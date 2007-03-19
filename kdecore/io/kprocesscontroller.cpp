@@ -18,7 +18,7 @@
 */
 
 #include "kprocess.h"
-#include "kprocctrl.h"
+#include "kprocesscontroller.h"
 
 #include <config.h>
 
@@ -33,56 +33,93 @@
 
 #include <qsocketnotifier.h>
 
-KProcessController *KProcessController::theKProcessController;
-int KProcessController::refCount;
+class KProcessController::Private
+{
+public:
+    Private()
+        : needcheck( false ),
+          notifier( 0 )
+    {
+    }
+
+    ~Private()
+    {
+        delete notifier;
+    }
+
+    int fd[2];
+    bool needcheck;
+    QSocketNotifier *notifier;
+    QList<KProcess*> kProcessList;
+    QList<int> unixProcessList;
+    static struct sigaction oldChildHandlerData;
+    static bool handlerSet;
+    static int refCount;
+    static KProcessController* instance;
+};
+
+KProcessController *KProcessController::Private::instance = 0;
+int KProcessController::Private::refCount = 0;
 
 void KProcessController::ref()
 {
-  if( !refCount ) {
-    theKProcessController = new KProcessController;
-    setupHandlers();
-  }
-  refCount++;
+    if ( !Private::refCount ) {
+        Private::instance = new KProcessController;
+        setupHandlers();
+    }
+    Private::refCount++;
 }
 
 void KProcessController::deref()
 {
-  refCount--;
-  if( !refCount ) {
-    resetHandlers();
-    delete theKProcessController;
-    theKProcessController = 0;
-  }
+    Private::refCount--;
+    if( !Private::refCount ) {
+        resetHandlers();
+        delete Private::instance;
+        Private::instance = 0;
+    }
+}
+
+KProcessController* KProcessController::instance()
+{
+    /*
+     * there were no safety guards in previous revisions, is that ok?
+    if ( !Private::instance ) {
+        ref();
+    }
+     */
+
+    return Private::instance;
 }
 
 KProcessController::KProcessController()
-  : needcheck( false )
+  : d( new Private )
 {
-  if( pipe( fd ) )
+  if( pipe( d->fd ) )
   {
     perror( "pipe" );
     abort();
   }
 
-  fcntl( fd[0], F_SETFL, O_NONBLOCK ); // in case slotDoHousekeeping is called without polling first
-  fcntl( fd[1], F_SETFL, O_NONBLOCK ); // in case it fills up
-  fcntl( fd[0], F_SETFD, FD_CLOEXEC );
-  fcntl( fd[1], F_SETFD, FD_CLOEXEC );
+  fcntl( d->fd[0], F_SETFL, O_NONBLOCK ); // in case slotDoHousekeeping is called without polling first
+  fcntl( d->fd[1], F_SETFL, O_NONBLOCK ); // in case it fills up
+  fcntl( d->fd[0], F_SETFD, FD_CLOEXEC );
+  fcntl( d->fd[1], F_SETFD, FD_CLOEXEC );
 
-  notifier = new QSocketNotifier( fd[0], QSocketNotifier::Read );
-  notifier->setEnabled( true );
-  QObject::connect( notifier, SIGNAL(activated(int)),
+  d->notifier = new QSocketNotifier( d->fd[0], QSocketNotifier::Read );
+  d->notifier->setEnabled( true );
+  QObject::connect( d->notifier, SIGNAL(activated(int)),
                     SLOT(slotDoHousekeeping()));
 }
 
 KProcessController::~KProcessController()
 {
-  delete notifier;
+  delete d;
 
 #ifndef Q_OS_MAC
 /* not sure why, but this is causing lockups */
-  close( fd[0] );
-  close( fd[1] );
+  close( d->fd[0] );
+  close( d->fd[1] );
 #else
 #warning FIXME: why does close() freeze up destruction?
 #endif
@@ -97,15 +134,15 @@ static void theReaper( int num )
 }
 
 #ifdef Q_OS_UNIX
-struct sigaction KProcessController::oldChildHandlerData;
+struct sigaction KProcessController::Private::oldChildHandlerData;
 #endif
-bool KProcessController::handlerSet = false;
+bool KProcessController::Private::handlerSet = false;
 
 void KProcessController::setupHandlers()
 {
-  if( handlerSet )
+  if( Private::handlerSet )
       return;
-  handlerSet = true;
+  Private::handlerSet = true;
 
 #ifdef Q_OS_UNIX
   struct sigaction act;
@@ -122,7 +159,7 @@ void KProcessController::setupHandlers()
 #ifdef SA_RESTART
   act.sa_flags |= SA_RESTART;
 #endif
-  sigaction( SIGCHLD, &act, &oldChildHandlerData );
+  sigaction( SIGCHLD, &act, &Private::oldChildHandlerData );
 
   sigaddset( &act.sa_mask, SIGCHLD );
   // Make sure we don't block this signal. gdb tends to do that :-(
@@ -134,9 +171,9 @@ void KProcessController::setupHandlers()
 
 void KProcessController::resetHandlers()
 {
-  if( !handlerSet )
+  if( !Private::handlerSet )
       return;
-  handlerSet = false;
+  Private::handlerSet = false;
 
 #ifdef Q_OS_UNIX
   sigset_t mask, omask;
@@ -145,10 +182,10 @@ void KProcessController::resetHandlers()
   sigprocmask( SIG_BLOCK, &mask, &omask );
 
   struct sigaction act;
-  sigaction( SIGCHLD, &oldChildHandlerData, &act );
+  sigaction( SIGCHLD, &Private::oldChildHandlerData, &act );
   if (act.sa_handler != theReaper) {
      sigaction( SIGCHLD, &act, 0 );
-     handlerSet = true;
+     Private::handlerSet = true;
   }
 
   sigprocmask( SIG_SETMASK, &omask, 0 );
@@ -166,12 +203,13 @@ void KProcessController::theSigCHLDHandler( int arg )
   int saved_errno = errno;
 
   char dummy = 0;
-  ::write( theKProcessController->fd[1], &dummy, 1 );
+  ::write( instance()->d->fd[1], &dummy, 1 );
 
 #ifdef Q_OS_UNIX
-  if( oldChildHandlerData.sa_handler != SIG_IGN &&
-      oldChildHandlerData.sa_handler != SIG_DFL )
-     oldChildHandlerData.sa_handler( arg ); // call the old handler
+    if ( Private::oldChildHandlerData.sa_handler != SIG_IGN &&
+         Private::oldChildHandlerData.sa_handler != SIG_DFL ) {
+        Private::oldChildHandlerData.sa_handler( arg ); // call the old handler
+    }
 #else
   //TODO: win32
 #endif
@@ -181,36 +219,36 @@ void KProcessController::theSigCHLDHandler( int arg )
 
 int KProcessController::notifierFd() const
 {
-  return fd[0];
+  return d->fd[0];
 }
 
 void KProcessController::unscheduleCheck()
 {
   char dummy[16]; // somewhat bigger - just in case several have queued up
-  if( ::read( fd[0], dummy, sizeof(dummy) ) > 0 )
-    needcheck = true;
+  if( ::read( d->fd[0], dummy, sizeof(dummy) ) > 0 )
+    d->needcheck = true;
 }
 
 void
 KProcessController::rescheduleCheck()
 {
-  if( needcheck )
+  if( d->needcheck )
   {
-    needcheck = false;
+    d->needcheck = false;
     char dummy = 0;
-    ::write( fd[1], &dummy, 1 );
+    ::write( d->fd[1], &dummy, 1 );
   }
 }
 
 void KProcessController::slotDoHousekeeping()
 {
   char dummy[16]; // somewhat bigger - just in case several have queued up
-  ::read( fd[0], dummy, sizeof(dummy) );
+  ::read( d->fd[0], dummy, sizeof(dummy) );
 
   int status;
  again:
-  QList<KProcess*>::iterator it( kProcessList.begin() );
-  QList<KProcess*>::iterator eit( kProcessList.end() );
+  QList<KProcess*>::iterator it( d->kProcessList.begin() );
+  QList<KProcess*>::iterator eit( d->kProcessList.end() );
   while( it != eit )
   {
     KProcess *prc = *it;
@@ -218,19 +256,19 @@ void KProcessController::slotDoHousekeeping()
     {
       prc->processHasExited( status );
       // the callback can nuke the whole process list and even 'this'
-      if (!theKProcessController)
+      if (!instance())
         return;
       goto again;
     }
     ++it;
   }
-  QList<int>::iterator uit( unixProcessList.begin() );
-  QList<int>::iterator ueit( unixProcessList.end() );
+  QList<int>::iterator uit( d->unixProcessList.begin() );
+  QList<int>::iterator ueit( d->unixProcessList.end() );
   while( uit != ueit )
   {
     if( waitpid( *uit, 0, WNOHANG ) > 0 )
     {
-      uit = unixProcessList.erase( uit );
+      uit = d->unixProcessList.erase( uit );
       deref(); // counterpart to addProcess, can invalidate 'this'
     } else
       ++uit;
@@ -254,9 +292,9 @@ bool KProcessController::waitForProcessExit( int timeout )
 
     fd_set fds;
     FD_ZERO( &fds );
-    FD_SET( fd[0], &fds );
+    FD_SET( d->fd[0], &fds );
 
-    switch( select( fd[0]+1, &fds, 0, 0, tvp ) )
+    switch( select( d->fd[0]+1, &fds, 0, 0, tvp ) )
     {
     case -1:
       if( errno == EINTR )
@@ -277,18 +315,18 @@ bool KProcessController::waitForProcessExit( int timeout )
 
 void KProcessController::addKProcess( KProcess* p )
 {
-  kProcessList.append( p );
+  d->kProcessList.append( p );
 }
 
 void KProcessController::removeKProcess( KProcess* p )
 {
-  kProcessList.removeAll( p );
+  d->kProcessList.removeAll( p );
 }
 
 void KProcessController::addProcess( int pid )
 {
-  unixProcessList.append( pid );
+  d->unixProcessList.append( pid );
   ref(); // make sure we stay around when the KProcess goes away
 }
 
-#include "kprocctrl.moc"
+#include "kprocesscontroller.moc"

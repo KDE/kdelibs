@@ -53,10 +53,10 @@ public:
   static void deref();
 
   /**
-   * Only a single instance of this class is allowed at a time,
-   * and this static variable is used to track the one instance.
+   * Only a single instance of this class is allowed at a time.
+   * This method provides access to that instance.
    */
-  static KProcessController *theKProcessController; // kde4: rename: instance
+  static KProcessController *instance();
 
   /**
    * Automatically called upon SIGCHLD. Never call it directly.
@@ -117,18 +117,8 @@ private Q_SLOTS:
 private:
   friend class I_just_love_gcc;
 
-  int fd[2];
-  bool needcheck;
-  QSocketNotifier *notifier;
-  QList<KProcess*> kProcessList;
-  QList<int> unixProcessList;
-
   static void setupHandlers();
   static void resetHandlers();
-  static struct sigaction oldChildHandlerData;
-  static bool handlerSet;
-
-  static int refCount;
 
   // Disallow instantiation
   KProcessController();
@@ -137,6 +127,9 @@ private:
   // Disallow assignment and copy-construction
   KProcessController( const KProcessController& );
   KProcessController& operator= ( const KProcessController& );
+
+  class Private;
+  Private* d;
 };
 
 #endif

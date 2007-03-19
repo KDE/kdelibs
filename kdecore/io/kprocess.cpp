@@ -24,7 +24,7 @@
 #endif
 
 #include "kprocess.h"
-#include "kprocctrl.h"
+#include "kprocesscontroller.h"
 #include "kpty.h"
 
 #include <config.h>
@@ -131,7 +131,7 @@ KProcess::KProcess( QObject* parent )
 	 d(new KProcessPrivate)
 {
   KProcessController::ref();
-  KProcessController::theKProcessController->addKProcess(this);
+  KProcessController::instance()->addKProcess(this);
 
 
   out[0] = out[1] = -1;
@@ -205,14 +205,14 @@ KProcess::~KProcess()
 #endif
   delete d;
 
-  KProcessController::theKProcessController->removeKProcess(this);
+  KProcessController::instance()->removeKProcess(this);
   KProcessController::deref();
 }
 
 void KProcess::detach()
 {
   if (runs) {
-    KProcessController::theKProcessController->addProcess(pid_);
+    KProcessController::instance()->addProcess(pid_);
     runs = false;
     pid_ = 0; // close without draining
     commClose(); // Clean up open fd's and socket notifiers.
@@ -413,11 +413,11 @@ bool KProcess::start(RunMode runmode, Communication comm)
       if (!runs)
       {
         // commClose detected data on the process exit notifification pipe
-        KProcessController::theKProcessController->unscheduleCheck();
+        KProcessController::instance()->unscheduleCheck();
         if (waitpid(pid_, &status, WNOHANG) != 0) // error finishes, too
         {
           commClose(); // this time for real (runs is false)
-          KProcessController::theKProcessController->rescheduleCheck();
+          KProcessController::instance()->rescheduleCheck();
           break;
         }
         runs = true; // for next commClose() iteration
@@ -508,7 +508,7 @@ bool KProcess::wait(int timeout)
   }
 
 #ifdef Q_OS_UNIX
-  int fd = KProcessController::theKProcessController->notifierFd();
+  int fd = KProcessController::instance()->notifierFd();
   for(;;)
   {
     fd_set fds;
@@ -532,14 +532,14 @@ bool KProcess::wait(int timeout)
         break;
       // fall through; should happen if tvp->tv_sec < 0
     case 0:
-      KProcessController::theKProcessController->rescheduleCheck();
+      KProcessController::instance()->rescheduleCheck();
       return false;
     default:
-      KProcessController::theKProcessController->unscheduleCheck();
+      KProcessController::instance()->unscheduleCheck();
       if (waitpid(pid_, &status, WNOHANG) != 0) // error finishes, too
       {
         processHasExited(status);
-        KProcessController::theKProcessController->rescheduleCheck();
+        KProcessController::instance()->rescheduleCheck();
         return true;
       }
     }
@@ -1003,7 +1003,7 @@ void KProcess::commClose()
     // buffer doesn't fill up whilst we are waiting for data on the other
     // (causing a deadlock). Hence we need to use select.
 
-    int notfd = KProcessController::theKProcessController->notifierFd();
+    int notfd = KProcessController::instance()->notifierFd();
 
     while ((communication & (Stdout | Stderr)) || runs) {
       fd_set rfds;
