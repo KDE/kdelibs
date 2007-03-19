@@ -70,9 +70,6 @@ void DeleteJob::slotStart()
 //aleXXX
 void DeleteJob::slotReport()
 {
-   if (progressId()==0)
-      return;
-
    emit deleting( this, m_currentURL );
    emitDeleting(m_currentURL);
 
@@ -152,8 +149,6 @@ void DeleteJob::statNextSrc()
         Scheduler::scheduleJob(job);
         //kDebug(7007) << "KIO::stat (DeleteJob) " << m_currentURL << endl;
         addSubjob(job);
-        //if ( progressId() ) // Did we get an ID from the observer ?
-        //  Observer::self()->slotDeleting( this, *it ); // show asap
     } else
     {
         m_totalFilesDirs = files.count()+symlinks.count() + dirs.count();

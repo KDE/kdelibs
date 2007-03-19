@@ -245,23 +245,6 @@ public:
 
 
     /**
-     * Sets the progress id for this job.
-     * Call this with the value given by uiserver.
-     *
-     * @param id the progress id for this job, as returned by uiserver
-     * @internal
-     */
-    void setProgressId( int id );
-
-    /**
-     * Returns the progress id for this job.
-     *
-     * @return the progress id for this job, as returned by uiserver
-     */
-    int progressId() const;
-
-
-    /**
      * Returns the processed amount of a given unit for this job.
      *
      * @param unit the unit of the requested amount
@@ -296,7 +279,7 @@ private: // don't tell moc, but those signals are in fact private
      * @param jobId the job identification number that emitted this signal
      * @internal
      */
-    void finished( KJob *job, int jobId );
+    void finished(KJob *job);
 
     /**
      * Emitted when the job is suspended.
@@ -304,7 +287,7 @@ private: // don't tell moc, but those signals are in fact private
      * @param job the job that emitted this signal
      * @param jobId the job identification number that emitted this signal
      */
-    void suspended( KJob *job, int jobId );
+    void suspended(KJob *job);
 
     /**
      * Emitted when the job is resumed.
@@ -312,7 +295,7 @@ private: // don't tell moc, but those signals are in fact private
      * @param job the job that emitted this signal
      * @param jobId the job identification number that emitted this signal
      */
-    void resumed( KJob *job, int jobId );
+    void resumed(KJob *job);
 
     /**
      * Emitted when the job is finished, in any case (completed, canceled,
@@ -320,7 +303,7 @@ private: // don't tell moc, but those signals are in fact private
      *
      * @param job the job that emitted this signal
      */
-    void result( KJob *job );
+    void result(KJob *job);
 
 Q_SIGNALS:
     /**

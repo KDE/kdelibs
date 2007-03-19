@@ -214,7 +214,7 @@ void Job::emitUnmounting(const QString &point)
 
 bool Job::doKill()
 {
-  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << " progressId()=" << progressId() << endl;
+  kDebug(7007) << "Job::kill this=" << this << " " << metaObject()->className() << endl;
   // kill all subjobs, without triggering their result slot
   QList<KJob *>::const_iterator it = subjobs().begin();
   const QList<KJob *>::const_iterator end = subjobs().end();
@@ -1658,7 +1658,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             if (!KProtocolManager::autoResume() && !m_overwrite)
             {
                 QString newPath;
-                KIO::Job* job = ( !progressId() && parentJob() ) ? parentJob() : this;
+                KIO::Job* job = ( parentJob() ) ? parentJob() : this;
                 // Ask confirmation about resuming previous transfer
                 res = ui()->askFileRename(
                       job, i18n("File Already Exists"),

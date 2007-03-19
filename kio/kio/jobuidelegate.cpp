@@ -57,7 +57,7 @@ KIO::JobUiDelegate::~JobUiDelegate()
 {
     if ( d->showProgressInfo && job() )
     {
-        delegateProxy->jobFinished( job()->progressId() );
+        delegateProxy->jobFinished( d->progressId );
     }
 
     delete d;
@@ -92,11 +92,7 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
     // Notify the UI Server and get a progress id
     if ( d->showProgressInfo )
     {
-        KIO::Job* kioJob = dynamic_cast<KIO::Job*>( job );
-        const int progressId = delegateProxy->newJob( job, SharedUiDelegateProxy::JobShown );
-        job->setProgressId( progressId );
-        if (kioJob)
-            kioJob->addMetaData("progress-id", QString::number(progressId));
+        d->progressId = delegateProxy->newJob( job, SharedUiDelegateProxy::JobShown );
 
         //kDebug(7007) << "Created job " << this << " with progress info -- m_progressId=" << m_progressId << endl;
         // Connect global progress info signals
@@ -116,8 +112,8 @@ void KIO::JobUiDelegate::connectJob( KJob *job )
                  this, SLOT( slotDescription( KJob*, const QString&,
                                               const QPair<QString,QString>&,
                                               const QPair<QString,QString>& ) ) );
-        connect( job, SIGNAL( finished( KJob*, int ) ),
-                 this, SLOT( slotFinished( KJob*, int ) ) );
+        connect( job, SIGNAL( finished(KJob*) ),
+                 this, SLOT( slotFinished( KJob* ) ) );
     }
 
     connect( job, SIGNAL( warning( KJob*, const QString& ) ),
@@ -132,11 +128,11 @@ void KIO::JobUiDelegate::showErrorMessage()
     }
 }
 
-void KIO::JobUiDelegate::slotFinished( KJob * /*job*/, int /*jobId*/ )
+void KIO::JobUiDelegate::slotFinished( KJob * /*job*/ )
 {
     // If we are displaying a progress dialog, remove it first.
-    if ( job()->progressId() ) // Did we get an ID from the observer ?
-        delegateProxy->jobFinished( job()->progressId() );
+    if ( d->progressId ) // Did we get an ID from the observer ?
+        delegateProxy->jobFinished( d->progressId );
     if ( job()->error() && isAutoErrorHandlingEnabled() )
         showErrorMessage();
 }
@@ -171,18 +167,18 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
 {
     kDebug() << "Observer::open_RenameDialog job=" << job << endl;
     if (job)
-        kDebug() << "                        progressId=" << job->progressId() << endl;
+        kDebug() << "                        progressId=" << d->progressId << endl;
     // Hide existing dialog box if any
-    if (job && job->progressId())
-        delegateProxy->uiserver().setJobVisible(job->progressId(), false);
+    if (job && d->progressId)
+        delegateProxy->uiserver().setJobVisible(d->progressId, false);
     // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
     // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
     RenameDialog_Result res = KIO::open_RenameDialog(caption, src, dest, mode,
                                                      newDest, sizeSrc, sizeDest,
                                                      ctimeSrc, ctimeDest, mtimeSrc,
                                                      mtimeDest);
-    if (job && job->progressId())
-        delegateProxy->uiserver().setJobVisible(job->progressId(), true);
+    if (job && d->progressId)
+        delegateProxy->uiserver().setJobVisible(d->progressId, true);
     return res;
 }
 
@@ -191,32 +187,32 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob * job,
                                               const QString & error_text)
 {
     // Hide existing dialog box if any
-    if (job && job->progressId())
-        delegateProxy->uiserver().setJobVisible(job->progressId(), false);
+    if (job && d->progressId)
+        delegateProxy->uiserver().setJobVisible(d->progressId, false);
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
     SkipDialog_Result res = KIO::open_SkipDialog(multi, error_text);
-    if (job && job->progressId())
-        delegateProxy->uiserver().setJobVisible(job->progressId(), true);
+    if (job && d->progressId)
+        delegateProxy->uiserver().setJobVisible(d->progressId, true);
     return res;
 }
 
 void KIO::JobUiDelegate::slotPercent( KJob *job, unsigned long percent )
 {
-    delegateProxy->uiserver().percent(job->progressId(), percent);
+    delegateProxy->uiserver().percent(d->progressId, percent);
 }
 
 void KIO::JobUiDelegate::slotInfoMessage( KJob *job, const QString &msg )
 {
-    delegateProxy->uiserver().infoMessage(job->progressId(), msg);
+    delegateProxy->uiserver().infoMessage(d->progressId, msg);
 }
 
 void KIO::JobUiDelegate::slotDescription( KJob *job, const QString &title,
                                           const QPair<QString, QString> &field1,
                                           const QPair<QString, QString> &field2 )
 {
-    delegateProxy->uiserver().setDescription(job->progressId(), title);
-    delegateProxy->uiserver().setDescriptionFirstField(job->progressId(), field1.first, field1.second);
-    delegateProxy->uiserver().setDescriptionSecondField(job->progressId(), field2.first, field2.second);
+    delegateProxy->uiserver().setDescription(d->progressId, title);
+    delegateProxy->uiserver().setDescriptionFirstField(d->progressId, field1.first, field1.second);
+    delegateProxy->uiserver().setDescriptionSecondField(d->progressId, field2.first, field2.second);
 }
 
 void KIO::JobUiDelegate::slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong total )
@@ -224,13 +220,13 @@ void KIO::JobUiDelegate::slotTotalAmount( KJob *job, KJob::Unit unit, qulonglong
     switch (unit)
     {
     case KJob::Bytes:
-        delegateProxy->uiserver().totalSize(job->progressId(), total);
+        delegateProxy->uiserver().totalSize(d->progressId, total);
         break;
     case KJob::Files:
-        delegateProxy->uiserver().totalFiles(job->progressId(), total);
+        delegateProxy->uiserver().totalFiles(d->progressId, total);
         break;
     case KJob::Directories:
-        delegateProxy->uiserver().totalDirs(job->progressId(), total);
+        delegateProxy->uiserver().totalDirs(d->progressId, total);
         break;
     }
 }
@@ -240,13 +236,13 @@ void KIO::JobUiDelegate::slotProcessedAmount( KJob *job, KJob::Unit unit, qulong
     switch (unit)
     {
     case KJob::Bytes:
-        delegateProxy->uiserver().processedSize(job->progressId(), amount);
+        delegateProxy->uiserver().processedSize(d->progressId, amount);
         break;
     case KJob::Files:
-        delegateProxy->uiserver().processedFiles(job->progressId(), amount);
+        delegateProxy->uiserver().processedFiles(d->progressId, amount);
         break;
     case KJob::Directories:
-        delegateProxy->uiserver().processedDirs(job->progressId(), amount);
+        delegateProxy->uiserver().processedDirs(d->progressId, amount);
         break;
     }
 }
@@ -254,9 +250,9 @@ void KIO::JobUiDelegate::slotProcessedAmount( KJob *job, KJob::Unit unit, qulong
 void KIO::JobUiDelegate::slotSpeed( KJob *job, unsigned long speed )
 {
     if (speed)
-        delegateProxy->uiserver().speed(job->progressId(), KIO::convertSize(speed) + QString("/s"));
+        delegateProxy->uiserver().speed(d->progressId, KIO::convertSize(speed) + QString("/s"));
     else
-        delegateProxy->uiserver().speed(job->progressId(), QString());
+        delegateProxy->uiserver().speed(d->progressId, QString());
 }
 
 
@@ -324,8 +320,6 @@ int KIO::SharedUiDelegateProxy::newJob(KJob *job, JobVisibility visibility, cons
                                        jobIcon, componentData.aboutData()->programName());
 
     m_dctJobs.insert(progressId, job);
-
-    job->setProgressId(progressId); // Just to make sure this attribute is set
 
     return progressId;
 }

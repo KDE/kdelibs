@@ -30,12 +30,11 @@
 class KJob::Private
 {
 public:
-    Private() : uiDelegate( 0 ), progressId( 0 ), error( KJob::NoError ),
+    Private() : uiDelegate( 0 ), error( KJob::NoError ),
                 progressUnit(KJob::Bytes), percentage( 0 ),
                 suspended( false ), capabilities( KJob::NoCapabilities ) {}
 
     KJobUiDelegate *uiDelegate;
-    int progressId;
     int error;
     QString errorText;
     KJob::Unit progressUnit;
@@ -103,10 +102,7 @@ bool KJob::kill( KillVerbosity verbosity )
         else
         {
             // If we are displaying a progress dialog, remove it first.
-            if ( d->progressId )
-            {
-                emit finished( this, d->progressId );
-            }
+            emit finished(this);
 
             deleteLater();
         }
@@ -126,7 +122,7 @@ bool KJob::suspend()
         d->suspended = true;
         doSuspend();
 
-        emit suspended( this, d->progressId );
+        emit suspended(this);
 
         return true;
     }
@@ -141,7 +137,7 @@ bool KJob::resume()
         d->suspended = false;
         doResume();
 
-        emit resumed( this, d->progressId );
+        emit resumed(this);
 
         return true;
     }
@@ -179,16 +175,6 @@ QString KJob::errorText() const
 QString KJob::errorString() const
 {
     return d->errorText;
-}
-
-void KJob::setProgressId( int id )
-{
-    d->progressId = id;
-}
-
-int KJob::progressId() const
-{
-    return d->progressId;
 }
 
 qulonglong KJob::processedAmount(Unit unit) const
@@ -260,10 +246,7 @@ void KJob::setPercent( unsigned long percentage )
 void KJob::emitResult()
 {
     // If we are displaying a progress dialog, remove it first.
-    if ( d->progressId )
-    {
-        emit finished( this, progressId() );
-    }
+    emit finished(this);
 
     emit result( this );
 

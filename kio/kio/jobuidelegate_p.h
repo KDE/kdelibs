@@ -41,9 +41,11 @@ namespace KIO
 class JobUiDelegatePrivate
 {
 public:
-    JobUiDelegatePrivate() { }
+    JobUiDelegatePrivate() : showProgressInfo(true),
+                             progressId(0), userTimestamp(0) { }
 
     bool showProgressInfo;
+    int progressId;
     QPointer<QWidget> errorParentWidget;
     unsigned long userTimestamp;
 };
