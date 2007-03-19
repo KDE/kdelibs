@@ -29,12 +29,12 @@ class KAbstractWidgetJobTracker::Private
 public:
     Private(KAbstractWidgetJobTracker *parent)
         : q(parent), job(0),
-          stopOnClose(true), onlyClean(false) { }
+          stopOnClose(true), autoDelete(true) { }
 
     KAbstractWidgetJobTracker *const q;
     KJob *job;
     bool stopOnClose;
-    bool onlyClean;
+    bool autoDelete;
 
     void _k_installEventFilter();
 };
@@ -76,23 +76,23 @@ bool KAbstractWidgetJobTracker::stopOnClose() const
     return d->stopOnClose;
 }
 
-void KAbstractWidgetJobTracker::setOnlyClean(bool onlyClean)
+void KAbstractWidgetJobTracker::setAutoDelete(bool autoDelete)
 {
-    d->onlyClean = onlyClean;
+    d->autoDelete = autoDelete;
 }
 
-bool KAbstractWidgetJobTracker::onlyClean() const
+bool KAbstractWidgetJobTracker::autoDelete() const
 {
-    return d->onlyClean;
+    return d->autoDelete;
 }
 
 void KAbstractWidgetJobTracker::finished(KJob */*job*/)
 {
     // clean or delete dialog
-    if (d->onlyClean) {
-        slotClean();
-    } else {
+    if (d->autoDelete) {
         deleteLater();
+    } else {
+        slotClean();
     }
 }
 
@@ -137,10 +137,10 @@ bool KAbstractWidgetJobTracker::eventFilter(QObject *obj, QEvent *event)
         // kill job when desired
         if (d->stopOnClose) {
             slotStop();
-        } else if (d->onlyClean) { // clean or delete dialog
-            slotClean();
-        } else {
+        } else if (d->autoDelete) { // clean or delete dialog
             deleteLater();
+        } else {
+            slotClean();
         }
     }
 

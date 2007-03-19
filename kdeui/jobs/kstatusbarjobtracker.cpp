@@ -61,9 +61,7 @@ KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
     d->showButton = button;
 
     // only clean this dialog
-    setOnlyClean(true);
-    // TODO : is this really needed ?
-    setStopOnClose(false);
+    setAutoDelete(false);
 
     d->widget = new QWidget(parent);
 
@@ -149,7 +147,7 @@ void KStatusBarJobTracker::percent(KJob */*job*/, unsigned long percent)
     d->progressBar->setValue(percent);
 }
 
-void KStatusBarJobTracker::speed(KJob *job, unsigned long value)
+void KStatusBarJobTracker::speed(KJob */*job*/, unsigned long value)
 {
     if (value == 0 ) { // speed is measured in bytes-per-second
         d->label->setText(i18n(" Stalled "));

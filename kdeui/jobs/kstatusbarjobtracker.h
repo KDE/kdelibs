@@ -24,7 +24,8 @@
 #include <kabstractwidgetjobtracker.h>
 
 /**
- * The interface to implement to track the progresses of a job.
+ * This class implements a job tracker with a widget suited for embedding in a
+ * status bar.
  */
 class KDECORE_EXPORT KStatusBarJobTracker : public KAbstractWidgetJobTracker
 {
@@ -32,12 +33,15 @@ class KDECORE_EXPORT KStatusBarJobTracker : public KAbstractWidgetJobTracker
 
 public:
     /**
-     * Creates a new KJobTrackerInterface
+     * Creates a new KStatusBarJobTracker
+     *
+     * @param parent the parent of this object and of the widget displaying the job progresses
+     * @param button true to display a stop button allowing to kill the job, false otherwise
      */
-    KStatusBarJobTracker(QWidget *parent, bool button = true);
+    KStatusBarJobTracker(QWidget *parent = 0, bool button = true);
 
     /**
-     * Destroys a KJobTrackerInterface
+     * Destroys a KStatusBarJobTracker
      */
     virtual ~KStatusBarJobTracker();
 

@@ -270,7 +270,7 @@ void KWidgetJobTracker::slotClean()
             d->speedLabel->setText(i18n("%1/s (done)",
                                         KGlobal::locale()->formatByteSize(1000 * d->totalSize / s)));
         }
-        setOnlyClean(false);
+        setAutoDelete(true);
     }
 }
 

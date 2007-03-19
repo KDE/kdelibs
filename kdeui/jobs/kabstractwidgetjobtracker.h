@@ -27,7 +27,7 @@ class KJob;
 class QWidget;
 
 /**
- * The base class for widget base job trackers.
+ * The base class for widget based job trackers.
  */
 class KDEUI_EXPORT KAbstractWidgetJobTracker : public KJobTrackerInterface
 {
@@ -35,19 +35,21 @@ class KDEUI_EXPORT KAbstractWidgetJobTracker : public KJobTrackerInterface
 
 public:
     /**
-     * Creates a new KWidgetJobTracker
+     * Creates a new KAbstractWidgetJobTracker
      *
      * @param parent the parent of this object and of the widget displaying the job progresses
      */
     KAbstractWidgetJobTracker(QWidget *parent = 0);
 
     /**
-     * Destroys a KWidgetJobTracker
+     * Destroys a KAbstractWidgetJobTracker
      */
     virtual ~KAbstractWidgetJobTracker();
 
     /**
      * Register a new job in this tracker.
+     * Note that job trackers inheriting from this class can have only one job
+     * registered at a time.
      *
      * @param job the job to register
      */
@@ -67,8 +69,21 @@ public:
      */
     virtual QWidget *widget() = 0;
 
-    // should we stop the job when the dialog is closed ?
+    /**
+     * This controls whether the job should be canceled if the dialog is closed.
+     *
+     * @param stopOnClose If true the job will be stopped if the dialog is closed,
+     * otherwise the job will continue even on close.
+     * @see stopOnClose()
+     */
     void setStopOnClose(bool stopOnClose);
+
+    /**
+     * Checks whether the job will be killed when the dialog is closed.
+     *
+     * @return true if the job is killed on close event, false otherwise.
+     * @see setStopOnClose()
+     */
     bool stopOnClose() const;
 
     /**
@@ -76,21 +91,21 @@ public:
      * the KJob is finished (or canceled).
      *
      * If your dialog is an embedded widget and not a separate window, you should
-     * setOnlyClean(true) in the constructor of your custom dialog.
+     * setAutoDelete(false) in the constructor of your custom dialog.
      *
-     * @param onlyClean If true the dialog will only call method slotClean.
-     * If false the dialog will be deleted.
-     * @see onlyClean()
+     * @param autoDelete If false the dialog will only call method slotClean.
+     * If true the dialog will be deleted.
+     * @see autoDelete()
      */
-    void setOnlyClean(bool onlyClean);
+    void setAutoDelete(bool autoDelete);
 
     /**
      * Checks whether the dialog should be deleted or cleaned.
-     * @return true if the dialog only calls slotClean, false if it will be
+     * @return false if the dialog only calls slotClean, true if it will be
      *         deleted
-     * @see setOnlyClean()
+     * @see setAutoDelete()
      */
-    bool onlyClean() const;
+    bool autoDelete() const;
 
 protected Q_SLOTS:
     /**
@@ -101,7 +116,6 @@ protected Q_SLOTS:
      */
     void finished(KJob *job);
 
-public Q_SLOTS:
     /**
      * This method should be called for correct cancellation of IO operation
      * Connect this to the progress widgets buttons etc.
@@ -143,6 +157,9 @@ Q_SIGNALS:
     void resume();
 
 protected:
+    /**
+     * @internal
+     */
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
