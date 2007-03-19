@@ -300,5 +300,5 @@ namespace KStringHandler
       @return the (hopefully correctly guessed) QString representation of @p str
      */
     KDECORE_EXPORT QString from8Bit( const char *str );
-};
+}
 #endif
