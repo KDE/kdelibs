@@ -92,7 +92,9 @@ KIconCanvas::KIconCanvas(QWidget *parent)
     connect(this, SIGNAL( currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
 	    SLOT(slotCurrentChanged(QListWidgetItem *)));
     setGridSize(QSize(80,80));
+#ifdef __GNUC__
 #warning how to port setShowToolTips?
+#endif
     // setShowToolTips(true);
 }
 
