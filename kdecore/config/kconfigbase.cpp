@@ -300,16 +300,6 @@ QStringList KConfigBase::readPathListEntry( const char *pKey, char sep ) const
 }
 
 
-QFont KConfigBase::readFontEntry( const QString& pKey, const QFont* pDefault ) const
-{
-  return d->group.readEntry(pKey, (pDefault? *pDefault: QFont()));
-}
-
-QFont KConfigBase::readFontEntry( const char *pKey, const QFont* pDefault ) const
-{
-  return d->group.readEntry(pKey, (pDefault? *pDefault: QFont()));
-}
-
 QRect KConfigBase::readRectEntry( const QString& pKey, const QRect* pDefault ) const
 {
   return d->group.readEntry(pKey, (pDefault? *pDefault: QRect()));
@@ -645,13 +635,6 @@ bool KConfigBase::checkConfigFilesWritable(bool warnUser)
     }
 }
 
-#ifdef KDE3_SUPPORT
-QColor KConfigBase::readEntry(const char* pKey, Qt::GlobalColor aDefault) const
-{ return d->group.readEntry(pKey, QColor(aDefault)); }
-QColor KConfigBase::readEntry(const QString &pKey, Qt::GlobalColor aDefault) const
-{ return d->group.readEntry(pKey.toLatin1().data(), QColor(aDefault)); }
-#endif
-
 QVariant KConfigBase::readPropertyEntry( const QString& pKey, const QVariant& aDefault) const
 { return d->group.readEntry(pKey, aDefault); }
 QVariant KConfigBase::readPropertyEntry( const char *pKey, const QVariant& aDefault) const
@@ -703,7 +686,3 @@ bool KConfigBase::readBoolEntry( const QString& pKey, bool bDefault ) const
 { return d->group.readEntry( pKey, bDefault ); }
 bool KConfigBase::readBoolEntry( const char *pKey, bool bDefault ) const
 { return d->group.readEntry( pKey, bDefault ); }
-QColor KConfigBase::readColorEntry( const QString& pKey, const QColor* pDefault ) const
-{ return d->group.readEntry(pKey, (pDefault? *pDefault: QColor())); }
-QColor KConfigBase::readColorEntry( const char *pKey, const QColor* pDefault  ) const
-{ return d->group.readEntry(pKey, (pDefault? *pDefault: QColor())); }

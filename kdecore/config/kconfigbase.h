@@ -174,18 +174,6 @@ public:
 
 #ifdef KDE3_SUPPORT
   /**
-   * Reads the color of an entry specified by @p pKey in the current group.
-   *
-   */
-  KDE_DEPRECATED QColor readEntry(const char* pKey, Qt::GlobalColor aDefault) const;
-
-  /**
-   * Reads the color of an entry specified by @p pKey in the current group.
-   *
-   */
-  KDE_DEPRECATED QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const;
-
-  /**
    * Reads a list of strings.
    *
    * @deprecated Use readListEntry(const QString&, char) const instead.
@@ -530,34 +518,6 @@ public:
   KDE_DEPRECATED double readDoubleNumEntry( const char *pKey, double nDefault = 0.0 ) const;
 
   /**
-   * Reads a QFont value.
-   *
-   * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a font object.
-   *
-   * @param pKey The key to search for.
-   * @param pDefault A default value (null QFont by default) returned if the
-   * key was not found or if the read value cannot be interpreted.
-   * @return The value for this key.
-   * @deprecated
-   */
-  KDE_DEPRECATED QFont readFontEntry( const QString& pKey, const QFont* pDefault = 0L ) const;
-
-  /**
-   * Reads a QFont value.
-   *
-   * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a font object.
-   *
-   * @param pKey The key to search for.
-   * @param pDefault A default value (null QFont by default) returned if the
-   * key was not found or if the read value cannot be interpreted.
-   * @return The value for this key.
-   * @deprecated
-   */
-  KDE_DEPRECATED QFont readFontEntry( const char *pKey, const QFont* pDefault = 0L ) const;
-
-  /**
    * Reads a boolean entry.
    *
    * Read the value of an entry specified by @p pKey in the current group
@@ -669,34 +629,6 @@ public:
    */
   KDE_DEPRECATED QSize readSizeEntry( const char *pKey, const QSize* pDefault = 0L ) const;
 
-
-  /**
-   * Reads a QColor entry.
-   *
-   * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a color.
-   *
-   * @param pKey The key to search for.
-   * @param pDefault A default value (null QColor by default) returned if the
-   * key was not found or if the value cannot be interpreted.
-   * @return The value for this key.
-   * @deprecated
-   */
-  KDE_DEPRECATED QColor readColorEntry( const QString& pKey, const QColor* pDefault = 0L ) const;
-
-  /**
-   * Reads a QColor entry.
-   *
-   * Read the value of an entry specified by @p pKey in the current group
-   * and interpret it as a color.
-   *
-   * @param pKey The key to search for.
-   * @param pDefault A default value (null QColor by default) returned if the
-   * key was not found or if the value cannot be interpreted.
-   * @return The value for this key.
-   * @deprecated
-   */
-  KDE_DEPRECATED QColor readColorEntry( const char *pKey, const QColor* pDefault = 0L ) const;
 
   /**
    * Reads a QDateTime entry.

@@ -146,6 +146,14 @@ public:
     /**
      * Reads the value of an entry specified by @p pKey in the current group.
      *
+     * This template method makes it possible to write
+     *    QString foo = readEntry("...", QString("default"));
+     * and the same with all other types supported by QVariant.
+     * The return type of the method is simply the same as the type of the default value.
+     *
+     * @note readEntry("...", Qt::white) cannot compile because Qt::white is an enum.
+     * You must turn it into readEntry("...", QColor(Qt::white)).
+     *
      * @param pKey The key to search for.
      * @param aDefault A default value returned if the key was not found.
      * @return The value for this key, or @p aDefault.
@@ -160,20 +168,6 @@ public:
     template <typename T>
         T readEntry( const QString& pKey, const T& aDefault) const
     { return readEntry(pKey.toUtf8().constData(), aDefault); }
-
-    /**
-     * Reads the color of an entry specified by @p pKey in the current group.
-     *
-     */
-    QColor readEntry(const char* pKey, Qt::GlobalColor aDefault) const
-    { return readEntry(pKey, QColor(aDefault)); }
-
-    /**
-     * Reads the color of an entry specified by @p pKey in the current group.
-     *
-     */
-    QColor readEntry(const QString& pKey, Qt::GlobalColor aDefault) const
-    { return readEntry(pKey, QColor(aDefault)); }
 
     /**
      * Reads a list from the config object.
@@ -550,7 +544,7 @@ public:
      * a certain entry, e.g. like:
      * \code
      * QColor computedDefault = qApp->palette().color(QPalette::Active, QPalette::Text)
-     * QColor color = config->readEntry(key, computedDefault);
+     * QColor color = config->readEntry(key, computedDefault).value<QColor>();
      * \encode
      *
      * Then it may wish to make the following check before

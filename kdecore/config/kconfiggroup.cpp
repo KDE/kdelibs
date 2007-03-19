@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 2 -*-
 /*
    This file is part of the KDE libraries
    Copyright (c) 1999 Preston Brown <pbrown@kde.org>
@@ -1075,3 +1074,4 @@ bool KConfigGroup::isImmutable() const
 {
   return d->master->groupIsImmutable( d->group );
 }
+
