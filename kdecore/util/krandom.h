@@ -43,7 +43,7 @@ namespace KRandom {
      * @return the random string
      */
     KDECORE_EXPORT QString randomString(int length);
-};
+}
 
 
 #endif
