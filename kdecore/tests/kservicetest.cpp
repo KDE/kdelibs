@@ -194,7 +194,7 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 
     // Now look for any KTextEditor/Plugin
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
-    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    QVERIFY( offerListHasService( offers, "ktexteditor_docwordcompletion.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }
 
@@ -203,9 +203,9 @@ void KServiceTest::testTraderConstraints()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'ktexteditor_isearch'");
+    KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'ktexteditor_docwordcompletion'");
     QCOMPARE(offers.count(), 1);
-    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    QVERIFY( offerListHasService( offers, "ktexteditor_docwordcompletion.desktop" ) );
 }
 
 void KServiceTest::testHasServiceType1() // with services constructed with a full path (rare)
@@ -216,11 +216,11 @@ void KServiceTest::testHasServiceType1() // with services constructed with a ful
     QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
 
-    QString ktexteditor_isearchPath = KStandardDirs::locate( "services", "ktexteditor_isearch.desktop" );
-    QVERIFY( !ktexteditor_isearchPath.isEmpty() );
-    KService ktexteditor_isearch( ktexteditor_isearchPath );
-    QVERIFY( ktexteditor_isearch.hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_isearch.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QString ktexteditor_docwordcompletionPath = KStandardDirs::locate( "services", "ktexteditor_docwordcompletion.desktop" );
+    QVERIFY( !ktexteditor_docwordcompletionPath.isEmpty() );
+    KService ktexteditor_docwordcompletion( ktexteditor_docwordcompletionPath );
+    QVERIFY( ktexteditor_docwordcompletion.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !ktexteditor_docwordcompletion.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KServiceTest::testHasServiceType2() // with services coming from ksycoca
@@ -230,10 +230,10 @@ void KServiceTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
 
-    KService::Ptr ktexteditor_isearch = KService::serviceByDesktopPath( "ktexteditor_isearch.desktop" );
-    QVERIFY( !ktexteditor_isearch.isNull() );
-    QVERIFY( ktexteditor_isearch->hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_isearch->hasServiceType( "KParts/ReadOnlyPart" ) );
+    KService::Ptr ktexteditor_docwordcompletion = KService::serviceByDesktopPath( "ktexteditor_docwordcompletion.desktop" );
+    QVERIFY( !ktexteditor_docwordcompletion.isNull() );
+    QVERIFY( ktexteditor_docwordcompletion->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !ktexteditor_docwordcompletion->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KServiceTest::testWriteServiceTypeProfile()
