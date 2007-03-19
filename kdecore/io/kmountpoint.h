@@ -53,39 +53,39 @@ public:
    static List currentMountPoints(int infoNeeded=0);
 
    /**
+    * When using supermount, the device name is in the options field
+    * as dev=/my/device
+    */
+   static QString devNameFromOptions(const QStringList &options);
+
+   /**
     * Where this filesystem gets mounted from.
     * This can refer to a device, a remote server or something else.
     */
-   QString mountedFrom() const { return m_mountedFrom; }
+   QString mountedFrom() const;
 
    /**
     * Canonical name of the device where the filesystem got mounted from.
     * (Or empty, if not a device)
     * Only available when the NeedRealDeviceName flag was set.
     */
-   QString realDeviceName() const { return m_device; }
+   QString realDeviceName() const;
 
    /**
     * Path where the filesystem is mounted or can be mounted.
     */
-   QString mountPoint() const { return m_mountPoint; }
+   QString mountPoint() const;
 
    /**
     * Type of filesystem
     */
-   QString mountType() const { return m_mountType; }
+   QString mountType() const;
 
    /**
     * Options used to mount the filesystem.
     * Only available when the NeedMountOptions flag was set.
     */
-   QStringList mountOptions() const { return m_mountOptions; }
-
-   /**
-    * When using supermount, the device name is in the options field
-    * as dev=/my/device
-    */
-   static QString devNameFromOptions(const QStringList &options);
+   QStringList mountOptions() const;
 
    /**
     * Destructor
@@ -97,12 +97,6 @@ private:
     * Constructor
     */
    KMountPoint();
-
-   QString m_mountedFrom;
-   QString m_device;
-   QString m_mountPoint;
-   QString m_mountType;
-   QStringList m_mountOptions;
 
    class Private;
    Private * const d;
