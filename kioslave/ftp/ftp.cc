@@ -2241,7 +2241,7 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, bool overwri
 }
 
 
-Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile,
+Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCopyFile,
                                 const KUrl& url, int permissions, bool overwrite)
 {
   // check if source is ok ...
@@ -2278,7 +2278,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, QString sCopyFile,
 }
 
 
-Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString sCopyFile,
+Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCopyFile,
                                 const KUrl& url, int permissions, bool overwrite)
 {
   // check if destination is ok ...

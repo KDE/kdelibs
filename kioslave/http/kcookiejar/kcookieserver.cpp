@@ -341,8 +341,8 @@ void KCookieServer::putCookie( QStringList& out, KHttpCookie *cookie,
 }
 
 bool KCookieServer::cookieMatches( KHttpCookiePtr c,
-                                   QString domain, QString fqdn,
-                                   QString path, QString name )
+                                   const QString &domain, const QString &fqdn,
+                                   const QString &path, const QString &name )
 {
     if( c )
     {
@@ -359,7 +359,7 @@ bool KCookieServer::cookieMatches( KHttpCookiePtr c,
 
 // DBUS function
 QString
-KCookieServer::findCookies(QString url, qlonglong windowId, const QDBusMessage &msg)
+KCookieServer::findCookies(const QString &url, qlonglong windowId, const QDBusMessage &msg)
 {
    if (cookiesPending(url))
    {
@@ -401,11 +401,11 @@ KCookieServer::findDomains()
 
 // DBUS function
 QStringList
-KCookieServer::findCookies(QList<int> fields,
-                           QString domain,
-                           QString fqdn,
-                           QString path,
-                           QString name)
+KCookieServer::findCookies(const QList<int> &fields,
+                           const QString &domain,
+                           const QString &fqdn,
+                           const QString &path,
+                           const QString &name)
 {
    QStringList result;
    bool allDomCookies = name.isEmpty();
@@ -433,14 +433,14 @@ KCookieServer::findCookies(QList<int> fields,
 
 // DBUS function
 QString
-KCookieServer::findDOMCookies(QString url)
+KCookieServer::findDOMCookies(const QString &url)
 {
    return findDOMCookies(url, 0);
 }
 
 // DBUS function
 QString
-KCookieServer::findDOMCookies(QString url, qlonglong windowId)
+KCookieServer::findDOMCookies(const QString &url, qlonglong windowId)
 {
    // We don't wait for pending cookies because it locks up konqueror
    // which can cause a deadlock if it happens to have a popup-menu up.
@@ -453,15 +453,15 @@ KCookieServer::findDOMCookies(QString url, qlonglong windowId)
 
 // DBUS function
 void
-KCookieServer::addCookies(QString arg1, QByteArray arg2, qlonglong arg3)
+KCookieServer::addCookies(const QString &arg1, const QByteArray &arg2, qlonglong arg3)
 {
    addCookies(arg1, arg2, arg3, false);
 }
 
 // DBUS function
 void
-KCookieServer::deleteCookie(QString domain, QString fqdn,
-                            QString path, QString name)
+KCookieServer::deleteCookie(const QString &domain, const QString &fqdn,
+                            const QString &path, const QString &name)
 {
    const KHttpCookieList* list = mCookieJar->getCookieList( domain, fqdn );
    if ( list && !list->isEmpty() )
@@ -482,7 +482,7 @@ KCookieServer::deleteCookie(QString domain, QString fqdn,
 
 // DBUS function
 void
-KCookieServer::deleteCookiesFromDomain(QString domain)
+KCookieServer::deleteCookiesFromDomain(const QString &domain)
 {
    mCookieJar->eatCookiesForDomain(domain);
    if (!mTimer)
@@ -507,7 +507,7 @@ KCookieServer::deleteSessionCookies( qlonglong windowId )
 }
 
 void
-KCookieServer::deleteSessionCookiesFor(QString fqdn, qlonglong windowId)
+KCookieServer::deleteSessionCookiesFor(const QString &fqdn, qlonglong windowId)
 {
   mCookieJar->eatSessionCookies( fqdn, windowId );
   if(!mTimer)
@@ -525,14 +525,14 @@ KCookieServer::deleteAllCookies()
 
 // DBUS function
 void
-KCookieServer::addDOMCookies(QString arg1, QByteArray arg2, qlonglong arg3)
+KCookieServer::addDOMCookies(const QString &arg1, const QByteArray &arg2, qlonglong arg3)
 {
    addCookies(arg1, arg2, arg3, true);
 }
 
 // DBUS function
 void
-KCookieServer::setDomainAdvice(QString url, QString advice)
+KCookieServer::setDomainAdvice(const QString &url, const QString &advice)
 {
    QString fqdn;
    QString dummy;
@@ -550,7 +550,7 @@ KCookieServer::setDomainAdvice(QString url, QString advice)
 
 // DBUS function
 QString
-KCookieServer::getDomainAdvice(QString url)
+KCookieServer::getDomainAdvice(const QString &url)
 {
    KCookieAdvice advice = KCookieDunno;
    QString fqdn;

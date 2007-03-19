@@ -43,26 +43,26 @@ public:
   ~KCookieServer();
 
 public Q_SLOTS:
-  QString findCookies(QString, qlonglong, const QDBusMessage &msg);
+  QString findCookies(const QString &url, qlonglong windowId, const QDBusMessage &msg);
   QStringList findDomains();
-  QStringList findCookies(QList<int>,QString,QString,QString,QString);
-  QString findDOMCookies(QString);
-  QString findDOMCookies(QString, qlonglong);
-  void addCookies(QString, QByteArray, qlonglong);
-  void deleteCookie(QString, QString, QString, QString);
-  void deleteCookiesFromDomain(QString);
-  void deleteSessionCookies(qlonglong);
-  void deleteSessionCookiesFor(QString, qlonglong);
+  QStringList findCookies(const QList<int> &fields,const QString &domain,const QString& fqdn,const QString &path, const QString &name);
+  QString findDOMCookies(const QString &url);
+  QString findDOMCookies(const QString &url, qlonglong windowId);
+  void addCookies(const QString &url, const QByteArray &cookieHeader, qlonglong windowId);
+  void deleteCookie(const QString &domain, const QString &fqdn, const QString &path, const QString &name);
+  void deleteCookiesFromDomain(const QString &domain);
+  void deleteSessionCookies(qlonglong windowId);
+  void deleteSessionCookiesFor(const QString &fqdn, qlonglong windowId);
   void deleteAllCookies();
-  void addDOMCookies(QString, QByteArray, qlonglong);
+  void addDOMCookies(const QString &url, const QByteArray &cookieHeader, qlonglong windowId);
   /**
    * Sets the cookie policy for the domain associated with the specified URL.
    */
-  void setDomainAdvice(QString url, QString advice);
+  void setDomainAdvice(const QString &url, const QString &advice);
   /**
    * Returns the cookie policy in effect for the specified URL.
    */
-  QString getDomainAdvice(QString url);
+  QString getDomainAdvice(const QString &url);
   void reloadPolicy();
   void shutdown();
 
@@ -74,7 +74,7 @@ public:
 
 public Q_SLOTS:
   void slotSave();
-  void slotDeleteSessionCookies(qlonglong);
+  void slotDeleteSessionCookies(qlonglong windowId);
 
 protected:
   KCookieJar *mCookieJar;
@@ -86,7 +86,7 @@ protected:
 
 private:
   virtual int newInstance(QList<QByteArray>) { return 0; }
-  bool cookieMatches(KHttpCookie*, QString, QString, QString, QString);
+  bool cookieMatches(KHttpCookie*, const QString&, const QString&, const QString&, const QString&);
   void putCookie(QStringList&, KHttpCookie*, const QList<int>&);
   void saveCookieJar();
 };
