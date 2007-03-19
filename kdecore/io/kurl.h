@@ -241,19 +241,19 @@ public:
    * Returns the protocol for the URL (i.e., file, http, etc.), lowercased.
    * @see QUrl::scheme
    */
-  QString protocol() const { return scheme().toLower(); }
+  QString protocol() const;
 
   /**
    * Sets the protocol for the URL (i.e., file, http, etc.)
    * @param proto the new protocol of the URL (without colon)
    */
-  void setProtocol( const QString& proto ) { setScheme( proto ); }
+  void setProtocol( const QString& proto );
 
   /**
    * Returns the decoded user name (login, user id, ...) included in the URL.
    * @return the user name or QString() if there is no user name
    */
-  QString user() const { return userName(); }
+  QString user() const;
 
   /**
    * Sets the user name (login, user id, ...) included in the URL.
@@ -261,19 +261,19 @@ public:
    * Special characters in the user name will appear encoded in the URL.
    * @param user the name of the user or QString() to remove the user
    */
-  void setUser( const QString& user ) { setUserName( user ); }
+  void setUser( const QString& user );
 
   /**
    * Test to see if this URL has a user name included in it.
    * @return true if the URL has an non-empty user name
    */
-  bool hasUser() const { return !userName().isEmpty(); }
+  bool hasUser() const;
 
   /**
    * Returns the decoded password (corresponding to user()) included in the URL.
    * @return the password or QString() if it does not exist
    **/
-  QString pass() const { return password(); }
+  QString pass() const;
 
   /**
    * Sets the password (corresponding to user()) included in the URL.
@@ -285,19 +285,19 @@ public:
    * @see setUser
    * @see hasUser
    **/
-  void setPass( const QString& pass ) { setPassword( pass ); }
+  void setPass( const QString& pass );
 
   /**
    * Test to see if this URL has a password included in it.
    * @return true if there is a non-empty password set
    **/
-  bool hasPass() const { return !password().isEmpty(); }
+  bool hasPass() const;
 
   /**
    * Test to see if this URL has a hostname included in it.
    * @return true if the URL has a host
    **/
-  bool hasHost() const { return !host().isEmpty(); }
+  bool hasHost() const;
 
   /**
    * Options to be used in adjustPath
@@ -320,19 +320,13 @@ public:
     AddTrailingSlash
   };
 
-
   /**
    * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath
 
    * @return The current decoded path. This does not include the query. Can
    *         be QString() if no path is set.
    */
-  QString path( AdjustPathOption trailing ) const;
-
-  /**
-   * same as QURL::path()
-   */
-  QString path() const { return QUrl::path(); }
+  QString path( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
   /**
    * @param trailing use to add or remove a trailing slash to/from the local path. see adjustPath
@@ -349,7 +343,7 @@ public:
    * Test to see if this URL has a path is included in it.
    * @return true if there is a path
    **/
-  bool hasPath() const { return !path().isEmpty(); }
+  bool hasPath() const;
 
   /**
    * Options to be used in cleanPath
@@ -859,7 +853,7 @@ public:
    * @param text the path
    * @return the new KUrl
    */
-  static KUrl fromPath( const QString& text ) { KUrl u; u.setPath( text ); return u; }
+  static KUrl fromPath( const QString& text );
 
   /**
    * \deprecated
