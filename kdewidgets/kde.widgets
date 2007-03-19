@@ -78,11 +78,6 @@ Group=Views (KDE)
 ToolTip=Line Edit (KDE)
 Group=Input (KDE)
 
-[K3ListViewSearchLine]
-ToolTip=ListView Search Line (KDE)
-Group=Input (KDE)
-ConstructorArgs=(parent, 0)
-
 [KTreeWidgetSearchLineWidget]
 ToolTip=QTreeWidget Search Line Widget (KDE)
 IncludeFile=ktreewidgetsearchline.h
@@ -93,12 +88,6 @@ ConstructorArgs=(parent, 0)
 ToolTip=QTreeWidget Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0)
-
-[K3ListViewSearchLineWidget]
-ToolTip=ListView Search Line Widget (KDE)
-IncludeFile=k3listviewsearchline.h
-Group=Input (KDE)
-ConstructorArgs=(0, parent)
 
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)

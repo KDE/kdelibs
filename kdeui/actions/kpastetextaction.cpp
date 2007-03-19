@@ -34,7 +34,6 @@
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>
-#include <kstringhandler.h>
 
 #include "kmenu.h"
 

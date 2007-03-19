@@ -80,7 +80,6 @@ set(kdeui_LIB_SRCS
  itemviews/k3iconview.cpp
  itemviews/k3iconviewsearchline.cpp
  itemviews/k3listview.cpp
- itemviews/k3listviewsearchline.cpp
  itemviews/klistwidget.cpp
  itemviews/ktreewidgetsearchline.cpp
  kernel/kapplication.cpp
@@ -278,7 +277,6 @@ install( FILES
  itemviews/k3iconviewsearchline.h
  itemviews/k3listview.h
  itemviews/k3listviewlineedit.h
- itemviews/k3listviewsearchline.h
  itemviews/klistwidget.h
  itemviews/ktreewidgetsearchline.h
  kernel/kapplication.h
