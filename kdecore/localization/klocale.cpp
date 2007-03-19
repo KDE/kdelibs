@@ -42,7 +42,6 @@
 #include "kdebug.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
-#include "kcalendarsystemfactory.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
 
@@ -2188,7 +2187,7 @@ const KCalendarSystem * KLocale::calendar() const
 
   // Check if it's the correct calendar?!?
   if ( !d->calendar )
-    d->calendar = KCalendarSystemFactory::create( d->calendarType, this );
+    d->calendar = KCalendarSystem::create( d->calendarType, this );
 
   return d->calendar;
 }
