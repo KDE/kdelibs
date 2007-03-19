@@ -109,13 +109,11 @@ set(kdecore_LIB_SRCS
    config/kdesktopfile.cpp
    config/ksharedconfig.cpp
    date/kcalendarsystem.cpp
-   date/kcalendarsystemfactory.cpp
    date/kcalendarsystemgregorian.cpp
    date/kcalendarsystemhijri.cpp
    date/kcalendarsystemhebrew.cpp
    date/kcalendarsystemjalali.cpp
    date/kdatetime.cpp
-   date/krfcdate.cpp
    date/ktimezones.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
@@ -126,7 +124,7 @@ set(kdecore_LIB_SRCS
    io/kmessage.cpp
    io/kmountpoint.cpp
    io/kprocess.cpp
-   io/kprocctrl.cpp
+   io/kprocesscontroller.cpp
    io/kprocio.cpp
    io/ksavefile.cpp
    io/ktempdir.cpp
@@ -267,9 +265,7 @@ install( FILES
    config/ksharedconfig.h
    config/kconfigflags.h
    date/kcalendarsystem.h
-   date/kcalendarsystemfactory.h
    date/kdatetime.h
-   date/krfcdate.h
    date/ksystemtimezone.h
    date/ktimezones.h
    date/ktzfiletimezone.h
@@ -277,7 +273,7 @@ install( FILES
    io/kdebug.h
    io/kmessage.h
    io/kprocess.h
-   io/kprocctrl.h
+   io/kprocesscontroller.h
    io/kprocio.h
    io/klockfile.h
    io/kmountpoint.h
