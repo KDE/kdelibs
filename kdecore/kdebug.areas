@@ -147,7 +147,7 @@
 4620        kviewcanvas
 4630        kview_plugin
 4640        kiconedit
-4650        okular (App)
+4650        okular (app)
 4651        okular (Poppler)
 4655        okular (libgs::Interpreter)
 4656        okular (libgs::InternalDocument)
