@@ -1012,7 +1012,7 @@ DOMString ElementImpl::toString() const
 	result += tagName().string();
 	result += ">";
     } else if (result.length() == 1) {
-	// ensure we dont get results like < /> can happen when serialize document
+	// ensure we do not get results like < /> can happen when serialize document
         result = "";
     } else {
 	result += " />";

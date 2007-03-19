@@ -340,7 +340,7 @@ QString KFileItemDelegate::Private::elidedText(QTextLayout &layout, const QStyle
     if (!wordWrapText(option) && text.indexOf(QChar::LineSeparator) == -1)
         return metrics.elidedText(text, option.textElideMode, maxWidth);
 
-    // Elide each line that has already been layed out in the layout.
+    // Elide each line that has already been laid out in the layout.
     QString elided;
     elided.reserve(text.length());
 

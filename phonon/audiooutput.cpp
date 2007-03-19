@@ -176,7 +176,7 @@ void AudioOutput::setupIface()
 	// set up attributes
     INTERFACE_CALL(setVolume(d->volume));
 
-    // if the output device is not available and the device was not explicitely set
+    // if the output device is not available and the device was not explicitly set
     if (!INTERFACE_CALL(setOutputDevice(d->outputDeviceIndex)) && !d->outputDeviceOverridden) {
         // fall back in the preference list of output devices
         QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(d->category);

@@ -218,7 +218,7 @@ void RegExp::prepareUtf8(const UString& s)
   // even past the \0 since the non-empty handling may jump one past the end
   _originalPos = new int[length * 3 + 2];
 
-  // Convert to runs of 8-bit characters, and generate indeces
+  // Convert to runs of 8-bit characters, and generate indices
   // Note that we do NOT combine surrogate pairs here, as
   // regexps operate on them as separate characters
   char *p      = _buffer;

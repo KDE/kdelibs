@@ -292,7 +292,7 @@ namespace Kross {
             /**
              * Set the value of the property with the name \p name . If there
              * exist no such property a new one got added. If \p persistent is
-             * true the property will be automaticly saved and restored.
+             * true the property will be automatically saved and restored.
              */
             void setProperty(const QString& name, const QString& value, bool persistent = false);
 

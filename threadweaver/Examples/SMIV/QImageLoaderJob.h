@@ -40,7 +40,7 @@ namespace ThreadWeaver {
         QImageLoaderJob (FileLoaderJob* file, QObject* parent=0);
         ~QImageLoaderJob ();
         /** Return the image. If it is not completely created, null will be
-            returned. If an error occured (for example, the data in file is a
+            returned. If an error occurred (for example, the data in file is a
             corrupted image), null will be returned, too. */
         QImage image() const;
       /** reimpl */
