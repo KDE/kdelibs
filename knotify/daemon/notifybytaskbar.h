@@ -32,7 +32,7 @@ class NotifyByTaskbar : public KNotifyPlugin
 		NotifyByTaskbar(QObject *parent=0l);
 		virtual ~NotifyByTaskbar();
 		
-		virtual QString optionName() { return "Taskbar"; };
+		virtual QString optionName() { return "Taskbar"; }
 		virtual void notify(int id , KNotifyConfig *config);
 };
 

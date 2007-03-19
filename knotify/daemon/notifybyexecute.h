@@ -32,7 +32,7 @@ class NotifyByExecute : public KNotifyPlugin
 		NotifyByExecute(QObject *parent=0l);
 		virtual ~NotifyByExecute();
 		
-		virtual QString optionName() { return "Execute"; };
+		virtual QString optionName() { return "Execute"; }
 		virtual void notify(int id , KNotifyConfig *config);
 };
 

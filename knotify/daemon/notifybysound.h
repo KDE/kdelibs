@@ -33,7 +33,7 @@ class NotifyBySound : public KNotifyPlugin
 		NotifyBySound(QObject *parent=0l);
 		virtual ~NotifyBySound();
 		
-		virtual QString optionName() { return "Sound"; };
+		virtual QString optionName() { return "Sound"; }
 		virtual void notify(int id , KNotifyConfig *config);
 		virtual void close(int id);
 		

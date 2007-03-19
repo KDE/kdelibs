@@ -32,7 +32,7 @@ class NotifyByLogfile : public KNotifyPlugin
 		NotifyByLogfile(QObject *parent=0l);
 		virtual ~NotifyByLogfile();
 		
-		virtual QString optionName() { return "Logfile"; };
+		virtual QString optionName() { return "Logfile"; }
 		virtual void notify(int id , KNotifyConfig *config);
 };
 
