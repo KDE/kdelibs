@@ -79,7 +79,6 @@ set(kdeui_LIB_SRCS
  icons/kiconloader.cpp
  icons/kicontheme.cpp
  itemviews/k3iconview.cpp
- itemviews/k3iconviewsearchline.cpp
  itemviews/k3listview.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
@@ -279,7 +278,6 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  itemviews/k3iconview.h
- itemviews/k3iconviewsearchline.h
  itemviews/k3listview.h
  itemviews/k3listviewlineedit.h
  itemviews/klistwidget.h

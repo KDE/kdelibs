@@ -32,6 +32,7 @@ set(kde3support_LIB_SRCS
   kdeui/k3activelabel.cpp
   kdeui/k3dockwidget.cpp
   kdeui/k3dockwidget_private.cpp
+  kdeui/k3iconviewsearchline.cpp
   kdeui/k3listbox.cpp
   kdeui/k3listviewsearchline.cpp
   kdeui/k3popupmenu.cpp
@@ -79,6 +80,7 @@ install( FILES
   kdeui/k3aboutdialog.h
   kdeui/k3activelabel.h
   kdeui/k3dockwidget.h
+  kdeui/k3iconviewsearchline.h
   kdeui/k3listbox.h
   kdeui/k3listviewsearchline.h
   kdeui/k3popupmenu.h
