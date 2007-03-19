@@ -247,11 +247,11 @@ KCookieJar::KCookieJar()
     m_configChanged = false;
     m_cookiesChanged = false;
 
-    KConfig cfg("data", "khtml/domain_info", KConfig::NoGlobals);
-    KConfigGroup group( &cfg, "<default>" );
-    QStringList countries = group.readEntry("twoLevelTLD", QStringList());
+    KConfig cfg( "data", "khtml/domain_info", KConfig::NoGlobals );
+    KConfigGroup group( &cfg, QString() );
+    QStringList countries = group.readEntry( "twoLevelTLD", QStringList() );
     foreach ( const QString& country, countries ) {
-       m_twoLevelTLD.insert(country, 1);
+       m_twoLevelTLD.insert( country, 1 );
     }
 }
 

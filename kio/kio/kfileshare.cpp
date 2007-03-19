@@ -87,7 +87,7 @@ void KFileShare::readConfig() // static
     // Create KFileSharePrivate instance
     KFileSharePrivate::self();
     KConfig config(QLatin1String(FILESHARECONF));
-    KConfigGroup group( &config, "<default>" );
+    KConfigGroup group( &config, QString() );
 
     s_sharingEnabled = group.readEntry("FILESHARING", "yes") == "yes";
     s_restricted = group.readEntry("RESTRICT", "yes") == "yes";
