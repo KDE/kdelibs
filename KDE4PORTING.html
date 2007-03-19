@@ -122,6 +122,7 @@ instead.</li>
 <li>klargefile.h =&gt; kde_file.h</li>
 <li>kcatalogue.h =&gt; kcatalog.h</li>
 <li>kaccelmanager.h =&gt; kacceleratormanager.h</li>
+<li>kprocctrl.h =&gt; kprotocolcontroller.h</li>
 </ul>
 
 <h4>KAboutData</h4>
@@ -520,6 +521,14 @@ Internally it is reference counted and the data deleted when the last reference 
 <h4>KRegExp</h4>
 <ul>
 <li>This class has been removed.  Use QRegExp instead</li>
+</ul>
+
+<h4>KRFCDate</h4>
+This class has been deprecated by KDateTime. It has been renamed K3RFCDate and moved to the libkde3support. The following method changes make porting easy:
+<ul>
+<li>KRFCDate::parseDate( string ) becomes KDateTime::fromString( string, KDateTime::RFCDate).toTime_t();</li>
+<li>KRFCDate::parseDateISO8601( string ) becomes KDateTime::fromString( string ).toTime_t();</li>
+<li>KRFCDate::localUTCOffset() becomes KDateTime::Spec::LocalZone().utcOffset / 60. Note that the KRFCDate version returned minutes while KDateTime returns seconds.</li>
 </ul>
 
 <h4>KSaveFile</h4>
