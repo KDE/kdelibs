@@ -342,7 +342,7 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
         return rules;
     }
     QList<KMimeMagicMatch> matches; // toplevel matches (indent==0)
-    int priority;
+    int priority = 0; // to avoid warning
     QString mimeTypeName;
 
     Q_FOREVER {
