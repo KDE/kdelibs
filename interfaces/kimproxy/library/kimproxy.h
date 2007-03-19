@@ -29,7 +29,7 @@
 #include <QtCore/QStringList>
 #include <qpixmap.h>
 
-#include "kdelibs_export.h"
+#include <kimproxy_export.h>
 
 #define IM_SERVICE_TYPE "DCOP/InstantMessenger"
 #define IM_CLIENT_PREFERENCES_FILE "default_components"

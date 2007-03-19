@@ -319,14 +319,6 @@
 # endif
 #endif
 
-#ifndef KIMPROXY_EXPORT
-# ifdef MAKE_KIMPROXY_LIB
-#  define KIMPROXY_EXPORT KDE_EXPORT
-# else
-#  define KIMPROXY_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef PHONONCORE_EXPORT
 # ifdef MAKE_PHONONCORE_LIB
 #  define PHONONCORE_EXPORT KDE_EXPORT

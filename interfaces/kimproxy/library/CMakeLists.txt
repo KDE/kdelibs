@@ -22,4 +22,4 @@ set_target_properties(kimproxy PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSI
 ########### install files ###############
 
 install(TARGETS kimproxy  DESTINATION ${LIB_INSTALL_DIR} )
-install( FILES kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES kimproxy_export.h kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} )
