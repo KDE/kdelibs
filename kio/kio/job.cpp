@@ -91,7 +91,7 @@ public:
     int m_extraFlags;
 };
 
-Job::Job(bool showProgressInfo) : KCompositeJob(0), m_speedTimer(0), d( new JobPrivate )
+Job::Job(bool showProgressInfo) : KCompositeJob(0), d( new JobPrivate )
 {
     setCapabilities( KJob::Killable | KJob::Suspendable );
     setUiDelegate( new JobUiDelegate( showProgressInfo ) );
@@ -99,7 +99,6 @@ Job::Job(bool showProgressInfo) : KCompositeJob(0), m_speedTimer(0), d( new JobP
 
 Job::~Job()
 {
-    delete m_speedTimer;
     delete d;
 }
 
@@ -147,18 +146,6 @@ void Job::removeSubjob( KJob *jobBase, bool mergeMetaData )
         m_incomingMetaData += job->metaData();
 
     KCompositeJob::removeSubjob( job );
-}
-
-void Job::emitSpeed( unsigned long bytes_per_second )
-{
-  //kDebug(7007) << "Job " << this << " emitSpeed " << bytes_per_second << endl;
-  if ( !m_speedTimer )
-  {
-    m_speedTimer = new QTimer(this);
-    connect( m_speedTimer, SIGNAL( timeout() ), SLOT( slotSpeedTimeout() ) );
-  }
-  emit speed( this, bytes_per_second );
-  m_speedTimer->start( 5000 );   // 5 seconds interval should be enough
 }
 
 void Job::emitMoving(const KUrl &src, const KUrl &dest)
@@ -255,15 +242,6 @@ void Job::slotSpeed( KJob*, unsigned long speed )
 {
   //kDebug(7007) << "Job::slotSpeed " << speed << endl;
   emitSpeed( speed );
-}
-
-void Job::slotSpeedTimeout()
-{
-  //kDebug(7007) << "slotSpeedTimeout()" << endl;
-  // send 0 and stop the timer
-  // timer will be restarted only when we receive another speed event
-  emit speed( this, 0 );
-  m_speedTimer->stop();
 }
 
 //Job::errorString is implemented in global.cpp

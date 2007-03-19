@@ -253,13 +253,6 @@ public:
          */
         void connected( KIO::Job *job );
 
-        /**
-         * Emitted to display information about the speed of this job.
-	 * @param job the job that emitted this signal
-	 * @param speed the speed in bytes/s
-         */
-        void speed( KJob *job, unsigned long speed );
-
     protected Q_SLOTS:
         /**
          * Forward signal from subjob.
@@ -268,11 +261,6 @@ public:
 	 * @see speed()
          */
         void slotSpeed( KJob *job, unsigned long speed );
-
-        /**
-         * Remove speed information.
-         */
-        void slotSpeedTimeout();
 
     protected:
         /**
@@ -298,14 +286,6 @@ public:
         void removeSubjob( KJob *job, bool mergeMetaData = false );
 
         /**
-         * Utility function for inherited jobs.
-         * Emits the speed signal and starts the timer for removing that info
-	 *
-	 * @param speed the speed in bytes/s
-         */
-        void emitSpeed( unsigned long speed );
-
-        /**
          * @internal
          * Some extra storage space for jobs that don't have their own
          * private d pointer.
@@ -320,8 +300,6 @@ public:
         MetaData m_outgoingMetaData;
 
     private:
-        QTimer *m_speedTimer;
-
         class JobPrivate;
         JobPrivate *d;
     };

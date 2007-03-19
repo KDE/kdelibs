@@ -397,6 +397,13 @@ private: // don't tell moc, but those signals are in fact private
      */
     void percent( KJob *job, unsigned long percent );
 
+    /**
+     * Emitted to display information about the speed of this job.
+     * @param job the job that emitted this signal
+     * @param speed the speed in bytes/s
+     */
+    void speed(KJob *job, unsigned long speed);
+
 protected:
     /**
      * Sets the error code. It should be called when an error
@@ -467,9 +474,20 @@ protected:
      */
     void emitPercent( qulonglong processedAmount, qulonglong totalAmount );
 
+    /**
+     * Utility function for inherited jobs.
+     * Emits the speed signal and starts the timer for removing that info
+     *
+     * @param speed the speed in bytes/s
+     */
+    void emitSpeed(unsigned long speed);
+
 private:
+    Q_PRIVATE_SLOT(d, void _k_speedTimeout())
+
     class Private;
     Private *const d;
+    friend class Private;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KJob::Capabilities )

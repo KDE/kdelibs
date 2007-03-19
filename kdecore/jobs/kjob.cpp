@@ -26,13 +26,17 @@
 #include <kglobal.h>
 #include <QEventLoop>
 #include <QMap>
+#include <QTimer>
 
 class KJob::Private
 {
 public:
-    Private() : uiDelegate( 0 ), error( KJob::NoError ),
-                progressUnit(KJob::Bytes), percentage( 0 ),
-                suspended( false ), capabilities( KJob::NoCapabilities ) {}
+    Private(KJob *job) : q(job), uiDelegate(0), error(KJob::NoError),
+                         progressUnit(KJob::Bytes), percentage(0),
+                         suspended(false), capabilities(KJob::NoCapabilities),
+                         speedTimer(0) {}
+
+    KJob *const q;
 
     KJobUiDelegate *uiDelegate;
     int error;
@@ -43,10 +47,13 @@ public:
     unsigned long percentage;
     bool suspended;
     KJob::Capabilities capabilities;
+    QTimer *speedTimer;
+
+    void _k_speedTimeout();
 };
 
-KJob::KJob( QObject *parent )
-    : QObject( parent ), d( new Private() )
+KJob::KJob(QObject *parent)
+    : QObject(parent), d(new Private(this))
 {
     // Don't exit while this job is running
     KGlobal::ref();
@@ -54,6 +61,7 @@ KJob::KJob( QObject *parent )
 
 KJob::~KJob()
 {
+    delete d->speedTimer;
     delete d->uiDelegate;
     delete d;
 
@@ -271,6 +279,25 @@ void KJob::emitPercent( qulonglong processedAmount, qulonglong totalAmount )
     {
         emit percent( this, d->percentage );
     }
+}
+
+void KJob::emitSpeed(unsigned long value)
+{
+    if (!d->speedTimer) {
+        d->speedTimer = new QTimer(this);
+        connect(d->speedTimer, SIGNAL(timeout()), SLOT(_k_speedTimeout()));
+    }
+
+    emit speed(this, value);
+    d->speedTimer->start(5000);   // 5 seconds interval should be enough
+}
+
+void KJob::Private::_k_speedTimeout()
+{
+    // send 0 and stop the timer
+    // timer will be restarted only when we receive another speed event
+    emit q->speed(q, 0);
+    speedTimer->stop();
 }
 
 #include "kjob.moc"
