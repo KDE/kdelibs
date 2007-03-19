@@ -158,7 +158,7 @@ private:
     /**
      * Take action need when listWidget is deleted.
      */
-    Q_PRIVATE_SLOT(d, void listWidgetDeleted());
+    Q_PRIVATE_SLOT(d, void listWidgetDeleted())
 
 
 private:
