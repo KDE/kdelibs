@@ -45,7 +45,7 @@ class KTemporaryFilePrivate;
  * For example, let's make a new temporary file:
  *
  * @code
- * KTemporaryFile temp();
+ * KTemporaryFile temp;
  * @endcode
  *
  * This temporary file will currently be stored in the default KDE temporary
