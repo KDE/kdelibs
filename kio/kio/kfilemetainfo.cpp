@@ -130,6 +130,8 @@ public:
             }
         }
     }
+    void addTriplet(const std::string& subject,
+        const std::string& predicate, const std::string& object) {}
     void finishAnalysis(const AnalysisResult*) {}
     void deleteEntries(const vector<string>&) {}
     void deleteAllEntries() {}
