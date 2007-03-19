@@ -86,10 +86,9 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
     entryMap.remove("Encoding"); // reserved as part of Desktop Entry Standard
     entryMap.remove("Version");  // reserved as part of Desktop Entry Standard
 
-    q->m_bDeleted = desktopGroup.readEntry("Hidden", false);
+    q->setDeleted( desktopGroup.readEntry("Hidden", false) );
     entryMap.remove("Hidden");
-    if (q->m_bDeleted)
-    {
+    if ( q->isDeleted() ) {
         m_bValid = false;
         return;
     }
@@ -133,7 +132,7 @@ void KService::Private::init( const KDesktopFile *config, KService* q )
 
     // In case Try Exec is set, check if the application is available
     if (!config->tryExec()) {
-        q->m_bDeleted = true;
+        q->setDeleted( true );
         m_bValid = false;
         return;
     }

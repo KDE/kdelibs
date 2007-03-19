@@ -44,8 +44,8 @@ class KDECORE_EXPORT KSycocaEntry : public KShared
 public:
    virtual ~KSycocaEntry();
 
-   virtual bool isType(KSycocaType t) const { return (t == KST_KSycocaEntry); }
-   virtual KSycocaType sycocaType() const { return KST_KSycocaEntry; }
+   virtual bool isType(KSycocaType t) const;
+   virtual KSycocaType sycocaType() const;
 
    typedef KSharedPtr<KSycocaEntry> Ptr;
    typedef QList<Ptr> List;
@@ -53,7 +53,7 @@ public:
    /**
     * Default constructor
     */
-   explicit KSycocaEntry(const QString &path) : mOffset(0), m_bDeleted(false), mPath(path) { }
+   explicit KSycocaEntry(const QString &path);
 
    /**
     * Safe demarshalling functions.
@@ -65,11 +65,7 @@ public:
     * @internal
     * Restores itself from a stream.
     */
-   KSycocaEntry( QDataStream &_str, int iOffset ) :
-              mOffset( iOffset ), m_bDeleted(false)
-   {
-     read(_str, mPath);
-   }
+   KSycocaEntry( QDataStream &_str, int iOffset );
 
    /**
     * @return the name of this entry
@@ -81,7 +77,7 @@ public:
     * The path can be absolute or relative.
     * The corresponding factory should know relative to what.
     */
-   QString entryPath() const { return mPath; }
+   QString entryPath() const;
 
    /**
     * @return true if valid
@@ -91,24 +87,25 @@ public:
    /**
     * @return true if deleted
     */
-   virtual bool isDeleted() const { return m_bDeleted; }
+   bool isDeleted() const;
+
+   /**
+    * Sets whether or not this service is deleted
+    */
+   void setDeleted( bool deleted );
 
    /**
     * @internal
     * @return the position of the entry in the sycoca file
     */
-   int offset() const { return mOffset; }
+   int offset() const;
 
    /**
     * @internal
     * Save ourselves to the database. Don't forget to call the parent class
     * first if you override this function.
     */
-   virtual void save(QDataStream &s)
-     {
-       mOffset = s.device()->pos(); // store position in member variable
-       s << qint32(sycocaType()) << mPath;
-     }
+   virtual void save(QDataStream &s);
 
    /**
     * @internal
@@ -116,16 +113,17 @@ public:
     */
    virtual void load(QDataStream &) = 0;
 
-private:
-   int mOffset;
-protected:
-   bool m_bDeleted;
-   QString mPath;
 protected:
    /** Virtual hook, used to add new "virtual" functions while maintaining
        binary compatibility. Unused in this class.
    */
    virtual void virtual_hook( int id, void* data );
+
+private:
+   Q_DISABLE_COPY(KSycocaEntry)
+
+   class Private;
+   Private* d;
 };
 
 #endif

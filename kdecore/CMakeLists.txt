@@ -176,6 +176,7 @@ set(kdecore_LIB_SRCS
    localization/klocalizedstring.cpp
    sycoca/ksycoca.cpp
    sycoca/ksycocadict.cpp
+   sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
    sycoca/kprotocolinfo.cpp
    sycoca/kprotocolinfofactory.cpp

@@ -49,7 +49,6 @@ KServiceGroup::KServiceGroup( const QString & name )
  , m_bDeep(false)
  , m_childCount(-1),d( new KServiceGroup::Private)
 {
-  m_bDeleted = false;
 }
 
 KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpath )
@@ -57,8 +56,6 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
  , m_bDeep(false)
  , m_childCount(-1),d( new KServiceGroup::Private)
 {
-  m_bDeleted = false;
-
   QString cfg = configFile;
   if (cfg.isEmpty())
      cfg = _relpath+".directory";

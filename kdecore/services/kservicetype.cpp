@@ -92,7 +92,7 @@ KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
     }
 
     m_strComment = desktopGroup.readEntry("Comment");
-    q->m_bDeleted = desktopGroup.readEntry("Hidden", false);
+    q->setDeleted( desktopGroup.readEntry("Hidden", false) );
 
     // We store this as property to preserve BC, we can't change that
     // because KSycoca needs to remain BC between KDE 2.x and KDE 3.x
