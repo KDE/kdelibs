@@ -81,21 +81,21 @@ bool Engine::init(const QString &configfile)
 		return false;
 	}
 
-	conf.setGroup("KNewStuff2");
-	m_providersurl = conf.readEntry("ProvidersUrl", QString());
-	m_localregistrydir = conf.readEntry("LocalRegistryDir", QString());
+	KConfigGroup group = conf.group("KNewStuff2");
+	m_providersurl = group.readEntry("ProvidersUrl", QString());
+	m_localregistrydir = group.readEntry("LocalRegistryDir", QString());
 
 	// FIXME: add support for several categories later on
 	// FIXME: read out only when actually installing as a performance improvement?
 	m_installation = new Installation();
-	m_installation->setUncompression(conf.readEntry("Uncompress", QString()));
-	m_installation->setCommand(conf.readEntry("InstallationCommand", QString()));
-	m_installation->setStandardResourceDir(conf.readEntry("StandardResource", QString()));
-	m_installation->setTargetDir(conf.readEntry("TargetDir", QString()));
-	m_installation->setInstallPath(conf.readEntry("InstallPath", QString()));
+	m_installation->setUncompression(group.readEntry("Uncompress", QString()));
+	m_installation->setCommand(group.readEntry("InstallationCommand", QString()));
+	m_installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
+	m_installation->setTargetDir(group.readEntry("TargetDir", QString()));
+	m_installation->setInstallPath(group.readEntry("InstallPath", QString()));
 
-	QString checksumpolicy = conf.readEntry("ChecksumPolicy", QString());
-	QString signaturepolicy = conf.readEntry("SignaturePolicy", QString());
+	QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
+	QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
 	if(!checksumpolicy.isEmpty())
 	{
 		if(checksumpolicy == "never")
