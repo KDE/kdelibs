@@ -74,6 +74,7 @@ install( FILES
   kdecore/k3sqlpropertymap.h
   kdecore/k3tempfile.h
   kdecore/k3urldrag.h
+  kdecore/kcalendarsystemfactory.h
   kdecore/ksimpleconfig.h
   kdecore/ktrader.h
   kdeui/k3aboutapplication.h
