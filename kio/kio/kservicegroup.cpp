@@ -69,7 +69,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
   m_strCaption = config.readEntry( "Name" );
   m_strIcon = config.readEntry( "Icon" );
   m_strComment = config.readEntry( "Comment" );
-  m_bDeleted = config.readEntry("Hidden", false );
+  setDeleted( config.readEntry("Hidden", false ) );
   d->m_bNoDisplay = config.readEntry("NoDisplay", false );
   QStringList tmpList;
   if (config.hasKey("OnlyShowIn"))
