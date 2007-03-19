@@ -51,6 +51,7 @@ set(kiocore_STAT_SRCS
   kio/ksambashare.cpp
   kio/knfsshare.cpp
   kio/kmimetypefactory.cpp
+  kio/kmimemagicrule.cpp
   kio/kmimetypetrader.cpp
   kio/kmimetype.cpp
   kio/kdedesktopmimetype.cpp
@@ -101,7 +102,6 @@ set(kiocore_STAT_SRCS
   kio/netaccess.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
-  kio/kmimemagic.cpp
   kio/tcpslavebase.cpp
   kio/slavebase.cpp
   kio/passworddialog.cpp

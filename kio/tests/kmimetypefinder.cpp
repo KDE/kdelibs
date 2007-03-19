@@ -18,7 +18,9 @@
 
 #include <kmimetype.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+//#include <kapplication.h>
+#include <kdeversion.h>
+#include <kcomponentdata.h>
 
 #include <stdio.h>
 
@@ -30,27 +32,27 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
-  KCmdLineArgs::init( argc, argv, "kmimefromext", "KMimeFromExt", "A mimetype testing tool, gives the mimetype for a given filename", "0.0" );
+    KCmdLineArgs::init( argc, argv, "kmimetypefinder", "MimeType Finder", "Gives the mimetype for a given file", KDE_VERSION_STRING );
 
-  KCmdLineArgs::addCmdLineOptions( options );
+    KCmdLineArgs::addCmdLineOptions( options );
 
-  KApplication app;
+    // KApplication app;
+    KComponentData instance("kmimetypefinder");
 
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-  if( args->count() < 1 ) {
-    printf( "No filename specified\n" );
-    return 1;
-  }
-  QString fileName = args->arg( 0 );
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    if( args->count() < 1 ) {
+        printf( "No filename specified\n" );
+        return 1;
+    }
+    const QString fileName = args->arg( 0 );
+    int accuracy;
+    KMimeType::Ptr mime = KMimeType::findByPath( fileName, 0, false, &accuracy );
+    if ( mime && mime->name() != KMimeType::defaultMimeType() ) {
+        printf("%s\n", mime->name().toLatin1().constData());
+        printf("(accuracy %d)\n", accuracy);
+    } else {
+        return 1; // error
+    }
 
-  // The "true" here means only the filename will be looked at.
-  // "Mime-magic" will not interfere. The file doesn't exist.
-  // TODO: a cmd line parameter for controlling this bool ;)
-  KMimeType::Ptr mime = KMimeType::findByPath( fileName, 0, true );
-  if ( mime && mime->name() != KMimeType::defaultMimeType() )
-    printf( "%s\n", mime->name().toLatin1().constData());
-  else
-    return 1; // error
-
-  return 0;
+    return 0;
 }

@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 1999 David Faure <faure@kde.org>
+   Copyright (C) 1999, 2007 David Faure <faure@kde.org>
                  1999 Waldo Bastian <bastian@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -25,9 +25,9 @@
 
 #include <kservicefactory.h>
 // We export the services to the service group factory!
-#include "kbuildservicegroupfactory.h"
 #include <QSet>
 #include <kserviceoffer.h>
+class KBuildServiceGroupFactory;
 class KBuildMimeTypeFactory;
 
 /**

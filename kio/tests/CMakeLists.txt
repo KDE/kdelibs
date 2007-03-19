@@ -12,6 +12,18 @@ target_link_libraries(ktradertest ${KDE4_KIO_LIBS})
 
 install(TARGETS ktradertest DESTINATION ${BIN_INSTALL_DIR} )
 
+########## kmimetypefinder - which is installed
+
+kde4_add_executable(kmimetypefinder NOGUI kmimetypefinder.cpp)
+
+target_link_libraries(kmimetypefinder ${KDE4_KIO_LIBS})
+
+install(TARGETS kmimetypefinder DESTINATION ${BIN_INSTALL_DIR} )
+
+
+########### TESTS ###############
+
+
 if(KDE4_BUILD_TESTS)
 
 ########### next target ###############
@@ -137,17 +149,6 @@ target_link_libraries(kdefaultprogresstest ${KDE4_KIO_LIBS})
 
 ########### next target ###############
 
-set(kmimemagictest_SRCS kmimemagictest.cpp)
-
-kde4_automoc(${kmimemagictest_SRCS})
-
-kde4_add_executable(kmimemagictest NOGUI RUN_UNINSTALLED ${kmimemagictest_SRCS})
-
-target_link_libraries(kmimemagictest ${KDE4_KIO_LIBS})
-
-
-########### next target ###############
-
 set(kiopassdlgtest_SRCS kiopassdlgtest.cpp)
 
 kde4_automoc(${kiopassdlgtest_SRCS})
@@ -210,17 +211,6 @@ kde4_automoc(${kionetrctest_SRCS})
 kde4_add_executable(kionetrctest NOGUI RUN_UNINSTALLED ${kionetrctest_SRCS})
 
 target_link_libraries(kionetrctest ${KDE4_KIO_LIBS})
-
-
-########### next target ###############
-
-set(kmimefromext_SRCS kmimefromext.cpp)
-
-kde4_automoc(${kmimefromext_SRCS})
-
-kde4_add_executable(kmimefromext NOGUI RUN_UNINSTALLED ${kmimefromext_SRCS})
-
-target_link_libraries(kmimefromext ${KDE4_KIO_LIBS})
 
 
 ########### next target ###############
@@ -315,7 +305,8 @@ target_link_libraries(kurlcompletiontest ${KDE4_KIO_LIBS})
 
 ########### next target ###############
 
-set(kmimetypetest_SRCS kmimetypetest.cpp)
+# compile kmimemagicrule.cpp into the test since it's not exported and we call match().
+set(kmimetypetest_SRCS kmimetypetest.cpp ../kio/kmimemagicrule.cpp)
 
 kde4_automoc(${kmimetypetest_SRCS})
 

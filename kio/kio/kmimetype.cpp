@@ -17,11 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kmimetype.h"
 #include "kmimetypefactory.h"
-#include "kmimemagic.h"
 #include "kprotocolmanager.h"
 #include <kde_file.h>
 
@@ -51,6 +48,7 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <QBuffer>
 
 template class KSharedPtr<KMimeType>;
 
@@ -67,14 +65,14 @@ class KMimeType::Private
 {
 public:
     QStringList m_lstPatterns;
-    QString m_strIcon;
+    QString m_parentMimeType;
     void loadInternal( QDataStream& _str );
 };
 
 void KMimeType::Private::loadInternal( QDataStream& _str )
 {
     // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
-    _str >> m_lstPatterns >> m_strIcon;
+    _str >> m_lstPatterns >> m_parentMimeType;
 }
 
 /**
@@ -96,11 +94,8 @@ void KMimeType::buildDefaultType()
     {
         QString defaultMimeType = KMimeType::defaultMimeType();
         errorMissingMimeType( defaultMimeType );
-        // TODO: port to xdg mime
-        KStandardDirs stdDirs;
-        QString sDefaultMimeType = stdDirs.resourceDirs("mime").first()+defaultMimeType+".desktop";
-        s_pDefaultMimeType = new KMimeType( sDefaultMimeType, defaultMimeType,
-                                            "unknown", "mime" );
+        QString sDefaultMimeType = KGlobal::dirs()->resourceDirs("xdgdata-mime").first()+defaultMimeType+".xml";
+        s_pDefaultMimeType = new KMimeType( sDefaultMimeType, defaultMimeType, "mime" );
     }
 }
 
@@ -135,8 +130,8 @@ void KMimeType::checkEssentialMimeTypes()
 
   if ( !KMimeType::mimeType( "inode/directory" ) )
     errorMissingMimeType( "inode/directory" );
-  if ( !KMimeType::mimeType( "inode/directory-locked" ) )
-    errorMissingMimeType( "inode/directory-locked" );
+  //if ( !KMimeType::mimeType( "inode/directory-locked" ) )
+  //  errorMissingMimeType( "inode/directory-locked" );
   if ( !KMimeType::mimeType( "inode/blockdevice" ) )
     errorMissingMimeType( "inode/blockdevice" );
   if ( !KMimeType::mimeType( "inode/chardevice" ) )
@@ -153,202 +148,181 @@ void KMimeType::checkEssentialMimeTypes()
     errorMissingMimeType( "application/x-desktop" );
 }
 
-KMimeType::Ptr KMimeType::mimeType( const QString& _name )
+KMimeType::Ptr KMimeType::mimeType( const QString& _name, FindByNameOption options )
 {
-  KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( _name );
-#if 0
-  // was in kde3, but is inconsistent with KServiceType::serviceType,
-  // and it breaks code that looks/creates offers, since application/octet-stream
-  // is used instead.
-  if ( !mime || !mime->isType( KST_KMimeType ) )
-  {
-    if ( !s_pDefaultMimeType )
-      buildDefaultType();
-    return s_pDefaultMimeType;
-  }
-
-  // We got a mimetype
-#endif
-
-  return mime;
+    return KMimeTypeFactory::self()->findMimeTypeByName( _name, options );
 }
 
 KMimeType::List KMimeType::allMimeTypes()
 {
-  return KMimeTypeFactory::self()->allMimeTypes();
+    return KMimeTypeFactory::self()->allMimeTypes();
 }
 
-KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t _mode,
-                                           bool _is_local_file, bool _fast_mode,
-                                           bool& needsMagic )
+static bool isBinaryData(const QByteArray& data)
 {
-  checkEssentialMimeTypes();
-  QString path = _url.path();
-  needsMagic = false;
-
-  if ( !_fast_mode )
-  {
-      if ( !_is_local_file && _url.isLocalFile() )
-          _is_local_file = true;
-
-      if ( _is_local_file && (_mode == 0 || _mode == (mode_t)-1) )
-      {
-          KDE_struct_stat buff;
-          if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
-              _mode = buff.st_mode;
-      }
-  }
-
-  // Look at mode_t first
-  if ( S_ISDIR( _mode ) )
-  {
-    // Special hack for local files. We want to see whether we
-    // are allowed to enter the directory
-    if ( _is_local_file )
-    {
-      if ( access( QFile::encodeName(path), R_OK ) == -1 )
-        return mimeType( "inode/directory-locked" );
+    // Check the first 32 bytes (see shared-mime spec)
+    const char* p = data.data();
+    for (int i = 0; i < qMin(32, data.size()); ++i) {
+        if (p[i] < 32) // ASCII control character
+            return true;
     }
-    return mimeType( "inode/directory" );
-  }
-  if ( S_ISCHR( _mode ) )
-    return mimeType( "inode/chardevice" );
-  if ( S_ISBLK( _mode ) )
-    return mimeType( "inode/blockdevice" );
-  if ( S_ISFIFO( _mode ) )
-    return mimeType( "inode/fifo" );
-  if ( S_ISSOCK( _mode ) )
-    return mimeType( "inode/socket" );
-  // KMimeMagic can do that better for local files
-  if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
-    return mimeType( "application/x-executable" );
+    return false;
+}
 
-  QString fileName ( _url.fileName() );
+KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
+                                           bool is_local_file,
+                                           QIODevice* device,
+                                           int* accuracy )
+{
+    checkEssentialMimeTypes();
+    const QString path = _url.path();
 
-  static const QString& slash = KGlobal::staticQString("/");
-  if ( ! fileName.isNull() && !path.endsWith( slash ) )
-  {
-      // Try to find it out by looking at the filename
-      KMimeType::Ptr mime( KMimeTypeFactory::self()->findFromPattern( fileName ) );
-      if ( mime )
-      {
-        // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
-        if ( _is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
-             KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) )
-        {
-            if ( mime->patternsAccuracy() < 100 ) {
-                if ( _is_local_file && !_fast_mode ) {
-                    KMimeMagicResult* result =
-                        KMimeMagic::self()->findFileType( path );
+    if (accuracy)
+        *accuracy = 100;
 
-                    if ( result && result->isValid() && result->accuracy() > 0 ) {
-                        mime = mimeType( result->mimeType() );
-                        if (!mime) {
-                            kWarning() << "KMimeMagic returned unknown mimetype " << result->mimeType() << endl;
-                            return defaultMimeTypePtr();
-                        }
-                        return mime;
-                    }
-                } else {
-                    needsMagic = true;
-                }
-            }
-            return mime;
+    if ( device ) {
+        if ( is_local_file && (mode == 0 || mode == (mode_t)-1) ) {
+            KDE_struct_stat buff;
+            if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
+                mode = buff.st_mode;
         }
-      }
-
-      static const QString& dotdesktop = KGlobal::staticQString(".desktop");
-      static const QString& dotkdelnk = KGlobal::staticQString(".kdelnk");
-      static const QString& dotdirectory = KGlobal::staticQString(".directory");
-
-      // Another filename binding, hardcoded, is .desktop:
-      if ( fileName.endsWith( dotdesktop ) )
-        return mimeType( "application/x-desktop" );
-      // Another filename binding, hardcoded, is .kdelnk;
-      // this is preserved for backwards compatibility
-      if ( fileName.endsWith( dotkdelnk ) )
-        return mimeType( "application/x-desktop" );
-      // .directory files are detected as x-desktop by mimemagic
-      // but don't have a Type= entry. Better cheat and say they are text files
-      if ( fileName == dotdirectory )
-        return mimeType( "text/plain" );
     }
 
-  if ( !_is_local_file || _fast_mode )
-  {
-    QString def = KProtocolManager::defaultMimetype( _url );
-    if ( !def.isEmpty() && def != defaultMimeType() )
-    {
-       // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
-       return mimeType( def );
+    // Look at mode_t first
+    if ( S_ISDIR( mode ) ) {
+        // KDE4 TODO: use an overlay instead
+#if 0
+        // Special hack for local files. We want to see whether we
+        // are allowed to enter the directory
+        if ( is_local_file )
+        {
+            if ( access( QFile::encodeName(path), R_OK ) == -1 )
+                return mimeType( "inode/directory-locked" );
+        }
+#endif
+        return mimeType( "inode/directory" );
     }
-    if ( path.endsWith( slash ) || path.isEmpty() )
-    {
-      // We have no filename at all. Maybe the protocol has a setting for
-      // which mimetype this means (e.g. directory).
-      // For HTTP (def==defaultMimeType()) we don't assume anything,
-      // because of redirections (e.g. freshmeat downloads).
-      if ( def.isEmpty() )
-      {
-          // Assume inode/directory, if the protocol supports listing.
-          if ( KProtocolManager::supportsListing( _url ) )
-              return mimeType( QLatin1String("inode/directory") );
-          else
-              return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
-      }
+    if ( S_ISCHR( mode ) )
+        return mimeType( "inode/chardevice" );
+    if ( S_ISBLK( mode ) )
+        return mimeType( "inode/blockdevice" );
+    if ( S_ISFIFO( mode ) )
+        return mimeType( "inode/fifo" );
+    if ( S_ISSOCK( mode ) )
+        return mimeType( "inode/socket" );
+    // remote executable file? stop here (otherwise findFromContent can do that better for local files)
+    if ( !is_local_file && S_ISREG( mode ) && ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
+        return mimeType( "application/x-executable" );
+
+    // We can optimize some device reading for use by the two findFromContent calls and isBinaryData
+    QByteArray beginning;
+    if ( device ) {
+        if ( !device->isOpen() ) {
+            if ( !device->open(QIODevice::ReadOnly) ) {
+                device = 0;
+            }
+        }
+        if ( device ) {
+            // Most magic rules care about 0 to 256 only, tar magic looks at offset 257, only the broken msoffice magic looks at > 2000...
+            // So 256 or 512 is a good choice imho.
+            beginning = device->read(512);
+        }
     }
 
-    // No more chances for non local URLs
+    // First try the high-priority magic matches (if we can read the data)
+    if ( device ) {
+        KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
+            device, KMimeTypeFactory::HighPriorityRules, accuracy, beginning );
+        if (mime)
+            return mime;
+    }
+
+    // Then try to find out by looking at the filename (if there's one)
+    const QString fileName( _url.fileName() );
+    static const QString& slash = KGlobal::staticQString("/");
+    if ( !fileName.isEmpty() && !path.endsWith( slash ) ) {
+        KMimeType::Ptr mime( KMimeTypeFactory::self()->findFromPattern( fileName ) );
+        if ( mime ) {
+            // Found something - can we trust it ? (e.g. don't trust *.pl over HTTP, could be anything)
+            if ( is_local_file || _url.hasSubUrl() || // Explicitly trust suburls
+                 KProtocolInfo::determineMimetypeFromExtension( _url.protocol() ) ) {
+                if (accuracy)
+                    *accuracy = 80;
+                return mime;
+            }
+        }
+    }
+
+    // Try the low-priority magic matches (if we can read the data)
+    if ( device ) {
+        KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
+            device, KMimeTypeFactory::LowPriorityRules, accuracy, beginning );
+        if (mime)
+            return mime;
+
+        // Nothing worked, check if the file contents looks like binary or text
+        if (!::isBinaryData(beginning)) {
+            if (accuracy)
+                *accuracy = 5;
+            return KMimeType::mimeType("text/plain");
+        }
+
+    } else { // Not a local file, or no magic allowed, find a fallback from the protocol
+        if (accuracy)
+            *accuracy = 10;
+        QString def = KProtocolManager::defaultMimetype( _url );
+        if ( !def.isEmpty() && def != defaultMimeType() ) {
+            // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
+            return mimeType( def );
+        }
+        if ( path.endsWith( slash ) || path.isEmpty() ) {
+            // We have no filename at all. Maybe the protocol has a setting for
+            // which mimetype this means (e.g. directory).
+            // For HTTP (def==defaultMimeType()) we don't assume anything,
+            // because of redirections (e.g. freshmeat downloads).
+            if ( def.isEmpty() ) {
+                // Assume inode/directory, if the protocol supports listing.
+                if ( KProtocolManager::supportsListing( _url ) )
+                    return mimeType( QLatin1String("inode/directory") );
+                else
+                    return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
+            }
+        }
+    }
+
+    if (accuracy)
+        *accuracy = 0;
     return defaultMimeTypePtr();
-  }
-
-  // Do some magic for local files
-  kDebug(7009) << QString("Mime Type finding for '%1'").arg(path) << endl;
-  KMimeMagicResult* result = KMimeMagic::self()->findFileType( path );
-
-  // If we still did not find it, we must assume the default mime type
-  if ( !result || !result->isValid() )
-    return defaultMimeTypePtr();
-
-  // The mimemagic stuff was successful
-  KMimeType::Ptr mime = mimeType( result->mimeType() );
-  if (!mime) {
-      kWarning() << "KMimeMagic returned unknown mimetype " << result->mimeType() << endl;
-      return defaultMimeTypePtr();
-  }
-  return mime;
 }
 
-KMimeType::Ptr KMimeType::findByUrl( const KUrl& _url, mode_t _mode,
-                                     bool _is_local_file, bool _fast_mode,
-                                     bool *accurate )
+KMimeType::Ptr KMimeType::findByUrl( const KUrl& url, mode_t mode,
+                                     bool is_local_file, bool fast_mode,
+                                     int *accuracy )
 {
-    bool needsMagic;
-    KMimeType::Ptr mime = findByUrlHelper(_url, _mode, _is_local_file, _fast_mode, needsMagic);
-    if (accurate) {
-        if (_is_local_file && !_fast_mode)
-            *accurate = true; // we used KMimeMagic, so the result is as good as can be
-        else
-            // we didn't use mimemagic; the result is accurate only if the patterns were not marked as unreliable
-            *accurate = !needsMagic && mime != defaultMimeTypePtr();
+    if ( !is_local_file && url.isLocalFile() )
+        is_local_file = true;
+    if (is_local_file && !fast_mode) {
+        QFile file(url.path());
+        return findByUrlHelper(url, mode, is_local_file, &file, accuracy);
     }
-    return mime;
+    return findByUrlHelper(url, mode, is_local_file, 0, accuracy);
 }
 
-KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByteArray& data, mode_t _mode )
+KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode,
+                                      bool fast_mode, int* accuracy )
 {
-    // First look at mode and name
-    bool needsMagic;
-    KMimeType::Ptr mime = findByUrlHelper(name, _mode, false, true, needsMagic);
+    KUrl url;
+    url.setPath(path);
+    return findByUrl(url, mode, true, fast_mode, accuracy);
+}
 
-    if ( needsMagic || !mime || mime->name() == KMimeType::defaultMimeType() ) {
-        // findByUrl found nothing conclusive, look at the data
-        KMimeMagicResult * result = KMimeMagic::self()->findBufferFileType(data, name);
-        if ( result->mimeType() != KMimeType::defaultMimeType() )
-          mime = KMimeType::mimeType( result->mimeType() );
-    }
-
-    return mime;
+KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByteArray& data,
+                                                mode_t mode, int* accuracy )
+{
+    KUrl url;
+    url.setPath(name);
+    QBuffer buffer(const_cast<QByteArray *>(&data));
+    return findByUrlHelper(url, mode, false, &buffer, accuracy);
 }
 
 QString KMimeType::extractKnownExtension(const QString &fileName)
@@ -360,148 +334,95 @@ QString KMimeType::extractKnownExtension(const QString &fileName)
     return QString();
 }
 
-KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode, bool fast_mode )
-{
-    KUrl u;
-    u.setPath(path);
-    return findByUrl( u, mode, true, fast_mode );
-}
-
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 {
-  KMimeMagicResult *result = KMimeMagic::self()->findBufferType(data);
-  if (accuracy)
-      *accuracy = result->accuracy();
-  return mimeType( result->mimeType() );
+    QBuffer buffer(const_cast<QByteArray *>(&data));
+    return KMimeTypeFactory::self()->findFromContent(
+        &buffer, KMimeTypeFactory::AllRules, accuracy );
 }
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
 {
-  KMimeMagicResult *result = KMimeMagic::self()->findFileType(fileName);
-  if (accuracy)
-      *accuracy = result->accuracy();
-  return mimeType( result->mimeType() );
+    QFile device(fileName);
+    return KMimeTypeFactory::self()->findFromContent(
+        &device, KMimeTypeFactory::AllRules, accuracy );
 }
 
-#define GZIP_MAGIC1	0x1f
-#define GZIP_MAGIC2	0x8b
-
-KMimeType::Format KMimeType::findFormatByFileContent( const QString &fileName )
+bool KMimeType::isBinaryData( const QString &fileName )
 {
-  KMimeType::Format result;
-  result.compression = Format::NoCompression;
-  KMimeType::Ptr mime = findByPath(fileName);
-  if (mime->name() == defaultMimeType())
-     mime = findByFileContent(fileName);
-
-  result.text = mime->name().startsWith("text/");
-  QVariant v = mime->property("X-KDE-text");
-  if (v.isValid())
-     result.text = v.toBool();
-
-  if (mime->name().startsWith("inode/"))
-     return result;
-
-  QFile f(fileName);
-  if (f.open(QIODevice::ReadOnly))
-  {
-     const QByteArray buf = f.read(3);
-     if ((buf.size() >= 2) && ((unsigned char)buf[0] == GZIP_MAGIC1) && ((unsigned char)buf[1] == GZIP_MAGIC2))
-        result.compression = Format::GZipCompression;
-  }
-  return result;
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly))
+        return false; // err, whatever
+    const QByteArray data = file.read(32);
+    return ::isBinaryData(data);
 }
 
-// Used only to create the default mimetype
-KMimeType::KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
-                      const QString& _comment )
-  : KServiceType( _fullpath, _type, _comment ), d(new Private)
+KMimeType::KMimeType( const QString & fullpath, const QString& name,
+                      const QString& comment )
+  : KServiceType( fullpath, name, comment ), d(new Private)
 {
-    d->m_strIcon = _icon;
 }
 
-KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config ), d(new Private)
-{
-  init( config );
-
-  if ( !isValid() )
-    kWarning(7009) << "mimetype not valid '" << name() << "' (missing entry in the file ?)" << endl;
-}
-
+#if 0
+// TODO remove once all converted to xdg mime
 void KMimeType::init( KDesktopFile * config )
 {
+  // TODO: move X-KDE-AutoEmbed to a kde (konqueror?) specific config file
   const KConfigGroup group = config->desktopGroup();
-  d->m_strIcon = config->readIcon();
-  d->m_lstPatterns = group.readEntry( "Patterns", QStringList(), ';' );
 
   // Read the X-KDE-AutoEmbed setting and store it in the properties map
   QString XKDEAutoEmbed = QLatin1String("X-KDE-AutoEmbed");
   if ( group.hasKey( XKDEAutoEmbed ) )
     m_mapProps.insert( XKDEAutoEmbed, group.readEntry( XKDEAutoEmbed, false ) );
 
-  QString XKDEText = QLatin1String("X-KDE-text");
-  if ( group.hasKey( XKDEText ) )
-    m_mapProps.insert( XKDEText, group.readEntry( XKDEText, false ) );
-
-  QString XKDEIsAlso = QLatin1String("X-KDE-IsAlso");
-  if ( group.hasKey( XKDEIsAlso ) ) {
-    QString inherits = group.readEntry( XKDEIsAlso, QString() );
-    if ( inherits != name() )
-        m_mapProps.insert( XKDEIsAlso, inherits );
-    else
-        kWarning(7009) << "Error: " << inherits << " inherits from itself!!!!" << endl;
-  }
-
-  QString XKDEPatternsAccuracy = QLatin1String("X-KDE-PatternsAccuracy");
-  if ( group.hasKey( XKDEPatternsAccuracy ) )
-    m_mapProps.insert( XKDEPatternsAccuracy, group.readEntry( XKDEPatternsAccuracy, QString() ) );
 }
+#endif
 
-KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset ), d(new Private)
+KMimeType::KMimeType( QDataStream& _str, int offset )
+    : KServiceType( _str, offset ), d(new Private)
 {
-  d->loadInternal( _str ); // load our specific stuff
+    d->loadInternal( _str ); // load our specific stuff
 }
 
 void KMimeType::load( QDataStream& _str )
 {
-  KServiceType::load( _str );
-  d->loadInternal( _str );
+    KServiceType::load( _str );
+    d->loadInternal( _str );
 }
 
 void KMimeType::save( QDataStream& _str )
 {
-  KServiceType::save( _str );
-  // Warning adding/removing fields here involves a binary incompatible change - update version
-  // number in ksycoca.h
-  _str << d->m_lstPatterns << d->m_strIcon;
+    KServiceType::save( _str );
+    // Warning adding/removing fields here involves a binary incompatible change - update version
+    // number in ksycoca.h
+    _str << d->m_lstPatterns << d->m_parentMimeType;
 }
 
 QVariant KMimeType::property( const QString& _name ) const
 {
-  if ( _name == "Patterns" )
-    return QVariant( d->m_lstPatterns );
-  if ( _name == "Icon" )
-    return QVariant( d->m_strIcon );
+    if ( _name == "Patterns" )
+        return QVariant( d->m_lstPatterns );
+    if ( _name == "Icon" )
+        return QVariant( iconName() );
 
-  return KServiceType::property( _name );
+    return KServiceType::property( _name );
 }
 
 QStringList KMimeType::propertyNames() const
 {
-  QStringList res = KServiceType::propertyNames();
-  res.append( "Patterns" );
-  res.append( "Icon" );
-
-  return res;
+    QStringList res = KServiceType::propertyNames();
+    res.append( "Patterns" );
+    res.append( "Icon" );
+    return res;
 }
 
 KMimeType::~KMimeType()
 {
 }
 
-QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t _mode )
+QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
 {
-    const KMimeType::Ptr mt = findByUrl( _url, _mode, _url.isLocalFile(),
+    const KMimeType::Ptr mt = findByUrl( _url, mode, _url.isLocalFile(),
                                          false /*HACK*/);
     static const QString& unknown = KGlobal::staticQString("unknown");
     const QString mimeTypeIcon = mt->iconName( _url );
@@ -547,13 +468,15 @@ QString KMimeType::favIconForUrl( const KUrl& url )
 
 QString KMimeType::parentMimeType() const
 {
-  QVariant v = property("X-KDE-IsAlso");
-  return v.toString();
+    return d->m_parentMimeType;
 }
 
 bool KMimeType::is( const QString& mimeTypeName ) const
 {
-  if ( name() == mimeTypeName )
+  if (name() == mimeTypeName)
+      return true;
+  KMimeType::Ptr me = KMimeTypeFactory::self()->findMimeTypeByName(mimeTypeName, KMimeType::ResolveAliases);
+  if (me && name() == me->name())
       return true;
   QString st = parentMimeType();
   //if (st.isEmpty()) kDebug(7009)<<"Parent mimetype is empty"<<endl;
@@ -569,29 +492,12 @@ bool KMimeType::is( const QString& mimeTypeName ) const
   return false;
 }
 
-int KMimeType::patternsAccuracy() const {
-  QVariant v = property("X-KDE-PatternsAccuracy");
-  if (!v.isValid()) return 100;
-  else
-      return v.toInt();
-}
-
 
 /*******************************************************
  *
  * KFolderType
  *
  ******************************************************/
-
-/*
-QString KFolderType::icon( const QString& _url, bool _is_local ) const
-{
-  if ( !_is_local || _url.isEmpty() )
-    return KMimeType::icon( _url, _is_local );
-
-  return KFolderType::icon( KUrl(_url) );
-}
-*/
 
 QString KFolderType::icon( const KUrl& _url ) const
 {
@@ -658,30 +564,20 @@ QString KFolderType::icon( const KUrl& _url ) const
   return icon;
 }
 
-/*
-QString KFolderType::comment( const QString& _url, bool _is_local ) const
-{
-  if ( !_is_local || _url.isEmpty() )
-    return KMimeType::comment( _url, _is_local );
-
-  return KFolderType::comment( KUrl(_url), _is_local );
-}
-*/
-
 QString KFolderType::comment( const KUrl& _url ) const
 {
-  if ( _url.isEmpty() || !_url.isLocalFile() )
-    return KMimeType::comment( _url );
+    if ( _url.isEmpty() || !_url.isLocalFile() )
+        return KMimeType::comment( _url );
 
-  KUrl u( _url );
-  u.addPath( ".directory" );
+    KUrl u( _url );
+    u.addPath( ".directory" );
 
-  KDesktopFile cfg( u.path() );
-  QString comment = cfg.readComment();
-  if ( comment.isEmpty() )
-    return KMimeType::comment( _url );
+    const KDesktopFile cfg( u.path() );
+    QString comment = cfg.readComment();
+    if ( comment.isEmpty() )
+        return KMimeType::comment( _url );
 
-  return comment;
+    return comment;
 }
 
 const QString & KMimeType::defaultMimeType()
@@ -693,17 +589,27 @@ const QString & KMimeType::defaultMimeType()
 
 QString KMimeType::iconName() const
 {
-    return d->m_strIcon;
+    return name();
 }
 
 QString KMimeType::iconName( const KUrl& ) const
 {
-    return d->m_strIcon;
+    return name();
 }
 
 const QStringList& KMimeType::patterns() const
 {
     return d->m_lstPatterns;
+}
+
+void KMimeType::addPattern(const QString& pattern)
+{
+    d->m_lstPatterns.append(pattern);
+}
+
+void KMimeType::setParentMimeType(const QString& parent)
+{
+    d->m_parentMimeType = parent;
 }
 
 void KMimeType::virtual_hook( int id, void* data )

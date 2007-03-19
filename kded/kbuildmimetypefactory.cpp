@@ -1,10 +1,10 @@
-// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
- *  Copyright (C) 1999-2006 David Faure   <faure@kde.org>
+ *  Copyright 1999-2007 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
- *  License version 2 as published by the Free Software Foundation;
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,7 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
- **/
+ */
 
 #include "kbuildmimetypefactory.h"
 #include "ksycoca.h"
@@ -31,125 +31,233 @@
 #include <kdesktopfile.h>
 #include <qhash.h>
 #include <QFile>
+#include <QDomDocument>
+#include "kmimefileparser.h"
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
-  KMimeTypeFactory()
+    KMimeTypeFactory()
 {
-   m_resourceList = new KSycocaResourceList;
-   m_resourceList->add( "mime", "*.desktop" );
+    m_resourceList = new KSycocaResourceList;
+    // We want all xml files under xdgdata-mime - but not packages/*.xml
+    m_resourceList->add( "xdgdata-mime", "*.xml" );
 }
 
 // return all resource types for this factory
 // i.e. first arguments to m_resourceList->add() above
 QStringList KBuildMimeTypeFactory::resourceTypes()
 {
-    return QStringList() << "mime";
+    return QStringList() << "xdgdata-mime";
 }
 
 KBuildMimeTypeFactory::~KBuildMimeTypeFactory()
 {
-   delete m_resourceList;
+    delete m_resourceList;
 }
 
-KMimeType::Ptr KBuildMimeTypeFactory::findMimeTypeByName(const QString &_name)
+KMimeType::Ptr KBuildMimeTypeFactory::findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options)
 {
-   assert (KSycoca::self()->isBuilding());
-   // We're building a database - the mime type must be in memory
-   KSycocaEntry::Ptr servType = m_entryDict->value( _name );
-   return KMimeType::Ptr::staticCast( servType );
+    assert (KSycoca::self()->isBuilding());
+
+    QString name = _name;
+    if (options & KMimeType::ResolveAliases) {
+        QMap<QString, QString>::const_iterator it = aliases().find(_name);
+        if (it != aliases().end())
+            name = *it;
+    }
+
+    // We're building a database - the mime type must be in memory
+    KSycocaEntry::Ptr servType = m_entryDict->value( name );
+    return KMimeType::Ptr::staticCast( servType );
 }
 
 KSycocaEntry::List KBuildMimeTypeFactory::allEntries()
 {
-   assert (KSycoca::self()->isBuilding());
-   KSycocaEntry::List lst;
-   KSycocaEntryDict::Iterator itmime = m_entryDict->begin();
-   const KSycocaEntryDict::Iterator endmime = m_entryDict->end();
-   for( ; itmime != endmime ; ++itmime )
-      lst.append( *itmime );
-   return lst;
+    assert (KSycoca::self()->isBuilding());
+    KSycocaEntry::List lst;
+    KSycocaEntryDict::Iterator itmime = m_entryDict->begin();
+    const KSycocaEntryDict::Iterator endmime = m_entryDict->end();
+    for( ; itmime != endmime ; ++itmime )
+        lst.append( *itmime );
+    return lst;
 }
 
-KSycocaEntry *
-KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
+KSycocaEntry * KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource)
 {
-  QString name = file;
-  int pos = name.lastIndexOf('/');
-  if (pos != -1)
-  {
-     name = name.mid(pos+1);
-  }
+    // file=text/plain.xml  ->  name=plain.xml dirName=text
+    const int pos = file.lastIndexOf('/');
+    if (pos == -1) // huh?
+        return 0;
+    const QString dirName = file.left(pos);
+    //pos = dirName.lastIndexOf('/');
+    //dirName = dirName.mid(pos+1);
+    if (dirName == "packages") // special subdir
+        return 0;
 
-  if (name.isEmpty())
-     return 0;
+    const QString fullPath = KGlobal::dirs()->locate( resource, file );
+    if (fullPath.isEmpty()) // can't happen
+        return 0;
+    QFile qfile(fullPath);
+    if (!qfile.open(QFile::ReadOnly))
+        return 0;
+    QDomDocument doc;
+    if (!doc.setContent(&qfile)) {
+        kWarning() << "Parse error in " << fullPath << endl;
+        return 0;
+    }
+    const QDomElement mimeTypeElement = doc.documentElement();
+    if (mimeTypeElement.tagName() != "mime-type")
+        return 0;
+    const QString name = mimeTypeElement.attribute("type");
+    if (name.isEmpty())
+        return 0;
 
-  KDesktopFile desktopFile(resource, file);
-  const KConfigGroup desktopGroup = desktopFile.desktopGroup();
+    QString comment;
+    QMap<QString, QString> commentsByLanguage;
+    for ( QDomNode n = mimeTypeElement.firstChild();
+          !n.isNull();
+          n = n.nextSibling() ) {
+        QDomElement e = n.toElement();
+        if(!e.isNull() && e.tagName() == "comment") {
+            const QString lang = e.attribute("xml:lang");
+            if (lang.isEmpty())
+                comment = e.text();
+            else
+                commentsByLanguage.insert(lang, e.text());
+            break;
+        }
+    }
+    if (comment.isEmpty()) {
+        kWarning() << "Missing <comment> field in " << fullPath << endl;
+    }
+    foreach(const QString& lang, KGlobal::locale()->languageList()) {
+        const QString comm = commentsByLanguage.value(lang);
+        if (!comm.isEmpty()) {
+            comment = comm;
+            break;
+        }
+    }
 
-  if ( desktopGroup.readEntry( "Hidden", false ) == true )
-    return 0;
+    //kDebug() << "Creating mimetype " << name << " from file " << file << endl;
 
-  const QString type = desktopGroup.readEntry( "Type" );
-  if ( type != QLatin1String( "MimeType" ) )
-  {
-     kWarning(7012) << "The mime type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=MimeType" << endl;
-    return 0;
-  }
+    KMimeType* e;
+    if ( name == "inode/directory" )
+        e = new KFolderType( file, name, comment );
+    else if ( name == "application/x-desktop" )
+        e = new KDEDesktopMimeType( file, name, comment );
+    else
+        e = new KMimeType( file, name, comment );
 
-  const QString mime = desktopGroup.readEntry( "MimeType" );
+    if (e->isDeleted())
+    {
+        delete e;
+        return 0;
+    }
 
-  if ( mime.isEmpty() )
-  {
-     kWarning(7012) << "The mime type config file " << desktopFile.fileName() << " does not contain a MimeType=... entry" << endl;
-    return 0;
-  }
+    if ( !(e->isValid()) )
+    {
+        kWarning(7012) << "Invalid MimeType : " << file << endl;
+        delete e;
+        return 0;
+    }
 
-  KMimeType* e;
-  if ( mime == "inode/directory" )
-    e = new KFolderType( &desktopFile );
-  else if ( mime == "application/x-desktop" )
-    e = new KDEDesktopMimeType( &desktopFile );
-  else
-    e = new KMimeType( &desktopFile );
-
-  if (e->isDeleted())
-  {
-    delete e;
-    return 0;
-  }
-
-  if ( !(e->isValid()) )
-  {
-    kWarning(7012) << "Invalid MimeType : " << file << endl;
-    delete e;
-    return 0;
-  }
-
-  return e;
+    return e;
 }
 
-void
-KBuildMimeTypeFactory::saveHeader(QDataStream &str)
+void KBuildMimeTypeFactory::saveHeader(QDataStream &str)
 {
-   KSycocaFactory::saveHeader(str);
-   str << (qint32) m_fastPatternOffset;
-   str << (qint32) m_otherPatternOffset;
+    KSycocaFactory::saveHeader(str);
+    // This header is read by KMimeTypeFactory's constructor
+    str << (qint32) m_fastPatternOffset;
+    str << (qint32) m_otherPatternOffset;
+    const QMap<QString, QString>& aliasMap = aliases();
+    str << (qint32) aliasMap.count();
+    for (QMap<QString, QString>::const_iterator it = aliasMap.begin(); it != aliasMap.end(); ++it) {
+        str << it.key() << it.value();
+    }
 }
 
-void
-KBuildMimeTypeFactory::save(QDataStream &str)
+void KBuildMimeTypeFactory::parseSubclassFile(const QString& fileName)
 {
-   KSycocaFactory::save(str);
+    QFile qfile( fileName );
+    kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
+    if (qfile.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&qfile);
+        stream.setCodec("UTF-8");
+        while (!stream.atEnd()) {
+            const QString line = stream.readLine();
+            if (line.isEmpty() || line[0] == '#')
+                continue;
+            const int pos = line.indexOf(' ');
+            if (pos == -1) // syntax error
+                continue;
+            const QString derivedTypeName = line.left(pos);
+            KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName);
+            if (!derivedType)
+                kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName << endl;
+            else {
+                const QString parentTypeName = line.mid(pos+1);
+                Q_ASSERT(!parentTypeName.isEmpty());
+                derivedType->setParentMimeType(parentTypeName);
+            }
+        }
+    }
+}
 
-   savePatternLists(str);
+void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
+{
+    QFile qfile( fileName );
+    kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
+    if (qfile.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&qfile);
+        stream.setCodec("UTF-8");
+        while (!stream.atEnd()) {
+            const QString line = stream.readLine();
+            if (line.isEmpty() || line[0] == '#')
+                continue;
+            const int pos = line.indexOf(' ');
+            if (pos == -1) // syntax error
+                continue;
+            const QString aliasTypeName = line.left(pos);
+            const QString parentTypeName = line.mid(pos+1);
+            Q_ASSERT(!aliasTypeName.isEmpty());
+            Q_ASSERT(!parentTypeName.isEmpty());
+            aliases().insert(aliasTypeName, parentTypeName);
+        }
+    }
+}
 
-   int endOfFactoryData = str.device()->pos();
+// Called by kbuildsycoca since it needs the subclasses and aliases for the trader index
+void KBuildMimeTypeFactory::parseSubclasses()
+{
+    const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
+    //kDebug() << k_funcinfo << subclassFiles << endl;
+    Q_FOREACH(const QString& file, subclassFiles) {
+        parseSubclassFile(file);
+    }
 
-   // Update header (pass #3)
-   saveHeader(str);
+    const QStringList aliasFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "aliases");
+    //kDebug() << k_funcinfo << aliasFiles << endl;
+    Q_FOREACH(const QString& file, aliasFiles) {
+        parseAliasFile(file);
+    }
+}
 
-   // Seek to end.
-   str.device()->seek(endOfFactoryData);
+void KBuildMimeTypeFactory::save(QDataStream &str)
+{
+    KMimeFileParser parser(this);
+    parser.parseGlobs();
+
+    KSycocaFactory::save(str);
+
+    savePatternLists(str);
+
+    int endOfFactoryData = str.device()->pos();
+
+    // Update header (pass #3)
+    saveHeader(str);
+
+    // Seek to end.
+    str.device()->seek(endOfFactoryData);
 }
 
 static bool isFastPattern(const QString& pattern)
@@ -196,47 +304,6 @@ KBuildMimeTypeFactory::savePatternLists(QDataStream &str)
          dict.insert( pattern, mimeType.constData() );
       }
    }
-
-#if 0
-   // XDG shared-mime-info support
-   const QStringList globFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "globs");
-   kDebug() << k_funcinfo << globFiles << endl;
-   QListIterator<QString> globIter( globFiles );
-   globIter.toBack();
-   while (globIter.hasPrevious()) {
-      const QString fileName = globIter.previous();
-      QFile globFile( fileName );
-      kDebug() << k_funcinfo << "Now parsing " << fileName << endl;
-      if (globFile.open(QIODevice::ReadOnly)) {
-         QTextStream stream(&globFile);
-         stream.setCodec("UTF-8");
-         while (!stream.atEnd()) {
-            const QString line = stream.readLine();
-            if (line.isEmpty() || line[0] == '#')
-               continue;
-            const int pos = line.indexOf(':');
-            if (pos == -1) // syntax error
-               continue;
-            const QString mimeTypeName = line.left(pos);
-            KMimeType::Ptr mimeType = findMimeTypeByName(mimeTypeName);
-            if (!mimeType)
-               kWarning(7012) << fileName << " refers to unknown mimetype " << mimeTypeName << endl;
-            else {
-               const QString pattern = line.mid(pos+1);
-               kDebug() << "mime type: " << mimeTypeName << " pattern: " << pattern << endl;
-               assert(!pattern.isEmpty());
-               if ( isFastPattern(pattern) )
-                  fastPatterns.append( pattern );
-               else
-                  otherPatterns.append( pattern );
-               // Assumption : there is only one mimetype for that pattern
-               // It doesn't really make sense otherwise, anyway.
-               dict.insert( pattern, mimeType.constData() );
-            }
-         }
-      }
-   }
-#endif
 
    // Sort the list - the fast one, useless for the other one
    fastPatterns.sort();

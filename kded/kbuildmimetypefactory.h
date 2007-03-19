@@ -1,5 +1,5 @@
 /* This file is part of the KDE project
-   Copyright (C) 1999 David Faure <faure@kde.org>
+   Copyright 1999-2007 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -37,11 +37,11 @@ public:
 
   virtual ~KBuildMimeTypeFactory();
 
-  /**
-   * Find a mime type in the database file
-   * @return a pointer to the mimetype in the memory dict (don't free!)
-   */
-  virtual KMimeType::Ptr findMimeTypeByName(const QString &_name);
+    /**
+     * Find a mime type in the database file
+     * @return a pointer to the mimetype in the memory dict (don't free!)
+     */
+    virtual KMimeType::Ptr findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
 
   virtual KSycocaEntry::List allEntries();
 
@@ -74,9 +74,12 @@ public:
    * Returns all resource types for this factory
    */
   static QStringList resourceTypes();
-private:
 
-  void savePatternLists(QDataStream &str);
+    void parseSubclasses();
+private:
+    void parseSubclassFile(const QString& fileName);
+    void parseAliasFile(const QString& fileName);
+    void savePatternLists(QDataStream &str);
 };
 
 #endif

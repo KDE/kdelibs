@@ -46,7 +46,6 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>
-#include <kio/global.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
 #include "klauncher_iface.h"

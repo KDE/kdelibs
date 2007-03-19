@@ -1,5 +1,5 @@
 /*  This file is part of the KDE libraries
- *  Copyright (C) 1999 David Faure   <faure@kde.org>
+ *  Copyright (C) 1999, 2007 David Faure <faure@kde.org>
  *                1999 Waldo Bastian <bastian@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
@@ -18,6 +18,7 @@
  **/
 
 #include "kbuildservicefactory.h"
+#include "kbuildservicegroupfactory.h"
 #include "kbuildmimetypefactory.h"
 #include "ksycoca.h"
 #include "ksycocadict.h"
@@ -142,8 +143,9 @@ void KBuildServiceFactory::populateServiceTypes()
             const QString str = it.next();
             // It could be a servicetype or a mimetype.
             KServiceType::Ptr serviceType = KServiceType::serviceType(str);
-            if (!serviceType)
-                serviceType = KServiceType::Ptr::staticCast( m_mimeTypeFactory->findMimeTypeByName( str ) );
+            if (!serviceType) {
+                serviceType = KServiceType::Ptr::staticCast( m_mimeTypeFactory->findMimeTypeByName( str, KMimeType::ResolveAliases ) );
+            }
             // TODO. But maybe we should rename all/all to */*, to also support image/*?
             // Not sure how to model all/allfiles then, though
             // Also this kind of thing isn't in the XDG standards...

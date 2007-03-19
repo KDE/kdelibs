@@ -47,6 +47,7 @@ KMimeTypeTrader::KMimeTypeTrader()
 {
 }
 
+#if 0
 // slow - but only used for all/all and all/allfiles. TODO: write them into ksycoca, in kbuildservicefactory.cpp
 static void addUnique( KServiceOfferList &lst, const KServiceOfferList &newLst, bool lowPrio )
 {
@@ -71,6 +72,7 @@ static void addUnique( KServiceOfferList &lst, const KServiceOfferList &newLst, 
         lst.append( offer );
     }
 }
+#endif
 
 // helper method for weightedOffers
 static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
@@ -78,7 +80,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
     KServiceOfferList lst;
 
     // Services associated directly with this mimetype (the normal case)
-    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType );
+    KMimeType::Ptr mime = KMimeTypeFactory::self()->findMimeTypeByName( mimeType, KMimeType::ResolveAliases );
     if ( !mime ) {
         kWarning(7014) << "KMimeTypeTrader: mimeType " << mimeType << " not found" << endl;
         return lst; // empty
@@ -91,6 +93,9 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
     //foreach( KService::Ptr serv, lst )
     //    kDebug() << serv.data() << " " << serv->name() << endl;
 
+
+    // With xdg-shared-mime this is automatically done via the implicit inheritance from application/octet-stream
+#if 0
     // Support for all/* is deactivated by KServiceTypeProfile::configurationMode()
     // (and makes no sense when querying for an "all" servicetype itself
     // nor for non-mimetypes service types)
@@ -118,6 +123,7 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
                 kWarning(7014) << "KMimeTypeTrader : mimetype all/allfiles not found" << endl;
         }
     }
+#endif
 
     return lst;
 }

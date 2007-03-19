@@ -186,8 +186,8 @@ void PreviewJob::startPreview()
 
             if (plugin == mimeMap.end())
             {
-                // check mime type inheritance
-                const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
+                // check mime type inheritance, resolve aliases
+                const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
                 QString parentMimeType = mimeInfo->parentMimeType();
                 while (!parentMimeType.isEmpty())
                 {
@@ -200,7 +200,8 @@ void PreviewJob::startPreview()
                     parentMimeType = parentMimeInfo->parentMimeType();
                 }
             }
-
+#if 0 // KDE4: should be covered by inheritance above, all text mimetypes inherit from text/plain
+            // if that's not enough, we need to invent something else
             if (plugin == mimeMap.end())
             {
                 // check X-KDE-Text property
@@ -218,6 +219,7 @@ void PreviewJob::startPreview()
                     }
                 }
             }
+#endif
         }
 
         if (plugin != mimeMap.end())

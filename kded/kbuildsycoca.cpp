@@ -562,9 +562,9 @@ void KBuildSycoca::save()
    m_str->device()->seek(0);
 
    (*m_str) << (qint32) KSycoca::version();
-   KSycocaFactory * servicetypeFactory = 0L;
-   KSycocaFactory * mimeTypeFactory = 0L;
-   KBuildServiceFactory * serviceFactory = 0L;
+   KSycocaFactory * servicetypeFactory = 0;
+   KBuildMimeTypeFactory * mimeTypeFactory = 0;
+   KBuildServiceFactory * serviceFactory = 0;
    for(KSycocaFactoryList::Iterator factory = m_lstFactories->begin();
        factory != m_lstFactories->end();
        ++factory)
@@ -575,7 +575,7 @@ void KBuildSycoca::save()
       if ( aId == KST_KServiceTypeFactory )
          servicetypeFactory = *factory;
       else if ( aId == KST_KMimeTypeFactory )
-         mimeTypeFactory = *factory;
+         mimeTypeFactory = static_cast<KBuildMimeTypeFactory *>( *factory );
       else if ( aId == KST_KServiceFactory )
          serviceFactory = static_cast<KBuildServiceFactory *>( *factory );
       aOffset = (*factory)->offset();
@@ -592,6 +592,7 @@ void KBuildSycoca::save()
    (*m_str) << (*g_allResourceDirs);
 
    // Calculate per-servicetype/mimetype data
+   mimeTypeFactory->parseSubclasses();
    serviceFactory->populateServiceTypes();
 
    // Write factory data....
@@ -631,18 +632,17 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
    if( top )
    {
       QFileInfo inf( dirname );
-      if( inf.lastModified() > stamp )
-         {
+      if( inf.lastModified() > stamp ) {
          kDebug( 7021 ) << "timestamp changed:" << dirname << endl;
          return false;
-         }
+      }
    }
    QDir dir( dirname );
-   QFileInfoList list = dir.entryInfoList( QDir::NoFilter, QDir::Unsorted );
-   if (list.count() == 0)
+   const QFileInfoList list = dir.entryInfoList( QDir::NoFilter, QDir::Unsorted );
+   if (list.isEmpty())
       return true;
 
-   foreach ( QFileInfo fi, list ) {
+   foreach ( const QFileInfo& fi, list ) {
       if( fi.fileName() == "." || fi.fileName() == ".." )
          continue;
       if( fi.lastModified() > stamp )

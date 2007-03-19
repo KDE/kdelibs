@@ -1,6 +1,6 @@
-
 project(kded)
 
+add_subdirectory( test )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
@@ -24,6 +24,7 @@ install(TARGETS kded DESTINATION ${BIN_INSTALL_DIR} )
 set(kbuildsycoca_KDEINIT_SRCS
    kbuildsycoca.cpp
    kbuildmimetypefactory.cpp
+   kmimefileparser.cpp
    kbuildservicetypefactory.cpp
    kbuildservicefactory.cpp
    kbuildservicegroupfactory.cpp

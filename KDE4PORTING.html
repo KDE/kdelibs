@@ -1707,6 +1707,7 @@ and KIconLoader::loadMimeTypeIcon with that icon name.</li>
 <li>KMimeType::mimeType(someName) now behaves like KServiceType::serviceType(someName), i.e. it returns 0 if that name doesn't exist,
 instead of returning the application/octet-stream mimetype. Test for null!</li>
 <li>iconForURL has been deprecated, will possibly be removed for KDE 4.0 final, use iconNameForURL instead</li>
+<li>KMimeType::findFormatByFileContent has been removed. Use KMimeType::isBinaryData instead.</li>
 </ul>
 
 <h4>KMimeTypeResolver</h4>

@@ -50,26 +50,22 @@ public:
     ServiceType m_type;
     bool m_display;
   };
-  // KDEDesktopMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
-  //                     const QString& _comment, const QStringList& _patterns );
-  // KDEDesktopMimeType( const QString & _fullpath ) : KMimeType( _fullpath ) { }
-  /**
-   * Construct a desktop mimetype and take all information from a desktop file.
-   * @param config the desktop configuration file that describes the mime type
-   */
-  KDEDesktopMimeType( KDesktopFile *config) : KMimeType( config ) { }
   /** \internal */
-  KDEDesktopMimeType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
+  KDEDesktopMimeType( const QString & fullpath, const QString& type,
+                      const QString& comment )
+      : KMimeType(fullpath, type, comment ) {}
+  /** \internal */
+  KDEDesktopMimeType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
 
-  virtual QString icon( const KUrl& _url ) const;
-  virtual QString comment( const KUrl& _url ) const;
+  virtual QString icon( const KUrl& url ) const;
+  virtual QString comment( const KUrl& url ) const;
 
   /**
    * Returns a list of services for the given .desktop file that are handled
    * by kio itself. Namely mount/unmount for FSDevice files.
    * @return the list of services
    */
-  static QList<Service> builtinServices( const KUrl& _url );
+  static QList<Service> builtinServices( const KUrl& url );
   /**
    * Returns a list of services defined by the user as possible actions
    * on the given .desktop file. May include empty actions which represent where

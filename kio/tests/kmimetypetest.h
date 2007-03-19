@@ -2,6 +2,7 @@
 #define KMIMETYPETEST_H
 
 #include <QObject>
+#include <kmimemagicrule.h>
 
 class KMimeTypeTest : public QObject
 {
@@ -14,11 +15,18 @@ private Q_SLOTS:
     void testFindByPath();
     void testFindByNameAndContent();
     void testAllMimeTypes();
+    void testAlias();
     void testMimeTypeParent();
     void testMimeTypeTraderForTextPlain();
     void testMimeTypeTraderForDerivedMimeType();
+    void testMimeTypeTraderForAlias();
     void testHasServiceType1();
     void testHasServiceType2();
+
+    void testParseMagicFile();
+    void testParseMagicFile_data();
+private:
+    QList<KMimeMagicRule> m_rules;
 };
 
 

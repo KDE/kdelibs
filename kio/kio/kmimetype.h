@@ -49,19 +49,6 @@ public:
     typedef KSharedPtr<KMimeType> Ptr;
     typedef QList<Ptr> List;
 
-    /**
-     * Construct a mimetype and take all information from a desktop file.
-     * @param config the desktop configuration file that describes the mime type
-     */
-    KMimeType( KDesktopFile *config );
-
-    /**
-     * @internal Construct a service from a stream.
-     *
-     * The stream must already be positionned at the correct offset
-     */
-    KMimeType( QDataStream& _str, int offset );
-
     virtual ~KMimeType();
 
     /**
@@ -89,14 +76,14 @@ public:
     /**
      * Return the filename of the icon associated with the mimetype, for a given url.
      * Use KIconLoader::loadMimeTypeIcon to load the icon.
-     * @param _url URL for the file
-     * @param _mode the mode of the file. The mode may modify the icon
+     * @param url URL for the file
+     * @param mode the mode of the file. The mode may modify the icon
      *              with overlays that show special properties of the
      *              icon. Use 0 for default
      * @return the name of the icon. The name of a default icon if there is no icon
      *         for the mime type
      */
-    static QString iconNameForUrl( const KUrl & _url, mode_t _mode = 0 );
+    static QString iconNameForUrl( const KUrl & url, mode_t mode = 0 );
 
     /**
      * Return the "favicon" (see http://www.favicon.com) for the given @p url,
@@ -138,12 +125,12 @@ public:
     virtual void save( QDataStream &qs );
 
     /**
-     * Returns the property with the given @p _name.
-     * @param _name the name of the property
+     * Returns the property with the given @p name.
+     * @param name the name of the property
      * @return the value of the property
      * @see propertyNames()
      */
-    virtual QVariant property( const QString& _name ) const;
+    virtual QVariant property( const QString& name ) const;
 
     /**
      * Retrieves a list of all properties associated with this
@@ -153,23 +140,25 @@ public:
      */
     virtual QStringList propertyNames() const;
 
+    enum FindByNameOption { DontResolveAlias, ResolveAliases = 1 };
+
     /**
-     * Retrieve a pointer to the mime type @p _name .
+     * Retrieve a pointer to the mime type @p name .
      *
      * @em Very @em important: Don't store the result in a KMimeType* !
      *
      * Also note that you get a new KMimeType pointer every time you call this.
      * Don't ever write code that compares mimetype pointers, compare names instead.
      *
-     * @param _name the name of the mime type
-     * @return the pointer to the KMimeType with the given @p _name, or
-     *         0L if not found
+     * @param name the name of the mime type
+     * @return the pointer to the KMimeType with the given @p name, or
+     *         0 if not found
      * @see KServiceType::serviceType
      */
-    static Ptr mimeType( const QString& _name );
+    static Ptr mimeType( const QString& name, FindByNameOption options = DontResolveAlias );
 
     /**
-     * Finds a KMimeType with the given @p _url.
+     * Finds a KMimeType with the given @p url.
      * This function looks at mode_t first.
      * If that does not help it
      * looks at the extension.  This is fine for FTP, FILE, TAR and
@@ -179,7 +168,7 @@ public:
      * the file contents will be examined if the URL is a local file, or
      * "application/octet-stream" is returned otherwise.
      *
-     * @param _url Is the right most URL with a filesystem protocol. It
+     * @param url Is the right most URL with a filesystem protocol. It
      *        is up to you to find out about that if you have a nested
      *        URL.  For example
      *        "http://localhost/mist.gz#gzip:/decompress" would have to
@@ -187,26 +176,26 @@ public:
      *        "file:/tmp/x.tar#tar:/src/test.gz#gzip:/decompress" would
      *        have to pass the "tar:/..." part of the URL, since gzip is
      *        a filter protocol and not a filesystem protocol.
-     * @param _mode the mode of the file (used, for example, to identify
+     * @param mode the mode of the file (used, for example, to identify
      *              executables)
-     * @param _is_local_file true if the file is local
-     * @param _fast_mode If set to true no disk access is allowed to
+     * @param is_local_file true if the file is local; false if not, or if you don't know.
+     * @param fast_mode If set to true no disk access is allowed to
      *        find out the mimetype. The result may be suboptimal, but
      *        it is @em fast.
-     *
-     * @param accurate set to true if a mimetype was found and it represents the best we can find out.
-     *  For instance findByUrl("foo.doc") in fast_mode=true will return false
-     *  since this could be a text file or a msword file, we would have to look
-     *  into it (fast_mode=false) to find out.
+     * @param accuracy if set, the accuracy of the result, between 0 and 100.
+     *        For instance, when the extension was used to determine the mimetype,
+     *        the accuracy is set to 80, as per the shared-mime spec.
+     *        Some 'magic' rules (used when !fast_mode) have an accuracy > 80
+     *        (and have priority over the filename, others are < 80).
      *
      * @return A pointer to the matching mimetype. 0 is never returned.
      * @em Very @em Important: Don't store the result in a KMimeType* !
      */
-    static Ptr findByUrl( const KUrl& _url, mode_t _mode = 0,
-                          bool _is_local_file = false, bool _fast_mode = false,
-                          bool *accurate = 0 );
+    static Ptr findByUrl( const KUrl& url, mode_t mode = 0,
+                          bool is_local_file = false, bool fast_mode = false,
+                          int *accuracy = 0 );
     /**
-     * Finds a KMimeType with the given @p _url.
+     * Finds a KMimeType with the given @p url.
      * This function looks at mode_t first.
      * If that does not help it
      * looks at the extension.  This is fine for FTP, FILE, TAR and
@@ -229,9 +218,12 @@ public:
      * @param fast_mode If set to true no disk access is allowed to
      *        find out the mimetype. The result may be suboptimal, but
      *        it is @em fast.
-     * @return A pointer to the matching mimetype. 0L is never returned.
+     * @param accuracy If not a null pointer, *accuracy is set to the
+     *          accuracy of the match (which is in the range 0..100)
+     * @return A pointer to the matching mimetype. 0 is never returned.
      */
-    static Ptr findByPath( const QString& path, mode_t mode = 0, bool fast_mode = false );
+    static Ptr findByPath( const QString& path, mode_t mode = 0,
+                           bool fast_mode = false, int* accuracy = 0 );
 
     /**
      * Tries to find out the MIME type of a data chunk by looking for
@@ -251,13 +243,17 @@ public:
      * and is determined automatically.
      *
      * This method is useful for instance in the get() method of kioslaves, and anywhere else
-     * were a filename is associated with some data which is available immediately.
+     * where a filename is associated with some data which is available immediately.
      *
-     * @param name the filename or url representing this data. Only used for the extension, not used as a local filename.
+     * @param name the filename or url representing this data.
+     * Only used for the extension, not used as a local filename.
      * @param data the data to examine when the extension isn't conclusive in itself
      * @param mode the mode of the file (used, for example, to identify executables)
+     * @param accuracy If not a null pointer, *accuracy is set to the
+     *          accuracy of the match (which is in the range 0..100)
      */
-    static Ptr findByNameAndContent( const QString& name, const QByteArray& data, mode_t _mode = 0 );
+    static Ptr findByNameAndContent( const QString& name, const QByteArray& data,
+                                     mode_t mode = 0, int *accuracy=0 );
 
     /**
      * Tries to find out the MIME type of a file by looking for
@@ -274,17 +270,13 @@ public:
      */
     static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );
 
-    struct Format{
-        bool text : 1;
-        enum { NoCompression=0, GZipCompression } compression : 4;
-        unsigned dummy : 27;
-    };
-
     /**
-     * Returns whether a file has an internal format that is human readable,
-     * or that would be human readable after decompression.
+     * Returns whether a file has an internal format that is not human readable.
+     * This is much more generic than "not mime->is(text/plain)".
+     * Many application file formats (like rtf and postscript) are based on text,
+     * but text that the user should rarely ever see.
      */
-    static Format findFormatByFileContent( const QString &fileName );
+    static bool isBinaryData( const QString &fileName );
 
     /**
      * Get all the mimetypes.
@@ -322,7 +314,8 @@ public:
      * return the name of the parent.
      *
      * For instance a text/x-log is a special kind of text/plain,
-     * so the definition of text/x-log can say "X-KDE-IsAlso=text/plain".
+     * so the definition of text/x-log can say
+     *      sub-class-of type="text/plain"
      * Or an smb-workgroup is a special kind of inode/directory, etc.
      * This mechanism can also be used to rename mimetypes and preserve compat.
      *
@@ -338,6 +331,7 @@ public:
      * Do not use name()=="somename" anymore, to check for a given mimetype.
      * For mimetype inheritance to work, use is("somename") instead.
      * Warning, do not use inherits(), that's the servicetype inheritance concept!
+     * is() also supports mimetype aliases.
      */
     bool is( const QString& mimeTypeName ) const;
 
@@ -348,22 +342,41 @@ public:
      */
     static QString extractKnownExtension( const QString &fileName );
 
+protected:
+
+    friend class KMimeTypeFactory; // for KMimeType(QDataStream&,int)
+    friend class KBuildMimeTypeFactory; // for KMimeType(QDataStream&,int)
+    friend class KMimeFileParser; // for addPattern and addMagicRule
+    /**
+     * @internal Construct a service from a stream.
+     *
+     * The stream must already be positionned at the correct offset
+     */
+    KMimeType( QDataStream& str, int offset );
+
+    /**
+     * Construct a mimetype and take all information from an XML file.
+     * @param fullpath the path to the xml that describes the mime type
+     * @param the name of the mimetype (usually the end of the path)
+     * @param comment the comment associated with the mimetype
+     */
+    KMimeType( const QString& fullpath, const QString& name, const QString& comment );
+
+    /// @internal for kbuildsycoca
+    void addPattern(const QString& pattern);
+    /// @internal for kbuildsycoca
+    void setParentMimeType(const QString& parent);
+
 private:
-    KMimeType( const QString & _fullpath, const QString& _type, const QString& _icon,
-               const QString& _comment );
+
     void loadInternal( QDataStream& );
-    void init( KDesktopFile * );
     static void buildDefaultType();
     static void checkEssentialMimeTypes();
-    static KMimeType::Ptr findByUrlHelper( const KUrl& _url, mode_t _mode,
-                                           bool _is_local_file, bool _fast_mode,
-                                           bool &needsMagic );
+    static KMimeType::Ptr findByUrlHelper( const KUrl& url, mode_t mode,
+                                           bool is_local_file, QIODevice* device, int* accuracy );
 
     class Private;
     Private* const d;
-
-    friend class KServiceTypeFactory;
-    int patternsAccuracy() const;
 
 protected:
     virtual void virtual_hook( int id, void* data );
@@ -378,16 +391,14 @@ class KIO_EXPORT KFolderType : public KMimeType
     K_SYCOCATYPE( KST_KFolderType, KMimeType )
 
 public:
-    /**
-     * Construct a folder mimetype and take all information from a desktop file.
-     * @param config the desktop configuration file that describes the mime type
-     */
-    KFolderType( KDesktopFile *config) : KMimeType( config ) { }
     /** \internal */
-    KFolderType( QDataStream& _str, int offset ) : KMimeType( _str, offset ) { }
+    KFolderType( const QString& fullpath, const QString& name, const QString& comment )
+        : KMimeType( fullpath, name, comment ) { }
+    /** \internal */
+    KFolderType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
 
-    virtual QString icon( const KUrl& _url ) const;
-    virtual QString comment( const KUrl& _url ) const;
+    virtual QString icon( const KUrl& url ) const;
+    virtual QString comment( const KUrl& url ) const;
 protected:
     virtual void virtual_hook( int id, void* data );
 };
