@@ -62,11 +62,12 @@ class KIO_EXPORT KRun : public QObject
   Q_OBJECT
 public:
   /**
+   * @param url the URL of the file or directory to 'run'
+   *
    * @param window
    *        The top-level widget of the app that invoked this object.
    *        It is used to make sure private information like passwords
    *        are properly handled per application.
-   * @param url the URL of the file or directory to 'run'
    *
    * @param mode The @p st_mode field of <tt>struct stat</tt>. If
    *        you don't know this set it to 0.
