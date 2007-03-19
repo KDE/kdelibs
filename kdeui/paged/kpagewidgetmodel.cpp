@@ -257,7 +257,7 @@ void PageItem::dump( int indent )
     prefix.append( " " );
 
   const QString name = ( mPageWidgetItem ? mPageWidgetItem->name() : "root" );
-  qDebug( "%s (%p)", qPrintable( QString( "%1%2" ).arg( prefix, name ) ), this );
+  qDebug( "%s (%p)", qPrintable( QString( "%1%2" ).arg( prefix, name ) ), (void*)this );
   for ( int i = 0; i < mChildItems.count(); ++i )
     mChildItems[ i ]->dump( indent + 2 );
 }

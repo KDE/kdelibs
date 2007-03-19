@@ -103,10 +103,10 @@ class KColorCombo::KColorComboPrivate
 {
 	protected:
 	friend class KColorCombo;
-  
-	KColorComboPrivate(KColorCombo *q){}
+
+	KColorComboPrivate(KColorCombo *q) : q(q) {}
 	~KColorComboPrivate(){}
-        
+
         KColorCombo *q;
 	QColor customColor;
 	QColor internalcolor;

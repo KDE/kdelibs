@@ -18,7 +18,6 @@
 
 #include "kwordwrap.h"
 #include <kdebug.h>
-#include <kstringhandler.h>
 
 #include <qpainter.h>
 #include <qvector.h>
