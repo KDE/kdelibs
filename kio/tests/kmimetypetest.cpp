@@ -66,6 +66,9 @@ void KMimeTypeTest::testByName()
     QVERIFY( s1 );
     QCOMPARE( s1->name(), QString::fromLatin1("text/plain") );
     qDebug("Comment is %s", qPrintable(s1->comment()) );
+
+    KMimeType::Ptr krita = KMimeType::mimeType("application/x-krita");
+    QVERIFY( krita );
 }
 
 void KMimeTypeTest::testIcons()
@@ -118,7 +121,7 @@ void KMimeTypeTest::testFindByPath()
     QCOMPARE( mf->name(), QString::fromLatin1( "application/x-desktop" ) );
 
     // Can't use KIconLoader since this is a "without GUI" test.
-    QString fh = KStandardDirs::locate( "icon", "crystalsvg/22x22/places/folder_home.png" );
+    QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
     QVERIFY( !fh.isEmpty() );
     mf = KMimeType::findByPath( fh );
     QVERIFY( mf );
@@ -277,8 +280,8 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     QVERIFY( offers.count() > 0 );
 
     // We should have at least a few kate plugins like
-    // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
-    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    // ktexteditor_docwordcompletion or ktexteditor_insertfile. This is all from kdelibs.
+    QVERIFY( offerListHasService( offers, "ktexteditor_docwordcompletion.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 
     // We shouldn't have non-plugins though
@@ -302,8 +305,8 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
     QVERIFY( offers.count() > 0 );
 
     // We should have at least a few kate plugins like
-    // ktexteditor_isearch or ktexteditor_insertfile. This is all from kdelibs.
-    QVERIFY( offerListHasService( offers, "ktexteditor_isearch.desktop" ) );
+    // ktexteditor_docwordcompletion or ktexteditor_insertfile. This is all from kdelibs.
+    QVERIFY( offerListHasService( offers, "ktexteditor_docwordcompletion.desktop" ) );
     QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
 }
 
@@ -334,13 +337,13 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
     QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
 
-    QString ktexteditor_isearchPath = KStandardDirs::locate( "services", "ktexteditor_isearch.desktop" );
-    QVERIFY( !ktexteditor_isearchPath.isEmpty() );
-    KService ktexteditor_isearch( ktexteditor_isearchPath );
-    QVERIFY( ktexteditor_isearch.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
-    //QVERIFY( ktexteditor_isearch.hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // inherited mimetype; fails
-    QVERIFY( ktexteditor_isearch.hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_isearch.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QString ktexteditor_insertfilePath = KStandardDirs::locate( "services", "ktexteditor_insertfile.desktop" );
+    QVERIFY( !ktexteditor_insertfilePath.isEmpty() );
+    KService ktexteditor_insertfile( ktexteditor_insertfilePath );
+    QVERIFY( ktexteditor_insertfile.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
+    //QVERIFY( ktexteditor_insertfile.hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // inherited mimetype; fails
+    QVERIFY( ktexteditor_insertfile.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !ktexteditor_insertfile.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
@@ -353,12 +356,12 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
 
-    KService::Ptr ktexteditor_isearch = KService::serviceByDesktopPath( "ktexteditor_isearch.desktop" );
-    QVERIFY( !ktexteditor_isearch.isNull() );
-    QVERIFY( ktexteditor_isearch->hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
-    QVERIFY( ktexteditor_isearch->hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // due to inheritance
-    QVERIFY( ktexteditor_isearch->hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_isearch->hasServiceType( "KParts/ReadOnlyPart" ) );
+    KService::Ptr ktexteditor_insertfile = KService::serviceByDesktopPath( "ktexteditor_insertfile.desktop" );
+    QVERIFY( !ktexteditor_insertfile.isNull() );
+    QVERIFY( ktexteditor_insertfile->hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
+    QVERIFY( ktexteditor_insertfile->hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // due to inheritance
+    QVERIFY( ktexteditor_insertfile->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !ktexteditor_insertfile->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KMimeTypeTest::testParseMagicFile_data()
