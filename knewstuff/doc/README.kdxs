@@ -1,0 +1,34 @@
+KNewStuff2: Desktop Exchange Service implementation (KDXS)
+Josef Spillner <spillner@kde.org>
+----------------------------------------------------------------------------
+This is a tech demo which will be folded into the KNewStuff library
+for KDE 4.
+It facilitates the access to the DXS webservice which allows for
+better interaction between the service and its users and contributors.
+DXS is like an interactive interface to a GHNS repository.
+
+To use it, you need Hotstuff installed, which as of now is released with
+the version number 0.9, although updates might be available from KStuff CVS.
+You also need dxs-perl installed from ghns.berlios.de until it gets merged
+into Hotstuff (before 1.0). Also, dxs-perl contains 'dxsclient.pl' to test
+the web service functionality in case KDXS doesn't work.
+A public GHNS repository with DXS currently runs on http://new.kstuff.org.
+
+Some class documentation:
+-------------------------
+
+Read src/CLASSES and src/knewstuff2/CLASSES.
+
+Todo:
+-----
+
+- remove all engine stuff from dialog, make dialog API accessible
+- improved error handling in kdxs
+- implementation of categories() and list() web service methods
+- automatic "upgrade" to cDXS, and "downgrade" to SOAP in soap.cpp
+- automatic recognition of web service capabilities (i.e. ro and rw)
+- automatic user authorisation (how to get user info from kded?)
+- finally, port to KDE 4 and merge into trunk/kdelibs/knewstuff
+
+- [ghns.fd.o] finish WSDL file
+
