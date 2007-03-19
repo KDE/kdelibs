@@ -26,7 +26,7 @@
 
 using namespace KParts;
 
-HistoryProvider * HistoryProvider::s_self = 0L;
+HistoryProvider * HistoryProvider::s_self = 0;
 static KStaticDeleter<HistoryProvider> historyProviderSd;
 
 class HistoryProvider::HistoryProviderPrivate

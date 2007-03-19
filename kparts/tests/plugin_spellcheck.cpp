@@ -26,7 +26,7 @@ void PluginSpellCheck::slotSpellCheck()
     kDebug() << "Plugin parent : " << parent()->objectName() << " (" << parent()->metaObject()->className() << ")" << endl;
     // The parent is assumed to be a NotepadPart
     if ( !parent()->inherits("NotepadPart") )
-       KMessageBox::error(0L,"You just called the spell-check action on a wrong part (not NotepadPart)");
+       KMessageBox::error(0,"You just called the spell-check action on a wrong part (not NotepadPart)");
     else
     {
          NotepadPart * part = (NotepadPart *) parent();

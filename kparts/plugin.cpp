@@ -173,7 +173,7 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
 {
     Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, parent );
     if ( !plugin )
-        return 0L;
+        return 0;
     plugin->d->m_library = libname;
     return plugin;
 }

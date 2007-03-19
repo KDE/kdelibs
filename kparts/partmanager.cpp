@@ -126,7 +126,7 @@ PartManager::~PartManager()
         it->setManager( 0 );
     }
 
-    // core dumps ... setActivePart( 0L );
+    // core dumps ... setActivePart( 0 );
     qApp->removeEventFilter( this );
     delete d;
 }
@@ -188,7 +188,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
          ( w->windowFlags().testFlag(Qt::Popup) ) || ( w->windowFlags().testFlag(Qt::Tool) ) )
         return false;
 
-    QMouseEvent* mev = 0L;
+    QMouseEvent* mev = 0;
     if ( ev->type() == QEvent::MouseButtonPress || ev->type() == QEvent::MouseButtonDblClick )
     {
         mev = static_cast<QMouseEvent *>( ev );
@@ -267,7 +267,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
                 }
                 else if ( d->m_activeWidget == w && d->m_activePart == part )
                 {
-                    setSelectedPart( 0L );
+                    setSelectedPart( 0 );
                     return false;
                 }
 
@@ -313,7 +313,7 @@ Part * PartManager::findPartFromWidget( QWidget * widget, const QPoint &pos )
         if ( part && d->m_parts.contains( part ) )
             return part;
     }
-    return 0L;
+    return 0;
 }
 
 Part * PartManager::findPartFromWidget( QWidget * widget )
@@ -323,7 +323,7 @@ Part * PartManager::findPartFromWidget( QWidget * widget )
         if ( widget == (*it)->widget() )
             return (*it);
     }
-    return 0L;
+    return 0;
 }
 
 void PartManager::addPart( Part *part, bool setActive )
@@ -440,7 +440,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     KParts::Part *oldActivePart = d->m_activePart;
     QWidget *oldActiveWidget = d->m_activeWidget;
 
-    setSelectedPart( 0L );
+    setSelectedPart( 0 );
 
     d->m_activePart = part;
     d->m_activeWidget = widget;
@@ -549,7 +549,7 @@ void PartManager::slotWidgetDestroyed()
 {
     kDebug(1000) << "KPartsManager::slotWidgetDestroyed()" << endl;
     if ( static_cast<const QWidget *>( sender() ) == d->m_activeWidget )
-        setActivePart( 0L ); //do not remove the part because if the part's widget dies, then the
+        setActivePart( 0 ); //do not remove the part because if the part's widget dies, then the
     //part will delete itself anyway, invoking removePart() in its destructor
 }
 

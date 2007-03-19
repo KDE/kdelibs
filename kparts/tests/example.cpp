@@ -93,11 +93,11 @@ void Shell::slotFileOpenRemote()
 void Shell::embedEditor()
 {
     if ( m_manager->activePart() == m_part2 )
-        createGUI( 0L );
+        createGUI( 0 );
 
     // replace part2 with the editor part
     delete m_part2;
-    m_part2 = 0L;
+    m_part2 = 0;
     m_editorpart = new NotepadPart( m_splitter, this );
     m_editorpart->setReadWrite(); // read-write mode
     m_manager->addPart( m_editorpart );
@@ -115,10 +115,10 @@ void Shell::slotFileCloseEditor()
 
     // Is this necessary ? (David)
     if ( m_manager->activePart() == m_editorpart )
-        createGUI( 0L );
+        createGUI( 0 );
 
     delete m_editorpart;
-    m_editorpart = 0L;
+    m_editorpart = 0;
     m_part2 = new Part2(this, m_splitter);
     m_manager->addPart( m_part2 );
     m_paEditFile->setEnabled(true);

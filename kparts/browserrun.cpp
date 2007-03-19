@@ -302,7 +302,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
                        : i18n("&Open With...");
 
     int choice = KMessageBox::questionYesNoCancel(
-        0L, question, url.host(),
+        0, question, url.host(),
         KStandardGuiItem::saveAs(), KGuiItem(openText),
         QLatin1String("askSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
 

@@ -89,7 +89,7 @@ void Shell::embedEditor()
 {
     // replace part2 with the editor part
     delete m_part2;
-    m_part2 = 0L;
+    m_part2 = 0;
     m_editorpart = new NotepadPart( m_splitter, this );
     m_editorpart->setReadWrite(); // read-write mode
     ////// m_manager->addPart( m_editorpart );
@@ -101,7 +101,7 @@ void Shell::embedEditor()
 void Shell::slotFileCloseEditor()
 {
     delete m_editorpart;
-    m_editorpart = 0L;
+    m_editorpart = 0;
     m_part2 = new Part2(this, m_splitter);
     ////// m_manager->addPart( m_part2 );
     m_part2->widget()->show(); //// we need to do this in a normal KTM....

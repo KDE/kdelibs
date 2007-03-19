@@ -255,7 +255,7 @@ Part *Part::hitTest( QWidget *widget, const QPoint & )
     Q_D(Part);
 
     if ( (QWidget *)d->m_widget != widget )
-        return 0L;
+        return 0;
 
     return this;
 }
@@ -322,7 +322,7 @@ void Part::guiActivateEvent( GUIActivateEvent * )
 QWidget *Part::hostContainer( const QString &containerName )
 {
     if ( !factory() )
-        return 0L;
+        return 0;
 
     return factory()->container( containerName, this );
 }
@@ -348,8 +348,8 @@ public:
 
         ReadOnlyPartPrivate(ReadOnlyPart *q): PartPrivate(q)
     {
-        m_job = 0L;
-        m_uploadJob = 0L;
+        m_job = 0;
+        m_uploadJob = 0;
         m_showProgressInfo = true;
         m_saveOk = false;
         m_waitForSave = false;

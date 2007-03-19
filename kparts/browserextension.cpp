@@ -90,7 +90,7 @@ URLArgs::URLArgs()
   xOffset = 0;
   yOffset = 0;
   trustedSource = false;
-  d = 0L; // Let's build it on demand for now
+  d = 0; // Let's build it on demand for now
 }
 
 
@@ -100,12 +100,12 @@ URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serv
   xOffset = _xOffset;
   yOffset = _yOffset;
   serviceType = _serviceType;
-  d = 0L; // Let's build it on demand for now
+  d = 0; // Let's build it on demand for now
 }
 
 URLArgs::URLArgs( const URLArgs &args )
 {
-  d = 0L;
+  d = 0;
   (*this) = args;
 }
 
@@ -349,9 +349,9 @@ public:
 
 }
 
-BrowserExtension::ActionSlotMap * BrowserExtension::s_actionSlotMap = 0L;
+BrowserExtension::ActionSlotMap * BrowserExtension::s_actionSlotMap = 0;
 static KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
-BrowserExtension::ActionNumberMap * BrowserExtension::s_actionNumberMap = 0L;
+BrowserExtension::ActionNumberMap * BrowserExtension::s_actionNumberMap = 0;
 static KStaticDeleter<BrowserExtension::ActionNumberMap> actionNumberMapsd;
 
 BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
@@ -690,7 +690,7 @@ BrowserHostExtension::findFrameParent(KParts::ReadOnlyPart *callingPart, const Q
 }
 
 LiveConnectExtension::LiveConnectExtension( KParts::ReadOnlyPart *parent )
- : QObject( parent ), d( NULL ) {}
+ : QObject( parent ), d( 0 ) {}
 
 LiveConnectExtension::~LiveConnectExtension() {}
 
