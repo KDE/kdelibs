@@ -194,12 +194,6 @@ Q_SIGNALS:
   void readReady(KProcIO *pio);
 
 protected:
-  QList<QByteArray *> outbuffer;
-  QByteArray recvbuffer;
-  QTextCodec *codec;
-  int rbi;
-  bool needreadsignal, readsignalon, writeready;
-
   void controlledEmission ();
 
 protected Q_SLOTS:
