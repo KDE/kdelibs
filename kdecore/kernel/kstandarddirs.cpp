@@ -20,7 +20,7 @@
 
 /*
  * Author: Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
- * Generated:	Thu Mar  5 16:05:28 EST 1998
+ * Generated: Thu Mar  5 16:05:28 EST 1998
  */
 
 #include <config.h>
@@ -313,15 +313,15 @@ void KStandardDirs::addPrefix( const QString& _dir )
 void KStandardDirs::addPrefix( const QString& _dir, bool priority )
 {
     if (_dir.isEmpty())
-	return;
+        return;
 
     QString dir = _dir;
     if (dir.at(dir.length() - 1) != '/')
-	dir += '/';
+        dir += '/';
 
     if (!d->prefixes.contains(dir)) {
         priorityAdd(d->prefixes, dir, priority);
-	d->dircache.clear();
+        d->dircache.clear();
     }
 }
 
@@ -333,15 +333,15 @@ void KStandardDirs::addXdgConfigPrefix( const QString& _dir )
 void KStandardDirs::addXdgConfigPrefix( const QString& _dir, bool priority )
 {
     if (_dir.isEmpty())
-	return;
+        return;
 
     QString dir = _dir;
     if (dir.at(dir.length() - 1) != '/')
-	dir += '/';
+        dir += '/';
 
     if (!d->xdgconf_prefixes.contains(dir)) {
         priorityAdd(d->xdgconf_prefixes, dir, priority);
-	d->dircache.clear();
+        d->dircache.clear();
     }
 }
 
@@ -353,15 +353,15 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir )
 void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
 {
     if (_dir.isEmpty())
-	return;
+        return;
 
     QString dir = _dir;
     if (dir.at(dir.length() - 1) != '/')
-	dir += '/';
+        dir += '/';
 
     if (!d->xdgdata_prefixes.contains(dir)) {
-	priorityAdd(d->xdgdata_prefixes, dir, priority);
-	d->dircache.clear();
+        priorityAdd(d->xdgdata_prefixes, dir, priority);
+        d->dircache.clear();
     }
 }
 
@@ -381,14 +381,14 @@ QString KStandardDirs::kfsstnd_xdg_data_prefixes()
 }
 
 bool KStandardDirs::addResourceType( const char *type,
-				     const QString& relativename )
+                                     const QString& relativename )
 {
     return addResourceType(type, relativename, true);
 }
 
 bool KStandardDirs::addResourceType( const char *type,
-				     const QString& relativename,
-				     bool priority )
+                                     const QString& relativename,
+                                     bool priority )
 {
     if (relativename.isEmpty())
        return false;
@@ -396,27 +396,27 @@ bool KStandardDirs::addResourceType( const char *type,
     QStringList& rels = d->relatives[type]; // find or insert
     QString copy = relativename;
     if (copy.at(copy.length() - 1) != '/')
-	copy += '/';
+        copy += '/';
     if (!rels.contains(copy)) {
         if (priority)
-	    rels.prepend(copy);
-	else
-	    rels.append(copy);
-	d->dircache.remove(type); // clean the cache
-	return true;
+            rels.prepend(copy);
+        else
+            rels.append(copy);
+        d->dircache.remove(type); // clean the cache
+        return true;
     }
     return false;
 }
 
 bool KStandardDirs::addResourceDir( const char *type,
-				    const QString& absdir)
+                                    const QString& absdir)
 {
     return addResourceDir(type, absdir, true);
 }
 
 bool KStandardDirs::addResourceDir( const char *type,
-				    const QString& absdir,
-				    bool priority)
+                                    const QString& absdir,
+                                    bool priority)
 {
     // find or insert entry in the map
     QStringList &paths = d->absolutes[type];
@@ -428,18 +428,18 @@ bool KStandardDirs::addResourceDir( const char *type,
         if (priority)
             paths.prepend(copy);
         else
-	    paths.append(copy);
-	d->dircache.remove(type); // clean the cache
-	return true;
+            paths.append(copy);
+        d->dircache.remove(type); // clean the cache
+        return true;
     }
     return false;
 }
 
 QString KStandardDirs::findResource( const char *type,
-				     const QString& filename ) const
+                                     const QString& filename ) const
 {
-	if (!QDir::isRelativePath(filename))
-	return filename; // absolute dirs are absolute dirs, right? :-/
+    if (!QDir::isRelativePath(filename))
+        return filename; // absolute dirs are absolute dirs, right? :-/
 
 #if 0
 kDebug(180) << "Find resource: " << type << endl;
@@ -451,9 +451,9 @@ for (QStringList::ConstIterator pit = prefixes.begin();
 }
 #endif
 
-    QString dir = findResourceDir(type, filename);
+    const QString dir = findResourceDir(type, filename);
     if (dir.isEmpty())
-	return dir;
+        return dir;
     else return dir + filename;
 }
 
@@ -476,7 +476,7 @@ quint32 KStandardDirs::calcResourceHash( const char *type,
     if (!QDir::isRelativePath(filename))
     {
         // absolute dirs are absolute dirs, right? :-/
-	return updateHash(filename, hash);
+        return updateHash(filename, hash);
     }
     if (d->restrictionsActive && (strcmp(type, "data")==0))
        applyDataRestrictions(filename);
@@ -529,7 +529,7 @@ QStringList KStandardDirs::findDirs( const char *type,
 }
 
 QString KStandardDirs::findResourceDir( const char *type,
-					const QString& filename) const
+                                        const QString& filename) const
 {
 #ifndef NDEBUG
     if (filename.isEmpty()) {
@@ -563,19 +563,19 @@ bool KStandardDirs::exists(const QString &fullPath)
     KDE_struct_stat buff;
     if (access(QFile::encodeName(fullPath), R_OK) == 0 && KDE_stat( QFile::encodeName(fullPath), &buff ) == 0)
         if (fullPath.at(fullPath.length() - 1) != '/') {
-	    if (S_ISREG( buff.st_mode ))
+            if (S_ISREG( buff.st_mode ))
                 return true;
         } else
-	    if (S_ISDIR( buff.st_mode ))
-		return true;
+            if (S_ISDIR( buff.st_mode ))
+                return true;
     return false;
 }
 
 static void lookupDirectory(const QString& path, const QString &relPart,
-			    const QRegExp &regexp,
-			    QStringList& list,
-			    QStringList& relList,
-			    bool recursive, bool unique)
+                            const QRegExp &regexp,
+                            QStringList& list,
+                            QStringList& relList,
+                            bool recursive, bool unique)
 {
   QString pattern = regexp.pattern();
   if (recursive || pattern.contains('?') || pattern.contains('*'))
@@ -599,10 +599,10 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     {
       QString fn( QFile::decodeName(ep->d_name));
       if (fn == "." || fn == ".." || fn.at(fn.length() - 1).toLatin1() == '~')
-	continue;
+        continue;
 
       if (!recursive && !regexp.exactMatch(fn))
-	continue; // No match
+        continue; // No match
 
       bool isDir;
       bool isReg;
@@ -615,28 +615,28 @@ static void lookupDirectory(const QString& path, const QString &relPart,
       if (ep->d_type == DT_UNKNOWN)
 #endif
       {
-	KDE_struct_stat buff;
-	if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-	  kDebug(180) << "Error stat'ing " << pathfn << " : " << perror << endl;
-	  continue; // Couldn't stat (e.g. no read permissions)
-	}
-	isReg = S_ISREG (buff.st_mode);
-	isDir = S_ISDIR (buff.st_mode);
+        KDE_struct_stat buff;
+        if ( KDE_stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
+          kDebug(180) << "Error stat'ing " << pathfn << " : " << perror << endl;
+          continue; // Couldn't stat (e.g. no read permissions)
+        }
+        isReg = S_ISREG (buff.st_mode);
+        isDir = S_ISDIR (buff.st_mode);
       }
 
       if ( recursive ) {
-	if ( isDir ) {
-	  lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, unique);
-	}
+        if ( isDir ) {
+          lookupDirectory(pathfn + '/', relPart + fn + '/', regexp, list, relList, recursive, unique);
+        }
         if (!regexp.exactMatch(fn))
-	  continue; // No match
+          continue; // No match
       }
       if ( isReg )
       {
         if (!unique || !relList.contains(relPart + fn))
         {
-	    list.append( pathfn );
-	    relList.append( relPart + fn );
+            list.append( pathfn );
+            relList.append( relPart + fn );
         }
       }
     }
@@ -663,14 +663,14 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 
 static void lookupPrefix(const QString& prefix, const QString& relpath,
                          const QString& relPart,
-			 const QRegExp &regexp,
-			 QStringList& list,
-			 QStringList& relList,
-			 bool recursive, bool unique)
+                         const QRegExp &regexp,
+                         QStringList& list,
+                         QStringList& relList,
+                         bool recursive, bool unique)
 {
     if (relpath.isEmpty()) {
        lookupDirectory(prefix, relPart, regexp, list,
-		       relList, recursive, unique);
+                       relList, recursive, unique);
        return;
     }
     QString path;
@@ -680,10 +680,10 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
     {
        int slash = relpath.indexOf('/');
        if (slash < 0)
-	   rest = relpath.left(relpath.length() - 1);
+           rest = relpath.left(relpath.length() - 1);
        else {
-	   path = relpath.left(slash);
-	   rest = relpath.mid(slash + 1);
+           path = relpath.left(slash);
+           rest = relpath.mid(slash + 1);
        }
     }
 
@@ -696,24 +696,24 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 #endif
     if (path.contains('*') || path.contains('?')) {
 
-	QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
-	DIR *dp = opendir( QFile::encodeName(prefix) );
-	if (!dp) {
-	    return;
-	}
+        QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
+        DIR *dp = opendir( QFile::encodeName(prefix) );
+        if (!dp) {
+            return;
+        }
 
-	struct dirent *ep;
+        struct dirent *ep;
 
-	while( ( ep = readdir( dp ) ) != 0L )
-	{
-	  QString fn( QFile::decodeName(ep->d_name));
-	  if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
-	    continue;
+        while( ( ep = readdir( dp ) ) != 0L )
+        {
+          QString fn( QFile::decodeName(ep->d_name));
+          if (fn == "." || fn == ".." || fn.at(fn.length() - 1) == '~')
+            continue;
 
-	  if ( !pathExp.exactMatch(fn) )
-	    continue; // No match
-	  QString rfn = relPart+fn;
-	  fn = prefix + fn;
+          if ( !pathExp.exactMatch(fn) )
+            continue; // No match
+          QString rfn = relPart+fn;
+          fn = prefix + fn;
 
           bool isDir;
 
@@ -731,11 +731,11 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
               }
               isDir = S_ISDIR (buff.st_mode);
           }
-	  if ( isDir )
-	    lookupPrefix(fn + '/', rest, rfn + '/', regexp, list, relList, recursive, unique);
-	}
+          if ( isDir )
+              lookupPrefix(fn + '/', rest, rfn + '/', regexp, list, relList, recursive, unique);
+        }
 
-	closedir( dp );
+        closedir( dp );
     } else {
         // Don't stat, if the dir doesn't exist we will find out
         // when we try to open it.
@@ -1002,10 +1002,10 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 #if 0
     kDebug(180) << "found dirs for resource " << type << ":" << endl;
     for (QStringList::ConstIterator pit = candidates.begin();
-	 pit != candidates.end();
-	 pit++)
+         pit != candidates.end();
+         pit++)
     {
-	fprintf(stderr, "%s\n", qPrintable(*pit));
+        fprintf(stderr, "%s\n", qPrintable(*pit));
     }
 #endif
 
@@ -1019,7 +1019,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
 
     if( p.isNull() )
     {
-	p = getenv( "PATH" );
+        p = getenv( "PATH" );
     }
 
     QString delimiters(QChar(KPATH_SEPARATOR));
@@ -1031,7 +1031,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     // split path using : or \b as delimiters
     for( int i = 0; i < tokens.count(); i++ )
     {
-	p = tokens[ i ];
+        p = tokens[ i ];
 
         if ( p[ 0 ] == '~' )
         {
@@ -1051,7 +1051,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
             }
         }
 
-	exePaths << p;
+        exePaths << p;
     }
 
     return exePaths;
@@ -1135,10 +1135,10 @@ QString KStandardDirs::findExe( const QString& appname,
     const QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
-	p = (*it) + '/';
-	p += real_appname;
+        p = (*it) + '/';
+        p += real_appname;
 
-	// Check for executable in this tokenized path
+        // Check for executable in this tokenized path
         result = checkExecutable(p, options & IgnoreExecBit);
         if (!result.isEmpty()) {
             //kDebug(180) << "findExe(): returning " << result << endl;
@@ -1168,41 +1168,41 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
     {
-	p = (*it) + '/';
-	p += real_appname;
+        p = (*it) + '/';
+        p += real_appname;
 
-	info.setFile( p );
+        info.setFile( p );
 
-	if( info.exists() && ( ( options & IgnoreExecBit ) || info.isExecutable())
-	    && info.isFile() ) {
-	    list.append( p );
-	}
+        if( info.exists() && ( ( options & IgnoreExecBit ) || info.isExecutable())
+            && info.isFile() ) {
+            list.append( p );
+        }
     }
 
     return list.count();
 }
 
 static int tokenize( QStringList& tokens, const QString& str,
-		     const QString& delim )
+                     const QString& delim )
 {
     int len = str.length();
     QString token = "";
 
     for( int index = 0; index < len; index++)
     {
-	if ( delim.contains( str[ index ] ) )
-	{
-	    tokens.append( token );
-	    token = "";
-	}
-	else
-	{
-	    token += str[ index ];
-	}
+        if ( delim.contains( str[ index ] ) )
+        {
+            tokens.append( token );
+            token = "";
+        }
+        else
+        {
+            token += str[ index ];
+        }
     }
     if ( token.length() > 0 )
     {
-	tokens.append( token );
+        tokens.append( token );
     }
 
     return tokens.count();
@@ -1214,43 +1214,43 @@ QString KStandardDirs::kde_default(const char *type) {
     // Make sure to update it if you update the code.
 
     if (!strcmp(type, "data"))
-	return "share/apps/";
+        return "share/apps/";
     if (!strcmp(type, "html"))
-	return "share/doc/HTML/";
+        return "share/doc/HTML/";
     if (!strcmp(type, "icon"))
-	return "share/icons/";
+        return "share/icons/";
     if (!strcmp(type, "config"))
-	return "share/config/";
+        return "share/config/";
     if (!strcmp(type, "pixmap"))
-	return "share/pixmaps/";
+        return "share/pixmaps/";
     if (!strcmp(type, "apps"))
-	return "share/applnk/";
+        return "share/applnk/";
     if (!strcmp(type, "sound"))
-	return "share/sounds/";
+        return "share/sounds/";
     if (!strcmp(type, "locale"))
-	return "share/locale/";
+        return "share/locale/";
     if (!strcmp(type, "services"))
-	return "share/services/";
+        return "share/services/";
     if (!strcmp(type, "servicetypes"))
-	return "share/servicetypes/";
+        return "share/servicetypes/";
     if (!strcmp(type, "mime"))
-	return "share/mimelnk/";
+        return "share/mimelnk/";
     if (!strcmp(type, "cgi"))
-	return "cgi-bin/";
+        return "cgi-bin/";
     if (!strcmp(type, "wallpaper"))
-	return "share/wallpapers/";
+        return "share/wallpapers/";
     if (!strcmp(type, "templates"))
-	return "share/templates/";
+        return "share/templates/";
     if (!strcmp(type, "exe"))
-	return "bin/";
+        return "bin/";
     if (!strcmp(type, "lib"))
-	return "lib" KDELIBSUFF "/";
+        return "lib" KDELIBSUFF "/";
     if (!strcmp(type, "module"))
-	return "lib" KDELIBSUFF "/kde4/";
+        return "lib" KDELIBSUFF "/kde4/";
     if (!strcmp(type, "qtplugins"))
         return "lib" KDELIBSUFF "/kde4/plugins";
     if (!strcmp(type, "kcfg"))
-	return "share/config.kcfg";
+        return "share/config.kcfg";
     if (!strcmp(type, "emoticons"))
         return "share/emoticons";
     if (!strcmp(type, "xdgdata-apps"))
@@ -1272,8 +1272,8 @@ QString KStandardDirs::kde_default(const char *type) {
 }
 
 QString KStandardDirs::saveLocation(const char *type,
-				    const QString& suffix,
-				    bool create) const
+                                    const QString& suffix,
+                                    bool create) const
 {
     checkConfig();
 
@@ -1314,19 +1314,19 @@ QString KStandardDirs::saveLocation(const char *type,
 
     KDE_struct_stat st;
     if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
-	if(!create) {
+        if(!create) {
 #ifndef NDEBUG
-	    kDebug(180) << QString("save location %1 doesn't exist").arg(fullPath) << endl;
+            kDebug(180) << QString("save location %1 doesn't exist").arg(fullPath) << endl;
 #endif
-	    return fullPath;
-	}
-	if(!makeDir(fullPath, 0700)) {
-	    return fullPath;
-	}
+            return fullPath;
+        }
+        if(!makeDir(fullPath, 0700)) {
+            return fullPath;
+        }
         d->dircache.remove(type);
     }
     if (!fullPath.endsWith("/"))
-	    fullPath += '/';
+            fullPath += '/';
     return fullPath;
 }
 
@@ -1382,9 +1382,9 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
           if (KDE_mkdir(baseEncoded, static_cast<mode_t>(mode)) != 0) {
             baseEncoded.prepend( "trying to create local folder " );
-	    perror(baseEncoded.data());
-	    return false; // Couldn't create it :-(
-	  }
+            perror(baseEncoded.data());
+            return false; // Couldn't create it :-(
+          }
         }
         i = pos + 1;
     }
@@ -1458,7 +1458,7 @@ void KStandardDirs::addKDEDefaults()
     {
         tokenize(kdedirList, kdedirs, QString(QChar(KPATH_SEPARATOR)));
     }
-	kdedirList.append(QFile::decodeName(KDEDIR));
+    kdedirList.append(QFile::decodeName(KDEDIR));
 
 #ifdef __KDE_EXECPREFIX
     QString execPrefix(__KDE_EXECPREFIX);
@@ -1494,12 +1494,12 @@ void KStandardDirs::addKDEDefaults()
         addPrefix(localKdeDir);
     }
 
-	QStringList::ConstIterator end(kdedirList.end());
+    QStringList::ConstIterator end(kdedirList.end());
     for (QStringList::ConstIterator it = kdedirList.begin();
-	 it != end; ++it)
+         it != end; ++it)
     {
-        QString dir = KShell::tildeExpand(*it);
-	addPrefix(dir);
+        const QString dir = KShell::tildeExpand(*it);
+        addPrefix(dir);
     }
     // end KDEDIRS
 
@@ -1508,11 +1508,11 @@ void KStandardDirs::addKDEDefaults()
     QString xdgdirs = readEnvPath("XDG_CONFIG_DIRS");
     if (!xdgdirs.isEmpty())
     {
-	tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
+        tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
     }
     else
     {
-	xdgdirList.clear();
+        xdgdirList.clear();
         xdgdirList.append("/etc/xdg");
 #ifdef Q_WS_WIN
         xdgdirList.append(kfsstnd_defaultprefix() + "/etc/xdg");
@@ -1540,10 +1540,10 @@ void KStandardDirs::addKDEDefaults()
     addXdgConfigPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.begin();
-	 it != xdgdirList.end(); ++it)
+         it != xdgdirList.end(); ++it)
     {
         QString dir = KShell::tildeExpand(*it);
-	addXdgConfigPrefix(dir);
+        addXdgConfigPrefix(dir);
     }
     // end XDG_CONFIG_XXX
 
@@ -1551,11 +1551,11 @@ void KStandardDirs::addKDEDefaults()
     xdgdirs = readEnvPath("XDG_DATA_DIRS");
     if (!xdgdirs.isEmpty())
     {
-	tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
+        tokenize(xdgdirList, xdgdirs, QString(QChar(KPATH_SEPARATOR)));
     }
     else
     {
-	xdgdirList.clear();
+        xdgdirList.clear();
         for (QStringList::ConstIterator it = kdedirList.begin();
            it != kdedirList.end(); ++it)
         {
@@ -1584,18 +1584,18 @@ void KStandardDirs::addKDEDefaults()
     addXdgDataPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.begin();
-	 it != xdgdirList.end(); ++it)
+         it != xdgdirList.end(); ++it)
     {
         QString dir = KShell::tildeExpand(*it);
-	addXdgDataPrefix(dir);
+        addXdgDataPrefix(dir);
     }
     // end XDG_DATA_XXX
 
 
     uint index = 0;
     while (types_indices[index] != -1) {
-	addResourceType(types + types_indices[index], kde_default(types + types_indices[index]));
-	index++;
+        addResourceType(types + types_indices[index], kde_default(types + types_indices[index]));
+        index++;
     }
     addResourceDir( "exe", LIBEXEC_INSTALL_DIR, false );
 
@@ -1762,7 +1762,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
             for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
                  it2 != entries.end(); it2++)
             {
-                QString key = it2.key();
+                const QString key = it2.key();
                 if (key.startsWith("dir_")) {
                     // generate directory list, there may be more than 1.
                     QStringList dirs = (*it2).split(',');
@@ -1791,7 +1791,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         for (QMap<QString, QString>::ConstIterator it2 = entries.begin();
             it2 != entries.end(); it2++)
         {
-            QString key = it2.key();
+            const QString key = it2.key();
             if (!cg.readEntry(key, true))
             {
                 d->restrictionsActive = true;
@@ -1830,13 +1830,13 @@ QString KStandardDirs::localxdgconfdir() const
 
 // just to make code more readable without macros
 QString KStandardDirs::locate( const char *type,
-        const QString& filename, const KComponentData &cData)
+                               const QString& filename, const KComponentData &cData)
 {
     return cData.dirs()->findResource(type, filename);
 }
 
 QString KStandardDirs::locateLocal( const char *type,
-        const QString& filename, const KComponentData &cData)
+                                    const QString& filename, const KComponentData &cData)
 {
     return locateLocal(type, filename, true, cData);
 }
