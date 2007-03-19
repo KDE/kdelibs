@@ -63,13 +63,12 @@ class QStringList;
  *
  * and so forth.
  *
- * @short Class for manipulating words and sentences in strings
+ * @short Namespace for manipulating words and sentences in strings
  * @author Ian Zepp <icszepp@islc.net>
  * @see KShell
  */
-class KDECORE_EXPORT KStringHandler
+namespace KStringHandler
 {
-public:
     /** Returns a range of words from that string.
       * Ie:
       * @li "0" returns the very first word
@@ -82,7 +81,7 @@ public:
       * @param range the words to return (see description)
       * @return the words, or an empty string if not found
       */
-    static QString        word( const QString &text , const char *range );
+    KDECORE_EXPORT QString word( const QString &text, const char *range );
 
     /** Inserts a word into the string, and returns
       * a new string with the word included. the first
@@ -93,7 +92,7 @@ public:
       * @param pos the position (in words) for the new word
       * @return the resulting string
       */
-    static QString        insword( const QString &text , const QString &word , int pos );
+    KDECORE_EXPORT QString insword( const QString &text, const QString &word, int pos );
 
     /** Replaces a word in the string, and returns
       * a new string with the word included. the first
@@ -104,7 +103,7 @@ public:
       * @param pos the position (in words) for the new word
       * @return the resulting string
       */
-    static QString        setword( const QString &text , const QString &word , int pos );
+    KDECORE_EXPORT QString setword( const QString &text, const QString &word, int pos );
 
     /** Removes a word or ranges of words from the string,
       * and returns a new string. The ranges definitions
@@ -118,7 +117,7 @@ public:
       * @param range the words to remove (see description)
       * @return the resulting string
       */
-    static QString        remrange( const QString &text , const char *range );
+    KDECORE_EXPORT QString remrange( const QString &text , const char *range );
 
 
     /** Removes a word at the given index, and returns a
@@ -127,7 +126,7 @@ public:
       * @param pos the position (in words) of thw word to delete
       * @return the resulting string
       */
-    static QString        remword( const QString &text , int pos );
+    KDECORE_EXPORT QString remword( const QString &text , int pos );
 
     /** Removes a matching word from the string, and returns
       * a new string. Note that only ONE match is removed.
@@ -135,35 +134,35 @@ public:
       * @param word the word to remove
       * @return the resulting string
       */
-    static QString        remword( const QString &text , const QString &word );
+    KDECORE_EXPORT QString remword( const QString &text , const QString &word );
 
     /** Capitalizes each word in the string
       * "hello there" becomes "Hello There"        (string)
       * @param text the text to capitalize
       * @return the resulting string
       */
-    static QString        capwords( const QString &text );
+    KDECORE_EXPORT QString capwords( const QString &text );
 
     /** Capitalizes each word in the list
       * [hello, there] becomes [Hello, There]    (list)
       * @param list the list to capitalize
       * @return the resulting list
       */
-    static QStringList    capwords( const QStringList &list );
+    KDECORE_EXPORT QStringList capwords( const QStringList &list );
 
     /** Reverses the order of the words in a string
       * "hello there" becomes "there hello"        (string)
       * @param text the text to reverse
       * @return the resulting string
       */
-    static QString        reverse( const QString &text );
+    KDECORE_EXPORT QString reverse( const QString &text );
 
     /** Reverses the order of the words in a list
       * [hello, there] becomes [there, hello]    (list)
       * @param list the list to reverse
       * @return the resulting list
       */
-    static QStringList    reverse( const QStringList &list );
+    KDECORE_EXPORT QStringList reverse( const QStringList &list );
 
 
     /** Centers a string and returns a string at least 'width' characters
@@ -174,7 +173,7 @@ public:
       * @param width the desired width of the new string
       * @return the resulting string
       */
-    static QString        center( const QString &text , int width );
+    KDECORE_EXPORT QString center( const QString &text , int width );
 
     /** Substitute characters at the beginning of a string by "...".
      * @param str is the string to modify
@@ -182,7 +181,7 @@ public:
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    static QString        lsqueeze( const QString & str, int maxlen = 40 );
+    KDECORE_EXPORT QString lsqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
@@ -195,9 +194,9 @@ public:
      *
      * @deprecated Use fontMetrics.elidedText(name, Qt::ElideLeft, fontMetrics.maxWidth() * maxlen) instead
      */
-    static KDE_DEPRECATED QString lEmSqueeze( const QString & name,
-                                              const QFontMetrics& fontMetrics,
-                                              int maxlen = 30 );
+    KDECORE_EXPORT QString lEmSqueeze( const QString & name,
+                                       const QFontMetrics& fontMetrics,
+                                       int maxlen = 30 );
 
     /** Substitute characters at the beginning of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -209,9 +208,9 @@ public:
      *
      * @deprecated Use fontMetrics.elidedText(name, Qt::ElideLeft, maxPixels) instead
      */
-    static KDE_DEPRECATED QString lPixelSqueeze( const QString & name,
-                                  const QFontMetrics& fontMetrics,
-                                  int maxPixels );
+    KDECORE_EXPORT_DEPRECATED QString lPixelSqueeze( const QString & name,
+                                                     const QFontMetrics& fontMetrics,
+                                                     int maxPixels );
 
     /** Substitute characters at the middle of a string by "...".
      * @param str is the string to modify
@@ -219,7 +218,7 @@ public:
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    static QString        csqueeze( const QString & str, int maxlen = 40 );
+    KDECORE_EXPORT QString csqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
@@ -232,9 +231,9 @@ public:
      *
      * @deprecated Use fontMetrics.elidedText(name, Qt::ElideMiddle, fontMetrics.maxWidth() * maxlen) instead
      */
-    static KDE_DEPRECATED QString cEmSqueeze( const QString & name,
-                                              const QFontMetrics& fontMetrics,
-                                              int maxlen = 30 );
+    KDECORE_EXPORT_DEPRECATED QString cEmSqueeze( const QString & name,
+                                                  const QFontMetrics& fontMetrics,
+                                                  int maxlen = 30 );
 
     /** Substitute characters in the middle of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -245,9 +244,9 @@ public:
      * @return the modified string
      * @deprecated Use fontMetrics.elidedText(name, Qt::ElideMiddle, maxPixels) instead.
      */
-    static KDE_DEPRECATED QString cPixelSqueeze( const QString & name,
-                                  const QFontMetrics& fontMetrics,
-                                  int maxPixels );
+    KDECORE_EXPORT_DEPRECATED QString cPixelSqueeze( const QString & name,
+                                                     const QFontMetrics& fontMetrics,
+                                                     int maxPixels );
 
     /** Substitute characters at the end of a string by "...".
      * @param str is the string to modify
@@ -255,7 +254,7 @@ public:
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    static QString        rsqueeze( const QString & str, int maxlen = 40 );
+    KDECORE_EXPORT QString rsqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters at the end of a string by "...". Similar to
      * method above, except that it truncates based on pixel width rather than
@@ -268,9 +267,9 @@ public:
      *
      * @deprecated Use fontMetrics.elidedText(name, Qt::ElideRight, fontMetrics.maxWidth() * maxlen) instead
      */
-    static KDE_DEPRECATED QString rEmSqueeze( const QString & name,
-                               const QFontMetrics& fontMetrics,
-                               int maxlen = 30 );
+    KDECORE_EXPORT_DEPRECATED QString rEmSqueeze( const QString & name,
+                                                  const QFontMetrics& fontMetrics,
+                                                  int maxlen = 30 );
 
     /** Substitute characters at the end of a string by "...". Similar to
      * method above, except that maxlen is the width in pixels to truncate to
@@ -281,20 +280,9 @@ public:
      * @return the modified string
      * @deprecated Use fontMetrics.elidedText(name, Qt::ElideRight, maxPixels) instead.
      */
-    static KDE_DEPRECATED QString rPixelSqueeze( const QString & name,
-                                  const QFontMetrics& fontMetrics,
-                                  int maxPixels );
-
-    /**
-     * Match a filename.
-     * @param filename is the real decoded filename (or dirname
-     *        without trailing '/').
-     * @param pattern is a pattern like *.txt, *.tar.gz, Makefile.*, *README*, etc.
-     * Patterns with two asterisks like "*.*pk" are not supported.
-     * @return true if the given filename matches the given pattern
-     */
-    static bool matchFileName( const QString& filename, const QString& pattern );
-    // KDE4: move to KShell
+    KDECORE_EXPORT_DEPRECATED QString rPixelSqueeze( const QString & name,
+                                                     const QFontMetrics& fontMetrics,
+                                                     int maxPixels );
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -313,8 +301,9 @@ public:
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
-    static QStringList perlSplit
-      (const QString & sep, const QString & s, int max = 0);
+    KDECORE_EXPORT QStringList perlSplit( const QString & sep,
+                                          const QString & s,
+                                          int max = 0 );
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -333,8 +322,9 @@ public:
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
-    static QStringList perlSplit
-      (const QChar & sep, const QString & s, int max = 0);
+    KDECORE_EXPORT QStringList perlSplit( const QChar & sep,
+                                          const QString & s,
+                                          int max = 0 );
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -353,8 +343,9 @@ public:
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
-    static QStringList perlSplit
-      (const QRegExp & sep, const QString & s, int max = 0);
+    KDECORE_EXPORT QStringList perlSplit( const QRegExp & sep,
+                                          const QString & s,
+                                          int max = 0);
 
     /**
      * This method auto-detects URLs in strings, and adds HTML markup to them
@@ -362,7 +353,7 @@ public:
      * @param text the string which may contain URLs
      * @return the resulting text
      */
-    static QString tagUrls( const QString& text );
+    KDECORE_EXPORT QString tagUrls( const QString& text );
 
     /**
       Obscure string by using a simple symmetric encryption. Applying the
@@ -376,7 +367,7 @@ public:
       @param str string to be obscured
       @return obscured string
     */
-    static QString obscure( const QString &str );
+    KDECORE_EXPORT QString obscure( const QString &str );
 
 
     /**
@@ -385,7 +376,7 @@ public:
       @param str the string to check
       @return true if UTF8. If false, the string is probably in Local8Bit.
      */
-    static bool isUtf8( const char *str );
+    KDECORE_EXPORT bool isUtf8( const char *str );
 
     /**
       Construct QString from a c string, guessing whether it is UTF8- or
@@ -394,8 +385,6 @@ public:
       @param str the input string
       @return the (hopefully correctly guessed) QString representation of @p str
      */
-    static QString from8Bit( const char *str );
-
-
+    KDECORE_EXPORT QString from8Bit( const char *str );
 };
 #endif

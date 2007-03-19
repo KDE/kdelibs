@@ -318,48 +318,7 @@ QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& f
   return fontMetrics.elidedText(name, Qt::ElideRight, maxPixels);
 }
 
-///// File name patterns (like *.txt)
-
-bool KStringHandler::matchFileName( const QString& filename, const QString& pattern  )
-{
-   int len = filename.length();
-   int pattern_len = pattern.length();
-
-   if (!pattern_len)
-      return false;
-
-   // Patterns like "Makefile*"
-   if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len ) {
-      if ( pattern[ 0 ] == '*' )
-      {
-         return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
-      }
-
-      const QChar *c1 = pattern.unicode();
-      const QChar *c2 = filename.unicode();
-      int cnt = 1;
-      while ( cnt < pattern_len && *c1++ == *c2++ )
-         ++cnt;
-      return cnt == pattern_len;
-   }
-
-   // Patterns like "*~", "*.extension"
-   if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
-   {
-     const QChar *c1 = pattern.unicode() + pattern_len - 1;
-     const QChar *c2 = filename.unicode() + len - 1;
-     int cnt = 1;
-     while ( cnt < pattern_len && *c1-- == *c2-- )
-        ++cnt;
-     return cnt == pattern_len;
-  }
-
-   // Patterns like "Makefile"
-   return ( filename == pattern );
-}
-
-  QStringList
-KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
+QStringList KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
@@ -384,8 +343,7 @@ KStringHandler::perlSplit(const QString & sep, const QString & s, int max)
   return l;
 }
 
-  QStringList
-KStringHandler::perlSplit(const QChar & sep, const QString & s, int max)
+QStringList KStringHandler::perlSplit(const QChar & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
@@ -410,8 +368,7 @@ KStringHandler::perlSplit(const QChar & sep, const QString & s, int max)
   return l;
 }
 
-  QStringList
-KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
+QStringList KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
@@ -437,8 +394,7 @@ KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
   return l;
 }
 
- QString
-KStringHandler::tagUrls( const QString& text )
+QString KStringHandler::tagUrls( const QString& text )
 {
     /*static*/ QRegExp urlEx("(www\\.(?!\\.)|(fish|(f|ht)tp(|s))://)[\\d\\w\\./,:_~\\?=&;#@\\-\\+\\%\\$]+[\\d\\w/]");
 
