@@ -196,6 +196,16 @@ void Engine::downloadPreview(Entry *entry)
 void Engine::downloadPayload(Entry *entry)
 {
 	KUrl source = KUrl(entry->payload().representation());
+
+	if(m_installation->targetDir().isEmpty())
+	{
+		// Remote resource
+		kDebug(550) << "Relaying remote payload '" << source << "'" << endl;
+		emit signalPayloadLoaded(source);
+		// FIXME: we still need registration for eventual deletion
+		return;
+	}
+
 	KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
 	kDebug(550) << "Downloading payload '" << source << "' to '" << destination << "'" << endl;
 
