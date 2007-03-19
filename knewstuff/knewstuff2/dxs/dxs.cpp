@@ -2,11 +2,11 @@
 
 #include "soap.h"
 
-#include <kdebug.h>
+#include "knewstuff2/core/entry.h"
+#include "knewstuff2/core/entryhandler.h"
+#include "knewstuff2/core/category.h"
 
-#include <knewstuff2/entry.h>
-#include <knewstuff2/entryhandler.h>
-#include <knewstuff2/category.h>
+#include <kdebug.h>
 
 #include <qdom.h>
 #include <qstringlist.h>

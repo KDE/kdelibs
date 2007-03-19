@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF2_CATEGORY_H
 #define KNEWSTUFF2_CATEGORY_H
 
-#include <knewstuff2/ktranslatable.h>
+#include <knewstuff2/core/ktranslatable.h>
 
 #include <kurl.h>
 

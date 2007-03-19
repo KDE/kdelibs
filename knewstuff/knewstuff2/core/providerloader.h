@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_PROVIDER_LOADER_H
 #define KNEWSTUFF2_PROVIDER_LOADER_H
 
-#include <knewstuff2/provider.h>
+#include <knewstuff2/core/provider.h>
 
 #include <qdom.h>
 #include <qobject.h>

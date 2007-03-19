@@ -1,8 +1,8 @@
 #ifndef KNEWSTUFF2_DOWNLOAD_H
 #define KNEWSTUFF2_DOWNLOAD_H
 
-#include <knewstuff2/provider.h>
-#include <knewstuff2/entry.h>
+#include <knewstuff2/core/provider.h>
+#include <knewstuff2/core/entry.h>
 
 #include <qwidget.h>
 

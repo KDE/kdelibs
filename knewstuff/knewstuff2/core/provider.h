@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_PROVIDER_H
 #define KNEWSTUFF2_PROVIDER_H
 
-#include <knewstuff2/feed.h>
+#include <knewstuff2/core/feed.h>
 
 #include <kurl.h>
 

@@ -1,7 +1,7 @@
 #include "knewstuff2_download.h"
 
-#include <knewstuff2/engine.h>
-#include <knewstuff2/author.h>
+#include <knewstuff2/core/engine.h>
+#include <knewstuff2/core/author.h>
 
 #include <kstandarddirs.h>
 #include <kapplication.h>

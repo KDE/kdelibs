@@ -1,4 +1,5 @@
-#include "kdxsview.h"
+#include <knewstuff2/ui/kdxsview.h>
+
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <klocale.h>

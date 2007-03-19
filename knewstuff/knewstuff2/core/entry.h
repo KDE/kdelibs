@@ -21,8 +21,8 @@
 #ifndef KNEWSTUFF2_ENTRY_H
 #define KNEWSTUFF2_ENTRY_H
 
-#include <knewstuff2/author.h>
-#include <knewstuff2/ktranslatable.h>
+#include <knewstuff2/core/author.h>
+#include <knewstuff2/core/ktranslatable.h>
 
 #include <kurl.h>
 

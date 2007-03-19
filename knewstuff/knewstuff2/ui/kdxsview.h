@@ -3,11 +3,11 @@
 
 #include <kdialog.h>
 
-#include <knewstuff2/providerloader.h>
+#include <knewstuff2/core/providerloader.h>
 
 class QComboBox;
 
-class KDXSView : public KDialog
+class KDE_EXPORT KDXSView : public KDialog
 {
 Q_OBJECT
 public:

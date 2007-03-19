@@ -1,7 +1,7 @@
 #ifndef KNEWSTUFF2_DXS_ENGINE_H
 #define KNEWSTUFF2_DXS_ENGINE_H
 
-#include <knewstuff2/engine.h>
+#include <knewstuff2/core/engine.h>
 
 namespace KNS {
 

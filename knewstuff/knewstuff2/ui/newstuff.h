@@ -14,7 +14,7 @@
 //#include <knewstuff2/provider.h>
 //#include <kio/job.h>
 
-#include "dxs.h"
+#include <knewstuff2/dxs/dxs.h>
 
 using namespace KNS;
 

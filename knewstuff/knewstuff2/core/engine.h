@@ -20,8 +20,8 @@
 #ifndef KNEWSTUFF2_ENGINE_H
 #define KNEWSTUFF2_ENGINE_H
 
-#include <knewstuff2/provider.h>
-#include <knewstuff2/entry.h>
+#include <knewstuff2/core/provider.h>
+#include <knewstuff2/core/entry.h>
 
 #include <kdelibs_export.h>
 

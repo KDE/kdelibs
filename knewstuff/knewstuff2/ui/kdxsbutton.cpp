@@ -1,9 +1,9 @@
 #include "kdxsbutton.h"
 
-#include "dxs.h"
+#include "knewstuff2/dxs/dxs.h"
 
-#include <knewstuff2/entry.h>
-#include <knewstuff2/category.h>
+#include "knewstuff2/core/entry.h"
+#include "knewstuff2/core/category.h"
 
 #include "newstuff.h"
 #include "kdxsrating.h"

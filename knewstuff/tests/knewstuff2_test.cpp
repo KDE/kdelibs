@@ -1,9 +1,9 @@
 #include "knewstuff2_test.h"
 
-#include <knewstuff2/ktranslatable.h>
-#include <knewstuff2/providerhandler.h>
-#include <knewstuff2/entryhandler.h>
-#include <knewstuff2/engine.h>
+#include <knewstuff2/core/ktranslatable.h>
+#include <knewstuff2/core/providerhandler.h>
+#include <knewstuff2/core/entryhandler.h>
+#include <knewstuff2/core/engine.h>
 
 #include <kstandarddirs.h>
 #include <kapplication.h>

@@ -37,11 +37,13 @@
 #include <kio/netaccess.h>
 #include <ktoolinvocation.h>
 
-#include <knewstuff2/provider.h>
-#include <knewstuff2/providerhandler.h>
-#include <knewstuff2/entry.h>
-#include <knewstuff2/entryhandler.h>
-#include <knewstuff2/category.h>
+#include "knewstuff2/core/provider.h"
+#include "knewstuff2/core/providerhandler.h"
+#include "knewstuff2/core/entry.h"
+#include "knewstuff2/core/entryhandler.h"
+#include "knewstuff2/core/category.h"
+
+#include "knewstuff2/dxs/dxs.h"
 
 // local includes
 #include "newstuff.h"
@@ -49,7 +51,6 @@
 #include "kdxsbutton.h"
 #include "qasyncpixmap.h"
 #include "qasyncframe.h"
-#include "dxs.h"
 
 // define the providers.xml location
 //#define PROVIDERS_URL "http://kpdf.kde.org/newstuff/providers.xml"

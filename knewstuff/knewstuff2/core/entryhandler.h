@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_ENTRY_HANDLER_H
 #define KNEWSTUFF2_ENTRY_HANDLER_H
 
-#include <knewstuff2/entry.h>
+#include <knewstuff2/core/entry.h>
 
 #include <qdom.h>
 #include <qstring.h>
