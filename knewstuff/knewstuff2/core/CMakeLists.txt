@@ -1,3 +1,5 @@
+add_subdirectory(plasmagik)
+
 project(knewstuff2)
 
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)

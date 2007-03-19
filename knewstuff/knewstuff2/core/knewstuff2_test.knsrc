@@ -1,6 +1,6 @@
 [KNewStuff2]
-#ProvidersUrl = http://new.kstuff.org/provider-kdeedu.xml
-ProvidersUrl = http://localhost/provider.xml
+ProvidersUrl = http://new.kstuff.org/provider-kdeedu.xml
+#ProvidersUrl = http://localhost/provider.xml
 LocalRegistryDir = /tmp/knewstuff2.metafiles
 
 TargetDir = knewstuff2_test
