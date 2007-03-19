@@ -24,7 +24,8 @@
 #include <kabstractwidgetjobtracker.h>
 
 /**
- * The base class for widget base job trackers.
+ * This class implements a job tracker with a widget suited for use as a
+ * progress dialog.
  */
 class KDEUI_EXPORT KWidgetJobTracker : public KAbstractWidgetJobTracker
 {
