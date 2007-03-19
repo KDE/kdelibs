@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 	/* first parse RHS driver DB */
-	if (!parseRhsPrinterDb("/usr/lib/rhs/rhs-printfilters/printerdb",out))
+	if (!parseRhsPrinterDb("/usr/lib/rhs" KDELIBSUFF" /rhs-printfilters/printerdb",out))
 		fprintf(stderr,"Unable to parse RHS DB file\n");
 	return 0;
 }
