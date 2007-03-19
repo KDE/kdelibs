@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+It comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law. You may
+redistribute copies of update-mime-database under the terms of the GNU General
+Public License. For more information about these matters, see the file named
+COPYING.
+-->
+<!--
+Notes:
+- the mime types in this file are valid with the version 0.20 of the
+  shared-mime-info package.
+- the "fdo #xxxxx" are the wish in the freedesktop.org bug database to include
+  the mime type there.
+-->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/metalink+xml">
+    <sub-class-of type="application/xml"/>
+    <comment>Metalink download</comment>
+    <glob pattern="*.metalink"/>
+  </mime-type>
+  <mime-type type="application/pkcs10"> <!-- fdo #10076, FIXED 0.21 -->
+    <comment>PKCS#10 certification request</comment>
+    <glob pattern="*.p10"/>
+  </mime-type>
+  <mime-type type="application/relaxng">
+    <sub-class-of type="application/xml"/>
+    <comment>RELAX NG</comment>
+    <glob pattern="*.rng"/>
+  </mime-type>
+  <mime-type type="application/vnd.ms-xpsdocument"> <!-- fdo #10027, FIXED 0.21 -->
+    <sub-class-of type="application/zip"/>
+    <comment>XPS document</comment>
+    <acronym>XPS</acronym>
+    <expanded-acronym>XML Paper Specification</expanded-acronym>
+    <glob pattern="*.xps"/>
+  </mime-type>
+  <mime-type type="application/x-cda">
+    <comment>CD audio</comment>
+    <glob pattern="*.cda"/>
+  </mime-type>
+  <mime-type type="application/x-font-snf">
+    <comment>SNF bitmap font</comment>
+    <glob pattern="*.snf"/>
+    <glob pattern="*.snf.Z"/>
+    <glob pattern="*.snf.gz"/>
+  </mime-type>
+  <mime-type type="application/x-java-applet">
+    <comment>Java applet</comment>
+  </mime-type>
+  <mime-type type="application/x-kcsrc">
+    <comment>KDE color scheme</comment>
+    <acronym>KDE</acronym>
+    <expanded-acronym>K Desktop Environment</expanded-acronym>
+    <glob pattern="*.kcsrc"/>
+  </mime-type>
+  <mime-type type="application/x-kns">
+    <sub-class-of type="application/zip"/>
+    <comment>KNewStuff package</comment>
+    <glob pattern="*.kns"/>
+  </mime-type>
+  <mime-type type="application/x-kwallet"> <!-- fdo #6326 -->
+    <comment>KWallet wallet</comment>
+    <magic priority="80">
+      <match type="string" value="KWALLET" offset="0"/>
+    </magic>
+    <glob pattern="*.kwl"/>
+  </mime-type>
+  <mime-type type="application/x-kudesigner">
+    <comment>Kugar report template</comment>
+    <glob pattern="*.kut"/>
+  </mime-type>
+  <mime-type type="application/x-mimearchive">
+    <comment>mime encapsulated web archive</comment>
+    <glob pattern="*.mhtml"/>
+    <glob pattern="*.mht"/>
+    <glob pattern="*.eml"/>
+  </mime-type>
+  <mime-type type="application/x-nzb"> <!-- fdo #10029 -->
+    <sub-class-of type="application/xml"/>
+    <comment>NewzBin usenet index</comment>
+    <glob pattern="*.nzb"/>
+    <magic priority="80">
+      <match type="string" value="&lt;nzb" offset="0:256"/>
+    </magic>
+    <root-XML namespaceURI='http://www.newzbin.com/DTD/2003/nzb' localName='nzb'/>
+  </mime-type>
+  <mime-type type="application/x-openraster">
+    <comment>OpenRaster document</comment>
+    <magic priority="50">
+      <match type="string" value="PK\003\004" offset="0">
+        <match type="string" value="mimetype" offset="30">
+          <match type="string" value="application/x-openraster" offset="38"/>
+        </match>
+      </match>
+    </magic>
+    <glob pattern="*.odr"/>
+  </mime-type>
+  <mime-type type="application/x-pak"> <!-- fdo #10030, FIXED 0.21 -->
+    <comment>PAK archive</comment>
+    <magic priority="80">
+      <match offset="0" type="string" value="PACK" />
+    </magic>
+    <glob pattern="*.pak" />
+  </mime-type>
+  <mime-type type="application/x-plasma">
+    <comment>plasmoid</comment>
+    <glob pattern="*.plasma"/>
+  </mime-type>
+  <mime-type type="application/x-superkaramba">
+    <sub-class-of type="application/zip"/>
+    <comment>Superkaramba theme</comment>
+    <glob pattern="*.skz"/>
+  </mime-type>
+  <mime-type type="application/x-vnd.kde.kexi"> <!-- ??? -->
+    <comment>Kexi project file</comment>
+    <glob pattern="*.kexi"/>
+  </mime-type>
+  <mime-type type="application/x-vnd.kde.kplato">
+    <comment>KPlato project management document</comment>
+    <glob pattern="*.kplato"/>
+    <glob pattern="*.kplatot"/>
+  </mime-type>
+  <mime-type type="application/x-vnd.kde.kugar.mixed">
+    <comment>Kugar archive</comment>
+    <glob pattern="*.kug"/>
+  </mime-type>
+  <mime-type type="application/x-xcursor"> <!-- fdo #10043 -->
+    <comment>X11 cursor</comment>
+    <magic priority="80">
+      <match type="string" value="Xcur" offset="0"/>
+    </magic>
+  </mime-type>
+  <mime-type type="application/x-webarchive">
+    <sub-class-of type="application/zip"/>
+    <comment>web archive</comment>
+    <glob pattern="*.war"/>
+  </mime-type>
+  <mime-type type="application/xsd">
+    <sub-class-of type="application/xml"/>
+    <comment>W3C XML schema</comment>
+    <glob pattern="*.xsd"/>
+  </mime-type>
+  <mime-type type="audio/aac">
+    <comment>AAC sound</comment>
+    <glob pattern="*.aac"/>
+  </mime-type>
+  <mime-type type="audio/x-pn-realaudio-plugin">
+    <comment>RealAudio plugin file</comment>
+  </mime-type>
+  <mime-type type="image/x-dds"> <!-- fdo #10083, FIXED 0.21 -->
+    <comment>DirectDraw surface</comment>
+    <magic priority="50">
+      <match value="DDS" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.dds"/>
+  </mime-type>
+  <mime-type type="image/x-exr"> <!-- fdo #6488 -->
+    <comment>EXR image</comment>
+    <magic priority="50">
+      <match type="little32" value="20000630" offset="0"/>
+    </magic>
+    <glob pattern="*.exr"/>
+  </mime-type>
+  <mime-type type="image/x-kde-raw">
+    <sub-class-of type="image/x-dcraw"/>
+    <comment>KDE raw image formats</comment>
+    <glob pattern="*.bay"/>
+    <glob pattern="*.bmq"/>
+    <glob pattern="*.cs1"/>
+    <glob pattern="*.cs2"/>
+    <glob pattern="*.erf"/>
+    <glob pattern="*.fff"/>
+    <glob pattern="*.hrd"/>
+    <glob pattern="*.mdc"/>
+    <glob pattern="*.mos"/>
+    <glob pattern="*.pnx"/>
+    <glob pattern="*.rdc"/>
+  </mime-type>
+  <mime-type type="text/x-hex">
+    <sub-class-of type="text/plain"/>
+    <comment>Intel® hexadecimal object file</comment>
+    <glob pattern="*.hex"/>
+  </mime-type>
+  <mime-type type="text/x-katefilelist">
+    <sub-class-of type="text/plain"/>
+    <comment>Kate file list loader plugin list</comment>
+    <glob pattern="*.katefl"/>
+  </mime-type>
+  <mime-type type="text/x-objchdr"> <!-- ??? -->
+    <sub-class-of type="text/x-csrc"/>
+    <comment>Objective-C header</comment>
+  </mime-type>
+  <mime-type type="text/vnd.abc"> <!-- fdo #6578 -->
+    <sub-class-of type="text/plain"/>
+    <comment>abc musical notation file</comment>
+    <magic priority="80">
+      <match type="string" value="%abc" offset="0"/>
+    </magic>
+    <glob pattern="*.abc"/>
+  </mime-type>
+
+  <!-- all/ fake mime types -->
+  <mime-type type="all/all">
+    <comment>all files and folders</comment>
+  </mime-type>
+  <mime-type type="all/allfiles">
+    <comment>all files</comment>
+  </mime-type>
+
+  <!-- uri/ fake mime types -->
+  <mime-type type="uri/mms">
+    <comment>mms: URIs</comment>
+  </mime-type>
+  <mime-type type="uri/mmst">
+    <comment>mmst: URIs</comment>
+  </mime-type>
+  <mime-type type="uri/mmsu">
+    <comment>mmsu: URIs</comment>
+  </mime-type>
+  <mime-type type="uri/pnm">
+    <comment>pnm: URIs</comment>
+  </mime-type>
+  <mime-type type="uri/rtspt">
+    <comment>rtspt: URIs</comment>
+  </mime-type>
+  <mime-type type="uri/rtspu">
+    <comment>rtspu: URIs</comment>
+  </mime-type>
+
+  <!-- inode/ fake mime types -->
+  <mime-type type="inode/directory-locked">
+    <sub-class-of type="inode/directory"/>
+    <comment>locked folder</comment>
+  </mime-type>
+
+  <!-- print/ fake mime types -->
+  <mime-type type="print/class">
+    <comment>class of printers</comment>
+  </mime-type>
+  <mime-type type="print/driver">
+    <comment>printer driver</comment>
+  </mime-type>
+  <mime-type type="print/folder">
+    <sub-class-of type="inode/directory"/>
+    <comment>print folder</comment>
+  </mime-type>
+  <mime-type type="print/jobs">
+    <sub-class-of type="inode/directory"/>
+    <comment>print jobs</comment>
+  </mime-type>
+  <mime-type type="print/manager">
+    <sub-class-of type="inode/directory"/>
+    <comment>print management tool</comment>
+  </mime-type>
+  <mime-type type="print/printer">
+    <comment>printer</comment>
+  </mime-type>
+  <mime-type type="print/printermodel">
+    <comment>printer model</comment>
+  </mime-type>
+
+  <!-- media/ fake mime types -->
+  <mime-type type="media/audiocd">
+    <sub-class-of type="inode/directory"/>
+    <comment>audio CD</comment>
+  </mime-type>
+  <mime-type type="media/blankcd">
+    <comment>blank CD</comment>
+  </mime-type>
+  <mime-type type="media/blankdvd">
+    <comment>blank DVD</comment>
+  </mime-type>
+  <mime-type type="media/camera_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted camera</comment>
+  </mime-type>
+  <mime-type type="media/camera_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted camera</comment>
+  </mime-type>
+  <mime-type type="media/cdrom_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted CD-ROM</comment>
+  </mime-type>
+  <mime-type type="media/cdrom_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted CD-ROM</comment>
+  </mime-type>
+  <mime-type type="media/cdwriter_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted CD Writer</comment>
+  </mime-type>
+  <mime-type type="media/cdwriter_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted CD Writer</comment>
+  </mime-type>
+  <mime-type type="media/dvd_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted DVD</comment>
+  </mime-type>
+  <mime-type type="media/dvd_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted DVD</comment>
+  </mime-type>
+  <mime-type type="media/dvdvideo">
+    <sub-class-of type="inode/directory"/>
+    <comment>DVD video disk</comment>
+  </mime-type>
+  <mime-type type="media/floppy5_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted 5¼" floppy</comment>
+  </mime-type>
+  <mime-type type="media/floppy5_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted 5¼" Floppy</comment>
+  </mime-type>
+  <mime-type type="media/floppy_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted floppy</comment>
+  </mime-type>
+  <mime-type type="media/floppy_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted floppy</comment>
+  </mime-type>
+  <mime-type type="media/gphoto2camera">
+    <sub-class-of type="inode/directory"/>
+    <comment>camera</comment>
+  </mime-type>
+  <mime-type type="media/hdd_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted hard disk volume</comment>
+  </mime-type>
+  <mime-type type="media/hdd_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted hard disk volume</comment>
+  </mime-type>
+  <mime-type type="media/nfs_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted NFS share</comment>
+  </mime-type>
+  <mime-type type="media/nfs_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted NFS share</comment>
+  </mime-type>
+  <mime-type type="media/removable_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted removable medium</comment>
+  </mime-type>
+  <mime-type type="media/removable_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted removable medium</comment>
+  </mime-type>
+  <mime-type type="media/smb_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted Samba share</comment>
+  </mime-type>
+  <mime-type type="media/smb_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted Samba share</comment>
+  </mime-type>
+  <mime-type type="media/svcd">
+    <comment>super video CD</comment>
+  </mime-type>
+  <mime-type type="media/vcd">
+    <comment>video CD</comment>
+  </mime-type>
+  <mime-type type="media/zip_mounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>mounted Zip disk</comment>
+  </mime-type>
+  <mime-type type="media/zip_unmounted">
+    <sub-class-of type="inode/directory"/>
+    <comment>unmounted Zip disk</comment>
+  </mime-type>
+
+  <!-- fonts/ fake mime types -->
+  <mime-type type="fonts/folder">
+    <sub-class-of type="inode/directory"/>
+    <comment>fonts folder</comment>
+  </mime-type>
+  <mime-type type="fonts/package">
+    <sub-class-of type="application/zip"/>
+    <comment>fonts package</comment>
+    <glob pattern="*.fonts.zip"/>
+  </mime-type>
+  <mime-type type="fonts/system-folder">
+    <sub-class-of type="inode/directory"/>
+    <comment>system fonts folder</comment>
+  </mime-type>
+  <mime-type type="fonts/group">
+    <sub-class-of type="application/zip"/>
+    <comment>font group</comment>
+    <glob pattern="*.fontgroup.zip"/>
+  </mime-type>
+
+  
+  <mime-type type="application/x-konsole">
+    <comment>file to open a shell</comment>
+    <glob pattern="*.shell"/>
+  </mime-type>
+  <mime-type type="application/x-smb-server">
+    <sub-class-of type="inode/directory"/>
+    <comment>Windows server</comment>
+  </mime-type>
+  <mime-type type="application/x-smb-workgroup">
+    <sub-class-of type="inode/directory"/>
+    <comment>Windows workgroup</comment>
+  </mime-type>
+  <mime-type type="application/x-ksysguard">
+    <!-- <sub-class-of type="application/xml"/> -->
+    <comment>KDE system monitor</comment>
+    <glob pattern="*.sgrd"/>
+  </mime-type>
+  <mime-type type="application/x-ktheme">
+    <sub-class-of type="application/zip"/>
+    <comment>KDE theme</comment>
+    <glob pattern="*.kth"/>
+  </mime-type>
+
+  <mime-type type="application/x-quanta">
+    <sub-class-of type="text/plain"/>
+    <comment>Quanta project</comment>
+    <glob pattern="*.quanta"/>
+  </mime-type>
+  <mime-type type="application/x-kommander">
+    <sub-class-of type="text/plain"/>
+    <comment>Kommander file</comment>
+    <glob pattern="*.kmdr"/>
+  </mime-type>
+
+  <mime-type type="application/x-tuberling">
+    <comment>potato</comment>
+    <glob pattern="*.tuberling"/>
+  </mime-type>
+  <mime-type type="application/x-kolf">
+    <comment>Kolf saved game</comment>
+    <glob pattern="*.kolfgame"/>
+  </mime-type>
+  <mime-type type="application/x-kourse">
+    <comment>Kolf course</comment>
+    <glob pattern="*.kolf"/>
+    <glob pattern="*.course"/>
+    <glob pattern="*.kourse"/>
+  </mime-type>
+
+  <mime-type type="text/mrml">
+    <comment>MRML document</comment>
+    <acronym>MRML</acronym>
+    <expanded-acronym>Multimedia Retrieval Markup Language</expanded-acronym>
+    <glob pattern="*.mrml"/>
+  </mime-type>
+  <mime-type type="application/prs.plucker"> <!-- http://www.iana.org/assignments/media-types/application/prs.plucker -->
+    <comment>Plucker document</comment>
+    <magic priority="50">
+      <match type="string" value="DataPlkr" offset="60"/>
+    </magic>
+<!--    <glob pattern="*.pdb"/> -->
+  </mime-type>
+
+  <mime-type type="application/x-cabri">
+    <comment>Cabri figure</comment>
+    <magic priority="80">
+      <match offset="0" type="string" value="FIGURE CabriII vers. " /> <!-- Cabri 1.0 -->
+      <match offset="0" type="string" value="Figure Cabri II " /> <!-- Cabri 1.2 -->
+    </magic>
+    <glob pattern="*.fig"/>
+  </mime-type>
+  <mime-type type="application/x-drgeo">
+    <comment>Dr. Geo figure</comment>
+    <glob pattern="*.fgeo"/>
+  </mime-type>
+  <mime-type type="application/x-kgeo">
+    <comment>KGeo figure</comment>
+    <glob pattern="*.kgeo"/>
+  </mime-type>
+  <mime-type type="application/x-kig">
+    <comment>Kig figure</comment>
+    <glob pattern="*.kig"/>
+    <glob pattern="*.kigz"/>
+  </mime-type>
+  <mime-type type="application/x-kseg">
+    <comment>KSeg document</comment>
+    <glob pattern="*.seg"/>
+  </mime-type>
+  <mime-type type="application/x-kvoctrain">
+    <sub-class-of type="application/xml"/>
+    <comment>vocabulary trainer document</comment>
+    <glob pattern="*.kvtml"/>
+  </mime-type>
+  <mime-type type="application/x-kmplot">
+    <comment>KmPlot file</comment>
+    <glob pattern="*.ftk"/>
+  </mime-type>
+  <mime-type type="application/x-kwordquiz">
+    <comment>KWordQuiz vocabulary</comment>
+    <glob pattern="*.wql"/>
+  </mime-type>
+
+  <mime-type type="application/vnd.ms-tnef"> <!-- fdo #10077, FIXED 0.21 -->
+    <comment>TNEF file</comment>
+    <acronym>TNEF</acronym>
+    <expanded-acronym>Transport Neutral Encapsulation Format</expanded-acronym>
+    <magic priority="50">
+      <match type="little32" value="0x223e9f78" offset="0"/>
+    </magic>
+    <glob pattern="*.tnef"/>
+    <glob pattern="*.tnf"/>
+    <alias type="application/ms-tnef"/>
+  </mime-type>
+
+  <mime-type type="application/x-kcachegrind">
+    <comment>Cachegrind/Callgrind profile dump</comment>
+    <glob pattern="cachegrind.out*"/>
+    <glob pattern="callgrind.out*"/>
+  </mime-type>
+  <mime-type type="application/x-uml">
+    <comment>Umbrello UML Modeller file</comment>
+    <glob pattern="*.xmi"/>
+    <glob pattern="*.xmi.tgz"/>
+    <glob pattern="*.xmi.tar.bz2"/>
+  </mime-type>
+
+  <mime-type type="application/x-win-lnk">
+    <comment>Windows link</comment>
+    <glob pattern="*.lnk"/>
+  </mime-type>
+
+  <mime-type type="application/x-kopete-emoticons">
+    <comment>Kopete emoticons archive</comment>
+    <glob pattern="*.kopete-emoticons"/>
+  </mime-type>
+  <mime-type type="application/x-icq">
+    <comment>ICQ contact</comment>
+    <glob pattern="*.uin"/>
+    <glob pattern="*.icq"/>
+  </mime-type>
+
+  <mime-type type="text/xmcd"> <!-- fdo #10074, FIXED 0.21 -->
+    <comment>CD database file</comment>
+  </mime-type>
+  <mime-type type="interface/x-winamp-skin">
+    <sub-class-of type="application/zip"/>
+    <comment>compressed Winamp skin</comment>
+    <glob pattern="*.wsz"/>
+  </mime-type>
+
+  <mime-type type="application/x-kexiproject-shortcut">
+    <comment>shortcut to Kexi project on database server</comment>
+    <glob pattern="*.kexis"/>
+  </mime-type>
+  <mime-type type="application/x-kexiproject-sqlite">
+    <comment>Kexi database file-based project</comment>
+    <glob pattern="*.kexi"/>
+  </mime-type>
+  <mime-type type="application/x-kexiproject-sqlite2">
+    <sub-class-of type="application/x-sqlite2"/>
+    <comment>Kexi database file-based project</comment>
+    <glob pattern="*.kexi"/>
+  </mime-type>
+  <mime-type type="application/x-kexiproject-sqlite3">
+    <sub-class-of type="application/x-sqlite3"/>
+    <comment>Kexi database file-based project</comment>
+    <glob pattern="*.kexi"/>
+  </mime-type>
+  <mime-type type="application/x-kexi-connectiondata">
+    <comment>data for database server connection</comment>
+    <glob pattern="*.kexic"/>
+  </mime-type>
+
+</mime-info>
