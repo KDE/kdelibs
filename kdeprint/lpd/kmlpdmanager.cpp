@@ -17,6 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include <config.h>
 #include "kmlpdmanager.h"
 #include "kmprinter.h"
 #include "kmdbentry.h"
@@ -70,7 +71,7 @@ QString KMLpdManager::driverDbCreationProgram()
 
 QString KMLpdManager::driverDirectory()
 {
-	return QLatin1String("/usr/lib/rhs/rhs-printfilters");
+	return QLatin1String("/usr/lib" KDELIBSUFF "/rhs/rhs-printfilters");
 }
 
 bool KMLpdManager::completePrinter(KMPrinter *printer)
