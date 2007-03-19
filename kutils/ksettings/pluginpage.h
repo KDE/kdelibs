@@ -70,20 +70,13 @@ class KUTILS_EXPORT PluginPage : public KCModule
 {
     Q_OBJECT
     public:
-
-#ifdef KDE3_SUPPORT
         /**
-         * Standart KCModule constructor. Automatically creates the the
-         * KPluginSelector widget.
+         * Standard KCModule constructor.
+         * Automatically creates the KPluginSelector widget.
          */
-        KDE_CONSTRUCTOR_DEPRECATED PluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
-#endif
-
-        /**
-         * Standart KCModule constructor. Automatically creates the the
-         * KPluginSelector widget.
-         */
-        PluginPage(const KComponentData &componentData, QWidget *parent = 0, const QStringList &args = QStringList());
+        PluginPage( const KComponentData &componentData,
+                    QWidget *parent = 0,
+                    const QStringList &args = QStringList() );
 
         ~PluginPage();
 
