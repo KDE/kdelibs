@@ -77,7 +77,7 @@ KAutostart::~KAutostart()
 
 void KAutostart::setAutostarts(bool autostart)
 {
-    d->df->writeEntry("Hidden", !autostart);
+    d->df->desktopGroup().writeEntry("Hidden", !autostart);
 }
 
 bool KAutostart::autostarts(const QString& environment,
@@ -87,7 +87,7 @@ bool KAutostart::autostarts(const QString& environment,
     bool starts = d->df->hasGroup("Desktop Entry");
 
     // check the hidden field
-    starts &= !d->df->readEntry("Hidden", false);
+    starts &= !d->df->desktopGroup().readEntry("Hidden", false);
 
     if (!environment.isEmpty())
     {
@@ -104,12 +104,12 @@ bool KAutostart::autostarts(const QString& environment,
 
 QString KAutostart::command() const
 {
-    return d->df->readEntry("Exec", QString());
+    return d->df->desktopGroup().readEntry( "Exec", QString() );
 }
 
 void KAutostart::setCommand(const QString& command)
 {
-    return d->df->writeEntry("Exec", command);
+    return d->df->desktopGroup().writeEntry( "Exec", command );
 }
 
 QString KAutostart::visibleName() const
@@ -119,7 +119,7 @@ QString KAutostart::visibleName() const
 
 void KAutostart::setVisibleName(const QString& name)
 {
-    d->df->writeEntry("Name", name);
+    d->df->desktopGroup().writeEntry( "Name", name );
 }
 
 bool KAutostart::isServiceRegistered(const QString& entryName)
@@ -129,18 +129,18 @@ bool KAutostart::isServiceRegistered(const QString& entryName)
 
 QString KAutostart::commandToCheck() const
 {
-    return d->df->readPathEntry("TryExec");
+    return d->df->desktopGroup().readPathEntry( "TryExec" );
 }
 
 void KAutostart::setCommandToCheck(const QString& exec)
 {
-    d->df->writePathEntry("TryExec", exec);
+    d->df->desktopGroup().writePathEntry( "TryExec", exec );
 }
 
 KAutostart::StartPhase KAutostart::startPhase() const
 {
-    int phase = d->df->readEntry("X-KDE-autostart-phase",
-                                 (int)KAutostart::Applications);
+    int phase = d->df->desktopGroup().readEntry("X-KDE-autostart-phase",
+                                                (int)KAutostart::Applications);
     if (phase < KAutostart::BaseDesktop ||
         phase > KAutostart::Applications)
     {
@@ -152,17 +152,17 @@ KAutostart::StartPhase KAutostart::startPhase() const
 
 void KAutostart::setStartPhase(KAutostart::StartPhase phase)
 {
-    d->df->writeEntry("X-KDE-autostart-phase", (int)phase);
+    d->df->desktopGroup().writeEntry( "X-KDE-autostart-phase", (int)phase );
 }
 
 QStringList KAutostart::allowedEnvironments() const
 {
-    return d->df->readEntry("OnlyShowIn", QStringList(), ';');
+    return d->df->desktopGroup().readEntry( "OnlyShowIn", QStringList(), ';' );
 }
 
 void KAutostart::setAllowedEnvironments(const QStringList& environments)
 {
-    d->df->writeEntry("OnlyShowIn", environments, ';');
+    d->df->desktopGroup().writeEntry( "OnlyShowIn", environments, ';' );
 }
 
 void KAutostart::addToAllowedEnvironments(const QString& environment)
@@ -175,7 +175,7 @@ void KAutostart::addToAllowedEnvironments(const QString& environment)
     }
 
     envs.append(environment);
-    d->df->writeEntry("OnlyShowIn", envs, ';');
+    d->df->desktopGroup().writeEntry( "OnlyShowIn", envs, ';' );
 }
 
 void KAutostart::removeFromAllowedEnvironments(const QString& environment)
@@ -194,12 +194,12 @@ void KAutostart::removeFromAllowedEnvironments(const QString& environment)
 
 QStringList KAutostart::excludedEnvironments() const
 {
-    return d->df->readEntry("NotShowIn", QStringList(), ';');
+    return d->df->desktopGroup().readEntry("NotShowIn", QStringList(), ';');
 }
 
 void KAutostart::setExcludedEnvironments(const QStringList& environments)
 {
-    d->df->writeEntry("NotShowIn", environments, ';');
+    d->df->desktopGroup().writeEntry("NotShowIn", environments, ';');
 }
 
 void KAutostart::addToExcludedEnvironments(const QString& environment)
