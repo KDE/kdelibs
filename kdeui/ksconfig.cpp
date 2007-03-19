@@ -440,9 +440,9 @@ void KSpellConfig::getAvailDictsIspell () {
   dictcombo->insertItem( i18n("ISpell Default") );
 
   // dictionary path
-  QFileInfo dir ("/usr/lib/ispell");
+  QFileInfo dir ("/usr/lib" KDELIBSUFF "/ispell");
   if (!dir.exists() || !dir.isDir())
-    dir.setFile ("/usr/local/lib/ispell");
+    dir.setFile ("/usr/local/lib" KDELIBSUFF "/ispell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/local/share/ispell");
   if (!dir.exists() || !dir.isDir())
@@ -509,9 +509,9 @@ void KSpellConfig::getAvailDictsAspell () {
   // ASPELL_DATADIR default.
   QFileInfo dir ( ASPELL_DATADIR );
   if (!dir.exists() || !dir.isDir())
-    dir.setFile ("/usr/lib/aspell-0.60");
+    dir.setFile ("/usr/lib" KDELIBSUFF "/aspell-0.60");
   if (!dir.exists() || !dir.isDir())
-    dir.setFile ("/usr/local/lib/aspell");
+    dir.setFile ("/usr/local/lib" KDELIBSUFF "/aspell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/aspell");
   if (!dir.exists() || !dir.isDir())
@@ -663,11 +663,11 @@ KSpellConfig::fillDicts( QComboBox* box, QStringList* dictionaries )
 
       // dictionary path
       // FIXME: use "aspell dump config" to find out the dict-dir
-      QFileInfo dir ("/usr/lib/aspell");
+      QFileInfo dir ("/usr/lib" KDELIBSUFF "/aspell");
       if (!dir.exists() || !dir.isDir())
-        dir.setFile ("/usr/lib/aspell-0.60");
+        dir.setFile ("/usr/lib" KDELIBSUFF "/aspell-0.60");
       if (!dir.exists() || !dir.isDir())
-        dir.setFile ("/usr/local/lib/aspell");
+        dir.setFile ("/usr/local/lib" KDELIBSUFF "/aspell");
       if (!dir.exists() || !dir.isDir())
         dir.setFile ("/usr/share/aspell");
       if (!dir.exists() || !dir.isDir())
