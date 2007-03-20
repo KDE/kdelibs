@@ -114,7 +114,6 @@ public:
     QPair<int /*row*/, KDirModelNode*> nodeForUrl(const KUrl& url) const;
     KDirModelNode* nodeForIndex(const QModelIndex& index) const;
     QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
-    QModelIndex indexForUrl(const KUrl& url) const;
     bool isDir(KDirModelNode* node) const {
         return (node == m_rootNode) || node->item()->isDir();
     }
@@ -186,18 +185,6 @@ KDirModelNode* KDirModelPrivate::nodeForIndex(const QModelIndex& index) const
         ? static_cast<KDirModelNode*>(index.internalPointer())
         : m_rootNode;
 }
-
-// url -> index. O(n*m)
-QModelIndex KDirModelPrivate::indexForUrl(const KUrl& url) const
-{
-    const QPair<int, KDirModelNode*> result = nodeForUrl(url); // O(n*m) (m is the depth from the root)
-    if (!result.second) {
-        kWarning() << "KDirModelPrivate::indexForUrl: " << url << " not found" << endl;
-        return QModelIndex();
-    }
-    return indexForNode(result.second, result.first); // O(1)
-}
-
 
 // We don't use QHash<KUrl,...> anymore, it's too slow.
 // Idea from George, to make QHash<KUrl,...> fast: - cache hash value into QUrl or KUrl
@@ -332,7 +319,7 @@ void KDirModel::slotRefreshItems( const KFileItemList& items )
     // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
     for ( KFileItemList::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
-        const QModelIndex index = d->indexForUrl( (*fit)->url() ); // O(n*m); maybe we could look up to the parent only once
+        const QModelIndex index = indexForUrl( (*fit)->url() ); // O(n*m); maybe we could look up to the parent only once
         if (!topLeft.isValid() || index.row() < topLeft.row()) {
             topLeft = index;
         }
@@ -522,14 +509,25 @@ QModelIndex KDirModel::indexForItem( const KFileItem* item ) const
 {
     // Note that we can only use the URL here, not the pointer.
     // KFileItems can be copied.
-    return d->indexForUrl(item->url()); // O(n*m)
+    return indexForUrl(item->url()); // O(n*m)
 }
 
 QModelIndex KDirModel::indexForItem( const KFileItem& item ) const
 {
     // Note that we can only use the URL here, not the pointer.
     // KFileItems can be copied.
-    return d->indexForUrl(item.url()); // O(n*m)
+    return indexForUrl(item.url()); // O(n*m)
+}
+
+// url -> index. O(n*m)
+QModelIndex KDirModel::indexForUrl(const KUrl& url) const
+{
+    const QPair<int, KDirModelNode*> result = d->nodeForUrl(url); // O(n*m) (m is the depth from the root)
+    if (!result.second) {
+        kWarning() << "KDirModel::indexForUrl: " << url << " not found" << endl;
+        return QModelIndex();
+    }
+    return d->indexForNode(result.second, result.first); // O(1)
 }
 
 QModelIndex KDirModel::index( int row, int column, const QModelIndex & parent ) const

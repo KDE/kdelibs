@@ -233,6 +233,7 @@ void KMimeTypeTest::testAlias()
     QVERIFY( !alias );
     alias = KMimeType::mimeType( "text/xml", KMimeType::ResolveAliases );
     QVERIFY( alias );
+    QCOMPARE( alias->name(), QString("application/xml") );
 
     QVERIFY(alias->is("application/xml"));
     QVERIFY(canonical->is("text/xml"));
