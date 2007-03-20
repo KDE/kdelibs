@@ -24,9 +24,9 @@
 #include <qlayout.h>
 #include <qcheckbox.h>
 
-#include <kapplication.h>
 #include <kauthorized.h>
 #include <kcombobox.h>
+#include <kdesktopfile.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -267,8 +267,8 @@ void KApplicationTree::slotSelectionChanged(Q3ListViewItem* i)
 
 void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
-    setColumnWidth(0, width()-QApplication::style()->pixelMetric(QStyle::PM_ScrollBarExtent)
-                         -2*QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth));
+    setColumnWidth(0, width()-style()->pixelMetric(QStyle::PM_ScrollBarExtent)
+                         -2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth));
     K3ListView::resizeEvent(e);
 }
 
@@ -381,7 +381,7 @@ void KOpenWithDialog::setMimeType( const KUrl::List& _urls )
 
 void KOpenWithDialog::init( const QString& _text, const QString& _value )
 {
-  bool bReadOnly = kapp && !KAuthorized::authorize("shell_access");
+  bool bReadOnly = !KAuthorized::authorize("shell_access");
   m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;
