@@ -21,35 +21,29 @@
 
 #include "kjobuidelegate.h"
 #include "kjob.h"
-#include <kglobal.h>
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
-
-#include <kdebug.h>
 
 class KJobUiDelegate::Private
 {
 public:
-    Private() : job( 0 ), autoErrorHandling( false ),
-                autoWarningHandling( true ) { }
+    Private(KJobUiDelegate *delegate)
+        : q(delegate), job( 0 ),
+          autoErrorHandling( false ),
+          autoWarningHandling( true ) { }
+
+    KJobUiDelegate * const q;
+
     KJob *job;
     bool autoErrorHandling;
     bool autoWarningHandling;
-    QString jobIcon;
+
+    void connectJob(KJob *job);
+    void _k_result(KJob *job);
 };
 
 KJobUiDelegate::KJobUiDelegate()
-    : QObject(), d( new Private() )
+    : QObject(), d(new Private(this))
 {
-    KComponentData cData = KGlobal::mainComponent();
 
-    if (cData.isValid() && cData.aboutData()) {
-        d->jobIcon = cData.aboutData()->appName();
-    } else {
-        kDebug() << "Couldn't retrieve application job launcher information. Some information won't be shown on the kio_uiserver" << endl;
-
-        d->jobIcon = QString();
-    }
 }
 
 KJobUiDelegate::~KJobUiDelegate()
@@ -99,34 +93,25 @@ bool KJobUiDelegate::isAutoWarningHandlingEnabled() const
     return d->autoWarningHandling;
 }
 
-void KJobUiDelegate::setJobIcon(const QString &jobIcon)
+void KJobUiDelegate::slotWarning(KJob */*job*/, const QString &/*plain*/,
+                                  const QString &/*rich*/)
 {
-    d->jobIcon = jobIcon;
+
 }
 
-QString KJobUiDelegate::jobIcon() const
+void KJobUiDelegate::connectJob(KJob *job)
 {
-    return d->jobIcon;
+    connect(job, SIGNAL(result(KJob*)),
+            this, SLOT(_k_result(KJob*)));
+
+    connect(job, SIGNAL(warning(KJob*, const QString&, const QString&)),
+            this, SLOT(slotWarning(KJob*, const QString&, const QString&)));
 }
 
-void KJobUiDelegate::connectJob( KJob *job )
+void KJobUiDelegate::Private::_k_result(KJob */*job*/)
 {
-    connect( job, SIGNAL( finished( KJob*, int ) ),
-             this, SLOT( slotFinished( KJob*, int ) ) );
-
-    connect( job, SIGNAL( warning( KJob*, const QString& ) ),
-             this, SLOT( slotWarning( KJob*, const QString& ) ) );
-}
-
-void KJobUiDelegate::slotFinished( KJob * /*job*/, int /*jobId*/ )
-{
-    if ( d->job->error() && d->autoErrorHandling )
-        showErrorMessage();
-}
-
-void KJobUiDelegate::slotWarning( KJob * /*job*/, const QString &/*errorText*/ )
-{
-
+    if ( job->error() && autoErrorHandling )
+        q->showErrorMessage();
 }
 
 #include "kjobuidelegate.moc"

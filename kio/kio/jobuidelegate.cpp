@@ -84,14 +84,6 @@ unsigned long KIO::JobUiDelegate::userTimestamp() const
     return d->userTimestamp;
 }
 
-void KIO::JobUiDelegate::connectJob( KJob *job )
-{
-    connect( job, SIGNAL( finished(KJob*) ),
-             this, SLOT( slotFinished( KJob* ) ) );
-    connect( job, SIGNAL( warning( KJob*, const QString& ) ),
-             this, SLOT( slotWarning( KJob*, const QString& ) ) );
-}
-
 void KIO::JobUiDelegate::showErrorMessage()
 {
     if ( job()->error() != KJob::KilledJobError )
@@ -100,13 +92,7 @@ void KIO::JobUiDelegate::showErrorMessage()
     }
 }
 
-void KIO::JobUiDelegate::slotFinished( KJob * /*job*/ )
-{
-    if ( job()->error() && isAutoErrorHandlingEnabled() )
-        showErrorMessage();
-}
-
-void KIO::JobUiDelegate::slotWarning( KJob * /*job*/, const QString &errorText )
+void KIO::JobUiDelegate::slotWarning(KJob */*job*/, const QString &plain, const QString &/*rich*/)
 {
     if (isAutoWarningHandlingEnabled())
     {
@@ -114,7 +100,7 @@ void KIO::JobUiDelegate::slotWarning( KJob * /*job*/, const QString &errorText )
         if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
         {
             msgBoxDisplayed++;
-            KMessageBox::information( d->errorParentWidget, errorText );
+            KMessageBox::information( d->errorParentWidget, plain );
             msgBoxDisplayed--;
         }
         // otherwise just discard it.

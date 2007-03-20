@@ -124,12 +124,8 @@ public:
                                       bool multi,
                                       const QString & error_text);
 
-protected:
-     virtual void connectJob( KJob *job );
-
 protected Q_SLOTS:
-    void slotFinished(KJob *job);
-    void slotWarning( KJob *job, const QString &errorText );
+    virtual void slotWarning(KJob *job, const QString &plain, const QString &rich);
 
 private:
     class Private;
