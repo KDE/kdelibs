@@ -237,9 +237,9 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
     struct statfs *mounted;
 #endif
 
-    int nud->fs = getmntinfo(&mounted, MNT_NOWAIT);
+    int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
 
-    for (int i=0;i<nud->fs;i++) 
+    for (int i=0;i< num_fs;i++) 
     {
       Ptr mp(new KMountPoint);
       mp->d->mountedFrom = QFile::decodeName(mounted[i].f_mntfromname);
