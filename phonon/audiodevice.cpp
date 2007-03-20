@@ -74,7 +74,7 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
             d->playbackDevice = true;
             groupName = QLatin1String("AudioOutputDevice_");
         } else {
-            Q_ASSERT(deviceType == Solid::AudioHw::AudioOutput | Solid::AudioHw::AudioInput);
+            Q_ASSERT(deviceType == (Solid::AudioHw::AudioOutput | Solid::AudioHw::AudioInput));
             d->captureDevice = true;
             d->playbackDevice = true;
             groupName = QLatin1String("AudioIODevice_");
