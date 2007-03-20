@@ -347,10 +347,9 @@ QList<KMimeMagicRule> KMimeTypeFactory::parseMagicFile(QIODevice* file, const QS
 
     Q_FOREVER {
         char ch = '\0';
-        // ignore error on this particular call, to finish the last section
-        file->getChar(&ch);
+        bool chOk = file->getChar(&ch);
 
-        if (ch == '[' || file->atEnd()) {
+        if (!chOk || ch == '[') {
             // Finish previous section
             if (!mimeTypeName.isEmpty()) {
                 rules.append(KMimeMagicRule(mimeTypeName, priority, matches));
