@@ -75,5 +75,5 @@ Comment[x-test]=xxGeneric Image to PS Filterxx
 Comment[xh]=Umfanekiso ngokubanzi kwicebo lokucoca ulwelo le PS
 Comment[zh_HK]=將一般圖檔轉成 PS 的過濾器
 Comment[zh_TW]=一般圖檔轉成 PS 的過濾器
-MimeTypeIn=image/jpeg,image/png,image/x-png,image/bmp,image/x-bmp,image/gif,image/tiff
+MimeTypeIn=image/jpeg,image/png,image/x-png,image/bmp,image/bmp,image/gif,image/tiff
 MimeTypeOut=application/postscript

@@ -130,10 +130,10 @@ QStringList Backend::knownMimeTypes() const
 {
 	if( m_supportedMimeTypes.isEmpty() )
 		const_cast<Backend*>( this )->m_supportedMimeTypes
-			<< QLatin1String( "audio/vorbis" )
-			//<< QLatin1String( "audio/x-mp3" )
+			<< QLatin1String( "audio/audio/x-vorbis+ogg+ogg" )
+			//<< QLatin1String( "audio/mpeg" )
 			<< QLatin1String( "audio/x-wav" )
-			<< QLatin1String( "video/x-ogm" );
+			<< QLatin1String( "video/x-ogm+ogg" );
 	return m_supportedMimeTypes;
 }
 

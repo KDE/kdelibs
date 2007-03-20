@@ -5,6 +5,6 @@ Name[x-test]=xxPGMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=pgm
-X-KDE-MimeType=image/x-portable-greymap
+X-KDE-MimeType=image/x-portable-graymap
 X-KDE-Read=true
 X-KDE-Write=true

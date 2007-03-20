@@ -5,6 +5,6 @@ Name[x-test]=xxPSDxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=psd,PSD
-X-KDE-MimeType=image/x-vnd.adobe.photoshop
+X-KDE-MimeType=image/x-psd
 X-KDE-Read=true
 X-KDE-Write=false

@@ -5,6 +5,6 @@ Name[x-test]=xxJP2xx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=jp2
-X-KDE-MimeType=image/jp2
+X-KDE-MimeType=image/jpeg2000
 X-KDE-Read=true
 X-KDE-Write=true

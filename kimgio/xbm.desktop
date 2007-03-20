@@ -5,6 +5,6 @@ Name[x-test]=xxXBMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=xbm
-X-KDE-MimeType=image/x-xbm
+X-KDE-MimeType=image/x-xbitmap
 X-KDE-Read=true
 X-KDE-Write=true
