@@ -2320,7 +2320,7 @@ void PlastikStyle::renderGradient(QPainter *painter,
     int key = search.key();
 
     CacheEntry *cacheEntry;
-    if( (cacheEntry = pixmapCache->take(key)) ) {
+    if( (cacheEntry = pixmapCache->object(key)) ) {
         if( search == *cacheEntry ) { // match! we can draw now...
             if(cacheEntry->pixmap) {
                 painter->drawTiledPixmap(rect, *(cacheEntry->pixmap) );
