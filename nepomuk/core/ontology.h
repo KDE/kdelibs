@@ -18,7 +18,6 @@
 #include <QtCore>
 
 #include <kmetadata/variant.h>
-#include <kmetadata/kmetadata_export.h>
 
 namespace Nepomuk {
     namespace KMetaData {
@@ -41,7 +40,7 @@ namespace Nepomuk {
 	 * This allows to create a GUI listing all properties defined for an arbitrary
 	 * resource (See \ref examples).
 	 */
-	class KMETADATA_EXPORT Ontology
+	class Ontology
 	    {
 	    public:
 		/**

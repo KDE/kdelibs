@@ -137,7 +137,7 @@ namespace Nepomuk {
 		/**
 		 * \internal Non-public API. Used by Resource to signalize errors.
 		 */
-		KMETADATA_NO_EXPORT void notifyError( const QString& uri, int errorCode );
+		void notifyError( const QString& uri, int errorCode );
 
 	    Q_SIGNALS:
 		/**

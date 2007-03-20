@@ -41,7 +41,7 @@ namespace Nepomuk {
 	 * Used internally by Resource.
 	 * \return The URI of the predicate used to state the type of a resource.
 	 */
-	KMETADATA_NO_EXPORT QString typePredicate();
+	QString typePredicate();
 
 	/**
 	 * Used internally by Resource.
@@ -62,7 +62,7 @@ namespace Nepomuk {
 	 *
 	 * \sa Ontology::defaultNamespace
 	 */
-	KMETADATA_NO_EXPORT QString ensureNamespace( const QString& uri );
+	QString ensureNamespace( const QString& uri );
 
 	template<typename T> KMETADATA_EXPORT QList<T> convertResourceList( const QList<Resource>& l ) {
 	    QList<T> rl;
