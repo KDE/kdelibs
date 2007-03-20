@@ -1,7 +1,5 @@
 project(libkmetadata)
 
-#find_package(KNep REQUIRED)
-
 include(KMetaDataMacros)
 
 KMETADATA_GENERATE_FROM_ONTOLOGY(
@@ -53,7 +51,6 @@ kde4_add_library(kmetadata SHARED ${kmetadata_LIB_SRCS})
 add_dependencies(kmetadata rcgen)
 
 target_link_libraries(kmetadata
-#  ${KNEP_LIBRARIES}
   knepclient
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
@@ -65,7 +62,6 @@ install(TARGETS kmetadata DESTINATION ${LIB_INSTALL_DIR} )
 install(FILES
   variant.h
   resourcemanager.h
-  ontology.h
   kmetadata.h
   tools.h
   kmetadata_export.h

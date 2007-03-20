@@ -47,6 +47,13 @@ Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type 
 }
 
 
+Nepomuk::KMetaData::Resource::Resource( Nepomuk::KMetaData::ResourceData* data )
+{
+    m_data = data;
+    data->ref();
+}
+
+
 Nepomuk::KMetaData::Resource::~Resource()
 {
     if( m_data->deref() == 0 &&

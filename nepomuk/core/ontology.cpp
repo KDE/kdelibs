@@ -18,10 +18,10 @@
 #include <kdebug.h>
 
 
-const QString Nepomuk::KMetaData::Ontology::RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-const QString Nepomuk::KMetaData::Ontology::RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
-const QString Nepomuk::KMetaData::Ontology::NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
-const QString Nepomuk::KMetaData::Ontology::NAO_NAMESPACE = "http://semanticdesktop.org/ontologies/2007/03/31/nao#";
+static const char* RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+static const char* RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
+static const char* NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
+static const char* NAO_NAMESPACE = "http://semanticdesktop.org/ontologies/2007/03/31/nao#";
 
 
 class Nepomuk::KMetaData::Ontology::Private
@@ -90,4 +90,28 @@ QString Nepomuk::KMetaData::Ontology::propertyName( const QString& property ) co
         return n.mid( 3 );
     else
         return n;
+}
+
+
+QString Nepomuk::KMetaData::Ontology::rdfNamepace()
+{
+    return QString( RDF_NAMESPACE );
+}
+
+
+QString Nepomuk::KMetaData::Ontology::rdfsNamespace()
+{
+    return QString( RDFS_NAMESPACE );
+}
+
+
+QString Nepomuk::KMetaData::Ontology::nrlNamespace()
+{
+    return QString( NRL_NAMESPACE );
+}
+
+
+QString Nepomuk::KMetaData::Ontology::naoNamespace()
+{
+    return QString( NAO_NAMESPACE );
 }

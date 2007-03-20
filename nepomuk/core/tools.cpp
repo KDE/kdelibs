@@ -91,7 +91,7 @@ QString Nepomuk::KMetaData::defaultGraph()
 
 QString Nepomuk::KMetaData::typePredicate()
 {
-    static QString s = Ontology::RDF_NAMESPACE + "type";
+    static QString s = Ontology::rdfNamepace() + "type";
     return s;
 }
 

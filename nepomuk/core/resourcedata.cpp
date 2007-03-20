@@ -30,11 +30,13 @@
 using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
 
-QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_data;
-QHash<QString, Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::s_kickoffData;
+typedef QHash<QString, Nepomuk::KMetaData::ResourceData*> ResourceDataHash;
+
+Q_GLOBAL_STATIC( ResourceDataHash, initializedData );
+Q_GLOBAL_STATIC( ResourceDataHash, kickoffData );
 
 // FIXME: we need a way to sync this URI with the ontology
-static const QString s_identifierUri( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier" );
+static const char* s_identifierUri = "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier";
 
 
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QString& type_ )
@@ -90,9 +92,9 @@ void Nepomuk::KMetaData::ResourceData::deleteData()
     m_proxyData = 0;
 
     if( !m_uri.isEmpty() )
-        s_data.remove( m_uri );
+        initializedData()->remove( m_uri );
     if( !m_kickoffUriOrId.isEmpty() )
-        s_kickoffData.remove( m_kickoffUriOrId );
+        kickoffData()->remove( m_kickoffUriOrId );
 
     delete this;
 }
@@ -350,10 +352,10 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
         // Move us to the final data hash now that the URI is known
         //
         if( !uri().isEmpty() && uri() != kickoffUriOrId() ) {
-            if( !s_data.contains( uri() ) )
-                s_data.insert( uri(), this );
+            if( !initializedData()->contains( uri() ) )
+                initializedData()->insert( uri(), this );
             else {
-                m_proxyData = s_data[uri()];
+                m_proxyData = initializedData()->value( uri() );
                 m_proxyData->ref();
                 // merge our local changes
                 m_proxyData->mergeIn( this );
@@ -390,7 +392,7 @@ bool Nepomuk::KMetaData::ResourceData::determinePropertyUris()
                 // the kickoff hash. It will be moved by determineUri
                 //
                 if( r.uri().isEmpty() )
-                    if( !s_kickoffData[r.m_data->kickoffUriOrId()]->determineUri() )
+                    if( !( *kickoffData() )[r.m_data->kickoffUriOrId()]->determineUri() )
                         return false;
             }
         }
@@ -849,16 +851,16 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
 {
     Q_ASSERT( !uriOrId.isEmpty() );
 
-    QHash<QString, ResourceData*>::iterator it = s_data.find( uriOrId );
+    QHash<QString, ResourceData*>::iterator it = initializedData()->find( uriOrId );
 
-    bool resFound = ( it != s_data.end() );
+    bool resFound = ( it != initializedData()->end() );
 
     //
     // The uriOrId is not a known local URI. Might be a kickoff value though
     //
-    if( it == s_data.end() ) {
-        it = s_kickoffData.find( uriOrId );
-        resFound = ( it != s_kickoffData.end() );
+    if( it == initializedData()->end() ) {
+        it = kickoffData()->find( uriOrId );
+        resFound = ( it != kickoffData()->end() );
     }
 
     //
@@ -870,7 +872,7 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
         // Every new ResourceData object ends up in the kickoffdata since its actual URI is not known yet
         //
         ResourceData* d = new ResourceData( uriOrId, type );
-        s_kickoffData.insert( uriOrId, d );
+        kickoffData()->insert( uriOrId, d );
 
         return d;
     }
@@ -880,4 +882,51 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
         //
         return it.value();
     }
+}
+
+
+QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allResourceDataOfType( const QString& type )
+{
+    QList<ResourceData*> l;
+
+    if( !type.isEmpty() ) {
+        for( QHash<QString, ResourceData*>::iterator rdIt = kickoffData()->begin();
+             rdIt != kickoffData()->end(); ++rdIt ) {
+            if( rdIt.value()->type() == type ) {
+                l.append( rdIt.value() );
+            }
+        }
+    }
+
+    return l;
+}
+
+
+QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allResourceDataWithProperty( const QString& _uri, const Variant& v )
+{
+    QList<ResourceData*> l;
+
+    for( QHash<QString, ResourceData*>::iterator rdIt = kickoffData()->begin();
+         rdIt != kickoffData()->end(); ++rdIt ) {
+
+        if( rdIt.value()->hasProperty( _uri ) &&
+            rdIt.value()->getProperty( _uri ) == v ) {
+            l.append( rdIt.value() );
+        }
+    }
+
+    return l;
+}
+
+
+QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allResourceData()
+{
+    QList<ResourceData*> l;
+
+    for( QHash<QString, ResourceData*>::iterator rdIt = kickoffData()->begin();
+         rdIt != kickoffData()->end(); ++rdIt ) {
+        l.append( rdIt.value() );
+    }
+
+    return l;
 }

@@ -189,26 +189,22 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
         rr.createRepository( KMetaData::defaultGraph() );
     }
 
-    // Get URIs for everyone
-    // =====================
-    for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_kickoffData.begin();
-         it != ResourceData::s_kickoffData.end(); ++it )
-        it.value()->init();
-
     // sync the stupid way by calling each resource's merge method.
     // FIXME: do a more performant sync by gathering statements to add and remove
+    QList<ResourceData*> allResources = ResourceData::allResourceData();
     QList<Statement> statementsToAdd;
     QList<ResourceData*> syncedResources;
-    for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
-         it != ResourceData::s_data.end(); ++it ) {
-        syncedResources.append( it.value() );
-        it.value()->startSync();
-        bool success = ( it.value()->determineUri() &&
-                         it.value()->determinePropertyUris() &&
-                         it.value()->merge() &&
-                         it.value()->save() );
-//    statementsToAdd += it.value()->allStatementsToAdd();
-        it.value()->endSync( success );
+    for( QList<ResourceData*>::iterator it = allResources.begin();
+         it != allResources.end(); ++it ) {
+        ResourceData* rd = *it;
+        syncedResources.append( rd );
+        rd->startSync();
+        bool success = ( rd->determineUri() &&
+                         rd->determinePropertyUris() &&
+                         rd->merge() &&
+                         rd->save() );
+//    statementsToAdd += rd->allStatementsToAdd();
+        rd->endSync( success );
     }
 
 
@@ -266,12 +262,10 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 
     if( !type.isEmpty() ) {
         // check local data
-        for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
-             rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
-
-            if( rdIt.value()->type() == type ) {
-                l.append( Resource( rdIt.key() ) );
-            }
+        QList<ResourceData*> localData = ResourceData::allResourceDataOfType( type );
+        for( QList<ResourceData*>::iterator rdIt = localData.begin();
+             rdIt != localData.end(); ++rdIt ) {
+            l.append( Resource( *rdIt ) );
         }
 
         kDebug(300004) << k_funcinfo << " added local resources: " << l.count() << endl;
@@ -307,12 +301,10 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
     }
     else {
         // check local data
-        for( QHash<QString, ResourceData*>::iterator rdIt = ResourceData::s_kickoffData.begin();
-             rdIt != ResourceData::s_kickoffData.end(); ++rdIt ) {
-
-            if( rdIt.value()->hasProperty( uri ) &&
-                rdIt.value()->getProperty( uri ) == v )
-                l.append( Resource( rdIt.key() ) );
+        QList<ResourceData*> localData = ResourceData::allResourceDataWithProperty( uri, v );
+        for( QList<ResourceData*>::iterator rdIt = localData.begin();
+             rdIt != localData.end(); ++rdIt ) {
+            l.append( Resource( *rdIt ) );
         }
 
         // check remote data

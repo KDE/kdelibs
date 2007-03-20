@@ -23,6 +23,10 @@
 namespace Nepomuk {
     namespace KMetaData {
 	/**
+	 * \deprecated This class will be replaced with a generic Ontology class
+	 * that can and will be used to represent arbitrary ontologies that are
+	 * either parsed from an NRL file or read from the RDF store.
+	 *
 	 * \brief This class represents the \ref page_ontology.
 	 *
 	 * Ontology represents the %Nepomuk desktop ontology and as such can be used
@@ -99,10 +103,10 @@ namespace Nepomuk {
 		 */
 		QString propertyName( const QString& property ) const;
 
-		static const QString RDF_NAMESPACE;
-		static const QString RDFS_NAMESPACE;
-		static const QString NRL_NAMESPACE;
-		static const QString NAO_NAMESPACE;
+		static QString rdfNamepace();
+		static QString rdfsNamespace();
+		static QString nrlNamespace();
+		static QString naoNamespace();
 
 	    private:
 		class Private;

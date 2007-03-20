@@ -233,6 +233,11 @@ namespace Nepomuk {
 		 */
 		static ResourceData* data( const QString& uriOrId, const QString& type );
 
+		static QList<ResourceData*> allResourceData();
+
+		static QList<ResourceData*> allResourceDataOfType( const QString& type );
+		static QList<ResourceData*> allResourceDataWithProperty( const QString& _uri, const Variant& v );
+
 	    private:
 		bool loadProperty( const QString& name, const Variant& val );
 
@@ -258,18 +263,6 @@ namespace Nepomuk {
 
 		QMutex m_syncingMutex;
 		QMutex m_modificationMutex;
-
-		/**
-		 * The data hash contains all resources with a URI
-		 */
-		static QHash<QString, ResourceData*> s_data;
-
-		/**
-		 * The data hash containing all resources
-		 */
-		static QHash<QString, ResourceData*> s_kickoffData;
-
-		static QString s_defaultType;
 
 		/**
 		 * Used to virtually merge two data objects representing the same

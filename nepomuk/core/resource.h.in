@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -45,7 +45,7 @@ namespace Nepomuk {
 	 * \brief Resource is the central object type in libKMetaData. It represents a piece of
 	 * information of any kind.
 	 *
-	 * Resources are identified by their unique URI (which 
+	 * Resources are identified by their unique URI (which
 	 * correlates directly with the URI in the local NEPOMUK RDF storage.
 	 *
 	 * Resource objects with the same URI share their data.
@@ -76,8 +76,8 @@ namespace Nepomuk {
 		 * The actual resource data is loaded on demand. Thus, it is possible to work
 		 * with Resources as if they were in memory all the time.
 		 *
-		 * \param uriOrIdentifier The unique URI or an arbitrary identifier of the resource. 
-		 *                        If the URI exists in the RDF store it is used to load the 
+		 * \param uriOrIdentifier The unique URI or an arbitrary identifier of the resource.
+		 *                        If the URI exists in the RDF store it is used to load the
 		 *                        related properties. If not the passed string is treated
 		 *                        as an identifier.
 		 *                        If a resource exists in the store which has this identifier
@@ -86,10 +86,10 @@ namespace Nepomuk {
 		 *                        with a new random URI which can be accessed through \a uri
 		 *                        after the resource has been synced. The resource can later
 		 *                        again be found through the same identifier.
-		 *                        
+		 *
 		 * \param type The URI identifying the type of the resource. If it is empty
 		 *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
-		 *             in case the resource already exists the type will be read from the 
+		 *             in case the resource already exists the type will be read from the
 		 *             store.
 		 *
 		 * Example:
@@ -107,6 +107,13 @@ namespace Nepomuk {
 		 * the related resource.
 		 */
 		Resource( const QString& uriOrIdentifier, const QString& type = QString() );
+
+
+                /**
+                 * Constructor used internally.
+                 */
+                Resource( ResourceData* );
+
 		virtual ~Resource();
 
 		Resource& operator=( const Resource& );
@@ -136,7 +143,7 @@ namespace Nepomuk {
 		 * The classname is derived from the type URI (see Resource::uri).
 		 * For a translated user readable name of the resource see
 		 * Ontology::typeName.
-		 * 
+		 *
 		 * \sa type()
 		 */
 		QString className() const;
@@ -254,7 +261,7 @@ namespace Nepomuk {
 		bool modified() const;
 
 		/**
-		 * \return true if this object represents the exact data from the local NEPOMUK RDF 
+		 * \return true if this object represents the exact data from the local NEPOMUK RDF
 		 * store. Differs from modified() in that it also handles changes in the store that
 		 * have not been loaded yet.
 		 *
@@ -266,7 +273,7 @@ namespace Nepomuk {
 		 * \return true if this resource (i.e. the uri of this resource) exists in the local
 		 * NEPOMUK RDF store, either as subject or as object.
 		 *
-		 * This method ignores any previous unsynced remove operations and only checks for 
+		 * This method ignores any previous unsynced remove operations and only checks for
 		 * the presence of the resource in the local RDF store.
 		 *
 		 * \sa inSync()
