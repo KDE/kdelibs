@@ -84,6 +84,11 @@ KCatalog & KCatalog::operator=(const KCatalog & rhs)
   d->language  = rhs.d->language;
   d->localeDir = rhs.d->localeDir;
 
+  // Update bindings.
+  // (Sometimes Gettext picks up wrong locale directory if bindings are not
+  // updated here. No idea why that happens.)
+  d->changeBindings();
+
   return *this;
 }
 
@@ -124,7 +129,7 @@ void KCatalogPrivate::changeBindings () const
     // Point Gettext to new language.
     setenv("LANGUAGE", language, 1);
 
-    // Locale directories may differ between languages.
+    // Locale directories may differ for different languages of same catalog.
     bindtextdomain(name, localeDir);
 
     // // Magic to make sure Gettext doesn't use stale cached translation
@@ -146,13 +151,7 @@ QString KCatalog::translate(const char * msgid) const
 QString KCatalog::translate(const char * msgctxt, const char * msgid) const
 {
   d->changeBindings();
-  // dpgettext is a macro which needs string literals for msgctxt and msgid
-  // so until and unless that is changed, we cannot use it this way.
-  //return QString::fromUtf8(dpgettext(d->name, msgctxt, msgid));
-  QByteArray tmpstr;
-  tmpstr.append(msgctxt).append(GLUE).append(msgid);
-  QString r = QString::fromUtf8(dgettext(d->name, tmpstr));
-  return r.mid(r.indexOf(GLUE) + 1); // because we may get tmpstr back
+  return QString::fromUtf8(dpgettext_expr(d->name, msgctxt, msgid));
 }
 
 QString KCatalog::translate(const char * msgid, const char * msgid_plural,
@@ -166,11 +165,5 @@ QString KCatalog::translate(const char * msgctxt, const char * msgid,
                             const char * msgid_plural, unsigned long n) const
 {
   d->changeBindings();
-  // dnpgettext is a macro which needs string literals for msgctxt and msgid
-  // so until and unless that is changed, we cannot use it this way.
-  //return QString::fromUtf8(dnpgettext(d->name, msgctxt, msgid, msgid_plural, n));
-  QByteArray tmpstr;
-  tmpstr.append(msgctxt).append(GLUE).append(msgid);
-  QString r = QString::fromUtf8(dngettext(d->name, tmpstr, msgid_plural, n));
-  return r.mid(r.indexOf(GLUE) + 1); // because we may get tmpstr back
+  return QString::fromUtf8(dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n));
 }
