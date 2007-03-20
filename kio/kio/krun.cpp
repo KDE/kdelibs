@@ -1066,7 +1066,7 @@ void KRun::foundMimeType( const QString& type )
 
   if ( type == "application/x-gzip"  ||
        type == "application/x-bzip"  ||
-       type == "application/x-bzip2"  )
+       type == "application/x-bzip"  )
   {
     KUrl::List lst = KUrl::split( m_strURL );
     if ( lst.isEmpty() )
@@ -1082,7 +1082,7 @@ void KRun::foundMimeType( const QString& type )
       lst.prepend( KUrl( "gzip:/decompress" ) );
     else if ( type == "application/x-bzip" )
       lst.prepend( KUrl( "bzip:/decompress" ) );
-    else if ( type == "application/x-bzip2" )
+    else if ( type == "application/x-bzip" )
       lst.prepend( KUrl( "bzip2:/decompress" ) );
     else if ( type == "application/x-tar" )
       lst.prepend( KUrl( "tar:/" ) );
@@ -1218,7 +1218,7 @@ bool KRun::isExecutable( const QString& serviceType )
 {
     return ( serviceType == "application/x-desktop" ||
              serviceType == "application/x-executable" ||
-             serviceType == "application/x-msdos-program" ||
+             serviceType == "application/x-ms-dos-executable" ||
              serviceType == "application/x-shellscript" );
 }
 

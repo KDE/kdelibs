@@ -92,10 +92,10 @@ public:
      * (gzip/bzip2 etc.) will automatically be used.
      *
      * The compression filter to be used is determined from the @p fileName
-     * if @p mimetype is empty. Pass "application/x-gzip" or "application/x-bzip2"
+     * if @p mimetype is empty. Pass "application/x-gzip" or "application/x-bzip"
      * to force the corresponding decompression filter, if available.
      *
-     * Warning: application/x-bzip2 may not be available.
+     * Warning: application/x-bzip may not be available.
      * In that case a QFile opened on the compressed data will be returned !
      * Use KFilterBase::findFilterByMimeType and code similar to what
      * deviceForFile is doing, to better control what's happening.
@@ -121,10 +121,10 @@ public:
      * (gzip/bzip2 etc.) will automatically be used.
      *
      * The compression filter to be used is determined @p mimetype .
-     * Pass "application/x-gzip" or "application/x-bzip2"
+     * Pass "application/x-gzip" or "application/x-bzip"
      * to use the corresponding decompression filter.
      *
-     * Warning: application/x-bzip2 may not be available.
+     * Warning: application/x-bzip may not be available.
      * In that case 0 will be returned !
      *
      * The returned QIODevice has to be deleted after using.

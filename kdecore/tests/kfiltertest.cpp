@@ -176,7 +176,7 @@ void KFilterTest::test_readall()
     kDebug() << " -- test_readall gzip -- " << endl;
     test_readall(pathgz, QString::fromLatin1("application/x-gzip"));
     kDebug() << " -- test_readall bzip2 -- " << endl;
-    test_readall(pathbz2, QString::fromLatin1("application/x-bzip2"));
+    test_readall(pathbz2, QString::fromLatin1("application/x-bzip"));
 }
 
 #include "kfiltertest.moc"

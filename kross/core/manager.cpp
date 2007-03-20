@@ -94,7 +94,7 @@ Manager::Manager()
             new InterpreterInfo("python",
                 pythonlib, // library
                 "*.py", // file filter-wildcard
-                QStringList() << /* "text/x-python" << */ "application/x-python", // mimetypes
+                QStringList() << "text/x-python", // mimetypes
                 pythonoptions // options
             )
         );
@@ -144,7 +144,7 @@ Manager::Manager()
             new InterpreterInfo("javascript",
                 kjslib, // library
                 "*.js", // file filter-wildcard
-                QStringList() << "application/x-javascript", // mimetypes
+                QStringList() << "application/javascript", // mimetypes
                 kjsoptions // options
             )
         );

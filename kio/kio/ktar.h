@@ -37,8 +37,8 @@ public:
      * using the compression filter associated to given mimetype.
      *
      * @param filename is a local path (e.g. "/home/weis/myfile.tgz")
-     * @param mimetype "application/x-gzip" or "application/x-bzip2"
-     * Do not use application/x-tgz or similar - you only need to
+     * @param mimetype "application/x-gzip" or "application/x-bzip"
+     * Do not use application/x-compressed-tar or similar - you only need to
      * specify the compression layer !  If the mimetype is omitted, it
      * will be determined from the filename.
      */

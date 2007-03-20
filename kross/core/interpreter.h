@@ -100,7 +100,7 @@ namespace Kross {
              * List of mimetypes this interpreter supports.
              *
              * \return QStringList with mimetypes like
-             *         "application/x-javascript".
+             *         "application/javascript".
              */
             const QStringList mimeTypes() const;
 

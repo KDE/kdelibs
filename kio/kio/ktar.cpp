@@ -75,15 +75,17 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
             d->mimetype = KMimeType::findByPath( fileName(), 0, true )->name();
         kDebug(7041) << "KTar::KTar mimetype = " << d->mimetype << endl;
 
-        if ( d->mimetype == "application/x-tgz" || d->mimetype == "application/x-targz" || // the latter is deprecated but might still be around
-             d->mimetype == "application/x-webarchive" )
+        if ( d->mimetype == "application/x-compressed-tar"
+             || d->mimetype == "application/x-tgz" // old deprecated name
+             || d->mimetype == "application/x-targz" // old deprecated name
+             || d->mimetype == "application/x-webarchive" )
         {
             // that's a gzipped tar file, so ask for gzip filter
             d->mimetype = "application/x-gzip";
         }
-        else if ( d->mimetype == "application/x-tbz" ) // that's a bzipped2 tar file, so ask for bz2 filter
+        else if ( d->mimetype == "application/x-bzip-compressed-tar" ) // that's a bzipped2 tar file, so ask for bz2 filter
         {
-            d->mimetype = "application/x-bzip2";
+            d->mimetype = "application/x-bzip";
         }
         else
         {
@@ -98,12 +100,12 @@ bool KTar::createDevice( QIODevice::OpenMode mode )
                     if ( firstByte == 0037 && secondByte == static_cast<char>(0213) )
                         d->mimetype = "application/x-gzip";
                     else if ( firstByte == 'B' && secondByte == 'Z' && thirdByte == 'h' )
-                        d->mimetype = "application/x-bzip2";
+                        d->mimetype = "application/x-bzip";
                     else if ( firstByte == 'P' && secondByte == 'K' && thirdByte == 3 )
                     {
                         char fourthByte;
                         if ( file.getChar(&fourthByte) && fourthByte == 4 )
-                            d->mimetype = "application/x-zip";
+                            d->mimetype = "application/zip";
                     }
                 }
             }
@@ -268,7 +270,7 @@ bool KTar::KTarPrivate::fillTempFile( const QString & fileName) {
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
-    || "application/x-bzip2" == mimetype)
+    || "application/x-bzip" == mimetype)
         forced = true;
 
     QIODevice *filterDev = KFilterDev::deviceForFile( fileName, mimetype, forced );
@@ -477,7 +479,7 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName ) {
 
     bool forced = false;
     if( "application/x-gzip" == mimetype
-        || "application/x-bzip2" == mimetype)
+        || "application/x-bzip" == mimetype)
         forced = true;
 
     // #### TODO this should use KSaveFile to avoid problems on disk full
