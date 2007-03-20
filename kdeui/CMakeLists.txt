@@ -63,6 +63,7 @@ set(kdeui_LIB_SRCS
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
+ dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
  dialogs/kprogressdialog.cpp
