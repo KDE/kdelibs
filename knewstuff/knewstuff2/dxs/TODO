@@ -1,2 +1,5 @@
 * entries should have reference to installed file/path once installed
+-----------------
+* korganizer: references to remote entries instead of download
+  (make this a feature)
 

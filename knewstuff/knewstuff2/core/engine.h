@@ -75,7 +75,9 @@ class KDE_EXPORT Engine : public QObject
 
     bool uploadEntry(Provider *provider, Entry *entry);
 
+    // FIXME: use Entry as parameter
     bool install(QString payloadfile);
+    bool uninstall(KNS::Entry *entry);
 
   signals:
     /**
@@ -89,9 +91,9 @@ class KDE_EXPORT Engine : public QObject
     void signalEntryLoaded(KNS::Entry *entry);
     void signalEntryChanged(KNS::Entry *entry);
     void signalEntriesFailed();
-    void signalPreviewLoaded(KUrl preview);
+    void signalPreviewLoaded(KUrl preview); // FIXME: return Entry
     void signalPreviewFailed();
-    void signalPayloadLoaded(KUrl payload);
+    void signalPayloadLoaded(KUrl payload); // FIXME: return Entry
     void signalPayloadFailed();
     void signalEntryUploaded();
     void signalEntryFailed();

@@ -197,10 +197,11 @@ void Engine::downloadPayload(Entry *entry)
 {
 	KUrl source = KUrl(entry->payload().representation());
 
-	if(m_installation->targetDir().isEmpty())
+	if(m_installation->isRemote())
 	{
 		// Remote resource
 		kDebug(550) << "Relaying remote payload '" << source << "'" << endl;
+		entry->setStatus(Entry::Installed);
 		emit signalPayloadLoaded(source);
 		// FIXME: we still need registration for eventual deletion
 		return;
@@ -302,6 +303,7 @@ void Engine::slotPayloadResult(KJob *job)
 		{
 			// FIXME: this is only so exposing the KUrl suffices for downloaded entries
 			Entry *entry = m_entry_jobs[job];
+			entry->setStatus(Entry::Installed);
 			m_entry_jobs.remove(job);
 			m_payloadfiles[entry] = fcjob->destUrl().path();
 		}
@@ -472,6 +474,7 @@ void Engine::loadRegistry(const QString &registrydir)
 			}
 
 			Entry *e = handler.entryptr();
+			e->setStatus(Entry::Installed);
 			m_entry_cache.append(e);
 			m_entry_index[id(e)] = e;
 
@@ -611,6 +614,7 @@ void Engine::loadEntryCache()
 		}
 
 		Entry *e = handler.entryptr();
+		e->setStatus(Entry::Downloadable);
 		m_entry_cache.append(e);
 		m_entry_index[id(e)] = e;
 
@@ -685,6 +689,7 @@ void Engine::mergeEntries(Entry::List *entries)
 		// TODO: find entry in entrycache, replace if needed
 		// don't forget marking as 'updateable'
 		Entry *e = (*it);
+		e->setStatus(Entry::Downloadable);
 
 		if(m_entry_index.contains(id(e)))
 		{
@@ -697,12 +702,14 @@ void Engine::mergeEntries(Entry::List *entries)
 			if(e->releaseDate() > oldentry->releaseDate())
 			{
 				kDebug(550) << "CACHE: update entry" << endl;
+				e->setStatus(Entry::Updateable);
 				// entry has changed
 				// FIXME: important: for cache filename, whole-content comparison
 				// is harmful, still needs id-based one!
 				cacheEntry(e);
 				emit signalEntryChanged(e);
 				// FIXME: oldentry can now be deleted, but it's still in the list!
+				// FIXME: better: assigne all values to 'e', keeps refs intact
 			}
 		}
 		else
@@ -1037,6 +1044,13 @@ bool Engine::install(QString payloadfile)
 		}
 	}
 
+	return true;
+}
+
+bool Engine::uninstall(KNS::Entry *entry)
+{
+	entry->setStatus(Entry::Deleted);
+	// FIXME: remove payload file, and maybe unpacked files
 	return true;
 }
 

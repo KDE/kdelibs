@@ -99,6 +99,14 @@ QString Installation::installPath() const
 	return m_installpath;
 }
 
+bool Installation::isRemote()
+{
+	if(!installPath().isEmpty()) return false;
+	if(!targetDir().isEmpty()) return false;
+	if(!standardResourceDir().isEmpty()) return false;
+	return true;
+}
+
 Installation::Policy Installation::checksumPolicy()
 {
 	return m_checksumpolicy;

@@ -67,6 +67,7 @@ class KDE_EXPORT Installation
     QString standardResourceDir() const;
     QString targetDir() const;
     QString installPath() const;
+    bool isRemote();
 
     Policy checksumPolicy();
     Policy signaturePolicy();

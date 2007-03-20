@@ -215,6 +215,18 @@ class KDE_EXPORT Entry
     QString checksum();
     QString signature();
 
+    enum Status
+    {
+        Invalid,
+        Downloadable,
+        Installed,
+        Updateable,
+        Deleted
+    };
+
+    Status status();
+    void setStatus(Status status);
+
   private:
     QString mType;
     QString mLicense;
@@ -231,6 +243,7 @@ class KDE_EXPORT Entry
 
     QString mChecksum;
     QString mSignature;
+    Status mStatus;
 
     class EntryPrivate *d;
 };

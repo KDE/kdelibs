@@ -33,7 +33,8 @@ Entry::Entry() :
   mReleaseDate(QDate::currentDate()),
   mRelease(0),
   mRating(0),
-  mDownloads(0)
+  mDownloads(0),
+  mStatus(Invalid)
 {
   d = NULL;
 }
@@ -180,5 +181,15 @@ void Entry::setSignature(QString signature)
 QString Entry::signature()
 {
 	return mSignature;
+}
+
+Entry::Status Entry::status()
+{
+	return mStatus;
+}
+
+void Entry::setStatus(Status status)
+{
+	mStatus = status;
 }
 
