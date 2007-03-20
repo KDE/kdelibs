@@ -3611,7 +3611,7 @@ try_again:
      if (m_strMimeType == "application/x-tar")
      {
         m_qContentEncodings.removeLast();
-        m_strMimeType = QString::fromLatin1("application/x-tgz");
+        m_strMimeType = QString::fromLatin1("application/x-compressed-tar");
      }
      else if (m_strMimeType == "application/postscript")
      {
@@ -3624,8 +3624,9 @@ try_again:
                 m_strMimeType == "text/html")
                 ||
                (m_request.allowCompressedPage &&
-                m_strMimeType != "application/x-tgz" &&
-                m_strMimeType != "application/x-targz" &&
+                m_strMimeType != "application/x-compressed-tar" &&
+                m_strMimeType != "application/x-tgz" && // deprecated name
+                m_strMimeType != "application/x-targz" && // deprecated name
                 m_strMimeType != "application/x-gzip" &&
                 !m_request.url.path().endsWith(QLatin1String(".gz")))
                 )
@@ -3640,36 +3641,26 @@ try_again:
   }
 
   // We can't handle "bzip2" encoding (yet). So if we get something with
-  // bzip2 encoding, we change the mimetype to "application/x-bzip2".
+  // bzip2 encoding, we change the mimetype to "application/x-bzip".
   // Note for future changes: some web-servers send both "bzip2" as
-  //   encoding and "application/x-bzip2" as mimetype. That is wrong.
+  //   encoding and "application/x-bzip[2]" as mimetype. That is wrong.
   //   currently that doesn't bother us, because we remove the encoding
-  //   and set the mimetype to x-bzip2 anyway.
+  //   and set the mimetype to x-bzip anyway.
   if (!m_qContentEncodings.isEmpty() && m_qContentEncodings.last() == "bzip2")
   {
      m_qContentEncodings.removeLast();
-     m_strMimeType = QString::fromLatin1("application/x-bzip2");
+     m_strMimeType = QString::fromLatin1("application/x-bzip");
   }
 
-  // Convert some common mimetypes to standard KDE mimetypes
+  // Convert some common mimetypes to standard mimetypes
   if (m_strMimeType == "application/x-targz")
-     m_strMimeType = QString::fromLatin1("application/x-tgz");
-  else if (m_strMimeType == "application/zip")
-     m_strMimeType = QString::fromLatin1("application/x-zip");
+     m_strMimeType = QString::fromLatin1("application/x-compressed-tar");
   else if (m_strMimeType == "image/x-png")
      m_strMimeType = QString::fromLatin1("image/png");
-  else if (m_strMimeType == "image/bmp")
-     m_strMimeType = QString::fromLatin1("image/x-bmp");
-  else if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
-     m_strMimeType = QString::fromLatin1("audio/x-mp3");
+  else if (m_strMimeType == "audio/x-mp3" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
+     m_strMimeType = QString::fromLatin1("audio/mpeg");
   else if (m_strMimeType == "audio/microsoft-wave")
      m_strMimeType = QString::fromLatin1("audio/x-wav");
-  else if (m_strMimeType == "audio/midi")
-     m_strMimeType = QString::fromLatin1("audio/x-midi");
-  else if (m_strMimeType == "image/x-xpixmap")
-     m_strMimeType = QString::fromLatin1("image/x-xpm");
-  else if (m_strMimeType == "application/rtf")
-     m_strMimeType = QString::fromLatin1("text/rtf");
 
   // Crypto ones....
   else if (m_strMimeType == "application/pkix-cert" ||
@@ -3678,22 +3669,22 @@ try_again:
      m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
   }
 
-  // Prefer application/x-tgz or x-gzpostscript over application/x-gzip.
+  // Prefer application/x-compressed-tar or x-gzpostscript over application/x-gzip.
   else if (m_strMimeType == "application/x-gzip")
   {
      if ((m_request.url.path().endsWith(".tar.gz")) ||
          (m_request.url.path().endsWith(".tar")))
-        m_strMimeType = QString::fromLatin1("application/x-tgz");
+        m_strMimeType = QString::fromLatin1("application/x-compressed-tar");
      if ((m_request.url.path().endsWith(".ps.gz")))
         m_strMimeType = QString::fromLatin1("application/x-gzpostscript");
   }
 
-  // Some webservers say "text/plain" when they mean "application/x-bzip2"
+  // Some webservers say "text/plain" when they mean "application/x-bzip"
   else if ((m_strMimeType == "text/plain") || (m_strMimeType == "application/octet-stream"))
   {
      QString ext = m_request.url.path().right(4).toUpper();
      if (ext == ".BZ2")
-        m_strMimeType = QString::fromLatin1("application/x-bzip2");
+        m_strMimeType = QString::fromLatin1("application/x-bzip");
      else if (ext == ".PEM")
         m_strMimeType = QString::fromLatin1("application/x-x509-ca-cert");
      else if (ext == ".SWF")
