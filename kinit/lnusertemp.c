@@ -152,6 +152,7 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
   }
   if (result == -1)
   {
+     perror("mkdir failed: ");
      return 1;
   }  
 
