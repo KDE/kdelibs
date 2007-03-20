@@ -525,6 +525,11 @@ Notes:
     <glob pattern="*.lnk"/>
   </mime-type>
 
+  <mime-type type="application/x-kgetlist">
+    <sub-class-of type="application/xml"/>
+    <comment>KGet download list</comment>
+    <glob pattern="*.kgt"/>
+  </mime-type>
   <mime-type type="application/x-kopete-emoticons">
     <comment>Kopete emoticons archive</comment>
     <glob pattern="*.kopete-emoticons"/>
