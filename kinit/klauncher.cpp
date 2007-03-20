@@ -181,13 +181,13 @@ KLauncher::KLauncher(int _kdeinitSocket)
       qDebug("KLauncher: Fatal error, can't create tempfile!");
       ::_exit(1);
    }
-   mPoolSocketName = domainname->fileName();
+   mPoolSocketNameEncoded = QFile::encodeName(domainname->fileName());
 #ifdef __CYGWIN__
    domainname->setAutoRemove(true);
 #endif
    delete domainname;
 
-   mPoolSocket.setAddress(QFile::encodeName(mPoolSocketName));
+   mPoolSocket.setAddress(mPoolSocketNameEncoded);
    mPoolSocket.setAcceptBuffered(false); // we use KStreamSockets
    connect(&mPoolSocket, SIGNAL(readyAccept()),
            SLOT(acceptSlave()));
@@ -226,10 +226,9 @@ KLauncher::~KLauncher()
 
 void KLauncher::close()
 {
-   if (!mPoolSocketName.isEmpty())
+   if (!mPoolSocketNameEncoded.isEmpty())
    {
-      const QByteArray filename = QFile::encodeName(mPoolSocketName);
-      unlink(filename.data());
+      unlink(mPoolSocketNameEncoded.data());
    }
 #ifdef Q_WS_X11
    if( mCached_dpy != NULL )
@@ -968,7 +967,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
 
     QString arg1 = protocol;
-    QString arg2 = QString::fromLocal8Bit(QFile::encodeName(mPoolSocketName));
+    QString arg2 = QString::fromLocal8Bit(mPoolSocketNameEncoded);
     QString arg3 = QString::fromLocal8Bit(QFile::encodeName(app_socket));
     QStringList arg_list;
     arg_list.append(arg1);

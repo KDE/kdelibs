@@ -188,7 +188,7 @@ protected:
    QList<KLaunchRequest*> requestQueue; // Requests waiting to being handled
    KLaunchRequest *lastRequest;
    QList<SlaveWaitRequest*> mSlaveWaitRequest;
-   QString mPoolSocketName;
+   QByteArray mPoolSocketNameEncoded;
    int kdeinitSocket;
    QSocketNotifier *kdeinitNotifier;
    KNetwork::KServerSocket mPoolSocket;

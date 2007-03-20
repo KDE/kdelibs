@@ -409,12 +409,12 @@ KLauncher::KLauncher(int _kdeinitSocket)
       qDebug("KLauncher: Fatal error, can't create tempfile!");
       ::_exit(1);
    }
-   mPoolSocketName = domainname->fileName();
+   mPoolSocketNameEncoded = QFile::encodeName(domainname->fileName());
 #ifdef __CYGWIN__
    domainname->setAutoRemove(true);
 #endif
    delete domainname;
-   mPoolSocket.setAddress(QFile::encodeName(mPoolSocketName));
+   mPoolSocket.setAddress(mPoolSocketNameEncoded);
 #else
    mPoolSocket.setAddress(QFile::encodeName("4545"));
 #endif
@@ -463,10 +463,9 @@ KLauncher::~KLauncher()
 void KLauncher::close()
 {
    TRACE();
-   if (!mPoolSocketName.isEmpty())
+   if (!mPoolSocketNameEncoded.isEmpty())
    {
-      const QByteArray filename = QFile::encodeName(mPoolSocketName);
-      unlink(filename.data());
+      unlink(mPoolSocketNameEncoded.data());
    }
 #ifdef Q_WS_X11
    if( mCached_dpy != NULL )
