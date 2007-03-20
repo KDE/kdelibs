@@ -40,9 +40,9 @@ public:
   /**
    * Create new entry.
    */
-  virtual KProtocolInfo* createEntry(const QString &, const char *);
+  virtual KProtocolInfo* createEntry(const QString &, const char *) const;
 
-  virtual KProtocolInfo* createEntry(int) { assert(0); return 0L; }
+  virtual KProtocolInfo* createEntry(int) const { assert(0); return 0L; }
 
   /**
    * Returns all resource types for this service factory

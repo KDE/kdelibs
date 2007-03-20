@@ -47,7 +47,7 @@ KBuildProtocolInfoFactory::~KBuildProtocolInfoFactory()
 }
 
 KProtocolInfo *
-KBuildProtocolInfoFactory::createEntry( const QString& file, const char * )
+KBuildProtocolInfoFactory::createEntry( const QString& file, const char * ) const
 {
    return new KProtocolInfo(file);
 }
