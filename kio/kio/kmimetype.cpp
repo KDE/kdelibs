@@ -162,12 +162,52 @@ static bool isBinaryData(const QByteArray& data)
 {
     // Check the first 32 bytes (see shared-mime spec)
     const char* p = data.data();
-    for (int i = 0; i < qMin(32, data.size()); ++i) {
+    const int end = qMin(32, data.size());
+    for (int i = 0; i < end; ++i) {
         if (p[i] < 32) // ASCII control character
             return true;
     }
     return false;
 }
+
+static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_file*/,
+                                    mode_t mode /*0 if unknown*/,
+                                    bool is_local_file )
+{
+    if ( is_local_file && (mode == 0 || mode == (mode_t)-1) ) {
+        KDE_struct_stat buff;
+        if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
+            mode = buff.st_mode;
+    }
+
+    if ( S_ISDIR( mode ) ) {
+        // KDE4 TODO: use an overlay instead
+#if 0
+        // Special hack for local files. We want to see whether we
+        // are allowed to enter the directory
+        if ( is_local_file )
+        {
+            if ( access( QFile::encodeName(path), R_OK ) == -1 )
+                return KMimeType::mimeType( "inode/directory-locked" );
+        }
+#endif
+        return KMimeType::mimeType( "inode/directory" );
+    }
+    if ( S_ISCHR( mode ) )
+        return KMimeType::mimeType( "inode/chardevice" );
+    if ( S_ISBLK( mode ) )
+        return KMimeType::mimeType( "inode/blockdevice" );
+    if ( S_ISFIFO( mode ) )
+        return KMimeType::mimeType( "inode/fifo" );
+    if ( S_ISSOCK( mode ) )
+        return KMimeType::mimeType( "inode/socket" );
+    // remote executable file? stop here (otherwise findFromContent can do that better for local files)
+    if ( !is_local_file && S_ISREG( mode ) && ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
+        return KMimeType::mimeType( "application/x-executable" );
+
+    return KMimeType::Ptr();
+}
+
 
 KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
                                            bool is_local_file,
@@ -180,39 +220,10 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     if (accuracy)
         *accuracy = 100;
 
-    if ( device ) {
-        if ( is_local_file && (mode == 0 || mode == (mode_t)-1) ) {
-            KDE_struct_stat buff;
-            if ( KDE_stat( QFile::encodeName(path), &buff ) != -1 )
-                mode = buff.st_mode;
-        }
-    }
-
-    // Look at mode_t first
-    if ( S_ISDIR( mode ) ) {
-        // KDE4 TODO: use an overlay instead
-#if 0
-        // Special hack for local files. We want to see whether we
-        // are allowed to enter the directory
-        if ( is_local_file )
-        {
-            if ( access( QFile::encodeName(path), R_OK ) == -1 )
-                return mimeType( "inode/directory-locked" );
-        }
-#endif
-        return mimeType( "inode/directory" );
-    }
-    if ( S_ISCHR( mode ) )
-        return mimeType( "inode/chardevice" );
-    if ( S_ISBLK( mode ) )
-        return mimeType( "inode/blockdevice" );
-    if ( S_ISFIFO( mode ) )
-        return mimeType( "inode/fifo" );
-    if ( S_ISSOCK( mode ) )
-        return mimeType( "inode/socket" );
-    // remote executable file? stop here (otherwise findFromContent can do that better for local files)
-    if ( !is_local_file && S_ISREG( mode ) && ( mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
-        return mimeType( "application/x-executable" );
+    // Look at mode first
+    KMimeType::Ptr mimeFromMode = findFromMode( path, mode, is_local_file );
+    if (mimeFromMode)
+        return mimeFromMode;
 
     // We can optimize some device reading for use by the two findFromContent calls and isBinaryData
     QByteArray beginning;
@@ -255,18 +266,8 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
 
     // Try the low-priority magic matches (if we can read the data)
     if ( device ) {
-        KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
+        return KMimeTypeFactory::self()->findFromContent(
             device, KMimeTypeFactory::LowPriorityRules, accuracy, beginning );
-        if (mime)
-            return mime;
-
-        // Nothing worked, check if the file contents looks like binary or text
-        if (!::isBinaryData(beginning)) {
-            if (accuracy)
-                *accuracy = 5;
-            return KMimeType::mimeType("text/plain");
-        }
-
     } else { // Not a local file, or no magic allowed, find a fallback from the protocol
         if (accuracy)
             *accuracy = 10;
@@ -344,6 +345,11 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
 {
     QFile device(fileName);
+    // Look at mode first
+    KMimeType::Ptr mimeFromMode = findFromMode( fileName, 0, true );
+    if (mimeFromMode)
+        return mimeFromMode;
+
     return KMimeTypeFactory::self()->findFromContent(
         &device, KMimeTypeFactory::AllRules, accuracy );
 }

@@ -14,6 +14,7 @@ private Q_SLOTS:
     void testFindByUrl();
     void testFindByPath();
     void testFindByNameAndContent();
+    void testFindByContent();
     void testAllMimeTypes();
     void testAlias();
     void testMimeTypeParent();

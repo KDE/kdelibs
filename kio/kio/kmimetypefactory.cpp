@@ -266,6 +266,20 @@ KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriorit
             }
         }
     }
+
+    // Do fallback code so that we never return 0 - unless we were only looking for HighPriorityRules
+    if (whichPriority != HighPriorityRules) {
+        // Nothing worked, check if the file contents looks like binary or text
+        if (!KMimeType::isBinaryData(beginning)) {
+            if (accuracy)
+                *accuracy = 5;
+            return findMimeTypeByName("text/plain");
+        }
+        if (accuracy)
+            *accuracy = 0;
+        return KMimeType::defaultMimeTypePtr();
+    }
+
     return KMimeType::Ptr();
 }
 

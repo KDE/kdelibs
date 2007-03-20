@@ -94,61 +94,66 @@ void KMimeTypeTest::testFindByPath()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    KMimeType::Ptr mf;
+    KMimeType::Ptr mime;
 
     QString exePath = KStandardDirs::findExe( "kioexec" );
     if ( exePath.isEmpty() )
         QSKIP( "kioexec not found", SkipAll );
 
-    mf = KMimeType::findByPath( exePath );
-    QVERIFY( mf );
+    mime = KMimeType::findByPath( exePath );
+    QVERIFY( mime );
 
 #ifdef Q_WS_WIN
-    QCOMPARE( mf->name(), QString::fromLatin1( "application/x-msdos-program" ) );
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-msdos-program" ) );
 #else
-    QCOMPARE( mf->name(), QString::fromLatin1( "application/x-executable" ) );
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-executable" ) );
 #endif
 
-    mf = KMimeType::findByPath("textfile.txt");
-    QVERIFY( mf );
-    QCOMPARE( mf->name(), QString::fromLatin1( "text/plain" ) );
+    mime = KMimeType::findByPath("textfile.txt");
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
 
-    mf = KMimeType::findByPath("foo.desktop");
-    QVERIFY( mf );
-    QCOMPARE( mf->name(), QString::fromLatin1( "application/x-desktop" ) );
-    mf = KMimeType::findByPath("foo.kdelnk");
-    QVERIFY( mf );
-    QCOMPARE( mf->name(), QString::fromLatin1( "application/x-desktop" ) );
+    mime = KMimeType::findByPath("foo.desktop");
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );
+    mime = KMimeType::findByPath("foo.kdelnk");
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );
 
     // Can't use KIconLoader since this is a "without GUI" test.
     QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
-    QVERIFY( !fh.isEmpty() );
-    mf = KMimeType::findByPath( fh );
-    QVERIFY( mf );
-    QCOMPARE( mf->name(), QString::fromLatin1( "image/png" ) );
+    QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
+    mime = KMimeType::findByPath( fh );
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1( "image/png" ) );
+
+    // Calling findByPath on a directory
+    mime = KMimeType::findByPath("/");
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("inode/directory") );
 }
 
 void KMimeTypeTest::testFindByUrl()
 {
-    KMimeType::Ptr mf;
+    KMimeType::Ptr mime;
 
     QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("http:/")) );
     QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("file:/")) );
-    mf = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
-    QVERIFY( mf );
+    mime = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
+    QVERIFY( mime );
 
-    QCOMPARE( mf->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
 
     if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
         QSKIP( "man protocol not installed", SkipSingle );
 
-    mf = KMimeType::findByUrl( KUrl("man:/ls") );
-    QVERIFY( mf );
-    QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
+    mime = KMimeType::findByUrl( KUrl("man:/ls") );
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/html") );
 
-    mf = KMimeType::findByUrl( KUrl("man:/ls/") );
-    QVERIFY( mf );
-    QCOMPARE( mf->name(), QString::fromLatin1("text/html") );
+    mime = KMimeType::findByUrl( KUrl("man:/ls/") );
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/html") );
 }
 
 void KMimeTypeTest::testFindByNameAndContent()
@@ -197,6 +202,21 @@ void KMimeTypeTest::testFindByNameAndContent()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("application/vnd.ms-tnef") );
 #endif
+}
+
+void KMimeTypeTest::testFindByContent()
+{
+    KMimeType::Ptr mime;
+
+    QByteArray textData = "Hello world";
+    mime = KMimeType::findByContent(textData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
+
+    // Calling findByContent on a directory
+    mime = KMimeType::findByFileContent("/");
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("inode/directory") );
 }
 
 void KMimeTypeTest::testAllMimeTypes()
