@@ -17,8 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#define QT3_SUPPORT
-
 #include "k3listviewsearchline.h"
 
 #include <k3listview.h>

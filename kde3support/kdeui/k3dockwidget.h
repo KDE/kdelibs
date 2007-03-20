@@ -530,7 +530,7 @@ public:
    *
    * @return The pointer to the dockwidget's child widget, 0L if there's no such child.
    */
-  QWidget* getWidget() const { return widget; };
+  QWidget* getWidget() const { return widget; }
 
   /**
    * Sets the header of this dockwidget.
@@ -589,12 +589,12 @@ public:
    *
    * @param ttStr A string for the tooltip on the tab.
    */
-  void setToolTipString(const QString& ttStr) { toolTipStr = ttStr; };
+  void setToolTipString(const QString& ttStr) { toolTipStr = ttStr; }
 
   /**
    * @return The tooltip string being shown on the appropriate tab page header when in dock-centered mode.
    */
-  const QString& toolTipString() const { return toolTipStr; };
+  const QString& toolTipString() const { return toolTipStr; }
 
   /**
    * @return result @p true, if a dockback is possible, otherwise @p false.
@@ -605,12 +605,12 @@ public:
    * Sets a string that is used for the label of the tab page when in tab page mode
    * @param label The new tab page label.
    */
-  void setTabPageLabel( const QString& label) { tabPageTitle = label; };
+  void setTabPageLabel( const QString& label) { tabPageTitle = label; }
 
   /**
    * @return A string that is used for the label of the tab page when in tab page mode.
    */
-  const QString& tabPageLabel() const { return tabPageTitle; };
+  const QString& tabPageLabel() const { return tabPageTitle; }
 
   /**
    * Catches and processes some QWidget events that are interesting for dockwidgets.
@@ -1097,7 +1097,7 @@ private:
     {
       dock = _dock;
       hide = _hide;
-    };
+    }
     ~MenuDockData(){}
 
     K3DockWidget* dock;

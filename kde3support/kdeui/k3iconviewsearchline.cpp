@@ -23,8 +23,6 @@
  * would be reimplemented.
  */
 
-#define QT3_SUPPORT
-
 #include "k3iconviewsearchline.h"
 
 #include <q3iconview.h>

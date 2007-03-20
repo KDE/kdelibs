@@ -440,7 +440,7 @@ void K3DockWidgetHeader::setDragEnabled(bool b)
 #ifndef NO_KDE2
 void K3DockWidgetHeader::saveConfig( KConfig* c )
 {
-    c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), QVariant(stayButton->isChecked()) );
+    c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), stayButton->isChecked() );
 }
 
 void K3DockWidgetHeader::loadConfig( KConfig* c )

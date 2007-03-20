@@ -9,14 +9,13 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_
 # all dependent libs
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
-add_definitions ( -DQT3_SUPPORT )
+add_definitions( -DQT3_SUPPORT -DKDE3_SUPPORT -DIN_KDE3_SUPPORT)
 
 if(UNIX)
    add_subdirectory( kunittest )
    add_subdirectory( tests )
 endif(UNIX)
 
-add_definitions(-DKDE3_SUPPORT)
 
 ########### next target ###############
 
