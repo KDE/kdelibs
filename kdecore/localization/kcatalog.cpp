@@ -31,7 +31,7 @@
 #include "gettext.h"
 
 // not defined on win32 :(
-#ifdef _MSC_VER
+#ifdef _WIN32
 # ifndef LC_MESSAGES
 #  define LC_MESSAGES 42
 # endif
