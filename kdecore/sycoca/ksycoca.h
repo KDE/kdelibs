@@ -147,11 +147,6 @@ public:
    void disableAutoRebuild();
 
    /**
-    * Determine relative path for a .desktop file from a full path and a resource name
-    */
-   static QString determineRelativePath( const QString & _fullpath, const char *_resource );
-
-   /**
     * When you receive a "databaseChanged" signal, you can query here if
     * a change has occurred in a specific resource type.
     * @see KStandardDirs for the various resource types.

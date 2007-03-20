@@ -447,6 +447,7 @@ QStringList KSycoca::allResourceDirs()
    return d->allResourceDirs;
 }
 
+#if 0
 QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_resource )
 {
   QString sRelativeFilePath;
@@ -464,6 +465,7 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_
     //kDebug(7011) << sRelativeFilePath << endl;
   return sRelativeFilePath;
 }
+#endif
 
 void KSycoca::flagError()
 {
