@@ -70,7 +70,7 @@ KMimeType::Ptr KBuildMimeTypeFactory::findMimeTypeByName(const QString &_name, K
     return KMimeType::Ptr::staticCast( servType );
 }
 
-KSycocaEntry::List KBuildMimeTypeFactory::allEntries()
+KSycocaEntry::List KBuildMimeTypeFactory::allEntries() const
 {
     assert (KSycoca::self()->isBuilding());
     KSycocaEntry::List lst;
