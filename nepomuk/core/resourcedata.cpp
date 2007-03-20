@@ -17,7 +17,7 @@
 #include "tools.h"
 #include "ontology.h"
 
-#include <knepomuk/knep.h>
+#include <knepomuk/knepomuk.h>
 #include <knepomuk/services/rdfrepository.h>
 #include <knepomuk/services/resourceidservice.h>
 #include <knepomuk/rdf/statementlistiterator.h>
