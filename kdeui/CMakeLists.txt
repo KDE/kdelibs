@@ -219,8 +219,8 @@ set( kdeui_UI
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
-qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServer.xml jobs/uiserverinterface )
-qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServerCallbacks.xml kuiserverjobtracker_p.h KSharedUiServerProxy jobs/uiservercallbacks )
+qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServer.xml )
+qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServerCallbacks.xml kuiserverjobtracker_p.h KSharedUiServerProxy uiservercallbacks )
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
