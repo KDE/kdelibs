@@ -47,15 +47,21 @@ void KConfigSkeletonTest::initTestCase()
 
   setCurrentGroup("MyGroup");
   addItemBool("MySetting1",mMyBool,DEFAULT_SETTING1);
+#if 0
   addItemColor("MySetting2",mMyColor,DEFAULT_SETTING2);
+#endif
 
   setCurrentGroup("MyOtherGroup");
+#if 0
   addItemFont("MySetting3",mMyFont,DEFAULT_SETTING3);
+#endif
   addItemString("MySetting4",mMyString,DEFAULT_SETTING4);
 
   QCOMPARE( mMyBool, DEFAULT_SETTING1 );
+#if 0 // TODO needs kdeui
   QCOMPARE( mMyColor, DEFAULT_SETTING2 );
   QCOMPARE( mMyFont, DEFAULT_SETTING3 );
+#endif
   QCOMPARE( mMyString, DEFAULT_SETTING4 );
 
 }
@@ -77,8 +83,10 @@ void KConfigSkeletonTest::testSimple()
   readConfig ();
 
   QCOMPARE( mMyBool, WRITE_SETTING1 );
+#if 0 // TODO needs kdeui
   QCOMPARE( mMyColor, WRITE_SETTING2 );
   QCOMPARE( mMyFont, WRITE_SETTING3 );
+#endif
   QCOMPARE( mMyString, WRITE_SETTING4 );
 
 }
@@ -88,8 +96,10 @@ void KConfigSkeletonTest::cleanupTestCase()
   setDefaults ();
 
   QCOMPARE( mMyBool, DEFAULT_SETTING1 );
+#if 0 // TODO needs kdeui
   QCOMPARE( mMyColor, DEFAULT_SETTING2 );
   QCOMPARE( mMyFont, DEFAULT_SETTING3 );
+#endif
   QCOMPARE( mMyString, DEFAULT_SETTING4 );
 
  writeConfig();
