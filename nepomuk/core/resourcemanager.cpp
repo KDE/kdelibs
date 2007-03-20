@@ -19,9 +19,9 @@
 
 #include <kmetadata/resource.h>
 
-#include <knep/knep.h>
-#include <knep/services/rdfrepository.h>
-#include <knep/rdf/statementlistiterator.h>
+#include <knepomuk/knep.h>
+#include <knepomuk/services/rdfrepository.h>
+#include <knepomuk/rdf/statementlistiterator.h>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>

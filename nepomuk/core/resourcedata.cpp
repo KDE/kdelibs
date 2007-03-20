@@ -17,10 +17,10 @@
 #include "tools.h"
 #include "ontology.h"
 
-#include <knep/knep.h>
-#include <knep/services/rdfrepository.h>
-#include <knep/services/resourceidservice.h>
-#include <knep/rdf/statementlistiterator.h>
+#include <knepomuk/knep.h>
+#include <knepomuk/services/rdfrepository.h>
+#include <knepomuk/services/resourceidservice.h>
+#include <knepomuk/rdf/statementlistiterator.h>
 
 #include <kdebug.h>
 

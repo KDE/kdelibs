@@ -19,7 +19,7 @@
 #include <kmetadata/variant.h>
 #include <kmetadata/kmetadata_export.h>
 
-#include <knep/rdf/node.h>
+#include <knepomuk/rdf/node.h>
 
 namespace Nepomuk {
     namespace KMetaData {

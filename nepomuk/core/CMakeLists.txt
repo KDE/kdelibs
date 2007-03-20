@@ -30,7 +30,7 @@ include_directories(
   ${nepomuk_backbone_SOURCE_DIR}
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
-  ${KNEP_INCLUDE_DIR}
+  ${KNEPOMUK_INCLUDE_DIR}
 )
 
 set(kmetadata_LIB_SRCS
@@ -51,7 +51,7 @@ kde4_add_library(kmetadata SHARED ${kmetadata_LIB_SRCS})
 add_dependencies(kmetadata rcgen)
 
 target_link_libraries(kmetadata
-  knep
+  knepomuk
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBRARY}

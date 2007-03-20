@@ -19,7 +19,7 @@
 
 #include <kmetadata/variant.h>
 
-#include <knep/rdf/statement.h>
+#include <knepomuk/rdf/statement.h>
 
 
 namespace Nepomuk {
