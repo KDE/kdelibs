@@ -133,13 +133,13 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      }
      if (!home_dir || !home_dir[0])
      {
-        fprintf(stderr, "Aborting. $HOME not set!");
-        exit(255);
+        fprintf(stderr, "Aborting. $HOME not set!\n");
+        return 1;
      }
      if (strlen(home_dir) > (PATH_MAX-100))
      {
-        fprintf(stderr, "Aborting. Home directory path too long!");
-        exit(255);
+        fprintf(stderr, "Aborting. Home directory path too long!\n");
+        return 1;
      }
      kde_home++;
      strncpy(kde_tmp_dir, home_dir, PATH_MAX);
@@ -231,7 +231,6 @@ int build_link(const char *tmp_prefix, const char *kde_prefix)
      if (mkdtemp(user_tmp_dir)==0) return 1; /*JOWENN: isn't that the better solution ?? */
 #endif
      return create_link(kde_tmp_dir, user_tmp_dir);
-     return 1;
   }
   result = check_tmp_dir(tmp_buf);
   if (result == 0) return 0; /* Success */
