@@ -418,11 +418,11 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
         }
         s = QTextStream( &f ).readAll();
     }
-    s.replace( "RESOURCECOMMENT", writeComment( comment, 0 ) );
-    s.replace( "RESOURCENAMEUPPER", name().toUpper() );
-    s.replace( "RESOURCENAME", name() );
-    s.replace( "PARENTRESOURCELOWER", parent->name().toLower() );
-    s.replace( "PARENTRESOURCE", parent->name() );
+    s.replace( "KMETADATA_RESOURCECOMMENT", writeComment( comment, 0 ) );
+    s.replace( "KMETADATA_RESOURCENAMEUPPER", name().toUpper() );
+    s.replace( "KMETADATA_RESOURCENAME", name() );
+    s.replace( "KMETADATA_PARENTRESOURCELOWER", parent->name().toLower() );
+    s.replace( "KMETADATA_PARENTRESOURCE", parent->name() );
 
     QString methods;
     QTextStream ms( &methods );
@@ -506,8 +506,8 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
         includeString += "class " + includeIt.next() + ";\n";
     }
 
-    s.replace( "OTHERCLASSES", includeString );
-    s.replace( "METHODS", methods );
+    s.replace( "KMETADATA_OTHERCLASSES", includeString );
+    s.replace( "KMETADATA_METHODS", methods );
 
     stream << s;
 
@@ -526,10 +526,10 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         }
         s = QTextStream( &f ).readAll();
     }
-    s.replace( "RESOURCENAMELOWER", name().toLower() );
-    s.replace( "RESOURCENAME", name() );
-    s.replace( "RESOURCETYPEURI", uri );
-    s.replace( "PARENTRESOURCE", parent->name() );
+    s.replace( "KMETADATA_RESOURCENAMELOWER", name().toLower() );
+    s.replace( "KMETADATA_RESOURCENAME", name() );
+    s.replace( "KMETADATA_RESOURCETYPEURI", uri );
+    s.replace( "KMETADATA_PARENTRESOURCE", parent->name() );
 
     QString methods;
     QTextStream ms( &methods );
@@ -576,7 +576,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
 
     ms << allResourcesDefinition() << endl;
 
-    s.replace( "METHODS", methods );
+    s.replace( "KMETADATA_METHODS", methods );
 
     stream << s;
 

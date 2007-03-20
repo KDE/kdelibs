@@ -222,5 +222,5 @@ QString Nepomuk::KMetaData::errorString( int code )
     }
 }
 
-
-METHODS
+// do not remove, will be replaced with method definitions by the KMetaData class generator
+KMETADATA_METHODS

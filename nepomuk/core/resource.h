@@ -26,7 +26,8 @@ namespace Nepomuk {
 	class ResourceData;
 	class Variant;
 
-OTHERCLASSES
+	// do not remove. Will be replaced with class declarations by the KMetaData class generator.
+	KMETADATA_OTHERCLASSES
 
 	enum ErrorCode {
 	    ERROR_SUCCESS = 0,
@@ -284,7 +285,8 @@ OTHERCLASSES
 		 */
 		bool operator==( const Resource& ) const;
 
-METHODS
+		// do not remove. Will be replaced with method declarations by the KMetaData class generator.
+		KMETADATA_METHODS
 
 	    private:
 		ResourceData* m_data;

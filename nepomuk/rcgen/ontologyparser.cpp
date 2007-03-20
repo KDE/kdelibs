@@ -241,7 +241,7 @@ bool OntologyParser::writeOntology( const QString& dir )
     // FIXME: type inheritance
 
     QString ctor = ontologySrcTemplate;
-    ctor.replace( "CONSTRUCTOR", s );
+    ctor.replace( "KMETADATA_CONSTRUCTOR", s );
 
     QFile f( dir + "/ontology_ctor.cpp" );
     if( f.open( QIODevice::WriteOnly ) ) {
