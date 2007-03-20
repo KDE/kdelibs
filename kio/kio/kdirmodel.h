@@ -75,6 +75,11 @@ public:
     QModelIndex indexForItem( const KFileItem& ) const;
 
     /**
+     * Return the index for a given url. This can be slow.
+     */
+    QModelIndex indexForUrl( const KUrl& ) const;
+
+    /**
      * Notify the model that the item at this index has changed.
      * For instance because KMimeTypeResolver called determineMimeType on it.
      * This makes the model emit its dataChanged signal at this index, so that views repaint.
