@@ -37,10 +37,9 @@ class KIO::JobUiDelegate::Private
 {
 public:
     Private() : showProgressInfo(true),
-                progressId(0), userTimestamp(0) { }
+                userTimestamp(0) { }
 
     bool showProgressInfo;
-    int progressId;
     QPointer<QWidget> errorParentWidget;
     unsigned long userTimestamp;
 };
@@ -121,8 +120,6 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            time_t mtimeDest)
 {
     kDebug() << "Observer::open_RenameDialog job=" << job << endl;
-    if (job)
-        kDebug() << "                        progressId=" << d->progressId << endl;
     // We now do it in process => KDE4: move this code out of Observer (back to job.cpp), so that
     // opening the rename dialog doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
     RenameDialog_Result res = KIO::open_RenameDialog(caption, src, dest, mode,
