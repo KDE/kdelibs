@@ -592,8 +592,8 @@ void KApplication::init(bool GUIenabled)
   pSessionConfig = 0L;
   bSessionManagement = true;
 
-  qRegisterMetaType<KUrl>("KUrl");
-  qRegisterMetaType<KUrl::List>("KUrl::List");
+  qRegisterMetaType<KUrl>();
+  qRegisterMetaType<KUrl::List>();
 
 #ifdef Q_WS_WIN
   KApplication_init_windows();
