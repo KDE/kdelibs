@@ -97,8 +97,6 @@ protected:
     */
    virtual bool isBuilding() { return true; }
 
-   void createMenuAttribute( KServiceGroup::Ptr entry );
-
    QStringList m_allResourceDirs;
    QString m_trackId;
 };
