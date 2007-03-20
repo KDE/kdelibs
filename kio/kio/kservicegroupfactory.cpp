@@ -69,11 +69,6 @@ KServiceGroupFactory * KServiceGroupFactory::self()
 KServiceGroup::Ptr KServiceGroupFactory::findGroupByDesktopPath(const QString &_name, bool deep)
 {
    if (!sycocaDict()) return KServiceGroup::Ptr(); // Error!
-
-   // Warning : this assumes we're NOT building a database
-   // But since findGroupByDesktopPath isn't called in that case...
-   // [ see KServiceTypeFactory for how to do it if needed ]
-
    int offset = sycocaDict()->find_string( _name );
    if (!offset) return KServiceGroup::Ptr(); // Not found
 

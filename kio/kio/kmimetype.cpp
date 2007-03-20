@@ -617,6 +617,3 @@ void KMimeType::virtual_hook( int id, void* data )
 
 void KFolderType::virtual_hook( int id, void* data )
 { KMimeType::virtual_hook( id, data ); }
-
-#include "k3mimetyperesolver.moc"
-

@@ -55,6 +55,7 @@ set(kiocore_STAT_SRCS
   kio/kmimemagicrule.cpp
   kio/kmimetypetrader.cpp
   kio/kmimetype.cpp
+  kio/k3mimetyperesolver.cpp
   kio/kdedesktopmimetype.cpp
   kio/kservicegroup.cpp
   kio/kservicegroupfactory.cpp

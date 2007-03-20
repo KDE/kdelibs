@@ -132,6 +132,8 @@ void KMimeTypeTest::testFindByUrl()
 {
     KMimeType::Ptr mf;
 
+    QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("http:/")) );
+    QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("file:/")) );
     mf = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
     QVERIFY( mf );
 

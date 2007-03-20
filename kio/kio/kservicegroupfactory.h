@@ -52,7 +52,7 @@ public:
   /**
    * Find a group ( by desktop path, e.g. "Applications/Editors")
    */
-  KServiceGroup::Ptr findGroupByDesktopPath( const QString &_name, bool deep = true );
+  virtual KServiceGroup::Ptr findGroupByDesktopPath( const QString &_name, bool deep = true );
 
   /**
    * Find a base group by name, e.g. "settings"
