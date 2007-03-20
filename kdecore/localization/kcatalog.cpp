@@ -30,6 +30,13 @@
 #include <locale.h>
 #include "gettext.h"
 
+// not defined on win32 :(
+#ifdef _MSC_VER
+# ifndef LC_MESSAGES
+#  define LC_MESSAGES 42
+# endif
+#endif
+
 static const QByteArray GLUE = GETTEXT_CONTEXT_GLUE;
 
 class KCatalogPrivate
