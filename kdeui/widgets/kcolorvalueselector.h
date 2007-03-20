@@ -21,6 +21,7 @@
 #define KVALUESELECTOR_H
 
 #include "kselector.h"
+#include "kcolorchoosermode.h"
 #include <QtGui/QPixmap>
 
 class KDEUI_EXPORT KColorValueSelector : public KSelector
@@ -38,13 +39,19 @@ public:
 
   ~KColorValueSelector();
   
+  void updateContents();
+
   int hue() const;
   void setHue( int h );
   int saturation() const;
   void setSaturation( int s );
+  int colorValue() const;
+  void setColorValue( int v );
 
-  void updateContents();
+  void setChooserMode (KColorChooserMode c);
 
+  KColorChooserMode chooserMode ();
+	
 protected:
   /**
    * Draws the contents of the widget on a pixmap,
@@ -64,6 +71,10 @@ private:
   class Private;
   friend class Private;
   Private *const d;
+  
+  int _hue;
+  int _sat;
+  int _colorValue;
   
   Q_DISABLE_COPY(KColorValueSelector)
 };

@@ -145,43 +145,4 @@ private:
   Q_DISABLE_COPY(KXYSelector)
 };
 
-class KDEUI_EXPORT KHueSaturationSelector : public KXYSelector
-{
-    Q_OBJECT
-public:
-  /**
-   * Constructs a hue/saturation selection widget.
-   */
-  KHueSaturationSelector( QWidget *parent=0);
-
-  /**
-   * Destructor.
-   */
-  ~KHueSaturationSelector();
-  
-protected:
-  /**
-   * Draws the contents of the widget on a pixmap,
-   * which is used for buffering.
-   */
-  virtual void drawPalette( QPixmap *pixmap );
-  virtual void resizeEvent( QResizeEvent * );
-
-  /**
-   * Reimplemented from KXYSelector. This drawing is
-   * buffered in a pixmap here. As real drawing
-   * routine, drawPalette() is used.
-   */
-  virtual void drawContents( QPainter *painter );
-
-private:
-  void updateContents();
-
-  class Private;
-  friend class Private;
-  Private * const d;
-  
-  Q_DISABLE_COPY(KHueSaturationSelector)
-};
-
 #endif /* KXYSELECTOR_H */

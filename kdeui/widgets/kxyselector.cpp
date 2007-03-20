@@ -60,15 +60,6 @@ public:
   QColor m_markerColor;
 };
 
-class KHueSaturationSelector::Private
-{
-public:
-  Private(KHueSaturationSelector *q): q(q) {}
-  
-  KHueSaturationSelector *q;
-  QPixmap pixmap;
-};
-
 KXYSelector::KXYSelector( QWidget *parent )
   : QWidget( parent )
     , d(new Private(this))
@@ -269,91 +260,6 @@ void KXYSelector::drawMarker( QPainter *p, int xp, int yp )
     p->drawEllipse(xp - 4, yp - 4, 8, 8);
 }
 
-static QVector<QColor> *s_standardPalette = 0;
-static KStaticDeleter<QVector<QColor> > spd;
 
-// Shared with KColorValueSelector
-KDEUI_EXPORT QVector<QColor> kdeui_standardPalette()
-{
-    if ( !s_standardPalette ) {
-        spd.setObject(s_standardPalette, new QVector<QColor>);
-
-        int i = 0;
-#define STANDARD_PAL_SIZE 17
-        s_standardPalette->resize( STANDARD_PAL_SIZE );
-
-        (*s_standardPalette)[i++] = Qt::red;
-        (*s_standardPalette)[i++] = Qt::green;
-        (*s_standardPalette)[i++] = Qt::blue;
-        (*s_standardPalette)[i++] = Qt::cyan;
-        (*s_standardPalette)[i++] = Qt::magenta;
-        (*s_standardPalette)[i++] = Qt::yellow;
-        (*s_standardPalette)[i++] = Qt::darkRed;
-        (*s_standardPalette)[i++] = Qt::darkGreen;
-        (*s_standardPalette)[i++] = Qt::darkBlue;
-        (*s_standardPalette)[i++] = Qt::darkCyan;
-        (*s_standardPalette)[i++] = Qt::darkMagenta;
-        (*s_standardPalette)[i++] = Qt::darkYellow;
-        (*s_standardPalette)[i++] = Qt::white;
-        (*s_standardPalette)[i++] = Qt::lightGray;
-        (*s_standardPalette)[i++] = Qt::gray;
-        (*s_standardPalette)[i++] = Qt::darkGray;
-        (*s_standardPalette)[i++] = Qt::black;
-    }
-    return *s_standardPalette;
-}
-
-KHueSaturationSelector::KHueSaturationSelector( QWidget *parent )
-	: KXYSelector( parent ), d(new Private(this))
-{
-	setRange( 0, 0, 359, 255 );
-}
-
-KHueSaturationSelector::~KHueSaturationSelector()
-{
-	delete d;
-}
-
-void KHueSaturationSelector::updateContents()
-{
-	drawPalette(&d->pixmap);
-}
-
-void KHueSaturationSelector::resizeEvent( QResizeEvent * )
-{
-	updateContents();
-}
-
-void KHueSaturationSelector::drawContents( QPainter *painter )
-{
-	painter->drawPixmap( contentsRect().x(), contentsRect().y(), d->pixmap );
-}
-
-void KHueSaturationSelector::drawPalette( QPixmap *pixmap )
-{
-	int xSize = contentsRect().width(), ySize = contentsRect().height();
-	QImage image( QSize(xSize, ySize), QImage::Format_RGB32 );
-	QColor col;
-	int h, s;
-	uint *p;
-
-	for ( s = ySize-1; s >= 0; s-- )
-	{
-		p = (uint *) image.scanLine( ySize - s - 1 );
-		for( h = 0; h < xSize; h++ )
-		{
-			col.setHsv( 359*h/(xSize-1), 255*s/((ySize == 1) ? 1 : ySize-1), 192 );
-			*p = col.rgb();
-			p++;
-		}
-	}
-
-	if ( pixmap->depth() <= 8 )
-	{
-                const QVector<QColor> standardPalette = kdeui_standardPalette();
-		KImageEffect::dither( image, standardPalette.data(), standardPalette.size() );
-	}
-	*pixmap=QPixmap::fromImage( image );
-}
 
 #include "kxyselector.moc"

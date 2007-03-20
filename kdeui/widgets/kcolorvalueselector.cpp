@@ -21,15 +21,18 @@
 #include <kimageeffect.h>
 #include <QPainter>
 #include <kstaticdeleter.h>
+#include <iostream>
 
 class KColorValueSelector::Private
 {
 public:
-  Private(KColorValueSelector *q): q(q), _hue(0), _sat(0) {}
+  Private(KColorValueSelector *q): q(q), _hue(0), _sat(0), _colorValue(0) {}
   
   KColorValueSelector *q;
   int _hue;
   int _sat;
+  int _colorValue;
+  KColorChooserMode _mode;
   QPixmap pixmap;
 };
 
@@ -70,6 +73,18 @@ void KColorValueSelector::setSaturation( int s )
   d->_sat = s;
 }
 
+int KColorValueSelector::colorValue () const
+{
+  return d->_colorValue;
+}
+
+void KColorValueSelector::setColorValue ( int v )
+{
+  d->_colorValue = v;
+}
+
+
+
 void KColorValueSelector::updateContents()
 {
 	drawPalette(&d->pixmap);
@@ -85,6 +100,24 @@ void KColorValueSelector::drawContents( QPainter *painter )
 	painter->drawPixmap( contentsRect().x(), contentsRect().y(), d->pixmap );
 }
 
+void KColorValueSelector::setChooserMode(KColorChooserMode c)
+{
+  if (c == ChooserHue) {
+      setRange(0, 360);
+  } else {
+      setRange(0, 255);
+  }
+   d->_mode = c;
+   
+   //really needed?
+   //emit modeChanged();
+}
+
+KColorChooserMode KColorValueSelector::chooserMode ()
+{
+	return d->_mode;
+}
+
 void KColorValueSelector::drawPalette( QPixmap *pixmap )
 {
 	int xSize = contentsRect().width(), ySize = contentsRect().height();
@@ -92,6 +125,10 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
 	QColor col;
 	uint *p;
 	QRgb rgb;
+	int _r, _g, _b;
+
+	col.setHsv(hue(), saturation(), colorValue());
+	col.getRgb(&_r, &_g, &_b);
 
 	if ( orientation() == Qt::Horizontal )
 	{
@@ -101,7 +138,32 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
 
 			for( int x = 0; x < xSize; x++ )
 			{
-				col.setHsv( d->_hue, d->_sat, 255*x/((xSize == 1) ? 1 : xSize-1) );
+
+				switch (chooserMode()) {
+				case ChooserClassic:
+				default:
+					col.setHsv( hue(), saturation(), 255*x/((xSize == 1) ? 1 : xSize-1) );
+					break;
+				case ChooserRed:
+					col.setRgb( 255*x/((xSize == 1) ? 1 : xSize-1), _g, _b);
+					break;
+				case ChooserGreen:
+					col.setRgb( _r, 255*x/((xSize == 1) ? 1 : xSize-1), _b);
+					break;
+				case ChooserBlue:
+					col.setRgb( _r, _g, 255*x/((xSize == 1) ? 1 : xSize-1));
+					break;
+				case ChooserHue:
+					col.setHsv( 360*x/((xSize == 1) ? 1 : xSize-1), 255, 255 );
+					break;
+				case ChooserSaturation:
+					col.setHsv( hue(), 255*x/((xSize == 1) ? 1 : xSize-1), colorValue() );
+					break;					
+				case ChooserValue:
+					col.setHsv( hue(), saturation(), 255*x/((xSize == 1) ? 1 : xSize-1) );
+					break;
+				}
+
 				rgb = col.rgb();
 				*p++ = rgb;
 			}
@@ -113,7 +175,32 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
 		for ( int v = 0; v < ySize; v++ )
 		{
 			p = (uint *) image.scanLine( ySize - v - 1 );
-			col.setHsv( d->_hue, d->_sat, 255*v/((ySize == 1) ? 1 : ySize-1) );
+
+			switch (chooserMode()) {
+				case ChooserClassic:
+				default:
+					col.setHsv( hue(), saturation(), 255*v/((ySize == 1) ? 1 : ySize-1) );
+					break;
+				case ChooserRed:
+					col.setRgb( 255*v/((ySize == 1) ? 1 : ySize-1), _g, _b);
+					break;
+				case ChooserGreen:
+					col.setRgb( _r, 255*v/((ySize == 1) ? 1 : ySize-1), _b);
+					break;
+				case ChooserBlue:
+					col.setRgb( _r, _g, 255*v/((ySize == 1) ? 1 : ySize-1));
+					break;
+				case ChooserHue:
+					col.setHsv( 360*v/((ySize == 1) ? 1 : ySize-1), 255, 255 );				
+				break;
+				case ChooserSaturation:
+					col.setHsv( hue(), 255*v/((ySize == 1) ? 1 : ySize-1), colorValue() );
+				break;
+				case ChooserValue:
+					col.setHsv( hue(), saturation(), 255*v/((ySize == 1) ? 1 : ySize-1) );
+				break;
+			}
+
 			rgb = col.rgb();
 			for ( int i = 0; i < xSize; i++ )
 				*p++ = rgb;
@@ -128,5 +215,6 @@ void KColorValueSelector::drawPalette( QPixmap *pixmap )
 	}
 	*pixmap=QPixmap::fromImage( image );
 }
+
 
 #include "kcolorvalueselector.moc"

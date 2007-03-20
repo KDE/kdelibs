@@ -63,7 +63,6 @@ set(kdeui_LIB_SRCS
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
- dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
  dialogs/kprogressdialog.cpp
@@ -153,6 +152,7 @@ set(kdeui_LIB_SRCS
  widgets/kfontrequester.cpp
  widgets/khbox.cpp
  widgets/khelpmenu.cpp
+ widgets/khuesaturationselect.cpp
  widgets/kkeybutton.cpp
  widgets/kinformationlabel.cpp
  widgets/kled.cpp
@@ -262,6 +262,7 @@ install( FILES
  dialogs/kdialog.h
  dialogs/kedittoolbar.h
  dialogs/kfontdialog.h
+ dialogs/khuesaturationselect.h
  dialogs/kinputdialog.h
  dialogs/kkeydialog.h
  dialogs/kmessagebox.h

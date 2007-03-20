@@ -35,6 +35,8 @@
 #include <qscrollarea.h>
 #include <qtablewidget.h>
 
+#include <kcolorchoosermode.h>
+
 class QComboBox;
 class QLineEdit;
 class KListWidget;
@@ -309,6 +311,13 @@ class KDEUI_EXPORT KColorDialog : public KDialog
     Q_PRIVATE_SLOT(d, void slotColorPicker())
     Q_PRIVATE_SLOT(d, void slotAddToCustomColors())
     Q_PRIVATE_SLOT(d, void slotDefaultColorClicked())
+    Q_PRIVATE_SLOT(d, void setHMode ( void ))
+    Q_PRIVATE_SLOT(d, void setSMode ( void ))
+    Q_PRIVATE_SLOT(d, void setVMode ( void ))
+    Q_PRIVATE_SLOT(d, void setRMode ( void ))
+    Q_PRIVATE_SLOT(d, void setGMode ( void ))
+    Q_PRIVATE_SLOT(d, void setBMode ( void ))
+
     /**
      * Write the settings of the dialog to config file.
      **/
