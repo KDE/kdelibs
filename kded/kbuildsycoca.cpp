@@ -380,8 +380,6 @@ bool KBuildSycoca::build()
      entry->setLayoutInfo(kdeMenu->layoutList);
      createMenu(QString(), QString(), kdeMenu);
 
-     createMenuAttribute( entry );
-
      (void) existingResourceDirs();
      *g_allResourceDirs += g_vfolder->allDirectories();
 
@@ -401,19 +399,6 @@ bool KBuildSycoca::build()
   qDeleteAll(entryDictList);
   return result;
 }
-
-void KBuildSycoca::createMenuAttribute( KServiceGroup::Ptr entry )
-{
-    KServiceGroup::List list = entry->entries(true, true);
-    KServiceGroup::List::ConstIterator it = list.begin();
-    for (; it != list.end(); ++it) {
-        if ((*it)->isType(KST_KServiceGroup)) {
-            KServiceGroup::Ptr g = KServiceGroup::Ptr::staticCast( *it );
-            createMenuAttribute( g );
-        }
-    }
-}
-
 
 void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFolderMenu::SubMenu *menu)
 {
