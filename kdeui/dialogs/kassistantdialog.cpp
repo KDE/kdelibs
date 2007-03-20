@@ -79,9 +79,11 @@ KAssistantDialog::~KAssistantDialog()
 void KAssistantDialog::init()
 {
     setButtons(Cancel | User1 | User2 | User3 | Help);
-    setButtonText(User3, i18n("Back"));
-    setButtonText(User2, i18n("Next"));
+    setButtonGuiItem( User3, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
+    setButtonText( User2, i18nc("Opposite to Back", "Next") );
     setButtonText(User1, i18n("Finish"));
+    setButtonIcon( User2, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
+    setButtonIcon( User1, KIcon("dialog-apply") );
     setDefaultButton(User2);
     showButtonSeparator(true);
     setFaceType(Plain);
