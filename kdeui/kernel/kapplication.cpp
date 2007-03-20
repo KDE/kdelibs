@@ -40,6 +40,7 @@
 #include <qwidget.h>
 #include <qlist.h>
 #include <QtDBus/QtDBus>
+#include <qmetatype.h>
 
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
@@ -61,6 +62,7 @@
 #include "kstandarddirs.h"
 #include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
+#include "kurl.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -589,6 +591,9 @@ void KApplication::init(bool GUIenabled)
 
   pSessionConfig = 0L;
   bSessionManagement = true;
+
+  qRegisterMetaType<KUrl>("KUrl");
+  qRegisterMetaType<KUrl::List>("KUrl::List");
 
 #ifdef Q_WS_WIN
   KApplication_init_windows();
