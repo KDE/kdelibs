@@ -76,11 +76,12 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
         QString filename = tf.section( '/', -1 );
         for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
              it != d->resources.end(); ++it ) {
-            if( filename == it.value().headerName() ) {
+            // we use startsWith() for a hackish handling of such suffixes as ".in"
+            if( filename.startsWith( it.value().headerName() ) ) {
                 qDebug() << "Using header template file " << tf << " for class " << it.value().name();
                 it.value().headerTemplateFilePath = tf;
             }
-            else if( filename == it.value().sourceName() ) {
+            else if( filename.startsWith( it.value().sourceName() ) ) {
                 qDebug() << "Using source template file " << tf << " for class " << it.value().name();
                 it.value().sourceTemplateFilePath = tf;
             }

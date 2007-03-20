@@ -13,8 +13,9 @@
  */
 
 #include "variant.h"
-#include "resource.h"
 #include "datetime.h"
+
+#include <kmetadata/resource.h>
 
 #include <kdebug.h>
 

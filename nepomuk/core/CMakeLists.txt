@@ -10,8 +10,8 @@ KMETADATA_GENERATE_FROM_ONTOLOGY(
   NAO_HEADERS
   NAO_SOURCES
   NAO_INCLUDES
-  ${libkmetadata_SOURCE_DIR}/resource.h
-  ${libkmetadata_SOURCE_DIR}/resource.cpp
+  ${libkmetadata_SOURCE_DIR}/resource.h.in
+  ${libkmetadata_SOURCE_DIR}/resource.cpp.in
 )
 
 KMETADATA_GENERATE_FROM_ONTOLOGY(
@@ -38,7 +38,6 @@ include_directories(
 set(kmetadata_LIB_SRCS
   variant.cpp
   datetime.cpp
-#  resource.cpp
   resourcedata.cpp
   resourcemanager.cpp
   ontology.cpp
@@ -65,8 +64,6 @@ set_target_properties(kmetadata PROPERTIES VERSION 1.0.0 SOVERSION 1 )
 install(TARGETS kmetadata DESTINATION ${LIB_INSTALL_DIR} )
 install(FILES
   variant.h
-  datetime.h
-#  resource.h
   resourcemanager.h
   ontology.h
   kmetadata.h
