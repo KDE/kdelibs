@@ -300,6 +300,13 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
        */
       reg = tmpReg = new RegExp(a0.toString(exec), RegExp::None);
     }
+    if (!reg->isValid()) {
+      delete tmpReg;
+      Object err = Error::create(exec, SyntaxError,
+				 "Invalid regular expression");
+      exec->setException(err);
+      return err;
+    }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp(reg, s);
     reg->prepareMatch(s);
