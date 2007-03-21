@@ -66,7 +66,7 @@ public:
 	@param domain Domain name. If left as QString:null, user configuration will be used. "local."
 		means local LAN
 	 */
-	PublicService(const QString& name=QString(),const QString& type=QString(),
+	explicit PublicService(const QString& name=QString(),const QString& type=QString(),
 		      unsigned int port=0,const QString& domain=QString());
 
 	~PublicService();

@@ -53,7 +53,7 @@ public:
 	@todo Explain if @p domain is the FQDN, or if host + "." + domain is.
 	@todo Explain when @p port is needed (does it override @p name?).
 	 */
-	ServiceBase(const QString& name=QString(),const QString& type=QString(),
+	explicit ServiceBase(const QString& name=QString(),const QString& type=QString(),
 		    const QString& domain=QString(), const QString& host=QString(),
 		    unsigned short port=0);
 
@@ -116,7 +116,7 @@ protected:
 
 	virtual void virtual_hook(int, void*);
 private:
-	ServiceBasePrivate* d;
+	ServiceBasePrivate* const d;
 
 };
 

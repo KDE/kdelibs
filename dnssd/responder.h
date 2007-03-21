@@ -44,7 +44,7 @@ class Responder : public QObject
 	Q_OBJECT
 
 public:
-	Responder(DNSServiceRef ref=0,QObject *parent = 0);
+	explicit Responder(DNSServiceRef ref=0,QObject *parent = 0);
 
 	~Responder();
 
