@@ -60,6 +60,16 @@ static void errorMissingMimeType( const QString& _type )
         0, i18n( "Could not find mime type\n%1", _type ) );
 }
 
+static QString iconForMime( const QString& mime )
+{
+    QString icon = mime;
+    int slashindex = icon.indexOf( QLatin1Char( '/' ) );
+    if ( slashindex != -1 ) {
+        icon[ slashindex ] = QLatin1Char( '-' );
+    }
+    return icon;
+}
+
 // KDE4 TODO: when we are in kdecore, share d pointer with KServiceType
 class KMimeType::Private
 {
@@ -595,12 +605,12 @@ const QString & KMimeType::defaultMimeType()
 
 QString KMimeType::iconName() const
 {
-    return name();
+    return iconForMime( name() );
 }
 
 QString KMimeType::iconName( const KUrl& ) const
 {
-    return name();
+    return iconForMime( name() );
 }
 
 const QStringList& KMimeType::patterns() const
