@@ -1047,8 +1047,6 @@ static double parseDate(const UString &date)
         day = strtol(dateString, &newPosStr, 10);
         if (errno)
             return NaN;
-        if (day < 1 /*|| day > 31*/)
-            return NaN;
         dateString = newPosStr;
         if (*dateString == '/')
             dateString++;
@@ -1079,10 +1077,10 @@ static double parseDate(const UString &date)
                 return NaN;
             dateString++;
         }
-    }
 
-    if (month < 0 /*|| month > 11*/)
-        return NaN;
+        if (month < 0 || month > 11)
+            return NaN;
+    }
 
     // '99 23:12:40 GMT'
     if (year <= 0 && *dateString) {
@@ -1099,7 +1097,7 @@ static double parseDate(const UString &date)
         dateString = newPosStr;
     else {
         // ' 23:12:40 GMT'
-        if (dateString != newPosStr && *newPosStr == ':') {
+        if (*newPosStr == ':') {
             // There was no year; the number was the hour.
             year = -1;
         } else if (isSpaceLike(*newPosStr)) {
@@ -1152,6 +1150,10 @@ static double parseDate(const UString &date)
                 dateString = newPosStr;
 
                 if (second < 0 || second > 59)
+                    return NaN;
+
+                // disallow trailing colon seconds
+                if (*dateString == ':')
                     return NaN;
             }
 
