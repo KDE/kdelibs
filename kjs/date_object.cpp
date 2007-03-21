@@ -372,8 +372,7 @@ bool DateProtoFuncImp::implementsCall() const
 
 Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
-  if ((id == ToString || id == ValueOf || id == GetTime || id == SetTime) &&
-      !thisObj.inherits(&DateInstanceImp::info)) {
+  if (!thisObj.inherits(&DateInstanceImp::info)) {
     // non-generic function called on non-date object
 
     // ToString and ValueOf are generic according to the spec, but the mozilla
