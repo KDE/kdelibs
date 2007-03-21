@@ -200,7 +200,10 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     }
 
     typedef KLibFactory* (*t_func)();
-    t_func func = (t_func)sym;
+    // Cast the void* to non-pointer type first - it's not legal to
+    // cast a pointer-to-object directly to a pointer-to-function.
+    ptrdiff_t tmp = reinterpret_cast<ptrdiff_t>(sym);
+    t_func func = reinterpret_cast<t_func>(tmp);
     KLibFactory* factory = func();
 
     if( !factory )
@@ -229,7 +232,10 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     }
 
     typedef QObject* (*t_func)();
-    t_func func = (t_func)sym;
+    // Cast the void* to non-pointer type first - it's not legal to
+    // cast a pointer-to-object directly to a pointer-to-function.
+    ptrdiff_t tmp = reinterpret_cast<ptrdiff_t>(sym);
+    t_func func = reinterpret_cast<t_func>(tmp);
     QObject* instance = func();
     KLibFactory *factory = qobject_cast<KLibFactory *>(instance);
 
@@ -383,7 +389,7 @@ static inline QByteArray makeLibName( const char* name )
       pos = 0;
     if (libname.indexOf('.', pos) < 0) {
         const char* const extList[] = { ".so", ".dylib", ".bundle", ".dll", ".sl" };
-        for (int i = 0; i < sizeof(extList) / sizeof(*extList); ++i) {
+        for (uint i = 0; i < sizeof(extList) / sizeof(*extList); ++i) {
            if (QLibrary::isLibrary(libname + extList[i]))
                return libname + extList[i];
         }
