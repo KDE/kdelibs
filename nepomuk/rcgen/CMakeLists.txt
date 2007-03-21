@@ -1,6 +1,9 @@
 project(kmetadata_rcgen)
 
-set(CMAKE_MODULE_PATH ${kmetadata_rcgen_SOURCE_DIR}/../cmake/modules)
+set(CMAKE_MODULE_PATH
+  ${kmetadata_rcgen_SOURCE_DIR}/../cmake/modules
+  ${kmetadata_rcgen_SOURCE_DIR}/../../backbone/cmake/modules
+)
 
 # search packages used by KDE
 find_package(KDE4 REQUIRED)
