@@ -27,7 +27,7 @@
 #if defined _WIN32 || defined _WIN64
 
 #ifndef KDNSSD_EXPORT
-# if defined(MAKE_DNSSD_LIB)
+# if defined(MAKE_KDNSSD_LIB)
    /* We are building this library */ 
 #  define KDNSSD_EXPORT KDE_EXPORT
 # else
