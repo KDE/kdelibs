@@ -31,6 +31,9 @@ namespace KJS {
 // I'm not sure that's guaranteed. There could be alignment issues with this, since arrays of
 // characters don't necessarily need the same alignment doubles do, but for now it seems to work.
 // It would be good to figure out a 100% clean way that still avoids code that runs at init time.
+#if COMPILER(MSVC) 
+#define AVOID_STATIC_CONSTRUCTORS 1
+#endif
 
 #if !AVOID_STATIC_CONSTRUCTORS
     extern const double NaN = NAN;
