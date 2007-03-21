@@ -300,7 +300,8 @@ void KColorCells::mousePressEvent( QMouseEvent *e )
 
 int KColorCells::positionToCell(const QPoint &pos, bool ignoreBorders) const
 {
-   //TODO ignoreBorders not yet handled
+    //TODO ignoreBorders not yet handled
+    Q_UNUSED( ignoreBorders )
 
    QTableWidgetItem* tableItem = itemAt(pos);
 
@@ -1008,68 +1009,71 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   //
   // add the HSV fields
   //
-  d->hmode = new QRadioButton(i18n("H:"), page);
-  l_lbot->addWidget(d->hmode, 0,1);  
+  l_lbot->setColumnStretch( 2, 10 );
+
+  d->hmode = new QRadioButton(i18n("Hue:"), page);
+  l_lbot->addWidget(d->hmode, 0, 0);
 
   d->hedit = new KColorSpinBox( 0, 359, 1, page );
-  l_lbot->addWidget(d->hedit, 0, 3);
+  l_lbot->addWidget(d->hedit, 0, 1);
   connect( d->hedit, SIGNAL( valueChanged(int) ),
-  	SLOT( slotHSVChanged() ) );
+           SLOT( slotHSVChanged() ) );
   connect( d->hmode, SIGNAL( clicked() ),
-	   SLOT (setHMode()));
-	   
-  d->smode = new QRadioButton(i18n("S:"), page);
-  l_lbot->addWidget(d->smode, 1,1);
-  
-  d->sedit = new KColorSpinBox( 0, 255, 1, page );
-  l_lbot->addWidget(d->sedit, 1, 3);
-  connect( d->sedit, SIGNAL( valueChanged(int) ),
-  	SLOT( slotHSVChanged() ) );
-  connect( d->smode, SIGNAL( clicked() ),
-	   SLOT (setSMode()));  	
+           SLOT (setHMode()));
 
-  d->vmode = new QRadioButton(i18n("V:"), page);
-  l_lbot->addWidget(d->vmode, 2,1);
-  
+  d->smode = new QRadioButton(i18n("Saturation:"), page);
+  l_lbot->addWidget( d->smode, 1, 0 );
+
+  d->sedit = new KColorSpinBox( 0, 255, 1, page );
+  l_lbot->addWidget( d->sedit, 1, 1 );
+  connect( d->sedit, SIGNAL( valueChanged(int) ),
+           SLOT( slotHSVChanged() ) );
+  connect( d->smode, SIGNAL( clicked() ),
+           SLOT (setSMode()));  	
+
+  d->vmode = new QRadioButton(i18n("Value:"), page);
+  l_lbot->addWidget(d->vmode, 2, 0);
+
   d->vedit = new KColorSpinBox( 0, 255, 1, page );
-  l_lbot->addWidget(d->vedit, 2, 3);
+  l_lbot->addWidget( d->vedit, 2, 1 );
   connect( d->vedit, SIGNAL( valueChanged(int) ),
-  	SLOT( slotHSVChanged() ) );
+           SLOT( slotHSVChanged() ) );
   connect( d->vmode, SIGNAL( clicked() ),
-	   SLOT (setVMode()));  	
+           SLOT (setVMode()));
+
 
   //
   // add the RGB fields
   //
-  d->rmode = new QRadioButton(i18n("R:"), page);
-  l_lbot->addWidget(d->rmode, 0,4);
+  d->rmode = new QRadioButton(i18n("Red:"), page);
+  l_lbot->addWidget( d->rmode, 0, 3 );
   d->redit = new KColorSpinBox( 0, 255, 1, page );
-  l_lbot->addWidget(d->redit, 0, 5);
+  l_lbot->addWidget( d->redit, 0, 4 );
   connect( d->redit, SIGNAL( valueChanged(int) ),
-  	SLOT( slotRGBChanged() ) );
+           SLOT( slotRGBChanged() ) );
   connect( d->rmode, SIGNAL( clicked() ),
-	   SLOT (setRMode()));
-	   
-  d->gmode = new QRadioButton(i18n("G:"), page);
-  l_lbot->addWidget(d->gmode, 1,4);
-  
+           SLOT (setRMode()));
+
+  d->gmode = new QRadioButton(i18n("Green:"), page);
+  l_lbot->addWidget(d->gmode, 1, 3);
+
   d->gedit = new KColorSpinBox( 0, 255,1, page );
-  l_lbot->addWidget(d->gedit, 1, 5);
+  l_lbot->addWidget( d->gedit, 1, 4 );
   connect( d->gedit, SIGNAL( valueChanged(int) ),
-  	SLOT( slotRGBChanged() ) );
+           SLOT( slotRGBChanged() ) );
   connect( d->gmode, SIGNAL( clicked() ),
-	   SLOT (setGMode()));
-	   
-  d->bmode = new QRadioButton(i18n("B:"), page);
-  l_lbot->addWidget(d->bmode, 2,4);
-  
+           SLOT (setGMode()));
+
+  d->bmode = new QRadioButton(i18n("Blue:"), page);
+  l_lbot->addWidget( d->bmode, 2, 3 );
+
   d->bedit = new KColorSpinBox( 0, 255, 1, page );
-  l_lbot->addWidget(d->bedit, 2, 5);
+  l_lbot->addWidget( d->bedit, 2, 4 );
   connect( d->bedit, SIGNAL( valueChanged(int) ),
-  	SLOT( slotRGBChanged() ) );
+           SLOT( slotRGBChanged() ) );
   connect( d->bmode, SIGNAL( clicked() ),
-	   SLOT (setBMode()));
-	   
+           SLOT (setBMode()));
+
   //
   // the entry fields should be wide enough to hold 8888888
   //
@@ -1190,6 +1194,8 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   d->htmlName->installEventFilter(this);
   d->hsSelector->installEventFilter(this);
   d->hsSelector->setAcceptDrops(true);
+
+  d->setVMode();
 }
 
 KColorDialog::~KColorDialog()
@@ -1257,20 +1263,18 @@ QColor KColorDialog::defaultColor() const
 }
 
 
-void KColorDialog::KColorDialogPrivate::setChooserMode (KColorChooserMode c)
+void KColorDialog::KColorDialogPrivate::setChooserMode( KColorChooserMode c )
 {
-	_mode = c; 
-	hsSelector->setChooserMode(c); 
-	valuePal->setChooserMode(c);
-	
-	
-  updateModeButtons();
-  valuePal->updateContents();
-  hsSelector->updateContents();
-  valuePal->repaint( );
-  hsSelector->repaint( );
-  slotHSVChanged();
-	
+    _mode = c; 
+    hsSelector->setChooserMode(c); 
+    valuePal->setChooserMode(c);
+
+    updateModeButtons();
+    valuePal->updateContents();
+    hsSelector->updateContents();
+    valuePal->repaint( );
+    hsSelector->repaint( );
+    slotHSVChanged();
 }
 
 
@@ -1519,26 +1523,25 @@ void KColorDialog::KColorDialogPrivate::slotHSChanged( int x, int y )
   QColor col;
 
   switch (chooserMode()) {
-	case ChooserHue:
-	default:
-		col.setHsv( _h, x, y);
-		break;
-	case ChooserSaturation:
-		col.setHsv( x, _s, y);
-		break;
-	case ChooserValue:
-                col.setHsv( x, y, _v );
-		break;	
-	case ChooserRed:
-		col.setRgb( _r, x, y);
-		break;
-	case ChooserGreen:
-		col.setRgb( x, _g, y);
-		break;
-	case ChooserBlue:
-		col.setRgb( y, x, _b);
-		break;
-	
+      case ChooserRed:
+          col.setRgb( _r, x, y);
+          break;
+      case ChooserGreen:
+          col.setRgb( x, _g, y);
+          break;
+      case ChooserBlue:
+          col.setRgb( y, x, _b);
+          break;
+      case ChooserHue:
+          col.setHsv( _h, x, y);
+          break;
+      case ChooserSaturation:
+          col.setHsv( x, _s, y);
+          break;
+      case ChooserValue:
+      default:
+          col.setHsv( x, y, _v );
+          break;	
   }
   _setColor( col );
 }
