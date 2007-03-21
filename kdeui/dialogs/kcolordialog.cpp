@@ -1000,6 +1000,8 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
 
   d->valuePal = new KColorValueSelector( page );
   d->valuePal->setMinimumSize(26, 70);
+  d->valuePal->setIndent( false );
+  d->valuePal->setArrowDirection( Qt::RightArrow );
   l_ltop->addWidget(d->valuePal, 1);
   connect( d->valuePal, SIGNAL( valueChanged( int ) ),
 	   SLOT( slotVChanged( int ) ) );
