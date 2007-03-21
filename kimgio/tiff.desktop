@@ -7,4 +7,4 @@ ServiceTypes=QImageIOPlugins
 X-KDE-ImageFormat=tiff,TIFF,tif,TIF
 X-KDE-MimeType=image/tiff
 X-KDE-Read=true
-X-KDE-Write=true
+X-KDE-Write=false
