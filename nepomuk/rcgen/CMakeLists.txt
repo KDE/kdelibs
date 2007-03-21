@@ -10,6 +10,7 @@ find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 include(MacroLibrary)
 
+find_package(GNUWIN32)
 find_package(Soprano REQUIRED)
 
 include_directories(
