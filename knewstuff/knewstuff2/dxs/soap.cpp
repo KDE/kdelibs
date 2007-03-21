@@ -72,10 +72,12 @@ void Soap::call_tree(QDomElement element, QString endpoint)
 
 	kDebug() << "Call(socket)!" << endl;
 
+	KUrl url(endpoint);
+	QString hostname = url.host();
+	int port = url.port();
+
 	m_socket = new QTcpSocket();
-	m_socket->connectToHost("new.kstuff.org", 10000);
-	//m_socket->connectToHost("localhost", 10000);
-	// FIXME: use connection parameter from providers' webService()
+	m_socket->connectToHost(hostname, port);
 
 	m_socket->write(data, data.size());
 

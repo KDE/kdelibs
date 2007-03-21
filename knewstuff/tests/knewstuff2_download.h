@@ -8,7 +8,7 @@
 
 namespace KNS
 {
-	class Engine;
+	class CoreEngine;
 };
 
 class QListWidget;
@@ -48,7 +48,7 @@ private:
 
         FeedWidget *m_feedtab;
         KNewStuff2Download::Category m_checkedButton;
-	KNS::Engine *m_engine;
+	KNS::CoreEngine *m_engine;
 	QListWidget *m_providerlist;
 	QTabWidget *m_feeds;
 	QWidget *m_activefeed;

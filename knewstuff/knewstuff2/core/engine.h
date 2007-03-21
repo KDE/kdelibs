@@ -17,8 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KNEWSTUFF2_ENGINE_H
-#define KNEWSTUFF2_ENGINE_H
+#ifndef KNEWSTUFF2_COREENGINE_H
+#define KNEWSTUFF2_COREENGINE_H
 
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>
@@ -43,20 +43,20 @@ class Installation;
  * and offers high-level synchronization calls which make use of an
  * underlying GHNS or DXS infrastructure.
  */
-class KDE_EXPORT Engine : public QObject
+class KDE_EXPORT CoreEngine : public QObject
 {
     Q_OBJECT
   public:
     /**
      * Constructor.
      */
-    Engine();
+    CoreEngine();
 
     /**
      * Destructor. Frees up all the memory again which might be taken
      * by cached entries and providers.
      */
-    ~Engine();
+    ~CoreEngine();
 
     /**
      * Initializes the engine. This step is application-specific and relies

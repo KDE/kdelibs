@@ -3,7 +3,7 @@
 #include <knewstuff2/core/ktranslatable.h>
 #include <knewstuff2/core/providerhandler.h>
 #include <knewstuff2/core/entryhandler.h>
-#include <knewstuff2/core/engine.h>
+#include <knewstuff2/core/coreengine.h>
 
 #include <kstandarddirs.h>
 #include <kapplication.h>
@@ -105,7 +105,7 @@ void KNewStuff2Test::engineTest()
 {
 	kDebug() << "-- test kns2 engine" << endl;
 
-	m_engine = new KNS::Engine();
+	m_engine = new KNS::CoreEngine();
 	bool ret = m_engine->init("knewstuff2_test.knsrc");
 
 	kDebug() << "-- engine test result: " << ret << endl;

@@ -1,13 +1,13 @@
 #ifndef KNEWSTUFF2_DXS_ENGINE_H
 #define KNEWSTUFF2_DXS_ENGINE_H
 
-#include <knewstuff2/core/engine.h>
+#include <knewstuff2/core/coreengine.h>
 
 namespace KNS {
 
 class Dxs;
 
-class KDE_EXPORT DxsEngine : public Engine
+class KDE_EXPORT DxsEngine : public CoreEngine
 {
     Q_OBJECT
   public:

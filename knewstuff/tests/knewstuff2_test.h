@@ -8,7 +8,7 @@
 
 namespace KNS
 {
-	class Engine;
+	class CoreEngine;
 };
 
 class KNewStuff2Test : public QObject
@@ -28,7 +28,7 @@ public slots:
 	void slotPayloadFailed();
 private:
 	void quitTest();
-	KNS::Engine *m_engine;
+	KNS::CoreEngine *m_engine;
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "knewstuff2_download.h"
 
-#include <knewstuff2/core/engine.h>
+#include <knewstuff2/core/coreengine.h>
 #include <knewstuff2/core/author.h>
 
 #include <kstandarddirs.h>
@@ -244,7 +244,7 @@ void KNewStuff2Download::run()
 {
     kDebug() << "-- test kns2 engine" << endl;
 
-    m_engine = new KNS::Engine();
+    m_engine = new KNS::CoreEngine();
     bool success = m_engine->init("knewstuff2_test.knsrc");
 
     kDebug() << "-- engine test result: " << success << endl;

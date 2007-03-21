@@ -5,6 +5,7 @@
 using namespace KNS;
 
 DxsEngine::DxsEngine()
+: CoreEngine()
 {
 	m_dxs = NULL;
 }
@@ -28,7 +29,7 @@ void DxsEngine::loadEntries(Provider *provider)
 	}
 	else
 	{
-		Engine::loadEntries(provider);
+		CoreEngine::loadEntries(provider);
 		return;
 	}
 

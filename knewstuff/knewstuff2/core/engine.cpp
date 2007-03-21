@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "engine.h"
+#include "coreengine.h"
 
 #include "entryhandler.h"
 #include "providerhandler.h"
@@ -41,7 +41,7 @@
 
 using namespace KNS;
 
-Engine::Engine()
+CoreEngine::CoreEngine()
 {
 	m_provider_loader = NULL;
 	m_entry_loader = NULL;
@@ -52,12 +52,12 @@ Engine::Engine()
 	m_installation = NULL;
 }
 
-Engine::~Engine()
+CoreEngine::~CoreEngine()
 {
 	shutdown();
 }
 
-bool Engine::init(const QString &configfile)
+bool CoreEngine::init(const QString &configfile)
 {
 	KConfig conf(configfile);
 	if(conf.getConfigState() == KConfig::NoAccess)
@@ -128,7 +128,7 @@ bool Engine::init(const QString &configfile)
 	return true;
 }
 
-void Engine::start()
+void CoreEngine::start()
 {
 	loadProvidersCache();
 	loadEntryCache();
@@ -155,7 +155,7 @@ void Engine::start()
 		SLOT(slotProvidersFailed()));
 }
 
-void Engine::loadEntries(Provider *provider)
+void CoreEngine::loadEntries(Provider *provider)
 {
 	EntryLoader *entry_loader = new EntryLoader();
 	entry_loader->load(provider->downloadUrl().url());
@@ -170,7 +170,7 @@ void Engine::loadEntries(Provider *provider)
 		SLOT(slotEntriesFailed()));
 }
 
-void Engine::downloadPreview(Entry *entry)
+void CoreEngine::downloadPreview(Entry *entry)
 {
 	if(m_previewfiles.contains(entry))
 	{
@@ -193,7 +193,7 @@ void Engine::downloadPreview(Entry *entry)
 	m_entry_jobs[job] = entry;
 }
 
-void Engine::downloadPayload(Entry *entry)
+void CoreEngine::downloadPayload(Entry *entry)
 {
 	KUrl source = KUrl(entry->payload().representation());
 
@@ -219,7 +219,7 @@ void Engine::downloadPayload(Entry *entry)
 	m_entry_jobs[job] = entry;
 }
 
-bool Engine::uploadEntry(Provider *provider, Entry *entry)
+bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 {
 	kDebug(550) << "Uploading " << entry->name().representation() << "..." << endl;
 
@@ -252,7 +252,7 @@ bool Engine::uploadEntry(Provider *provider, Entry *entry)
 	return true;
 }
 
-void Engine::slotProvidersLoaded(KNS::Provider::List *list)
+void CoreEngine::slotProvidersLoaded(KNS::Provider::List *list)
 {
 	mergeProviders(list);
 
@@ -264,13 +264,13 @@ void Engine::slotProvidersLoaded(KNS::Provider::List *list)
 	// FIXME: cleanup provider loader
 }
 
-void Engine::slotProvidersFailed()
+void CoreEngine::slotProvidersFailed()
 {
 	emit signalProvidersFailed();
 	// FIXME: cleanup provider loader
 }
 
-void Engine::slotEntriesLoaded(KNS::Entry::List *list)
+void CoreEngine::slotEntriesLoaded(KNS::Entry::List *list)
 {
 	mergeEntries(list);
 
@@ -282,13 +282,13 @@ void Engine::slotEntriesLoaded(KNS::Entry::List *list)
 	// FIXME: cleanup entry loader
 }
 
-void Engine::slotEntriesFailed()
+void CoreEngine::slotEntriesFailed()
 {
 	emit signalEntriesFailed();
 	// FIXME: cleanup entry loader
 }
 
-void Engine::slotPayloadResult(KJob *job)
+void CoreEngine::slotPayloadResult(KJob *job)
 {
 	if(job->error())
 	{
@@ -314,7 +314,7 @@ void Engine::slotPayloadResult(KJob *job)
 }
 
 // FIXME: this should be handled more internally to return a (cached) preview image
-void Engine::slotPreviewResult(KJob *job)
+void CoreEngine::slotPreviewResult(KJob *job)
 {
 	if(job->error())
 	{
@@ -339,7 +339,7 @@ void Engine::slotPreviewResult(KJob *job)
 	}
 }
 
-void Engine::slotUploadPayloadResult(KJob *job)
+void CoreEngine::slotUploadPayloadResult(KJob *job)
 {
 	if(job->error())
 	{
@@ -358,7 +358,7 @@ void Engine::slotUploadPayloadResult(KJob *job)
 		SLOT(slotUploadPreviewResult(KJob*)));
 }
 
-void Engine::slotUploadPreviewResult(KJob *job)
+void CoreEngine::slotUploadPreviewResult(KJob *job)
 {
 	if(job->error())
 	{
@@ -399,7 +399,7 @@ void Engine::slotUploadPreviewResult(KJob *job)
 		SLOT(slotUploadMetaResult(KJob*)));
 }
 
-void Engine::slotUploadMetaResult(KJob *job)
+void CoreEngine::slotUploadMetaResult(KJob *job)
 {
 	if(job->error())
 	{
@@ -418,7 +418,7 @@ void Engine::slotUploadMetaResult(KJob *job)
 	}
 }
 
-void Engine::loadRegistry(const QString &registrydir)
+void CoreEngine::loadRegistry(const QString &registrydir)
 {
 	KStandardDirs d;
 
@@ -429,7 +429,7 @@ void Engine::loadRegistry(const QString &registrydir)
 	{
 		kDebug(550) << " + Load from directory '" + (*it) + "'." << endl;
 		QDir dir((*it));
-		QStringList files = dir.entryList();
+		QStringList files = dir.entryList(QDir::Files | QDir::Readable);
 		for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
 		{
 			QString filepath = (*it) + "/" + (*fit);
@@ -485,7 +485,7 @@ void Engine::loadRegistry(const QString &registrydir)
 	}
 }
 
-void Engine::loadProvidersCache()
+void CoreEngine::loadProvidersCache()
 {
 	KStandardDirs d;
 
@@ -552,7 +552,7 @@ void Engine::loadProvidersCache()
 	}
 }
 
-void Engine::loadEntryCache()
+void CoreEngine::loadEntryCache()
 {
 	KStandardDirs d;
 
@@ -569,7 +569,7 @@ void Engine::loadEntryCache()
 	kDebug(550) << " + Load from directory '" + cachedir + "'." << endl;
 
 	QDir dir(cachedir);
-	QStringList files = dir.entryList();
+	QStringList files = dir.entryList(QDir::Files | QDir::Readable);
 	for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
 	{
 		QString filepath = cachedir + "/" + (*fit);
@@ -633,7 +633,7 @@ void Engine::loadEntryCache()
 	}
 }
 
-void Engine::shutdown()
+void CoreEngine::shutdown()
 {
 	m_entry_index.clear();
 	m_provider_index.clear();
@@ -651,7 +651,7 @@ void Engine::shutdown()
 	// FIXME: entry loader object not used yet - must be a list of those
 }
 
-void Engine::mergeProviders(Provider::List *providers)
+void CoreEngine::mergeProviders(Provider::List *providers)
 {
 	for(Provider::List::Iterator it = providers->begin(); it != providers->end(); it++)
 	{
@@ -682,7 +682,7 @@ void Engine::mergeProviders(Provider::List *providers)
 	}
 }
 
-void Engine::mergeEntries(Entry::List *entries)
+void CoreEngine::mergeEntries(Entry::List *entries)
 {
 	for(Entry::List::Iterator it = entries->begin(); it != entries->end(); it++)
 	{
@@ -724,7 +724,7 @@ void Engine::mergeEntries(Entry::List *entries)
 	}
 }
 
-void Engine::cacheProvider(Provider *provider)
+void CoreEngine::cacheProvider(Provider *provider)
 {
 	KStandardDirs d;
 
@@ -761,7 +761,7 @@ void Engine::cacheProvider(Provider *provider)
 	f.close();
 }
 
-void Engine::cacheEntry(Entry *entry)
+void CoreEngine::cacheEntry(Entry *entry)
 {
 	KStandardDirs d;
 
@@ -809,7 +809,7 @@ void Engine::cacheEntry(Entry *entry)
 	f.close();
 }
 
-void Engine::registerEntry(Entry *entry)
+void CoreEngine::registerEntry(Entry *entry)
 {
 	KStandardDirs d;
 
@@ -849,7 +849,7 @@ void Engine::registerEntry(Entry *entry)
 	f.close();
 }
 
-QString Engine::id(Entry *e)
+QString CoreEngine::id(Entry *e)
 {
 	// This is the primary key of an entry:
 	// A lookup on the untranslated original name, which must exist
@@ -857,14 +857,14 @@ QString Engine::id(Entry *e)
 	return e->name().translated(QString());
 }
 
-QString Engine::pid(Provider *p)
+QString CoreEngine::pid(Provider *p)
 {
 	// This is the primary key of a provider:
 	// The download URL
 	return p->downloadUrl().url();
 }
 
-bool Engine::install(QString payloadfile)
+bool CoreEngine::install(QString payloadfile)
 {
 	QList<Entry*> entries = m_payloadfiles.keys(payloadfile);
 	if(entries.size() != 1)
@@ -1047,11 +1047,11 @@ bool Engine::install(QString payloadfile)
 	return true;
 }
 
-bool Engine::uninstall(KNS::Entry *entry)
+bool CoreEngine::uninstall(KNS::Entry *entry)
 {
 	entry->setStatus(Entry::Deleted);
 	// FIXME: remove payload file, and maybe unpacked files
 	return true;
 }
 
-#include "engine.moc"
+#include "coreengine.moc"
