@@ -115,7 +115,7 @@ Thread::Thread (WeaverImpl *parent)
 
 Thread::~Thread()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 unsigned int Thread::id()

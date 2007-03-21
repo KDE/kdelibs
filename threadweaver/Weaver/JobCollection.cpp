@@ -138,7 +138,7 @@ JobCollection::~JobCollection()
     if ( d->weaver != 0 ) // still queued
         dequeueElements();
     // QObject cleanup takes care of the job runners
-    delete d; d = 0;
+    delete d;
 }
 
 void JobCollection::addJob ( Job *job )

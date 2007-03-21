@@ -55,6 +55,10 @@ namespace ThreadWeaver {
 
         /** reimplemented */
         void internalJobDone( Job* );
+
+    private:
+        class Private;
+        Private * const d;
     };
 
 }

@@ -35,7 +35,7 @@
 using namespace ThreadWeaver;
 
 JobSequence::JobSequence ( QObject *parent )
-    : JobCollection ( parent )
+    : JobCollection ( parent ), d ( 0 )
 {
 }
 

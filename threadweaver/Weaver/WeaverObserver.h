@@ -67,6 +67,10 @@ namespace ThreadWeaver {
         void threadSuspended ( Thread* );
         void threadExited ( Thread* );
         void weaverStateChanged ( State* );
+
+    private:
+        class Private;
+        Private * const d;
     };
 
 }

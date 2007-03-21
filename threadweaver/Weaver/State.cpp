@@ -63,7 +63,7 @@ State::State ( WeaverInterface *weaver )
 
 State::~State()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 const QString& State::stateName () const

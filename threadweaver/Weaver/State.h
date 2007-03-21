@@ -105,7 +105,7 @@ namespace ThreadWeaver {
         WeaverInterface* weaver();
 
         class Private;
-        Private *d;
+        Private * const d;
     };
 }
 

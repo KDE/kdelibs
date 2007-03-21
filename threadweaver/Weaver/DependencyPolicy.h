@@ -107,7 +107,7 @@ namespace ThreadWeaver {
 
     private:
         class Private;
-        Private* d;
+        Private * const d;
 
     public:
         /** This method should be useful for debugging purposes. */

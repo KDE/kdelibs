@@ -105,7 +105,7 @@ namespace ThreadWeaver {
         void dequeueElements();
 
       class Private;
-      Private* d;
+      Private * const d;
 
     };
 
