@@ -27,9 +27,9 @@
 #ifndef KXMLCORE_PLATFORM_H
 #define KXMLCORE_PLATFORM_H
 
-//Force KDE build here in our tree...
+// Force KDE build here in our tree...
 #ifndef BUILDING_KDE__
-#define BUILDING_KDE__
+#define BUILDING_KDE__ 1
 #endif
 
 // PLATFORM handles OS, operating environment, graphics API, and CPU
@@ -74,7 +74,7 @@
 // PLATFORM(KDE)
 // PLATFORM(MAC)
 // PLATFORM(WIN)
-#if defined(BUILDING_KDE__)
+#if BUILDING_KDE__
 #define KXMLCORE_PLATFORM_KDE 1
 #elif PLATFORM(DARWIN)
 #define KXMLCORE_PLATFORM_MAC 1
@@ -129,6 +129,11 @@
 
 // Compiler
 
+// COMPILER(CWP)
+#if defined(__MWERKS__)
+#define KXMLCORE_COMPILER_CWP 1
+#endif
+
 // COMPILER(MSVC)
 #if defined(_MSC_VER)
 #define KXMLCORE_COMPILER_MSVC 1
@@ -151,9 +156,14 @@
 #define KXMLCORE_COMPILER_CYGWIN 1
 #endif
 
-// multiple threads only supported on Mac for now
+// multiple threads & bindings only supported on Mac for now
 #if PLATFORM(MAC)
+#ifndef KXMLCORE_USE_MULTIPLE_THREADS
 #define KXMLCORE_USE_MULTIPLE_THREADS 1
+#endif
+#ifndef KXMLCORE_USE_BINDINGS
+#define KXMLCORE_USE_BINDINGS 1
+#endif
 #endif
 
 // for Unicode, KDE uses Qt, everything else uses ICU

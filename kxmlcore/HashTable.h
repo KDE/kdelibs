@@ -233,7 +233,7 @@ namespace KXMLCore {
 
     using std::swap;
 
-#if !COMPILER(MSVC)
+#if !COMPILER(MSVC) && !COMPILER(CWP)
     // Visual C++ has a swap for pairs defined.
 
     // swap pairs by component, in case of pair members that specialize swap

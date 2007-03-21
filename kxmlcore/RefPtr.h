@@ -24,6 +24,7 @@
 #define KXMLCORE_REF_PTR_H
 
 #include <algorithm>
+#include "PassRefPtr.h"
 
 namespace KXMLCore {
 

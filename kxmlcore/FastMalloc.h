@@ -23,6 +23,7 @@
 #ifndef KXMLCORE_FAST_MALLOC_H
 #define KXMLCORE_FAST_MALLOC_H
 
+#include <pthread.h>
 #include <stdlib.h>
 #include <new>
 #include "Platform.h"
@@ -44,6 +45,8 @@ namespace KXMLCore {
     inline void *fastRealloc(void* p, size_t n) {
         return realloc(p, n);
     }
+
+    inline void fastMallocRegisterThread(pthread_t) {}
 
 } // namespace KXMLCore
 
