@@ -339,6 +339,7 @@ install( FILES
  widgets/kfontrequester.h
  widgets/kcmodule.h
  widgets/kcolorbutton.h
+ widgets/kcolorchoosermode.h
  widgets/kcolorcombo.h
  widgets/kcompletionbox.h
  widgets/kcombobox.h
