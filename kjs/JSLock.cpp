@@ -57,26 +57,12 @@ void JSLock::unlock()
   pthread_mutex_unlock(&interpreterLock);
 }
 
-#else
-
-// If threading support is off, set the lock count to a constant value of 1 so assertions
-// that the lock is held don't fail
-const int interpreterLockCount = 1;
-
-void JSLock::lock()
-{
-}
-
-void JSLock::unlock()
-{
-}
-
-#endif
-
 int JSLock::lockCount()
 {
     return interpreterLockCount;
 }
+
+#endif
         
 JSLock::DropAllLocks::DropAllLocks()
 {

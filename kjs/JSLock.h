@@ -73,6 +73,13 @@ namespace KJS {
         JSLock& operator=(const JSLock&);
     };
 
+#if !USE(MULTIPLE_THREADS)
+    inline void JSLock::lock()      {}
+    inline void JSLock::unlock()    {}
+    // Fix the lock count at 1 so assertions that the lock is held don't fail
+    inline int JSLock::lockCount()  { return 1; }
+#endif
+
 } // namespace
 
 #endif // KJS_INTERPRETER_LOCK_H

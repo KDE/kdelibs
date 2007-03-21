@@ -45,6 +45,9 @@
 #include "string_object.h"
 #include "types.h"
 #include "value.h"
+#ifdef KJS_DEBUG_MEM
+#include "lexer.h"
+#endif
 
 #if USE(BINDINGS)
 #include "runtime.h"
@@ -681,13 +684,12 @@ Interpreter* Interpreter::interpreterWithGlobalObject(JSObject* globalObject)
 }
 
 #ifdef KJS_DEBUG_MEM
-#include "lexer.h"
 void Interpreter::finalCheck()
 {
   fprintf(stderr,"Interpreter::finalCheck()\n");
   Collector::collect();
 
-  Node::finalCheck();
+//  Node::finalCheck();
   Collector::finalCheck();
   Lexer::globalClear();
   UString::globalClear();
