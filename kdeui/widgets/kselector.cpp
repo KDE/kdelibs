@@ -35,13 +35,19 @@
  * See KColorDialog for example.
  */
 
-#define ARROWWINGSIZE 2
+#define ARROWSIZE 5
 
 class KSelector::Private
 {
 public:
-  QPoint m_previousPos;
-  bool m_indent;
+    Private()
+    {
+        arrowPE = QStyle::PE_IndicatorArrowLeft;
+        m_indent = true;
+    }
+
+    bool m_indent;
+    QStyle::PrimitiveElement arrowPE;
 };
 
 class KGradientSelector::KGradientSelectorPrivate
@@ -55,7 +61,7 @@ public:
   QColor color1;
   QColor color2;
   QString text1;
-  QString text2;  
+  QString text2;
 };
 
 KSelector::KSelector( QWidget *parent )
@@ -63,8 +69,6 @@ KSelector::KSelector( QWidget *parent )
  , d(new Private)
 {
     setOrientation(Qt::Horizontal);
-    d->m_indent = true;
-    d->m_previousPos = calcArrowPos( 0 );
 }
 
 KSelector::KSelector( Qt::Orientation o, QWidget *parent )
@@ -72,10 +76,7 @@ KSelector::KSelector( Qt::Orientation o, QWidget *parent )
  , d(new Private)
 {
     setOrientation(o);
-    d->m_indent = true;
-    d->m_previousPos = calcArrowPos( 0 );
 }
-
 
 KSelector::~KSelector()
 {
@@ -94,20 +95,38 @@ bool KSelector::indent() const
 
 QRect KSelector::contentsRect() const
 {
-  int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  int iw = (w < ARROWWINGSIZE) ? ARROWWINGSIZE : w;
+    int w = indent() ? style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) : 0;
+    //TODO: is the height:width ratio of an indicator arrow always 2:1? hm.
+    int iw = (w < ARROWSIZE) ? ARROWSIZE : w;
 
-  if ( orientation() == Qt::Vertical )
-    return QRect( w, iw, width() - w * 2 - 5, height() - 2 * iw );
-  else
-    return QRect( iw, w, width() - 2 * iw, height() - w * 2 - 5 );
+    if ( orientation() == Qt::Vertical ) {
+        if ( arrowDirection() == Qt::RightArrow ) {
+            return QRect( w + ARROWSIZE, iw,
+                          width() - w*2 - ARROWSIZE,
+                          height() - iw*2 );
+        } else {
+            return QRect( w, iw,
+                          width() - w*2 - ARROWSIZE,
+                          height() - iw*2 );
+        }
+    } else { // Qt::Horizontal
+        if ( arrowDirection() == Qt::UpArrow ) {
+            return QRect( iw, w,
+                          width() - 2*iw,
+                          height() - w*2 - ARROWSIZE );
+        } else {
+            return QRect( iw, w + ARROWSIZE,
+                          width() - 2*iw,
+                          height() - w*2 - ARROWSIZE );
+        }
+    }
 }
 
 void KSelector::paintEvent( QPaintEvent * )
 {
   QPainter painter;
   int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-  int iw = (w < ARROWWINGSIZE) ? ARROWWINGSIZE : w;
+  int iw = (w < ARROWSIZE) ? ARROWSIZE : w;
 
   painter.begin( this );
 
@@ -163,7 +182,7 @@ void KSelector::moveArrow( const QPoint &pos )
 {
     int val;
     int w = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    int iw = (w < ARROWWINGSIZE) ? ARROWWINGSIZE : w;
+    int iw = (w < ARROWSIZE) ? ARROWSIZE : w;
 
     if ( orientation() == Qt::Vertical )
         val = ( maximum() - minimum() ) * (height() - pos.y() - iw)
@@ -180,20 +199,86 @@ QPoint KSelector::calcArrowPos( int val )
 {
     QPoint p;
     int w = style()->pixelMetric( QStyle::PM_DefaultFrameWidth );
-    int iw = ( w < ARROWWINGSIZE ) ? ARROWWINGSIZE : w;
+    int iw = ( w < ARROWSIZE ) ? ARROWSIZE : w;
 
     if ( orientation() == Qt::Vertical )
     {
         p.setY( height() - iw - 1 - (height() - 2 * iw - 1) * val  / ( maximum() - minimum() ) );
-        p.setX( width() - 5 );
+
+        if ( d->arrowPE == QStyle::PE_IndicatorArrowRight ) {
+            p.setX( 0 );
+        } else {
+            p.setX( width() - 5 );
+        }
     }
     else
     {
         p.setX( iw + (width() - 2 * iw - 1) * val  / ( maximum() - minimum() ) );
         p.setY( height() - 5 );
+        if ( d->arrowPE == QStyle::PE_IndicatorArrowDown ) {
+            p.setY( 0 );
+        } else {
+            p.setY( height() - 5 );
+        }
     }
 
     return p;
+}
+
+void KSelector::setArrowDirection( Qt::ArrowType direction )
+{
+    switch ( direction ) {
+        case Qt::UpArrow:
+            if ( orientation() == Qt::Horizontal ) {
+                d->arrowPE = QStyle::PE_IndicatorArrowUp;
+            } else {
+                d->arrowPE = QStyle::PE_IndicatorArrowLeft;
+            }
+            break;
+        case Qt::DownArrow:
+            if ( orientation() == Qt::Horizontal ) {
+                d->arrowPE = QStyle::PE_IndicatorArrowDown;
+            } else {
+                d->arrowPE = QStyle::PE_IndicatorArrowRight;
+            }
+            break;
+        case Qt::LeftArrow:
+            if ( orientation() == Qt::Vertical ) {
+                d->arrowPE = QStyle::PE_IndicatorArrowLeft;
+            } else {
+                d->arrowPE = QStyle::PE_IndicatorArrowDown;
+            }
+            break;
+        case Qt::RightArrow:
+            if ( orientation() == Qt::Vertical ) {
+                d->arrowPE = QStyle::PE_IndicatorArrowRight;
+            } else {
+                d->arrowPE = QStyle::PE_IndicatorArrowUp;
+            }
+            break;
+
+        case Qt::NoArrow:
+            break;
+    }
+}
+
+Qt::ArrowType KSelector::arrowDirection() const
+{
+    switch ( d->arrowPE ) {
+        case QStyle::PE_IndicatorArrowUp:
+            return Qt::UpArrow;
+            break;
+        case QStyle::PE_IndicatorArrowDown:
+            return Qt::DownArrow;
+            break;
+        case QStyle::PE_IndicatorArrowRight:
+            return Qt::RightArrow;
+            break;
+        case QStyle::PE_IndicatorArrowLeft:
+        default:
+            return Qt::LeftArrow;
+            break;
+    }
 }
 
 void KSelector::drawContents( QPainter * )
@@ -201,43 +286,20 @@ void KSelector::drawContents( QPainter * )
 
 void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 {
-#if 0
-
-    QPolygon array(3);
-
     painter->setPen( QPen() );
     painter->setBrush( QBrush( palette().color(QPalette::ButtonText) ) );
-    array.setPoint( 0, pos.x()+0, pos.y()+0 );
-    array.setPoint( 1, pos.x()+5, pos.y()+5 );
-    if ( orientation() == Qt::Vertical )
-    {
-      array.setPoint( 2, pos.x()+5, pos.y()-5 );
-    }
-    else
-    {
-      array.setPoint( 2, pos.x()-5, pos.y()+5 );
-    }
 
-    painter->drawPolygon( array );
-#else
-    QPolygon array(3);
+    QStyleOption o;
 
-    painter->setPen( QPen() );
-    painter->setBrush( QBrush( palette().color(QPalette::ButtonText) ) );
-    array.setPoint( 0, pos.x()+0, pos.y()+0 );
-    if ( orientation() == Qt::Vertical )
-    {
-      array.setPoint( 1, pos.x()+5, pos.y() + ARROWWINGSIZE + 1 );
-      array.setPoint( 2, pos.x()+5, pos.y() - ARROWWINGSIZE - 1 );
-    }
-    else
-    {
-      array.setPoint( 1, pos.x() + ARROWWINGSIZE + 1, pos.y() + 5 );
-      array.setPoint( 2, pos.x() - ARROWWINGSIZE -1, pos.y() + 5 );
-    }
+    if ( orientation() == Qt::Vertical ) {
+        o.rect = QRect( pos.x(), pos.y() - ARROWSIZE / 2,
+                        ARROWSIZE, ARROWSIZE );
+    } else {
+        o.rect = QRect( pos.x() - ARROWSIZE / 2, pos.y(),
+                        ARROWSIZE, ARROWSIZE );
 
-    painter->drawPolygon( array );
-#endif
+    }
+    style()->drawPrimitive( d->arrowPE, &o, painter, this );
 }
 
 //----------------------------------------------------------------------------

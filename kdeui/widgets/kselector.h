@@ -75,6 +75,16 @@ public:
    */
   bool indent() const;
 
+  /**
+   * Sets the arrow direction.
+   */
+  void setArrowDirection( Qt::ArrowType direction );
+
+  /**
+   * @return the current arrow direction
+   */
+  Qt::ArrowType arrowDirection() const;
+
 protected:
   /**
    * Override this function to draw the contents of the control.
