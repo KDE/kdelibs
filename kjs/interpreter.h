@@ -39,7 +39,7 @@ namespace KJS {
   class TimeoutChecker;
   class Package;
   
-#if PLATFORM(MAC)
+#if USE(BINDINGS)
   namespace Bindings {
     class RootObject;
   }
@@ -327,7 +327,7 @@ namespace KJS {
      */
     virtual bool isSafeScript(const Interpreter*) { return true; }
   
-#if PLATFORM(MAC)
+#if USE(BINDINGS)
     virtual void *createLanguageInstanceForValue(ExecState*, int language, JSObject* value, const Bindings::RootObject* origin, const Bindings::RootObject* current);
 #endif
 

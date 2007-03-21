@@ -18,6 +18,7 @@
  *
  */
 
+#include <math.h>
 #include "global.h"
 
 namespace KJS {
@@ -31,7 +32,10 @@ namespace KJS {
 // characters don't necessarily need the same alignment doubles do, but for now it seems to work.
 // It would be good to figure out a 100% clean way that still avoids code that runs at init time.
 
-#if PLATFORM(DARWIN)
+#if !AVOID_STATIC_CONSTRUCTORS
+    extern const double NaN = NAN;
+    extern const double Inf = INFINITY;
+#elif PLATFORM(DARWIN)
 
 #if PLATFORM(BIG_ENDIAN)
     extern const unsigned char NaN[sizeof(double)] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };

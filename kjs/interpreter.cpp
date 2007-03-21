@@ -46,7 +46,7 @@
 #include "types.h"
 #include "value.h"
 
-#if PLATFORM(MAC)
+#if USE(BINDINGS)
 #include "runtime.h"
 #endif
 
@@ -707,7 +707,7 @@ void Interpreter::setShouldPrintExceptions(bool print)
 }
 
 // bindings are OS X WebKit-only for now
-#if PLATFORM(MAC)
+#if USE(BINDINGS)
 void *Interpreter::createLanguageInstanceForValue(ExecState *exec, int language, JSObject *value, const Bindings::RootObject *origin, const Bindings::RootObject *current)
 {
     return Bindings::Instance::createLanguageInstanceForValue (exec, (Bindings::Instance::BindingLanguage)language, value, origin, current);

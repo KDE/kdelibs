@@ -71,6 +71,7 @@ namespace KJS {
    * The initial value of the the global variable's "Number" property
    */
   class NumberObjectImp : public InternalFunctionImp {
+    using InternalFunctionImp::construct;
   public:
     NumberObjectImp(ExecState *exec,
                     FunctionPrototype *funcProto,
