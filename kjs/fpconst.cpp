@@ -35,7 +35,7 @@ namespace KJS {
 #define AVOID_STATIC_CONSTRUCTORS 1
 #endif
 
-#if !AVOID_STATIC_CONSTRUCTORS
+#if (defined(AVOID_STATIC_CONSTRUCTORS) && !AVOID_STATIC_CONSTRUCTORS)
     extern const double NaN = NAN;
     extern const double Inf = INFINITY;
 #elif PLATFORM(DARWIN)
