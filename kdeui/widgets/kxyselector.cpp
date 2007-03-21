@@ -166,8 +166,6 @@ void KXYSelector::paintEvent( QPaintEvent * /* ev */ )
   QStyleOptionFrame opt;
   opt.initFrom(this);
 
-  opt.state = QStyle::State_Sunken;
-
   QPainter painter;
   painter.begin( this );
 
