@@ -5,12 +5,12 @@
 
 namespace KNS {
 
-class KDE_EXPORT XEngine : public DxsEngine
+class KDE_EXPORT Engine : public DxsEngine
 {
     Q_OBJECT
   public:
-    XEngine();
-    ~XEngine();
+    Engine();
+    ~Engine();
 
     KNS::Entry::List downloadDialogModal();
     KNS::Entry *uploadDialogModal();

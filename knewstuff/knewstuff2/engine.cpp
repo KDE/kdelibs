@@ -2,30 +2,30 @@
 
 using namespace KNS;
 
-XEngine::XEngine()
+Engine::Engine()
 : DxsEngine()
 {
 }
 
-XEngine::~XEngine()
+Engine::~Engine()
 {
 }
 
-KNS::Entry::List XEngine::downloadDialogModal()
+KNS::Entry::List Engine::downloadDialogModal()
 {
 	return KNS::Entry::List();
 }
 
-KNS::Entry *XEngine::uploadDialogModal()
+KNS::Entry *Engine::uploadDialogModal()
 {
 	return NULL;
 }
 
-void XEngine::downloadDialog()
+void Engine::downloadDialog()
 {
 }
 
-void XEngine::uploadDialog()
+void Engine::uploadDialog()
 {
 }
 
