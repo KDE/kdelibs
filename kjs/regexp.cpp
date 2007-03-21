@@ -190,7 +190,7 @@ RegExp::RegExp(const UString &p, char flags)
 #ifndef NDEBUG
     char errorMessage[80];
     regerror(errorCode, &_regex, errorMessage, sizeof errorMessage);
-    fprintf(stderr, "KJS: regcomp failed with '%s'", errorMessage);
+    fprintf(stderr, "KJS: regcomp failed with '%s'\n", errorMessage);
 #endif
     _valid = false;
   }
@@ -364,6 +364,9 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   return s.substr(offsetVector[0], offsetVector[1] - offsetVector[0]);
 
 #else
+
+  if (!_valid)
+    return UString::null();
 
   const unsigned maxMatch = 10;
   regmatch_t rmatch[maxMatch];

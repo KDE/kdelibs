@@ -492,6 +492,10 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
        */
       reg = tmpReg = new RegExp(a0->toString(exec), RegExp::None);
     }
+    if (!reg->isValid()) {
+      delete tmpReg;
+      return throwError(exec, SyntaxError, "Invalid regular expression");
+    }
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->lexicalInterpreter()->builtinRegExp());
     reg->prepareMatch(u);
     UString mstr = regExpObj->performMatch(reg, u, 0, &pos);
