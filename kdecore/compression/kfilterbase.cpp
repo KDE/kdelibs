@@ -72,7 +72,8 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
         return new KGzipFilter;
     }
 #ifdef HAVE_BZIP2_SUPPORT
-    else if ( mimeType == QLatin1String( "application/x-bzip" ) )
+    else if ( mimeType == QLatin1String( "application/x-bzip" )
+              || mimetype == QLatin1String( "application/x-bzip2" ) ) // old name, kept for compatibility
     {
         return new KBzip2Filter;
     }
