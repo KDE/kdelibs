@@ -263,7 +263,6 @@ install( FILES
  dialogs/kdialog.h
  dialogs/kedittoolbar.h
  dialogs/kfontdialog.h
- dialogs/khuesaturationselect.h
  dialogs/kinputdialog.h
  dialogs/kkeydialog.h
  dialogs/kmessagebox.h
@@ -354,6 +353,7 @@ install( FILES
  widgets/keditlistbox.h
  widgets/khbox.h
  widgets/khelpmenu.h
+ widgets/khuesaturationselect.h
  widgets/kkeybutton.h
  widgets/kinformationlabel.h
  widgets/kled.h
