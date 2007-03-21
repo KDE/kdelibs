@@ -74,9 +74,9 @@ class KUTILS_EXPORT PluginPage : public KCModule
          * Standard KCModule constructor.
          * Automatically creates the KPluginSelector widget.
          */
-        PluginPage( const KComponentData &componentData,
-                    QWidget *parent = 0,
-                    const QStringList &args = QStringList() );
+        explicit PluginPage( const KComponentData &componentData,
+                             QWidget *parent = 0,
+                             const QStringList &args = QStringList() );
 
         ~PluginPage();
 

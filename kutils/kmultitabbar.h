@@ -66,7 +66,7 @@ public:
 	 */
 	enum KMultiTabBarStyle{VSNET=0, KDEV3=1, KONQSBC=2, KDEV3ICON=3,STYLELAST=0xffff};
 
-        KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0 );
+        explicit KMultiTabBar(KMultiTabBarMode bm,QWidget *parent=0 );
 	virtual ~KMultiTabBar();
 
 	/**
@@ -152,12 +152,7 @@ protected:
 	virtual void fontChange( const QFont& );
 	void updateSeparator();
 private:
-	class KMultiTabBarInternal *m_internal;
-	QBoxLayout *m_l;
-	QFrame *m_btnTabSep;
-	QList<KMultiTabBarButton*> m_buttons;
-	KMultiTabBarPosition m_position;
-	KMultiTabBarPrivate *d;
+	KMultiTabBarPrivate * const d;
 };
 
 /**
@@ -200,8 +195,7 @@ protected:
 	virtual void hideEvent( class QHideEvent*);
 	virtual void showEvent( class QShowEvent*);
 private:
-	int m_id;
-	KMultiTabBarButtonPrivate *d;
+	KMultiTabBarButtonPrivate * const d;
 Q_SIGNALS:
 	/**
 	 * this is emitted if  the button is clicked
@@ -234,9 +228,7 @@ public:
 	void showActiveTabText(bool show);
 	void resize(){ setSize( neededSize() ); }
 private:
-	bool m_showActiveTabText;
-	int m_expandedSize;
-	KMultiTabBarTabPrivate *d;
+	KMultiTabBarTabPrivate * const d;
 protected:
 	friend class KMultiTabBarInternal;
 	void setSize(int);

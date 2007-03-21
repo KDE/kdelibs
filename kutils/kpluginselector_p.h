@@ -38,6 +38,15 @@ class QStackedWidget;
 class KPluginSelectionWidget;
 class KPluginInfoLVI;
 
+enum CheckWhatDependencies
+{
+    /// If an item was checked, check all dependencies of that item
+    DependenciesINeed = 0,
+    /// If an item was unchecked, uncheck all items that depends on that item
+    DependenciesNeedMe
+};
+
+
 class KPluginSelector::Private
     : public QObject
 {

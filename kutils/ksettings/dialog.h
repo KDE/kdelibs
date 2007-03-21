@@ -101,7 +101,7 @@ class KUTILS_EXPORT Dialog : public QObject
          *                     dialog - centering the dialog over the parent
          *                     widget.
          */
-        Dialog( ContentInListView content = Static, QWidget * parent = 0 );
+        explicit Dialog( ContentInListView content = Static, QWidget * parent = 0 );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected
@@ -115,7 +115,7 @@ class KUTILS_EXPORT Dialog : public QObject
          *                     dialog - centering the dialog over the parent
          *                     widget.
          */
-         Dialog( const QStringList & components, QWidget * parent = 0 );
+         explicit Dialog( const QStringList & components, QWidget * parent = 0 );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected

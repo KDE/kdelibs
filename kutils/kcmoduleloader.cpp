@@ -191,22 +191,23 @@ void KCModuleLoader::showLastLoaderError(QWidget *parent)
 }
 
 KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & text,
-        const QString &details_, QWidget * parent )
+        const QString &details, QWidget * parent )
 {
-  QString details = details_;
-  if( details.isNull() )
-    details = i18n("<qt><p>The diagnostics is:<br>%1"
+  QString realDetails = details;
+  if( realDetails.isNull() )
+    realDetails = i18n("<qt><p>The diagnostics is:<br>%1"
         "<p>Possible reasons:</p><ul><li>An error occurred during your last "
         "KDE upgrade leaving an orphaned control module<li>You have old third party "
         "modules lying around.</ul><p>Check these points carefully and try to remove "
         "the module mentioned in the error message. If this fails, consider contacting "
         "your distributor or packager.</p></qt>", KLibLoader::self()->lastErrorMessage());
   if( report & Dialog )
-    KMessageBox::detailedError( parent, text, details );
+    KMessageBox::detailedError( parent, text, realDetails );
   if( report & Inline )
-    return new KCMError( text, details, parent );
+    return new KCMError( text, realDetails, parent );
   return 0;
 }
 
 // vim: ts=2 sw=2 et
+
 

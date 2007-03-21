@@ -75,7 +75,7 @@ public:
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
-	KCModuleProxy( const KCModuleInfo& info, QWidget* parent = 0,
+	explicit KCModuleProxy( const KCModuleInfo& info, QWidget* parent = 0,
 			const QStringList& args = QStringList() );
 
 	/**
@@ -88,7 +88,7 @@ public:
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
-	KCModuleProxy( const QString& serviceName, QWidget* parent = 0,
+	explicit KCModuleProxy( const QString& serviceName, QWidget* parent = 0,
 			const QStringList& args = QStringList() );
 
 	/**
@@ -99,7 +99,7 @@ public:
 	 * @param args This is used in the implementation and is internal.
 	 * Use the default.
 	 */
-	KCModuleProxy( const KService::Ptr& service, QWidget* parent = 0,
+	explicit KCModuleProxy( const KService::Ptr& service, QWidget* parent = 0,
 			const QStringList& args = QStringList() );
 
 	/**
@@ -243,13 +243,6 @@ protected:
 	 */
 	void showEvent( QShowEvent * );
 
-	/**
-	 * Internal initialization function, called by the constructors.
-	 *
-	 * @internal
-	 */
-	void init( const KCModuleInfo& info );
-
 
 	/**
 	 * Emits the quickHelpChanged signal.
@@ -278,7 +271,7 @@ private Q_SLOTS:
 private:
 
 	class Private;
-	Private* d;
+	Private * const d;
 };
 
 #endif // KCMODULEPROXY_H

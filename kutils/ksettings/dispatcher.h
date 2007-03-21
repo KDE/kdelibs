@@ -105,17 +105,8 @@ class KUTILS_EXPORT Dispatcher : public QObject
         ~Dispatcher();
         static Dispatcher *m_self;
 
-        struct ComponentInfo
-        {
-            KComponentData componentData;
-            Q3Signal *signal;
-            int count;
-        };
-        QMap<QByteArray, ComponentInfo> m_componentInfo;
-        QMap<QObject *, QByteArray> m_componentName;
-
         class DispatcherPrivate;
-        DispatcherPrivate *d;
+        DispatcherPrivate * const d;
 };
 
 }

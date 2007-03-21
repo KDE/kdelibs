@@ -80,7 +80,7 @@ class KUTILS_EXPORT KCModuleContainer : public KCModule
 		 * @param mods The modules to load
 		 * @return The KCModule containing the requested modules.
 		 */
-		KCModuleContainer( QWidget *parent, const QString& mods = QString() );
+		explicit KCModuleContainer( QWidget *parent, const QString& mods = QString() );
 
 		/**
 		 * Adds the specified module to the tab widget. Setting the tab icon, text,
@@ -174,4 +174,5 @@ typedef KGenericFactory<KCModuleContainer#factoryName> KCModuleContainer##factor
 K_EXPORT_COMPONENT_FACTORY(factoryName, KCModuleContainer##factoryName##Factory)
 
 #endif // KCMODULECONTAINER_H
+
 

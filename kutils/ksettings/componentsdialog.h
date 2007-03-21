@@ -49,7 +49,7 @@ class KUTILS_EXPORT ComponentsDialog : public KDialog
           @param parent parent widget
           @param name   name
         */
-        ComponentsDialog( QWidget * parent = 0, const char * name = 0 );
+        explicit ComponentsDialog( QWidget * parent = 0, const char * name = 0 );
         ~ComponentsDialog();
 
         /**

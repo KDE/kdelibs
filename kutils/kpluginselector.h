@@ -170,16 +170,8 @@ Q_SIGNALS:
     void configCommitted(const QByteArray &componentName);
 
 private:
-    enum CheckWhatDependencies
-    {
-        /// If an item was checked, check all dependencies of that item
-        DependenciesINeed = 0,
-        /// If an item was unchecked, uncheck all items that depends on that item
-        DependenciesNeedMe
-    };
-
     class Private;
-    Private *d;
+    Private * const d;
 };
 
 #endif

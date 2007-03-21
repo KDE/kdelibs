@@ -55,8 +55,9 @@
 class KCModuleProxy::Private
 {
 	public:
-		Private( const KCModuleInfo & info, KCModuleProxy* _parent )
-			: kcm( 0 )
+		Private( KCModuleProxy *_parent, const KCModuleInfo &info, const QStringList &_args)
+			: args ( _args )
+			, kcm( 0 )
 			//, view( 0 )
 			, topLayout( 0 )
 			, rootInfo( 0 )
@@ -264,41 +265,25 @@ void KCModuleProxy::moduleDestroyed()
 
 KCModuleProxy::KCModuleProxy( const KService::Ptr& service, QWidget * parent,
 		const QStringList& args )
-	: QWidget( parent )
+	: QWidget( parent ),
+	d( new Private(this,KCModuleInfo(service),args) )
 {
-	init( KCModuleInfo( service ));
-	d->args = args;
 }
 
 KCModuleProxy::KCModuleProxy( const KCModuleInfo& info, QWidget * parent,
 		const QStringList& args )
-	: QWidget( parent )
+	: QWidget( parent ),
+	d( new Private(this,info,args) )
 {
-	init( info );
-	d->args = args;
 }
 
 KCModuleProxy::KCModuleProxy( const QString& serviceName, QWidget * parent,
 		const QStringList& args )
-	: QWidget( parent )
+	: QWidget( parent ),
+	d( new Private(this,KCModuleInfo(serviceName),args) )
 {
-	init( KCModuleInfo( serviceName ));
-	d->args = args;
 }
 
-void KCModuleProxy::init( const KCModuleInfo& info )
-{
-	kDebug(711) << k_funcinfo << endl;
-
-	d = new Private( info, this );
-
-	/* This is all we do for now; all the heavy work is
-	 * done in realModule(). It's called when the module
-	 * _actually_ is needed, in for example showEvent().
-	 * The module is loaded "on demand" -- lazy loading.
-	 */
-
-}
 
 void KCModuleProxy::load()
 {

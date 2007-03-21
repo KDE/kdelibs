@@ -158,7 +158,7 @@ public:
 
 private:
   class Private;
-  Private *d;
+  Private * d; // krazy:exclude=dpointer
 };
 
 #endif // KCMODULEINFO_H
