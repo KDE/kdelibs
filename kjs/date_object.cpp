@@ -879,6 +879,9 @@ static double makeTime(tm *t, double ms, bool utc)
         utcOffset = - timezone;
 #endif
         t->tm_isdst = 0;
+#elif PLATFORM(DARWIN)
+        utcOffset = 0;
+        t->tm_isdst = 0;
 #else
         tm t3;
         localtime_r(&zero, &t3);
@@ -1044,7 +1047,7 @@ static double parseDate(const UString &date)
         day = strtol(dateString, &newPosStr, 10);
         if (errno)
             return NaN;
-        if (day < 1 || day > 31)
+        if (day < 1 /*|| day > 31*/)
             return NaN;
         dateString = newPosStr;
         if (*dateString == '/')
@@ -1078,7 +1081,7 @@ static double parseDate(const UString &date)
         }
     }
 
-    if (month < 0 || month > 11)
+    if (month < 0 /*|| month > 11*/)
         return NaN;
 
     // '99 23:12:40 GMT'
@@ -1096,7 +1099,7 @@ static double parseDate(const UString &date)
         dateString = newPosStr;
     else {
         // ' 23:12:40 GMT'
-        if (*newPosStr == ':') {
+        if (dateString != newPosStr && *newPosStr == ':') {
             // There was no year; the number was the hour.
             year = -1;
         } else if (isSpaceLike(*newPosStr)) {
