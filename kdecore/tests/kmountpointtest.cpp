@@ -55,9 +55,11 @@ void KMountPointTest::testCurrentMountPoints()
     QVERIFY(mountWithDevice);
 
     // Check findByDevice
-    const KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
+    KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
     QVERIFY(found);
     QCOMPARE(found->mountPoint(), mountWithDevice->mountPoint());
+    found = mountPoints.findByDevice("/I/Dont/Exist");
+    QVERIFY(!found);
 
     // Check findByPath
 #ifdef Q_OS_UNIX
