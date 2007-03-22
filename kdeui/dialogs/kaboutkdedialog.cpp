@@ -141,8 +141,6 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
 
     QWidget *mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
-    mainWidget->setMinimumWidth(578);
-    mainWidget->setMinimumHeight(317);
 
     setMainWidget(mainWidget);
 }
