@@ -34,7 +34,7 @@ KAutoMount::KAutoMount( bool _readonly, const QByteArray& _format, const QString
                         const QString&  _mountpoint, const QString & _desktopFile,
                         bool _show_filemanager_window )
   : m_strDevice( _device ),
-    m_desktopFile( _desktopFile )
+    m_desktopFile( _desktopFile ), d(0)
 {
   //kDebug(7015) << "KAutoMount device=" << _device << " mountpoint=" << _mountpoint << endl;
   m_bShowFilemanagerWindow = _show_filemanager_window;
@@ -77,8 +77,13 @@ void KAutoMount::slotResult( KJob * job )
   delete this;
 }
 
+KAutoMount::~KAutoMount()
+{
+}
+
+
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
-  : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint )
+  : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint ), d(0)
 {
   KIO::Job * job = KIO::unmount( m_mountpoint );
   connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
@@ -111,6 +116,10 @@ void KAutoUnmount::slotResult( KJob * job )
   }
 
   delete this;
+}
+
+KAutoUnmount::~KAutoUnmount()
+{
 }
 
 #include "kautomount.moc"
