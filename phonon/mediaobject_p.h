@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -39,7 +39,8 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 	protected:
 		MediaObjectPrivate()
 			: aboutToFinishTime( 0 ),
-            kiofallback(0)
+            kiofallback(0),
+            ignoreLoadingToBufferingStateChange(false)
 		{
 		}
 
@@ -49,6 +50,7 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		KUrl url;
 		qint32 aboutToFinishTime;
         KioFallback *kiofallback;
+        bool ignoreLoadingToBufferingStateChange;
 };
 }
 

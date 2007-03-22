@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -80,7 +80,20 @@ void MediaObject::setUrl( const KUrl& url )
 	if( iface() )
 	{
 		stop(); // first call stop as that often is the expected state
-		                    // for setting a new URL
+                // for setting a new URL
+//X         if (url.scheme() == "http") {
+//X             if (!d->kiofallback) {
+//X                 // iface() is a MediaObject, we want a ByteStream
+//X                 d->deleteIface();
+//X                 if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
+//X                     emit stateChanged(StoppedState, d->state);
+//X                     d->state = StoppedState;
+//X                 }
+//X             }
+//X             // catch URLs that we rather want KIO to handle
+//X             d->setupKioStreaming();
+//X             return;
+//X         }
 		MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
 		if( iface )
 		{
@@ -91,8 +104,15 @@ void MediaObject::setUrl( const KUrl& url )
 		}
 
 		// we're using a ByteStream
-		// first try to do with a proper MediaObject
+        // first try to do with a proper MediaObject. By deleting the ByteStream
+        // now we might end up with d->state == PlayingState because the stop
+        // call above is async and so we might be deleting a playing ByteStream.
+        // To fix this we change state to StoppedState manually.
 		d->deleteIface();
+        if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
+            emit stateChanged(StoppedState, d->state);
+            d->state = StoppedState;
+        }
 		d->createIface();
 		// createIface will set up a ByteStream (in setupIface) if needed
 	}
@@ -152,13 +172,37 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
     if (newstate == Phonon::ErrorState && !kiofallback) {
         kDebug(600) << "backend MediaObject reached ErrorState, trying ByteStream now" << endl;
         deleteIface();
-        if (oldstate != Phonon::LoadingState) {
+        ignoreLoadingToBufferingStateChange = false;
+        switch (oldstate) {
+        case Phonon::BufferingState:
+            // play() has already been called, we need to make sure it is called
+            // on the backend ByteStream now, too
+            //emit q->stateChanged(Phonon::LoadingState, oldstate);
+            ignoreLoadingToBufferingStateChange = true;
+            break;
+        case Phonon::LoadingState:
+            // no extras
+            break;
+        default:
+            kError(600) << "backend MediaObject reached ErrorState after " << oldstate
+                << ". It seems a KIO-ByteStream won't help here, trying anyway." << endl;
             emit q->stateChanged(Phonon::LoadingState, oldstate);
+            break;
         }
         setupKioStreaming();
-		return;
-	}
-	emit q->stateChanged( newstate, oldstate );
+        if (oldstate == Phonon::BufferingState) {
+            q->play();
+        }
+        return;
+    } else if (ignoreLoadingToBufferingStateChange &&
+            kiofallback &&
+            oldstate == Phonon::LoadingState) {
+        if (newstate != Phonon::BufferingState) {
+            emit q->stateChanged(newstate, Phonon::BufferingState);
+        }
+        return;
+    }
+    emit q->stateChanged(newstate, oldstate);
 }
 
 // setupIface is not called for ByteStream
