@@ -731,6 +731,13 @@ bool Nepomuk::KMetaData::ResourceData::merge()
 
 void Nepomuk::KMetaData::ResourceData::mergeIn( const ResourceData* other )
 {
+    // merge in the resource type (FIXME: also prefer specializations of this->type() once we have a type hirarchy)
+    if ( !other->type().isEmpty() && other->type() != ResourceManager::instance()->ontology()->defaultType() ) {
+        if ( this->type().isEmpty() || this->type() == ResourceManager::instance()->ontology()->defaultType() ) {
+            m_type = other->type();
+        }
+    }
+
     // merge in possible remote changes
     for( PropertiesMap::const_iterator it = other->m_properties.constBegin();
          it != other->m_properties.constEnd(); ++it ) {
