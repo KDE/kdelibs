@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
+   Copyright 2007 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -40,16 +41,9 @@ class KServiceTypeProfileList;
  * @see KServiceType
  * @see KServiceTypeTrader
  * @short Represents the user's preferences for services of a service type
- *
- * @internal used by KServiceTypeTrader/KMimeTypeTrader
  */
 namespace KServiceTypeProfile
 {
-    /**
-     * Clear all cached information
-     */
-    KDECORE_EXPORT void clearCache();
-
     /**
      * Write the complete profile for a given servicetype.
      * Do not use this for mimetypes.
@@ -88,6 +82,13 @@ namespace KServiceTypeProfile
      * @internal, for KServiceTypeTrader
      */
     KDECORE_EXPORT bool hasProfile( const QString& serviceType );
+
+    /**
+     * Clear all cached information
+     * @internal, for KServiceTypeFactory
+     */
+    void clearCache();
+
 }
 
 #endif
