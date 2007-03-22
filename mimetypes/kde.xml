@@ -124,7 +124,7 @@ Notes:
     <comment>Kugar archive</comment>
     <glob pattern="*.kug"/>
   </mime-type>
-  <mime-type type="application/x-xcursor"> <!-- fdo #10043 -->
+  <mime-type type="application/x-xcursor"> <!-- fdo #10043, FIXED 0.21 -->
     <comment>X11 cursor</comment>
     <magic priority="80">
       <match type="string" value="Xcur" offset="0"/>
