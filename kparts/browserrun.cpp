@@ -328,7 +328,7 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
     // - other strange 'internal' mimetypes like print/manager...
     // KEEP IN SYNC!!!
     if ( mime->is( "text/html" ) ||
-         mime->is( "text/xml" ) ||
+         mime->is( "application/xml" ) ||
          mime->is( "inode/directory" ) ||
          mimeType.startsWith( "image" ) ||
          mime->is( "multipart/x-mixed-replace" ) ||
