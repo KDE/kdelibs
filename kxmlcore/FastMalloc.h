@@ -23,7 +23,9 @@
 #ifndef KXMLCORE_FAST_MALLOC_H
 #define KXMLCORE_FAST_MALLOC_H
 
+#if USE(MULTIPLE_THREADS)
 #include <pthread.h>
+#endif
 #include <stdlib.h>
 #include <new>
 #include "Platform.h"
@@ -46,7 +48,9 @@ namespace KXMLCore {
         return realloc(p, n);
     }
 
+#if USE(MULTIPLE_THREADS)
     inline void fastMallocRegisterThread(pthread_t) {}
+#endif
 
 } // namespace KXMLCore
 
