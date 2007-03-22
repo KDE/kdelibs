@@ -76,7 +76,7 @@ void KMimeTypeTest::testIcons()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    checkIcon( KUrl( "file:/tmp/" ), "inode/directory" );
+    checkIcon( KUrl( "file:/tmp/" ), "inode-directory" );
 
     if ( !KUser().isSuperUser() ) // Can't test this one if running as root
     {
@@ -84,7 +84,7 @@ void KMimeTypeTest::testIcons()
         KTempDir tmp( emptyString, 0 );
         tmp.setAutoRemove( true );
         KUrl url( tmp.name() );
-        checkIcon( url, "inode/directory" ); // was folder_locked, but we don't have that anymore - TODO
+        checkIcon( url, "inode-directory" ); // was folder_locked, but we don't have that anymore - TODO
         chmod( QFile::encodeName( tmp.name() ), 0500 ); // so we can 'rm -rf' it
     }
 }
