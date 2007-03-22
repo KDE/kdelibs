@@ -53,12 +53,6 @@ public:
    static List currentMountPoints(int infoNeeded=0);
 
    /**
-    * When using supermount, the device name is in the options field
-    * as dev=/my/device
-    */
-   static QString devNameFromOptions(const QStringList &options);
-
-   /**
     * Where this filesystem gets mounted from.
     * This can refer to a device, a remote server or something else.
     */
