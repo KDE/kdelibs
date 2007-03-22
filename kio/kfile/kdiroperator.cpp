@@ -1277,7 +1277,9 @@ void KDirOperator::setupActions()
     reloadAction->setShortcuts( KStandardShortcut::shortcut( KStandardShortcut::Reload ));
 
     actionSeparator = new QAction( this );
+    actionSeparator->setSeparator(true);
     myActionCollection->addAction( "separator", actionSeparator );
+
 
     mkdirAction = new KAction( i18n("New Folder..."), this );
     myActionCollection->addAction( "mkdir", mkdirAction );
