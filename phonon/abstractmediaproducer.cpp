@@ -222,6 +222,8 @@ void AbstractMediaProducer::setupIface()
 	connect( d->backendObject, SIGNAL( tick( qint64 ) ), SIGNAL( tick( qint64 ) ) );
 	connect( d->backendObject, SIGNAL( metaDataChanged( const QMultiMap<QString, QString>& ) ), SLOT( _k_metaDataChanged( const QMultiMap<QString, QString>& ) ) );
     connect(d->backendObject, SIGNAL(seekableChanged(bool)), SIGNAL(seekableChanged(bool)));
+    connect(d->backendObject, SIGNAL(hasVideoChanged(bool)), SIGNAL(hasVideoChanged(bool)));
+    connect(d->backendObject, SIGNAL(bufferStatus(int)), SIGNAL(bufferStatus(int)));
 
 	// set up attributes
     INTERFACE_CALL(setTickInterval(d->tickInterval));
@@ -251,7 +253,15 @@ void AbstractMediaProducer::setupIface()
 			QTimer::singleShot( 0, this, SLOT( _k_resumePause() ) );
 			break;
 	}
-	d->state = qobject_cast<MediaProducerInterface*>( d->backendObject )->state();
+    const State backendState = INTERFACE_CALL(state());
+    if (d->state != backendState && d->state != ErrorState) {
+        // careful: if d->state is ErrorState we might be switching from a
+        // MediaObject to a ByteStream for KIO fallback. In that case the state
+        // change to ErrorState was already supressed.
+        kDebug(600) << "emitting a state change because the backend object has been replaced" << endl;
+        emit stateChanged(backendState, d->state);
+        d->state = backendState;
+    }
 }
 
 void AbstractMediaProducerPrivate::_k_resumePlay()

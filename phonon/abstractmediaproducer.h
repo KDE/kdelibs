@@ -414,6 +414,37 @@ namespace Phonon
              */
             void seekableChanged(bool isSeekable);
 
+            /**
+             * Emitted whenever the return value of hasVideo() changes.
+             *
+             * Normally you'll check hasVideo() first and then let this signal
+             * tell you whether video is available now or not. That way you
+             * don't have to poll hasVideo().
+             *
+             * \param hasVideo \p true  The stream contains video and adding a
+             *                          VideoWidget will show a video.
+             *                 \p false There is no video data in the stream and
+             *                          adding a VideoWidget will show an empty (black)
+             *                          VideoWidget.
+             */
+            void hasVideoChanged(bool hasVideo);
+
+            /**
+             * Tells about the status of the buffer.
+             *
+             * You can use this signal to show a progress bar to the user when
+             * in BufferingState:
+             *
+             * \code
+             * progressBar->setRange(0, 100); // this is the default
+             * connect(mediaObject, SIGNAL(bufferStatus(int)), progressBar, SLOT(setValue(int)));
+             * \endcode
+             *
+             * \param percentFilled A number between 0 and 100 telling you how
+             *                      much the buffer is filled.
+             */
+            void bufferStatus(int percentFilled);
+
 		private:
 			Q_PRIVATE_SLOT( k_func(), void _k_resumePlay() )
 			Q_PRIVATE_SLOT( k_func(), void _k_resumePause() )
