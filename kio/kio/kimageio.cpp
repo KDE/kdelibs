@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 3 -*-
 /**
 * kimgio.h -- Implementation of interface to the KDE Image IO library.
 * Sirtaj Singh Kang <taj@kde.org>, 23 Sep 1998.
@@ -27,16 +26,19 @@ KImageIO::pattern(Mode _mode)
         if ( (service->property("X-KDE-Read").toBool() && _mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && _mode == Writing ) ) {
 
-	        QString mimeType = service->property("X-KDE-MimeType").toString();
-	        if ( mimeType.isEmpty() ) continue;
+            QString mimeType = service->property("X-KDE-MimeType").toString();
+            if ( mimeType.isEmpty() ) continue;
             KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
-	        QString pattern = mime->patterns().join(" ");
-	        patterns.append( pattern + separator + mime->comment() );
-	        if (!allPatterns.isEmpty() )
-	            allPatterns += ' ';
-	        allPatterns += pattern;
-
-	    }
+            if (!mime) {
+                kWarning() << service->desktopEntryPath() << " specifies unknown mimetype " << mimeType << endl;
+            } else {
+                QString pattern = mime->patterns().join(" ");
+                patterns.append( pattern + separator + mime->comment() );
+                if (!allPatterns.isEmpty() )
+                    allPatterns += ' ';
+                allPatterns += pattern;
+            }
+        }
     }
 
     allPatterns = allPatterns + separator + i18n("All Pictures");
@@ -84,7 +86,7 @@ QStringList KImageIO::types( Mode _mode )
         if ( (service->property("X-KDE-Read").toBool() && _mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && _mode == Writing ) ) {
 
-             imagetypes += service->property("X-KDE-ImageFormat").toStringList();
+            imagetypes += service->property("X-KDE-ImageFormat").toStringList();
 
         }
     }
