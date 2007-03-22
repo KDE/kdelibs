@@ -24,9 +24,6 @@
 #include <kdirnotify.h>
 #include <kio/global.h>
 
-#include <kiconloader.h>
-#include <kprocess.h>
-#include <ktoolinvocation.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
@@ -93,7 +90,6 @@ QString KDEDesktopMimeType::comment( const KUrl& _url ) const
 static pid_t runFSDevice( const KUrl& _url, const KDesktopFile &cfg );
 static pid_t runApplication( const KUrl& _url, const QString & _serviceFile );
 static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg );
-static pid_t runMimeType( const KUrl& _url, const KDesktopFile &cfg );
 
 pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
 {
@@ -123,9 +119,6 @@ pid_t KDEDesktopMimeType::run( const KUrl& u, bool _is_local )
     cfg.setDollarExpansion( true ); // for URL=file:$HOME (Simon)
     return runLink( u, cfg );
   }
-  else if ( type == "MimeType" )
-    return runMimeType( u, cfg );
-
 
   QString tmp = i18n("The desktop entry of type\n%1\nis unknown.",  type );
   KMessageBoxWrapper::error( 0, tmp);
@@ -204,26 +197,6 @@ static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg )
       run->setPreferredService( lastOpenedWidth );
 
   return -1; // we don't want to return 0, but we don't want to return a pid
-}
-
-// KDE3 mimetype desktop file. We won't miss this code if it goes away...
-static pid_t runMimeType( const KUrl& url , const KDesktopFile& )
-{
-  // Hmm, can't really use keditfiletype since we might be looking
-  // at the global file, or at a file not in share/mimelnk...
-
-  QStringList args;
-  args << "openProperties";
-  args << url.path();
-
-  int pid;
-  if ( !KToolInvocation::kdeinitExec("kfmclient", args, 0, &pid) )
-      return pid;
-
-  KProcess p;
-  p << "kfmclient" << args;
-  p.start(KProcess::DontCare);
-  return p.pid();
 }
 
 QList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( const KUrl& _url )
