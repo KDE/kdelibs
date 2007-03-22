@@ -132,6 +132,7 @@ protected: // accessed by KBuildMimeTypeFactory
 private:
     // Read magic files
     void parseMagic();
+    KMimeType::Ptr findFromPatternHelper(const QString &filename, QString *match = 0);
 
     QStringList m_patterns;
     QList<qint32> m_pattern_offsets;

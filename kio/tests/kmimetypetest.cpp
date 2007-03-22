@@ -113,6 +113,14 @@ void KMimeTypeTest::testFindByPath()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
 
+    mime = KMimeType::findByPath("textfile.TxT"); // case-insensitive search
+    QCOMPARE( mime->name(), QString::fromLatin1( "text/plain" ) );
+
+    mime = KMimeType::findByPath("textfile.C"); // case-sensitive uppercase match
+    QCOMPARE( mime->name(), QString::fromLatin1( "text/x-c++src" ) );
+    mime = KMimeType::findByPath("textfile.c"); // for comparison
+    QCOMPARE( mime->name(), QString::fromLatin1( "text/x-csrc" ) );
+
     mime = KMimeType::findByPath("foo.desktop");
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );

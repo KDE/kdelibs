@@ -137,11 +137,26 @@ QString KMimeTypeFactory::resolveAlias(const QString& mime)
     return m_aliases.value(mime);
 }
 
-KMimeType::Ptr KMimeTypeFactory::findFromPattern( const QString &_filename, QString *match )
+KMimeType::Ptr KMimeTypeFactory::findFromPattern( const QString &filename, QString *match )
 {
     // Assume we're NOT building a database
     if (!m_str) return KMimeType::Ptr();
 
+    // "Applications MUST first try a case-sensitive match, then try again with
+    // the filename converted to lower-case if that fails. This is so that
+    // main.C will be seen as a C++ file, but IMAGE.GIF will still use the
+    // *.gif pattern."
+    KMimeType::Ptr mime = findFromPatternHelper(filename, match);
+    if (!mime) {
+        const QString lowerCase = filename.toLower();
+        if (lowerCase != filename)
+            mime = findFromPatternHelper(lowerCase, match);
+    }
+    return mime;
+}
+
+KMimeType::Ptr KMimeTypeFactory::findFromPatternHelper( const QString &_filename, QString *match )
+{
     // Get stream to the header
     QDataStream *str = m_str;
 
