@@ -186,7 +186,8 @@ KConfig::KConfig(KConfigBackEnd *aBackEnd)
 
 KConfig::~KConfig()
 {
-  sync();
+    sync();
+    delete d;
 }
 
 QStringList KConfig::extraConfigFiles() const
@@ -395,7 +396,7 @@ void KConfig::setForceGlobal( bool force )
     d->forceGlobal = force;
 }
 
-bool KConfig::forceGlobal() const 
+bool KConfig::forceGlobal() const
 {
     return d->forceGlobal;
 }
