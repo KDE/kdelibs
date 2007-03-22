@@ -108,7 +108,7 @@ bool OntologyParser::parse( const QString& filename )
         }
     }
 
-    Soprano::Model* model = d->rdfParser->parse( filename );
+    Soprano::Model* model = d->rdfParser->parse( QUrl::fromLocalFile( filename ) );
     bool success = true;
 
     if( !model )
