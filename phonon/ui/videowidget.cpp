@@ -160,6 +160,8 @@ void VideoWidget::enterFullScreen()
 
 bool VideoWidgetPrivate::aboutToDeleteIface()
 {
+    pBACKEND_GET(Phonon::VideoWidget::AspectRatio, aspectRatio, "aspectRatio");
+    pBACKEND_GET(Phonon::VideoWidget::ScaleMode, scaleMode, "scaleMode");
 	return AbstractVideoOutputPrivate::aboutToDeleteIface();
 }
 
@@ -170,6 +172,7 @@ void VideoWidget::setupIface()
 	AbstractVideoOutput::setupIface();
 	kDebug( 602 ) << "calling setAspectRatio on the backend " << d->aspectRatio << endl;
 	BACKEND_CALL1( "setAspectRatio", Phonon::VideoWidget::AspectRatio, d->aspectRatio );
+    BACKEND_CALL1("setScaleMode", Phonon::VideoWidget::ScaleMode, d->scaleMode);
 
 	QWidget *w = 0;
 	BACKEND_GET( QWidget *, w, "widget" );
