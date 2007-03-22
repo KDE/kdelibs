@@ -244,11 +244,15 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
       }
 
       // UTF-8 transform
+      const unsigned long replacementChar = 0xFFFD;
       unsigned long V;
       if (n == 2) {
 	unsigned long yyyyy = octets[0] & 0x1F;
 	unsigned long zzzzzz = octets[1] & 0x3F;
 	V = (yyyyy << 6) | zzzzzz;
+	// 2-byte sequence overlong for this value?
+	if (V < 0xFF)
+	  V = replacementChar;
 	C = UChar((unsigned short)V);
       }
       else if (n == 3) {
@@ -256,6 +260,11 @@ UString decodeURI(ExecState *exec, UString string, UString reservedSet)
 	unsigned long yyyyyy = octets[1] & 0x3F;
 	unsigned long zzzzzz = octets[2] & 0x3F;
 	V = (xxxx << 12) | (yyyyyy << 6) | zzzzzz;
+	// 3-byte sequence overlong for this value,
+	// an invalid value or UTF-16 surrogate?
+	if (V < 0x800 || V == 0xFFFE || V == 0xFFFF ||
+	    (V >= 0xD800 && V <= 0xDFFF))
+	  V = replacementChar;
 	C = UChar((unsigned short)V);
       }
       else {
