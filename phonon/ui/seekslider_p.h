@@ -43,7 +43,7 @@ class SeekSliderPrivate
             iconLabel(parent),
             media(0),
             ticking(false),
-            icon("player_time")
+            icon("player-time")
         {
             const int e = parent->style()->pixelMetric(QStyle::PM_ButtonIconSize);
             iconSize = QSize(e, e);

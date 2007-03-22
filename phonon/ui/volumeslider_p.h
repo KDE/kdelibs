@@ -40,8 +40,8 @@ class VolumeSliderPrivate
             layout(QBoxLayout::LeftToRight, parent),
             slider(Qt::Horizontal, parent),
             muteButton(parent),
-            volumeIcon("player_volume"),
-            mutedIcon("player_volume_muted"),
+            volumeIcon("player-volume"),
+            mutedIcon("player-volume-muted"),
             output(0),
             ignoreVolumeChange(false)
         {
