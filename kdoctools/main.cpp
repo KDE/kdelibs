@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #define LIBXML_DLL_IMPORT __declspec(dllimport)
 #else
-extern int xmlLoadExtDtdDefaultValue;
+extern "C" int xmlLoadExtDtdDefaultValue;
 #endif
 
 #include <string.h>
