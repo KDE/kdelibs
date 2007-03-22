@@ -115,7 +115,7 @@ void KUrlBarItem::init( const QString& icon, K3Icon::Group group,
                         const QString& description, bool persistent )
 {
 
-    qDebug() << __FUNCTION__ << "created noew KUrlBarItem with description" << description;
+    qDebug() << __FUNCTION__ << "created new KUrlBarItem with description" << description;
 
     d->isPersistent = persistent;
 
