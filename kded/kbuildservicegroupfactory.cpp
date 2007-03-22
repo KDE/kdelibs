@@ -174,3 +174,12 @@ KBuildServiceGroupFactory::save(QDataStream &str)
    // Seek to end.
    str.device()->seek(endOfFactoryData);
 }
+
+KServiceGroup::Ptr KBuildServiceGroupFactory::findGroupByDesktopPath( const QString &_name, bool deep )
+{
+    assert (KSycoca::self()->isBuilding());
+    Q_UNUSED(deep); // ?
+    // We're building a database - the service type must be in memory
+    KSycocaEntry::Ptr group = m_entryDict->value( _name );
+    return KServiceGroup::Ptr::staticCast( group );
+}

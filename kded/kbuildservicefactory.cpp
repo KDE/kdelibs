@@ -24,6 +24,7 @@
 #include "ksycocadict.h"
 #include "kresourcelist.h"
 #include "kmimetype.h"
+#include "kdesktopfile.h"
 
 #include <kglobal.h>
 #include <kstandarddirs.h>

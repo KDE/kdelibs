@@ -19,6 +19,7 @@
 #ifndef __k_build_service_group_factory_h__
 #define __k_build_service_group_factory_h__
 
+#include <kservice.h>
 #include <kservicegroupfactory.h>
 #include <QtCore/QStringList>
 
@@ -62,6 +63,11 @@ public:
    * A pointer to the group is returned.
    */
   KServiceGroup::Ptr addNew( const QString &menuName, const QString& file, KServiceGroup::Ptr entry, bool isDeleted);
+
+  /**
+   * Find a group ( by desktop path, e.g. "Applications/Editors")
+   */
+  virtual KServiceGroup::Ptr findGroupByDesktopPath( const QString &_name, bool deep = true );
 
   /**
    * Add a new menu entry
