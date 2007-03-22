@@ -1,8 +1,9 @@
 project(kmetadata_rcgen)
 
 set(CMAKE_MODULE_PATH
-  ${kmetadata_rcgen_SOURCE_DIR}/../cmake/modules
-  ${kmetadata_rcgen_SOURCE_DIR}/../../backbone/cmake/modules
+  ${CMAKE_MODULE_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/modules
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../backbone/cmake/modules
 )
 
 # search packages used by KDE
@@ -11,7 +12,13 @@ include(KDE4Defaults)
 include(MacroLibrary)
 
 find_package(GNUWIN32)
-find_package(Soprano REQUIRED)
+
+#find_package(Soprano REQUIRED)
+# Soprano is in the same module now
+set(SOPRANO_INCLUDE_DIR ../../../qrdf)
+LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../../qrdf/soprano)
+set(SOPRANO_LIBRARIES soprano)
+set(SOPRANO_FOUND )
 
 include_directories(
   ${kmetadata_rcgen_SOURCE_DIR}
