@@ -55,6 +55,7 @@
 #include <phonon/objectdescriptionmodel.h>
 #include <kicon.h>
 #include <QToolButton>
+#include <QProgressBar>
 
 using namespace Phonon;
 
@@ -142,8 +143,10 @@ bool ProducerWidget::connectPath( PathWidget *w )
 {
 	if( m_media )
 	{
-		m_audioPaths.append( w->path() );
-		return m_media->addAudioPath( w->path() );
+        if (m_media->addAudioPath(w->path())) {
+            m_audioPaths.append( w->path() );
+            return true;
+        }
 	}
 	if( m_audioPaths.contains( w->path() ) )
 		return false;
@@ -152,9 +155,11 @@ bool ProducerWidget::connectPath( PathWidget *w )
 }
 
 ProducerWidget::ProducerWidget( QWidget *parent )
-	: QFrame( parent )
-	, m_media( 0 )
-	, m_length( -1 )
+    : QFrame(parent),
+    m_media(0),
+    m_length(-1),
+    m_vpath(0),
+    m_vout(0)
 {
 	setFrameShape( QFrame::Box );
 	setFrameShadow( QFrame::Sunken );
@@ -206,6 +211,12 @@ ProducerWidget::ProducerWidget( QWidget *parent )
 	m_statelabel = new QLabel( frame2 );
 	vlayout2->addWidget( m_statelabel );
 
+    m_bufferProgress = new QProgressBar(frame2);
+    m_bufferProgress->setMaximumSize(100, 16);
+    m_bufferProgress->setTextVisible(false);
+    //m_bufferProgress->hide();
+    vlayout2->addWidget(m_bufferProgress);
+
 	m_totaltime = new QLabel( frame2 );
 	vlayout2->addWidget( m_totaltime );
 	
@@ -221,6 +232,11 @@ ProducerWidget::ProducerWidget( QWidget *parent )
 	loadFile( getenv( "PHONON_TESTURL" ) );
 }
 
+ProducerWidget::~ProducerWidget()
+{
+    delete m_media;
+}
+
 void ProducerWidget::tick( qint64 t )
 {
 	QTime x( 0, 0 );
@@ -233,8 +249,29 @@ void ProducerWidget::tick( qint64 t )
 	m_remainingtime->setText( x.toString( "m:ss.zzz" ) );
 }
 
-void ProducerWidget::stateChanged( Phonon::State newstate )
+void ProducerWidget::checkVideoWidget()
 {
+    if (m_media->hasVideo() && BackendCapabilities::supportsVideo()) {
+        VideoPath *m_vpath = new VideoPath(m_media);
+        m_media->addVideoPath(m_vpath);
+        VideoWidget *m_vout = new VideoWidget(0);
+        connect(m_vpath, SIGNAL(destroyed()), m_vout, SLOT(deleteLater()));
+        m_vpath->addOutput(m_vout);
+
+        m_vout->setMinimumSize(160, 120);
+        m_vout->resize(m_vout->sizeHint());
+        m_vout->setFullScreen(false);
+        m_vout->show();
+    } else if (m_vpath) {
+        delete m_vpath;
+    }
+}
+
+void ProducerWidget::stateChanged(Phonon::State newstate, Phonon::State oldstate)
+{
+    if (oldstate == Phonon::BufferingState) {
+        //m_bufferProgress->hide();
+    }
 	switch( newstate )
 	{
 		case Phonon::ErrorState:
@@ -251,6 +288,8 @@ void ProducerWidget::stateChanged( Phonon::State newstate )
 			break;
 		case Phonon::BufferingState:
 			m_statelabel->setText( "Buffering" );
+            m_bufferProgress->reset();
+            m_bufferProgress->show();
 			break;
 		case Phonon::PlayingState:
 			m_statelabel->setText( "Playing" );
@@ -278,18 +317,7 @@ void ProducerWidget::loadFile( const QString & file )
 	m_media->setAboutToFinishTime( 2000 );
 	foreach( AudioPath *path, m_audioPaths )
 		m_media->addAudioPath( path );
-	/*if( m_media->hasVideo() && BackendCapabilities::self()->supportsVideo() )
-	{
-		vpath = new VideoPath( this );
-		m_media->addVideoPath( vpath );
-		vout = new VideoWidget( this );
-		vpath->addOutput( vout );
-
-		vout->setMinimumSize( 160, 120 );
-		vout->setFullScreen( false );
-		vout->show();
-	}*/
-	stateChanged( m_media->state() );
+    stateChanged(m_media->state(), Phonon::LoadingState);
 
 	connect( m_pause, SIGNAL( clicked() ), m_media, SLOT( pause() ) );
 	connect( m_play, SIGNAL( clicked() ), m_media, SLOT( play() ) );
@@ -299,9 +327,11 @@ void ProducerWidget::loadFile( const QString & file )
 	connect( m_media, SIGNAL( length( qint64 ) ), SLOT( length( qint64 ) ) );
 	length( m_media->totalTime() );
 	connect( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
-			SLOT( stateChanged( Phonon::State ) ) );
+            SLOT(stateChanged(Phonon::State, Phonon::State)));
 	connect( m_media, SIGNAL( finished() ), SLOT( slotFinished() ) );
 	connect( m_media, SIGNAL( aboutToFinish( qint32 ) ), SLOT( slotAboutToFinish( qint32 ) ) );
+    connect(m_media, SIGNAL(hasVideoChanged(bool)), SLOT(checkVideoWidget()));
+    connect(m_media, SIGNAL(bufferStatus(int)), m_bufferProgress, SLOT(setValue(int)));
 }
 
 void ProducerWidget::updateMetaData()

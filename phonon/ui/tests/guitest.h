@@ -32,6 +32,7 @@ class QString;
 class QAbstractButton;
 class QFrame;
 class QComboBox;
+class QProgressBar;
 namespace Phonon
 {
 	class MediaObject;
@@ -42,6 +43,8 @@ namespace Phonon
 	class VideoWidget;
 	class SeekSlider;
 	class VolumeSlider;
+    class VideoPath;
+    class VideoWidget;
 }
 
 using namespace Phonon;
@@ -54,16 +57,18 @@ class ProducerWidget : public QFrame
 	Q_OBJECT
 	public:
 		ProducerWidget( QWidget *parent = 0 );
+        ~ProducerWidget();
 		bool connectPath( PathWidget* w );
 
 	private Q_SLOTS:
 		void tick( qint64 );
-		void stateChanged( Phonon::State );
+        void stateChanged(Phonon::State, Phonon::State);
 		void length( qint64 );
 		void loadFile( const QString& );
 		void slotFinished();
 		void slotAboutToFinish( qint32 remaining );
 		void updateMetaData();
+        void checkVideoWidget();
 
 	private:
 		SeekSlider *m_seekslider;
@@ -73,6 +78,9 @@ class ProducerWidget : public QFrame
 		MediaObject *m_media;
 		qint64 m_length;
 		QList<AudioPath*> m_audioPaths;
+        QProgressBar *m_bufferProgress;
+        VideoPath *m_vpath;
+        VideoWidget *m_vout;
 };
 
 class PathWidget : public QFrame
