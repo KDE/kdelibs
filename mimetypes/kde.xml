@@ -161,6 +161,13 @@ Notes:
     </magic>
     <glob pattern="*.exr"/>
   </mime-type>
+  <mime-type type="image/x-hdr"> <!-- TODO fdo report -->
+    <comment>HDR image</comment>
+    <acronym>HDR</acronym>
+    <expanded-acronym>High Dynamic Range</expanded-acronym>
+    <glob pattern="*.hdr"/>
+    <glob pattern="*.pic"/>
+  </mime-type>
   <mime-type type="image/x-kde-raw">
     <sub-class-of type="image/x-dcraw"/>
     <comment>KDE raw image formats</comment>
