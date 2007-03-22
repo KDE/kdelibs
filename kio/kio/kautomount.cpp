@@ -23,6 +23,7 @@
 #include "kio/jobuidelegate.h"
 #include <kdirnotify.h>
 #include <kdebug.h>
+#include <kmountpoint.h>
 
 /***********************************************************************
  *
@@ -45,36 +46,34 @@ KAutoMount::KAutoMount( bool _readonly, const QByteArray& _format, const QString
 
 void KAutoMount::slotResult( KJob * job )
 {
-  if ( job->error() ) {
-    emit error();
-    job->uiDelegate()->showErrorMessage();
-  }
-  else
-  {
-    KUrl mountpoint;
-    mountpoint.setPath( KIO::findDeviceMountPoint( m_strDevice ) );
-    //kDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint << endl;
-    Q_ASSERT( mountpoint.isValid() );
+    if ( job->error() ) {
+        emit error();
+        job->uiDelegate()->showErrorMessage();
+    } else {
+        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( m_strDevice );
+        if (!mp) {
+            kWarning(7015) << m_strDevice << " was correctly mounted, but findByDevice() didn't find it. "
+                           << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device" << endl;
+        } else {
+            KUrl url(mp->mountPoint());
+            //kDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint << endl;
+            if ( m_bShowFilemanagerWindow ) {
+                KRun::runUrl( url, "inode/directory", 0 /*TODO - window*/ );
+            }
+            // Notify about the new stuff in that dir, in case of opened windows showing it
+            org::kde::KDirNotify::emitFilesAdded( url.url() );
+        }
 
-    if ( mountpoint.path().isEmpty() )
-        kWarning(7015) << m_strDevice << " was correctly mounted, but KIO::findDeviceMountPoint didn't find it. "
-                        << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab line" << endl;
-    else if ( m_bShowFilemanagerWindow )
-      KRun::runUrl( mountpoint, "inode/directory", 0 /*TODO - window*/ );
+        // Update the desktop file which is used for mount/unmount (icon change)
+        kDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
+        KUrl dfURL;
+        dfURL.setPath( m_desktopFile );
+        org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
+        //KDirWatch::self()->setFileDirty( m_desktopFile );
 
-    // Notify about the new stuff in that dir, in case of opened windows showing it
-    org::kde::KDirNotify::emitFilesAdded( mountpoint.url() );
-
-    // Update the desktop file which is used for mount/unmount (icon change)
-    kDebug(7015) << " mount finished : updating " << m_desktopFile << endl;
-    KUrl dfURL;
-    dfURL.setPath( m_desktopFile );
-    org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
-    //KDirWatch::self()->setFileDirty( m_desktopFile );
-
-    emit finished();
-  }
-  delete this;
+        emit finished();
+    }
+    deleteLater();
 }
 
 KAutoMount::~KAutoMount()
@@ -83,39 +82,38 @@ KAutoMount::~KAutoMount()
 
 
 KAutoUnmount::KAutoUnmount( const QString & _mountpoint, const QString & _desktopFile )
-  : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint ), d(0)
+    : m_desktopFile( _desktopFile ), m_mountpoint( _mountpoint ), d(0)
 {
-  KIO::Job * job = KIO::unmount( m_mountpoint );
-  connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
+    KIO::Job * job = KIO::unmount( m_mountpoint );
+    connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotResult( KJob * ) ) );
 }
 
 void KAutoUnmount::slotResult( KJob * job )
 {
-  if ( job->error() ) {
-    emit error();
-    job->uiDelegate()->showErrorMessage();
-  }
-  else
-  {
-    // Update the desktop file which is used for mount/unmount (icon change)
-    kDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
-    KUrl dfURL;
-    dfURL.setPath( m_desktopFile );
-    org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
-    //KDirWatch::self()->setFileDirty( m_desktopFile );
+    if ( job->error() ) {
+        emit error();
+        job->uiDelegate()->showErrorMessage();
+    }
+    else
+    {
+        // Update the desktop file which is used for mount/unmount (icon change)
+        kDebug(7015) << "unmount finished : updating " << m_desktopFile << endl;
+        KUrl dfURL;
+        dfURL.setPath( m_desktopFile );
+        org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
+        //KDirWatch::self()->setFileDirty( m_desktopFile );
 
-    // Notify about the new stuff in that dir, in case of opened windows showing it
-    // You may think we removed files, but this may have also readded some
-    // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
-    // is to relist the directory anyway.
-    KUrl mp;
-    mp.setPath( m_mountpoint );
-    org::kde::KDirNotify::emitFilesAdded( mp.url() );
+        // Notify about the new stuff in that dir, in case of opened windows showing it
+        // You may think we removed files, but this may have also readded some
+        // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
+        // is to relist the directory anyway.
+        KUrl mp( m_mountpoint );
+        org::kde::KDirNotify::emitFilesAdded( mp.url() );
 
-    emit finished();
-  }
+        emit finished();
+    }
 
-  delete this;
+    deleteLater();
 }
 
 KAutoUnmount::~KAutoUnmount()
