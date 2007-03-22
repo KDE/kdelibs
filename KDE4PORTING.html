@@ -78,6 +78,7 @@ or <a href="http://doc.trolltech.com/4.2/porting4.html">this page online</a>.</p
 <li><a href="#kscreensaver">KScreensaver</a></li>
 <li><a href="#i18n">I18N</a></li>
 <li><a href="#kssl">KSSL</a></li>
+<li><a href="#mimetypes">Mime types names</a></li>
 </UL>
 
 <h3><a name="gettingstarted">Getting started</a></h3>
@@ -2089,6 +2090,369 @@ ki18n("Welcome").toString(myLocale);
 <li>KSSLInfoDlg was renamed to KSSLInfoDialog</li>
 <li>ksslinfodlg.h was moved to ksslinfodialog.h</li>
 </ul>
+
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
+
+<h3><a name="mimetypes">Changes in mime types names</a></h3>
+
+<p>KDE 4 switched to the XDG mime types, thus the names for some mime types have changed.</p>
+
+<p>The following list contains the renamings from the KDE mime types to the XDG ones.</p>
+
+<p>Notes:</p>
+<ul>
+  <li>(alias) means that the old KDE mime type is an alias in the corresponding XDG mime type, so the conversion is not strictly needed (although suggested)</li>
+</ul>
+
+<table border="1">
+<tr>
+  <th>Old KDE mime type</th>
+  <th>XDG mime type</th>
+<tr>
+<tr>
+  <td>application/chm</td>
+  <td>application/x-chm</td>
+</tr>
+<tr>
+  <td>application/fits</td>
+  <td>image/x-fits</td>
+</tr>
+<tr>
+  <td>application/java</td>
+  <td>application/x-java</td>
+</tr>
+<tr>
+  <td>application/mathml+xml</td>
+  <td>text/mathml</td>
+</tr>
+<tr>
+  <td>application/msexcel</td>
+  <td>application/vnd.ms-excel (alias)</td>
+</tr>
+<tr>
+  <td>application/mspowerpoint</td>
+  <td>application/vnd.ms-powerpoint (alias)</td>
+</tr>
+<tr>
+  <td>application/ms-tnef</td>
+  <td>application/vnd.ms-tnef</td>
+</tr>
+<tr>
+  <td>application/pgp</td>
+  <td>application/pgp-encrypted (alias)</td>
+</tr>
+<tr>
+  <td>application/vnd.ms-asf</td>
+  <td>video/x-ms-asf</td>
+</tr>
+<tr>
+  <td>application/vnd.ms-word</td>
+  <td>application/msword (alias)</td>
+</tr>
+<tr>
+  <td>application/vnd.palm</td>
+  <td>application/x-palm-database (alias)</td>
+</tr>
+<tr>
+  <td>application/vnd.stardivision.writer-global</td>
+  <td>application/vnd.stardivision.writer</td>
+</tr>
+<tr>
+  <td>application/vnd.sun.xml.base</td>
+  <td>application/vnd.oasis.opendocument.database</td>
+</tr>
+<tr>
+  <td>application/vnd.sun.xml.writer.master</td>
+  <td>application/vnd.sun.xml.writer.global</td>
+</tr>
+<tr>
+  <td>application/wordperfect</td>
+  <td>application/vnd.wordperfect (alias)</td>
+</tr>
+<tr>
+  <td>application/x-7z</td>
+  <td>application/x-7z-compressed</td>
+</tr>
+<tr>
+  <td>application/x-afm</td>
+  <td>application/x-font-afm</td>
+</tr>
+<tr>
+  <td>application/x-applixgraphics</td>
+  <td>image/x-applix-graphics</td>
+</tr>
+<tr>
+  <td>application/x-applixspread</td>
+  <td>application/x-applix-spreadsheet</td>
+</tr>
+<tr>
+  <td>application/x-applixword</td>
+  <td>application/x-applix-word</td>
+</tr>
+<tr>
+  <td>application/x-bz2dvi</td>
+  <td>application/x-bzdvi</td>
+</tr>
+<tr>
+  <td>application/x-bzip2</td>
+  <td>application/x-bzip (alias)</td>
+</tr>
+<tr>
+  <td>application/x-dbase</td>
+  <td>application/x-dbf (alias)</td>
+</tr>
+<tr>
+  <td>application/x-font-ghostscript</td>
+  <td>application/x-font-type1</td>
+</tr>
+<tr>
+  <td>application/x-font-ttc</td>
+  <td>application/x-font-ttf</td>
+</tr>
+<tr>
+  <td>application/x-gettext</td>
+  <td>text/x-gettext-translation (*.po)<br>
+      text/x-gettext-translation-template (*.pot)</td>
+</tr>
+<tr>
+  <td>application/x-hancomword</td>
+  <td>application/x-hwp</td>
+</tr>
+<tr>
+  <td>application/x-iso</td>
+  <td>application/x-cd-image</td>
+</tr>
+<tr>
+  <td>application/x-jar</td>
+  <td>application/x-java-archive (alias)</td>
+</tr>
+<tr>
+  <td>application/x-javascript</td>
+  <td>application/javascript (alias)</td>
+</tr>
+<tr>
+  <td>application/x-msaccess</td>
+  <td>application/vnd.ms-access (alias)</td>
+</tr>
+<tr>
+  <td>application/x-msdos-program</td>
+  <td>application/x-ms-dos-executable</td>
+</tr>
+<tr>
+  <td>application/x-msmetafile</td>
+  <td>image/x-wmf</td>
+</tr>
+<tr>
+  <td>application/x-ogg</td>
+  <td>application/ogg</td>
+</tr>
+<tr>
+  <td>application/x-perl-module</td>
+  <td>application/x-perl</td>
+</tr>
+<tr>
+  <td>application/x-python</td>
+  <td>text/x-python</td>
+</tr>
+<tr>
+  <td>application/x-rar-compressed</td>
+  <td>application/x-rar</td>
+</tr>
+<tr>
+  <td>application/x-tbz</td>
+  <td>application/x-bzip-compressed-tar</td>
+</tr>
+<tr>
+  <td>application/x-tgz</td>
+  <td>application/x-compressed-tar</td>
+</tr>
+<tr>
+  <td>application/x-troff</td>
+  <td>text/troff (alias)</td>
+</tr>
+<tr>
+  <td>application/x-zip</td>
+  <td>application/zip</td>
+</tr>
+<tr>
+  <td>application/x-zip-compressed</td>
+  <td>application/zip (alias)</td>
+</tr>
+<tr>
+  <td>application/xml-dtd</td>
+  <td>text/x-dtd</td>
+</tr>
+<tr>
+  <td>audio/mpegurl</td>
+  <td>audio/x-mpegurl (alias)</td>
+</tr>
+<tr>
+  <td>audio/x-midi</td>
+  <td>audio/midi (alias)</td>
+</tr>
+<tr>
+  <td>audio/x-mp3</td>
+  <td>audio/mpeg (alias)</td>
+</tr>
+<tr>
+  <td>audio/x-oggflac</td>
+  <td>audio/x-flac+ogg</td>
+</tr>
+<tr>
+  <td>audio/x-pn-realaudio</td>
+  <td>audio/vnd.rn-realaudio (alias)</td>
+</tr>
+<tr>
+  <td>audio/x-speex</td>
+  <td>audio/x-speex+ogg</td>
+</tr>
+<tr>
+  <td>audio/x-vorbis</td>
+  <td>audio/x-vorbis+ogg</td>
+</tr>
+<tr>
+  <td>audio/vorbis</td>
+  <td>audio/x-vorbis+ogg</td>
+</tr>
+<tr>
+  <td>image/fits</td>
+  <td>image/x-fits</td>
+</tr>
+<tr>
+  <td>image/jp2</td>
+  <td>image/jpeg2000</td>
+</tr>
+<tr>
+  <td>image/jpg</td>
+  <td>image/jpeg</td>
+</tr>
+<tr>
+  <td>image/pjpeg</td>
+  <td>image/jpeg (alias)</td>
+</tr>
+<tr>
+  <td>image/svg-xml</td>
+  <td>image/svg+xml</td>
+</tr>
+<tr>
+  <td>image/svg+xml</td>
+  <td>image/svg+xml (*.svg)<br>
+      image/svg+xml-compressed (*.svgz)</td>
+</tr>
+<tr>
+  <td>image/x-bmp</td>
+  <td>image/bmp</td>
+</tr>
+<tr>
+  <td>image/x-djvu</td>
+  <td>image/vnd.djvu (alias)</td>
+</tr>
+<tr>
+  <td>image/x-portable-greymap</td>
+  <td>image/x-portable-graymap</td>
+</tr>
+<tr>
+  <td>image/x-raw</td>
+  <td>image/x-dcraw (general mime type)<br><br>
+      Specific mime types (all subclasses of image/x-dcraw):<br>
+      image/x-panasonic-raw (*.raw)<br>
+      image/x-kodak-dcr (*.dcr)<br>
+      image/x-adobe-dng (*.dng)<br>
+      image/x-canon-crw (*.crw *.cr2)<br>
+      image/x-nikon-nef (*.nef)<br>
+      image/x-minolta-mrw (*.mrw)<br>
+      image/x-kodak-k25 (*.k25)<br>
+      image/x-kodak-kdc (*.kdc)<br>
+      image/x-olympus-orf (*.orf)<br>
+      image/x-pentax-pef (*.pef)<br>
+      image/x-fuji-raf (*.raf)<br>
+      image/x-sony-sr2 (*.sr2)<br>
+      image/x-sony-srf (*.srf)<br>
+      image/x-sigma-x3f (*.x3f)<br>
+      other extensions that were part of image/x-raw: image/x-kde-raw
+  </td>
+</tr>
+<tr>
+  <td>image/x-targa</td>
+  <td>image/x-tga</td>
+</tr>
+<tr>
+  <td>image/x-vnd.adobe.photoshop</td>
+  <td>image/x-psd</td>
+</tr>
+<tr>
+  <td>image/x-xbm</td>
+  <td>image/x-xbitmap</td>
+</tr>
+<tr>
+  <td>image/x-xcf-gimp</td>
+  <td>image/x-xcf</td>
+</tr>
+<tr>
+  <td>image/x-xpm</td>
+  <td>image/x-xpixmap</td>
+</tr>
+<tr>
+  <td>text/docbook</td>
+  <td>application/docbook+xml</td>
+</tr>
+<tr>
+  <td>text/javascript</td>
+  <td>application/javascript (alias)</td>
+</tr>
+<tr>
+  <td>text/rss</td>
+  <td>application/rss+xml (alias)</td>
+</tr>
+<tr>
+  <td>text/rtf</td>
+  <td>application/rtf</td>
+</tr>
+<tr>
+  <td>text/x-csv</td>
+  <td>text/csv</td>
+</tr>
+<tr>
+  <td>text/x-diff</td>
+  <td>text/x-patch</td>
+</tr>
+<tr>
+  <td>text/x-latex</td>
+  <td>text/x-tex</td>
+</tr>
+<tr>
+  <td>text/xml</td>
+  <td>application/xml (alias)</td>
+</tr>
+<tr>
+  <td>text/x-mswinurl</td>
+  <td>application/x-mswinurl</td>
+</tr>
+<tr>
+  <td>text/x-vcalendar</td>
+  <td>text/calendar (alias)</td>
+</tr>
+<tr>
+  <td>text/x-vcard</td>
+  <td>text/directory (alias)</td>
+</tr>
+<tr>
+  <td>text/x-xslt</td>
+  <td>application/xslt+xml</td>
+</tr>
+<tr>
+  <td>video/avi</td>
+  <td>video/x-msvideo</td>
+</tr>
+<tr>
+  <td>video/x-ogm</td>
+  <td>video/x-ogm+ogg</td>
+</tr>
+<tr>
+  <td>video/x-theora</td>
+  <td>video/x-theora+ogg</td>
+</tr>
+</table>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
