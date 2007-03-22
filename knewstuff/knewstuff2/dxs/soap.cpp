@@ -74,7 +74,7 @@ void Soap::call_tree(QDomElement element, QString endpoint)
 
 	KUrl url(endpoint);
 	QString hostname = url.host();
-	int port = url.port();
+	int port = 30303/*url.port()*/;
 
 	m_socket = new QTcpSocket();
 	m_socket->connectToHost(hostname, port);

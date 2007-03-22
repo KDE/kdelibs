@@ -1,5 +1,5 @@
-#ifndef KDXS_H
-#define KDXS_H
+#ifndef KNEWSTUFF2_KDXS_H
+#define KNEWSTUFF2_KDXS_H
 
 #include <kmainwindow.h>
 

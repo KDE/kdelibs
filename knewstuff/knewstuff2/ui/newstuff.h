@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005 by Enrico Ros <eros.kde@email.it>                  *
+ *   Copyright (C) 2005 - 2007 Josef Spillner <spillner@kde.org>           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -7,12 +8,10 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
-#ifndef _KPDF_NEWSTUFF_H_
-#define _KPDF_NEWSTUFF_H_
+#ifndef KNEWSTUFF2_UI_NEWSTUFF_H
+#define KNEWSTUFF2_UI_NEWSTUFF_H
 
 #include <qdialog.h>
-//#include <knewstuff2/provider.h>
-//#include <kio/job.h>
 
 #include <knewstuff2/dxs/dxs.h>
 
@@ -41,12 +40,6 @@ class NewStuffDialog : public QDialog
         // remove an already installed item
         void removeItem( AvailableItem * item );
 
-    signals:
-        // tells that a file has been installed
-        void installedFile( QString fileName, QString type );
-        // tells that a file has been removed
-        void removedFile( QString oldFileName );
-
     private:
         // private storage class
         class NewStuffDialogPrivate * d;
@@ -58,14 +51,6 @@ class NewStuffDialog : public QDialog
         void slotResetMessageColors();
         void slotNetworkTimeout();
         void slotSortingSelected( int sortType );
-        // providersList loading
-        void slotLoadProvidersList();
-        void slotProvidersListInfoData( KJob *, const QByteArray & );
-        void slotProvidersListResult( KJob * );
-        // provider loading
-        void slotLoadProvider( int provider = 0 );
-        void slotProviderInfoData( KJob *, const QByteArray & );
-        void slotProviderInfoResult( KJob * );
 	// DXS
         void slotLoadProvidersListDXS();
         void slotLoadProviderDXS(int index);
@@ -75,9 +60,9 @@ class NewStuffDialog : public QDialog
 	void slotError();
         // file downloading
         void slotDownloadItem( AvailableItem * );
-        void slotItemMessage( KJob *, const QString & );
-        void slotItemPercentage( KJob *, unsigned long );
-        void slotItemResult( KJob * );
+        //void slotItemMessage( KJob *, const QString & );
+        //void slotItemPercentage( KJob *, unsigned long );
+        //void slotItemResult( KJob * );
 };
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef KDXS_CHANGES_H
-#define KDXS_CHANGES_H
+#ifndef KNEWSTUFF2_UI_KDXSCHANGES_H
+#define KNEWSTUFF2_UI_KDXSCHANGES_H
 
 #include <kdialog.h>
 

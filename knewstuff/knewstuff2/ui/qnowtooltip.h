@@ -1,5 +1,5 @@
-#ifndef QNOW_TOOLTIP_H
-#define QNOW_TOOLTIP_H
+#ifndef KNEWSTUFF2_UI_QNOWTOOLTIP_H
+#define KNEWSTUFF2_UI_QNOWTOOLTIP_H
 
 #include <qrect.h>
 #include <qstring.h>

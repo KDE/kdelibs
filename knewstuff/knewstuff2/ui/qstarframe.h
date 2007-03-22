@@ -1,5 +1,5 @@
-#ifndef QSTAR_FRAME_H
-#define QSTAR_FRAME_H
+#ifndef KNEWSTUFF2_UI_QSTARFRAME_H
+#define KNEWSTUFF2_UI_QSTARFRAME_H
 
 #include <qframe.h>
 

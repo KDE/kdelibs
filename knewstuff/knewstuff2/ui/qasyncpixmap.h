@@ -1,5 +1,5 @@
-#ifndef QASYNC_PIXMAP_H
-#define QASYNC_PIXMAP_H
+#ifndef KNEWSTUFF2_UI_QASYNCPIXMAP_H
+#define KNEWSTUFF2_UI_QASYNCPIXMAP_H
 
 #include <qpixmap.h>
 #include <qobject.h>

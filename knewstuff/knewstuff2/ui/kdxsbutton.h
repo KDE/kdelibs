@@ -1,5 +1,5 @@
-#ifndef KDXSBUTTON_H
-#define KDXSBUTTON_H
+#ifndef KNEWSTUFF2_UI_KDXSBUTTON_H
+#define KNEWSTUFF2_UI_KDXSBUTTON_H
 
 #include <qtoolbutton.h>
 

@@ -1,5 +1,5 @@
-#ifndef QASYNC_FRAME_H
-#define QASYNC_FRAME_H
+#ifndef KNEWSTUFF2_UI_QASYNCFRAME_H
+#define KNEWSTUFF2_UI_QASYNCFRAME_H
 
 #include <qframe.h>
 

@@ -1,5 +1,5 @@
-#ifndef KDXS_COMMENT_H
-#define KDXS_COMMENT_H
+#ifndef KNEWSTUFF2_UI_KDXSCOMMENT_H
+#define KNEWSTUFF2_UI_KDXSCOMMENT_H
 
 #include <kdialog.h>
 

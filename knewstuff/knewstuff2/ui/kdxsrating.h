@@ -1,5 +1,5 @@
-#ifndef KDXS_RATING_H
-#define KDXS_RATING_H
+#ifndef KNEWSTUFF2_UI_KDXSRATING_H
+#define KNEWSTUFF2_UI_KDXSRATING_H
 
 #include <kdialog.h>
 
