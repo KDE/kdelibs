@@ -1562,9 +1562,9 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
         else
         {
             // Didn't work - or maybe we just got a warning
-            QString mp = KIO::findDeviceMountPoint( _dev );
+            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( _dev );
             // Is the device mounted ?
-            if ( !mp.isEmpty() && mount_ret == 0)
+            if ( mp && mount_ret == 0)
             {
                 kDebug(7101) << "mount got a warning: " << err << endl;
                 warning( err );
@@ -1741,25 +1741,10 @@ bool FileProtocol::pmount(const QString &dev)
 
 bool FileProtocol::pumount(const QString &point)
 {
-    QString real_point = KStandardDirs::realPath(point);
-
-    KMountPoint::List mtab = KMountPoint::currentMountPoints();
-
-    KMountPoint::List::const_iterator it = mtab.begin();
-    KMountPoint::List::const_iterator end = mtab.end();
-
-    QString dev;
-
-    for (; it!=end; ++it)
-    {
-        QString tmp = (*it)->mountedFrom();
-        QString mp = (*it)->mountPoint();
-        mp = KStandardDirs::realPath(mp);
-
-        if (mp==real_point)
-            dev = KStandardDirs::realPath(tmp);
-    }
-
+    KMountPoint::Ptr mp = KMountPoint::currentMountPoints(KMountPoint::NeedRealDeviceName).findByPath(point);
+    if (!mp)
+        return false;
+    QString dev = mp->realDeviceName();
     if (dev.isEmpty()) return false;
 
     QString epath = getenv("PATH");
