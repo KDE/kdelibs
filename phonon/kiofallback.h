@@ -65,6 +65,8 @@ class KioFallback : public QObject
         bool endOfDataSent;
         bool seeking;
         bool reading;
+        bool m_open;
+        qint64 m_seekPosition;
         KIO::SimpleJob *kiojob;
 };
 } // namespace Phonon

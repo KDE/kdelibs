@@ -29,7 +29,6 @@
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 
-//#define PHONON_CLASSNAME MediaObject
 #define PHONON_INTERFACENAME ByteStreamInterface
 
 namespace Phonon
@@ -40,6 +39,8 @@ KioFallback::KioFallback(MediaObject *parent)
     endOfDataSent(false),
     seeking(false),
     reading(false),
+    m_open(false),
+    m_seekPosition(0),
     kiojob(0)
 {
 }
@@ -55,12 +56,7 @@ KioFallback::~KioFallback()
 void KioFallback::stopped()
 {
     // if (do pre-buffering) {
-    MediaObject *q = static_cast<MediaObject *>(parent());
-    MediaObjectPrivate *d = q->k_func();
-    ByteStreamInterface *bs = qobject_cast<ByteStreamInterface *>(d->backendObject);
-    if (bs) {
-        setupKioJob();
-    }
+    setupKioJob();
     // }
 }
 
@@ -77,7 +73,7 @@ void KioFallback::setupKioStreaming()
     MediaObjectPrivate *d = q->k_func();
     Q_ASSERT(d->backendObject == 0);
 
-    d->backendObject = Factory::createByteStream(this);
+    d->backendObject = Factory::createByteStream(q);
     if (!d->backendObject) {
         return;
     }
@@ -86,12 +82,12 @@ void KioFallback::setupKioStreaming()
     setupKioJob();
     endOfDataSent = false;
 
-    //setupIface for ByteStream
-    //connect(d->backendObject, SIGNAL(finished()), q, SIGNAL(finished()));
+    // reinitialize the KIO job when the playback has finished
+    // if (do pre-buffering) {
     connect(d->backendObject, SIGNAL(finished()), this, SLOT(setupKioJob()));
-    //connect(d->backendObject, SIGNAL(aboutToFinish(qint32)), q, SIGNAL(aboutToFinish(qint32)));
-    //connect(d->backendObject, SIGNAL(length(qint64)), q, SIGNAL(length(qint64)));
+    // }
 
+    //setupIface for ByteStream
     connect(d->backendObject, SIGNAL(needData()), this, SLOT(bytestreamNeedData()));
     connect(d->backendObject, SIGNAL(enoughData()), this, SLOT(bytestreamEnoughData()));
     connect(d->backendObject, SIGNAL(seekStream(qint64)), this, SLOT(bytestreamSeekStream(qint64)));
@@ -106,6 +102,7 @@ void KioFallback::setupKioJob()
     MediaObject *q = static_cast<MediaObject *>(parent());
     MediaObjectPrivate *d = q->k_func();
     Q_ASSERT(d->backendObject);
+    Q_ASSERT(qobject_cast<ByteStreamInterface *>(d->backendObject));
 
     if (kiojob) {
         kiojob->kill();
@@ -116,6 +113,7 @@ void KioFallback::setupKioJob()
         if (!kiojob) {
             return;
         }
+        m_open = false;
 
         BACKEND_CALL1("setStreamSeekable", bool, true);
         connect(kiojob, SIGNAL(open(KIO::Job*)), this, SLOT(bytestreamFileJobOpen(KIO::Job*)));
@@ -140,20 +138,19 @@ void KioFallback::setupKioJob()
 
 void KioFallback::bytestreamNeedData()
 {
-    // while seeking the backend won't get any data
-    if (seeking) {
-        return;
-    }
-
-    if (kiojob && kiojob->isSuspended()) {
-        kiojob->resume();
-    }
-    if (!reading) {
-        reading = true;
-        KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
-        if (filejob) {
-            filejob->read( 32768 );
+    KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
+    if (filejob) {
+        // KIO::FileJob
+        // while seeking the backend won't get any data
+        if (seeking || !m_open) {
+            reading = true;
+        } else if (!reading) {
+            reading = true;
+            filejob->read(32768);
         }
+    } else {
+        // KIO::TransferJob
+        kiojob->resume();
     }
 }
 
@@ -164,15 +161,17 @@ void KioFallback::bytestreamEnoughData()
     // FileJob::read()
     if (kiojob && !qobject_cast<KIO::FileJob*>(kiojob) && !kiojob->isSuspended()) {
         kiojob->suspend();
+    } else {
+        reading = false;
     }
-    reading = false;
 }
 
 void KioFallback::bytestreamData(KIO::Job *, const QByteArray &data)
 {
     if (seeking) {
+        // seek doesn't block, so don't send data to the backend until it signals us
+        // that the seek is done
         kDebug(600) << k_funcinfo << "seeking: do nothing" << endl;
-        reading = false;
         return;
     }
 
@@ -194,9 +193,8 @@ void KioFallback::bytestreamData(KIO::Job *, const QByteArray &data)
     INTERFACE_CALL(writeData(data));
     if (reading) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
-        if (filejob) {
-            filejob->read(32768);
-        }
+        Q_ASSERT(filejob);
+        filejob->read(32768);
     }
 }
 
@@ -240,29 +238,25 @@ void KioFallback::cleanupByteStream()
     if (kiojob) {
         kiojob->kill();
         kiojob = 0;
+        reading = false;
     }
 }
 
 void KioFallback::bytestreamSeekStream(qint64 position)
 {
     kDebug(600) << k_funcinfo << position << " = " << qulonglong(position) << endl;
-    KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
     seeking = true;
-    reading = false;
-
-    // don't suspend when seeking as that will make the application hang,
-    // waiting for the FileJob::position signal
-    if (kiojob->isSuspended()) {
-        kiojob->resume();
+    if (m_open) {
+        KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
+        filejob->seek(position);
+    } else {
+        m_seekPosition = position;
     }
-
-    filejob->seek(position);
-    // seek doesn't block, so don't send data to the backend until it signals us
-    // that the seek is done
 }
 
 void KioFallback::bytestreamFileJobOpen(KIO::Job *)
 {
+    m_open = true;
     endOfDataSent = false;
     KIO::FileJob *filejob = static_cast<KIO::FileJob *>(kiojob);
     kDebug(600) << k_funcinfo << filejob->size() << endl;
@@ -270,9 +264,11 @@ void KioFallback::bytestreamFileJobOpen(KIO::Job *)
     MediaObjectPrivate *d = q->k_func();
     BACKEND_CALL1("setStreamSize", qint64, filejob->size());
 
-    // start streaming data to the Backend until it signals enoughData
-    reading = true;
-    filejob->read(32768);
+    if (seeking) {
+        filejob->seek(m_seekPosition);
+    } else if (reading) {
+        filejob->read(32768);
+    }
 }
 
 void KioFallback::bytestreamSeekDone(KIO::Job *, KIO::filesize_t offset)
@@ -280,10 +276,11 @@ void KioFallback::bytestreamSeekDone(KIO::Job *, KIO::filesize_t offset)
     kDebug(600) << k_funcinfo << offset << endl;
     seeking = false;
     endOfDataSent = false;
-    reading = true;
-    KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
-    Q_ASSERT(filejob);
-    filejob->read(32768);
+    if (reading) {
+        KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
+        Q_ASSERT(filejob);
+        filejob->read(32768);
+    }
 }
 
 } // namespace Phonon
