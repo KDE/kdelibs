@@ -1,0 +1,85 @@
+/*
+ *  Copyright (C) 2006 David Faure   <faure@kde.org>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License version 2 as published by the Free Software Foundation;
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ *  Boston, MA 02110-1301, USA.
+ */
+
+#include "kmountpointtest.h"
+#include <qtest_kde.h>
+#include "kmountpointtest.moc"
+
+#include "kmountpoint.h"
+#include <kdebug.h>
+#include <kde_file.h>
+#include <sys/stat.h>
+
+QTEST_KDEMAIN( KMountPointTest, NoGUI )
+
+void KMountPointTest::initTestCase()
+{
+
+}
+
+void KMountPointTest::testCurrentMountPoints()
+{
+    const KMountPoint::List mountPoints = KMountPoint::currentMountPoints(KMountPoint::NeedRealDeviceName);
+    QVERIFY(!mountPoints.isEmpty());
+    KMountPoint::Ptr mountWithDevice;
+    foreach(KMountPoint::Ptr mountPoint, mountPoints) {
+        /*kDebug() << "Mount: " << mountPoint->mountedFrom()
+          << " (" << mountPoint->realDeviceName() << ") "
+          << mountPoint->mountPoint() << " " << mountPoint->mountType() << endl;*/
+        QVERIFY(!mountPoint->mountedFrom().isEmpty());
+        QVERIFY(!mountPoint->mountPoint().isEmpty());
+        QVERIFY(!mountPoint->mountType().isEmpty());
+        // old bug, happened because KMountPoint called KStandardDirs::realPath instead of realFilePath
+        QVERIFY(!mountPoint->realDeviceName().endsWith('/'));
+
+        // keep one (any) mountpoint with a device name for the test below
+        if (!mountPoint->realDeviceName().isEmpty())
+            mountWithDevice = mountPoint;
+    }
+
+    QVERIFY(mountWithDevice);
+
+    // Check findByDevice
+    const KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
+    QVERIFY(found);
+    QCOMPARE(found->mountPoint(), mountWithDevice->mountPoint());
+
+    // Check findByPath
+#ifdef Q_OS_UNIX
+    const KMountPoint::Ptr rootMountPoint = mountPoints.findByPath("/");
+    QVERIFY(rootMountPoint);
+    QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
+
+    KDE_struct_stat rootStatBuff;
+    QCOMPARE( KDE_stat( "/", &rootStatBuff ), 0 );
+    KDE_struct_stat homeStatBuff;
+    if ( KDE_stat( "/home", &homeStatBuff ) == 0 ) {
+        bool sameDevice = rootStatBuff.st_dev == homeStatBuff.st_dev;
+        const KMountPoint::Ptr homeMountPoint = mountPoints.findByPath("/home");
+        QVERIFY(homeMountPoint);
+        //kDebug() << "Checking the home mount point, sameDevice=" << sameDevice << endl;
+        if (sameDevice)
+            QCOMPARE(homeMountPoint->mountPoint(), QString("/"));
+        else
+            QCOMPARE(homeMountPoint->mountPoint(), QString("/home"));
+    } else {
+        kDebug() << "/home doesn't seem to exist, skipping test" << endl;
+    }
+#endif
+}
+

@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
+ *                2007 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -15,7 +16,7 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
- **/
+ */
 
 #include <config.h>
 #include <stdlib.h>
@@ -82,6 +83,7 @@ extern "C" void endvfsent( );
 # endif
 #endif
 
+#include "kdebug.h"
 
 
 #ifdef _OS_SOLARIS_
@@ -146,7 +148,7 @@ static QString devNameFromOptions(const QStringList &options)
    return QString("none");
 }
 
-KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
+KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded)
 {
   KMountPoint::List result;
 
@@ -178,7 +180,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
       if (infoNeeded & NeedRealDeviceName)
       {
          if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realPath(mp->d->mountedFrom);
+            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
       }
       // TODO: Strip trailing '/' ?
       result.append(mp);
@@ -229,7 +231,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
       if (infoNeeded & NeedRealDeviceName)
       {
          if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realPath(mp->d->mountedFrom);
+            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
       }
       // TODO: Strip trailing '/' ?
       result.append(mp);
@@ -240,7 +242,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(int infoNeeded)
    return result;
 }
 
-KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
+KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 {
   KMountPoint::List result;
 
@@ -276,7 +278,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
       if (infoNeeded & NeedRealDeviceName)
       {
          if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realPath(mp->d->mountedFrom);
+            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
       }
       // TODO: Strip trailing '/' ?
       result.append(mp);
@@ -340,7 +342,7 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
             if (infoNeeded & NeedRealDeviceName)
             {
                if (mp->d->mountedFrom.startsWith("/"))
-                  mp->d->device = KStandardDirs::realPath(mp->d->mountedFrom);
+                  mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
             }
 
             result.append(mp);
@@ -382,8 +384,8 @@ KMountPoint::List KMountPoint::currentMountPoints(int infoNeeded)
 
       if (infoNeeded & NeedRealDeviceName)
       {
-         if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realPath(mp->d->mountedFrom);
+         if (mp->d->mountedFrom.startsWith('/'))
+            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
       }
       // TODO: Strip trailing '/' ?
       result.append(mp);
@@ -416,5 +418,34 @@ QString KMountPoint::mountType() const
 QStringList KMountPoint::mountOptions() const
 {
     return d->mountOptions;
+}
+
+KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
+{
+    /* If the path contains symlinks, get the real name */
+    const QString realname = KStandardDirs::realFilePath(path);
+
+    int max = 0;
+    KMountPoint::Ptr result;
+    for (const_iterator it = begin(); it != end(); ++it) {
+        const QString mountpoint = (*it)->d->mountPoint;
+        const int length = mountpoint.length();
+        if (realname.startsWith(mountpoint) && length > max) {
+            max = length;
+            result = *it;
+            // keep iterating to check for a better match (bigger max)
+        }
+    }
+    return result;
+}
+
+KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
+{
+    const QString realDevice = KStandardDirs::realFilePath(device);
+    for (const_iterator it = begin(); it != end(); ++it) {
+        if ((*it)->d->mountedFrom == realDevice)
+            return *it;
+    }
+    return Ptr();
 }
 
