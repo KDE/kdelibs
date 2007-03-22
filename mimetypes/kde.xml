@@ -456,12 +456,11 @@ Notes:
     <expanded-acronym>Multimedia Retrieval Markup Language</expanded-acronym>
     <glob pattern="*.mrml"/>
   </mime-type>
-  <mime-type type="application/prs.plucker"> <!-- http://www.iana.org/assignments/media-types/application/prs.plucker -->
+  <mime-type type="application/prs.plucker"> <!-- fdo #10379 -->
     <comment>Plucker document</comment>
-    <magic priority="50">
+    <magic priority="80">
       <match type="string" value="DataPlkr" offset="60"/>
     </magic>
-<!--    <glob pattern="*.pdb"/> -->
   </mime-type>
 
   <mime-type type="application/x-cabri">
