@@ -709,10 +709,20 @@ void KIconButton::setIcon(const QString& icon)
       mpDialog->setCustomLocation( QFileInfo( mpLoader->iconPath(mIcon, mGroup, true) ).absolutePath() );
 }
 
+void KIconButton::setIcon(const QIcon& icon)
+{
+    QPushButton::setIcon(icon);
+}
+
 void KIconButton::resetIcon()
 {
     mIcon.clear();
     setIcon(QIcon());
+}
+
+const QString &KIconButton::icon() const
+{
+    return mIcon;
 }
 
 void KIconButton::slotChangeIcon()

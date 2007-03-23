@@ -884,7 +884,7 @@ bool KUrlBarItemDialog::getInformation( bool allowGlobal, KUrl& url,
 
 KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
                                       const QString& description,
-                                      QString icon, bool appLocal,
+                                      const QString &icon, bool appLocal,
                                       int iconSize,
                                       QWidget *parent)
     : KDialog( parent )
@@ -931,8 +931,9 @@ KUrlBarItemDialog::KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
     m_iconButton->setObjectName( QLatin1String( "icon button" ) );
     m_iconButton->setIconSize( iconSize );
     if ( icon.isEmpty() )
-        icon = KMimeType::iconNameForUrl( url );
-    m_iconButton->setIcon( icon );
+        m_iconButton->setIcon( KMimeType::iconNameForUrl( url ) );
+    else
+        m_iconButton->setIcon( icon );
     label->setBuddy( m_iconButton );
     label->setWhatsThis(whatsThisText );
     m_iconButton->setWhatsThis(whatsThisText );
@@ -977,7 +978,7 @@ QString KUrlBarItemDialog::description() const
     return m_edit->text();
 }
 
-QString KUrlBarItemDialog::icon() const
+const QString &KUrlBarItemDialog::icon() const
 {
     return m_iconButton->icon();
 }

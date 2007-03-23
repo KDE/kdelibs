@@ -282,8 +282,7 @@ public:
      */
     void setIcon(const QString& icon);
 
-    void setIcon(const QIcon& icon)
-    {QPushButton::setIcon(icon);}
+    void setIcon(const QIcon& icon);
 
     /**
      * Resets the icon (reverts to an empty button).
@@ -293,7 +292,7 @@ public:
     /**
      * Returns the name of the selected icon.
      */
-    QString icon() const { return mIcon; }
+    const QString &icon() const;
 
     /**
      * Sets the size of the icon to be shown / selected.

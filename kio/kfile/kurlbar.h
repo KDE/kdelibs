@@ -585,7 +585,7 @@ public:
      * used (KMimeType::pixmapForUrl()).
      */
     KUrlBarItemDialog( bool allowGlobal, const KUrl& url,
-                       const QString& description, QString icon,
+                       const QString& description, const QString &icon,
                        bool appLocal = true,
                        int iconSize = K3Icon::SizeMedium,
                        QWidget *parent = 0);
@@ -607,7 +607,7 @@ public:
     /**
      * @returns the configured icon
      */
-    QString icon() const;
+    const QString &icon() const;
 
     /**
      * @returns whether the item should be local to the application or global.

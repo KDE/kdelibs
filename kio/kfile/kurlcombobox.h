@@ -100,7 +100,7 @@ public:
      * If the list of urls contains more items than maxItems, the first items
      * will be stripped.
      */
-    void setUrls( QStringList urls );
+    void setUrls( const QStringList &urls );
 
     /**
      * Inserts @p urls into the combobox below the "default urls" (see
@@ -109,7 +109,7 @@ public:
      * If the list of urls contains more items than maxItems, the @p remove
      * parameter determines whether the first or last items will be stripped.
      */
-    void setUrls( QStringList urls, OverLoadResolving remove );
+    void setUrls( const QStringList &urls, OverLoadResolving remove );
 
     /**
      * @returns a list of all urls currently handled. The list contains at most

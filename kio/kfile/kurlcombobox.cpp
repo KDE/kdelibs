@@ -137,29 +137,27 @@ void KUrlComboBox::setDefaults()
     }
 }
 
-void KUrlComboBox::setUrls( QStringList urls )
+void KUrlComboBox::setUrls( const QStringList &urls )
 {
     setUrls( urls, RemoveBottom );
 }
 
-void KUrlComboBox::setUrls( QStringList urls, OverLoadResolving remove )
+void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
 {
     setDefaults();
     qDeleteAll( itemList );
     itemList.clear();
 
-    if ( urls.isEmpty() )
+    if ( _urls.isEmpty() )
         return;
 
-    QStringList::Iterator it = urls.begin();
+    QStringList urls;
+    QStringList::ConstIterator it = _urls.constBegin();
 
     // kill duplicates
-    while ( it != urls.end() ) {
-        while ( urls.count( *it ) > 1 ) {
-            it = urls.erase( it );
-            continue;
-        }
-        ++it;
+    while ( it != _urls.constEnd() ) {
+        if ( !urls.contains( *it ) )
+            urls += *it;
     }
 
     // limit to myMaximum items
@@ -167,8 +165,10 @@ void KUrlComboBox::setUrls( QStringList urls, OverLoadResolving remove )
        on that, so call it Overload (capital 'O').  (matz) */
     int Overload = urls.count() - myMaximum + defaultList.count();
     while ( Overload > 0 ) {
-        if (remove == RemoveBottom) urls.removeLast();
-	else urls.removeFirst();
+        if (remove == RemoveBottom)
+            urls.removeLast();
+        else
+            urls.removeFirst();
         Overload--;
     }
 

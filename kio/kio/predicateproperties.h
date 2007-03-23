@@ -34,7 +34,7 @@ class QValidator;
 class KIO_EXPORT PredicateProperties {
 friend class PredicatePropertyProvider;
 public:
-    PredicateProperties(const QString& predicate = QString::null);
+    PredicateProperties(const QString& predicate = QString());
     PredicateProperties(const PredicateProperties& p);
     ~PredicateProperties();
     const PredicateProperties& operator=(const PredicateProperties& p);
