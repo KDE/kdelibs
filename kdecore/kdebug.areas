@@ -173,25 +173,6 @@
 
 # kdepim
 5200        kitchensync
-5201        kitchensync (Konnector)
-5202        kitchensync (OpieKonnector)
-5203        kitchensync (PhoneKonnector)
-5204        kitchensync (AgendaKonnector)
-5205	    kitchensync (CasioKonnector)
-5210        kitchensync (KitchenSyncApp)
-5220        kitchensync (ManipulatorParts)
-5221        kitchensync (overviewpart)
-5222        kitchensync (organizerpart)
-5223        kitchensync (fileviewpart)
-5224        kitchensync Desktop
-5225        kitchensync (QtopiaKonnector)
-5226        kitchensync Categories
-5227        kitchensync Todo
-5228        kitchensync AddressBook
-5229        kitchensync Datebook
-5230        kitchensync SyncEntry
-5231        kitchensync SyncUI
-5250        kitchensync (Syncing Algorithm)
 5300        libkdepim
 5310        kprefs
 5400        calendarsystem
@@ -218,6 +199,7 @@
 5951        kalarm (resources)
 5960        kandy
 5970        karm
+5975        ktnef
 
 # libkhtml
 6000        khtml
