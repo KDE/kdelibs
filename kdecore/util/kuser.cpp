@@ -271,7 +271,7 @@ KUserGroup::KUserGroup(const char *_name) {
   fillName(_name);
 }
 
-KUserGroup::KUserGroup(const group *g) {
+KUserGroup::KUserGroup(const ::group *g) {
   fillGroup(g);
 }
 
@@ -297,7 +297,7 @@ void KUserGroup::fillName(const char *_name) {
   fillGroup(_name ? ::getgrnam( _name ) : 0);
 }
 
-void KUserGroup::fillGroup(const group *p) {
+void KUserGroup::fillGroup(const ::group *p) {
   if (!p) {
     d = new Private;
     return;
@@ -343,7 +343,7 @@ QStringList KUserGroup::userNames() const {
 QList<KUserGroup> KUserGroup::allGroups() {
   QList<KUserGroup> result;
 
-  group* g;
+  ::group* g;
   while ((g = getgrent()))  {
      result.append(KUserGroup(g));
   }
@@ -356,7 +356,7 @@ QList<KUserGroup> KUserGroup::allGroups() {
 QStringList KUserGroup::allGroupNames() {
   QStringList result;
 
-  group* g;
+  ::group* g;
   while ((g = getgrent()))  {
      result.append(QString::fromLocal8Bit(g->gr_name));
   }

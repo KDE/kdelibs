@@ -1,5 +1,4 @@
 project(kdecore)
-KDE4_NO_ENABLE_FINAL(kdecore)
 # Generate kdefakes.h
 configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
@@ -154,6 +153,7 @@ set(kdecore_LIB_SRCS
    services/yacc.c
    services/lex.c
    services/kplugininfo.cpp
+   network/ksocketdevice.cpp # must be before the rest of network/, for enable-final
    network/kbufferedsocket.cpp
    network/kclientsocketbase.cpp
    network/kdatagramsocket.cpp
@@ -165,7 +165,6 @@ set(kdecore_LIB_SRCS
    network/kreverseresolver.cpp
    network/kserversocket.cpp
    network/ksocketaddress.cpp
-   network/ksocketdevice.cpp
    network/ksocketbase.cpp
    network/kstreamsocket.cpp
    network/ksocketbuffer.cpp

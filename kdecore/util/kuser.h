@@ -362,7 +362,7 @@ public:
 private:
   class Private;
   KSharedPtr<Private> d;
-  void fillGroup(const group* g);
+  void fillGroup(const ::group* g);
   void fillName(const char *name);
 };
 
