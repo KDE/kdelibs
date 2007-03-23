@@ -144,6 +144,16 @@ KTimeZone *KSystemTimeZones::readZone(const QString &name)
     return KSystemTimeZonesPrivate::readZone(name);
 }
 
+const KTimeZones::ZoneMap KSystemTimeZones::zones()
+{
+    return timeZones()->zones();
+}
+
+const KTimeZone * KSystemTimeZones::zone(const QString& name)
+{
+    return timeZones()->zone(name);
+}
+
 KTimeZone *KSystemTimeZonesPrivate::readZone(const QString &name)
 {
     if (!m_tzfileSource)

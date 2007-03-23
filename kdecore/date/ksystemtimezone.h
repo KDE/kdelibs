@@ -76,15 +76,22 @@ class KSystemTimeZoneDataPrivate;
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDECORE_EXPORT KSystemTimeZones
+namespace KSystemTimeZones
 {
-public:
+    /**
+     * Returns the unique KTimeZones instance containing the system time zones
+     * collection. It is first created if it does not already exist.
+     *
+     * @return time zones.
+     */
+    KDECORE_EXPORT KTimeZones *timeZones();
+
     /**
      * Returns all the time zones defined in this collection.
      *
      * @return time zone collection
      */
-    static const KTimeZones::ZoneMap zones()   { return timeZones()->zones(); }
+    KDECORE_EXPORT const KTimeZones::ZoneMap zones();
 
     /**
      * Returns the time zone with the given name.
@@ -98,7 +105,7 @@ public:
      *         Do not delete the returned object.
      * @see readZone()
      */
-    static const KTimeZone *zone(const QString &name)   { return timeZones()->zone(name); }
+    KDECORE_EXPORT const KTimeZone *zone(const QString &name);
 
     /**
      * Returns the time zone with the given name, containing the full time zone
@@ -111,7 +118,7 @@ public:
      *         It is the caller's responsibility to delete the returned object.
      * @see zone()
      */
-    static KTimeZone *readZone(const QString &name);
+    KDECORE_EXPORT KTimeZone *readZone(const QString &name);
 
     /**
      * Returns the current local system time zone.
@@ -135,27 +142,15 @@ public:
      *         Note that if UTC is returned as a default, it may not belong to the
      *         the collection returned by KSystemTimeZones::zones().
      */
-    static const KTimeZone *local();
+    KDECORE_EXPORT const KTimeZone *local();
 
     /**
      * Returns the location of the system time zone zoneinfo database.
      *
      * @return path of directory containing the zoneinfo database
      */
-    static QString zoneinfoDir();
-
-    /**
-     * Returns the unique KTimeZones instance containing the system time zones
-     * collection. It is first created if it does not already exist.
-     *
-     * @return time zones.
-     */
-    static KTimeZones *timeZones();
-
-private:
-    KSystemTimeZonesPrivate * const d;
-};
-
+    KDECORE_EXPORT QString zoneinfoDir();
+}
 
 /**
  * The KSystemTimeZone class represents a time zone in the system database.
@@ -348,7 +343,7 @@ public:
      * Creates a new copy of this object.
      * The caller is responsible for deleting the copy.
      * Derived classes must reimplement this method to return a copy of the
-     * calling instance 
+     * calling instance
      *
      * @return copy of this instance. This is a KSystemTimeZoneData pointer.
      */
