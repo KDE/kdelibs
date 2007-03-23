@@ -39,8 +39,6 @@
 #include <qapplication.h>
 #include <math.h>
 
-#define NEARBYINT(i) ((int(float(i) + 0.5)))
-
 class KMultiTabBarPrivate
 {
 public:
@@ -264,9 +262,9 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 						//kDebug()<<"placing line on old line"<<endl;
 						kDebug()<<"diff="<<diff<<endl;
 						tab->removeEventFilter(this);
-						tab->move(NEARBYINT(tmp-tab->neededSize()),lines*24);
+						tab->move(qRound(tmp-tab->neededSize()),lines*24);
 //						tab->setFixedWidth(tab->neededSize()+diff);
-						tab->setFixedWidth(NEARBYINT(tmp+diff)-tab->x());;
+						tab->setFixedWidth(qRound(tmp+diff)-tab->x());;
 						tab->installEventFilter(this);
 						CALCDIFF(m_tabs,diff,(i+1))
 
@@ -280,8 +278,8 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 					//kDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")"<<endl;
 					//kDebug()<<"diff="<<diff<<endl;
 					tab->removeEventFilter(this);
-					tab->move(NEARBYINT(tmp-tab->neededSize()),lines*24);
-					tab->setFixedWidth(NEARBYINT(tmp+diff)-tab->x());;
+					tab->move(qRound(tmp-tab->neededSize()),lines*24);
+					tab->setFixedWidth(qRound(tmp+diff)-tab->x());;
 
 					//tab->setFixedWidth(tab->neededSize()+diff);
 					tab->installEventFilter(this);
@@ -309,8 +307,8 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 					}
 					else {
 						tab->removeEventFilter(this);
-						tab->move(lines*24,NEARBYINT(tmp-tab->neededSize()));
-                                                tab->setFixedHeight(NEARBYINT(tmp+diff)-tab->y());;
+						tab->move(lines*24,qRound(tmp-tab->neededSize()));
+                                                tab->setFixedHeight(qRound(tmp+diff)-tab->y());;
 						tab->installEventFilter(this);
 					}
 					cnt=0;
@@ -318,8 +316,8 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 					lines++;
 				} else 	{
 					tab->removeEventFilter(this);
-					tab->move(lines*24,NEARBYINT(tmp-tab->neededSize()));
-                                        tab->setFixedHeight(NEARBYINT(tmp+diff)-tab->y());;
+					tab->move(lines*24,qRound(tmp-tab->neededSize()));
+                                        tab->setFixedHeight(qRound(tmp+diff)-tab->y());;
 					tab->installEventFilter(this);
 				}
 			}
