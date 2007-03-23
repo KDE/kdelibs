@@ -40,8 +40,6 @@
 /* Define to 1 if you have malloc.h */
 #cmakedefine   HAVE_MALLOC_H 1
 
-#cmakedefine   HAVE_FLOAT_H 1
-
 /* define if message translations are enabled */
 #cmakedefine ENABLE_NLS 1
 
@@ -53,7 +51,6 @@
 #cmakedefine HAVE_SYS_TYPES_H 1
 #cmakedefine HAVE_SYS_PARAM_H 1
 #cmakedefine HAVE_SYS_TIME_H 1
-#cmakedefine HAVE_SYS_TIMEB_H 1
 #cmakedefine HAVE_SYS_SELECT_H 1
 #cmakedefine HAVE_SYS_STROPTS_H 1
 #cmakedefine HAVE_SYS_BITYPES_H 1
@@ -68,13 +65,11 @@
 #cmakedefine HAVE_CRT_EXTERNS_H 1
 #cmakedefine HAVE_CARBON_CARBON_H 1
 #cmakedefine HAVE_FSTAB_H 1
-#cmakedefine HAVE_IEEEFP_H 1
 #cmakedefine HAVE_LIBUTIL_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1
 #cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_PTHREAD_NP_H 1
 #cmakedefine HAVE_PTY_H 1
 #cmakedefine HAVE_SYS_BITYPES_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
@@ -88,10 +83,6 @@
 
 #cmakedefine   HAVE_BACKTRACE 1
 #cmakedefine   HAVE_FADVISE 1
-#cmakedefine   HAVE_FUNC__FINITE 1
-#cmakedefine   HAVE_FUNC_FINITE 1
-#cmakedefine   HAVE_FUNC_ISINF 1
-#cmakedefine   HAVE_FUNC_ISNAN 1
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
 #cmakedefine   HAVE_GETPT 1
@@ -112,12 +103,10 @@
 #cmakedefine   HAVE_SETEUID 1
 #cmakedefine   HAVE_SETMNTENT 1
 #cmakedefine   HAVE_SETPRIORITY 1
-#cmakedefine   HAVE_SNPRINTF 1
 #cmakedefine   HAVE_SRANDOM 1
 #cmakedefine   HAVE_STRCMP 1
 #cmakedefine   HAVE_STRLCPY 1
 #cmakedefine   HAVE_STRLCAT 1
-#cmakedefine   HAVE_STRNCASECMP 1
 #cmakedefine   HAVE_STRRCHR 1
 #cmakedefine   HAVE_STRTOLL 1
 #cmakedefine   HAVE_UNLOCKPT 1

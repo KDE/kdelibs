@@ -56,17 +56,14 @@ check_include_files(strings.h     HAVE_STRINGS_H)                      # various
 check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
 check_include_files(dlfcn.h       HAVE_DLFCN_H)                        # various
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
-check_include_files(float.h       HAVE_FLOAT_H)                        # kjs
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
 
 check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
 check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
-check_include_files(ieeefp.h      HAVE_IEEEFP_H)                       # kjs
 check_include_files(limits.h      HAVE_LIMITS_H)                       # various
 check_include_files("sys/types.h;libutil.h" HAVE_LIBUTIL_H)            # kdesu, kdecore
 check_include_files(util.h        HAVE_UTIL_H)                         # kdesu, kdecore
 check_include_files(mntent.h      HAVE_MNTENT_H)                       # kio, kdecore
-check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)        # kjs
 check_include_files(pty.h         HAVE_PTY_H)                          # kdecore
 check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
 check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)                  # kwallet
@@ -89,7 +86,6 @@ check_include_files(paths.h       HAVE_PATHS_H)                        # kdecore
 
 check_include_files(errno.h       HAVE_ERRNO_H)                        # kjs, errno.h is used in many places, but only guarded in kjs/
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)                     # various
-check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)                    # kjs
 check_include_files(valgrind/memcheck.h   HAVE_VALGRIND_MEMCHECK_H)    # khtml
 check_include_files(crtdbg.h      HAVE_CRTDBG_H)                       # kjs
 
@@ -104,11 +100,9 @@ macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)                                    
 # macro.  Note that some symbols require multiple includes in a
 # specific order.  Refer to the man page for each symbol for which a
 # check is to be added to get the proper set of headers.
-check_symbol_exists(strncasecmp     "strings.h"                HAVE_STRNCASECMP) # kjs
 check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)      # libltdl
 check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)     # libltdl
 check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)     # kioslave
-check_symbol_exists(snprintf        "stdio.h"                  HAVE_SNPRINTF)    # kjs
 check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
 check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
 
@@ -173,11 +167,6 @@ check_function_exists(setmntent  HAVE_SETMNTENT)         # kio, kdecore
 check_function_exists(unsetenv   HAVE_UNSETENV)          # kdecore/fakes.c
 check_function_exists(usleep     HAVE_USLEEP)            # kdecore/fakes.c, kdeui/qxembed
 check_function_exists(_getpty    HAVE__GETPTY)           # kdesu
-
-check_function_exists(_finite    HAVE_FUNC__FINITE)      # kjs
-check_function_exists(finite     HAVE_FUNC_FINITE)       # kjs
-check_function_exists(isinf      HAVE_FUNC_ISINF)        # kjs
-check_function_exists(isnan      HAVE_FUNC_ISNAN)        # kjs
 
 # check for prototypes [for functions provided by kdefakes when not available]
 
