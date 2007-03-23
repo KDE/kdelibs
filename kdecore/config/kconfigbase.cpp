@@ -361,66 +361,8 @@ void KConfigBase::writeEntry( const QString& pKey, const Q3StrList &value,
 }
 #endif
 
-static bool cleanHomeDirPath( QString &path, const QString &homeDir )
-{
-#ifdef Q_WS_WIN //safer
-   if (!QDir::convertSeparators(path).startsWith(QDir::convertSeparators(homeDir)))
-        return false;
-#else
-   if (!path.startsWith(homeDir))
-        return false;
-#endif
-
-   int len = homeDir.length();
-   // replace by "$HOME" if possible
-   if (len && (path.length() == len || path[len] == '/')) {
-        path.replace(0, len, QString::fromLatin1("$HOME"));
-        return true;
-   } else
-        return false;
-}
-
-static QString translatePath( QString path ) // krazy:exclude=passbyvalue
-{
-   if (path.isEmpty())
-       return path;
-
-   // only "our" $HOME should be interpreted
-   path.replace('$', "$$");
-
-   bool startsWithFile = path.startsWith(QLatin1String("file:"), Qt::CaseInsensitive);
-
-   // return original path, if it refers to another type of URL (e.g. http:/), or
-   // if the path is already relative to another directory
-   if ((!startsWithFile && path[0] != '/') ||
-        (startsWithFile && path[5] != '/'))
-	return path;
-
-   if (startsWithFile)
-        path.remove(0,5); // strip leading "file:/" off the string
-
-   // keep only one single '/' at the beginning - needed for cleanHomeDirPath()
-   while (path[0] == '/' && path[1] == '/')
-	path.remove(0,1);
-
-   // we can not use KGlobal::dirs()->relativeLocation("home", path) here,
-   // since it would not recognize paths without a trailing '/'.
-   // All of the 3 following functions to return the user's home directory
-   // can return different paths. We have to test all them.
-   const QString homeDir0 = QFile::decodeName(getenv("HOME"));
-   const QString homeDir1 = QDir::homePath();
-   const QString homeDir2 = QDir(homeDir1).canonicalPath();
-   if (cleanHomeDirPath(path, homeDir0) ||
-       cleanHomeDirPath(path, homeDir1) ||
-       cleanHomeDirPath(path, homeDir2) ) {
-     // kDebug() << "Path was replaced\n";
-   }
-
-   if (startsWithFile)
-      path.prepend( "file://" );
-
-   return path;
-}
+// defined in kconfiggroup.cpp
+extern QString translatePath( QString path ); // krazy:exclude=passbyvalue
 
 void KConfigBase::writePathEntry( const char *pKey, const QString & path,
                                   WriteConfigFlags pFlags)
