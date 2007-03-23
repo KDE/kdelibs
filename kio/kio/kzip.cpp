@@ -40,7 +40,6 @@
 #include "kzip.h"
 #include "kfilterdev.h"
 #include "klimitediodevice.h"
-#include <kmimetype.h>
 #include <kdebug.h>
 
 #include <qhash.h>
