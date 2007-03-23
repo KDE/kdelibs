@@ -181,6 +181,7 @@ Part::Part( QObject *parent )
 Part::Part(PartPrivate &dd, QObject *parent)
     : QObject( parent ), PartBase( dd )
 {
+    PartBase::setPartObject( this );
 }
 
 Part::~Part()
