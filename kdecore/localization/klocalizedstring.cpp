@@ -291,7 +291,7 @@ KLocalizedString KLocalizedString::subs (uint a, int fieldWidth, int base,
 {
     if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<pluraln>(abs(a));
+        d->number = static_cast<pluraln>(a);
         d->numberSet = true;
         d->numberOrd = d->args.size();
     }
@@ -319,7 +319,7 @@ KLocalizedString KLocalizedString::subs (ulong a, int fieldWidth, int base,
 {
     if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<pluraln>(abs(a));
+        d->number = static_cast<pluraln>(a);
         d->numberSet = true;
         d->numberOrd = d->args.size();
     }
@@ -347,7 +347,7 @@ KLocalizedString KLocalizedString::subs (qulonglong a, int fieldWidth, int base,
 {
     if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<pluraln>(abs(a));
+        d->number = static_cast<pluraln>(a);
         d->numberSet = true;
         d->numberOrd = d->args.size();
     }
