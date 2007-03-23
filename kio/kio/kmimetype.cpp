@@ -83,6 +83,10 @@ void KMimeType::Private::loadInternal( QDataStream& _str )
 {
     // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
     _str >> m_lstPatterns >> m_parentMimeType;
+    if (KSycoca::self()->isBuilding()) {
+        // We're going to re-fill the list, so clear it
+        m_lstPatterns.clear();
+    }
 }
 
 /**
