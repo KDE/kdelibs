@@ -23,12 +23,13 @@
 #ifndef KXMLCORE_FAST_MALLOC_H
 #define KXMLCORE_FAST_MALLOC_H
 
+#include "Platform.h"
 #if USE(MULTIPLE_THREADS)
 #include <pthread.h>
 #endif
 #include <stdlib.h>
 #include <new>
-#include "Platform.h"
+
 
 namespace KXMLCore {
 
