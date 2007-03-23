@@ -333,7 +333,7 @@ KLocalizedString KLocalizedString::subs (qlonglong a, int fieldWidth, int base,
 {
     if (!d->plural.isEmpty() && !d->numberSet)
     {
-        d->number = static_cast<pluraln>(abs(a));
+        d->number = static_cast<pluraln>(qAbs(a));
         d->numberSet = true;
         d->numberOrd = d->args.size();
     }
