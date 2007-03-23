@@ -406,9 +406,9 @@ void KMimeTypeTest::testPatterns()
     QVERIFY( mime_kpresenter );
     QCOMPARE( mime_kpresenter->patterns().join(","), QString("*.kpr,*.kpt") );
     // mimetype with a no patterns
-    KMimeType::Ptr mime_mbox = KMimeType::mimeType( "application/mbox" );
-    QVERIFY( mime_mbox );
-    QCOMPARE( mime_mbox->patterns().join(","), QString() );
+    KMimeType::Ptr mime_pkcs7 = KMimeType::mimeType( "application/pkcs7-mime" );
+    QVERIFY( mime_pkcs7 );
+    QCOMPARE( mime_pkcs7->patterns().join(","), QString() );
 }
 
 void KMimeTypeTest::testParseMagicFile_data()
