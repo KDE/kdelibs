@@ -30,34 +30,34 @@
 
 static const KCmdLineOptions options[] =
 {
-	{"+url", 0, 0},
-	KCmdLineLastOption
+    {"+url", 0, 0},
+    KCmdLineLastOption
 };
 
 int main(int argc, char **argv)
 {
-	KLocale::setMainCatalog("kdelibs");
-	KCmdLineArgs::init(argc, argv, "ktelnetservice", I18N_NOOP("telnet service"),
-			   I18N_NOOP("telnet protocol handler"), "unknown");
-	KCmdLineArgs::addCmdLineOptions(options);
+    KLocale::setMainCatalog("kdelibs");
+    KCmdLineArgs::init(argc, argv, "ktelnetservice", I18N_NOOP("telnet service"),
+               I18N_NOOP("telnet protocol handler"), "unknown");
+    KCmdLineArgs::addCmdLineOptions(options);
 
-	KApplication app;
+    KApplication app;
 
-	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-	if (args->count() != 1)
-		return 1;
+    if (args->count() != 1)
+        return 1;
 
-	KConfig config("kdeglobals");
-        KConfigGroup cg(&config, "General");
-	QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
+    KConfig config("kdeglobals");
+    KConfigGroup cg(&config, "General");
+    QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
 
-	KUrl url(args->arg(0));
-	QStringList cmd;
-	if (terminal == "konsole")
-	    cmd << "--noclose";
+    KUrl url(args->arg(0));
+    QStringList cmd;
+    if (terminal == "konsole")
+        cmd << "--noclose";
 
-	cmd << "-e";
+    cmd << "-e";
         if ( url.protocol() == "telnet" )
             cmd << "telnet";
         else if ( url.protocol() == "ssh" )
@@ -72,15 +72,15 @@ int main(int argc, char **argv)
         if (!KAuthorized::authorize("shell_access"))
         {
             KMessageBox::sorry(0,
-            	i18n("You do not have permission to access the %1 protocol.", url.protocol()));
+                i18n("You do not have permission to access the %1 protocol.", url.protocol()));
             return 3;
         }
 
-	if (!url.user().isEmpty())
-	{
-		cmd << "-l";
-		cmd << url.user();
-	}
+    if (!url.user().isEmpty())
+    {
+        cmd << "-l";
+        cmd << url.user();
+    }
 
         QString host;
         if (!url.host().isEmpty())
@@ -96,16 +96,14 @@ int main(int argc, char **argv)
 
         cmd << host;
 
-	if (url.port() > 0){
+    if (url.port() > 0){
             if ( url.protocol() == "ssh" )
-		cmd << "-p" << QString::number(url.port());
-	    else
-		cmd << QString::number(url.port());
-	}
+        cmd << "-p" << QString::number(url.port());
+        else
+        cmd << QString::number(url.port());
+    }
 
-	KToolInvocation::kdeinitExec(terminal, cmd);
+    KToolInvocation::kdeinitExec(terminal, cmd);
 
-	return 0;
+    return 0;
 }
-
-// vim: ts=4 sw=4 noet

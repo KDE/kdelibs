@@ -25,6 +25,15 @@ QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 #include "krun.h"
 #include <kshell.h>
 #include <kservice.h>
+#include <kstandarddirs.h>
+
+
+void KRunUnitTest::initTestCase()
+{
+    // testProcessDesktopExec works only if your terminal application is set to "x-term"
+    KConfigGroup cg(KGlobal::config(), "General");
+    cg.writeEntry("TerminalApplication", "x-term");
+}
 
 void KRunUnitTest::testBinaryName_data()
 {
@@ -50,8 +59,22 @@ void KRunUnitTest::testBinaryName()
 }
 
 //static const char *bt(bool tr) { return tr?"true":"false"; }
-static void checkPDE(const KService &service, const KUrl::List &urls, bool tf, const QString& b)
+static void checkPDE(const char* exec, const char* term, const char* sus,
+                     const KUrl::List &urls, bool tf, const QString& b)
 {
+    QFile out( "kruntest.desktop" );
+    if ( !out.open( IO_WriteOnly ) )
+        abort();
+    QByteArray str = "[Desktop Entry]\n"
+                     "Type=Application\n"
+                     "Name=just_a_test\n"
+                     "Icon=~/icon.png\n";
+    str += QByteArray(exec) + '\n';
+    str += QByteArray(term) + '\n';
+    str += QByteArray(sus) + '\n';
+    out.write( str );
+    out.close();
+    KService service(QDir::currentPath() + "/kruntest.desktop");
     /*qDebug() << QString().sprintf(
         "processDesktopExec( "
         "service = {\nexec = %s\nterminal = %s, terminalOptions = %s\nsubstituteUid = %s, user = %s },"
@@ -60,15 +83,11 @@ static void checkPDE(const KService &service, const KUrl::List &urls, bool tf, c
         KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(tf));
     */
     QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tf)), b);
+    QFile::remove("kruntest.desktop");
 }
 
 void KRunUnitTest::testProcessDesktopExec()
 {
-
-    // ------ this test works only if your terminal application is set to "x-term" ------
-    KConfigGroup cg(KGlobal::config(), "General");
-    cg.writeEntry("TerminalApplication", "x-term");
-
     KUrl::List l0;
     KUrl::List l1; l1 << KUrl( "file:/tmp" );
     KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
@@ -79,7 +98,7 @@ void KRunUnitTest::testProcessDesktopExec()
         *terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
           *sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
         *rslts[] = {
-            "date -u", // 0
+            "/bin/date -u", // 0
             "/bin/sh -c 'echo $PWD '", // 1
             "x-term -T ' - just_a_test' -e date -u", // 2
             "x-term -T ' - just_a_test' -e /bin/sh -c 'echo $PWD '", // 3
@@ -99,42 +118,63 @@ void KRunUnitTest::testProcessDesktopExec()
     for (int su = 0; su < 2; su++)
         for (int te = 0; te < 2; te++)
             for (int ex = 0; ex < 2; ex++) {
-                QFile out( "kruntest.desktop" );
-                if ( !out.open( IO_WriteOnly ) )
-                    abort();
-                QByteArray str = "[Desktop Entry]\n"
-                                 "Type=Application\n"
-                                 "Name=just_a_test\n"
-                                 "Icon=~/icon.png\n";
-                str += QByteArray(execs[ex]) + '\n';
-                str += QByteArray(terms[te]) + '\n';
-                str += QByteArray(sus[su]) + '\n';
-                out.write( str );
-                out.close();
-                KService s(QDir::currentPath() + "/kruntest.desktop");
-                //::unlink("kruntest.desktop");
-                checkPDE( s, l0, false, rslts[ex+te*2+su*4]);
+                checkPDE( execs[ex], terms[te], sus[su], l0, false, rslts[ex+te*2+su*4]);
             }
-
-    KService s1("dummy", "kate %U", "app");
-    checkPDE( s1, l0, false, "kate"); // gives runtime warning
-    checkPDE( s1, l1, false, "kate /tmp");
-    checkPDE( s1, l2, false, "kate http://localhost/foo");
-    checkPDE( s1, l3, false, "kate /local/file http://remotehost.org/bar");
-    KService s2("dummy", "kate %u", "app");
-     //checkPDE( s2, l0, false, "kate"); // gives runtime warning
-    checkPDE( s2, l1, false, "kate /tmp");
-    checkPDE( s2, l2, false, "kate http://localhost/foo");
-    //checkPDE( s2, l3, false, "kate"); // gives runtime warning
-    KService s3("dummy", "kate %F", "app");
-    checkPDE( s3, l0, false, "kate");
-    checkPDE( s3, l1, false, "kate /tmp");
-    checkPDE( s3, l2, false, "kioexec 'kate %F' http://localhost/foo");
-    checkPDE( s3, l3, false, "kioexec 'kate %F' file:///local/file http://remotehost.org/bar");
-
-    checkPDE( s3, l1, true, "kioexec --tempfiles 'kate %F' file:///tmp");
-
-    KService s4("dummy", "sh -c \"kate \"'\\\"'\"%F\"'\\\"'", "app");
-    checkPDE( s4, l1, false, "sh -c 'kate \\\"/tmp\\\"'");
 }
 
+void KRunUnitTest::testProcessDesktopExecNoFile_data()
+{
+    QTest::addColumn<QString>("execLine");
+    QTest::addColumn<KUrl::List>("urls");
+    QTest::addColumn<bool>("tempfiles");
+    QTest::addColumn<QString>("expected");
+
+    KUrl::List l0;
+    KUrl::List l1; l1 << KUrl( "file:/tmp" );
+    KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
+    KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
+
+    // A real-world use case would be kate.
+    // But I picked kdeinit since it's installed by kdelibs
+    QString kdeinit = KStandardDirs::findExe("kdeinit");
+    if (kdeinit.isEmpty()) kdeinit = "kdeinit";
+
+    QString kmailservice = KStandardDirs::findExe("kmailservice");
+    if (kmailservice.isEmpty()) kmailservice = "kmailservice";
+    if (!kdeinit.isEmpty()) {
+        QVERIFY(!kmailservice.isEmpty());
+        QVERIFY(kmailservice.contains("kde4/libexec"));
+    }
+
+    QTest::newRow("%U l0") << "kdeinit %U" << l0 << false << kdeinit;
+    QTest::newRow("%U l1") << "kdeinit %U" << l1 << false << kdeinit + " /tmp";
+    QTest::newRow("%U l2") << "kdeinit %U" << l2 << false << kdeinit + " http://localhost/foo";
+    QTest::newRow("%U l3") << "kdeinit %U" << l3 << false << kdeinit + " /local/file http://remotehost.org/bar";
+
+    //QTest::newRow("%u l0") << "kdeinit %u" << l0 << false << kdeinit; // gives runtime warning
+    QTest::newRow("%u l1") << "kdeinit %u" << l1 << false << kdeinit + " /tmp";
+    QTest::newRow("%u l2") << "kdeinit %u" << l2 << false << kdeinit + " http://localhost/foo";
+    //QTest::newRow("%u l3") << "kdeinit %u" << l3 << false << kdeinit; // gives runtime warning
+
+    QTest::newRow("%F l0") << "kdeinit %F" << l0 << false << kdeinit;
+    QTest::newRow("%F l1") << "kdeinit %F" << l1 << false << kdeinit + " /tmp";
+    QTest::newRow("%F l2") << "kdeinit %F" << l2 << false << "kioexec 'kdeinit %F' http://localhost/foo";
+    QTest::newRow("%F l3") << "kdeinit %F" << l3 << false << "kioexec 'kdeinit %F' file:///local/file http://remotehost.org/bar";
+
+    QTest::newRow("%F l1 tempfile") << "kdeinit %F" << l1 << true << "kioexec --tempfiles 'kdeinit %F' file:///tmp";
+
+    QTest::newRow("sh -c kdeinit %F") << "sh -c \"kdeinit \"'\\\"'\"%F\"'\\\"'"
+                                   << l1 << false << "/bin/sh -c 'kdeinit \\\"/tmp\\\"'";
+
+    QTest::newRow("kmailservice %u l1") << "kmailservice %u" << l1 << false << kmailservice + " /tmp";
+}
+
+void KRunUnitTest::testProcessDesktopExecNoFile()
+{
+    QFETCH(QString, execLine);
+    KService service("dummy", execLine, "app");
+    QFETCH(KUrl::List, urls);
+    QFETCH(bool, tempfiles);
+    QFETCH(QString, expected);
+    QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tempfiles)), expected);
+}

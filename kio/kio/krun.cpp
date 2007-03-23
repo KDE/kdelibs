@@ -444,6 +444,14 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
       result << "/bin/sh" << "-c" << exec;
     else if (err != KShell::NoError)
       goto synerr;
+    else {
+      if (!result.isEmpty()) {
+        // resolve the executable according to the path, which also makes it possible to find kde4/libexec helpers.
+        const QString exePath = KStandardDirs::findExe(result[0]);
+        if (!exePath.isEmpty())
+          result[0] = exePath;
+      }
+    }
   }
 
   return result;
