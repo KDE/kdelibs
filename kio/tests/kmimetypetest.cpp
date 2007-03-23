@@ -400,15 +400,15 @@ void KMimeTypeTest::testPatterns()
     // mimetype with a single pattern
     KMimeType::Ptr mime_pdf = KMimeType::mimeType( "application/pdf" );
     QVERIFY( mime_pdf );
-    QCOMPARE( mime_pdf->patterns(), QStringList() << "*.pdf" );
+    QCOMPARE( mime_pdf->patterns().join(","), QString("*.pdf") );
     // mimetype with more than one pattern
     KMimeType::Ptr mime_kpresenter = KMimeType::mimeType( "application/x-kpresenter" );
     QVERIFY( mime_kpresenter );
-    QCOMPARE( mime_kpresenter->patterns(), QStringList() << "*.kpr" << "*.kpt" );
+    QCOMPARE( mime_kpresenter->patterns().join(","), QString("*.kpr,*.kpt") );
     // mimetype with a no patterns
     KMimeType::Ptr mime_mbox = KMimeType::mimeType( "application/mbox" );
     QVERIFY( mime_mbox );
-    QCOMPARE( mime_mbox->patterns(), QStringList() );
+    QCOMPARE( mime_mbox->patterns().join(","), QString() );
 }
 
 void KMimeTypeTest::testParseMagicFile_data()
