@@ -198,7 +198,7 @@ private:
     KServiceTypeTrader& operator=( const KServiceTypeTrader& rhs );
 
     class Private;
-    Private* d;
+    Private * const d;
 };
 
 #endif

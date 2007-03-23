@@ -1190,7 +1190,7 @@ private:
   void internalSetGroup( const QByteArray &_group );
 
   class Private;
-  Private *d;
+  Private * const d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KConfigBase::WriteConfigFlags )

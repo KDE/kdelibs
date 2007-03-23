@@ -129,7 +129,7 @@ private:
   KProcessController& operator= ( const KProcessController& );
 
   class Private;
-  Private* d;
+  Private * const d;
 };
 
 #endif

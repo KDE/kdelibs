@@ -667,7 +667,7 @@ float KSystemTimeZonesPrivate::convertCoordinate(const QString &coordinate)
 KSystemTimeZone::KSystemTimeZone(KSystemTimeZoneSource *source, const QString &name,
         const QString &countryCode, float latitude, float longitude, const QString &comment)
   : KTimeZone(source, name, countryCode, latitude, longitude, comment)
-//    , d(0)
+    , d(0)
 {
 }
 
@@ -832,6 +832,7 @@ bool       KSystemTimeZoneSourcePrivate::multiParse = false;
 
 
 KSystemTimeZoneSource::KSystemTimeZoneSource()
+    : d(0)
 //  : d(new KSystemTimeZoneSourcePrivate)
 {
 }

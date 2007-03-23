@@ -61,24 +61,28 @@ static inline bool writeEntryGui(KConfigGroup *cg, const char *key, const QVaria
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QString &_group)
+ : d(new Private())
 {
     init( master );
     changeGroup( _group.toUtf8( ) );
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const QByteArray &_group)
+ : d(new Private())
 {
     init( master );
     changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KConfigBase *master, const char * _group)
+ : d(new Private())
 {
     init( master );
     changeGroup( _group );
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QString &_group)
+ : d(new Private())
 {
     init( master.data() );
     changeGroup( _group.toUtf8() );
@@ -86,6 +90,7 @@ KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QString &_group)
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QByteArray &_group)
+ : d(new Private())
 {
     init( master.data() );
     changeGroup( _group );
@@ -93,6 +98,7 @@ KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const QByteArray &_group)
 }
 
 KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const char * _group)
+ : d(new Private())
 {
     init( master.data() );
     changeGroup( _group );
@@ -101,7 +107,6 @@ KConfigGroup::KConfigGroup(KSharedConfig::Ptr master, const char * _group)
 
 void KConfigGroup::init(KConfigBase *master)
 {
-  d = new Private();
   d->master = master;
   d->masterShared = 0;
 }
@@ -113,8 +118,8 @@ KConfigGroup &KConfigGroup::operator=(const KConfigGroup &rhs)
 }
 
 KConfigGroup::KConfigGroup(const KConfigGroup &rhs)
+ : d(new Private())
 {
-  d = new Private();
   *this = rhs;
 }
 

@@ -72,7 +72,7 @@ public:
     virtual bool hasTransitions() const;
 
 private:
-    KTzfileTimeZonePrivate *d;
+    KTzfileTimeZonePrivate * const d;
 };
 
 
@@ -116,7 +116,7 @@ public:
     virtual KTimeZoneData *parse(const KTimeZone *zone) const;
 
 private:
-    KTzfileTimeZoneSourcePrivate *d;
+    KTzfileTimeZoneSourcePrivate * const d;
 };
 
 

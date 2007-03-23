@@ -189,7 +189,7 @@ private:
 
     Q_DISABLE_COPY(KSycoca)
     class Private;
-    Private * d;
+    Private * const d;
 };
 
 #endif

@@ -153,7 +153,7 @@ public:
     static KTimeZones *timeZones();
 
 private:
-    KSystemTimeZonesPrivate *d;
+    KSystemTimeZonesPrivate * const d;
 };
 
 
@@ -267,7 +267,7 @@ public:
     virtual bool isDst(time_t t) const;
 
 private:
-    KSystemTimeZonePrivate *d;
+    KSystemTimeZonePrivate * const d;
 };
 
 
@@ -319,7 +319,7 @@ public:
     static void endParseBlock();
 
 private:
-    KSystemTimeZoneSourcePrivate *d;
+    KSystemTimeZoneSourcePrivate * const d;
 };
 
 
@@ -372,7 +372,7 @@ public:
     virtual QList<int> utcOffsets() const;
 
 private:
-    KSystemTimeZoneDataPrivate *d;
+    KSystemTimeZoneDataPrivate * const d;
 };
 
 #endif
