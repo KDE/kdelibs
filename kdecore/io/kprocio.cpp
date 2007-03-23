@@ -192,7 +192,7 @@ void KProcIO::sent(KProcess *)
 
 void KProcIO::received (KProcess *, char *buffer, int buflen)
 {
-  d->recvbuffer += QByteArray(buffer, buflen+1);
+  d->recvbuffer += QByteArray(buffer, buflen);
 
   controlledEmission();
 }
