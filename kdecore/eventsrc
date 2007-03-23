@@ -1728,8 +1728,10 @@ default_sound=KDE_Logout_3.ogg
 
 [cancellogout]
 Name=Logout canceled
+Name[bg]=Излизането от системата отменено
 Name[da]=Log af annulleret
 Name[el]=Η αποσύνδεση ακυρώθηκε
+Name[es]=Salida cancelada
 Name[fy]=Ofmelding ôfbrutsen
 Name[hu]=Kijelentkezés megszakítva
 Name[it]=Uscita annullata
@@ -1745,8 +1747,10 @@ Name[sv]=Utloggning avbruten
 Name[uk]=Вихід скасовано
 Name[zh_TW]=取消登出
 Comment=KDE logout was canceled
+Comment[bg]=Излзането от KDE беше отменено
 Comment[da]=log af fra KDE blev annulleret
 Comment[el]=Η αποσύνδεση από το KDE ακυρώθηκε
+Comment[es]=La salida de KDE fue cancelada
 Comment[fy]=KDE ôfmelding wie ôfbrutsen
 Comment[hu]=A KDE-s kijelentkezés megszakadt
 Comment[it]=L'uscita da KDE è stata annullata
