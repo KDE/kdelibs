@@ -23,6 +23,7 @@ private Q_SLOTS:
     void testMimeTypeTraderForAlias();
     void testHasServiceType1();
     void testHasServiceType2();
+    void testPatterns();
 
     void testParseMagicFile();
     void testParseMagicFile_data();

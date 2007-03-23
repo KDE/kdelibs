@@ -395,6 +395,22 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !ktexteditor_insertfile->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
+void KMimeTypeTest::testPatterns()
+{
+    // mimetype with a single pattern
+    KMimeType::Ptr mime_pdf = KMimeType::mimeType( "application/pdf" );
+    QVERIFY( mime_pdf );
+    QCOMPARE( mime_pdf->patterns(), QStringList() << "*.pdf" );
+    // mimetype with more than one pattern
+    KMimeType::Ptr mime_kpresenter = KMimeType::mimeType( "application/x-kpresenter" );
+    QVERIFY( mime_kpresenter );
+    QCOMPARE( mime_kpresenter->patterns(), QStringList() << "*.kpr" << "*.kpt" );
+    // mimetype with a no patterns
+    KMimeType::Ptr mime_mbox = KMimeType::mimeType( "application/mbox" );
+    QVERIFY( mime_mbox );
+    QCOMPARE( mime_mbox->patterns(), QStringList() );
+}
+
 void KMimeTypeTest::testParseMagicFile_data()
 {
     //kDebug() << k_funcinfo << endl;
