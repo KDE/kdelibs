@@ -42,7 +42,6 @@
 #include "kcomponentdata.h"
 #include "kglobal.h"
 #include "kstringhandler.h"
-#include "kstaticdeleter.h"
 #include "kurl.h"
 
 #ifdef Q_WS_X11
@@ -138,8 +137,7 @@ public:
 KCmdLineArgsList *KCmdLineArgs::argsList = 0;
 int KCmdLineArgs::argc = 0;
 char **KCmdLineArgs::argv = 0;
-char *KCmdLineArgs::mCwd = 0;
-static KStaticDeleter <char> mCwdd;
+QString KCmdLineArgs::mCwd = QString();
 const KAboutData *KCmdLineArgs::about = 0;
 bool KCmdLineArgs::parsed = false;
 bool KCmdLineArgs::ignoreUnknown = false;
@@ -199,17 +197,13 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLine
 
    about = _about;
    parsed = false;
-   mCwd = mCwdd.setObject(mCwd, new char [PATH_MAX+1], true);
-   getcwd(mCwd, PATH_MAX);
-#ifdef Q_WS_WIN
-   win32_slashify(mCwd, PATH_MAX);
-#endif
+   mCwd = QDir::currentPath();
    addStdCmdLineOptions(stdargs);
 }
 
-QString KCmdLineArgs::cwd()
+const QString &KCmdLineArgs::cwd()
 {
-   return QFile::decodeName(QByteArray(mCwd));
+   return mCwd;
 }
 
 const char * KCmdLineArgs::appName()
@@ -272,7 +266,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    removeArgs("qt");
    removeArgs("kde");
 
-   QByteArray qCwd = mCwd;
+   QByteArray qCwd = QFile::encodeName(mCwd);
    ds << qCwd;
 
    uint count = argsList ? argsList->count() : 0;
@@ -310,10 +304,8 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
 
    QByteArray qCwd;
    ds >> qCwd;
-   delete [] mCwd;
 
-   mCwd = mCwdd.setObject(mCwd, new char[qCwd.length()+1], true);
-   strncpy(mCwd, qCwd.data(), qCwd.length()+1);
+   mCwd = QFile::decodeName(qCwd);
 
    uint count;
    ds >> count;
@@ -1066,6 +1058,18 @@ KCmdLineArgs::~KCmdLineArgs()
   delete parsedArgList;
   if (argsList)
      argsList->removeAll(this);
+}
+
+void
+KCmdLineArgs::setCwd( const char * cwd )
+{
+    mCwd = QFile::decodeName( cwd );
+}
+
+void
+KCmdLineArgs::setCwd( const QString & cwd )
+{
+    mCwd = cwd;
 }
 
 void

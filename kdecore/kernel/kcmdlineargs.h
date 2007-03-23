@@ -379,7 +379,7 @@ public:
    * where the user started a second instance.
    * @return the current working directory
    **/
-  static QString cwd();
+  static const QString &cwd();
 
   /**
    * Get the appname according to argv[0].
@@ -517,8 +517,15 @@ public:
    * directory in case makeURL needs it.
    * @param cwd the new working directory
    */
-  static void setCwd( char * cwd ) { mCwd = cwd; }
+  static void setCwd( const char * cwd );
 
+  /**
+   * Made public for apps that don't use KCmdLineArgs
+   * To be done before makeURL, to set the current working
+   * directory in case makeURL needs it.
+   * @param cwd the new working directory
+   */
+  static void setCwd( const QString & cwd );
   /**
    *  Clear all options and arguments.
    */
@@ -699,7 +706,7 @@ private:
   static char **argv; // The original argv
   static bool parsed; // Whether we have parsed the arguments since calling init
   static bool ignoreUnknown; // Ignore unknown options and arguments
-  static char *mCwd; // Current working directory. Important for KUnqiueApp!
+  static QString mCwd; // Current working directory. Important for KUnqiueApp!
   static bool parseArgs;
   static StdCmdLineArgs mStdargs;
 
