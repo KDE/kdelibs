@@ -130,10 +130,29 @@ endif(TIFF_FOUND)
 
 ########### install files ###############
 
-install( FILES png.desktop xpm.desktop bmp.desktop pbm.desktop pgm.desktop  ppm.desktop xbm.desktop jpeg.desktop xv.desktop eps.desktop ico.desktop gif.desktop pcx.desktop tga.desktop rgb.desktop xcf.desktop dds.desktop mng.desktop psd.desktop hdr.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
+install( FILES
+  png.desktop
+  xpm.desktop
+  bmp.desktop
+  pbm.desktop
+  pgm.desktop
+  ppm.desktop
+  xbm.desktop
+  jpeg.desktop
+  xv.desktop
+  eps.desktop
+  ico.desktop
+  gif.desktop
+  pcx.desktop
+  tga.desktop
+  rgb.desktop
+  xcf.desktop
+  dds.desktop
+  mng.desktop
+  psd.desktop
+  hdr.desktop
+  DESTINATION ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 install( FILES qimageio_plugin.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR}/ )
-
-
 
 
