@@ -17,23 +17,18 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-// ------ this test works only if your terminal application is set to "x-term" ------
-
 #include "kruntest.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kshell.h>
 #include <kservice.h>
 #include <kde_file.h>
 #include <kcmdlineargs.h>
 #include <qpushbutton.h>
 #include <QtGui/QLayout>
-#include <qdir.h>
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 const int MAXKRUNS = 100;
 
@@ -51,20 +46,20 @@ void testKRun::foundMimeType( const QString& _type )
 
 Receiver::Receiver()
 {
-        QVBoxLayout *lay = new QVBoxLayout(this);
-        QPushButton * h = new QPushButton( "Press here to terminate", this );
-        lay->addWidget( h );
-        start = new QPushButton( "Launch KRuns", this );
-        lay->addWidget( start );
-        stop = new QPushButton( "Stop those KRuns", this );
-        stop->setEnabled(false);
-        lay->addWidget( stop );
-        QObject::connect( h, SIGNAL(clicked()), kapp, SLOT(quit()) );
-        QObject::connect( start, SIGNAL(clicked()), this, SLOT(slotStart()) );
-        QObject::connect( stop, SIGNAL(clicked()), this, SLOT(slotStop()) );
+    QVBoxLayout *lay = new QVBoxLayout(this);
+    QPushButton * h = new QPushButton( "Press here to terminate", this );
+    lay->addWidget( h );
+    start = new QPushButton( "Launch KRuns", this );
+    lay->addWidget( start );
+    stop = new QPushButton( "Stop those KRuns", this );
+    stop->setEnabled(false);
+    lay->addWidget( stop );
+    QObject::connect( h, SIGNAL(clicked()), kapp, SLOT(quit()) );
+    QObject::connect( start, SIGNAL(clicked()), this, SLOT(slotStart()) );
+    QObject::connect( stop, SIGNAL(clicked()), this, SLOT(slotStop()) );
 
-        adjustSize();
-        show();
+    adjustSize();
+    show();
 }
 
 void Receiver::slotStop()
@@ -78,7 +73,6 @@ void Receiver::slotStop()
   stop->setEnabled(false);
 }
 
-
 void Receiver::slotStart()
 {
   for (int i = 0 ; i < MAXKRUNS ; i++ )
@@ -90,109 +84,13 @@ void Receiver::slotStart()
   stop->setEnabled(true);
 }
 
-void check(QString txt, QString a, QString b)
-{
-  if (a.isEmpty())
-    a.clear();
-  if (b.isEmpty())
-    b.clear();
-  if (a == b)
-    kDebug() << txt << " : '" << a << "' - ok" << endl;
-  else {
-    kDebug() << txt << " : '" << a << "' but expected '" << b << "' - KO!" << endl;
-    exit(1);
-  }
-}
-
-const char *bt(bool tr) { return tr?"true":"false"; }
-
-void checkPDE(const KService &service, const KUrl::List &urls, bool tf, QString b)
-{
-  check(
-   QString().sprintf("processDesktopExec( "
-      "service = {\nexec = %s\nterminal = %s, terminalOptions = %s\nsubstituteUid = %s, user = %s },"
-       "\nURLs = { %s },\ntemp_files = %s )",
-      service.exec().toLatin1().constData(), bt(service.terminal()), service.terminalOptions().toLatin1().constData(), bt(service.substituteUid()), service.username().toLatin1().constData(),
-       KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(tf)),
-   KShell::joinArgs(KRun::processDesktopExec(service,urls,tf)), b);
-}
-
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init(argc,argv,"kruntest", 0, 0, 0, 0);
-  KApplication app;
-  // First some non-interactive tests -- TODO Move
+    KCmdLineArgs::init(argc,argv,"kruntest", 0, 0, 0, 0);
+    KApplication app;
 
-  KUrl::List l0;
-  KUrl::List l1; l1 << KUrl( "file:/tmp" );
-  KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
-  KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
-
-  static const char
-    *execs[] = { "Exec=date -u", "Exec=echo $$PWD" },
-    *terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
-    *sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
-    *rslts[] = {
-"date -u", // 0
-"/bin/sh -c 'echo $PWD '", // 1
-"'x-term' '-T' ' - just_a_test' '-e' 'date' '-u'", // 2
-"'x-term' '-T' ' - just_a_test' '-e' '/bin/sh' '-c' 'echo $PWD '", // 3
-"'kdesu' '-u' 'sprallo' '-c' 'date -u '", // 4
-"'kdesu' '-u' 'sprallo' '-c' '/bin/sh -c '\\''echo $PWD '\\'''", // 5
-"'x-term' '-T' ' - just_a_test' '-e' 'su' 'sprallo' '-c' 'date -u '", // 6
-"'x-term' '-T' ' - just_a_test' '-e' 'su' 'sprallo' '-c' '/bin/sh -c '\\''echo $PWD '\\'''", // 7
-"'date -u '", // 8
-"'echo $PWD '", // 9
-"'x-term -T \" - just_a_test\"' '-e' 'date -u '", // a
-"'x-term -T \" - just_a_test\"' '-e' '/bin/sh -c '\\''echo $PWD '\\'''", // b
-"'kdesu' '-u' 'sprallo' '-c' ''\\''date -u '\\'''", // c
-"'kdesu' '-u' 'sprallo' '-c' ''\\''/bin/sh -c '\\''\\'\\'''\\''echo $PWD '\\''\\'\\'''\\'''\\'''", // d
-"'x-term -T \" - just_a_test\"' '-e' 'su' 'sprallo' '-c' ''\\''date -u '\\'''", // e
-"'x-term -T \" - just_a_test\"' '-e' 'su' 'sprallo' '-c' ''\\''/bin/sh -c '\\''\\'\\'''\\''echo $PWD '\\''\\'\\'''\\'''\\'''", // f
-    };
-    for (int su = 0; su < 2; su++)
-      for (int te = 0; te < 2; te++)
-        for (int ex = 0; ex < 2; ex++) {
-          QFile out( "kruntest.desktop" );
-          if ( !out.open( IO_WriteOnly ) )
-            abort();
-          QByteArray str = "[Desktop Entry]\n"
-                           "Type=Application\n"
-                           "Name=just_a_test\n"
-                           "Icon=~/icon.png\n";
-          str += QByteArray(execs[ex]) + '\n';
-          str += QByteArray(terms[te]) + '\n';
-          str += QByteArray(sus[su]) + '\n';
-          out.write( str );
-          out.close();
-          KService s(QDir::currentPath() + "/kruntest.desktop");
-          //::unlink("kruntest.desktop");
-          checkPDE( s, l0, false, rslts[ex+te*2+su*4]);
-        }
-
-  KService s1("dummy", "kate %U", "app");
-  checkPDE( s1, l0, false, "'kate'");
-  checkPDE( s1, l1, false, "'kate' '/tmp'");
-  checkPDE( s1, l2, false, "'kate' 'http://localhost/foo'");
-  checkPDE( s1, l3, false, "'kate' '/local/file' 'http://remotehost.org/bar'");
-  KService s2("dummy", "kate %u", "app");
-  checkPDE( s2, l0, false, "'kate'");
-  checkPDE( s2, l1, false, "'kate' '/tmp'");
-  checkPDE( s2, l2, false, "'kate' 'http://localhost/foo'");
-  checkPDE( s2, l3, false, "'kate'");
-  KService s3("dummy", "kate %F", "app");
-  checkPDE( s3, l0, false, "'kate'");
-  checkPDE( s3, l1, false, "'kate' '/tmp'");
-  checkPDE( s3, l2, false, "'kfmexec' 'kate %F' 'http://localhost/foo'");
-  checkPDE( s3, l3, false, "'kfmexec' 'kate %F' 'file:/local/file' 'http://remotehost.org/bar'");
-
-  checkPDE( s3, l1, true, "'kfmexec' '--tempfiles' 'kate %F' 'file:/tmp'");
-
-  KService s4("dummy", "sh -c \"kate \"'\\\"'\"%F\"'\\\"'", "app");
-  checkPDE( s4, l1, false, "'kate' '\"/tmp\"'");
-
-  Receiver receiver;
-  return app.exec();
+    Receiver receiver;
+    return app.exec();
 }
 
 #include "kruntest.moc"
