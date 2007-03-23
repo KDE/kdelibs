@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     KCmdLineArgs::init(argc,argv,"whatever", 0, 0, 0, 0);
-    KApplication k;// KMessageBox needs KApp for makeStdCaption
+    KApplication k;
 
     KBuildSycocaProgressDialog::rebuildKSycoca(0);
     return 0;

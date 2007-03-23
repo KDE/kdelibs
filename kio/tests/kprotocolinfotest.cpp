@@ -30,10 +30,9 @@ int main(int argc, char **argv) {
                         "1.0");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    KComponentData componentData(&aboutData);
 
-    KUrl url;
-    url.setPath("/tmp");
+    KUrl url("/tmp");
     assert( KProtocolManager::supportsListing( KUrl( "ftp://10.1.1.10") ) );
     assert( KProtocolManager::inputType(url) == KProtocolInfo::T_NONE );
     assert( KProtocolManager::outputType(url) == KProtocolInfo::T_FILESYSTEM );

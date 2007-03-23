@@ -16,38 +16,22 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef KMIMETYPETEST_H
-#define KMIMETYPETEST_H
+#ifndef KRUNUNITTEST_H
+#define KRUNUNITTEST_H
 
 #include <QObject>
-#include <kmimemagicrule.h>
 
-class KMimeTypeTest : public QObject
+class KRunUnitTest : public QObject
 {
     Q_OBJECT
-private Q_SLOTS:
-    void initTestCase();
-    void testByName();
-    void testIcons();
-    void testFindByUrl();
-    void testFindByPath();
-    void testFindByNameAndContent();
-    void testFindByContent();
-    void testAllMimeTypes();
-    void testAlias();
-    void testMimeTypeParent();
-    void testMimeTypeTraderForTextPlain();
-    void testMimeTypeTraderForDerivedMimeType();
-    void testMimeTypeTraderForAlias();
-    void testHasServiceType1();
-    void testHasServiceType2();
-    void testPatterns();
 
-    void testParseMagicFile();
-    void testParseMagicFile_data();
-private:
-    QList<KMimeMagicRule> m_rules;
+private Q_SLOTS:
+    void testBinaryName_data();
+    void testBinaryName();
+    void testProcessDesktopExec();
+
 };
 
 
-#endif
+#endif /* KRUNUNITTEST_H */
+

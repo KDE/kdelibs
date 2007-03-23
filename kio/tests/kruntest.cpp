@@ -106,11 +106,6 @@ void check(QString txt, QString a, QString b)
 
 const char *bt(bool tr) { return tr?"true":"false"; }
 
-void checkBN(QString a, bool tr, QString b)
-{
-  check( QString().sprintf("binaryName('%s', %s)", a.toLatin1().constData(), bt(tr)), KRun::binaryName(a, tr), b);
-}
-
 void checkPDE(const KService &service, const KUrl::List &urls, bool tf, QString b)
 {
   check(
@@ -126,14 +121,7 @@ int main(int argc, char **argv)
 {
   KCmdLineArgs::init(argc,argv,"kruntest", 0, 0, 0, 0);
   KApplication app;
-  // First some non-interactive tests
-  checkBN( "/usr/bin/ls", true, "ls");
-  checkBN( "/usr/bin/ls", false, "/usr/bin/ls");
-  checkBN( "/path/to/wine \"long argument with path\"", true, "wine" );
-  checkBN( "/path/with/a/sp\\ ace/exe arg1 arg2", true, "exe" );
-  checkBN( "\"progname\" \"arg1\"", true, "progname" );
-  checkBN( "'quoted' \"arg1\"", true, "quoted" );
-  checkBN( " 'leading space'   arg1", true, "leading space" );
+  // First some non-interactive tests -- TODO Move
 
   KUrl::List l0;
   KUrl::List l1; l1 << KUrl( "file:/tmp" );
@@ -145,8 +133,8 @@ int main(int argc, char **argv)
     *terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
     *sus[] = { "X-KDE-SubstituteUID=false", "X-KDE-SubstituteUID=true\nX-KDE-Username=sprallo" },
     *rslts[] = {
-"'date' '-u'", // 0
-"'/bin/sh' '-c' 'echo $PWD '", // 1
+"date -u", // 0
+"/bin/sh -c 'echo $PWD '", // 1
 "'x-term' '-T' ' - just_a_test' '-e' 'date' '-u'", // 2
 "'x-term' '-T' ' - just_a_test' '-e' '/bin/sh' '-c' 'echo $PWD '", // 3
 "'kdesu' '-u' 'sprallo' '-c' 'date -u '", // 4

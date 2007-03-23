@@ -19,7 +19,7 @@
 
 #include "kacltest.h"
 
-#include <config.h>
+#include <config-acl.h>
 
 #include <kacl.h>
 #include <kapplication.h>
@@ -71,11 +71,15 @@ int main(int argc, char *argv[])
     KCmdLineArgs::init(argc,argv,"kacltest", 0, 0, 0, 0);
     KApplication app;
 
+#ifdef HAVE_POSIX_ACL
     KACLTest test;
     test.setup();
     test.runAll();
     test.cleanup();
     kDebug() << "All tests OK." << endl;
+#else
+    kDebug() << "All tests skipped - no ACL support" << endl;
+#endif
     return 0; // success. The exit(1) in check() is what happens in case of failure.
 }
 
