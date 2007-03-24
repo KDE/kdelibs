@@ -27,7 +27,6 @@
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
-#include <kstaticdeleter.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <qtooltip.h>

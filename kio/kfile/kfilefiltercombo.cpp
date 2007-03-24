@@ -19,7 +19,6 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <kstaticdeleter.h>
 #include <config-kfile.h>
 #include <QEvent>
 #include <QLineEdit>

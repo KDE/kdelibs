@@ -36,7 +36,6 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
-#include <kstaticdeleter.h>
 
 #include "kio/authinfo.h"
 

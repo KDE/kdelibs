@@ -34,7 +34,6 @@
 #include "kconfigini.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
-#include "kstaticdeleter.h"
 #include "ktoolinvocation.h"
 #include "kcomponentdata.h"
 

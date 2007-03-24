@@ -55,7 +55,6 @@
 #include <errno.h>
 #include <string.h>
 #include <kconfig.h>
-#include "kstaticdeleter.h"
 #include "kcomponentdata.h"
 #include <config.h>
 

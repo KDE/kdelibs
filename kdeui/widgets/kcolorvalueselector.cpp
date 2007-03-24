@@ -20,7 +20,6 @@
 #include "kcolorvalueselector.h"
 #include <kimageeffect.h>
 #include <QPainter>
-#include <kstaticdeleter.h>
 #include <iostream>
 
 class KColorValueSelector::Private

@@ -19,7 +19,6 @@
 
 #include "kxyselector.h"
 #include <kimageeffect.h>
-#include <kstaticdeleter.h>
 #include <QStyle>
 #include <QPainter>
 #include <QStyleOptionFrame>
