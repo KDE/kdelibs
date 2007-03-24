@@ -28,7 +28,7 @@
 #include <klocale.h>
 #include <kprocess.h>
 
-#include <kio/passdlg.h>
+#include <kio/passworddialog.h>
 
 KDXSButton::KDXSButton(QWidget *parent)
 : QToolButton(parent)
