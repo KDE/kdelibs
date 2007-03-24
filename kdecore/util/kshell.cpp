@@ -399,13 +399,8 @@ QString KShell::tildeExpand( const QString &fname )
 
 QString KShell::homeDir( const QString &user )
 {
-#ifdef Q_OS_WIN
     if (user.isEmpty())
         return QDir::homePath();
-#else
-    if (user.isEmpty())
-        return QFile::decodeName( getenv( "HOME" ) );
-#endif
     struct passwd *pw = getpwnam( QFile::encodeName( user ).data() );
     if (!pw)
         return QString();
