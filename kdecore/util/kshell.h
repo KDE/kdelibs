@@ -160,7 +160,7 @@ namespace KShell {
      * Patterns with two asterisks like "*.*pk" are not supported.
      * @return true if the given filename matches the given pattern
      */
-    KDECORE_EXPORT bool matchFileName( const QString& filename, const QString& pattern );
+    KDECORE_EXPORT bool matchFileName( const QString &filename, const QString &pattern );
 }
 
 #endif /* KSHELL_H */

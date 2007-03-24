@@ -101,7 +101,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                 if ((flags & AbortOnMeta) && isMeta( c ))
                     goto metaerr;
             }
-	    QString ccret = homeDir( args.mid(opos, pos-opos) );
+            QString ccret = homeDir( args.mid(opos, pos-opos) );
             if (ccret.isEmpty()) {
                 pos = opos;
                 c = QLatin1Char('~');
@@ -122,16 +122,17 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
         // before the notilde label, as a tilde does not match anyway
         if (firstword) {
             if (c == QLatin1Char('_') ||
-	        (c >= QLatin1Char('A') && c <= QLatin1Char('Z')) ||
-		(c >= QLatin1Char('a') && c <= QLatin1Char('z'))) {
+                (c >= QLatin1Char('A') && c <= QLatin1Char('Z')) ||
+                (c >= QLatin1Char('a') && c <= QLatin1Char('z')))
+            {
                 int pos2 = pos;
                 QChar cc;
                 do
-                  cc = args[pos2++];
+                    cc = args[pos2++];
                 while (cc == QLatin1Char('_') ||
-		       (cc >= QLatin1Char('A') && cc <= QLatin1Char('Z')) ||
+                       (cc >= QLatin1Char('A') && cc <= QLatin1Char('Z')) ||
                        (cc >= QLatin1Char('a') && cc <= QLatin1Char('z')) ||
-		       (cc >= QLatin1Char('0') && cc <= QLatin1Char('9')));
+                       (cc >= QLatin1Char('0') && cc <= QLatin1Char('9')));
                 if (cc == QLatin1Char('='))
                     goto metaerr;
             }
@@ -145,7 +146,7 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                         goto quoteerr;
                     c = args.unicode()[pos++];
                 } while (c != QLatin1Char('\''));
-		cret += args.mid(spos, pos-spos-1);
+                cret += args.mid(spos, pos-spos-1);
             } else if (c == QLatin1Char('"')) {
                 for (;;) {
                     if (pos >= args.length())
@@ -158,14 +159,14 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
                             goto quoteerr;
                         c = args.unicode()[pos++];
                         if (c != QLatin1Char('"') &&
-			    c != QLatin1Char('\\') &&
+                            c != QLatin1Char('\\') &&
                             !((flags & AbortOnMeta) &&
-			      (c == QLatin1Char('$') ||
-			       c == QLatin1Char('`'))))
+                              (c == QLatin1Char('$') ||
+                               c == QLatin1Char('`'))))
                             cret += QLatin1Char('\\');
                     } else if ((flags & AbortOnMeta) &&
-			       (c == QLatin1Char('$') ||
-			        c == QLatin1Char('`')))
+                                (c == QLatin1Char('$') ||
+                                 c == QLatin1Char('`')))
                         goto metaerr;
                     cret += c;
                 }
@@ -254,14 +255,14 @@ QStringList KShell::splitArgs( const QString &args, int flags, int *err )
     return ret;
 
   quoteerr:
-   if (err)
-       *err = BadQuoting;
-   return QStringList();
+    if (err)
+        *err = BadQuoting;
+    return QStringList();
 
   metaerr:
-   if (err)
-       *err = FoundMeta;
-   return QStringList();
+    if (err)
+        *err = FoundMeta;
+    return QStringList();
 }
 
 inline static bool isSpecial( QChar cUnicode )
@@ -288,7 +289,7 @@ QString KShell::joinArgs( const QStringList &args )
             for (int i = 0; i < (*it).length(); i++)
                 if (isSpecial((*it).unicode()[i])) {
                     QString tmp(*it);
-                    tmp.replace( q, QLatin1String("'\\''" ));
+                    tmp.replace( q, QLatin1String("'\\''" ) );
                     ret += q;
                     tmp += q;
                     ret += tmp;
@@ -388,10 +389,10 @@ QString KShell::tildeExpand( const QString &fname )
     if (fname.length() && fname[0] == QLatin1Char('~')) {
         int pos = fname.indexOf( QLatin1Char('/') );
         if (pos < 0)
-	    return homeDir( fname.mid(1) );
-	QString ret = homeDir( fname.mid(1, pos-1) );
+            return homeDir( fname.mid(1) );
+        QString ret = homeDir( fname.mid(1, pos-1) );
         if (!ret.isNull())
-	    ret += fname.mid(pos);
+            ret += fname.mid(pos);
         return ret;
     }
     return fname;
@@ -407,41 +408,39 @@ QString KShell::homeDir( const QString &user )
     return QFile::decodeName( pw->pw_dir );
 }
 
-bool KShell::matchFileName( const QString& filename, const QString& pattern  )
+bool KShell::matchFileName( const QString &filename, const QString &pattern )
 {
-   int len = filename.length();
-   int pattern_len = pattern.length();
+    int len = filename.length();
+    int pattern_len = pattern.length();
 
-   if (!pattern_len)
-      return false;
+    if (!pattern_len)
+        return false;
 
-   // Patterns like "Makefile*"
-   if ( pattern[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len ) {
-      if ( pattern[ 0 ] == '*' )
-      {
-         return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
-      }
+    // Patterns like "Makefile*"
+    if (pattern[pattern_len - 1] == '*' && len + 1 >= pattern_len) {
+        if (pattern[0] == '*')
+            return filename.indexOf(pattern.mid(1, pattern_len - 2)) != -1;
 
-      const QChar *c1 = pattern.unicode();
-      const QChar *c2 = filename.unicode();
-      int cnt = 1;
-      while ( cnt < pattern_len && *c1++ == *c2++ )
-         ++cnt;
-      return cnt == pattern_len;
-   }
+        const QChar *c1 = pattern.unicode();
+        const QChar *c2 = filename.unicode();
+        int cnt = 1;
+        while (cnt < pattern_len && *c1++ == *c2++)
+           ++cnt;
+        return cnt == pattern_len;
+    }
 
-   // Patterns like "*~", "*.extension"
-   if ( pattern[ 0 ] == '*' && len + 1 >= pattern_len )
-   {
-     const QChar *c1 = pattern.unicode() + pattern_len - 1;
-     const QChar *c2 = filename.unicode() + len - 1;
-     int cnt = 1;
-     while ( cnt < pattern_len && *c1-- == *c2-- )
-        ++cnt;
-     return cnt == pattern_len;
-  }
+    // Patterns like "*~", "*.extension"
+    if (pattern[0] == '*' && len + 1 >= pattern_len)
+    {
+        const QChar *c1 = pattern.unicode() + pattern_len - 1;
+        const QChar *c2 = filename.unicode() + len - 1;
+        int cnt = 1;
+        while (cnt < pattern_len && *c1-- == *c2--)
+            ++cnt;
+        return cnt == pattern_len;
+    }
 
-   // Patterns like "Makefile"
-   return ( filename == pattern );
+    // Patterns like "Makefile"
+    return filename == pattern;
 }
 
