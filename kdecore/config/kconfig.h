@@ -52,7 +52,7 @@ public:
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
-   *        @p bUseKDEGlobals).
+   *        @p flags).
    * @param flags determines how the configuration file is created and accessed. Passing in
    *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
    *        merged settings
@@ -67,7 +67,7 @@ public:
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
-   *        @p bUseKDEGlobals).
+   *        @p flags).
    * @param flags determines how the configuration file is created and accessed. Passing in
    *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
    *        merged settings
@@ -84,8 +84,8 @@ public:
    * @param fileName A file to parse in addition to the
    *        system-wide file(s).  If it is not provided, only global
    *        KDE configuration data will be read (depending on the value of
-   *        @p bUseKDEGlobals).
-   * @param flags determines howt he configuration file is created and accessed. Passing in
+   *        @p flags).
+   * @param flags determines how the configuration file is created and accessed. Passing in
    *        IncludeGlobals will result in entries in kdeglobals being parsed and included in the
    *        merged settings
    * @param resType the place to look in (config, data, etc) See KStandardDirs.
