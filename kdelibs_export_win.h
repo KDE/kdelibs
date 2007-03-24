@@ -45,37 +45,11 @@
 # endif
 #endif
 
-
-#ifndef KSPEECH_EXPORT
-# ifdef MAKE_KSPEECH_LIB
-#  define KSPEECH_EXPORT  KDE_EXPORT
-# else
-#  define KSPEECH_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KSPEECH_EXPORT
-# ifdef MAKE_KSPEECH_LIB
-#  define KSPEECH_EXPORT  KDE_EXPORT
-# else
-#  define KSPEECH_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KDEPRINT_EXPORT
 # ifdef MAKE_KDEPRINT_LIB
 #  define KDEPRINT_EXPORT  KDE_EXPORT
 # else
 #  define KDEPRINT_EXPORT KDE_IMPORT
-# endif
-#endif
-
-
-#ifndef KHEXEDIT_EXPORT
-# ifdef MAKE_KHEXEDIT_LIB
-#  define KHEXEDIT_EXPORT  KDE_EXPORT
-# else
-#  define KHEXEDIT_EXPORT KDE_IMPORT
 # endif
 #endif
 
@@ -108,14 +82,6 @@
 #  define KNTLM_EXPORT KDE_EXPORT
 # else
 #  define KNTLM_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KTEXTEDITOR_EXPORT
-# ifdef MAKE_KTEXTEDITOR_LIB
-#  define KTEXTEDITOR_EXPORT KDE_EXPORT
-# else
-#  define KTEXTEDITOR_EXPORT KDE_IMPORT
 # endif
 #endif
 

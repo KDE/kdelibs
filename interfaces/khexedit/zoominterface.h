@@ -18,7 +18,7 @@
 #ifndef KHE_ZOOMINTERFACE_H
 #define KHE_ZOOMINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <khexedit/khexedit_export.h>
 
 #include <QtCore/QObject>
 

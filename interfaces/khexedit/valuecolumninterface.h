@@ -18,7 +18,7 @@
 #ifndef KHE_VALUECOLUMNINTERFACE_H
 #define KHE_VALUECOLUMNINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <khexedit/khexedit_export.h>
 
 #include <QtCore/QObject>
 

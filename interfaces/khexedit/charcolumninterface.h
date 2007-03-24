@@ -18,7 +18,7 @@
 #ifndef KHE_CHARCOLUMNINTERFACE_H
 #define KHE_CHARCOLUMNINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <khexedit/khexedit_export.h>
 
 #include <QtCore/QChar>
 #include <QtCore/QObject>

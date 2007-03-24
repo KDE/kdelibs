@@ -32,7 +32,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QByteArray>
 
-#include <kdelibs_export.h>
+#include <kspeech_export.h>
 
 class KSpeechPrivate;
 

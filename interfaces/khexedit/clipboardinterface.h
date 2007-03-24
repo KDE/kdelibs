@@ -18,7 +18,7 @@
 #ifndef KHE_CLIPBOARDINTERFACE_H
 #define KHE_CLIPBOARDINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <khexedit/khexedit_export.h>
 
 #include <QtCore/QObject>
 
