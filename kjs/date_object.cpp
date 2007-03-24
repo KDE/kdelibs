@@ -36,7 +36,7 @@
 #include <sys/time.h>
 #endif
 
-#if HAVE(SYS_TIMEB_H)
+#if HAVE(SYS_TIMEB_H) ||PLATFORM(WIN_OS)
 #include <sys/timeb.h>
 #endif
 
