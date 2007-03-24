@@ -50,7 +50,7 @@
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kaction.h>
-#include <kprocess.h>
+#include <kshell.h>
 #include <kfilterdev.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
@@ -546,11 +546,11 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 
 	KPipeProcess	in;
 	QFile		out(tmpFile);
-	QString cmd = KProcess::quote(exe);
+	QString cmd = KShell::quoteArg(exe);
 	cmd += " -t cups -d ";
-	cmd += KProcess::quote(comps[2]);
+	cmd += KShell::quoteArg(comps[2]);
 	cmd += " -p ";
-	cmd += KProcess::quote(comps[1]);
+	cmd += KShell::quoteArg(comps[1]);
 	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
