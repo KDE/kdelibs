@@ -57,7 +57,7 @@ install(TARGETS knewstuff2 DESTINATION ${LIB_INSTALL_DIR})
 install(FILES
   core/author.h
   core/category.h
-  core/engine.h
+  core/coreengine.h
   core/entry.h
   core/entryhandler.h
   core/entryloader.h
