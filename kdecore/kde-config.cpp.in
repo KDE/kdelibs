@@ -36,9 +36,79 @@ static KCmdLineOptions options[] =
     { 0,0,0 }
 };
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+
+static QString getKde4Prefix()
+{
+    static QString modFilePath;
+    if(modFilePath.isEmpty()) {
+        wchar_t module_name[256];
+        GetModuleFileNameW(0, module_name, sizeof(module_name) / sizeof(wchar_t));
+        modFilePath = QString::fromUtf16((ushort *)module_name);
+        int idx = modFilePath.lastIndexOf('\\');
+        if(idx != -1)
+            modFilePath = modFilePath.left(idx);
+        modFilePath = QDir(modFilePath + "/../").canonicalPath();
+    }
+    return modFilePath;
+}
+
+static const QString prefix        = getKde4Prefix();
+static const QString exec_prefix   = getKde4Prefix();
+static const QString libdir        = getKde4Prefix() + "/lib";
+static const QString includedir    = getKde4Prefix() + "/include";
+static const QString sysconfdir    = getKde4Prefix() + "/etc";
+static const QString share         = getKde4Prefix() + "/share";
+static const QString datadir       = share + QLatin1String("/apps");
+static const QString kde_appsdir   = share + QLatin1String("/applnk");
+static const QString kde_confdir   = share + QLatin1String("/config");
+static const QString kde_kcfgdir   = share + QLatin1String("/config.kcfg");
+static const QString kde_datadir   = share + QLatin1String("/apps");
+static const QString kde_bindir    = getKde4Prefix();
+static const QString kde_htmldir   = share + QLatin1String("/doc/HTML");
+static const QString kde_icondir   = share + QLatin1String("/icons");
+static const QString kde_moduledir = libdir + QLatin1String("/kde4");
+static const QString kde_locale    = share + QLatin1String("/locale");
+static const QString kde_mimedir   = share + QLatin1String("/mimelnk");
+static const QString kde_servicesdir     = share + QLatin1String("/services");
+static const QString kde_servicetypesdir = share + QLatin1String("/servicetypes");
+static const QString kde_sounddir        = share + QLatin1String("/sounds");
+static const QString kde_templatesdir    = share + QLatin1String("/templates");
+static const QString kde_wallpaperdir    = share + QLatin1String("/wallpapers");
+static const QString xdg_menudir         = share + QLatin1String("/currently/undefined");
+static const QString xdg_appsdir         = share + QLatin1String("/applications/kde4");
+static const QString xdg_directorydir    = share + QLatin1String("/desktop-directories");
+#else
+static const QString prefix        = QString(QLatin1String("@prefix@"));
+static const QString exec_prefix   = QString(QLatin1String("@exec_prefix@"));
+static const QString libdir        = QString(QLatin1String("@libdir@"));
+static const QString includedir    = QString(QLatin1String("@includedir@"));
+static const QString sysconfdir    = QString(QLatin1String("@sysconfdir@"));
+static const QString datadir       = QString(QLatin1String("@datadir@"));
+static const QString kde_appsdir   = QString(QLatin1String("@kde_appsdir@"));
+static const QString kde_confdir   = QString(QLatin1String("@kde_confdir@"));
+static const QString kde_kcfgdir   = QString(QLatin1String("@kde_kcfgdir@"));
+static const QString kde_datadir   = QString(QLatin1String("@kde_datadir@"));
+static const QString kde_bindir    = QString(QLatin1String("@kde_bindir@"));
+static const QString kde_htmldir   = QString(QLatin1String("@kde_htmldir@"));
+static const QString kde_icondir   = QString(QLatin1String("@kde_icondir@"));
+static const QString kde_moduledir = QString(QLatin1String("@kde_moduledir@"));
+static const QString kde_locale    = QString(QLatin1String("@kde_locale@"));
+static const QString kde_mimedir   = QString(QLatin1String("@kde_mimedir@"));
+static const QString kde_servicesdir     = QString(QLatin1String("@kde_servicesdir@"));
+static const QString kde_servicetypesdir = QString(QLatin1String("@kde_servicetypesdir@"));
+static const QString kde_sounddir        = QString(QLatin1String("@kde_sounddir@"));
+static const QString kde_templatesdir    = QString(QLatin1String("@kde_templatesdir@"));
+static const QString kde_wallpaperdir    = QString(QLatin1String("@kde_wallpaperdir@"));
+static const QString xdg_menudir         = QString(QLatin1String("@xdg_menudir@"));
+static const QString xdg_appsdir         = QString(QLatin1String("@xdg_appsdir@"));
+static const QString xdg_directorydir    = QString(QLatin1String("@xdg_directorydir@"));
+#endif
+
 bool _expandvars = false;
 
-QString expandvars(const char *_input)
+static QString expandvars(const char *_input)
 {
     QString result = QLatin1String(_input);
     if (!_expandvars)
@@ -47,62 +117,62 @@ QString expandvars(const char *_input)
     bool changed = false;
     int index = result.indexOf("${prefix}");
     if (index >= 0) {
-        result = result.replace(index, 9, "@prefix@");
+        result = result.replace(index, 9, prefix);
         changed = true;
     }
     index = result.indexOf("$(prefix)");
     if (index >= 0) {
-        result = result.replace(index, 9, "@prefix@");
+        result = result.replace(index, 9, prefix);
         changed = true;
     }
     index = result.indexOf("${datadir}");
     if (index >= 0) {
-        result = result.replace(index, 10, "@datadir@");
+        result = result.replace(index, 10, datadir);
         changed = true;
     }
     index = result.indexOf("$(datadir)");
     if (index >= 0) {
-        result = result.replace(index, 10, "@datadir@");
+        result = result.replace(index, 10, datadir);
         changed = true;
     }
     index = result.indexOf("${exec_prefix}");
     if (index >= 0) {
-        result = result.replace(index, 14, "@exec_prefix@");
+        result = result.replace(index, 14, exec_prefix);
         changed = true;
     }
     index = result.indexOf("$(exec_prefix)");
     if (index >= 0) {
-        result = result.replace(index, 14, "@exec_prefix@");
+        result = result.replace(index, 14, exec_prefix);
         changed = true;
     }
     index = result.indexOf("${libdir}");
     if (index >= 0) {
-        result = result.replace(index, 9, "@libdir@");
+        result = result.replace(index, 9, libdir);
         changed = true;
     }
     index = result.indexOf("$(libdir)");
     if (index >= 0) {
-        result = result.replace(index, 9, "@libdir@");
+        result = result.replace(index, 9, libdir);
         changed = true;
     }
     index = result.indexOf("${includedir}");
     if (index >= 0) {
-        result = result.replace(index, 20, "@includedir@");
+        result = result.replace(index, 20, includedir);
         changed = true;
     }
     index = result.indexOf("$(includedir)");
     if (index >= 0) {
-        result = result.replace(index, 20, "@includedir@");
+        result = result.replace(index, 20, includedir);
         changed = true;
     }
     index = result.indexOf("${sysconfdir}");
     if (index >= 0) {
-        result = result.replace(index, 13, "@sysconfdir@");
+        result = result.replace(index, 13, sysconfdir);
         changed = true;
     }
     index = result.indexOf("$(sysconfdir)");
     if (index >= 0) {
-        result = result.replace(index, 13, "@sysconfdir@");
+        result = result.replace(index, 13, sysconfdir);
         changed = true;
     }
     if (changed)
@@ -111,7 +181,7 @@ QString expandvars(const char *_input)
         return result;
 }
 
-void printResult(const QString &s)
+static void printResult(const QString &s)
 {
     if (s.isEmpty())
         printf("\n");
@@ -140,13 +210,13 @@ int main(int argc, char **argv)
 
     if (args->isSet("prefix"))
     {
-        printResult(expandvars("@prefix@"));
+        printResult(expandvars(prefix.toLocal8Bit()));
         return 0;
     }
 
     if (args->isSet("exec-prefix"))
     {
-        printResult(expandvars("@exec_prefix@"));
+        printResult(expandvars(exec_prefix.toLocal8Bit()));
         return 0;
     }
 
@@ -284,36 +354,36 @@ int main(int argc, char **argv)
     type = args->getOption("install");
     if (!type.isEmpty())
     {
-        const char *installprefixes[] = {
-            "apps",   "@kde_appsdir@",
-            "config", "@kde_confdir@",
-            "kcfg",   "@kde_kcfgdir@",
-            "data",   "@kde_datadir@",
-            "exe",    "@kde_bindir@",
-            "html",   "@kde_htmldir@",
-            "icon",   "@kde_icondir@",
-            "lib",    "@libdir@",
-            "module", "@kde_moduledir@",
-            "qtplugins", "@kde_moduledir@/plugins",
-            "locale", "@kde_locale@",
-            "mime",   "@kde_mimedir@",
-            "services", "@kde_servicesdir@",
-            "servicetypes", "@kde_servicetypesdir@",
-            "sound", "@kde_sounddir@",
-            "templates", "@kde_templatesdir@",
-            "wallpaper", "@kde_wallpaperdir@",
-            "xdgconf-menu", "@xdg_menudir@",
-            "xdgdata-apps", "@xdg_appsdir@",
-            "xdgdata-dirs", "@xdg_directorydir@",
-            "include", "@includedir@",
-            0, 0
+        static QString installprefixes[] = {
+            "apps",   kde_appsdir,
+            "config", kde_confdir,
+            "kcfg",   kde_kcfgdir,
+            "data",   kde_datadir,
+            "exe",    kde_bindir,
+            "html",   kde_htmldir,
+            "icon",   kde_icondir,
+            "lib",    libdir,
+            "module", kde_moduledir,
+            "qtplugins", kde_moduledir + QLatin1String("/plugins"),
+            "locale", kde_locale,
+            "mime",   kde_mimedir,
+            "services", kde_servicesdir,
+            "servicetypes", kde_servicetypesdir,
+            "sound", kde_sounddir,
+            "templates", kde_templatesdir,
+            "wallpaper", kde_wallpaperdir,
+            "xdgconf-menu", xdg_menudir,
+            "xdgdata-apps", xdg_appsdir,
+            "xdgdata-dirs", xdg_directorydir,
+            "include", includedir,
+            QString(), QString()
         };
         int index = 0;
-        while (installprefixes[index] && type != installprefixes[index]) {
+        while (!installprefixes[index].isEmpty() && type != installprefixes[index]) {
             index += 2;
         }
-        if (installprefixes[index]) {
-            printResult(expandvars(installprefixes[index+1]));
+        if (!installprefixes[index].isEmpty()) {
+            printResult(expandvars(installprefixes[index+1].toLocal8Bit()));
         } else {
             printResult("NONE"); // no i18n here as for scripts
         }
