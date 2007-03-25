@@ -1,5 +1,5 @@
 /***************************************************************************
- * scriptmanager.h
+ * scriptmanager.cpp
  * This file is part of the KDE project
  * copyright (c) 2005-2006 Cyrille Berger <cberger@cberger.net>
  * copyright (C) 2006-2007 Sebastian Sauer <mail@dipe.org>
@@ -19,7 +19,6 @@
  ***************************************************************************/
 
 #include "scriptmanager.h"
-#include "scriptmanagereditor.h"
 #include "scriptmanageradd.h"
 
 #include "../core/manager.h"
@@ -28,6 +27,7 @@
 #include "../core/guiclient.h"
 //#include "../core/interpreter.h"
 #include "../core/model.h"
+#include "../core/view.h"
 
 #include <QFileInfo>
 #include <QDir>
@@ -35,6 +35,7 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QTreeView>
+#include <QSignalMapper>
 
 #include <kapplication.h>
 //#include <kdeversion.h>
@@ -47,6 +48,8 @@
 #include <kfiledialog.h>
 #include <kmenu.h>
 #include <kpagedialog.h>
+#include <kaction.h>
+#include <kactioncollection.h>
 
 #include <ktar.h>
 #include <kio/netaccess.h>
@@ -92,8 +95,7 @@ namespace Kross {
         public:
             ScriptManagerModule* module;
             bool modified;
-            QTreeView* view;
-            KPushButton *runbtn, *stopbtn, *editbtn, *addbtn, *removebtn;
+            ActionCollectionView* view;
             Private(ScriptManagerModule* m) : module(m), modified(false) {}
     };
 
@@ -107,30 +109,14 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     mainlayout->setMargin(0);
     setLayout(mainlayout);
 
-    d->view = new QTreeView(this);
+    d->view = new ActionCollectionView(this);
     mainlayout->addWidget(d->view);
-    d->view->header()->hide();
-    d->view->setSelectionMode(QAbstractItemView::SingleSelection);
-    d->view->setAlternatingRowColors(true);
-    d->view->setRootIsDecorated(true);
-    d->view->setSortingEnabled(false);
-    d->view->setItemsExpandable(true);
-    d->view->setDragEnabled(true);
-    d->view->setAcceptDrops(true);
-    d->view->setDropIndicatorShown(true);
-    d->view->setDragDropMode(QAbstractItemView::InternalMove);
 
     ActionCollectionModel::Mode modelmode = ActionCollectionModel::Mode( ActionCollectionModel::Icons | ActionCollectionModel::ToolTips | ActionCollectionModel::UserCheckable );
     ActionCollectionModel* model = new ActionCollectionModel(d->view, Kross::Manager::self().actionCollection(), modelmode);
     d->view->setModel(model);
 
-    QItemSelectionModel* selectionmodel = new QItemSelectionModel(model, this);
-    d->view->setSelectionModel(selectionmodel);
-
-    connect(d->view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-            this, SLOT(slotSelectionChanged()));
-    connect(d->view->model(), SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
-            this, SLOT(slotDataChanged(const QModelIndex&,const QModelIndex&)));
+    //d->view->selectionModel();
 
     QWidget* btnwidget = new QWidget(this);
     QVBoxLayout* btnlayout = new QVBoxLayout();
@@ -138,53 +124,18 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     btnwidget->setLayout(btnlayout);
     mainlayout->addWidget(btnwidget);
 
-    d->runbtn = new KPushButton(KIcon("media-playback-start"), i18n("Run"), btnwidget);
-    d->runbtn->setToolTip( i18n("Execute the selected script.") );
-    d->runbtn->setEnabled(false);
-    btnlayout->addWidget(d->runbtn);
-    connect(d->runbtn, SIGNAL(clicked()), this, SLOT(slotRun()) );
+    //KActionCollection* collection = d->view->actionCollection();
 
-    d->stopbtn = new KPushButton(KIcon("media-playback-stop"), i18n("Stop"), btnwidget);
-    d->stopbtn->setToolTip( i18n("Stop execution of the selected script.") );
-    d->stopbtn->setEnabled(false);
-    btnlayout->addWidget(d->stopbtn);
-    connect(d->stopbtn, SIGNAL(clicked()), this, SLOT(slotStop()) );
+    d->view->createButton(btnwidget, "run");
+    d->view->createButton(btnwidget, "stop");
 
     QFrame* hr1 = new QFrame(btnwidget);
     hr1->setFrameStyle(QFrame::HLine | QFrame::Sunken);
     btnlayout->addWidget(hr1, 0);
 
-    d->editbtn = new KPushButton(KIcon("edit"), i18n("Edit..."), btnwidget);
-    d->editbtn->setToolTip( i18n("Edit selected script.") );
-    d->editbtn->setEnabled(false);
-    btnlayout->addWidget(d->editbtn);
-    connect(d->editbtn, SIGNAL(clicked()), this, SLOT(slotEdit()) );
-
-    d->addbtn = new KPushButton(KIcon("list-add"), i18n("Add..."), btnwidget);
-    d->addbtn->setToolTip( i18n("Add a new script.") );
-    btnlayout->addWidget(d->addbtn);
-    //d->addbtn->setEnabled(false);
-    connect(d->addbtn, SIGNAL(clicked()), this, SLOT(slotAdd()) );
-
-    d->removebtn = new KPushButton(KIcon("list-remove"), i18n("Remove"), btnwidget);
-    d->removebtn->setToolTip( i18n("Remove selected script.") );
-    btnlayout->addWidget(d->removebtn);
-    d->removebtn->setEnabled(false);
-    connect(d->removebtn, SIGNAL(clicked()), this, SLOT(slotRemove()) );
-
-    /*
-    QFrame* hr2 = new QFrame(btnwidget);
-    hr2->setFrameStyle(QFrame::HLine | QFrame::Sunken);
-    btnlayout->addWidget(hr2, 0);
-
-    d->newstuffbtn = new KPushButton(KIcon("get-hot-new-stuff"), i18n("Get New Scripts"), btnwidget);
-    d->newstuffbtn->setToolTip( i18n("Get new scripts from the internet.") );
-    btnlayout->addWidget(d->newstuffbtn);
-    d->newstuffbtn->setEnabled(false);
-    //TODO connect(d->newstuffbtn, SIGNAL(clicked()), this, SLOT(slotNewScripts()) );
-    */
-
-    //i18n("About"), i18n("Configure")
+    d->view->createButton(btnwidget, "edit");
+    d->view->createButton(btnwidget, "add");
+    d->view->createButton(btnwidget, "remove");
 
     btnlayout->addStretch(1);
     d->view->expandAll();
@@ -200,102 +151,12 @@ ScriptManagerModule* ScriptManagerCollection::module() const
     return d->module;
 }
 
+/*
 bool ScriptManagerCollection::isModified() const
 {
     return d->modified;
 }
-
-void ScriptManagerCollection::slotSelectionChanged()
-{
-    bool startenabled = d->view->selectionModel()->hasSelection();
-    bool stopenabled = false;
-    bool hasselection = d->view->selectionModel()->selectedIndexes().count() > 0;
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        Action* action = ActionCollectionModel::action(index);
-        if( startenabled && ! action )
-            startenabled = false;
-        if( ! stopenabled )
-            stopenabled = (action && ! action->isFinalized());
-    }
-    d->runbtn->setEnabled(startenabled);
-    d->stopbtn->setEnabled(stopenabled);
-    d->editbtn->setEnabled(hasselection);
-    //d->removebtn->setEnabled(hasselection);
-}
-
-void ScriptManagerCollection::slotDataChanged(const QModelIndex&, const QModelIndex&)
-{
-    d->modified = true;
-}
-
-void ScriptManagerCollection::slotRun()
-{
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        if( ! index.isValid() ) continue;
-        d->stopbtn->setEnabled(true);
-        Action* action = ActionCollectionModel::action(index);
-        if( ! action ) continue;
-        connect(action, SIGNAL(finished(Kross::Action*)), SLOT(slotSelectionChanged()));
-        action->trigger();
-    }
-    slotSelectionChanged();
-}
-
-void ScriptManagerCollection::slotStop()
-{
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        if( ! index.isValid() ) continue;
-        Action* action = ActionCollectionModel::action(index);
-        if( ! action ) continue;
-        //connect(action, SIGNAL(started(Kross::Action*)), SLOT(slotSelectionChanged()));
-        //connect(action, SIGNAL(finished(Kross::Action*)), SLOT(slotSelectionChanged()));
-        action->finalize();
-    }
-    slotSelectionChanged();
-}
-
-void ScriptManagerCollection::slotEdit()
-{
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        if( ! index.isValid() ) continue;
-        if( Action* action = ActionCollectionModel::action(index) )
-            d->module->showEditorDialog(action, this);
-        else if( ActionCollection* collection = ActionCollectionModel::collection(index) )
-            d->module->showEditorDialog(collection, this);
-        else
-            continue;
-        break;
-    }
-}
-
-void ScriptManagerCollection::slotAdd()
-{
-    ActionCollection* collection = 0;
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
-        if( ! index.isValid() ) continue;
-        if( ActionCollectionModel::action(index) ) {
-            //TODO propably add the item right after the current selected one?
-            QModelIndex parent = index;
-            while( parent.isValid() && ! collection ) {
-                parent = d->view->model()->parent(parent);
-                collection = ActionCollectionModel::collection(parent);
-            }
-            if( collection ) break; // job done
-        }
-        else if( ActionCollection* c = ActionCollectionModel::collection(index) ) {
-            collection = c;
-            break; // job done
-        }
-    }
-    ScriptManagerAddWizard wizard(this, collection);
-    int result = wizard.exec();
-    Q_UNUSED(result);
-}
-
-void ScriptManagerCollection::slotRemove()
-{
-    KMessageBox::sorry(0, "TODO");
-}
+*/
 
 #if 0
 bool ScriptManagerCollection::slotInstall() {
@@ -447,46 +308,9 @@ bool ScriptManagerModule::uninstallPackage(Action* action)
 }
 #endif
 
-void ScriptManagerModule::showEditorDialog(QObject* object, QWidget* parent)
+QWidget* ScriptManagerModule::createManagerWidget(QWidget* parent)
 {
-    Action* action = dynamic_cast< Action* >(object);
-    ActionCollection* collection = dynamic_cast< ActionCollection* >(object);
-    if( (! action) && (! collection) )
-        return;
-
-    KPageDialog* dialog = new KPageDialog(parent);
-    dialog->setCaption( i18n("Edit") );
-    dialog->setButtons( KDialog::Ok | KDialog::Cancel );
-    //dialog->enableButtonOk( false );
-    dialog->setFaceType( KPageDialog::Tabbed ); //Auto Plain List Tree Tabbed
-
-    ScriptManagerEditor* editor = 0;
-    ScriptManagerPropertiesEditor* propeditor = 0;
-    if( action ) {
-        editor = new ScriptManagerEditor(action, dialog->mainWidget());
-        propeditor = new ScriptManagerPropertiesEditor(action, dialog->mainWidget());
-    }
-    else {
-        editor = new ScriptManagerEditor(collection, dialog->mainWidget());
-        //propeditor = new ScriptManagerPropertiesEditor(collection, dialog->mainWidget());
-    }
-
-    if( editor )
-        dialog->addPage(editor, i18n("General"));
-    if( propeditor )
-        dialog->addPage(propeditor, i18n("Properties"));
-
-    //dialog->addPage(new QWidget(this), i18n("Security"));
-
-    dialog->resize( QSize(600, 400).expandedTo( dialog->minimumSizeHint() ) );
-    int result = dialog->exec();
-    if( result == QDialog::Accepted /*&& dialog->result() == KDialog::Ok*/ ) {
-        if( editor )
-            editor->commit();
-        if( propeditor )
-            propeditor->commit();
-    }
-    dialog->delayedDestruct();
+    return new ScriptManagerCollection(this, parent);
 }
 
 void ScriptManagerModule::showManagerDialog()
@@ -494,9 +318,8 @@ void ScriptManagerModule::showManagerDialog()
     KDialog* dialog = new KDialog();
     dialog->setCaption( i18n("Script Manager") );
     dialog->setButtons( KDialog::Ok | KDialog::Cancel );
-    dialog->setMainWidget( new ScriptManagerCollection(this, dialog->mainWidget()) );
+    dialog->setMainWidget( createManagerWidget( dialog->mainWidget() ) );
     dialog->resize( QSize(520, 380).expandedTo( dialog->minimumSizeHint() ) );
-
     int result = dialog->exec();
 #if 0
     if ( view->isModified() ) {

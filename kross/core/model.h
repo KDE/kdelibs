@@ -1,7 +1,7 @@
 /***************************************************************************
  * model.h
  * This file is part of the KDE project
- * copyright (C) 2006 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C) 2006-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,6 +38,7 @@ namespace Kross {
      */
     class KROSSCORE_EXPORT ActionCollectionModel : public QAbstractItemModel
     {
+            Q_OBJECT
         public:
             enum Mode {
                 None = 0,
@@ -81,6 +82,9 @@ namespace Kross {
             * represents or NULL if the QModelIndex is not a \a ActionCollection .
             */
             static ActionCollection* collection(const QModelIndex& index);
+
+        private Q_SLOTS:
+            void slotUpdated();
 
         private:
             /// \internal d-pointer class.

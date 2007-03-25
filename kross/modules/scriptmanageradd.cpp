@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "scriptmanageradd.h"
-#include "scriptmanagereditor.h"
 #include "scriptmanager.h"
 #include "formfile.h"
 
@@ -26,6 +25,7 @@
 #include "../core/interpreter.h"
 #include "../core/action.h"
 #include "../core/actioncollection.h"
+#include "../core/view.h"
 
 #include <QFileInfo>
 #include <QVBoxLayout>
@@ -149,7 +149,7 @@ namespace Kross {
     {
         public:
             ScriptManagerAddWizard* const wizard;
-            ScriptManagerEditor* editor;
+            ActionCollectionEditor* editor;
             explicit Private(ScriptManagerAddWizard* const w): wizard(w), editor(0) {}
     };
 }
@@ -193,7 +193,7 @@ void ScriptManagerAddScriptWidget::showEvent(QShowEvent* event)
     }
     action->setFile( file );
 
-    d->editor = new ScriptManagerEditor(action, this);
+    d->editor = new ActionCollectionEditor(action, this);
     layout()->addWidget(d->editor);
 
     QWidget::showEvent(event);
@@ -224,7 +224,7 @@ ScriptManagerAddCollectionWidget::ScriptManagerAddCollectionWidget(ScriptManager
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
     ActionCollection* collection = new ActionCollection("");
-    m_editor = new ScriptManagerEditor(collection, this);
+    m_editor = new ActionCollectionEditor(collection, this);
     layout->addWidget(m_editor);
 }
 

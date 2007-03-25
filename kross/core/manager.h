@@ -1,7 +1,7 @@
 /***************************************************************************
  * manager.h
  * This file is part of the KDE project
- * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -168,6 +168,7 @@ namespace Kross {
              */
             QObject* module(const QString& modulename);
 
+            //TODO remove those testcases?
             /** Return a new \a Color object. */
             QObject* color();
             /** Return a new \a Font object. */
@@ -176,6 +177,23 @@ namespace Kross {
             QObject* brush();
             /** Return a new \a DateTime object. */
             QObject* datetime();
+
+            /**
+            * Execute a script file.
+            * \param file The script file that should be executed.
+            */
+            bool executeScriptFile(const QString& file = QString());
+
+            /**
+            * Show a KFileDialog to select a script file that should be executed.
+            */
+            bool showExecuteScriptFile();
+
+            /**
+            * Show the "Script Manager" dialog defined in the \a ScriptManagerModule
+            * to let the user manage the script files.
+            */
+            bool showScriptManager();
 
         Q_SIGNALS:
 

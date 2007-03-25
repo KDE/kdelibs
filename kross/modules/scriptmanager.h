@@ -50,7 +50,7 @@ namespace Kross {
             * to create this \a ScriptManagerCollection instance.
             * \param parent The parent widget this widget is child of.
             */
-            ScriptManagerCollection(ScriptManagerModule* module, QWidget* parent);
+            explicit ScriptManagerCollection(ScriptManagerModule* module, QWidget* parent = 0);
 
             /**
             * Destructor.
@@ -66,8 +66,9 @@ namespace Kross {
             /**
             * \return true if the collection was modified.
             */
-            bool isModified() const;
+            //bool isModified() const;
 
+#if 0
         public Q_SLOTS:
 
             /**
@@ -100,6 +101,7 @@ namespace Kross {
             void slotSelectionChanged();
             /// The data changed.
             void slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+#endif
 
         private:
             /// \internal d-pointer class.
@@ -121,28 +123,10 @@ namespace Kross {
 
         public Q_SLOTS:
 
-#if 0
             /**
-            * Install the scriptpackage \p file . The scriptpackage should be a
-            * tar.gz or tar.bzip archivefile.
-            *
-            * \param scriptpackagefile The local tar.gz or tar.bzip archivfile
-            * which contains the files that should be installed.
-            * \return true if installing was successfully else false.
+            * Create and return the "Script Manager" widget.
             */
-            bool installPackage(const QString& scriptpackagefile);
-
-            /**
-            * Uninstalls the scriptpackage \p action and removes all to the package
-            * belonging files.
-            *
-            * \param action The \a Action that should be removed.
-            * \return true if the uninstall was successfully else false.
-            */
-            bool uninstallPackage(Action* action);
-#endif
-
-            void showEditorDialog(QObject* object, QWidget* parent = 0);
+            QWidget* createManagerWidget(QWidget* parent = 0);
 
             /**
             * Display the modal "Script Manager" dialog.

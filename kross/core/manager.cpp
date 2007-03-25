@@ -1,7 +1,7 @@
 /***************************************************************************
  * manager.cpp
  * This file is part of the KDE project
- * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,6 +40,8 @@
 #include <kmenu.h>
 #include <kstandarddirs.h>
 #include <kmimetype.h>
+#include <kfiledialog.h>
+#include <kmessagebox.h>
 
 extern "C"
 {
@@ -287,5 +289,57 @@ QObject* Manager::color() { return new Color(this); }
 QObject* Manager::font() { return new Font(this); }
 QObject* Manager::brush() { return new Brush(this); }
 QObject* Manager::datetime() { return new DateTime(this); }
+
+bool Manager::executeScriptFile(const QString& file)
+{
+    krossdebug( QString("Manager::executeScriptFile() file='%1'").arg(file) );
+    Action* action = new Action(0 /*no parent*/, KUrl(file));
+    action->trigger();
+    bool ok = ! action->hadError();
+    delete action; //action->delayedDestruct();
+    return ok;
+}
+
+bool Manager::showExecuteScriptFile()
+{
+    QStringList mimetypes;
+    foreach(QString interpretername, interpreters()) {
+        InterpreterInfo* info = interpreterInfo(interpretername);
+        Q_ASSERT( info );
+        mimetypes.append( info->mimeTypes().join(" ").trimmed() );
+    }
+    KFileDialog* filedialog = new KFileDialog(
+        KUrl("kfiledialog:///KrossExecuteScript"), // startdir
+        mimetypes.join(" "), // filter
+        0, // custom widget
+        0 // parent
+    );
+    filedialog->setCaption( i18n("Execute Script File") );
+    filedialog->setOperationMode( KFileDialog::Opening );
+    filedialog->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
+    return filedialog->exec() ? executeScriptFile( filedialog->selectedUrl().path() ) : false;
+}
+
+/*
+QWidget* Manager::createScriptManager(QWidget* parent)
+{
+    QObject* obj = Manager::self().module("scriptmanager");
+    QWidget* widget = 0;
+    if( obj )
+        if( QMetaObject::invokeMethod(obj, "createManagerWidget", Q_RETURN_ARG(QWidget*,widget), Q_ARG(QWidget*,parent)) )
+            return widget; // successfully called the method.
+    return 0;
+}
+*/
+
+bool Manager::showScriptManager()
+{
+    QObject* obj = Manager::self().module("scriptmanager");
+    if( obj )
+        if( QMetaObject::invokeMethod(obj, "showManagerDialog") )
+            return true; // successfully called the method.
+    KMessageBox::sorry(0, i18n("Failed to load the Script Manager."));
+    return false;
+}
 
 #include "manager.moc"

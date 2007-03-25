@@ -1,7 +1,7 @@
 /***************************************************************************
  * model.cpp
  * This file is part of the KDE project
- * copyright (C) 2006 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C) 2006-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ using namespace Kross;
 namespace Kross {
 
     /// \internal item representation.
-    class ActionCollectionModelItem
+    class ActionCollectionModelItem : public QObject
     {
         public:
             enum Type { ActionType, CollectionType };
@@ -48,13 +48,13 @@ namespace Kross {
             };
             const QModelIndex parent;
 
-            ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex())
-                : type(ActionType), action(a), parent(p)
+            explicit ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex(), ActionCollectionModelItem* parentitem = 0)
+                : QObject(parentitem), type(ActionType), action(a), parent(p)
             {
             }
 
-            ActionCollectionModelItem(ActionCollection* c, const QModelIndex& p = QModelIndex())
-                : type(CollectionType), collection(c), parent(p)
+            explicit ActionCollectionModelItem(ActionCollection* c, const QModelIndex& p = QModelIndex(), ActionCollectionModelItem* parentitem = 0)
+                : QObject(parentitem), type(CollectionType), collection(c), parent(p)
             {
             }
     };
@@ -63,6 +63,7 @@ namespace Kross {
     class ActionCollectionModel::Private
     {
         public:
+            ActionCollection* collection;
             ActionCollectionModelItem* item;
             Mode mode;
     };
@@ -73,17 +74,24 @@ ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* 
     : QAbstractItemModel(parent)
     , d( new Private() )
 {
-    ActionCollection* c = collection ? collection : Kross::Manager::self().actionCollection();
-    d->item = new ActionCollectionModelItem(c);
+    d->collection = collection ? collection : Kross::Manager::self().actionCollection();
+    //d->item = 0;
+    d->item = new ActionCollectionModelItem( d->collection );
     d->mode = mode;
     //setSupportedDragActions(Qt::MoveAction);
-    QObject::connect(c, SIGNAL(updated()), this, SIGNAL(layoutChanged()));
+    QObject::connect(d->collection, SIGNAL(updated()), this, SLOT(slotUpdated()));
 }
 
 ActionCollectionModel::~ActionCollectionModel()
 {
     delete d->item;
     delete d;
+}
+
+void ActionCollectionModel::slotUpdated()
+{
+    emit layoutAboutToBeChanged();
+    emit layoutChanged();
 }
 
 Action* ActionCollectionModel::action(const QModelIndex& index)
@@ -106,6 +114,7 @@ int ActionCollectionModel::columnCount(const QModelIndex&) const
 int ActionCollectionModel::rowCount(const QModelIndex& index) const
 {
     ActionCollectionModelItem* item = index.isValid() ? static_cast<ActionCollectionModelItem*>(index.internalPointer()) : d->item;
+    Q_ASSERT( item );
     if( item->type == ActionCollectionModelItem::CollectionType )
         return item->collection->actions().count() + item->collection->collections().count();
     return 0;
@@ -119,13 +128,13 @@ QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex&
     if( row < count ) {
         Action* action = dynamic_cast< Action* >( item->collection->actions().value(row) );
         if( action )
-            return createIndex(row, column, new ActionCollectionModelItem(action, parent));
+            return createIndex(row, column, new ActionCollectionModelItem(action, parent, item));
     }
     else {
         QString name = item->collection->collections().value(row - count);
         ActionCollection* collection = item->collection->collection(name);
         if( collection )
-            return createIndex(row, column, new ActionCollectionModelItem(collection, parent));
+            return createIndex(row, column, new ActionCollectionModelItem(collection, parent, item));
     }
     return QModelIndex();
 }
@@ -400,3 +409,5 @@ bool ActionCollectionProxyModel::filterAcceptsRow(int source_row, const QModelIn
     }
     return true;
 }
+
+#include "model.moc"

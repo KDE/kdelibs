@@ -18,7 +18,7 @@ install(TARGETS krossmoduleforms DESTINATION ${PLUGIN_INSTALL_DIR})
 ############################################
 # the scriptmanager module
 
-set(krossmodulescriptmanager_PART_SRCS scriptmanager.cpp scriptmanagereditor.cpp scriptmanageradd.cpp formfile.cpp)
+set(krossmodulescriptmanager_PART_SRCS scriptmanager.cpp scriptmanageradd.cpp formfile.cpp)
 kde4_automoc(krossmodulescriptmanager ${krossmodulescriptmanager_PART_SRCS})
 kde4_add_plugin(krossmodulescriptmanager ${krossmodulescriptmanager_PART_SRCS})
 

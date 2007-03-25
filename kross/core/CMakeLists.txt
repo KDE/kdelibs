@@ -16,6 +16,7 @@ set(krosscore_LIB_SRCS
    actioncollection.cpp
    manager.cpp
    model.cpp
+   view.cpp
    guiclient.cpp
    )
 
@@ -31,17 +32,18 @@ install(TARGETS krosscore  DESTINATION ${LIB_INSTALL_DIR})
 ########### install files ###############
 
 install( FILES 
-	krossconfig.h 
-	errorinterface.h 
-	childreninterface.h 
-	metatype.h 
-	variant.h 
-	interpreter.h 
-	script.h 
-	action.h 
-	actioncollection.h 
-	manager.h 
-	guiclient.h 
-	model.h 
-	DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core)
+    krossconfig.h 
+    errorinterface.h 
+    childreninterface.h 
+    metatype.h 
+    variant.h 
+    interpreter.h 
+    script.h 
+    action.h 
+    actioncollection.h 
+    manager.h 
+    guiclient.h 
+    model.h 
+    view.h
+    DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core)
 

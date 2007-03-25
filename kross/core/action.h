@@ -1,7 +1,7 @@
 /***************************************************************************
  * action.h
  * This file is part of the KDE project
- * copyright (C)2004-2006 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2004-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,8 +40,9 @@ namespace Kross {
      * to by the matching @a Kross::Interpreter created @a Kross::Script
      * instance.
      *
-     * The \a Manager takes care of handling the Action instances
-     * application width.
+     * The \a Manager takes care of handling the \a Action instances
+     * application by providing access to \a ActionCollection containers
+     * for those \a Action instances.
      *
      * Once you've such a Action instance you're able to perform actions
      * with it like to execute scripting code.
@@ -304,8 +305,10 @@ namespace Kross {
         Q_SIGNALS:
 
             /**
-             * This signal is emitted if the content of the ActionCollection
-             * was changed.
+             * This signal is emitted if the content of the Action
+             * was changed. The \a ActionCollection instances this Action
+             * is child of are connected with this signal to fire up
+             * there own updated signal if an Action of them was updated.
              */
             void updated();
 

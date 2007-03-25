@@ -32,9 +32,9 @@ namespace Kross {
 
     //class Action;
     class ActionCollection;
+    class ActionCollectionEditor;
     class ScriptManagerCollection;
     class ScriptManagerAddWizard;
-    class ScriptManagerEditor;
     class FormFileWidget;
 
     /**
@@ -96,7 +96,7 @@ namespace Kross {
     };
 
     /**
-    * The ScriptManagerAddScriptWidget widget displays a \a ScriptManagerEditor
+    * The ScriptManagerAddScriptWidget widget displays a \a ActionCollectionEditor
     * widget to configure the settings of the new \a Action instance.
     */
     class ScriptManagerAddScriptWidget : public QWidget
@@ -118,7 +118,7 @@ namespace Kross {
     };
 
     /**
-    * The ScriptManagerAddScriptWidget widget displays a \a ScriptManagerEditor
+    * The ScriptManagerAddScriptWidget widget displays a \a ActionCollectionEditor
     * widget to configure the settings of the new \a ActionCollection instance.
     */
     class ScriptManagerAddCollectionWidget : public QWidget
@@ -131,7 +131,7 @@ namespace Kross {
             void slotUpdate();
         private:
             ScriptManagerAddWizard* m_wizard;
-            ScriptManagerEditor* m_editor;
+            ActionCollectionEditor* m_editor;
     };
 
     /**

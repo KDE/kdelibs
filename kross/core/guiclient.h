@@ -1,7 +1,7 @@
 /***************************************************************************
  * guiclient.h
  * This file is part of the KDE project
- * copyright (C) 2005-2006 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C) 2005-2007 by Sebastian Sauer (mail@dipe.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -88,21 +88,24 @@ namespace Kross {
             /**
             * A KFileDialog will be displayed to let the user choose the scriptfile
             * that should be executed.
+            * \deprecated use Kross::Manager::showExecuteScriptFile()
             */
-            bool executeFile();
+            bool executeFile() KDE_DEPRECATED;
 
             /**
             * Execute the scriptfile \p file . Internaly we try to use
             * the defined filename to auto-detect the \a Interpreter which
             * should be used for the execution.
+            * \deprecated use Kross::Manager::executeScriptFile()
             */
-            bool executeFile(const KUrl& file);
+            bool executeFile(const KUrl& file) KDE_DEPRECATED;
 
             /**
             * The \a ScriptManagerGUI dialog will be displayed to
             * let the user manage the scriptfiles.
+            * \deprecated use Kross::Manager::showScriptManager()
             */
-            void showManager();
+            bool showManager() KDE_DEPRECATED;
 
         private Q_SLOTS:
 
