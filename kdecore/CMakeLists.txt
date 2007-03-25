@@ -54,6 +54,7 @@ endif (APPLE)
 
 if (WIN32)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
+      kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       network/klocalsocket_win.cpp
       )

@@ -57,7 +57,7 @@
 #include "kuser.h"
 #include "kstaticdeleter.h"
 #include "kde_file.h"
-
+#include "kkernel_win.h"
 
 class KStandardDirs::KStandardDirsPrivate
 {
@@ -120,8 +120,7 @@ static QString kfsstnd_defaultprefix()
    if (!s->defaultprefix.isEmpty())
       return s->defaultprefix;
 #ifdef Q_WS_WIN
-   s->defaultprefix = QFile::decodeName(KDEDIR);
-   //TODO: find other location (the Registry?)
+   s->defaultprefix = getKde4Prefix();
 #else //UNIX
    s->defaultprefix = KDEDIR;
 #endif
