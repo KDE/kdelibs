@@ -50,17 +50,17 @@ public:
 
 public:
   KConfigDialogManager *q;
-  
+
   /**
   * KConfigSkeleton object used to store settings
    */
   KConfigSkeleton *m_conf;
-  
+
   /**
   * Dialog being managed
    */
   QWidget *m_dialog;
-  
+
   QHash<QString, QWidget *> knownWidget;
   QHash<QString, QWidget *> buddyWidget;
   bool insideGroupBox;
@@ -135,7 +135,10 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert( "KTextBrowser", SIGNAL(sourceChanged(const QString &)));
     s_changedMap->insert( "KTextEdit", SIGNAL(textChanged()));
+    s_changedMap->insert( "KUrlRequester",  SIGNAL(returnPressed (const QString& )));
+    s_changedMap->insert( "KUrlRequester",  SIGNAL(urlSelected (const KUrl& )));
     s_changedMap->insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
+    s_changedMap->insert( "KUrlComboBox",  SIGNAL(urlActivated (const KUrl& )));
     s_changedMap->insert( "KIntNumInput", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));

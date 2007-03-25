@@ -144,6 +144,19 @@ target_link_libraries(test9  ${KDE4_KDECORE_LIBS} )
 
 ########### next target ###############
 
+set(test10_SRCS test10main.cpp )
+
+kde4_automoc(${test10_SRCS})
+
+gen_kcfg_test_source(test10 test10_SRCS)
+
+kde4_add_executable(test10 NOGUI ${test10_SRCS})
+
+target_link_libraries(test10  ${KDE4_KDECORE_LIBS} )
+
+
+########### next target ###############
+
 set(test_dpointer_SRCS test_dpointer_main.cpp )
 
 kde4_automoc(${test_dpointer_SRCS})

@@ -30,6 +30,7 @@
 #include <qpoint.h>
 #include <qsize.h>
 #include <qrect.h>
+#include <kurl.h>
 #include <qvariant.h>
 
 namespace ConversionCheck {
@@ -111,7 +112,8 @@ QVConversions(QPointF, unsupported, supported);
 QVConversions(QByteArray, supported, supported);
 QVConversions(QStringList, unsupported, supported);
 QVConversions(QVariantList, unsupported, supported);
-
+QVConversions(KUrl, supported, supported);
+QVConversions(KUrl::List, unsupported, supported);
 }
 
 #endif

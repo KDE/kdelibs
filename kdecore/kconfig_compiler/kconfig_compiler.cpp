@@ -763,6 +763,8 @@ QString param( const QString &type )
     else if ( type == "Path" )        return "const QString &";
     else if ( type == "PathList" )    return "const QStringList &";
     else if ( type == "Password" )    return "const QString &";
+    else if ( type == "Url" )         return "const KUrl &";
+    else if ( type == "UrlList" )     return "const KUrl::List &";
     else {
         std::cerr <<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
         return "QString"; //For now, but an assert would be better
@@ -793,6 +795,8 @@ QString cppType( const QString &type )
     else if ( type == "Path" )        return "QString";
     else if ( type == "PathList" )    return "QStringList";
     else if ( type == "Password" )    return "QString";
+    else if ( type == "Url" )         return "KUrl";
+    else if ( type == "UrlList" )     return "KUrl::List";
     else {
         std::cerr<<"kconfig_compiler does not support type \""<< type <<"\""<<std::endl;
         return "QString"; //For now, but an assert would be better
@@ -820,6 +824,8 @@ QString defaultValue( const QString &type )
     else if ( type == "Path" )        return "\"\""; // Use empty string, not null string!
     else if ( type == "PathList" )    return "QStringList()";
     else if ( type == "Password" )    return "\"\""; // Use empty string, not null string!
+    else if ( type == "Url" )         return "KUrl()";
+    else if ( type == "UrlList" )     return "KUrl::List()";
     else {
         std::cerr<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<std::endl;
         return "QString"; //For now, but an assert would be better
@@ -1225,7 +1231,7 @@ int main( int argc, char **argv )
       }
       Signal theSignal;
       theSignal.name = signalName;
- 
+
       for( QDomElement e2 = e.firstChildElement(); !e2.isNull(); e2 = e2.nextSiblingElement() ) {
         if ( e2.tagName() == "argument") {
           SignalArguments argument;

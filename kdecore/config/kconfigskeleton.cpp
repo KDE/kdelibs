@@ -104,6 +104,45 @@ KConfigSkeleton::ItemPath::ItemPath( const QString &_group, const QString &_key,
 {
 }
 
+KConfigSkeleton::ItemUrl::ItemUrl( const QString &_group, const QString &_key,
+                                    KUrl &reference,
+                                    const KUrl &defaultValue )
+  : KConfigSkeletonGenericItem<KUrl>( _group, _key, reference, defaultValue )
+{
+}
+
+void KConfigSkeleton::ItemUrl::writeConfig( KConfig *config )
+{
+    if ( mReference != mLoadedValue ) // WABA: Is this test needed?
+    {
+        KConfigGroup cg(config, mGroup );
+        if ((mDefault == mReference) && !config->hasDefault( mKey))
+            cg.revertToDefault( mKey );
+        else
+            cg.writeEntry<QString>( mKey, mReference.url() );
+    }
+}
+
+void KConfigSkeleton::ItemUrl::readConfig( KConfig *config )
+{
+    KConfigGroup cg(config, mGroup );
+
+    mReference = KUrl( cg.readEntry<QString>( mKey, mDefault.url() ) );
+    mLoadedValue = mReference;
+
+    readImmutability( cg );
+}
+
+void KConfigSkeleton::ItemUrl::setProperty(const QVariant & p)
+{
+    mReference = p.value<KUrl>();
+}
+
+QVariant KConfigSkeleton::ItemUrl::property() const
+{
+    return QVariant::fromValue(mReference);
+}
+
 KConfigSkeleton::ItemProperty::ItemProperty( const QString &_group,
                                         const QString &_key,
                                         QVariant &reference,
@@ -723,6 +762,46 @@ void KConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
   }
 }
 
+KConfigSkeleton::ItemUrlList::ItemUrlList( const QString &_group, const QString &_key,
+                                            KUrl::List &reference,
+                                            const KUrl::List &defaultValue )
+  : KConfigSkeletonGenericItem<KUrl::List>( _group, _key, reference, defaultValue )
+{
+}
+
+void KConfigSkeleton::ItemUrlList::readConfig( KConfig *config )
+{
+    KConfigGroup cg(config, mGroup );
+    if ( !cg.hasKey( mKey ) )
+        mReference = mDefault;
+    else
+        mReference = KUrl::List( cg.readEntry<QStringList>( mKey, mDefault.toStringList() ) );
+    mLoadedValue = mReference;
+
+    readImmutability( cg );
+}
+
+void KConfigSkeleton::ItemUrlList::writeConfig( KConfig *config )
+{
+    if ( mReference != mLoadedValue ) // WABA: Is this test needed?
+    {
+        KConfigGroup cg(config, mGroup );
+        if ((mDefault == mReference) && !cg.hasDefault( mKey))
+            cg.revertToDefault( mKey );
+        else
+            cg.writeEntry<QStringList>( mKey, mReference.toStringList() );
+    }
+}
+
+void KConfigSkeleton::ItemUrlList::setProperty(const QVariant & p)
+{
+    mReference = p.value<KUrl::List>();
+}
+
+QVariant KConfigSkeleton::ItemUrlList::property() const
+{
+    return QVariant::fromValue<KUrl::List>(mReference);
+}
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
                                       QList<int> &reference,

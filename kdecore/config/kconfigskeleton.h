@@ -30,6 +30,7 @@
 #include <qrect.h>
 #include <qstringlist.h>
 #include <qvariant.h>
+#include <kurl.h>
 #include <kdelibs_export.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
@@ -444,6 +445,31 @@ public:
              const QString & defaultValue = QString());
   };
 
+    /**
+     * Class for handling a url preferences item.
+     */
+    class KDECORE_EXPORT ItemUrl:public KConfigSkeletonGenericItem < KUrl >
+    {
+    public:
+
+        /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem
+         */
+        ItemUrl(const QString & _group, const QString & _key,
+                   KUrl & reference,
+                   const KUrl & defaultValue = KUrl());
+
+        /** @copydoc KConfigSkeletonItem::writeConfig(KConfig*) */
+        void writeConfig(KConfig * config);
+
+        /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
+        void readConfig(KConfig * config);
+
+        /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
+        void setProperty(const QVariant & p);
+
+        /** @copydoc KConfigSkeletonItem::property() */
+        QVariant property() const;
+    };
 
   /**
    * Class for handling a QVariant preferences item.
@@ -878,6 +904,29 @@ public:
     void writeConfig(KConfig * config);
   };
 
+    /**
+     * Class for handling a url list preferences item.
+     */
+    class KDECORE_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < KUrl::List >
+    {
+    public:
+        /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
+        ItemUrlList(const QString & _group, const QString & _key,
+                     KUrl::List & reference,
+                     const KUrl::List & defaultValue = KUrl::List());
+
+        /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
+        void readConfig(KConfig * config);
+
+        /** @copydoc KConfigSkeletonItem::writeConfig(KConfig*) */
+        void writeConfig(KConfig * config);
+
+        /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
+        void setProperty(const QVariant & p);
+
+        /** @copydoc KConfigSkeletonItem::property() */
+        QVariant property() const;
+    };
 
   /**
    * Class for handling an integer list preferences item.
