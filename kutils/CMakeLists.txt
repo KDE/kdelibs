@@ -44,6 +44,7 @@ install(TARGETS kutils  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
+ kutils_export.h
  kcmoduleinfo.h
  kcmoduleloader.h
  kcmultidialog.h

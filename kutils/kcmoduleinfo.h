@@ -24,6 +24,7 @@
 #ifndef KCMODULEINFO_H
 #define KCMODULEINFO_H
 
+#include <kutils_export.h>
 #include <kservice.h>
 
 class QPixmap;

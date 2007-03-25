@@ -20,9 +20,12 @@
 #ifndef KSETTINGS_DIALOG_H
 #define KSETTINGS_DIALOG_H
 
-#include <QtCore/QObject>
+#include <kutils_export.h>
 #include <kservice.h>
-#include <QList>
+
+#include <QtCore/QObject>
+#include <QtCore/QList>
+
 
 template<class T> class QList;
 class KPluginInfo;

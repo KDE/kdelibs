@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <qmap.h>
-#include <kdelibs_export.h>
+#include <kutils_export.h>
 #include <kcomponentdata.h>
 
 class Q3Signal;

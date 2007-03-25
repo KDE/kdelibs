@@ -25,7 +25,7 @@
 #include <QString>
 #include <QList>
 
-#include <kdelibs_export.h>
+#include <kutils_export.h>
 #include <ksharedconfig.h>
 
 class KComponentData;

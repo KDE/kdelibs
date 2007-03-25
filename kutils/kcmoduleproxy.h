@@ -26,7 +26,7 @@
 
 #include <kcmodule.h>
 #include <kservice.h>
-#include <kdelibs_export.h>
+#include <kutils_export.h>
 
 class KAboutData;
 class KCModuleInfo;

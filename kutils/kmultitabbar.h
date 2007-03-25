@@ -30,7 +30,7 @@
 #include <qlist.h>
 #include <qpushbutton.h>
 
-#include <kdelibs_export.h>
+#include <kutils_export.h>
 
 class QPixmap;
 class QPainter;

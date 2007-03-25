@@ -20,8 +20,8 @@
 #ifndef KSETTINGS_COMPONENTSDIALOG_H
 #define KSETTINGS_COMPONENTSDIALOG_H
 
+#include <kutils_export.h>
 #include <kdialog.h>
-
 
 #include <QList>
 

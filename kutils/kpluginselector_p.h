@@ -27,7 +27,7 @@
 #include <kconfigbase.h>
 #include <klocale.h>
 
-#include <kdelibs_export.h>
+#include <kutils_export.h>
 #include <kconfiggroup.h>
 
 class QTreeWidget;

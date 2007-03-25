@@ -85,14 +85,6 @@
 # endif
 #endif
 
-#ifndef KVCARD_EXPORT
-# ifdef MAKE_KVCARD_LIB
-#  define KVCARD_EXPORT KDE_EXPORT
-# else
-#  define KVCARD_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KRESOURCES_EXPORT
 # ifdef MAKE_KRESOURCES_LIB
 #  define KRESOURCES_EXPORT KDE_EXPORT
@@ -122,14 +114,6 @@
 #  define KMDI_EXPORT  KDE_EXPORT
 # else
 #  define KMDI_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KUTILS_EXPORT
-# ifdef MAKE_KUTILS_LIB
-#  define KUTILS_EXPORT  KDE_EXPORT
-# else
-#  define KUTILS_EXPORT KDE_IMPORT
 # endif
 #endif
 
