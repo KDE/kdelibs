@@ -102,6 +102,8 @@ set(kdeui_LIB_SRCS
  paged/kpagewidgetmodel.cpp
  shortcuts/kshortcut.cpp
  shortcuts/kstandardshortcut.cpp
+ shortcuts/kgesture.cpp
+ shortcuts/kgesturemap.cpp
  util/kacceleratormanager.cpp
  util/kcheckaccelerators.cpp
  util/kckey.cpp
@@ -305,6 +307,7 @@ install( FILES
  paged/kpagewidgetmodel.h
  shortcuts/kshortcut.h
  shortcuts/kstandardshortcut.h
+ shortcuts/kgesture.h
  util/fixx11h.h
  util/kacceleratormanager.h
  util/kaccelgen.h
