@@ -45,13 +45,10 @@ install( FILES kmailservice.protocol telnet.protocol rlogin.protocol rtsp.protoc
 
 # install the fileshareset and filesharelist scripts, they are not required on windows
 if (UNIX)
-   install(PROGRAMS fileshareset DESTINATION ${BIN_INSTALL_DIR} )
+   install(PROGRAMS fileshareset DESTINATION ${LIBEXEC_INSTALL_DIR} )
    # write a cmake script file which creates the symlink
-   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink ${CMAKE_INSTALL_PREFIX}/bin/fileshareset ${CMAKE_INSTALL_PREFIX}/bin/filesharelist)\n")
+   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink ${LIBEXEC_INSTALL_DIR}/fileshareset ${LIBEXEC_INSTALL_DIR}/filesharelist)\n")
    # and add it as post-install script to any of the installed targets, so it will be executed during "make install"
    set_target_properties(ktelnetservice PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
 endif (UNIX)
-
-
-
 

@@ -170,7 +170,6 @@ void KFileShare::readShareList()
     else
         s_shareList->clear();
 
-    // /usr/sbin on Mandrake, $PATH allows flexibility for other distributions
     QString exe = findExe( "filesharelist" );
     if (exe.isEmpty()) {
         s_authorization = ErrorNotFound;
@@ -220,7 +219,8 @@ KFileShare::Authorization KFileShare::authorization()
 
 QString KFileShare::findExe( const char* exeName )
 {
-   // /usr/sbin on Mandrake, $PATH allows flexibility for other distributions
+   // Normally fileshareset and filesharelist are installed in kde4/libexec;
+   // allow distributions to move it somewhere else in the PATH or in /usr/sbin.
    QString path = QString::fromLocal8Bit(getenv("PATH"));
 #ifndef Q_WS_WIN
    path += QLatin1String(":/usr/sbin");
