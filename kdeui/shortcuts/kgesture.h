@@ -102,7 +102,7 @@ public:
      * makes up the drawing of the gesture. By default, only a 'fill="none"'
      * attribute will be set.
      */
-    QByteArray toSvg(const QString &attributes) const;
+    QByteArray toSvg(const QString &attributes = QString()) const;
 
     /**
      * Return a difference measurement betwenn this gesture and the other
