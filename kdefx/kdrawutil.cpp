@@ -230,7 +230,7 @@ KDEFX_EXPORT void kColorBitmaps(QPainter *p, const QPalette &pal, int x, int y,
     int i;
     for(i=0; i < 6; ++i){
         if(bitmaps[i]){
-            if(!bitmaps[i]->mask())
+            if (bitmaps[i]->mask().isNull())
                 bitmaps[i]->setMask(*bitmaps[i]);
             p->setPen(colors[i]);
             p->drawPixmap(x, y, *bitmaps[i]);
