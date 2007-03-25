@@ -84,11 +84,14 @@ void ByteStream::writeData( const QByteArray& data )
 {
 	Q_ASSERT( ! m_eof );
 	m_bufferSize += data.size();
-	if( m_bufferSize > 17 * 1000 )
+    if (m_bufferSize > 17 * 1000) {
 		if( state() == Phonon::BufferingState )
 			setState( Phonon::PlayingState );
 		else if( state() == Phonon::LoadingState )
 			setState( Phonon::StoppedState );
+    } else {
+        emit bufferStatus(m_bufferSize / 17000);
+    }
 }
 
 void ByteStream::setStreamSize( qint64 s )

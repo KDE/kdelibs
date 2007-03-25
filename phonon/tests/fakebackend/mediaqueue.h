@@ -44,7 +44,7 @@ class MediaQueue : public QObject
 		Q_INVOKABLE void setDoCrossfade( bool doCrossfade );
 
 	Q_SIGNALS:
-		void needNextMediaObject();
+        void needNextUrl();
 
 	private:
 		qint32 m_timeBetweenMedia;

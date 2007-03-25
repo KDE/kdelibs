@@ -82,6 +82,8 @@ namespace Fake
 			void tick( qint64 time );
 			void metaDataChanged( QMultiMap<QString, QString> );
             void seekableChanged(bool);
+            void hasVideoChanged(bool);
+            void bufferStatus(int);
 
 		protected:
 			void fillBuffer( QVector<float>* buffer );
