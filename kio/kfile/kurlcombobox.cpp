@@ -158,6 +158,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
     while ( it != _urls.constEnd() ) {
         if ( !urls.contains( *it ) )
             urls += *it;
+        ++it;
     }
 
     // limit to myMaximum items
