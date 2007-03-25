@@ -22,15 +22,15 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-#include <qevent.h>
 #include "kxmessages.h"
-
-#include <kapplication.h>
 
 #ifdef Q_WS_X11 // FIXME(E): Figure out what parts we can/should emulate in QT/E
 
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
+#include <fixx11h.h>
+#include <kapplication.h>
+
 
 // for broadcasting
 const long BROADCAST_MASK = PropertyChangeMask;
