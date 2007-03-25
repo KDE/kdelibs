@@ -85,14 +85,6 @@
 # endif
 #endif
 
-#ifndef KABC_EXPORT
-# ifdef MAKE_KABC_LIB
-#  define KABC_EXPORT KDE_EXPORT
-# else
-#  define KABC_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KVCARD_EXPORT
 # ifdef MAKE_KVCARD_LIB
 #  define KVCARD_EXPORT KDE_EXPORT
@@ -234,46 +226,6 @@
 #  define SONNETUI_EXPORT KDE_EXPORT
 # else
 #  define SONNETUI_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KABC_DIR_EXPORT
-# ifdef MAKE_KABC_DIRECTORY_LIB
-#  define KABC_DIR_EXPORT KDE_EXPORT
-# else
-#  define KABC_DIR_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KABC_FILE_CORE_EXPORT
-# ifdef MAKE_KABC_FILE_CORE_LIB
-#  define KABC_FILE_CORE_EXPORT KDE_EXPORT
-# else
-#  define KABC_FILE_CORE_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KABC_FILE_EXPORT
-# ifdef MAKE_KABC_FILE_LIB
-#  define KABC_FILE_EXPORT KDE_EXPORT
-# else
-#  define KABC_FILE_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KABC_NET_EXPORT
-# ifdef MAKE_KABC_NET_LIB
-#  define KABC_NET_EXPORT KDE_EXPORT
-# else
-#  define KABC_NET_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KABC_LDAPKIO_EXPORT
-# ifdef MAKE_KABC_LDAPKIO_LIB
-#  define KABC_LDAPKIO_EXPORT KDE_EXPORT
-# else
-#  define KABC_LDAPKIO_EXPORT KDE_IMPORT
 # endif
 #endif
 
