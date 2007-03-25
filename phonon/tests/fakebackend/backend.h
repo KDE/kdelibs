@@ -60,6 +60,9 @@ namespace Fake
 			Q_INVOKABLE char const* uiLibrary() const;
 			// Q_INVOKABLE char* uiSymbol() const;
 
+        Q_SIGNALS:
+            void objectDescriptionChanged(ObjectDescriptionType);
+
 		private:
 			QStringList m_supportedMimeTypes;
 			QList<QPointer<AudioOutput> > m_audioOutputs;
