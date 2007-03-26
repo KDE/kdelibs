@@ -27,9 +27,9 @@ QTEST_KDEMAIN( KStandardShortcutTest, GUI ) // GUI needed by KAccel
 
 void KStandardShortcutTest::testShortcutDefault()
 {
-    QCOMPARE( KStandardShortcut::shortcutDefault( KStandardShortcut::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
-    QCOMPARE( KStandardShortcut::shortcutDefault( KStandardShortcut::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
-    QCOMPARE( KStandardShortcut::shortcutDefault( KStandardShortcut::EndOfLine ).toString(), QLatin1String( "End" ) );
+    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
+    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
+    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::EndOfLine ).toString(), QLatin1String( "End" ) );
 }
 
 void KStandardShortcutTest::testName()
