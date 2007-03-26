@@ -59,10 +59,8 @@
 
 using namespace KIO;
 
-#ifndef KDE_USE_FINAL
 typedef QMap<QString, QString> StringStringMap;
 Q_DECLARE_METATYPE(StringStringMap)
-#endif
 
 /** @internal */
 class TCPSlaveBase::TcpSlaveBasePrivate
