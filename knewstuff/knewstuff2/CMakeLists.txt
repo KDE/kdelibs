@@ -52,7 +52,7 @@ kde4_automoc(${knewstuff2_SRCS})
 
 kde4_add_library(knewstuff2 SHARED ${knewstuff2_core_SRCS} ${knewstuff2_dxs_SRCS} ${knewstuff2_ui_SRCS} ${knewstuff2_SRCS})
 
-target_link_libraries(knewstuff2 ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} ${KDE4_KHTML_LIBS} ${QT_QTNETWORK_LIBRARY})
+target_link_libraries(knewstuff2 ${KDE4_KIO_LIBS} ${KDE4_KHTML_LIBS} ${QT_QTNETWORK_LIBRARY})
 set_target_properties(knewstuff2 PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS knewstuff2 DESTINATION ${LIB_INSTALL_DIR})
 
