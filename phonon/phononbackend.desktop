@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=PhononBackend
 Name=KDE Multimedia Backend
+Name[ja]=KDE マルチメディアバックエンド
 Name[x-test]=xxKDE Multimedia Backendxx
 
 ##

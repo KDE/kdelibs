@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=SolidPowerManager
 
 Comment=Power Management Backend
+Comment[ja]=電源管理のバックエンド
 Comment[x-test]=xxPower Management Backendxx
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
