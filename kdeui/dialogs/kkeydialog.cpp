@@ -23,6 +23,7 @@
 */
 
 #include "kkeydialog.h"
+#include "kkeydialog_p.h"
 #include "kkeybutton.h"
 
 #include "ui_kkeydialog.h"
@@ -258,7 +259,7 @@ void KKeyChooser::addCollection(KActionCollection *collection, const QString &ti
 	d->actionCollections.append( pColl );
 	d->appendToView(d->actionLists.count() - 1, str);
 }*/
-    
+
 
 void KKeyChooser::save()
 {
@@ -418,9 +419,9 @@ void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
 			if (!(*it)->parent())
 				continue;
-	
+
 			otherItem = static_cast<KKeyChooserItem *>(*it);
-	
+
 			for (i = LocalPrimary; i <= GlobalAlternate; i++)
 				if (capture == otherItem->keySequence(i)) {
 					conflict = true;
@@ -431,7 +432,7 @@ void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
 
 		if (conflict && !stealShortcut(otherItem, i, capture))
 			return;
-	
+
 		//check for conflicts with other applications' global shortcuts
 		QString conflicting = KGlobalAccel::findActionNameSystemwide(capture);
 		if (!conflicting.isEmpty() && !stealExternalGlobalShortcut(conflicting, capture))
@@ -491,13 +492,13 @@ void KKeyChooserPrivate::capturedRockerGesture(KRockerGesture capture)
 	if (capture.isValid()) {
 		bool conflict = false;
 		KKeyChooserItem *otherItem;
-	
+
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
 			if (!(*it)->parent())
 				continue;
 
 			otherItem = static_cast<KKeyChooserItem *>(*it);
-	
+
 			if (capture == otherItem->m_action->rockerGesture()) {
 				conflict = true;
 				break;
@@ -545,7 +546,7 @@ void KKeyChooserPrivate::wontStealStandardShortcut(KStandardShortcut::StandardSh
 	                       "\"%2\"that many applications use.\n"
 	                       "You cannot use it for global shortcuts for this reason.",
 	                       seq.toString(), KStandardShortcut::name(std));
-	
+
 	KMessageBox::sorry(q, message, title);
 }
 
@@ -698,7 +699,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 	if (role == Qt::SizeHintRole) {
 		return QSize(0, 30);
 	}
-			
+
 	switch (role) {
 	case Qt::DisplayRole:
 		switch(column) {
@@ -910,7 +911,7 @@ class KKeyDialog::KKeyDialogPrivate
 {
 public:
   KKeyDialogPrivate(KKeyDialog *q): q(q), m_keyChooser(0) {}
-  
+
   KKeyDialog *q;
   KKeyChooser* m_keyChooser; // ### move
 };

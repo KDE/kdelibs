@@ -76,7 +76,7 @@ public:
 		AllActions        = 0xffffffff
 	};
 	Q_DECLARE_FLAGS(ActionTypes, ActionType)
-	
+
 	enum LetterShortcuts {
 		/// Shortcuts without a modifier are not allowed,
 		/// so 'A' would not be valid, whereas 'Ctrl+A' would be.
@@ -180,7 +180,7 @@ public Q_SLOTS:
 
 protected:
 	virtual void showEvent(QShowEvent* event);
- 
+
 private:
 	Q_PRIVATE_SLOT(d, void capturedKeyShortcut(QKeySequence))
 	Q_PRIVATE_SLOT(d, void capturedShapeGesture(KShapeGesture))
@@ -282,24 +282,6 @@ private:
 	class KKeyDialogPrivate *const d;
 
 	Q_DISABLE_COPY(KKeyDialog)
-};
-
-
-//H4X
-#include <kextendableitemdelegate.h>
-class QAbstractItemView;
-class KKeyChooserDelegate : public KExtendableItemDelegate
-{
-	Q_OBJECT
-public:
-	KKeyChooserDelegate(QAbstractItemView *parent);
-	//virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-Q_SIGNALS:
-	void editInstead(QModelIndex index);
-private:
-	//mutable QModelIndex *m_index;
-private Q_SLOTS:
-	void itemActivated(QModelIndex index);
 };
 
 #endif // KKEYDIALOG_H
