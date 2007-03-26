@@ -28,6 +28,7 @@
 #cmakedefine HAVE_PTHREAD_ATTR_GET_NP 1
 #cmakedefine HAVE_PTHREAD_GETATTR_NP 1
 #cmakedefine HAVE_PCREPOSIX 1
+#cmakedefine HAVE_SYS_TIMEB_H
 
 // we don't want any padding between UChars (ARM processor)
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)

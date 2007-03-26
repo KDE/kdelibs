@@ -5,6 +5,7 @@ KDE4_NO_ENABLE_FINAL(kjs)
 # Configuration checks
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
 check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
+check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
 
 macro_optional_find_package(PCRE)
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
