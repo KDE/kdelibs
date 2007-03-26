@@ -27,7 +27,7 @@ class QColorGroup;
  * the editor for a K3ListView.  please don't use this.
  * @internal
  **/
-class KDEUI_EXPORT K3ListViewLineEdit : public KLineEdit
+class K3ListViewLineEdit : public KLineEdit
 {
 Q_OBJECT
 public:

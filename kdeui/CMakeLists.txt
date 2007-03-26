@@ -290,7 +290,6 @@ install( FILES
  icons/kicontheme.h
  itemviews/k3iconview.h
  itemviews/k3listview.h
- itemviews/k3listviewlineedit.h
  itemviews/kextendableitemdelegate.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
