@@ -188,4 +188,5 @@ void AudioPathPrivate::phononObjectDestroyed( Base* o )
 
 #include "audiopath.moc"
 
+#undef PHONON_CLASSNAME
 // vim: sw=4 ts=4 tw=80

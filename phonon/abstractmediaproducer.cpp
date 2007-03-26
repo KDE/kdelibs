@@ -328,4 +328,6 @@ void AbstractMediaProducerPrivate::phononObjectDestroyed( Base* o )
 } //namespace Phonon
 
 #include "abstractmediaproducer.moc"
+#undef PHONON_CLASSNAME
+#undef PHONON_INTERFACENAME
 // vim: sw=4 ts=4 tw=80

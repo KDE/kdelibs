@@ -156,4 +156,5 @@ void Visualization::setupIface()
 } // namespace Phonon
 
 #include "visualization.moc"
+#undef PHONON_CLASSNAME
 // vim: sw=4 ts=4

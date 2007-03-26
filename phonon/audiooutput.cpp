@@ -90,7 +90,10 @@ float AudioOutput::volume() const
     return INTERFACE_CALL(volume());
 }
 
+#ifndef PHONON_LOG10OVER20
+#define PHONON_LOG10OVER20
 static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
+#endif // PHONON_LOG10OVER20
 
 double AudioOutput::volumeDecibel() const
 {
@@ -274,4 +277,6 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeT
 
 #include "audiooutput.moc"
 
+#undef PHONON_CLASSNAME
+#undef PHONON_INTERFACENAME
 // vim: sw=4 ts=4 tw=100 et

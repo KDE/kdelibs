@@ -102,4 +102,6 @@ void ByteStream::setupIface()
 
 #include "bytestream.moc"
 
+#undef PHONON_CLASSNAME
+#undef PHONON_INTERFACENAME
 // vim: sw=4 ts=4 tw=80

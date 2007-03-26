@@ -31,7 +31,10 @@ PHONON_HEIR_IMPL( AudioEffect )
 PHONON_GETTER( float, volume, d->currentVolume )
 PHONON_SETTER( setVolume, currentVolume, float )
 
+#ifndef PHONON_LOG10OVER20
+#define PHONON_LOG10OVER20
 static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
+#endif // PHONON_LOG10OVER20
 
 double VolumeFaderEffect::volumeDecibel() const
 {
@@ -87,4 +90,5 @@ void VolumeFaderEffect::setupIface()
 }
 
 #include "volumefadereffect.moc"
+#undef PHONON_CLASSNAME
 // vim: sw=4 ts=4

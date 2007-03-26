@@ -71,4 +71,5 @@ void MediaQueue::setupIface()
 } // namespace Phonon
 
 #include "mediaqueue.moc"
+#undef PHONON_CLASSNAME
 // vim: sw=4 ts=4

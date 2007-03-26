@@ -62,5 +62,6 @@ void DeinterlaceFilter::setupIface()
 }
 } // namespace Phonon
 
+#undef PHONON_CLASSNAME
 #include "deinterlacefilter.moc"
 // vim: sw=4 ts=4
