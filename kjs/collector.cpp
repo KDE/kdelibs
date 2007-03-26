@@ -131,7 +131,7 @@ void* Collector::allocate(size_t s)
       heap.oversizeCells = static_cast<CollectorCell **>(fastRealloc(heap.oversizeCells, numOversizeCells * sizeof(CollectorCell *)));
     }
 
-    void *newCell = fastMalloc(s);
+    void *newCell = fastCalloc(s);
     heap.oversizeCells[usedOversizeCells] = static_cast<CollectorCell *>(newCell);
     heap.usedOversizeCells = usedOversizeCells + 1;
     heap.numLiveObjects = numLiveObjects + 1;
@@ -496,6 +496,10 @@ bool Collector::collect()
         if (imp->m_marked) {
           imp->m_marked = false;
         } else if (currentThreadIsMainThread || imp->m_destructorIsThreadSafe) {
+          // special case for allocated but uninitialized object 
+          // (We don't need this check earlier because nothing prior this point assumes the object has a valid vptr.) 
+          if (cell->u.freeCell.zeroIfFree == 0)
+            continue;
           imp->~JSCell();
           --usedCells;
           --numLiveObjects;
@@ -508,7 +512,7 @@ bool Collector::collect()
       }
     } else {
       size_t minimumCellsToProcess = usedCells;
-      for (size_t i = 0; i < minimumCellsToProcess; i++) {
+      for (size_t i = 0; (i < minimumCellsToProcess) & (i < CELLS_PER_BLOCK); i++) {
         CollectorCell *cell = curBlock->cells + i;
         if (cell->u.freeCell.zeroIfFree == 0) {
           ++minimumCellsToProcess;
@@ -560,6 +564,8 @@ bool Collector::collect()
     JSCell *imp = (JSCell *)heap.oversizeCells[cell];
 
     if (!imp->m_marked && (currentThreadIsMainThread || imp->m_destructorIsThreadSafe)) {
+      if (imp->freeCell.zeroIfFree == 0) //If partly initialized, better don't touch it!
+        continue;
       imp->~JSCell();
 #if DEBUG_COLLECTOR
       heap.oversizeCells[cell]->u.freeCell.zeroIfFree = 0;
