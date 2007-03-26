@@ -294,6 +294,11 @@ KUrl::List KUrl::List::fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMa
     return uris;
 }
 
+KUrl::List::operator QVariant() const
+{
+  return qVariantFromValue(*this);
+}
+
 ////
 
 KUrl::KUrl()
@@ -503,6 +508,11 @@ bool KUrl::operator==( const QString& _u ) const
 {
   KUrl u( _u );
   return ( *this == u );
+}
+
+KUrl::operator QVariant() const
+{
+  return qVariantFromValue(*this);
 }
 
 bool KUrl::cmp( const KUrl &u, bool ignore_trailing ) const

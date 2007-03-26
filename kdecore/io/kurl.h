@@ -147,7 +147,7 @@ public:
        * Converts this KUrl::List to a QVariant, this allows to use KUrl::List
        * in QVariant() constructor
        */
-      inline operator QVariant() const { return qVariantFromValue(*this); }
+      operator QVariant() const;
 
       /**
        * Adds URLs data into the given QMimeData.
@@ -763,7 +763,7 @@ public:
    * Converts this KUrl to a QVariant, this allows to use KUrl
    * in QVariant() constructor
    */
-  inline operator QVariant() const { return qVariantFromValue(*this); }
+  operator QVariant() const;
 
   /**
    * The same as equals(), just with a less obvious name.
