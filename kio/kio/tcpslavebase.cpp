@@ -37,7 +37,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include <ksocks.h>
 #include <kdebug.h>
 #include <ksslall.h>
 #include <ksslcertdialog.h>
