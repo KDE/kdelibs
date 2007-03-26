@@ -55,7 +55,7 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
         return QModelIndex();
 
     if (m_pendingIndexes.count() < 20) { // for few items, it's faster to not bother
-        kDebug() << k_funcinfo << "Few items, returning first one" << endl;
+        //kDebug() << k_funcinfo << "Few items, returning first one" << endl;
         return m_pendingIndexes.first();
     }
 
@@ -65,12 +65,12 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
     for ( ; it != end ; ++it ) {
         const QRect rect = m_view->visualRect(*it);
         if (rect.intersects(visibleArea)) {
-            kDebug() << k_funcinfo << "found item at " << rect << " in visibleArea " << visibleArea << endl;
+            //kDebug() << k_funcinfo << "found item at " << rect << " in visibleArea " << visibleArea << endl;
             return *it;
         }
     }
 
-    kDebug() << k_funcinfo << "no more visible icon found" << endl;
+    //kDebug() << k_funcinfo << "no more visible icon found" << endl;
     m_noVisibleIcon = true;
     return QModelIndex();
 }
@@ -120,7 +120,7 @@ void KMimeTypeResolver::slotProcessMimeIcons()
     KFileItem* item = d->m_dirModel->itemForIndex(index);
     if (item) { // check that item still exists
         if (!item->isMimeTypeKnown()) { // check if someone did it meanwhile
-            kDebug() << k_funcinfo << "Determining mimetype for " << item->url() << endl;
+            //kDebug() << k_funcinfo << "Determining mimetype for " << item->url() << endl;
             item->determineMimeType();
             d->m_dirModel->itemChanged(index);
         }
