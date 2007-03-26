@@ -381,7 +381,7 @@ write_all(int fd, const char *buf, size_t len)
 }
 
 
-void FileProtocol::open(const KUrl &url, OpenMode mode)
+void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
 {
     kDebug(7101) << "FileProtocol::open " << url.url() << endl;
 
@@ -415,7 +415,8 @@ void FileProtocol::open(const KUrl &url, OpenMode mode)
         flags |= O_WRONLY | O_APPEND;
     } else if (mode & QIODevice::WriteOnly) {
         if (!(mode & QIODevice::ReadOnly) || mode & QIODevice::Truncate) {
-        flags |= O_TRUNC;
+            flags |= O_TRUNC;
+        }
     }
 
     int fd = KDE_open( _path.data(), flags);
