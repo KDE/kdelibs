@@ -42,7 +42,8 @@ class KServiceTypePrivate;
  */
 class KDECORE_EXPORT KServiceType : public KSycocaEntry
 {
-    K_SYCOCATYPE( KST_KServiceType, KSycocaEntry )
+    K_SYCOCATYPE( KST_KServiceType, KSycocaEntry )  
+    Q_DECLARE_PRIVATE( KServiceType )
 
 public:
     typedef KSharedPtr<KServiceType> Ptr;
@@ -207,23 +208,28 @@ public:
     static List allServiceTypes();
 
 protected: // used by KMimeType
-    QMap<QString,QVariant> m_mapProps;
 
+    /**
+      * @internal construct a service from a stream.
+      * The stream must already be positionned at the correct offset
+      */
+     KServiceType( KServiceTypePrivate &dd, QDataStream& _str, int offset );
+    
     /**
      * Constructor for KMimeType.
      * @param _fullpath the path of the service type's desktop file
      * @param _name the name of the service type
      * @param _comment a comment (can be empty)
      */
-    KServiceType( const QString& _fullpath, const QString& _name,
+    KServiceType( KServiceTypePrivate &dd, const QString& _fullpath, const QString& _name,
                   const QString& _comment );
 
 protected:
     virtual void virtual_hook( int id, void* data );
 
-private:
-    friend class KServiceTypePrivate;
-    KServiceTypePrivate* const d;
+protected:
+    KServiceTypePrivate *d_ptr;
+    Q_DISABLE_COPY(KServiceType)
 };
 
 //QDataStream& operator>>( QDataStream& _str, KServiceType& s );

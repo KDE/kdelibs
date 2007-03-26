@@ -18,6 +18,7 @@
  **/
 
 #include "kmimetype.h"
+#include "kmimetype_p.h"
 #include "kmimetypefactory.h"
 
 #include <kconfig.h>
@@ -67,16 +68,7 @@ static QString iconForMime( const QString& mime )
     return icon;
 }
 
-// KDE4 TODO: when we are in kdecore, share d pointer with KServiceType
-class KMimeType::Private
-{
-public:
-    QStringList m_lstPatterns;
-    QString m_parentMimeType;
-    void loadInternal( QDataStream& _str );
-};
-
-void KMimeType::Private::loadInternal( QDataStream& _str )
+void KMimeTypePrivate::loadInternal( QDataStream& _str )
 {
     // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
     _str >> m_lstPatterns >> m_parentMimeType;
@@ -379,9 +371,15 @@ bool KMimeType::isBinaryData( const QString &fileName )
     return isBufferBinaryData(data);
 }
 
+KMimeType::KMimeType( KMimeTypePrivate &dd, const QString & fullpath, const QString& name,
+                      const QString& comment )
+    : KServiceType( dd, fullpath, name, comment )
+{
+}
+
 KMimeType::KMimeType( const QString & fullpath, const QString& name,
                       const QString& comment )
-  : KServiceType( fullpath, name, comment ), d(new Private)
+    : KServiceType( *new KMimeTypePrivate(this), fullpath, name, comment )
 {
 }
 
@@ -400,20 +398,30 @@ void KMimeType::init( KDesktopFile * config )
 }
 #endif
 
-KMimeType::KMimeType( QDataStream& _str, int offset )
-    : KServiceType( _str, offset ), d(new Private)
+KMimeType::KMimeType( KMimeTypePrivate &dd, QDataStream& _str, int offset )
+    : KServiceType( dd, _str, offset )
 {
+    Q_D(KMimeType);
     d->loadInternal( _str ); // load our specific stuff
+}
+
+KMimeType::KMimeType( QDataStream& _str, int offset )
+    : KServiceType( *new KMimeTypePrivate(this), _str, offset )
+{
+  Q_D(KMimeType);
+  d->loadInternal( _str ); // load our specific stuff
 }
 
 void KMimeType::load( QDataStream& _str )
 {
+    Q_D(KMimeType);
     KServiceType::load( _str );
     d->loadInternal( _str );
 }
 
 void KMimeType::save( QDataStream& _str )
 {
+    Q_D(KMimeType);
     KServiceType::save( _str );
     // Warning adding/removing fields here involves a binary incompatible change - update version
     // number in ksycoca.h
@@ -422,6 +430,7 @@ void KMimeType::save( QDataStream& _str )
 
 QVariant KMimeType::property( const QString& _name ) const
 {
+    Q_D(const KMimeType);
     if ( _name == "Patterns" )
         return QVariant( d->m_lstPatterns );
     if ( _name == "Icon" )
@@ -440,7 +449,6 @@ QStringList KMimeType::propertyNames() const
 
 KMimeType::~KMimeType()
 {
-    delete d;
 }
 
 QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
@@ -491,6 +499,8 @@ QString KMimeType::favIconForUrl( const KUrl& url )
 
 QString KMimeType::parentMimeType() const
 {
+    Q_D(const KMimeType);
+
     if (!d->m_parentMimeType.isEmpty())
         return d->m_parentMimeType;
     const QString myName = name();
@@ -509,6 +519,8 @@ QString KMimeType::parentMimeType() const
 
 bool KMimeType::is( const QString& mimeTypeName ) const
 {
+  Q_D(const KMimeType);
+  
   if (name() == mimeTypeName)
       return true;
   KMimeType::Ptr me = KMimeTypeFactory::self()->findMimeTypeByName(mimeTypeName, KMimeType::ResolveAliases);
@@ -548,16 +560,19 @@ QString KMimeType::iconName( const KUrl& ) const
 
 const QStringList& KMimeType::patterns() const
 {
+    Q_D(const KMimeType);
     return d->m_lstPatterns;
 }
 
 void KMimeType::addPattern(const QString& pattern)
 {
+    Q_D(KMimeType);
     d->m_lstPatterns.append(pattern);
 }
 
 void KMimeType::setParentMimeType(const QString& parent)
 {
+    Q_D(KMimeType);
     d->m_parentMimeType = parent;
 }
 

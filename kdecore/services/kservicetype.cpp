@@ -18,6 +18,7 @@
  **/
 
 #include "kservicetype.h"
+#include "kservicetype_p.h"
 #include "ksycoca.h"
 #include "kservice.h"
 #include "kservicetypefactory.h"
@@ -31,32 +32,12 @@
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
 
-class KServiceTypePrivate
-{
-public:
-    KServiceTypePrivate()
-        : m_serviceOffersOffset( -1 ), m_parentTypeLoaded(false)
-    {
-    }
-
-    void init( KDesktopFile *config, KServiceType* q );
-
-    KServiceType::Ptr parentType;
-    QString m_strName;
-    QString m_strComment;
-    int m_serviceOffersOffset;
-    QMap<QString,QVariant::Type> m_mapPropDefs;
-    bool m_bValid;
-    bool m_bDerived;
-    bool m_parentTypeLoaded;
-
-};
-
-KServiceType::KServiceType( const QString & _fullpath, const QString& _name,
+KServiceType::KServiceType( KServiceTypePrivate &dd, const QString & _fullpath, const QString& _name,
                             const QString& _comment )
     : KSycocaEntry(_fullpath),
-      d(new KServiceTypePrivate)
+      d_ptr(&dd)
 {
+    Q_D(KServiceType);
     d->m_strName = _name;
     d->m_strComment = _comment;
     d->m_bValid = !_name.isEmpty();
@@ -65,23 +46,27 @@ KServiceType::KServiceType( const QString & _fullpath, const QString& _name,
 #if 0
 KServiceType::KServiceType( const QString & _fullpath)
     : KSycocaEntry(_fullpath),
-      d(new KServiceTypePrivate)
+      d_ptr(new KServiceTypePrivate(this))
 {
+    Q_D(KServiceType);
     KDesktopFile config( _fullpath );
-    d->init(&config, this);
+    d->init(&config);
 }
 #endif
 
 KServiceType::KServiceType( KDesktopFile *config )
     : KSycocaEntry(config->fileName()),
-      d(new KServiceTypePrivate)
+      d_ptr(new KServiceTypePrivate(this))
 {
-    d->init(config, this);
+    Q_D(KServiceType);
+    d->init(config);
 }
 
 void
-KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
+KServiceTypePrivate::init( KDesktopFile *config )
 {
+    Q_Q(KServiceType);
+
     KConfigGroup desktopGroup = config->desktopGroup();
     // Is it a mimetype ? ### KDE4: remove
     m_strName = desktopGroup.readEntry( "MimeType" );
@@ -99,7 +84,7 @@ KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
     QString sDerived = desktopGroup.readEntry( "X-KDE-Derived" );
     m_bDerived = !sDerived.isEmpty();
     if ( m_bDerived )
-        q->m_mapProps.insert( "X-KDE-Derived", sDerived );
+        m_mapProps.insert( "X-KDE-Derived", sDerived );
 
     const QStringList tmpList = config->groupList();
     QStringList::const_iterator gIt = tmpList.begin();
@@ -111,7 +96,7 @@ KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
             v = cg.readEntry( "Value", v );
 
             if ( v.isValid() )
-                q->m_mapProps.insert( (*gIt).mid( 10 ), v );
+                m_mapProps.insert( (*gIt).mid( 10 ), v );
         }
     }
 
@@ -128,7 +113,13 @@ KServiceTypePrivate::init( KDesktopFile *config, KServiceType* q )
 }
 
 KServiceType::KServiceType( QDataStream& _str, int offset )
-    : KSycocaEntry( _str, offset ), d(new KServiceTypePrivate)
+    : KSycocaEntry( _str, offset ), d_ptr(new KServiceTypePrivate(this))
+{
+    load( _str);
+}
+
+KServiceType::KServiceType( KServiceTypePrivate &dd, QDataStream& _str, int offset )
+    : KSycocaEntry( _str, offset ), d_ptr(&dd)
 {
     load( _str);
 }
@@ -136,38 +127,42 @@ KServiceType::KServiceType( QDataStream& _str, int offset )
 void
 KServiceType::load( QDataStream& _str )
 {
+    Q_D(KServiceType);
     qint8 b;
     QString dummy;
-    _str >> d->m_strName >> dummy >> d->m_strComment >> m_mapProps >> d->m_mapPropDefs
+    _str >> d->m_strName >> dummy >> d->m_strComment >> d->m_mapProps >> d->m_mapPropDefs
          >> b >> d->m_serviceOffersOffset;
     d->m_bValid = b;
-    d->m_bDerived = m_mapProps.contains("X-KDE-Derived");
+    d->m_bDerived = d->m_mapProps.contains("X-KDE-Derived");
 }
 
 void
 KServiceType::save( QDataStream& _str )
 {
+  Q_D(KServiceType);
   KSycocaEntry::save( _str );
   // !! This data structure should remain binary compatible at all times !!
   // You may add new fields at the end. Make sure to update the version
   // number in ksycoca.h
-  _str << d->m_strName << QString() /*was icon*/ << d->m_strComment << m_mapProps << d->m_mapPropDefs
+  _str << d->m_strName << QString() /*was icon*/ << d->m_strComment << d->m_mapProps << d->m_mapPropDefs
        << (qint8)d->m_bValid << d->m_serviceOffersOffset;
 }
 
 KServiceType::~KServiceType()
 {
-    delete d;
+    delete d_ptr;
 }
 
 QString KServiceType::parentServiceType() const
 {
+    Q_D(const KServiceType);
     const QVariant v = property("X-KDE-Derived");
     return v.toString();
 }
 
 bool KServiceType::inherits( const QString& servTypeName ) const
 {
+    Q_D(const KServiceType);
     if ( name() == servTypeName )
         return true;
     QString st = parentServiceType();
@@ -185,6 +180,7 @@ bool KServiceType::inherits( const QString& servTypeName ) const
 QVariant
 KServiceType::property( const QString& _name ) const
 {
+    Q_D(const KServiceType);
     QVariant v;
 
     if ( _name == "Name" )
@@ -192,7 +188,7 @@ KServiceType::property( const QString& _name ) const
     else if ( _name == "Comment" )
         v = QVariant( d->m_strComment );
     else
-        v = m_mapProps.value( _name );
+        v = d->m_mapProps.value( _name );
 
     return v;
 }
@@ -200,7 +196,8 @@ KServiceType::property( const QString& _name ) const
 QStringList
 KServiceType::propertyNames() const
 {
-    QStringList res = m_mapProps.keys();
+    Q_D(const KServiceType);
+    QStringList res = d->m_mapProps.keys();
     res.append( "Name" );
     res.append( "Comment" );
     return res;
@@ -209,12 +206,14 @@ KServiceType::propertyNames() const
 QVariant::Type
 KServiceType::propertyDef( const QString& _name ) const
 {
+    Q_D(const KServiceType);
     return static_cast<QVariant::Type>( d->m_mapPropDefs.value( _name, QVariant::Invalid ) );
 }
 
 QStringList
 KServiceType::propertyDefNames() const
 {
+    Q_D(const KServiceType);
     return d->m_mapPropDefs.keys();
 }
 
@@ -230,6 +229,7 @@ KServiceType::List KServiceType::allServiceTypes()
 
 KServiceType::Ptr KServiceType::parentType()
 {
+    Q_D(KServiceType);
     if (d->m_parentTypeLoaded)
         return d->parentType;
 
@@ -247,22 +247,26 @@ KServiceType::Ptr KServiceType::parentType()
 
 void KServiceType::setServiceOffersOffset( int offset )
 {
+    Q_D(KServiceType);
     Q_ASSERT( offset != -1 );
     d->m_serviceOffersOffset = offset;
 }
 
 int KServiceType::serviceOffersOffset() const
 {
+    Q_D(const KServiceType);
     return d->m_serviceOffersOffset;
 }
 
 QString KServiceType::comment() const
 {
+    Q_D(const KServiceType);
     return d->m_strComment;
 }
 
 QString KServiceType::name() const
 {
+    Q_D(const KServiceType);
     return d->m_strName;
 }
 
@@ -274,17 +278,20 @@ QString KServiceType::desktopEntryPath() const
 
 bool KServiceType::isDerived() const
 {
+    Q_D(const KServiceType);
     return d->m_bDerived;
 }
 
 bool KServiceType::isValid() const
 {
+    Q_D(const KServiceType);
     return d->m_bValid;
 }
 
 const QMap<QString,QVariant::Type>& KServiceType::propertyDefs() const
 {
-     return d->m_mapPropDefs;
+    Q_D(const KServiceType);
+    return d->m_mapPropDefs;
 }
 
 void KServiceType::virtual_hook( int id, void* data )

@@ -23,6 +23,8 @@
 #include "kmimetype.h"
 
 class KDesktopFile;
+class KDEDesktopMimeTypePrivate;
+class KFolderTypePrivate;
 
 /**
  * @internal  - this header is not installed
@@ -33,15 +35,19 @@ class KDesktopFile;
 class KDECORE_EXPORT KDEDesktopMimeType : public KMimeType
 {
     K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
+    Q_DECLARE_PRIVATE( KDEDesktopMimeType )
 
 public:
     /** \internal */
     KDEDesktopMimeType( const QString & fullpath, const QString& type,
-                        const QString& comment )
-        : KMimeType(fullpath, type, comment ) {}
+                        const QString& comment );
+  
     /** \internal */
-    KDEDesktopMimeType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
+    KDEDesktopMimeType( QDataStream& str, int offset );
 
+    /** Destructor. */
+    ~KDEDesktopMimeType();
+    
     virtual QString icon( const KUrl& url ) const;
     virtual QString comment( const KUrl& url ) const;
 
@@ -58,16 +64,21 @@ protected:
 class KDECORE_EXPORT KFolderType : public KMimeType
 {
     K_SYCOCATYPE( KST_KFolderType, KMimeType )
+    Q_DECLARE_PRIVATE( KFolderType )
 
 public:
     /** \internal */
-    KFolderType( const QString& fullpath, const QString& name, const QString& comment )
-        : KMimeType( fullpath, name, comment ) { }
+    KFolderType( const QString& fullpath, const QString& name, const QString& comment );
+  
     /** \internal */
-    KFolderType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
+    KFolderType( QDataStream& str, int offset );
+  
+    /** Destructor. */
+    ~KFolderType();
 
     virtual QString icon( const KUrl& url ) const;
     virtual QString comment( const KUrl& url ) const;
+
 protected:
     virtual void virtual_hook( int id, void* data );
 };

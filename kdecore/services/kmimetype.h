@@ -25,10 +25,13 @@
 
 #include <qstringlist.h>
 #include <QtCore/QList>
+#include <QtCore/qobjectdefs.h>
 
 #include <kurl.h>
 #include <ksycocatype.h>
 #include <kservicetype.h>
+
+class KMimeTypePrivate;
 
 /**
  * Represent a mime type, like "text/plain", and the data that is associated
@@ -44,6 +47,7 @@
 class KDECORE_EXPORT KMimeType : public KServiceType
 {
     K_SYCOCATYPE( KST_KMimeType, KServiceType )
+    Q_DECLARE_PRIVATE( KMimeType )
 
 public:
     typedef KSharedPtr<KMimeType> Ptr;
@@ -355,13 +359,14 @@ protected:
     friend class KMimeTypeFactory; // for KMimeType(QDataStream&,int)
     friend class KBuildMimeTypeFactory; // for KMimeType(QDataStream&,int)
     friend class KMimeFileParser; // for addPattern and addMagicRule
+
     /**
      * @internal Construct a service from a stream.
      *
      * The stream must already be positionned at the correct offset
      */
     KMimeType( QDataStream& str, int offset );
-
+    
     /**
      * Construct a mimetype and take all information from an XML file.
      * @param fullpath the path to the xml that describes the mime type
@@ -369,6 +374,21 @@ protected:
      * @param comment the comment associated with the mimetype
      */
     KMimeType( const QString& fullpath, const QString& name, const QString& comment );
+    
+    /**
+     * @internal Construct a service from a stream.
+     *
+     * The stream must already be positionned at the correct offset
+     */
+    KMimeType( KMimeTypePrivate &dd, QDataStream& str, int offset );
+
+    /**
+     * Construct a mimetype and take all information from an XML file.
+     * @param fullpath the path to the xml that describes the mime type
+     * @param the name of the mimetype (usually the end of the path)
+     * @param comment the comment associated with the mimetype
+     */
+    KMimeType( KMimeTypePrivate &dd, const QString& fullpath, const QString& name, const QString& comment );
 
     /// @internal for kbuildsycoca
     void addPattern(const QString& pattern);
@@ -382,9 +402,6 @@ private:
     static void checkEssentialMimeTypes();
     static KMimeType::Ptr findByUrlHelper( const KUrl& url, mode_t mode,
                                            bool is_local_file, QIODevice* device, int* accuracy );
-
-    class Private;
-    Private* const d;
 
 protected:
     virtual void virtual_hook( int id, void* data );

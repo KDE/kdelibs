@@ -18,11 +18,35 @@
  **/
 
 #include "kdedesktopmimetype.h"
+#include "kmimetype_p.h"
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
 #include <kmountpoint.h>
 #include <dirent.h>
 #include <qfile.h>
+
+class KDEDesktopMimeTypePrivate: public KMimeTypePrivate
+{
+public:
+  Q_DECLARE_PUBLIC(KDEDesktopMimeType)
+  
+  KDEDesktopMimeTypePrivate(KDEDesktopMimeType *q): KMimeTypePrivate(q) {}
+};
+
+KDEDesktopMimeType::KDEDesktopMimeType( const QString & fullpath, const QString& type,
+                    const QString& comment )
+  : KMimeType( *new KDEDesktopMimeTypePrivate(this), fullpath, type, comment )
+{
+}
+
+KDEDesktopMimeType::KDEDesktopMimeType( QDataStream& str, int offset )
+    : KMimeType( *new KDEDesktopMimeTypePrivate(this), str, offset )
+{
+}
+
+KDEDesktopMimeType::~KDEDesktopMimeType()
+{
+}
 
 QString KDEDesktopMimeType::icon( const KUrl& _url ) const
 {
@@ -88,6 +112,28 @@ void KDEDesktopMimeType::virtual_hook( int id, void* data )
  * KFolderType
  *
  ******************************************************/
+
+class KFolderTypePrivate: public KMimeTypePrivate
+{
+public:
+  Q_DECLARE_PUBLIC(KFolderType)
+  
+  KFolderTypePrivate(KFolderType *q): KMimeTypePrivate(q) {}
+};
+
+KFolderType::KFolderType( const QString& fullpath, const QString& name, const QString& comment )
+    : KMimeType( *new KFolderTypePrivate(this), fullpath, name, comment )
+{
+}
+
+KFolderType::KFolderType( QDataStream& str, int offset )
+    : KMimeType( *new KFolderTypePrivate(this), str, offset )
+{
+}
+
+KFolderType::~KFolderType()
+{
+}
 
 QString KFolderType::icon( const KUrl& _url ) const
 {
