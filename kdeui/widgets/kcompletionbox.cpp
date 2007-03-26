@@ -317,36 +317,35 @@ void KCompletionBox::sizeAndPosition()
     }
 }
 
-void KCompletionBox::show()
+void KCompletionBox::setVisible( bool visible )
 {
-    d->upwardBox = false;
-    if ( d->m_parent ) {
-        sizeAndPosition();
-        qApp->installEventFilter( this );
+    if (visible) {
+        d->upwardBox = false;
+        if ( d->m_parent ) {
+            sizeAndPosition();
+            qApp->installEventFilter( this );
+        }
+
+        // ### we shouldn't need to call this, but without this, the scrollbars
+        // are pretty b0rked.
+        //triggerUpdate( true );
+
+        // Workaround for I'm not sure whose bug - if this KCompletionBox' parent
+        // is in a layout, that layout will detect inserting new child (posted
+        // ChildInserted event), and will trigger relayout (post LayoutHint event).
+        // QWidget::show() sends also posted ChildInserted events for the parent,
+        // and later all LayoutHint events, which causes layout updating.
+        // The problem is, KCompletionBox::eventFilter() detects resizing
+        // of the parent, and calls hide() - and this hide() happen in the middle
+        // of show(), causing inconsistent state. I'll try to submit a Qt patch too.
+        qApp->sendPostedEvents();
+    } else {
+        if ( d->m_parent )
+            qApp->removeEventFilter( this );
+        d->cancelText.clear();
     }
-
-    // ### we shouldn't need to call this, but without this, the scrollbars
-    // are pretty b0rked.
-    //triggerUpdate( true );
-
-    // Workaround for I'm not sure whose bug - if this KCompletionBox' parent
-    // is in a layout, that layout will detect inserting new child (posted
-    // ChildInserted event), and will trigger relayout (post LayoutHint event).
-    // QWidget::show() sends also posted ChildInserted events for the parent,
-    // and later all LayoutHint events, which causes layout updating.
-    // The problem is, KCompletionBox::eventFilter() detects resizing
-    // of the parent, and calls hide() - and this hide() happen in the middle
-    // of show(), causing inconsistent state. I'll try to submit a Qt patch too.
-    qApp->sendPostedEvents();
-    KListWidget::show();
-}
-
-void KCompletionBox::hide()
-{
-    if ( d->m_parent )
-        qApp->removeEventFilter( this );
-    d->cancelText.clear();
-    KListWidget::hide();
+  
+    KListWidget::setVisible(visible);
 }
 
 QRect KCompletionBox::calculateGeometry() const

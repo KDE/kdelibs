@@ -179,12 +179,7 @@ public Q_SLOTS:
     /**
      * Re-implemented for internal reasons.  API is unaffected.
      */
-    virtual void show();
-
-    /**
-     * Re-implemented for internal reasons.  API is unaffected.
-     */
-    virtual void hide();
+    virtual void setVisible( bool visible );
 
 Q_SIGNALS:
     /**
