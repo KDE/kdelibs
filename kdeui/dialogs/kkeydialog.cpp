@@ -976,3 +976,4 @@ int KKeyDialog::configure(KActionCollection *collection, KKeyChooser::LetterShor
 }
 
 #include "kkeydialog.moc"
+#include "kkeydialog_p.moc"
