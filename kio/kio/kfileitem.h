@@ -430,7 +430,7 @@ public:
      * Converts this KFileItem to a QVariant, this allows to use KFileItem
      * in QVariant() constructor
      */
-    inline operator QVariant() const { return qVariantFromValue(*this); }
+    operator QVariant() const;
 
     /**
      * This allows to associate some "extra" data to a KFileItem. As one

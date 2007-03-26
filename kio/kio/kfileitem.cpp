@@ -980,6 +980,11 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->init();
 }
 
+KFileItem::operator QVariant() const
+{
+    return qVariantFromValue(*this);
+}
+
 void KFileItem::setExtraData( const void *key, void *value )
 {
     if ( !key )
