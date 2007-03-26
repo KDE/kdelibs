@@ -381,7 +381,7 @@ write_all(int fd, const char *buf, size_t len)
 }
 
 
-void FileProtocol::open( const KUrl& url, int access )
+void FileProtocol::open(const KUrl &url, OpenMode mode)
 {
     kDebug(7101) << "FileProtocol::open " << url.url() << endl;
 
@@ -405,14 +405,18 @@ void FileProtocol::open( const KUrl& url, int access )
     }
 
     int flags = 0;
-    int rw_access = access & 0x3;
-    if (rw_access == 1) flags = O_RDONLY;
-    else
-    if (rw_access == 2) flags = O_WRONLY;
-    else
-    if (rw_access == 3) flags = O_RDWR;
-
-    if (rw_access != 1 && (access & 0x4)) flags |= O_CREAT;
+    if (mode & QIODevice::ReadOnly) {
+        flags |= O_RDONLY;
+    }
+    if (mode & QIODevice::WriteOnly) {
+        flags |= O_WRONLY | O_CREAT;
+    }
+    if (mode & QIODevice::Append) {
+        flags |= O_WRONLY | O_APPEND;
+    } else if (mode & QIODevice::WriteOnly) {
+        if (!(mode & QIODevice::ReadOnly) || mode & QIODevice::Truncate) {
+        flags |= O_TRUNC;
+    }
 
     int fd = KDE_open( _path.data(), flags);
     if ( fd < 0 ) {

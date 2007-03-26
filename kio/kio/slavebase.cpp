@@ -763,7 +763,7 @@ void SlaveBase::listDir(KUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_LISTDIR)); }
 void SlaveBase::get(KUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
-void SlaveBase::open(KUrl const &, int )
+void SlaveBase::open(KUrl const &, QIODevice::OpenMode)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_OPEN)); }
 void SlaveBase::mimetype(KUrl const &url)
 { get(url); }
@@ -1025,7 +1025,8 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_OPEN:
     {
         stream >> url >> i;
-        open( url, i );
+        QIODevice::OpenMode mode = QFlag(i);
+        open(url, mode);
     } break;
     case CMD_PUT:
     {

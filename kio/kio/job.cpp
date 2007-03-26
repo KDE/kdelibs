@@ -1112,10 +1112,10 @@ TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )
     return job;
 }
 
-FileJob *KIO::open( const KUrl& url, int access )
+FileJob *KIO::open(const KUrl &url, QIODevice::OpenMode mode)
 {
     // Send decoded path and encoded query
-    KIO_ARGS << url << access;
+    KIO_ARGS << url << mode;
     FileJob * job = new FileJob( url, packedArgs );
     return job;
 }

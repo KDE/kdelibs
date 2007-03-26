@@ -61,7 +61,7 @@ public:
   virtual void mkdir( const KUrl& url, int permissions );
   virtual void chmod( const KUrl& url, int permissions );
   virtual void del( const KUrl& url, bool isfile);
-  virtual void open( const KUrl& url, int access );
+  virtual void open(const KUrl &url, QIODevice::OpenMode mode);
 
   /**
    * Special commands supported by this slave:

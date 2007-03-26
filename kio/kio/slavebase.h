@@ -377,9 +377,9 @@ public:
      * open.
      * @param url the full url for this request. Host, port and user of the URL
      *        can be assumed to be the same as in the last setHost() call.
-     * @param access 1 - rdonly, 2 - wronly or 3 - rdwr
+     * @param mode see \ref QIODevice::OpenMode
      */
-    virtual void open( const KUrl& url, int access );
+    virtual void open(const KUrl &url, QIODevice::OpenMode mode);
 
     /**
      * put, i.e. write data into a file.

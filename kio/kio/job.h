@@ -193,10 +193,12 @@ namespace KIO {
      *
      * The file-job emits open() when opened
      * @param url the URL of the file
-     * @param access the access privileges (1 - ReadOnly, 2 - WriteOnly, 3 - Read/Write)
-     * @return the file-handling job
+     * @param mode the access privileges: see \ref OpenMode
+     *
+     * @return The file-handling job. It will never return 0. Errors are handled asynchronously
+     * (emitted as signals).
      */
-    KIO_EXPORT FileJob *open( const KUrl& url, int access );
+    KIO_EXPORT FileJob *open(const KUrl &url, QIODevice::OpenMode mode);
 
     /**
      * Put (a.k.a. write)
