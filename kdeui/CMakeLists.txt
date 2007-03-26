@@ -100,10 +100,11 @@ set(kdeui_LIB_SRCS
  paged/kpagewidgetmodel.cpp
  shortcuts/kshortcut.cpp
  shortcuts/kstandardshortcut.cpp
+ shortcuts/kglobalaccel.cpp
+ shortcuts/kacceleratormanager.cpp
+ shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
- util/kacceleratormanager.cpp
- util/kcheckaccelerators.cpp
  util/kckey.cpp
  util/kcolormimedata.cpp
  util/kcommand.cpp
@@ -112,7 +113,6 @@ set(kdeui_LIB_SRCS
  util/kconfiggroupgui.cpp
  util/kcrash.cpp
  util/kcursor.cpp
- util/kglobalaccel.cpp
  util/kguiitem.cpp
  util/kkeyserver.cpp
  util/kmanagerselection.cpp
@@ -191,13 +191,13 @@ set(kdeui_LIB_SRCS
 )
 
 if (Q_WS_X11)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_x11.cpp util/kkeyserver_x11.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_x11.cpp util/kkeyserver_x11.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp )
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
 endif (Q_WS_WIN)
 
 if (UNIX)
@@ -305,16 +305,16 @@ install( FILES
  paged/kpagewidgetmodel.h
  shortcuts/kshortcut.h
  shortcuts/kstandardshortcut.h
+ shortcuts/kglobalaccel.h
+ shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/fixx11h.h
- util/kacceleratormanager.h
  util/kaccelgen.h
  util/kcolormimedata.h
  util/kcommand.h
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
- util/kglobalaccel.h
  util/kguiitem.h
  util/kkeyserver.h
  util/kkeyserver_x11.h
