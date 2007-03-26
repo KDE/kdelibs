@@ -62,6 +62,7 @@
 #include "kstandarddirs.h"
 #include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
+#include "kgesturemap.h"
 #include "kurl.h"
 
 #if defined Q_WS_X11
@@ -163,6 +164,7 @@ public:
   Private(const QByteArray &cName)
       : componentData(cName),
       checkAccelerators(0),
+      gestureMap(0),
       startup_id("0"),
       app_started_timer(0),
       session_save(false)
@@ -177,6 +179,7 @@ public:
   Private(const KComponentData &cData)
       : componentData(cData),
       checkAccelerators(0),
+      gestureMap(0),
       startup_id("0"),
       app_started_timer(0),
       session_save(false)
@@ -191,6 +194,7 @@ public:
   Private()
       : componentData(KCmdLineArgs::aboutData()),
       checkAccelerators(0),
+      gestureMap(0),
       startup_id( "0" ),
       app_started_timer( 0 ),
       session_save( false )
@@ -208,6 +212,7 @@ public:
 
   KComponentData componentData;
   KCheckAccelerators* checkAccelerators;
+  KGestureMap* gestureMap;
   QByteArray startup_id;
   QTimer* app_started_timer;
   bool session_save;
@@ -554,6 +559,7 @@ void KApplication::init(bool GUIenabled)
     KGlobalSettings::self();
 
     d->checkAccelerators = new KCheckAccelerators( this );
+    d->gestureMap = new KGestureMap( this );
 
     connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
             this, SLOT(slot_KToolInvication_hook(QStringList&,QByteArray&)));
@@ -615,6 +621,11 @@ void KApplication::reparseConfiguration()
 void KApplication::quit()
 {
     QApplication::quit();
+}
+
+KGestureMap* KApplication::gestureMap() const
+{
+    return d->gestureMap;
 }
 
 void KApplication::disableSessionManagement() {

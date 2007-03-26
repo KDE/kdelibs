@@ -166,6 +166,8 @@ void KGestureMap::stopAcquisition()
 
 bool KGestureMap::eventFilter(QObject *obj, QEvent *e)
 {
+    //disable until it does not interfere with other input any more
+    return false;
     Q_UNUSED(obj);
     int type = e->type();
 

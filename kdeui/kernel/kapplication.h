@@ -28,6 +28,7 @@
 class KConfig;
 class KConfigBase;
 class KCharsets;
+class KGestureMap;
 
 #ifdef KDE3_SUPPORT
 #include <krandom.h>
@@ -415,6 +416,8 @@ private:
   void init(bool GUIenabled=true);
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
   void read_app_startup_id();
+  friend class KAction;
+  KGestureMap* gestureMap() const;
 
 public:
   /**
