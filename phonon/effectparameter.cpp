@@ -36,7 +36,7 @@ bool EffectParameter::isValid() const
 }
 
 EffectParameter::EffectParameter( int parameterId, const QString& name, Hints hints,
-		QVariant defaultValue, QVariant min, QVariant max,
+        const QVariant &defaultValue, const QVariant &min, const QVariant &max,
 		const QString& description )
 	: d( new EffectParameterPrivate )
 {

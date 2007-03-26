@@ -38,19 +38,6 @@ QList<EffectParameter> DeinterlaceFilter::parameterList() const
     return ret;
 }
 
-QVariant DeinterlaceFilter::value(int parameterId) const
-{
-    //if(parameterId == 1)
-        //return brightness();
-    return QVariant();
-}
-
-void DeinterlaceFilter::setValue(int parameterId, QVariant newValue)
-{
-    //if(parameterId == 1)
-        //setBrightness(newValue.toInt());
-}
-
 /*
 PHONON_GETTER(int, brightness, d->brightness)
 PHONON_GETTER(int, lowerBound, -1000)

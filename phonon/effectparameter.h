@@ -225,8 +225,8 @@ class PHONONCORE_EXPORT EffectParameter
 		 * WhatsThis help.
 		 */
 		EffectParameter( int parameterId, const QString& name, EffectParameter::Hints hints,
-				QVariant defaultValue, QVariant min = QVariant(), QVariant max = QVariant(),
-				const QString& description = QString() );
+                const QVariant &defaultValue, const QVariant &min = QVariant(),
+                const QVariant &max = QVariant(), const QString &description = QString());
 
 	protected:
 		/**

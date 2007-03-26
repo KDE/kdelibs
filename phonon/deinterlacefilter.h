@@ -39,10 +39,6 @@ class PHONONCORE_EXPORT DeinterlaceFilter : public VideoEffect
     PHONON_HEIR(DeinterlaceFilter)
     public:
         virtual QList<EffectParameter> parameterList() const;
-
-    protected:
-        virtual QVariant value(int parameterId) const;
-        virtual void setValue(int parameterId, QVariant newValue);
 };
 } //namespace Phonon
 
