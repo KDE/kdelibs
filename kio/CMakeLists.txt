@@ -102,9 +102,6 @@ set(kiocore_STAT_SRCS
   kio/slavebase.cpp
   kio/passworddialog.cpp
   kio/forwardingslavebase.cpp
-  kio/progressbase.cpp
-  kio/defaultprogress.cpp
-  kio/statusbarprogress.cpp
   kio/kdirnotify.cpp
   kio/kemailsettings.cpp
   kio/renamedialog.cpp
@@ -300,9 +297,6 @@ install(  FILES
   kio/paste.h
   kio/slavebase.h
   kio/filejob.h
-  kio/progressbase.h
-  kio/defaultprogress.h
-  kio/statusbarprogress.h
   kio/tcpslavebase.h
   kio/forwardingslavebase.h
   kio/chmodjob.h

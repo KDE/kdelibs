@@ -53,7 +53,6 @@ KIO_BUILD_TESTS(
   kioslavetest
   kdirwatchtest
   speed
-  kdefaultprogresstest
   kiopassdlgtest
   kscantest
   safesitetest

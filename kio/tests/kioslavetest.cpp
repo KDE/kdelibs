@@ -148,8 +148,8 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   changeProgressMode( b );
 
   // statusbar progress widget
-  statusProgress = new StatusbarProgress( statusBar() );
-  statusBar()->addPermanentWidget( statusProgress, 0 );
+  statusTracker = new KStatusBarJobTracker( statusBar() );
+  statusBar()->addPermanentWidget( statusTracker->widget(), 0 );
 
   // run & stop butons
   hbLayout = new QHBoxLayout();
@@ -323,7 +323,7 @@ void KioslaveTest::startJob() {
            SLOT( slotResult( KJob * ) ) );
 
   if (progressMode == ProgressStatus) {
-    statusProgress->setJob( job );
+    statusTracker->registerJob( job );
   }
 
   pbStop->setEnabled( true );

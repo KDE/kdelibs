@@ -23,7 +23,7 @@
 
 #include "kio/job.h"
 #include "kio/global.h"
-#include "kio/statusbarprogress.h"
+#include "kstatusbarjobtracker.h"
 #include "kio/slave.h"
 
 class KioslaveTest : public KMainWindow {
@@ -97,7 +97,7 @@ private:
   KIO::Job *job;
   QWidget *main_widget;
 
-  KIO::StatusbarProgress *statusProgress;
+  KStatusBarJobTracker *statusTracker;
 
   int selectedOperation;
   int progressMode;
