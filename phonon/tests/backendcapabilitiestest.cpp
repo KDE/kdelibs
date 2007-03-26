@@ -25,6 +25,9 @@
 #include <QStringList>
 #include <QSet>
 #include "../backendinterface.h"
+#include "loadfakebackend.h"
+#include <kservice.h>
+#include <kservicetypetrader.h>
 
 using namespace Phonon;
 
@@ -36,13 +39,27 @@ void BackendCapabilitiesTest::initTestCase()
 void BackendCapabilitiesTest::checkMimeTypes()
 {
 	QVERIFY( Factory::backend( false ) == 0 );
+#ifdef USE_FAKE_BACKEND
+    QStringList mimeTypes;
+    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1 "
+            "and Library == 'phonon_fake' and [X-KDE-PhononBackendInfo-Version] == '0.1'");
+    if (!offers.isEmpty()) {
+        mimeTypes = offers.first()->serviceTypes();
+        mimeTypes.removeAll("PhononBackend");
+    }
+#else
 	QStringList mimeTypes = BackendCapabilities::knownMimeTypes();
+#endif
 	QVERIFY( mimeTypes.size() > 0 ); // a backend that doesn't know any mimetypes is useless
 	foreach( QString mimeType, mimeTypes ) {
 		qDebug( "%s", qPrintable( mimeType ) );
 		QVERIFY( BackendCapabilities::isMimeTypeKnown( mimeType ) );
 	}
 	QVERIFY( Factory::backend( false ) == 0 ); // the backend should not have been created at this point
+#ifdef USE_FAKE_BACKEND
+    Phonon::loadFakeBackend();
+#endif
 	QVERIFY( Factory::backend( true ) != 0 );  // create the backend
 	QStringList realMimeTypes = BackendCapabilities::knownMimeTypes(); // this list has to be a subset of the one before
 	foreach( QString mimeType, realMimeTypes ) {

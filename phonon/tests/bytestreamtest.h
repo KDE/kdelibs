@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2
@@ -40,13 +40,15 @@ class ByteStreamTest : public QObject
 			m_audioOutput( 0 )
 		{}
 
-	private Q_SLOTS:
-		void initTestCase();
-		void setMedia();
-		void checkForDefaults();
+    Q_SIGNALS:
+        void continueTestPlayOnFinish();
 
-		void addPaths();
-		void initOutput();
+	private Q_SLOTS:
+        void init();
+        void cleanup();
+
+		void initTestCase();
+		void checkForDefaults();
 
 		// state change tests
 		void stopToStop();
@@ -59,9 +61,9 @@ class ByteStreamTest : public QObject
 		void pauseToPlay();
 		void pauseToStop();
 
+        void testTickSignal();
 		void testSeek();
 		void testAboutToFinish();
-		void testTickSignal();
 
 		void cleanupTestCase();
 
@@ -75,12 +77,18 @@ class ByteStreamTest : public QObject
         void seekStream(qint64 offset);
         void kioJobOpen(KIO::Job*);
 
-	private:
+    private:
+        void setMedia();
+        void addPaths();
+        void initOutput();
+
 		void initByteStream();
 
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
 		void stopPlayback( Phonon::State currentState );
-		void pausePlayback( Phonon::State currentState );
+        void pausePlayback();
+        void waitForSignal(QObject *obj, const char *signalName, int timeout = 0);
+        void testOneSeek(qint64 seekTo);
 
 		KUrl m_url;
 		KIO::Job* m_job;

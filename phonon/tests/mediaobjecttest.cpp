@@ -28,6 +28,7 @@
 #include <phonon/audiooutput.h>
 
 #include <unistd.h>
+#include "loadfakebackend.h"
 
 const qint64 ALLOWED_TIME_FOR_SEEKING = 1000; // 1s
 const qint64 ALLOWED_SEEK_INACCURACY = 300; // 0.3s
@@ -164,9 +165,14 @@ void MediaObjectTest::initTestCase()
 	qRegisterMetaType<qint32>( "qint32" );
 	qRegisterMetaType<qint64>( "qint64" );
 
+#ifdef USE_FAKE_BACKEND
+    Phonon::loadFakeBackend();
+    m_url.setUrl("file:///foo.ogg");
+#else
 	m_url.setUrl( getenv( "PHONON_TESTURL" ) );
 	if( !m_url.isValid() )
 		QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
+#endif
 	m_media = new MediaObject( this );
 	m_stateChangedSignalSpy = new QSignalSpy( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
 	QVERIFY( m_stateChangedSignalSpy->isValid() );
@@ -641,7 +647,7 @@ void MediaObjectTest::testTickSignal()
 {
     QTime start1;
     QTime start2;
-	for( qint32 tickInterval = 80; tickInterval <= 1000; tickInterval *= 2 )
+	for( qint32 tickInterval = 80; tickInterval <= 500; tickInterval *= 2 )
 	{
         QSignalSpy tickSpy(m_media, SIGNAL(tick(qint64)));
 		qDebug() << "Test 20 ticks with an interval of" <<  tickInterval << "ms";

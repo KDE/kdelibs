@@ -20,11 +20,13 @@
 #include <qtest_kde.h>
 #include "audiocapturedevicetest.h"
 #include "../objectdescription.h"
+#include "loadfakebackend.h"
 
 using namespace Phonon;
 
 void AudioCaptureDeviceTest::initTestCase()
 {
+    Phonon::loadFakeBackend();
 }
 
 void AudioCaptureDeviceTest::sensibleValues()

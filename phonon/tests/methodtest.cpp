@@ -33,17 +33,17 @@ void MethodTest::checkBackendInterface()
     QVERIFY(qobject_cast<Phonon::BackendInterface*>(Factory::backend()) != 0);
 }
 
-//void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
-//#include "methods/abstractaudiooutput.cpp"
-//#include "methods/audiodataoutput.cpp"
-//}
+void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
+#include "methods/abstractaudiooutput.cpp"
+#include "methods/audiodataoutput.cpp"
+}
 void MethodTest::checkAudioEffectMethods_data() { addColumns();
 #include "methods/audioeffect.cpp"
 }
-//void MethodTest::checkAudioOutputMethods_data() { addColumns();
-//#include "methods/abstractaudiooutput.cpp"
-//#include "methods/audiooutput.cpp"
-//}
+void MethodTest::checkAudioOutputMethods_data() { addColumns();
+#include "methods/abstractaudiooutput.cpp"
+#include "methods/audiooutput.cpp"
+}
 void MethodTest::checkAudioPathMethods_data() { addColumns();
 #include "methods/audiopath.cpp"
 }
@@ -87,9 +87,9 @@ void MethodTest::checkVisualizationMethods_data() { addColumns();
 void MethodTest::checkVolumeFaderEffectMethods_data() { addColumns();
 #include "methods/volumefadereffect.cpp"
 }
-//void MethodTest::checkAudioDataOutputMethods()   { checkMethods( Factory::createAudioDataOutput() ); }
+void MethodTest::checkAudioDataOutputMethods()   { checkMethods( Factory::createAudioDataOutput() ); }
 void MethodTest::checkAudioEffectMethods()       { checkMethods( Factory::createAudioEffect( 1 ) ); }
-//void MethodTest::checkAudioOutputMethods()       { checkMethods( Factory::createAudioOutput() ); }
+void MethodTest::checkAudioOutputMethods()       { checkMethods( Factory::createAudioOutput() ); }
 void MethodTest::checkAudioPathMethods()         { checkMethods( Factory::createAudioPath() ); }
 void MethodTest::checkAvCaptureMethods()         { checkMethods( Factory::createAvCapture() ); }
 void MethodTest::checkBackendMethods()           { checkMethods( Factory::backend() ); }
@@ -147,6 +147,7 @@ void MethodTest::addColumns()
 	QTest::addColumn<QByteArray>( "returnType" );
 	QTest::addColumn<QByteArray>( "signature" );
 	QTest::addColumn<bool>( "optional" );
+    QTest::addColumn<bool>("isSignal");
 }
 
 void MethodTest::addMethod( const char* returnType, const char* signature, bool optional )
@@ -154,7 +155,12 @@ void MethodTest::addMethod( const char* returnType, const char* signature, bool 
 	QByteArray name( returnType );
 	name += ' ';
 	name += signature;
-	QTest::newRow( name.constData() ) << QByteArray( returnType ) << QByteArray( signature ) << optional;
+	QTest::newRow( name.constData() ) << QByteArray( returnType ) << QByteArray( signature ) << optional << false;
+}
+
+void MethodTest::addSignal(const char *signature)
+{
+    QTest::newRow(signature) << QByteArray() << QByteArray(signature) << false << true;
 }
 
 void MethodTest::checkMethods( QObject* backendObject )
@@ -166,20 +172,25 @@ void MethodTest::checkMethods( QObject* backendObject )
 	QFETCH( QByteArray, returnType );
 	QFETCH( QByteArray, signature );
 	QFETCH( bool, optional );
+    QFETCH(bool, isSignal);
 
-	int index = meta->indexOfMethod( QMetaObject::normalizedSignature( signature.constData() ) );
-	if( index == -1 && optional )
-	{
-		QWARN( "method is not available - default behaviour will be used instead" );
-	}
-	else
-	{
-		QVERIFY( index != -1 );
-		QMetaMethod method = meta->method( index );
-		QCOMPARE( method.typeName(), returnType.constData() );
-	}
+    if (isSignal) {
+        QVERIFY(meta->indexOfSignal(QMetaObject::normalizedSignature(signature.constData())) != -1);
+    } else {
+        int index = meta->indexOfMethod(QMetaObject::normalizedSignature(signature.constData()));
+        if (index == -1 && optional) {
+            QWARN("method is not available - default behaviour will be used instead");
+        } else {
+            if (index == -1) {
+                QFAIL(qPrintable(QString("Method %1 not available!").arg(signature.constData())));
+            }
+            QVERIFY(index != -1);
+            QMetaMethod method = meta->method(index);
+            QCOMPARE(method.typeName(), returnType.constData());
+        }
+    }
 }
 
-QTEST_KDEMAIN( MethodTest, NoGUI )
+QTEST_KDEMAIN(MethodTest, NoGUI)
 #include "methodtest.moc"
 // vim: sw=4 ts=4

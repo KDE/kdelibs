@@ -23,11 +23,13 @@
 #include <QLatin1String>
 #include "../phononnamespace.h"
 #include <qtest_kde.h>
+#include "loadfakebackend.h"
 
 using namespace Phonon;
 
 void AudioOutputTest::initTestCase()
 {
+    Phonon::loadFakeBackend();
 }
 
 void AudioOutputTest::checkName()

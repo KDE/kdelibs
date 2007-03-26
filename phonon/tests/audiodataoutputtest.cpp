@@ -25,11 +25,13 @@
 #include <qtest_kde.h>
 #include <cstdlib>
 #include <kurl.h>
+#include "loadfakebackend.h"
 
 using namespace Phonon;
 
 void AudioDataOutputTest::initTestCase()
 {
+    Phonon::loadFakeBackend();
 	AudioDataOutput test( this );
 }
 

@@ -18,6 +18,8 @@
 */
 
 #include "audiopathtest.h"
+#include "loadfakebackend.h"
+
 #include <cstdlib>
 #include <qtest_kde.h>
 #include <QTime>
@@ -30,6 +32,8 @@ Q_DECLARE_METATYPE( Phonon::State )
 void AudioPathTest::initTestCase()
 {
 	qRegisterMetaType<Phonon::State>( "Phonon::State" );
+
+    Phonon::loadFakeBackend();
 
 	//m_url.setUrl( getenv( "PHONON_TESTURL" ) );
 	//if( !m_url.isValid() )
