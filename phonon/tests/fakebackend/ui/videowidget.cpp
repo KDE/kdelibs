@@ -103,15 +103,16 @@ void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 	}
 }
 
-Phonon::VideoWidget::OverlayTypes VideoWidget::overlayCapabilities() const
+int VideoWidget::overlayCapabilities() const
 {
-	return Phonon::VideoWidget::OverlayFull;
+    return 4;
 }
 
-bool VideoWidget::createOverlay(QWidget *widget, Phonon::VideoWidget::OverlayType type)
+bool VideoWidget::createOverlay(QWidget *widget, int type)
 {
-	if ((overlay != 0) || (type != Phonon::VideoWidget::OverlayFull))
-		return false;
+    if ((overlay != 0) || (type != 4)) {
+        return false;
+    }
 
 	if (layout() == 0) {
 		QLayout *layout = new QVBoxLayout(this);

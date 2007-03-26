@@ -47,8 +47,8 @@ namespace Fake
 
 		public slots:
 			QWidget *widget() { return this; }
-			Phonon::VideoWidget::OverlayTypes overlayCapabilities() const;
-			bool createOverlay(QWidget *widget, Phonon::VideoWidget::OverlayType type);
+            int overlayCapabilities() const;
+            bool createOverlay(QWidget *widget, int type);
 
 		protected:
 			virtual void childEvent(QChildEvent *event);
