@@ -1,0 +1,156 @@
+Tutorial: Using KNewStuff2 to enable the 'Get Hot New Stuff' framework in KDE applications
+==========================================================================================
+
+This tutorial intends to replace the old one (at http://www.kstuff.org/docs/tutorial/) and
+will be maintained as a simple text file for the time being. It should eventually also
+cover security aspects, thus replacing the KNewStuffSecure tutorial found at
+http://developer.kde.org/documentation/tutorials/knewstuffsecure/ as well.
+
+Techbase looks like the best place for it once it's done.
+
+Revision 2.0.0preX (26.03.2007)
+
+Tutorial Start
+--------------
+
+This tutorial will guide the application developer step-by-step to a GHNS-enabled KDE
+application. It covers finding and using the KNewStuff2 library and the provision of data.
+This is revision 2.0 of the tutorial. It replaces version 1.1 which was the last version
+for KDE 3 and only covered KNewStuff1.
+
+In order to promote cross-implementation interoperability, the GHNS protocol specification
+is being maintained at freedesktop.org. As such, the format details will not be covered
+by the tutorial anymore. However, a few examples will be given for easier understanding.
+
+GHNS Introduction
+-----------------
+
+The 'Get Hot New Stuff' slogan appears across all desktop applications which offer creative
+and collaborative data sharing to the users. Depending on the type of application, users
+can upload and/or download new data files, scripts, extensions and so on.
+
+KNewStuff2 is an implementation of GHNS. It doesn't only support GHNS though, but also the
+more interactive Desktop eXchange Service (DXS), if supported by the data provider.
+
+Both GHNS and DXS are described at http://ghns.freedesktop.org/.
+
+Vocabulary
+----------
+
+A lot of specific terms have been created. The following list should eliminate the confusion. 
+* Get Hot New Stuff:
+  The general framework which is involved client- and server-side. 
+* KNewStuff2:
+  The KDE library written to use GHNS efficiently and easily.
+  An alternative library would be SDLNewStuff, for example. 
+* Hotstuff:
+  Server-side scripts to allow for unattended data processing for traditional KNewStuff
+  uploads/downloads and their new-style GHNS and DXS counterparts. No alternative is known,
+  although the kde-look family of sites also do data processing. 
+* GHNS web frontend:
+  A generic term for a web frontend to allow user ratings, reviews and data overviews.
+  Cocodrilo is a freely available frontend, whereas the kde-look site family provides a nice
+  but not free alternative. 
+* Provider: Server provider hosting directory information and/or contributed data.
+
+Preparations
+------------
+
+Since KNewStuff2 ships with kdelibs as part of KDE 4, there is no need to check for it with
+build system tools. In CMake, remember to link against the library.
+
+# target_add_libraries(... ${KDE4_KNEWSTUFF2_LIBS})
+
+The header files are installed under $kdedir/include/knewstuff2, so in the relevant files
+they're included with statements such as:
+
+# #include <knewstuff2/engine.h>
+
+In many cases this file is in fact the only one needed by the application. Here's a complete
+list of headers installed by KNewStuff2:
+
+* knewstuff2/engine.h - the most convenient engine class with workflows, derived from DxsEngine
+* knewstuff2/dxs/dxsengine.h - DXS-enabled GHNS engine without workflows, derived from CoreEngine
+* knewstuff2/core/coreengine.h - basic pure GHNS engine without workflows
+
+* knewstuff2/core/author.h - author with contact information
+* knewstuff2/core/category.h - category of an entry
+* knewstuff2/core/entry.h - KNS::Entry, a GHNS data item
+* knewstuff2/core/feed.h - representation of a feed, e.g. most popular entries
+* knewstuff2/core/installation.h - installation instructions as read from *.knsrc files
+* knewstuff2/core/provider.h - KNS::Provider, information about GHNS data repositories
+
+* knewstuff2/core/entryhandler.h - (de)serialisation of KNS::Entry
+* knewstuff2/core/entryloader.h - downloading of entry lists (feeds) which contain entries
+* knewstuff2/core/providerhandler.h - (de)serialisation of KNS::Provider
+* knewstuff2/core/providerloader.h - download of provider files which contain providers
+
+* knewstuff2/core/ktranslatable.h - convenience class for translated QStrings
+
+All classes are contained in the KNS namespaces. Therefore, applications use KNS::Engine
+as their class for managing uploads and downloads of GHNS data. These workflows are described
+in detail in SVN.
+
+Configuration
+-------------
+
+Each application must install a configuration file named *.knsrc if it wants to configure
+certain aspects of its usage of KNewStuff2.
+
+# install(FILES app.knsrc DESTINATION ${CONFIG_INSTALL_DIR})
+
+The *.knsrc files describe where application is downloaded to, if/how it is uncompressed,
+and further details such as data security policies.
+
+# # Minimum contents
+# [KNewStuff2]
+# ProvidersUrl=http://.../provider.xml
+
+# # How to check? Any number of the lines below, 'ifpossible' is default
+# ChecksumPolicy=... # never/ifpossible/always
+# SignaturePolicy=... # never/ifpossible/always
+
+# # Where to install? Exactly one of the lines below
+# StandardResource=wallpapers # becomes $KDEHOME/share/wallpapers
+# TargetDir=appname/datadir # becomes $KDEHOME/share/apps/appname/datadir
+# InstallPath=.dir/subdir # becomes $HOME/.dir/subdir
+
+# # What to do after installation? Any number of the lines below
+# Uncompress=true # unpack the downloaded archive
+# InstallationCommand=dbus-send ... '%f' ... # post-installation command
+
+Downloading data
+----------------
+
+Depending on the application, providing additional data can be accomplished using the
+'File Import' dialog, 'Internet Level' menu item, or just an 'Update now' KAction.
+In fact, there's been a KNS::Button class available since KDE 3.4, which is used for
+configuration of the desktop wallpaper, for instance.
+
+The download dialog can be opened in modal or non-modal mode. Example:
+
+# KNS::Engine *engine = new KNS::Engine();
+# KNS::Entry::List entries = engine->downloadDialogModal();
+# // inspect entries, if wanted
+# delete engine;
+
+Uploading data
+--------------
+
+Similar to downloads, both modal and non-modal ways of invoking the dialog exist.
+
+# KNS::Engine *engine = new KNS::Engine();
+# KNS::Entry *entry = engine->uploadDialogModal();
+# // if !entry, then something went wrong
+# delete engine;
+
+The server side
+---------------
+
+So far this tutorial was all about the applications. But how to select a GHNS provider
+or even run one by oneself?
+
+There will be separate documentation on this topic. For the time being, there is
+GHNS hosting tested with KNewStuff2 being offered at new.kstuff.org, a server sponsored
+by OSU-OSL for the advancement of collaborative data sharing.
+
