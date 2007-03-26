@@ -38,6 +38,11 @@ class KKeyChooserItem;
 class KKeyChooserPrivate;
 class KAction;
 
+// KKeyChooser expects that the list of existing shortcuts is already
+// free of conflicts. If it is not, nothing will crash, but your users
+// won't like the resulting behavior.
+
+
 /**
  * @short Widget for configuration of KAccel and KGlobalAccel.
  *
@@ -73,7 +78,12 @@ public:
 	Q_DECLARE_FLAGS(ActionTypes, ActionType)
 	
 	enum LetterShortcuts {
+		/// Shortcuts without a modifier are not allowed,
+		/// so 'A' would not be valid, whereas 'Ctrl+A' would be.
+		/// This only applies to printable characters, however.
+		/// 'F1', 'Insert' etc. could still be used.
 		LetterShortcutsDisallowed = 0,
+		/// Letter shortcuts are allowed
 		LetterShortcutsAllowed
 	};
 
@@ -86,7 +96,7 @@ public:
 	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyChooser( KActionCollection* collection, QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
+	KKeyChooser(KActionCollection *collection, QWidget *parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed);
 
 	/**
 	 * \overload
@@ -108,13 +118,13 @@ public:
 	 * already associated with the KKeyChooser object.
 	 * @param title subtree title of this collection of shortcut.
 	 */
-	bool insert( KActionCollection *, const QString &title = QString());
+	void addCollection(KActionCollection *, const QString &title = QString());
 
 	/**
 	 * This function writes any shortcut changes back to the original
 	 * action set(s).
 	 */
-	void commitChanges();
+	//void commitChanges(); //we do it the other way around
 
 	/**
 	 * This commits and then saves the actions to disk.
@@ -165,33 +175,25 @@ public Q_SLOTS:
 	/**
 	 * Set all keys to their default values (bindings).
 	 **/
-	void allDefault();
+	//TODO:implement
+	//void allDefault();
 
 protected:
 	virtual void showEvent(QShowEvent* event);
  
 private:
-	Q_PRIVATE_SLOT(d, void slotLocalNoKey())
-	Q_PRIVATE_SLOT(d, void slotLocalDefaultKey())
-	Q_PRIVATE_SLOT(d, void slotLocalCustomKey())
-	Q_PRIVATE_SLOT(d, void slotLocalCapturedShortcut( const KShortcut& cut ))
-	
-	Q_PRIVATE_SLOT(d, void slotGlobalNoKey())
-	Q_PRIVATE_SLOT(d, void slotGlobalDefaultKey())
-	Q_PRIVATE_SLOT(d, void slotGlobalCustomKey())
-	Q_PRIVATE_SLOT(d, void slotGlobalCapturedShortcut( const KShortcut& cut ))
+	Q_PRIVATE_SLOT(d, void capturedKeyShortcut(QKeySequence));
+	Q_PRIVATE_SLOT(d, void capturedShapeGesture(KShapeGesture));
+	Q_PRIVATE_SLOT(d, void capturedRockerGesture(KRockerGesture));
 
-	Q_PRIVATE_SLOT(d, void slotListItemSelected( QTreeWidgetItem *item ))
-	Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ))
-        
-	Q_PRIVATE_SLOT(d, void captureCurrentItem())
+	Q_PRIVATE_SLOT(d, void startEditing(QWidget *, QModelIndex));
+	Q_PRIVATE_SLOT(d, void doneEditingCurrent());
 
 private:
 	friend class KKeyDialog;
 	friend class KKeyChooserPrivate;
-	KKeyChooserPrivate* const d;
-        
-        Q_DISABLE_COPY(KKeyChooser)
+	KKeyChooserPrivate *const d;
+	Q_DISABLE_COPY(KKeyChooser);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KKeyChooser::ActionTypes)
@@ -223,7 +225,9 @@ public:
 	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
 	 * keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	explicit KKeyDialog( KKeyChooser::ActionTypes types = KKeyChooser::AllActions, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0 );
+	explicit KKeyDialog(KKeyChooser::ActionTypes types = KKeyChooser::AllActions,
+                        KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed,
+                        QWidget *parent = 0);
 
 	/**
 	 * Destructor. Deletes all resources used by a KKeyDialog object.
@@ -231,27 +235,28 @@ public:
 	virtual ~KKeyDialog();
 
 	/**
-	 * Insert an action collection, i.e. add all its actions to the ones
-	 * displayed by the dialog.
-	 * Simply call insert with the action collections of each one in turn.
+	 * Add all actions of the collection to the ones displayed and configured
+     * by the dialog.
+	 * Call insert with each of your to-be-configured collections in turn.
 	 *
 	 * @param title the title associated with the collection (if null, the
 	 * KAboutData::progName() of the collection's componentData is used)
 	 */
-	void insert(KActionCollection *, const QString &title = QString());
+	void addCollection(KActionCollection *, const QString &title = QString());
 
 	/**
 	 * Run the dialog and call commitChanges() if @p bSaveSettings
 	 * is true.
 	 */
-	bool configure( bool bSaveSettings = true );
+	bool configure(bool saveSettings = true);
 
 	/**
 	 * Commit key setting changes so that changed settings actually become active.
 	 * This method is implicitly called from configure(bool) if
 	 * @p bSaveSettings is true.
 	 */
-	void commitChanges();
+	//TODO: it's unused! maybe add undoChanges, though...
+	//void commitChanges();
 
 	/**
 	 * Pops up a modal dialog for configuring key settings. The new
@@ -268,14 +273,33 @@ public:
 	 *
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
-	static int configure( KActionCollection* coll, KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true );
+	static int configure( KActionCollection *collection, KKeyChooser::LetterShortcuts allowLetterShortcuts =
+                          KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true);
 
 private:
 	class KKeyDialogPrivate;
 	friend class KKeyDialogPrivate;
-	class KKeyDialogPrivate* const d;
+	class KKeyDialogPrivate *const d;
 
-	Q_DISABLE_COPY(KKeyDialog)          
+	Q_DISABLE_COPY(KKeyDialog);
+};
+
+
+//H4X
+#include <kextendableitemdelegate.h>
+class QAbstractItemView;
+class KKeyChooserDelegate : public KExtendableItemDelegate
+{
+	Q_OBJECT
+public:
+	KKeyChooserDelegate(QAbstractItemView *parent);
+	//virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
+Q_SIGNALS:
+	void editInstead(QModelIndex index);
+private:
+	//mutable QModelIndex *m_index;
+private Q_SLOTS:
+	void itemActivated(QModelIndex index);
 };
 
 #endif // KKEYDIALOG_H

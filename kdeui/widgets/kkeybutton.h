@@ -24,6 +24,10 @@
 
 #include <kshortcut.h>
 
+
+class KKeyButtonPrivate;
+
+
 /**
  * @short A push button that looks like a keyboard key.
  *
@@ -42,46 +46,50 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 {
 	Q_OBJECT
 
- public:
+public:
 	/**
 	* Constructs  key button widget.
 	*/
-	explicit KKeyButton( QWidget *parent = 0 );
+	explicit KKeyButton(QWidget *parent = 0);
 	/**
 	* Destructs the key button widget.
 	*/
 	virtual ~KKeyButton();
 
-	void setShortcut( const KShortcut& cut );
-	const KShortcut& shortcut() const;
+	void setKeySequence(const QKeySequence &seq);
+	QKeySequence keySequence() const;
 
 	/**
 	* Reimplemented for internal purposes.
 	*/
-	void setText( const QString& text );
+	void setText(const QString &text);
 
- Q_SIGNALS:
-	void capturedShortcut( const KShortcut& );
+Q_SIGNALS:
+	void capturedKeySequence(const QKeySequence &);
 
- public Q_SLOTS:
+public Q_SLOTS:
 	/**
 	 * Call this method to capture a shortcut from the keyboard.
 	 * If it succeeds, the capturedShortcut() signal will be emitted.
 	 */
 	void captureShortcut();
 
- protected:
+protected:
 	/**
 	* Reimplemented for internal reasons.
 	*/
-	void paintEvent( QPaintEvent* pe );
+	void paintEvent(QPaintEvent *pe);
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
 
- private:
-        class KKeyButtonPrivate;
-        friend class KKeyButtonPrivate;
-	KKeyButtonPrivate* const d;
-        
-        Q_DISABLE_COPY(KKeyButton)
+private:
+	//TODO: can these be moved in the private class? //remark: yes, use emit q->blah!
+	void startRecording();
+	void doneRecording();
+	friend class KKeyButtonPrivate;
+	KKeyButtonPrivate *const d;
+
+	Q_DISABLE_COPY(KKeyButton);
 };
 
 #endif
