@@ -24,6 +24,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/kwallet/client
    ${CMAKE_SOURCE_DIR}/kde3support/kdeui/ #for k3wizard
    ${KDE4_KDEUI_INCLUDES}
+   ${KDE4_SOLID_INCLUDES}
    ${ZLIB_INCLUDE_DIR}
    ${STRIGI_INCLUDE_DIR}
 )
