@@ -24,7 +24,7 @@
 
 #include "global.h"
 #include "JSType.h"
-#include <kxmlcore/Assertions.h>
+#include <wtf/Assertions.h>
 #include <stdint.h>
 #include <stdlib.h>
 

@@ -30,7 +30,7 @@
 #include "lookup.h"
 #include "operations.h"
 #include "PropertyNameArray.h"
-#include <kxmlcore/HashSet.h>
+#include <wtf/HashSet.h>
 #include <stdio.h>
 
 

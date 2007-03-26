@@ -42,8 +42,8 @@
 #include "config.h"
 #include "identifier.h"
 
-#include <kxmlcore/FastMalloc.h>
-#include <kxmlcore/HashSet.h>
+#include <wtf/FastMalloc.h>
+#include <wtf/HashSet.h>
 #include <string.h> // for strlen
 #include <new> // for placement new
 

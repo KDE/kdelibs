@@ -31,7 +31,7 @@
 #include "dtoa.h"
 #include "interpreter.h"
 #include "nodes.h"
-#include <kxmlcore/unicode/Unicode.h>
+#include <wtf/unicode/Unicode.h>
 
 using namespace WTF;
 using namespace Unicode;

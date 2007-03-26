@@ -26,7 +26,7 @@
 #include "object.h"
 #include <math.h>
 #include <stdio.h>
-#include <kxmlcore/MathExtras.h>
+#include <wtf/MathExtras.h>
 
 #if HAVE(FUNC_ISINF) && HAVE(IEEEFP_H)
 #include <ieeefp.h>

@@ -26,9 +26,9 @@
 
 #include "kjs/global.h"
 
-#include <kxmlcore/FastMalloc.h>
-#include <kxmlcore/RefPtr.h>
-#include <kxmlcore/PassRefPtr.h>
+#include <wtf/FastMalloc.h>
+#include <wtf/RefPtr.h>
+#include <wtf/PassRefPtr.h>
 
 #include <stdint.h>
 

@@ -29,7 +29,7 @@
 #include "operations.h"
 #include <stdio.h>
 #include <string.h>
-#include <kxmlcore/MathExtras.h>
+#include <wtf/MathExtras.h>
 
 namespace KJS {
 

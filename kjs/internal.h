@@ -33,7 +33,7 @@
 #include "types.h"
 #include "ustring.h"
 
-#include <kxmlcore/Noncopyable.h>
+#include <wtf/Noncopyable.h>
 
 #ifndef I18N_NOOP
 #define I18N_NOOP(s) s

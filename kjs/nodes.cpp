@@ -38,9 +38,9 @@
 #include "operations.h"
 #include "package.h"
 #include "PropertyNameArray.h"
-#include <kxmlcore/HashSet.h>
-#include <kxmlcore/HashCountedSet.h>
-#include <kxmlcore/MathExtras.h>
+#include <wtf/HashSet.h>
+#include <wtf/HashCountedSet.h>
+#include <wtf/MathExtras.h>
 
 using namespace KJS;
 

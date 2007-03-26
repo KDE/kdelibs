@@ -24,7 +24,7 @@
 #ifndef SHARED_H
 #define SHARED_H
 
-#include <kxmlcore/SharedPtr.h>
+#include <wtf/SharedPtr.h>
 
 namespace khtml {
 
@@ -55,7 +55,7 @@ public:
     TreeShared() { _ref = 0; m_parent = 0; /*counter++;*/ }
     TreeShared( type *parent ) { _ref=0; m_parent = parent; /*counter++;*/ }
     virtual ~TreeShared() { /*counter--;*/ }
-    
+
     virtual void removedLastRef() { delete static_cast<type*>(this); }
 
     void ref() { _ref++;  }
@@ -80,7 +80,7 @@ protected:
 };
 
 //A special pointer for nodes keeping track of the document,
-//which helps distinguish back links from them to it, in order to break 
+//which helps distinguish back links from them to it, in order to break
 //cycles
 template <class T> class DocPtr {
 public:
@@ -88,35 +88,35 @@ public:
     DocPtr(T *ptr) : m_ptr(ptr) { if (ptr) ptr->selfOnlyRef(); }
     DocPtr(const DocPtr &o) : m_ptr(o.m_ptr) { if (T *ptr = m_ptr) ptr->selfOnlyRef(); }
     ~DocPtr() { if (T *ptr = m_ptr) ptr->selfOnlyDeref(); }
-    
+
     template <class U> DocPtr(const DocPtr<U> &o) : m_ptr(o.get()) { if (T *ptr = m_ptr) ptr->selfOnlyRef(); }
-    
+
     void resetSkippingRef(T *o) { m_ptr = o; }
-    
+
     T *get() const { return m_ptr; }
-    
+
     T &operator*() const { return *m_ptr; }
     T *operator->() const { return m_ptr; }
-    
+
     bool operator!() const { return !m_ptr; }
 
     // this type conversion operator allows implicit conversion to
     // bool but not to other integer types
-    
+
     typedef T * (DocPtr::*UnspecifiedBoolType)() const;
     operator UnspecifiedBoolType() const
     {
         return m_ptr ? &DocPtr::get : 0;
     }
-    
+
     DocPtr &operator=(const DocPtr &);
     DocPtr &operator=(T *);
-    
+
  private:
     T *m_ptr;
 };
 
-template <class T> DocPtr<T> &DocPtr<T>::operator=(const DocPtr<T> &o) 
+template <class T> DocPtr<T> &DocPtr<T>::operator=(const DocPtr<T> &o)
 {
     T *optr = o.m_ptr;
     if (optr)
@@ -137,34 +137,34 @@ template <class T> inline DocPtr<T> &DocPtr<T>::operator=(T *optr)
     return *this;
 }
 
-template <class T> inline bool operator==(const DocPtr<T> &a, const DocPtr<T> &b) 
-{ 
-    return a.get() == b.get(); 
-}
-
-template <class T> inline bool operator==(const DocPtr<T> &a, const T *b) 
-{ 
-    return a.get() == b; 
-}
-
-template <class T> inline bool operator==(const T *a, const DocPtr<T> &b) 
+template <class T> inline bool operator==(const DocPtr<T> &a, const DocPtr<T> &b)
 {
-    return a == b.get(); 
+    return a.get() == b.get();
 }
 
-template <class T> inline bool operator!=(const DocPtr<T> &a, const DocPtr<T> &b) 
-{ 
-    return a.get() != b.get(); 
+template <class T> inline bool operator==(const DocPtr<T> &a, const T *b)
+{
+    return a.get() == b;
+}
+
+template <class T> inline bool operator==(const T *a, const DocPtr<T> &b)
+{
+    return a == b.get();
+}
+
+template <class T> inline bool operator!=(const DocPtr<T> &a, const DocPtr<T> &b)
+{
+    return a.get() != b.get();
 }
 
 template <class T> inline bool operator!=(const DocPtr<T> &a, const T *b)
 {
-    return a.get() != b; 
+    return a.get() != b;
 }
 
-template <class T> inline bool operator!=(const T *a, const DocPtr<T> &b) 
-{ 
-    return a != b.get(); 
+template <class T> inline bool operator!=(const T *a, const DocPtr<T> &b)
+{
+    return a != b.get();
 }
 
 

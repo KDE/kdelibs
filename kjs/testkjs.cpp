@@ -25,7 +25,7 @@
 #include "config.h"
 #include "collector.h"
 
-#include <kxmlcore/HashTraits.h>
+#include <wtf/HashTraits.h>
 #include "JSLock.h"
 #include "object.h"
 #include "Parser.h"

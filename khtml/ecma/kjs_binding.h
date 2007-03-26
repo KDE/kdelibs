@@ -24,7 +24,7 @@
 
 #include <kdelibs_export.h>
 #include <kjs/interpreter.h>
-#include <kxmlcore/HashMap.h>
+#include <wtf/HashMap.h>
 
 #include <dom/dom_node.h>
 #include <qvariant.h>
@@ -118,7 +118,7 @@ namespace KJS {
      * "Smart" window.open policy
      */
     bool isWindowOpenAllowed() const;
-    
+
     /**
      * CPU guard API. This should be used instead of Interpreter
      * methods as it manages the timeouts, including VG support
@@ -126,7 +126,7 @@ namespace KJS {
     virtual bool shouldInterruptScript() const;
     void startCPUGuard();
     void stopCPUGuard();
-    
+
     static void turnOffCPUGuard() {
         s_disableCPUGuard = true;
     }
@@ -147,7 +147,7 @@ namespace KJS {
   {
     if (entry->attr & Function)
       slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
-    else 
+    else
       slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
   }
 
@@ -167,7 +167,7 @@ namespace KJS {
 
     if (entry->attr & Function)
       slot.setStaticEntry(thisObj, entry, staticFunctionGetter<FuncImp>);
-    else 
+    else
       slot.setStaticEntry(thisObj, entry, staticValueGetter<ThisImp>);
 
     return true;
@@ -342,7 +342,7 @@ namespace KJS {
 #define IMPLEMENT_PSEUDO_CONSTRUCTOR_WITH_PARENT(Class,ClassName,ProtoClass,ParentProtoClass) \
     IMPLEMENT_PSEUDO_CONSTRUCTOR_IMP(Class,ClassName,ProtoClass,ParentProtoClass::self(exec))
 
-// This declares a constant table, which merely maps everything in its 
+// This declares a constant table, which merely maps everything in its
 // table to its token value. Can be used as a prototype
 #define DEFINE_CONSTANT_TABLE(Class) \
    class Class : public DOMObject { \
@@ -356,9 +356,9 @@ namespace KJS {
      static ObjectImp* self(ExecState *exec);\
      static Identifier* s_name; \
      static Identifier* name(); \
-   }; 
+   };
 
-// Emits an implementation of a constant table 
+// Emits an implementation of a constant table
 #define IMPLEMENT_CONSTANT_TABLE(Class,ClassName) \
      bool Class::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) \
      { \

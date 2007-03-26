@@ -19,7 +19,7 @@
  *
  */
 
-#include <kxmlcore/Platform.h>
+#include <wtf/Platform.h>
 
 #ifndef ALWAYS_INLINE
 #if COMPILER(GCC)

@@ -24,7 +24,7 @@ macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
-include_directories( ${CMAKE_SOURCE_DIR}/kxmlcore ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/wtf ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)

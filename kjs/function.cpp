@@ -40,7 +40,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <kxmlcore/unicode/Unicode.h>
+#include <wtf/unicode/Unicode.h>
 
 using namespace WTF;
 using namespace Unicode;

@@ -25,7 +25,7 @@
 #include "internal.h"
 #include "function_object.h"
 #include "regexp.h"
-#include <kxmlcore/OwnArrayPtr.h>
+#include <wtf/OwnArrayPtr.h>
 
 namespace KJS {
   class ExecState;

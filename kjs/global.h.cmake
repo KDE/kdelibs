@@ -23,7 +23,7 @@
 #ifndef KJS_GLOBAL_H
 #define KJS_GLOBAL_H
 
-#include <kxmlcore/Platform.h>
+#include <wtf/Platform.h>
 
 // we don't want any padding between UChars (ARM processor)
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)

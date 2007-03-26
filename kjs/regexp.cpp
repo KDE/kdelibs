@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <kxmlcore/Vector.h>
+#include <wtf/Vector.h>
 using WTF::Vector;
 
 namespace KJS {

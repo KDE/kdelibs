@@ -24,7 +24,7 @@
 #define _KJSDEBUGGER_H_
 
 #include "global.h"
-#include <kxmlcore/HashMap.h>
+#include <wtf/HashMap.h>
 #include "protect.h"
 
 namespace KJS {
