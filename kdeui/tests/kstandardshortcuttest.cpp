@@ -51,8 +51,8 @@ void KStandardShortcutTest::testShortcut()
 
 void KStandardShortcutTest::testFindStdAccel()
 {
-    QCOMPARE( KStandardShortcut::findStandardShortcut( QString( "Ctrl+F" ) ), KStandardShortcut::Find );
-    QCOMPARE( KStandardShortcut::findStandardShortcut( QString( "Ctrl+Shift+Alt+G" ) ), KStandardShortcut::AccelNone );
+    QCOMPARE( KStandardShortcut::find( QString( "Ctrl+F" ) ), KStandardShortcut::Find );
+    QCOMPARE( KStandardShortcut::find( QString( "Ctrl+Shift+Alt+G" ) ), KStandardShortcut::AccelNone );
 }
 
 void KStandardShortcutTest::testRemoveShortcut()
