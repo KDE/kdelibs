@@ -490,7 +490,20 @@ QString KMimeType::favIconForUrl( const KUrl& url )
 
 QString KMimeType::parentMimeType() const
 {
-    return d->m_parentMimeType;
+    if (!d->m_parentMimeType.isEmpty())
+        return d->m_parentMimeType;
+    const QString myName = name();
+    const QString myGroup = myName.left(myName.indexOf('/'));
+    // All text/* types are subclasses of text/plain.
+    if (myGroup == "text" && myName != "text/plain")
+        return "text/plain";
+    // All real-file mimetypes implicitly derive from application/octet-stream
+    if (myGroup != "inode" &&
+        // kde extensions
+        myGroup != "all" && myGroup != "fonts" && myGroup != "media" && myGroup != "print" && myGroup != "uri"
+        && myName != "application/octet-stream")
+        return "application/octet-stream";
+    return QString();
 }
 
 bool KMimeType::is( const QString& mimeTypeName ) const

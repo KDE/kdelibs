@@ -272,11 +272,31 @@ void KMimeTypeTest::testMimeTypeParent()
     if ( !KSycoca::isAvailable() )
         QSKIP( "ksycoca not available", SkipAll );
 
-    // Check that text/x-patch knows that inherits from text/plain
+    // All file-like mimetypes inherit from octet-stream
+    const KMimeType::Ptr msword = KMimeType::mimeType("application/msword");
+    QVERIFY(msword);
+    QCOMPARE(msword->parentMimeType(), QString("application/octet-stream"));
+    QVERIFY(msword->is("application/octet-stream"));
+
+    const KMimeType::Ptr directory = KMimeType::mimeType("inode/directory");
+    QVERIFY(directory);
+    QCOMPARE(directory->parentMimeType(), QString());
+    QVERIFY(!directory->is("application/octet-stream"));
+
+    // Check that text/x-patch knows that it inherits from text/plain (it says so explicitely)
     const KMimeType::Ptr plain = KMimeType::mimeType( "text/plain" );
     const KMimeType::Ptr derived = KMimeType::mimeType( "text/x-patch" );
     QVERIFY( derived );
     QCOMPARE( derived->parentMimeType(), plain->name() );
+    QVERIFY( derived->is("text/plain") );
+    QVERIFY( derived->is("application/octet-stream") );
+
+    // Check that text/mrml knows that it inherits from text/plain (implicitly)
+    const KMimeType::Ptr mrml = KMimeType::mimeType("text/mrml");
+    if (!mrml)
+        QSKIP("kdelibs not installed", SkipAll);
+    QVERIFY(mrml->is("text/plain"));
+    QVERIFY(mrml->is("application/octet-stream"));
 }
 
 // Helper method for all the trader tests
