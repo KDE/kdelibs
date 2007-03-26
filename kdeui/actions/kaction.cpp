@@ -31,6 +31,7 @@
 
 #include "kglobalaccel.h"
 #include "kguiitem.h"
+#include "kgesturemap.h"
 #include "kicon.h"
 //---------------------------------------------------------------------
 // KActionPrivate
@@ -49,6 +50,8 @@ public:
   void init(KAction *q_ptr);
 
   KShortcut globalShortcut, defaultGlobalShortcut;
+  KShapeGesture shapeGesture, defaultShapeGesture;
+  KRockerGesture rockerGesture, defaultRockerGesture;
 
   bool globalShortcutAllowed;
   KAction *q;
@@ -94,6 +97,8 @@ KAction::~KAction()
         d->globalShortcut = KShortcut();
         KGlobalAccel::self()->checkAction(this); // unregister
     }
+    KApplication::kApplication()->gestureMap()->removeGesture(d->shapeGesture, this);
+    KApplication::kApplication()->gestureMap()->removeGesture(d->rockerGesture, this);
     delete d;
 }
 
@@ -192,6 +197,60 @@ void KAction::setGlobalShortcutAllowed( bool allowed )
   if (d->globalShortcutAllowed != allowed) {
     d->globalShortcutAllowed = allowed;
     KGlobalAccel::self()->checkAction(this);
+  }
+}
+
+KShapeGesture KAction::shapeGesture( ShortcutTypes type ) const
+{
+  Q_ASSERT(type);
+  if ( type & DefaultShortcut )
+    return d->defaultShapeGesture;
+
+  return d->shapeGesture;
+}
+
+KRockerGesture KAction::rockerGesture( ShortcutTypes type ) const
+{
+  Q_ASSERT(type);
+  if ( type & DefaultShortcut )
+    return d->defaultRockerGesture;
+
+  return d->rockerGesture;
+}
+
+void KAction::setShapeGesture( const KShapeGesture& gest,  ShortcutTypes type )
+{
+  Q_ASSERT(type);
+
+  if( type & DefaultShortcut )
+    d->defaultShapeGesture = gest;
+
+  if ( type & ActiveShortcut ) {
+    if ( KApplication::kApplication()->gestureMap()->findAction( gest ) ) {
+      kDebug() << k_funcinfo << "New mouse gesture already in use, won't change gesture." << endl;
+      return;
+    }
+    KApplication::kApplication()->gestureMap()->removeGesture( d->shapeGesture, this );
+    KApplication::kApplication()->gestureMap()->addGesture( gest, this );
+    d->shapeGesture = gest;
+  }
+}
+
+void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type )
+{
+  Q_ASSERT(type);
+
+  if( type & DefaultShortcut )
+    d->defaultRockerGesture = gest;
+
+  if ( type & ActiveShortcut ) {
+    if ( KApplication::kApplication()->gestureMap()->findAction( gest ) ) {
+      kDebug() << k_funcinfo << "New mouse gesture already in use, won't change gesture." << endl;
+      return;
+    }
+    KApplication::kApplication()->gestureMap()->removeGesture( d->rockerGesture, this );
+    KApplication::kApplication()->gestureMap()->addGesture( gest, this );
+    d->rockerGesture = gest;
   }
 }
 

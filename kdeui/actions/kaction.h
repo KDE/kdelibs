@@ -33,6 +33,8 @@
 #include <kshortcut.h>
 
 class KIcon;
+class KShapeGesture;
+class KRockerGesture;
 
 /**
  * @short Class to encapsulate user-driven action or event
@@ -339,6 +341,12 @@ public:
      * \param allowed set to \e true if this action may have a global shortcut, otherwise \e false.
      */
     void setGlobalShortcutAllowed(bool allowed);
+
+    KShapeGesture shapeGesture(ShortcutTypes type = ActiveShortcut) const;
+    KRockerGesture rockerGesture(ShortcutTypes type = ActiveShortcut) const;
+
+    void setShapeGesture(const KShapeGesture& gest, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
+    void setRockerGesture(const KRockerGesture& gest, ShortcutTypes type = static_cast<ShortcutType>(ActiveShortcut | DefaultShortcut));
 
 Q_SIGNALS:
 #ifdef KDE3_SUPPORT
