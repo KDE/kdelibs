@@ -47,7 +47,7 @@
 #include <string.h> // for strlen
 #include <new> // for placement new
 
-namespace KXMLCore {
+namespace WTF {
 
     template<typename T> class DefaultHash;
     template<typename T> class StrHash;
@@ -128,7 +128,7 @@ struct CStringTranslator
         UChar *d = static_cast<UChar *>(fastMalloc(sizeof(UChar) * length));
         for (int i = 0; i != length; i++)
             d[i] = c[i];
-        
+
         UString::Rep *r = UString::Rep::create(d, length).release();
         r->isIdentifier = 1;
         r->rc = 0;
@@ -145,7 +145,7 @@ PassRefPtr<UString::Rep> Identifier::add(const char *c)
     int length = strlen(c);
     if (length == 0)
         return &UString::Rep::empty;
-    
+
     return *identifierTable().add<const char *, CStringTranslator>(c).first;
 }
 
@@ -171,13 +171,13 @@ struct UCharBufferTranslator
         UChar *d = static_cast<UChar *>(fastMalloc(sizeof(UChar) * buf.length));
         for (unsigned i = 0; i != buf.length; i++)
             d[i] = buf.s[i];
-        
+
         UString::Rep *r = UString::Rep::create(d, buf.length).release();
         r->isIdentifier = 1;
         r->rc = 0;
         r->_hash = hash;
-        
-        location = r; 
+
+        location = r;
     }
 };
 
@@ -185,8 +185,8 @@ PassRefPtr<UString::Rep> Identifier::add(const UChar *s, int length)
 {
     if (length == 0)
         return &UString::Rep::empty;
-    
-    UCharBuffer buf = {s, length}; 
+
+    UCharBuffer buf = {s, length};
     return *identifierTable().add<UCharBuffer, UCharBufferTranslator>(buf).first;
 }
 

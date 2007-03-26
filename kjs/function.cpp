@@ -42,7 +42,7 @@
 
 #include <kxmlcore/unicode/Unicode.h>
 
-using namespace KXMLCore;
+using namespace WTF;
 using namespace Unicode;
 
 namespace KJS {
@@ -240,11 +240,11 @@ JSValue *FunctionImp::callerGetter(ExecState* exec, JSObject*, const Identifier&
 
     if (!context)
         return jsNull();
-    
+
     Context* callingContext = context->callingContext();
     if (!callingContext)
         return jsNull();
-    
+
     FunctionImp* callingFunction = callingContext->function();
     if (!callingFunction)
         return jsNull();

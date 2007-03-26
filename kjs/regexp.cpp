@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <kxmlcore/Vector.h>
-using KXMLCore::Vector;
+using WTF::Vector;
 
 namespace KJS {
 

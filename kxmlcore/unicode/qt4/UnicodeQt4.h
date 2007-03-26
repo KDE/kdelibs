@@ -28,7 +28,7 @@
 
 #include "../UnicodeCategory.h"
 
-namespace KXMLCore {
+namespace WTF {
   namespace Unicode {
     inline int toLower(uint16_t* str, int strLength, uint16_t*& destIfNeeded)
     {

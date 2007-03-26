@@ -31,7 +31,7 @@
 #include <new>
 
 
-namespace KXMLCore {
+namespace WTF {
 
     inline void *fastMalloc(size_t n) {
         return malloc(n);
@@ -53,12 +53,12 @@ namespace KXMLCore {
     inline void fastMallocRegisterThread(pthread_t) {}
 #endif
 
-} // namespace KXMLCore
+} // namespace WTF
 
-using KXMLCore::fastMalloc;
-using KXMLCore::fastCalloc;
-using KXMLCore::fastRealloc;
-using KXMLCore::fastFree;
+using WTF::fastMalloc;
+using WTF::fastCalloc;
+using WTF::fastRealloc;
+using WTF::fastFree;
 
 
 #endif /* KXMLCORE_FAST_MALLOC_H */

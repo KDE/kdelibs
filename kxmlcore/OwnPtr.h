@@ -26,7 +26,7 @@
 #include "Assertions.h"
 #include "Noncopyable.h"
 
-namespace KXMLCore {
+namespace WTF {
 
     template <typename T> class OwnPtr : Noncopyable {
     public:
@@ -58,8 +58,8 @@ namespace KXMLCore {
 
     template <typename T> inline void swap(OwnPtr<T>& a, OwnPtr<T>& b) { a.swap(b); }
 
-} // namespace KXMLCore
+} // namespace WTF
 
-using KXMLCore::OwnPtr;
+using WTF::OwnPtr;
 
 #endif // KXMLCORE_OWN_PTR_H

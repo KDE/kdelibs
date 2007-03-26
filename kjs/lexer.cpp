@@ -33,7 +33,7 @@
 #include "nodes.h"
 #include <kxmlcore/unicode/Unicode.h>
 
-using namespace KXMLCore;
+using namespace WTF;
 using namespace Unicode;
 
 // we can't specify the namespace in yacc's C output, so do it here
@@ -586,13 +586,13 @@ bool Lexer::isLineTerminator()
 
 bool Lexer::isIdentStart(int c)
 {
-  return (category(c) & (KXMLCore::Unicode::Letter_Uppercase | Letter_Lowercase | Letter_Titlecase | Letter_Modifier | Letter_Other))
+  return (category(c) & (WTF::Unicode::Letter_Uppercase | Letter_Lowercase | Letter_Titlecase | Letter_Modifier | Letter_Other))
     || c == '$' || c == '_';
 }
 
 bool Lexer::isIdentPart(int c)
 {
-  return (category(c) & (KXMLCore::Unicode::Letter_Uppercase | Letter_Lowercase | Letter_Titlecase | Letter_Modifier | Letter_Other
+  return (category(c) & (WTF::Unicode::Letter_Uppercase | Letter_Lowercase | Letter_Titlecase | Letter_Modifier | Letter_Other
 	| Mark_NonSpacing | Mark_SpacingCombining | Number_DecimalDigit | Punctuation_Connector))
     || c == '$' || c == '_';
 }
@@ -892,7 +892,7 @@ Identifier *Lexer::makeIdentifier(KJS::UChar*, unsigned int)
   identifiers[numIdentifiers++] = identifier;
   return identifier;
 }
- 
+
 // FIXME: this completely ignores its parameters, instead using buffer16 and pos16 - wtf?
 UString *Lexer::makeUString(KJS::UChar*, unsigned int)
 {

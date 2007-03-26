@@ -23,7 +23,7 @@
 #ifndef KXMLCORE_SHARED_PTR_H
 #define KXMLCORE_SHARED_PTR_H
 
-namespace KXMLCore {
+namespace WTF {
 
     // FIXME: Change template name to RefPtr?
     template <class T> class SharedPtr
@@ -122,10 +122,10 @@ namespace KXMLCore {
         return SharedPtr<T>(const_cast<T *>(p.get())); 
     }
 
-} // namespace KXMLCore
+} // namespace WTF
 
-using KXMLCore::SharedPtr;
-using KXMLCore::static_pointer_cast;
-using KXMLCore::const_pointer_cast;
+using WTF::SharedPtr;
+using WTF::static_pointer_cast;
+using WTF::const_pointer_cast;
 
 #endif // KXMLCORE_SHARED_PTR_H

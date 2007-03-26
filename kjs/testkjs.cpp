@@ -47,7 +47,7 @@
 #endif
 
 using namespace KJS;
-using namespace KXMLCore;
+using namespace WTF;
 
 static void testIsInteger();
 static void testUString();
@@ -305,8 +305,8 @@ int kjsmain(int argc, char** argv)
 
 static void testIsInteger()
 {
-  // Unit tests for KXMLCore::IsInteger. Don't have a better place for them now.
-  // FIXME: move these once we create a unit test directory for KXMLCore.
+  // Unit tests for WTF::IsInteger. Don't have a better place for them now.
+  // FIXME: move these once we create a unit test directory for WTF.
 
   assert(IsInteger<bool>::value);
   assert(IsInteger<char>::value);

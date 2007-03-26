@@ -23,7 +23,7 @@
 
 #include <stddef.h>
 
-namespace KXMLCore {
+namespace WTF {
     template<typename T> class ListRefPtr;
     template<typename T> class OwnArrayPtr;
     template<typename T> class OwnPtr;
@@ -31,10 +31,10 @@ namespace KXMLCore {
     template<typename T> class RefPtr;
 }
 
-using KXMLCore::ListRefPtr;
-using KXMLCore::OwnArrayPtr;
-using KXMLCore::OwnPtr;
-using KXMLCore::PassRefPtr;
-using KXMLCore::RefPtr;
+using WTF::ListRefPtr;
+using WTF::OwnArrayPtr;
+using WTF::OwnPtr;
+using WTF::PassRefPtr;
+using WTF::RefPtr;
 
 #endif

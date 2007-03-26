@@ -26,7 +26,7 @@
 #include <algorithm>
 #include "PassRefPtr.h"
 
-namespace KXMLCore {
+namespace WTF {
 
     template <typename T> class PassRefPtr;
 
@@ -183,10 +183,10 @@ namespace KXMLCore {
         return RefPtr<T>(const_cast<T *>(p.get())); 
     }
 
-} // namespace KXMLCore
+} // namespace WTF
 
-using KXMLCore::RefPtr;
-using KXMLCore::static_pointer_cast;
-using KXMLCore::const_pointer_cast;
+using WTF::RefPtr;
+using WTF::static_pointer_cast;
+using WTF::const_pointer_cast;
 
 #endif // KXMLCORE_REF_PTR_H

@@ -22,10 +22,10 @@
 #ifndef KXMLCORE_NONCOPYABLE
 #define KXMLCORE_NONCOPYABLE
 
-// We don't want argument-dependent lookup to pull in everything from the KXMLCore
+// We don't want argument-dependent lookup to pull in everything from the WTF
 // namespace when you use Noncopyable, so put it in its own namespace.
 
-namespace KXMLCoreNoncopyable {
+namespace WTFNoncopyable {
 
     class Noncopyable {
         Noncopyable(const Noncopyable&);
@@ -35,8 +35,8 @@ namespace KXMLCoreNoncopyable {
         ~Noncopyable() { }
     };
 
-} // namespace KXMLCoreNoncopyable
+} // namespace WTFNoncopyable
 
-using KXMLCoreNoncopyable::Noncopyable;
+using WTFNoncopyable::Noncopyable;
 
 #endif // KXMLCORE_NONCOPYABLE
