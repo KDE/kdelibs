@@ -39,6 +39,7 @@
 #include <kstaticdeleter.h>
 #include "kaction.h"
 #include "kactioncollection.h"
+#include "kmessagebox.h"
 #include <kconfig.h>
 #include <kconfiggroup.h>
 
@@ -307,6 +308,45 @@ void KGlobalAccel::enableImpl( bool enable )
 		else
 			i->disable();
 	}
+}
+
+
+//static
+QString KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
+{
+	QMap<QString, QString> globalEntries = KGlobal::config()->group("Global Shortcuts").entryMap();
+	QMap<QString, QString>::const_iterator it = globalEntries.constBegin();
+
+	while (it != globalEntries.constEnd()) {
+		KShortcut globalCut(it.value());
+		foreach (QKeySequence globalSeq, globalCut) {
+			if (seq == globalSeq)
+				return it.key();
+		}
+		++it;
+	}
+	return QString();
+}
+
+
+//static
+bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QString &actionName, const QKeySequence &seq)
+{
+	QString title = i18n("Conflict with Global Shortcut");
+	QString message = i18n("The '%1' key combination has already been allocated "
+	                       "to the global action \"%2\".\n"
+	                       "Do you want to reassign it from that action to the current one?",
+	                       seq.toString(), actionName.trimmed());
+
+	return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
+	       == KMessageBox::Continue;
+}
+
+
+//static
+void KGlobalAccel::stealShortcutSystemwide(const QString &actionName, const QKeySequence &seq)
+{
+#warning implement me!
 }
 
 #include "kglobalaccel.moc"

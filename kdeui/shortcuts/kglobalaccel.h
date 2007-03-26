@@ -28,6 +28,7 @@
 class QWidget;
 class KConfigBase;
 class KAction;
+class QKeySequence;
 
 /**
  * @short Configurable global shortcut support
@@ -51,7 +52,7 @@ public:
 	/**
 	 * Returns (and creates if necessary) the singleton instance
 	 */
-	static KGlobalAccel* self();
+	static KGlobalAccel *self();
 
 	/**
 	 * Checks whether the accelerators are enabled.
@@ -64,7 +65,7 @@ public:
 	 * @param enabled true if the KGlobalAccel should be enabled, false if it
 	 *  should be disabled.
 	 */
-	void setEnabled( bool enabled );
+	void setEnabled(bool enabled);
 
 	/**
 	 * Check to see if \a action has global accelerators or not, and grab or release them
@@ -73,7 +74,7 @@ public:
 	 * You should not need to call this function yourself, it is called as needed by
 	 * KAction::setGlobalShortcut()
 	 */
-	void checkAction(KAction* action);
+	void checkAction(KAction *action);
 
 	/**
 	 * Returns the configuration group that is used to save the accelerators.
@@ -87,7 +88,7 @@ public:
 	 * @param cg the configuration group
 	 * @see KConfig
 	 */
-	void setConfigGroup( const QString &cg );
+	void setConfigGroup(const QString &cg);
 
 	/**
 	 * Read all shortcuts from @p config, or (if @p config
@@ -98,7 +99,7 @@ public:
 	 *                 configuration file
 	 * @return true if successful, otherwise false
 	 */
-	bool readSettings( KConfigBase* config = 0 );
+	bool readSettings(KConfigBase *config = 0);
 
 	/**
 	 * Write the current global shortcuts to @p config,
@@ -114,12 +115,37 @@ public:
 	 *
 	 * @return true if successful, otherwise false
 	 */
-	bool writeSettings( KConfigBase* config = 0L, bool writeDefaults = false, KAction* oneAction = 0L) const;
+	bool writeSettings(KConfigBase *config = 0, bool writeDefaults = false, KAction *oneAction = 0) const;
 	
 	/**
 	 * Return a list of all KActions which currently have a valid global shortcut assigned.
 	 */
 	const QList<KAction*> actionsWithGlobalShortcut() const;
+
+	/**
+	 * Return the name of the action that uses the given key sequence. This applies to
+	 * all actions with global shortcuts in any KDE application.
+	 *
+	 * @see promptStealShortcutSystemwide(), stealShorctutSystemwide()
+	 */
+	static QString findActionNameSystemwide(const QKeySequence &seq);
+
+	/**
+	 * Show a messagebox to inform the user that a global shorcut is already occupied,
+	 * and ask to take it away from its current action. This is GUI only, so nothing will
+	 * be actually changed.
+	 *
+	 * @see stealShorctutSystemwide()
+	 */
+	static bool promptStealShortcutSystemwide(QWidget *parent, const QString &actionName, const QKeySequence &seq);
+
+	/**
+	 * Take away the given shortcut from the named action it belongs to.
+	 * This applies to all actions with global shortcuts in any KDE application.
+	 *
+	 * @see promptStealShortcutSystemwide()
+	 */
+	static void stealShortcutSystemwide(const QString &actionName, const QKeySequence &seq);
 
 private Q_SLOTS:
 	/**
@@ -141,7 +167,7 @@ private:
 	/// Creates a new KGlobalAccel object
 	KGlobalAccel();
 
-	void grabKey(int key, bool grab, KAction* action);
+	void grabKey(int key, bool grab, KAction *action);
 
 	static KGlobalAccel* s_instance;
 	class KGlobalAccelData* const d;

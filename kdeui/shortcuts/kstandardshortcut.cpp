@@ -134,10 +134,10 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
 /** Search for the KStandardShortcutInfo object associated with the given @p id.
     Return a dummy entry with no name and an empty shortcut if @p id is invalid.
 */
-static KStandardShortcutInfo *guardedStandardShortcutInfo( StandardShortcut id )
+static KStandardShortcutInfo *guardedStandardShortcutInfo(StandardShortcut id)
 {
-	if ( id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
-             id < 0  ) {
+	if (id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
+             id < 0) {
 		kWarning(125) << "KStandardShortcut: id not found!" << endl;
 		return &g_infoStandardShortcut[AccelNone];
 	} else
@@ -149,26 +149,26 @@ static KStandardShortcutInfo *guardedStandardShortcutInfo( StandardShortcut id )
     On X11, if QApplication was initialized with GUI disabled,
     the default will always be used.
 */
-static void initialize( StandardShortcut id )
+static void initialize(StandardShortcut id)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
+	KConfigGroup cg(KGlobal::config(), "Shortcuts");
 
 #ifdef Q_WS_X11
 	// Code within this block breaks if we aren't running in GUI mode.
-	if( QX11Info::display() && cg.hasKey( info->name ) )
+	if(QX11Info::display() && cg.hasKey(info->name))
 #else
-	if( cg.hasKey( info->name ) )
+	if(cg.hasKey(info->name))
 #endif
 	{
-		QString s = cg.readEntry( info->name );
-		if( s != "none" )
-			info->cut = KShortcut( s );
+		QString s = cg.readEntry(info->name);
+		if (s != "none")
+			info->cut = KShortcut(s);
 		else
 			info->cut.clear();
 	} else {
-		info->cut = shortcutDefault( id );
+		info->cut = hardcodedDefaultShortcut(id);
 	}
 
 	info->isInitialized = true;
@@ -176,30 +176,30 @@ static void initialize( StandardShortcut id )
 
 void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
-	if( info->id == AccelNone )
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
+	if(info->id == AccelNone)
 		return;
 
-	KConfigGroup cg( KGlobal::config(), "Shortcuts" );
+	KConfigGroup cg(KGlobal::config(), "Shortcuts");
 
 	info->cut = newShortcut;
-	bool sameAsDefault = (newShortcut == shortcutDefault( id ));
+	bool sameAsDefault = (newShortcut == hardcodedDefaultShortcut(id));
 
 	if (sameAsDefault)
-		if( cg.hasKey( info->name ) )
-			cg.deleteEntry( info->name );
+		if(cg.hasKey(info->name))
+			cg.deleteEntry(info->name);
 		else
 			return;
 
-	cg.writeEntry( info->name, info->cut.toString() );
+	cg.writeEntry(info->name, info->cut.toString());
 }
 
-QString name( StandardShortcut id )
+QString name(StandardShortcut id)
 {
-	return guardedStandardShortcutInfo( id )->name;
+	return guardedStandardShortcutInfo(id)->name;
 }
 
-QString label( StandardShortcut id )
+QString label(StandardShortcut id)
 {
 	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
 	return i18n((info->description) ? info->description : info->name);
@@ -215,25 +215,25 @@ QString whatsThis( StandardShortcut /*id*/ )
 		return QString();
 }
 
-const KShortcut &shortcut( StandardShortcut id )
+const KShortcut &shortcut(StandardShortcut id)
 {
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-	if( !info->isInitialized )
-		initialize( id );
+	if(!info->isInitialized)
+		initialize(id);
 
 	return info->cut;
 }
 
-StandardShortcut findStandardShortcut( const QKeySequence &seq )
+StandardShortcut find(const QKeySequence &seq)
 {
 	if( !seq.isEmpty() ) {
-		for( uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++ ) {
+		for(uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++) {
 			StandardShortcut id = g_infoStandardShortcut[i].id;
 			if( id != AccelNone ) {
-				if( !g_infoStandardShortcut[i].isInitialized )
-					initialize( id );
-				if( g_infoStandardShortcut[i].cut.contains( seq ) )
+				if(!g_infoStandardShortcut[i].isInitialized)
+					initialize(id);
+				if(g_infoStandardShortcut[i].cut.contains(seq))
 					return id;
 			}
 		}
@@ -241,21 +241,21 @@ StandardShortcut findStandardShortcut( const QKeySequence &seq )
 	return AccelNone;
 }
 
-StandardShortcut findStandardShortcut( const char *keyName )
+StandardShortcut find(const char *keyName)
 {
-	for( uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++ )
+	for(uint i = 0; i < sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo); i++)
 		if (qstrcmp(g_infoStandardShortcut[i].name, keyName))
 			return g_infoStandardShortcut[i].id;
 
 	return AccelNone;
 }
 
-KShortcut shortcutDefault( StandardShortcut id )
+KShortcut hardcodedDefaultShortcut(StandardShortcut id)
 {
 	KShortcut cut;
-	KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
+	KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-	return KShortcut( info->cutDefault, info->cutDefault2 );
+	return KShortcut(info->cutDefault, info->cutDefault2);
 }
 
 const KShortcut& open()                  { return shortcut( Open ); }

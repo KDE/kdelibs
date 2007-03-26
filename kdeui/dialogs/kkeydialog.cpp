@@ -26,7 +26,7 @@
 #include "kkeybutton.h"
 
 #include "ui_kkeydialog.h"
-#include "ui_kshortcuteditor.h"
+//#include "ui_kshortcuteditor.h"
 
 #include <string.h>
 
@@ -182,7 +182,7 @@ KKeyChooserDelegate::KKeyChooserDelegate(QAbstractItemView *parent)
 }
 
 
-#include "kshapegestureselector.h"
+//#include "kshapegestureselector.h"
 //slot
 void KKeyChooserDelegate::itemActivated(QModelIndex index)
 {
@@ -191,19 +191,19 @@ void KKeyChooserDelegate::itemActivated(QModelIndex index)
 
 	//testing hack
 	if (index.column() == 2) {
-		KShapeGestureSelector *ksgs = new KShapeGestureSelector(0);
-		ksgs->exec();
+		//KShapeGestureSelector *ksgs = new KShapeGestureSelector(0);
+		//ksgs->exec();
 	}
 	if (index.column() == 0) {
 		const QAbstractItemModel *model = index.model();
 		index = model->index(index.row(), 1, index.parent());
 	}
 	if (!isExtended(index)) {
-		//TODO:fix the leak!!! (make a "real" KShortcutEditor widget)
-		Ui::KShortcutEditor *kseui = new Ui::KShortcutEditor;
-		QWidget *editor = new QWidget(static_cast<QAbstractItemView*>(parent())->viewport());
-		kseui->setupUi(editor);
-		extendItem(editor, index);
+		// //TODO:fix the leak!!! (make a "real" KShortcutEditor widget)
+		// Ui::KShortcutEditor *kseui = new Ui::KShortcutEditor;
+		// QWidget *editor = new QWidget(static_cast<QAbstractItemView*>(parent())->viewport());
+		// kseui->setupUi(editor);
+		// extendItem(editor, index);
 	} else {
 		contractItem(index);
 	}
