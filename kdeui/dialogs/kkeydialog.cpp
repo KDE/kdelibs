@@ -29,6 +29,7 @@
 
 #include <string.h>
 
+#include <QtDebug>
 #include <QTreeWidgetItem>
 #include <QGroupBox>
 #include <QTimer>
@@ -216,7 +217,7 @@ bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
 	d->rgpLists.append( pColl->actions() );
 	d->collections.append( pColl );
 	d->buildListView(d->rgpLists.count() - 1, str);
-
+    
 	return true;
 }
 
@@ -950,7 +951,7 @@ KKeyDialog::KKeyDialog( KKeyChooser::ActionTypes types, KKeyChooser::LetterShort
 	connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
 
 	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
-	resize( group.readEntry( "Dialog Size", size() ) );
+	resize( group.readEntry( "Dialog Size", sizeHint() ) );
 }
 
 KKeyDialog::~KKeyDialog()

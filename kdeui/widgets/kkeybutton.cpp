@@ -130,6 +130,7 @@ void KKeyButton::captureShortcut()
 void KKeyButton::paintEvent( QPaintEvent* )
 {
   QPainter painter(this);
+  painter.setRenderHint( QPainter::Antialiasing );
 
   QPolygon a( 4 );
   a.setPoint( 0, 0, 0) ;
