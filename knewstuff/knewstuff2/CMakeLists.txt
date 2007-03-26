@@ -37,6 +37,8 @@ set(knewstuff2_ui_SRCS
   ui/qasyncframe.cpp
   ui/qstarframe.cpp
   ui/qnowtooltip.cpp
+  ui/uploaddialog.cpp
+  ui/providerdialog.cpp
 )
 
 set(knewstuff2_SRCS
@@ -68,5 +70,15 @@ install(FILES
   core/providerloader.h
   core/installation.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/core
+)
+
+install(FILES
+  dxs/dxsengine.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/dxs
+)
+
+install(FILES
+  engine.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2
 )
 

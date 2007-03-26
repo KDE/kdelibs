@@ -53,81 +53,7 @@
 #include "qasyncpixmap.h"
 #include "qasyncframe.h"
 
-/** GUI: Internal Widget that displays a ver-stretchable (only) image */
-class ExtendImageWidget : public QWidget
-{
-    public:
-        ExtendImageWidget( const QPixmap & pix, QWidget * parent )
-            : QWidget( parent/*, WNoAutoErase*/ ), m_pixmap( pix ) // FIXME KDE4PORT
-        {
-            // adjust size hint
-            setFixedWidth( pix.width() );
-            setMinimumHeight( pix.height() );
-            // paint all own pixels
-            //setBackgroundMode( Qt::NoBackground ); // FIXME KDE4PORT
-            // create the tile image from last line of pixmap
-            //m_tile.resize( pix.width(), 1 ); // FIXME KDE4PORT
-            //copyBlt( &m_tile, 0,0, &pix, 0,pix.height()-2, pix.width(),1 ); // FIXME KDE4PORT
-        }
-
-        // internal paint function
-        void paintEvent( QPaintEvent * e )
-        {
-            // extend the bottom line of the image when painting
-            QRegion paintRegion = e->region();
-            QRect pixmapRect = e->rect().intersect( m_pixmap.rect() );
-            // paint the pixmap rect
-            QPainter p( this );
-            p.drawPixmap( pixmapRect.topLeft(), m_pixmap, pixmapRect );
-            // paint the tiled bottom part
-            QVector<QRect> rects = paintRegion.subtract( pixmapRect ).rects();
-            for ( int i = 0; i < rects.count(); i++ )
-            {
-                const QRect & tileRect = rects[ i ];
-                p.drawTiledPixmap( tileRect, m_tile, QPoint(tileRect.left(), 0) );
-            }
-        }
-
-    private:
-        QPixmap m_pixmap;
-        QPixmap m_tile;
-};
-
-
-/** CORE: extend KNS::Entry adding convenience methods */
-class AvailableItem : public Entry
-{
-    public:
-        typedef QList< AvailableItem * > List;
-
-	/// BEGIN DXS
-	// FIXME?!
-	AvailableItem(Entry *e)
-	{
-		setName(e->name());
-		setAuthor(e->author());
-		setType(e->type());
-		setLicense(e->license());
-		setSummary(e->summary());
-		setVersion(e->version());
-		setRelease(e->release());
-		setReleaseDate(e->releaseDate());
-		setPayload(e->payload());
-		setPreview(e->preview());
-		setRating(e->rating());
-		setDownloads(e->downloads());
-	}
-	/// END DXS
-
-        AvailableItem()
-            : Entry()
-        {
-        }
-
-        // returns the source url
-        QString url() const { return payload().representation(); }
-};
-
+using namespace KNS;
 
 class MyEventFilter : public QObject
 {
@@ -154,7 +80,7 @@ class MyEventFilter : public QObject
 class ItemsViewPart : public KHTMLPart
 {
     public:
-        ItemsViewPart( QWidget * parentWidget )
+        ItemsViewPart( QWidget * parentWidget = 0 )
             : KHTMLPart( parentWidget )
         {
             // customize functionality
@@ -170,16 +96,16 @@ class ItemsViewPart : public KHTMLPart
             view()->installEventFilter(f);
         }
 
-        void setItem ( AvailableItem *item )
+        void setEntry( Entry *entry )
         {
-            m_item = item;
+            m_entry = entry;
             buildContents();
         }
 
-        void updateItem( AvailableItem * item )
+        void updateEntry( Entry *entry )
         {
             // get item id string and iformations
-            QString idString = QString::number( (unsigned long)item );
+            QString idString = QString::number( (unsigned long)entry );
 //            AvailableItem::State state = item->state();
 //            bool showProgress = state != AvailableItem::Normal;
 //            int pixelProgress = showProgress ? (int)(item->progress() * 80.0) : 0;
@@ -206,33 +132,33 @@ class ItemsViewPart : public KHTMLPart
 // XXX ???
 //            write( "<div style='font-size:2em; border-bottom: 1px solid blue; background-color: #808080;'>Updated</div>" );
 
-            AvailableItem * item = m_item;
+            Entry *entry = m_entry;
 
             // precalc the image string
-            QString imageString = item->preview().representation();
+            QString imageString = entry->preview().representation();
             if ( imageString.length() > 1 )
                 imageString = "<div class='leftImage'><img src='" + imageString + "' border='0'></div>";
 
             // precalc the title string
-            QString titleString = item->name().representation();
-            if ( item->version().length() > 0 )
-                titleString += " v." + item->version();
+            QString titleString = entry->name().representation();
+            if ( entry->version().length() > 0 )
+                titleString += " v." + entry->version();
 
             // precalc button's text
 ///            QString buttonText = item->installed() ? i18n( "Uninstall" ) : i18n( "Install" );
 
             // precalc item's dynamic strings
-            QString idString = QString::number( (unsigned long)item );
+            QString idString = QString::number( (unsigned long)entry );
             QString clickString = "window.location.href=\"item:" + idString + "\";";
 
             // precalc the string for displaying stars (normal+grayed)
-            int starPixels = 11 + 11 * (item->rating() / 10);
+            int starPixels = 11 + 11 * (entry->rating() / 10);
             QString starsString = "<div class='star' style='width: " + QString::number( starPixels ) + "px;'></div>";
-            int grayPixels = 22 + 22 * (item->rating() / 20);
+            int grayPixels = 22 + 22 * (entry->rating() / 20);
             starsString = "<div class='starbg' style='width: " + QString::number( grayPixels ) + "px;'>" + starsString + "</div>";
 
             // precalc the string for displaying author (parsing email)
-	    KNS::Author author = item->author();
+	    KNS::Author author = entry->author();
             QString authorString = author.name();
             QString emailString = author.email();
             if (!emailString.isEmpty())
@@ -264,12 +190,12 @@ class ItemsViewPart : public KHTMLPart
                         "</tr></table>"
                         // contents body: item description
                         "<div class='contentsBody'>"
-                          + item->summary().representation() +
+                          + entry->summary().representation() +
                         "</div>"
                         // contents footer: author's name/date
                         "<div class='contentsFooter'>"
                           "<em>" + authorString + "</em>, "
-                          + KGlobal::locale()->formatDate( item->releaseDate(), true ) +
+                          + KGlobal::locale()->formatDate( entry->releaseDate(), true ) +
                         "</div>"
                      "</td>"
                   "</tr></table>" )
@@ -336,8 +262,8 @@ class ItemsViewPart : public KHTMLPart
                 }
 
                 // I love to cast pointers
-                AvailableItem * item = (AvailableItem *)itemPointer;
-                if ( item != m_item )
+                Entry *entry = (Entry*)itemPointer;
+                if ( entry != m_entry )
                 {
                     kWarning() << "ItemsView: error retrieving item pointer." << endl;
                     return;
@@ -353,7 +279,7 @@ class ItemsViewPart : public KHTMLPart
         }
 
     private:
-        AvailableItem *m_item;
+        Entry *m_entry;
 };
 
 
@@ -362,7 +288,7 @@ class ItemsView : public QScrollArea
 {
     //Q_OBJECT
     public:
-        ItemsView( NewStuffDialog * newStuffDialog, QWidget * parentWidget )
+        ItemsView( DownloadDialog * newStuffDialog, QWidget * parentWidget )
             : QScrollArea( parentWidget ),
             m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
         {
@@ -373,10 +299,15 @@ class ItemsView : public QScrollArea
             clear();
         }
 
-        void setItems( const AvailableItem::List & itemList )
+	void setEngine(DxsEngine *engine)
+	{
+	    m_engine = engine;
+	}
+
+        void setItems( const Entry::List & itemList )
         {
             clear();
-            m_items = itemList;
+            m_entries = itemList;
             buildContents();
         }
 
@@ -386,104 +317,81 @@ class ItemsView : public QScrollArea
             buildContents();
         }
 
-        void updateItem( AvailableItem * item )
+        void updateItem( Entry *entry )
         {
-            Q_UNUSED(item);
+            Q_UNUSED(entry);
 // XXX ???
 // TODO: proxy over
         }
 
     private:
-        // generate the HTML contents to be displayed by the class itself
         void buildContents()
         {
-            //setResizePolicy(QScrollArea::AutoOneFit); // FIXME KDE4PORT
-
             if(m_root)
             {
                 m_root = takeWidget();
                 delete m_root;
             }
 
-            m_root = new QWidget(widget());
-            setWidget(m_root);
+            m_root = new QWidget();
             QVBoxLayout *layout = new QVBoxLayout(m_root);
 
-            AvailableItem::List::iterator it = m_items.begin(), iEnd = m_items.end();
+            Entry::List::iterator it = m_entries.begin(), iEnd = m_entries.end();
             for ( ; it != iEnd; ++it )
             {
-                AvailableItem * item = *it;
+                Entry* entry = (*it);
 
-                QWidget *itemview = new QWidget(m_root);
-                QWidget *nav = new QWidget(itemview);
-                ItemsViewPart *part = new ItemsViewPart(itemview);
+                QFrame *itemview = new QFrame();
+                QWidget *nav = new QWidget();
+                ItemsViewPart *part = new ItemsViewPart();
                 QHBoxLayout *l = new QHBoxLayout(itemview);
                 l->addWidget(nav);
                 l->addWidget(part->view());
                 layout->addWidget(itemview);
 
-                QAsyncFrame *f = new QAsyncFrame(nav);
-// XXX ???
-                f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
-                QString imageurl = item->preview().representation();
-                QAsyncPixmap *pix = new QAsyncPixmap(imageurl);
-                f->setFixedSize(64, 64);
-                connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
-                KDXSButton *p = new KDXSButton(nav);
-                p->setEntry(item);
                 QVBoxLayout *l2 = new QVBoxLayout(nav);
-                l2->addWidget(f);
-                l2->addStretch(1);
-                l2->addWidget(p);
+                KDXSButton *dxsbutton = new KDXSButton();
+                dxsbutton->setEntry(entry);
+		dxsbutton->setEngine(m_engine);
 
-                part->setItem(item);
+                QString imageurl = entry->preview().representation();
+		if(!imageurl.isEmpty())
+		{
+                    QAsyncFrame *f = new QAsyncFrame();
+                    f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+                    QAsyncPixmap *pix = new QAsyncPixmap(imageurl);
+                    f->setFixedSize(64, 64);
+                    connect(pix, SIGNAL(signalLoaded(QPixmap*)), f, SLOT(slotLoaded(QPixmap*)));
+                    l2->addWidget(f);
+		}
+                l2->addStretch(1);
+                l2->addWidget(dxsbutton);
+
+                part->setEntry(entry);
             }
 
-            m_root->show();
+            setWidget(m_root);
         }
 
         // delete all the classes we own
         void clear()
         {
-            // delete all items and empty local list
-            AvailableItem::List::iterator it = m_items.begin(), iEnd = m_items.end();
-            for ( ; it != iEnd; ++it )
-                delete *it;
-            m_items.clear();
+            m_entries.clear();
             m_pixmaps.clear();
         }
 
     private:
-        NewStuffDialog * m_newStuffDialog;
-        AvailableItem::List m_items;
+        DownloadDialog * m_newStuffDialog;
+        Entry::List m_entries;
         QWidget *m_root;
         int m_sorting;
         QMap<QPixmap*, QWidget*> m_pixmaps;
+	DxsEngine *m_engine;
 };
 
 
-/** CORE/GUI: The main dialog that performs GHNS low level operations **/
-/* internal storage structures to be used by NewStuffDialog */
-struct ProvidersListJobInfo // -> Provider(s)
+struct KNS::DownloadDialogPrivate
 {
-    KJob * job;
-    QString receivedData;
-};
-struct ProviderJobInfo      // -> AvailableItem(s)
-{
-    QString receivedData;
-};
-struct ItemTransferInfo          // -> download files
-{
-    AvailableItem * item;
-};
-struct NewStuffDialogPrivate
-{
-    // Jobs (1 for fetching the list, unlimited for providers / items)
-    ProvidersListJobInfo providersListJob;
-    QMap< KJob *, ProviderJobInfo > providerJobs;
-    QMap< KJob *, ItemTransferInfo > transferJobs;
-
     // Contents
     QList< Provider * > providers;
 
@@ -500,12 +408,10 @@ struct NewStuffDialogPrivate
     QTimer * networkTimer;
 };
 
-NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
-    : QDialog( parentWidget ), d( new NewStuffDialogPrivate )
+DownloadDialog::DownloadDialog( QWidget * parentWidget )
+    : QDialog( parentWidget ), d( new DownloadDialogPrivate )
 {
     // initialize the private classes
-    d->providersListJob.job = 0;
-
     d->parentWidget = parentWidget;
 
     d->messageTimer = new QTimer( this );
@@ -520,9 +426,10 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
     QBoxLayout * horLay = new QHBoxLayout( this/*, 11*/ ); // FIXME KDE4PORT
 
     // create left picture widget (if picture found)
-    QPixmap p( KStandardDirs::locate( "data", "kpdf/pics/ghns.png" ) );
-    if ( !p.isNull() )
-       horLay->addWidget( new ExtendImageWidget( p, this ) );
+    //QPixmap p( KStandardDirs::locate( "data", "kpdf/pics/ghns.png" ) );
+    //if ( !p.isNull() )
+    //   horLay->addWidget( new ExtendImageWidget( p, this ) );
+    // FIXME KDE4PORT: if we use a left bar image, find a better way
 
     // create right 'main' widget
     QWidget * rightLayouterWidget = new QWidget( this );
@@ -601,36 +508,18 @@ NewStuffDialog::NewStuffDialog( QWidget * parentWidget )
     resize( 700, 400 );
     slotResetMessageColors();
 
-    // start loading providers list
-    //QTimer::singleShot( 100, this, SLOT( slotLoadProvidersList() ) );
-    //QTimer::singleShot( 100, this, SLOT( slotLoadProvidersListDXS() ) );
+    m_engine = NULL;
+
+    setWindowTitle(i18n("Get Hot New Stuff!"));
 }
 
-NewStuffDialog::~NewStuffDialog()
+DownloadDialog::~DownloadDialog()
 {
-    // cancel pending KJob(s) (don't like to leave orphaned threads alone)
-    if ( d->providersListJob.job )
-        d->providersListJob.job->kill();
-
-    QMap< KJob *, ProviderJobInfo >::iterator pIt = d->providerJobs.begin(), pEnd = d->providerJobs.end();
-    for ( ; pIt != pEnd; ++pIt )
-        pIt.key()->kill();
-
-    QMap< KJob *, ItemTransferInfo >::iterator tIt = d->transferJobs.begin(), tEnd = d->transferJobs.end();
-    for ( ; tIt != tEnd; ++tIt )
-        tIt.key()->kill();
-
-    // delete all Provider descriptors
-    QList< Provider * >::iterator it = d->providers.begin(), iEnd = d->providers.end();
-    for ( ; it != iEnd; ++it )
-        delete *it;
-    d->providers.clear();
-
     // delete the private storage structure
     delete d;
 }
 
-void NewStuffDialog::displayMessage( const QString & msg, MessageType type, int timeOutMs )
+void DownloadDialog::displayMessage( const QString & msg, MessageType type, int timeOutMs )
 {
     // stop the pending timer if present
     if ( d->messageTimer )
@@ -661,7 +550,7 @@ void NewStuffDialog::displayMessage( const QString & msg, MessageType type, int 
     d->messageTimer->start( timeOutMs );
 }
 
-void NewStuffDialog::installItem( AvailableItem * item )
+void DownloadDialog::installItem( Entry *entry )
 {
     // safety check
 //    if ( item->url().isEmpty() || item->destinationPath().isEmpty() )
@@ -671,28 +560,28 @@ void NewStuffDialog::installItem( AvailableItem * item )
 //    }
 
     //TODO check for AvailableItem deletion! (avoid broken pointers) -> cancel old jobs
-    slotDownloadItem( item );
+    slotDownloadItem( entry );
 }
 
-void NewStuffDialog::removeItem( AvailableItem * item )
+void DownloadDialog::removeItem( Entry *entry )
 {
-Q_UNUSED(item);
+Q_UNUSED(entry);
 //    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
 }
 
-void NewStuffDialog::slotResetMessageColors() // SLOT
+void DownloadDialog::slotResetMessageColors() // SLOT
 {
     // FIXME KDE4PORT
     //d->messageLabel->setPaletteForegroundColor( palette().active().text() );
     //d->messageLabel->setPaletteBackgroundColor( palette().active().background() );
 }
 
-void NewStuffDialog::slotNetworkTimeout() // SLOT
+void DownloadDialog::slotNetworkTimeout() // SLOT
 {
     displayMessage( i18n("Timeout. Check internet connection!"), Error );
 }
 
-void NewStuffDialog::slotSortingSelected( int sortType ) // SLOT
+void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 {
     d->itemsView->setSorting( sortType );
 }
@@ -700,39 +589,43 @@ void NewStuffDialog::slotSortingSelected( int sortType ) // SLOT
 
 ///////////////// DXS ////////////////////
 
-void NewStuffDialog::setEngine(Dxs *engine)
+void DownloadDialog::setEngine(DxsEngine *engine)
 {
-	m_dxs = engine;
+	m_engine = engine;
 
-	connect(m_dxs,
+	d->itemsView->setEngine(m_engine);
+
+	// FIXME: adapt to DxsEngine from Dxs!
+	connect(m_engine,
 		SIGNAL(signalCategories(QList<KNS::Category*>)),
 		SLOT(slotCategories(QList<KNS::Category*>)));
-	connect(m_dxs,
+	connect(m_engine,
 		SIGNAL(signalEntries(QList<KNS::Entry*>)),
 		SLOT(slotEntries(QList<KNS::Entry*>)));
-	connect(m_dxs,
+	connect(m_engine,
 		SIGNAL(signalError()),
 		SLOT(slotError()));
-	connect(m_dxs,
+	connect(m_engine,
 		SIGNAL(signalFault()),
 		SLOT(slotFault()));
 }
 
-void NewStuffDialog::slotLoadProviderDXS(int index)
+void DownloadDialog::slotLoadProviderDXS(int index)
 {
 	Q_UNUSED(index);
 
 	QString category = d->typeCombo->currentText();
 	QString categoryname = m_categorymap[category];
 
-	m_dxs->call_entries(categoryname, QString());
+	//m_dxs->call_entries(categoryname, QString());
+	// FIXME: use m_engine
 }
 
-void NewStuffDialog::slotLoadProvidersListDXS()
+void DownloadDialog::slotLoadProvidersListDXS()
 {
 }
 
-void NewStuffDialog::slotCategories(QList<KNS::Category*> categories)
+void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 {
 	m_categorymap.clear();
 
@@ -753,26 +646,31 @@ void NewStuffDialog::slotCategories(QList<KNS::Category*> categories)
 	slotLoadProviderDXS(0);
 }
 
-void NewStuffDialog::slotEntries(QList<KNS::Entry*> entries)
+void DownloadDialog::slotEntries(QList<KNS::Entry*> entries)
 {
-	AvailableItem::List itemList;
+	d->itemsView->setItems( entries );
+}
 
-	for(QList<KNS::Entry*>::Iterator it = entries.begin(); it != entries.end(); it++)
-	{
-		KNS::Entry *entry = (*it);
-		kDebug() << "Entry: " << entry->name().representation() << endl;
-		itemList.append(new AvailableItem(entry));
-	}
+// FIXME: below here, those are for traditional GHNS
 
-	d->itemsView->setItems( itemList );
+void DownloadDialog::addEntry(Entry *entry)
+{
+	m_entries.append(entry);
+
+	kDebug() << "downloaddialog: addEntry to list of size " << m_entries.size() << endl;
+}
+
+void DownloadDialog::refresh()
+{
+	d->itemsView->setItems(m_entries);
 }
 
 ///////////////// DXS ////////////////////
 
 //BEGIN File(s) Transferring
-void NewStuffDialog::slotDownloadItem( AvailableItem * item )
+void DownloadDialog::slotDownloadItem( Entry *entry )
 {
-Q_UNUSED(item);
+Q_UNUSED(entry);
 /*
 XXX update item status
     item->setState( AvailableItem::Installing );
@@ -784,21 +682,21 @@ XXX inform the user
 */
 }
 
-/*void NewStuffDialog::slotItemMessage( KJob * job, const QString & message )
+/*void DownloadDialog::slotItemMessage( KJob * job, const QString & message )
 {
     AvailableItem * item = d->transferJobs[ job ].item;
     kDebug() << "Name: " << item->name().representation() << " msg: '" << message << "'." << endl;
     d->itemsView->updateItem( item );
 }
 
-void NewStuffDialog::slotItemPercentage( KJob * job, unsigned long percent )
+void DownloadDialog::slotItemPercentage( KJob * job, unsigned long percent )
 {
     AvailableItem * item = d->transferJobs[ job ].item;
     item->setProgress( (float)percent / 100.0 );
     d->itemsView->updateItem( item );
 }
 
-void NewStuffDialog::slotItemResult( KJob * job )
+void DownloadDialog::slotItemResult( KJob * job )
 {
     item->setState( AvailableItem::Normal );
     item->setProgress( 100.0 );
@@ -808,14 +706,14 @@ void NewStuffDialog::slotItemResult( KJob * job )
 //END File(s) Transferring
 
 // fault/error from kdxsbutton
-void NewStuffDialog::slotFault()
+void DownloadDialog::slotFault()
 {
 	KMessageBox::error(this,
 		i18n("A protocol fault has occurred. The request has failed."),
 		i18n("Desktop Exchange Service"));
 }
 
-void NewStuffDialog::slotError()
+void DownloadDialog::slotError()
 {
 	KMessageBox::error(this,
 		i18n("A network error has occurred. The request has failed."),

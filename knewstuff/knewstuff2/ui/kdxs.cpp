@@ -8,7 +8,7 @@
 KDXS::KDXS()
 : KMainWindow()
 {
-	KDXSView *view = new KDXSView(this);
+	KNS::KDXSView *view = new KNS::KDXSView(this);
 	setCentralWidget(view);
 }
 

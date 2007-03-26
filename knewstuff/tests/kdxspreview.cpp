@@ -20,6 +20,6 @@ int main(int argc, char **argv)
 	KCmdLineArgs::init(argc, argv, &about);
 	KApplication app;
 
-	KDXSView view;
+	KNS::KDXSView view;
 	return view.exec();
 }

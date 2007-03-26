@@ -3,26 +3,27 @@
 
 #include <qtoolbutton.h>
 
-//#include <knewstuff2/entry.h>
+class KMenu;
+class QAction;
+class KUrl;
 
 namespace KNS
 {
-	class Dxs;
-	class Entry;
-	class Category;
-};
 
-class KMenu;
-class QAction;
+class Dxs;
+class Entry;
+class DxsEngine;
+class Category;
 
 class KDXSButton : public QToolButton
 {
 Q_OBJECT
 public:
-	KDXSButton(QWidget *parent);
+	KDXSButton(QWidget *parent = 0);
 	~KDXSButton();
 
         void setEntry(KNS::Entry *e);
+	void setEngine(KNS::DxsEngine *engine);
 
 public slots:
 	void slotTriggered(QAction *action);
@@ -43,6 +44,9 @@ public slots:
 
 	void slotFault();
 	void slotError();
+
+	void slotPayloadLoaded(KUrl url);
+	void slotPayloadFailed();
 
 private:
 	bool authenticate();
@@ -99,9 +103,12 @@ private:
 	KNS::Dxs *m_dxs;
 	KMenu *m_p, *m_history, *m_contact;
 	KNS::Entry *m_entry;
+	KNS::DxsEngine *m_engine;
 
 	QString m_username;
 	QString m_password;
 };
+
+}
 
 #endif

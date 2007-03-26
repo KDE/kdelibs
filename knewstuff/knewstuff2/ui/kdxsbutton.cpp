@@ -30,16 +30,22 @@
 
 #include <kio/passworddialog.h>
 
+using namespace KNS;
+
 KDXSButton::KDXSButton(QWidget *parent)
 : QToolButton(parent)
 {
 	m_entry = 0;
+	m_dxs = 0;
+	m_engine = 0;
 
 	// FIXME KDE4PORT
 	//setBackgroundColor(QColor(255, 255, 255));
 
 	m_p = new KMenu(this);
 	action_install = m_p->addAction(SmallIcon("knewstuff"),
+		i18n("Install"));
+	action_deinstall = m_p->addAction(SmallIcon("knewstuff"),
 		i18n("Deinstall"));
 	action_comments = m_p->addAction(SmallIcon("leftjust"),
 		i18n("Comments"));
@@ -90,11 +96,65 @@ KDXSButton::KDXSButton(QWidget *parent)
 	connect(m_contact, SIGNAL(triggered(QAction*)), SLOT(slotTriggered(QAction*)));
 	connect(pcollab, SIGNAL(triggered(QAction*)), SLOT(slotTriggered(QAction*)));
 
-	connect(m_history, SIGNAL(activated(int)), SLOT(slotVersionsActivated(int)));
-	connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
+	// FIXME KDE4PORT: dynamic qactions are needed here
+	//connect(m_history, SIGNAL(activated(int)), SLOT(slotVersionsActivated(int)));
+	//connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
+
+	QPixmap pix = SmallIcon("knewstuff");
+	setIcon(pix);
+	setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	setMenu(m_p);
+
+	setEnabled(false);
+	show();
+}
+
+KDXSButton::~KDXSButton()
+{
+}
+
+void KDXSButton::setEntry(Entry *e)
+{
+	m_entry = e;
+
+	if(m_engine) setEnabled(true);
+
+	Entry::Status status = e->status();
+	if(status == Entry::Installed)
+	{
+		setText(i18n("Deinstall"));
+		action_install->setVisible(false);
+	}
+	else
+	{
+		setText(i18n("Install"));
+		action_deinstall->setVisible(false);
+	}
+
+	Author author = e->author();
+	if(!author.email().isEmpty())
+	{
+		action_contactbymail = m_contact->addAction(SmallIcon("mail_send"),
+			i18n("Send Mail"));
+	}
+	if(!author.jabber().isEmpty())
+	{
+		action_contactbyjabber = m_contact->addAction(SmallIcon("idea"),
+			i18n("Contact on Jabber"));
+	}
+}
+
+void KDXSButton::setEngine(DxsEngine *engine)
+{
+	m_engine = engine;
+
+	if(m_entry) setEnabled(true);
 
 	m_dxs = new KNS::Dxs();
 	m_dxs->setEndpoint(KUrl("http://localhost/cgi-bin/hotstuff-dxs"));
+	// FIXME: use real endpoint as soon as provider is loaded
+	// FIXME: actually we would need a setProvider() here as well
+	// FIXME: another thing: shouldn't dxsengine own the dxs object?
 
 	connect(m_dxs,
 		SIGNAL(signalInfo(QString, QString, QString)),
@@ -132,41 +192,13 @@ KDXSButton::KDXSButton(QWidget *parent)
 	connect(m_dxs,
 		SIGNAL(signalError()),
 		SLOT(slotError()));
-
-	QPixmap pix = SmallIcon("knewstuff");
-	setIcon(pix);
-        setText(i18n("Install"));
-	// FIXME KDE4PORT
-        //setUsesTextLabel(true);
-        //setUsesBigPixmap(false);
-        //setTextPosition(QToolButton::BesideIcon);
-	setMenu(m_p);
-	show();
-}
-
-KDXSButton::~KDXSButton()
-{
-}
-
-void KDXSButton::setEntry(Entry *e)
-{
-//	m_dxs->setEntry(e);
-	m_entry = e;
-
-// XXX ???
-// extend Entry class to contain author contact information
-
-	action_contactbymail = m_contact->addAction(SmallIcon("mail_send"),
-		i18n("Send Mail"));
-	action_contactbyjabber = m_contact->addAction(SmallIcon("idea"),
-		i18n("Contact on Jabber"));
 }
 
 void KDXSButton::slotInfo(QString provider, QString server, QString version)
 {
-	QString infostring = i18n("Server: %1").arg(server);
-	infostring += "\n" + i18n("Provider: %1").arg(provider);
-	infostring += "\n" + i18n("Version: %1").arg(version);
+	QString infostring = i18n("Server: %1", server);
+	infostring += "\n" + i18n("Provider: %1", provider);
+	infostring += "\n" + i18n("Version: %1", version);
 
 	KMessageBox::information(this,
 		infostring,
@@ -387,10 +419,20 @@ void KDXSButton::slotTriggered(QAction *action)
 		if(authenticate())
 			m_dxs->call_subscription(0, true);
 	}
-	if((action == action_deinstall) || (action == action_install))
+	if(action == action_deinstall)
 	{
-		NewStuffDialog *d = new NewStuffDialog(this);
-		d->show();
+		m_engine->uninstall(m_entry);
+	}
+	if(action == action_install)
+	{
+		m_engine->downloadPayload(m_entry);
+
+		connect(m_engine,
+			SIGNAL(signalPayloadLoaded(KUrl)),
+			SLOT(slotPayloadLoaded(KUrl)));
+		connect(m_engine,
+			SIGNAL(signalPayloadFailed()),
+			SLOT(slotPayloadFailed()));
 	}
 	if(action == action_collabcomment)
 	{
@@ -441,7 +483,10 @@ void KDXSButton::slotVersionsHighlighted(int id)
 
 void KDXSButton::slotClicked()
 {
-	slotTriggered(action_install);
+	if(action_install->isVisible())
+		slotTriggered(action_install);
+	else
+		slotTriggered(action_deinstall);
 }
 
 bool KDXSButton::authenticate()
@@ -462,6 +507,18 @@ bool KDXSButton::authenticate()
 	}
 
 	return false;
+}
+
+void KDXSButton::slotPayloadLoaded(KUrl url)
+{
+	kDebug() << "PAYLOAD: success; try to install" << endl;
+
+	m_engine->install(url.url());
+}
+
+void KDXSButton::slotPayloadFailed()
+{
+	kDebug() << "PAYLOAD: failed" << endl;
 }
 
 #include "kdxsbutton.moc"

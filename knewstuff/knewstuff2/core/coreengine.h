@@ -98,6 +98,9 @@ class KDE_EXPORT CoreEngine : public QObject
     void signalEntryUploaded();
     void signalEntryFailed();
 
+    void signalProvidersFinished();
+    void signalEntriesFinished();
+
   private slots:
     void slotProvidersLoaded(KNS::Provider::List *list);
     void slotProvidersFailed();

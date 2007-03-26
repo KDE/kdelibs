@@ -8,26 +8,30 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
-#ifndef KNEWSTUFF2_UI_NEWSTUFF_H
-#define KNEWSTUFF2_UI_NEWSTUFF_H
+#ifndef KNEWSTUFF2_UI_DOWNLOADDIALOG_H
+#define KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 
 #include <qdialog.h>
 
-#include <knewstuff2/dxs/dxs.h>
+#include <knewstuff2/dxs/dxsengine.h>
+#include <knewstuff2/core/category.h>
 
-using namespace KNS;
-
-class AvailableItem;
 class KJob;
 
-class NewStuffDialog : public QDialog
+namespace KNS
+{
+
+class DownloadDialog : public QDialog
 {
     Q_OBJECT
     public:
-        NewStuffDialog( QWidget * parent );
-        ~NewStuffDialog();
+        DownloadDialog( QWidget * parent );
+        ~DownloadDialog();
 
-	void setEngine(Dxs *engine);
+	void addEntry(Entry *entry);
+	void refresh();
+
+	void setEngine(DxsEngine *engine);
 
         // show a message in the bottom bar
         enum MessageType { Normal, Info, Error };
@@ -35,17 +39,19 @@ class NewStuffDialog : public QDialog
             MessageType type = Normal, int timeOutMs = 3000 );
 
         // begin installing that item
-        void installItem( AvailableItem * item );
+        void installItem( Entry * entry );
 
         // remove an already installed item
-        void removeItem( AvailableItem * item );
+        void removeItem( Entry * entry );
 
     private:
         // private storage class
-        class NewStuffDialogPrivate * d;
+        class DownloadDialogPrivate * d;
 
-	Dxs *m_dxs;
+	DxsEngine *m_engine;
 	QMap<QString, QString> m_categorymap;
+
+	QList<Entry*> m_entries;
 
     private slots:
         void slotResetMessageColors();
@@ -59,10 +65,12 @@ class NewStuffDialog : public QDialog
 	void slotFault();
 	void slotError();
         // file downloading
-        void slotDownloadItem( AvailableItem * );
+        void slotDownloadItem( Entry * );
         //void slotItemMessage( KJob *, const QString & );
         //void slotItemPercentage( KJob *, unsigned long );
         //void slotItemResult( KJob * );
 };
+
+}
 
 #endif

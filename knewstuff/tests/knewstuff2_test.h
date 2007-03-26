@@ -1,5 +1,5 @@
-#ifndef KNEWSTUFF2_TEST_H
-#define KNEWSTUFF2_TEST_H
+#ifndef KNEWSTUFF2_TEST_TEST_H
+#define KNEWSTUFF2_TEST_TEST_H
 
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>

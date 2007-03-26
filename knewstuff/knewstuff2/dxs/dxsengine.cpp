@@ -2,12 +2,15 @@
 
 #include "dxs.h"
 
+#include <kdebug.h>
+
 using namespace KNS;
 
 DxsEngine::DxsEngine()
 : CoreEngine()
 {
 	m_dxs = NULL;
+	m_dxspolicy = DxsIfPossible;
 }
 
 DxsEngine::~DxsEngine()
@@ -15,23 +18,44 @@ DxsEngine::~DxsEngine()
 	delete m_dxs;
 }
 
+void DxsEngine::setDxsPolicy(Policy policy)
+{
+	m_dxspolicy = policy;
+}
+
 void DxsEngine::loadEntries(Provider *provider)
 {
+	// Ensure that the provider offers DXS at all
+	// Match DXS offerings with the engine's policy
+	if(provider->webService().isValid())
+	{
+		if(m_dxspolicy == DxsNever)
+		{
+			CoreEngine::loadEntries(provider);
+			return;
+		}
+	}
+	else
+	{
+		if(m_dxspolicy != DxsAlways)
+		{
+			CoreEngine::loadEntries(provider);
+			return;
+		}
+		else
+		{
+			kError(550) << "DxsEngine: DXS requested but not offered" << endl;
+			return;
+		}
+	}
+
+	// From here on, it's all DXS now
+
 	if(!m_dxs)
 	{
 		m_dxs = new Dxs();
 	}
-
-	// Ensure that the provider offers DXS at all
-	if(provider->webService().isValid())
-	{
-		m_dxs->setEndpoint(provider->webService());
-	}
-	else
-	{
-		CoreEngine::loadEntries(provider);
-		return;
-	}
+	m_dxs->setEndpoint(provider->webService());
 
 	// FIXME: load all categories first, then feeds second
 	m_dxs->call_entries(QString(), QString());

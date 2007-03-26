@@ -14,6 +14,15 @@ class KDE_EXPORT DxsEngine : public CoreEngine
     DxsEngine();
     ~DxsEngine();
 
+    enum Policy
+    {
+      DxsNever,
+      DxsIfPossible,
+      DxsAlways
+    };
+
+    void setDxsPolicy(Policy policy);
+
     void loadEntries(Provider *provider);
     //void downloadPreview(Entry *entry);
     //void downloadPayload(Entry *entry);
@@ -32,6 +41,7 @@ class KDE_EXPORT DxsEngine : public CoreEngine
 
   private:
     Dxs *m_dxs;
+    Policy m_dxspolicy;
 };
 
 }

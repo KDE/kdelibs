@@ -1,5 +1,5 @@
-#ifndef KNEWSTUFF2_DOWNLOAD_H
-#define KNEWSTUFF2_DOWNLOAD_H
+#ifndef KNEWSTUFF2_TEST_DOWNLOAD_H
+#define KNEWSTUFF2_TEST_DOWNLOAD_H
 
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>

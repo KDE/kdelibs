@@ -244,6 +244,8 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 	KUrl sourcepayload = KUrl(entry->payload().representation());
 	KUrl destfolder = provider->uploadUrl();
 
+	destfolder.setFileName(sourcepayload.fileName());
+
 	KIO::FileCopyJob *fcjob = KIO::file_copy(sourcepayload, destfolder, -1, true, false, false);
 	connect(fcjob,
 		SIGNAL(result(KJob*)),
@@ -292,6 +294,9 @@ void CoreEngine::slotPayloadResult(KJob *job)
 {
 	if(job->error())
 	{
+		kError(550) << "Cannot load payload file." << endl;
+		kError(550) << job->errorString() << endl;
+
 		m_entry_jobs.remove(job);
 		emit signalPayloadFailed();
 	}
@@ -318,6 +323,9 @@ void CoreEngine::slotPreviewResult(KJob *job)
 {
 	if(job->error())
 	{
+		kError(550) << "Cannot load preview file." << endl;
+		kError(550) << job->errorString() << endl;
+
 		m_entry_jobs.remove(job);
 		emit signalPreviewFailed();
 	}
@@ -343,10 +351,21 @@ void CoreEngine::slotUploadPayloadResult(KJob *job)
 {
 	if(job->error())
 	{
+		kError(550) << "Cannot upload payload file." << endl;
+		kError(550) << job->errorString() << endl;
+
 		m_uploadedentry = NULL;
 		m_uploadprovider = NULL;
 
 		emit signalEntryFailed();
+		return;
+	}
+
+	if(m_uploadedentry->preview().isEmpty())
+	{
+		// FIXME: we abuse 'job' here for the shortcut if there's no preview
+		slotUploadPreviewResult(job);
+		return;
 	}
 
 	KUrl sourcepreview = KUrl(m_uploadedentry->preview().representation());
@@ -362,10 +381,14 @@ void CoreEngine::slotUploadPreviewResult(KJob *job)
 {
 	if(job->error())
 	{
+		kError(550) << "Cannot upload preview file." << endl;
+		kError(550) << job->errorString() << endl;
+
 		m_uploadedentry = NULL;
 		m_uploadprovider = NULL;
 
 		emit signalEntryFailed();
+		return;
 	}
 
 	// FIXME: the following save code is also in cacheEntry()
@@ -403,10 +426,14 @@ void CoreEngine::slotUploadMetaResult(KJob *job)
 {
 	if(job->error())
 	{
+		kError(550) << "Cannot upload meta file." << endl;
+		kError(550) << job->errorString() << endl;
+
 		m_uploadedentry = NULL;
 		m_uploadprovider = NULL;
 
 		emit signalEntryFailed();
+		return;
 	}
 	else
 	{
@@ -680,6 +707,8 @@ void CoreEngine::mergeProviders(Provider::List *providers)
 		m_provider_cache.append(p);
 		m_provider_index[pid(p)] = p;
 	}
+
+	emit signalProvidersFinished();
 }
 
 void CoreEngine::mergeEntries(Entry::List *entries)
@@ -722,6 +751,8 @@ void CoreEngine::mergeEntries(Entry::List *entries)
 		m_entry_cache.append(e);
 		m_entry_index[id(e)] = e;
 	}
+
+	emit signalEntriesFinished();
 }
 
 void CoreEngine::cacheProvider(Provider *provider)

@@ -2,6 +2,8 @@
 
 #include "newstuff.h"
 
+#include "knewstuff2/dxs/dxs.h"
+
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -11,6 +13,8 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
+
+using namespace KNS;
 
 KDXSView::KDXSView(QWidget *parent)
 : KDialog(parent)
@@ -113,8 +117,9 @@ void KDXSView::slotProvidersLoaded(KNS::Provider::List *providers)
 	dxs->setEndpoint(endpoint);
 	//dxs->setMethod(m_type->currentItem());
 
-	NewStuffDialog *d = new NewStuffDialog(this);
-	d->setEngine(dxs);
+	DownloadDialog *d = new DownloadDialog(this);
+	//d->setEngine(dxs);
+	// FIXME: use DxsEngine object here
 	d->show();
 
 	// FIXME: provide queueing/update mechanism for dialog

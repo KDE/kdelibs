@@ -1,0 +1,27 @@
+KNewStuff2 test applications
+============================
+
+In order to understand the test structure, remember the engine class
+hierarchy of the library:
+ KNS::CoreEngine    - GHNS provider loading/upload/download
+ -> KNS::DxsEngine  - DXS interaction (contains KNS::Dxs child)
+   -> KNS::Engine   - dialog integration and convenience wrappers
+
+knewstuff2_test:
+ * test CoreEngine functionality
+ * command line only
+
+knewstuff2_download:
+ * test CoreEngine functionality
+ * custom download dialog
+
+knewstuff2_standard:
+ * test Engine functionality
+ * uses standard dialogs
+ * syntax 1: knewstuff2_standard --download
+ * syntax 2: knewstuff2_standard --upload <payloadfile>
+
+kdxspreview:
+ * test Dxs functionality
+ * dialog partially reused from knewstuff2/ui (still unclean)
+

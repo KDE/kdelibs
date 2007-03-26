@@ -7,6 +7,9 @@
 
 class QComboBox;
 
+namespace KNS
+{
+
 class KDE_EXPORT KDXSView : public KDialog
 {
 Q_OBJECT
@@ -26,5 +29,7 @@ private:
 	QComboBox *m_url;
 	QComboBox *m_type;
 };
+
+}
 
 #endif
