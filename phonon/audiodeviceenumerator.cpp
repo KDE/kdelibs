@@ -82,8 +82,6 @@ void AudioDeviceEnumeratorPrivate::findDevices()
 
     Solid::DeviceList devices = manager.findDevicesFromQuery("AudioHw.deviceType & 'AudioInput|AudioOutput'");
     foreach (Solid::Device device, devices) {
-        Solid::AudioHw *audiohw = device.as<Solid::AudioHw>();
-        Q_ASSERT(audiohw);
         AudioDevice dev(device, config);
         if (dev.isValid()) {
             if (dev.isCaptureDevice()) {

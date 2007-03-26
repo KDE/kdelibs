@@ -2,8 +2,7 @@
 KDE4_NO_ENABLE_FINAL(phonon)
 
 # Those apply to all subdirs
-include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/solid)
-
+include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/solid)
 
 # phonon specific configure checks
 # maybe they could be moved into a separate file which is then included here, Alex
@@ -55,13 +54,14 @@ set(phononcore_LIB_SRCS
 	globalconfig.cpp
 	factory.cpp
 	kiofallback.cpp
+	guiinterface.cpp
 	)
 
 kde4_automoc(${phononcore_LIB_SRCS})
 
 kde4_add_library(phononcore SHARED ${phononcore_LIB_SRCS})
 
-target_link_libraries(phononcore ${KDE4_KIO_LIBS})
+target_link_libraries(phononcore ${KDE4_KDECORE_LIBS})
 
 set_target_properties(phononcore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS phononcore  DESTINATION ${LIB_INSTALL_DIR} )
@@ -127,3 +127,5 @@ install(FILES
 	audiodevice.h
 	audiodeviceenumerator.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
+
+# vim: noet

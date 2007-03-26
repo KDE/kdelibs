@@ -20,54 +20,26 @@
 #ifndef KIOFALLBACK_H
 #define KIOFALLBACK_H
 
+#include <kdelibs_export.h>
+
 #include "phononnamespace.h"
-
-#include <kio/global.h>
-
-class QByteArray;
-class KJob;
-
-namespace KIO
-{
-    class Job;
-    class SimpleJob;
-} // namespace KIO
+#include "mediaobject.h"
 
 namespace Phonon
 {
 class MediaObject;
 
-class KioFallback : public QObject
+class PHONONCORE_EXPORT KioFallback : public QObject
 {
     Q_OBJECT
     public:
-        KioFallback(MediaObject *parent);
-        ~KioFallback();
+        KioFallback(MediaObject *parent) : QObject(parent) {}
+        virtual ~KioFallback() {}
 
-        void stopped();
-        qint64 totalTime() const;
-
-        void setupKioStreaming();
-
-    public Q_SLOTS:
-        void setupKioJob();
-        void bytestreamNeedData();
-        void bytestreamEnoughData();
-        void bytestreamData(KIO::Job *, const QByteArray &);
-        void bytestreamResult(KJob *);
-        void bytestreamTotalSize(KJob *, qulonglong);
-        void cleanupByteStream();
-        void bytestreamSeekStream(qint64);
-        void bytestreamFileJobOpen(KIO::Job *);
-        void bytestreamSeekDone(KIO::Job *, KIO::filesize_t);
-
-    private:
-        bool endOfDataSent;
-        bool seeking;
-        bool reading;
-        bool m_open;
-        qint64 m_seekPosition;
-        KIO::SimpleJob *kiojob;
+        virtual void stopped() = 0;
+        virtual qint64 totalTime() const = 0;
+        virtual void setupKioStreaming() = 0;
+        virtual void setupKioJob() = 0;
 };
 } // namespace Phonon
 #endif // KIOFALLBACK_H

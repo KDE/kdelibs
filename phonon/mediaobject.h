@@ -28,6 +28,7 @@ class KUrl;
 namespace Phonon
 {
 	class MediaObjectPrivate;
+    class KioFallbackImpl;
 
 	/**
 	 * \short Interface for media playback of a given URL.
@@ -49,7 +50,7 @@ namespace Phonon
 	class PHONONCORE_EXPORT MediaObject : public AbstractMediaProducer
 	{
 		friend class MediaQueue;
-        friend class KioFallback;
+        friend class KioFallbackImpl;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( MediaObject )
 		PHONON_HEIR( MediaObject )

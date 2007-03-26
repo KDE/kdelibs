@@ -17,12 +17,41 @@
 
 */
 
-#include "kiofallback.h"
+#ifndef GUIINTERFACE_H
+#define GUIINTERFACE_H
+
+#include <kdelibs_export.h>
+#include <QStringList>
+#include <QString>
+#include <QVariant>
+
+class QObject;
 
 namespace Phonon
 {
 
+class KioFallback;
+class MediaObject;
+
+class PHONONCORE_EXPORT GuiInterface
+{
+    public:
+        virtual ~GuiInterface();
+
+        static GuiInterface *instance();
+        virtual QVariant icon(const QString &name) { Q_UNUSED(name); return QVariant(); }
+
+        virtual void notification(const char *notificationName, const QString &text,
+                const QStringList &actions = QStringList(), QObject *receiver = 0,
+                const char *actionSlot = 0);
+
+        virtual KioFallback *newKioFallback(MediaObject *parent);
+
+    private:
+        static GuiInterface *s_instance;
+};
+extern PHONONCORE_EXPORT GuiInterface *_kde_internal_GuiInterface;
+
 } // namespace Phonon
 
-#include "kiofallback.moc"
-// vim: sw=4 sts=4 et tw=100
+#endif // GUIINTERFACE_H

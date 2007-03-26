@@ -1,3 +1,10 @@
+- VideoWidget::setFullScreen will make the real VideoWidget inaccessible for the application as the
+  backend widget is reparented to an internal widget. This internal widget is shown in fullscreen
+  mode. But this way all events that happen on the (fullscreen) video widget don't arrive at the
+  application. Forwarding events still doesn't solve the problem of mapping mouse coordinates or
+  adding custom widgets (like a toolbar). Though perhaps adding those widgets as overlay is even
+  better. :)
+
 - let the Phonon KCM check whether the hw: ALSA device already does mixing, only if it does not
    prefer the dmix: device
 

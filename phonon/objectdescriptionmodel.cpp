@@ -21,9 +21,10 @@
 #include "objectdescriptionmodel_p.h"
 #include <QList>
 #include "objectdescription.h"
-#include <kicon.h>
 #include <kdebug.h>
 #include <QMimeData>
+#include "guiinterface.h"
+#include <QStringList>
 
 #ifdef Q_D
 #undef Q_D
@@ -212,7 +213,7 @@ QVariant ObjectDescriptionModel<type>::data( const QModelIndex& index, int role 
                 QVariant icon = d->data.at(index.row()).property("icon");
                 if (icon.isValid()) {
                     if (icon.type() == QVariant::String) {
-                        return KIcon(icon.toString());
+                        return GuiInterface::instance()->icon(icon.toString());
                     } else if (icon.type() == QVariant::Icon) {
                         return icon;
                     }

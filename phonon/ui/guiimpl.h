@@ -17,12 +17,24 @@
 
 */
 
-#include "kiofallback.h"
+#ifndef UI_GUIIMPL_H
+#define UI_GUIIMPL_H
+
+#include <kicon.h>
+#include "../guiinterface.h"
 
 namespace Phonon
 {
+class GuiImpl : public GuiInterface
+{
+    public:
+        QVariant icon(const QString &name);
+        void notification(const char *notificationName, const QString &text,
+                const QStringList &actions = QStringList(), QObject *receiver = 0,
+                const char *actionSlot = 0);
 
+        virtual KioFallback *newKioFallback(MediaObject *parent);
+};
 } // namespace Phonon
 
-#include "kiofallback.moc"
-// vim: sw=4 sts=4 et tw=100
+#endif // UI_GUIIMPL_H

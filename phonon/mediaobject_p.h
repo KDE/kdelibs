@@ -28,10 +28,11 @@
 namespace Phonon
 {
 class KioFallback;
+class KioFallbackImpl;
 
 class MediaObjectPrivate : public AbstractMediaProducerPrivate
 {
-    friend class KioFallback;
+    friend class KioFallbackImpl;
 	K_DECLARE_PUBLIC( MediaObject )
 	protected:
 		virtual bool aboutToDeleteIface();
@@ -44,7 +45,6 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 		{
 		}
 
-		void setupKioStreaming();
 		void _k_stateChanged( Phonon::State, Phonon::State );
 
 		KUrl url;

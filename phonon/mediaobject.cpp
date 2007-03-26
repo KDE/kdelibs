@@ -21,6 +21,8 @@
 #include "factory.h"
 #include "mediaobjectinterface.h"
 #include "kiofallback.h"
+#include "guiinterface.h"
+#include "bytestreaminterface.h"
 
 #include <kdebug.h>
 #include <QCoreApplication>
@@ -83,16 +85,19 @@ void MediaObject::setUrl( const KUrl& url )
                 // for setting a new URL
 //X         if (url.scheme() == "http") {
 //X             if (!d->kiofallback) {
-//X                 // iface() is a MediaObject, we want a ByteStream
-//X                 d->deleteIface();
-//X                 if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
-//X                     emit stateChanged(StoppedState, d->state);
-//X                     d->state = StoppedState;
+//X                 d->kiofallback = GuiInterface::instance()->newKioFallback(this);
+//X                 if (d->kiofallback) {
+//X                     // iface() is a MediaObject, we want a ByteStream
+//X                     d->deleteIface();
+//X                     if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
+//X                         emit stateChanged(StoppedState, d->state);
+//X                         d->state = StoppedState;
+//X                     }
+//X                     // catch URLs that we rather want KIO to handle
+//X                     d->kiofallback->setupKioStreaming();
+//X                     return;
 //X                 }
 //X             }
-//X             // catch URLs that we rather want KIO to handle
-//X             d->setupKioStreaming();
-//X             return;
 //X         }
 		MediaObjectInterface *iface = qobject_cast<MediaObjectInterface*>( d->backendObject );
 		if( iface )
@@ -138,27 +143,17 @@ void MediaObject::play()
 
 PHONON_SETTER( setAboutToFinishTime, aboutToFinishTime, qint32 )
 
-void MediaObjectPrivate::setupKioStreaming()
-{
-    if (!kiofallback) {
-        Q_Q(MediaObject);
-        kiofallback = new KioFallback(q); // TODO get from Factory
-        if (!kiofallback) {
-            return;
-        }
-    }
-    kiofallback->setupKioStreaming();
-}
-
 bool MediaObjectPrivate::aboutToDeleteIface()
 {
 	//kDebug( 600 ) << k_funcinfo << endl;
 	pBACKEND_GET( qint32, aboutToFinishTime, "aboutToFinishTime" );
     if (AbstractMediaProducerPrivate::aboutToDeleteIface()) {
-        // the next backend object we'll handle is a MediaObject, so delete the
-        // KioFallback object
-        delete kiofallback;
-        kiofallback = 0;
+        if (qobject_cast<ByteStreamInterface *>(backendObject)) {
+            // the next backend object we'll handle is a MediaObject, so delete the
+            // KioFallback object
+            delete kiofallback;
+            kiofallback = 0;
+        }
         return true;
     }
     return false;
@@ -170,6 +165,13 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
 
     // backend MediaObject reached ErrorState, try a ByteStream
     if (newstate == Phonon::ErrorState && !kiofallback) {
+        Q_Q(MediaObject);
+        kiofallback = GuiInterface::instance()->newKioFallback(q);
+        if (!kiofallback) {
+            kDebug(600) << "backend MediaObject reached ErrorState, no KIO fallback available" << endl;
+            emit q->stateChanged(newstate, oldstate);
+            return;
+        }
         kDebug(600) << "backend MediaObject reached ErrorState, trying ByteStream now" << endl;
         deleteIface();
         ignoreLoadingToBufferingStateChange = false;
@@ -189,7 +191,7 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
             emit q->stateChanged(Phonon::LoadingState, oldstate);
             break;
         }
-        setupKioStreaming();
+        kiofallback->setupKioStreaming();
         if (oldstate == Phonon::BufferingState) {
             q->play();
         }
