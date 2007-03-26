@@ -292,12 +292,14 @@ public Q_SLOTS:
     /**
      * Reimplemented to reposition the popup.
      */
-    virtual void show();
+    void show();
 
     /**
      * Shows the popup in the given point
      */
     void show(const QPoint &p);
+    
+    virtual void setVisible(bool visible);
 
 Q_SIGNALS:
     /**

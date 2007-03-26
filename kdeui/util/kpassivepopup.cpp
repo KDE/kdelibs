@@ -258,20 +258,25 @@ void KPassivePopup::mouseReleaseEvent( QMouseEvent *e )
 // Main Implementation
 //
 
-void KPassivePopup::show()
+void KPassivePopup::setVisible( bool visible )
 {
+    if (! visible ) {
+        QFrame::setVisible( visible );
+        return;
+    }
+  
     if ( size() != sizeHint() )
-	resize( sizeHint() );
+        resize( sizeHint() );
 
     if ( d->fixedPosition.isNull() )
-	positionSelf();
+        positionSelf();
     else {
-	if( d->popupStyle == Balloon )
-	    setAnchor( d->fixedPosition );
-	else
-	    move( d->fixedPosition );
+        if( d->popupStyle == Balloon )
+            setAnchor( d->fixedPosition );
+        else
+            move( d->fixedPosition );
     }
-    QFrame::show();
+    QFrame::setVisible( /*visible=*/ true );
 
     int delay = d->hideDelay;
     if ( delay < 0 ) {
@@ -281,6 +286,11 @@ void KPassivePopup::show()
     if ( delay > 0 ) {
         d->hideTimer->start( delay );
     }
+}
+
+void KPassivePopup::show()
+{
+    QFrame::show();
 }
 
 void KPassivePopup::show(const QPoint &p)
