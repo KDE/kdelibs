@@ -130,8 +130,8 @@ void* Collector::allocate(size_t s)
       heap.numOversizeCells = numOversizeCells;
       heap.oversizeCells = static_cast<CollectorCell **>(fastRealloc(heap.oversizeCells, numOversizeCells * sizeof(CollectorCell *)));
     }
-
-    void *newCell = fastCalloc(s);
+    
+    void *newCell = fastCalloc(s, 1);
     heap.oversizeCells[usedOversizeCells] = static_cast<CollectorCell *>(newCell);
     heap.usedOversizeCells = usedOversizeCells + 1;
     heap.numLiveObjects = numLiveObjects + 1;
@@ -564,7 +564,7 @@ bool Collector::collect()
     JSCell *imp = (JSCell *)heap.oversizeCells[cell];
 
     if (!imp->m_marked && (currentThreadIsMainThread || imp->m_destructorIsThreadSafe)) {
-      if (imp->freeCell.zeroIfFree == 0) //If partly initialized, better don't touch it!
+      if (heap.oversizeCells[cell]->u.freeCell.zeroIfFree == 0) //If partly initialized, better don't touch it!
         continue;
       imp->~JSCell();
 #if DEBUG_COLLECTOR
