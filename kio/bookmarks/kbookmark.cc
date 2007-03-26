@@ -257,6 +257,32 @@ QList<KUrl> KBookmarkGroup::groupUrlList() const
     return urlList;
 }
 
+KBookmark KBookmarkGroup::closestBookmark( const KUrl& url ) const
+{
+    KBookmark bookmark = first();
+    KBookmark foundBookmark;
+    int maxLength = 0;
+
+    // Search the bookmark which is equal to the Url or at least is a parent Url.
+    // If there are more than one possible parent Url candidates, choose the bookmark
+    // which covers the bigger range of the Url.
+    int i = 0;
+    while (!bookmark.isNull()) {
+        const KUrl bookmarkUrl = bookmark.url();
+        if (bookmarkUrl.isParentOf(url)) {
+            const int length = bookmarkUrl.prettyUrl().length();
+            if (length > maxLength) {
+                foundBookmark = bookmark;
+                maxLength = length;
+            }
+        }
+        bookmark = next(bookmark);
+        ++i;
+    }
+
+    return foundBookmark;
+}
+
 //////
 
 bool KBookmark::isGroup() const
@@ -604,4 +630,3 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
     }
     return bookmarks;
 }
-

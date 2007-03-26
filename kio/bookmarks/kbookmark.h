@@ -348,6 +348,22 @@ public:
      */
     QList<KUrl> groupUrlList() const;
 
+    /**
+     * Returns the closest bookmark for the URL \a url.
+     * The closest bookmark is defined as bookmark which is equal to
+     * the URL or at least is a parent URL. If there are more than
+     * one possible parent URL candidates, the bookmark which covers
+     * the bigger range of the URL is returned.
+     *
+     * Example: the url is '/home/peter/Documents/Music'.
+     * Available bookmarks are:
+     * - /home/peter
+     * - /home/peter/Documents
+     *
+     * The returned bookmark will the one for '/home/peter/Documents'.
+     */
+    KBookmark closestBookmark( const KUrl& url ) const;
+
 protected:
     QDomElement nextKnownTag( QDomElement start, bool goNext ) const;
 

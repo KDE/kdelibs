@@ -421,9 +421,9 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
     //kDebug(7043) << "KBookmarkManager::findByAddress " << address << endl;
     KBookmark result = root();
     // The address is something like /5/10/2+
-    QStringList addresses = address.split(QRegExp("[/+]"),QString::SkipEmptyParts);
+    const QStringList addresses = address.split(QRegExp("[/+]"),QString::SkipEmptyParts);
     // kWarning() << addresses.join(",") << endl;
-    for ( QStringList::Iterator it = addresses.begin() ; it != addresses.end() ; )
+    for ( QStringList::const_iterator it = addresses.begin() ; it != addresses.end() ; )
     {
        bool append = ((*it) == "+");
        uint number = (*it).toUInt();
@@ -684,13 +684,6 @@ KBookmarkSettings *KBookmarkSettings::self()
       readSettings();
    }
    return s_self;
-}
-
-void KBookmarkOwner::openBookmark(const KBookmark & bm, Qt::MouseButtons mb, Qt::KeyboardModifiers km)
-{
-   Q_UNUSED(bm)
-   Q_UNUSED(mb)
-   Q_UNUSED(km)
 }
 
 #include "kbookmarkmanager.moc"
