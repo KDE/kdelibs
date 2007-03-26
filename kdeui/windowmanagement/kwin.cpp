@@ -62,7 +62,7 @@ static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
 static Atom kde_wm_window_opacity;
 static Atom kde_wm_window_shadow;
-static Atom wm_protocols;
+static Atom kwin_wm_protocols;
 static Atom kwin_UTF8_STRING;
 static Atom net_wm_cm;
 
@@ -86,7 +86,7 @@ static void kwin_net_create_atoms() {
         atoms[n] = &kde_wm_window_shadow;
         names[n++] = "_KDE_WM_WINDOW_SHADOW";
 
-        atoms[n] = &wm_protocols;
+        atoms[n] = &kwin_wm_protocols;
         names[n++] = "WM_PROTOCOLS";
         
         char net_wm_cm_name[ 100 ];
@@ -193,7 +193,7 @@ bool ContextWidget::x11Event( XEvent * ev)
 			       &root_x, &root_y, &lx, &ly, &state );
 	    } while  ( _child != None && _child != w );
 
-	    ::sendClientMessage(w, wm_protocols, net_wm_context_help);
+	    ::sendClientMessage(w, kwin_wm_protocols, net_wm_context_help);
 	    XEvent e = *ev;
 	    e.xbutton.window = w;
 	    e.xbutton.subwindow = w;

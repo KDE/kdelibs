@@ -65,7 +65,6 @@
 // We define it out when compiling with --enable-final in which case
 // we use the version defined in KColorDlg
 
-#ifndef KDE_USE_FINAL
 #define STANDARD_PAL_SIZE 17
 
 static QColor *standardPalette = 0;
@@ -97,7 +96,6 @@ static void createStandardPalette()
     standardPalette[i++] = Qt::darkGray;
     standardPalette[i++] = Qt::black;
 }
-#endif
 
 class KColorCombo::KColorComboPrivate
 {

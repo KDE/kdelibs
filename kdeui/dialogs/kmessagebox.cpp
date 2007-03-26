@@ -115,7 +115,8 @@ static void sendNotification( QString message,
     }
 }
 
-static QString qrichtextify( const QString& text )
+// also used by kpassworddialog.cpp
+QString qrichtextify( const QString& text )
 {
     if ( text.isEmpty() || text[0] == '<' ) {
         return text;

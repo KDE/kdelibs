@@ -60,7 +60,7 @@ struct Mod
 // Array Structures
 //---------------------------------------------------------------------
 
-struct ModInfo
+struct X11ModInfo
 {
 	int modQt;
 	int modX;
@@ -87,7 +87,7 @@ struct TransKey {
 // Arrays
 //---------------------------------------------------------------------
 
-static ModInfo g_rgModInfo[4] =
+static X11ModInfo g_rgX11ModInfo[4] =
 {
 	{ Qt::SHIFT,   X11_ONLY(ShiftMask) },
 	{ Qt::CTRL,    X11_ONLY(ControlMask) },
@@ -313,7 +313,7 @@ bool initializeMods()
 	checkDisplay();
 	XModifierKeymap* xmk = XGetModifierMapping( QX11Info::display() );
 
-	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
+	g_rgX11ModInfo[3].modX = g_modXNumLock = g_modXScrollLock = g_modXModeSwitch = 0; 
 
 	int min_keycode, max_keycode;	
 	int keysyms_per_keycode = 0;
@@ -352,8 +352,8 @@ bool initializeMods()
 		}
 	}
 
-	g_rgModInfo[3].modX = g_meta_mask;
-	g_rgModInfo[2].modX = g_alt_mask;
+	g_rgX11ModInfo[3].modX = g_meta_mask;
+	g_rgX11ModInfo[2].modX = g_alt_mask;
 
 	XFreeModifiermap( xmk );
 
@@ -362,7 +362,7 @@ bool initializeMods()
 
 	g_bInitializedMods = true;
 
-	kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgModInfo[3].modX, 16) << endl;
+	kDebug(125) << "KKeyServer::initializeMods(): Win Mod = 0x" << QString::number(g_rgX11ModInfo[3].modX, 16) << endl;
 	return true;
 }
 
@@ -506,8 +506,8 @@ bool keyQtToModX( int modQt, uint & modX )
 
 	modX = 0;
 	for( int i = 0; i < 4; i++ ) {
-		if( modQt & g_rgModInfo[i].modQt ) {
-			modX |= g_rgModInfo[i].modX;
+		if( modQt & g_rgX11ModInfo[i].modQt ) {
+			modX |= g_rgX11ModInfo[i].modX;
 			continue;
 		}
 	}
@@ -521,8 +521,8 @@ bool modXToQt( uint modX, int& modQt )
 
 	modQt = 0;
 	for( int i = 0; i < 4; i++ ) {
-		if( modX & g_rgModInfo[i].modX ) {
-			modQt |= g_rgModInfo[i].modQt;
+		if( modX & g_rgX11ModInfo[i].modX ) {
+			modQt |= g_rgX11ModInfo[i].modQt;
 			continue;
 		}
 	}

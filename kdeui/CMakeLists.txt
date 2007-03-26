@@ -1,8 +1,6 @@
 
 project(kdeui)
 
-KDE4_NO_ENABLE_FINAL(kdeui)
-
 include_directories(
  ${CMAKE_SOURCE_DIR}/kdefx
  ${CMAKE_SOURCE_DIR}/interfaces
@@ -32,6 +30,8 @@ add_subdirectory( liveui/tests )
 ########### next target ###############
 
 set(kdeui_LIB_SRCS
+ itemviews/k3iconview.cpp # first because of enable-final
+ itemviews/k3listview.cpp
  klanguagebutton.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
@@ -79,8 +79,6 @@ set(kdeui_LIB_SRCS
  icons/kicon.cpp
  icons/kiconloader.cpp
  icons/kicontheme.cpp
- itemviews/k3iconview.cpp
- itemviews/k3listview.cpp
  itemviews/klistwidget.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp

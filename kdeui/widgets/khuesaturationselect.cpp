@@ -33,7 +33,9 @@ KDEUI_EXPORT QVector<QColor> kdeui_standardPalette()
         spd.setObject(s_standardPalette, new QVector<QColor>);
 
         int i = 0;
+#ifndef STANDARD_PAL_SIZE
 #define STANDARD_PAL_SIZE 17
+#endif
         s_standardPalette->resize( STANDARD_PAL_SIZE );
 
         (*s_standardPalette)[i++] = Qt::red;
@@ -76,15 +78,16 @@ KHueSaturationSelector::KHueSaturationSelector( QWidget *parent )
 
 void KHueSaturationSelector::setChooserMode( KColorChooserMode c )
 {
-	int x,y;
-	
-	x = 255;
-	y = 255;
+	int x;
+	int y = 255;
 	
 	switch (c) {
 		case ChooserSaturation:
 		case ChooserValue:
 			x = 359;
+			break;
+		default:
+			x = 255;
 			break;
 	}
 	

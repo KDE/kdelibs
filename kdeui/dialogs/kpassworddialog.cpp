@@ -60,20 +60,8 @@ public:
     unsigned int commentRow;
 };
 
-static QString qrichtextify( const QString& text )
-{
-    if ( text.isEmpty() || text[0] == '<' ) {
-        return text;
-    }
-
-    QStringList lines = text.split('\n', QString::SkipEmptyParts);
-    for(QStringList::Iterator it = lines.begin(); it != lines.end(); ++it)
-    {
-        *it = Qt::convertFromPlainText( *it, Qt::WhiteSpaceNormal );
-    }
-
-    return lines.join(QString());
-}
+// defined in kmessagebox.cpp
+extern QString qrichtextify( const QString& text );
 
 KPasswordDialog::KPasswordDialog( QWidget* parent ,
                                   const KPasswordDialogFlags& flags,
