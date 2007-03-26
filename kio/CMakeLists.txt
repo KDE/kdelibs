@@ -180,6 +180,8 @@ set(kfile_STAT_SRCS
   kfile/kencodingfiledialog.cpp
   kfile/kacleditwidget.cpp
   kfile/kfile.cpp
+  kfile/kdevicelistmodel.cpp
+  kfile/kdevicelistitem.cpp
 )
 
 # kio/kssl/Makefile.am: kssl
@@ -238,7 +240,7 @@ kde4_automoc(${kio_LIB_PRIVATE_SRCS})
 
 kde4_add_library(kio SHARED ${kio_LIB_SRCS})
 
-target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} ${STRIGI_LIBRARIES})
+target_link_libraries(kio ${KDE4_KDECORE_LIBS} ${QT_QT3SUPPORT_LIBRARY} kdeui kwalletclient ${ZLIB_LIBRARY} ${STRIGI_LIBRARIES} ${KDE4_SOLID_LIBS})
 
 if (UNIX)
    target_link_libraries(kio kdesu)
@@ -355,6 +357,7 @@ install( FILES
   kio/kdirmodel.h
   kfile/kcombiview.h
   kfile/kcustommenueditor.h
+  kfile/kdevicelistmodel.h
   kfile/kdiroperator.h
   kfile/kdirselectdialog.h
   kfile/kdiskfreesp.h
