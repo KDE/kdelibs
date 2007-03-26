@@ -5,15 +5,23 @@ KDE4_NO_ENABLE_FINAL(kjs)
 # Configuration checks
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
 check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
+check_include_files(float.h       HAVE_FLOAT_H)
 check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
+check_include_files(ieeefp.h      HAVE_IEEEFP_H)
+check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)
+check_function_exists(_finite    HAVE_FUNC__FINITE)
+check_function_exists(finite     HAVE_FUNC_FINITE)
+check_function_exists(isinf      HAVE_FUNC_ISINF)
+check_function_exists(isnan      HAVE_FUNC_ISNAN)
+
+
 
 macro_optional_find_package(PCRE)
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
-
-#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/global.h )
+configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kxmlcore ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
 
