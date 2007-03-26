@@ -440,6 +440,7 @@ QStringList KMimeType::propertyNames() const
 
 KMimeType::~KMimeType()
 {
+    delete d;
 }
 
 QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
