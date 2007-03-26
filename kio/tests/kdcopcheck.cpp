@@ -5,7 +5,7 @@
 #include <kstandarddirs.h>
 #include <kservicegroup.h>
 #include <kprotocolinfo.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <qtimer.h>
 #include <kcmdlineargs.h>
 #include "kdcopcheck.h"
@@ -42,7 +42,7 @@ TestService::TestService(const QString &exec)
            this, SLOT(newApp(const QByteArray&)));
    connect(KApplication::dcopClient(), SIGNAL( applicationRemoved(const QByteArray&)),
            this, SLOT(endApp(const QByteArray&)));
-   connect(&proc, SIGNAL(processExited(KProcess *)),
+   connect(&proc, SIGNAL(processExited(K3Process *)),
            this, SLOT(appExit()));
 
    QTimer::singleShot(20*1000, this, SLOT(stop()));

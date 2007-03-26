@@ -24,7 +24,7 @@
 #include <kio/scheduler.h>
 #include <kio/copyjob.h>
 #include <klocale.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kstringhandler.h>
 #include <kmimetypetrader.h>
 #include <ktemporaryfile.h>
@@ -382,9 +382,9 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
                 // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
                 // Until the shiny new class comes about, send the suggestedFileName
                 // along with the actual URL to download. (DA)
-                cmd += " " + KProcess::quote(url.url());
+                cmd += " " + K3Process::quote(url.url());
                 if ( !suggestedFileName.isEmpty() )
-                    cmd +=" " + KProcess::quote(suggestedFileName);
+                    cmd +=" " + K3Process::quote(suggestedFileName);
 
                 kDebug(1000) << "Calling command  " << cmd << endl;
                 // slave is already on hold (slotBrowserMimetype())

@@ -25,7 +25,7 @@
 
 #include "downloader.h"
 
-class KProcIO;
+class K3ProcIO;
 
 namespace KPAC
 {
@@ -45,7 +45,7 @@ namespace KPAC
         bool initHostName();
         bool checkDomain() const;
 
-        KProcIO* m_helper;
+        K3ProcIO* m_helper;
         QString m_hostname;
     };
 }

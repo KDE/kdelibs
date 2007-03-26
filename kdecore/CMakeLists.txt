@@ -123,9 +123,9 @@ set(kdecore_LIB_SRCS
    io/klockfile.cpp
    io/kmessage.cpp
    io/kmountpoint.cpp
-   io/kprocess.cpp
-   io/kprocesscontroller.cpp
-   io/kprocio.cpp
+   io/k3process.cpp
+   io/k3processcontroller.cpp
+   io/k3procio.cpp
    io/ksavefile.cpp
    io/ktempdir.cpp
    io/ktemporaryfile.cpp
@@ -279,9 +279,9 @@ install( FILES
    io/kautosavefile.h
    io/kdebug.h
    io/kmessage.h
-   io/kprocess.h
-   io/kprocesscontroller.h
-   io/kprocio.h
+   io/k3process.h
+   io/k3processcontroller.h
+   io/k3procio.h
    io/klockfile.h
    io/kmountpoint.h
    io/ksavefile.h

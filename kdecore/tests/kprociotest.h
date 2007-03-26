@@ -1,5 +1,5 @@
 //
-//  DUMMY -- A dummy class with a slot to demonstrate KProcess signals
+//  DUMMY -- A dummy class with a slot to demonstrate K3Process signals
 //
 //  version 0.2, Aug 2nd 1997
 //
@@ -12,19 +12,19 @@
 
 #include <stdio.h>
 #include <QtCore/QObject>
-#include "kprocio.h"
+#include "k3procio.h"
 
 class Dummy : public QObject
 {
  Q_OBJECT
 
  public Q_SLOTS:
-   void printMessage(KProcess *proc)
+   void printMessage(K3Process *proc)
    {
      printf("Process %d exited!\n", (int)proc->pid()); 
    } 
  
-   void gotOutput(KProcIO*proc)
+   void gotOutput(K3ProcIO*proc)
    {
     QString line;
     while(true) {

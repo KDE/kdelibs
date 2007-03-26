@@ -25,7 +25,7 @@
 #define KJAVAPROCESS_H
 
 #include <kdelibs_export.h>
-#include <kprocess.h>
+#include <k3process.h>
 
 /**
  * @short A class for invoking a Java VM
@@ -39,7 +39,7 @@
  */
 
 class KJavaProcessPrivate;
-class KHTML_EXPORT KJavaProcess : public KProcess //QObject
+class KHTML_EXPORT KJavaProcess : public K3Process //QObject
 {
 Q_OBJECT
 
@@ -64,7 +64,7 @@ public:
 
     /**
      * Returns the status of the java Process- true if it's ok, false if it has died.
-     * It calls KProcess::isRunning()
+     * It calls K3Process::isRunning()
      */
     bool isRunning();
 
@@ -139,7 +139,7 @@ protected Q_SLOTS:
     /**
      * This slot is called when the Java Process exited.
      */
-    void slotExited( KProcess *process );
+    void slotExited( K3Process *process );
 
 protected:
     virtual bool invokeJVM();
@@ -150,7 +150,7 @@ protected:
     void        sendBuffer( QByteArray* buff );
     void        storeSize( QByteArray* buff );
 
-    KProcess* javaProcess;
+    K3Process* javaProcess;
 
 Q_SIGNALS:
     void received( const QByteArray& );

@@ -25,7 +25,7 @@
 
 #include "knotifyplugin.h"
 
-class KProcess;
+class K3Process;
 
 class NotifyBySound : public KNotifyPlugin
 { Q_OBJECT

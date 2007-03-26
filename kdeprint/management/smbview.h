@@ -22,7 +22,7 @@
 
 #include <k3listview.h>
 
-class KProcess;
+class K3Process;
 class KTemporaryFile;
 
 class SmbView : public K3ListView
@@ -49,15 +49,15 @@ protected:
 	void processShares();
 
 protected Q_SLOTS:
-	void slotReceivedStdout(KProcess*, char*, int);
-	void slotProcessExited(KProcess*);
+	void slotReceivedStdout(K3Process*, char*, int);
+	void slotProcessExited(K3Process*);
 	void slotSelectionChanged(Q3ListViewItem*);
 
 private:
 	enum State { GroupListing, ServerListing, ShareListing, Idle };
 	int 		m_state;
 	Q3ListViewItem	*m_current;
-	KProcess	*m_proc;
+	K3Process	*m_proc;
 	QString		m_buffer;
 	QString		m_login, m_password;
 	KTemporaryFile	*m_passwdFile;

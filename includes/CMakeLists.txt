@@ -357,9 +357,9 @@ install( FILES
   KPrintDialog
   KPrintDialogPage
   KPrinter
-  KProcIO
-  KProcess
-  KProcessController
+  K3ProcIO
+  K3Process
+  K3ProcessController
   KProcessRunner
   KProgressDialog
   KPropertiesDialog
@@ -421,7 +421,7 @@ install( FILES
   KSharedConfig
   KSharedPtr
   KShellCompletion
-  KShellProcess
+  K3ShellProcess
   KShortcut
   KShortcutDialog
   KSimpleFileFilter

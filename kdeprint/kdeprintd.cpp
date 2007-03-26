@@ -130,12 +130,12 @@ QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remf
 		if ( !url.isLocalFile() )
 		{
 			QString tmpFilename = KStandardDirs::locateLocal( "tmp", "kdeprint_" + KRandom::randomString( 8 ) );
-			command.replace( re, KProcess::quote( tmpFilename ) );
+			command.replace( re, K3Process::quote( tmpFilename ) );
 			proc->setOutput( re.cap( 1 ) );
 			proc->setTempOutput( tmpFilename );
 		}
 		else
-			command.replace( re, KProcess::quote( re.cap( 1 ) ) );
+			command.replace( re, K3Process::quote( re.cap( 1 ) ) );
 	}
 
 	if ( checkFiles( command, files ) )
@@ -190,7 +190,7 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 				KGuiItem(i18n("Enter the root password")),
 				"provideRootsPassword") == KMessageBox::Continue)
 			{
-				cmd = ("kdesu -c " + KProcess::quote(cmd));
+				cmd = ("kdesu -c " + K3Process::quote(cmd));
 				break;
 			}
 			else

@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kdialog.h>
 
 class QProgressBar;
@@ -43,9 +43,9 @@ public:
 	static bool exportDest(const QString& dest, const QString& datadir);
 
 protected Q_SLOTS:
-	void slotReceived(KProcess*, char*, int);
+	void slotReceived(K3Process*, char*, int);
 	void doNextAction();
-	void slotProcessExited(KProcess*);
+	void slotProcessExited(K3Process*);
 	void slotActionClicked();
 
 protected:
@@ -57,7 +57,7 @@ protected:
 	void showError(const QString& msg);
 
 private:
-	KProcess	m_proc;
+	K3Process	m_proc;
 	QStringList	m_buffer;
 	int		m_state;
 	QStringList	m_actions;

@@ -25,8 +25,8 @@
 #include <kdelibs_export.h>
 
 class QTextCodec;
-class KProcIO;
-class KProcess;
+class K3ProcIO;
+class K3Process;
 class K3SpellConfig;
 class K3SpellDlg;
 
@@ -447,23 +447,23 @@ Q_SIGNALS:
 
 
 protected Q_SLOTS:
-  /* All of those signals from KProcIO get sent here. */
-  void K3Spell2 (KProcIO *);
-  void checkWord2 (KProcIO *);
+  /* All of those signals from K3ProcIO get sent here. */
+  void K3Spell2 (K3ProcIO *);
+  void checkWord2 (K3ProcIO *);
   void checkWord3 ();
-  void check2 (KProcIO *);
+  void check2 (K3ProcIO *);
   void checkList2 ();
-  void checkList3a (KProcIO *);
+  void checkList3a (K3ProcIO *);
   void checkListReplaceCurrent ();
   void checkList4 ();
   void dialog2 (int dlgresult);
   void check3 ();
-  void suggestWord( KProcIO * );
+  void suggestWord( K3ProcIO * );
 
   void slotStopCancel (int);
-  void ispellExit (KProcess *);
+  void ispellExit (K3Process *);
   void emitDeath();
-  void ispellErrors (KProcess *, char *, int);
+  void ispellErrors (K3Process *, char *, int);
   void checkNext();
 
 private Q_SLOTS:
@@ -492,7 +492,7 @@ Q_SIGNALS:
 
 protected:
 
-  KProcIO *proc;
+  K3ProcIO *proc;
   QWidget *parent;
   K3SpellConfig *ksconfig;
   K3SpellDlg *ksdlg;

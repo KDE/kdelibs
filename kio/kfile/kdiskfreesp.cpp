@@ -27,7 +27,7 @@
 #include <qtextstream.h>
 
 #include <kdebug.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kio/global.h>
 #include <config-kfile.h>
 
@@ -46,11 +46,11 @@
 KDiskFreeSp::KDiskFreeSp(QObject *parent)
     : QObject(parent)
 {
-    dfProc = new KProcess(); Q_CHECK_PTR(dfProc);
+    dfProc = new K3Process(); Q_CHECK_PTR(dfProc);
     dfProc->setEnvironment("LANGUAGE", "C");
-    connect( dfProc, SIGNAL(receivedStdout(KProcess *, char *, int) ),
-             this, SLOT (receivedDFStdErrOut(KProcess *, char *, int)) );
-    connect(dfProc,SIGNAL(processExited(KProcess *) ),
+    connect( dfProc, SIGNAL(receivedStdout(K3Process *, char *, int) ),
+             this, SLOT (receivedDFStdErrOut(K3Process *, char *, int)) );
+    connect(dfProc,SIGNAL(processExited(K3Process *) ),
             this, SLOT(dfDone() ) );
 
     readingDFStdErrOut=false;
@@ -68,7 +68,7 @@ KDiskFreeSp::~KDiskFreeSp()
 /***************************************************************************
   * is called, when the df-command writes on StdOut
 **/
-void KDiskFreeSp::receivedDFStdErrOut(KProcess *, char *data, int len)
+void KDiskFreeSp::receivedDFStdErrOut(K3Process *, char *data, int len)
 {
   QByteArray tmp(data,len+1);  // adds a zero-byte
   dfStringErrOut.append(tmp);
@@ -85,7 +85,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
   dfStringErrOut=""; // yet no data received
   dfProc->clearArguments();
   (*dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
-  if (!dfProc->start( KProcess::NotifyOnExit, KProcess::AllOutput ))
+  if (!dfProc->start( K3Process::NotifyOnExit, K3Process::AllOutput ))
      kError() << "could not execute ["<< DF_COMMAND << "]" << endl;
   return 1;
 }

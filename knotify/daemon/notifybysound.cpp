@@ -36,7 +36,7 @@
 // KDE headers
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <kurl.h>
@@ -55,7 +55,7 @@ class NotifyBySound::Private
 		bool useExternal;
 		QString externalPlayer;
 
-		QHash<int, KProcess *> processes;
+		QHash<int, K3Process *> processes;
 		QHash<int, Phonon::MediaObject*> mediaobjects;
 		QSignalMapper *signalmapper;
 		Phonon::AudioPath *audiopath;
@@ -160,13 +160,13 @@ void NotifyBySound::notify( int eventId, KNotifyConfig * config )
 	else
 	{
         // use an external player to play the sound
-		KProcess *proc = new KProcess( this );
-		connect( proc, SIGNAL(processExited(KProcess*)), d->signalmapper,  SLOT(map()));
+		K3Process *proc = new K3Process( this );
+		connect( proc, SIGNAL(processExited(K3Process*)), d->signalmapper,  SLOT(map()));
 		d->signalmapper->setMapping( proc , eventId );
 
 		proc->clearArguments();
 		(*proc) << d->externalPlayer << QFile::encodeName( soundFile );
-		proc->start(KProcess::NotifyOnExit);
+		proc->start(K3Process::NotifyOnExit);
 		return;
 	}
 }

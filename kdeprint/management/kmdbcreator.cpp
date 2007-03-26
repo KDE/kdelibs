@@ -36,9 +36,9 @@ KMDBCreator::KMDBCreator(QObject *parent)
 	m_dlg = 0;
 	m_status = true;
 
-	connect(&m_proc,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStdout(KProcess*,char*,int)));
-	connect(&m_proc,SIGNAL(receivedStderr(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
-	connect(&m_proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
+	connect(&m_proc,SIGNAL(receivedStdout(K3Process*,char*,int)),SLOT(slotReceivedStdout(K3Process*,char*,int)));
+	connect(&m_proc,SIGNAL(receivedStderr(K3Process*,char*,int)),SLOT(slotReceivedStderr(K3Process*,char*,int)));
+	connect(&m_proc,SIGNAL(processExited(K3Process*)),SLOT(slotProcessExited(K3Process*)));
 }
 
 KMDBCreator::~KMDBCreator()
@@ -96,7 +96,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 		msg = i18n("The executable %1 could not be found in your "
 		           "PATH. Check that this program exists and is "
 			   "accessible in your PATH variable.", exestr);
-	else if (!m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
+	else if (!m_proc.start(K3Process::NotifyOnExit, K3Process::AllOutput))
 		msg = i18n("Unable to start the creation of the driver "
 		           "database. The execution of %1 failed.", exestr);
 	if (!msg.isEmpty())
@@ -126,7 +126,7 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	return started;
 }
 
-void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
+void KMDBCreator::slotReceivedStdout(K3Process*, char *buf, int len)
 {
 	// save buffer
 	QString	str( QByteArray(buf, len) );
@@ -153,12 +153,12 @@ void KMDBCreator::slotReceivedStdout(KProcess*, char *buf, int len)
 	}
 }
 
-void KMDBCreator::slotReceivedStderr(KProcess*, char*, int)
+void KMDBCreator::slotReceivedStderr(K3Process*, char*, int)
 {
 	// just discard it for the moment
 }
 
-void KMDBCreator::slotProcessExited(KProcess*)
+void KMDBCreator::slotProcessExited(K3Process*)
 {
 	// delete the progress dialog
 	if (m_dlg)

@@ -7,20 +7,20 @@ you should or should not use them.
 1. fork + exec
 
 You never want to use this unless you have a very good reason why it is 
-impossible to use KProcess.
+impossible to use K3Process.
 
-2. KProcess
+2. K3Process
 
 You want to use this if you need to start a new process which needs to be a 
 child of your process, e.g. because you want to catch stdout/stderr or need 
 to send it data via stdin. You should never use this to start other KDE 
 applications unless your application is called kgdb :-) If you need to
 send/receive text like data to/from the process, you are probably better 
-off with KProcIO
+off with K3ProcIO
 
-3. KProcIO
+3. K3ProcIO
 
-Like KProcess. Unlike KProcess, this class actually makes it easy to 
+Like K3Process. Unlike K3Process, this class actually makes it easy to 
 send data to and receive data from the process.
 
 4. startServiceByDesktopPath

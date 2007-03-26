@@ -20,10 +20,10 @@
 #ifndef KPRINTPROCESS_H
 #define KPRINTPROCESS_H
 
-#include <kprocess.h>
+#include <k3process.h>
 #include <QtCore/QStringList>
 
-class KPrintProcess : public KShellProcess
+class KPrintProcess : public K3ShellProcess
 {
 	Q_OBJECT
 public:
@@ -50,8 +50,8 @@ Q_SIGNALS:
 	void printError( KPrintProcess*, const QString& );
 
 protected Q_SLOTS:
-	void slotReceivedStderr(KProcess*, char*, int);
-	void slotExited( KProcess* );
+	void slotReceivedStderr(K3Process*, char*, int);
+	void slotExited( K3Process* );
 
 private:
 	QString	m_buffer;

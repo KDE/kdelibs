@@ -496,7 +496,7 @@ Mon Mar 23 00:08:02 1998  Stephan Kulow  <coolo@kde.org>
 
 Sun Mar 22 00:22:46 1998  Stephan Kulow  <coolo@kde.org>
 
-	* kfiledialog.cpp: use KShellProcess now
+	* kfiledialog.cpp: use K3ShellProcess now
 
 	* kfiledialog.h: added virtual function initFileList to made 
 	KFileDialog customable

@@ -22,7 +22,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmimetype.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <krun.h>
 #include <ksycoca.h>
 
@@ -199,7 +199,7 @@ void KMimeTypeChooser::editMimeType()
 #ifndef Q_OS_WIN
                       + " --parent " + QString::number( (ulong)topLevelWidget()->winId())
 #endif
-                      + ' ' + KProcess::quote(mt),
+                      + ' ' + K3Process::quote(mt),
                       keditfiletype, keditfiletype /*unused*/);
 }
 

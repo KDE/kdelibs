@@ -27,7 +27,7 @@ ASNs which will stay too long until a timeout ). For improving the quality
 of ASN and reducing the number of ASNs that don't detect when the application
 has started, some .desktop file entries may be helpful ( see below ).
  If you want to start an application in your code, prefer using KRun or
-KApplication::startServiceByXXX() calls. Classes like KProcess don't create
+KApplication::startServiceByXXX() calls. Classes like K3Process don't create
 ASN, so if you need to use it, you have to send it manually ( only in case
 ASN is useful in this case, it shouldn't be sent e.g. for system processes ).
  

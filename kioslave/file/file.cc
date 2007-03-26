@@ -82,7 +82,7 @@
 #include <QtCore/QFile>
 #include "file.h"
 #include <limits.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kmountpoint.h>
 #include <kstandarddirs.h>
 
@@ -1507,18 +1507,18 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     if ( _dev.startsWith( "LABEL=" ) ) { // turn LABEL=foo into -L foo (#71430)
         QString labelName = _dev.mid( 6 );
         dev = "-L ";
-        dev += QFile::encodeName( KProcess::quote( labelName ) ); // is it correct to assume same encoding as filesystem?
+        dev += QFile::encodeName( K3Process::quote( labelName ) ); // is it correct to assume same encoding as filesystem?
     } else if ( _dev.startsWith( "UUID=" ) ) { // and UUID=bar into -U bar
         QString uuidName = _dev.mid( 5 );
         dev = "-U ";
-        dev += QFile::encodeName( KProcess::quote( uuidName ) );
+        dev += QFile::encodeName( K3Process::quote( uuidName ) );
     }
     else
-        dev = QFile::encodeName( KProcess::quote(_dev) ); // get those ready to be given to a shell
+        dev = QFile::encodeName( K3Process::quote(_dev) ); // get those ready to be given to a shell
 
-    QByteArray point = QFile::encodeName( KProcess::quote(_point) );
+    QByteArray point = QFile::encodeName( K3Process::quote(_point) );
     bool fstype_empty = !_fstype || !*_fstype;
-    QByteArray fstype = KProcess::quote(_fstype).toLatin1(); // good guess
+    QByteArray fstype = K3Process::quote(_fstype).toLatin1(); // good guess
     QByteArray readonly = _ro ? "-r" : "";
     QString epath = QLatin1String(getenv("PATH"));
     QString path = QLatin1String("/sbin:/bin");
@@ -1668,7 +1668,7 @@ void FileProtocol::unmount( const QString& _point )
 		 */
 		ptr = strrchr( devname, '/' );
 		*ptr = '\0';
-                QByteArray qdevname(QFile::encodeName(KProcess::quote(QFile::decodeName(QByteArray(devname)))).data());
+                QByteArray qdevname(QFile::encodeName(K3Process::quote(QFile::decodeName(QByteArray(devname)))).data());
 		buffer = "/usr/bin/eject " + qdevname + " 2>" + tmpFileName;
 		kDebug(7101) << "VOLMGT: eject " << qdevname << endl;
 
@@ -1708,7 +1708,7 @@ void FileProtocol::unmount( const QString& _point )
         error( KIO::ERR_COULD_NOT_UNMOUNT, i18n("Could not find program \"umount\""));
         return;
     }
-    buffer = umountProg + QFile::encodeName(KProcess::quote(_point)) + " 2>" + tmpFileName;
+    buffer = umountProg + QFile::encodeName(K3Process::quote(_point)) + " 2>" + tmpFileName;
     system( buffer.constData() );
 #endif /* HAVE_VOLMGT */
 
@@ -1737,7 +1737,7 @@ bool FileProtocol::pmount(const QString &dev)
         return false;
 
     QByteArray buffer = QFile::encodeName(pmountProg) + ' ' +
-                        QFile::encodeName(KProcess::quote(dev));
+                        QFile::encodeName(K3Process::quote(dev));
 
     int res = system( buffer.constData() );
 
@@ -1763,7 +1763,7 @@ bool FileProtocol::pumount(const QString &point)
 
     QByteArray buffer = QFile::encodeName(pumountProg);
     buffer += ' ';
-    buffer += QFile::encodeName(KProcess::quote(dev));
+    buffer += QFile::encodeName(K3Process::quote(dev));
 
     int res = system( buffer.data() );
 

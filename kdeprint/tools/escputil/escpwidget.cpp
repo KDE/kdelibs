@@ -71,9 +71,9 @@ EscpWidget::EscpWidget(QWidget *parent)
 {
 	m_hasoutput = false;
 
-	connect(&m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
-	connect(&m_proc, SIGNAL(receivedStdout(KProcess*,char*,int)), SLOT(slotReceivedStdout(KProcess*,char*,int)));
-	connect(&m_proc, SIGNAL(receivedStderr(KProcess*,char*,int)), SLOT(slotReceivedStderr(KProcess*,char*,int)));
+	connect(&m_proc, SIGNAL(processExited(K3Process*)), SLOT(slotProcessExited(K3Process*)));
+	connect(&m_proc, SIGNAL(receivedStdout(K3Process*,char*,int)), SLOT(slotReceivedStdout(K3Process*,char*,int)));
+	connect(&m_proc, SIGNAL(receivedStderr(K3Process*,char*,int)), SLOT(slotReceivedStderr(K3Process*,char*,int)));
 
 	QPushButton	*cleanbtn = new QPushButton(this);
 	cleanbtn->setObjectName(QLatin1String("-c"));
@@ -210,7 +210,7 @@ void EscpWidget::startCommand(const QString& arg)
 	foreach ( QByteArray arg, m_proc.args() )
 		kDebug() << "ARG: " << arg << endl;
 
-	if (m_proc.start(KProcess::NotifyOnExit, KProcess::AllOutput))
+	if (m_proc.start(K3Process::NotifyOnExit, K3Process::AllOutput))
 		setEnabled(false);
 	else
 	{
@@ -220,7 +220,7 @@ void EscpWidget::startCommand(const QString& arg)
 	}
 }
 
-void EscpWidget::slotProcessExited(KProcess*)
+void EscpWidget::slotProcessExited(K3Process*)
 {
 	setEnabled(true);
 	if (!m_proc.normalExit() || m_proc.exitStatus() != 0)
@@ -243,13 +243,13 @@ void EscpWidget::slotProcessExited(KProcess*)
 	m_hasoutput = false;
 }
 
-void EscpWidget::slotReceivedStdout(KProcess*, char *buf, int len)
+void EscpWidget::slotReceivedStdout(K3Process*, char *buf, int len)
 {
 	QString	bufstr = QByteArray(buf, len);
 	m_outbuffer.append(bufstr);
 }
 
-void EscpWidget::slotReceivedStderr(KProcess*, char *buf, int len)
+void EscpWidget::slotReceivedStderr(K3Process*, char *buf, int len)
 {
 	QString	bufstr = QByteArray(buf, len);
 	m_errorbuffer.append(bufstr);

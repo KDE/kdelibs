@@ -39,7 +39,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <qprocess.h>
 #include <kconfig.h>
 #include <kapplication.h>
@@ -541,7 +541,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 }
 
 QString KPrinterImpl::quote(const QString& s)
-{ return KProcess::quote(s); }
+{ return K3Process::quote(s); }
 
 void KPrinterImpl::saveOptions(const QMap<QString,QString>& opts)
 {

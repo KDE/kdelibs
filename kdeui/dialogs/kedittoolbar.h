@@ -23,7 +23,7 @@
 #include <kxmlguiclient.h>
 #include <kdialog.h>
 
-class KProcess;
+class K3Process;
 class KActionCollection;
 class QComboBox;
 class QToolButton;
@@ -391,7 +391,7 @@ private:
 
   Q_PRIVATE_SLOT(d, void slotChangeIcon())
 
-  Q_PRIVATE_SLOT(d, void slotProcessExited( KProcess* ))
+  Q_PRIVATE_SLOT(d, void slotProcessExited( K3Process* ))
 
 private:
   friend class KEditToolBarWidgetPrivate;

@@ -44,7 +44,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kpushbutton.h>
-#include <kprocio.h>
+#include <k3procio.h>
 #include <ktoolbar.h>
 
 #include "kaction.h"
@@ -203,7 +203,7 @@ public:
   
   void slotChangeIcon();
   
-  void slotProcessExited( KProcess* );
+  void slotProcessExited( K3Process* );
   
 
 
@@ -361,7 +361,7 @@ public:
   KSeparator *m_comboSeparator;
   QLabel * m_helpArea;
   KPushButton* m_changeIcon;
-  KProcIO* m_kdialogProcess;
+  K3ProcIO* m_kdialogProcess;
   bool m_hasKDialog;
 };
 
@@ -1356,7 +1356,7 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   if ( m_kdialogProcess && m_kdialogProcess->isRunning() )
         return;
 
-  m_kdialogProcess = new KProcIO;
+  m_kdialogProcess = new K3ProcIO;
   QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
   (*m_kdialogProcess) << kdialogExe;
   (*m_kdialogProcess) << "--embed";
@@ -1364,7 +1364,7 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   (*m_kdialogProcess) << "--geticon";
   (*m_kdialogProcess) << "Toolbar";
   (*m_kdialogProcess) << "Actions";
-  if ( !m_kdialogProcess->start( KProcess::NotifyOnExit ) ) {
+  if ( !m_kdialogProcess->start( K3Process::NotifyOnExit ) ) {
     kError(240) << "Can't run " << kdialogExe << endl;
     delete m_kdialogProcess;
     m_kdialogProcess = 0;
@@ -1374,11 +1374,11 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   m_activeList->setEnabled( false ); // don't change the current item
   m_toolbarCombo->setEnabled( false ); // don't change the current toolbar
 
-  QObject::connect( m_kdialogProcess, SIGNAL( processExited( KProcess* ) ),
-                    m_widget, SLOT( slotProcessExited( KProcess* ) ) );
+  QObject::connect( m_kdialogProcess, SIGNAL( processExited( K3Process* ) ),
+                    m_widget, SLOT( slotProcessExited( K3Process* ) ) );
 }
 
-void KEditToolBarWidgetPrivate::slotProcessExited( KProcess* )
+void KEditToolBarWidgetPrivate::slotProcessExited( K3Process* )
 {
   m_activeList->setEnabled( true );
   m_toolbarCombo->setEnabled( true );

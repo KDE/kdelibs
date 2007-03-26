@@ -32,7 +32,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <kdebug.h>
 #include <qtextcodec.h>
 #include <qfileinfo.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <QList>
 
 class MyPair {
@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
 #ifdef Q_OS_WIN
             cmd += file.fileName();
 #else
-            cmd += KProcess::quote(file.fileName());
+            cmd += K3Process::quote(file.fileName());
 #endif
             cmd += " 2>&1";
             FILE *xmllint = popen( QFile::encodeName( cmd ).constData(), "r" );

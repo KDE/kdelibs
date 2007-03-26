@@ -20,7 +20,7 @@
 #include "posterpreview.h"
 
 #include <kdebug.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kprinter.h>
 #include <klocale.h>
 #include <kcursor.h>
@@ -61,9 +61,9 @@ PosterPreview::~PosterPreview()
 
 void PosterPreview::init()
 {
-	m_process = new KProcess;
-	connect( m_process, SIGNAL( receivedStderr( KProcess*, char*, int ) ), SLOT( slotProcessStderr( KProcess*, char*, int ) ) );
-	connect( m_process, SIGNAL( processExited( KProcess* ) ), SLOT( slotProcessExited( KProcess* ) ) );
+	m_process = new K3Process;
+	connect( m_process, SIGNAL( receivedStderr( K3Process*, char*, int ) ), SLOT( slotProcessStderr( K3Process*, char*, int ) ) );
+	connect( m_process, SIGNAL( processExited( K3Process* ) ), SLOT( slotProcessExited( K3Process* ) ) );
 
 	m_cols = m_rows = m_pw = m_ph = m_mw = m_mh = 0;
 	m_dirty = false;
@@ -102,7 +102,7 @@ void PosterPreview::updatePoster()
 	m_process->clearArguments();
 	*m_process << "poster" << "-F" << "-m" + m_mediasize << "-p" + m_postersize
 		<< "-c" + QString::number( m_cutmargin ) + "%";
-	if ( !m_process->start( KProcess::NotifyOnExit, KProcess::Stderr ) )
+	if ( !m_process->start( K3Process::NotifyOnExit, K3Process::Stderr ) )
 	{
 		m_rows = m_cols = 0;
 		m_dirty = false;
@@ -215,12 +215,12 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 	}
 }
 
-void PosterPreview::slotProcessStderr( KProcess*, char *buf, int len )
+void PosterPreview::slotProcessStderr( K3Process*, char *buf, int len )
 {
 	m_buffer.append( QByteArray( buf, len ) );
 }
 
-void PosterPreview::slotProcessExited( KProcess* )
+void PosterPreview::slotProcessExited( K3Process* )
 {
 	if ( m_process->normalExit() && m_process->exitStatus() == 0 )
 		parseBuffer();

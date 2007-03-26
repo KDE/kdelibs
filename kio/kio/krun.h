@@ -31,7 +31,7 @@
 #include <kurl.h>
 #include <kstartupinfo.h>
 
-class KProcess;
+class K3Process;
 class KService;
 class KJob;
 namespace KIO {
@@ -394,9 +394,9 @@ class KIO_EXPORT KProcessRunner : public QObject
 
   public:
 
-    static pid_t run(KProcess *, const QString & binName);
+    static pid_t run(K3Process *, const QString & binName);
 #ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
-    static pid_t run(KProcess *, const QString & binName, const KStartupInfoId& id );
+    static pid_t run(K3Process *, const QString & binName, const KStartupInfoId& id );
 #endif
 
     virtual ~KProcessRunner();
@@ -405,17 +405,17 @@ class KIO_EXPORT KProcessRunner : public QObject
 
   protected Q_SLOTS:
 
-    void slotProcessExited(KProcess *);
+    void slotProcessExited(K3Process *);
 
   private:
 
-    KProcessRunner(KProcess *, const QString & binName);
+    KProcessRunner(K3Process *, const QString & binName);
 #ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
-    KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id );
+    KProcessRunner(K3Process *, const QString & binName, const KStartupInfoId& id );
 #endif
     KProcessRunner();
 
-    KProcess * process_;
+    K3Process * process_;
     QString binName;
 #ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     KStartupInfoId id_;

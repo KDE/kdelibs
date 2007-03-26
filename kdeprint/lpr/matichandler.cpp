@@ -33,7 +33,7 @@
 #include <kstandarddirs.h>
 #include <krandom.h>
 #include <kdebug.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <qprocess.h>
 #include <QtCore/QFile>
 #include <qtextstream.h>
@@ -259,11 +259,11 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 
 	KPipeProcess	in;
 	QFile		out(tmpFile);
-	QString cmd = KProcess::quote(exe);
+	QString cmd = K3Process::quote(exe);
 	cmd += " -t lpd -d ";
-	cmd += KProcess::quote(comps[2]);
+	cmd += K3Process::quote(comps[2]);
 	cmd += " -p ";
-	cmd += KProcess::quote(comps[1]);
+	cmd += K3Process::quote(comps[1]);
 	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
 	{
 		QTextStream	tin(&in), tout(&out);
@@ -330,7 +330,7 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		inFile.close();
 		tmpFile.close();
 
-		QString	cmd = "mv " + KProcess::quote(tmpFile.fileName()) + ' ' + KProcess::quote(outFile);
+		QString	cmd = "mv " + K3Process::quote(tmpFile.fileName()) + ' ' + K3Process::quote(outFile);
 		int	status = ::system(QFile::encodeName(cmd).data());
 		QFile::remove(tmpFile.fileName());
 		result = (status != -1 && WEXITSTATUS(status) == 0);

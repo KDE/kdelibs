@@ -21,7 +21,7 @@
 #define ESCPWIDGET_H
 
 #include <QtGui/QWidget>
-#include <kprocess.h>
+#include <k3process.h>
 #include <kurl.h>
 
 class QLabel;
@@ -37,16 +37,16 @@ public:
 	void setPrinterName(const QString&);
 
 protected Q_SLOTS:
-	void slotReceivedStdout(KProcess*, char*, int);
-	void slotReceivedStderr(KProcess*, char*, int);
-	void slotProcessExited(KProcess*);
+	void slotReceivedStdout(K3Process*, char*, int);
+	void slotReceivedStderr(K3Process*, char*, int);
+	void slotProcessExited(K3Process*);
 	void slotButtonClicked();
 
 protected:
 	void startCommand(const QString& arg);
 
 private:
-	KProcess	m_proc;
+	K3Process	m_proc;
 	KUrl		m_deviceURL;
 	QString		m_errorbuffer, m_outbuffer;
 	QLabel		*m_printer, *m_device;

@@ -37,7 +37,7 @@
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kdebug.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <klibloader.h>
 #include <kmessagebox.h>
 
@@ -396,7 +396,7 @@ QString KXmlCommand::buildCommand(const QMap<QString,QString>& opts, bool pipein
 				}
 				else
 				{
-					format.replace( re, KProcess::quote( dopt->valueText() ) );
+					format.replace( re, K3Process::quote( dopt->valueText() ) );
 				}
 				str.append(format).append(" ");
 			}

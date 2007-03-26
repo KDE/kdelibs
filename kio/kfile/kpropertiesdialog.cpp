@@ -113,7 +113,7 @@ extern "C" {
 #include <kmimetypetrader.h>
 #include <kmetaprops.h>
 #include <kpreviewprops.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <krun.h>
 #include <k3listview.h>
 #include <kvbox.h>
@@ -1106,7 +1106,7 @@ void KFilePropsPlugin::slotEditFileType()
   QString keditfiletype = QString::fromLatin1("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
-                    + ' ' + KProcess::quote(mime),
+                    + ' ' + K3Process::quote(mime),
                     keditfiletype, keditfiletype /*unused*/);
 #endif
 }

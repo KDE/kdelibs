@@ -42,7 +42,7 @@
 #include <qtimer.h>
 
 #include <klocale.h>
-#include <kprocio.h>
+#include <k3procio.h>
 #include <kurl.h>
 
 #include "discovery.moc"
@@ -51,10 +51,10 @@ namespace KPAC
 {
     Discovery::Discovery( QObject* parent )
         : Downloader( parent ),
-          m_helper( new KProcIO )
+          m_helper( new K3ProcIO )
     {
-        connect( m_helper, SIGNAL( readReady( KProcIO* ) ), SLOT( helperOutput() ) );
-        connect( m_helper, SIGNAL( processExited( KProcess* ) ), SLOT( failed() ) );
+        connect( m_helper, SIGNAL( readReady( K3ProcIO* ) ), SLOT( helperOutput() ) );
+        connect( m_helper, SIGNAL( processExited( K3Process* ) ), SLOT( failed() ) );
         *m_helper << "kpac_dhcp_helper";
 
         if ( !m_helper->start() )

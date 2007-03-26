@@ -45,9 +45,9 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_state = None;
 	m_status = false;
 	m_actionindex = 0;
-	connect(&m_proc, SIGNAL(receivedStdout(KProcess*,char*,int)), SLOT(slotReceived(KProcess*,char*,int)));
-	connect(&m_proc, SIGNAL(receivedStderr(KProcess*,char*,int)), SLOT(slotReceived(KProcess*,char*,int)));
-	connect(&m_proc, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
+	connect(&m_proc, SIGNAL(receivedStdout(K3Process*,char*,int)), SLOT(slotReceived(K3Process*,char*,int)));
+	connect(&m_proc, SIGNAL(receivedStderr(K3Process*,char*,int)), SLOT(slotReceived(K3Process*,char*,int)));
+	connect(&m_proc, SIGNAL(processExited(K3Process*)), SLOT(slotProcessExited(K3Process*)));
 
 	m_side = new SidePixmap(this);
 	m_doit = new QPushButton(i18n("&Export"), this);
@@ -153,7 +153,7 @@ void CupsAddSmb::slotActionClicked()
 		m_proc.kill();
 }
 
-void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
+void CupsAddSmb::slotReceived(K3Process*, char *buf, int buflen)
 {
 	QString	line;
 	int		index(0);
@@ -317,7 +317,7 @@ void CupsAddSmb::doNextAction()
 	}
 }
 
-void CupsAddSmb::slotProcessExited(KProcess*)
+void CupsAddSmb::slotProcessExited(K3Process*)
 {
 	kDebug(500) << "PROCESS EXITED (" << m_state << ")" << endl;
 	if (m_proc.normalExit() && m_state != Start && m_status)
@@ -478,7 +478,7 @@ bool CupsAddSmb::startProcess()
 	m_actionindex = 0;
 	m_buffer.clear();
 	kDebug(500) << "PROCESS STARTED = " << m_proc.args()[0] << endl;
-	return m_proc.start(KProcess::NotifyOnExit, KProcess::All);
+	return m_proc.start(K3Process::NotifyOnExit, K3Process::All);
 }
 
 #include "cupsaddsmb2.moc"

@@ -36,7 +36,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
-#include <kprocess.h>
+#include <k3process.h>
 
 #include <pwd.h>
 #include <unistd.h>
@@ -186,9 +186,9 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 
 	// 4) change permissions of spool directory
 	QByteArray cmd = "chmod -R o-rwx,g+rwX ";
-	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
+	cmd += QFile::encodeName(K3Process::quote(ent->arg("sd")));
 	cmd += "&& chown -R lp.lp ";
-	cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
+	cmd += QFile::encodeName(K3Process::quote(ent->arg("sd")));
 	if (system(cmd.data()) != 0)
 	{
 		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.", ent->arg("sd"), ent->m_name));
@@ -210,7 +210,7 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 			return false;
 		}
 		QByteArray cmd = "rm -rf ";
-		cmd += QFile::encodeName(KProcess::quote(ent->arg("sd")));
+		cmd += QFile::encodeName(K3Process::quote(ent->arg("sd")));
 		system(cmd.data());
 		delete ent;
 		return true;
@@ -226,7 +226,7 @@ bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 	cmd += ' ';
 	cmd += state ? "up" : "down";
 	cmd += ' ';
-	cmd += KProcess::quote(printer->printerName());
+	cmd += K3Process::quote(printer->printerName());
 	if (proc.open(cmd))
 	{
 		QTextStream	t(&proc);
@@ -554,9 +554,9 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 			return false;
 		// write various driver files using templates
 		QByteArray cmd = "cp ";
-		cmd += QFile::encodeName(KProcess::quote(driverDirectory()+"/master-filter"));
+		cmd += QFile::encodeName(K3Process::quote(driverDirectory()+"/master-filter"));
 		cmd += ' ';
-		cmd += QFile::encodeName(KProcess::quote(spooldir + "/filter"));
+		cmd += QFile::encodeName(K3Process::quote(spooldir + "/filter"));
 		if (system(cmd.data()) == 0 &&
 		    savePrinttoolCfgFile(driverDirectory()+"/general.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/postscript.cfg.in",spooldir,options) &&

@@ -24,8 +24,8 @@
 #include <qradiobutton.h>
 #include <qbuttongroup.h>
 #include <qlayout.h>
-#include <kprocess.h>
-#include <kprocio.h>
+#include <k3process.h>
+#include <k3procio.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kstandarddirs.h>
@@ -44,7 +44,7 @@ class KFileSharePropsPlugin::Private
 {
 public:
     KVBox *m_vBox;
-    KProcess *m_configProc;
+    K3Process *m_configProc;
     bool m_bAllShared;
     bool m_bAllUnshared;
 };
@@ -206,15 +206,15 @@ void KFileSharePropsPlugin::slotConfigureFileSharing()
 {
     if (d->m_configProc) return;
 
-    d->m_configProc = new KProcess(this);
+    d->m_configProc = new K3Process(this);
     (*d->m_configProc) << KStandardDirs::findExe("kdesu") << "kcmshell" << "fileshare";
-    if (!d->m_configProc->start( KProcess::NotifyOnExit ))
+    if (!d->m_configProc->start( K3Process::NotifyOnExit ))
     {
        delete d->m_configProc;
        d->m_configProc = 0;
        return;
     }
-    connect(d->m_configProc, SIGNAL(processExited(KProcess *)),
+    connect(d->m_configProc, SIGNAL(processExited(K3Process *)),
             this, SLOT(slotConfigureFileSharingDone()));
     m_pbConfig->setEnabled(false);
 }

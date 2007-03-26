@@ -42,10 +42,10 @@
 #include <kstandardaction.h>
 
 KPreviewProc::KPreviewProc()
-: KProcess()
+: K3Process()
 {
 	m_bOk = false;
-	connect(this, SIGNAL(processExited(KProcess*)), SLOT(slotProcessExited(KProcess*)));
+	connect(this, SIGNAL(processExited(K3Process*)), SLOT(slotProcessExited(K3Process*)));
 }
 
 KPreviewProc::~KPreviewProc()
@@ -65,7 +65,7 @@ bool KPreviewProc::startPreview()
 		return false;
 }
 
-void KPreviewProc::slotProcessExited(KProcess* proc)
+void KPreviewProc::slotProcessExited(K3Process* proc)
 {
 	emit finished();
 	if ( proc->normalExit() && proc->exitStatus() == 0 )

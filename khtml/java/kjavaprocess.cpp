@@ -46,20 +46,20 @@ private:
 };
 
 KJavaProcess::KJavaProcess() 
-	: KProcess(),
+	: K3Process(),
 	d(new KJavaProcessPrivate)
 
 {
     d->processKilled = false;
 
-    javaProcess = this; //new KProcess();
+    javaProcess = this; //new K3Process();
 
-    connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
+    connect( javaProcess, SIGNAL( wroteStdin( K3Process * ) ),
              this, SLOT( slotWroteData() ) );
     connect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
              this, SLOT( slotReceivedData(int, int&) ) );
-    connect( javaProcess, SIGNAL( processExited (KProcess *) ),
-             this, SLOT( slotExited (KProcess *) ) );
+    connect( javaProcess, SIGNAL( processExited (K3Process *) ),
+             this, SLOT( slotExited (K3Process *) ) );
 
     d->jvmPath = "java";
     d->mainClass = "-help";
@@ -306,11 +306,11 @@ bool KJavaProcess::invokeJVM()
 	stream << bit.next();
     kDebug(6100) << argStr << endl;
 
-    KProcess::Communication flags =  (KProcess::Communication)
-                                     (KProcess::Stdin | KProcess::Stdout |
-                                      KProcess::NoRead);
+    K3Process::Communication flags =  (K3Process::Communication)
+                                     (K3Process::Stdin | K3Process::Stdout |
+                                      K3Process::NoRead);
 
-    const bool rval = javaProcess->start( KProcess::NotifyOnExit, flags );
+    const bool rval = javaProcess->start( K3Process::NotifyOnExit, flags );
     if( rval )
         javaProcess->resume(); //start processing stdout on the java process
     else
@@ -384,7 +384,7 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     len = num_bytes + num_bytes_msg;
 }
 
-void KJavaProcess::slotExited( KProcess *process )
+void KJavaProcess::slotExited( K3Process *process )
 {
   if (process == javaProcess) {
     int status = -1;

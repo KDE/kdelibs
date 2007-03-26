@@ -63,7 +63,7 @@ that we would like to make for the next binary incompatible release.
   Dirk's work on KUrl).
   (André Wöbbeking)
 
-- Solve need for casting when using bitfield enums (e.g. KProcess::Communication)
+- Solve need for casting when using bitfield enums (e.g. K3Process::Communication)
   by the use of Q_DECLARE_FLAGS/Q_DECLARE_OPERATORS_FOR_FLAGS
   (Simon)
 
@@ -114,7 +114,7 @@ that we would like to make for the next binary incompatible release.
 	* Perhaps an own font section?
   (Frans)
 
-- KProcess needs a major facelift. Not all of these items need to be BIC, but not needing to
+- K3Process needs a major facelift. Not all of these items need to be BIC, but not needing to
   worry about legacy will certainly allow an overall cleaner solution.
   - the internals need to be encapsulated properly. many of the virtuals shouldn't be virtual;
     lots of protected members should be accessible only via accessors. the current model is
@@ -130,7 +130,7 @@ that we would like to make for the next binary incompatible release.
   - do something about the NoRead comm mode
   - add setComm(); remove comm arg from start(). as a side effect, this will allow for using
     writeStdin() in Block mode.
-  - merge KProcIO into KProcess; add setBuffered() for separate channels.
+  - merge K3ProcIO into K3Process; add setBuffered() for separate channels.
   - use QByteArray for writeStdin(). better than the buf+len arg, as it is ref-counted.
   (Oswald)
   - better than the buf+len arg, as it is ref-counted. See

@@ -1330,7 +1330,7 @@ void RegressionTest::doFailureReport( const QString& test, int failures )
 
     QString relOutputDir = makeRelativePath(m_baseDir, m_outputDir);
 
-    // are blocking reads possible with KProcess?
+    // are blocking reads possible with K3Process?
     QString pwd = QDir::currentPath();
     chdir( QFile::encodeName( m_baseDir ) );
 

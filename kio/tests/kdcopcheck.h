@@ -1,7 +1,7 @@
 #ifndef _BLA_H_
 #define _BLA_H_
 
-#include <kprocess.h>
+#include <k3process.h>
 #include <QtCore/QString>
 #include <QtCore/QObject>
 
@@ -22,7 +22,7 @@ public Q_SLOTS:
 protected:  
     int result;
     QString m_exec;
-    KProcess proc;
+    K3Process proc;
 };
 
 #endif

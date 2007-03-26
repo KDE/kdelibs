@@ -27,7 +27,7 @@
 #include <QtCore/QFile>
 #include <cups/cups.h>
 #include <stdlib.h>
-#include <kprocess.h>
+#include <k3process.h>
 
 static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd);
 
@@ -159,5 +159,5 @@ static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd)
 		}
 	}
 	if (!optstr.isEmpty())
-		cmd.append(" -o ").append( KProcess::quote( optstr ) );
+		cmd.append(" -o ").append( K3Process::quote( optstr ) );
 }

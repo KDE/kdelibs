@@ -19,7 +19,7 @@
 
 #include "smbview.h"
 
-#include <kprocess.h>
+#include <k3process.h>
 #include <ktemporaryfile.h>
 #include <q3header.h>
 #include <qapplication.h>
@@ -50,11 +50,11 @@ SmbView::SmbView(QWidget *parent)
 
 	m_state = Idle;
 	m_current = 0;
-	m_proc = new KProcess();
+	m_proc = new K3Process();
 	m_proc->setUseShell(true);
 	m_passwdFile = 0;
-	connect(m_proc,SIGNAL(processExited(KProcess*)),SLOT(slotProcessExited(KProcess*)));
-	connect(m_proc,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStdout(KProcess*,char*,int)));
+	connect(m_proc,SIGNAL(processExited(K3Process*)),SLOT(slotProcessExited(K3Process*)));
+	connect(m_proc,SIGNAL(receivedStdout(K3Process*,char*,int)),SLOT(slotReceivedStdout(K3Process*,char*,int)));
 	connect(this,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotSelectionChanged(Q3ListViewItem*)));
 }
 
@@ -90,7 +90,7 @@ void SmbView::startProcess(int state)
 	m_buffer.clear();
 	m_state = state;
 	QApplication::setOverrideCursor(KCursor::waitCursor());
-	m_proc->start(KProcess::NotifyOnExit,KProcess::Stdout);
+	m_proc->start(K3Process::NotifyOnExit,K3Process::Stdout);
 	emit running(true);
 }
 
@@ -117,12 +117,12 @@ void SmbView::endProcess()
 	m_proc->clearArguments();
 }
 
-void SmbView::slotProcessExited(KProcess*)
+void SmbView::slotProcessExited(K3Process*)
 {
 	endProcess();
 }
 
-void SmbView::slotReceivedStdout(KProcess*, char *buf, int len)
+void SmbView::slotReceivedStdout(K3Process*, char *buf, int len)
 {
 	m_buffer.append(QString::fromLocal8Bit(buf,len));
 }
@@ -177,11 +177,11 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 		{ // opening group
 			m_current = item;
 			*m_proc << "nmblookup"+m_wins_server+"-M ";
-                        *m_proc << KProcess::quote(item->text(0));
+                        *m_proc << K3Process::quote(item->text(0));
                         *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
-                        *m_proc << KProcess::quote(item->text(0));
+                        *m_proc << K3Process::quote(item->text(0));
 			*m_proc << " -A ";
-                        *m_proc << KProcess::quote(m_passwdFile->fileName());
+                        *m_proc << K3Process::quote(m_passwdFile->fileName());
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
@@ -196,14 +196,14 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 			{
 				*m_proc << "smbclient -N -L ";
 			}
-			*m_proc << KProcess::quote (item->text (0));
+			*m_proc << K3Process::quote (item->text (0));
 			*m_proc << " -W ";
-			*m_proc << KProcess::quote (item->parent ()->
+			*m_proc << K3Process::quote (item->parent ()->
 							text (0));
 			if (!krb5ccname)
 			{
 				*m_proc << " -A ";
-				*m_proc << KProcess::
+				*m_proc << K3Process::
 					quote (m_passwdFile->fileName ());
 			}
 			startProcess(ShareListing);

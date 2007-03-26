@@ -46,7 +46,7 @@
 #include "k3sconfig.h"
 #include "k3spelldlg.h"
 #include <kwin.h>
-#include <kprocio.h>
+#include <k3procio.h>
 #include <QTextStream>
 
 #define MAXLINELENGTH 10000
@@ -99,11 +99,11 @@ public:
     */
 
 
-//  Connects a slot to KProcIO's output signal
-#define OUTPUT(x) (connect (proc, SIGNAL (readReady(KProcIO *)), this, SLOT (x(KProcIO *))))
+//  Connects a slot to K3ProcIO's output signal
+#define OUTPUT(x) (connect (proc, SIGNAL (readReady(K3ProcIO *)), this, SLOT (x(K3ProcIO *))))
 
 // Disconnect a slot from...
-#define NOOUTPUT(x) (disconnect (proc, SIGNAL (readReady(KProcIO *)), this, SLOT (x(KProcIO *))))
+#define NOOUTPUT(x) (disconnect (proc, SIGNAL (readReady(K3ProcIO *)), this, SLOT (x(K3ProcIO *))))
 
 
 
@@ -299,11 +299,11 @@ K3Spell::startIspell()
 
   if (trystart == 0) //don't connect these multiple times
   {
-    connect( proc, SIGNAL(receivedStderr(KProcess *, char *, int)),
-             this, SLOT(ispellErrors(KProcess *, char *, int)) );
+    connect( proc, SIGNAL(receivedStderr(K3Process *, char *, int)),
+             this, SLOT(ispellErrors(K3Process *, char *, int)) );
 
-    connect( proc, SIGNAL(processExited(KProcess *)),
-             this, SLOT(ispellExit (KProcess *)) );
+    connect( proc, SIGNAL(processExited(K3Process *)),
+             this, SLOT(ispellExit (K3Process *)) );
 
     OUTPUT(K3Spell2);
   }
@@ -316,13 +316,13 @@ K3Spell::startIspell()
 }
 
 void
-K3Spell::ispellErrors( KProcess *, char *buffer, int buflen )
+K3Spell::ispellErrors( K3Process *, char *buffer, int buflen )
 {
   buffer[buflen-1] = '\0';
   //  kDebug(750) << "ispellErrors [" << buffer << "]\n" << endl;
 }
 
-void K3Spell::K3Spell2( KProcIO * )
+void K3Spell::K3Spell2( K3ProcIO * )
 
 {
   QString line;
@@ -558,7 +558,7 @@ bool K3Spell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
   return true;
 }
 
-void K3Spell::checkWord2( KProcIO* )
+void K3Spell::checkWord2( K3ProcIO* )
 {
   QString word;
   QString line;
@@ -615,7 +615,7 @@ void K3Spell::checkNext()
   }
 }
 
-void K3Spell::suggestWord( KProcIO * )
+void K3Spell::suggestWord( K3ProcIO * )
 {
   QString word;
   QString line;
@@ -807,14 +807,14 @@ bool K3Spell::checkList (QStringList *_wordlist, bool _usedialog)
   lastpos = -1;
   checkList2();
 
-  // when checked, KProcIO calls checkList3a
+  // when checked, K3ProcIO calls checkList3a
   OUTPUT(checkList3a);
 
   return true;
 }
 
 void K3Spell::checkList2 ()
-  // send one word from the list to KProcIO
+  // send one word from the list to K3ProcIO
   // invoked first time by checkList, later by checkListReplaceCurrent and checkList4
 {
   // send next word
@@ -844,8 +844,8 @@ void K3Spell::checkList2 ()
   }
 }
 
-void K3Spell::checkList3a (KProcIO *)
-  // invoked by KProcIO, when data from ispell are read
+void K3Spell::checkList3a (K3ProcIO *)
+  // invoked by K3ProcIO, when data from ispell are read
 {
   //kDebug(750) << "start of checkList3a" << endl;
 
@@ -968,7 +968,7 @@ void K3Spell::checkList4 ()
     //proc->disconnect();
     //proc->kill();
     //delete proc;
-    //proc = new KProcIO( codec );
+    //proc = new K3ProcIO( codec );
     //startIspell();
     return;
   };
@@ -1013,7 +1013,7 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
 
   newbuffer = origbuffer;
 
-  // KProcIO calls check2 when read from ispell
+  // K3ProcIO calls check2 when read from ispell
   OUTPUT( check2 );
   proc->writeStdin( QString( "!" ) );
 
@@ -1040,8 +1040,8 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
 }
 
 
-void K3Spell::check2( KProcIO * )
-  // invoked by KProcIO when read from ispell
+void K3Spell::check2( K3ProcIO * )
+  // invoked by K3ProcIO when read from ispell
 {
   int e, tempe;
   QString word;
@@ -1320,7 +1320,7 @@ void K3Spell::cleanUp()
   proc->closeStdin();
 }
 
-void K3Spell::ispellExit( KProcess* )
+void K3Spell::ispellExit( K3Process* )
 {
   kDebug() << "K3Spell::ispellExit() " << m_status << endl;
 
@@ -1571,7 +1571,7 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
       // Hack for modal spell checking
       connect( this, SIGNAL(ready(K3Spell *)), this, SLOT(slotModalReady()) );
 
-  proc = new KProcIO( codec );
+  proc = new K3ProcIO( codec );
 
   startIspell();
 }

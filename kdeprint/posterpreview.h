@@ -23,7 +23,7 @@
 #include <QFrame>
 #include <QList>
 
-class KProcess;
+class K3Process;
 
 class PosterPreview : public QFrame
 {
@@ -55,15 +55,15 @@ protected:
 	void emitSelectedPages();
 
 protected Q_SLOTS:
-	void slotProcessStderr( KProcess*, char*, int );
-	void slotProcessExited( KProcess* );
+	void slotProcessStderr( K3Process*, char*, int );
+	void slotProcessExited( K3Process* );
 
 private:
 	int m_rows, m_cols;
 	int m_pw, m_ph; // page size
 	int m_mw, m_mh; // cur margins
 	QRect m_posterbb; // poster bounding box (without any margin)
-	KProcess *m_process;
+	K3Process *m_process;
 	QString m_buffer;
 	QString m_postersize, m_mediasize;
 	int m_cutmargin;

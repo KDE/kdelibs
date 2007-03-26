@@ -108,7 +108,7 @@ Since 2.2 release, Michael Goffioul <kdeprint@swing.be>
   * kdeprintfax: added possibility to view files being faxed and
     file action (remove and view) are enabled only when needed.
   * KPrinter: when printing to a file, support encoding and spaces
-    in file names + system --> KProcess.
+    in file names + system --> K3Process.
 
 07/11/2001 Michael Goffioul <kdeprint@swing.be>
   * kdeprint: fixed some problems:
@@ -137,7 +137,7 @@ Since 2.2 release, Michael Goffioul <kdeprint@swing.be>
     printers. No management is allowed on remote jobs (yet?).
 
 10/11/2001 Michael Goffioul <kdeprint@swing.be>
-  * general: use KShellProcess::quote() for any quoting. Normally,
+  * general: use K3ShellProcess::quote() for any quoting. Normally,
     all quoting problem should be fixed now.
     
 12/11/2001 Michael Goffioul <kdeprint@swing.be>

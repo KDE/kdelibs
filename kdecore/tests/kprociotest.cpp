@@ -1,5 +1,5 @@
 //
-//  MAIN -- a little demo of the capabilities of the "KProcess" class
+//  MAIN -- a little demo of the capabilities of the "K3Process" class
 //
 //  version 0.2, Aug 2nd 1997
 //
@@ -7,7 +7,7 @@
 //
 
 
-#include "kprocess.h"
+#include "k3process.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -40,15 +40,15 @@ int main(int argc, char *argv[])
 
  QApplication app(argc, argv);
 
- printf("Welcome to the KProcIO Demo Application!\n");
+ printf("Welcome to the K3ProcIO Demo Application!\n");
 
 
- KProcIO p;
+ K3ProcIO p;
 
  p << "rev";
 
- p.connect(&p, SIGNAL(processExited(KProcess*)), &dummy, SLOT(printMessage(KProcess*)));
- p.connect(&p, SIGNAL(readReady(KProcIO*)), &dummy, SLOT(gotOutput(KProcIO*)));
+ p.connect(&p, SIGNAL(processExited(K3Process*)), &dummy, SLOT(printMessage(K3Process*)));
+ p.connect(&p, SIGNAL(readReady(K3ProcIO*)), &dummy, SLOT(gotOutput(K3ProcIO*)));
 
  bool b;
 

@@ -31,7 +31,7 @@
 
 #include <kdelibs_export.h>
 
-class KProcess;
+class K3Process;
 
 /**
  * This class parses the output of "df" to find the disk usage
@@ -73,11 +73,11 @@ Q_SIGNALS:
    void done();
 
 private Q_SLOTS:
-   void receivedDFStdErrOut(KProcess *, char *data, int len);
+   void receivedDFStdErrOut(K3Process *, char *data, int len);
    void dfDone();
 
 private:
-  KProcess         *dfProc;
+  K3Process         *dfProc;
   QByteArray          dfStringErrOut;
   QString           m_mountPoint;
   bool              readingDFStdErrOut;

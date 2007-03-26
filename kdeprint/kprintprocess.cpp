@@ -23,12 +23,12 @@
 #include <QtCore/QFile>
 
 KPrintProcess::KPrintProcess()
-: KShellProcess()
+: K3ShellProcess()
 {
 	// redirect everything to a single buffer
-	connect(this,SIGNAL(receivedStdout(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
-	connect(this,SIGNAL(receivedStderr(KProcess*,char*,int)),SLOT(slotReceivedStderr(KProcess*,char*,int)));
-	connect( this, SIGNAL( processExited( KProcess* ) ), SLOT( slotExited( KProcess* ) ) );
+	connect(this,SIGNAL(receivedStdout(K3Process*,char*,int)),SLOT(slotReceivedStderr(K3Process*,char*,int)));
+	connect(this,SIGNAL(receivedStderr(K3Process*,char*,int)),SLOT(slotReceivedStderr(K3Process*,char*,int)));
+	connect( this, SIGNAL( processExited( K3Process* ) ), SLOT( slotExited( K3Process* ) ) );
 	m_state = None;
 }
 
@@ -53,7 +53,7 @@ bool KPrintProcess::print()
 	return start(NotifyOnExit,All);
 }
 
-void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)
+void KPrintProcess::slotReceivedStderr(K3Process *proc, char *buf, int len)
 {
 	if (proc == this)
 	{
@@ -62,7 +62,7 @@ void KPrintProcess::slotReceivedStderr(KProcess *proc, char *buf, int len)
 	}
 }
 
-void KPrintProcess::slotExited( KProcess* )
+void KPrintProcess::slotExited( K3Process* )
 {
 	switch ( m_state )
 	{

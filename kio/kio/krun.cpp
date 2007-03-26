@@ -51,7 +51,7 @@
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
-#include <kprocess.h>
+#include <k3process.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
@@ -473,7 +473,7 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   return QString();
 }
 
-static pid_t runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
+static pid_t runCommandInternal( K3Process* proc, const KService* service, const QString& binName,
     const QString &execName, const QString & iconName )
 {
   if (service && !service->desktopEntryPath().isEmpty()
@@ -596,9 +596,9 @@ static pid_t runTempService( const KService& _service, const KUrl::List& _urls, 
   {
       args = KRun::processDesktopExec(_service, _urls, tempFiles, suggestedFileName );
   }
-  kDebug(7010) << "runTempService: KProcess args=" << args << endl;
+  kDebug(7010) << "runTempService: K3Process args=" << args << endl;
 
-  KProcess * proc = new KProcess;
+  K3Process * proc = new K3Process;
   *proc << args;
 
   if (!_service.path().isEmpty())
@@ -722,7 +722,7 @@ pid_t KRun::runCommand( const QString &cmd )
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
 {
   kDebug(7010) << "runCommand " << cmd << "," << execName << endl;
-  KProcess * proc = new KProcess;
+  K3Process * proc = new K3Process;
   proc->setUseShell(true);
   *proc << cmd;
   KService::Ptr service = KService::serviceByDesktopName( binaryName( execName, true ) );
@@ -1233,27 +1233,27 @@ bool KRun::isExecutable( const QString& serviceType )
 /****************/
 
 pid_t
-KProcessRunner::run(KProcess * p, const QString & binName)
+KProcessRunner::run(K3Process * p, const QString & binName)
 {
   return (new KProcessRunner(p, binName))->pid();
 }
 
 #ifdef Q_WS_X11
 pid_t
-KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
+KProcessRunner::run(K3Process * p, const QString & binName, const KStartupInfoId& id )
 {
   return (new KProcessRunner(p, binName, id))->pid();
 }
 #endif
 
-KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
+KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName )
   : QObject(),
     process_(p),
     binName( _binName )
 {
   QObject::connect(
-      process_, SIGNAL(processExited(KProcess *)),
-      this,     SLOT(slotProcessExited(KProcess *)));
+      process_, SIGNAL(processExited(K3Process *)),
+      this,     SLOT(slotProcessExited(K3Process *)));
 
   process_->start();
   if ( !process_->pid() )
@@ -1261,15 +1261,15 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
 }
 
 #ifdef Q_WS_X11
-KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
+KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName, const KStartupInfoId& id )
   : QObject(),
     process_(p),
     binName( _binName ),
     id_( id )
 {
   QObject::connect(
-      process_, SIGNAL(processExited(KProcess *)),
-      this,     SLOT(slotProcessExited(KProcess *)));
+      process_, SIGNAL(processExited(K3Process *)),
+      this,     SLOT(slotProcessExited(K3Process *)));
 
   process_->start();
   if ( !process_->pid() )
@@ -1289,7 +1289,7 @@ KProcessRunner::pid() const
 }
 
   void
-KProcessRunner::slotProcessExited(KProcess * p)
+KProcessRunner::slotProcessExited(K3Process * p)
 {
   if (p != process_)
     return; // Eh ?
