@@ -11,6 +11,14 @@ class MethodDef
   attr_writer :optional
 end
 
+class SignalDef
+  def initialize(signature)
+    @signature = signature
+  end
+
+  attr_reader :signature
+end
+
 class Parser
     def initialize(filename)
       @file = File.new filename, "r"
@@ -21,6 +29,12 @@ class Parser
     attr_reader :signatures
 
     private
+    def addSignal(signature)
+      unless @signatures.include? signature
+        @signatures[signature] = SignalDef.new(signature)
+      end
+    end
+
     def addMethod(returnType, signature, optional)
       if @signatures.include? signature
         if returnType != ''
@@ -67,10 +81,25 @@ class Parser
     PARSER3_CLOSE         = 17
     PARSER3_DONE          = 18
 
+    PARSER4_OPENING_PAREN                  = 0
+    PARSER4_SENDER                         = 1
+    PARSER4_PRIVATE_SENDER                 = 2
+    PARSER4_COMMA_1                        = 3
+    PARSER4_SIGNAL_MACRO                   = 4
+    PARSER4_SIGNAL_OPENING_PAREN           = 5
+    PARSER4_SIGNAL_SIGNATURE               = 6
+    PARSER4_SIGNAL_SIGNATURE_OPENING_PAREN = 7
+    PARSER4_SIGNAL_SIGNATURE_CONST         = 8
+    PARSER4_SIGNAL_SIGNATURE_TYPE1         = 9
+    PARSER4_SIGNAL_SIGNATURE_TYPE2_1       = 10
+    PARSER4_SIGNAL_SIGNATURE_TYPE2_2       = 11
+    PARSER4_SIGNAL_CLOSING_PAREN           = 12
+
     def parse
       inbackendcall = false
       innamedescriptioncall = false
       ininvokemethodcall = false
+      inconnect = false
       optionalmethod = false
       lasttoken = ';'
       thistoken = ';'
@@ -84,7 +113,10 @@ class Parser
         thistoken = token
         token = token[1..-1] if token[0,9] == "pBACKEND_"
         if token[0,8] == "BACKEND_"
-          fail if innamedescriptioncall or inbackendcall or ininvokemethodcall
+          fail if innamedescriptioncall
+          fail if inbackendcall
+          fail if ininvokemethodcall
+          fail if inconnect
           inbackendcall = true
           if token[8,3] != "GET" # skip return arg
             parserstate = PARSER_METHOD_NAME
@@ -93,14 +125,108 @@ class Parser
             parserstate = PARSER_RETURN_TYPE
           end
         elsif token == 'NAMEDESCRIPTIONFROMINDEX'
-          fail if innamedescriptioncall or inbackendcall or ininvokemethodcall
+          fail if innamedescriptioncall
+          fail if inbackendcall
+          fail if ininvokemethodcall
+          fail if inconnect
           innamedescriptioncall = true
           parserstate = PARSER2_CLASSNAME
         elsif token == 'QMetaObject'
-          fail if innamedescriptioncall or inbackendcall or ininvokemethodcall
+          fail if innamedescriptioncall
+          fail if inbackendcall
+          fail if ininvokemethodcall
+          fail if inconnect
           ininvokemethodcall = true
           parserstate = PARSER3_SCOPEDELIMIT
           optionalmethod = (lasttoken[-1,1] == '=' or lasttoken == '(') ? true : false
+        elsif token == 'connect'
+          fail if innamedescriptioncall
+          fail if inbackendcall
+          fail if ininvokemethodcall
+          fail if inconnect
+          inconnect = true
+          parserstate = PARSER4_OPENING_PAREN
+        elsif inconnect
+          #puts "state = #{parserstate}, token = #{token}"
+          lastparserstate = parserstate
+          case parserstate
+          when PARSER4_OPENING_PAREN
+            parserstate = PARSER4_SENDER if token == '('
+          when PARSER4_SENDER
+            # d->backendObject or only backendObject
+            parserstate = PARSER4_COMMA_1 if token == 'backendObject'
+            parserstate = PARSER4_PRIVATE_SENDER if token == 'd'
+          when PARSER4_PRIVATE_SENDER
+            parserstate = PARSER4_SENDER if token == '->'
+          when PARSER4_COMMA_1
+            parserstate = PARSER4_SIGNAL_MACRO if token == ','
+          when PARSER4_SIGNAL_MACRO
+            parserstate = PARSER4_SIGNAL_OPENING_PAREN if token == 'SIGNAL'
+          when PARSER4_SIGNAL_OPENING_PAREN
+            parserstate = PARSER4_SIGNAL_SIGNATURE if token == '('
+          when PARSER4_SIGNAL_SIGNATURE
+            signature = token
+            parserstate = PARSER4_SIGNAL_SIGNATURE_OPENING_PAREN
+          when PARSER4_SIGNAL_SIGNATURE_OPENING_PAREN
+            case token
+            when '('
+              signature += '('
+              parserstate = PARSER4_SIGNAL_SIGNATURE_CONST
+            when '()'
+              signature += '()'
+              parserstate = PARSER4_SIGNAL_CLOSING_PAREN
+            end
+          when PARSER4_SIGNAL_SIGNATURE_CONST
+            case token
+            when 'const'
+              signature += 'const '
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE1
+            when ')'
+              signature += ')'
+              parserstate = PARSER4_SIGNAL_CLOSING_PAREN
+            else
+              signature += token
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE2_1
+            end
+          when PARSER4_SIGNAL_SIGNATURE_TYPE1
+            case token
+            when 'const'
+            when ')'
+            else
+              signature += token
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE2_1
+            end
+          when PARSER4_SIGNAL_SIGNATURE_TYPE2_1
+            case token
+            when ','
+              signature += ', '
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE1
+            when ')'
+              signature += ')'
+              parserstate = PARSER4_SIGNAL_CLOSING_PAREN
+            else
+              signature += token
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE2_2
+            end
+          when PARSER4_SIGNAL_SIGNATURE_TYPE2_2
+            case token
+            when ','
+              signature += ', '
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE1
+            when ')'
+              signature += ')'
+              parserstate = PARSER4_SIGNAL_CLOSING_PAREN
+            else
+              signature += token
+              parserstate = PARSER4_SIGNAL_SIGNATURE_TYPE2_1
+            end
+          when PARSER4_SIGNAL_CLOSING_PAREN
+            addSignal(signature) if token == ')'
+          end
+          if parserstate == lastparserstate
+            inconnect = false
+            signature = String.new
+          end
         elsif ininvokemethodcall
           case parserstate
           when PARSER3_BACKENDOBJ
@@ -265,14 +391,23 @@ class Parser
       incomment = false
       instring = false
       laststring = ''
+      linenum = 0
       @file.each_line do |line|
+        linenum += 1
         line.strip!
         next if line[0..1] == "//"
         next if line[0,1] == "#" # ignore preprocessor statements
         line.split(/(\b|\s+)/).each do |token|
+          #puts token
           if instring
+            indexOfEscapedQuote = token.index '\\"'
+            if indexOfEscapedQuote != nil
+              laststring += token
+              next
+            end
             indexOfQuote = token.index '"'
             if indexOfQuote and indexOfQuote > 0
+              fail if token[indexOfQuote-1,1] == '\\'
               laststring += token[0..indexOfQuote-1]
               token = token[indexOfQuote..-1]
             end
@@ -280,6 +415,11 @@ class Parser
               laststring += token[2..-1]
               next
             elsif token[0,1] == '"'
+              if laststring[-1,1] == '\\'
+                laststring[-1,1] = '"'
+                laststring += token[1..-1]
+                next
+              end
               instring = false
               yield laststring + '"'
               token = token[1..-1]
@@ -300,6 +440,18 @@ class Parser
             end
             break if token == "//"
           end
+          doublequote = token.index '""'
+          if doublequote != nil
+            if doublequote > 0
+              yield token[0,doublequote]
+            end
+            yield '""'
+            if token.length > doublequote+2
+              token = token[doublequote+2..-1]
+            else
+              next
+            end
+          end
           quote = token.index '"'
           if quote != nil
             laststring = token[quote..-1]
@@ -313,12 +465,16 @@ class Parser
           semicolon = token.index ';'
           if not semicolon
             if token.length > 1
-              if token[-1,1] == ',' or token[-1,1] == "'"
+              while token[0,1] == '(' or token[0,1] == ')' or token[0,1] == "'"
+                yield token[0,1]
+                token = token[1..-1]
+              end
+              if token.length == 0
+              elsif token.length == 1
+                yield token
+              elsif token[-1,1] == ',' or token[-1,1] == "'"
                 yield token[0..-2]
                 yield token[-1,1]
-              elsif token[0,1] == "'"
-                yield token[0,1]
-                yield token[1..-1]
               else
                 yield token
               end
@@ -342,9 +498,13 @@ end
 
 p = Parser.new ARGV[0]
 p.signatures.each do |signature,method|
-  if method.optional
-    puts "addMethod( \"#{method.returnType}\", \"#{signature}\", true );"
+  if method.class == SignalDef
+    puts "addSignal(\"#{signature}\");"
   else
-    puts "addMethod( \"#{method.returnType}\", \"#{signature}\" );"
+    if method.optional
+      puts "addMethod(\"#{method.returnType}\", \"#{signature}\", true);"
+    else
+      puts "addMethod(\"#{method.returnType}\", \"#{signature}\");"
+    end
   end
 end
