@@ -140,7 +140,7 @@ class KDEUI_EXPORT KPlotPoint {
  * @author Jason Harris
  * @version 1.1
  */
-class KDEEDUPLOT_EXPORT KPlotObject{
+class KDEUI_EXPORT KPlotObject{
 public:
         /**
          * The type classification of the KPlotObject.
