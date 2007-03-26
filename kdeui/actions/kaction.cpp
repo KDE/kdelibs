@@ -97,8 +97,12 @@ KAction::~KAction()
         d->globalShortcut = KShortcut();
         KGlobalAccel::self()->checkAction(this); // unregister
     }
+    // TODO fix with a gesture map singleton so that it doesn't crash when there is no kapp
+    // (for instance in the kdeui unit tests)
+#if 0
     KApplication::kApplication()->gestureMap()->removeGesture(d->shapeGesture, this);
     KApplication::kApplication()->gestureMap()->removeGesture(d->rockerGesture, this);
+#endif
     delete d;
 }
 
@@ -225,6 +229,7 @@ void KAction::setShapeGesture( const KShapeGesture& gest,  ShortcutTypes type )
   if( type & DefaultShortcut )
     d->defaultShapeGesture = gest;
 
+#if 0
   if ( type & ActiveShortcut ) {
     if ( KApplication::kApplication()->gestureMap()->findAction( gest ) ) {
       kDebug() << k_funcinfo << "New mouse gesture already in use, won't change gesture." << endl;
@@ -234,6 +239,7 @@ void KAction::setShapeGesture( const KShapeGesture& gest,  ShortcutTypes type )
     KApplication::kApplication()->gestureMap()->addGesture( gest, this );
     d->shapeGesture = gest;
   }
+#endif
 }
 
 void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type )
@@ -243,6 +249,7 @@ void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type 
   if( type & DefaultShortcut )
     d->defaultRockerGesture = gest;
 
+#if 0
   if ( type & ActiveShortcut ) {
     if ( KApplication::kApplication()->gestureMap()->findAction( gest ) ) {
       kDebug() << k_funcinfo << "New mouse gesture already in use, won't change gesture." << endl;
@@ -252,6 +259,7 @@ void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type 
     KApplication::kApplication()->gestureMap()->addGesture( gest, this );
     d->rockerGesture = gest;
   }
+#endif
 }
 
 /* vim: et sw=2 ts=2
