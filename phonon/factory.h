@@ -225,7 +225,9 @@ namespace Factory
     PHONONCORE_EXPORT QObject* registerQObject( QObject* o );
     PHONONCORE_EXPORT void registerFrontendObject(BasePrivate *);
     PHONONCORE_EXPORT void deregisterFrontendObject(BasePrivate *);
-    const KComponentData &componentData();
+    PHONONCORE_EXPORT const KComponentData &componentData();
+
+    PHONONCORE_EXPORT void createBackend(const QString &library, const QString &version = QString());
 
 //X    It is probably better if we can get away with internal handling of
 //X    freeing the soundcard device when it's not needed anymore and

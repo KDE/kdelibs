@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2004-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2004-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,22 +18,23 @@
 */
 
 #include "factory.h"
-#include "base_p.h"
 
-#include <kservicetypetrader.h>
-#include <klibloader.h>
-#include <kmessagebox.h>
 #include <QFile>
 #include <QList>
+#include <QCoreApplication>
+#include <QtDBus/QtDBus>
+
 #include <klocale.h>
 #include <kmimetype.h>
 #include <kdebug.h>
-#include <QCoreApplication>
-
-#include <QtDBus/QtDBus>
-#include "backendinterface.h"
-#include "factory_p.h"
 #include <kglobal.h>
+#include <kservicetypetrader.h>
+#include <klibloader.h>
+#include <kmessage.h>
+
+#include "backendinterface.h"
+#include "base_p.h"
+#include "factory_p.h"
 #include "audiooutput.h"
 #include "audiooutput_p.h"
 
@@ -53,75 +54,100 @@ const KComponentData &Factory::componentData()
     return globalFactory->componentData;
 }
 
-void FactoryPrivate::createBackend()
+void Factory::createBackend(const QString &library, const QString &version)
 {
-    /*if (service) {
-        // we already have a valid backend lib opened. force it to unload:
-        KLibLoader::self()->unloadLibrary(QFile::encodeName(ptr->library()));
-    }*/
-    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
-            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+    Q_ASSERT(!globalFactory->backendObject);
+
+    QString additionalConstraints = QLatin1String(" and Library == '") + library + QLatin1Char('\'');
+    if (!version.isEmpty()) {
+        additionalConstraints += QLatin1String(" and [X-KDE-PhononBackendInfo-Version] == '")
+            + version + QLatin1Char('\'');
+    }
+    const KService::List offers = KServiceTypeTrader::self()->query(QLatin1String("PhononBackend"),
+            QString("Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1%1")
+            .arg(additionalConstraints));
+    if (offers.isEmpty()) {
+        KMessage::message(KMessage::Error, i18n("Unable to find the requested Multimedia Backend"));
+        return;
+    }
+
     KService::List::const_iterator it = offers.begin();
     const KService::List::const_iterator end = offers.end();
-    QStringList errormsg;
-    for (; it != end; ++it) {
-        KService::Ptr ptr = *it;
-        KLibFactory* factory = 0;
-#ifdef PHONON_LOAD_BACKEND_GLOBAL
-        // This code is in here temporarily until NMM gets fixed.
-        // Currently the NMM backend will fail with undefined symbols if
-        // the backend is not loaded with global symbol resolution
-        KLibrary* library = KLibLoader::self()->library(QFile::encodeName(ptr->library()), QLibrary::ExportExternalSymbolsHint);
-        if (library) {
-            factory = library->factory();
-        }
-#else
-        factory = KLibLoader::self()->factory(QFile::encodeName(ptr->library()));
-#endif
-        if (factory) {
-            backend = factory->create();
-            if (0 == backend) {
-                QString e = i18n("create method returned 0");
-                errormsg.append(e);
-                kDebug(600) << "Error getting backend from factory for " <<
-                    ptr->name() << ", " << ptr->library() << ":\n" << e << endl;
-            } else {
-                service = ptr;
-                kDebug(600) << "using backend: " << ptr->name() << endl;
-                break;
-            }
-        } else {
-            QString e = KLibLoader::self()->lastErrorMessage();
-            errormsg.append(e);
-            kDebug(600) << "Error getting factory for " << ptr->name() <<
-                ":\n" << e << endl;
-        }
+    while (it != end && !globalFactory->createBackend(*it)) {
+        ++it;
     }
-    if (backend) {
-        connect(backend, SIGNAL(objectDescriptionChanged(ObjectDescriptionType)),
-                SLOT(objectDescriptionChanged(ObjectDescriptionType)));
-    } else {
-        if (offers.size() == 0) {
-            KMessageBox::error(0, i18n("Unable to find a Multimedia Backend"));
-        } else {
-            QString details = "<qt><table>";
-            QStringList::Iterator eit = errormsg.begin();
-            QStringList::Iterator eend = errormsg.end();
-            KService::List::const_iterator oit = offers.begin();
-            const KService::List::const_iterator oend = offers.end();
-            for (; eit != eend || oit != oend; ++eit, ++oit)
-                details += QString("<tr><td><b>%1</b></td><td>%2</td></tr>")
-                    .arg((*oit)->name()).arg(*eit);
-            details += "</table></qt>";
+}
 
-            KMessageBox::detailedError(0,
-                    i18n("Unable to use any of the available Multimedia Backends"), details);
-        }
+bool FactoryPrivate::createBackend(KService::Ptr newService)
+{
+    KLibFactory* factory = 0;
+#ifdef PHONON_LOAD_BACKEND_GLOBAL
+    // This code is in here temporarily until NMM gets fixed.
+    // Currently the NMM backend will fail with undefined symbols if
+    // the backend is not loaded with global symbol resolution
+    KLibrary* library = KLibLoader::self()->library(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
+    if (library) {
+        factory = library->factory();
+    }
+#else
+    factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()));
+#endif
+    if (!factory) {
+        QString errorReason = KLibLoader::self()->lastErrorMessage();
+        kError(600) << "Can not create factory for " << newService->name() <<
+            ":\n" << errorReason << endl;
+
+        KMessage::message(KMessage::Error,
+                QLatin1String("<qt>")
+                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
+                + QLatin1Char('\n')
+                + errorReason
+                + QLatin1String("<qt>"));
+        return false;
+    }
+
+    backendObject = factory->create();
+    if (0 == backendObject) {
+        QString errorReason = i18n("create method returned 0");
+        kError(600) << "Can not create backend object from factory for " <<
+            newService->name() << ", " << newService->library() << ":\n" << errorReason << endl;
+
+        KMessage::message(KMessage::Error,
+                QLatin1String("<qt>")
+                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
+                + QLatin1Char('\n')
+                + errorReason
+                + QLatin1String("<qt>"));
+        return false;
+    }
+
+    service = newService;
+    kDebug(600) << "using backend: " << newService->name() << endl;
+
+    connect(backendObject, SIGNAL(objectDescriptionChanged(ObjectDescriptionType)),
+            SLOT(objectDescriptionChanged(ObjectDescriptionType)));
+
+    return true;
+}
+
+void FactoryPrivate::createBackend()
+{
+    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+    if (offers.isEmpty()) {
+        KMessage::message(KMessage::Error, i18n("Unable to find a Multimedia Backend"));
+        return;
+    }
+
+    KService::List::const_iterator it = offers.begin();
+    const KService::List::const_iterator end = offers.end();
+    while (it != end && !createBackend(*it)) {
+        ++it;
     }
 }
 
 FactoryPrivate::FactoryPrivate()
-    : backend(0)
+    : backendObject(0)
 {
     // Add the post routine to make sure that all other global statics (especially the ones from Qt)
     // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
@@ -144,7 +170,7 @@ FactoryPrivate::~FactoryPrivate()
         kError(600) << "The backend objects are not deleted as was requested." << endl;
         qDeleteAll(objects);
     }
-    delete backend;
+    delete backendObject;
 }
 
 void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
@@ -187,7 +213,7 @@ void Factory::deregisterFrontendObject(BasePrivate* bp)
 
 void FactoryPrivate::phononBackendChanged()
 {
-    if (backend) {
+    if (backendObject) {
         foreach(BasePrivate* bp, basePrivateList) {
             bp->deleteIface();
         }
@@ -203,8 +229,8 @@ void FactoryPrivate::phononBackendChanged()
             }
             return;
         }
-        delete backend;
-        backend = 0;
+        delete backendObject;
+        backendObject = 0;
     }
     createBackend();
     foreach(BasePrivate* bp, basePrivateList) {
@@ -263,14 +289,14 @@ FACTORY_IMPL(VideoDataOutput)
 
 QObject* Factory::backend(bool createWhenNull)
 {
-    if (createWhenNull && globalFactory->backend == 0) {
+    if (createWhenNull && globalFactory->backendObject == 0) {
         globalFactory->createBackend();
         // XXX: might create "reentrancy" problems:
         // a method calls this method and is called again because the
         // backendChanged signal is emitted
         emit globalFactory->backendChanged();
     }
-    return globalFactory->backend;
+    return globalFactory->backendObject;
 }
 
 const char* Factory::uiLibrary()
@@ -279,7 +305,7 @@ const char* Factory::uiLibrary()
         return 0;
     }
     const char* ret = 0;
-    QMetaObject::invokeMethod(globalFactory->backend, "uiLibrary", Qt::DirectConnection, Q_RETURN_ARG(const char*, ret));
+    QMetaObject::invokeMethod(globalFactory->backendObject, "uiLibrary", Qt::DirectConnection, Q_RETURN_ARG(const char*, ret));
     return ret;
 }
 
@@ -290,7 +316,7 @@ const char* Factory::uiSymbol()
 	const char* ret = 0;
 	// the backend doesn't have to implement the symbol - the default factory
 	// symbol will be used then
-	if (QMetaObject::invokeMethod(globalFactory->backend, "uiSymbol", Qt::DirectConnection, Q_RETURN_ARG(const char*, ret)))
+	if (QMetaObject::invokeMethod(globalFactory->backendObject, "uiSymbol", Qt::DirectConnection, Q_RETURN_ARG(const char*, ret)))
 		return ret;
 	return 0;
 }
