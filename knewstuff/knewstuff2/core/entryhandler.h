@@ -47,6 +47,8 @@ class KDE_EXPORT EntryHandler
     EntryHandler(const Entry& entry);
 
     bool isValid();
+    void setCompatibilityFormat();
+
     Entry entry();
     Entry *entryptr();
     QDomElement entryXML();
@@ -60,6 +62,7 @@ class KDE_EXPORT EntryHandler
     Entry mEntry;
     QDomElement mEntryXML;
     bool mValid;
+    bool mCompat;
 };
 
 }

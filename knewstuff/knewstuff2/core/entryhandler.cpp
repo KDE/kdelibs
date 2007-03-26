@@ -28,6 +28,7 @@ using namespace KNS;
 EntryHandler::EntryHandler(const Entry& entry)
 {
   mValid = false;
+  mCompat = false;
   mEntry = entry;
   mEntryXML = serializeElement(entry);
 }
@@ -37,6 +38,11 @@ EntryHandler::EntryHandler(const QDomElement& entryxml)
   mValid = false;
   mEntryXML = entryxml;
   mEntry = deserializeElement(entryxml);
+}
+
+void EntryHandler::setCompatibilityFormat()
+{
+  mCompat = true;
 }
 
 bool EntryHandler::isValid()
@@ -59,7 +65,7 @@ Entry *EntryHandler::entryptr()
   Entry *entry = new Entry();
   entry->setName(mEntry.name());
   entry->setAuthor(mEntry.author());
-  entry->setType(mEntry.type());
+  entry->setCategory(mEntry.category());
   entry->setLicense(mEntry.license());
   entry->setSummary(mEntry.summary());
   entry->setVersion(mEntry.version());
@@ -77,15 +83,34 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
   QDomDocument doc;
 
   QDomElement el = doc.createElement("stuff");
-  el.setAttribute("category", entry.type());
+  el.setAttribute("category", entry.category());
 
-//  (void)addElement(doc, el, "author", entry.author());
-//  FIXME: rather include author XML element/reference here created by AuthorHandler!
+  QDomElement author = addElement(doc, el, "author", entry.author().name());
+  if(!entry.author().email().isEmpty())
+    author.setAttribute("email", entry.author().email());
+  if(!entry.author().homepage().isEmpty())
+    author.setAttribute("homepage", entry.author().homepage());
+  if(!entry.author().jabber().isEmpty())
+    author.setAttribute("im", entry.author().jabber());
+  // FIXME: 'jabber' or 'im'? consult with kopete guys...
+
   (void)addElement(doc, el, "licence", entry.license());
   (void)addElement(doc, el, "version", entry.version());
-  (void)addElement(doc, el, "release", QString::number(entry.release()));
-  (void)addElement(doc, el, "rating", QString::number(entry.rating()));
-  (void)addElement(doc, el, "downloads", QString::number(entry.downloads()));
+  if(mCompat)
+    (void)addElement(doc, el, "release", QString::number(entry.release()));
+  if((entry.rating() > 0) || (entry.downloads() > 0))
+  {
+    (void)addElement(doc, el, "rating", QString::number(entry.rating()));
+    (void)addElement(doc, el, "downloads", QString::number(entry.downloads()));
+  }
+  if(!entry.signature().isEmpty())
+  {
+    (void)addElement(doc, el, "signature", entry.signature());
+  }
+  if(!entry.checksum().isEmpty())
+  {
+    (void)addElement(doc, el, "checksum", entry.checksum());
+  }
 
   (void)addElement(doc, el, "releasedate",
     entry.releaseDate().toString(Qt::ISODate));
@@ -103,28 +128,28 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
   for(it = langs.begin(); it != langs.end(); ++it)
   {
     e = addElement(doc, el, "name", name.translated(*it));
-    e.setAttribute("xml:lang", *it);
+    e.setAttribute("lang", *it);
   }
 
   langs = summary.languages();
   for(it = langs.begin(); it != langs.end(); ++it)
   {
     e = addElement(doc, el, "summary", summary.translated(*it));
-    e.setAttribute("xml:lang", *it);
+    e.setAttribute("lang", *it);
   }
 
   langs = preview.languages();
   for(it = langs.begin(); it != langs.end(); ++it)
   {
     e = addElement(doc, el, "preview", preview.translated(*it));
-    e.setAttribute("xml:lang", *it);
+    e.setAttribute("lang", *it);
   }
 
   langs = payload.languages();
   for(it = langs.begin(); it != langs.end(); ++it)
   {
     e = addElement(doc, el, "payload", payload.translated(*it));
-    e.setAttribute("xml:lang", *it);
+    e.setAttribute("lang", *it);
   }
 
   return el;
@@ -137,8 +162,11 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
 
   if(entryxml.tagName() != "stuff") return entry;
 
-  QString type = entryxml.attribute("category");
-  entry.setType(type);
+  if(!mCompat)
+  {
+    QString category = entryxml.attribute("category");
+    entry.setCategory(category);
+  }
 
   QDomNode n;
   for(n = entryxml.firstChild(); !n.isNull(); n = n.nextSibling())
@@ -153,8 +181,12 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     {
       Author author;
       QString email = e.attribute("email");
+      QString jabber = e.attribute("im");
+      QString homepage = e.attribute("homepage");
       author.setName(e.text().trimmed());
       author.setEmail(email);
+      author.setJabber(jabber);
+      author.setHomepage(homepage);
       entry.setAuthor(author);
     }
     else if(e.tagName() == "licence")
@@ -172,7 +204,10 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     }
     else if(e.tagName() == "release")
     {
-      entry.setRelease(e.text().toInt());
+      if(mCompat)
+      {
+        entry.setRelease(e.text().toInt());
+      }
     }
     else if(e.tagName() == "releasedate")
     {
@@ -196,6 +231,21 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
     else if(e.tagName() == "downloads")
     {
       entry.setDownloads(e.text().toInt());
+    }
+    else if(e.tagName() == "category")
+    {
+      if(mCompat)
+      {
+        entry.setCategory(e.text());
+      }
+    }
+    else if(e.tagName() == "signature")
+    {
+      entry.setSignature(e.text());
+    }
+    else if(e.tagName() == "checksum")
+    {
+      entry.setChecksum(e.text());
     }
   }
 

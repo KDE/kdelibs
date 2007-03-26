@@ -70,16 +70,16 @@ class KDE_EXPORT Entry
     KTranslatable name() const;
 
     /**
-     * Sets the application type, e.g. 'kdesktop/wallpaper'.
+     * Sets the data category, e.g. 'kdesktop/wallpaper'.
      */
-    void setType(const QString& type);
+    void setCategory(const QString& category);
 
     /**
-     * Retrieve the type of the data object.
+     * Retrieve the category of the data object.
      *
-     * @return object type
+     * @return object category
      */
-    QString type() const;
+    QString category() const;
 
     /**
      * Sets the author of the object.
@@ -212,8 +212,8 @@ class KDE_EXPORT Entry
     // FIXME: below here, everything under consideration
     void setChecksum(QString checksum);
     void setSignature(QString signature);
-    QString checksum();
-    QString signature();
+    QString checksum() const;
+    QString signature() const;
 
     enum Status
     {
@@ -228,7 +228,7 @@ class KDE_EXPORT Entry
     void setStatus(Status status);
 
   private:
-    QString mType;
+    QString mCategory;
     QString mLicense;
     QString mVersion;
     QDate mReleaseDate;

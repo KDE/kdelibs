@@ -97,7 +97,7 @@ QDomElement ProviderHandler::serializeElement(const Provider& provider)
   for(it = langs.begin(); it != langs.end(); ++it)
   {
     e = addElement(doc, el, "title", name.translated(*it));
-    e.setAttribute("xml:lang", *it);
+    e.setAttribute("lang", *it);
   }
 
   if(provider.downloadUrl().isValid())

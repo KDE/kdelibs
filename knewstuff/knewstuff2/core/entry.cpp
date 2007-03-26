@@ -53,14 +53,14 @@ KTranslatable Entry::name() const
   return mName;
 }
 
-void Entry::setType(const QString& type)
+void Entry::setCategory(const QString& category)
 {
-  mType = type;
+  mCategory = category;
 }
 
-QString Entry::type() const
+QString Entry::category() const
 {
-  return mType;
+  return mCategory;
 }
 
 void Entry::setAuthor(const Author &author)
@@ -168,7 +168,7 @@ void Entry::setChecksum(QString checksum)
 	mChecksum = checksum;
 }
 
-QString Entry::checksum()
+QString Entry::checksum() const
 {
 	return mChecksum;
 }
@@ -178,7 +178,7 @@ void Entry::setSignature(QString signature)
 	mSignature = signature;
 }
 
-QString Entry::signature()
+QString Entry::signature() const
 {
 	return mSignature;
 }
