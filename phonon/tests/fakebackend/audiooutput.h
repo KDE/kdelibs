@@ -52,6 +52,7 @@ namespace Fake
 
 		Q_SIGNALS:
 			void volumeChanged( float newVolume );
+            void audioDeviceFailed();
 
 		private:
 			float m_volume;

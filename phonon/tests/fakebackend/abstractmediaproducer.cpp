@@ -57,6 +57,7 @@ AbstractMediaProducer::~AbstractMediaProducer()
 
 void AbstractMediaProducer::setBufferSize( int size )
 {
+    Q_UNUSED(size);
 	//m_bufferSize = size;
 }
 
@@ -120,7 +121,7 @@ bool AbstractMediaProducer::isSeekable() const
 
 qint64 AbstractMediaProducer::currentTime() const
 {
-	//kDebug( 604 ) << k_funcinfo << endl;
+    //kDebug(604) << k_funcinfo << endl;
 	switch( state() )
 	{
 		case Phonon::PausedState:
@@ -210,8 +211,11 @@ void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, con
 void AbstractMediaProducer::play()
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
-	m_tickTimer->start();
-	setState( Phonon::PlayingState );
+    if (m_state == Phonon::LoadingState) {
+        setState(Phonon::BufferingState);
+    } else {
+        setState(Phonon::PlayingState);
+    }
 }
 
 void AbstractMediaProducer::pause()
@@ -242,7 +246,7 @@ void AbstractMediaProducer::seek( qint64 time )
 				m_startTime = m_pauseTime;
 				break;
 			case Phonon::PlayingState:
-				m_startTime = QTime::currentTime();
+                m_startTime.start();
 				break;
 			case Phonon::StoppedState:
 			case Phonon::ErrorState:
@@ -276,6 +280,7 @@ void AbstractMediaProducer::setState( State newstate )
 			m_pauseTime.start();
 			break;
 		case Phonon::PlayingState:
+            m_tickTimer->start();
 			if( oldstate == Phonon::PausedState || oldstate == Phonon::BufferingState )
 				m_startTime = m_startTime.addMSecs( m_pauseTime.elapsed() );
 			else
@@ -284,6 +289,7 @@ void AbstractMediaProducer::setState( State newstate )
 		case Phonon::StoppedState:
 		case Phonon::ErrorState:
 		case Phonon::LoadingState:
+            m_startTime = QTime();
 			break;
 	}
 	//kDebug( 604 ) << "emit stateChanged( " << newstate << ", " << oldstate << " )" << endl;

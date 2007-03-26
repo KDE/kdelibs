@@ -57,6 +57,9 @@ namespace Fake
 		protected:
 			virtual void emitTick();
 
+        private Q_SLOTS:
+            void loadingComplete();
+
 		private:
 			KUrl m_url;
 			qint32 m_aboutToFinishTime;

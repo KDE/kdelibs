@@ -140,6 +140,7 @@ void ByteStream::stop()
 
 	AbstractMediaProducer::stop();
 	m_streamConsumeTimer->stop();
+    m_streamPosition = 0;
 }
 
 bool ByteStream::isSeekable() const

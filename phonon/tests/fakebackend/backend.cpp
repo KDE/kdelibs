@@ -85,6 +85,8 @@ QObject* Backend::createObject0(BackendInterface::Class0 c, QObject *parent)
             return new BrightnessControl(parent);
         case VideoDataOutputClass:
             return new VideoDataOutput(parent);
+        case DeinterlaceFilterClass:
+            return 0;//new DeinterlaceFilter(parent);
     }
     return 0;
 }
@@ -130,7 +132,7 @@ QStringList Backend::knownMimeTypes() const
 {
 	if( m_supportedMimeTypes.isEmpty() )
 		const_cast<Backend*>( this )->m_supportedMimeTypes
-			<< QLatin1String( "audio/audio/x-vorbis+ogg+ogg" )
+			<< QLatin1String( "audio/x-vorbis+ogg" )
 			//<< QLatin1String( "audio/mpeg" )
 			<< QLatin1String( "audio/x-wav" )
 			<< QLatin1String( "video/x-ogm+ogg" );

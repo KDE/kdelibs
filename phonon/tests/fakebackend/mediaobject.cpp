@@ -58,14 +58,24 @@ qint32 MediaObject::aboutToFinishTime() const
 void MediaObject::setUrl( const KUrl& url )
 {
 	//kDebug( 604 ) << k_funcinfo << endl;
-    AbstractMediaProducer::stop();
     m_aboutToFinishNotEmitted = true;
 	m_url = url;
+    setState(Phonon::LoadingState);
 	emit length( totalTime() );
 	QMultiMap<QString, QString> metaData;
 	metaData.insert( "TITLE", "Fake video" );
 	metaData.insert( "ARTIST", "Matthias Kretz" );
 	emit metaDataChanged( metaData );
+    QTimer::singleShot(50, this, SLOT(loadingComplete()));
+}
+
+void MediaObject::loadingComplete()
+{
+    if (state() == Phonon::LoadingState) {
+        setState(Phonon::StoppedState);
+    } else if (state() == Phonon::BufferingState) {
+        setState(Phonon::PlayingState);
+    }
 }
 
 void MediaObject::setAboutToFinishTime( qint32 newAboutToFinishTime )
