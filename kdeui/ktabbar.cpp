@@ -186,7 +186,8 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                     if ( mHoverCloseButtonTab == t )
                         return;
                     mEnableCloseButtonTimer->stop();
-                    delete mHoverCloseButton;
+                    mHoverCloseButton->deleteLater();
+                    mHoverCloseButton = 0;
                 }
 
                 mHoverCloseButton = new QPushButton( this );
@@ -206,7 +207,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
         }
         if ( mHoverCloseButton ) {
             mEnableCloseButtonTimer->stop();
-            delete mHoverCloseButton;
+            mHoverCloseButton->deleteLater();
             mHoverCloseButton = 0;
         }
     }
