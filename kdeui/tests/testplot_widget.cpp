@@ -20,9 +20,9 @@
 #include <QVBoxLayout>
 #include <kdebug.h>
 
-#include "../kplotwidget.h"
-#include "../kplotobject.h"
-#include "../kplotaxis.h"
+#include "../kplot/kplotwidget.h"
+#include "../kplot/kplotobject.h"
+#include "../kplot/kplotaxis.h"
 #include "testplot_widget.h"
 
 TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
