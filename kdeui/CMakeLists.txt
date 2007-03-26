@@ -20,8 +20,8 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_SOURCE_DIR}/liveui
+ ${CMAKE_CURRENT_SOURCE_DIR}/kplot
  ${CMAKE_CURRENT_BINARY_DIR}/jobs
- ${CMAKE_CURRENT_BINARY_DIR}/kplot
 )
 
 add_subdirectory( about )
