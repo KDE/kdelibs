@@ -27,6 +27,7 @@
 #cmakedefine HAVE_FLOAT_H 1
 #cmakedefine HAVE_IEEEFP_H 1
 #cmakedefine HAVE_PTHREAD_NP_H 1
+#cmakedefine HAVE_MEMCHECK_H 1
 #cmakedefine HAVE_FUNC__FINITE 1
 #cmakedefine HAVE_FUNC_FINITE 1
 #cmakedefine HAVE_FUNC_ISINF 1
