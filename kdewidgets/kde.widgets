@@ -258,3 +258,9 @@ Group=Container (KDE)
 IncludeFile=kinformationlabel.h
 ToolTip=A specialized label to display informative message
 Group=Display (KDE)
+
+[KPlotWidget]
+IncludeFile=kplotwidget.h
+ToolTip=A plot widget
+WhatsThis=A widget for easily making 2-dimensional plots
+Group=Plot (KDE)
