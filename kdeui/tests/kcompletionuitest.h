@@ -41,7 +41,7 @@ protected Q_SLOTS:
     void slotList();
     void slotAdd();
     void slotRemove();
-    void slotHighlighted( const QString& );
+    void slotHighlighted( int );
 
 protected:
     QStringList defaultItems() const;

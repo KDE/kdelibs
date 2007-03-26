@@ -105,8 +105,8 @@ Form1::Form1( QWidget* parent )
 
     ListBox1 = new QListWidget( GroupBox1 );
     Layout8->addWidget( ListBox1 );
-    connect( ListBox1, SIGNAL( highlighted( const QString& )),
-	     SLOT( slotHighlighted( const QString& )));
+    connect( ListBox1, SIGNAL( currentRowChanged( int )),
+	     SLOT( slotHighlighted( int )));
     ListBox1->setToolTip("Contains the contents of the completion object.\n:x is the weighting, i.e. how often an item has been inserted");
 
     Layout7 = new QVBoxLayout;
@@ -164,8 +164,16 @@ void Form1::slotList()
     ListBox1->addItems( items );
 }
 
-void Form1::slotHighlighted( const QString& text )
+void Form1::slotHighlighted( int row )
 {
+    if (row == -1)
+        return;
+  
+    QListWidgetItem *i = ListBox1->item( row );
+    Q_ASSERT(i != 0);
+    
+    QString text = i->text();
+    
     // remove any "weighting"
     int index = text.lastIndexOf( ':' );
     if ( index > 0 )
