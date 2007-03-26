@@ -88,8 +88,8 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 
 	int keyCodeX;
 	uint keyModX;
-	KKeyServer::keyQtToCodeX(keyQt, keyCodeX);
-	KKeyServer::keyQtToModX(keyQt, keyModX);
+	KKeyServer::keyQtToCodeX(keyQt, &keyCodeX);
+	KKeyServer::keyQtToModX(keyQt, &keyModX);
 
 	keyModX &= g_keyModMaskXAccel; // Get rid of any non-relevant bits in mod
 	
@@ -223,8 +223,8 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 
 	int keyCodeQt;
 	int keyModQt;
-	KKeyServer::symXToKeyQt(keySymX, keyCodeQt);
-	KKeyServer::modXToQt(keyModX, keyModQt);
+	KKeyServer::symXToKeyQt(keySymX, &keyCodeQt);
+	KKeyServer::modXToQt(keyModX, &keyModQt);
 	
 	int keyQt = keyCodeQt | keyModQt;
 	
