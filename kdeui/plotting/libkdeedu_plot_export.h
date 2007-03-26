@@ -1,5 +1,5 @@
-/*
-    This file is part of libkdeedu.
+/*  -*- C++ -*-
+    This file is part of the KDE libraries
     Copyright (c) 2006 Pino Toscano <toscano.pino@tiscali.it>
 
     This library is free software; you can redistribute it and/or
