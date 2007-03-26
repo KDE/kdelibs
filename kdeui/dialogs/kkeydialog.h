@@ -182,18 +182,18 @@ protected:
 	virtual void showEvent(QShowEvent* event);
  
 private:
-	Q_PRIVATE_SLOT(d, void capturedKeyShortcut(QKeySequence));
-	Q_PRIVATE_SLOT(d, void capturedShapeGesture(KShapeGesture));
-	Q_PRIVATE_SLOT(d, void capturedRockerGesture(KRockerGesture));
+	Q_PRIVATE_SLOT(d, void capturedKeyShortcut(QKeySequence))
+	Q_PRIVATE_SLOT(d, void capturedShapeGesture(KShapeGesture))
+	Q_PRIVATE_SLOT(d, void capturedRockerGesture(KRockerGesture))
 
-	Q_PRIVATE_SLOT(d, void startEditing(QWidget *, QModelIndex));
-	Q_PRIVATE_SLOT(d, void doneEditingCurrent());
+	Q_PRIVATE_SLOT(d, void startEditing(QWidget *, QModelIndex))
+	Q_PRIVATE_SLOT(d, void doneEditingCurrent())
 
 private:
 	friend class KKeyDialog;
 	friend class KKeyChooserPrivate;
 	KKeyChooserPrivate *const d;
-	Q_DISABLE_COPY(KKeyChooser);
+	Q_DISABLE_COPY(KKeyChooser)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KKeyChooser::ActionTypes)
@@ -281,7 +281,7 @@ private:
 	friend class KKeyDialogPrivate;
 	class KKeyDialogPrivate *const d;
 
-	Q_DISABLE_COPY(KKeyDialog);
+	Q_DISABLE_COPY(KKeyDialog)
 };
 
 

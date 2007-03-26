@@ -89,7 +89,7 @@ private:
 	friend class KKeyButtonPrivate;
 	KKeyButtonPrivate *const d;
 
-	Q_DISABLE_COPY(KKeyButton);
+	Q_DISABLE_COPY(KKeyButton)
 };
 
 #endif
