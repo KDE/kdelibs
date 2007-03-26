@@ -35,6 +35,7 @@
 
 #include "k3syntaxhighlighter.h"
 #include <kconfiggroup.h>
+#include <fixx11h.h>
 
 static int dummy, dummy2, dummy3, dummy4;
 static int *Okay = &dummy;

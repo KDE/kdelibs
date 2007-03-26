@@ -1,6 +1,4 @@
 
-KDE4_NO_ENABLE_FINAL(phonon)
-
 # Those apply to all subdirs
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/solid)
 
