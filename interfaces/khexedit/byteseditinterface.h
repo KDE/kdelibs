@@ -18,10 +18,10 @@
 #ifndef KHE_BYTESEDITINTERFACE_H
 #define KHE_BYTESEDITINTERFACE_H
 
-// kde specific
-#include <kservicetypetrader.h>
-
 #include <QtGui/QWidget>
+// kde specific
+#include <khexedit/khexedit_export.h>
+#include <kservicetypetrader.h>
 
 /**
  * @short KHE (short for KHexEdit) is KDE's namespace for all things related
