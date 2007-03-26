@@ -980,4 +980,14 @@ kde4_add_test(kjobtrackerstest ${kjobtrackerstest_SRCS})
 
 target_link_libraries(kjobtrackerstest ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
 
+########### next target ###############
+
+set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
+
+kde4_automoc(${kplottest_SRCS})
+
+kde4_add_executable(kplottest ${kplottest_SRCS})
+
+target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})
+
 ########### End of tests ###############

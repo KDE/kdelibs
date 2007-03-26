@@ -21,10 +21,10 @@
 #ifndef KPLOTAXIS_H
 #define KPLOTAXIS_H
 
-#include <QString>
-#include <QList>
+#include <QtCore/QString>
+#include <QtCore/QList>
 
-#include <libkdeedu_plot_export.h>
+#include <kdelibs_export.h>
 
 /**
  * @short Axis for KPlotWidget
@@ -34,7 +34,7 @@
  * @author Andreas Nicolai
  * @version 1.0
  */
-class KDEEDUPLOT_EXPORT KPlotAxis {
+class KDEUI_EXPORT KPlotAxis {
 public:
 
 	/**

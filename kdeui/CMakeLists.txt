@@ -21,6 +21,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_SOURCE_DIR}/liveui
  ${CMAKE_CURRENT_BINARY_DIR}/jobs
+ ${CMAKE_CURRENT_BINARY_DIR}/kplot
 )
 
 add_subdirectory( about )
@@ -189,6 +190,9 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguibuilder.cpp
  liveui/kliveui.cpp
+ kplot/kplotwidget.cpp
+ kplot/kplotobject.cpp
+ kplot/kplotaxis.cpp
 )
 
 if (Q_WS_X11)
@@ -392,6 +396,9 @@ install( FILES
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
  liveui/kliveui.h
+ kplot/kplotwidget.h
+ kplot/kplotobject.h
+ kplot/kplotaxis.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
