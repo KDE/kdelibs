@@ -101,9 +101,9 @@ UploadDialog::UploadDialog( Engine *engine, QWidget *parent ) :
   topLayout->addWidget( mPreviewUrl, 6, 1 );
 
   QLabel *summaryLabel = new QLabel( i18n("Summary:"), topPage );
-  topLayout->addWidget( summaryLabel, 7, 7, 0, 1 );
+  topLayout->addWidget( summaryLabel, 7, 0, 1, 2 );
   mSummaryEdit = new KTextEdit( topPage );
-  topLayout->addWidget( mSummaryEdit, 8, 8, 0, 1 );
+  topLayout->addWidget( mSummaryEdit, 8, 0, 1, 2 );
 
   KUser user;
   mAuthorEdit->setText(user.fullName());
