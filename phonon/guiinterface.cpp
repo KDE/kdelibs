@@ -37,6 +37,7 @@ void GuiInterface::notification(const char *notificationName, const QString &tex
 
 KioFallback *GuiInterface::newKioFallback(MediaObject *parent)
 {
+    Q_UNUSED(parent);
     return 0;
 }
 
