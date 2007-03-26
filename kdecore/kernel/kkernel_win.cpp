@@ -40,7 +40,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID)
         default:
             break;
     }
-    return TRUE;
+    return true;
 }
 
 // can't use QCoreApplication::applicationDirPath() because sometimes we
