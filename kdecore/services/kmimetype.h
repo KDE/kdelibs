@@ -279,6 +279,14 @@ public:
     static bool isBinaryData( const QString &fileName );
 
     /**
+     * Returns whether a buffer has an internal format that is not human readable.
+     * This is much more generic than "not mime->is(text/plain)".
+     * Many application file formats (like rtf and postscript) are based on text,
+     * but text that the user should rarely ever see.
+     */
+    static bool isBufferBinaryData( const QByteArray &data );
+
+    /**
      * Get all the mimetypes.
      *
      * Useful for showing the list of

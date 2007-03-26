@@ -169,7 +169,7 @@ KMimeType::List KMimeType::allMimeTypes()
     return KMimeTypeFactory::self()->allMimeTypes();
 }
 
-static bool isBinaryData(const QByteArray& data)
+bool KMimeType::isBufferBinaryData(const QByteArray& data)
 {
     // Check the first 32 bytes (see shared-mime spec)
     const char* p = data.data();
@@ -376,7 +376,7 @@ bool KMimeType::isBinaryData( const QString &fileName )
     if (!file.open(QIODevice::ReadOnly))
         return false; // err, whatever
     const QByteArray data = file.read(32);
-    return ::isBinaryData(data);
+    return isBufferBinaryData(data);
 }
 
 KMimeType::KMimeType( const QString & fullpath, const QString& name,
