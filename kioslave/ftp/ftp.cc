@@ -58,6 +58,7 @@
 #include <kmimemagic.h>
 #include <kmimetype.h>
 #include <ksockaddr.h>
+#include <ksocketaddress.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
 #include <kremoteencoding.h>
@@ -835,7 +836,6 @@ bool Ftp::ftpSendCmd( const QCString& cmd, int maxretries )
   return true;
 }
 
-
 /*
  * ftpOpenPASVDataConnection - set up data connection, using PASV mode
  *
@@ -852,6 +852,8 @@ int Ftp::ftpOpenPASVDataConnection()
   const KSocketAddress *sa = m_control->peerAddress();
   if (sa != NULL && sa->family() != PF_INET)
     return ERR_INTERNAL;       // no PASV for non-PF_INET connections
+
+  const KInetSocketAddress *sin = static_cast<const KInetSocketAddress*>(sa);
 
   if (m_extControl & pasvUnknown)
     return ERR_INTERNAL;       // already tried and got "unknown command"
@@ -886,14 +888,17 @@ int Ftp::ftpOpenPASVDataConnection()
   }
 
   // Make hostname and port number ...
-  QString host;
-  host.sprintf("%d.%d.%d.%d", i[0], i[1], i[2], i[3]);
   int port = i[4] << 8 | i[5];
+
+  // we ignore the host part on purpose for two reasons
+  // a) it might be wrong anyway
+  // b) it would make us being suceptible to a port scanning attack
 
   // now connect the data socket ...
   m_data = new FtpSocket("PASV");
-  m_data->setAddress(host, port);
-  kdDebug(7102) << "Connecting to " << host << " on port " << port << endl;
+  m_data->setAddress(sin->nodeName(), port);
+
+  kdDebug(7102) << "Connecting to " << sin->nodeName() << " on port " << port << endl;
   return m_data->connectSocket(connectTimeout(), false);
 }
 
