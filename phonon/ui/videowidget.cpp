@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -101,23 +101,6 @@ PHONON_SETTER( setAspectRatio, aspectRatio, Phonon::VideoWidget::AspectRatio )
 PHONON_GETTER(Phonon::VideoWidget::ScaleMode, scaleMode, d->scaleMode)
 PHONON_SETTER(setScaleMode, scaleMode, Phonon::VideoWidget::ScaleMode)
 
-PHONON_GETTER(Phonon::VideoWidget::OverlayTypes, overlayCapabilities, OverlayNone)
-
-bool VideoWidget::createOverlay(QWidget *widget, VideoWidget::OverlayType type)
-{
-	K_D( VideoWidget );
-
-	if( !d->backendObject )
-		return false;
-
-	bool result;
-
-	if (BACKEND_GET2(bool, result, "createOverlay", QWidget *, widget, Phonon::VideoWidget::OverlayType, type))
-		return result;
-
-	return false;
-}
-
 void VideoWidget::setFullScreen( bool newFullScreen )
 {
 	kDebug( 602 ) << k_funcinfo << newFullScreen << endl;
@@ -182,6 +165,11 @@ void VideoWidget::setupIface()
 		d->layout.addWidget( w );
 		setSizePolicy( w->sizePolicy() );
 	}
+
+    int cap = 0;
+    if (BACKEND_GET(int, cap, "overlayCapabilities")) {
+        setProperty("_k_overlayCapabilities", cap);
+    }
 }
 
 /*
@@ -214,4 +202,5 @@ QSize VideoWidget::minimumSizeHint()
 #include "videowidget.moc"
 #include "videowidget_p.moc"
 
+#undef PHONON_CLASSNAME
 // vim: sw=4 ts=4 tw=80

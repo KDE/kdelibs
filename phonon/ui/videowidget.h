@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,6 +28,7 @@ class QString;
 namespace Phonon
 {
 class AbstractVideoOutput;
+class OverlayApi;
 
 	class VideoWidgetPrivate;
 	/**
@@ -45,9 +46,10 @@ class AbstractVideoOutput;
 	 */
 	class PHONONUI_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
 	{
+        friend class OverlayApi;
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT
-        Q_ENUMS(AspectRatio ScaleMode OverlayType)
+        Q_ENUMS(AspectRatio ScaleMode)
 		/**
 		 * This property holds whether the video is shown using the complete
 		 * screen.
@@ -121,53 +123,12 @@ class AbstractVideoOutput;
             };
 
 			/**
-			 * Defines the different overlay types.
-			 */
-			enum OverlayType
-			{
-				/**
-				 * No overlay.
-				 */
-				OverlayNone = 0,
-				/**
-				 * Scaled overlay (with semi-transparency).
-				 */
-				OverlayScaled = 1,
-				/**
-				 * Unscaled overlay (without semi-transparency).
-				 */
-				OverlayOpaque = 2,
-				/**
-				 * Unscaled overlay (with semi-transparency).
-				 */
-				OverlayFull = 4
-			};
-
-			Q_DECLARE_FLAGS( OverlayTypes, OverlayType )
-
-			/**
 			 * Constructs a new video widget with a \p parent.
 			 */
 			VideoWidget( QWidget* parent = 0 );
 
 			AspectRatio aspectRatio() const;
             ScaleMode scaleMode() const;
-
-			/**
-			 * Query the overlay capabilities of the videowidget.
-			 */
-			OverlayTypes overlayCapabilities() const;
-
-			/**
-			 * Creates an overlay (takes ownership of the widget).
-			 * Note that you can only have one overlay per video widget;
-			 * the exception is that you can have one overlay of the type
-			 * OverlayScaled and one of OverlayOpaque at the same time.
-			 * You can remove the overlay either by deleting or by reparenting
-			 * the widget.
-			 * @return whether the creation was successful
-			 */
-			bool createOverlay(QWidget *widget, OverlayType type);
 
 		public Q_SLOTS:
 			void setFullScreen( bool fullscreen );
@@ -205,7 +166,6 @@ class AbstractVideoOutput;
             Q_PRIVATE_SLOT(k_func(), void _k_cursorTimeout())
 	};
 
-	Q_DECLARE_OPERATORS_FOR_FLAGS( VideoWidget::OverlayTypes )
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

@@ -28,6 +28,7 @@ void MethodTest::checkUiBackendMethods_data() { addColumns();
 }
 void MethodTest::checkVideoWidgetMethods_data() { addColumns();
 #include "methods/videowidget.cpp"
+#include "methods/overlayapi.cpp"
 }
 void MethodTest::checkUiBackendMethods()   { checkMethods( UiFactory::self()->backend() ); }
 void MethodTest::checkVideoWidgetMethods() { checkMethods( UiFactory::self()->createVideoWidget() ); }
@@ -37,6 +38,7 @@ void MethodTest::addColumns()
 	QTest::addColumn<QByteArray>( "returnType" );
 	QTest::addColumn<QByteArray>( "signature" );
 	QTest::addColumn<bool>( "optional" );
+    QTest::addColumn<bool>("isSignal");
 }
 
 void MethodTest::addMethod( const char* returnType, const char* signature, bool optional )
@@ -44,32 +46,42 @@ void MethodTest::addMethod( const char* returnType, const char* signature, bool 
 	QByteArray name( returnType );
 	name += ' ';
 	name += signature;
-	QTest::newRow( name.constData() ) << QByteArray( returnType ) << QByteArray( signature ) << optional;
+	QTest::newRow( name.constData() ) << QByteArray( returnType ) << QByteArray( signature ) << optional << false;
+}
+
+void MethodTest::addSignal(const char *signature)
+{
+    QTest::newRow(signature) << QByteArray() << QByteArray(signature) << false << true;
 }
 
 void MethodTest::checkMethods( QObject* backendObject )
 {
 	if( !backendObject )
 		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
-	meta = backendObject->metaObject();
+    const QMetaObject *meta = backendObject->metaObject();
 
 	QFETCH( QByteArray, returnType );
 	QFETCH( QByteArray, signature );
 	QFETCH( bool, optional );
+    QFETCH(bool, isSignal);
 
-	int index = meta->indexOfMethod( QMetaObject::normalizedSignature( signature.constData() ) );
-	if( index == -1 && optional )
-	{
-		QWARN( "method is not available - default behaviour will be used instead" );
-	}
-	else
-	{
-		QVERIFY( index != -1 );
-		QMetaMethod method = meta->method( index );
-		QCOMPARE( method.typeName(), returnType.constData() );
-	}
+    if (isSignal) {
+        QVERIFY(meta->indexOfSignal(QMetaObject::normalizedSignature(signature.constData())) != -1);
+    } else {
+        int index = meta->indexOfMethod(QMetaObject::normalizedSignature(signature.constData()));
+        if (index == -1 && optional) {
+            QWARN("method is not available - default behaviour will be used instead");
+        } else {
+            if (index == -1) {
+                QFAIL(qPrintable(QString("Method %1 not available!").arg(signature.constData())));
+            }
+            QVERIFY(index != -1);
+            QMetaMethod method = meta->method(index);
+            QCOMPARE(method.typeName(), returnType.constData());
+        }
+    }
 }
 
-QTEST_KDEMAIN( MethodTest, GUI )
+QTEST_KDEMAIN(MethodTest, GUI)
 #include "methodtest.moc"
 // vim: sw=4 ts=4
