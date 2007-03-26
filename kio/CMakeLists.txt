@@ -57,6 +57,7 @@ set(kiocore_STAT_SRCS
   kio/kmimetype.cpp
   kio/k3mimetyperesolver.cpp
   kio/kdedesktopmimetype.cpp
+  kio/kdesktopfileactions.cpp
   kio/kservicegroup.cpp
   kio/kservicegroupfactory.cpp
   kio/kurifilter.cpp
@@ -365,6 +366,7 @@ install( FILES
   kio/kmimetypechooser.h
   kio/kacl.h
   kio/kdedesktopmimetype.h
+  kio/kdesktopfileactions.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdirmodel.h
   kfile/kcombiview.h

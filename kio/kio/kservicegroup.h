@@ -19,15 +19,7 @@
 #ifndef __kservicegroup_h__
 #define __kservicegroup_h__
 
-#include <qstring.h>
-#include <qdatastream.h>
-#include <qvariant.h>
-
-#include <kdesktopfile.h>
-
 #include "ksycocaentry.h"
-#include "ksycocatype.h"
-#include "kservice.h"
 
 class KBuildServiceGroupFactory;
 

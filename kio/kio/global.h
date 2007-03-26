@@ -349,8 +349,11 @@ namespace KIO
    * Returns the mount point where @p device is mounted
    * right now. This means, it has to be mounted, not just
    * defined in fstab.
+   *
+   * @deprecated use KMountPoint::currentMountPoints() and findByDevice().
+   *
    */
-  KIO_EXPORT QString findDeviceMountPoint( const QString& device );
+  KIO_EXPORT_DEPRECATED QString findDeviceMountPoint( const QString& device );
 
   /**
    * Returns the mount point on which resides @p filename.
@@ -358,6 +361,8 @@ namespace KIO
    * will return /home
    * @param filename the file name to check
    * @return the mount point of the given @p filename
+   *
+   * @deprecated use KMountPoint::currentMountPoints() and findByPath().
    */
   KIO_EXPORT QString findPathMountPoint( const QString & filename );
 

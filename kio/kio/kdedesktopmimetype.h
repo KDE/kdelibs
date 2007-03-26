@@ -1,6 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
- *                     David Faure   <faure@kde.org>
+ *                2000, 2007 David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -26,87 +26,26 @@ class KDesktopFile;
 
 /**
  * Mime type for desktop files.
- * Handles mount/umount icon, and user-defined properties.
+ * Handles mount/umount icon, trash icon, reading the comment from the desktop file.
  * @short Mimetype for a .desktop file
  */
 class KIO_EXPORT KDEDesktopMimeType : public KMimeType
 {
-  K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
+    K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
 
 public:
-  enum ServiceType { ST_MOUNT, ST_UNMOUNT, /* ST_PROPERTIES, */ ST_USER_DEFINED };
+    /** \internal */
+    KDEDesktopMimeType( const QString & fullpath, const QString& type,
+                        const QString& comment )
+        : KMimeType(fullpath, type, comment ) {}
+    /** \internal */
+    KDEDesktopMimeType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
 
-  /**
-   * Structure representing a service, in the list of services
-   * returned by builtinServices and userDefinedServices
-   */
-  struct Service
-  {
-    Service() { m_display = true; }
-    bool isEmpty() const { return m_strName.isEmpty(); }
-    QString m_strName;
-    QString m_strIcon;
-    QString m_strExec;
-    ServiceType m_type;
-    bool m_display;
-  };
-  /** \internal */
-  KDEDesktopMimeType( const QString & fullpath, const QString& type,
-                      const QString& comment )
-      : KMimeType(fullpath, type, comment ) {}
-  /** \internal */
-  KDEDesktopMimeType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
-
-  virtual QString icon( const KUrl& url ) const;
-  virtual QString comment( const KUrl& url ) const;
-
-  /**
-   * Returns a list of services for the given .desktop file that are handled
-   * by kio itself. Namely mount/unmount for FSDevice files.
-   * @return the list of services
-   */
-  static QList<Service> builtinServices( const KUrl& url );
-  /**
-   * Returns a list of services defined by the user as possible actions
-   * on the given .desktop file. May include empty actions which represent where
-   * visual separators should appear in user-visible representations of those actions,
-   * such as separators in a menu.
-   * @param path the path to the desktop file describing the services
-   * @param bLocalFiles true if those services are to be applied to local files only
-   * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
-   * @return the list of user deviced actions
-   */
-  static QList<Service> userDefinedServices( const QString& path, bool bLocalFiles );
-
-    /**
-     * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
-     * This allows for the menu to be changed depending on the exact files via
-     * the X-KDE-GetActionMenu extension.
-     */
-    static QList<Service> userDefinedServices( const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const KUrl::List & file_list = KUrl::List());
-
-  /**
-   * Execute @p service on the list of @p urls.
-   * @param urls the list of urls
-   * @param service the service to execute
-   */
-  static void executeService( const KUrl::List& urls, KDEDesktopMimeType::Service& service );
-
-  /**
-   * Invokes the default action for the desktop entry. If the desktop
-   * entry is not local, then only false is returned. Otherwise we
-   * would create a security problem. Only types Link and Mimetype
-   * could be followed.
-   *
-   * @param _url the url to run
-   * @param _is_local true if the URL is local, false otherwise
-   * @return true on success and false on failure.
-   * @see KRun::runUrl
-   */
-  static pid_t run( const KUrl& _url, bool _is_local );
+    virtual QString icon( const KUrl& url ) const;
+    virtual QString comment( const KUrl& url ) const;
 
 protected:
-  virtual void virtual_hook( int id, void* data );
+    virtual void virtual_hook( int id, void* data );
 };
 
 #endif

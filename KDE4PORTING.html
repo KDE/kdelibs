@@ -1498,6 +1498,11 @@ in the drop/paste side.</li>
 <li>KBookmarkMannager::managerForFile() requires a DBus Name as the second parameter.</li>
 </ul>
 
+<h4>KDEDesktopMimeType class</h4>
+<ul>
+<li>All the static methods have been moved to KDesktopFileActions, in kdesktopfileactions.h</li>
+</ul>
+
 <h4>KDirLister class</h4>
 <ul>
 <li>The constructor argument is now a separate setter, so: KDirLister(false) -&gt; KDirLister(); KDirLister(true) -&gt; KDirLister() + setDelayedMimeTypes(true). On the other hand, KDirLister being a QObject, it takes a QObject* parent argument.</li>
@@ -1697,7 +1702,7 @@ a listDir result.</li>
 
 <h4>KMimeMagic</h4>
 <ul>
-<li>KMimeMagic is not public API anymore. Use the KMimeType API instead:
+<li>The KMimeMagic class is gone. Use the KMimeType API instead:
 <ul>
   <li>KMimeMagic::self()-&gt;findFileType(path) -&gt; KMimeType::findByPath(path) (preferred) or KMimeType::findByFileContent(path) (if only the content should be considered, but this isn't always reliable)</li>
   <li>KMimeMagic::self()-&gt;findBufferType(data) -&gt; KMimeType::findByContent(data)</li>

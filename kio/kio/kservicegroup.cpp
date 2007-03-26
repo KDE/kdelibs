@@ -17,16 +17,17 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "kservicegroup.h"
+#include "kservicefactory.h"
+#include "kservicegroupfactory.h"
+#include "kservice.h"
+#include <ksycoca.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <ksortablelist.h>
-#include "kservicefactory.h"
-#include "kservicegroupfactory.h"
-#include "kservicegroup.h"
-#include "kservice.h"
-#include "ksycoca.h"
+#include <kdesktopfile.h>
 
 class KServiceGroup::Private
 {

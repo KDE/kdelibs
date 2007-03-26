@@ -40,7 +40,7 @@
 #include "kio/netaccess.h"
 #include "kfile/kopenwithdialog.h"
 #include "kfile/krecentdocument.h"
-#include "kdedesktopmimetype.h"
+#include "kdesktopfileactions.h"
 
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
@@ -113,7 +113,7 @@ pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bo
   else if ( _mimetype == "application/x-desktop" )
   {
     if ( u.isLocalFile() && runExecutables )
-      return KDEDesktopMimeType::run( u, true );
+      return KDesktopFileActions::run( u, true );
   }
   else if ( isExecutableFile(u, _mimetype) )
   {
