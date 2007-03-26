@@ -744,7 +744,6 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   return true;
 }
 
-
 /*
  * ftpOpenPASVDataConnection - set up data connection, using PASV mode
  *
@@ -762,7 +761,7 @@ int Ftp::ftpOpenPASVDataConnection()
   if (sa.family() != PF_INET)
     return ERR_INTERNAL;       // no PASV for non-PF_INET connections
 
-  if (m_extControl & pasvUnknown)
+ if (m_extControl & pasvUnknown)
     return ERR_INTERNAL;       // already tried and got "unknown command"
 
   m_bPasv = true;
@@ -795,8 +794,11 @@ int Ftp::ftpOpenPASVDataConnection()
   }
 
   // Make hostname and port number ...
-  KInetSocketAddress address((KIpAddress((i[3] << 24) | (i[2] << 16) |
-                                         (i[1] << 8) | i[0]) ), i[4] << 8 | i[5]);
+  const KInetSocketAddress sin = sa.asInet();
+  // we ignore the host part on purpose for two reasons
+  // a) it might be wrong anyway
+  // b) it would make us being suceptible to a port scanning attack
+  KInetSocketAddress address(sin.nodeName(), i[4] << 8 | i[5]);
 
   // now connect the data socket ...
   m_data = new KStreamSocket("PASV");
