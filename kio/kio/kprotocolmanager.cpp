@@ -22,6 +22,7 @@
 #include <sys/utsname.h>
 #include <QtDBus/QtDBus>
 
+#include <kdeversion.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -98,7 +99,7 @@ KConfig *KProtocolManager::config()
   return d->config;
 }
 
-KConfigGroup KProtocolManager::http_config()
+static KConfigGroup http_config()
 {
   if (!d)
      d = new KProtocolManagerPrivate;

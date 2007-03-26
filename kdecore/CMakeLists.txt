@@ -142,6 +142,11 @@ set(kdecore_LIB_SRCS
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
+   services/kdedesktopmimetype.cpp
+   services/kmimetypefactory.cpp
+   services/kmimemagicrule.cpp
+   services/kmimetypetrader.cpp
+   services/kmimetype.cpp
    services/kservice.cpp
    services/kservicefactory.cpp
    services/kserviceoffer.cpp
@@ -310,6 +315,8 @@ install( FILES
    network/ksocks.h
    network/ksockssocketdevice.h
    network/kstreamsocket.h
+   services/kmimetype.h
+   services/kmimetypetrader.h
    services/kservice.h
    #services/kservicefactory.h: do not install, internal API
    services/kservicetype.h

@@ -22,11 +22,9 @@
 
 #include <qstringlist.h>
 
-#include <kapplication.h>
 #include <kio/global.h>
 #include "kprotocolinfo.h"
 
-#include <kconfiggroup.h>
 class KConfig;
 
 /**
@@ -594,7 +592,5 @@ public:
    * (Shared with SlaveConfig)
    */
   static KConfig *config();
-private:
-  static KConfigGroup http_config();
 };
 #endif

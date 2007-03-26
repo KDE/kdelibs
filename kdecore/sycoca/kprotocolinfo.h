@@ -347,6 +347,11 @@ public:
 
   typedef enum { Name, FromUrl } FileNameUsedForCopying;
 
+  /// @internal. Use KProtocolManager instead.
+  bool supportsListing() const;
+  /// @internal. Use KProtocolManager instead.
+  QString defaultMimeType() const;
+
 protected:
   QString m_name;
   QString m_exec;

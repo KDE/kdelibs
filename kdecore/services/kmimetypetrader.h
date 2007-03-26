@@ -40,7 +40,7 @@
  *        applications or components that can handle a specific mimetype.
  * @see KServiceTypeTrader, KService
  */
-class KIO_EXPORT KMimeTypeTrader
+class KDECORE_EXPORT KMimeTypeTrader
 {
 public:
 

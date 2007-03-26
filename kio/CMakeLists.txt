@@ -44,19 +44,12 @@ add_subdirectory( kio/dummyanalyzers )
 # for the kfile usage in bookmarks
 include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
 
-# kio/kio/Makefile.am: kiocore
-
 set(kiocore_STAT_SRCS
   kio/kdirwatch.cpp
   kio/kfileshare.cpp
   kio/ksambashare.cpp
   kio/knfsshare.cpp
-  kio/kmimetypefactory.cpp
-  kio/kmimemagicrule.cpp
-  kio/kmimetypetrader.cpp
-  kio/kmimetype.cpp
   kio/k3mimetyperesolver.cpp
-  kio/kdedesktopmimetype.cpp
   kio/kdesktopfileactions.cpp
   kio/kservicegroup.cpp
   kio/kservicegroupfactory.cpp
@@ -328,8 +321,6 @@ install(  FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
 install( FILES
-  kio/kmimetype.h
-  kio/kmimetypetrader.h
   kio/kimageio.h
   kio/krun.h
   kio/kdirwatch.h
@@ -365,7 +356,6 @@ install( FILES
   kio/kremoteencoding.h
   kio/kmimetypechooser.h
   kio/kacl.h
-  kio/kdedesktopmimetype.h
   kio/kdesktopfileactions.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdirmodel.h

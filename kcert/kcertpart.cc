@@ -44,7 +44,7 @@
 #include <kcombobox.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
-#include <kio/kmimetype.h>
+#include <kmimetype.h>
 
 K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 

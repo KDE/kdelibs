@@ -52,6 +52,8 @@
 #include <X11/Xlib.h>
 #endif
 
+#include <QCoreApplication>
+
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE	30
 
@@ -239,9 +241,9 @@ void KLauncher::close()
 void
 KLauncher::destruct(int exit_code)
 {
-   if (qApp) ((KLauncher*)qApp)->close();
-   // We don't delete qApp here, that's intentional.
-   ::_exit(exit_code);
+    if (QCoreApplication::instance()) ((KLauncher*)QCoreApplication::instance())->close();
+    // We don't delete the app here, that's intentional.
+    ::_exit(exit_code);
 }
 
 void KLauncher::setLaunchEnv(const QString &name, const QString &value)
@@ -1101,7 +1103,7 @@ void KLauncher::reparseConfiguration()
       slave->reparseConfiguration();
 }
 
-void 
+void
 KLauncher::slotGotOutput()
 {
 }

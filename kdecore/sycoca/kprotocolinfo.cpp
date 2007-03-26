@@ -393,6 +393,16 @@ QString KProtocolInfo::proxiedBy( const QString& _protocol )
   return prot->d->proxyProtocol;
 }
 
+QString KProtocolInfo::defaultMimeType() const
+{
+    return m_defaultMimetype;
+}
+
+bool KProtocolInfo::supportsListing() const
+{
+    return m_supportsListing;
+}
+
 bool KProtocolInfo::canRenameFromFile() const
 {
   return d->canRenameFromFile;

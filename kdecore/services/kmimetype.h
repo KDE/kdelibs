@@ -41,7 +41,7 @@
  *
  * @see KServiceType
  */
-class KIO_EXPORT KMimeType : public KServiceType
+class KDECORE_EXPORT KMimeType : public KServiceType
 {
     K_SYCOCATYPE( KST_KMimeType, KServiceType )
 
@@ -378,27 +378,6 @@ private:
     class Private;
     Private* const d;
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-};
-
-/**
- * Folder mime type. Handles locked folders, for instance.
- * @short Mimetype for a folder (inode/directory)
- */
-class KIO_EXPORT KFolderType : public KMimeType
-{
-    K_SYCOCATYPE( KST_KFolderType, KMimeType )
-
-public:
-    /** \internal */
-    KFolderType( const QString& fullpath, const QString& name, const QString& comment )
-        : KMimeType( fullpath, name, comment ) { }
-    /** \internal */
-    KFolderType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
-
-    virtual QString icon( const KUrl& url ) const;
-    virtual QString comment( const KUrl& url ) const;
 protected:
     virtual void virtual_hook( int id, void* data );
 };

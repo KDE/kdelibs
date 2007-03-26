@@ -78,6 +78,15 @@ KDECORE_BUILD_TESTS(
 
 KDECORE_EXECUTE_TESTS( ${kdecore_unittests} )
 
+########### kmimetypetest ###############
+
+# compile kmimemagicrule.cpp into the test since it's not exported and we call match().
+set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
+kde4_automoc(${kmimetypetest_SRCS})
+kde4_add_executable(kmimetypetest NOGUI RUN_UNINSTALLED ${kmimetypetest_SRCS})
+target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+add_test(kdecore-kmimetypetest ${EXECUTABLE_OUTPUT_PATH}/kmimetypetest)
+
 ########### module for klibloadertest ###############
 
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )

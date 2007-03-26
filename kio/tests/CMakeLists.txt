@@ -12,15 +12,6 @@ target_link_libraries(ktradertest ${KDE4_KIO_LIBS})
 
 install(TARGETS ktradertest DESTINATION ${BIN_INSTALL_DIR} )
 
-########## kmimetypefinder - which is installed
-
-kde4_add_executable(kmimetypefinder NOGUI kmimetypefinder.cpp)
-
-target_link_libraries(kmimetypefinder ${KDE4_KIO_LIBS})
-
-install(TARGETS kmimetypefinder DESTINATION ${BIN_INSTALL_DIR} )
-
-
 ########### TESTS ###############
 
 if(KDE4_BUILD_TESTS)
@@ -82,15 +73,6 @@ KIO_BUILD_TESTS(
 KIO_EXECUTE_TESTS(
   ${kio_unittests}
 )
-
-########### kmimetypetest ###############
-
-# compile kmimemagicrule.cpp into the test since it's not exported and we call match().
-set(kmimetypetest_SRCS kmimetypetest.cpp ../kio/kmimemagicrule.cpp)
-kde4_automoc(${kmimetypetest_SRCS})
-kde4_add_executable(kmimetypetest NOGUI RUN_UNINSTALLED ${kmimetypetest_SRCS})
-target_link_libraries(kmimetypetest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} )
-add_test(kio-kmimetypetest ${EXECUTABLE_OUTPUT_PATH}/kmimetypetest)
 
 ###########  ###############
 

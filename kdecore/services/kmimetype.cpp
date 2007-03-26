@@ -19,35 +19,34 @@
 
 #include "kmimetype.h"
 #include "kmimetypefactory.h"
-#include "kprotocolmanager.h"
-#include <kde_file.h>
 
+#include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kmessageboxwrapper.h>
-
 #include <kdebug.h>
 #include <kdesktopfile.h>
+#include <kde_file.h>
 #include <klocale.h>
-#include <kconfig.h>
+#include <kmessage.h>
+#include <kprotocolinfo.h>
+#include <kprotocolinfofactory.h>
 #include <kstandarddirs.h>
-#include <kurl.h>
 #include <ksycoca.h>
+#include <kurl.h>
 
 #include <qset.h>
 #include <qstring.h>
 #include <qfile.h>
 #include <QtDBus/QtDBus>
+#include <QBuffer>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #include <assert.h>
-#include <dirent.h>
 #include <errno.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <QBuffer>
 
 template class KSharedPtr<KMimeType>;
 
@@ -55,8 +54,7 @@ static KMimeType::Ptr s_pDefaultMimeType;
 
 static void errorMissingMimeType( const QString& _type )
 {
-    KMessageBoxWrapper::sorry(
-        0, i18n( "Could not find mime type\n%1", _type ) );
+    KMessage::message( KMessage::Error, i18n( "Could not find mime type\n%1", _type ) );
 }
 
 static QString iconForMime( const QString& mime )
@@ -137,7 +135,7 @@ void KMimeType::checkEssentialMimeTypes()
   // Lets do some rescue here.
   if ( !KMimeTypeFactory::self()->checkMimeTypes() )
   {
-    KMessageBoxWrapper::error( 0L, i18n( "No mime types installed." ) );
+    KMessage::message( KMessage::Error, i18n( "No mime types installed." ) );
     return; // no point in going any further
   }
 
@@ -284,7 +282,11 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     } else { // Not a local file, or no magic allowed, find a fallback from the protocol
         if (accuracy)
             *accuracy = 10;
-        QString def = KProtocolManager::defaultMimetype( _url );
+        // ## this breaks with proxying; find a way to move proxying info to kdecore's kprotocolinfo?
+        KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
+        QString def;
+        if (prot)
+            def = prot->defaultMimeType();
         if ( !def.isEmpty() && def != defaultMimeType() ) {
             // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
             return mimeType( def );
@@ -296,7 +298,8 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
             // because of redirections (e.g. freshmeat downloads).
             if ( def.isEmpty() ) {
                 // Assume inode/directory, if the protocol supports listing.
-                if ( KProtocolManager::supportsListing( _url ) )
+                KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol( _url.protocol() );
+                if ( prot && prot->supportsListing() )
                     return mimeType( QLatin1String("inode/directory") );
                 else
                     return defaultMimeTypePtr(); // == 'no idea', e.g. for "data:,foo/"
@@ -512,93 +515,6 @@ bool KMimeType::is( const QString& mimeTypeName ) const
 }
 
 
-/*******************************************************
- *
- * KFolderType
- *
- ******************************************************/
-
-QString KFolderType::icon( const KUrl& _url ) const
-{
-  if ( _url.isEmpty() || !_url.isLocalFile() )
-    return KMimeType::iconName( _url );
-
-  KUrl u( _url );
-  u.addPath( ".directory" );
-
-  QString icon;
-  // using KStandardDirs as this one checks for path being
-  // a file instead of a directory
-  if ( KStandardDirs::exists( u.path() ) )
-  {
-    KDesktopFile cfg( u.path() );
-    KConfigGroup group = cfg.desktopGroup();
-    icon = group.readEntry( "Icon" );
-    QString empty_icon = group.readEntry( "EmptyIcon" );
-
-    if ( !empty_icon.isEmpty() )
-    {
-      bool isempty = false;
-      DIR *dp = 0L;
-      struct dirent *ep;
-      dp = opendir( QFile::encodeName(_url.path()) );
-      if ( dp )
-      {
-        QSet<QByteArray> entries;
-        // Note that readdir isn't guaranteed to return "." and ".." first (#79826)
-        ep=readdir( dp ); if ( ep ) entries.insert( ep->d_name );
-        ep=readdir( dp ); if ( ep ) entries.insert( ep->d_name );
-        if ( (ep=readdir( dp )) == 0L ) // third file is NULL entry -> empty directory
-          isempty = true;
-        else {
-          entries.insert( ep->d_name );
-          if ( readdir( dp ) == 0 ) { // only three
-            // check if we got "." ".." and ".directory"
-            isempty = entries.contains( "." ) &&
-                      entries.contains( ".." ) &&
-                      entries.contains( ".directory" );
-          }
-        }
-        if (!isempty && !strcmp(ep->d_name, ".directory"))
-          isempty = (readdir(dp) == 0L);
-        closedir( dp );
-      }
-
-      if ( isempty )
-        return empty_icon;
-    }
-  }
-
-  if ( icon.isEmpty() )
-    return KMimeType::iconName( _url );
-
-  if ( icon.startsWith( "./" ) ) {
-    // path is relative with respect to the location
-    // of the .directory file (#73463)
-    KUrl v( _url );
-    v.addPath( icon.mid( 2 ) );
-    icon = v.path();
-  }
-
-  return icon;
-}
-
-QString KFolderType::comment( const KUrl& _url ) const
-{
-    if ( _url.isEmpty() || !_url.isLocalFile() )
-        return KMimeType::comment( _url );
-
-    KUrl u( _url );
-    u.addPath( ".directory" );
-
-    const KDesktopFile cfg( u.path() );
-    QString comment = cfg.readComment();
-    if ( comment.isEmpty() )
-        return KMimeType::comment( _url );
-
-    return comment;
-}
-
 const QString & KMimeType::defaultMimeType()
 {
     static const QString & s_strDefaultMimeType =
@@ -633,6 +549,3 @@ void KMimeType::setParentMimeType(const QString& parent)
 
 void KMimeType::virtual_hook( int id, void* data )
 { KServiceType::virtual_hook( id, data ); }
-
-void KFolderType::virtual_hook( int id, void* data )
-{ KMimeType::virtual_hook( id, data ); }

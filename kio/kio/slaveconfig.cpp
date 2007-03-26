@@ -23,6 +23,7 @@
 #include <qhash.h>
 
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kstaticdeleter.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>

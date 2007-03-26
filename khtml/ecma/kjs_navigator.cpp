@@ -28,7 +28,7 @@
 #include <kdebug.h>
 
 #include <kio/kprotocolmanager.h>
-#include <kio/kmimetype.h>
+#include <kmimetype.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
 #include "kjs_navigator.h"

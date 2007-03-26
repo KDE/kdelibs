@@ -25,11 +25,12 @@
 class KDesktopFile;
 
 /**
+ * @internal  - this header is not installed
  * Mime type for desktop files.
  * Handles mount/umount icon, trash icon, reading the comment from the desktop file.
  * @short Mimetype for a .desktop file
  */
-class KIO_EXPORT KDEDesktopMimeType : public KMimeType
+class KDECORE_EXPORT KDEDesktopMimeType : public KMimeType
 {
     K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
 
@@ -44,6 +45,29 @@ public:
     virtual QString icon( const KUrl& url ) const;
     virtual QString comment( const KUrl& url ) const;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+};
+
+/**
+ * @internal  - this header is not installed
+ *
+ * Folder mime type. Handles locked folders, for instance.
+ * @short Mimetype for a folder (inode/directory)
+ */
+class KDECORE_EXPORT KFolderType : public KMimeType
+{
+    K_SYCOCATYPE( KST_KFolderType, KMimeType )
+
+public:
+    /** \internal */
+    KFolderType( const QString& fullpath, const QString& name, const QString& comment )
+        : KMimeType( fullpath, name, comment ) { }
+    /** \internal */
+    KFolderType( QDataStream& str, int offset ) : KMimeType( str, offset ) { }
+
+    virtual QString icon( const KUrl& url ) const;
+    virtual QString comment( const KUrl& url ) const;
 protected:
     virtual void virtual_hook( int id, void* data );
 };

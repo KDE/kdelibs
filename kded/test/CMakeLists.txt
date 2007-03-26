@@ -5,7 +5,7 @@ include_directories( ${KDE4_KIO_INCLUDES} .. )
 
 ######### kmimefileparsertest ########
 
-set(kmimefileparsertest_SRCS kmimefileparsertest.cpp ../kmimefileparser.cpp ../../kio/kio/kmimemagicrule.cpp)
+set(kmimefileparsertest_SRCS kmimefileparsertest.cpp ../kmimefileparser.cpp ../../kdecore/services/kmimemagicrule.cpp)
 
 kde4_automoc(${kmimefileparsertest_SRCS})
 

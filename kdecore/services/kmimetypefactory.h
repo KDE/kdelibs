@@ -44,7 +44,7 @@ class KExecMimeType;
  * but can also create mime types from data streams or single config files
  * @see KMimeType
  */
-class KIO_EXPORT KMimeTypeFactory : public KSycocaFactory
+class KDECORE_EXPORT KMimeTypeFactory : public KSycocaFactory
 {
     K_SYCOCAFACTORY( KST_KMimeTypeFactory )
 public:
