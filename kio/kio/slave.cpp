@@ -370,7 +370,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 #endif
     org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
-  	qDebug() << __FUNCTION__ << protocol  << " " << url.host() << " " << sockname;
+    //qDebug() << __FUNCTION__ << protocol  << " " << url.host() << " " << sockname;
     QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), sockname, errorStr);
     if (!reply.isValid()) {
 	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );

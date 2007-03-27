@@ -84,7 +84,6 @@ static QString realSystemPath()
 
 void JobTest::initTestCase()
 {
-    qDebug( "initTestCase" );
     // Start with a clean base dir
     cleanupTestCase();
     QDir dir; // TT: why not a static method?
@@ -154,7 +153,7 @@ static void createTestSymlink( const QString& path )
     } else {
         QVERIFY( S_ISLNK( buf.st_mode ) );
     }
-    qDebug( "symlink %s created", qPrintable( path ) );
+    //qDebug( "symlink %s created", qPrintable( path ) );
     QVERIFY( QFileInfo( path ).isSymLink() );
 }
 
@@ -545,14 +544,13 @@ void JobTest::moveDirectoryNoPermissions()
 #ifdef Q_WS_WIN
     kDebug() << "port to win32" << endl;
 #else
-#if 1
-    QString src = "/etc/rc.d";
+
+    // All of /etc is a bit much, so try to find something smaller:
+    QString src = "/etc/cups";
     if ( !QFile::exists( src ) )
-        src= "/etc";
-#else
-    QString src = "/etc";
-#endif
-   const QString dest = homeTmpDir() + "mdnp";
+        src = "/etc";
+
+    const QString dest = homeTmpDir() + "mdnp";
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
     KUrl u;
@@ -565,8 +563,7 @@ void JobTest::moveDirectoryNoPermissions()
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     QVERIFY( !ok );
-    qDebug( "%d", KIO::NetAccess::lastError() );
-    QVERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    QCOMPARE( KIO::NetAccess::lastError(), (int)KIO::ERR_ACCESS_DENIED );
     QVERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
     QVERIFY( QFile::exists( src ) );
 #endif
@@ -605,9 +602,12 @@ void JobTest::listRecursive()
 #endif
             "fileFromHome,fileFromHome_copied");
 
-    qDebug( "%s", qPrintable( m_names.join( "," ) ) );
-    qDebug( "%s", ref_names.data() );
-    QCOMPARE( m_names.join( "," ).toLatin1(), ref_names );
+    const QString joinedNames = m_names.join( "," );
+    if (joinedNames.toLatin1() != ref_names) {
+        qDebug( "%s", qPrintable( joinedNames ) );
+        qDebug( "%s", ref_names.data() );
+    }
+    QCOMPARE( joinedNames.toLatin1(), ref_names );
 }
 
 void JobTest::directorySize()
@@ -653,6 +653,7 @@ void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
     }
 }
 
+#if 0 // old performance tests
 class OldUDSAtom
 {
 public:
@@ -974,6 +975,7 @@ void JobTest::newApiPerformance()
         QVERIFY( url.isEmpty() );
     }
 }
+#endif
 
 void JobTest::calculateRemainingSeconds()
 {

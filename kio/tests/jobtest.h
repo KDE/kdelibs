@@ -53,7 +53,7 @@ private Q_SLOTS:
     void moveDirectoryToOtherPartition();
     void moveFileNoPermissions();
     void moveDirectoryNoPermissions();
-    void newApiPerformance();
+    //void newApiPerformance();
     void calculateRemainingSeconds();
 
     // Remote tests
