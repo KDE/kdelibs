@@ -123,6 +123,12 @@ public:
     bool operator==(const KShapeGesture &other) const;
 
     /**
+     * Return the opposite of operator==()
+     */
+    bool operator!=(const KShapeGesture &other) const
+        {return !operator==(other);}
+
+    /**
      * Return an opaque value for use in hash tables
      */
     uint hashable() const;
@@ -215,6 +221,12 @@ public:
      * Return whether this gesture is equal to the other gesture.
      */
     bool operator==(const KRockerGesture &other) const;
+
+    /**
+     * Return the opposite of operator==()
+     */
+    bool operator!=(const KRockerGesture &other) const
+        {return !operator==(other);}
 
     /**
      * Return an opaque value for use in hash tables
