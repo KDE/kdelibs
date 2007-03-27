@@ -648,6 +648,12 @@ void KKeyChooserPrivate::globalShortcutsChangedSystemwide()
 }
 
 
+void KKeyChooser::allDefault()
+{
+}
+
+
+//slot
 void KKeyChooser::resizeColumns()
 {
 	for (int i = 0; i < d->ui.list->columnCount(); i++)

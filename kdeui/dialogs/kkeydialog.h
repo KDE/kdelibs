@@ -176,7 +176,7 @@ public Q_SLOTS:
 	 * Set all keys to their default values (bindings).
 	 **/
 	//TODO:implement
-	//void allDefault();
+	void allDefault();
 
 protected:
 	virtual void showEvent(QShowEvent* event);
