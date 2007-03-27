@@ -35,6 +35,9 @@ class QMenu;
 /**
  * The abstract base class for all Commands. Commands are used to
  * store information needed for Undo/Redo functionality...
+ *
+ * Note: you might want to use the QUndo framework instead.
+ * It didn't exist when KCommand was written.
  */
 class KDEUI_EXPORT KCommand
 {
@@ -76,6 +79,9 @@ protected:
  * A command which stores its name.
  * It is more memory-efficient to use KCommand and to implement the name() method,
  * but in some cases it's more simple or more flexible to store the name at creation time.
+ *
+ * Note: you might want to use the QUndo framework instead.
+ * It didn't exist when KCommand was written.
  */
 class KDEUI_EXPORT KNamedCommand : public KCommand
 {
@@ -154,6 +160,9 @@ protected:
  * commands, if appropriate. It also activates/deactivates the
  * undo/redo actions in the menu and changes the text according
  * to the name of the command.
+ *
+ * Note: you might want to use the QUndo framework instead.
+ * It didn't exist when KCommand was written.
  */
 class KDEUI_EXPORT KCommandHistory : public QObject {
     Q_OBJECT
@@ -327,6 +336,9 @@ private:
    @endcode
  * Note that there is no need to connect or even keep a reference to the object as
  * all work is done automatically.
+ *
+ * Note: you might want to use the QUndo framework instead.
+ * It didn't exist when KCommand was written.
  */
 class KUndoRedoAction : public KToolBarPopupAction
 {
