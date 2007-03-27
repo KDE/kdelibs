@@ -252,7 +252,7 @@ void KCMultiDialog::slotHelpClicked()
 }
 
 
-KPageWidgetItem* KCMultiDialog::addModule( const QString& path )
+KPageWidgetItem* KCMultiDialog::addModule( const QString& path, const QStringList& args )
 {
   QString complete = path;
 
@@ -261,11 +261,11 @@ KPageWidgetItem* KCMultiDialog::addModule( const QString& path )
 
   KService::Ptr service = KService::serviceByStorageId( complete );
 
-  return addModule( KCModuleInfo( service ), 0 );
+  return addModule( KCModuleInfo( service ), 0, args );
 }
 
 KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
-                                           KPageWidgetItem *parentItem )
+                                           KPageWidgetItem *parentItem, const QStringList& args )
 {
   if ( !moduleInfo.service() )
     return 0;
@@ -286,7 +286,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   else
     addPage( item );
 
-  KCModuleProxy *kcm = new KCModuleProxy( moduleInfo, widget );
+  KCModuleProxy *kcm = new KCModuleProxy( moduleInfo, widget, args );
 
   connect( kcm, SIGNAL( changed( bool ) ), this, SLOT( _k_clientChanged( bool ) ) );
 

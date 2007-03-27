@@ -211,7 +211,7 @@ class PageNode
 				return node->m_pageWidgetItem;
 		}
 
-		void addToDialog( KCMultiDialog * dlg )
+		void addToDialog( KCMultiDialog * dlg, const QStringList& arguments )
 		{
 			kDebug( 700 ) << k_funcinfo << "for " << name() << endl;
 			if( ! isVisible() )
@@ -219,7 +219,9 @@ class PageNode
 
 			if( KCM == m_type )
 			{
-				m_pageWidgetItem = dlg->addModule( *m_value.kcm, parentPageWidgetItem() );
+				m_pageWidgetItem = dlg->addModule( *m_value.kcm, 
+                                                   parentPageWidgetItem(), 
+                                                   arguments );
 				return;
 			}
 			if( Group == m_type && 0 == m_value.group->page )
@@ -234,7 +236,7 @@ class PageNode
 			}
 			List::Iterator end = m_children.end();
 			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				( *it )->addToDialog( dlg );
+				( *it )->addToDialog( dlg, arguments );
 		}
 
 		void removeFromDialog( KCMultiDialog * dlg )
@@ -359,36 +361,40 @@ class Dialog::DialogPrivate
 		QStringList registeredComponents;
 		QList<KService::Ptr> services;
 		QMap<QString, KPluginInfo*> plugininfomap;
+		QStringList arguments;
 };
 
 Dialog::Dialog( ContentInListView content,
-		QWidget * parent )
+		QWidget * parent, const QStringList& arguments )
 	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
 	d->services = instanceServices();
+	d->arguments = arguments;
 }
 
 Dialog::Dialog( const QStringList & components,
-		QWidget * parent )
+		QWidget * parent, const QStringList& arguments )
 	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = true;
 	d->services = instanceServices() + parentComponentsServices( components );
+	d->arguments = arguments;
 }
 
 Dialog::Dialog( const QStringList & components,
-		ContentInListView content, QWidget * parent )
+		ContentInListView content, QWidget * parent, const QStringList& arguments )
 	: QObject( parent )
 	, d( new DialogPrivate( this ) )
 {
 	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
 	d->services = instanceServices() + parentComponentsServices( components );
+	d->arguments = arguments;
 }
 
 Dialog::~Dialog()
@@ -591,7 +597,7 @@ void Dialog::createDialogFromServices()
 	connect( d->dlg, SIGNAL( configCommitted( const QByteArray & ) ),
 		Dispatcher::self(), SLOT( reparseConfiguration( const QByteArray & ) ) );
 
-	d->pagetree.addToDialog( d->dlg );
+	d->pagetree.addToDialog( d->dlg, d->arguments );
 }
 
 void Dialog::configureTree()
@@ -620,7 +626,7 @@ void Dialog::updateTreeList()
 	// and we need to have a predefined order.
 
 	d->pagetree.removeFromDialog( d->dlg );
-	d->pagetree.addToDialog( d->dlg );
+	d->pagetree.addToDialog( d->dlg, d->arguments );
 }
 
 } //namespace

@@ -103,8 +103,11 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
+         * @param arguments    A list of arguments that are passed to all
+         *                     KCModules when adding them to the dialog
          */
-        explicit Dialog( ContentInListView content = Static, QWidget * parent = 0 );
+        explicit Dialog( ContentInListView content = Static, QWidget * parent = 0, 
+                         const QStringList& arguments = QStringList() );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected
@@ -117,8 +120,11 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
+         * @param arguments    A list of arguments that are passed to all
+         *                     KCModules when adding them to the dialog
          */
-         explicit Dialog( const QStringList & components, QWidget * parent = 0 );
+         explicit Dialog( const QStringList & components, QWidget * parent = 0,
+                          const QStringList& arguments = QStringList() );
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected
@@ -133,9 +139,12 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
+         * @param arguments    A list of arguments that are passed to all
+         *                     KCModules when adding them to the dialog
          */
         Dialog( const QStringList & components, ContentInListView
-                content, QWidget * parent = 0 );
+                content, QWidget * parent = 0, 
+                const QStringList& arguments = QStringList() );
 
         ~Dialog();
 
