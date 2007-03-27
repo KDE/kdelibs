@@ -42,8 +42,9 @@ public:
 
     /**
      * Creates a new gesture consisting of given shape.
-     * @p shape must be a "reasonable" polygon - it must contain at least two points
-     * and at most 200, not all points are allowed to be equal etc.
+     * @p shape must be a "reasonable" polygon. It must contain at least two points
+     * and it should at contain at most 50 for performance reasons. No two consecutive points
+     * are allowed to be at the same position.
      * @param shape shape to draw in order to trigger this gesture
      */
     KShapeGesture(const QPolygon &shape);
