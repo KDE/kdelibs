@@ -17,10 +17,6 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-
-#ifndef KFILEMETAINFO_PROVIDER_H
-#define KFILEMETAINFO_PROVIDER_H
-
 #include "kfilewriteplugin.h"
 #include "predicateproperties.h"
 #include "kfilemetainfoitem.h"
@@ -63,4 +59,3 @@ public:
     bool modified;
 };
 
-#endif
