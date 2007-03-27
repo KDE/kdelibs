@@ -448,6 +448,20 @@ Internally it is reference counted and the data deleted when the last reference 
 <li>modFlagLabel() was removed, use either KKeyServer::modToStringUser(), or QKeySequence(Qt::yourmodifier).toString()</li>
 </ul>
 
+<h4>KKeyButton</h4>
+<ul>
+<li>Now only configures a single QKeySequence, and does it directly instead of using a modal dialog that pops up.</li>
+<li>A widget to configure both key sequences of a KShortcut <i>without a modal dialog</i> is work in progress ATM.</li>
+<li>probably has bugs, don't let this confuse you.</li>
+</ul>
+
+<h4>KKeyDialog</h4>
+<ul>
+<li>Changed from edit/commit semantics to edit in-place/revert semantics. The old way didn't work in corner cases, the new way is quite a bit less complicated internally, and such cases only appear if a user opens multiple KKeyDialogs at the same time, which nobody does intentionally.</li>
+<li>Rewritten. It was hard to read, which stood in the way of future changes/improvements.</li>
+<li>Uses a new GUI layout.</li>
+</ul>
+
 <h4>KKeyNative</h4>
 <ul>
 <li>Removed. Use plain ints as the Qt key code instead.</li>
