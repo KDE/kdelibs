@@ -229,6 +229,19 @@ void KBuildMimeTypeFactory::parseAliasFile(const QString& fileName)
 // Called by kbuildsycoca since it needs the subclasses and aliases for the trader index
 void KBuildMimeTypeFactory::parseSubclasses()
 {
+    // First clear up any old data (loaded by the incremental mode) that we are going to reload anyway
+    aliases().clear();
+
+    KSycocaEntryDict::Iterator itmime = m_entryDict->begin();
+    const KSycocaEntryDict::Iterator endmime = m_entryDict->end();
+    for( ; itmime != endmime ; ++itmime ) {
+        const KSycocaEntry::Ptr& entry = (*itmime);
+        Q_ASSERT( entry->isType( KST_KMimeType ) );
+        KMimeType::Ptr mimeType = KMimeType::Ptr::staticCast( entry );
+        mimeType->internalClearData();
+    }
+
+
     const QStringList subclassFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "subclasses");
     //kDebug() << k_funcinfo << subclassFiles << endl;
     Q_FOREACH(const QString& file, subclassFiles) {

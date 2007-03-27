@@ -366,7 +366,7 @@ protected:
      * The stream must already be positionned at the correct offset
      */
     KMimeType( QDataStream& str, int offset );
-    
+
     /**
      * Construct a mimetype and take all information from an XML file.
      * @param fullpath the path to the xml that describes the mime type
@@ -374,7 +374,7 @@ protected:
      * @param comment the comment associated with the mimetype
      */
     KMimeType( const QString& fullpath, const QString& name, const QString& comment );
-    
+
     /**
      * @internal Construct a service from a stream.
      *
@@ -390,10 +390,12 @@ protected:
      */
     KMimeType( KMimeTypePrivate &dd, const QString& fullpath, const QString& name, const QString& comment );
 
-    /// @internal for kbuildsycoca
+    /// @internal for kbuildsycoca. Don't ever use this, or else...
     void addPattern(const QString& pattern);
-    /// @internal for kbuildsycoca
+    /// @internal for kbuildsycoca. Don't ever use this, or else...
     void setParentMimeType(const QString& parent);
+    /// @internal for kbuildsycoca. Don't ever use this, or else...
+    void internalClearData();
 
 private:
 

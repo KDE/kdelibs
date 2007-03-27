@@ -70,12 +70,7 @@ static QString iconForMime( const QString& mime )
 
 void KMimeTypePrivate::loadInternal( QDataStream& _str )
 {
-    // kDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
     _str >> m_lstPatterns >> m_parentMimeType;
-    if (KSycoca::self()->isBuilding()) {
-        // We're going to re-fill the list, so clear it
-        m_lstPatterns.clear();
-    }
 }
 
 /**
@@ -408,8 +403,8 @@ KMimeType::KMimeType( KMimeTypePrivate &dd, QDataStream& _str, int offset )
 KMimeType::KMimeType( QDataStream& _str, int offset )
     : KServiceType( *new KMimeTypePrivate(this), _str, offset )
 {
-  Q_D(KMimeType);
-  d->loadInternal( _str ); // load our specific stuff
+    Q_D(KMimeType);
+    d->loadInternal( _str ); // load our specific stuff
 }
 
 void KMimeType::load( QDataStream& _str )
@@ -572,6 +567,14 @@ void KMimeType::setParentMimeType(const QString& parent)
 {
     Q_D(KMimeType);
     d->m_parentMimeType = parent;
+}
+
+void KMimeType::internalClearData()
+{
+    Q_D(KMimeType);
+    // Clear that data that KBuildMimeTypeFactory is going to refill - and only that data.
+    d->m_parentMimeType.clear();
+    d->m_lstPatterns.clear();
 }
 
 void KMimeType::virtual_hook( int id, void* data )
