@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "kmimemagicrule.h"
+#include "kmimemagicrule_p.h"
 #include <QIODevice>
 #include <kdebug.h>
 #include <QByteArrayMatcher>

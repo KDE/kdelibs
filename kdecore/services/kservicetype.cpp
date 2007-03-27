@@ -155,14 +155,12 @@ KServiceType::~KServiceType()
 
 QString KServiceType::parentServiceType() const
 {
-    Q_D(const KServiceType);
     const QVariant v = property("X-KDE-Derived");
     return v.toString();
 }
 
 bool KServiceType::inherits( const QString& servTypeName ) const
 {
-    Q_D(const KServiceType);
     if ( name() == servTypeName )
         return true;
     QString st = parentServiceType();

@@ -26,7 +26,7 @@
 
 #include "ksycocafactory.h"
 #include "kmimetype.h"
-#include "kmimemagicrule.h"
+#include "kmimemagicrule_p.h"
 
 class KSycoca;
 class KSycocaDict;

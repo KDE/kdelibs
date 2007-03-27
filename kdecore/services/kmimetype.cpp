@@ -519,8 +519,6 @@ QString KMimeType::parentMimeType() const
 
 bool KMimeType::is( const QString& mimeTypeName ) const
 {
-  Q_D(const KMimeType);
-  
   if (name() == mimeTypeName)
       return true;
   KMimeType::Ptr me = KMimeTypeFactory::self()->findMimeTypeByName(mimeTypeName, KMimeType::ResolveAliases);

@@ -20,7 +20,7 @@
 #define KMIMETYPETEST_H
 
 #include <QObject>
-#include <kmimemagicrule.h>
+#include <kmimemagicrule_p.h>
 
 class KMimeTypeTest : public QObject
 {
