@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KPROCCTRL_H
-#define KPROCCTRL_H
+#ifndef K3PROCCTRL_H
+#define K3PROCCTRL_H
 
 #include <QtCore/QList>
 #include <k3process.h>
