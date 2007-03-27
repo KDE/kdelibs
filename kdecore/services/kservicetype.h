@@ -229,6 +229,8 @@ protected:
 
 protected:
     KServiceTypePrivate *d_ptr;
+
+private:
     Q_DISABLE_COPY(KServiceType)
 };
 
