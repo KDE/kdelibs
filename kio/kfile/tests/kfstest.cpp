@@ -27,7 +27,6 @@
 #include <qwidget.h>
 
 #include <kfiledialog.h>
-#include <kfileiconview.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
 #include <kapplication.h>
