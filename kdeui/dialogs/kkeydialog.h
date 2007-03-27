@@ -174,9 +174,8 @@ public Q_SLOTS:
 	void resizeColumns();
 
 	/**
-	 * Set all keys to their default values (bindings).
+	 * Set all shortcuts to their default values (bindings).
 	 **/
-	//TODO:implement
 	void allDefault();
 
 protected:
@@ -256,7 +255,7 @@ public:
 	 * This method is implicitly called from configure(bool) if
 	 * @p bSaveSettings is true.
 	 */
-	//TODO: it's unused! maybe add undoChanges, though...
+	//TODO: it's (okay, almost) unused! maybe add undoChanges, though...
 	//void commitChanges();
 
 	/**

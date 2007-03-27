@@ -137,11 +137,17 @@ public:
 
 	KKeyChooserItem *itemFromIndex(const QModelIndex &index);
 
+	//helper functions for conflict resolution
 	bool stealShortcut(KKeyChooserItem *item, unsigned int column, const QKeySequence &seq);
 	bool stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq);
 	void wontStealStandardShortcut(KStandardShortcut::StandardShortcut sa, const QKeySequence &seq);
 	bool stealShapeGesture(KKeyChooserItem *item, const KShapeGesture &gest);
 	bool stealRockerGesture(KKeyChooserItem *item, const KRockerGesture &gest);
+
+	//these functions do the conflict resolution
+	void changeKeyShortcut(KKeyChooserItem *item, uint column, const QKeySequence &capture);
+	void changeShapeGesture(KKeyChooserItem *item, const KShapeGesture &capture);
+	void changeRockerGesture(KKeyChooserItem *item, const KRockerGesture &capture);
 
 // private slots
 	void capturedKeyShortcut(QKeySequence);
@@ -155,7 +161,7 @@ public:
 
 // members
 	KKeyChooser *q;
-	QModelIndex currentlyEditingIndex;
+	QModelIndex editingIndex;
 	//QList< QList<QAction*> > actionLists;
 	QList<KActionCollection *> actionCollections;
 
@@ -379,28 +385,33 @@ KKeyChooserItem *KKeyChooserPrivate::itemFromIndex(const QModelIndex &index)
 //slot
 void KKeyChooserPrivate::startEditing(QWidget *editor, QModelIndex index)
 {
-	currentlyEditingIndex = index;
+	editingIndex = index;
 }
 
 //slot
 void KKeyChooserPrivate::doneEditingCurrent()
 {
-	currentlyEditingIndex = QModelIndex();
+	editingIndex = QModelIndex();
 }
 
 
 //slot
 void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
 {
-	if (!currentlyEditingIndex.isValid())
-		return;
-
-	int editingColumn = currentlyEditingIndex.column();
-
-	if (capture == itemFromIndex(currentlyEditingIndex)->keySequence(editingColumn))
-		return;
-
 	//TODO: make sure letter shortcuts only go in if allowed. modify KKeyButton.
+	if (!editingIndex.isValid())
+		return;
+
+	KKeyChooserItem *item = itemFromIndex(editingIndex);
+	int column = editingIndex.column();
+	changeKeyShortcut(item, column, capture);
+}
+
+
+void KKeyChooserPrivate::changeKeyShortcut(KKeyChooserItem *item, uint column, const QKeySequence &capture)
+{
+	if (capture == item->keySequence(column))
+		return;
 
 	if (!capture.isEmpty()) {
 		bool conflict = false;
@@ -408,7 +419,7 @@ void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
 		KKeyChooserItem *otherItem;
 
 		//refuse to assign a global shortcut occupied by a standard shortcut
-		if (editingColumn == GlobalPrimary || editingColumn == GlobalAlternate) {
+		if (column == GlobalPrimary || column == GlobalAlternate) {
 			KStandardShortcut::StandardShortcut ssc = KStandardShortcut::find(capture);
 			if (ssc != KStandardShortcut::AccelNone) {
 				wontStealStandardShortcut(ssc, capture);
@@ -440,10 +451,10 @@ void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
 			return;
 	}
 
-	itemFromIndex(currentlyEditingIndex)->setKeySequence(editingColumn - LocalPrimary, capture);
+	item->setKeySequence(column, capture);
 	//update global configuration to reflect our changes
 	//TODO:: much better to do this in setKeySequence
-	if (editingColumn == GlobalPrimary || editingColumn == GlobalAlternate) {
+	if (column == GlobalPrimary || column == GlobalAlternate) {
 
 	}
 }
@@ -452,7 +463,16 @@ void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
 //slot
 void KKeyChooserPrivate::capturedShapeGesture(KShapeGesture capture)
 {
-	if (!currentlyEditingIndex.isValid())
+	if (!editingIndex.isValid())
+		return;
+
+	changeShapeGesture(itemFromIndex(editingIndex), capture);
+}
+
+
+void KKeyChooserPrivate::changeShapeGesture(KKeyChooserItem *item, const KShapeGesture &capture)
+{
+	if (capture == item->m_action->shapeGesture())
 		return;
 
 	if (capture.isValid()) {
@@ -480,14 +500,23 @@ void KKeyChooserPrivate::capturedShapeGesture(KShapeGesture capture)
 			return;
 	}
 
-	itemFromIndex(currentlyEditingIndex)->setShapeGesture(capture);
+	item->setShapeGesture(capture);
 }
 
 
 //slot
 void KKeyChooserPrivate::capturedRockerGesture(KRockerGesture capture)
 {
-	if (!currentlyEditingIndex.isValid())
+	if (!editingIndex.isValid())
+		return;
+
+	changeRockerGesture(itemFromIndex(editingIndex), capture);
+}
+
+
+void KKeyChooserPrivate::changeRockerGesture(KKeyChooserItem *item, const KRockerGesture &capture)
+{
+	if (capture == item->m_action->rockerGesture())
 		return;
 
 	if (capture.isValid()) {
@@ -510,7 +539,7 @@ void KKeyChooserPrivate::capturedRockerGesture(KRockerGesture capture)
 			return;
 	}
 
-	itemFromIndex(currentlyEditingIndex)->setRockerGesture(capture);
+	item->setRockerGesture(capture);
 }
 
 
@@ -649,8 +678,32 @@ void KKeyChooserPrivate::globalShortcutsChangedSystemwide()
 }
 
 
+//slot
 void KKeyChooser::allDefault()
 {
+	for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
+		if (!(*it)->parent())
+			continue;
+
+		KKeyChooserItem *item = static_cast<KKeyChooserItem *>(*it);
+		KAction *act = item->m_action;
+		
+		if (act->shortcut() != act->shortcut(KAction::DefaultShortcut)) {
+			d->changeKeyShortcut(item, LocalPrimary, act->shortcut(KAction::DefaultShortcut).primary());
+			d->changeKeyShortcut(item, LocalAlternate, act->shortcut(KAction::DefaultShortcut).alternate());
+		}
+		
+		if (act->globalShortcut() != act->globalShortcut(KAction::DefaultShortcut)) {
+			d->changeKeyShortcut(item, GlobalPrimary, act->globalShortcut(KAction::DefaultShortcut).primary());
+			d->changeKeyShortcut(item, GlobalAlternate, act->globalShortcut(KAction::DefaultShortcut).alternate());
+		}
+		
+		if (act->shapeGesture() != act->shapeGesture(KAction::DefaultShortcut))
+			d->changeShapeGesture(item, act->shapeGesture(KAction::DefaultShortcut));
+		
+		if (act->rockerGesture() != act->rockerGesture(KAction::DefaultShortcut))
+			d->changeRockerGesture(item, act->rockerGesture(KAction::DefaultShortcut));
+	}
 }
 
 
