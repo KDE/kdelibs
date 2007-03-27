@@ -346,7 +346,9 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QString 
 //static
 void KGlobalAccel::stealShortcutSystemwide(const QString &actionName, const QKeySequence &seq)
 {
+#ifdef __GNUC__
 #warning implement me!
+#endif
 }
 
 #include "kglobalaccel.moc"
