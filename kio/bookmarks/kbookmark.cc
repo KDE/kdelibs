@@ -263,10 +263,9 @@ KBookmark KBookmarkGroup::closestBookmark( const KUrl& url ) const
     KBookmark foundBookmark;
     int maxLength = 0;
 
-    // Search the bookmark which is equal to the Url or at least is a parent Url.
-    // If there are more than one possible parent Url candidates, choose the bookmark
-    // which covers the bigger range of the Url.
-    int i = 0;
+    // Search the bookmark which is equal to the URL or at least is a parent URL.
+    // If there are more than one possible parent URL candidates, choose the bookmark
+    // which covers the bigger range of the URL.
     while (!bookmark.isNull()) {
         const KUrl bookmarkUrl = bookmark.url();
         if (bookmarkUrl.isParentOf(url)) {
@@ -277,7 +276,6 @@ KBookmark KBookmarkGroup::closestBookmark( const KUrl& url ) const
             }
         }
         bookmark = next(bookmark);
-        ++i;
     }
 
     return foundBookmark;
