@@ -61,7 +61,7 @@ KPlotWidget *kpw = new KPlotWidget( parent );
 kpw->setLimits( 1.0, 5.0, 1.0, 25.0 );
 
 // creating a red polygon ...
-KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::LINES );
+KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::Lines );
 // ... adding some points to it ...
 for ( float x = 1.0; x <= 5.0; x += 0.1 )
     kpo->addPoint( x, x*x );
