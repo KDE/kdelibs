@@ -350,7 +350,7 @@ namespace KJS {
     //operations (e.g. assign) use that..
     //void handleResolveFailure(ResolveResult& res, ExecState* exec, JSObject* scope, const Identifier& ident) = 0;
 
-    void recurseVisit(NodeVisitor * /*visitor*/) {};
+    void recurseVisit(NodeVisitor * /*visitor*/) {}
   };
 
   class ResolveIdentifier : public ResolveHandlerBase {
