@@ -130,6 +130,12 @@ public:
             }
         }
     }
+    virtual void addValue(const Strigi::AnalysisResult*,
+                          const RegisteredField*, const std::string&, const std::string&)
+    {
+        // ######## TODO
+    }
+
     void addTriplet(const std::string& subject,
         const std::string& predicate, const std::string& object) {}
     void finishAnalysis(const AnalysisResult*) {}
@@ -168,7 +174,7 @@ KFileMetaInfoPrivate::initWriters(QIODevice& file) {
     QStringList mimetypes;
     QHash<QString, KFileMetaInfoItem>::iterator i;
     for (i = items.begin(); i != items.end(); ++i) {
-        KFileWritePlugin *w = 
+        KFileWritePlugin *w =
             KFileWriterProvider::self()->loadPlugin(i.key());
         i.value().p->writer = w;
         if (w) {
