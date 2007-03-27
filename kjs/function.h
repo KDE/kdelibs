@@ -25,12 +25,12 @@
 #define KJS_FUNCTION_H
 
 #include "object.h"
+#include "nodes.h"
 #include <wtf/OwnPtr.h>
 
 namespace KJS {
 
   class ActivationImp;
-  class FunctionBodyNode;
   class FunctionPrototype;
 
   enum CodeType { GlobalCode,
