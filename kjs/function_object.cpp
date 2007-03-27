@@ -84,7 +84,7 @@ JSValue *FunctionProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, c
         Identifier ident = fi->functionName();
         UString prettyIdent = escapeStringForPrettyPrinting(ident.ustring());
         return jsString("function " + prettyIdent +
-                        "(" + fi->parameterString() + ") " +
+                        "(" + fi->body->paramString() + ") " +
                         fi->body->toString());
      } else if (thisObj->inherits(&InternalFunctionImp::info) &&
                 !static_cast<InternalFunctionImp*>(thisObj)->functionName().isNull()) {
@@ -230,11 +230,11 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
           while (i < len && *c == ' ')
               c++, i++;
           if (i == len) {
-              fimp->addParameter(Identifier(param));
+              bodyNode->addParam(Identifier(param));
               params++;
               break;
           } else if (*c == ',') {
-              fimp->addParameter(Identifier(param));
+              bodyNode->addParam(Identifier(param));
               params++;
               c++, i++;
               continue;

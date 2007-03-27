@@ -31,13 +31,11 @@ namespace KJS {
 
   class ActivationImp;
   class FunctionBodyNode;
-  class Parameter;
   class FunctionPrototype;
 
   enum CodeType { GlobalCode,
                   EvalCode,
-                  FunctionCode,
-                  AnonymousCode };
+                  FunctionCode };
 
   class KJS_EXPORT InternalFunctionImp : public JSObject {
   public:
@@ -87,10 +85,9 @@ namespace KJS {
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
-    void addParameter(const Identifier &n);
+    //Note: unlike body->paramName, this returns Identifier::null for parameters 
+    //that will never get set, due to later param having the same name
     Identifier getParameterName(int index);
-    // parameters in string representation, e.g. (a, b, c)
-    UString parameterString() const;
     virtual CodeType codeType() const = 0;
 
     virtual Completion execute(ExecState *exec) = 0;
@@ -130,9 +127,6 @@ namespace KJS {
     void setScope(const ScopeChain &s) { _scope = s; }
 
     virtual void mark();
-  protected:
-    OwnPtr<Parameter> param;
-
   private:
     ScopeChain _scope;
 
@@ -140,8 +134,7 @@ namespace KJS {
     static JSValue *callerGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
     static JSValue *lengthGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
 
-    void processParameters(ExecState *exec, const List &);
-    virtual void processVarDecls(ExecState *exec);
+    void passInParameters(ExecState *exec, const List &);
   };
 
   class KJS_EXPORT DeclaredFunctionImp : public FunctionImp {
@@ -157,9 +150,6 @@ namespace KJS {
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-
-  private:
-    virtual void processVarDecls(ExecState *exec);
   };
 
   class IndexToNameMap {
@@ -197,10 +187,28 @@ namespace KJS {
   class ActivationImp : public JSObject {
   public:
     ActivationImp(FunctionImp *function, const List &arguments);
+    ~ActivationImp();
 
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+    
+    enum RoCheck {
+      CheckReadOnly, DontCheckReadOnly
+    };
+
+    void putLocal(int propertyID, JSValue *value, RoCheck roCheck) {
+      assert(validLocal(propertyID));
+      if ((roCheck == CheckReadOnly) && (_locals[propertyID].attr & ReadOnly))
+        return;
+      _locals[propertyID].value = value;
+        //We do not have to touch the flags here -- they're pre-computed..
+    }
+
+    JSValue** getLocalDirect(int propertyID) {
+      assert(validLocal(propertyID));
+      return &_locals[propertyID].value;
+    }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -208,14 +216,30 @@ namespace KJS {
     virtual void mark();
 
     bool isActivation() { return true; }
+
+    void setupLocals();
+    void setupFunctionLocals(ExecState *exec);
   private:
     static PropertySlot::GetValueFunc getArgumentsGetter();
     static JSValue *argumentsGetter(ExecState *exec, JSObject *, const Identifier &, const PropertySlot& slot);
     void createArgumentsObject(ExecState *exec) const;
 
+    struct Local {
+      JSValue* value;
+      int      attr;
+    };
+
     FunctionImp *_function;
     List _arguments;
-    mutable Arguments *_argumentsObject;
+
+
+    //List of locals, but the entry 0 is special: 
+    //the value here is the arguments object, 
+    //the attr is the length of the array (e.g. numLocals + 1)
+    Local *_locals;
+
+    int  numLocals() const        { return _locals[0].attr; }
+    bool validLocal(int id) const { return 0 < id && id < numLocals(); }
   };
 
   class GlobalFuncImp : public InternalFunctionImp {

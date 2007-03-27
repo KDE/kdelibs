@@ -154,9 +154,14 @@ public:
     virtual void mark();
     bool marked() const;
 
+    bool isLocalInjected()  const { return m_localInjected; }
+    void setLocalInjected()       { m_localInjected = true; }
+
 private:
     bool m_destructorIsThreadSafe : 1;
     bool m_marked : 1;
+    bool m_localInjected : 1; // Used when this object is the active scope,
+                              // to denote dynamic addition of local variables
 };
 
 KJS_EXPORT JSValue *jsNumberCell(double);
@@ -205,6 +210,7 @@ inline JSValue::~JSValue()
 inline JSCell::JSCell(bool destructorIsThreadSafe)
     : m_destructorIsThreadSafe(destructorIsThreadSafe)
     , m_marked(false)
+    , m_localInjected(false)
 {
 }
 

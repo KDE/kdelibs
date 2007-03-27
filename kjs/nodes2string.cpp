@@ -128,7 +128,7 @@ void RegExpNode::streamTo(SourceStream &s) const
 
 void ThisNode::streamTo(SourceStream &s) const { s << "this"; }
 
-void ResolveNode::streamTo(SourceStream &s) const { s << ident; }
+void ResolveIdentifier::streamTo(SourceStream &s, const Identifier& ident) const { s << ident; }
 
 void GroupNode::streamTo(SourceStream &s) const
 {
@@ -230,7 +230,7 @@ void FunctionCallValueNode::streamTo(SourceStream &s) const
   s << expr << args;
 }
 
-void FunctionCallResolveNode::streamTo(SourceStream &s) const
+void ResolveFunctionCall::streamTo(SourceStream &s, const Identifier& ident) const
 {
   s << ident << args;
 }
@@ -255,9 +255,9 @@ void FunctionCallParenDotNode::streamTo(SourceStream &s) const
   s << "(" << base << "." << ident << ")" << args;
 }
 
-void PostfixResolveNode::streamTo(SourceStream &s) const
+void ResolvePostfix::streamTo(SourceStream &s, const Identifier& ident) const
 {
-  s << m_ident;
+  s << ident;
   if (m_oper == OpPlusPlus)
     s << "++";
   else
@@ -282,9 +282,9 @@ void PostfixDotNode::streamTo(SourceStream &s) const
     s << "--";
 }
 
-void DeleteResolveNode::streamTo(SourceStream &s) const
+void ResolveDelete::streamTo(SourceStream &s, const Identifier& ident) const
 {
-  s << "delete " << m_ident;
+  s << "delete " << ident;
 }
 
 void DeleteBracketNode::streamTo(SourceStream &s) const
@@ -312,18 +312,18 @@ void TypeOfValueNode::streamTo(SourceStream &s) const
   s << "typeof " << m_expr;
 }
 
-void TypeOfResolveNode::streamTo(SourceStream &s) const
+void ResolveTypeOf::streamTo(SourceStream &s, const Identifier& ident) const
 {
-  s << "typeof " << m_ident;
+  s << "typeof " << ident;
 }
 
-void PrefixResolveNode::streamTo(SourceStream &s) const
+void ResolvePrefix::streamTo(SourceStream &s, const Identifier& ident) const
 {
   if (m_oper == OpPlusPlus)
     s << "++";
   else
     s << "--";
-  s << m_ident;
+  s << ident;
 }
 
 void PrefixBracketNode::streamTo(SourceStream &s) const
@@ -504,9 +504,9 @@ static void streamAssignmentOperatorTo(SourceStream &s, Operator oper)
   s << opStr;
 }
 
-void AssignResolveNode::streamTo(SourceStream &s) const
+void ResolveAssign::streamTo(SourceStream &s, const Identifier& ident) const
 {
-  s << m_ident;
+  s << ident;
   streamAssignmentOperatorTo(s, m_oper);
   s << m_right;
 }

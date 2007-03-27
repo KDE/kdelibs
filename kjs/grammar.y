@@ -62,6 +62,25 @@ static Node *makeDeleteNode(Node *expr);
 static StatementNode *makeImportNode(PackageNameNode *n,
 				     bool wildcard, const Identifier &a);
 
+template<typename ResolverType>
+Node* makeDynamicResolver(Node* n) {
+  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
+  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType());
+}
+
+template<typename ResolverType, typename T1>
+Node* makeDynamicResolver(Node* n, T1 arg1) {
+  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
+  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1));
+}
+
+template<typename ResolverType, typename T1, typename T2>
+Node* makeDynamicResolver(Node* n, T1 arg1, T2 arg2) {
+  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
+  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1, arg2));
+}
+
+
 %}
 
 %union {
@@ -237,7 +256,7 @@ PrimaryExprNoBrace:
     THIS                                { $$ = new ThisNode(); }
   | Literal
   | ArrayLiteral
-  | IDENT                               { $$ = new ResolveNode(*$1); }
+  | IDENT                               { $$ = new DynamicResolver<ResolveIdentifier>(*$1, ResolveIdentifier()); }
   | '(' Expr ')'                        { $$ = ($2->isResolveNode() || $2->isGroupNode()) ?
                                             $2 : new GroupNode($2); }
 ;
@@ -883,8 +902,7 @@ static bool makeAssignNode(Node*& result, Node *loc, Operator op, Node *expr)
         return false;
 
     if (n->isResolveNode()) {
-        ResolveNode *resolve = static_cast<ResolveNode *>(n);
-        result = new AssignResolveNode(resolve->identifier(), op, expr);
+        result = makeDynamicResolver<ResolveAssign>(n, op, expr);
     } else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         result = new AssignBracketNode(bracket->base(), bracket->subscript(), op, expr);
@@ -905,8 +923,7 @@ static bool makePrefixNode(Node*& result, Node *expr, Operator op)
         return false;
     
     if (n->isResolveNode()) {
-        ResolveNode *resolve = static_cast<ResolveNode *>(n);
-        result = new PrefixResolveNode(resolve->identifier(), op);
+        result = makeDynamicResolver<ResolvePrefix>(n, op);
     } else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         result = new PrefixBracketNode(bracket->base(), bracket->subscript(), op);
@@ -927,8 +944,7 @@ static bool makePostfixNode(Node*& result, Node *expr, Operator op)
         return false;
     
     if (n->isResolveNode()) {
-        ResolveNode *resolve = static_cast<ResolveNode *>(n);
-        result = new PostfixResolveNode(resolve->identifier(), op);
+        result = makeDynamicResolver<ResolvePostfix>(n, op);
     } else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         result = new PostfixBracketNode(bracket->base(), bracket->subscript(), op);
@@ -948,8 +964,7 @@ static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)
     if (!n->isLocation())
         return new FunctionCallValueNode(func, args);
     else if (n->isResolveNode()) {
-        ResolveNode *resolve = static_cast<ResolveNode *>(n);
-        return new FunctionCallResolveNode(resolve->identifier(), args);
+        return makeDynamicResolver<ResolveFunctionCall>(n, args);
     } else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         if (n != func)
@@ -970,10 +985,9 @@ static Node *makeTypeOfNode(Node *expr)
 {
     Node *n = expr->nodeInsideAllParens();
 
-    if (n->isResolveNode()) {
-        ResolveNode *resolve = static_cast<ResolveNode *>(n);
-        return new TypeOfResolveNode(resolve->identifier());
-    } else
+    if (n->isResolveNode())
+        return makeDynamicResolver<ResolveTypeOf>(n);
+    else
         return new TypeOfValueNode(n);
 }
 
@@ -984,8 +998,7 @@ static Node *makeDeleteNode(Node *expr)
     if (!n->isLocation())
         return new DeleteValueNode(expr);
     else if (n->isResolveNode()) {
-        ResolveNode *resolve = static_cast<ResolveNode *>(n);
-        return new DeleteResolveNode(resolve->identifier());
+        return makeDynamicResolver<ResolveDelete>(n);
     } else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         return new DeleteBracketNode(bracket->base(), bracket->subscript());

@@ -491,7 +491,7 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
         // execute the code
         Context ctx(globalObj, this, thisObj, progNode.get());
         ExecState newExec(this, &ctx);
-        progNode->processVarDecls(&newExec);
+        progNode->processDecls(&newExec);
         res = progNode->execute(&newExec);
     }
     

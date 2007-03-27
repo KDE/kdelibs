@@ -4,6 +4,7 @@
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2007 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -47,16 +48,48 @@ using namespace Unicode;
 
 namespace KJS {
 
+// ----------------------------- LookupOptimizer ------------------------------
+class LookupOptimizer : public NodeVisitor {
+public:
+  LookupOptimizer(ExecState* exec, FunctionBodyNode* body) : m_exec(exec), m_body(body) {}
+
+  void optimize() {
+    visit(m_body);
+  }
+  
+  virtual Node* visit(Node* node)
+  {
+    //Do not recurse inside nodes that introduce new scopes:
+    //that includes 'with' and various function literals.
+    if (node->introducesNewScope()) return 0;
+
+    //Catch can introduce a new scope as well, but 
+    //the rest of try is fine..
+    if (node->isTryNode()) {
+       static_cast<TryNode*>(node)->recurseVisitNonCatch(this);
+       return 0;
+    }
+    //### FIXME: deal with the ForIn mess.
+
+    if (node->isDynamicResolver()) {
+      Node* resultNode = node->optimizeResolver(m_exec, m_body);
+      //Now, we optimized this node, but it may make sense to optimize 
+      //inside it as well, so recurse, too. 
+      NodeVisitor::visit(resultNode);
+      return resultNode != node ? resultNode : 0; //Avoid re-set of refcount'd pointer to same value
+    }
+
+    return NodeVisitor::visit(node);
+  }
+private:
+  ExecState*        m_exec;
+  FunctionBodyNode* m_body;
+};
+
+
 // ----------------------------- FunctionImp ----------------------------------
 
 const ClassInfo FunctionImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
-
-  class Parameter {
-  public:
-    Parameter(const Identifier &n) : name(n) { }
-    Identifier name;
-    OwnPtr<Parameter> next;
-  };
 
 FunctionImp::FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b)
   : InternalFunctionImp(static_cast<FunctionPrototype*>
@@ -85,11 +118,30 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
   ExecState newExec(exec->dynamicInterpreter(), &ctx);
   if (exec->hadException())
     newExec.setException(exec->exception());
+    
+  // Compute the set of all local variables, and functions.
+  // and optimize access to them the first time we're called.
+  // The AST building already took care of parameter declarations for us.
+  if (!body->builtSymbolList()) {
+   // now handle other locals (functions, variables)
+    body->processDecls(&newExec);
+    body->setBuiltSymbolList();
 
-  // assign user supplied arguments to parameters
-  processParameters(&newExec, args);
-  // add variable declarations (initialized to undefined)
-  processVarDecls(&newExec);
+    LookupOptimizer optimizer(&newExec, body.get());
+    optimizer.optimize();
+  }
+
+  ActivationImp* activation = static_cast<ActivationImp*>(ctx.activationObject());
+
+  // Here, we actually fill stuff in, going by increasing priorities: 
+  // first, initialize flags and set to undefined...
+  activation->setupLocals();
+  
+  // Next, assign user supplied arguments to parameters
+  passInParameters(&newExec, args);
+
+  // Now, fill in function objects. These should override everything else
+  activation->setupFunctionLocals(&newExec);
 
   Debugger* dbg = exec->dynamicInterpreter()->debugger();
   int sid = -1;
@@ -151,34 +203,11 @@ JSValue* FunctionImp::callAsFunction(ExecState* exec, JSObject* thisObj, const L
     return jsUndefined();
 }
 
-void FunctionImp::addParameter(const Identifier& n)
-{
-  OwnPtr<Parameter> *p = &param;
-  while (*p)
-    p = &(*p)->next;
-
-  p->set(new Parameter(n));
-}
-
-UString FunctionImp::parameterString() const
-{
-  UString s;
-  const Parameter *p = param.get();
-  while (p) {
-    if (!s.isEmpty())
-        s += ", ";
-    s += p->name.ustring();
-    p = p->next.get();
-  }
-
-  return s;
-}
-
-
 // ECMA 10.1.3q
-void FunctionImp::processParameters(ExecState* exec, const List& args)
+void FunctionImp::passInParameters(ExecState* exec, const List& args)
 {
-  JSObject* variable = exec->context()->variableObject();
+  assert (exec->context()->variableObject()->isActivation());
+  ActivationImp* variable = static_cast<ActivationImp*>(exec->context()->variableObject());
 
 #ifdef KJS_VERBOSE
   fprintf(stderr, "---------------------------------------------------\n"
@@ -186,33 +215,20 @@ void FunctionImp::processParameters(ExecState* exec, const List& args)
 	  name().isEmpty() ? "(internal)" : name().ascii());
 #endif
 
-  if (param) {
-    ListIterator it = args.begin();
-    Parameter *p = param.get();
-    JSValue  *v = *it;
-    while (p) {
-      if (it != args.end()) {
-#ifdef KJS_VERBOSE
-	fprintf(stderr, "setting parameter %s ", p->name.ascii());
-	printInfo(exec,"to", *it);
-#endif
-	variable->put(exec, p->name, v);
-	v = ++it;
-      } else
-	variable->put(exec, p->name, jsUndefined());
-      p = p->next.get();
+  ListIterator it = args.begin();
+  for (int paramPos = 0; paramPos < body->numParams(); ++paramPos) {
+    int writeTo = body->paramSymbolID(paramPos);
+    JSValue*  v = jsUndefined();
+    if (it != args.end()) {
+      v = *it;
+      ++it;
     }
-  }
 #ifdef KJS_VERBOSE
-  else {
-    for (int i = 0; i < args.size(); i++)
-      printInfo(exec,"setting argument", args[i]);
-  }
+    fprintf(stderr, "setting parameter %s", body->paramName(paramPos));
+    printInfo(exec,"to", v);
 #endif
-}
-
-void FunctionImp::processVarDecls(ExecState * /*exec*/)
-{
+    variable->putLocal(writeTo, v, ActivationImp::DontCheckReadOnly);
+  }
 }
 
 JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
@@ -255,13 +271,7 @@ JSValue *FunctionImp::callerGetter(ExecState* exec, JSObject*, const Identifier&
 JSValue *FunctionImp::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
 {
   FunctionImp *thisObj = static_cast<FunctionImp *>(slot.slotBase());
-  const Parameter *p = thisObj->param.get();
-  int count = 0;
-  while (p) {
-    ++count;
-    p = p->next.get();
-  }
-  return jsNumber(count);
+  return jsNumber(thisObj->body->numParams());
 }
 
 bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
@@ -309,24 +319,14 @@ bool FunctionImp::deleteProperty(ExecState *exec, const Identifier &propertyName
  */
 Identifier FunctionImp::getParameterName(int index)
 {
-  int i = 0;
-  Parameter *p = param.get();
-
-  if(!p)
+  if (index >= body->numParams())
     return Identifier::null();
 
-  // skip to the parameter we want
-  while (i++ < index && (p = p->next.get()))
-    ;
-
-  if (!p)
-    return Identifier::null();
-
-  Identifier name = p->name;
+  Identifier name = body->paramName(index);
 
   // Are there any subsequent parameters with the same name?
-  while ((p = p->next.get()))
-    if (p->name == name)
+  for (int pos = index + 1; pos < body->numParams(); ++pos)
+    if (body->paramName(pos) == name)
       return Identifier::null();
 
   return name;
@@ -376,11 +376,6 @@ Completion DeclaredFunctionImp::execute(ExecState *exec)
   if (result.complType() == Throw || result.complType() == ReturnValue)
       return result;
   return Completion(Normal, jsUndefined()); // TODO: or ReturnValue ?
-}
-
-void DeclaredFunctionImp::processVarDecls(ExecState *exec)
-{
-  body->processVarDecls(exec);
 }
 
 // ------------------------------ IndexToNameMap ---------------------------------
@@ -521,10 +516,29 @@ const ClassInfo ActivationImp::info = {"Activation", 0, 0, 0};
 
 // ECMA 10.1.6
 ActivationImp::ActivationImp(FunctionImp *function, const List &arguments)
-    : _function(function), _arguments(true), _argumentsObject(0)
+    : _function(function), _arguments(true), _locals(0)
 {
   _arguments.copyFrom(arguments);
   // FIXME: Do we need to support enumerating the arguments property?
+}
+
+void ActivationImp::setupLocals() {
+  int numLocals = _function->body->numLocals();
+  _locals  = new Local[numLocals + 1];
+  _locals[0].value = 0;
+  _locals[0].attr  = numLocals + 1; 
+  for (int l = 1; l < numLocals + 1; ++l) {
+    _locals[l].value = jsUndefined();
+    _locals[l].attr  = _function->body->getLocalAttr(l); 
+  }
+}
+
+void ActivationImp::setupFunctionLocals(ExecState *exec) {
+  int numLocals = _function->body->numLocals();
+  for (int l = 1; l < numLocals + 1; ++l) {
+    if (FuncDeclNode* funcDecl = _function->body->getLocalFuncDecl(l))
+      _locals[l].value = funcDecl->makeFunctionObject(exec);
+  }
 }
 
 JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
@@ -532,10 +546,10 @@ JSValue *ActivationImp::argumentsGetter(ExecState* exec, JSObject*, const Identi
   ActivationImp *thisObj = static_cast<ActivationImp *>(slot.slotBase());
 
   // default: return builtin arguments array
-  if (!thisObj->_argumentsObject)
+  if (!thisObj->_locals[0].value)
     thisObj->createArgumentsObject(exec);
 
-  return thisObj->_argumentsObject;
+  return thisObj->_locals[0].value;
 }
 
 PropertySlot::GetValueFunc ActivationImp::getArgumentsGetter()
@@ -548,12 +562,22 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
     // do this first so property map arguments property wins over the below
     // we don't call JSObject because we won't have getter/setter properties
     // and we don't want to support __proto__
+    
+    // See if we're doing fallback  lookup on a local..
+    int id = _function->body->lookupSymbolID(propertyName);
+
+    if (validLocal(id)) {
+      slot.setValueSlot(this, &_locals[id].value);
+      return true;
+    }
 
     if (JSValue** location = getDirectLocation(propertyName)) {
         slot.setValueSlot(this, location);
         return true;
     }
 
+    // Important: if you add more dynamic properties here, 
+    // make sure to make the optimizeResolver call honor them.
     if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier()) {
         slot.setCustom(this, getArgumentsGetter());
         return true;
@@ -564,6 +588,11 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
 
 bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
+    // If someone tries to delete a local, return false, that's not permitted
+    int id = _function->body->lookupSymbolID(propertyName);
+    if (validLocal(id))
+        return false;
+    
     if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier())
         return false;
     return JSObject::deleteProperty(exec, propertyName);
@@ -574,7 +603,15 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
   // There's no way that an activation object can have a prototype or getter/setter properties
   assert(!_prop.hasGetterSetterProperties());
   assert(prototype() == jsNull());
+  
+  // See if we're setting a local..
+  int id = _function->body->lookupSymbolID(propertyName);
+  if (validLocal(id)) {
+    putLocal(id, value, CheckReadOnly);
+    return;
+  }
 
+  //### Document this, ugh.
   _prop.put(propertyName, value, attr, (attr == None || attr == DontDelete));
 }
 
@@ -583,14 +620,22 @@ void ActivationImp::mark()
     if (_function && !_function->marked())
         _function->mark();
     _arguments.mark();
-    if (_argumentsObject && !_argumentsObject->marked())
-        _argumentsObject->mark();
+    for (int pos = 0; pos < numLocals(); ++pos) {
+      JSValue *val = _locals[pos].value;
+      if (val && !val->marked())
+        val->mark();
+    }
     JSObject::mark();
+}
+
+ActivationImp::~ActivationImp()
+{
+    delete[] _locals;
 }
 
 void ActivationImp::createArgumentsObject(ExecState *exec) const
 {
-  _argumentsObject = new Arguments(exec, _function, _arguments, const_cast<ActivationImp*>(this));
+    _locals[0].value = new Arguments(exec, _function, _arguments, const_cast<ActivationImp*>(this));
 }
 
 // ------------------------------ GlobalFunc -----------------------------------
@@ -846,7 +891,7 @@ JSValue *GlobalFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, 
             newExec.setException(exec->exception());
 
         // execute the code
-        progNode->processVarDecls(&newExec);
+        progNode->processDecls(&newExec);
         Completion c = progNode->execute(&newExec);
 
         // if an exception occurred, propogate it back to the previous execution object

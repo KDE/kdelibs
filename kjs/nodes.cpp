@@ -3,6 +3,7 @@
  *  Copyright (C) 1999-2002 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *  Copyright (C) 2003 Apple Computer, Inc.
+ *  Copyright (C) 2007 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,6 +32,8 @@
 #endif
 #include <stdio.h>
 
+#include <iostream>
+
 #include "context.h"
 #include "debugger.h"
 #include "function_object.h"
@@ -41,6 +44,7 @@
 #include <wtf/HashSet.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/MathExtras.h>
+
 
 using namespace KJS;
 
@@ -73,6 +77,19 @@ using namespace KJS;
   } \
   if (Collector::isOutOfMemory()) \
     return jsUndefined(); // will be picked up by KJS_CHECKEXCEPTION
+
+#define KJS_CHECKEXCEPTIONVALUE_RESOLVER \
+  if (exec->hadException()) { \
+    node->setExceptionDetailsIfNeeded(exec); \
+    node->debugExceptionIfNeeded(exec, exec->exception());	\
+    res.evalValue = jsUndefined(); \
+    return; \
+  } \
+  if (Collector::isOutOfMemory()) { \
+    res.evalValue = jsUndefined(); /* will be picked up by KJS_CHECKEXCEPTION */ \
+    return; \
+  }
+
 
 #define KJS_CHECKEXCEPTIONLIST \
   if (exec->hadException()) { \
@@ -293,6 +310,66 @@ Node *Node::nodeInsideAllParens()
     return this;
 }
 
+namespace KJS {
+
+class VarDeclVisitor: public NodeVisitor {
+  private:
+    ExecState* m_exec;
+  public:
+    VarDeclVisitor(ExecState* exec) : m_exec(exec)
+    {}
+
+    virtual Node* visit(Node* node) {
+      node->processVarDecl(m_exec);
+
+      //Do not recurse inside function bodies...
+      if (node->introducesNewStaticScope())
+        return 0;
+
+      return NodeVisitor::visit(node);
+    }
+};
+
+class FuncDeclVisitor: public NodeVisitor {
+  private:
+    ExecState* m_exec;
+  public:
+    FuncDeclVisitor(ExecState* exec) : m_exec(exec)
+    {}
+
+    virtual Node* visit(Node* node) {
+      node->processFuncDecl(m_exec);
+
+      if (node->introducesNewStaticScope())
+        return 0;
+
+      return NodeVisitor::visit(node);
+    }
+};
+
+}
+
+void Node::processDecls(ExecState *exec) {
+  VarDeclVisitor vVisit(exec);
+  vVisit.visit(this);
+
+  FuncDeclVisitor fVisit(exec);
+  fVisit.visit(this);
+}
+
+void Node::processVarDecl (ExecState* state)
+{}
+
+void Node::processFuncDecl(ExecState* state)
+{}
+
+
+// ------------------------------ NodeVisitor ----------------------------------
+Node* NodeVisitor::visit(Node *node) {
+  node->recurseVisit(this);
+  return 0;
+}
+
 // ------------------------------ StatementNode --------------------------------
 
 StatementNode::StatementNode()
@@ -315,10 +392,6 @@ bool StatementNode::hitStatement(ExecState* exec)
     return dbg->atStatement(exec, currentSourceId(exec), firstLine(), lastLine());
   else
     return true; // continue
-}
-
-void StatementNode::processFuncDecl(ExecState*)
-{
 }
 
 // ------------------------------ NullNode -------------------------------------
@@ -369,11 +442,42 @@ JSValue *ThisNode::evaluate(ExecState *exec)
   return exec->context()->thisValue();
 }
 
-// ------------------------------ ResolveNode ----------------------------------
-
-// ECMA 11.1.2 & 10.1.4
-JSValue *ResolveNode::evaluate(ExecState *exec)
+// ------------------------------ StaticResolver--------------------------------
+template<typename Handler>
+void StaticResolver<Handler>::streamTo(SourceStream& stream) const
 {
+  handler.streamTo(stream, ident);
+}
+
+template<typename Handler>
+JSValue* StaticResolver<Handler>::evaluate(ExecState* exec) {
+  ActivationImp* scope = static_cast<ActivationImp*>(exec->context()->activationObject());
+
+  PropertySlot  slot;
+  ResolveResult res;
+  slot.setValueSlot(scope, scope->getLocalDirect(index));
+  handler.handleResolveSuccess(res, this, exec, scope, slot, ident);
+
+  if (res.writeValue)
+    scope->putLocal(index, res.writeValue, ActivationImp::CheckReadOnly);
+
+  return res.evalValue;
+}
+
+template<typename Handler>
+void StaticResolver<Handler>::recurseVisit(NodeVisitor *visitor) {
+   handler.recurseVisit(visitor);
+}
+
+// ------------------------------ DynamicResolver-------------------------------
+template<typename Handler>
+void DynamicResolver<Handler>::streamTo(SourceStream& stream) const
+{
+  handler.streamTo(stream, ident);
+}
+
+template<typename Handler>
+JSValue* DynamicResolver<Handler>::evaluate(ExecState* exec) {
   const ScopeChain& chain = exec->context()->scopeChain();
   ScopeChainIterator iter = chain.begin();
   ScopeChainIterator end = chain.end();
@@ -382,17 +486,114 @@ JSValue *ResolveNode::evaluate(ExecState *exec)
   assert(iter != end);
 
   PropertySlot slot;
+  JSObject *scopeObj;
+  ResolveResult res;
   do {
-    JSObject *o = *iter;
+    scopeObj = *iter;
 
-    if (o->getPropertySlot(exec, ident, slot))
-      return slot.getValue(exec, o, ident);
+    if (scopeObj->getPropertySlot(exec, ident, slot)) {
+      handler.handleResolveSuccess(res, this, exec, scopeObj, slot, ident);
+      if (res.writeValue)
+        scopeObj->put(exec, ident, res.writeValue);
+      return res.evalValue;
+    }
 
     ++iter;
   } while (iter != end);
 
-  return throwUndefinedVariableError(exec, ident);
+  handler.handleResolveFailure(res, this, exec, scopeObj, ident);
+  if (res.writeValue)
+     scopeObj->put(exec, ident, res.writeValue);
+  return res.evalValue;
 }
+
+template<typename Handler>
+Node* DynamicResolver<Handler>::optimizeResolver(ExecState *exec, FunctionBodyNode *node) const
+{
+  int index = node->lookupSymbolID(ident);
+
+  // If the symbol isn't local, we can still optimize 
+  // a bit, and skip the local scope for lookup.
+  // (unless 'eval' injects a new local, but NonLocalResolver
+  // is careful about that)
+  if (index == -1) {
+    if (ident == exec->dynamicInterpreter()->argumentsIdentifier())
+      return const_cast<Node*>(static_cast<const Node*>(this)); //Dynamic property..
+    else
+      return new NonLocalResolver<Handler>(ident, handler);
+  } else
+    return new StaticResolver<Handler>(index, ident, handler);
+}
+
+template<typename Handler>
+void DynamicResolver<Handler>::recurseVisit(NodeVisitor *visitor) {
+   handler.recurseVisit(visitor);
+}
+
+// ------------------------------ NonLocalResolver -----------------------------
+template<typename Handler>
+void NonLocalResolver<Handler>::streamTo(SourceStream& stream) const
+{
+  handler.streamTo(stream, ident);
+}
+
+template<typename Handler>
+JSValue* NonLocalResolver<Handler>::evaluate(ExecState* exec) {
+  const ScopeChain& chain = exec->context()->scopeChain();
+  ScopeChainIterator iter = chain.begin();
+  ScopeChainIterator end = chain.end();
+
+  // we must always have something in the scope chain
+  assert(iter != end);
+
+
+  PropertySlot slot;
+  JSObject *scopeObj = *iter;
+
+  if (!scopeObj->isLocalInjected()) {
+   // Unless eval introduced new variables dynamically,
+   // we know this isn't in the top scope
+   ++iter;
+  }
+
+  ResolveResult res;
+
+  while (iter!= end) {
+    scopeObj = *iter;
+
+    if (scopeObj->getPropertySlot(exec, ident, slot)) {
+      handler.handleResolveSuccess(res, this, exec, scopeObj, slot, ident);
+      if (res.writeValue)
+        scopeObj->put(exec, ident, res.writeValue);
+      return res.evalValue;
+    }
+
+    ++iter;
+  };
+
+  handler.handleResolveFailure(res, this, exec, scopeObj, ident);
+  if (res.writeValue)
+     scopeObj->put(exec, ident, res.writeValue);
+  return res.evalValue;
+}
+
+template<typename Handler>
+void NonLocalResolver<Handler>::recurseVisit(NodeVisitor *visitor) {
+   handler.recurseVisit(visitor);
+}
+
+
+// ------------------------------ ResolveIdentifier--------------------------------
+
+// ECMA 11.1.2 & 10.1.4
+
+void ResolveIdentifier::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* /*scope*/, const Identifier& ident)
+{
+  res.evalValue = node->throwUndefinedVariableError(exec, ident);
+}
+
+template class StaticResolver<ResolveIdentifier>;
+template class DynamicResolver<ResolveIdentifier>;
 
 // ------------------------------ GroupNode ------------------------------------
 
@@ -410,6 +611,12 @@ Node *GroupNode::nodeInsideAllParens()
     while (n->isGroupNode());
     return n;
 }
+
+void GroupNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, group);
+}
+
 
 // ------------------------------ ElementNode ----------------------------------
 
@@ -431,6 +638,13 @@ void ElementNode::breakCycle()
 {
     next = 0;
 }
+
+void ElementNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, next);
+    recurseVisitLink(visitor, node);
+}
+
 
 // ------------------------------ ArrayNode ------------------------------------
 
@@ -456,6 +670,11 @@ JSValue *ArrayNode::evaluate(ExecState *exec)
   return array;
 }
 
+void ArrayNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, element);
+}
+
 // ------------------------------ ObjectLiteralNode ----------------------------
 
 // ECMA 11.1.5
@@ -465,6 +684,11 @@ JSValue *ObjectLiteralNode::evaluate(ExecState *exec)
     return list->evaluate(exec);
 
   return exec->lexicalInterpreter()->builtinObject()->construct(exec,List::empty());
+}
+
+void ObjectLiteralNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, list);
 }
 
 // ------------------------------ PropertyListNode -----------------------------
@@ -504,12 +728,25 @@ void PropertyListNode::breakCycle()
     next = 0;
 }
 
+void PropertyListNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, node);
+    recurseVisitLink(visitor, next);
+}
+
+
 // ------------------------------ PropertyNode -----------------------------
 // ECMA 11.1.5
 JSValue *PropertyNode::evaluate(ExecState*)
 {
   assert(false);
   return jsNull();
+}
+
+void PropertyNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, name);
+    recurseVisitLink(visitor, assign);
 }
 
 // ---------------------------- PropertyNameNode -------------------------------
@@ -544,6 +781,13 @@ JSValue *BracketAccessorNode::evaluate(ExecState *exec)
   return o->get(exec, Identifier(v2->toString(exec)));
 }
 
+void BracketAccessorNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, expr1);
+    recurseVisitLink(visitor, expr2);
+}
+
+
 // ------------------------------ DotAccessorNode --------------------------------
 
 // ECMA 11.2.1b
@@ -553,6 +797,11 @@ JSValue *DotAccessorNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
   return v->toObject(exec)->get(exec, ident);
 
+}
+
+void DotAccessorNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, expr);
 }
 
 // ------------------------------ ArgumentListNode -----------------------------
@@ -582,6 +831,12 @@ void ArgumentListNode::breakCycle()
     next = 0;
 }
 
+void ArgumentListNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, next);
+    recurseVisitLink(visitor, expr);
+}
+
 // ------------------------------ ArgumentsNode --------------------------------
 
 JSValue *ArgumentsNode::evaluate(ExecState *)
@@ -589,6 +844,12 @@ JSValue *ArgumentsNode::evaluate(ExecState *)
   assert(0);
   return 0; // dummy, see evaluateList()
 }
+
+void ArgumentsNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, list);
+}
+
 
 // ------------------------------ NewExprNode ----------------------------------
 
@@ -617,6 +878,13 @@ JSValue *NewExprNode::evaluate(ExecState *exec)
   return constr->construct(exec, argList);
 }
 
+void NewExprNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, expr);
+    recurseVisitLink(visitor, args);
+}
+
+
 // ECMA 11.2.3
 JSValue *FunctionCallValueNode::evaluate(ExecState *exec)
 {
@@ -641,54 +909,61 @@ JSValue *FunctionCallValueNode::evaluate(ExecState *exec)
   return func->call(exec, thisObj, argList);
 }
 
-// ECMA 11.2.3
-JSValue *FunctionCallResolveNode::evaluate(ExecState *exec)
+void FunctionCallValueNode::recurseVisit(NodeVisitor *visitor)
 {
-  const ScopeChain& chain = exec->context()->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
-
-  // we must always have something in the scope chain
-  assert(iter != end);
-
-  PropertySlot slot;
-  JSObject *base;
-  do {
-    base = *iter;
-    if (base->getPropertySlot(exec, ident, slot)) {
-      JSValue *v = slot.getValue(exec, base, ident);
-      KJS_CHECKEXCEPTIONVALUE
-
-      if (!v->isObject()) {
-        return throwError(exec, TypeError, "Value %s (result of expression %s) is not object.", v, ident);
-      }
-
-      JSObject *func = static_cast<JSObject*>(v);
-
-      if (!func->implementsCall()) {
-        return throwError(exec, TypeError, "Object %s (result of expression %s) does not allow calls.", v, ident);
-      }
-
-      List argList = args->evaluateList(exec);
-      KJS_CHECKEXCEPTIONVALUE
-
-      JSObject *thisObj = base;
-      // ECMA 11.2.3 says that in this situation the this value should be null.
-      // However, section 10.2.3 says that in the case where the value provided
-      // by the caller is null, the global object should be used. It also says
-      // that the section does not apply to interal functions, but for simplicity
-      // of implementation we use the global object anyway here. This guarantees
-      // that in host objects you always get a valid object for this.
-      if (thisObj->isActivation())
-        thisObj = exec->dynamicInterpreter()->globalObject();
-
-      return func->call(exec, thisObj, argList);
-    }
-    ++iter;
-  } while (iter != end);
-
-  return throwUndefinedVariableError(exec, ident);
+    recurseVisitLink(visitor, expr);
+    recurseVisitLink(visitor, args);
 }
+
+
+// ECMA 11.2.3
+void ResolveFunctionCall::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
+    PropertySlot& slot, const Identifier& ident)
+{
+  JSValue *v = slot.getValue(exec, base, ident);
+  KJS_CHECKEXCEPTIONVALUE_RESOLVER
+
+  if (!v->isObject()) {
+    res.evalValue = node->throwError(exec, TypeError, "Value %s (result of expression %s) is not object.", v, ident);
+    return;
+  }
+
+  JSObject *func = static_cast<JSObject*>(v);
+
+  if (!func->implementsCall()) {
+    res.evalValue = node->throwError(exec, TypeError, "Object %s (result of expression %s) does not allow calls.", v, ident);
+    return;
+  }
+
+  List argList = args->evaluateList(exec);
+  KJS_CHECKEXCEPTIONVALUE_RESOLVER
+
+  JSObject *thisObj = base;
+  // ECMA 11.2.3 says that in this situation the this value should be null.
+  // However, section 10.2.3 says that in the case where the value provided
+  // by the caller is null, the global object should be used. It also says
+  // that the section does not apply to interal functions, but for simplicity
+  // of implementation we use the global object anyway here. This guarantees
+  // that in host objects you always get a valid object for this.
+  if (thisObj->isActivation())
+    thisObj = exec->dynamicInterpreter()->globalObject();
+
+  res.evalValue = func->call(exec, thisObj, argList);
+}
+
+void ResolveFunctionCall::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* /*scope*/, const Identifier& ident)
+{
+  res.evalValue = node->throwUndefinedVariableError(exec, ident);
+}
+
+void ResolveFunctionCall::recurseVisit(NodeVisitor *visitor)
+{
+   Node::recurseVisitLink(visitor, args);
+}
+
+template class StaticResolver<ResolveFunctionCall>;
+template class DynamicResolver<ResolveFunctionCall>;
+
 
 // ECMA 11.2.3
 JSValue *FunctionCallBracketNode::evaluate(ExecState *exec)
@@ -739,6 +1014,14 @@ JSValue *FunctionCallBracketNode::evaluate(ExecState *exec)
   return func->call(exec, thisObj, argList);
 }
 
+void FunctionCallBracketNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, base);
+    recurseVisitLink(visitor, subscript);
+    recurseVisitLink(visitor, args);
+}
+
+
 static const char *dotExprNotAnObjectString()
 {
   return "Value %s (result of expression %s.%s) is not object.";
@@ -778,39 +1061,36 @@ JSValue *FunctionCallDotNode::evaluate(ExecState *exec)
   return func->call(exec, thisObj, argList);
 }
 
+void FunctionCallDotNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, base);
+    recurseVisitLink(visitor, args);
+}
+
 // ECMA 11.3
 
-// ------------------------------ PostfixResolveNode ----------------------------------
+// ------------------------------ ResolvePostfix --------------------------------------
 
-JSValue *PostfixResolveNode::evaluate(ExecState *exec)
+
+void ResolvePostfix::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
+    PropertySlot& slot, const Identifier& ident)
 {
-  const ScopeChain& chain = exec->context()->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
+  JSValue *v = slot.getValue(exec, base, ident);
 
-  // we must always have something in the scope chain
-  assert(iter != end);
+  double n = v->toNumber(exec);
 
-  PropertySlot slot;
-  JSObject *base;
-  do {
-    base = *iter;
-    if (base->getPropertySlot(exec, m_ident, slot)) {
-        JSValue *v = slot.getValue(exec, base, m_ident);
-
-        double n = v->toNumber(exec);
-
-        double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-        base->put(exec, m_ident, jsNumber(newValue));
-
-        return jsNumber(n);
-    }
-
-    ++iter;
-  } while (iter != end);
-
-  return throwUndefinedVariableError(exec, m_ident);
+  double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
+  res.writeValue = jsNumber(newValue);
+  res.evalValue  = jsNumber(n);
 }
+
+void ResolvePostfix::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident) {
+  res.evalValue = node->throwUndefinedVariableError(exec, ident);
+}
+
+template class StaticResolver<ResolvePostfix>;
+template class DynamicResolver<ResolvePostfix>;
+
 
 // ------------------------------ PostfixBracketNode ----------------------------------
 
@@ -850,6 +1130,13 @@ JSValue *PostfixBracketNode::evaluate(ExecState *exec)
   return jsNumber(n);
 }
 
+void PostfixBracketNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, m_base);
+    recurseVisitLink(visitor, m_subscript);
+}
+
+
 // ------------------------------ PostfixDotNode ----------------------------------
 
 JSValue *PostfixDotNode::evaluate(ExecState *exec)
@@ -870,31 +1157,27 @@ JSValue *PostfixDotNode::evaluate(ExecState *exec)
   return jsNumber(n);
 }
 
+void PostfixDotNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, m_base);
+}
+
 // ECMA 11.4.1
 
-// ------------------------------ DeleteResolveNode -----------------------------------
-JSValue *DeleteResolveNode::evaluate(ExecState *exec)
+// ------------------------------ ResolveDelete ---------------------------------------
+void ResolveDelete::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
+    PropertySlot& slot, const Identifier& ident)
 {
-  const ScopeChain& chain = exec->context()->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
-
-  // we must always have something in the scope chain
-  assert(iter != end);
-
-  PropertySlot slot;
-  JSObject *base;
-  do {
-    base = *iter;
-    if (base->getPropertySlot(exec, m_ident, slot)) {
-        return jsBoolean(base->deleteProperty(exec, m_ident));
-    }
-
-    ++iter;
-  } while (iter != end);
-
-  return jsBoolean(true);
+  res.evalValue = jsBoolean(base->deleteProperty(exec, ident));
 }
+
+void ResolveDelete::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident)
+{
+  res.evalValue = jsBoolean(true);
+}
+
+template class StaticResolver<ResolveDelete>;
+template class DynamicResolver<ResolveDelete>;
 
 // ------------------------------ DeleteBracketNode -----------------------------------
 JSValue *DeleteBracketNode::evaluate(ExecState *exec)
@@ -914,6 +1197,12 @@ JSValue *DeleteBracketNode::evaluate(ExecState *exec)
   return jsBoolean(base->deleteProperty(exec, propertyName));
 }
 
+void DeleteBracketNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_base);
+  recurseVisitLink(visitor, m_subscript);
+}
+
 // ------------------------------ DeleteDotNode -----------------------------------
 JSValue *DeleteDotNode::evaluate(ExecState *exec)
 {
@@ -922,6 +1211,11 @@ JSValue *DeleteDotNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   return jsBoolean(base->deleteProperty(exec, m_ident));
+}
+
+void DeleteDotNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_base);
 }
 
 // ------------------------------ DeleteValueNode -----------------------------------
@@ -934,6 +1228,11 @@ JSValue *DeleteValueNode::evaluate(ExecState *exec)
   return jsBoolean(true);
 }
 
+void DeleteValueNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_expr);
+}
+
 // ------------------------------ VoidNode -------------------------------------
 
 // ECMA 11.4.2
@@ -943,6 +1242,11 @@ JSValue *VoidNode::evaluate(ExecState *exec)
   KJS_CHECKEXCEPTIONVALUE
 
   return jsUndefined();
+}
+
+void VoidNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
 }
 
 // ECMA 11.4.3
@@ -976,29 +1280,20 @@ static JSValue *typeStringForValue(JSValue *v)
     }
 }
 
-JSValue *TypeOfResolveNode::evaluate(ExecState *exec)
+void ResolveTypeOf::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
+    PropertySlot& slot, const Identifier& ident)
 {
-  const ScopeChain& chain = exec->context()->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
-
-  // we must always have something in the scope chain
-  assert(iter != end);
-
-  PropertySlot slot;
-  JSObject *base;
-  do {
-    base = *iter;
-    if (base->getPropertySlot(exec, m_ident, slot)) {
-        JSValue *v = slot.getValue(exec, base, m_ident);
-        return typeStringForValue(v);
-    }
-
-    ++iter;
-  } while (iter != end);
-
-  return jsString("undefined");
+  JSValue *v = slot.getValue(exec, base, ident);
+  res.evalValue = typeStringForValue(v);
 }
+
+void ResolveTypeOf::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident)
+{
+  res.evalValue = jsString("undefined");
+}
+
+template class StaticResolver<ResolveTypeOf>;
+template class DynamicResolver<ResolveTypeOf>;
 
 // ------------------------------ TypeOfValueNode -----------------------------------
 
@@ -1010,40 +1305,36 @@ JSValue *TypeOfValueNode::evaluate(ExecState *exec)
   return typeStringForValue(v);
 }
 
+void TypeOfValueNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_expr);
+}
+
+
 // ECMA 11.4.4 and 11.4.5
 
-// ------------------------------ PrefixResolveNode ----------------------------------
+// ------------------------------ ResolvePrefix --------------------------------------
 
-JSValue *PrefixResolveNode::evaluate(ExecState *exec)
+void ResolvePrefix::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base,
+    PropertySlot& slot, const Identifier& ident)
 {
-  const ScopeChain& chain = exec->context()->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
+  JSValue *v = slot.getValue(exec, base, ident);
 
-  // we must always have something in the scope chain
-  assert(iter != end);
+  double n = v->toNumber(exec);
 
-  PropertySlot slot;
-  JSObject *base;
-  do {
-    base = *iter;
-    if (base->getPropertySlot(exec, m_ident, slot)) {
-        JSValue *v = slot.getValue(exec, base, m_ident);
+  double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
+  JSValue *n2 = jsNumber(newValue);
 
-        double n = v->toNumber(exec);
-
-        double newValue = (m_oper == OpPlusPlus) ? n + 1 : n - 1;
-        JSValue *n2 = jsNumber(newValue);
-        base->put(exec, m_ident, n2);
-
-        return n2;
-    }
-
-    ++iter;
-  } while (iter != end);
-
-  return throwUndefinedVariableError(exec, m_ident);
+  res.evalValue = res.writeValue = n2;
 }
+
+void ResolvePrefix::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident)
+{
+  res.evalValue = node->throwUndefinedVariableError(exec, ident);
+}
+
+template class StaticResolver<ResolvePrefix>;
+template class DynamicResolver<ResolvePrefix>;
 
 // ------------------------------ PrefixBracketNode ----------------------------------
 
@@ -1085,6 +1376,12 @@ JSValue *PrefixBracketNode::evaluate(ExecState *exec)
   return n2;
 }
 
+void PrefixBracketNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_base);
+  recurseVisitLink(visitor, m_subscript);
+}
+
 // ------------------------------ PrefixDotNode ----------------------------------
 
 JSValue *PrefixDotNode::evaluate(ExecState *exec)
@@ -1106,6 +1403,12 @@ JSValue *PrefixDotNode::evaluate(ExecState *exec)
   return n2;
 }
 
+void PrefixDotNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_base);
+}
+
+
 // ------------------------------ UnaryPlusNode --------------------------------
 
 // ECMA 11.4.6
@@ -1116,6 +1419,12 @@ JSValue *UnaryPlusNode::evaluate(ExecState *exec)
 
   return jsNumber(v->toNumber(exec));
 }
+
+void UnaryPlusNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
+}
+
 
 // ------------------------------ NegateNode -----------------------------------
 
@@ -1129,6 +1438,11 @@ JSValue *NegateNode::evaluate(ExecState *exec)
   return jsNumber(-n);
 }
 
+void NegateNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
+}
+
 // ------------------------------ BitwiseNotNode -------------------------------
 
 // ECMA 11.4.8
@@ -1139,6 +1453,12 @@ JSValue *BitwiseNotNode::evaluate(ExecState *exec)
   return jsNumber(~v->toInt32(exec));
 }
 
+void BitwiseNotNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
+}
+
+
 // ------------------------------ LogicalNotNode -------------------------------
 
 // ECMA 11.4.9
@@ -1147,6 +1467,11 @@ JSValue *LogicalNotNode::evaluate(ExecState *exec)
   JSValue *v = expr->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
   return jsBoolean(!v->toBoolean(exec));
+}
+
+void LogicalNotNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
 }
 
 // ------------------------------ MultNode -------------------------------------
@@ -1163,6 +1488,12 @@ JSValue *MultNode::evaluate(ExecState *exec)
   return mult(exec, v1, v2, oper);
 }
 
+void MultNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, term1);
+  recurseVisitLink(visitor, term2);
+}
+
 // ------------------------------ AddNode --------------------------------------
 
 // ECMA 11.6
@@ -1176,6 +1507,13 @@ JSValue *AddNode::evaluate(ExecState *exec)
 
   return add(exec, v1, v2, oper);
 }
+
+void AddNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, term1);
+  recurseVisitLink(visitor, term2);
+}
+
 
 // ------------------------------ ShiftNode ------------------------------------
 
@@ -1201,6 +1539,13 @@ JSValue *ShiftNode::evaluate(ExecState *exec)
     return jsUndefined();
   }
 }
+
+void ShiftNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, term1);
+  recurseVisitLink(visitor, term2);
+}
+
 
 // ------------------------------ RelationalNode -------------------------------
 
@@ -1250,6 +1595,13 @@ JSValue *RelationalNode::evaluate(ExecState *exec)
   return jsBoolean(b);
 }
 
+void RelationalNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+}
+
+
 // ------------------------------ EqualNode ------------------------------------
 
 // ECMA 11.9
@@ -1273,6 +1625,13 @@ JSValue *EqualNode::evaluate(ExecState *exec)
   return jsBoolean(result);
 }
 
+void EqualNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+}
+
+
 // ------------------------------ BitOperNode ----------------------------------
 
 // ECMA 11.10
@@ -1295,6 +1654,13 @@ JSValue *BitOperNode::evaluate(ExecState *exec)
   return jsNumber(result);
 }
 
+void BitOperNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+}
+
+
 // ------------------------------ BinaryLogicalNode ----------------------------
 
 // ECMA 11.11
@@ -1311,6 +1677,13 @@ JSValue *BinaryLogicalNode::evaluate(ExecState *exec)
 
   return v2;
 }
+
+void BinaryLogicalNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+}
+
 
 // ------------------------------ ConditionalNode ------------------------------
 
@@ -1329,6 +1702,14 @@ JSValue *ConditionalNode::evaluate(ExecState *exec)
 
   return v;
 }
+
+void ConditionalNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, logical);
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+}
+
 
 // ECMA 11.13
 
@@ -1395,47 +1776,47 @@ static ALWAYS_INLINE JSValue *valueForReadModifyAssignment(ExecState * exec, JSV
   return v;
 }
 
-// ------------------------------ AssignResolveNode -----------------------------------
+// ------------------------------ ResolveAssign ---------------------------------------
 
-JSValue *AssignResolveNode::evaluate(ExecState *exec)
-{
-  const ScopeChain& chain = exec->context()->scopeChain();
-  ScopeChainIterator iter = chain.begin();
-  ScopeChainIterator end = chain.end();
+void ResolveAssign::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base,
+    PropertySlot& slot, const Identifier& ident) {
 
-  // we must always have something in the scope chain
-  assert(iter != end);
-
-  PropertySlot slot;
-  JSObject *base;
-  do {
-    base = *iter;
-    if (base->getPropertySlot(exec, m_ident, slot))
-      goto found;
-
-    ++iter;
-  } while (iter != end);
-
-  if (m_oper != OpEqual)
-    return throwUndefinedVariableError(exec, m_ident);
-
- found:
   JSValue *v;
 
   if (m_oper == OpEqual) {
     v = m_right->evaluate(exec);
   } else {
-    JSValue *v1 = slot.getValue(exec, base, m_ident);
-    KJS_CHECKEXCEPTIONVALUE
+    JSValue *v1 = slot.getValue(exec, base, ident);
+    KJS_CHECKEXCEPTIONVALUE_RESOLVER
     JSValue *v2 = m_right->evaluate(exec);
     v = valueForReadModifyAssignment(exec, v1, v2, m_oper);
   }
 
-  KJS_CHECKEXCEPTIONVALUE
+  KJS_CHECKEXCEPTIONVALUE_RESOLVER
 
-  base->put(exec, m_ident, v);
-  return v;
+  res.evalValue = res.writeValue = v;
 }
+
+void ResolveAssign::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident) {
+  //Lookup failure is OK for assignments, but not 
+  //read-modify-write ops, e.g. +=
+  if (m_oper == OpEqual) {
+    //Note: does not use the slot in this case..
+    PropertySlot emptySlot;
+    handleResolveSuccess(res, node, exec, base, emptySlot, ident);
+    return;
+  }
+  
+  res.evalValue = node->throwUndefinedVariableError(exec, ident);
+}
+
+void ResolveAssign::recurseVisit(NodeVisitor *visitor)
+{
+   Node::recurseVisitLink(visitor, m_right);
+}
+
+template class StaticResolver<ResolveAssign>;
+template class DynamicResolver<ResolveAssign>;
 
 // ------------------------------ AssignDotNode -----------------------------------
 
@@ -1462,6 +1843,13 @@ JSValue *AssignDotNode::evaluate(ExecState *exec)
   base->put(exec, m_ident, v);
   return v;
 }
+
+void AssignDotNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_base);
+  recurseVisitLink(visitor, m_right);
+}
+
 
 // ------------------------------ AssignBracketNode -----------------------------------
 
@@ -1512,6 +1900,14 @@ JSValue *AssignBracketNode::evaluate(ExecState *exec)
   return v;
 }
 
+void AssignBracketNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, m_base);
+  recurseVisitLink(visitor, m_subscript);
+  recurseVisitLink(visitor, m_right);
+}
+
+
 // ------------------------------ CommaNode ------------------------------------
 
 // ECMA 11.14
@@ -1525,6 +1921,13 @@ JSValue *CommaNode::evaluate(ExecState *exec)
   return v;
 }
 
+void CommaNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+}
+
+
 // ------------------------------ AssignExprNode -------------------------------
 
 // ECMA 12.2
@@ -1532,6 +1935,12 @@ JSValue *AssignExprNode::evaluate(ExecState *exec)
 {
   return expr->evaluate(exec);
 }
+
+void AssignExprNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
+}
+
 
 // ------------------------------ VarDeclNode ----------------------------------
 
@@ -1551,6 +1960,10 @@ JSValue *VarDeclNode::evaluate(ExecState *exec)
       val = init->evaluate(exec);
       KJS_CHECKEXCEPTIONVALUE
   } else {
+      // If we're inside a function context,
+      // no work to do here..
+      if (variable->isActivation()) return 0;
+
       // already declared? - check with getDirect so you can override
       // built-in properties of the global object with var declarations.
       if (variable->getDirect(ident))
@@ -1570,24 +1983,51 @@ JSValue *VarDeclNode::evaluate(ExecState *exec)
     flags |= ReadOnly;
   variable->put(exec, ident, val, flags);
 
-  return jsString(ident.ustring());
+  return 0; //No useful value, not a true expr
 }
 
-void VarDeclNode::processVarDecls(ExecState *exec)
+void VarDeclNode::processVarDecl(ExecState *exec)
 {
   JSObject* variable = exec->context()->variableObject();
+  
+  // First, determine which flags we want to use..
+  int flags = DontDelete; 
+  if (varType == VarDeclNode::Constant)
+    flags |= ReadOnly;
 
-  // If a variable by this name already exists, don't clobber it -
-  // it might be a function parameter
-  if (!variable->hasProperty(exec, ident)) {
-    int flags = Internal;
-    if (exec->context()->codeType() != EvalCode)
-      flags |= DontDelete;
-    if (varType == VarDeclNode::Constant)
-      flags |= ReadOnly;
-    variable->put(exec, ident, jsUndefined(), flags);
-  }
+  // Are we inside a function? If so, we fill in the symbol table
+  switch (exec->context()->codeType()) {
+    case FunctionCode:
+      // Inside a function, we're just computing static information.
+      // so, just fill in the symbol table.
+      exec->context()->currentBody()->addVarDecl(ident, flags, exec);
+      return;
+    case EvalCode:
+      // eval-injected variables can be deleted..
+      flags &= ~DontDelete;
+
+      // If a variable by this name already exists, don't clobber it -
+      // eval may be trying to inject a variable that already exists..
+      if (!variable->hasProperty(exec, ident)) {
+        variable->put(exec, ident, jsUndefined(), flags);
+        // eval injected a new local into scope! Better mark that down, 
+        // so that NonLocalResolver stops skipping the local scope
+        variable->setLocalInjected();
+      }
+      break;
+    case GlobalCode:
+      // If a variable by this name already exists, don't clobber it -
+      // ### I am not sue this is needed for GlobalCode
+      if (!variable->hasProperty(exec, ident))
+        variable->put(exec, ident, jsUndefined(), flags);
+  };
 }
+
+void VarDeclNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, init);
+}
+
 
 // ------------------------------ VarDeclListNode ------------------------------
 
@@ -1601,16 +2041,17 @@ JSValue *VarDeclListNode::evaluate(ExecState *exec)
   return jsUndefined();
 }
 
-void VarDeclListNode::processVarDecls(ExecState *exec)
-{
-  for (VarDeclListNode *n = this; n; n = n->next.get())
-    n->var->processVarDecls(exec);
-}
-
 void VarDeclListNode::breakCycle()
 {
     next = 0;
 }
+
+void VarDeclListNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, var);
+  recurseVisitLink(visitor, next);
+}
+
 
 // ------------------------------ VarStatementNode -----------------------------
 
@@ -1625,10 +2066,11 @@ Completion VarStatementNode::execute(ExecState *exec)
   return Completion(Normal);
 }
 
-void VarStatementNode::processVarDecls(ExecState *exec)
+void VarStatementNode::recurseVisit(NodeVisitor *visitor)
 {
-  next->processVarDecls(exec);
+  recurseVisitLink(visitor, next);
 }
+
 
 // ------------------------------ BlockNode ------------------------------------
 
@@ -1649,15 +2091,12 @@ Completion BlockNode::execute(ExecState *exec)
   if (!source)
     return Completion(Normal);
 
-  source->processFuncDecl(exec);
-
   return source->execute(exec);
 }
 
-void BlockNode::processVarDecls(ExecState *exec)
+void BlockNode::recurseVisit(NodeVisitor *visitor)
 {
-  if (source)
-    source->processVarDecls(exec);
+    recurseVisitLink(visitor, source);
 }
 
 // ------------------------------ EmptyStatementNode ---------------------------
@@ -1680,6 +2119,12 @@ Completion ExprStatementNode::execute(ExecState *exec)
 
   return Completion(Normal, v);
 }
+
+void ExprStatementNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
+}
+
 
 // ------------------------------ IfNode ---------------------------------------
 
@@ -1704,13 +2149,13 @@ Completion IfNode::execute(ExecState *exec)
   return statement2->execute(exec);
 }
 
-void IfNode::processVarDecls(ExecState *exec)
+void IfNode::recurseVisit(NodeVisitor *visitor)
 {
-  statement1->processVarDecls(exec);
-
-  if (statement2)
-    statement2->processVarDecls(exec);
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, statement1);
+  recurseVisitLink(visitor, statement2);
 }
+
 
 // ------------------------------ DoWhileNode ----------------------------------
 
@@ -1746,9 +2191,10 @@ Completion DoWhileNode::execute(ExecState *exec)
   return Completion(Normal, 0);
 }
 
-void DoWhileNode::processVarDecls(ExecState *exec)
+void DoWhileNode::recurseVisit(NodeVisitor *visitor)
 {
-  statement->processVarDecls(exec);
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, statement);
 }
 
 // ------------------------------ WhileNode ------------------------------------
@@ -1795,9 +2241,10 @@ Completion WhileNode::execute(ExecState *exec)
   return Completion(); // work around gcc 4.0 bug
 }
 
-void WhileNode::processVarDecls(ExecState *exec)
+void WhileNode::recurseVisit(NodeVisitor *visitor)
 {
-  statement->processVarDecls(exec);
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, statement);
 }
 
 // ------------------------------ ForNode --------------------------------------
@@ -1845,13 +2292,14 @@ Completion ForNode::execute(ExecState *exec)
   return Completion(); // work around gcc 4.0 bug
 }
 
-void ForNode::processVarDecls(ExecState *exec)
+void ForNode::recurseVisit(NodeVisitor *visitor)
 {
-  if (expr1)
-    expr1->processVarDecls(exec);
-
-  statement->processVarDecls(exec);
+  recurseVisitLink(visitor, expr1);
+  recurseVisitLink(visitor, expr2);
+  recurseVisitLink(visitor, expr3);
+  recurseVisitLink(visitor, statement);
 }
+
 
 // ------------------------------ ForInNode ------------------------------------
 
@@ -1865,7 +2313,7 @@ ForInNode::ForInNode(const Identifier &i, AssignExprNode *in, Node *e, Statement
 {
   // for( var foo = bar in baz )
   varDecl = new VarDeclNode(ident, init.get(), VarDeclNode::Variable);
-  lexpr = new ResolveNode(ident);
+  lexpr = new DynamicResolver<ResolveIdentifier>(ident, ResolveIdentifier());
 }
 
 // ECMA 12.6.4
@@ -1905,7 +2353,7 @@ Completion ForInNode::execute(ExecState *exec)
       JSValue *str = jsString(name.ustring());
 
       if (lexpr->isResolveNode()) {
-        const Identifier &ident = static_cast<ResolveNode *>(lexpr.get())->identifier();
+        const Identifier &ident = static_cast<DynamicResolver<ResolveIdentifier> *>(lexpr.get())->identifier();
 
         const ScopeChain& chain = exec->context()->scopeChain();
         ScopeChainIterator iter = chain.begin();
@@ -1971,11 +2419,13 @@ Completion ForInNode::execute(ExecState *exec)
   return Completion(Normal, retval);
 }
 
-void ForInNode::processVarDecls(ExecState *exec)
+void ForInNode::recurseVisit(NodeVisitor *visitor)
 {
-  if (varDecl)
-    varDecl->processVarDecls(exec);
-  statement->processVarDecls(exec);
+  recurseVisitLink(visitor, init);
+//  recurseVisitLink(visitor, lexpr); ### hack
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, varDecl);
+  recurseVisitLink(visitor, statement);
 }
 
 // ------------------------------ ContinueNode ---------------------------------
@@ -2017,7 +2467,7 @@ Completion ReturnNode::execute(ExecState *exec)
   KJS_BREAKPOINT;
 
   CodeType codeType = exec->context()->codeType();
-  if (codeType != FunctionCode && codeType != AnonymousCode ) {
+  if (codeType != FunctionCode) {
     return createErrorCompletion(exec, SyntaxError, "Invalid return statement.");
   }
 
@@ -2029,6 +2479,12 @@ Completion ReturnNode::execute(ExecState *exec)
 
   return Completion(ReturnValue, v);
 }
+
+void ReturnNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, value);
+}
+
 
 // ------------------------------ WithNode -------------------------------------
 
@@ -2048,10 +2504,12 @@ Completion WithNode::execute(ExecState *exec)
   return res;
 }
 
-void WithNode::processVarDecls(ExecState *exec)
+void WithNode::recurseVisit(NodeVisitor *visitor)
 {
-  statement->processVarDecls(exec);
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, statement);
 }
+
 
 // ------------------------------ CaseClauseNode -------------------------------
 
@@ -2073,17 +2531,12 @@ Completion CaseClauseNode::evalStatements(ExecState *exec)
     return Completion(Normal, jsUndefined());
 }
 
-void CaseClauseNode::processVarDecls(ExecState *exec)
+void CaseClauseNode::recurseVisit(NodeVisitor *visitor)
 {
-  if (source)
-    source->processVarDecls(exec);
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, source);
 }
 
-void CaseClauseNode::processFuncDecl(ExecState* exec)
-{
-  if (source)
-      source->processFuncDecl(exec);
-}
 
 // ------------------------------ ClauseListNode -------------------------------
 
@@ -2094,24 +2547,15 @@ JSValue *ClauseListNode::evaluate(ExecState *)
   return 0;
 }
 
-// ECMA 12.11
-void ClauseListNode::processVarDecls(ExecState *exec)
-{
-  for (ClauseListNode *n = this; n; n = n->next.get())
-    if (n->clause)
-      n->clause->processVarDecls(exec);
-}
-
-void ClauseListNode::processFuncDecl(ExecState* exec)
-{
-  for (ClauseListNode* n = this; n; n = n->next.get())
-    if (n->clause)
-      n->clause->processFuncDecl(exec);
-}
-
 void ClauseListNode::breakCycle()
 {
     next = 0;
+}
+
+void ClauseListNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, clause);
+  recurseVisitLink(visitor, next);
 }
 
 // ------------------------------ CaseBlockNode --------------------------------
@@ -2206,24 +2650,11 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, JSValue *input)
   return Completion(Normal);
 }
 
-void CaseBlockNode::processVarDecls(ExecState *exec)
+void CaseBlockNode::recurseVisit(NodeVisitor *visitor)
 {
-  if (list1)
-    list1->processVarDecls(exec);
-  if (def)
-    def->processVarDecls(exec);
-  if (list2)
-    list2->processVarDecls(exec);
-}
-
-void CaseBlockNode::processFuncDecl(ExecState* exec)
-{
-  if (list1)
-   list1->processFuncDecl(exec);
-  if (def)
-    def->processFuncDecl(exec);
-  if (list2)
-    list2->processFuncDecl(exec);
+  recurseVisitLink(visitor, list1);
+  recurseVisitLink(visitor, def);
+  recurseVisitLink(visitor, list2);
 }
 
 // ------------------------------ SwitchNode -----------------------------------
@@ -2245,14 +2676,10 @@ Completion SwitchNode::execute(ExecState *exec)
   return res;
 }
 
-void SwitchNode::processVarDecls(ExecState *exec)
+void SwitchNode::recurseVisit(NodeVisitor *visitor)
 {
-  block->processVarDecls(exec);
-}
-
-void SwitchNode::processFuncDecl(ExecState* exec)
-{
-  block->processFuncDecl(exec);
+  recurseVisitLink(visitor, expr);
+  recurseVisitLink(visitor, block);
 }
 
 // ------------------------------ LabelNode ------------------------------------
@@ -2270,9 +2697,9 @@ Completion LabelNode::execute(ExecState *exec)
   return e;
 }
 
-void LabelNode::processVarDecls(ExecState *exec)
+void LabelNode::recurseVisit(NodeVisitor *visitor)
 {
-  statement->processVarDecls(exec);
+  recurseVisitLink(visitor, statement);
 }
 
 // ------------------------------ ThrowNode ------------------------------------
@@ -2289,6 +2716,12 @@ Completion ThrowNode::execute(ExecState *exec)
 
   return Completion(Throw, v);
 }
+
+void ThrowNode::recurseVisit(NodeVisitor *visitor)
+{
+  recurseVisitLink(visitor, expr);
+}
+
 
 // ------------------------------ TryNode --------------------------------------
 
@@ -2316,13 +2749,17 @@ Completion TryNode::execute(ExecState *exec)
   return c;
 }
 
-void TryNode::processVarDecls(ExecState *exec)
+void TryNode::recurseVisit(NodeVisitor *visitor)
 {
-  tryBlock->processVarDecls(exec);
-  if (catchBlock)
-    catchBlock->processVarDecls(exec);
-  if (finallyBlock)
-    finallyBlock->processVarDecls(exec);
+    recurseVisitLink(visitor, tryBlock);
+    recurseVisitLink(visitor, catchBlock);
+    recurseVisitLink(visitor, finallyBlock);
+}
+
+void TryNode::recurseVisitNonCatch(NodeVisitor* visitor)
+{
+    recurseVisitLink(visitor, tryBlock);
+    recurseVisitLink(visitor, finallyBlock); //### check this?
 }
 
 // ------------------------------ ParameterNode --------------------------------
@@ -2338,22 +2775,97 @@ void ParameterNode::breakCycle()
     next = 0;
 }
 
+void ParameterNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, next);
+}
+
 // ------------------------------ FunctionBodyNode -----------------------------
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
     : BlockNode(s)
     , m_sourceURL(Lexer::curr()->sourceURL())
     , m_sourceId(Parser::sid)
+    , m_builtSymbolList(false)
 {
 
   setLoc(-1, -1);
 }
 
-void FunctionBodyNode::processFuncDecl(ExecState *exec)
+
+void FunctionBodyNode::addVarDecl(const Identifier& ident, int attr, ExecState* exec)
 {
-    if (source)
-        source->processFuncDecl(exec);
+  // There is one nasty special case: ignore a 'var' declaration of 'arguments';
+  // it effectively doesn't do anything since the magic 'arguments' is already 
+  // in scope anyway, and if we allocated a local, we would have to worry about
+  // keeping track of whether it was initialized or not on what is supposed to be the 
+  // fast path. So we just make this go through the property map instead.
+  // Note that this does not matter for parameters or function declarations,
+  // since those overwrite the magic 'arguments' anyway.
+  if (ident == exec->dynamicInterpreter()->argumentsIdentifier())
+    return;
+
+  (void)addSymbol(ident, attr);
 }
+
+void FunctionBodyNode::addFunDecl(const Identifier& ident, int attr, FuncDeclNode* funcDecl)
+{
+  (void)addSymbol(ident, attr, funcDecl);
+}
+
+int FunctionBodyNode::addSymbol(const Identifier& ident, int flags, FuncDeclNode* funcDecl)
+{
+
+  // We get symbols in the order specified in 10.1.3, but sometimes
+  // the later ones are supposed to lose. This -mostly- does not 
+  // matter for us --- we primarily concern ourselves with name/ID
+  // mapping, but there is an issue of attributes and funcDecl's.
+  // However, the only flag that matters here is ReadOnly -- 
+  // everything else just has DontDelete set; and it's from const, 
+  // so we can just ignore it on repetitions, since var/const should lose
+  // and are at the end.
+  //
+  // And for funcDecl, since functions win over everything, we always set it if non-zero
+  if (JSValue* oldIdVal = m_symbolTable.get(ident)) {
+    int oldId = (int)oldIdVal->getNumber();
+    if (funcDecl)
+      m_symbolList[oldId - 1].funcDecl = funcDecl;
+    return oldId;
+  }
+    
+  int id = m_symbolList.size() + 1;         //First entry gets 1, etc.
+  m_symbolTable.put(ident, jsNumber(id), 0);
+  m_symbolList.append (Symbol(ident, flags, funcDecl));
+  return id;
+}
+
+int FunctionBodyNode::lookupSymbolID(const Identifier& ident) const
+{
+  JSValue* val = m_symbolTable.get(ident);
+  if (!val)
+    return -1;
+  return val->getNumber();
+}
+
+
+void FunctionBodyNode::addParam(const Identifier& ident)
+{
+  int id = addSymbol(ident, DontDelete);
+  m_paramList.append(Parameter(ident, id));
+}
+
+UString FunctionBodyNode::paramString() const
+{
+  UString s;
+  for (int pos = 0; pos < numParams(); ++pos) {
+    if (!s.isEmpty())
+        s += ", ";
+    s += paramName(pos).ustring();
+  }
+
+  return s;
+}
+
 
 // ------------------------------ FuncDeclNode ---------------------------------
 
@@ -2362,38 +2874,56 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 {
   Context *context = exec->context();
 
+  // See whether we just need to fill in the symbol table, 
+  // or actually fiddle with objects.
+  int flags = Internal | DontDelete;
+  switch (exec->context()->codeType()) {
+    case FunctionCode:
+      // Inside a function, just need symbol info
+      exec->context()->currentBody()->addFunDecl(ident, flags, this);
+      return;
+    case EvalCode:
+      // eval-injected symbols can be deleted...
+      flags &= ~DontDelete;
+      
+      // fallthrough intentional
+    case GlobalCode:
+      context->variableObject()->put(exec, ident, makeFunctionObject(exec), flags);
+  };
+}
+
+void FuncDeclNode::addParams() 
+{
+  for(ParameterNode *p = param.get(); p != 0L; p = p->nextParam())
+    body->addParam(p->ident());
+}
+
+FunctionImp* FuncDeclNode::makeFunctionObject(ExecState *exec)
+{
   // TODO: let this be an object with [[Class]] property "Function"
+  Context *context = exec->context();
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
 
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
   func->put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
-  int plen = 0;
-  for(ParameterNode *p = param.get(); p != 0L; p = p->nextParam(), plen++)
-    func->addParameter(p->ident());
+  func->put(exec, lengthPropertyName, jsNumber(body->numParams()), ReadOnly|DontDelete|DontEnum);
 
-  func->put(exec, lengthPropertyName, jsNumber(plen), ReadOnly|DontDelete|DontEnum);
-
-  // ECMA 10.2.2
-  context->variableObject()->put(exec, ident, func, Internal | (context->codeType() == EvalCode ? 0 : DontDelete));
-
-  if (body) {
-    // hack the scope so that the function gets put as a property of func, and it's scope
-    // contains the func as well as our current scope
-    JSObject *oldVar = context->variableObject();
-    context->setVariableObject(func);
-    context->pushScope(func);
-    body->processFuncDecl(exec);
-    context->popScope();
-    context->setVariableObject(oldVar);
-  }
+  return func;
 }
 
 Completion FuncDeclNode::execute(ExecState *)
 {
     return Completion(Normal);
 }
+
+void FuncDeclNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, param);
+    recurseVisitLink(visitor, body);
+}
+
 
 // ------------------------------ FuncExprNode ---------------------------------
 
@@ -2417,10 +2947,6 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
   proto->put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
   func->put(exec, prototypePropertyName, proto, Internal|DontDelete);
 
-  int plen = 0;
-  for(ParameterNode *p = param.get(); p != 0L; p = p->nextParam(), plen++)
-    func->addParameter(p->ident());
-
   if (named) {
     functionScopeObject->put(exec, ident, func, Internal | ReadOnly | (context->codeType() == EvalCode ? 0 : DontDelete));
     context->popScope();
@@ -2428,6 +2954,20 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
 
   return func;
 }
+
+void FuncExprNode::addParams()
+{
+  for(ParameterNode *p = param.get(); p != 0L; p = p->nextParam())
+    body->addParam(p->ident());
+}
+
+
+void FuncExprNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, param);
+    recurseVisitLink(visitor, body);
+}
+
 
 // ------------------------------ SourceElementsNode ---------------------------
 
@@ -2469,21 +3009,15 @@ Completion SourceElementsNode::execute(ExecState *exec)
 }
 
 // ECMA 14
-void SourceElementsNode::processFuncDecl(ExecState *exec)
-{
-  for (SourceElementsNode *n = this; n; n = n->next.get())
-    n->node->processFuncDecl(exec);
-}
-
-void SourceElementsNode::processVarDecls(ExecState *exec)
-{
-  for (SourceElementsNode *n = this; n; n = n->next.get())
-    n->node->processVarDecls(exec);
-}
-
 void SourceElementsNode::breakCycle()
 {
     next = 0;
+}
+
+void SourceElementsNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, node);
+    recurseVisitLink(visitor, next);
 }
 
 ProgramNode::ProgramNode(SourceElementsNode *s) : FunctionBodyNode(s)
@@ -2494,6 +3028,11 @@ JSValue* PackageNameNode::evaluate(ExecState*)
 {
     // should never get here.
     return 0;
+}
+
+void PackageNameNode::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, names);
 }
 
 Completion PackageNameNode::loadSymbol(ExecState* exec, bool wildcard)
@@ -2587,7 +3126,8 @@ Completion ImportStatement::execute(ExecState*)
     return Completion(Normal);
 }
 
-void ImportStatement::processVarDecls(ExecState* exec)
+
+void ImportStatement::processVarDecl(ExecState* exec)
 {
     // error out if package support is not activated
     Package* glob = exec->lexicalInterpreter()->globalPackage();
@@ -2597,5 +3137,18 @@ void ImportStatement::processVarDecls(ExecState* exec)
 	return;
     }
 
+    // also error out if not used on top-level
+    if (exec->context()->codeType() != GlobalCode) {
+      throwError(exec, GeneralError,
+                  "Package imports may only occur at top level.");
+      return;
+    }
+
     name->loadSymbol(exec, wld);
 }
+
+void ImportStatement::recurseVisit(NodeVisitor *visitor)
+{
+    recurseVisitLink(visitor, name);
+}
+
