@@ -27,6 +27,7 @@ QTEST_KDEMAIN( KStandarddirsTest, NoGUI )
 #include <kconfig.h>
 #include <kglobal.h>
 #include <QDebug>
+#include <config.h>
 
 void KStandarddirsTest::testLocateLocal()
 {
@@ -163,8 +164,8 @@ void KStandarddirsTest::testFindExe()
 
     const QString bin = KGlobal::dirs()->findExe( "lnusertemp" );
     QVERIFY( !bin.isEmpty() );
-    QVERIFY( bin.endsWith( "lib/kde4/libexec/lnusertemp" EXT ) );
-
+    QVERIFY( bin.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT ) );
+    
     // Check the "exe" resource too
     QCOMPARE( KGlobal::dirs()->realFilePath(bin),
               KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
