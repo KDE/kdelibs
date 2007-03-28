@@ -42,10 +42,12 @@ public:
 
     /**
      * Creates a new gesture consisting of given shape.
+     * If the gesture belongs to a KAction, and the user draws approximately the same shape
+     * on the screen while holding down the right mouse button, the action will trigger.
      * @p shape must be a "reasonable" polygon. It must contain at least two points
-     * and it should at contain at most 50 for performance reasons. No two consecutive points
+     * and it should contain at most 50 for performance reasons. No two consecutive points
      * are allowed to be at the same position.
-     * @param shape shape to draw in order to trigger this gesture
+     * @param shape shape to draw to trigger this gesture
      */
     KShapeGesture(const QPolygon &shape);
 
@@ -67,7 +69,7 @@ public:
     ~KShapeGesture();
 
     /**
-     * set shape of this gesture
+     * Set the shape to draw to trigger this gesture.
      */
     void setShape(const QPolygon &shape);
 
@@ -106,8 +108,8 @@ public:
     QByteArray toSvg(const QString &attributes = QString()) const;
 
     /**
-     * Return a difference measurement betwenn this gesture and the other
-     * gesture. Abort comparison if difference is larger than abortThreshold
+     * Return a difference measurement betwenn this gesture and the @p other
+     * gesture. Abort comparison if difference is larger than @p abortThreshold
      * and return a very large difference in that case.
      * Usual return values range from x to y //TODO: fill in x and y
      */

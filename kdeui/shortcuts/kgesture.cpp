@@ -121,9 +121,22 @@ bool KShapeGesture::isValid() const
 
 QString KShapeGesture::toString() const
 {
+    if (!isValid())
+        return QString();
+
     QString ret;
-    //TODO: implement
-    
+    int i;
+    for (i = 0; i < m_shape.size() - 1; i++) {
+        ret.append(QString::number(m_shape[i].x()));
+        ret.append(',');
+        ret.append(QString::number(m_shape[i].y()));
+        ret.append(',');
+    }
+    i++;
+    ret.append(QString::number(m_shape[i].x()));
+    ret.append(',');
+    ret.append(QString::number(m_shape[i].y()));
+
     return ret;
 }
 
@@ -244,6 +257,7 @@ float KShapeGesture::distance(const KShapeGesture &other, float abortThreshold) 
         for (int j = 0; j < 6; j++) {
             desiredPosition = (oposition + opositionB) * 0.5;
             if (dist < distB) {
+                //retract upper bound to desiredPosition
                 //copy state of lower bound to upper bound, advance it from there
                 oxB = ox; oyB = oy;
                 omxB = omx; omyB = omy;
@@ -266,7 +280,7 @@ float KShapeGesture::distance(const KShapeGesture &other, float abortThreshold) 
                 opositionB = desiredPosition;
                 distB = metric(oxB-x, oyB-y);
             } else {
-                //advance lower bound
+                //advance lower bound to desiredPosition
                 if (desiredPosition > o_lengthTo[opointIndex+1]) {
 
                     while (desiredPosition > o_lengthTo[opointIndex+1])
@@ -329,9 +343,8 @@ KRockerGesture::KRockerGesture()
 
 
 KRockerGesture::KRockerGesture(Qt::MouseButton hold, Qt::MouseButton thenPush)
- : m_hold(hold),
-   m_thenPush(thenPush)
 {
+    setButtons(hold, thenPush);
 }
 
 KRockerGesture::KRockerGesture(const QString &description)
@@ -358,10 +371,28 @@ void KRockerGesture::setButtons(Qt::MouseButton hold, Qt::MouseButton thenPush)
     if (hold == thenPush) {
         m_hold = Qt::NoButton;
         m_thenPush = Qt::NoButton;
-    } else {
-        m_hold = hold;
-        m_thenPush = thenPush;
+        return;
     }
+
+    int button = hold;
+    for (int i = 0; i < 2; i++) {
+        switch (button) {
+        case Qt::LeftButton:
+        case Qt::RightButton:
+        case Qt::MidButton:
+        case Qt::XButton1:
+        case Qt::XButton2:
+            break;
+        default:
+            m_hold = Qt::NoButton;
+            m_thenPush = Qt::NoButton;
+            return;
+        }
+        button = thenPush;
+    }
+
+    m_hold = hold;
+    m_thenPush = thenPush;
 }
 
 
@@ -411,7 +442,35 @@ bool KRockerGesture::isValid() const
 
 QString KRockerGesture::toString() const
 {
-    return "";
+    if (!isValid())
+        return QString();
+    QString ret;
+    int button = m_hold;
+    char desc;
+    for (int i = 0; i < 2; i++) {
+        switch (button) {
+        case Qt::LeftButton:
+            desc = 'L';
+            break;
+        case Qt::RightButton:
+            desc = 'R';
+            break;
+        case Qt::MidButton:
+            desc = 'M';
+            break;
+        case Qt::XButton1:
+            desc = '1';
+            break;
+        case Qt::XButton2:
+            desc = '2';
+            break;
+        default:
+            return QString();
+        }
+        ret.append(desc);
+        button = m_thenPush;
+    }
+    return ret;
 }
 
 
