@@ -19,6 +19,7 @@
 #ifndef KNOTIFYCONFIGWIDGET_H
 #define KNOTIFYCONFIGWIDGET_H
 
+#include <knotifyconfig_export.h>
 #include <kvbox.h>
 #include <QtCore/QString>
 

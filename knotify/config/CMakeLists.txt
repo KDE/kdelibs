@@ -25,7 +25,7 @@ install(TARGETS knotifyconfig  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES knotifyconfig_export.h knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 
 
 
