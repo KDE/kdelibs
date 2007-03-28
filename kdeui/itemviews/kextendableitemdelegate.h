@@ -24,16 +24,14 @@
 #include <QItemDelegate>
 #include <QHash>
 
-/*
+/**
 This delegate makes it possible to display an arbitrary QWidget ("extender") that spans all columns below a line of items.
 The extender will logically belong to a column in the row above it.
 
 
-It is your responsibility to devise a way to trigger extension and contraction of items.
+It is your responsibility to devise a way to trigger extension and contraction of items, by calling
+extendItem() and contractItem().
 */
-
-//TODO:listen for removal of rows and columns to clean out dead persistent indexes/editors.
-//TODO:follow binary compatibility rules
 
 
 class QAbstractItemView;
@@ -45,6 +43,11 @@ class KExtendableItemDelegate : public QItemDelegate {
 public:
 	enum auxDataRoles {ShowExtensionIndicatorRole = Qt::UserRole + 200};
 
+	/**
+	 * Create a new KExtendableItemDelegate that belongs to @p parent. In contrast to generic
+	 * QAbstractItemDelegates, an instance of this class can only ever be the delegate for one
+	 * instance of af QAbstractItemView subclass.
+	 */
 	KExtendableItemDelegate(QAbstractItemView *parent);
 	virtual ~KExtendableItemDelegate();
 
@@ -52,20 +55,44 @@ public:
 	virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	
-	/** ...
+	/**
+	 * Insert the @p extender that logically belongs to @p index into the view.
 	 * If you need a parent for the extender at construction time, use the itemview's viewport().
 	 * The extender will be reparented and resized to the viewport by this function.
 	 */
 	void extendItem(QWidget *extender, const QModelIndex &index);
+
+    /**
+     * Remove the extender that logically belongs to @p index from the view.
+	 */
 	void contractItem(const QModelIndex &index);
+
+	/**
+	 * Return whether there is an extender that belongs to @p index.
+	 */
 	bool isExtended(const QModelIndex &index) const;
+	
+	/**
+	 * Reimplement this function to adjust the internal geometry of the extender.
+	 * The external geometry of the extender will be set by the delegate.
+	 */
 	virtual void updateExtenderGeometry(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 Q_SIGNALS:
+	/**
+	 * This signal indicates that the item at @p index was extended with @p extender.
+	 */
 	void extenderCreated(QWidget *extender, QModelIndex index);
+
+	/**
+	 * This signal indicates that the @p extender belonging to @p index has emitted the destroyed() signal.
+	 */
 	void extenderDestroyed(QWidget *extender, QModelIndex index);
 
 protected:
+	/**
+	 * Reimplement this function to 
+	 */
 	QRect extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	//these two must have the same (screen) size!
 	QPixmap m_extendIcon;
