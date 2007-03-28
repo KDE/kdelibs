@@ -739,9 +739,9 @@ public:
    *
    * @see  writeEntry()
    */
-  KDE_DEPRECATED void writeEntry( const char *pKey, const Q3StrList &value,
-                                  char sep = ',', bool bPersistent = true,
-                                  bool bGlobal = false, bool bNLS = false );
+  void writeEntry( const char *pKey, const Q3StrList &value,
+                   char sep = ',', bool bPersistent = true,
+                   bool bGlobal = false, bool bNLS = false );
 #endif
 
   /**
