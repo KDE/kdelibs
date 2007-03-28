@@ -18,7 +18,8 @@ kde4_add_ui_files(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 
 kde4_add_library(knotifyconfig SHARED ${knotifyconfig_LIB_SRCS})
 
-target_link_libraries(knotifyconfig  ${KDE4_KDECORE_LIBS} kdeui kio)
+# Needs KIO for KUrlRequester
+target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} )
 
 set_target_properties(knotifyconfig PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS knotifyconfig  DESTINATION ${LIB_INSTALL_DIR} )
