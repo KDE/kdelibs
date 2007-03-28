@@ -90,7 +90,7 @@ namespace Kross {
             * that should be executed.
             * \deprecated use Kross::Manager::showExecuteScriptFile()
             */
-            bool executeFile() KDE_DEPRECATED;
+            KDE_DEPRECATED bool executeFile();
 
             /**
             * Execute the scriptfile \p file . Internaly we try to use
@@ -98,14 +98,14 @@ namespace Kross {
             * should be used for the execution.
             * \deprecated use Kross::Manager::executeScriptFile()
             */
-            bool executeFile(const KUrl& file) KDE_DEPRECATED;
+            KDE_DEPRECATED bool executeFile(const KUrl& file);
 
             /**
             * The \a ScriptManagerGUI dialog will be displayed to
             * let the user manage the scriptfiles.
             * \deprecated use Kross::Manager::showScriptManager()
             */
-            bool showManager() KDE_DEPRECATED;
+            KDE_DEPRECATED bool showManager();
 
         private Q_SLOTS:
 

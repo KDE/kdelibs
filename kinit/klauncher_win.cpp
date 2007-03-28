@@ -477,7 +477,7 @@ void
 KLauncher::destruct(int exit_code)
 {
    TRACE();
-   if (qApp) ((KLauncher*)qApp)->close();
+    if (QCoreApplication::instance()) ((KLauncher*)QCoreApplication::instance())->close();
    // We don't delete qApp here, that's intentional.   
    ::_exit(exit_code);
 }
