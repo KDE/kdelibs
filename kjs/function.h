@@ -24,8 +24,8 @@
 #ifndef KJS_FUNCTION_H
 #define KJS_FUNCTION_H
 
-#include <kjs/object.h>
-#include <kjs/nodes.h>
+#include "object.h"
+#include "nodes.h"
 #include <wtf/OwnPtr.h>
 
 namespace KJS {
