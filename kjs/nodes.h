@@ -81,6 +81,7 @@ namespace KJS {
 
   class NodeVisitor {
   public:
+    virtual ~NodeVisitor() {}
     /**
      This method should be overriden by subclasses to process nodes, and 
      perhaps return pointers for replacement nodes. If the node should not be 
