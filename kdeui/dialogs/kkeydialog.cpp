@@ -299,10 +299,14 @@ void KKeyChooserPrivate::initGUI( KKeyChooser::ActionTypes types, KKeyChooser::L
 	//we have our own editing mechanism
 	ui.list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
-	                 q, SLOT(globalSettingsChanged(int)));
+	//QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
+	//                 q, SLOT(globalSettingsChanged(int)));
+#ifdef __GNUC__
+    #warning fixme slot globalSettingsChanged(int) does not exist
+#endif
+
 	QObject::connect(delegate, SIGNAL(extenderCreated(QWidget *, QModelIndex)),
-	                 q, SLOT(startEditing(QWidget *, QModelIndex)));
+	                 q, SLOT(startEditing(QWidget *, QModelIndex)));	
 	QObject::connect(delegate, SIGNAL(extenderDestroyed(QWidget *, QModelIndex)),
 	                 q, SLOT(doneEditingCurrent()));
 }
