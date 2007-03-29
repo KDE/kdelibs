@@ -40,6 +40,8 @@ namespace Fake
 
 			Q_INVOKABLE Phonon::VideoWidget::AspectRatio aspectRatio() const;
 			Q_INVOKABLE void setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio );
+            Q_INVOKABLE Phonon::VideoWidget::ScaleMode scaleMode() const;
+            Q_INVOKABLE void setScaleMode(Phonon::VideoWidget::ScaleMode);
 
 			// Fake specific:
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
@@ -61,6 +63,7 @@ namespace Fake
 			QPixmap m_pixmap;
 			QSize m_videoSize;
 			Phonon::VideoWidget::AspectRatio m_aspectRatio;
+            Phonon::VideoWidget::ScaleMode m_scaleMode;
 	};
 }} //namespace Phonon::Fake
 

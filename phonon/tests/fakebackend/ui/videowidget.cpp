@@ -18,6 +18,7 @@
 */
 
 #include "videowidget.h"
+#include "../../../ui/overlayapi.h"
 #include <QChildEvent>
 #include <QPalette>
 #include <QImage>
@@ -86,6 +87,16 @@ void VideoWidget::setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio )
 	}
 }
 
+Phonon::VideoWidget::ScaleMode VideoWidget::scaleMode() const
+{
+    return m_scaleMode;
+}
+
+void VideoWidget::setScaleMode(Phonon::VideoWidget::ScaleMode scaleMode)
+{
+    m_scaleMode = scaleMode;
+}
+
 void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 {
 	switch( frame.fourcc )
@@ -105,12 +116,12 @@ void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 
 int VideoWidget::overlayCapabilities() const
 {
-    return 4;
+    return OverlayApi::OverlayFull;
 }
 
 bool VideoWidget::createOverlay(QWidget *widget, int type)
 {
-    if ((overlay != 0) || (type != 4)) {
+    if ((overlay != 0) || (type != OverlayApi::OverlayFull)) {
         return false;
     }
 
