@@ -4,12 +4,14 @@
 #include <kcmdlineargs.h>
 #include <kpassivepopup.h>
 #include <qpushbutton.h>
+#include <ksystemtrayicon.h>
 
 QPushButton *pb;
 QPushButton *pb2;
 QPushButton *pb3;
 QPushButton *pb4;
 QPushButton *pb5;
+KSystemTrayIcon *icon;
 
 void Test::showIt()
 {
@@ -38,6 +40,11 @@ void Test::showIt5()
   KPassivePopup::message( KPassivePopup::Balloon, "The caption is...", "Hello World", pb5 );
 }
 
+void Test::showIt6(QSystemTrayIcon::ActivationReason reason)
+{
+  if (reason == QSystemTrayIcon::Trigger)
+    KPassivePopup::message( "QSystemTrayIcon test", "Hello World", icon);
+}
 
 int main( int argc, char **argv )
 {
@@ -70,6 +77,11 @@ int main( int argc, char **argv )
     pb5->setText( "Balloon taskbar entry" );
     pb5->connect( pb5, SIGNAL(clicked()), t, SLOT( showIt5() ) );
     pb5->show();
+
+    icon = new KSystemTrayIcon();
+    icon->setIcon(icon->loadIcon("x"));
+    icon->connect( icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), t, SLOT( showIt6(QSystemTrayIcon::ActivationReason) ) );
+    icon->show();
 
     return app.exec();
 

@@ -9,6 +9,16 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 ########### next target ###############
 
+set(kpassivepopuptest_SRCS kpassivepopuptest.cpp)
+
+kde4_automoc(${kpassivepopuptest_SRCS})
+
+kde4_add_executable(kpassivepopuptest ${kpassivepopuptest_SRCS})
+
+target_link_libraries(kpassivepopuptest ${KDE4_KDEUI_LIBS})
+
+########### next target ###############
+
 set(kblendtest_SRCS kblendtest.cpp)
 
 kde4_automoc(${kblendtest_SRCS})

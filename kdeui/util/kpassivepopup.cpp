@@ -18,6 +18,7 @@
 #include <QPolygonF>
 #include <QTimer>
 #include <QToolTip>
+#include <QSystemTrayIcon>
 
 #include <kvbox.h>
 #include <kdebug.h>
@@ -264,7 +265,7 @@ void KPassivePopup::setVisible( bool visible )
         QFrame::setVisible( visible );
         return;
     }
-  
+
     if ( size() != sizeHint() )
         resize( sizeHint() );
 
@@ -369,11 +370,19 @@ void KPassivePopup::positionSelf()
 
 void KPassivePopup::moveNear( const QRect &target )
 {
+    QPoint pos = calculateNearbyPoint(target);
+    if( d->popupStyle == Balloon )
+        setAnchor( pos );
+    else
+        move( pos.x(), pos.y() );
+}
+
+QPoint KPassivePopup::calculateNearbyPoint( const QRect &target) {
     QPoint pos = target.topLeft();
     int x = pos.x();
     int y = pos.y();
-    int w = width();
-    int h = height();
+    int w = minimumSizeHint().width();
+    int h = minimumSizeHint().height();
 
     QRect r = KGlobalSettings::desktopGeometry(QPoint(x+w/2,y+h/2));
 
@@ -407,10 +416,7 @@ void KPassivePopup::moveNear( const QRect &target )
     if ( x < r.left() )
         x = r.left();
 
-    if( d->popupStyle == Balloon )
-        setAnchor( QPoint( x, y ) );
-    else
-        move( x, y );
+    return QPoint( x, y );
 }
 
 QPoint KPassivePopup::anchor() const
@@ -540,6 +546,25 @@ KPassivePopup *KPassivePopup::message( const QString &caption, const QString &te
     return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout );
 }
 
+KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+                       const QPixmap &icon,
+                       QSystemTrayIcon *parent, int timeout )
+{
+    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout );
+}
+
+KPassivePopup *KPassivePopup::message( const QString &text, QSystemTrayIcon *parent )
+{
+    return message( DEFAULT_POPUP_TYPE, QString(), text, QPixmap(), parent );
+}
+
+KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+                       QSystemTrayIcon *parent )
+{
+    return message( DEFAULT_POPUP_TYPE, caption, text, QPixmap(), parent );
+}
+
+
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
 				       const QPixmap &icon,
 				       QWidget *parent, int timeout )
@@ -577,6 +602,34 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
 
     return pop;
 }
+
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
+                       const QPixmap &icon,
+                       QSystemTrayIcon *parent, int timeout )
+{
+    KPassivePopup *pop = new KPassivePopup( );
+    pop->setPopupStyle( popupStyle );
+    pop->setAutoDelete( true );
+    pop->setView( caption, text, icon );
+    pop->d->hideDelay = timeout;
+    QPoint pos = pop->calculateNearbyPoint(parent->geometry());
+    pop->show(pos);
+    pop->moveNear(parent->geometry());
+
+    return pop;
+}
+
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &text, QSystemTrayIcon *parent )
+{
+    return message( popupStyle, QString(), text, QPixmap(), parent );
+}
+
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
+                       QSystemTrayIcon *parent )
+{
+    return message( popupStyle, caption, text, QPixmap(), parent );
+}
+
 
 // Local Variables:
 // c-basic-offset: 4
