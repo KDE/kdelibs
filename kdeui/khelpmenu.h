@@ -139,8 +139,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
       menuWhatsThis = 1,
       menuAboutApp = 2,
       menuAboutKDE = 3,
-      menuReportBug = 4,
-      menuSwitchLanguage = 5
+      menuReportBug = 4
     };
 
     /**
@@ -223,11 +222,6 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * Opens the standard "Report Bugs" dialog box.
      */
     void reportBug();
-    
-    /**
-     * Opens changing default application language dialog box.
-     */
-    void switchApplicationLanguage();
 
   private slots:
     /**

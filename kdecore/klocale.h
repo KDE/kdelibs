@@ -1301,7 +1301,7 @@ private:
    */
   static QString catalogueFileName(const QString & language,
 				   const KCatalogue & catalog);
-public:
+
   /**
    * @internal Checks whether or not theFind catalog for given language and given catalog name.
    *

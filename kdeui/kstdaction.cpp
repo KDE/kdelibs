@@ -313,8 +313,6 @@ KAction *tipOfDay( const QObject *recvr, const char *slot, KActionCollection* pa
 	{ return KStdAction::create( TipofDay, name, recvr, slot, parent ); }
 KAction *reportBug( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( ReportBug, name, recvr, slot, parent ); }
-KAction *switchApplicationLanguage( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
-	{ return KStdAction::create( SwitchApplicationLanguage, name, recvr, slot, parent ); }
 KAction *aboutApp( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
 	{ return KStdAction::create( AboutApp, name, recvr, slot, parent ); }
 KAction *aboutKDE( const QObject *recvr, const char *slot, KActionCollection* parent, const char *name )
