@@ -157,7 +157,8 @@ namespace KStdAction
 		ConfigureNotifications,
 		FullScreen, ///< @since 3.2
 		Clear, ///< @since 3.2
-        PasteText ///< @since 3.2
+        PasteText, ///< @since 3.2
+        SwitchApplicationLanguage ///< @since 3.5.7
 	};
 
 	/**

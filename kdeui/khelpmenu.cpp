@@ -42,20 +42,24 @@
 #include <kstdaccel.h>
 #include <kstdaction.h>
 
+#include "kswitchlanguagedialog.h"
+
 #include "config.h"
 #include <qxembed.h>
 
 class KHelpMenuPrivate
 {
 public:
-    KHelpMenuPrivate()
+    KHelpMenuPrivate():mSwitchApplicationLanguage(NULL)
     {
     }
     ~KHelpMenuPrivate()
     {
+        delete mSwitchApplicationLanguage;
     }
 
     const KAboutData *mAboutData;
+    KSwitchLanguageDialog *mSwitchApplicationLanguage;
 };
 
 KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
@@ -147,6 +151,15 @@ KPopupMenu* KHelpMenu::menu()
       need_separator = true;
     }
 
+    if (kapp->authorizeKAction("switch_application_language"))
+    {
+      if (need_separator)
+        mMenu->insertSeparator();
+      mMenu->insertItem( i18n( "Switch application &language..." ), menuSwitchLanguage );
+      mMenu->connectItem( menuSwitchLanguage, this, SLOT(switchApplicationLanguage()) );
+      need_separator = true;
+    }
+    
     if (need_separator)
       mMenu->insertSeparator();
 
@@ -240,6 +253,16 @@ void KHelpMenu::reportBug()
   mBugReport->show();
 }
 
+void KHelpMenu::switchApplicationLanguage()
+{
+  if ( !d->mSwitchApplicationLanguage )
+  {
+    d->mSwitchApplicationLanguage = new KSwitchLanguageDialog( mParent, "switchlanguagedialog", false );
+    connect( d->mSwitchApplicationLanguage, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+  }
+  d->mSwitchApplicationLanguage->show();
+}
+
 
 void KHelpMenu::dialogFinished()
 {
@@ -262,6 +285,11 @@ void KHelpMenu::timerExpired()
   if( mAboutApp && !mAboutApp->isVisible() )
   {
     delete mAboutApp; mAboutApp = 0;
+  }
+  
+  if (d->mSwitchApplicationLanguage && !d->mSwitchApplicationLanguage->isVisible())
+  {
+    delete d->mSwitchApplicationLanguage; d->mSwitchApplicationLanguage = 0;
   }
 }
 
