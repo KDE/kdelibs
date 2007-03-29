@@ -34,6 +34,9 @@ using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
 
 
+static const char* KMETADATA_NAMESPACE = "http://kmetadata.kde.org/resources#";
+
+
 class Nepomuk::KMetaData::ResourceManager::Private : public QThread
 {
 public:
@@ -69,8 +72,12 @@ Nepomuk::KMetaData::ResourceManager::ResourceManager()
 {
     d = new Private( this );
     setAutoSync( true );
+    // FIXME: Does D-Bus still not work from different threads or is there a bug in my D-Bus stuff that
+    // results in all the QTimer warnings if I run syncAll from the Private thread?
+    //     connect( &d->syncTimer, SIGNAL(timeout()),
+//              this, SLOT(slotStartAutoSync()) );
     connect( &d->syncTimer, SIGNAL(timeout()),
-             this, SLOT(slotStartAutoSync()) );
+             this, SLOT(syncAll()) );
 }
 
 
@@ -340,7 +347,8 @@ QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
 
     QString s;
     while( 1 ) {
-        s = ontology()->defaultNamespace() + KRandom::randomString( 20 );
+        // Should we use the Nepomuk localhost whatever namespace here?
+        s = KMETADATA_NAMESPACE + KRandom::randomString( 20 );
         if( !rdfr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ||
             ( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
               !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
