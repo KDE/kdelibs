@@ -80,12 +80,12 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
  **/
 class KMetaInfoWriter : public IndexWriter {
 public:
+    // irrelevant for KFileMetaInfo
     void startAnalysis(AnalysisResult*) {
     }
-    void addText(const AnalysisResult*, const char* s, int32_t n) {
-        // we do not store text as metainfo
-        QString text = QString::fromUtf8(s, n);
-        //qDebug() << text;
+    // irrelevant for KFileMetaInfo
+    // we do not store text as metainfo
+    void addText(const AnalysisResult*, const char* /*s*/, int32_t /*n*/) {
     }
     void addField(const AnalysisResult* idx, const RegisteredField* field,
             const string& value) {
@@ -146,14 +146,17 @@ public:
             addField(ar, field, m);
         }
     }
-
+    /* irrelevant for KFileMetaInfo: These triples does not convey information
+     * about this file, so we ignore it
+     */
     void addTriplet(const std::string& /*subject*/,
         const std::string& /*predicate*/, const std::string& /*object*/) {
-        // these triples does not convey information about this file,
-        // so we ignore it
     }
+    // irrelevant for KFileMetaInfo
     void finishAnalysis(const AnalysisResult*) {}
+    // irrelevant for KFileMetaInfo
     void deleteEntries(const vector<string>&) {}
+    // irrelevant for KFileMetaInfo
     void deleteAllEntries() {}
 };
 class KFileMetaInfoPrivate : public QSharedData {
@@ -164,6 +167,10 @@ public:
     //Private() :QSharedData() {qDebug() <<"ok: " << this;}
     void init(QIODevice& stream, const KUrl& url, time_t mtime);
     void initWriters(QIODevice& /*file*/);
+    void operator=(const KFileMetaInfoPrivate& k) {
+        items = k.items;
+        kurl = k.kurl;
+    }
 };
 static const KFileMetaInfoItem nullitem;
 
@@ -196,7 +203,6 @@ KFileMetaInfoPrivate::initWriters(QIODevice& file) {
         }
     }
 }
-
 KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
         KFileMetaInfo::WhatFlags /*w*/) :p(new KFileMetaInfoPrivate()) {
     QFileInfo fileinfo(path);
@@ -220,12 +226,11 @@ KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new KFileMetaInfoPrivate()) {
 }
 KFileMetaInfo::KFileMetaInfo() :p(new KFileMetaInfoPrivate()) {
 }
-KFileMetaInfo::KFileMetaInfo(const KFileMetaInfo&) {
+KFileMetaInfo::KFileMetaInfo(const KFileMetaInfo& k) :p(k.p) {
 }
 const KFileMetaInfo&
 KFileMetaInfo::operator=(KFileMetaInfo const& kfmi) {
-    p->items = kfmi.p->items;
-    p->kurl = kfmi.p->kurl;
+    p = kfmi.p;
     return kfmi;
 }
 KFileMetaInfo::~KFileMetaInfo() {

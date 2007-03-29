@@ -85,29 +85,64 @@ s
     Q_DECLARE_FLAGS(WhatFlags, What)
 
     /**
-     * @param path 
+     * @brief Construct a KFileMetaInfo that contains metainformation about
+     * the resource pointed to by @p path.
      **/
     KFileMetaInfo(const QString& path, const QString& mimetype = QString(),
         WhatFlags w = Everything);
+    /**
+     * @brief Construct a KFileMetaInfo that contains metainformation about
+     * the resource pointed to by @p url.
+     **/
     KFileMetaInfo(const KUrl& url);
+    /**
+     * @brief Construct an empty, invalid KFileMetaInfo instance.
+     **/
     KFileMetaInfo();
+    /**
+     * @brief Construct a KFileMetaInfo instance from another one.
+     **/
     KFileMetaInfo(const KFileMetaInfo&);
+    /**
+     * @brief Destructor.
+     **/
     ~KFileMetaInfo();
+    /**
+     * @brief Copy a KFileMetaInfo instance from another one.
+     **/
     const KFileMetaInfo& operator=(KFileMetaInfo const& kfmi);
+    /**
+     * @brief Save the changes made to this KFileMetaInfo instance.
+     */
     bool applyChanges();
+    /**
+     * @brief Retrieve all the items.
+     **/
     const QHash<QString, KFileMetaInfoItem>& items() const;
     KFileMetaInfoItem& item(const QString& key);
     const KFileMetaInfoItem& item(const QString& key) const;
     bool isValid() const;
+    /**
+     * Deprecated
+     **/
     QStringList preferredKeys() const;
+    /**
+     * Deprecated
+     **/
     QStringList supportedKeys() const;
     KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& )
 ;
     KIO_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&);
+    /**
+     * Deprecated
+     **/
     KFileMetaInfoGroupList preferredGroups() const;
-/*    KFileMetaInfoGroupList supportedGroups() const {
+    /**
+     * Deprecated
+     **/
+    KFileMetaInfoGroupList supportedGroups() const {
         return KFileMetaInfoGroupList();
-    }*/
+    }
     KFileMetaInfoGroupList groups() const;
     QStringList keys() const;
     const KUrl& url() const;
