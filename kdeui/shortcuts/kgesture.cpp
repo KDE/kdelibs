@@ -21,6 +21,7 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <math.h>
+#include <QStringList>
 
 KShapeGesture::KShapeGesture()
 {
@@ -35,8 +36,30 @@ KShapeGesture::KShapeGesture(const QPolygon &shape)
 
 KShapeGesture::KShapeGesture(const QString &description)
 {
-    Q_UNUSED(description);
-    //TODO: implement
+    QStringList sl = description.split(',');
+    m_friendlyName = sl.takeFirst();
+
+    bool ok = true;
+    QPolygon poly;
+    int x, y;
+    QStringList::const_iterator it = sl.constBegin();
+    while (it != sl.constEnd()) {
+        x = (*it).toInt(&ok);
+        ++it;
+        if (!ok || it == sl.constEnd())
+            break;
+        y = (*it).toInt(&ok);
+        if (!ok)
+            break;
+        ++it;
+        poly.append(QPoint(x, y));
+    }
+    if (!ok) {
+        m_friendlyName = QString();
+        return;
+    }
+
+    setShape(poly);
 }
 
 
@@ -124,7 +147,10 @@ QString KShapeGesture::toString() const
     if (!isValid())
         return QString();
 
-    QString ret;
+    //TODO: what if the name contains a "," or ";"? Limit the name to letters?
+    QString ret = m_friendlyName;
+    ret.append(',');
+
     int i;
     for (i = 0; i < m_shape.size() - 1; i++) {
         ret.append(QString::number(m_shape[i].x()));
@@ -335,6 +361,10 @@ uint KShapeGesture::hashable() const
 }
 
 
+/********************************************************
+ * KRockerGesture *
+ *******************************************************/
+
 KRockerGesture::KRockerGesture()
  : m_hold(Qt::NoButton),
    m_thenPush(Qt::NoButton)
@@ -347,10 +377,40 @@ KRockerGesture::KRockerGesture(Qt::MouseButton hold, Qt::MouseButton thenPush)
     setButtons(hold, thenPush);
 }
 
+
 KRockerGesture::KRockerGesture(const QString &description)
+ : m_hold(Qt::NoButton),
+   m_thenPush(Qt::NoButton)
 {
-    Q_UNUSED(description);
-    //TODO:implement
+    if (description.length() != 2)
+        return;
+
+    Qt::MouseButton hold, thenPush;
+    Qt::MouseButton *current = &hold;
+    for (int i = 0; i < 2; i++) {
+        switch (description[i].toLatin1()) {
+        case 'L':
+            *current = Qt::LeftButton;
+            break;
+        case 'R':
+            *current = Qt::RightButton;
+            break;
+        case 'M':
+            *current = Qt::MidButton;
+            break;
+        case '1':
+            *current = Qt::XButton1;
+            break;
+        case '2':
+            *current = Qt::XButton2;
+            break;
+        default:
+            return;
+        }
+        current = &thenPush;
+    }
+    m_hold = hold;
+    m_thenPush = thenPush;
 }
 
 
