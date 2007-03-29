@@ -56,6 +56,7 @@
 #include <kicon.h>
 #include <QToolButton>
 #include <QProgressBar>
+#include <kmessagebox.h>
 
 using namespace Phonon;
 
@@ -276,6 +277,12 @@ void ProducerWidget::stateChanged(Phonon::State newstate, Phonon::State oldstate
 	{
 		case Phonon::ErrorState:
 			m_statelabel->setText( "Error" );
+            {
+                QString text = m_media->errorString();
+                if (!text.isEmpty()) {
+                    KMessageBox::error(this, text);
+                }
+            }
 			break;
 		case Phonon::LoadingState:
 			m_statelabel->setText( "Loading" );

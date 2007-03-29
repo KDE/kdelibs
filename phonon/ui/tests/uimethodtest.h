@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2
@@ -17,15 +17,17 @@
 
 */
 
-#ifndef PHONON_METHODTEST_H
-#define PHONON_METHODTEST_H
+#ifndef PHONON_UIMETHODTEST_H
+#define PHONON_UIMETHODTEST_H
 
 #include <QObject>
+#include "../../tests/loadfakebackend.h"
 
-class MethodTest : public QObject
+class UiMethodTest : public QObject
 {
 	Q_OBJECT
 	private Q_SLOTS:
+        void initTestCase() { Phonon::loadFakeBackend(); }
 		void checkUiBackendMethods_data();
 		void checkUiBackendMethods();
 		void checkVideoWidgetMethods_data();
@@ -39,4 +41,5 @@ class MethodTest : public QObject
 		QObject* backendObject;
 		const QMetaObject* meta;
 };
-#endif // PHONON_METHODTEST_H
+#endif // PHONON_UIMETHODTEST_H
+// vim: ts=4

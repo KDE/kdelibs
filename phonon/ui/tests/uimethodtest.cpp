@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2
@@ -17,23 +17,23 @@
 
 */
 
-#include "methodtest.h"
+#include "uimethodtest.h"
 #include "../factory.h"
 #include <qtest_kde.h>
 
 using namespace Phonon;
 
-void MethodTest::checkUiBackendMethods_data() { addColumns();
+void UiMethodTest::checkUiBackendMethods_data() { addColumns();
 #include "methods/factory.cpp"
 }
-void MethodTest::checkVideoWidgetMethods_data() { addColumns();
+void UiMethodTest::checkVideoWidgetMethods_data() { addColumns();
 #include "methods/videowidget.cpp"
 #include "methods/overlayapi.cpp"
 }
-void MethodTest::checkUiBackendMethods()   { checkMethods( UiFactory::self()->backend() ); }
-void MethodTest::checkVideoWidgetMethods() { checkMethods( UiFactory::self()->createVideoWidget() ); }
+void UiMethodTest::checkUiBackendMethods()   { checkMethods( UiFactory::self()->backend() ); }
+void UiMethodTest::checkVideoWidgetMethods() { checkMethods( UiFactory::self()->createVideoWidget() ); }
 
-void MethodTest::addColumns()
+void UiMethodTest::addColumns()
 {
 	QTest::addColumn<QByteArray>( "returnType" );
 	QTest::addColumn<QByteArray>( "signature" );
@@ -41,7 +41,7 @@ void MethodTest::addColumns()
     QTest::addColumn<bool>("isSignal");
 }
 
-void MethodTest::addMethod( const char* returnType, const char* signature, bool optional )
+void UiMethodTest::addMethod(const char *returnType, const char *signature, bool optional)
 {
 	QByteArray name( returnType );
 	name += ' ';
@@ -49,12 +49,12 @@ void MethodTest::addMethod( const char* returnType, const char* signature, bool 
 	QTest::newRow( name.constData() ) << QByteArray( returnType ) << QByteArray( signature ) << optional << false;
 }
 
-void MethodTest::addSignal(const char *signature)
+void UiMethodTest::addSignal(const char *signature)
 {
     QTest::newRow(signature) << QByteArray() << QByteArray(signature) << false << true;
 }
 
-void MethodTest::checkMethods( QObject* backendObject )
+void UiMethodTest::checkMethods(QObject *backendObject)
 {
 	if( !backendObject )
 		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
@@ -82,6 +82,6 @@ void MethodTest::checkMethods( QObject* backendObject )
     }
 }
 
-QTEST_KDEMAIN(MethodTest, GUI)
-#include "methodtest.moc"
+QTEST_KDEMAIN(UiMethodTest, GUI)
+#include "uimethodtest.moc"
 // vim: sw=4 ts=4
