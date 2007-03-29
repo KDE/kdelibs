@@ -914,6 +914,7 @@ void KNotifyWidget::openExecDialog( KURLRequester *requester )
 
 void KNotifyWidget::playSound()
 {
+    QString soundPath = m_soundPath->url();
     if (!KIO::NetAccess::exists( m_soundPath->url(), true, 0 )) {        
         bool foundSound=false;
 
@@ -931,6 +932,7 @@ void KNotifyWidget::playSound()
                if ( dir.isReadable() && dir.count() > 2 && 
 	            KIO::NetAccess::exists( *it + m_soundPath->url(), true, 0 )) {
                        foundSound=true;
+                       soundPath = *it + m_soundPath->url();
                        break;
                }
                ++it;
@@ -941,7 +943,7 @@ void KNotifyWidget::playSound()
             return;
         }
     }
-    KAudioPlayer::play( m_soundPath->url() );
+    KAudioPlayer::play( soundPath );
 }
 
 void KNotifyWidget::enableAll()
