@@ -110,19 +110,18 @@ the provider supports DXS. Such interaction includes:
   directly), but they can also be requested for viewing.
 * Several others. See short descriptions in the feature guide.
 
-Library structure (under review)
-================================
+Library structure
+=================
 
-knewstuff/knewstuff2/core - conventional ghns + engine
+Proposed structure:
+knewstuff/knewstuff2/core - conventional ghns + coreengine
 knewstuff/knewstuff2/dxs  - dxs + dxsengine
 knewstuff/knewstuff2/ui   - dialogs
-knewstuff/knewstuff2      - thin convenience wrapper
+knewstuff/knewstuff2      - workflow wrapper (engine)
 knewstuff/tests           - test applications
 knewstuff/data            - icons and other data
 knewstuff/doc             - documentation
 
-Note: should engine encapsulate both ghns and dxs stuff?
-There could also be a CoreEngine (in line with the trendy core-ui split).
-* There's now an Engine and a DxsEngine so this issue is obsolete.
-* But we could still rename Engine to CoreEngine for consistency :-)
+Under review:
+plasmagik/                - packaging handler
 

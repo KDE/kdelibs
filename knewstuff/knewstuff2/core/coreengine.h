@@ -67,7 +67,7 @@ class KDE_EXPORT CoreEngine : public QObject
      * @return \b true if any configuration was found, \b false otherwise
      */
     bool init(const QString &configfile);
-    void start();
+    void start(bool localonly);
 
     void loadEntries(Provider *provider);
     void downloadPreview(Entry *entry);

@@ -15,6 +15,10 @@ knewstuff2_download:
  * test CoreEngine functionality
  * custom download dialog
 
+knewstuff2_cache:
+ * test CoreEngine functionality
+ * reports contents of cache
+
 knewstuff2_standard:
  * test Engine functionality
  * uses standard dialogs

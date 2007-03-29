@@ -40,6 +40,17 @@ kde4_add_executable(knewstuff2_standard ${knewstuff2_standard_SRCS})
 target_link_libraries(knewstuff2_standard ${KDE4_KDECORE_LIBS} knewstuff2)
 
 ##########################
+ 
+set(knewstuff2_cache_SRCS
+   knewstuff2_cache.cpp
+)
+
+kde4_automoc(${knewstuff2_cache_SRCS})
+kde4_add_executable(knewstuff2_cache ${knewstuff2_cache_SRCS})
+
+target_link_libraries(knewstuff2_cache ${KDE4_KDECORE_LIBS} knewstuff2)
+
+##########################
 
 set(kdxspreview_SRCS
    kdxspreview.cpp

@@ -128,7 +128,7 @@ bool CoreEngine::init(const QString &configfile)
 	return true;
 }
 
-void CoreEngine::start()
+void CoreEngine::start(bool localonly)
 {
 	loadProvidersCache();
 	loadEntryCache();
@@ -139,6 +139,12 @@ void CoreEngine::start()
 	if(!m_localregistrydir.isEmpty())
 	{
 		loadRegistry(m_localregistrydir);
+	}
+
+	if(localonly)
+	{
+		emit signalEntriesFinished();
+		return;
 	}
 
 	m_provider_loader = new ProviderLoader();

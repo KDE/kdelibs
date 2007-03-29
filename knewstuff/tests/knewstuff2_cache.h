@@ -1,0 +1,28 @@
+#ifndef KNEWSTUFF2_TEST_CACHE_H
+#define KNEWSTUFF2_TEST_CACHE_H
+
+#include <knewstuff2/core/entry.h>
+
+#include <qobject.h>
+
+namespace KNS
+{
+	class CoreEngine;
+};
+
+class KNewStuff2Cache : public QObject
+{
+Q_OBJECT
+public:
+	KNewStuff2Cache();
+	void run();
+public slots:
+	void slotEntryLoaded(KNS::Entry *entry);
+	void slotEntriesFailed();
+	void slotEntriesFinished();
+private:
+	void quitTest();
+	KNS::CoreEngine *m_engine;
+};
+
+#endif

@@ -48,7 +48,7 @@ KNS::Entry *Engine::uploadDialogModal(QString file)
 		SIGNAL(signalProvidersFailed()),
 		SLOT(slotProvidersFailed()));
 
-	start();
+	start(false);
 
 	while(m_command == upload)
 	{
@@ -88,7 +88,7 @@ void Engine::downloadDialog()
 		SLOT(slotEntriesFinished()));
 
 	m_command = download;
-	start();
+	start(false);
 }
 
 void Engine::uploadDialog()
@@ -112,7 +112,7 @@ void Engine::uploadDialog()
 //		SLOT(slotProvidersFailed()));
 
 	m_command = upload;
-	start();
+	start(false);
 }
 
 void Engine::slotProviderLoaded(KNS::Provider *provider)

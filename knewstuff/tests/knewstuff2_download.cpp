@@ -275,7 +275,7 @@ void KNewStuff2Download::run()
             SIGNAL(signalPreviewFailed()),
             SLOT(slotPreviewFailed()));
 
-        m_engine->start();
+        m_engine->start(false);
     } else {
         kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
         kWarning() << "Although this is not required anymore, so something went really wrong." << endl;
