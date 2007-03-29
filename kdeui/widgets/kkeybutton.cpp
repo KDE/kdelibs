@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,12 +27,14 @@
 #include "kkeyserver.h"
 #include "kshortcutdialog.h"
 
+//TODO: remove unneeded includes
 #include <qcursor.h>
 #include <qdrawutil.h>
 #include <qpainter.h>
 #include <QPolygon>
 #include <QStyle>
 #include <QKeyEvent>
+#include <QTimer>
 
 #include <kdebug.h>
 #include <kglobalaccel.h>
@@ -79,6 +82,8 @@ public:
 
 	KKeyButton *q;
 	QKeySequence keySequence;
+	QTimer modifierlessTimeout;
+	bool allowModifierless;
 	uint nKey;
 	uint modifierKeys;
 	bool isRecording;
@@ -86,18 +91,28 @@ public:
 
 
 KKeyButton::KKeyButton(QWidget *parent)
-: QPushButton( parent ), d(new KKeyButtonPrivate(this))
+ : QPushButton(parent),
+   d(new KKeyButtonPrivate(this))
 {
-	setFocusPolicy( Qt::StrongFocus );
+	//TODO: add key icon to button
+	setFocusPolicy(Qt::StrongFocus);
 	d->isRecording = false;
+	d->allowModifierless = true;
 	connect(this, SIGNAL(clicked()), this, SLOT(captureShortcut()));
-	setShortcut(QKeySequence());
+	connect(&d->modifierlessTimeout, SIGNAL(timeout()), this, SLOT(doneRecording()));
+	setText(i18n("None"));
 }
 
 
 KKeyButton::~KKeyButton ()
 {
 	delete d;
+}
+
+
+void KKeyButton::setAllowModifierless(bool allow)
+{
+	d->allowModifierless = allow;
 }
 
 
@@ -126,7 +141,7 @@ void KKeyButton::setKeySequence(const QKeySequence &seq)
 void KKeyButton::setText( const QString& text )
 {
 	QPushButton::setText( text );
-	setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
+	//setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
 }
 
 
@@ -134,22 +149,28 @@ void KKeyButton::startRecording()
 {
 	d->nKey = 0;
 	d->modifierKeys = 0;
+	d->keySequence = QKeySequence();
 	d->isRecording = true;
 	grabKeyboard();
+	setDown(true);
+	d->updateShortcutDisplay();
 	//### it's not clear to me when exactly to repaint. try stuff.
-	repaint();
+	//repaint();
 }
 
 
 void KKeyButton::doneRecording()
 {
 	//### other things that need to be done
+	d->modifierlessTimeout.stop();
 	d->isRecording = false;
+	d->updateShortcutDisplay();
 	releaseKeyboard();
 	emit capturedKeySequence(d->keySequence);
+	setDown(false);
 }
 
-
+#if 0
 void KKeyButton::paintEvent( QPaintEvent* )
 {
   QPainter painter(this);
@@ -206,7 +227,7 @@ void KKeyButton::paintEvent( QPaintEvent* )
   }
 
 }
-
+#endif
 
 void KKeyButtonPrivate::updateShortcutDisplay()
 {
@@ -221,22 +242,22 @@ void KKeyButtonPrivate::updateShortcutDisplay()
 		if (nKey == 0) {
 			if (modifierKeys) {
 #if defined(Q_WS_MAC)
-				if(modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
-				if(modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
-				if(modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-				if(modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
+				if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
+				if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
+				if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #elif defined(Q_WS_X11)
-				if(modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
-				if(modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-				if(modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
-				if(modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
+				if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
+				if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
+				if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
+				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #endif
 			} else
 				s = i18nc("What the user inputs now will be taken as the new shortcut", "Capturing");
 		}
+		//make it clear that input is still going on
+		s.append("...");
 	}
-	//make it clear that input is still going on
-	s.append("...");
 
 	q->setText(s);
 }
@@ -247,12 +268,14 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 	QPushButton::keyPressEvent(e);
 
 	//if key is a letter, it must be stored as lowercase
+	//TODO: umlauts are *very* broken, change that!
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ?
 		(QChar( e->key() & 0xff ).toLower().toLatin1() | (e->key() & 0xffff00) )
 		: e->key();
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
-	
+	//TODO: don't have the return key appear as first key of the sequence when it was pressed to start editing!
+	//hmmm.... return, space, and escape all don't work as intended.
 	if (!d->isRecording) {
 		if (keyQt == Qt::Key_Return) {
 			startRecording();
@@ -262,7 +285,7 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 		return;
 	}
 
-	if (d->modifierKeys != newModifiers && d->nKey == 0)
+	if (d->nKey == 0)
 		d->modifierKeys = newModifiers;
 
 	switch(keyQt) {
@@ -271,9 +294,20 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 	case Qt::Key_Alt:
 	case Qt::Key_Meta:
 	case Qt::Key_Menu: //unused (yes, but why?)
+		// If we are editing the first key in the sequence,
+		// display modifier keys which are held down
+		if(d->nKey == 0)
+			d->updateShortcutDisplay();
 		break;
 	default:
-		if(keyQt == Qt::Key_Return && d->nKey > 0)
+		if (!d->modifierKeys) {
+			if (!d->allowModifierless)
+				return;
+			else
+				d->modifierlessTimeout.start(750);
+		}
+
+		if (d->nKey > 0 && keyQt == Qt::Key_Return)
 			doneRecording();
 		else if (keyQt) {
 			if (d->nKey == 0)
@@ -282,15 +316,13 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 				d->keySequence = KKeyButtonPrivate::appendToSequence(d->keySequence, keyQt);
 
 			d->nKey++;
+			if (d->nKey >= 4) {
+				doneRecording();
+				return;
+            }
 			d->updateShortcutDisplay();
 		}
-		return;
 	}
-
-	// If we are editing the first key in the sequence,
-	// display modifier keys which are held down
-	if(d->nKey == 0)
-		d->updateShortcutDisplay();
 }
 
 

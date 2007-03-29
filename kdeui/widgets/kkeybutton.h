@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2001, 2002 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -56,6 +57,8 @@ public:
 	*/
 	virtual ~KKeyButton();
 
+	void setAllowModifierless(bool allow);
+
 	void setKeySequence(const QKeySequence &seq);
 	QKeySequence keySequence() const;
 
@@ -78,14 +81,16 @@ protected:
 	/**
 	* Reimplemented for internal reasons.
 	*/
-	void paintEvent(QPaintEvent *pe);
+//	void paintEvent(QPaintEvent *pe);
 	virtual void keyPressEvent(QKeyEvent *event);
 	virtual void keyReleaseEvent(QKeyEvent *event);
+
+private Q_SLOTS:
+	void doneRecording();
 
 private:
 	//TODO: can these be moved in the private class? //remark: yes, use emit q->blah!
 	void startRecording();
-	void doneRecording();
 	friend class KKeyButtonPrivate;
 	KKeyButtonPrivate *const d;
 
