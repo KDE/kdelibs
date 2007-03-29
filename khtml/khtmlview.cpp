@@ -514,6 +514,7 @@ void KHTMLView::init()
     setAcceptDrops(true);
     if (!widget())
         setWidget( new QWidget(this) );
+    widget()->setAttribute( Qt::WA_NoSystemBackground );
     QSize s = viewport()->size();
     resizeContents(s.width(), s.height());
 
@@ -3277,7 +3278,8 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode,
 	if (d->oldUnderMouse)
 	    d->oldUnderMouse->deref();
         d->oldUnderMouse = targetNode;
-        d->oldUnderMouse->ref();
+        if (d->oldUnderMouse)
+            d->oldUnderMouse->ref();
     }
 
     bool swallowEvent = false;
