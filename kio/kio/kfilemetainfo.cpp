@@ -48,7 +48,9 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfo& ) {
 QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&) {
     return s;
 }
-
+/**
+ * @brief Wrap a QIODevice in a Strigi stream.
+ **/
 class QIODeviceInputStream : public jstreams::BufferedInputStream<char> {
 private:
     QIODevice& in;
@@ -72,6 +74,10 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
     }
     return nwritten;
 }
+/**
+ * @brief KMetaInfoWriter handles the data returned by the Strigi analyzers and 
+ * store it in a KFileMetaInfo.
+ **/
 class KMetaInfoWriter : public IndexWriter {
 public:
     void startAnalysis(AnalysisResult*) {
@@ -81,48 +87,49 @@ public:
         QString text = QString::fromUtf8(s, n);
         //qDebug() << text;
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* field,
             const string& value) {
         if (idx->writerData()) {
             QString val = QString::fromUtf8(value.c_str(), value.size());
-            addField(idx, fieldname, val);
+            addField(idx, field, val);
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* field,
         const unsigned char* data, uint32_t size) {
         if (idx->writerData()) {
             QByteArray d((const char*)data, size);
-            addField(idx, fieldname, QVariant(d));
+            addField(idx, field, QVariant(d));
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* field,
             uint32_t value) {
         if (idx->writerData()) {
-            addField(idx, fieldname, QVariant(value));
+            addField(idx, field, QVariant(value));
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* field,
             int32_t value) {
         if (idx->writerData()) {
-            addField(idx, fieldname, QVariant(value));
+            addField(idx, field, QVariant(value));
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* fieldname,
+    void addField(const AnalysisResult* idx, const RegisteredField* field,
             double value) {
         if (idx->writerData()) {
-            addField(idx, fieldname, QVariant(value));
+            addField(idx, field, QVariant(value));
         }
     }
     void addField(const AnalysisResult* idx,
-            const RegisteredField* fieldname, const QVariant& value) {
+            const RegisteredField* field, const QVariant& value) {
         QHash<QString, KFileMetaInfoItem>* info
             = static_cast<QHash<QString, KFileMetaInfoItem>*>(
             idx->writerData());
         if (info) {
-            string name(fieldname->getKey());
+            string name(field->getKey());
             QString key = QString::fromUtf8(name.c_str(), name.size());
             QHash<QString, KFileMetaInfoItem>::iterator i = info->find(key);
             if (i == info->end()) {
+                // retrieve the info describing this field
                 PredicateProperties pp(key);
                 info->insert(key, KFileMetaInfoItem(pp, value, 0, true));
             } else {
@@ -130,14 +137,21 @@ public:
             }
         }
     }
-    virtual void addValue(const Strigi::AnalysisResult*,
-                          const RegisteredField*, const std::string&, const std::string&)
-    {
-        // ######## TODO
+    void addValue(const Strigi::AnalysisResult* ar,
+            const RegisteredField* field, const std::string& name,
+            const std::string& value) {
+        if (ar->writerData()) {
+            QVariantMap m;
+            m.insert(name.c_str(), value.c_str());
+            addField(ar, field, m);
+        }
     }
 
-    void addTriplet(const std::string& subject,
-        const std::string& predicate, const std::string& object) {}
+    void addTriplet(const std::string& /*subject*/,
+        const std::string& /*predicate*/, const std::string& /*object*/) {
+        // these triples does not convey information about this file,
+        // so we ignore it
+    }
     void finishAnalysis(const AnalysisResult*) {}
     void deleteEntries(const vector<string>&) {}
     void deleteAllEntries() {}
