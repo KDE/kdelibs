@@ -927,7 +927,7 @@ public:
    * @param c the KDE configuration saver
    * @param group the name of the section in KConfig
    */
-  void writeConfig( KConfig* c = 0L, QString group = QString() );
+  void writeConfig( KConfig* c = 0L, const QString &group = QString() );
 
   /**
    * Like writeConfig but reads the whole stuff in.
@@ -945,7 +945,7 @@ public:
    * @param c the KDE configuration saver
    * @param group the name of the section in KConfig
    */
-  void readConfig ( KConfig* c = 0L, QString group = QString() );
+  void readConfig ( KConfig* c = 0L, const QString &group = QString() );
 #endif
 
   void setMainDockWidget2(K3DockWidget *);
@@ -1357,7 +1357,7 @@ public:
    * @param c     KDE class for saving configurations
    * @param group name of section to write to
    */
-  void writeDockConfig( KConfig* c = 0L, QString group = QString() );
+  void writeDockConfig( KConfig* c = 0L, const QString &group = QString() );
 
   /**
    * It reads the current dock state from the given section of KConfig.
@@ -1365,7 +1365,7 @@ public:
    * @param c     KDE class for saving configurations
    * @param group name of section to read from
    */
-  void readDockConfig ( KConfig* c = 0L, QString group = QString() );
+  void readDockConfig ( KConfig* c = 0L, const QString &group = QString() );
 #endif
 
   /**
@@ -1470,8 +1470,8 @@ public:
   void readDockConfig(QDomElement &base);
 
 #ifndef NO_KDE2
-  void writeDockConfig( KConfig* c = 0L, QString group = QString() );
-  void readDockConfig ( KConfig* c = 0L, QString group = QString() );
+  void writeDockConfig( KConfig* c = 0L, const QString &group = QString() );
+  void readDockConfig ( KConfig* c = 0L, const QString &group = QString() );
 #endif
 
 

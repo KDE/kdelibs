@@ -170,12 +170,12 @@ void K3DockMainWindow::readDockConfig(QDomElement &base)
 }
 
 #ifndef NO_KDE2
-void K3DockMainWindow::writeDockConfig( KConfig* c, QString group )
+void K3DockMainWindow::writeDockConfig( KConfig* c, const QString &group )
 {
   dockManager->writeConfig( c, group );
 }
 
-void K3DockMainWindow::readDockConfig( KConfig* c, QString group )
+void K3DockMainWindow::readDockConfig( KConfig* c, const QString &group )
 {
   dockManager->readConfig( c, group );
 }
@@ -2552,13 +2552,13 @@ void K3DockManager::setReadDockConfigMode(int mode)
 }
 
 #ifndef NO_KDE2
-void K3DockManager::writeConfig( KConfig* c, QString group )
+void K3DockManager::writeConfig( KConfig* c, const QString &_group )
 {
   //debug("BEGIN Write Config");
   if (!c) {
       c = KGlobal::config().data();
   }
-  if ( group.isEmpty() ) group = "dock_setting_default";
+  QString group = _group.isEmpty() ? "dock_setting_default" : _group;
 
   KConfigGroup cg(c, group);
   cg.writeEntry( "Version", DOCK_CONFIG_VERSION );
@@ -2701,12 +2701,12 @@ void K3DockManager::writeConfig( KConfig* c, QString group )
   //debug("END Write Config");
 }
 #include <qmessagebox.h>
-void K3DockManager::readConfig( KConfig* c, QString group )
+void K3DockManager::readConfig( KConfig* c, const QString &_group )
 {
   if (!c) {
       c = KGlobal::config().data();
   }
-  if ( group.isEmpty() ) group = "dock_setting_default";
+  QString group = group.isEmpty() ? "dock_setting_default" : _group;
 
   KConfigGroup cg(c, group );
   QStringList nameList;
@@ -3152,12 +3152,12 @@ void K3DockArea::resizeEvent(QResizeEvent *rsize)
 }
 
 #ifndef NO_KDE2
-void K3DockArea::writeDockConfig( KConfig* c, QString group )
+void K3DockArea::writeDockConfig( KConfig* c, const QString &group )
 {
   dockManager->writeConfig( c, group );
 }
 
-void K3DockArea::readDockConfig( KConfig* c, QString group )
+void K3DockArea::readDockConfig( KConfig* c, const QString &group )
 {
   dockManager->readConfig( c, group );
 }
@@ -3238,7 +3238,7 @@ QStringList K3DockContainer::containedWidgets() const {
 void K3DockContainer::showWidget(K3DockWidget *) {
 }
 
-void K3DockContainer::insertWidget (K3DockWidget *dw, QPixmap, const QString &, int &)
+void K3DockContainer::insertWidget (K3DockWidget *dw, const QPixmap &, const QString &, int &)
 	{
 		struct ListItem *it=new struct ListItem;
 		it->data=strdup(dw->name());

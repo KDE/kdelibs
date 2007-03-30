@@ -46,7 +46,7 @@ public:
   K3DockContainer();
   virtual ~K3DockContainer();
   virtual K3DockWidget *parentDockWidget();
-  virtual void insertWidget (K3DockWidget *, QPixmap, const QString &, int &);
+  virtual void insertWidget (K3DockWidget *, const QPixmap &, const QString &, int &);
   virtual void showWidget(K3DockWidget *);
   virtual void removeWidget(K3DockWidget*);
   virtual void undockWidget(K3DockWidget*);
