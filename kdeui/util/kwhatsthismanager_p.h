@@ -19,6 +19,7 @@
 #ifndef KWHATSTHISMANAGER_P_H
 #define KWHATSTHISMANAGER_P_H
 
+#include <kdelibs_export.h>
 #include <QEvent>
 #include <QWidget>
 

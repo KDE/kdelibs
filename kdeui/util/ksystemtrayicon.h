@@ -18,6 +18,8 @@
 #ifndef KSYSTEMTRAY_H
 #define KSYSTEMTRAY_H
 
+#include <kdelibs_export.h>
+
 #include <QtGui/QSystemTrayIcon>
 
 #include <kglobal.h>
