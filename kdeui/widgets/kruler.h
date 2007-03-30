@@ -384,7 +384,7 @@ public:
   /**
    * Returns the current ruler offset.
    **/
-  inline int offset() const;
+  int offset() const;
 
   int endOffset() const;
 
