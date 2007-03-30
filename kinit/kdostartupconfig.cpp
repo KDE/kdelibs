@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 #undef QT_NO_CAST_ASCII
 
 // See description in kstartupconfig.cpp .
-
+#include <config.h>
 #include <QtCore/QFile>
 #include <qtextstream.h>
 #include <kcomponentdata.h>
