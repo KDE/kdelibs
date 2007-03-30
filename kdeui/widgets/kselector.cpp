@@ -284,6 +284,11 @@ Qt::ArrowType KSelector::arrowDirection() const
 void KSelector::drawContents( QPainter * )
 {}
 
+QSize KSelector::minimumSize() const
+{
+    return sizeHint();
+}
+
 void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 {
     painter->setPen( QPen() );

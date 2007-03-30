@@ -177,8 +177,7 @@ public:
 protected:
 
   virtual void drawContents( QPainter * );
-  virtual QSize minimumSize() const
-  { return sizeHint(); }
+  virtual QSize minimumSize() const;
 
 private:
   class KGradientSelectorPrivate;
