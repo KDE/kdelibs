@@ -70,7 +70,7 @@ PHONON_EXECUTE_TESTS(
 	audiooutputdevicetest_fake
 	audiocapturedevicetest_fake
 	videocapturedevicetest_fake
-	bytestreamtest_fake
+	#bytestreamtest_fake
 	bytestreamtest2_fake
 	audiodevicelisttest
 	)
