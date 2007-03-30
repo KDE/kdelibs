@@ -1229,9 +1229,9 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "locale"))
         return "share/locale/";
     if (!strcmp(type, "services"))
-        return "share/services/";
+        return "share/kde4/services/";
     if (!strcmp(type, "servicetypes"))
-        return "share/servicetypes/";
+        return "share/kde4/servicetypes/";
     if (!strcmp(type, "mime"))
         return "share/mimelnk/";
     if (!strcmp(type, "cgi"))
