@@ -32,7 +32,7 @@ using namespace Phonon;
 
 void SeekSliderTest::initTestCase()
 {
-        Phonon::loadFakeBackend();
+    Phonon::loadFakeBackend();
 	ss = new SeekSlider;
 	QVERIFY( ss != 0 );
 	qslider = ss->findChild<QSlider*>();
@@ -40,6 +40,16 @@ void SeekSliderTest::initTestCase()
 	QVERIFY( qslider != 0 );
 	QVERIFY( qlabel != 0 );
 	media = new MediaObject( this );
+}
+
+void SeekSliderTest::waitForSignal(QObject *obj, const char *signalName, int timeout)
+{
+    QEventLoop loop;
+    connect(obj, signalName, &loop, SLOT(quit()));
+    if (timeout > 0) {
+        QTimer::singleShot(timeout, &loop, SLOT(quit()));
+    }
+    loop.exec();
 }
 
 void SeekSliderTest::testEnabled()
@@ -63,10 +73,23 @@ void SeekSliderTest::setMedia()
 void SeekSliderTest::playMedia()
 {
 	media->play();
-	if( media->state() != Phonon::PlayingState )
-		QVERIFY( !qslider->isEnabled() );
-	else
-		QVERIFY( qslider->isEnabled() );
+    QSignalSpy stateSpy(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
+    while (media->state() != Phonon::PlayingState) {
+        waitForSignal(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
+        QVERIFY(!stateSpy.isEmpty());
+        switch (qvariant_cast<Phonon::State>(stateSpy.last().first())) {
+        case Phonon::PlayingState:
+        case Phonon::PausedState:
+        case Phonon::BufferingState:
+            QVERIFY(qslider->isEnabled());
+            break;
+        case Phonon::ErrorState:
+        case Phonon::StoppedState:
+        case Phonon::LoadingState:
+            QVERIFY(!qslider->isEnabled());
+            break;
+        }
+    }
 }
 
 void SeekSliderTest::seekWithSlider()
@@ -83,3 +106,4 @@ void SeekSliderTest::cleanupTestCase()
 
 QTEST_KDEMAIN( SeekSliderTest, GUI )
 #include "seekslider.moc"
+// vim: ts=4

@@ -40,6 +40,7 @@ class SeekSliderTest : public QObject
 		void seekWithSlider();
 		void cleanupTestCase();
 	private:
+        void waitForSignal(QObject *obj, const char *signalName, int timeout);
 		Phonon::SeekSlider* ss;
 		QSlider* qslider;
 		QLabel* qlabel;
@@ -47,3 +48,4 @@ class SeekSliderTest : public QObject
 };
 
 #endif // SEEKSLIDER_H
+// vim: ts=4
