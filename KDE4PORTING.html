@@ -1566,6 +1566,14 @@ in the drop/paste side.</li>
 <li>void setFilterMimeType(const QString &amp;label, const KMimeType::List &amp;types, const KMimeType::Ptr &amp;defaultType) was removed</li>
 <li>void setPreviewWidget(const QWidget *w) was removed</li>
 <li>void updateStatusLine(int dirs, int files); was removed</li>
+<li>protected member locationEdit is now a method locationEdit()</li>
+<li>protected member filterWidget is now a method filterWidget()</li>
+</ul>
+
+<h4>KFileIconView, KFileDetailView, KFileTreeView, KFileTreeViewItem</h4>
+<ul>
+<li>All renamed to K3File* since they are based upon K3IconView and K3ListView</li>
+<li>No replacement yet, apart from the more low-level KDirModel</li>
 </ul>
 
 <h4>KFileItemList</h4>
