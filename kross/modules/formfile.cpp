@@ -52,7 +52,7 @@ namespace Kross {
                 setModal( false );
                 setParent( parent, windowFlags() & ~Qt::WindowType_Mask );
                 setGeometry(0, 0, width(), height());
-                setFocusProxy( locationEdit );
+                setFocusProxy( locationEdit() );
                 //setMinimumSize( QSize(width(), height()) );
                 setMinimumSize( QSize(480,360) );
 
@@ -81,16 +81,16 @@ namespace Kross {
             QString selectedFile() const
             {
                 KUrl selectedUrl;
-                QString locationText = locationEdit->currentText();
+                QString locationText = locationEdit()->currentText();
                 if( locationText.contains( '/' ) ) { // relative path? -> prepend the current directory
-                    KUrl u( ops->url(), KShell::tildeExpand(locationText) );
-                    selectedUrl = u.isValid() ? u : selectedUrl = ops->url();
+                    KUrl u( baseUrl(), KShell::tildeExpand(locationText) );
+                    selectedUrl = u.isValid() ? u : selectedUrl = baseUrl();
                 }
                 else { // simple filename -> just use the current URL
-                    selectedUrl = ops->url();
+                    selectedUrl = baseUrl();
                 }
 
-                QFileInfo fi( selectedUrl.path(), locationEdit->currentText() );
+                QFileInfo fi( selectedUrl.path(), locationEdit()->currentText() );
                 return fi.absoluteFilePath();
             }
 
