@@ -22,19 +22,31 @@
 
 #include "kdelibs_export.h"
 #include <QVariant>
-#include <QIODevice>
 
+class QIODevice;
 class KUrl;
 
 class KIO_EXPORT KFileWritePlugin : public QObject {
     Q_OBJECT
     friend class KFileWriterProvider;
 public:
-    KFileWritePlugin(QObject *parent, const QStringList& args);
+    /**
+     * @brief Constructor that initializes the object as a QObject.
+     **/
+    KFileWritePlugin(QObject* parent, const QStringList& args);
+    /**
+     * @brief Destructor
+     **/
     virtual ~KFileWritePlugin();
+    /**
+     * @brief determine if this plugin can write a value into a particular
+     * resource.
+     **/
     virtual bool canWrite(QIODevice& file, const QString& key) = 0;
+    /**
+     * @brief Write a set of values into a resource pointed to by @p file.
+     **/
     virtual bool write(QIODevice& file, const QVariantMap& data) = 0;
-
 };
 
 #endif
