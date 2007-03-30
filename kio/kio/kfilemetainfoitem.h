@@ -34,24 +34,59 @@ friend class KFileMetaInfo;
 friend class KFileMetaInfoPrivate;
 friend class KMetaInfoWriter;
 public:
+    /**
+     * @brief Default constructor
+     **/
     KFileMetaInfoItem();
+    /**
+     * @brief Copy constructor
+     **/
     KFileMetaInfoItem(const KFileMetaInfoItem& item);
+    /**
+     * @brief Destructor
+     **/
     ~KFileMetaInfoItem();
+    /**
+     * @brief Copy operator
+     **/
     const KFileMetaInfoItem& operator=(const KFileMetaInfoItem& item);
-    bool setValue(const QVariant& value);
+    /**
+     * @brief Can this item be edited.
+     **/
     bool isEditable() const;
+    /**
+     * @brief Has this value been removed, e.g with setValue(QVarian())
+     **/
     bool isRemoved() const;
+    /**
+     * @brief Can this item be removed.
+     **/
     bool isModified() const;
+    /**
+     * @brief Retrieve the current value of this item
+     **/
     const QVariant& value() const;
+    /**
+     * @brief Set the value of this field.
+     **/
+    bool setValue(const QVariant& value);
+    /**
+     * @brief Append a value to the properties in this file.
+     **/
     bool addValue(const QVariant&);
+    /**
+     * @brief Is this a valid item.
+     **/
     bool isValid() const;
+    /**
+     * @brief Retrieve the properties of this field type.
+     **/
     const PredicateProperties& properties() const;
     /**
      * Localized name of the predicate.
      * Convenience function for properties().name();
      **/
     const QString& name() const;
-
     /**
      * This method returns a translated suffix to be displayed after the
      * value. Think of the kbps in 128kbps
@@ -59,7 +94,6 @@ public:
      * @return the prefix
      */
     QString suffix() const;
-
 private:
     QSharedDataPointer<KFileMetaInfoItemPrivate> p;
 
