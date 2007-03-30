@@ -21,7 +21,7 @@
 #ifndef KURLREQUESTERDIALOG_H
 #define KURLREQUESTERDIALOG_H
 
-#include <kio_export.h>
+#include <kio/kio_export.h>
 #include <kdialog.h>
 #include <kurl.h>
 
