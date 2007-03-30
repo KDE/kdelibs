@@ -21,9 +21,11 @@
 #ifndef __kebdrag_h
 #define __kebdrag_h
 
+#include <kdelibs_export.h>
+
+#include <kbookmark.h>
 #include <q3dragobject.h>
 #include <q3valuelist.h>
-#include <kbookmark.h>
 
 // Clipboard/dnd data : URLs + XML for bookmarks
 class KDE3SUPPORT_EXPORT K3BookmarkDrag : public Q3UriDrag

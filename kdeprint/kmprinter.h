@@ -23,12 +23,15 @@
 #if defined( _KDEPRINT_COMPILE )
 /* internal header, do not use except if you are a KDEPrint developer */
 
+#include <kdelibs_export.h>
+
+#include <kdeprint/kmobject.h>
+#include <kurl.h>
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <QList>
-#include <kurl.h>
 #include <qmap.h>
-#include <kdeprint/kmobject.h>
 
 class KMDBEntry;
 class DrMain;

@@ -20,10 +20,13 @@
 #ifndef KDEPRINTCHECK_H
 #define KDEPRINTCHECK_H
 
-#include <QtCore/QString>
-#include <QtCore/QStringList>
+#include <kdelibs_export.h>
+
 #include <kconfiggroup.h>
 #include <kurl.h>
+
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 class KDEPRINT_EXPORT KdeprintChecker
 {

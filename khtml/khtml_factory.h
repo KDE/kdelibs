@@ -20,10 +20,13 @@
 #ifndef __khtml_factory_h__
 #define __khtml_factory_h__
 
+#include <kdelibs_export.h>
+
 #include <kparts/factory.h>
 #include <kparts/historyprovider.h>
-#include <QLinkedList>
 #include <kurl.h>
+
+#include <QLinkedList>
 
 class KComponentData;
 class KIconLoader;
