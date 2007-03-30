@@ -147,10 +147,11 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QWidget *topcontents = new QWidget (dialog);
     QVBoxLayout* toplayout = new QVBoxLayout( topcontents );
     toplayout->setSpacing( KDialog::spacingHint()*2 );
-    toplayout->setMargin( KDialog::marginHint() );
+    toplayout->setMargin(0);
 
     QWidget *contents = new QWidget(topcontents);
     QHBoxLayout * lay = new QHBoxLayout(contents);
+    lay->setMargin(0);
     lay->setSpacing(KDialog::spacingHint());
     toplayout->addWidget(contents);
 
