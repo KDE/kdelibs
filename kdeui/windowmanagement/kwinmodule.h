@@ -27,7 +27,7 @@
 #include <qwindowdefs.h> //For WId
 #include "kdelibs_export.h"
 
-#ifdef Q_OS_UNIX
+#ifdef Q_WS_X11
 
 class KWinModulePrivate;
 
@@ -343,10 +343,10 @@ private:
     friend class KWinModulePrivate;
 };
 
-#else  //Q_OS_UNIX
+#else  //Q_WS_X11
 class KDEUI_EXPORT KWinModule : public QObject
 {
 };
-#endif //Q_OS_UNIX
+#endif //Q_WS_X11
 
 #endif
