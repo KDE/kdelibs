@@ -16,6 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kfilebookmarkhandler.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -25,7 +27,6 @@
 #include <kstandarddirs.h>
 
 #include "kfiledialog.h"
-#include "kfilebookmarkhandler.h"
 
 KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
     : QObject( dialog ),

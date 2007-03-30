@@ -24,11 +24,12 @@
 
 class QTextStream;
 class KMenu;
+class KFileDialog;
 
 /**
  * Note: Ported to new KBookmarkMenu, but untested
  */
-class KIO_EXPORT KFileBookmarkHandler : public QObject, public KBookmarkOwner
+class KFileBookmarkHandler : public QObject, public KBookmarkOwner
 {
     Q_OBJECT
 
