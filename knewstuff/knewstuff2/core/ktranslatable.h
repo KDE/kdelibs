@@ -92,6 +92,13 @@ public:
 	QStringList languages();
 
 	/**
+	 * Returns the language which most likely resembles the current language.
+	 *
+	 * @return Current language, or one close to it
+	 */
+	QString language();
+
+	/**
 	 * Returns a map of all languages and their strings.
 	 *
 	 * @return Map of all languages as keys and all strings as values

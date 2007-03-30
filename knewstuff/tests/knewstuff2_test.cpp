@@ -19,6 +19,12 @@ KNewStuff2Test::KNewStuff2Test()
 : QObject()
 {
 	m_engine = NULL;
+	m_testall = false;
+}
+
+void KNewStuff2Test::setTestAll(bool testall)
+{
+	m_testall = testall;
 }
 
 void KNewStuff2Test::entryTest()
@@ -122,6 +128,9 @@ void KNewStuff2Test::engineTest()
 			SIGNAL(signalEntryLoaded(KNS::Entry*)),
 			SLOT(slotEntryLoaded(KNS::Entry*)));
 		connect(m_engine,
+			SIGNAL(signalEntriesFinished()),
+			SLOT(slotEntriesFinished()));
+		connect(m_engine,
 			SIGNAL(signalEntriesFailed()),
 			SLOT(slotEntriesFailed()));
 		connect(m_engine,
@@ -154,12 +163,20 @@ void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry)
 	kDebug() << "SLOT: slotEntryLoaded" << endl;
 	kDebug() << "-- entry: " << entry->name().representation() << endl;
 
-	kDebug() << "-- now, download the entry's preview and payload file" << endl;
+	if(m_testall)
+	{
+		kDebug() << "-- now, download the entry's preview and payload file" << endl;
 
-	if(!entry->preview().isEmpty())
-		m_engine->downloadPreview(entry);
-	if(!entry->payload().isEmpty())
-		m_engine->downloadPayload(entry);
+		if(!entry->preview().isEmpty())
+			m_engine->downloadPreview(entry);
+		if(!entry->payload().isEmpty())
+			m_engine->downloadPayload(entry);
+	}
+}
+
+void KNewStuff2Test::slotEntriesFinished()
+{
+	quitTest();
 }
 
 void KNewStuff2Test::slotPayloadLoaded(KUrl payload)
@@ -205,9 +222,16 @@ void KNewStuff2Test::quitTest()
 	}
 }
 
+static KCmdLineOptions options[] =
+{
+	{"testall", "Downloads all previews and payloads", 0},
+	KCmdLineLastOption
+};
+
 int main(int argc, char **argv)
 {
 	KCmdLineArgs::init(argc, argv, "knewstuff2_test", NULL, NULL, NULL);
+	KCmdLineArgs::addCmdLineOptions(options);
 	KApplication app(false);
 
 	// Take source directory into account
@@ -215,8 +239,13 @@ int main(int argc, char **argv)
 	KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
 
 	KNewStuff2Test *test = new KNewStuff2Test();
-	test->entryTest();
-	test->providerTest();
+	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+	if(args->isSet("testall"))
+	{
+		test->setTestAll(true);
+		test->entryTest();
+		test->providerTest();
+	}
 	test->engineTest();
 
 	return app.exec();

@@ -10,6 +10,8 @@ hierarchy of the library:
 knewstuff2_test:
  * test CoreEngine functionality
  * command line only
+ * syntax 1: knewstuff2_test (downloads feed and caches)
+ * syntax 2: knewstuff2_test --testall (also downloads files)
 
 knewstuff2_download:
  * test CoreEngine functionality

@@ -733,10 +733,25 @@ void CoreEngine::mergeProviders(Provider::List *providers)
 
 bool CoreEngine::entryCached(Entry *entry)
 {
-	// FIXME: this is invalid if entry name translations are added over time
+	// Direct cache lookup first
 	// FIXME: probably better use URL (changes less frequently) and do iteration
-	// by hand if URL not found?
 	if(m_entry_index.contains(id(entry))) return true;
+
+	// If entry wasn't found, either
+	// - a translation was added which matches our locale better, or
+	// - our locale preferences changed, or both.
+	// In that case we've got to find the old name in the new entry,
+	// since we assume that translations are always added but never removed.
+	for(int i = 0; i < m_entry_cache.count(); i++)
+	{
+		Entry *oldentry = m_entry_cache.at(i);
+		QString lang = id(oldentry).section(":", 0, 0);
+		QString oldname = oldentry->name().translated(lang);
+		QString name = entry->name().translated(lang);
+		kDebug(550) << "CACHE: compare entry names " << oldname << "/" << name << endl;
+		if(name == oldname) return true;
+	}
+
 	return false;
 }
 
@@ -757,7 +772,7 @@ void CoreEngine::mergeEntries(Entry::List *entries)
 			// more robust than comparing all attributes? (-> xml infoset)
 			// FIXME: separate version updated from server-side translation updates
 			Entry *oldentry = m_entry_index[id(e)];
-			if(e->releaseDate() > oldentry->releaseDate())
+			if((!oldentry) || (e->releaseDate() > oldentry->releaseDate()))
 			{
 				kDebug(550) << "CACHE: update entry" << endl;
 				e->setStatus(Entry::Updateable);
@@ -913,9 +928,9 @@ void CoreEngine::registerEntry(Entry *entry)
 QString CoreEngine::id(Entry *e)
 {
 	// This is the primary key of an entry:
-	// A lookup on the name, which must exist might be translated
+	// A lookup on the name, which must exist but might be translated
 	// This requires some care for comparison since translations might be added
-	return e->name().representation();
+	return e->name().language() + ":" + e->name().representation();
 }
 
 QString CoreEngine::pid(Provider *p)

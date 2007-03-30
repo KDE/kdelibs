@@ -16,6 +16,7 @@ class KNewStuff2Test : public QObject
 Q_OBJECT
 public:
 	KNewStuff2Test();
+	void setTestAll(bool testall);
 	void entryTest();
 	void providerTest();
 	void engineTest();
@@ -24,11 +25,13 @@ public slots:
 	void slotProvidersFailed();
 	void slotEntryLoaded(KNS::Entry *entry);
 	void slotEntriesFailed();
+	void slotEntriesFinished();
 	void slotPayloadLoaded(KUrl payload);
 	void slotPayloadFailed();
 private:
 	void quitTest();
 	KNS::CoreEngine *m_engine;
+	bool m_testall;
 };
 
 #endif

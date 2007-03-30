@@ -52,6 +52,18 @@ QString KTranslatable::representation()
 	else return *(m_strings.begin());
 }
 
+QString KTranslatable::language()
+{
+	if(m_strings.isEmpty()) return QString();
+
+	QStringList langs = KGlobal::locale()->languageList();
+	for(QStringList::Iterator it = langs.begin(); it != langs.end(); ++it)
+		if(m_strings.contains(*it)) return (*it);
+
+	if(m_strings.contains(QString())) return QString();
+	else return m_strings.begin().key();
+}
+
 QString KTranslatable::translated(QString lang)
 {
 	if(m_strings.contains(lang))
