@@ -930,7 +930,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
         // Prepare the mimetype to show in the question (comment if available, name as fallback)
         QString mimeName = serviceType;
         KMimeType::Ptr mime = KMimeType::mimeType(serviceType);
-        if ( mime->name() != KMimeType::defaultMimeType() )
+        if ( mime && mime->name() != KMimeType::defaultMimeType() )
             mimeName = mime->comment();
 
         // Check if we already asked the user, for this page

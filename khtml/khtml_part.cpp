@@ -2027,7 +2027,7 @@ void KHTMLPart::end()
 bool KHTMLPart::doOpenStream( const QString& mimeType )
 {
     KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
-    if ( mime->is( "text/html" ) || mime->is( "text/xml" ) )
+    if ( mime && ( mime->is( "text/html" ) || mime->is( "text/xml" ) ) )
     {
         begin( url() );
         return true;
@@ -4684,8 +4684,8 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
         return 0L;
   }
 
-  KService::List::ConstIterator it = offers.begin();
-  const KService::List::ConstIterator itEnd = offers.end();
+  KService::List::ConstIterator it = offers.constBegin();
+  const KService::List::ConstIterator itEnd = offers.constEnd();
   for ( ; it != itEnd; ++it )
   {
     KService::Ptr service = (*it);
@@ -6431,7 +6431,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     {
       img = static_cast<HTMLImageElementImpl *>(innerNode.handle());
       u = KUrl( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
-      pix = KIconLoader::global()->loadIcon(KMimeType::mimeType("image/png")->iconName(), K3Icon::Desktop);
+      pix = KIconLoader::global()->loadIcon("image-png", K3Icon::Desktop);
     }
     else
     {
