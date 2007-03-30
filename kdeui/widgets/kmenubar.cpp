@@ -68,6 +68,8 @@
 
 */
 
+static int block_resize = 0;
+
 class KMenuBar::KMenuBarPrivate
 {
 public:
@@ -344,8 +346,6 @@ void KMenuBar::selectionTimeout()
 #endif
     }
 }
-
-int KMenuBar::block_resize = 0;
 
 void KMenuBar::resizeEvent( QResizeEvent *e )
 {

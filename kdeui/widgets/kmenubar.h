@@ -98,7 +98,6 @@ private:
     void setTopLevelMenuInternal(bool top_level);
     void updateMenuBarSize();
     void checkSize( int& w, int& h );
-    static int block_resize;
 private:
     class KMenuBarPrivate;
     KMenuBarPrivate *d;
