@@ -148,15 +148,15 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
     virtual void hideEvent(QHideEvent*);
 
-private Q_SLOTS:
-    void resetKeyboardVars(bool noMatches = false);
-    void actionHovered(QAction* action);
-    void showCtxMenu(const QPoint &pos);
-
 private:
     QString underlineText(const QString& text, uint length);
     class KMenuPrivate;
     KMenuPrivate * const d;
+
+    Q_PRIVATE_SLOT(d, void resetKeyboardVars(bool));
+    Q_PRIVATE_SLOT(d, void actionHovered(QAction*));
+    Q_PRIVATE_SLOT(d, void showCtxMenu(const QPoint &));
+
 };
 
 

@@ -39,8 +39,9 @@
 class KMenu::KMenuPrivate
 {
 public:
-    KMenuPrivate ()
-        : noMatches(false)
+    KMenuPrivate (KMenu *_parent)
+        : parent(_parent)
+        , noMatches(false)
         , shortcuts(false)
         , autoExec(false)
         , lastHitAction(0L)
@@ -48,13 +49,20 @@ public:
         , keyboardModifiers(Qt::NoModifier)
         , ctxMenu(0)
         , highlightedAction(0)
-    {}
+    {
+        resetKeyboardVars();
+    }
 
     ~KMenuPrivate ()
     {
         delete ctxMenu;
     }
 
+    void resetKeyboardVars(bool noMatches = false);
+    void actionHovered(QAction* action);
+    void showCtxMenu(const QPoint &pos);
+
+    KMenu *parent;
 
     // variables for keyboard navigation
     QTimer clearTimer;
@@ -101,17 +109,15 @@ Q_DECLARE_METATYPE(KMenuContext)
 
 KMenu::KMenu(QWidget *parent)
     : QMenu(parent)
-    , d(new KMenuPrivate())
+    , d(new KMenuPrivate(this))
 {
-    resetKeyboardVars();
     connect(&(d->clearTimer), SIGNAL(timeout()), SLOT(resetKeyboardVars()));
 }
 
 KMenu::KMenu( const QString & title, QWidget * parent )
     : QMenu(title, parent)
-    , d(new KMenuPrivate())
+    , d(new KMenuPrivate(this))
 {
-    resetKeyboardVars();
     connect(&(d->clearTimer), SIGNAL(timeout()), SLOT(resetKeyboardVars()));
 }
 
@@ -167,7 +173,7 @@ QAction* KMenu::addTitle(const QIcon &icon, const QString &text, QAction* before
 void KMenu::closeEvent(QCloseEvent*e)
 {
     if (d->shortcuts)
-        resetKeyboardVars();
+        d->resetKeyboardVars();
     QMenu::closeEvent(e);
 }
 
@@ -203,7 +209,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
             || key == Qt::Key_Right || key == Qt::Key_F1 || key == Qt::Key_PageUp
             || key == Qt::Key_PageDown || key == Qt::Key_Back || key == Qt::Key_Select) {
 
-        resetKeyboardVars();
+        d->resetKeyboardVars();
         // continue event processing by QMenu
         //e->ignore();
         d->keyboardModifiers = e->modifiers();
@@ -218,7 +224,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
         if (key == Qt::Key_Backspace) {
 
             if (d->keySeq.length() == 1) {
-                resetKeyboardVars();
+                d->resetKeyboardVars();
                 return;
             }
 
@@ -226,10 +232,10 @@ void KMenu::keyPressEvent(QKeyEvent* e)
             keyString = d->keySeq.left(d->keySeq.length() - 1);
 
             // allow sequence matching to be tried again
-            resetKeyboardVars();
+            d->resetKeyboardVars();
 
         } else if (key == Qt::Key_Delete) {
-            resetKeyboardVars();
+            d->resetKeyboardVars();
 
             // clear active item
             setActiveAction(0L);
@@ -237,7 +243,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
 
         } else if (d->noMatches) {
             // clear if there are no matches
-            resetKeyboardVars();
+            d->resetKeyboardVars();
 
             // clear active item
             setActiveAction(0L);
@@ -251,7 +257,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
     } else if (key == Qt::Key_Backspace && menuAction()) {
         // backspace with no chars in the buffer... go back a menu.
         hide();
-        resetKeyboardVars();
+        d->resetKeyboardVars();
         return;
     }
 
@@ -319,26 +325,26 @@ void KMenu::keyPressEvent(QKeyEvent* e)
         if (d->autoExec) {
             // activate anything
             d->lastHitAction->activate(QAction::Trigger);
-            resetKeyboardVars();
+            d->resetKeyboardVars();
 
         } else if (d->lastHitAction && d->lastHitAction->menu()) {
             // only activate sub-menus
             d->lastHitAction->activate(QAction::Trigger);
-            resetKeyboardVars();
+            d->resetKeyboardVars();
         }
 
         return;
     }
 
     // no matches whatsoever, clean up
-    resetKeyboardVars(true);
+    d->resetKeyboardVars(true);
     //e->ignore();
     QMenu::keyPressEvent(e);
 }
 
 bool KMenu::focusNextPrevChild( bool next )
 {
-    resetKeyboardVars();
+    d->resetKeyboardVars();
     return QMenu::focusNextPrevChild( next );
 }
 
@@ -352,19 +358,19 @@ QString KMenu::underlineText(const QString& text, uint length)
     return ret;
 }
 
-void KMenu::resetKeyboardVars(bool noMatches /* = false */)
+void KMenu::KMenuPrivate::resetKeyboardVars(bool _noMatches)
 {
     // Clean up keyboard variables
-    if (d->lastHitAction) {
-        d->lastHitAction->setText(d->originalText);
-        d->lastHitAction = 0L;
+    if (lastHitAction) {
+        lastHitAction->setText(originalText);
+        lastHitAction = 0L;
     }
 
     if (!noMatches) {
-        d->keySeq.clear();
+        keySeq.clear();
     }
 
-    d->noMatches = noMatches;
+    noMatches = _noMatches;
 }
 
 void KMenu::setKeyboardShortcutsEnabled(bool enable)
@@ -431,9 +437,9 @@ void KMenu::hideContextMenu()
     d->ctxMenu->hide();
 }
 
-void KMenu::actionHovered(QAction* /*action*/)
+void KMenu::KMenuPrivate::actionHovered(QAction* /*action*/)
 {
-    hideContextMenu();
+    parent->hideContextMenu();
 }
 
 static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contextedAction) {
@@ -445,27 +451,27 @@ static void KMenuSetActionData(QMenu *menu,KMenu* contextedMenu, QAction* contex
     }
 }
 
-void KMenu::showCtxMenu(const QPoint &pos)
+void KMenu::KMenuPrivate::showCtxMenu(const QPoint &pos)
 {
-    d->highlightedAction = activeAction();
+    highlightedAction = parent->activeAction();
 
-    if (!d->highlightedAction)
+    if (!highlightedAction)
     {
-        KMenuSetActionData(this,0,0);
+        KMenuSetActionData(parent,0,0);
         return;
     }
 
-    emit aboutToShowContextMenu(this, d->highlightedAction, d->ctxMenu);
-    KMenuSetActionData(this,this,d->highlightedAction);
+    emit parent->aboutToShowContextMenu(parent, highlightedAction, ctxMenu);
+    KMenuSetActionData(parent,parent,highlightedAction);
 
 
-    if (QMenu* subMenu = d->highlightedAction->menu())
+    if (QMenu* subMenu = highlightedAction->menu())
     {
         QTimer::singleShot(100, subMenu, SLOT(hide()));
     }
 
 
-    d->ctxMenu->popup(this->mapToGlobal(pos));
+    ctxMenu->popup(parent->mapToGlobal(pos));
 }
 
 KMenu * KMenu::contextMenuFocus( )
@@ -492,11 +498,11 @@ void KMenu::contextMenuEvent(QContextMenuEvent* e)
     {
         if (e->reason() == QContextMenuEvent::Mouse)
         {
-            showCtxMenu(e->pos());
+            d->showCtxMenu(e->pos());
         }
         else if (activeAction())
         {
-            showCtxMenu(actionGeometry(activeAction()).center());
+            d->showCtxMenu(actionGeometry(activeAction()).center());
         }
 
         e->accept();
