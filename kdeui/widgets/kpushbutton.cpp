@@ -34,40 +34,91 @@
 #include <kguiitem.h>
 #include <kicon.h>
 
+static bool s_useIcons = false;
+
 class KPushButton::KPushButtonPrivate
 {
 public:
+    KPushButtonPrivate(KPushButton *_parent) : parent(_parent), m_dragEnabled( false )
+    {
+    }
+
+    KPushButton *parent;
+
     KGuiItem item;
     KStandardGuiItem::StandardItem itemType;
     QPointer<QMenu> delayedMenu;
     QTimer * delayedMenuTimer;
+    bool m_dragEnabled;
+    QPoint startPos;
+
+    void slotSettingsChanged( int );
+    void slotPressedInternal();
+    void slotClickedInternal();
+    void slotDelayedMenuTimeout();
+    void readSettings();
 };
 
-bool KPushButton::s_useIcons = false;
+void KPushButton::KPushButtonPrivate::slotSettingsChanged( int /* category */ )
+{
+    readSettings();
+    parent->setIcon( item.icon() );
+}
 
-KPushButton::KPushButton( QWidget *parent ) : QPushButton( parent ),
-      m_dragEnabled( false )
+void KPushButton::KPushButtonPrivate::slotPressedInternal()
+{
+    if (!delayedMenu.isNull()) {
+        if (delayedMenuTimer==0) {
+            delayedMenuTimer=new QTimer(parent);
+            delayedMenuTimer->setSingleShot(true);
+            connect(delayedMenuTimer,SIGNAL(timeout()),parent,SLOT(slotDelayedMenuTimeout()));
+        }
+        int delay=parent->style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, parent);
+        delayedMenuTimer->start((delay<=0) ? 150:delay);
+    }
+}
+
+void KPushButton::KPushButtonPrivate::slotClickedInternal()
+{
+    if (delayedMenuTimer)
+        delayedMenuTimer->stop();
+}
+
+void KPushButton::KPushButtonPrivate::slotDelayedMenuTimeout() {
+    delayedMenuTimer->stop();
+    if (!delayedMenu.isNull()) {
+        parent->setMenu(delayedMenu);
+        parent->showMenu();
+        parent->setMenu(0);
+    }
+}
+
+void KPushButton::KPushButtonPrivate::readSettings()
+{
+    s_useIcons = KGlobalSettings::showIconsOnPushButtons();
+}
+
+
+
+KPushButton::KPushButton( QWidget *parent ) : QPushButton( parent )
 {
     init( KGuiItem( "" ) );
 }
 
-KPushButton::KPushButton( const QString &text, QWidget *parent ) : QPushButton( parent ),
-      m_dragEnabled( false )
+KPushButton::KPushButton( const QString &text, QWidget *parent ) : QPushButton( parent )
 {
     init( KGuiItem( text ) );
 }
 
 KPushButton::KPushButton( const KIcon &icon, const QString &text,
                           QWidget *parent )
-    : QPushButton( text, parent ),
-      m_dragEnabled( false )
+    : QPushButton( text, parent )
 {
     init( KGuiItem( text, icon ) );
 }
 
 KPushButton::KPushButton( const KGuiItem &item, QWidget *parent )
-    : QPushButton( parent ),
-      m_dragEnabled( false )
+    : QPushButton( parent )
 {
     init( item );
 }
@@ -83,20 +134,20 @@ KPushButton::~KPushButton()
 
 void KPushButton::init( const KGuiItem &item )
 {
-    d = new KPushButtonPrivate;
+    d = new KPushButtonPrivate(this);
     d->item = item;
     d->itemType = (KStandardGuiItem::StandardItem) 0;
     d->delayedMenuTimer=0;
 
-    connect(this,SIGNAL(pressed()),this, SLOT(slotPressedInternal()));
-    connect(this,SIGNAL(clicked()),this, SLOT(slotClickedInternal()));
+    connect(this,SIGNAL(pressed()), this, SLOT(slotPressedInternal()));
+    connect(this,SIGNAL(clicked()), this, SLOT(slotClickedInternal()));
     // call QPushButton's implementation since we don't need to
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
 
     static bool initialized = false;
     if ( !initialized ) {
-        readSettings();
+        d->readSettings();
         initialized = true;
     }
 
@@ -112,9 +163,9 @@ void KPushButton::init( const KGuiItem &item )
              SLOT( slotSettingsChanged(int) ) );
 }
 
-void KPushButton::readSettings()
+bool KPushButton::isDragEnabled() const
 {
-    s_useIcons = KGlobalSettings::showIconsOnPushButtons();
+    return d->m_dragEnabled;
 }
 
 void KPushButton::setGuiItem( const KGuiItem& item )
@@ -167,34 +218,28 @@ void KPushButton::setIcon( const QIcon &qicon )
     d->item.setIcon(KIcon(qicon));
 }
 
-void KPushButton::slotSettingsChanged( int /* category */ )
-{
-    readSettings();
-    setIcon( d->item.icon() );
-}
-
 void KPushButton::setDragEnabled( bool enable )
 {
-    m_dragEnabled = enable;
+    d->m_dragEnabled = enable;
 }
 
 void KPushButton::mousePressEvent( QMouseEvent *e )
 {
-    if ( m_dragEnabled )
-        startPos = e->pos();
+    if ( d->m_dragEnabled )
+        d->startPos = e->pos();
     QPushButton::mousePressEvent( e );
 }
 
 void KPushButton::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( !m_dragEnabled )
+    if ( !d->m_dragEnabled )
     {
         QPushButton::mouseMoveEvent( e );
         return;
     }
 
     if ( (e->buttons() & Qt::LeftButton) &&
-         (e->pos() - startPos).manhattanLength() >
+         (e->pos() - d->startPos).manhattanLength() >
          KGlobalSettings::dndEventDelay() )
     {
         startDrag();
@@ -222,35 +267,6 @@ void KPushButton::setDelayedMenu(QMenu *delayedMenu)
 QMenu* KPushButton::delayedMenu()
 {
     return d->delayedMenu;
-}
-
-
-void KPushButton::slotPressedInternal()
-{
-    if (!d->delayedMenu.isNull()) {
-        if (d->delayedMenuTimer==0) {
-            d->delayedMenuTimer=new QTimer(this);
-            d->delayedMenuTimer->setSingleShot(true);
-            connect(d->delayedMenuTimer,SIGNAL(timeout()),this,SLOT(slotDelayedMenuTimeout()));
-        }
-        int delay=style()->styleHint(QStyle::SH_ToolButton_PopupDelay, 0, this);
-        d->delayedMenuTimer->start((delay<=0) ? 150:delay);
-    }
-}
-
-void KPushButton::slotClickedInternal()
-{
-    if (d->delayedMenuTimer)
-        d->delayedMenuTimer->stop();
-}
-
-void KPushButton::slotDelayedMenuTimeout() {
-    d->delayedMenuTimer->stop();
-    if (!d->delayedMenu.isNull()) {
-        setMenu(d->delayedMenu);
-        showMenu();
-        setMenu(0);
-    }
 }
 
 #include "kpushbutton.moc"

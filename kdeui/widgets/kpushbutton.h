@@ -78,7 +78,7 @@ public:
     /**
      * @returns if drag support is enabled or not.
      */
-    bool isDragEnabled() const { return m_dragEnabled; }
+    bool isDragEnabled() const;
 
     /**
      * Sets the KGuiItem for this button.
@@ -149,28 +149,20 @@ protected:
     virtual void startDrag();
 
 private:
-    bool m_dragEnabled;
-    QPoint startPos;
-
-private Q_SLOTS:
-    void slotSettingsChanged( int category );
-    void slotPressedInternal();
-    void slotClickedInternal();
-    void slotDelayedMenuTimeout();
-private:
     /**
      * Internal.
      * Initialize the KPushButton instance
      */
     void init( const KGuiItem &item );
 
-    void readSettings();
-    static bool s_useIcons;
-
 private:
     class KPushButtonPrivate;
     KPushButtonPrivate *d;
 
+    Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ));
+    Q_PRIVATE_SLOT(d, void slotPressedInternal());
+    Q_PRIVATE_SLOT(d, void slotClickedInternal());
+    Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout());
 };
 
 #endif // KPUSHBUTTON_H
