@@ -17,6 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kurlrequesterdialog.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -35,8 +36,6 @@
 #include <krecentdocument.h>
 #include <kurl.h>
 #include <kurlrequester.h>
-
-#include "kurlrequesterdialog.h"
 
 
 KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, QWidget *parent)
