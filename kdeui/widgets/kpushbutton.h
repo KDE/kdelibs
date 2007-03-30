@@ -159,10 +159,10 @@ private:
     class KPushButtonPrivate;
     KPushButtonPrivate *d;
 
-    Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ));
-    Q_PRIVATE_SLOT(d, void slotPressedInternal());
-    Q_PRIVATE_SLOT(d, void slotClickedInternal());
-    Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout());
+    Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ))
+    Q_PRIVATE_SLOT(d, void slotPressedInternal())
+    Q_PRIVATE_SLOT(d, void slotClickedInternal())
+    Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout())
 };
 
 #endif // KPUSHBUTTON_H
