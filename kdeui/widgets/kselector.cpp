@@ -284,11 +284,6 @@ Qt::ArrowType KSelector::arrowDirection() const
 void KSelector::drawContents( QPainter * )
 {}
 
-QSize KSelector::minimumSize() const
-{
-    return sizeHint();
-}
-
 void KSelector::drawArrow( QPainter *painter, const QPoint &pos )
 {
     painter->setPen( QPen() );
@@ -423,6 +418,11 @@ void KGradientSelector::drawContents( QPainter *painter )
     painter->drawText( contentsRect().right() -
        painter->fontMetrics().width( d->text2 ) - 2, yPos, d->text2 );
   }
+}
+
+QSize KGradientSelector::minimumSize() const
+{
+    return sizeHint();
 }
 
 void KGradientSelector::setColors( const QColor &col1, const QColor &col2 )
