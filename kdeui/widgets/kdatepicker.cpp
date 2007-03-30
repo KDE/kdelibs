@@ -111,8 +111,12 @@ void KDatePicker::init( const QDate &dt )
 {
 
   QBoxLayout * topLayout = new QVBoxLayout(this);
+  topLayout->setSpacing(0);
+  topLayout->setMargin(0);
 
   d->navigationLayout = new QHBoxLayout();
+  d->navigationLayout->setSpacing(0);
+  d->navigationLayout->setMargin(0);
   topLayout->addLayout(d->navigationLayout);
   d->navigationLayout->addStretch();
   yearBackward = new QToolButton(this);
@@ -198,6 +202,8 @@ void KDatePicker::init( const QDate &dt )
   topLayout->addWidget(table);
 
   QBoxLayout * bottomLayout = new QHBoxLayout();
+  bottomLayout->setMargin(0);
+  bottomLayout->setSpacing(0);
   topLayout->addLayout(bottomLayout);
 
   bottomLayout->addWidget(d->todayButton);

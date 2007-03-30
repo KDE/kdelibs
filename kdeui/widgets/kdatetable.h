@@ -23,7 +23,6 @@
 #include <QtGui/QValidator>
 #include <QtGui/QLineEdit>
 #include <QtCore/QDateTime>
-#include <Qt3Support/Q3GridView>
 #include <kdelibs_export.h>
 
 class KMenu;
@@ -117,7 +116,7 @@ public:
  * @internal
  * @author Tim Gilman, Mirko Boehm
  */
-class KDEUI_EXPORT KDateTable : public Q3GridView
+class KDEUI_EXPORT KDateTable : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ date WRITE setDate )
@@ -198,18 +197,11 @@ protected:
      */
     virtual QDate dateFromPos( int pos ); 
 
-    /**
-     * Paint a cell.
-     */
-    virtual void paintCell(QPainter*, int, int);
-    /**
-     * Handle the resize events.
-     */
-    virtual void viewportResizeEvent(QResizeEvent *);
+    virtual void paintEvent(QPaintEvent *e);
     /**
      * React on mouse clicks that select a date.
      */
-    virtual void contentsMousePressEvent(QMouseEvent *);
+    virtual void mousePressEvent(QMouseEvent *);
     virtual void wheelEvent( QWheelEvent * e );
     virtual void keyPressEvent( QKeyEvent *e );
     virtual void focusInEvent( QFocusEvent *e );
@@ -253,7 +245,8 @@ private:
     KDateTablePrivate *d;
 
     void initAccels();
-  
+    void paintCell(QPainter *painter, int row, int col);
+
     Q_DISABLE_COPY(KDateTable)
 };
 
