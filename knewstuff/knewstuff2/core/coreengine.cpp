@@ -29,6 +29,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
+#include <kcodecs.h>
 
 #include <kio/job.h>
 #include <krandom.h>
@@ -187,6 +188,13 @@ void CoreEngine::downloadPreview(Entry *entry)
 	}
 
 	KUrl source = KUrl(entry->preview().representation());
+
+	if(!source.isValid())
+	{
+		kError(550) << "The entry doesn't have a preview." << endl;
+		return;
+	}
+
 	KUrl destination = KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10);
 	kDebug(550) << "Downloading preview '" << source << "' to '" << destination << "'" << endl;
 
@@ -202,6 +210,12 @@ void CoreEngine::downloadPreview(Entry *entry)
 void CoreEngine::downloadPayload(Entry *entry)
 {
 	KUrl source = KUrl(entry->payload().representation());
+
+	if(!source.isValid())
+	{
+		kError(550) << "The entry doesn't have a payload." << endl;
+		return;
+	}
 
 	if(m_installation->isRemote())
 	{
@@ -717,6 +731,15 @@ void CoreEngine::mergeProviders(Provider::List *providers)
 	emit signalProvidersFinished();
 }
 
+bool CoreEngine::entryCached(Entry *entry)
+{
+	// FIXME: this is invalid if entry name translations are added over time
+	// FIXME: probably better use URL (changes less frequently) and do iteration
+	// by hand if URL not found?
+	if(m_entry_index.contains(id(entry))) return true;
+	return false;
+}
+
 void CoreEngine::mergeEntries(Entry::List *entries)
 {
 	for(Entry::List::Iterator it = entries->begin(); it != entries->end(); it++)
@@ -726,7 +749,7 @@ void CoreEngine::mergeEntries(Entry::List *entries)
 		Entry *e = (*it);
 		e->setStatus(Entry::Downloadable);
 
-		if(m_entry_index.contains(id(e)))
+		if(entryCached(e))
 		{
 			kDebug(550) << "CACHE: hit entry " << e->name().representation() << endl;
 			// FIXME: if changed, emit signalEntryChanged()
@@ -811,7 +834,8 @@ void CoreEngine::cacheEntry(Entry *entry)
 	//QString cachefile = KRandom::randomString(10) + ".meta";
 	//FIXME: this must be deterministic, but it could also be an OOB random string
 	//which gets stored into <ghnscache> just like preview...
-	QString cachefile = id(entry) + ".meta";
+	QString idbase64 = QString(KCodecs::base64Encode(id(entry).toUtf8()));
+	QString cachefile = idbase64 + ".meta";
 
 	kDebug(550) << " + Save to file '" + cachefile + "'." << endl;
 
@@ -889,16 +913,29 @@ void CoreEngine::registerEntry(Entry *entry)
 QString CoreEngine::id(Entry *e)
 {
 	// This is the primary key of an entry:
-	// A lookup on the untranslated original name, which must exist
-	// FIXME: this is not a valid assumption per GHNS spec!
-	return e->name().translated(QString());
+	// A lookup on the name, which must exist might be translated
+	// This requires some care for comparison since translations might be added
+	return e->name().representation();
 }
 
 QString CoreEngine::pid(Provider *p)
 {
 	// This is the primary key of a provider:
-	// The download URL
-	return p->downloadUrl().url();
+	// The download URL, which is never translated
+	// If no download URL exists, a feed or web service URL must exist
+	if(p->downloadUrl().isValid())
+		return p->downloadUrl().url();
+	if(p->webService().isValid())
+		return p->webService().url();
+	QStringList feeds = p->feeds();
+	for(int i = 0; i < feeds.count(); i++)
+	{
+		QString feedtype = feeds.at(i);
+		Feed *f = p->downloadUrlFeed(feedtype);
+		if(f->feedUrl().isValid())
+			return f->feedUrl().url();
+	}
+	return QString();
 }
 
 bool CoreEngine::install(QString payloadfile)

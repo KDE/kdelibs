@@ -154,10 +154,12 @@ void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry)
 	kDebug() << "SLOT: slotEntryLoaded" << endl;
 	kDebug() << "-- entry: " << entry->name().representation() << endl;
 
-	kDebug() << "-- now, download the entry" << endl;
+	kDebug() << "-- now, download the entry's preview and payload file" << endl;
 
-	m_engine->downloadPreview(entry);
-	m_engine->downloadPayload(entry);
+	if(!entry->preview().isEmpty())
+		m_engine->downloadPreview(entry);
+	if(!entry->payload().isEmpty())
+		m_engine->downloadPayload(entry);
 }
 
 void KNewStuff2Test::slotPayloadLoaded(KUrl payload)

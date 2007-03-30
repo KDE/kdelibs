@@ -123,6 +123,8 @@ class KDE_EXPORT CoreEngine : public QObject
     void mergeEntries(Entry::List *entries);
     void shutdown();
 
+    bool entryCached(Entry *entry);
+
     QString id(Entry *e);
     QString pid(Provider *p);
 
