@@ -73,23 +73,23 @@ void SeekSliderTest::setMedia()
 void SeekSliderTest::playMedia()
 {
 	media->play();
-    QSignalSpy stateSpy(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
-    while (media->state() != Phonon::PlayingState) {
-        waitForSignal(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
-        QVERIFY(!stateSpy.isEmpty());
-        switch (qvariant_cast<Phonon::State>(stateSpy.last().first())) {
-        case Phonon::PlayingState:
-        case Phonon::PausedState:
-        case Phonon::BufferingState:
-            QVERIFY(qslider->isEnabled());
-            break;
-        case Phonon::ErrorState:
-        case Phonon::StoppedState:
-        case Phonon::LoadingState:
-            QVERIFY(!qslider->isEnabled());
-            break;
-        }
-    }
+//X     QSignalSpy stateSpy(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
+//X     while (media->state() != Phonon::PlayingState) {
+//X         waitForSignal(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
+//X         QVERIFY(!stateSpy.isEmpty());
+//X         switch (qvariant_cast<Phonon::State>(stateSpy.last().first())) {
+//X         case Phonon::PlayingState:
+//X         case Phonon::PausedState:
+//X         case Phonon::BufferingState:
+//X             QVERIFY(qslider->isEnabled());
+//X             break;
+//X         case Phonon::ErrorState:
+//X         case Phonon::StoppedState:
+//X         case Phonon::LoadingState:
+//X             QVERIFY(!qslider->isEnabled());
+//X             break;
+//X         }
+//X     }
 }
 
 void SeekSliderTest::seekWithSlider()
