@@ -203,14 +203,23 @@ void XMLHttpRequest::tryPut(ExecState *exec, const Identifier &propertyName, con
 
 void XMLHttpRequest::putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/)
 {
+  JSEventListener* newListener;
   switch(token) {
   case Onreadystatechange:
-    onReadyStateChangeListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
-    if (onReadyStateChangeListener) onReadyStateChangeListener->ref();
+    newListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
+    if (newListener != onReadyStateChangeListener) {
+      if (onReadyStateChangeListener) onReadyStateChangeListener->deref();
+      onReadyStateChangeListener = newListener;
+      if (onReadyStateChangeListener) onReadyStateChangeListener->ref();
+    }
     break;
   case Onload:
-    onLoadListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
-    if (onLoadListener) onLoadListener->ref();
+    newListener = Window::retrieveActive(exec)->getJSEventListener(value, true);
+    if (newListener != onLoadListener) {
+      if (onLoadListener) onLoadListener->deref();
+      onLoadListener = newListener;
+      if (onLoadListener) onLoadListener->ref();
+    }
     break;
   default:
     kdWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
@@ -235,6 +244,10 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, const DOM::Document &d)
 
 XMLHttpRequest::~XMLHttpRequest()
 {
+  if (onReadyStateChangeListener)
+    onReadyStateChangeListener->deref();
+  if (onLoadListener)
+    onLoadListener->deref();
   delete qObject;
   qObject = 0;
   delete decoder;
