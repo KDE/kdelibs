@@ -95,6 +95,7 @@ class PathWidget : public QFrame
     private Q_SLOTS:
         void addVolumeFader();
         void addEffect();
+        void effectToggled(bool checked);
 
 	private:
 		AudioPath *m_path;

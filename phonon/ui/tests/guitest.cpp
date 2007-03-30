@@ -57,6 +57,7 @@
 #include <QToolButton>
 #include <QProgressBar>
 #include <kmessagebox.h>
+#include <QGroupBox>
 
 using namespace Phonon;
 
@@ -123,16 +124,47 @@ void PathWidget::addEffect()
     QList<AudioEffectDescription> effectList = BackendCapabilities::availableAudioEffects();
     if (current < effectList.size()) {
         AudioEffect *effect = new AudioEffect(effectList[current], m_path);
-        layout()->addWidget(new EffectWidget(effect, this));
+        QGroupBox *gb = new QGroupBox(effectList[current].name(), this);
+        layout()->addWidget(gb);
+        gb->setFlat(true);
+        gb->setCheckable(true);
+        gb->setChecked(true);
+        (new QHBoxLayout(gb))->addWidget(new EffectWidget(effect, gb));
         m_path->insertEffect(effect);
+        gb->setProperty("AudioEffect", QVariant::fromValue(static_cast<QObject*>(effect)));
+        connect(gb, SIGNAL(toggled(bool)), SLOT(effectToggled(bool)));
     }
+}
+
+void PathWidget::effectToggled(bool checked)
+{
+    if (checked) {
+        return;
+    }
+    QVariant v = sender()->property("AudioEffect");
+    if (!v.isValid()) {
+        return;
+    }
+    QObject *effect = v.value<QObject *>();
+    if (!effect) {
+        return;
+    }
+    delete effect;
+    sender()->deleteLater();
 }
 
 void PathWidget::addVolumeFader()
 {
     VolumeFaderEffect *effect = new VolumeFaderEffect(m_path);
-    layout()->addWidget(new EffectWidget(effect, this));
+    QGroupBox *gb = new QGroupBox("VolumeFader", this);
+    layout()->addWidget(gb);
+    gb->setFlat(true);
+    gb->setCheckable(true);
+    gb->setChecked(true);
+    (new QHBoxLayout(gb))->addWidget(new EffectWidget(effect, gb));
     m_path->insertEffect(effect);
+    gb->setProperty("AudioEffect", QVariant::fromValue(static_cast<QObject*>(effect)));
+    connect(gb, SIGNAL(toggled(bool)), SLOT(effectToggled(bool)));
 }
 
 bool PathWidget::connectOutput( OutputWidget *w )
@@ -587,6 +619,7 @@ int main( int argc, char **argv )
 	KCmdLineArgs::init( argc, argv, &about );
 	KApplication app;
 	MainWidget w;
+    w.setWindowIcon(KIcon("phonon"));
 	w.show();
 	return app.exec();
 }
