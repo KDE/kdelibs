@@ -153,9 +153,9 @@ private:
     class KMenuPrivate;
     KMenuPrivate * const d;
 
-    Q_PRIVATE_SLOT(d, void resetKeyboardVars(bool));
-    Q_PRIVATE_SLOT(d, void actionHovered(QAction*));
-    Q_PRIVATE_SLOT(d, void showCtxMenu(const QPoint &));
+    Q_PRIVATE_SLOT(d, void resetKeyboardVars(bool))
+    Q_PRIVATE_SLOT(d, void actionHovered(QAction*))
+    Q_PRIVATE_SLOT(d, void showCtxMenu(const QPoint &))
 
 };
 
