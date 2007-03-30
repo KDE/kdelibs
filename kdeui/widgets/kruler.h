@@ -412,62 +412,11 @@ protected:
   virtual void paintEvent(QPaintEvent *);
 
 private:
-  void init();
-
-  QAbstractSlider range;
-  Qt::Orientation dir;
-  int tmDist;
-  int lmDist;
-  int mmDist;
-  int bmDist;
-  int offset_;
-  bool showtm; /* show tiny, little, medium, big, endmarks */
-  bool showlm;
-  bool showmm;
-  bool showbm;
-  bool showem;
-
-  double ppm; /* pixel per mark */
-
-  QString endlabel;
+  void init(Qt::Orientation orientation);
 
 private:
   class KRulerPrivate;
   KRulerPrivate *d;
 };
-
-
-int
-KRuler::minValue() const
-{ return minimum(); }
-
-int
-KRuler::maxValue() const
-{ return maximum(); }
-
-
-int
-KRuler::tinyMarkDistance() const
-{ return tmDist; }
-
-int
-KRuler::littleMarkDistance() const
-{ return lmDist; }
-
-int
-KRuler::mediumMarkDistance() const
-{ return mmDist; }
-
-int
-KRuler::bigMarkDistance() const
-{ return bmDist; }
-
-double
-KRuler::pixelPerMark() const
-{ return ppm; }
-
-int
-KRuler::offset() const
-{ return offset_; }
 
 #endif
