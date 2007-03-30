@@ -13,11 +13,11 @@ ENDMACRO(PHONON_BUILD_TESTS)
 
 # same as above but using the fake backend
 MACRO(PHONON_BUILD_TESTS_FAKE)
-	add_definitions(-DUSE_FAKE_BACKEND)
 	FOREACH(_testname ${ARGN})
 		kde4_automoc(${_testname}.cpp)
 		kde4_add_executable(${_testname}_fake NOGUI ${_testname}.cpp)
 		target_link_libraries(${_testname}_fake ${KDE4_PHONONUI_LIBS} ${QT_QTTEST_LIBRARY})
+		SET_TARGET_PROPERTIES(${_testname}_fake PROPERTIES COMPILE_FLAGS -DUSE_FAKE_BACKEND)
 	ENDFOREACH(_testname)
 ENDMACRO(PHONON_BUILD_TESTS_FAKE)
 
