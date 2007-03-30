@@ -68,16 +68,16 @@ protected:
     QString cookieStr(bool useDOMFormat);
 
 public:
-    KHttpCookie(const QString &_host=QString(),
-                const QString &_domain=QString(),
-                const QString &_path=QString(),
-                const QString &_name=QString(),
-                const QString &_value=QString(),
-                time_t _expireDate=0,
-                int _protocolVersion=0,
-                bool _secure = false,
-                bool _httpOnly = false,
-                bool _explicitPath = false);
+    explicit KHttpCookie(const QString &_host=QString(),
+                         const QString &_domain=QString(),
+                         const QString &_path=QString(),
+                         const QString &_name=QString(),
+                         const QString &_value=QString(),
+                         time_t _expireDate=0,
+                         int _protocolVersion=0,
+                         bool _secure = false,
+                         bool _httpOnly = false,
+                         bool _explicitPath = false);
 
     QString domain(void) { return mDomain; }
     QString host(void) { return mHost; }

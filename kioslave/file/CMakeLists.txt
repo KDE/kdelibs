@@ -6,7 +6,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 ########### next target ###############
 
-set(kio_file_PART_SRCS file.cc )
+set(kio_file_PART_SRCS file.cpp )
 
 kde4_automoc(${kio_file_PART_SRCS})
 

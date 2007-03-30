@@ -49,7 +49,7 @@ install(TARGETS kio_http_cache_cleaner DESTINATION ${BIN_INSTALL_DIR} )
 # kio/httpfilter/Makefile.am: httpfilter
 
 set(kio_http_PART_SRCS
-http.cc
+http.cpp
 ${httpfilter_STAT_SRCS}
 ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
 )

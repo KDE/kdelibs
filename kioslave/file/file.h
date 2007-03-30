@@ -44,7 +44,7 @@ class KIOSLAVE_FILE_EXPORT FileProtocol : public QObject, public KIO::SlaveBase
   Q_OBJECT
 public:
   FileProtocol( const QByteArray &pool, const QByteArray &app);
-  virtual ~FileProtocol() { }
+  virtual ~FileProtocol();
 
   virtual void get( const KUrl& url );
   virtual void put( const KUrl& url, int _mode,
@@ -88,11 +88,8 @@ protected:
   QString getGroupName( gid_t gid ) const;
 
 private:
-  mutable QHash<uid_t, QString> mUsercache;
-  mutable QHash<gid_t, QString> mGroupcache;
-
   class FileProtocolPrivate;
-  FileProtocolPrivate *d;
+  FileProtocolPrivate * const d;
 };
 
 #endif

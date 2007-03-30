@@ -131,11 +131,23 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   return 0;
 }
 
+class FileProtocol::FileProtocolPrivate
+{
+public:
+  FileProtocolPrivate() {}
+  mutable QHash<uid_t, QString> mUsercache;
+  mutable QHash<gid_t, QString> mGroupcache;
+};
 
-FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app ) : SlaveBase( "file", pool, app )
+FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app )
+    : SlaveBase( "file", pool, app ), d(new FileProtocolPrivate)
 {
 }
 
+FileProtocol::~FileProtocol()
+{
+    delete d;
+}
 
 int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
 {
@@ -1117,28 +1129,28 @@ void FileProtocol::del( const KUrl& url, bool isfile)
 
 QString FileProtocol::getUserName( uid_t uid ) const
 {
-    if ( !mUsercache.contains( uid ) ) {
+    if ( !d->mUsercache.contains( uid ) ) {
         struct passwd *user = getpwuid( uid );
         if ( user ) {
-            mUsercache.insert( uid, QString::fromLatin1(user->pw_name) );
+            d->mUsercache.insert( uid, QString::fromLatin1(user->pw_name) );
         }
         else
             return QString::number( uid );
     }
-    return mUsercache[uid];
+    return d->mUsercache[uid];
 }
 
 QString FileProtocol::getGroupName( gid_t gid ) const
 {
-    if ( !mGroupcache.contains( gid ) ) {
+    if ( !d->mGroupcache.contains( gid ) ) {
         struct group *grp = getgrgid( gid );
         if ( grp ) {
-            mGroupcache.insert( gid, QString::fromLatin1(grp->gr_name) );
+            d->mGroupcache.insert( gid, QString::fromLatin1(grp->gr_name) );
         }
         else
             return QString::number( gid );
     }
-    return mGroupcache[gid];
+    return d->mGroupcache[gid];
 }
 
 bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & path, UDSEntry & entry,

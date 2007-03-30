@@ -7,7 +7,7 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 ########### next target ###############
 
 set(kio_ftp_PART_SRCS
-ftp.cc
+ftp.cpp
 )
 
 kde4_automoc(${kio_ftp_PART_SRCS})
