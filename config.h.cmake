@@ -187,5 +187,12 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 /* Defined to 1 if you have a d_type member in struct dirent */
 #cmakedefine HAVE_DIRENT_D_TYPE 1
 
+
+#if defined _WIN32 || defined _WIN64
+#define KPATH_SEPARATOR ';'
+#else
+#define KPATH_SEPARATOR ':'
+#endif
+
 #include "kdecore/kdefakes.h"
 
