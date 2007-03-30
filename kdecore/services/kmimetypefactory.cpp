@@ -256,8 +256,12 @@ KMimeType::Ptr KMimeTypeFactory::findFromPatternHelper( const QString &_filename
 KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriority whichPriority, int* accuracy, const QByteArray& beginning)
 {
     if (!device->isOpen()) {
-        if (!device->open(QIODevice::ReadOnly))
+        if (!device->open(QIODevice::ReadOnly)) {
+            // Do fallback code so that we never return 0 - unless we were only looking for HighPriorityRules
+            if (whichPriority != HighPriorityRules)
+                return KMimeType::defaultMimeTypePtr();
             return KMimeType::Ptr();
+        }
     }
     if (device->size() == 0)
         return findMimeTypeByName("application/x-zerosize");
