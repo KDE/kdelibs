@@ -265,8 +265,7 @@ void KKeyChooser::addCollection(KActionCollection *collection, const QString &ti
 
 		if (name.startsWith(QLatin1String("Program:")))
 			l = Program;
-		else if
-			(name.startsWith(QLatin1String("Group:")))
+		else if (name.startsWith(QLatin1String("Group:")))
 			l = Group;
 		else if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
 			new KKeyChooserItem((hier[l]), kact);
