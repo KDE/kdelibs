@@ -149,11 +149,14 @@
  * use KDE_CONSTRUCTOR_DEPRECATED instead.
  */
 
-#ifndef KDE_DEPRECATED
-# ifdef KDE_DEPRECATED_WARNINGS
-#  define KDE_DEPRECATED Q_DECL_DEPRECATED
-# else
-#  define KDE_DEPRECATED
+#ifdef __cplusplus
+# include <QtCore/qglobal.h>
+# ifndef KDE_DEPRECATED
+#  ifdef KDE_DEPRECATED_WARNINGS
+#   define KDE_DEPRECATED Q_DECL_DEPRECATED
+#  else
+#   define KDE_DEPRECATED
+#  endif
 # endif
 #endif
 
