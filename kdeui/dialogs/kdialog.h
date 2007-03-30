@@ -71,10 +71,6 @@ class QMenu;
  * animate the cancel button so that the dialog behaves like regular
  * dialogs.
  *
- * NOTE: None of the regular slots (like slotOk() ) or
- * signals that are related to the standard action buttons will be used
- * when you don't use these buttons.
- *
  * <b>Layout:</b>\n
  *
  * The dialog consists of a help area on top (becomes visible if you define
@@ -779,7 +775,7 @@ class KDEUI_EXPORT KDialog : public QDialog
     class Private;
     friend class Private;
     Private* const d;
-    
+
     Q_DISABLE_COPY(KDialog)
 };
 
@@ -819,9 +815,9 @@ class KDEUI_EXPORT KDialogQueue : public QObject
 
   private:
     class Private;
-    friend class Private;  
+    friend class Private;
     Private* const d;
-    
+
     Q_DISABLE_COPY(KDialogQueue)
 };
 
