@@ -22,11 +22,11 @@
 #ifndef kurl_h
 #define kurl_h
 
+#include <kdecore_export.h>
+
 #include <QtCore/qvariant.h>
 #include <QtCore/qurl.h>
 #include <QtCore/qmap.h>
-
-#include "kdelibs_export.h"
 
 class QStringList;
 class QMimeData;

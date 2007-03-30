@@ -22,9 +22,9 @@
 #ifndef KJOB_H
 #define KJOB_H
 
+#include <kdecore_export.h>
 #include <QtCore/QObject>
 #include <QtCore/QPair>
-#include <kdelibs_export.h>
 
 class KJobUiDelegate;
 

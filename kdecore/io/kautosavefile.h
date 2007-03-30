@@ -20,10 +20,11 @@
 #ifndef KAUTOSAVEFILE_H
 #define KAUTOSAVEFILE_H
 
+#include <kdecore_export.h>
+#include "kurl.h"
+
 #include <QtCore/qfile.h>
 #include <QtCore/qlist.h>
-#include "kurl.h"
-#include "kdelibs_export.h"
 
 class KAutoSaveFilePrivate;
 /**

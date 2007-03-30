@@ -20,7 +20,7 @@
 #ifndef KASCII_H
 #define KASCII_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 /**
  * Locale-independent qstricmp. Use this for comparing ascii keywords

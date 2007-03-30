@@ -25,9 +25,10 @@
 #ifndef _KTZFILETIMEZONE_H
 #define _KTZFILETIMEZONE_H
 
-#include <QtCore/QString>
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include <ktimezones.h>
+
+#include <QtCore/QString>
 
 class KTzfileTimeZoneSource;
 class KTzfileTimeZonePrivate;

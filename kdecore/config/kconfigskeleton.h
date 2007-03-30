@@ -23,6 +23,12 @@
 #ifndef KCONFIGSKELETON_H
 #define KCONFIGSKELETON_H
 
+#include <kdecore_export.h>
+
+#include <kurl.h>
+#include <ksharedconfig.h>
+#include <kconfiggroup.h>
+
 #include <qcolor.h>
 #include <qdatetime.h>
 #include <qfont.h>
@@ -30,10 +36,6 @@
 #include <qrect.h>
 #include <qstringlist.h>
 #include <qvariant.h>
-#include <kurl.h>
-#include <kdelibs_export.h>
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
 
   /**
    * @short Class for storing a preferences setting

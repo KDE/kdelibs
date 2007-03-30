@@ -25,9 +25,8 @@
 #ifndef KIOBUFFER_H
 #define KIOBUFFER_H
 
+#include <kdecore_export.h>
 #include <QtCore/QByteArray>
-
-#include <kdelibs_export.h>
 
 class QIODevice;
 

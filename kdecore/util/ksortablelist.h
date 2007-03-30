@@ -20,9 +20,10 @@
 #ifndef KSORTABLELIST_H
 #define KSORTABLELIST_H
 
+#include <kdecore_export.h>
+
 #include <qpair.h>
 #include <QtCore/QList>
-#include <kdelibs_export.h>
 
 /**
  * KSortableItem is a QPair that provides several operators

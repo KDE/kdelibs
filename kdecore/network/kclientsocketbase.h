@@ -28,9 +28,9 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
+#include <kdecore_export.h>
 #include "ksocketbase.h"
 #include "kresolver.h"
-#include <kdelibs_export.h>
 
 namespace KNetwork {
 

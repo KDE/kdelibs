@@ -21,8 +21,8 @@
 #ifndef _KIDNA_H
 #define _KIDNA_H
 
+#include <kdecore_export.h>
 #include <qstring.h>
-#include "kdelibs_export.h"
 
 namespace KIDNA {
     /**

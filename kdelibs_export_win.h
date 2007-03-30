@@ -19,16 +19,6 @@
 
 #include <io.h> /* to avoid #includes */
 
-#define KPATH_SEPARATOR ';'
-
-#ifndef KDECORE_EXPORT
-# if defined(MAKE_KDECORE_LIB) || defined(MAKE_KDEFAKES_LIB)
-#  define KDECORE_EXPORT KDE_EXPORT
-# else
-#  define KDECORE_EXPORT KDE_IMPORT //for apps and other libs
-# endif
-#endif
-
 #ifndef KDEUI_EXPORT
 # ifdef MAKE_KDEUI_LIB
 #  define KDEUI_EXPORT KDE_EXPORT

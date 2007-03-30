@@ -21,7 +21,7 @@
 #ifndef KAUTHORIZED_H
 #define KAUTHORIZED_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 class KUrl;
 class QString;

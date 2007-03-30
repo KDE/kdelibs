@@ -11,6 +11,8 @@
 #ifndef KLAUNCHER_IFACE_H_84591156096727
 #define KLAUNCHER_IFACE_H_84591156096727
 
+#include <kdecore_export.h>
+
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
@@ -19,8 +21,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
-
-#include <kdelibs_export.h>
 
 /*
  * Proxy class for interface org.kde.KLauncher

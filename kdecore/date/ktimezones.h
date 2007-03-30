@@ -27,14 +27,16 @@
 #ifndef _KTIMEZONES_H
 #define _KTIMEZONES_H
 
-#include <ctime>
+#include <kdecore_export.h>
+
 #include <QtCore/QDateTime>
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedDataPointer>
-#include "kdelibs_export.h"
+
+#include <ctime>
 
 class KTimeZone;
 class KTimeZoneData;

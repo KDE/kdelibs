@@ -22,7 +22,7 @@
 #define _KTOOLINVOCATION_H
 
 #include "kdeversion.h" // TODO remove
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 #include "kurl.h" // TODO replace with class KUrl;
 #include <QtCore/QObject>

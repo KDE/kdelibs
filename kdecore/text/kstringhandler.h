@@ -19,7 +19,7 @@
 #ifndef KSTRINGHANDLER_H
 #define KSTRINGHANDLER_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 class QChar;
 class QRegExp;

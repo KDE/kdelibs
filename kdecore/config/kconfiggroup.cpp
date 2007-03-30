@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
+
 #include "kconfiggroup.h"
 #include "kconfig.h"
 #include "kstringhandler.h"

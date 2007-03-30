@@ -19,9 +19,9 @@
 #ifndef KDECORE_KMESSAGE_H
 #define KDECORE_KMESSAGE_H
 
-#include <QtCore/QString>
+#include <kdecore_export.h>
 
-#include <kdelibs_export.h>
+#include <QtCore/QString>
 
 class KMessageHandler;
 /**

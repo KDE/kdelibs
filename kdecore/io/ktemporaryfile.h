@@ -21,9 +21,10 @@
 #ifndef ktemporaryfile_h
 #define ktemporaryfile_h
 
-#include <QtCore/QTemporaryFile>
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include <kglobal.h>
+
+#include <QtCore/QTemporaryFile>
 
 class KTemporaryFilePrivate;
 

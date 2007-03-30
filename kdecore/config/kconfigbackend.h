@@ -22,11 +22,12 @@
 #ifndef KCONFIGBACKEND_H
 #define KCONFIGBACKEND_H
 
-#include <QtCore/QStack>
+#include <kdecore_export.h>
 
-#include <kdelibs_export.h>
 #include <kconfigbase.h>
 #include <klockfile.h>
+
+#include <QtCore/QStack>
 
 class QFile;
 class QByteArray;

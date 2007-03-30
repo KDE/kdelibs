@@ -36,7 +36,7 @@
 
 #define KBase64 KCodecs
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 
 class QByteArray;
 class QIODevice;

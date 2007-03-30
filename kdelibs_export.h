@@ -34,7 +34,6 @@
 #else /* UNIX */
 
 /* export statements for unix */
-#define KDECORE_EXPORT KDE_EXPORT
 #define KDEUI_EXPORT KDE_EXPORT
 #define KDEFX_EXPORT KDE_EXPORT
 #define KDEPRINT_EXPORT KDE_EXPORT
@@ -67,8 +66,6 @@
 
 #define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 
-#define KPATH_SEPARATOR ':'
-
 #ifndef O_BINARY
 #define O_BINARY 0 /* for open() */
 #endif
@@ -80,9 +77,6 @@
 /* workaround for kdecore: stupid moc's grammar doesn't accept two macros
    between 'class' keyword and <classname>: */
 #ifdef KDE_DEPRECATED
-# ifndef KDECORE_EXPORT_DEPRECATED
-#  define KDECORE_EXPORT_DEPRECATED KDE_DEPRECATED KDECORE_EXPORT
-# endif
 # ifndef KDEUI_EXPORT_DEPRECATED
 #  define KDEUI_EXPORT_DEPRECATED KDE_DEPRECATED KDEUI_EXPORT
 # endif

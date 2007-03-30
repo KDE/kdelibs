@@ -21,7 +21,7 @@
 #ifndef KSHELL_H
 #define KSHELL_H
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 
 class QStringList;
 class QString;

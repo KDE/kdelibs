@@ -21,7 +21,7 @@
 #ifndef KCALENDARSYSTEM_H
 #define KCALENDARSYSTEM_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 #include <QStringList>
 

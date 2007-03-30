@@ -22,9 +22,10 @@
 #ifndef _KDEBUG_H_
 #define _KDEBUG_H_
 
+#include <kdecore_export.h>
+
 #include <qdebug.h>
 #include <qstring.h>
-#include "kdelibs_export.h"
 
 class QWidget;
 class KDateTime;

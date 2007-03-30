@@ -20,7 +20,7 @@
 #ifndef KTEMPDIR_H
 #define KTEMPDIR_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include <qstring.h>
 
 /**

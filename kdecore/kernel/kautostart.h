@@ -20,9 +20,9 @@
 #ifndef KDELIBS_KAUTOSTART_H
 #define KDELIBS_KAUTOSTART_H
 
-#include <QtCore/QObject>
+#include <kdecore_export.h>
 
-#include "kdelibs_export.h"
+#include <QtCore/QObject>
 
 class QStringList;
 

@@ -19,10 +19,10 @@
 #ifndef __kfilterbase__h
 #define __kfilterbase__h
 
+#include <kdecore_export.h>
+
 #include <qobject.h>
 #include <qstring.h>
-
-#include <kdelibs_export.h>
 
 #ifdef Q_WS_WIN
 #undef ERROR //avoid conflicts

@@ -18,9 +18,9 @@
 #ifndef __kfilterdev_h
 #define __kfilterdev_h
 
+#include <kdecore_export.h>
 #include <qiodevice.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
 
 class QFile;
 class KFilterBase;

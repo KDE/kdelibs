@@ -22,7 +22,7 @@
 #ifndef KMACROEXPANDER_H
 #define KMACROEXPANDER_H
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <qchar.h>
 
 class QString;

@@ -19,7 +19,7 @@
 #ifndef KCOMPONENTDATA_H
 #define KCOMPONENTDATA_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include "ksharedconfig.h"
 
 class QByteArray;

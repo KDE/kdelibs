@@ -26,12 +26,13 @@
 #ifndef _KSYSTEMTIMEZONE_H
 #define _KSYSTEMTIMEZONE_H
 
+#include <kdecore_export.h>
+#include "ktimezones.h"
+
 #include <QtCore/QDateTime>
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
-#include "kdelibs_export.h"
-#include "ktimezones.h"
 
 class KSystemTimeZoneSource;
 class KSystemTimeZonePrivate;

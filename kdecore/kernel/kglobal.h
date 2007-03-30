@@ -18,7 +18,7 @@
 #ifndef _KGLOBAL_H
 #define _KGLOBAL_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include <QAtomicPointer>
 
 class KComponentData;

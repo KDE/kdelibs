@@ -1,6 +1,5 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
-    Copyright (c) 1998, 1999 KDE Team
+/*  This file is part of the KDE project
+    Copyright (C) 2007 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,33 +17,33 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KRANDOM_H
-#define KRANDOM_H
+#ifndef KDECORE_EXPORT_H
+#define KDECORE_EXPORT_H
 
-#include <kdecore_export.h>
+/* needed for KDE_EXPORT and KDE_IMPORT macros */
+#include <kdemacros.h>
 
-#include <QtCore/QString>
+/* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
+#if defined _WIN32 || defined _WIN64
 
-/**
- * @short Helper class to create random data
- *
- * This namespace provides methods which generate random data.
- */
-namespace KRandom {
-    /**
-     * Generates a uniform random number.
-     * @return A truly unpredictable number in the range [0, RAND_MAX)
-     */
-    KDECORE_EXPORT int random();
+#ifndef KDECORE_EXPORT
+# if defined(MAKE_KDECORE_LIB)
+   /* We are building this library */ 
+#  define KDECORE_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */ 
+#  define KDECORE_EXPORT KDE_IMPORT
+# endif
+#endif
 
-    /**
-     * Generates a random string.  It operates in the range [A-Za-z0-9]
-     * @param length Generate a string of this length.
-     * @return the random string
-     */
-    KDECORE_EXPORT QString randomString(int length);
-}
+#else /* UNIX */
 
+#define KDECORE_EXPORT KDE_EXPORT
 
 #endif
 
+# ifndef KDECORE_EXPORT_DEPRECATED
+#  define KDECORE_EXPORT_DEPRECATED KDE_DEPRECATED KDECORE_EXPORT
+# endif
+
+#endif

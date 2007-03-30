@@ -25,7 +25,7 @@
  * @brief The file contains macros and functions related to the KDE version.
  */
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 /**
  * @brief Version of KDE as string, at compile time

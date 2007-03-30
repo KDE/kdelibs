@@ -19,11 +19,10 @@
 #ifndef KSYCOCADICT_H
 #define KSYCOCADICT_H
 
-#include <QList>
-
-#include <kdelibs_export.h>
-
+#include <kdecore_export.h>
 #include "ksycocaentry.h"
+
+#include <QList>
 
 class QString;
 class QDataStream;

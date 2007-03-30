@@ -23,12 +23,13 @@
 #ifndef KCONFIGBASE_H
 #define KCONFIGBASE_H
 
-#include <qcolor.h>
-#include <qvariant.h>
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <kconfiggroup.h>
 #include <kconfigflags.h>
 #include <kdebug.h>
+
+#include <qcolor.h>
+#include <qvariant.h>
 
 // This include fixes linker errors under msvc:
 // In qdbusmessage.h QList<QVariant> is instantiated because

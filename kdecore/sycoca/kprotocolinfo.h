@@ -19,7 +19,7 @@
 #ifndef KPROTOCOLINFO_H
 #define KPROTOCOLINFO_H
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 
 #include <kurl.h>
 #include <ksycocaentry.h>

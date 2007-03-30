@@ -20,8 +20,8 @@
 #ifndef KCOMPOSITEJOB_H
 #define KCOMPOSITEJOB_H
 
+#include <kdecore_export.h>
 #include <kjob.h>
-#include <kdelibs_export.h>
 
 #include <QtCore/QList>
 

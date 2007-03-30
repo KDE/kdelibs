@@ -21,12 +21,13 @@
 #if defined(I_KNOW_KSOCKS_ISNT_PUBLIC)
 /* "ksocks.h is not public API" */
 
+#include <kdecore_export.h>
+#include <kstaticdeleter.h>
+
 #include <qstringlist.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <kstaticdeleter.h>
-#include <kdelibs_export.h>
 
 #ifdef Q_OS_UNIX
 

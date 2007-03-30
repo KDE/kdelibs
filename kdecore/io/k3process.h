@@ -20,12 +20,14 @@
 #ifndef K3PROCESS_H
 #define K3PROCESS_H
 
+#include <kdecore_export.h>
+
+#include <qobject.h>
+
 #include <sys/types.h> // for pid_t
 #include <sys/wait.h>
 #include <signal.h>
 #include <unistd.h>
-#include <qobject.h>
-#include <kdelibs_export.h>
 
 class QSocketNotifier;
 class KProcessPrivate;

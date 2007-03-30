@@ -19,12 +19,12 @@
 #ifndef KSYCOCAENTRY_H
 #define KSYCOCAENTRY_H
 
-#include <qdatastream.h>
-#include <QtCore/QList>
-
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <ksycocatype.h>
 #include <ksharedptr.h>
+
+#include <qdatastream.h>
+#include <QtCore/QList>
 
 class QString;
 class QStringList;

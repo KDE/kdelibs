@@ -20,7 +20,7 @@
 #ifndef KLOCKFILE_H
 #define KLOCKFILE_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include <ksharedptr.h>
 #include <kglobal.h>
 

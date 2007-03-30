@@ -21,7 +21,7 @@
 #ifndef _NETSUPP_H_
 #define _NETSUPP_H_
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

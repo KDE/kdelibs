@@ -19,7 +19,8 @@
 #ifndef KCHARSETS_H
 #define KCHARSETS_H
 
-#include "kdelibs_export.h"
+#include <kdemacros.h>
+#include <kdecore_export.h>
 
 class KGlobal;
 class KCharsetsPrivate;

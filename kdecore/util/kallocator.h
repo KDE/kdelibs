@@ -26,7 +26,7 @@
 #ifndef KALLOCATOR_H
 #define KALLOCATOR_H
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 
 template <typename T> class QList;
 

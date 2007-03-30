@@ -22,7 +22,7 @@
 #ifndef KUSER_H
 #define KUSER_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include "ksharedptr.h"
 #include <sys/types.h>
 

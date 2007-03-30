@@ -21,7 +21,7 @@
 #ifndef KLOCALSOCKET_H
 #define KLOCALSOCKET_H
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 #include <QtCore/QString>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>

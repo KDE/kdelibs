@@ -22,10 +22,10 @@
 #ifndef KCONFIGINIBACKEND_H
 #define KCONFIGINIBACKEND_H
 
-#include <QDateTime>
-
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <kconfigbackend.h>
+
+#include <QDateTime>
 
 class QFile;
 class QByteArray;

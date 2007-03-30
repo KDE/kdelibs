@@ -59,8 +59,8 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QString>
 
+#include <kdecore_export.h>
 #include "ksocketaddress.h"
-#include <kdelibs_export.h>
 
 class QMutex;
 

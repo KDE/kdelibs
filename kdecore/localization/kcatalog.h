@@ -20,8 +20,8 @@
 #ifndef KCATALOG_H
 #define KCATALOG_H
 
+#include <kdecore_export.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
 
 class KCatalogPrivate;
 

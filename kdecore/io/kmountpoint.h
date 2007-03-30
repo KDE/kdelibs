@@ -21,9 +21,10 @@
 #ifndef KMOUNTPOINT_H
 #define KMOUNTPOINT_H
 
-#include <kdelibs_export.h>
-#include <qstringlist.h>
+#include <kdecore_export.h>
 #include <ksharedptr.h>
+
+#include <qstringlist.h>
 
 /**
  * The KMountPoint class provides information about mounted and unmounted disks.

@@ -22,10 +22,11 @@
 #ifndef KLOCALE_H
 #define KLOCALE_H
 
-#include <qstring.h>
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
+
+#include <qstring.h>
 
 class QStringList;
 class QTextCodec;

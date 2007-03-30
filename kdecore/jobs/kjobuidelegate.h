@@ -22,8 +22,8 @@
 #ifndef KJOBUIPROXY_H
 #define KJOBUIPROXY_H
 
+#include <kdecore_export.h>
 #include <qobject.h>
-#include <kdelibs_export.h>
 
 class KJob;
 

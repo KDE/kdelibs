@@ -23,7 +23,7 @@
 #ifndef KCONFIGGROUP_H
 #define KCONFIGGROUP_H
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <kdebug.h>
 #include <kconfigflags.h>
 #include <qcolor.h>

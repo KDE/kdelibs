@@ -19,8 +19,8 @@
 #ifndef KLOCALIZEDSTRING_H
 #define KLOCALIZEDSTRING_H
 
+#include <kdecore_export.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
 
 class KLocale;
 class KLocalizedStringPrivate;

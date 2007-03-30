@@ -19,7 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kdelibs_export.h"
+#include <kdecore_export.h>
 
 #include <config.h>
 

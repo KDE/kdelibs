@@ -22,7 +22,7 @@
 #ifndef KCONFIGDATA_H
 #define KCONFIGDATA_H
 
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <qmap.h>
 #include <qbytearray.h>
 

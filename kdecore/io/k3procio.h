@@ -18,9 +18,10 @@
 #ifndef K3PROCIO_H
 #define K3PROCIO_H
 
-#include <qstring.h>
+#include <kdecore_export.h>
 #include <k3process.h>
-#include "kdelibs_export.h"
+
+#include <qstring.h>
 
 class KProcIOPrivate;
 class QTextCodec;

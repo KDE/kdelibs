@@ -22,8 +22,8 @@
 #ifndef KABOUTDATA_H
 #define KABOUTDATA_H
 
+#include <kdecore_export.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
 
 template <class T> class QList;
 class KLocalizedString;

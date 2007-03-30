@@ -22,10 +22,10 @@
 #ifndef __KDEDMODULE_H__
 #define __KDEDMODULE_H__
 
+#include <kdecore_export.h>
+
 #include <QtCore/qobject.h>
 #include <QtCore/qbytearray.h>
-
-#include "kdelibs_export.h"
 
 class KDEDModulePrivate;
 class Kded;

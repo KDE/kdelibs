@@ -23,8 +23,8 @@
 #ifndef kpty_h
 #define kpty_h
 
+#include <kdecore_export.h>
 #include <qglobal.h>
-#include <kdelibs_export.h>
 
 #ifdef Q_OS_UNIX
 

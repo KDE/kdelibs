@@ -26,10 +26,10 @@
 #ifndef _KDATETIME_H_
 #define _KDATETIME_H_
 
-#include <QtCore/QSharedDataPointer>
-
+#include <kdecore_export.h>
 #include <ktimezones.h>
-#include "kdelibs_export.h"
+
+#include <QtCore/QSharedDataPointer>
 
 class QDataStream;
 class KDateTimePrivate;
