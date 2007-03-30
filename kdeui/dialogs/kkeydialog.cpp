@@ -1,5 +1,4 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
+/* This file is part of the KDE libraries Copyright (C) 1998 Mark Donohoe <donohoe@kde.org>
     Copyright (C) 1997 Nicolas Hadacek <hadacek@kde.org>
     Copyright (C) 1998 Matthias Ettrich <ettrich@kde.org>
     Copyright (C) 2001 Ellis Whitehead <ellis@kde.org>
@@ -94,8 +93,7 @@ enum reallyEvilRole {
 class KKeyChooserItem : public QTreeWidgetItem
 {
  public:
-	KKeyChooserItem(QTreeWidget *parent, QTreeWidgetItem *after, KAction *action);
-	KKeyChooserItem(QTreeWidgetItem *parent, QTreeWidgetItem *after, KAction *action);
+	KKeyChooserItem(QTreeWidgetItem *parent, KAction *action);
 	virtual ~KKeyChooserItem();
 	void undoChanges();
 
@@ -137,6 +135,8 @@ public:
 
 	KKeyChooserItem *itemFromIndex(const QModelIndex &index);
 
+	QTreeWidgetItem *findOrMakeItem(QTreeWidgetItem *parent, const QString &name);
+
 	//helper functions for conflict resolution
 	bool stealShortcut(KKeyChooserItem *item, unsigned int column, const QKeySequence &seq);
 	bool stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq);
@@ -157,13 +157,12 @@ public:
 	void startEditing(QWidget *, QModelIndex);
 	void doneEditingCurrent();
 
-	void globalShortcutsChangedSystemwide();
+	void globalSettingsChangedSystemwide(int);
 
 // members
+	QList<KActionCollection *> actionCollections;
 	KKeyChooser *q;
 	QModelIndex editingIndex;
-	//QList< QList<QAction*> > actionLists;
-	QList<KActionCollection *> actionCollections;
 
 	Ui::KKeyDialog ui;
 
@@ -251,21 +250,40 @@ KKeyChooser::~KKeyChooser()
 
 void KKeyChooser::addCollection(KActionCollection *collection, const QString &title)
 {
-	//TODO:implement
-	return;
+	d->actionCollections.append(collection);
+	enum hierarchyLevel {Root = 0, Program, Group, Action/*unused*/};
+	KAction *kact;
+	QTreeWidgetItem *hier[3];
+	uint l = Program;
+	hier[Root] = d->ui.list->invisibleRootItem();
+	hier[Program] = d->findOrMakeItem(hier[Root], title.isEmpty() ? i18n("Shortcuts") : title);
+	hier[Group] = d->findOrMakeItem(hier[Program], "if you see this, something went wrong");
+
+	foreach (QAction *action, collection->actions()) {
+		QString name = action->text();
+		kDebug(125) << "Key: " << name << endl;
+
+		if (name.startsWith(QLatin1String("Program:")))
+			l = Program;
+		else if
+			(name.startsWith(QLatin1String("Group:")))
+			l = Group;
+		else if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
+			new KKeyChooserItem((hier[l]), kact);
+			continue;
+		}
+		
+		if (!hier[l]->childCount())
+			delete hier[l];
+
+		hier[l] = d->findOrMakeItem(hier[l - 1], name);
+	}
+
+	for (l = Group; l >= Program; l--) {
+		if (!hier[l]->childCount())
+			delete hier[l];
+	}
 }
-
-/*bool KKeyChooser::insert( KActionCollection* pColl, const QString &title )
-{
-    QString str = title;
-    if (title.isEmpty() && pColl->componentData().isValid() && pColl->componentData().aboutData()) {
-        str = pColl->componentData().aboutData()->programName();
-    }
-
-	d->actionLists.append( pColl->actions() );
-	d->actionCollections.append( pColl );
-	d->appendToView(d->actionLists.count() - 1, str);
-}*/
 
 
 void KKeyChooser::save()
@@ -299,81 +317,12 @@ void KKeyChooserPrivate::initGUI( KKeyChooser::ActionTypes types, KKeyChooser::L
 	//we have our own editing mechanism
 	ui.list->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-	//QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
-	//                 q, SLOT(globalSettingsChanged(int)));
-#ifdef __GNUC__
-    #warning fixme slot globalSettingsChanged(int) does not exist
-#endif
-
+	QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
+	                 q, SLOT(globalSettingsChangedSystemwide(int)));
 	QObject::connect(delegate, SIGNAL(extenderCreated(QWidget *, QModelIndex)),
 	                 q, SLOT(startEditing(QWidget *, QModelIndex)));	
 	QObject::connect(delegate, SIGNAL(extenderDestroyed(QWidget *, QModelIndex)),
 	                 q, SLOT(doneEditingCurrent()));
-}
-
-// Add all shortcuts to the list
-void KKeyChooserPrivate::appendToView( uint nList, const QString &title )
-{
-/*	const QList<QAction*> pList = actionLists[nList];
-
-	QTreeWidgetItem *pProgramItem, *pGroupItem = 0, *pParentItem, *pItem;
-
-	QString str = (title.isEmpty() ? i18n("Shortcuts") : title);
-	pParentItem = pProgramItem = pItem = new QTreeWidgetItem( ui.list, QStringList() << str );
-	ui.list->expandItem(pParentItem);
-	pParentItem->setFlags(pParentItem->flags() & ~Qt::ItemIsSelectable);
-
-	foreach (QAction* action, pList) {
-		KKeyChooser::ActionTypes thisType = 0;
-		switch (action->shortcutContext()) {
-			case Qt::ApplicationShortcut:
-				thisType = KKeyChooser::ApplicationAction;
-				break;
-			case Qt::WindowShortcut:
-				thisType = KKeyChooser::WindowAction;
-				break;
-			case Qt::WidgetShortcut:
-				thisType = KKeyChooser::WidgetAction;
-				break;
-		}
-
-		KAction *kaction = qobject_cast<KAction*>(action);
-
-		if (kaction!=0 && kaction->globalShortcutAllowed())
-			thisType &= KKeyChooser::GlobalAction;
-
-		if (!(thisType & actionTypes))
-			continue;
-
-		QString sName = action->text();
-		kDebug(125) << "Key: " << sName << endl;
-		if( sName.startsWith( QLatin1String("Program:") ) ) {
-			pItem = new QTreeWidgetItem( ui.list, pProgramItem );
-			pItem->setText(0, action->text());
-			pItem->setFlags(pItem->flags() & ~Qt::ItemIsSelectable);
-			ui.list->expandItem(pItem);
-			if( !pProgramItem->childCount() )
-				delete pProgramItem;
-			pProgramItem = pParentItem = pItem;
-		} else if( sName.startsWith( QLatin1String("Group:") ) ) {
-			pItem = new QTreeWidgetItem( pProgramItem, pParentItem );
-			pItem->setText(0, action->text());
-			pItem->setFlags(pItem->flags() & ~Qt::ItemIsSelectable);
-			ui.list->expandItem(pItem);
-			if( pGroupItem && !pGroupItem->childCount() )
-				delete pGroupItem;
-			pGroupItem = pParentItem = pItem;
-		} else if( !sName.isEmpty() && sName != QLatin1String("unnamed") && kaction!=0 && kaction->isShortcutConfigurable() ) {
-			pItem = new KKeyChooserItem( pParentItem, pItem, kaction );
-		}
-		//H4X
-		pItem->setFlags(pItem->flags() | Qt::ItemIsEditable);
-	}
-
-	if( !pProgramItem->childCount() )
-		delete pProgramItem;
-	if( pGroupItem && !pGroupItem->childCount() )
-		delete pGroupItem;*/
 }
 
 
@@ -386,11 +335,27 @@ KKeyChooserItem *KKeyChooserPrivate::itemFromIndex(const QModelIndex &index)
 }
 
 
+QTreeWidgetItem *KKeyChooserPrivate::findOrMakeItem(QTreeWidgetItem *parent, const QString &name)
+{
+	for (int i = 0; i < parent->childCount(); i++) {
+		QTreeWidgetItem *child = parent->child(i);
+		if (child->text(0) == name)
+			return child;
+	}
+	QTreeWidgetItem *ret = new QTreeWidgetItem(parent);
+	ret->setText(0, name);
+	ui.list->expandItem(ret);
+	ret->setFlags(ret->flags() & ~Qt::ItemIsSelectable);
+	return ret;
+}
+
+
 //slot
 void KKeyChooserPrivate::startEditing(QWidget *editor, QModelIndex index)
 {
 	editingIndex = index;
 }
+
 
 //slot
 void KKeyChooserPrivate::doneEditingCurrent()
@@ -433,7 +398,7 @@ void KKeyChooserPrivate::changeKeyShortcut(KKeyChooserItem *item, uint column, c
 
 		//find conflicting shortcuts in this application
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
-			if (!(*it)->parent())
+			if ((*it)->childCount())
 				continue;
 
 			otherItem = static_cast<KKeyChooserItem *>(*it);
@@ -617,65 +582,8 @@ bool KKeyChooserPrivate::stealRockerGesture(KKeyChooserItem *item, const KRocker
 }
 
 
-/*void KKeyChooserPrivate::updateButtons()
-{
-	// Hack: Do this incase we still have changeKey() running.
-	//  Better would be to capture the mouse pointer so that we can't click
-	//   around while we're supposed to be entering a key.
-	//  Better yet would be a modal dialog for changeKey()!
-	q->releaseKeyboard();
-	KKeyChooserItem* pItem = dynamic_cast<KKeyChooserItem*>( ui.list->currentItem() );
-
-	if ( !pItem ) {
-		// if nothing is selected -> disable radio boxes
-		ui.localGroup->setEnabled( false );
-		ui.localCustomSelector->setShortcut( KShortcut() );
-
-		ui.globalGroup->setEnabled( false );
-		ui.globalCustomSelector->setShortcut( KShortcut() );
-
-	} else {
-		// Set key strings
-		QString localKeyStrCfg = pItem->shortcut().toString();
-		QString localKeyStrDef = pItem->defaultShortcut().toString();
-		QString globalKeyStrCfg = pItem->globalShortcut().toString();
-		QString globalKeyStrDef = pItem->defaultGlobalShortcut().toString();
-
-		ui.localCustomSelector->setShortcut( pItem->shortcut() );
-		ui.globalCustomSelector->setShortcut( pItem->globalShortcut() );
-
-		ui.localDefault->setText( i18nc("Default (default shortcut)", "De&fault (%1)", localKeyStrDef.isEmpty() ? i18n("none") : localKeyStrDef) );
-		ui.globalDefault->setText( i18nc("Default (default shortcut)", "De&fault (%1)" , globalKeyStrDef.isEmpty() ? i18n("none") : globalKeyStrDef) );
-
-		// Select the appropriate radio button.
-		if (pItem->shortcut().isEmpty())
-			ui.localNone->setChecked( true );
-		else if (pItem->shortcut() == pItem->defaultShortcut())
-			ui.localDefault->setChecked( true );
-		else
-			ui.localCustom->setChecked( true );
-
-		if (pItem->globalShortcut().isEmpty())
-			ui.globalNone->setChecked( true );
-		else if (pItem->globalShortcut() == pItem->defaultGlobalShortcut())
-			ui.globalDefault->setChecked( true );
-		else
-			ui.globalCustom->setChecked( true );
-
-		// Enable buttons if this key is configurable.
-		// The 'Default Key' button must also have a default key.
-		ui.localGroup->setEnabled( pItem->isConfigurable() );
-		ui.localDefault->setEnabled( pItem->isConfigurable() && !pItem->defaultShortcut().isEmpty() );
-
-		ui.globalGroup->setEnabled( pItem->action()->globalShortcutAllowed() );
-		ui.globalDefault->setEnabled( pItem->action()->globalShortcutAllowed() && !pItem->defaultGlobalShortcut().isEmpty() );
-	}
-}*/
-
-
-//TODO: get this called
 //slot
-void KKeyChooserPrivate::globalShortcutsChangedSystemwide()
+void KKeyChooserPrivate::globalSettingsChangedSystemwide(int which)
 {
 	KGlobalAccel::self()->readSettings();
 	//TODO:do something about it, too?
@@ -727,19 +635,8 @@ void KKeyChooser::showEvent( QShowEvent * event )
 
 
 //---------------------------------------------------
-KKeyChooserItem::KKeyChooserItem(QTreeWidget* parent, QTreeWidgetItem* after, KAction* action)
-	: QTreeWidgetItem(parent, after)
-	, m_action(action)
-	, m_oldLocalShortcut(0)
-	, m_oldGlobalShortcut(0)
-	, m_oldShapeGesture(0)
-	, m_oldRockerGesture(0)
-{
-}
-
-
-KKeyChooserItem::KKeyChooserItem(QTreeWidgetItem* parent, QTreeWidgetItem* after, KAction* action)
-	: QTreeWidgetItem(parent, after)
+KKeyChooserItem::KKeyChooserItem(QTreeWidgetItem *parent, KAction *action)
+	: QTreeWidgetItem(parent)
 	, m_action(action)
 	, m_oldLocalShortcut(0)
 	, m_oldGlobalShortcut(0)

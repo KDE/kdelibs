@@ -65,14 +65,14 @@ class KDEUI_EXPORT KKeyChooser : public QWidget
 
 public:
 	enum ActionType {
-		/// Actions which are triggered by any keypress in the application
-		ApplicationAction = 0x1,
-		/// Actions which are triggered by any keypress in a window which has the action added to it or its child widget(s)
-		WindowAction      = 0x2,
 		/// Actions which are triggered by any keypress in a widget which has the action added to it
-		WidgetAction      = 0x4,
+		WidgetAction      = Qt::WidgetShortcut      /*0*/,
+		/// Actions which are triggered by any keypress in a window which has the action added to it or its child widget(s)
+		WindowAction      = Qt::WindowShortcut      /*1*/,
+		/// Actions which are triggered by any keypress in the application
+		ApplicationAction = Qt::ApplicationShortcut /*2*/,
 		/// Actions which are triggered by any keypress in the windowing system
-		GlobalAction      = 0x8,
+		GlobalAction      = 4,
 		/// All actions
 		AllActions        = 0xffffffff
 	};
@@ -188,6 +188,8 @@ private:
 
 	Q_PRIVATE_SLOT(d, void startEditing(QWidget *, QModelIndex))
 	Q_PRIVATE_SLOT(d, void doneEditingCurrent())
+
+	Q_PRIVATE_SLOT(d, void globalSettingsChangedSystemwide(int))
 
 private:
 	friend class KKeyDialog;
