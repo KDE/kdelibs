@@ -20,7 +20,7 @@
 #ifndef PREDICATEPROPERTIES_H
 #define PREDICATEPROPERTIES_H
 
-#include "kdelibs_export.h"
+#include <kio/kio_export.h>
 #include <QSharedData>
 #include <QVariant>
 class QValidator;

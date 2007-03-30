@@ -19,7 +19,7 @@
 #ifndef __kio_skip_dialog__
 #define __kio_skip_dialog__
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 #include <kdialog.h>
 
 class QPushButton;

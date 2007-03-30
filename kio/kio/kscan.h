@@ -20,6 +20,7 @@
 #ifndef KSCAN_H
 #define KSCAN_H
 
+#include <kio/kio_export.h>
 #include <kpagedialog.h>
 #include <kcomponentdata.h>
 #include <klibloader.h>

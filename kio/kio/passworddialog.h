@@ -20,6 +20,7 @@
 #ifndef kio_pass_word_dialog_h
 #define kio_pass_word_dialog_h
 
+#include <kio/kio_export.h>
 #include <kpassworddialog.h>
 
 class QGridLayout;

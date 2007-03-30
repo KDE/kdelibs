@@ -19,6 +19,8 @@
 #ifndef KURLBAR_H
 #define KURLBAR_H
 
+#include <kio/kio_export.h>
+
 #include <qevent.h>
 #include <QtGui/QFrame>
 #include <qtooltip.h>

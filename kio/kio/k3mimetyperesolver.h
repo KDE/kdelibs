@@ -21,6 +21,7 @@
 #ifndef __kmimetyperesolver_h
 #define __kmimetyperesolver_h
 
+#include <kio/kio_export.h>
 #include <q3scrollview.h>
 #include <QtCore/QList>
 #include <qtimer.h>

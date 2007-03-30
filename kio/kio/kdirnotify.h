@@ -19,7 +19,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 /*
  * Proxy class for interface org.kde.KDirNotify

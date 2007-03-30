@@ -19,6 +19,7 @@
 #ifndef KMIMETYPE_CHOOSER_H
 #define KMIMETYPE_CHOOSER_H
 
+#include <kio/kio_export.h>
 #include <kdialog.h>
 #include <kvbox.h>
 

@@ -21,7 +21,7 @@
 
 #include <qtimer.h>
 #include <qprogressdialog.h>
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 /**
  * Progress dialog while ksycoca is being rebuilt (by kbuildsycoca).

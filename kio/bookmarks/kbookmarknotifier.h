@@ -22,7 +22,7 @@
 #ifndef __kbookmarknotifier_h__
 #define __kbookmarknotifier_h__
 
-#include "kdelibs_export.h"
+#include <kio/kio_export.h>
 
 class QString;
 

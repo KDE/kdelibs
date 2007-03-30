@@ -22,6 +22,8 @@
 #ifndef __k_run_h__
 #define __k_run_h__
 
+#include <kio/kio_export.h>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 

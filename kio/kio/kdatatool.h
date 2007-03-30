@@ -21,6 +21,7 @@
 #ifndef KDATATOOL_H
 #define KDATATOOL_H
 
+#include <kio/kio_export.h>
 #include <qobject.h>
 
 #include <kaction.h>

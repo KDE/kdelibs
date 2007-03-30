@@ -19,6 +19,7 @@
 #ifndef _KCUSTOMMENUEDITOR_H_
 #define _KCUSTOMMENUEDITOR_H_
 
+#include <kio/kio_export.h>
 #include <kdialog.h>
 
 class K3ListView;

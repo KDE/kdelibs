@@ -21,7 +21,7 @@
 
 #include <qobject.h>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KNFSSharePrivate;
 

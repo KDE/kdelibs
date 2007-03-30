@@ -44,7 +44,7 @@ class QDateTime;
 class KSSLCertChain;
 class KSSLX509V3;
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 #include <ksslconfig.h>
 
 #include <QList>

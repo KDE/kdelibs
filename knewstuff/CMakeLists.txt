@@ -57,5 +57,5 @@ endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 
-install( FILES downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h knewstuffsecure.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/knewstuff )
+install( FILES knewstuff_export.h downloaddialog.h engine.h entry.h knewstuffgeneric.h knewstuff.h providerdialog.h provider.h uploaddialog.h knewstuffbutton.h knewstuffsecure.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/knewstuff )
 

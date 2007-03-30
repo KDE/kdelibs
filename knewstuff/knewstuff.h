@@ -22,7 +22,7 @@
 
 #include <QtCore/QString>
 
-#include <kdelibs_export.h>
+#include <knewstuff/knewstuff_export.h>
 
 class QObject;
 class QWidget;

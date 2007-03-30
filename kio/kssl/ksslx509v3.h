@@ -23,7 +23,7 @@
 
 #include <QtCore/QString>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 /**
  * KDE X509v3 Flag Class

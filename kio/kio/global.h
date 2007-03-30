@@ -19,7 +19,7 @@
 #ifndef __kio_global_h__
 #define __kio_global_h__
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 #include <qstring.h>
 #include <qhash.h>

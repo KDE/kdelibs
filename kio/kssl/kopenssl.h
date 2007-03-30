@@ -25,6 +25,8 @@
 #define KOSSL KOpenSSLProxy
 class KOpenSSLProxyPrivate;
 
+#include <kio/kio_export.h>
+
 #include <klibloader.h>
 #include "ksslconfig.h"
 

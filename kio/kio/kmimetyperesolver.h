@@ -22,7 +22,7 @@
 #define KMIMETYPERESOLVER_H
 
 #include <QObject>
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 class QModelIndex;
 class KFileItemList;
 class QAbstractItemView;

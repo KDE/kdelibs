@@ -21,6 +21,7 @@
 #ifndef KUrlPIXMAPPROVIDER_H
 #define KUrlPIXMAPPROVIDER_H
 
+#include <kio/kio_export.h>
 #include <kpixmapprovider.h>
 #include <kmimetype.h>
 

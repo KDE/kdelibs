@@ -19,6 +19,7 @@
 #ifndef KREMOTEENCODING_H
 #define KREMOTEENCODING_H
 
+#include <kio/kio_export.h>
 #include <kurl.h>
 #include <qstring.h>
 #include <qbytearray.h>

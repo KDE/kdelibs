@@ -21,7 +21,7 @@
 #ifndef __KSSLCSESSIONCACHE_H
 #define __KSSLCSESSIONCACHE_H
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KUrl;
 class QString;

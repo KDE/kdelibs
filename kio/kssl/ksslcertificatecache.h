@@ -26,7 +26,7 @@ class KSSLCertificate;
 #include <QtCore/QStringList>
 #include <qdatetime.h>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KIO_EXPORT KSSLCertificateCache {
 public:

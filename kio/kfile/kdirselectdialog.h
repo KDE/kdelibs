@@ -20,6 +20,8 @@
 #ifndef KDIRSELECTDIALOG_H
 #define KDIRSELECTDIALOG_H
 
+#include <kio/kio_export.h>
+
 #include <kdialog.h>
 #include <kurl.h>
 

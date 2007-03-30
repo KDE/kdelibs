@@ -21,6 +21,7 @@
 #ifndef SAFESITE_H
 #define SAFESITE_H
 
+#include <kio/kio_export.h>
 #include <kurl.h>
 
 namespace SafeSite {

@@ -22,7 +22,7 @@
 #ifndef __connection_h__
 #define __connection_h__
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 #include <stdio.h>
 #include <QQueue>

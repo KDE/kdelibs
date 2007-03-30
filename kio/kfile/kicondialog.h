@@ -14,6 +14,8 @@
 #ifndef __KIconDialog_h__
 #define __KIconDialog_h__
 
+#include <kio/kio_export.h>
+
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpushbutton.h>

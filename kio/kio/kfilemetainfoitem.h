@@ -21,7 +21,7 @@
 #ifndef KFILEMETAINFOITEM_H
 #define KFILEMETAINFOITEM_H
 
-#include "kdelibs_export.h"
+#include <kio/kio_export.h>
 #include <QSharedData>
 
 class KFileWritePlugin;

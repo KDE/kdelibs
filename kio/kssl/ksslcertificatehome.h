@@ -26,7 +26,7 @@ class KSSLPKCS12;
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KIO_EXPORT KSSLCertificateHome {
  

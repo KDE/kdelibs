@@ -20,7 +20,7 @@
 
 #include <qdir.h>
 
-#include "kdelibs_export.h"
+#include <kio/kio_export.h>
 
 /**
  * KFile is a class which provides a namespace for some enumerated

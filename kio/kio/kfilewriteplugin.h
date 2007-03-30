@@ -20,7 +20,7 @@
 #ifndef KFILEWRITEPLUGIN_H
 #define KFILEWRITEPLUGIN_H
 
-#include "kdelibs_export.h"
+#include <kio/kio_export.h>
 #include <QVariant>
 
 class QIODevice;

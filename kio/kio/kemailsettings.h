@@ -31,7 +31,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KEMailSettingsPrivate;
 

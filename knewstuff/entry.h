@@ -27,7 +27,7 @@
 #include <QtCore/QStringList>
 
 #include <kurl.h>
-#include <kdelibs_export.h>
+#include <knewstuff/knewstuff_export.h>
 
 namespace KNS {
 

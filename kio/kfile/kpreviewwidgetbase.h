@@ -24,7 +24,7 @@
 #include <qhash.h>
 #include <qwidget.h>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KUrl;
 

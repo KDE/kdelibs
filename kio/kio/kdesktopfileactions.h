@@ -20,6 +20,7 @@
 #ifndef KDESKTOPFILEACTIONS_H
 #define KDESKTOPFILEACTIONS_H
 
+#include <kio/kio_export.h>
 #include <sys/types.h> // pid_t
 #include <kurl.h>
 class KDesktopFile;

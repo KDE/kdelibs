@@ -69,14 +69,6 @@
 # endif
 #endif
 
-#ifndef KIO_EXPORT
-# ifdef MAKE_KIO_LIB
-#  define KIO_EXPORT KDE_EXPORT
-# else
-#  define KIO_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KNTLM_EXPORT
 # ifdef MAKE_KNTLM_LIB
 #  define KNTLM_EXPORT KDE_EXPORT
@@ -154,14 +146,6 @@
 #  define KDOCUMENT_EXPORT KDE_EXPORT
 # else
 #  define KDOCUMENT_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KNEWSTUFF_EXPORT
-# ifdef MAKE_KNEWSTUFF_LIB
-#  define KNEWSTUFF_EXPORT KDE_EXPORT
-# else
-#  define KNEWSTUFF_EXPORT KDE_IMPORT
 # endif
 #endif
 

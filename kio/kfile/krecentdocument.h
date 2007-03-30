@@ -28,6 +28,8 @@
 #ifndef __KRECENTDOCUMENT_H
 #define __KRECENTDOCUMENT_H
 
+#include <kio/kio_export.h>
+
 #include <qstring.h>
 #include <kurl.h>
 

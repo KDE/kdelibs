@@ -19,6 +19,7 @@
 #ifndef __kio_paste_h__
 #define __kio_paste_h__
 
+#include <kio/kio_export.h>
 #include <qstring.h>
 #include <kurl.h>
 class QWidget;

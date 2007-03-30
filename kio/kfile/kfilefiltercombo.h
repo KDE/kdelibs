@@ -20,6 +20,8 @@
 #ifndef KFILEFILTERCOMBO_H
 #define KFILEFILTERCOMBO_H
 
+#include <kio/kio_export.h>
+
 #include <qstringlist.h>
 
 #include <kcombobox.h>

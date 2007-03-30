@@ -20,7 +20,7 @@
 #ifndef _INCLUDE_KSSLUTILS_H
 #define _INCLUDE_KSSLUTILS_H
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 #include "ksslconfig.h"
 
 #include <unistd.h>

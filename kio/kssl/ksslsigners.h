@@ -26,7 +26,7 @@ class KSSLCertificate;
 
 #include <QtCore/QStringList>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 // ### KDE4 - Fix constness
 /**

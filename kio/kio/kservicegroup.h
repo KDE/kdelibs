@@ -19,6 +19,7 @@
 #ifndef __kservicegroup_h__
 #define __kservicegroup_h__
 
+#include <kio/kio_export.h>
 #include "ksycocaentry.h"
 
 class KBuildServiceGroupFactory;

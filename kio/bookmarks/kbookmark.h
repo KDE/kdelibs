@@ -20,6 +20,8 @@
 #ifndef __kbookmark_h
 #define __kbookmark_h
 
+#include <kio/kio_export.h>
+
 #include <qstring.h>
 #include <QtCore/QList>
 #include <qdom.h>

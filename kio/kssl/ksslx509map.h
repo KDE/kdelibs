@@ -24,7 +24,7 @@
 #include <qmap.h>
 #include <QtCore/QString>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 /**
  * X.509 Map Parsing Class

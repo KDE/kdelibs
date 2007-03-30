@@ -19,6 +19,8 @@
 #ifndef KDBUSSERVICESTARTER_H
 #define KDBUSSERVICESTARTER_H
 
+#include <kio/kio_export.h>
+
 #include <qstring.h>
 #include <kstaticdeleter.h>
 

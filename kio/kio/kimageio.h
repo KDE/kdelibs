@@ -11,7 +11,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 /**
  * A small convenience class to get information about image format names and

@@ -19,6 +19,8 @@
 #ifndef KDIRCOMBOBOX_H
 #define KDIRCOMBOBOX_H
 
+#include <kio/kio_export.h>
+
 #include <qevent.h>
 #include <QtCore/QList>
 #include <qmap.h>

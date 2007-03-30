@@ -29,7 +29,7 @@
 #include <qstringlist.h>
 #include <qhash.h>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class KArchiveDirectory;
 class KArchiveFile;

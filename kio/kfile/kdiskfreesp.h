@@ -29,7 +29,7 @@
 #include <qobject.h>
 #include <qstring.h>
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
 
 class K3Process;
 

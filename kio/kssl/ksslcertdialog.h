@@ -21,6 +21,8 @@
 #ifndef _KSSLCERTDIALOG_H
 #define _KSSLCERTDIALOG_H
 
+#include <kio/kio_export.h>
+
 #include <QtCore/QStringList>
 #include <kdialog.h>
 

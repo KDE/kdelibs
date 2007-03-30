@@ -21,6 +21,7 @@
 #ifndef __kbookmarkimporter_kde1_h
 #define __kbookmarkimporter_kde1_h
 
+#include <kio/kio_export.h>
 #include <qdom.h>
 #include <qstringlist.h>
 #include <kconfig.h>
