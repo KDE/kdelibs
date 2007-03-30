@@ -20,6 +20,9 @@
 #ifndef KFILESHAREPRIVATE_H
 #define KFILESHAREPRIVATE_H
 
+#include <QObject>
+class KDirWatch;
+
 /**
  * @internal
  * Do not use, ever.

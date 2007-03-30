@@ -19,44 +19,37 @@
 
 #ifndef kfileshare_h
 #define kfileshare_h
-#include <qobject.h>
 
 #include <kio/kio_export.h>
-
-class KDirWatch;
+class QString;
 
 /**
  * Common functionality for the file sharing
  * (communication with the backend)
  */
-class KIO_EXPORT KFileShare
+namespace KFileShare
 {
-
-  
-public:
     /**
      * Reads the file share configuration file
      */
-    static void readConfig();
-    
+    KIO_EXPORT void readConfig();
+
     /**
      * Reads the list of shared folders
      */
-    static void readShareList();
+    KIO_EXPORT void readShareList();
 
 
     /**
      * Call this to know if a directory is currently shared
      */
-    static bool isDirectoryShared( const QString& path );
+    KIO_EXPORT bool isDirectoryShared( const QString& path );
 
     enum Authorization { NotInitialized, ErrorNotFound, Authorized, UserNotAllowed };
     /**
      * Call this to know if the current user is authorized to share directories
      */
-    static Authorization authorization();
-
-    static QString findExe( const char* exeName );
+    KIO_EXPORT Authorization authorization();
 
     /**
      * Uses a suid perl script to share the given path 
@@ -65,8 +58,8 @@ public:
      * @param shared whether the path should be shared or not
      * @returns whether the perl script was successful
      */
-    static bool setShared( const QString& path, bool shared );
-    
+    KIO_EXPORT bool setShared( const QString& path, bool shared );
+
     /**
      * The used share mode.
      * Simple means that the simple sharing dialog is used and
@@ -75,54 +68,43 @@ public:
      * users can share any folder.
      */
     enum ShareMode { Simple, Advanced };
-    
+
     /**
      * Returns whether sharing is enabled
      * If this is false, file sharing is disabled and
      * nobody can share files.
      */
-    static bool sharingEnabled();
-    
+    KIO_EXPORT bool sharingEnabled();
+
     /**
      * Returns whether file sharing is restricted.
      * If it is not restricted every user can shar files.
      * If it is restricted only users in the configured
      * file share group can share files.
      */
-    static bool isRestricted();
-    
+    KIO_EXPORT bool isRestricted();
+
     /**
      * Returns the group that is used for file sharing.
      * That is, all users in that group are allowed to
      * share files if file sharing is restricted.
      */
-    static QString fileShareGroup();
-    
+    KIO_EXPORT QString fileShareGroup();
+
     /**
      * Returns the configured share mode
      */
-    static ShareMode shareMode();
-    
+    KIO_EXPORT ShareMode shareMode();
+
     /**
      * Returns whether Samba is enabled
      */
-    static bool sambaEnabled();
-    
+    KIO_EXPORT bool sambaEnabled();
+
     /** 
      * Returns whether NFS is enabled
      */
-    static bool nfsEnabled();
-
-private:
-    static Authorization s_authorization;
-    static QStringList* s_shareList;
-    static ShareMode s_shareMode;
-    static bool s_sambaEnabled;
-    static bool s_nfsEnabled;
-    static bool s_restricted;
-    static QString s_fileShareGroup;
-    static bool s_sharingEnabled;
-    
-};
+    KIO_EXPORT bool nfsEnabled();
+}
 
 #endif

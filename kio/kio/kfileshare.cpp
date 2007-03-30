@@ -33,19 +33,32 @@
 #include <kconfig.h>
 #include <kuser.h>
 
-KFileShare::Authorization KFileShare::s_authorization = NotInitialized;
-QStringList* KFileShare::s_shareList = 0L;
+static KFileShare::Authorization s_authorization = KFileShare::NotInitialized;
+static QStringList* s_shareList = 0L;
 static KStaticDeleter<QStringList> sdShareList;
 
-KFileShare::ShareMode KFileShare::s_shareMode;
-bool KFileShare::s_sambaEnabled;
-bool KFileShare::s_nfsEnabled;
-bool KFileShare::s_restricted;
-QString KFileShare::s_fileShareGroup;
-bool KFileShare::s_sharingEnabled;
-
+static KFileShare::ShareMode s_shareMode;
+static bool s_sambaEnabled;
+static bool s_nfsEnabled;
+static bool s_restricted;
+static QString s_fileShareGroup;
+static bool s_sharingEnabled;
 
 #define FILESHARECONF "/etc/security/fileshare.conf"
+
+static QString findExe( const char* exeName )
+{
+   // Normally fileshareset and filesharelist are installed in kde4/libexec;
+   // allow distributions to move it somewhere else in the PATH or in /usr/sbin.
+   QString path = QString::fromLocal8Bit(getenv("PATH"));
+#ifndef Q_WS_WIN
+   path += QLatin1String(":/usr/sbin");
+#endif
+   QString exe = KStandardDirs::findExe( exeName, path );
+   if (exe.isEmpty())
+       kError() << exeName << " not found in " << path << endl;
+   return exe;
+}
 
 KFileSharePrivate::KFileSharePrivate()
 {
@@ -170,7 +183,7 @@ void KFileShare::readShareList()
     else
         s_shareList->clear();
 
-    QString exe = findExe( "filesharelist" );
+    QString exe = ::findExe( "filesharelist" );
     if (exe.isEmpty()) {
         s_authorization = ErrorNotFound;
         return;
@@ -217,20 +230,6 @@ KFileShare::Authorization KFileShare::authorization()
     return s_authorization;
 }
 
-QString KFileShare::findExe( const char* exeName )
-{
-   // Normally fileshareset and filesharelist are installed in kde4/libexec;
-   // allow distributions to move it somewhere else in the PATH or in /usr/sbin.
-   QString path = QString::fromLocal8Bit(getenv("PATH"));
-#ifndef Q_WS_WIN
-   path += QLatin1String(":/usr/sbin");
-#endif
-   QString exe = KStandardDirs::findExe( exeName, path );
-   if (exe.isEmpty())
-       kError() << exeName << " not found in " << path << endl;
-   return exe;
-}
-
 bool KFileShare::setShared( const QString& path, bool shared )
 {
     if (! KFileShare::sharingEnabled() ||
@@ -238,7 +237,7 @@ bool KFileShare::setShared( const QString& path, bool shared )
        return false;
 
     kDebug(7000) << "KFileShare::setShared " << path << "," << shared << endl;
-    QString exe = KFileShare::findExe( "fileshareset" );
+    QString exe = ::findExe( "fileshareset" );
     if (exe.isEmpty())
         return false;
 
