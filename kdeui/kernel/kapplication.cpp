@@ -64,6 +64,8 @@
 #include "ktoolinvocation.h"
 #include "kgesturemap.h"
 #include "kurl.h"
+#include "kmessage.h"
+#include "kmessageboxmessagehandler.h"
 
 #if defined Q_WS_X11
 #include <QtGui/qx11info_x11.h>
@@ -557,6 +559,8 @@ void KApplication::init(bool GUIenabled)
 
     // Trigger initial settings
     KGlobalSettings::self();
+
+    KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
     d->checkAccelerators = new KCheckAccelerators( this );
     d->gestureMap = new KGestureMap( this );
