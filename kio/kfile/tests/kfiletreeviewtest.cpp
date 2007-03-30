@@ -27,7 +27,7 @@
 #include <kdebug.h>
 #include <kstatusbar.h>
 
-#include <kfiletreeview.h>
+#include <k3filetreeview.h>
 #include "kfiletreeviewtest.h"
 
 
@@ -38,7 +38,7 @@ testFrame::testFrame():KMainWindow( 0 ),
 
 {
    setObjectName( "Test FileTreeView" );
-   treeView = new KFileTreeView( this );
+   treeView = new K3FileTreeView( this );
    treeView->setDragEnabled( true );
    treeView->setAcceptDrops( true );
    treeView->setDropVisualizer( true );
@@ -78,10 +78,10 @@ void testFrame::showPath( const KUrl &url )
       if( dirOnlyMode ) treeView->setDirOnlyMode( nb, true );
       nb->setOpenPixmap( pixOpen );
 
-      connect( nb, SIGNAL(populateFinished(KFileTreeViewItem*)),
-	       this, SLOT(slotPopulateFinished(KFileTreeViewItem*)));
-      connect( nb, SIGNAL( directoryChildCount( KFileTreeViewItem *, int )),
-	       this, SLOT( slotSetChildCount( KFileTreeViewItem*, int )));
+      connect( nb, SIGNAL(populateFinished(K3FileTreeViewItem*)),
+	       this, SLOT(slotPopulateFinished(K3FileTreeViewItem*)));
+      connect( nb, SIGNAL( directoryChildCount( K3FileTreeViewItem *, int )),
+	       this, SLOT( slotSetChildCount( K3FileTreeViewItem*, int )));
       // nb->setChildRecurse(false );
 
       nb->setOpen(true);
@@ -109,7 +109,7 @@ void testFrame::copyUrls( KUrl::List& list, KUrl& to )
 }
 
 
-void testFrame::slotPopulateFinished(KFileTreeViewItem *item )
+void testFrame::slotPopulateFinished(K3FileTreeViewItem *item )
 {
    if( item )
    {
@@ -127,7 +127,7 @@ void testFrame::slotPopulateFinished(KFileTreeViewItem *item )
    }
 }
 
-void testFrame::slotSetChildCount( KFileTreeViewItem *item, int c )
+void testFrame::slotSetChildCount( K3FileTreeViewItem *item, int c )
 {
    if( item )
       item->setText(1, QString::number( c ));

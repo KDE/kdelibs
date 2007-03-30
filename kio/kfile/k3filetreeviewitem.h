@@ -29,20 +29,20 @@
 #include <kio/job.h>
 
 class KUrl;
-class KFileTreeView;
+class K3FileTreeView;
 class KFileTreeBranch;
 class KFileTreeItem;
 
 
 /**
- * An item for a KFileTreeView that knows about its own KFileItem.
+ * An item for a K3FileTreeView that knows about its own KFileItem.
  */
-class KIO_EXPORT KFileTreeViewItem : public K3ListViewItem
+class KIO_EXPORT K3FileTreeViewItem : public K3ListViewItem
 {
 public:
-   KFileTreeViewItem( KFileTreeViewItem*, KFileItem*, KFileTreeBranch * );
-   KFileTreeViewItem( KFileTreeView*, KFileItem*, KFileTreeBranch * );
-   ~KFileTreeViewItem();
+   K3FileTreeViewItem( K3FileTreeViewItem*, KFileItem*, KFileTreeBranch * );
+   K3FileTreeViewItem( K3FileTreeView*, KFileItem*, KFileTreeBranch * );
+   ~K3FileTreeViewItem();
 
    /**
     * @return the KFileTreeBranch the item is sorted in.
@@ -86,20 +86,20 @@ private:
    KFileItem *m_kfileitem;
    KFileTreeBranch *m_branch;
    bool  m_wasListed;
-   class KFileTreeViewItemPrivate;
-   KFileTreeViewItemPrivate *d;
+   class K3FileTreeViewItemPrivate;
+   K3FileTreeViewItemPrivate *d;
 };
 
 
 /**
  * List of KFileTreeViewItems
  */
-typedef Q3PtrList<KFileTreeViewItem> KFileTreeViewItemList;
+typedef Q3PtrList<K3FileTreeViewItem> K3FileTreeViewItemList;
 
 /**
  * Iterator for KFileTreeViewItemList
  */
-typedef Q3PtrListIterator<KFileTreeViewItem> KFileTreeViewItemListIterator;
+typedef Q3PtrListIterator<K3FileTreeViewItem> K3FileTreeViewItemListIterator;
 
 
 #endif

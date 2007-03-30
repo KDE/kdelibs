@@ -23,15 +23,13 @@
 #ifndef _KFILEPREVIEW_H
 #define _KFILEPREVIEW_H
 
+#include "kfileview.h"
+
 #include <qsplitter.h>
 #include <qwidget.h>
 #include <qstring.h>
 
 #include <kurl.h>
-#include <kfileitem.h>
-#include <kfileiconview.h>
-#include <kfiledetailview.h>
-#include <kfile.h>
 
 /*!
  * This KFileView is an empbedded preview for some file types.

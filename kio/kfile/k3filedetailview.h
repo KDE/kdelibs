@@ -35,29 +35,29 @@ class QKeyEvent;
  * An item for the listiew, that has a reference to its corresponding
  * KFileItem.
  */
-class KIO_EXPORT KFileListViewItem : public K3ListViewItem
+class KIO_EXPORT K3FileListViewItem : public K3ListViewItem
 {
 public:
-    KFileListViewItem( Q3ListView *parent, const QString &text,
+    K3FileListViewItem( Q3ListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi )
 	: K3ListViewItem( parent, text ), inf( fi ) {
         setPixmap( 0, icon );
         setText( 0, text );
     }
 
-    KFileListViewItem( Q3ListView *parent, KFileItem *fi )
+    K3FileListViewItem( Q3ListView *parent, KFileItem *fi )
         : K3ListViewItem( parent ), inf( fi ) {
         init();
     }
 
-    KFileListViewItem( Q3ListView *parent, const QString &text,
+    K3FileListViewItem( Q3ListView *parent, const QString &text,
 		       const QPixmap &icon, KFileItem *fi,
 		       Q3ListViewItem *after)
 	: K3ListViewItem( parent, after ), inf( fi ) {
         setPixmap( 0, icon );
         setText( 0, text );
     }
-    ~KFileListViewItem() {
+    ~K3FileListViewItem() {
         inf->removeExtraData( listView() );
     }
 
@@ -88,8 +88,8 @@ private:
     QString m_key;
 
 private:
-    class KFileListViewItemPrivate;
-    KFileListViewItemPrivate* d;
+    class K3FileListViewItemPrivate;
+    K3FileListViewItemPrivate* d;
 
 };
 
@@ -101,13 +101,13 @@ private:
  * @see KCombiView
  * @see KFileIconView
  */
-class KIO_EXPORT KFileDetailView : public K3ListView, public KFileView
+class KIO_EXPORT K3FileDetailView : public K3ListView, public KFileView
 {
     Q_OBJECT
 
 public:
-    KFileDetailView(QWidget *parent);
-    virtual ~KFileDetailView();
+    K3FileDetailView(QWidget *parent);
+    virtual ~K3FileDetailView();
 
     virtual QWidget *widget() { return this; }
     virtual void clearView();
@@ -140,7 +140,7 @@ public:
 
     // for K3MimeTypeResolver
     void mimeTypeDeterminationFinished();
-    void determineIcon( KFileListViewItem *item );
+    void determineIcon( K3FileListViewItem *item );
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
 
     virtual void readConfig( KConfig *, const QString& group = QString() );
@@ -189,21 +189,21 @@ private:
     virtual void setSorting(int i, bool b) { K3ListView::setSorting(i, b); }
     virtual void setSelected(Q3ListViewItem *i, bool b) { K3ListView::setSelected(i, b); }
 
-    inline KFileListViewItem * viewItem( const KFileItem *item ) const {
+    inline K3FileListViewItem * viewItem( const KFileItem *item ) const {
         if ( item )
-            return (KFileListViewItem *) item->extraData( this );
+            return (K3FileListViewItem *) item->extraData( this );
         return 0L;
     }
 
-    void setSortingKey( KFileListViewItem *item, const KFileItem *i );
+    void setSortingKey( K3FileListViewItem *item, const KFileItem *i );
 
 
     bool m_blockSortingSignal;
-    K3MimeTypeResolver<KFileListViewItem,KFileDetailView> *m_resolver;
+    K3MimeTypeResolver<K3FileListViewItem,K3FileDetailView> *m_resolver;
 
 private:
-    class KFileDetailViewPrivate;
-    KFileDetailViewPrivate* const d;
+    class K3FileDetailViewPrivate;
+    K3FileDetailViewPrivate* const d;
 };
 
 #endif // KFILEDETAILVIEW_H

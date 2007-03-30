@@ -36,6 +36,7 @@
 #include <qlinkedlist.h>
 #include <Q3ScrollView>
 #include <QTextDocument>
+#include <q3ptrlist.h>
 
 #undef Bool
 

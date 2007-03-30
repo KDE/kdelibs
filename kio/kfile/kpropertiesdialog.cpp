@@ -66,8 +66,6 @@ extern "C" {
 #include <qpainter.h>
 #include <qlayout.h>
 #include <qcombobox.h>
-#include <q3groupbox.h>
-#include <q3listbox.h>
 #include <qstyle.h>
 #include <qprogressbar.h>
 #include <QVector>

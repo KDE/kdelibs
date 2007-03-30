@@ -19,8 +19,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3fileiconview.h"
+
 #include <qapplication.h>
-#include <qdesktopwidget.h>
 #include <qevent.h>
 #include <qfontmetrics.h>
 #include <qnamespace.h>
@@ -43,22 +44,21 @@
 #include <kactionmenu.h>
 #include <kconfiggroup.h>
 
-#include "kfileiconview.h"
 #include "config-kfile.h"
 
 #define DEFAULT_PREVIEW_SIZE 60
 #define DEFAULT_SHOW_PREVIEWS false
 #define DEFAULT_VIEW_MODE "KFileIconView_SmallColumns"
 
-KFileIconViewItem::~KFileIconViewItem()
+K3FileIconViewItem::~K3FileIconViewItem()
 {
     fileInfo()->removeExtraData( iconView() );
 }
 
-class KFileIconView::KFileIconViewPrivate
+class K3FileIconView::K3FileIconViewPrivate
 {
 public:
-    KFileIconViewPrivate( KFileIconView *parent ) {
+    K3FileIconViewPrivate( K3FileIconView *parent ) {
         previewIconSize = 60;
         job = 0;
         dropItem = 0;
@@ -92,7 +92,7 @@ public:
                  parent, SLOT( slotAutoOpen() ));
     }
 
-    ~KFileIconViewPrivate() {
+    ~K3FileIconViewPrivate() {
         if ( job )
             job->kill();
     }
@@ -101,7 +101,7 @@ public:
     QAction *zoomIn, *zoomOut;
     KToggleAction *previews;
     KIO::PreviewJob *job;
-    KFileIconViewItem *dropItem;
+    K3FileIconViewItem *dropItem;
     QTimer previewTimer;
     QTimer autoOpenTimer;
     QStringList previewMimeTypes;
@@ -110,8 +110,8 @@ public:
     bool ignoreMaximumSize :1;
 };
 
-KFileIconView::KFileIconView(QWidget *parent, const char *name)
-    : K3IconView(parent, name), KFileView(),d(new KFileIconViewPrivate( this ))
+K3FileIconView::K3FileIconView(QWidget *parent, const char *name)
+    : K3IconView(parent, name), KFileView(),d(new K3FileIconViewPrivate( this ))
 {
 
     setViewName( i18n("Icon View") );
@@ -169,19 +169,17 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 		 SLOT( highlighted( Q3IconViewItem * )));
 
     // for mimetype resolving
-    m_resolver = new K3MimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
+    m_resolver = new K3MimeTypeResolver<K3FileIconViewItem,K3FileIconView>(this);
 }
 
-KFileIconView::~KFileIconView()
+K3FileIconView::~K3FileIconView()
 {
     delete m_resolver;
     delete d;
 }
 
-void KFileIconView::readConfig( KConfigGroup *configGroup)
+void K3FileIconView::readConfig( KConfigGroup *configGroup)
 {
-    //QString gr = group.isEmpty() ? QString("KFileIconView") : group;
-    //KConfigGroup cg( kc, gr );
     QString small = QLatin1String("KFileIconView_SmallColumns");
     d->previewIconSize = configGroup->readEntry( "KFileIconView_Preview Size", DEFAULT_PREVIEW_SIZE );
     d->previews->setChecked( configGroup->readEntry( "KFileIconView_ShowPreviews", DEFAULT_SHOW_PREVIEWS ) );
@@ -199,11 +197,8 @@ void KFileIconView::readConfig( KConfigGroup *configGroup)
         showPreviews();
 }
 
-void KFileIconView::writeConfig( KConfigGroup *configGroup)
+void K3FileIconView::writeConfig( KConfigGroup *configGroup)
 {
-    //QString gr = group.isEmpty() ? QString("KFileIconView") : group;
-    //KConfigGroup cg( kc, gr );
-
     QString viewMode =  d->smallColumns->isChecked() ?
         QLatin1String("SmallColumns") :
         QLatin1String("LargeRows");
@@ -225,7 +220,7 @@ void KFileIconView::writeConfig( KConfigGroup *configGroup)
         configGroup->writeEntry( "KFileIconView_ShowPreviews", showPreviews );
 }
 
-void KFileIconView::showToolTip( Q3IconViewItem *item )
+void K3FileIconView::showToolTip( Q3IconViewItem *item )
 {
     if ( !item )
 	return;
@@ -239,17 +234,17 @@ void KFileIconView::showToolTip( Q3IconViewItem *item )
     }
 }
 
-void KFileIconView::slotActivateMenu( Q3IconViewItem* item, const QPoint& pos )
+void K3FileIconView::slotActivateMenu( Q3IconViewItem* item, const QPoint& pos )
 {
     if ( !item ) {
 	sig->activateMenu( 0, pos );
 	return;
     }
-    KFileIconViewItem *i = (KFileIconViewItem*) item;
+    K3FileIconViewItem *i = (K3FileIconViewItem*) item;
     sig->activateMenu( i->fileInfo(), pos );
 }
 
-void KFileIconView::keyPressEvent( QKeyEvent *e )
+void K3FileIconView::keyPressEvent( QKeyEvent *e )
 {
     K3IconView::keyPressEvent( e );
 
@@ -259,14 +254,14 @@ void KFileIconView::keyPressEvent( QKeyEvent *e )
         e->ignore();
 }
 
-void KFileIconView::setSelected( const KFileItem *info, bool enable )
+void K3FileIconView::setSelected( const KFileItem *info, bool enable )
 {
-    KFileIconViewItem *item = viewItem( info );
+    K3FileIconViewItem *item = viewItem( info );
     if ( item )
         K3IconView::setSelected( item, enable, true );
 }
 
-void KFileIconView::selectAll()
+void K3FileIconView::selectAll()
 {
     if (KFileView::selectionMode() == KFile::NoSelection ||
         KFileView::selectionMode() == KFile::Single)
@@ -275,17 +270,17 @@ void KFileIconView::selectAll()
     K3IconView::selectAll( true );
 }
 
-void KFileIconView::clearSelection()
+void K3FileIconView::clearSelection()
 {
     K3IconView::clearSelection();
 }
 
-void KFileIconView::invertSelection()
+void K3FileIconView::invertSelection()
 {
     K3IconView::invertSelection();
 }
 
-void KFileIconView::clearView()
+void K3FileIconView::clearView()
 {
     m_resolver->m_lstPendingMimeIconItems.clear();
 
@@ -293,7 +288,7 @@ void KFileIconView::clearView()
     stopPreview();
 }
 
-void KFileIconView::insertItem( KFileItem *i )
+void K3FileIconView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
@@ -301,7 +296,7 @@ void KFileIconView::insertItem( KFileItem *i )
     // Since creating and initializing an item leads to a repaint,
     // we disable updates on the IconView for a while.
     qview->setUpdatesEnabled( false );
-    KFileIconViewItem *item = new KFileIconViewItem( qview, i );
+    K3FileIconViewItem *item = new K3FileIconViewItem( qview, i );
     initItem( item, i, true );
     qview->setUpdatesEnabled( true );
 
@@ -311,53 +306,53 @@ void KFileIconView::insertItem( KFileItem *i )
     i->setExtraData( this, item );
 }
 
-void KFileIconView::slotActivate( Q3IconViewItem *item )
+void K3FileIconView::slotActivate( Q3IconViewItem *item )
 {
     if ( !item )
 	return;
-    const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (K3FileIconViewItem*)item )->fileInfo();
     if ( fi )
 	sig->activate( fi );
 }
 
-void KFileIconView::selected( Q3IconViewItem *item )
+void K3FileIconView::selected( Q3IconViewItem *item )
 {
     if ( !item || (QApplication::keyboardModifiers() & (Qt::ShiftModifier | Qt::ControlModifier)) != 0 )
 	return;
 
     if ( KGlobalSettings::singleClick() ) {
-	const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+	const KFileItem *fi = ( (K3FileIconViewItem*)item )->fileInfo();
 	if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
 	    sig->activate( fi );
     }
 }
 
-void KFileIconView::setCurrentItem( const KFileItem *item )
+void K3FileIconView::setCurrentItem( const KFileItem *item )
 {
-    KFileIconViewItem *it = viewItem( item );
+    K3FileIconViewItem *it = viewItem( item );
     if ( it )
         K3IconView::setCurrentItem( it );
 }
 
-KFileItem * KFileIconView::currentFileItem() const
+KFileItem * K3FileIconView::currentFileItem() const
 {
-    KFileIconViewItem *current = static_cast<KFileIconViewItem*>( currentItem() );
+    K3FileIconViewItem *current = static_cast<K3FileIconViewItem*>( currentItem() );
     if ( current )
         return current->fileInfo();
 
     return 0L;
 }
 
-void KFileIconView::highlighted( Q3IconViewItem *item )
+void K3FileIconView::highlighted( Q3IconViewItem *item )
 {
     if ( !item )
 	return;
-    const KFileItem *fi = ( (KFileIconViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (K3FileIconViewItem*)item )->fileInfo();
     if ( fi )
 	sig->highlightFile( fi );
 }
 
-void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
+void K3FileIconView::setSelectionMode( KFile::SelectionMode sm )
 {
     disconnect( SIGNAL( selectionChanged() ), this );
     disconnect( SIGNAL( selectionChanged( Q3IconViewItem * )), this );
@@ -387,18 +382,18 @@ void KFileIconView::setSelectionMode( KFile::SelectionMode sm )
 		 SLOT( highlighted( Q3IconViewItem * )));
 }
 
-bool KFileIconView::isSelected( const KFileItem *i ) const
+bool K3FileIconView::isSelected( const KFileItem *i ) const
 {
-    KFileIconViewItem *item = viewItem( i );
+    K3FileIconViewItem *item = viewItem( i );
     return (item && item->isSelected());
 }
 
-void KFileIconView::updateView( bool b )
+void K3FileIconView::updateView( bool b )
 {
     if ( !b )
         return; // eh?
 
-    KFileIconViewItem *item = static_cast<KFileIconViewItem*>(Q3IconView::firstItem());
+    K3FileIconViewItem *item = static_cast<K3FileIconViewItem*>(Q3IconView::firstItem());
     if ( item ) {
         do {
             if ( d->previews->isChecked() ) {
@@ -412,19 +407,19 @@ void KFileIconView::updateView( bool b )
             }
             // recalculate item parameters but avoid an in-place repaint
             item->setPixmap( (item->fileInfo())->pixmap( myIconSize ), true, false );
-            item = static_cast<KFileIconViewItem *>(item->nextItem());
+            item = static_cast<K3FileIconViewItem *>(item->nextItem());
         } while ( item != 0L );
     }
 }
 
-void KFileIconView::updateView( const KFileItem *i )
+void K3FileIconView::updateView( const KFileItem *i )
 {
-    KFileIconViewItem *item = viewItem( i );
+    K3FileIconViewItem *item = viewItem( i );
     if ( item )
         initItem( item, i, true );
 }
 
-void KFileIconView::removeItem( const KFileItem *i )
+void K3FileIconView::removeItem( const KFileItem *i )
 {
     if ( !i )
 	return;
@@ -432,20 +427,20 @@ void KFileIconView::removeItem( const KFileItem *i )
     if ( d->job )
         d->job->removeItem( i );
 
-    KFileIconViewItem *item = viewItem( i );
+    K3FileIconViewItem *item = viewItem( i );
     m_resolver->m_lstPendingMimeIconItems.removeAll( item );
     delete item;
 
     KFileView::removeItem( i );
 }
 
-void KFileIconView::setIconSize( int size )
+void K3FileIconView::setIconSize( int size )
 {
     myIconSize = size;
     updateIcons();
 }
 
-void KFileIconView::setPreviewSize( int size )
+void K3FileIconView::setPreviewSize( int size )
 {
     if ( size < 30 )
         size = 30; // minimum
@@ -455,30 +450,30 @@ void KFileIconView::setPreviewSize( int size )
         showPreviews();
 }
 
-void KFileIconView::setIgnoreMaximumSize(bool ignoreSize)
+void K3FileIconView::setIgnoreMaximumSize(bool ignoreSize)
 {
     d->ignoreMaximumSize = ignoreSize;
 }
 
-void KFileIconView::updateIcons()
+void K3FileIconView::updateIcons()
 {
     updateView( true );
     arrangeItemsInGrid();
 }
 
-void KFileIconView::ensureItemVisible( const KFileItem *i )
+void K3FileIconView::ensureItemVisible( const KFileItem *i )
 {
-    KFileIconViewItem *item = viewItem( i );
+    K3FileIconViewItem *item = viewItem( i );
     if ( item )
 	K3IconView::ensureItemVisible( item );
 }
 
-void KFileIconView::slotSelectionChanged()
+void K3FileIconView::slotSelectionChanged()
 {
     sig->highlightFile( 0L );
 }
 
-void KFileIconView::slotSmallColumns()
+void K3FileIconView::slotSmallColumns()
 {
     //kDebug(250) << "slotSmallColumns " << kBacktrace() << endl;
 
@@ -503,7 +498,7 @@ void KFileIconView::slotSmallColumns()
     setIconSize( K3Icon::SizeSmall );
 }
 
-void KFileIconView::slotLargeRows()
+void K3FileIconView::slotLargeRows()
 {
     // kDebug(250) << "slotLargeRows " << kBacktrace() << endl;
     // setItemTextPos(), setArrangement(), setWordWrapIconText() and
@@ -520,7 +515,7 @@ void KFileIconView::slotLargeRows()
     setIconSize( K3Icon::SizeMedium );
 }
 
-void KFileIconView::stopPreview()
+void K3FileIconView::stopPreview()
 {
     if ( d->job ) {
         d->job->kill();
@@ -528,7 +523,7 @@ void KFileIconView::stopPreview()
     }
 }
 
-void KFileIconView::slotPreviewsToggled( bool on )
+void K3FileIconView::slotPreviewsToggled( bool on )
 {
     if ( on )
         showPreviews();
@@ -538,7 +533,7 @@ void KFileIconView::slotPreviewsToggled( bool on )
     }
 }
 
-void KFileIconView::showPreviews()
+void K3FileIconView::showPreviews()
 {
     if ( d->previewMimeTypes.isEmpty() )
         d->previewMimeTypes = KIO::PreviewJob::supportedMimeTypes();
@@ -565,15 +560,15 @@ void KFileIconView::showPreviews()
 //              this, SLOT( slotFailed( const KFileItem* ) ));
 }
 
-void KFileIconView::slotPreviewResult( KJob *job )
+void K3FileIconView::slotPreviewResult( KJob *job )
 {
     if ( job == d->job )
         d->job = 0L;
 }
 
-void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
+void K3FileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
 {
-    KFileIconViewItem *it = viewItem( item );
+    K3FileIconViewItem *it = viewItem( item );
     if ( it )
         if( item->overlays() & K3Icon::HiddenOverlay )
         {
@@ -586,7 +581,7 @@ void KFileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
             it->setPixmap( pix );
 }
 
-bool KFileIconView::canPreview( const KFileItem *item ) const
+bool K3FileIconView::canPreview( const KFileItem *item ) const
 {
     QStringList::Iterator it = d->previewMimeTypes.begin();
     QRegExp r;
@@ -608,35 +603,35 @@ bool KFileIconView::canPreview( const KFileItem *item ) const
     return false;
 }
 
-KFileItem * KFileIconView::firstFileItem() const
+KFileItem * K3FileIconView::firstFileItem() const
 {
-    KFileIconViewItem *item = static_cast<KFileIconViewItem*>( firstItem() );
+    K3FileIconViewItem *item = static_cast<K3FileIconViewItem*>( firstItem() );
     if ( item )
         return item->fileInfo();
     return 0L;
 }
 
-KFileItem * KFileIconView::nextItem( const KFileItem *fileItem ) const
+KFileItem * K3FileIconView::nextItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
-        KFileIconViewItem *item = viewItem( fileItem );
+        K3FileIconViewItem *item = viewItem( fileItem );
         if ( item && item->nextItem() )
-            return ((KFileIconViewItem*) item->nextItem())->fileInfo();
+            return ((K3FileIconViewItem*) item->nextItem())->fileInfo();
     }
     return 0L;
 }
 
-KFileItem * KFileIconView::prevItem( const KFileItem *fileItem ) const
+KFileItem * K3FileIconView::prevItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
-        KFileIconViewItem *item = viewItem( fileItem );
+        K3FileIconViewItem *item = viewItem( fileItem );
         if ( item && item->prevItem() )
-            return ((KFileIconViewItem*) item->prevItem())->fileInfo();
+            return ((K3FileIconViewItem*) item->prevItem())->fileInfo();
     }
     return 0L;
 }
 
-void KFileIconView::setSorting( QDir::SortFlags spec )
+void K3FileIconView::setSorting( QDir::SortFlags spec )
 {
     KFileView::setSorting( spec );
 
@@ -665,18 +660,18 @@ void KFileIconView::setSorting( QDir::SortFlags spec )
 //
 // mimetype determination on demand
 //
-void KFileIconView::mimeTypeDeterminationFinished()
+void K3FileIconView::mimeTypeDeterminationFinished()
 {
     // anything to do?
 }
 
-void KFileIconView::determineIcon( KFileIconViewItem *item )
+void K3FileIconView::determineIcon( K3FileIconViewItem *item )
 {
     (void) item->fileInfo()->determineMimeType();
     updateView( item->fileInfo() );
 }
 
-void KFileIconView::listingCompleted()
+void K3FileIconView::listingCompleted()
 {
     arrangeItemsInGrid();
 
@@ -696,7 +691,7 @@ void KFileIconView::listingCompleted()
 
 /////////////////////////////////////////////////////////////////
 
-void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
+void K3FileIconView::initItem( K3FileIconViewItem *item, const KFileItem *i,
                               bool updateTextAndPixmap )
 {
     if ( d->previews->isChecked() && canPreview( i ) )
@@ -732,7 +727,7 @@ void KFileIconView::initItem( KFileIconViewItem *item, const KFileItem *i,
     }
 }
 
-void KFileIconView::arrangeItemsInGrid( bool update )
+void K3FileIconView::arrangeItemsInGrid( bool update )
 {
     if ( d->noArrangement )
         return;
@@ -740,24 +735,20 @@ void KFileIconView::arrangeItemsInGrid( bool update )
     K3IconView::arrangeItemsInGrid( update );
 }
 
-void KFileIconView::zoomIn()
+void K3FileIconView::zoomIn()
 {
     setPreviewSize( d->previewIconSize + 30 );
 }
 
-void KFileIconView::zoomOut()
+void K3FileIconView::zoomOut()
 {
     setPreviewSize( d->previewIconSize - 30 );
 }
 
-#ifdef __GNUC__
-#warning port K3IconView to QListView, then adapt KFileIconView
-#endif
-
 // Qt4 porting: once we use QListWidget, this becomes a reimplementation of
 // virtual QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
 // or better: something at the model level, instead?
-Q3DragObject *KFileIconView::dragObject()
+Q3DragObject *K3FileIconView::dragObject()
 {
     // create a list of the URL:s that we want to drag
     const KUrl::List urls = KFileView::selectedItems()->urlList();
@@ -771,7 +762,7 @@ Q3DragObject *KFileIconView::dragObject()
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
 
-#if 0 // there is no more kurldrag, this should use urls.populateMimeData( mimeData ) instead
+#if 0 // TODO there is no more kurldrag, this should use urls.populateMimeData( mimeData ) instead
     Q3DragObject* myDragObject = new KUrlDrag( urls, widget() );
     myDragObject->setPixmap( pixmap, hotspot );
     return myDragObject;
@@ -779,7 +770,7 @@ Q3DragObject *KFileIconView::dragObject()
     return 0;
 }
 
-void KFileIconView::slotAutoOpen()
+void K3FileIconView::slotAutoOpen()
 {
     d->autoOpenTimer.stop();
     if( !d->dropItem )
@@ -796,16 +787,16 @@ void KFileIconView::slotAutoOpen()
         sig->activate( fileItem );
 }
 
-bool KFileIconView::acceptDrag(QDropEvent* e) const
+bool K3FileIconView::acceptDrag(QDropEvent* e) const
 {
     return KUrl::List::canDecode( e->mimeData() ) &&
-       (e->source()!=const_cast<KFileIconView*>(this)) &&
+       (e->source()!=const_cast<K3FileIconView*>(this)) &&
        ( e->dropAction() == Qt::CopyAction
       || e->dropAction() == Qt::MoveAction
       || e->dropAction() == Qt::LinkAction );
 }
 
-void KFileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
+void K3FileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
 {
     if ( ! acceptDrag( e ) ) { // can we decode this ?
         e->ignore();            // No
@@ -816,7 +807,7 @@ void KFileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
 
-    KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
+    K3FileIconViewItem *item = dynamic_cast<K3FileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
     if ( item ) {  // are we over an item ?
        d->dropItem = item;
        d->autoOpenTimer.start( autoOpenDelay() ); // restart timer
@@ -828,7 +819,7 @@ void KFileIconView::contentsDragEnterEvent( QDragEnterEvent *e )
     }
 }
 
-void KFileIconView::contentsDragMoveEvent( QDragMoveEvent *e )
+void K3FileIconView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
     if ( ! acceptDrag( e ) ) { // can we decode this ?
         e->ignore();            // No
@@ -839,7 +830,7 @@ void KFileIconView::contentsDragMoveEvent( QDragMoveEvent *e )
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
 
-    KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
+    K3FileIconViewItem *item = dynamic_cast<K3FileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
     if ( item ) {  // are we over an item ?
        if (d->dropItem != item)
        {
@@ -854,13 +845,13 @@ void KFileIconView::contentsDragMoveEvent( QDragMoveEvent *e )
     }
 }
 
-void KFileIconView::contentsDragLeaveEvent( QDragLeaveEvent * )
+void K3FileIconView::contentsDragLeaveEvent( QDragLeaveEvent * )
 {
     d->dropItem = 0;
     d->autoOpenTimer.stop();
 }
 
-void KFileIconView::contentsDropEvent( QDropEvent *e )
+void K3FileIconView::contentsDropEvent( QDropEvent *e )
 {
     d->dropItem = 0;
     d->autoOpenTimer.stop();
@@ -871,7 +862,7 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
     }
     e->acceptProposedAction();     // Yes
 
-    KFileIconViewItem *item = dynamic_cast<KFileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
+    K3FileIconViewItem *item = dynamic_cast<K3FileIconViewItem*>(findItem( contentsToViewport( e->pos() ) ));
     KFileItem * fileItem = 0;
     if (item)
         fileItem = item->fileInfo();
@@ -886,4 +877,4 @@ void KFileIconView::contentsDropEvent( QDropEvent *e )
     }
 }
 
-#include "kfileiconview.moc"
+#include "k3fileiconview.moc"

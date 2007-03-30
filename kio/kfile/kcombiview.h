@@ -28,7 +28,7 @@
 #include <kfile.h>
 #include <kfileview.h>
 
-class KFileIconView;
+class K3FileIconView;
 class QEvent;
 
 /**
@@ -40,18 +40,17 @@ class QEvent;
  *
  * After creating the KCombiView, you need to supply the view shown in the
  * right, (see setRight()). Available KFileView implementations are
- * KFileIconView and KFileDetailView.
+ * K3FileIconView and KFileDetailView.
  *
  * Most of the below methods are just implementations of the baseclass
  * KFileView, so look there for documentation.
  *
  * @see KFileView
- * @see KFileIconView
+ * @see K3FileIconView
  * @see KFileDetailView
  * @see KDirOperator
  */
-class KIO_EXPORT KCombiView : public QSplitter,
-		   public KFileView
+class KIO_EXPORT KCombiView : public QSplitter, public KFileView
 {
     Q_OBJECT
 
@@ -102,7 +101,7 @@ public:
     virtual void setAcceptDrops(bool b);
 
 protected:
-    KFileIconView *left;
+    K3FileIconView *left;
     KFileView *right;
 
 protected Q_SLOTS:

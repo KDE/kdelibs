@@ -49,35 +49,35 @@ public:
     };
 
     /**
-      * Constructs a file dialog for text files with encoding selection possibility.
-      *
-      * @param startDir This can either be
-      *         @li The URL of the directory to start in.
-      *         @li QString() to start in the current working
-      *		    directory, or the last directory where a file has been
-      *		    selected.
-      *         @li ':&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in the same application that specified
-      *             the same keyword.
-      *         @li '::&lt;keyword&gt;' to start in the directory last used
-      *             by a filedialog in any application that specified the
-      *             same keyword.
-      *
-      * @param encoding The encoding shown in the encoding combo. If it's
-      *		    QString(), the global default encoding will be shown.
-      *
-      * @param filter This is a space separated list of shell globs.
-      *             You can set the text to be displayed for the glob, and
-      *             provide multiple globs.  See setFilter() for details on
-      *             how to do this...
-      *
-      * @param caption The caption of the dialog
-      *
-      * @param type This can either be
-      *		@li Opening (open dialog, the default setting)
-      *		@li Saving
-      * @param parent The parent widget of this dialog      *
-      */
+     * Constructs a file dialog for text files with encoding selection possibility.
+     *
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li QString() to start in the current working
+     *		    directory, or the last directory where a file has been
+     *		    selected.
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
+     *             by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
+     *             by a filedialog in any application that specified the
+     *             same keyword.
+     *
+     * @param encoding The encoding shown in the encoding combo. If it's
+     *		    QString(), the global default encoding will be shown.
+     *
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
+     *
+     * @param caption The caption of the dialog
+     *
+     * @param type This can either be
+     *		@li Opening (open dialog, the default setting)
+     *		@li Saving
+     * @param parent The parent widget of this dialog
+     */
     KEncodingFileDialog (const QString& startDir = QString(),
                     const QString& encoding = QString(),
 		    const QString& filter = QString(),
@@ -115,10 +115,10 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param encoding The encoding shown in the encoding combo.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -147,10 +147,10 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param encoding The encoding shown in the encoding combo.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this.
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -179,10 +179,10 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param encoding The encoding shown in the encoding combo.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -214,10 +214,10 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param encoding The encoding shown in the encoding combo.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -250,10 +250,10 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param encoding The encoding shown in the encoding combo.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -285,10 +285,10 @@ public:
      *             by a filedialog in any application that specified the
      *             same keyword.
      * @param encoding The encoding shown in the encoding combo.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */

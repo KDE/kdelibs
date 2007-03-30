@@ -45,7 +45,7 @@
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 
-#include "kfiletreeview.h"
+#include "k3filetreeview.h"
 #include "kdirselectdialog.h"
 #include <kconfiggroup.h>
 
@@ -119,7 +119,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     hlay->addLayout( m_mainLayout, 1 );
 
     // Create dir list
-    m_treeView = new KFileTreeView( page );
+    m_treeView = new K3FileTreeView( page );
     m_treeView->addColumn( i18n("Folders") );
     m_treeView->setColumnWidthMode( 0, Q3ListView::Maximum );
     m_treeView->setResizeMode( Q3ListView::AllColumns );
@@ -245,14 +245,14 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
         openNextDir( d->branch->root() );
 }
 
-void KDirSelectDialog::openNextDir( KFileTreeViewItem * /*parent*/ )
+void KDirSelectDialog::openNextDir( K3FileTreeViewItem * /*parent*/ )
 {
     if ( !d->branch )
         return;
 
     KUrl url = d->dirsToList.pop();
 
-    KFileTreeViewItem *item = view()->findItem( d->branch, url.path().mid(1));
+    K3FileTreeViewItem *item = view()->findItem( d->branch, url.path().mid(1));
     if ( item )
     {
         if ( !item->isOpen() )
@@ -264,7 +264,7 @@ void KDirSelectDialog::openNextDir( KFileTreeViewItem * /*parent*/ )
 //         qDebug("###### openNextDir: item not found!");
 }
 
-void KDirSelectDialog::slotNextDirToList( KFileTreeViewItem *item )
+void KDirSelectDialog::slotNextDirToList( K3FileTreeViewItem *item )
 {
     // scroll to make item the topmost item
     view()->ensureItemVisible( item );
@@ -280,8 +280,8 @@ void KDirSelectDialog::slotNextDirToList( KFileTreeViewItem *item )
         openNextDir( item );
     else
     {
-        d->branch->disconnect( SIGNAL( populateFinished( KFileTreeViewItem * )),
-                               this, SLOT( slotNextDirToList( KFileTreeViewItem *)));
+        d->branch->disconnect( SIGNAL( populateFinished( K3FileTreeViewItem * )),
+                               this, SLOT( slotNextDirToList( K3FileTreeViewItem *)));
         view()->setCurrentItem( item );
         item->setSelected( true );
     }
@@ -317,7 +317,7 @@ void KDirSelectDialog::slotUser1()
 
 void KDirSelectDialog::accept()
 {
-    KFileTreeViewItem *item = m_treeView->currentKFileTreeViewItem();
+    K3FileTreeViewItem *item = m_treeView->currentKFileTreeViewItem();
     if ( !item )
         return;
 
@@ -348,7 +348,7 @@ void KDirSelectDialog::slotCurrentChanged()
     if ( d->comboLocked )
         return;
 
-    KFileTreeViewItem *current = view()->currentKFileTreeViewItem();
+    K3FileTreeViewItem *current = view()->currentKFileTreeViewItem();
     KUrl u = current ? current->url() : (d->branch ? d->branch->rootUrl() : KUrl());
 
     if ( u.isValid() )
@@ -396,7 +396,7 @@ void KDirSelectDialog::slotComboTextChanged( const QString& text )
     if ( d->branch )
     {
         KUrl url( text );
-        KFileTreeViewItem *item = d->branch->findTVIByUrl( url );
+        K3FileTreeViewItem *item = d->branch->findTVIByUrl( url );
         if ( item )
         {
             view()->setCurrentItem( item );

@@ -31,7 +31,7 @@ class QColorGroup;
 #include <k3listview.h>
 #include <kdirnotify.h>
 #include <kio/job.h>
-#include <kfiletreeviewitem.h>
+#include <k3filetreeviewitem.h>
 #include <kfiletreebranch.h>
 
 class QTimer;
@@ -42,26 +42,26 @@ class QTimer;
  * The filetreeview offers a treeview on the file system which behaves like
  * a QTreeView showing files and/or directories in the file system.
  *
- * KFileTreeView is able to handle more than one URL, represented by
+ * K3FileTreeView is able to handle more than one URL, represented by
  * KFileTreeBranch.
  *
  * Typical usage:
- * 1. create a KFileTreeView fitting in your layout and add columns to it
+ * 1. create a K3FileTreeView fitting in your layout and add columns to it
  * 2. call addBranch to create one or more branches
  * 3. retrieve the root item with KFileTreeBranch::root() and set it open
  *    if desired. That starts the listing.
  */
-class KIO_EXPORT KFileTreeView : public K3ListView
+class KIO_EXPORT K3FileTreeView : public K3ListView
 {
     Q_OBJECT
 public:
-    KFileTreeView( QWidget *parent );
-    virtual ~KFileTreeView();
+    K3FileTreeView( QWidget *parent );
+    virtual ~K3FileTreeView();
 
     /**
      * @return the current (i.e. selected) item
      */
-    KFileTreeViewItem * currentKFileTreeViewItem() const;
+    K3FileTreeViewItem * currentKFileTreeViewItem() const;
 
    /**
     * @return the URL of the current selected item.
@@ -102,7 +102,7 @@ public:
    virtual bool removeBranch( KFileTreeBranch *branch );
 
    /**
-    *  @returns a pointer to the KFileTreeBranch in the KFileTreeView or zero on failure.
+    *  @returns a pointer to the KFileTreeBranch in the K3FileTreeView or zero on failure.
     *  @param searchName is the name of a branch
     */
    KFileTreeBranch *branch( const QString& searchName );
@@ -120,19 +120,19 @@ public:
    virtual void setDirOnlyMode( KFileTreeBranch *branch, bool );
 
    /**
-    * searches a branch for a KFileTreeViewItem identified by the relative url given as
+    * searches a branch for a K3FileTreeViewItem identified by the relative url given as
     * second parameter. The method adds the branches base url to the relative path and finds
     * the item.
     * @returns a pointer to the item or zero if the item does not exist.
     * @param brnch  is a pointer to the branch to search in
     * @param relUrl is the branch relativ url
     */
-   KFileTreeViewItem *findItem( KFileTreeBranch* brnch, const QString& relUrl );
+   K3FileTreeViewItem *findItem( KFileTreeBranch* brnch, const QString& relUrl );
 
    /**
     * see method above, differs only in the first parameter. Finds the branch by its name.
     */
-   KFileTreeViewItem *findItem( const QString& branchName, const QString& relUrl );
+   K3FileTreeViewItem *findItem( const QString& branchName, const QString& relUrl );
 
    /**
     * @returns a flag indicating if extended folder pixmaps are displayed or not.
@@ -159,8 +159,8 @@ protected:
    virtual bool acceptDrag(QDropEvent* event) const;
     virtual Q3DragObject * dragObject();
 
-    virtual void startAnimation( KFileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
-    virtual void stopAnimation( KFileTreeViewItem* item );
+    virtual void startAnimation( K3FileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
+    virtual void stopAnimation( K3FileTreeViewItem* item );
     virtual void contentsDragEnterEvent( QDragEnterEvent *e );
     virtual void contentsDragMoveEvent( QDragMoveEvent *e );
     virtual void contentsDragLeaveEvent( QDragLeaveEvent *e );
@@ -168,12 +168,12 @@ protected:
 
 protected Q_SLOTS:
     virtual void slotNewTreeViewItems( KFileTreeBranch*,
-				       const KFileTreeViewItemList& );
+				       const K3FileTreeViewItemList& );
 
     virtual void slotSetNextUrlToSelect( const KUrl &url )
       { m_nextUrlToSelect = url; }
 
-    virtual QPixmap itemIcon( KFileTreeViewItem*, int gap = 0 ) const;
+    virtual QPixmap itemIcon( K3FileTreeViewItem*, int gap = 0 ) const;
 
 private Q_SLOTS:
     void slotExecuted( Q3ListViewItem * );
@@ -189,7 +189,7 @@ private Q_SLOTS:
     void slotOnItem( Q3ListViewItem * );
     void slotItemRenamed(Q3ListViewItem*, const QString &, int);
 
-   void slotPopulateFinished( KFileTreeViewItem* );
+   void slotPopulateFinished( K3FileTreeViewItem* );
 
 
 Q_SIGNALS:
@@ -203,9 +203,9 @@ Q_SIGNALS:
    void dropped( QWidget*, QDropEvent*, KUrl::List&, KUrl& );
 
    void dropped( QDropEvent *, Q3ListViewItem * );
-   void dropped(KFileTreeView *, QDropEvent *, Q3ListViewItem *);
+   void dropped(K3FileTreeView *, QDropEvent *, Q3ListViewItem *);
    void dropped(QDropEvent *, Q3ListViewItem *, Q3ListViewItem *);
-   void dropped(KFileTreeView *, QDropEvent *, Q3ListViewItem *, Q3ListViewItem *);
+   void dropped(K3FileTreeView *, QDropEvent *, Q3ListViewItem *, Q3ListViewItem *);
 
 protected:
    KUrl m_nextUrlToSelect;
@@ -231,7 +231,7 @@ private:
         uint iconNumber;
         QPixmap originalPixmap;
     };
-    typedef QMap<KFileTreeViewItem *, AnimationInfo> MapCurrentOpeningFolders;
+    typedef QMap<K3FileTreeViewItem *, AnimationInfo> MapCurrentOpeningFolders;
     MapCurrentOpeningFolders m_mapCurrentOpeningFolders;
 
 
@@ -248,8 +248,8 @@ private:
     QTimer *m_autoOpenTimer;
 
 private:
-   class KFileTreeViewPrivate;
-   KFileTreeViewPrivate *d;
+   class K3FileTreeViewPrivate;
+   K3FileTreeViewPrivate *d;
 };
 
 #endif

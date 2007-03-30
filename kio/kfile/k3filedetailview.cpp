@@ -19,6 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3filedetailview.h"
 #include <qevent.h>
 #include <qnamespace.h>
 #include <q3header.h>
@@ -34,7 +35,6 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include "kfiledetailview.h"
 #include "config-kfile.h"
 
 #define COL_NAME 0
@@ -44,18 +44,18 @@
 #define COL_OWNER 4
 #define COL_GROUP 5
 
-class KFileDetailView::KFileDetailViewPrivate
+class K3FileDetailView::K3FileDetailViewPrivate
 {
 public:
-   KFileDetailViewPrivate() : dropItem(0)
+   K3FileDetailViewPrivate() : dropItem(0)
    { }
 
-   KFileListViewItem *dropItem;
+   K3FileListViewItem *dropItem;
    QTimer autoOpenTimer;
 };
 
-KFileDetailView::KFileDetailView(QWidget *parent)
-    : K3ListView(parent), KFileView(), d(new KFileDetailViewPrivate())
+K3FileDetailView::K3FileDetailView(QWidget *parent)
+    : K3ListView(parent), KFileView(), d(new K3FileDetailViewPrivate())
 {
     // this is always the static section, not the index depending on column order
     m_sortingCol = COL_NAME;
@@ -120,61 +120,61 @@ KFileDetailView::KFileDetailView(QWidget *parent)
     setSorting( sorting() );
 
     m_resolver =
-        new K3MimeTypeResolver<KFileListViewItem,KFileDetailView>( this );
+        new K3MimeTypeResolver<K3FileListViewItem,K3FileDetailView>( this );
 }
 
-KFileDetailView::~KFileDetailView()
+K3FileDetailView::~K3FileDetailView()
 {
     delete m_resolver;
     delete d;
 }
 
-void KFileDetailView::readConfig( KConfig *config, const QString& group )
+void K3FileDetailView::readConfig( KConfig *config, const QString& group )
 {
     restoreLayout( config, group );
 }
 
-void KFileDetailView::writeConfig( KConfig *config, const QString& group )
+void K3FileDetailView::writeConfig( KConfig *config, const QString& group )
 {
     saveLayout( config, group );
 }
 
-void KFileDetailView::setSelected( const KFileItem *info, bool enable )
+void K3FileDetailView::setSelected( const KFileItem *info, bool enable )
 {
     if ( !info )
 	return;
 
     // we can only hope that this casts works
-    KFileListViewItem *item = (KFileListViewItem*)info->extraData( this );
+    K3FileListViewItem *item = (K3FileListViewItem*)info->extraData( this );
 
     if ( item )
 	K3ListView::setSelected( item, enable );
 }
 
-void KFileDetailView::setCurrentItem( const KFileItem *item )
+void K3FileDetailView::setCurrentItem( const KFileItem *item )
 {
     if ( !item )
         return;
-    KFileListViewItem *it = (KFileListViewItem*) item->extraData( this );
+    K3FileListViewItem *it = (K3FileListViewItem*) item->extraData( this );
     if ( it )
         K3ListView::setCurrentItem( it );
 }
 
-KFileItem * KFileDetailView::currentFileItem() const
+KFileItem * K3FileDetailView::currentFileItem() const
 {
-    KFileListViewItem *current = static_cast<KFileListViewItem*>( currentItem() );
+    K3FileListViewItem *current = static_cast<K3FileListViewItem*>( currentItem() );
     if ( current )
         return current->fileInfo();
 
     return 0L;
 }
 
-void KFileDetailView::clearSelection()
+void K3FileDetailView::clearSelection()
 {
     K3ListView::clearSelection();
 }
 
-void KFileDetailView::selectAll()
+void K3FileDetailView::selectAll()
 {
     if (KFileView::selectionMode() == KFile::NoSelection ||
         KFileView::selectionMode() == KFile::Single)
@@ -183,32 +183,32 @@ void KFileDetailView::selectAll()
     K3ListView::selectAll( true );
 }
 
-void KFileDetailView::invertSelection()
+void K3FileDetailView::invertSelection()
 {
     K3ListView::invertSelection();
 }
 
-void KFileDetailView::slotActivateMenu (Q3ListViewItem *item,const QPoint& pos )
+void K3FileDetailView::slotActivateMenu (Q3ListViewItem *item,const QPoint& pos )
 {
     if ( !item ) {
         sig->activateMenu( 0, pos );
         return;
     }
-    KFileListViewItem *i = (KFileListViewItem*) item;
+    K3FileListViewItem *i = (K3FileListViewItem*) item;
     sig->activateMenu( i->fileInfo(), pos );
 }
 
-void KFileDetailView::clearView()
+void K3FileDetailView::clearView()
 {
     m_resolver->m_lstPendingMimeIconItems.clear();
     K3ListView::clear();
 }
 
-void KFileDetailView::insertItem( KFileItem *i )
+void K3FileDetailView::insertItem( KFileItem *i )
 {
     KFileView::insertItem( i );
 
-    KFileListViewItem *item = new KFileListViewItem( (Q3ListView*) this, i );
+    K3FileListViewItem *item = new K3FileListViewItem( (Q3ListView*) this, i );
 
     setSortingKey( item, i );
 
@@ -218,40 +218,40 @@ void KFileDetailView::insertItem( KFileItem *i )
         m_resolver->m_lstPendingMimeIconItems.append( item );
 }
 
-void KFileDetailView::slotActivate( Q3ListViewItem *item )
+void K3FileDetailView::slotActivate( Q3ListViewItem *item )
 {
     if ( !item )
         return;
 
-    const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (K3FileListViewItem*)item )->fileInfo();
     if ( fi )
         sig->activate( fi );
 }
 
-void KFileDetailView::selected( Q3ListViewItem *item )
+void K3FileDetailView::selected( Q3ListViewItem *item )
 {
     if ( !item )
         return;
 
     if ( KGlobalSettings::singleClick() ) {
-        const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+        const KFileItem *fi = ( (K3FileListViewItem*)item )->fileInfo();
         if ( fi && (fi->isDir() || !onlyDoubleClickSelectsFiles()) )
             sig->activate( fi );
     }
 }
 
-void KFileDetailView::highlighted( Q3ListViewItem *item )
+void K3FileDetailView::highlighted( Q3ListViewItem *item )
 {
     if ( !item )
         return;
 
-    const KFileItem *fi = ( (KFileListViewItem*)item )->fileInfo();
+    const KFileItem *fi = ( (K3FileListViewItem*)item )->fileInfo();
     if ( fi )
         sig->highlightFile( fi );
 }
 
 
-void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
+void K3FileDetailView::setSelectionMode( KFile::SelectionMode sm )
 {
     disconnect( this, SIGNAL( selectionChanged() ));
     disconnect( this, SIGNAL( selectionChanged( Q3ListViewItem * ) ));
@@ -282,34 +282,34 @@ void KFileDetailView::setSelectionMode( KFile::SelectionMode sm )
                  SLOT( highlighted( Q3ListViewItem * )));
 }
 
-bool KFileDetailView::isSelected( const KFileItem *i ) const
+bool K3FileDetailView::isSelected( const KFileItem *i ) const
 {
     if ( !i )
         return false;
 
-    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
+    K3FileListViewItem *item = (K3FileListViewItem*) i->extraData( this );
     return (item && item->isSelected());
 }
 
 
-void KFileDetailView::updateView( bool b )
+void K3FileDetailView::updateView( bool b )
 {
     if ( !b )
         return;
 
     Q3ListViewItemIterator it( (Q3ListView*)this );
     for ( ; it.current(); ++it ) {
-        KFileListViewItem *item=static_cast<KFileListViewItem *>(it.current());
+        K3FileListViewItem *item=static_cast<K3FileListViewItem *>(it.current());
         item->setPixmap( 0, item->fileInfo()->pixmap(K3Icon::SizeSmall) );
     }
 }
 
-void KFileDetailView::updateView( const KFileItem *i )
+void K3FileDetailView::updateView( const KFileItem *i )
 {
     if ( !i )
         return;
 
-    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
+    K3FileListViewItem *item = (K3FileListViewItem*) i->extraData( this );
     if ( !item )
         return;
 
@@ -319,7 +319,7 @@ void KFileDetailView::updateView( const KFileItem *i )
     //item->repaint(); // only repaints if visible
 }
 
-void KFileDetailView::setSortingKey( KFileListViewItem *item,
+void K3FileDetailView::setSortingKey( K3FileListViewItem *item,
                                      const KFileItem *i )
 {
     // see also setSorting()
@@ -336,19 +336,19 @@ void KFileDetailView::setSortingKey( KFileListViewItem *item,
 }
 
 
-void KFileDetailView::removeItem( const KFileItem *i )
+void K3FileDetailView::removeItem( const KFileItem *i )
 {
     if ( !i )
         return;
 
-    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
+    K3FileListViewItem *item = (K3FileListViewItem*) i->extraData( this );
     m_resolver->m_lstPendingMimeIconItems.removeAll( item );
     delete item;
 
     KFileView::removeItem( i );
 }
 
-void KFileDetailView::slotSortingChanged( int col )
+void K3FileDetailView::slotSortingChanged( int col )
 {
     // col is the section here, not the index!
 
@@ -398,7 +398,7 @@ void KFileDetailView::slotSortingChanged( int col )
     const KFileItemList::const_iterator kend = itemList.end();
     for ( ; kit != kend; ++kit ) {
         KFileItem *item = *kit;
-        KFileListViewItem *i = viewItem( item );
+        K3FileListViewItem *i = viewItem( item );
         QString key;
         if ( sortSpec & QDir::Time ) {
             // warning, time_t is often signed -> cast it
@@ -421,7 +421,7 @@ void KFileDetailView::slotSortingChanged( int col )
 }
 
 
-void KFileDetailView::setSorting( QDir::SortFlags spec )
+void K3FileDetailView::setSorting( QDir::SortFlags spec )
 {
     int col = 0;
     if ( spec & QDir::Time )
@@ -449,37 +449,37 @@ void KFileDetailView::setSorting( QDir::SortFlags spec )
     m_blockSortingSignal = false;
 }
 
-void KFileDetailView::ensureItemVisible( const KFileItem *i )
+void K3FileDetailView::ensureItemVisible( const KFileItem *i )
 {
     if ( !i )
         return;
 
-    KFileListViewItem *item = (KFileListViewItem*) i->extraData( this );
+    K3FileListViewItem *item = (K3FileListViewItem*) i->extraData( this );
 
     if ( item )
         K3ListView::ensureItemVisible( item );
 }
 
 // we're in multiselection mode
-void KFileDetailView::slotSelectionChanged()
+void K3FileDetailView::slotSelectionChanged()
 {
     sig->highlightFile( 0L );
 }
 
-KFileItem * KFileDetailView::firstFileItem() const
+KFileItem * K3FileDetailView::firstFileItem() const
 {
-    KFileListViewItem *item = static_cast<KFileListViewItem*>( firstChild() );
+    K3FileListViewItem *item = static_cast<K3FileListViewItem*>( firstChild() );
     if ( item )
         return item->fileInfo();
     return 0L;
 }
 
-KFileItem * KFileDetailView::nextItem( const KFileItem *fileItem ) const
+KFileItem * K3FileDetailView::nextItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
-        KFileListViewItem *item = viewItem( fileItem );
+        K3FileListViewItem *item = viewItem( fileItem );
         if ( item && item->itemBelow() )
-            return ((KFileListViewItem*) item->itemBelow())->fileInfo();
+            return ((K3FileListViewItem*) item->itemBelow())->fileInfo();
         else
             return 0L;
     }
@@ -487,12 +487,12 @@ KFileItem * KFileDetailView::nextItem( const KFileItem *fileItem ) const
         return firstFileItem();
 }
 
-KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
+KFileItem * K3FileDetailView::prevItem( const KFileItem *fileItem ) const
 {
     if ( fileItem ) {
-        KFileListViewItem *item = viewItem( fileItem );
+        K3FileListViewItem *item = viewItem( fileItem );
         if ( item && item->itemAbove() )
-            return ((KFileListViewItem*) item->itemAbove())->fileInfo();
+            return ((K3FileListViewItem*) item->itemAbove())->fileInfo();
         else
             return 0L;
     }
@@ -500,7 +500,7 @@ KFileItem * KFileDetailView::prevItem( const KFileItem *fileItem ) const
         return firstFileItem();
 }
 
-void KFileDetailView::keyPressEvent( QKeyEvent *e )
+void K3FileDetailView::keyPressEvent( QKeyEvent *e )
 {
     K3ListView::keyPressEvent( e );
 
@@ -515,18 +515,18 @@ void KFileDetailView::keyPressEvent( QKeyEvent *e )
 //
 // mimetype determination on demand
 //
-void KFileDetailView::mimeTypeDeterminationFinished()
+void K3FileDetailView::mimeTypeDeterminationFinished()
 {
     // anything to do?
 }
 
-void KFileDetailView::determineIcon( KFileListViewItem *item )
+void K3FileDetailView::determineIcon( K3FileListViewItem *item )
 {
     (void) item->fileInfo()->determineMimeType();
     updateView( item->fileInfo() );
 }
 
-void KFileDetailView::listingCompleted()
+void K3FileDetailView::listingCompleted()
 {
     m_resolver->start();
 }
@@ -534,7 +534,7 @@ void KFileDetailView::listingCompleted()
 // Qt4 porting: once we use QListWidget, this becomes a reimplementation of
 // virtual QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
 // or better: something at the model level, instead?
-Q3DragObject *KFileDetailView::dragObject()
+Q3DragObject *K3FileDetailView::dragObject()
 {
     // create a list of the URL:s that we want to drag
     const KUrl::List urls = KFileView::selectedItems()->urlList();
@@ -555,7 +555,7 @@ Q3DragObject *KFileDetailView::dragObject()
     return 0;
 }
 
-void KFileDetailView::slotAutoOpen()
+void K3FileDetailView::slotAutoOpen()
 {
     d->autoOpenTimer.stop();
     if( !d->dropItem )
@@ -572,16 +572,16 @@ void KFileDetailView::slotAutoOpen()
         sig->activate( fileItem );
 }
 
-bool KFileDetailView::acceptDrag(QDropEvent* e) const
+bool K3FileDetailView::acceptDrag(QDropEvent* e) const
 {
     return KUrl::List::canDecode( e->mimeData() ) &&
-       (e->source()!= const_cast<KFileDetailView*>(this)) &&
+       (e->source()!= const_cast<K3FileDetailView*>(this)) &&
        ( e->dropAction() == Qt::CopyAction
       || e->dropAction() == Qt::MoveAction
       || e->dropAction() == Qt::LinkAction );
 }
 
-void KFileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
+void K3FileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
 {
     if ( ! acceptDrag( e ) ) { // can we decode this ?
         e->ignore();            // No
@@ -592,7 +592,7 @@ void KFileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
 
-    KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
+    K3FileListViewItem *item = dynamic_cast<K3FileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
     if ( item ) {  // are we over an item ?
        d->dropItem = item;
        d->autoOpenTimer.start( autoOpenDelay() ); // restart timer
@@ -604,7 +604,7 @@ void KFileDetailView::contentsDragEnterEvent( QDragEnterEvent *e )
     }
 }
 
-void KFileDetailView::contentsDragMoveEvent( QDragMoveEvent *e )
+void K3FileDetailView::contentsDragMoveEvent( QDragMoveEvent *e )
 {
     if ( ! acceptDrag( e ) ) { // can we decode this ?
         e->ignore();            // No
@@ -615,7 +615,7 @@ void KFileDetailView::contentsDragMoveEvent( QDragMoveEvent *e )
     if ((dropOptions() & AutoOpenDirs) == 0)
        return;
 
-    KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
+    K3FileListViewItem *item = dynamic_cast<K3FileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
     if ( item ) {  // are we over an item ?
        if (d->dropItem != item)
        {
@@ -630,13 +630,13 @@ void KFileDetailView::contentsDragMoveEvent( QDragMoveEvent *e )
     }
 }
 
-void KFileDetailView::contentsDragLeaveEvent( QDragLeaveEvent * )
+void K3FileDetailView::contentsDragLeaveEvent( QDragLeaveEvent * )
 {
     d->dropItem = 0;
     d->autoOpenTimer.stop();
 }
 
-void KFileDetailView::contentsDropEvent( QDropEvent *e )
+void K3FileDetailView::contentsDropEvent( QDropEvent *e )
 {
     d->dropItem = 0;
     d->autoOpenTimer.stop();
@@ -647,7 +647,7 @@ void KFileDetailView::contentsDropEvent( QDropEvent *e )
     }
     e->acceptProposedAction();     // Yes
 
-    KFileListViewItem *item = dynamic_cast<KFileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
+    K3FileListViewItem *item = dynamic_cast<K3FileListViewItem*>(itemAt( contentsToViewport( e->pos() ) ));
     KFileItem * fileItem = 0;
     if (item)
         fileItem = item->fileInfo();
@@ -666,9 +666,9 @@ void KFileDetailView::contentsDropEvent( QDropEvent *e )
 /////////////////////////////////////////////////////////////////
 
 
-void KFileListViewItem::init()
+void K3FileListViewItem::init()
 {
-    KFileListViewItem::setPixmap( COL_NAME, inf->pixmap(K3Icon::SizeSmall));
+    K3FileListViewItem::setPixmap( COL_NAME, inf->pixmap(K3Icon::SizeSmall));
 
     setText( COL_NAME, inf->text() );
     setText( COL_SIZE, KGlobal::locale()->formatNumber( inf->size(), 0));
@@ -678,4 +678,4 @@ void KFileListViewItem::init()
     setText( COL_GROUP, inf->group() );
 }
 
-#include "kfiledetailview.moc"
+#include "k3filedetailview.moc"

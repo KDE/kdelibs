@@ -24,26 +24,25 @@
 
 class QColorGroup;
 
-#include <q3dict.h>
 #include <q3listview.h>
 
 #include <kfileitem.h>
 #include <kio/global.h>
 #include <kdirlister.h>
 #include <kio/job.h>
-#include <kfiletreeviewitem.h>
+#include <k3filetreeviewitem.h>
 
 class KUrl;
-class KFileTreeView;
+class K3FileTreeView;
 
 
 /**
- * This is the branch class of the KFileTreeView, which represents one
+ * This is the branch class of the K3FileTreeView, which represents one
  * branch in the treeview. Every branch has a root which is an url. The branch
  * lists the files under the root. Every branch uses its own dirlister and can
  * have its own filter etc.
  *
- * @short Branch object for KFileTreeView object.
+ * @short Branch object for K3FileTreeView object.
  *
  */
 
@@ -52,18 +51,18 @@ class KIO_EXPORT KFileTreeBranch : public KDirLister
    Q_OBJECT
 public:
    /**
-    * constructs a branch for KFileTreeView. Does not yet start to list it.
+    * constructs a branch for K3FileTreeView. Does not yet start to list it.
     * @param url start url of the branch.
     * @param name the name of the branch, which is displayed in the first column of the treeview.
     * @param pix is a pixmap to display as an icon of the branch.
     * @param showHidden flag to make hidden files visible or not.
-    * @param branchRoot is the KFileTreeViewItem to use as the root of the
+    * @param branchRoot is the K3FileTreeViewItem to use as the root of the
     *        branch, with the default 0 meaning to let KFileTreeBranch create
     *        it for you.
     */
-   KFileTreeBranch( KFileTreeView*, const KUrl& url, const QString& name,
+   KFileTreeBranch( K3FileTreeView*, const KUrl& url, const QString& name,
                     const QPixmap& pix, bool showHidden = false,
-		    KFileTreeViewItem *branchRoot = 0 );
+		    K3FileTreeViewItem *branchRoot = 0 );
 
    /**
     * @returns the root url of the branch.
@@ -71,17 +70,17 @@ public:
    KUrl 	rootUrl() const { return( m_startURL ); }
 
    /**
-    * sets a KFileTreeViewItem as root widget for the branch.
+    * sets a K3FileTreeViewItem as root widget for the branch.
     * That must be created outside of the branch. All KFileTreeViewItems
     * the branch is allocating will become children of that object.
-    * @param r the KFileTreeViewItem to become the root item.
+    * @param r the K3FileTreeViewItem to become the root item.
     */
-   virtual void 	setRoot( KFileTreeViewItem *r ){ m_root = r; }
+   virtual void 	setRoot( K3FileTreeViewItem *r ){ m_root = r; }
 
    /**
     * @returns the root item.
     */
-   KFileTreeViewItem *root( ) { return( m_root );}
+   K3FileTreeViewItem *root( ) { return( m_root );}
 
    /**
     * @returns the name of the branch.
@@ -105,7 +104,7 @@ public:
     * which is displayed if the branch is expanded.
     * The root item pixmap defaults to the icon for directories.
     * @see pixmap()
-    * Note that it depends on KFileTreeView::showFolderOpenPximap weather
+    * Note that it depends on K3FileTreeView::showFolderOpenPximap weather
     * open pixmap are displayed or not.
     */
    const QPixmap& openPixmap() { return(m_openRootIcon); }
@@ -142,11 +141,11 @@ public:
 public Q_SLOTS:
    /**
     * populates a branch. This method must be called after a branch was added
-    * to  a KFileTreeView using method addBranch.
+    * to  a K3FileTreeView using method addBranch.
     * @param url is the url of the root item where the branch starts.
     * @param currItem is the current parent.
     */
-   virtual bool populate( const KUrl &url, KFileTreeViewItem* currItem );
+   virtual bool populate( const KUrl &url, K3FileTreeViewItem* currItem );
 
    /**
     * sets printing of the file extensions on or off. If you pass false to this
@@ -160,35 +159,35 @@ public Q_SLOTS:
 
 protected:
    /**
-    * allocates a KFileTreeViewItem for the branch
+    * allocates a K3FileTreeViewItem for the branch
     * for new items.
     */
-   virtual KFileTreeViewItem *createTreeViewItem( KFileTreeViewItem *parent,
+   virtual K3FileTreeViewItem *createTreeViewItem( K3FileTreeViewItem *parent,
 						  KFileItem *fileItem );
 
 public:
    /**
-    * find the according KFileTreeViewItem by an url
+    * find the according K3FileTreeViewItem by an url
     */
-   virtual KFileTreeViewItem *findTVIByUrl( const KUrl& );
+   virtual K3FileTreeViewItem *findTVIByUrl( const KUrl& );
 
 Q_SIGNALS:
    /**
     * emitted with the item of a directory which was finished to populate
     */
-   void populateFinished( KFileTreeViewItem * );
+   void populateFinished( K3FileTreeViewItem * );
 
    /**
-    * emitted with a list of new or updated KFileTreeViewItem which were
+    * emitted with a list of new or updated K3FileTreeViewItem which were
     * found in a branch. Note that this signal is emitted very often and may slow
     * down the performance of the treeview !
     */
-   void newTreeViewItems( KFileTreeBranch*, const KFileTreeViewItemList& );
+   void newTreeViewItems( KFileTreeBranch*, const K3FileTreeViewItemList& );
 
    /**
     * emitted with the exact count of children for a directory.
     */
-   void directoryChildCount( KFileTreeViewItem* item, int count );
+   void directoryChildCount( K3FileTreeViewItem* item, int count );
 
 private Q_SLOTS:
    void slotRefreshItems( const KFileItemList& );
@@ -202,10 +201,10 @@ private Q_SLOTS:
    void slotRedirect( const KUrl& oldUrl, const KUrl&newUrl );
 
 private:
-   KFileTreeViewItem    *parentKFTVItem( KFileItem *item );
+   K3FileTreeViewItem    *parentKFTVItem( KFileItem *item );
    static void           deleteChildrenOf( Q3ListViewItem *parent );
 
-   KFileTreeViewItem 	*m_root;
+   K3FileTreeViewItem 	*m_root;
    KUrl 		m_startURL;
    QString 		m_name;
    QPixmap 		m_rootIcon;
@@ -217,7 +216,7 @@ private:
 
    /* The next two members are used for caching purposes in findTVIByURL. */
    KUrl                 m_lastFoundURL;
-   KFileTreeViewItem   *m_lastFoundItem;
+   K3FileTreeViewItem   *m_lastFoundItem;
 
    bool                 m_recurseChildren :1;
    bool                 m_showExtensions  :1;

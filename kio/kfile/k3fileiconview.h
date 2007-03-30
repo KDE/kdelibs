@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KFILEICONVIEW_H
-#define KFILEICONVIEW_H
+#ifndef K3FILEICONVIEW_H
+#define K3FILEICONVIEW_H
 
 class KFileItem;
 class QWidget;
@@ -35,17 +35,17 @@ class QLabel;
  * An item for the iconview, that has a reference to its corresponding
  * KFileItem.
  */
-class KIO_EXPORT KFileIconViewItem : public K3IconViewItem
+class KIO_EXPORT K3FileIconViewItem : public K3IconViewItem
 {
 public:
-    KFileIconViewItem( Q3IconView *parent, const QString &text,
+    K3FileIconViewItem( Q3IconView *parent, const QString &text,
 		       const QPixmap &pixmap,
 		       KFileItem *fi )
 	: K3IconViewItem( parent, text, pixmap ), inf( fi ) {}
-    KFileIconViewItem( Q3IconView *parent, KFileItem *fi )
+    K3FileIconViewItem( Q3IconView *parent, KFileItem *fi )
 	: K3IconViewItem( parent ), inf( fi ) {}
 
-    virtual ~KFileIconViewItem();
+    virtual ~K3FileIconViewItem();
 
     /**
      * @returns the corresponding KFileItem
@@ -58,8 +58,8 @@ private:
     KFileItem *inf;
 
 private:
-    class KFileIconViewItemPrivate;
-    KFileIconViewItemPrivate* d;
+    class K3FileIconViewItemPrivate;
+    K3FileIconViewItemPrivate* d;
 
 };
 
@@ -76,13 +76,13 @@ namespace KIO {
  * @see KCombiView
  * @see KFileDetailView
  */
-class KIO_EXPORT KFileIconView : public K3IconView, public KFileView
+class KIO_EXPORT K3FileIconView : public K3IconView, public KFileView
 {
     Q_OBJECT
 
 public:
-    KFileIconView(QWidget *parent, const char *name);
-    virtual ~KFileIconView();
+    K3FileIconView(QWidget *parent, const char *name);
+    virtual ~K3FileIconView();
 
     virtual QWidget *widget() { return this; }
     virtual void clearView();
@@ -134,13 +134,12 @@ public:
 
     virtual void setSorting(QDir::SortFlags sort);
 
-    //most times configGroup should be really a KConfigGroup
     virtual void readConfig( KConfigGroup *configGroup );
     virtual void writeConfig( KConfigGroup *configGroup );
 
     // for K3MimeTypeResolver
     void mimeTypeDeterminationFinished();
-    void determineIcon( KFileIconViewItem *item );
+    void determineIcon( K3FileIconViewItem *item );
     Q3ScrollView *scrollWidget() const { return (Q3ScrollView*) this; }
     void setAcceptDrops(bool b)
     {
@@ -212,7 +211,7 @@ Q_SIGNALS:
     void dropped(QDropEvent *event, const KUrl::List &urls, const KUrl &url);
 
 private:
-    K3MimeTypeResolver<KFileIconViewItem,KFileIconView> *m_resolver;
+    K3MimeTypeResolver<K3FileIconViewItem,K3FileIconView> *m_resolver;
 
     int th;
     int myIconSize;
@@ -226,18 +225,18 @@ private:
 
     void updateIcons();
 
-    inline KFileIconViewItem * viewItem( const KFileItem *item ) const {
+    inline K3FileIconViewItem * viewItem( const KFileItem *item ) const {
         if ( item )
-            return (KFileIconViewItem *) item->extraData( this );
+            return (K3FileIconViewItem *) item->extraData( this );
         return 0L;
     }
 
-    void initItem(KFileIconViewItem *item, const KFileItem *i,
+    void initItem(K3FileIconViewItem *item, const KFileItem *i,
                   bool updateTextAndPixmap );
 
 private:
-    class KFileIconViewPrivate;
-    KFileIconViewPrivate* const d;
+    class K3FileIconViewPrivate;
+    K3FileIconViewPrivate* const d;
 };
 
 #endif // KFILESIMPLEVIEW_H

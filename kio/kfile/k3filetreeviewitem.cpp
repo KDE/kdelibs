@@ -21,12 +21,12 @@
 #include <kfileitem.h>
 #include <kicontheme.h>
 
-#include "kfiletreeviewitem.h"
+#include "k3filetreeviewitem.h"
 
-/* --- KFileTreeViewItem --- */
+/* --- K3FileTreeViewItem --- */
 /*
  */
-KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
+K3FileTreeViewItem::K3FileTreeViewItem( K3FileTreeViewItem *parent,
 				      KFileItem* item,
 				      KFileTreeBranch *brnch )
    : K3ListViewItem( parent ),
@@ -39,7 +39,7 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
 
 }
 
-KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
+K3FileTreeViewItem::K3FileTreeViewItem( K3FileTreeView* parent,
 				      KFileItem* item,
 				      KFileTreeBranch *brnch )
    :K3ListViewItem( (Q3ListView*)parent ),
@@ -51,33 +51,33 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
    setText( 0, item->text());
 }
 
-KFileTreeViewItem::~KFileTreeViewItem()
+K3FileTreeViewItem::~K3FileTreeViewItem()
 {
     if ( m_kfileitem )
         m_kfileitem->removeExtraData( m_branch );
 }
 
-bool KFileTreeViewItem::alreadyListed() const
+bool K3FileTreeViewItem::alreadyListed() const
 {
    return m_wasListed;
 }
 
-void KFileTreeViewItem::setListed( bool wasListed )
+void K3FileTreeViewItem::setListed( bool wasListed )
 {
    m_wasListed = wasListed;
 }
 
-KUrl KFileTreeViewItem::url() const
+KUrl K3FileTreeViewItem::url() const
 {
     return m_kfileitem ? m_kfileitem->url() : KUrl();
 }
 
-QString KFileTreeViewItem::path()  const
+QString K3FileTreeViewItem::path()  const
 {
     return m_kfileitem ? m_kfileitem->url().path() : QString();
 }
 
-bool KFileTreeViewItem::isDir() const
+bool K3FileTreeViewItem::isDir() const
 {
     return m_kfileitem ? m_kfileitem->isDir() : false;
 }

@@ -41,6 +41,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
    : KFileDialog(startDir,filter,parent), d(new KEncodingFileDialogPrivate)
 {
   setCaption(caption);
+  //ops->clearHistory();
 
   setOperationMode( type );
 
@@ -101,7 +102,6 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenFileNameAndEncoding(cons
                             Opening, parent);
 
     dlg.setMode( KFile::File | KFile::LocalOnly );
-    dlg.ops->clearHistory();
     dlg.exec();
 
     Result res;
@@ -119,7 +119,6 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenFileNamesAndEncoding(con
     KEncodingFileDialog dlg(startDir, encoding, filter, caption.isNull() ? i18n("Open") : caption,
                             Opening, parent);
     dlg.setMode(KFile::Files | KFile::LocalOnly);
-    dlg.ops->clearHistory();
     dlg.exec();
 
     Result res;
@@ -136,7 +135,6 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenUrlAndEncoding(const QSt
                             Opening, parent);
 
     dlg.setMode( KFile::File );
-    dlg.ops->clearHistory();
     dlg.exec();
 
     Result res;
@@ -155,7 +153,6 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenUrlsAndEncoding(const QS
                             Opening, parent);
 
     dlg.setMode(KFile::Files);
-    dlg.ops->clearHistory();
     dlg.exec();
 
     Result res;

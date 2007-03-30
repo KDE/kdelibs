@@ -22,8 +22,7 @@
 
 #include "kfileitem.h"
 #include "kcombiview.h"
-#include "kfileiconview.h"
-#include "kfiledetailview.h"
+#include "k3fileiconview.h"
 #include "config-kfile.h"
 
 #include <qevent.h>
@@ -44,7 +43,7 @@ KCombiView::KCombiView( QWidget *parent)
     m_lastViewForNextItem(0),
     m_lastViewForPrevItem(0)
 {
-    left = new KFileIconView( this, "left" );
+    left = new K3FileIconView( this, "left" );
     left->setAcceptDrops(false);
     left->viewport()->setAcceptDrops(false);
     left->setGridX( 160 );

@@ -29,8 +29,8 @@ class QMenu;
 class QVBoxLayout;
 class KConfig;
 class KFileTreeBranch;
-class KFileTreeView;
-class KFileTreeViewItem;
+class K3FileTreeView;
+class K3FileTreeViewItem;
 class KToggleAction;
 class Q3ListViewItem;
 class KSharedConfigPtr;
@@ -69,7 +69,7 @@ public:
      */
     KUrl url() const;
 
-    KFileTreeView * view() const { return m_treeView; }
+    K3FileTreeView * view() const { return m_treeView; }
 
     bool localOnly() const { return m_localOnly; }
 
@@ -108,7 +108,7 @@ protected:
 private Q_SLOTS:
     void slotCurrentChanged();
     void slotUrlActivated( const QString& );
-    void slotNextDirToList( KFileTreeViewItem *dirItem );
+    void slotNextDirToList( K3FileTreeViewItem *dirItem );
     void slotComboTextChanged( const QString& text );
     void slotContextMenu( K3ListView *, Q3ListViewItem *, const QPoint & );
     void slotShowHiddenFoldersToggled();
@@ -117,10 +117,10 @@ private Q_SLOTS:
 private:
     void readConfig(const KSharedConfigPtr &config, const QString& group);
     void saveConfig(KSharedConfigPtr config, const QString& group);
-    void openNextDir( KFileTreeViewItem *parent );
+    void openNextDir( K3FileTreeViewItem *parent );
     KFileTreeBranch * createBranch( const KUrl& url );
 
-    KFileTreeView *m_treeView;
+    K3FileTreeView *m_treeView;
     QMenu *m_contextMenu;
     KToggleAction *m_showHiddenFolders;
     bool m_localOnly;

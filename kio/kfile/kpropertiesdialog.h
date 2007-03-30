@@ -29,7 +29,6 @@
 #define __propsdialog_h
 
 #include <qstring.h>
-#include <q3ptrlist.h>
 
 #include <kdemacros.h>
 #include <kurl.h>

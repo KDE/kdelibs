@@ -28,13 +28,13 @@ public:
    void showPath( const KUrl & );
    void setDirOnly( ) { dirOnlyMode = true; }
 public Q_SLOTS:
-   void slotPopulateFinished(KFileTreeViewItem *);
-   void slotSetChildCount( KFileTreeViewItem *item, int c );
+   void slotPopulateFinished(K3FileTreeViewItem *);
+   void slotSetChildCount( K3FileTreeViewItem *item, int c );
 
    void urlsDropped( QWidget*, QDropEvent*, KUrl::List& );
    void copyUrls( KUrl::List& list, KUrl& to );
 private:
-   KFileTreeView *treeView;
+   K3FileTreeView *treeView;
    bool          dirOnlyMode;
 };
 

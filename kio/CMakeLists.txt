@@ -148,11 +148,11 @@ set(kbookmarks_STAT_SRCS
 set(kfile_STAT_SRCS
   kfile/kfilefiltercombo.cpp
   kfile/kfileview.cpp
-  kfile/kfileiconview.cpp
+  kfile/k3fileiconview.cpp
   kfile/krecentdocument.cpp
   kfile/kfiledialog.cpp
   kfile/kdiroperator.cpp
-  kfile/kfiledetailview.cpp
+  kfile/k3filedetailview.cpp
   kfile/kcombiview.cpp
   kfile/kurlrequester.cpp
   kfile/kfilepreview.cpp
@@ -168,8 +168,8 @@ set(kfile_STAT_SRCS
   kfile/kurlbar.cpp
   kfile/kmetaprops.cpp
   kfile/kpreviewprops.cpp
-  kfile/kfiletreeview.cpp
-  kfile/kfiletreeviewitem.cpp
+  kfile/k3filetreeview.cpp
+  kfile/k3filetreeviewitem.cpp
   kfile/kfiletreebranch.cpp
   kfile/kdirselectdialog.cpp
   kfile/kfilebookmarkhandler.cpp
@@ -365,14 +365,14 @@ install( FILES
   kfile/kdiskfreesp.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
-  kfile/kfiledetailview.h
+  kfile/k3filedetailview.h
   kfile/kfiledialog.h
-  kfile/kfileiconview.h
+  kfile/k3fileiconview.h
   kfile/kfilepreview.h
   kfile/kfilesharedialog.h
   kfile/kfiletreebranch.h
-  kfile/kfiletreeview.h
-  kfile/kfiletreeviewitem.h
+  kfile/k3filetreeview.h
+  kfile/k3filetreeviewitem.h
   kfile/kfileview.h
   kfile/kfilefiltercombo.h
   kfile/kicondialog.h

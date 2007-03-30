@@ -5,6 +5,7 @@
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
                   2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
                   2001 Frerich Raabe <raabe@kde.org>
+                  2007 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -108,14 +109,15 @@ public:
       *
       * @param filter A shell glob or a mime-type-filter that specifies
       *               which files to display.
-      * See setFilter() for details on how to use this argument.
+      * See setFilter() and setMimeFilter() for details on how to use this argument.
+      *
+      * @param parent The parent widget of this dialog
       *
       * @param widget A widget, or a widget of widgets, for displaying custom
       *               data in the dialog. This can be used, for example, to
       *               display a check box with the caption "Open as read-only".
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileDialog.
-      * @param parent The parent widget of this dialog
       */
     KFileDialog( const KUrl& startDir, const QString& filter,
                  QWidget *parent, QWidget* widget = 0 );
@@ -330,10 +332,10 @@ public:
      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
      *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -371,10 +373,10 @@ public:
      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
      *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -403,10 +405,10 @@ public:
      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
      *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -435,10 +437,10 @@ public:
      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
      *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -467,10 +469,10 @@ public:
      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
      *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -506,10 +508,10 @@ public:
      *         @li An URL starting with 'kfiledialog:///&lt;keyword&gt;?global' to start
      *             in the directory last used by a filedialog in any application that specified the
      *             same keyword.
-     * @param filter This is a space separated list of shell globs.
-     * You can set the text to be displayed for the glob, and
-     * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -638,7 +640,7 @@ public:
      *      yourAction->plug( kfileDialog->toolBar() );
      * \endcode
      */
-    KToolBar *toolBar() const { return toolbar; }
+    KToolBar *toolBar() const;
 
     /**
      * @returns a pointer to the OK-Button in the filedialog. You may use it
@@ -669,16 +671,20 @@ public:
     KUrlBar *speedBar();
 
     /**
+     * @returns the combobox used to type the filename or full location of the file.
+     */
+    KUrlComboBox *locationEdit() const;
+
+    /**
+     * @returns the combobox that contains the filters
+     */
+    KFileFilterCombo *filterWidget() const;
+
+    /**
      * @returns a pointer to the action collection, holding all the used
      * KActions.
      */
     KActionCollection *actionCollection() const;
-
-    /**
-     * @returns the action before the path combobox so subclasses may insert widgets into
-     * the dialog
-     */
-    QAction* pathComboIndex();
 
     /**
      * This method implements the logic to determine the user's default directory
@@ -738,14 +744,6 @@ Q_SIGNALS:
     void filterChanged( const QString& filter );
 
 protected:
-    KToolBar *toolbar;
-
-    static KUrl *lastDirectory;
-
-    KUrlComboBox *locationEdit;
-
-    KFileFilterCombo *filterWidget;
-
     virtual void showEvent(QShowEvent* event);
 
     /**
@@ -753,6 +751,12 @@ protected:
      */
     virtual void keyPressEvent( QKeyEvent *e );
 
+protected Q_SLOTS:
+    virtual void slotOk();
+    virtual void accept();
+    virtual void slotCancel();
+
+private:
     /**
       * Perform basic initialization tasks. Called by constructors.
       */
@@ -762,7 +766,7 @@ protected:
       * rebuild geometry management.
       *
       */
-    virtual void initGUI();
+    void initGUI();
 
     /**
      * called when an item is highlighted/selected in multiselection mode.
@@ -774,23 +778,23 @@ protected:
      * Reads configuration and applies it (size, recent directories, ...)
      * Recommended usage together with KConfigGroup
      */
-    virtual void readConfig( KConfigGroup * configGroup);
+    void readConfig( KConfigGroup * configGroup);
 
     /**
      * Saves the current configuration
      * Recommended usage together with KConfigGroup
      */
-    virtual void writeConfig( KConfigGroup *configGroup);
+    void writeConfig( KConfigGroup *configGroup);
 
     /**
      * Reads the recent used files and inserts them into the location combobox
      */
-    virtual void readRecentFiles( KConfig * );
+    void readRecentFiles( KConfig * );
 
     /**
      * Saves the entries from the location combobox.
      */
-    virtual void saveRecentFiles( KConfig * );
+    void saveRecentFiles( KConfig * );
 
     /**
      * Parses the string "line" for files. If line doesn't contain any ", the
@@ -821,8 +825,7 @@ protected:
      */
     void updateAutoSelectExtension();
 
-
-protected Q_SLOTS:
+private Q_SLOTS:
     void urlEntered( const KUrl& );
     void enterUrl( const KUrl& url );
     void enterUrl( const QString& url );
@@ -837,10 +840,6 @@ protected Q_SLOTS:
     void fileCompletion( const QString& );
     void toggleSpeedbar( bool );
     void toggleBookmarks(bool show);
-
-    virtual void slotOk();
-    virtual void accept();
-    virtual void slotCancel();
 
     void slotAutoSelectExtClicked();
     void addToRecentDocuments();
@@ -864,14 +863,10 @@ private:
 
     void setNonExtSelection();
 
-protected:
-    KDirOperator *ops;
-    bool autoDirectoryFollowing;
-
     KUrl::List& parseSelectedUrls() const;
 
 private:
-    KFileDialogPrivate *d;
+    KFileDialogPrivate * const d;
 };
 
 #endif

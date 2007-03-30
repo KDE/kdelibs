@@ -19,10 +19,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kfilepreview.h"
+#include "kfilepreview.moc"
+
 #include <kaction.h>
-#include <kfilepreview.h>
-#include <kfilepreview.moc>
 #include <klocale.h>
+#include <k3fileiconview.h>
+#include <k3filedetailview.h>
 
 #include <qlabel.h>
 
@@ -34,14 +37,14 @@ KFilePreview::KFilePreview(KFileView *view, QWidget *parent)
     if ( view )
         init( view );
     else
-        init( new KFileIconView( (QSplitter*) this, "left" ));
+        init( new K3FileIconView( (QSplitter*) this, "left" ));
 }
 
 
 KFilePreview::KFilePreview(QWidget *parent)
     : QSplitter(parent), KFileView()
 {
-    init( new KFileIconView((QSplitter*)this, "left") );
+    init( new K3FileIconView((QSplitter*)this, "left") );
 }
 
 KFilePreview::~KFilePreview()

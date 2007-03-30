@@ -18,6 +18,17 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kdiroperator.h"
+#include "kcombiview.h"
+#include "kfilepreview.h"
+#include "k3fileiconview.h"
+#include "k3filedetailview.h"
+#include "kfileview.h"
+#include "kfileitem.h"
+#include "kfilemetapreview.h"
+
+#include "config-kfile.h"
+
 #include <unistd.h>
 
 #include <qdir.h>
@@ -57,16 +68,6 @@
 #include <ktoggleaction.h>
 #include <kactionmenu.h>
 #include <kconfiggroup.h>
-
-#include "config-kfile.h"
-#include "kcombiview.h"
-#include "kdiroperator.h"
-#include "kfiledetailview.h"
-#include "kfileiconview.h"
-#include "kfilepreview.h"
-#include "kfileview.h"
-#include "kfileitem.h"
-#include "kfilemetapreview.h"
 
 
 template class QHash<QString,KFileItem*>;
@@ -915,13 +916,13 @@ KFileView* KDirOperator::createView( QWidget* parent, KFile::FileView view )
             new_view = combi;
     }
     else if ( KFile::isDetailView( view ) && !preview ) {
-        KFileDetailView *ndw = new KFileDetailView( parent );
+        K3FileDetailView *ndw = new K3FileDetailView( parent );
         ndw->setObjectName( "detail view" );
         new_view = ndw;
         new_view->setViewName( i18n("Detailed View") );
     }
     else /* if ( KFile::isSimpleView( view ) && !preview ) */ {
-        KFileIconView *iconView =  new KFileIconView( parent, "simple view");
+        K3FileIconView* iconView = new K3FileIconView(parent, "simple view");
         new_view = iconView;
         new_view->setViewName( i18n("Short View") );
     }
