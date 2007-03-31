@@ -51,7 +51,7 @@ QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&) {
 /**
  * @brief Wrap a QIODevice in a Strigi stream.
  **/
-class QIODeviceInputStream : public jstreams::BufferedInputStream<char> {
+class QIODeviceInputStream : public BufferedInputStream {
 private:
     QIODevice& in;
     int32_t fillBuffer(char* start, int32_t space);
@@ -65,7 +65,7 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
     int32_t nwritten = in.read(start, space);
     // check the file stream status
     if (nwritten < 0) {
-        error = "Could not read from QIODevice.";
+        m_error = "Could not read from QIODevice.";
         in.close();
         return -1;
     }
@@ -125,7 +125,7 @@ public:
             = static_cast<QHash<QString, KFileMetaInfoItem>*>(
             idx->writerData());
         if (info) {
-            string name(field->getKey());
+            string name(field->key());
             QString key = QString::fromUtf8(name.c_str(), name.size());
             QHash<QString, KFileMetaInfoItem>::iterator i = info->find(key);
             if (i == info->end()) {
