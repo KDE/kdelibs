@@ -8,4 +8,9 @@ MACRO( PHONON_DECLARE_EXAMPLES )
 	ENDFOREACH( _examplename )
 ENDMACRO( PHONON_DECLARE_EXAMPLES )
 
-PHONON_DECLARE_EXAMPLES(crossfade videoplayandforget pcmoutput)
+PHONON_DECLARE_EXAMPLES(
+    crossfade
+    videoplayandforget
+    pcmoutput
+    videoplayback
+    )
