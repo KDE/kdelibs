@@ -1661,7 +1661,7 @@ int main( int argc, char **argv )
 
   // Header required by singleton implementation
   if ( singleton )
-    cpp << "#include <kstaticdeleter.h>" << endl << endl;
+    cpp << "#include <kstaticdeleter.h>" << endl << "#include <QtCore/QFile>" << endl << endl;
   if ( singleton && cfgFileNameArg )
     cpp << "#include <kdebug.h>" << endl << endl;
 
