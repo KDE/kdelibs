@@ -80,7 +80,6 @@ void MediaObject::openMedia(Phonon::MediaObject::Media media)
         break;
     case Phonon::MediaObject::CD:
     case Phonon::MediaObject::DVD:
-    case Phonon::MediaObject::DVB:
     case Phonon::MediaObject::VCD:
         break;
     default:

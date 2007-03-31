@@ -62,8 +62,7 @@ namespace Phonon
                 None = 0,
                 CD = 1,
                 DVD = 2,
-                DVB = 3,
-                VCD = 4
+                VCD = 3
             };
 			/**
 			 * Get the URL the MediaObject should use as media data source.
