@@ -22,6 +22,7 @@
 #ifndef KSPELL_DIALOG_H
 #define KSPELL_DIALOG_H
 
+#include <kdelibs_export.h>
 #include <kdialog.h>
 
 class Q3ListViewItem;
