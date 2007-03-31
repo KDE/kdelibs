@@ -151,24 +151,6 @@ void MediaObject::openMedia(Media media)
     }
 }
 
-void MediaObject::stop()
-{
-	Phonon::State prevState = state();
-	if( prevState == Phonon::StoppedState || prevState == Phonon::LoadingState )
-		return;
-	AbstractMediaProducer::stop();
-
-    K_D(MediaObject);
-    if (d->kiofallback) {
-        d->kiofallback->stopped();
-    }
-}
-
-void MediaObject::play()
-{
-	AbstractMediaProducer::play();
-}
-
 PHONON_SETTER( setAboutToFinishTime, aboutToFinishTime, qint32 )
 
 bool MediaObjectPrivate::aboutToDeleteIface()
@@ -232,7 +214,19 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
             emit q->stateChanged(newstate, Phonon::BufferingState);
         }
         return;
+    } else if (newstate == StoppedState && kiofallback) {
+        switch (oldstate) {
+        case PlayingState:
+        case PausedState:
+        case BufferingState:
+            kiofallback->stopped();
+            break;
+        default:
+            // nothing
+            break;
+        }
     }
+
     emit q->stateChanged(newstate, oldstate);
 }
 

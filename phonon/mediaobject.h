@@ -97,15 +97,6 @@ namespace Phonon
 
 		public Q_SLOTS:
 			/**
-			 * \reimp
-			 */
-			void stop();
-			/**
-			 * \reimp
-			 */
-			void play();
-
-			/**
 			 * Set the URL the MediaObject should use as media data source.
 			 *
 			 * \param url The URL to the media data.
