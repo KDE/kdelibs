@@ -43,16 +43,16 @@ namespace KJS {
 	* KJS::Identifier method("someJSMethod");
 	* @endcode
 	*/
-        Identifier(const char *s) : _ustring(add(s)) { }
-        Identifier(const UChar *s, int length) : _ustring(add(s, length)) { }
-        explicit Identifier(UString::Rep *rep) : _ustring(add(rep)) { }
-        explicit Identifier(const UString &s) : _ustring(add(s.rep())) { }
+        Identifier(const char* s) : _ustring(add(s)) { }
+        Identifier(const UChar* s, int length) : _ustring(add(s, length)) { }
+        explicit Identifier(UString::Rep* rep) : _ustring(add(rep)) { }
+        explicit Identifier(const UString& s) : _ustring(add(s.rep())) { }
 
 
 	/**
 	* returns a UString of the identifier
 	*/
-        const UString &ustring() const { return _ustring; }
+        const UString& ustring() const { return _ustring; }
         KJS_EXTERNAL_EXPORT DOM::DOMString domString() const;
         /**
 	* returns a QString of the identifier
@@ -62,7 +62,7 @@ namespace KJS {
 	/**
 	* returns a UChar pointer to the string of the identifier with a size defined by @ref size().
 	*/
-        const UChar *data() const { return _ustring.data(); }
+        const UChar* data() const { return _ustring.data(); }
 	/**
 	* The size of the UChar string returned.
 	*/
@@ -71,7 +71,7 @@ namespace KJS {
 	/**
 	* Char * of the identifier's string.
 	*/
-        const char *ascii() const { return _ustring.ascii(); }
+        const char* ascii() const { return _ustring.ascii(); }
 
         static Identifier from(unsigned y) { return Identifier(UString::from(y)); }
 
@@ -84,10 +84,9 @@ namespace KJS {
 	*/
         bool isEmpty() const { return _ustring.isEmpty(); }
 
-        uint32_t toUInt32(bool *ok) const { return _ustring.toUInt32(ok); }
-        uint32_t toStrictUInt32(bool *ok) const { return _ustring.toStrictUInt32(ok); }
-        unsigned toArrayIndex(bool *ok) const { return _ustring.toArrayIndex(ok); }
-
+        uint32_t toUInt32(bool* ok) const { return _ustring.toUInt32(ok); }
+        uint32_t toStrictUInt32(bool* ok) const { return _ustring.toStrictUInt32(ok); }
+        unsigned toArrayIndex(bool* ok) const { return _ustring.toArrayIndex(ok); }
         double toDouble() const { return _ustring.toDouble(); }
 
 	/**
@@ -95,29 +94,28 @@ namespace KJS {
 	*/
         static const Identifier &null();
 
-        friend bool operator==(const Identifier &, const Identifier &);
-        friend bool operator!=(const Identifier &, const Identifier &);
+        friend bool operator==(const Identifier&, const Identifier&);
+        friend bool operator!=(const Identifier&, const Identifier&);
 
-        friend bool operator==(const Identifier &, const char *);
+        friend bool operator==(const Identifier&, const char*);
 
-        static void remove(UString::Rep *);
+        static void remove(UString::Rep*);
 
-        static bool equal(const UString::Rep *, const char *);
-        static bool equal(const UString::Rep *, const UChar *, int length);
-        static bool equal(const UString::Rep *, const UString::Rep *);
+        static bool equal(const UString::Rep*, const char*);
+        static bool equal(const UString::Rep*, const UChar*, int length);
+        static bool equal(const UString::Rep*, const UString::Rep*);
 
     private:
         UString _ustring;
 
-
-        static bool equal(const Identifier &a, const Identifier &b)
+        static bool equal(const Identifier& a, const Identifier& b)
             { return a._ustring.rep() == b._ustring.rep(); }
-        static bool equal(const Identifier &a, const char *b)
+        static bool equal(const Identifier& a, const char* b)
             { return equal(a._ustring.rep(), b); }
 
-        static PassRefPtr<UString::Rep> add(const char *);
-        static PassRefPtr<UString::Rep> add(const UChar *, int length);
-        static PassRefPtr<UString::Rep> add(UString::Rep *);
+        static PassRefPtr<UString::Rep> add(const char*);
+        static PassRefPtr<UString::Rep> add(const UChar*, int length);
+        static PassRefPtr<UString::Rep> add(UString::Rep*);
     };
     
 #if !defined(KJS_IDENTIFIER_HIDE_GLOBALS)
@@ -127,13 +125,13 @@ namespace KJS {
         { return nullIdentifier; }
 #endif
 
-    inline bool operator==(const Identifier &a, const Identifier &b)
+    inline bool operator==(const Identifier& a, const Identifier& b)
         { return Identifier::equal(a, b); }
 
-    inline bool operator!=(const Identifier &a, const Identifier &b)
+    inline bool operator!=(const Identifier& a, const Identifier& b)
         { return !Identifier::equal(a, b); }
 
-    inline bool operator==(const Identifier &a, const char *b)
+    inline bool operator==(const Identifier& a, const char* b)
         { return Identifier::equal(a, b); }
 
     // List of property names, passed to a macro so we can do set them up various
@@ -164,6 +162,6 @@ namespace KJS {
     #undef KJS_IDENTIFIER_DECLARE_PROPERTY_NAME_GLOBAL
 #endif
 
-}
+} // namespace KJS
 
-#endif
+#endif // KJS_IDENTIFIER_H
