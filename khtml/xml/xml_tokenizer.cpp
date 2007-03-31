@@ -152,7 +152,7 @@ void XMLHandler::fixUpNSURI(QString& uri, const QString& qname)
 {
     /* QXml does not resolve the namespaces of attributes in the same 
        tag that preceed the xmlns declaration. This fixes up that case */
-    if (uri.isEmpty() && qname.find(':') != -1) {
+    if (uri.isEmpty() && qname.indexOf(':') != -1) {
         QXmlNamespaceSupport ns;
         QString localName, prefix;
         ns.splitName(qname, prefix, localName);
