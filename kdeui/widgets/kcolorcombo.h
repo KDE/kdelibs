@@ -26,14 +26,17 @@
 #ifndef KCOLORCOMBO_H
 #define KCOLORCOMBO_H
 
+#include <QtGui/QComboBox>
+
 #include <kdeui_export.h>
 
-#include <qcombobox.h>
-
-class KColorComboInternal;
+class KColorComboPrivate;
 
 /**
  * Combobox for colors.
+ *
+ * The combobox provides some preset colors to be selected, and an entry to
+ * select a custom color using a color dialog.
  */
 class KDEUI_EXPORT KColorCombo : public QComboBox
 {
@@ -44,7 +47,7 @@ public:
     /**
      * Constructs a color combo box.
      */
-    KColorCombo( QWidget *parent );
+    explicit KColorCombo(QWidget *parent = 0);
     ~KColorCombo();
 
     /**
@@ -55,7 +58,6 @@ public:
      * Returns the currently selected color.
      **/
     QColor color() const;
-
 
     /**
      * Clear the color list and don't show it, till the next setColor() call
@@ -73,21 +75,16 @@ Q_SIGNALS:
     void highlighted( const QColor &col );
 
 protected:
-	virtual void resizeEvent( QResizeEvent *re );
-
-private Q_SLOTS:
-	void slotActivated( int index );
-	void slotHighlighted( int index );
+        virtual void paintEvent(QPaintEvent *event);
 
 private:
-	void addColors();
-
-private:
-	class KColorComboPrivate;
         friend class KColorComboPrivate;
-	KColorComboPrivate *d;
+        KColorComboPrivate *const d;
         
         Q_DISABLE_COPY(KColorCombo)
+
+        Q_PRIVATE_SLOT(d, void _k_slotActivated(int))
+        Q_PRIVATE_SLOT(d, void _k_slotHighlighted(int))
 };
 
 #endif	// KCOLORCOMBO_H
