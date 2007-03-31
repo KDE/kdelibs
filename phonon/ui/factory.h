@@ -89,7 +89,7 @@ class PHONONUI_EXPORT UiFactory : public QObject
 	private:
 		static UiFactory * m_self;
 		class Private;
-		Private * d;
+		Private *const d;
 };
 } // namespace Phonon
 
