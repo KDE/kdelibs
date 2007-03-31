@@ -1416,7 +1416,10 @@ int main( int argc, char **argv )
   } else {
     h << "    static " << className << " *self();" << endl;
     if (cfgFileNameArg)
+    {
       h << "    static void instance(const char * cfgfilename);" << endl;
+      h << "    static void instance(const QString& cfgfilename);" << endl;
+    }
   }
 
   // Destructor
@@ -1726,6 +1729,16 @@ int main( int argc, char **argv )
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
       cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;
+      cpp << "  mSelf->readConfig();" << endl;
+      cpp << "}" << endl << endl;
+      cpp << "void " << className << "::instance(const QString& cfgfilename)" << endl;
+      cpp << "{" << endl;
+      cpp << "  if (mSelf) {" << endl;
+      cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
+      cpp << "     return;" << endl;
+      cpp << "  }" << endl;
+      cpp << "  QByteArray filename = QFile::encodeName(cfgfilename);" << endl;
+      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(filename.data()) );" << endl;
       cpp << "  mSelf->readConfig();" << endl;
       cpp << "}" << endl << endl;
     }
