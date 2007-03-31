@@ -100,6 +100,12 @@ WhatsThis=A push button that looks like a keyboard key.
 IncludeFile=kkeybutton.h
 Group=Buttons (KDE)
 
+[KDialogButtonBox]
+ToolTip=Button Box (KDE)
+WhatsThis=KDE's button box.
+IncludeFile=kdialogbuttonbox.h
+Group=Buttons (KDE)
+
 [KRestrictedLine]
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
