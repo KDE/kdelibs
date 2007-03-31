@@ -105,7 +105,7 @@ class OverlayApi;
                  * Make width/height == 16/9, which is the size of most current
                  * media. (16:9)
                  */
-                AspectRatio16_9 = 3,
+                AspectRatio16_9 = 3
 //X                 /**
 //X                  * Assume that every pixel of the video image needs to be displayed with the same
 //X                  * physical width and height. (1:1 image pixels, not imagewidth
