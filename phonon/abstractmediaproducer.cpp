@@ -293,7 +293,7 @@ void AbstractMediaProducer::setupIface()
     if (d->state != backendState && d->state != ErrorState) {
         // careful: if d->state is ErrorState we might be switching from a
         // MediaObject to a ByteStream for KIO fallback. In that case the state
-        // change to ErrorState was already supressed.
+        // change to ErrorState was already suppressed.
         kDebug(600) << "emitting a state change because the backend object has been replaced" << endl;
         emit stateChanged(backendState, d->state);
         d->state = backendState;
