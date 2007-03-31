@@ -60,7 +60,9 @@ class PHONONCORE_EXPORT AddonInterface
         enum TrackCommand {
             availableTracks,
             track,
-            setTrack
+            setTrack,
+            autoplayTracks,
+            setAutoplayTracks
         };
 
         virtual bool hasInterface(Interface interface) const = 0;
