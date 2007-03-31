@@ -21,8 +21,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KKEYDIALOG_H
-#define KKEYDIALOG_H
+#ifndef KSHORTCUTSDIALOG_H
+#define KSHORTCUTSDIALOG_H
 
 #include <kdialog.h>
 
@@ -35,11 +35,11 @@ class KActionCollection;
 class KConfigBase;
 class KGlobalAccel;
 class KShortcut;
-class KKeyChooserItem;
-class KKeyChooserPrivate;
+class KShortcutsEditorItem;
+class KShortcutsEditorPrivate;
 class KAction;
 
-// KKeyChooser expects that the list of existing shortcuts is already
+// KShortcutsEditor expects that the list of existing shortcuts is already
 // free of conflicts. If it is not, nothing will crash, but your users
 // won't like the resulting behavior.
 
@@ -55,11 +55,11 @@ class KAction;
  * slot if you want to set all configurable shortcuts to their
  * default values.
  *
- * @see KKeyDialog
+ * @see KShortcutsDialog
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  */
-class KDEUI_EXPORT KKeyChooser : public QWidget
+class KDEUI_EXPORT KShortcutsEditor : public QWidget
 {
 	Q_OBJECT
 
@@ -97,7 +97,7 @@ public:
 	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	KKeyChooser(KActionCollection *collection, QWidget *parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed);
+	KShortcutsEditor(KActionCollection *collection, QWidget *parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed);
 
 	/**
 	 * \overload
@@ -109,14 +109,14 @@ public:
 	 * @param allowLetterShortcuts set to LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	explicit KKeyChooser( QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
+	explicit KShortcutsEditor( QWidget* parent, ActionTypes actionTypes = AllActions, LetterShortcuts allowLetterShortcuts = LetterShortcutsAllowed );
 
 	/// Destructor
-	virtual ~KKeyChooser();
+	virtual ~KShortcutsEditor();
 
 	/**
 	 * Insert an action collection, i.e. add all its actions to the ones
-	 * already associated with the KKeyChooser object.
+	 * already associated with the KShortcutsEditor object.
 	 * @param title subtree title of this collection of shortcut.
 	 */
 	void addCollection(KActionCollection *, const QString &title = QString());
@@ -127,8 +127,14 @@ public:
 	 */
 	//void commitChanges(); //we do it the other way around
 
+    /**
+	 * This function reverts any shortcut changes to the original
+	 * action set(s). Not implemented yet.
+	 */
+    void undoChanges();
+
 	/**
-	 * This commits and then saves the actions to disk.
+	 * This saves the actions to disk.
 	 * Any KActionCollection objects with the xmlFile() value set
 	 * will be written to an XML file.  All other will be written
 	 * to the application's rc file.
@@ -192,49 +198,49 @@ private:
 	Q_PRIVATE_SLOT(d, void globalSettingsChangedSystemwide(int))
 
 private:
-	friend class KKeyDialog;
-	friend class KKeyChooserPrivate;
-	KKeyChooserPrivate *const d;
-	Q_DISABLE_COPY(KKeyChooser)
+	friend class KShortcutsDialog;
+	friend class KShortcutsEditorPrivate;
+	KShortcutsEditorPrivate *const d;
+	Q_DISABLE_COPY(KShortcutsEditor)
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(KKeyChooser::ActionTypes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KShortcutsEditor::ActionTypes)
 
 /**
  * @short Dialog for configuration of KActionCollection and KGlobalAccel.
  *
- * The KKeyDialog class is used for configuring dictionaries of key/action
- * associations for KActionCollection and KGlobalAccel. It uses the KKeyChooser widget
+ * The KShortcutsDialog class is used for configuring dictionaries of key/action
+ * associations for KActionCollection and KGlobalAccel. It uses the KShortcutsEditor widget
  * and offers buttons to set all keys to defaults and invoke on-line help.
  *
  * Several static methods are supplied which provide the most convenient interface
  * to the dialog. The most common and most encouraged use is with KActionCollection.
  *
  * \code
- * KKeyDialog::configure( actionCollection() );
+ * KShortcutsDialog::configure( actionCollection() );
  * \endcode
  *
  * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  */
-class KDEUI_EXPORT KKeyDialog : public KDialog
+class KDEUI_EXPORT KShortcutsDialog : public KDialog
 {
 	Q_OBJECT
 
 public:
 	/**
-	 * Constructs a KKeyDialog as a child of @p parent.
+	 * Constructs a KShortcutsDialog as a child of @p parent.
 	 * Set @p bAllowLetterShortcuts to false if unmodified alphanumeric
 	 * keys ('A', '1', etc.) are not permissible shortcuts.
 	 */
-	explicit KKeyDialog(KKeyChooser::ActionTypes types = KKeyChooser::AllActions,
-                        KKeyChooser::LetterShortcuts allowLetterShortcuts = KKeyChooser::LetterShortcutsAllowed,
+	explicit KShortcutsDialog(KShortcutsEditor::ActionTypes types = KShortcutsEditor::AllActions,
+                        KShortcutsEditor::LetterShortcuts allowLetterShortcuts = KShortcutsEditor::LetterShortcutsAllowed,
                         QWidget *parent = 0);
 
 	/**
-	 * Destructor. Deletes all resources used by a KKeyDialog object.
+	 * Destructor. Deletes all resources used by a KShortcutsDialog object.
 	 */
-	virtual ~KKeyDialog();
+	virtual ~KShortcutsDialog();
 
 	/**
 	 * Add all actions of the collection to the ones displayed and configured
@@ -267,7 +273,7 @@ public:
 	 * the *uirc file which they were intially read from.
 	 *
 	 * @param coll the KActionCollection to configure
-	 * @param allowLetterShortcuts set to KKeyChooser::LetterShortcutsDisallowed if unmodified alphanumeric
+	 * @param allowLetterShortcuts set to KShortcutsEditor::LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 * @param parent the parent widget to attach to
 	 * @param bSaveSettings if true, the settings will also be saved back to
@@ -275,15 +281,15 @@ public:
 	 *
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
-	static int configure( KActionCollection *collection, KKeyChooser::LetterShortcuts allowLetterShortcuts =
-                          KKeyChooser::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true);
+	static int configure( KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts =
+                          KShortcutsEditor::LetterShortcutsAllowed, QWidget* parent = 0, bool bSaveSettings = true);
 
 private:
-	class KKeyDialogPrivate;
-	friend class KKeyDialogPrivate;
-	class KKeyDialogPrivate *const d;
+	class KShortcutsDialogPrivate;
+	friend class KShortcutsDialogPrivate;
+	class KShortcutsDialogPrivate *const d;
 
-	Q_DISABLE_COPY(KKeyDialog)
+	Q_DISABLE_COPY(KShortcutsDialog)
 };
 
-#endif // KKEYDIALOG_H
+#endif // KSHORTCUTSDIALOG_H

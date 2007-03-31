@@ -18,15 +18,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KKEYBUTTON_H
-#define KKEYBUTTON_H
+#ifndef KKEYSEQUENCEWIDGET_H
+#define KKEYSEQUENCEWIDGET_H
 
 #include <QtGui/QPushButton>
 
 #include <kshortcut.h>
 
 
-class KKeyButtonPrivate;
+class KKeySequenceWidgetPrivate;
 
 
 /**
@@ -36,65 +36,56 @@ class KKeyButtonPrivate;
  * You can call captureShortcut() to get a new shortcut from the user.
  * If captureShortcut() succeeds, then the capturedShortcut() signal will be
  * emitted with the value of the new shortcut.  The widget containing
- * a KKeyButton widget must connect to this signal and check if the shortcut
+ * a KKeySequenceWidget widget must connect to this signal and check if the shortcut
  * is valid.  If it is, you will need to call setShortcut() with the new
  * value in order make it the key currently displayed.
  *
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
  */
-class KDEUI_EXPORT KKeyButton: public QPushButton
+class KDEUI_EXPORT KKeySequenceWidget: public QWidget
 {
 	Q_OBJECT
 
 public:
 	/**
-	* Constructs  key button widget.
+	* Constructor.
 	*/
-	explicit KKeyButton(QWidget *parent = 0);
+	explicit KKeySequenceWidget(QWidget *parent = 0);
 	/**
-	* Destructs the key button widget.
+	* Destructs the widget.
 	*/
-	virtual ~KKeyButton();
+	virtual ~KKeySequenceWidget();
 
-	void setAllowModifierless(bool allow);
+	void setModifierlessAllowed(bool allow);
+	bool isModifierlessAllowed();
+	
+	void setHaveClearButton(bool show);
 
-	void setKeySequence(const QKeySequence &seq);
 	QKeySequence keySequence() const;
 
-	/**
-	* Reimplemented for internal purposes.
-	*/
-	void setText(const QString &text);
-
 Q_SIGNALS:
-	void capturedKeySequence(const QKeySequence &);
+	void keySequenceChanged(QKeySequence seq);
 
 public Q_SLOTS:
 	/**
 	 * Call this method to capture a shortcut from the keyboard.
-	 * If it succeeds, the capturedShortcut() signal will be emitted.
+	 * If it succeeds, keySequenceChanged() will be emitted.
 	 */
-	void captureShortcut();
+	void captureKeySequence();
+    void setKeySequence(QKeySequence seq);
+    void clearKeySequence();
 
-protected:
-	/**
-	* Reimplemented for internal reasons.
-	*/
-//	void paintEvent(QPaintEvent *pe);
-	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void keyReleaseEvent(QKeyEvent *event);
-
-private Q_SLOTS:
-	void doneRecording();
+private:
+	Q_PRIVATE_SLOT(d, void doneRecording());
 
 private:
 	//TODO: can these be moved in the private class? //remark: yes, use emit q->blah!
 	void startRecording();
-	friend class KKeyButtonPrivate;
-	KKeyButtonPrivate *const d;
+	friend class KKeySequenceWidgetPrivate;
+	KKeySequenceWidgetPrivate *const d;
 
-	Q_DISABLE_COPY(KKeyButton)
+	Q_DISABLE_COPY(KKeySequenceWidget)
 };
 
-#endif
+#endif //KKEYSEQUENCEWIDGET_H

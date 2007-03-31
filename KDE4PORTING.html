@@ -450,13 +450,21 @@ Internally it is reference counted and the data deleted when the last reference 
 
 <h4>KKeyButton</h4>
 <ul>
-<li>Now only configures a single QKeySequence, and does it directly instead of using a modal dialog that pops up.</li>
-<li>A widget to configure both key sequences of a KShortcut <i>without a modal dialog</i> is work in progress ATM.</li>
-<li>probably has bugs, don't let this confuse you.</li>
+<li>Gone, two replacements: KKeySequenceWidget and KShortcutWidget. Use KShortcutWidget only if you really want two possible shortcuts.</li>
+<li>Both don't pop up a modal dialog.</li>
+</ul>
+
+<h4>KKeyChooser</h4>
+<ul>
+<li>Renamed to KShortcutsEditor.</li>
+<li>Global shortcut conflict checking functions moved to KGlobalAccel.</li>
+<li>Standard shortcuts checking functions were removed.</li>
+<li>See also: KKeyDialog.</li>
 </ul>
 
 <h4>KKeyDialog</h4>
 <ul>
+<li>Renamed to KShortcutsDialog</li>
 <li>Changed from edit/commit semantics to edit in-place/revert semantics. The old way didn't work in corner cases, the new way is quite a bit less complicated internally, and such cases only appear if a user opens multiple KKeyDialogs at the same time, which nobody does intentionally.</li>
 <li>Rewritten. It was hard to read, which stood in the way of future changes/improvements.</li>
 <li>Uses a new GUI layout.</li>
@@ -572,6 +580,11 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 <li>remove() -&gt; removeAll()</li>
 <li>toList() -&gt; Not needed anymore since KShortcut inherits QList&lt;QKeySequence&gt;</li>
 <li>toStringInternal() -&gt; You shouldn't be using this! But use toString() instead</li>
+</ul>
+
+<h4>KShortcutDialog</h4>
+<ul>
+<li>Removed, see KKeySequenceWidget/KShortcutWidget.</li>
 </ul>
 
 <h4>KShortcutList and derivatives</h4>

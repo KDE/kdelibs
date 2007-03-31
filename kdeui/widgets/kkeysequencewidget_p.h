@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2006,2007 Andreas Hartmetz (ahartmetz@gmail.com)
+    Copyright (C) 2001, 2002 Ellis Whitehead <ellis@kde.org>
+    Copyright (C) 2007 Andreas Hartmetz <ahartmetz@gmail.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,27 +17,36 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#ifndef KKEYSEQUENCEWIDGET_P_H
+#define KKEYSEQUENCEWIDGET_P_H
 
-#ifndef KKEYDIALOG_P_H
-#define KKEYDIALOG_P_H
+#include <QPushButton>
 
-
-#include <kextendableitemdelegate.h>
-class QAbstractItemView;
-class KKeyChooserDelegate : public KExtendableItemDelegate
+class KKeySequenceButton: public QPushButton
 {
 	Q_OBJECT
+
 public:
-	KKeyChooserDelegate(QAbstractItemView *parent);
-	//virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
-Q_SIGNALS:
-	void editInstead(QModelIndex index);
+	explicit KKeySequenceButton(KKeySequenceWidgetPrivate *d, QWidget *parent)
+	 : QPushButton(parent),
+	   d(d) {}
+
+	virtual ~KKeySequenceButton();
+
+	//Reimplemented
+	void setText(const QString &text);
+
+protected:
+	/**
+	* Reimplemented for internal reasons.
+	*/
+//	void paintEvent(QPaintEvent *pe);
+	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyReleaseEvent(QKeyEvent *event);
+
 private:
-	//mutable QModelIndex *m_index;
-private Q_SLOTS:
-	void itemActivated(QModelIndex index);
+	KKeySequenceWidgetPrivate *const d;
+
 };
 
-
-#endif /* KKEYDIALOG_P_H */
-
+#endif //KKEYSEQUENCEWIDGET_P_H

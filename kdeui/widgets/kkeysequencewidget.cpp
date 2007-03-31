@@ -23,9 +23,10 @@
 #include <config.h>
 #endif
 
-#include "kkeybutton.h"
+#include "kkeysequencewidget.h"
+
 #include "kkeyserver.h"
-#include "kshortcutdialog.h"
+#include "kiconloader.h"
 
 //TODO: remove unneeded includes
 #include <qcursor.h>
@@ -35,12 +36,18 @@
 #include <QStyle>
 #include <QKeyEvent>
 #include <QTimer>
+#include <QHBoxLayout>
+#include <QToolButton>
+#include <QApplication>
 
 #include <kdebug.h>
 #include <kglobalaccel.h>
 #include <klocale.h>
 
-/*#ifdef Q_WS_X11
+#include "kkeysequencewidget_p.h"
+
+#if 0
+#ifdef Q_WS_X11
 #define XK_XKB_KEYS
 #define XK_MISCELLANY
 #include <X11/Xlib.h>	// For x11Event()
@@ -61,27 +68,38 @@ const int XKeyRelease = KeyRelease;
 //static const char* psTemp[] = {
 //  I18N_NOOP("Primary"), I18N_NOOP("Alternate"), I18N_NOOP("Multi-Key")
 //};
+#endif
 
 /***********************************************************************/
-/* KKeyButton                                                          */
+/* KKeySequenceWidget                                                          */
 /*                                                                     */
 /* Initially added by Mark Donohoe <donohoe@kde.org>                   */
 /*                                                                     */
 /***********************************************************************/
  
-class KKeyButtonPrivate
+class KKeySequenceWidgetPrivate
 {
 public:
-	KKeyButtonPrivate(KKeyButton *q): q(q) {}
+	KKeySequenceWidgetPrivate(KKeySequenceWidget *q): q(q) {}
+
+	void init();
 
 	static QKeySequence appendToSequence(const QKeySequence& seq, int keyQt);
 	void updateShortcutDisplay();
 
-	//private slots
-	void captureShortcut();
+	void startRecording();
 
-	KKeyButton *q;
+//private slot
+	void doneRecording();
+	
+//members
+	KKeySequenceWidget *const q;
+	QHBoxLayout *layout;
+	KKeySequenceButton *keyButton;
+	QToolButton *clearButton;
+
 	QKeySequence keySequence;
+    QKeySequence oldKeySequence;
 	QTimer modifierlessTimeout;
 	bool allowModifierless;
 	uint nKey;
@@ -90,88 +108,130 @@ public:
 };
 
 
-KKeyButton::KKeyButton(QWidget *parent)
- : QPushButton(parent),
-   d(new KKeyButtonPrivate(this))
+KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
+ : QWidget(parent),
+   d(new KKeySequenceWidgetPrivate(this))
 {
-	//TODO: add key icon to button
-	setFocusPolicy(Qt::StrongFocus);
-	d->isRecording = false;
-	d->allowModifierless = true;
-	connect(this, SIGNAL(clicked()), this, SLOT(captureShortcut()));
-	connect(&d->modifierlessTimeout, SIGNAL(timeout()), this, SLOT(doneRecording()));
-	setText(i18n("None"));
+	d->init();
+	connect(this, SIGNAL(clicked()), this, SLOT(captureKeySequence()));
+	QObject::connect(&d->modifierlessTimeout, SIGNAL(timeout()), this, SLOT(doneRecording()));
+	//TODO: how to adopt style changes at runtime?
+	/*QFont modFont = d->clearButton->font();
+	modFont.setStyleHint(QFont::TypeWriter);
+	d->clearButton->setFont(modFont);*/
+	d->updateShortcutDisplay();
 }
 
 
-KKeyButton::~KKeyButton ()
+void KKeySequenceWidgetPrivate::init()
+{
+	isRecording = false;
+	allowModifierless = false;
+	
+	layout = new QHBoxLayout(q);
+	
+	keyButton = new KKeySequenceButton(this, q);
+	keyButton->setFocusPolicy(Qt::StrongFocus);
+	keyButton->setIcon(SmallIcon("configure.png"));
+	layout->addWidget(keyButton);
+
+	clearButton = new QToolButton(q);
+	layout->addWidget(clearButton);
+
+	if (qApp->isLeftToRight())
+		clearButton->setIcon(SmallIcon("clear-left.png"));
+	else
+		clearButton->setIcon(SmallIcon("locationbar-erase.png"));
+}
+
+
+KKeySequenceWidget::~KKeySequenceWidget ()
 {
 	delete d;
 }
 
 
-void KKeyButton::setAllowModifierless(bool allow)
+void KKeySequenceWidget::setModifierlessAllowed(bool allow)
 {
 	d->allowModifierless = allow;
 }
 
 
-//slot
-void KKeyButton::captureShortcut()
+bool KKeySequenceWidget::isModifierlessAllowed()
 {
-	startRecording();
+	return d->allowModifierless;
 }
 
 
-QKeySequence KKeyButton::keySequence() const
+void KKeySequenceWidget::setHaveClearButton(bool haveClear)
+{
+	d->clearButton->setVisible(haveClear);
+}
+
+
+//slot
+void KKeySequenceWidget::captureKeySequence()
+{
+	d->startRecording();
+}
+
+
+QKeySequence KKeySequenceWidget::keySequence() const
 {
 	return d->keySequence;
 }
 
 
-void KKeyButton::setKeySequence(const QKeySequence &seq)
+//slot
+void KKeySequenceWidget::setKeySequence(QKeySequence seq)
 {
+	d->oldKeySequence = d->keySequence;
 	d->keySequence = seq;
-	QString keyStr = d->keySequence.toString();
-	keyStr.replace(QLatin1Char('&'), QLatin1String("&&"));
-	setText(keyStr.isEmpty() ? i18n("None") : keyStr);
+	d->doneRecording();
 }
 
 
-void KKeyButton::setText( const QString& text )
+//slot
+void KKeySequenceWidget::clearKeySequence()
 {
-	QPushButton::setText( text );
+	setKeySequence(QKeySequence());
+}
+
+
+void KKeySequenceButton::setText(const QString &text)
+{
+	QPushButton::setText(text);
 	//setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
 }
 
 
-void KKeyButton::startRecording()
+void KKeySequenceWidgetPrivate::startRecording()
 {
-	d->nKey = 0;
-	d->modifierKeys = 0;
-	d->keySequence = QKeySequence();
-	d->isRecording = true;
-	grabKeyboard();
-	setDown(true);
-	d->updateShortcutDisplay();
-	//### it's not clear to me when exactly to repaint. try stuff.
-	//repaint();
+	nKey = 0;
+	modifierKeys = 0;
+	oldKeySequence = keySequence;
+	keySequence = QKeySequence();
+	isRecording = true;
+	keyButton->grabKeyboard();
+	keyButton->setDown(true);
+	updateShortcutDisplay();
 }
 
 
-void KKeyButton::doneRecording()
+void KKeySequenceWidgetPrivate::doneRecording()
 {
 	//### other things that need to be done
-	d->modifierlessTimeout.stop();
-	d->isRecording = false;
-	d->updateShortcutDisplay();
-	releaseKeyboard();
-	emit capturedKeySequence(d->keySequence);
-	setDown(false);
+	modifierlessTimeout.stop();
+	isRecording = false;
+	keyButton->setDown(false);
+	updateShortcutDisplay();
+	keyButton->releaseKeyboard();
+	if (keySequence != oldKeySequence)
+		emit q->keySequenceChanged(keySequence);
 }
 
 #if 0
-void KKeyButton::paintEvent( QPaintEvent* )
+void KKeySequenceButton::paintEvent( QPaintEvent* )
 {
   QPainter painter(this);
   painter.setRenderHint( QPainter::Antialiasing );
@@ -229,14 +289,14 @@ void KKeyButton::paintEvent( QPaintEvent* )
 }
 #endif
 
-void KKeyButtonPrivate::updateShortcutDisplay()
+void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 {
 	//empty string if no non-modifier was pressed
 	QString s = keySequence.toString();
 	s.replace('&', QLatin1String("&&"));
 
 	//### really needed???
-	q->setFocus();
+	keyButton->setFocus();
 	if (isRecording) {
 		// Display modifiers for the first key in the QKeySequence
 		if (nKey == 0) {
@@ -253,17 +313,27 @@ void KKeyButtonPrivate::updateShortcutDisplay()
 				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #endif
 			} else
-				s = i18nc("What the user inputs now will be taken as the new shortcut", "Capturing");
+				s = i18nc("What the user inputs now will be taken as the new shortcut", "Input");
 		}
 		//make it clear that input is still going on
-		s.append("...");
+		s.append(" ...");
 	}
 
-	q->setText(s);
+	if (s.isEmpty())
+		s = "None";
+
+	s.prepend(' ');
+	s.append(' ');
+	keyButton->setText(s);
 }
 
 
-void KKeyButton::keyPressEvent(QKeyEvent *e)
+KKeySequenceButton::~KKeySequenceButton()
+{
+}
+
+
+void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 {
 	QPushButton::keyPressEvent(e);
 
@@ -278,7 +348,7 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 	//hmmm.... return, space, and escape all don't work as intended.
 	if (!d->isRecording) {
 		if (keyQt == Qt::Key_Return) {
-			startRecording();
+			d->startRecording();
 			d->modifierKeys = newModifiers;
 			d->updateShortcutDisplay();
 		}
@@ -300,24 +370,25 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 			d->updateShortcutDisplay();
 		break;
 	default:
+		//TODO:Shift is NOT a modifier like Ctrl/Alt/WinKey!
 		if (!d->modifierKeys) {
 			if (!d->allowModifierless)
 				return;
 			else
-				d->modifierlessTimeout.start(750);
+				d->modifierlessTimeout.start(600);
 		}
 
 		if (d->nKey > 0 && keyQt == Qt::Key_Return)
-			doneRecording();
+			d->doneRecording();
 		else if (keyQt) {
 			if (d->nKey == 0)
-				d->keySequence = KKeyButtonPrivate::appendToSequence(d->keySequence, keyQt | d->modifierKeys);
+				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt | d->modifierKeys);
 			else
-				d->keySequence = KKeyButtonPrivate::appendToSequence(d->keySequence, keyQt);
+				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
 
 			d->nKey++;
 			if (d->nKey >= 4) {
-				doneRecording();
+				d->doneRecording();
 				return;
             }
 			d->updateShortcutDisplay();
@@ -326,7 +397,7 @@ void KKeyButton::keyPressEvent(QKeyEvent *e)
 }
 
 
-void KKeyButton::keyReleaseEvent(QKeyEvent *e)
+void KKeySequenceButton::keyReleaseEvent(QKeyEvent *e)
 {
 	QPushButton::keyReleaseEvent(e);
 	if (!d->isRecording)
@@ -340,12 +411,12 @@ void KKeyButton::keyReleaseEvent(QKeyEvent *e)
 			d->modifierKeys = newModifiers;
 			d->updateShortcutDisplay();
 		} else
-			doneRecording();
+			d->doneRecording();
 	}
 }
 
 
-QKeySequence KKeyButtonPrivate::appendToSequence(const QKeySequence& seq, int keyQt)
+QKeySequence KKeySequenceWidgetPrivate::appendToSequence(const QKeySequence& seq, int keyQt)
 {
 	switch (seq.count()) {
 	case 0:
@@ -361,4 +432,5 @@ QKeySequence KKeyButtonPrivate::appendToSequence(const QKeySequence& seq, int ke
 	}
 }
 
-#include "kkeybutton.moc"
+#include "kkeysequencewidget.moc"
+#include "kkeysequencewidget_p.moc"

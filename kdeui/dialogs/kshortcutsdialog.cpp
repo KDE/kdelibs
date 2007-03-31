@@ -22,11 +22,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kkeydialog.h"
-#include "kkeydialog_p.h"
-#include "kkeybutton.h"
+#include "kshortcutsdialog.h"
+#include "kshortcutsdialog_p.h"
+#include "kkeysequencewidget.h"
 
-#include "ui_kkeydialog.h"
+#include "ui_kshortcutsdialog.h"
 //#include "ui_kshortcuteditor.h"
 
 #include <string.h>
@@ -90,11 +90,11 @@ enum reallyEvilRole {
 };
 
 
-class KKeyChooserItem : public QTreeWidgetItem
+class KShortcutsEditorItem : public QTreeWidgetItem
 {
  public:
-	KKeyChooserItem(QTreeWidgetItem *parent, KAction *action);
-	virtual ~KKeyChooserItem();
+	KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
+	virtual ~KShortcutsEditorItem();
 	void undoChanges();
 
 	virtual QVariant data(int column, int role) const;
@@ -118,36 +118,36 @@ private:
 };
 
 //---------------------------------------------------------------------
-// KKeyChooserPrivate
+// KShortcutsEditorPrivate
 //---------------------------------------------------------------------
 
-class KKeyChooserPrivate
+class KShortcutsEditorPrivate
 {
 public:
-	KKeyChooserPrivate(KKeyChooser *q): q(q)
+	KShortcutsEditorPrivate(KShortcutsEditor *q): q(q)
 	{
 	}
 
-	void initGUI( KKeyChooser::ActionTypes actionTypes, KKeyChooser::LetterShortcuts allowLetterShortcuts );
+	void initGUI( KShortcutsEditor::ActionTypes actionTypes, KShortcutsEditor::LetterShortcuts allowLetterShortcuts );
 	void appendToView( uint nList, const QString &title = QString() );
 
 	static void readGlobalKeys( QMap< QString, KShortcut >& map );
 
-	KKeyChooserItem *itemFromIndex(const QModelIndex &index);
+	KShortcutsEditorItem *itemFromIndex(const QModelIndex &index);
 
 	QTreeWidgetItem *findOrMakeItem(QTreeWidgetItem *parent, const QString &name);
 
 	//helper functions for conflict resolution
-	bool stealShortcut(KKeyChooserItem *item, unsigned int column, const QKeySequence &seq);
+	bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);
 	bool stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq);
 	void wontStealStandardShortcut(KStandardShortcut::StandardShortcut sa, const QKeySequence &seq);
-	bool stealShapeGesture(KKeyChooserItem *item, const KShapeGesture &gest);
-	bool stealRockerGesture(KKeyChooserItem *item, const KRockerGesture &gest);
+	bool stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gest);
+	bool stealRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &gest);
 
 	//these functions do the conflict resolution
-	void changeKeyShortcut(KKeyChooserItem *item, uint column, const QKeySequence &capture);
-	void changeShapeGesture(KKeyChooserItem *item, const KShapeGesture &capture);
-	void changeRockerGesture(KKeyChooserItem *item, const KRockerGesture &capture);
+	void changeKeyShortcut(KShortcutsEditorItem *item, uint column, const QKeySequence &capture);
+	void changeShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &capture);
+	void changeRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &capture);
 
 // private slots
 	void capturedKeyShortcut(QKeySequence);
@@ -161,14 +161,14 @@ public:
 
 // members
 	QList<KActionCollection *> actionCollections;
-	KKeyChooser *q;
+	KShortcutsEditor *q;
 	QModelIndex editingIndex;
 
-	Ui::KKeyDialog ui;
+	Ui::KShortcutsDialog ui;
 
 	bool allowLetterShortcuts;
 
-	KKeyChooser::ActionTypes actionTypes;
+	KShortcutsEditor::ActionTypes actionTypes;
 };
 
 
@@ -176,7 +176,7 @@ public:
 //H4X
 //
 //TODO:make sure that the rest of the layout is top-aligned!
-KKeyChooserDelegate::KKeyChooserDelegate(QAbstractItemView *parent)
+KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
  : KExtendableItemDelegate(parent)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
@@ -191,7 +191,7 @@ KKeyChooserDelegate::KKeyChooserDelegate(QAbstractItemView *parent)
 
 //#include "kshapegestureselector.h"
 //slot
-void KKeyChooserDelegate::itemActivated(QModelIndex index)
+void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
 	kDebug() << "itemActivated" <<endl;
 	//TODO: here, we only want maximum ONE extender open at any time.
@@ -216,39 +216,39 @@ void KKeyChooserDelegate::itemActivated(QModelIndex index)
 	}
 }
 
-/*bool KKeyChooserDelegate::eventFilter(QObject *object, QEvent *event)
+/*bool KShortcutsEditorDelegate::eventFilter(QObject *object, QEvent *event)
 {
 	return false;
 }*/
 
 //---------------------------------------------------------------------
-// KKeyChooser
+// KShortcutsEditor
 //---------------------------------------------------------------------
 
-KKeyChooser::KKeyChooser(KActionCollection *collection, QWidget *parent, ActionTypes actionType,
+KShortcutsEditor::KShortcutsEditor(KActionCollection *collection, QWidget *parent, ActionTypes actionType,
                          LetterShortcuts allowLetterShortcuts )
 : QWidget( parent )
-, d(new KKeyChooserPrivate(this))
+, d(new KShortcutsEditorPrivate(this))
 {
 	d->initGUI(actionType, allowLetterShortcuts);
 	addCollection(collection);
 }
 
 
-KKeyChooser::KKeyChooser(QWidget *parent, ActionTypes actionType, LetterShortcuts allowLetterShortcuts)
+KShortcutsEditor::KShortcutsEditor(QWidget *parent, ActionTypes actionType, LetterShortcuts allowLetterShortcuts)
 : QWidget(parent)
-, d(new KKeyChooserPrivate(this))
+, d(new KShortcutsEditorPrivate(this))
 {
 	d->initGUI(actionType, allowLetterShortcuts);
 }
 
 
-KKeyChooser::~KKeyChooser()
+KShortcutsEditor::~KShortcutsEditor()
 {
 	delete d;
 }
 
-void KKeyChooser::addCollection(KActionCollection *collection, const QString &title)
+void KShortcutsEditor::addCollection(KActionCollection *collection, const QString &title)
 {
 	d->actionCollections.append(collection);
 	enum hierarchyLevel {Root = 0, Program, Group, Action/*unused*/};
@@ -268,7 +268,7 @@ void KKeyChooser::addCollection(KActionCollection *collection, const QString &ti
 		else if (name.startsWith(QLatin1String("Group:")))
 			l = Group;
 		else if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
-			new KKeyChooserItem((hier[l]), kact);
+			new KShortcutsEditorItem((hier[l]), kact);
 			continue;
 		}
 		
@@ -285,7 +285,7 @@ void KKeyChooser::addCollection(KActionCollection *collection, const QString &ti
 }
 
 
-void KKeyChooser::save()
+void KShortcutsEditor::save()
 {
 	foreach (KActionCollection* collection, d->actionCollections)
 		collection->writeSettings();
@@ -294,22 +294,27 @@ void KKeyChooser::save()
 }
 
 
-void KKeyChooserPrivate::initGUI( KKeyChooser::ActionTypes types, KKeyChooser::LetterShortcuts allowLetterShortcuts )
+void KShortcutsEditor::undoChanges()
+{
+}
+
+
+void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts )
 {
 	actionTypes = types;
-	this->allowLetterShortcuts = (allowLetterShortcuts == KKeyChooser::LetterShortcutsAllowed);
+	this->allowLetterShortcuts = (allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
 
 	ui.setupUi(q);
 	//ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
 	ui.list->header()->setStretchLastSection(false);
-	if (!(actionTypes & KKeyChooser::GlobalAction)) {
+	if (!(actionTypes & KShortcutsEditor::GlobalAction)) {
 		ui.list->header()->hideSection(3);
-	} else if (!(actionTypes & ~KKeyChooser::GlobalAction)) {
+	} else if (!(actionTypes & ~KShortcutsEditor::GlobalAction)) {
 		ui.list->header()->hideSection(1);
 		ui.list->header()->hideSection(2);
 	}
 
-	KKeyChooserDelegate *delegate = new KKeyChooserDelegate(ui.list);
+	KShortcutsEditorDelegate *delegate = new KShortcutsEditorDelegate(ui.list);
 	ui.list->setItemDelegate(delegate);
 	ui.list->setSelectionBehavior(QAbstractItemView::SelectItems);
 	ui.list->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -327,14 +332,14 @@ void KKeyChooserPrivate::initGUI( KKeyChooser::ActionTypes types, KKeyChooser::L
 
 // Look, Trolltech! You made QTreeWidget::itemFromIndex protected but I'll do it anyway.
 // NOTE: there is no official guarantee that this pointer will stay valid during anything.
-KKeyChooserItem *KKeyChooserPrivate::itemFromIndex(const QModelIndex &index)
+KShortcutsEditorItem *KShortcutsEditorPrivate::itemFromIndex(const QModelIndex &index)
 {
 	//don't tell anyone please!
-	return reinterpret_cast<KKeyChooserItem *>(ui.list->model()->data(index, ItemPointerRole).toULongLong());
+	return reinterpret_cast<KShortcutsEditorItem *>(ui.list->model()->data(index, ItemPointerRole).toULongLong());
 }
 
 
-QTreeWidgetItem *KKeyChooserPrivate::findOrMakeItem(QTreeWidgetItem *parent, const QString &name)
+QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent, const QString &name)
 {
 	for (int i = 0; i < parent->childCount(); i++) {
 		QTreeWidgetItem *child = parent->child(i);
@@ -350,33 +355,33 @@ QTreeWidgetItem *KKeyChooserPrivate::findOrMakeItem(QTreeWidgetItem *parent, con
 
 
 //slot
-void KKeyChooserPrivate::startEditing(QWidget *editor, QModelIndex index)
+void KShortcutsEditorPrivate::startEditing(QWidget *editor, QModelIndex index)
 {
 	editingIndex = index;
 }
 
 
 //slot
-void KKeyChooserPrivate::doneEditingCurrent()
+void KShortcutsEditorPrivate::doneEditingCurrent()
 {
 	editingIndex = QModelIndex();
 }
 
 
 //slot
-void KKeyChooserPrivate::capturedKeyShortcut(QKeySequence capture)
+void KShortcutsEditorPrivate::capturedKeyShortcut(QKeySequence capture)
 {
 	//TODO: make sure letter shortcuts only go in if allowed. modify KKeyButton.
 	if (!editingIndex.isValid())
 		return;
 
-	KKeyChooserItem *item = itemFromIndex(editingIndex);
+	KShortcutsEditorItem *item = itemFromIndex(editingIndex);
 	int column = editingIndex.column();
 	changeKeyShortcut(item, column, capture);
 }
 
 
-void KKeyChooserPrivate::changeKeyShortcut(KKeyChooserItem *item, uint column, const QKeySequence &capture)
+void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint column, const QKeySequence &capture)
 {
 	if (capture == item->keySequence(column))
 		return;
@@ -384,7 +389,7 @@ void KKeyChooserPrivate::changeKeyShortcut(KKeyChooserItem *item, uint column, c
 	if (!capture.isEmpty()) {
 		bool conflict = false;
 		unsigned int i;
-		KKeyChooserItem *otherItem;
+		KShortcutsEditorItem *otherItem;
 
 		//refuse to assign a global shortcut occupied by a standard shortcut
 		if (column == GlobalPrimary || column == GlobalAlternate) {
@@ -400,7 +405,7 @@ void KKeyChooserPrivate::changeKeyShortcut(KKeyChooserItem *item, uint column, c
 			if ((*it)->childCount())
 				continue;
 
-			otherItem = static_cast<KKeyChooserItem *>(*it);
+			otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
 			for (i = LocalPrimary; i <= GlobalAlternate; i++)
 				if (capture == otherItem->keySequence(i)) {
@@ -429,7 +434,7 @@ void KKeyChooserPrivate::changeKeyShortcut(KKeyChooserItem *item, uint column, c
 
 
 //slot
-void KKeyChooserPrivate::capturedShapeGesture(KShapeGesture capture)
+void KShortcutsEditorPrivate::capturedShapeGesture(KShapeGesture capture)
 {
 	if (!editingIndex.isValid())
 		return;
@@ -438,21 +443,21 @@ void KKeyChooserPrivate::capturedShapeGesture(KShapeGesture capture)
 }
 
 
-void KKeyChooserPrivate::changeShapeGesture(KKeyChooserItem *item, const KShapeGesture &capture)
+void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &capture)
 {
 	if (capture == item->m_action->shapeGesture())
 		return;
 
 	if (capture.isValid()) {
 		bool conflict = false;
-		KKeyChooserItem *otherItem;
+		KShortcutsEditorItem *otherItem;
 
 		//search for conflicts
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
 			if (!(*it)->parent())
 				continue;
 
-			otherItem = static_cast<KKeyChooserItem *>(*it);
+			otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
 			//comparisons are possibly expensive
 			if (!otherItem->m_action->shapeGesture().isValid())
@@ -473,7 +478,7 @@ void KKeyChooserPrivate::changeShapeGesture(KKeyChooserItem *item, const KShapeG
 
 
 //slot
-void KKeyChooserPrivate::capturedRockerGesture(KRockerGesture capture)
+void KShortcutsEditorPrivate::capturedRockerGesture(KRockerGesture capture)
 {
 	if (!editingIndex.isValid())
 		return;
@@ -482,20 +487,20 @@ void KKeyChooserPrivate::capturedRockerGesture(KRockerGesture capture)
 }
 
 
-void KKeyChooserPrivate::changeRockerGesture(KKeyChooserItem *item, const KRockerGesture &capture)
+void KShortcutsEditorPrivate::changeRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &capture)
 {
 	if (capture == item->m_action->rockerGesture())
 		return;
 
 	if (capture.isValid()) {
 		bool conflict = false;
-		KKeyChooserItem *otherItem;
+		KShortcutsEditorItem *otherItem;
 
 		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
 			if (!(*it)->parent())
 				continue;
 
-			otherItem = static_cast<KKeyChooserItem *>(*it);
+			otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
 			if (capture == otherItem->m_action->rockerGesture()) {
 				conflict = true;
@@ -511,7 +516,7 @@ void KKeyChooserPrivate::changeRockerGesture(KKeyChooserItem *item, const KRocke
 }
 
 
-bool KKeyChooserPrivate::stealShortcut(KKeyChooserItem *item, unsigned int column, const QKeySequence &seq)
+bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq)
 {
 	QString title = i18n("Key Conflict");
 	QString message = i18n("The '%1' key combination has already been allocated to the \"%2\" action.\n"
@@ -527,17 +532,17 @@ bool KKeyChooserPrivate::stealShortcut(KKeyChooserItem *item, unsigned int colum
 }
 
 
-bool KKeyChooserPrivate::stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq)
+bool KShortcutsEditorPrivate::stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq)
 {
 	if (KGlobalAccel::promptStealShortcutSystemwide(q, name, seq)) {
 		KGlobalAccel::stealShortcutSystemwide(name, seq);
 		return true;
-	 } else
+	} else
 		return false;
 }
 
 
-void KKeyChooserPrivate::wontStealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
+void KShortcutsEditorPrivate::wontStealStandardShortcut(KStandardShortcut::StandardShortcut std, const QKeySequence &seq)
 {
 	QString title = i18n("Conflict with Standard Application Shortcut");
 	QString message = i18n("The '%1' key combination has already been allocated to the standard action "
@@ -549,7 +554,7 @@ void KKeyChooserPrivate::wontStealStandardShortcut(KStandardShortcut::StandardSh
 }
 
 
-bool KKeyChooserPrivate::stealShapeGesture(KKeyChooserItem *item, const KShapeGesture &gst)
+bool KShortcutsEditorPrivate::stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gst)
 {
 	QString title = i18n("Key Conflict");
 	QString message = i18n("The '%1' shape gesture has already been allocated to the \"%2\" action.\n"
@@ -565,7 +570,7 @@ bool KKeyChooserPrivate::stealShapeGesture(KKeyChooserItem *item, const KShapeGe
 }
 
 
-bool KKeyChooserPrivate::stealRockerGesture(KKeyChooserItem *item, const KRockerGesture &gst)
+bool KShortcutsEditorPrivate::stealRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &gst)
 {
 	QString title = i18n("Key Conflict");
 	QString message = i18n("The '%1' rocker gesture has already been allocated to the \"%2\" action.\n"
@@ -582,7 +587,7 @@ bool KKeyChooserPrivate::stealRockerGesture(KKeyChooserItem *item, const KRocker
 
 
 //slot
-void KKeyChooserPrivate::globalSettingsChangedSystemwide(int which)
+void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
 {
 	KGlobalAccel::self()->readSettings();
 	//TODO:do something about it, too?
@@ -590,13 +595,13 @@ void KKeyChooserPrivate::globalSettingsChangedSystemwide(int which)
 
 
 //slot
-void KKeyChooser::allDefault()
+void KShortcutsEditor::allDefault()
 {
 	for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
 		if (!(*it)->parent())
 			continue;
 
-		KKeyChooserItem *item = static_cast<KKeyChooserItem *>(*it);
+		KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
 		KAction *act = item->m_action;
 		
 		if (act->shortcut() != act->shortcut(KAction::DefaultShortcut)) {
@@ -619,14 +624,14 @@ void KKeyChooser::allDefault()
 
 
 //slot
-void KKeyChooser::resizeColumns()
+void KShortcutsEditor::resizeColumns()
 {
 	for (int i = 0; i < d->ui.list->columnCount(); i++)
 		d->ui.list->resizeColumnToContents(i);
 }
 
 
-void KKeyChooser::showEvent( QShowEvent * event )
+void KShortcutsEditor::showEvent( QShowEvent * event )
 {
 	QWidget::showEvent(event);
 	QTimer::singleShot(0, this, SLOT(resizeColumns()));
@@ -634,7 +639,7 @@ void KKeyChooser::showEvent( QShowEvent * event )
 
 
 //---------------------------------------------------
-KKeyChooserItem::KKeyChooserItem(QTreeWidgetItem *parent, KAction *action)
+KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action)
 	: QTreeWidgetItem(parent)
 	, m_action(action)
 	, m_oldLocalShortcut(0)
@@ -645,7 +650,7 @@ KKeyChooserItem::KKeyChooserItem(QTreeWidgetItem *parent, KAction *action)
 }
 
 
-KKeyChooserItem::~KKeyChooserItem()
+KShortcutsEditorItem::~KShortcutsEditorItem()
 {
 	delete m_oldLocalShortcut;
 	delete m_oldGlobalShortcut;
@@ -654,7 +659,7 @@ KKeyChooserItem::~KKeyChooserItem()
 }
 
 
-QVariant KKeyChooserItem::data(int column, int role) const
+QVariant KShortcutsEditorItem::data(int column, int role) const
 {
 	if (role == Qt::SizeHintRole) {
 		return QSize(0, 30);
@@ -717,7 +722,7 @@ QVariant KKeyChooserItem::data(int column, int role) const
 }
 
 
-QKeySequence KKeyChooserItem::keySequence(uint column) const
+QKeySequence KShortcutsEditorItem::keySequence(uint column) const
 {
 	switch (column) {
 	//"safe" but useless
@@ -734,7 +739,7 @@ QKeySequence KKeyChooserItem::keySequence(uint column) const
 }
 
 
-void KKeyChooserItem::setKeySequence(uint column, const QKeySequence &seq)
+void KShortcutsEditorItem::setKeySequence(uint column, const QKeySequence &seq)
 {
 	KShortcut ks;
 	//TODO: register changes system-wide
@@ -762,7 +767,7 @@ void KKeyChooserItem::setKeySequence(uint column, const QKeySequence &seq)
 }
 
 
-void KKeyChooserItem::setShapeGesture(const KShapeGesture &gst)
+void KShortcutsEditorItem::setShapeGesture(const KShapeGesture &gst)
 {
 	if (!m_oldShapeGesture) {
 		m_oldShapeGesture = new KShapeGesture(gst);
@@ -772,7 +777,7 @@ void KKeyChooserItem::setShapeGesture(const KShapeGesture &gst)
 }
 
 
-void KKeyChooserItem::setRockerGesture(const KRockerGesture &gst)
+void KShortcutsEditorItem::setRockerGesture(const KRockerGesture &gst)
 {
 	if (!m_oldRockerGesture) {
 		m_oldRockerGesture = new KRockerGesture(gst);
@@ -783,7 +788,7 @@ void KKeyChooserItem::setRockerGesture(const KRockerGesture &gst)
 
 
 //our definition of modified is "modified since the chooser was shown".
-void KKeyChooserItem::updateModified()
+void KShortcutsEditorItem::updateModified()
 {
 	if (m_oldLocalShortcut && *m_oldLocalShortcut == m_action->shortcut()) {
 		delete m_oldLocalShortcut;
@@ -804,7 +809,7 @@ void KKeyChooserItem::updateModified()
 }
 
 
-bool KKeyChooserItem::isModified(uint column) const
+bool KShortcutsEditorItem::isModified(uint column) const
 {
 	switch (column) {
 	case Name:
@@ -835,7 +840,7 @@ bool KKeyChooserItem::isModified(uint column) const
 }
 
 
-void KKeyChooserItem::undoChanges()
+void KShortcutsEditorItem::undoChanges()
 {
 	if (m_oldLocalShortcut)
 		m_action->setShortcut(*m_oldLocalShortcut);
@@ -856,7 +861,7 @@ void KKeyChooserItem::undoChanges()
 ////
 
 /************************************************************************/
-/* KKeyDialog                                                           */
+/* KShortcutsDialog                                                           */
 /*                                                                      */
 /* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                   */
 /*                                                                      */
@@ -867,46 +872,46 @@ void KKeyChooserItem::undoChanges()
 /*                                                                      */
 /************************************************************************/
 
-class KKeyDialog::KKeyDialogPrivate
+class KShortcutsDialog::KShortcutsDialogPrivate
 {
 public:
-  KKeyDialogPrivate(KKeyDialog *q): q(q), m_keyChooser(0) {}
+  KShortcutsDialogPrivate(KShortcutsDialog *q): q(q), m_keyChooser(0) {}
 
-  KKeyDialog *q;
-  KKeyChooser* m_keyChooser; // ### move
+  KShortcutsDialog *q;
+  KShortcutsEditor* m_keyChooser; // ### move
 };
 
 
-KKeyDialog::KKeyDialog( KKeyChooser::ActionTypes types, KKeyChooser::LetterShortcuts allowLetterShortcuts, QWidget *parent )
-: KDialog( parent ), d(new KKeyDialogPrivate(this))
+KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts, QWidget *parent )
+: KDialog( parent ), d(new KShortcutsDialogPrivate(this))
 {
 	setCaption(i18n("Configure Shortcuts"));
 	setButtons(Default|Ok|Cancel);
 	setModal(true);
-	d->m_keyChooser = new KKeyChooser( this, types, allowLetterShortcuts );
+	d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
 	setMainWidget( d->m_keyChooser );
 	connect( this, SIGNAL(defaultClicked()), d->m_keyChooser, SLOT(allDefault()) );
 
-	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
+	KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
 	resize( group.readEntry( "Dialog Size", sizeHint() ) );
 }
 
 
-KKeyDialog::~KKeyDialog()
+KShortcutsDialog::~KShortcutsDialog()
 {
-	KConfigGroup group( KGlobal::config(), "KKeyDialog Settings" );
+	KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
 	group.writeEntry( "Dialog Size", size(), KConfigBase::Global );
 	delete d;
 }
 
 
-void KKeyDialog::addCollection(KActionCollection *collection, const QString &title)
+void KShortcutsDialog::addCollection(KActionCollection *collection, const QString &title)
 {
 	d->m_keyChooser->addCollection(collection, title);
 }
 
 
-bool KKeyDialog::configure(bool saveSettings)
+bool KShortcutsDialog::configure(bool saveSettings)
 {
 	int retcode = exec();
 	if( retcode == Accepted ) {
@@ -920,20 +925,20 @@ bool KKeyDialog::configure(bool saveSettings)
 }
 
 
-/*void KKeyDialog::commitChanges()
+/*void KShortcutsDialog::commitChanges()
 {
 	d->m_keyChooser->commitChanges();
 }*/
 
 
-int KKeyDialog::configure(KActionCollection *collection, KKeyChooser::LetterShortcuts allowLetterShortcuts,
+int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts,
                           QWidget *parent, bool saveSettings)
 {
-	kDebug(125) << "KKeyDialog::configureKeys( KActionCollection*, " << saveSettings << " )" << endl;
-	KKeyDialog dlg(KKeyChooser::AllActions, allowLetterShortcuts, parent);
+	kDebug(125) << "KShortcutsDialog::configureKeys( KActionCollection*, " << saveSettings << " )" << endl;
+	KShortcutsDialog dlg(KShortcutsEditor::AllActions, allowLetterShortcuts, parent);
 	dlg.d->m_keyChooser->addCollection(collection);
 	return dlg.configure(saveSettings);
 }
 
-#include "kkeydialog.moc"
-#include "kkeydialog_p.moc"
+#include "kshortcutsdialog.moc"
+#include "kshortcutsdialog_p.moc"

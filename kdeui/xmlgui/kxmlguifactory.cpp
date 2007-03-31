@@ -41,7 +41,7 @@
 #include <kstandarddirs.h>
 
 #include "kaction.h"
-#include "kkeydialog.h"
+#include "kshortcutsdialog.h"
 #include "kactioncollection.h"
 
 using namespace KXMLGUI;
@@ -538,9 +538,11 @@ void KXMLGUIFactory::configureAction( QAction *action, const QDomAttr &attribute
 }
 
 
-int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSettings )
+int KXMLGUIFactory::configureShortcuts(bool letterCutsOk , bool bSaveSettings )
 {
-	KKeyDialog dlg( KKeyChooser::AllActions, bAllowLetterShortcuts ? KKeyChooser::LetterShortcutsAllowed : KKeyChooser::LetterShortcutsDisallowed, qobject_cast<QWidget*>(parent()) );
+	KShortcutsDialog dlg(KShortcutsEditor::AllActions,
+         letterCutsOk ? KShortcutsEditor::LetterShortcutsAllowed : KShortcutsEditor::LetterShortcutsDisallowed,
+         qobject_cast<QWidget*>(parent()));
 	foreach (KXMLGUIClient *client, d->m_clients)
 	{
 		if(!client->xmlFile().isEmpty())

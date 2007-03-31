@@ -94,10 +94,16 @@ ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
 Group=Buttons (KDE)
 
-[KKeyButton]
-ToolTip=Keyboard Key Button. (KDE)
-WhatsThis=A push button that looks like a keyboard key.
-IncludeFile=kkeybutton.h
+[KKeySequenceWidget]
+ToolTip=QKeySequence picker widget. (KDE)
+WhatsThis=A widget to pick a QKeySequence.
+IncludeFile=kkeysequencewidget.h
+Group=Buttons (KDE)
+
+[KShortcutWidget]
+ToolTip=Shortcut picker widget. (KDE)
+WhatsThis=A widget to pick a KShortcut.
+IncludeFile=kshortcutwidget.h
 Group=Buttons (KDE)
 
 [KDialogButtonBox]

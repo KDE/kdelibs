@@ -30,16 +30,19 @@
 //remove once we stop using it
 #include <kdebug.h>
 
+//TODO:listen for removal of rows and columns to clean out dead persistent indexes/editors.
+//TODO:follow binary compatibility rules
+
 KExtendableItemDelegate::KExtendableItemDelegate(QAbstractItemView* parent)
  : QItemDelegate(parent),
    m_hasExtenders(false)
 {
 	QImageReader imgReader;
 	//in the final version, just take these as arguments.
-	imgReader.setScaledSize(QSize(12, 12));
-	imgReader.setFileName("/home/kdehase/arrow_right.svg");
-	m_extendIcon = QPixmap::fromImage(imgReader.read());
-	imgReader.setFileName("/home/kdehase/arrow_down.svg");
+	//imgReader.setScaledSize(QSize(12, 12));
+	//imgReader.setFileName("/home/kdehase/arrow_right.svg");
+	//m_extendIcon = QPixmap::fromImage(imgReader.read());
+	//imgReader.setFileName("/home/kdehase/arrow_down.svg");
 	m_contractIcon = QPixmap::fromImage(imgReader.read());
 	parent->installEventFilter(this);
 }

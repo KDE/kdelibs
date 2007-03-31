@@ -23,7 +23,7 @@
 #include "kmenu.h"
 #include "kaction.h"
 #include "kactioncollection.h"
-#include "kshortcutdialog.h"
+//#include "kshortcutdialog.h" see below
 #include <klocale.h>
 
 
@@ -80,13 +80,17 @@ void KMenuMenuHandler::slotSetShortcut()
   KAction *action= qobject_cast<KAction*>(menu->contextMenuFocusAction());
   if(!action)
     return;
-
+#if 0 
+  //OK. First of all, this isn't used according to lxr.kde.org.
+  //sorry, KShortcutDialog is gone. Use KShortcutWidget or KKeySequenceWidget
+  //and put it in a dialog if you have to.
   KShortcutDialog dialog(action->shortcut() , m_builder->widget() );
   dialog.exec();
   action->setShortcut(dialog.shortcut(), KAction::ActiveShortcut);
 
   if(KActionCollection *collection = qobject_cast<KActionCollection *>(action->parent()))
     collection->writeSettings();
+#endif
 }
 
 

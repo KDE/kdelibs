@@ -64,7 +64,6 @@ set(kdeui_LIB_SRCS
  dialogs/kcolordialog.cpp
  dialogs/kfontdialog.cpp
  dialogs/kinputdialog.cpp
- dialogs/kkeydialog.cpp
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
@@ -72,7 +71,7 @@ set(kdeui_LIB_SRCS
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
  dialogs/kprogressdialog.cpp
- dialogs/kshortcutdialog.cpp
+ dialogs/kshortcutsdialog.cpp
  dialogs/ksplashscreen.cpp
  dialogs/ktip.cpp
  findreplace/kfind.cpp
@@ -164,7 +163,7 @@ set(kdeui_LIB_SRCS
  widgets/khbox.cpp
  widgets/khelpmenu.cpp
  widgets/khuesaturationselect.cpp
- widgets/kkeybutton.cpp
+ widgets/kkeysequencewidget.cpp
  widgets/kinformationlabel.cpp
  widgets/kled.cpp
  widgets/klineedit.cpp
@@ -177,6 +176,7 @@ set(kdeui_LIB_SRCS
  widgets/kruler.cpp
  widgets/kselector.cpp
  widgets/kseparator.cpp
+ widgets/kshortcutwidget.cpp
  widgets/ksqueezedtextlabel.cpp
  widgets/kstatusbar.cpp
  widgets/kstringvalidator.cpp
@@ -224,11 +224,10 @@ endif (UNIX)
 kde4_automoc(${kdeui_LIB_SRCS})
 
 set( kdeui_UI
-   dialogs/kkeydialog.ui
-   dialogs/kshortcutdialog_simple.ui
-   dialogs/kshortcutdialog_advanced.ui
    dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
+   dialogs/kshortcutsdialog.ui
+   widgets/kshortcutwidget.ui
    sonnet/kspell2ui.ui 
    sonnet/configui.ui
    )
@@ -280,15 +279,14 @@ install( FILES
  dialogs/kedittoolbar.h
  dialogs/kfontdialog.h
  dialogs/kinputdialog.h
- dialogs/kkeydialog.h
  dialogs/kmessagebox.h
  dialogs/kmessageboxmessagehandler.h
  dialogs/knewpassworddialog.h
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
  dialogs/kprogressdialog.h
- dialogs/kshortcutdialog.h
  dialogs/ksplashscreen.h
+ dialogs/kshortcutsdialog.h
  dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h
@@ -372,7 +370,7 @@ install( FILES
  widgets/khbox.h
  widgets/khelpmenu.h
  widgets/khuesaturationselect.h
- widgets/kkeybutton.h
+ widgets/kkeysequencewidget.h
  widgets/kinformationlabel.h
  widgets/kled.h
  widgets/klineedit.h
@@ -392,6 +390,7 @@ install( FILES
  widgets/ktabwidget.h
  widgets/kruler.h
  widgets/kselector.h
+ widgets/kshortcutwidget.h
  widgets/kstatusbar.h
  widgets/ktoolbar.h
  widgets/kurllabel.h
