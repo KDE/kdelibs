@@ -360,7 +360,7 @@ namespace KJS {
     bool isResolveNode() const { return true; }
   
     void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident) {
+    void handleResolveSuccess(ResolveResult& res, Node*, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident) {
         res.evalValue = slot.getValue(exec, scope, ident);
     }
     void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
