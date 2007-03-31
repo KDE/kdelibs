@@ -27,14 +27,6 @@
 # endif
 #endif
 
-#ifndef KJS_EXPORT
-# ifdef MAKE_KJS_LIB
-#  define KJS_EXPORT KDE_EXPORT
-# else
-#  define KJS_EXPORT KDE_IMPORT
-# endif 
-#endif 
-
 #ifndef KJSEMBED_EXPORT
 # ifdef MAKE_KJSEMBED_LIB
 #  define KJSEMBED_EXPORT KDE_EXPORT

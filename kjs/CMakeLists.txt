@@ -160,6 +160,7 @@ endif(KDE4_BUILD_TESTS)
 
 ########### install files ###############
 install( FILES
+    kjs_export.h
     ExecState.h
     JSImmediate.h
     JSLock.h
