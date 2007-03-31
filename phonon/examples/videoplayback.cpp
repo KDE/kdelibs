@@ -74,4 +74,9 @@ void MediaPlayer::hasVideoChanged(bool hasVideo)
     m_vwidget->setVisible(hasVideo);
 }
 
+int main()
+{
+    return 0;
+}
+
 #include "videoplayback.moc"
