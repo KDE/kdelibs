@@ -133,7 +133,7 @@ public:
      * and is positioned immediately the regular expression support widgets
      * for the replacement string.
      */
-    QWidget *replaceExtension();
+    QWidget *replaceExtension() const;
 
 protected Q_SLOTS:
 

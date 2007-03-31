@@ -38,9 +38,11 @@
  */
 class KReplaceDialog::KReplaceDialogPrivate {
   public:
-    KReplaceDialogPrivate() : m_initialShowDone(false) {}
+    KReplaceDialogPrivate() : initialShowDone(false) {}
+
     QStringList replaceStrings;
-    bool m_initialShowDone;
+    bool initialShowDone;
+    QWidget *replaceExtension;
 };
 
 KReplaceDialog::KReplaceDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, const QStringList &replaceStrings, bool hasSelection) :
@@ -59,9 +61,9 @@ KReplaceDialog::~KReplaceDialog()
 
 void KReplaceDialog::showEvent( QShowEvent *e )
 {
-    if ( !d->m_initialShowDone )
+    if ( !d->initialShowDone )
     {
-        d->m_initialShowDone = true; // only once
+        d->initialShowDone = true; // only once
 
         if (!d->replaceStrings.isEmpty())
         {
@@ -85,15 +87,15 @@ long KReplaceDialog::options() const
     return options;
 }
 
-QWidget *KReplaceDialog::replaceExtension()
+QWidget *KReplaceDialog::replaceExtension() const
 {
-    if (!m_replaceExtension)
+    if (!d->replaceExtension)
     {
-      m_replaceExtension = new QWidget(m_replaceGrp);
-      m_replaceLayout->addWidget(m_replaceExtension, 3, 0, 1, 2);
+      d->replaceExtension = new QWidget(m_replaceGrp);
+      m_replaceLayout->addWidget(d->replaceExtension, 3, 0, 1, 2);
     }
 
-    return m_replaceExtension;
+    return d->replaceExtension;
 }
 
 QString KReplaceDialog::replacement() const

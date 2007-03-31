@@ -213,7 +213,7 @@ public:
      * and is positioned immediately below the regular expression support
      * widgets for the pattern string.
      */
-    QWidget *findExtension();
+    QWidget *findExtension() const;
 
 Q_SIGNALS:
     /**
@@ -243,14 +243,11 @@ private Q_SLOTS:
 private:
 
     QGroupBox *m_findGrp;
-    QLabel *m_findLabel;
     KHistoryCombo *m_find;
     QCheckBox *m_regExp;
     QPushButton *m_regExpItem;
     QGridLayout *m_findLayout;
-    QWidget *m_findExtension;
 
-    QGroupBox *m_optionGrp;
     QCheckBox *m_wholeWordsOnly;
     QCheckBox *m_fromCursor;
     QCheckBox *m_selectedText;
@@ -274,12 +271,10 @@ private:
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
 
     QGroupBox *m_replaceGrp;
-    QLabel *m_replaceLabel;
     KHistoryCombo *m_replace;
     QCheckBox* m_backRef;
     QPushButton* m_backRefItem;
     QGridLayout *m_replaceLayout;
-    QWidget *m_replaceExtension;
 
     QCheckBox* m_promptOnReplace;
 
