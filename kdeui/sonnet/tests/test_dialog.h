@@ -1,5 +1,5 @@
 /**
- * configwidget.h
+ * test_dialog.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
  *
@@ -18,41 +18,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef KSPELL_CONFIGWIDGET_H
-#define KSPELL_CONFIGWIDGET_H
+#ifndef TEST_DIALOG_H
+#define TEST_DIALOG_H
 
-#include <QtGui/QWidget>
-#include <kdelibs_export.h>
+#include "dialog.h"
 #include "loader.h"
 
-namespace KSpell2
+#include <QtCore/QObject>
+
+class TestDialog : public QObject
 {
-    class Loader;
-    class SONNETUI_EXPORT ConfigWidget : public QWidget
-    {
-        Q_OBJECT
-    public:
-        ConfigWidget( Loader::Ptr loader, QWidget *parent );
-        ~ConfigWidget();
+    Q_OBJECT
+public:
+    TestDialog();
 
-        bool backgroundCheckingButtonShown() const;
-
-    public Q_SLOTS:
-        void save();
-        void setBackgroundCheckingButtonShown( bool );
-        void slotDefault();
-    protected Q_SLOTS:
-        void slotChanged();
-
-    private:
-        void init( Loader::Ptr loader );
-        void setFromGUI();
-        void setCorrectLanguage( const QStringList& langs );
-
-    private:
-        class Private;
-        Private* const d;
-    };
-}
+public Q_SLOTS:
+    void check( const QString& buffer );
+    void doneChecking( const QString& );
+private:
+    KSpell2::Loader *m_loader;
+};
 
 #endif

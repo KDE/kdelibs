@@ -128,7 +128,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
     </spacer>
    </item>
    <item row="3" column="0" colspan="5" >
-    <widget class="Q3ListView" name="m_suggestions" >
+    <widget class="QListWidget" name="m_suggestions" >
      <property name="toolTip" >
       <string>Suggestion List</string>
      </property>
@@ -139,7 +139,7 @@ Click here if you consider that the unknown word is not misspelled and you want 
 &lt;/qt></string>
      </property>
      <property name="resizeMode" >
-      <enum>Q3ListView::AllColumns</enum>
+      <enum>Adjust</enum>
      </property>
      <column>
       <property name="text" >
@@ -291,15 +291,6 @@ Click here if you consider that the unknown word is not misspelled and you want 
  </widget>
  <layoutdefault spacing="6" margin="11" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>Q3ListView</class>
-   <extends></extends>
-   <header>q3listview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>m_addBtn</tabstop>
   <tabstop>m_replacement</tabstop>

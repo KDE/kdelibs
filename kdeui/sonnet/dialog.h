@@ -22,16 +22,15 @@
 #ifndef KSPELL_DIALOG_H
 #define KSPELL_DIALOG_H
 
-#include <kdelibs_export.h>
 #include <kdialog.h>
 
-class Q3ListViewItem;
+class QListWidgetItem;
 
 namespace KSpell2
 {
     class Filter;
     class BackgroundChecker;
-    class SONNETUI_EXPORT Dialog : public KDialog
+    class KDEUI_EXPORT Dialog : public KDialog
     {
         Q_OBJECT
     public:
@@ -72,7 +71,7 @@ namespace KSpell2
         void slotSkipAll();
         void slotSuggest();
         void slotChangeLanguage( const QString& );
-        void slotSelectionChanged( Q3ListViewItem * );
+        void slotSelectionChanged( QListWidgetItem * );
         void slotAutocorrect();
 
     private:

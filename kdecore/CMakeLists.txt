@@ -6,6 +6,7 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 include(network/ConfigureChecks.cmake)
 configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/sonnet/ )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
@@ -76,6 +77,7 @@ endif (UNIX)
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 add_subdirectory( network/tests )
+add_subdirectory( sonnet/tests )
 
 ########### next target ###############
 
@@ -159,6 +161,15 @@ set(kdecore_LIB_SRCS
    services/yacc.c
    services/lex.c
    services/kplugininfo.cpp
+   sonnet/loader.cpp
+   sonnet/client.cpp
+   sonnet/speller.cpp
+   sonnet/filter.cpp
+   sonnet/settings.cpp
+   sonnet/backgroundchecker.cpp
+   sonnet/backgroundthread.cpp
+   sonnet/backgroundengine.cpp
+   sonnet/defaultdictionary.cpp
    network/ksocketdevice.cpp # must be before the rest of network/, for enable-final
    network/kbufferedsocket.cpp
    network/kclientsocketbase.cpp
@@ -362,6 +373,15 @@ install( FILES
 )
 
 install( FILES
-   services/kplugininfo.desktop
+        sonnet/backgroundchecker.h
+        sonnet/defaultdictionary.h
+        sonnet/filter.h
+        sonnet/settings.h
+        sonnet/loader.h
+        sonnet/speller.h
+	DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet)
+
+install( FILES
+   services/kplugininfo.desktop sonnet/sonnetspeller.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )

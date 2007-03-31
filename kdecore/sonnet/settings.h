@@ -24,14 +24,14 @@
 
 #include <qstringlist.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 #include <ksharedconfig.h>
 
 namespace KSpell2
 {
     class Loader;
 
-    class SONNETCORE_EXPORT Settings
+    class KDECORE_EXPORT Settings
     {
     public:
         ~Settings();

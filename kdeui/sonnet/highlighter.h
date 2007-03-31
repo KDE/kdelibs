@@ -26,12 +26,12 @@
 #include <QSyntaxHighlighter>
 #include <QStringList>
 #include <kdemacros.h>
-
+#include <kdeui_export.h>
 class QTextEdit;
 
 namespace KSpell2
 {
-    class SONNETUI_EXPORT Highlighter : public QSyntaxHighlighter
+    class KDEUI_EXPORT Highlighter : public QSyntaxHighlighter
     {
 	Q_OBJECT
     public:

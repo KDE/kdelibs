@@ -107,22 +107,6 @@
 # endif
 #endif
 
-#ifndef SONNETCORE_EXPORT
-# ifdef MAKE_SONNETCORE_LIB
-#  define SONNETCORE_EXPORT KDE_EXPORT
-# else
-#  define SONNETCORE_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef SONNETUI_EXPORT
-# ifdef MAKE_SONNETUI_LIB
-#  define SONNETUI_EXPORT KDE_EXPORT
-# else
-#  define SONNETUI_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef PHONONCORE_EXPORT
 # ifdef MAKE_PHONONCORE_LIB
 #  define PHONONCORE_EXPORT KDE_EXPORT

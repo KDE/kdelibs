@@ -321,7 +321,7 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	     k->key() == Qt::Key_PageDown ||
 	     k->key() == Qt::Key_Home ||
 	     k->key() == Qt::Key_End ||
-	     (( Qt::ButtonState(k->modifiers()) & Qt::ControlModifier ) &&
+	     (( k->modifiers()== Qt::ControlModifier ) &&
 	      ((k->key() == Qt::Key_A) ||
 	       (k->key() == Qt::Key_B) ||
 	       (k->key() == Qt::Key_E) ||

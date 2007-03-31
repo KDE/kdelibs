@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <q3listview.h>
+#include <qlistview.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
@@ -97,8 +97,8 @@ void Dialog::initConnections()
              SLOT(slotSuggest()) );
     connect( d->ui.m_language, SIGNAL(activated(const QString&)),
              SLOT(slotChangeLanguage(const QString&)) );
-    connect( d->ui.m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
-             SLOT(slotSelectionChanged(Q3ListViewItem*)) );
+    connect( d->ui.m_suggestions, SIGNAL(itemChanged(QListWidgetItem*)),
+	     SLOT(slotSelectionChanged(QListWidgetItem*)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
              SIGNAL(misspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
@@ -122,7 +122,7 @@ void Dialog::initGui()
     d->wdg = new QWidget( this );
     d->ui.setupUi( d->wdg );
 
-    d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
+    //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
     d->ui.m_language->clear();
     d->ui.m_language->insertItems( 0, d->checker->loader()->languagesName() );
     d->ui.m_language->setCurrentIndex( d->checker->loader()->languages().indexOf(
@@ -246,17 +246,16 @@ void Dialog::slotChangeLanguage( const QString& lang )
     slotSuggest();
 }
 
-void Dialog::slotSelectionChanged( Q3ListViewItem *item )
+void Dialog::slotSelectionChanged( QListWidgetItem *item )
 {
-    d->ui.m_replacement->setText( item->text( 0 ) );
+    d->ui.m_replacement->setText( item->text() );
 }
 
 void Dialog::fillSuggestions( const QStringList& suggs )
 {
     d->ui.m_suggestions->clear();
     for ( QStringList::ConstIterator it = suggs.begin(); it != suggs.end(); ++it ) {
-        new Q3ListViewItem( d->ui.m_suggestions, d->ui.m_suggestions->firstChild(),
-                           *it );
+	    d->ui.m_suggestions->addItem(*it );
     }
 }
 

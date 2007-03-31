@@ -5,6 +5,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/kdefx
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
+ ${CMAKE_SOURCE_DIR}/kdecore/sonnet
+ ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
@@ -22,11 +24,13 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/liveui
  ${CMAKE_CURRENT_SOURCE_DIR}/kplot
  ${CMAKE_CURRENT_BINARY_DIR}/jobs
+ ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
 )
 
 add_subdirectory( about )
 add_subdirectory( tests )
 add_subdirectory( liveui/tests )
+add_subdirectory( sonnet/tests )
 
 ########### next target ###############
 
@@ -107,6 +111,10 @@ set(kdeui_LIB_SRCS
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
+ sonnet/dialog.cpp
+ sonnet/configwidget.cpp
+ sonnet/highlighter.cpp
+ sonnet/configdialog.cpp
  util/kckey.cpp
  util/kcolormimedata.cpp
  util/kcommand.cpp
@@ -221,6 +229,8 @@ set( kdeui_UI
    dialogs/kshortcutdialog_advanced.ui
    dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
+   sonnet/kspell2ui.ui 
+   sonnet/configui.ui
    )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
@@ -400,6 +410,13 @@ install( FILES
  kplot/kplotobject.h
  kplot/kplotaxis.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
+
+install( FILES 
+  sonnet/dialog.h 
+  sonnet/highlighter.h 
+  sonnet/configdialog.h   
+  sonnet/configwidget.h  
+  DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 

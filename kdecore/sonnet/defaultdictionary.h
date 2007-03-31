@@ -29,7 +29,7 @@
 namespace KSpell2
 {
     class Loader;
-    class SONNETCORE_EXPORT DefaultDictionary : public QObject,
+    class KDECORE_EXPORT DefaultDictionary : public QObject,
                                                 public Speller
     {
         Q_OBJECT

@@ -24,7 +24,7 @@
 #define KSPELL_FILTER_H
 
 #include <qstring.h>
-#include <kdelibs_export.h>
+#include <kdecore_export.h>
 
 namespace KSpell2
 {
@@ -37,7 +37,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short struct represents word
      */
-    struct SONNETCORE_EXPORT Word
+    struct KDECORE_EXPORT Word
     {
         Word() : start( 0 ), end( true )
             {}
@@ -62,7 +62,7 @@ namespace KSpell2
      * @author Zack Rusin <zack@kde.org>
      * @short used to split text into words
      */
-    class SONNETCORE_EXPORT Filter
+    class KDECORE_EXPORT Filter
     {
     public:
         static Filter *defaultFilter();
