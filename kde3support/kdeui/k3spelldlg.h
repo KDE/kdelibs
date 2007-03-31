@@ -20,6 +20,7 @@
 #ifndef K3SPELLDLG_H
 #define K3SPELLDLG_H
 
+#include <kdelibs_export.h>
 #include <kdialog.h>
 
 class QStringList;
