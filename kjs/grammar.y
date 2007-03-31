@@ -222,7 +222,7 @@ Literal:
   | DIVEQUAL /* regexp with /= */       {
                                             Lexer *l = Lexer::curr();
                                             if (!l->scanRegExp()) YYABORT;
-                                            $$ = new RegExpNode(UString('=') + l->pattern, l->flags);
+                                            $$ = new RegExpNode("=" + l->pattern, l->flags);
                                         }
 ;
 
@@ -248,7 +248,7 @@ PrimaryExpr:
     PrimaryExprNoBrace
   | '{' '}'                             { $$ = new ObjectLiteralNode(); }
   | '{' PropertyList '}'                { $$ = new ObjectLiteralNode($2); }
-  /* allow extra comma, see http://bugzilla.opendarwin.org/show_bug.cgi?id=5939 */
+  /* allow extra comma, see http://bugs.webkit.org/show_bug.cgi?id=5939 */
   | '{' PropertyList ',' '}'            { $$ = new ObjectLiteralNode($2); }
 ;
 
