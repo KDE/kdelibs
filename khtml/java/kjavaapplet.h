@@ -24,7 +24,7 @@
 #ifndef KJAVAAPPLET_H
 #define KJAVAAPPLET_H
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include <kurl.h>
 
 #include <QtCore/QObject>

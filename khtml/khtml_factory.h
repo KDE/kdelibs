@@ -20,7 +20,7 @@
 #ifndef __khtml_factory_h__
 #define __khtml_factory_h__
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 
 #include <kparts/factory.h>
 #include <kparts/historyprovider.h>

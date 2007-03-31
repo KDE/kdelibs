@@ -23,7 +23,7 @@
 #ifndef KJAVAAPPLETVIEWER_H
 #define KJAVAAPPLETVIEWER_H
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>

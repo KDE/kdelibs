@@ -22,10 +22,9 @@
 #ifndef _DOM_DOMString_h_
 #define _DOM_DOMString_h_
 
+#include <khtml_export.h>
 #include <kdebug.h>
 #include <qstring.h>
-
-#include <kdelibs_export.h>
 
 namespace DOM {
 

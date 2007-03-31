@@ -29,9 +29,8 @@
 #ifndef HTML_INLINE_H
 #define HTML_INLINE_H
 
+#include <khtml_export.h>
 #include <dom/html_element.h>
-
-#include <kdelibs_export.h>
 
 namespace DOM {
 class HTMLGenericElementImpl;

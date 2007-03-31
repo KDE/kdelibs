@@ -22,7 +22,7 @@
 #ifndef KJAVADOWNLOADER_H
 #define KJAVADOWNLOADER_H
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include <QtCore/QObject>
 
 /**

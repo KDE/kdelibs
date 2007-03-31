@@ -30,10 +30,10 @@
 #ifndef HTML_DOCUMENT_H
 #define HTML_DOCUMENT_H
 
+#include <khtml_export.h>
+
 #include <dom/dom_doc.h>
 #include <dom/dom_string.h>
-
-#include <kdelibs_export.h>
 
 class KHTMLView;
 class KHTMLPart;

@@ -26,10 +26,10 @@
 #ifndef KHTMLVIEW_H
 #define KHTMLVIEW_H
 
+#include <khtml_export.h>
+
 // qt includes and classes
 #include <QScrollArea>
-
-#include <kdelibs_export.h>
 
 class QPainter;
 class QRect;

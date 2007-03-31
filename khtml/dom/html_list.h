@@ -29,8 +29,8 @@
 #ifndef HTML_LIST_H
 #define HTML_LIST_H
 
+#include <khtml_export.h>
 #include <dom/html_element.h>
-#include <kdelibs_export.h>
 
 namespace DOM {
 

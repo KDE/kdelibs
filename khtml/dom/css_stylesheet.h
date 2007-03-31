@@ -27,11 +27,11 @@
 #ifndef _CSS_css_stylesheet_h_
 #define _CSS_css_stylesheet_h_
 
+#include <khtml_export.h>
+
 #include <dom/dom_string.h>
 #include <dom/dom_node.h>
 #include <dom/dom_misc.h>
-
-#include <kdelibs_export.h>
 
 namespace DOM {
 

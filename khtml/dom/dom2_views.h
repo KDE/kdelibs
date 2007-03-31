@@ -23,7 +23,7 @@
 #ifndef _DOM_Views_h_
 #define _DOM_Views_h_
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 namespace DOM {
 
 class Document;

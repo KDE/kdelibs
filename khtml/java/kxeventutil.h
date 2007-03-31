@@ -21,7 +21,7 @@
 #ifndef KXEVENTUTIL_H
 #define KXEVENTUTIL_H
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <QtCore/QString>

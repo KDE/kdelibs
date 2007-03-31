@@ -26,10 +26,10 @@
  */
 #ifndef _dom2_traversal_h_
 #define _dom2_traversal_h_
+
+#include <khtml_export.h>
 #include <dom/dom_node.h>
 #include <dom/dom_misc.h>
-
-#include <kdelibs_export.h>
 
 namespace DOM {
 class Node;

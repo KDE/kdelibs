@@ -29,8 +29,8 @@
 #ifndef _DOM_Node_h_
 #define _DOM_Node_h_
 
+#include <khtml_export.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
 
 class QRect;
 

@@ -29,8 +29,8 @@
 #ifndef HTML_ELEMENT_H
 #define HTML_ELEMENT_H
 
+#include <khtml_export.h>
 #include <dom/dom_element.h>
-#include <kdelibs_export.h>
 
 class KHTMLView;
 

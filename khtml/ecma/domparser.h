@@ -21,11 +21,11 @@
 #ifndef DOMPARSER_H
 #define DOMPARSER_H
 
-#include <qpointer.h>
-#include "kdelibs_export.h"
+#include <khtml_export.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
 #include <misc/shared.h>
+#include <qpointer.h>
 
 #include "kjs_dom.h"
 

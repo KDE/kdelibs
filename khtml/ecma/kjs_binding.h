@@ -22,7 +22,7 @@
 #ifndef _KJS_BINDING_H_
 #define _KJS_BINDING_H_
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include <kjs/interpreter.h>
 #include <wtf/HashMap.h>
 

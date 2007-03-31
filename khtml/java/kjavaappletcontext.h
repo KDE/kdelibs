@@ -24,8 +24,8 @@
 #ifndef KJAVAAPPLETCONTEXT_H
 #define KJAVAAPPLETCONTEXT_H
 
+#include <khtml_export.h>
 #include <QtCore/QObject>
-#include <kdelibs_export.h>
 
 /**
  * @short Provides a context for KJavaAppletWidgets

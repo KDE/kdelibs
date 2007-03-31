@@ -24,7 +24,7 @@
 #ifndef KJAVAAPPLETSERVER_H
 #define KJAVAAPPLETSERVER_H
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include "kjavaprocess.h"
 #include <QtCore/QObject>
 #include <qmap.h>

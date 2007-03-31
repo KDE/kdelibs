@@ -24,7 +24,7 @@
 #ifndef KJAVAPROCESS_H
 #define KJAVAPROCESS_H
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 #include <k3process.h>
 
 /**

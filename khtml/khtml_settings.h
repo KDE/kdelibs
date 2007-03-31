@@ -22,6 +22,7 @@
 
 class KConfig;
 class KConfigGroup;
+#include <khtml_export.h>
 #include <qcolor.h>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -29,7 +30,6 @@ class KConfigGroup;
 #include <qmap.h>
 #include <qpair.h>
 
-#include <kdelibs_export.h>
 
 struct KPerDomainSettings;
 class KHTMLSettingsPrivate;

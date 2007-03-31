@@ -27,22 +27,6 @@
 # endif
 #endif
 
-#ifndef KHTML_EXPORT
-# ifdef MAKE_KHTML_LIB
-#  define KHTML_EXPORT KDE_EXPORT
-# else
-#  define KHTML_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KHTML_JAVA_EXPORT
-# ifdef MAKE_KHTML_JAVA_LIB
-#  define KHTML_JAVA_EXPORT KDE_EXPORT
-# else
-#  define KHTML_JAVA_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KJS_EXPORT
 # ifdef MAKE_KJS_LIB
 #  define KJS_EXPORT KDE_EXPORT

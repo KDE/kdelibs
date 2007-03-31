@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kdelibs_export.h>
+#include <khtml_export.h>
 
 // Defined in libkhtml
 extern "C"  KDE_EXPORT void* init_khtmlimagefactory();
