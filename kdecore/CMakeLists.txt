@@ -186,6 +186,7 @@ set(kdecore_LIB_SRCS
    network/kstreamsocket.cpp
    network/ksocketbuffer.cpp
    network/klocalsocket.cpp
+   network/ksocketfactory.cpp
    network/netsupp.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp

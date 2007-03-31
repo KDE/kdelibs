@@ -23,9 +23,11 @@
 
 #include <kdecore_export.h>
 #include <QtCore/QString>
+#include <QtNetwork/QNetworkProxy>
 
 class QTcpSocket;
 class QTcpServer;
+class QUdpSocket;
 class QHostAddress;
 
 /**
@@ -164,6 +166,10 @@ public:
     static QTcpServer *listenAt(const QString &service, int defaultPort = -1, QObject *parent = 0);
 
     static QUdpSocket *datagramSocket(const QString &node, const QString &service, QObject *parent = 0);
+
+    static QNetworkProxy proxyForConnection(const QString &node, const QString &service);
+    static QNetworkProxy proxyForListening(const QString &service);
+    static QNetworkProxy proxyForDatagram(const QString &node, const QString &service);
 };
 
 #endif
