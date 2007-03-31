@@ -423,7 +423,7 @@ install( FILES
   KShellCompletion
   K3ShellProcess
   KShortcut
-  KShortcutDialog
+  KShortcutsDialog
   KSimpleFileFilter
   KSocks
   KSortableItem
