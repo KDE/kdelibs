@@ -20,7 +20,7 @@
 #ifndef PHONON_TRACKINTERFACE_H
 #define PHONON_TRACKINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include <QObject>
 
 namespace Phonon

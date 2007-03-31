@@ -20,10 +20,10 @@
 #ifndef PHONON_FACTORY_H
 #define PHONON_FACTORY_H
 
-#include <QObject>
-
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include <kglobal.h>
+
+#include <QObject>
 
 namespace Phonon
 {

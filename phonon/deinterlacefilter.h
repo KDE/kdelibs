@@ -20,7 +20,7 @@
 #ifndef PHONON_DEINTERLACEFILTER_H
 #define PHONON_DEINTERLACEFILTER_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "videoeffect.h"
 
 namespace Phonon

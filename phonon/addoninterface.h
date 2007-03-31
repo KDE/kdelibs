@@ -20,7 +20,7 @@
 #ifndef PHONON_ADDONINTERFACE_H
 #define PHONON_ADDONINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include <QList>
 #include <QVariant>
 

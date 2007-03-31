@@ -19,9 +19,9 @@
 #ifndef Phonon_MEDIAOBJECT_H
 #define Phonon_MEDIAOBJECT_H
 
-#include "abstractmediaproducer.h"
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "phonondefs.h"
+#include "abstractmediaproducer.h"
 
 class KUrl;
 

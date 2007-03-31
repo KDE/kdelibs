@@ -20,7 +20,7 @@
 #ifndef PHONON_CHAPTERINTERFACE_H
 #define PHONON_CHAPTERINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include <ksharedptr.h>
 
 namespace Phonon

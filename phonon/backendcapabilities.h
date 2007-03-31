@@ -20,11 +20,11 @@
 #ifndef Phonon_BACKENDCAPABILITIES_H
 #define Phonon_BACKENDCAPABILITIES_H
 
-#include <QObject>
-
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "objectdescription.h"
 #include <kglobal.h>
+
+#include <QObject>
 
 template<class T> class QList;
 class QStringList;

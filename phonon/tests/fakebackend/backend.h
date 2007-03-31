@@ -20,12 +20,13 @@
 #ifndef Phonon_FAKE_BACKEND_H
 #define Phonon_FAKE_BACKEND_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
+#include <phonon/objectdescription.h>
+#include <phonon/backendinterface.h>
+
 #include <QList>
 #include <QPointer>
 #include <QStringList>
-#include <phonon/objectdescription.h>
-#include <phonon/backendinterface.h>
 
 class KUrl;
 

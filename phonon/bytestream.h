@@ -19,8 +19,8 @@
 #ifndef PHONON_BYTESTREAM_H
 #define PHONON_BYTESTREAM_H
 
+#include <phonon/phonon_export.h>
 #include "abstractmediaproducer.h"
-#include <kdelibs_export.h>
 #include "phonondefs.h"
 
 class QString;

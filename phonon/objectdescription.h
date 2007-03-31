@@ -20,8 +20,9 @@
 #ifndef PHONON_OBJECTDESCRIPTION_H
 #define PHONON_OBJECTDESCRIPTION_H
 
+#include <phonon/phonon_export.h>
+
 #include <QtGlobal>
-#include <kdelibs_export.h>
 #include <QSharedDataPointer>
 #include <QVariant>
 #include <QByteArray>

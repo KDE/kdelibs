@@ -19,8 +19,8 @@
 #ifndef Phonon_AUDIOOUTPUT_H
 #define Phonon_AUDIOOUTPUT_H
 
+#include <phonon/phonon_export.h>
 #include "abstractaudiooutput.h"
-#include <kdelibs_export.h>
 #include "phonondefs.h"
 #include "phononnamespace.h"
 #include "objectdescription.h"

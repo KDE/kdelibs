@@ -20,11 +20,10 @@
 #ifndef PHONON_MEDIAOBJECTINTERFACE_H
 #define PHONON_MEDIAOBJECTINTERFACE_H
 
-#include <kdelibs_export.h>
-
-#include <QtCore/QObject>
-#include <kurl.h>
+#include <phonon/phonon_export.h>
 #include "mediaobject.h"
+#include <kurl.h>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

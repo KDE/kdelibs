@@ -20,10 +20,11 @@
 #ifndef PHONON_EFFECTPARAMETER_H
 #define PHONON_EFFECTPARAMETER_H
 
-#include <QString>
-#include <kdelibs_export.h>
-#include <QVariant>
+#include <phonon/phonon_export.h>
 #include <ksharedptr.h>
+
+#include <QString>
+#include <QVariant>
 
 namespace Phonon
 {

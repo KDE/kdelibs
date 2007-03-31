@@ -20,9 +20,10 @@
 #ifndef PHONON_BACKENDINTERFACE_H
 #define PHONON_BACKENDINTERFACE_H
 
-#include <kdelibs_export.h>
-#include <Qt/qglobal.h>
+#include <phonon/phonon_export.h>
 #include "objectdescription.h"
+
+#include <Qt/qglobal.h>
 
 class QVariant;
 

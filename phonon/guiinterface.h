@@ -20,7 +20,7 @@
 #ifndef GUIINTERFACE_H
 #define GUIINTERFACE_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include <QStringList>
 #include <QString>
 #include <QVariant>

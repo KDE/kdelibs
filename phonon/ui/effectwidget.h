@@ -20,8 +20,8 @@
 #ifndef PHONON_UI_EFFECTWIDGET_H
 #define PHONON_UI_EFFECTWIDGET_H
 
+#include <phonon/phonon_export.h>
 #include <QWidget>
-#include <kdelibs_export.h>
 
 namespace Phonon
 {

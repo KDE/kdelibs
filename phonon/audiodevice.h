@@ -20,7 +20,7 @@
 #ifndef PHONON_AUDIODEVICE_H
 #define PHONON_AUDIODEVICE_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include <solid/audiohw.h>
 #include <ksharedconfig.h>
 class QString;

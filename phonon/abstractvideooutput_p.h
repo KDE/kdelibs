@@ -20,9 +20,9 @@
 #ifndef ABSTRACTVIDEOOUTPUT_P_H
 #define ABSTRACTVIDEOOUTPUT_P_H
 
+#include <phonon/phonon_export.h>
 #include "abstractvideooutput.h"
 #include "base_p.h"
-#include <kdelibs_export.h>
 
 namespace Phonon
 {

@@ -20,8 +20,8 @@
 #ifndef PHONON_BASE_H
 #define PHONON_BASE_H
 
+#include <phonon/phonon_export.h>
 #include "phonondefs.h"
-#include <kdelibs_export.h>
 
 class QObject;
 namespace Phonon

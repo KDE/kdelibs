@@ -20,8 +20,8 @@
 #ifndef Phonon_FAKE_UI_BACKEND_H
 #define Phonon_FAKE_UI_BACKEND_H
 
+#include <phonon/phonon_export.h>
 #include <QObject>
-#include <kdelibs_export.h>
 
 namespace Phonon
 {

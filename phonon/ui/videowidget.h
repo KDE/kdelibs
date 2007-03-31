@@ -19,9 +19,9 @@
 #ifndef Phonon_VIDEOWIDGET_H
 #define Phonon_VIDEOWIDGET_H
 
-#include <QWidget>
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "../abstractvideooutput.h"
+#include <QWidget>
 
 class QString;
 

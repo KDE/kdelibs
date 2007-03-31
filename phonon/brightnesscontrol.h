@@ -20,7 +20,7 @@
 #ifndef PHONON_BRIGHTNESSCONTROL_H
 #define PHONON_BRIGHTNESSCONTROL_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "videoeffect.h"
 
 namespace Phonon

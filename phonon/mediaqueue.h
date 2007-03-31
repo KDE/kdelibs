@@ -20,7 +20,7 @@
 #ifndef PHONON_MEDIAQUEUE_H
 #define PHONON_MEDIAQUEUE_H
 
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "mediaobject.h"
 
 namespace Phonon

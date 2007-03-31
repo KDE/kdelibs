@@ -20,9 +20,9 @@
 #ifndef PHONON_OBJECTDESCRIPTIONMODEL_H
 #define PHONON_OBJECTDESCRIPTIONMODEL_H
 
-#include <QAbstractListModel>
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "objectdescription.h"
+#include <QAbstractListModel>
 
 template<class t> class QList;
 

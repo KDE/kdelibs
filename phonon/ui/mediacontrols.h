@@ -20,9 +20,9 @@
 #ifndef PHONON_UI_MEDIACONTROLS_H
 #define PHONON_UI_MEDIACONTROLS_H
 
-#include <QWidget>
-#include <kdelibs_export.h>
+#include <phonon/phonon_export.h>
 #include "../phononnamespace.h"
+#include <QWidget>
 
 namespace Phonon
 {

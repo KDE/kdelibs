@@ -20,9 +20,9 @@
 #ifndef Phonon_AUDIOPLAYER_H
 #define Phonon_AUDIOPLAYER_H
 
-#include <kdelibs_export.h>
-#include <QWidget>
+#include <phonon/phonon_export.h>
 #include "../phononnamespace.h"
+#include <QWidget>
 
 class KUrl;
 
