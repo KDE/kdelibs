@@ -184,5 +184,11 @@ inline PHONONCORE_EXPORT kdbgstream& operator<<( kdbgstream & stream, const Phon
 	return stream;
 }
 
+#include <QMetaType>
+
+Q_DECLARE_METATYPE(Phonon::State)
+Q_DECLARE_METATYPE(Phonon::ErrorType)
+Q_DECLARE_METATYPE(Phonon::Category)
+
 // vim: sw=4 ts=4 tw=80
 #endif // PHONONNAMESPACE_H

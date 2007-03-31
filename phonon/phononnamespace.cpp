@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -43,5 +43,19 @@ namespace Phonon
 		return QString();
 	}
 }
+
+static int registerPhononMetaTypes()
+{
+    qRegisterMetaType<Phonon::State>();
+    qRegisterMetaType<Phonon::ErrorType>();
+    qRegisterMetaType<Phonon::Category>();
+    return 0; // something
+}
+
+#ifdef Q_CONSTRUCTOR_FUNCTION
+Q_CONSTRUCTOR_FUNCTION(registerPhononMetaTypes)
+#else
+static const int _Phonon_registerMetaTypes = registerPhononMetaTypes();
+#endif
 
 // vim: sw=4 ts=4

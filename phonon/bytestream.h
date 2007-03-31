@@ -114,6 +114,7 @@ namespace Phonon
 	 * aboutToFinish signal will still work, but you should not depend on it
 	 * being emitted at the correct time.
 	 *
+     * \ingroup Playback
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class PHONONCORE_EXPORT ByteStream : public AbstractMediaProducer

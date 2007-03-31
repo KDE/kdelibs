@@ -22,6 +22,7 @@
 #include "abstractmediaproducer.h"
 #include <kurl.h>
 #include <phonon/mediaobjectinterface.h>
+#include <QVariant>
 
 class KUrl;
 
@@ -36,15 +37,16 @@ namespace Fake
 		public:
 			MediaObject( QObject* parent );
 			~MediaObject();
-			Q_INVOKABLE KUrl url() const;
-			Q_INVOKABLE qint64 totalTime() const;
+            KUrl url() const;
+            qint64 totalTime() const;
 			Q_INVOKABLE qint32 aboutToFinishTime() const;
-			Q_INVOKABLE void setUrl( const KUrl& url );
+            void setUrl( const KUrl& url );
+            void openMedia(Phonon::MediaObject::Media media);
 			Q_INVOKABLE void setAboutToFinishTime( qint32 newAboutToFinishTime );
 
-			Q_INVOKABLE void play();
-			Q_INVOKABLE void pause();
-			Q_INVOKABLE void seek( qint64 time );
+            void play();
+            void pause();
+            void seek(qint64 time);
 
 		public Q_SLOTS:
 			void stop();

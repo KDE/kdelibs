@@ -64,24 +64,24 @@ void VideoWidget::setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio )
 			else
 				m_videoSize.setHeight( w * 3 / 4 );
 			break;
-		case Phonon::VideoWidget::AspectRatioSquare:
-			if( h < w )
-				m_videoSize.setWidth( h );
-			else
-				m_videoSize.setHeight( w );
-			break;
-		case Phonon::VideoWidget::AspectRatioAnamorphic:
+//X 		case Phonon::VideoWidget::AspectRatioSquare:
+//X 			if( h < w )
+//X 				m_videoSize.setWidth( h );
+//X 			else
+//X 				m_videoSize.setHeight( w );
+//X 			break;
+        case Phonon::VideoWidget::AspectRatio16_9:
 			if( h * 16 / 9 < w )
 				m_videoSize.setWidth( h * 16 / 9 );
 			else
 				m_videoSize.setHeight( w * 9 / 16 );
 			break;
-		case Phonon::VideoWidget::AspectRatioDvb:
-			if( h * 211 / 100 < w )
-				m_videoSize.setWidth( h * 211 / 100 );
-			else
-				m_videoSize.setHeight( w * 100 / 211 );
-			break;
+//X 		case Phonon::VideoWidget::AspectRatioDvb:
+//X 			if( h * 211 / 100 < w )
+//X 				m_videoSize.setWidth( h * 211 / 100 );
+//X 			else
+//X 				m_videoSize.setHeight( w * 100 / 211 );
+//X 			break;
 		default:
 			Q_ASSERT( false ); // this may not happen
 	}

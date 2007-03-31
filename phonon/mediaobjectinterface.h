@@ -24,9 +24,16 @@
 
 #include <QtCore/QObject>
 #include <kurl.h>
+#include "mediaobject.h"
 
 namespace Phonon
 {
+/**
+ * \short Interface for MediaObject objects
+ *
+ * \ingroup Backend
+ * \author Matthias Kretz <kretz@kde.org>
+ */
 class PHONONCORE_EXPORT MediaObjectInterface
 {
 	public:
@@ -34,10 +41,11 @@ class PHONONCORE_EXPORT MediaObjectInterface
 		virtual qint64 totalTime() const = 0;
 		virtual KUrl url() const = 0;
 		virtual void setUrl( const KUrl& url ) = 0;
+        virtual void openMedia(MediaObject::Media media) = 0;
 };
 }
 
-Q_DECLARE_INTERFACE( Phonon::MediaObjectInterface, "org.kde.Phonon.MediaObjectInterface/0.1" )
+Q_DECLARE_INTERFACE(Phonon::MediaObjectInterface, "MediaObjectInterface02.phonon.kde.org")
 
 #endif // PHONON_MEDIAOBJECTINTERFACE_H
 // vim: sw=4 ts=4 tw=80

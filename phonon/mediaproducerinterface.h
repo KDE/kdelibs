@@ -61,6 +61,7 @@ namespace Phonon
  * </li>
  * </ul>
  *
+ * \ingroup Backend
  * \author Matthias Kretz <kretz@kde.org>
  * \see AbstractMediaProducer
  */

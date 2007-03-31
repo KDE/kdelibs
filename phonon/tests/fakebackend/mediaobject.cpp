@@ -61,12 +61,31 @@ void MediaObject::setUrl( const KUrl& url )
     m_aboutToFinishNotEmitted = true;
 	m_url = url;
     setState(Phonon::LoadingState);
+    if (!m_url.isValid() || m_url.isEmpty()) {
+        return;
+    }
 	emit length( totalTime() );
 	QMultiMap<QString, QString> metaData;
 	metaData.insert( "TITLE", "Fake video" );
 	metaData.insert( "ARTIST", "Matthias Kretz" );
 	emit metaDataChanged( metaData );
     QTimer::singleShot(50, this, SLOT(loadingComplete()));
+}
+
+void MediaObject::openMedia(Phonon::MediaObject::Media media)
+{
+    switch (media) {
+    case Phonon::MediaObject::None:
+        setUrl(KUrl());
+        break;
+    case Phonon::MediaObject::CD:
+    case Phonon::MediaObject::DVD:
+    case Phonon::MediaObject::DVB:
+    case Phonon::MediaObject::VCD:
+        break;
+    default:
+        kError(604) << "media " << media << " not implemented" << endl;
+    }
 }
 
 void MediaObject::loadingComplete()

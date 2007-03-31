@@ -40,6 +40,7 @@ namespace Phonon
 	 * BackendCapabilities::availableAudioCaptureDevices and
 	 * BackendCapabilities::availableVideoCaptureDevices.
 	 *
+     * @ingroup Recording
 	 * @author Matthias Kretz <kretz@kde.org>
 	 * @see BackendCapabilities::availableAudioCaptureDevices
 	 * @see BackendCapabilities::availableVideoCaptureDevices

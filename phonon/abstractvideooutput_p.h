@@ -29,7 +29,7 @@ namespace Phonon
 class PHONONCORE_EXPORT AbstractVideoOutputPrivate : public BasePrivate
 {
 	K_DECLARE_PUBLIC( AbstractVideoOutput )
-	PHONON_PRIVATEABSTRACTCLASS( Base )
+    PHONON_PRIVATEABSTRACTCLASS
 	protected:
 };
 } //namespace Phonon

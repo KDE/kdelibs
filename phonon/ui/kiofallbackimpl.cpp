@@ -28,6 +28,7 @@
 #include <kio/filejob.h>
 #include <kio/job.h>
 #include <kprotocolmanager.h>
+#include <klocale.h>
 
 #define PHONON_INTERFACENAME ByteStreamInterface
 
@@ -201,7 +202,8 @@ void KioFallbackImpl::bytestreamData(KIO::Job *, const QByteArray &data)
 void KioFallbackImpl::bytestreamResult(KJob *job)
 {
     if (job->error()) {
-        kDebug(600) << "KIO Job error: " << job->errorString() << endl;
+        QString kioErrorString = job->errorString();
+        kDebug(600) << "KIO Job error: " << kioErrorString << endl;
         disconnect(m_kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
                 this, SLOT(bytestreamData(KIO::Job*,const QByteArray&)));
         disconnect(m_kiojob, SIGNAL(result(KJob*)),
@@ -216,6 +218,20 @@ void KioFallbackImpl::bytestreamResult(KJob *job)
             disconnect(m_kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
                     this, SLOT(bytestreamTotalSize(KJob*,qulonglong)));
         }
+        // go to ErrorState - NormalError
+        MediaObject *q = static_cast<MediaObject *>(parent());
+        MediaObjectPrivate *d = q->k_func();
+        State lastState = q->state();
+        d->errorOverride = true;
+        d->errorType = NormalError;
+        d->errorString =
+            i18n("<html>%1 reported the error:<blockquote>%2</blockquote>"
+                    "<hr/>Falling back to KIO to read the media data failed with the error:"
+                    "<blockquote>%3</blockquote></html>",
+                    Factory::backendName(),
+                    d->errorString, kioErrorString);
+        d->state = ErrorState;
+        d->_k_stateChanged(ErrorState, lastState);
     }
     m_kiojob = 0;
     m_endOfDataSent = true;

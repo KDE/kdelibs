@@ -31,7 +31,7 @@ namespace Phonon
 class AudioOutputPrivate : public AbstractAudioOutputPrivate
 {
 	K_DECLARE_PUBLIC( AudioOutput )
-	PHONON_PRIVATECLASS( AbstractAudioOutput )
+    PHONON_PRIVATECLASS
     public:
         void deviceListChanged();
 

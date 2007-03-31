@@ -28,7 +28,7 @@ namespace Phonon
 class AbstractAudioOutputPrivate : public BasePrivate
 {
 	K_DECLARE_PUBLIC( AbstractAudioOutput )
-	PHONON_PRIVATEABSTRACTCLASS( Base )
+    PHONON_PRIVATEABSTRACTCLASS
 };
 } //namespace Phonon
 

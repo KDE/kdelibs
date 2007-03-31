@@ -137,6 +137,22 @@ throughout this documentation simply called Backend:
 \li \ref phonon_Visualization "Visualization"
 \li \ref phonon_VolumeFaderEffect "VolumeFaderEffect"
 
+\defgroup Frontend Classes for applications using Phonon
+Here you find all classes that are available to application developers using
+%Phonon.
+
+\defgroup Playback Playback
+\ingroup Frontend
+
+\defgroup Recording Recording
+\ingroup Frontend
+
+\defgroup BackendInformation Information about the backend
+\ingroup Frontend
+
+\defgroup Backend Backend classes and interfaces
+In this group you can find all classes and interfaces relevant for backend
+development. As an application developer you can safely ignore these classes.
 
 */
 // DOXYGEN_REFERENCES = kdecore kdeui kio
@@ -144,5 +160,5 @@ throughout this documentation simply called Backend:
 // DOXYGEN_SET_HIDE_SCOPE_NAMES = YES
 // DOXYGEN_SET_HIDE_FRIEND_COMPOUNDS = YES
 // DOXYGEN_SET_PROJECT_NAME = Phonon
-// DOXYGEN_SET_EXCLUDE += kcm DESIGN
+// DOXYGEN_EXCLUDE += examples kcm DESIGN factory.h kiofallback.h kiofallbackimpl.h guiinterface.h guiimpl.h globalconfig.h
 // vim: tw=80

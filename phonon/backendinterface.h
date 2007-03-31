@@ -32,6 +32,7 @@ namespace Phonon
 /**
  * \short Main Backend class interface
  *
+ * \ingroup Backend
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONONCORE_EXPORT BackendInterface

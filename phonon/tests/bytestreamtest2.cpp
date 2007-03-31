@@ -34,8 +34,6 @@ const qint64 ALLOWED_TICK_INACCURACY = 350; // allow +/- 350 ms inaccuracy
 
 using namespace Phonon;
 
-Q_DECLARE_METATYPE( Phonon::State )
-
 static qint64 castQVariantToInt64( const QVariant& variant )
 {
 	return *reinterpret_cast<const qint64*>( variant.constData() );
@@ -147,10 +145,6 @@ static const qint64 STREAM_SIZE = 1024 * 1024 * 4; // 4MB
 void ByteStreamTest2::initTestCase()
 {
     Phonon::loadFakeBackend();
-
-	qRegisterMetaType<Phonon::State>( "Phonon::State" );
-	qRegisterMetaType<qint32>( "qint32" );
-	qRegisterMetaType<qint64>( "qint64" );
 
     // init timer that pushes the PCM data
 	m_timer = new QTimer( this );

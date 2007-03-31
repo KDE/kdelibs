@@ -29,7 +29,7 @@ namespace Phonon
 class AudioPathPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( AudioPath )
-	PHONON_PRIVATECLASS( Base )
+    PHONON_PRIVATECLASS
 	protected:
 		AudioPathPrivate()
 		{

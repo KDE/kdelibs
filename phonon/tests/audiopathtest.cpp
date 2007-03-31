@@ -27,12 +27,8 @@
 
 using namespace Phonon;
 
-Q_DECLARE_METATYPE( Phonon::State )
-
 void AudioPathTest::initTestCase()
 {
-	qRegisterMetaType<Phonon::State>( "Phonon::State" );
-
     Phonon::loadFakeBackend();
 
 	//m_url.setUrl( getenv( "PHONON_TESTURL" ) );

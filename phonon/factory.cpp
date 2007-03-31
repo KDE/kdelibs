@@ -89,6 +89,7 @@ bool FactoryPrivate::createBackend(KService::Ptr newService)
     if (library) {
         factory = library->factory();
     }
+    //factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
 #else
     factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()));
 #endif
@@ -153,8 +154,6 @@ FactoryPrivate::FactoryPrivate()
     // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
     // as the whole backend might still be alive.
     qAddPostRoutine(globalFactory.destroy);
-    qRegisterMetaType<qint64>("qint64");
-    qRegisterMetaType<qint32>("qint32");
     QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",
             "phononBackendChanged", this, SLOT(phononBackendChanged()));
 }

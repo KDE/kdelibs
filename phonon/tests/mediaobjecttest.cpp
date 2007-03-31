@@ -36,8 +36,6 @@ const qint64 ALLOWED_TICK_INACCURACY = 350; // allow +/- 350 ms inaccuracy
 
 using namespace Phonon;
 
-Q_DECLARE_METATYPE( Phonon::State )
-
 static qint64 castQVariantToInt64( const QVariant& variant )
 {
 	return *reinterpret_cast<const qint64*>( variant.constData() );
@@ -161,10 +159,6 @@ void MediaObjectTest::waitForSignal(QObject *obj, const char *signalName, int ti
 
 void MediaObjectTest::initTestCase()
 {
-	qRegisterMetaType<Phonon::State>( "Phonon::State" );
-	qRegisterMetaType<qint32>( "qint32" );
-	qRegisterMetaType<qint64>( "qint64" );
-
 #ifdef USE_FAKE_BACKEND
     Phonon::loadFakeBackend();
     m_url.setUrl("file:///foo.ogg");

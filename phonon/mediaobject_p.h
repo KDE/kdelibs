@@ -34,20 +34,20 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 {
     friend class KioFallbackImpl;
 	K_DECLARE_PUBLIC( MediaObject )
-	protected:
-		virtual bool aboutToDeleteIface();
-		virtual void createIface();
+    PHONON_PRIVATECLASS
 	protected:
 		MediaObjectPrivate()
-			: aboutToFinishTime( 0 ),
+            : media(MediaObject::None),
+            aboutToFinishTime(0),
             kiofallback(0),
             ignoreLoadingToBufferingStateChange(false)
 		{
 		}
 
-		void _k_stateChanged( Phonon::State, Phonon::State );
+        PHONONCORE_EXPORT void _k_stateChanged(Phonon::State, Phonon::State);
 
 		KUrl url;
+        MediaObject::Media media;
 		qint32 aboutToFinishTime;
         KioFallback *kiofallback;
         bool ignoreLoadingToBufferingStateChange;

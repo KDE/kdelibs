@@ -29,7 +29,7 @@ namespace Phonon
 class VideoPathPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( VideoPath )
-	PHONON_PRIVATECLASS( Base )
+    PHONON_PRIVATECLASS
 	protected:
 		QList<AbstractVideoOutput*> outputs;
 		QList<VideoEffect*> effects;

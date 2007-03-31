@@ -33,14 +33,17 @@ namespace Phonon
 {
 
 /**
- * Singleton class describing the capabilities of the Backend.
+ * Collection of functions describing the capabilities of the Backend.
  *
+ * \ingroup BackendInformation
  * \author Matthias Kretz <kretz@kde.org>
  */
 namespace BackendCapabilities
 {
     /**
      * Notifications about backend capabilities.
+     *
+     * \ingroup BackendInformation
      */
     class Notifier : public QObject
     {

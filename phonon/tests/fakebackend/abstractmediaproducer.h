@@ -27,7 +27,9 @@
 #include "videopath.h"
 #include <QHash>
 #include <phonon/mediaproducerinterface.h>
+#include <phonon/addoninterface.h>
 #include <QMultiMap>
+#include <QVariant>
 
 class QTimer;
 
@@ -37,10 +39,10 @@ namespace Phonon
 
 namespace Fake
 {
-	class KDE_EXPORT AbstractMediaProducer : public QObject, public Phonon::MediaProducerInterface
+	class KDE_EXPORT AbstractMediaProducer : public QObject, public Phonon::MediaProducerInterface, public Phonon::AddonInterface
 	{
 		Q_OBJECT
-		Q_INTERFACES( Phonon::MediaProducerInterface )
+        Q_INTERFACES(Phonon::MediaProducerInterface Phonon::AddonInterface)
 		public:
 			AbstractMediaProducer( QObject* parent );
 			~AbstractMediaProducer();
@@ -74,6 +76,9 @@ namespace Fake
 
             QString errorString() const;
             Phonon::ErrorType errorType() const;
+
+            bool hasInterface(Interface) const { return false; }
+            QVariant interfaceCall(Interface, int, const QList<QVariant> &) { return QVariant(); }
 
 			void setBufferSize( int size );
 

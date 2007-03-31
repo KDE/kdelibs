@@ -69,12 +69,18 @@ class ProducerWidget : public QFrame
 		void slotAboutToFinish( qint32 remaining );
 		void updateMetaData();
         void checkVideoWidget();
+        void openCD();
+        void openDVD();
+        void nextTrack();
+        void prevTrack();
 
 	private:
+        void ensureMedia();
+
 		SeekSlider *m_seekslider;
 		QLabel *m_statelabel, *m_totaltime, *m_currenttime, *m_remainingtime;
 		QLabel *m_metaDataLabel;
-		QAbstractButton *m_pause, *m_play, *m_stop;
+		QAbstractButton *m_pause, *m_play, *m_stop, *m_next, *m_prev;
 		MediaObject *m_media;
 		qint64 m_length;
 		QList<AudioPath*> m_audioPaths;

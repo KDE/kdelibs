@@ -30,12 +30,12 @@
 #define K_D( classname ) PHONON_CONCAT_HELPER( classname, Private )* const d = k_func()
 #define K_Q( classname ) classname* const q = q_func()
 
-#define PHONON_PRIVATECLASS( baseclass ) \
+#define PHONON_PRIVATECLASS \
 protected: \
 	virtual bool aboutToDeleteIface(); \
 	virtual void createIface(); \
 
-#define PHONON_PRIVATEABSTRACTCLASS( baseclass ) \
+#define PHONON_PRIVATEABSTRACTCLASS \
 protected: \
 	virtual bool aboutToDeleteIface(); \
 

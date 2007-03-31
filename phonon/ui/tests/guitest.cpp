@@ -27,6 +27,7 @@
 #include <phonon/volumefadereffect.h>
 #include <phonon/ui/videowidget.h>
 #include <phonon/ui/effectwidget.h>
+#include <phonon/trackinterface.h>
 
 #include <QApplication>
 #include <QPushButton>
@@ -205,6 +206,15 @@ ProducerWidget::ProducerWidget( QWidget *parent )
 	connect( file, SIGNAL( returnPressed( const QString & ) ), SLOT( loadFile( const QString & ) ) );
 	topLayout->addWidget( file );
 
+    QHBoxLayout *mediaLayout = new QHBoxLayout(this);
+    topLayout->addLayout(mediaLayout);
+    QPushButton *audiocdButton = new QPushButton("CD", this);
+    QPushButton *dvdButton = new QPushButton("DVD", this);
+    mediaLayout->addWidget(audiocdButton);
+    mediaLayout->addWidget(dvdButton);
+    connect(audiocdButton, SIGNAL(clicked()), SLOT(openCD()));
+    connect(dvdButton,     SIGNAL(clicked()), SLOT(openDVD()));
+
 	m_seekslider = new SeekSlider( this );
 	topLayout->addWidget( m_seekslider );
 
@@ -236,6 +246,20 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     m_stop->setIcon(KIcon("media-playback-stop"));
 	vlayout->addWidget( m_stop );
 
+    m_next = new QToolButton(frame1);
+    m_next->setIconSize(QSize(32, 32));
+    m_next->setText("next");
+    m_next->setIcon(KIcon("media-skip-forward"));
+    vlayout->addWidget(m_next);
+    connect(m_next, SIGNAL(clicked()), SLOT(nextTrack()));
+
+    m_prev = new QToolButton(frame1);
+    m_prev->setIconSize(QSize(32, 32));
+    m_prev->setText("prev");
+    m_prev->setIcon(KIcon("media-skip-backward"));
+    vlayout->addWidget(m_prev);
+    connect(m_prev, SIGNAL(clicked()), SLOT(prevTrack()));
+
 	QFrame *frame2 = new QFrame( frame0 );
 	hlayout->addWidget( frame2 );
 	QVBoxLayout *vlayout2 = new QVBoxLayout( frame2 );
@@ -247,7 +271,6 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     m_bufferProgress = new QProgressBar(frame2);
     m_bufferProgress->setMaximumSize(100, 16);
     m_bufferProgress->setTextVisible(false);
-    //m_bufferProgress->hide();
     vlayout2->addWidget(m_bufferProgress);
 
 	m_totaltime = new QLabel( frame2 );
@@ -302,8 +325,10 @@ void ProducerWidget::checkVideoWidget()
 
 void ProducerWidget::stateChanged(Phonon::State newstate, Phonon::State oldstate)
 {
-    if (oldstate == Phonon::BufferingState) {
-        //m_bufferProgress->hide();
+    if (oldstate == LoadingState) {
+        const bool hasTracks = m_media->hasInterface<TrackInterface>();
+        m_next->setEnabled(hasTracks);
+        m_prev->setEnabled(hasTracks);
     }
 	switch( newstate )
 	{
@@ -345,32 +370,95 @@ void ProducerWidget::length( qint64 ms )
 	tick( m_media->currentTime() );
 }
 
-void ProducerWidget::loadFile( const QString & file )
+void ProducerWidget::ensureMedia()
 {
-	delete m_media;
-	m_media = new MediaObject( this );
-	connect( m_media, SIGNAL( metaDataChanged() ), SLOT( updateMetaData() ) );
-	m_seekslider->setMediaProducer( m_media );
-	m_media->setUrl( KUrl( file ) );
-	m_media->setTickInterval( 100 );
-	m_media->setAboutToFinishTime( 2000 );
-	foreach( AudioPath *path, m_audioPaths )
-		m_media->addAudioPath( path );
+    if (m_media) {
+        return;
+    }
+    m_media = new MediaObject(this);
+    connect(m_media, SIGNAL(metaDataChanged()), SLOT(updateMetaData()));
+    m_seekslider->setMediaProducer(m_media);
+    m_media->setTickInterval(100);
+    m_media->setAboutToFinishTime(2000);
+
+    foreach (AudioPath *path, m_audioPaths) {
+        m_media->addAudioPath(path);
+    }
+
     stateChanged(m_media->state(), Phonon::LoadingState);
+    length(m_media->totalTime());
 
-	connect( m_pause, SIGNAL( clicked() ), m_media, SLOT( pause() ) );
-	connect( m_play, SIGNAL( clicked() ), m_media, SLOT( play() ) );
-	connect( m_stop, SIGNAL( clicked() ), m_media, SLOT( stop() ) );
+    connect(m_pause, SIGNAL(clicked()), m_media, SLOT(pause()));
+    connect(m_play,  SIGNAL(clicked()), m_media, SLOT(play()));
+    connect(m_stop,  SIGNAL(clicked()), m_media, SLOT(stop()));
 
-	connect( m_media, SIGNAL(   tick( qint64 ) ), SLOT(   tick( qint64 ) ) );
-	connect( m_media, SIGNAL( length( qint64 ) ), SLOT( length( qint64 ) ) );
-	length( m_media->totalTime() );
-	connect( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ),
+    connect(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
             SLOT(stateChanged(Phonon::State, Phonon::State)));
-	connect( m_media, SIGNAL( finished() ), SLOT( slotFinished() ) );
-	connect( m_media, SIGNAL( aboutToFinish( qint32 ) ), SLOT( slotAboutToFinish( qint32 ) ) );
+    connect(m_media, SIGNAL(tick(qint64)),          SLOT(tick(qint64)));
+    connect(m_media, SIGNAL(length(qint64)),        SLOT(length(qint64)));
+    connect(m_media, SIGNAL(finished()),            SLOT(slotFinished()));
+    connect(m_media, SIGNAL(aboutToFinish(qint32)), SLOT(slotAboutToFinish(qint32)));
     connect(m_media, SIGNAL(hasVideoChanged(bool)), SLOT(checkVideoWidget()));
     connect(m_media, SIGNAL(bufferStatus(int)), m_bufferProgress, SLOT(setValue(int)));
+}
+
+void ProducerWidget::openCD()
+{
+    ensureMedia();
+    m_media->openMedia(MediaObject::CD);
+
+    const bool hasTracks = m_media->hasInterface<TrackInterface>();
+    m_next->setEnabled(hasTracks);
+    m_prev->setEnabled(hasTracks);
+}
+
+void ProducerWidget::nextTrack()
+{
+    if (m_media->hasInterface<TrackInterface>()) {
+        TrackInterface iface(m_media);
+        State s = m_media->state();
+        kDebug() << s << endl;
+        iface.setCurrentTrack(iface.currentTrack() + 1);
+        if (s == PlayingState || s == BufferingState) {
+            kDebug() << "play()" << endl;
+            m_media->play();
+        }
+    }
+}
+
+void ProducerWidget::prevTrack()
+{
+    if (m_media->hasInterface<TrackInterface>()) {
+        TrackInterface iface(m_media);
+        State s = m_media->state();
+        kDebug() << s << endl;
+        iface.setCurrentTrack(iface.currentTrack() - 1);
+        if (s == PlayingState || s == BufferingState) {
+            kDebug() << "play()" << endl;
+            m_media->play();
+        }
+    }
+}
+
+void ProducerWidget::openDVD()
+{
+    ensureMedia();
+    m_media->openMedia(MediaObject::DVD);
+    const bool hasTracks = m_media->hasInterface<TrackInterface>();
+    m_next->setEnabled(hasTracks);
+    m_prev->setEnabled(hasTracks);
+}
+
+void ProducerWidget::loadFile( const QString & file )
+{
+    delete m_media;
+    m_media = 0;
+    ensureMedia();
+    Q_ASSERT(m_media);
+	m_media->setUrl( KUrl( file ) );
+    const bool hasTracks = m_media->hasInterface<TrackInterface>();
+    m_next->setEnabled(hasTracks);
+    m_prev->setEnabled(hasTracks);
 }
 
 void ProducerWidget::updateMetaData()
@@ -379,7 +467,7 @@ void ProducerWidget::updateMetaData()
 	QStringList keys = m_media->metaDataKeys();
 	foreach( QString key, keys )
 	{
-		metaData += key + QLatin1String( ": " ) + m_media->metaDataItem( key ) + "\n";
+		metaData += key + QLatin1String( ": " ) + m_media->metaDataItems( key ).join(QLatin1String("\n")) + "\n";
 	}
 	m_metaDataLabel->setText( metaData.left( metaData.length() - 1 ) );
 }

@@ -17,33 +17,35 @@
 
 */
 
-#ifndef PHONON_AUDIOOUTPUTINTERFACE_H
-#define PHONON_AUDIOOUTPUTINTERFACE_H
+#ifndef PHONON_TRACKINTERFACE_H
+#define PHONON_TRACKINTERFACE_H
 
-#include "phononnamespace.h"
-#include <Qt/qglobal.h>
+#include <kdelibs_export.h>
+#include <ksharedptr.h>
 
 namespace Phonon
 {
-/**
- * \short Interface for AudioOutput objects
- *
- * \ingroup Backend
- * \author Matthias Kretz <kretz@kde.org>
- */
-class PHONONCORE_EXPORT AudioOutputInterface
+class AbstractMediaProducer;
+class TrackInterfacePrivate;
+class PHONONCORE_EXPORT TrackInterface
 {
+    friend class AbstractMediaProducer;
     public:
-        virtual ~AudioOutputInterface() {}
+        //TrackInterface();
+        TrackInterface(AbstractMediaProducer *);
+        ~TrackInterface();
+        TrackInterface(const TrackInterface &);
+        TrackInterface &operator=(const TrackInterface &);
+        bool operator==(const TrackInterface &);
 
-        virtual float volume() const = 0;
-        virtual void setVolume(float) = 0;
+        bool isValid() const;
 
-        virtual int outputDevice() const = 0;
-        virtual bool setOutputDevice(int) = 0;
+        int availableTracks() const;
+        int currentTrack() const;
+        void setCurrentTrack(int trackNumber);
+
+    private:
+        KSharedPtr<TrackInterfacePrivate> d;
 };
 } // namespace Phonon
-
-Q_DECLARE_INTERFACE(Phonon::AudioOutputInterface, "org.kde.Phonon.AudioOutputInterface/0.1" )
-
-#endif // PHONON_AUDIOOUTPUTINTERFACE_H
+#endif // PHONON_TRACKINTERFACE_H

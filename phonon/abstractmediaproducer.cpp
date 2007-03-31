@@ -25,7 +25,9 @@
 #include "audiopath.h"
 
 #include "mediaproducerinterface.h"
-
+#include "addoninterface.h"
+#include "trackinterface.h"
+#include "chapterinterface.h"
 
 #include <QTimer>
 
@@ -97,9 +99,17 @@ bool AbstractMediaProducer::addAudioPath( AudioPath* audioPath )
 	return false;
 }
 
+Phonon::State AbstractMediaProducer::state() const
+{
+    K_D(const AbstractMediaProducer);
+    if (!d->backendObject || d->errorOverride) {
+        return d->state;
+    }
+    return INTERFACE_CALL(state());
+}
+
 PHONON_INTERFACE_SETTER( setTickInterval, tickInterval, qint32 )
 PHONON_INTERFACE_GETTER( qint32, tickInterval, d->tickInterval )
-PHONON_INTERFACE_GETTER( Phonon::State, state, d->state )
 PHONON_INTERFACE_GETTER( bool, hasVideo, false )
 PHONON_INTERFACE_GETTER( bool, isSeekable, false )
 PHONON_INTERFACE_GETTER( qint64, currentTime, d->currentTime )
@@ -186,6 +196,9 @@ QString AbstractMediaProducer::errorString() const
 {
     if (state() == Phonon::ErrorState) {
         K_D(const AbstractMediaProducer);
+        if (d->errorOverride) {
+            return d->errorString;
+        }
         return INTERFACE_CALL(errorString());
     }
     return QString();
@@ -195,9 +208,34 @@ ErrorType AbstractMediaProducer::errorType() const
 {
     if (state() == Phonon::ErrorState) {
         K_D(const AbstractMediaProducer);
+        if (d->errorOverride) {
+            return d->errorType;
+        }
         return INTERFACE_CALL(errorType());
     }
     return Phonon::NoError;
+}
+
+template<>
+bool AbstractMediaProducer::hasInterface<TrackInterface>() const
+{
+    K_D(const AbstractMediaProducer);
+    if (d->backendObject) {
+        return qobject_cast<AddonInterface *>(d->backendObject)
+            ->hasInterface(AddonInterface::TrackInterface);
+    }
+    return false;
+}
+
+template<>
+bool AbstractMediaProducer::hasInterface<ChapterInterface>() const
+{
+    K_D(const AbstractMediaProducer);
+    if (d->backendObject) {
+        return qobject_cast<AddonInterface *>(d->backendObject)
+            ->hasInterface(AddonInterface::ChapterInterface);
+    }
+    return false;
 }
 
 bool AbstractMediaProducerPrivate::aboutToDeleteIface()
@@ -205,9 +243,9 @@ bool AbstractMediaProducerPrivate::aboutToDeleteIface()
 	//kDebug( 600 ) << k_funcinfo << endl;
 	if( backendObject )
 	{
-		state = qobject_cast<MediaProducerInterface*>( backendObject )->state();
-		currentTime = qobject_cast<MediaProducerInterface*>( backendObject )->currentTime();
-		tickInterval = qobject_cast<MediaProducerInterface*>( backendObject )->tickInterval();
+        state = pINTERFACE_CALL(state());
+        currentTime = pINTERFACE_CALL(currentTime());
+        tickInterval = pINTERFACE_CALL(tickInterval());
 	}
 	return true;
 }
@@ -289,12 +327,6 @@ QStringList AbstractMediaProducer::metaDataKeys() const
 {
 	K_D( const AbstractMediaProducer );
 	return d->metaData.keys();
-}
-
-QString AbstractMediaProducer::metaDataItem( const QString& key ) const
-{
-	K_D( const AbstractMediaProducer );
-	return d->metaData.value( key );
 }
 
 QStringList AbstractMediaProducer::metaDataItems( const QString& key ) const

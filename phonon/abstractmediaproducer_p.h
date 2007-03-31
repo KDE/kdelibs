@@ -31,7 +31,7 @@ namespace Phonon
 class AbstractMediaProducerPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( AbstractMediaProducer )
-	PHONON_PRIVATEABSTRACTCLASS( Base )
+	PHONON_PRIVATEABSTRACTCLASS
 	protected:
 		AbstractMediaProducerPrivate()
 			: state( Phonon::LoadingState )
@@ -42,7 +42,10 @@ class AbstractMediaProducerPrivate : public BasePrivate, private BaseDestruction
             selectedAudioStream(),
             selectedVideoStream(),
             selectedSubtitleStream(),
-            metaData()
+            metaData(),
+            errorOverride(false),
+            errorString(),
+            errorType(Phonon::NormalError)
 		{ }
 
 		State state;
@@ -54,6 +57,9 @@ class AbstractMediaProducerPrivate : public BasePrivate, private BaseDestruction
 		QHash<VideoPath*, QString> selectedVideoStream;
 		QHash<VideoPath*, QString> selectedSubtitleStream;
 		QMultiMap<QString, QString> metaData;
+        bool errorOverride;
+        QString errorString;
+        ErrorType errorType;
 
 	private:
 		void _k_resumePlay();

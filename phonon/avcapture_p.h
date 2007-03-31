@@ -28,7 +28,7 @@ namespace Phonon
 class AvCapturePrivate : public AbstractMediaProducerPrivate
 {
 	K_DECLARE_PUBLIC( AvCapture )
-	PHONON_PRIVATECLASS( AbstractMediaProducer )
+    PHONON_PRIVATECLASS
     public:
         AvCapturePrivate()
             : audioCaptureDevice(-1),

@@ -85,36 +85,33 @@ class OverlayApi;
 			 */
 			enum AspectRatio
 			{
+                /**
+                 * Let the decoder find the aspect ratio automatically from the
+                 * media file (this is the default).
+                 */
+                AspectRatioAuto = 0,
 				/**
 				 * Fits the video into the widget making the aspect ratio depend
 				 * solely on the size of the widget. This way the aspect ratio
 				 * is freely resizeable by the user.
 				 */
-				AspectRatioWidget = 0,
-				/**
-				 * Let the decoder find the aspect ratio automatically from the
-				 * media file (this is the default).
-				 */
-				AspectRatioAuto = 1,
-				/**
-                 * Assume that every pixel of the video image needs to be displayed with the same
-                 * physical width and height. (1:1 image pixels, not imagewidth
-                 * = imageheight)
-				 */
-				AspectRatioSquare = 2,
+				AspectRatioWidget = 1,
 				/**
 				 * Make width/height == 4/3, which is the old TV size and
 				 * monitor size (1024/768 == 4/3). (4:3)
 				 */
-				AspectRatio4_3 = 3,
-				/**
-				 * 16:9
-				 */
-				AspectRatioAnamorphic = 4,
-				/**
-				 * 2:1
-				 */
-				AspectRatioDvb = 5 //TODO: remove again? nonstandard?
+				AspectRatio4_3 = 2,
+                /**
+                 * Make width/height == 16/9, which is the size of most current
+                 * media. (16:9)
+                 */
+                AspectRatio16_9 = 3,
+//X                 /**
+//X                  * Assume that every pixel of the video image needs to be displayed with the same
+//X                  * physical width and height. (1:1 image pixels, not imagewidth
+//X                  * = imageheight)
+//X                  */
+//X                 AspectRatioSquare = 4,
 			};
 
             enum ScaleMode {

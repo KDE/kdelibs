@@ -26,6 +26,12 @@
 
 namespace Phonon
 {
+/**
+ * \short Interface for ByteStream objects
+ *
+ * \ingroup Backend
+ * \author Matthias Kretz <kretz@kde.org>
+ */
 class PHONONCORE_EXPORT ByteStreamInterface
 {
 	public:

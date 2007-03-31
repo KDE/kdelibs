@@ -28,6 +28,7 @@
 #include <QSlider>
 #include <QCheckBox>
 #include <QComboBox>
+#include <kicon.h>
 
 using namespace Phonon;
 
@@ -145,6 +146,7 @@ int main( int argc, char ** argv )
 	KCmdLineArgs::init( argc, argv, &about );
 	KApplication app;
 	MediaPlayer foo;
+    foo.setWindowIcon(KIcon("phonon"));
 	foo.show();
 	KUrl url( getenv( "PHONON_TESTURL" ) );
 	if( url.isValid() )

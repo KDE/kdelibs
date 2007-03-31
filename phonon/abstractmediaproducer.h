@@ -48,6 +48,7 @@ namespace Phonon
 	class PHONONCORE_EXPORT AbstractMediaProducer : public QObject, public Base
 	{
 		friend class MediaObjectPrivate;
+        friend class TrackInterface;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AbstractMediaProducer )
 		PHONON_ABSTRACTBASE( AbstractMediaProducer )
@@ -242,8 +243,31 @@ namespace Phonon
 			 */
 			QStringList availableSubtitleStreams() const;
 
+            /**
+             * Lists all keys that are set and can be used with \ref
+             * metaDataItem and \ref metaDataItems
+             */
 			QStringList metaDataKeys() const;
-			QString metaDataItem( const QString& key ) const;
+
+            /**
+             * Returns the strings associated with the given \p key.
+             *
+             * Backends should use the keys specified in the Ogg Vorbis
+             * documentation: http://xiph.org/vorbis/doc/v-comment.html
+             *
+             * Therefore the following should work with every backend:
+             *
+             * A typical usage looks like this:
+             * \code
+             * setMetaArtist (media->metaDataItems("ARTIST"     ));
+             * setMetaAlbum  (media->metaDataItems("ALBUM"      ));
+             * setMetaTitle  (media->metaDataItems("TITLE"      ));
+             * setMetaDate   (media->metaDataItems("DATE"       ));
+             * setMetaGenre  (media->metaDataItems("GENRE"      ));
+             * setMetaTrack  (media->metaDataItems("TRACKNUMBER"));
+             * setMetaComment(media->metaDataItems("DESCRIPTION"));
+             * \endcode
+             */
 			QStringList metaDataItems( const QString& key ) const;
 
             /**
@@ -257,6 +281,9 @@ namespace Phonon
              * \see Phonon::ErrorType
              */
             ErrorType errorType() const;
+
+            template<typename T>
+            bool hasInterface() const;
 
 		public Q_SLOTS:
 			/**

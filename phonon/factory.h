@@ -193,7 +193,7 @@ namespace Factory
     /**
      * Get the name of the Backend. It's the name from the .desktop file.
      */
-    QString backendName();
+    PHONONCORE_EXPORT QString backendName();
 
     /**
      * Get the comment of the Backend. It's the comment from the .desktop file.

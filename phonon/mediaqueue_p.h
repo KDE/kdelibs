@@ -29,7 +29,7 @@ namespace Phonon
 class MediaQueuePrivate : public MediaObjectPrivate
 {
 	K_DECLARE_PUBLIC( MediaQueue )
-	PHONON_PRIVATECLASS( Base )
+    PHONON_PRIVATECLASS
 	protected:
 		MediaQueuePrivate()
 			: doCrossfade( true )

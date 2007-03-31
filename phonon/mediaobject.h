@@ -45,6 +45,7 @@ namespace Phonon
 	 * media->play();
 	 * \endcode
 	 *
+     * \ingroup Playback
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
 	class PHONONCORE_EXPORT MediaObject : public AbstractMediaProducer
@@ -57,12 +58,22 @@ namespace Phonon
 		Q_PROPERTY( KUrl url READ url WRITE setUrl )
 		Q_PROPERTY( qint32 aboutToFinishTime READ aboutToFinishTime WRITE setAboutToFinishTime )
 		public:
+            enum Media {
+                None = 0,
+                CD = 1,
+                DVD = 2,
+                DVB = 3,
+                VCD = 4
+            };
 			/**
 			 * Get the URL the MediaObject should use as media data source.
 			 *
 			 * \return The currently used URL to the media data
 			 */
 			KUrl url() const;
+
+            Media media() const;
+
 			/**
 			 * Get the total time (in milliseconds) of the file currently being played.
 			 *
@@ -101,6 +112,16 @@ namespace Phonon
 			 * \param url The URL to the media data.
 			 */
 			void setUrl( const KUrl& url );
+
+            /**
+             * Instead of a media file MediaObject can also handle other media
+             * like DVD, CD and so forth. To open such a media ignore the URL
+             * property and call openMedia instead. \ref url() will return an
+             * empty URL then.
+             *
+             * \param media see \ref Media
+             */
+            void openMedia(Media media);
 
 			/**
 			 * Sets the time in milliseconds the aboutToFinish signal is emitted

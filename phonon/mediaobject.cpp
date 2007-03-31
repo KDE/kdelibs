@@ -78,6 +78,7 @@ qint64 MediaObject::remainingTime() const
 void MediaObject::setUrl( const KUrl& url )
 {
 	K_D( MediaObject );
+    d->media = None;
 	d->url = url;
 	if( iface() )
 	{
@@ -123,6 +124,33 @@ void MediaObject::setUrl( const KUrl& url )
 	}
 }
 
+MediaObject::Media MediaObject::media() const
+{
+    K_D(const MediaObject);
+    return d->media;
+}
+
+void MediaObject::openMedia(Media media)
+{
+    K_D(MediaObject);
+    d->url.clear();
+    d->media = media;
+    if (iface()) {
+        stop();
+        if (!qobject_cast<MediaObjectInterface *>(d->backendObject)) {
+            // backendObject is a ByteStream
+            d->deleteIface();
+            if (d->state == PlayingState || d->state == PausedState || d->state == BufferingState) {
+                emit stateChanged(StoppedState, d->state);
+                d->state = StoppedState;
+            }
+            d->createIface(); // calls openMedia in setupIface
+        } else {
+            INTERFACE_CALL(openMedia(media));
+        }
+    }
+}
+
 void MediaObject::stop()
 {
 	Phonon::State prevState = state();
@@ -164,7 +192,7 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
     K_Q(MediaObject);
 
     // backend MediaObject reached ErrorState, try a ByteStream
-    if (newstate == Phonon::ErrorState && !kiofallback) {
+    if (!url.isEmpty() && newstate == Phonon::ErrorState && !kiofallback) {
         Q_Q(MediaObject);
         kiofallback = GuiInterface::instance()->newKioFallback(q);
         if (!kiofallback) {
@@ -172,6 +200,7 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
             emit q->stateChanged(newstate, oldstate);
             return;
         }
+        errorString = q->errorString();
         kDebug(600) << "backend MediaObject reached ErrorState, trying ByteStream now" << endl;
         deleteIface();
         ignoreLoadingToBufferingStateChange = false;
@@ -230,6 +259,8 @@ void MediaObject::setupIface()
         INTERFACE_CALL(setUrl(d->url));
         // if the state changes to ErrorState it will be handled in
         // _k_stateChanged and a ByteStream will be used.
+    } else if (d->media != None) {
+        INTERFACE_CALL(openMedia(d->media));
     }
 }
 

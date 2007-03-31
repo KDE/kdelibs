@@ -28,7 +28,7 @@ namespace Phonon
 class VolumeFaderEffectPrivate : public AudioEffectPrivate
 {
 	K_DECLARE_PUBLIC( VolumeFaderEffect )
-	PHONON_PRIVATECLASS( AudioEffect )
+    PHONON_PRIVATECLASS
 	protected:
 		VolumeFaderEffectPrivate()
 			: currentVolume( 1.0 )

@@ -53,6 +53,8 @@ set(phononcore_LIB_SRCS
 	factory.cpp
 	kiofallback.cpp
 	guiinterface.cpp
+	trackinterface.cpp
+	#chapterinterface.cpp
 	)
 
 kde4_automoc(${phononcore_LIB_SRCS})
@@ -78,6 +80,8 @@ install( FILES
 	mediaqueue.h
 	avcapture.h
 	bytestream.h
+	trackinterface.h
+	chapterinterface.h
 	audiopath.h
 	videopath.h
 	effect.h
@@ -102,6 +106,7 @@ install( FILES
 	mediaproducerinterface.h
 	mediaobjectinterface.h
 	audiooutputinterface.h
+	addoninterface.h
 	DESTINATION ${INCLUDE_INSTALL_DIR}/phonon)
 install( FILES  phononbackend.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES org.kde.Phonon.AudioOutput.xml DESTINATION ${DBUS_INTERFACES_DIR} )

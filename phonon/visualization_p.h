@@ -28,7 +28,7 @@ namespace Phonon
 class VisualizationPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( Visualization )
-	PHONON_PRIVATECLASS( Base )
+    PHONON_PRIVATECLASS
 	protected:
 		VisualizationPrivate()
 			: audioPath( 0 )

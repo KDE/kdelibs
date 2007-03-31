@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,23 +17,27 @@
 
 */
 
-#ifndef PHONON_DEINTERLACEFILTER_P_H
-#define PHONON_DEINTERLACEFILTER_P_H
+#ifndef PHONON_CHAPTERINTERFACE_H
+#define PHONON_CHAPTERINTERFACE_H
 
-#include "deinterlacefilter.h"
-#include "videoeffect_p.h"
+#include <kdelibs_export.h>
+#include <ksharedptr.h>
 
 namespace Phonon
 {
-class DeinterlaceFilterPrivate : public VideoEffectPrivate
+class AbstractMediaProducer;
+class ChapterInterfacePrivate;
+class PHONONCORE_EXPORT ChapterInterface
 {
-    K_DECLARE_PUBLIC(DeinterlaceFilter)
-    PHONON_PRIVATECLASS
-    protected:
-        DeinterlaceFilterPrivate()
-        {
-        }
+    friend class AbstractMediaProducer;
+    public:
+        ChapterInterface();
+        ~ChapterInterface();
+    private:
+        ChapterInterface(AbstractMediaProducer *);
+        KSharedPtr<ChapterInterfacePrivate> d;
 };
-}
 
-#endif // PHONON_DEINTERLACEFILTER_P_H
+} // namespace Phonon
+
+#endif // PHONON_CHAPTERINTERFACE_H
