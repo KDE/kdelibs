@@ -68,7 +68,7 @@ namespace Phonon
 			 *
 			 * \param parent QObject parent
 			 */
-			AudioEffect( const AudioEffectDescription& type, QObject* parent = 0 );
+            explicit AudioEffect(const AudioEffectDescription &type, QObject *parent = 0);
 
 			AudioEffectDescription type() const;
 			virtual QList<EffectParameter> parameterList() const;

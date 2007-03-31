@@ -112,7 +112,7 @@ namespace Phonon
 			 * \see Phonon::categoryToString
 			 * \see outputDevice
 			 */
-			AudioOutput( Phonon::Category category, QObject* parent = 0 );
+            explicit AudioOutput(Phonon::Category category, QObject *parent = 0);
 			QString name() const;
 			double volumeDecibel() const;
 

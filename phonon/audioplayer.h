@@ -58,7 +58,7 @@ class PHONONCORE_EXPORT AudioPlayer : public QObject
 		 * \param category The category used for the audio output device.
 		 * \param parent The QObject parent.
 		 */
-		AudioPlayer( Phonon::Category category, QObject* parent = 0 );
+        explicit AudioPlayer(Phonon::Category category, QObject *parent = 0);
 
 		/**
 		 * On destruction the playback is stopped, also the audio output is

@@ -58,7 +58,7 @@ class PHONONUI_EXPORT VideoPlayer : public QWidget
 		 * \param category The category used for the audio output device.
 		 * \param parent The QObject parent.
 		 */
-		VideoPlayer( Phonon::Category category, QWidget* parent = 0 );
+        explicit VideoPlayer(Phonon::Category category, QWidget *parent = 0);
 
 		/**
 		 * On destruction the playback is stopped, also the audio output is

@@ -34,7 +34,7 @@ class Effect;
 		Q_OBJECT
 		Q_DECLARE_PRIVATE( EffectWidget )
 		public:
-			EffectWidget( Effect* effect, QWidget* parent = 0 );
+            explicit EffectWidget(Effect *effect, QWidget *parent = 0);
 			~EffectWidget();
 
 		protected:
