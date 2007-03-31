@@ -21,7 +21,7 @@
 #ifndef K3PASSWORDDIALOG_H
 #define K3PASSWORDDIALOG_H
 
-#include <kdelibs_export.h>
+#include <kde3support_export.h>
 #include <kdialog.h>
 
 #include <QtGui/QLineEdit>

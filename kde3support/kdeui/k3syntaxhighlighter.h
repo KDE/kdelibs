@@ -24,12 +24,12 @@
 #ifndef K3SYNTAXHIGHLIGHTER_H
 #define K3SYNTAXHIGHLIGHTER_H
 
+#include <kde3support_export.h>
+
 #include <q3textedit.h>
 #include <q3syntaxhighlighter.h>
 #include <qcolor.h>
 #include <qstringlist.h>
-
-#include <kdelibs_export.h>
 
 class Q3Accel;
 class QTimer;

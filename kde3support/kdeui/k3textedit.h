@@ -20,9 +20,9 @@
 #ifndef K3TEXTEDIT_H
 #define K3TEXTEDIT_H
 
-#include <q3textedit.h>
+#include <kde3support_export.h>
 
-#include <kdelibs_export.h>
+#include <q3textedit.h>
 
 class K3Spell;
 

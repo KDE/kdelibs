@@ -20,9 +20,9 @@
 #ifndef K3TEMPFILE_H
 #define K3TEMPFILE_H
 
-#include <stdio.h>
-#include "kdelibs_export.h"
+#include <kde3support_export.h>
 #include <QtCore/QString>
+#include <stdio.h>
 
 class QFile;
 class QTextStream;

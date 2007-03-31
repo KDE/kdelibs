@@ -22,9 +22,9 @@
 
 #ifndef QT_NO_DRAGANDDROP
 
+#include <kde3support_export.h>
 #include <q3dragobject.h>
 #include <q3valuelist.h>
-#include "kdelibs_export.h"
 
 class K3MultipleDragPrivate;
 /**

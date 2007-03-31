@@ -20,9 +20,10 @@
 #ifndef _K3COLORDRAG_H
 #define _K3COLORDRAG_H
 
+#include <kde3support_export.h>
+
 #include <q3dragobject.h>
 #include <qcolor.h>
-#include <kdelibs_export.h>
 
 class K3ColorDragPrivate;
 /**

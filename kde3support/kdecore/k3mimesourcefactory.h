@@ -22,8 +22,9 @@
 #ifndef KMIMESOURCEFACTORY_H
 #define KMIMESOURCEFACTORY_H
 
-#include <kdelibs_export.h>
+#include <kde3support_export.h>
 #include <kglobal.h>
+
 #include <qmime.h>
 #include <Qt3Support/Q3MimeSourceFactory>
 

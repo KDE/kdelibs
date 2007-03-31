@@ -19,10 +19,11 @@
 #ifndef K3SPELL_H
 #define K3SPELL_H
 
+#include <kde3support_export.h>
+
 #include <qobject.h>
 #include <qstringlist.h>
 #include <qstring.h>
-#include <kdelibs_export.h>
 
 class QTextCodec;
 class K3ProcIO;

@@ -21,7 +21,7 @@
 #ifndef __kebdrag_h
 #define __kebdrag_h
 
-#include <kdelibs_export.h>
+#include <kde3support_export.h>
 
 #include <kbookmark.h>
 #include <q3dragobject.h>

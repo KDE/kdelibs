@@ -20,10 +20,12 @@
 #ifndef KUrlDRAG_H
 #define KUrlDRAG_H
 
+#include <kde3support_export.h>
+#include <kurl.h>
+
 #include <qstringlist.h>
 #include <q3dragobject.h>
-#include <kurl.h>
-#include "kdelibs_export.h"
+
 class QMimeSource;
 
 class K3URLDragPrivate;

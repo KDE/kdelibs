@@ -30,10 +30,10 @@
 #ifndef K3ABOUTDIALOG_H
 #define K3ABOUTDIALOG_H
 
+#include <kde3support_export.h>
+
 #include <QtGui/QFrame>
 #include <kdialog.h>
-
-#include <kdelibs_export.h>
 
 class QLabel;
 class QVBoxLayout;

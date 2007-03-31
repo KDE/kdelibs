@@ -40,7 +40,6 @@
 #define KNTLM_EXPORT KDE_EXPORT
 #define KHTML_EXPORT KDE_EXPORT
 #define KHTML_JAVA_EXPORT KDE_EXPORT
-#define KDE3SUPPORT_EXPORT KDE_EXPORT
 #define KATEPARTINTERFACES_EXPORT KDE_EXPORT
 #define KATEPART_EXPORT KDE_EXPORT
 #define KUNITTEST_EXPORT KDE_EXPORT
@@ -70,12 +69,3 @@
 #endif
 
 #endif /*_KDELIBS_EXPORT_H*/
-
-/* workaround for kdecore: stupid moc's grammar doesn't accept two macros
-   between 'class' keyword and <classname>: */
-#ifdef KDE_DEPRECATED
-# ifndef KDE3SUPPORT_EXPORT_DEPRECATED
-#  define KDE3SUPPORT_EXPORT_DEPRECATED KDE_DEPRECATED KDE3SUPPORT_EXPORT
-# endif
-#endif
-/* (let's add KDE****_EXPORT_DEPRECATED for other libraries if it's needed) */

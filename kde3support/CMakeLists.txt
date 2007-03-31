@@ -66,6 +66,7 @@ install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
+  kde3support_export.h
   kdecore/k3mimesourcefactory.h
   kdecore/k3multipledrag.h
   kdecore/k3rfcdate.h

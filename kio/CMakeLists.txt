@@ -22,7 +22,8 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${CMAKE_SOURCE_DIR}/kwallet/client
-   ${CMAKE_SOURCE_DIR}/kde3support/kdeui/ #for k3wizard
+   ${CMAKE_SOURCE_DIR}/kde3support
+   ${CMAKE_SOURCE_DIR}/kde3support/kdeui #for k3wizard
    ${KDE4_KDEUI_INCLUDES}
    ${CMAKE_SOURCE_DIR}/solid
    ${ZLIB_INCLUDE_DIR}

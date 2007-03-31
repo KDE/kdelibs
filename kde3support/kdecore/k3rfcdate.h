@@ -20,8 +20,8 @@
 #ifndef KRFCDATE_H
 #define KRFCDATE_H
 
+#include <kde3support_export.h>
 #include <time.h>
-#include <kdelibs_export.h>
 
 class QString;
 class QByteArray;

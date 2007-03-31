@@ -18,11 +18,11 @@
 #ifndef KDELIBS_KSCONFIG_H
 #define KDELIBS_KSCONFIG_H
 
+#include <kde3support_export.h>
+#include <ksharedconfig.h>
+
 #include <QtGui/QWidget>
 #include <QtCore/QStringList>
-
-#include <kdelibs_export.h>
-#include <ksharedconfig.h>
 
 class QCheckBox;
 class QComboBox;

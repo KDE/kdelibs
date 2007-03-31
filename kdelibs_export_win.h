@@ -67,14 +67,6 @@
 # endif
 #endif
 
-#ifndef KDE3SUPPORT_EXPORT
-# ifdef MAKE_KDE3SUPPORT_LIB
-#  define KDE3SUPPORT_EXPORT KDE_EXPORT
-# else
-#  define KDE3SUPPORT_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KHTML_EXPORT
 # ifdef MAKE_KHTML_LIB
 #  define KHTML_EXPORT KDE_EXPORT

@@ -23,10 +23,11 @@
 #define QT3_SUPPORT
 #endif
 
+#include <kde3support_export.h>
+#include <kpixmapeffect.h>
+
 #include <Qt3Support/Q3PopupMenu>
 #include <QtGui/QMenuItem>
-#include <kpixmapeffect.h>
-#include <kdelibs_export.h>
 
 /**
  * @short A menu with keyboard searching and convenience methods for title items.
