@@ -20,7 +20,7 @@
 #define Phonon_UI_FAKE_VIDEOWIDGET_H
 
 #include <QWidget>
-#include <phonon/videoframe.h>
+#include <phonon/experimental/videoframe.h>
 #include <phonon/ui/videowidget.h>
 #include "../abstractvideooutput.h"
 #include <QPixmap>
@@ -45,7 +45,7 @@ namespace Fake
 
 			// Fake specific:
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
-			virtual void processFrame( Phonon::VideoFrame& frame );
+            virtual void processFrame(Phonon::Experimental::VideoFrame &frame);
 
 		public slots:
 			QWidget *widget() { return this; }

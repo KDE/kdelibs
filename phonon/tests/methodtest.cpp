@@ -36,7 +36,7 @@ void MethodTest::checkBackendInterface()
 
 void MethodTest::checkAudioDataOutputMethods_data() { addColumns();
 #include "methods/abstractaudiooutput.cpp"
-#include "methods/audiodataoutput.cpp"
+#include "../experimental/tests/methods/audiodataoutput.cpp"
 }
 void MethodTest::checkAudioEffectMethods_data() { addColumns();
 #include "methods/audioeffect.cpp"
@@ -50,7 +50,7 @@ void MethodTest::checkAudioPathMethods_data() { addColumns();
 }
 void MethodTest::checkAvCaptureMethods_data() { addColumns();
 #include "methods/abstractmediaproducer.cpp"
-#include "methods/avcapture.cpp"
+#include "../experimental/tests/methods/avcapture.cpp"
 }
 void MethodTest::checkBackendMethods_data() { addColumns();
 #include "methods/factory.cpp"
@@ -74,7 +74,7 @@ void MethodTest::checkMediaQueueMethods_data() { addColumns();
 }
 void MethodTest::checkVideoDataOutputMethods_data() { addColumns();
 #include "methods/abstractvideooutput.cpp"
-#include "methods/videodataoutput.cpp"
+#include "../experimental/tests/methods/videodataoutput.cpp"
 }
 void MethodTest::checkVideoEffectMethods_data() { addColumns();
 #include "methods/videoeffect.cpp"
@@ -83,7 +83,7 @@ void MethodTest::checkVideoPathMethods_data() { addColumns();
 #include "methods/videopath.cpp"
 }
 void MethodTest::checkVisualizationMethods_data() { addColumns();
-#include "methods/visualization.cpp"
+#include "../experimental/tests/methods/visualization.cpp"
 }
 void MethodTest::checkVolumeFaderEffectMethods_data() { addColumns();
 #include "methods/volumefadereffect.cpp"

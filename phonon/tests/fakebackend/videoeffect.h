@@ -20,7 +20,7 @@
 #define Phonon_FAKE_VIDEOEFFECT_H
 
 #include <QObject>
-#include <phonon/videoframe.h>
+#include <phonon/experimental/videoframe.h>
 #include <phonon/effectparameter.h>
 
 namespace Phonon
@@ -39,7 +39,7 @@ namespace Fake
 			Q_INVOKABLE QList<EffectParameter> parameterList() const;
 
 			// Fake specific:
-			virtual void processFrame( Phonon::VideoFrame& frame );
+            virtual void processFrame(Phonon::Experimental::VideoFrame &frame);
 
 		private:
 			QList<Phonon::EffectParameter> m_parameterList;

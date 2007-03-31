@@ -17,29 +17,37 @@
 
 */
 
-#ifndef AVCAPTURE_P_H
-#define AVCAPTURE_P_H
+#ifndef PHONON_VISUALIZATION_P_H
+#define PHONON_VISUALIZATION_P_H
 
-#include "avcapture.h"
-#include "abstractmediaproducer_p.h"
+#include "visualization.h"
+#include "../base_p.h"
 
 namespace Phonon
 {
-class AvCapturePrivate : public AbstractMediaProducerPrivate
+namespace Experimental
 {
-	K_DECLARE_PUBLIC( AvCapture )
+class VisualizationPrivate : public BasePrivate, private BaseDestructionHandler
+{
+	K_DECLARE_PUBLIC( Visualization )
     PHONON_PRIVATECLASS
-    public:
-        AvCapturePrivate()
-            : audioCaptureDevice(-1),
-            videoCaptureDevice(-1)
-        {
-        }
 	protected:
-		int audioCaptureDevice;
-		int videoCaptureDevice;
-};
-}
+		VisualizationPrivate()
+			: audioPath( 0 )
+			, videoOutput( 0 )
+			, visualizationIndex( -1 ) // invalid
+		{
+		}
 
-#endif // AVCAPTURE_P_H
+		AudioPath* audioPath;
+		AbstractVideoOutput* videoOutput;
+		int visualizationIndex;
+
+	private:
+		void phononObjectDestroyed( Base* );
+};
+} // namespace Experimental
+} // namespace Phonon
+
+#endif // PHONON_VISUALIZATION_P_H
 // vim: sw=4 ts=4 tw=80

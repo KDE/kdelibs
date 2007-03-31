@@ -17,21 +17,34 @@
 
 */
 
-#include "avwriter.h"
-#include "avwriter_p.h"
+#ifndef AUDIODATAOUTPUT_P_H
+#define AUDIODATAOUTPUT_P_H
+
+#include "audiodataoutput.h"
+#include "../abstractaudiooutput_p.h"
 
 namespace Phonon
 {
-
-AvWriter::AvWriter( QObject* parent )
-	: QObject( parent )
-	, d_ptr( new AvWriterPrivate )
+namespace Experimental
 {
-	Q_D( AvWriter );
-	d->q_ptr = this;
-}
 
-} //namespace Phonon
+class AudioDataOutputPrivate : public AbstractAudioOutputPrivate
+{
+	K_DECLARE_PUBLIC( AudioDataOutput )
+    PHONON_PRIVATECLASS
+	protected:
+		AudioDataOutputPrivate()
+			: format( AudioDataOutput::IntegerFormat )
+			, dataSize( 512 )
+		{
+		}
 
-#include "avwriter.moc"
-// vim: sw=4 ts=4
+		AudioDataOutput::Format format;
+		int dataSize;
+};
+
+} // namespace Experimental
+} // namespace Phonon
+
+#endif // AUDIODATAOUTPUT_P_H
+// vim: sw=4 ts=4 tw=80

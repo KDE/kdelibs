@@ -19,15 +19,19 @@
 #ifndef PHONON_AVCAPTURE_H
 #define PHONON_AVCAPTURE_H
 
-#include "abstractmediaproducer.h"
-#include "phonondefs.h"
-#include "objectdescription.h"
+#include "export.h"
+#include "../abstractmediaproducer.h"
+#include "../phonondefs.h"
+#include "../objectdescription.h"
 
 class QString;
 class QStringList;
 
 namespace Phonon
 {
+namespace Experimental
+{
+
 	class AvCapturePrivate;
 
 	/**
@@ -45,7 +49,7 @@ namespace Phonon
 	 * @see BackendCapabilities::availableAudioCaptureDevices
 	 * @see BackendCapabilities::availableVideoCaptureDevices
 	 */
-	class PHONONCORE_EXPORT AvCapture : public AbstractMediaProducer
+	class PHONONEXPERIMENTAL_EXPORT AvCapture : public AbstractMediaProducer
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AvCapture )
@@ -120,7 +124,9 @@ namespace Phonon
 			 */
 			void setVideoCaptureDevice( int sourceIndex );
 	};
-} //namespace Phonon
+
+} // namespace Experimental
+} // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONON_AVCAPTURE_H

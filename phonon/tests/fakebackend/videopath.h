@@ -20,7 +20,7 @@
 #define Phonon_FAKE_VIDEOPATH_H
 
 #include <QObject>
-#include <phonon/videoframe.h>
+#include <phonon/experimental/videoframe.h>
 #include <QList>
 
 namespace Phonon
@@ -44,7 +44,7 @@ namespace Fake
 			Q_INVOKABLE bool removeEffect( QObject* effect );
 
 			// fake specific
-			void processFrame( Phonon::VideoFrame& frame );
+            void processFrame(Phonon::Experimental::VideoFrame &frame);
 
 		private:
 			QList<VideoEffect*> m_effects;

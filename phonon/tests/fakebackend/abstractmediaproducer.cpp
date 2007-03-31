@@ -306,7 +306,7 @@ void AbstractMediaProducer::emitTick()
 		tickInterval = m_tickInterval;
 	}
 	QVector<float> buffer( m_bufferSize );
-	VideoFrame frame;
+    Experimental::VideoFrame frame;
 	frame.fourcc = 0x00000000;
 	frame.width = 320;
 	frame.height = 240;
@@ -358,7 +358,7 @@ void AbstractMediaProducer::fillBuffer( QVector<float>* buffer )
 	}
 }
 
-void AbstractMediaProducer::fillFrameData( Phonon::VideoFrame* frame )
+void AbstractMediaProducer::fillFrameData(Phonon::Experimental::VideoFrame *frame)
 {
 	static quint32 frameCount = 0;
 	quint8* dataPtr = reinterpret_cast<quint8*>( frame->data.data() );

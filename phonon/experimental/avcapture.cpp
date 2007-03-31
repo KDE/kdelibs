@@ -25,6 +25,9 @@
 
 namespace Phonon
 {
+namespace Experimental
+{
+
 PHONON_HEIR_IMPL( AbstractMediaProducer )
 
 AudioCaptureDevice AvCapture::audioCaptureDevice() const
@@ -103,7 +106,8 @@ void AvCapture::setupIface()
 	BACKEND_CALL1( "setVideoCaptureDevice", int, d->videoCaptureDevice );
 }
 
-} //namespace Phonon
+} // namespace Experimental
+} // namespace Phonon
 
 #include "avcapture.moc"
 

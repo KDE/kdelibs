@@ -20,7 +20,7 @@
 #define Phonon_FAKE_AUDIODATAOUTPUT_H
 
 #include "abstractaudiooutput.h"
-#include <phonon/audiodataoutput.h>
+#include <phonon/experimental/audiodataoutput.h>
 #include <QVector>
 
 namespace Phonon
@@ -38,10 +38,10 @@ namespace Fake
 			~AudioDataOutput();
 
 		public Q_SLOTS:
-			Phonon::AudioDataOutput::Format format() const;
+            Phonon::Experimental::AudioDataOutput::Format format() const;
 			int dataSize() const;
 			int sampleRate() const;
-			void setFormat( Phonon::AudioDataOutput::Format format );
+            void setFormat(Phonon::Experimental::AudioDataOutput::Format format);
 			void setDataSize( int size );
 
 		public:
@@ -49,14 +49,14 @@ namespace Fake
 			virtual void processBuffer( const QVector<float>& buffer );
 
 		signals:
-			void dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<qint16> >& data );
-			void dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<float> >& data );
+            void dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > &data);
+            void dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > &data);
 			void endOfMedia( int remainingSamples );
 
 		private:
 			void convertAndEmit( const QVector<float>& buffer );
 
-			Phonon::AudioDataOutput::Format m_format;
+			Phonon::Experimental::AudioDataOutput::Format m_format;
 			int m_dataSize;
 			QVector<float> m_pendingData;
 	};

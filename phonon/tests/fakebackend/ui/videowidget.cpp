@@ -18,7 +18,7 @@
 */
 
 #include "videowidget.h"
-#include "../../../ui/overlayapi.h"
+#include <phonon/experimental/overlayapi.h>
 #include <QChildEvent>
 #include <QPalette>
 #include <QImage>
@@ -97,7 +97,7 @@ void VideoWidget::setScaleMode(Phonon::VideoWidget::ScaleMode scaleMode)
     m_scaleMode = scaleMode;
 }
 
-void VideoWidget::processFrame( Phonon::VideoFrame& frame )
+void VideoWidget::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
 	switch( frame.fourcc )
 	{
@@ -116,12 +116,12 @@ void VideoWidget::processFrame( Phonon::VideoFrame& frame )
 
 int VideoWidget::overlayCapabilities() const
 {
-    return OverlayApi::OverlayFull;
+    return Experimental::OverlayApi::OverlayFull;
 }
 
 bool VideoWidget::createOverlay(QWidget *widget, int type)
 {
-    if ((overlay != 0) || (type != OverlayApi::OverlayFull)) {
+    if ((overlay != 0) || (type != Experimental::OverlayApi::OverlayFull)) {
         return false;
     }
 

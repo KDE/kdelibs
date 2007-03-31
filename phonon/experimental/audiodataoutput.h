@@ -19,9 +19,9 @@
 #ifndef Phonon_AUDIODATAOUTPUT_H
 #define Phonon_AUDIODATAOUTPUT_H
 
-#include <kdelibs_export.h>
-#include "abstractaudiooutput.h"
-#include "phonondefs.h"
+#include "export.h"
+#include "../abstractaudiooutput.h"
+#include "../phonondefs.h"
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 template<typename T> class QVector;
@@ -29,6 +29,8 @@ template<typename Key, typename T> class QMap;
 #endif
 
 namespace Phonon
+{
+namespace Experimental
 {
 	class AudioDataOutputPrivate;
 
@@ -47,7 +49,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONONCORE_EXPORT AudioDataOutput : public AbstractAudioOutput
+	class PHONONEXPERIMENTAL_EXPORT AudioDataOutput : public AbstractAudioOutput
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AudioDataOutput )
@@ -149,7 +151,7 @@ namespace Phonon
 			 *
 			 * \param data A mapping of Channel to a vector holding the audio data.
 			 */
-			void dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<qint16> >& data );
+			void dataReady( const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> >& data );
 
 			/**
 			 * Emitted whenever another dataSize number of samples are ready and
@@ -159,7 +161,7 @@ namespace Phonon
 			 *
 			 * \param data A mapping of Channel to a vector holding the audio data.
 			 */
-			void dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<float> >& data );
+			void dataReady( const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> >& data );
 
 			/**
 			 * This signal is emitted before the last dataReady signal of a
@@ -177,7 +179,8 @@ namespace Phonon
 			 */
 			void endOfMedia( int remainingSamples );
 	};
-} //namespace Phonon
+} // namespace Experimental
+} // namespace Phonon
 
 // vim: sw=4 ts=4 tw=80
 #endif // Phonon_AUDIODATAOUTPUT_H

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,24 +17,24 @@
 
 */
 
-#ifndef PHONON_RTPRECEIVER_H
-#define PHONON_RTPRECEIVER_H
+#ifndef OVERLAYAPI_P_H
+#define OVERLAYAPI_P_H
 
-#include "abstractmediaproducer.h"
+#include "overlayapi.h"
 
 namespace Phonon
 {
-
-class RtpReceiver : public AbstractMediaProducer
+namespace Experimental
 {
-	Q_OBJECT
-	K_DECLARE_PRIVATE( RtpReceiver )
-	PHONON_HEIR( VideoDataOutput )
-	public:
-		setUrl( const KUrl& );
-		setBandwidth( int kiloBitPerSecond );
+class OverlayApiPrivate
+{
+    Q_DECLARE_PUBLIC(OverlayApi)
+    protected:
+        OverlayApi* q_ptr;
+        VideoWidget *videowidget;
 };
-
+} // namespace Experimental
 } // namespace Phonon
 
-#endif // PHONON_RTPRECEIVER_H
+#endif // OVERLAYAPI_P_H
+// vim: sw=4 sts=4 et tw=100

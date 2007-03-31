@@ -20,10 +20,13 @@
 #ifndef PHONON_AVWRITER_H
 #define PHONON_AVWRITER_H
 
-#include "abstractaudiooutput.h"
-#include "abstractvideooutput.h"
+#include "export.h"
+#include "../abstractaudiooutput.h"
+#include "../abstractvideooutput.h"
 
 namespace Phonon
+{
+namespace Experimental
 {
 
 class AvWriterPrivate;
@@ -36,7 +39,7 @@ class AvWriterPrivate;
 // depending on the source material?
 // Chapters: call a method when to add a chapter? How does that map to a
 // specific frame/sample? Chapter support is probably overkill for Phonon.
-class PHONONCORE_EXPORT AvWriter : public QObject
+class PHONONEXPERIMENTAL_EXPORT AvWriter : public QObject
 {
 	Q_OBJECT
 	Q_DECLARE_PRIVATE( AvWriter )
@@ -72,6 +75,7 @@ class PHONONCORE_EXPORT AvWriter : public QObject
 		void setContainerFormat( ContainerFormat format );
 };
 
+} // namespace Experimental
 } // namespace Phonon
 
 #endif // PHONON_AVWRITER_H

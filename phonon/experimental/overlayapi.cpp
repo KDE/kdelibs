@@ -20,11 +20,13 @@
 #include "overlayapi.h"
 #include "overlayapi_p.h"
 #include "../phonondefs_p.h"
-#include "videowidget.h"
+#include "../ui/videowidget.h"
 
 #include <QVariant>
 
 namespace Phonon
+{
+namespace Experimental
 {
 
 OverlayApi::OverlayApi(VideoWidget *parent)
@@ -66,6 +68,7 @@ bool OverlayApi::createOverlay(QWidget *widget, OverlayType type)
     return false;
 }
 
+} // namespace Experimental
 } // namespace Phonon
 
 #include "overlayapi.moc"

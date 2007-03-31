@@ -20,14 +20,17 @@
 #ifndef PHONON_AUDIOWRITER_H
 #define PHONON_AUDIOWRITER_H
 
-#include "abstractaudiooutput.h"
-#include "phonondefs.h"
+#include "export.h"
+#include "../abstractaudiooutput.h"
+#include "../phonondefs.h"
 
 namespace Phonon
 {
+namespace Experimental
+{
 
 class AudioWriterPrivate;
-class PHONONCORE_EXPORT AudioWriter : public AbstractAudioOutput
+class PHONONEXPERIMENTAL_EXPORT AudioWriter : public AbstractAudioOutput
 {
 	Q_OBJECT
 	K_DECLARE_PRIVATE( AudioWriter )
@@ -48,6 +51,7 @@ class PHONONCORE_EXPORT AudioWriter : public AbstractAudioOutput
 		// codec parameters? reuse EffectParameter class?
 };
 
+} // namespace Experimental
 } // namespace Phonon
 
 #endif // PHONON_AUDIOWRITER_H

@@ -85,7 +85,7 @@ bool VideoPath::removeEffect( QObject* effect )
 	return false;
 }
 
-void VideoPath::processFrame( Phonon::VideoFrame& frame )
+void VideoPath::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
 	foreach( VideoEffect* effect, m_effects )
 		effect->processFrame( frame ); //modifies the frame

@@ -27,6 +27,8 @@
 
 namespace Phonon
 {
+namespace Experimental
+{
 PHONON_OBJECT_IMPL
 
 Visualization::~Visualization()
@@ -153,6 +155,7 @@ void Visualization::setupIface()
 		BACKEND_CALL1( "setVideoOutput", QObject*, d->videoOutput->iface() );
 }
 
+} // namespace Experimental
 } // namespace Phonon
 
 #include "visualization.moc"

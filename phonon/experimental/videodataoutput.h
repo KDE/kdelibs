@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005-2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,9 +20,9 @@
 #ifndef PHONON_VIDEODATAOUTPUT_H
 #define PHONON_VIDEODATAOUTPUT_H
 
-#include <kdelibs_export.h>
-#include "abstractvideooutput.h"
-#include "phonondefs.h"
+#include "export.h"
+#include "../abstractvideooutput.h"
+#include "../phonondefs.h"
 #include <QObject>
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -32,6 +32,8 @@ template<typename Key, typename T> class QMap;
 class QSize;
 
 namespace Phonon
+{
+namespace Experimental
 {
 	class VideoDataOutputPrivate;
 	class VideoFrame;
@@ -52,7 +54,7 @@ namespace Phonon
 	 *
 	 * \author Matthias Kretz <kretz@kde.org>
 	 */
-	class PHONONCORE_EXPORT VideoDataOutput : public QObject, public AbstractVideoOutput
+	class PHONONEXPERIMENTAL_EXPORT VideoDataOutput : public QObject, public AbstractVideoOutput
 	{
 		Q_OBJECT
 		K_DECLARE_PRIVATE( VideoDataOutput )
@@ -128,7 +130,7 @@ namespace Phonon
 			 * \param frame An object of class VideoFrame holding the video data
 			 * and some additional information.
 			 */
-			void frameReady( const Phonon::VideoFrame& frame );
+            void frameReady(const Phonon::Experimental::VideoFrame &frame);
 
 			/**
 			 * This signal is emitted after the last frameReady signal of a
@@ -136,6 +138,8 @@ namespace Phonon
 			 */
 			void endOfMedia();
 	};
+
+} // namespace Experimental
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

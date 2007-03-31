@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2005-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,6 +24,8 @@
 #define PHONON_CLASSNAME VideoDataOutput
 
 namespace Phonon
+{
+namespace Experimental
 {
 
 VideoDataOutput::VideoDataOutput( QObject* parent )
@@ -100,12 +102,13 @@ void VideoDataOutput::setupIface()
 	// set up attributes
 	BACKEND_CALL1( "setFormat", quint32, d->format );
 	//d->backendObject->setDisplayLatency( d->displayLatency );
-	connect( d->backendObject, SIGNAL( frameReady( const Phonon::VideoFrame& ) ),
-			SIGNAL( frameReady( const Phonon::VideoFrame& ) ) );
+    connect(d->backendObject, SIGNAL(frameReady(const Phonon::Experimental::VideoFrame &)),
+            SIGNAL(frameReady(const Phonon::Experimental::VideoFrame &)));
 	connect( d->backendObject, SIGNAL( endOfMedia() ), SIGNAL( endOfMedia() ) );
 }
 
-} //namespace Phonon
+} // namespace Experimental
+} // namespace Phonon
 
 #include "videodataoutput.moc"
 

@@ -28,7 +28,7 @@
 
 namespace Phonon
 {
-class AbstractMediaProducerPrivate : public BasePrivate, private BaseDestructionHandler
+class PHONONCORE_EXPORT AbstractMediaProducerPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( AbstractMediaProducer )
 	PHONON_PRIVATEABSTRACTCLASS

@@ -27,13 +27,18 @@ class QString;
 
 namespace Phonon
 {
+namespace Experimental
+{
+    class Visualization;
+} // namespace Experimental
+
 	class AbstractVideoOutputPrivate;
 
 	class PHONONCORE_EXPORT AbstractVideoOutput : public Base
 	{
 		friend class VideoPath;
 		friend class VideoPathPrivate;
-		friend class Visualization;
+		friend class Experimental::Visualization;
 		K_DECLARE_PRIVATE( AbstractVideoOutput )
 		protected:
 			/**

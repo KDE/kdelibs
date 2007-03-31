@@ -17,34 +17,25 @@
 
 */
 
-#ifndef PHONON_VISUALIZATION_P_H
-#define PHONON_VISUALIZATION_P_H
+#ifndef PHONON_AVWRITER_P_H
+#define PHONON_AVWRITER_P_H
 
-#include "visualization.h"
-#include "base_p.h"
+#include "rtpsender.h"
 
 namespace Phonon
 {
-class VisualizationPrivate : public BasePrivate, private BaseDestructionHandler
+namespace Experimental
 {
-	K_DECLARE_PUBLIC( Visualization )
-    PHONON_PRIVATECLASS
+
+class AvWriterPrivate
+{
+	Q_DECLARE_PUBLIC( AvWriter )
 	protected:
-		VisualizationPrivate()
-			: audioPath( 0 )
-			, videoOutput( 0 )
-			, visualizationIndex( -1 ) // invalid
-		{
-		}
-
-		AudioPath* audioPath;
-		AbstractVideoOutput* videoOutput;
-		int visualizationIndex;
-
-	private:
-		void phononObjectDestroyed( Base* );
+		AvWriter* q_ptr;
 };
+
+} // namespace Experimental
 } // namespace Phonon
 
-#endif // PHONON_VISUALIZATION_P_H
+#endif // PHONON_AVWRITER_P_H
 // vim: sw=4 ts=4 tw=80

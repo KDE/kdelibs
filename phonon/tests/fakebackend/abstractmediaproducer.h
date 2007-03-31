@@ -35,7 +35,10 @@ class QTimer;
 
 namespace Phonon
 {
-	class VideoFrame;
+namespace Experimental
+{
+    class VideoFrame;
+} // namespace Experimental
 
 namespace Fake
 {
@@ -92,7 +95,7 @@ namespace Fake
 
 		protected:
 			void fillBuffer( QVector<float>* buffer );
-			void fillFrameData( Phonon::VideoFrame* frame );
+            void fillFrameData(Phonon::Experimental::VideoFrame *frame);
 			void setState( State );
 
 		protected Q_SLOTS:

@@ -179,8 +179,6 @@ void AbstractMediaProducer::stop()
 	if( iface() )
 	{
         INTERFACE_CALL(stop());
-		if( tickInterval() > 0 )
-			emit tick( 0 );
 	}
 }
 

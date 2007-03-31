@@ -17,36 +17,52 @@
 
 */
 
-#ifndef PHONON_VIDEODATAOUTPUT_P_H
-#define PHONON_VIDEODATAOUTPUT_P_H
+#ifndef PHONON_FRAME_H
+#define PHONON_FRAME_H
 
+#include "export.h"
 #include "videodataoutput.h"
-#include "abstractvideooutput_p.h"
-#include "videoframe.h"
-#include <QSize>
+#include <QByteArray>
 
 namespace Phonon
 {
-class VideoDataOutputPrivate : public AbstractVideoOutputPrivate
+namespace Experimental
 {
-	K_DECLARE_PUBLIC( VideoDataOutput )
-    PHONON_PRIVATECLASS
-	protected:
-		VideoDataOutputPrivate()
-			: format( 0x00000000 ) //BI_RGB TODO: what should be the default?
-			// after changing the default -> change the dox accordingly
-			, displayLatency( 0 )
-			, frameRate( -1 )
-		{
-		}
+	/**
+	 * \brief A single video frame.
+	 *
+	 * This simple class contains the data of a frame and metadata describing
+	 * how to interpret the data.
+	 *
+	 * \author Matthias Kretz <kretz@kde.org>
+	 */
+	class PHONONEXPERIMENTAL_EXPORT VideoFrame
+	{
+		public:
+			QByteArray data;
+			/**
+			 * The width of the video frame in pixels.
+			 */
+			int width;
+			/**
+			 * The height of the video frame in pixels.
+			 */
+			int height;
+			/**
+			 * The FOURCC (four character code) identifying the data format.
+			 */
+			quint32 fourcc;
+			/**
+			 * The color depth in bits.
+			 */
+			int depth;
+			/**
+			 * The number of bits per pixel.
+			 */
+			int bpp;
+	};
+} // namespace Experimental
+} // namespace Phonon
 
-		quint32 format;
-		int displayLatency;
-		int frameRate;
-		QSize frameSize;
-		Qt::AspectRatioMode frameAspectRatioMode;
-};
-} //namespace Phonon
-
-#endif // PHONON_VIDEODATAOUTPUT_P_H
 // vim: sw=4 ts=4 tw=80
+#endif // PHONON_FRAME_H

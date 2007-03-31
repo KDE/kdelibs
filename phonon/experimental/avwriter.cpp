@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,21 +17,24 @@
 
 */
 
-#ifndef OVERLAYAPI_P_H
-#define OVERLAYAPI_P_H
-
-#include "overlayapi.h"
+#include "avwriter.h"
+#include "avwriter_p.h"
 
 namespace Phonon
 {
-class OverlayApiPrivate
+namespace Experimental
 {
-    Q_DECLARE_PUBLIC(OverlayApi)
-    protected:
-        OverlayApi* q_ptr;
-        VideoWidget *videowidget;
-};
+
+AvWriter::AvWriter( QObject* parent )
+	: QObject( parent )
+	, d_ptr( new AvWriterPrivate )
+{
+	Q_D( AvWriter );
+	d->q_ptr = this;
+}
+
+} // namespace Experimental
 } // namespace Phonon
 
-#endif // OVERLAYAPI_P_H
-// vim: sw=4 sts=4 et tw=100
+#include "avwriter.moc"
+// vim: sw=4 ts=4

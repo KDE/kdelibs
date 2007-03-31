@@ -17,29 +17,27 @@
 
 */
 
-#ifndef AUDIODATAOUTPUT_P_H
-#define AUDIODATAOUTPUT_P_H
+#ifndef PHONON_RTPRECEIVER_H
+#define PHONON_RTPRECEIVER_H
 
-#include "audiodataoutput.h"
-#include "abstractaudiooutput_p.h"
+#include "../abstractmediaproducer.h"
 
 namespace Phonon
 {
-class AudioDataOutputPrivate : public AbstractAudioOutputPrivate
+namespace Experimental
 {
-	K_DECLARE_PUBLIC( AudioDataOutput )
-    PHONON_PRIVATECLASS
-	protected:
-		AudioDataOutputPrivate()
-			: format( AudioDataOutput::IntegerFormat )
-			, dataSize( 512 )
-		{
-		}
 
-		AudioDataOutput::Format format;
-		int dataSize;
+class RtpReceiver : public AbstractMediaProducer
+{
+	Q_OBJECT
+	K_DECLARE_PRIVATE( RtpReceiver )
+	PHONON_HEIR( VideoDataOutput )
+	public:
+		setUrl( const KUrl& );
+		setBandwidth( int kiloBitPerSecond );
 };
-} //namespace Phonon
 
-#endif // AUDIODATAOUTPUT_P_H
-// vim: sw=4 ts=4 tw=80
+} // namespace Experimental
+} // namespace Phonon
+
+#endif // PHONON_RTPRECEIVER_H

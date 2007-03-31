@@ -17,48 +17,34 @@
 
 */
 
-#ifndef PHONON_FRAME_H
-#define PHONON_FRAME_H
+#ifndef AVCAPTURE_P_H
+#define AVCAPTURE_P_H
 
-#include "videodataoutput.h"
-#include <QByteArray>
+#include "avcapture.h"
+#include "../abstractmediaproducer_p.h"
 
 namespace Phonon
 {
-	/**
-	 * \brief A single video frame.
-	 *
-	 * This simple class contains the data of a frame and metadata describing
-	 * how to interpret the data.
-	 *
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class PHONONCORE_EXPORT VideoFrame
-	{
-		public:
-			QByteArray data;
-			/**
-			 * The width of the video frame in pixels.
-			 */
-			int width;
-			/**
-			 * The height of the video frame in pixels.
-			 */
-			int height;
-			/**
-			 * The FOURCC (four character code) identifying the data format.
-			 */
-			quint32 fourcc;
-			/**
-			 * The color depth in bits.
-			 */
-			int depth;
-			/**
-			 * The number of bits per pixel.
-			 */
-			int bpp;
-	};
+namespace Experimental
+{
+
+class AvCapturePrivate : public AbstractMediaProducerPrivate
+{
+	K_DECLARE_PUBLIC( AvCapture )
+    PHONON_PRIVATECLASS
+    public:
+        AvCapturePrivate()
+            : audioCaptureDevice(-1),
+            videoCaptureDevice(-1)
+        {
+        }
+	protected:
+		int audioCaptureDevice;
+		int videoCaptureDevice;
+};
+
+} // namespace Experimental
 } // namespace Phonon
 
+#endif // AVCAPTURE_P_H
 // vim: sw=4 ts=4 tw=80
-#endif // PHONON_FRAME_H

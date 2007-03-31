@@ -465,7 +465,7 @@ class Parser
           semicolon = token.index ';'
           if not semicolon
             if token.length > 1
-              while token[0,1] == '(' or token[0,1] == ')' or token[0,1] == "'"
+              while token[0,1] == '(' or token[0,1] == ')' or token[0,1] == "'" or token[0,1] == '&'
                 yield token[0,1]
                 token = token[1..-1]
               end

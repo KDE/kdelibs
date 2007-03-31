@@ -20,7 +20,7 @@
 #ifndef PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
 #define PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
 
-#include <phonon/videoframe.h>
+#include <phonon/experimental/videoframe.h>
 
 namespace Phonon
 {
@@ -31,7 +31,7 @@ class AbstractVideoOutput
 {
 	public:
 		virtual ~AbstractVideoOutput() {}
-		virtual void processFrame( Phonon::VideoFrame& frame ) = 0;
+        virtual void processFrame(Phonon::Experimental::VideoFrame &frame) = 0;
 		virtual void* internal1( void* = 0 ) { return 0; }
 };
 

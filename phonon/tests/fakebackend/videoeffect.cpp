@@ -47,7 +47,7 @@ void VideoEffect::setValue( int parameterId, QVariant newValue )
 {
 }
 
-void VideoEffect::processFrame( Phonon::VideoFrame& frame )
+void VideoEffect::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
 	// do nothing
 }

@@ -18,6 +18,7 @@ add_subdirectory( ui )
 add_subdirectory( tests )
 add_subdirectory( kcm )
 add_subdirectory( examples )
+add_subdirectory(experimental)
 
 ########### next target ###############
 
@@ -29,7 +30,6 @@ set(phononcore_LIB_SRCS
 	abstractmediaproducer.cpp
 	mediaobject.cpp
 	mediaqueue.cpp
-	avcapture.cpp
 	bytestream.cpp
 	audiopath.cpp
 	videopath.cpp
@@ -43,10 +43,7 @@ set(phononcore_LIB_SRCS
 	deinterlacefilter.cpp
 	abstractaudiooutput.cpp
 	audiooutput.cpp
-	audiodataoutput.cpp
 	abstractvideooutput.cpp
-	videodataoutput.cpp
-	visualization.cpp
 	audioplayer.cpp
 	backendcapabilities.cpp
 	globalconfig.cpp
@@ -78,7 +75,6 @@ install( FILES
 	abstractmediaproducer.h
 	mediaobject.h
 	mediaqueue.h
-	avcapture.h
 	bytestream.h
 	trackinterface.h
 	chapterinterface.h
@@ -93,11 +89,7 @@ install( FILES
 	deinterlacefilter.h
 	abstractaudiooutput.h
 	audiooutput.h
-	audiodataoutput.h
 	abstractvideooutput.h
-	videoframe.h
-	videodataoutput.h
-	visualization.h
 	audioplayer.h
 	backendcapabilities.h
 	phonondefs.h

@@ -26,6 +26,8 @@
 namespace Phonon
 {
 class VideoWidget;
+namespace Experimental
+{
 class OverlayApiPrivate;
 
 class PHONONEXPERIMENTAL_EXPORT OverlayApi : public QObject
@@ -83,5 +85,6 @@ class PHONONEXPERIMENTAL_EXPORT OverlayApi : public QObject
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(OverlayApi::OverlayTypes)
 
+} // namespace Experimental
 } // namespace Phonon
 #endif // PHONON_OVERLAYAPI_H

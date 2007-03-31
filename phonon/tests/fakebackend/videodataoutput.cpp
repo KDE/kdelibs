@@ -78,7 +78,7 @@ void VideoDataOutput::setFormat( quint32 fourcc )
 //X 	m_latency = milliseconds;
 //X }
 
-void VideoDataOutput::processFrame( Phonon::VideoFrame& frame )
+void VideoDataOutput::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
 	if( frame.fourcc == m_fourcc )
 		emit frameReady( frame );

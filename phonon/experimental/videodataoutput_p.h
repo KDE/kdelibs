@@ -17,17 +17,40 @@
 
 */
 
-#ifndef PHONON_AVWRITER_P_H
-#define PHONON_AVWRITER_P_H
+#ifndef PHONON_VIDEODATAOUTPUT_P_H
+#define PHONON_VIDEODATAOUTPUT_P_H
 
-#include "rtpsender.h"
+#include "videodataoutput.h"
+#include "../abstractvideooutput_p.h"
+#include "videoframe.h"
+#include <QSize>
 
-class AvWriterPrivate
+namespace Phonon
 {
-	Q_DECLARE_PUBLIC( AvWriter )
+namespace Experimental
+{
+class VideoDataOutputPrivate : public AbstractVideoOutputPrivate
+{
+	K_DECLARE_PUBLIC( VideoDataOutput )
+    PHONON_PRIVATECLASS
 	protected:
-		AvWriter* q_ptr;
+		VideoDataOutputPrivate()
+			: format( 0x00000000 ) //BI_RGB TODO: what should be the default?
+			// after changing the default -> change the dox accordingly
+			, displayLatency( 0 )
+			, frameRate( -1 )
+		{
+		}
+
+		quint32 format;
+		int displayLatency;
+		int frameRate;
+		QSize frameSize;
+		Qt::AspectRatioMode frameAspectRatioMode;
 };
 
-#endif // PHONON_AVWRITER_P_H
+} // namespace Experimental
+} // namespace Phonon
+
+#endif // PHONON_VIDEODATAOUTPUT_P_H
 // vim: sw=4 ts=4 tw=80

@@ -34,7 +34,7 @@ AudioDataOutput::~AudioDataOutput()
 {
 }
 
-Phonon::AudioDataOutput::Format AudioDataOutput::format() const
+Phonon::Experimental::AudioDataOutput::Format AudioDataOutput::format() const
 {
 	return m_format;
 }
@@ -49,7 +49,7 @@ int AudioDataOutput::sampleRate() const
 	return 44100;
 }
 
-void AudioDataOutput::setFormat( Phonon::AudioDataOutput::Format format )
+void AudioDataOutput::setFormat(Phonon::Experimental::AudioDataOutput::Format format)
 {
 	m_format = format;
 }
@@ -59,16 +59,16 @@ void AudioDataOutput::setDataSize( int size )
 	m_dataSize = size;
 }
 
-typedef QMap<Phonon::AudioDataOutput::Channel, QVector<float> > FloatMap;
-typedef QMap<Phonon::AudioDataOutput::Channel, QVector<qint16> > IntMap;
+typedef QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > FloatMap;
+typedef QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > IntMap;
 
 inline void AudioDataOutput::convertAndEmit( const QVector<float>& buffer )
 {
-	if( m_format == Phonon::AudioDataOutput::FloatFormat )
+	if( m_format == Phonon::Experimental::AudioDataOutput::FloatFormat )
 	{
 		FloatMap map;
-		map.insert( Phonon::AudioDataOutput::LeftChannel, buffer );
-		map.insert( Phonon::AudioDataOutput::RightChannel, buffer );
+		map.insert( Phonon::Experimental::AudioDataOutput::LeftChannel, buffer );
+		map.insert( Phonon::Experimental::AudioDataOutput::RightChannel, buffer );
 		emit dataReady( map );
 	}
 	else
@@ -77,8 +77,8 @@ inline void AudioDataOutput::convertAndEmit( const QVector<float>& buffer )
 		QVector<qint16> intBuffer( m_dataSize );
 		for( int i = 0; i < m_dataSize; ++i )
 			intBuffer[ i ] = static_cast<qint16>( buffer[ i ] * static_cast<float>( 0x7FFF ) );
-		map.insert( Phonon::AudioDataOutput::LeftChannel, intBuffer );
-		map.insert( Phonon::AudioDataOutput::RightChannel, intBuffer );
+		map.insert( Phonon::Experimental::AudioDataOutput::LeftChannel, intBuffer );
+		map.insert( Phonon::Experimental::AudioDataOutput::RightChannel, intBuffer );
 		emit dataReady( map );
 	}
 }

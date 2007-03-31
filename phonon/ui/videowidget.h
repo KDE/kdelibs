@@ -28,7 +28,11 @@ class QString;
 namespace Phonon
 {
 class AbstractVideoOutput;
-class OverlayApi;
+
+namespace Experimental
+{
+    class OverlayApi;
+} // namespace Experimental
 
 	class VideoWidgetPrivate;
 	/**
@@ -46,7 +50,7 @@ class OverlayApi;
 	 */
 	class PHONONUI_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
 	{
-        friend class OverlayApi;
+        friend class Experimental::OverlayApi;
 		K_DECLARE_PRIVATE( VideoWidget )
 		Q_OBJECT
         Q_ENUMS(AspectRatio ScaleMode)

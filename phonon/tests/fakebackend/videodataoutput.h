@@ -20,7 +20,7 @@
 #define Phonon_FAKE_VIDEODATAOUTPUT_H
 
 #include "abstractvideooutput.h"
-#include <phonon/videoframe.h>
+#include <phonon/experimental/videoframe.h>
 #include <QVector>
 #include <QByteArray>
 #include <QObject>
@@ -59,10 +59,10 @@ namespace Fake
 			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
 
 			// Fake specific:
-			virtual void processFrame( Phonon::VideoFrame& frame );
+            virtual void processFrame(Phonon::Experimental::VideoFrame &frame);
 
 		signals:
-			void frameReady( const Phonon::VideoFrame& frame );
+            void frameReady(const Phonon::Experimental::VideoFrame &frame);
 			void endOfMedia();
 
 		private:

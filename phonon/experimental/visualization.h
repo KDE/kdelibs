@@ -20,17 +20,21 @@
 #ifndef PHONON_VISUALIZATION_H
 #define PHONON_VISUALIZATION_H
 
-#include "base.h"
-#include "phonondefs.h"
+#include "export.h"
+#include "../base.h"
+#include "../phonondefs.h"
 #include <QObject>
-#include "basedestructionhandler.h"
-#include "objectdescription.h"
+#include "../basedestructionhandler.h"
+#include "../objectdescription.h"
 
 namespace Phonon
 {
+class AudioPath;
+class AbstractVideoOutput;
+
+namespace Experimental
+{
 	class VisualizationPrivate;
-	class AudioPath;
-	class AbstractVideoOutput;
 
 /**
  * \short A class to create visual effects from an audio signal.
@@ -58,7 +62,7 @@ namespace Phonon
  * \see AudioDataOutput
  * \see BackendCapabilities::availableVisualizationEffects()
  */
-class PHONONCORE_EXPORT Visualization : public QObject, public Base
+class PHONONEXPERIMENTAL_EXPORT Visualization : public QObject, public Base
 {
 	Q_OBJECT
 	K_DECLARE_PRIVATE( Visualization )
@@ -93,6 +97,7 @@ class PHONONCORE_EXPORT Visualization : public QObject, public Base
 		//QWidget* createParameterWidget( QWidget* parent = 0 );
 };
 
+} // namespace Experimental
 } // namespace Phonon
 
 #endif // PHONON_VISUALIZATION_H

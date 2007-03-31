@@ -19,15 +19,16 @@
 
 #include "audiodataoutputtest.h"
 #include "../audiodataoutput.h"
-#include "../mediaobject.h"
-#include "../audiopath.h"
-#include "../audiooutput.h"
+#include "../../mediaobject.h"
+#include "../../audiopath.h"
+#include "../../audiooutput.h"
 #include <qtest_kde.h>
 #include <cstdlib>
 #include <kurl.h>
-#include "loadfakebackend.h"
+#include "../../tests/loadfakebackend.h"
 
 using namespace Phonon;
+using namespace Phonon::Experimental;
 
 void AudioDataOutputTest::initTestCase()
 {
@@ -43,22 +44,24 @@ void AudioDataOutputTest::testSampleRate()
 
 void AudioDataOutputTest::testFormat()
 {
-	qRegisterMetaType<QMap<Phonon::AudioDataOutput::Channel, QVector<float> > >( "QMap<Phonon::AudioDataOutput::Channel,QVector<float> >" );
-	qRegisterMetaType<QMap<Phonon::AudioDataOutput::Channel, QVector<qint16> > >( "QMap<Phonon::AudioDataOutput::Channel,QVector<qint16> >" );
+    qRegisterMetaType<QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > >
+        ("QMap<Phonon::Experimental::AudioDataOutput::Channel,QVector<float> >");
+    qRegisterMetaType<QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > >
+        ("QMap<Phonon::Experimental::AudioDataOutput::Channel,QVector<qint16> >");
 	AudioDataOutput test( this );
-	QSignalSpy floatReadySpy( &test, SIGNAL( dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<float> >& ) ) );
-	QSignalSpy intReadySpy( &test, SIGNAL( dataReady( const QMap<Phonon::AudioDataOutput::Channel, QVector<qint16> >& ) ) );
+    QSignalSpy floatReadySpy(&test, SIGNAL(dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > &)));
+    QSignalSpy intReadySpy(&test, SIGNAL(dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > &)));
 	QCOMPARE( floatReadySpy.size(), 0 );
 	QCOMPARE( intReadySpy.size(), 0 );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::IntegerFormat );
-	test.setFormat( Phonon::AudioDataOutput::IntegerFormat );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::IntegerFormat );
-	test.setFormat( Phonon::AudioDataOutput::FloatFormat );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::FloatFormat );
-	test.setFormat( Phonon::AudioDataOutput::FloatFormat );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::FloatFormat );
-	test.setFormat( Phonon::AudioDataOutput::IntegerFormat );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::IntegerFormat );
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::IntegerFormat);
+    test.setFormat(Phonon::Experimental::AudioDataOutput::IntegerFormat);
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::IntegerFormat);
+    test.setFormat(Phonon::Experimental::AudioDataOutput::FloatFormat);
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::FloatFormat);
+    test.setFormat(Phonon::Experimental::AudioDataOutput::FloatFormat);
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::FloatFormat);
+    test.setFormat(Phonon::Experimental::AudioDataOutput::IntegerFormat);
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::IntegerFormat);
 
 	MediaObject media( this );
 	KUrl url( getenv( "PHONON_TESTURL" ) );
@@ -81,8 +84,8 @@ void AudioDataOutputTest::testFormat()
 	QCOMPARE( floatReadySpy.size(), 0 );
 
 	media.pause();
-	test.setFormat( Phonon::AudioDataOutput::FloatFormat );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::FloatFormat );
+    test.setFormat(Phonon::Experimental::AudioDataOutput::FloatFormat);
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::FloatFormat);
 	intReadySpy.clear();
 	media.play();
 	startTime.start();
@@ -92,8 +95,8 @@ void AudioDataOutputTest::testFormat()
 	QCOMPARE( intReadySpy.size(), 0 );
 
 	media.pause();
-	test.setFormat( Phonon::AudioDataOutput::IntegerFormat );
-	QCOMPARE( test.format(), Phonon::AudioDataOutput::IntegerFormat );
+    test.setFormat(Phonon::Experimental::AudioDataOutput::IntegerFormat);
+    QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::IntegerFormat);
 	floatReadySpy.clear();
 	media.play();
 	startTime.start();

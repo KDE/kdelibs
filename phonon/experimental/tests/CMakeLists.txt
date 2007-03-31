@@ -1,5 +1,3 @@
-add_subdirectory(fakebackend)
-
 include_directories(${KDE4_KIO_INCLUDES})
 
 IF(KDE4_BUILD_TESTS)
@@ -11,7 +9,7 @@ MACRO(PHONON_BUILD_TESTS)
 	FOREACH(_testname ${ARGN})
 		kde4_automoc(${_testname}.cpp)
 		kde4_add_executable(${_testname} NOGUI ${_testname}.cpp)
-		target_link_libraries(${_testname} ${KDE4_PHONONUI_LIBS} ${QT_QTTEST_LIBRARY})
+		target_link_libraries(${_testname} ${KDE4_PHONONUI_LIBS} phononexperimental ${QT_QTTEST_LIBRARY})
 	ENDFOREACH(_testname)
 ENDMACRO(PHONON_BUILD_TESTS)
 
@@ -20,7 +18,7 @@ MACRO(PHONON_BUILD_TESTS_FAKE)
 	FOREACH(_testname ${ARGN})
 		kde4_automoc(${_testname}.cpp)
 		kde4_add_executable(${_testname}_fake NOGUI ${_testname}.cpp)
-		target_link_libraries(${_testname}_fake ${KDE4_PHONONUI_LIBS} ${QT_QTTEST_LIBRARY})
+		target_link_libraries(${_testname}_fake ${KDE4_PHONONUI_LIBS} phononexperimental ${QT_QTTEST_LIBRARY})
 		SET_TARGET_PROPERTIES(${_testname}_fake PROPERTIES COMPILE_FLAGS -DUSE_FAKE_BACKEND)
 	ENDFOREACH(_testname)
 ENDMACRO(PHONON_BUILD_TESTS_FAKE)
@@ -32,44 +30,14 @@ MACRO(PHONON_EXECUTE_TESTS)
 ENDMACRO(PHONON_EXECUTE_TESTS)
 
 PHONON_BUILD_TESTS(
-	methodtest
-	mediaobjecttest
-	audiopathtest
-	backendcapabilitiestest
-	audiooutputtest
-	audiooutputdevicetest
-	audiocapturedevicetest
-	videocapturedevicetest
-	bytestreamtest
-	bytestreamtest2
-	audiodevicelisttest
+	audiodataoutputtest
 	)
-target_link_libraries(audiodevicelisttest ${KDE4_KAUDIODEVICELIST_LIBS})
 
 PHONON_BUILD_TESTS_FAKE(
-	methodtest
-	mediaobjecttest
-	audiopathtest
-	backendcapabilitiestest
-	audiooutputtest
-	audiooutputdevicetest
-	audiocapturedevicetest
-	videocapturedevicetest
-	bytestreamtest
-	bytestreamtest2
+	audiodataoutputtest
 	)
 PHONON_EXECUTE_TESTS(
-	methodtest_fake
-	mediaobjecttest_fake
-	audiopathtest_fake
-	backendcapabilitiestest_fake
-	audiooutputtest_fake
-	audiooutputdevicetest_fake
-	audiocapturedevicetest_fake
-	videocapturedevicetest_fake
-	#bytestreamtest_fake
-	bytestreamtest2_fake
-	audiodevicelisttest
+	audiodataoutputtest_fake
 	)
 
 ENDIF(KDE4_BUILD_TESTS)
