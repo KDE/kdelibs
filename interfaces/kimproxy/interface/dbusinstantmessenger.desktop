@@ -3,4 +3,5 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=DBUS/InstantMessenger
 Comment=Instant Messenger with a D-Bus interface
+Comment[sv]=Direktmeddelanden med ett D-Bus gränssnitt
 Comment[x-test]=xxInstant Messenger with a D-Bus interfacexx
