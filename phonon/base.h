@@ -68,7 +68,7 @@ namespace Phonon
 			 * \internal
 			 * private data pointer
 			 */
-			BasePrivate* k_ptr;
+            BasePrivate *const k_ptr;
 
 			/**
 			 * \internal

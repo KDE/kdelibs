@@ -39,7 +39,6 @@ namespace Phonon
 		foreach( BaseDestructionHandler* handler, d->handlers )
 			handler->phononObjectDestroyed( this );
 		delete k_ptr;
-		k_ptr = 0;
 	}
 
 	QObject* Base::iface()
