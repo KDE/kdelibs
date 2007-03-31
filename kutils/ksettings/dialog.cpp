@@ -634,13 +634,13 @@ void Dialog::updateTreeList()
 
 void Dialog::removeDuplicateServices()
 {
-	QStringList usedNames;
+	QSet<QString> usedNames;
 	QList<KService::Ptr> newlist;
 	Q_FOREACH( KService::Ptr svc, d->services )
 	{
-		if( !usedNames.contains( svc->name() ) )
+		if( !usedNames.contains( svc->desktopEntryPath() ) )
 		{
-			usedNames.append( svc->name() );
+			usedNames.insert( svc->desktopEntryPath() );
 			newlist.append( svc );
 		}
 	}
