@@ -21,22 +21,20 @@
 #define PHONON_TRACKINTERFACE_H
 
 #include <kdelibs_export.h>
-#include <ksharedptr.h>
+#include <QObject>
 
 namespace Phonon
 {
 class AbstractMediaProducer;
 class TrackInterfacePrivate;
-class PHONONCORE_EXPORT TrackInterface
+
+class PHONONCORE_EXPORT TrackInterface : public QObject
 {
     friend class AbstractMediaProducer;
     public:
         //TrackInterface();
         TrackInterface(AbstractMediaProducer *);
         ~TrackInterface();
-        TrackInterface(const TrackInterface &);
-        TrackInterface &operator=(const TrackInterface &);
-        bool operator==(const TrackInterface &);
 
         bool isValid() const;
 
@@ -44,8 +42,15 @@ class PHONONCORE_EXPORT TrackInterface
         int currentTrack() const;
         void setCurrentTrack(int trackNumber);
 
+        bool autoplayTracks() const;
+        void setAutoplayTracks(bool);
+
+    Q_SIGNALS:
+        void availableTracksChanged(int availableTracks);
+        void trackChanged(int trackNumber);
+
     private:
-        KSharedPtr<TrackInterfacePrivate> d;
+        TrackInterfacePrivate *const d;
 };
 } // namespace Phonon
 #endif // PHONON_TRACKINTERFACE_H

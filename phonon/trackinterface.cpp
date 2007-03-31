@@ -29,6 +29,10 @@ namespace Phonon
 class TrackInterfacePrivate : public QSharedData
 {
     public:
+        TrackInterfacePrivate(AbstractMediaProducer *mp)
+            : media(mp)
+        {}
+
         AbstractMediaProducer *media;
 };
 
@@ -37,69 +41,67 @@ class TrackInterfacePrivate : public QSharedData
 //X }
 
 TrackInterface::TrackInterface(AbstractMediaProducer *mp)
-    : d(new TrackInterfacePrivate)
+    : QObject(mp)
+    , d(new TrackInterfacePrivate(mp))
 {
-    d->media = mp;
-}
-
-TrackInterface::TrackInterface(const TrackInterface &rhs)
-{
-    d = rhs.d;
+    Q_ASSERT(mp);
 }
 
 TrackInterface::~TrackInterface()
 {
-}
-
-TrackInterface &TrackInterface::operator=(const TrackInterface &rhs)
-{
-    d = rhs.d;
-    return *this;
-}
-
-bool TrackInterface::operator==(const TrackInterface &rhs)
-{
-    return d == rhs.d;
+    delete d;
 }
 
 bool TrackInterface::isValid() const
 {
-    if (d.isNull()) {
+    if (!d || !d->media) {
         return false;
     }
     return d->media->hasInterface<TrackInterface>();
 }
 
+#define IFACE(retDefault) \
+    AddonInterface *iface = qobject_cast<AddonInterface *>(d->media->iface()); \
+    do { \
+        if (!iface) { \
+            return retDefault; \
+        } \
+    } while (false)
+
 int TrackInterface::availableTracks() const
 {
-    AddonInterface *iface = qobject_cast<AddonInterface *>(d->media->iface());
-    if (!iface) {
-        return 0;
-    }
+    IFACE(0);
     return iface->interfaceCall(AddonInterface::TrackInterface,
             AddonInterface::availableTracks).toInt();
 }
 
 int TrackInterface::currentTrack() const
 {
-    AddonInterface *iface = qobject_cast<AddonInterface *>(d->media->iface());
-    if (!iface) {
-        return 0;
-    }
+    IFACE(0);
     return iface->interfaceCall(AddonInterface::TrackInterface,
             AddonInterface::track).toInt();
 }
 
 void TrackInterface::setCurrentTrack(int trackNumber)
 {
-    AddonInterface *iface = qobject_cast<AddonInterface *>(d->media->iface());
-    if (!iface) {
-        return;
-    }
+    IFACE();
     iface->interfaceCall(AddonInterface::TrackInterface,
             AddonInterface::setTrack, QList<QVariant>() << QVariant(trackNumber));
 }
 
+bool TrackInterface::autoplayTracks() const
+{
+    IFACE(true);
+    return iface->interfaceCall(AddonInterface::TrackInterface,
+            AddonInterface::autoplayTracks).toBool();
+}
+
+void TrackInterface::setAutoplayTracks(bool b)
+{
+    IFACE();
+    iface->interfaceCall(AddonInterface::TrackInterface,
+            AddonInterface::setAutoplayTracks, QList<QVariant>() << QVariant(b));
+}
 } // namespace Phonon
 
 // vim: sw=4 sts=4 et tw=100
