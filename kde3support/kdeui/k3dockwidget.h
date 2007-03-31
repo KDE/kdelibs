@@ -48,6 +48,7 @@
 
 #define _KDOCKWIDGET_2_2_
 
+#include <kdelibs_export.h>
 #include <qpoint.h>
 #include <q3ptrlist.h>
 #include <qframe.h>

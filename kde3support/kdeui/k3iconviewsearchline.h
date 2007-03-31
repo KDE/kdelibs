@@ -20,8 +20,8 @@
 #ifndef KICONVIEWSEARCHLINE_H
 #define KICONVIEWSEARCHLINE_H
 
+#include <kdelibs_export.h>
 #include <klineedit.h>
-
 
 class Q3IconView;
 class Q3IconViewItem;

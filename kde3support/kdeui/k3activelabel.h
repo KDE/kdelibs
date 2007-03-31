@@ -20,6 +20,7 @@
 #ifndef KACTIVELABEL_H
 #define KACTIVELABEL_H
 
+#include <kdelibs_export.h>
 #include <ktextbrowser.h>
 
 class K3ActiveLabelPrivate;

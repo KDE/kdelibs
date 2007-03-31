@@ -21,9 +21,10 @@
 #ifndef K3PASSWORDDIALOG_H
 #define K3PASSWORDDIALOG_H
 
-#include <QtGui/QLineEdit>
-
+#include <kdelibs_export.h>
 #include <kdialog.h>
+
+#include <QtGui/QLineEdit>
 
 class QLabel;
 class QGridLayout;
