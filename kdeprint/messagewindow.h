@@ -20,10 +20,10 @@
 #ifndef MESSAGEWINDOW_H
 #define MESSAGEWINDOW_H
 
+#include <kdeprint_export.h>
+
 #include <QHash>
 #include <qwidget.h>
-
-#include <kdelibs_export.h>
 
 class QLabel;
 

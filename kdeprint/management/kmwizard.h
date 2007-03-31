@@ -20,10 +20,10 @@
 #ifndef KMWIZARD_H
 #define KMWIZARD_H
 
+#include <kdeprint_export.h>
 #include <qdialog.h>
 #include <QMultiHash>
 #include <QStack>
-#include <kdelibs_export.h>
 
 class QStackedWidget;
 class QLabel;

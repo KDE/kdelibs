@@ -21,11 +21,11 @@
 #ifndef KPRINTERIMPL_H
 #define KPRINTERIMPL_H
 
+#include <kdeprint_export.h>
+
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <qmap.h>
-
-#include <kdelibs_export.h>
 
 class KPrinter;
 class KMPrinter;

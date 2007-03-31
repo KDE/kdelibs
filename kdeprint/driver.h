@@ -24,14 +24,14 @@
 #if defined( _KDEPRINT_COMPILE )
 /* internal header, do not use except if you are a KDEPrint developer */
 
+#include <kdeprint_export.h>
+
 #include <qstring.h>
 #include <qmap.h>
 #include <qrect.h>
 #include <qsize.h>
 #include <QHash>
 #include <QList>
-
-#include <kdelibs_export.h>
 
 class DriverItem;
 class QTreeWidget;

@@ -20,10 +20,9 @@
 #ifndef KPIPEPROCESS_H
 #define KPIPEPROCESS_H
 
+#include <kdeprint_export.h>
 #include <QtCore/QFile>
 #include <stdio.h>
-
-#include <kdelibs_export.h>
 
 class KDEPRINT_EXPORT KPipeProcess : public QFile
 {

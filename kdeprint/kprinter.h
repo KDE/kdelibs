@@ -21,16 +21,14 @@
 #ifndef KPRINTER_H
 #define KPRINTER_H
 
+#include <kdeprint_export.h>
+#include <kdeprint/kpreloadobject.h>
+
 #include <qpaintdevice.h>
 #include <qprinter.h>
 #include <qmap.h>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-
-#include <kdemacros.h>
-#include <kdelibs_export.h>
-
-#include <kdeprint/kpreloadobject.h>
 
 class KPrinterImpl;
 class KPrintDialogPage;

@@ -21,10 +21,10 @@
 #ifndef KPRINTDIALOGPAGE_H
 #define KPRINTDIALOGPAGE_H
 
+#include <kdeprint_export.h>
+
 #include <qwidget.h>
 #include <qmap.h>
-
-#include <kdelibs_export.h>
 
 class KMPrinter;
 class DrMain;

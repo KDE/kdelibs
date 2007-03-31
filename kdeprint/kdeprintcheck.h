@@ -20,7 +20,7 @@
 #ifndef KDEPRINTCHECK_H
 #define KDEPRINTCHECK_H
 
-#include <kdelibs_export.h>
+#include <kdeprint_export.h>
 
 #include <kconfiggroup.h>
 #include <kurl.h>

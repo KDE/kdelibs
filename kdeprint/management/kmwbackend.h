@@ -20,8 +20,8 @@
 #ifndef KMWBACKEND_H
 #define KMWBACKEND_H
 
+#include <kdeprint_export.h>
 #include "kmwizardpage.h"
-#include <kdelibs_export.h>
 #include <qmap.h>
 
 class KVisibleButtonGroup;

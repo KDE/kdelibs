@@ -20,10 +20,10 @@
 #ifndef KXMLCOMMANDSELECTOR_H
 #define KXMLCOMMANDSELECTOR_H
 
+#include <kdeprint_export.h>
+
 #include <qwidget.h>
 #include <qstringlist.h>
-
-#include <kdelibs_export.h>
 
 class QComboBox;
 class QLineEdit;

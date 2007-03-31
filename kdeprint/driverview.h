@@ -21,10 +21,10 @@
 #ifndef DRIVERVIEW_H
 #define DRIVERVIEW_H
 
+#include <kdeprint_export.h>
+
 #include <QMap>
 #include <QWidget>
-
-#include <kdelibs_export.h>
 
 class QTreeWidget;
 class QTreeWidgetItem;

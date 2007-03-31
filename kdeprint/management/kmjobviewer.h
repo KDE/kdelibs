@@ -20,7 +20,7 @@
 #ifndef KMJOBVIEWER_H
 #define KMJOBVIEWER_H
 
-#include <kdelibs_export.h>
+#include <kdeprint_export.h>
 
 #if defined( _KDEPRINT_COMPILE ) || defined(Q_MOC_RUN)
 /* internal header, do not use except if you are a KDEPrint developer */

@@ -20,11 +20,11 @@
 #ifndef KMVIRTUALMANAGER_H
 #define KMVIRTUALMANAGER_H
 
+#include <kdeprint_export.h>
+
 #include <QDateTime>
 #include <QList>
 #include <QObject>
-
-#include <kdelibs_export.h>
 
 #include "kpreloadobject.h"
 

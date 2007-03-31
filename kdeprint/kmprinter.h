@@ -23,7 +23,7 @@
 #if defined( _KDEPRINT_COMPILE )
 /* internal header, do not use except if you are a KDEPrint developer */
 
-#include <kdelibs_export.h>
+#include <kdeprint_export.h>
 
 #include <kdeprint/kmobject.h>
 #include <kurl.h>

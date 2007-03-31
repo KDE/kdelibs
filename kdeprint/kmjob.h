@@ -23,10 +23,11 @@
 
 #if defined( _KDEPRINT_COMPILE )
 
+#include <kdeprint_export.h>
+
 #include <qstring.h>
 #include <QVector>
 #include <kdeprint/kmobject.h>
-#include <kdelibs_export.h>
 
 /**
  * @internal

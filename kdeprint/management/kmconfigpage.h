@@ -20,9 +20,8 @@
 #ifndef KMCONFIGPAGE_H
 #define KMCONFIGPAGE_H
 
+#include <kdeprint_export.h>
 #include <qwidget.h>
-
-#include <kdelibs_export.h>
 
 class KConfig;
 class KConfigGroup;

@@ -20,10 +20,9 @@
 #ifndef MARGINWIDGET_H
 #define MARGINWIDGET_H
 
+#include <kdeprint_export.h>
+
 #include <qwidget.h>
-
-
-#include <kdelibs_export.h>
 
 class MarginValueWidget;
 class MarginPreview;

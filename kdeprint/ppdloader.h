@@ -20,13 +20,13 @@
 #ifndef PPDLOADER_H
 #define PPDLOADER_H
 
+#include <kdeprint_export.h>
+
 #include <QStack>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <qvariant.h>
 #include <qhash.h>
-
-#include <kdelibs_export.h>
 
 class DrGroup;
 class DrBase;

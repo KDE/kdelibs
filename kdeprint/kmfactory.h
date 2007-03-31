@@ -21,14 +21,14 @@
 #ifndef KMFACTORY_H
 #define KMFACTORY_H
 
+#include <kdeprint_export.h>
+#include <kconfiggroup.h>
+
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <qlist.h>
 #include <QtCore/QObject>
 #include <qpair.h>
-
-#include <kconfiggroup.h>
-#include <kdelibs_export.h>
 
 class KMManager;
 class KMJobManager;

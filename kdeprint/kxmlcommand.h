@@ -20,11 +20,11 @@
 #ifndef KXMLCOMMAND_H
 #define KXMLCOMMAND_H
 
+#include <kdeprint_export.h>
+
 #include <qdom.h>
 #include <qmap.h>
 #include <QtCore/QObject>
-
-#include <kdelibs_export.h>
 
 class DrMain;
 class DrGroup;

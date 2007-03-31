@@ -20,7 +20,7 @@
 #ifndef KPRINTACTION_H
 #define KPRINTACTION_H
 
-#include <kdelibs_export.h>
+#include <kdeprint_export.h>
 #include <kactionmenu.h>
 
 class KPrinter;

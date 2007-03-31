@@ -20,9 +20,8 @@
 #ifndef KPQTPAGE_H
 #define KPQTPAGE_H
 
+#include <kdeprint_export.h>
 #include "kprintdialogpage.h"
-
-#include <kdelibs_export.h>
 
 class KButtonGroup;
 class QComboBox;

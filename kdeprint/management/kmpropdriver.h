@@ -20,9 +20,8 @@
 #ifndef KMPROPDRIVER_H
 #define KMPROPDRIVER_H
 
+#include <kdeprint_export.h>
 #include "kmpropwidget.h"
-
-#include <kdelibs_export.h>
 
 class QLabel;
 

@@ -20,10 +20,10 @@
 #ifndef KMPROPERTYPAGE_H
 #define KMPROPERTYPAGE_H
 
-#include "cjanuswidget.h"
-#include "kmprinterpage.h"
+#include <kdeprint_export.h>
 #include <kdeprint/kpreloadobject.h>
-#include <kdelibs_export.h>
+#include "kmprinterpage.h"
+#include "cjanuswidget.h"
 #include <qlist.h>
 
 class KMPropWidget;

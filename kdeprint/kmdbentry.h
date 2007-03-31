@@ -20,10 +20,10 @@
 #ifndef KMDBENTRY_H
 #define KMDBENTRY_H
 
+#include <kdeprint_export.h>
+
 #include <QList>
 #include <QString>
-
-#include <kdelibs_export.h>
 
 class KDEPRINT_EXPORT KMDBEntry
 {

@@ -20,10 +20,10 @@
 #ifndef SIDEPIXMAP_H
 #define SIDEPIXMAP_H
 
+#include <kdeprint_export.h>
+
 #include <qframe.h>
 #include <qpixmap.h>
-
-#include <kdelibs_export.h>
 
 class KDEPRINT_MANAGEMENT_EXPORT SidePixmap : public QFrame
 {

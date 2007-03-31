@@ -22,7 +22,7 @@
 
 #include <qwidget.h>
 
-#include <kdelibs_export.h>
+#include <kdeprint_export.h>
 
 class KMPrinter;
 class KMWizard;

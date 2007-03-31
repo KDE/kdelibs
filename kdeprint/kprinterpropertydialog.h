@@ -21,7 +21,7 @@
 #ifndef KPRINTERPROPERTYDIALOG_H
 #define KPRINTERPROPERTYDIALOG_H
 
-#include <kdelibs_export.h>
+#include <kdeprint_export.h>
 #include <kdialog.h>
 
 class KMPrinter;
