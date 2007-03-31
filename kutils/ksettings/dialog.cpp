@@ -219,8 +219,8 @@ class PageNode
 
 			if( KCM == m_type )
 			{
-				m_pageWidgetItem = dlg->addModule( *m_value.kcm, 
-                                                   parentPageWidgetItem(), 
+				m_pageWidgetItem = dlg->addModule( *m_value.kcm,
+                                                   parentPageWidgetItem(),
                                                    arguments );
 				return;
 			}
@@ -372,6 +372,7 @@ Dialog::Dialog( ContentInListView content,
 	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
 	d->services = instanceServices();
+	removeDuplicateServices();
 	d->arguments = arguments;
 }
 
@@ -382,7 +383,8 @@ Dialog::Dialog( const QStringList & components,
 {
 	d->parentwidget = parent;
 	d->staticlistview = true;
-	d->services = instanceServices() + parentComponentsServices( components );
+    d->services = instanceServices() + parentComponentsServices( components );
+	removeDuplicateServices();
 	d->arguments = arguments;
 }
 
@@ -394,6 +396,7 @@ Dialog::Dialog( const QStringList & components,
 	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
 	d->services = instanceServices() + parentComponentsServices( components );
+	removeDuplicateServices();
 	d->arguments = arguments;
 }
 
@@ -627,6 +630,22 @@ void Dialog::updateTreeList()
 
 	d->pagetree.removeFromDialog( d->dlg );
 	d->pagetree.addToDialog( d->dlg, d->arguments );
+}
+
+void Dialog::removeDuplicateServices()
+{
+	QStringList usedNames;
+	QList<KService::Ptr> newlist;
+	Q_FOREACH( KService::Ptr svc, d->services )
+	{
+		if( !usedNames.contains( svc->name() ) )
+		{
+			usedNames.append( svc->name() );
+			newlist.append( svc );
+		}
+	}
+	d->services.clear();
+	d->services = newlist;
 }
 
 } //namespace

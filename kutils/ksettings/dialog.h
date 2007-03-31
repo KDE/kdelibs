@@ -106,7 +106,7 @@ class KUTILS_EXPORT Dialog : public QObject
          * @param arguments    A list of arguments that are passed to all
          *                     KCModules when adding them to the dialog
          */
-        explicit Dialog( ContentInListView content = Static, QWidget * parent = 0, 
+        explicit Dialog( ContentInListView content = Static, QWidget * parent = 0,
                          const QStringList& arguments = QStringList() );
 
         /**
@@ -143,7 +143,7 @@ class KUTILS_EXPORT Dialog : public QObject
          *                     KCModules when adding them to the dialog
          */
         Dialog( const QStringList & components, ContentInListView
-                content, QWidget * parent = 0, 
+                content, QWidget * parent = 0,
                 const QStringList& arguments = QStringList() );
 
         ~Dialog();
@@ -207,6 +207,14 @@ class KUTILS_EXPORT Dialog : public QObject
          * checks for 0 and if it's not created this method will do it.
          */
         void createDialogFromServices();
+
+        /**
+         * @internal
+         * This method is called in the constructor right after creating the
+         * list of service pointers. It removes duplicates from that list, so
+         * each entry in the list has a unique name()
+         */
+        void removeDuplicateServices();
 
         class DialogPrivate;
         DialogPrivate* const d;
