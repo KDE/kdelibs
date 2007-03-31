@@ -55,7 +55,7 @@ static int systemServicePort(const char *servname, const char *protoname)
     // NetBSD has a reentrant function as well (buffer allocated per-thread)
     // See http://bugs.kde.org/show_bug.cgi?id=127253
 
-    return getservbyname(servname, protoname);
+    return getservbyname(servname, protoname)->s_port;
 
 #elif !defined(HAVE_GETSERVBYNAME_R)
 # ifdef __GNUC__
