@@ -18,12 +18,12 @@
 #ifndef __KDRAWUTIL_H
 #define __KDRAWUTIL_H
 
+#include <kdefx_export.h>
+
 #include <qnamespace.h>
 #include <qpainter.h>
 #include <qbitmap.h>
 #include <qpalette.h>
-
-#include <kdelibs_export.h>
 
 /*
  * Various drawing routines. Also see Qt's qdrawutil.h for some more routines

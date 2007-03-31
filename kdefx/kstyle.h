@@ -35,14 +35,14 @@
 #ifndef KDE_KSTYLE_H
 #define KDE_KSTYLE_H
 
+#include <kdefx_export.h>
+
 #include <qcommonstyle.h>
 #include <qpalette.h>
 #include <qstyleplugin.h>
 
 class QStyleOptionProgressBar;
 class QStyleOptionTab;
-
-#include <kdelibs_export.h>
 
 /**
  * Makes style coding more convenient.

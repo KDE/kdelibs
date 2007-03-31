@@ -29,7 +29,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __KIMAGE_EFFECT_H
 #define __KIMAGE_EFFECT_H
 
-#include <kdelibs_export.h>
+#include <kdefx_export.h>
 
 class QImage;
 class QSize;

@@ -19,14 +19,6 @@
 
 #include <io.h> /* to avoid #includes */
 
-#ifndef KDEFX_EXPORT
-# ifdef MAKE_KDEFX_LIB
-#  define KDEFX_EXPORT  KDE_EXPORT
-# else
-#  define KDEFX_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KDEPRINT_EXPORT
 # ifdef MAKE_KDEPRINT_LIB
 #  define KDEPRINT_EXPORT  KDE_EXPORT

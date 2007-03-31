@@ -34,7 +34,6 @@
 #else /* UNIX */
 
 /* export statements for unix */
-#define KDEFX_EXPORT KDE_EXPORT
 #define KDEPRINT_EXPORT KDE_EXPORT
 #define KDEPRINT_MANAGEMENT_EXPORT KDE_EXPORT
 #define KDEPRINT_MANAGEMENT_MODULE_EXPORT KDE_EXPORT
@@ -75,9 +74,6 @@
 /* workaround for kdecore: stupid moc's grammar doesn't accept two macros
    between 'class' keyword and <classname>: */
 #ifdef KDE_DEPRECATED
-# ifndef KABC_EXPORT_DEPRECATED
-#  define KABC_EXPORT_DEPRECATED KDE_DEPRECATED KABC_EXPORT
-# endif
 # ifndef KDE3SUPPORT_EXPORT_DEPRECATED
 #  define KDE3SUPPORT_EXPORT_DEPRECATED KDE_DEPRECATED KDE3SUPPORT_EXPORT
 # endif

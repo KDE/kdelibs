@@ -8,7 +8,7 @@
 #ifndef __KPIXMAP_EFFECT_H
 #define __KPIXMAP_EFFECT_H
 
-#include <kdelibs_export.h>
+#include <kdefx_export.h>
 
 #include <qsize.h>
 #include <qpixmap.h>

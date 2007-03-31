@@ -20,12 +20,12 @@
 #ifndef KPIXMAPSPLITTER_H
 #define KPIXMAPSPLITTER_H
 
+#include <kdefx_export.h>
+
 #include <qpixmap.h>
 #include <qrect.h>
 #include <qsize.h>
 #include <QtCore/QString>
-
-#include <kdelibs_export.h>
 
 /**
  * @short A class to split a pixmap into several items.
