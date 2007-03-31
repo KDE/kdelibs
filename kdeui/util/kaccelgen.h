@@ -20,11 +20,11 @@
 #ifndef KACCELGEN_H
 #define KACCELGEN_H
 
+#include <kdeui_export.h>
+
 #include <qmap.h>
 #include <qstring.h>
 #include <qstringlist.h>
-
-#include <kdelibs_export.h>
 
 /**
  * Provides functions that, given a collection of QStrings, will

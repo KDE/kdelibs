@@ -21,11 +21,11 @@
 #ifndef KLIVEUI_H
 #define KLIVEUI_H
 
-#include <QObject>
-
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 #include <kstandardaction.h>
+
+#include <QObject>
 
 class QAction;
 class QWidget;

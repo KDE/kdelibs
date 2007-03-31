@@ -22,9 +22,9 @@
 #ifndef KPAGEMODEL_H
 #define KPAGEMODEL_H
 
-#include <QtCore/QAbstractItemModel>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtCore/QAbstractItemModel>
 
 /**
  *  @short A base class for a model used by KPageView.

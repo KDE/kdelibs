@@ -20,7 +20,7 @@
 #ifndef KHUESATURATIONSELECT_H_
 #define KHUESATURATIONSELECT_H_
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include "kxyselector.h"
 
 #include "kcolorchoosermode.h"

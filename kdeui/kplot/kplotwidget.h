@@ -21,10 +21,10 @@
 #ifndef KPLOTWIDGET_H
 #define KPLOTWIDGET_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QFrame>
 #include <QtCore/QList>
-
-#include <kdelibs_export.h>
 
 class KPlotAxis;
 class KPlotObject;

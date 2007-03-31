@@ -18,9 +18,9 @@
 #ifndef KICONVIEW_H
 #define KICONVIEW_H
 
-#include <Qt3Support/Q3IconView>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <Qt3Support/Q3IconView>
 
 /**
  * @short A variant of QIconView that honors KDE's system-wide settings.

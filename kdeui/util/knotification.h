@@ -20,12 +20,12 @@
 #ifndef KNOTIFICATION_H
 #define KNOTIFICATION_H
 
+#include <kdeui_export.h>
+#include <kcomponentdata.h>
 
 #include <qpixmap.h>
 #include <qobject.h>
 #include <qpair.h>
-#include <kdelibs_export.h>
-#include <kcomponentdata.h>
 
 class QWidget;
 

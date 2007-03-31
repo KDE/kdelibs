@@ -34,7 +34,6 @@
 #else /* UNIX */
 
 /* export statements for unix */
-#define KDEUI_EXPORT KDE_EXPORT
 #define KDEFX_EXPORT KDE_EXPORT
 #define KDEPRINT_EXPORT KDE_EXPORT
 #define KDEPRINT_MANAGEMENT_EXPORT KDE_EXPORT
@@ -62,7 +61,6 @@
 #define KAUDIODEVICELIST_EXPORT KDE_EXPORT
 
 #define KDED_EXPORT KDE_EXPORT
-#define KDOCUMENT_EXPORT KDE_EXPORT
 
 #define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 
@@ -77,9 +75,6 @@
 /* workaround for kdecore: stupid moc's grammar doesn't accept two macros
    between 'class' keyword and <classname>: */
 #ifdef KDE_DEPRECATED
-# ifndef KDEUI_EXPORT_DEPRECATED
-#  define KDEUI_EXPORT_DEPRECATED KDE_DEPRECATED KDEUI_EXPORT
-# endif
 # ifndef KABC_EXPORT_DEPRECATED
 #  define KABC_EXPORT_DEPRECATED KDE_DEPRECATED KABC_EXPORT
 # endif

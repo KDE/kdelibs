@@ -21,9 +21,10 @@
 #ifndef KTEXTBROWSER_H
 #define KTEXTBROWSER_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QTextBrowser>
 
-#include <kdelibs_export.h>
 
 /**
  * @short Extended QTextBrowser.

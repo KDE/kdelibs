@@ -22,9 +22,8 @@
 #ifndef KBUTTONGROUP_H
 #define KBUTTONGROUP_H
 
+#include <kdeui_export.h>
 #include <QtGui/QGroupBox>
-
-#include <kdelibs_export.h>
 
 /**
  * @short Group box with index of the selected radio button

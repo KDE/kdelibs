@@ -22,9 +22,9 @@
 #ifndef KNUMVALIDATOR_H
 #define KNUMVALIDATOR_H
 
-#include <QtGui/QValidator>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QValidator>
 
 class QWidget;
 class QString;

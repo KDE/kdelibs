@@ -21,10 +21,10 @@
 #ifndef KPLOTAXIS_H
 #define KPLOTAXIS_H
 
+#include <kdeui_export.h>
+
 #include <QtCore/QString>
 #include <QtCore/QList>
-
-#include <kdelibs_export.h>
 
 /**
  * @short Axis for KPlotWidget

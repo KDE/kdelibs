@@ -22,10 +22,10 @@
 #ifndef K_NUMINPUT_H
 #define K_NUMINPUT_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QWidget>
 #include <QtGui/QSpinBox>
-
-#include <kdelibs_export.h>
 
 class QLabel;
 class QSlider;

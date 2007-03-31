@@ -18,9 +18,9 @@
 #ifndef KLISTBOX_H
 #define KLISTBOX_H
 
-#include <QListWidget>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QListWidget>
 
 /**
  * @short A variant of QListBox that honors KDE's system-wide settings.

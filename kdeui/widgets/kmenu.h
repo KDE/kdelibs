@@ -20,9 +20,9 @@
 #ifndef KMENU_H
 #define KMENU_H
 
-#include <QtGui/QMenu>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QMenu>
 
 /**
  * @short A menu with keyboard searching

@@ -19,8 +19,8 @@
 #ifndef kwordwrap_h
 #define kwordwrap_h
 
+#include <kdeui_export.h>
 #include <Qt>
-#include <kdelibs_export.h>
 
 class QFontMetrics;
 class QRect;

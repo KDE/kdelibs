@@ -20,9 +20,9 @@
 #ifndef KDELIBS_KNOTIFICATIONRESTRICTIONS_H
 #define KDELIBS_KNOTIFICATIONRESTRICTIONS_H
 
-#include <QtCore/QObject>
+#include <kdeui_export.h>
 
-#include "kdelibs_export.h"
+#include <QtCore/QObject>
 
 /**
  * KNotificationRestrictions provides a simple mechanism to avoid disruptions

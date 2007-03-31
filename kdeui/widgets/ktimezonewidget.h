@@ -20,9 +20,9 @@
 #ifndef KTIMEZONEWIDGET_H
 #define KTIMEZONEWIDGET_H
 
-#include <QtGui/QTreeWidget>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QTreeWidget>
 
 class KTimeZone;
 class KTimeZones;

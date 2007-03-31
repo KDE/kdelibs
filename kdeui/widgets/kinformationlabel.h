@@ -19,9 +19,10 @@
 #ifndef KDEUI_KINFORMATIONLABEL_H
 #define KDEUI_KINFORMATIONLABEL_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QFrame>
 #include <QtGui/QIcon>
-#include <kdelibs_export.h>
 
 class QMouseEvent;
 /**

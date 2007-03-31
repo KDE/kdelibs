@@ -20,9 +20,9 @@
 #ifndef KUNDOSTACK_H
 #define KUNDOSTACK_H
 
-#include <QUndoStack>
+#include <kdeui_export.h>
 
-#include "kdelibs_export.h"
+#include <QUndoStack>
 
 class KActionCollection;
 

@@ -20,8 +20,8 @@
 #ifndef KCURSOR_H
 #define KCURSOR_H
 
+#include <kdeui_export.h>
 #include <qcursor.h>
-#include <kdelibs_export.h>
 
 class QEvent;
 class QWidget;

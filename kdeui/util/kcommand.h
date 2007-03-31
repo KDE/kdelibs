@@ -21,11 +21,11 @@
 #ifndef kcommand_h
 #define kcommand_h
 
+#include <kdeui_export.h>
+
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QObject>
-
-#include <kdelibs_export.h>
 
 class KAction;
 class KActionCollection;

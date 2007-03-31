@@ -23,7 +23,7 @@
 
 // Version macros. Never put this further down.
 #include "kdeversion.h"
-#include "kdelibs_export.h"
+#include <kdeui_export.h>
 
 class KConfig;
 class KConfigBase;

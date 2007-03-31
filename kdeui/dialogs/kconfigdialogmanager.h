@@ -21,10 +21,10 @@
 #ifndef KCONFIGDIALOGMANAGER_H
 #define KCONFIGDIALOGMANAGER_H
 
+#include <kdeui_export.h>
+
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-
-#include "kdelibs_export.h"
 
 class KConfigSkeleton;
 class KConfigSkeletonItem;

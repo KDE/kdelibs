@@ -20,7 +20,7 @@
 #ifndef kxmlguibuilder_h
 #define kxmlguibuilder_h
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 class KComponentData;
 class KXMLGUIBuilderPrivate;

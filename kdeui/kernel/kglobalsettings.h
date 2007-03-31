@@ -18,7 +18,7 @@
 #ifndef _KGLOBALSETTINGS_H
 #define _KGLOBALSETTINGS_H
 
-#include "kdelibs_export.h"
+#include <kdeui_export.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtGui/QPalette>

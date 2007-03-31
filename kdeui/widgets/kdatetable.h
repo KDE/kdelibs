@@ -20,10 +20,11 @@
 #ifndef KDATETBL_H
 #define KDATETBL_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QValidator>
 #include <QtGui/QLineEdit>
 #include <QtCore/QDateTime>
-#include <kdelibs_export.h>
 
 class KMenu;
 

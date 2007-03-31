@@ -20,9 +20,9 @@
 #ifndef KSPLASHSCREEN_H
 #define KSPLASHSCREEN_H
 
-#include <QtGui/QSplashScreen>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QSplashScreen>
 
 class QPixmap;
 

@@ -25,13 +25,14 @@ DEALINGS IN THE SOFTWARE.
 #ifndef KSTARTUPINFO_H
 #define KSTARTUPINFO_H
 
-#include <sys/types.h>
-#include <qobject.h>
+#include <kdeui_export.h>
 
+#include <qobject.h>
 #include <qstring.h>
 #include <qcoreevent.h>
 #include <qwindowdefs.h>
-#include <kdelibs_export.h>
+
+#include <sys/types.h>
 
 #if !defined(Q_WS_X11)
 typedef void Display;

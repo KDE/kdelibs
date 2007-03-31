@@ -19,9 +19,8 @@
 #ifndef _KACTION_SELECTOR_H_
 #define _KACTION_SELECTOR_H_
 
+#include <kdeui_export.h>
 #include <qwidget.h>
-
-#include <kdelibs_export.h>
 
 class QListWidget;
 class QListWidgetItem;

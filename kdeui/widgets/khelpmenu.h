@@ -22,10 +22,10 @@
 #ifndef KHELPMENU_H
 #define KHELPMENU_H
 
+#include <kdeui_export.h>
+
 #include <qobject.h>
 #include <qstring.h>
-
-#include <kdelibs_export.h>
 
 class KActionCollection;
 class KMenu;

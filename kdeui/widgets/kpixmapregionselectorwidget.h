@@ -20,11 +20,11 @@
 #ifndef KPIXMAPREGIONSELECTORWIDGET_H
 #define KPIXMAPREGIONSELECTORWIDGET_H
 
+#include <kdeui_export.h>
+#include <kimageeffect.h>
+
 #include <QtGui/QPixmap>
 #include <QtGui/QWidget>
-
-#include <kdelibs_export.h>
-#include <kimageeffect.h>
 
 class KMenu;
 

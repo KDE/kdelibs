@@ -22,10 +22,10 @@
 #ifndef KSTRINGVALIDATOR_H
 #define KSTRINGVALIDATOR_H
 
+#include <kdeui_export.h>
+
 #include <QtCore/QStringList>
 #include <QtGui/QValidator>
-
-#include <kdelibs_export.h>
 
 /**
  * @short A QValidator to (dis)allow certain strings

@@ -23,9 +23,9 @@
 #ifndef KWINMODULE_H
 #define KWINMODULE_H
 
+#include <kdeui_export.h>
 #include <qobject.h>
 #include <qwindowdefs.h> //For WId
-#include "kdelibs_export.h"
 
 #ifdef Q_WS_X11
 

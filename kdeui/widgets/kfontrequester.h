@@ -20,11 +20,11 @@
 #ifndef KFONTREQUESTER_H
 #define KFONTREQUESTER_H
 
+#include <kdeui_export.h>
+
 #include <qwidget.h>
 #include <qfont.h>
 #include <qstring.h>
-
-#include <kdelibs_export.h>
 
 class QLabel;
 class QPushButton;

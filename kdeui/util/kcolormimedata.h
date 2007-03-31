@@ -21,7 +21,7 @@
 #ifndef _KCOLORMIMEDATA_H
 #define _KCOLORMIMEDATA_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 class QColor;
 class QDrag;

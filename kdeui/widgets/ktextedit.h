@@ -20,9 +20,9 @@
 #ifndef KTEXTEDIT_H
 #define KTEXTEDIT_H
 
-#include <QtGui/QTextEdit>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QTextEdit>
 
 /**
  * @short A KDE'ified QTextEdit

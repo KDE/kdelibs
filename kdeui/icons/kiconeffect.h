@@ -13,11 +13,12 @@
 #ifndef KICONEFFECT_H
 #define KICONEFFECT_H
 
+#include <kdeui_export.h>
+
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qcolor.h>
 #include <qrect.h>
-#include "kdelibs_export.h"
 
 class QWidget;
 

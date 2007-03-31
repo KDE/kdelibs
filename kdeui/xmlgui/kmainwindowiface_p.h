@@ -21,9 +21,9 @@
 #ifndef KWINDOW_INTERFACE_H
 #define KWINDOW_INTERFACE_H
 
+#include <kdeui_export.h>
 #include <QtDBus/QtDBus>
 #include <qmap.h>
-#include <kdelibs_export.h>
 
 class KDCOPActionProxy;
 class KDCOPPropertyProxy;

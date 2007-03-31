@@ -22,9 +22,8 @@
 #ifndef KSTATUSBAR_H
 #define KSTATUSBAR_H
 
+#include <kdeui_export.h>
 #include <QtGui/QStatusBar>
-
-#include <kdelibs_export.h>
 
 class QObject;
 class QEvent;

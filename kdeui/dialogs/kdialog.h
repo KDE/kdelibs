@@ -27,12 +27,12 @@
 class KPushButton;
 class QMenu;
 
-#include <QtGui/QDialog>
-
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 #include <kconfigbase.h>
 #include <kguiitem.h>
+
+#include <QtGui/QDialog>
 
 /**
  * @short A dialog base class with standard buttons and predefined layouts.

@@ -20,10 +20,10 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 
+#include <kdeui_export.h>
+
 #include <QtCore/QDateTime>
 #include <QtGui/QFrame>
-
-#include <kdelibs_export.h>
 
 class QLineEdit;
 class QToolButton;

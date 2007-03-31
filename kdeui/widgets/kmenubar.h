@@ -22,9 +22,9 @@
 #ifndef KMENUBAR_H
 #define KMENUBAR_H
 
-#include <qmenubar.h>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <qmenubar.h>
 
 /**
  * %KDE Style-able menubar.

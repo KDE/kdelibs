@@ -21,10 +21,10 @@
 #ifndef KSESSIONMANAGED_H
 #define KSESSIONMANAGED_H
 
+#include <kdeui_export.h>
+
 #include <QtCore/QList>
 #include <QtGui/QSessionManager>
-
-#include "kdelibs_export.h"
 
 /**
    Provides highlevel access to session management on a per-object

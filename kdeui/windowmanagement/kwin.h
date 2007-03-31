@@ -19,8 +19,8 @@
 #ifndef KWIN_H
 #define KWIN_H
 
+#include <kdeui_export.h>
 #include <qwindowdefs.h>
-#include <kdelibs_export.h>
 
 #ifdef Q_OS_UNIX
 

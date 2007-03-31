@@ -22,10 +22,10 @@
 
 class QColorGroup;
 
+#include <kdeui_export.h>
+
 #include <Qt3Support/Q3ListView>
 #include <Qt3Support/Q3PtrList>
-
-#include <kdelibs_export.h>
 
 class Q3DragObject;
 class KConfig;

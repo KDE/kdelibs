@@ -19,9 +19,10 @@
 #ifndef KCLIPBOARD_H
 #define KCLIPBOARD_H
 
+#include <kdeui_export.h>
+
 #include <qobject.h>
 #include <qclipboard.h>
-#include <kdelibs_export.h>
 
 template <class T> class KStaticDeleter;
 class QMimeData;

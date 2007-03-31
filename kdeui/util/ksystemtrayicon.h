@@ -18,11 +18,10 @@
 #ifndef KSYSTEMTRAY_H
 #define KSYSTEMTRAY_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
+#include <kglobal.h>
 
 #include <QtGui/QSystemTrayIcon>
-
-#include <kglobal.h>
 
 class KActionCollection;
 class KMenu;

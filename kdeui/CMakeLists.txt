@@ -241,6 +241,7 @@ install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-background.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
+ kdeui_export.h
  klanguagebutton.h
  actions/kactioncollection.h
  actions/kaction.h

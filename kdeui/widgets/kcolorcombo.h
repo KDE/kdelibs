@@ -26,9 +26,9 @@
 #ifndef KCOLORCOMBO_H
 #define KCOLORCOMBO_H
 
-#include <qcombobox.h>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <qcombobox.h>
 
 class KColorComboInternal;
 

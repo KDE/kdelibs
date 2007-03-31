@@ -20,9 +20,9 @@
 #ifndef KCOLORBUTTON_H
 #define KCOLORBUTTON_H
 
-#include <QtGui/QPushButton>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QPushButton>
 
 class QStyleOptionButton;
 class KColorButtonPrivate;

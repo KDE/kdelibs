@@ -20,10 +20,10 @@
 #ifndef KEDITLISTBOX_H
 #define KEDITLISTBOX_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QGroupBox>
 #include <QtGui/QStringListModel>
-
-#include <kdelibs_export.h>
 
 class KLineEdit;
 class KComboBox;

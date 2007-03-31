@@ -22,11 +22,12 @@
 #ifndef KDELIBS_KPALETTE_H
 #define KDELIBS_KPALETTE_H
 
+#include <kdeui_export.h>
+
 #include <qcolor.h>
 #include <QtCore/QList>
 #include <qstring.h>
 #include <qstringlist.h>
-#include "kdelibs_export.h"
 
 class KPalettePrivate;
 

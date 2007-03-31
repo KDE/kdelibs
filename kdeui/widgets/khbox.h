@@ -19,9 +19,9 @@
 #ifndef KHBOX_H
 #define KHBOX_H
 
-#include <QtGui/QFrame>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QFrame>
 
 class QChildEvent;
 

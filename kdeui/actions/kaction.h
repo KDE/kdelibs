@@ -26,11 +26,11 @@
 #ifndef KACTION_H
 #define KACTION_H
 
-#include <QtGui/QWidgetAction>
-
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
+
+#include <QtGui/QWidgetAction>
 
 class KIcon;
 class KShapeGesture;

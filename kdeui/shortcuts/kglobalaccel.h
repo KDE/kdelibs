@@ -21,9 +21,9 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include <QtCore/QObject>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtCore/QObject>
 
 class QWidget;
 class KConfigBase;

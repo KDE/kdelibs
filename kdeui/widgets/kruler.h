@@ -21,9 +21,9 @@
 #ifndef KRULER_H
 #define KRULER_H
 
-#include <QtGui/QAbstractSlider>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QAbstractSlider>
 
 /**
  * A ruler widget.

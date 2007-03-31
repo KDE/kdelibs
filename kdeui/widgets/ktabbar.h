@@ -21,9 +21,9 @@
 #ifndef KTABBAR_H
 #define KTABBAR_H
 
-#include <QtGui/QTabBar>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QTabBar>
 
 /**
  * A QTabBar with extended features.

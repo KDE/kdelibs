@@ -19,9 +19,8 @@
 #ifndef KANIMWIDGET_H
 #define KANIMWIDGET_H
 
+#include <kdeui_export.h>
 #include <QtGui/QToolButton>
-
-#include <kdelibs_export.h>
 
 class QStringList;
 class QPainter;

@@ -19,9 +19,9 @@
 #ifndef kstandardguiitem_h
 #define kstandardguiitem_h
 
-#include <QtCore/QPair>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtCore/QPair>
 
 class KGuiItem;
 

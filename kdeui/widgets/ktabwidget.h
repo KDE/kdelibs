@@ -21,9 +21,9 @@
 #ifndef KTABWIDGET_H
 #define KTABWIDGET_H
 
-#include <QtGui/QTabWidget>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QTabWidget>
 
 class QTab;
 

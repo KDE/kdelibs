@@ -19,6 +19,8 @@
 #ifndef KSTANDARDACTION_H
 #define KSTANDARDACTION_H
 
+#include <kdeui_export.h>
+
 class QObject;
 class QStringList;
 class QWidget;
@@ -29,7 +31,6 @@ class KToggleAction;
 class KToggleToolBarAction;
 class KToggleFullScreenAction;
 
-#include <kdelibs_export.h>
 
 /**
  * Convenience methods to access all standard KDE actions.

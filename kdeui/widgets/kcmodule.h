@@ -23,9 +23,9 @@
 #ifndef KCMODULE_H
 #define KCMODULE_H
 
-#include <QtGui/QWidget>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QWidget>
 
 class QStringList;
 class KAboutData;

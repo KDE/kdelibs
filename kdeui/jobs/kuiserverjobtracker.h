@@ -20,7 +20,7 @@
 #ifndef KUISERVERJOBTRACKER_H
 #define KUISERVERJOBTRACKER_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include <kjobtrackerinterface.h>
 
 class KJob;

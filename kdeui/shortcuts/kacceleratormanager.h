@@ -21,10 +21,10 @@
 #ifndef K_ACCELMANAGER_H
 #define K_ACCELMANAGER_H
 
+#include <kdeui_export.h>
+
 class QWidget;
 class QString;
-
-#include <kdelibs_export.h>
 
 /**
  * KDE Accelerator manager.

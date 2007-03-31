@@ -19,9 +19,9 @@
 #ifndef KICONENGINE_H
 #define KICONENGINE_H
 
-#include <QtGui/QIconEngine>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QIconEngine>
 
 class KIconLoader;
 

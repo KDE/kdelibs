@@ -20,7 +20,7 @@
 #ifndef KBUTTONBOX_H
 #define KBUTTONBOX_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 #include <QtGui/QWidget>
 

@@ -21,13 +21,13 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QColor>
 #include <QtCore/QPointF>
 #include <QtCore/QString>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
-
-#include <kdelibs_export.h>
 
 class QPainter;
 class KPlotWidget;

@@ -10,7 +10,7 @@
 #ifndef KSVGRENDERER_H
 #define KSVGRENDERER_H
 
-#include "kdelibs_export.h"
+#include <kdeui_export.h>
 
 #include <QtSvg/QSvgRenderer>
 

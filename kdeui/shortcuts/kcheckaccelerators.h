@@ -21,6 +21,8 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
+#include <kdeui_export.h>
+
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -29,8 +31,6 @@
 class QDialog;
 class QMenuData;
 class QTextBrowser;
-
-#include "kdelibs_export.h"
 
 /**
  @internal

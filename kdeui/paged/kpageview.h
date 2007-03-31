@@ -22,9 +22,9 @@
 #ifndef KPAGEVIEW_H
 #define KPAGEVIEW_H
 
-#include <QtGui/QWidget>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QWidget>
 
 class KPageModel;
 

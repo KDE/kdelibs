@@ -20,7 +20,8 @@
 #ifndef KXYSELECTOR_H
 #define KXYSELECTOR_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
+
 #include <QtGui/QWidget>
 #include <QtGui/QPixmap>
 

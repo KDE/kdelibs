@@ -19,9 +19,9 @@
 #ifndef KDATECTL_H
 #define KDATECTL_H
 
-#include <qwidget.h>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <qwidget.h>
 
 class QDate;
 

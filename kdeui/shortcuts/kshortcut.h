@@ -27,7 +27,7 @@
 #ifndef KSHORTCUT_H
 #define KSHORTCUT_H
 
-#include "kdelibs_export.h"
+#include <kdeui_export.h>
 
 #include <QtCore/QList>
 #include <QtGui/QKeySequence>

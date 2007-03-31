@@ -20,7 +20,7 @@
 #ifndef KLED_H
 #define KLED_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 #include <QtGui/QWidget>
 

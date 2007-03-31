@@ -20,8 +20,8 @@
 #ifndef KSEPARATOR_H
 #define KSEPARATOR_H
 
+#include <kdeui_export.h>
 #include <qframe.h>
-#include <kdelibs_export.h>
 
 /**
  * Standard horizontal or vertical separator.

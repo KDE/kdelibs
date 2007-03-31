@@ -21,7 +21,7 @@
 #ifndef KABSTRACTWIDGETJOBTRACKER_H
 #define KABSTRACTWIDGETJOBTRACKER_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include <kjobtrackerinterface.h>
 
 class KJob;

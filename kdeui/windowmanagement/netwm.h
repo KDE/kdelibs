@@ -27,7 +27,7 @@
 #ifndef   netwm_h
 #define   netwm_h
 
-#include "kdelibs_export.h"
+#include <kdeui_export.h>
 #include <qwidget.h>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>

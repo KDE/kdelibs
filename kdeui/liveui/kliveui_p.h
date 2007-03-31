@@ -21,15 +21,15 @@
 #ifndef KLIVEUI_P_H
 #define KLIVEUI_P_H
 
+#include <kdeui_export.h>
+#include <kcomponentdata.h>
+
 #include <QtXml/QXmlContentHandler>
 #include <QStack>
 #include <QObject>
 #include <QSet>
 #include <QAction>
 #include <QPointer>
-
-#include <kdelibs_export.h>
-#include <kcomponentdata.h>
 
 namespace KLiveUi
 {

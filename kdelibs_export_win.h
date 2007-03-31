@@ -19,14 +19,6 @@
 
 #include <io.h> /* to avoid #includes */
 
-#ifndef KDEUI_EXPORT
-# ifdef MAKE_KDEUI_LIB
-#  define KDEUI_EXPORT KDE_EXPORT
-# else
-#  define KDEUI_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KDEFX_EXPORT
 # ifdef MAKE_KDEFX_LIB
 #  define KDEFX_EXPORT  KDE_EXPORT
@@ -128,14 +120,6 @@
 #  define KDED_EXPORT KDE_EXPORT
 # else
 #  define KDED_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KDOCUMENT_EXPORT
-# ifdef MAKE_KDOCUMENT_LIB
-#  define KDOCUMENT_EXPORT KDE_EXPORT
-# else
-#  define KDOCUMENT_EXPORT KDE_IMPORT
 # endif
 #endif
 

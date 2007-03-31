@@ -25,9 +25,9 @@
 #ifndef KTOOLBAR_H
 #define KTOOLBAR_H
 
-#include <QtGui/QToolBar>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QToolBar>
 
 class QDomElement;
 

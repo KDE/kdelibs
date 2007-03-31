@@ -21,11 +21,11 @@
 #ifndef KURLLABEL_H
 #define KURLLABEL_H
 
+#include <kdeui_export.h>
+
 #include <QtGui/QColor>
 #include <QtGui/QLabel>
 #include <QtGui/QPixmap>
-
-#include <kdelibs_export.h>
 
 class QCursor;
 

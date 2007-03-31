@@ -19,9 +19,9 @@
 #ifndef KDATETIMEWIDGET
 #define KDATETIMEWIDGET
 
-#include <qwidget.h>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <qwidget.h>
 
 class QDateTime;
 

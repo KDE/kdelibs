@@ -19,9 +19,8 @@
 #ifndef KSQUEEZEDTEXTLABEL_H
 #define KSQUEEZEDTEXTLABEL_H
 
+#include <kdeui_export.h>
 #include <qlabel.h>
-
-#include <kdelibs_export.h>
 
 class KSqueezedTextLabelPrivate;
 

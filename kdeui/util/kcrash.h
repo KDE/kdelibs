@@ -22,7 +22,7 @@
 #ifndef KCRASH_H
 #define KCRASH_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 class QString;
 

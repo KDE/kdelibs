@@ -26,10 +26,11 @@
 #ifndef KACTIONCOLLECTION_H
 #define KACTIONCOLLECTION_H
 
-#include <qobject.h>
+#include <kdeui_export.h>
 #include <kstandardaction.h>
-#include <kdelibs_export.h>
 #include <kcomponentdata.h>
+
+#include <qobject.h>
 
 class QAction;
 class KConfigBase;

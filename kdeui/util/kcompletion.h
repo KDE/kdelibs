@@ -20,16 +20,16 @@
 #ifndef KCOMPLETION_H
 #define KCOMPLETION_H
 
+#include <kdeui_export.h>
+#include <kglobalsettings.h>
+#include <ksortablelist.h>
+#include <kshortcut.h>
+
 #include <qmap.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpointer.h>
-
-#include "kdelibs_export.h"
-#include <kglobalsettings.h>
-#include <ksortablelist.h>
-#include <kshortcut.h>
 
 class KCompTreeNode;
 class KCompletionPrivate;

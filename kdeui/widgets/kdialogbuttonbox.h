@@ -21,7 +21,7 @@
 #ifndef KDIALOGBUTTONBOX_H
 #define KDIALOGBUTTONBOX_H
 
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 
 #include <QtGui/QDialogButtonBox>
 

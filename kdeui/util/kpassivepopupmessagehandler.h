@@ -19,9 +19,10 @@
 #ifndef KDEUI_KPASSIVEPOPUPMESSAGEHANDLER_H
 #define KDEUI_KPASSIVEPOPUPMESSAGEHANDLER_H
 
-#include <QtCore/QObject>
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include <kmessage.h>
+
+#include <QtCore/QObject>
 
 class QWidget;
 /**

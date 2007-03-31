@@ -21,10 +21,10 @@
 #ifndef kxmlguifactory_h
 #define kxmlguifactory_h
 
-#include <qobject.h>
-
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include <kcomponentdata.h>
+
+#include <qobject.h>
 
 class QAction;
 class KXMLGUIFactoryPrivate;

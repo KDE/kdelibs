@@ -11,9 +11,9 @@
 #ifndef KPASSIVEPOPUP_H
 #define KPASSIVEPOPUP_H
 
-#include <QtGui/QFrame>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <QtGui/QFrame>
 
 class KVBox;
 class QSystemTrayIcon;

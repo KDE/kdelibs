@@ -19,10 +19,10 @@
 #ifndef KDEUI_KMESSAGEBOXMESSAGEHANDLER_H
 #define KDEUI_KMESSAGEBOXMESSAGEHANDLER_H
 
-#include <QtCore/QObject>
-
-#include <kdelibs_export.h>
+#include <kdeui_export.h>
 #include <kmessage.h>
+
+#include <QtCore/QObject>
 
 class QWidget;
 /**

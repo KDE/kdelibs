@@ -27,9 +27,9 @@
 #ifndef KLANGBUTTON_H
 #define KLANGBUTTON_H
 
-#include <qwidget.h>
+#include <kdeui_export.h>
 
-#include <kdelibs_export.h>
+#include <qwidget.h>
 
 class KLanguageButtonPrivate;
 class QIcon;
