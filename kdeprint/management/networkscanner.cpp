@@ -19,6 +19,8 @@
 
 #define USE_QSOCKET
 
+#include <kdelibs_export.h>
+
 #include "networkscanner.h"
 
 #include <qprogressbar.h>

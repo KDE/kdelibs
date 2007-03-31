@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include <kdelibs_export.h>
 
 #include "cupsddialog.h"
 

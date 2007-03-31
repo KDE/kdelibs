@@ -20,6 +20,7 @@
 #ifndef PLUGINACTION_H
 #define PLUGINACTION_H
 
+#include <kdelibs_export.h>
 #include <kaction.h>
 
 class KDEPRINT_MANAGEMENT_EXPORT PluginAction : public KAction
