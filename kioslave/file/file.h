@@ -23,6 +23,8 @@
 #ifndef __file_h__
 #define __file_h__
 
+#include <kdelibs_export.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
