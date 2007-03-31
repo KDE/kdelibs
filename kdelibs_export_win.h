@@ -51,22 +51,6 @@
 # endif
 #endif
 
-#ifndef KATEPARTINTERFACES_EXPORT
-# ifdef MAKE_KATEPARTINTERFACES_LIB
-#  define KATEPARTINTERFACES_EXPORT KDE_EXPORT
-# else
-#  define KATEPARTINTERFACES_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef KATEPART_EXPORT
-# ifdef MAKE_KATEPART_LIB
-#  define KATEPART_EXPORT  KDE_EXPORT
-# else
-#  define KATEPART_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KHTML_EXPORT
 # ifdef MAKE_KHTML_LIB
 #  define KHTML_EXPORT KDE_EXPORT
@@ -98,14 +82,6 @@
 #  define KJSEMBED_EXPORT KDE_IMPORT
 # endif 
 #endif 
-
-#ifndef KDED_EXPORT
-# ifdef MAKE_KDED_LIB
-#  define KDED_EXPORT KDE_EXPORT
-# else
-#  define KDED_EXPORT KDE_IMPORT
-# endif
-#endif
 
 #ifndef PHONONCORE_EXPORT
 # ifdef MAKE_PHONONCORE_LIB
