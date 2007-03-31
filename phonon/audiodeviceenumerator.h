@@ -40,6 +40,7 @@ namespace Phonon
      * }
      * \endcode
      *
+     * \ingroup Backend
      * \author Matthias Kretz <kretz@kde.org>
      */
     class KAUDIODEVICELIST_EXPORT AudioDeviceEnumerator : public QObject

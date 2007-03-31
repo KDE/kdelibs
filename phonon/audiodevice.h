@@ -43,6 +43,7 @@ namespace Phonon
      * instanciate this class in your code, use AudioDeviceEnumerator::availableDevices().
      *
      * \see AudioDeviceEnumerator
+     * \ingroup Backend
      * \author Matthias Kretz <kretz@kde.org>
      */
     class KAUDIODEVICELIST_EXPORT AudioDevice
