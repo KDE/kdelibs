@@ -400,14 +400,12 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see viewConfig
      * @see viewConfigGroup
      */
-	// ### KDE4: make virtual
-    void setViewConfig( KConfigGroup *configGroup);
+    virtual void setViewConfig(KConfigGroup& configGroup);
 
     /*
-     * @returns the group set by setViewConfig
-     * configuration.
+     * @returns the group set by setViewConfig configuration.
      */
-    KConfigGroup *viewConfigGroup() const;
+    KConfigGroup* viewConfigGroup() const;
 
     /**
      * Reads the default settings for a view, i.e. the default KFile::FileView.
@@ -422,7 +420,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see setViewConfig
      * @see writeConfig
      */
-    virtual void readConfig( KConfigGroup *configGroup);
+    virtual void readConfig( const KConfigGroup& configGroup);
 
     /**
      * Saves the current settings like sorting, simple or detailed view.
@@ -430,7 +428,7 @@ class KIO_EXPORT KDirOperator : public QWidget
      * @see readConfig
      * @see setViewConfig
      */
-    virtual void writeConfig( KConfigGroup *configGroup);
+    virtual void writeConfig( KConfigGroup& configGroup);
 
 
     /**

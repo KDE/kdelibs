@@ -26,15 +26,15 @@
 #include <kmenu.h>
 #include <kstandarddirs.h>
 
-#include "kfiledialog.h"
+#include "kfilewidget.h"
 
-KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
-    : QObject( dialog ),
+KFileBookmarkHandler::KFileBookmarkHandler( KFileWidget *widget )
+    : QObject( widget ),
       KBookmarkOwner(),
-      m_dialog( dialog )
+      m_widget( widget )
 {
     setObjectName( "KFileBookmarkHandler" );
-    m_menu = new KMenu( dialog );
+    m_menu = new KMenu( widget );
     m_menu->setObjectName( "bookmark menu" );
 
     QString file = KStandardDirs::locate( "data", "kfile/bookmarks.xml" );
@@ -53,7 +53,7 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileDialog *dialog )
     manager->setUpdate( true );
 
     m_bookmarkMenu = new KBookmarkMenu( manager, this, m_menu,
-                                        dialog->actionCollection() );
+                                        widget->actionCollection() );
 }
 
 KFileBookmarkHandler::~KFileBookmarkHandler()
@@ -68,7 +68,7 @@ void KFileBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons,
 
 QString KFileBookmarkHandler::currentUrl() const
 {
-    return m_dialog->baseUrl().url();
+    return m_widget->baseUrl().url();
 }
 
 void KFileBookmarkHandler::importOldBookmarks( const QString& path,

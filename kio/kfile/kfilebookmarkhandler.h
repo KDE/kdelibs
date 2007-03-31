@@ -24,7 +24,7 @@
 
 class QTextStream;
 class KMenu;
-class KFileDialog;
+class KFileWidget;
 
 /**
  * Note: Ported to new KBookmarkMenu, but untested
@@ -34,7 +34,7 @@ class KFileBookmarkHandler : public QObject, public KBookmarkOwner
     Q_OBJECT
 
 public:
-    KFileBookmarkHandler( KFileDialog *dialog );
+    KFileBookmarkHandler( KFileWidget *widget );
     ~KFileBookmarkHandler();
 
     QMenu * popupMenu();
@@ -53,7 +53,7 @@ Q_SIGNALS:
 private:
     void importOldBookmarks( const QString& path, KBookmarkManager *manager );
 
-    KFileDialog *m_dialog;
+    KFileWidget *m_widget;
     KMenu *m_menu;
     KBookmarkMenu *m_bookmarkMenu;
 

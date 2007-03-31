@@ -151,6 +151,7 @@ set(kfile_STAT_SRCS
   kfile/kfileview.cpp
   kfile/k3fileiconview.cpp
   kfile/krecentdocument.cpp
+  kfile/kfilewidget.cpp
   kfile/kfiledialog.cpp
   kfile/kdiroperator.cpp
   kfile/k3filedetailview.cpp
@@ -375,6 +376,8 @@ install( FILES
   kfile/k3filetreeview.h
   kfile/k3filetreeviewitem.h
   kfile/kfileview.h
+  kfile/kfilewidget.h
+  kfile/kabstractfilewidget.h
   kfile/kfilefiltercombo.h
   kfile/kicondialog.h
   kfile/kimagefilepreview.h

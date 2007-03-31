@@ -30,7 +30,7 @@
 #include <kfile.h>
 #include <kurl.h>
 #include <kmimetype.h>
-#include <kio/jobclasses.h>
+#include <kio/jobclasses.h> // TODO remove
 
 class QCheckBox;
 class QHBoxLayout;
@@ -50,7 +50,7 @@ class KPushButton;
 class KToolBar;
 class KPreviewWidgetBase;
 
-struct KFileDialogPrivate;
+class KFileDialogPrivate;
 
 /**
  * Provides a user (and developer) friendly way to
@@ -744,8 +744,6 @@ Q_SIGNALS:
     void filterChanged( const QString& filter );
 
 protected:
-    virtual void showEvent(QShowEvent* event);
-
     /**
      * Reimplemented to animate the cancel button.
      */
@@ -757,115 +755,8 @@ protected Q_SLOTS:
     virtual void slotCancel();
 
 private:
-    /**
-      * Perform basic initialization tasks. Called by constructors.
-      */
-    void init(const KUrl& startDir, const QString& filter, QWidget* widget);
+    Q_DISABLE_COPY(KFileDialog)
 
-    /**
-      * rebuild geometry management.
-      *
-      */
-    void initGUI();
-
-    /**
-     * called when an item is highlighted/selected in multiselection mode.
-     * handles setting the locationEdit.
-     */
-    void multiSelectionChanged();
-
-    /**
-     * Reads configuration and applies it (size, recent directories, ...)
-     * Recommended usage together with KConfigGroup
-     */
-    void readConfig( KConfigGroup * configGroup);
-
-    /**
-     * Saves the current configuration
-     * Recommended usage together with KConfigGroup
-     */
-    void writeConfig( KConfigGroup *configGroup);
-
-    /**
-     * Reads the recent used files and inserts them into the location combobox
-     */
-    void readRecentFiles( KConfig * );
-
-    /**
-     * Saves the entries from the location combobox.
-     */
-    void saveRecentFiles( KConfig * );
-
-    /**
-     * Parses the string "line" for files. If line doesn't contain any ", the
-     * whole line will be interpreted as one file. If the number of " is odd,
-     * an empty list will be returned. Otherwise, all items enclosed in " "
-     * will be returned as correct urls.
-     */
-    KUrl::List tokenize(const QString& line) const;
-
-    /**
-     * Returns the absolute version of the URL specified in locationEdit.
-     */
-    KUrl getCompleteUrl(const QString&);
-
-    /**
-     * Returns the filename extension associated with the currentFilter().
-     * QString() is returned if an extension is not available or if
-     * operationMode() != Saving.
-     */
-    QString currentFilterExtension();
-
-    /**
-     * Updates the currentFilterExtension and the availability of the
-     * Automatically Select Extension Checkbox (visible if operationMode()
-     * == Saving and enabled if an extension _will_ be associated with the
-     * currentFilter(), _after_ this call).  You should call this after
-     * filterWidget->setCurrentItem().
-     */
-    void updateAutoSelectExtension();
-
-private Q_SLOTS:
-    void urlEntered( const KUrl& );
-    void enterUrl( const KUrl& url );
-    void enterUrl( const QString& url );
-    void locationActivated( const QString& url );
-
-
-    void slotFilterChanged();
-    void fileHighlighted(const KFileItem *i);
-    void fileSelected(const KFileItem *i);
-    void slotStatResult(KJob* job);
-    void slotLoadingFinished();
-    void fileCompletion( const QString& );
-    void toggleSpeedbar( bool );
-    void toggleBookmarks(bool show);
-
-    void slotAutoSelectExtClicked();
-    void addToRecentDocuments();
-    void initSpeedbar();
-
-private Q_SLOTS:
-    void slotLocationChanged( const QString& text );
-
-private:
-    KFileDialog(const KFileDialog&);
-    KFileDialog operator=(const KFileDialog&);
-
-    void setLocationText( const QString& text );
-    void updateLocationWhatsThis();
-
-    void appendExtension(KUrl &url);
-    void updateLocationEditExtension(const QString &);
-    void updateFilter();
-
-    static void initStatic();
-
-    void setNonExtSelection();
-
-    KUrl::List& parseSelectedUrls() const;
-
-private:
     KFileDialogPrivate * const d;
 };
 

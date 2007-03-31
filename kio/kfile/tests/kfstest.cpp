@@ -68,7 +68,7 @@ int main(int argc, char **argv)
     if (argv1 == QLatin1String("diroperator")) {
         KDirOperator *op = new KDirOperator(startDir, 0);
         KConfigGroup grp(KGlobal::config(), "TestGroup" );
-        op->setViewConfig(&grp);
+        op->setViewConfig(grp);
         op->setView(KFile::Simple);
         op->show();
         a.exec();
