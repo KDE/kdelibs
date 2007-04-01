@@ -1000,4 +1000,14 @@ kde4_add_executable(kplottest ${kplottest_SRCS})
 
 target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})
 
+########### next target ###############
+
+set(kconfigskeletontest_SRCS kconfigskeletontest.cpp)
+
+kde4_automoc(${kconfigskeletontest_SRCS})
+
+kde4_add_test(kconfigskeletontest ${kconfigskeletontest_SRCS})
+
+target_link_libraries(kconfigskeletontest ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
+
 ########### End of tests ###############

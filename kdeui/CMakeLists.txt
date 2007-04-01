@@ -9,6 +9,7 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
+ ${CMAKE_CURRENT_SOURCE_DIR}/config
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
@@ -52,6 +53,8 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
+ config/kconfigskeleton.cpp
+ config/kconfiggroupgui.cpp
  dialogs/kaboutkdedialog.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
@@ -117,7 +120,6 @@ set(kdeui_LIB_SRCS
  util/kcommand.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
- util/kconfiggroupgui.cpp
  util/kcrash.cpp
  util/kcursor.cpp
  util/kguiitem.cpp
@@ -266,6 +268,7 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
+ config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kaboutkdedialog.h
  dialogs/kassistantdialog.h

@@ -38,7 +38,6 @@ set(kdecore_unittests
  kasciitest
  ktimezonestest
  kconfigtest
- kconfigskeletontest
  kurlmimetest
  klibloadertest
  klockfiletest

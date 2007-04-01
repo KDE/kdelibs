@@ -23,7 +23,7 @@
 #ifndef KCONFIGSKELETON_H
 #define KCONFIGSKELETON_H
 
-#include <kdecore_export.h>
+#include <kdeui_export.h>
 
 #include <kurl.h>
 #include <ksharedconfig.h>
@@ -48,7 +48,7 @@
    * addItem() functions of KConfigSkeleton instead. If you subclass this class you will
    * have to register instances with the function KConfigSkeleton::addItem().
    */
-  class KDECORE_EXPORT KConfigSkeletonItem
+  class KDEUI_EXPORT KConfigSkeletonItem
   {
   public:
     typedef QList < KConfigSkeletonItem * >List;
@@ -373,14 +373,14 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    * subclasses yourself, but you can use \ref kconfig_compiler to automatically
    * generate the C++ code from an XML description of the configuration options.
    */
-class KDECORE_EXPORT KConfigSkeleton : public QObject
+class KDEUI_EXPORT KConfigSkeleton : public QObject
 {
   Q_OBJECT
 public:
   /**
    * Class for handling a string preferences item.
    */
-  class KDECORE_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
+  class KDEUI_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
   {
   public:
     enum Type { Normal, Password, Path };
@@ -426,7 +426,7 @@ public:
   /**
    * Class for handling a password preferences item.
    */
-  class KDECORE_EXPORT ItemPassword:public ItemString
+  class KDEUI_EXPORT ItemPassword:public ItemString
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -438,7 +438,7 @@ public:
   /**
    * Class for handling a path preferences item.
    */
-  class KDECORE_EXPORT ItemPath:public ItemString
+  class KDEUI_EXPORT ItemPath:public ItemString
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -450,7 +450,7 @@ public:
     /**
      * Class for handling a url preferences item.
      */
-    class KDECORE_EXPORT ItemUrl:public KConfigSkeletonGenericItem < KUrl >
+    class KDEUI_EXPORT ItemUrl:public KConfigSkeletonGenericItem < KUrl >
     {
     public:
 
@@ -476,7 +476,7 @@ public:
   /**
    * Class for handling a QVariant preferences item.
    */
-  class KDECORE_EXPORT ItemProperty:public KConfigSkeletonGenericItem < QVariant >
+  class KDEUI_EXPORT ItemProperty:public KConfigSkeletonGenericItem < QVariant >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -492,7 +492,7 @@ public:
   /**
    * Class for handling a bool preferences item.
    */
-  class KDECORE_EXPORT ItemBool:public KConfigSkeletonGenericItem < bool >
+  class KDEUI_EXPORT ItemBool:public KConfigSkeletonGenericItem < bool >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -513,7 +513,7 @@ public:
   /**
    * Class for handling a 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt:public KConfigSkeletonGenericItem < qint32 >
+  class KDEUI_EXPORT ItemInt:public KConfigSkeletonGenericItem < qint32 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -555,7 +555,7 @@ public:
   /**
    * Class for handling a 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemLongLong:public KConfigSkeletonGenericItem < qint64 >
+  class KDEUI_EXPORT ItemLongLong:public KConfigSkeletonGenericItem < qint64 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -594,7 +594,7 @@ public:
   /**
    * Class for handling enums.
    */
-  class KDECORE_EXPORT ItemEnum:public ItemInt
+  class KDEUI_EXPORT ItemEnum:public ItemInt
   {
   public:
     struct Choice
@@ -626,7 +626,7 @@ public:
   /**
    * Class for handling an unsingend 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
+  class KDEUI_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -664,7 +664,7 @@ public:
   /**
    * Class for handling unsigned 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemULongLong:public KConfigSkeletonGenericItem < quint64 >
+  class KDEUI_EXPORT ItemULongLong:public KConfigSkeletonGenericItem < quint64 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -703,7 +703,7 @@ public:
   /**
    * Class for handling a floating point preference item.
    */
-  class KDECORE_EXPORT ItemDouble:public KConfigSkeletonGenericItem < double >
+  class KDEUI_EXPORT ItemDouble:public KConfigSkeletonGenericItem < double >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -742,7 +742,7 @@ public:
   /**
    * Class for handling a color preferences item.
    */
-  class KDECORE_EXPORT ItemColor:public KConfigSkeletonGenericItem < QColor >
+  class KDEUI_EXPORT ItemColor:public KConfigSkeletonGenericItem < QColor >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -764,7 +764,7 @@ public:
   /**
    * Class for handling a font preferences item.
    */
-  class KDECORE_EXPORT ItemFont:public KConfigSkeletonGenericItem < QFont >
+  class KDEUI_EXPORT ItemFont:public KConfigSkeletonGenericItem < QFont >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -785,7 +785,7 @@ public:
   /**
    * Class for handling a QRect preferences item.
    */
-  class KDECORE_EXPORT ItemRect:public KConfigSkeletonGenericItem < QRect >
+  class KDEUI_EXPORT ItemRect:public KConfigSkeletonGenericItem < QRect >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -806,7 +806,7 @@ public:
   /**
    * Class for handling a QPoint preferences item.
    */
-  class KDECORE_EXPORT ItemPoint:public KConfigSkeletonGenericItem < QPoint >
+  class KDEUI_EXPORT ItemPoint:public KConfigSkeletonGenericItem < QPoint >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -827,7 +827,7 @@ public:
   /**
    * Class for handling a QSize preferences item.
    */
-  class KDECORE_EXPORT ItemSize:public KConfigSkeletonGenericItem < QSize >
+  class KDEUI_EXPORT ItemSize:public KConfigSkeletonGenericItem < QSize >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -848,7 +848,7 @@ public:
   /**
    * Class for handling a QDateTime preferences item.
    */
-  class KDECORE_EXPORT ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
+  class KDEUI_EXPORT ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -870,7 +870,7 @@ public:
   /**
    * Class for handling a string list preferences item.
    */
-  class KDECORE_EXPORT ItemStringList:public KConfigSkeletonGenericItem < QStringList >
+  class KDEUI_EXPORT ItemStringList:public KConfigSkeletonGenericItem < QStringList >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -892,7 +892,7 @@ public:
   /**
    * Class for handling a path list preferences item.
    */
-  class KDECORE_EXPORT ItemPathList:public ItemStringList
+  class KDEUI_EXPORT ItemPathList:public ItemStringList
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -909,7 +909,7 @@ public:
     /**
      * Class for handling a url list preferences item.
      */
-    class KDECORE_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < KUrl::List >
+    class KDEUI_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < KUrl::List >
     {
     public:
         /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -933,7 +933,7 @@ public:
   /**
    * Class for handling an integer list preferences item.
    */
-  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
+  class KDEUI_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */

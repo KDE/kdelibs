@@ -105,7 +105,6 @@ set(kdecore_LIB_SRCS
    config/kconfig.cpp
    config/kconfigbase.cpp
    config/kconfiggroup.cpp
-   config/kconfigskeleton.cpp
    config/kconfigbackend.cpp
    config/kconfigini.cpp
    config/kdesktopfile.cpp
@@ -278,7 +277,6 @@ install( FILES
    config/kconfiggroup.h
    config/kconfigbackend.h
    config/kconfigini.h
-   config/kconfigskeleton.h
    config/kconfigdata.h
    config/kdesktopfile.h
    config/ksharedconfig.h
