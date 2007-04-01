@@ -47,13 +47,6 @@ public:
 	typedef KSharedPtr<RemoteService> Ptr;
 	
 	/**
-	Creates unresolved service from given DNS label
-	@param label Data returned by PTR query - it is decoded into name, type and 
-	domain
-	 */
-	explicit RemoteService(const QString& label);
-	
-	/**
 	Creates unresolved remote service with given name, type and domain.
 	 */
 	RemoteService(const QString& name,const QString& type,const QString& domain, const QString& subtype=QString());

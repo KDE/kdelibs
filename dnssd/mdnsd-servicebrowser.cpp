@@ -120,8 +120,8 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 	if (event->type()==QEvent::User+SD_ADDREMOVE) {
 		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
 		// m_type has useless trailing dot
-		RemoteService::Ptr svr(new RemoteService(aev->m_name+'.'+
-			aev->m_type.left(aev->m_type.length()-1)+'.'+aev->m_domain));
+		//FIXME: check it
+		RemoteService::Ptr svr(new RemoteService(aev->m_name,aev->m_type.left(aev->m_type.length()-1),aev->m_domain));
 		if (aev->m_op==AddRemoveEvent::Add) {
 		    if (m_autoResolve) {
 			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));

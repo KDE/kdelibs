@@ -107,15 +107,6 @@ protected:
 	Map of TXT properties
 	 */
 	QMap<QString,QString> m_textData;
-	/**
-	Encode service name, type and domain into string that can be used as DNS-SD PTR label
-	 */
-	QString encode();
-	/**
-	Decode PTR label returned by DNS resolver into service name, type and domain. It also
-	handles special cases - metaservices and domains.
-	 */
-	void decode(const QString& name);
 
 	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const ServiceBase & a);
 	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, ServiceBase & a);
