@@ -40,7 +40,7 @@ class KUrlComboBox;
 class KFileFilterCombo;
 class KFileWidgetPrivate;
 
-class KFileWidget : public QWidget, public KAbstractFileWidget
+class KIO_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
 {
     Q_OBJECT
 public:
@@ -75,7 +75,7 @@ public:
                  QWidget *parent, QWidget* widget = 0 );
 
 
-    ~KFileWidget();
+    virtual ~KFileWidget();
 
     /**
      * @returns The selected fully qualified filename.
