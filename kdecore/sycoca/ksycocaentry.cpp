@@ -109,7 +109,7 @@ KSycocaType KSycocaEntry::sycocaType() const
     return KST_KSycocaEntry;
 }
 
-QString KSycocaEntry::entryPath() const
+const QString &KSycocaEntry::entryPath() const
 {
     return d->path;
 }

@@ -76,7 +76,7 @@ public:
 
 void KService::Private::init( const KDesktopFile *config, KService* q )
 {
-    const QString entryPath = q->entryPath();
+    const QString &entryPath = q->entryPath();
     bool absPath = !QDir::isRelativePath(entryPath);
 
     // TODO: it makes sense to have a KConstConfigGroup I guess
@@ -619,12 +619,14 @@ KService::Ptr KService::serviceByStorageId( const QString& _storageId )
     return service;
 }
 
-bool KService::substituteUid() const {
+bool KService::substituteUid() const
+{
     QVariant v = property("X-KDE-SubstituteUID", QVariant::Bool);
     return v.isValid() && v.toBool();
 }
 
-QString KService::username() const {
+QString KService::username() const
+{
     // See also KDesktopFile::tryExec()
     QString user;
     QVariant v = property("X-KDE-Username", QVariant::String);
@@ -636,7 +638,8 @@ QString KService::username() const {
     return user;
 }
 
-bool KService::noDisplay() const {
+bool KService::noDisplay() const
+{
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "NoDisplay" );
     if ( (it != d->m_mapProps.end()) && (it->isValid()))
     {
@@ -669,12 +672,14 @@ bool KService::noDisplay() const {
     return false;
 }
 
-QString KService::untranslatedGenericName() const {
+QString KService::untranslatedGenericName() const
+{
     QVariant v = property("UntranslatedGenericName", QVariant::String);
     return v.isValid() ? v.toString() : QString();
 }
 
-QString KService::parentApp() const {
+QString KService::parentApp() const
+{
     QMap<QString,QVariant>::ConstIterator it = d->m_mapProps.find( "X-KDE-ParentApp" );
     if ( (it == d->m_mapProps.end()) || (!it->isValid()))
     {
@@ -684,18 +689,19 @@ QString KService::parentApp() const {
     return it->toString();
 }
 
-bool KService::allowMultipleFiles() const {
+bool KService::allowMultipleFiles() const
+{
     // Can we pass multiple files on the command line or do we have to start the application for every single file ?
     return (d->m_strExec.contains( "%F" ) || d->m_strExec.contains( "%U" ) ||
             d->m_strExec.contains( "%N" ) || d->m_strExec.contains( "%D" ));
 }
 
-QStringList KService::categories() const
+const QStringList &KService::categories() const
 {
     return d->categories;
 }
 
-QString KService::menuId() const
+const QString &KService::menuId() const
 {
     return d->menuId;
 }
@@ -705,7 +711,7 @@ void KService::setMenuId(const QString &_menuId)
     d->menuId = _menuId;
 }
 
-QString KService::storageId() const
+const QString &KService::storageId() const
 {
     if (!d->menuId.isEmpty())
         return d->menuId;
@@ -775,35 +781,37 @@ bool KService::isApplication() const
     return d->m_strType == "Application";
 }
 
-QString KService::type() const
+const QString &KService::type() const
 {
     return d->m_strType;
 }
 
 void KService::virtual_hook( int id, void* data )
-{ KSycocaEntry::virtual_hook( id, data ); }
+{
+    KSycocaEntry::virtual_hook( id, data );
+}
 
 QString KService::name() const
 {
     return d->m_strName;
 }
 
-QString KService::exec() const
+const QString &KService::exec() const
 {
     return d->m_strExec;
 }
 
-QString KService::library() const
+const QString &KService::library() const
 {
     return d->m_strLibrary;
 }
 
-QString KService::icon() const
+const QString &KService::icon() const
 {
     return d->m_strIcon;
 }
 
-QString KService::terminalOptions() const
+const QString &KService::terminalOptions() const
 {
     return d->m_strTerminalOptions;
 }
@@ -814,12 +822,12 @@ bool KService::terminal() const
 }
 
 // KDE4: remove and port code to entryPath?
-QString KService::desktopEntryPath() const
+const QString &KService::desktopEntryPath() const
 {
     return entryPath();
 }
 
-QString KService::desktopEntryName() const
+const QString &KService::desktopEntryName() const
 {
     return d->m_strDesktopEntryName;
 }
@@ -829,27 +837,27 @@ KService::DBUSStartupType_t KService::DBUSStartupType() const
     return d->m_DBUSStartusType;
 }
 
-QString KService::path() const
+const QString &KService::path() const
 {
     return d->m_strPath;
 }
 
-QString KService::comment() const
+const QString &KService::comment() const
 {
     return d->m_strComment;
 }
 
-QString KService::genericName() const
+const QString &KService::genericName() const
 {
     return d->m_strGenName;
 }
 
-QStringList KService::keywords() const
+const QStringList &KService::keywords() const
 {
     return d->m_lstKeywords;
 }
 
-QStringList KService::serviceTypes() const
+const QStringList &KService::serviceTypes() const
 {
     return d->m_lstServiceTypes;
 }
@@ -886,7 +894,7 @@ void KService::setTerminalOptions(const QString &options)
     d->m_strTerminalOptions = options;
 }
 
-QStringList & KService::accessServiceTypes()
+QStringList &KService::accessServiceTypes()
 {
     return d->m_lstServiceTypes;
 }
