@@ -175,31 +175,26 @@ public:
     KZipFileEntry( KZip* zip, const QString& name, int access, int date,
                    const QString& user, const QString& group, const QString& symlink,
                    const QString& path, qint64 start, qint64 uncompressedSize,
-                   int encoding, qint64 compressedSize) :
-        KArchiveFile( zip, name, access, date, user, group, symlink,
-                      start, uncompressedSize ),
-        m_crc(0),
-        m_compressedSize(compressedSize),
-        m_headerStart(0),
-        m_encoding(encoding),
-        m_path( path )
-    {}
-    int encoding() const { return m_encoding; }
-    qint64 compressedSize() const { return m_compressedSize; }
+                   int encoding, qint64 compressedSize);
+
+    ~KZipFileEntry();
+
+    int encoding() const;
+    qint64 compressedSize() const;
 
     /// Only used when writing
-    void setCompressedSize(qint64 compressedSize) { m_compressedSize = compressedSize; }
+    void setCompressedSize(qint64 compressedSize);
 
     /// Header start: only used when writing
-    void setHeaderStart(qint64 headerstart) { m_headerStart = headerstart; }
-    qint64 headerStart() const {return m_headerStart; }
+    void setHeaderStart(qint64 headerstart);
+    qint64 headerStart() const;
 
     /// CRC: only used when writing
-    unsigned long crc32() const { return m_crc; }
-    void setCRC32(unsigned long crc32) { m_crc=crc32; }
+    unsigned long crc32() const;
+    void setCRC32(unsigned long crc32);
 
     /// Name with complete path - KArchiveFile::name() is the filename only (no path)
-    QString path() const { return m_path; }
+    const QString &path() const;
 
     /**
      * @return the content of this file.
@@ -217,12 +212,8 @@ public:
     virtual QIODevice* createDevice() const;
 
 private:
-    unsigned long m_crc;
-    qint64 m_compressedSize;
-    qint64 m_headerStart;
-    int m_encoding;
-    QString m_path;
-    class KZipFileEntryPrivate* d;
+    class KZipFileEntryPrivate;
+    KZipFileEntryPrivate * const d;
 };
 
 #endif

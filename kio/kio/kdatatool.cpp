@@ -39,71 +39,88 @@
  * KDataToolInfo
  *
  *************************************************/
+class KDataToolInfo::KDataToolInfoPrivate
+{
+public:
+    KDataToolInfoPrivate()
+     : service(0)
+    {}
+
+    KService::Ptr service;
+    KComponentData componentData;
+};
 
 KDataToolInfo::KDataToolInfo()
+    : d(new KDataToolInfoPrivate)
 {
-    m_service = 0;
 }
 
 KDataToolInfo::KDataToolInfo(const KService::Ptr& service, const KComponentData &componentData)
+    : d(new KDataToolInfoPrivate)
 {
-    m_service = service;
-    m_componentData = componentData;
+    d->service = service;
+    d->componentData = componentData;
 
-    if ( !!m_service && !m_service->serviceTypes().contains( "KDataTool" ) )
+    if ( !d->service && !d->service->serviceTypes().contains( "KDataTool" ) )
     {
-        kDebug(30003) << "The service " << m_service->name()
+        kDebug(30003) << "The service " << d->service->name()
                        << " does not feature the service type KDataTool" << endl;
-        m_service = 0;
+        d->service = 0;
     }
 }
 
 KDataToolInfo::KDataToolInfo( const KDataToolInfo& info )
+    : d(new KDataToolInfoPrivate)
 {
-    m_service = info.service();
-    m_componentData = info.componentData();
+    d->service = info.service();
+    d->componentData = info.componentData();
 }
 
 KDataToolInfo& KDataToolInfo::operator= ( const KDataToolInfo& info )
 {
-    m_service = info.service();
-    m_componentData = info.componentData();
+    d->service = info.service();
+    d->componentData = info.componentData();
     return *this;
+}
+
+KDataToolInfo::~KDataToolInfo()
+{
+    delete d;
 }
 
 QString KDataToolInfo::dataType() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QString();
 
-    return m_service->property( "DataType" ).toString();
+    return d->service->property( "DataType" ).toString();
 }
 
 QStringList KDataToolInfo::mimeTypes() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QStringList();
 
-    return m_service->property( "DataMimeTypes" ).toStringList();
+    return d->service->property( "DataMimeTypes" ).toStringList();
 }
 
 bool KDataToolInfo::isReadOnly() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return true;
 
-    return m_service->property( "ReadOnly" ).toBool();
+    return d->service->property( "ReadOnly" ).toBool();
 }
 
 QPixmap KDataToolInfo::icon() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QPixmap();
 
     QPixmap pix;
     QStringList lst = KGlobal::dirs()->resourceDirs("icon");
     QStringList::ConstIterator it = lst.begin();
-    while (!pix.load( *it + '/' + m_service->icon() ) && it != lst.end() )
+    while (!pix.load( *it + '/' + d->service->icon() ) && it != lst.end() )
         it++;
 
     return pix;
@@ -111,13 +128,13 @@ QPixmap KDataToolInfo::icon() const
 
 QPixmap KDataToolInfo::miniIcon() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QPixmap();
 
     QPixmap pix;
     QStringList lst = KGlobal::dirs()->resourceDirs("mini");
     QStringList::ConstIterator it = lst.begin();
-    while (!pix.load( *it + '/' + m_service->icon() ) && it != lst.end() )
+    while (!pix.load( *it + '/' + d->service->icon() ) && it != lst.end() )
         it++;
 
     return pix;
@@ -125,41 +142,46 @@ QPixmap KDataToolInfo::miniIcon() const
 
 QString KDataToolInfo::iconName() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QString();
-    return m_service->icon();
+    return d->service->icon();
 }
 
 QStringList KDataToolInfo::commands() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QStringList();
 
-    return m_service->property( "Commands" ).toStringList();
+    return d->service->property( "Commands" ).toStringList();
 }
 
 QStringList KDataToolInfo::userCommands() const
 {
-    if ( !m_service )
+    if ( !d->service )
         return QStringList();
 
-    return m_service->comment().split( ',', QString::SkipEmptyParts );
+    return d->service->comment().split( ',', QString::SkipEmptyParts );
 }
 
 KDataTool* KDataToolInfo::createTool( QObject* parent ) const
 {
-    if ( !m_service )
+    if ( !d->service )
         return 0;
 
-    KDataTool* tool = KService::createInstance<KDataTool>( m_service, parent );
+    KDataTool* tool = KService::createInstance<KDataTool>( d->service, parent );
     if ( tool )
-        tool->setComponentData(m_componentData);
+        tool->setComponentData(d->componentData);
     return tool;
 }
 
 KService::Ptr KDataToolInfo::service() const
 {
-    return m_service;
+    return d->service;
+}
+
+const KComponentData &KDataToolInfo::componentData() const
+{
+    return d->componentData;
 }
 
 QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString& mimetype, const KComponentData &componentData)
@@ -211,7 +233,7 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
 
 bool KDataToolInfo::isValid() const
 {
-    return( m_service );
+    return( !d->service.isNull() );
 }
 
 /*************************************************
@@ -219,18 +241,33 @@ bool KDataToolInfo::isValid() const
  * KDataToolAction
  *
  *************************************************/
+class KDataToolAction::KDataToolActionPrivate
+{
+public:
+    KDataToolActionPrivate() {}
+
+    QString command;
+    KDataToolInfo info;
+};
+
 KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command,
                                   QObject *parent )
     : KAction( text, parent ),
-      m_command( command ),
-      m_info( info )
+      d(new KDataToolActionPrivate)
 {
     setIcon( KIcon( info.iconName() ) );
+    d->command = command;
+    d->info = info;
+}
+
+KDataToolAction::~KDataToolAction()
+{
+    delete d;
 }
 
 void KDataToolAction::slotActivated()
 {
-    emit toolActivated( m_info, m_command );
+    emit toolActivated( d->info, d->command );
 }
 
 QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent )
@@ -274,15 +311,32 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
  * KDataTool
  *
  *************************************************/
+class KDataTool::KDataToolPrivate
+{
+public:
+    KDataToolPrivate() {}
+
+    KComponentData componentData;
+};
 
 KDataTool::KDataTool( QObject* parent )
-    : QObject(parent)
+    : QObject(parent), d(new KDataToolPrivate)
 {
+}
+
+KDataTool::~KDataTool()
+{
+    delete d;
+}
+
+void KDataTool::setComponentData(const KComponentData &componentData)
+{
+    d->componentData = componentData;
 }
 
 const KComponentData &KDataTool::componentData() const
 {
-   return m_componentData;
+   return d->componentData;
 }
 
 #include "kdatatool.moc"

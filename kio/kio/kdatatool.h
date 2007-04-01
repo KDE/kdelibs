@@ -22,7 +22,8 @@
 #define KDATATOOL_H
 
 #include <kio/kio_export.h>
-#include <qobject.h>
+#include <QObject>
+#include <QString>
 
 #include <kaction.h>
 #include <kservice.h>
@@ -58,6 +59,10 @@ public:
      * @param instance the instance to use
      */
     KDataToolInfo(const KService::Ptr& service, const KComponentData &instance);
+    /**
+     * Destructor
+     */
+    ~KDataToolInfo();
     /**
      * Copy constructor.
      */
@@ -154,7 +159,7 @@ public:
      * The instance of the service.
      * @return the instance
      */
-    const KComponentData &componentData() const { return m_componentData; }
+    const KComponentData &componentData() const;
 
     /**
      * A DataToolInfo may be invalid if the KService passed to its constructor does
@@ -174,10 +179,8 @@ public:
     static QList<KDataToolInfo> query(const QString& datatype, const QString& mimetype, const KComponentData &instance);
 
 private:
-    KService::Ptr m_service;
-    KComponentData m_componentData;
-private:
-    class KDataToolInfoPrivate* d;
+    class KDataToolInfoPrivate;
+    KDataToolInfoPrivate * const d;
 };
 
 
@@ -207,6 +210,11 @@ public:
     KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command, QObject *parent );
 
     /**
+     * Destructor
+     */
+    ~KDataToolAction();
+
+    /**
      * Creates a list of actions from a list of information about data-tools.
      * The slot must have a signature corresponding to the toolActivated signal.
      *
@@ -231,10 +239,8 @@ protected:
     virtual void slotActivated();
 
 private:
-    QString m_command;
-    KDataToolInfo m_info;
-private:
-    class KDataToolActionPrivate* d;
+    class KDataToolActionPrivate;
+    KDataToolActionPrivate * const d;
 
 };
 
@@ -261,9 +267,14 @@ public:
     KDataTool( QObject* parent = 0 );
 
     /**
+     * Destructor
+     */
+    ~KDataTool();
+
+    /**
      * @internal. Do not use under any circumstance (including bad weather).
      */
-    void setComponentData(const KComponentData &componentData) { m_componentData = componentData; }
+    void setComponentData(const KComponentData &componentData);
 
     /**
      * Returns the instance of the part that created this tool.
@@ -288,10 +299,8 @@ public:
     virtual bool run( const QString& command, void* data, const QString& datatype, const QString& mimetype) = 0;
 
 private:
-    KComponentData m_componentData;
-private:
     class KDataToolPrivate;
-    KDataToolPrivate * d;
+    KDataToolPrivate * const d;
 };
 
 #endif

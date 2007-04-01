@@ -1273,8 +1273,81 @@ KZip::ExtraField KZip::extraField() const
     return d->m_extraField;
 }
 
+////////////////////////////////////////////////////////////////////////
+////////////////////// KZipFileEntry////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+class KZipFileEntry::KZipFileEntryPrivate
+{
+public:
+    KZipFileEntryPrivate()
+    : crc(0),
+      compressedSize(0),
+      headerStart(0),
+      encoding(0)
+    {}
+    unsigned long crc;
+    qint64        compressedSize;
+    qint64        headerStart;
+    int           encoding;
+    QString       path;
+};
 
-///////////////
+KZipFileEntry::KZipFileEntry(KZip* zip, const QString& name, int access, int date,
+                             const QString& user, const QString& group, const QString& symlink,
+                             const QString& path, qint64 start, qint64 uncompressedSize,
+                             int encoding, qint64 compressedSize)
+ : KArchiveFile(zip, name, access, date, user, group, symlink, start, uncompressedSize ),
+   d(new KZipFileEntryPrivate)
+{
+    d->path = path;
+    d->encoding = encoding;
+    d->compressedSize = compressedSize;
+}
+
+KZipFileEntry::~KZipFileEntry()
+{
+    delete d;
+}
+
+int KZipFileEntry::encoding() const
+{
+    return d->encoding;
+}
+
+qint64 KZipFileEntry::compressedSize() const
+{
+    return d->compressedSize;
+}
+
+void KZipFileEntry::setCompressedSize(qint64 compressedSize)
+{
+    d->compressedSize = compressedSize;
+}
+
+void KZipFileEntry::setHeaderStart(qint64 headerstart)
+{
+    d->headerStart = headerstart;
+}
+
+qint64 KZipFileEntry::headerStart() const
+{
+    return d->headerStart;
+}
+
+unsigned long KZipFileEntry::crc32() const
+{
+    return d->crc;
+}
+
+void KZipFileEntry::setCRC32(unsigned long crc32)
+{
+    d->crc=crc32;
+}
+
+const QString &KZipFileEntry::path() const
+{
+    return d->path;
+}
 
 QByteArray KZipFileEntry::data() const
 {
