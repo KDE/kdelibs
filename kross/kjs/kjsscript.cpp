@@ -68,7 +68,7 @@ namespace Kross {
     }
 
     /// Publish a QObject to a KJSEmbed::Engine.
-    static void publishObject(KJSEmbed::Engine* engine, KJS::ExecState* exec, QString name, QObject* object, bool restricted)
+    static void publishObject(KJSEmbed::Engine* engine, KJS::ExecState* exec, const QString &name, QObject* object, bool restricted)
     {
         KJS::JSObject* obj = engine->addObject(object, name.isEmpty() ? object->objectName() : name);
         if( ! obj ) {

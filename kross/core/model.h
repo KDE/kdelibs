@@ -100,7 +100,7 @@ namespace Kross {
     class KROSSCORE_EXPORT ActionCollectionProxyModel : public QSortFilterProxyModel
     {
         public:
-            ActionCollectionProxyModel(QObject* parent, ActionCollectionModel* model = 0);
+            explicit ActionCollectionProxyModel(QObject* parent, ActionCollectionModel* model = 0);
             virtual ~ActionCollectionProxyModel();
 
         private:

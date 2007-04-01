@@ -60,7 +60,7 @@ namespace Kross {
             /**
              * Set the filter to \p filter .
              */
-            void setFilter(QString filter);
+            void setFilter(const QString &filter);
 
             /**
              * \return the current mimetype filter.

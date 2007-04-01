@@ -167,10 +167,10 @@ QString FormFileWidget::currentFilter() const
     return d->impl ? d->impl->currentFilter() : d->currentFilter;
 }
 
-void FormFileWidget::setFilter(QString filter)
+void FormFileWidget::setFilter(const QString &filter)
 {
-    filter.replace(QRegExp("([^\\\\]{1,1})/"), "\\1\\/"); // escape '/' chars else KFileDialog assumes they are mimetypes :-/
     d->filter = filter;
+    d->filter.replace(QRegExp("([^\\\\]{1,1})/"), "\\1\\/"); // escape '/' chars else KFileDialog assumes they are mimetypes :-/
     if( d->impl )
         d->impl->setFilter(d->filter);
 }

@@ -208,9 +208,9 @@ int KDEsuClient::setPass(const char *pass, int timeout)
 {
     QByteArray cmd = "PASS ";
     cmd += escape(pass);
-    cmd += " ";
+    cmd += ' ';
     cmd += QByteArray().setNum(timeout);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -219,19 +219,19 @@ int KDEsuClient::exec(const QByteArray &prog, const QByteArray &user, const QByt
     QByteArray cmd;
     cmd = "EXEC ";
     cmd += escape(prog);
-    cmd += " ";
+    cmd += ' ';
     cmd += escape(user);
     if (!options.isEmpty() || !env.isEmpty())
     {
-       cmd += " ";
+       cmd += ' ';
        cmd += escape(options);
        for (int i = 0; i < env.count(); ++i)
        {
-          cmd += " ";
+          cmd += ' ';
           cmd += escape(env.at(i));
        }
     }
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -239,7 +239,7 @@ int KDEsuClient::setHost(const QByteArray &host)
 {
     QByteArray cmd = "HOST ";
     cmd += escape(host);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -248,7 +248,7 @@ int KDEsuClient::setPriority(int prio)
     QByteArray cmd;
     cmd += "PRIO ";
     cmd += QByteArray::number(prio);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -257,7 +257,7 @@ int KDEsuClient::setScheduler(int sched)
     QByteArray cmd;
     cmd += "SCHD ";
     cmd += QByteArray::number(sched);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -265,9 +265,9 @@ int KDEsuClient::delCommand(const QByteArray &key, const QByteArray &user)
 {
     QByteArray cmd = "DEL ";
     cmd += escape(key);
-    cmd += " ";
+    cmd += ' ';
     cmd += escape(user);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 int KDEsuClient::setVar(const QByteArray &key, const QByteArray &value, int timeout,
@@ -275,13 +275,13 @@ int KDEsuClient::setVar(const QByteArray &key, const QByteArray &value, int time
 {
     QByteArray cmd = "SET ";
     cmd += escape(key);
-    cmd += " ";
+    cmd += ' ';
     cmd += escape(value);
-    cmd += " ";
+    cmd += ' ';
     cmd += escape(group);
-    cmd += " ";
+    cmd += ' ';
     cmd += QByteArray().setNum(timeout);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -289,7 +289,7 @@ QByteArray KDEsuClient::getVar(const QByteArray &key)
 {
     QByteArray cmd = "GET ";
     cmd += escape(key);
-    cmd += "\n";
+    cmd += '\n';
     QByteArray reply;
     command(cmd, &reply);
     return reply;
@@ -299,7 +299,7 @@ QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
 {
     QByteArray cmd = "GETK ";
     cmd += escape(group);
-    cmd += "\n";
+    cmd += '\n';
     QByteArray reply;
     command(cmd, &reply);
     int index=0, pos;
@@ -332,7 +332,7 @@ bool KDEsuClient::findGroup(const QByteArray &group)
 {
     QByteArray cmd = "CHKG ";
     cmd += escape(group);
-    cmd += "\n";
+    cmd += '\n';
     if( command(cmd) == -1 )
         return false;
     return true;
@@ -342,7 +342,7 @@ int KDEsuClient::delVar(const QByteArray &key)
 {
     QByteArray cmd = "DELV ";
     cmd += escape(key);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -350,7 +350,7 @@ int KDEsuClient::delGroup(const QByteArray &group)
 {
     QByteArray cmd = "DELG ";
     cmd += escape(group);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 
@@ -358,7 +358,7 @@ int KDEsuClient::delVars(const QByteArray &special_key)
 {
     QByteArray cmd = "DELS ";
     cmd += escape(special_key);
-    cmd += "\n";
+    cmd += '\n';
     return command(cmd);
 }
 

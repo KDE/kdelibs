@@ -191,7 +191,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
             }
 
             // Warning/error message.
-            m_Error += line; m_Error += "\n";
+            m_Error += line; m_Error += '\n';
             if (m_bTerminal)
                 fprintf(stderr, "ssh: %s\n", line.constData());
             break;
