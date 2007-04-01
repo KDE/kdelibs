@@ -21,7 +21,7 @@
 #include <kglobal.h>
 
 #include "kiconloader.h"
-#include "kiconengine.h"
+#include "kiconengine_p.h"
 
 KIcon::KIcon(const QString& iconName, KIconLoader* iconLoader, int overlays)
   : QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global(), overlays))

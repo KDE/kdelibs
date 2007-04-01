@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kiconengine.h"
+#include "kiconengine_p.h"
 
 #include <QPainter>
 #include <QMenu>

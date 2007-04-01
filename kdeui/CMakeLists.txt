@@ -291,7 +291,6 @@ install( FILES
  findreplace/kfinddialog.h
  findreplace/kreplacedialog.h
  icons/kiconeffect.h
- icons/kiconengine.h
  icons/kicon.h
  icons/kiconloader.h
  icons/kicontheme.h
