@@ -163,7 +163,7 @@ void NetworkScanner::slotScanClicked()
 					i18n( "You are about to scan a subnet (%1.*) that does not "
 						  "correspond to the current subnet of this computer (%2.*). Do you want "
 						  "to scan the specified subnet anyway?" ,  d->prefixaddress ,  d->localPrefix() ),
-					QString(), KGuiItem( i18n( "&Scan" ), "zoom-original" ), "askForScan" ) == KMessageBox::Continue )
+					QString(), KGuiItem( i18n( "&Scan" ), "zoom-original" ), KStandardGuiItem::cancel(), "askForScan" ) == KMessageBox::Continue )
 			start();
 	}
 	else

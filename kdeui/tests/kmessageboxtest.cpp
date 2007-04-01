@@ -83,11 +83,11 @@ case 1:
   i = KMessageBox::warningContinueCancel(w, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", KGuiItem( QLatin1String("&Print") ), "dontask", false);
+                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", false);
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", KGuiItem( QLatin1String("&Print") ), "dontask", KMessageBox::AllowLink);
+                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", KMessageBox::AllowLink);
   i = KMessageBox::questionYesNo(0, "<p>Do you have a printer? thisisaverylongdkldhklghklghklashgkllasghkdlsghkldfghklsabla bla bbla bla. It also has <a href=http://www.kde.org>this URL</a>.</p>",
   	QString("Bla"), KGuiItem(QString("Yes")), KGuiItem(QString("No")), "bla", KMessageBox::AllowLink);
   break;
@@ -133,7 +133,7 @@ case 7:
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", KGuiItem( QLatin1String("&Print") ), "dontask", false);
+                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", false);
   break;
 
 case 8:

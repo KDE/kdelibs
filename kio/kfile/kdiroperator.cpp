@@ -476,14 +476,16 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" ,
                   files.first() ),
                                                       i18n("Delete File"),
-                                                      KStandardGuiItem::del(), "AskForDelete" );
+                                                      KStandardGuiItem::del(),
+                                                      KStandardGuiItem::cancel(), "AskForDelete" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
                 i18np("Do you really want to delete this item?", "Do you really want to delete these %1 items?", items.count() ),
                                                     files,
                                                     i18n("Delete Files"),
-                                                    KStandardGuiItem::del(), "AskForDelete" );
+                                                    KStandardGuiItem::del(),
+                                                    KStandardGuiItem::cancel(), "AskForDelete" );
         doIt = (ret == KMessageBox::Continue);
     }
 
@@ -531,14 +533,16 @@ KIO::CopyJob * KDirOperator::trash( const KFileItemList& items,
                 i18n( "<qt>Do you really want to trash\n <b>'%1'</b>?</qt>" ,
                   files.first() ),
                                                       i18n("Trash File"),
-                                                      KGuiItem(i18nc("to trash", "&Trash"),"edit-trash"), "AskForTrash" );
+                                                      KGuiItem(i18nc("to trash", "&Trash"),"edit-trash"),
+                                                      KStandardGuiItem::cancel(), "AskForTrash" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,
                 i18np("translators: not called for n == 1", "Do you really want to trash these %1 items?", items.count() ),
                                                     files,
                                                     i18n("Trash Files"),
-                                                    KGuiItem(i18nc("to trash", "&Trash"),"edit-trash"), "AskForTrash" );
+                                                    KGuiItem(i18nc("to trash", "&Trash"),"edit-trash"),
+                                                    KStandardGuiItem::cancel(), "AskForTrash" );
         doIt = (ret == KMessageBox::Continue);
     }
 

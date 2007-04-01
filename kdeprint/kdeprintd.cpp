@@ -187,7 +187,7 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 				     "as a different user to the one currently logged in. To continue "
 				     "printing, you need to provide root's password."),
 				QString(),
-				KGuiItem(i18n("Enter the root password")),
+				KGuiItem(i18n("Enter the root password")), KStandardGuiItem::cancel(),
 				"provideRootsPassword") == KMessageBox::Continue)
 			{
 				cmd = ("kdesu -c " + K3Process::quote(cmd));

@@ -188,6 +188,7 @@ void KSystemTrayIcon::maybeQuit()
     if (KMessageBox::warningContinueCancel(d->window, query,
                                      i18n("Confirm Quit From System Tray"),
                                      KStandardGuiItem::quit(),
+                                     KStandardGuiItem::cancel(),
                                      QString("systemtrayquit%1")
                                             .arg(caption)) !=
         KMessageBox::Continue)

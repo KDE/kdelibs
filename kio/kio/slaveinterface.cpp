@@ -465,11 +465,11 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
             break;
         case KIO::SlaveBase::WarningContinueCancel:
             result = KMessageBox::warningContinueCancel(0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), dontAskAgainName);
+                                              text, caption, KGuiItem(buttonYes), KStandardGuiItem::cancel(), dontAskAgainName);
             break;
         case KIO::SlaveBase::WarningYesNoCancel:
             result = KMessageBox::warningYesNoCancel(0L, // parent ?
-                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), dontAskAgainName);
+                                              text, caption, KGuiItem(buttonYes), KGuiItem(buttonNo), KStandardGuiItem::cancel(), dontAskAgainName);
             break;
         case KIO::SlaveBase::Information:
             KMessageBox::information(0L, // parent ?

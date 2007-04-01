@@ -38,6 +38,18 @@ class KDialog;
   * be plaintext or richtext. If the text is plaintext, a newline-character
   * may be used to indicate the end of a paragraph.
   *
+  * @port4 Where applicable, the static functions now take an additional
+  *        argument to specify the cancel button. Since a default argument is
+  *        provided, this will affect your code only, if you specified
+  *        dontAskAgainName and/or options. In those cases, adding an additional
+  *        parameter KStandardGuiItem::cancel() leads to the old behavior. The
+  *        following functions are affected (omitting function arguments in the
+  *        list): questionYesNoCancel(), questionYesNoCancelWId(),
+  *        warningContinueCancel(), warningContinueCancelWId(),
+  *        warningContinueCancelList(), warningContinueCancelListWId(),
+  *        warningYesNoCancel(), warningYesNoCancelWId(),
+  *        warningYesNoCancelList(), warningYesNoCancelListWId(), messageBox(),
+  *        messageBoxWId().
   * @author Waldo Bastian (bastian@kde.org)
   */
 class KDEUI_EXPORT KMessageBox
@@ -140,6 +152,8 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button.
   *                  The default is i18n("&No").
+  * @param buttonCancel  The text for the third button.
+  *                  The default is i18n("&Cancel").
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -155,15 +169,14 @@ public:
   * To be used for questions like "Do you want to discard the message or save it for later?",
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel".
-  *
-  * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
   */
 
   static int questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
-                          const KGuiItem &buttonNo  = KStandardGuiItem::no(),
+                          const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                          const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
 
@@ -175,7 +188,8 @@ public:
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
-                          const KGuiItem &buttonNo  = KStandardGuiItem::no(),
+                          const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                          const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                           const QString &dontAskAgainName = QString(),
                           Options options = Notify);
 
@@ -351,6 +365,7 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button.
+  * @param buttonCancel The text for the second button.
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -359,8 +374,6 @@ public:
   *                If @p dontAskAgainName starts with a ':' then the setting
   *                is stored in the global config file.
   * @param options  see Options
-  *
-  * The second button always has the text "Cancel".
   *
   * @return  @p Continue is returned if the Continue-button is pressed.
   *          @p Cancel is returned if the Cancel-button is pressed.
@@ -374,6 +387,7 @@ public:
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
+                         const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -385,6 +399,7 @@ public:
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
+                         const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -401,6 +416,7 @@ public:
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Warning").
   * @param buttonContinue The text for the first button.
+  * @param buttonCancel The text for the second button.
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further confirmation can be turned off.
   *                The string is used to lookup and store the setting
@@ -410,8 +426,6 @@ public:
   *                is stored in the global config file.
   *
   * @param options  see Options
-  *
-  * The second button always has the text "Cancel".
   *
   * @return  @p Continue is returned if the Continue-button is pressed.
   *          @p Cancel is returned if the Cancel-button is pressed.
@@ -426,6 +440,7 @@ public:
                          const QStringList &strlist,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
+                         const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -438,6 +453,7 @@ public:
                          const QStringList &strlist,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
+                         const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                          const QString &dontAskAgainName = QString(),
                          Options options = Notify);
 
@@ -454,6 +470,8 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button.
   *                  The default is i18n("&No").
+  * @param buttonCancel  The text for the third button.
+  *                  The default is i18n("&Cancel").
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further questions can be turned off. If turned off
   *                all questions will be automatically answered with the
@@ -473,8 +491,6 @@ public:
   * The text should explain the implication of choosing 'No'.
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
-  *
-  * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
   */
 
   static int warningYesNoCancel(QWidget *parent,
@@ -482,6 +498,7 @@ public:
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                                const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -494,6 +511,7 @@ public:
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                                const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -514,6 +532,8 @@ public:
   *                  The default is i18n("&Yes").
   * @param buttonNo  The text for the second button.
   *                  The default is i18n("&No").
+  * @param buttonCancel  The text for the third button.
+  *                  The default is i18n("&Cancel").
   * @param dontAskAgainName If provided, a checkbox is added with which
   *                further questions can be turned off. If turned off
   *                all questions will be automatically answered with the
@@ -533,8 +553,6 @@ public:
   * The text should explain the implication of choosing 'No'.
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
-  *
-  * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
   */
   static int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
@@ -542,6 +560,7 @@ public:
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                                const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -555,6 +574,7 @@ public:
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                                 const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                                const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                                 const QString &dontAskAgainName = QString(),
                                 Options options = Notify);
 
@@ -924,6 +944,8 @@ public:
      *                  The default is i18n("&Yes").
      * @param buttonNo  The text for the second button.
      *                  The default is i18n("&No").
+     * @param buttonCancel  The text for the third button.
+     *                  The default is i18n("&Cancel").
      * @param dontShowAskAgainName If provided, a checkbox is added with which
      *                further questions/information can be turned off. If turned off
      *                all questions will be automatically answered with the
@@ -940,6 +962,7 @@ public:
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                    const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                     const QString &dontShowAskAgainName = QString(),
                     Options options = Notify);
 
@@ -951,6 +974,7 @@ public:
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                    const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
                     const QString &dontShowAskAgainName = QString(),
                     Options options = Notify);
 

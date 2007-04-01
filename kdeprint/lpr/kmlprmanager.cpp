@@ -489,7 +489,7 @@ void KMLprManager::slotEditPrintcap()
 		 "done by confirmed system administrator. This may "
 		 "prevent your printer from working. Do you want to "
 		 "continue?"), QString(), KStandardGuiItem::cont(),
-	    "editPrintcap") == KMessageBox::Cancel)
+	    KStandardGuiItem::cancel(), "editPrintcap") == KMessageBox::Cancel)
 		return;
 
 	PrintcapEntry	*entry = findEntry(m_currentprinter);

@@ -731,7 +731,7 @@ void KMMainView::slotTest()
 	if (m_current)
 	{
 		KMTimer::self()->hold();
-		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", m_current->printerName()), QString(), KGuiItem(i18n("Print Test Page")), "printTestPage") == KMessageBox::Continue)
+		if (KMessageBox::warningContinueCancel(this, i18n("You are about to print a test page on %1. Do you want to continue?", m_current->printerName()), QString(), KGuiItem(i18n("Print Test Page")), KStandardGuiItem::cancel(), "printTestPage") == KMessageBox::Continue)
 		{
 			if (KMFactory::self()->manager()->testPrinter(m_current))
 				KMessageBox::information(this,i18n("Test page successfully sent to printer %1.", m_current->printerName()));

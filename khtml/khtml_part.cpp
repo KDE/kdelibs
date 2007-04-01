@@ -4795,6 +4795,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                                                            "\nAre you sure you wish to continue?"),
                                                       i18n("Network Transmission"),
                                                       KGuiItem(i18n("&Send Unencrypted")),
+                                                      KStandardGuiItem::cancel(),
                                                       "WarnOnUnencryptedForm");
           // Move this setting into KSSL instead
           QString grpNotifMsgs = QLatin1String("Notification Messages");
@@ -4818,6 +4819,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                                                        "Do you want to continue?"),
                                                   i18n("Network Transmission"),
                                                   KGuiItem(i18n("&Send Email")),
+                                                  KStandardGuiItem::cancel(),
                                                   "WarnTriedEmailSubmit");
 
       if (rc == KMessageBox::Cancel) {

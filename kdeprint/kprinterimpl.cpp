@@ -474,7 +474,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 						    "Do you want KDE to attempt and convert this file to %2?</qt>", mime, primaryMimeType),
 					       QString(),
 					       KGuiItem(i18n("Convert")),
-					       KGuiItem(i18n("Keep")),
+					       KGuiItem(i18n("Keep")), KStandardGuiItem::cancel(),
 					       QLatin1String("kdeprintAutoConvert"))) == KMessageBox::Yes)
 			{
 				// find the filter chain
