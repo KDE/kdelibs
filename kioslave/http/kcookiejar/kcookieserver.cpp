@@ -66,12 +66,12 @@ public:
    qlonglong windowId;
 };
 
-template class  Q3PtrList<CookieRequest>;
+template class  QList<CookieRequest*>;
 
-class RequestList : public Q3PtrList<CookieRequest>
+class RequestList : public QList<CookieRequest*>
 {
 public:
-   RequestList() : Q3PtrList<CookieRequest>() { }
+   RequestList() : QList<CookieRequest*>() { }
 };
 
 KCookieServer::KCookieServer()
@@ -265,23 +265,23 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
 
 
     // Check if we can handle any request
-    for ( CookieRequest *request = mRequestList->first(); request;)
+    RequestList reqToRemove;
+    RequestList::ConstIterator it = mRequestList->constBegin();
+    for ( ; it != mRequestList->constEnd(); ++it )
     {
+        CookieRequest *request = *it;
         if (!cookiesPending( request->url ))
         {
            QString res = mCookieJar->findCookies( request->url, request->DOM, request->windowId );
 
            QDBusConnection::sessionBus().send(request->reply.createReply(res));
-           CookieRequest *tmp = request;
-           request = mRequestList->next();
-           mRequestList->removeRef( tmp );
-           delete tmp;
-        }
-        else
-        {
-          request = mRequestList->next();
+           reqToRemove += request;
+           delete request;
         }
     }
+    it = reqToRemove.constBegin();
+    for( ; it != reqToRemove.constEnd(); ++it )
+        mRequestList->removeAll( *it );
     if (mCookieJar->changed() && !mTimer)
         saveCookieJar();
 }
