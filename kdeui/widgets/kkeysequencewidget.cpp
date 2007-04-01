@@ -113,8 +113,9 @@ KKeySequenceWidget::KKeySequenceWidget(QWidget *parent)
    d(new KKeySequenceWidgetPrivate(this))
 {
 	d->init();
-	connect(this, SIGNAL(clicked()), this, SLOT(captureKeySequence()));
-	QObject::connect(&d->modifierlessTimeout, SIGNAL(timeout()), this, SLOT(doneRecording()));
+	connect(d->keyButton, SIGNAL(clicked()), this, SLOT(captureKeySequence()));
+	connect(d->clearButton, SIGNAL(clicked()), this, SLOT(clearKeySequence()));
+	connect(&d->modifierlessTimeout, SIGNAL(timeout()), this, SLOT(doneRecording()));
 	//TODO: how to adopt style changes at runtime?
 	/*QFont modFont = d->clearButton->font();
 	modFont.setStyleHint(QFont::TypeWriter);
