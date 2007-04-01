@@ -30,7 +30,6 @@ if (HAVE_DNSSD)
    mdnsd-publicservice.cpp
    mdnsd-responder.cpp
    mdnsd-servicebrowser.cpp
-   mdnsd-query.cpp
    )
 else (HAVE_DNSSD)
   set(kdnssd_LIB_SRCS

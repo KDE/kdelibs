@@ -23,31 +23,30 @@
 
 #include <QtCore/QObject>
 
+
 namespace DNSSD
 {
 
-class ServiceBrowserPrivate : public QObject
+class ServiceBrowserPrivate : public Responder
 {
 Q_OBJECT
 public:
-	ServiceBrowserPrivate(ServiceBrowser* parent) : QObject(), m_running(false), m_resolver(0), m_parent(parent)
+	ServiceBrowserPrivate(ServiceBrowser* parent) : Responder(),  m_parent(parent)
 	{}
 	QList<RemoteService::Ptr> m_services;
 	QList<RemoteService::Ptr> m_duringResolve;
 	QString m_type;
 	QString m_domain;
 	bool m_autoResolve;
-	bool m_running;
 	bool m_finished;
-	Query* m_resolver;
 	ServiceBrowser* m_parent;
+	QTimer timeout;
 
-	QList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
-private Q_SLOTS:
+	virtual void customEvent(QEvent* event);
+public Q_SLOTS:
 	void queryFinished();
 	void serviceResolved(bool success);
-	void gotNewService(DNSSD::RemoteService::Ptr);
-	void gotRemoveService(DNSSD::RemoteService::Ptr);
+	void onTimeout();
 };
 
 }

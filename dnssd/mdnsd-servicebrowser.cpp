@@ -20,15 +20,23 @@
 
 #include <QtCore/QStringList>
 #include "domainbrowser.h"
-#include "mdnsd-query.h"
 #include "servicebrowser.h"
-#include "mdnsd-servicebrowser_p.h"
-#include <config-dnssd.h>
-#include <QHash>
+#include <QtCore/QHash>
 #include <dns_sd.h>
+#include "mdnsd-responder.h"
+#include "remoteservice.h"
+#include "mdnsd-sdevent.h"
+#include <QtCore/QCoreApplication>
+#include <QtCore/QTimer>
+#include "mdnsd-servicebrowser_p.h"
+
+#define TIMEOUT_WAN 2000
+#define TIMEOUT_LAN 200
 
 namespace DNSSD
 {
+void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode,
+		     const char *serviceName, const char *regtype, const char *replyDomain, void *context);
 
 const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
 
@@ -39,6 +47,8 @@ ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QStrin
 	d->m_type=type;
 	d->m_autoResolve=autoResolve;
 	d->m_domain=domain;
+        d->timeout.setSingleShot(true);
+	connect(&d->timeout,SIGNAL(timeout()),d,SLOT(onTimeout()));
 }
 
 
@@ -52,7 +62,6 @@ ServiceBrowser::State ServiceBrowser::isAvailable()
 }
 ServiceBrowser::~ ServiceBrowser()
 {
-	delete d->m_resolver;
 	delete d;
 }
 
@@ -76,44 +85,20 @@ void ServiceBrowserPrivate::serviceResolved(bool success)
 
 void ServiceBrowser::startBrowse()
 {
-	if (d->m_running) return;
-	d->m_running=true;
-	Query* b = new Query(d->m_type,d->m_domain);
-	connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
-			SLOT(gotNewService(DNSSD::RemoteService::Ptr)));
-	connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
-			SLOT(gotRemoveService(DNSSD::RemoteService::Ptr)));
-	connect(b,SIGNAL(finished()),this,SLOT(queryFinished()));
-	b->startQuery();
-	d->m_resolver=b;
+	if (d->isRunning()) return;
+	d->m_finished = false;
+	DNSServiceRef ref;
+	if (DNSServiceBrowse(&ref,0,0, d->m_type.toAscii().constData(),
+	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
+		   == kDNSServiceErr_NoError) d->setRef(ref);
+	if (!d->isRunning()) emit finished();
+	else d->timeout.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAN : TIMEOUT_WAN);
 }
 
-void ServiceBrowserPrivate::gotNewService(RemoteService::Ptr svr)
-{
-	if (findDuplicate(svr)==(m_services.end()))  {
-		if (m_autoResolve) {
-			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
-			m_duringResolve+=svr;
-			svr->resolveAsync();
-		} else	{
-			m_services+=svr;
-			emit m_parent->serviceAdded(svr);
-		}
-	}
-}
-
-void ServiceBrowserPrivate::gotRemoveService(RemoteService::Ptr svr)
-{
-	QList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
-	if (it!=(m_services.end())) {
-		emit m_parent->serviceRemoved(*it);
-		m_services.erase(it);
-	}
-}
 
 void ServiceBrowserPrivate::queryFinished()
 {
-	if (!m_duringResolve.count() && m_resolver->isFinished()) emit m_parent->finished();
+	if (!m_duringResolve.count() && m_finished) emit m_parent->finished();
 }
 
 
@@ -125,13 +110,57 @@ QList<RemoteService::Ptr> ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
-QList<RemoteService::Ptr>::Iterator ServiceBrowserPrivate::findDuplicate(RemoteService::Ptr src)
+void ServiceBrowserPrivate::customEvent(QEvent* event)
 {
-	QList<RemoteService::Ptr>::Iterator itEnd = m_services.end();
-	for (QList<RemoteService::Ptr>::Iterator it = m_services.begin(); it!=itEnd; ++it)
-		if ((src->type()==(*it)->type()) && (src->serviceName()==(*it)->serviceName()) &&
-				   (src->domain() == (*it)->domain())) return it;
-	return itEnd;
+	if (event->type()==QEvent::User+SD_ERROR) {
+		stop();
+		m_finished=false;
+		queryFinished();
+	}
+	if (event->type()==QEvent::User+SD_ADDREMOVE) {
+		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
+		// m_type has useless trailing dot
+		RemoteService::Ptr svr(new RemoteService(aev->m_name+'.'+
+			aev->m_type.left(aev->m_type.length()-1)+'.'+aev->m_domain));
+		if (aev->m_op==AddRemoveEvent::Add) {
+		    if (m_autoResolve) {
+			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
+			m_duringResolve+=svr;
+			svr->resolveAsync();
+		    } else	{
+			m_services+=svr;
+			emit m_parent->serviceAdded(svr);
+		    }
+		}
+		else {
+		    emit m_parent->serviceRemoved(svr);
+		    m_services.removeAll(svr);
+		}
+		m_finished = aev->m_last;
+		if (m_finished) queryFinished();
+	}
+}
+
+void ServiceBrowserPrivate::onTimeout()
+{
+	m_finished=true;
+	queryFinished();
+}
+
+void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode,
+		     const char *serviceName, const char *regtype, const char *replyDomain,
+		     void *context)
+{
+	QObject *obj = reinterpret_cast<QObject*>(context);
+	if (errorCode != kDNSServiceErr_NoError) {
+		ErrorEvent err;
+		QCoreApplication::sendEvent(obj, &err);
+	} else {
+		AddRemoveEvent arev((flags & kDNSServiceFlagsAdd) ? AddRemoveEvent::Add :
+			AddRemoveEvent::Remove, QString::fromUtf8(serviceName), regtype,
+			DNSToDomain(replyDomain), !(flags & kDNSServiceFlagsMoreComing));
+		QCoreApplication::sendEvent(obj, &arev);
+	}
 }
 
 

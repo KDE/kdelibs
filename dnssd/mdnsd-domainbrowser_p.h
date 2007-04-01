@@ -24,17 +24,16 @@
 namespace DNSSD
 {
 
-class DomainBrowserPrivate : public QObject
+class DomainBrowserPrivate : public Responder
 {
 Q_OBJECT
 public:
-	DomainBrowserPrivate(DomainBrowser* parent): m_parent(parent) {}
+	DomainBrowserPrivate(DomainBrowser::DomainType type, DomainBrowser* parent): Responder(), m_type(type), m_parent(parent) {}
+        DomainBrowser::DomainType m_type;
 	DomainBrowser* m_parent;
 	QStringList m_domains;
-	bool m_running;
+	virtual void customEvent(QEvent* event);
 public Q_SLOTS:
-	void gotNewDomain(DNSSD::RemoteService::Ptr);
-	void gotRemoveDomain(DNSSD::RemoteService::Ptr);
 	void domainListChanged();
 
 };

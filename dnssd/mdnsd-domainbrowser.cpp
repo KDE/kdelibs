@@ -19,20 +19,23 @@
  */
 
 #include <QtCore/QStringList>
+#include <QtCore/QCoreApplication>
+#include <QtDBus/QtDBus>
 #include "domainbrowser.h"
-#include "mdnsd-domainbrowser_p.h"
 #include "settings.h"
 #include "remoteservice.h"
-#include "mdnsd-query.h"
+#include "mdnsd-responder.h"
+#include "mdnsd-sdevent.h"
 #include <QHash>
-#include <QtDBus/QtDBus>
+#include "mdnsd-domainbrowser_p.h"
 
 namespace DNSSD
 {
 
-DomainBrowser::DomainBrowser(DomainType, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate(this))
+void domain_callback(DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode, const char *replyDomain, void *context);
+
+DomainBrowser::DomainBrowser(DomainType type, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate(type,this))
 {
-	d->m_running = false;
 	d->m_domains = Configuration::domainList();
 	if (Configuration::browseLocal()) d->m_domains+="local.";
 
@@ -51,25 +54,30 @@ DomainBrowser::~DomainBrowser()
 
 void DomainBrowser::startBrowse()
 {
-	if (d->m_running) return;
-	d->m_running=true;
 	QStringList::const_iterator itEnd = d->m_domains.end();
 	for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it ) emit domainAdded(*it);
+	if (d->isRunning()) return;
+	DNSServiceRef ref;
+	if (DNSServiceEnumerateDomains(&ref,(d->m_type==Browsing) ? kDNSServiceFlagsBrowseDomains:kDNSServiceFlagsBrowseDomains,
+	0, domain_callback,reinterpret_cast<void*>(d)) == kDNSServiceErr_NoError) d->setRef(ref);
 }
 
-void DomainBrowserPrivate::gotNewDomain(DNSSD::RemoteService::Ptr srv)
+void DomainBrowserPrivate::customEvent(QEvent* event)
 {
-	QString domain = srv->serviceName()+'.'+srv->domain();
-	if (m_domains.contains(domain)) return;
-	m_domains.append(domain);
-	emit m_parent->domainAdded(domain);
-}
-
-void DomainBrowserPrivate::gotRemoveDomain(DNSSD::RemoteService::Ptr srv)
-{
-	QString domain = srv->serviceName()+'.'+srv->domain();
-	m_domains.removeAll(domain);
-	emit m_parent->domainRemoved(domain);
+	if (event->type()==QEvent::User+SD_ERROR) stop();
+	if (event->type()==QEvent::User+SD_ADDREMOVE) {
+		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
+		if (aev->m_op==AddRemoveEvent::Add) {
+		    //FIXME: check if domain name is not name+domain (there was some mdnsd weirdness)
+	    	    if (m_domains.contains(aev->m_domain)) return;
+		    m_domains.append(aev->m_domain);
+		    emit m_parent->domainAdded(aev->m_domain);
+		}
+		else {
+			m_domains.removeAll(aev->m_domain);
+			emit m_parent->domainRemoved(aev->m_domain);
+		}
+	}
 }
 
 void DomainBrowserPrivate::domainListChanged()
@@ -97,9 +105,28 @@ QStringList DomainBrowser::domains() const
 
 bool DomainBrowser::isRunning() const
 {
-	return d->m_running;
+	return d->isRunning();
+}
+
+void domain_callback(DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode, const char *replyDomain, void *context)
+{
+	QObject *obj = reinterpret_cast<QObject*>(context);
+	if (errorCode != kDNSServiceErr_NoError) {
+		ErrorEvent err;
+		QCoreApplication::sendEvent(obj, &err);
+	} else {
+		// domain browser is supposed to return only _additional_ domains
+		if (flags&kDNSServiceFlagsDefault) return;
+		AddRemoveEvent arev((flags & kDNSServiceFlagsAdd) ? AddRemoveEvent::Add :
+			AddRemoveEvent::Remove, QString(), QString(),
+			DNSToDomain(replyDomain), !(flags & kDNSServiceFlagsMoreComing));
+		QCoreApplication::sendEvent(obj, &arev);
+	}
 }
 
 }
+
+
+
 #include "domainbrowser.moc"
 #include "mdnsd-domainbrowser_p.moc"
