@@ -2001,7 +2001,7 @@ bool HTTPProtocol::httpOpenConnection()
 
     setConnectTimeout( m_proxyConnTimeout );
 
-    if ( !connectToHost(proxy_host, QString::number( proxy_port ), false) )
+    if ( !connectToHost("http-proxy", proxy_host, proxy_port, false) )
     {
       if (userAborted()) {
         error(ERR_NO_CONTENT, "");
@@ -2031,7 +2031,7 @@ bool HTTPProtocol::httpOpenConnection()
     // Apparently we don't want a proxy.  let's just connect directly
     setConnectTimeout(m_remoteConnTimeout);
 
-    if ( !connectToHost(m_state.hostname, QString::number( m_state.port ), false ) )
+    if ( !connectToHost(m_protocol, m_state.hostname, m_state.port, false ) )
     {
       if (userAborted()) {
         error(ERR_NO_CONTENT, "");
