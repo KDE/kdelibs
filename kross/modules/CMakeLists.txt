@@ -8,17 +8,17 @@ include_directories(
 ############################################
 # the forms module
 
-set(krossmoduleforms_PART_SRCS formfile.cpp form.cpp)
+set(krossmoduleforms_PART_SRCS form.cpp)
 kde4_automoc(${krossmoduleforms_PART_SRCS})
 kde4_add_plugin(krossmoduleforms ${krossmoduleforms_PART_SRCS})
 
-target_link_libraries(krossmoduleforms ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KDE4_KDECORE_LIBS} kparts krosscore)
+target_link_libraries(krossmoduleforms ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${KDE4_KDECORE_LIBS} ${KDE4_KIO_LIBS} kparts krosscore)
 install(TARGETS krossmoduleforms DESTINATION ${PLUGIN_INSTALL_DIR})
 
 ############################################
 # the scriptmanager module
 
-set(krossmodulescriptmanager_PART_SRCS scriptmanager.cpp scriptmanageradd.cpp formfile.cpp)
+set(krossmodulescriptmanager_PART_SRCS scriptmanager.cpp scriptmanageradd.cpp)
 kde4_automoc(krossmodulescriptmanager ${krossmodulescriptmanager_PART_SRCS})
 kde4_add_plugin(krossmodulescriptmanager ${krossmodulescriptmanager_PART_SRCS})
 

@@ -31,9 +31,10 @@
 
 #include <kdialog.h>
 
-class KActionCollection;
 class QLineEdit;
 class QComboBox;
+class QItemSelection;
+class KActionCollection;
 class KUrlRequester;
 
 namespace Kross {
@@ -50,7 +51,7 @@ namespace Kross {
     * KDialog d(this);
     * Action* a = new Action();
     * new ActionCollectionEditor(a, d.mainWidget());
-    * dialog.exec();
+    * d.exec();
     * \endcode
     *
     * Example that shows how to display the editor with an \a ActionCollection ;
@@ -69,17 +70,17 @@ namespace Kross {
             * Constructor.
             * \param action The \a Action instance this editor should
             * operate on.
-            * \param parent The parent widget this widget is child of.
+            * \param parent The optional parent widget this widget is child of.
             */
-            ActionCollectionEditor(Action* action, QWidget* parent);
+            explicit ActionCollectionEditor(Action* action, QWidget* parent = 0);
 
             /**
             * Constructor.
             * \param collection The \a ActionCollection instance this
             * editor should operate on.
-            * \param parent The parent widget this widget is child of.
+            * \param parent The optional parent widget this widget is child of.
             */
-            ActionCollectionEditor(ActionCollection* collection, QWidget* parent);
+            explicit ActionCollectionEditor(ActionCollection* collection, QWidget* parent = 0);
 
             /**
             * Destructor.
@@ -146,13 +147,17 @@ namespace Kross {
     *
     * Example how to create, fill and use an instance of a ActionCollectionView;
     * \code
+    * // We like to show the widget in a dialog.
+    * KDialog d(this);
     * // Create the view.
-    * ActionCollectionView* view = new ActionCollectionView( dialog->mainWidget() );
+    * ActionCollectionView* v = new ActionCollectionView( d.mainWidget() );
     * // Create the model.
-    * ActionCollectionModel::Mode modelmode = ActionCollectionModel::Mode( ActionCollectionModel::Icons | ActionCollectionModel::ToolTips | ActionCollectionModel::UserCheckable );
-    * ActionCollectionModel* model = new ActionCollectionModel(view, Manager::self().actionCollection(), modelmode);
+    * ActionCollectionModel::Mode mode( ActionCollectionModel::Icons | ActionCollectionModel::ToolTips | ActionCollectionModel::UserCheckable );
+    * ActionCollectionModel* m = new ActionCollectionModel(view, Manager::self().actionCollection(), mode);
     * // Set the model the view should use.
-    * view->setModel(model);
+    * v->setModel(m);
+    * // Show the dialog.
+    * d.exec();
     * \endcode
     */
     class KROSSCORE_EXPORT ActionCollectionView : public QTreeView
@@ -190,7 +195,10 @@ namespace Kross {
             /**
             * \return the KActionCollection which is filled with KAction
             * instances this view provides. Per default there are the
-            * actions "run", "stop", "edit", "add" and "remove".
+            * actions "run" to run a script, "stop" to stop execution, "edit"
+            * to edit the selected item, "add" to add a new item or resource,
+            * "remove" to remove the selected item and "manager" to call and
+            * show the modal Script Manager dialog.
             */
             KActionCollection* actionCollection() const;
 
@@ -258,10 +266,6 @@ namespace Kross {
 
         protected Q_SLOTS:
 
-            /**
-            * This slot got called if the selected item changed.
-            */
-            virtual void slotSelectionChanged();
 
             /**
             * This slot got called if the data changed.
@@ -272,6 +276,22 @@ namespace Kross {
             * This slot got called if the enable/disable state of an action changed.
             */
             virtual void slotEnabledChanged(const QString& actionname);
+
+            /**
+            * This slot got called if the selected item changed.
+            */
+            virtual void slotSelectionChanged();
+
+        protected:
+
+            /**
+            * This method provides us access to the QItemSelection. Compared to
+            * the selectionModel()->selection() method this method does also
+            * map the selection to the source-model for the case e.g. the
+            * \a ActionCollectionProxyModel proxy-model was used rather then
+            * a \a ActionCollectionModel direct.
+            */
+            QItemSelection itemSelection() const;
 
         private:
             /// \internal d-pointer class.

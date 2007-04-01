@@ -19,7 +19,6 @@
 
 #include "scriptmanageradd.h"
 #include "scriptmanager.h"
-#include "formfile.h"
 
 #include "../core/manager.h"
 #include "../core/interpreter.h"
@@ -37,6 +36,7 @@
 #include <klocale.h>
 #include <kurl.h>
 #include <kmimetype.h>
+#include <kfilewidget.h>
 
 using namespace Kross;
 
@@ -97,8 +97,8 @@ namespace Kross {
     {
         public:
             ScriptManagerAddWizard* const wizard;
-            FormFileWidget* filewidget;
-            explicit Private(ScriptManagerAddWizard* const w): wizard(w), filewidget(0) {}
+            KFileWidget* filewidget;
+            explicit Private(ScriptManagerAddWizard* const w): wizard(w) {}
     };
 }
 
@@ -109,7 +109,7 @@ ScriptManagerAddFileWidget::ScriptManagerAddFileWidget(ScriptManagerAddWizard* w
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
     setLayout(layout);
-    d->filewidget = new FormFileWidget(this, startDirOrVariable);
+    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), QString::null, this);
 
     QStringList mimetypes;
     foreach(QString interpretername, Manager::self().interpreters()) {

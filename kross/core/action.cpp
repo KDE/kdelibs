@@ -380,7 +380,10 @@ QString Action::property(const QString& name, const QString& defaultvalue)
     KConfig* config = KApplication::kApplication()->sessionConfig();
     const QString groupname = QString("Script %1").arg(objectName());
     KConfigGroup cg(config, groupname);
-    return cg.readEntry(name, defaultvalue);
+    QString value = cg.readEntry(name, defaultvalue);
+    //d->propertyvalues.insert(name, value);
+    //d->propertynames.append(name);
+    return value;
 }
 
 void Action::setProperty(const QString& name, const QString& value, bool persistent)

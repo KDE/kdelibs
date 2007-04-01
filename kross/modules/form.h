@@ -25,8 +25,93 @@
 #include <QUrl>
 
 #include <kpagedialog.h>
+//#include <kfilewidget.h>
 
 namespace Kross {
+
+    /**
+     * The FormFileWidget class provides access to a KFileWidget.
+     */
+    class FormFileWidget : public QWidget
+    {
+            Q_OBJECT
+            Q_ENUMS(Mode)
+
+        public:
+            FormFileWidget(QWidget* parent, const QString& startDirOrVariable);
+            virtual ~FormFileWidget();
+
+            /**
+             * The Mode the FormFileWidget could have.
+             */
+            enum Mode { Other = 0, Opening, Saving };
+
+        public Q_SLOTS:
+
+            /**
+             * Set the \a Mode the FormFileWidget should have to \p mode .
+             * Valid modes are "Other", "Opening" or "Saving".
+             */
+            void setMode(const QString& mode);
+
+            /**
+             * \return the current filter.
+             */
+            QString currentFilter() const;
+
+            /**
+             * Set the filter to \p filter .
+             */
+            void setFilter(const QString &filter);
+
+            /**
+             * \return the current mimetype filter.
+             */
+            QString currentMimeFilter() const;
+
+            /**
+             * Set the mimetype filter to \p filter .
+             */
+            void setMimeFilter(const QStringList& filter);
+
+            /**
+             * \return the currently selected file.
+             */
+            QString selectedFile() const;
+
+            //QStringList selectedFiles() const { return KFileDialog::selectedFiles(); }
+            //QString selectedUrl() const { return KFileDialog::selectedUrl().toLocalFile(); }
+
+        Q_SIGNALS:
+
+            /**
+            * Emitted when the user selects a file. It is only emitted in single-
+            * selection mode.
+            */
+            void fileSelected(const QString& file);
+
+            /**
+            * Emitted when the user highlights a file.
+            */
+            void fileHighlighted(const QString&);
+
+            /**
+            * Emitted when the user hilights one or more files in multiselection mode.
+            */
+            void selectionChanged();
+
+            /**
+            * Emitted when the filter changed, i.e. the user entered an own filter
+            * or chose one of the predefined set via setFilter().
+            */
+            void filterChanged(const QString& filter);
+
+        private:
+            /// \internal d-pointer class.
+            class Private;
+            /// \internal d-pointer instance.
+            Private* const d;
+    };
 
     /**
      * The FormDialog class provides access to KDialog objects as

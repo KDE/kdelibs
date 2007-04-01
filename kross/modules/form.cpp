@@ -18,7 +18,6 @@
  ***************************************************************************/
 
 #include "form.h"
-#include "formfile.h"
 
 #include <QByteArray>
 #include <QBuffer>
@@ -54,6 +53,9 @@
 //#include <klocale.h>
 //#include <kmimetype.h>
 //#include <kstandarddirs.h>
+#include <kfilewidget.h>
+#include <kurlcombobox.h>
+#include <kshell.h>
 
 extern "C"
 {
@@ -64,6 +66,98 @@ extern "C"
 }
 
 using namespace Kross;
+
+/*********************************************************************************
+ * FormDialog
+ */
+
+namespace Kross {
+
+    /// \internal d-pointer class.
+    class FormFileWidget::Private
+    {
+        public:
+            KFileWidget* filewidget;
+    };
+
+}
+
+FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariable)
+    : QWidget(parent), d(new Private())
+{
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setSpacing(0);
+    layout->setMargin(0);
+    setLayout(layout);
+
+    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), QString::null, this);
+    layout->addWidget( d->filewidget );
+    //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
+
+    QObject::connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SIGNAL(fileSelected(const QString&)));
+    QObject::connect(d->filewidget, SIGNAL(fileHighlighted(const QString&)), this, SIGNAL(fileHighlighted(const QString&)));
+    QObject::connect(d->filewidget, SIGNAL(selectionChanged()), this, SIGNAL(selectionChanged()));
+    QObject::connect(d->filewidget, SIGNAL(filterChanged(const QString&)), this, SIGNAL(filterChanged(const QString&)));
+
+//     d->impl->setOperationMode(d->mode);
+//     if( d->mimeFilter.count() > 0 )
+//         d->impl->setMimeFilter(d->mimeFilter);
+//     else if( ! d->filter.isEmpty() )
+//         d->impl->setFilter(d->filter);
+
+    if( parent && parent->layout() )
+        parent->layout()->addWidget(this);
+    setMinimumSize( QSize(480,360) );
+}
+
+FormFileWidget::~FormFileWidget()
+{
+    delete d;
+}
+
+void FormFileWidget::setMode(const QString& mode)
+{
+    QMetaEnum e = metaObject()->enumerator( metaObject()->indexOfEnumerator("Mode") );
+    KFileWidget::OperationMode m = (KFileWidget::OperationMode) e.keysToValue( mode.toLatin1() );
+    d->filewidget->setOperationMode(m);
+}
+
+QString FormFileWidget::currentFilter() const
+{
+    return d->filewidget->currentFilter();
+}
+
+void FormFileWidget::setFilter(const QString &filter)
+{
+    QString f = filter;
+    f.replace(QRegExp("([^\\\\]{1,1})/"), "\\1\\/"); // escape '/' chars else KFileDialog assumes they are mimetypes :-/
+    d->filewidget->setFilter(f);
+}
+
+QString FormFileWidget::currentMimeFilter() const
+{
+    return d->filewidget->currentMimeFilter();
+}
+
+void FormFileWidget::setMimeFilter(const QStringList& filter)
+{
+    d->filewidget->setMimeFilter(filter);
+}
+
+QString FormFileWidget::selectedFile() const
+{
+    KUrl selectedUrl;
+    QString locationText = d->filewidget->locationEdit()->currentText();
+    if( locationText.contains( '/' ) ) { // relative path? -> prepend the current directory
+        KUrl u( d->filewidget->baseUrl(), KShell::tildeExpand(locationText) );
+        selectedUrl = u.isValid() ? u : selectedUrl = d->filewidget->baseUrl();
+    }
+    else { // simple filename -> just use the current URL
+        selectedUrl = d->filewidget->baseUrl();
+    }
+    QFileInfo fi( selectedUrl.path(), d->filewidget->locationEdit()->currentText() );
+    return fi.absoluteFilePath();
+}
 
 /*********************************************************************************
  * FormDialog

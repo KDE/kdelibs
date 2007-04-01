@@ -296,8 +296,8 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
     setRootIsDecorated(true);
     setSortingEnabled(false);
     setItemsExpandable(true);
-    setDragEnabled(true);
-    setAcceptDrops(true);
+    //setDragEnabled(true);
+    //setAcceptDrops(true);
     setDropIndicatorShown(true);
     setDragDropMode(QAbstractItemView::InternalMove);
 
@@ -347,6 +347,12 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
 
     //i18n("About"), i18n("Configure")
 
+    KAction* manageraction = new KAction(KIcon("media-eject"), i18n("Script Manager"), this);
+    manageraction->setObjectName("manager");
+    manageraction->setToolTip( i18n("Script Manager to configure scripts.") );
+    d->collection->addAction("manager", manageraction);
+    connect(manageraction, SIGNAL(triggered()), &Manager::self(), SLOT(showScriptManager()) );
+
     connect(this, SIGNAL(enabledChanged(const QString&)), this, SLOT(slotEnabledChanged(const QString&)));
     //expandAll();
 }
@@ -358,16 +364,15 @@ ActionCollectionView::~ActionCollectionView()
 
 void ActionCollectionView::setModel(QAbstractItemModel* m)
 {
-    //Q_ASSERT( dynamic_cast< ActionCollectionModel* >(m) );
     QTreeView::setModel(m);
     d->modified = false;
 
-    QItemSelectionModel* selectionmodel = new QItemSelectionModel(model(), this);
+    QItemSelectionModel* selectionmodel = new QItemSelectionModel(m, this);
     setSelectionModel(selectionmodel);
 
     connect(selectionModel(), SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
             this, SLOT(slotSelectionChanged()));
-    connect(model(), SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
+    connect(m, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
             this, SLOT(slotDataChanged(const QModelIndex&,const QModelIndex&)));
 }
 
@@ -389,6 +394,13 @@ KActionCollection* ActionCollectionView::actionCollection() const
 KPushButton* ActionCollectionView::button(const QString& actionname) const
 {
     return d->buttons.contains(actionname) ? d->buttons[actionname] : 0;
+}
+
+QItemSelection ActionCollectionView::itemSelection() const
+{
+    QAbstractProxyModel* proxymodel = dynamic_cast< QAbstractProxyModel* >( model() );
+    QItemSelection selection = selectionModel()->selection();
+    return proxymodel ? proxymodel->mapSelectionToSource(selection) : selection;
 }
 
 KPushButton* ActionCollectionView::createButton(QWidget* parentWidget, const QString& actionname)
@@ -421,7 +433,7 @@ void ActionCollectionView::slotSelectionChanged()
     bool startenabled = selectionModel()->hasSelection();
     bool stopenabled = false;
     bool hasselection = selectionModel()->selectedIndexes().count() > 0;
-    foreach(QModelIndex index, selectionModel()->selectedIndexes()) {
+    foreach(QModelIndex index, itemSelection().indexes()) {
         Action* action = ActionCollectionModel::action(index);
         if( startenabled && ! action )
             startenabled = false;
@@ -459,7 +471,8 @@ void ActionCollectionView::slotRun()
 {
     if( ! selectionModel() ) return;
     QAction* stopaction = d->collection->action("stop");
-    foreach(QModelIndex index, selectionModel()->selectedIndexes()) {
+
+    foreach(QModelIndex index, itemSelection().indexes()) {
         if( ! index.isValid() )
             continue;
         if( stopaction ) {
@@ -478,7 +491,7 @@ void ActionCollectionView::slotRun()
 void ActionCollectionView::slotStop()
 {
     if( ! selectionModel() ) return;
-    foreach(QModelIndex index, selectionModel()->selectedIndexes()) {
+    foreach(QModelIndex index, itemSelection().indexes()) {
         if( ! index.isValid() )
             continue;
         Action* action = ActionCollectionModel::action(index);
@@ -496,7 +509,7 @@ void ActionCollectionView::slotEdit()
     if( ! selectionModel() ) return;
     Action* action = 0;
     ActionCollection* collection = 0;
-    foreach(QModelIndex index, selectionModel()->selectedIndexes()) {
+    foreach(QModelIndex index, itemSelection().indexes()) {
         if( ! index.isValid() ) continue;
         if( Action* a = ActionCollectionModel::action(index) )
             action = a;
@@ -537,7 +550,7 @@ KMessageBox::sorry(0, "TODO");
 #if 0
     if( ! selectionModel() ) return;
     ActionCollection* collection = 0;
-    foreach(QModelIndex index, d->view->selectionModel()->selectedIndexes()) {
+    foreach(QModelIndex index, itemSelection().indexes()) {
         if( ! index.isValid() ) continue;
         if( ActionCollectionModel::action(index) ) {
             //TODO propably add the item right after the current selected one?

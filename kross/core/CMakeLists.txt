@@ -37,6 +37,7 @@ install( FILES
     errorinterface.h 
     childreninterface.h 
     metatype.h 
+    metafunction.h 
     variant.h 
     interpreter.h 
     script.h 

@@ -110,6 +110,9 @@ ScriptManagerCollection::ScriptManagerCollection(ScriptManagerModule* module, QW
     setLayout(mainlayout);
 
     d->view = new ActionCollectionView(this);
+    d->view->setDragEnabled(true);
+    d->view->setAcceptDrops(true);
+
     mainlayout->addWidget(d->view);
 
     ActionCollectionModel::Mode modelmode = ActionCollectionModel::Mode( ActionCollectionModel::Icons | ActionCollectionModel::ToolTips | ActionCollectionModel::UserCheckable );
