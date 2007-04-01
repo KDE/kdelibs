@@ -140,7 +140,6 @@ void SMTP::sendMessage(void)
         kDebug() << "enabling read on sock...\n" << endl;
         interactTimer.setSingleShot(true);
         interactTimer.start(timeOut);
-        sock->enableRead(true);
     }
 }
 #include <stdio.h>
@@ -158,8 +157,10 @@ void SMTP::connectTimerTick(void)
     }
 
     kDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... " << endl;
-    sock = new KNetwork::KBufferedSocket(serverHost.toAscii().constData(), QString::number(hostPort));
+    sock = KSocketFactory::connectToHost("smtp", serverHost, hostPort, this);
 
+#if 0
+    // socket can't fail here
     if (!sock->connect()) {
         timeOutTimer.stop();
         kDebug() << "connection failed!" << endl;
@@ -168,14 +169,15 @@ void SMTP::connectTimerTick(void)
         connected = false;
         return;
     }
+#endif
     connected = true;
     finished = false;
     state = INIT;
     serverState = NONE;
 
     connect(sock, SIGNAL(readyRead()), this, SLOT(socketReadyToRead()));
-    connect(sock, SIGNAL(closed()), this, SLOT(socketCloseded()));
-    //    sock->enableRead(true);
+    connect(sock, SIGNAL(error()), this, SLOT(socketClosed()));
+    connect(sock, SIGNAL(disconnected()), this, SLOT(socketClosed()));
     timeOutTimer.stop();
     kDebug() << "connected" << endl;
 }
@@ -184,8 +186,6 @@ void SMTP::connectTimedOut(void)
 {
     timeOutTimer.stop();
 
-    if(sock)
-	sock->enableRead(false);
     kDebug() << "socket connection timed out" << endl;
     socketClosed();
     emit error(CONNECTTIMEOUT);
@@ -195,8 +195,6 @@ void SMTP::interactTimedOut(void)
 {
     interactTimer.stop();
 
-    if(sock)
-        sock->enableRead(false);
     kDebug() << "time out waiting for server interaction" << endl;
     socketClosed();
     emit error(INTERACTTIMEOUT);
@@ -232,9 +230,6 @@ void SMTP::socketReadyToRead()
 void SMTP::socketClosed()
 {
     timeOutTimer.stop();
-    disconnect(sock, SIGNAL(readyRead()), this, SLOT(socketReadyToRead()));
-    disconnect(sock, SIGNAL(closed()), this, SLOT(socketClosed()));
-    sock->enableRead(false);
     kDebug() << "connection terminated" << endl;
     connected = false;
     delete sock;
@@ -290,7 +285,6 @@ void SMTP::processLine(QString *line)
         case DATA:
             state = FINISHED;
             finished = true;
-            sock->enableRead(false);
             emit messageSent();
             break;
         default:

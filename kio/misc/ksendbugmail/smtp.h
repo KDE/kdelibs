@@ -3,7 +3,8 @@
 
 #include <QtCore/QObject>
 #include <qtimer.h>
-#include <kbufferedsocket.h>
+#include <qtcpsocket.h>
+#include <ksocketfactory.h>
 
 #ifdef Q_WS_WIN
 // win32 defines some global constants, which collides with some of the below mentined 
@@ -142,7 +143,7 @@ private:
 
     QString domainName;
 
-    KNetwork::KBufferedSocket *sock;
+    QTcpSocket *sock;
     QTimer connectTimer;
     QTimer timeOutTimer;
     QTimer interactTimer;
