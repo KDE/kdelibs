@@ -9,8 +9,8 @@ class Test : public QObject
   Q_OBJECT
 
 public:
-  Test() : QObject() {};
-  ~Test() {};
+  Test() : QObject() {}
+  ~Test() {}
 
 public Q_SLOTS:
   void showIt();
