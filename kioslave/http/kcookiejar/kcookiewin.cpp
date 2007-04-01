@@ -55,7 +55,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef QT_NO_WHATSTHIS
 #endif
 
-#include <kidna.h>
 #include <kwin.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -124,7 +123,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
       host += portNum;
     }
 
-    txt = QString("<b>%1</b>").arg( KIDNA::toUnicode(host) );
+    txt = QString("<b>%1</b>").arg( QUrl::fromAce(host.toLatin1()) );
     if (cookie->isCrossDomain())
        txt += i18n(" <b>[Cross Domain]</b>");
     lbl = new QLabel( txt, vBox );
