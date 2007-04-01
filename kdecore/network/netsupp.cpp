@@ -883,6 +883,8 @@ void freeaddrinfo(struct addrinfo *p)
   dofreeaddrinfo(p);
 }
 
+namespace KDE
+{
 char *gai_strerror(int errorcode)
 {
   static const char messages[] =
@@ -916,7 +918,7 @@ char *gai_strerror(int errorcode)
   strcpy(buffer, i18n(messages + messages_indices[errorcode]).toLocal8Bit());
   return buffer;
 }
-
+}
 static void findport(unsigned short port, char *serv, size_t servlen, int flags)
 {
   if (serv == NULL)
