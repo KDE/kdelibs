@@ -55,6 +55,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>
 #include <kauthorized.h>
