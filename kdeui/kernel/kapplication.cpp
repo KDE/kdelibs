@@ -23,20 +23,12 @@
 #undef QT_NO_TRANSLATION
 #include <qtranslator.h>
 #define QT_NO_TRANSLATION
-#include <qtextedit.h>
-#include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qicon.h>
-#include <qlineedit.h>
-#include <qmessagebox.h>
-#include <qmetaobject.h>
-#include <qregexp.h>
 #include <qsessionmanager.h>
 #include <qstylefactory.h>
-#include <qtextstream.h>
 #include <qtimer.h>
-#include <qtooltip.h>
 #include <qwidget.h>
 #include <qlist.h>
 #include <QtDBus/QtDBus>
@@ -56,7 +48,6 @@
 #include "kdebug.h"
 #include "kglobal.h"
 #include "kiconloader.h"
-#include "klibloader.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
 #include "kstandarddirs.h"
@@ -84,13 +75,7 @@
 
 #include <fcntl.h>
 #include <stdlib.h> // getenv(), srand(), rand()
-#include <signal.h>
 #include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <errno.h>
-#include <string.h>
-#include <netdb.h>
 #if defined Q_WS_X11
 //#ifndef Q_WS_QWS //FIXME(E): NetWM should talk to QWS...
 #include <netwm.h>
@@ -119,8 +104,6 @@
 #endif
 
 #include <qevent.h>
-#include <QDesktopWidget>
-#include <QMetaObject>
 #include <kcomponentdata.h>
 
 KApplication* KApplication::KApp = 0L;
@@ -166,7 +149,6 @@ public:
   Private(const QByteArray &cName)
       : componentData(cName),
       checkAccelerators(0),
-      gestureMap(0),
       startup_id("0"),
       app_started_timer(0),
       session_save(false)
@@ -181,7 +163,6 @@ public:
   Private(const KComponentData &cData)
       : componentData(cData),
       checkAccelerators(0),
-      gestureMap(0),
       startup_id("0"),
       app_started_timer(0),
       session_save(false)
@@ -196,7 +177,6 @@ public:
   Private()
       : componentData(KCmdLineArgs::aboutData()),
       checkAccelerators(0),
-      gestureMap(0),
       startup_id( "0" ),
       app_started_timer( 0 ),
       session_save( false )
@@ -214,7 +194,6 @@ public:
 
   KComponentData componentData;
   KCheckAccelerators* checkAccelerators;
-  KGestureMap* gestureMap;
   QByteArray startup_id;
   QTimer* app_started_timer;
   bool session_save;
@@ -563,7 +542,7 @@ void KApplication::init(bool GUIenabled)
     KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
     d->checkAccelerators = new KCheckAccelerators( this );
-    d->gestureMap = new KGestureMap( this );
+    KGestureMap::self()->installEventFilterOnMe( this );
 
     connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
             this, SLOT(slot_KToolInvication_hook(QStringList&,QByteArray&)));
@@ -625,11 +604,6 @@ void KApplication::reparseConfiguration()
 void KApplication::quit()
 {
     QApplication::quit();
-}
-
-KGestureMap* KApplication::gestureMap() const
-{
-    return d->gestureMap;
 }
 
 void KApplication::disableSessionManagement() {

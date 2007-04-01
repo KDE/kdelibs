@@ -21,6 +21,8 @@
 #include <kaction.h>
 #include <qevent.h>
 
+#include <kstaticdeleter.h>
+
 #include <kdebug.h>
 
 #include "kgesturemap.h"
@@ -31,18 +33,33 @@
  code.
  */
 
-KGestureMap::KGestureMap(KApplication *parent)
- : QObject(parent),
-   m_gestureTimeout(this),
-   m_acquiring(false)
+KGestureMap *KGestureMap::s_instance = 0;
+static KStaticDeleter<KGestureMap> staticDeleter;
+
+
+KGestureMap::~KGestureMap()
 {
-    Q_ASSERT(parent);
+}
+
+
+KGestureMap *KGestureMap::self()
+{
+    if (!s_instance)
+        staticDeleter.setObject(s_instance, new KGestureMap());
+
+    return s_instance;
+}
+
+
+KGestureMap::KGestureMap()
+{
     m_gestureTimeout.setSingleShot(true);
     connect(&m_gestureTimeout, SIGNAL(timeout()), this, SLOT(stopAcquisition()));
     //It would be nice to install the filter on demand. Unfortunately,
     //undesired behavior might result due to changing invocation
     //orders of different event filters.
-    parent->installEventFilter(this);
+    if (qApp)
+        qApp->installEventFilter(this);
 }
 
 
@@ -104,6 +121,12 @@ KAction *KGestureMap::findAction(const KRockerGesture &gesture) const
 }
 
 
+void KGestureMap::installEventFilterOnMe(KApplication *app)
+{
+    app->installEventFilter(this);
+}
+
+
 inline int KGestureMap::bitCount(int n)
 {
     int count = 0;
@@ -134,7 +157,7 @@ void KGestureMap::matchShapeGesture()
     KAction *bestMatch = 0;
 
     for (QHash<KShapeGesture, KAction *>::const_iterator it = m_shapeGestures.constBegin(); 
-         it != m_shapeGestures.constEnd(); ++it) {
+        it != m_shapeGestures.constEnd(); ++it) {
         dist = m_shapeGesture.distance(it.key(), 1000.0);
         if (dist < minDist) {
             minDist = dist;

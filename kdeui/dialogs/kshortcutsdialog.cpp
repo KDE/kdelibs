@@ -347,7 +347,7 @@ QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent
 			return child;
 	}
 	QTreeWidgetItem *ret = new QTreeWidgetItem(parent);
-	ret->setText(0, QString(name).remove('&'));
+	ret->setText(0, name);
 	ui.list->expandItem(ret);
 	ret->setFlags(ret->flags() & ~Qt::ItemIsSelectable);
 	return ret;

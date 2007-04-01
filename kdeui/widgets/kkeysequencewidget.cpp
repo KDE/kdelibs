@@ -130,7 +130,7 @@ void KKeySequenceWidgetPrivate::init()
 	allowModifierless = false;
 	
 	layout = new QHBoxLayout(q);
-	
+
 	keyButton = new KKeySequenceButton(this, q);
 	keyButton->setFocusPolicy(Qt::StrongFocus);
 	keyButton->setIcon(SmallIcon("configure.png"));

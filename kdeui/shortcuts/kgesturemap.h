@@ -17,15 +17,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KGSTRMAP_H
-#define KGSTRMAP_H
+#ifndef KGESTUREMAP_H
+#define KGESTUREMAP_H
 
 #include <qobject.h>
-#include <qevent.h>
 #include <qhash.h>
 #include <QTimer>
+#include <QPolygon>
 
-#include <QString>
 #include "kgesture.h"
 
 class KApplication;
@@ -36,8 +35,8 @@ class KGestureMap : public QObject
 {
     Q_OBJECT
 public:
-    KGestureMap(KApplication *parent);
-    // void ~KGestureMap();
+    static KGestureMap *self();
+    virtual ~KGestureMap();
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
     void addGesture(const KShapeGesture &gesture, KAction *kact);
@@ -49,7 +48,14 @@ public:
 
 private Q_SLOTS:
     void stopAcquisition();
+
 private:
+    KGestureMap();
+
+    friend class KApplication;
+    //intended to be used at application initialization
+    void installEventFilterOnMe(KApplication *app);
+
     inline int bitCount(int n);
     void handleAction(KAction *kact);
     void matchShapeGesture();
@@ -63,7 +69,8 @@ private:
 
     KShapeGesture m_shapeGesture;
     KRockerGesture m_rockerGesture;
+
+    static KGestureMap *s_instance;
 };
 
-//KGSTRMAP_H
-#endif
+#endif //KGESTUREMAP_H
