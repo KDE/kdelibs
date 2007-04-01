@@ -48,7 +48,7 @@ KUiServerJobTracker::KUiServerJobTracker(QObject *parent)
 KUiServerJobTracker::~KUiServerJobTracker()
 {
     foreach(int id, d->progressIds.values()) {
-        serverProxy->jobFinished(id);
+        serverProxy->jobFinished(id, KJob::KilledJobError);
     }
 
     delete d;
@@ -60,7 +60,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
     if (d->progressIds.contains(job)) return;
 
     int id = serverProxy->newJob(job, KSharedUiServerProxy::JobShown);
-    d->progressIds[job] = id;
+    d->progressIds.insert(job, id);
 
     KJobTrackerInterface::registerJob(job);
 }
@@ -68,24 +68,28 @@ void KUiServerJobTracker::registerJob(KJob *job)
 void KUiServerJobTracker::unregisterJob(KJob *job)
 {
     int id = d->progressIds.take(job);
-    serverProxy->jobFinished(id);
+    serverProxy->jobFinished(id, job->error());
     KJobTrackerInterface::unregisterJob(job);
 }
 
 void KUiServerJobTracker::finished(KJob *job)
 {
     int id = d->progressIds.take(job);
-    serverProxy->jobFinished(id);
+    serverProxy->jobFinished(id, job->error());
 }
 
 void KUiServerJobTracker::suspended(KJob *job)
 {
-    //TODO: Implement this
+    if (!d->progressIds.contains(job)) return;
+    int id = d->progressIds[job];
+    serverProxy->uiserver().jobSuspended(id);
 }
 
 void KUiServerJobTracker::resumed(KJob *job)
 {
-    //TODO: Implement this
+    if (!d->progressIds.contains(job)) return;
+    int id = d->progressIds[job];
+    serverProxy->uiserver().jobResumed(id);
 }
 
 void KUiServerJobTracker::description(KJob *job, const QString &title,
@@ -152,8 +156,6 @@ void KUiServerJobTracker::speed(KJob *job, unsigned long value)
 KSharedUiServerProxy::KSharedUiServerProxy()
     : m_uiserver("org.kde.kuiserver", "/UiServer", QDBusConnection::sessionBus())
 {
-    QDBusConnection::sessionBus().registerObject("/UiServerCallbacks", this, QDBusConnection::ExportScriptableSlots);
-
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kuiserver"))
     {
         //kDebug(KDEBUG_OBSERVER) << "Starting kuiserver" << endl;
@@ -201,9 +203,9 @@ int KSharedUiServerProxy::newJob(KJob *job, JobVisibility visibility, const QStr
     return progressId;
 }
 
-void KSharedUiServerProxy::jobFinished(int progressId)
+void KSharedUiServerProxy::jobFinished(int progressId, int errorCode)
 {
-    m_uiserver.jobFinished(progressId);
+    m_uiserver.jobFinished(progressId, errorCode);
     m_jobs.remove(progressId);
 }
 
@@ -224,6 +226,7 @@ void KSharedUiServerProxy::slotActionPerformed(int actionId, int jobId)
             job->kill();
             break;
         default:
+            kWarning() << "Unknown actionId (" << actionId << ") for jobId " << jobId << endl;
             break;
         }
     }

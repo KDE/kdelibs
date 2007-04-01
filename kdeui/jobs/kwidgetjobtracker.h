@@ -63,6 +63,8 @@ protected Q_SLOTS:
     virtual void percent(KJob *job, unsigned long percent);
     virtual void speed(KJob *job, unsigned long value);
     virtual void slotClean();
+    virtual void suspended(KJob *job);
+    virtual void resumed(KJob *job);
 
     //TODO: Misses canResume()
 

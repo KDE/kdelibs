@@ -79,8 +79,9 @@ public:
      * the job ended
      *
      * @param progressId the progress ID of the job, as returned by newJob()
+     * @param errorCode  the error code of the job
      */
-    void jobFinished(int progressId);
+    void jobFinished(int progressId, int errorCode);
 
 public Q_SLOTS:
     /**

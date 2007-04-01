@@ -101,10 +101,10 @@ bool KJob::kill( KillVerbosity verbosity )
 {
     if ( doKill() )
     {
+        setError( KilledJobError );
+
         if ( verbosity!=Quietly )
         {
-            // FIXME: Define this error correctly
-            setError( KilledJobError );
             emitResult();
         }
         else
@@ -127,12 +127,13 @@ bool KJob::suspend()
 {
     if ( !d->suspended )
     {
-        d->suspended = true;
-        doSuspend();
+        if ( doSuspend() )
+        {
+            d->suspended = true;
+            emit suspended(this);
 
-        emit suspended(this);
-
-        return true;
+            return true;
+        }
     }
 
     return false;
@@ -142,12 +143,13 @@ bool KJob::resume()
 {
     if ( d->suspended )
     {
-        d->suspended = false;
-        doResume();
+        if ( doResume() )
+        {
+            d->suspended = false;
+            emit resumed(this);
 
-        emit resumed(this);
-
-        return true;
+            return true;
+        }
     }
 
     return false;
@@ -254,7 +256,7 @@ void KJob::setPercent( unsigned long percentage )
 void KJob::emitResult()
 {
     // If we are displaying a progress dialog, remove it first.
-    emit finished(this);
+    emit finished( this );
 
     emit result( this );
 

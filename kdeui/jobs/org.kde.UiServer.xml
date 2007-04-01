@@ -13,6 +13,15 @@
     </method>
     <method name="jobFinished">
       <arg name="id" type="i" direction="in"/>
+      <arg name="errorCode" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="jobSuspended">
+      <arg name="id" type="i" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="jobResumed">
+      <arg name="id" type="i" direction="in"/>
       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
     </method>
     <method name="totalSize">

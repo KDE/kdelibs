@@ -276,7 +276,6 @@ private: // don't tell moc, but those signals are in fact private
      * observers that the job is terminated and that progress can be hidden.
      *
      * @param job the job that emitted this signal
-     * @param jobId the job identification number that emitted this signal
      * @internal
      */
     void finished(KJob *job);
@@ -285,7 +284,6 @@ private: // don't tell moc, but those signals are in fact private
      * Emitted when the job is suspended.
      *
      * @param job the job that emitted this signal
-     * @param jobId the job identification number that emitted this signal
      */
     void suspended(KJob *job);
 
@@ -293,7 +291,6 @@ private: // don't tell moc, but those signals are in fact private
      * Emitted when the job is resumed.
      *
      * @param job the job that emitted this signal
-     * @param jobId the job identification number that emitted this signal
      */
     void resumed(KJob *job);
 

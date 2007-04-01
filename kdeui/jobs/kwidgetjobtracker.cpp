@@ -274,6 +274,18 @@ void KWidgetJobTracker::slotClean()
     }
 }
 
+void KWidgetJobTracker::suspended(KJob */* job */)
+{
+    d->pauseButton->setText(i18n("Resume"));
+    d->suspended = true;
+}
+
+void KWidgetJobTracker::resumed(KJob */* job */)
+{
+    d->pauseButton->setText(i18n("Pause"));
+    d->suspended = false;
+}
+
 void KWidgetJobTracker::Private::init(QWidget *parent)
 {
     widget = new QWidget(parent);
@@ -458,13 +470,9 @@ void KWidgetJobTracker::Private::_k_openLocation()
 void KWidgetJobTracker::Private::_k_pauseResumeClicked()
 {
     if ( !suspended ) {
-        pauseButton->setText(i18n("Resume"));
         q->slotSuspend();
-        suspended = true;
     } else {
-        pauseButton->setText(i18n("Pause"));
         q->slotResume();
-        suspended = false;
     }
 }
 
