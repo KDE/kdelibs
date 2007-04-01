@@ -30,8 +30,8 @@
 #include <QtCore/QObject>
 
 #include <kurl.h>
-#include <kstreamsocket.h>
-#include <kserversocket.h>
+#include <k3streamsocket.h>
+#include <k3serversocket.h>
 
 #include <kio/connection.h>
 

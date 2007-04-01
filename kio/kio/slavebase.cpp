@@ -47,7 +47,7 @@
 #include <kconfigdata.h>
 #include <kdesu/client.h>
 #include <klocale.h>
-#include <kstreamsocket.h>
+#include <k3streamsocket.h>
 
 #include "kremoteencoding.h"
 
@@ -55,9 +55,6 @@
 #include "kio/connection.h"
 #include "kio/ioslave_defaults.h"
 #include "kio/slaveinterface.h"
-
-#define I_KNOW_KSOCKS_ISNT_PUBLIC
-#include <ksocks.h>
 
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE
@@ -1010,7 +1007,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_CONFIG:
     {
         stream >> d->configData;
-#ifdef Q_OS_UNIX //TODO: not yet available on WIN32
+#if 0 //TODO: decide what to do in KDE 4.1
         KSocks::setConfig(d->configGroup);
 #endif
 	delete d->remotefile;

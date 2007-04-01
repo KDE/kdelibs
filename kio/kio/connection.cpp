@@ -34,9 +34,9 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
-#include <network/kresolver.h>
-#include <network/kstreamsocket.h>
-#include <network/ksocketdevice.h>
+#include <network/k3resolver.h>
+#include <network/k3streamsocket.h>
+#include <network/k3socketdevice.h>
 
 #include <kdebug.h>
 #include <qsocketnotifier.h>

@@ -51,7 +51,7 @@
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 
-#include <network/kserversocket.h>
+#include <network/k3serversocket.h>
 
 using namespace KNetwork;
 

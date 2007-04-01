@@ -65,9 +65,9 @@ endif (WIN32)
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp 
-      network/khttpproxysocketdevice.cpp
-      network/ksocks.cpp
-      network/ksockssocketdevice.cpp
+      network/k3httpproxysocketdevice.cpp
+      network/k3socks.cpp
+      network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
       util/kpty.cpp
       fakes.c )
@@ -170,21 +170,20 @@ set(kdecore_LIB_SRCS
    sonnet/backgroundthread.cpp
    sonnet/backgroundengine.cpp
    sonnet/defaultdictionary.cpp
-   network/ksocketdevice.cpp # must be before the rest of network/, for enable-final
-   network/kbufferedsocket.cpp
-   network/kclientsocketbase.cpp
-   network/kdatagramsocket.cpp
-   network/kidna.cpp
-   network/kresolver.cpp
-   network/kresolvermanager.cpp
-   network/kresolverworkerbase.cpp
-   network/kresolverstandardworkers.cpp
-   network/kreverseresolver.cpp
-   network/kserversocket.cpp
-   network/ksocketaddress.cpp
-   network/ksocketbase.cpp
-   network/kstreamsocket.cpp
-   network/ksocketbuffer.cpp
+   network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
+   network/k3bufferedsocket.cpp
+   network/k3clientsocketbase.cpp
+   network/k3datagramsocket.cpp
+   network/k3resolver.cpp
+   network/k3resolvermanager.cpp
+   network/k3resolverworkerbase.cpp
+   network/k3resolverstandardworkers.cpp
+   network/k3reverseresolver.cpp
+   network/k3serversocket.cpp
+   network/k3socketaddress.cpp
+   network/k3socketbase.cpp
+   network/k3streamsocket.cpp
+   network/k3socketbuffer.cpp
    network/klocalsocket.cpp
    network/ksocketfactory.cpp
    network/netsupp.cpp
@@ -313,21 +312,21 @@ install( FILES
    kernel/kcomponentdata.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
-   network/kbufferedsocket.h
-   network/kclientsocketbase.h
-   network/kdatagramsocket.h
-   network/khttpproxysocketdevice.h
-   network/kidna.h
-   network/kiobuffer.h
-   network/kresolver.h
-   network/kreverseresolver.h
-   network/kserversocket.h
-   network/ksocketaddress.h
-   network/ksocketbase.h
-   network/ksocketdevice.h
-   network/ksocks.h
-   network/ksockssocketdevice.h
-   network/kstreamsocket.h
+   network/k3bufferedsocket.h
+   network/k3clientsocketbase.h
+   network/k3datagramsocket.h
+   network/k3httpproxysocketdevice.h
+   network/k3iobuffer.h
+   network/k3resolver.h
+   network/k3reverseresolver.h
+   network/k3serversocket.h
+   network/k3socketaddress.h
+   network/k3socketbase.h
+   network/k3socketdevice.h
+   network/k3sockssocketdevice.h
+   network/k3streamsocket.h
+   network/klocalsocket.h
+   network/ksocketfactory.h
    services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h

@@ -50,7 +50,7 @@ QTcpSocket *KSocketFactory::connectToHost(const QString &protocol, const QString
                                           QObject *parent)
 {
     // ### TO-DO: find a way to determine if we should use QSslSocket or plain QTcpSocket
-    QTcpSocket *socket = new QSslSocket(parent);
+    QTcpSocket *socket = new QTcpSocket(parent);
 
     socket->setProxy(proxyForConnection(protocol, host));
     socket->connectToHost(host, port);
