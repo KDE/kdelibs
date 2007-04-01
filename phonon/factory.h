@@ -20,7 +20,7 @@
 #ifndef PHONON_FACTORY_H
 #define PHONON_FACTORY_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include <kglobal.h>
 
 #include <QObject>

@@ -20,7 +20,7 @@
 #ifndef Phonon_UiFACTORY_H
 #define Phonon_UiFACTORY_H
 
-#include <phonon/phonon_export.h>
+#include "../phonon_export.h"
 #include <QObject>
 
 class KUrl;

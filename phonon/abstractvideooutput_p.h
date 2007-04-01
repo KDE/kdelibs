@@ -20,7 +20,7 @@
 #ifndef ABSTRACTVIDEOOUTPUT_P_H
 #define ABSTRACTVIDEOOUTPUT_P_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "abstractvideooutput.h"
 #include "base_p.h"
 

@@ -19,7 +19,7 @@
 #ifndef PHONON_BYTESTREAM_H
 #define PHONON_BYTESTREAM_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "abstractmediaproducer.h"
 #include "phonondefs.h"
 

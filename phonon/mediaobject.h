@@ -19,7 +19,7 @@
 #ifndef Phonon_MEDIAOBJECT_H
 #define Phonon_MEDIAOBJECT_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "phonondefs.h"
 #include "abstractmediaproducer.h"
 

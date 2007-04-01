@@ -20,7 +20,7 @@
 #ifndef PHONON_VOLUMEFADEREFFECT_H
 #define PHONON_VOLUMEFADEREFFECT_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "audioeffect.h"
 
 namespace Phonon

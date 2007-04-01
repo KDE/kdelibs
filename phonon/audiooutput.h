@@ -19,7 +19,7 @@
 #ifndef Phonon_AUDIOOUTPUT_H
 #define Phonon_AUDIOOUTPUT_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "abstractaudiooutput.h"
 #include "phonondefs.h"
 #include "phononnamespace.h"

@@ -20,7 +20,7 @@
 #ifndef PHONON_UI_EFFECTWIDGET_H
 #define PHONON_UI_EFFECTWIDGET_H
 
-#include <phonon/phonon_export.h>
+#include "../phonon_export.h"
 #include <QWidget>
 
 namespace Phonon

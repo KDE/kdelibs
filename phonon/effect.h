@@ -20,7 +20,7 @@
 #ifndef PHONON_EFFECT_H
 #define PHONON_EFFECT_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include <QVariant>
 
 template<class T> class QList;

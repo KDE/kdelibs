@@ -20,7 +20,7 @@
 #ifndef PHONON_BASE_H
 #define PHONON_BASE_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "phonondefs.h"
 
 class QObject;

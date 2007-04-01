@@ -20,7 +20,7 @@
 #ifndef PHONON_OBJECTDESCRIPTIONMODEL_H
 #define PHONON_OBJECTDESCRIPTIONMODEL_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "objectdescription.h"
 #include <QAbstractListModel>
 

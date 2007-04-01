@@ -20,7 +20,7 @@
 #ifndef PHONON_MEDIAOBJECTINTERFACE_H
 #define PHONON_MEDIAOBJECTINTERFACE_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "mediaobject.h"
 #include <kurl.h>
 #include <QtCore/QObject>

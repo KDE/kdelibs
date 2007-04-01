@@ -20,7 +20,7 @@
 #ifndef KIOFALLBACK_H
 #define KIOFALLBACK_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 
 #include "phononnamespace.h"
 #include "mediaobject.h"

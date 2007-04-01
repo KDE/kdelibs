@@ -20,7 +20,7 @@
 #ifndef PHONON_BACKENDINTERFACE_H
 #define PHONON_BACKENDINTERFACE_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 #include "objectdescription.h"
 
 #include <Qt/qglobal.h>

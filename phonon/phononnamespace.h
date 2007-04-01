@@ -20,7 +20,7 @@
 #ifndef PHONONNAMESPACE_H
 #define PHONONNAMESPACE_H
 
-#include <phonon/phonon_export.h>
+#include "phonon_export.h"
 
 /**
  * \brief The %KDE Multimedia classes
