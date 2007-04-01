@@ -21,7 +21,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QIconEngine>
+#include <QtGui/QIconEngineV2>
 
 class KIconLoader;
 
@@ -34,7 +34,7 @@ class KIconLoader;
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KIconEngine : public QIconEngine
+class KIconEngine : public QIconEngineV2
 {
   public:
     /**
@@ -69,6 +69,11 @@ class KDEUI_EXPORT KIconEngine : public QIconEngine
     virtual void paint ( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state );
     /// Reimplementation
     virtual QPixmap pixmap ( const QSize & size, QIcon::Mode mode, QIcon::State state );
+
+    virtual QString key() const;
+    virtual QIconEngineV2 *clone() const;
+    virtual bool read(QDataStream &in);
+    virtual bool write(QDataStream &out) const;
 
   private:
     class KIconEnginePrivate* const d;

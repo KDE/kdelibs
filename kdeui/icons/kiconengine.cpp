@@ -120,3 +120,26 @@ QPixmap KIconEngine::pixmap( const QSize & size, QIcon::Mode mode, QIcon::State 
 
     return pix;
 }
+
+QString KIconEngine::key() const
+{
+    return QLatin1String("KIconEngine");
+}
+
+QIconEngineV2 *KIconEngine::clone() const
+{
+    return new KIconEngine(d->iconName, d->iconLoader, d->overlays);
+}
+
+bool KIconEngine::read(QDataStream &in)
+{
+    in >> d->iconName >> d->overlays;
+    return true;
+}
+
+bool KIconEngine::write(QDataStream &out) const
+{
+    out << d->iconName << d->overlays;
+    return true;
+}
+
