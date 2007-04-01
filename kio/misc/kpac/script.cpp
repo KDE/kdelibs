@@ -32,17 +32,15 @@
 
 #include <qregexp.h>
 #include <QtCore/QString>
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QHostInfo>
 
-#include <kbufferedsocket.h>
-#include <ksocketaddress.h>
 #include <kurl.h>
 #include <kjs/object.h>
-#include <kresolver.h>
 
 #include "script.h"
 
 using namespace KJS;
-using namespace KNetwork;
 
 QString UString::qstring() const
 {
@@ -68,32 +66,25 @@ namespace
         static Address parse( const UString& ip )
             { return Address( ip.qstring(), true ); }
 
-        operator KInetSocketAddress() const { return m_address; }
-        operator UString() const { return UString( m_address.ipAddress().toString() ); }
-        operator const in_addr_t() const {
-          const sockaddr_in* sin = m_address;
-          return sin->sin_addr.s_addr;
-        }
+        operator QHostAddress() const { return m_address; }
+        operator UString() const { return UString( m_address.toString() ); }
 
     private:
         Address( const QString& host, bool numeric )
         {
-            int flags = 0;
-
-            if ( numeric )
-              flags = KNetwork::KResolver::NoResolve;
-
-            KNetwork::KResolverResults addresses =
-               KNetwork::KResolver::resolve( host, QString(), flags,
-                                             KNetwork::KResolver::IPv4Family );
-
-            if ( addresses.error() || addresses.isEmpty() ) 
-	      throw Error();
-
-            m_address = addresses.first().address().asInet();
+            if ( numeric ) {
+                m_address = QHostAddress( host );
+                if ( m_address.isNull() )
+                    throw Error();
+            } else {
+                QHostInfo addresses = QHostInfo::fromName(host);
+                if ( addresses.error() || addresses.addresses().isEmpty() )
+                    throw Error();
+                m_address = addresses.addresses().at(0);
+            }
         }
-         
-        KInetSocketAddress m_address;
+
+        QHostAddress m_address;
     };
 
     struct Function : public JSObject
@@ -186,12 +177,12 @@ namespace
             if ( args.size() != 3 ) return Undefined();
             try
             {
-                KInetSocketAddress host = Address::resolve( args[ 0 ]->toString( exec ) );
-                KInetSocketAddress subnet = Address::parse( args[ 1 ]->toString( exec ) );
-                KInetSocketAddress mask = Address::parse( args[ 2 ]->toString( exec ) );
+                QHostAddress host = Address::resolve( args[ 0 ]->toString( exec ) );
+                QHostAddress subnet = Address::parse( args[ 1 ]->toString( exec ) );
+                QHostAddress mask = Address::parse( args[ 2 ]->toString( exec ) );
 
-#warning "Write a method to do netmask comparison in the KNetwork library"
-                return Boolean( ( host.ipAddress().IPv4Addr() & mask.ipAddress().IPv4Addr() ) == ( subnet.ipAddress().IPv4Addr() & mask.ipAddress().IPv4Addr() ) );
+                return Boolean( ( host.toIPv4Address() & mask.toIPv4Address() ) ==
+                                ( subnet.toIPv4Address() & mask.toIPv4Address() ) );
             }
             catch ( const Address::Error& )
             {
