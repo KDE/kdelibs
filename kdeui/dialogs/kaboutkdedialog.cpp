@@ -94,7 +94,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
         "for information on some projects in which you can participate."
         "<br><br>"
         "If you need more information or documentation, then a visit to "
-        "<a href=\"http://developer.kde.org/\">http://developer.kde.org</A> "
+        "<a href=\"http://techbase.kde.org/\">http://techbase.kde.org</A> "
         "will provide you with what you need."));
 
     QLabel *support = new QLabel;
