@@ -22,7 +22,7 @@
 #ifndef KJS_JS_IMMEDIATE_H
 #define KJS_JS_IMMEDIATE_H
 
-#include "global.h"
+#include <kjs/global.h>
 #include "JSType.h"
 #include <wtf/Assertions.h>
 #include <stdint.h>
