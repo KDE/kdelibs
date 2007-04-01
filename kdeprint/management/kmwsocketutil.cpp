@@ -30,20 +30,18 @@
 #include <kmessagebox.h>
 #include <QtGui/QLayout>
 #include <qregexp.h>
+#include <qhostinfo.h>
 #include <knumvalidator.h>
 
 #include <qapplication.h>
+#include <qtcpsocket.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kresolver.h>
-#include <kreverseresolver.h>
-#include <kstreamsocket.h>
+#include <ksocketfactory.h>
 
 #include <unistd.h>
 
-using namespace KNetwork;
-
-QString localRootIP();
+static QString localRootIP();
 
 //----------------------------------------------------------------------------------------
 
@@ -160,14 +158,13 @@ KMWSocketUtil::~KMWSocketUtil()
 
 bool KMWSocketUtil::checkPrinter(const QString& IPstr, int port, QString* hostname)
 {
-	KStreamSocket	sock(IPstr, QString::number(port));
-	sock.setTimeout(timeout_);
-	if (sock.connect())
+	QTcpSocket *sock = KSocketFactory::synchronousConnectToHost("ipp", IPstr, port, timeout_);
+	if (sock->isOpen())
 	{
 		if (hostname)
 		{
-			QString	portname;
-			KReverseResolver::resolve(sock.peerAddress(), *hostname, portname);
+			QHostInfo info = QHostInfo::fromName(sock->peerAddress().toString());
+			*hostname = info.hostName();
 		}
 		return true;
 	}
@@ -217,16 +214,14 @@ void KMWSocketUtil::configureScan(QWidget *parent)
 
 //----------------------------------------------------------------------------------------
 
-QString localRootIP()
+// ### Use QNetworkInterface?
+// This function is just plain *wrong* anyways for any netmask that isn't /24
+static QString localRootIP()
 {
-	char	buf[256];
-	buf[0] = '\0';
-	if (!gethostname(buf, sizeof(buf)))
-		buf[sizeof(buf)-1] = '\0';
-	KResolverResults    infos = KResolver::resolve(buf, QString());
-	if (!infos.error() && infos.count() > 0)
+	QHostInfo infos = QHostInfo::fromName(QHostInfo::localHostName());
+	if (!infos.error() && !infos.addresses().isEmpty())
 	{
-		QString	IPstr = infos.first().address().nodeName();
+		QString	IPstr = infos.addresses().at(0).toString();
 		int	p = IPstr.lastIndexOf('.');
 		IPstr.truncate(p);
 		return IPstr;

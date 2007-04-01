@@ -17,8 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#define USE_QSOCKET
-
 #include <kdeprint_export.h>
 
 #include "networkscanner.h"
@@ -30,18 +28,16 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qregexp.h>
+#include <qtcpsocket.h>
+#include <qhostinfo.h>
 
 #include <kpushbutton.h>
 #include <klocale.h>
-#include <kresolver.h>
-#include <kreverseresolver.h>
-#include <kbufferedsocket.h>
+#include <ksocketfactory.h>
 #include <kmessagebox.h>
 #include <knumvalidator.h>
 #include <kdebug.h>
 #include <unistd.h>
-
-using namespace KNetwork;
 
 class NetworkScanner::NetworkScannerPrivate
 {
@@ -57,7 +53,7 @@ public:
 	KPushButton *scan, *settings;
 	QLabel *subnetlab;
 	QTimer *timer;
-	KBufferedSocket *socket;
+	QTcpSocket *socket;
 
 	NetworkScannerPrivate( int portvalue ) : port( portvalue )
 	{
@@ -79,18 +75,16 @@ public:
 QString NetworkScanner::NetworkScannerPrivate::localPrefix()
 {
 #ifdef __GNUC__
-#warning "Upgrade NetworkScanner with KNetworkInterface"
+#warning "Upgrade NetworkScanner with QNetworkInterface"
+// This function is just plain *wrong* anyways for any netmask that isn't /24
+// It's also duplicated in kwmsocketutil.cpp function localRootIP
 #endif
-	char	buf[256];
-	buf[0] = '\0';
-	if (!gethostname(buf, sizeof(buf)))
-		buf[sizeof(buf)-1] = '\0';
-	KResolverResults infos = KResolver::resolve(buf, "80");
 
-	if (infos.count() > 0)
+	QHostInfo infos = QHostInfo::fromName(QHostInfo::localHostName());
+	if (!infos.error() && !infos.addresses().isEmpty())
 	{
-		QString	IPstr = infos[0].address().nodeName();
-		int	p = IPstr.lastIndexOf('.');	// this is wrong!! -thiago
+		QString	IPstr = infos.addresses().at(0).toString();
+		int	p = IPstr.lastIndexOf('.');
 		IPstr.truncate(p);
 		return IPstr;
 	}
@@ -113,13 +107,13 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	d->settings = new KPushButton( KGuiItem( i18n( "&Settings" ), "configure" ), this );
 	d->scan = new KPushButton( KGuiItem( i18n( "Sc&an" ), "zoom-original" ), this );
 	d->timer = new QTimer( this );
-	d->socket = new KBufferedSocket( QString(), QString(), this );
+	d->socket = 0;
 	QLabel *label = new QLabel( i18n( "Network scan:" ), this );
 	d->subnetlab = new QLabel( i18n( "Subnet: %1" ,  d->scanString() ), this );
 
 	QGridLayout *l0 = new QGridLayout( this );
-  l0->setMargin( 0 );
-  l0->setSpacing( 10 );
+	l0->setMargin( 0 );
+	l0->setSpacing( 10 );
 	l0->addWidget( label, 0, 0, 1, 2 );
 	l0->addWidget( d->bar, 1, 0, 1, 2 );
 	l0->addWidget( d->subnetlab, 2, 0, 1, 2 );
@@ -129,10 +123,6 @@ NetworkScanner::NetworkScanner( int port, QWidget *parent )
 	connect( d->timer, SIGNAL( timeout() ), SLOT( slotTimeout() ) );
 	connect( d->settings, SIGNAL( clicked() ), SLOT( slotSettingsClicked() ) );
 	connect( d->scan, SIGNAL( clicked() ), SLOT( slotScanClicked() ) );
-
-	connect( d->socket, SIGNAL( connected( const KNetwork::KResolverEntry& ) ),
-            SLOT( slotConnectionSuccess( const KNetwork::KResolverEntry& ) ) );
-	connect( d->socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
 }
 
 NetworkScanner::~NetworkScanner()
@@ -168,7 +158,8 @@ void NetworkScanner::slotScanClicked()
 	}
 	else
 	{
-		d->socket->close();
+		delete d->socket;
+		d->socket = 0;
 		finish();
 	}
 }
@@ -197,10 +188,15 @@ void NetworkScanner::slotNext()
 		return;
 
 	d->timer->stop();
-	d->socket->connect( d->prefixaddress + '.' + QString::number( d->currentaddress ), QString::number(d->port) );
+	d->socket = KSocketFactory::connectToHost( "ipp", d->prefixaddress + '.' + QString::number( d->currentaddress ), d->port );
 	kDebug() << "Address: " << d->socket->peerAddress().toString() << endl;
-  d->timer->setSingleShot(true);
+	d->timer->setSingleShot(true);
 	d->timer->start( d->timeout );
+
+	connect( d->socket, SIGNAL(connected()),
+                 SLOT(slotConnectionSuccess()) );
+	connect( d->socket, SIGNAL(error()),
+                 SLOT(slotConnectionFailed()) );
 }
 
 void NetworkScanner::next()
@@ -222,34 +218,32 @@ void NetworkScanner::slotTimeout()
 	if ( !d->scanning )
 		return;
 
-	d->socket->close();
+	delete d->socket;
+	d->socket = 0;
 	next();
 }
 
-void NetworkScanner::slotConnectionSuccess( const KResolverEntry& target )
+void NetworkScanner::slotConnectionSuccess()
 {
+	QHostAddress peer = d->socket->peerAddress();
 	kDebug() << "Success" << endl;
-	kDebug() << "Connection success: " << target.address().toString() << endl;
+	kDebug() << "Connection success: " << peer.toString() << endl;
 	//kDebug() << "Socket: " << d->socket->socket() << endl;
 
-	KInetSocketAddress addr = target.address().asInet();
-	if ( addr.ipVersion() )
-	{
-		SocketInfo *info = new SocketInfo;
-		info->IP = addr.ipAddress().toString();
-		info->Port = d->port;
+	SocketInfo *info = new SocketInfo;
+	info->IP = peer.toString();
+	info->Port = d->port;
 
-		QString portname;
-		KReverseResolver::resolve( addr, info->Name, portname );
-		d->printers.append( info );
-		d->socket->close();
-	}
-	else
-		kDebug() << "Connected to something odd!" << endl;
+	QHostInfo qhi = QHostInfo::fromName( peer.toString() );
+	info->Name = qhi.hostName();
+	d->printers.append( info );
+
+	delete d->socket;
+	d->socket = 0;
 	next();
 }
 
-void NetworkScanner::slotConnectionFailed( int )
+void NetworkScanner::slotConnectionFailed()
 {
 	kDebug() << "Failure" << endl;
 	next();
@@ -298,16 +292,17 @@ bool NetworkScanner::checkPrinter( const QString& host, int port )
 	QListIterator<NetworkScanner::SocketInfo*> it( d->printers );
 	while ( it.hasNext() )
 	{
-    NetworkScanner::SocketInfo *info(it.next());
+		NetworkScanner::SocketInfo *info(it.next());
 		if ( port == info->Port && ( host == info->IP ||
 					host == info->Name ) )
 			return true;
 	}
 
 	// not found in SocketInfo list, try to establish connection
-	KStreamSocket sock( host, QString::number(port) );
-	sock.setTimeout( d->timeout );
-	return sock.connect();
+	QTcpSocket *sock = KSocketFactory::synchronousConnectToHost( "ipp", host, port, d->timeout );
+	bool ok = sock->isOpen();
+	delete sock;
+	return ok;
 }
 
 NetworkScannerConfig::NetworkScannerConfig(NetworkScanner *scanner, const char *name)

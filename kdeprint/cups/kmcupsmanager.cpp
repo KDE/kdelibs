@@ -38,6 +38,7 @@
 #include <qregexp.h>
 #include <qtimer.h>
 #include <qdatetime.h>
+#include <qtcpsocket.h>
 
 #include <kdebug.h>
 #include <krandom.h>
@@ -45,7 +46,8 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
-#include <kbufferedsocket.h>
+#include <ksocketfactory.h>
+#include <klocalsocket.h>
 #include <klibloader.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
@@ -55,8 +57,6 @@
 #include <cups/cups.h>
 #include <cups/ppd.h>
 #include <math.h>
-
-using namespace KNetwork;
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).toUtf8())
 
@@ -76,6 +76,7 @@ KMCupsManager::KMCupsManager(QObject *parent, const QStringList & /*args*/)
 	CupsInfos::self();
 	m_cupsdconf = 0;
 	m_currentprinter = 0;
+	m_socket = 0;
 
 	setHasManagement(true);
 	setPrinterOperationMask(KMManager::PrinterAll);
@@ -889,13 +890,8 @@ QString KMCupsManager::testPage()
 void KMCupsManager::checkUpdatePossibleInternal()
 {
 	kDebug(500) << "Checking for update possible" << endl;
-	m_socket = new KNetwork::KBufferedSocket;
-	m_socket->setTimeout( 1500 );
-	connect( m_socket, SIGNAL( connected(const KNetwork::KResolverEntry&) ),
-                SLOT( slotConnectionSuccess() ) );
-	connect( m_socket, SIGNAL( gotError( int ) ), SLOT( slotConnectionFailed( int ) ) );
 	trials = 5;
-	QTimer::singleShot( 1, this, SLOT( slotAsyncConnect() ) );
+	QMetaObject::invokeMethod( this, "slotAsyncConnect", Qt::QueuedConnection );
 }
 
 void KMCupsManager::slotConnectionSuccess()
@@ -928,12 +924,23 @@ void KMCupsManager::slotAsyncConnect()
 {
 	kDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
         if (CupsInfos::self()->host().startsWith("/"))
-            m_socket->connect( QString(), CupsInfos::self()->host());
+	{
+		KLocalSocket *ls = new KLocalSocket;
+		m_socket = ls;
+		ls->connectToPath( CupsInfos::self()->host() );
+		if ( ls->isOpen() )
+			// fake it
+			QMetaObject::invokeMethod( this, "slotConnectionSuccess", Qt::QueuedConnection );
+	}
         else
-            m_socket->connect( CupsInfos::self()->host(), QString::number(CupsInfos::self()->port()) );
+		m_socket = KSocketFactory::connectToHost( "ipp", CupsInfos::self()->host(), CupsInfos::self()->port() );
+
+	connect( m_socket, SIGNAL( connected() ),
+                SLOT( slotConnectionSuccess() ) );
+	connect( m_socket, SIGNAL( error( QAbstractSocket::SocketError ) ), SLOT( slotConnectionFailed( int ) ) );
 }
 
-void KMCupsManager::slotConnectionFailed( int errcode )
+void KMCupsManager::slotConnectionFailed( QAbstractSocket::SocketError errcode )
 {
 	kDebug(500) << "Connection failed trials=" << trials << endl;
 	if ( trials > 0 )
@@ -945,14 +952,13 @@ void KMCupsManager::slotConnectionFailed( int errcode )
 
 	QString einfo;
 	switch (errcode) {
-	    case KNetwork::KSocketBase::ConnectionRefused:
-	    case KNetwork::KSocketBase::ConnectionTimedOut:
+	    case QAbstractSocket::ConnectionRefusedError:
+	    case QAbstractSocket::SocketTimeoutError:
 		einfo = i18n("connection refused") + QString(" (%1)").arg(errcode);
 		break;
-	    case KNetwork::KSocketBase::LookupFailure:
+	    case QAbstractSocket::HostNotFoundError:
 		einfo = i18n("host not found") + QString(" (%1)").arg(errcode);
 		break;
-	    case KNetwork::KSocketBase::WouldBlock:
 	    default:
 		einfo = i18n("read failed (%1)", errcode);
 		break;

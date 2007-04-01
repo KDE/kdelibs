@@ -28,7 +28,8 @@
 #include <kdebug.h>
 #include <qlineedit.h>
 #include <kmessagebox.h>
-#include <kstreamsocket.h>
+#include <ksocketfactory.h>
+#include <qtcpsocket.h>
 
 static bool checkLpdQueue(const char *host, const char *queue);
 
@@ -74,20 +75,32 @@ void KMWLpd::updatePrinter(KMPrinter *p)
 
 bool checkLpdQueue(const char *host, const char *queue)
 {
-	KNetwork::KStreamSocket	sock(host, "printer");
-	sock.setBlocking(true);
-	if (sock.connect() != 0)
+	QTcpSocket *sock = KSocketFactory::synchronousConnectToHost("printer", host, 515);
+	if (sock->isOpen() != 0)
+	{
+		delete sock;
 		return false;
+	}
 
 	char	res[64] = {0};
 	qsnprintf(res,64,"%c%s\n",(char)4,queue);
-	if (sock.write(res, strlen(res)) != (Q_LONG)(strlen(res)))
+	if (sock->write(res, strlen(res)) != strlen(res) &&
+	    (sock->bytesToWrite() == 0 || sock->waitForBytesWritten()))
+	{
+		delete sock;
 		return false;
+	}
 
 	char	buf[1024] = {0};
 	int	n, tot(1);
-	while ((n = sock.read(res, 63)) > 0)
+	while (sock->isOpen())
 	{
+		if (!sock->bytesAvailable())
+			sock->waitForReadyRead();
+		n = sock->read(res, 63);
+		if (n < 0)
+			break;
+
 		res[n] = 0;
 		tot += n;
 		if (tot >= 1024)
@@ -95,7 +108,7 @@ bool checkLpdQueue(const char *host, const char *queue)
 		else
 			strcat(buf, res);
 	}
-	sock.close();
+	delete sock;
 	if (strlen(buf) == 0 || strstr(buf, "unknown printer") != NULL)
 		return false;
 	return true;

@@ -22,11 +22,9 @@
 
 #include <kdialog.h>
 
-#include <QList>
-#include <QWidget>
-
-namespace KNetwork { class KResolverEntry; }
-
+#include <QtCore/QList>
+#include <QtGui/QWidget>
+#include <QtNetwork/QAbstractSocket>
 
 class KDEPRINT_MANAGEMENT_EXPORT NetworkScanner : public QWidget
 {
@@ -58,8 +56,8 @@ Q_SIGNALS:
 	void scanFinished();
 
 protected Q_SLOTS:
-	void slotConnectionSuccess( const KNetwork::KResolverEntry& );
-	void slotConnectionFailed( int );
+	void slotConnectionSuccess();
+	void slotConnectionFailed();
 	void slotTimeout();
 	void slotScanClicked();
 	void slotSettingsClicked();

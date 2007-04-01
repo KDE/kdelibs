@@ -20,15 +20,13 @@
 #ifndef KMCUPSMANAGER_H
 #define KMCUPSMANAGER_H
 
-#include <kbufferedsocket.h>
+#include <QtNetwork/QAbstractSocket>
 #include "kmmanager.h"
 
 class IppRequest;
 class KLibrary;
 
-namespace KNetwork {
-    class KStreamSocket;
-}
+class QIODevice;
 
 class KMCupsManager : public KMManager
 {
@@ -72,7 +70,7 @@ public Q_SLOTS:
 	void printerIppReport();
 
 protected Q_SLOTS:
-	void slotConnectionFailed( int );
+	void slotConnectionFailed( QAbstractSocket::SocketError );
 	void slotConnectionSuccess();
 	void slotAsyncConnect();
 
@@ -99,7 +97,7 @@ protected:
 private:
 	KLibrary	*m_cupsdconf;
 	KMPrinter	*m_currentprinter;
-        KNetwork::KStreamSocket   *m_socket;
+	QIODevice	*m_socket;
 	bool m_hostSuccess;
 	bool m_lookupDone;
 };
