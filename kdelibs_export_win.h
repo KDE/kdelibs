@@ -19,14 +19,6 @@
 
 #include <io.h> /* to avoid #includes */
 
-#ifndef KNTLM_EXPORT
-# ifdef MAKE_KNTLM_LIB
-#  define KNTLM_EXPORT KDE_EXPORT
-# else
-#  define KNTLM_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KJSEMBED_EXPORT
 # ifdef MAKE_KJSEMBED_LIB
 #  define KJSEMBED_EXPORT KDE_EXPORT

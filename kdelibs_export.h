@@ -34,7 +34,6 @@
 #else /* UNIX */
 
 /* export statements for unix */
-#define KNTLM_EXPORT KDE_EXPORT
 #define KUNITTEST_EXPORT KDE_EXPORT
 
 #ifndef O_BINARY
