@@ -25,6 +25,7 @@
 #ifndef KJS_OBJECT_H
 #define KJS_OBJECT_H
 
+#include "global.h"
 #include "JSType.h"
 #include "interpreter.h"
 #include "property_map.h"
