@@ -31,12 +31,6 @@
 /* Qt macros aren't known in a non C++ project */
 #if defined _WIN32 || defined _WIN64
 # include <kdelibs_export_win.h>
-#else /* UNIX */
-
-#ifndef O_BINARY
-#define O_BINARY 0 /* for open() */
-#endif
-
 #endif
 
 #endif /*_KDELIBS_EXPORT_H*/

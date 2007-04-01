@@ -191,6 +191,9 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 #if defined _WIN32 || defined _WIN64
 #define KPATH_SEPARATOR ';'
 #else
+#ifndef O_BINARY
+#define O_BINARY 0 /* for open() */
+#endif
 #define KPATH_SEPARATOR ':'
 #endif
 
