@@ -65,7 +65,7 @@ public:
 	QKeySequence keySequence() const;
 
 Q_SIGNALS:
-	void keySequenceChanged(QKeySequence seq);
+	void keySequenceChanged(const QKeySequence &seq);
 
 public Q_SLOTS:
 	/**
@@ -73,7 +73,7 @@ public Q_SLOTS:
 	 * If it succeeds, keySequenceChanged() will be emitted.
 	 */
 	void captureKeySequence();
-    void setKeySequence(QKeySequence seq);
+    void setKeySequence(const QKeySequence &seq);
     void clearKeySequence();
 
 private:

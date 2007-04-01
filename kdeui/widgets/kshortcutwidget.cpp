@@ -27,8 +27,8 @@ public:
     KShortcutWidgetPrivate(KShortcutWidget *q) : q(q) {}
 
 //private slots
-    void priKeySequenceChanged(QKeySequence);
-    void altKeySequenceChanged(QKeySequence);
+    void priKeySequenceChanged(const QKeySequence &);
+    void altKeySequenceChanged(const QKeySequence &);
 
 //members
     KShortcutWidget *const q;
@@ -44,10 +44,10 @@ KShortcutWidget::KShortcutWidget(QWidget *parent)
 {
     d->holdChangedSignal = false;
     d->ui.setupUi(this);
-    connect(d->ui.priEditor, SIGNAL(keySequenceChanged(QKeySequencel)),
-            this, SLOT(priKeySequenceChanged(QKeySequence)));
-    connect(d->ui.altEditor, SIGNAL(keySequenceChanged(QKeySequencel)),
-            this, SLOT(altKeySequenceChanged(QKeySequence)));
+    connect(d->ui.priEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+            this, SLOT(priKeySequenceChanged(const QKeySequence &)));
+    connect(d->ui.altEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+            this, SLOT(altKeySequenceChanged(const QKeySequence &)));
 }
 
 
@@ -77,7 +77,7 @@ void KShortcutWidget::setHaveClearButtons(bool show)
 
 
 //slot
-void KShortcutWidget::setShortcut(KShortcut newSc)
+void KShortcutWidget::setShortcut(const KShortcut &newSc)
 {
     if (newSc == d->cut)
         return;
@@ -99,7 +99,7 @@ void KShortcutWidget::clearShortcut()
 
 
 //private slot
-void KShortcutWidgetPrivate::priKeySequenceChanged(QKeySequence seq)
+void KShortcutWidgetPrivate::priKeySequenceChanged(const QKeySequence &seq)
 {
     cut.setPrimary(seq);
     if (!holdChangedSignal)
@@ -108,7 +108,7 @@ void KShortcutWidgetPrivate::priKeySequenceChanged(QKeySequence seq)
 
 
 //private slot
-void KShortcutWidgetPrivate::altKeySequenceChanged(QKeySequence seq)
+void KShortcutWidgetPrivate::altKeySequenceChanged(const QKeySequence &seq)
 {
     cut.setAlternate(seq);
     if (!holdChangedSignal)

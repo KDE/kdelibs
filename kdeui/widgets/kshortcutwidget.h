@@ -39,15 +39,15 @@ public:
     KShortcut shortcut() const;
 
 Q_SIGNALS:
-    void shortcutChanged(KShortcut cut);
+    void shortcutChanged(const KShortcut &cut);
 
 public Q_SLOTS:
-    void setShortcut(KShortcut cut);
+    void setShortcut(const KShortcut &cut);
     void clearShortcut();
 
 private:
-    Q_PRIVATE_SLOT(d, void priKeySequenceChanged(QKeySequence))
-    Q_PRIVATE_SLOT(d, void altKeySequenceChanged(QKeySequence))
+    Q_PRIVATE_SLOT(d, void priKeySequenceChanged(const QKeySequence &))
+    Q_PRIVATE_SLOT(d, void altKeySequenceChanged(const QKeySequence &))
 
 private:
     friend class KShortcutWidgetPrivate;

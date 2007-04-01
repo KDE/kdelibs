@@ -183,7 +183,7 @@ QKeySequence KKeySequenceWidget::keySequence() const
 
 
 //slot
-void KKeySequenceWidget::setKeySequence(QKeySequence seq)
+void KKeySequenceWidget::setKeySequence(const QKeySequence &seq)
 {
 	d->oldKeySequence = d->keySequence;
 	d->keySequence = seq;

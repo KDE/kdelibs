@@ -150,9 +150,9 @@ public:
 	void changeRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &capture);
 
 // private slots
-	void capturedKeyShortcut(QKeySequence);
-	void capturedShapeGesture(KShapeGesture);
-	void capturedRockerGesture(KRockerGesture);
+	void capturedKeyShortcut(const QKeySequence &);
+	void capturedShapeGesture(const KShapeGesture &);
+	void capturedRockerGesture(const KRockerGesture &);
 
 	void startEditing(QWidget *, QModelIndex);
 	void doneEditingCurrent();
@@ -347,7 +347,7 @@ QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent
 			return child;
 	}
 	QTreeWidgetItem *ret = new QTreeWidgetItem(parent);
-	ret->setText(0, name);
+	ret->setText(0, QString(name).remove('&'));
 	ui.list->expandItem(ret);
 	ret->setFlags(ret->flags() & ~Qt::ItemIsSelectable);
 	return ret;
@@ -369,7 +369,7 @@ void KShortcutsEditorPrivate::doneEditingCurrent()
 
 
 //slot
-void KShortcutsEditorPrivate::capturedKeyShortcut(QKeySequence capture)
+void KShortcutsEditorPrivate::capturedKeyShortcut(const QKeySequence &capture)
 {
 	//TODO: make sure letter shortcuts only go in if allowed. modify KKeyButton.
 	if (!editingIndex.isValid())
@@ -434,7 +434,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 
 
 //slot
-void KShortcutsEditorPrivate::capturedShapeGesture(KShapeGesture capture)
+void KShortcutsEditorPrivate::capturedShapeGesture(const KShapeGesture &capture)
 {
 	if (!editingIndex.isValid())
 		return;
@@ -478,7 +478,7 @@ void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, con
 
 
 //slot
-void KShortcutsEditorPrivate::capturedRockerGesture(KRockerGesture capture)
+void KShortcutsEditorPrivate::capturedRockerGesture(const KRockerGesture &capture)
 {
 	if (!editingIndex.isValid())
 		return;
