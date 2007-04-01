@@ -29,10 +29,10 @@
 #include <QString>
 #include <QByteArray>
 
+#include <QTcpSocket>
+
 #include <kurl.h>
 #include <kio/slavebase.h>
-#include <kstreamsocket.h>
-#include <kserversocket.h>
 
 struct FtpEntry
 {
@@ -404,13 +404,13 @@ private: // data members
   /**
    * control connection socket, only set if openControl() succeeded
    */
-  KNetwork::KStreamSocket  *m_control;
+  QTcpSocket  *m_control;
   QByteArray m_lastControlLine;
 
   /**
    * data connection socket
    */
-  KNetwork::KStreamSocket  *m_data;
+  QTcpSocket  *m_data;
 };
 
 #endif // KDELIBS_FTP_H

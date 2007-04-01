@@ -31,9 +31,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>  // Required for AIX
-#include <netinet/tcp.h>
+#include <sys/time.h>
 #include <unistd.h> // must be explicitly included for MacOSX
 
 #include <qdom.h>
@@ -41,9 +39,10 @@
 #include <qregexp.h>
 #include <qdatetime.h>
 #include <QtDBus/QtDBus>
+#include <qtcpsocket.h>
+#include <qhostinfo.h>
 
 #include <kurl.h>
-#include <kidna.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -51,11 +50,9 @@
 #include <kdatetime.h>
 #include <kcodecs.h>
 #include <kcomponentdata.h>
-#include <kresolver.h>
 #include <krandom.h>
 #include <kmimetype.h>
 #include <ktoolinvocation.h>
-#include <kstreamsocket.h>
 #include <kstandarddirs.h>
 #include <kremoteencoding.h>
 
@@ -64,9 +61,6 @@
 
 #include "httpfilter.h"
 #include "http.h"
-
-#define I_KNOW_KSOCKS_ISNT_PUBLIC
-#include <ksocks.h>
 
 #ifdef HAVE_LIBGSSAPI
 #ifdef GSSAPI_MIT
@@ -89,7 +83,6 @@
 #include <kcmdlineargs.h>
 
 using namespace KIO;
-using namespace KNetwork;
 
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
@@ -431,7 +424,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
   if (host.indexOf(':') == -1)
     {
       m_request.hostname = host;
-      m_request.encoded_hostname = KIDNA::toAscii(host);
+      m_request.encoded_hostname = QUrl::toAce(host);
     }
   else
     {
@@ -1995,10 +1988,6 @@ bool HTTPProtocol::httpOpenConnection()
   kDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpenConnection" << endl;
 
   setBlockConnection( true );
-#ifndef Q_WS_WIN
-  // kio_http uses its own proxying:
-  KSocks::self()->disableSocks();
-#endif
 
   if ( m_state.doProxy )
   {
@@ -2021,11 +2010,11 @@ bool HTTPProtocol::httpOpenConnection()
 
       switch ( connectResult() )
       {
-        case KSocketBase::LookupFailure:
+        case QAbstractSocket::HostNotFoundError:
           errMsg = proxy_host;
           errCode = ERR_UNKNOWN_PROXY_HOST;
           break;
-        case KSocketBase::Timeout:
+        case QAbstractSocket::SocketTimeoutError:
           errMsg = i18n("Proxy %1 at port %2", proxy_host, proxy_port);
           errCode = ERR_SERVER_TIMEOUT;
           break;
@@ -2071,8 +2060,10 @@ bool HTTPProtocol::httpOpenConnection()
     }
   }
 
+#if 0                           // QTcpSocket doesn't support this
   // Set our special socket option!!
   socket().setNoDelay(true);
+#endif
 
   m_bFirstRequest = true;
 
@@ -5491,7 +5482,7 @@ QString HTTPProtocol::createNTLMAuth( bool isForProxy )
     QByteArray challenge;
     KCodecs::base64Decode( strauth.right( len - 5 ), challenge );
     KNTLM::getAuth( buf, challenge, user, passwd, domain,
-		    KNetwork::KResolver::localHostName() );
+		    QHostInfo::localHostName() );
   }
   else
   {

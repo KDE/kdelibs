@@ -58,6 +58,8 @@
 #endif
 
 #include <qdir.h>
+#include <qhostaddress.h>
+#include <qtcpserver.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -67,6 +69,7 @@
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
 #include <kremoteencoding.h>
+#include <ksocketfactory.h>
 #include <kde_file.h>
 
 #ifdef HAVE_STRTOLL
@@ -134,7 +137,6 @@ namespace KIO {
 KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 
 using namespace KIO;
-using namespace KNetwork;
 
 extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
 {
@@ -156,45 +158,6 @@ extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
   kDebug(7102) << "Done" << endl;
   return 0;
 }
-
-#ifdef __GNUC__
-#warning "FIXME: Make it possible to set KeepAlive and Linger"
-#endif
-#if 0
-int FtpSocket::connectSocket(const QString& host, const QString& port,
-                             int iTimeOutSec, bool bControl)
-{
-  closeSocket();
-
-  m_socket.setTimeout(iTimeOutSec * 1000);
-  m_socket.setResolutionEnabled(bControl);
-  m_socket.setAddressReuseable(true);
-  m_socket.setBlocking(true);
-
-  if(!m_socket.connect(host, port))
-  {
-    int iErrorCode = ERR_COULD_NOT_CONNECT;
-    if (m_socket.error() == KStreamSocket::LookupFailure)
-      iErrorCode = ERR_HOST_NOT_FOUND;
-    kError(7102) << m_pszName << ": connect failed (code " << m_socket.error()
-                  << "): " << m_socket.errorString() << endl;
-    return iErrorCode;
-  }
-
-  if(!bControl)
-  { int on=1;
-    if( !setSocketOption(SO_KEEPALIVE, (char *)&on, sizeof(on)) )
-      errorMessage(0, "Keepalive not allowed");
-
-    struct linger lng = { 1, 120 };
-    if( !setSocketOption(SO_LINGER, (char *)&lng, sizeof (lng)) )
-      errorMessage(0, "Linger mode was not allowed.");
-  }
-
-  debugMessage("connected");
-  return 0;
-}
-#endif
 
 //===============================================================================
 // Ftp
@@ -263,6 +226,8 @@ const char* Ftp::ftpResponse(int iOffset)
     // be stored. Some servers (OpenBSD) send a single "nnn-" followed by
     // optional lines that start with a space and a final "nnn text" line.
     do {
+      while (!m_control->canReadLine() && m_control->isOpen())
+        m_control->waitForReadyRead();
       m_lastControlLine = m_control->readLine();
       pTxt = m_lastControlLine.data();
       int nBytes = m_lastControlLine.size();
@@ -394,21 +359,13 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
  */
 bool Ftp::ftpOpenControlConnection( const QString &host, int port )
 {
-  QString serv;
-  if ( port > 0 )
-    serv = QString::number( port );
-  else
-    serv = QLatin1String( "ftp" );
-
   // implicitly close, then try to open a new connection ...
   closeConnection();
   QString sErrorMsg;
-  m_control = new KStreamSocket;
-  m_control->setBlocking(true);
 
   // now connect to the server and read the login message ...
-  m_control->setTimeout(connectTimeout() * 1000);
-  int iErrorCode = m_control->connect(host, serv) ? 0 : ERR_COULD_NOT_CONNECT;
+  m_control = KSocketFactory::synchronousConnectToHost("ftp", host, port, connectTimeout() * 1000);
+  int iErrorCode = m_control->isOpen() ? 0 : ERR_COULD_NOT_CONNECT;
 
   // on connect success try to read the server message...
   if(iErrorCode == 0)
@@ -423,7 +380,7 @@ bool Ftp::ftpOpenControlConnection( const QString &host, int port )
   }
   else
   {
-    if (m_control->error() == KSocketBase::LookupFailure)
+    if (m_control->error() == QAbstractSocket::HostNotFoundError)
       iErrorCode = ERR_UNKNOWN_HOST;
 
     sErrorMsg = QString("%1: %2").arg(host).arg(m_control->errorString());
@@ -676,6 +633,8 @@ bool Ftp::ftpSendCmd( const QByteArray& cmd, int maxretries )
   QByteArray buf = cmd;
   buf += "\r\n";      // Yes, must use CR/LF - see http://cr.yp.to/ftp/request.html
   int num = m_control->write(buf);
+  while (m_control->bytesToWrite() && m_control->waitForBytesWritten())
+    ;
 
   // If we were able to successfully send the command, then we will
   // attempt to read the response. Otherwise, take action to re-attempt
@@ -757,8 +716,8 @@ int Ftp::ftpOpenPASVDataConnection()
   assert(m_data == NULL);       // ... but no data connection
 
   // Check that we can do PASV
-  const KSocketAddress &sa = m_control->peerAddress();
-  if (sa.family() != PF_INET)
+  QHostAddress addr = m_control->peerAddress();
+  if (addr.protocol() != QAbstractSocket::IPv4Protocol)
     return ERR_INTERNAL;       // no PASV for non-PF_INET connections
 
  if (m_extControl & pasvUnknown)
@@ -793,21 +752,17 @@ int Ftp::ftpOpenPASVDataConnection()
     return ERR_INTERNAL;
   }
 
-  // Make hostname and port number ...
-  const KInetSocketAddress sin = sa.asInet();
   // we ignore the host part on purpose for two reasons
   // a) it might be wrong anyway
   // b) it would make us being suceptible to a port scanning attack
-  KInetSocketAddress address(sin.nodeName(), i[4] << 8 | i[5]);
 
   // now connect the data socket ...
-  m_data = new KStreamSocket("PASV");
-  m_data->setBlocking(true);
-  m_data->setResolutionEnabled(false);
-  m_data->setTimeout(connectTimeout() * 1000);
+  quint16 port = i[4] << 8 | i[5];
+  m_data = KSocketFactory::synchronousConnectToHost("ftp-data", addr.toString(), port,
+                                                    connectTimeout() * 1000);
 
-  kDebug(7102) << "Connecting to " << address.toString() << endl;
-  return m_data->connect(address.nodeName(), address.serviceName()) ? 0 : ERR_INTERNAL;
+  kDebug(7102) << "Connecting to " << addr.toString() << "port " << port << endl;
+  return m_data->isOpen() ? 0 : ERR_INTERNAL;
 }
 
 /*
@@ -818,7 +773,7 @@ int Ftp::ftpOpenEPSVDataConnection()
   assert(m_control != NULL);    // must have control connection socket
   assert(m_data == NULL);       // ... but no data connection
 
-  const KInetSocketAddress& sa = m_control->peerAddress().asInet();
+  QHostAddress address = m_control->peerAddress();
   int portnum;
 
   if (m_extControl & epsvUnknown)
@@ -840,10 +795,9 @@ int Ftp::ftpOpenEPSVDataConnection()
   if ( !start || sscanf(start, "|||%d|", &portnum) != 1)
     return ERR_INTERNAL;
 
-  m_data = new KStreamSocket;
-  m_data->setResolutionEnabled(false);
-  m_data->setTimeout(connectTimeout() * 1000);
-  return m_data->connect(sa.nodeName(), QString::number(portnum));
+  m_data = KSocketFactory::synchronousConnectToHost("ftp-data", address.toString(), portnum,
+                                                    connectTimeout() * 1000);
+  return m_data->isOpen() ? 0 : ERR_INTERNAL;
 }
 
 /*
@@ -915,50 +869,44 @@ int Ftp::ftpOpenPortDataConnection()
   if (m_extControl & eprtUnknown)
     return ERR_INTERNAL;
 
-  KServerSocket server;
-  server.setBlocking(true);
-  server.setAcceptBuffered(false);
-  server.setResolutionEnabled(false);
-  server.setFamily(KResolver::InternetFamily);
-  server.setTimeout(connectTimeout() * 1000);
-
+  QTcpServer *server = KSocketFactory::listen("ftp-data");
+  if (!server->isListening())
   {
-    // yes, we are sure this is a KInetSocketAddress
-    KInetSocketAddress sin = m_control->localAddress().asInet();
-
-    // setting port to 0 will make us bind to a random, free port
-    server.bind(sin.nodeName(), QLatin1String("0"));
+    delete server;
+    return ERR_COULD_NOT_LISTEN;
   }
 
-  if (!server.listen(1))
-    return ERR_COULD_NOT_LISTEN;
-
-  KInetSocketAddress sin = server.localAddress().asInet();
+  server->setMaxPendingConnections(1);
 
   QString command;
-  if (sin.ianaFamily() == 1)
+  QHostAddress localAddress = m_control->localAddress();
+  if (localAddress.protocol() == QAbstractSocket::IPv4Protocol)
   {
     struct
     {
       quint32 ip4;
       quint16 port;
     } data;
-    data.ip4 = sin.ipAddress().IPv4Addr();
-    data.port = sin.port();
+    data.ip4 = localAddress.toIPv4Address();
+    data.port = server->serverPort();
 
     unsigned char *pData = reinterpret_cast<unsigned char*>(&data);
     command.sprintf("PORT %d,%d,%d,%d,%d,%d",pData[0],pData[1],pData[2],pData[3],pData[4],pData[5]);
   }
-  else
+  else if (localAddress.protocol() == QAbstractSocket::IPv6Protocol)
   {
-    command = QString("EPRT |%1|%2|%3|").arg(sin.ianaFamily()).arg(sin.nodeName()).arg(sin.port());
+    command = QString("EPRT |2|%2|%3|").arg(localAddress.toString()).arg(server->serverPort());
   }
 
   if( ftpSendCmd(command.toLatin1()) && (m_iRespType == 2) )
   {
-    m_data = server.accept();
+    server->waitForNewConnection(connectTimeout() * 1000);
+    m_data = server->nextPendingConnection();
+    delete server;
     return m_data ? 0 : ERR_COULD_NOT_CONNECT;
   }
+
+  delete server;
   return ERR_INTERNAL;
 }
 
@@ -1800,6 +1748,8 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
     // read the data and detect EOF or error ...
     if(iBlockSize+iBufferCur > (int)sizeof(buffer))
       iBlockSize = sizeof(buffer) - iBufferCur;
+    if (m_data->bytesAvailable() == 0)
+      m_data->waitForReadyRead();
     int n = m_data->read( buffer+iBufferCur, iBlockSize );
     if(n <= 0)
     {   // this is how we detect EOF in case of unknown size
@@ -2067,6 +2017,8 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
     if (result > 0)
     {
       m_data->write( buffer );
+      while (m_data->bytesToWrite() && m_data->waitForBytesWritten())
+        ;
       processed_size += result;
       processedSize (processed_size);
     }
