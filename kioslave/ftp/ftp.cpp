@@ -364,6 +364,8 @@ bool Ftp::ftpOpenControlConnection( const QString &host, int port )
   QString sErrorMsg;
 
   // now connect to the server and read the login message ...
+  if (port == 0)
+    port = 21;                  // default FTP port
   m_control = KSocketFactory::synchronousConnectToHost("ftp", host, port, connectTimeout() * 1000);
   int iErrorCode = m_control->isOpen() ? 0 : ERR_COULD_NOT_CONNECT;
 
@@ -758,10 +760,10 @@ int Ftp::ftpOpenPASVDataConnection()
 
   // now connect the data socket ...
   quint16 port = i[4] << 8 | i[5];
+  kDebug(7102) << "Connecting to " << addr.toString() << " port " << port << endl;
   m_data = KSocketFactory::synchronousConnectToHost("ftp-data", addr.toString(), port,
                                                     connectTimeout() * 1000);
 
-  kDebug(7102) << "Connecting to " << addr.toString() << "port " << port << endl;
   return m_data->isOpen() ? 0 : ERR_INTERNAL;
 }
 
