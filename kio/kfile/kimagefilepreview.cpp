@@ -44,7 +44,7 @@ KImageFilePreview::KImageFilePreview( QWidget *parent )
 
     imageLabel = new QLabel( this );
     imageLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
-    imageLabel->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred ) );
+    imageLabel->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
     vb->addWidget( imageLabel );
 
     QHBoxLayout *hb = new QHBoxLayout();
