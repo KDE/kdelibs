@@ -24,8 +24,8 @@ namespace DNSSD
 {
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
-			      const QString& domain)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port), d(0)
+			      const QString& domain, const QString& subtype)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port, subtype), d(0)
 {
 	if (domain.isNull())  m_domain="local.";
 }

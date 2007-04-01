@@ -67,7 +67,7 @@ public:
 		means local LAN
 	 */
 	explicit PublicService(const QString& name=QString(),const QString& type=QString(),
-		      unsigned int port=0,const QString& domain=QString());
+		      unsigned int port=0,const QString& domain=QString(), const QString& subtype=QString());
 
 	~PublicService();
 	

@@ -56,7 +56,7 @@ public:
 	/**
 	Creates unresolved remote service with given name, type and domain.
 	 */
-	RemoteService(const QString& name,const QString& type,const QString& domain);
+	RemoteService(const QString& name,const QString& type,const QString& domain, const QString& subtype=QString());
 	
 	virtual ~RemoteService();
 	

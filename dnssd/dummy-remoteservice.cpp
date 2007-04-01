@@ -29,8 +29,8 @@ RemoteService::RemoteService(const QString& label) : d(0)
 	decode(label);
 }
 
-RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
-		: ServiceBase(name, type, domain), d(0)
+RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain, const QString& subtype)
+		: ServiceBase(name, type, domain, subtype), d(0)
 {
 }
 

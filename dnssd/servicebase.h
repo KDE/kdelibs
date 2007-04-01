@@ -100,8 +100,8 @@ protected:
 	QString m_type;
 	QString m_domain;
 	QString m_hostName;
-	QString m_subtype;
 	unsigned short m_port;
+	QString m_subtype;
 
 	/**
 	Map of TXT properties

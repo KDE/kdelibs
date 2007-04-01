@@ -26,8 +26,8 @@ namespace DNSSD
 {
 
 ServiceBase::ServiceBase(const QString& name, const QString& type, const QString& domain,
-			 const QString& host, unsigned short port) : 
-    		m_serviceName(name), m_type(type), m_domain(domain), m_hostName(host), m_port(port), d(0)
+			 const QString& host, unsigned short port, const QString& subtype) : 
+    		m_serviceName(name), m_type(type), m_domain(domain), m_hostName(host), m_port(port), m_subtype(subtype), d(0)
 {}
 
 ServiceBase::~ServiceBase()
