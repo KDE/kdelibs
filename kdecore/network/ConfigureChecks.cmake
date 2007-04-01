@@ -6,6 +6,20 @@ include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CheckStructMember)
 
+macro_push_required_vars()
+  set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDE_DIR}")
+  check_cxx_source_compiles(
+"#include <QtNetwork/QSslSocket>
+int main()
+{
+    QSslSocket *socket;
+    return 0;
+}" HAVE_QSSLSOCKET)
+  if (NOT HAVE_QSSLSOCKET)
+    message(SEND_ERROR "KDE Requires Qt to be built with SSL support")
+  endif (NOT HAVE_QSSLSOCKET)
+macro_pop_required_vars()
+
 check_include_files(idna.h        HAVE_IDNA_H)
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
 
