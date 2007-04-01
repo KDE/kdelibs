@@ -14,12 +14,10 @@ install(TARGETS ktradertest DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### TESTS ###############
 
-if(KDE4_BUILD_TESTS)
-
 MACRO(KIO_BUILD_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
-               kde4_add_executable(${_testname} NOGUI RUN_UNINSTALLED ${_testname}.cpp)
+               kde4_add_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KIO_BUILD_TESTS)
@@ -74,5 +72,3 @@ KIO_EXECUTE_TESTS(
 )
 
 ###########  ###############
-
-endif(KDE4_BUILD_TESTS)
