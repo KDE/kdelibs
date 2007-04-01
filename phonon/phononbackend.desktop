@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=PhononBackend
 Name=KDE Multimedia Backend
 Name[ja]=KDE マルチメディアバックエンド
+Name[nl]=KDE-multimedia-backend
 Name[sv]=KDE:s multimediagränssnitt
 Name[x-test]=xxKDE Multimedia Backendxx
 

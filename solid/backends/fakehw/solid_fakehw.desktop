@@ -9,5 +9,6 @@ Name=FakeHw
 Name[sv]=Testhårdvara
 Name[x-test]=xxFakeHwxx
 Comment=Fake Hardware discovery
+Comment[nl]=Nep hardware-detectie
 Comment[sv]=Upptäckt av testhårdvara
 Comment[x-test]=xxFake Hardware discoveryxx

@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=KCModule
 Name=KDE Configuration Module
 Name[ja]=KDE 設定モジュール
+Name[nl]=KDE-configuratiemodule
 Name[sv]=KDE-inställningsmodul
 Name[x-test]=xxKDE Configuration Modulexx
 

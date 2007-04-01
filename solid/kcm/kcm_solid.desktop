@@ -14,10 +14,12 @@ Name=Solid
 Name[x-test]=xxSolidxx
 
 Comment=Hardware Integration Configuration
+Comment[nl]=Hardware-integratie instellen
 Comment[sv]=Inställning av hårdvaruintegrering
 Comment[x-test]=xxHardware Integration Configurationxx
 
 Keywords=Solid,Hardware,Power,Network,Discovery,Management
+Keywords[nl]=Solid,Hardware,Power,Network,Discovery,Management,Beheer,Netwerk,Detectie
 Keywords[sv]=Solid,hårdvara,ström,nätverk,upptäcka,hantering
 Keywords[x-test]=xxSolid,Hardware,Power,Network,Discovery,Managementxx
 

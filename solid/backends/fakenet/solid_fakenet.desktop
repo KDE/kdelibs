@@ -9,5 +9,6 @@ Name=Fake Net
 Name[sv]=Testnät
 Name[x-test]=xxFake Netxx
 Comment=Fake Network Management
+Comment[nl]=Nep netwerkbeheer
 Comment[sv]=Hantering av testnätverk
 Comment[x-test]=xxFake Network Managementxx

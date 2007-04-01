@@ -5,6 +5,7 @@ X-KDE-ServiceType=KFileWrite
 
 Comment=KFileWrite plugin
 Comment[ja]=KFileWrite プラグイン
+Comment[nl]=KFileWrite-plugin
 Comment[sv]=KFileWrite-insticksprogram
 
 [PropertyDef::MetaDataKeys]

@@ -12,5 +12,6 @@ Name=Fake
 Name[sv]=Test
 Name[x-test]=xxFakexx
 Comment=Testing Backend
+Comment[nl]=Test-backend
 Comment[sv]=Testgränssnitt
 Comment[x-test]=xxTesting Backendxx
