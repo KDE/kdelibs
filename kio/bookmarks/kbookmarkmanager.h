@@ -40,7 +40,7 @@ class QDBusMessage;
  * A sample file looks like this :
  * \code
  * <xbel>
- *   <bookmark href="http://developer.kde.org"><title>Developer Web Site</title></bookmark>
+ *   <bookmark href="http://techbase.kde.org"><title>Developer Web Site</title></bookmark>
  *   <folder folded="no">
  *     <title>Title of this folder</title>
  *     <bookmark icon="kde" href="http://www.kde.org"><title>KDE Web Site</title></bookmark>
