@@ -36,7 +36,6 @@ class KGestureMap : public QObject
     Q_OBJECT
 public:
     static KGestureMap *self();
-    virtual ~KGestureMap();
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
     void addGesture(const KShapeGesture &gesture, KAction *kact);
@@ -50,7 +49,9 @@ private Q_SLOTS:
     void stopAcquisition();
 
 private:
+    friend class KGestureMapContainer;
     KGestureMap();
+    virtual ~KGestureMap();
 
     friend class KApplication;
     //intended to be used at application initialization
@@ -69,8 +70,6 @@ private:
 
     KShapeGesture m_shapeGesture;
     KRockerGesture m_rockerGesture;
-
-    static KGestureMap *s_instance;
 };
 
 #endif //KGESTUREMAP_H

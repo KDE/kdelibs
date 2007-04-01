@@ -21,7 +21,7 @@
 #include <kaction.h>
 #include <qevent.h>
 
-#include <kstaticdeleter.h>
+#include <kglobal.h>
 
 #include <kdebug.h>
 
@@ -33,8 +33,13 @@
  code.
  */
 
-KGestureMap *KGestureMap::s_instance = 0;
-static KStaticDeleter<KGestureMap> staticDeleter;
+class KGestureMapContainer {
+public:
+    KGestureMap gestureMap;
+};
+
+
+K_GLOBAL_STATIC(KGestureMapContainer, g_instance)
 
 
 KGestureMap::~KGestureMap()
@@ -44,10 +49,7 @@ KGestureMap::~KGestureMap()
 
 KGestureMap *KGestureMap::self()
 {
-    if (!s_instance)
-        staticDeleter.setObject(s_instance, new KGestureMap());
-
-    return s_instance;
+    return &g_instance->gestureMap;
 }
 
 
