@@ -22,8 +22,6 @@
 #ifndef KJS_JS_IMMEDIATE_H
 #define KJS_JS_IMMEDIATE_H
 
-#include <kjs/kjs_export.h>
-
 #include "global.h"
 #include "JSType.h"
 #include <wtf/Assertions.h>
