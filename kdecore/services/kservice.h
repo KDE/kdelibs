@@ -98,7 +98,7 @@ public:
      * @return the type of the service ("Application" or "Service")
      * @deprecated use isApplication()
      */
-    KDE_DEPRECATED const QString &type() const;
+    KDE_DEPRECATED QString type() const;
 
     /**
      * Returns the name of the service.
@@ -112,20 +112,20 @@ public:
      * @return the command that the service executes,
      *         or QString() if not set
      */
-    const QString &exec() const;
+    QString exec() const;
     /**
      * Returns the name of the service's library.
      * @return the name of the library that contains the service's
      *         implementation, or QString() if not set
      */
-    const QString &library() const;
+    QString library() const;
 
     /**
      * Returns the name of the icon.
      * @return the icon associated with the service,
      *         or QString() if not set
      */
-    const QString &icon() const;
+    QString icon() const;
     /**
      * Checks whethe the service should be run in a terminal.
      * @return true if the service is to be run in a terminal.
@@ -140,7 +140,7 @@ public:
      * @return the terminal options,
      *         or QString() if not set
      */
-    const QString &terminalOptions() const;
+    QString terminalOptions() const;
     /**
      * Checks whether the service runs with a different user id.
      * @return true if the service has to be run under a different uid.
@@ -167,7 +167,7 @@ public:
      * @return the path of the service's desktop file,
      *         or QString() if not set
      */
-    const QString &desktopEntryPath() const;
+    QString desktopEntryPath() const;
 
     /**
      * Returns the filename of the service desktop entry without any
@@ -175,14 +175,14 @@ public:
      * @return the name of the desktop entry without path or extension,
      *         or QString() if not set
      */
-    const QString &desktopEntryName() const;
+    QString desktopEntryName() const;
 
     /**
      * Returns the menu ID of the service desktop entry.
      * The menu ID is used to add or remove the entry to a menu.
      * @return the menu ID
      */
-    const QString &menuId() const;
+    QString menuId() const;
 
     /**
      * Returns a normalized ID suitable for storing in configuration files.
@@ -190,7 +190,7 @@ public:
      * back to desktopEntryPath()
      * @return the storage ID
      */
-    const QString &storageId() const;
+    QString storageId() const;
 
     /**
      * Describes the DBUS Startup type of the service.
@@ -217,14 +217,14 @@ public:
      * @return the working directory to run the program in,
      *         or QString() if not set
      */
-    const QString &path() const;
+    QString path() const;
 
     /**
      * Returns the descriptive comment for the service, if there is one.
      * @return the descriptive comment for the service, or QString()
      *         if not set
      */
-    const QString &comment() const;
+    QString comment() const;
 
     /**
      * Returns the generic name for the service, if there is one
@@ -232,7 +232,7 @@ public:
      * @return the generic name,
      *         or QString() if not set
      */
-    const QString &genericName() const;
+    QString genericName() const;
 
     /**
      * Returns the untranslated (US English) generic name
@@ -247,13 +247,13 @@ public:
      * Returns a list of descriptive keywords the service, if there are any.
      * @return the list of keywords
      */
-    const QStringList &keywords() const;
+    QStringList keywords() const;
 
     /**
      * Returns a list of VFolder categories.
      * @return the list of VFolder categories
      */
-    const QStringList &categories() const;
+    QStringList categories() const;
 
     /**
      * Returns the service types that this service supports.
@@ -261,7 +261,7 @@ public:
      * Note that this doesn't include inherited servicetypes or mimetypes,
      * only the service types listed in the .desktop file.
      */
-    const QStringList &serviceTypes() const;
+    QStringList serviceTypes() const;
 
     /**
      * Checks whether the service supports this service type

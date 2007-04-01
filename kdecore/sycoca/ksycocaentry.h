@@ -77,7 +77,7 @@ public:
     * The path can be absolute or relative.
     * The corresponding factory should know relative to what.
     */
-   const QString &entryPath() const;
+   QString entryPath() const;
 
    /**
     * @return true if valid
