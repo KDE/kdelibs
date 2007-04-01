@@ -467,7 +467,7 @@ class KIO_EXPORT KArchiveFile : public KArchiveEntry
 {
 public:
     /**
-     * Creates a new file entry.
+     * Creates a new file entry. Do not call this, KArchive takes care of it.
      * @param archive the entries archive
      * @param name the name of the entry
      * @param access the permissions in unix format
@@ -482,6 +482,9 @@ public:
                   const QString& user, const QString& group, const QString &symlink,
                   qint64 pos, qint64 size );
 
+    /**
+     * Destructor. Do not call this, KArchive takes care of it.
+     */
     virtual ~KArchiveFile();
 
     /**

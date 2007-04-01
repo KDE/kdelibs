@@ -167,16 +167,22 @@ private:
 
 
 /**
- * @internal
+ * A KZipFileEntry represents an file in a zip archive.
  */
 class KIO_EXPORT KZipFileEntry : public KArchiveFile
 {
 public:
+    /**
+     * Creates a new zip file entry. Do not call this, KZip takes care of it.
+     */
     KZipFileEntry( KZip* zip, const QString& name, int access, int date,
                    const QString& user, const QString& group, const QString& symlink,
                    const QString& path, qint64 start, qint64 uncompressedSize,
                    int encoding, qint64 compressedSize);
 
+    /**
+     * Destructor. Do not call this.
+     */
     ~KZipFileEntry();
 
     int encoding() const;
