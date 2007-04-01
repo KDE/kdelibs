@@ -21,7 +21,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
- ${CMAKE_CURRENT_SOURCE_DIR}/liveui
  ${CMAKE_CURRENT_SOURCE_DIR}/kplot
  ${CMAKE_CURRENT_BINARY_DIR}/jobs
  ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
@@ -29,7 +28,6 @@ include_directories(
 
 add_subdirectory( about )
 add_subdirectory( tests )
-add_subdirectory( liveui/tests )
 add_subdirectory( sonnet/tests )
 
 ########### next target ###############
@@ -198,7 +196,6 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguibuilder.cpp
- liveui/kliveui.cpp
  kplot/kplotwidget.cpp
  kplot/kplotobject.cpp
  kplot/kplotaxis.cpp
@@ -405,7 +402,6 @@ install( FILES
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
- liveui/kliveui.h
  kplot/kplotwidget.h
  kplot/kplotobject.h
  kplot/kplotaxis.h
