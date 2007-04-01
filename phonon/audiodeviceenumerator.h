@@ -80,12 +80,12 @@ namespace Phonon
             void deviceUnplugged(const AudioDevice &device);
 
         protected:
-            AudioDeviceEnumerator(QObject *parent = 0);
+            AudioDeviceEnumerator(AudioDeviceEnumeratorPrivate *);
             ~AudioDeviceEnumerator();
             AudioDevice *deviceFor(const QString &internalId);
 
         private:
-            AudioDeviceEnumeratorPrivate *d;
+            AudioDeviceEnumeratorPrivate *const d;
             Q_PRIVATE_SLOT(d, void _k_deviceAdded(const QString &))
             Q_PRIVATE_SLOT(d, void _k_deviceRemoved(const QString &))
     };

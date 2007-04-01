@@ -32,9 +32,14 @@ namespace Phonon
 
 K_GLOBAL_STATIC(AudioDeviceEnumeratorPrivate, audioDeviceEnumeratorPrivate)
 
-AudioDeviceEnumeratorPrivate::AudioDeviceEnumeratorPrivate()
+AudioDeviceEnumerator::AudioDeviceEnumerator(AudioDeviceEnumeratorPrivate *dd)
+    : d(dd)
 {
-    q.d = this;
+}
+
+AudioDeviceEnumeratorPrivate::AudioDeviceEnumeratorPrivate()
+    : q(this)
+{
     config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals);
     findDevices();
     QObject::connect(&Solid::DeviceManager::self(), SIGNAL(deviceAdded(const QString &)), &q, SLOT(_k_deviceAdded(const QString &)));
@@ -57,11 +62,6 @@ AudioDevice *AudioDeviceEnumerator::deviceFor(const QString &internalId)
     return 0;
 }
 */
-
-AudioDeviceEnumerator::AudioDeviceEnumerator(QObject *parent)
-    : QObject(parent)
-{
-}
 
 void AudioDeviceEnumeratorPrivate::findDevices()
 {
