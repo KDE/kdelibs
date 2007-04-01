@@ -18,19 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config-dnssd.h>
-
 #include "publicservice.h"
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <qapplication.h>
-#include <network/ksocketaddress.h>
-#include <kurl.h>
-#include <unistd.h>
-#include "sdevent.h"
-#include "responder.h"
-#include "settings.h"
 
 namespace DNSSD
 {

@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "responder.h"
-#include <qapplication.h>
+#include "mdnsd-responder.h"
+#include <QtCore/QCoreApplication>
 #include <kidna.h>
 
 // dns_sd.h API should care about proper encoding of non-latin1 characters
@@ -41,13 +41,11 @@ void Responder::setRef(DNSServiceRef ref)
 	m_running = false;
 	m_ref = ref;
 	if (m_ref == 0 ) return;
-#ifdef HAVE_DNSSD
 	int fd = DNSServiceRefSockFD(ref);
 	if (fd == -1) return;
 	m_socket = new QSocketNotifier(fd,QSocketNotifier::Read,this);
 	connect(m_socket,SIGNAL(activated(int)),this,SLOT(process()));
 	m_running = true;
-#endif
 }
 Responder::~Responder()
 {
@@ -58,9 +56,7 @@ void Responder::stop()
 {
 	if (m_socket) delete m_socket;
 	m_socket = 0;
-#ifdef HAVE_DNSSD
 	if (m_ref) DNSServiceRefDeallocate(m_ref);
-#endif
 	m_ref = 0;
 	m_running = false;
 }
@@ -68,9 +64,7 @@ void Responder::stop()
 
 void Responder::process()
 {
-#ifdef HAVE_DNSSD
 	if ( DNSServiceProcessResult(m_ref) != kDNSServiceErr_NoError) stop();
-#endif
 }
 
 bool Responder::isRunning() const
@@ -105,4 +99,4 @@ QString DNSToDomain(const char* domain)
 
 
 }
-#include "responder.moc"
+#include "mdnsd-responder.moc"

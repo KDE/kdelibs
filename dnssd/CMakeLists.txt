@@ -10,12 +10,12 @@ if (HAVE_DNSSD)
   include_directories( ${DNSSD_INCLUDE_DIR} )
   set(kdnssd_LIB_SRCS
    servicebase.cpp
-   domainbrowser.cpp
-   remoteservice.cpp
-   publicservice.cpp
-   responder.cpp
-   servicebrowser.cpp
-   query.cpp
+   mdnsd-domainbrowser.cpp
+   mdnsd-remoteservice.cpp
+   mdnsd-publicservice.cpp
+   mdnsd-responder.cpp
+   mdnsd-servicebrowser.cpp
+   mdnsd-query.cpp
    )
 else (HAVE_DNSSD)
   set(kdnssd_LIB_SRCS

@@ -18,40 +18,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
-#include "domainbrowser.h"
-#include "servicebrowser.h"
-#include <QHash>
+#ifndef DNSSDDOMAINBROWSER_P_H
+#define DNSSDDOMAINBROWSER_P_H
 
 namespace DNSSD
 {
 
-const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
-
-
-ServiceBrowser::ServiceBrowser(const QString&,bool,const QString&) : d(0)
-{}
-
-
-ServiceBrowser::State ServiceBrowser::isAvailable()
+class DomainBrowserPrivate : public QObject
 {
-	return Unsupported;
-}
-ServiceBrowser::~ ServiceBrowser()
-{
-}
+Q_OBJECT
+public:
+	DomainBrowserPrivate(DomainBrowser* parent): m_parent(parent) {}
+	DomainBrowser* m_parent;
+	QStringList m_domains;
+	bool m_running;
+public Q_SLOTS:
+	void gotNewDomain(DNSSD::RemoteService::Ptr);
+	void gotRemoveDomain(DNSSD::RemoteService::Ptr);
+	void domainListChanged();
 
-void ServiceBrowser::startBrowse()
-{}
-
-QList<RemoteService::Ptr> ServiceBrowser::services() const
-{
-	return QList<RemoteService::Ptr>();
-}
-
-void ServiceBrowser::virtual_hook(int, void*)
-{}
+};
 
 }
-
-#include "servicebrowser.moc"
+#endif

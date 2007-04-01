@@ -20,9 +20,9 @@
 
 #include <QtCore/QStringList>
 #include "domainbrowser.h"
-#include "query.h"
+#include "mdnsd-query.h"
 #include "servicebrowser.h"
-#include "servicebrowser_p.h"
+#include "mdnsd-servicebrowser_p.h"
 #include <config-dnssd.h>
 #include <QHash>
 #include <dns_sd.h>
@@ -138,4 +138,4 @@ QList<RemoteService::Ptr>::Iterator ServiceBrowserPrivate::findDuplicate(RemoteS
 }
 
 #include "servicebrowser.moc"
-#include "servicebrowser_p.moc"
+#include "mdnsd-servicebrowser_p.moc"

@@ -18,18 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config-dnssd.h>
-
-#include "publicservice.h"
-#include <sys/types.h>
+#include <QtCore/QCoreApplication>
 #include <netinet/in.h>
-#include <sys/socket.h>
-#include <qapplication.h>
-#include <network/ksocketaddress.h>
-#include <kurl.h>
-#include <unistd.h>
-#include "sdevent.h"
-#include "responder.h"
+#include "publicservice.h"
+#include "mdnsd-sdevent.h"
+#include "mdnsd-responder.h"
 #include "settings.h"
 
 namespace DNSSD
@@ -152,10 +145,10 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 	QObject *obj = reinterpret_cast<QObject*>(context);
 	if (errorCode != kDNSServiceErr_NoError) {
 		ErrorEvent err;
-		QApplication::sendEvent(obj, &err);
+		QCoreApplication::sendEvent(obj, &err);
 	} else {
 		PublishEvent pev(QString::fromUtf8(name));
-		QApplication::sendEvent(obj, &pev);
+		QCoreApplication::sendEvent(obj, &pev);
 	}
 }
 

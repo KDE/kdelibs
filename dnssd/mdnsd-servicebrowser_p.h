@@ -18,40 +18,38 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
-#include "domainbrowser.h"
-#include "servicebrowser.h"
-#include <QHash>
+#ifndef DNSSDSERVICEBROWSER_P_H
+#define DNSSDSERVICEBROWSER_P_H
+
+#include <QtCore/QObject>
 
 namespace DNSSD
 {
 
-const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
-
-
-ServiceBrowser::ServiceBrowser(const QString&,bool,const QString&) : d(0)
-{}
-
-
-ServiceBrowser::State ServiceBrowser::isAvailable()
+class ServiceBrowserPrivate : public QObject
 {
-	return Unsupported;
+Q_OBJECT
+public:
+	ServiceBrowserPrivate(ServiceBrowser* parent) : QObject(), m_running(false), m_resolver(0), m_parent(parent)
+	{}
+	QList<RemoteService::Ptr> m_services;
+	QList<RemoteService::Ptr> m_duringResolve;
+	QString m_type;
+	QString m_domain;
+	bool m_autoResolve;
+	bool m_running;
+	bool m_finished;
+	Query* m_resolver;
+	ServiceBrowser* m_parent;
+
+	QList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
+private Q_SLOTS:
+	void queryFinished();
+	void serviceResolved(bool success);
+	void gotNewService(DNSSD::RemoteService::Ptr);
+	void gotRemoveService(DNSSD::RemoteService::Ptr);
+};
+
 }
-ServiceBrowser::~ ServiceBrowser()
-{
-}
 
-void ServiceBrowser::startBrowse()
-{}
-
-QList<RemoteService::Ptr> ServiceBrowser::services() const
-{
-	return QList<RemoteService::Ptr>();
-}
-
-void ServiceBrowser::virtual_hook(int, void*)
-{}
-
-}
-
-#include "servicebrowser.moc"
+#endif

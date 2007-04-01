@@ -18,10 +18,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "query.h"
-#include "responder.h"
+#include "mdnsd-query.h"
+#include "mdnsd-responder.h"
 #include "remoteservice.h"
-#include "sdevent.h"
+#include "mdnsd-sdevent.h"
 #include <qapplication.h>
 #include <qtimer.h>
 
@@ -30,10 +30,8 @@
 
 namespace DNSSD
 {
-#ifdef HAVE_DNSSD
 void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode,
 		     const char *serviceName, const char *regtype, const char *replyDomain, void *context);
-#endif
 class QueryPrivate : public Responder
 {
 public:
@@ -78,12 +76,10 @@ void Query::startQuery()
 {
 	if (d->isRunning()) return;
 	d->m_finished = false;
-#ifdef HAVE_DNSSD
 	DNSServiceRef ref;
 	if (DNSServiceBrowse(&ref,0,0, d->m_type.toAscii().constData(),
 	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
-#endif
 	if (!d->isRunning()) emit finished();
 		else d->timeout.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAN : TIMEOUT_WAN);
 }
@@ -115,7 +111,6 @@ void Query::timeout()
 	d->m_finished=true;
 	emit finished();
 }
-#ifdef HAVE_DNSSD
 void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode,
 		     const char *serviceName, const char *regtype, const char *replyDomain,
 		     void *context)
@@ -131,6 +126,5 @@ void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceE
 		QApplication::sendEvent(obj, &arev);
 	}
 }
-#endif
 }
-#include "query.moc"
+#include "mdnsd-query.moc"

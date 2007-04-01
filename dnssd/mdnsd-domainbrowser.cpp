@@ -20,10 +20,10 @@
 
 #include <QtCore/QStringList>
 #include "domainbrowser.h"
-#include "domainbrowser_p.h"
+#include "mdnsd-domainbrowser_p.h"
 #include "settings.h"
 #include "remoteservice.h"
-#include "query.h"
+#include "mdnsd-query.h"
 #include <QHash>
 #include <QtDBus/QtDBus>
 
@@ -102,4 +102,4 @@ bool DomainBrowser::isRunning() const
 
 }
 #include "domainbrowser.moc"
-#include "domainbrowser_p.moc"
+#include "mdnsd-domainbrowser_p.moc"
