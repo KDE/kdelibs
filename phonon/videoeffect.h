@@ -20,15 +20,17 @@
 #define Phonon_VIDEOEFFECT_H
 
 #include "base.h"
+#include "effect.h"
 #include "phonondefs.h"
 #include <QObject>
-#include "effect.h"
 #include "objectdescription.h"
 
 class QString;
+template<class T> class QList;
 
 namespace Phonon
 {
+	class EffectParameter;
 	class VideoEffectPrivate;
 
 	/**
@@ -61,13 +63,28 @@ namespace Phonon
 
 		public:
 			/**
-			 * Standard QObject constructor.
-			 *
+             * QObject constructor.
+             *
+             * \param type A VideoEffectDescription object to determine the
+             * type of effect. See \ref
+             * BackendCapabilities::availableVideoEffects().
 			 * \param parent QObject parent
 			 */
             explicit VideoEffect(const VideoEffectDescription &type, QObject *parent = 0);
 
+            /**
+             * Returns the type of this effect. This is the same type as was
+             * passed to the constructor.
+             */
 			VideoEffectDescription type() const;
+
+            /**
+             * Returns a list of parameters that this effect provides to control
+             * its behaviour.
+             *
+             * \see EffectParameter
+             * \see EffectWidget
+             */
 			virtual QList<EffectParameter> parameterList() const;
 
 		protected:

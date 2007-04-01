@@ -26,7 +26,6 @@
 #include "objectdescription.h"
 
 class QString;
-class QStringList;
 template<class T> class QList;
 
 namespace Phonon
@@ -64,13 +63,28 @@ namespace Phonon
 
 		public:
 			/**
-			 * Standard QObject constructor.
-			 *
+             * QObject constructor.
+             *
+             * \param type An AudioEffectDescription object to determine the
+             * type of effect. See \ref
+             * BackendCapabilities::availableAudioEffects().
 			 * \param parent QObject parent
 			 */
             explicit AudioEffect(const AudioEffectDescription &type, QObject *parent = 0);
 
+            /**
+             * Returns the type of this effect. This is the same type as was
+             * passed to the constructor.
+             */
 			AudioEffectDescription type() const;
+
+            /**
+             * Returns a list of parameters that this effect provides to control
+             * its behaviour.
+             *
+             * \see EffectParameter
+             * \see EffectWidget
+             */
 			virtual QList<EffectParameter> parameterList() const;
 
 		protected:
