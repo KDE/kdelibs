@@ -27,8 +27,6 @@
 #include <kimagefilepreview.h>
 
 #include <qlayout.h>
-#include <qstring.h>
-#include <qstringlist.h>
 #include <qimage.h>
 #include <qpixmap.h>
 #include <qlabel.h>
@@ -36,7 +34,6 @@
 #include <qtimer.h>
 #include <qradiobutton.h>
 #include <qfileinfo.h>
-#include <qtoolbutton.h>
 #include <qprogressbar.h>
 #include <ksvgrenderer.h>
 
@@ -184,9 +181,9 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
 	}
 	QPixmap pm = QPixmap::fromImage(img);
 	QFileInfo fi(*it);
-	QListWidgetItem *item = new QListWidgetItem(pm, fi.baseName(), q);
+        QListWidgetItem *item = new QListWidgetItem(pm, fi.completeBaseName(), q);
 	item->setData(Qt::UserRole, *it);
-        item->setToolTip(fi.baseName());
+        item->setToolTip(fi.completeBaseName());
     }
 
     // enable updates since we have to draw the whole view now
@@ -224,6 +221,7 @@ class KIconDialog::KIconDialogPrivate
 	m_bLockUser = false;
 	m_bLockCustomDir = false;
 	searchLine = 0;
+        mNumOfSteps = 1;
     }
     ~KIconDialogPrivate() {}
 
@@ -251,6 +249,7 @@ class KIconDialog::KIconDialogPrivate
     QPushButton *mpBrowseBut;
     QRadioButton *mpRb1, *mpRb2;
     QProgressBar *mpProgress;
+    int mNumOfSteps;
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
     int mNumContext;
@@ -303,6 +302,7 @@ void KIconDialog::KIconDialogPrivate::init()
     q->setMainWidget(main);
 
     QVBoxLayout *top = new QVBoxLayout(main);
+    top->setMargin(0);
 
     QGroupBox *bgroup = new QGroupBox(main);
     bgroup->setTitle(i18n("Icon Source"));
@@ -641,7 +641,7 @@ void KIconDialog::KIconDialogPrivate::_k_slotStartLoading(int steps)
 	mpProgress->hide();
     else
     {
-        mpProgress->setRange(0, steps);
+        mNumOfSteps = steps;
         mpProgress->setValue(0);
         mpProgress->show();
     }
@@ -649,7 +649,7 @@ void KIconDialog::KIconDialogPrivate::_k_slotStartLoading(int steps)
 
 void KIconDialog::KIconDialogPrivate::_k_slotProgress(int p)
 {
-    mpProgress->setValue(p);
+    mpProgress->setValue(static_cast<int>(100.0 * (double)p / (double)mNumOfSteps));
     // commented out the following since setProgress already paints ther
     // progress bar. ->repaint() only makes it flicker
     //mpProgress->repaint();
@@ -657,6 +657,7 @@ void KIconDialog::KIconDialogPrivate::_k_slotProgress(int p)
 
 void KIconDialog::KIconDialogPrivate::_k_slotFinished()
 {
+    mNumOfSteps = 1;
     mpProgress->hide();
 }
 
