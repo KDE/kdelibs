@@ -32,7 +32,6 @@
 
 namespace DNSSD
 {
-#ifdef HAVE_DNSSD
 void resolve_callback    (    DNSServiceRef,
 				DNSServiceFlags,
 				uint32_t,
@@ -45,7 +44,6 @@ void resolve_callback    (    DNSServiceRef,
 				void                                *context
 			 );
 
-#endif
 class RemoteServicePrivate : public Responder
 {
 public:
@@ -85,12 +83,10 @@ void RemoteService::resolveAsync()
 	if (d->isRunning()) return;
 	d->m_resolved = false;
 	kDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
-#ifdef HAVE_DNSSD
 	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,m_serviceName.toUtf8(), m_type.toAscii().constData(), 
  		domainToDNS(m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(d))
 		== kDNSServiceErr_NoError) d->setRef(ref);
-#endif
 	if (!d->isRunning()) emit resolved(false);
 }
 
@@ -141,7 +137,6 @@ QDataStream & operator>> (QDataStream & s, RemoteService & a)
 }
 
 
-#ifdef HAVE_DNSSD
 void resolve_callback    (    DNSServiceRef,
 			      DNSServiceFlags,
 			      uint32_t,
@@ -175,7 +170,6 @@ void resolve_callback    (    DNSServiceRef,
 	ResolveEvent rev(DNSToDomain(hosttarget),ntohs(port),map);
 	QApplication::sendEvent(obj, &rev);
 }
-#endif
 
 
 }

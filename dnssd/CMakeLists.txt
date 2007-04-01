@@ -5,16 +5,10 @@ macro_optional_find_package(DNSSD)
 macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
-
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 if (HAVE_DNSSD)
   include_directories( ${DNSSD_INCLUDE_DIR} )
-endif (HAVE_DNSSD)
-
-
-########### next target ###############
-
-set(kdnssd_LIB_SRCS
+  set(kdnssd_LIB_SRCS
    servicebase.cpp
    domainbrowser.cpp
    remoteservice.cpp
@@ -23,6 +17,20 @@ set(kdnssd_LIB_SRCS
    servicebrowser.cpp
    query.cpp
    )
+else (HAVE_DNSSD)
+  set(kdnssd_LIB_SRCS
+   servicebase.cpp
+   dummy-domainbrowser.cpp
+   dummy-remoteservice.cpp
+   dummy-publicservice.cpp
+   dummy-servicebrowser.cpp
+   )
+
+endif (HAVE_DNSSD)
+
+
+########### next target ###############
+
 
 
 kde4_automoc(${kdnssd_LIB_SRCS})

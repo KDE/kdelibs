@@ -82,7 +82,7 @@ public:
 	/**
 	Returns list of services 
 	 */
-	const QList<RemoteService::Ptr>& services() const;
+	QList<RemoteService::Ptr> services() const;
 
 	/**
 	Starts browsing for services.

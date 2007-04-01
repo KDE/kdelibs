@@ -49,7 +49,7 @@ public:
 	/**
 	Current list of domains to browse.
 	 */
-	const QStringList& domains() const;
+	QStringList domains() const;
 
 	/**
 	Starts browsing. To stop destroy this object.

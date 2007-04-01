@@ -25,9 +25,7 @@
 #include "servicebrowser_p.h"
 #include <config-dnssd.h>
 #include <QHash>
-#ifdef HAVE_DNSSD
 #include <dns_sd.h>
-#endif
 
 namespace DNSSD
 {
@@ -46,15 +44,11 @@ ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QStrin
 
 ServiceBrowser::State ServiceBrowser::isAvailable()
 {
-#ifdef HAVE_DNSSD
 //	DNSServiceRef ref;
 //	bool ok (DNSServiceCreateConnection(&ref)==kDNSServiceErr_NoError);
 //	if (ok) DNSServiceRefDeallocate(ref);
 //	return (ok) ? Working : Stopped;
 	return Working;
-#else
-	return Unsupported;
-#endif
 }
 ServiceBrowser::~ ServiceBrowser()
 {
@@ -123,7 +117,7 @@ void ServiceBrowserPrivate::queryFinished()
 }
 
 
-const QList<RemoteService::Ptr>& ServiceBrowser::services() const
+QList<RemoteService::Ptr> ServiceBrowser::services() const
 {
 	return d->m_services;
 }

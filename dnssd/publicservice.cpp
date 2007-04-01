@@ -34,10 +34,8 @@
 
 namespace DNSSD
 {
-#ifdef HAVE_DNSSD
 void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType errorCode, const char *name,
 		       const char*, const char*, void *context);
-#endif
 class PublicServicePrivate : public Responder
 {
 public:
@@ -129,7 +127,6 @@ void PublicService::stop()
 void PublicService::publishAsync()
 {
 	if (d->isRunning()) stop();
-#ifdef HAVE_DNSSD
 	TXTRecordRef txt;
 	TXTRecordCreate(&txt,0,0);
 	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
@@ -146,11 +143,9 @@ void PublicService::publishAsync()
 	    htons(m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
 	    reinterpret_cast<void*>(d)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);
-#endif
 	if (!d->isRunning()) emit published(false);
 }
 
-#ifdef HAVE_DNSSD
 void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType errorCode, const char *name,
 		       const char*, const char*, void *context)
 {
@@ -163,7 +158,6 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 		QApplication::sendEvent(obj, &pev);
 	}
 }
-#endif
 
 void PublicServicePrivate::customEvent(QEvent* event)
 {

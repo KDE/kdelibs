@@ -90,7 +90,7 @@ void DomainBrowserPrivate::domainListChanged()
 	if (was_running) m_parent->startBrowse();
 }
 
-const QStringList& DomainBrowser::domains() const
+QStringList DomainBrowser::domains() const
 {
 	return d->m_domains;
 }
