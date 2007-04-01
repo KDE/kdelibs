@@ -16,19 +16,12 @@
 
 #include <kio/kio_export.h>
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qpushbutton.h>
+#include <QtCore/QStringList>
+#include <QtGui/QPushButton>
 
-#include <kicontheme.h>
 #include <kdialog.h>
 #include <klistwidget.h>
 
-class QComboBox;
-class QTimer;
-class QKeyEvent;
-class QRadioButton;
-class QProgressBar;
 class KIconLoader;
 
 /**
@@ -39,7 +32,7 @@ class KIO_EXPORT KIconCanvas: public KListWidget
     Q_OBJECT
 
 public:
-    KIconCanvas(QWidget *parent=0L);
+    explicit KIconCanvas(QWidget *parent=0L);
     ~KIconCanvas();
 
     /**
@@ -65,18 +58,14 @@ Q_SIGNALS:
     void progress(int);
     void finished();
 
-private Q_SLOTS:
-    void slotLoadFiles();
-    void slotCurrentChanged(QListWidgetItem *item);
-
-private:
-    QStringList mFiles;
-    QTimer *mpTimer;
-
-
 private:
     class KIconCanvasPrivate;
     KIconCanvasPrivate* const d;
+
+    Q_DISABLE_COPY(KIconCanvas)
+
+    Q_PRIVATE_SLOT(d, void _k_slotLoadFiles())
+    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged(QListWidgetItem *item))
 };
 
 
@@ -94,7 +83,7 @@ public:
     /**
      * Constructs an icon selection dialog using the global iconloader.
      */
-    KIconDialog(QWidget *parent=0L);
+    explicit KIconDialog(QWidget *parent=0L);
     /**
      * Constructs an icon selection dialog using a specific iconloader.
      */
@@ -198,37 +187,20 @@ Q_SIGNALS:
 protected Q_SLOTS:
     void slotOk();
 
-private Q_SLOTS:
-    void slotContext(int);
-    void slotStartLoading(int);
-    void slotProgress(int);
-    void slotFinished();
-    void slotAcceptIcons();
-    void slotBrowse();
-    void slotOtherIconClicked();
-    void slotSystemIconClicked();
-
-private:
-    void init();
-    void showIcons();
-    void setContext( K3Icon::Context context );
-
-    int mGroupOrSize;
-    K3Icon::Context mContext;
-
-    QStringList mFileList;
-    QComboBox *mpCombo;
-    QPushButton *mpBrowseBut;
-    QRadioButton *mpRb1, *mpRb2;
-    QProgressBar *mpProgress;
-    KIconLoader *mpLoader;
-    KIconCanvas *mpCanvas;
-    int mNumContext;
-    K3Icon::Context mContextMap[ 12 ]; // must match KIcon::Context size, code has assert
-
 private:
     class KIconDialogPrivate;
     KIconDialogPrivate* const d;
+
+    Q_DISABLE_COPY(KIconDialog)
+
+    Q_PRIVATE_SLOT(d, void _k_slotContext(int))
+    Q_PRIVATE_SLOT(d, void _k_slotStartLoading(int))
+    Q_PRIVATE_SLOT(d, void _k_slotProgress(int))
+    Q_PRIVATE_SLOT(d, void _k_slotFinished())
+    Q_PRIVATE_SLOT(d, void _k_slotAcceptIcons())
+    Q_PRIVATE_SLOT(d, void _k_slotBrowse())
+    Q_PRIVATE_SLOT(d, void _k_slotOtherIconClicked())
+    Q_PRIVATE_SLOT(d, void _k_slotSystemIconClicked())
 };
 
 
@@ -251,7 +223,7 @@ public:
     /**
      * Constructs a KIconButton using the global iconloader.
      */
-    KIconButton(QWidget *parent=0L);
+    explicit KIconButton(QWidget *parent=0L);
 
     /**
      * Constructs a KIconButton using a specific KIconLoader.
@@ -315,22 +287,14 @@ Q_SIGNALS:
      */
     void iconChanged(const QString &icon);
 
-private Q_SLOTS:
-    void slotChangeIcon();
-    void newIconName(const QString& name);
-
 private:
-    void init( KIconLoader *loader );
-
-    bool mbUser;
-    K3Icon::Group mGroup;
-    K3Icon::Context mContext;
-
-    QString mIcon;
-    KIconDialog *mpDialog;
-    KIconLoader *mpLoader;
     class KIconButtonPrivate;
     KIconButtonPrivate* const d;
+
+    Q_DISABLE_COPY(KIconButton)
+
+    Q_PRIVATE_SLOT(d, void _k_slotChangeIcon())
+    Q_PRIVATE_SLOT(d, void _k_newIconName(const QString&))
 };
 
 
