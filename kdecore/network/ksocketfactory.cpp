@@ -41,6 +41,7 @@
 class _k_internal_QTcpSocketSetError: public QAbstractSocket
 {
 public:
+    _k_internal_QTcpSocketSetError(); // not defined anywhere!
     using QAbstractSocket::setSocketError;
     using QAbstractSocket::setSocketState;
     using QAbstractSocket::setErrorString;
