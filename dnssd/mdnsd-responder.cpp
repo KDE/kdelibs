@@ -20,7 +20,7 @@
 
 #include "mdnsd-responder.h"
 #include <QtCore/QCoreApplication>
-#include <kidna.h>
+#include <QtCore/QUrl>
 
 // dns_sd.h API should care about proper encoding of non-latin1 characters
 // but for now it does not
@@ -81,7 +81,7 @@ QByteArray domainToDNS(const QString &domain)
 {
 #ifdef IDN_BROKEN_IN_MDNSRESPONDER
 	if (domainIsLocal(domain)) return domain.toUtf8();
-		else return KIDNA::toAsciiCString(domain);
+		else return QUrl::toAce(domain);
 #else
 	return domain.toUtf8();
 #endif
@@ -91,7 +91,7 @@ QString DNSToDomain(const char* domain)
 {
 #ifdef IDN_BROKEN_IN_MDNSRESPONDER
 	if (domainIsLocal(domain)) return QString::fromUtf8(domain);
-		else return KIDNA::toUnicode(domain);
+		else return QUrl::fromAce(domain);
 #else
 	return QString::fromUtf8(domain);
 #endif
