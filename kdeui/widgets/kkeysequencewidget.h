@@ -77,7 +77,7 @@ public Q_SLOTS:
     void clearKeySequence();
 
 private:
-	Q_PRIVATE_SLOT(d, void doneRecording());
+	Q_PRIVATE_SLOT(d, void doneRecording())
 
 private:
 	//TODO: can these be moved in the private class? //remark: yes, use emit q->blah!
