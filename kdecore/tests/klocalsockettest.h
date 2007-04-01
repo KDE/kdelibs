@@ -42,6 +42,8 @@ private Q_SLOTS:
     void writing();
 
     void state();
+
+    void connected();
 };
 
 #endif

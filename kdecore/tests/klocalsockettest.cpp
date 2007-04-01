@@ -224,6 +224,20 @@ void tst_KLocalSocket::state()
     delete socket2;
 }
 
+void tst_KLocalSocket::connected()
+{
+    KLocalSocket socket;
+    socket.connectToPath(socketpath);
+    QEXPECT_FAIL("", "Will fix later", Continue);
+    QVERIFY(!socket.isOpen());
+
+    QSignalSpy spy(&socket, SIGNAL(connected()));
+    QTest::qWait(100);
+
+    QEXPECT_FAIL("", "Will fix later", Continue);
+    QCOMPARE(spy.count(), 1);
+}
+
 QTEST_MAIN(tst_KLocalSocket)
 
 #include "klocalsockettest.moc"
