@@ -26,14 +26,8 @@
 
 #include <kdialog.h>
 
-class QComboBox;
-class QCheckBox;
 class QFont;
-class QLabel;
-class QLineEdit;
 class QStringList;
-class KListWidget;
-class KIntNumInput;
 
 /**
  * @short A font selection widget.
@@ -140,7 +134,7 @@ public:
   /**
    * @return The currently selected font in the chooser.
    */
-  QFont font() const { return selFont; }
+  QFont font() const;
 
   /**
    * Sets the color to use in the preview.
@@ -210,8 +204,7 @@ public:
    * @param theFont The font to convert.
    * @return A string representing the given font in XLFD format.
    */
-  static QString getXLFD( const QFont &theFont )
-    { return theFont.rawName(); }
+  static QString getXLFD(const QFont &theFont);
 
   /**
    * The selection criteria for the font families shown in the dialog.
@@ -246,53 +239,23 @@ Q_SIGNALS:
    */
   void fontSelected( const QFont &font );
 
-private Q_SLOTS:
-  void toggled_checkbox();
-  void family_chosen_slot(const QString&);
-  void size_chosen_slot(const QString&);
-  void style_chosen_slot(const QString&);
-  void displaySample(const QFont &font);
-  void showXLFDArea(bool);
-  void size_value_slot(int);
 private:
-  void fillFamilyListBox(bool onlyFixedFonts = false);
-  void fillSizeList();
   // This one must be static since getFontList( QStringList, char*) is so
   static void addFont( QStringList &list, const char *xfont );
-
-  void setupDisplay();
-
-  // pointer to an optinally supplied list of fonts to
-  // inserted into the fontdialog font-family combo-box
-  QStringList  fontList;
-
-  KIntNumInput *sizeOfFont;
-
-  QLineEdit    *sampleEdit;
-  QLineEdit    *xlfdEdit;
-
-  QLabel       *familyLabel;
-  QLabel       *styleLabel;
-  QCheckBox    *familyCheckbox;
-  QCheckBox    *styleCheckbox;
-  QCheckBox    *sizeCheckbox;
-  QLabel       *sizeLabel;
-  KListWidget     *familyListBox;
-  KListWidget     *styleListBox;
-  KListWidget     *sizeListBox;
-  QCheckBox    *sizeIsRelativeCheckBox;
-
-  QFont        selFont;
-
-  QString      selectedStyle;
-  int          selectedSize;
-  QMap<QString, QString> currentStyles;
-
-  bool usingFixed;
 
 private:
   class Private;
   Private * const d;
+
+    Q_DISABLE_COPY(KFontChooser)
+
+    Q_PRIVATE_SLOT(d, void _k_toggled_checkbox())
+    Q_PRIVATE_SLOT(d, void _k_family_chosen_slot(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_size_chosen_slot(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_style_chosen_slot(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_displaySample(const QFont &font))
+    Q_PRIVATE_SLOT(d, void _k_showXLFDArea(bool))
+    Q_PRIVATE_SLOT(d, void _k_size_value_slot(int))
 };
 
 /**
@@ -361,29 +324,26 @@ public:
    * @param onlyFixed readjust the font list to display only fixed
    *        width fonts if true, or vice-versa
    */
-  void setFont( const QFont &font, bool onlyFixed = false )
-    { chooser->setFont(font, onlyFixed); }
+  void setFont(const QFont &font, bool onlyFixed = false);
 
   /**
    * @return The currently selected font in the dialog.
    */
-  QFont font() const { return chooser->font(); }
+  QFont font() const;
 
   /**
    * Sets the state of the checkbox indicating whether the font size
    * is to be interpreted as relative size.
-   * NOTE: If parameter sizeIsRelative was not set in the constructor
+   * @note If parameter sizeIsRelative was not set in the constructor
    *       of the dialog this setting will be ignored.
    */
-  void setSizeIsRelative( Qt::CheckState relative )
-    { chooser->setSizeIsRelative( relative ); }
+  void setSizeIsRelative(Qt::CheckState relative);
 
   /**
    * @return Whether the font size is to be interpreted as relative size
    *         (default: false)
    */
-  Qt::CheckState sizeIsRelative() const
-    { return chooser->sizeIsRelative(); }
+  Qt::CheckState sizeIsRelative() const;
 
   /**
    * Creates a modal font dialog, lets the user choose a font,
@@ -477,12 +437,13 @@ Q_SIGNALS:
   void fontSelected( const QFont &font );
 
 protected:
-  KFontChooser *chooser;
+    KFontChooser* chooser() const;
 
 private:
   class KFontDialogPrivate;
   KFontDialogPrivate * const d;
 
+    Q_DISABLE_COPY(KFontDialog)
 };
 
 #endif
