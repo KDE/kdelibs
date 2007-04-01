@@ -36,7 +36,6 @@
 /* export statements for unix */
 #define KNTLM_EXPORT KDE_EXPORT
 #define KUNITTEST_EXPORT KDE_EXPORT
-#define KROSSCORE_EXPORT KDE_EXPORT
 
 #define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 

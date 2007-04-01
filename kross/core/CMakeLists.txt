@@ -32,6 +32,7 @@ install(TARGETS krosscore  DESTINATION ${LIB_INSTALL_DIR})
 ########### install files ###############
 
 install( FILES 
+    kross_export.h
     krossconfig.h 
     errorinterface.h 
     childreninterface.h 
