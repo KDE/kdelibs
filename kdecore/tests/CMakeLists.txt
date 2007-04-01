@@ -1,5 +1,3 @@
-if(KDE4_BUILD_TESTS)
-
 # Tests don't need to go into toplevel/bin, they are fine in the current dir.
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
@@ -11,7 +9,7 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 MACRO(KDECORE_BUILD_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
-               kde4_add_executable(${_testname} NOGUI RUN_UNINSTALLED ${_testname}.cpp)
+               kde4_add_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KDECORE_BUILD_TESTS)
@@ -134,5 +132,3 @@ target_link_libraries(klibloadertestmodule4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LI
 #   FILE(APPEND ${_laname} "library_names='${_soname} ${_soname} ${_soname}'\n")
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
-
-endif(KDE4_BUILD_TESTS)
