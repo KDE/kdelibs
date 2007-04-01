@@ -31,6 +31,7 @@
 #include <kservicetypetrader.h>
 #include <qprocess.h>
 #include <kmimetypefactory.h>
+#include <ktemporaryfile.h>
 
 void KMimeTypeTest::initTestCase()
 {
@@ -128,6 +129,19 @@ void KMimeTypeTest::testFindByPath()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );
 
+#if 0
+    // Test a real PDF file.
+    // If we find x-matlab because it starts with '%' then we are not ordering by priority.
+    KTemporaryFile tempFile;
+    QVERIFY(tempFile.open());
+    QString tempFileName = tempFile.fileName();
+    tempFile.write("%PDF");
+    tempFile.close();
+    mime = KMimeType::findByPath( tempFileName );
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/pdf" ) );
+#endif
+
     // Can't use KIconLoader since this is a "without GUI" test.
     QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
     QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
@@ -139,12 +153,23 @@ void KMimeTypeTest::testFindByPath()
     mime = KMimeType::findByPath("/");
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("inode/directory") );
+
+    // Test a file that doesn't exist
+    mime = KMimeType::findByPath("/IDontExist");
+    QVERIFY( mime );
+    QCOMPARE(mime->name(), QString::fromLatin1("application/octet-stream"));
+
+    // Test a file that doesn't exist but that has a known extension
+    mime = KMimeType::findByPath("/IDontExist.txt");
+    QVERIFY( mime );
+    QCOMPARE(mime->name(), QString::fromLatin1("text/plain"));
 }
 
 void KMimeTypeTest::testFindByUrl()
 {
+    // Tests with local files are already done in testFindByPath,
+    // here we test for remote urls only.
     KMimeType::Ptr mime;
-
     QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("http:/")) );
     QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("file:/")) );
     mime = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
@@ -210,6 +235,12 @@ void KMimeTypeTest::testFindByNameAndContent()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("application/vnd.ms-tnef") );
 #endif
+
+    QByteArray pdfData = "%PDF-";
+    mime = KMimeType::findByNameAndContent("foo", pdfData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("application/pdf") );
+
 }
 
 void KMimeTypeTest::testFindByContent()
@@ -220,6 +251,11 @@ void KMimeTypeTest::testFindByContent()
     mime = KMimeType::findByContent(textData);
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
+
+    QByteArray pdfData = "%PDF-";
+    mime = KMimeType::findByContent(pdfData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("application/pdf") );
 
     // Calling findByContent on a directory
     mime = KMimeType::findByFileContent("/");

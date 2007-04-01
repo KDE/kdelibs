@@ -84,7 +84,7 @@ public:
     enum WhichPriority { LowPriorityRules, HighPriorityRules, AllRules };
     /**
      * Find a mimetype from the content of a file or buffer
-     * @param device the file or buffer. open or not.
+     * @param device the file or buffer. Must be open.
      * @param whichPriority whether to use only low (<80) or high priority (>=80) rules, or all.
      * @param accuracy returns the priority of the rule that matched
      * @param beginning the first N bytes of the device, to avoid repeated seeks

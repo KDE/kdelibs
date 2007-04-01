@@ -269,8 +269,8 @@ public:
      * @param fileName the path to the file
      * @param accuracy If not a null pointer, *accuracy is set to the
      *          accuracy of the match (which is in the range 0..100)
-     * @return a pointer to the KMimeType. application/octet-stream's KMimeType of the
-     *         type can not be found this way.
+     * @return a pointer to the KMimeType, or the default mimetype
+     *         (application/octet-stream) if the file cannot be opened.
      */
     static Ptr findByFileContent( const QString &fileName, int *accuracy=0 );
 

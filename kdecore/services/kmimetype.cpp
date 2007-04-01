@@ -341,6 +341,7 @@ QString KMimeType::extractKnownExtension(const QString &fileName)
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
 {
     QBuffer buffer(const_cast<QByteArray *>(&data));
+    buffer.open(QIODevice::ReadOnly);
     return KMimeTypeFactory::self()->findFromContent(
         &buffer, KMimeTypeFactory::AllRules, accuracy );
 }
@@ -352,6 +353,9 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     KMimeType::Ptr mimeFromMode = findFromMode( fileName, 0, true );
     if (mimeFromMode)
         return mimeFromMode;
+    if (!device.open(QIODevice::ReadOnly)) {
+        return KMimeType::defaultMimeTypePtr();
+    }
 
     return KMimeTypeFactory::self()->findFromContent(
         &device, KMimeTypeFactory::AllRules, accuracy );
