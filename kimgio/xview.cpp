@@ -10,8 +10,6 @@
 #include <stdlib.h>
 #include <QtGui/QImage>
 
-#include <kdelibs_export.h>
-
 #include "xview.h"
 
 #define BUFSIZE 1024

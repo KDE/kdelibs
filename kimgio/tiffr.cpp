@@ -9,7 +9,6 @@
 
 #include <qimage.h>
 #include <qfile.h>
-#include <kdelibs_export.h>
 
 #include <assert.h>
 

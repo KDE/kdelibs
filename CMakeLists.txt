@@ -192,13 +192,8 @@ set(KDE4_DATA_INSTALL_DIR    \"${KDE4_DATA_INSTALL_DIR}\")
 # ...and append all library dependencies
 export_library_dependencies(${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake APPEND)
 
-install( FILES kdelibs_export.h ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
-
-if(WIN32)
-   install( FILES kdelibs_export_win.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
-endif(WIN32)
-
 
 
 macro_display_feature_log()

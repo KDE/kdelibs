@@ -24,8 +24,6 @@
 #include <QVector>
 #include <QDesktopWidget>
 
-#include <kdelibs_export.h>
-
 #include "ico.h"
 
 namespace
