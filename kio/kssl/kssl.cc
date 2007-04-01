@@ -46,13 +46,12 @@
 #include <ksslpkcs12.h>
 #include <ksslsession.h>
 #include <klocale.h>
-#include <ksocks.h>
 
-#include <ksocketdevice.h>
-using namespace KNetwork;
+#include <qabstractsocket.h>
 
 #ifdef __GNUC__
 #warning "kssl.cc contains temporary functions! Clean up"
+#warning "kssl.cc needs to be ported to QSslSocket"
 #endif
 
 #define sk_dup d->kossl->sk_dup
@@ -250,12 +249,13 @@ return initialize();
 
 
 // KDE4 FIXME: temporary code
+// I have no idea if this even works!
 int KSSL::accept(QIODevice* dev) {
-	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
+	QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(dev);
 	if (socket == 0L)
 		return -1;
 
-	return accept(socket->socketDevice()->socket());
+	return accept(socket->socketDescriptor());
 }
 
 int KSSL::accept(int sock) {
@@ -333,11 +333,11 @@ return -1;
 
 // KDE4 FIXME: temporary code
 int KSSL::connect(QIODevice* dev) {
-	KActiveSocketBase* socket = qobject_cast<KActiveSocketBase*>(dev);
+	QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(dev);
 	if (socket == 0L)
 		return -1;
 
-	return connect(socket->socketDevice()->socket());
+	return connect(socket->socketDescriptor());
 }
 
 
