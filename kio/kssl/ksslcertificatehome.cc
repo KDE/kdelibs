@@ -22,11 +22,8 @@
 #include <ksslcertificate.h>
 #include <ksslpkcs12.h>
 
-#include <kresolver.h>
 #include <kconfiggroup.h>
 #include <kconfig.h>
-
-using namespace KNetwork;
 
 QStringList KSSLCertificateHome::getCertificateList()
 {
@@ -45,7 +42,7 @@ QStringList KSSLCertificateHome::getCertificateList()
 void KSSLCertificateHome::setDefaultCertificate(const QString & name, const QString &host, bool send, bool prompt)
 {
     KConfig file("ksslauthmap", KConfig::OnlyLocal);
-    KConfigGroup cfg(&file, KResolver::domainToAscii(host));
+    KConfigGroup cfg(&file, QString::fromLatin1(QUrl::toAce(host)));
 
     cfg.writeEntry("certificate", name);
     cfg.writeEntry("send", send);
@@ -150,7 +147,7 @@ KSSLPKCS12* KSSLCertificateHome::getCertificateByHost(const QString &host,
 QString KSSLCertificateHome::getDefaultCertificateName(const QString &host, KSSLAuthAction *aa)
 {
     KConfig file("ksslauthmap", KConfig::OnlyLocal);
-    KConfigGroup cfg = file.group(KResolver::domainToAscii(host));
+    KConfigGroup cfg = file.group(QString::fromLatin1(QUrl::toAce(host)));
 
     if (!cfg.exists()) {
         if (aa) *aa = AuthNone;

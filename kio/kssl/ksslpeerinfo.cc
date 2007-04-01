@@ -22,13 +22,10 @@
 #include <ksslconfig.h>
 
 #include <qregexp.h>
+#include <qurl.h>
 
 #include "ksslpeerinfo.h"
 #include <kdebug.h>
-
-#ifndef Q_WS_WIN //TODO kresolver not ported
-#include "kresolver.h"
-#endif
 
 #include "ksslx509map.h"
 
@@ -59,11 +56,7 @@ void KSSLPeerInfo::setPeerHost(const QString &realHost) {
 	while(d->peerHost.endsWith("."))
 		d->peerHost.truncate(d->peerHost.length()-1);
 
-#ifdef Q_WS_WIN //TODO kresolver not ported
-	d->peerHost = d->peerHost.toLower();
-#else
-	d->peerHost = QLatin1String(KNetwork::KResolver::domainToAscii(d->peerHost));
-#endif
+	d->peerHost = QString::fromLatin1(QUrl::toAce(d->peerHost));
 }
 
 bool KSSLPeerInfo::certMatchesAddress() {
