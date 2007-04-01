@@ -56,17 +56,6 @@ class KDNSSD_EXPORT ServiceBrowser : public QObject
 	Q_OBJECT
 public:
 	/**
-	@li AutoDelete -  DomainBrowser object passes in constructor should be deleted when ServiceBrowser is deleted
-	@li AutoResolve - after disovering new service it will be resolved and then 
-	reported with serviceAdded() signal. It raises network usage by resolving all services, 
-	so use it only when necessary.
-	 */
-	enum Flags {
-	AutoDelete =1,
-	AutoResolve = 2
-	};
-	
-	/**
 	Availability of DNS-SD services.
 	@li Working - available
 	@li Stopped - not available because mdnsd daemon is not running. This flag is currently unused
@@ -74,44 +63,19 @@ public:
 	*/
 	enum State { Working, Stopped, Unsupported };
 
+	
 	/**
 	ServiceBrowser constructor.
 	 
-	@param types List of service types to browse for (example: "_http._tcp"). 
+	@param type Service types to browse for (example: "_http._tcp"). 
 	Can also be DNSSD::ServicesBrowser::AllServices to specify "metaquery" for all service types 
 	present on network
-	@param domains DomainBrowser object used to specify domains to browse. You do not have to connect 
-	its domainAdded() signal - it will be done automatically. You can left this parameter as NULL 
-	for default domains.
-	@param flags One or more values from #Flags
-	
-	@todo KDE4: set default values for domains and flags
+	@param autoResolve - after disovering new service it will be resolved and then 
+	reported with serviceAdded() signal. It raises network usage by resolving all services, 
+	so use it only when necessary.
+	@param domain Domain name. Can be left as null string to use default domain
 	 */
-	ServiceBrowser(const QStringList& types,DomainBrowser* domains,int flags);
-
-	/**
-	The same as above, but allows only one service type
-	@param type Type of services to browse for
-	@param autoResolve See Flags, equal to setting AutoResolve if
-			   @p autoResolve is true
-	@deprecated use previous constructor instead
-	 */
-	explicit ServiceBrowser(const QString& type,DomainBrowser* domains=0,bool autoResolve=false);
-	
-	/**
-	Overloaded constructor used to create browser for one domain
-	
-	@param type Type of services to browse for
-	@param domain Domain name. You can add more domains later using addDomain and remove them
-	with removeDomain
-	@param flags One or more values from #Flags. AutoDelete flag has no effect 
-	 */
-	ServiceBrowser(const QString& type,const QString& domain, int flags);
-	
-	/**
-	@deprecated user previous constructor instead
-	 */
-	ServiceBrowser(const QString& type,const QString& domain, bool autoResolve=false);
+	explicit ServiceBrowser(const QString& type, bool autoResolve=false, const QString& domain=QString());
 	
 	~ServiceBrowser();
 
@@ -126,13 +90,6 @@ public:
 	 */
 	virtual void startBrowse();
 
-	/**
-	Return DomainBrowser containing domains being browsed. Valid object will returned 
-	even if 'domains' parameters in constructor was set to NULL or single domain 
-	constructor was used.
-	 */
-	const DomainBrowser* browsedDomains() const;
-	
 	/**
 	Special service type to search for all available service types. Pass it as "type"
 	parameter to ServiceBrowser constructor.
@@ -193,30 +150,11 @@ Q_SIGNALS:
 	 */
 	void finished();
 
-public Q_SLOTS:
-	/**
-	Remove one domain from list of domains to browse
-	 */
-	void removeDomain(const QString& domain);
-	
-	/**
-	Add new domain to browse
-	 */
-	void addDomain(const QString& domain);
-
 protected:
 	virtual void virtual_hook(int, void*);
 private:
+	friend class ServiceBrowserPrivate;
 	ServiceBrowserPrivate* const d;
-
-	bool allFinished();
-	void init(const QStringList&, DomainBrowser*, int);
-	QList<RemoteService::Ptr>::Iterator findDuplicate(RemoteService::Ptr src);
-private Q_SLOTS:
-	void serviceResolved(bool success);
-	void gotNewService(DNSSD::RemoteService::Ptr);
-	void gotRemoveService(DNSSD::RemoteService::Ptr);
-	void queryFinished();
 
 };
 

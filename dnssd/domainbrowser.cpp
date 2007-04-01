@@ -20,6 +20,7 @@
 
 #include <QtCore/QStringList>
 #include "domainbrowser.h"
+#include "domainbrowser_p.h"
 #include "settings.h"
 #include "remoteservice.h"
 #include "query.h"
@@ -29,19 +30,9 @@
 namespace DNSSD
 {
 
-class DomainBrowserPrivate
-{
-public:
-	QHash<QString,Query*> resolvers;
-	QStringList m_domains;
-	bool m_recursive;
-	bool m_running;
-};
-
-DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
+DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrowserPrivate(this))
 {
 	d->m_running = false;
-	d->m_recursive = Configuration::recursive();
 	d->m_domains = Configuration::domainList();
 	if (Configuration::browseLocal()) d->m_domains+="local.";
 
@@ -52,18 +43,8 @@ DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrow
         dbus.connect( QString(), dbusPath, dbusInterface, "domainListChanged", this, SLOT(domainListChanged()) );
 }
 
-DomainBrowser::DomainBrowser(const QStringList& domains, bool recursive, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate)
-{
-	d->m_recursive = recursive;
-	d->m_running = false;
-	d->m_domains=domains;
-}
-
-
 DomainBrowser::~DomainBrowser()
 {
-	qDeleteAll(d->resolvers);
-	d->resolvers.clear();
 	delete d;
 }
 
@@ -73,64 +54,40 @@ void DomainBrowser::startBrowse()
 	if (d->m_running) return;
 	d->m_running=true;
 	QStringList::const_iterator itEnd = d->m_domains.end();
-	for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it ) {
-		emit domainAdded(*it);
-		if (d->m_recursive) {
-			Query* b = new Query("b._dns-sd._udp",(*it));
-			connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
-				SLOT(gotNewDomain(DNSSD::RemoteService::Ptr)));
-			connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
-				SLOT(gotRemoveDomain(DNSSD::RemoteService::Ptr)));
-			b->startQuery();
-			d->resolvers.insert((*it),b);
-		}
-	}
+	for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it ) emit domainAdded(*it);
 }
 
-void DomainBrowser::gotNewDomain(DNSSD::RemoteService::Ptr srv)
+void DomainBrowserPrivate::gotNewDomain(DNSSD::RemoteService::Ptr srv)
 {
 	QString domain = srv->serviceName()+'.'+srv->domain();
-	if (d->m_domains.contains(domain)) return;
-	d->m_domains.append(domain);
-	emit domainAdded(domain);
-	if (d->m_recursive && !d->resolvers[domain]) {
-		Query* b = new Query("b._dns-sd._udp",domain);
-		connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
-			SLOT(gotNewDomain(DNSSD::RemoteService::Ptr)));
-		connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
-			SLOT(gotRemoveDomain(DNSSD::RemoteService::Ptr)));
-		b->startQuery();
-		d->resolvers.insert(domain,b);
-	}
+	if (m_domains.contains(domain)) return;
+	m_domains.append(domain);
+	emit m_parent->domainAdded(domain);
 }
 
-void DomainBrowser::gotRemoveDomain(DNSSD::RemoteService::Ptr srv)
+void DomainBrowserPrivate::gotRemoveDomain(DNSSD::RemoteService::Ptr srv)
 {
 	QString domain = srv->serviceName()+'.'+srv->domain();
-	d->m_domains.removeAll(domain);
-	emit domainRemoved(domain);
-	d->resolvers.remove(domain);
+	m_domains.removeAll(domain);
+	emit m_parent->domainRemoved(domain);
 }
 
-void DomainBrowser::domainListChanged()
+void DomainBrowserPrivate::domainListChanged()
 {
-	bool was_running = d->m_running;
-	d->m_running = false;
-	// remove all domains and resolvers
-	d->resolvers.clear();
+	bool was_running = m_running;
+	m_running = false;
 	if (was_running) {
-		QStringList::const_iterator itEnd = d->m_domains.end();
-		for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it )
-			emit domainRemoved(*it);
+		QStringList::const_iterator itEnd = m_domains.end();
+		for (QStringList::const_iterator it=m_domains.begin(); it!=itEnd; ++it )
+			emit m_parent->domainRemoved(*it);
 	}
-	d->m_domains.clear();
+	m_domains.clear();
 	// now reread configuration and add domains
 	Configuration::self()->readConfig();
-	d->m_recursive = Configuration::recursive();
-	d->m_domains = Configuration::domainList();
-	if (Configuration::browseLocal()) d->m_domains+="local.";
+	m_domains = Configuration::domainList();
+	if (Configuration::browseLocal()) m_domains+="local.";
 	// this will emit domainAdded() for every domain if necessary
-	if (was_running) startBrowse();
+	if (was_running) m_parent->startBrowse();
 }
 
 const QStringList& DomainBrowser::domains() const
@@ -145,3 +102,4 @@ bool DomainBrowser::isRunning() const
 
 }
 #include "domainbrowser.moc"
+#include "domainbrowser_p.moc"

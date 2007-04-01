@@ -49,34 +49,23 @@ void resolve_callback    (    DNSServiceRef,
 class RemoteServicePrivate : public Responder
 {
 public:
-	RemoteServicePrivate() : Responder(), m_resolved(false)
+	RemoteServicePrivate(RemoteService* parent) : Responder(), m_resolved(false), m_parent(parent)
 	{}
 	bool m_resolved;
+	RemoteService* m_parent;
+	virtual void customEvent(QEvent* event);
 };
 
 RemoteService::RemoteService(const QString& label)
-	:d(new RemoteServicePrivate())
+	:d(new RemoteServicePrivate(this))
 {
 	decode(label);
 }
 RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
-		: ServiceBase(name, type, domain), d(new RemoteServicePrivate())
+		: ServiceBase(name, type, domain), d(new RemoteServicePrivate(this))
 {
 }
 
-RemoteService::RemoteService(const KUrl& url)
-	:d(new RemoteServicePrivate())
-{
-	if (!url.isValid()) return;
-	if (url.protocol()!="invitation") return;
-	if (!url.hasPath()) return;
-	m_hostName = url.host();
-	m_port = url.port();
-	m_type = url.path().section('/',1,1);
-	m_serviceName = url.path().section('/',2);
-	m_textData = url.queryItems();
-	d->m_resolved=true;
-}
 
 RemoteService::~RemoteService()
 {
@@ -99,7 +88,7 @@ void RemoteService::resolveAsync()
 #ifdef HAVE_DNSSD
 	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,m_serviceName.toUtf8(), m_type.toAscii().constData(), 
- 		domainToDNS(m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(this))
+ 		domainToDNS(m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(d))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	if (!d->isRunning()) emit resolved(false);
@@ -110,20 +99,20 @@ bool RemoteService::isResolved() const
 	return d->m_resolved;
 }
 
-void RemoteService::customEvent(QEvent* event)
+void RemoteServicePrivate::customEvent(QEvent* event)
 {
 	if (event->type() == QEvent::User+SD_ERROR) {
-		d->stop();
-		d->m_resolved=false;
-		emit resolved(false);
+		stop();
+		m_resolved=false;
+		emit m_parent->resolved(false);
 	}
 	if (event->type() == QEvent::User+SD_RESOLVE) {
 		ResolveEvent* rev = static_cast<ResolveEvent*>(event);
-		m_hostName = rev->m_hostname;
-		m_port = rev->m_port;
-		m_textData = rev->m_txtdata;
-		d->m_resolved = true;
-		emit resolved(true);
+		m_parent->m_hostName = rev->m_hostname;
+		m_parent->m_port = rev->m_port;
+		m_parent->m_textData = rev->m_txtdata;
+		m_resolved = true;
+		emit m_parent->resolved(true);
 	}
 }
 

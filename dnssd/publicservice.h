@@ -122,13 +122,6 @@ public:
 	 */
 	void setDomain(const QString& domain);
 	
-	/**
-	Translates service into URL that can be sent to another user. 
-	@param host Use specified hostname. If left empty, public IP address (the one used for 
-	default route) will be used.
-	 */
-	const KUrl toInvitation(const QString& host=QString());
-
 Q_SIGNALS:
 	/**
 	Emitted when publishing is complete - parameter is set to true if it was successful. It will also
@@ -136,10 +129,10 @@ Q_SIGNALS:
 	*/
 	void published(bool);
 private:
+	friend class PublicServicePrivate;
 	PublicServicePrivate* const d;
 
 protected:
-	virtual void customEvent(QEvent* event);
 	virtual void virtual_hook(int, void*);
 };
 

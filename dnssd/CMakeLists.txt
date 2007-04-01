@@ -15,14 +15,15 @@ endif (HAVE_DNSSD)
 ########### next target ###############
 
 set(kdnssd_LIB_SRCS
-   remoteservice.cpp
-   responder.cpp
    servicebase.cpp
-   publicservice.cpp
-   query.cpp
    domainbrowser.cpp
+   remoteservice.cpp
+   publicservice.cpp
+   responder.cpp
    servicebrowser.cpp
+   query.cpp
    )
+
 
 kde4_automoc(${kdnssd_LIB_SRCS})
 

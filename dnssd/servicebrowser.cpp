@@ -22,6 +22,7 @@
 #include "domainbrowser.h"
 #include "query.h"
 #include "servicebrowser.h"
+#include "servicebrowser_p.h"
 #include <config-dnssd.h>
 #include <QHash>
 #ifdef HAVE_DNSSD
@@ -33,56 +34,15 @@ namespace DNSSD
 
 const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
 
-class ServiceBrowserPrivate
-{
-public:
-	ServiceBrowserPrivate() : m_running(false)
-	{}
-	QList<RemoteService::Ptr> m_services;
-	QList<RemoteService::Ptr> m_duringResolve;
-	QStringList m_types;
-	DomainBrowser* m_domains;
-	int m_flags;
-	bool m_running;
-	bool m_finished;
-	QHash<QString,Query*> resolvers;
-};
 
-ServiceBrowser::ServiceBrowser(const QString& type,DomainBrowser* domains,bool autoResolve)
-	:d(new ServiceBrowserPrivate())
+ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QString& domain)
+	:d(new ServiceBrowserPrivate(this))
 {
-	if (domains) init(QStringList( type ),domains,autoResolve ? AutoResolve : 0);
-		else init(QStringList( type ),new DomainBrowser(this),autoResolve ?  AutoResolve|AutoDelete : AutoDelete);
+	d->m_type=type;
+	d->m_autoResolve=autoResolve;
+	d->m_domain=domain;
 }
 
-ServiceBrowser::ServiceBrowser(const QStringList& types,DomainBrowser* domains,int flags)
-    :d(new ServiceBrowserPrivate())
-{
-	if (domains) init(types,domains,flags);
-		else init(types,new DomainBrowser(this),flags|AutoDelete);
-}
-
-void ServiceBrowser::init(const QStringList& type,DomainBrowser* domains,int flags)
-{
-	d->m_types=type;
-	d->m_flags=flags;
-	d->m_domains = domains;
-	connect(d->m_domains,SIGNAL(domainAdded(const QString& )),this,SLOT(addDomain(const QString& )));
-	connect(d->m_domains,SIGNAL(domainRemoved(const QString& )),this,
-		SLOT(removeDomain(const QString& )));
-}
-
-ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,bool autoResolve)
-	:d(new ServiceBrowserPrivate())
-{
-	init(QStringList( type ) ,new DomainBrowser(QStringList(domain),false,this),autoResolve ? AutoResolve|AutoDelete : AutoDelete);
-}
-
-ServiceBrowser::ServiceBrowser(const QString& type,const QString& domain,int flags)
-	:d(new ServiceBrowserPrivate())
-{
-	init(QStringList(type),new DomainBrowser(QStringList(domain),false,this),flags | AutoDelete);
-}
 
 ServiceBrowser::State ServiceBrowser::isAvailable()
 {
@@ -98,31 +58,24 @@ ServiceBrowser::State ServiceBrowser::isAvailable()
 }
 ServiceBrowser::~ ServiceBrowser()
 {
-	qDeleteAll(d->resolvers);
-	d->resolvers.clear();
-	if (d->m_flags & AutoDelete) delete d->m_domains;
+	delete d->m_resolver;
 	delete d;
 }
 
-const DomainBrowser* ServiceBrowser::browsedDomains() const
-{
-	return d->m_domains;
-}
-
-void ServiceBrowser::serviceResolved(bool success)
+void ServiceBrowserPrivate::serviceResolved(bool success)
 {
 	QObject* sender_obj = const_cast<QObject*>(sender());
 	RemoteService* svr = static_cast<RemoteService*>(sender_obj);
 	disconnect(svr,SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
-	QList<RemoteService::Ptr>::Iterator it = d->m_duringResolve.begin();
-	QList<RemoteService::Ptr>::Iterator itEnd = d->m_duringResolve.end();
+	QList<RemoteService::Ptr>::Iterator it = m_duringResolve.begin();
+	QList<RemoteService::Ptr>::Iterator itEnd = m_duringResolve.end();
 	while ( it!= itEnd && svr!= (*it).data()) ++it;
 	if (it != itEnd) {
 		if (success) {
-		  	d->m_services+=(*it);
-			emit serviceAdded(RemoteService::Ptr(svr));
+		  	m_services+=(*it);
+			emit m_parent->serviceAdded(RemoteService::Ptr(svr));
 		}
-		d->m_duringResolve.erase(it);
+		m_duringResolve.erase(it);
 		queryFinished();
 	}
 }
@@ -131,84 +84,44 @@ void ServiceBrowser::startBrowse()
 {
 	if (d->m_running) return;
 	d->m_running=true;
-	if (d->m_domains->isRunning()) {
-		QStringList::const_iterator itEnd  = d->m_domains->domains().end();
-		for ( QStringList::const_iterator it = d->m_domains->domains().begin(); it != itEnd; ++it )
-			addDomain(*it);
-	} else d->m_domains->startBrowse();
+	Query* b = new Query(d->m_type,d->m_domain);
+	connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
+			SLOT(gotNewService(DNSSD::RemoteService::Ptr)));
+	connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
+			SLOT(gotRemoveService(DNSSD::RemoteService::Ptr)));
+	connect(b,SIGNAL(finished()),this,SLOT(queryFinished()));
+	b->startQuery();
+	d->m_resolver=b;
 }
 
-void ServiceBrowser::gotNewService(RemoteService::Ptr svr)
+void ServiceBrowserPrivate::gotNewService(RemoteService::Ptr svr)
 {
-	if (findDuplicate(svr)==(d->m_services.end()))  {
-		if (d->m_flags & AutoResolve) {
+	if (findDuplicate(svr)==(m_services.end()))  {
+		if (m_autoResolve) {
 			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
-			d->m_duringResolve+=svr;
+			m_duringResolve+=svr;
 			svr->resolveAsync();
 		} else	{
-			d->m_services+=svr;
-			emit serviceAdded(svr);
+			m_services+=svr;
+			emit m_parent->serviceAdded(svr);
 		}
 	}
 }
 
-void ServiceBrowser::gotRemoveService(RemoteService::Ptr svr)
+void ServiceBrowserPrivate::gotRemoveService(RemoteService::Ptr svr)
 {
 	QList<RemoteService::Ptr>::Iterator it = findDuplicate(svr);
-	if (it!=(d->m_services.end())) {
-		emit serviceRemoved(*it);
-		d->m_services.erase(it);
+	if (it!=(m_services.end())) {
+		emit m_parent->serviceRemoved(*it);
+		m_services.erase(it);
 	}
 }
 
-
-void ServiceBrowser::removeDomain(const QString& domain)
+void ServiceBrowserPrivate::queryFinished()
 {
-	while (d->resolvers[domain]) d->resolvers.remove(domain);
-	QList<RemoteService::Ptr>::Iterator it = d->m_services.begin();
-	while (it!=d->m_services.end())
-		// use section to skip possible trailing dot
-		if ((*it)->domain().section('.',0) == domain.section('.',0)) {
-			emit serviceRemoved(*it);
-			it = d->m_services.erase(it);
-		} else ++it;
+	if (!m_duringResolve.count() && m_resolver->isFinished()) emit m_parent->finished();
 }
 
-void ServiceBrowser::addDomain(const QString& domain)
-{
-	if (!d->m_running) return;
-	if (!(d->resolvers[domain])) {
-		QStringList::ConstIterator itEnd = d->m_types.end();
-		for (QStringList::ConstIterator it=d->m_types.begin(); it!=itEnd; ++it) {
-			Query* b = new Query((*it),domain);
-			connect(b,SIGNAL(serviceAdded(DNSSD::RemoteService::Ptr)),this,
-				SLOT(gotNewService(DNSSD::RemoteService::Ptr)));
-			connect(b,SIGNAL(serviceRemoved(DNSSD::RemoteService::Ptr )),this,
-				SLOT(gotRemoveService(DNSSD::RemoteService::Ptr)));
-			connect(b,SIGNAL(finished()),this,SLOT(queryFinished()));
-			b->startQuery();
-			d->resolvers.insert(domain,b);
-		}
-	}
-}
-
-void ServiceBrowser::queryFinished()
-{
-	if (allFinished()) emit finished();
-}
-
-bool ServiceBrowser::allFinished()
-{
-	if  (d->m_duringResolve.count()) return false;
-	bool all = true;
-	QHash<QString,Query*>::const_iterator i = d->resolvers.constBegin();
-  	while (i != d->resolvers.constEnd())
-	{
-		all&=(i.value())->isFinished();	
-		++i;
-	}
-	return all;
-}
 
 const QList<RemoteService::Ptr>& ServiceBrowser::services() const
 {
@@ -218,10 +131,10 @@ const QList<RemoteService::Ptr>& ServiceBrowser::services() const
 void ServiceBrowser::virtual_hook(int, void*)
 {}
 
-QList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService::Ptr src)
+QList<RemoteService::Ptr>::Iterator ServiceBrowserPrivate::findDuplicate(RemoteService::Ptr src)
 {
-	QList<RemoteService::Ptr>::Iterator itEnd = d->m_services.end();
-	for (QList<RemoteService::Ptr>::Iterator it = d->m_services.begin(); it!=itEnd; ++it)
+	QList<RemoteService::Ptr>::Iterator itEnd = m_services.end();
+	for (QList<RemoteService::Ptr>::Iterator it = m_services.begin(); it!=itEnd; ++it)
 		if ((src->type()==(*it)->type()) && (src->serviceName()==(*it)->serviceName()) &&
 				   (src->domain() == (*it)->domain())) return it;
 	return itEnd;
@@ -231,3 +144,4 @@ QList<RemoteService::Ptr>::Iterator ServiceBrowser::findDuplicate(RemoteService:
 }
 
 #include "servicebrowser.moc"
+#include "servicebrowser_p.moc"

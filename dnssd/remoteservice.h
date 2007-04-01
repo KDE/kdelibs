@@ -58,12 +58,6 @@ public:
 	 */
 	RemoteService(const QString& name,const QString& type,const QString& domain);
 	
-	/**
-	Creates resolved remote service from invitation URL constructed by PublicService::toInvitation.
-	If URL was invalid, service is set to unresolved and other fields should not be used.
-	 */
-	explicit RemoteService(const KUrl& url);
-	
 	virtual ~RemoteService();
 	
 	/**
@@ -95,11 +89,8 @@ Q_SIGNALS:
 
 protected:
 	virtual void virtual_hook(int id, void *data);
-	virtual void customEvent(QEvent* event);
 private:
-	void resolveError();
-	void resolved(const char *host, unsigned short port, unsigned short txtlen,
-		const char* txtRecord);
+	friend class RemoteServicePrivate;
 	RemoteServicePrivate* const d;
 
 	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const RemoteService & a);

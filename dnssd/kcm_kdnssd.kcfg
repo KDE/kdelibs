@@ -14,26 +14,5 @@
    <whatsthis>If true .local domain will be browsed. It is always link-local, using multicast DNS.</whatsthis>
    <default>true</default>
   </entry>
-  <entry key="Recursive" type="Bool" >
-   <label>Recursive search for domains</label>
-   <whatsthis>Specifies that every found domain should be in turn queried for more browsing domains.</whatsthis>
-   <default>false</default>
-  </entry>
- </group>
- <group name="publishing" >
-  <entry key="PublishType" type="Enum" >
-   <label>Select publishing in LAN (multicast) or WAN (unicast, needs configured DNS server)</label>
-   <whatsthis>Specifies if publishing should be by default link-local using multicast DNS (LAN) or 'wide-area' using normal DNS server (WAN).</whatsthis>
-   <default>LAN</default>
-   <choices>
-    <choice name="LAN" />
-    <choice name="WAN" />
-   </choices>
-  </entry>
-  <entry key="PublishDomain" type="String" >
-   <label>Name of default publishing domain for WAN</label>
-   <whatsthis>Domain name for publishing using 'wide-area' (normal DNS) ZeroConf. This must match domain specified in /etc/mdnsd.conf. This value is used only if PublishType is set to WAN.
-</whatsthis>
-  </entry>
  </group>
 </kcfg>

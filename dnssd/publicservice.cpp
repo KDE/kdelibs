@@ -34,7 +34,6 @@
 
 namespace DNSSD
 {
-static unsigned long publicIP();
 #ifdef HAVE_DNSSD
 void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType errorCode, const char *name,
 		       const char*, const char*, void *context);
@@ -42,18 +41,18 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 class PublicServicePrivate : public Responder
 {
 public:
-	PublicServicePrivate() : m_published(false)
+	PublicServicePrivate(PublicService* parent) : m_published(false), m_parent(parent)
 	{}
 	bool m_published;
+	PublicService* m_parent;
+	virtual void customEvent(QEvent* event);
 };
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
 			      const QString& domain)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port),d(new PublicServicePrivate)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port),d(new PublicServicePrivate( this))
 {
-	if (domain.isNull())
-		if (Configuration::publishType()==Configuration::EnumPublishType::LAN) m_domain="local.";
-		else m_domain=Configuration::publishDomain();
+	if (domain.isNull())  m_domain="local.";
 }
 
 
@@ -145,7 +144,7 @@ void PublicService::publishAsync()
 	DNSServiceRef ref;
 	if (DNSServiceRegister(&ref,0,0,m_serviceName.toUtf8(),m_type.toAscii().constData(),domainToDNS(m_domain),NULL,
 	    htons(m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
-	    reinterpret_cast<void*>(this)) == kDNSServiceErr_NoError) d->setRef(ref);
+	    reinterpret_cast<void*>(d)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);
 #endif
 	if (!d->isRunning()) emit published(false);
@@ -166,58 +165,22 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 }
 #endif
 
-const KUrl PublicService::toInvitation(const QString& host)
-{
-	KUrl url;
-	url.setProtocol("invitation");
-	if (host.isEmpty()) { // select best address
-		unsigned long s_address = publicIP();
-		if (!s_address) return KUrl();
-		KNetwork::KIpAddress addr(s_address);
-		url.setHost(addr.toString());
-	} else 	url.setHost(host);
-	//FIXME: if there is no public interface, select any non-loopback
-	url.setPort(m_port);
-	url.setPath('/'+m_type+'/'+m_serviceName);
-	QString query;
-	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
-	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it)
-		url.addQueryItem(it.key(),it.value());;
-	return url;
-}
-
-void PublicService::customEvent(QEvent* event)
+void PublicServicePrivate::customEvent(QEvent* event)
 {
 	if (event->type()==QEvent::User+SD_ERROR) {
-		stop();
-		emit published(false);
+		m_parent->stop();
+		emit m_parent->published(false);
 	}
 	if (event->type()==QEvent::User+SD_PUBLISH) {
-		d->m_published=true;
-		emit published(true);
-		m_serviceName = static_cast<PublishEvent*>(event)->m_name;
+		m_published=true;
+		emit m_parent->published(true);
+		m_parent->m_serviceName = static_cast<PublishEvent*>(event)->m_name;
 	}
 }
 
 void PublicService::virtual_hook(int, void*)
 {
 }
-
-static unsigned long publicIP()
-{
-	struct sockaddr_in addr;
-	socklen_t len = sizeof(addr);
-	int sock = socket(AF_INET,SOCK_DGRAM,0);
-	if (sock == -1) return 0;
-	addr.sin_family = AF_INET;
-	addr.sin_port = 1;	// Not important, any port and public address will do
-	addr.sin_addr.s_addr = 0x11111111;
-	if ((connect(sock,(const struct sockaddr*)&addr,sizeof(addr))) == -1) { close(sock); return 0; }
-	if ((getsockname(sock,(struct sockaddr*)&addr, &len)) == -1) { close(sock); return 0; }
-	::close(sock);
-	return addr.sin_addr.s_addr;
-}
-
 
 }
 
