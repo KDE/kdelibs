@@ -777,12 +777,17 @@ void KFontChooser::showXLFDArea(bool show)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+class KFontDialog::KFontDialogPrivate
+{
+public:
+    KFontDialogPrivate() {}
+};
 
 KFontDialog::KFontDialog( QWidget *parent,
 			  bool onlyFixed, bool modal,
 			  const QStringList &fontList, bool makeFrame, bool diff,
                           Qt::CheckState *sizeIsRelativeState )
-    : KDialog( parent )
+    : KDialog( parent ), d(new KFontDialogPrivate)
 {
     setCaption( i18n("Select Font") );
     setButtons( Ok | Cancel );
@@ -795,6 +800,10 @@ KFontDialog::KFontDialog( QWidget *parent,
     setMainWidget(chooser);
 }
 
+KFontDialog::~KFontDialog()
+{
+    delete d;
+}
 
 int KFontDialog::getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed,
                               QWidget *parent, bool makeFrame,

@@ -292,7 +292,7 @@ private:
 
 private:
   class Private;
-  Private *d;
+  Private * const d;
 };
 
 /**
@@ -348,6 +348,11 @@ public:
 	       const QStringList &fontlist = QStringList(),
 	       bool makeFrame = true, bool diff = false,
                Qt::CheckState *sizeIsRelativeState = 0L );
+
+  /**
+   * Destructs the font dialog.
+   */
+  virtual ~KFontDialog();
 
   /**
    * Sets the currently selected font in the dialog.
@@ -476,7 +481,7 @@ protected:
 
 private:
   class KFontDialogPrivate;
-  KFontDialogPrivate *d;
+  KFontDialogPrivate * const d;
 
 };
 
