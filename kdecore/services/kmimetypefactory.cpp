@@ -260,7 +260,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriorit
             // Do fallback code so that we never return 0 - unless we were only looking for HighPriorityRules
             if (whichPriority != HighPriorityRules)
                 return KMimeType::defaultMimeTypePtr();
-            return KMimeType::Ptr();
+            return KMimeType::defaultMimeTypePtr();
         }
     }
     if (device->size() == 0)
