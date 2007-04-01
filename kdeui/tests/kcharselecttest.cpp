@@ -11,7 +11,7 @@ int main (int argc,char **argv)
 
     KApplication app;
 
-    KCharSelect selector( 0, "char selector" );
+    KCharSelect selector( 0 );
     selector.resize( selector.sizeHint() );
     selector.show();
     selector.setWindowTitle( "KCharSelect Test" );
