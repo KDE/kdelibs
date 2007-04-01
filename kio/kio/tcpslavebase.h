@@ -27,10 +27,9 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-#include <ksocketbase.h>
 #include <kio/slavebase.h>
 
-namespace KNetwork { class KStreamSocket; }
+class QIODevice;
 
 namespace KIO {
 
@@ -96,16 +95,6 @@ protected:
     void setBlockSize(int sz);
 
     /**
-     * Determines the appropriate port to use.
-     *
-     * This functions attempts to discover the appropriate port.
-     *
-     * @param _port the port to try, if it works, it is returned
-     * @return the default port if the given port doesn't work
-     */
-    QString port(const QString& _port);
-
-    /**
      * Performs the initial TCP connection stuff and/or
      * SSL handshaking as necessary.
      *
@@ -115,15 +104,16 @@ protected:
      * connectResult() function to determine the result of the
      * request for connection.
      *
+     * @param protocol the protocol being used
      * @param host hostname
-     * @param service service name (this is mapped to a port number)
+     * @param port port number
      * @param sendError if true sends error message to calling app.
      *
      * @return on succes, true is returned.
      *         on failure, false is returned and an appropriate
      *         error message is send to the application.
      */
-    bool connectToHost( const QString &host, const QString& service,
+    bool connectToHost( const QString &protocol, const QString& host, quint16 port,
                         bool sendError = true );
 
     /**
@@ -308,7 +298,7 @@ protected:
     /**
      * Return the socket object, if the class ever needs to do anything to it
      */
-    KNetwork::KStreamSocket& socket();
+    QIODevice *socket() const;
 
 protected:
     bool m_bIsSSL;
