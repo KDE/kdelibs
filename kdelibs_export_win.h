@@ -35,14 +35,6 @@
 # endif 
 #endif 
 
-#ifndef KIOSLAVE_FILE_EXPORT
-# ifdef MAKE_KIO_FILE_LIB
-#  define KIOSLAVE_FILE_EXPORT KDE_EXPORT
-# else
-#  define KIOSLAVE_FILE_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef _CRT_SECURE_NO_DEPRECATE
 #define _CRT_SECURE_NO_DEPRECATE
 #endif

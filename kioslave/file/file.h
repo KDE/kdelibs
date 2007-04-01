@@ -23,20 +23,19 @@
 #ifndef __file_h__
 #define __file_h__
 
-#include <kdelibs_export.h>
+#include <kio/kio_export.h>
+#include <kio/global.h>
+#include <kio/slavebase.h>
+
+#include <QObject>
+#include <QHash>
+#include <QString>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #include <stdio.h>
 #include <unistd.h>
-
-#include <QObject>
-#include <QHash>
-#include <QString>
-
-#include <kio/global.h>
-#include <kio/slavebase.h>
 
 // Note that this header file is installed, so think twice
 // before breaking binary compatibility (read: it is forbidden :)

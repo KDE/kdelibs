@@ -37,8 +37,6 @@
 #define KNTLM_EXPORT KDE_EXPORT
 #define KUNITTEST_EXPORT KDE_EXPORT
 
-#define KIOSLAVE_FILE_EXPORT KDE_EXPORT
-
 #ifndef O_BINARY
 #define O_BINARY 0 /* for open() */
 #endif

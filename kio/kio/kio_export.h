@@ -28,22 +28,36 @@
 
 #ifndef KIO_EXPORT
 # if defined(MAKE_KIO_LIB)
-   /* We are building this library */ 
+   /* We are building this library */
 #  define KIO_EXPORT KDE_EXPORT
 # else
-   /* We are using this library */ 
+   /* We are using this library */
 #  define KIO_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef KIOSLAVE_FILE_EXPORT
+# if defined(MAKE_KIOSLAVE_FILE_LIB)
+   /* We are building this library */
+#  define KIOSLAVE_FILE_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */
+#  define KIOSLAVE_FILE_EXPORT KDE_IMPORT
 # endif
 #endif
 
 #else /* UNIX */
 
 #define KIO_EXPORT KDE_EXPORT
+#define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 
 #endif
 
 # ifndef KIO_EXPORT_DEPRECATED
 #  define KIO_EXPORT_DEPRECATED KDE_DEPRECATED KIO_EXPORT
+# endif
+# ifndef KIOSLAVE_FILE_EXPORT_DEPRECATED
+#  define KIOSLAVE_FILE_EXPORT_DEPRECATED KDE_DEPRECATED KIOSLAVE_FILE_EXPORT
 # endif
 
 #endif
