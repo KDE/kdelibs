@@ -22,9 +22,9 @@
 
 #include <solid/solid_export.h>
 
-#include <QObject>
-#include <QList>
-#include <ksocketaddress.h>
+#include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtNetwork/QHostAddress>
 
 namespace Solid
 {
@@ -54,14 +54,14 @@ namespace Ifaces
          *
          * @return the list of IP version 4 addresses
          */
-        virtual QList<KNetwork::KIpAddress> ipV4Addresses() const = 0;
+        virtual QList<QHostAddress> ipV4Addresses() const = 0;
 
         /**
          * Retrieves the IP version 6 addresses the device has on this network.
          *
          * @return the list of IP version 6 addresses
          */
-        virtual QList<KNetwork::KIpAddress> ipV6Addresses() const = 0;
+        virtual QList<QHostAddress> ipV6Addresses() const = 0;
 
         /**
          * Retrieves the IP version 4 subnetwork mask of this network.
@@ -90,7 +90,7 @@ namespace Ifaces
          *
          * @return the dns servers
          */
-        virtual QList<KNetwork::KIpAddress> dnsServers() const = 0;
+        virtual QList<QHostAddress> dnsServers() const = 0;
 
         /**
          * Retrieves the activation status of this network. For ethernets, this will always be true.

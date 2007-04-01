@@ -39,15 +39,15 @@ public:
                  QObject * parent = 0 );
     virtual ~FakeNetwork();
 
-    QList<KNetwork::KIpAddress> ipV4Addresses() const;
-    QList<KNetwork::KIpAddress> ipV6Addresses() const;
+    QList<QHostAddress> ipV4Addresses() const;
+    QList<QHostAddress> ipV6Addresses() const;
 
     QString subnetMask() const;
     QString broadcastAddress() const;
 
     QString route() const;
 
-    QList<KNetwork::KIpAddress> dnsServers() const;
+    QList<QHostAddress> dnsServers() const;
 
     void setActivated( bool );
     bool isActive() const;
@@ -58,7 +58,7 @@ Q_SIGNALS:
     void activationStateChanged( bool );
 
 protected:
-    QList<KNetwork::KIpAddress> stringlistToKIpAddress( const QStringList & ) const;
+    QList<QHostAddress> stringlistToKIpAddress( const QStringList & ) const;
     QMap<QString, QVariant> mPropertyMap;
 };
 
