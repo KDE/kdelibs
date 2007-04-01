@@ -19,7 +19,7 @@
 
 #include "classpreviews.h"
 
-KDialogPreview::KDialogPreview(QWidget * parent , const char * /* name , bool, WFlagsf */)
+KDialogPreview::KDialogPreview(QWidget * parent)
 {
    if (parent)
       setParent(parent);

@@ -35,7 +35,7 @@
 class KDialogPreview : public KDialog
 {
 public:
-	KDialogPreview(QWidget * parent = 0 , const char * name = 0/*, bool modal = false, WFlags f = 0*/);
+	KDialogPreview(QWidget * parent = 0);
 };
 
 #endif
