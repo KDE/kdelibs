@@ -325,7 +325,7 @@ using namespace std;
 #include <qhash.h>
 #include <qtextstream.h>
 
-#include <kdelibs_export.h>
+#include <kunittest_export.h>
 
 /*! @def CHECK(x,y)
  * Use this macro to perform an equality check. For example

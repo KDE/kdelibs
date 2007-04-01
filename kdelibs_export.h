@@ -33,9 +33,6 @@
 # include <kdelibs_export_win.h>
 #else /* UNIX */
 
-/* export statements for unix */
-#define KUNITTEST_EXPORT KDE_EXPORT
-
 #ifndef O_BINARY
 #define O_BINARY 0 /* for open() */
 #endif

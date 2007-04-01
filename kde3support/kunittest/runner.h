@@ -35,7 +35,7 @@ using namespace std;
 #include <qhash.h>
 #include <QtCore/QString>
 
-#include <kdelibs_export.h>
+#include <kunittest_export.h>
 
 #include "tester.h"
 
