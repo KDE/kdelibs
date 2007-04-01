@@ -4,7 +4,7 @@ if(KDE4_BUILD_TESTS)
 # Tests don't need to go into toplevel/bin, they are fine in the current dir.
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-include_directories(${KDE4_KDECORE_INCLUDES})
+include_directories(${KDE4_KDEUI_INCLUDES})
 
 #test5.cpp test5.h: $(srcdir)/test5.kcfg ../kconfig_compiler $(srcdir)/test5.kcfgc
 #	../kconfig_compiler $(srcdir)/test5.kcfg $(srcdir)/test5.kcfgc
@@ -34,7 +34,7 @@ gen_kcfg_test_source(test1 test1_SRCS)
 
 kde4_add_executable(test1 NOGUI ${test1_SRCS})
 
-target_link_libraries(test1  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test1  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -47,7 +47,7 @@ gen_kcfg_test_source(test2 test2_SRCS)
 
 kde4_add_executable(test2 NOGUI ${test2_SRCS})
 
-target_link_libraries(test2  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test2  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -60,7 +60,7 @@ gen_kcfg_test_source(test3 test3_SRCS)
 
 kde4_add_executable(test3 NOGUI ${test3_SRCS})
 
-target_link_libraries(test3  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test3  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -73,7 +73,7 @@ gen_kcfg_test_source(test4 test4_SRCS)
 
 kde4_add_executable(test4 NOGUI ${test4_SRCS})
 
-target_link_libraries(test4  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test4  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -86,7 +86,7 @@ gen_kcfg_test_source(test5 test5_SRCS)
 
 kde4_add_executable(test5 NOGUI ${test5_SRCS})
 
-target_link_libraries(test5  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test5  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -99,7 +99,7 @@ gen_kcfg_test_source(test6 test6_SRCS)
 
 kde4_add_executable(test6 NOGUI ${test6_SRCS})
 
-target_link_libraries(test6  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test6  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -112,7 +112,7 @@ gen_kcfg_test_source(test7 test7_SRCS)
 
 kde4_add_executable(test7 NOGUI ${test7_SRCS})
 
-target_link_libraries(test7  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test7  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -126,7 +126,7 @@ gen_kcfg_test_source(test8b test8_SRCS)
 
 kde4_add_executable(test8 NOGUI ${test8_SRCS})
 
-target_link_libraries(test8  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test8  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -139,7 +139,7 @@ gen_kcfg_test_source(test9 test9_SRCS)
 
 kde4_add_executable(test9 NOGUI ${test9_SRCS})
 
-target_link_libraries(test9  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test9  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -152,7 +152,7 @@ gen_kcfg_test_source(test10 test10_SRCS)
 
 kde4_add_executable(test10 NOGUI ${test10_SRCS})
 
-target_link_libraries(test10  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test10  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -165,7 +165,7 @@ gen_kcfg_test_source(test_dpointer test_dpointer_SRCS)
 
 kde4_add_executable(test_dpointer NOGUI ${test_dpointer_SRCS})
 
-target_link_libraries(test_dpointer  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test_dpointer  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -178,7 +178,7 @@ gen_kcfg_test_source(test_signal test_signal_SRCS)
 
 kde4_add_executable(test_signal NOGUI ${test_signal_SRCS})
 
-target_link_libraries(test_signal  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(test_signal  ${KDE4_KDEUI_LIBS} )
 
 
 ########### next target ###############
@@ -190,7 +190,7 @@ kde4_automoc(${kconfigcompiler_test_SRCS})
 
 #kde4_add_executable(kconfigcompiler_test NOGUI ${kconfigcompiler_test_SRCS})
 
-#target_link_libraries(kconfigcompiler_test  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}_debug )
+#target_link_libraries(kconfigcompiler_test  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY}_debug )
 
 endif(KDE4_BUILD_TESTS)
 
