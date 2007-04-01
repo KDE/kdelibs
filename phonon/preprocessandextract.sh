@@ -1,6 +1,6 @@
 #!/bin/sh
 EXTRACT="`dirname $0`/extractmethodcalls.rb"
-IGNORE="^\(trackinterface\|guiimpl\|kiofallbackimpl\|kiofallback\|guiinterface\|deinterlacefilter\|audiodevice\|audiodeviceenumerator\|audioplayer\|globalconfig\|objectdescriptionmodel\|audiooutputadaptor\|effectwidget\|mediacontrols\|videoplayer\|seekslider\|volumeslider\).cpp$"
+IGNORE="^\(guiimpl\|kiofallbackimpl\|kiofallback\|guiinterface\|deinterlacefilter\|audiodevice\|audiodeviceenumerator\|audioplayer\|globalconfig\|objectdescriptionmodel\|audiooutputadaptor\|effectwidget\|mediacontrols\|videoplayer\|seekslider\|volumeslider\).cpp$"
 
 if test -n "$1" -a -f "$1"; then
 	echo "preprocessing $1"

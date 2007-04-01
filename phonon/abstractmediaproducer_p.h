@@ -28,10 +28,14 @@
 
 namespace Phonon
 {
+class FrontendInterfacePrivate;
+
 class PHONONCORE_EXPORT AbstractMediaProducerPrivate : public BasePrivate, private BaseDestructionHandler
 {
 	K_DECLARE_PUBLIC( AbstractMediaProducer )
 	PHONON_PRIVATEABSTRACTCLASS
+    public:
+        QList<FrontendInterfacePrivate *> interfaceList;
 	protected:
 		AbstractMediaProducerPrivate()
 			: state( Phonon::LoadingState )

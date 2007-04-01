@@ -34,6 +34,8 @@
 #include <kdebug.h>
 #include <QStringList>
 
+#include "frontendinterface_p.h"
+
 #define PHONON_CLASSNAME AbstractMediaProducer
 #define PHONON_INTERFACENAME MediaProducerInterface
 
@@ -299,6 +301,10 @@ void AbstractMediaProducer::setupIface()
         kDebug(600) << "emitting a state change because the backend object has been replaced" << endl;
         emit stateChanged(backendState, d->state);
         d->state = backendState;
+    }
+
+    foreach (FrontendInterfacePrivate *f, d->interfaceList) {
+        f->backendObjectChanged();
     }
 }
 

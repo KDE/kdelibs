@@ -230,7 +230,7 @@ void MediaObjectPrivate::_k_stateChanged( Phonon::State newstate, Phonon::State 
     emit q->stateChanged(newstate, oldstate);
 }
 
-// setupIface is not called for ByteStream
+// setupIface is also called for ByteStream
 void MediaObject::setupIface()
 {
 	K_D( MediaObject );

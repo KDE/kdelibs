@@ -48,7 +48,7 @@ namespace Phonon
 	class PHONONCORE_EXPORT AbstractMediaProducer : public QObject, public Base
 	{
 		friend class MediaObjectPrivate;
-        friend class TrackInterface;
+        friend class FrontendInterfacePrivate;
 		Q_OBJECT
 		K_DECLARE_PRIVATE( AbstractMediaProducer )
 		PHONON_ABSTRACTBASE( AbstractMediaProducer )

@@ -22,29 +22,30 @@
 #include "addoninterface.h"
 #include <QList>
 #include <QVariant>
-#include <QSharedData>
+#include "frontendinterface_p.h"
 
 namespace Phonon
 {
-class TrackInterfacePrivate : public QSharedData
+class TrackInterfacePrivate : public FrontendInterfacePrivate
 {
     public:
-        TrackInterfacePrivate(AbstractMediaProducer *mp)
-            : media(mp)
-        {}
+        TrackInterfacePrivate(AbstractMediaProducer *mp) : FrontendInterfacePrivate(mp) {}
 
-        AbstractMediaProducer *media;
+        virtual void backendObjectChanged(QObject *);
+        TrackInterface *q;
 };
-
-//X TrackInterface::TrackInterface()
-//X {
-//X }
 
 TrackInterface::TrackInterface(AbstractMediaProducer *mp)
     : QObject(mp)
     , d(new TrackInterfacePrivate(mp))
 {
-    Q_ASSERT(mp);
+    d->q = this;
+}
+
+void TrackInterfacePrivate::backendObjectChanged(QObject *backendObject)
+{
+    QObject::connect(backendObject, SIGNAL(trackChanged(int)), q, SIGNAL(trackChanged(int)));
+    QObject::connect(backendObject, SIGNAL(availableTracksChanged(int)), q, SIGNAL(availableTracksChanged(int)));
 }
 
 TrackInterface::~TrackInterface()
@@ -61,7 +62,7 @@ bool TrackInterface::isValid() const
 }
 
 #define IFACE(retDefault) \
-    AddonInterface *iface = qobject_cast<AddonInterface *>(d->media->iface()); \
+    AddonInterface *iface = d->iface(); \
     do { \
         if (!iface) { \
             return retDefault; \

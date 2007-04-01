@@ -32,7 +32,6 @@ class PHONONCORE_EXPORT TrackInterface : public QObject
 {
     friend class AbstractMediaProducer;
     public:
-        //TrackInterface();
         TrackInterface(AbstractMediaProducer *);
         ~TrackInterface();
 

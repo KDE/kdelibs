@@ -64,10 +64,12 @@ void MethodTest::checkBrightnessControlMethods_data() { addColumns();
 void MethodTest::checkByteStreamMethods_data() { addColumns();
 #include "methods/abstractmediaproducer.cpp"
 #include "methods/bytestream.cpp"
+#include "methods/trackinterface.cpp"
 }
 void MethodTest::checkMediaObjectMethods_data() { addColumns();
 #include "methods/abstractmediaproducer.cpp"
 #include "methods/mediaobject.cpp"
+#include "methods/trackinterface.cpp"
 }
 void MethodTest::checkMediaQueueMethods_data() { addColumns();
 #include "methods/mediaqueue.cpp"

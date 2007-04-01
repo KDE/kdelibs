@@ -93,6 +93,10 @@ namespace Fake
             void hasVideoChanged(bool);
             void bufferStatus(int);
 
+            // AddonInterface:
+            void trackChanged(int);
+            void availableTracksChanged(int);
+
 		protected:
 			void fillBuffer( QVector<float>* buffer );
             void fillFrameData(Phonon::Experimental::VideoFrame *frame);
