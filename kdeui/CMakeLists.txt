@@ -148,6 +148,7 @@ set(kdeui_LIB_SRCS
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
+ widgets/kcharselectdata.cpp
  widgets/kcmodule.cpp
  widgets/kcolorbutton.cpp
  widgets/kcolorcombo.cpp

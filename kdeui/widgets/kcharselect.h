@@ -21,136 +21,89 @@
 #ifndef kcharselect_h
 #define kcharselect_h
 
-#include <qtableview.h>
-
 #include <qstring.h>
-#include <qpoint.h>
 #include <qstringlist.h>
+#include <qwidget.h>
+#include <kglobal.h>
+#include <kdeui_export.h>
 
-#include <kvbox.h>
-
-class QFontComboBox;
 class QFont;
-class QFontDatabase;
-class QMouseEvent;
-class QSpinBox;
-class KCharSelectTablePrivate;
-class KCharSelectPrivate;
-class KCharSelectItemModel;
-/**
- * @short Character selection table
- *
- * A table widget which displays the characters of a font. Internally
- * used by KCharSelect. See the KCharSelect documentation for further
- * details.
- *
- * @author Reginald Stadlbauer <reggie@kde.org>
- */
-
-class KDEUI_EXPORT KCharSelectTable : public QTableView
-{
-    Q_OBJECT
-
-public:
-    /**
-     * Constructor. Using @p _font, draw a table of chars from unicode
-     * table @p _tableNum. Character @p _chr in this table is highlighted.
-     */
-    KCharSelectTable( QWidget *parent, const QString &_font,
-		      const QChar &_chr, int _tableNum );
-
-    ~KCharSelectTable();
-  
-    virtual QSize sizeHint() const;
-    virtual void resizeEvent( QResizeEvent * );
-
-    /** Set the font (name) to be displayed to @p _font . */
-    virtual void setFont( const QString &_font );
-    /** Set the highlighted character to @p _chr . */
-    virtual void setChar( const QChar &_chr );
-    /** Set the table number (offset of 256 characters into
-        the font) to @p _tableNum . */
-    /*virtual no more*/ void setTableNum( int _tableNum );
-
-    /** @return Currently highlighted character. */
-    virtual QChar chr();
-
-protected:
-    //virtual void paintCell( class QPainter *p, int row, int col );
-
-    virtual void mousePressEvent( QMouseEvent *e ) {  mouseMoveEvent( e ); QTableView::mousePressEvent(e);}
-    virtual void mouseDoubleClickEvent ( QMouseEvent *e ){  mouseMoveEvent( e ); doubleClicked();}
-    virtual void mouseReleaseEvent( QMouseEvent *e ) { mouseMoveEvent( e ); activated( chr() ); activated(); }
-    virtual void mouseMoveEvent( QMouseEvent *e );
-
-    virtual void keyPressEvent( QKeyEvent *e );
-
-Q_SIGNALS:
-    void activated( const QChar &c );
-    void activated();
-    void focusItemChanged();
-    void focusItemChanged( const QChar &c );
-    void tableUp();
-    void tableDown();
-    void doubleClicked();
-
-private:
-    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ))
-    
-    virtual void setFont(const QFont &f) { QTableView::setFont(f); }
-    
-private:
-    friend class KCharSelectTablePrivate;
-    KCharSelectTablePrivate* const d;
-
-    Q_DISABLE_COPY(KCharSelectTable)
-};
+class QUrl;
 
 /**
  * @short Character selection widget
  *
  * This widget allows the user to select a character of a
- * specified font in a table
+ * specified font and to browse Unicode information
  *
  * \image html kcharselect.png "Character Selection Widget"
  *
  * You can specify the font whose characters should be displayed via
- * setFont() or in the constructor. Using enableFontCombo() you can allow the
- * user to choose the font from a combob-box. As only 256 characters
- * are displayed at once in the table, using the spinbox on the top
- * the user can choose starting from which character the table
- * displays them. This spinbox also can be enabled or disabled using
- * enableTableSpinBox().
+ * setFont() or in the constructor. Using GuiElements you can create a
+ * compact version of KCharSelect if there is not enough space and if you
+ * don't need all features.
  *
- * KCharSelect supports keyboard and mouse navigation. Click+Move
- * always selects the character below the mouse cursor. Using the
- * arrow keys moves the focus mark around and pressing RETURN
- * or SPACE selects the cell which contains the focus mark.
+ * KCharSelect displays one Unicode block at a time and provides
+ * categorized access to them. Unicode character names and further details,
+ * including cross references, are displayed. Additionally, there is a search
+ * to find characters.
  *
- * To get the current selected character, use the chr()
+ * To get the current selected character, use the currentChar()
  * method. You can set the character which should be displayed with
- * setChar() and the table number which should be displayed with
- * setTableNum().
+ * setChar().
  *
  * @author Reginald Stadlbauer <reggie@kde.org>
+ * @author Daniel Laidig <d.laidig@gmx.de>
  */
 
-class KDEUI_EXPORT KCharSelect : public KVBox
+class KDEUI_EXPORT KCharSelect : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY( QString fontFamily READ font WRITE setFont )
-    Q_PROPERTY( int tableNum READ tableNum WRITE setTableNum )
-    Q_PROPERTY( bool fontComboEnabled READ isFontComboEnabled WRITE enableFontCombo )
-    Q_PROPERTY( bool tableSpinBoxEnabled READ isTableSpinBoxEnabled WRITE enableTableSpinBox )
+    Q_PROPERTY(QFont font READ font WRITE setFont)
+    Q_PROPERTY(QChar currentChar READ currentChar WRITE setChar)
+    Q_PROPERTY(QList<QChar> displayedChars READ displayedChars)
 
 public:
     /**
-     * Constructor. @p font specifies which font should be displayed, @p
-     * chr which character should be selected and @p tableNum specifies
-     * the number of the table which should be displayed.
+     * Flags to set the shown widgets
      */
-    KCharSelect( QWidget *parent,
-		 const QString &font = QString(), const QChar &chr = ' ', int tableNum = 0 );
+    enum GuiElement {
+        /**
+         * Shows the search widgets
+         */
+        SearchLine = 0x01,
+        /**
+         * Shows the font combo box
+         */
+        FontCombo = 0x02,
+        /**
+         * Shows the font size spin box
+         */
+        FontSize = 0x04,
+        /**
+         * Shows the category/block selection combo boxes
+         */
+        BlockCombos = 0x08,
+        /**
+         * Shows the actual table
+         */
+        CharacterTable = 0x10,
+        /**
+         * Shows the detail browser
+         */
+        DetailBrowser = 0x20,
+        GuiElementsMax      = 65536
+    };
+    Q_DECLARE_FLAGS(GuiElements,
+                    GuiElement)
+
+    /**
+     * Constructor. @p chr defines which character should be selected and which block
+     * should be displayed, @p font specifies which font should be displayed. @p guiElements
+     * can be used to show a custom set of widgets.
+     */
+    KCharSelect(QWidget *parent, const QChar &chr = 0x0,
+                const QFont &font = QFont(), const GuiElements guiElements = GuiElements(65535));
     ~KCharSelect();
     /**
      * Reimplemented.
@@ -160,83 +113,60 @@ public:
     /**
      * Sets the font which is displayed to @p font
      */
-    void setFont( const QString &font );
-
-    /**
-     * Sets the currently selected character to @p chr.
-     */
-    void setChar( const QChar &chr );
-
-    /**
-     * Sets the currently displayed table to @p tableNum.
-     */
-    void setTableNum( int tableNum );
+    void setFont(const QFont &font);
 
     /**
      * Returns the currently selected character.
      */
-    virtual QChar chr() const;
+    virtual QChar currentChar() const;
 
     /**
      * Returns the currently displayed font.
      */
-    QString font() const;
+    QFont font() const;
 
     /**
-     * Returns the currently displayed table
+     * Returns a list of currently displayed characters.
      */
-    int tableNum() const;
+    QList<QChar> displayedChars() const;
 
+public Q_SLOTS:
     /**
-     * If @p e is set to true, the combobox which allows the user to
-     * select the font which should be displayed is enabled, else
-     * disabled.
+     * Highlights the character @p c. If the character is not displayed, the block is changed.
      */
-    void enableFontCombo( bool e );
-
-    /**
-     * If @p e is set to true, the spinbox which allows the user to
-     * specify which characters of the font should be displayed, is
-     * enabled, else disabled.
-     */
-    void enableTableSpinBox( bool e );
-
-    /**
-     * Returns wether the font combobox on the top is enabled or
-     * disabled.
-     *
-     * @see enableFontCombo()
-     */
-    bool isFontComboEnabled() const;
-
-    /**
-     * Returns wether the table spinbox on the top is enabled or
-     * disabled.
-     *
-     * @see enableTableSpinBox()
-     */
-    bool isTableSpinBoxEnabled() const;
+    void setChar(const QChar &c);
 
 Q_SIGNALS:
-    void highlighted( const QChar &c );
-    void highlighted();
-    void activated( const QChar &c );
-    void activated();
-    void fontChanged( const QString &_font );
-    void focusItemChanged();
-    void focusItemChanged( const QChar &c );
-    void doubleClicked();
+    /**
+     * A new font is selected or the font size changed.
+     */
+    void fontChanged(const QFont &_font);
+    /**
+     * The current character is changed.
+     */
+    void currentCharChanged(const QChar &c);
+    /**
+     * The currently displayed characters are changed (search results or block).
+     */
+    void displayedCharsChanged();
+    /**
+     * A character is selected to be inserted somewhere.
+     */
+    void charSelected(const QChar &c);
 
 private:
-    Q_PRIVATE_SLOT(d, void _k_charTableUp())
-    Q_PRIVATE_SLOT(d, void _k_charTableDown())
-    Q_PRIVATE_SLOT(d, void _k_fontSelected( const QString &))
-    Q_PRIVATE_SLOT(d, void _k_tableChanged( int _value ))
-    Q_PRIVATE_SLOT(d, void _k_slotUnicodeEntered())
-    Q_PRIVATE_SLOT(d, void _k_slotUpdateUnicode( const QChar &c ))
+    Q_PRIVATE_SLOT(d, void _k_fontSelected())
+    Q_PRIVATE_SLOT(d, void _k_slotUpdateUnicode(const QChar &c))
+    Q_PRIVATE_SLOT(d, void _k_sectionSelected(int index))
+    Q_PRIVATE_SLOT(d, void _k_blockSelected(int index))
+    Q_PRIVATE_SLOT(d, void _k_searchEditChanged())
+    Q_PRIVATE_SLOT(d, void _k_search())
+    Q_PRIVATE_SLOT(d, void _k_linkClicked(QUrl))
 
     class KCharSelectPrivate;
     KCharSelectPrivate* const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KCharSelect::GuiElements)
 
 #endif

@@ -21,102 +21,106 @@
 #include "kcharselect.h"
 
 #include "kcharselect_p.h"
-#include "kcharselect_p.moc"
 
 #include <qcolor.h>
 #include <qfontcombobox.h>
+#include <qcombobox.h>
 #include <qevent.h>
 #include <qfont.h>
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qpainter.h>
 #include <qpen.h>
-#include <qregexp.h>
 #include <qspinbox.h>
 #include <qstyle.h>
 #include <qtooltip.h>
-#include <qvalidator.h>
+#include <qboxlayout.h>
+#include <qsplitter.h>
+#include <qtextbrowser.h>
+#include <qpushbutton.h>
+#include <qtimer.h>
 
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
 #include <qheaderview.h>
+#include <klineedit.h>
 
 class KCharSelectTablePrivate
 {
 public:
-    KCharSelectTablePrivate(KCharSelectTable *q): q(q), m_model(0) {}
-  
-    void _k_slotCurrentChanged( const QModelIndex & current, const QModelIndex & previous );
-  
+    KCharSelectTablePrivate(KCharSelectTable *q): q(q), model(0) {}
     KCharSelectTable *q;
-  
-    /** Current font name. @see setFont() */
-    QString vFont;
-    /** Currently highlighted character. @see chr() @see setChar() */
-    QChar vChr;
-    /** Current table number. @see setTable() */
-    int vTableNum;
-    QPoint vPos;
-    QChar focusItem;
-    QPoint focusPos;
-    int temp;
-    KCharSelectItemModel *m_model;
+
+    QFont font;
+    KCharSelectItemModel *model;
+    QList<QChar> chars;
+    QChar chr;
+
+    QTimer* resizeTimer;
+
+    void _k_resizeCells();
+    void _k_doubleClicked(const QModelIndex & index);
+    void _k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
 };
 
 class KCharSelect::KCharSelectPrivate
 {
 public:
+    KLineEdit* searchLine;
     QLineEdit *unicodeLine;
     QFontComboBox *fontCombo;
-    QSpinBox *tableSpinBox;
+    QSpinBox *fontSizeSpinBox;
+    QComboBox *sectionCombo;
+    QComboBox *blockCombo;
     KCharSelectTable *charTable;
+    QTextBrowser *detailBrowser;
 
     KCharSelect *q;
 
-    inline void _k_charTableUp() { if ( q->tableNum() < 255 ) q->setTableNum( q->tableNum() + 1 ); }
-    inline void _k_charTableDown() { if ( q->tableNum() > 0 ) q->setTableNum( q->tableNum() - 1 ); }
-    void _k_fontSelected( const QString &_font );
-    void _k_tableChanged( int _value );
-    void _k_slotUnicodeEntered();
-    void _k_slotUpdateUnicode( const QChar &c );
+    QString createLinks(QString s);
+    void _k_fontSelected();
+    void _k_slotUpdateUnicode(const QChar &c);
+    void _k_sectionSelected(int index);
+    void _k_blockSelected(int index);
+    void _k_searchEditChanged();
+    void _k_search();
+    void _k_linkClicked(QUrl url);
 };
 
 /******************************************************************/
-/* Class: KCharSelectTable					  */
+/* Class: KCharSelectTable                                        */
 /******************************************************************/
 
-//==================================================================
-KCharSelectTable::KCharSelectTable( QWidget *parent, const QString &_font,
-				    const QChar &_chr, int _tableNum )
-    : QTableView( parent), d(new KCharSelectTablePrivate(this))
+KCharSelectTable::KCharSelectTable(QWidget *parent, const QFont &_font)
+        : QTableView(parent), d(new KCharSelectTablePrivate(this))
 {
-    d->vFont = _font;
-    d->vChr = _chr;
-    d->vTableNum = _tableNum;
-    d->vPos = QPoint( 0, 0 );
-    d->focusItem = _chr;
-    d->focusPos = QPoint( 0, 0 );
-    d->m_model = 0;
-      
-    setSelectionBehavior(QAbstractItemView::SelectItems);
+    d->font = _font;
+    d->model = 0;
+
+    d->resizeTimer = new QTimer(this);
+    d->resizeTimer->setSingleShot(true);
+    connect(d->resizeTimer, SIGNAL(timeout()), this, SLOT(_k_resizeCells()));
+
+    setTabKeyNavigation(false);
     setSelectionMode(QAbstractItemView::SingleSelection);
     QPalette _palette;
-    _palette.setColor( backgroundRole(), palette().color( QPalette::Base ) );
-    setPalette( _palette );
+    _palette.setColor(backgroundRole(), palette().color(QPalette::Base));
+    setPalette(_palette);
     verticalHeader()->setVisible(false);
     verticalHeader()->setResizeMode(QHeaderView::Custom);
     horizontalHeader()->setVisible(false);
     horizontalHeader()->setResizeMode(QHeaderView::Custom);
-    setTableNum(_tableNum);
-/*
-    setCellWidth( 20 );
-    setCellHeight( 25 );
-*/
-    //repaintContents( false );
-    
-    setFocusPolicy( Qt::StrongFocus );
-    //setBackgroundMode( Qt::NoBackground );
+
+    setFocusPolicy(Qt::StrongFocus);
+    setDragEnabled(true);
+    setAcceptDrops(true);
+    setDropIndicatorShown(false);
+    setDragDropMode(QAbstractItemView::DragDrop);
+
+    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(_k_doubleClicked(QModelIndex)));
+
+    d->resizeTimer->start();
 }
 
 KCharSelectTable::~KCharSelectTable()
@@ -124,258 +128,270 @@ KCharSelectTable::~KCharSelectTable()
     delete d;
 }
 
-//==================================================================
-void KCharSelectTable::setFont( const QString &_font )
+void KCharSelectTable::setFont(const QFont &_font)
 {
-    d->vFont = _font;
-    if (d->m_model) d->m_model->setFont(_font);
+    QTableView::setFont(_font);
+    d->font = _font;
+    if (d->model) d->model->setFont(_font);
+    d->resizeTimer->start();
 }
 
 QChar KCharSelectTable::chr()
 {
-    return d->vChr;
+    return d->chr;
 }
 
-//==================================================================
-void KCharSelectTable::setChar( const QChar &_chr )
+QFont KCharSelectTable::font() const
 {
-    //const uint short chr=_chr;
-    //if (chr)
-    d->vChr = _chr;
-#ifdef __GNUC__
-    #warning fixme //repaintContents( false );
-#endif
+    return d->font;
 }
 
-//==================================================================
-void KCharSelectTable::setTableNum( int _tableNum )
+QList<QChar> KCharSelectTable::displayedChars() const
 {
-    d->focusItem = QChar( _tableNum * 256 );
+    return d->chars;
+}
 
-    d->vTableNum = _tableNum;
-    
-    KCharSelectItemModel *m=d->m_model;
-    d->m_model=new KCharSelectItemModel(_tableNum,d->vFont,this);
-    setModel(d->m_model);
-    QItemSelectionModel *selectionModel=new QItemSelectionModel(d->m_model);
+void KCharSelectTable::setChar(const QChar &c)
+{
+    int pos = d->chars.indexOf(c);
+    if (pos != -1) {
+        setCurrentIndex(model()->index(pos / model()->columnCount(), pos % model()->columnCount()));
+    }
+}
+
+void KCharSelectTable::setContents(QList<QChar> chars)
+{
+    d->chars = chars;
+
+    KCharSelectItemModel *m = d->model;
+    d->model = new KCharSelectItemModel(chars, d->font, this);
+    setModel(d->model);
+    d->resizeTimer->start();
+    QItemSelectionModel *selectionModel = new QItemSelectionModel(d->model);
     setSelectionModel(selectionModel);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(selectionModel,SIGNAL(currentChanged ( const QModelIndex & ,const QModelIndex &)), this, SLOT(_k_slotCurrentChanged ( const QModelIndex &, const QModelIndex &)));
+    connect(selectionModel, SIGNAL(currentChanged(const QModelIndex & , const QModelIndex &)), this, SLOT(_k_slotCurrentChanged(const QModelIndex &, const QModelIndex &)));
+    connect(d->model, SIGNAL(showCharRequested(QChar)), this, SIGNAL(showCharRequested(QChar)));
     delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
-#ifdef __GNUC__
-    #warning fixme //repaintContents( false );
-#endif
 }
 
-//==================================================================
-void KCharSelectTablePrivate::_k_slotCurrentChanged ( const QModelIndex & current, const QModelIndex & previous ) {
-	Q_UNUSED(previous);
-	if (!m_model) return;
-	focusItem = m_model->data(current,KCharSelectItemModel::CharacterRole).toChar();
-	emit q->focusItemChanged( focusItem );
-	emit q->focusItemChanged();
-}
-
-
-//==================================================================
-QSize KCharSelectTable::sizeHint() const
+void KCharSelectTable::scrollTo(const QModelIndex & index, ScrollHint hint)
 {
-    if (!model()) return QTableView::sizeHint();
-    int w = columnWidth(0);
-    int h = rowHeight(0);
-
-    w *= model()->columnCount(QModelIndex());
-    h *= model()->rowCount(QModelIndex());
-
-    return QSize( w, h );
+    // this prevents horizontal scrolling when selecting a character in the last column
+    if (index.isValid() && index.column() != 0) {
+        QTableView::scrollTo(d->model->index(index.row(), 0), hint);
+    } else {
+        QTableView::scrollTo(index, hint);
+    }
 }
 
-//==================================================================
-void KCharSelectTable::resizeEvent( QResizeEvent * e )
+void KCharSelectTablePrivate::_k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-    if (!model()) return;
-    const int new_w   = (e->size().width()  /*- 2*(margin()+frameWidth())*/) / model()->columnCount(QModelIndex());
-    const int new_h   = (e->size().height() /*- 2*(margin()+frameWidth())*/) / model()->rowCount(QModelIndex());
-    const int columns=model()->columnCount(QModelIndex());
-    const int rows=model()->rowCount(QModelIndex());
-    setUpdatesEnabled(false);
-    QHeaderView* hv=horizontalHeader();
-    for (int i=0;i<columns;i++) {
-    	hv->resizeSection(i,new_w);
-    }
-    hv=verticalHeader();
-    for (int i=0;i<rows;i++) {
-    	hv->resizeSection(i,new_h);
-    }
+    Q_UNUSED(previous);
+    if (!model) return;
+    QVariant temp = model->data(current, KCharSelectItemModel::CharacterRole);
+    if (temp.type() != QVariant::Char)
+        return;
+    QChar c = temp.toChar();
+    chr = c;
+    emit q->focusItemChanged(c);
+}
 
-    setUpdatesEnabled(true);
+void KCharSelectTable::resizeEvent(QResizeEvent * e)
+{
     QTableView::resizeEvent(e);
-}
-
-#ifdef __GNUC__
-#warning fix all below
-#endif
-//==================================================================
-void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
-{
-    if (!model()) return;
-    const int numRows=model()->rowCount(QModelIndex());
-    const int numCols=model()->columnCount(QModelIndex());
-    const int row = rowAt( e->y() );
-    const int col = columnAt( e->x() );
-    if ( row >= 0 && row < numRows && col >= 0 && col < numCols ) {
-	const QPoint oldPos = d->vPos;
-
-	d->vPos.setX( col );
-	d->vPos.setY( row );
-
-	d->vChr = QChar( d->vTableNum * 256 + numCols * d->vPos.y() + d->vPos.x() );
-
-	const QPoint oldFocus = d->focusPos;
-
-	d->focusPos = d->vPos;
-	d->focusItem = d->vChr;
-
-#ifdef __GNUC__
-#warning fixme
-#endif
-/*	
-	repaintCell( oldFocus.y(), oldFocus.x(), true );
-	repaintCell( oldPos.y(), oldPos.x(), true );
-	repaintCell( d->vPos.y(), d->vPos.x(), true );
-*/
-	/*emit highlighted( d->vChr );
-	emit highlighted();*/
-
-	emit focusItemChanged( d->focusItem );
-	emit focusItemChanged();
+    if (e->size().width() != e->oldSize().width()) {
+        d->resizeTimer->start();
     }
 }
 
-//==================================================================
-void KCharSelectTable::keyPressEvent( QKeyEvent *e )
+void KCharSelectTablePrivate::_k_resizeCells()
 {
-    if (d->m_model)
-    switch ( e->key() ) {
-    case Qt::Key_PageDown:
-        emit tableDown();
-	return;
-        break;
-    case Qt::Key_PageUp:
-        emit tableUp();
-	return;
-        break;
-    case Qt::Key_Space:
-	emit activated( ' ' );
-	emit activated();
-	return;
-        break;
-    case Qt::Key_Enter: case Qt::Key_Return: {
-    	if (!currentIndex().isValid()) return;
-            const QPoint oldPos = d->vPos;
+    if (!q->model()) return;
+    static_cast<KCharSelectItemModel*>(q->model())->updateColumnCount(q->viewport()->size().width());
 
-	    d->vPos = d->focusPos;
-	    d->vChr = d->focusItem;
+    QChar oldChar = q->chr();
 
-	    emit activated( d->m_model->data(currentIndex(),KCharSelectItemModel::CharacterRole).toChar());
-	    emit activated();
+    const int new_w   = q->viewport()->size().width() / q->model()->columnCount(QModelIndex());
+    const int columns = q->model()->columnCount(QModelIndex());
+    const int rows = q->model()->rowCount(QModelIndex());
+    q->setUpdatesEnabled(false);
+    QHeaderView* hv = q->horizontalHeader();
+    int spaceLeft = q->viewport()->size().width() % new_w + 1;
+    for (int i = 0;i <= columns;i++) {
+        if (i < spaceLeft) {
+            hv->resizeSection(i, new_w + 1);
+        } else {
+            hv->resizeSection(i, new_w);
         }
-	return;
-	break;
     }
+
+    hv = q->verticalHeader();
+    const int new_h = QFontMetrics(font).xHeight() * 3;
+    for (int i = 0;i < rows;i++) {
+        hv->resizeSection(i, new_h);
+    }
+
+    q->setUpdatesEnabled(true);
+    q->setChar(oldChar);
+}
+
+void KCharSelectTablePrivate::_k_doubleClicked(const QModelIndex & index)
+{
+    QChar c = model->data(index, KCharSelectItemModel::CharacterRole).toChar();
+    if (c.isPrint()) {
+        emit q->activated(c);
+    }
+}
+
+void KCharSelectTable::keyPressEvent(QKeyEvent *e)
+{
+    if (d->model)
+        switch (e->key()) {
+        case Qt::Key_Space:
+            emit activated(' ');
+            return;
+            break;
+    case Qt::Key_Enter: case Qt::Key_Return: {
+            if (!currentIndex().isValid()) return;
+            QChar c = d->model->data(currentIndex(), KCharSelectItemModel::CharacterRole).toChar();
+            if (c.isPrint()) {
+                emit activated(c);
+            }
+        }
+        return;
+        break;
+        }
     QTableView::keyPressEvent(e);
 }
 
 
 /******************************************************************/
-/* Class: KCharSelect						  */
+/* Class: KCharSelect                                             */
 /******************************************************************/
 
-//==================================================================
-KCharSelect::KCharSelect( QWidget *parent, const QString &_font, const QChar &_chr, int _tableNum )
-  : KVBox( parent ), d(new KCharSelectPrivate)
+KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, const GuiElements guiElements)
+        : QWidget(parent), d(new KCharSelectPrivate)
 {
     d->q = this;
-    setSpacing( KDialog::spacingHint() );
-    KHBox* const bar = new KHBox( this );
-    bar->setSpacing( KDialog::spacingHint() );
 
-    QLabel* const lFont = new QLabel( i18n( "Font:" ), bar );
-    lFont->resize( lFont->sizeHint() );
-    lFont->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-    lFont->setMaximumWidth( lFont->sizeHint().width() );
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->setMargin(0);
+    if (SearchLine & guiElements) {
+        QHBoxLayout *searchLayout = new QHBoxLayout();
+        mainLayout->addLayout(searchLayout);
+        d->searchLine = new KLineEdit(this);
+        searchLayout->addWidget(d->searchLine);
+        d->searchLine->setClickMessage(i18n("Enter a search term here"));
+        d->searchLine->setClearButtonShown(true);
+        d->searchLine->setToolTip(i18n("Enter a search term here"));
+        connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
 
-    d->fontCombo = new QFontComboBox(bar);
+        QPushButton* searchButton = new QPushButton(i18n("Search"), this);
+        searchLayout->addWidget(searchButton);
+        connect(d->searchLine, SIGNAL(returnPressed(QString)), searchButton, SLOT(animateClick()));
+        connect(searchButton, SIGNAL(pressed()), this, SLOT(_k_search()));
+    }
+
+    if ((SearchLine & guiElements) && ((FontCombo & guiElements) || (FontSize & guiElements) || (BlockCombos & guiElements))) {
+        QFrame* line = new QFrame(this);
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        mainLayout->addWidget(line);
+    }
+
+    QHBoxLayout *comboLayout = new QHBoxLayout();
+
+
+    d->fontCombo = new QFontComboBox(this);
+    comboLayout->addWidget(d->fontCombo);
     d->fontCombo->setEditable(true);
-    d->fontCombo->resize( d->fontCombo->sizeHint() );
+    d->fontCombo->resize(d->fontCombo->sizeHint());
+    d->fontCombo->setToolTip(i18n("Set font"));
 
-    connect( d->fontCombo, SIGNAL( currentIndexChanged( const QString & ) ), this, SLOT( _k_fontSelected( const QString & ) ) );
+    d->fontSizeSpinBox = new QSpinBox(this);
+    comboLayout->addWidget(d->fontSizeSpinBox);
+    d->fontSizeSpinBox->setValue(QWidget::font().pointSize());
+    d->fontSizeSpinBox->setRange(1, 400);
+    d->fontSizeSpinBox->setSingleStep(1);
+    d->fontSizeSpinBox->setToolTip(i18n("Set font size"));
 
-    QLabel* const lTable = new QLabel( i18n( "Table:" ), bar );
-    lTable->resize( lTable->sizeHint() );
-    lTable->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-    lTable->setMaximumWidth( lTable->sizeHint().width() );
+    if (((FontCombo & guiElements) || (FontSize & guiElements)) && (BlockCombos & guiElements)) {
+        comboLayout->addSpacing(20);
+    }
+    connect(d->fontCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(_k_fontSelected()));
+    connect(d->fontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(_k_fontSelected()));
 
-    d->tableSpinBox = new QSpinBox( bar );
-    d->tableSpinBox->setRange(0,255);
-    d->tableSpinBox->setSingleStep(1);
-    d->tableSpinBox->resize( d->tableSpinBox->sizeHint() );
 
-    connect( d->tableSpinBox, SIGNAL( valueChanged( int ) ), this, SLOT( _k_tableChanged( int ) ) );
+    d->sectionCombo = new QComboBox(this);
+    d->sectionCombo->setToolTip(i18n("Select a category"));
+    comboLayout->addWidget(d->sectionCombo);
+    d->blockCombo = new QComboBox(this);
+    d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
+    d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    comboLayout->addWidget(d->blockCombo, 1);
+    d->sectionCombo->addItems(KCharSelectData::sectionList());
+    d->blockCombo->setMinimumWidth(QFontMetrics(QWidget::font()).averageCharWidth() * 25);
 
-    QLabel* const lUnicode = new QLabel( i18n( "&Unicode code point:" ), bar );
-    lUnicode->resize( lUnicode->sizeHint() );
-    lUnicode->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-    lUnicode->setMaximumWidth( lUnicode->sizeHint().width() );
+    connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
+    connect(d->blockCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_blockSelected(int)));
+    if ((FontCombo & guiElements) || (FontSize & guiElements) || (BlockCombos & guiElements)) {
+        mainLayout->addLayout(comboLayout);
+    }
+    if (!(FontCombo & guiElements)) {
+        d->fontCombo->hide();
+    }
+    if (!(FontSize & guiElements)) {
+        d->fontSizeSpinBox->hide();
+    }
+    if (!(BlockCombos & guiElements)) {
+        d->sectionCombo->hide();
+        d->blockCombo->hide();
+    }
 
-    const QRegExp rx( "[a-fA-F0-9]{1,4}" );
-    QValidator* const validator = new QRegExpValidator( rx, this );
+    QSplitter *splitter = splitter = new QSplitter(this);;
+    if ((CharacterTable & guiElements) || (DetailBrowser & guiElements)) {
+        mainLayout->addWidget(splitter);
+    } else {
+        splitter->hide();
+    }
+    d->charTable = new KCharSelectTable(this, font);
+    if (CharacterTable & guiElements) {
+        splitter->addWidget(d->charTable);
+        d->charTable->setFocus(Qt::OtherFocusReason);
+    } else {
+        d->charTable->hide();
+    }
 
-    d->unicodeLine = new QLineEdit( bar );
-    d->unicodeLine->setValidator(validator);
-    lUnicode->setBuddy(d->unicodeLine);
-    d->unicodeLine->resize( d->unicodeLine->sizeHint() );
-    d->_k_slotUpdateUnicode(_chr);
+    const QSize sz(200, 200);
+    d->charTable->resize(sz);
+    d->charTable->setMinimumSize(sz);
 
-    connect( d->unicodeLine, SIGNAL( returnPressed() ), this, SLOT( _k_slotUnicodeEntered() ) );
+    d->charTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    d->charTable = new KCharSelectTable( this, _font.isEmpty() ? KVBox::font().family() : _font, _chr, _tableNum );
+    setFont(font);
 
-    const QSize sz( 200,
-                    200 );    
-#ifdef __GNUC__
-    #warning fixme
-#endif
-    #if 0    
-    const QSize sz( charTable->contentsWidth()  +  4 ,
-                    charTable->contentsHeight() +  4 );
-    #endif
-    d->charTable->resize( sz );
-    //charTable->setMaximumSize( sz );
-    d->charTable->setMinimumSize( sz );
+    connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)), this, SLOT(_k_slotUpdateUnicode(const QChar &)));
+    connect(d->charTable, SIGNAL(activated(const QChar &)), this, SIGNAL(charSelected(const QChar &)));
+    connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)),
+            this, SIGNAL(currentCharChanged(const QChar &)));
 
-    d->charTable->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    d->charTable->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    connect(d->charTable, SIGNAL(showCharRequested(QChar)), this, SLOT(setChar(QChar)));
 
-    setFont( _font.isEmpty() ? KVBox::font().family() : _font );
-    setTableNum( _tableNum );
+    d->detailBrowser = new QTextBrowser(this);
+    if (DetailBrowser & guiElements) {
+        splitter->addWidget(d->detailBrowser);
+    } else {
+        d->detailBrowser->hide();
+    }
+    connect(d->detailBrowser, SIGNAL(anchorClicked(QUrl)), this, SLOT(_k_linkClicked(QUrl)));
 
-    connect( d->charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SLOT( _k_slotUpdateUnicode( const QChar & ) ) );
-    connect( d->charTable, SIGNAL( focusItemChanged( const QChar & ) ), this, SIGNAL( highlighted( const QChar & ) ) );
-    connect( d->charTable, SIGNAL( focusItemChanged() ), this, SIGNAL( highlighted() ) );
-    connect( d->charTable, SIGNAL( activated( const QChar & ) ), this, SIGNAL( activated( const QChar & ) ) );
-    connect( d->charTable, SIGNAL( activated() ), this, SIGNAL( activated() ) );
-    connect( d->charTable, SIGNAL( focusItemChanged( const QChar & ) ),
-	     this, SIGNAL( focusItemChanged( const QChar & ) ) );
-    connect( d->charTable, SIGNAL( focusItemChanged() ), this, SIGNAL( focusItemChanged() ) );
-    connect( d->charTable, SIGNAL( tableUp() ), this, SLOT( _k_charTableUp() ) );
-    connect( d->charTable, SIGNAL( tableDown() ), this, SLOT( _k_charTableDown() ) );
-
-    connect( d->charTable, SIGNAL(doubleClicked()),this,SIGNAL(doubleClicked()));
-
-    setFocusPolicy( Qt::StrongFocus );
-    setFocusProxy( d->charTable );
+    setFocusPolicy(Qt::StrongFocus);
+    setFocusProxy(d->charTable);
+    d->_k_sectionSelected(0);
+    d->_k_blockSelected(0);
+    setChar(chr);
 }
 
 KCharSelect::~KCharSelect()
@@ -383,115 +399,250 @@ KCharSelect::~KCharSelect()
     delete d;
 }
 
-//==================================================================
 QSize KCharSelect::sizeHint() const
 {
-    return KVBox::sizeHint();
+    return QWidget::sizeHint();
 }
 
-//==================================================================
-void KCharSelect::setFont( const QString &_font )
+void KCharSelect::setFont(const QFont &_font)
 {
     d->fontCombo->setCurrentFont(_font);
-    d->charTable->setFont( _font );
+    d->fontSizeSpinBox->setValue(_font.pointSize());
+    d->_k_fontSelected();
 }
 
-//==================================================================
-void KCharSelect::setChar( const QChar &_chr )
-{
-    d->charTable->setChar( _chr );
-    d->_k_slotUpdateUnicode( _chr );
-}
-
-//==================================================================
-void KCharSelect::setTableNum( int _tableNum )
-{
-    d->tableSpinBox->setValue( _tableNum );
-    d->charTable->setTableNum( _tableNum );
-}
-
-//==================================================================
-QChar KCharSelect::chr() const
+QChar KCharSelect::currentChar() const
 {
     return d->charTable->chr();
 }
 
-//==================================================================
-QString KCharSelect::font() const
+QFont KCharSelect::font() const
 {
-    return d->fontCombo->currentText();
+    return d->charTable->font();
 }
 
-//==================================================================
-int KCharSelect::tableNum() const
+QList<QChar> KCharSelect::displayedChars() const
 {
-    return d->tableSpinBox->value();
+    return d->charTable->displayedChars();
 }
 
-//==================================================================
-void KCharSelect::enableFontCombo( bool e )
+void KCharSelect::setChar(const QChar &c)
 {
-    d->fontCombo->setEnabled( e );
+    int block = KCharSelectData::blockIndex(c);
+    int section = KCharSelectData::sectionIndex(block);
+    d->sectionCombo->setCurrentIndex(section);
+    int index = d->blockCombo->findData(block);
+    if (index != -1) {
+        d->blockCombo->setCurrentIndex(index);
+    }
+    d->charTable->setChar(c);
 }
 
-//==================================================================
-void KCharSelect::enableTableSpinBox( bool e )
+void KCharSelect::KCharSelectPrivate::_k_fontSelected()
 {
-    d->tableSpinBox->setEnabled( e );
+    QFont font = fontCombo->currentFont();
+    font.setPointSize(fontSizeSpinBox->value());
+    charTable->setFont(font);
+    emit q->fontChanged(font);
 }
 
-//==================================================================
-bool KCharSelect::isFontComboEnabled() const
+void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 {
-    return d->fontCombo->isEnabled();
+    QString html;
+    if (c.isPrint()) {
+        html = QString("<p>" + i18n("Character:") + " <font size=\"+4\" face=\"") + charTable->font().family() + "\">&#" + QString::number(c.unicode()) + ";</font> " + KCharSelectData::formatCode(c.unicode())  + "<br>";
+    } else {
+        html = QString("<p>" + i18n("Character:") + " <b>" + i18n("Non-printable") + "</b> ") + KCharSelectData::formatCode(c.unicode())  + "<br>";
+    }
+    QString name = KCharSelectData::name(c);
+    if (!name.isEmpty()) {
+        html += i18n("Name: ") + Qt::escape(name) + "</p>";
+    }
+    QStringList aliases = KCharSelectData::aliases(c);
+    QStringList notes = KCharSelectData::notes(c);
+    QList<QChar> seeAlso = KCharSelectData::seeAlso(c);
+    QStringList equivalents = KCharSelectData::equivalents(c);
+    QStringList approxEquivalents = KCharSelectData::approximateEquivalents(c);
+    if (!(aliases.isEmpty() && notes.isEmpty() && seeAlso.isEmpty() && equivalents.isEmpty() && approxEquivalents.isEmpty())) {
+        html += "<p><b>" + i18n("Annotations and Cross References") + "</b></p>";
+    }
+
+    if (!aliases.isEmpty()) {
+        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
+        foreach(QString alias, aliases) {
+            html += "<li>" + createLinks(Qt::escape(alias)) + "</li>";
+        }
+        html += "</ul>";
+    }
+
+    if (!notes.isEmpty()) {
+        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
+        foreach(QString note, notes) {
+            html += "<li>" + createLinks(Qt::escape(note)) + "</li>";
+        }
+        html += "</ul>";
+    }
+
+    if (!seeAlso.isEmpty()) {
+        html += "<p style=\"margin-bottom: 0px;\">" + i18n("See also:") + "</p><ul style=\"margin-top: 0px;\">";
+        foreach(QChar c2, seeAlso) {
+            html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
+            if (c2.isPrint()) {
+                html += "&#" + QString::number(c2.unicode()) + "; ";
+            }
+            html += KCharSelectData::formatCode(c2.unicode()) + ' ' + Qt::escape(KCharSelectData::name(c2)) + "</a></li>";
+        }
+        html += "</ul>";
+    }
+
+    if (!equivalents.isEmpty()) {
+        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
+        foreach(QString equivalent, equivalents) {
+            html += "<li>" + createLinks(Qt::escape(equivalent)) + "</li>";
+        }
+        html += "</ul>";
+    }
+
+    if (!approxEquivalents.isEmpty()) {
+        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
+        foreach(QString approxEquivalent, approxEquivalents) {
+            html += "<li>" + createLinks(Qt::escape(approxEquivalent)) + "</li>";
+        }
+        html += "</ul>";
+    }
+
+    QStringList unihan = KCharSelectData::unihanInfo(c);
+    if (unihan.count() == 7) {
+        html += "<p><b>" + i18n("CJK Ideograph Information") + "</b></p><p>";
+        bool newline = true;
+        if (!unihan[0].isEmpty()) {
+            html += i18n("Definition in English: ") + unihan[0];
+            newline = false;
+        }
+        if (!unihan[2].isEmpty()) {
+            if (!newline) html += "<br>";
+            html += i18n("Mandarin Pronunciation: ") + unihan[2];
+            newline = false;
+        }
+        if (!unihan[1].isEmpty()) {
+            if (!newline) html += "<br>";
+            html += i18n("Cantonese Pronunciation: ") + unihan[1];
+            newline = false;
+        }
+        if (!unihan[6].isEmpty()) {
+            if (!newline) html += "<br>";
+            html += i18n("Japanese On Pronunciation: ") + unihan[6];
+            newline = false;
+        }
+        if (!unihan[5].isEmpty()) {
+            if (!newline) html += "<br>";
+            html += i18n("Japanese Kun Pronunciation: ") + unihan[5];
+            newline = false;
+        }
+        if (!unihan[3].isEmpty()) {
+            if (!newline) html += "<br>";
+            html += i18n("Tang Pronunciation: ") + unihan[3];
+            newline = false;
+        }
+        if (!unihan[4].isEmpty()) {
+            if (!newline) html += "<br>";
+            html += i18n("Korean Pronunciation: ") + unihan[4];
+            newline = false;
+        }
+        html += "</p>";
+    }
+
+    html += "<p><b>" + i18n("General Character Properties") + "</b><br>";
+    html += i18n("Block: ") + KCharSelectData::block(c) + "<br>";
+    html += i18n("Unicode category: ") + KCharSelectData::categoryText(c.category()) + "</p>";
+
+    QByteArray utf8 = QString(c).toUtf8();
+
+    html += "<p><b>" + i18n("Various Useful Representations") + "</b><br>";
+    html += i18n("UTF-8:");
+    foreach(unsigned char c, utf8)
+    html += " " + KCharSelectData::formatCode(c, 2, "0x");
+    html += "<br>" + i18n("UTF-16: ") + KCharSelectData::formatCode(c.unicode(), 4, "0x") + "<br>";
+    html += i18n("C octal escaped UTF-8: ");
+    foreach(unsigned char c, utf8)
+    html += KCharSelectData::formatCode(c, 3, "\\", 7);
+    html += "<br>" + i18n("XML decimal entity:") + " &amp;#" + QString::number(c.unicode()) + ";</p>";
+
+    detailBrowser->setHtml(html);
 }
 
-//==================================================================
-bool KCharSelect::isTableSpinBoxEnabled() const
+QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
 {
-    return d->tableSpinBox->isEnabled();
+    QRegExp rx("\\b([\\dABCDEF]{4})\\b");
+
+    QStringList chars;
+    int pos = 0;
+
+    while ((pos = rx.indexIn(s, pos)) != -1) {
+        chars << rx.cap(1);
+        pos += rx.matchedLength();
+    }
+
+    foreach(QString c, chars) {
+        int unicode = c.toInt(0, 16);
+        QString link = "<a href=\"" + c + "\">";
+        if (QChar(unicode).isPrint()) {
+            link += "&#" + QString::number(unicode) + "; U+" + c + ' ';
+        }
+        link += KCharSelectData::name(QChar(unicode)) + "</a>";
+        s.replace(c, link);
+    }
+    return s;
 }
 
-//==================================================================
-void KCharSelect::KCharSelectPrivate::_k_fontSelected( const QString &_font )
+void KCharSelect::KCharSelectPrivate::_k_sectionSelected(int index)
 {
-    charTable->setFont( _font );
-    emit q->fontChanged( _font );
+    blockCombo->clear();
+    QList<int> blocks = KCharSelectData::sectionContents(index);
+    foreach(int block, blocks) {
+        blockCombo->addItem(KCharSelectData::blockName(block), QVariant(block));
+    }
+    blockCombo->setCurrentIndex(0);
 }
 
-//==================================================================
-void KCharSelect::KCharSelectPrivate::_k_tableChanged( int _value )
+void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
 {
-    charTable->setTableNum( _value );
+    int block = blockCombo->itemData(index).toInt();
+    QList<QChar> contents = KCharSelectData::blockContents(block);
+    charTable->setContents(contents);
+    emit q->displayedCharsChanged();
+    charTable->setChar(contents[0]);
 }
 
-//==================================================================
-void KCharSelect::KCharSelectPrivate::_k_slotUnicodeEntered( )
+void KCharSelect::KCharSelectPrivate::_k_searchEditChanged()
 {
-    const QString s = unicodeLine->text();
-    if (s.isEmpty())
+    if (searchLine->text().isEmpty()) {
+        sectionCombo->setEnabled(true);
+        blockCombo->setEnabled(true);
+        _k_blockSelected(blockCombo->currentIndex());
+    } else {
+        sectionCombo->setEnabled(false);
+        blockCombo->setEnabled(false);
+    }
+}
+
+void KCharSelect::KCharSelectPrivate::_k_search()
+{
+    if (searchLine->text().isEmpty()) {
         return;
-    
-    bool ok;
-    const int uc = s.toInt(&ok, 16);
-    if (!ok)
-        return;
-    
-    const int table = uc / 256;
-    charTable->setTableNum( table );
-    tableSpinBox->setValue(table);
-    const QChar ch(uc);
-    charTable->setChar( ch );
-    emit q->activated( ch );
+    }
+    charTable->setContents(KCharSelectData::find(searchLine->text(), KCharSelectData::Default));
 }
 
-void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode( const QChar &c )
+void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
 {
-    const int uc = c.unicode();
-    QString s;
-    s.sprintf("%04X", uc);
-    unicodeLine->setText(s);
+    QString hex = url.toString();
+    if (hex.size() > 4) {
+        return;
+    }
+    int unicode = hex.toInt(0, 16);
+    q->setChar(QChar(unicode));
 }
-
 
 #include "kcharselect.moc"
+#include "kcharselect_p.moc"
