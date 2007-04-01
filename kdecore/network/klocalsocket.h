@@ -46,8 +46,6 @@ class KLocalSocketPrivate;
  *   sockets, but they don't exist as entries in the filesystem and,
  *   thus, aren't restricted by its permissions
  *
- * @note THIS CLASS IS NOT FINISHED. DO NOT USE IT.
- *       I WILL BREAK BINARY COMPATIBILITY OUTSIDE MONDAYS.
  * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KLocalSocket : public QTcpSocket
@@ -156,8 +154,6 @@ class KLocalSocketServerPrivate;
  * from users of KLocalSocket. It supports the same kind of socket
  * types that KLocalSocket does (see KLocalSocket::LocalSocketType).
  *
- * @note THIS CLASS IS NOT FINISHED. DO NOT USE IT.
- *       I WILL BREAK BINARY COMPATIBILITY OUTSIDE MONDAYS.
  * @author Thiago Macieira <thiago@kde.org>
  */
 class KDECORE_EXPORT KLocalSocketServer : public QObject
