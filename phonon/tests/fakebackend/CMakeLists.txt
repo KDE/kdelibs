@@ -28,7 +28,7 @@ kde4_automoc(${phonon_fake_PART_SRCS})
 kde4_add_plugin(phonon_fake ${phonon_fake_PART_SRCS})
 
 
-target_link_libraries(phonon_fake ${KDE4_PHONONCORE_LIBS})
+target_link_libraries(phonon_fake ${KDE4_PHONONCORE_LIBS} phononexperimental)
 
 install(TARGETS phonon_fake  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

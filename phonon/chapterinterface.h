@@ -35,7 +35,7 @@ class PHONONCORE_EXPORT ChapterInterface
         ~ChapterInterface();
     private:
         ChapterInterface(AbstractMediaProducer *);
-        KSharedPtr<ChapterInterfacePrivate> d;
+//        KSharedPtr<ChapterInterfacePrivate> d;
 };
 
 } // namespace Phonon

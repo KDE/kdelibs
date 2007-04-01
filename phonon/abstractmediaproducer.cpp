@@ -215,6 +215,7 @@ ErrorType AbstractMediaProducer::errorType() const
 }
 
 template<>
+PHONONCORE_EXPORT
 bool AbstractMediaProducer::hasInterface<TrackInterface>() const
 {
     K_D(const AbstractMediaProducer);
@@ -226,6 +227,7 @@ bool AbstractMediaProducer::hasInterface<TrackInterface>() const
 }
 
 template<>
+PHONONCORE_EXPORT
 bool AbstractMediaProducer::hasInterface<ChapterInterface>() const
 {
     K_D(const AbstractMediaProducer);

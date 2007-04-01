@@ -27,7 +27,7 @@
 #if defined _WIN32 || defined _WIN64
 
 #ifndef PHONONCORE_EXPORT
-# if defined(MAKE_PHONON_LIB)
+# if defined(MAKE_PHONONCORE_LIB)
    /* We are building this library */
 #  define PHONONCORE_EXPORT KDE_EXPORT
 # else
