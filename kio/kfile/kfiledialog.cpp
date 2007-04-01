@@ -27,6 +27,9 @@
 
 #include <QCheckBox>
 #include <QKeyEvent>
+#ifdef Q_WS_WIN
+# include <QFileDialog>
+#endif
 
 // #include <kaction.h>
 // #include <kapplication.h>
@@ -512,7 +515,7 @@ KUrl KFileDialog::getStartUrl( const KUrl& startDir,
 
 void KFileDialog::setStartDir( const KUrl& directory )
 {
-    KFileDialog::setStartDir(directory);
+    KFileWidget::setStartDir(directory);
 }
 
 KToolBar * KFileDialog::toolBar() const
