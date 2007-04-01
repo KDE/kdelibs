@@ -141,7 +141,7 @@ class KDE_EXPORT Backend {
 
 	private:
 		class BackendPrivate;
-		const BackendPrivate *d;
+		BackendPrivate *const d;
 		QString _name;
 		QString _path;
 		bool _open;
