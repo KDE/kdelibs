@@ -20,14 +20,13 @@
 #ifndef Phonon_FAKE_UI_BACKEND_H
 #define Phonon_FAKE_UI_BACKEND_H
 
-#include <phonon/phonon_export.h>
 #include <QObject>
 
 namespace Phonon
 {
 namespace Fake
 {
-	class PHONON_FAKEUI_EXPORT UiBackend : public QObject
+    class UiBackend : public QObject
 	{
 		Q_OBJECT
 		public:

@@ -20,7 +20,6 @@
 #ifndef Phonon_FAKE_BACKEND_H
 #define Phonon_FAKE_BACKEND_H
 
-#include <phonon/phonon_export.h>
 #include <phonon/objectdescription.h>
 #include <phonon/backendinterface.h>
 
@@ -36,7 +35,7 @@ namespace Fake
 {
 	class AudioOutput;
 
-    class PHONON_FAKE_EXPORT Backend : public QObject, public BackendInterface
+    class Backend : public QObject, public BackendInterface
 	{
 		Q_OBJECT
         Q_INTERFACES(Phonon::BackendInterface)

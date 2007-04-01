@@ -46,26 +46,6 @@
 # endif
 #endif
 
-#ifndef PHONON_FAKE_EXPORT
-# if defined(MAKE_PHONON_FAKE_LIB)
-   /* We are building this library */
-#  define PHONON_FAKE_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */
-#  define PHONON_FAKE_EXPORT KDE_IMPORT
-# endif
-#endif
-
-#ifndef PHONON_FAKEUI_EXPORT
-# if defined(MAKE_PHONON_FAKEUI_LIB)
-   /* We are building this library */
-#  define PHONON_FAKEUI_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */
-#  define PHONON_FAKEUI_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KAUDIODEVICELIST_EXPORT
 # if defined(MAKE_KAUDIODEVICELIST_LIB)
    /* We are building this library */
@@ -80,8 +60,6 @@
 
 #define PHONONCORE_EXPORT KDE_EXPORT
 #define PHONONUI_EXPORT KDE_EXPORT
-#define PHONON_FAKE_EXPORT KDE_EXPORT
-#define PHONON_FAKEUI_EXPORT KDE_EXPORT
 #define KAUDIODEVICELIST_EXPORT KDE_EXPORT
 
 #endif
