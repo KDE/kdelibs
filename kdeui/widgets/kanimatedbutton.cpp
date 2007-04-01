@@ -34,6 +34,15 @@
 class KAnimatedButtonPrivate
 {
 public:
+    KAnimatedButtonPrivate(KAnimatedButton *qq)
+        : q(qq)
+    {
+    }
+
+    void updateCurrentIcon();
+
+    KAnimatedButton *q;
+
   int                    frames;
   int                    current_frame;
   QPixmap                pixmap;
@@ -42,8 +51,7 @@ public:
 };
 
 KAnimatedButton::KAnimatedButton( QWidget *parent )
-  : QToolButton( parent ),
-    d( new KAnimatedButtonPrivate )
+    : QToolButton(parent), d(new KAnimatedButtonPrivate(this))
 {
   connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
 }
@@ -65,7 +73,7 @@ void KAnimatedButton::stop()
 {
   d->current_frame = 0;
   d->timer.stop();
-  updateCurrentIcon();
+  d->updateCurrentIcon();
 }
 
 void KAnimatedButton::setIcons( const QString& icons )
@@ -91,25 +99,25 @@ void KAnimatedButton::slotTimerUpdate()
   if (d->current_frame == d->frames)
      d->current_frame = 0;
 
-  updateCurrentIcon();
+  d->updateCurrentIcon();
 }
 
-void KAnimatedButton::updateCurrentIcon( )
+void KAnimatedButtonPrivate::updateCurrentIcon()
 {
-  if ( d->pixmap.isNull() )
+  if (pixmap.isNull())
     return;
 
-  int w = d->pixmap.width();
+  int w = pixmap.width();
   int h = w;
 
   QPixmap pix(w, h);
 
   {
     QPainter p(&pix);
-    p.drawPixmap(QPoint(0,0), d->pixmap, QRect(0, d->current_frame*h, w, h));
+    p.drawPixmap(QPoint(0,0), pixmap, QRect(0, current_frame * h, w, h));
   }
 
-  setIcon(QIcon(pix));
+  q->setIcon(QIcon(pix));
 }
 
 void KAnimatedButton::updateIcons()
@@ -128,7 +136,7 @@ void KAnimatedButton::updateIcons()
   }
   d->pixmap = QPixmap::fromImage(img);
 
-  updateCurrentIcon();
+  d->updateCurrentIcon();
 }
 
 int KAnimatedButton::iconDimensions() const

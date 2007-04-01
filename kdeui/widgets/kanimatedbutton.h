@@ -22,10 +22,6 @@
 #include <kdeui_export.h>
 #include <QtGui/QToolButton>
 
-class QStringList;
-class QPainter;
-class QMouseEvent;
-
 /**
  * @short An extended version of QToolButton which can display an animated icon.
  *
@@ -101,9 +97,9 @@ protected Q_SLOTS:
   void slotTimerUpdate();
 
 private:
-  void updateCurrentIcon();
-
   class KAnimatedButtonPrivate *const d;
+
+    Q_DISABLE_COPY(KAnimatedButton)
 };
 
 #endif // _KANIMWIDGET_H
