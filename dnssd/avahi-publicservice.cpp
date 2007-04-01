@@ -1,0 +1,213 @@
+/* This file is part of the KDE project
+ *
+ * Copyright (C) 2004, 2005 Jakub Stachowski <qbast@go2.pl>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#include "config.h"
+
+#include "publicservice.h"
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <qapplication.h>
+#include <ksocketaddress.h>
+#include <unistd.h>
+#include "servicebrowser.h"
+#include "settings.h"
+#include "avahi_server_interface.h"
+#include "avahi_entrygroup_interface.h"
+#include "avahi-publicservice_p.h"
+
+namespace DNSSD
+{
+
+PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
+			      const QString& domain)
+  		: QObject(), ServiceBase(name, type, QString::null, domain, port), d(new PublicServicePrivate(this))
+{
+	if (domain.isNull()) m_domain="local.";
+}
+
+
+PublicService::~PublicService()
+{
+	delete d;
+}
+
+void PublicServicePrivate::tryApply()
+{
+    if (fillEntryGroup()) commit();
+    else {
+	m_parent->stop();
+	emit m_parent->published(false);
+    }
+}
+
+void PublicService::setServiceName(const QString& serviceName)
+{
+	m_serviceName = serviceName;
+	if (d->m_running) {
+	    d->m_group->Reset();
+	    d->tryApply();
+	} 
+}
+
+void PublicService::setDomain(const QString& domain)
+{
+	m_domain = domain;
+	if (d->m_running) {
+	    d->m_group->Reset();
+	    d->tryApply();
+	} 
+}
+
+
+void PublicService::setType(const QString& type)
+{
+	m_type = type;
+	if (d->m_running) {
+	    d->m_group->Reset();
+	    d->tryApply();
+	} 
+}
+
+void PublicService::setPort(unsigned short port)
+{
+	m_port = port;
+	if (d->m_running) {
+	    d->m_group->Reset();
+	    d->tryApply();
+    	} 
+}
+
+void PublicService::setTextData(const QMap<QString,QString>& textData)
+{
+	m_textData = textData;
+	if (d->m_running) {
+	    d->m_group->Reset();
+	    d->tryApply();
+	} 
+}
+
+bool PublicService::isPublished() const
+{
+	return d->m_published;
+}
+
+bool PublicService::publish()
+{
+	publishAsync();
+	while (d->m_running && !d->m_published) QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+	return d->m_published;
+}
+
+void PublicService::stop()
+{
+    if (d->m_group) d->m_group->Reset();
+    d->m_published = false;
+}
+bool PublicServicePrivate::fillEntryGroup()
+{
+    if (!m_group) {
+	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+	QDBusReply<QDBusObjectPath> rep=s.EntryGroupNew();
+	if (!rep.isValid()) return false;
+	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
+    }
+    QMap<QString,QString>::ConstIterator itEnd = m_parent->m_textData.end();
+//    for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
+//	s = avahi_string_list_add_pair(s, it.key().utf8(),it.data().utf8());
+    //FIXME: domainToDNS needed?
+    m_group->AddService(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type ,m_parent->m_domain ,
+	m_parent->m_hostName,m_parent->m_port,QByteArray());
+    return true;
+}
+
+void PublicServicePrivate::serverStateChanged(int s,const QString&)
+{
+    if (!m_running) return;
+    switch (s) {
+	case AVAHI_CLIENT_FAILURE:
+	    m_parent->stop();
+	    emit m_parent->published(false);
+	    break;
+	case AVAHI_CLIENT_S_REGISTERING:
+	case AVAHI_CLIENT_S_COLLISION:
+	    m_group->Reset();
+	    m_collision=true;
+	    break;
+	case AVAHI_CLIENT_S_RUNNING:
+	    if (m_collision) {
+		m_collision=false;
+		tryApply();
+	    }
+    }
+}				    
+
+void PublicService::publishAsync()
+{
+	if (d->m_running) stop();
+	
+	if (!d->m_group) {
+	    emit published(false);
+	    return;
+	}
+	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+	int state=AVAHI_CLIENT_FAILURE;
+	QDBusReply<int> rep=s.GetState();
+	
+	if (rep.isValid()) state=rep.value();
+
+	d->m_running=true; 
+	d->m_collision=true; // make it look like server is getting out of collision to force registering
+	d->serverStateChanged(state, QString());
+}
+
+
+void PublicServicePrivate::groupStateChanged(int s,  const QString& reason)
+{
+    switch (s) {
+    case AVAHI_ENTRY_GROUP_COLLISION: {
+    	    org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+	    QDBusReply<QString> rep=s.GetAlternativeServiceName(m_parent->m_serviceName);
+	    if (rep.isValid())  m_parent->setServiceName(rep.value());
+	    else serverStateChanged(AVAHI_CLIENT_FAILURE, reason);
+	    break;
+	    }
+    case AVAHI_ENTRY_GROUP_ESTABLISHED:
+	    m_published=true;
+	    emit m_parent->published(true);
+	    break;
+    case AVAHI_ENTRY_GROUP_FAILURE:
+	    serverStateChanged(AVAHI_CLIENT_FAILURE, reason);
+    default: 
+	break;
+    }
+}
+
+void PublicService::virtual_hook(int, void*)
+{
+}
+
+
+}
+
+#include "publicservice.moc"
+#include "avahi-publicservice_p.moc"

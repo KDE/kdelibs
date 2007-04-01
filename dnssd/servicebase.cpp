@@ -45,6 +45,7 @@ QString ServiceBase::encode()
 
 void ServiceBase::decode(const QString& name)
 {
+    //FIXME: decode subtype
 	QString rest;
 	if (name[0]=='_') { 		// metaquery
 		m_serviceName.clear();
@@ -87,6 +88,10 @@ const QString& ServiceBase::hostName() const
 	return m_hostName;
 }
 
+const QString& ServiceBase::subtype() const
+{
+        return m_subtype;
+}
 unsigned short ServiceBase::port() const
 {
 	return m_port;

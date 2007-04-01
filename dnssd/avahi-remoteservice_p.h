@@ -18,31 +18,32 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
-#include "domainbrowser.h"
+#ifndef DNSSDREMOTESERVICE_P_H
+#define DNSSDREMOTESERVICE_P_H
+
+#include <QtCore/QObject>
 
 namespace DNSSD
 {
 
-DomainBrowser::DomainBrowser(DomainType, QObject *parent) : QObject(parent), d(0)
-{}
-
-DomainBrowser::~DomainBrowser()
-{}
-
-
-void DomainBrowser::startBrowse()
-{}
-
-QStringList DomainBrowser::domains() const
+class RemoteServicePrivate : public QObject
 {
-	return QStringList();
+Q_OBJECT
+public:
+	RemoteServicePrivate(RemoteService* parent) : QObject(), m_resolved(false), m_running(false), m_resolver(0), m_parent(parent)
+	{}
+        ~RemoteServicePrivate() {  if (m_resolver) m_resolver->Free(); }
+	bool m_resolved;
+	bool m_running;
+	org::freedesktop::Avahi::ServiceResolver* m_resolver;
+	RemoteService* m_parent;
+	void stop();
+
+private Q_SLOTS:
+        void gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int aprotocol, const QString &address, ushort port, const QByteArray &txt, uint flags);
+	void gotError();
+};
+
 }
 
-bool DomainBrowser::isRunning() const
-{
-	return false;
-}
-
-}
-#include "domainbrowser.moc"
+#endif

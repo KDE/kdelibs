@@ -18,31 +18,40 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
-#include "domainbrowser.h"
+#ifndef DNSSDSERVICEBROWSER_P_H
+#define DNSSDSERVICEBROWSER_P_H
+
+#include <QtCore/QObject>
 
 namespace DNSSD
 {
 
-DomainBrowser::DomainBrowser(DomainType, QObject *parent) : QObject(parent), d(0)
-{}
-
-DomainBrowser::~DomainBrowser()
-{}
-
-
-void DomainBrowser::startBrowse()
-{}
-
-QStringList DomainBrowser::domains() const
+class ServiceBrowserPrivate : public QObject
 {
-	return QStringList();
+Q_OBJECT
+public:
+	ServiceBrowserPrivate(ServiceBrowser* parent) : QObject(), m_running(false), m_browser(0), m_parent(parent)
+	{}
+        ~ServiceBrowserPrivate() {  if (m_browser) m_browser->Free(); }
+	QList<RemoteService::Ptr> m_services;
+	QList<RemoteService::Ptr> m_duringResolve;
+	QString m_type;
+	QString m_domain;
+	bool m_autoResolve;
+	bool m_running;
+	bool m_finished;
+	bool m_browserFinished;
+	org::freedesktop::Avahi::ServiceBrowser* m_browser;
+	ServiceBrowser* m_parent;
+
+private Q_SLOTS:
+	void browserFinished();
+	void queryFinished();
+	void serviceResolved(bool success);
+	void gotNewService(int,int,const QString&,const QString&,const QString&, uint);
+	void gotRemoveService(int,int,const QString&,const QString&,const QString&, uint);
+};
+
 }
 
-bool DomainBrowser::isRunning() const
-{
-	return false;
-}
-
-}
-#include "domainbrowser.moc"
+#endif

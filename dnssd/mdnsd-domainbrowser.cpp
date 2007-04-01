@@ -30,7 +30,7 @@
 namespace DNSSD
 {
 
-DomainBrowser::DomainBrowser(QObject *parent) : QObject(parent),d(new DomainBrowserPrivate(this))
+DomainBrowser::DomainBrowser(DomainType, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate(this))
 {
 	d->m_running = false;
 	d->m_domains = Configuration::domainList();

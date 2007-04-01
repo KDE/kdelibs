@@ -30,19 +30,20 @@ namespace DNSSD
 class DomainBrowserPrivate;
 
 /**
-@short Class used to provide  list of additional domains for browsing.
+@short Class used to provide  list of additional domains for browsing or publishing.
 @author Jakub Stachowski
 */
 class KDNSSD_EXPORT DomainBrowser : public QObject
 {
 	Q_OBJECT
 public:
+	enum DomainType { Browsing, Publishing };
 	/**
 	Standard constructor. It takes all parameters from global configuration.
 	All changes in configuration are applied immediately.
 	@param parent Parent object.
 	 */
-	DomainBrowser(QObject *parent=0);
+	explicit DomainBrowser(DomainType type, QObject *parent=0);
 
 	~DomainBrowser();
 

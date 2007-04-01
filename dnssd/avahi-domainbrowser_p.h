@@ -18,31 +18,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
-#include "domainbrowser.h"
+#ifndef DNSSDDOMAINBROWSER_P_H
+#define DNSSDDOMAINBROWSER_P_H
 
 namespace DNSSD
 {
 
-DomainBrowser::DomainBrowser(DomainType, QObject *parent) : QObject(parent), d(0)
-{}
+class DomainBrowserPrivate : public QObject 
+{   
+Q_OBJECT
+public: 
+    DomainBrowserPrivate(DomainBrowser::DomainType type, DomainBrowser* parent) : m_type(type), m_browser(0), m_parent(parent),m_started(false) {}
+    ~DomainBrowserPrivate() {  if (m_browser) m_browser->Free(); }
 
-DomainBrowser::~DomainBrowser()
-{}
-
-
-void DomainBrowser::startBrowse()
-{}
-
-QStringList DomainBrowser::domains() const
-{
-	return QStringList();
-}
-
-bool DomainBrowser::isRunning() const
-{
-	return false;
-}
+    DomainBrowser::DomainType m_type;
+    org::freedesktop::Avahi::DomainBrowser* m_browser;
+    DomainBrowser* m_parent;
+    bool m_started;
+    QSet<QString> m_domains;
+private Q_SLOTS:
+    void gotNewDomain(int,int,const QString&, uint);
+    void gotRemoveDomain(int,int,const QString&, uint);
+    
+};		
 
 }
-#include "domainbrowser.moc"
+#endif
