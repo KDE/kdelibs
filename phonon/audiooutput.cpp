@@ -27,7 +27,6 @@
 
 #include <cmath>
 #include <klocale.h>
-#include <QApplication>
 
 #define PHONON_CLASSNAME AudioOutput
 #define PHONON_INTERFACENAME AudioOutputInterface
@@ -253,24 +252,22 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeT
     deviceBeforeFallback = outputDeviceIndex;
     outputDeviceIndex = newIndex;
     emit q->outputDeviceChanged(AudioOutputDevice::fromIndex(outputDeviceIndex));
-    if (QApplication::type() != QApplication::Tty) {
-        QString text;
-        AudioOutputDevice device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
-        AudioOutputDevice device2 = AudioOutputDevice::fromIndex(outputDeviceIndex);
-        switch (type) {
-        case FallbackChange:
-            text = i18n("The audio playback device '<i>%1</i>' does not work. "
-                "Falling back to '<i>%2</i>'.", device1.name(), device2.name());
-            break;
-        case HigherPreferenceChange:
-            text = i18n("Switching to the audio playback device '<i>%1</i>' "
-                    "which just became available and has higher preference.", device2.name());
-            break;
-        }
-        GuiInterface::instance()->notification("AudioDeviceFallback", text,
-                QStringList(i18n("Revert back to device '%1'", device1.name())),
-                q, SLOT(_k_revertFallback()));
+    QString text;
+    AudioOutputDevice device1 = AudioOutputDevice::fromIndex(deviceBeforeFallback);
+    AudioOutputDevice device2 = AudioOutputDevice::fromIndex(outputDeviceIndex);
+    switch (type) {
+    case FallbackChange:
+        text = i18n("The audio playback device '<i>%1</i>' does not work. "
+            "Falling back to '<i>%2</i>'.", device1.name(), device2.name());
+        break;
+    case HigherPreferenceChange:
+        text = i18n("Switching to the audio playback device '<i>%1</i>' "
+                "which just became available and has higher preference.", device2.name());
+        break;
     }
+    GuiInterface::instance()->notification("AudioDeviceFallback", text,
+            QStringList(i18n("Revert back to device '%1'", device1.name())),
+            q, SLOT(_k_revertFallback()));
 }
 
 } //namespace Phonon
