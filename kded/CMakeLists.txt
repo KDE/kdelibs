@@ -43,7 +43,7 @@ target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KDECORE_LIBS} kio )
 
 install(TARGETS kdeinit_kbuildsycoca4  DESTINATION ${LIB_INSTALL_DIR} )
 # ## test. but ideally we don't want the .so installed
-set_target_properties(kdeinit_kbuildsycoca4 PROPERTIES VERSION 4.0.0 SOVERSION 4)
+set_target_properties(kdeinit_kbuildsycoca4 PROPERTIES SOVERSION 4)
 
 target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
 install(TARGETS kbuildsycoca4 DESTINATION ${BIN_INSTALL_DIR} )
