@@ -1109,6 +1109,7 @@ if needed (see the KURLDrag section)</li>
 <h4>KEditToolbar</h4>
 <ul>
 <li>KEditToolbar is now KEditToolBar</li>
+<li>The constructors for KEditToolBar now take as the second argument an optional QString naming which toolbar to edit. If QString() is passed, the default (or only) toolbar is set for editting. If you previously used one of the constructors which did not have a defaultToolbar parameter, then you will want to pass in QString() for this parameter.</li>
 </ul>
 
 <h4>KEditToolbarWidget</h4>
