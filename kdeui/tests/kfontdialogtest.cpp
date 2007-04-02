@@ -42,8 +42,8 @@
 
   QFont font;
   int nRet = KFontDialog::getFont(font);
-  int flags;
-  nRet = KFontDialog::getFontDiff(font, flags);
+  KFontChooser::FontDiffFlags diffFlags;
+  nRet = KFontDialog::getFontDiff(font, diffFlags);
 
   return nRet;
 }
