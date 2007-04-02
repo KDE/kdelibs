@@ -97,7 +97,7 @@ void K3IconView::slotOnItem( Q3IconViewItem *item )
     if ( item ) {
         if ( m_bUseSingle ) {
             if ( m_bChangeCursorOverItem )
-                viewport()->setCursor( KCursor().handCursor() );
+                viewport()->setCursor(QCursor(Qt::PointingHandCursor));
 
             if ( (m_autoSelectDelay > -1) ) {
                 m_pAutoSelect->setSingleShot( true );
