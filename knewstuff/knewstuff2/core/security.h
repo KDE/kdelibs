@@ -25,8 +25,8 @@
 #include <qmap.h>
 #include <QtCore/QObject>
 
-class KProcIO;
-class KProcess;
+class K3ProcIO;
+class K3Process;
 
 struct KeyStruct {
    QString id;
@@ -124,8 +124,8 @@ private:
    QString m_secretKey; /// the key used for signing
 
 private Q_SLOTS:
-   void slotProcessExited(KProcess *process);
-   void slotDataArrived(KProcIO *process);
+   void slotProcessExited(K3Process *process);
+   void slotDataArrived(K3ProcIO *process);
 
 Q_SIGNALS:
    /** Sent when the validity check is done.

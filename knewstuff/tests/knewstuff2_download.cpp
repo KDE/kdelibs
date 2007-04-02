@@ -42,6 +42,8 @@ KNSButton::KNSButton(QWidget *parent /*= 0*/)
 
 void KNSButton::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     QPalette palette;
     QPainter p(this);
     int h = height();
@@ -58,9 +60,10 @@ void KNSButton::paintEvent(QPaintEvent *event)
 
     //Draw the text and the icon
     p.setPen(Qt::black);
-    if (&icon()) {
+    QIcon ic = icon();
+    if (!ic.isNull()) {
         p.drawPixmap(QRect(10, ((h/2) - 16), 32, 32),
-                     icon().pixmap(QSize(32, 32)), QRect(0, 0, 32, 32));
+                     ic.pixmap(QSize(32, 32)), QRect(0, 0, 32, 32));
     }
 
     p.drawText(QRect((w - (w - 40)), (h/2 - 20), (w - 40), h), Qt::AlignCenter, text());
@@ -189,6 +192,8 @@ KNewStuff2Download::KNewStuff2Download()
 
 void KNewStuff2Download::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
+
     int frameWidth = frame->size().width();
     int frameHeight = frame->size().height();
 
@@ -237,6 +242,7 @@ void KNewStuff2Download::buttonToggled(bool checked)
 
 void KNewStuff2Download::switchCategory(KNewStuff2Download::Category category)
 {
+    Q_UNUSED(category);
 //TODO
 }
 

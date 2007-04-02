@@ -26,7 +26,7 @@
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <klocale.h>
-#include <kprocess.h>
+#include <k3process.h>
 
 #include <kio/passworddialog.h>
 
@@ -388,17 +388,19 @@ void KDXSButton::slotTriggered(QAction *action)
 	}
 	if(action == action_contactbymail)
 	{
+		// FIXME: use real data
 		QString address = "spillner@kde.org";
 		KToolInvocation::invokeMailer(address, i18n("KNewStuff contributions"), "");
 	}
 	if(action == action_contactbyjabber)
 	{
+		// FIXME: use real data
 		QString address = "josef@jabber.org";
-		KProcess proc;
+		K3Process proc;
 		proc << "kopete";
 		proc << "--autoconnect";
 		proc << address;
-		proc.start(KProcess::DontCare);
+		proc.start(K3Process::DontCare);
 	}
 	if(action == action_collabtranslation)
 	{

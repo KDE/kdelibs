@@ -33,7 +33,7 @@
 #include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
-#include <kprocio.h>
+#include <k3procio.h>
 
  //app includes
 #include "security.h"
@@ -62,11 +62,11 @@ void Security::readKeys()
   }
   m_runMode = List;
   m_keys.clear();
-  KProcIO *readProcess=new KProcIO();
+  K3ProcIO *readProcess=new K3ProcIO();
   *readProcess << "gpg"<<"--no-secmem-warning"<<"--no-tty"<<"--with-colon"<<"--list-keys";
-  connect(readProcess, SIGNAL(processExited(KProcess *)), this, SLOT(slotProcessExited(KProcess *)));
-  connect(readProcess, SIGNAL(readReady(KProcIO *)) ,this, SLOT(slotDataArrived(KProcIO *)));
-  if (!readProcess->start(KProcess::NotifyOnExit, true))
+  connect(readProcess, SIGNAL(processExited(K3Process *)), this, SLOT(slotProcessExited(K3Process *)));
+  connect(readProcess, SIGNAL(readReady(K3ProcIO *)) ,this, SLOT(slotDataArrived(K3ProcIO *)));
+  if (!readProcess->start(K3Process::NotifyOnExit, true))
     KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and retrieve the available keys. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible.</qt>"));
   else
     m_gpgRunning = true;
@@ -80,15 +80,15 @@ void Security::readSecretKeys()
     return;
   }
   m_runMode = ListSecret;
-  KProcIO *readProcess=new KProcIO();
+  K3ProcIO *readProcess=new K3ProcIO();
   *readProcess << "gpg"<<"--no-secmem-warning"<<"--no-tty"<<"--with-colon"<<"--list-secret-keys";
-  connect(readProcess, SIGNAL(processExited(KProcess *)), this, SLOT(slotProcessExited(KProcess *)));
-  connect(readProcess, SIGNAL(readReady(KProcIO *)) ,this, SLOT(slotDataArrived(KProcIO *)));
-  if (readProcess->start(KProcess::NotifyOnExit, true))
+  connect(readProcess, SIGNAL(processExited(K3Process *)), this, SLOT(slotProcessExited(K3Process *)));
+  connect(readProcess, SIGNAL(readReady(K3ProcIO *)) ,this, SLOT(slotDataArrived(K3ProcIO *)));
+  if (readProcess->start(K3Process::NotifyOnExit, true))
     m_gpgRunning = true;  
 }
 
-void Security::slotProcessExited(KProcess *process)
+void Security::slotProcessExited(K3Process *process)
 {
   switch (m_runMode)
    {
@@ -105,7 +105,7 @@ void Security::slotProcessExited(KProcess *process)
    delete process;
 }
 
-void Security::slotDataArrived(KProcIO *procIO)
+void Security::slotDataArrived(K3ProcIO *procIO)
 {
   QString data;
   while (procIO->readln(data, true) != -1)
@@ -252,11 +252,11 @@ void Security::slotCheckValidity()
   m_signatureKey.trusted = false;
 
   //verify the signature
-  KProcIO *verifyProcess=new KProcIO();
+  K3ProcIO *verifyProcess=new K3ProcIO();
   *verifyProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--verify" << f.path() + "/signature"<< m_fileName;
-  connect(verifyProcess, SIGNAL(processExited(KProcess *)),this, SLOT(slotProcessExited(KProcess *)));
-  connect(verifyProcess, SIGNAL(readReady(KProcIO *)),this, SLOT(slotDataArrived(KProcIO *)));
-  if (verifyProcess->start(KProcess::NotifyOnExit,true))
+  connect(verifyProcess, SIGNAL(processExited(K3Process *)),this, SLOT(slotProcessExited(K3Process *)));
+  connect(verifyProcess, SIGNAL(readReady(K3ProcIO *)),this, SLOT(slotDataArrived(K3ProcIO *)));
+  if (verifyProcess->start(K3Process::NotifyOnExit,true))
       m_gpgRunning = true;
   else
   {
@@ -332,12 +332,12 @@ void Security::slotSignFile()
     m_secretKey = secretKeys[0];
 
   //verify the signature
-  KProcIO *signProcess=new KProcIO();
+  K3ProcIO *signProcess=new K3ProcIO();
   *signProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--no-tty"<<"--detach-sign" << "-u" << m_secretKey << "-o" << f.path() + "/signature" << m_fileName;
-  connect(signProcess, SIGNAL(processExited(KProcess *)),this, SLOT(slotProcessExited(KProcess *)));
-  connect(signProcess, SIGNAL(readReady(KProcIO *)),this, SLOT(slotDataArrived(KProcIO *)));
+  connect(signProcess, SIGNAL(processExited(K3Process *)),this, SLOT(slotProcessExited(K3Process *)));
+  connect(signProcess, SIGNAL(readReady(K3ProcIO *)),this, SLOT(slotDataArrived(K3ProcIO *)));
   m_runMode = Sign;
-  if (signProcess->start(KProcess::NotifyOnExit,true))
+  if (signProcess->start(K3Process::NotifyOnExit,true))
     m_gpgRunning = true;
   else
   {

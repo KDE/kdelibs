@@ -40,6 +40,8 @@ set(knewstuff2_ui_SRCS
   ui/qnowtooltip.cpp
   ui/uploaddialog.cpp
   ui/providerdialog.cpp
+  ui/knewstuffbutton.cpp
+  ui/knewstuffaction.cpp
 )
 
 set(knewstuff2_SRCS
@@ -76,6 +78,12 @@ install(FILES
 install(FILES
   dxs/dxsengine.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/dxs
+)
+
+install(FILES
+  ui/knewstuffbutton.h
+  ui/knewstuffaction.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui
 )
 
 install(FILES

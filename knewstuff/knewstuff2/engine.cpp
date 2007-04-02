@@ -15,7 +15,7 @@ using namespace KNS;
 Engine::Engine()
 : DxsEngine()
 {
-	m_command = none;
+	m_command = command_none;
 	m_uploaddialog = NULL;
 	m_downloaddialog = NULL;
 	setDxsPolicy(DxsEngine::DxsNever); // FIXME: until KIO/cDXS gets fixed!
@@ -29,7 +29,7 @@ Engine::~Engine()
 
 void Engine::workflow()
 {
-	if((m_command == upload) || (m_command == download))
+	if((m_command == command_upload) || (m_command == command_download))
 	{
 		connect(this,
 			SIGNAL(signalProviderLoaded(KNS::Provider*)),
@@ -39,7 +39,7 @@ void Engine::workflow()
 			SLOT(slotProvidersFailed()));
 	}
 
-	if(m_command == upload)
+	if(m_command == command_upload)
 	{
 		connect(this,
 			SIGNAL(signalProvidersFinished()),
@@ -48,7 +48,7 @@ void Engine::workflow()
 		m_entry = NULL;
 	}
 
-	if(m_command == download)
+	if(m_command == command_download)
 	{
 		connect(this,
 			SIGNAL(signalEntryLoaded(KNS::Entry*, const Feed*, const Provider*)),
@@ -72,18 +72,30 @@ void Engine::workflow()
 
 	if(m_modal)
 	{
-		while(m_command == upload)
+		while(m_command == command_upload)
 		{
 			kapp->processEvents();
 		}
 	}
 }
 
+KNS::Entry::List Engine::download()
+{
+	KNS::Entry::List entries;
+
+	Engine *engine = new Engine();
+	entries = engine->downloadDialogModal();
+	delete engine;
+
+	// FIXME: refcounting?
+	return entries;
+}
+
 KNS::Entry::List Engine::downloadDialogModal()
 {
 	kDebug(550) << "Engine: downloadDialogModal" << endl;
 
-	m_command = download;
+	m_command = command_download;
 	m_modal = true;
 
 	workflow();
@@ -95,22 +107,34 @@ void Engine::downloadDialog()
 {
 	kDebug(550) << "Engine: downloadDialog" << endl;
 
-	if(m_command != none)
+	if(m_command != command_none)
 	{
 		kError(550) << "Engine: asynchronous workflow already going on" << endl;
 	}
 
-	m_command = download;
+	m_command = command_download;
 	m_modal = false;
 
 	workflow();
+}
+
+KNS::Entry *Engine::upload(QString file)
+{
+	KNS::Entry *entry;
+
+	Engine *engine = new Engine();
+	entry = engine->uploadDialogModal(file);
+	delete engine;
+
+	// FIXME: refcounting?
+	return entry;
 }
 
 KNS::Entry *Engine::uploadDialogModal(QString file)
 {
 	kDebug(550) << "Engine: uploadDialogModal" << endl;
 
-	m_command = upload;
+	m_command = command_upload;
 	m_modal = true;
 	m_uploadfile = file;
 
@@ -123,12 +147,12 @@ void Engine::uploadDialog(QString file)
 {
 	kDebug(550) << "Engine: uploadDialog" << endl;
 
-	if(m_command != none)
+	if(m_command != command_none)
 	{
 		kError(550) << "Engine: asynchronous workflow already going on" << endl;
 	}
 
-	m_command = upload;
+	m_command = command_upload;
 	m_modal = false;
 	m_uploadfile = file;
 
@@ -139,11 +163,11 @@ void Engine::slotProviderLoaded(KNS::Provider *provider)
 {
 	kDebug(550) << "Engine: slotProviderLoaded" << endl;
 
-	if(m_command == download)
+	if(m_command == command_download)
 	{
 		this->loadEntries(provider);
 	}
-	else if(m_command == upload)
+	else if(m_command == command_upload)
 	{
 		// FIXME: inject into upload dialog
 		// FIXME: dialog could do this by itself!
@@ -162,7 +186,7 @@ void Engine::slotProvidersFailed()
 {
 	kDebug(550) << "Engine: slotProvidersFailed" << endl;
 
-	m_command = none;
+	m_command = command_none;
 }
 
 void Engine::slotEntryLoaded(KNS::Entry *entry, const Feed *feed, const Provider *provider)
@@ -181,7 +205,7 @@ void Engine::slotEntryUploaded()
 {
 	kDebug(550) << "Engine: slotEntryUploaded" << endl;
 
-	m_command = none;
+	m_command = command_none;
 
 	//m_entry = ...; // FIXME: where do we get it from now?
 	// FIXME: we cannot assign it earlier, probably need m_delayedentry
@@ -192,7 +216,7 @@ void Engine::slotEntryFailed()
 {
 	kDebug(550) << "Engine: slotEntryFailed" << endl;
 
-	m_command = none;
+	m_command = command_none;
 }
 
 void Engine::slotProvidersFinished()
@@ -216,7 +240,7 @@ void Engine::slotProvidersFinished()
 	ret = provdialog.exec();
 	if(ret == QDialog::Rejected)
 	{
-		m_command = none;
+		m_command = command_none;
 		return;
 	}
 
@@ -227,7 +251,7 @@ void Engine::slotProvidersFinished()
 	ret = uploaddialog.exec();
 	if(ret == QDialog::Rejected)
 	{
-		m_command = none;
+		m_command = command_none;
 		return;
 	}
 
@@ -235,7 +259,7 @@ void Engine::slotProvidersFinished()
 	entry->setPayload(m_uploadfile);
 	if(!entry)
 	{
-		m_command = none;
+		m_command = command_none;
 		return;
 	}
 

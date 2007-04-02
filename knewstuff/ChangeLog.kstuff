@@ -1,0 +1,111 @@
+2006-01-13 13:31  josef
+
+	* src/: kdxscomment.cpp, kdxscomment.h, kdxsrating.cpp,
+	  kdxsrating.h: - the missing files :)
+
+2006-01-13 13:30  josef
+
+	* featureguide.txt, src/Makefile.am, src/dxs.cpp, src/dxs.h,
+	  src/kdxsbutton.cpp, src/kdxsbutton.h: - (unchecked)
+	  implementation of comment and rating methods - improved feature
+	  guide
+
+2005-12-19 09:51  josef
+
+	* src/: dxs.cpp, dxs.h, kdxsbutton.cpp, kdxsbutton.h, soap.cpp,
+	  soap.h: - support for removal requests and subscriptions -
+	  support for canonical tree structure exchange format via a socket
+
+2005-12-12 13:05  josef
+
+	* src/: kdxsbutton.cpp, kdxsbutton.h, kdxsrc, kns-translation.ui,
+	  newstuff.cpp: - usage of config file to avoid hardcoding the
+	  paths - if no history is present, display this as a fact
+
+2005-11-01 18:20  josef
+
+	* ChangeLog: - improved changelog
+
+2005-11-01 18:14  josef
+
+	* .cvsignore, ChangeLog, Makefile.am, TODO, VERSION,
+	  featureguide.txt, admin/.cvsignore: - adding missing files -
+	  shutting up CVS using .cvsignore files - remove bogus VERSION
+	  file
+
+2005-08-31 16:06  josef
+
+	* src/: kdxsbutton.cpp, kdxsbutton.h, newstuff.cpp: - pseudo-usage
+	  of Entry author contact information
+
+2005-08-31 15:53  josef
+
+	* src/: Makefile.am, kdxsbutton.cpp, kdxsbutton.h, newstuff.cpp,
+	  qasyncframe.cpp, qasyncframe.h, qasyncpixmap.cpp, qasyncpixmap.h:
+	  - implementation of asynchronous pixmap loading
+
+2005-08-31 14:45  josef
+
+	* src/.cvsignore: - ignore the binary too, of course...
+
+2005-08-31 14:45  josef
+
+	* src/: .cvsignore, kdxsview.cpp: - cvsignore files - include all
+	  .moc files properly
+
+2005-08-31 14:40  josef
+
+	* src/newstuff.cpp: - clear the dialog view after changing
+	  parameters and before rebuilding view - eat khtml scroll events
+	  so people don't see it's khtml being used
+
+2005-08-30 21:12  josef
+
+	* src/: Makefile.am, kdxsbutton.cpp, kdxsbutton.h, kdxsview.cpp,
+	  kdxsview.h, newstuff.cpp: - separating button and default view -
+	  including dxsbutton into download dialog - separating HTML views
+	  of download dialog
+
+2005-08-30 15:23  josef
+
+	* src/: Makefile.am, kdxsview.cpp, kdxsview.h, kns-translation.ui,
+	  newstuff.cpp, newstuff.h, soap.cpp: - addition of newstuff dialog
+	  from Enrico Ros (kpdf annotations-branch)
+
+2005-08-30 00:55  josef
+
+	* src/: dxs.cpp, dxs.h, kdxsview.cpp, kdxsview.h, soap.cpp: -
+	  saving the work of today...
+
+2005-08-29 23:26  josef
+
+	* admin/: Makefile, Makefile.in: - removing superfluous files
+
+2005-08-29 23:25  josef
+
+	* configure.in.in: - missing configure.in.in file
+
+2005-08-29 23:23  josef
+
+	* acinclude.m4, admin/Doxyfile.am, admin/Doxyfile.global,
+	  admin/Makefile, admin/Makefile.am, admin/Makefile.common,
+	  admin/Makefile.in, admin/acinclude.m4.in, admin/am_edit,
+	  admin/bcheck.pl, admin/compile, admin/conf.change.pl,
+	  admin/config.guess, admin/config.pl, admin/config.sub,
+	  admin/configure.in.bot.end, admin/configure.in.min,
+	  admin/cvs-clean.pl, admin/cvs.sh, admin/debianrules,
+	  admin/depcomp, admin/deps.am, admin/detect-autoconf.sh,
+	  admin/install-sh, admin/libtool.m4.in, admin/ltmain.sh,
+	  admin/missing, admin/mkinstalldirs, admin/nmcheck,
+	  admin/oldinclude.m4.in, admin/pkg.m4.in, admin/ylwrap: - addition
+	  of missing admin directory
+
+2005-08-29 23:22  josef
+
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am.in,
+	  Makefile.cvs, NEWS, README, VERSION, acinclude.m4,
+	  src/Makefile.am, src/dxs.cpp, src/dxs.h, src/kdxs.cpp,
+	  src/kdxs.h, src/kdxsview.cpp, src/kdxsview.h, src/main.cpp,
+	  src/soap.cpp, src/soap.h: - import of KDXS, the DXS-enabled
+	  newstuff testbed
+

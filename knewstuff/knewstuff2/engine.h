@@ -59,6 +59,8 @@ class KDE_EXPORT Engine : public DxsEngine
      */
     KNS::Entry::List downloadDialogModal();
 
+    static KNS::Entry::List download();
+
     /**
      * Starts the upload workflow. This workflow will offer provider
      * selection and afterwards upload all files associated with an entry.
@@ -67,6 +69,8 @@ class KDE_EXPORT Engine : public DxsEngine
      * @return Uploaded entry, or \b null in case of failures
      */
     KNS::Entry *uploadDialogModal(QString file);
+
+    static KNS::Entry *upload(QString file);
 
     /**
      * Asynchronous way of starting the download workflow.
@@ -101,9 +105,9 @@ class KDE_EXPORT Engine : public DxsEngine
 
     enum Command
     {
-        none,
-        upload,
-        download
+        command_none,
+        command_upload,
+        command_download
     };
 
     Command m_command;
