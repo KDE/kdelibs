@@ -48,6 +48,7 @@ class MediaObjectPrivate : public AbstractMediaProducerPrivate
 
 		KUrl url;
         MediaObject::Media media;
+        QString mediaDevice;
 		qint32 aboutToFinishTime;
         KioFallback *kiofallback;
         bool ignoreLoadingToBufferingStateChange;

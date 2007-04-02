@@ -110,8 +110,10 @@ namespace Phonon
              * empty URL then.
              *
              * \param media see \ref Media
+             * \param mediaDevice A device name like '/dev/dvd' or
+             * '/home/user/Videos/MyDVD'
              */
-            void openMedia(Media media);
+            void openMedia(Media media, const QString &mediaDevice = QString());
 
 			/**
 			 * Sets the time in milliseconds the aboutToFinish signal is emitted

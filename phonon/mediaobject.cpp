@@ -130,11 +130,12 @@ MediaObject::Media MediaObject::media() const
     return d->media;
 }
 
-void MediaObject::openMedia(Media media)
+void MediaObject::openMedia(Media media, const QString &mediaDevice)
 {
     K_D(MediaObject);
     d->url.clear();
     d->media = media;
+    d->mediaDevice = mediaDevice;
     if (iface()) {
         stop();
         if (!qobject_cast<MediaObjectInterface *>(d->backendObject)) {
@@ -146,7 +147,7 @@ void MediaObject::openMedia(Media media)
             }
             d->createIface(); // calls openMedia in setupIface
         } else {
-            INTERFACE_CALL(openMedia(media));
+            INTERFACE_CALL(openMedia(media, mediaDevice));
         }
     }
 }
@@ -254,7 +255,7 @@ void MediaObject::setupIface()
         // if the state changes to ErrorState it will be handled in
         // _k_stateChanged and a ByteStream will be used.
     } else if (d->media != None) {
-        INTERFACE_CALL(openMedia(d->media));
+        INTERFACE_CALL(openMedia(d->media, d->mediaDevice));
     }
 }
 
