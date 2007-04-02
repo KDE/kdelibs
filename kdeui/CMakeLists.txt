@@ -325,6 +325,9 @@ install( FILES
  paged/kpageview.h
  paged/kpagewidget.h
  paged/kpagewidgetmodel.h
+ plotting/kplotwidget.h
+ plotting/kplotobject.h
+ plotting/kplotaxis.h
  shortcuts/kshortcut.h
  shortcuts/kstandardshortcut.h
  shortcuts/kglobalaccel.h
@@ -404,9 +407,6 @@ install( FILES
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
- plotting/kplotwidget.h
- plotting/kplotobject.h
- plotting/kplotaxis.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install( FILES 
