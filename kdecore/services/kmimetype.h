@@ -370,7 +370,7 @@ protected:
     /**
      * Construct a mimetype and take all information from an XML file.
      * @param fullpath the path to the xml that describes the mime type
-     * @param the name of the mimetype (usually the end of the path)
+     * @param name the name of the mimetype (usually the end of the path)
      * @param comment the comment associated with the mimetype
      */
     KMimeType( const QString& fullpath, const QString& name, const QString& comment );
@@ -378,14 +378,14 @@ protected:
     /**
      * @internal Construct a service from a stream.
      *
-     * The stream must already be positionned at the correct offset
+     * The stream must already be positioned at the correct offset
      */
     KMimeType( KMimeTypePrivate &dd, QDataStream& str, int offset );
 
     /**
      * Construct a mimetype and take all information from an XML file.
      * @param fullpath the path to the xml that describes the mime type
-     * @param the name of the mimetype (usually the end of the path)
+     * @param name the name of the mimetype (usually the end of the path)
      * @param comment the comment associated with the mimetype
      */
     KMimeType( KMimeTypePrivate &dd, const QString& fullpath, const QString& name, const QString& comment );
@@ -399,7 +399,7 @@ protected:
 
 private:
 
-    void loadInternal( QDataStream& );
+    void loadInternal( QDataStream& _str);
     static void buildDefaultType();
     static void checkEssentialMimeTypes();
     static KMimeType::Ptr findByUrlHelper( const KUrl& url, mode_t mode,

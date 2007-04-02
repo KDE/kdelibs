@@ -312,7 +312,7 @@ Q_SIGNALS:
      * The fields of the description can be "Source" with an URL, and,
      * "Destination" with an URL for a "Copying" description.
      * @param job the job that emitted this signal
-     * @param description the general description of the job
+     * @param title the general description of the job
      * @param field1 first field (localized name and value)
      * @param field2 second field (localized name and value)
      */

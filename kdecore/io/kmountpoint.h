@@ -44,11 +44,11 @@ public:
     public:
         List() : QList<Ptr>() {}
         /**
-         * Find the mountpoint on which resides @p filename
+         * Find the mountpoint on which resides @p path
          * For instance if /home is a separate partition, findByPath("/home/user/blah")
          * will return /home
-         * @param filename the file name to check
-         * @return the mount point of the given @p filename
+         * @param path the path to check
+         * @return the mount point of the given file
          */
         Ptr findByPath(const QString& path) const;
 

@@ -503,8 +503,7 @@ public:
 
     /**
      * Checks whether it is possible to change the given group.
-     * @param group the group to check
-     * @return whether changes may be made to @p group in this configuration
+     * @return whether changes may be made to this group in this configuration
      * file.
      */
     bool isImmutable() const;
