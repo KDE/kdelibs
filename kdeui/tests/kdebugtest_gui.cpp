@@ -1,22 +1,26 @@
 #include "kdebug.h"
 #include <QtGui/QWidget>
+#include <QApplication>
+#include <QVariant>
+#include <QPen>
 
 
 int main(int argc, char** argv)
 {
-  QApplication app(argc, argv);
-  TestWidget widget(0);
-  widget.setGeometry(45, 54, 120, 80);
-  widget.show();
+    QApplication app(argc, argv);
+    QWidget widget(0);
+    widget.setGeometry(45, 54, 120, 80);
+    widget.show();
 
-  kDebug() << &widget;
+    kDebug() << &widget;
 
-  QRegion reg(r);
-  reg += QRect(1,60,200,59);
-  kDebug() << reg << endl;
+    QRect r(9,12,58,234);
+    QRegion reg(r);
+    reg += QRect(1,60,200,59);
+    kDebug() << reg << endl;
 
-  QVariant v = QPen( Qt::red );
-  kDebug() << "Variant: " << v << endl;
+    QVariant v = QPen( Qt::red );
+    kDebug() << "Variant: " << v << endl;
 
-  return 0;;
+    return 0;
 }
