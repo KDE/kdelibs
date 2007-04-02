@@ -81,9 +81,10 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx
                         ${CMAKE_SOURCE_DIR}/kdeui/itemviews
                         ${CMAKE_SOURCE_DIR}/kdeui/jobs
                         ${CMAKE_SOURCE_DIR}/kdeui/kernel
-                        ${CMAKE_SOURCE_DIR}/kdeui/kplot
                         ${CMAKE_SOURCE_DIR}/kdeui/paged
+                        ${CMAKE_SOURCE_DIR}/kdeui/plotting
                         ${CMAKE_SOURCE_DIR}/kdeui/shortcuts
+                        ${CMAKE_SOURCE_DIR}/kdeui/sonnet
                         ${CMAKE_SOURCE_DIR}/kdeui/util
                         ${CMAKE_SOURCE_DIR}/kdeui/widgets
                         ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
