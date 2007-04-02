@@ -40,7 +40,7 @@ class FileLoaderJob : public Job
 {
     Q_OBJECT
 public:
-    explicit FileLoaderJob (QString filename, QObject* parent=0);
+    explicit FileLoaderJob (const QString &filename, QObject* parent=0);
     ~FileLoaderJob ();
     /** Return true if the operation succeeded. */
     bool success () const;
