@@ -136,9 +136,9 @@ int main(int argc, char **argv) {
     }
 
     if ( args->isSet( "check" ) ) {
-        char pwd_buffer[250];
+        char pwd_buffer[PATH_MAX];
         QFileInfo file( QFile::decodeName(args->arg( 0 )) );
-        if ( !getcwd( pwd_buffer, sizeof(pwd_buffer) ) ) {
+        if ( !getcwd( pwd_buffer, sizeof(pwd_buffer) - 1 ) ) {
 	     kdError() << "getcwd failed." << endl;
              return 2;
 	}
