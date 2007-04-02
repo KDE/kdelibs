@@ -1205,7 +1205,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
         if ( r && r->isText() )
-            c = KCursor::ibeamCursor();
+            c = QCursor(Qt::IBeamCursor);
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
 	    if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
@@ -1217,7 +1217,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 
         break;
     case CURSOR_CROSS:
-        c = KCursor::crossCursor();
+        c = QCursor(Qt::CrossCursor);
         break;
     case CURSOR_POINTER:
         c = m_part->urlCursor();
@@ -1225,42 +1225,42 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             mailtoCursor = true;
         break;
     case CURSOR_PROGRESS:
-        c = KCursor::workingCursor();
+        c = KCursor("working_cursor", Qt::BusyCursor);
         break;
     case CURSOR_MOVE:
-        c = KCursor::sizeAllCursor();
+        c = QCursor(Qt::SizeAllCursor);
         break;
     case CURSOR_E_RESIZE:
     case CURSOR_W_RESIZE:
-        c = KCursor::sizeHorCursor();
+        c = QCursor(Qt::SizeHorCursor);
         break;
     case CURSOR_N_RESIZE:
     case CURSOR_S_RESIZE:
-        c = KCursor::sizeVerCursor();
+        c = QCursor(Qt::SizeVerCursor);
         break;
     case CURSOR_NE_RESIZE:
     case CURSOR_SW_RESIZE:
-        c = KCursor::sizeBDiagCursor();
+        c = QCursor(Qt::SizeBDiagCursor);
         break;
     case CURSOR_NW_RESIZE:
     case CURSOR_SE_RESIZE:
-        c = KCursor::sizeFDiagCursor();
+        c = QCursor(Qt::SizeFDiagCursor);
         break;
     case CURSOR_TEXT:
-        c = KCursor::ibeamCursor();
+        c = QCursor(Qt::IBeamCursor);
         break;
     case CURSOR_WAIT:
-        c = KCursor::waitCursor();
+        c = QCursor(Qt::WaitCursor);
         break;
     case CURSOR_HELP:
-        c = KCursor::whatsThisCursor();
+        c = QCursor(Qt::WhatsThisCursor);
         break;
     case CURSOR_DEFAULT:
         break;
     }
 
     if ( viewport()->cursor().handle() != c.handle() ) {
-        if( c.handle() == KCursor::arrowCursor().handle()) {
+        if( c.handle() == QCursor(Qt::ArrowCursor).handle()) {
             for (KHTMLPart* p = m_part; p; p = p->parentPart())
                 p->view()->viewport()->unsetCursor();
         }

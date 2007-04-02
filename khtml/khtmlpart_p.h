@@ -154,7 +154,7 @@ public:
     m_startOffset = m_endOffset = 0;
     m_startBeforeEnd = true;
     m_extendAtEnd = true;
-    m_linkCursor = KCursor::handCursor();
+    m_linkCursor = QCursor(Qt::PointingHandCursor);
     m_loadedObjects = 0;
     m_totalObjectCount = 0;
     m_jobPercent = 0;
