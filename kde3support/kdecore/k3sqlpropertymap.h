@@ -21,7 +21,7 @@
 #include <Qt3Support/q3sqlpropertymap.h>
 #endif
 
-#include <kdelibs_export.h>
+#include <kde3support_export.h>
 
 /**
  * Install a Qt SQL property map with entries for all KDE widgets
