@@ -1,0 +1,15 @@
+- porting signals to Q_SIGNALS, slots to Q_SLOTS etc.
+- mass indentation (which style, which tool?)
+- port 1-2 apps, at least khangman!
+- API docs
+- copyrights
+- style questions (0 vs. NULL, iterators vs. for-loop etc.)
+
+- knewstuffsecure
+- packager (plasmagik)
+
+- server support
+
+apps:
+KVocTrain must share data with KHangMan
+

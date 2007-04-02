@@ -1,0 +1,35 @@
+KNewStuff2 - the next generation GHNS
+=====================================
+
+This is the stating area which will lead to a much more powerful
+KNewStuff library for collaborative data sharing in KDE 4.
+
+The following updated information can be given already:
+
+* In trunk/kdelibs/knewstuff, we have basically KNewStuff ported
+  to KDE 4. It might or might not work - do not file bug reports.
+  This is not KNS2, but KNS1-KDE4, and will soon be replaced.
+  Some small parts of it (container classes and dialogs) made
+  their way into KNS2, but most of it was rewritten from scratch.
+  Part of the cleanup will also be to support the new GHNS formats
+  as defined on ghns.freedesktop.org, while keeping compatibility
+  support for the old format.
+
+* Here, we have KNewStuff2 which was switched to KDE 4 some time
+  ago, based on KNS1 and KDXS.
+  KDXS was developed under KDE 3 for a long time but since KDE 4
+  gained enough stability it was ported, allowing it to synchronise
+  faster with KNS1-KDE4.
+  KDXS implements "social content service" support, that is, the user
+  can give ratings, comments etc. directly from within the GUI.
+
+* Also integrated now, we have a slightly adapted version of the new
+  download dialog, shamelessly ripped from the annotations_branch of
+  KPDF, which is now still being used in oKular.
+  It looks much better than the old one, but has several things
+  hardcoded. The overall design idea is to be able to use multiple
+  dialogs, by cleanly separating all operations into the KNS engine.
+
+There you go. Have a look at doc/*.txt for some documentation,
+especially the tutorial.
+
