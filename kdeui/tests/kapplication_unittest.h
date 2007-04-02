@@ -26,7 +26,7 @@ class KApplication_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    void testKLibLoaderUnload();
+    //void testKLibLoaderUnload();
 };
 
 #endif
