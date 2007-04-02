@@ -141,20 +141,10 @@ class KDEUI_EXPORT KSelectionOwner
     private:
         void filter_selection_request( XSelectionRequestEvent& ev_P );
         bool handle_selection( Atom target_P, Atom property_P, Window requestor_P );
-        const Atom selection;
-        const int screen;
-        Window window;
-        Time timestamp;
-        long extra1, extra2;
-        static Atom manager_atom;
-        static Atom xa_multiple;
-        static Atom xa_targets;
-        static Atom xa_timestamp;
-    private:
-        KSelectionOwnerPrivate* const d;
-    };
 
-class KSelectionWatcherPrivate;
+        class Private;
+        Private* const d;
+    };
 
 /**
  This class implements watching manager selections, as described in the ICCCM
@@ -212,12 +202,9 @@ class KDEUI_EXPORT KSelectionWatcher
         void lostOwner();
     private:
         void init();
-        const Atom selection;
-        const int screen;
-        Window selection_owner;
-        static Atom manager_atom;
-    private:
-        KSelectionWatcherPrivate* const d;
+
+        class Private;
+        Private* const d;
     };
 
 #endif
