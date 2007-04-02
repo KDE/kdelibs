@@ -35,7 +35,12 @@ public:
     Private(KJob *job) : q(job), uiDelegate(0), error(KJob::NoError),
                          progressUnit(KJob::Bytes), percentage(0),
                          suspended(false), capabilities(KJob::NoCapabilities),
-                         speedTimer(0) {}
+                         speedTimer(0)
+    {
+        if (!_k_kjobUnitEnumRegistered) {
+            _k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
+        }
+    }
 
     KJob *const q;
 
@@ -52,10 +57,10 @@ public:
 
     void _k_speedTimeout();
 
-    static const bool _k_kjobUnitEnumRegistered;
+    static bool _k_kjobUnitEnumRegistered;
 };
 
-const bool KJob::Private::_k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
+bool KJob::Private::_k_kjobUnitEnumRegistered = false;
 
 KJob::KJob(QObject *parent)
     : QObject(parent), d(new Private(this))
