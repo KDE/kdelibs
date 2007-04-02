@@ -42,7 +42,7 @@ private:
             Wanted = 0x2,
             Estimated = 0x4
         };
-        Q_DECLARE_FLAGS(Category, CategoryFlag);
+        Q_DECLARE_FLAGS(Category, CategoryFlag)
 
         void switchCategory(KNewStuff2Download::Category category);
 
