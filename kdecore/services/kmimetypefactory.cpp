@@ -324,6 +324,12 @@ void KMimeTypeFactory::virtual_hook( int id, void* data )
 #include <kstandarddirs.h>
 #include <QFile>
 
+// Sort them in descending order of priority
+static bool mimeMagicRuleCompare(const KMimeMagicRule& lhs, const KMimeMagicRule& rhs) {
+    return lhs.priority() > rhs.priority();
+}
+
+
 void KMimeTypeFactory::parseMagic()
 {
     const QStringList magicFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "magic");
@@ -337,6 +343,7 @@ void KMimeTypeFactory::parseMagic()
         if (magicFile.open(QIODevice::ReadOnly))
             m_magicRules += parseMagicFile(&magicFile, fileName);
     }
+    qSort(m_magicRules.begin(), m_magicRules.end(), mimeMagicRuleCompare);
 }
 
 static char readNumber(qint64& value, QIODevice* file)
@@ -350,6 +357,7 @@ static char readNumber(qint64& value, QIODevice* file)
     // eof
     return '\0';
 }
+
 
 #define MAKE_LITTLE_ENDIAN16(val) val = (quint16)(((quint16)(val) << 8)|((quint16)(val) >> 8))
 

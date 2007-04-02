@@ -129,18 +129,16 @@ void KMimeTypeTest::testFindByPath()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1( "application/x-desktop" ) );
 
-#if 0
     // Test a real PDF file.
     // If we find x-matlab because it starts with '%' then we are not ordering by priority.
     KTemporaryFile tempFile;
     QVERIFY(tempFile.open());
     QString tempFileName = tempFile.fileName();
-    tempFile.write("%PDF");
+    tempFile.write("%PDF-");
     tempFile.close();
     mime = KMimeType::findByPath( tempFileName );
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1( "application/pdf" ) );
-#endif
 
     // Can't use KIconLoader since this is a "without GUI" test.
     QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
