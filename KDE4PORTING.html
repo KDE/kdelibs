@@ -1132,10 +1132,22 @@ The constructors have been simplified to take an optional parent. Other paramete
 <ul>
 <li>3rd parameter onlyFixed -&gt; FixedFontsOnly</li>
 <li>5th parameter makeFrame -&gt; DisplayFrame</li>
-<li>7th parameter diff -&gt; ShowDifferences </li>
+<li>7th parameter diff -&gt; ShowDifferences</li>
 </ul>
 </li>
 </ul>
+
+<h4>KFontDialog</h4>
+<ul>
+<li>The KFontDialog constructor now takes a set of flags to determine how it is displayed, which replaces the numerous bools used previously. The following mappings from the bools in KDE3 and the enum in KDE4 are as follows:
+<ul>
+<li>3rd parameter onlyFixed -&gt; KFontChooser::FixedFontsOnly</li>
+<li>5th parameter makeFrame -&gt; KFontChooser::DisplayFrame</li>
+<li>7th parameter diff -&gt; KFontChooser::ShowDifferences</li>
+</ul>
+</li>
+</ul>
+
 
 <h4>KGradientSelector</h4>
 <ul>
