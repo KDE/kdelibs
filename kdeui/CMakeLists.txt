@@ -406,9 +406,9 @@ install( FILES
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
- kplot/kplotwidget.h
- kplot/kplotobject.h
- kplot/kplotaxis.h
+ plotting/kplotwidget.h
+ plotting/kplotobject.h
+ plotting/kplotaxis.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install( FILES 
