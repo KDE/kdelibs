@@ -23,10 +23,10 @@
 #include <k3process.h>
 #include <kprinter.h>
 #include <klocale.h>
-#include <kcursor.h>
 #include <kglobalsettings.h>
 
 #include <QAbstractTextDocumentLayout>
+#include <QCursor>
 #include <QPainter>
 #include <QTextDocument>
 #include <QTextEdit>
@@ -179,9 +179,9 @@ void PosterPreview::mouseMoveEvent( QMouseEvent *e )
 	if ( m_boundingrect.isValid() )
 	{
 		if ( m_boundingrect.contains( e->pos() ) )
-			setCursor( KCursor::handCursor() );
+			setCursor( QCursor( Qt::OpenHandCursor ) );
 		else
-			setCursor( KCursor::arrowCursor() );
+			setCursor( QCursor( Qt::ArrowCursor ) );
 	}
 }
 

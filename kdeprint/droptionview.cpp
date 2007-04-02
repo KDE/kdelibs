@@ -251,9 +251,9 @@ OptionBooleanView::OptionBooleanView(QWidget *parent)
 	//m_group->setFrameStyle(QFrame::NoFrame);
 
 	m_btn1 = new QRadioButton(m_group);
-	m_btn1->setCursor(KCursor::handCursor());
+	m_btn1->setCursor( QCursor( Qt::OpenHandCursor ) );
 	m_btn2 = new QRadioButton(m_group);
-	m_btn2->setCursor(KCursor::handCursor());
+	m_btn2->setCursor( QCursor( Qt::OpenHandCursor ) );
 	
 	layout->addWidget( m_btn1 );
 	layout->addWidget( m_btn2 );
