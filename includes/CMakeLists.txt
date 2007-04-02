@@ -182,8 +182,8 @@ install( FILES
   KDoubleValidator
   KEMailSettings
   KEditListBox
-  KEditToolbar
-  KEditToolbarWidget
+  KEditToolBar
+  KEditToolBarWidget
   KEncodingFileDialog
   KEntry
   KEntryKey
