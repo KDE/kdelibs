@@ -1225,7 +1225,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             mailtoCursor = true;
         break;
     case CURSOR_PROGRESS:
-        c = KCursor("working_cursor", Qt::BusyCursor);
+        c = QCursor(Qt::BusyCursor); // working_cursor
         break;
     case CURSOR_MOVE:
         c = QCursor(Qt::SizeAllCursor);
