@@ -350,7 +350,7 @@ KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, c
         d->blockCombo->hide();
     }
 
-    QSplitter *splitter = splitter = new QSplitter(this);;
+    QSplitter *splitter = new QSplitter(this);
     if ((CharacterTable & guiElements) || (DetailBrowser & guiElements)) {
         mainLayout->addWidget(splitter);
     } else {
