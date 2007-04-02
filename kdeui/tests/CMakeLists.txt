@@ -111,6 +111,10 @@ KDEUI_BUILD_TESTS(
 )
 endif (Q_WS_X11)
 
+KDEUI_EXECUTE_TESTS(
+  ${kdeui_unittests}
+)
+
 ## kplottest
 
 set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
