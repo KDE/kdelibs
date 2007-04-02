@@ -108,11 +108,11 @@ public:
    * Sets the font size of the widgets elements.
    **/
   void setFontSize(int);
+
   /**
    * Returns the font size of the widget elements.
    */
-  int fontSize() const
-    { return fontsize; }
+  int fontSize() const;
 
   /**
    * By calling this method with @p enable = true, KDatePicker will show
@@ -173,10 +173,6 @@ Q_SIGNALS:
    *  clicking on it in the table.
    */
   void tableClicked();
-
-private:
-  /// the font size for the widget
-  int fontsize;
 
 private:
   void init( const QDate &dt );

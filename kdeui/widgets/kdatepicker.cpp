@@ -80,6 +80,9 @@ public:
     KDateTable *table;
     /// the widest month string in pixels:
     QSize maxMonthRect;
+
+    /// the font size for the widget
+    int fontsize;
 };
 
 void KDatePicker::fillWeeksCombo(const QDate &date)
@@ -168,11 +171,11 @@ void KDatePicker::init( const QDate &dt )
   d->line = new KLineEdit(this);
   d->val = new KDateValidator(this);
   d->table = new KDateTable(this);
-  fontsize = KGlobalSettings::generalFont().pointSize();
-  if (fontsize == -1)
-     fontsize = QFontInfo(KGlobalSettings::generalFont()).pointSize();
+  d->fontsize = KGlobalSettings::generalFont().pointSize();
+  if (d->fontsize == -1)
+     d->fontsize = QFontInfo(KGlobalSettings::generalFont()).pointSize();
 
-  fontsize++; // Make a little bigger
+  d->fontsize++; // Make a little bigger
 
   d->selectWeek = new QComboBox(this);  // read only week selection
   d->todayButton = new QToolButton(this);
@@ -188,7 +191,7 @@ void KDatePicker::init( const QDate &dt )
   d->todayButton->setToolTip(i18n("Select the current day"));
 
   // -----
-  setFontSize(fontsize);
+  setFontSize(d->fontsize);
   d->line->setValidator(d->val);
   d->line->installEventFilter( this );
   if ( QApplication::isRightToLeft() )
@@ -504,7 +507,7 @@ KDatePicker::setFontSize(int s)
   QFont font;
   QRect r;
   // -----
-  fontsize=s;
+  d->fontsize=s;
   for(count=0; count<NoOfButtons; ++count)
     {
       font=buttons[count]->font();
@@ -541,6 +544,12 @@ KDatePicker::setFontSize(int s)
 
   d->table->setFontSize(s);
 }
+
+int KDatePicker::fontSize() const
+{
+    return fontsize;
+}
+
 
 void
 KDatePicker::setCloseButton( bool enable )
