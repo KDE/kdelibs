@@ -138,7 +138,7 @@ class Parser
           fail if inconnect
           ininvokemethodcall = true
           parserstate = PARSER3_SCOPEDELIMIT
-          optionalmethod = (lasttoken[-1,1] == '=' or lasttoken == '(') ? true : false
+          optionalmethod = (lasttoken[-1,1] == '=' or lasttoken == '(' or lasttoken == '!') ? true : false
         elsif token == 'connect'
           fail if innamedescriptioncall
           fail if inbackendcall
