@@ -321,6 +321,7 @@ install( FILES
    network/k3socketaddress.h
    network/k3socketbase.h
    network/k3socketdevice.h
+   network/k3socks.h
    network/k3sockssocketdevice.h
    network/k3streamsocket.h
    network/klocalsocket.h
