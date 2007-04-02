@@ -16,12 +16,14 @@ if (HAVE_AVAHI)
    avahi-servicebrowser.cpp
    avahi-remoteservice.cpp
    avahi-publicservice.cpp
+   avahi-servicetypebrowser.cpp
    avahi_server_interface.cpp
    avahi_serviceresolver_interface.cpp
    avahi_entrygroup_interface.cpp
    )
    qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.DomainBrowser.xml avahi_domainbrowser_interface )
    qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceBrowser.xml avahi_servicebrowser_interface )
+   qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceTypeBrowser.xml avahi_servicetypebrowser_interface )
 else (HAVE_AVAHI)
     
 if (HAVE_DNSSD)
