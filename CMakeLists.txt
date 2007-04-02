@@ -107,6 +107,9 @@ set(KDE4_KDE3SUPPORT_INCLUDES ${CMAKE_SOURCE_DIR}/kde3support
                               ${CMAKE_SOURCE_DIR}/kde3support/kio
                               ${KDE4_KPARTS_INCLUDES})
 
+# khtml depends on kde3support currently
+set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml
+                        ${KDE4_KDE3SUPPORT_INCLUDES})
 
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)

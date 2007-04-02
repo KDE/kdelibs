@@ -615,7 +615,6 @@ void KGlobalSettings::rereadFontSettings()
 
 void KGlobalSettings::rereadPathSettings()
 {
-    kDebug() << "KGlobalSettings::rereadPathSettings" << endl;
     delete s_autostartPath;
     s_autostartPath = 0L;
     delete s_desktopPath;
