@@ -330,7 +330,7 @@ private:
 private:
     class KCommandHistoryPrivate;
     KCommandHistoryPrivate * const d;
-    Q_DISABLE_COPY( KCommandHistory );
+    Q_DISABLE_COPY( KCommandHistory )
 };
 
 #include <ktoolbarpopupaction.h>
