@@ -21,10 +21,10 @@
 #ifndef KPLOTWIDGET_H
 #define KPLOTWIDGET_H
 
-#include <QFrame>
-#include <QList>
+#include <kdeui_export.h>
 
-#include <libkdeedu_plot_export.h>
+#include <QtGui/QFrame>
+#include <QtCore/QList>
 
 class KPlotAxis;
 class KPlotObject;
@@ -61,7 +61,7 @@ KPlotWidget *kpw = new KPlotWidget( parent );
 kpw->setLimits( 1.0, 5.0, 1.0, 25.0 );
 
 // creating a red polygon ...
-KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::LINES );
+KPlotObject *kpo = new KPlotObject( Qt::red, KPlotObject::Lines );
 // ... adding some points to it ...
 for ( float x = 1.0; x <= 5.0; x += 0.1 )
     kpo->addPoint( x, x*x );
@@ -76,7 +76,7 @@ kpw->addPlotObject( kpo );
  *@author Jason Harris
  *@version 1.1
  */
-class KDEEDUPLOT_EXPORT KPlotWidget : public QFrame {
+class KDEUI_EXPORT KPlotWidget : public QFrame {
 	Q_OBJECT
 	Q_PROPERTY(int leftPadding READ leftPadding)
 	Q_PROPERTY(int rightPadding READ rightPadding)

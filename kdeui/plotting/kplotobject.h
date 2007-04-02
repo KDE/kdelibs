@@ -21,13 +21,13 @@
 #ifndef KPLOTOBJECT_H
 #define KPLOTOBJECT_H
 
-#include <QColor>
-#include <QPointF>
-#include <QString>
-#include <QPen>
-#include <QBrush>
+#include <kdeui_export.h>
 
-#include <libkdeedu_plot_export.h>
+#include <QtGui/QColor>
+#include <QtCore/QPointF>
+#include <QtCore/QString>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
 
 class QPainter;
 class KPlotWidget;
@@ -42,7 +42,7 @@ class KPlotWidget;
  * bar-widths are omitted, then the widths will be set automatically, 
  * based on the halfway-mark between adjacent points.
  */
-class KDEEDUPLOT_EXPORT KPlotPoint {
+class KDEUI_EXPORT KPlotPoint {
  public:
         /**
          * Default constructor.
@@ -140,7 +140,7 @@ class KDEEDUPLOT_EXPORT KPlotPoint {
  * @author Jason Harris
  * @version 1.1
  */
-class KDEEDUPLOT_EXPORT KPlotObject{
+class KDEUI_EXPORT KPlotObject{
 public:
         /**
          * The type classification of the KPlotObject.

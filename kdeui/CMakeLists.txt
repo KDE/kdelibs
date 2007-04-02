@@ -113,6 +113,9 @@ set(kdeui_LIB_SRCS
  paged/kpageview_p.cpp
  paged/kpagewidget.cpp
  paged/kpagewidgetmodel.cpp
+ plotting/kplotaxis.cpp
+ plotting/kplotobject.cpp
+ plotting/kplotwidget.cpp
  shortcuts/kshortcut.cpp
  shortcuts/kstandardshortcut.cpp
  shortcuts/kglobalaccel.cpp
@@ -201,9 +204,6 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguibuilder.cpp
- kplot/kplotwidget.cpp
- kplot/kplotobject.cpp
- kplot/kplotaxis.cpp
 )
 
 if (Q_WS_X11)

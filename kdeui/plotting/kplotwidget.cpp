@@ -471,7 +471,7 @@ void KPlotWidget::placeLabel( QPainter *painter, KPlotPoint *pp ) {
 				//Add some padding to labelRect
 				labelRect.adjust( -2, -2, 2, 2 );
 
-				float r = sqrt( (ix-ix0)*(ix-ix0) + (iy-iy0)*(iy-iy0) );
+				float r = sqrt( (float)(ix-ix0)*(ix-ix0) + (iy-iy0)*(iy-iy0) );
 				float cost = d->rectCost( labelRect ) + 0.1*r;
 
 				if ( cost < bestCost ) {
