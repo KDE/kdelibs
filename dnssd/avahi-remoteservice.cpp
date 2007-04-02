@@ -57,9 +57,8 @@ void RemoteService::resolveAsync()
         registerTypes();
 	kDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
-	//FIXME: does Avahi needs IDN transformation for WAN domains?
 	//FIXME: don't use LOOKUP_NO_ADDRESS if NSS unavailable 
-	QDBusReply<QDBusObjectPath> rep=s.ServiceResolverNew(-1, -1, m_serviceName, m_type, m_domain, -1, 8 /*AVAHI_LOOKUP_NO_ADDRESS*/);
+	QDBusReply<QDBusObjectPath> rep=s.ServiceResolverNew(-1, -1, m_serviceName, m_type, domainToDNS(m_domain), -1, 8 /*AVAHI_LOOKUP_NO_ADDRESS*/);
 	if (!rep.isValid()) {
 	    emit resolved(false);
 	    return;
@@ -92,6 +91,7 @@ void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString
 	m_parent->m_serviceName = name;
 	m_parent->m_hostName = host;
 	m_parent->m_port = port;
+	m_parent->m_domain=DNSToDomain(domain);
 	//FIXME: TXT
 //	m_parent->m_textData = txt;
 	m_resolved = true;

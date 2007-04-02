@@ -8,7 +8,6 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 set(kdnssd_LIB_SRCS    servicebase.cpp )
 kde4_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc )
 
-set(HAVE_AVAHI 1)
 if (HAVE_AVAHI) 
   set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
    avahi-domainbrowser.cpp

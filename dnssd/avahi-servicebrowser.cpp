@@ -60,7 +60,7 @@ void ServiceBrowser::startBrowse()
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	QString fullType=d->m_type;
 	if (!d->m_subtype.isEmpty()) fullType=d->m_subtype+"._sub."+d->m_type;
-	QDBusReply<QDBusObjectPath> rep=s.ServiceBrowserNew(-1, -1, fullType, d->m_domain,0);
+	QDBusReply<QDBusObjectPath> rep=s.ServiceBrowserNew(-1, -1, fullType, domainToDNS(d->m_domain),0);
 	
 	if (!rep.isValid()) return;
 	d->m_running=true;

@@ -111,6 +111,11 @@ private:
 
 };
 
+/* Utils functions */
+
+/** Return true if domain is link-local ('local.') */
+bool domainIsLocal(const QString& domain);
+
 }
 
 #endif

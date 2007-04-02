@@ -21,6 +21,7 @@
 #include <dnssd/servicebase.h>
 #include <qregexp.h>
 #include <QDataStream>
+#include <QtCore/QUrl>
 
 namespace DNSSD
 {
@@ -77,6 +78,11 @@ QDataStream & operator>> (QDataStream & s, ServiceBase & a)
 	s >> a.m_serviceName >> a.m_type >> a.m_domain >> a.m_hostName >> port >> a.m_textData;
 	a.m_port = port;	
 	return s;
+}
+
+bool domainIsLocal(const QString& domain)
+{
+	return domain.section('.',-1,-1).toLower()=="local";
 }
 
 }

@@ -152,11 +152,11 @@ bool PublicServicePrivate::fillEntryGroup()
     QMap<QString,QByteArray>::ConstIterator itEnd = m_parent->m_textData.end();
 //    for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
 //	s = avahi_string_list_add_pair(s, it.key().utf8(),it.data().utf8());
-    //FIXME: domainToDNS needed?
-    m_group->AddService(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type ,m_parent->m_domain ,
+    //FIXME: TXT
+    m_group->AddService(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type , domainToDNS(m_parent->m_domain) ,
 	m_parent->m_hostName,m_parent->m_port,QList<QByteArray>());
     Q_FOREACH(QString subtype, m_subtypes) 
-	m_group->AddServiceSubtype(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type, m_parent->m_domain , subtype);
+	m_group->AddServiceSubtype(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type, domainToDNS(m_parent->m_domain) , subtype);
     return true;
 }
 

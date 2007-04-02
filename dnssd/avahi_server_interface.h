@@ -228,7 +228,13 @@ Q_SIGNALS: // SIGNALS
     void StateChanged(int state, const QString &error);
 };
 
-void registerTypes();
+
+namespace DNSSD {
+    void registerTypes();
+    QString domainToDNS(const QString &domain);
+    QString DNSToDomain(const QString &domain);
+}
+
 namespace org {
   namespace freedesktop {
     namespace Avahi {

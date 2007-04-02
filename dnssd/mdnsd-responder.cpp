@@ -21,10 +21,7 @@
 #include "mdnsd-responder.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QUrl>
-
-// dns_sd.h API should care about proper encoding of non-latin1 characters
-// but for now it does not
-#define IDN_BROKEN_IN_MDNSRESPONDER
+#include "servicebase.h"
 
 namespace DNSSD
 {
@@ -72,31 +69,17 @@ bool Responder::isRunning() const
 	return m_running;
 }
 
-bool domainIsLocal(const QString& domain)
-{
-	return domain.section('.',-1,-1).toLower()=="local";
-}
-
 QByteArray domainToDNS(const QString &domain)
 {
-#ifdef IDN_BROKEN_IN_MDNSRESPONDER
 	if (domainIsLocal(domain)) return domain.toUtf8();
 		else return QUrl::toAce(domain);
-#else
-	return domain.toUtf8();
-#endif
 }
 
 QString DNSToDomain(const char* domain)
 {
-#ifdef IDN_BROKEN_IN_MDNSRESPONDER
 	if (domainIsLocal(domain)) return QString::fromUtf8(domain);
 		else return QUrl::fromAce(domain);
-#else
-	return QString::fromUtf8(domain);
-#endif
 }
-
 
 }
 #include "mdnsd-responder.moc"

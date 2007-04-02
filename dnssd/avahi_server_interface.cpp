@@ -10,6 +10,9 @@
  */
 
 #include "avahi_server_interface.h"
+#include "servicebase.h"
+#include <QtCore/QUrl>
+
 Q_DECLARE_METATYPE(QList<QByteArray>);
 
 /*
@@ -25,6 +28,7 @@ OrgFreedesktopAvahiServerInterface::~OrgFreedesktopAvahiServerInterface()
 {
 }
 
+namespace DNSSD {
 
 
 void registerTypes()
@@ -36,5 +40,17 @@ void registerTypes()
     }
 }
 
+QString domainToDNS(const QString &domain)
+{
+	if (domainIsLocal(domain)) return domain;
+	else return QUrl::toAce(domain);
+}
+
+QString DNSToDomain(const QString& domain)
+{
+	if (domainIsLocal(domain)) return domain;
+	else return QUrl::fromAce(domain.toAscii());
+}
+}
 
 #include "avahi_server_interface.moc"
