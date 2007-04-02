@@ -57,7 +57,7 @@ void KConfigGroup::writeEntry( const char *pKey,
 
 // ----------------------------------------------------------------------
 
-KAppTreeListItem::KAppTreeListItem( K3ListView* parent, const QString & name,
+KAppTreeListItem::KAppTreeListItem( Q3ListView* parent, const QString & name,
                                     const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
     : Q3ListViewItem( parent, name )
 {
@@ -133,7 +133,7 @@ bool KAppTreeListItem::isDirectory()
 // ----------------------------------------------------------------------
 
 KApplicationTree::KApplicationTree( QWidget *parent )
-    : K3ListView( parent ), currentitem(0)
+    : Q3ListView( parent ), currentitem(0)
 {
     addColumn( i18n("Known Applications") );
     setRootIsDecorated( true );
@@ -269,7 +269,7 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
 {
     setColumnWidth(0, width()-style()->pixelMetric(QStyle::PM_ScrollBarExtent)
                          -2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth));
-    K3ListView::resizeEvent(e);
+    Q3ListView::resizeEvent(e);
 }
 
 // Prune empty directories from the tree

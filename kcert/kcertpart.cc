@@ -38,7 +38,7 @@
 #include <qprocess.h>
 #include <qtabwidget.h>
 #include <kseparator.h>
-#include <k3listview.h>
+#include <q3listview.h>
 #include <QTextEdit>
 #include <qregexp.h>
 #include <kcombobox.h>
@@ -49,14 +49,14 @@
 K_EXPORT_COMPONENT_FACTORY( libkcertpart, KParts::GenericFactory<KCertPart> )
 
 
-KX509Item::KX509Item(K3ListViewItem *parent, KSSLCertificate *x) :
-	K3ListViewItem(parent, 0L)
+KX509Item::KX509Item(Q3ListViewItem *parent, KSSLCertificate *x) :
+	Q3ListViewItem(parent, 0L)
 {
 	setup(x);
 }
 
-KX509Item::KX509Item(K3ListView *parent, KSSLCertificate *x) :
-	K3ListViewItem(parent)
+KX509Item::KX509Item(Q3ListView *parent, KSSLCertificate *x) :
+	Q3ListViewItem(parent)
 {
 	setup(x);
 }
@@ -95,8 +95,8 @@ KX509Item::~KX509Item()
 }
 
 
-KPKCS12Item::KPKCS12Item(K3ListViewItem *parent, KSSLPKCS12 *x) :
-	K3ListViewItem(parent, 0L)
+KPKCS12Item::KPKCS12Item(Q3ListViewItem *parent, KSSLPKCS12 *x) :
+	Q3ListViewItem(parent, 0L)
 {
 	cert = x;
 	if (x) {
@@ -154,13 +154,13 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_baseGrid->setMargin(KDialog::marginHint());
 	_baseGrid->setSpacing(KDialog::spacingHint());
 
-	_sideList = new K3ListView(_frame);
+	_sideList = new Q3ListView(_frame);
 	_sideList->setRootIsDecorated(true);
 	_sideList->addColumn(i18n("Certificates"));
-	_parentCA = new K3ListViewItem(_sideList, i18n("Signers"));
+	_parentCA = new Q3ListViewItem(_sideList, i18n("Signers"));
 	_parentCA->setExpandable(true);
 	_sideList->setOpen(_parentCA, true);
-	_parentP12 = new K3ListViewItem(_sideList, i18n("Client"));
+	_parentP12 = new Q3ListViewItem(_sideList, i18n("Client"));
 	_parentP12->setExpandable(true);
 	_sideList->setOpen(_parentP12, true);
 

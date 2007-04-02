@@ -400,19 +400,6 @@ kde4_add_test(kselectactiontest ${kselectactiontest_SRCS})
 
 target_link_libraries(kselectactiontest ${KDE4_KDEUI_LIBS})
 
-
-########### next target ###############
-
-set(itemcontainertest_SRCS
-itemcontainertest.cpp
-)
-
-kde4_automoc(${itemcontainertest_SRCS})
-
-kde4_add_test(itemcontainertest ${itemcontainertest_SRCS})
-
-target_link_libraries(itemcontainertest ${KDE4_KDEUI_LIBS})
-
 ########### next target ###############
 
 set(kxmlguitest_SRCS
@@ -450,19 +437,6 @@ kde4_automoc(${ksystemtraytest_SRCS})
 kde4_add_test(ksystemtraytest ${ksystemtraytest_SRCS})
 
 target_link_libraries(ksystemtraytest ${KDE4_KDEUI_LIBS})
-
-
-########### next target ###############
-
-set(k3listviewtest_SRCS
-k3listviewtest.cpp
-)
-
-kde4_automoc(${k3listviewtest_SRCS})
-
-kde4_add_test(k3listviewtest ${k3listviewtest_SRCS})
-
-target_link_libraries(k3listviewtest ${KDE4_KDEUI_LIBS})
 
 
 ########### next target ###############

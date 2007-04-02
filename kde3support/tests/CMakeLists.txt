@@ -1,88 +1,37 @@
-
-if(KDE4_BUILD_TESTS)
-
 # Tests don't need to go into toplevel/bin, they are fine in the current dir.
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 include_directories( ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
 
+MACRO(KDE3SUPPORT_BUILD_TESTS)
+       FOREACH(_testname ${ARGN})
+               kde4_automoc(${_testname}.cpp)
+               kde4_add_test(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY})
+       ENDFOREACH(_testname)
+ENDMACRO(KDE3SUPPORT_BUILD_TESTS)
+MACRO(KDE3SUPPORT_EXECUTE_TESTS)
+       FOREACH(_testname ${ARGN})
+               add_test(kde3support-${_testname} ${EXECUTABLE_OUTPUT_PATH}/${_testname})
+       ENDFOREACH(_testname)
+ENDMACRO(KDE3SUPPORT_EXECUTE_TESTS)
 
-########### next target ###############
+set(kde3support_unittests
+  kcommandtest
+  krfcdatetest
+)
 
-set(kactivelabeltest_SRCS kactivelabeltest.cpp)
+KDE3SUPPORT_BUILD_TESTS(
+  itemcontainertest
+  k3listviewtest
+  kactivelabeltest
+  kdockwidgetdemo
+  kdockwidgettest
+  kdocktest
+  kaboutdialogtest
+  ${kde3support_unittests}
+)
 
-kde4_automoc(${kactivelabeltest_SRCS})
-
-kde4_add_executable(kactivelabeltest NOGUI RUN_UNINSTALLED ${kactivelabeltest_SRCS})
-
-target_link_libraries(kactivelabeltest ${KDE4_KDEUI_LIBS} kde3support)
-
-########### next target ###############
-
-set(kdockwidgetdemo_SRCS kdockwidgetdemo.cpp )
-
-kde4_automoc(${kdockwidgetdemo_SRCS})
-
-kde4_add_executable(kdockwidgetdemo NOGUI ${kdockwidgetdemo_SRCS})
-
-target_link_libraries(kdockwidgetdemo  ${KDE4_KDECORE_LIBS} kde3support)
-
-
-########### next target ###############
-
-set(kdockwidgettest_SRCS kdockwidgettest.cpp )
-
-kde4_automoc(${kdockwidgettest_SRCS})
-
-kde4_add_executable(kdockwidgettest NOGUI ${kdockwidgettest_SRCS})
-
-target_link_libraries(kdockwidgettest  ${KDE4_KDECORE_LIBS} kde3support)
-
-
-########### next target ###############
-
-set(kdocktest_SRCS kdocktest.cpp )
-
-kde4_automoc(${kdocktest_SRCS})
-
-kde4_add_executable(kdocktest NOGUI ${kdocktest_SRCS})
-
-target_link_libraries(kdocktest  ${KDE4_KDE3SUPPORT_LIBS} )
-
-
-########### next target ###############
-
-set(kaboutdialogtest_SRCS kaboutdialogtest.cpp)
-
-kde4_automoc(${kaboutdialogtest_SRCS})
-
-kde4_add_executable(kaboutdialogtest NOGUI RUN_UNINSTALLED ${kaboutdialogtest_SRCS})
-
-target_link_libraries(kaboutdialogtest ${KDE4_KDE3SUPPORT_LIBS} )
-
-
-########### kcommandtest ###############
-
-set(kcommandtest_SRCS kcommandtest.cpp )
-
-kde4_automoc(kcommandtest ${kcommandtest_SRCS})
-
-kde4_add_test(kcommandtest ${kcommandtest_SRCS})
-
-target_link_libraries(kcommandtest  ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kcommandtest ${EXECUTABLE_OUTPUT_PATH}/kcommandtest)
-
-########### next target ###############
-
-set(krfcdatetest_SRCS krfcdatetest.cpp )
-
-kde4_automoc(${krfcdatetest_SRCS})
-
-kde4_add_executable(krfcdatetest NOGUI RUN_UNINSTALLED ${krfcdatetest_SRCS})
-
-target_link_libraries(krfcdatetest  ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY} )
-
-add_test(kdecore-krfcdatetest ${EXECUTABLE_OUTPUT_PATH}/krfcdatetest)
-
-endif(KDE4_BUILD_TESTS)
+KDE3SUPPORT_EXECUTE_TESTS(
+  ${kde3support_unittests}
+)

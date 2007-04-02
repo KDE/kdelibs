@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include <kparts/part.h>
-#include <k3listview.h>
+#include <q3listview.h>
 
 class KSSLCertBox;
 class QFrame;
@@ -40,10 +40,10 @@ class QGridLayout;
 class QPushButton;
 
 
-class KX509Item : public K3ListViewItem {
+class KX509Item : public Q3ListViewItem {
 	public:
-		KX509Item(K3ListViewItem *parent, KSSLCertificate *x);
-		KX509Item(K3ListView *parent, KSSLCertificate *x);
+		KX509Item(Q3ListViewItem *parent, KSSLCertificate *x);
+		KX509Item(Q3ListView *parent, KSSLCertificate *x);
 		void setup(KSSLCertificate *x);
 		~KX509Item();
 		virtual int rtti() const { return 1; }
@@ -52,9 +52,9 @@ class KX509Item : public K3ListViewItem {
 };
 
 
-class KPKCS12Item : public K3ListViewItem {
+class KPKCS12Item : public Q3ListViewItem {
 	public:
-		KPKCS12Item(K3ListViewItem *parent, KSSLPKCS12 *x);
+		KPKCS12Item(Q3ListViewItem *parent, KSSLPKCS12 *x);
 		~KPKCS12Item();
 	KSSLPKCS12 *cert;
 	QString _prettyName;
@@ -90,8 +90,8 @@ protected:
   void displayPKCS12Cert(KSSLCertificate *c);
   void displayCACert(KSSLCertificate *c);
 
-  K3ListView *_sideList;
-  K3ListViewItem *_parentCA, *_parentP12;
+  Q3ListView *_sideList;
+  Q3ListViewItem *_parentCA, *_parentP12;
   QFrame *_pkcsFrame, *_blankFrame, *_x509Frame, *_frame;
 
   // for the PKCS12 widget

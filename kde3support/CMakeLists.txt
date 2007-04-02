@@ -30,8 +30,10 @@ set(kde3support_LIB_SRCS
   kdeui/k3activelabel.cpp
   kdeui/k3dockwidget.cpp
   kdeui/k3dockwidget_private.cpp
+  kdeui/k3iconview.cpp
   kdeui/k3iconviewsearchline.cpp
   kdeui/k3listbox.cpp
+  kdeui/k3listview.cpp
   kdeui/k3listviewsearchline.cpp
   kdeui/k3popupmenu.cpp
   kdeui/k3textedit.cpp
@@ -94,6 +96,8 @@ install( FILES
   kdeui/k3sconfig.h
   kdeui/k3passworddialog.h
   kdeui/kcommand.h
+  kdeui/k3listview.h
+  kdeui/k3iconview.h
   kio/k3bookmarkdrag.h
   kio/kio/skipdlg.h
   kio/kio/passdlg.h

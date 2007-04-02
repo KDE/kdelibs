@@ -1,6 +1,3 @@
-
-
-
 ########### next target ###############
 
 set(kdeprint_management_LIB_SRCS
@@ -67,7 +64,7 @@ kde4_automoc(${kdeprint_management_LIB_SRCS})
 
 kde4_add_library(kdeprint_management SHARED ${kdeprint_management_LIB_SRCS})
 
-target_link_libraries(kdeprint_management  ${KDE4_KDECORE_LIBS} kdeprint )
+target_link_libraries(kdeprint_management  ${KDE4_KDECORE_LIBS} kdeprint ${KDE4_KDE3SUPPORT_LIBS} )
 
 set_target_properties(kdeprint_management PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS kdeprint_management  DESTINATION ${LIB_INSTALL_DIR} )
@@ -105,7 +102,5 @@ install(TARGETS kaddprinterwizard DESTINATION ${BIN_INSTALL_DIR} )
 
 install( FILES tileup.png tiledown.png side.png  DESTINATION  ${DATA_INSTALL_DIR}/kdeprint )
 install( FILES  kmmainview.h kmjobviewer.h kmprinterpage.h kiconselectaction.h kmtimer.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kdeprint )
-
-
 
 

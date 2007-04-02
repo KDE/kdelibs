@@ -20,7 +20,7 @@
 #ifndef OPENWITHDIALOG_P_H
 #define OPENWITHDIALOG_P_H
 
-#include <k3listview.h>
+#include <q3listview.h>
 
 /**
  * @internal
@@ -39,7 +39,7 @@ protected:
     void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &exec);
 
 public:
-    KAppTreeListItem( K3ListView* parent, const QString & name, const QPixmap& pixmap,
+    KAppTreeListItem( Q3ListView* parent, const QString & name, const QPixmap& pixmap,
                       bool parse, bool dir, const QString &p, const QString &c );
     KAppTreeListItem( Q3ListViewItem* parent, const QString & name, const QPixmap& pixmap,
                       bool parse, bool dir, const QString &p, const QString &c );
@@ -56,7 +56,7 @@ protected:
 /**
  * @internal
  */
-class KApplicationTree : public K3ListView
+class KApplicationTree : public Q3ListView
 {
     Q_OBJECT
 public:

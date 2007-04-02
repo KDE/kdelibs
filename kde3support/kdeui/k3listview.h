@@ -22,7 +22,7 @@
 
 class QColorGroup;
 
-#include <kdeui_export.h>
+#include <kde3support_export.h>
 
 #include <Qt3Support/Q3ListView>
 #include <Qt3Support/Q3PtrList>
@@ -54,7 +54,7 @@ class KConfigGroup;
  * Reimplement dragObject() and (possibly) startDrag(),
  * and setDragEnabled(true).
  */
-class KDEUI_EXPORT K3ListView : public Q3ListView
+class KDE3SUPPORT_EXPORT K3ListView : public Q3ListView
 {
   friend class K3ListViewItem;
 
@@ -981,7 +981,7 @@ private:
  *
  * @short listview item with alternate background color support
  */
-class KDEUI_EXPORT K3ListViewItem : public Q3ListViewItem
+class KDE3SUPPORT_EXPORT K3ListViewItem : public Q3ListViewItem
 {
   friend class K3ListView;
 public:

@@ -35,8 +35,6 @@ add_subdirectory( sonnet/tests )
 ########### next target ###############
 
 set(kdeui_LIB_SRCS
- itemviews/k3iconview.cpp # first because of enable-final
- itemviews/k3listview.cpp
  klanguagebutton.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
@@ -305,8 +303,6 @@ install( FILES
  icons/kicon.h
  icons/kiconloader.h
  icons/kicontheme.h
- itemviews/k3iconview.h
- itemviews/k3listview.h
  itemviews/kextendableitemdelegate.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h

@@ -18,7 +18,7 @@
 #ifndef KICONVIEW_H
 #define KICONVIEW_H
 
-#include <kdeui_export.h>
+#include <kde3support_export.h>
 
 #include <Qt3Support/Q3IconView>
 
@@ -38,7 +38,7 @@
  * QIconView::selectionChanged() signal.
  *
  **/
-class KDEUI_EXPORT K3IconView : public Q3IconView
+class KDE3SUPPORT_EXPORT K3IconView : public Q3IconView
 {
   friend class K3IconViewItem;
   Q_OBJECT
@@ -218,7 +218,7 @@ class KWordWrap;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDEUI_EXPORT K3IconViewItem : public Q3IconViewItem
+class KDE3SUPPORT_EXPORT K3IconViewItem : public Q3IconViewItem
 {
 public:
     // Need to redefine all the constructors - I want Java !

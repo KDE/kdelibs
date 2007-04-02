@@ -100,6 +100,13 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts
                          ${KDE4_KIO_INCLUDES})
 
+# kde3support depends on kparts
+set(KDE4_KDE3SUPPORT_INCLUDES ${CMAKE_SOURCE_DIR}/kde3support
+                              ${CMAKE_SOURCE_DIR}/kde3support/kdecore
+                              ${CMAKE_SOURCE_DIR}/kde3support/kdeui
+                              ${CMAKE_SOURCE_DIR}/kde3support/kio
+                              ${KDE4_KPARTS_INCLUDES})
+
 
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)

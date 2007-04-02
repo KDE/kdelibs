@@ -139,7 +139,7 @@ KACLListViewItem::KACLListViewItem( Q3ListView* parent,
                                     KACLListView::EntryType _type,
                                     unsigned short _value, bool defaults,
                                     const QString& _qualifier )
- : K3ListViewItem( parent, parent->lastItem() ), // we want to append
+ : Q3ListViewItem( parent, parent->lastItem() ), // we want to append
    type( _type ), value( _value ), isDefault( defaults ),
    qualifier( _qualifier ), isPartial( false )
 {
@@ -200,7 +200,7 @@ void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
         mycg.setColor( QPalette::Text, QColor( 100, 100, 100 ) );
         p->setFont( font );
     }
-    K3ListViewItem::paintCell( p, mycg, column, width, alignment );
+    Q3ListViewItem::paintCell( p, mycg, column, width, alignment );
 
     KACLListViewItem *below =0;
     if ( itemBelow() )
@@ -590,7 +590,7 @@ void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )
 
 
 KACLListView::KACLListView( QWidget* parent )
- : K3ListView( parent ),
+ : Q3ListView( parent ),
    m_hasMask( false ), m_allowDefaults( false )
 {
     // Add the columns
@@ -787,7 +787,7 @@ void KACLListView::contentsMousePressEvent( QMouseEvent * e )
     if ( !clickedItem ) return;
     // if the click is on an as yet unselected item, select it first
     if ( !clickedItem->isSelected() )
-        K3ListView::contentsMousePressEvent( e );
+        Q3ListView::contentsMousePressEvent( e );
 
     if ( !currentItem() ) return;
     int column = header()->sectionAt( e->x() );
@@ -804,7 +804,7 @@ void KACLListView::contentsMousePressEvent( QMouseEvent * e )
             perm = ACL_EXECUTE;
             break;
         default:
-            return K3ListView::contentsMousePressEvent( e );
+            return Q3ListView::contentsMousePressEvent( e );
     }
     KACLListViewItem* referenceItem = static_cast<KACLListViewItem*>( clickedItem );
     unsigned short referenceHadItSet = referenceItem->value & perm;

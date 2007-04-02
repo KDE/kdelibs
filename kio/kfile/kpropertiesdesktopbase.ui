@@ -51,7 +51,7 @@
     </widget>
    </item>
    <item row="7" column="0" colspan="7" >
-    <widget class="K3ListView" name="filetypeList" >
+    <widget class="Q3ListView" name="filetypeList" >
      <property name="sizePolicy" >
       <sizepolicy>
        <hsizetype>7</hsizetype>
@@ -288,9 +288,9 @@ Following the command, you can have several place holders which will be replaced
    <pixmap></pixmap>
   </customwidget>
   <customwidget>
-   <class>K3ListView</class>
+   <class>Q3ListView</class>
    <extends>Q3ListView</extends>
-   <header>k3listview.h</header>
+   <header>q3listview.h</header>
    <container>0</container>
    <pixmap></pixmap>
   </customwidget>
