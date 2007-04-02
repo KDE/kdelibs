@@ -21,7 +21,7 @@
 #ifndef kcommand_h
 #define kcommand_h
 
-#include <kdeui_export.h>
+#include <kde3support_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QString>
@@ -39,7 +39,7 @@ class QMenu;
  * Note: you might want to use the QUndo framework instead.
  * It didn't exist when KCommand was written.
  */
-class KDEUI_EXPORT KCommand
+class KDE3SUPPORT_EXPORT KCommand
 {
 protected:
     /**
@@ -87,7 +87,7 @@ private:
  * Note: you might want to use the QUndo framework instead.
  * It didn't exist when KCommand was written.
  */
-class KDEUI_EXPORT KNamedCommand : public KCommand
+class KDE3SUPPORT_EXPORT KNamedCommand : public KCommand
 {
 protected:
     /**
@@ -122,7 +122,7 @@ private:
  * It will appear as one to the user and in the command history,
  * but it can use the implementation of multiple commands internally.
  */
-class KDEUI_EXPORT KMacroCommand : public KNamedCommand
+class KDE3SUPPORT_EXPORT KMacroCommand : public KNamedCommand
 {
 public:
     /**
@@ -174,7 +174,7 @@ private:
  * Note: you might want to use the QUndo framework instead.
  * It didn't exist when KCommand was written.
  */
-class KDEUI_EXPORT KCommandHistory : public QObject {
+class KDE3SUPPORT_EXPORT KCommandHistory : public QObject {
     Q_OBJECT
 public:
     /**

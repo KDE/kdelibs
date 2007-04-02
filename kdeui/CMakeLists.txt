@@ -127,7 +127,6 @@ set(kdeui_LIB_SRCS
  sonnet/highlighter.cpp
  sonnet/configdialog.cpp
  util/kckey.cpp
- util/kcommand.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
  util/kcrash.cpp
@@ -333,7 +332,6 @@ install( FILES
  shortcuts/kgesture.h
  util/fixx11h.h
  util/kaccelgen.h
- util/kcommand.h
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
