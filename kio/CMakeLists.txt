@@ -351,6 +351,7 @@ install( FILES
   kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
   kfile/kimagefilepreview.h
+  kfile/kpreviewwidgetbase.h
   bookmarks/kbookmark.h
   bookmarks/kbookmarkbar.h
   bookmarks/kbookmarkexporter.h
