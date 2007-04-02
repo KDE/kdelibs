@@ -53,14 +53,14 @@ public:
 
 
 KDateWidget::KDateWidget( QWidget *parent )
-  : QWidget( parent )
+  : QWidget( parent ), d( new KDateWidgetPrivate )
 {
   init(QDate());
   setDate(QDate());
 }
 
 KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
-  : QWidget( parent )
+  : QWidget( parent ), d( new KDateWidgetPrivate )
 {
   init(date);
   setDate(date);
@@ -68,7 +68,6 @@ KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
 
 void KDateWidget::init(const QDate& date)
 {
-  d = new KDateWidgetPrivate;
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);
   layout->setSpacing(KDialog::spacingHint());

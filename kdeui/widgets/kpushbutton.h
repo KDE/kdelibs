@@ -157,7 +157,7 @@ private:
 
 private:
     class KPushButtonPrivate;
-    KPushButtonPrivate *d;
+    KPushButtonPrivate * const d;
 
     Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ))
     Q_PRIVATE_SLOT(d, void slotPressedInternal())

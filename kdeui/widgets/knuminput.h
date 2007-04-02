@@ -882,7 +882,7 @@ private:
   int maxPrecision() const;
 
   class Private;
-  Private * d;
+  Private * const d;
 };
 
 #endif // K_NUMINPUT_H

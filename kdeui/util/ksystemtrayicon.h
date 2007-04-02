@@ -121,7 +121,7 @@ private:
     void init( QWidget* );
     void minimizeRestore( bool restore );
 
-    KSystemTrayIconPrivate* d;
+    KSystemTrayIconPrivate* const d;
 };
 
 #endif

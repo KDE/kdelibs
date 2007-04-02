@@ -1065,7 +1065,7 @@ KDoubleSpinBox::KDoubleSpinBox( double lower, double upper, double step,
 }
 
 KDoubleSpinBox::~KDoubleSpinBox() {
-  delete d; d = 0;
+  delete d;
 }
 
 bool KDoubleSpinBox::acceptLocalizedNumbers() const {

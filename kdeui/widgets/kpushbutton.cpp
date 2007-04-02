@@ -100,41 +100,38 @@ void KPushButton::KPushButtonPrivate::readSettings()
 
 
 
-KPushButton::KPushButton( QWidget *parent ) : QPushButton( parent )
+KPushButton::KPushButton( QWidget *parent )
+    : QPushButton( parent ), d( new KPushButtonPrivate(this) ) 
 {
     init( KGuiItem( "" ) );
 }
 
-KPushButton::KPushButton( const QString &text, QWidget *parent ) : QPushButton( parent )
+KPushButton::KPushButton( const QString &text, QWidget *parent )
+    : QPushButton( parent ), d( new KPushButtonPrivate(this) )
 {
     init( KGuiItem( text ) );
 }
 
 KPushButton::KPushButton( const KIcon &icon, const QString &text,
                           QWidget *parent )
-    : QPushButton( text, parent )
+    : QPushButton( text, parent ), d( new KPushButtonPrivate(this) )
 {
     init( KGuiItem( text, icon ) );
 }
 
 KPushButton::KPushButton( const KGuiItem &item, QWidget *parent )
-    : QPushButton( parent )
+    : QPushButton( parent ), d( new KPushButtonPrivate(this) )
 {
     init( item );
 }
 
 KPushButton::~KPushButton()
 {
-    if( d )
-    {
-        delete d;
-        d = 0L;
-    }
+    delete d;
 }
 
 void KPushButton::init( const KGuiItem &item )
 {
-    d = new KPushButtonPrivate(this);
     d->item = item;
     d->itemType = (KStandardGuiItem::StandardItem) 0;
     d->delayedMenuTimer=0;

@@ -80,7 +80,7 @@ protected Q_SLOTS:
 
 private:
    class KDateWidgetPrivate;
-   KDateWidgetPrivate *d;
+   KDateWidgetPrivate * const d;
 };
 
 #endif

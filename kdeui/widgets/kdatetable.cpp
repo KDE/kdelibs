@@ -174,10 +174,8 @@ KDateValidator::fixup( QString& ) const
 }
 
 KDateTable::KDateTable(const QDate& date_, QWidget* parent)
-  : QWidget(parent)
+  : QWidget(parent), d(new KDateTablePrivate(this))
 {
-  d = new KDateTablePrivate(this);
-
   setFontSize(10);
   setFocusPolicy(Qt::StrongFocus);
   QPalette palette;
@@ -195,9 +193,8 @@ KDateTable::KDateTable(const QDate& date_, QWidget* parent)
 }
 
 KDateTable::KDateTable(QWidget *parent)
-  : QWidget(parent)
+  : QWidget(parent), d(new KDateTablePrivate(this))
 {
-  d = new KDateTablePrivate(this);
   setFontSize(10);
   setFocusPolicy(Qt::StrongFocus);
   QPalette palette;

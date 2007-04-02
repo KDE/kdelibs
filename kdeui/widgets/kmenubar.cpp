@@ -133,7 +133,8 @@ Atom KMenuBar::KMenuBarPrivate::makeSelectionAtom()
 #endif
 }
 
-KMenuBar::KMenuBar(QWidget *parent) : QMenuBar(parent)
+KMenuBar::KMenuBar(QWidget *parent)
+    : QMenuBar(parent), d(new KMenuBarPrivate)
 {
 #ifdef Q_WS_X11
 #ifdef __GNUC__
@@ -141,7 +142,6 @@ KMenuBar::KMenuBar(QWidget *parent) : QMenuBar(parent)
 #endif
    // QXEmbed::initialize();
 #endif
-    d = new KMenuBarPrivate;
     connect( &d->selection_timer, SIGNAL( timeout()),
         this, SLOT( selectionTimeout()));
 

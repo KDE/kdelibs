@@ -87,7 +87,7 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
         void stopScreenSaverPrevention();
 
         class Private;
-        Private *d;
+        Private * const d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KNotificationRestrictions::Services)

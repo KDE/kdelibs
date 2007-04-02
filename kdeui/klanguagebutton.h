@@ -31,7 +31,6 @@
 
 #include <qwidget.h>
 
-class KLanguageButtonPrivate;
 class QIcon;
 class QMenu;
 class QAction;
@@ -169,12 +168,8 @@ private:
   void setCurrentItem( QAction* );
   void init();
 
-  // work space for the new class
-  QStringList *m_ids;
-  QMenu *m_popup;
-  QString m_current;
-
-  KLanguageButtonPrivate * d;
+  class KLanguageButtonPrivate;
+  KLanguageButtonPrivate * const d;
 };
 
 #endif

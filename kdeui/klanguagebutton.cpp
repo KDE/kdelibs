@@ -61,9 +61,9 @@ static void checkInsertPos( QMenu *popup, const QString & str,
 }
 
 static QMenu * checkInsertIndex( QMenu *popup,
-                                      const QStringList *tags, const QString &submenu )
+                                      const QStringList &tags, const QString &submenu )
 {
-  int pos = tags->indexOf( submenu );
+  int pos = tags.indexOf( submenu );
 
   QMenu *pi = 0;
   if ( pos != -1 )
@@ -80,21 +80,25 @@ static QMenu * checkInsertIndex( QMenu *popup,
   return pi;
 }
 
-class KLanguageButtonPrivate
+class KLanguageButton::KLanguageButtonPrivate
 {
 public:
   QPushButton * button;
   bool staticText;
+
+  QStringList ids;
+  QMenu *popup;
+  QString current;
 };
 
 KLanguageButton::KLanguageButton( QWidget * parent )
-  : QWidget( parent )
+  : QWidget( parent ), d( new KLanguageButtonPrivate )
 {
   init();
 }
 
 KLanguageButton::KLanguageButton( const QString & text, QWidget * parent )
-  : QWidget( parent)
+  : QWidget( parent ), d( new KLanguageButtonPrivate )
 {
   init();
 
@@ -110,10 +114,8 @@ void KLanguageButton::setText(const QString & text)
 
 void KLanguageButton::init()
 {
-  m_current.clear();
-  m_ids = new QStringList;
-  m_popup = new QMenu( this );
-  d = new KLanguageButtonPrivate;
+  d->current.clear();
+  d->popup = new QMenu( this );
 
   d->staticText = false;
 
@@ -128,8 +130,6 @@ void KLanguageButton::init()
 
 KLanguageButton::~KLanguageButton()
 {
-  delete m_ids;
-
   delete d->button;
   delete d;
 }
@@ -151,7 +151,7 @@ void KLanguageButton::insertLanguage( const QString& path, const QString& name,
 void KLanguageButton::insertItem( const QIcon& icon, const QString &text,
                                   const QString & id, const QString &submenu, int index )
 {
-  QMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
+  QMenu *pi = checkInsertIndex( d->popup, d->ids, submenu );
   checkInsertPos( pi, text, index );
   QAction *a=new QAction(icon,text,this);
   a->setData(id);
@@ -159,7 +159,7 @@ void KLanguageButton::insertItem( const QIcon& icon, const QString &text,
     pi->insertAction(a,(pi->actions())[index] );
   else
     pi->addAction(a);
-  m_ids->append(id);
+  d->ids.append(id);
 }
 
 void KLanguageButton::insertItem( const QString &text, const QString & id,
@@ -170,7 +170,7 @@ void KLanguageButton::insertItem( const QString &text, const QString & id,
 
 void KLanguageButton::insertSeparator( const QString &submenu, int index )
 {
-  QMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
+  QMenu *pi = checkInsertIndex( d->popup, d->ids, submenu );
   if ( (index<(pi->actions().count()-1)) && (index>=0))
     pi->insertSeparator((pi->actions())[index] );
   else
@@ -181,7 +181,7 @@ void KLanguageButton::insertSubmenu( const QIcon & icon,
                                      const QString &text, const QString &id,
                                      const QString &submenu, int index )
 {
-  QMenu *pi = checkInsertIndex( m_popup, m_ids, submenu );
+  QMenu *pi = checkInsertIndex( d->popup, d->ids, submenu );
   QMenu *p = new QMenu(text, pi );
   p->setIcon(icon);
   checkInsertPos( pi, text, index );
@@ -190,7 +190,7 @@ void KLanguageButton::insertSubmenu( const QIcon & icon,
   else
     pi->addMenu(p);
 
-  m_ids->append(id);
+  d->ids.append(id);
 
   connect( p, SIGNAL( hovered( QAction* ) ),
            SLOT( slotHovered( QAction* ) ) );
@@ -213,7 +213,7 @@ void KLanguageButton::slotTriggered( QAction *a )
   setCurrentItem( a);
 
   // Forward event from popup menu as if it was emitted from this widget:
-  emit activated( m_current);
+  emit activated( d->current);
 }
 
 void KLanguageButton::slotHovered( QAction *a )
@@ -225,20 +225,20 @@ void KLanguageButton::slotHovered( QAction *a )
 
 int KLanguageButton::count() const
 {
-  return m_ids->count();
+  return d->ids.count();
 }
 
 void KLanguageButton::clear()
 {
-  m_ids->clear();
+  d->ids.clear();
 
-  m_popup->clear();
+  d->popup->clear();
 
-  d->button->setMenu( m_popup );
+  d->button->setMenu( d->popup );
 
-  connect( m_popup, SIGNAL( triggered( QAction* ) ),
+  connect( d->popup, SIGNAL( triggered( QAction* ) ),
            SLOT( slotTriggered( QAction* ) ) );
-  connect( m_popup, SIGNAL( hovered( QAction* ) ),
+  connect( d->popup, SIGNAL( hovered( QAction* ) ),
            SLOT( slotHovered( QAction* ) ) );
 
   if ( !d->staticText )
@@ -250,13 +250,13 @@ void KLanguageButton::clear()
 
 bool KLanguageButton::contains( const QString & id ) const
 {
-  return m_ids->contains( id ) > 0;
+  return d->ids.contains( id ) > 0;
 }
 
 QString KLanguageButton::current() const
 {
-  if (m_current.isEmpty()) return "en";
-  else return m_current;
+  if (d->current.isEmpty()) return "en";
+  else return d->current;
 }
 
 
@@ -267,7 +267,7 @@ QString KLanguageButton::id( int i ) const
     kDebug() << "KLanguageButton::tag(), unknown tag " << i << endl;
     return QString();
   }
-  return m_ids->at( i );
+  return d->ids.at( i );
 }
 
 
@@ -275,7 +275,7 @@ QString KLanguageButton::id( int i ) const
 void KLanguageButton::setCurrentItem( QAction *a )
 {
   if (!a->data().isValid()) return;
-  m_current=a->data().toString();
+  d->current=a->data().toString();
 
   if ( !d->staticText )
   {
@@ -301,10 +301,10 @@ static QAction *findAction(QMenu *menu ,const QString& data)
 void KLanguageButton::setCurrentItem( const QString & id )
 {
   QAction *a;
-  if (m_ids->count()==0) return;
-  if (m_ids->indexOf(id)==-1)
-    a=findAction(m_popup,(*m_ids)[0]);
+  if (d->ids.count()==0) return;
+  if (d->ids.indexOf(id)==-1)
+    a=findAction(d->popup,d->ids[0]);
   else
-    a=findAction(m_popup,id);
+    a=findAction(d->popup,id);
   if (a) setCurrentItem(a);
 }

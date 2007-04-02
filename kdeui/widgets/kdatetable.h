@@ -88,7 +88,7 @@ Q_SIGNALS:
 private:
   class KPopupFramePrivate;
   friend class KPopupFramePrivate;
-  KPopupFramePrivate *d;
+  KPopupFramePrivate * const d;
   
   Q_DISABLE_COPY(KPopupFrame)
 };
@@ -243,7 +243,7 @@ private:
 private:
     class KDateTablePrivate;
     friend class KDateTablePrivate;
-    KDateTablePrivate *d;
+    KDateTablePrivate * const d;
 
     void initAccels();
     void paintCell(QPainter *painter, int row, int col);

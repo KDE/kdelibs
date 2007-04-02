@@ -69,27 +69,28 @@ public:
 };
 
 KSystemTrayIcon::KSystemTrayIcon( QWidget* parent )
-    : QSystemTrayIcon( parent )
+    : QSystemTrayIcon( parent ),
+      d( new KSystemTrayIconPrivate( this, parent ) )
 {
     init( parent );
 }
 
 KSystemTrayIcon::KSystemTrayIcon( const QString& icon, QWidget* parent )
-    : QSystemTrayIcon( loadIcon( icon ), parent )
+    : QSystemTrayIcon( loadIcon( icon ), parent ),
+      d( new KSystemTrayIconPrivate( this, parent ) )
 {
     init( parent );
 }
 
 KSystemTrayIcon::KSystemTrayIcon( const QIcon& icon, QWidget* parent )
-    : QSystemTrayIcon( icon, parent )
+    : QSystemTrayIcon( icon, parent ),
+      d( new KSystemTrayIconPrivate( this, parent ) )
 {
     init( parent );
 }
 
 void KSystemTrayIcon::init( QWidget* parent )
 {
-    d = new KSystemTrayIconPrivate( this, parent );
-
     d->menu = new KMenu( parent );
     d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
     d->menu->setTitle( KGlobal::mainComponent().aboutData()->programName() );

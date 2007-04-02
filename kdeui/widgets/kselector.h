@@ -168,11 +168,11 @@ public:
   void setFirstText( const QString &t );
   void setSecondText( const QString &t );
 
-  const QColor firstColor() const;
-  const QColor secondColor() const;
+  QColor firstColor() const;
+  QColor secondColor() const;
 
-  const QString firstText() const;
-  const QString secondText() const;
+  QString firstText() const;
+  QString secondText() const;
 
 protected:
 
@@ -182,7 +182,7 @@ protected:
 private:
   class KGradientSelectorPrivate;
   friend class KGradientSelectorPrivate;
-  KGradientSelectorPrivate *d;
+  KGradientSelectorPrivate * const d;
   
   Q_DISABLE_COPY(KGradientSelector)
 };

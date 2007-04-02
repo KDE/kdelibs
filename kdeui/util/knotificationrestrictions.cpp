@@ -54,10 +54,8 @@ class KNotificationRestrictions::Private
 
 KNotificationRestrictions::KNotificationRestrictions(Services control,
                                                      QObject* parent)
-    : QObject(parent)
+    : QObject(parent), d(new Private(control))
 {
-    d = new Private(control);
-
     if (d->control & ScreenSaver)
     {
         startScreenSaverPrevention();

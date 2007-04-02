@@ -100,7 +100,7 @@ private:
     void checkSize( int& w, int& h );
 private:
     class KMenuBarPrivate;
-    KMenuBarPrivate *d;
+    KMenuBarPrivate * const d;
 };
 
 #endif

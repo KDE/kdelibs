@@ -463,22 +463,22 @@ void KGradientSelector::setSecondText( const QString &t )
   update();
 }
 
-const QColor KGradientSelector::firstColor() const
+QColor KGradientSelector::firstColor() const
 {
   return d->color1;
 }
 
-const QColor KGradientSelector::secondColor() const
+QColor KGradientSelector::secondColor() const
 {
   return d->color2;
 }
 
-const QString KGradientSelector::firstText() const
+QString KGradientSelector::firstText() const
 {
   return d->text1;
 }
 
-const QString KGradientSelector::secondText() const
+QString KGradientSelector::secondText() const
 {
   return d->text2;
 }
