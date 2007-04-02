@@ -9,10 +9,5 @@
    <label>Additional domains for browsing</label>
    <whatsthis>List of 'wide-area' (non link-local) domains that should be browsed.</whatsthis>
   </entry>
-  <entry key="BrowseLocal" type="Bool" >
-   <label>Browse local network</label>
-   <whatsthis>If true .local domain will be browsed. It is always link-local, using multicast DNS.</whatsthis>
-   <default>true</default>
-  </entry>
  </group>
 </kcfg>

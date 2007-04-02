@@ -37,7 +37,6 @@ void domain_callback(DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceE
 DomainBrowser::DomainBrowser(DomainType type, QObject *parent) : QObject(parent),d(new DomainBrowserPrivate(type,this))
 {
 	d->m_domains = Configuration::domainList();
-	if (Configuration::browseLocal()) d->m_domains+="local.";
 
         // Those same names have to be used in the kcontrol module too.
         const QString dbusPath = "/libdnssd";
@@ -93,7 +92,6 @@ void DomainBrowserPrivate::domainListChanged()
 	// now reread configuration and add domains
 	Configuration::self()->readConfig();
 	m_domains = Configuration::domainList();
-	if (Configuration::browseLocal()) m_domains+="local.";
 	// this will emit domainAdded() for every domain if necessary
 	if (was_running) m_parent->startBrowse();
 }

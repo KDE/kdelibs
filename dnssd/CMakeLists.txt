@@ -5,10 +5,11 @@ macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
+set(kdnssd_LIB_SRCS    servicebase.cpp )
+kde4_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc )
 
 if (HAVE_AVAHI) 
-  set(kdnssd_LIB_SRCS
-   servicebase.cpp
+  set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
    avahi-domainbrowser.cpp
    avahi-servicebrowser.cpp
    avahi-remoteservice.cpp
@@ -23,8 +24,7 @@ else (HAVE_AVAHI)
     
 if (HAVE_DNSSD)
   include_directories( ${DNSSD_INCLUDE_DIR} )
-  set(kdnssd_LIB_SRCS
-   servicebase.cpp
+  set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
    mdnsd-domainbrowser.cpp
    mdnsd-remoteservice.cpp
    mdnsd-publicservice.cpp
@@ -32,8 +32,7 @@ if (HAVE_DNSSD)
    mdnsd-servicebrowser.cpp
    )
 else (HAVE_DNSSD)
-  set(kdnssd_LIB_SRCS
-   servicebase.cpp
+  set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
    dummy-domainbrowser.cpp
    dummy-remoteservice.cpp
    dummy-publicservice.cpp
