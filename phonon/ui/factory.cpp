@@ -58,11 +58,10 @@ class UiFactory::Private
 				KLibrary* library = KLibLoader::self()->library( lib );
 				if( library )
 				{
-					void* sym = library->symbol( symbol );
-					if( sym )
+                                    	typedef KLibFactory* ( *t_func )();
+                                        t_func func = ( t_func )library->resolveFunction( symbol );
+					if( func )
 					{
-						typedef KLibFactory* ( *t_func )();
-						t_func func = ( t_func )sym;
 						factory = func();
 						//connect( factory, SIGNAL( objectCreated( QObject* ) ),
 								//library, SLOT( slotObjectCreated( QObject* ) ) );

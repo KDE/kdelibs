@@ -22,6 +22,7 @@
 
 #include <QtNetwork/QAbstractSocket>
 #include "kmmanager.h"
+#include <klibloader.h>
 
 class IppRequest;
 class KLibrary;
@@ -87,7 +88,7 @@ protected:
 	DrMain* loadMaticDriver(const QString& drname);
 	void saveDriverFile(DrMain *driver, const QString& filename);
 	void reportIppError(IppRequest*);
-	void* loadCupsdConfFunction(const char*);
+	KLibrary::void_function_ptr loadCupsdConfFunction(const char*);
 	void unloadCupsdConf();
 	QString cupsInstallDir();
 	void ippReport(IppRequest&, int, const QString&);

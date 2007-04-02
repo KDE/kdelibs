@@ -255,80 +255,79 @@ KDEDModule *Kded::loadModule(const QString &obj, bool onDemand)
 
 KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
 {
-  KDEDModule *module = 0;
-  if (s && !s->library().isEmpty())
-  {
-    QString obj = s->desktopEntryName();
-    KDEDModule *oldModule = m_modules.value(obj, 0);
-    if (oldModule)
-       return oldModule;
-
-    if (onDemand)
+    KDEDModule *module = 0;
+    if (s && !s->library().isEmpty())
     {
-      QVariant p = s->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
-      if (p.isValid() && (p.toBool() == false))
-      {
-         noDemandLoad(s->desktopEntryName());
-         return 0;
-      }
-    }
-    // get the library loader instance
+        QString obj = s->desktopEntryName();
+        KDEDModule *oldModule = m_modules.value(obj, 0);
+        if (oldModule)
+            return oldModule;
 
-    KLibLoader *loader = KLibLoader::self();
-
-    QVariant v = s->property("X-KDE-FactoryName", QVariant::String);
-    QString factory = v.isValid() ? v.toString() : QString();
-    if (factory.isEmpty())
-    {
-       // Stay bugward compatible
-       v = s->property("X-KDE-Factory", QVariant::String);
-       factory = v.isValid() ? v.toString() : QString();
-    }
-    if (factory.isEmpty())
-      factory = s->library();
-
-    factory = "create_" + factory;
-    QString libname = "kded_"+s->library();
-
-    KLibrary *lib = loader->library(QFile::encodeName(libname));
-    if (!lib)
-    {
-      kWarning() << k_funcinfo << "Could not load library. [ "
-                 << loader->lastErrorMessage() << " ]" << endl;
-      libname.prepend("lib");
-      lib = loader->library(QFile::encodeName(libname));
-    }
-    if (lib)
-    {
-      // get the create_ function
-      void *create = lib->symbol(QFile::encodeName(factory));
-
-      if (create)
-      {
-        // create the module
-        KDEDModule* (*func)();
-        func = (KDEDModule* (*)()) create;
-        module = func();
-        if (module)
+        if (onDemand)
         {
-          module->setModuleName(obj);
-          m_modules.insert(obj, module);
-          m_libs.insert(obj, lib);
-          connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
-          kDebug(7020) << "Successfully loaded module '" << obj << "'\n";
-          return module;
+            QVariant p = s->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
+            if (p.isValid() && (p.toBool() == false))
+            {
+                noDemandLoad(s->desktopEntryName());
+                return 0;
+            }
         }
-      }
-      loader->unloadLibrary(QFile::encodeName(libname));
+        // get the library loader instance
+
+        KLibLoader *loader = KLibLoader::self();
+
+        QVariant v = s->property("X-KDE-FactoryName", QVariant::String);
+        QString factory = v.isValid() ? v.toString() : QString();
+        if (factory.isEmpty())
+        {
+            // Stay bugward compatible
+            v = s->property("X-KDE-Factory", QVariant::String);
+            factory = v.isValid() ? v.toString() : QString();
+        }
+        if (factory.isEmpty())
+            factory = s->library();
+
+        factory = "create_" + factory;
+        QString libname = "kded_"+s->library();
+
+        KLibrary *lib = loader->library(QFile::encodeName(libname));
+        if (!lib)
+        {
+            kWarning() << k_funcinfo << "Could not load library. [ "
+                       << loader->lastErrorMessage() << " ]" << endl;
+            libname.prepend("lib");
+            lib = loader->library(QFile::encodeName(libname));
+        }
+        if (lib)
+        {
+            // get the create_ function
+            KDEDModule* (*create)();
+            create = (KDEDModule* (*)())lib->resolveFunction(QFile::encodeName(factory));
+
+            if (create)
+            {
+                // create the module
+                module = create();
+                if (module)
+                {
+                    module->setModuleName(obj);
+                    m_modules.insert(obj, module);
+                    m_libs.insert(obj, lib);
+                    connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
+                    kDebug(7020) << "Successfully loaded module '" << obj << "'\n";
+                    return module;
+                }
+            }
+            loader->unloadLibrary(QFile::encodeName(libname));
+        }
+        else
+        {
+            kWarning() << k_funcinfo << "Could not load library. [ "
+                       << loader->lastErrorMessage() << " ]" << endl;
+        }
+        kDebug(7020) << "Could not load module '" << obj << "'\n";
     }
-    else
-    {
-       kWarning() << k_funcinfo << "Could not load library. [ "
-                   << loader->lastErrorMessage() << " ]" << endl;
-    }
-    kDebug(7020) << "Could not load module '" << obj << "'\n";
-  }
-  return 0;
+    return 0;
 }
 
 bool Kded::unloadModule(const QString &obj)

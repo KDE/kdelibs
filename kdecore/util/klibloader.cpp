@@ -191,7 +191,7 @@ KLibFactory* KLibraryPrivate::kde3Factory(const QByteArray &factoryname)
     if ( factories.contains( symname ) )
         return factories[ symname ];
 
-    void* sym = q->symbol( symname );
+    KLibrary::void_function_ptr sym = q->resolveFunction( symname );
     if ( !sym )
     {
         kLibLoaderPrivate->errorMessage = i18n( "The library %1 does not offer an %2 function.", libname, QLatin1String("init_") + libname );
@@ -223,7 +223,7 @@ KLibFactory *KLibraryPrivate::kde4Factory()
     if ( factories.contains( symname ) )
         return factories[ symname ];
 
-    void* sym = q->symbol( symname );
+    KLibrary::void_function_ptr sym = q->resolveFunction( symname );
     if ( !sym )
     {
 //        KLibLoader::self()->d->errorMessage = i18n("The library %1 does not offer an qt_plugin_instance function.", libname);
@@ -266,23 +266,38 @@ KLibFactory* KLibrary::factory(const char* factoryname)
     return factory;
 }
 
-void* KLibrary::resolve( const char* symname ) const
+void *KLibrary::resolveSymbol( const char* symname ) const
 {
-    void* sym = d->handle->resolve( symname );
+    void *sym = d->handle->resolve( symname );
     if ( !d->handle->isLoaded() || !sym )
     {
         kLibLoaderPrivate->errorMessage = QLatin1String("KLibrary: ") + d->handle->errorString();
-        kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        //kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
         return 0;
     }
 
     return sym;
 }
 
-bool KLibrary::hasSymbol( const char* symname ) const
+KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname ) const
 {
-    void* sym = d->handle->resolve(symname);
-    return (sym != 0L );
+    void *psym = d->handle->resolve( symname );
+    if (!psym)
+        return 0;
+
+    // Cast the void* to non-pointer type first - it's not legal to
+    // cast a pointer-to-object directly to a pointer-to-function.
+    ptrdiff_t tmp = reinterpret_cast<ptrdiff_t>(psym);
+    void_function_ptr sym = reinterpret_cast<void_function_ptr>(tmp);
+
+    if ( !d->handle->isLoaded() || !sym )
+    {
+        kLibLoaderPrivate->errorMessage = QLatin1String("KLibrary: ") + d->handle->errorString();
+        //kDebug(150) << kLibLoaderPrivate->errorMessage << endl;
+        return 0;
+    }
+
+    return sym;
 }
 
 void KLibrary::unload() const
@@ -555,9 +570,9 @@ void KLibLoader::unloadLibrary( const char *libname )
   d->close_pending( wrap );
 }
 
-KLibFactory* KLibLoader::factory( const char* _name )
+KLibFactory* KLibLoader::factory( const char* _name, QLibrary::LoadHints hint )
 {
-    KLibrary* lib = library( _name );
+    KLibrary* lib = library( _name, hint );
     if ( !lib )
         return 0;
 

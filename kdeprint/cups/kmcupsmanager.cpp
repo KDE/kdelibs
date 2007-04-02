@@ -718,7 +718,7 @@ bool KMCupsManager::savePrinterDriver(KMPrinter *p, DrMain *d)
 	return result;
 }
 
-void* KMCupsManager::loadCupsdConfFunction(const char *name)
+KLibrary::void_function_ptr KMCupsManager::loadCupsdConfFunction(const char *name)
 {
 	if (!m_cupsdconf)
 	{
@@ -729,7 +729,7 @@ void* KMCupsManager::loadCupsdConfFunction(const char *name)
 			return NULL;
 		}
 	}
-	void*	func = m_cupsdconf->symbol(name);
+	KLibrary::void_function_ptr	func = m_cupsdconf->resolveFunction(name);
 	if (!func)
 		setErrorMsg(i18n("Symbol %1 not found in cupsdconf library.", name));
 	return func;

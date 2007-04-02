@@ -266,7 +266,7 @@ QObject* Manager::module(const QString& modulename)
     }
 
     def_module_func func;
-    func = (def_module_func) lib->symbol("krossmodule");
+    func = (def_module_func) lib->resolveFunction("krossmodule");
     if( ! func ) {
         krosswarning( QString("Failed to determinate init function in module '%1'").arg(modulename) );
         return 0;

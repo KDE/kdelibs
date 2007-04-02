@@ -70,9 +70,9 @@ namespace khtml {
 	    printf("Try to load libthai dynamically...\n");
             KLibLoader *loader = KLibLoader::self();
             lib = loader->library("libthai");
-            if (lib && lib->hasSymbol("th_brk")) {
-                th_brk = (th_brk_def) lib->symbol("th_brk");
-            } else {
+            if ( lib )
+                th_brk = (th_brk_def) lib->resolveFunction("th_brk");
+            if ( !th_brk ) {
                 // indication that loading failed and we shouldn't try to load again
 		printf("Error, can't load libthai...\n");
                 thaiCodec = 0;

@@ -155,7 +155,7 @@ void KMLprManager::initHandlers()
 		if (library)
 		{
 			kDebug() << "loading external handler from " << *it << endl;
-			LprHandler*(*func)(KMManager*) = (LprHandler*(*)(KMManager*))(library->symbol("create_handler"));
+			LprHandler*(*func)(KMManager*) = (LprHandler*(*)(KMManager*))(library->resolveFunction("create_handler"));
 			if (func)
 				insertHandler(func(this));
 			else

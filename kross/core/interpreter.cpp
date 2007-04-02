@@ -135,7 +135,7 @@ Interpreter* InterpreterInfo::interpreter()
 
     // Get the extern "C" krosspython_instance function.
     def_interpreter_func interpreter_func;
-    interpreter_func = (def_interpreter_func) library->symbol("krossinterpreter");
+    interpreter_func = (def_interpreter_func) library->resolveFunction("krossinterpreter");
     // and execute the extern krosspython_instance function.
     d->interpreter = interpreter_func
         ? (Interpreter*) (interpreter_func)(KROSS_VERSION, this)

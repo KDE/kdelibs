@@ -82,14 +82,13 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QByteArray &libpre
     // get the create_ function
     QByteArray factorymethod( "create_" );
     factorymethod += mod.handle().toLatin1();
-    void *create = lib->symbol( factorymethod );
+    KCModule* (*create)(QWidget *, const char*);
+    create = (KCModule* (*)(QWidget *, const char*))lib->resolveFunction( factorymethod );
 
     if (create)
     {
       // create the module
-      KCModule* (*func)(QWidget *, const char*);
-      func = (KCModule* (*)(QWidget *, const char*)) create;
-      return func( parent, mod.handle().toLatin1() );
+      return create( parent, mod.handle().toLatin1() );
     }
     else
     {

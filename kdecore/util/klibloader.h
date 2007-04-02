@@ -68,6 +68,9 @@ class KDECORE_EXPORT KLibrary : public QObject
 
     Q_OBJECT
 public:
+
+    typedef void (*void_function_ptr) ();
+
     /**
      * Returns the name of the library.
      * @return The name of the library like "libkspread".
@@ -91,25 +94,21 @@ public:
 
     /**
      * Looks up a symbol from the library. This is a very low level
-     * function that you usually don't want to use. Usually you should
-     * check using hasSymbol() whether the symbol actually exists,
-     * otherwise a warning will be printed.
+     * function that you usually don't want to use.
      * @param name the name of the symbol to look up
      * @return the address of the symbol, or 0 if it does not exist
      * @see hasSymbol
      */
-    void* resolve( const char* name ) const;
-    void* symbol( const char* name ) const { return resolve(name); }
+    void* resolveSymbol( const char* name ) const;
 
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually don't want to use.
-     * Unlike symbol(), this method doesn't warn if the symbol doesn't exist,
-     * so if the symbol might or might not exist, better use hasSymbol() before symbol().
-     * @param name the name of the symbol to check
-     * @return true if the symbol exists
+     * @param name the name of the symbol to look up
+     * @return the address of the symbol, or 0 if it does not exist
+     * @see hasSymbol
      */
-    bool hasSymbol( const char* name ) const;
+    void_function_ptr resolveFunction( const char* name ) const;
 
     /**
      * Unloads the library.
@@ -131,6 +130,7 @@ private:
     ~KLibrary();
 
     KLibraryPrivate * const d;
+    void *symbol( const char* name ) const;
 };
 
 class KLibWrapPrivate;
@@ -308,7 +308,7 @@ public:
      *         not have a factory
      * @see library
      */
-    KLibFactory* factory( const char* libname );
+    KLibFactory* factory( const char* libname, QLibrary::LoadHints loadHint = 0);
 
     /**
      * Loads and initializes a library. Loading a library multiple times is

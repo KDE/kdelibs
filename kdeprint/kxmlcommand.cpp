@@ -663,7 +663,7 @@ QString KXmlCommandManager::selectCommand(QWidget *parent)
 	}
 	else
 	{
-		QString ( *func )( QWidget* ) = ( QString( * )( QWidget* ) )lib->symbol( "select_command" );
+		QString ( *func )( QWidget* ) = ( QString( * )( QWidget* ) )lib->resolveFunction( "select_command" );
 		if ( !func )
 		{
 			KMessageBox::error( parent, i18n( "Unable to find wizard object in management library." ) );

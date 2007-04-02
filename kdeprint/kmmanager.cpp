@@ -510,7 +510,7 @@ int KMManager::addPrinterWizard(QWidget *parent)
 		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
 	else
 	{
-		int (*func)(QWidget*) = (int(*)(QWidget*))lib->symbol("add_printer_wizard");
+		int (*func)(QWidget*) = (int(*)(QWidget*))lib->resolveFunction("add_printer_wizard");
 		if (!func)
 			setErrorMsg(i18n("Unable to find wizard object in management library."));
 		else
@@ -526,7 +526,7 @@ bool KMManager::invokeOptionsDialog(QWidget *parent)
 		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
 	else
 	{
-		bool (*func)(QWidget*) = (bool(*)(QWidget*))lib->symbol("config_dialog");
+		bool (*func)(QWidget*) = (bool(*)(QWidget*))lib->resolveFunction("config_dialog");
 		if (!func)
 			setErrorMsg(i18n("Unable to find options dialog in management library."));
 		else
