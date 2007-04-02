@@ -101,6 +101,11 @@ void KMacroCommand::unexecute()
     }
 }
 
+const QList<KCommand *> KMacroCommand::commands() const
+{
+    return d->commands;
+}
+
 
 class KCommandHistory::KCommandHistoryPrivate {
 public:

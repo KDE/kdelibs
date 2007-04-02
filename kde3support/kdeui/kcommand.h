@@ -152,6 +152,8 @@ public:
     virtual void unexecute();
 
 protected:
+    const QList<KCommand *> commands() const;
+
     virtual void virtual_hook( int id, void* data );
 
 private:
