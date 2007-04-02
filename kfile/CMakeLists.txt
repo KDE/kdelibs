@@ -3,6 +3,7 @@ add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}
+  ${CMAKE_SOURCE_DIR}/solid
   ${CMAKE_SOURCE_DIR}/kde3support
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui #for k3iconview, k3listview
 )
@@ -24,7 +25,15 @@ set(kfile_LIB_SRCS
   kfiletreebranch.cpp
   kfileview.cpp
   kfilewidget.cpp
+  kfileplacesitem.cpp
+  kfileplacesmodel.cpp
+  kfileplacesselector.cpp
+  kfileplacesview.cpp
+  kprotocolcombo.cpp
   kurlbar.cpp
+  kurlbutton.cpp
+  kurlnavigatorbutton.cpp
+  kurlnavigator.cpp
 )
 
 kde4_automoc(${kfile_LIB_SRCS})
@@ -42,11 +51,14 @@ install( FILES
   kdiroperator.h
   kdirselectdialog.h
   kfilefiltercombo.h
+  kfileplacesmodel.h
+  kfileplacesview.h
   kfilepreview.h
   kfiletreebranch.h
   kfileview.h
   kfilewidget.h
   # kurlbar.h
+  kurlnavigator.h
   kfile_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
