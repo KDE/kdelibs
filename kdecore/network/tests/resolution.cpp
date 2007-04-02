@@ -25,7 +25,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include <ksocketaddress.h>
+#include <k3socketaddress.h>
 #include "kdebug.h"
 #include "resolution.h"
 

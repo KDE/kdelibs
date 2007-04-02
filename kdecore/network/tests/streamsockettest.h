@@ -1,8 +1,8 @@
 #ifndef streamsockettest_h
 #define streamsockettest_h
 
-#include "kstreamsocket.h"
-#include "kresolver.h"
+#include "k3streamsocket.h"
+#include "k3resolver.h"
 using namespace KNetwork;
 
 class Test : public QObject

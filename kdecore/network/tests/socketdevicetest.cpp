@@ -4,9 +4,9 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "ksocketdevice.h"
-#include "ksocketaddress.h"
-#include "kresolver.h"
+#include "k3socketdevice.h"
+#include "k3socketaddress.h"
+#include "k3resolver.h"
 
 #include <iostream>
 using namespace std;

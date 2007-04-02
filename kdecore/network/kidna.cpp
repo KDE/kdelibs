@@ -22,7 +22,7 @@
 #include "kidna.h"
 
 #ifndef Q_WS_WIN //TODO kresolver not ported
-#include "kresolver.h"
+#include "k3resolver.h"
 #endif
 
 #ifndef Q_WS_WIN //TODO knetwork not ported

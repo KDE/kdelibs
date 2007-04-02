@@ -27,7 +27,7 @@
 
 #include <QCoreApplication>
 #include <QString>
-#include <kresolver.h>
+#include <k3resolver.h>
 
 class Test : public QObject
 {

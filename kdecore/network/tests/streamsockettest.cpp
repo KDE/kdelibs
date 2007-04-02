@@ -3,7 +3,7 @@
 #include <QCoreApplication>
 #include <QString>
 #include <QByteArray>
-#include "ksocketaddress.h"
+#include "k3socketaddress.h"
 
 #include "streamsockettest.h"
 

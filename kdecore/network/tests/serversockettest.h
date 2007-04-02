@@ -1,8 +1,8 @@
 #ifndef test_h
 #define test_h
 
-#include "kserversocket.h"
-#include "kresolver.h"
+#include "k3serversocket.h"
+#include "k3resolver.h"
 using namespace KNetwork;
 
 class Test : public QObject
