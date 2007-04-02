@@ -236,7 +236,11 @@ qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiS
 
 kde4_add_library(kdeui SHARED ${kdeui_LIB_SRCS})
 
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
+target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY} ${QT_QTXML_LIBRARY} kdefx )
+
+if(X11_XTest_FOUND)
+   target_link_libraries(kdeui ${X11_XTest_LIB})
+endif(X11_XTest_FOUND)
 
 set_target_properties(kdeui PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )

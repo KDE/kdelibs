@@ -40,10 +40,6 @@ if (HAVE_RESOLV_LIBRARY)
   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} resolv)
 endif (HAVE_RESOLV_LIBRARY)
 
-if(X11_XTest_FOUND)
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${X11_XTest_LIB})
-endif(X11_XTest_FOUND)
-
 if (APPLE)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
 endif (APPLE)
