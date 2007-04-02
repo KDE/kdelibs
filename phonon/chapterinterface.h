@@ -39,6 +39,8 @@ class PHONONCORE_EXPORT ChapterInterface : public QObject
 
         int availableChapters() const;
         int currentChapter() const;
+
+    public Q_SLOTS:
         void setCurrentChapter(int chapterNumber);
 
     Q_SIGNALS:

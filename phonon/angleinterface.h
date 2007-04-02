@@ -39,6 +39,8 @@ class PHONONCORE_EXPORT AngleInterface : public QObject
 
         int availableAngles() const;
         int currentAngle() const;
+
+    public Q_SLOTS:
         void setCurrentAngle(int angleNumber);
 
     Q_SIGNALS:

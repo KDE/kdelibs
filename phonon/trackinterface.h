@@ -39,10 +39,28 @@ class PHONONCORE_EXPORT TrackInterface : public QObject
 
         int availableTracks() const;
         int currentTrack() const;
-        void setCurrentTrack(int trackNumber);
 
         bool autoplayTracks() const;
+
+    public Q_SLOTS:
+        void setCurrentTrack(int trackNumber);
         void setAutoplayTracks(bool);
+
+        /**
+         * Skips to the next track.
+         *
+         * If it was playing before the track change it will start playback on the next track if
+         * autoplayTracks is enabled.
+         */
+        void nextTrack();
+
+        /**
+         * Skips to the previous track.
+         *
+         * If it was playing before the track change it will start playback on the previous track if
+         * autoplayTracks is enabled.
+         */
+        void previousTrack();
 
     Q_SIGNALS:
         void availableTracksChanged(int availableTracks);

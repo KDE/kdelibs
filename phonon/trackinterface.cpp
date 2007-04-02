@@ -103,6 +103,25 @@ void TrackInterface::setAutoplayTracks(bool b)
     iface->interfaceCall(AddonInterface::TrackInterface,
             AddonInterface::setAutoplayTracks, QList<QVariant>() << QVariant(b));
 }
+
+void TrackInterface::nextTrack()
+{
+    State s = d->media->state();
+    setCurrentTrack(currentTrack() + 1);
+    if ((s == PlayingState || s == BufferingState) && autoplayTracks()) {
+        d->media->play();
+    }
+}
+
+void TrackInterface::previousTrack()
+{
+    State s = d->media->state();
+    setCurrentTrack(currentTrack() - 1);
+    if ((s == PlayingState || s == BufferingState) && autoplayTracks()) {
+        d->media->play();
+    }
+}
+
 } // namespace Phonon
 
 #include "trackinterface.moc"

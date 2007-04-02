@@ -20,6 +20,7 @@
 #ifndef PHONON_NAVIGATIONINTERFACE_H
 #define PHONON_NAVIGATIONINTERFACE_H
 
+#include "phonon_export.h"
 #include <QObject>
 
 namespace Phonon
@@ -27,7 +28,7 @@ namespace Phonon
 class NavigationInterfacePrivate;
 class AbstractMediaProducer;
 
-class NavigationInterface : public QObject
+class PHONONCORE_EXPORT NavigationInterface : public QObject
 {
     Q_OBJECT
     public:
