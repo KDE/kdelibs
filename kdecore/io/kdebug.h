@@ -251,7 +251,7 @@ class KDECORE_EXPORT kdbgstream {
      * @param widget the widget to print
      * @return this stream
      */
-    kdbgstream& operator << (const QWidget* widget);
+    //kdbgstream& operator << (const QWidget* widget);
 
     /**
      * Prints the given value.

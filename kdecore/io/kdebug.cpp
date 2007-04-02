@@ -453,6 +453,7 @@ kdbgstream& kdbgstream::operator<<(const QString& string)
     return *this;
 }
 
+#if 0 // can't do this in kdecore
 kdbgstream& kdbgstream::operator << (const QWidget* widget)
 {
   if (!d->print)
@@ -477,6 +478,7 @@ kdbgstream& kdbgstream::operator << (const QWidget* widget)
   }
   return *this;
 }
+#endif
 
 /*
  * When printing a string:
