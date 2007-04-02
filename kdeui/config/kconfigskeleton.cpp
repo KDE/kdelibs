@@ -135,12 +135,12 @@ void KConfigSkeleton::ItemUrl::readConfig( KConfig *config )
 
 void KConfigSkeleton::ItemUrl::setProperty(const QVariant & p)
 {
-    mReference = p.value<KUrl>();
+    mReference = qVariantValue<KUrl>(p);
 }
 
 QVariant KConfigSkeleton::ItemUrl::property() const
 {
-    return QVariant::fromValue(mReference);
+    return qVariantFromValue<KUrl>(mReference);
 }
 
 KConfigSkeleton::ItemProperty::ItemProperty( const QString &_group,
@@ -795,12 +795,12 @@ void KConfigSkeleton::ItemUrlList::writeConfig( KConfig *config )
 
 void KConfigSkeleton::ItemUrlList::setProperty(const QVariant & p)
 {
-    mReference = p.value<KUrl::List>();
+    mReference = qVariantValue<KUrl::List>(p);
 }
 
 QVariant KConfigSkeleton::ItemUrlList::property() const
 {
-    return QVariant::fromValue<KUrl::List>(mReference);
+    return qVariantFromValue<KUrl::List>(mReference);
 }
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
