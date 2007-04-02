@@ -349,6 +349,10 @@ install( FILES
   KPixmapRegionSelectorDialog
   KPixmapRegionSelectorWidget
   KPixmapSplitter
+  KPlotAxis
+  KPlotObject
+  KPlotPoint
+  KPlotWidget
   KPluginInfo
   KPluginSelector
   KPopupFrame
