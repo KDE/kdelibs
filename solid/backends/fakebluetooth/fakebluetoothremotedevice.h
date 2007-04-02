@@ -41,71 +41,71 @@ public:
     QString ubi() const
     {
         return mUbi;
-    };
+    }
     QString address() const
     {
         return mAddress;
-    };
+    }
     bool isConnected() const
     {
         return mConnected;
-    };
+    }
     QString version() const
     {
         return mVersion;
-    };
+    }
     QString revision() const
     {
         return mRevision;
-    };
+    }
     QString manufacturer() const
     {
         return mManufacturer;
-    };
+    }
     QString company() const
     {
         return mCompany;
-    };
+    }
     QString majorClass() const
     {
         return mMajorClass;
-    };
+    }
     QString minorClass() const
     {
         return mMinorClass;
-    };
+    }
     QStringList serviceClasses() const
     {
         return mServiceClass;
-    };
+    }
     QString name() const
     {
         return mName;
-    };
+    }
     QString alias() const
     {
         return mAlias;
-    };
+    }
     QString lastSeen() const
     {
         return mLastSeen;
-    };
+    }
     QString lastUsed() const
     {
         return mLastUsed;
-    };
+    }
     bool hasBonding() const
     {
         return mBonded;
-    };
+    }
     int pinCodeLength() const
     {
         return mPinCodeLength;
-    };
+    }
     int encryptionKeySize() const
     {
         return mEncryptionKeySize;
-    };
+    }
 
 private:
     QString mUbi;
@@ -130,25 +130,25 @@ public Q_SLOTS:
     void setAlias(const QString &alias)
     {
         mAlias = alias;
-    };
+    }
     void clearAlias()
     {
         mAlias = "";
-    };
+    }
     void disconnect()
     {
         mConnected = false;
-    };
+    }
     void createBonding()
     {
         mBonded = true;
-    };
+    }
     void cancelBondingProcess()
-    {};
+    {}
     void removeBonding()
     {
         mBonded = false;
-    };
+    }
 
 Q_SIGNALS:
     void classChanged(uint devClass);

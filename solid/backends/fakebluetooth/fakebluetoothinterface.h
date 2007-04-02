@@ -50,84 +50,84 @@ public:
     QString ubi() const
     {
         return mUbi;
-    };
+    }
 
     QString address() const
     {
         kDebug() << k_funcinfo << endl; return mAddress;
-    };
+    }
     QString version() const
     {
         return mVersion;
-    };
+    }
     QString revision() const
     {
         return mRevision;
-    };
+    }
     QString manufacturer() const
     {
         return mManufacturer;
-    };
+    }
     QString company() const
     {
         return mCompany;
-    };
+    }
     QString mode() const
     {
         return mMode;
-    };
+    }
     int discoverableTimeout() const
     {
         return mDiscoverableTimeout;
-    };
+    }
     bool isDiscoverable() const
     {
         return mDiscoverable;
-    };
+    }
     QStringList listConnections() const
     {
         return mConnections;
-    };
+    }
     QString majorClass() const
     {
         return mMajorClass;
-    };
+    }
     QStringList listAvailableMinorClasses() const
     {
         return mMinorClasses;
-    };
+    }
     QString minorClass() const
     {
         return mMinorClass;
-    };
+    }
     QStringList serviceClasses() const
     {
         return mServiceClasses;
-    };
+    }
     QString name() const
     {
         return mName;
-    };
+    }
     QStringList listBondings() const
     {
         return mBondings;
-    };
+    }
     bool isPeriodicDiscovery() const
     {
         return mPeriodicDiscovery;
-    };
+    }
     bool isPeriodicDiscoveryNameResolving() const
     {
         return mPeriodicDiscoveryNameResolving;
-    };
+    }
     QStringList listRemoteDevices() const
     {
         return mRemoteDevices;
-    };
+    }
     QStringList listRecentRemoteDevices(const QString&) const
     {
         return mRecentRemoteDevices;
-    };
+    }
 
     void injectDevice(const QString& , FakeBluetoothRemoteDevice*);
 private:
@@ -157,32 +157,32 @@ public Q_SLOTS:
     void setMode(const QString &mode)
     {
         mMode = mode; /* emit modeChanged( mMode );*/
-    };
+    }
     void setDiscoverableTimeout(int timeout)
     {
         mTimeout = timeout;
-    };
+    }
     void setMinorClass(const QString &minorClass)
     {
         mMinorClass = minorClass;
-    };
+    }
     void setName(const QString &name)
     {
         mName = name;
-    };
+    }
     void discoverDevices();
     void discoverDevicesWithoutNameResolving()
-    {};
+    {}
     void cancelDiscovery()
-    {};
+    {}
     void startPeriodicDiscovery()
-    {};
+    {}
     void stopPeriodicDiscovery()
-    {};
+    {}
     void setPeriodicDiscoveryNameResolving(bool resolving)
     {
         mPeriodicDiscoveryNameResolving = resolving;
-    };
+    }
 
 Q_SIGNALS:
     void modeChanged(const QString &mode);

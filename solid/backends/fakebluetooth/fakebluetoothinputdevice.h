@@ -41,27 +41,27 @@ public:
     QString ubi() const
     {
         return mUbi;
-    };
+    }
     bool isConnected() const
     {
         return mConnected;
-    };
+    }
     QString address() const
     {
         return mAddress;
-    };
+    }
     QString name() const
     {
         return mName;
-    };
+    }
     QString productID() const
     {
         return mProductID;
-    };
+    }
     QString vendorID() const
     {
         return mVendorID;
-    };
+    }
 
 private:
     QString mUbi;
@@ -75,11 +75,11 @@ public Q_SLOTS:
     void slotConnected()
     {
         mConnected = true;
-    };
+    }
     void slotDisconnected()
     {
         mConnected = false;
-    };
+    }
 
 Q_SIGNALS:
     void connected();
