@@ -1,5 +1,3 @@
-#define QT3_SUPPORT
-
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kconfig.h>

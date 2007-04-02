@@ -6,10 +6,6 @@
 * Licensed under the GNU General Public License version 2
 */
 
-// remove when Q3IconView is ported
-#define QT3_SUPPORT
-#define QT3_SUPPORT_WARNINGS
-
 #include <QLayout>
 #include <QRadioButton>
 #include <QCheckBox>
