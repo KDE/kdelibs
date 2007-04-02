@@ -23,8 +23,8 @@
 
 #include <QtCore/QObject>
 #include <dnssd/servicebase.h>
+#include <QStringList>
 
-class QStringList;
 namespace DNSSD
 {
 class PublicServicePrivate;

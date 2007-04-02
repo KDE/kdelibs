@@ -51,10 +51,10 @@ void PublicService::setType(const QString& type)
 	m_type = type;
 }
 
-void PublicService::setSubType(const QString& type)
-{
-	m_subtype = type;
-}
+//X void PublicService::setSubType(const QString& type)
+//X {
+//X 	m_subtype = type;
+//X }
 
 void PublicService::setPort(unsigned short port)
 {
@@ -71,10 +71,10 @@ bool PublicService::isPublished() const
 	return false;
 }
 
-void PublicService::setTextData(const QMap<QString,QString>& textData)
-{
-	m_textData = textData;
-}
+//X void PublicService::setTextData(const QMap<QString,QString>& textData)
+//X {
+//X 	m_textData = textData;
+//X }
 
 bool PublicService::publish()
 {
