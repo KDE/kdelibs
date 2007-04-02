@@ -35,191 +35,16 @@
 #include "kcursor_p.h"
 #include <kconfiggroup.h>
 
-KCursor::KCursor()
+KCursor::KCursor( const QString& name, Qt::CursorShape fallback )
+    : QCursor( fallback ),
+      d( 0 )
 {
-}
-
-QCursor KCursor::handCursor()
-{
-        static QCursor *hand_cursor = 0;
-
-        if (!hand_cursor)
-        {
-                KConfigGroup cg( KGlobal::config(), "General" );
-
-#ifndef Q_WS_WIN // this mask doesn't work too well on win32
-                if ( cg.readEntry("handCursorStyle", "Windows") == "Windows" )
-                {
-                        static const unsigned char HAND_BITS[] = {
-                                0x80, 0x01, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02, 0x00, 0x40, 0x02,
-                                0x00, 0x40, 0x02, 0x00, 0x40, 0x02, 0x00, 0x40, 0x1e, 0x00, 0x40,
-                                0xf2, 0x00, 0x40, 0x92, 0x01, 0x70, 0x92, 0x02, 0x50, 0x92, 0x04,
-                                0x48, 0x80, 0x04, 0x48, 0x00, 0x04, 0x48, 0x00, 0x04, 0x08, 0x00,
-                                0x04, 0x08, 0x00, 0x04, 0x10, 0x00, 0x04, 0x10, 0x00, 0x04, 0x20,
-                                0x00, 0x02, 0x40, 0x00, 0x02, 0x40, 0x00, 0x01, 0xc0, 0xff, 0x01};
-                        static const unsigned char HAND_MASK_BITS[] = {
-                                0x80, 0x01, 0x00, 0xc0, 0x03, 0x00, 0xc0, 0x03, 0x00, 0xc0, 0x03,
-                                0x00, 0xc0, 0x03, 0x00, 0xc0, 0x03, 0x00, 0xc0, 0x1f, 0x00, 0xc0,
-                                0xff, 0x00, 0xc0, 0xff, 0x01, 0xf0, 0xff, 0x03, 0xf0, 0xff, 0x07,
-                                0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07, 0xf8, 0xff, 0x07, 0xf8, 0xff,
-                                0x07, 0xf8, 0xff, 0x07, 0xf0, 0xff, 0x07, 0xf0, 0xff, 0x07, 0xe0,
-                                0xff, 0x03, 0xc0, 0xff, 0x03, 0xc0, 0xff, 0x01, 0xc0, 0xff, 0x01};
-                        QBitmap hand_bitmap = QBitmap::fromData(QSize( 22, 22 ), HAND_BITS);
-                        QBitmap hand_mask = QBitmap::fromData(QSize( 22, 22 ), HAND_MASK_BITS);
-                        hand_cursor = new QCursor(hand_bitmap, hand_mask, 7, 0);
-                        // Hack to force QCursor to call XCreatePixmapCursor() immediately
-                        // so the bitmaps don't get pushed out of the Xcursor LRU cache.
-                        hand_cursor->handle();
-                }
-                else
-#endif //! Q_WS_WIN
-                        hand_cursor = new QCursor(Qt::PointingHandCursor);
-        }
-
-        Q_CHECK_PTR(hand_cursor);
-        return *hand_cursor;
-}
-
-/* XPM */
-static const char * const working_cursor_xpm[]={
-"32 32 3 1",
-"# c None",
-"a c #000000",
-". c #ffffff",
-"..##############################",
-".a.##########.aaaa.#############",
-".aa.#########.aaaa.#############",
-".aaa.#######.aaaaaa.############",
-".aaaa.#####.a...a..a..##########",
-".aaaaa.####a....a...aa##########",
-".aaaaaa.###a...aa...aa##########",
-".aaaaaaa.##a..a.....aa##########",
-".aaaaaaaa.#.aa.....a..##########",
-".aaaaa....##.aaaaaa.############",
-".aa.aa.######.aaaa.#############",
-".a.#.aa.#####.aaaa.#############",
-"..##.aa.########################",
-"#####.aa.#######################",
-"#####.aa.#######################",
-"######..########################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################",
-"################################"};
-
-
-QCursor KCursor::workingCursor()
-{
-        static QCursor *working_cursor = 0;
-
-        if (!working_cursor)
-        {
-            QPixmap pm( const_cast< const char** >( working_cursor_xpm ));
-            working_cursor = new QCursor( pm, 1, 1 );
-            // Hack to force QCursor to call XCreatePixmapCursor() immediately
-            // so the bitmaps don't get pushed out of the Xcursor LRU cache.
-            working_cursor->handle();
-        }
-
-        Q_CHECK_PTR(working_cursor);
-        return *working_cursor;
-}
-
-/**
- * All of the follow functions will return the Qt default for now regardless
- * of the style.  This will change at some later date
- */
-QCursor KCursor::arrowCursor()
-{
-    return Qt::ArrowCursor;
-}
-
-
-QCursor KCursor::upArrowCursor()
-{
-    return Qt::UpArrowCursor;
-}
-
-
-QCursor KCursor::crossCursor()
-{
-    return Qt::CrossCursor;
-}
-
-
-QCursor KCursor::waitCursor()
-{
-    return Qt::WaitCursor;
-}
-
-
-QCursor KCursor::ibeamCursor()
-{
-    return Qt::IBeamCursor;
-}
-
-
-QCursor KCursor::sizeVerCursor()
-{
-    return Qt::SizeVerCursor;
-}
-
-
-QCursor KCursor::sizeHorCursor()
-{
-    return Qt::SizeHorCursor;
-}
-
-
-QCursor KCursor::sizeBDiagCursor()
-{
-    return Qt::SizeBDiagCursor;
-}
-
-
-QCursor KCursor::sizeFDiagCursor()
-{
-    return Qt::SizeFDiagCursor;
-}
-
-
-QCursor KCursor::sizeAllCursor()
-{
-    return Qt::SizeAllCursor;
-}
-
-
-QCursor KCursor::blankCursor()
-{
-    return Qt::BlankCursor;
-}
-
-QCursor KCursor::whatsThisCursor()
-{
-    return Qt::WhatsThisCursor;
-}
-
-// auto-hide cursor stuff
-
-void KCursor::setAutoHideCursor( QWidget *w, bool enable )
-{
-    setAutoHideCursor( w, enable, false );
+    Q_UNUSED( name )
+    //FIXME: actually try and load cursor name. frederikh has this task.
 }
 
 void KCursor::setAutoHideCursor( QWidget *w, bool enable,
-				 bool customEventFilter )
+                                 bool customEventFilter )
 {
     KCursorPrivate::self()->setAutoHideCursor( w, enable, customEventFilter );
 }
@@ -278,7 +103,7 @@ void KCursorPrivateAutoHideEventFilter::hideCursor()
     if ( m_isOwnCursor )
         m_oldCursor = w->cursor();
 
-    w->setCursor( KCursor::blankCursor() );
+    w->setCursor( QCursor( Qt::BlankCursor ) );
 }
 
 void KCursorPrivateAutoHideEventFilter::unhideCursor()

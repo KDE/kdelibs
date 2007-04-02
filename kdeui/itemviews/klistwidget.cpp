@@ -19,7 +19,6 @@
 #include "klistwidget.h"
 
 #include <kglobalsettings.h>
-#include <kcursor.h>
 #include <kdebug.h>
 
 #include <qtimer.h>
@@ -46,7 +45,7 @@ KListWidget::KListWidget( QWidget *parent )
 void KListWidget::slotItemEntered( QListWidgetItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
-        viewport()->setCursor( KCursor().handCursor() );
+        viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
 
     if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
       m_pAutoSelect->setSingleShot( true );

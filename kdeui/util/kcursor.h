@@ -27,110 +27,23 @@ class QEvent;
 class QWidget;
 
 /**
- * @short A QCursor wrapper allowing "themed" cursors and auto-hiding cursors.
- *
- * A wrapper around QCursor that allows for "themed" cursors.
- *
- * Currently, the only themed cursor is a hand shaped cursor.
- *
- * A typical usage would be
- * \code
- * setCursor(KCursor::handCursor());
- * \endcode
+ * @short A set of convenience methods for auto-hiding cursors on widgets.
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KCursor
+class KDEUI_EXPORT KCursor : public QCursor
 {
 public:
     /**
-     * Constructor.
+     * Attempts to load the requested @p name cursor from the current theme.
+     * If it fails, it falls back to the Qt::CursorShape provided as the 
+     * second parameter. This allows one to access cursors that may be in a
+     * theme but not in the Qt::CursorShape enum.
      *
-     * Does not do anything so far.
-     **/
-    KCursor();
-
-    /**
-     * Returns the proper hand cursor according to
-     * the current GUI style (static function).
+     * @param name the name of the cursor to try and load
+     * @param fallback the cursor to load if @p name cursor can not be loaded
      */
-    static QCursor handCursor();
-
-    /**
-     * Returns the proper arrow+hourglass cursor according to
-     * the current GUI style (static function).
-     */
-    static QCursor workingCursor();
-
-    /**
-     * Returns the proper arrow cursor according to
-     * the current GUI style (static function).
-     */
-    static QCursor arrowCursor();
-
-    /**
-     * Returns the proper up arrow cursor according to
-     * the current GUI style (static function).
-     */
-    static QCursor upArrowCursor();
-
-    /**
-     * Returns the proper cross-hair cursor according to
-     * the current GUI style (static function).
-     */
-    static QCursor crossCursor();
-
-    /**
-     * Returns the proper hourglass cursor according to
-     * the current GUI style (static function).
-     */
-    static QCursor waitCursor();
-
-    /**
-     * Returns the proper text cursor according to
-     * the current GUI style (static function).
-     */
-    static QCursor ibeamCursor();
-
-    /**
-     * Returns the proper vertical resize cursor
-     * according to the current GUI style (static function).
-     */
-    static QCursor sizeVerCursor();
-
-    /**
-     * Returns the proper horizontal resize cursor
-     * according to the current GUI style (static function).
-     */
-    static QCursor sizeHorCursor();
-
-    /**
-     * Returns the proper diagonal resize (/) cursor
-     * according to the current GUI style (static function).
-     */
-    static QCursor sizeBDiagCursor();
-
-    /**
-     * Returns the proper diagonal resize (\) cursor
-     * according to the current GUI style (static function).
-     */
-    static QCursor sizeFDiagCursor();
-
-    /**
-     * Returns the proper all-directions resize cursor
-     * according to the current GUI style (static function).
-     */
-    static QCursor sizeAllCursor();
-
-    /**
-     * Returns a blank or invisible cursor (static function).
-     */
-    static QCursor blankCursor();
-
-    /**
-     * Returns a WhatsThis cursor (static function).
-     */
-    static QCursor whatsThisCursor();
+    KCursor( const QString & name, Qt::CursorShape fallback );
 
     /**
      * Sets auto-hiding the cursor for widget @p w. Enabling it will result in
@@ -154,19 +67,8 @@ public:
      * a QCanvasView, then you have to pass all key-events that should trigger
      * auto-hiding to autoHideEventFilter().
      */
-    static void setAutoHideCursor( QWidget *w, bool enable );
-
-    /**
-     * Overloaded method for the case where you have an event-filter installed
-     * on the widget you want to enable auto-cursor-hiding.
-     *
-     * In this case set @p customEventFilter to true and call
-     * autoHideEventFilter() from the beginning of your eventFilter().
-     *
-     * @see autoHideEventFilter
-     */
     static void setAutoHideCursor( QWidget *w, bool enable,
-				   bool customEventFilter );
+                                   bool customEventFilter = false );
 
     /**
      * Sets the delay time in milliseconds for auto-hiding. When no keyboard
@@ -215,7 +117,9 @@ public:
     static void autoHideEventFilter( QObject *, QEvent * );
 
 private:
-    static QCursor *s_handCursor;
+    class Private;
+    Private* const d;
+    Q_DISABLE_COPY( KCursor );
 };
 
 

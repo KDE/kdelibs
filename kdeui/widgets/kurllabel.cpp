@@ -90,7 +90,7 @@ KUrlLabel::KUrlLabel( const QString& url, const QString& text, QWidget* parent )
     d( new Private( url, this ) )
 {
   setFont( font() );
-  setCursor( KCursor::handCursor() );
+  setCursor( QCursor( Qt::OpenHandCursor ) );
   d->setLinkColor( d->linkColor );
 }
 
@@ -99,7 +99,7 @@ KUrlLabel::KUrlLabel( QWidget* parent )
     d( new Private( QString(), this ) )
 {
   setFont( font() );
-  setCursor( KCursor::handCursor() );
+  setCursor( QCursor( Qt::OpenHandCursor ) );
   d->setLinkColor( d->linkColor );
 }
 
@@ -172,10 +172,11 @@ void KUrlLabel::setUseCursor( bool on, QCursor* cursor )
   d->cursor = cursor;
 
   if ( on ) {
-    if ( cursor )
-      setCursor( *cursor );
-    else
-      setCursor( KCursor::handCursor() );
+    if ( cursor ) {
+        setCursor( *cursor );
+    } else {
+        setCursor( QCursor( Qt::OpenHandCursor ) );
+    }
   } else
     unsetCursor();
 }

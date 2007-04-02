@@ -979,6 +979,12 @@ calls automatically on a right-mouse-button click or on activation by the contex
 There's no need to do anything in mousePressEvent/mouseReleaseEvent/keyPressEvent.
 </ul>
 
+<h4>KCursor</h4>
+<ul>
+<li>KCursor is now a QCursor, allowing for loading of non-standard icons from themes</li>
+<li>The static methods for loading various cursor types are gone, just use QCursor( Qt::CursorShape ) directly instead</li>
+</ul>
+
 <h4>KDatePicker</h4>
 <ul>
 <li>signal void dateChanged(QDate); was replaced by void dateChanged( const QDate&amp;);</li>
