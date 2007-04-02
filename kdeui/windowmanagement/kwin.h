@@ -50,8 +50,7 @@ class QString;
  * most-commonly used NET-features with a simpler, KDEish interface.
  *
  * In addition, it encapsulates KDE functionality not yet provided by
- * the NET hints.  Currently that is invokeContextHelp() and
- * setSystemTrayWindowFor() only.
+ * the NET hints.
  *
  * @short Class for interaction with the window manager.
  * @see NET
@@ -143,17 +142,6 @@ public:
      * that belongs to another application.
      */
     static void setMainWindow( QWidget* subwindow, WId mainwindow );
-
-    /**
-     * Makes @p trayWin a system tray window for @p forWin.
-     *
-     * A system tray window serves as an icon replacement. It's
-     * displayed inside the panel's system tray.
-     * @param trayWin the id of the system tray window
-     * @param forWin the id of the window represented by the system
-     *        tray window
-     */
-    static void setSystemTrayWindowFor( WId trayWin, WId forWin );
 
     class WindowInfo;
     /**
