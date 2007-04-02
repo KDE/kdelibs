@@ -292,4 +292,3 @@ KGuiItem overwrite()
 
 } // KStandardGuiItem namespace
 
-#include "kstandardguiitem.moc"
