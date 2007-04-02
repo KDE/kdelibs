@@ -9,9 +9,11 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
+ ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${CMAKE_CURRENT_SOURCE_DIR}/config
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+ ${CMAKE_CURRENT_SOURCE_DIR}/fonts
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
  ${CMAKE_CURRENT_SOURCE_DIR}/jobs
@@ -53,6 +55,12 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
+ colors/kcolorbutton.cpp
+ colors/kcolorcombo.cpp
+ colors/kcolordialog.cpp
+ colors/kcolormimedata.cpp
+ colors/kcolorvalueselector.cpp
+ colors/khuesaturationselect.cpp
  config/kconfigskeleton.cpp
  config/kconfiggroupgui.cpp
  dialogs/kaboutkdedialog.cpp
@@ -62,8 +70,6 @@ set(kdeui_LIB_SRCS
  dialogs/kbugreport.cpp
  dialogs/kdialog.cpp
  dialogs/kedittoolbar.cpp
- dialogs/kcolordialog.cpp
- dialogs/kfontdialog.cpp
  dialogs/kinputdialog.cpp
  dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
@@ -79,6 +85,9 @@ set(kdeui_LIB_SRCS
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
+ fonts/kfontchooser.cpp
+ fonts/kfontdialog.cpp
+ fonts/kfontrequester.cpp
  icons/kiconeffect.cpp
  icons/kiconengine.cpp
  icons/kicon.cpp
@@ -116,7 +125,6 @@ set(kdeui_LIB_SRCS
  sonnet/highlighter.cpp
  sonnet/configdialog.cpp
  util/kckey.cpp
- util/kcolormimedata.cpp
  util/kcommand.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
@@ -150,9 +158,6 @@ set(kdeui_LIB_SRCS
  widgets/kcharselect.cpp
  widgets/kcharselectdata.cpp
  widgets/kcmodule.cpp
- widgets/kcolorbutton.cpp
- widgets/kcolorcombo.cpp
- widgets/kcolorvalueselector.cpp
  widgets/kcombobox.cpp
  widgets/kcompletionbox.cpp
  widgets/kdatepicker.cpp
@@ -160,10 +165,8 @@ set(kdeui_LIB_SRCS
  widgets/kdatetimewidget.cpp
  widgets/kdatewidget.cpp
  widgets/keditlistbox.cpp
- widgets/kfontrequester.cpp
  widgets/khbox.cpp
  widgets/khelpmenu.cpp
- widgets/khuesaturationselect.cpp
  widgets/kkeysequencewidget.cpp
  widgets/kinformationlabel.cpp
  widgets/kled.cpp
@@ -220,8 +223,7 @@ if (UNIX)
        )
 endif (UNIX)
 
-
-kde4_automoc(${kdeui_LIB_SRCS})
+kde4_automoc(${kdeui_LIB_SRCS} dialogs/kdialogqueue_p.h)
 
 set( kdeui_UI
    dialogs/kpassworddialog.ui
@@ -268,17 +270,22 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
+ colors/kcolorbutton.h
+ colors/kcolorchoosermode.h
+ colors/kcolorcombo.h
+ colors/kcolordialog.h
+ colors/kcolormimedata.h
+ colors/kcolorvalueselector.h
+ colors/khuesaturationselect.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kaboutkdedialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h
- dialogs/kcolordialog.h
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h
  dialogs/kdialog.h
  dialogs/kedittoolbar.h
- dialogs/kfontdialog.h
  dialogs/kinputdialog.h
  dialogs/kmessagebox.h
  dialogs/kmessageboxmessagehandler.h
@@ -293,6 +300,9 @@ install( FILES
  findreplace/kreplace.h
  findreplace/kfinddialog.h
  findreplace/kreplacedialog.h
+ fonts/kfontchooser.h
+ fonts/kfontdialog.h
+ fonts/kfontrequester.h
  icons/kiconeffect.h
  icons/kicon.h
  icons/kiconloader.h
@@ -324,7 +334,6 @@ install( FILES
  shortcuts/kgesture.h
  util/fixx11h.h
  util/kaccelgen.h
- util/kcolormimedata.h
  util/kcommand.h
  util/kcompletion.h
  util/kcrash.h
@@ -351,17 +360,12 @@ install( FILES
  widgets/kanimatedbutton.h
  widgets/karrowbutton.h
  widgets/kdatepicker.h
- widgets/kfontrequester.h
  widgets/kcmodule.h
- widgets/kcolorbutton.h
- widgets/kcolorchoosermode.h
- widgets/kcolorcombo.h
  widgets/kcompletionbox.h
  widgets/kcombobox.h
  widgets/kbuttonbox.h
  widgets/kbuttongroup.h
  widgets/kcharselect.h
- widgets/kcolorvalueselector.h
  widgets/kdatetable.h
  widgets/kdatetimewidget.h
  widgets/kdatewidget.h
@@ -369,7 +373,6 @@ install( FILES
  widgets/keditlistbox.h
  widgets/khbox.h
  widgets/khelpmenu.h
- widgets/khuesaturationselect.h
  widgets/kkeysequencewidget.h
  widgets/kinformationlabel.h
  widgets/kled.h
@@ -418,7 +421,7 @@ install( FILES
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
-install( FILES dialogs/40.colors dialogs/Web.colors dialogs/Royal.colors dialogs/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
+install( FILES colors/40.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 install(FILES jobs/org.kde.UiServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
 install(FILES jobs/org.kde.UiServerCallbacks.xml DESTINATION ${DBUS_INTERFACES_DIR})

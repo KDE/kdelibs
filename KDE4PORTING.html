@@ -230,7 +230,7 @@ ode that uses the Q3Data* classes working.For new code, use User in the meta obj
 (Note: this feature was new in KDE 3.5 but never publicly announced.)</li>
 <li>The user-visible encoding names are now mostly upper-case
 (instead of being always lower-case).</li>
-<li>KCharsets::languageForEncoding should be replaced 
+<li>KCharsets::languageForEncoding should be replaced
 by KCharsets::descriptionForEncoding. The function KCharsets::languageForEncoding is planned to be removed before the release of KDE4.</li>
 <li>The status of the encoding UTF-7 is not guaranteed to be kept, as Qt
 does not support this encoding.</li>
@@ -1092,6 +1092,27 @@ if needed (see the KURLDrag section)</li>
 <li>void insertStrList(const QStrList* list, int index=-1) and void insertStrList(const QStrList&amp; list, int index=-1) have been deprecated, use QStringList or const char** instead</li>
 </ul>
 
+<h4>KEditToolbar</h4>
+<ul>
+<li>KEditToolbar is now KEditToolBar</li>
+</ul>
+
+<h4>KEditToolbarWidget</h4>
+KEditToolbar is now KEditToolBarWidget
+
+<h4>KFind</h4>
+<ul>
+<li>The options argument in the constructor is now an enumerated flag of type KFind::Options</li>
+<li>resetCounts() was renamed to resetMatchCount()</li>
+<li>The Options flags from KReplace were added to the Options enumeration of KFind</li>
+</ul>
+
+<h4>KFind</h4>
+The constructors have been simplified to take an optional parent. Other parameters must be set by using the API directly, e.g. setHasSelection and setSearch
+
+<h4>KFontChooser</h4>
+Was in kfontdialog.h, but was moved to it's own header. so now either do #include &lt;KFontChooser&gt; or #incldue &lt;kfontchooser.h&gt;
+
 <h4>KGradientSelector</h4>
 <ul>
 <li>Reversed the value range, if orientation is horizontal. Now minimum is on the left and maximum on the right side.</li>
@@ -1227,6 +1248,12 @@ use( dlg.password() );
 <h4>KPixmapIO</h4>
 <ul>
 <li>The class is dumped, use QPixmap.toImage() and QPixmap::fromImage()</li>
+</ul>
+
+<h4>KPixmapRegionSelecorDialog</h4>
+<ul>
+    <li>getSelectedRegion was changed to selectedRegion</li>
+    <li>getSelectedImage was changed to selectedImage</li>
 </ul>
 
 <h4>KPopupMenu</h4>
@@ -1786,7 +1813,7 @@ instead of returning the application/octet-stream mimetype. Test for null!</li>
 </ul>
 
 <h4>KPropertiesDialogPlugin</h4>
-<ul> 
+<ul>
 <li>KPropsPage or KPropsDlgPlugin was renamed to KPropertiesDialogPlugin</li>
 <li>The header file was renamed from kpropsdlg.h to kpropertiesdialog.h</li>
 </ul>
