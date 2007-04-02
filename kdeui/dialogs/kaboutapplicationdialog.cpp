@@ -34,7 +34,8 @@
 #include "kaboutapplicationdialog.h"
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
-  : KDialog(parent)
+  : KDialog(parent),
+    d( 0 )
 {
     setPlainCaption(i18n("About %1", aboutData->programName()));
     setButtons(KDialog::Close);

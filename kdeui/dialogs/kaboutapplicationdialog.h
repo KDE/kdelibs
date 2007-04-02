@@ -55,6 +55,11 @@ class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
          *        toplevel window so that the dialog becomes centered.
          */
         explicit KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent = 0);
+
+    private:
+        class Private;
+        Private* const d;
+        Q_DISABLE_COPY( KAboutApplicationDialog )
 };
 
 #endif

@@ -51,6 +51,11 @@ class KDEUI_EXPORT KAboutKdeDialog : public KDialog
          *        toplevel window so that the dialog becomes centered.
          */
         explicit KAboutKdeDialog(QWidget *parent = 0);
+
+    private:
+        class Private;
+        Private* const d;
+        Q_DISABLE_COPY( KAboutKdeDialog )
 };
 
 #endif

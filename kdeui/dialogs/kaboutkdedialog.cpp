@@ -32,7 +32,8 @@
 #include "kaboutkdedialog.h"
 
 KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
-  : KDialog(parent)
+  : KDialog(parent),
+    d( 0 )
 {
     setPlainCaption(i18n("About KDE"));
     setButtons(KDialog::Help | KDialog::Close);
