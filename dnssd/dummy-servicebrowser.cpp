@@ -26,9 +26,6 @@
 namespace DNSSD
 {
 
-const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
-
-
 ServiceBrowser::ServiceBrowser(const QString&,bool,const QString&, const QString&) : d(0)
 {}
 

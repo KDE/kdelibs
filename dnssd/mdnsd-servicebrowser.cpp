@@ -38,9 +38,6 @@ namespace DNSSD
 void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceErrorType errorCode,
 		     const char *serviceName, const char *regtype, const char *replyDomain, void *context);
 
-const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
-
-
 ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QString& domain, const QString& subtype)
 	:d(new ServiceBrowserPrivate(this))
 {

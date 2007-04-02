@@ -68,8 +68,6 @@ public:
 	ServiceBrowser constructor.
 	 
 	@param type Service types to browse for (example: "_http._tcp"). 
-	Can also be DNSSD::ServicesBrowser::AllServices to specify "metaquery" for all service types 
-	present on network
 	@param autoResolve - after disovering new service it will be resolved and then 
 	reported with serviceAdded() signal. It raises network usage by resolving all services, 
 	so use it only when necessary.
@@ -92,12 +90,6 @@ public:
 	 */
 	virtual void startBrowse();
 
-	/**
-	Special service type to search for all available service types. Pass it as "type"
-	parameter to ServiceBrowser constructor.
-	 */
-	static const QString AllServices;
-	
 	/**
 	Checks availability of DNS-SD services (this also covers publishing).
 

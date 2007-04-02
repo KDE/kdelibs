@@ -44,8 +44,8 @@ public:
 	typedef KSharedPtr<ServiceBase> Ptr;
 
 	/**
-	@param name Service name - empty for metaservices
-	@param type Service type - empty for domains
+	@param name Service name
+	@param type Service type
 	@param domain Domain name for service
 	@param host   Host name for service
 	@param port   Port number for service
@@ -60,13 +60,12 @@ public:
 	virtual  ~ServiceBase();
 
 	/**
-	Returns name of service. This is empty for metaservices
+	Returns name of service.
 	 */
 	const QString& serviceName() const;
 
 	/**
-	Returns type of service. It always in format _sometype._udp or _sometype._tcp and
-	it is empty for domains.
+	Returns type of service. It always in format _sometype._udp or _sometype._tcp.
 	 */
 	const QString& type() const;
 

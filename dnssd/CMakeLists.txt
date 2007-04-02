@@ -37,6 +37,7 @@ else (HAVE_DNSSD)
    dummy-remoteservice.cpp
    dummy-publicservice.cpp
    dummy-servicebrowser.cpp
+   dummy-servicetypebrowser.cpp
    )
 
 endif (HAVE_DNSSD)
@@ -61,7 +62,7 @@ install(TARGETS kdnssd  DESTINATION ${LIB_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES dnssd_export.h domainbrowser.h remoteservice.h   publicservice.h servicebase.h servicebrowser.h ${CMAKE_CURRENT_BINARY_DIR}/settings.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd )
+install( FILES dnssd_export.h domainbrowser.h remoteservice.h servicetypebrowser.h  publicservice.h servicebase.h servicebrowser.h ${CMAKE_CURRENT_BINARY_DIR}/settings.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd )
 
 
 

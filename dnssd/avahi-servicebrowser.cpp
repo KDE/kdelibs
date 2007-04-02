@@ -30,10 +30,6 @@ Q_DECLARE_METATYPE(QList<QByteArray>);
 namespace DNSSD
 {
 
-//FIXME: implement servicetypebrowser
-const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
-
-
 ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QString& domain, const QString& subtype)
 	:d(new ServiceBrowserPrivate(this))
 {
@@ -71,7 +67,7 @@ void ServiceBrowser::startBrowse()
 	    SLOT(gotNewService(int,int,const QString&,const QString&,const QString&, uint)));
 	connect(b,SIGNAL(ItemRemove(int,int,const QString&,const QString&,const QString&,uint)),d, 
 	    SLOT(gotRemoveService(int,int,const QString&,const QString&,const QString&, uint)));
-	connect(b,SIGNAL(allForNow()),d,SLOT(browseFinished()));
+	connect(b,SIGNAL(AllForNow()),d,SLOT(browserFinished()));
 	d->m_browser=b;
 }
 
