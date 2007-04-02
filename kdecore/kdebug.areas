@@ -35,6 +35,7 @@
 280        kdeui (KSharedPixmap)
 281        kdeui (KCModule)
 282        kdeui (K3DockWidget)
+283        kdeui (K*Gesture*)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
 293        kdeui (KLineEdit)

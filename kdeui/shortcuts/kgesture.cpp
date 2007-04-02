@@ -167,7 +167,6 @@ QString KShapeGesture::toString() const
 }
 
 
-#include <kdebug.h>
 QByteArray KShapeGesture::toSvg(const QString &attributes) const
 {
     if (!isValid()) {
