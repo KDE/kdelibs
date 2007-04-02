@@ -655,7 +655,7 @@ inline T KConfigGroup::readEntry( const char* pKey, const T& aDefault) const
 #if KCONFIG_QVARIANT_CHECK
   ConversionCheck::to_QVariant<T>();
 #endif
-  return qvariant_cast<T>(readEntry(pKey, QVariant(aDefault)));
+  return qvariant_cast<T>(readEntry(pKey, qVariantFromValue(aDefault)));
 }
 
 template <typename T>
@@ -686,7 +686,7 @@ inline void KConfigGroup::writeEntry( const char* pKey, const T& value,
 #if KCONFIG_QVARIANT_CHECK
   ConversionCheck::to_QVariant<T>();
 #endif
-  writeEntry( pKey, QVariant(value), pFlags );
+  writeEntry( pKey, qVariantFromValue(value), pFlags );
 }
 
 #endif // KCONFIGGROUP_H
