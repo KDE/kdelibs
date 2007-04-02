@@ -33,7 +33,7 @@ set(knewstuff2_ui_SRCS
   ui/kdxscomments.cpp
   ui/kdxschanges.cpp
   ui/kdxstranslation.cpp
-  ui/newstuff.cpp
+  ui/downloaddialog.cpp
   ui/qasyncpixmap.cpp
   ui/qasyncframe.cpp
   ui/qstarframe.cpp

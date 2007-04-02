@@ -1,6 +1,6 @@
 #include "knewstuff2/engine.h"
 
-#include "knewstuff2/ui/newstuff.h"
+#include "knewstuff2/ui/downloaddialog.h"
 #include "knewstuff2/ui/uploaddialog.h"
 #include "knewstuff2/ui/providerdialog.h"
 

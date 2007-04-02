@@ -5,7 +5,7 @@
 #include "knewstuff2/core/entry.h"
 #include "knewstuff2/core/category.h"
 
-#include "newstuff.h"
+#include "downloaddialog.h"
 #include "kdxsrating.h"
 #include "kdxscomment.h"
 #include "kdxscomments.h"

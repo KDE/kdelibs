@@ -1,6 +1,6 @@
 #include "kdxsview.h"
 
-#include "newstuff.h"
+#include "downloaddialog.h"
 
 #include "knewstuff2/dxs/dxs.h"
 

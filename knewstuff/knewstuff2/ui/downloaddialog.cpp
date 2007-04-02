@@ -47,7 +47,7 @@
 #include "knewstuff2/dxs/dxs.h"
 
 // local includes
-#include "newstuff.h"
+#include "downloaddialog.h"
 
 #include "kdxsbutton.h"
 #include "qasyncpixmap.h"
@@ -769,4 +769,4 @@ void DownloadDialog::slotError()
 		i18n("Desktop Exchange Service"));
 }
 
-#include "newstuff.moc"
+#include "downloaddialog.moc"
