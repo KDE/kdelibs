@@ -31,7 +31,7 @@
 #include <kpushbutton.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
-#include <kwin.h>
+#include <kwm.h>
 #include <krandom.h>
 #include <QtGui/QLayout>
 #include <qtimer.h>
@@ -74,7 +74,7 @@ StatusWindow::StatusWindow(int pid)
 	m_icon->setPixmap(DesktopIcon("document-print"));
 	m_icon->setAlignment(Qt::AlignCenter);
 #ifdef Q_WS_X11
-	KWin::setIcons(winId(), *(m_icon->pixmap()), SmallIcon("document-print"));
+	KWM::setIcons(winId(), *(m_icon->pixmap()), SmallIcon("document-print"));
 #endif
 	QGridLayout	*l0 = new QGridLayout(this);
     l0->setMargin(10);

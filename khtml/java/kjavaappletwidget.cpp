@@ -22,7 +22,7 @@
 #include "kjavaappletwidget.h"
 #include "kjavaappletserver.h"
 
-#include <kwin.h>
+#include <kwm.h>
 #include <kdebug.h>
 #include <klocale.h>
 
@@ -49,9 +49,6 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget* parent )
     //setProtocol(QXEmbed::XPLAIN);
 
     m_applet = new KJavaApplet( this );
-#ifdef Q_WS_X11
-    m_kwm    = new KWinModule( this );
-#endif
 
     d->tmplabel = new QLabel( this );
     d->tmplabel->setText( KJavaAppletServer::getAppletLabel() );
@@ -73,10 +70,10 @@ KJavaAppletWidget::~KJavaAppletWidget()
 void KJavaAppletWidget::showApplet()
 {
 #ifdef Q_WS_X11
-    connect( m_kwm, SIGNAL( windowAdded( WId ) ),
+    connect( KWM::self(), SIGNAL( windowAdded( WId ) ),
 	         this,  SLOT( setWindow( WId ) ) );
 
-    m_kwm->doNotManage( m_swallowTitle );
+    KWM::doNotManage( m_swallowTitle );
 
     //Now we send applet info to the applet server
     if ( !m_applet->isCreated() )
@@ -88,7 +85,7 @@ void KJavaAppletWidget::setWindow( WId w )
 {
 #ifdef Q_WS_X11
     //make sure that this window has the right name, if so, embed it...
-    KWin::WindowInfo w_info = KWin::windowInfo( w, NET::WMVisibleName | NET::WMName );
+    KWM::WindowInfo w_info = KWM::windowInfo( w, NET::WMVisibleName | NET::WMName );
     if ( m_swallowTitle == w_info.name() ||
          m_swallowTitle == w_info.visibleName() )
     {
@@ -98,7 +95,7 @@ void KJavaAppletWidget::setWindow( WId w )
         d->tmplabel = 0;
 
         // disconnect from KWM events
-        disconnect( m_kwm, SIGNAL( windowAdded( WId ) ),
+        disconnect( KWM::self(), SIGNAL( windowAdded( WId ) ),
                     this,  SLOT( setWindow( WId ) ) );
 
         embedClient( w );

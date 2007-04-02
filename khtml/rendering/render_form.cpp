@@ -37,7 +37,7 @@
 #include <kreplacedialog.h>
 #include <k3spell.h>
 #include <kurlcompletion.h>
-#include <kwin.h>
+#include <kwm.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 
@@ -1548,7 +1548,7 @@ void TextAreaWidget::slotFind()
 #ifdef Q_WS_WIN
       m_findDlg->activateWindow();
 #else
-      KWin::activateWindow( m_findDlg->winId() );
+      KWM::activateWindow( m_findDlg->winId() );
 #endif
     } else {
       m_findDlg = new KFindDialog(false, this, "KHTML Text Area Find Dialog");
@@ -1567,7 +1567,7 @@ void TextAreaWidget::slotReplace()
 #ifdef Q_WS_WIN
       m_repDlg->activateWindow();
 #else
-      KWin::activateWindow( m_repDlg->winId() );
+      KWM::activateWindow( m_repDlg->winId() );
 #endif
     } else {
       m_repDlg = new KReplaceDialog(this, "KHTMLText Area Replace Dialog", 0,

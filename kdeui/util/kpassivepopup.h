@@ -177,7 +177,7 @@ public:
     /**
      * If no relative window (eg taskbar button, system tray window) is
      * available, use this rectangle (pass it to moveNear()).
-     * Basically KWinModule::workArea() with width and height set to 0
+     * Basically KWM::workArea() with width and height set to 0
      * so that moveNear uses the upper-left position.
      * @return The QRect to be passed to moveNear() if no other is
      * available.

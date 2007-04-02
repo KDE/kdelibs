@@ -53,7 +53,6 @@ template <class Z> class NETRArray;
    @author Bradley T. Hughes <bhughes@trolltech.com>
    @see NET
    @see NETWinInfo
-   @see KWin
  **/
 
 class KDEUI_EXPORT NETRootInfo : public NET {
@@ -795,7 +794,6 @@ private:
    @author Bradley T. Hughes <bhughes@trolltech.com>
    @see NET
    @see NETRootInfo
-   @see KWin
    @see http://www.freedesktop.org/standards/wm-spec/
  **/
 

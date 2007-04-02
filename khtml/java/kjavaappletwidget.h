@@ -35,7 +35,6 @@
 #define QX11EmbedContainer QWidget
 #include <QWidget>
 #endif
-#include <kwinmodule.h>
 
 /**
  * @short A widget for displaying Java applets
@@ -121,7 +120,6 @@ private:
     KJavaAppletWidgetPrivate* const d;
 
     KJavaApplet* m_applet;
-    KWinModule*  m_kwm;
     QString      m_swallowTitle;
 
 };

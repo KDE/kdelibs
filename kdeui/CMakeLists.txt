@@ -213,8 +213,7 @@ if (Q_WS_WIN)
 endif (Q_WS_WIN)
 
 if (UNIX)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwin.cpp
-                                         windowmanagement/kwinmodule.cpp
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_x11.cpp
                                          windowmanagement/netwm.cpp
        )
 endif (UNIX)
@@ -396,8 +395,7 @@ install( FILES
  widgets/kurllabel.h
  widgets/kvbox.h
  widgets/kxyselector.h
- windowmanagement/kwin.h
- windowmanagement/kwinmodule.h
+ windowmanagement/kwm.h
  windowmanagement/netwm_def.h
  windowmanagement/netwm.h
  xmlgui/kmainwindow.h

@@ -59,7 +59,7 @@
 #include <kstaticdeleter.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
-#include <kwin.h>
+#include <kwm.h>
 #include <kconfiggroup.h>
 
 #if defined Q_WS_X11
@@ -904,7 +904,7 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
   int w, h;
 #if defined Q_WS_X11
   // save maximalization as desktop size + 1 in that direction
-  KWin::WindowInfo info = KWin::windowInfo( winId(), NET::WMState );
+  KWM::WindowInfo info = KWM::windowInfo( winId(), NET::WMState );
   w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
   h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
 #else
@@ -976,7 +976,7 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & config )
             else
                 resize( size );
             // QWidget::showMaximized() is both insufficient and broken
-            KWin::setState( winId(), state );
+            KWM::setState( winId(), state );
 #else
             if (size.width() > desk.width() || size.height() > desk.height())
               setWindowState( Qt::WindowMaximized );

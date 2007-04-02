@@ -342,8 +342,8 @@ void KUniqueApplication::newInstanceNoFork()
 #if defined Q_WS_X11
   // KDE4 remove
   // A hack to make startup notification stop for apps which override newInstance()
-  // and reuse an already existing window there, but use KWin::activateWindow()
-  // instead of KStartupInfo::setNewStartupId(). Therefore KWin::activateWindow()
+  // and reuse an already existing window there, but use KWM::activateWindow()
+  // instead of KStartupInfo::setNewStartupId(). Therefore KWM::activateWindow()
   // for now sets this flag. Automatically ending startup notification always
   // would cause problem if the new window would show up with a small delay.
   if( s_handleAutoStarted )

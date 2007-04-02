@@ -57,7 +57,7 @@ class QGroupBox;
  * To create a non-modal find dialog:
  * \code
  *   if ( m_findDia )
- *     KWin::setActiveWindow( m_findDia->winId() );
+ *     KWM::activateWindow( m_findDia->winId() );
  *   else
  *   {
  *     m_findDia = new KFindDialog(false,...);

@@ -31,8 +31,7 @@
 #include "kstandardaction.h"
 
 #ifdef Q_WS_X11
-#include <kwin.h>
-#include <kwinmodule.h>
+#include <kwm.h>
 #include <QX11Info>
 #endif
 
@@ -106,7 +105,7 @@ void KSystemTrayIcon::init( QWidget* parent )
         connect( action, SIGNAL( triggered( bool ) ), this, SLOT( minimizeRestoreAction() ) );
 
 #ifdef Q_WS_X11
-        KWin::WindowInfo info = KWin::windowInfo( parent->winId(), NET::WMDesktop );
+        KWM::WindowInfo info = KWM::windowInfo( parent->winId(), NET::WMDesktop );
         d->onAllDesktops = info.onAllDesktops();
 #else
         d->onAllDesktops = false;
@@ -217,7 +216,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
     }
 
 #ifdef Q_WS_X11
-    KWin::WindowInfo info1 = KWin::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
+    KWM::WindowInfo info1 = KWM::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
 //    - not mapped -> show, raise, focus
@@ -228,7 +227,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
         minimizeRestore( true );
     else
     {
-        KWinModule module;
+        KWM module;
         QListIterator< WId > it (module.stackingOrder());
         it.toBack();
         while( it.hasPrevious() )
@@ -236,7 +235,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
             WId id = it.previous();
             if( id == pw->winId() )
                 break;
-            KWin::WindowInfo info2 = KWin::windowInfo( id,
+            KWM::WindowInfo info2 = KWM::windowInfo( id,
                 NET::WMGeometry | NET::XAWMState | NET::WMState | NET::WMWindowType );
             if( info2.mappingState() != NET::Visible )
                 continue; // not visible on current desktop -> ignore
@@ -250,7 +249,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
             if( type == NET::Dock || type == NET::TopMenu )
                 continue; // obscured by dock or topmenu -> ignore
             pw->raise();
-            KWin::activateWindow( pw->winId());
+            KWM::activateWindow( pw->winId());
             return;
         }
         minimizeRestore( false ); // hide
@@ -264,17 +263,17 @@ void KSystemTrayIcon::minimizeRestore( bool restore )
     if( !pw )
 	return;
 #ifdef Q_WS_X11
-    KWin::WindowInfo info = KWin::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
+    KWM::WindowInfo info = KWM::windowInfo( pw->winId(), NET::WMGeometry | NET::WMDesktop );
     if ( restore )
     {
 	if( d->onAllDesktops )
-	    KWin::setOnAllDesktops( pw->winId(), true );
+	    KWM::setOnAllDesktops( pw->winId(), true );
 	else
-	    KWin::setCurrentDesktop( info.desktop() );
+	    KWM::setCurrentDesktop( info.desktop() );
         pw->move( info.geometry().topLeft() ); // avoid placement policies
         pw->show();
         pw->raise();
-	KWin::activateWindow( pw->winId() );
+	KWM::activateWindow( pw->winId() );
     } else {
 	d->onAllDesktops = info.onAllDesktops();
 	pw->hide();

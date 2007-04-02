@@ -45,7 +45,6 @@
 #include <klocale.h>
 #include "k3sconfig.h"
 #include "k3spelldlg.h"
-#include <kwin.h>
 #include <k3procio.h>
 #include <QTextStream>
 

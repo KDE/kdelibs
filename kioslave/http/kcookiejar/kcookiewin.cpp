@@ -55,7 +55,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef QT_NO_WHATSTHIS
 #endif
 
-#include <kwin.h>
+#include <kwm.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurllabel.h>
@@ -89,7 +89,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     else
     {
         // No window associated... make sure the user notices our dialog.
-        KWin::setState( winId(), NET::KeepAbove );
+        KWM::setState( winId(), NET::KeepAbove );
         kapp->updateUserTimestamp();
     }
 # endif

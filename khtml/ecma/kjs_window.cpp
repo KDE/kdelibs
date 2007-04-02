@@ -40,11 +40,7 @@
 #include <klocale.h>
 #include <kcodecs.h>
 #include <kparts/browserinterface.h>
-#include <kwin.h>
-
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-#include <kwinmodule.h> // schroder
-#endif
+#include <kwm.h>
 
 #ifndef KONQ_EMBEDDED
 #include <kbookmarkmanager.h>
@@ -178,9 +174,6 @@ bool Screen::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 
 ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
 {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
-  KWinModule info(0, KWinModule::INFO_DESKTOP);
-#endif
   QWidget *thisWidget = Window::retrieveActive(exec)->part()->widget();
   QRect sg = KGlobalSettings::desktopGeometry(thisWidget);
 
@@ -194,7 +187,7 @@ ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
     return Number(thisWidget->depth());
   case AvailLeft: {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    QRect clipped = info.workArea().intersect(sg);
+    QRect clipped = KWM::workArea().intersect(sg);
     return Number(clipped.x()-sg.x());
 #else
     return Number(10);
@@ -202,7 +195,7 @@ ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
   }
   case AvailTop: {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    QRect clipped = info.workArea().intersect(sg);
+    QRect clipped = KWM::workArea().intersect(sg);
     return Number(clipped.y()-sg.y());
 #else
     return Number(10);
@@ -210,7 +203,7 @@ ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
   }
   case AvailHeight: {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    QRect clipped = info.workArea().intersect(sg);
+    QRect clipped = KWM::workArea().intersect(sg);
     return Number(clipped.height());
 #else
     return Number(100);
@@ -218,7 +211,7 @@ ValueImp *Screen::getValueProperty(ExecState *exec, int token) const
   }
   case AvailWidth: {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
-    QRect clipped = info.workArea().intersect(sg);
+    QRect clipped = KWM::workArea().intersect(sg);
     return Number(clipped.width());
 #else
     return Number(100);
@@ -976,7 +969,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       if (!part->widget())
         return Number(0);
-      KWin::WindowInfo inf = KWin::windowInfo(part->widget()->topLevelWidget()->winId(), NET::WMGeometry);
+      KWM::WindowInfo inf = KWM::windowInfo(part->widget()->topLevelWidget()->winId(), NET::WMGeometry);
       return Number(token == OuterHeight ?
                     inf.geometry().height() : inf.geometry().width());
 #else
@@ -1920,7 +1913,7 @@ ValueImp *WindowFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const 
     if(policy == KHTMLSettings::KJSWindowFocusAllow && widget) {
       widget->topLevelWidget()->raise();
 #ifdef Q_WS_X11
-      KWin::deIconifyWindow( widget->topLevelWidget()->winId() );
+      KWM::unminimizeWindow( widget->topLevelWidget()->winId() );
 #else
       //TODO
 #endif

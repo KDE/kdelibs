@@ -39,7 +39,7 @@
 #include <knewpassworddialog.h>
 #include <kstandarddirs.h>
 #include <kwalletentry.h>
-#include <kwin.h>
+#include <kwm.h>
 
 #include <qdir.h>
 #include <QtGui/QLabel>
@@ -255,7 +255,7 @@ int KWalletD::open(const QString& wallet, qlonglong wId, const QString& appid, c
 // Sets up a dialog that will be shown by kwallet.
 void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal ) {
 	if( wId != 0 )
-		KWin::setMainWindow( dialog, wId ); // correct, set dialog parent
+		KWM::setMainWindow( dialog, wId ); // correct, set dialog parent
 	else {
 		if( appid.isEmpty())
 			kWarning() << "Using kwallet without parent window!" << endl;
@@ -266,9 +266,9 @@ void KWalletD::setupDialog( QWidget* dialog, WId wId, const QString& appid, bool
 		kapp->updateUserTimestamp();
 	}
 	if( modal )
-		KWin::setState( dialog->winId(), NET::Modal );
+		KWM::setState( dialog->winId(), NET::Modal );
 	else
-		KWin::clearState( dialog->winId(), NET::Modal );
+		KWM::clearState( dialog->winId(), NET::Modal );
 	activeDialog = dialog;
 }
 
@@ -282,9 +282,9 @@ void KWalletD::checkActiveDialog() {
 	if( !activeDialog || activeDialog->isHidden())
 		return;
 	kapp->updateUserTimestamp();
-	KWin::setState( activeDialog->winId(), NET::KeepAbove );
-	KWin::setOnAllDesktops( activeDialog->winId(), true );
-	KWin::forceActiveWindow( activeDialog->winId());
+	KWM::setState( activeDialog->winId(), NET::KeepAbove );
+	KWM::setOnAllDesktops( activeDialog->winId(), true );
+	KWM::forceActiveWindow( activeDialog->winId());
 }
 
 

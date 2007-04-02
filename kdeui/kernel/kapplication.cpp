@@ -70,7 +70,7 @@
 #include <sys/wait.h>
 
 #ifndef Q_WS_WIN
-#include "kwin.h"
+#include "kwm.h"
 #endif
 
 #include <fcntl.h>

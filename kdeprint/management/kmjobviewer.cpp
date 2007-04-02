@@ -45,7 +45,7 @@
 #include <kcursor.h>
 #include <kmenubar.h>
 #include <kdebug.h>
-#include <kwin.h>
+#include <kwm.h>
 #include <kio/netaccess.h>
 #include <qtimer.h>
 #include <QtGui/QLayout>
@@ -156,7 +156,7 @@ void KMJobViewer::updateCaption()
 		setCaption(i18n("No Printer"));
 	}
 #ifndef Q_OS_WIN
-	KWin::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
+	KWM::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
 #endif
 }
 

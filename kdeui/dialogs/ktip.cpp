@@ -51,10 +51,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ktextbrowser.h>
 #include <kconfiggroup.h>
 
-#ifdef Q_WS_X11
-#include <kwin.h>
-#endif
-
 #include "ktip.h"
 
 class KTipDatabase::Private

@@ -56,9 +56,8 @@ DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include <signal.h>
 #ifdef Q_WS_X11
-#include <kwinmodule.h>
+#include <kwm.h>
 #include <kxmessages.h>
-#include <kwin.h>
 #endif
 
 static const char* const NET_STARTUP_MSG = "_NET_STARTUP_INFO";
@@ -130,7 +129,6 @@ class KStartupInfo::Private
         // contains ASN's that had change: but no new: yet
         QMap< KStartupInfoId, KStartupInfo::Data > uninited_startups;
 #ifdef Q_WS_X11
-        KWinModule* wm_module;
         KXMessages msgs;
 #endif
 	QTimer* cleanup;
@@ -152,12 +150,9 @@ class KStartupInfo::Private
                 return;
             
             if( !( flags & DisableKWinModule )) {
-                wm_module = new KWinModule( q );
-                QObject::connect( wm_module, SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
-                QObject::connect( wm_module, SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                QObject::connect( KWM::self(), SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                QObject::connect( KWM::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
             }
-            else
-                wm_module = NULL;
             QObject::connect( &msgs, SIGNAL( gotMessage( const QString& )), q, SLOT( got_message( const QString& )));
             cleanup = new QTimer( q );
             QObject::connect( cleanup, SIGNAL( timeout()), q, SLOT( startups_cleanup()));
@@ -198,11 +193,11 @@ void KStartupInfo::Private::got_message( const QString& msg_P )
 #endif
     }
 
-// if the application stops responding for a while, KWinModule may get
+// if the application stops responding for a while, KWM may get
 // the information about the already mapped window before KXMessages
 // actually gets the info about the started application (depends
 // on their order in X11 event filter in KApplication)
-// simply delay info from KWinModule a bit
+// simply delay info from KWM a bit
 // SELI???
 namespace
 {
@@ -615,12 +610,12 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_i
             }
         if( activate )
             {
-            KWin::setOnDesktop( window->winId(), KWin::currentDesktop());
+            KWM::setOnDesktop( window->winId(), KWM::currentDesktop());
         // This is not very nice, but there's no way how to get any
         // usable timestamp without ASN, so force activating the window.
         // And even with ASN, it's not possible to get the timestamp here,
         // so if the WM doesn't have support for ASN, it can't be used either.
-            KWin::forceActiveWindow( window->winId());
+            KWM::forceActiveWindow( window->winId());
             }
         }
 #endif
