@@ -484,6 +484,13 @@ Internally it is reference counted and the data deleted when the last reference 
 
 <h4>KLibFactory</h4>
 
+<h4>KLibLoader</h4>
+<ul>
+<li>The resolve(const char* name) and symbol(const char* name) methods were merged and renamed to resolveSymbol</li>
+<li>bool hasSymbol was removed, use resolveFunction instead</li>
+<li>resolveFunction( const char* name ) was added which returns not a void* but a KLibrary::void_function_ptr which can be used as a void* would in boolean tests and for making subsequent function calls.</li>
+</ul>
+
 <h4>KLocale</h4>
 <ul>
 <li> QString formatNumber(const QString &amp;numStr) const -&gt;   QString formatNumber(const QString &amp;numStr, bool round=true, int precision=2) const;</li>
@@ -938,9 +945,15 @@ was selected and the color itself as arguments</li>
 
 <h4>KColorDrag</h4>
 <ul>
-<li>has been moved as K3ColorDrag to kde3support</li>
+<li>has been renamed to K3ColorDrag and moved as kde3support</li>
 <li>use QMimeData  directly instead or KColorMimeData, which closest resembles KColorDrag</li>
 </ul>
+
+<h4>KCommand</h4>
+KCommand has been renamed to K3Command and moved to kde3support. The header file was named k3command.h.
+
+<h4>KCommandHistory</h4>
+KCommandHistory has been renamed to K3CommandHistory and moved to kde3support. The header file was named k3command.h.
 
 <h4>KConfigDialog</h4>
 <ul>
@@ -1112,7 +1125,16 @@ KEditToolbar is now KEditToolBarWidget
 The constructors have been simplified to take an optional parent. Other parameters must be set by using the API directly, e.g. setHasSelection and setSearch
 
 <h4>KFontChooser</h4>
-Was in kfontdialog.h, but was moved to it's own header. so now either do #include &lt;KFontChooser&gt; or #incldue &lt;kfontchooser.h&gt;
+<ul>
+<li>Was in kfontdialog.h, but was moved to it's own header. so now either do #include &lt;KFontChooser&gt; or #include &lt;kfontchooser.h&gt;</li>
+<li>The KFontChooser constructors now take a set of flags to determine how it is displayed, which replaces the numerous bools used previously. The following mappings from the bools in KDE3 and the enum in KDE4 are as follows:
+<ul>
+<li>3rd parameter onlyFixed -&gt; FixedFontsOnly</li>
+<li>5th parameter makeFrame -&gt; DisplayFrame</li>
+<li>7th parameter diff -&gt; ShowDifferences </li>
+</ul>
+</li>
+</ul>
 
 <h4>KGradientSelector</h4>
 <ul>
@@ -1191,6 +1213,9 @@ Was in kfontdialog.h, but was moved to it's own header. so now either do #includ
 <li>K3ListBox has been added to kde3support to help with porting</li>
 </ul>
 
+<h4>KMacroCommand</h4>
+KMacroCommand has been renamed to K3MacroCommand and moved to kde3support. The header file was renamed k3command.h.
+
 <h4>KMainWindow</h4>
 <ul>
 <li>getMemberList() was replaced by memberList() and memberList was renamed to mMemberList and made it private</li>
@@ -1215,6 +1240,9 @@ Was in kfontdialog.h, but was moved to it's own header. so now either do #includ
 <li>Where applicable, the static functions now take an additional argument to specify the cancel button. Since a default argument is provided, this will affect your code only, if you specified dontAskAgainName and/or options. In those cases, adding an additional parameter KStdGuiItem::cancel() leads to the old behavior. The following functions are affected (omitting function arguments in the list): questionYesNoCancel(), questionYesNoCancelWId(), warningContinueCancel(), warningContinueCancelWId(), 
 warningContinueCancelList(), warningContinueCancelListWId(), warningYesNoCancel(), warningYesNoCancelWId(), warningYesNoCancelList(), warningYesNoCancelListWId(), messageBox(), messageBoxWId().</li>
 </ul>
+
+<h4>KNamedCommand</h4>
+KNamedCommand has been renamed to K3NamedCommand and moved to kde3support. The header file was renamed k3command.h.
 
 <h4>KPassivePopup</h4>
 <ul>
@@ -1491,6 +1519,9 @@ removed in favor of <tt>setMaximumHeight()/setMaximumWidth()</tt></li>
 <ul>
 <li>Deleted - use QAction::setSeparator()</li>
 </ul>
+
+<h4>KUndoRedoAction</h4>
+KUndoRedoAction has been renamed to K3UndoRedoAction and moved to kde3support. The header file was named k3command.h.
 
 <h4>KURLLabel</h4>
 <ul>
