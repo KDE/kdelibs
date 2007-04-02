@@ -486,7 +486,7 @@ void /*KDE_NO_EXPORT*/ mapRenderPosToDOMPos(RenderObject *r, long r_ofs,
   node = r->element();
   Q_ASSERT(node);
 #if DEBUG_CARETMODE > 5
-      kDebug(6200) << "mapRTD: r " << r << "@" << (r ? r->renderName() : QString()) << (r && r->element() ? QString(".node ") + QString::number((unsigned)r->element(),16) + "@" + r->element()->nodeName().string() : QString()) << " outside " << outside << " outsideEnd " << outsideEnd << endl;
+      kDebug(6200) << "mapRTD: r " << r << '@' << (r ? r->renderName() : QString()) << (r && r->element() ? QString(".node ") + QString::number((unsigned)r->element(),16) + '@' + r->element()->nodeName().string() : QString()) << " outside " << outside << " outsideEnd " << outsideEnd << endl;
 #endif
   if (node->nodeType() == Node::ELEMENT_NODE || node->nodeType() == Node::TEXT_NODE) {
 
@@ -1357,7 +1357,7 @@ void LineIterator::nextBlock()
     int state;		// not used
     mapRenderPosToTraversalState(cb_outside, cb_outside_end, false, trav);
 #if DEBUG_CARETMODE > 1
-    kDebug(6200) << "nextBlock: before adv r" << r << " " << (r ? r->renderName() : QString()) << (r && r->isText() ? " contains \"" + QString(((RenderText *)r)->str->s, qMin(((RenderText *)r)->str->l,15)) + "\"" : QString()) << " trav " << trav << " cb_outside " << cb_outside << " cb_outside_end " << cb_outside_end << endl;
+    kDebug(6200) << "nextBlock: before adv r" << r << ' ' << (r ? r->renderName() : QString()) << (r && r->isText() ? " contains \"" + QString(((RenderText *)r)->str->s, qMin(((RenderText *)r)->str->l,15)) + "\"" : QString()) << " trav " << trav << " cb_outside " << cb_outside << " cb_outside_end " << cb_outside_end << endl;
 #endif
     r = advanceSuitableObject(r, trav, false, base, state);
     if (!r) {
@@ -1393,7 +1393,7 @@ void LineIterator::nextBlock()
     }/*end if*/
     InlineFlowBox *flowBox = cb->firstLineBox();
 #if DEBUG_CARETMODE > 0
-    kDebug(6200) << "++: flowBox " << flowBox << " cb " << cb << "[" << (cb?cb->renderName()+QString(".node ")+QString::number((unsigned)cb->element(),16)+(cb->element()?"@"+cb->element()->nodeName().string():QString()):QString()) << "]" << endl;
+    kDebug(6200) << "++: flowBox " << flowBox << " cb " << cb << '[' << (cb?cb->renderName()+QString(".node ")+QString::number((unsigned)cb->element(),16)+(cb->element()?'@'+cb->element()->nodeName().string():QString()):QString()) << ']' << endl;
 #endif
     Q_ASSERT(flowBox);
     if (!flowBox) {	// ### utter emergency (why is this possible at all?)

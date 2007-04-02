@@ -471,7 +471,7 @@ ValueImp *XMLHttpRequest::getAllResponseHeaders() const
     return Undefined();
   }
 
-  return String(responseHeaders.mid(endOfLine + 1) + "\n");
+  return String(responseHeaders.mid(endOfLine + 1) + '\n');
 }
 
 ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
@@ -480,7 +480,7 @@ ValueImp *XMLHttpRequest::getResponseHeader(const QString& name) const
     return Undefined();
   }
 
-  QRegExp headerLinePattern(name + ":", Qt::CaseInsensitive);
+  QRegExp headerLinePattern(name + ':', Qt::CaseInsensitive);
 
   int matchLength;
   int headerLinePos = headerLinePattern.indexIn(responseHeaders, 0);

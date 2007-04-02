@@ -945,7 +945,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
                     downloadViaKIO = false;
                     KUrl cleanDest = destURL;
                     cleanDest.setPass( QString() ); // don't put password into commandline
-                    cmd += " " + K3Process::quote(url.url()) + " " +
+                    cmd += ' ' + K3Process::quote(url.url()) + ' ' +
                            K3Process::quote(cleanDest.url());
                     kDebug(1000) << "Calling command  "<<cmd<<endl;
                     KRun::runCommand(cmd);

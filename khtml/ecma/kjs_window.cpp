@@ -2619,7 +2619,7 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
   KUrl url = m_frame->m_part->url();
   switch(token) {
     case Hash:
-      return String( UString(url.ref().isNull() ? QString("") : "#" + url.ref()) );
+      return String( UString(url.ref().isNull() ? QString("") : '#' + url.ref()) );
     case Host: {
       UString str = url.host();
       if (url.port() > 0)
@@ -2635,7 +2635,7 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
       if (url.isEmpty())
 	return String("about:blank");
       else if (!url.hasPath())
-        return String( UString(url.prettyUrl()+"/") );
+        return String( UString(url.prettyUrl()+'/') );
       else
         return String( UString(url.prettyUrl()) );
     case Pathname:
@@ -2645,7 +2645,7 @@ ValueImp* Location::getValueProperty(ExecState *exec, int token) const
     case Port:
       return String( UString(url.port() ? QString::number((int)url.port()) : QLatin1String("")) );
     case Protocol:
-      return String( UString(url.protocol()+":") );
+      return String( UString(url.protocol()+':') );
     case Search:
       return String( UString(url.query()) );
     case EqualEqual: // [[==]]
@@ -2742,7 +2742,7 @@ UString Location::toString(ExecState *exec) const
       if (url.isEmpty())
         return "about:blank";
       else if (!url.hasPath())
-        return url.prettyUrl()+"/";
+        return url.prettyUrl()+'/';
       else
         return url.prettyUrl();
     }

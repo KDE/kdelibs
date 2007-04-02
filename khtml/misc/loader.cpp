@@ -220,7 +220,7 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, KI
     // Set the type we want (probably css or xml)
     QString ah = QLatin1String( accept );
     if ( !ah.isEmpty() )
-        ah += ",";
+        ah += ',';
     ah += "*/*;q=0.1";
     setAccept( ah );
     m_hadError = false;

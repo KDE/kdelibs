@@ -298,7 +298,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             enc_string += '&';
 
                         enc_string += encodeCString(*it);
-                        enc_string += "=";
+                        enc_string += '=';
                         ++it;
                         enc_string += encodeCString(*it);
                     }

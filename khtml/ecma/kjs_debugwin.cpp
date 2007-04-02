@@ -669,7 +669,7 @@ void KJSDebugWin::slotEval()
     msg = retval->toString(interp->globalExec()).qstring();
   }
 
-  m_evalEdit->insert(msg+"\n");
+  m_evalEdit->insert(msg+'\n');
   updateContextList();
 }
 

@@ -845,7 +845,7 @@ QString KHTMLSettings::settingsToCSS() const
     // lets start with the link properties
     QString str = "a:link {\ncolor: ";
     str += d->m_linkColor.name();
-    str += ";";
+    str += ';';
     if(d->m_underlineLink)
         str += "\ntext-decoration: underline;";
 
@@ -857,7 +857,7 @@ QString KHTMLSettings::settingsToCSS() const
     str += "\n}\n";
     str += "a:visited {\ncolor: ";
     str += d->m_vLinkColor.name();
-    str += ";";
+    str += ';';
     if(d->m_underlineLink)
         str += "\ntext-decoration: underline;";
 

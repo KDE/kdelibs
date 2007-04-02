@@ -465,8 +465,8 @@ void XMLTokenizer::finish()
             line = stream.readLine();
 
             for (unsigned long colno = 0; colno < m_handler.errorCol-1; colno++)
-                errorLocPtr += " ";
-            errorLocPtr += "^";
+                errorLocPtr += ' ';
+            errorLocPtr += '^';
         }
 
         // Create elements for display
@@ -483,7 +483,7 @@ void XMLTokenizer::finish()
         if ( !line.isNull() ) {
             hr = doc->createElementNS(XHTML_NAMESPACE,"hr");
             pre = doc->createElementNS(XHTML_NAMESPACE,"pre");
-            lineText = doc->createTextNode(line+"\n");
+            lineText = doc->createTextNode(line+'\n');
             errorLocText = doc->createTextNode(errorLocPtr);
         }
 
