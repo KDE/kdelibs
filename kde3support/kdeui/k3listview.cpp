@@ -23,6 +23,7 @@
 #include "k3listviewlineedit.h"
 
 #include <q3dragobject.h>
+#include <qcursor.h>
 #include <qevent.h>
 #include <qtimer.h>
 #include <q3header.h>
@@ -35,7 +36,6 @@
 
 #include <kglobalsettings.h>
 #include <kconfig.h>
-#include <kcursor.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
@@ -810,7 +810,7 @@ void K3ListView::contentsMouseMoveEvent( QMouseEvent *e )
           d->cursorInExecuteArea = isExecuteArea(vp);
 
           if( d->cursorInExecuteArea ) //cursor moved in execute area
-            viewport()->setCursor( KCursor::handCursor() );
+            viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
           else //cursor moved out of execute area
             viewport()->unsetCursor();
         }

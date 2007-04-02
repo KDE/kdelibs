@@ -19,10 +19,10 @@
 #include "k3listbox.h"
 
 #include <kglobalsettings.h>
-#include <kcursor.h>
 #include <kdebug.h>
 
-#include <qtimer.h>
+#include <QTimer>
+#include <QCursor>
 #include <QKeyEvent>
 #include <QApplication>
 
@@ -46,7 +46,7 @@ K3ListBox::K3ListBox( QWidget *parent, const char *name, Qt::WFlags f )
 void K3ListBox::slotOnItem( Q3ListBoxItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
-        viewport()->setCursor( KCursor().handCursor() );
+        viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
 
     if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
       m_pAutoSelect->setSingleShot( true );
