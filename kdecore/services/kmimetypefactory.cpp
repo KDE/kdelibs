@@ -277,6 +277,9 @@ KMimeType::Ptr KMimeTypeFactory::findFromContent(QIODevice* device, WhichPriorit
                 return findMimeTypeByName(rule.mimetype());
             }
         }
+        // Rules are sorted by decreasing priority, so we can abort when we're past high-prio rules
+        if (whichPriority == HighPriorityRules && rule.priority() < 80)
+            break;
     }
 
     // Do fallback code so that we never return 0 - unless we were only looking for HighPriorityRules

@@ -239,6 +239,11 @@ void KMimeTypeTest::testFindByNameAndContent()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("application/pdf") );
 
+    // High-priority rule (80)
+    QByteArray phpData = "<?php";
+    mime = KMimeType::findByNameAndContent("foo", phpData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("application/x-php") );
 }
 
 void KMimeTypeTest::testFindByContent()
