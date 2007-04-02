@@ -56,7 +56,7 @@ kde4_add_kcfg_files(kdnssd_LIB_SRCS ${kdnssd_KCFG_SRCS})
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 
 if (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDE4_KDECORE_LIBS} ${DNSSD_LIBRARIES} )
+  target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS} ${DNSSD_LIBRARIES} )
 else (HAVE_DNSSD)
   target_link_libraries(kdnssd ${KDE4_KDECORE_LIBS})
 endif (HAVE_DNSSD)
