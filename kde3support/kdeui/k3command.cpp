@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kcommand.h"
+#include "k3command.h"
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kstandardshortcut.h>
@@ -30,94 +30,94 @@
 
 #include "ktoolbarpopupaction.h"
 
-KCommand::KCommand()
+K3Command::K3Command()
     : d( 0 )
 {
 }
 
-KCommand::~KCommand()
+K3Command::~K3Command()
 {
 }
 
-class KNamedCommand::Private
+class K3NamedCommand::Private
 {
     public:
         QString name;
 };
 
-KNamedCommand::KNamedCommand( const QString &name )
-    : KCommand(),
+K3NamedCommand::K3NamedCommand( const QString &name )
+    : K3Command(),
       d( new Private )
 {
     d->name = name;
 }
 
-QString KNamedCommand::name() const
+QString K3NamedCommand::name() const
 {
     return d->name;
 }
 
-void KNamedCommand::setName( const QString &name )
+void K3NamedCommand::setName( const QString &name )
 {
     d->name = name;
 }
 
-class KMacroCommand::Private
+class K3MacroCommand::Private
 {
     public:
-        QList<KCommand *> commands;
+        QList<K3Command *> commands;
 };
 
-KMacroCommand::KMacroCommand( const QString & name )
-    : KNamedCommand(name),
+K3MacroCommand::K3MacroCommand( const QString & name )
+    : K3NamedCommand(name),
       d( new Private )
 {
 }
 
-KMacroCommand::~KMacroCommand()
+K3MacroCommand::~K3MacroCommand()
 {
     qDeleteAll( d->commands );
 }
 
-void KMacroCommand::addCommand( KCommand *command )
+void K3MacroCommand::addCommand( K3Command *command )
 {
     d->commands.append(command);
 }
 
-void KMacroCommand::execute()
+void K3MacroCommand::execute()
 {
-    QListIterator<KCommand *> it( d->commands );
+    QListIterator<K3Command *> it( d->commands );
     while ( it.hasNext() ) {
         it.next()->execute();
     }
 }
 
-void KMacroCommand::unexecute()
+void K3MacroCommand::unexecute()
 {
-    QListIterator<KCommand *> it( d->commands );
+    QListIterator<K3Command *> it( d->commands );
     it.toBack();
     while ( it.hasPrevious() ) {
         it.previous()->unexecute();
     }
 }
 
-const QList<KCommand *> KMacroCommand::commands() const
+const QList<K3Command *> K3MacroCommand::commands() const
 {
     return d->commands;
 }
 
 
-class KCommandHistory::KCommandHistoryPrivate {
+class K3CommandHistory::K3CommandHistoryPrivate {
 public:
-    KCommandHistoryPrivate()
+    K3CommandHistoryPrivate()
         : m_undoLimit(50), m_redoLimit(30),
         m_savedAt(-1), m_current(-1) {
     }
-    ~KCommandHistoryPrivate() {
+    ~K3CommandHistoryPrivate() {
         qDeleteAll( m_commands );
     }
 
-    QList<KCommand *> m_commands;
+    QList<K3Command *> m_commands;
     int m_undoLimit, m_redoLimit;
 
     int m_savedAt;
@@ -140,24 +140,24 @@ public:
 
 ////////////
 
-KCommandHistory::KCommandHistory() :
-    d( new KCommandHistoryPrivate )
+K3CommandHistory::K3CommandHistory() :
+    d( new K3CommandHistoryPrivate )
 {
     clear();
 }
 
-KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool withMenus) :
-    d( new KCommandHistoryPrivate )
+K3CommandHistory::K3CommandHistory(KActionCollection * actionCollection, bool withMenus) :
+    d( new K3CommandHistoryPrivate )
 {
     if (withMenus)
     {
         // TODO instead of a menu this should show a listbox like koffice's KoCommandHistory does,
         // so that it's clearer that N actions will be undone together, not just action number N.
 
-        // TODO also move this out of KCommandHistory, to make it core-only.
+        // TODO also move this out of K3CommandHistory, to make it core-only.
 
-        new KUndoRedoAction( KUndoRedoAction::Undo, actionCollection, this );
-        new KUndoRedoAction( KUndoRedoAction::Redo, actionCollection, this );
+        new K3UndoRedoAction( K3UndoRedoAction::Undo, actionCollection, this );
+        new K3UndoRedoAction( K3UndoRedoAction::Redo, actionCollection, this );
     }
     else
     {
@@ -167,11 +167,11 @@ KCommandHistory::KCommandHistory(KActionCollection * actionCollection, bool with
     clear();
 }
 
-KCommandHistory::~KCommandHistory() {
+K3CommandHistory::~K3CommandHistory() {
     delete d;
 }
 
-void KCommandHistory::clear() {
+void K3CommandHistory::clear() {
     qDeleteAll( d->m_commands );
     d->m_commands.clear();
     d->m_current = -1;
@@ -179,7 +179,7 @@ void KCommandHistory::clear() {
     emit commandHistoryChanged();
 }
 
-void KCommandHistory::addCommand(KCommand *command, bool execute) {
+void K3CommandHistory::addCommand(K3Command *command, bool execute) {
     if ( !command )
         return;
 
@@ -203,17 +203,17 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
     }
 }
 
-KCommand * KCommandHistory::presentCommand() const
+K3Command * K3CommandHistory::presentCommand() const
 {
     if ( d->m_current >= 0 )
         return d->m_commands[ d->m_current ];
     return 0;
 }
 
-void KCommandHistory::undo() {
+void K3CommandHistory::undo() {
     Q_ASSERT( d->m_current >= 0 );
 
-    KCommand* command = d->m_commands[ d->m_current ];
+    K3Command* command = d->m_commands[ d->m_current ];
 
     command->unexecute();
     emit commandExecuted( command );
@@ -226,8 +226,8 @@ void KCommandHistory::undo() {
     clipCommands(); // only needed here and in addCommand, NOT in redo
 }
 
-void KCommandHistory::redo() {
-    KCommand* command = d->m_commands[ d->m_current + 1 ];
+void K3CommandHistory::redo() {
+    K3Command* command = d->m_commands[ d->m_current + 1 ];
     command->execute();
     emit commandExecuted( command );
 
@@ -239,25 +239,25 @@ void KCommandHistory::redo() {
     emit commandHistoryChanged();
 }
 
-void KCommandHistory::documentSaved() {
+void K3CommandHistory::documentSaved() {
     d->m_savedAt = d->m_current;
 }
 
-void KCommandHistory::setUndoLimit(int limit) {
+void K3CommandHistory::setUndoLimit(int limit) {
     if ( limit>0 && limit != d->m_undoLimit ) {
         d->m_undoLimit = limit;
         clipCommands();
     }
 }
 
-void KCommandHistory::setRedoLimit(int limit) {
+void K3CommandHistory::setRedoLimit(int limit) {
     if ( limit>0 && limit != d->m_redoLimit ) {
         d->m_redoLimit = limit;
         clipCommands();
     }
 }
 
-void KCommandHistory::clipCommands() {
+void K3CommandHistory::clipCommands() {
     int count = d->m_commands.count();
     if ( count <= d->m_undoLimit && count <= d->m_redoLimit ) {
         emit commandHistoryChanged();
@@ -287,25 +287,25 @@ void KCommandHistory::clipCommands() {
     emit commandHistoryChanged();
 }
 
-void KCommandHistory::updateActions()
+void K3CommandHistory::updateActions()
 {
     // it hasn't changed, but this updates all actions connected to this command history.
     emit commandHistoryChanged();
 }
 
-bool KCommandHistory::isUndoAvailable() const
+bool K3CommandHistory::isUndoAvailable() const
 {
     return d->m_current >= 0;
 }
 
-bool KCommandHistory::isRedoAvailable() const
+bool K3CommandHistory::isRedoAvailable() const
 {
     return d->m_current < d->m_commands.count() - 1;
 }
 
-QList<KCommand *> KCommandHistory::undoCommands( int maxCommands ) const
+QList<K3Command *> K3CommandHistory::undoCommands( int maxCommands ) const
 {
-    QList<KCommand *> lst;
+    QList<K3Command *> lst;
     for ( int i = d->m_current; i >= 0; --i ) {
         lst.append( d->m_commands[i] );
         if ( maxCommands > 0 && lst.count() == maxCommands )
@@ -314,9 +314,9 @@ QList<KCommand *> KCommandHistory::undoCommands( int maxCommands ) const
     return lst;
 }
 
-QList<KCommand *> KCommandHistory::redoCommands( int maxCommands ) const
+QList<K3Command *> K3CommandHistory::redoCommands( int maxCommands ) const
 {
-    QList<KCommand *> lst;
+    QList<K3Command *> lst;
     for ( int i = d->m_current + 1; i < d->m_commands.count(); ++i )
     {
         lst.append( d->m_commands[i] );
@@ -326,32 +326,32 @@ QList<KCommand *> KCommandHistory::redoCommands( int maxCommands ) const
     return lst;
 }
 
-int KCommandHistory::undoLimit() const
+int K3CommandHistory::undoLimit() const
 {
      return d->m_undoLimit;
 }
 
-int KCommandHistory::redoLimit() const
+int K3CommandHistory::redoLimit() const
 {
      return d->m_redoLimit;
 }
 
-class KUndoRedoAction::Private
+class K3UndoRedoAction::Private
 {
     public:
-        Private( KUndoRedoAction::Type type, KCommandHistory* commandHistory)
+        Private( K3UndoRedoAction::Type type, K3CommandHistory* commandHistory)
             : type( type ),
               commandHistory( commandHistory )
         {
         }
 
         Type type;
-        KCommandHistory* commandHistory;
+        K3CommandHistory* commandHistory;
 };
 
 
 
-KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory )
+K3UndoRedoAction::K3UndoRedoAction( Type type, KActionCollection* actionCollection, K3CommandHistory* commandHistory )
     : KToolBarPopupAction( KIcon( type == Undo ? "edit-undo" : "edit-redo" ),
                            QString(), // text is set in clear() on start
                            actionCollection),
@@ -372,19 +372,19 @@ KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection
                                 this);
 }
 
-void KUndoRedoAction::slotAboutToShow()
+void K3UndoRedoAction::slotAboutToShow()
 {
     menu()->clear();
     // TODO make number of items configurable ?
     const int maxCommands = 9;
     if ( d->type == Undo ) {
-        const QList<KCommand *> commands = d->commandHistory->undoCommands( maxCommands );
+        const QList<K3Command *> commands = d->commandHistory->undoCommands( maxCommands );
         for (int i = 0; i < commands.count(); ++i) {
             QAction *action = menu()->addAction( i18n("Undo: %1", commands[i]->name()) );
             action->setData( i );
         }
     } else {
-        const QList<KCommand *> commands = d->commandHistory->redoCommands( maxCommands );
+        const QList<K3Command *> commands = d->commandHistory->redoCommands( maxCommands );
         for (int i = 0; i < commands.count(); ++i) {
             QAction *action = menu()->addAction( i18n("Redo: %1", commands[i]->name()) );
             action->setData( i );
@@ -392,10 +392,10 @@ void KUndoRedoAction::slotAboutToShow()
     }
 }
 
-void KUndoRedoAction::slotActionTriggered( QAction *action )
+void K3UndoRedoAction::slotActionTriggered( QAction *action )
 {
     const int pos = action->data().toInt();
-    kDebug(230) << "KUndoRedoAction::slotActionTriggered " << pos << endl;
+    kDebug(230) << "K3UndoRedoAction::slotActionTriggered " << pos << endl;
     if ( d->type == Undo ) {
         for ( int i = 0 ; i < pos+1; ++i ) {
             d->commandHistory->undo();
@@ -407,7 +407,7 @@ void KUndoRedoAction::slotActionTriggered( QAction *action )
     }
 }
 
-void KUndoRedoAction::slotCommandHistoryChanged()
+void K3UndoRedoAction::slotCommandHistoryChanged()
 {
     const bool isUndo = d->type == Undo;
     const bool enabled = isUndo ? d->commandHistory->isUndoAvailable() : d->commandHistory->isRedoAvailable();
@@ -416,24 +416,24 @@ void KUndoRedoAction::slotCommandHistoryChanged()
         setText(isUndo ? i18n("&Undo") : i18n("&Redo"));
     } else {
         if (isUndo) {
-            KCommand* presentCommand = d->commandHistory->presentCommand();
+            K3Command* presentCommand = d->commandHistory->presentCommand();
             Q_ASSERT(presentCommand);
             setText(i18n("&Undo: %1", presentCommand->name()));
         } else {
-            KCommand* redoCommand = d->commandHistory->redoCommands(1).first();
+            K3Command* redoCommand = d->commandHistory->redoCommands(1).first();
             setText(i18n("&Redo: %1", redoCommand->name()));
         }
     }
 }
 
 
-void KCommand::virtual_hook( int, void* )
+void K3Command::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-void KNamedCommand::virtual_hook( int id, void* data )
-{ KCommand::virtual_hook( id, data ); }
+void K3NamedCommand::virtual_hook( int id, void* data )
+{ K3Command::virtual_hook( id, data ); }
 
-void KMacroCommand::virtual_hook( int id, void* data )
-{ KNamedCommand::virtual_hook( id, data ); }
+void K3MacroCommand::virtual_hook( int id, void* data )
+{ K3NamedCommand::virtual_hook( id, data ); }
 
-#include "kcommand.moc"
+#include "k3command.moc"

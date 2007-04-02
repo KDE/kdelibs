@@ -37,18 +37,18 @@ class QMenu;
  * store information needed for Undo/Redo functionality...
  *
  * Note: you might want to use the QUndo framework instead.
- * It didn't exist when KCommand was written.
+ * It didn't exist when K3Command was written.
  */
-class KDE3SUPPORT_EXPORT KCommand
+class KDE3SUPPORT_EXPORT K3Command
 {
 protected:
     /**
      * Creates a command.
      */
-    KCommand();
+    K3Command();
 
 public:
-    virtual ~KCommand();
+    virtual ~K3Command();
 
     /**
      * The main method: executes this command.
@@ -76,18 +76,18 @@ protected:
 private:
     class Private;
     Private* const d;
-    Q_DISABLE_COPY( KCommand )
+    Q_DISABLE_COPY( K3Command )
 };
 
 /**
  * A command which stores its name.
- * It is more memory-efficient to use KCommand and to implement the name() method,
+ * It is more memory-efficient to use K3Command and to implement the name() method,
  * but in some cases it's more simple or more flexible to store the name at creation time.
  *
  * Note: you might want to use the QUndo framework instead.
- * It didn't exist when KCommand was written.
+ * It didn't exist when K3Command was written.
  */
-class KDE3SUPPORT_EXPORT KNamedCommand : public KCommand
+class KDE3SUPPORT_EXPORT K3NamedCommand : public K3Command
 {
 protected:
     /**
@@ -95,7 +95,7 @@ protected:
      * @param name the name of this command, translated, since it will appear
      * in the menus.
      */
-    KNamedCommand( const QString &name );
+    K3NamedCommand( const QString &name );
 
 public:
     /**
@@ -114,7 +114,7 @@ protected:
 private:
     class Private;
     Private* const d;
-    Q_DISABLE_COPY( KNamedCommand )
+    Q_DISABLE_COPY( K3NamedCommand )
 };
 
 /**
@@ -122,7 +122,7 @@ private:
  * It will appear as one to the user and in the command history,
  * but it can use the implementation of multiple commands internally.
  */
-class KDE3SUPPORT_EXPORT KMacroCommand : public KNamedCommand
+class KDE3SUPPORT_EXPORT K3MacroCommand : public K3NamedCommand
 {
 public:
     /**
@@ -131,14 +131,14 @@ public:
      * @param name the name of this command, translated, since it will appear
      * in the menus.
      */
-    KMacroCommand( const QString & name );
-    virtual ~KMacroCommand();
+    K3MacroCommand( const QString & name );
+    virtual ~K3MacroCommand();
 
     /**
      * Appends a command to this macro command.
      * The ownership is transfered to the macro command.
      */
-    void addCommand(KCommand *command);
+    void addCommand(K3Command *command);
 
     /**
      * Executes this command, i.e. execute all the sub-commands
@@ -152,14 +152,14 @@ public:
     virtual void unexecute();
 
 protected:
-    const QList<KCommand *> commands() const;
+    const QList<K3Command *> commands() const;
 
     virtual void virtual_hook( int id, void* data );
 
 private:
     class Private;
     Private* const d;
-    Q_DISABLE_COPY( KMacroCommand )
+    Q_DISABLE_COPY( K3MacroCommand )
 };
 
 
@@ -168,15 +168,15 @@ private:
  * Commands. It keeps track of its size and deletes commands
  * if it gets too large. The user can set a maximum undo and
  * a maximum redo limit (e.g. max. 50 undo / 30 redo commands).
- * The KCommandHistory keeps track of the "borders" and deletes
+ * The K3CommandHistory keeps track of the "borders" and deletes
  * commands, if appropriate. It also activates/deactivates the
  * undo/redo actions in the menu and changes the text according
  * to the name of the command.
  *
  * Note: you might want to use the QUndo framework instead.
- * It didn't exist when KCommand was written.
+ * It didn't exist when K3Command was written.
  */
-class KDE3SUPPORT_EXPORT KCommandHistory : public QObject {
+class KDE3SUPPORT_EXPORT K3CommandHistory : public QObject {
     Q_OBJECT
 public:
     /**
@@ -184,7 +184,7 @@ public:
      * This constructor doesn't create actions, so you need to call
      * #undo and #redo yourself.
      */
-    KCommandHistory();
+    K3CommandHistory();
 
     /**
      * Creates a command history, to store commands.
@@ -194,12 +194,12 @@ public:
      * into a toolbar.
      * @param actionCollection the parent collection
      */
-    KCommandHistory(KActionCollection *actionCollection, bool withMenus = true);
+    K3CommandHistory(KActionCollection *actionCollection, bool withMenus = true);
 
     /**
      * Destructs the command history object.
      */
-    virtual ~KCommandHistory();
+    virtual ~K3CommandHistory();
 
     /**
      * Erases all the undo/redo history.
@@ -218,7 +218,7 @@ public:
      * Note that the command history takes ownership of the command, it will delete
      * it when the undo limit is reached, or when deleting the command history itself.
      */
-    void addCommand(KCommand *command, bool execute=true);
+    void addCommand(K3Command *command, bool execute=true);
 
     /**
      * @return the maximum number of items in the undo history
@@ -249,7 +249,7 @@ public:
      * @return the present command, i.e. the one that undo() would unexecute.
      * This can be used to e.g. show selection.
      */
-    KCommand * presentCommand() const;
+    K3Command * presentCommand() const;
 
     /**
      * @return true if undo is available,
@@ -272,7 +272,7 @@ public:
      * @param maxCommands maximum number of commands requested. 0 means no maximum,
      * all stored undo commands (within undoLimit()) are returned.
      */
-    QList<KCommand *> undoCommands( int maxCommands = 0 ) const;
+    QList<K3Command *> undoCommands( int maxCommands = 0 ) const;
 
     /**
      * @return the list of next @p maxCommands actions that will be redone by redo()
@@ -281,7 +281,7 @@ public:
      * @param maxCommands maximum number of commands requested. 0 means no maximum,
      * all stored redo commands (within redoLimit()) are returned.
      */
-    QList<KCommand *> redoCommands( int maxCommands = 0 ) const;
+    QList<K3Command *> redoCommands( int maxCommands = 0 ) const;
 
 public Q_SLOTS:
     /**
@@ -311,7 +311,7 @@ Q_SIGNALS:
      * You can use this to update the GUI, for instance.
      * @param command was executed
      */
-    void commandExecuted(KCommand *command);
+    void commandExecuted(K3Command *command);
 
     /**
      * Emitted every time we reach the index where you
@@ -330,9 +330,9 @@ private:
     void clipCommands();  // ensures that the limits are kept
 
 private:
-    class KCommandHistoryPrivate;
-    KCommandHistoryPrivate * const d;
-    Q_DISABLE_COPY( KCommandHistory )
+    class K3CommandHistoryPrivate;
+    K3CommandHistoryPrivate * const d;
+    Q_DISABLE_COPY( K3CommandHistory )
 };
 
 #include <ktoolbarpopupaction.h>
@@ -351,14 +351,14 @@ private:
  * all work is done automatically.
  *
  * Note: you might want to use the QUndo framework instead.
- * It didn't exist when KCommand was written.
+ * It didn't exist when K3Command was written.
  */
-class KUndoRedoAction : public KToolBarPopupAction
+class K3UndoRedoAction : public KToolBarPopupAction
 {
     Q_OBJECT
 public:
     enum Type { Undo, Redo };
-    KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory );
+    K3UndoRedoAction( Type type, KActionCollection* actionCollection, K3CommandHistory* commandHistory );
 
 private Q_SLOTS:
     void slotAboutToShow();
@@ -368,7 +368,7 @@ private Q_SLOTS:
 private:
     class Private;
     Private* const d;
-    Q_DISABLE_COPY( KUndoRedoAction )
+    Q_DISABLE_COPY( K3UndoRedoAction )
 };
 
 #endif

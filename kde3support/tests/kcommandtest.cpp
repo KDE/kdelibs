@@ -5,15 +5,15 @@
 
 #include <kactioncollection.h>
 #include <kaction.h>
-#include <kcommand.h>
+#include <k3command.h>
 #include <klocale.h>
 
 QTEST_KDEMAIN(KCommandTest, GUI)
 
-class KTestCommand : public KNamedCommand
+class KTestCommand : public K3NamedCommand
 {
 public:
-    KTestCommand( const QString& name ) : KNamedCommand( name ) {}
+    KTestCommand( const QString& name ) : K3NamedCommand( name ) {}
     ~KTestCommand() {
         deletedCommands.append( name() );
     }
@@ -37,10 +37,10 @@ QStringList KTestCommand::executedCommands;
 QStringList KTestCommand::unexecutedCommands;
 QStringList KTestCommand::deletedCommands;
 
-static QString commandListToString( const QList<KCommand *>& commands )
+static QString commandListToString( const QList<K3Command *>& commands )
 {
     QStringList lst;
-    foreach( KCommand* cmd, commands )
+    foreach( K3Command* cmd, commands )
         lst.append( cmd->name() );
     return lst.join(",");
 }
@@ -48,7 +48,7 @@ static QString commandListToString( const QList<KCommand *>& commands )
 void KCommandTest::testMacroCommand()
 {
     {
-        KMacroCommand macroCommand( "foo" );
+        K3MacroCommand macroCommand( "foo" );
         macroCommand.execute(); // no-op
         macroCommand.unexecute(); // no-op
         KTestCommand* c1 = new KTestCommand( "1" );
@@ -72,8 +72,8 @@ void KCommandTest::testCommandHistoryAdd()
     m_documentRestored = 0;
     KActionCollection actionCollection( ( QWidget*)0 );
     {
-        KCommandHistory ch( &actionCollection );
-        connect( &ch, SIGNAL( commandExecuted( KCommand* ) ), this, SLOT( slotCommandExecuted( KCommand* ) ) );
+        K3CommandHistory ch( &actionCollection );
+        connect( &ch, SIGNAL( commandExecuted( K3Command* ) ), this, SLOT( slotCommandExecuted( K3Command* ) ) );
         connect( &ch, SIGNAL( documentRestored() ), this, SLOT( slotDocumentRestored() ) );
 
         // Checking the empty state
@@ -94,7 +94,7 @@ void KCommandTest::testCommandHistoryAdd()
         QVERIFY( !ch.isUndoAvailable() );
         QVERIFY( !redo->isEnabled() );
         QVERIFY( !ch.isRedoAvailable() );
-        QCOMPARE( ch.presentCommand(), (KCommand * )0 );
+        QCOMPARE( ch.presentCommand(), (K3Command * )0 );
 
         KTestCommand* c1 = new KTestCommand( "1" );
         ch.addCommand( c1 ); // executes the action
@@ -120,7 +120,7 @@ void KCommandTest::testCommandHistoryAdd()
         QCOMPARE( undo->text(), i18n( "&Undo" ) );
         QVERIFY( redo->isEnabled() );
         QVERIFY( ch.isRedoAvailable() );
-        QCOMPARE( ch.presentCommand(), (KCommand * )0 );
+        QCOMPARE( ch.presentCommand(), (K3Command * )0 );
         ch.redo();
         QCOMPARE( KTestCommand::executedCommands.join( "," ), QString( "1,1" ) );
         QVERIFY( undo->isEnabled() );
@@ -208,8 +208,8 @@ void KCommandTest::testDocumentRestored()
     m_commandsExecuted = 0;
     m_documentRestored = 0;
     {
-        KCommandHistory ch;
-        connect( &ch, SIGNAL( commandExecuted( KCommand* ) ), this, SLOT( slotCommandExecuted( KCommand* ) ) );
+        K3CommandHistory ch;
+        connect( &ch, SIGNAL( commandExecuted( K3Command* ) ), this, SLOT( slotCommandExecuted( K3Command* ) ) );
         connect( &ch, SIGNAL( documentRestored() ), this, SLOT( slotDocumentRestored() ) );
 
         ch.documentSaved(); // saved with empty history
@@ -241,7 +241,7 @@ void KCommandTest::testUndoLimit()
     m_documentRestored = 0;
     KActionCollection actionCollection( ( QWidget*)0 );
     {
-        KCommandHistory ch( &actionCollection );
+        K3CommandHistory ch( &actionCollection );
         ch.setUndoLimit( 2 );
         ch.setRedoLimit( 2 );
 
