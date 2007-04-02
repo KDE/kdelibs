@@ -4,7 +4,7 @@ macro_optional_find_package(DNSSD)
 macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
-include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 if (HAVE_AVAHI) 
   set(kdnssd_LIB_SRCS

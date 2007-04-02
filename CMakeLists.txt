@@ -73,6 +73,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx
                         ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/actions
                         ${CMAKE_SOURCE_DIR}/kdeui/colors
+                        ${CMAKE_SOURCE_DIR}/kdeui/config
                         ${CMAKE_SOURCE_DIR}/kdeui/dialogs
                         ${CMAKE_SOURCE_DIR}/kdeui/findreplace
                         ${CMAKE_SOURCE_DIR}/kdeui/fonts
