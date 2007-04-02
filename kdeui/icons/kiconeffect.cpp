@@ -39,8 +39,12 @@
 class KIconEffectPrivate
 {
 public:
-	QString mKey[6][3];
-	QColor  mColor2[6][3];
+    int effect[6][3];
+    float value[6][3];
+    QColor color[6][3];
+    bool trans[6][3];
+    QString key[6][3];
+    QColor color2[6][3];
 };
 
 KIconEffect::KIconEffect()
@@ -82,22 +86,22 @@ void KIconEffect::init()
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
 	// Default effects
-	mEffect[i][0] = NoEffect;
-	mEffect[i][1] =  ((i==0)||(i==4)) ? ToGamma : NoEffect;
-	mEffect[i][2] = ToGray;
+	d->effect[i][0] = NoEffect;
+	d->effect[i][1] =  ((i==0)||(i==4)) ? ToGamma : NoEffect;
+	d->effect[i][2] = ToGray;
 
-	mTrans[i][0] = false;
-	mTrans[i][1] = false;
-	mTrans[i][2] = true;
-        mValue[i][0] = 1.0;
-        mValue[i][1] = ((i==0)||(i==4)) ? 0.7 : 1.0;
-        mValue[i][2] = 1.0;
-        mColor[i][0] = QColor(144,128,248);
-        mColor[i][1] = QColor(169,156,255);
-        mColor[i][2] = QColor(34,202,0);
-        d->mColor2[i][0] = QColor(0,0,0);
-        d->mColor2[i][1] = QColor(0,0,0);
-        d->mColor2[i][2] = QColor(0,0,0);
+	d->trans[i][0] = false;
+	d->trans[i][1] = false;
+	d->trans[i][2] = true;
+        d->value[i][0] = 1.0;
+        d->value[i][1] = ((i==0)||(i==4)) ? 0.7 : 1.0;
+        d->value[i][2] = 1.0;
+        d->color[i][0] = QColor(144,128,248);
+        d->color[i][1] = QColor(169,156,255);
+        d->color[i][2] = QColor(34,202,0);
+        d->color2[i][0] = QColor(0,0,0);
+        d->color2[i][1] = QColor(0,0,0);
+        d->color2[i][2] = QColor(0,0,0);
 
 	KConfigGroup cg(config, *it + "Icons");
 	for (it2=states.begin(), j=0; it2!=states.end(); it2++, j++)
@@ -118,11 +122,11 @@ void KIconEffect::init()
 	    else
 		continue;
 	    if(effect != -1)
-                mEffect[i][j] = effect;
-	    mValue[i][j] = cg.readEntry(*it2 + "Value", 0.0);
-	    mColor[i][j] = cg.readEntry(*it2 + "Color", QColor());
-	    d->mColor2[i][j] = cg.readEntry(*it2 + "Color2", QColor());
-	    mTrans[i][j] = cg.readEntry(*it2 + "SemiTransparent", false);
+                d->effect[i][j] = effect;
+	    d->value[i][j] = cg.readEntry(*it2 + "Value", 0.0);
+	    d->color[i][j] = cg.readEntry(*it2 + "Color", QColor());
+	    d->color2[i][j] = cg.readEntry(*it2 + "Color2", QColor());
+	    d->trans[i][j] = cg.readEntry(*it2 + "SemiTransparent", false);
 
 	}
     }
@@ -130,34 +134,34 @@ void KIconEffect::init()
 
 bool KIconEffect::hasEffect(int group, int state) const
 {
-    return mEffect[group][state] != NoEffect;
+    return d->effect[group][state] != NoEffect;
 }
 
 QString KIconEffect::fingerprint(int group, int state) const
 {
     if ( group >= K3Icon::LastGroup ) return "";
-    QString cached = d->mKey[group][state];
+    QString cached = d->key[group][state];
     if (cached.isEmpty())
     {
         QString tmp;
-        cached = tmp.setNum(mEffect[group][state]);
+        cached = tmp.setNum(d->effect[group][state]);
         cached += ':';
-        cached += tmp.setNum(mValue[group][state]);
+        cached += tmp.setNum(d->value[group][state]);
         cached += ':';
-        cached += mTrans[group][state] ? QLatin1String("trans")
+        cached += d->trans[group][state] ? QLatin1String("trans")
             : QLatin1String("notrans");
-        if (mEffect[group][state] == Colorize || mEffect[group][state] == ToMonochrome)
+        if (d->effect[group][state] == Colorize || d->effect[group][state] == ToMonochrome)
         {
             cached += ':';
-            cached += mColor[group][state].name();
+            cached += d->color[group][state].name();
         }
-        if (mEffect[group][state] == ToMonochrome)
+        if (d->effect[group][state] == ToMonochrome)
         {
             cached += ':';
-            cached += d->mColor2[group][state].name();
+            cached += d->color2[group][state].name();
         }
 
-        d->mKey[group][state] = cached;
+        d->key[group][state] = cached;
     }
 
     return cached;
@@ -175,8 +179,8 @@ QImage KIconEffect::apply(const QImage &image, int group, int state) const
 	kDebug(265) << "Illegal icon group: " << group << "\n";
 	return image;
     }
-    return apply(image, mEffect[group][state], mValue[group][state],
-	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
+    return apply(image, d->effect[group][state], d->value[group][state],
+	    d->color[group][state], d->color2[group][state], d->trans[group][state]);
 }
 
 QImage KIconEffect::apply(const QImage &image, int effect, float value, const QColor &col, bool trans) const
@@ -233,8 +237,8 @@ QPixmap KIconEffect::apply(const QPixmap &pixmap, int group, int state) const
 	kDebug(265) << "Illegal icon group: " << group << "\n";
 	return pixmap;
     }
-    return apply(pixmap, mEffect[group][state], mValue[group][state],
-	    mColor[group][state], d->mColor2[group][state], mTrans[group][state]);
+    return apply(pixmap, d->effect[group][state], d->value[group][state],
+	    d->color[group][state], d->color2[group][state], d->trans[group][state]);
 }
 
 QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,

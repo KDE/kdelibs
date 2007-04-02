@@ -55,7 +55,7 @@ public:
      */
     enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate,
                    ToMonochrome,
-		   LastEffect };
+                   LastEffect };
 
     /**
      * Rereads configuration.
@@ -213,10 +213,6 @@ public:
     static void overlay(QImage &src, QImage &overlay);
 
 private:
-    int mEffect[6][3];
-    float mValue[6][3];
-    QColor mColor[6][3];
-    bool mTrans[6][3];
     KIconEffectPrivate* const d;
 };
 
