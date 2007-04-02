@@ -461,7 +461,7 @@ void KMainWindow::configureToolbars()
     KConfigGroup cg(KGlobal::config(), QString());
     saveMainWindowSettings(cg);
     if (!d->toolBarEditor) {
-      d->toolBarEditor = new KEditToolBar(actionCollection(), xmlFile(), true, this);
+      d->toolBarEditor = new KEditToolBar(actionCollection(), QString(), xmlFile(), true, this);
       connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
     }
     d->toolBarEditor->show();

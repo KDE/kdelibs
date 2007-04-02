@@ -130,29 +130,21 @@ public:
    * file at all (very rare).
    *
    * @param collection The collection of actions to work on.
+   * @param defaultToolBar The toolbar with this name will appear for editing.
+   *                       Pass in QString() for the default behaviour,
+   *                       generallyd desired for apps that do not use
+   *                       components.
    * @param xmlfile The application's local resource file.
    * @param global If @p true, then the global resource file will also
    *               be parsed.
    * @param parent The parent of the dialog.
    */
   explicit KEditToolBar(KActionCollection *collection,
-                        const QString& xmlfile = QString(), bool global = true,
+                        const QString& defaultToolBar = QString(),
+                        const QString& xmlfile = QString(),
+                        bool global = true,
                         QWidget* parent = 0);
 
-  //KDE 4.0: merge the two constructors
-  /* Constructor for apps that do not use components, which has an extra argument
-   * specifying the toolbar to be shown.
-   * @param defaultToolBar The toolbar with this name will appear for editing.
-   * @param collection The collection of actions to work on.
-   * @param xmlfile The application's local resource file.
-   * @param global If @p true, then the global resource file will also
-   *               be parsed.
-   * @param parent The parent of the dialog.
-   * @param name An internal name.
-   */
-  KEditToolBar(const QString& defaultToolBar, KActionCollection *collection,
-               const QString& xmlfile = QString(), bool global = true,
-               QWidget* parent = 0);
   /**
    * Constructor for KParts based apps.
    *
@@ -169,20 +161,13 @@ public:
    * \endcode
    *
    * @param factory Your application's factory object
-   * @param parent The usual parent for the dialog.
-   */
-  explicit KEditToolBar(KXMLGUIFactory* factory, QWidget* parent = 0);
-
-  //KDE 4.0: merge the two constructors
-  /** Constructor for KParts based apps, which has an extra argument
-   * specifying the toolbar to be shown.
-   *
    * @param defaultToolBar The toolbar with this name will appear for editing.
-   * @param factory Your application's factory object
+   *                       Pass in QString() for default behavior.
    * @param parent The usual parent for the dialog.
    */
-  KEditToolBar(const QString& defaultToolBar, KXMLGUIFactory* factory,
-               QWidget* parent = 0);
+  explicit KEditToolBar(KXMLGUIFactory* factory,
+                        const QString& defaultToolbar = QString(),
+                        QWidget* parent = 0);
 
   /// destructor
   ~KEditToolBar();

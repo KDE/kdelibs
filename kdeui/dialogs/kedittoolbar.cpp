@@ -385,46 +385,37 @@ public:
 
 const char *KEditToolBarPrivate::s_defaultToolBar = 0L;
 
-KEditToolBar::KEditToolBar(KActionCollection *collection, const QString& file,
+KEditToolBar::KEditToolBar(KActionCollection *collection,
+                           const QString& defaultToolBar,
+                           const QString& file,
                            bool global, QWidget* parent)
   : KDialog(parent),
     d(new KEditToolBarPrivate(this))
 {
-    d->m_widget = new KEditToolBarWidget(QLatin1String(KEditToolBarPrivate::s_defaultToolBar), collection, file, global, this);
+    QString toolBar = defaultToolBar;
+    if ( toolBar.isEmpty() ) {
+        toolBar = QLatin1String(KEditToolBarPrivate::s_defaultToolBar);
+    }
+
+    d->m_widget = new KEditToolBarWidget( toolBar, collection, file, global, this);
     init();
     d->m_global = global;
     d->m_collection = collection;
     d->m_file = file;
 }
 
-KEditToolBar::KEditToolBar(const QString& defaultToolBar, KActionCollection *collection,
-                           const QString& file, bool global,
-                           QWidget* parent)
-  : KDialog(parent),
-    d(new KEditToolBarPrivate(this))
-{
-    d->m_widget = new KEditToolBarWidget(defaultToolBar, collection, file, global, this);
-    init();
-    d->m_global = global;
-    d->m_collection = collection;
-    d->m_file = file;
-}
-
-KEditToolBar::KEditToolBar(KXMLGUIFactory* factory, QWidget* parent)
-    : KDialog(parent),
-      d(new KEditToolBarPrivate(this))
-{
-    d->m_widget = new KEditToolBarWidget(QLatin1String(KEditToolBarPrivate::s_defaultToolBar), factory, this);
-    init();
-    d->m_factory = factory;
-}
-
-KEditToolBar::KEditToolBar(const QString& defaultToolBar,KXMLGUIFactory* factory,
+KEditToolBar::KEditToolBar(KXMLGUIFactory* factory,
+                           const QString& defaultToolBar,
                            QWidget* parent)
     : KDialog(parent),
       d(new KEditToolBarPrivate(this))
 {
-    d->m_widget = new KEditToolBarWidget(defaultToolBar, factory, this);
+    QString toolBar = defaultToolBar;
+    if ( toolBar.isEmpty() ) {
+        toolBar = QLatin1String(KEditToolBarPrivate::s_defaultToolBar);
+    }
+
+    d->m_widget = new KEditToolBarWidget( toolBar, factory, this);
     init();
     d->m_factory = factory;
 }
