@@ -103,6 +103,7 @@ namespace KSpell2
     private:
         class Private;
         Private *const d;
+        Q_DISABLE_COPY( Highlighter )
     };
 
 }
