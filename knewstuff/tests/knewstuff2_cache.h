@@ -10,7 +10,7 @@ namespace KNS
 	class CoreEngine;
 	class Feed;
 	class Provider;
-};
+}
 
 class KNewStuff2Cache : public QObject
 {

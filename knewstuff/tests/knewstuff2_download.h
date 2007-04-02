@@ -9,7 +9,7 @@
 namespace KNS
 {
 	class CoreEngine;
-};
+}
 
 class QListWidget;
 class QTabWidget;

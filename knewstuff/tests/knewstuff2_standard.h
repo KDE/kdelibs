@@ -8,7 +8,7 @@
 namespace KNS
 {
 	class Engine;
-};
+}
 
 class KNewStuff2Standard : public QObject
 {
