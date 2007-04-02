@@ -555,6 +555,10 @@ QVariant KConfigGroup::readEntry( const char *pKey, const QVariant &aDefault ) c
                  << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
                     "Please inform the KDE developers" << endl;
         break;
+      case QVariant::Url: {
+          const QUrl url( readEntry( pKey, KUrl( aDefault.toUrl() ).url() ) );
+          return url;
+      }
 
       default:
           break;
@@ -912,7 +916,9 @@ void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
                  << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
                     "Please inform the KDE developers" << endl;
         break;
-
+    case QVariant::Url:
+        writeEntry( pKey, KUrl( prop.toUrl() ).url(), pFlags );
+        return;
     case QVariant::Pixmap:
     case QVariant::Image:
     case QVariant::Brush:
