@@ -291,6 +291,7 @@ install( FILES
  dialogs/kprogressdialog.h
  dialogs/ksplashscreen.h
  dialogs/kshortcutsdialog.h
+ dialogs/kshortcutseditor.h
  dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h

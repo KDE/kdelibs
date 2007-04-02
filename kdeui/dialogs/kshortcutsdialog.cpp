@@ -940,5 +940,6 @@ int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor:
 	return dlg.configure(saveSettings);
 }
 
+#include "kshortcutseditor.moc"
 #include "kshortcutsdialog.moc"
 #include "kshortcutsdialog_p.moc"
