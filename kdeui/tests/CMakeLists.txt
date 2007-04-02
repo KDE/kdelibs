@@ -823,19 +823,6 @@ kde4_add_test(kactionselectortest ${kactionselectortest_SRCS})
 target_link_libraries(kactionselectortest ${KDE4_KDEUI_LIBS})
 
 
-########### kcommandtest ###############
-
-set(kcommandtest_SRCS kcommandtest.cpp )
-
-kde4_automoc(kcommandtest ${kcommandtest_SRCS})
-
-kde4_add_test(kcommandtest ${kcommandtest_SRCS})
-
-target_link_libraries(kcommandtest  ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kcommandtest ${EXECUTABLE_OUTPUT_PATH}/kcommandtest)
-
-
 ########### next target ###############
 
 set(kapptest_SRCS kapptest.cpp )

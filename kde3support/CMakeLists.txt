@@ -58,7 +58,7 @@ kde4_automoc(${kde3support_LIB_SRCS})
 
 kde4_add_library(kde3support SHARED ${kde3support_LIB_SRCS})
 
-target_link_libraries(kde3support  ${KDE4_KDECORE_LIBS}  ${QT_QTXML_LIBRARY} kdeui kutils kparts kio)
+target_link_libraries(kde3support  ${KDE4_KDECORE_LIBS}  ${QT_QTXML_LIBRARY} kdeui kparts kio)
 
 set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kde3support  DESTINATION ${LIB_INSTALL_DIR} )
