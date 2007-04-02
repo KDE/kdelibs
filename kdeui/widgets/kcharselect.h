@@ -39,9 +39,9 @@ class QUrl;
  * \image html kcharselect.png "Character Selection Widget"
  *
  * You can specify the font whose characters should be displayed via
- * setFont() or in the constructor. Using GuiElements you can create a
- * compact version of KCharSelect if there is not enough space and if you
- * don't need all features.
+ * setCurrentFont(). Using the Controls argument in the contructor
+ * you can create a compact version of KCharSelect if there is not enough
+ * space and if you don't need all features.
  *
  * KCharSelect displays one Unicode block at a time and provides
  * categorized access to them. Unicode character names and further details,
@@ -50,7 +50,7 @@ class QUrl;
  *
  * To get the current selected character, use the currentChar()
  * method. You can set the character which should be displayed with
- * setChar().
+ * setCurrentChar().
  *
  * @author Reginald Stadlbauer <reggie@kde.org>
  * @author Daniel Laidig <d.laidig@gmx.de>
@@ -59,15 +59,15 @@ class QUrl;
 class KDEUI_EXPORT KCharSelect : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(QFont font READ font WRITE setFont)
-    Q_PROPERTY(QChar currentChar READ currentChar WRITE setChar)
+    Q_PROPERTY(QFont currentFont READ currentFont WRITE setCurrentFont)
+    Q_PROPERTY(QChar currentChar READ currentChar WRITE setCurrentChar)
     Q_PROPERTY(QList<QChar> displayedChars READ displayedChars)
 
 public:
     /**
      * Flags to set the shown widgets
      */
-    enum GuiElement {
+    enum Control {
         /**
          * Shows the search widgets
          */
@@ -92,18 +92,18 @@ public:
          * Shows the detail browser
          */
         DetailBrowser = 0x20,
-        GuiElementsMax      = 65536
+        /**
+         * Shows everything
+         */
+        AllGuiElements      = 65535
     };
-    Q_DECLARE_FLAGS(GuiElements,
-                    GuiElement)
+    Q_DECLARE_FLAGS(Controls,
+                    Control)
 
     /**
-     * Constructor. @p chr defines which character should be selected and which block
-     * should be displayed, @p font specifies which font should be displayed. @p guiElements
-     * can be used to show a custom set of widgets.
+     * Constructor. @p controls can be used to show a custom set of widgets.
      */
-    KCharSelect(QWidget *parent, const QChar &chr = 0x0,
-                const QFont &font = QFont(), const GuiElements guiElements = GuiElements(65535));
+    KCharSelect(QWidget *parent, const Controls controls = AllGuiElements);
     ~KCharSelect();
     /**
      * Reimplemented.
@@ -111,19 +111,14 @@ public:
     virtual QSize sizeHint() const;
 
     /**
-     * Sets the font which is displayed to @p font
-     */
-    void setFont(const QFont &font);
-
-    /**
      * Returns the currently selected character.
      */
-    virtual QChar currentChar() const;
+    QChar currentChar() const;
 
     /**
      * Returns the currently displayed font.
      */
-    QFont font() const;
+    QFont currentFont() const;
 
     /**
      * Returns a list of currently displayed characters.
@@ -134,13 +129,18 @@ public Q_SLOTS:
     /**
      * Highlights the character @p c. If the character is not displayed, the block is changed.
      */
-    void setChar(const QChar &c);
+    void setCurrentChar(const QChar &c);
+
+    /**
+     * Sets the font which is displayed to @p font
+     */
+    void setCurrentFont(const QFont &font);
 
 Q_SIGNALS:
     /**
      * A new font is selected or the font size changed.
      */
-    void fontChanged(const QFont &_font);
+    void currentFontChanged(const QFont &_font);
     /**
      * The current character is changed.
      */
@@ -167,6 +167,6 @@ private:
     KCharSelectPrivate* const d;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(KCharSelect::GuiElements)
+Q_DECLARE_OPERATORS_FOR_FLAGS(KCharSelect::Controls)
 
 #endif

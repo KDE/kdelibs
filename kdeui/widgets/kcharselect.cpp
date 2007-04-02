@@ -271,14 +271,14 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
 /* Class: KCharSelect                                             */
 /******************************************************************/
 
-KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, const GuiElements guiElements)
+KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         : QWidget(parent), d(new KCharSelectPrivate)
 {
     d->q = this;
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);
-    if (SearchLine & guiElements) {
+    if (SearchLine & controls) {
         QHBoxLayout *searchLayout = new QHBoxLayout();
         mainLayout->addLayout(searchLayout);
         d->searchLine = new KLineEdit(this);
@@ -294,7 +294,7 @@ KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, c
         connect(searchButton, SIGNAL(pressed()), this, SLOT(_k_search()));
     }
 
-    if ((SearchLine & guiElements) && ((FontCombo & guiElements) || (FontSize & guiElements) || (BlockCombos & guiElements))) {
+    if ((SearchLine & controls) && ((FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls))) {
         QFrame* line = new QFrame(this);
         line->setFrameShape(QFrame::HLine);
         line->setFrameShadow(QFrame::Sunken);
@@ -317,7 +317,7 @@ KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, c
     d->fontSizeSpinBox->setSingleStep(1);
     d->fontSizeSpinBox->setToolTip(i18n("Set font size"));
 
-    if (((FontCombo & guiElements) || (FontSize & guiElements)) && (BlockCombos & guiElements)) {
+    if (((FontCombo & controls) || (FontSize & controls)) && (BlockCombos & controls)) {
         comboLayout->addSpacing(20);
     }
     connect(d->fontCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(_k_fontSelected()));
@@ -336,28 +336,28 @@ KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, c
 
     connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
     connect(d->blockCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_blockSelected(int)));
-    if ((FontCombo & guiElements) || (FontSize & guiElements) || (BlockCombos & guiElements)) {
+    if ((FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls)) {
         mainLayout->addLayout(comboLayout);
     }
-    if (!(FontCombo & guiElements)) {
+    if (!(FontCombo & controls)) {
         d->fontCombo->hide();
     }
-    if (!(FontSize & guiElements)) {
+    if (!(FontSize & controls)) {
         d->fontSizeSpinBox->hide();
     }
-    if (!(BlockCombos & guiElements)) {
+    if (!(BlockCombos & controls)) {
         d->sectionCombo->hide();
         d->blockCombo->hide();
     }
 
     QSplitter *splitter = new QSplitter(this);
-    if ((CharacterTable & guiElements) || (DetailBrowser & guiElements)) {
+    if ((CharacterTable & controls) || (DetailBrowser & controls)) {
         mainLayout->addWidget(splitter);
     } else {
         splitter->hide();
     }
-    d->charTable = new KCharSelectTable(this, font);
-    if (CharacterTable & guiElements) {
+    d->charTable = new KCharSelectTable(this, QFont());
+    if (CharacterTable & controls) {
         splitter->addWidget(d->charTable);
         d->charTable->setFocus(Qt::OtherFocusReason);
     } else {
@@ -370,17 +370,17 @@ KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, c
 
     d->charTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    setFont(font);
+    setCurrentFont(QFont());
 
     connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)), this, SLOT(_k_slotUpdateUnicode(const QChar &)));
     connect(d->charTable, SIGNAL(activated(const QChar &)), this, SIGNAL(charSelected(const QChar &)));
     connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)),
             this, SIGNAL(currentCharChanged(const QChar &)));
 
-    connect(d->charTable, SIGNAL(showCharRequested(QChar)), this, SLOT(setChar(QChar)));
+    connect(d->charTable, SIGNAL(showCharRequested(QChar)), this, SLOT(setCurrentChar(QChar)));
 
     d->detailBrowser = new QTextBrowser(this);
-    if (DetailBrowser & guiElements) {
+    if (DetailBrowser & controls) {
         splitter->addWidget(d->detailBrowser);
     } else {
         d->detailBrowser->hide();
@@ -391,7 +391,7 @@ KCharSelect::KCharSelect(QWidget *parent, const QChar &chr, const QFont &font, c
     setFocusProxy(d->charTable);
     d->_k_sectionSelected(0);
     d->_k_blockSelected(0);
-    setChar(chr);
+    setCurrentChar(0x0);
 }
 
 KCharSelect::~KCharSelect()
@@ -404,7 +404,7 @@ QSize KCharSelect::sizeHint() const
     return QWidget::sizeHint();
 }
 
-void KCharSelect::setFont(const QFont &_font)
+void KCharSelect::setCurrentFont(const QFont &_font)
 {
     d->fontCombo->setCurrentFont(_font);
     d->fontSizeSpinBox->setValue(_font.pointSize());
@@ -416,7 +416,7 @@ QChar KCharSelect::currentChar() const
     return d->charTable->chr();
 }
 
-QFont KCharSelect::font() const
+QFont KCharSelect::currentFont() const
 {
     return d->charTable->font();
 }
@@ -426,7 +426,7 @@ QList<QChar> KCharSelect::displayedChars() const
     return d->charTable->displayedChars();
 }
 
-void KCharSelect::setChar(const QChar &c)
+void KCharSelect::setCurrentChar(const QChar &c)
 {
     int block = KCharSelectData::blockIndex(c);
     int section = KCharSelectData::sectionIndex(block);
@@ -443,7 +443,7 @@ void KCharSelect::KCharSelectPrivate::_k_fontSelected()
     QFont font = fontCombo->currentFont();
     font.setPointSize(fontSizeSpinBox->value());
     charTable->setFont(font);
-    emit q->fontChanged(font);
+    emit q->currentFontChanged(font);
 }
 
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
@@ -641,7 +641,7 @@ void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
         return;
     }
     int unicode = hex.toInt(0, 16);
-    q->setChar(QChar(unicode));
+    q->setCurrentChar(QChar(unicode));
 }
 
 #include "kcharselect.moc"
