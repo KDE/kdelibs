@@ -34,7 +34,7 @@ set(kdeui_unittests
   kreplacetest
   kshortcuttest
   kstandardactiontest
-  kstandardshortcuttest  
+  kstandardshortcuttest
   kuniqueapptest
   kapplication_unittest
 )
@@ -104,6 +104,7 @@ KDEUI_BUILD_TESTS(
   knewpassworddialogtest
   kpassworddialogtest
   kjobtrackerstest
+  kdebugtest_gui
 )
 
 if (Q_WS_X11)
