@@ -55,7 +55,6 @@
 
 static bool atoms_created = false;
 
-static Atom net_wm_context_help;
 static Atom kde_wm_change_state;
 static Atom kde_wm_window_opacity;
 static Atom kde_wm_window_shadow;
@@ -70,9 +69,6 @@ static void kwin_net_create_atoms() {
 	const char* names[max];
 	Atom atoms_return[max];
 	int n = 0;
-
-	atoms[n] = &net_wm_context_help;
-	names[n++] = "_NET_WM_CONTEXT_HELP";
 
 	atoms[n] = &kde_wm_change_state;
 	names[n++] = "_KDE_WM_CHANGE_STATE";
@@ -121,96 +117,6 @@ static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z
   XSendEvent(QX11Info::display(), QX11Info::appRootWindow(), False, mask, &ev);
 }
 #endif
-
-/*
-  Send a client message to window w
- */
-#ifdef Q_WS_X11
-static void sendClientMessage(Window w, Atom a, long x){
-  XEvent ev;
-  long mask;
-
-  memset(&ev, 0, sizeof(ev));
-  ev.xclient.type = ClientMessage;
-  ev.xclient.window = w;
-  ev.xclient.message_type = a;
-  ev.xclient.format = 32;
-  ev.xclient.data.l[0] = x;
-  ev.xclient.data.l[1] = CurrentTime;
-  mask = 0L;
-  if (w == QX11Info::appRootWindow())
-    mask = SubstructureRedirectMask;        /* magic! */
-  XSendEvent(QX11Info::display(), w, False, mask, &ev);
-}
-#endif
-
-#ifdef Q_WS_X11
-namespace
-{
-class ContextWidget : public QWidget
-{
-public:
-    ContextWidget();
-    virtual bool x11Event( XEvent * ev);
-
-private:
-    QEventLoop mLoop;
-};
-
-ContextWidget::ContextWidget()
-	: QWidget()
-    {
-	kwin_net_create_atoms();
-	kapp->installX11EventFilter( this );
-	QWhatsThis::enterWhatsThisMode();
-	QCursor c = *QApplication::overrideCursor();
-	QWhatsThis::leaveWhatsThisMode();
-	XGrabPointer( QX11Info::display(), QX11Info::appRootWindow(), true,
-		      (uint)( ButtonPressMask | ButtonReleaseMask |
-			      PointerMotionMask | EnterWindowMask |
-			      LeaveWindowMask ),
-		      GrabModeAsync, GrabModeAsync,
-		      None, c.handle(), CurrentTime );
-	mLoop.exec();
-    }
-
-
-bool ContextWidget::x11Event( XEvent * ev)
-    {
-	if ( ev->type == ButtonPress && ev->xbutton.button == Button1 ) {
-	    XUngrabPointer( QX11Info::display(), ev->xbutton.time );
-	    Window root;
-	    Window _child = QX11Info::appRootWindow();
-	    int root_x, root_y, lx, ly;
-	    uint state;
-	    Window w;
-	    do {
-		w = _child;
-		XQueryPointer( QX11Info::display(), w, &root, &_child,
-			       &root_x, &root_y, &lx, &ly, &state );
-	    } while  ( _child != None && _child != w );
-
-	    ::sendClientMessage(w, kwin_wm_protocols, net_wm_context_help);
-	    XEvent e = *ev;
-	    e.xbutton.window = w;
-	    e.xbutton.subwindow = w;
-	    e.xbutton.x = lx;
-	    e.xbutton.y = ly;
-	    XSendEvent( QX11Info::display(), w, true, ButtonPressMask, &e );
-	    mLoop.exit(0);
-	    return true;
-	}
-	return false;
-    }
-} // namespace
-#endif
-
-void KWin::invokeContextHelp()
-{
-#ifdef Q_WS_X11
-    ContextWidget w;
-#endif
-}
 
 void KWin::activateWindow( WId win, long time )
 {

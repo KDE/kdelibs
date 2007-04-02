@@ -125,12 +125,6 @@ public:
     static void setUserTime( WId win, long time );
 
     /**
-     * Invokes interactive context help.
-     */
-    static void invokeContextHelp();
-
-
-    /**
      * Sets the parent window of @p subwindow to be @p mainwindow.
      * This overrides the parent set the usual way as the QWidget parent,
      * but only for the window manager - e.g. stacking order and window grouping
