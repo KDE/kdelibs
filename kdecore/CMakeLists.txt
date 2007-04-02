@@ -76,7 +76,7 @@ endif (UNIX)
 
 add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
-add_subdirectory( network/tests )
+#add_subdirectory( network/tests )
 add_subdirectory( sonnet/tests )
 
 ########### next target ###############
