@@ -19,6 +19,8 @@
  */
 
 #include "config.h"
+#include <QtCore/QCoreApplication>
+#include <QStringList>
 
 #include "publicservice.h"
 #ifdef HAVE_SYS_TYPES_H
@@ -26,8 +28,6 @@
 #endif
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <QtCore/QCoreApplication>
-#include <QStringList>
 #include <ksocketaddress.h>
 #include <unistd.h>
 #include "servicebrowser.h"
@@ -113,7 +113,7 @@ void PublicService::setPort(unsigned short port)
     	} 
 }
 
-void PublicService::setTextData(const QMap<QString,QString>& textData)
+void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 {
 	m_textData = textData;
 	if (d->m_running) {
@@ -147,7 +147,7 @@ bool PublicServicePrivate::fillEntryGroup()
 	if (!rep.isValid()) return false;
 	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
     }
-    QMap<QString,QString>::ConstIterator itEnd = m_parent->m_textData.end();
+    QMap<QString,QByteArray>::ConstIterator itEnd = m_parent->m_textData.end();
 //    for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
 //	s = avahi_string_list_add_pair(s, it.key().utf8(),it.data().utf8());
     //FIXME: domainToDNS needed?

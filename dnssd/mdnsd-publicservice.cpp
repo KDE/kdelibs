@@ -111,7 +111,7 @@ bool PublicService::isPublished() const
 	return d->m_published;
 }
 
-void PublicService::setTextData(const QMap<QString,QString>& textData)
+void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 {
 	m_textData = textData;
 	if (d->isRunning()) {
@@ -138,10 +138,9 @@ void PublicService::publishAsync()
 	if (d->isRunning()) stop();
 	TXTRecordRef txt;
 	TXTRecordCreate(&txt,0,0);
-	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
-	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
-		QByteArray value = it.value().toUtf8();
-		if (TXTRecordSetValue(&txt,it.key().toUtf8(),value.length(),value)!=kDNSServiceErr_NoError) {
+	QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.end();
+	for (QMap<QString,QByteArray>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
+		if (TXTRecordSetValue(&txt,it.key().toUtf8(),it.value().length(),it.value())!=kDNSServiceErr_NoError) {
 			TXTRecordDeallocate(&txt);
 			emit published(false);
 			return;

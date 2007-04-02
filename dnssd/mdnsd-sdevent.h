@@ -65,14 +65,14 @@ class ResolveEvent : public QEvent
 {
 public:
 	ResolveEvent(const QString& hostname, unsigned short port,
-		     const QMap<QString,QString>& txtdata) 
+		     const QMap<QString,QByteArray>& txtdata) 
 		: QEvent((QEvent::Type)(QEvent::User+SD_RESOLVE)), m_hostname(hostname),
 		  m_port(port), m_txtdata(txtdata)
 	{}
 
 	const QString m_hostname;
 	const unsigned short m_port;
-	const QMap<QString,QString> m_txtdata;
+	const QMap<QString,QByteArray> m_txtdata;
 };
 
 

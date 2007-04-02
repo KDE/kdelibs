@@ -150,12 +150,12 @@ void resolve_callback    (    DNSServiceRef,
 	int index=0;
 	unsigned char valueLen;
 	kDebug() << "Resolve callback\n";
-	QMap<QString,QString> map;
+	QMap<QString,QByteArray> map;
         const void *voidValue = 0;
 	while (TXTRecordGetItemAtIndex(txtLen,txtRecord,index++,256,key,&valueLen,
 		&voidValue) == kDNSServiceErr_NoError)  
         {
-		if (voidValue) map[QString::fromUtf8(key)]=QString::fromUtf8((const char*)voidValue,valueLen);
+		if (voidValue) map[QString::fromUtf8(key)]=QByteArray((const char*)voidValue,valueLen);
 			else map[QString::fromUtf8(key)].clear();
         }
 	ResolveEvent rev(DNSToDomain(hosttarget),ntohs(port),map);

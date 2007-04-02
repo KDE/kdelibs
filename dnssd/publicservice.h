@@ -97,7 +97,7 @@ public:
 	/**
 	Sets new text properties. If services is already published, it will be re-announced with new data.
 	*/
-	void setTextData(const QMap<QString,QString>& textData);
+	void setTextData(const QMap<QString,QByteArray>& textData);
 	
 	/**
 	Sets name of the service.  If service is currently published, it will be re-announced with new data.

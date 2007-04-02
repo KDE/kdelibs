@@ -57,7 +57,7 @@ unsigned short ServiceBase::port() const
 {
 	return m_port;
 }
-const QMap<QString,QString>& ServiceBase::textData() const
+const QMap<QString,QByteArray>& ServiceBase::textData() const
 {
 	return m_textData;
 }

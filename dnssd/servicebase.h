@@ -88,7 +88,7 @@ public:
 	/**
 	Returns read only map of text properties.  It is only valid for local and resolved remote services.
 	 */
-	const QMap<QString,QString>& textData() const;
+	const QMap<QString,QByteArray>& textData() const;
 
 protected:
 	QString m_serviceName;
@@ -100,7 +100,7 @@ protected:
 	/**
 	Map of TXT properties
 	 */
-	QMap<QString,QString> m_textData;
+	QMap<QString,QByteArray> m_textData;
 
 	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const ServiceBase & a);
 	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, ServiceBase & a);
