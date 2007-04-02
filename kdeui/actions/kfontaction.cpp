@@ -37,7 +37,7 @@
 #include <kfontchooser.h>
 
 KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
-  : KSelectAction(parent)
+  : KSelectAction(parent), d( 0 )
 {
     QStringList list;
     KFontChooser::getFontList( list, fontListCriteria );
@@ -46,7 +46,7 @@ KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
 }
 
 KFontAction::KFontAction(QObject *parent)
-  : KSelectAction(parent)
+  : KSelectAction(parent), d( 0 )
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -55,7 +55,7 @@ KFontAction::KFontAction(QObject *parent)
 }
 
 KFontAction::KFontAction(const QString & text, QObject *parent)
-  : KSelectAction(text, parent)
+  : KSelectAction(text, parent), d( 0 )
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );
@@ -64,7 +64,7 @@ KFontAction::KFontAction(const QString & text, QObject *parent)
 }
 
 KFontAction::KFontAction(const KIcon &icon, const QString &text, QObject *parent)
-  : KSelectAction(icon, text, parent)
+  : KSelectAction(icon, text, parent), d( 0 )
 {
     QStringList list;
     KFontChooser::getFontList( list, 0 );

@@ -33,22 +33,34 @@
 ///////////////////////////////////////////////////////////////
 //  Implementation of KIntValidator
 //
+class KIntValidator::KIntValidatorPrivate
+{
+public:
+    KIntValidatorPrivate()
+     : _base(0), _min(0), _max(0)
+    {}
+    int _base;
+    int _min;
+    int _max;
+};
 
 KIntValidator::KIntValidator ( QWidget * parent, int base )
-  : QValidator(parent), _min(0), _max(0)
+  : QValidator(parent), d(new KIntValidatorPrivate)
 {
   setBase(base);
 }
 
 KIntValidator::KIntValidator ( int bottom, int top, QWidget * parent, int base )
-  : QValidator(parent)
+  : QValidator(parent), d(new KIntValidatorPrivate)
 {
   setBase(base);
   setRange(bottom, top);
 }
 
 KIntValidator::~KIntValidator ()
-{}
+{
+    delete d;
+}
 
 QValidator::State KIntValidator::validate ( QString &str, int & ) const
 {
@@ -57,17 +69,17 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   QString newStr;
 
   newStr = str.trimmed();
-  if (_base > 10)
+  if (d->_base > 10)
     newStr = newStr.toUpper();
 
   if (newStr == QLatin1String("-")) {// a special case
-    if ((_min || _max) && _min >= 0)
+    if ((d->_min || d->_max) && d->_min >= 0)
       ok = false;
     else
       return QValidator::Acceptable;
   }
   else if (!newStr.isEmpty())
-    val = newStr.toInt(&ok, _base);
+    val = newStr.toInt(&ok, d->_base);
   else {
     val = 0;
     ok = true;
@@ -76,10 +88,10 @@ QValidator::State KIntValidator::validate ( QString &str, int & ) const
   if (! ok)
     return QValidator::Invalid;
 
-  if ((! _min && ! _max) || (val >= _min && val <= _max))
+  if ((! d->_min && ! d->_max) || (val >= d->_min && val <= d->_max))
     return QValidator::Acceptable;
 
-  if (_max && _min >= 0 && val < 0)
+  if (d->_max && d->_min >= 0 && val < 0)
     return QValidator::Invalid;
 
   return QValidator::Intermediate;
@@ -96,46 +108,46 @@ void KIntValidator::fixup ( QString &str ) const
   if (state == QValidator::Invalid || state == QValidator::Acceptable)
     return;
 
-  if (! _min && ! _max)
+  if (! d->_min && ! d->_max)
     return;
 
-  val = str.toInt(0, _base);
+  val = str.toInt(0, d->_base);
 
-  if (val < _min) val = _min;
-  if (val > _max) val = _max;
+  if (val < d->_min) val = d->_min;
+  if (val > d->_max) val = d->_max;
 
-  str.setNum(val, _base);
+  str.setNum(val, d->_base);
 }
 
 void KIntValidator::setRange ( int bottom, int top )
 {
-  _min = bottom;
-  _max = top;
+  d->_min = bottom;
+  d->_max = top;
 
-	if (_max < _min)
-		_max = _min;
+	if (d->_max < d->_min)
+		d->_max = d->_min;
 }
 
 void KIntValidator::setBase ( int base )
 {
-  _base = base;
-  if (_base < 2) _base = 2;
-  if (_base > 36) _base = 36;
+  d->_base = base;
+  if (d->_base < 2) d->_base = 2;
+  if (d->_base > 36) d->_base = 36;
 }
 
 int KIntValidator::bottom () const
 {
-  return _min;
+  return d->_min;
 }
 
 int KIntValidator::top () const
 {
-  return _max;
+  return d->_max;
 }
 
 int KIntValidator::base () const
 {
-  return _base;
+  return d->_base;
 }
 
 
@@ -143,38 +155,34 @@ int KIntValidator::base () const
 //  Implementation of KFloatValidator
 //
 
-class KFloatValidatorPrivate
+class KFloatValidator::KFloatValidatorPrivate
 {
 public:
     KFloatValidatorPrivate()
-    {
-    }
-    ~KFloatValidatorPrivate()
-    {
-    }
+     : acceptLocalizedNumbers(false), _min(0), _max(0)
+    {}
     bool acceptLocalizedNumbers;
+    double _min;
+    double _max;
 };
 
 
 KFloatValidator::KFloatValidator ( QWidget * parent )
-  : QValidator(parent), _min(0), _max(0)
+  : QValidator(parent), d(new KFloatValidatorPrivate)
 {
-    d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers=false;
 }
 
 KFloatValidator::KFloatValidator ( double bottom, double top, QWidget * parent )
-  : QValidator(parent)
+  : QValidator(parent), d(new KFloatValidatorPrivate)
 {
-    d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers=false;
     setRange(bottom, top);
 }
 
 KFloatValidator::KFloatValidator ( double bottom, double top, bool localeAware, QWidget * parent )
-  : QValidator(parent)
+  : QValidator(parent), d(new KFloatValidatorPrivate)
 {
-    d = new KFloatValidatorPrivate;
     d->acceptLocalizedNumbers = localeAware;
     setRange(bottom, top);
 }
@@ -202,7 +210,7 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
   newStr = str.trimmed();
 
   if (newStr == QLatin1String("-")) {// a special case
-    if ((_min || _max) && _min >= 0)
+    if ((d->_min || d->_max) && d->_min >= 0)
       ok = false;
     else
       return QValidator::Acceptable;
@@ -223,13 +231,13 @@ QValidator::State KFloatValidator::validate ( QString &str, int & ) const
   if (! ok)
     return QValidator::Invalid;
 
-  if (( !_min && !_max) || (val >= _min && val <= _max))
+  if (( !d->_min && !d->_max) || (val >= d->_min && val <= d->_max))
     return QValidator::Acceptable;
 
-  if (_max && _min >= 0 && val < 0)
+  if (d->_max && d->_min >= 0 && val < 0)
     return QValidator::Invalid;
 
-  if ( (_min || _max) && (val < _min || val > _max))
+  if ( (d->_min || d->_max) && (val < d->_min || val > d->_max))
     return QValidator::Invalid;
 
   return QValidator::Intermediate;
@@ -246,34 +254,34 @@ void KFloatValidator::fixup ( QString &str ) const
   if (state == QValidator::Invalid || state == QValidator::Acceptable)
     return;
 
-  if (! _min && ! _max)
+  if (! d->_min && ! d->_max)
     return;
 
   val = str.toDouble();
 
-  if (val < _min) val = _min;
-  if (val > _max) val = _max;
+  if (val < d->_min) val = d->_min;
+  if (val > d->_max) val = d->_max;
 
   str.setNum(val);
 }
 
 void KFloatValidator::setRange ( double bottom, double top )
 {
-  _min = bottom;
-  _max = top;
+  d->_min = bottom;
+  d->_max = top;
 
-	if (_max < _min)
-		_max = _min;
+	if (d->_max < d->_min)
+		d->_max = d->_min;
 }
 
 double KFloatValidator::bottom () const
 {
-  return _min;
+  return d->_min;
 }
 
 double KFloatValidator::top () const
 {
-  return _max;
+  return d->_max;
 }
 
 
@@ -283,24 +291,22 @@ double KFloatValidator::top () const
 //  Implementation of KDoubleValidator
 //
 
-class KDoubleValidator::Private {
+class KDoubleValidator::KDoubleValidatorPrivate {
 public:
-  Private( bool accept=true ) : acceptLocalizedNumbers( accept ) {}
+  KDoubleValidatorPrivate( bool accept=true ) : acceptLocalizedNumbers( accept ) {}
 
   bool acceptLocalizedNumbers;
 };
 
 KDoubleValidator::KDoubleValidator( QObject * parent )
-  : QDoubleValidator( parent ), d( 0 )
+  : QDoubleValidator( parent ), d(  new KDoubleValidatorPrivate() )
 {
-  d = new Private();
 }
 
 KDoubleValidator::KDoubleValidator( double bottom, double top, int decimals,
   QObject * parent )
-  : QDoubleValidator( bottom, top, decimals, parent ), d( 0 )
+  : QDoubleValidator( bottom, top, decimals, parent ), d( new KDoubleValidatorPrivate() )
 {
-  d = new Private();
 }
 
 KDoubleValidator::~KDoubleValidator()

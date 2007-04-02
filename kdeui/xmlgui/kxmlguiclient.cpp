@@ -67,13 +67,13 @@ public:
 };
 
 KXMLGUIClient::KXMLGUIClient()
+    : d( new KXMLGUIClientPrivate )
 {
-  d = new KXMLGUIClientPrivate;
 }
 
 KXMLGUIClient::KXMLGUIClient( KXMLGUIClient *parent )
+    : d( new KXMLGUIClientPrivate )
 {
-  d = new KXMLGUIClientPrivate;
   parent->insertChildClient( this );
 }
 

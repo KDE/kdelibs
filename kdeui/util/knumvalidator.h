@@ -85,13 +85,9 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
     virtual int base () const;
 
   private:
-    int _base;
-    int _min;
-    int _max;
-
+    class KIntValidatorPrivate;
+    KIntValidatorPrivate * const d;
 };
-
-class KFloatValidatorPrivate;
 
 /**
  \brief QValidator for floating point entry (Obsolete)
@@ -157,10 +153,8 @@ class KDEUI_EXPORT KFloatValidator : public QValidator {
     bool acceptLocalizedNumbers() const;
 
  private:
-    double _min;
-    double _max;
-
-    KFloatValidatorPrivate *d;
+    class KFloatValidatorPrivate;
+    KFloatValidatorPrivate * const d;
 };
 
 /**
@@ -203,8 +197,8 @@ public:
 
 private:
   typedef QDoubleValidator base;
-  class Private;
-  Private * d;
+  class KDoubleValidatorPrivate;
+  KDoubleValidatorPrivate * const d;
 };
 
 #endif

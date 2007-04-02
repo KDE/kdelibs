@@ -346,7 +346,7 @@ private:
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
-  KXMLGUIClientPrivate *d;
+  KXMLGUIClientPrivate * const d;
 };
 
 #endif

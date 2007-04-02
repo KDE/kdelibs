@@ -996,7 +996,7 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
    // Call our own copy() to fix copying of squeezed text
    if (QApplication::clipboard()->supportsSelection() ) {
        if ( e->button() == Qt::LeftButton ) {
-           copy( FALSE );
+           copy( false );
        }
    }
 }

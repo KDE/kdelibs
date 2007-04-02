@@ -54,7 +54,7 @@ private Q_SLOTS:
 
 private:
     class KFontActionPrivate;
-    KFontActionPrivate *d;
+    KFontActionPrivate * const d;
 };
 
 #endif
