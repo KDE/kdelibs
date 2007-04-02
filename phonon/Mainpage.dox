@@ -160,5 +160,5 @@ development. As an application developer you can safely ignore these classes.
 // DOXYGEN_SET_HIDE_SCOPE_NAMES = YES
 // DOXYGEN_SET_HIDE_FRIEND_COMPOUNDS = YES
 // DOXYGEN_SET_PROJECT_NAME = Phonon
-// DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h kiofallback.h kiofallbackimpl.h guiinterface.h guiimpl.h globalconfig.h basedestructionhandler.h
+// DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h kiofallback.h kiofallbackimpl.h guiinterface.h guiimpl.h globalconfig.h basedestructionhandler.h audiooutputadaptor.h
 // vim: tw=80

@@ -92,9 +92,13 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 
 	public:
 		/**
-		 * Constructs a new seek slider with a \p parent.
+         * Constructs a seek slider widget with the given \p parent.
 		 */
 		SeekSlider( QWidget* parent = 0 );
+
+        /**
+         * Destroys the seek slider.
+         */
 		~SeekSlider();
 
 		bool hasTracking() const;
@@ -127,7 +131,7 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
 
     protected:
         //SeekSlider(SeekSliderPrivate &d, QWidget *parent);
-        SeekSliderPrivate *d_ptr;
+        SeekSliderPrivate *const d_ptr;
 };
 
 } // namespace Phonon
