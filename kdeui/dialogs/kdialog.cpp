@@ -717,11 +717,12 @@ void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
 void KDialog::setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode)
 {
   KPushButton *button = this->button( id );
-  if ( button )
+  if ( button ) {
     if (popupmode==InstantPopup)
       button->setMenu( menu );
     else
       button->setDelayedMenu(menu);
+  }
 }
 
 void KDialog::setButtonText( ButtonCode id, const QString &text )
