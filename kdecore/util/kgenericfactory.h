@@ -190,7 +190,7 @@ public:
 
 protected:
     virtual QObject *createObject( QObject *parent,
-                                  const char *className, const QStringList &args )
+                                   const char *className, const QStringList &args )
     {
         KGenericFactoryBase<Product>::initializeMessageCatalog();
         return KDEPrivate::ConcreteFactory<Product, ParentType>
