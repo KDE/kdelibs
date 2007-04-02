@@ -23,9 +23,8 @@
 
 #include <QtCore/QObject>
 #include <dnssd/servicebase.h>
-#include <QEvent>
 
-class KUrl;
+class QStringList;
 namespace DNSSD
 {
 class PublicServicePrivate;
@@ -67,7 +66,7 @@ public:
 		means local LAN
 	 */
 	explicit PublicService(const QString& name=QString(),const QString& type=QString(),
-		      unsigned int port=0,const QString& domain=QString(), const QString& subtype=QString());
+		      unsigned int port=0,const QString& domain=QString(), const QStringList& subtypes=QStringList());
 
 	~PublicService();
 	
@@ -111,6 +110,12 @@ public:
 	 */
 	void setType(const QString& type);
 
+	/**
+	Sets subtypetypes of service. Pass empty list to remove subtype.  If service is 
+	currently published, it will be re-announced with new data.
+	 */
+	void setSubTypes(const QStringList& type);
+
 	/** 
 	Sets port. If service is currently published, it will be re-announced with new data.
 	 */
@@ -122,6 +127,10 @@ public:
 	 */
 	void setDomain(const QString& domain);
 	
+	/**
+	Returns otpional subtype of service. It is always empty for domains and in most cases empty for normal services.
+	 */
+	QStringList subtypes() const;
 Q_SIGNALS:
 	/**
 	Emitted when publishing is complete - parameter is set to true if it was successful. It will also

@@ -31,10 +31,11 @@ namespace DNSSD
 const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
 
 
-ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QString& domain)
+ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QString& domain, const QString& subtype)
 	:d(new ServiceBrowserPrivate(this))
 {
 	d->m_type=type;
+	d->m_subtype=subtype;
 	d->m_autoResolve=autoResolve;
 	d->m_domain=domain;
 }

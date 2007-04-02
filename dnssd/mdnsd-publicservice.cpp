@@ -19,6 +19,7 @@
  */
 
 #include <QtCore/QCoreApplication>
+#include <QStringList>
 #include <netinet/in.h>
 #include "publicservice.h"
 #include "mdnsd-sdevent.h"
@@ -36,14 +37,16 @@ public:
 	{}
 	bool m_published;
 	PublicService* m_parent;
+	QStringList m_subtypes;
 	virtual void customEvent(QEvent* event);
 };
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
-			      const QString& domain, const QString& subtype)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port, subtype),d(new PublicServicePrivate( this))
+			      const QString& domain, const QStringList& subtypes)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port),d(new PublicServicePrivate( this))
 {
 	if (domain.isNull())  m_domain="local.";
+	d->m_subtypes=subtypes;
 }
 
 
@@ -71,10 +74,23 @@ void PublicService::setDomain(const QString& domain)
 	}
 }
 
+QStringList PublicService::subtypes() const
+{
+	return d->m_subtypes;
+}
 
 void PublicService::setType(const QString& type)
 {
 	m_type = type;
+	if (d->isRunning()) {
+		stop();
+		publishAsync();
+	}
+}
+
+void PublicService::setSubTypes(const QStringList& subtypes)
+{
+	d->m_subtypes = subtypes;
 	if (d->isRunning()) {
 		stop();
 		publishAsync();

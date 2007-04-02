@@ -37,6 +37,7 @@ public:
 	QList<RemoteService::Ptr> m_duringResolve;
 	QString m_type;
 	QString m_domain;
+	QString m_subtype;
 	bool m_autoResolve;
 	bool m_finished;
 	ServiceBrowser* m_parent;

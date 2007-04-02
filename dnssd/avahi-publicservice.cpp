@@ -26,7 +26,8 @@
 #endif
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <qapplication.h>
+#include <QtCore/QCoreApplication>
+#include <QStringList>
 #include <ksocketaddress.h>
 #include <unistd.h>
 #include "servicebrowser.h"
@@ -39,10 +40,11 @@ namespace DNSSD
 {
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
-			      const QString& domain, const QString& subtype)
-  		: QObject(), ServiceBase(name, type, QString::null, domain, port, subtype), d(new PublicServicePrivate(this))
+			      const QString& domain, const QStringList& subtypes)
+  		: QObject(), ServiceBase(name, type, QString::null, domain, port), d(new PublicServicePrivate(this))
 {
 	if (domain.isNull()) m_domain="local.";
+	d->m_subtypes=subtypes;
 }
 
 
@@ -86,6 +88,20 @@ void PublicService::setType(const QString& type)
 	    d->m_group->Reset();
 	    d->tryApply();
 	} 
+}
+
+void PublicService::setSubTypes(const QStringList& subtypes)
+{
+	d->m_subtypes = subtypes;
+	if (d->m_running) {
+	    d->m_group->Reset();
+	    d->tryApply();
+	} 
+}
+
+QStringList PublicService::subtypes() const
+{
+	return d->m_subtypes;
 }
 
 void PublicService::setPort(unsigned short port)

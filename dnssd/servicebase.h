@@ -49,14 +49,13 @@ public:
 	@param domain Domain name for service
 	@param host   Host name for service
 	@param port   Port number for service
-	@param subtype Optional subtype
 
 	@todo Explain if @p domain is the FQDN, or if host + "." + domain is.
 	@todo Explain when @p port is needed (does it override @p name?).
 	 */
 	explicit ServiceBase(const QString& name=QString(),const QString& type=QString(),
 		    const QString& domain=QString(), const QString& host=QString(),
-		    unsigned short port=0, const QString& subtype=QString());
+		    unsigned short port=0);
 
 	virtual  ~ServiceBase();
 
@@ -71,10 +70,6 @@ public:
 	 */
 	const QString& type() const;
 
-	/**
-	Returns otpional subtype of service. It is always empty for domains and in most cases empty for normal services.
-	 */
-	const QString& subtype() const;
 	/**
 	Returns domain that given service belongs to. It is "local." for link-local services.
 	 */
@@ -101,7 +96,6 @@ protected:
 	QString m_domain;
 	QString m_hostName;
 	unsigned short m_port;
-	QString m_subtype;
 
 	/**
 	Map of TXT properties

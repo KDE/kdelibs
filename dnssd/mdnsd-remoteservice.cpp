@@ -50,8 +50,8 @@ public:
 	virtual void customEvent(QEvent* event);
 };
 
-RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain, const QString& subtype)
-		: ServiceBase(name, type, domain, subtype), d(new RemoteServicePrivate(this))
+RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
+		: ServiceBase(name, type, domain), d(new RemoteServicePrivate(this))
 {
 }
 

@@ -19,13 +19,14 @@
  */
 
 #include "publicservice.h"
+#include <QStringList>
 
 namespace DNSSD
 {
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
-			      const QString& domain, const QString& subtype)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port, subtype), d(0)
+			      const QString& domain, const QStringList&)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port), d(0)
 {
 	if (domain.isNull())  m_domain="local.";
 }
@@ -50,9 +51,19 @@ void PublicService::setType(const QString& type)
 	m_type = type;
 }
 
+void PublicService::setSubType(const QString& type)
+{
+	m_subtype = type;
+}
+
 void PublicService::setPort(unsigned short port)
 {
 	m_port = port;
+}
+
+QStringList PublicService::subtypes() const
+{
+	return QStringList();
 }
 
 bool PublicService::isPublished() const

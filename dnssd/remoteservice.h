@@ -23,10 +23,8 @@
 
 #include <QtCore/QObject>
 #include <dnssd/servicebase.h>
-#include <QEvent>
 
 class QDataStream;
-class KUrl;
 namespace DNSSD
 {
 class RemoteServicePrivate;
@@ -49,7 +47,7 @@ public:
 	/**
 	Creates unresolved remote service with given name, type and domain.
 	 */
-	RemoteService(const QString& name,const QString& type,const QString& domain, const QString& subtype=QString());
+	RemoteService(const QString& name,const QString& type,const QString& domain);
 	
 	virtual ~RemoteService();
 	

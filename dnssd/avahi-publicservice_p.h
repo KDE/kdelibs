@@ -45,15 +45,18 @@ public:
 	     m_parent(parent)
 	{}
         ~PublicServicePrivate() {  if (m_group) m_group->Free(); }
+
 	bool m_published;
 	bool m_running;
 	org::freedesktop::Avahi::EntryGroup* m_group;
 	bool m_collision;
+	QStringList m_subtypes;
+	PublicService* m_parent;
+	
 	void commit()
 	{
 	    if (!m_collision) m_group->Commit();
 	}    
-	PublicService* m_parent;
 	void stop();
 	bool fillEntryGroup();
 	void tryApply();
