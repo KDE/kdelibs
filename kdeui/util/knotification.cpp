@@ -68,6 +68,12 @@ struct KNotification::Private
     QTimer updateTimer;
 
     Private() : id(0), ref(1), widget(0l) {}
+    /**
+     * recursive function that raise the widget. @p w
+     *
+     * @see raiseWidget()
+     */
+    static void raiseWidget(QWidget *w);
 };
 
 KNotification::KNotification(const QString& eventId, QWidget *parent, const NotificationFlags& flags) :
@@ -210,14 +216,15 @@ void KNotification::close()
 
 void KNotification::raiseWidget()
 {
-	if(!d->widget)
-		return;
+    if ( !d->widget ) {
+        return;
+    }
 
-	raiseWidget(d->widget);
+    Private::raiseWidget( d->widget );
 }
 
 
-void KNotification::raiseWidget(QWidget *w)
+void KNotification::Private::raiseWidget(QWidget *w)
 {
 	//TODO  this function is far from finished.
 	if(w->isTopLevel())

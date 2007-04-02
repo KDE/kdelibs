@@ -417,12 +417,6 @@ private Q_SLOTS:
 private:
 	struct Private;
 	Private *const d;
-	/**
-	 * recursive function that raise the widget. @p w
-	 *
-	 * @see raiseWidget()
-	 */
-	static void raiseWidget(QWidget *w);
 
 
 public:

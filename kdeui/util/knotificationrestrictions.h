@@ -79,15 +79,11 @@ class KDEUI_EXPORT KNotificationRestrictions : public QObject
                                            QObject* parent = 0);
         virtual ~KNotificationRestrictions();
 
-    private Q_SLOTS:
-        void screensaverFakeKeyEvent();
-
     private:
-        void startScreenSaverPrevention();
-        void stopScreenSaverPrevention();
-
         class Private;
         Private * const d;
+
+        Q_PRIVATE_SLOT( d, void screensaverFakeKeyEvent() );
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KNotificationRestrictions::Services)
