@@ -997,28 +997,29 @@ public:
   K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after);
 
   K3ListViewItem(Q3ListView *parent,
-    QString, QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString());
+    const QString& label1, const QString& label2 = QString(),
+    const QString& label3 = QString(), const QString& label4 = QString(),
+    const QString& label5 = QString(), const QString& label6 = QString(),
+    const QString& labem7 = QString(), const QString& label7 = QString());
 
   K3ListViewItem(Q3ListViewItem *parent,
-    QString, QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString());
+    const QString& label1, const QString& label2 = QString(),
+    const QString& label3 = QString(), const QString& label4 = QString(),
+    const QString& label5 = QString(), const QString& label6 = QString(),
+    const QString& labem7 = QString(), const QString& label7 = QString());
 
   K3ListViewItem(Q3ListView *parent, Q3ListViewItem *after,
-    QString, QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString());
+    const QString& label1, const QString& label2 = QString(),
+    const QString& label3 = QString(), const QString& label4 = QString(),
+    const QString& label5 = QString(), const QString& label6 = QString(),
+    const QString& labem7 = QString(), const QString& label7 = QString());
 
   K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
-    QString, QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString(),
-    QString = QString(), QString = QString());
+    const QString& label1, const QString& label2 = QString(),
+    const QString& label3 = QString(), const QString& label4 = QString(),
+    const QString& label5 = QString(), const QString& label6 = QString(),
+    const QString& labem7 = QString(), const QString& label7 = QString());
+
 
   virtual ~K3ListViewItem();
 

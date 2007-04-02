@@ -2162,32 +2162,32 @@ K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after)
 }
 
 K3ListViewItem::K3ListViewItem(Q3ListView *parent,
-    QString label1, QString label2, QString label3, QString label4,
-    QString label5, QString label6, QString label7, QString label8)
+    const QString &label1, const QString &label2, const QString &label3, const QString &label4,
+    const QString &label5, const QString &label6, const QString &label7, const QString &label8)
   : Q3ListViewItem(parent, label1, label2, label3, label4, label5, label6, label7, label8)
 {
   init();
 }
 
 K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent,
-    QString label1, QString label2, QString label3, QString label4,
-    QString label5, QString label6, QString label7, QString label8)
+    const QString &label1, const QString &label2, const QString &label3, const QString &label4,
+    const QString &label5, const QString &label6, const QString &label7, const QString &label8)
   : Q3ListViewItem(parent, label1, label2, label3, label4, label5, label6, label7, label8)
 {
   init();
 }
 
 K3ListViewItem::K3ListViewItem(Q3ListView *parent, Q3ListViewItem *after,
-    QString label1, QString label2, QString label3, QString label4,
-    QString label5, QString label6, QString label7, QString label8)
+    const QString &label1, const QString &label2, const QString &label3, const QString &label4,
+    const QString &label5, const QString &label6, const QString &label7, const QString &label8)
   : Q3ListViewItem(parent, after, label1, label2, label3, label4, label5, label6, label7, label8)
 {
   init();
 }
 
 K3ListViewItem::K3ListViewItem(Q3ListViewItem *parent, Q3ListViewItem *after,
-    QString label1, QString label2, QString label3, QString label4,
-    QString label5, QString label6, QString label7, QString label8)
+    const QString &label1, const QString &label2, const QString &label3, const QString &label4,
+    const QString &label5, const QString &label6, const QString &label7, const QString &label8)
   : Q3ListViewItem(parent, after, label1, label2, label3, label4, label5, label6, label7, label8)
 {
   init();
