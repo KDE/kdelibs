@@ -755,48 +755,6 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
 }
 
 
-NETRootInfo2::NETRootInfo2(Display *display, Window supportWindow, const char *wmName,
-			 unsigned long properties[], int properties_size,
-                         int screen, bool doActivate)
-    : NETRootInfo( display, supportWindow, wmName, properties, properties_size,
-	screen, doActivate )
-{
-}
-
-NETRootInfo2::NETRootInfo2(Display *display, const unsigned long properties[], int properties_size,
-                int screen, bool doActivate)
-    : NETRootInfo( display, properties, properties_size, screen, doActivate )
-{
-}
-
-NETRootInfo3::NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
-			 unsigned long properties[], int properties_size,
-                         int screen, bool doActivate)
-    : NETRootInfo2( display, supportWindow, wmName, properties, properties_size,
-	screen, doActivate )
-{
-}
-
-NETRootInfo3::NETRootInfo3(Display *display, const unsigned long properties[], int properties_size,
-                int screen, bool doActivate)
-    : NETRootInfo2( display, properties, properties_size, screen, doActivate )
-{
-}
-
-NETRootInfo4::NETRootInfo4(Display *display, Window supportWindow, const char *wmName,
-			 unsigned long properties[], int properties_size,
-                         int screen, bool doActivate)
-    : NETRootInfo3( display, supportWindow, wmName, properties, properties_size,
-	screen, doActivate )
-{
-}
-
-NETRootInfo4::NETRootInfo4(Display *display, const unsigned long properties[], int properties_size,
-                int screen, bool doActivate)
-    : NETRootInfo3( display, properties, properties_size, screen, doActivate )
-{
-}
-
 // Copy an existing NETRootInfo object.
 
 NETRootInfo::NETRootInfo(const NETRootInfo &rootinfo) {
@@ -1764,11 +1722,6 @@ void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y
     XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
-void NETRootInfo::restackRequest(Window window, Window above, int detail)
-{
-    restackRequest( window, FromTool, above, detail, QX11Info::appUserTime() );
-}
-
 void NETRootInfo::restackRequest(Window window, RequestSource src, Window above, int detail, Time timestamp )
 {
 #ifdef    NETWMDEBUG
@@ -1793,11 +1746,11 @@ void NETRootInfo::restackRequest(Window window, RequestSource src, Window above,
     XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
 }
 
-void NETRootInfo2::sendPing( Window window, Time timestamp )
+void NETRootInfo::sendPing( Window window, Time timestamp )
 {
     if (role != WindowManager) return;
 #ifdef   NETWMDEBUG
-    fprintf(stderr, "NETRootInfo2::setPing: window 0x%lx, timestamp %lu\n",
+    fprintf(stderr, "NETRootInfo::setPing: window 0x%lx, timestamp %lu\n",
 	window, timestamp );
 #endif
     XEvent e;
@@ -1815,11 +1768,11 @@ void NETRootInfo2::sendPing( Window window, Time timestamp )
     XSendEvent(p->display, window, False, 0, &e);
 }
 
-void NETRootInfo3::takeActivity( Window window, Time timestamp, long flags )
+void NETRootInfo::takeActivity( Window window, Time timestamp, long flags )
 {
     if (role != WindowManager) return;
 #ifdef   NETWMDEBUG
-    fprintf(stderr, "NETRootInfo2::takeActivity: window 0x%lx, timestamp %lu, flags 0x%lx\n",
+    fprintf(stderr, "NETRootInfo::takeActivity: window 0x%lx, timestamp %lu, flags 0x%lx\n",
 	window, timestamp, flags );
 #endif
     XEvent e;
@@ -1935,22 +1888,18 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		    event->xclient.window);
 #endif
 
-	    changeActiveWindow(event->xclient.window);
-	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
-            {
-                RequestSource src = FromUnknown;
-                Time timestamp = CurrentTime;
-                Window active_window = None;
-                // make sure there aren't unknown values
-                if( event->xclient.data.l[0] >= FromUnknown
-                    && event->xclient.data.l[0] <= FromTool )
-                    {
-                    src = static_cast< RequestSource >( event->xclient.data.l[0] );
-                    timestamp = event->xclient.data.l[1];
-                    active_window = event->xclient.data.l[2];
-                    }
-		this2->changeActiveWindow( event->xclient.window, src, timestamp, active_window );
-            }
+            RequestSource src = FromUnknown;
+            Time timestamp = CurrentTime;
+            Window active_window = None;
+            // make sure there aren't unknown values
+            if( event->xclient.data.l[0] >= FromUnknown
+                && event->xclient.data.l[0] <= FromTool )
+                {
+                src = static_cast< RequestSource >( event->xclient.data.l[0] );
+                timestamp = event->xclient.data.l[1];
+                active_window = event->xclient.data.l[2];
+                }
+	    changeActiveWindow( event->xclient.window, src, timestamp, active_window );
 	} else if (event->xclient.message_type == net_wm_moveresize) {
 
 #ifdef    NETWMDEBUG
@@ -1979,8 +1928,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		    );
 #endif
 
-	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
-	        this2->moveResizeWindow(event->xclient.window,
+	    moveResizeWindow(event->xclient.window,
 		           event->xclient.data.l[0],
 		           event->xclient.data.l[1],
 		           event->xclient.data.l[2],
@@ -2001,44 +1949,36 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		    event->xclient.window);
 #endif
 
-	    if( NETRootInfo3* this3 = dynamic_cast< NETRootInfo3* >( this ))
-            {
-                RequestSource src = FromUnknown;
-                Time timestamp = CurrentTime;
-                // make sure there aren't unknown values
-                if( event->xclient.data.l[0] >= FromUnknown
-                    && event->xclient.data.l[0] <= FromTool )
-                    {
-                    src = static_cast< RequestSource >( event->xclient.data.l[0] );
-                    timestamp = event->xclient.data.l[3];
-                    }
-	        this3->restackWindow(event->xclient.window, src,
-                    event->xclient.data.l[1], event->xclient.data.l[2], timestamp);
-            }
-	    else if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
-	        this2->restackWindow(event->xclient.window,
-                    event->xclient.data.l[1], event->xclient.data.l[2]);
+            RequestSource src = FromUnknown;
+            Time timestamp = CurrentTime;
+            // make sure there aren't unknown values
+            if( event->xclient.data.l[0] >= FromUnknown
+                && event->xclient.data.l[0] <= FromTool )
+                {
+                src = static_cast< RequestSource >( event->xclient.data.l[0] );
+                timestamp = event->xclient.data.l[3];
+                }
+	    restackWindow(event->xclient.window, src,
+                event->xclient.data.l[1], event->xclient.data.l[2], timestamp);
 	} else if (event->xclient.message_type == wm_protocols
 	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_ping) {
 	    dirty = WMPing;
 
 #ifdef   NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo2::event: gotPing(0x%lx,%lu)\n",
+	    fprintf(stderr, "NETRootInfo::event: gotPing(0x%lx,%lu)\n",
 		event->xclient.window, event->xclient.data.l[1]);
 #endif
-	    if( NETRootInfo2* this2 = dynamic_cast< NETRootInfo2* >( this ))
-		this2->gotPing( event->xclient.data.l[2], event->xclient.data.l[1]);
+	    gotPing( event->xclient.data.l[2], event->xclient.data.l[1]);
 	} else if (event->xclient.message_type == wm_protocols
 	    && (Atom)event->xclient.data.l[ 0 ] == net_wm_take_activity) {
 	    dirty2 = WM2TakeActivity;
 
 #ifdef   NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo2::event: gotTakeActivity(0x%lx,%lu,0x%lx)\n",
+	    fprintf(stderr, "NETRootInfo::event: gotTakeActivity(0x%lx,%lu,0x%lx)\n",
 		event->xclient.window, event->xclient.data.l[1], event->xclient.data.l[3]);
 #endif
-	    if( NETRootInfo3* this3 = dynamic_cast< NETRootInfo3* >( this ))
-		this3->gotTakeActivity( event->xclient.data.l[2], event->xclient.data.l[1],
-                    event->xclient.data.l[3]);
+	    gotTakeActivity( event->xclient.data.l[2], event->xclient.data.l[1],
+                event->xclient.data.l[3]);
 	} else if (event->xclient.message_type == net_showing_desktop) {
 	    dirty2 = WM2ShowingDesktop;
 
@@ -2047,8 +1987,7 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		    event->xclient.data.l[0]);
 #endif
 
-	    if( NETRootInfo4* this4 = dynamic_cast< NETRootInfo4* >( this ))
-	        this4->changeShowingDesktop(event->xclient.data.l[0]);
+	    changeShowingDesktop(event->xclient.data.l[0]);
 	}
     }
 

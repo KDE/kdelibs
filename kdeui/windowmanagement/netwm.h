@@ -559,10 +559,21 @@ public:
        Sends the _NET_RESTACK_WINDOW request.
     **/
     void restackRequest(Window window, RequestSource source, Window above, int detail, Time timestamp);
+
     /**
-       @obsolete
-    **/
-    void restackRequest(Window window, Window above, int detail);
+      Sends a ping with the given timestamp to the window, using
+      the _NET_WM_PING protocol.
+    */
+    void sendPing( Window window, Time timestamp );
+
+    /**
+       Sends a take activity message with the given timestamp to the window, using
+       the _NET_WM_TAKE_ACTIVITY protocol (see the WM spec for details).
+       @param window the window to which the message should be sent
+       @param timestamp timestamp of the message
+       @param flags arbitrary flags
+    */
+    void takeActivity( Window window, Time timestamp, long flags );
 
     /**
        This function takes the passed XEvent and returns an OR'ed list of
@@ -670,17 +681,6 @@ protected:
     virtual void changeCurrentDesktop(int desktop) { Q_UNUSED(desktop); }
 
     /**
-       @deprecated Use NETRootInfo2::changeActiveWindow() instead.
-       A Window Manager should subclass NETRootInfo and reimplement this function
-       when it wants to know when a Client made a request to change the active
-       (focused) window. The changeActiveWindow() method in NETRootInfo2
-       should be used instead.
-
-       @param window the id of the window to activate
-    **/
-    virtual KDE_DEPRECATED void changeActiveWindow(Window window) { Q_UNUSED(window); }
-
-    /**
        A Window Manager should subclass NETRootInfo and reimplement this function
        when it wants to know when a Client made a request to close a window.
 
@@ -704,6 +704,70 @@ protected:
     virtual void moveResize(Window window, int x_root, int y_root,
     			    unsigned long direction) { Q_UNUSED(window); Q_UNUSED(x_root); Q_UNUSED(y_root); Q_UNUSED(direction); }
 
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to receive replies to the _NET_WM_PING protocol.
+       @param window the window from which the reply came
+       @param timestamp timestamp of the ping
+     */
+    virtual void gotPing( Window window, Time timestamp ) { Q_UNUSED(window); Q_UNUSED(timestamp); }
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to know when a Client made a request to change the active
+       (focused) window.
+
+       @param window the id of the window to activate
+       @param src the source from which the request came
+       @param timestamp the timestamp of the user action causing this request
+       @param active_window active window of the requesting application, if any
+    **/
+    virtual void changeActiveWindow(Window window,NET::RequestSource src,
+        Time timestamp, Window active_window ) { Q_UNUSED(window); Q_UNUSED(src); Q_UNUSED(timestamp); Q_UNUSED(active_window);}
+
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to know when a pager made a request to move/resize a window.
+       See _NET_MOVERESIZE_WINDOW for details.
+
+       @param window the id of the window to more/resize
+       @param flags Flags specifying the operation (see _NET_MOVERESIZE_WINDOW description)
+       @param x Requested X position for the window
+       @param y Requested Y position for the window
+       @param width Requested width for the window
+       @param height Requested height for the window
+    **/
+    virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { Q_UNUSED(window); Q_UNUSED(flags); Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(width); Q_UNUSED(height); }
+
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to know when a Client made a request to restack a window.
+       See _NET_RESTACK_WINDOW for details.
+
+       @param window the id of the window to restack
+       @param source the source of the request
+       @param above other window in the restack request
+       @param detail restack detail
+       @param timestamp the timestamp of the request
+    **/
+    virtual void restackWindow(Window window, RequestSource source,
+           Window above, int detail, Time timestamp) { Q_UNUSED(window); Q_UNUSED(source); Q_UNUSED(above); Q_UNUSED(detail); Q_UNUSED(timestamp); }
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to receive replies to the _NET_WM_TAKE_ACTIVITY protocol.
+       @param window the window from which the reply came
+       @param timestamp timestamp of the ping
+       @param flags flags passed in the original message
+     */
+    virtual void gotTakeActivity(Window window, Time timestamp, long flags ) { Q_UNUSED(window); Q_UNUSED(timestamp); Q_UNUSED(flags); }
+
+    /**
+       A Window Manager should subclass NETRootInfo and reimplement this function
+       when it wants to know when a pager made a request to change showing the desktop.
+       See _NET_SHOWING_DESKTOP for details.
+
+       @param showing whether to activate the showing desktop mode
+    **/
+    virtual void changeShowingDesktop(bool showing) { Q_UNUSED(showing); }
 
 private:
     void update( const unsigned long[] );
@@ -719,152 +783,6 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     NETRootInfoPrivate *p;
-    friend class NETRootInfo2;
-    friend class NETRootInfo3;
-};
-
-/**
- This class is an extension of the NETRootInfo class, and exists solely
- for binary compatibility reasons (adds new virtual methods). Simply
- use it instead of NETRootInfo and override also the added virtual methods.
-*/
-class KDEUI_EXPORT NETRootInfo2
-    : public NETRootInfo
-{
-public:
-    NETRootInfo2(Display *display, Window supportWindow, const char *wmName,
-		unsigned long properties[], int properties_size,
-                int screen = -1, bool doActivate = true);
-    NETRootInfo2(Display *display, const unsigned long properties[], int properties_size,
-                int screen = -1, bool doActivate = true);
-    /**
-      Sends a ping with the given timestamp to the window, using
-      the _NET_WM_PING protocol.
-    */
-    void sendPing( Window window, Time timestamp );
-protected:
-    friend class NETRootInfo;
-    /**
-       A Window Manager should subclass NETRootInfo2 and reimplement this function
-       when it wants to receive replies to the _NET_WM_PING protocol.
-       @param window the window from which the reply came
-       @param timestamp timestamp of the ping
-     */
-    virtual void gotPing( Window window, Time timestamp ) { Q_UNUSED(window); Q_UNUSED(timestamp); }
-    /**
-       A Window Manager should subclass NETRootInfo2 and reimplement this function
-       when it wants to know when a Client made a request to change the active
-       (focused) window.
-
-       @param window the id of the window to activate
-       @param src the source from which the request came
-       @param timestamp the timestamp of the user action causing this request
-       @param active_window active window of the requesting application, if any
-    **/
-    virtual void changeActiveWindow(Window window,NET::RequestSource src,
-        Time timestamp, Window active_window ) { Q_UNUSED(window); Q_UNUSED(src); Q_UNUSED(timestamp); Q_UNUSED(active_window);}
-    /**
-       A Window Manager should subclass NETRootInfo2 and reimplement this function
-       when it wants to know when a Client made a request to restack a window.
-       See _NET_RESTACK_WINDOW for details.
-
-       @param window the id of the window to restack
-       @param above other window in the restack request
-       @param detail restack detail
-    **/
-    virtual void restackWindow(Window window, Window above, int detail) { Q_UNUSED(window); Q_UNUSED(above); Q_UNUSED(detail); }
-
-    /**
-       A Window Manager should subclass NETRootInfo2 and reimplement this function
-       when it wants to know when a pager made a request to move/resize a window.
-       See _NET_MOVERESIZE_WINDOW for details.
-
-       @param window the id of the window to more/resize
-       @param flags Flags specifying the operation (see _NET_MOVERESIZE_WINDOW description)
-       @param x Requested X position for the window
-       @param y Requested Y position for the window
-       @param width Requested width for the window
-       @param height Requested height for the window
-    **/
-    virtual void moveResizeWindow(Window window, int flags, int x, int y, int width, int height) { Q_UNUSED(window); Q_UNUSED(flags); Q_UNUSED(x); Q_UNUSED(y); Q_UNUSED(width); Q_UNUSED(height); }
-
-// no private data, use NETRootInfoPrivate
-};
-
-/**
- This class is an extension of the NETRootInfo class, and exists solely
- for binary compatibility reasons (adds new virtual methods). Simply
- use it instead of NETRootInfo and override also the added virtual methods.
-*/
-class KDEUI_EXPORT NETRootInfo3
-    : public NETRootInfo2
-{
-public:
-    NETRootInfo3(Display *display, Window supportWindow, const char *wmName,
-		unsigned long properties[], int properties_size,
-                int screen = -1, bool doActivate = true);
-    NETRootInfo3(Display *display, const unsigned long properties[], int properties_size,
-                int screen = -1, bool doActivate = true);
-    /**
-       Sends a take activity message with the given timestamp to the window, using
-       the _NET_WM_TAKE_ACTIVITY protocol (see the WM spec for details).
-       @param window the window to which the message should be sent
-       @param timestamp timestamp of the message
-       @param flags arbitrary flags
-    */
-    void takeActivity( Window window, Time timestamp, long flags );
-protected:
-    friend class NETRootInfo;
-    /**
-       A Window Manager should subclass NETRootInfo3 and reimplement this function
-       when it wants to know when a Client made a request to restack a window.
-       See _NET_RESTACK_WINDOW for details.
-
-       @param window the id of the window to restack
-       @param source the source of the request
-       @param above other window in the restack request
-       @param detail restack detail
-       @param timestamp the timestamp of the request
-    **/
-    virtual void restackWindow(Window window, RequestSource source,
-           Window above, int detail, Time timestamp) { Q_UNUSED(window); Q_UNUSED(source); Q_UNUSED(above); Q_UNUSED(detail); Q_UNUSED(timestamp); }
-    /**
-       A Window Manager should subclass NETRootInfo3 and reimplement this function
-       when it wants to receive replies to the _NET_WM_TAKE_ACTIVITY protocol.
-       @param window the window from which the reply came
-       @param timestamp timestamp of the ping
-       @param flags flags passed in the original message
-     */
-    virtual void gotTakeActivity(Window window, Time timestamp, long flags ) { Q_UNUSED(window); Q_UNUSED(timestamp); Q_UNUSED(flags); }
-// no private data, use NETRootInfoPrivate
-};
-
-/**
- This class is an extension of the NETRootInfo class, and exists solely
- for binary compatibility reasons (adds new virtual methods). Simply
- use it instead of NETRootInfo and override also the added virtual methods.
-*/
-class KDEUI_EXPORT NETRootInfo4
-    : public NETRootInfo3
-{
-public:
-    NETRootInfo4(Display *display, Window supportWindow, const char *wmName,
-		unsigned long properties[], int properties_size,
-                int screen = -1, bool doActivate = true);
-    NETRootInfo4(Display *display, const unsigned long properties[], int properties_size,
-                int screen = -1, bool doActivate = true);
-
-protected:
-    friend class NETRootInfo;
-    /**
-       A Window Manager should subclass NETRootInfo2 and reimplement this function
-       when it wants to know when a pager made a request to change showing the desktop.
-       See _NET_SHOWING_DESKTOP for details.
-
-       @param showing whether to activate the showing desktop mode
-    **/
-    virtual void changeShowingDesktop(bool showing) { Q_UNUSED(showing); }
-// no private data, use NETRootInfoPrivate
 };
 
 /**
@@ -1340,7 +1258,6 @@ public:
        @return the value to be on all desktops
     **/
     static const int OnAllDesktops;
-
 
 protected:
     /**

@@ -55,11 +55,11 @@ static unsigned long desktop_properties[ 2 ] = {
 				     NET::KDESystemTrayWindows,
                                      NET::WM2ShowingDesktop };
 
-class KWinModulePrivate : public QWidget, public NETRootInfo4
+class KWinModulePrivate : public QWidget, public NETRootInfo
 {
 public:
     KWinModulePrivate(int _what)
-	: QWidget(0), NETRootInfo4( QX11Info::display(),
+	: QWidget(0), NETRootInfo( QX11Info::display(),
                                      _what >= KWinModule::INFO_WINDOWS ?
                                      windows_properties : desktop_properties,
                                      2,
