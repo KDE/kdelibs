@@ -147,7 +147,9 @@ void PublicService::publishAsync()
 		}
 	}
 	DNSServiceRef ref;
-	if (DNSServiceRegister(&ref,0,0,m_serviceName.toUtf8(),m_type.toAscii().constData(),domainToDNS(m_domain),NULL,
+	QString fullType=m_type;
+	Q_FOREACH(QString subtype, d->m_subtypes) fullType+=","+subtype;
+	if (DNSServiceRegister(&ref,0,0,m_serviceName.toUtf8(),fullType.toAscii().constData(),domainToDNS(m_domain),NULL,
 	    htons(m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
 	    reinterpret_cast<void*>(d)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);

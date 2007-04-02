@@ -27,6 +27,8 @@
 #include "avahi_serviceresolver_interface.h"
 #include "avahi-remoteservice_p.h"
 
+Q_DECLARE_METATYPE(QList<QByteArray>);
+
 namespace DNSSD
 {
 
@@ -52,6 +54,7 @@ void RemoteService::resolveAsync()
 {
 	if (d->m_running) return;
 	d->m_resolved = false;
+        registerTypes();
 	kDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	//FIXME: does Avahi needs IDN transformation for WAN domains?

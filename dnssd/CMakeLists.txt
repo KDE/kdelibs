@@ -8,18 +8,19 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 set(kdnssd_LIB_SRCS    servicebase.cpp )
 kde4_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc )
 
+set(HAVE_AVAHI 1)
 if (HAVE_AVAHI) 
   set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
    avahi-domainbrowser.cpp
    avahi-servicebrowser.cpp
    avahi-remoteservice.cpp
    avahi-publicservice.cpp
+   avahi_server_interface.cpp
+   avahi_serviceresolver_interface.cpp
+   avahi_entrygroup_interface.cpp
    )
-   qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.Server.xml avahi_server_interface )
    qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.DomainBrowser.xml avahi_domainbrowser_interface )
    qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceBrowser.xml avahi_servicebrowser_interface )
-   qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceResolver.xml avahi_serviceresolver_interface )
-   qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.EntryGroup.xml avahi_entrygroup_interface )
 else (HAVE_AVAHI)
     
 if (HAVE_DNSSD)
@@ -47,10 +48,6 @@ endif (HAVE_AVAHI)
 
 
 kde4_automoc(${kdnssd_LIB_SRCS})
-
-set( kdnssd_KCFG_SRCS settings.kcfgc )
-
-kde4_add_kcfg_files(kdnssd_LIB_SRCS ${kdnssd_KCFG_SRCS})
 
 kde4_add_library(kdnssd SHARED ${kdnssd_LIB_SRCS})
 

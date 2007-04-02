@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+
 #include <QtCore/QSet>
 #include "avahi_server_interface.h"
 #include "domainbrowser.h"
@@ -35,6 +36,7 @@ typedef enum {
     AVAHI_DOMAIN_BROWSER_MAX
 } AvahiDomainBrowserType;
 
+Q_DECLARE_METATYPE(QList<QByteArray>);
 
 namespace DNSSD
 {

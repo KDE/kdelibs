@@ -64,6 +64,8 @@ public:
 	@param port Port number. Set to 0 to "reserve" service name. 
 	@param domain Domain name. If left as QString:null, user configuration will be used. "local."
 		means local LAN
+	@param subtypes Optional list of subtypes. Each subtype name must have leading underscore. Example:
+	    service of type _ftp._tcp may have subtype _anon meaning that it is anonymous FTP server. 
 	 */
 	explicit PublicService(const QString& name=QString(),const QString& type=QString(),
 		      unsigned int port=0,const QString& domain=QString(), const QStringList& subtypes=QStringList());

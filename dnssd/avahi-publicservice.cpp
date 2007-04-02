@@ -26,15 +26,15 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <ksocketaddress.h>
-#include <unistd.h>
 #include "servicebrowser.h"
 #include "settings.h"
 #include "avahi_server_interface.h"
 #include "avahi_entrygroup_interface.h"
 #include "avahi-publicservice_p.h"
+#include "avahi_server_interface.h"
+
+Q_DECLARE_METATYPE(QList<QByteArray>);
+
 
 namespace DNSSD
 {
@@ -141,18 +141,22 @@ void PublicService::stop()
 }
 bool PublicServicePrivate::fillEntryGroup()
 {
+    registerTypes();
     if (!m_group) {
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	QDBusReply<QDBusObjectPath> rep=s.EntryGroupNew();
 	if (!rep.isValid()) return false;
 	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
     }
+	
     QMap<QString,QByteArray>::ConstIterator itEnd = m_parent->m_textData.end();
 //    for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
 //	s = avahi_string_list_add_pair(s, it.key().utf8(),it.data().utf8());
     //FIXME: domainToDNS needed?
     m_group->AddService(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type ,m_parent->m_domain ,
-	m_parent->m_hostName,m_parent->m_port,QByteArray());
+	m_parent->m_hostName,m_parent->m_port,QList<QByteArray>());
+    Q_FOREACH(QString subtype, m_subtypes) 
+	m_group->AddServiceSubtype(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type, m_parent->m_domain , subtype);
     return true;
 }
 

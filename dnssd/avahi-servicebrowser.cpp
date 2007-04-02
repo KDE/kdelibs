@@ -25,9 +25,12 @@
 #include "avahi-servicebrowser_p.h"
 #include <QHash>
 
+Q_DECLARE_METATYPE(QList<QByteArray>);
+
 namespace DNSSD
 {
 
+//FIXME: implement servicetypebrowser
 const QString ServiceBrowser::AllServices = "_services._dns-sd._udp";
 
 
@@ -55,7 +58,9 @@ void ServiceBrowser::startBrowse()
 {
 	if (d->m_running) return;
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
-	QDBusReply<QDBusObjectPath> rep=s.ServiceBrowserNew(-1, -1, d->m_type, d->m_domain,0);
+	QString fullType=d->m_type;
+	if (!d->m_subtype.isEmpty()) fullType=d->m_subtype+"._sub."+d->m_type;
+	QDBusReply<QDBusObjectPath> rep=s.ServiceBrowserNew(-1, -1, fullType, d->m_domain,0);
 	
 	if (!rep.isValid()) return;
 	d->m_running=true;
