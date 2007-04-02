@@ -383,6 +383,7 @@ install( FILES
   KRestrictedLine
   KRuler
   KRun
+  KShortcutsEditor
   KSMIMECrypto
   KSSL
   KSSLCertBox
