@@ -59,11 +59,12 @@ class KDEUI_EXPORT KToggleToolBarAction : public KToggleAction
     KToggleToolBarAction(const char* toolBarName, const QString& text, QObject *parent);
 
     /**
-     * Create a KToggleToolbarAction that manages the @param toolbar.
+     * Create a KToggleToolbarAction that manages the @param toolBar.
      * This can be either the name of a toolbar in an xml ui file,
      * or a toolbar programmatically created with that name.
      *
-     * @param The action's parent object.
+     * @param toolBar the toolbar to be managed
+     * @param parent The action's parent object.
      */
     KToggleToolBarAction(KToolBar *toolBar, const QString &text, QObject *parent);
 

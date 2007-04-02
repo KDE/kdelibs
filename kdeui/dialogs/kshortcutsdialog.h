@@ -272,7 +272,7 @@ public:
 	 * @p bSaveSettings if true, the settings will also be saved back to
 	 * the *uirc file which they were intially read from.
 	 *
-	 * @param coll the KActionCollection to configure
+	 * @param collection the KActionCollection to configure
 	 * @param allowLetterShortcuts set to KShortcutsEditor::LetterShortcutsDisallowed if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 * @param parent the parent widget to attach to

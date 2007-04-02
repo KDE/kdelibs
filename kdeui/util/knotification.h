@@ -449,10 +449,10 @@ public:
 	/**
 	 * @brief emit an event
 	 * 
-	 * This method crate the KNotification, assing every parametter, and fire the event.
+	 * This method creates the KNotification, setting every parameter, and fire the event.
 	 * You don't need to call sendEvent
 	 *
-	 * A popup may be showed, a sound may be played, depending the config.
+	 * A popup may be displayed or a sound may be played, depending the config.
 	 *
 	 * return a KNotification .  You may use that pointer to connect some signals or slot.
 	 * the pointer is automatically deleted when the event is closed.
@@ -460,14 +460,12 @@ public:
 	 * Make sure you use one of the CloseOnTimeOut or CloseWhenWidgetActivated, if not,
 	 * you have to close yourself the notification.
 	 *
-	 * @note the text is shown in a QLabel, you should make sure to escape the html is needed.
+	 * @note the text is shown in a QLabel, you should escape HTML, if needed.
 	 *
 	 * @param eventId is the name of the event
 	 * @param text is the text of the notification to show in the popup.
 	 * @param pixmap is a picture which may be shown in the popup.
 	 * @param widget is a widget where the notification reports to
-	 * @param actions is a list of action texts.
-	 * @param contexts is the lists of contexts, see ContextList
 	 * @param flags is a bitmask of NotificationFlag
          * @param componentData used to determine the location of the config file.  by default, kapp is used
 	 */

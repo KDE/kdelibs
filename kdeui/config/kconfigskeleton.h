@@ -212,7 +212,7 @@
   protected:
     /**
      * sets mIsImmutable to true if mKey in config is immutable
-     * @param config KConfig to check if mKey is immutable in
+     * @param group KConfigGroup to check if mKey is immutable in
      */
     void readImmutability(const KConfigGroup &group);
 

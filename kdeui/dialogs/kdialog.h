@@ -321,7 +321,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      * The initial size will be ignored if smaller than
      * the dialog's minimum size.
      *
-     * @param s Startup size.
+     * @param size Startup size.
      */
     void setInitialSize( const QSize &size );
 
@@ -331,7 +331,7 @@ class KDEUI_EXPORT KDialog : public QDialog
      *
      * This method should only be called right before show() or exec().
      *
-     * @param s  Size added to minimum size.
+     * @param size  Size added to minimum size.
      */
     void incrementInitialSize( const QSize &size );
 

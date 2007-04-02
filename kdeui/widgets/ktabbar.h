@@ -81,6 +81,8 @@ class KDEUI_EXPORT KTabBar: public QTabBar
     /**
      * Selects the tab which has a tab header at
      * given @param position.
+     *
+     * @param position the coordinates of the tab
      */
     int selectTab( const QPoint &position ) const;
 

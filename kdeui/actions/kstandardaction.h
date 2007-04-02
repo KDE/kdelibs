@@ -198,7 +198,6 @@ namespace KStandardAction
    * @param slot The SLOT to invoke when a URL is selected. The slot's
    * signature is slotURLSelected( const KUrl & ).
    * @param parent parent widget
-   * @param name name of widget
    */
   KDEUI_EXPORT KRecentFilesAction *openRecent(const QObject *recvr, const char *slot, QObject *parent);
 

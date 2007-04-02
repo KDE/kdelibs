@@ -55,11 +55,15 @@ namespace KStandardGuiItem
 
     /**
      * Returns the gui item for the given identifier @param id.
+     *
+     * @param id the identifier to search for
      */
     KDEUI_EXPORT KGuiItem guiItem( StandardItem id );
 
     /**
      * Returns the name of the gui item for the given identifier @param id.
+     *
+     * @param id the identifier to search for
      */
     KDEUI_EXPORT QString standardItem( StandardItem id );
 
