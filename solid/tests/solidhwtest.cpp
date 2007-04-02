@@ -37,7 +37,7 @@
     #error "FAKE_COMPUTER_XML not set. An XML file describing a computer is required for this test"
 #endif
 
-QTEST_KDEMAIN( SolidHwTest, NoGUI )
+QTEST_KDEMAIN_CORE( SolidHwTest )
 
 void SolidHwTest::initTestCase()
 {

@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 
-QTEST_KDEMAIN( KSpell2FilterTest, NoGUI )
+QTEST_KDEMAIN_CORE( KSpell2FilterTest )
 
 using namespace KSpell2;
 

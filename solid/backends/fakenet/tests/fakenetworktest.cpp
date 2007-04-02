@@ -24,7 +24,7 @@
 
 #include "fakenetworktest.h"
 
-QTEST_KDEMAIN( FakeNetworking_Test, NoGUI )
+QTEST_KDEMAIN_CORE( FakeNetworking_Test )
 
 void FakeNetworking_Test::testFakeNetworking()
 {

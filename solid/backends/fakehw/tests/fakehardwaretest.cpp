@@ -33,7 +33,7 @@
 #include "fakemanager.h"
 #include "fakedevice.h"
 
-QTEST_KDEMAIN( FakeHardwareTest, NoGUI )
+QTEST_KDEMAIN_CORE( FakeHardwareTest )
 
 void FakeHardwareTest::testFakeBackend()
 {

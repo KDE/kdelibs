@@ -26,7 +26,7 @@
 
 #include "fakebluetoothtest.h"
 
-QTEST_KDEMAIN(FakeBluetooth_Test, NoGUI)
+QTEST_KDEMAIN_CORE(FakeBluetooth_Test)
 
 void FakeBluetooth_Test::testFakeBluetooth()
 {

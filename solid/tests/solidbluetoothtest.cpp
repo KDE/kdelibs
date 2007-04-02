@@ -33,7 +33,7 @@
 #error "FAKE_BLUETOOTH_XML not set. An XML file describing a bluetooth context is required for this test"
 #endif
 
-QTEST_KDEMAIN(SolidBluetoothTest, NoGUI)
+QTEST_KDEMAIN_CORE(SolidBluetoothTest)
 
 void SolidBluetoothTest::initTestCase()
 {

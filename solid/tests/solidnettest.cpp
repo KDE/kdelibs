@@ -31,7 +31,7 @@
     #error "FAKE_NETWORKING_XML not set. An XML file describing a networking context is required for this test"
 #endif
 
-QTEST_KDEMAIN( SolidNetTest, NoGUI )
+QTEST_KDEMAIN_CORE( SolidNetTest )
 
 void SolidNetTest::initTestCase()
 {
