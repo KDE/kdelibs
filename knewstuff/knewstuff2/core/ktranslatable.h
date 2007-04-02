@@ -20,7 +20,7 @@
 #ifndef KTRANSLATABLE_H
 #define KTRANSLATABLE_H
 
-#include <knewstuff_export.h>
+#include <knewstuff2/knewstuff_export.h>
 
 #include <qstring.h>
 #include <qmap.h>

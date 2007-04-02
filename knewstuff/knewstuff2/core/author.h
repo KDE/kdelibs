@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_AUTHOR_H
 #define KNEWSTUFF2_AUTHOR_H
 
-#include <knewstuff_export.h>
+#include <knewstuff2/knewstuff_export.h>
 
 #include <qstring.h>
 

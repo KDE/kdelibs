@@ -1,6 +1,5 @@
-/*
-    This file is part of KNewStuff.
-    Copyright (c) 2002 Cornelius Schumacher <schumacher@kde.org>
+/*  This file is part of the KDE project
+    Copyright (C) 2007 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,23 +16,34 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KNEWSTUFF2_UI_ACTION_H
-#define KNEWSTUFF2_UI_ACTION_H
 
-#include <knewstuff2/knewstuff_export.h>
+#ifndef KNEWSTUFF_EXPORT_H
+#define KNEWSTUFF_EXPORT_H
 
-class QObject;
-class QWidget;
-class KAction;
-class KActionCollection;
+/* needed for KDE_EXPORT and KDE_IMPORT macros */
+#include <kdemacros.h>
 
-namespace KNS {
+/* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
+#if defined _WIN32 || defined _WIN64
 
-KNEWSTUFF_EXPORT KAction* standardAction(const QString& what,
-                        const QObject *recvr,
-                        const char *slot,
-                        KActionCollection* parent,
-                        const char *name = 0);
-}
+#ifndef KNEWSTUFF_EXPORT
+# if defined(MAKE_KNEWSTUFF2_LIB)
+   /* We are building this library */ 
+#  define KNEWSTUFF_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */ 
+#  define KNEWSTUFF_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#else /* UNIX */
+
+#define KNEWSTUFF_EXPORT KDE_EXPORT
+
+#endif
+
+# ifndef KNEWSTUFF_EXPORT_DEPRECATED
+#  define KNEWSTUFF_EXPORT_DEPRECATED KDE_DEPRECATED KNEWSTUFF_EXPORT
+# endif
 
 #endif

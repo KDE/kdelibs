@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF2_INSTALLATION_H
 #define KNEWSTUFF2_INSTALLATION_H
 
-#include <knewstuff_export.h>
+#include <knewstuff2/knewstuff_export.h>
 
 #include <qstring.h>
 

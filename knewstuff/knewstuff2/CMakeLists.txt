@@ -88,6 +88,7 @@ install(FILES
 
 install(FILES
   engine.h
+  knewstuff_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2
 )
 

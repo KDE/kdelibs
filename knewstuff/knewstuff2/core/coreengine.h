@@ -23,7 +23,7 @@
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>
 
-#include <knewstuff_export.h>
+#include <knewstuff2/knewstuff_export.h>
 
 #include <qobject.h>
 #include <qstring.h>

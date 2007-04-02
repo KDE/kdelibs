@@ -1,7 +1,7 @@
 #ifndef KNEWSTUFF2_DXS_DXS_H
 #define KNEWSTUFF2_DXS_DXS_H
 
-#include <knewstuff_export.h>
+#include <knewstuff2/knewstuff_export.h>
 #include <qobject.h>
 
 #include <kurl.h>
