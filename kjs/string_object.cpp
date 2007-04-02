@@ -31,7 +31,9 @@
 #include "regexp_object.h"
 #include <wtf/unicode/Unicode.h>
 
-using namespace KJS;
+using namespace WTF;
+
+namespace KJS {
 
 // ------------------------------ StringInstance ----------------------------
 
@@ -99,7 +101,7 @@ void StringInstance::getPropertyNames(ExecState* exec, PropertyNameArray& proper
 {
   int size = internalValue()->getString().size();
   for (int i = 0; i < size; i++)
-    propertyNames.add(Identifier(UString(i)));
+    propertyNames.add(Identifier(UString::from(i)));
   return JSObject::getPropertyNames(exec, propertyNames);
 }
 
@@ -160,7 +162,7 @@ bool StringPrototype::getOwnPropertySlot(ExecState *exec, const Identifier& prop
 
 // ------------------------------ StringProtoFunc ---------------------------
 
-StringProtoFunc::StringProtoFunc(ExecState *exec, int i, int len, const Identifier& name)
+StringProtoFunc::StringProtoFunc(ExecState* exec, int i, int len, const Identifier& name)
   : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name)
   , id(i)
 {
@@ -393,9 +395,9 @@ static JSValue *replace(ExecState *exec, const UString &source, JSValue *pattern
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20
-JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
 {
-  JSValue *result = NULL;
+  JSValue* result = NULL;
 
   // toString and valueOf are no generic function.
   if (id == ToString || id == ValueOf) {
@@ -669,7 +671,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     uint16_t* dataPtr = reinterpret_cast<uint16_t*>(u.rep()->data());
     uint16_t* destIfNeeded;
 
-    int len = WTF::Unicode::toLower(dataPtr, u.size(), destIfNeeded);
+    int len = Unicode::toLower(dataPtr, u.size(), destIfNeeded);
     if (len >= 0)
         result = jsString(UString(reinterpret_cast<UChar *>(destIfNeeded ? destIfNeeded : dataPtr), len));
     else
@@ -685,7 +687,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     uint16_t* dataPtr = reinterpret_cast<uint16_t*>(u.rep()->data());
     uint16_t* destIfNeeded;
 
-    int len = WTF::Unicode::toUpper(dataPtr, u.size(), destIfNeeded);
+    int len = Unicode::toUpper(dataPtr, u.size(), destIfNeeded);
     if (len >= 0)
         result = jsString(UString(reinterpret_cast<UChar *>(destIfNeeded ? destIfNeeded : dataPtr), len));
     else
@@ -695,7 +697,7 @@ JSValue *StringProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
     break;
   }
   case LocaleCompare:
-    return Number(localeCompare(s, a0->toString(exec)));
+    return jsNumber(localeCompare(s, a0->toString(exec)));
 #ifndef KJS_PURE_ECMA
   case Big:
     result = jsString("<big>" + s + "</big>");
@@ -793,7 +795,7 @@ StringObjectFuncImp::StringObjectFuncImp(ExecState*, FunctionPrototype* funcProt
   putDirect(lengthPropertyName, jsNumber(1), DontDelete|ReadOnly|DontEnum);
 }
 
-JSValue *StringObjectFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+JSValue *StringObjectFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, const List &args)
 {
   UString s;
   if (args.size()) {
@@ -810,4 +812,6 @@ JSValue *StringObjectFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisO
     s = "";
 
   return jsString(s);
+}
+
 }
