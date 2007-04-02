@@ -17,8 +17,8 @@
 
 */
 
-#ifndef PHONON_TRACKINTERFACE_H
-#define PHONON_TRACKINTERFACE_H
+#ifndef PHONON_ANGLEINTERFACE_H
+#define PHONON_ANGLEINTERFACE_H
 
 #include "phonon_export.h"
 #include <QObject>
@@ -26,30 +26,29 @@
 namespace Phonon
 {
 class AbstractMediaProducer;
-class TrackInterfacePrivate;
+class AngleInterfacePrivate;
 
-class PHONONCORE_EXPORT TrackInterface : public QObject
+class PHONONCORE_EXPORT AngleInterface : public QObject
 {
     Q_OBJECT
     public:
-        TrackInterface(AbstractMediaProducer *);
-        ~TrackInterface();
+        AngleInterface(AbstractMediaProducer *);
+        ~AngleInterface();
 
         bool isValid() const;
 
-        int availableTracks() const;
-        int currentTrack() const;
-        void setCurrentTrack(int trackNumber);
-
-        bool autoplayTracks() const;
-        void setAutoplayTracks(bool);
+        int availableAngles() const;
+        int currentAngle() const;
+        void setCurrentAngle(int angleNumber);
 
     Q_SIGNALS:
-        void availableTracksChanged(int availableTracks);
-        void trackChanged(int trackNumber);
+        void availableAnglesChanged(int availableAngles);
+        void angleChanged(int angleNumber);
 
     private:
-        TrackInterfacePrivate *const d;
+        AngleInterfacePrivate *const d;
 };
+
 } // namespace Phonon
-#endif // PHONON_TRACKINTERFACE_H
+
+#endif // PHONON_ANGLEINTERFACE_H

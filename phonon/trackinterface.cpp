@@ -105,4 +105,5 @@ void TrackInterface::setAutoplayTracks(bool b)
 }
 } // namespace Phonon
 
+#include "trackinterface.moc"
 // vim: sw=4 sts=4 et tw=100

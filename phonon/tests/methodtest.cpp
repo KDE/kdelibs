@@ -65,11 +65,17 @@ void MethodTest::checkByteStreamMethods_data() { addColumns();
 #include "methods/abstractmediaproducer.cpp"
 #include "methods/bytestream.cpp"
 #include "methods/trackinterface.cpp"
+#include "methods/chapterinterface.cpp"
+#include "methods/angleinterface.cpp"
+#include "methods/navigationinterface.cpp"
 }
 void MethodTest::checkMediaObjectMethods_data() { addColumns();
 #include "methods/abstractmediaproducer.cpp"
 #include "methods/mediaobject.cpp"
 #include "methods/trackinterface.cpp"
+#include "methods/chapterinterface.cpp"
+#include "methods/angleinterface.cpp"
+#include "methods/navigationinterface.cpp"
 }
 void MethodTest::checkMediaQueueMethods_data() { addColumns();
 #include "methods/mediaqueue.cpp"

@@ -17,39 +17,28 @@
 
 */
 
-#ifndef PHONON_TRACKINTERFACE_H
-#define PHONON_TRACKINTERFACE_H
+#ifndef PHONON_NAVIGATIONINTERFACE_H
+#define PHONON_NAVIGATIONINTERFACE_H
 
-#include "phonon_export.h"
 #include <QObject>
 
 namespace Phonon
 {
+class NavigationInterfacePrivate;
 class AbstractMediaProducer;
-class TrackInterfacePrivate;
 
-class PHONONCORE_EXPORT TrackInterface : public QObject
+class NavigationInterface : public QObject
 {
     Q_OBJECT
     public:
-        TrackInterface(AbstractMediaProducer *);
-        ~TrackInterface();
+        NavigationInterface(AbstractMediaProducer *parent);
+        ~NavigationInterface();
 
         bool isValid() const;
 
-        int availableTracks() const;
-        int currentTrack() const;
-        void setCurrentTrack(int trackNumber);
-
-        bool autoplayTracks() const;
-        void setAutoplayTracks(bool);
-
-    Q_SIGNALS:
-        void availableTracksChanged(int availableTracks);
-        void trackChanged(int trackNumber);
-
     private:
-        TrackInterfacePrivate *const d;
+        NavigationInterfacePrivate *const d;
 };
+
 } // namespace Phonon
-#endif // PHONON_TRACKINTERFACE_H
+#endif // PHONON_NAVIGATIONINTERFACE_H

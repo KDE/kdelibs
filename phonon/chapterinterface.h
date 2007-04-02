@@ -21,21 +21,32 @@
 #define PHONON_CHAPTERINTERFACE_H
 
 #include "phonon_export.h"
-#include <ksharedptr.h>
+#include <QObject>
 
 namespace Phonon
 {
 class AbstractMediaProducer;
 class ChapterInterfacePrivate;
-class PHONONCORE_EXPORT ChapterInterface
+
+class PHONONCORE_EXPORT ChapterInterface : public QObject
 {
-    friend class AbstractMediaProducer;
+    Q_OBJECT
     public:
-        ChapterInterface();
-        ~ChapterInterface();
-    private:
         ChapterInterface(AbstractMediaProducer *);
-//        KSharedPtr<ChapterInterfacePrivate> d;
+        ~ChapterInterface();
+
+        bool isValid() const;
+
+        int availableChapters() const;
+        int currentChapter() const;
+        void setCurrentChapter(int chapterNumber);
+
+    Q_SIGNALS:
+        void availableChaptersChanged(int availableChapters);
+        void chapterChanged(int chapterNumber);
+
+    private:
+        ChapterInterfacePrivate *const d;
 };
 
 } // namespace Phonon

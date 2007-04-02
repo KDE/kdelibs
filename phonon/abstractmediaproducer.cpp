@@ -35,6 +35,8 @@
 #include <QStringList>
 
 #include "frontendinterface_p.h"
+#include "navigationinterface.h"
+#include "angleinterface.h"
 
 #define PHONON_CLASSNAME AbstractMediaProducer
 #define PHONON_INTERFACENAME MediaProducerInterface
@@ -236,6 +238,30 @@ bool AbstractMediaProducer::hasInterface<ChapterInterface>() const
     if (d->backendObject) {
         return qobject_cast<AddonInterface *>(d->backendObject)
             ->hasInterface(AddonInterface::ChapterInterface);
+    }
+    return false;
+}
+
+template<>
+PHONONCORE_EXPORT
+bool AbstractMediaProducer::hasInterface<NavigationInterface>() const
+{
+    K_D(const AbstractMediaProducer);
+    if (d->backendObject) {
+        return qobject_cast<AddonInterface *>(d->backendObject)
+            ->hasInterface(AddonInterface::NavigationInterface);
+    }
+    return false;
+}
+
+template<>
+PHONONCORE_EXPORT
+bool AbstractMediaProducer::hasInterface<AngleInterface>() const
+{
+    K_D(const AbstractMediaProducer);
+    if (d->backendObject) {
+        return qobject_cast<AddonInterface *>(d->backendObject)
+            ->hasInterface(AddonInterface::AngleInterface);
     }
     return false;
 }

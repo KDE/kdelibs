@@ -96,6 +96,10 @@ namespace Fake
             // AddonInterface:
             void trackChanged(int);
             void availableTracksChanged(int);
+            void chapterChanged(int);
+            void availableChaptersChanged(int);
+            void angleChanged(int);
+            void availableAnglesChanged(int);
 
 		protected:
 			void fillBuffer( QVector<float>* buffer );

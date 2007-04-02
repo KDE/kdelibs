@@ -38,14 +38,14 @@ class PHONONCORE_EXPORT AddonInterface
         virtual ~AddonInterface() {}
 
         enum Interface {
-            MenuInterface    = 1,
-            ChapterInterface = 2,
-            AngleInterface   = 3,
-            TrackInterface   = 4
+            NavigationInterface = 1,
+            ChapterInterface    = 2,
+            AngleInterface      = 3,
+            TrackInterface      = 4
         };
 
-        enum MenuCommand {
-            Menu1Button = 0x0001
+        enum NavigationCommand {
+            Menu1Button
         };
         enum ChapterCommand {
             availableChapters,
