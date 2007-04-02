@@ -2,7 +2,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
-#include <QApplication>
+#include <QCoreApplication>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
    //KCmdLineArgs::init(argc, argv, &about);
    KComponentData cData(&about);
 
-   QApplication a(argc, argv);
+   QCoreApplication a(argc, argv);
 
 //  showMem("After QApplication constructor");
 

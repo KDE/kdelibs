@@ -39,7 +39,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
  * QTEST_KDEMAIN( TestClass, GUI ).
  *
  * \param TestObject The class you use for testing.
- * \param flags one of KDEMainFlag
+ * \param flags one of KDEMainFlag. This is passed to the QApplication constructor.
  *
  * \see KDEMainFlag
  * \see QTestLib
@@ -51,8 +51,33 @@ int main(int argc, char *argv[]) \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
     KAboutData aboutData( "qttest", "qttest", "version" );  \
     KDEMainFlags mainFlags = flags;                         \
-    QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
     KComponentData cData(&aboutData); \
+    QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
+    app.setApplicationName( "qttest" ); \
+    TestObject tc; \
+    return QTest::qExec( &tc, argc, argv ); \
+}
+
+/**
+ * \short KDE Replacement for QTEST_MAIN from QTestLib, for non-gui code.
+ *
+ * This macro should be used for classes that need a KComponentData.
+ * So instead of writing QTEST_MAIN( TestClass ) you write
+ * QTEST_KDEMAIN_CORE( TestClass ).
+ *
+ * \param TestObject The class you use for testing.
+ *
+ * \see KDEMainFlag
+ * \see QTestLib
+ */
+#define QTEST_KDEMAIN_CORE(TestObject) \
+int main(int argc, char *argv[]) \
+{ \
+    setenv("LC_ALL", "C", 1); \
+    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
+    KAboutData aboutData( "qttest", "qttest", "version" );  \
+    KComponentData cData(&aboutData); \
+    QCoreApplication app( argc, argv ); \
     app.setApplicationName( "qttest" ); \
     TestObject tc; \
     return QTest::qExec( &tc, argc, argv ); \

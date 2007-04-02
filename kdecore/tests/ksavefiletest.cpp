@@ -33,7 +33,7 @@
 #include <qtest_kde.h>
 #include "ksavefiletest.h"
 
-QTEST_KDEMAIN( KSaveFileTest, NoGUI )
+QTEST_KDEMAIN_CORE( KSaveFileTest )
 
 QString tmp(QDir::tempPath() + '/');
 

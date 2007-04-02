@@ -25,7 +25,7 @@
 #include <kde_file.h>
 #include <sys/stat.h>
 
-QTEST_KDEMAIN( KMountPointTest, NoGUI )
+QTEST_KDEMAIN_CORE( KMountPointTest )
 
 void KMountPointTest::initTestCase()
 {

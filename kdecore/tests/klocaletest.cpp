@@ -207,4 +207,4 @@ KLocaleTest::bug95511()
 	QVERIFY(ok);
 }
 
-QTEST_KDEMAIN(KLocaleTest, NoGUI)
+QTEST_KDEMAIN_CORE(KLocaleTest)

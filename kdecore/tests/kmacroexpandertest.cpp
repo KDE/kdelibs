@@ -180,4 +180,4 @@ KMacroExpanderTest::expandMacrosSubClass()
 	QCOMPARE(s, QLatin1String("subst expanded but not %not equ %"));
 }
 
-QTEST_KDEMAIN(KMacroExpanderTest, NoGUI)
+QTEST_KDEMAIN_CORE(KMacroExpanderTest)

@@ -1,5 +1,5 @@
 #include <kcmdlineargs.h>
-#include <QApplication>
+#include <QCoreApplication>
 #include <kurl.h>
 
 #include <stdio.h>
@@ -34,7 +34,7 @@ main(int argc, char *argv[])
    // MyWidget::addCmdLineOptions();
 
    //KApplication app( false );
-   QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
+   QCoreApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv() );
 
    // Get application specific arguments
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

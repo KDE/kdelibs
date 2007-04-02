@@ -7,7 +7,7 @@
 #include "kcalendartest.moc"
 #include "klocale.h"
 
-QTEST_KDEMAIN(KCalendarTest, NoGUI)
+QTEST_KDEMAIN_CORE(KCalendarTest)
 
 void KCalendarTest::listTypes()
 {
@@ -27,15 +27,15 @@ void KCalendarTest::testGregorian()
     QCOMPARE( calendar->year(testDate), 2005 );
     QCOMPARE( calendar->yearString(testDate, true), QString("05") );
     QCOMPARE( calendar->yearString(testDate, false), QString("2005") );
-    // TODO: int   yearStringToInteger (const QString &sNum, int &iLength) const 
+    // TODO: int   yearStringToInteger (const QString &sNum, int &iLength) const
     QCOMPARE( calendar->month(testDate), 9 );
     QCOMPARE( calendar->monthString(testDate, true), QString("9") );
     QCOMPARE( calendar->monthString(testDate, false), QString("09") );
-    // TODO: int   monthStringToInteger (const QString &sNum, int &iLength) const 
+    // TODO: int   monthStringToInteger (const QString &sNum, int &iLength) const
     QCOMPARE( calendar->day(testDate), 10 );
     QCOMPARE( calendar->dayString(testDate, true), QString("10") );
     QCOMPARE( calendar->dayString(testDate, false), QString("10") );
-    //TODO:  int   dayStringToInteger (const QString &sNum, int &iLength) const 
+    //TODO:  int   dayStringToInteger (const QString &sNum, int &iLength) const
     QCOMPARE( calendar->monthsInYear(testDate), 12 );
     QCOMPARE( calendar->daysInYear(testDate), 365 );
     QCOMPARE( calendar->daysInMonth(testDate), 30 );
@@ -105,15 +105,15 @@ void KCalendarTest::testHijri()
     QCOMPARE( calendar->year(testDate), 1426 );
     QCOMPARE( calendar->yearString(testDate, true), QString("26") );
     QCOMPARE( calendar->yearString(testDate, false), QString("1426") );
-    // TODO: int   yearStringToInteger (const QString &sNum, int &iLength) const 
+    // TODO: int   yearStringToInteger (const QString &sNum, int &iLength) const
     QCOMPARE( calendar->month(testDate), 8 );
     QCOMPARE( calendar->monthString(testDate, true), QString("8") );
     QCOMPARE( calendar->monthString(testDate, false), QString("08") );
-    // TODO: int   monthStringToInteger (const QString &sNum, int &iLength) const 
+    // TODO: int   monthStringToInteger (const QString &sNum, int &iLength) const
     QCOMPARE( calendar->day(testDate), 6 );
     QCOMPARE( calendar->dayString(testDate, true), QString("6") );
     QCOMPARE( calendar->dayString(testDate, false), QString("06") );
-    //TODO:  int   dayStringToInteger (const QString &sNum, int &iLength) const 
+    //TODO:  int   dayStringToInteger (const QString &sNum, int &iLength) const
     QCOMPARE( calendar->monthsInYear(testDate), 12 );
     QCOMPARE( calendar->daysInYear(testDate), 355 );
     QCOMPARE( calendar->daysInMonth(testDate), 29 );

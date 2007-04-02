@@ -2,7 +2,7 @@
 #include "kstringhandlertest.h"
 #include "kstringhandlertest.moc"
 
-QTEST_KDEMAIN(KStringHandlerTest, NoGUI)
+QTEST_KDEMAIN_CORE(KStringHandlerTest)
 
 #include "kstringhandler.h"
 #include <QString>

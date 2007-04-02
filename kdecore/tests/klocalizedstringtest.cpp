@@ -135,4 +135,4 @@ void KLocalizedStringTest::miscMethods ()
     QVERIFY(k.isEmpty());
 }
 
-QTEST_KDEMAIN(KLocalizedStringTest, NoGUI)
+QTEST_KDEMAIN_CORE(KLocalizedStringTest)

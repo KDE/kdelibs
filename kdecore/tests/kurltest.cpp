@@ -22,7 +22,7 @@
 #include "kurltest.h"
 #include "kurltest.moc"
 
-QTEST_KDEMAIN( KUrlTest, NoGUI )
+QTEST_KDEMAIN_CORE( KUrlTest )
 
 #include <config.h>
 #include <kcmdlineargs.h>

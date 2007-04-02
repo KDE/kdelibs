@@ -53,7 +53,7 @@ void KServiceTest::initTestCase()
     }
 }
 
-QTEST_KDEMAIN( KServiceTest, NoGUI )
+QTEST_KDEMAIN_CORE( KServiceTest )
 
 void KServiceTest::testByName()
 {

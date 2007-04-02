@@ -20,7 +20,7 @@
 #include "klibloadertest.h"
 #include "klibloadertest.moc"
 
-QTEST_KDEMAIN( KLibLoaderTest, NoGUI )
+QTEST_KDEMAIN_CORE( KLibLoaderTest )
 
 #include <klibloader.h>
 #include <kstandarddirs.h>

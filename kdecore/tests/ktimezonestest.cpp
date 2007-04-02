@@ -24,7 +24,7 @@
 #include "ktimezonestest.moc"
 
 
-QTEST_KDEMAIN(KTimeZonesTest, NoGUI)
+QTEST_KDEMAIN_CORE(KTimeZonesTest)
 
 
 ///////////////////

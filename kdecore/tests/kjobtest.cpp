@@ -23,7 +23,7 @@
 #include <qtimer.h>
 #include <qsignalspy.h>
 
-QTEST_KDEMAIN( KJobTest, NoGUI )
+QTEST_KDEMAIN_CORE( KJobTest )
 
 
 KJobTest::KJobTest()

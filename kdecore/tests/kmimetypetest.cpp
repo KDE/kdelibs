@@ -47,7 +47,7 @@ static void checkIcon( const KUrl& url, const QString& expectedIcon )
     QCOMPARE( icon, expectedIcon );
 }
 
-QTEST_KDEMAIN( KMimeTypeTest, NoGUI )
+QTEST_KDEMAIN_CORE( KMimeTypeTest )
 
 void KMimeTypeTest::testByName()
 {

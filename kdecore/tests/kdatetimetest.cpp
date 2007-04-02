@@ -28,7 +28,7 @@
 
 //TODO: test new methods
 
-QTEST_KDEMAIN(KDateTimeTest, NoGUI)
+QTEST_KDEMAIN_CORE(KDateTimeTest)
 
 KDE_IMPORT extern int KDateTime_utcCacheHit;
 KDE_IMPORT extern int KDateTime_zoneCacheHit;

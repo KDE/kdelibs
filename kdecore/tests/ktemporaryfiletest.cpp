@@ -14,7 +14,7 @@ This file has been placed in the Public Domain.
 #include "ktemporaryfile.h"
 #include "ktemporaryfiletest.moc"
 
-QTEST_KDEMAIN( KTemporaryFileTest, NoGUI )
+QTEST_KDEMAIN_CORE( KTemporaryFileTest )
 
 /*
 Notes on these tests:
@@ -73,7 +73,7 @@ void KTemporaryFileTest::testKTemporaryFile()
         QVERIFY(file.fileName().endsWith("eggs"));
         QVERIFY(QFile::exists(file.fileName()));
     }
-    
+
     //TODO: How to test outside of tmp when we can't be sure what
     //directories we have write access to?
 }

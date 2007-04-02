@@ -64,10 +64,10 @@ void KTempDirTest::testCreateSubDir()
 	QString dName = dir->name();
 	delete dir;
 	d.refresh();
-	
+
 	QVERIFY(!QDir(dName).exists());
 	QVERIFY(!d.exists(QString("123")));
 	QVERIFY(!d.exists(QString("456")));
 }
 
-QTEST_KDEMAIN(KTempDirTest, 0)
+QTEST_KDEMAIN_CORE(KTempDirTest)

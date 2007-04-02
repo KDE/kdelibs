@@ -1,4 +1,4 @@
-/*  
+/*
     Copyright (c) 2006 Volker Krause <volker.krause@rwth-aachen.de>
 
     This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
 
 #include <kascii.h>
 
-QTEST_KDEMAIN( KAsciiTest, NoGUI )
+QTEST_KDEMAIN_CORE( KAsciiTest )
 
 void KAsciiTest::testkasciistricmp()
 {

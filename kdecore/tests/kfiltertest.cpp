@@ -29,7 +29,7 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-QTEST_KDEMAIN(KFilterTest, NoGUI)
+QTEST_KDEMAIN_CORE(KFilterTest)
 
 void KFilterTest::initTestCase()
 {

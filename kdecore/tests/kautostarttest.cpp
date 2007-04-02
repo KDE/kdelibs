@@ -26,7 +26,7 @@
 
 #include <QFile>
 
-QTEST_KDEMAIN( KAutostartTest, NoGUI )
+QTEST_KDEMAIN_CORE( KAutostartTest )
 
 #include <kautostart.h>
 

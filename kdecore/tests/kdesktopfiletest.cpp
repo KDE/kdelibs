@@ -22,7 +22,7 @@
 
 #include <qtest_kde.h>
 
-QTEST_KDEMAIN( KDesktopFileTest, NoGUI )
+QTEST_KDEMAIN_CORE( KDesktopFileTest )
 
 void KDesktopFileTest::testRead()
 {

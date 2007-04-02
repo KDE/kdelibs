@@ -113,4 +113,4 @@ KShellTest::abortOnMeta()
 	QVERIFY(err1 == err2);
 }
 
-QTEST_KDEMAIN(KShellTest, 0)
+QTEST_KDEMAIN_CORE(KShellTest)

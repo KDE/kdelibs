@@ -13,7 +13,7 @@
 #include <string.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include <QApplication>
+#include <QCoreApplication>
 
 #include <signal.h>
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
  KComponentData cData(&about);
  //KCmdLineArgs::init(argc, argv, &about);
  //KApplication app;
- QApplication app(argc, argv);
+ QCoreApplication app(argc, argv);
 
  printf("Welcome to the K3Process Demo Application!\n");
 

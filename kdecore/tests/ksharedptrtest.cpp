@@ -28,7 +28,7 @@
 
 #include <qtest_kde.h>
 
-QTEST_KDEMAIN( KSharedPtrTest, NoGUI )
+QTEST_KDEMAIN_CORE( KSharedPtrTest )
 
 class SharedString : public KShared
 {

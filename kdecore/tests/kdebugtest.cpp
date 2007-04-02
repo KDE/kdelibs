@@ -6,13 +6,8 @@
 #include <qpen.h>
 #include <qvariant.h>
 
-class TestWidget : public QWidget
+void testKDebug()
 {
-
-public:
-  TestWidget(QWidget* parent)
-    : QWidget(parent)
-  {
     kDebug().form("mytest %s", "hello") << endl;
     QString test = "%20C this is a string";
     kDebug(150) << test << endl;
@@ -46,10 +41,6 @@ public:
     QRect r(9,12,58,234);
     kDebug() << r << endl;
 
-    QRegion reg(r);
-    reg += QRect(1,60,200,59);
-    kDebug() << reg << endl;
-
     QStringList sl;
     sl << "hi" << "this" << "list" << "is" << "short";
     kDebug() << sl << endl;
@@ -64,8 +55,6 @@ public:
 
     QVariant v( 0.12345 );
     kDebug() << "Variant: " << v << endl;
-    v = QPen( Qt::red );
-    kDebug() << "Variant: " << v << endl;
 
     QByteArray data;
     data.resize( 6 );
@@ -79,20 +68,11 @@ public:
     data.resize( 80 );
     data.fill( 42 );
     kDebug() << data << endl;
-  }
-  void resizeEvent(QResizeEvent*)
-  {
-    kDebug() << this << endl;
-  }
-};
+}
 
-int main(int argc, char** argv)
+int main(int, char** )
 {
-  QApplication app(argc, argv);
-  TestWidget widget(0);
-  widget.setGeometry(45, 54, 120, 80);
-  widget.show();
-  app.exec();
-  return 0;
+    testKDebug();
+    return 0;
 }
 
