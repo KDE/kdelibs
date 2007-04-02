@@ -1222,7 +1222,7 @@ void RenderStyle::setCounterIncrement(CSSValueListImpl *l)
 
 static QString describeFont( const QFont &f)
 {
-    QString res = "'" + f.family() + "' ";
+    QString res = '\'' + f.family() + "' ";
 
     if ( f.pointSize() > 0)
         res += QString::number( f.pointSize() ) + "pt";

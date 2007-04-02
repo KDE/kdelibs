@@ -1509,7 +1509,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             langAttr = langAttr.toLower();
             langSel = langSel.toLower();
 //             kDebug(6080) << ":lang " << langAttr << "=" << langSel << "?" << endl;
-            return (langAttr == langSel || langAttr.startsWith(langSel+"-"));
+            return (langAttr == langSel || langAttr.startsWith(langSel+'-'));
         }
         case CSSSelector::PseudoNot: {
             // check the simple selector

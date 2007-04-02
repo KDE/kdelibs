@@ -404,5 +404,5 @@ QString KXEventUtil::getX11EventInfo( XEvent* e )
             break;
     }
 
-    return s + " " + anyInfo + " " + info;
+    return s + ' ' + anyInfo + ' ' + info;
 }
