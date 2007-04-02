@@ -1623,6 +1623,10 @@ in the drop/paste side.</li>
 <li>This class is removed due to its inflexiblity, use cyrus-sasl or the upcoming QCA SASL implementation</li>
 </ul>
 
+<h4>KDirSelectDialog</h4>
+<ul>
+<li>KDirSelectDialog moved to libkfile. If you were only using the static method selectDirectory, you can use KFileDialog::getExistingDirectory (for local files, i.e. if the second argument was true), or KFileDialog::getExistingDirectoryUrl</li>
+</ul>
 
 <h4>KFileDialog,KDirselectDialog,KUrlRequesterDlg,KCustomMenuEditor,KUrlBarItemDialog</h4>
 <ul>
