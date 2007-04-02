@@ -47,11 +47,6 @@
 #include <QTime>
 #include <QTimer>
 
-// IDN
-#ifdef HAVE_IDNA_H
-# include <idna.h>
-#endif
-
 // KDE
 #include <klocale.h>
 
@@ -273,10 +268,6 @@ void KResolverResults::virtual_hook( int, void* )
 
 ///////////////////////
 // class KResolver
-
-typedef QSet<QString> QStringSet;
-QStringSet *KResolver::idnDomains;
-
 
 // default constructor
 KResolver::KResolver(QObject *parent)
@@ -1012,57 +1003,23 @@ QString KResolver::localHostName()
   return domainToUnicode(name);
 }
 
-// forward declaration
-static QStringList splitLabels(const QString& unicodeDomain);
-static QByteArray ToASCII(const QString& label);
-static QString ToUnicode(const QString& label);
-
-static QStringSet *KResolver_initIdnDomains()
+static void KResolver_initIdnDomains()
 {
-  const char *kde_use_idn = getenv("KDE_USE_IDN");
-  if (!kde_use_idn)
-     kde_use_idn = "ac:at:br:cat:ch:cl:cn:de:dk:fi:gr:hu:info:io:is:jp:kr:li:lt:museum:org:no:se:sh:th:tm:tw:vn";
-  return new QStringSet(QString::fromLatin1(kde_use_idn).toLower().split(':').toSet());
+  static bool init = false;
+  if (!init)
+    {
+      const char *kde_use_idn = getenv("KDE_USE_IDN");
+      if (kde_use_idn)
+        QUrl::setIdnWhitelist(QString::fromLatin1(kde_use_idn).toLower().split(':'));
+      init = true;
+    }
 }
 
 // implement the ToAscii function, as described by IDN documents
 QByteArray KResolver::domainToAscii(const QString& unicodeDomain)
 {
-  if (!idnDomains)
-    idnDomains = KResolver_initIdnDomains();
-
-  QByteArray retval;
-  // RFC 3490, section 4 describes the operation:
-  // 1) this is a query, so don't allow unassigned
-
-  // 2) split the domain into individual labels, without
-  // separators.
-  QStringList input = splitLabels(unicodeDomain);
-
-  // Do we allow IDN names for this TLD?
-  const QString& tld = input.at(input.count() - 1);
-  if (input.count() && !idnDomains->contains(tld.toLower()))
-    return input.join(".").toLower().toLatin1(); // No IDN allowed for this TLD
-
-  // 3) decide whether to enforce the STD3 rules for chars < 0x7F
-  // we don't enforce
-
-  // 4) for each label, apply ToASCII
-  QStringList::Iterator it = input.begin();
-  const QStringList::Iterator end = input.end();
-  for ( ; it != end; ++it)
-    {
-      QByteArray cs = ToASCII(*it);
-      if (cs.isNull())
-	return QByteArray();	// error!
-
-      // no, all is Ok.
-      if (!retval.isEmpty())
-	retval += '.';
-      retval += cs;
-    }
-
-  return retval;
+  KResolver_initIdnDomains();
+  return QUrl::toAce(unicodeDomain);
 }
 
 QString KResolver::domainToUnicode(const QByteArray& asciiDomain)
@@ -1075,41 +1032,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
 {
   if (asciiDomain.isEmpty())
     return asciiDomain;
-  if (!idnDomains)
-    idnDomains = KResolver_initIdnDomains();
-
-  QString retval;
-
-  // draft-idn-idna-14.txt, section 4 describes the operation:
-  // 1) this is a query, so don't allow unassigned
-  //   besides, input is ASCII
-
-  // 2) split the domain into individual labels, without
-  // separators.
-  QStringList input = splitLabels(asciiDomain);
-
-  // Do we allow IDN names for this TLD?
-  const QString& tld = input.at(input.count() - 1);
-  if (input.count() && !idnDomains->contains(tld.toLower()))
-    return asciiDomain.toLower(); // No TLDs allowed
-
-  // 3) decide whether to enforce the STD3 rules for chars < 0x7F
-  // we don't enforce
-
-  // 4) for each label, apply ToUnicode
-  QStringList::Iterator it;
-  const QStringList::Iterator end = input.end();
-  for (it = input.begin(); it != end; ++it)
-    {
-      QString label = ToUnicode(*it).toLower();
-
-      // ToUnicode can't fail
-      if (!retval.isEmpty())
-	retval += '.';
-      retval += label;
-    }
-
-  return retval;
+  KResolver_initIdnDomains();
+  return QUrl::fromAce(asciiDomain.toLatin1());
 }
 
 QString KResolver::normalizeDomain(const QString& domain)
@@ -1128,118 +1052,5 @@ void KResolver::virtual_hook( int, void* )
 //                Internationalized Domain Names (IDN
 //  RFC 3492 - Punycode: A Bootstring encoding of Unicode
 //          for Internationalized Domain Names in Applications (IDNA)
-
-static QStringList splitLabels(const QString& unicodeDomain)
-{
-  // From RFC 3490 section 3.1:
-  // "Whenever dots are used as label separators, the following characters
-  // MUST be recognized as dots: U+002E (full stop), U+3002 (ideographic full
-  // stop), U+FF0E (fullwidth full stop), U+FF61 (halfwidth ideographic full
-  // stop)."
-  static const unsigned int separators[] = { 0x002E, 0x3002, 0xFF0E, 0xFF61 };
-
-  QStringList lst;
-  int start = 0;
-  int i;
-  for (i = 0; i < unicodeDomain.length(); i++)
-    {
-      unsigned int c = unicodeDomain[i].unicode();
-
-      if (c == separators[0] ||
-	  c == separators[1] ||
-	  c == separators[2] ||
-	  c == separators[3])
-	{
-	  // found a separator!
-	  lst << unicodeDomain.mid(start, i - start);
-	  start = i + 1;
-	}
-    }
-  if ((long)i >= start)
-    // there is still one left
-    lst << unicodeDomain.mid(start, i - start);
-
-  return lst;
-}
-
-static QByteArray ToASCII(const QString& label)
-{
-#ifdef HAVE_IDNA_H
-  // We have idna.h, so we can use the idna_to_ascii
-  // function :)
-
-  if (label.length() > 64)
-    return (char*)0L;		// invalid label
-
-  if (label.length() == 0)
-    // this is allowed
-    return QByteArray("");	// empty, not null
-
-  QByteArray retval;
-  char buf[65];
-
-  quint32* ucs4 = new quint32[label.length() + 1];
-
-  int i;
-  for (i = 0; i < label.length(); i++)
-    ucs4[i] = (unsigned long)label[i].unicode();
-  ucs4[i] = 0;			// terminate with NUL, just to be on the safe side
-
-  if (idna_to_ascii_4i(ucs4, label.length(), buf, 0) == IDNA_SUCCESS)
-    // success!
-    retval = buf;
-
-  delete [] ucs4;
-  return retval;
-#else
-  return label.toLatin1();
-#endif
-}
-
-static QString ToUnicode(const QString& label)
-{
-#ifdef HAVE_IDNA_H
-  // We have idna.h, so we can use the idna_to_unicode
-  // function :)
-
-  quint32 *ucs4_input, *ucs4_output;
-  size_t outlen;
-
-  ucs4_input = new quint32[label.length() + 1];
-  for (int i = 0; i < label.length(); i++)
-    ucs4_input[i] = (unsigned long)label[i].unicode();
-
-  // try the same length for output
-  ucs4_output = new quint32[outlen = label.length()];
-
-  idna_to_unicode_44i(ucs4_input, label.length(),
-		      ucs4_output, &outlen,
-		      0);
-
-  if (outlen > (size_t)label.length())
-    {
-      // it must have failed
-      delete [] ucs4_output;
-      ucs4_output = new quint32[outlen];
-
-      idna_to_unicode_44i(ucs4_input, label.length(),
-			  ucs4_output, &outlen,
-			  0);
-    }
-
-  // now set the answer
-  QString result;
-  result.resize(outlen);
-  for (uint i = 0; i < outlen; i++)
-    result[i] = (unsigned int)ucs4_output[i];
-
-  delete [] ucs4_input;
-  delete [] ucs4_output;
-
-  return result;
-#else
-  return label;
-#endif
-}
 
 #include "k3resolver.moc"

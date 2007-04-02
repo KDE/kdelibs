@@ -36,14 +36,9 @@ if(GETTEXT_FOUND)
   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${GETTEXT_LIBRARIES})
 endif(GETTEXT_FOUND)
 
-
 if (HAVE_RESOLV_LIBRARY)
   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} resolv)
 endif (HAVE_RESOLV_LIBRARY)
-
-if(HAVE_IDNA_H)
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} idn)
-endif(HAVE_IDNA_H)
 
 if(X11_XTest_FOUND)
    set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${X11_XTest_LIB})

@@ -20,7 +20,6 @@ int main()
   endif (NOT HAVE_QSSLSOCKET)
 macro_pop_required_vars()
 
-check_include_files(idna.h        HAVE_IDNA_H)
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
 
 if (WIN32)

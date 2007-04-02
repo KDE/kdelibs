@@ -948,8 +948,6 @@ private:
   KResolverPrivate* const d;
   friend class KResolverResults;
   friend class ::KNetwork::Internal::KResolverManager;
-
-  static QSet<QString> *idnDomains;
 };
 
 }				// namespace KNetwork
