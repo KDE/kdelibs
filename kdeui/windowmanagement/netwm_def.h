@@ -349,11 +349,9 @@ public:
         TooltipMask      = 1<<12, ///< @see Tooltip
         NotificationMask = 1<<13, ///< @see Notification
         ComboBoxMask     = 1<<14, ///< @see ComboBox
-        DNDIconMask      = 1<<15  ///< @see DNDIcon
+        DNDIconMask      = 1<<15, ///< @see DNDIcon
+        AllTypesMask     = 0LU-1  ///< All window types.
     };
-
-    // KDE4 move to WindowTypeMask
-    enum { AllTypesMask = 0LU-1 };
 
     /**
      * Returns true if the given window type matches the mask given
@@ -473,25 +471,24 @@ public:
     /**
        Client window mapping state.  The class automatically watches the mapping
        state of the client windows, and uses the mapping state to determine how
-       to set/change different properties.
+       to set/change different properties. Note that this is very lowlevel
+       and you most probably don't want to use this state.
     **/
-
-    // KDE4 aaarghl, this doesn't map correctly to Xlib #defines
     enum MappingState {
 	/**
 	   indicates the client window is visible to the user.
 	**/
-	Visible, // ie. NormalState
+	Visible = 1, //NormalState,
 	/**
 	   indicates that neither the client window nor its icon is visible.
 	**/
-	Withdrawn,
+	Withdrawn = 0, //WithdrawnState,
 	/**
 	   indicates that the client window is not visible, but its icon is.
 	   This can be when the window is minimized or when it's on a
 	   different virtual desktop. See also NET::Hidden.
 	**/
-	Iconic
+	Iconic = 3 // IconicState
     };
 
     /**

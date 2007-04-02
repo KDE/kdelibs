@@ -219,7 +219,6 @@ public:
        Returns the properties argument passed to the constructor.
        The size is the maximum array size the constructor accepts.
     **/
-    // KDE4 better name?
     const unsigned long* passedProperties() const;
 
     /**
@@ -388,8 +387,7 @@ public:
 
        @param count The number of windows in the array
     **/
-    // KDE4 'const Window*', also in the others below
-    void setClientList(Window *windows, unsigned int count);
+    void setClientList(const Window *windows, unsigned int count);
 
     /**
        Sets the list of managed windows in stacking order on the Root/Desktop
@@ -399,7 +397,7 @@ public:
 
        @param count The number of windows in the array.
     **/
-    void setClientListStacking(Window *windows, unsigned int count);
+    void setClientListStacking(const Window *windows, unsigned int count);
 
     /**
        Sets the list of KDE system tray windows on the root window.
@@ -408,7 +406,7 @@ public:
 
        @param count The number of windows in the array.
     **/
-    void setKDESystemTrayWindows(Window *windows, unsigned int count);
+    void setKDESystemTrayWindows(const Window *windows, unsigned int count);
 
     /**
        Sets the current desktop to the specified desktop.
@@ -491,7 +489,7 @@ public:
 
        @param count The number of windows in the array.
     **/
-    void setVirtualRoots(Window *windows, unsigned int count);
+    void setVirtualRoots(const Window *windows, unsigned int count);
 
     /**
        Sets the desktop layout. This is set by the pager. When setting, the pager must
@@ -958,7 +956,6 @@ public:
        Returns the properties argument passed to the constructor.
        The size is the maximum array size the constructor accepts.
     **/
-    // KDE4 better name?
     const unsigned long* passedProperties() const;
 
     /**

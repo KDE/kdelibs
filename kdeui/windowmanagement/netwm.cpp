@@ -175,7 +175,7 @@ static char *nstrndup(const char *s1, int l) {
 }
 
 
-static Window *nwindup(Window *w1, int n) {
+static Window *nwindup(const Window *w1, int n) {
     if (! w1 || n == 0) return (Window *) 0;
 
     Window *w2 = new Window[n];
@@ -857,7 +857,7 @@ void NETRootInfo::activate() {
 }
 
 
-void NETRootInfo::setClientList(Window *windows, unsigned int count) {
+void NETRootInfo::setClientList(const Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
     p->clients_count = count;
@@ -876,7 +876,7 @@ void NETRootInfo::setClientList(Window *windows, unsigned int count) {
 }
 
 
-void NETRootInfo::setClientListStacking(Window *windows, unsigned int count) {
+void NETRootInfo::setClientListStacking(const Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
     p->stacking_count = count;
@@ -895,7 +895,7 @@ void NETRootInfo::setClientListStacking(Window *windows, unsigned int count) {
 }
 
 
-void NETRootInfo::setKDESystemTrayWindows(Window *windows, unsigned int count) {
+void NETRootInfo::setKDESystemTrayWindows(const Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
     p->kde_system_tray_windows_count = count;
@@ -1619,11 +1619,12 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
 }
 
 
-void NETRootInfo::setVirtualRoots(Window *windows, unsigned int count) {
+void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count) {
     if (role != WindowManager) return;
 
     p->virtual_roots_count = count;
-    p->virtual_roots = windows;
+    delete[] p->virtual_roots;
+    p->virtual_roots = nwindup(windows,count);;
 
 #ifdef   NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setVirtualRoots: setting list with %ld windows\n",
