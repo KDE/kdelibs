@@ -114,35 +114,14 @@ public:
    * collection of actions (some of which appear in your toolbars).
    * The other two parameters are optional.
    *
-   * The second parameter, xmlfile(), is the name (absolute or
-   * relative) of your application's UI resource file.  If it is
-   * left blank, then the resource file: share/apps/appname/appnameui.rc
-   * is used.  This is the same resource file that is used by the
-   * default createGUI() function in KMainWindow so you're usually
-   * pretty safe in leaving it blank.
-   *
-   * The third parameter, global(), controls whether or not the
-   * global resource file is used.  If this is @p true, then you may
-   * edit all of the actions in your toolbars -- global ones and
-   * local one.  If it is @p false, then you may edit only your
-   * application's entries.  The only time you should set this to
-   * false is if your application does not use the global resource
-   * file at all (very rare).
-   *
    * @param collection The collection of actions to work on.
    * @param defaultToolBar The toolbar with this name will appear for editing.
    *                       Pass in QString() for the default behaviour,
    *                       generallyd desired for apps that do not use
    *                       components.
-   * @param xmlfile The application's local resource file.
-   * @param global If @p true, then the global resource file will also
-   *               be parsed.
    * @param parent The parent of the dialog.
    */
   explicit KEditToolBar(KActionCollection *collection,
-                        const QString& defaultToolBar = QString(),
-                        const QString& xmlfile = QString(),
-                        bool global = true,
                         QWidget* parent = 0);
 
   /**
@@ -165,22 +144,48 @@ public:
    *                       Pass in QString() for default behavior.
    * @param parent The usual parent for the dialog.
    */
-  explicit KEditToolBar(KXMLGUIFactory* factory,
-                        const QString& defaultToolbar = QString(),
-                        QWidget* parent = 0);
+  explicit KEditToolBar( KXMLGUIFactory* factory,
+                         QWidget* parent = 0 );
 
   /// destructor
   ~KEditToolBar();
 
-  /** Sets the default toolbar, which will be auto-selected when the constructor without the
-    *    defaultToolBar argument is used.
-    *   @param  toolbarName  the name of the toolbar
-    */
-  static void setDefaultToolBar(const char *toolbarName);
+  /**
+   * Sets the default toolbar that will be selected when the dialog is shown.
+   * If not set, or QString() is passed in, the global default tool bar name
+   * will be used.
+   * @param toolBarName the name of the tool bar
+   * @see setGlobalDefaultToolBar
+   */
+  void setDefaultToolBar( const QString& toolBarName );
 
-  static KDE_DEPRECATED void setDefaultToolbar(const char *toolbarName)
-  { setDefaultToolBar(toolbarName); }
-  
+  /**
+   * The name (absolute or relative) of your application's UI resource file
+   * is assumed to be share/apps/appname/appnameui.rc though this can be
+   * overridden by calling this method.
+   *
+   * The global parameter controls whether or not the
+   * global resource file is used.  If this is @p true, then you may
+   * edit all of the actions in your toolbars -- global ones and
+   * local one.  If it is @p false, then you may edit only your
+   * application's entries.  The only time you should set this to
+   * false is if your application does not use the global resource
+   * file at all (very rare).
+   *
+   * @param xmlfile The application's local resource file.
+   * @param global If @p true, then the global resource file will also
+   *               be parsed.
+   */
+  void setResourceFile( const QString& file, bool global = true );
+
+  /**
+   * Sets the default toolbar which will be auto-selected for all
+   * KEditToolBar instances. Can be overriden on a per-dialog basis
+   * by calling setDefaultToolBar( const QString& ) on the dialog.
+   *   @param  toolbarName  the name of the tool bar
+   */
+  static void setGlobalDefaultToolBar(const char *toolBarName);
+
 protected Q_SLOTS:
   /**
    * Overridden in order to save any changes made to the toolbars
@@ -276,24 +281,7 @@ public:
    * @param parent This widget's parent
    */
   explicit KEditToolBarWidget( KActionCollection *collection,
-                               const QString& xmlfile = QString(),
-                               bool global = true, QWidget *parent = 0L);
-
-   //KDE 4.0: merge the two constructors
-   /* Same as above, with an extra agrument specifying the toolbar to be shown.
-   *
-   * @param defaultToolBar The toolbar with this name will appear for editing.
-   * @param collection The collection of actions to work on
-   * @param xmlfile The application's local resource file
-   * @param global If true, then the global resource file will also
-   *               be parsed
-   * @param parent This widget's parent
-   */
-  KEditToolBarWidget(const QString& defaultToolBar,
-                     KActionCollection *collection,
-                     const QString& file = QString(),
-                     bool global = true,
-                     QWidget *parent = 0L);
+                               QWidget *parent = 0L);
 
   /**
    * Constructor for KParts based apps.
@@ -315,19 +303,7 @@ public:
    * @param factory Your application's factory object
    * @param parent This widget's parent
    */
-  explicit KEditToolBarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
-
-   //KDE 4.0: merge the two constructors
-   /* Same as above, with an extra agrument specifying the toolbar to be shown.
-   *
-   *
-   * @param defaultToolBar The toolbar with this name will appear for editing.
-   * @param factory Your application's factory object
-   * @param parent This widget's parent
-   */
-  KEditToolBarWidget(const QString& defaultToolBar,
-                     KXMLGUIFactory* factory,
-                     QWidget *parent = 0L);
+  explicit KEditToolBarWidget( QWidget *parent = 0L );
 
   /**
    * Destructor.  Note that any changes done in this widget will
@@ -335,6 +311,21 @@ public:
    * to do that.
    */
   virtual ~KEditToolBarWidget();
+
+  /**
+   * Loads the toolbar configuration into the widget. Should be called before being shown.
+   * @see KEditToolBar
+   */
+  void load( const QString& resourceFile,
+             bool global = true,
+             const QString& defaultToolBar = QString() );
+
+  /**
+   * Loads the toolbar configuration into the widget. Should be called before being shown.
+   * @see KEditToolBar
+   */
+  void load( KXMLGUIFactory* factory,
+             const QString& defaultToolBar = QString() );
 
   /**
    * @internal Reimplemented for internal purposes.

@@ -1109,11 +1109,15 @@ if needed (see the KURLDrag section)</li>
 <h4>KEditToolbar</h4>
 <ul>
 <li>KEditToolbar is now KEditToolBar</li>
-<li>The constructors for KEditToolBar now take as the second argument an optional QString naming which toolbar to edit. If QString() is passed, the default (or only) toolbar is set for editting. If you previously used one of the constructors which did not have a defaultToolbar parameter, then you will want to pass in QString() for this parameter.</li>
+<li>The static setDefaultToolBar was renamed to setGlobalDefaultToolBar</li>
+<li>The constructors have been simplified to take either a KActionCollection* or a KXMLGUIFactory*, depending on whether the app is using XMLGUI or not. To set a non-default resource file in the KActionCollection* case, call setResourceFile.</li>
 </ul>
 
 <h4>KEditToolbarWidget</h4>
-KEditToolbar is now KEditToolBarWidget
+<ul>
+<li>KEditToolbar is now KEditToolBarWidget</li>
+<li>The constructors have been simplified to take either a KActionCollection* and a parent widget or just a parent widget. The latter is for use with XMLGUI. Before being shown, the new load() methods should be called. These allow for populating the widget before being shown but after construction, which is useful when allowing the resource file to be changed as in KEditToolBar.</li>
+</ul>
 
 <h4>KFind</h4>
 <ul>
