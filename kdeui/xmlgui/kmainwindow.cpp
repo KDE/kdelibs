@@ -86,7 +86,7 @@ public:
     QTimer* settingsTimer;
     KToggleAction *showStatusBarAction;
     QRect defaultWindowSize;
-    KEditToolbar* toolBarEditor;
+    KEditToolBar* toolBarEditor;
 };
 
 QList<KMainWindow*> KMainWindow::sMemberList;
@@ -461,7 +461,7 @@ void KMainWindow::configureToolbars()
     KConfigGroup cg(KGlobal::config(), QString());
     saveMainWindowSettings(cg);
     if (!d->toolBarEditor) {
-      d->toolBarEditor = new KEditToolbar(actionCollection(), xmlFile(), true, this);
+      d->toolBarEditor = new KEditToolBar(actionCollection(), xmlFile(), true, this);
       connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
     }
     d->toolBarEditor->show();
