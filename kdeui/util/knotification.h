@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2005-2007 Olivier Goffart <ogoffart at kde.org>
+   Copyright (C) 2005-2006 Olivier Goffart <ogoffart at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -185,6 +185,14 @@ public:
 	enum NotificationFlag
 	{
 		/**
+		 * When the notification is activated, raise the notification's widget.
+		 *
+		 * This will change the desktop, raise the window, and switch to the tab.
+		 * @todo  doesn't works yet
+		 */
+		RaiseWidgetOnActivation=0x01,
+
+		/**
 		 * The notification will be automatically closed after a timeout. (this is the default)
 		 */
 		CloseOnTimeout=0x00,
@@ -195,12 +203,20 @@ public:
 		 * close function manually when the event is done, otherwise there will be a memory leak
 		 */
 		Persistant=0x02,
-  
+
+		/**
+		 * The notification will be automatically closed if the widget() becomes
+		 * activated.
+		 *
+		 * If the widget is already activated when the notification occurs, the
+		 * notification will be closed after a small timeout.
+		 * @todo doesn't works yet
+		 */
+		CloseWhenWidgetActivated=0x04,
+        
 		/**
 		 * @internal
 		 * The event is a standard kde event, and not an event of the application
-		 * 
-		 * This is an internal flag, don't use it in your application
  		 */
 		DefaultEvent=0xF000
 		
@@ -233,6 +249,10 @@ public:
 	/**
 	 * @brief the widget associated to the notification
 	 *
+	 * If the widget is destroyed, the notification will be automatically canceled.
+	 * If the widget is activated, the notificaiton will be automatically closed if the flags said that
+	 *
+	 * When the notification is activated, the widget might be raised.
 	 * Depending of the configuration, the taskbar entry of the window containing the widget may blink.
 	 */
 	QWidget *widget() const;
@@ -423,10 +443,10 @@ public:
 	/**
 	 * @brief emit an event
 	 * 
-	 * This method crate the KNotification, assing every parametter, and fire the event.
+	 * This method creates the KNotification, setting every parameter, and fire the event.
 	 * You don't need to call sendEvent
 	 *
-	 * A popup may be showed, a sound may be played, depending the config.
+	 * A popup may be displayed or a sound may be played, depending the config.
 	 *
 	 * return a KNotification .  You may use that pointer to connect some signals or slot.
 	 * the pointer is automatically deleted when the event is closed.
@@ -434,14 +454,12 @@ public:
 	 * Make sure you use one of the CloseOnTimeOut or CloseWhenWidgetActivated, if not,
 	 * you have to close yourself the notification.
 	 *
-	 * @note the text is shown in a QLabel, you should make sure to escape the html is needed.
+	 * @note the text is shown in a QLabel, you should escape HTML, if needed.
 	 *
 	 * @param eventId is the name of the event
 	 * @param text is the text of the notification to show in the popup.
 	 * @param pixmap is a picture which may be shown in the popup.
 	 * @param widget is a widget where the notification reports to
-	 * @param actions is a list of action texts.
-	 * @param contexts is the lists of contexts, see ContextList
 	 * @param flags is a bitmask of NotificationFlag
          * @param componentData used to determine the location of the config file.  by default, kapp is used
 	 */
