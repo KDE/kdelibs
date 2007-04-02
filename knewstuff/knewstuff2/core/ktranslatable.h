@@ -20,7 +20,7 @@
 #ifndef KTRANSLATABLE_H
 #define KTRANSLATABLE_H
 
-#include <kdelibs_export.h>
+#include <knewstuff_export.h>
 
 #include <qstring.h>
 #include <qmap.h>
@@ -37,7 +37,7 @@ namespace KNS {
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT KTranslatable
+class KNEWSTUFF_EXPORT KTranslatable
 {
 public:
 	typedef QMap<QString, QString> Map;

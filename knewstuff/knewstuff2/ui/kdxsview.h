@@ -10,7 +10,7 @@ class QComboBox;
 namespace KNS
 {
 
-class KDE_EXPORT KDXSView : public KDialog
+class KNEWSTUFF_EXPORT KDXSView : public KDialog
 {
 Q_OBJECT
 public:

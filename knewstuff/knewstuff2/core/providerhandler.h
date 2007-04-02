@@ -31,7 +31,7 @@ namespace KIO { class Job; }
 
 namespace KNS {
 
-class KDE_EXPORT ProviderHandler
+class KNEWSTUFF_EXPORT ProviderHandler
 {
   public:
     ProviderHandler(const QDomElement &providerxml);

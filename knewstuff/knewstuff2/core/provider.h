@@ -46,7 +46,7 @@ namespace KNS {
  *
  * @internal
  */
-class KDE_EXPORT Provider
+class KNEWSTUFF_EXPORT Provider
 {
   public:
     typedef QList<Provider*> List;

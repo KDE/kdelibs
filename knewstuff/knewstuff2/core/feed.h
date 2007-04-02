@@ -39,7 +39,7 @@ namespace KNS {
  *
  * @author Josef Spillner (spillner@kde.org)
  */
-class KDE_EXPORT Feed
+class KNEWSTUFF_EXPORT Feed
 {
   public:
     /**

@@ -7,7 +7,7 @@ namespace KNS {
 
 class Dxs;
 
-class KDE_EXPORT DxsEngine : public CoreEngine
+class KNEWSTUFF_EXPORT DxsEngine : public CoreEngine
 {
     Q_OBJECT
   public:

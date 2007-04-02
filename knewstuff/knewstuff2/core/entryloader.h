@@ -42,7 +42,7 @@ class Provider;
  * 
  * @internal
  */
-class KDE_EXPORT EntryLoader : public QObject
+class KNEWSTUFF_EXPORT EntryLoader : public QObject
 {
     Q_OBJECT
   public:

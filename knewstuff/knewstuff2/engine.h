@@ -35,7 +35,7 @@ class Feed;
  * GHNS or DXS are used transparently.
  * This class is the one which applications should use.
  */
-class KDE_EXPORT Engine : public DxsEngine
+class KNEWSTUFF_EXPORT Engine : public DxsEngine
 {
     Q_OBJECT
   public:

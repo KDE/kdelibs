@@ -21,7 +21,7 @@
 #define KNEWSTUFF2_UI_ACTION_H
 
 // FIXME: use knewstuff_export.h again?
-#include <kdelibs_export.h>
+#include <knewstuff_export.h>
 
 class QObject;
 class QWidget;
@@ -30,7 +30,7 @@ class KActionCollection;
 
 namespace KNS {
 
-KDE_EXPORT KAction* standardAction(const QString& what,
+KNEWSTUFF_EXPORT KAction* standardAction(const QString& what,
                         const QObject *recvr,
                         const char *slot,
                         KActionCollection* parent,

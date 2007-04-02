@@ -23,7 +23,7 @@
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>
 
-#include <kdelibs_export.h>
+#include <knewstuff_export.h>
 
 #include <qobject.h>
 #include <qstring.h>
@@ -43,7 +43,7 @@ class Installation;
  * and offers high-level synchronization calls as well as upload and download
  * primitives using an underlying GHNS protocol.
  */
-class KDE_EXPORT CoreEngine : public QObject
+class KNEWSTUFF_EXPORT CoreEngine : public QObject
 {
     Q_OBJECT
   public:

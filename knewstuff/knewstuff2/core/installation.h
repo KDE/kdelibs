@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF2_INSTALLATION_H
 #define KNEWSTUFF2_INSTALLATION_H
 
-#include <kdelibs_export.h>
+#include <knewstuff_export.h>
 
 #include <qstring.h>
 
@@ -40,7 +40,7 @@ namespace KNS {
  *
  * @internal
  */
-class KDE_EXPORT Installation
+class KNEWSTUFF_EXPORT Installation
 {
   public:
     /**

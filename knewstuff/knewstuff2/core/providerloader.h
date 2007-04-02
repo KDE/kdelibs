@@ -43,7 +43,7 @@ namespace KNS {
  *
  * @internal
  */
-class KDE_EXPORT ProviderLoader : public QObject
+class KNEWSTUFF_EXPORT ProviderLoader : public QObject
 {
     Q_OBJECT
   public:

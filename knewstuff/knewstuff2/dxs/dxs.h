@@ -1,6 +1,7 @@
 #ifndef KNEWSTUFF2_DXS_DXS_H
 #define KNEWSTUFF2_DXS_DXS_H
 
+#include <knewstuff_export.h>
 #include <qobject.h>
 
 #include <kurl.h>
@@ -14,7 +15,7 @@ class Soap;
 class Entry;
 class Category;
 
-class KDE_EXPORT Dxs : public QObject
+class KNEWSTUFF_EXPORT Dxs : public QObject
 {
 Q_OBJECT
 public:
