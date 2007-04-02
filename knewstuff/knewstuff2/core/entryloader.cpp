@@ -21,6 +21,7 @@
 #include "entryloader.h"
 
 #include "entryhandler.h"
+#include "feed.h"
 
 #include <qbytearray.h>
 
@@ -33,22 +34,38 @@ using namespace KNS;
 
 EntryLoader::EntryLoader()
 {
+  m_feed = 0;
+  m_provider = 0;
 }
 
-void EntryLoader::load(const QString &stuffurl)
+void EntryLoader::load(const Provider *provider, const Feed *feed)
 {
   kDebug(550) << "EntryLoader::load()" << endl;
+
+  m_provider = provider;
+  m_feed = feed;
 
   m_entries.clear();
   m_jobdata.clear();
 
-  kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl << endl;
+  KUrl stuffurl = feed->feedUrl();
+  kDebug(550) << "EntryLoader::load(): stuffUrl: " << stuffurl.url() << endl;
   
-  KIO::TransferJob *job = KIO::get( KUrl( stuffurl ), false, false );
+  KIO::TransferJob *job = KIO::get( stuffurl, false, false );
   connect( job, SIGNAL( result( KJob * ) ),
            SLOT( slotJobResult( KJob * ) ) );
   connect( job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
            SLOT( slotJobData( KIO::Job *, const QByteArray & ) ) );
+}
+
+const Feed *EntryLoader::feed() const
+{
+  return m_feed;
+}
+
+const Provider *EntryLoader::provider() const
+{
+  return m_provider;
 }
 
 void EntryLoader::slotJobData( KIO::Job *, const QByteArray &data )
@@ -68,7 +85,7 @@ void EntryLoader::slotJobResult( KJob *job )
   //QString contents = QString::fromUtf8(m_jobdata);
 
   kDebug(550) << "--ENTRIES-START--" << endl;
-  kDebug(550) << QString(m_jobdata) << endl;
+  kDebug(550) << QString::fromUtf8(m_jobdata) << endl;
   kDebug(550) << "--ENTRIES-END--" << endl;
 
   QDomDocument doc;
@@ -93,7 +110,7 @@ void EntryLoader::slotJobResult( KJob *job )
     }
   }
  
-  emit signalEntriesLoaded( &m_entries );
+  emit signalEntriesLoaded( m_entries );
 }
 
 #include "entryloader.moc"

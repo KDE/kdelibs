@@ -47,10 +47,9 @@ class KNEWSTUFF_EXPORT ProviderDialog : public KDialog
     /**
       Constructor.
 
-      @param engine a KNewStuff engine object
       @param parent the parent window
     */
-    ProviderDialog( /*Engine *engine,*/ QWidget *parent );
+    ProviderDialog( QWidget *parent );
 
     /**
       Clears the list of providers.

@@ -36,6 +36,7 @@ KDXSButton::KDXSButton(QWidget *parent)
 : QToolButton(parent)
 {
 	m_entry = 0;
+	m_provider = 0;
 	m_dxs = 0;
 	m_engine = 0;
 
@@ -43,9 +44,9 @@ KDXSButton::KDXSButton(QWidget *parent)
 	//setBackgroundColor(QColor(255, 255, 255));
 
 	m_p = new KMenu(this);
-	action_install = m_p->addAction(SmallIcon("knewstuff"),
+	action_install = m_p->addAction(SmallIcon("get-hot-new-stuff"),
 		i18n("Install"));
-	action_deinstall = m_p->addAction(SmallIcon("knewstuff"),
+	action_deinstall = m_p->addAction(SmallIcon("get-hot-new-stuff"),
 		i18n("Deinstall"));
 	action_comments = m_p->addAction(SmallIcon("leftjust"),
 		i18n("Comments"));
@@ -53,7 +54,7 @@ KDXSButton::KDXSButton(QWidget *parent)
 		i18n("Changelog"));
 
 	m_history = new KMenu(this);
-	m_history->setIcon(SmallIcon("kmultiple"));
+	m_history->setIcon(SmallIcon("news"));
 	m_history->setTitle(i18n("Switch version"));
 
 	// FIXME KDE4PORT
@@ -67,22 +68,22 @@ KDXSButton::KDXSButton(QWidget *parent)
 		i18n("Provider information"));
 
 	m_contact = new KMenu(this);
-	m_contact->setIcon(SmallIcon("mail_new"));
+	m_contact->setIcon(SmallIcon("users"));
 	m_contact->setTitle(i18n("Contact author"));
 
 	KMenu *pcollab = new KMenu(this);
 	pcollab->setIcon(SmallIcon("gear"));
 	pcollab->setTitle(i18n("Collaboration"));
 
-	action_collabrating = pcollab->addAction(SmallIcon("wizard"),
+	action_collabrating = pcollab->addAction(SmallIcon("plus"),
 		i18n("Add Rating"));
-	action_collabcomment = pcollab->addAction(SmallIcon("add"),
+	action_collabcomment = pcollab->addAction(SmallIcon("kontact-notes"),
 		i18n("Add Comment"));
-	action_collabtranslation = pcollab->addAction(SmallIcon("translate"),
+	action_collabtranslation = pcollab->addAction(SmallIcon("character-set"),
 		i18n("Translate"));
-	action_collabsubscribe = pcollab->addAction(SmallIcon("bookmark_add"),
+	action_collabsubscribe = pcollab->addAction(SmallIcon("news-subscribe"),
 		i18n("Subscribe"));
-	action_collabremoval = pcollab->addAction(SmallIcon("remove"),
+	action_collabremoval = pcollab->addAction(SmallIcon("edit-trash"),
 		i18n("Report bad entry"));
 	pcollab->addMenu(m_contact);
 
@@ -100,7 +101,7 @@ KDXSButton::KDXSButton(QWidget *parent)
 	//connect(m_history, SIGNAL(activated(int)), SLOT(slotVersionsActivated(int)));
 	//connect(m_history, SIGNAL(highlighted(int)), SLOT(slotVersionsHighlighted(int)));
 
-	QPixmap pix = SmallIcon("knewstuff");
+	QPixmap pix = SmallIcon("get-hot-new-stuff");
 	setIcon(pix);
 	setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	setMenu(m_p);
@@ -134,7 +135,7 @@ void KDXSButton::setEntry(Entry *e)
 	Author author = e->author();
 	if(!author.email().isEmpty())
 	{
-		action_contactbymail = m_contact->addAction(SmallIcon("mail_send"),
+		action_contactbymail = m_contact->addAction(SmallIcon("message"),
 			i18n("Send Mail"));
 	}
 	if(!author.jabber().isEmpty())
@@ -142,6 +143,11 @@ void KDXSButton::setEntry(Entry *e)
 		action_contactbyjabber = m_contact->addAction(SmallIcon("idea"),
 			i18n("Contact on Jabber"));
 	}
+}
+
+void KDXSButton::setProvider(KNS::Provider *provider)
+{
+	m_provider = provider;
 }
 
 void KDXSButton::setEngine(DxsEngine *engine)

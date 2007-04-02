@@ -21,6 +21,7 @@
 #define KNEWSTUFF2_FEED_H
 
 #include <knewstuff2/core/ktranslatable.h>
+#include <knewstuff2/core/entry.h>
 
 #include <kurl.h>
 
@@ -28,6 +29,13 @@ namespace KNS {
 
 /**
  * @short KNewStuff feed.
+ *
+ * A feed represents a collection of entries for download. One or more feeds
+ * are offered by a provider, each of which has a different characteristics.
+ * Usually, GHNS providers offer three feeds, for the most popular, highest
+ * rated and latest entries. Simple providers might offer no special feeds
+ * at all, only one default feed will be available in this case.
+ * Entries might appear in different feeds at the same time.
  *
  * @author Josef Spillner (spillner@kde.org)
  */
@@ -80,10 +88,30 @@ class KDE_EXPORT Feed
      */
     KUrl feedUrl() const;
 
+    /**
+     * Adds an association to an entry.
+     *
+     * Ownership of the entry will remain with the caller.
+     *
+     * @param entry Entry to link to this feed
+     */
+    void addEntry(Entry *entry);
+
+    /**
+     * Retrieves the list of associated entries.
+     *
+     * If the feed loading hasn't completed yet, this method may return
+     * the empty list.
+     *
+     * @return List of entries associated with this feed
+     */
+    Entry::List entries() const;
+
   private:
     KTranslatable mName;
     KTranslatable mDescription;
     KUrl mFeed;
+    Entry::List mEntries;
 
     class FeedPrivate *d;
 };

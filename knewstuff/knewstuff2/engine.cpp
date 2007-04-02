@@ -20,99 +20,119 @@ Engine::Engine()
 	m_downloaddialog = NULL;
 	setDxsPolicy(DxsEngine::DxsNever); // FIXME: until KIO/cDXS gets fixed!
 	m_entry = NULL;
+	m_modal = false;
 }
 
 Engine::~Engine()
 {
 }
 
-KNS::Entry::List Engine::downloadDialogModal()
+void Engine::workflow()
 {
-	return KNS::Entry::List();
-}
+	if((m_command == upload) || (m_command == download))
+	{
+		connect(this,
+			SIGNAL(signalProviderLoaded(KNS::Provider*)),
+			SLOT(slotProviderLoaded(KNS::Provider*)));
+		connect(this,
+			SIGNAL(signalProvidersFailed()),
+			SLOT(slotProvidersFailed()));
+	}
 
-KNS::Entry *Engine::uploadDialogModal(QString file)
-{
-	m_uploadfile = file;
-	m_entry = NULL;
+	if(m_command == upload)
+	{
+		connect(this,
+			SIGNAL(signalProvidersFinished()),
+			SLOT(slotProvidersFinished()));
 
-	m_command = upload;
+		m_entry = NULL;
+	}
 
-	connect(this,
-		SIGNAL(signalProviderLoaded(KNS::Provider*)),
-		SLOT(slotProviderLoaded(KNS::Provider*)));
-	connect(this,
-		SIGNAL(signalProvidersFinished()),
-		SLOT(slotProvidersFinished()));
-	connect(this,
-		SIGNAL(signalProvidersFailed()),
-		SLOT(slotProvidersFailed()));
+	if(m_command == download)
+	{
+		connect(this,
+			SIGNAL(signalEntryLoaded(KNS::Entry*, const Feed*, const Provider*)),
+			SLOT(slotEntryLoaded(KNS::Entry*, const Feed*, const Provider*)));
+		connect(this,
+			SIGNAL(signalEntriesFailed()),
+			SLOT(slotEntriesFailed()));
+		connect(this,
+			SIGNAL(signalEntriesFinished()),
+			SLOT(slotEntriesFinished()));
+		connect(this,
+			SIGNAL(signalEntriesFeedFinished(const Feed*)),
+			SLOT(slotEntriesFeedFinished(const Feed*)));
+
+		m_downloaddialog = new DownloadDialog(0);
+		m_downloaddialog->setEngine(this);
+		m_downloaddialog->show();
+	}
 
 	start(false);
 
-	while(m_command == upload)
+	if(m_modal)
 	{
-		kapp->processEvents();
+		while(m_command == upload)
+		{
+			kapp->processEvents();
+		}
 	}
+}
 
-	return m_entry;
+KNS::Entry::List Engine::downloadDialogModal()
+{
+	kDebug(550) << "Engine: downloadDialogModal" << endl;
+
+	m_command = download;
+	m_modal = true;
+
+	workflow();
+
+	return KNS::Entry::List();
 }
 
 void Engine::downloadDialog()
 {
 	kDebug(550) << "Engine: downloadDialog" << endl;
 
-	if(m_downloaddialog)
+	if(m_command != none)
 	{
-		// ???
+		kError(550) << "Engine: asynchronous workflow already going on" << endl;
 	}
 
-	m_downloaddialog = new DownloadDialog(0);
-	m_downloaddialog->setEngine(this);
-	m_downloaddialog->show();
-
-	connect(this,
-		SIGNAL(signalProviderLoaded(KNS::Provider*)),
-		SLOT(slotProviderLoaded(KNS::Provider*)));
-	connect(this,
-		SIGNAL(signalProvidersFailed()),
-		SLOT(slotProvidersFailed()));
-	connect(this,
-		SIGNAL(signalEntryLoaded(KNS::Entry*)),
-		SLOT(slotEntryLoaded(KNS::Entry*)));
-	connect(this,
-		SIGNAL(signalEntriesFailed()),
-		SLOT(slotEntriesFailed()));
-	connect(this,
-		SIGNAL(signalEntriesFinished()),
-		SLOT(slotEntriesFinished()));
-
 	m_command = download;
-	start(false);
+	m_modal = false;
+
+	workflow();
 }
 
-void Engine::uploadDialog()
+KNS::Entry *Engine::uploadDialogModal(QString file)
+{
+	kDebug(550) << "Engine: uploadDialogModal" << endl;
+
+	m_command = upload;
+	m_modal = true;
+	m_uploadfile = file;
+
+	workflow();
+
+	return m_entry;
+}
+
+void Engine::uploadDialog(QString file)
 {
 	kDebug(550) << "Engine: uploadDialog" << endl;
 
-	if(m_uploaddialog)
+	if(m_command != none)
 	{
-		// ???
+		kError(550) << "Engine: asynchronous workflow already going on" << endl;
 	}
 
-	m_uploaddialog = new UploadDialog(0);
-//	m_uploaddialog->setEngine(this);
-	m_uploaddialog->show();
-
-//	connect(this,
-//		SIGNAL(signalProviderLoaded(KNS::Provider*)),
-//		SLOT(slotProviderLoaded(KNS::Provider*)));
-//	connect(this,
-//		SIGNAL(signalProvidersFailed()),
-//		SLOT(slotProvidersFailed()));
-
 	m_command = upload;
-	start(false);
+	m_modal = false;
+	m_uploadfile = file;
+
+	workflow();
 }
 
 void Engine::slotProviderLoaded(KNS::Provider *provider)
@@ -145,12 +165,11 @@ void Engine::slotProvidersFailed()
 	m_command = none;
 }
 
-void Engine::slotEntryLoaded(KNS::Entry *entry)
+void Engine::slotEntryLoaded(KNS::Entry *entry, const Feed *feed, const Provider *provider)
 {
 	kDebug(550) << "Engine: slotEntryLoaded" << endl;
 
-	//m_downloaddialog->slotEntries(...);
-	m_downloaddialog->addEntry(entry);
+	m_downloaddialog->addEntry(entry, feed, provider);
 }
 
 void Engine::slotEntriesFailed()
@@ -166,6 +185,7 @@ void Engine::slotEntryUploaded()
 
 	//m_entry = ...; // FIXME: where do we get it from now?
 	// FIXME: we cannot assign it earlier, probably need m_delayedentry
+	// FIXME: if not modal, this must be a signal to the outside (is already the case?)
 }
 
 void Engine::slotEntryFailed()
@@ -234,6 +254,14 @@ void Engine::slotProvidersFinished()
 		SLOT(slotEntryFailed()));
 
 	uploadEntry(provider, entry);
+}
+
+void Engine::slotEntriesFeedFinished(const Feed *feed)
+{
+	kDebug(550) << "Engine: slotEntriesFeedFinished" << endl;
+
+	Q_UNUSED(feed);
+	//m_downloaddialog->refresh();
 }
 
 void Engine::slotEntriesFinished()

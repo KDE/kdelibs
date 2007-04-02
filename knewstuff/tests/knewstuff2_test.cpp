@@ -125,8 +125,8 @@ void KNewStuff2Test::engineTest()
 			SIGNAL(signalProvidersFailed()),
 			SLOT(slotProvidersFailed()));
 		connect(m_engine,
-			SIGNAL(signalEntryLoaded(KNS::Entry*)),
-			SLOT(slotEntryLoaded(KNS::Entry*)));
+			SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+			SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
 		connect(m_engine,
 			SIGNAL(signalEntriesFinished()),
 			SLOT(slotEntriesFinished()));
@@ -139,6 +139,12 @@ void KNewStuff2Test::engineTest()
 		connect(m_engine,
 			SIGNAL(signalPayloadFailed()),
 			SLOT(slotPayloadFailed()));
+		connect(m_engine,
+			SIGNAL(signalInstallationFinished()),
+			SLOT(slotInstallationFinished()));
+		connect(m_engine,
+			SIGNAL(signalInstallationFailed()),
+			SLOT(slotInstallationFailed()));
 
 		m_engine->start(false);
 	}
@@ -158,8 +164,11 @@ void KNewStuff2Test::slotProviderLoaded(KNS::Provider *provider)
 	m_engine->loadEntries(provider);
 }
 
-void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry)
+void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
+	Q_UNUSED(feed);
+	Q_UNUSED(provider);
+
 	kDebug() << "SLOT: slotEntryLoaded" << endl;
 	kDebug() << "-- entry: " << entry->name().representation() << endl;
 
@@ -176,7 +185,11 @@ void KNewStuff2Test::slotEntryLoaded(KNS::Entry *entry)
 
 void KNewStuff2Test::slotEntriesFinished()
 {
-	quitTest();
+	// Wait for installation if requested
+	if(!m_testall)
+	{
+		quitTest();
+	}
 }
 
 void KNewStuff2Test::slotPayloadLoaded(KUrl payload)
@@ -184,8 +197,12 @@ void KNewStuff2Test::slotPayloadLoaded(KUrl payload)
 	kDebug() << "-- entry downloaded successfully" << endl;
 	kDebug() << "-- downloaded to " << payload.prettyUrl() << endl;
 
-	kDebug() << "-- OK, finish test" << endl;
-	quitTest();
+	kDebug() << "-- run installation" << endl;
+
+	bool ret = m_engine->install(payload.path());
+
+	kDebug() << "-- installation result: " << ret << endl;
+	kDebug() << "-- now, wait for installation to finish..." << endl;
 }
 
 void KNewStuff2Test::slotPayloadFailed()
@@ -203,6 +220,19 @@ void KNewStuff2Test::slotProvidersFailed()
 void KNewStuff2Test::slotEntriesFailed()
 {
 	kDebug() << "SLOT: slotEntriesFailed" << endl;
+	quitTest();
+}
+
+void KNewStuff2Test::slotInstallationFinished()
+{
+	kDebug() << "SLOT: slotInstallationFinished" << endl;
+	kDebug() << "-- OK, finish test" << endl;
+	quitTest();
+}
+
+void KNewStuff2Test::slotInstallationFailed()
+{
+	kDebug() << "SLOT: slotInstallationFailed" << endl;
 	quitTest();
 }
 

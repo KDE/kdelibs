@@ -25,6 +25,7 @@
 #include "entryloader.h"
 #include "providerloader.h"
 #include "installation.h"
+#include "security.h"
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -44,13 +45,12 @@ using namespace KNS;
 
 CoreEngine::CoreEngine()
 {
-	m_provider_loader = NULL;
-	m_entry_loader = NULL;
-
 	m_uploadedentry = NULL;
 	m_uploadprovider = NULL;
 
 	m_installation = NULL;
+
+	m_activefeeds = 0;
 }
 
 CoreEngine::~CoreEngine()
@@ -132,7 +132,7 @@ bool CoreEngine::init(const QString &configfile)
 void CoreEngine::start(bool localonly)
 {
 	loadProvidersCache();
-	loadEntryCache();
+	//loadEntriesCache();
 
 	// FIXME: LocalRegistryDir must be created in $KDEHOME if missing?
 	// FIXME: rename registry to cache?
@@ -148,33 +148,38 @@ void CoreEngine::start(bool localonly)
 		return;
 	}
 
-	m_provider_loader = new ProviderLoader();
-	m_provider_loader->load(m_providersurl);
+	ProviderLoader *provider_loader = new ProviderLoader();
+	provider_loader->load(m_providersurl);
 
-	// FIXME: I think we need a slot so we can delete the loader again
-	// we could have one for the entire lifetime, but for entry loaders this
-	// would result in too many objects active at once
-	connect(m_provider_loader,
-		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
-		SLOT(slotProvidersLoaded(KNS::Provider::List*)));
-	connect(m_provider_loader,
+	connect(provider_loader,
+		SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
+		SLOT(slotProvidersLoaded(KNS::Provider::List)));
+	connect(provider_loader,
 		SIGNAL(signalProvidersFailed()),
 		SLOT(slotProvidersFailed()));
 }
 
 void CoreEngine::loadEntries(Provider *provider)
 {
-	EntryLoader *entry_loader = new EntryLoader();
-	entry_loader->load(provider->downloadUrl().url());
-	// FIXME: loaders should probably accept KUrl directly
+	QStringList feeds = provider->feeds();
+	for(int i = 0; i < feeds.count(); i++)
+	{
+		Feed *feed = provider->downloadUrlFeed(feeds.at(i));
+		if(feed)
+		{
+			EntryLoader *entry_loader = new EntryLoader();
+			entry_loader->load(provider, feed);
 
-	// FIXME: the engine should do this... for all feeds!
-	connect(entry_loader,
-		SIGNAL(signalEntriesLoaded(KNS::Entry::List*)),
-		SLOT(slotEntriesLoaded(KNS::Entry::List*)));
-	connect(entry_loader,
-		SIGNAL(signalEntriesFailed()),
-		SLOT(slotEntriesFailed()));
+			connect(entry_loader,
+				SIGNAL(signalEntriesLoaded(KNS::Entry::List)),
+				SLOT(slotEntriesLoaded(KNS::Entry::List)));
+			connect(entry_loader,
+				SIGNAL(signalEntriesFailed()),
+				SLOT(slotEntriesFailed()));
+
+			m_activefeeds++;
+		}
+	}
 }
 
 void CoreEngine::downloadPreview(Entry *entry)
@@ -274,40 +279,43 @@ bool CoreEngine::uploadEntry(Provider *provider, Entry *entry)
 	return true;
 }
 
-void CoreEngine::slotProvidersLoaded(KNS::Provider::List *list)
+void CoreEngine::slotProvidersLoaded(KNS::Provider::List list)
 {
-	mergeProviders(list);
+	ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
+	delete loader;
 
-	/*for(Provider::List::Iterator it = list->begin(); it != list->end(); it++)
-	{
-		Provider *provider = (*it);
-		emit signalProviderLoaded(provider);
-	}*/
-	// FIXME: cleanup provider loader
+	mergeProviders(list);
 }
 
 void CoreEngine::slotProvidersFailed()
 {
+	ProviderLoader *loader = dynamic_cast<ProviderLoader*>(sender());
+	delete loader;
+
 	emit signalProvidersFailed();
-	// FIXME: cleanup provider loader
 }
 
-void CoreEngine::slotEntriesLoaded(KNS::Entry::List *list)
+void CoreEngine::slotEntriesLoaded(KNS::Entry::List list)
 {
-	mergeEntries(list);
+	EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
+	const Provider *provider = loader->provider();
+	const Feed *feed = loader->feed();
+	delete loader;
+	m_activefeeds--;
 
-	/*for(Entry::List::Iterator it = list->begin(); it != list->end(); it++)
-	{
-		Entry *entry = (*it);
-		emit signalEntryLoaded(entry);
-	}*/
-	// FIXME: cleanup entry loader
+	kDebug(550) << "Provider source " << provider->name().representation() << endl;
+	kDebug(550) << "Feed source " << feed->name().representation() << endl;
+
+	mergeEntries(list, feed, provider);
 }
 
 void CoreEngine::slotEntriesFailed()
 {
+	EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
+	delete loader;
+	m_activefeeds--;
+
 	emit signalEntriesFailed();
-	// FIXME: cleanup entry loader
 }
 
 void CoreEngine::slotPayloadResult(KJob *job)
@@ -593,13 +601,162 @@ void CoreEngine::loadProvidersCache()
 		m_provider_cache.append(p);
 		m_provider_index[pid(p)] = p;
 
+		loadFeedCache(p);
+
 		emit signalProviderLoaded(p);
 
-		provider = root.nextSiblingElement("provider");
+		provider = provider.nextSiblingElement("provider");
 	}
 }
 
-void CoreEngine::loadEntryCache()
+void CoreEngine::loadFeedCache(Provider *provider)
+{
+	KStandardDirs d;
+
+	kDebug(550) << "Loading feed cache." << endl;
+
+	QStringList cachedirs = d.findDirs("cache", "knewstuff2-feeds.cache");
+	if(cachedirs.size() == 0)
+	{
+		kDebug(550) << "Cache directory not present, skip loading." << endl;
+		return;
+	}
+	QString cachedir = cachedirs.first();
+
+	QStringList entrycachedirs = d.findDirs("cache", "knewstuff2-entries.cache");
+	if(entrycachedirs.size() == 0)
+	{
+		kDebug(550) << "Cache directory not present, skip loading." << endl;
+		return;
+	}
+	QString entrycachedir = entrycachedirs.first();
+
+	kDebug(550) << " + Load from directory '" + cachedir + "'." << endl;
+
+	QStringList feeds = provider->feeds();
+	for(int i = 0; i < feeds.count(); i++)
+	{
+		Feed *feed = provider->downloadUrlFeed(feeds.at(i));
+		QString feedname = feeds.at(i);
+
+		// FIXME: hack because we saved with wrong name!
+		feedname = "???";
+		QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + "-" + feedname);
+		QString cachefile = cachedir + "/" + idbase64 + ".xml";
+
+		kDebug(550) << "  + Load from file '" + cachefile + "'." << endl;
+
+		bool ret;
+		QFile f(cachefile);
+		ret = f.open(QIODevice::ReadOnly);
+		if(!ret)
+		{
+			kWarning(550) << "The file could not be opened." << endl;
+			return;
+		}
+
+		QDomDocument doc;
+		ret = doc.setContent(&f);
+		if(!ret)
+		{
+			kWarning(550) << "The file could not be parsed." << endl;
+			return;
+		}
+
+		QDomElement root = doc.documentElement();
+		if(root.tagName() != "ghnsfeeds")
+		{
+			kWarning(550) << "The file doesn't seem to be of interest." << endl;
+			return;
+		}
+
+		QDomElement entryel = root.firstChildElement("entry-id");
+		if(entryel.isNull())
+		{
+			kWarning(550) << "Missing entries in the cache." << endl;
+			return;
+		}
+
+		while(!entryel.isNull())
+		{
+			QString idbase64 = entryel.text();
+			QString filepath = entrycachedir + "/" + idbase64 + ".meta";
+
+			kDebug(550) << "   + Load entry from file '" + filepath + "'." << endl;
+
+			Entry *entry = loadEntryCache(filepath);
+			if(entry)
+			{
+				feed->addEntry(entry);
+				emit signalEntryLoaded(entry, feed, provider);
+			}
+
+			entryel = entryel.nextSiblingElement("entry-id");
+		}
+	}
+}
+
+KNS::Entry *CoreEngine::loadEntryCache(const QString& filepath)
+{
+	bool ret;
+	QFile f(filepath);
+	ret = f.open(QIODevice::ReadOnly);
+	if(!ret)
+	{
+		kWarning(550) << "The file could not be opened." << endl;
+		return NULL;
+	}
+
+	QDomDocument doc;
+	ret = doc.setContent(&f);
+	if(!ret)
+	{
+		kWarning(550) << "The file could not be parsed." << endl;
+		return NULL;
+	}
+
+	QDomElement root = doc.documentElement();
+	if(root.tagName() != "ghnscache")
+	{
+		kWarning(550) << "The file doesn't seem to be of interest." << endl;
+		return NULL;
+	}
+
+	QDomElement stuff = root.firstChildElement("stuff");
+	if(stuff.isNull())
+	{
+		kWarning(550) << "Missing GHNS cache metadata." << endl;
+		return NULL;
+	}
+
+	EntryHandler handler(stuff);
+	if(!handler.isValid())
+	{
+		kWarning(550) << "Invalid GHNS installation metadata." << endl;
+		return NULL;
+	}
+
+	Entry *e = handler.entryptr();
+	e->setStatus(Entry::Downloadable);
+	m_entry_cache.append(e);
+	m_entry_index[id(e)] = e;
+
+	if(root.hasAttribute("previewfile"))
+	{
+		m_previewfiles[e] = root.attribute("previewfile");
+		// FIXME: check here for a [ -f previewfile ]
+	}
+	if(root.hasAttribute("payloadfile"))
+	{
+		m_payloadfiles[e] = root.attribute("payloadfile");
+		// FIXME: check here for a [ -f payloadfile ]
+	}
+
+	return e;
+}
+
+// FIXME: not needed anymore?
+void CoreEngine::loadEntriesCache()
 {
 	KStandardDirs d;
 
@@ -622,61 +779,13 @@ void CoreEngine::loadEntryCache()
 		QString filepath = cachedir + "/" + (*fit);
 		kDebug(550) << "  + Load from file '" + filepath + "'." << endl;
 
-		bool ret;
-		QFile f(filepath);
-		ret = f.open(QIODevice::ReadOnly);
-		if(!ret)
-		{
-			kWarning(550) << "The file could not be opened." << endl;
-			continue;
-		}
+		Entry *e = loadEntryCache(filepath);
 
-		QDomDocument doc;
-		ret = doc.setContent(&f);
-		if(!ret)
+		if(e)
 		{
-			kWarning(550) << "The file could not be parsed." << endl;
-			continue;
+			// FIXME: load provider/feed information first
+			emit signalEntryLoaded(e, NULL, NULL);
 		}
-
-		QDomElement root = doc.documentElement();
-		if(root.tagName() != "ghnscache")
-		{
-			kWarning(550) << "The file doesn't seem to be of interest." << endl;
-			continue;
-		}
-
-		QDomElement stuff = root.firstChildElement("stuff");
-		if(stuff.isNull())
-		{
-			kWarning(550) << "Missing GHNS cache metadata." << endl;
-			continue;
-		}
-
-		EntryHandler handler(stuff);
-		if(!handler.isValid())
-		{
-			kWarning(550) << "Invalid GHNS installation metadata." << endl;
-			continue;
-		}
-
-		Entry *e = handler.entryptr();
-		e->setStatus(Entry::Downloadable);
-		m_entry_cache.append(e);
-		m_entry_index[id(e)] = e;
-
-		if(root.hasAttribute("previewfile"))
-		{
-			m_previewfiles[e] = root.attribute("previewfile");
-			// FIXME: check here for a [ -f previewfile ]
-		}
-		if(root.hasAttribute("payloadfile"))
-		{
-			m_payloadfiles[e] = root.attribute("payloadfile");
-			// FIXME: check here for a [ -f payloadfile ]
-		}
-
-		emit signalEntryLoaded(e);
 	}
 }
 
@@ -692,29 +801,49 @@ void CoreEngine::shutdown()
 	m_provider_cache.clear();
 
 	delete m_installation;
-
-	delete m_provider_loader;
-	delete m_entry_loader;
-	// FIXME: entry loader object not used yet - must be a list of those
 }
 
-void CoreEngine::mergeProviders(Provider::List *providers)
+bool CoreEngine::providerCached(Provider *provider)
 {
-	for(Provider::List::Iterator it = providers->begin(); it != providers->end(); it++)
+	if(m_provider_index.contains(pid(provider)))
+		return true;
+	return false;
+}
+
+bool CoreEngine::providerChanged(Provider *oldprovider, Provider *provider)
+{
+	QStringList oldfeeds = oldprovider->feeds();
+	QStringList feeds = provider->feeds();
+	if(oldfeeds.count() != feeds.count())
+		return true;
+	for(int i = 0; i < feeds.count(); i++)
 	{
-		// TODO: find entry in providercache, replace if needed
+		Feed *oldfeed = oldprovider->downloadUrlFeed(feeds.at(i));
+		Feed *feed = provider->downloadUrlFeed(feeds.at(i));
+		if(!oldfeed)
+			return true;
+		if(feed->feedUrl() != oldfeed->feedUrl())
+			return true;
+	}
+	return false;
+}
+
+void CoreEngine::mergeProviders(Provider::List providers)
+{
+	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); it++)
+	{
 		Provider *p = (*it);
 
-		if(m_provider_index.contains(pid(p)))
+		if(providerCached(p))
 		{
 			kDebug(550) << "CACHE: hit provider " << p->name().representation() << endl;
-			// FIXME: see mergeEntries for the hit case
 			Provider *oldprovider = m_provider_index[pid(p)];
-			if(p->downloadUrl() != oldprovider->downloadUrl())
+			if(providerChanged(oldprovider, p))
 			{
 				kDebug(550) << "CACHE: update provider" << endl;
 				cacheProvider(p);
 				emit signalProviderChanged(p);
+				// FIXME: oldprovider can now be deleted, see entry hit case
 			}
 		}
 		else
@@ -755,9 +884,16 @@ bool CoreEngine::entryCached(Entry *entry)
 	return false;
 }
 
-void CoreEngine::mergeEntries(Entry::List *entries)
+bool CoreEngine::entryChanged(Entry *oldentry, Entry *entry)
 {
-	for(Entry::List::Iterator it = entries->begin(); it != entries->end(); it++)
+	if((!oldentry) || (entry->releaseDate() > oldentry->releaseDate()))
+		return true;
+	return false;
+}
+
+void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provider *provider)
+{
+	for(Entry::List::Iterator it = entries.begin(); it != entries.end(); it++)
 	{
 		// TODO: find entry in entrycache, replace if needed
 		// don't forget marking as 'updateable'
@@ -767,12 +903,9 @@ void CoreEngine::mergeEntries(Entry::List *entries)
 		if(entryCached(e))
 		{
 			kDebug(550) << "CACHE: hit entry " << e->name().representation() << endl;
-			// FIXME: if changed, emit signalEntryChanged()
-			// we might have a cache on the whole content (e.g. base64) for that matter
-			// more robust than comparing all attributes? (-> xml infoset)
-			// FIXME: separate version updated from server-side translation updates
+			// FIXME: separate version updates from server-side translation updates?
 			Entry *oldentry = m_entry_index[id(e)];
-			if((!oldentry) || (e->releaseDate() > oldentry->releaseDate()))
+			if(entryChanged(oldentry, e))
 			{
 				kDebug(550) << "CACHE: update entry" << endl;
 				e->setStatus(Entry::Updateable);
@@ -789,14 +922,20 @@ void CoreEngine::mergeEntries(Entry::List *entries)
 		{
 			kDebug(550) << "CACHE: miss entry " << e->name().representation() << endl;
 			cacheEntry(e);
-			emit signalEntryLoaded(e);
+			emit signalEntryLoaded(e, feed, provider);
 		}
 
 		m_entry_cache.append(e);
 		m_entry_index[id(e)] = e;
 	}
 
-	emit signalEntriesFinished();
+	cacheFeed(provider, "???", feed, entries);
+
+	emit signalEntriesFeedFinished(feed);
+	if(m_activefeeds == 0)
+	{
+		emit signalEntriesFinished();
+	}
 }
 
 void CoreEngine::cacheProvider(Provider *provider)
@@ -828,6 +967,53 @@ void CoreEngine::cacheProvider(Provider *provider)
 	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		kError(550) << "Cannot write meta information to '" << cachedir << "'." << endl;
+		// FIXME: ignore?
+		return;
+	}
+	QTextStream metastream(&f);
+	metastream << root;
+	f.close();
+
+	/*QStringList feeds = p->feeds();
+	for(int i = 0; i < feeds.count(); i++)
+	{
+		Feed *feed = p->downloadUrlFeed(feeds.at(i));
+		cacheFeed(p, feeds.at(i), feed);
+	}*/
+}
+
+void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Feed *feed, Entry::List entries)
+{
+	KStandardDirs d;
+
+	Q_UNUSED(feed);
+
+	kDebug(550) << "Caching feed." << endl;
+
+	QString cachedir = d.saveLocation("cache", "knewstuff2-feeds.cache");
+
+	kDebug(550) << " + Save to directory '" + cachedir + "'." << endl;
+
+	QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + "-" + feedname);
+	QString cachefile = idbase64 + ".xml";
+
+	kDebug(550) << " + Save to file '" + cachefile + "'." << endl;
+
+	QDomDocument doc;
+	QDomElement root = doc.createElement("ghnsfeeds");
+	for(int i = 0; i < entries.count(); i++)
+	{
+		QString idbase64 = QString(KCodecs::base64Encode(id(entries.at(i)).toUtf8()));
+		QDomElement entryel = doc.createElement("entry-id");
+		root.appendChild(entryel);
+		QDomText entrytext = doc.createTextNode(idbase64);
+		entryel.appendChild(entrytext);
+	}
+
+	QFile f(cachedir + cachefile);
+	if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		kError(550) << "Cannot write meta information to '" << cachedir + cachefile << "'." << endl;
 		// FIXME: ignore?
 		return;
 	}
@@ -933,15 +1119,13 @@ QString CoreEngine::id(Entry *e)
 	return e->name().language() + ":" + e->name().representation();
 }
 
-QString CoreEngine::pid(Provider *p)
+QString CoreEngine::pid(const Provider *p)
 {
 	// This is the primary key of a provider:
 	// The download URL, which is never translated
 	// If no download URL exists, a feed or web service URL must exist
-	if(p->downloadUrl().isValid())
-		return p->downloadUrl().url();
-	if(p->webService().isValid())
-		return p->webService().url();
+	//if(p->downloadUrl().isValid())
+	//	return p->downloadUrl().url();
 	QStringList feeds = p->feeds();
 	for(int i = 0; i < feeds.count(); i++)
 	{
@@ -950,6 +1134,8 @@ QString CoreEngine::pid(Provider *p)
 		if(f->feedUrl().isValid())
 			return f->feedUrl().url();
 	}
+	if(p->webService().isValid())
+		return p->webService().url();
 	return QString();
 }
 
@@ -1133,6 +1319,16 @@ bool CoreEngine::install(QString payloadfile)
 		}
 	}
 
+	// FIXME: security object lifecycle - it is a singleton!
+	Security *sec = Security::ref();
+
+	connect(sec,
+		SIGNAL(validityResult(int)),
+		SLOT(slotInstallationVerification(int)));
+
+	// FIXME: change to accept filename + signature
+	sec->checkValidity(QString());
+
 	return true;
 }
 
@@ -1141,6 +1337,16 @@ bool CoreEngine::uninstall(KNS::Entry *entry)
 	entry->setStatus(Entry::Deleted);
 	// FIXME: remove payload file, and maybe unpacked files
 	return true;
+}
+
+void CoreEngine::slotInstallationVerification(int result)
+{
+	kDebug(550) << "SECURITY result " << result << endl;
+
+	if(result & Security::SIGNED_OK)
+		emit signalInstallationFinished();
+	else
+		emit signalInstallationFailed();
 }
 
 #include "coreengine.moc"

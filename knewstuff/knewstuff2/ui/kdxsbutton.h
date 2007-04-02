@@ -12,6 +12,7 @@ namespace KNS
 
 class Dxs;
 class Entry;
+class Provider;
 class DxsEngine;
 class Category;
 
@@ -23,6 +24,7 @@ public:
 	~KDXSButton();
 
         void setEntry(KNS::Entry *e);
+	void setProvider(KNS::Provider *provider);
 	void setEngine(KNS::DxsEngine *engine);
 
 public slots:
@@ -103,6 +105,7 @@ private:
 	KNS::Dxs *m_dxs;
 	KMenu *m_p, *m_history, *m_contact;
 	KNS::Entry *m_entry;
+	KNS::Provider *m_provider;
 	KNS::DxsEngine *m_engine;
 
 	QString m_username;

@@ -210,11 +210,50 @@ class KDE_EXPORT Entry
     int downloads() const;
 
     // FIXME: below here, everything under consideration
+
+    /**
+     * Sets the checksum of the entry. This will be a string representation
+     * of an MD5 sum of the entry's selected payload file.
+     *
+     * @ref checksum Checksum for the entry
+     */
     void setChecksum(QString checksum);
+
+    /**
+     * Sets the signature of the entry. This will be a digital signature
+     * in OpenPGP-compliant format.
+     *
+     * @ref signature Signature for the entry
+     */
     void setSignature(QString signature);
+
+    /**
+     * Returns the checksum for the entry.
+     *
+     * If an empty string is returned, no checksum was assigned.
+     *
+     * @return Checksum of this entry
+     */
     QString checksum() const;
+
+    /**
+     * Returns the signature for the entry.
+     *
+     * If an empty string is returned, no signature was assigned.
+     *
+     * @return Signature of this entry
+     */
     QString signature() const;
 
+    /**
+     * Status of the entry. An entry will be downloadable from the provider's
+     * site prior to the download. Once downloaded and installed, it will
+     * be either installed or updateable, implying an out-of-date
+     * installation. Finally, the entry can be deleted and hence show up as
+     * downloadable again.
+     * Entries not taking part in this cycle, for example those in upload,
+     * have an invalid status.
+     */
     enum Status
     {
         Invalid,
@@ -224,8 +263,20 @@ class KDE_EXPORT Entry
         Deleted
     };
 
-    Status status();
+    /**
+     * Sets the entry's status. If no status is set, the default will be
+     * \ref Invalid.
+     *
+     * @param status New status of the entry
+     */
     void setStatus(Status status);
+
+    /**
+     * Retrieves the entry's status.
+     *
+     * @return Current status of the entry
+     */
+    Status status();
 
   private:
     QString mCategory;

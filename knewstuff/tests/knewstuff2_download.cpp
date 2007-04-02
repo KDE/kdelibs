@@ -257,8 +257,8 @@ void KNewStuff2Download::run()
             SIGNAL(signalProvidersFailed()),
             SLOT(slotProvidersFailed()));
         connect(m_engine,
-            SIGNAL(signalEntryLoaded(KNS::Entry*)),
-            SLOT(slotEntryLoaded(KNS::Entry*)));
+            SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+            SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
         connect(m_engine,
             SIGNAL(signalEntriesFailed()),
             SLOT(slotEntriesFailed()));
@@ -322,8 +322,11 @@ void KNewStuff2Download::slotProviderLoaded(KNS::Provider *provider)
     m_engine->loadEntries(provider);
 }
 
-void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry)
+void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
+    Q_UNUSED(feed);
+    Q_UNUSED(provider);
+
     kDebug() << "SLOT: slotEntryLoaded" << endl;
     kDebug() << "-- entry: " << entry->name().representation() << endl;
 

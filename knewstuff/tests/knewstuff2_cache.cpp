@@ -30,8 +30,8 @@ void KNewStuff2Cache::run()
 	if(ret)
 	{
 		connect(m_engine,
-			SIGNAL(signalEntryLoaded(KNS::Entry*)),
-			SLOT(slotEntryLoaded(KNS::Entry*)));
+			SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+			SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
 		connect(m_engine,
 			SIGNAL(signalEntriesFailed()),
 			SLOT(slotEntriesFailed()));
@@ -49,8 +49,11 @@ void KNewStuff2Cache::run()
 	}
 }
 
-void KNewStuff2Cache::slotEntryLoaded(KNS::Entry *entry)
+void KNewStuff2Cache::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
+	Q_UNUSED(feed);
+	Q_UNUSED(provider);
+
 	kDebug() << "SLOT: slotEntryLoaded" << endl;
 	kDebug() << "-- entry: " << entry->name().representation() << endl;
 }

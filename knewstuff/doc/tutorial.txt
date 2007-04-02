@@ -86,6 +86,7 @@ list of headers installed by KNewStuff2:
 * knewstuff2/core/providerloader.h - download of provider files which contain providers
 
 * knewstuff2/core/ktranslatable.h - convenience class for translated QStrings
+* knewstuff2/core/security.h - encapsulation of security-related methods
 
 All classes are contained in the KNS namespaces. Therefore, applications use KNS::Engine
 as their class for managing uploads and downloads of GHNS data. These workflows are described

@@ -15,6 +15,7 @@ set(knewstuff2_core_SRCS
    core/providerloader.cpp
    core/coreengine.cpp
    core/installation.cpp
+   core/security.cpp
 )
 
 set(knewstuff2_dxs_SRCS

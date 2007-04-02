@@ -38,12 +38,13 @@ namespace KNS {
  * @short KNewStuff provider container.
  *
  * This class provides accessors for the provider object.
- * as used by KNewStuff.
  * It should probably not be used directly by the application.
  *
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
+ *
+ * @internal
  */
 class KDE_EXPORT Provider
 {
@@ -73,32 +74,31 @@ class KDE_EXPORT Provider
     KTranslatable name() const;
 
     /**
-     * Sets the download URL.
-     */
-    void setDownloadUrl( const KUrl & );
-
-    /**
-     * Retrieves the download URL.
-     *
-     * @return download URL
-     */
-    KUrl downloadUrl() const;
-
-    /**
      * Adds a feed URL.
+     *
+     * Each feed is assigned an internal identifier string.
+     * The empty string represents the default feed.
+     *
+     * @param feedtype String representing the feed type
+     * @param feed Feed to add to this provider
      */
     void addDownloadUrlFeed( QString feedtype, Feed *feed );
 
     /**
-     * Feed to retrieve 'tagged' (variant) download URLs.
-     * Feed can be one of 'score', 'downloads', 'latest'.
+     * Feed to retrieve for the given feed type.
      *
-     * @return download URL of a certain feed
+     * The feed can be one of 'score', 'downloads', 'latest'.
+     * It can also be the empty string for the default feed.
+     * For all feeds not present here, \b null is returned.
+     *
+     * @return download feed of a certain feed type
      */
     Feed *downloadUrlFeed( QString feedtype ) const;
 
     /**
      * Returns a list of all feeds.
+     *
+     * @return List of identifier names for the feeds of this provider
      */
     QStringList feeds() const;
 
@@ -168,7 +168,6 @@ class KDE_EXPORT Provider
 
   private:
     KTranslatable mName;
-    KUrl mDownloadUrl;
     KUrl mUploadUrl;
     KUrl mNoUploadUrl;
     KUrl mWebAccess;

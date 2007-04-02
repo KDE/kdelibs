@@ -61,21 +61,22 @@ void DxsEngine::loadEntries(Provider *provider)
 	m_dxs->call_entries(QString(), QString());
 
 	connect(m_dxs,
-		SIGNAL(signalEntries(KNS::Entry::List*)),
-		SLOT(slotEntriesLoaded(KNS::Entry::List*)));
+		SIGNAL(signalEntries(KNS::Entry::List)),
+		SLOT(slotEntriesLoaded(KNS::Entry::List)));
 	connect(m_dxs,
 		SIGNAL(signalFault()),
 		SLOT(slotEntriesFailed()));
 	// FIXME: which one of signalFault()/signalError()? Or both?
 }
 
-void DxsEngine::slotEntriesLoaded(KNS::Entry::List *list)
+void DxsEngine::slotEntriesLoaded(KNS::Entry::List list)
 {
 	// FIXME: we circumvent the cache now...
-	for(Entry::List::Iterator it = list->begin(); it != list->end(); it++)
+	for(Entry::List::Iterator it = list.begin(); it != list.end(); it++)
 	{
 		Entry *entry = (*it);
-		emit signalEntryLoaded(entry);
+		// FIXME: the association to feed and provider is missing here
+		emit signalEntryLoaded(entry, NULL, NULL);
 	}
 }
 

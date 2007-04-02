@@ -17,7 +17,7 @@ public:
 	KDXSView(QWidget *parent = NULL);
 private slots:
 	void slotRun();
-	void slotProvidersLoaded(KNS::Provider::List *providers);
+	void slotProvidersLoaded(KNS::Provider::List providers);
 	void slotProvidersFailed();
 private:
 	enum Access

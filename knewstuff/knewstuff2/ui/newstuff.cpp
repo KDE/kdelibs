@@ -71,6 +71,11 @@ class MyEventFilter : public QObject
                 kapp->sendEvent((dynamic_cast<QWidget*>(o))->parentWidget(), e);
                 return true;
             }
+	    else if(e->type() == QEvent::KeyPress)
+	    {
+                kapp->sendEvent((dynamic_cast<QWidget*>(o))->parentWidget(), e);
+	    	return true;
+	    }
             return false;
         }
 };
@@ -239,8 +244,15 @@ class ItemsViewPart : public KHTMLPart
         }
 
         // handle clicks on page links/buttons
-        void urlSelected( const QString & link, int, int, const QString &, KParts::URLArgs )
+        void urlSelected( const QString &link, int button, int state, const QString &target, KParts::URLArgs args)
         {
+	    kDebug() << "Clicked on URL " << link << endl;
+
+	    Q_UNUSED(button);
+	    Q_UNUSED(state);
+	    Q_UNUSED(target);
+	    Q_UNUSED(args);
+
             KUrl url( link );
             QString urlProtocol = url.protocol();
             QString urlPath = url.path();
@@ -248,6 +260,8 @@ class ItemsViewPart : public KHTMLPart
             if ( urlProtocol == "mailto" )
             {
                 // clicked over a mail address
+                // FIXME: if clicked with MRB, show context menu with IM etc.
+                // FIXME: but RMB never reaches this method?!
                 KToolInvocation::invokeMailer( url );
             }
             else if ( urlProtocol == "item" )
@@ -304,7 +318,7 @@ class ItemsView : public QScrollArea
 	    m_engine = engine;
 	}
 
-        void setItems( const Entry::List & itemList )
+        void setItems( /*const Entry::List & itemList*/ QMap<const Feed*, KNS::Entry::List> itemList )
         {
             clear();
             m_entries = itemList;
@@ -333,10 +347,17 @@ class ItemsView : public QScrollArea
                 delete m_root;
             }
 
+	    if(m_entries.keys().count() == 0)
+	    {
+	        // FIXME: warning?
+	        return;
+	    }
+
             m_root = new QWidget();
             QVBoxLayout *layout = new QVBoxLayout(m_root);
 
-            Entry::List::iterator it = m_entries.begin(), iEnd = m_entries.end();
+            Entry::List entries = m_entries[m_entries.keys().first()];
+            Entry::List::iterator it = entries.begin(), iEnd = entries.end();
             for ( ; it != iEnd; ++it )
             {
                 Entry* entry = (*it);
@@ -348,10 +369,13 @@ class ItemsView : public QScrollArea
                 l->addWidget(nav);
                 l->addWidget(part->view());
                 layout->addWidget(itemview);
+		//part->view()->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+		part->view()->setFixedHeight(100);
 
                 QVBoxLayout *l2 = new QVBoxLayout(nav);
                 KDXSButton *dxsbutton = new KDXSButton();
                 dxsbutton->setEntry(entry);
+                dxsbutton->setProvider(0);
 		dxsbutton->setEngine(m_engine);
 
                 QString imageurl = entry->preview().representation();
@@ -382,7 +406,7 @@ class ItemsView : public QScrollArea
 
     private:
         DownloadDialog * m_newStuffDialog;
-        Entry::List m_entries;
+        QMap<const Feed*, Entry::List> m_entries;
         QWidget *m_root;
         int m_sorting;
         QMap<QPixmap*, QWidget*> m_pixmaps;
@@ -468,9 +492,10 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
         d->sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
         d->sortCombo->setMinimumWidth( 100 );
         d->sortCombo->setEnabled( false );
-        d->sortCombo->addItem( SmallIcon( "fonts" ), i18n("Name") );
-        d->sortCombo->addItem( SmallIcon( "knewstuff" ), i18n("Rating") );
-        d->sortCombo->addItem( SmallIcon( "favorites" ), i18n("Downloads") );
+        d->sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
+        d->sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
+        d->sortCombo->addItem( SmallIcon( "calendar-today" ), i18n("Most recent") );
+        d->sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
         connect( d->sortCombo, SIGNAL( activated(int) ),
                  this, SLOT( slotSortingSelected(int) ) );
 
@@ -648,21 +673,45 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 
 void DownloadDialog::slotEntries(QList<KNS::Entry*> entries)
 {
-	d->itemsView->setItems( entries );
+	Q_UNUSED(entries);
+
+	//d->itemsView->setItems( entries );
+	// FIXME: old API here
 }
 
 // FIXME: below here, those are for traditional GHNS
 
-void DownloadDialog::addEntry(Entry *entry)
+void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *provider)
 {
-	m_entries.append(entry);
+	Q_UNUSED(provider);
 
-	kDebug() << "downloaddialog: addEntry to list of size " << m_entries.size() << endl;
+	Entry::List entries = m_entries[feed];
+	entries.append(entry);
+	m_entries[feed] = entries;
+
+	kDebug() << "downloaddialog: addEntry to list of size " << entries.size() << endl;
 }
 
 void DownloadDialog::refresh()
 {
 	d->itemsView->setItems(m_entries);
+
+	for(int i = 0; i < m_entries.keys().count(); i++)
+	{
+		const Feed *feed = m_entries.keys().at(i);
+		if(!feed)
+		{
+			kDebug() << "INVALID FEED?!" << endl;
+			continue;
+		}
+		//QPixmap icon = DesktopIcon(QString(), 16);
+		//d->typeCombo->addItem(icon, feed->name().representation());
+		d->typeCombo->addItem(feed->name().representation());
+		// FIXME: see DXS categories
+	}
+	d->typeCombo->setEnabled(true);
+	d->sortCombo->setEnabled(true);
+	// FIXME: sort combo must be filled with feeds instead of being prefilled
 }
 
 ///////////////// DXS ////////////////////

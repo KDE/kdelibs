@@ -40,6 +40,8 @@ namespace KNS {
  * This class sets up a list of all possible providers by querying
  * the main provider database for this specific application.
  * It should probably not be used directly by the application.
+ *
+ * @internal
  */
 class KDE_EXPORT ProviderLoader : public QObject
 {
@@ -62,7 +64,7 @@ class KDE_EXPORT ProviderLoader : public QObject
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
-    void signalProvidersLoaded(KNS::Provider::List *);
+    void signalProvidersLoaded(KNS::Provider::List);
     void signalProvidersFailed();
 
   protected slots:

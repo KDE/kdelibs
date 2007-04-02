@@ -72,7 +72,7 @@ public:
 	/**
 	 * Returns the string which matches most closely the specified language.
 	 *
-	 * @param Language the contents should appear in, in 'xx_XX' format
+	 * @param lang Language the contents should appear in, in 'xx_XX' format
 	 * @return Contents for the specified language
 	 */
 	QString translated(QString lang);

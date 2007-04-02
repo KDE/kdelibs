@@ -1,5 +1,6 @@
-Base classes:
+Utility classes, useful also outside of KNewStuff2:
  KTranslatable
+ Security
 
 Container classes:
  Author
@@ -16,9 +17,5 @@ Parser/dumper classes:
 Engine classes (asynchronous, therefore qobjects):
  EntryLoader
  ProviderLoader
- Engine
-
-Test classes:
- KNewStuff2Test
- KNewStuff2Download
+ CoreEngine
 

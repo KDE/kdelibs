@@ -27,8 +27,11 @@ provider.*
  -> author, feed and category are now additional entities
 
 security.*
+ -> see knewstuff2/core/
+
 knewstuffbutton.*
  -> TODO
+ -> will go to knewstuff2/ui/ (there's already kdxsbutton)
 
 engine.*
  (non-graphical upload/download functionality)

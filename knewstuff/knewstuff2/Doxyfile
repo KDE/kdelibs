@@ -1,0 +1,12 @@
+PROJECT_NAME           = KNewStuff2
+PROJECT_NUMBER         = 0.0
+EXTRACT_ALL            = YES
+HIDE_FRIEND_COMPOUNDS  = YES
+HIDE_SCOPE_NAMES       = NO
+QUIET                  = YES
+RECURSIVE              = YES
+SOURCE_BROWSER         = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+

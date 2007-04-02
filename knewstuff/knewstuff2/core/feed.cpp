@@ -67,3 +67,13 @@ KUrl Feed::feedUrl() const
   return mFeed;
 }
 
+void Feed::addEntry(Entry *entry)
+{
+  mEntries.append(entry);
+}
+
+Entry::List Feed::entries() const
+{
+  return mEntries;
+}
+

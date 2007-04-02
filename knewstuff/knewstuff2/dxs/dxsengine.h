@@ -36,7 +36,7 @@ class KDE_EXPORT DxsEngine : public CoreEngine
 
   //private slots:
     // FIXME: idem for slots
-    void slotEntriesLoaded(KNS::Entry::List *list);
+    void slotEntriesLoaded(KNS::Entry::List list);
     void slotEntriesFailed();
 
   private:

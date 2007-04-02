@@ -26,10 +26,19 @@
 
 namespace KNS {
 
+// FIXME: maybe it's smarter to let this class perform the installation
+// so we can reduce the size of KNS::CoreEngine a bit?
+
 /**
  * @short KNewStuff entry installation.
  *
+ * The installation class stores all information related to an entry's
+ * installation. However, the installation itself is performed by the
+ * engine.
+ *
  * @author Josef Spillner (spillner@kde.org)
+ *
+ * @internal
  */
 class KDE_EXPORT Installation
 {

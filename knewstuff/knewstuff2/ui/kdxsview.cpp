@@ -26,7 +26,7 @@ KDXSView::KDXSView(QWidget *parent)
 	setMainWidget(root);
 
 	QPushButton *button = new QPushButton(i18n("Get Hot New Stuff!"), root);
-	button->setIcon(SmallIcon("knewstuff"));
+	button->setIcon(SmallIcon("get-hot-new-stuff"));
 
 	QLabel *dxslabel = new QLabel(i18n(
 		"Please select the <b>Get Hot New Stuff</b> "
@@ -73,15 +73,15 @@ void KDXSView::slotRun()
 {
 	ProviderLoader *pl = new ProviderLoader(/*this*/);
 	connect(pl,
-		SIGNAL(signalProvidersLoaded(KNS::Provider::List*)),
-		SLOT(slotProvidersLoaded(KNS::Provider::List*)));
+		SIGNAL(signalProvidersLoaded(KNS::Provider::List)),
+		SLOT(slotProvidersLoaded(KNS::Provider::List)));
 	connect(pl,
 		SIGNAL(signalProvidersFailed()),
 		SLOT(slotProvidersFailed()));
 	pl->load(m_url->currentText());
 }
 
-void KDXSView::slotProvidersLoaded(KNS::Provider::List *providers)
+void KDXSView::slotProvidersLoaded(KNS::Provider::List providers)
 {
 	kDebug() << "(providers loaded)" << endl;
 
@@ -96,7 +96,7 @@ void KDXSView::slotProvidersLoaded(KNS::Provider::List *providers)
 	}
 
 	KUrl endpoint;
-	for(Provider::List::Iterator it = providers->begin(); it != providers->end(); it++)
+	for(Provider::List::Iterator it = providers.begin(); it != providers.end(); it++)
 	{
 		Provider *provider = (*it);
 		if(provider->webService().isValid())

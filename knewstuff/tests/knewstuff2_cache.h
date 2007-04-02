@@ -8,6 +8,8 @@
 namespace KNS
 {
 	class CoreEngine;
+	class Feed;
+	class Provider;
 };
 
 class KNewStuff2Cache : public QObject
@@ -17,7 +19,7 @@ public:
 	KNewStuff2Cache();
 	void run();
 public slots:
-	void slotEntryLoaded(KNS::Entry *entry);
+	void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
 	void slotEntriesFailed();
 	void slotEntriesFinished();
 private:

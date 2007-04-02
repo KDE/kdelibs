@@ -28,7 +28,7 @@ class DownloadDialog : public QDialog
         DownloadDialog( QWidget * parent );
         ~DownloadDialog();
 
-	void addEntry(Entry *entry);
+	void addEntry(Entry *entry, const Feed *feed, const Provider *provider);
 	void refresh();
 
 	void setEngine(DxsEngine *engine);
@@ -51,7 +51,8 @@ class DownloadDialog : public QDialog
 	DxsEngine *m_engine;
 	QMap<QString, QString> m_categorymap;
 
-	QList<Entry*> m_entries;
+	//QList<Entry*> m_entries;
+	QMap<const Feed*, KNS::Entry::List> m_entries;
 
     private slots:
         void slotResetMessageColors();

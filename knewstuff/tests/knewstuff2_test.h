@@ -23,11 +23,13 @@ public:
 public slots:
 	void slotProviderLoaded(KNS::Provider *provider);
 	void slotProvidersFailed();
-	void slotEntryLoaded(KNS::Entry *entry);
+	void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
 	void slotEntriesFailed();
 	void slotEntriesFinished();
 	void slotPayloadLoaded(KUrl payload);
 	void slotPayloadFailed();
+	void slotInstallationFinished();
+	void slotInstallationFailed();
 private:
 	void quitTest();
 	KNS::CoreEngine *m_engine;

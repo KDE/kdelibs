@@ -60,7 +60,7 @@ Provider *ProviderHandler::providerptr()
 {
   Provider *provider = new Provider();
   provider->setName(mProvider.name());
-  provider->setDownloadUrl(mProvider.downloadUrl());
+  //provider->setDownloadUrl(mProvider.downloadUrl());
   provider->setUploadUrl(mProvider.uploadUrl());
   provider->setNoUploadUrl(mProvider.noUploadUrl());
   provider->setWebAccess(mProvider.webAccess());
@@ -100,10 +100,10 @@ QDomElement ProviderHandler::serializeElement(const Provider& provider)
     e.setAttribute("lang", *it);
   }
 
-  if(provider.downloadUrl().isValid())
+  /*if(provider.downloadUrl().isValid())
   {
     el.setAttribute("downloadurl", provider.downloadUrl().url());
-  }
+  }*/
   if(provider.uploadUrl().isValid())
   {
     el.setAttribute("uploadurl", provider.uploadUrl().url());
@@ -129,7 +129,10 @@ QDomElement ProviderHandler::serializeElement(const Provider& provider)
   for(QStringList::Iterator it = feeds.begin(); it != feeds.end(); it++)
   {
     Feed *feed = provider.downloadUrlFeed((*it));
-    el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
+    if((*it).isEmpty())
+      el.setAttribute("downloadurl", feed->feedUrl().url());
+    else
+      el.setAttribute("downloadurl-" + (*it), feed->feedUrl().url());
   }
 
   mValid = true;
@@ -143,17 +146,17 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
 
   if(providerxml.tagName() != "provider") return provider;
 
-  QString downloadurl = providerxml.attribute("downloadurl");
   QString uploadurl = providerxml.attribute("uploadurl");
   QString nouploadurl = providerxml.attribute("nouploadurl");
   QString webservice = providerxml.attribute("webservice");
   QString webaccess = providerxml.attribute("webaccess");
-  provider.setDownloadUrl(KUrl(downloadurl));
+  //provider.setDownloadUrl(KUrl(downloadurl));
   provider.setUploadUrl(KUrl(uploadurl));
   provider.setNoUploadUrl(KUrl(nouploadurl));
   provider.setWebService(KUrl(webservice));
   provider.setWebAccess(KUrl(webaccess));
 
+  QString downloadurl = providerxml.attribute("downloadurl");
   QString downloadlatest = providerxml.attribute("downloadurl-latest");
   QString downloadscore = providerxml.attribute("downloadurl-score");
   QString downloaddownloads = providerxml.attribute("downloadurl-downloads");
@@ -178,6 +181,13 @@ Provider ProviderHandler::deserializeElement(const QDomElement& providerxml)
     feeddownloads->setName(i18n("Most Downloads"));
     feeddownloads->setFeedUrl(downloaddownloads);
     provider.addDownloadUrlFeed("downloads", feeddownloads);
+  }
+  if(!downloadurl.isEmpty())
+  {
+    Feed *feedgeneric = new Feed();
+    feedgeneric->setName(i18n("Unsorted"));
+    feedgeneric->setFeedUrl(downloadurl);
+    provider.addDownloadUrlFeed(QString(), feedgeneric);
   }
  
   // FIXME: what exactly is the following condition supposed to do?

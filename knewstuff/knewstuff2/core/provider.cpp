@@ -19,12 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-//#include <kconfig.h>
 #include <kdebug.h>
 #include <kio/job.h>
-//#include <kglobal.h>
-//#include <kmessagebox.h>
-//#include <klocale.h>
 
 #include "provider.h"
 
@@ -59,9 +55,7 @@ Feed *Provider::downloadUrlFeed( QString feedtype ) const
   }
   else
   {
-    //return mDownloadUrl;
     return NULL;
-    // FIXME: this API makes it impossible to have "default feed"
   }
 }
 
@@ -83,16 +77,6 @@ void Provider::setIcon( const KUrl &url )
 KUrl Provider::icon() const
 {
   return mIcon;
-}
-
-void Provider::setDownloadUrl( const KUrl &url )
-{
-  mDownloadUrl = url;
-}
-
-KUrl Provider::downloadUrl() const
-{
-  return mDownloadUrl;
 }
 
 void Provider::setUploadUrl( const KUrl &url )

@@ -26,18 +26,21 @@
 #include <qobject.h>
 #include <qstring.h>
 
-#include <kurl.h>
-
 class KJob;
 
 namespace KIO { class Job; }
 
 namespace KNS {
 
+class Feed;
+class Provider;
+
 /**
  * KNewStuff entry loader.
  * Loads any entries from a given file and notifies about when the
  * loading has completed.
+ * 
+ * @internal
  */
 class KDE_EXPORT EntryLoader : public QObject
 {
@@ -50,17 +53,36 @@ class KDE_EXPORT EntryLoader : public QObject
 
     /**
      * Starts asynchronously loading the list of entries from the
-     * given URL.
+     * given provider for the given feed.
      *
-     * @param stuffurl location of the XML file containing the entries
+     * @param provider Provider to load the entries from
+     * @param feed Feed to download
      */
-    void load(const QString &stuffurl);
+    void load(const Provider *provider, const Feed *feed);
+
+    /**
+     * Returns the provider which was used for download.
+     *
+     * @return Provider used by this loader
+     */
+    const Provider *provider() const;
+
+    /**
+     * Returns the feed which was used for download.
+     *
+     * @return Feed used by this loader
+     */
+    const Feed *feed() const;
 
   signals:
     /**
      * Indicates that the list of entries has been successfully loaded.
      */
-    void signalEntriesLoaded(KNS::Entry::List *);
+    void signalEntriesLoaded(KNS::Entry::List list);
+
+    /**
+     * Indicates that the list of entries could not be loaded.
+     */
     void signalEntriesFailed();
 
   protected slots:
@@ -71,6 +93,8 @@ class KDE_EXPORT EntryLoader : public QObject
     QByteArray m_jobdata;
 
     Entry::List m_entries;
+    const Feed *m_feed;
+    const Provider *m_provider;
 };
 
 }

@@ -21,6 +21,12 @@ call from KNewStuff1 to the new
 call in KNewStuff2. Similarly, calling ::uploadDialogModal() handles all
 upload in a modal way, without the need for signals and slots.
 
+The modal calls return the list of affected entries directly. These entries
+should be queried about their status for installed, removed and updated
+entries in the download dialog, and a single entry returned for the upload
+dialog.
+The non-modal calls will send signals for each affected entry.
+
 Upload
 ------
 

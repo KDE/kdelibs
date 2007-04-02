@@ -67,7 +67,7 @@ void ProviderLoader::slotJobResult( KJob *job )
   }
 
   kDebug(550) << "--PROVIDERS-START--" << endl;
-  kDebug(550) << QString(m_jobdata) << endl;
+  kDebug(550) << QString::fromUtf8(m_jobdata) << endl;
   kDebug(550) << "--PROVIDERS-END--" << endl;
 
   QDomDocument doc;
@@ -92,7 +92,7 @@ void ProviderLoader::slotJobResult( KJob *job )
     }
   }
  
-  emit signalProvidersLoaded( &m_providers );
+  emit signalProvidersLoaded( m_providers );
 }
 
 #include "providerloader.moc"

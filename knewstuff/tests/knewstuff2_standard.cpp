@@ -13,7 +13,7 @@ KNewStuff2Standard::KNewStuff2Standard()
     m_engine = NULL;
 }
 
-void KNewStuff2Standard::run(bool upload, QString file)
+void KNewStuff2Standard::run(bool upload, bool modal, QString file)
 {
     kDebug() << "-- test kns2 engine" << endl;
 
@@ -22,29 +22,45 @@ void KNewStuff2Standard::run(bool upload, QString file)
 
     kDebug() << "-- engine test result: " << success << endl;
 
-    if(success)
-    {
-        //m_engine->start();
+	if(!success)
+		return;
+
+	//m_engine->start();
 	if(upload)
 	{
-		kDebug() << "-- start upload" << endl;
-		m_engine->uploadDialogModal(file);
-		kDebug() << "-- upload finished" << endl;
+		if(modal)
+		{
+			kDebug() << "-- start upload (modal)" << endl;
+			m_engine->uploadDialogModal(file);
+			kDebug() << "-- upload (modal) finished" << endl;
+		}
+		else
+		{
+			kDebug() << "-- start upload (non-modal); will not block" << endl;
+			m_engine->uploadDialog(file);
+		}
 	}
 	else
 	{
-		m_engine->downloadDialog();
+		if(modal)
+		{
+			kDebug() << "-- start download (modal)" << endl;
+			m_engine->downloadDialogModal();
+			kDebug() << "-- download (modal) finished" << endl;
+		}
+		else
+		{
+			kDebug() << "-- start download (non-modal); will not block" << endl;
+			m_engine->downloadDialog();
+		}
 	}
-    }
-    else
-    {
-    }
 }
 
 static KCmdLineOptions options[] =
 {
 	{"upload <file>", "Tests upload dialog", 0},
 	{"download", "Tests download dialog", 0},
+	{"modal", "Show modal dialogs", 0},
 	KCmdLineLastOption
 };
 
@@ -60,13 +76,18 @@ int main(int argc, char **argv)
 
     KNewStuff2Standard *standard = new KNewStuff2Standard();
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    bool modal = false;
+    if(args->isSet("modal"))
+    {
+        modal = true;
+    }
     if(args->isSet("upload"))
     {
-        standard->run(true, args->getOption("upload"));
+        standard->run(true, modal, args->getOption("upload"));
     }
     else if(args->isSet("download"))
     {
-        standard->run(false, QString());
+        standard->run(false, modal, QString());
     }
     else
     {
