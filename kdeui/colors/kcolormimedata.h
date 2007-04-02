@@ -63,7 +63,7 @@ namespace KColorMimeData
      * filled with the specified color, which is going to be displayed next to the mouse cursor
      */
     KDEUI_EXPORT QDrag* createDrag(const QColor& color, QWidget *dragsource);
-};
+}
 
 
 #endif // _KCOLORMIMEDATA_H
