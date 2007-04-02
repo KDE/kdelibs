@@ -36,7 +36,7 @@ KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
 	QLabel	*m_hostlabel = new QLabel(i18n("&Host:"), this);
 	QLabel	*m_portlabel = new QLabel(i18n("&Port:"), this);
 	m_useproxy = new QCheckBox(i18n("&Use proxy server"), this);
-	m_useproxy->setCursor(KCursor::handCursor());
+	m_useproxy->setCursor(QCursor(Qt::PointingHandCursor));
 	m_proxyhost = new QLineEdit(this);
 	m_proxyport = new QLineEdit(this);
 	m_proxyport->setValidator(new QIntValidator(m_proxyport));

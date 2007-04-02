@@ -64,6 +64,6 @@ int KVisibleButtonGroup::addButton(QAbstractButton *btn, int ID)
 KRadioButtonWithHandOver::KRadioButtonWithHandOver(const QString& txt, QWidget *parent)
 : QRadioButton(txt,parent)
 {
-	setCursor(KCursor::handCursor());
+	setCursor(QCursor(Qt::PointingHandCursor));
 }
 

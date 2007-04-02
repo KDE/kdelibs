@@ -41,7 +41,7 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 	m_installdir = new KUrlRequester(m_dirbox);
 	m_installdir->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
 	m_stddir = new QCheckBox(i18n("Standard installation (/)"), m_dirbox);
-	m_stddir->setCursor(KCursor::handCursor());
+	m_stddir->setCursor(QCursor(Qt::PointingHandCursor));
 
 	QVBoxLayout *lay0 = new QVBoxLayout(this);
 	lay0->setMargin(0);

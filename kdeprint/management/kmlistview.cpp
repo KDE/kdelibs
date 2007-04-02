@@ -263,11 +263,11 @@ void KMListView::setPrinter(KMPrinter *p)
 
 void KMListView::slotOnItem(Q3ListViewItem *)
 {
-	setCursor(KCursor::handCursor());
+	setCursor(QCursor(Qt::PointingHandCursor));
 }
 
 void KMListView::slotOnViewport()
 {
-	setCursor(KCursor::arrowCursor());
+	setCursor(QCursor(Qt::ArrowCursor));
 }
 #include "kmlistview.moc"

@@ -89,7 +89,7 @@ void SmbView::startProcess(int state)
 {
 	m_buffer.clear();
 	m_state = state;
-	QApplication::setOverrideCursor(KCursor::waitCursor());
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	m_proc->start(K3Process::NotifyOnExit,K3Process::Stdout);
 	emit running(true);
 }

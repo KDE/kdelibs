@@ -69,7 +69,7 @@ KMConfigGeneral::KMConfigGeneral(QWidget *parent)
         connect(m_testpage->lineEdit(),SIGNAL(textChanged ( const QString & )),this,SLOT(testPageChanged(const QString & )));
 	m_testpage->setDisabled(true);
 	m_preview->setDisabled(true);
-	m_defaulttestpage->setCursor(KCursor::handCursor());
+	m_defaulttestpage->setCursor(QCursor(Qt::PointingHandCursor));
 
 	QGroupBox	*m_statusbox = new QGroupBox(i18n("Miscellaneous"), this);
 	m_statusbox->setLayout( new QVBoxLayout );

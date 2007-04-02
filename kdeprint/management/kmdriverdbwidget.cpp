@@ -48,8 +48,8 @@ KMDriverDbWidget::KMDriverDbWidget(QWidget *parent)
 	m_model = new KListWidget(this);
 	m_postscript = new QCheckBox(i18n("&PostScript printer"),this);
 	m_raw = new QCheckBox(i18n("&Raw printer (no driver needed)"),this);
-	m_postscript->setCursor(KCursor::handCursor());
-	m_raw->setCursor(KCursor::handCursor());
+	m_postscript->setCursor(QCursor(Qt::PointingHandCursor));
+	m_raw->setCursor(QCursor(Qt::PointingHandCursor));
 	m_other = new KPushButton(KGuiItem(i18n("&Other..."), "document-open"), this);
 	QLabel	*l1 = new QLabel(i18n("&Manufacturer:"), this);
 	QLabel	*l2 = new QLabel(i18n("Mo&del:"), this);
@@ -166,7 +166,7 @@ void KMDriverDbWidget::init()
 {
 	if (!m_valid)
 	{
-		QApplication::setOverrideCursor(KCursor::waitCursor());
+		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 		m_manu->clear();
 		m_model->clear();
 		m_manu->addItem(i18n("Loading..."));

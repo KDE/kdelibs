@@ -80,9 +80,9 @@ KMCupsConfigWidget::KMCupsConfigWidget(QWidget *parent)
 	m_password = new QLineEdit(m_loginbox);
 	m_password->setEchoMode(QLineEdit::Password);
 	m_savepwd = new QCheckBox( i18n( "&Store password in configuration file" ), m_loginbox );
-	m_savepwd->setCursor( KCursor::handCursor() );
+	m_savepwd->setCursor(QCursor(Qt::PointingHandCursor));
 	m_anonymous = new QCheckBox(i18n("Use &anonymous access"), m_loginbox);
-	m_anonymous->setCursor(KCursor::handCursor());
+	m_anonymous->setCursor(QCursor(Qt::PointingHandCursor));
 	m_loginlabel->setBuddy(m_login);
 	m_passwordlabel->setBuddy(m_password);
 
