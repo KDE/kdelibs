@@ -56,8 +56,6 @@
 static bool atoms_created = false;
 
 static Atom kde_wm_change_state;
-static Atom kde_wm_window_opacity;
-static Atom kde_wm_window_shadow;
 static Atom kwin_wm_protocols;
 static Atom kwin_UTF8_STRING;
 static Atom net_wm_cm;
@@ -72,12 +70,6 @@ static void kwin_net_create_atoms() {
 
 	atoms[n] = &kde_wm_change_state;
 	names[n++] = "_KDE_WM_CHANGE_STATE";
-
-        atoms[n] = &kde_wm_window_opacity;
-        names[n++] = "_NET_WM_WINDOW_OPACITY";
-
-        atoms[n] = &kde_wm_window_shadow;
-        names[n++] = "_KDE_WM_WINDOW_SHADOW";
 
         atoms[n] = &kwin_wm_protocols;
         names[n++] = "WM_PROTOCOLS";
@@ -384,29 +376,6 @@ void KWin::clearState( WId win, unsigned long state )
 #ifdef Q_WS_X11
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( 0, state );
-#endif
-}
-
-void KWin::setOpacity( WId win, uint percent )
-{
-#ifdef Q_WS_X11
-    kwin_net_create_atoms();
-    if (percent > 99)
-        XDeleteProperty (QX11Info::display(), win, kde_wm_window_opacity);
-    else
-    {
-        long opacity = long(0xFFFFFFFF/100.0*percent);
-        XChangeProperty(QX11Info::display(), win, kde_wm_window_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1L);
-    }
-#endif
-}
-
-void KWin::setShadowSize( WId win, uint percent )
-{
-#ifdef Q_WS_X11
-    kwin_net_create_atoms();
-    long shadowSize = long(0xFFFFFFFF/100.0*percent);
-    XChangeProperty(QX11Info::display(), win, kde_wm_window_shadow, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &shadowSize, 1L);
 #endif
 }
 
