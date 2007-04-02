@@ -561,7 +561,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     html += "<p><b>" + i18n("Various Useful Representations") + "</b><br>";
     html += i18n("UTF-8:");
     foreach(unsigned char c, utf8)
-    html += " " + KCharSelectData::formatCode(c, 2, "0x");
+    html += ' ' + KCharSelectData::formatCode(c, 2, "0x");
     html += "<br>" + i18n("UTF-16: ") + KCharSelectData::formatCode(c.unicode(), 4, "0x") + "<br>";
     html += i18n("C octal escaped UTF-8: ");
     foreach(unsigned char c, utf8)
