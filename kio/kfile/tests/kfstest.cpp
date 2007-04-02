@@ -32,8 +32,8 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kurl.h>
-#include <kurlbar.h>
 #if 0 // SPLIT-TODO
+#include <kurlbar.h>
 #include <kdiroperator.h>
 #endif
 #include <kfile.h>
