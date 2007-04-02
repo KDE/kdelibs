@@ -782,43 +782,4 @@ class KDEUI_EXPORT KDialog : public QDialog
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::CaptionFlags)
 
-
-/**
- * \brief Queue for showing modal dialogs one after the other.
- *
- * This is useful if you want to show a modal dialog but are not in the
- * position to start a new event loop at that point in your code.
- *
- * The disadvantage is that you will not be able to get any information from
- * the dialog, so it can currently only be used for simple dialogs.
- *
- * You probably want to use KMessageBox::queueMessageBox() instead
- * of this class directly.
- *
- * @author Waldo Bastian <bastian@kde.org>
- */
-class KDEUI_EXPORT KDialogQueue : public QObject
-{
-  Q_OBJECT
-
-  public:
-    static void queueDialog(QDialog *);
-
-    ~KDialogQueue();
-
-  protected:
-    KDialogQueue();
-    static KDialogQueue *self();
-
-  private:
-    Q_PRIVATE_SLOT(d, void slotShowQueuedDialog())
-
-  private:
-    class Private;
-    friend class Private;
-    Private* const d;
-
-    Q_DISABLE_COPY(KDialogQueue)
-};
-
 #endif // KDIALOG_H

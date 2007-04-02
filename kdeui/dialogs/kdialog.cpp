@@ -23,6 +23,7 @@
 #include <config.h>
 
 #include "kdialog.h"
+#include "kdialogqueue_p.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -1098,3 +1099,4 @@ void KDialogQueue::Private::slotShowQueuedDialog()
 }
 
 #include "kdialog.moc"
+#include "kdialogqueue_p.moc"
