@@ -72,7 +72,7 @@ void MediaObject::setUrl( const KUrl& url )
     QTimer::singleShot(50, this, SLOT(loadingComplete()));
 }
 
-void MediaObject::openMedia(Phonon::MediaObject::Media media)
+void MediaObject::openMedia(Phonon::MediaObject::Media media, const QString &)
 {
     switch (media) {
     case Phonon::MediaObject::None:
