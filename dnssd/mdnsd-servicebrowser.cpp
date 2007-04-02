@@ -89,7 +89,7 @@ void ServiceBrowser::startBrowse()
 	QString fullType=d->m_type;
 	if (!d->m_subtype.isEmpty()) fullType=d->m_subtype+"._sub."+d->m_type;
 	if (DNSServiceBrowse(&ref,0,0, fullType.toAscii().constData(),
-	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
+	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(d))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 	if (!d->isRunning()) emit finished();
 	else d->timeout.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAN : TIMEOUT_WAN);
@@ -120,7 +120,6 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 	if (event->type()==QEvent::User+SD_ADDREMOVE) {
 		AddRemoveEvent *aev = static_cast<AddRemoveEvent*>(event);
 		// m_type has useless trailing dot
-		//FIXME: check it
 		RemoteService::Ptr svr(new RemoteService(aev->m_name,aev->m_type.left(aev->m_type.length()-1),aev->m_domain));
 		if (aev->m_op==AddRemoveEvent::Add) {
 		    if (m_autoResolve) {

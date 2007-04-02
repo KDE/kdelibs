@@ -67,8 +67,8 @@ void RemoteService::resolveAsync()
 	org::freedesktop::Avahi::ServiceResolver *b=new org::freedesktop::Avahi::ServiceResolver("org.freedesktop.Avahi",rep.value().path(),
 	    QDBusConnection::systemBus());
 	connect(b,SIGNAL(Found(int,int,const QString &,const QString &,const QString &,const QString &, int, const QString &,ushort,
-	     const QByteArray &, uint)),d, SLOT(gotFound(int,int,const QString &,const QString &,const QString &,const QString &,
-	     int, const QString &,ushort , const QByteArray &, uint)));
+	     const QList<QByteArray>&, uint)),d, SLOT(gotFound(int,int,const QString &,const QString &,const QString &,const QString &,
+	     int, const QString &,ushort , const QList<QByteArray>&, uint)));
 	connect(b,SIGNAL(Failure(const QString&)),d, SLOT(gotError()));
 	d->m_running=true;
 }
@@ -86,14 +86,17 @@ void RemoteServicePrivate::gotError()
 	emit m_parent->resolved(false);
 }
 
-void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int, const QString &, ushort port, const QByteArray &txt, uint)
+void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int, const QString &, ushort port, const QList<QByteArray> &txt, uint)
 {
 	m_parent->m_serviceName = name;
 	m_parent->m_hostName = host;
 	m_parent->m_port = port;
 	m_parent->m_domain=DNSToDomain(domain);
-	//FIXME: TXT
-//	m_parent->m_textData = txt;
+	Q_FOREACH(QByteArray x, txt) {
+		int pos=x.indexOf("=");
+		if (pos==-1) m_parent->m_textData[x]=QByteArray();
+		else m_parent->m_textData[x.mid(0,pos)]=x.mid(pos+1,x.size()-pos);
+	}
 	m_resolved = true;
 	emit m_parent->resolved(true);
 }

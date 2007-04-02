@@ -40,7 +40,7 @@ public:
 	void stop();
 
 private Q_SLOTS:
-        void gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int aprotocol, const QString &address, ushort port, const QByteArray &txt, uint flags);
+        void gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int aprotocol, const QString &address, ushort port, const QList<QByteArray> &txt, uint flags);
 	void gotError();
 };
 
