@@ -20,7 +20,7 @@
 #ifndef KFILEFILTERCOMBO_H
 #define KFILEFILTERCOMBO_H
 
-#include <kio/kio_export.h>
+#include <kfile_export.h>
 
 #include <qstringlist.h>
 
@@ -29,7 +29,7 @@
 
 class KFileFilterComboPrivate;
 
-class KIO_EXPORT KFileFilterCombo : public KComboBox
+class KFILE_EXPORT KFileFilterCombo : public KComboBox
 {
     Q_OBJECT
 

@@ -22,7 +22,9 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdirwatch.h>
+#if 0
 #include <k3filetreeview.h>
+#endif
 #include <qdatetime.h>
 #include <qdialog.h>
 #include <qdir.h>
@@ -47,7 +49,6 @@ int main(int argc, char **argv)
 KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
 {
     QPushButton *e,*f;
-    K3FileTreeView *tree;
 
     QVBoxLayout *lay = new QVBoxLayout(this);
     lay->setMargin( 0 );
@@ -61,11 +62,14 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     dir = QDir::currentPath();
     file = dir + "/testfile_kdirwatchtest_gui";
 
-    lay->addWidget(tree = new K3FileTreeView(this));
+#if 0
+    K3FileTreeView *tree = new K3FileTreeView(this);
+    lay->addWidget(tree);
     QString view = "file:" + dir;
     KFileTreeBranch *branch = tree->addBranch(KUrl(view.toLatin1().constData()), "Our data dir");
     tree->addColumn("Folders");
     branch->setOpen(true);
+#endif
 
     w1 = new KDirWatch();
     w2 = new KDirWatch();

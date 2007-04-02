@@ -21,7 +21,6 @@
 #ifndef KFILEDETAILVIEW_H
 #define KFILEDETAILVIEW_H
 
-class QColorGroup;
 class KFileItem;
 class QWidget;
 class QKeyEvent;
@@ -35,7 +34,7 @@ class QKeyEvent;
  * An item for the listiew, that has a reference to its corresponding
  * KFileItem.
  */
-class KIO_EXPORT K3FileListViewItem : public K3ListViewItem
+class KFILE_EXPORT K3FileListViewItem : public K3ListViewItem
 {
 public:
     K3FileListViewItem( Q3ListView *parent, const QString &text,
@@ -101,7 +100,7 @@ private:
  * @see KCombiView
  * @see KFileIconView
  */
-class KIO_EXPORT K3FileDetailView : public K3ListView, public KFileView
+class KFILE_EXPORT K3FileDetailView : public K3ListView, public KFileView
 {
     Q_OBJECT
 

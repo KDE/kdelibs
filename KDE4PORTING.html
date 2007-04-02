@@ -1615,12 +1615,14 @@ in the drop/paste side.</li>
 <li>void updateStatusLine(int dirs, int files); was removed</li>
 <li>protected member locationEdit is now a method locationEdit()</li>
 <li>protected member filterWidget is now a method filterWidget()</li>
+<li>getExistingUrl -&gt; getExistingDirectoryUrl</li>
 </ul>
 
 <h4>KFileIconView, KFileDetailView, KFileTreeView, KFileTreeViewItem</h4>
 <ul>
 <li>All renamed to K3File* since they are based upon K3IconView and K3ListView</li>
 <li>No replacement yet, apart from the more low-level KDirModel</li>
+<li>Those classes have all moved to a new library, libkfile. You need to link to ${KDE4_KFILE_LIBS} to keep using those classes.</li>
 </ul>
 
 <h4>KFileItemList</h4>
@@ -1844,9 +1846,9 @@ to pass a KUrl to most methods instead.</li>
 <li>renamed to KUrlBar</li>
 </ul>
 
-<h4>KURLCombo</h4>
+<h4>KURLComboBox</h4>
 <ul>
-<li>Renamed to KUrlCombo</li>
+<li>Renamed to KUrlComboBox</li>
 <li>All usage of QPixmap has been replaced by usage of QIcon</li>
 <li>getPixmap() --&gt; getIcon()</li>
 </ul>

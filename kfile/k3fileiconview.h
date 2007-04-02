@@ -35,7 +35,7 @@ class QLabel;
  * An item for the iconview, that has a reference to its corresponding
  * KFileItem.
  */
-class KIO_EXPORT K3FileIconViewItem : public K3IconViewItem
+class KFILE_EXPORT K3FileIconViewItem : public K3IconViewItem
 {
 public:
     K3FileIconViewItem( Q3IconView *parent, const QString &text,
@@ -76,7 +76,7 @@ namespace KIO {
  * @see KCombiView
  * @see KFileDetailView
  */
-class KIO_EXPORT K3FileIconView : public K3IconView, public KFileView
+class KFILE_EXPORT K3FileIconView : public K3IconView, public KFileView
 {
     Q_OBJECT
 

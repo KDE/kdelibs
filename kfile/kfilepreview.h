@@ -34,7 +34,7 @@
 /*!
  * This KFileView is an empbedded preview for some file types.
  */
-class KIO_EXPORT KFilePreview : public QSplitter, public KFileView
+class KFILE_EXPORT KFilePreview : public QSplitter, public KFileView
 {
     Q_OBJECT
 

@@ -50,7 +50,7 @@ class QEvent;
  * @see KFileDetailView
  * @see KDirOperator
  */
-class KIO_EXPORT KCombiView : public QSplitter, public KFileView
+class KFILE_EXPORT KCombiView : public QSplitter, public KFileView
 {
     Q_OBJECT
 

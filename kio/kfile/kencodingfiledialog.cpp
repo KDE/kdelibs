@@ -28,7 +28,6 @@
 #include <klocale.h>
 #include <kcharsets.h>
 #include <qtextcodec.h>
-#include <kdiroperator.h>
 #include <krecentdocument.h>
 
 struct KEncodingFileDialogPrivate

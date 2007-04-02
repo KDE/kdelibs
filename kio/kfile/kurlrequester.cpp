@@ -19,7 +19,6 @@
 #include "kurlrequester.h"
 
 #include <kcombobox.h>
-#include <kdirselectdialog.h>
 #include <kfiledialog.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -250,7 +249,10 @@ void KUrlRequester::slotOpenDialog()
          (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) &&
          (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
     {
-        newurl = KDirSelectDialog::selectDirectory(url(), d->fileDialogMode & KFile::LocalOnly);
+        if (d->fileDialogMode & KFile::LocalOnly)
+            newurl = KFileDialog::getExistingDirectory(url(), this);
+        else
+            newurl = KFileDialog::getExistingDirectoryUrl(url(), this);
         if ( !newurl.isValid() )
         {
             return;

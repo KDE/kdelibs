@@ -23,7 +23,7 @@
 */
 
 #include "kfiledialog.h"
-#include "kfilewidget.h"
+#include "kabstractfilewidget.h"
 
 #include <QCheckBox>
 #include <QKeyEvent>
@@ -31,56 +31,14 @@
 # include <QFileDialog>
 #endif
 
-// #include <kaction.h>
-// #include <kapplication.h>
-// #include <kauthorized.h>
-// #include <kcharsets.h>
-// #include <kcmdlineargs.h>
-// #include <kcompletionbox.h>
-// #include <kconfig.h>
-// #include <kdebug.h>
-// #include <kglobal.h>
-// #include <kglobalsettings.h>
-// #include <kicon.h>
-// #include <kiconloader.h>
 #include <kimageio.h>
-// #include <kio/job.h>
-// #include <kio/jobuidelegate.h>
-// #include <kio/netaccess.h>
-// #include <kio/scheduler.h>
-// #include <kservicetypefactory.h>
 #include <klocale.h>
-// #include <kmessagebox.h>
-// #include <kmimetype.h>
-// #include <kmenu.h>
-// #include <kprotocolmanager.h>
 #include <kpushbutton.h>
-// #include <krecentdirs.h>
-// #include <kshell.h>
-// #include <kstandarddirs.h>
-// #include <kstandardguiitem.h>
-// #include <kstaticdeleter.h>
-// #include <ktoolbar.h>
-// #include <kurl.h>
-// #include <kurlcombobox.h>
-// #include <kurlcompletion.h>
-// #include <kuser.h>
-// #include <kactioncollection.h>
-// #include <kactionmenu.h>
-// #include <kconfiggroup.h>
-
 #include "config-kfile.h"
-// #include "kpreviewwidgetbase.h"
-
-#include <kdirselectdialog.h>
-// #include <kfileview.h>
 #include <krecentdocument.h>
-// #include <kfilefiltercombo.h>
-// #include <kdiroperator.h>
 #include <kimagefilepreview.h>
-
-// #include <kfilespeedbar.h>
-// #include <kfilebookmarkhandler.h>
+#include <klibloader.h>
+#include "kabstractfilemodule.h"
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -88,14 +46,29 @@
 #include <fixx11h.h>
 #endif
 
+static KAbstractFileModule* s_module = 0;
+static KAbstractFileModule* fileModule()
+{
+    if (!s_module) {
+        int error = 0;
+        // TODO fix memleak -- qApp post routine for deleting the module ?
+        s_module = KLibLoader::createInstance<KAbstractFileModule>( "libkfilemodule", 0, QStringList(), &error );
+        if ( error ) {
+            kWarning() << "KFileDialog wasn't able to find libkfilemodule (error " << error << ") " << KLibLoader::self()->lastErrorMessage() << endl;
+        }
+    }
+    return s_module;
+}
+
 class KFileDialogPrivate
 {
 public:
-    KFileWidget* w;
+    KFileDialogPrivate() : w(0) {}
+    KAbstractFileWidget* w;
 };
 
 KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
-                          QWidget *parent, QWidget* widget)
+                          QWidget *parent, QWidget* customWidget)
 #ifdef Q_WS_WIN
     : KDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
@@ -106,21 +79,25 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
 {
     setButtons( KDialog::None );
 
-    d->w = new KFileWidget( startDir, filter, this, widget );
-    setMainWidget(d->w);
+    // Dlopen the file widget from libkfilemodule
+    QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
+    d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
+    d->w->setFilter(filter);
+    setMainWidget(fileQWidget);
 
     d->w->okButton()->show();
     connect(d->w->okButton(), SIGNAL(clicked()), SLOT(slotOk()));
     d->w->cancelButton()->show();
     connect(d->w->cancelButton(), SIGNAL( clicked() ), SLOT( slotCancel() ));
 
-    connect(d->w, SIGNAL(accepted()), SLOT(accept()));
-    connect(d->w, SIGNAL(canceled()), SLOT(slotCancel()));
+    connect(fileQWidget, SIGNAL(accepted()), SLOT(accept()));
+    connect(fileQWidget, SIGNAL(canceled()), SLOT(slotCancel()));
+
+    if (customWidget)
+     d->w->setCustomWidget(customWidget);
 
     KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
     restoreDialogSize(cfgGroup);
-
-    // SPLIT-TODO: saveDialogSize in the code that calls writeConfig...
 }
 
 
@@ -182,6 +159,8 @@ void KFileDialog::accept()
 {
     setResult( QDialog::Accepted ); // keep old behavior; probably not needed though
     d->w->accept();
+    KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
+    saveDialogSize(cfgGroup);
     KDialog::accept();
     emit okClicked();
 }
@@ -289,11 +268,11 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
     return dlg.selectedUrls();
 }
 
-KUrl KFileDialog::getExistingUrl(const KUrl& startDir,
-                                       QWidget *parent,
-                                       const QString& caption)
+KUrl KFileDialog::getExistingDirectoryUrl(const KUrl& startDir,
+                                          QWidget *parent,
+                                          const QString& caption)
 {
-    return KDirSelectDialog::selectDirectory(startDir, false, parent, caption);
+    return fileModule()->selectDirectory(startDir, false, parent, caption);
 }
 
 QString KFileDialog::getExistingDirectory(const KUrl& startDir,
@@ -304,11 +283,9 @@ QString KFileDialog::getExistingDirectory(const KUrl& startDir,
     return QFileDialog::getExistingDirectory(parent, caption,
                                              startDir.path(), QFileDialog::ShowDirsOnly);
 #else
-    KUrl url = KDirSelectDialog::selectDirectory(startDir, true, parent,
-                                                 caption);
+    KUrl url = fileModule()->selectDirectory(startDir, true, parent, caption);
     if ( url.isValid() )
         return url.path();
-
     return QString();
 #endif
 }
@@ -460,26 +437,6 @@ KUrlBar * KFileDialog::speedBar()
     return d->w->speedBar();
 }
 
-void KFileDialog::setKeepLocation( bool keep )
-{
-    d->w->setKeepLocation(keep);
-}
-
-bool KFileDialog::keepsLocation() const
-{
-    return d->w->keepsLocation();
-}
-
-void KFileDialog::setOperationMode( OperationMode mode )
-{
-    d->w->setOperationMode(static_cast<KFileWidget::OperationMode>(mode));
-}
-
-KFileDialog::OperationMode KFileDialog::operationMode() const
-{
-    return static_cast<KFileDialog::OperationMode>(d->w->operationMode());
-}
-
 KUrlComboBox* KFileDialog::locationEdit() const
 {
     return d->w->locationEdit();
@@ -493,6 +450,26 @@ KFileFilterCombo* KFileDialog::filterWidget() const
 KActionCollection * KFileDialog::actionCollection() const
 {
     return d->w->actionCollection();
+}
+
+void KFileDialog::setKeepLocation( bool keep )
+{
+    d->w->setKeepLocation(keep);
+}
+
+bool KFileDialog::keepsLocation() const
+{
+    return d->w->keepsLocation();
+}
+
+void KFileDialog::setOperationMode( OperationMode mode )
+{
+    d->w->setOperationMode(static_cast<KAbstractFileWidget::OperationMode>(mode));
+}
+
+KFileDialog::OperationMode KFileDialog::operationMode() const
+{
+    return static_cast<KFileDialog::OperationMode>(d->w->operationMode());
 }
 
 void KFileDialog::keyPressEvent( QKeyEvent *e )
@@ -510,17 +487,22 @@ void KFileDialog::keyPressEvent( QKeyEvent *e )
 KUrl KFileDialog::getStartUrl( const KUrl& startDir,
                                QString& recentDirClass )
 {
-    return KFileWidget::getStartUrl(startDir, recentDirClass);
+    return fileModule()->getStartUrl(startDir, recentDirClass);
 }
 
 void KFileDialog::setStartDir( const KUrl& directory )
 {
-    KFileWidget::setStartDir(directory);
+    fileModule()->setStartDir(directory);
 }
 
 KToolBar * KFileDialog::toolBar() const
 {
     return d->w->toolBar();
+}
+
+KAbstractFileWidget* KFileDialog::fileWidget()
+{
+    return d->w;
 }
 
 #include "kfiledialog.moc"

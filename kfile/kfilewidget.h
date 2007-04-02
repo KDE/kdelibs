@@ -27,22 +27,17 @@
 #ifndef KFILEWIDGET_H
 #define KFILEWIDGET_H
 
+#include "kfile_export.h"
 #include "kabstractfilewidget.h"
 #include <QtGui/QWidget>
 
 class KJob;
 class KFileItem;
-class KPushButton;
-class KActionCollection;
-class KToolBar;
-class KUrlBar;
-class KUrlComboBox;
-class KFileFilterCombo;
-class KFileWidgetPrivate;
 
-class KIO_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
+class KFILE_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
 {
     Q_OBJECT
+    Q_INTERFACES(KAbstractFileWidget)
 public:
     /**
       * Constructs a file selector widget.
@@ -71,10 +66,11 @@ public:
       *               When creating this widget, you don't need to specify a parent,
       *               since the widget's parent will be set automatically by KFileWidget.
       */
-    KFileWidget( const KUrl& startDir, const QString& filter,
-                 QWidget *parent, QWidget* widget = 0 );
+    KFileWidget(const KUrl& startDir, QWidget *parent);
 
-
+    /**
+     * Destructor
+     */
     virtual ~KFileWidget();
 
     /**
@@ -316,16 +312,14 @@ public:
     KToolBar *toolBar() const;
 
     /**
-     * @returns a pointer to the OK-Button in the filedialog. You may use it
-     * e.g. to set a custom text to it.
+     * @returns a pointer to the OK-Button in the filedialog.
      * Note that the button is hidden and unconnected when using KFileWidget alone;
      * KFileDialog shows it and connects to it.
      */
     KPushButton *okButton() const;
 
     /**
-     * @returns a pointer to the Cancel-Button in the filedialog. You may use
-     * it e.g. to set a custom text to it.
+     * @returns a pointer to the Cancel-Button in the filedialog.
      * Note that the button is hidden and unconnected when using KFileWidget alone;
      * KFileDialog shows it and connects to it.
      */
@@ -383,7 +377,17 @@ public:
      */
     static void setStartDir( const KUrl& directory );
 
-protected Q_SLOTS:
+    /**
+     * Set a custom widget that should be added to the file dialog.
+     * @param widget A widget, or a widget of widgets, for displaying custom
+     *               data in the file widget. This can be used, for example, to
+     *               display a check box with the caption "Open as read-only".
+     *               When creating this widget, you don't need to specify a parent,
+     *               since the widget's parent will be set automatically by KFileWidget.
+     */
+    void setCustomWidget(QWidget* widget);
+
+public Q_SLOTS:
     /**
      * Called when clicking ok (when this widget is used in KFileDialog)
      * Might or might not call accept().
@@ -464,7 +468,6 @@ private:
     KUrl getCompleteUrl(const QString&);
 
 private:
-    friend class KFileDialog; // calls slotOk etc.
     friend class KFileWidgetPrivate;
     KFileWidgetPrivate* const d;
 };

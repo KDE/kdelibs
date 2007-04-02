@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kdirselectdialog.h"
+
 #include <qdir.h>
 #include <qlayout.h>
 #include <qmenu.h>
@@ -46,7 +48,6 @@
 #include <ktoggleaction.h>
 
 #include "k3filetreeview.h"
-#include "kdirselectdialog.h"
 #include <kconfiggroup.h>
 
 // ### add mutator for treeview!

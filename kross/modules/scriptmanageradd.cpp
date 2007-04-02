@@ -109,7 +109,7 @@ ScriptManagerAddFileWidget::ScriptManagerAddFileWidget(ScriptManagerAddWizard* w
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
     setLayout(layout);
-    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), QString::null, this);
+    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), this);
 
     QStringList mimetypes;
     foreach(QString interpretername, Manager::self().interpreters()) {

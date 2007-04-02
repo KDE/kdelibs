@@ -24,7 +24,7 @@
 class KConfig;
 class KSharedConfigPtr;
 
-class KIO_EXPORT KFileSpeedBar : public KUrlBar
+class KFILE_EXPORT KFileSpeedBar : public KUrlBar
 {
     Q_OBJECT
 public:

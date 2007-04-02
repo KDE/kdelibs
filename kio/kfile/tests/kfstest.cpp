@@ -33,7 +33,9 @@
 #include <kcmdlineargs.h>
 #include <kurl.h>
 #include <kurlbar.h>
+#if 0 // SPLIT-TODO
 #include <kdiroperator.h>
+#endif
 #include <kfile.h>
 #include <kdebug.h>
 #include <kicondialog.h>
@@ -65,6 +67,7 @@ int main(int argc, char **argv)
     if ( argc > 2 )
         startDir = KUrl( argv[2] );
 
+#if 0 // SPLIT-TODO
     if (argv1 == QLatin1String("diroperator")) {
         KDirOperator *op = new KDirOperator(startDir, 0);
         KConfigGroup grp(KGlobal::config(), "TestGroup" );
@@ -73,14 +76,15 @@ int main(int argc, char **argv)
         op->show();
         a.exec();
     }
+#endif
 
     else if (argv1 == QLatin1String("justone")) {
         QString name = KFileDialog::getOpenFileName(startDir);
         qDebug("filename=%s",name.toLatin1().constData());
     }
 
-    else if (argv1 == QLatin1String("existingUrl")) {
-        KUrl url = KFileDialog::getExistingUrl();
+    else if (argv1 == QLatin1String("existingDirectoryUrl")) {
+        KUrl url = KFileDialog::getExistingDirectoryUrl();
         qDebug("URL=%s",url.url().toLatin1().constData());
         name1 = url.url();
     }
@@ -109,13 +113,14 @@ int main(int argc, char **argv)
         QStringList filter;
         filter << "all/allfiles" << "text/plain";
         dlg->setMimeFilter( filter, "all/allfiles" );
+#if 0 // SPLIT-TODO
         KUrlBar *urlBar = dlg->speedBar();
         if ( urlBar )
         {
             urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"),
                                        QLatin1String("KDE FTP Server") );
         }
-
+#endif
         if ( dlg->exec() == KDialog::Accepted )
             name1 = dlg->selectedUrl().url();
     }

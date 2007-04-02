@@ -20,7 +20,7 @@
 #ifndef KDIRSELECTDIALOG_H
 #define KDIRSELECTDIALOG_H
 
-#include <kio/kio_export.h>
+#include <kfile_export.h>
 
 #include <kdialog.h>
 #include <kurl.h>
@@ -43,7 +43,7 @@ class K3ListView;
  * @author Michael Jarrett <michaelj@corel.com>
  * @see KFileDialog
  */
-class KIO_EXPORT KDirSelectDialog : public KDialog
+class KFILE_EXPORT KDirSelectDialog : public KDialog
 {
     Q_OBJECT
 

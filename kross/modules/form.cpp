@@ -90,7 +90,7 @@ FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariabl
     layout->setMargin(0);
     setLayout(layout);
 
-    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), QString::null, this);
+    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), this);
     layout->addWidget( d->filewidget );
     //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
 

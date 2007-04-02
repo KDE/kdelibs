@@ -32,6 +32,8 @@
 #include <kmimetype.h>
 #include <kio/jobclasses.h> // TODO remove
 
+class KAbstractFileWidget;
+class KFileWidget;
 class QCheckBox;
 class QHBoxLayout;
 class QGridLayout;
@@ -44,7 +46,6 @@ class KDirOperator;
 class KUrlBar;
 class KUrlComboBox;
 class KFileFilterCombo;
-class KFileView;
 class KFileItem;
 class KPushButton;
 class KToolBar;
@@ -522,8 +523,8 @@ public:
 
 
     /**
-     * Creates a modal file dialog and returns the selected
-     * directory or an empty string if none was chosen.
+     * Creates a modal directory-selection dialog and returns the selected
+     * directory (local only) or an empty string if none was chosen.
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
@@ -538,17 +539,16 @@ public:
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
+     * @return the path to an existing local directory.
      */
     static QString getExistingDirectory( const KUrl& startDir = KUrl(),
                                          QWidget * parent = 0,
                                          const QString& caption= QString() );
 
     /**
-     * Creates a modal file dialog and returns the selected
+     * Creates a modal directory-selection dialog and returns the selected
      * directory or an empty string if none was chosen.
-     *
-     * Contrary to getExistingDirectory(), this method allows the
-     * selection of a remote directory.
+     * This version supports remote urls.
      *
      * @param startDir This can either be
      *         @li The URL of the directory to start in.
@@ -563,10 +563,11 @@ public:
      *             same keyword.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
+     * @return the url to an existing directory (local or remote).
      */
-    static KUrl getExistingUrl( const KUrl& startDir = KUrl(),
-                                QWidget * parent = 0,
-                                const QString& caption= QString() );
+    static KUrl getExistingDirectoryUrl( const KUrl& startDir = KUrl(),
+                                         QWidget * parent = 0,
+                                         const QString& caption= QString() );
 
     /**
      * Creates a modal file dialog with an image previewer and returns the
@@ -629,6 +630,12 @@ public:
     void setLocationLabel(const QString& text);
 
     /**
+     * Returns the KFileWidget that implements most of this file dialog.
+     * If you link to libkfile you can cast this to a KFileWidget*.
+     */
+    KAbstractFileWidget* fileWidget();
+
+    /**
      * Returns a pointer to the toolbar.
      *
      * You can use this to insert custom
@@ -667,22 +674,24 @@ public:
      * to not use the speed-bar.
      * @see KUrlBar
      * @see KUrlBar::insertDynamicItem
+     * You need to link to libkfile to use this widget.
      */
     KUrlBar *speedBar();
 
     /**
      * @returns the combobox used to type the filename or full location of the file.
+     * You need to link to libkfile to use this widget.
      */
     KUrlComboBox *locationEdit() const;
 
     /**
      * @returns the combobox that contains the filters
+     * You need to link to libkfile to use this widget.
      */
     KFileFilterCombo *filterWidget() const;
 
     /**
-     * @returns a pointer to the action collection, holding all the used
-     * KActions.
+     * @returns a pointer to the action collection, holding all the used KActions.
      */
     KActionCollection *actionCollection() const;
 

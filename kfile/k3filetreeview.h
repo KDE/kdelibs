@@ -51,7 +51,7 @@ class QTimer;
  * 3. retrieve the root item with KFileTreeBranch::root() and set it open
  *    if desired. That starts the listing.
  */
-class KIO_EXPORT K3FileTreeView : public K3ListView
+class KFILE_EXPORT K3FileTreeView : public K3ListView
 {
     Q_OBJECT
 public:

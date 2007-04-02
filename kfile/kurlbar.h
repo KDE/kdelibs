@@ -19,7 +19,8 @@
 #ifndef KURLBAR_H
 #define KURLBAR_H
 
-#include <kio/kio_export.h>
+// Not exported anymore, only used internally.
+//#include <kfile_export.h>
 
 #include <qevent.h>
 #include <QtGui/QFrame>
@@ -42,7 +43,7 @@ class KUrlBar;
  * @see KUrlBar
  * @see KUrlBarListWidget
  */
-class KIO_EXPORT KUrlBarItem : public QListWidgetItem
+class KUrlBarItem : public QListWidgetItem
 {
 public:
     /**
@@ -218,7 +219,7 @@ class KUrlBarListWidget;
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A URL-bar widget, as used in the KFileDialog
  */
-class KIO_EXPORT KUrlBar : public QFrame
+class KUrlBar : public QFrame
 {
     Q_OBJECT
 
@@ -480,7 +481,7 @@ class QMimeData;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlBarListWidget : public KListWidget
+class KUrlBarListWidget : public KListWidget
 {
     Q_OBJECT
 
@@ -552,7 +553,7 @@ class KUrlRequester;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlBarItemDialog : public KDialog
+class KUrlBarItemDialog : public KDialog
 {
     Q_OBJECT
 

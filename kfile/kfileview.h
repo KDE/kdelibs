@@ -25,6 +25,7 @@
 class QPoint;
 class KActionCollection;
 
+#include "kfile_export.h"
 #include <qwidget.h>
 
 #include "kfileitem.h"
@@ -34,7 +35,7 @@ class KActionCollection;
  * internal class to make easier to use signals possible
  * @internal
  **/
-class KIO_EXPORT KFileViewSignaler : public QObject
+class KFILE_EXPORT KFileViewSignaler : public QObject
 {
     Q_OBJECT
 
@@ -95,7 +96,7 @@ Q_SIGNALS:
   * @short A base class for views of the KDE file selector
   * @author Stephan Kulow <coolo@kde.org>
   **/
-class KIO_EXPORT KFileView {
+class KFILE_EXPORT KFileView {
 
 public:
     KFileView();

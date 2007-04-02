@@ -1,4 +1,3 @@
-
 project(kio)
 macro_optional_find_package(FAM)
 
@@ -42,9 +41,6 @@ add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( kfile/tests )
 add_subdirectory( kio/dummyanalyzers )
-
-# for the kfile usage in bookmarks
-include_directories( ${CMAKE_SOURCE_DIR}/kio/kfile )
 
 set(kiocore_STAT_SRCS
   kio/kdirwatch.cpp
@@ -119,13 +115,9 @@ set(kiocore_STAT_SRCS
   kio/klimitediodevice.cpp
 )
 
-
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/kio/kautomount.cpp)
 endif(UNIX)
-
-
-# kio/bookmarks/Makefile.am: kbookmarks
 
 set(kbookmarks_STAT_SRCS
   bookmarks/kbookmark.cc
@@ -144,47 +136,31 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkdombuilder.cc
 )
 
-# kio/kfile/Makefile.am: kfile
-
 set(kfile_STAT_SRCS
-  kfile/kfilefiltercombo.cpp
-  kfile/kfileview.cpp
-  kfile/k3fileiconview.cpp
-  kfile/krecentdocument.cpp
-  kfile/kfilewidget.cpp
-  kfile/kfiledialog.cpp
-  kfile/kdiroperator.cpp
-  kfile/k3filedetailview.cpp
-  kfile/kcombiview.cpp
-  kfile/kurlrequester.cpp
-  kfile/kfilepreview.cpp
-  kfile/kurlcombobox.cpp
-  kfile/kurlrequesterdialog.cpp
-  kfile/kopenwithdialog.cpp
-  kfile/kpropertiesdialog.cpp
-  kfile/kicondialog.cpp
-  kfile/krecentdirs.cpp
-  kfile/kdiskfreesp.cpp
-  kfile/kimagefilepreview.cpp
-  kfile/kfilesharedialog.cpp
-  kfile/kurlbar.cpp
-  kfile/kmetaprops.cpp
-  kfile/kpreviewprops.cpp
-  kfile/k3filetreeview.cpp
-  kfile/k3filetreeviewitem.cpp
-  kfile/kfiletreebranch.cpp
-  kfile/kdirselectdialog.cpp
-  kfile/kfilebookmarkhandler.cpp
-  kfile/kfilemetainfowidget.cpp
-  kfile/kcustommenueditor.cpp
-  kfile/kfilespeedbar.cpp
-  kfile/kpreviewwidgetbase.cpp
-  kfile/kfilemetapreview.cpp
-  kfile/kencodingfiledialog.cpp
+  kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
-  kfile/kfile.cpp
-  kfile/kdevicelistmodel.cpp
+  kfile/kcustommenueditor.cpp
   kfile/kdevicelistitem.cpp
+  kfile/kdevicelistmodel.cpp
+  kfile/kdiskfreesp.cpp
+  kfile/kencodingfiledialog.cpp
+  kfile/kfile.cpp
+  kfile/kfiledialog.cpp
+  kfile/kfilemetainfowidget.cpp
+  kfile/kfilemetapreview.cpp
+  kfile/kfilesharedialog.cpp
+  kfile/kicondialog.cpp
+  kfile/kimagefilepreview.cpp
+  kfile/kmetaprops.cpp
+  kfile/kopenwithdialog.cpp
+  kfile/kpreviewprops.cpp
+  kfile/kpreviewwidgetbase.cpp
+  kfile/kpropertiesdialog.cpp
+  kfile/krecentdirs.cpp
+  kfile/krecentdocument.cpp
+  kfile/kurlcombobox.cpp
+  kfile/kurlrequester.cpp
+  kfile/kurlrequesterdialog.cpp
 )
 
 # kio/kssl/Makefile.am: kssl
@@ -359,37 +335,24 @@ install( FILES
   kio/kdesktopfileactions.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdirmodel.h
-  kfile/kcombiview.h
   kfile/kcustommenueditor.h
   kfile/kdevicelistmodel.h
-  kfile/kdiroperator.h
-  kfile/kdirselectdialog.h
   kfile/kdiskfreesp.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
-  kfile/k3filedetailview.h
-  kfile/kfiledialog.h
-  kfile/k3fileiconview.h
-  kfile/kfilepreview.h
-  kfile/kfilesharedialog.h
-  kfile/kfiletreebranch.h
-  kfile/k3filetreeview.h
-  kfile/k3filetreeviewitem.h
-  kfile/kfileview.h
-  kfile/kfilewidget.h
   kfile/kabstractfilewidget.h
-  kfile/kfilefiltercombo.h
+  kfile/kabstractfilemodule.h
+  kfile/kfiledialog.h
+  kfile/kfilesharedialog.h
   kfile/kicondialog.h
-  kfile/kimagefilepreview.h
   kfile/kopenwithdialog.h
-  kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
   kfile/krecentdocument.h
-  kfile/kurlbar.h
   kfile/kurlcombobox.h
   kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
+  kfile/kimagefilepreview.h
   bookmarks/kbookmark.h
   bookmarks/kbookmarkbar.h
   bookmarks/kbookmarkexporter.h

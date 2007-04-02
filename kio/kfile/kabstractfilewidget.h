@@ -22,6 +22,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#ifndef KABSTRACTFILEWIDGET_H
+#define KABSTRACTFILEWIDGET_H
 
 class KPreviewWidgetBase;
 
@@ -29,8 +31,13 @@ class KPreviewWidgetBase;
 #include "kfile.h"
 #include <kmimetype.h>
 
-#ifndef KABSTRACTFILEWIDGET_H
-#define KABSTRACTFILEWIDGET_H
+class KPushButton;
+class KActionCollection;
+class KToolBar;
+class KFileWidgetPrivate;
+class KUrlBar;
+class KUrlComboBox;
+class KFileFilterCombo;
 
 class KIO_EXPORT KAbstractFileWidget
 {
@@ -273,7 +280,87 @@ public:
      * the location is used for.
      */
     virtual void setLocationLabel(const QString& text) = 0;
+
+    /**
+     * Returns a pointer to the toolbar.
+     *
+     * You can use this to insert custom
+     * items into it, e.g.:
+     * \code
+     *      yourAction = new KAction( i18n("Your Action"), 0,
+     *                                this, SLOT( yourSlot() ),
+     *                                this, "action name" );
+     *      yourAction->plug( kfileDialog->toolBar() );
+     * \endcode
+     */
+    virtual KToolBar *toolBar() const = 0;
+
+    /**
+     * @returns a pointer to the OK-Button in the filedialog.
+     * Note that the button is hidden and unconnected when using KFileWidget alone;
+     * KFileDialog shows it and connects to it.
+     */
+    virtual KPushButton *okButton() const = 0;
+
+    /**
+     * @returns a pointer to the Cancel-Button in the filedialog.
+     * Note that the button is hidden and unconnected when using KFileWidget alone;
+     * KFileDialog shows it and connects to it.
+     */
+    virtual KPushButton *cancelButton() const = 0;
+
+    /**
+     * @returns the KUrlBar object used as the "speed bar". You can add custom
+     * entries to it like that:
+     * \code
+     * KUrlBar *urlBar = fileDialog->speedBar();
+     * if ( urlBar )
+     *     urlBar->insertDynamicItem( someURL, i18n("The URL's description") );
+     * \endcode
+     *
+     * Note that this method may return a null-pointer if the user configured
+     * to not use the speed-bar.
+     * @see KUrlBar
+     * @see KUrlBar::insertDynamicItem
+     */
+    virtual KUrlBar *speedBar() = 0;
+
+    /**
+     * @returns the combobox used to type the filename or full location of the file.
+     */
+    virtual KUrlComboBox *locationEdit() const = 0;
+
+    /**
+     * @returns the combobox that contains the filters
+     */
+    virtual KFileFilterCombo *filterWidget() const = 0;
+
+    /**
+     * @returns a pointer to the action collection, holding all the used
+     * KActions.
+     */
+    virtual KActionCollection *actionCollection() const = 0;
+
+    /**
+     * Set a custom widget that should be added to the file dialog.
+     * @param widget A widget, or a widget of widgets, for displaying custom
+     *               data in the file widget. This can be used, for example, to
+     *               display a check box with the caption "Open as read-only".
+     *               When creating this widget, you don't need to specify a parent,
+     *               since the widget's parent will be set automatically by KFileWidget.
+     */
+    virtual void setCustomWidget(QWidget* widget) = 0;
+
+    /**
+     * Called when clicking ok (when this widget is used in KFileDialog)
+     * Might or might not call accept().
+     */
+    virtual void slotOk() = 0;
+    virtual void accept() = 0;
+    virtual void slotCancel() = 0;
 };
+
+Q_DECLARE_INTERFACE(KAbstractFileWidget, "org.kde.KAbstractFileWidget")
 
 #endif /* KABSTRACTFILEWIDGET_H */
 

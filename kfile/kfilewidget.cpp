@@ -70,7 +70,9 @@ class KFileWidgetPrivate
 {
 public:
     KFileWidgetPrivate( KFileWidget* q )
-        : inAccept(false),
+        : boxLayout(0),
+          customWidget(0),
+          inAccept(false),
           q(q)
     {
     }
@@ -119,6 +121,7 @@ public:
     // now following all kind of widgets, that I need to rebuild
     // the geometry management
     QBoxLayout *boxLayout;
+    QVBoxLayout *vbox;
 
     QLabel *locationLabel;
 
@@ -187,14 +190,12 @@ static const char autocompletionWhatsThisText[] = I18N_NOOP("<p>While typing in 
                                                   "This feature can be controlled by clicking with the right mouse button "
                                                   "and selecting a preferred mode from the <b>Text Completion</b> menu.")  "</qt>";
 
-KFileWidget::KFileWidget( const KUrl& startDir, const QString& filter,
-                          QWidget *parent, QWidget* widget )
+KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
 {
     initStatic();
 
     // TODO move most of this code for the KFileWidgetPrivate constructor
-    d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
     d->bookmarkHandler = 0;
@@ -208,7 +209,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, const QString& filter,
     d->okButton->hide();
     d->cancelButton->hide();
 
-    d->customWidget = widget;
     d->autoSelectExtCheckBox = 0; // delayed loading
     d->autoSelectExtChecked = false;
     d->urlBar = 0; // delayed loading
@@ -420,7 +420,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, const QString& filter,
     d->filterLabel->setWhatsThis(whatsThisText);
     d->filterWidget = new KFileFilterCombo(this);
     d->filterWidget->setWhatsThis(whatsThisText);
-    setFilter(filter);
     d->filterLabel->setBuddy(d->filterWidget);
     connect(d->filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
 
@@ -909,7 +908,6 @@ void KFileWidget::fileHighlighted(const KFileItem *i)
     if (i && i->isDir())
         return;
 
-
     if ( (d->ops->mode() & KFile::Files) != KFile::Files ) {
         if ( !i )
             return;
@@ -1046,7 +1044,7 @@ void KFileWidgetPrivate::initGUI()
 
     urlBarLayout = new QHBoxLayout();
     boxLayout->addItem(urlBarLayout ); // needed for the urlBar that may appear
-    QVBoxLayout *vbox = new QVBoxLayout();
+    vbox = new QVBoxLayout();
     vbox->setMargin(KDialog::marginHint());
     urlBarLayout->addItem(vbox);
 
@@ -1080,31 +1078,7 @@ void KFileWidgetPrivate::initGUI()
     q->setTabOrder(okButton, cancelButton);
     q->setTabOrder(cancelButton, pathCombo);
     q->setTabOrder(pathCombo, ops);
-
-    // If a custom widget was specified...
-    if ( customWidget != 0 )
-    {
-        // ...add it to the dialog, below the filter list box.
-
-        // Change the parent so that this widget is a child of the main widget
-        customWidget->setParent( q);
-
-        vbox->addWidget( customWidget );
-        vbox->addSpacing(3);
-
-        // FIXME: This should adjust the tab orders so that the custom widget
-        // comes after the Cancel button. The code appears to do this, but the result
-        // somehow screws up the tab order of the file path combo box. Not a major
-        // problem, but ideally the tab order with a custom widget should be
-        // the same as the order without one.
-        q->setTabOrder(cancelButton, customWidget);
-        q->setTabOrder(customWidget, pathCombo);
-    }
-    else
-    {
-        q->setTabOrder(cancelButton, pathCombo);
-    }
-
+    q->setTabOrder(cancelButton, pathCombo);
     q->setTabOrder(pathCombo, ops);
 }
 
@@ -2091,6 +2065,28 @@ void KFileWidgetPrivate::setNonExtSelection()
 KToolBar * KFileWidget::toolBar() const
 {
     return d->toolbar;
+}
+
+void KFileWidget::setCustomWidget(QWidget* widget)
+{
+    delete d->customWidget;
+    d->customWidget = widget;
+
+    // add it to the dialog, below the filter list box.
+
+    // Change the parent so that this widget is a child of the main widget
+    d->customWidget->setParent( this );
+
+    d->vbox->addWidget( d->customWidget );
+    //d->vbox->addSpacing(3); // can't do this every time...
+
+    // FIXME: This should adjust the tab orders so that the custom widget
+    // comes after the Cancel button. The code appears to do this, but the result
+    // somehow screws up the tab order of the file path combo box. Not a major
+    // problem, but ideally the tab order with a custom widget should be
+    // the same as the order without one.
+    setTabOrder(d->cancelButton, d->customWidget);
+    setTabOrder(d->customWidget, d->pathCombo);
 }
 
 #include "kfilewidget.moc"
