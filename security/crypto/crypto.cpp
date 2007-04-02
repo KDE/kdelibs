@@ -66,7 +66,7 @@
 #include <knewpassworddialog.h>
 #include <k3process.h>
 #include <kpushbutton.h>
-#include <kresolver.h>
+#include <k3resolver.h>
 #include <kseparator.h>
 #include <kstandarddirs.h>
 #include <kurllabel.h>
