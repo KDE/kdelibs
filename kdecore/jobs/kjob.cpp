@@ -27,6 +27,7 @@
 #include <QEventLoop>
 #include <QMap>
 #include <QTimer>
+#include <QMetaType>
 
 class KJob::Private
 {
@@ -50,7 +51,11 @@ public:
     QTimer *speedTimer;
 
     void _k_speedTimeout();
+
+    static const bool _k_kjobUnitEnumRegistered;
 };
+
+const bool KJob::Private::_k_kjobUnitEnumRegistered = qRegisterMetaType<KJob::Unit>("KJob::Unit");
 
 KJob::KJob(QObject *parent)
     : QObject(parent), d(new Private(this))
