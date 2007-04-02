@@ -43,6 +43,7 @@ private:
     BackendChooser *m_hardwareChooser;
     BackendChooser *m_powerChooser;
     BackendChooser *m_networkChooser;
+    BackendChooser *m_bluetoothChooser;
 };
 
 #endif

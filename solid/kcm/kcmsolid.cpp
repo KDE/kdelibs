@@ -51,10 +51,12 @@ KcmSolid::KcmSolid( QWidget* parent, const QStringList& args )
     m_hardwareChooser = new BackendChooser( this, "SolidDeviceManager" );
     m_powerChooser = new BackendChooser( this, "SolidPowerManager" );
     m_networkChooser = new BackendChooser( this, "SolidNetworkManager" );
+    m_bluetoothChooser = new BackendChooser( this, "SolidBluetoothManager" );
 
     layout()->addWidget( m_hardwareChooser );
     layout()->addWidget( m_powerChooser );
     layout()->addWidget( m_networkChooser );
+    layout()->addWidget( m_bluetoothChooser );
 
     load();
 
@@ -64,6 +66,9 @@ KcmSolid::KcmSolid( QWidget* parent, const QStringList& args )
              this, SLOT( slotChooserChanged(bool) ) );
     connect( m_networkChooser, SIGNAL( changed(bool) ),
              this, SLOT( slotChooserChanged(bool) ) );
+    connect( m_bluetoothChooser, SIGNAL( changed(bool) ),
+             this, SLOT( slotChooserChanged(bool) ) );
+
 }
 
 void KcmSolid::load()
@@ -71,6 +76,7 @@ void KcmSolid::load()
     m_hardwareChooser->load();
     m_powerChooser->load();
     m_networkChooser->load();
+    m_bluetoothChooser->load();
 }
 
 void KcmSolid::save()
@@ -78,6 +84,7 @@ void KcmSolid::save()
     m_hardwareChooser->save();
     m_powerChooser->save();
     m_networkChooser->save();
+    m_bluetoothChooser->save();
 }
 
 void KcmSolid::defaults()
@@ -85,6 +92,7 @@ void KcmSolid::defaults()
     m_hardwareChooser->defaults();
     m_powerChooser->defaults();
     m_networkChooser->defaults();
+    m_bluetoothChooser->defaults();
 }
 
 void KcmSolid::slotChooserChanged( bool state )

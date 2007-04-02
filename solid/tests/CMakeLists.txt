@@ -36,7 +36,24 @@ target_link_libraries(solidnettest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} sol
 
 add_test(solidnettest ${EXECUTABLE_OUTPUT_PATH}/solidnettest)
 
+########### solidbluetoothtest ###############
+
+set(solidbluetoothtest_SRCS 
+   solidbluetoothtest.cpp )
+
+kde4_automoc(${solidbluetoothtest_SRCS})
+
+kde4_add_executable(solidbluetoothtest NOGUI RUN_UNINSTALLED ${solidbluetoothtest_SRCS})
+add_definitions(-DFAKE_BLUETOOTH_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakebluetooth/fakebluetooth.xml\\"")
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakebluetooth )
+
+target_link_libraries(solidbluetoothtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakebluetooth_static)
+
+add_test(solidbluetoothtest ${EXECUTABLE_OUTPUT_PATH}/solidbluetoothtest)
+
 ########### install files ###############
+
 
 endif(KDE4_BUILD_TESTS)
 
