@@ -30,20 +30,20 @@ class KFontRequester::KFontRequesterPrivate
 {
 public:
   KFontRequesterPrivate(KFontRequester *q): q(q) {}
-  
+
   KFontRequester *q;
   bool m_onlyFixed;
   QString m_sampleText, m_title;
   QLabel *m_sampleLabel;
   QPushButton *m_button;
-  QFont m_selFont;  
+  QFont m_selFont;
 };
 
-KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed ) 
+KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
     : QWidget( parent ), d(new KFontRequesterPrivate(this))
 {
   d->m_onlyFixed = onlyFixed;
-      
+
   QHBoxLayout *layout = new QHBoxLayout( this );
   layout->setMargin( 0 );
   layout->setSpacing( KDialog::spacingHint() );
@@ -121,13 +121,18 @@ void KFontRequester::setTitle( const QString &title )
 
 void KFontRequester::buttonClicked()
 {
-  int result = KFontDialog::getFont( d->m_selFont, d->m_onlyFixed, parentWidget() );
+    KFontChooser::DisplayFlags flags = KFontChooser::DisplayFrame;
+    if ( d->m_onlyFixed ) {
+        flags |= KFontChooser::FixedFontsOnly;
+    }
 
-  if ( result == KDialog::Accepted )
-  {
-    displaySampleText();
-    emit fontSelected( d->m_selFont );
-  }
+    int result = KFontDialog::getFont( d->m_selFont, flags, parentWidget() );
+
+    if ( result == KDialog::Accepted )
+    {
+        displaySampleText();
+        emit fontSelected( d->m_selFont );
+    }
 }
 
 void KFontRequester::displaySampleText()
