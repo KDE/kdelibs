@@ -224,13 +224,19 @@ void KJobTest::testKill_data()
     QTest::addColumn<int>("killVerbosity");
     QTest::addColumn<int>("errorCode");
     QTest::addColumn<QString>("errorText");
+    QTest::addColumn<int>("resultEmitCount");
+    QTest::addColumn<int>("finishedEmitCount");
 
     QTest::newRow("killed with result") << (int)KJob::EmitResult
                                         << (int)KJob::KilledJobError
-                                        << QString();
+                                        << QString()
+                                        << 1
+                                        << 1;
     QTest::newRow("killed quietly") << (int)KJob::Quietly
-                                    << (int)KJob::NoError
-                                    << QString();
+                                    << (int)KJob::KilledJobError
+                                    << QString()
+                                    << 0
+                                    << 1;
 }
 
 void KJobTest::testKill()
@@ -239,13 +245,19 @@ void KJobTest::testKill()
 
     connect( job, SIGNAL( result( KJob* ) ),
              this, SLOT( slotResult( KJob* ) ) );
+    connect( job, SIGNAL( finished( KJob* ) ),
+             this, SLOT( slotFinished( KJob* ) ) );
 
     m_lastError = KJob::NoError;
     m_lastErrorText = QString();
+    m_resultCount = 0;
+    m_finishedCount = 0;
 
     QFETCH(int, killVerbosity);
     QFETCH(int, errorCode);
     QFETCH(QString, errorText);
+    QFETCH(int, resultEmitCount);
+    QFETCH(int, finishedEmitCount);
 
     QSignalSpy destroyed_spy( job, SIGNAL( destroyed( QObject* ) ) );
 
@@ -257,6 +269,9 @@ void KJobTest::testKill()
 
     QCOMPARE( job->error(),  errorCode );
     QCOMPARE( job->errorText(),  errorText );
+
+    QCOMPARE(m_resultCount, resultEmitCount);
+    QCOMPARE(m_finishedCount, finishedEmitCount);
 
     // Verify that the job is not deleted immediately...
     QCOMPARE( destroyed_spy.size(), 0 );
@@ -294,7 +309,21 @@ void KJobTest::slotResult( KJob *job )
         m_lastErrorText = QString();
     }
 
+    m_resultCount++;
     loop.quit();
+}
+
+void KJobTest::slotFinished(KJob *job)
+{
+    if (job->error()) {
+        m_lastError = job->error();
+        m_lastErrorText = job->errorText();
+    } else {
+        m_lastError = KJob::NoError;
+        m_lastErrorText = QString();
+    }
+
+    m_finishedCount++;
 }
 
 TestJob::TestJob() : KJob()

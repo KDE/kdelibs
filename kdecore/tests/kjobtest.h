@@ -71,11 +71,14 @@ private Q_SLOTS:
     void testDelegateUsage();
 
     void slotResult( KJob *job );
+    void slotFinished(KJob *job);
 
 private:
     QEventLoop loop;
     int m_lastError;
     QString m_lastErrorText;
+    int m_resultCount;
+    int m_finishedCount;
 };
 
 #endif
