@@ -19,7 +19,6 @@ KIO_BUILD_TESTS(
   kurlrequestertest
   kopenwithtest
   kicondialogtest
-  kcustommenueditortest
 )
 
 ########### next target ###############

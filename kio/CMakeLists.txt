@@ -139,7 +139,6 @@ set(kbookmarks_STAT_SRCS
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
-  kfile/kcustommenueditor.cpp
   kfile/kdevicelistitem.cpp
   kfile/kdevicelistmodel.cpp
   kfile/kdiskfreesp.cpp
@@ -335,7 +334,6 @@ install( FILES
   kio/kdesktopfileactions.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdirmodel.h
-  kfile/kcustommenueditor.h
   kfile/kdevicelistmodel.h
   kfile/kdiskfreesp.h
   kfile/kencodingfiledialog.h
