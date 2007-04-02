@@ -925,13 +925,22 @@ actionCollection -&gt; addAction(KStandardAction::Copy, this, SLOT(copy()))
 <h4>KButtonBox</h4>
 <p>Replaced by KDialogButtonBox.   Add the role parameter to the addButton function. Or check if it can't be achieved using KDialog</p>
 
-
 <h4>KCharSelectTable</h4>
 <ul>
-<li>There is no separation between focused and selected item anymore, only between selected and activated.</li>
-<li>Signal focusItemChanged is not emitted with the currently selected/focused character, not with the most recent activated one.</li>
-<li>Signal highlighted(...) has been removed.</li>
-<li>Protected members gotoleft/right/up/down are gone. If you really need to simulate them, use the qitemselectionmodel</li>
+<li>Removed from public API. Use KCharSelect.</li>
+</ul>
+
+<h4>KCharSelect</h4>
+<ul>
+<li>Cleaned up constructor, removed char, font and table arguments. The concept of showing tables isn't used any more and all functions/signals are removed. There is no need for a replacement.</li>
+<li>highlighted()/focusItemChanged()/activated()  -&gt;  currentCharChanged(QChar)</li>
+<li>doubleClicked()  -&gt;  charSelected(QChar)</li>
+<li>setFont()/font()  -&gt;  setCurrentFont()/currentFont()</li>
+<li>fontChanged()  -&gt;  currentFontChanged()</li>
+<li>QFont is used for fonts instead of a QString containg the font face.</li>
+<li>setChar()/chr()  -&gt;  setCurrentChar()/currentChar()</li>
+<li>enableFontCombo(), enableTableSpinBox(), isFontComboEnabled() and isTableSpinBoxEnabled() are removed.</li>
+
 </ul>
 
 <h4>KColorCells</h4>
