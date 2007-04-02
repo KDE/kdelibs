@@ -59,6 +59,27 @@ public:
     QComboBox *selectWeek;
     QToolButton *todayButton;
     QBoxLayout *navigationLayout;
+
+    /// the year forward button
+    QToolButton *yearForward;
+    /// the year backward button
+    QToolButton *yearBackward;
+    /// the month forward button
+    QToolButton *monthForward;
+    /// the month backward button
+    QToolButton *monthBackward;
+    /// the button for selecting the month directly
+    QToolButton *selectMonth;
+    /// the button for selecting the year directly
+    QToolButton *selectYear;
+    /// the line edit to enter the date directly
+    QLineEdit *line;
+    /// the validator for the line edit:
+    KDateValidator *val;
+    /// the date table
+    KDateTable *table;
+    /// the widest month string in pixels:
+    QSize maxMonthRect;
 };
 
 void KDatePicker::fillWeeksCombo(const QDate &date)
@@ -119,34 +140,34 @@ void KDatePicker::init( const QDate &dt )
   d->navigationLayout->setMargin(0);
   topLayout->addLayout(d->navigationLayout);
   d->navigationLayout->addStretch();
-  yearBackward = new QToolButton(this);
-  yearBackward->setAutoRaise(true);
-  d->navigationLayout->addWidget(yearBackward);
-  monthBackward = new QToolButton(this);
-  monthBackward ->setAutoRaise(true);
-  d->navigationLayout->addWidget(monthBackward);
+  d->yearBackward = new QToolButton(this);
+  d->yearBackward->setAutoRaise(true);
+  d->navigationLayout->addWidget(d->yearBackward);
+  d->monthBackward = new QToolButton(this);
+  d->monthBackward ->setAutoRaise(true);
+  d->navigationLayout->addWidget(d->monthBackward);
   d->navigationLayout->addSpacing(KDialog::spacingHint());
 
-  selectMonth = new QToolButton(this);
-  selectMonth ->setAutoRaise(true);
-  d->navigationLayout->addWidget(selectMonth);
-  selectYear = new QToolButton(this);
-  selectYear->setCheckable(true);
-  selectYear->setAutoRaise(true);
-  d->navigationLayout->addWidget(selectYear);
+  d->selectMonth = new QToolButton(this);
+  d->selectMonth ->setAutoRaise(true);
+  d->navigationLayout->addWidget(d->selectMonth);
+  d->selectYear = new QToolButton(this);
+  d->selectYear->setCheckable(true);
+  d->selectYear->setAutoRaise(true);
+  d->navigationLayout->addWidget(d->selectYear);
   d->navigationLayout->addSpacing(KDialog::spacingHint());
 
-  monthForward = new QToolButton(this);
-  monthForward ->setAutoRaise(true);
-  d->navigationLayout->addWidget(monthForward);
-  yearForward = new QToolButton(this);
-  yearForward ->setAutoRaise(true);
-  d->navigationLayout->addWidget(yearForward);
+  d->monthForward = new QToolButton(this);
+  d->monthForward ->setAutoRaise(true);
+  d->navigationLayout->addWidget(d->monthForward);
+  d->yearForward = new QToolButton(this);
+  d->yearForward ->setAutoRaise(true);
+  d->navigationLayout->addWidget(d->yearForward);
   d->navigationLayout->addStretch();
 
-  line = new KLineEdit(this);
-  val = new KDateValidator(this);
-  table = new KDateTable(this);
+  d->line = new KLineEdit(this);
+  d->val = new KDateValidator(this);
+  d->table = new KDateTable(this);
   fontsize = KGlobalSettings::generalFont().pointSize();
   if (fontsize == -1)
      fontsize = QFontInfo(KGlobalSettings::generalFont()).pointSize();
@@ -157,49 +178,49 @@ void KDatePicker::init( const QDate &dt )
   d->todayButton = new QToolButton(this);
   d->todayButton->setIcon(KIcon("calendar-today"));
 
-  yearForward->setToolTip(i18n("Next year"));
-  yearBackward->setToolTip(i18n("Previous year"));
-  monthForward->setToolTip(i18n("Next month"));
-  monthBackward->setToolTip(i18n("Previous month"));
+  d->yearForward->setToolTip(i18n("Next year"));
+  d->yearBackward->setToolTip(i18n("Previous year"));
+  d->monthForward->setToolTip(i18n("Next month"));
+  d->monthBackward->setToolTip(i18n("Previous month"));
   d->selectWeek->setToolTip(i18n("Select a week"));
-  selectMonth->setToolTip(i18n("Select a month"));
-  selectYear->setToolTip(i18n("Select a year"));
+  d->selectMonth->setToolTip(i18n("Select a month"));
+  d->selectYear->setToolTip(i18n("Select a year"));
   d->todayButton->setToolTip(i18n("Select the current day"));
 
   // -----
   setFontSize(fontsize);
-  line->setValidator(val);
-  line->installEventFilter( this );
+  d->line->setValidator(d->val);
+  d->line->installEventFilter( this );
   if ( QApplication::isRightToLeft() )
   {
-      yearForward->setIcon(KIcon(QLatin1String("arrow-left-double")));
-      yearBackward->setIcon(KIcon(QLatin1String("arrow-right-double")));
-      monthForward->setIcon(KIcon(QLatin1String("arrow-left")));
-      monthBackward->setIcon(KIcon(QLatin1String("arrow-right")));
+      d->yearForward->setIcon(KIcon(QLatin1String("arrow-left-double")));
+      d->yearBackward->setIcon(KIcon(QLatin1String("arrow-right-double")));
+      d->monthForward->setIcon(KIcon(QLatin1String("arrow-left")));
+      d->monthBackward->setIcon(KIcon(QLatin1String("arrow-right")));
   }
   else
   {
-      yearForward->setIcon(KIcon(QLatin1String("arrow-right-double")));
-      yearBackward->setIcon(KIcon(QLatin1String("arrow-left-double")));
-      monthForward->setIcon(KIcon(QLatin1String("arrow-right")));
-      monthBackward->setIcon(KIcon(QLatin1String("arrow-left")));
+      d->yearForward->setIcon(KIcon(QLatin1String("arrow-right-double")));
+      d->yearBackward->setIcon(KIcon(QLatin1String("arrow-left-double")));
+      d->monthForward->setIcon(KIcon(QLatin1String("arrow-right")));
+      d->monthBackward->setIcon(KIcon(QLatin1String("arrow-left")));
   }
 
-  connect(table, SIGNAL(dateChanged(const QDate&)), SLOT(dateChangedSlot(const QDate&)));
-  connect(table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
-  connect(monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()));
-  connect(monthBackward, SIGNAL(clicked()), SLOT(monthBackwardClicked()));
-  connect(yearForward, SIGNAL(clicked()), SLOT(yearForwardClicked()));
-  connect(yearBackward, SIGNAL(clicked()), SLOT(yearBackwardClicked()));
+  connect(d->table, SIGNAL(dateChanged(const QDate&)), SLOT(dateChangedSlot(const QDate&)));
+  connect(d->table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()));
+  connect(d->monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()));
+  connect(d->monthBackward, SIGNAL(clicked()), SLOT(monthBackwardClicked()));
+  connect(d->yearForward, SIGNAL(clicked()), SLOT(yearForwardClicked()));
+  connect(d->yearBackward, SIGNAL(clicked()), SLOT(yearBackwardClicked()));
   connect(d->selectWeek, SIGNAL(activated(int)), SLOT(weekSelected(int)));
   connect(d->todayButton, SIGNAL(clicked()), SLOT(todayButtonClicked()));
-  connect(selectMonth, SIGNAL(clicked()), SLOT(selectMonthClicked()));
-  connect(selectYear, SIGNAL(toggled(bool)), SLOT(selectYearClicked()));
-  connect(line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()));
-  table->setFocus();
+  connect(d->selectMonth, SIGNAL(clicked()), SLOT(selectMonthClicked()));
+  connect(d->selectYear, SIGNAL(toggled(bool)), SLOT(selectYearClicked()));
+  connect(d->line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()));
+  d->table->setFocus();
 
 
-  topLayout->addWidget(table);
+  topLayout->addWidget(d->table);
 
   QBoxLayout * bottomLayout = new QHBoxLayout();
   bottomLayout->setMargin(0);
@@ -207,10 +228,10 @@ void KDatePicker::init( const QDate &dt )
   topLayout->addLayout(bottomLayout);
 
   bottomLayout->addWidget(d->todayButton);
-  bottomLayout->addWidget(line);
+  bottomLayout->addWidget(d->line);
   bottomLayout->addWidget(d->selectWeek);
 
-  table->setDate(dt);
+  d->table->setDate(dt);
   dateChangedSlot(dt);  // needed because table emits changed only when newDate != oldDate
 }
 
@@ -230,8 +251,8 @@ KDatePicker::eventFilter(QObject *o, QEvent *e )
            (k->key() == Qt::Key_Up)    ||
            (k->key() == Qt::Key_Down) )
        {
-          QApplication::sendEvent( table, e );
-          table->setFocus();
+          QApplication::sendEvent( d->table, e );
+          d->table->setFocus();
           return true; // eat event
        }
    }
@@ -251,15 +272,15 @@ KDatePicker::dateChangedSlot(const QDate &date)
 
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-    line->setText(KGlobal::locale()->formatDate(date, true));
-    selectMonth->setText(calendar->monthName(date, false));
+    d->line->setText(KGlobal::locale()->formatDate(date, true));
+    d->selectMonth->setText(calendar->monthName(date, false));
     fillWeeksCombo(date);
 
     // calculate the item num in the week combo box; normalize selected day so as if 1.1. is the first day of the week
     QDate firstDay;
     calendar->setYMD(firstDay, calendar->year(date), 1, 1);
     d->selectWeek->setCurrentIndex((calendar->dayOfYear(date) + calendar->dayOfWeek(firstDay) - 2) / 7/*calendar->daysInWeek()*/);
-    selectYear->setText(calendar->yearString(date, false));
+    d->selectYear->setText(calendar->yearString(date, false));
 
     emit(dateChanged(date));
 }
@@ -268,14 +289,14 @@ void
 KDatePicker::tableClickedSlot()
 {
   kDebug(298) << "KDatePicker::tableClickedSlot: table clicked." << endl;
-  emit(dateSelected(table->date()));
+  emit(dateSelected(d->table->date()));
   emit(tableClicked());
 }
 
 const QDate &
 KDatePicker::date() const
 {
-    return table->date();
+    return d->table->date();
 }
 
 bool
@@ -283,7 +304,7 @@ KDatePicker::setDate(const QDate& date)
 {
     if(date.isValid())
     {
-        table->setDate(date);  // this also emits dateChanged() which then calls our dateChangedSlot()
+        d->table->setDate(date);  // this also emits dateChanged() which then calls our dateChangedSlot()
         return true;
     }
     else
@@ -297,7 +318,7 @@ void
 KDatePicker::monthForwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addMonths( table->date(), 1 );
+    temp = KGlobal::locale()->calendar()->addMonths( d->table->date(), 1 );
 
     setDate( temp );
 }
@@ -306,7 +327,7 @@ void
 KDatePicker::monthBackwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addMonths( table->date(), -1 );
+    temp = KGlobal::locale()->calendar()->addMonths( d->table->date(), -1 );
 
     setDate( temp );
 }
@@ -315,7 +336,7 @@ void
 KDatePicker::yearForwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addYears( table->date(), 1 );
+    temp = KGlobal::locale()->calendar()->addYears( d->table->date(), 1 );
 
     setDate( temp );
 }
@@ -324,7 +345,7 @@ void
 KDatePicker::yearBackwardClicked()
 {
     QDate temp;
-    temp = KGlobal::locale()->calendar()->addYears( table->date(), -1 );
+    temp = KGlobal::locale()->calendar()->addYears( d->table->date(), -1 );
 
     setDate( temp );
 }
@@ -334,7 +355,7 @@ KDatePicker::weekSelected(int week)
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  QDate date = table->date();
+  QDate date = d->table->date();
   int year = calendar->year(date);
 
   calendar->setYMD(date, year, 1, 1);  // first day of selected year
@@ -350,10 +371,10 @@ KDatePicker::selectMonthClicked()
 {
   // every year can have different month names (in some calendar systems)
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-  QDate date = table->date();
+  QDate date = d->table->date();
   const int months = calendar->monthsInYear(date);
 
-  QMenu popup(selectMonth);
+  QMenu popup(d->selectMonth);
 
   for (int i = 1; i <= months; i++)
     popup.addAction(calendar->monthName(i, calendar->year(date)))->setData(i);
@@ -363,7 +384,7 @@ KDatePicker::selectMonthClicked()
   if (item) // if this happens the above should already given an assertion
     popup.setActiveAction(item);
 
-  if ( (item = popup.exec(selectMonth->mapToGlobal(QPoint(0, 0)), item)) == 0 ) return;  // canceled
+  if ( (item = popup.exec(d->selectMonth->mapToGlobal(QPoint(0, 0)), item)) == 0 ) return;  // canceled
 
   int day = calendar->day(date);
   // ----- construct a valid date in this month:
@@ -378,7 +399,7 @@ KDatePicker::selectYearClicked()
 {
   const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-  if (!selectYear->isChecked ())
+  if (!d->selectYear->isChecked ())
   {
     return;
   }
@@ -388,18 +409,18 @@ KDatePicker::selectYearClicked()
   KDateInternalYearSelector* picker = new KDateInternalYearSelector(popup);
   // -----
   picker->resize(picker->sizeHint());
-  picker->setYear( table->date().year() );
+  picker->setYear( d->table->date().year() );
   picker->selectAll();
   popup->setMainWidget(picker);
   connect(picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)));
   picker->setFocus();
-  if(popup->exec(selectYear->mapToGlobal(QPoint(0, selectMonth->height()))))
+  if(popup->exec(d->selectYear->mapToGlobal(QPoint(0, d->selectMonth->height()))))
     {
       QDate date;
       int day;
       // -----
       year=picker->getYear();
-      date=table->date();
+      date=d->table->date();
       day=calendar->day(date);
       // ----- construct a valid date in this month:
       //date.setYMD(year, date.month(), 1);
@@ -411,7 +432,7 @@ KDatePicker::selectYearClicked()
     } else {
       KNotification::beep();
     }
-  selectYear->setChecked( false );
+  d->selectYear->setChecked( false );
   delete popup;
 }
 
@@ -422,9 +443,9 @@ void
 KDatePicker::setEnabled(bool enable)
 {
   QWidget *widgets[]= {
-    yearForward, yearBackward, monthForward, monthBackward,
-    selectMonth, selectYear,
-    line, table, d->selectWeek, d->todayButton };
+    d->yearForward, d->yearBackward, d->monthForward, d->monthBackward,
+    d->selectMonth, d->selectYear,
+    d->line, d->table, d->selectWeek, d->todayButton };
   const int Size=sizeof(widgets)/sizeof(widgets[0]);
   int count;
   // -----
@@ -434,12 +455,17 @@ KDatePicker::setEnabled(bool enable)
     }
 }
 
+KDateTable *KDatePicker::dateTable() const
+{
+    return d->table;
+}
+
 void
 KDatePicker::lineEnterPressed()
 {
   QDate temp;
   // -----
-  if(val->date(line->text(), temp)==QValidator::Acceptable)
+  if(d->val->date(d->line->text(), temp)==QValidator::Acceptable)
     {
         kDebug(298) << "KDatePicker::lineEnterPressed: valid date entered." << endl;
         emit(dateEntered(temp));
@@ -468,8 +494,8 @@ KDatePicker::setFontSize(int s)
   QWidget *buttons[]= {
     // yearBackward,
     // monthBackward,
-    selectMonth,
-    selectYear,
+    d->selectMonth,
+    d->selectYear,
     // monthForward,
     // yearForward
   };
@@ -485,35 +511,35 @@ KDatePicker::setFontSize(int s)
       font.setPointSize(s);
       buttons[count]->setFont(font);
     }
-  QFontMetrics metrics(selectMonth->fontMetrics());
+  QFontMetrics metrics(d->selectMonth->fontMetrics());
 
   for (int i = 1; ; ++i)
     {
       QString str = KGlobal::locale()->calendar()->monthName(i,
-         KGlobal::locale()->calendar()->year(table->date()), false);
+         KGlobal::locale()->calendar()->year(d->table->date()), false);
       if (str.isNull()) break;
       r=metrics.boundingRect(str);
-      maxMonthRect.setWidth(qMax(r.width(), maxMonthRect.width()));
-      maxMonthRect.setHeight(qMax(r.height(),  maxMonthRect.height()));
+      d->maxMonthRect.setWidth(qMax(r.width(), d->maxMonthRect.width()));
+      d->maxMonthRect.setHeight(qMax(r.height(),  d->maxMonthRect.height()));
     }
 
   QStyleOptionToolButton opt;
 
   // stolen from KToolBarButton
   opt.init(this);
-  opt.font      = selectMonth->font();
-  opt.icon      = selectMonth->icon();
-  opt.text      = selectMonth->text();
-  opt.features  = selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
+  opt.font      = d->selectMonth->font();
+  opt.icon      = d->selectMonth->icon();
+  opt.text      = d->selectMonth->text();
+  opt.features  = d->selectMonth->menu() ? QStyleOptionToolButton::Menu : QStyleOptionToolButton::None; //### FIXME: delay?
   opt.subControls       = QStyle::SC_All;
   opt.activeSubControls = 0; //### FIXME: !!
 
   QSize metricBound = style()->sizeFromContents(QStyle::CT_ToolButton,
                                                &opt,
-                                               maxMonthRect, selectMonth);
-  selectMonth->setMinimumSize(metricBound);
+                                               d->maxMonthRect, d->selectMonth);
+  d->selectMonth->setMinimumSize(metricBound);
 
-  table->setFontSize(s);
+  d->table->setFontSize(s);
 }
 
 void

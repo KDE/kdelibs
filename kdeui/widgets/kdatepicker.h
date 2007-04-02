@@ -102,7 +102,7 @@ public:
    * @returns the KDateTable widget child of this KDatePicker
    * widget.
    */
-  KDateTable *dateTable() const { return table; }
+  KDateTable *dateTable() const;
 
   /**
    * Sets the font size of the widgets elements.
@@ -135,28 +135,7 @@ protected:
   virtual bool eventFilter(QObject *o, QEvent *e );
   /// the resize event
   virtual void resizeEvent(QResizeEvent*);
-  /// the year forward button
-  QToolButton *yearForward;
-  /// the year backward button
-  QToolButton *yearBackward;
-  /// the month forward button
-  QToolButton *monthForward;
-  /// the month backward button
-  QToolButton *monthBackward;
-  /// the button for selecting the month directly
-  QToolButton *selectMonth;
-  /// the button for selecting the year directly
-  QToolButton *selectYear;
-  /// the line edit to enter the date directly
-  QLineEdit *line;
-  /// the validator for the line edit:
-  KDateValidator *val;
-  /// the date table
-  KDateTable *table;
-  /// the size calculated during resize events
-    //  QSize sizehint;
-  /// the widest month string in pixels:
-  QSize maxMonthRect;
+
 protected Q_SLOTS:
   void dateChangedSlot(const QDate&);
   void tableClickedSlot();
