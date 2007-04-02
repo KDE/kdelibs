@@ -7,9 +7,6 @@ class tst_KStandardAction : public QObject
 {
     Q_OBJECT
 
-public slots:
-    inline void dummy() {}
-
 private slots:
     void implicitInsertion();
 };
