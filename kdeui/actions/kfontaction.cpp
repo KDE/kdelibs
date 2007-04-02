@@ -34,6 +34,7 @@
 #include <kfontdialog.h>
 #include <kicon.h>
 #include <klocale.h>
+#include <kfontchooser.h>
 
 KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
   : KSelectAction(parent)
