@@ -47,7 +47,7 @@ public:
     * later the setPixmap method of the KPixmapRegionSelectorWidget widget of
     * the new object.
     */
-   explicit KPixmapRegionSelectorDialog(QWidget *parent=0L, bool modal = false );
+   explicit KPixmapRegionSelectorDialog( QWidget *parent = 0 );
    /**
     * The destructor of the dialog
     */
@@ -57,8 +57,7 @@ public:
     * @returns the KPixmapRegionSelectorWidget widget so that additional
     * parameters can be set by using it.
     */
-   KPixmapRegionSelectorWidget *pixmapRegionSelectorWidget() const 
-      { return m_pixmapSelectorWidget; }
+   KPixmapRegionSelectorWidget *pixmapRegionSelectorWidget() const;
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -67,7 +66,7 @@ public:
     * @returns the selected rectangle, or an invalid rectangle if the user 
     * pressed the Cancel button.
     */
-   static QRect getSelectedRegion(const QPixmap &pixmap, QWidget *parent = 0L );
+   static QRect selectedRegion( const QPixmap &pixmap, QWidget *parent = 0L );
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -77,7 +76,8 @@ public:
     * @returns the selected rectangle, or an invalid rectangle if the user 
     * pressed the Cancel button.
     */
-   static QRect getSelectedRegion(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent = 0L );
+   static QRect selectedRegion( const QPixmap &pixmap, int aspectRatioWidth,
+                                int aspectRatioHeight, QWidget *parent = 0L );
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -86,7 +86,7 @@ public:
     * @returns the selected image, or an invalid image if the user 
     * pressed the Cancel button.
     */
-   static QImage getSelectedImage(const QPixmap &pixmap, QWidget *parent = 0L );
+   static QImage selectedImage( const QPixmap &pixmap, QWidget *parent = 0L );
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -96,10 +96,14 @@ public:
     * @returns the selected image, or an invalid image if the user 
     * pressed the Cancel button.
     */
-   static QImage getSelectedImage(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent = 0L );
+   static QImage selectedImage( const QPixmap &pixmap, int aspectRatioWidth,
+                                int aspectRatioHeight, QWidget *parent = 0L );
 
-protected:
-   KPixmapRegionSelectorWidget *m_pixmapSelectorWidget;
+private:
+    class Private;
+    Private* const d;
+
+    Q_DISABLE_COPY( KPixmapRegionSelectorDialog )
 };
 
 

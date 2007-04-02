@@ -29,18 +29,28 @@
 #include <kpixmapregionselectorwidget.h>
 #include <kvbox.h>
 
-KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog(QWidget *parent,
-     bool modal )
-  : KDialog(parent)
+class KPixmapRegionSelectorDialog::Private
+{
+public:
+    Private()
+        : pixmapSelectorWidget( 0 )
+    {
+    }
+
+    KPixmapRegionSelectorWidget *pixmapSelectorWidget;
+};
+
+KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
+  : KDialog( parent ),
+    d( new Private )
 {
   setCaption( i18n("Select Region of Image") );
   setButtons( Help|Ok|Cancel );
   showButtonSeparator( true );
-  setModal( modal );
 
   KVBox *vbox=new KVBox(this);
   new QLabel(i18n("Please click and drag on the image to select the region of interest:"), vbox);
-  m_pixmapSelectorWidget= new KPixmapRegionSelectorWidget(vbox);
+  d->pixmapSelectorWidget= new KPixmapRegionSelectorWidget(vbox);
 
   vbox->setSpacing( KDialog::spacingHint() );
 
@@ -51,7 +61,12 @@ KPixmapRegionSelectorDialog::~KPixmapRegionSelectorDialog()
 {
 }
 
-QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, QWidget *parent )
+KPixmapRegionSelectorWidget *KPixmapRegionSelectorDialog::pixmapRegionSelectorWidget() const
+{
+    return d->pixmapSelectorWidget;
+}
+
+QRect KPixmapRegionSelectorDialog::selectedRegion(const QPixmap &pixmap, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
@@ -72,7 +87,7 @@ QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, QWid
   return rect;
 }
 
-QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
+QRect KPixmapRegionSelectorDialog::selectedRegion(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
@@ -94,7 +109,7 @@ QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, int 
   return rect;
 }
 
-QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, QWidget *parent )
+QImage KPixmapRegionSelectorDialog::selectedImage(const QPixmap &pixmap, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
@@ -114,7 +129,7 @@ QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, QWid
   return image;
 }
 
-QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
+QImage KPixmapRegionSelectorDialog::selectedImage(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
