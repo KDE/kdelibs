@@ -19,13 +19,11 @@
 #include "config.h"
 #include "klibloader.h"
 
-#include <qclipboard.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qtimer.h>
 #include <qlibrary.h>
 #include <QStack>
-#include <qapplication.h>
 
 #include "kstandarddirs.h"
 #include "kcomponentdata.h"
@@ -33,6 +31,7 @@
 #include "klocale.h"
 
 #include <stdlib.h> //getenv
+#include <QCoreApplication>
 
 
 namespace KLibLoader_cpp {
@@ -636,11 +635,11 @@ void KLibLoaderPrivate::close_pending(KLibWrapPrivate *wrap)
     if (!pending_close.contains( wrap )) {
       if (!deleted_one)
         /* Only diagnose, if we really haven't deleted anything. */
-//        kDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
+//      kDebug(150) << "try to dlclose " << wrap->name << ": not yet" << endl;
       break;
     }
 
-//    kDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
+//  kDebug(150) << "try to dlclose " << wrap->name << ": yes, done." << endl;
 
     if ( !deleted_one ) {
       /* Only do the hack once in this loop.
@@ -652,14 +651,8 @@ void KLibLoaderPrivate::close_pending(KLibWrapPrivate *wrap)
 
       /* Well.. let's do something more subtle... convert the clipboard context
          to text. That should be safe as it only uses objects defined by Qt. */
-      if( qApp->clipboard()->ownsSelection()) {
-	qApp->clipboard()->setText(
-            qApp->clipboard()->text( QClipboard::Selection ), QClipboard::Selection );
-      }
-      if( qApp->clipboard()->ownsClipboard()) {
-	qApp->clipboard()->setText(
-            qApp->clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
-      }
+
+      emit instance.kapplication_hook_clearClipboard();
     }
 
     deleted_one = true;

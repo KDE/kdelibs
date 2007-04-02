@@ -36,6 +36,7 @@ set(kdeui_unittests
   kstandardactiontest
   kstandardshortcuttest  
   kuniqueapptest
+  kapplication_unittest
 )
 
 KDEUI_BUILD_TESTS(

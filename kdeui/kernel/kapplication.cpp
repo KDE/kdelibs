@@ -105,6 +105,7 @@
 
 #include <qevent.h>
 #include <kcomponentdata.h>
+#include <klibloader.h>
 
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
@@ -545,7 +546,9 @@ void KApplication::init(bool GUIenabled)
     KGestureMap::self()->installEventFilterOnMe( this );
 
     connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
-            this, SLOT(slot_KToolInvication_hook(QStringList&,QByteArray&)));
+            this, SLOT(slot_KToolInvocation_hook(QStringList&,QByteArray&)));
+    connect(KLibLoader::self(), SIGNAL(kapplication_hook_clearClipboard()),
+            this, SLOT(slot_KLibLoader_hook_clearClipboard()));
   }
 
 #ifdef Q_WS_MAC
@@ -1111,7 +1114,7 @@ void KApplication::read_app_startup_id()
 }
 
 // Hook called by KToolInvocation
-void KApplication::slot_KToolInvication_hook(QStringList& envs,QByteArray& startup_id)
+void KApplication::slot_KToolInvocation_hook(QStringList& envs,QByteArray& startup_id)
 {
 #ifdef Q_WS_X11
     if (QX11Info::display()) {
@@ -1134,6 +1137,19 @@ void KApplication::setSynchronizeClipboard(bool synchronize)
 {
     KClipboardSynchronizer::self()->setSynchronizing(synchronize);
     KClipboardSynchronizer::self()->setReverseSynchronizing(synchronize);
+}
+
+void KApplication::slot_KLibLoader_hook_clearClipboard()
+{
+    kDebug() << k_funcinfo << endl;
+    if( clipboard()->ownsSelection()) {
+	clipboard()->setText(
+            clipboard()->text( QClipboard::Selection ), QClipboard::Selection );
+    }
+    if( clipboard()->ownsClipboard()) {
+	clipboard()->setText(
+            clipboard()->text( QClipboard::Clipboard ), QClipboard::Clipboard );
+    }
 }
 
 #include "kapplication.moc"

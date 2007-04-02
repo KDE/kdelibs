@@ -478,6 +478,10 @@ public:
         return res;
     }
 
+Q_SIGNALS:
+    /// @internal for KApplication. Do not use.
+    void kapplication_hook_clearClipboard();
+
 private:
     /**
      * You should NEVER destruct an instance of KLibLoader

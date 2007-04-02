@@ -402,9 +402,10 @@ protected:
   static KApplication *KApp;
 
 private Q_SLOTS:
-  void x11FilterDestroyed();
-  void checkAppStartedSlot();
-  void slot_KToolInvication_hook(QStringList&,QByteArray&);
+    void x11FilterDestroyed();
+    void checkAppStartedSlot();
+    void slot_KToolInvocation_hook(QStringList&,QByteArray&);
+    void slot_KLibLoader_hook_clearClipboard();
 
 private:
   QString sessionConfigName() const;

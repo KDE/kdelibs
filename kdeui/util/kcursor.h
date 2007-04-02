@@ -36,7 +36,7 @@ class KDEUI_EXPORT KCursor : public QCursor
 public:
     /**
      * Attempts to load the requested @p name cursor from the current theme.
-     * If it fails, it falls back to the Qt::CursorShape provided as the 
+     * If it fails, it falls back to the Qt::CursorShape provided as the
      * second parameter. This allows one to access cursors that may be in a
      * theme but not in the Qt::CursorShape enum.
      *
