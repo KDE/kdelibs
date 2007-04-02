@@ -41,7 +41,7 @@ namespace Fake
             qint64 totalTime() const;
 			Q_INVOKABLE qint32 aboutToFinishTime() const;
             void setUrl( const KUrl& url );
-            void openMedia(Phonon::MediaObject::Media media);
+            void openMedia(Phonon::MediaObject::Media media, const QString &mediaDevice);
 			Q_INVOKABLE void setAboutToFinishTime( qint32 newAboutToFinishTime );
 
             void play();
