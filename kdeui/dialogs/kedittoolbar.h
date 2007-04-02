@@ -171,7 +171,7 @@ public:
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
    */
-  KEditToolBar(KXMLGUIFactory* factory, QWidget* parent = 0);
+  explicit KEditToolBar(KXMLGUIFactory* factory, QWidget* parent = 0);
 
   //KDE 4.0: merge the two constructors
   /** Constructor for KParts based apps, which has an extra argument
@@ -232,11 +232,10 @@ protected:
 
 private:
   void init();
-  
-private:
+
   friend class KEditToolBarPrivate;
   KEditToolBarPrivate *const d;
-  
+
   Q_DISABLE_COPY(KEditToolBar)
 };
 
@@ -291,9 +290,9 @@ public:
    *               be parsed
    * @param parent This widget's parent
    */
-  KEditToolBarWidget(KActionCollection *collection,
-                     const QString& xmlfile = QString(),
-                     bool global = true, QWidget *parent = 0L);
+  explicit KEditToolBarWidget( KActionCollection *collection,
+                               const QString& xmlfile = QString(),
+                               bool global = true, QWidget *parent = 0L);
 
    //KDE 4.0: merge the two constructors
    /* Same as above, with an extra agrument specifying the toolbar to be shown.
@@ -331,7 +330,7 @@ public:
    * @param factory Your application's factory object
    * @param parent This widget's parent
    */
-  KEditToolBarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
+  explicit KEditToolBarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
 
    //KDE 4.0: merge the two constructors
    /* Same as above, with an extra agrument specifying the toolbar to be shown.
@@ -400,83 +399,4 @@ private:
   Q_DISABLE_COPY(KEditToolBarWidget)
 };
 
-
-/**
-* @short A dialog used to customize or configure toolbars.
- *
- * This dialog only works if your application uses the XML UI
- * framework for creating menus and toolbars.  It depends on the XML
- * files to describe the toolbar layouts and it requires the actions
- * to determine which buttons are active.
- *
- * @deprecated use KEditToolBar
- */
-class KDEUI_EXPORT_DEPRECATED KEditToolbar : public KEditToolBar
-{
-  Q_OBJECT
-  
-public:
-  KEditToolbar(KActionCollection *collection,
-               const QString& xmlfile = QString(), bool global = true,
-               QWidget* parent = 0);
-  
-  KEditToolbar(const QString& defaultToolBar, KActionCollection *collection,
-               const QString& xmlfile = QString(), bool global = true,
-               QWidget* parent = 0);
-  
-  KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0);
-  
-  KEditToolbar(const QString& defaultToolBar, KXMLGUIFactory* factory,
-               QWidget* parent = 0);
-  
-  ~KEditToolbar();
-  
-private:
-  class KEditToolbarPrivate;
-  friend class KEditToolbarPrivate;
-  KEditToolBarPrivate *const d;
-  
-  Q_DISABLE_COPY(KEditToolbar)
-};
-
-/**
- * @short A widget used to customize or configure toolbars
- *
- * This is the widget that does all of the work for the
- * KEditToolBar dialog.  In most cases, you will want to use the
- * dialog instead of this widget directly.
- *
- * @deprecated use KEditToolBarWidget
- */
-class KDEUI_EXPORT_DEPRECATED KEditToolbarWidget : public KEditToolBarWidget
-{
-  Q_OBJECT
-  
-public:
-  KEditToolbarWidget(KActionCollection *collection,
-                     const QString& xmlfile = QString(),
-                     bool global = true, QWidget *parent = 0L);
-  
-  KEditToolbarWidget(const QString& defaultToolBar,
-                     KActionCollection *collection,
-                     const QString& file = QString(),
-                     bool global = true,
-                     QWidget *parent = 0L);
-  
-  KEditToolbarWidget(KXMLGUIFactory* factory, QWidget *parent = 0L);
-  
-  KEditToolbarWidget(const QString& defaultToolBar,
-                     KXMLGUIFactory* factory,
-                     QWidget *parent = 0L);
-  
-  ~KEditToolbarWidget();
-  
-private:
-  class KEditToolbarWidgetPrivate;
-  friend class KEditToolbarWidgetPrivate;
-  KEditToolbarWidgetPrivate *const d;
-  
-  Q_DISABLE_COPY(KEditToolbarWidget)
-};
-    
 #endif // _KEDITTOOLBAR_H
