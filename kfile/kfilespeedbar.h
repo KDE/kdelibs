@@ -19,6 +19,7 @@
 #ifndef KFILESPEEDBAR_H
 #define KFILESPEEDBAR_H
 
+#include <kfile_export.h>
 #include <kurlbar.h>
 
 class KConfig;
