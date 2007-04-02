@@ -25,7 +25,9 @@
 
 #include "ksplashscreen.h"
 
-KSplashScreen::KSplashScreen(const QPixmap &pixmap, Qt::WFlags f): QSplashScreen(pixmap, f)
+KSplashScreen::KSplashScreen(const QPixmap &pixmap, Qt::WFlags f)
+    : QSplashScreen( pixmap, f ),
+      d( 0 )
 {
 	QRect desk = KGlobalSettings::splashScreenDesktopGeometry();
 	resize(pixmap.width(), pixmap.height());

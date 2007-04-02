@@ -391,7 +391,7 @@ void KConfigDialogManager::updateSettings()
   }
 }
 
-QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget)
+QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
 {
   if (!s_propertyMap->contains(widget->metaObject()->className())) {
     const QMetaObject *metaObject = widget->metaObject();
@@ -442,7 +442,7 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
   w->setProperty( userproperty, v );
 }
 
-QVariant KConfigDialogManager::property(QWidget *w)
+QVariant KConfigDialogManager::property(QWidget *w) const
 {
   QButtonGroup *bg = qobject_cast<QButtonGroup *>(w);
   if (bg && bg->checkedButton())
@@ -464,7 +464,7 @@ QVariant KConfigDialogManager::property(QWidget *w)
   return w->property( userproperty );
 }
 
-bool KConfigDialogManager::hasChanged()
+bool KConfigDialogManager::hasChanged() const
 {
 
   QWidget *widget;
@@ -490,7 +490,7 @@ bool KConfigDialogManager::hasChanged()
   return false;
 }
 
-bool KConfigDialogManager::isDefault()
+bool KConfigDialogManager::isDefault() const
 {
   bool bUseDefaults = d->m_conf->useDefaults(true);
   bool result = !hasChanged();

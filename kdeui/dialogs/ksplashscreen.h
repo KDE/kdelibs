@@ -55,6 +55,10 @@ public:
    */
   ~KSplashScreen();
 
+private:
+    class Private;
+    Private* const d;
+    Q_DISABLE_COPY( KSplashScreen )
 };
 
 #endif //KSPLASHSCREEN_H

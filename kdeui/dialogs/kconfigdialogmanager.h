@@ -127,13 +127,13 @@ public:
    * Returns whether the current state of the known widgets are
    * different from the state in the config object.
    */
-  bool hasChanged();
+  bool hasChanged() const;
 
   /**
    * Returns whether the current state of the known widgets are
    * the same as the default state in the config object.
    */
-  bool isDefault();
+  bool isDefault() const;
 
   /**
    * Retrieve the property map
@@ -197,7 +197,7 @@ protected:
    * Finds the USER property name using Qt's MetaProperty system, and caches
    * it in the property map (the cache could be retrieved by propertyMap() ).
    */
-  QByteArray getUserProperty(const QWidget *widget);
+  QByteArray getUserProperty(const QWidget *widget) const;
 
   /**
    * Set a property
@@ -207,7 +207,7 @@ protected:
   /**
    * Retrieve a property
    */
-  QVariant property(QWidget *w);
+  QVariant property(QWidget *w) const;
 
   /**
    * Setup secondary widget properties

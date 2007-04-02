@@ -173,6 +173,7 @@ class KDEUI_EXPORT KTipDialog : public KDialog
     Q_PRIVATE_SLOT( d, void nextTip() )
     Q_PRIVATE_SLOT( d, void prevTip() )
     Q_PRIVATE_SLOT( d, void showOnStart( bool ) )
+    Q_DISABLE_COPY(KTipDialog)
 };
 
 #endif

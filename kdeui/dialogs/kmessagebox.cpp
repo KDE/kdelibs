@@ -28,6 +28,7 @@
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdialog.h>
+#include <kdialogqueue_p.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
 #include <knotification.h>

@@ -24,7 +24,7 @@
 
 #include <QHash>
 
-class KAssistantDialogPrivate
+class KAssistantDialog::Private
 {
     public:
         QHash<KPageWidgetItem*, bool> valid;
@@ -56,7 +56,7 @@ class KAssistantDialogPrivate
         }
 };
 
-KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags), d(new KAssistantDialogPrivate)
+KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags) : KPageDialog(parent, flags), d(new Private)
 {
     init();
     //workaround to get the page model
@@ -65,7 +65,7 @@ KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags) : KPageDi
     d->pageModel=static_cast<KPageWidgetModel*>(pagewidget->model());
 }
 
-KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget, parent, flags), d(new KAssistantDialogPrivate)
+KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) : KPageDialog(widget, parent, flags), d(new Private)
 {
     init();
     d->pageModel=static_cast<KPageWidgetModel*>(widget->model());
@@ -117,7 +117,7 @@ void KAssistantDialog::setValid(KPageWidgetItem * page, bool enable)
         slotCurrentPageChanged();
 }
 
-bool KAssistantDialog::isValid(KPageWidgetItem * page)
+bool KAssistantDialog::isValid(KPageWidgetItem * page) const
 {
     return d->valid.value(page, true);
 }
@@ -146,7 +146,7 @@ void KAssistantDialog::setAppropriate(KPageWidgetItem * page, bool appropriate)
     d->appropriate[page]=appropriate;
 }
 
-bool KAssistantDialog::isAppropriate(KPageWidgetItem * page)
+bool KAssistantDialog::isAppropriate(KPageWidgetItem * page) const
 {
     return d->appropriate.value(page, true);
 }

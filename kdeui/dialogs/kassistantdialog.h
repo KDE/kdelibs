@@ -22,8 +22,6 @@
 
 #include <kpagedialog.h>
 
-class KAssistantDialogPrivate;
-
 /**
  * This class provides a framework for assistant dialogs.
  *
@@ -61,7 +59,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          * @flags the window flags to give to the assistant dialog. The
          * default of zero is usually what you want.
          */
-        KAssistantDialog(QWidget *parent=0, Qt::WFlags flags=0);
+        explicit KAssistantDialog(QWidget *parent=0, Qt::WFlags flags=0);
         virtual ~KAssistantDialog();
 
         /**
@@ -80,7 +78,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          * @see setValid
          * @param page the page to check the validity of
          */
-        bool isValid(KPageWidgetItem *page);
+        bool isValid(KPageWidgetItem *page) const;
 
         /**
          * Specify whether a page is appropriate.
@@ -103,7 +101,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          * @param page is the page to check the appropriateness of.
          * @return true if @p page is appropriate, false if it is not
          */
-        bool isAppropriate(KPageWidgetItem *page);
+        bool isAppropriate(KPageWidgetItem *page) const;
 
 
     public Q_SLOTS:
@@ -136,12 +134,15 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          *
          * Calls the KPageDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) constructor
          */
-        KAssistantDialog(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
+        explicit KAssistantDialog(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
 
         virtual void showEvent(QShowEvent * event);
 
     private:
-        KAssistantDialogPrivate * const d;
+        class Private;
+        Private * const d;
+        Q_DISABLE_COPY( KAssistantDialog )
+
         void init();
 };
 
