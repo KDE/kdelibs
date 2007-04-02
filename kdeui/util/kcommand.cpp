@@ -30,37 +30,75 @@
 
 #include "ktoolbarpopupaction.h"
 
+KCommand::KCommand()
+    : d( 0 )
+{
+}
+
 KCommand::~KCommand()
 {
 }
 
-KMacroCommand::KMacroCommand( const QString & name ) : KNamedCommand(name)
+class KNamedCommand::Private
+{
+    public:
+        QString name;
+};
+
+KNamedCommand::KNamedCommand( const QString &name )
+    : KCommand(),
+      d( new Private )
+{
+    d->name = name;
+}
+
+QString KNamedCommand::name() const
+{
+    return d->name;
+}
+
+void KNamedCommand::setName( const QString &name )
+{
+    d->name = name;
+}
+
+class KMacroCommand::Private
+{
+    public:
+        QList<KCommand *> commands;
+};
+
+KMacroCommand::KMacroCommand( const QString & name )
+    : KNamedCommand(name),
+      d( new Private )
 {
 }
 
 KMacroCommand::~KMacroCommand()
 {
-    qDeleteAll( m_commands );
+    qDeleteAll( d->commands );
 }
 
 void KMacroCommand::addCommand( KCommand *command )
 {
-    m_commands.append(command);
+    d->commands.append(command);
 }
 
 void KMacroCommand::execute()
 {
-    QListIterator<KCommand *> it( m_commands );
-    while ( it.hasNext() )
+    QListIterator<KCommand *> it( d->commands );
+    while ( it.hasNext() ) {
         it.next()->execute();
+    }
 }
 
 void KMacroCommand::unexecute()
 {
-    QListIterator<KCommand *> it( m_commands );
+    QListIterator<KCommand *> it( d->commands );
     it.toBack();
-    while ( it.hasPrevious() )
+    while ( it.hasPrevious() ) {
         it.previous()->unexecute();
+    }
 }
 
 
@@ -293,23 +331,37 @@ int KCommandHistory::redoLimit() const
      return d->m_redoLimit;
 }
 
+class KUndoRedoAction::Private
+{
+    public:
+        Private( KUndoRedoAction::Type type, KCommandHistory* commandHistory)
+            : type( type ),
+              commandHistory( commandHistory )
+        {
+        }
+
+        Type type;
+        KCommandHistory* commandHistory;
+};
+
+
+
 KUndoRedoAction::KUndoRedoAction( Type type, KActionCollection* actionCollection, KCommandHistory* commandHistory )
     : KToolBarPopupAction( KIcon( type == Undo ? "edit-undo" : "edit-redo" ),
                            QString(), // text is set in clear() on start
                            actionCollection),
-      m_type( type ),
-      m_commandHistory( commandHistory ),
-      d(0)
+      d( new Private( type, commandHistory ) )
 {
     setShortcut( KStandardShortcut::shortcut( type == Undo ? KStandardShortcut::Undo : KStandardShortcut::Redo ) );
-    if (m_type == Undo)
-        connect( this, SIGNAL(triggered(bool)), m_commandHistory, SLOT(undo()) );
-    else
-        connect( this, SIGNAL(triggered(bool)), m_commandHistory, SLOT(redo()) );
+    if ( d->type == Undo ) {
+        connect( this, SIGNAL(triggered(bool)), d->commandHistory, SLOT(undo()) );
+    } else {
+        connect( this, SIGNAL(triggered(bool)), d->commandHistory, SLOT(redo()) );
+    }
     connect( this->menu(), SIGNAL(aboutToShow()), this, SLOT(slotAboutToShow()) );
     connect( this->menu(), SIGNAL(triggered(QAction*)), this, SLOT(slotActionTriggered(QAction*)) );
 
-    connect( m_commandHistory, SIGNAL(commandHistoryChanged()), this, SLOT(slotCommandHistoryChanged()) );
+    connect( d->commandHistory, SIGNAL(commandHistoryChanged()), this, SLOT(slotCommandHistoryChanged()) );
     slotCommandHistoryChanged();
     actionCollection->addAction(KStandardAction::stdName(type == Undo ? KStandardAction::Undo : KStandardAction::Redo),
                                 this);
@@ -320,14 +372,14 @@ void KUndoRedoAction::slotAboutToShow()
     menu()->clear();
     // TODO make number of items configurable ?
     const int maxCommands = 9;
-    if (m_type == Undo) {
-        const QList<KCommand *> commands = m_commandHistory->undoCommands( maxCommands );
+    if ( d->type == Undo ) {
+        const QList<KCommand *> commands = d->commandHistory->undoCommands( maxCommands );
         for (int i = 0; i < commands.count(); ++i) {
             QAction *action = menu()->addAction( i18n("Undo: %1", commands[i]->name()) );
             action->setData( i );
         }
     } else {
-        const QList<KCommand *> commands = m_commandHistory->redoCommands( maxCommands );
+        const QList<KCommand *> commands = d->commandHistory->redoCommands( maxCommands );
         for (int i = 0; i < commands.count(); ++i) {
             QAction *action = menu()->addAction( i18n("Redo: %1", commands[i]->name()) );
             action->setData( i );
@@ -339,29 +391,31 @@ void KUndoRedoAction::slotActionTriggered( QAction *action )
 {
     const int pos = action->data().toInt();
     kDebug(230) << "KUndoRedoAction::slotActionTriggered " << pos << endl;
-    if (m_type == Undo) {
-        for ( int i = 0 ; i < pos+1; ++i )
-            m_commandHistory->undo();
+    if ( d->type == Undo ) {
+        for ( int i = 0 ; i < pos+1; ++i ) {
+            d->commandHistory->undo();
+        }
     } else {
-        for ( int i = 0 ; i < pos+1; ++i )
-            m_commandHistory->redo();
+        for ( int i = 0 ; i < pos+1; ++i ) {
+            d->commandHistory->redo();
+        }
     }
 }
 
 void KUndoRedoAction::slotCommandHistoryChanged()
 {
-    const bool isUndo = m_type == Undo;
-    const bool enabled = isUndo ? m_commandHistory->isUndoAvailable() : m_commandHistory->isRedoAvailable();
+    const bool isUndo = d->type == Undo;
+    const bool enabled = isUndo ? d->commandHistory->isUndoAvailable() : d->commandHistory->isRedoAvailable();
     setEnabled(enabled);
     if (!enabled) {
         setText(isUndo ? i18n("&Undo") : i18n("&Redo"));
     } else {
         if (isUndo) {
-            KCommand* presentCommand = m_commandHistory->presentCommand();
+            KCommand* presentCommand = d->commandHistory->presentCommand();
             Q_ASSERT(presentCommand);
             setText(i18n("&Undo: %1", presentCommand->name()));
         } else {
-            KCommand* redoCommand = m_commandHistory->redoCommands(1).first();
+            KCommand* redoCommand = d->commandHistory->redoCommands(1).first();
             setText(i18n("&Redo: %1", redoCommand->name()));
         }
     }

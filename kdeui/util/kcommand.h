@@ -45,7 +45,7 @@ protected:
     /**
      * Creates a command.
      */
-    KCommand() {}
+    KCommand();
 
 public:
     virtual ~KCommand();
@@ -73,6 +73,10 @@ public:
     virtual QString name() const = 0;
 protected:
     virtual void virtual_hook( int id, void* data );
+private:
+    class Private;
+    Private* const d;
+    Q_DISABLE_COPY( KCommand )
 };
 
 /**
@@ -91,23 +95,26 @@ protected:
      * @param name the name of this command, translated, since it will appear
      * in the menus.
      */
-    KNamedCommand(const QString &name) : KCommand(), m_name(name) {}
+    KNamedCommand( const QString &name );
 
 public:
     /**
      * @return the name of this command
      */
-    virtual QString name() const { return m_name; }
+    virtual QString name() const;
     /**
      * Updates the name of this command.
      * Rarely necessary.
      */
-    void setName(const QString &name) { m_name=name; }
+    void setName( const QString &name );
 
-private:
-    QString m_name;
 protected:
     virtual void virtual_hook( int id, void* data );
+
+private:
+    class Private;
+    Private* const d;
+    Q_DISABLE_COPY( KNamedCommand )
 };
 
 /**
@@ -145,9 +152,12 @@ public:
     virtual void unexecute();
 
 protected:
-    QList<KCommand *> m_commands;
-protected:
     virtual void virtual_hook( int id, void* data );
+
+private:
+    class Private;
+    Private* const d;
+    Q_DISABLE_COPY( KMacroCommand )
 };
 
 
@@ -320,6 +330,7 @@ private:
 private:
     class KCommandHistoryPrivate;
     KCommandHistoryPrivate * const d;
+    Q_DISABLE_COPY( KCommandHistory );
 };
 
 #include <ktoolbarpopupaction.h>
@@ -353,11 +364,9 @@ private Q_SLOTS:
     void slotCommandHistoryChanged();
 
 private:
-    Type m_type;
-    KCommandHistory* m_commandHistory;
-
-    class KUndoRedoActionPrivate;
-    KUndoRedoActionPrivate* const d;
+    class Private;
+    Private* const d;
+    Q_DISABLE_COPY( KUndoRedoAction )
 };
 
 #endif
