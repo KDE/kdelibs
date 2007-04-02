@@ -49,6 +49,7 @@
 #include <qalgorithms.h>
 #include <QtCore/QEvent>
 #include <QtCore/QVariant>
+#include <QtGui/QApplication>
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QIcon>
 #include <QtGui/QLabel>
@@ -1931,7 +1932,7 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         {
             ColorMode cm( widgetLayoutProp(WT_GroupBox, GroupBox::TitleTextColor,
                           option, widget) );
-            return cm.color(option->palette).rgba();
+            return cm.color(option ? option->palette : qApp->palette()).rgba();
         }
 
         case SH_DialogButtonLayout:
