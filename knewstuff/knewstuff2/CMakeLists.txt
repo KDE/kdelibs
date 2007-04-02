@@ -1,6 +1,6 @@
 project(knewstuff2)
 
-include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${KDE4_KIO_INCLUDES} ${KDE4_KHTML_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 set(knewstuff2_core_SRCS
    core/ktranslatable.cpp

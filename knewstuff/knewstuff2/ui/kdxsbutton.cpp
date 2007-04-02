@@ -481,7 +481,7 @@ void KDXSButton::slotVersionsHighlighted(int id)
 	if(id == historyinactive)
 	{
 		//m_history->setItemEnabled(historyinactive, true);
-		m_history->setCursor(KCursor::workingCursor());
+		m_history->setCursor(QCursor(Qt::WaitCursor));
 		kDebug() << "hourglass!" << endl;
 
 		m_dxs->call_history(0);
