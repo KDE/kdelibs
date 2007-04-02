@@ -547,7 +547,7 @@ KDatePicker::setFontSize(int s)
 
 int KDatePicker::fontSize() const
 {
-    return fontsize;
+    return d->fontsize;
 }
 
 
