@@ -155,7 +155,7 @@ void KMJobViewer::updateCaption()
 	{
 		setCaption(i18n("No Printer"));
 	}
-#ifndef Q_OS_WIN
+#ifdef Q_WS_X11
 	KWM::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
 #endif
 }
