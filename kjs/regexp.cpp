@@ -184,7 +184,7 @@ RegExp::RegExp(const UString &p, int f)
 #ifndef NDEBUG
     char errorMessage[80];
     regerror(errorCode, &preg, errorMessage, sizeof errorMessage);
-    fprintf(stderr, "KJS: regcomp failed with '%s'", errorMessage);
+    fprintf(stderr, "KJS: regcomp failed with '%s'\n", errorMessage);
 #endif
     valid = false;
   }

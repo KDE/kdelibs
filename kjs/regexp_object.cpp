@@ -268,6 +268,19 @@ Value RegExpObjectImp::get(ExecState *exec, const Identifier &p) const
   return InternalFunctionImp::get(exec, p);
 }
 
+bool RegExpObjectImp::hasProperty(ExecState *exec, const Identifier &p) const
+{
+  UString s = p.ustring();
+  if (s[0] == '$' && lastOvector) {
+    bool ok;
+    (void)s.substr(1).toULong(&ok);
+    if (ok)
+      return true;
+  }
+
+  return InternalFunctionImp::hasProperty(exec, p);
+}
+
 bool RegExpObjectImp::implementsConstruct() const
 {
   return true;
