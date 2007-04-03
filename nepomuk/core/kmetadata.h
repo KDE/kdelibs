@@ -15,6 +15,5 @@
 #include <kmetadata/resource.h>
 #include <kmetadata/variant.h>
 #include <kmetadata/resourcemanager.h>
-#include <kmetadata/ontology.h>
 #include <kmetadata/allresources.h>
 #include <kmetadata/tools.h>

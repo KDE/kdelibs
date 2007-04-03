@@ -3,7 +3,7 @@ project(libkmetadata)
 include(KMetaDataMacros)
 
 KMETADATA_GENERATE_FROM_ONTOLOGY(
-  ${kmetadata_SOURCE_DIR}/nao.nrl
+  ${kmetadata_SOURCE_DIR}/ontologies/nao.nrl
   ${libkmetadata_BINARY_DIR}
   NAO_HEADERS
   NAO_SOURCES
