@@ -330,7 +330,7 @@ void AbstractMediaProducer::setupIface()
     }
 
     foreach (FrontendInterfacePrivate *f, d->interfaceList) {
-        f->backendObjectChanged();
+        f->_backendObjectChanged();
     }
 }
 

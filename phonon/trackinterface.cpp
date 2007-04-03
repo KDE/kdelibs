@@ -40,6 +40,7 @@ TrackInterface::TrackInterface(AbstractMediaProducer *mp)
     , d(new TrackInterfacePrivate(mp))
 {
     d->q = this;
+    d->_backendObjectChanged();
 }
 
 void TrackInterfacePrivate::backendObjectChanged(QObject *backendObject)
@@ -86,8 +87,12 @@ int TrackInterface::currentTrack() const
 void TrackInterface::setCurrentTrack(int trackNumber)
 {
     IFACE();
+    State s = d->media->state();
     iface->interfaceCall(AddonInterface::TrackInterface,
             AddonInterface::setTrack, QList<QVariant>() << QVariant(trackNumber));
+    if ((s == PlayingState || s == BufferingState) && autoplayTracks()) {
+        d->media->play();
+    }
 }
 
 bool TrackInterface::autoplayTracks() const
@@ -106,20 +111,12 @@ void TrackInterface::setAutoplayTracks(bool b)
 
 void TrackInterface::nextTrack()
 {
-    State s = d->media->state();
     setCurrentTrack(currentTrack() + 1);
-    if ((s == PlayingState || s == BufferingState) && autoplayTracks()) {
-        d->media->play();
-    }
 }
 
 void TrackInterface::previousTrack()
 {
-    State s = d->media->state();
     setCurrentTrack(currentTrack() - 1);
-    if ((s == PlayingState || s == BufferingState) && autoplayTracks()) {
-        d->media->play();
-    }
 }
 
 } // namespace Phonon

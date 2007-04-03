@@ -41,6 +41,7 @@ ChapterInterface::ChapterInterface(AbstractMediaProducer *mp)
     d(new ChapterInterfacePrivate(mp))
 {
     d->q = this;
+    d->_backendObjectChanged();
 }
 
 void ChapterInterfacePrivate::backendObjectChanged(QObject *backendObject)

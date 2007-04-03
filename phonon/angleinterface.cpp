@@ -41,6 +41,7 @@ AngleInterface::AngleInterface(AbstractMediaProducer *mp)
     d(new AngleInterfacePrivate(mp))
 {
     d->q = this;
+    d->_backendObjectChanged();
 }
 
 void AngleInterfacePrivate::backendObjectChanged(QObject *backendObject)

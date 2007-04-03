@@ -36,6 +36,7 @@ NavigationInterface::NavigationInterface(AbstractMediaProducer *mp)
     d(new NavigationInterfacePrivate(mp))
 {
     d->q = this;
+    d->_backendObjectChanged();
 }
 
 NavigationInterface::~NavigationInterface()

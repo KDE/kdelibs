@@ -38,7 +38,8 @@ class FrontendInterfacePrivate
             d->interfaceList << this;
         }
         virtual void backendObjectChanged(QObject *iface) = 0;
-        void backendObjectChanged() {
+        void _backendObjectChanged() {
+            kDebug(600) << k_funcinfo << endl;
             QObject *x = media->iface();
             if (x) {
                 backendObjectChanged(x);
