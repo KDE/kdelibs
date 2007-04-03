@@ -311,6 +311,8 @@
 <!ENTITY Clay.Pradarits '<personname><firstname>Clay</firstname><surname>Pradarits</surname></personname>'>
 <!ENTITY Harri.Porten '<personname><firstname>Harri</firstname><surname>Porten</surname></personname>'>
 <!ENTITY Harri.Porten.mail '<email>porten@kde.org</email>'>
+<!ENTITY potolo '<personname><firstname>Richard</firstname><surname>Hawthorne</surname></personname>'>
+<!ENTITY potolo.mail '<email>techno_plume-coding@yahoo.com</email>'>
 <!ENTITY Clay.Pradarits.mail '<email>gasky@winfire.com</email>'>
 <!ENTITY Milos.Prudek '<personname><firstname>Milos</firstname><surname>Prudek</surname></personname>'>
 <!ENTITY Milos.Prudek.mail '<email>milos.prudek@worldonline.cz</email>'>
