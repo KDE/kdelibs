@@ -227,8 +227,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
         minimizeRestore( true );
     else
     {
-        KWM module;
-        QListIterator< WId > it (module.stackingOrder());
+        QListIterator< WId > it (KWM::stackingOrder());
         it.toBack();
         while( it.hasPrevious() )
         {
