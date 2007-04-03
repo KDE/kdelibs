@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     widget.setGeometry(45, 54, 120, 80);
     widget.show();
 
-    kDebug() << &widget;
+    kDebug() << &widget << endl;
 
     QRect r(9,12,58,234);
     QRegion reg(r);
