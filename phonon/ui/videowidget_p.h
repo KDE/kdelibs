@@ -69,6 +69,9 @@ FullScreenVideoWidget::FullScreenVideoWidget( QWidget* parent )
     : QWidget(parent, Qt::Window),
     child(0)
 {
+    setAttribute(Qt::WA_QuitOnClose, false); // if the other windows are closed but the fullscreen
+    // video widget is still open quit the application
+
 	QPalette pal = palette();
 	pal.setColor( QPalette::Window, Qt::black );
 	setPalette( pal );
