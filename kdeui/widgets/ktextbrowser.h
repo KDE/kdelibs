@@ -92,7 +92,7 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
     /**
      * Make sure we use our own hand cursor
      */
-    virtual void mouseMoveEvent( QMouseEvent* event );
+    virtual void mouseMoveEvent( QMouseEvent* event ); //TODO remove!
 
     /**
      * Reimplemented to support Qt2 behavior (Ctrl-Wheel = fast scroll)
