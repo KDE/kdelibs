@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KNEWSTUFF_EXPORT_H
-#define KNEWSTUFF_EXPORT_H
+#ifndef KNEWSTUFF2_EXPORT_H
+#define KNEWSTUFF2_EXPORT_H
 
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
