@@ -331,11 +331,6 @@ namespace KJS {
     virtual void *createLanguageInstanceForValue(ExecState*, int language, JSObject* value, const Bindings::RootObject* origin, const Bindings::RootObject* current);
 #endif
 
-    // This is a workaround to avoid accessing the global variables for these identifiers in
-    // important property lookup functions, to avoid taking PIC branches in Mach-O binaries
-    const Identifier& argumentsIdentifier() { return *m_argumentsPropertyName; }
-    const Identifier& specialPrototypeIdentifier() { return *m_specialPrototypePropertyName; }
-    
     // Chained list of interpreters (ring)
     static Interpreter* firstInterpreter() { return s_hook; }
     Interpreter* nextInterpreter() const { return next; }
@@ -392,9 +387,6 @@ private:
     ExecState m_globalExec;
     JSObject* m_globalObject;
     Package *globPkg;
-
-    const Identifier *m_argumentsPropertyName;
-    const Identifier *m_specialPrototypePropertyName;
 
     // Chained list of interpreters (ring) - for collector
     static Interpreter* s_hook;

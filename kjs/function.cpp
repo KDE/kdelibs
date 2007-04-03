@@ -246,7 +246,7 @@ JSValue *FunctionImp::argumentsGetter(ExecState* exec, JSObject*, const Identifi
 
 JSValue *FunctionImp::callerGetter(ExecState* exec, JSObject*, const Identifier&, const PropertySlot& slot)
 {
-    FunctionImp* thisObj = static_cast<FunctionImp* >(slot.slotBase());
+    FunctionImp* thisObj = static_cast<FunctionImp*>(slot.slotBase());
     Context* context = exec->m_context;
     while (context) {
         if (context->function() == thisObj)
@@ -277,18 +277,18 @@ JSValue *FunctionImp::lengthGetter(ExecState*, JSObject*, const Identifier&, con
 bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
     // Find the arguments from the closest context.
-    if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier()) {
+    if (propertyName == exec->propertyNames().arguments) {
         slot.setCustom(this, argumentsGetter);
         return true;
     }
 
     // Compute length of parameters.
-    if (propertyName == lengthPropertyName) {
+    if (propertyName == exec->propertyNames().length) {
         slot.setCustom(this, lengthGetter);
         return true;
     }
 
-    if (propertyName == callerPropertyName) {
+    if (propertyName == exec->propertyNames().caller) {
         slot.setCustom(this, callerGetter);
         return true;
     }
@@ -298,14 +298,14 @@ bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& property
 
 void FunctionImp::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
-    if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier() || propertyName == lengthPropertyName)
+    if (propertyName == exec->propertyNames().arguments || propertyName == exec->propertyNames().length)
         return;
     InternalFunctionImp::put(exec, propertyName, value, attr);
 }
 
 bool FunctionImp::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
-    if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier() || propertyName == lengthPropertyName)
+    if (propertyName == exec->propertyNames().arguments || propertyName == exec->propertyNames().length)
         return false;
     return InternalFunctionImp::deleteProperty(exec, propertyName);
 }
@@ -320,14 +320,14 @@ bool FunctionImp::deleteProperty(ExecState *exec, const Identifier &propertyName
 Identifier FunctionImp::getParameterName(int index)
 {
   if (index >= body->numParams())
-    return Identifier::null();
+    return CommonIdentifiers::shared()->nullIdentifier;
 
   Identifier name = body->paramName(index);
 
   // Are there any subsequent parameters with the same name?
   for (int pos = index + 1; pos < body->numParams(); ++pos)
     if (body->paramName(pos) == name)
-      return Identifier::null();
+      return CommonIdentifiers::shared()->nullIdentifier;
 
   return name;
 }
@@ -337,8 +337,8 @@ Identifier FunctionImp::getParameterName(int index)
 // ### is "Function" correct here?
 const ClassInfo DeclaredFunctionImp::info = {"Function", &FunctionImp::info, 0, 0};
 
-DeclaredFunctionImp::DeclaredFunctionImp(ExecState *exec, const Identifier &n,
-					 FunctionBodyNode *b, const ScopeChain &sc)
+DeclaredFunctionImp::DeclaredFunctionImp(ExecState* exec, const Identifier& n,
+					 FunctionBodyNode* b, const ScopeChain& sc)
   : FunctionImp(exec, n, b)
 {
   setScope(sc);
@@ -353,7 +353,7 @@ bool DeclaredFunctionImp::implementsConstruct() const
 JSObject *DeclaredFunctionImp::construct(ExecState *exec, const List &args)
 {
   JSObject *proto;
-  JSValue *p = get(exec,prototypePropertyName);
+  JSValue *p = get(exec, exec->propertyNames().prototype);
   if (p->isObject())
     proto = static_cast<JSObject*>(p);
   else
@@ -428,7 +428,7 @@ void IndexToNameMap::unMap(const Identifier &index)
 
   assert(indexIsNumber && indexAsNumber < size);
 
-  _map[indexAsNumber] = Identifier::null();
+  _map[indexAsNumber] = CommonIdentifiers::shared()->nullIdentifier;;
 }
 
 Identifier& IndexToNameMap::operator[](int index)
@@ -456,8 +456,8 @@ Arguments::Arguments(ExecState *exec, FunctionImp *func, const List &args, Activ
 _activationObject(act),
 indexToNameMap(func, args)
 {
-  putDirect(calleePropertyName, func, DontEnum);
-  putDirect(lengthPropertyName, args.size(), DontEnum);
+  putDirect(exec->propertyNames().callee, func, DontEnum);
+  putDirect(exec->propertyNames().length, args.size(), DontEnum);
 
   int i = 0;
   ListIterator iterator = args.begin();
@@ -578,7 +578,7 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
 
     // Important: if you add more dynamic properties here, 
     // make sure to make the optimizeResolver call honor them.
-    if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier()) {
+    if (propertyName == exec->propertyNames().arguments) {
         slot.setCustom(this, getArgumentsGetter());
         return true;
     }
@@ -593,7 +593,7 @@ bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyNa
     if (validLocal(id))
         return false;
     
-    if (propertyName == exec->dynamicInterpreter()->argumentsIdentifier())
+    if (propertyName == exec->propertyNames().arguments)
         return false;
     return JSObject::deleteProperty(exec, propertyName);
 }
@@ -641,11 +641,11 @@ void ActivationImp::createArgumentsObject(ExecState *exec) const
 // ------------------------------ GlobalFunc -----------------------------------
 
 
-GlobalFuncImp::GlobalFuncImp(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+GlobalFuncImp::GlobalFuncImp(ExecState* exec, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
   : InternalFunctionImp(funcProto, name)
   , id(i)
 {
-  putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+  putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
 }
 
 CodeType GlobalFuncImp::codeType() const

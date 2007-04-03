@@ -3382,7 +3382,7 @@ yyreduce:
 
   case 282:
 #line 824 "grammar.y"
-    { (yyval.stat) = new TryNode((yyvsp[(2) - (4)].stat), Identifier::null(), 0, (yyvsp[(4) - (4)].stat)); DBG((yyval.stat), (yylsp[(1) - (4)]), (yylsp[(2) - (4)])); ;}
+    { (yyval.stat) = new TryNode((yyvsp[(2) - (4)].stat), CommonIdentifiers::shared()->nullIdentifier, 0, (yyvsp[(4) - (4)].stat)); DBG((yyval.stat), (yylsp[(1) - (4)]), (yylsp[(2) - (4)])); ;}
     break;
 
   case 283:
@@ -3463,12 +3463,12 @@ yyreduce:
 
   case 297:
 #line 862 "grammar.y"
-    { (yyval.funcExpr) = new FuncExprNode(Identifier::null(), (yyvsp[(4) - (4)].body)); ;}
+    { (yyval.funcExpr) = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, (yyvsp[(4) - (4)].body)); ;}
     break;
 
   case 298:
 #line 864 "grammar.y"
-    { (yyval.funcExpr) = new FuncExprNode(Identifier::null(), (yyvsp[(5) - (5)].body), (yyvsp[(3) - (5)].param)); ;}
+    { (yyval.funcExpr) = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, (yyvsp[(5) - (5)].body), (yyvsp[(3) - (5)].param)); ;}
     break;
 
   case 299:
@@ -3883,7 +3883,7 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& ge
         return false;
     
     result = new PropertyNode(new PropertyNameNode(name), 
-                              new FuncExprNode(Identifier::null(), body, params), type);
+                              new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, body, params), type);
 
     return true;
 }

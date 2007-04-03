@@ -104,6 +104,7 @@ set(kjs_LIB_SRCS
    JSImmediate.cpp
    PropertyNameArray.cpp
    JSWrapperObject.cpp
+   CommonIdentifiers.cpp
    )
 
 if (NOT DEFINED QT_ONLY)
@@ -183,6 +184,7 @@ install( FILES
     ustring.h
     value.h
     nodes.h
+    CommonIdentifiers.h
 
     ${CMAKE_CURRENT_BINARY_DIR}/global.h
 

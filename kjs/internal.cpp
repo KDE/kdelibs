@@ -271,7 +271,7 @@ void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
         name = "(unknown class)";
 
       if ( obj->inherits(&ArrayInstance::info) )
-        arrayLength = obj->get(exec,lengthPropertyName)->toUInt32(exec);
+        arrayLength = obj->get(exec, exec->propertyNames().length)->toUInt32(exec);
       break;
     }
     case GetterSetterType:

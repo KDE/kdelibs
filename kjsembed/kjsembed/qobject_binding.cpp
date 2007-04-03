@@ -569,7 +569,7 @@ SlotBinding::SlotBinding(KJS::ExecState *exec, const QMetaMethod &member )
 {
     m_memberName = extractMemberName(member);
     int count = member.parameterNames().count();
-    putDirect( KJS::lengthPropertyName, count, LengthFlags );
+    putDirect( exec->propertyNames().length, count, LengthFlags );
 }
 
 
@@ -577,7 +577,7 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
 {
     if ( 0 == value )
         return new KJS::JSObject();
-    
+
     const QMetaObject *meta = value->metaObject();
     KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
     KJS::JSObject *returnValue;

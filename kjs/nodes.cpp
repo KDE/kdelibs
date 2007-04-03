@@ -517,7 +517,7 @@ Node* DynamicResolver<Handler>::optimizeResolver(ExecState *exec, FunctionBodyNo
   // (unless 'eval' injects a new local, but NonLocalResolver
   // is careful about that)
   if (index == -1) {
-    if (ident == exec->dynamicInterpreter()->argumentsIdentifier())
+    if (ident == exec->propertyNames().arguments)
       return const_cast<Node*>(static_cast<const Node*>(this)); //Dynamic property..
     else
       return new NonLocalResolver<Handler>(ident, handler);
@@ -657,7 +657,7 @@ JSValue *ArrayNode::evaluate(ExecState *exec)
   if (element) {
     array = static_cast<JSObject*>(element->evaluate(exec));
     KJS_CHECKEXCEPTIONVALUE
-    length = opt ? array->get(exec,lengthPropertyName)->toInt32(exec) : 0;
+    length = opt ? array->get(exec, exec->propertyNames().length)->toInt32(exec) : 0;
   } else {
     JSValue *newArr = exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty());
     array = static_cast<JSObject*>(newArr);
@@ -665,7 +665,7 @@ JSValue *ArrayNode::evaluate(ExecState *exec)
   }
 
   if (opt)
-    array->put(exec,lengthPropertyName, jsNumber(elision + length), DontEnum | DontDelete);
+    array->put(exec, exec->propertyNames().length, jsNumber(elision + length), DontEnum | DontDelete);
 
   return array;
 }
@@ -2802,7 +2802,7 @@ void FunctionBodyNode::addVarDecl(const Identifier& ident, int attr, ExecState* 
   // fast path. So we just make this go through the property map instead.
   // Note that this does not matter for parameters or function declarations,
   // since those overwrite the magic 'arguments' anyway.
-  if (ident == exec->dynamicInterpreter()->argumentsIdentifier())
+  if (ident == exec->propertyNames().arguments)
     return;
 
   (void)addSymbol(ident, attr);
@@ -2905,10 +2905,10 @@ FunctionImp* FuncDeclNode::makeFunctionObject(ExecState *exec)
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
 
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
-  proto->put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
-  func->put(exec, prototypePropertyName, proto, Internal|DontDelete);
+  proto->put(exec, exec->propertyNames().constructor, func, ReadOnly | DontDelete | DontEnum);
+  func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
 
-  func->put(exec, lengthPropertyName, jsNumber(body->numParams()), ReadOnly|DontDelete|DontEnum);
+  func->put(exec, exec->propertyNames().length, jsNumber(body->numParams()), ReadOnly|DontDelete|DontEnum);
 
   return func;
 }
@@ -2944,8 +2944,8 @@ JSValue *FuncExprNode::evaluate(ExecState *exec)
 
   FunctionImp *func = new DeclaredFunctionImp(exec, ident, body.get(), context->scopeChain());
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
-  proto->put(exec, constructorPropertyName, func, ReadOnly|DontDelete|DontEnum);
-  func->put(exec, prototypePropertyName, proto, Internal|DontDelete);
+  proto->put(exec, exec->propertyNames().constructor, func, ReadOnly|DontDelete|DontEnum);
+  func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
 
   if (named) {
     functionScopeObject->put(exec, ident, func, Internal | ReadOnly | (context->codeType() == EvalCode ? 0 : DontDelete));

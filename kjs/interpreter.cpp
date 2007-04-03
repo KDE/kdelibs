@@ -243,8 +243,6 @@ void Interpreter::init()
     m_startTimeoutCheckCount = 0;
     m_pauseTimeoutCheckCount = 0;
     m_compatMode = NativeMode;
-    m_argumentsPropertyName = &argumentsPropertyName;
-    m_specialPrototypePropertyName = &specialPrototypePropertyName;
 
     interpreterMap().set(m_globalObject, this);
 
@@ -276,8 +274,7 @@ Interpreter::~Interpreter()
     next->prev = prev;
     prev->next = next;
     s_hook = next;
-    if (s_hook == this)
-    {
+    if (s_hook == this) {
         // This was the last interpreter
         s_hook = 0;
     }
@@ -292,8 +289,6 @@ JSObject* Interpreter::globalObject() const
 
 void Interpreter::initGlobalObject()
 {
-    Identifier::init();
-
     FunctionPrototype *funcProto = new FunctionPrototype(&m_globalExec);
     m_FunctionPrototype = funcProto;
     ObjectPrototype *objProto = new ObjectPrototype(&m_globalExec, funcProto);
@@ -348,7 +343,7 @@ void Interpreter::initGlobalObject()
     m_UriError = new NativeErrorImp(&m_globalExec, funcProto, m_UriErrorPrototype);
     
     // ECMA 15.3.4.1
-    funcProto->put(&m_globalExec, constructorPropertyName, m_Function, DontEnum);
+    funcProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Function, DontEnum);
     
     m_globalObject->put(&m_globalExec, "Object", m_Object, DontEnum);
     m_globalObject->put(&m_globalExec, "Function", m_Function, DontEnum);
@@ -369,21 +364,21 @@ void Interpreter::initGlobalObject()
     m_globalObject->put(&m_globalExec, "URIError",m_UriError, Internal);
     
     // Set the constructorPropertyName property of all builtin constructors
-    objProto->put(&m_globalExec, constructorPropertyName, m_Object, DontEnum | DontDelete | ReadOnly);
-    funcProto->put(&m_globalExec, constructorPropertyName, m_Function, DontEnum | DontDelete | ReadOnly);
-    arrayProto->put(&m_globalExec, constructorPropertyName, m_Array, DontEnum | DontDelete | ReadOnly);
-    booleanProto->put(&m_globalExec, constructorPropertyName, m_Boolean, DontEnum | DontDelete | ReadOnly);
-    stringProto->put(&m_globalExec, constructorPropertyName, m_String, DontEnum | DontDelete | ReadOnly);
-    numberProto->put(&m_globalExec, constructorPropertyName, m_Number, DontEnum | DontDelete | ReadOnly);
-    dateProto->put(&m_globalExec, constructorPropertyName, m_Date, DontEnum | DontDelete | ReadOnly);
-    regexpProto->put(&m_globalExec, constructorPropertyName, m_RegExp, DontEnum | DontDelete | ReadOnly);
-    errorProto->put(&m_globalExec, constructorPropertyName, m_Error, DontEnum | DontDelete | ReadOnly);
-    m_EvalErrorPrototype->put(&m_globalExec, constructorPropertyName, m_EvalError, DontEnum | DontDelete | ReadOnly);
-    m_RangeErrorPrototype->put(&m_globalExec, constructorPropertyName, m_RangeError, DontEnum | DontDelete | ReadOnly);
-    m_ReferenceErrorPrototype->put(&m_globalExec, constructorPropertyName, m_ReferenceError, DontEnum | DontDelete | ReadOnly);
-    m_SyntaxErrorPrototype->put(&m_globalExec, constructorPropertyName, m_SyntaxError, DontEnum | DontDelete | ReadOnly);
-    m_TypeErrorPrototype->put(&m_globalExec, constructorPropertyName, m_TypeError, DontEnum | DontDelete | ReadOnly);
-    m_UriErrorPrototype->put(&m_globalExec, constructorPropertyName, m_UriError, DontEnum | DontDelete | ReadOnly);
+    objProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Object, DontEnum | DontDelete | ReadOnly);
+    funcProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Function, DontEnum | DontDelete | ReadOnly);
+    arrayProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Array, DontEnum | DontDelete | ReadOnly);
+    booleanProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Boolean, DontEnum | DontDelete | ReadOnly);
+    stringProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_String, DontEnum | DontDelete | ReadOnly);
+    numberProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Number, DontEnum | DontDelete | ReadOnly);
+    dateProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Date, DontEnum | DontDelete | ReadOnly);
+    regexpProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_RegExp, DontEnum | DontDelete | ReadOnly);
+    errorProto->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_Error, DontEnum | DontDelete | ReadOnly);
+    m_EvalErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_EvalError, DontEnum | DontDelete | ReadOnly);
+    m_RangeErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_RangeError, DontEnum | DontDelete | ReadOnly);
+    m_ReferenceErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_ReferenceError, DontEnum | DontDelete | ReadOnly);
+    m_SyntaxErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_SyntaxError, DontEnum | DontDelete | ReadOnly);
+    m_TypeErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_TypeError, DontEnum | DontDelete | ReadOnly);
+    m_UriErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_UriError, DontEnum | DontDelete | ReadOnly);
     
     // built-in values
     m_globalObject->put(&m_globalExec, "NaN",        jsNaN(), DontEnum|DontDelete);

@@ -517,7 +517,7 @@ DateProtoFunc::DateProtoFunc(ExecState *exec, int i, int len, const Identifier& 
   , utc(i < 0)
   // We use a negative ID to denote the "UTC" variant.
 {
-    putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+    putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
 }
 
 JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
@@ -693,15 +693,15 @@ DateObjectImp::DateObjectImp(ExecState *exec,
   : InternalFunctionImp(funcProto)
 {
   // ECMA 15.9.4.1 Date.prototype
-  putDirect(prototypePropertyName, dateProto, DontEnum|DontDelete|ReadOnly);
+  static const Identifier* parsePropertyName = new Identifier("parse");
+  static const Identifier* UTCPropertyName = new Identifier("UTC");
 
-  static const Identifier parsePropertyName("parse");
-  putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::Parse, 1, parsePropertyName), DontEnum);
-  static const Identifier UTCPropertyName("UTC");
-  putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::UTC, 7, UTCPropertyName), DontEnum);
+  putDirect(exec->propertyNames().prototype, dateProto, DontEnum|DontDelete|ReadOnly);
+  putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::Parse, 1, *parsePropertyName), DontEnum);
+  putDirectFunction(new DateObjectFuncImp(exec, funcProto, DateObjectFuncImp::UTC, 7, *UTCPropertyName), DontEnum);
 
   // no. of arguments for constructor
-  putDirect(lengthPropertyName, 7, ReadOnly|DontDelete|DontEnum);
+  putDirect(exec->propertyNames().length, 7, ReadOnly|DontDelete|DontEnum);
 }
 
 bool DateObjectImp::implementsConstruct() const
@@ -782,10 +782,10 @@ JSValue *DateObjectImp::callAsFunction(ExecState * /*exec*/, JSObject * /*thisOb
 
 // ------------------------------ DateObjectFuncImp ----------------------------
 
-DateObjectFuncImp::DateObjectFuncImp(ExecState*, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+DateObjectFuncImp::DateObjectFuncImp(ExecState* exec, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
     : InternalFunctionImp(funcProto, name), id(i)
 {
-    putDirect(lengthPropertyName, len, DontDelete|ReadOnly|DontEnum);
+    putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
 }
 
 // ECMA 15.9.4.2 - 3

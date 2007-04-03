@@ -197,7 +197,7 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
   assert(value);
 
   // non-standard netscape extension
-  if (propertyName == exec->dynamicInterpreter()->specialPrototypeIdentifier()) {
+  if (propertyName == exec->propertyNames().underscoreProto) {
     setPrototype(value);
     return;
   }
@@ -346,11 +346,11 @@ JSValue *JSObject::defaultValue(ExecState *exec, JSType hint) const
   Identifier secondPropertyName;
   /* Prefer String for Date objects */
   if ((hint == StringType) || (hint != StringType) && (hint != NumberType) && (_proto == exec->lexicalInterpreter()->builtinDatePrototype())) {
-    firstPropertyName = toStringPropertyName;
-    secondPropertyName = valueOfPropertyName;
+    firstPropertyName = exec->propertyNames().toString;
+    secondPropertyName = exec->propertyNames().valueOf;
   } else {
-    firstPropertyName = valueOfPropertyName;
-    secondPropertyName = toStringPropertyName;
+    firstPropertyName = exec->propertyNames().valueOf;
+    secondPropertyName = exec->propertyNames().toString;
   }
 
   JSValue *v;
@@ -442,7 +442,7 @@ bool JSObject::implementsHasInstance() const
 
 bool JSObject::hasInstance(ExecState* exec, JSValue* value)
 {
-    JSValue* proto = get(exec, prototypePropertyName);
+    JSValue* proto = get(exec, exec->propertyNames().prototype);
     if (!proto->isObject()) {
         throwError(exec, TypeError, "intanceof called on an object with an invalid prototype property.");
         return false;

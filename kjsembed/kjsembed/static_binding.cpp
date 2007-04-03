@@ -29,11 +29,11 @@ namespace KJSEmbed {
 using namespace KJSEmbed;
 
 StaticBinding::StaticBinding(KJS::ExecState *exec, const Method *method )
-  : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), 
+  : KJS::InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()),
                              method->name),
     m_method(method)
 {
-    putDirect( KJS::lengthPropertyName, m_method->argc, LengthFlags );
+    putDirect( exec->propertyNames().length, m_method->argc, LengthFlags );
 }
 
 KJS::JSValue *StaticBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
@@ -46,13 +46,13 @@ KJS::JSValue *StaticBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject
   }
 
   KJS::JSValue *retValue = (*m_method->call)(exec,self,args);
-  
+
   if( exec->hadException() )
   {
     return KJS::jsNull();
   }
   return retValue;
-  
+
 }
 
 void StaticBinding::publish( KJS::ExecState *exec, KJS::JSObject *object, const Method *methods )
@@ -70,7 +70,7 @@ StaticConstructor::StaticConstructor(KJS::ExecState *exec, const Constructor *co
                              constructor->name),
     m_constructor( constructor )
 {
-    putDirect( KJS::lengthPropertyName, m_constructor->argc, LengthFlags );
+    putDirect( exec->propertyNames().length, m_constructor->argc, LengthFlags );
     m_default = KJS::jsNull();
 }
 
@@ -131,7 +131,7 @@ KJS::JSObject* StaticConstructor::bind(KJS::ExecState* exec, const QString& clas
 //    qDebug() << "StaticConstructor::bind() className=" << className  << " mybind=" << mybind;
     if (mybind)
         return (*mybind)(exec, objPtr);
-    
+
     return 0;
 }
 

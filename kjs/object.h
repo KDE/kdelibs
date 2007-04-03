@@ -578,7 +578,7 @@ ALWAYS_INLINE bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifie
     }
 
     // non-standard Netscape extension
-    if (propertyName == exec->dynamicInterpreter()->specialPrototypeIdentifier()) {
+    if (propertyName == exec->propertyNames().underscoreProto) {
         slot.setValueSlot(this, &_proto);
         return true;
     }
