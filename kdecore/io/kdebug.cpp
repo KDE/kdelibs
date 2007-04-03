@@ -36,16 +36,15 @@
 #include "kstandarddirs.h"
 #include "kdatetime.h"
 
-#include <QtGui/QWidget>
 #include <kmessage.h>
 #include <klocale.h>
 #include <kconfiggroup.h>
+#include <kurl.h>
+
 #include <qfile.h>
 #include <qhash.h>
-
+#include <qobject.h>
 #include <qstring.h>
-
-#include <kurl.h>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid
@@ -453,32 +452,58 @@ kdbgstream& kdbgstream::operator<<(const QString& string)
     return *this;
 }
 
-#if 0 // can't do this in kdecore
-kdbgstream& kdbgstream::operator << (const QWidget* widget)
+kdbgstream& kdbgstream::operator<<( QWidget* object )
 {
-  if (!d->print)
-      return *this;
+    return kdbgstream::operator<<( (const QObject*) object );
+}
 
-  if(widget==0) {
-      d->output += QLatin1String("[Null pointer]");
-  } else {
+kdbgstream& kdbgstream::operator<<( const QWidget* object )
+{
+    return kdbgstream::operator<<( (const QObject*) object );
+}
+
+kdbgstream& kdbgstream::operator<<( QObject* object )
+{
+    return kdbgstream::operator<<( static_cast<const QObject*>( object ) );
+}
+
+kdbgstream& kdbgstream::operator<<( const QObject* object )
+{
+    if ( !d->print ) {
+        return *this;
+    }
+
+    if ( object == 0 ) {
+        d->output += QLatin1String("[Null pointer]");
+    } else {
       d->output += QString::fromAscii("[%1 pointer(0x%2)")
-                         .arg(QString::fromUtf8(widget->metaObject()->className()))
-                         .arg(QString::number(ulong(widget), 16)
-		              .rightJustified(8, QLatin1Char('0')));
-      if(widget->objectName().isEmpty()) {
-	  d->output += QLatin1String( " to unnamed widget, " );
+                         .arg( QString::fromUtf8( object->metaObject()->className() ) )
+                         .arg( QString::number( ulong( object ), 16 )
+                                 .rightJustified( 8, QLatin1Char( '0' ) ) );
+
+      bool isWidget = object->isWidgetType();
+      if ( object->objectName().isEmpty() ) {
+          d->output += QString::fromAscii( " to unnamed %1" )
+                                    .arg( isWidget ? QLatin1String( "widget" )
+                                                   : QLatin1String( "object" ) );
       } else {
-	  d->output += QString::fromAscii(" to widget %1, ")
-	                    .arg(widget->objectName());
+          d->output += QString::fromAscii(" to %1 %2")
+                                         .arg( isWidget ? QLatin1String( "widget" )
+                                                        : QLatin1String( "object" ) )
+                                         .arg( object->objectName() );
       }
-      d->output += QString::fromAscii("geometry=%1x%2+%3+%4]")
-                       .arg(widget->width()).arg(widget->height())
-                       .arg(widget->x()).arg(widget->y());
+
+      if ( isWidget ) {
+          QRect r = object->property( "geometry" ).toRect();
+          d->output += QString::fromAscii(", geometry = %1x%2+%3+%4")
+                       .arg(r.width()).arg(r.height())
+                       .arg(r.x()).arg(r.y());
+      }
+      d->output += QLatin1String( "]" );
   }
+
   return *this;
 }
-#endif
 
 /*
  * When printing a string:

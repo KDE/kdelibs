@@ -27,6 +27,7 @@
 #include <qdebug.h>
 #include <qstring.h>
 
+class QObject;
 class QWidget;
 class KDateTime;
 class KUrl;
@@ -246,12 +247,16 @@ class KDECORE_EXPORT kdbgstream {
 #endif
      ;
 
-    /** Operator to print out basic information about a QWidget.
+    /** Operator to print out basic information about a QObject or QWidget.
      *  Output of class names only works if the class is moc'ified.
+     *  Prints the geometry of the object if it is a QWidget
      * @param widget the widget to print
      * @return this stream
      */
-    //kdbgstream& operator << (const QWidget* widget);
+    kdbgstream& operator<<( QObject* object );
+    kdbgstream& operator<<( const QObject* object );
+    kdbgstream& operator<<( QWidget* object );
+    kdbgstream& operator<<( const QWidget* object );
 
     /**
      * Prints the given value.
