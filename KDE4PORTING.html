@@ -616,7 +616,7 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 
 <h4>KStandardDirs</h4>
 <ul>
-<li>boolean values as parameters for recursive, uniqe and checking for executability in the following methods were changed to instead take SearchOptions flags for improved code readability:
+<li>boolean values as parameters for recursive, unique and checking for executability in the following methods were changed to instead take SearchOptions flags for improved code readability:
 <ul>
 <li>calcResourceHash</li>
 <li>findAllResources</li>
@@ -2156,7 +2156,7 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <h4>Messages.sh files</h4>
 <p>Instead of the "messages" target of the Makefile.am files,
 KDE4 uses now Bash scripts with Messages.sh file names.
-The Perl script branches/work/kde4-l10n/scripts/conversion/Makefile2Messages.pl
+The Perl script branches/work/l10n-kde4/scripts/conversion/Makefile2Messages.pl
 can be used as an half-automatic conversion. (Please verify the result!)</p>
 
 <h4>rc.cpp file</h4>
@@ -2168,7 +2168,7 @@ you are not explicitly setting KAboutData::setTranslator.</p>
 <p>Scripty uses
 <a href="http://gnu.org/software/gettext/gettext.html">xgettext 0.16.1</a>
 for extracting
-messages out of code. This is a huge step from the former xgettext 0.10.35-kde
+messages out of the source code. This is a huge step from the former xgettext 0.10.35-kde
 used in KDE3.</p>
 <p>Important changes:</p>
 <ul>
@@ -2178,7 +2178,7 @@ need to adapt them, as xgettext does not automatically know about the
 <li>You cannot have two similar messages, one being a normal message and
 the other the singular form of a plural-form messages. For Gettext, this is
 the same message and therefore this creates problems. (Note: there is not
-any similar problems when you use contexts.)</li>
+any similar problem when you use contexts.)</li>
 <li>As in Gettext 0.16.1, contexts are supposed to be short, please consider
 using a special comment instead of a context to give long hints to translators.
 The special comment starts with //i18n: ot /*i18n: and must be <em>before</em>
