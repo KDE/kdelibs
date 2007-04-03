@@ -172,6 +172,8 @@
 <!ENTITY Dominik.Haumann.mail '<email>dhdev@gmx.de</email>'>
 <!ENTITY Simon.Hausmann '<personname><firstname>Simon</firstname><surname>Hausmann</surname></personname>'>
 <!ENTITY Simon.Hausmann.mail '<email>hausmann@kde.org</email>'>
+<!ENTITY Richard.Hawthorne '<personname><firstname>Richard</firstname><surname>Hawthorne</surname></personname>'>
+<!ENTITY Richard.Hawthorne.mail '<email>techno_plume-coding@yahoo.com</email>'>
 <!ENTITY Kurt.Hindenburg '<personname><firstname>Kurt</firstname><surname>Hindenburg</surname></personname>'>
 <!ENTITY Kurt.Hindenburg.mail '<email>kurt.hindenburg@kdemail.org</email>'>
 <!ENTITY Matthias.Hoelzer-Kluepfel '<personname><firstname>Matthias</firstname><surname>H&ouml;lzer-Kl&uuml;pfel</surname></personname>'>
@@ -309,11 +311,9 @@
 <!ENTITY Dan.Pilone '<personname><firstname>Dan</firstname><surname>Pilone</surname></personname>'>
 <!ENTITY Dan.Pilone.mail '<email>pilone@slac.com</email>'>
 <!ENTITY Clay.Pradarits '<personname><firstname>Clay</firstname><surname>Pradarits</surname></personname>'>
+<!ENTITY Clay.Pradarits.mail '<email>gasky@winfire.com</email>'>
 <!ENTITY Harri.Porten '<personname><firstname>Harri</firstname><surname>Porten</surname></personname>'>
 <!ENTITY Harri.Porten.mail '<email>porten@kde.org</email>'>
-<!ENTITY potolo '<personname><firstname>Richard</firstname><surname>Hawthorne</surname></personname>'>
-<!ENTITY potolo.mail '<email>techno_plume-coding@yahoo.com</email>'>
-<!ENTITY Clay.Pradarits.mail '<email>gasky@winfire.com</email>'>
 <!ENTITY Milos.Prudek '<personname><firstname>Milos</firstname><surname>Prudek</surname></personname>'>
 <!ENTITY Milos.Prudek.mail '<email>milos.prudek@worldonline.cz</email>'>
 
