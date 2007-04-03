@@ -4,5 +4,6 @@ Type=ServiceType
 X-KDE-ServiceType=DBUS/Text-to-Speech
 Comment=Text-to-Speech Service with a D-Bus interface
 Comment[nl]=Tekst-tot-spraak-dienst met een DCOP interface
+Comment[pa]=ਇੱਕ D-Bus ਇੰਟਰਫੇਸ ਨਾਲ ਪਾਠ-ਤੋਂ-ਬੋਲੀ ਸੇਵਾ
 Comment[sv]=Text till tal-tjänst med ett D-bus gränssnitt
 Comment[x-test]=xxText-to-Speech Service with a D-Bus interfacexx

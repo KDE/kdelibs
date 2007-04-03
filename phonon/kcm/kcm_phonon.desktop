@@ -11,10 +11,12 @@ X-KDE-FactoryName=kcm_phonon
 X-KDE-ParentApp=kcontrol
 
 Name=Phonon
+Name[pa]=ਫੋਨੋਨ
 Name[x-test]=xxPhononxx
 Comment=Sound System Configuration
 Comment[ja]=サウンドシステムの設定
 Comment[nl]=Geluidssysteem instellen
+Comment[pa]=ਸਾਊਂਡ ਸਿਸਟਮ ਸੰਰਚਨਾ
 Comment[sv]=Ljudsysteminställning
 Comment[x-test]=xxSound System Configurationxx
 Keywords=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine

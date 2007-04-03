@@ -5,6 +5,7 @@ X-KDE-ServiceType=KCModuleInit
 Name=KDE Configuration Initialization
 Name[ja]=KDE 設定の初期化
 Name[nl]=KDE-configuratie initialiseren
+Name[pa]=KDE ਸੰਰਚਨਾ ਸ਼ੁਰੂਆਤ
 Name[sv]=Initiering av KDE-inställningar
 Name[x-test]=xxKDE Configuration Initializationxx
 

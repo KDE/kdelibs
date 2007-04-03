@@ -6,6 +6,7 @@ X-KDE-ServiceType=SolidNetworkManager
 Comment=Network Management Backend
 Comment[ja]=ネットワーク管理のバックエンド
 Comment[nl]=Netwerkbeheer-backend
+Comment[pa]=ਨੈੱਟਵਰਕ ਪਰਬੰਧ ਬੈਕ-ਐਂਡ
 Comment[sv]=Gränssnitt för nätverkshantering
 Comment[x-test]=xxNetwork Management Backendxx
 
