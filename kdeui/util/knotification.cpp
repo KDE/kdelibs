@@ -114,6 +114,8 @@ void KNotification::setWidget(QWidget *wid)
 {
 	d->widget = wid;
 	setParent(wid);
+	if( d->flags &  CloseWhenWidgetActivated )
+		wid->installEventFilter(this);
 }
 
 void KNotification::setText(const QString &text)
@@ -344,6 +346,21 @@ void KNotification::sendEventSync()
 void KNotification::update()
 {
 	KNotificationManager::self()->update(this, d->id);
+}
+
+bool KNotification::eventFilter( QObject * watched, QEvent * event )
+{
+	if( watched == d->widget )
+	{
+		if( event->type() == QEvent::WindowActivate )
+		{
+			if( d->flags &  CloseWhenWidgetActivated )
+				QTimer::singleShot(500, this, SLOT(close()));
+		}
+		//kDebug(299) << k_funcinfo << event->type() << endl;
+	}
+	else 
+		QObject::eventFilter( watched, event );
 }
 
 

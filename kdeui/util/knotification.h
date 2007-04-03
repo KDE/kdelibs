@@ -210,7 +210,9 @@ public:
 		 *
 		 * If the widget is already activated when the notification occurs, the
 		 * notification will be closed after a small timeout.
-		 * @todo doesn't works yet
+		 * 
+		 * This only works if the widget is the toplevel widget
+		 * @todo make it work with tabulated widget
 		 */
 		CloseWhenWidgetActivated=0x04,
         
@@ -437,6 +439,12 @@ private Q_SLOTS:
 private:
 	struct Private;
 	Private *const d;
+	
+protected:
+	/**
+	 * reimplemented for internals raison
+	 */
+	virtual bool eventFilter( QObject * watched, QEvent * event );
 
 
 public:
