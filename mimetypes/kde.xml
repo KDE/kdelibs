@@ -394,11 +394,6 @@ Notes:
     <sub-class-of type="inode/directory"/>
     <comment>system fonts folder</comment>
   </mime-type>
-  <mime-type type="fonts/group">
-    <sub-class-of type="application/zip"/>
-    <comment>font group</comment>
-    <glob pattern="*.fontgroup.zip"/>
-  </mime-type>
 
   
   <mime-type type="application/x-konsole">
