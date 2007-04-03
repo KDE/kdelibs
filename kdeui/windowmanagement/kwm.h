@@ -47,10 +47,7 @@ class KWMPrivate;
  * @short Class for interaction with the window manager.
  * @author Matthias Ettrich (ettrich@kde.org)
  */
-class KDEUI_EXPORT KWM : public QObject
-#ifdef Q_WS_X11
-                                , public NET
-#endif
+class KDEUI_EXPORT KWM : public QObject, public NET
 {
     Q_OBJECT
 
