@@ -36,7 +36,7 @@ public:
     DomainBrowser* m_parent;
     bool m_started;
     QSet<QString> m_domains;
-private Q_SLOTS:
+public Q_SLOTS:
     void gotNewDomain(int,int,const QString&, uint);
     void gotRemoveDomain(int,int,const QString&, uint);
     

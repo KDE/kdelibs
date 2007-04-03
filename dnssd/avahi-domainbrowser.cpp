@@ -20,21 +20,17 @@
 
 
 #include <QtCore/QSet>
+#include <QtCore/QFile>
+#include <QtCore/QIODevice>
+#include <kstandarddirs.h>
+#include <stdlib.h>
 #include "avahi_server_interface.h"
 #include "domainbrowser.h"
 #include "avahi_domainbrowser_interface.h"
 #include "avahi-domainbrowser_p.h"
 
-#define UNSPEC -1
-
-typedef enum {
-    AVAHI_DOMAIN_BROWSER_BROWSE,            /**< Browse for a list of available browsing domains */
-    AVAHI_DOMAIN_BROWSER_BROWSE_DEFAULT,    /**< Browse for the default browsing domain */
-    AVAHI_DOMAIN_BROWSER_REGISTER,          /**< Browse for a list of available registering domains */
-    AVAHI_DOMAIN_BROWSER_REGISTER_DEFAULT,  /**< Browse for the default registering domain */
-    AVAHI_DOMAIN_BROWSER_BROWSE_LEGACY,     /**< Legacy browse domain - see DNS-SD spec for more information */
-    AVAHI_DOMAIN_BROWSER_MAX
-} AvahiDomainBrowserType;
+#define AVAHI_DOMAIN_BROWSER_BROWSE 0            /**< Browse for a list of available browsing domains */
+#define AVAHI_DOMAIN_BROWSER_REGISTER 2          /**< Browse for a list of available registering domains */
 
 Q_DECLARE_METATYPE(QList<QByteArray>);
 
@@ -48,6 +44,7 @@ DomainBrowser::~DomainBrowser()
 {
     delete d;
 }
+
 
 void DomainBrowser::startBrowse()
 {
@@ -63,6 +60,20 @@ void DomainBrowser::startBrowse()
 	connect(b,SIGNAL(ItemNew(int,int,const QString&,uint)),d, SLOT(gotNewDomain(int,int,const QString&, uint)));
 	connect(b,SIGNAL(ItemRemove(int,int,const QString&,uint)),d, SLOT(gotRemoveDomain(int,int,const QString&, uint)));
 	d->m_browser=b;
+	if (d->m_type==Browsing) {	
+    	    char* domains_evar=getenv("AVAHI_BROWSE_DOMAINS");
+	    if (domains_evar) {
+		QStringList edomains=QString::fromUtf8(domains_evar).split(':');
+		Q_FOREACH(QString s, edomains) d->gotNewDomain(-1,-1,s,0);
+	    }
+	    KStandardDirs dirs;
+	    //FIXME: watch this file and restart browser if it changes
+	    QFile domains_cfg(dirs.localxdgconfdir()+"/avahi/browse-domains");
+	    if (domains_cfg.open(QIODevice::ReadOnly | QIODevice::Text)) 
+		while (!domains_cfg.atEnd()) d->gotNewDomain(-1,-1,QString::fromUtf8(domains_cfg.readLine().data()).trimmed(),0);
+	    
+	}
+	    	    
 }
 
 void DomainBrowserPrivate::gotNewDomain(int,int,const QString& domain,uint)
