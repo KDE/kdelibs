@@ -449,3 +449,5 @@
 <!ENTITY Nikolas.Zimmermann.mail '<email>wildfox@kde.org</email>'>
 <!ENTITY Danny.Allen '<personname><firstname>Danny</firstname><surname>Allen</surname></personname>'>
 <!ENTITY Danny.Allen.mail '<email>danny@dannyallen.co.uk</email>'>
+<!ENTITY Albert.Astals.Cid '<personname><firstname>Albert</firstname><surname>Astals</surname></personname>'>
+<!ENTITY Albert.Astals.Cid.mail '<email>aacid@kde.org</email>'>
