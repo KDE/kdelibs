@@ -1,7 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2006 by Peter Penz (<peter.penz@gmx.at>)                *
  *   Copyright (C) 2006 by Aaron J. Seigo (<aseigo@kde.org>)               *
- *   Copyright (C) 2006 by Patrice Tremblay                                *
  *   Copyright (C) 2007 by Kevin Ottens (ervin@kde.org)                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
