@@ -62,7 +62,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 
     d->bookmarkManager = KBookmarkManager::managerForFile(file, "dolphin", false);
 
-    d->deviceModel = new KDeviceListModel("IS Volume", this);
+    d->deviceModel = new KDeviceListModel("[ Volume.ignored == false AND Volume.usage == 'FileSystem' ]", this);
 
     connect(d->deviceModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
             this, SLOT(_k_devicesInserted(const QModelIndex&, int, int)));
@@ -97,6 +97,30 @@ KIcon KFilePlacesModel::icon(const QModelIndex &index) const
 QString KFilePlacesModel::text(const QModelIndex &index) const
 {
     return data(index, Qt::DisplayRole).toString();
+}
+
+bool KFilePlacesModel::isDevice(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return false;
+
+    KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
+
+    return item->isDevice();
+}
+
+Solid::Device KFilePlacesModel::deviceForIndex(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return Solid::Device();
+
+    KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
+
+    if (item->isDevice()) {
+        return d->deviceModel->deviceForIndex(item->deviceIndex());
+    } else {
+        return Solid::Device();
+    }
 }
 
 QVariant KFilePlacesModel::data(const QModelIndex &index, int role) const

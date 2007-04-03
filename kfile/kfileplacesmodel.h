@@ -26,6 +26,8 @@
 #include <kurl.h>
 #include <kicon.h>
 
+#include <solid/device.h>
+
 /**
  * This class is a list view model. Each entry represents a "place"
  * where user can access files. Only revelant when
@@ -48,6 +50,8 @@ public:
     bool mountNeeded(const QModelIndex &index) const;
     KIcon icon(const QModelIndex &index) const;
     QString text(const QModelIndex &index) const;
+    bool isDevice(const QModelIndex &index) const;
+    Solid::Device deviceForIndex(const QModelIndex &index) const;
 
     /**
      * @brief Get a visible data based on Qt role for the given index.

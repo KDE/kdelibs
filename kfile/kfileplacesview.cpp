@@ -19,7 +19,8 @@
 
 #include "kfileplacesview.h"
 
-#include <kdebug.h>
+#include <kjob.h>
+#include <solid/volume.h>
 
 #include "kfileplacesmodel.h"
 
@@ -29,6 +30,8 @@ public:
     Private(KFilePlacesView *parent) : q(parent) { }
 
     KFilePlacesView * const q;
+
+    KUrl currentUrl;
 
     void _k_placeClicked(const QModelIndex &index);
 };
@@ -47,7 +50,6 @@ KFilePlacesView::~KFilePlacesView()
 
 void KFilePlacesView::setUrl(const KUrl &url)
 {
-    kDebug() << k_funcinfo << endl;
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
 
     if (placesModel==0) return;
@@ -55,20 +57,36 @@ void KFilePlacesView::setUrl(const KUrl &url)
     QModelIndex index = placesModel->closestItem(url);
 
     if (index.isValid()) {
+        d->currentUrl = url;
         selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     } else {
+        d->currentUrl = KUrl();
         selectionModel()->clear();
     }
 }
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 {
-    kDebug() << k_funcinfo << endl;
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
 
     if (placesModel==0) return;
 
-    emit q->urlChanged(placesModel->url(index));
+    if (placesModel->isDevice(index)) {
+        Solid::Device device = placesModel->deviceForIndex(index);
+        if (device.is<Solid::Volume>() && !device.as<Solid::Volume>()->isMounted()) {
+            KJob *job = device.as<Solid::Volume>()->mount();
+            job->exec(); // FIXME: Do this asynchronously
+        }
+    }
+
+    KUrl url = placesModel->url(index);
+
+    if (url.isValid()) {
+        currentUrl = url;
+        emit q->urlChanged(url);
+    } else {
+        q->setUrl(currentUrl);
+    }
 }
 
 #include "kfileplacesview.moc"
