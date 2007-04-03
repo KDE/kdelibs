@@ -57,7 +57,7 @@ pre {
 <p>This document contains the changes you have to apply to programs written for
 KDE 3.x when you want to port them to KDE 4.0.<br>
 As a start you should have a look at doc/html/porting4.html in the Qt package,
-or <a href="http://doc.trolltech.com/4.2/porting4.html">this page online</a>.</p>
+or <a href="http://doc.trolltech.com/4.3/porting4.html">this page online</a>.</p>
 
 <h3><a name="TOC">Table of Contents</a></h3>
 
@@ -91,7 +91,7 @@ or <a href="http://doc.trolltech.com/4.2/porting4.html">this page online</a>.</p
 <ul>
 <li>
 The "const char *name" arguments in the constructors of QObject derived classes
-have been removed (not of all classes yet). Use setObjectName() instead if the object name is really necessary.
+have been removed. Use setObjectName() instead if the object name is really necessary.
 </li>
 <li>The define KDE_DEPRECATED must be used now at the start of the declaration
 (but still after an eventual "static", "inline" or "virtual" keyword).
@@ -2261,7 +2261,7 @@ ki18n("Welcome").toString(myLocale);
 <tr>
   <th>Old KDE mime type</th>
   <th>XDG mime type</th>
-<tr>
+</tr>
 <tr>
   <td>application/chm</td>
   <td>application/x-chm</td>
