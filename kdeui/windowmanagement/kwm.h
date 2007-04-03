@@ -600,14 +600,16 @@ protected:
     virtual void connectNotify( const char* signal );
         
 private:
+    friend class KWMStaticContainer;
+    KWM() {}
 
     enum { INFO_BASIC=1, // desktop info, not per-window
            INFO_WINDOWS=2 }; // also per-window info
+
     static void init(int);
 
-    static KWMPrivate* sd;
-
     friend class KWMPrivate;
+    static inline KWMPrivate* const s_d_func();
 };
 
 /**

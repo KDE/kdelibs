@@ -33,8 +33,16 @@
 #include <qx11info_x11.h>
 #include <X11/Xatom.h>
 
-KWMPrivate* KWM::sd = NULL;
-static KWM* kwm_instance = NULL;
+class KWMStaticContainer {
+public:
+    KWMStaticContainer() : d(0) {}
+    KWM kwm;
+    KWMPrivate* d;
+};
+
+
+K_GLOBAL_STATIC(KWMStaticContainer, g_kwmInstanceContainer)
+
 
 static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientListStacking |
 				     NET::NumberOfDesktops |
@@ -94,12 +102,10 @@ public:
 };
 
 KWMPrivate::KWMPrivate(int _what)
-    : QWidget(0), NETRootInfo( QX11Info::display(),
-                                 _what >= KWM::INFO_WINDOWS ?
-                                 windows_properties : desktop_properties,
-                                 2,
-				 -1, false
-				 ),
+    : QWidget(0),
+      NETRootInfo( QX11Info::display(),
+                   _what >= KWM::INFO_WINDOWS ? windows_properties : desktop_properties,
+                   2, -1, false ),
       strutSignalConnected( false ),
       what( _what )
 {
@@ -111,6 +117,8 @@ KWMPrivate::KWMPrivate(int _what)
 
 bool KWMPrivate::x11Event( XEvent * ev )
 {
+    KWM* s_q = KWM::self();
+
     if ( ev->xany.window == QX11Info::appRootWindow() ) {
         int old_current_desktop = currentDesktop();
         WId old_active_window = activeWindow();
@@ -120,23 +128,23 @@ bool KWMPrivate::x11Event( XEvent * ev )
 	NETRootInfo::event( ev, m, 5 );
 
 	if (( m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop )
-	    emit kwm_instance->currentDesktopChanged( currentDesktop() );
+	    emit s_q->currentDesktopChanged( currentDesktop() );
 	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
-	    emit kwm_instance->activeWindowChanged( activeWindow() );
+	    emit s_q->activeWindowChanged( activeWindow() );
  	if ( m[ PROTOCOLS ] & DesktopViewport )
- 	    emit kwm_instance->currentDesktopViewportChanged(currentDesktop(), currentViewport(currentDesktop()));
+ 	    emit s_q->currentDesktopViewportChanged(currentDesktop(), currentViewport(currentDesktop()));
 	if ( m[ PROTOCOLS ] & DesktopNames )
-	    emit kwm_instance->desktopNamesChanged();
+	    emit s_q->desktopNamesChanged();
 	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
-	    emit kwm_instance->numberOfDesktopsChanged( numberOfDesktops() );
+	    emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m[ PROTOCOLS ] & WorkArea )
-	    emit kwm_instance->workAreaChanged();
+	    emit s_q->workAreaChanged();
 	if ( m[ PROTOCOLS ] & ClientListStacking ) {
 	    updateStackingOrder();
-	    emit kwm_instance->stackingOrderChanged();
+	    emit s_q->stackingOrderChanged();
 	}
         if(( m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop ) {
-	    emit kwm_instance->showingDesktopChanged( showingDesktop());
+	    emit s_q->showingDesktopChanged( showingDesktop());
         }
     } else  if ( windows.contains( ev->xany.window ) ){
 	NETWinInfo ni( QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0 );
@@ -156,11 +164,11 @@ bool KWMPrivate::x11Event( XEvent * ev )
         	possibleStrutWindows.append( ev->xany.window );
 	}
 	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
-	    emit kwm_instance->windowChanged( ev->xany.window );
-	    emit kwm_instance->windowChanged( ev->xany.window, dirty );
-	    emit kwm_instance->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
+	    emit s_q->windowChanged( ev->xany.window );
+	    emit s_q->windowChanged( ev->xany.window, dirty );
+	    emit s_q->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
 	    if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 )
-		emit kwm_instance->strutChanged();
+		emit s_q->strutChanged();
 	}
     }
 
@@ -188,9 +196,13 @@ void KWMPrivate::updateStackingOrder()
 
 void KWMPrivate::addClient(Window w)
 {
+    KWM* s_q = KWM::self();
+
     if ( (what >= KWM::INFO_WINDOWS) && !QWidget::find( w ) )
-	XSelectInput( QX11Info::display(), w, PropertyChangeMask | StructureNotifyMask );
+        XSelectInput( QX11Info::display(), w, PropertyChangeMask | StructureNotifyMask );
+
     bool emit_strutChanged = false;
+
     if( strutSignalConnected ) {
         NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop );
         NETStrut strut = info.strut();
@@ -200,14 +212,17 @@ void KWMPrivate::addClient(Window w)
         }
     } else
         possibleStrutWindows.append( w );
+
     windows.append( w );
-    emit kwm_instance->windowAdded( w );
+    emit s_q->windowAdded( w );
     if ( emit_strutChanged )
-        emit kwm_instance->strutChanged();
+        emit s_q->strutChanged();
 }
 
 void KWMPrivate::removeClient(Window w)
 {
+    KWM* s_q = KWM::self();
+
     bool emit_strutChanged = removeStrutWindow( w );
     if( strutSignalConnected && possibleStrutWindows.contains( w )) {
         NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut );
@@ -216,11 +231,12 @@ void KWMPrivate::removeClient(Window w)
             emit_strutChanged = true;
         }
     }
+
     possibleStrutWindows.removeAll( w );
     windows.removeAll( w );
-    emit kwm_instance->windowRemoved( w );
+    emit s_q->windowRemoved( w );
     if ( emit_strutChanged )
-        emit kwm_instance->strutChanged();
+        emit s_q->strutChanged();
 }
 
 int KWMPrivate::numberOfViewports(int desktop) const
@@ -294,53 +310,66 @@ static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z
 
 KWM* KWM::self()
 {
-    if( kwm_instance == NULL )
-        kwm_instance = new KWM;
-    return kwm_instance;
+    return &(g_kwmInstanceContainer->kwm);
 }
+
+
+KWMPrivate* const KWM::s_d_func()
+{
+    return g_kwmInstanceContainer->d;
+}
+
 
 // optimalization - create KWMPrivate only when needed and only for what is needed
 void KWM::connectNotify( const char* signal )
 {
+    KWMPrivate* const s_d = s_d_func();
+
+    if( s_d && !s_d->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
+        s_d->strutSignalConnected = true;
+
     int what = INFO_BASIC;
     if( QLatin1String( signal ) == SIGNAL(workAreaChanged()))
         what = INFO_WINDOWS;
-    if( QLatin1String( signal ) == SIGNAL(strutChanged()))
+    else if( QLatin1String( signal ) == SIGNAL(strutChanged()))
         what = INFO_WINDOWS;
-    if( QLatin1String( signal ) == SIGNAL(stackingOrderChanged()))
+    else if( QLatin1String( signal ) == SIGNAL(stackingOrderChanged()))
         what = INFO_WINDOWS;
-    if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const unsigned long*))).data())
+    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const unsigned long*))).data())
         what = INFO_WINDOWS;
-    if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,unsigned int))).data())
+    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,unsigned int))).data())
         what = INFO_WINDOWS;
-    if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).data())
+    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).data())
         what = INFO_WINDOWS;
-    init( what );
-    if( !sd->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
-        sd->strutSignalConnected = true;
+
+    init( what ); // invalidates s_d
     QObject::connectNotify( signal );
 }
 
+// WARNING
+// you have to call s_d_func() again after calling this function if you want a valid pointer!
 void KWM::init(int what)
 {
+    KWMPrivate* const s_d = s_d_func();
+
     if (what >= INFO_WINDOWS)
        what = INFO_WINDOWS;
     else
        what = INFO_BASIC;
 
-    if ( !sd )
-        sd = new KWMPrivate(what);
-    else if (sd->what < what)
+    if ( !s_d )
+        g_kwmInstanceContainer->d = new KWMPrivate(what); // invalidates s_d
+    else if (s_d->what < what)
     {
-        delete sd;
-        sd = new KWMPrivate(what);
+        delete s_d;
+        g_kwmInstanceContainer->d = new KWMPrivate(what); // invalidates s_d
     }
 }
 
 const QList<WId>& KWM::windows()
 {
     init( INFO_BASIC );
-    return sd->windows;
+    return s_d_func()->windows;
 }
 
 KWM::WindowInfo KWM::windowInfo( WId win, unsigned long properties, unsigned long properties2 )
@@ -351,21 +380,23 @@ KWM::WindowInfo KWM::windowInfo( WId win, unsigned long properties, unsigned lon
 bool KWM::hasWId(WId w)
 {
     init( INFO_BASIC );
-    return sd->windows.contains( w );
+    return s_d_func()->windows.contains( w );
 }
 
 const QList<WId>& KWM::stackingOrder()
 {
     init( INFO_BASIC );
-    return sd->stackingOrder;
+    return s_d_func()->stackingOrder;
 }
 
 int KWM::currentDesktop()
 {
     if (!QX11Info::display())
       return 1;
-    if( sd )
-        return sd->currentDesktop();
+
+    KWMPrivate* const s_d = s_d_func();
+    if( s_d )
+        return s_d->currentDesktop();
     NETRootInfo info( QX11Info::display(), NET::CurrentDesktop );
     return info.currentDesktop();
 }
@@ -374,8 +405,10 @@ int KWM::numberOfDesktops()
 {
     if (!QX11Info::display())
       return 1;
-    if( sd )
-        return sd->numberOfDesktops();
+
+    KWMPrivate* const s_d = s_d_func();
+    if( s_d )
+        return s_d->numberOfDesktops();
     NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops );
     return info.numberOfDesktops();
 }
@@ -406,13 +439,13 @@ void KWM::setOnDesktop( WId win, int desktop )
 int KWM::numberOfViewports(int desktop)
 {
     init( INFO_BASIC );
-    return sd->numberOfViewports(desktop);
+    return s_d_func()->numberOfViewports(desktop);
 }
 
 int KWM::currentViewport(int desktop)
 {
     init( INFO_BASIC );
-    return sd->currentViewport(desktop);
+    return s_d_func()->currentViewport(desktop);
 }
 
 void KWM::setCurrentDesktopViewport( int desktop, QPoint viewport )
@@ -426,8 +459,9 @@ void KWM::setCurrentDesktopViewport( int desktop, QPoint viewport )
 
 WId KWM::activeWindow()
 {
-    if( sd )
-        return sd->activeWindow();
+    KWMPrivate* const s_d = s_d_func();
+    if( s_d )
+        return s_d->activeWindow();
     NETRootInfo info( QX11Info::display(), NET::ActiveWindow );
     return info.activeWindow();
 }
@@ -707,64 +741,71 @@ bool KWM::compositingActive()
 QRect KWM::workArea( int desktop )
 {
     init( INFO_BASIC );
-    int desk  = (desktop > 0 && desktop <= (int) sd->numberOfDesktops() ) ? desktop : currentDesktop();
+    int desk  = (desktop > 0 && desktop <= (int) s_d_func()->numberOfDesktops() ) ? desktop : currentDesktop();
     if ( desk <= 0 )
-	return QApplication::desktop()->geometry();
-    NETRect r = sd->workArea( desk );
+        return QApplication::desktop()->geometry();
+
+    NETRect r = s_d_func()->workArea( desk );
     if( r.size.width <= 0 || r.size.height <= 0 ) // not set
-	return QApplication::desktop()->geometry();
+        return QApplication::desktop()->geometry();
+
     return QRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
 }
 
 QRect KWM::workArea( const QList<WId>& exclude, int desktop )
 {
-    init( INFO_WINDOWS );
+    init( INFO_WINDOWS ); // invalidates s_d_func's return value
+    KWMPrivate* const s_d = s_d_func();
+
     QRect all = QApplication::desktop()->geometry();
     QRect a = all;
 
     if (desktop == -1)
-	desktop = sd->currentDesktop();
+        desktop = s_d->currentDesktop();
 
     QList<WId>::ConstIterator it1;
-    for( it1 = sd->windows.begin(); it1 != sd->windows.end(); ++it1 ) {
+    for( it1 = s_d->windows.begin(); it1 != s_d->windows.end(); ++it1 ) {
 
-	if(exclude.contains(*it1)) continue;
+        if(exclude.contains(*it1))
+            continue;
 
 // Kicker (very) extensively calls this function, causing hundreds of roundtrips just
 // to repeatedly find out struts of all windows. Therefore strut values for strut
 // windows are cached here.
         NETStrut strut;
-        QList< KWMPrivate::StrutData >::Iterator it2 = sd->strutWindows.begin();
-        for( ;
-             it2 != sd->strutWindows.end();
-             ++it2 )
+        QList< KWMPrivate::StrutData >::Iterator it2 = s_d->strutWindows.begin();
+        for( ; it2 != s_d->strutWindows.end(); ++it2 )
             if( (*it2).window == *it1 )
                 break;
-        if( it2 != sd->strutWindows.end()) {
-            if(!((*it2).desktop == desktop || (*it2).desktop == NETWinInfo::OnAllDesktops ))
-                continue;
-            strut = (*it2).strut;
-        } else if( sd->possibleStrutWindows.contains( *it1 ) ) {
-            NETWinInfo info( QX11Info::display(), (*it1), QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop);
-	    strut = info.strut();
-            sd->possibleStrutWindows.removeAll( *it1 );
-            sd->strutWindows.append( KWMPrivate::StrutData( *it1, info.strut(), info.desktop()));
-	    if(!(info.desktop() == desktop || info.desktop() == NETWinInfo::OnAllDesktops))
-                continue;
-        } else
-            continue; // not a strut window
 
-	QRect r = all;
-	if ( strut.left > 0 )
-	    r.setLeft( r.left() + (int) strut.left );
-	if ( strut.top > 0 )
-	    r.setTop( r.top() + (int) strut.top );
-	if ( strut.right > 0  )
-	    r.setRight( r.right() - (int) strut.right );
-	if ( strut.bottom > 0  )
-	    r.setBottom( r.bottom() - (int) strut.bottom );
+            if( it2 != s_d->strutWindows.end()) {
+                if(!((*it2).desktop == desktop || (*it2).desktop == NETWinInfo::OnAllDesktops ))
+                    continue;
 
-	a = a.intersect(r);
+                strut = (*it2).strut;
+            } else if( s_d->possibleStrutWindows.contains( *it1 ) ) {
+
+                NETWinInfo info( QX11Info::display(), (*it1), QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop);
+                strut = info.strut();
+                s_d->possibleStrutWindows.removeAll( *it1 );
+                s_d->strutWindows.append( KWMPrivate::StrutData( *it1, info.strut(), info.desktop()));
+
+                if( !(info.desktop() == desktop || info.desktop() == NETWinInfo::OnAllDesktops) )
+                    continue;
+            } else
+                continue; // not a strut window
+
+        QRect r = all;
+        if ( strut.left > 0 )
+            r.setLeft( r.left() + (int) strut.left );
+        if ( strut.top > 0 )
+            r.setTop( r.top() + (int) strut.top );
+        if ( strut.right > 0  )
+            r.setRight( r.right() - (int) strut.right );
+        if ( strut.bottom > 0  )
+            r.setBottom( r.bottom() - (int) strut.bottom );
+
+        a = a.intersect(r);
     }
     return a;
 }
@@ -772,18 +813,29 @@ QRect KWM::workArea( const QList<WId>& exclude, int desktop )
 QString KWM::desktopName( int desktop )
 {
     init( INFO_BASIC );
-    const char* name = sd->desktopName( (desktop > 0 && desktop <= (int) sd->numberOfDesktops() ) ? desktop : currentDesktop() );
+    KWMPrivate* const s_d = s_d_func();
+
+    bool isDesktopSane = (desktop > 0 && desktop <= (int) s_d->numberOfDesktops());
+    const char* name = s_d->desktopName( isDesktopSane ? desktop : currentDesktop() );
+
     if ( name && name[0] )
-	return QString::fromUtf8( name );
+        return QString::fromUtf8( name );
+
     return i18n("Desktop %1",  desktop );
 }
 
 void KWM::setDesktopName( int desktop, const QString& name )
 {
+    KWMPrivate* const s_d = s_d_func();
+
     if (desktop <= 0 || desktop > (int) numberOfDesktops() )
-	desktop = currentDesktop();
-    if( sd )
-        return sd->setDesktopName( desktop, name.toUtf8().data() );
+        desktop = currentDesktop();
+
+    if( s_d ) {
+        s_d->setDesktopName( desktop, name.toUtf8().data() );
+        return;
+    }
+
     NETRootInfo info( QX11Info::display(), 0 );
     info.setDesktopName( desktop, name.toUtf8().data() );
 }
@@ -791,7 +843,7 @@ void KWM::setDesktopName( int desktop, const QString& name )
 bool KWM::showingDesktop()
 {
     init( INFO_BASIC );
-    return sd->showingDesktop();
+    return s_d_func()->showingDesktop();
 }
 
 void KWM::setUserTime( WId win, long time )
