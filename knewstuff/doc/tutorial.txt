@@ -130,6 +130,10 @@ configuration of the desktop wallpaper, for instance.
 
 The download dialog can be opened in modal or non-modal mode. Example:
 
+# KNS::Entry::List entries = KNS::Engine::download()
+
+Or, in detail:
+
 # KNS::Engine *engine = new KNS::Engine();
 # KNS::Entry::List entries = engine->downloadDialogModal();
 # // inspect entries, if wanted
@@ -140,8 +144,12 @@ Uploading data
 
 Similar to downloads, both modal and non-modal ways of invoking the dialog exist.
 
+# KNS::Entry *entry = KNS::Engine::upload(QString file);
+
+Or, in detail:
+
 # KNS::Engine *engine = new KNS::Engine();
-# KNS::Entry *entry = engine->uploadDialogModal();
+# KNS::Entry *entry = engine->uploadDialogModal(QString file);
 # // if !entry, then something went wrong
 # delete engine;
 
