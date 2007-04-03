@@ -1417,7 +1417,7 @@ int main( int argc, char **argv )
     h << "    static " << className << " *self();" << endl;
     if (cfgFileNameArg)
     {
-      h << "    static void instance(const char * cfgfilename);" << endl;
+      h << "    static void instance(const QByteArray& cfgfilename);" << endl;
       h << "    static void instance(const QString& cfgfilename);" << endl;
     }
   }
@@ -1570,7 +1570,7 @@ int main( int argc, char **argv )
   if ( singleton ) {
     h << "    " << className << "(";
     if ( cfgFileNameArg )
-      h << "const char *arg";
+      h << "const QString& arg";
     h << ");" << endl;
     h << "    static " << className << " *mSelf;" << endl << endl;
   }
@@ -1722,13 +1722,13 @@ int main( int argc, char **argv )
     cpp << "}" << endl << endl;
 
     if ( cfgFileNameArg ) {
-      cpp << "void " << className << "::instance(const char *cfgfilename)" << endl;
+      cpp << "void " << className << "::instance(const QByteArray& cfgfilename)" << endl;
       cpp << "{" << endl;
       cpp << "  if (mSelf) {" << endl;
       cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
-      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;
+      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(QFile::decodeName(cfgfilename)) );" << endl;
       cpp << "  mSelf->readConfig();" << endl;
       cpp << "}" << endl << endl;
       cpp << "void " << className << "::instance(const QString& cfgfilename)" << endl;
@@ -1737,8 +1737,7 @@ int main( int argc, char **argv )
       cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
-      cpp << "  QByteArray filename = QFile::encodeName(cfgfilename);" << endl;
-      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(filename.data()) );" << endl;
+      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;
       cpp << "  mSelf->readConfig();" << endl;
       cpp << "}" << endl << endl;
     }
@@ -1753,7 +1752,7 @@ int main( int argc, char **argv )
     if ( !singleton )
       cpp << " KSharedConfig::Ptr config";
     else
-      cpp << " const char *config";
+      cpp << " const QString& config";
     cpp << (parameters.isEmpty() ? " " : ", ");
   }
 
