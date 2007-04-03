@@ -71,6 +71,7 @@ or <a href="http://doc.trolltech.com/4.3/porting4.html">this page online</a>.</p
 <li><a href="#kparts">Changes in kparts</a></li>
 <li><a href="#kded">Changes in kded</a></li>
 <li><a href="#kspell">Changes in kspell</a></li>
+<li><a href="#kdnssd">Changes in kdnssd</a></li>
 <li><a href="#khtmlpart">API-cleanup in KHTML</a></li>
 <li><a href="#kfile">Changes in kfile</a></li>
 <li><a href="#kcontrol">KDE Control Center</a></li>
@@ -2034,6 +2035,44 @@ it's about pure service types (plugins, kcmodules, etc.)</li>
 <ul>
 <li>All of the features of KSpell have been moved to Sonnet</li>
 </ul>
+
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
+
+<h3><a name="kdnssd">Changes in kdnssd</a></h3>
+
+<h4>DomainBrowser</h4>
+<ul>
+<LI>Recursive browsing feature has been removed removed</LI>
+<li>Constructor that takes list of domains and does not use configuration has been removed</li>
+<li>It is now possible to search for browsing or publishing domains</li>
+</ul>
+
+<h4>ServiceBase</h4>
+<ul>
+<LI>Service properties are stored in QMap&lt;QString,QByteArray&gt; instead of QMap&lt;QString,QString&gt;.</LI>
+<LI>This class is not used to pass domains or service types anymore</LI>
+</ul>
+
+<h4>ServiceBrowser</h4>
+<ul>
+<LI>Browsing multiple types or multiple domains at once has been removed</LI>
+<li>In KDE3 ServiceBrowser created with default constructor (for example ServiceBrowser("_http._tcp") ) browsed all configured domains. Now it only browses default one. To browse other domains create more ServiceBrowser objects</li>
+<li>It is now possible to specify subtype to narrow searching scope (for example "anon" for only anonymous FTP servers)</li>
+<li>Browsing for service types is now done using new class ServiceTypeBrowser</li>
+</ul>
+
+<h4>RemoteService</h4>
+<ul><LI>Creating RemoteService from URL or DNS label is no longer supported</LI></ul>
+
+<h4>PublicService</h4>
+<ul>
+<LI>Optional list of subtypes can be passed to constructor.</LI>
+<li>Encoding service into URL is no longer supported</li>
+</ul>
+
+<h4>Query</h4>
+<ul>
+<LI>This class has been merged into ServiceBrowser</LI></ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
