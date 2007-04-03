@@ -810,7 +810,7 @@ void K3ListView::contentsMouseMoveEvent( QMouseEvent *e )
           d->cursorInExecuteArea = isExecuteArea(vp);
 
           if( d->cursorInExecuteArea ) //cursor moved in execute area
-            viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
+            viewport()->setCursor(Qt::PointingHandCursor);
           else //cursor moved out of execute area
             viewport()->unsetCursor();
         }

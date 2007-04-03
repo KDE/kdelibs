@@ -46,7 +46,7 @@ K3ListBox::K3ListBox( QWidget *parent, const char *name, Qt::WFlags f )
 void K3ListBox::slotOnItem( Q3ListBoxItem *item )
 {
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
-        viewport()->setCursor( QCursor( Qt::OpenHandCursor ) );
+        viewport()->setCursor(Qt::PointingHandCursor);
 
     if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
       m_pAutoSelect->setSingleShot( true );
