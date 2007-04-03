@@ -33,7 +33,7 @@
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
-#include <kdirselectdialog.h>
+#include <kfiledialog.h>
 
 #include "test_regression_gui_window.moc"
 
@@ -154,7 +154,7 @@ void TestRegressionWindow::toggleNoXvfbUse(bool checked)
 
 void TestRegressionWindow::setTestsDirectory()
 {
-	m_testsUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+	m_testsUrl = KFileDialog::getExistingDirectory();
 
 	initTestsDirectory();
 	loadOutputHTML();
@@ -162,7 +162,7 @@ void TestRegressionWindow::setTestsDirectory()
 
 void TestRegressionWindow::setOutputDirectory()
 {
-	m_outputUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+	m_outputUrl = KFileDialog::getExistingDirectory();
 	loadOutputHTML();
 }
 
@@ -235,7 +235,7 @@ void TestRegressionWindow::initTestsDirectory()
 
 void TestRegressionWindow::setKHTMLDirectory()
 {
-	m_khtmlUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+	m_khtmlUrl = KFileDialog::getExistingDirectory();
 
 	if(!m_khtmlUrl.isEmpty())
 	{
@@ -572,7 +572,7 @@ void TestRegressionWindow::pauseContinueButtonClicked()
 void TestRegressionWindow::saveLogButtonClicked()
 {
 	assert(m_activeProcess == 0);
-	m_saveLogUrl = KDirSelectDialog::selectDirectory(QString(), true /* local only */);
+	m_saveLogUrl = KFileDialog::getExistingDirectory();
 
 	QString fileName = m_saveLogUrl.path() + "/logOutput.html";
 	if(QFileInfo(fileName).exists())
