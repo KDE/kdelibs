@@ -24,8 +24,8 @@ class KNSButton : public QAbstractButton
 {
 public:
     KNSButton(QWidget *parent = 0);
-    void setText(const QString &text) { t = text; };
-    const QString text() { return t; };
+    void setText(const QString &text) { t = text; }
+    const QString text() { return t; }
 protected:
     void paintEvent(QPaintEvent *event);
 private:
