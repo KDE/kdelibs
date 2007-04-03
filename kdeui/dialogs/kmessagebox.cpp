@@ -74,7 +74,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QIcon ret = KIconLoader::global()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeMedium, K3Icon::DefaultState, 0, true);
+   QIcon ret = KIconLoader::global()->loadIcon(icon_name, K3Icon::NoGroup, K3Icon::SizeLarge, K3Icon::DefaultState, 0, true);
 
    if (ret.isNull()) {
        return QMessageBox::standardIcon(icon);
