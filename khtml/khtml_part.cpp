@@ -3011,10 +3011,10 @@ void KHTMLPart::findText()
   // Raise if already opened
   if ( d->m_findDialog )
   {
-#ifdef Q_WS_WIN
-    d->m_findDialog->activateWindow();
-#else
+#ifdef Q_WS_X11
     KWM::activateWindow( d->m_findDialog->winId() );
+#else
+    d->m_findDialog->activateWindow();
 #endif
     return;
   }

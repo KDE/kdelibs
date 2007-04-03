@@ -1545,10 +1545,10 @@ void TextAreaWidget::slotFind()
         return;
 
     if ( m_findDlg ) {
-#ifdef Q_WS_WIN
-      m_findDlg->activateWindow();
-#else
+#ifdef Q_WS_X11
       KWM::activateWindow( m_findDlg->winId() );
+#else
+      m_findDlg->activateWindow();
 #endif
     } else {
       m_findDlg = new KFindDialog(false, this, "KHTML Text Area Find Dialog");
@@ -1564,10 +1564,10 @@ void TextAreaWidget::slotReplace()
         return;
 
     if ( m_repDlg ) {
-#ifdef Q_WS_WIN
-      m_repDlg->activateWindow();
-#else
+#ifdef Q_WS_X11
       KWM::activateWindow( m_repDlg->winId() );
+#else
+      m_repDlg->activateWindow();
 #endif
     } else {
       m_repDlg = new KReplaceDialog(this, "KHTMLText Area Replace Dialog", 0,
