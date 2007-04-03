@@ -53,7 +53,7 @@ public:
 	QStringList domains() const;
 
 	/**
-	Starts browsing. To stop destroy this object.
+	Starts browsing. To stop destroy this object. domainAdded signals may be emitted before this function returns.
 	 */
 	void startBrowse() ;
 

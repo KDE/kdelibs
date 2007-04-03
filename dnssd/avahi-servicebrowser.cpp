@@ -58,7 +58,10 @@ void ServiceBrowser::startBrowse()
 	if (!d->m_subtype.isEmpty()) fullType=d->m_subtype+"._sub."+d->m_type;
 	QDBusReply<QDBusObjectPath> rep=s.ServiceBrowserNew(-1, -1, fullType, domainToDNS(d->m_domain),0);
 	
-	if (!rep.isValid()) return;
+	if (!rep.isValid()) {
+	    emit finished();
+	    return;
+	}
 	d->m_running=true;
 	d->m_browserFinished=true;
 	org::freedesktop::Avahi::ServiceBrowser *b=new org::freedesktop::Avahi::ServiceBrowser("org.freedesktop.Avahi",rep.value().path(),

@@ -56,9 +56,7 @@ public:
 	 */
 	void startBrowse() ;
 
-	/**
-	Returns true when browse has already started
-	 */
+	//@todo: remove on next Monday
 	bool isRunning() const;
 
 Q_SIGNALS:

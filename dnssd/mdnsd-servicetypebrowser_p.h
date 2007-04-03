@@ -18,39 +18,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef DNSSDSERVICETYPEBROWSER_P_H
+#define DNSSDSERVICETYPEBROWSER_P_H
+
 #include <QtCore/QStringList>
-#include "domainbrowser.h"
-#include "servicebrowser.h"
-#include <QHash>
 
 namespace DNSSD
 {
 
-ServiceBrowser::ServiceBrowser(const QString&,bool,const QString&, const QString&) : d(0)
-{}
-
-
-ServiceBrowser::State ServiceBrowser::isAvailable()
+class ServiceTypeBrowserPrivate : public QObject
 {
-	return Unsupported;
-}
-ServiceBrowser::~ ServiceBrowser()
-{
-}
-
-void ServiceBrowser::startBrowse()
-{
-    emit finished();
-}
-
-QList<RemoteService::Ptr> ServiceBrowser::services() const
-{
-	return QList<RemoteService::Ptr>();
-}
-
-void ServiceBrowser::virtual_hook(int, void*)
-{}
+Q_OBJECT
+public:
+	ServiceTypeBrowserPrivate(ServiceTypeBrowser* parent):  m_parent(parent) {}
+	ServiceTypeBrowser* m_parent;
+	ServiceBrowser* m_browser;
+	QStringList m_servicetypes;
+public Q_SLOTS:
+    void newService(DNSSD::RemoteService::Ptr);
+    void removeService(DNSSD::RemoteService::Ptr);
+};
 
 }
-
-#include "servicebrowser.moc"
+#endif
