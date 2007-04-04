@@ -13,7 +13,6 @@
  */
 
 #include "tools.h"
-#include "ontology.h"
 #include "resourcemanager.h"
 
 #include <kdebug.h>
