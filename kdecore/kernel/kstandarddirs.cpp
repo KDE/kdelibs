@@ -1030,27 +1030,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     // split path using : or \b as delimiters
     for( int i = 0; i < tokens.count(); i++ )
     {
-        p = tokens[ i ];
-
-        if ( p[ 0 ] == '~' )
-        {
-            int len = p.indexOf( '/' );
-            if ( len == -1 )
-                len = p.length();
-            if ( len == 1 )
-            {
-                p.replace( 0, 1, QDir::homePath() );
-            }
-            else
-            {
-                QString user = p.mid( 1, len - 1 );
-                struct passwd *dir = getpwnam( user.toLocal8Bit().data() );
-                if ( dir && strlen( dir->pw_dir ) )
-                    p.replace( 0, len, QString::fromLocal8Bit( dir->pw_dir ) );
-            }
-        }
-
-        exePaths << p;
+        exePaths << KShell::tildeExpand( tokens[ i ] );
     }
 
     return exePaths;
