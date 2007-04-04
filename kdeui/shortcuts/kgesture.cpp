@@ -149,19 +149,14 @@ QString KShapeGesture::toString() const
 
     //TODO: what if the name contains a "," or ";"? Limit the name to letters?
     QString ret = m_friendlyName;
-    ret.append(',');
 
     int i;
-    for (i = 0; i < m_shape.size() - 1; i++) {
+    for (i = 0; i < m_shape.size(); i++) {
+        ret.append(',');
         ret.append(QString::number(m_shape[i].x()));
         ret.append(',');
         ret.append(QString::number(m_shape[i].y()));
-        ret.append(',');
     }
-    i++;
-    ret.append(QString::number(m_shape[i].x()));
-    ret.append(',');
-    ret.append(QString::number(m_shape[i].y()));
 
     return ret;
 }
