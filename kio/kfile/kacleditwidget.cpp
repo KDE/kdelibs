@@ -72,24 +72,29 @@ static struct {
 KACLEditWidget::KACLEditWidget( QWidget *parent )
    :QWidget( parent )
 {
-    KHBox *hbox = new KHBox( parent );
+    QHBoxLayout *hbox = new QHBoxLayout( this );
+    hbox->setMargin( 0 );
     hbox->setSpacing(  KDialog::spacingHint() );
-    m_listView = new KACLListView( hbox );
+    m_listView = new KACLListView( this );
+    hbox->addWidget( m_listView );
     connect( m_listView, SIGNAL( selectionChanged() ),
             this, SLOT( slotUpdateButtons() ) );
-    KVBox *vbox = new KVBox( hbox );
+    QVBoxLayout *vbox = new QVBoxLayout();
+    hbox->addLayout( vbox );
     vbox->setSpacing(  KDialog::spacingHint() );
-    m_AddBtn = new QPushButton( i18n( "Add Entry..." ), vbox );
+    m_AddBtn = new QPushButton( i18n( "Add Entry..." ), this );
+    vbox->addWidget( m_AddBtn );
     m_AddBtn->setObjectName( QLatin1String( "add_entry_button" ) );
     connect( m_AddBtn, SIGNAL( clicked() ), m_listView, SLOT( slotAddEntry() ) );
-    m_EditBtn = new QPushButton( i18n( "Edit Entry..." ), vbox );
+    m_EditBtn = new QPushButton( i18n( "Edit Entry..." ), this );
+    vbox->addWidget( m_EditBtn );
     m_EditBtn->setObjectName( QLatin1String( "edit_entry_button" ) );
     connect( m_EditBtn, SIGNAL( clicked() ), m_listView, SLOT( slotEditEntry() ) );
-    m_DelBtn = new QPushButton( i18n( "Delete Entry" ), vbox );
+    m_DelBtn = new QPushButton( i18n( "Delete Entry" ), this );
+    vbox->addWidget( m_DelBtn );
     m_DelBtn->setObjectName( QLatin1String( "delete_entry_button" ) );
     connect( m_DelBtn, SIGNAL( clicked() ), m_listView, SLOT( slotRemoveEntry() ) );
-    QWidget *spacer = new QWidget( vbox );
-    spacer->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Expanding );
+    vbox->addItem( new QSpacerItem( 10, 10, QSizePolicy::Fixed, QSizePolicy::Expanding ) );
     slotUpdateButtons();
 }
 
