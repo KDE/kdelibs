@@ -37,13 +37,14 @@ ServiceBrowser::ServiceBrowser(const QString& type,bool autoResolve,const QStrin
 	d->m_subtype=subtype;
 	d->m_autoResolve=autoResolve;
 	d->m_domain=domain;
+	d->m_timer.setSingleShot(true);
 }
 
 ServiceBrowser::State ServiceBrowser::isAvailable()
 {
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	QDBusReply<int> rep= s.GetState();
-	return (rep.isValid() && rep.value()==1) ? Working:Stopped;
+	return (rep.isValid() && rep.value()==2) ? Working:Stopped;
 }
 ServiceBrowser::~ ServiceBrowser()
 {
@@ -72,6 +73,8 @@ void ServiceBrowser::startBrowse()
 	    SLOT(gotRemoveService(int,int,const QString&,const QString&,const QString&, uint)));
 	connect(b,SIGNAL(AllForNow()),d,SLOT(browserFinished()));
 	d->m_browser=b;
+	connect(&d->m_timer,SIGNAL(timeout()), d, SLOT(browserFinished()));
+	d->m_timer.start(TIMEOUT_LAN);
 }
 
 void ServiceBrowserPrivate::serviceResolved(bool success)
@@ -95,6 +98,7 @@ void ServiceBrowserPrivate::serviceResolved(bool success)
 
 void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
+	m_timer.start(TIMEOUT_LAN);
 	RemoteService::Ptr svr(new RemoteService(name, type,domain));
 	if (m_autoResolve) {
 		connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
@@ -108,12 +112,14 @@ void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QSt
 
 void ServiceBrowserPrivate::gotRemoveService(int,int,const QString& name, const QString& type, const QString& domain, uint)
 {
+	m_timer.start(TIMEOUT_LAN);
 	RemoteService::Ptr svr(new RemoteService(name, type,domain));
 	emit m_parent->serviceRemoved(svr);
 	m_services.removeAll(svr);
 }
 void ServiceBrowserPrivate::browserFinished()
 {
+    m_timer.stop();
     m_browserFinished=true;
     queryFinished();
 }

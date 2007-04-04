@@ -20,6 +20,9 @@
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
 
+// wait 100ms after last service
+#define TIMEOUT_LAN 100
+
 /*
  * Proxy class for interface org.freedesktop.Avahi.Server
  */

@@ -35,6 +35,7 @@ namespace DNSSD
 ServiceTypeBrowser::ServiceTypeBrowser(const QString& domain, QObject *parent) : QObject(parent), d(new ServiceTypeBrowserPrivate(this))
 {
 	d->m_domain=domain;
+	d->m_timer.setSingleShot(true);
 }
 
 ServiceTypeBrowser::~ServiceTypeBrowser()
@@ -54,17 +55,30 @@ void ServiceTypeBrowser::startBrowse()
 	    QDBusConnection::systemBus());
 	connect(b,SIGNAL(ItemNew(int,int,const QString&,const QString&,uint)),d, SLOT(gotNewServiceType(int,int,const QString&,const QString&, uint)));
 	connect(b,SIGNAL(ItemRemove(int,int,const QString&,const QString&,uint)),d, SLOT(gotRemoveServiceType(int,int,const QString&,const QString&, uint)));
+	connect(b,SIGNAL(AllForNow()),d,SLOT(finished()));
+	connect(&d->m_timer,SIGNAL(timeout()), d, SLOT(finished()));
 	d->m_browser=b;
+	d->m_timer.start(TIMEOUT_LAN);
+}
+
+void ServiceTypeBrowserPrivate::finished()
+{
+    m_timer.stop();
+    emit m_parent->finished();
 }
 
 void ServiceTypeBrowserPrivate::gotNewServiceType(int,int,const QString& type,const QString&,uint)
 {
+	m_timer.start(TIMEOUT_LAN);
 	m_servicetypes+=type;
 	emit m_parent->serviceTypeAdded(type);
 }
 
+
+
 void ServiceTypeBrowserPrivate::gotRemoveServiceType(int,int,const QString& type,const QString&,uint)
 {
+	m_timer.start(TIMEOUT_LAN);
 	m_servicetypes.removeAll(type);
 	emit m_parent->serviceTypeRemoved(type);
 }

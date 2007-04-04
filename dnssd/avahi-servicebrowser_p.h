@@ -22,6 +22,7 @@
 #define DNSSDSERVICEBROWSER_P_H
 
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
 
 namespace DNSSD
 {
@@ -42,6 +43,7 @@ public:
 	bool m_running;
 	bool m_finished;
 	bool m_browserFinished;
+	QTimer m_timer;
 	org::freedesktop::Avahi::ServiceBrowser* m_browser;
 	ServiceBrowser* m_parent;
 

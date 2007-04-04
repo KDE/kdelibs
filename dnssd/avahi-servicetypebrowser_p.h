@@ -21,6 +21,8 @@
 #ifndef DNSSDSERVICETYPEBROWSER_P_H
 #define DNSSDSERVICETYPEBROWSER_P_H
 
+#include <QtCore/QTimer>
+
 namespace DNSSD
 {
 
@@ -36,9 +38,11 @@ public:
     bool m_started;
     QStringList m_servicetypes;
     QString m_domain;
+    QTimer m_timer;
 private Q_SLOTS:
     void gotNewServiceType(int,int,const QString&, const QString&, uint);
     void gotRemoveServiceType(int,int,const QString&, const QString&, uint);
+    void finished();
     
 };		
 
