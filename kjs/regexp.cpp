@@ -138,8 +138,10 @@ RegExp::RegExp(const UString &p, int f)
   if (flgs & Multiline)
     pcreflags |= PCRE_MULTILINE;
 
+#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Supported)
     pcreflags |= (PCRE_UTF8 | PCRE_NO_UTF8_CHECK);
+#endif
 
   // Fill our buffer with an encoded version, whether utf-8, or, 
   // if PCRE is incapable, truncated.
@@ -329,7 +331,11 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     nextPos  = i + 1;
   }
 
-  int baseFlags = utf8Support == Supported ? PCRE_NO_UTF8_CHECK : 0;
+  int baseFlags =
+#ifdef PCRE_CONFIG_UTF8
+    utf8Support == Supported ? PCRE_NO_UTF8_CHECK :
+#endif
+    0;
   if (pcre_exec(pcregex, NULL, buffer, bufferSize, startPos,
                 m_notEmpty ? (PCRE_NOTEMPTY | PCRE_ANCHORED | baseFlags) : baseFlags, // see man pcretest
                 ovector ? *ovector : 0L, ovecsize) == PCRE_ERROR_NOMATCH)
