@@ -45,7 +45,7 @@
 
 namespace KJS {
 
-    class CommonIdentifiers : Noncopyable {
+    class KJS_EXPORT CommonIdentifiers : Noncopyable {
 
     private:
         CommonIdentifiers();
