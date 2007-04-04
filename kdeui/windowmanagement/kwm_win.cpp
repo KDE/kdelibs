@@ -248,6 +248,11 @@ const QList<WId>& KWM::windows()
   return lst;
 }
 
+void KWM::setType( WId win, NET::WindowType windowType )
+{
+ //TODO
+ kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!" << endl;
+}
 
 #include "kwm.moc"
 

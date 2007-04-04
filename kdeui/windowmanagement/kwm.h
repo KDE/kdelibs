@@ -313,7 +313,6 @@ public:
      * @param miniIcon the new mini icon
      */
     static void  setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon );
-#ifdef Q_WS_X11
     /**
      * Sets the type of window @p win to @p windowType.
      *
@@ -321,7 +320,6 @@ public:
      * @param windowType the type of the window (see NET::WindowType)
      */
     static void setType( WId win, NET::WindowType windowType );
-#endif
     /**
      * Sets the state of window @p win to @p state.
      *
