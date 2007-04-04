@@ -1945,6 +1945,7 @@ int main( int argc, char **argv )
   if ( hasSignals ) {
     cpp << "void " << className << "::" << "usrWriteConfig()" << endl;
     cpp << "{" << endl;
+    cpp << "  " << inherits << "::usrWriteConfig();" << endl << endl;
     foreach(const Signal &signal, signalList) {
       cpp << "  if ( " << varPath("settingsChanged") << " & " << signalEnumName(signal.name) << " ) " << endl;
       cpp << "    emit " << signal.name << "(";
