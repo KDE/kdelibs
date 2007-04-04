@@ -217,6 +217,13 @@ if (Q_WS_X11)
                                          windowmanagement/netwm.cpp
        )
 endif (Q_WS_X11)
+if (Q_WS_MAC)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_mac.cpp
+       )     
+endif (Q_WS_MAC)
+if (Q_WS_WIN)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_win.cpp)
+endif (Q_WS_WIN)
 
 kde4_automoc(${kdeui_LIB_SRCS} dialogs/kdialogqueue_p.h)
 

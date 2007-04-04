@@ -25,7 +25,7 @@
 
 #ifndef   netwm_def_h
 #define   netwm_def_h
-
+#ifdef Q_WS_X11
 #include <kdeui_export.h>
 
 /**
@@ -691,6 +691,9 @@ public:
     static int timestampDiff( unsigned long time1_, unsigned long time2_ );
 
 };
-
+#else
+class KDEUI_EXPORT NET {
+};
+#endif
 
 #endif // netwm_def_h

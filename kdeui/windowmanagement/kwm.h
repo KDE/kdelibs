@@ -27,12 +27,13 @@
 #include <kdeui_export.h>
 #include <qobject.h>
 #include <qwindowdefs.h> //For WId
+#include <netwm_def.h>
 
 #ifdef Q_WS_X11
 
-#include <netwm_def.h>
-
 class KWMPrivate;
+#endif
+
 
 /**
  *
@@ -52,13 +53,13 @@ class KDEUI_EXPORT KWM : public QObject, public NET
     Q_OBJECT
 
 public:
-
+#ifdef Q_WS_X11
     /**
      * Access to the singleton instance. Useful mainly for connecting to signals.
      */
     static KWM* self();
-
-    /**
+#endif    
+   /**
      * Returns the list of all toplevel windows currently managed by the
      * window manager in the order of creation. Please do not rely on
      * indexes of this list: Whenever you enter Qt's event loop in your
@@ -77,7 +78,7 @@ public:
      * @return the list of all toplevel windows
      */
     static const QList<WId>& windows();
-
+#ifdef Q_WS_X11
     /**
      * Test to see if @p id still managed at present.
      * @param id the window id to test
@@ -97,7 +98,7 @@ public:
      * @return the window information
      */
     static WindowInfo windowInfo( WId win, unsigned long properties, unsigned long properties2 = 0 );
-
+#endif
     /**
      * Returns the list of all toplevel windows currently managed by the
      * window manager in the current stacking order (from lower to
@@ -105,7 +106,7 @@ public:
      * @return the list of all toplevel windows in stacking order
      */
     static const QList<WId>& stackingOrder();
-
+    
     /**
      * Returns the currently active window, or 0 if no window is active.
      * @return the window id of the active window, or 0 if no window is 
@@ -243,7 +244,7 @@ public:
      * that belongs to another application.
      */
     static void setMainWindow( QWidget* subwindow, WId mainwindow );
-
+#ifdef Q_WS_X11
     /**
      * Returns the WM_TRANSIENT_FOR property for the given window, i.e. the mainwindow
      * for this window.
@@ -257,7 +258,7 @@ public:
      * @param window the id of the window
      */
     static WId groupLeader( WId window );
-
+#endif
     /**
      * Returns an icon for window @p win.
      *
@@ -312,7 +313,7 @@ public:
      * @param miniIcon the new mini icon
      */
     static void  setIcons( WId win, const QPixmap& icon, const QPixmap& miniIcon );
-
+#ifdef Q_WS_X11
     /**
      * Sets the type of window @p win to @p windowType.
      *
@@ -320,7 +321,7 @@ public:
      * @param windowType the type of the window (see NET::WindowType)
      */
     static void setType( WId win, NET::WindowType windowType );
-
+#endif
     /**
      * Sets the state of window @p win to @p state.
      *
@@ -440,7 +441,6 @@ public:
      * not to activate the window after being shown.
      */
     static void setUserTime( WId win, long time );
-
     /**
      * Sets the strut of window @p win to @p to @p left width
      * ranging from @p left_start to @p left_end on the left edge,
@@ -478,12 +478,10 @@ public:
      * @param bottom the bottom strut
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
-
     /**
      * Returns true if the WM announces which actions it allows for windows.
      */
     static bool allowedActionsSupported();
-
     /**
      * Function that reads and returns the contents of the given text
      * property (WM_NAME, WM_ICON_NAME,...).
@@ -500,7 +498,6 @@ public:
      * @param title the title of the window
      */
     static void doNotManage( const QString& title );
-
 
 Q_SIGNALS:
 
@@ -600,18 +597,21 @@ protected:
     virtual void connectNotify( const char* signal );
         
 private:
+#ifdef Q_WS_X11
     friend class KWMStaticContainer;
+#endif
     KWM() {}
 
     enum { INFO_BASIC=1, // desktop info, not per-window
            INFO_WINDOWS=2 }; // also per-window info
-
+#ifdef Q_WS_X11
     static void init(int);
 
     friend class KWMPrivate;
     static inline KWMPrivate* const s_d_func();
+#endif
 };
-
+#ifdef Q_WS_X11
 /**
  * Information about a window.
  */
@@ -801,11 +801,6 @@ private:
     class Private;
     Private * d;
 };
-
-#else  //Q_WS_X11
-class KDEUI_EXPORT KWM : public QObject
-{
-};
-#endif //Q_WS_X11
+#endif
 
 #endif
