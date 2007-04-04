@@ -20,7 +20,7 @@ install(TARGETS kio_file  DESTINATION ${PLUGIN_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES file.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
-install( FILES file.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )
+install( FILES kioslave_file_export.h file.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )
 
 
 

@@ -23,7 +23,7 @@
 #ifndef __file_h__
 #define __file_h__
 
-#include <kio/kio_export.h>
+#include "kioslave_file_export.h"
 #include <kio/global.h>
 #include <kio/slavebase.h>
 

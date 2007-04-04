@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KIO_EXPORT_H
-#define KIO_EXPORT_H
+#ifndef KIOSLAVE_FILE_EXPORT_H
+#define KIOSLAVE_FILE_EXPORT_H
 
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
@@ -26,24 +26,24 @@
 /* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
 #if defined _WIN32 || defined _WIN64
 
-#ifndef KIO_EXPORT
-# if defined(MAKE_KIO_LIB)
-   /* We are building this library */
-#  define KIO_EXPORT KDE_EXPORT
+#ifndef KIOSLAVE_FILE_EXPORT
+# if defined(MAKE_KIOSLAVE_FILE_LIB)
+   /* We are building this library */ 
+#  define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 # else
-   /* We are using this library */
-#  define KIO_EXPORT KDE_IMPORT
+   /* We are using this library */ 
+#  define KIOSLAVE_FILE_EXPORT KDE_IMPORT
 # endif
 #endif
 
 #else /* UNIX */
 
-#define KIO_EXPORT KDE_EXPORT
+#define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 
 #endif
 
-# ifndef KIO_EXPORT_DEPRECATED
-#  define KIO_EXPORT_DEPRECATED KDE_DEPRECATED KIO_EXPORT
+# ifndef KIOSLAVE_FILE_EXPORT_DEPRECATED
+#  define KIOSLAVE_FILE_EXPORT_DEPRECATED KDE_DEPRECATED KIOSLAVE_FILE_EXPORT
 # endif
 
 #endif
