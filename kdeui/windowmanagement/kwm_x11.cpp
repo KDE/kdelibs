@@ -323,11 +323,6 @@ KWMPrivate* const KWM::s_d_func()
 // optimalization - create KWMPrivate only when needed and only for what is needed
 void KWM::connectNotify( const char* signal )
 {
-    KWMPrivate* const s_d = s_d_func();
-
-    if( s_d && !s_d->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
-        s_d->strutSignalConnected = true;
-
     int what = INFO_BASIC;
     if( QLatin1String( signal ) == SIGNAL(workAreaChanged()))
         what = INFO_WINDOWS;
@@ -342,7 +337,11 @@ void KWM::connectNotify( const char* signal )
     else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).data())
         what = INFO_WINDOWS;
 
-    init( what ); // invalidates s_d
+    init( what );
+    KWMPrivate* const s_d = s_d_func();
+    if( !sd->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
+        sd->strutSignalConnected = true;
+
     QObject::connectNotify( signal );
 }
 
