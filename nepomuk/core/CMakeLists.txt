@@ -39,6 +39,13 @@ set(kmetadata_LIB_SRCS
   resourcedata.cpp
   resourcemanager.cpp
   tools.cpp
+  ui/kratingwidget.cpp
+  ui/ktagcloudwidget.cpp
+  ui/kblocklayout.cpp
+  ui/kmetadatatagcloud.cpp
+  ui/kmetadatatagwidget.cpp
+  ui/kautoscrollarea.cpp
+  ui/ktagdisplaywidget.cpp
   ${NAO_SOURCES}
   ${NIE_SOURCES}
 )
@@ -52,8 +59,11 @@ add_dependencies(kmetadata rcgen)
 target_link_libraries(kmetadata
   knepomuk
   ${QT_QTCORE_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBRARY}
+  ${KDE4_KDEUI_LIBRARY}
+  ${KDE4_KDEFX_LIBRARY}
 )
 
 set_target_properties(kmetadata PROPERTIES VERSION 1.0.0 SOVERSION 1 )
@@ -69,3 +79,5 @@ install(FILES
   ${NIE_HEADERS}
   DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata
 )
+
+add_subdirectory(ui)
