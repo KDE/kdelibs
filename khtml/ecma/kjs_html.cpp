@@ -2935,7 +2935,7 @@ void KJS::HTMLCollection::getPropertyNames(ExecState* exec, PropertyNameArray& p
   for (unsigned i = 0; i < m_impl->length(); ++i)
       propertyNames.add(Identifier::from(i));
 
-  propertyNames.add(lengthPropertyName);
+  propertyNames.add(exec->propertyNames().length);
 
   ObjectImp::getPropertyNames(exec, propertyNames);
 }
@@ -2959,7 +2959,7 @@ bool KJS::HTMLCollection::getOwnPropertySlot(ExecState *exec, const Identifier &
 #ifdef KJS_VERBOSE
   kDebug(6070) << "KJS::HTMLCollection::getOwnPropertySlot " << propertyName.toAscii().constData() << endl;
 #endif
-  if (propertyName == lengthPropertyName)
+  if (propertyName == exec->propertyNames().length)
   {
 #ifdef KJS_VERBOSE
     kDebug(6070) << "  collection length is " << m_impl->length() << endl;
@@ -3175,7 +3175,7 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
     return;
   }
   // resize ?
-  else if (propertyName == lengthPropertyName) {
+  else if (propertyName == exec->propertyNames().length) {
     uint32_t newLen;
     bool converted = value->getUInt32(newLen);
 
@@ -3299,7 +3299,7 @@ OptionConstructorImp::OptionConstructorImp(ExecState *exec, DOM::DocumentImpl* d
 
   // no. of arguments for constructor
   // ## is 4 correct ? 0 to 4, it seems to be
-  put(exec,lengthPropertyName, Number(4), ReadOnly|DontDelete|DontEnum);
+  put(exec, exec->propertyNames().length, Number(4), ReadOnly|DontDelete|DontEnum);
 }
 
 bool OptionConstructorImp::implementsConstruct() const

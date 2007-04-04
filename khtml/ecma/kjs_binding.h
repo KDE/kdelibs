@@ -327,7 +327,7 @@ namespace KJS {
     const ClassInfo Class::info = { ClassName, 0, 0, 0 }; \
     Class::Class(ExecState* exec): DOMObject(ParentProto) {\
         ObjectImp* proto = ProtoClass::self(exec); \
-        putDirect(prototypePropertyName, proto, DontDelete|ReadOnly); \
+        putDirect(exec->propertyNames().prototype, proto, DontDelete|ReadOnly); \
     }\
     ObjectImp* Class::self(ExecState *exec) { \
         return cacheGlobalObject<Class>(exec, "[[" ClassName ".constructor]]"); \

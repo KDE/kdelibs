@@ -188,12 +188,12 @@ bool DOMNode::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName
 
 static khtml::RenderObject* handleBodyRootQuirk(const DOM::NodeImpl* node, khtml::RenderObject* rend, int token)
 {
-  //This emulates the quirks of various height/width properties on the viewport and root. Note that it 
+  //This emulates the quirks of various height/width properties on the viewport and root. Note that it
   //is (mostly) IE-compatible in quirks, and mozilla-compatible in strict.
   if (!rend) return 0;
 
   bool quirksMode = rend->style() && rend->style()->htmlHacks();
-  
+
   //There are a couple quirks here. One is that in quirks mode body is always forwarded to root...
   //This is relevant for even the scrollTop/scrollLeft type properties.
   if (quirksMode && node->id() == ID_BODY) {
@@ -202,7 +202,7 @@ static khtml::RenderObject* handleBodyRootQuirk(const DOM::NodeImpl* node, khtml
   }
 
   //Also, some properties of the root are really done in terms of the viewport.
-  //These are  {offset/client}{Height/Width}. The offset versions do it only in 
+  //These are  {offset/client}{Height/Width}. The offset versions do it only in
   //quirks mode, the client always.
   if (!rend->isRoot()) return rend; //Don't care about non-root things here!
   bool needViewport = false;
@@ -217,7 +217,7 @@ static khtml::RenderObject* handleBodyRootQuirk(const DOM::NodeImpl* node, khtml
       needViewport = true;
       break;
   }
-  
+
   if (needViewport) {
     //Scan up to find the new target
     while (rend->parent())
@@ -400,7 +400,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
 {
   DOMExceptionTranslator exception(exec);
   NodeImpl& node = *impl();
-  
+
   switch (token) {
   case NodeValue:
     node.setNodeValue(value->toString(exec).domString(), exception);
@@ -478,7 +478,7 @@ void DOMNode::putValueProperty(ExecState *exec, int token, ValueImp* value, int 
     setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
     break;
   default:
-    // Make sure our layout is up to date 
+    // Make sure our layout is up to date
     DOM::DocumentImpl* docimpl = node.getDocument();
     if (docimpl)
       docimpl->updateLayout();
@@ -531,7 +531,7 @@ UString DOMNode::toString(ExecState *) const
     return "null";
   UString s;
 
-  
+
   if ( m_impl->isElementNode() ) {
     DOM::ElementImpl* e = static_cast<DOM::ElementImpl*>(impl());
     s = DOMString(e->nodeName().string());
@@ -718,7 +718,7 @@ DOM::NodeImpl* DOMNodeList::getByName(const Identifier& name)
 
 bool DOMNodeList::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-  if (propertyName == lengthPropertyName) {
+  if (propertyName == exec->propertyNames().length) {
     slot.setCustom(this, lengthGetter);
     return true;
   }
@@ -750,7 +750,7 @@ void DOMNodeList::getPropertyNames(ExecState* exec, PropertyNameArray& propertyN
   for (unsigned i = 0; i < m_impl->length(); ++i)
       propertyNames.add(Identifier::from(i));
 
-  propertyNames.add(lengthPropertyName);
+  propertyNames.add(exec->propertyNames().length);
 
   JSObject::getPropertyNames(exec, propertyNames);
 }
@@ -1011,7 +1011,7 @@ ValueImp* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisO
   DOMExceptionTranslator exception(exec);
   DOM::NodeImpl&     node = *static_cast<DOMNode *>( thisObj )->impl();
   DOM::DocumentImpl& doc  = static_cast<DOM::DocumentImpl&>(node);
-  
+
   KJS::UString str = args[0]->toString(exec);
   DOM::DOMString s = str.domString();
 
@@ -1148,7 +1148,7 @@ const ClassInfo DOMElement::info = { "Element", &DOMNode::info, &DOMElementTable
 @end
 */
 DOMElement::DOMElement(ExecState *exec, DOM::ElementImpl* e)
-  : DOMNode(exec, e) 
+  : DOMNode(exec, e)
 {
     setPrototype(DOMElementProto::self(exec));
 }
@@ -1180,7 +1180,7 @@ bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyN
   //DOM::Element element = static_cast<DOM::Element>(node);
   if (getStaticOwnValueSlot(&DOMElementTable, this, propertyName, slot))
     return true;
-  
+
   // We have to check in DOMNode before giving access to attributes, otherwise
   // onload="..." would make onload return the string (attribute value) instead of
   // the listener object (function).
@@ -1220,7 +1220,7 @@ ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
 
   switch(id) {
     case DOMElement::GetAttribute:
-      /** In theory, we should not return null here, as per DOM. In practice, that 
+      /** In theory, we should not return null here, as per DOM. In practice, that
        breaks websites */
       return getStringOrNull(element.getAttribute(args[0]->toString(exec).domString()));
     case DOMElement::SetAttribute:
@@ -1251,7 +1251,7 @@ ValueImp* DOMElementProtoFunc::callAsFunction(ExecState *exec, ObjectImp *thisOb
     case DOMElement::RemoveAttributeNS: // DOM2
       element.removeAttributeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(), exception);
       return Undefined();
-   case DOMElement::GetAttributeNodeNS: // DOM2 
+   case DOMElement::GetAttributeNodeNS: // DOM2
       return getDOMNode(exec,element.getAttributeNodeNS(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),exception));
     case DOMElement::SetAttributeNodeNS: {
       DOM::Attr toRet = element.setAttributeNodeNS(KJS::toAttr(args[0]), exception);
@@ -1331,7 +1331,7 @@ ValueImp* DOMDOMImplementationProtoFunc::callAsFunction(ExecState *exec, ObjectI
         setDOMException(exec, DOMException::NOT_FOUND_ERR);
         return Null();
       }
-        
+
       DOM::DocumentTypeImpl* docType = static_cast<DOM::DocumentTypeImpl*>(supposedDocType);
 
       DOM::DocumentImpl* doc = implementation.createDocument(args[0]->toString(exec).domString(),args[1]->toString(exec).domString(),docType,exception);
@@ -1446,7 +1446,7 @@ ValueImp *DOMNamedNodeMap::lengthGetter(ExecState *, JSObject*, const Identifier
 }
 
 bool DOMNamedNodeMap::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot) {
-  if (propertyName == lengthPropertyName) {
+  if (propertyName == exec->propertyNames().length) {
     slot.setCustom(this, lengthGetter);
     return true;
   }
@@ -1807,7 +1807,7 @@ bool DOMNamedNodesCollection::getOwnPropertySlot(ExecState *exec, const Identifi
 {
   kDebug(6070) << k_funcinfo << propertyName.ascii() << endl;
 
-  if (propertyName == lengthPropertyName) {
+  if (propertyName == exec->propertyNames().length) {
     slot.setCustom(this, lengthGetter);
     return true;
   }
@@ -1815,7 +1815,7 @@ bool DOMNamedNodesCollection::getOwnPropertySlot(ExecState *exec, const Identifi
   //May be it's an index?
   if (getIndexSlot(this, m_nodes.size(), propertyName, slot))
     return true;
-  
+
   return DOMObject::getOwnPropertySlot(exec,propertyName,slot);
 }
 
