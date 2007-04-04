@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=SolidBluetoothManager
 
 Comment=Bluetooth Management Backend
+Comment[sv]=Blåtandshanteringsgränssnitt
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString

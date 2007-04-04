@@ -6,4 +6,6 @@ X-KDE-Library=solid_fakebluetooth
 InitialPreference=10
 Icon=system
 Name=Fake Bluetooth
+Name[sv]=Blåtandstest
 Comment=Fake Bluetooth Management
+Comment[sv]=Blåtandshanteringstest
