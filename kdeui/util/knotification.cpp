@@ -359,8 +359,8 @@ bool KNotification::eventFilter( QObject * watched, QEvent * event )
 		}
 		//kDebug(299) << k_funcinfo << event->type() << endl;
 	}
-	else 
-		QObject::eventFilter( watched, event );
+
+	return false;
 }
 
 
