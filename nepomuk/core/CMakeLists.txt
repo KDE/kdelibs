@@ -38,7 +38,6 @@ set(kmetadata_LIB_SRCS
   datetime.cpp
   resourcedata.cpp
   resourcemanager.cpp
-  ontology.cpp
   tools.cpp
   ${NAO_SOURCES}
   ${NIE_SOURCES}

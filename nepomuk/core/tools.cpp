@@ -21,7 +21,12 @@
 #include <klocale.h>
 
 
-static const QString s_xmlSchemaNs = "http://www.w3.org/2001/XMLSchema#";
+static const char* RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+static const char* RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
+static const char* NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
+static const char* NAO_NAMESPACE = "http://semanticdesktop.org/ontologies/2007/03/31/nao#";
+static const char* XS_NAMESPACE = "http://www.w3.org/2001/XMLSchema#";
+
 static QHash<QString, int> s_xmlSchemaTypes;
 static QHash<int, QString> s_variantSchemaTypeHash;
 static QString s_customRep;
@@ -91,7 +96,7 @@ QString Nepomuk::KMetaData::defaultGraph()
 
 QString Nepomuk::KMetaData::typePredicate()
 {
-    static QString s = Ontology::rdfNamepace() + "type";
+    static QString s = RDF_NAMESPACE + QString( "type" );
     return s;
 }
 
@@ -105,7 +110,7 @@ Nepomuk::RDF::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData:
     Nepomuk::RDF::Node node;
     node.type = Nepomuk::RDF::NodeLiteral;
     //  node.language = getLocaleLang();
-    node.dataTypeUri = s_xmlSchemaNs + s_variantSchemaTypeHash[v.simpleType()];
+    node.dataTypeUri = XS_NAMESPACE + s_variantSchemaTypeHash[v.simpleType()];
     node.value = v.toString();
     return node;
 }
@@ -125,7 +130,7 @@ QList<Nepomuk::RDF::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::K
             Nepomuk::RDF::Node node;
             node.type = Nepomuk::RDF::NodeLiteral;
             //      node.language = getLocaleLang();
-            node.dataTypeUri = s_xmlSchemaNs + s_variantSchemaTypeHash[v.simpleType()];
+            node.dataTypeUri = XS_NAMESPACE + s_variantSchemaTypeHash[v.simpleType()];
             node.value = *it;
             nl.append( node );
         }
@@ -156,14 +161,25 @@ Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Nepomuk
 }
 
 
-
-
-QString Nepomuk::KMetaData::ensureNamespace( const QString& uri )
+QString Nepomuk::KMetaData::rdfNamepace()
 {
-    QString s(uri);
-    // very dumb check for a namespace
-    // FIXME: improve this
-    if( !uri.contains( "://" ) )
-        s.prepend( Nepomuk::KMetaData::ResourceManager::instance()->ontology()->defaultNamespace() + '#' );
-    return s;
+    return QString( RDF_NAMESPACE );
+}
+
+
+QString Nepomuk::KMetaData::rdfsNamespace()
+{
+    return QString( RDFS_NAMESPACE );
+}
+
+
+QString Nepomuk::KMetaData::nrlNamespace()
+{
+    return QString( NRL_NAMESPACE );
+}
+
+
+QString Nepomuk::KMetaData::naoNamespace()
+{
+    return QString( NAO_NAMESPACE );
 }

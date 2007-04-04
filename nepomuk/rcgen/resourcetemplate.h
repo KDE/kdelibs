@@ -128,19 +128,3 @@ static const QString sourceTemplate = gplTemplate +
 "}\n"
 "\n"
 "KMETADATA_METHODS\n";
-
-
-static const QString ontologySrcTemplate = 
-"static const QString NKDE_NAMESPACE = \"http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1\";\n"
-"\n"
-"Nepomuk::KMetaData::Ontology::Ontology()\n"
-"{\n"
-"   d = new Private;\n"
-"KMETADATA_CONSTRUCTOR"
-"}\n"
-"\n"
-"\n"
-"Nepomuk::KMetaData::Ontology::~Ontology()\n"
-"{\n"
-"   delete d;\n"
-"}\n";

@@ -15,7 +15,6 @@
 #include "resourcedata.h"
 #include "resourcemanager.h"
 #include "tools.h"
-#include "ontology.h"
 
 #include <knepomuk/knepomuk.h>
 #include <knepomuk/services/rdfrepository.h>
@@ -37,6 +36,7 @@ Q_GLOBAL_STATIC( ResourceDataHash, kickoffData );
 
 // FIXME: we need a way to sync this URI with the ontology
 static const char* s_identifierUri = "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier";
+static const char* s_defaultType = "http://www.w3.org/2000/01/rdf-schema#Resource";
 
 
 Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QString& type_ )
@@ -48,7 +48,7 @@ Nepomuk::KMetaData::ResourceData::ResourceData( const QString& uriOrId, const QS
       m_proxyData(0)
 {
     if( m_type.isEmpty() && !uriOrId.isEmpty() )
-        m_type = ResourceManager::instance()->ontology()->defaultType();
+        m_type = s_defaultType;
 }
 
 
@@ -433,7 +433,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
 
             // load the type if we have no type or the default
             if( s.predicate.value == KMetaData::typePredicate() ) {
-                if( m_type.isEmpty() || m_type == ResourceManager::instance()->ontology()->defaultType() )
+                if( m_type.isEmpty() || m_type == s_defaultType )
                     m_type = s.object.value;
             }
             else {
@@ -732,8 +732,8 @@ bool Nepomuk::KMetaData::ResourceData::merge()
 void Nepomuk::KMetaData::ResourceData::mergeIn( const ResourceData* other )
 {
     // merge in the resource type (FIXME: also prefer specializations of this->type() once we have a type hirarchy)
-    if ( !other->type().isEmpty() && other->type() != ResourceManager::instance()->ontology()->defaultType() ) {
-        if ( this->type().isEmpty() || this->type() == ResourceManager::instance()->ontology()->defaultType() ) {
+    if ( !other->type().isEmpty() && other->type() != s_defaultType ) {
+        if ( this->type().isEmpty() || this->type() == s_defaultType ) {
             m_type = other->type();
         }
     }

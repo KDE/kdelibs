@@ -14,7 +14,6 @@
 
 #include "resourcemanager.h"
 #include "resourcedata.h"
-#include "ontology.h"
 #include "tools.h"
 
 #include <kmetadata/resource.h>
@@ -44,7 +43,6 @@ public:
         : initialized(false),
           autoSync(true),
           registry(0),
-          ontology(0),
           m_parent(manager) {
     }
 
@@ -56,7 +54,6 @@ public:
 
     bool autoSync;
     Nepomuk::Backbone::Registry* registry;
-    Nepomuk::KMetaData::Ontology* ontology;
 
     QTimer syncTimer;
 
@@ -84,7 +81,6 @@ Nepomuk::KMetaData::ResourceManager::ResourceManager()
 Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 {
     d->syncTimer.stop();
-    delete d->ontology;
     delete d;
 }
 
@@ -106,8 +102,6 @@ Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instan
 int Nepomuk::KMetaData::ResourceManager::init()
 {
     if( !d->initialized ) {
-        if( !d->ontology )
-            d->ontology = new Ontology();
         if( !d->registry )
             d->registry = new Backbone::Registry( this );
 
@@ -137,12 +131,6 @@ int Nepomuk::KMetaData::ResourceManager::init()
 bool Nepomuk::KMetaData::ResourceManager::initialized() const
 {
     return d->initialized;
-}
-
-
-Nepomuk::KMetaData::Ontology* Nepomuk::KMetaData::ResourceManager::ontology() const
-{
-    return d->ontology;
 }
 
 
@@ -297,10 +285,8 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
 }
 
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesWithProperty( const QString& _uri, const Variant& v ) const
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allResourcesWithProperty( const QString& uri, const Variant& v ) const
 {
-    QString uri = ensureNamespace( _uri );
-
     QList<Resource> l;
 
     if( v.isList() ) {

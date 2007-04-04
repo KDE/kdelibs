@@ -131,28 +131,28 @@ QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allPro
 bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
 {
     m_data->init();
-    return m_data->hasProperty( ensureNamespace( uri ) );
+    return m_data->hasProperty( uri );
 }
 
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
 {
     m_data->init();
-    return m_data->getProperty( ensureNamespace( uri ) );
+    return m_data->getProperty( uri );
 }
 
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
     //  m_data->init();
-    m_data->setProperty( ensureNamespace( uri ), value );
+    m_data->setProperty( uri, value );
 }
 
 
 void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 {
     m_data->init();
-    m_data->removeProperty( ensureNamespace( uri ) );
+    m_data->removeProperty( uri );
 }
 
 
@@ -171,7 +171,7 @@ void Nepomuk::KMetaData::Resource::revive()
 
 bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
 {
-    return !ResourceManager::instance()->allResourcesWithProperty( ensureNamespace( uri ), *this ).isEmpty();
+    return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
 }
 
 

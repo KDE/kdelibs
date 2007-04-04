@@ -57,13 +57,6 @@ namespace Nepomuk {
 	 */
 	KMETADATA_EXPORT Variant RDFLiteralToValue( const RDF::Node& node );
 
-	/**
-	 * If \a uri does not have a namespace, append the default one.
-	 *
-	 * \sa Ontology::defaultNamespace
-	 */
-	QString ensureNamespace( const QString& uri );
-
 	template<typename T> KMETADATA_EXPORT QList<T> convertResourceList( const QList<Resource>& l ) {
 	    QList<T> rl;
 	    for( QList<Resource>::const_iterator it = l.constBegin();
@@ -81,6 +74,10 @@ namespace Nepomuk {
 	    return rl;
 	}
 
+	KMETADATA_EXPORT QString rdfNamepace();
+	KMETADATA_EXPORT QString rdfsNamespace();
+	KMETADATA_EXPORT QString nrlNamespace();
+	KMETADATA_EXPORT QString naoNamespace();
     }
 }
 
