@@ -634,6 +634,11 @@ int KUrlNavigator::historySize() const
     return d->m_history.count();
 }
 
+int KUrlNavigator::historyIndex() const
+{
+    return d->m_historyIndex;
+}
+
 void KUrlNavigator::goBack()
 {
     d->updateHistoryElem();

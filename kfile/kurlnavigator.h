@@ -64,6 +64,12 @@ public:
     /** Returns the amount of items in the history */
     int historySize() const;
 
+    /**
+     * Returns the history index of the current active URL, where
+     * 0 <= history index < KUrlNavigator::historySize().
+     */
+    int historyIndex() const;
+
     /** Returns the saved position from the history */
     QPoint savedPosition() const;
 
