@@ -339,8 +339,8 @@ void KWM::connectNotify( const char* signal )
 
     init( what );
     KWMPrivate* const s_d = s_d_func();
-    if( !sd->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
-        sd->strutSignalConnected = true;
+    if( !s_d->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
+        s_d->strutSignalConnected = true;
 
     QObject::connectNotify( signal );
 }
