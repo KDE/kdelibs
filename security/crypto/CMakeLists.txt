@@ -1,4 +1,6 @@
 
+add_definitions (-DQT3_SUPPORT)
+
 ########### next target ###############
 include_directories(${OPENSSL_INCLUDE_DIR})
 
