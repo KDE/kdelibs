@@ -35,10 +35,11 @@
 
 #include <WeaverObserver.h>
 #include <ThreadWeaver.h>
+#include <threadweaver_export.h>
 
 namespace ThreadWeaver {
 
-    class WeaverThreadGrid : public QFrame
+    class THREADWEAVER_EXPORT WeaverThreadGrid : public QFrame
     {
         Q_OBJECT
     public:
