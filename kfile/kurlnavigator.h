@@ -31,84 +31,115 @@ class KFilePlacesModel;
 class QMouseEvent;
 
 /**
- * @brief Navigation bar which contains the current shown URL.
+ * @brief Allows to navigate through the paths of an URL.
  *
  * The URL navigator offers two modes:
- * - Editable:     Represents the 'classic' mode, where the current URL
- *                 is editable inside a line editor.
- * - Non editable: The URL is represented by a number of buttons, where
- *                 clicking on a button results in activating the URL
- *                 the button represents. This mode also supports drag
- *                 and drop of items.
+ * - Editable:     Represents the 'classic' mode, where the URL
+ *                 is editable inside a line editor. By pressing RETURN
+ *                 the URL will get activated.
+ * - Non editable ("breadcrumb view"): The URL is represented by a
+ *                 number of buttons, where each button represents a path
+ *                 of the URL. By clicking on a button the path will get
+ *                 activated. This mode also supports drag and drop of items.
  *
- * The mode can be changed by a toggle button located on the left side of
- * the navigator.
+ * The mode can be changed by a toggle button which is part of the
+ * URL navigator. It is recommended that the application remembers the setting
+ * of the mode or allows the user to configure the default mode
+ * (see KUrlNavigator::setUrlEditable()).
  *
- * The URL navigator also remembers the URL history and allows to go
+ * The URL navigator remembers the URL history during navigation and allows to go
  * back and forward within this history.
+ *
+ * The typical usage of the KUrlNavigator is:
+ * - Create an instance providing a places model and an URL.
+ * - Create an instance of QAbstractItemView which shows the content of the URL
+ *   given by the URL navigator.
+ * - Connect to the signal KUrlNavigator::urlChanged() and synchronize the content of
+ *   QAbstractItemView with the URL given by the URL navigator.
  */
 class KFILE_EXPORT KUrlNavigator : public QWidget
 {
     Q_OBJECT
 
 public:
+    /**
+     * @param placesModel    Model for the places which are selectable inside a 
+     *                       menu. A place can be a bookmark or a device.
+     * @param url            URL which is used for the navigation or editing.
+     * @param parent         Parent widget.
+     */
     KUrlNavigator(KFilePlacesModel* placesModel, const KUrl& url, QWidget* parent);
     virtual ~KUrlNavigator();
 
-    /** Returns the current active URL. */
+    /** Returns the current URL. */
     const KUrl& url() const;
 
-    /** Returns the portion of the current active URL up to the button at index. */
+    /**
+     * Returns the portion of the current URL up to the path part given
+     * by \a index. Assuming that the current URL is /home/peter/Documents/Music,
+     * then the following URLs are returned for an index:
+     * - index <= 0: /home
+     * - index is 1: /home/peter
+     * - index is 2: /home/peter/Documents
+     * - index >= 3: /home/peter/Documents/Music
+     */
     KUrl url(int index) const;
 
-    /** Returns the amount of items in the history */
+    /** Returns the amount of items in the history. */
     int historySize() const;
 
     /**
-     * Returns the history index of the current active URL, where
+     * Returns the history index of the current URL, where
      * 0 <= history index < KUrlNavigator::historySize().
      */
     int historyIndex() const;
 
-    /** Returns the saved position from the history */
-    QPoint savedPosition() const;
+    /**
+     * Returns the saved contents position of the upper left corner
+     * for the current URL.
+     */
+    QPoint savedPosition() const; // TODO: check naming of storeContentsPosition() counterpart
 
     /**
      * Goes back one step in the URL history. The signals
-     * UrlNavigator::urlChanged and UrlNavigator::historyChanged
-     * are submitted.
+     * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
+     * are emitted.
      */
-    void goBack();
+    void goBack(); // TODO: provide a bool return value
 
     /**
      * Goes forward one step in the URL history. The signals
-     * UrlNavigator::urlChanged and UrlNavigator::historyChanged
-     * are submitted.
+     * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
+     * are emitted.
      */
-    void goForward();
+    void goForward(); // TODO: provide a bool return value
 
     /**
-     * Goes up one step of the URL path. The signals
-     * UrlNavigator::urlChanged and UrlNavigator::historyChanged
-     * are submitted.
+     * Goes up one step of the URL path and remembers the old path
+     * in the history. The signals KUrlNavigator::urlChanged() and
+     * KUrlNavigator::historyChanged() are emitted.
      */
-    void goUp();
+    void goUp(); // TODO: provide a bool return value
 
     /**
-     * Goes to the home URL. The signals UrlNavigator::urlChanged
-     * and UrlNavigator::historyChanged are submitted.
+     * Goes to the home URL and remembers the old URL in the history.
+     * The signals KUrlNavigator::urlChanged()
+     * and KUrlNavigator::historyChanged() are emitted.
+     *
+     * @see KUrlNavigator::setHomeUrl()
      */
     void goHome();
 
     /**
-     * Sets the home URL used by goHome().
+     * Sets the home URL used by KUrlNavigator::goHome(). If no
+     * home URL is set, the default home path of the user is used.
      */
     void setHomeUrl(const QString& homeUrl);
 
     /**
-     * @return True, if the URL is editable by the user within a line editor.
+     * @return True, if the URL is editable within a line editor.
      *         If false is returned, each part of the URL is presented by a button
-     *         for fast navigation.
+     *         for fast navigation ("breadcrumb view").
      */
     bool isUrlEditable() const;
 
@@ -116,14 +147,16 @@ public:
      * Allows to edit the URL of the navigation bar if \a editable
      * is true, and sets the focus accordingly.
      * If \a editable is false, each part of
-     * the URL is presented by a button for a fast navigation.
+     * the URL is presented by a button for a fast navigation ("breadcrumb view").
      */
     void setUrlEditable(bool editable);
 
     /**
      * Set the URL navigator to the active mode, if \a active
-     * is true. The active mode is default. Using the URL navigator
-     * in the inactive mode is useful when having split views,
+     * is true. The active mode is default. The inactive mode only differs
+     * visually from the active mode, no change of the behavior is given.
+     *
+     * Using the URL navigator in the inactive mode is useful when having split views,
      * where the inactive view is indicated by an inactive URL
      * navigator visually.
      */
@@ -131,46 +164,49 @@ public:
 
     /**
      * Returns true, if the URL navigator is in the active mode.
-     * @see UrlNavigator::setActive()
+     * @see KUrlNavigator::setActive()
      */
     bool isActive() const;
 
     /**
-     * Sets whether or not to show hidden files in lists
+     * Sets whether or not to show hidden files in lists.
      */
-    void setShowHiddenFiles( bool show );
+    void setShowHiddenFiles( bool show ); // TODO: remove, is a relict from the KDE3 version of Dolphin
 
     /**
-     * Returns true if the URL navigator is set to show hidden files
+     * Returns true if the URL navigator is set to show hidden files.
      */
-    bool showHiddenFiles() const; // TODO rename, looks like a verb
+    bool showHiddenFiles() const; // TODO: remove, is a relict from the KDE3 version of Dolphin
 
     /**
      * Handles the dropping of the URLs \a urls to the given
-     * destination \a destination and emits the signal urlsDropped.
+     * destination \a destination and emits the signal KUrlNavigator::urlsDropped().
      */
     void dropUrls(const KUrl::List& urls,
-                  const KUrl& destination);
+                  const KUrl& destination); // TODO: this is no public API, emit a signal in KUrlNavigatorButton instead
 
 public Q_SLOTS:
     /**
-     * Sets the current active URL.
-     * The signals UrlNavigator::urlChanged and UrlNavigator::historyChanged
-     * are submitted.
+     * Sets the active URL to \a url. The old URL is added to the history.
+     * The signals KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
+     * are emitted.
      */
     void setUrl(const KUrl& url);
 
     /**
-     * Activates the URL navigator (UrlNavigator::isActive() will return true)
-     * and emits the signal 'activationChanged()'.
+     * Activates the URL navigator (KUrlNavigator::isActive() will return true)
+     * and emits the signal KUrlNavigator::activationChanged().
      */
     void requestActivation();
 
     /**
      * Stores the coordinates of the contents into
-     * the current history element.
+     * the current history element. The contents of the URL is usually shown
+     * inside an instance of QAbstractItemView. It is recommended to invoke this
+     * slot whenever the upper left position of the QAbstractItemView has been
+     * changed to be able to restore the position when going back in history.
      */
-    void storeContentsPosition(int x, int y);
+    void storeContentsPosition(int x, int y); // TODO: rename to be aligned with savedPosition()
 
 Q_SIGNALS:
     /**
@@ -182,7 +218,7 @@ Q_SIGNALS:
     /**
      * Is emitted, if the URL has been changed e. g. by
      * the user.
-     * @see setUrl()
+     * @see KUrlNavigator::setUrl()
      */
     void urlChanged(const KUrl& url);
 
@@ -202,7 +238,7 @@ Q_SIGNALS:
 protected:
     /**
      * If the Escape key is pressed, the navigation bar should switch
-     * to the browse mode.
+     * to the breadcrumb view.
      */
     virtual void keyReleaseEvent(QKeyEvent* event);
 
