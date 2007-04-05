@@ -24,6 +24,7 @@
 
 #include <QAbstractItemModel>
 #include <kurl.h>
+#include <kbookmark.h>
 #include <kicon.h>
 
 #include <solid/device.h>
@@ -54,6 +55,11 @@ public:
     QString text(const QModelIndex &index) const;
     bool isDevice(const QModelIndex &index) const;
     Solid::Device deviceForIndex(const QModelIndex &index) const;
+    KBookmark bookmarkForIndex(const QModelIndex &index) const;
+
+    void addPlace(const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
+    void editPlace(const QModelIndex &index, const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
+    void removePlace(const QModelIndex &index) const;
 
     /**
      * @brief Get a visible data based on Qt role for the given index.

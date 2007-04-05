@@ -50,6 +50,7 @@ public:
 
     QVariant bookmarkData(const QString &address, int role) const;
     QVariant deviceData(const QPersistentModelIndex &index, int role) const;
+    void reloadAndSignal();
 
     void _k_devicesInserted(const QModelIndex &parent, int start, int end);
     void _k_devicesRemoved(const QModelIndex &parent, int start, int end);
@@ -123,6 +124,20 @@ Solid::Device KFilePlacesModel::deviceForIndex(const QModelIndex &index) const
         return d->deviceModel->deviceForIndex(item->deviceIndex());
     } else {
         return Solid::Device();
+    }
+}
+
+KBookmark KFilePlacesModel::bookmarkForIndex(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return KBookmark();
+
+    KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
+
+    if (!item->isDevice()) {
+        return d->bookmarkManager->findByAddress(item->bookmarkAddress());
+    } else {
+        return KBookmark();
     }
 }
 
@@ -281,9 +296,12 @@ void KFilePlacesModel::Private::_k_reloadBookmarks()
 
     while (!bookmark.isNull()) {
         QString udi = bookmark.metaDataItem("UDI");
+        QString appName = bookmark.metaDataItem("OnlyInApp");
         QPersistentModelIndex index = devices.take(udi);
 
-        if (udi.isEmpty() || index.isValid()) {
+        bool allowedHere = appName.isEmpty() || (appName==KGlobal::mainComponent().componentName());
+
+        if ((udi.isEmpty() && allowedHere) || index.isValid()) {
             q->beginInsertRows(QModelIndex(), items.size(), items.size());
 
             KFilePlacesItem *item = new KFilePlacesItem();
@@ -317,6 +335,16 @@ void KFilePlacesModel::Private::_k_reloadBookmarks()
     }
 }
 
+void KFilePlacesModel::Private::reloadAndSignal()
+{
+    bool signalsBlocked = q->blockSignals(true); // Avoid too much signaling...
+    // We reload here to avoid a transitional
+    // period where devices are seen as separators
+    _k_reloadBookmarks();
+    q->blockSignals(signalsBlocked);
+    bookmarkManager->emitChanged(bookmarkManager->root()); // ... we'll get relisted anyway
+}
+
 Qt::DropActions KFilePlacesModel::supportedDropActions() const
 {
     return Qt::ActionMask;
@@ -337,7 +365,7 @@ Qt::ItemFlags KFilePlacesModel::flags(const QModelIndex &index) const
 
 static QString _k_internalMimetype(const KFilePlacesModel * const self)
 {
-    return QString("application/x-kfileplacesmodel-")+QString::number( (long)self );
+    return QString("application/x-kfileplacesmodel-")+QString::number((long)self);
 }
 
 QStringList KFilePlacesModel::mimeTypes() const
@@ -447,14 +475,58 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         return false;
     }
 
-    bool signalsBlocked = blockSignals(true); // Avoid too much signaling...
-    // We reload here to avoid a transitional
-    // period where devices are seen as separators
-    d->_k_reloadBookmarks();
-    blockSignals(signalsBlocked);
-    d->bookmarkManager->emitChanged(d->bookmarkManager->root()); // ... we'll get relisted anyway
+    d->reloadAndSignal();
 
     return true;
+}
+
+void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
+                                const QString &iconName, const QString &appName)
+{
+    KBookmark bookmark = d->bookmarkManager->root().addBookmark(d->bookmarkManager, text, url, iconName);
+
+    if (!appName.isEmpty()) {
+        bookmark.setMetaDataItem("OnlyInApp", appName);
+    }
+
+    d->reloadAndSignal();
+}
+
+void KFilePlacesModel::editPlace(const QModelIndex &index, const QString &text, const KUrl &url,
+                                 const QString &iconName, const QString &appName)
+{
+    if (!index.isValid()) return;
+
+    KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
+
+    if (item->isDevice()) return;
+
+    KBookmark bookmark = d->bookmarkManager->findByAddress(item->bookmarkAddress());
+
+    if (bookmark.isNull()) return;
+
+    bookmark.setFullText(text);
+    bookmark.setUrl(url);
+    bookmark.setIcon(iconName);
+    bookmark.setMetaDataItem("OnlyInApp", appName);
+
+    d->reloadAndSignal();
+}
+
+void KFilePlacesModel::removePlace(const QModelIndex &index) const
+{
+    if (!index.isValid()) return;
+
+    KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
+
+    if (item->isDevice()) return;
+
+    KBookmark bookmark = d->bookmarkManager->findByAddress(item->bookmarkAddress());
+
+    if (bookmark.isNull()) return;
+
+    d->bookmarkManager->root().deleteBookmark(bookmark);
+    d->reloadAndSignal();
 }
 
 #include "kfileplacesmodel.moc"

@@ -26,6 +26,7 @@
 #include <kurl.h>
 
 class QAbstractItemModel;
+class QContextMenuEvent;
 
 /**
  * This class allows to display a KFilePlacesModel.
@@ -39,6 +40,12 @@ public:
 
 public Q_SLOTS:
     void setUrl(const KUrl &url);
+
+protected:
+    void contextMenuEvent(QContextMenuEvent *event);
+
+protected Q_SLOTS:
+    void rowsInserted(const QModelIndex &parent, int start, int end);
 
 Q_SIGNALS:
     void urlChanged(const KUrl &url);

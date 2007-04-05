@@ -19,9 +19,17 @@
 
 #include "kfileplacesview.h"
 
+#include <QMenu>
+#include <QContextMenuEvent>
+
+#include <kdebug.h>
+
+#include <kcomponentdata.h>
+#include <klocale.h>
 #include <kjob.h>
 #include <solid/volume.h>
 
+#include "kurlbar.h"
 #include "kfileplacesmodel.h"
 
 class KFilePlacesView::Private
@@ -65,11 +73,80 @@ void KFilePlacesView::setUrl(const KUrl &url)
 
     if (index.isValid()) {
         d->currentUrl = url;
-        selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+        selectionModel()->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
     } else {
         d->currentUrl = KUrl();
         selectionModel()->clear();
     }
+}
+
+void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
+
+    if (placesModel==0) return;
+
+    QModelIndex index = indexAt(event->pos());
+
+    QMenu menu;
+
+    QAction *edit = 0;
+    if (index.isValid() && !placesModel->isDevice(index)) {
+        edit = menu.addAction(KIcon("edit"), i18n("&Edit Entry..."));
+        menu.addSeparator();
+    }
+
+    QAction *add = menu.addAction(KIcon("document-new"), i18n("&Add Entry..."));
+
+    QAction* remove = 0L;
+    if (index.isValid() && !placesModel->isDevice(index)) {
+        remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove Entry"));
+    }
+
+    QAction *result = menu.exec(event->globalPos());
+
+    if (add != 0 &&result == add) {
+        KUrl url;
+        QString description;
+        QString iconName;
+        bool appLocal = false;
+
+        if (KUrlBarItemDialog::getInformation(true, url, description,
+                                              iconName, appLocal, 64, this))
+        {
+            QString appName;
+            if (appLocal) appName = KGlobal::mainComponent().componentName();
+
+            placesModel->addPlace(description, url, iconName, appName);
+        }
+
+    } else if (edit != 0 && result == edit) {
+        KBookmark bookmark = placesModel->bookmarkForIndex(index);
+        KUrl url = bookmark.url();
+        QString description = bookmark.text();
+        QString iconName = bookmark.icon();
+        bool appLocal = !bookmark.metaDataItem("OnlyInApp").isEmpty();
+
+        if (KUrlBarItemDialog::getInformation(true, url, description,
+                                              iconName, appLocal, 64, this))
+        {
+            QString appName;
+            if (appLocal) appName = KGlobal::mainComponent().componentName();
+
+            placesModel->editPlace(index, description, url, iconName, appName);
+        }
+
+    } else if (remove != 0 && result == remove) {
+        placesModel->removePlace(index);
+    }
+
+    setUrl(d->currentUrl);
+}
+
+void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
+{
+    QListView::rowsInserted(parent, start, end);
+    setUrl(d->currentUrl);
 }
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
