@@ -23,19 +23,19 @@
 #include <QListWidget>
 
 /**
- * @short A variant of QListBox that honors KDE's system-wide settings.
+ * @short A variant of QListWidget that honors KDE's system-wide settings.
  *
- * Extends the functionality of QListBox to honor the system
+ * Extends the functionality of QListWidget to honor the system
  * wide settings for Single Click/Double Click mode, Auto Selection and
  * Change Cursor over Link.
  *
  * There is a new signal executed(). It gets connected to either
- * QListBox::clicked() or QListBox::doubleClicked()
+ * QListWidget::itemClicked() or QListWidget::itemDoubleClicked()
  * depending on the KDE wide Single Click/Double Click settings. It is
  * strongly recommended that you use this signal instead of the above
  * mentioned. This way you don't need to care about the current
  * settings.  If you want to get informed when the user selects
- * something connect to the QListBox::selectionChanged() signal.
+ * something connect to the QListWidget::itemSelectionChanged() signal.
  **/
 class KDEUI_EXPORT KListWidget : public QListWidget
 {
@@ -53,7 +53,7 @@ Q_SIGNALS:
    * setting the user clicked or double clicked on that item.
    * @param item is the pointer to the executed listbox item.
    *
-   * Note that you may not delete any QListBoxItem objects in slots
+   * Note that you may not delete any QListWidgetItem objects in slots
    * connected to this signal.
    */
   void executed( QListWidgetItem *item );
@@ -66,7 +66,7 @@ Q_SIGNALS:
    * @param item is the pointer to the executed listbox item.
    * @param pos is the position where the user has clicked
    *
-   * Note that you may not delete any QListBoxItem objects in slots
+   * Note that you may not delete any QListWidgetItem objects in slots
    * connected to this signal.
    */
   void executed( QListWidgetItem *item, const QPoint &pos );
@@ -78,7 +78,7 @@ Q_SIGNALS:
    * @param item The pointer to the clicked listbox item.
    * @param pos The position where the user has clicked.
    *
-   * Note that you may not delete any QListBoxItem objects in slots
+   * Note that you may not delete any QListWidgetItem objects in slots
    * connected to this signal.
    *
    * This signal is more or less here for the sake of completeness.
