@@ -119,14 +119,32 @@ public:
      */
     QString fullText() const;
     /**
+     * Set the text shown for the bookmark.
+     *
+     * @param fullText the new bookmark title
+     */
+    void setFullText(const QString &fullText);
+    /**
      * URL contained by the bookmark
      */
     KUrl url() const;
+    /**
+     * Set the URL of the bookmark
+     *
+     * @param url the new bookmark URL
+     */
+    void setUrl(const KUrl &url);
     /**
      * @return the pixmap file for this bookmark
      * (i.e. the name of the icon)
      */
     QString icon() const;
+    /**
+     * Set the icon name of the bookmark
+     *
+     * @param icon the new icon name for this bookmark
+     */
+    void setIcon(const QString &icon);
 
     /**
      * @return the group containing this bookmark

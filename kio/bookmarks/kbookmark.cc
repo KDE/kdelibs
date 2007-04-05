@@ -314,9 +314,31 @@ QString KBookmark::fullText() const
     return element.namedItem("title").toElement().text();
 }
 
+void KBookmark::setFullText(const QString &fullText)
+{
+    QDomNode titleNode = element.namedItem("title");
+    if (titleNode.isNull()) {
+        titleNode = element.ownerDocument().createElement("title");
+        element.appendChild(titleNode);
+    }
+
+    if (titleNode.firstChild().isNull()) {
+        QDomText domtext = titleNode.ownerDocument().createTextNode("");
+        titleNode.appendChild(domtext);
+    }
+
+    QDomText domtext = titleNode.firstChild().toText();
+    domtext.setData(fullText);
+}
+
 KUrl KBookmark::url() const
 {
     return KUrl(element.attribute("href")); // Decodes it from utf8
+}
+
+void KBookmark::setUrl(const KUrl &url)
+{
+    element.setAttribute("href", url.prettyUrl());
 }
 
 QString KBookmark::icon() const
@@ -333,6 +355,11 @@ QString KBookmark::icon() const
             else
                 icon = KMimeType::iconNameForUrl( url() );
     return icon;
+}
+
+void KBookmark::setIcon(const QString &icon)
+{
+    element.setAttribute("icon", icon);
 }
 
 KBookmarkGroup KBookmark::parentGroup() const
