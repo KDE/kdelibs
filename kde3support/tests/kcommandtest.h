@@ -2,7 +2,7 @@
 #define KCOMMANDTEST_H
 
 #include <QtCore/QObject>
-class KCommand;
+class K3Command;
 
 class KCommandTest : public QObject
 {
@@ -10,7 +10,7 @@ class KCommandTest : public QObject
 
 
 protected Q_SLOTS:
-    void slotCommandExecuted( KCommand* );
+    void slotCommandExecuted( K3Command* );
     void slotDocumentRestored();
 
 private Q_SLOTS:

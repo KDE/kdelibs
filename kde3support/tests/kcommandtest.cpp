@@ -309,7 +309,7 @@ void KCommandTest::testUndoLimit()
 
 // Helper slots
 
-void KCommandTest::slotCommandExecuted( KCommand* )
+void KCommandTest::slotCommandExecuted( K3Command* )
 {
     ++m_commandsExecuted;
 }
