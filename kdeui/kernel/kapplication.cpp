@@ -103,6 +103,10 @@
 #include <QSystemTrayIcon>
 #endif
 
+#ifdef Q_OS_UNIX
+#include <signal.h>
+#endif
+
 #include <qevent.h>
 #include <kcomponentdata.h>
 #include <klibloader.h>
