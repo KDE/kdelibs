@@ -78,6 +78,7 @@ WId KWM::activeWindow()
 {
     //return something
     kDebug() << "WId KWM::activeWindow()   isn't yet implemented!" << endl;
+    return 0;
 }
 
 void KWM::activateWindow( WId win, long time )
@@ -235,7 +236,7 @@ void KWM::doNotManage( const QString& title )
 const QList<WId>& KWM::stackingOrder()
 {
   //TODO
-  QList<WId> lst;
+  static QList<WId> lst;
   kDebug() << "const QList<WId>& KWM::stackingOrder() isn't yet implemented!" << endl;
   return lst;
 }
@@ -243,7 +244,7 @@ const QList<WId>& KWM::stackingOrder()
 const QList<WId>& KWM::windows()
 {
   //TODO
-  QList<WId> lst;
+  static QList<WId> lst;
   kDebug() << "const QList<WId>& KWM::windows()  isn't yet implemented!" << endl;
   return lst;
 }
