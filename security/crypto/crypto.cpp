@@ -289,7 +289,7 @@ QString whatstr;
   //
   Q3GroupBox *cwbg = new Q3GroupBox(i18n("Cipher Wizard"), tabSSL);
   cwbg->setOrientation(Qt::Horizontal);
-  QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg->layout());
+  QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg);
   laygroup2->setSpacing(KDialog::spacingHint());
   QComboBox *cwcb = new QComboBox(cwbg);
     laygroup2->addWidget( cwcb );
@@ -352,7 +352,7 @@ QString whatstr;
 
   oInfo = new Q3GroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
   oInfo->setOrientation(Qt::Vertical);
-  QVBoxLayout *laygroup1 = new QVBoxLayout(oInfo->layout());
+  QVBoxLayout *laygroup1 = new QVBoxLayout(oInfo);
   laygroup1->setSpacing(KDialog::spacingHint());
   vbox->addWidget(oInfo);
   oPath = new KUrlRequester(oInfo);
