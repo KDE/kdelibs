@@ -114,8 +114,6 @@ K3ProcessController::K3ProcessController()
 
 K3ProcessController::~K3ProcessController()
 {
-  delete d;
-
 #ifndef Q_OS_MAC
 /* not sure why, but this is causing lockups */
   close( d->fd[0] );
@@ -123,6 +121,8 @@ K3ProcessController::~K3ProcessController()
 #else
 #warning FIXME: why does close() freeze up destruction?
 #endif
+
+  delete d;
 }
 
 
