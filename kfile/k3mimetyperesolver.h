@@ -21,7 +21,7 @@
 #ifndef __kmimetyperesolver_h
 #define __kmimetyperesolver_h
 
-#include <kio/kio_export.h>
+#include <kfile_export.h>
 #include <q3scrollview.h>
 #include <QtCore/QList>
 #include <qtimer.h>
@@ -32,8 +32,9 @@
  * @internal
  * A baseclass for K3MimeTypeResolver, with the interface,
  * K3MimeTypeResolverHelper uses.
+ * @deprecated, use KMimeTypeResolver from KIO instead.
  */
-class KIO_EXPORT K3MimeTypeResolverBase
+class KFILE_EXPORT K3MimeTypeResolverBase
 {
 public:
     virtual ~K3MimeTypeResolverBase() {}
@@ -48,8 +49,10 @@ protected:
  * This class is used by K3MimeTypeResolver, because it can't be a QObject
  * itself. So an object of this class is used to handle signals, slots etc.
  * and forwards them to the K3MimeTypeResolver instance.
+ *
+ * @deprecated, use KMimeTypeResolver from KIO instead.
  */
-class KIO_EXPORT K3MimeTypeResolverHelper : public QObject
+class KFILE_EXPORT K3MimeTypeResolverHelper : public QObject
 {
     Q_OBJECT
 

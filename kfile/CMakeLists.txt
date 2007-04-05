@@ -11,6 +11,7 @@ include_directories(
 add_subdirectory(tests)
 
 set(kfile_LIB_SRCS
+  k3mimetyperesolver.cpp
   k3filedetailview.cpp
   k3fileiconview.cpp
   k3filetreeview.cpp
@@ -43,6 +44,7 @@ set_target_properties(kfile PROPERTIES VERSION 5.0.0 SOVERSION 5 )
 install(TARGETS kfile  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES
+  k3mimetyperesolver.h
   k3filedetailview.h
   k3fileiconview.h
   k3filetreeview.h

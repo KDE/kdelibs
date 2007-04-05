@@ -47,7 +47,6 @@ set(kiocore_STAT_SRCS
   kio/kfileshare.cpp
   kio/ksambashare.cpp
   kio/knfsshare.cpp
-  kio/k3mimetyperesolver.cpp
   kio/kdesktopfileactions.cpp
   kio/kservicegroup.cpp
   kio/kservicegroupfactory.cpp
@@ -326,7 +325,6 @@ install( FILES
   kio/predicateproperties.h
   kio/kfilewriteplugin.h
   kio/kmimetyperesolver.h
-  kio/k3mimetyperesolver.h
   kio/kdbusservicestarter.h
   kio/kremoteencoding.h
   kio/kmimetypechooser.h
