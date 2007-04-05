@@ -28,6 +28,8 @@
 
 #include <solid/device.h>
 
+class QMimeData;
+
 /**
  * This class is a list view model. Each entry represents a "place"
  * where user can access files. Only revelant when
@@ -100,6 +102,13 @@ public:
      */
     QModelIndex closestItem(const KUrl &url) const;
 
+
+    Qt::DropActions supportedDropActions() const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    QStringList mimeTypes() const;
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+                      int row, int column, const QModelIndex &parent);
 private:
     Q_PRIVATE_SLOT(d, void _k_devicesInserted(const QModelIndex&, int, int))
     Q_PRIVATE_SLOT(d, void _k_devicesRemoved(const QModelIndex&, int, int))

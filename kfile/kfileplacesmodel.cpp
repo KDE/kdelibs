@@ -20,10 +20,13 @@
 #include "kfileplacesmodel.h"
 #include "kfileplacesitem_p.h"
 
+#include <QMimeData>
+
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <kicon.h>
+#include <kmimetype.h>
 
 #include <kdevicelistmodel.h>
 #include <kbookmarkmanager.h>
@@ -312,6 +315,146 @@ void KFilePlacesModel::Private::_k_reloadBookmarks()
 
         q->endInsertRows();
     }
+}
+
+Qt::DropActions KFilePlacesModel::supportedDropActions() const
+{
+    return Qt::ActionMask;
+}
+
+Qt::ItemFlags KFilePlacesModel::flags(const QModelIndex &index) const
+{
+    Qt::ItemFlags res = Qt::ItemIsSelectable|Qt::ItemIsEnabled;
+
+    if (index.isValid())
+        res|= Qt::ItemIsDragEnabled;
+
+    if (!index.isValid() || url(index).isValid())
+        res|= Qt::ItemIsDropEnabled;
+
+    return res;
+}
+
+static QString _k_internalMimetype(const KFilePlacesModel * const self)
+{
+    return QString("application/x-kfileplacesmodel-")+QString::number((int)self);
+}
+
+QStringList KFilePlacesModel::mimeTypes() const
+{
+    QStringList types;
+
+    types << _k_internalMimetype(this) << "text/uri-list";
+
+    return types;
+}
+
+QMimeData *KFilePlacesModel::mimeData(const QModelIndexList &indexes) const
+{
+    KUrl::List urls;
+    QByteArray itemData;
+
+    QDataStream stream(&itemData, QIODevice::WriteOnly);
+
+    foreach (const QModelIndex &index, indexes) {
+        KUrl itemUrl = url(index);
+        if (itemUrl.isValid())
+            urls << itemUrl;
+        stream << index.row();
+    }
+
+    QMimeData *mimeData = new QMimeData();
+
+    if (!urls.isEmpty())
+        urls.populateMimeData(mimeData);
+
+    mimeData->setData(_k_internalMimetype(this), itemData);
+
+    return mimeData;
+}
+
+bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+                                    int row, int column, const QModelIndex &parent)
+{
+    if (action == Qt::IgnoreAction)
+        return true;
+
+    if (column > 0)
+        return false;
+
+    if (row==-1 && parent.isValid()) {
+        return false; // Don't allow to move an item onto another one,
+                      // too easy for the user to mess something up
+                      // If we really really want to allow copying files this way,
+                      // let's do it in the views to get the good old drop menu
+    }
+
+
+    KBookmark afterBookmark;
+
+    if (row==-1) {
+        // The dropped item is moved or added to the last position
+
+        KFilePlacesItem *lastItem = d->items.last();
+        afterBookmark = d->bookmarkManager->findByAddress(lastItem->bookmarkAddress());
+
+    } else {
+        // The dropped item is moved or added before position 'row', ie after position 'row-1'
+
+        if (row>0) {
+            KFilePlacesItem *afterItem = d->items[row-1];
+            afterBookmark = d->bookmarkManager->findByAddress(afterItem->bookmarkAddress());
+        }
+    }
+
+    if (data->hasFormat(_k_internalMimetype(this))) {
+        // The operation is an internal move
+        QByteArray itemData = data->data(_k_internalMimetype(this));
+        QDataStream stream(&itemData, QIODevice::ReadOnly);
+        int itemRow;
+
+        stream >> itemRow;
+
+        KFilePlacesItem *item = d->items[itemRow];
+        KBookmark bookmark = d->bookmarkManager->findByAddress(item->bookmarkAddress());
+
+        d->bookmarkManager->root().moveItem(bookmark, afterBookmark);
+
+    } else if (data->hasFormat("text/uri-list")) {
+        // The operation is an add
+        KUrl::List urls = KUrl::List::fromMimeData(data);
+
+        KBookmarkGroup group = d->bookmarkManager->root();
+
+        foreach (KUrl url, urls) {
+            KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
+
+            if (!mimetype->is("inode/directory")) {
+                // Only directories are allowed
+                continue;
+            }
+
+            KBookmark bookmark = group.addBookmark(d->bookmarkManager,
+                                                   url.fileName(), url,
+                                                   mimetype->iconName());
+            group.moveItem(bookmark, afterBookmark);
+            afterBookmark = bookmark;
+        }
+
+    } else {
+        // Oops, shouldn't happen thanks to mimeTypes()
+        kWarning() << k_funcinfo << ": received wrong mimedata, " << data->formats() << endl;
+        return false;
+    }
+
+    bool signalsBlocked = blockSignals(true); // Avoid too much signaling...
+    // We reload here to avoid a transitional
+    // period where devices are seen as separators
+    d->_k_reloadBookmarks();
+    blockSignals(signalsBlocked);
+    d->bookmarkManager->emitChanged(d->bookmarkManager->root()); // ... we'll get relisted anyway
+
+    return true;
 }
 
 #include "kfileplacesmodel.moc"
