@@ -27,7 +27,7 @@
 #if defined _WIN32 || defined _WIN64
 
 #ifndef KIOSLAVE_FILE_EXPORT
-# if defined(MAKE_KIOSLAVE_FILE_LIB)
+# if defined(MAKE_KIOSLAVE_FILE_LIB) || defined(MAKE_KIO_FILE_LIB)
    /* We are building this library */ 
 #  define KIOSLAVE_FILE_EXPORT KDE_EXPORT
 # else
