@@ -112,10 +112,11 @@ QWidget *KNotification::widget() const
 
 void KNotification::setWidget(QWidget *wid)
 {
-	d->widget = wid;
-	setParent(wid);
-	if( d->flags &  CloseWhenWidgetActivated )
-		wid->installEventFilter(this);
+    d->widget = wid;
+    setParent(wid);
+    if ( wid && d->flags &  CloseWhenWidgetActivated ) {
+        wid->installEventFilter(this);
+    }
 }
 
 void KNotification::setText(const QString &text)
