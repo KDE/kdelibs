@@ -176,6 +176,8 @@
 5200        kitchensync
 5300        libkdepim
 5310        kprefs
+5320        kdepimlibs (kmime)
+5321        kdepimlibs (kpimutils)
 5400        calendarsystem
 5500        knotes
 5510        kpilot
