@@ -183,7 +183,6 @@ install( FILES
     types.h
     ustring.h
     value.h
-    nodes.h
     CommonIdentifiers.h
 
     ${CMAKE_CURRENT_BINARY_DIR}/global.h

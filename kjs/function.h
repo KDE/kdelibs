@@ -25,13 +25,13 @@
 #define KJS_FUNCTION_H
 
 #include "object.h"
-#include "nodes.h"
 #include <wtf/OwnPtr.h>
 
 namespace KJS {
 
   class ActivationImp;
   class FunctionPrototype;
+  class FunctionBodyNode;
 
   enum CodeType { GlobalCode,
                   EvalCode,
