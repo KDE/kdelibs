@@ -83,7 +83,9 @@ namespace KJS {
       Unsupported
     };
     
+#ifdef PCRE_CONFIG_UTF8
     static UTF8SupportState utf8Support;
+#endif
 #endif
     unsigned int nrSubPatterns;
 

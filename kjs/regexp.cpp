@@ -318,6 +318,7 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
   int startPos;
   int nextPos;
 
+#ifdef PCRE_CONFIG_UTF8
   if (utf8Support == Supported) {
     startPos = i;
     while (originalPos[startPos] < i)
@@ -326,7 +327,9 @@ UString RegExp::match(const UString &s, int i, int *pos, int **ovector)
     nextPos = startPos;
     while (originalPos[nextPos] < (i + 1))
       ++nextPos;
-  } else {
+  } else
+#endif
+  {
     startPos = i;
     nextPos  = i + 1;
   }
