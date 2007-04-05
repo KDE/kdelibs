@@ -178,6 +178,8 @@
 5310        kprefs
 5320        kdepimlibs (kmime)
 5321        kdepimlibs (kpimutils)
+5322        kdepimlibs (kldap)
+5323        kdepimlibs (kblog)
 5400        calendarsystem
 5500        knotes
 5510        kpilot
@@ -187,10 +189,10 @@
 5601        kontact (interfaces)
 5602        kontact (plugins)
 5650        kresources
-5700        kabc
+5700        kdepimlibs (kabc)
 5710        kabc/vcard
 5720        kaddressbook
-5800        libkcal
+5800        kdepimlibs (kcal)
 5850        korganizer
 5855        korganizer (verbose)
 5890        korgac
@@ -557,6 +559,7 @@
 
 # kdeextragear
 50001   kfortune
+50002   mailody
 
 # KIPI - KDE Imaging Plugin Interface
 51000   KIPI (general)
