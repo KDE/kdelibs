@@ -270,7 +270,6 @@ QModelIndex KApplicationModel::index(int row, int column, const QModelIndex &par
     if (row < 0 || column != 0)
         return QModelIndex();
 
-    Q_UNUSED(column)
     AppNode *node = d->root;
     if (parent.isValid())
         node = static_cast<AppNode*>(parent.internalPointer());
