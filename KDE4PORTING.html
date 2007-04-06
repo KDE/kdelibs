@@ -245,16 +245,6 @@ does not support this encoding.</li>
 <li>Header renamed to kcodecs.h</li>
 </ul>
 
-<h4>KComboBox</h4>
-<ul>
-<li>void setURLDropsEnabled() -&gt; void setUrlDropsEnabled()</li>
-<li>bool isURLDropsEnabled() -&gt; bool urlDropsEnabled()</li>
-<li>void setEditURL() -&gt; void setEditUrl()</li>
-<li>void addURL( ... ) -&gt; void addUrl( ... )</li>
-<li>void insertURL( ... ) -&gt; void insertUrl( ... )</li>
-<li>void changeURL( ... ) -&gt; void changeUrl( ... )</li>
-</ul>
-
 <h4>KCompletion</h4>
 <ul>
 <li>enableSounds() was removed, use setSoundsEnabled()</li>
@@ -450,27 +440,6 @@ Internally it is reference counted and the data deleted when the last reference 
 <li>modFlagLabel() was removed, use either KKeyServer::modToStringUser(), or QKeySequence(Qt::yourmodifier).toString()</li>
 </ul>
 
-<h4>KKeyButton</h4>
-<ul>
-<li>Gone, two replacements: KKeySequenceWidget and KShortcutWidget. Use KShortcutWidget only if you really want two possible shortcuts.</li>
-<li>Both don't pop up a modal dialog.</li>
-</ul>
-
-<h4>KKeyChooser</h4>
-<ul>
-<li>Renamed to KShortcutsEditor.</li>
-<li>Global shortcut conflict checking functions moved to KGlobalAccel.</li>
-<li>Standard shortcuts checking functions were removed.</li>
-<li>See also: KKeyDialog.</li>
-</ul>
-
-<h4>KKeyDialog</h4>
-<ul>
-<li>Renamed to KShortcutsDialog</li>
-<li>Changed from edit/commit semantics to edit in-place/revert semantics. The old way didn't work in corner cases, the new way is quite a bit less complicated internally, and such cases only appear if a user opens multiple KKeyDialogs at the same time, which nobody does intentionally.</li>
-<li>Rewritten. It was hard to read, which stood in the way of future changes/improvements.</li>
-<li>Uses a new GUI layout.</li>
-</ul>
 
 <h4>KKeyNative</h4>
 <ul>
@@ -968,6 +937,16 @@ was selected and the color itself as arguments</li>
 <li>use QMimeData  directly instead or KColorMimeData, which closest resembles KColorDrag</li>
 </ul>
 
+<h4>KComboBox</h4>
+<ul>
+<li>void setURLDropsEnabled() -&gt; void setUrlDropsEnabled()</li>
+<li>bool isURLDropsEnabled() -&gt; bool urlDropsEnabled()</li>
+<li>void setEditURL() -&gt; void setEditUrl()</li>
+<li>void addURL( ... ) -&gt; void addUrl( ... )</li>
+<li>void insertURL( ... ) -&gt; void insertUrl( ... )</li>
+<li>void changeURL( ... ) -&gt; void changeUrl( ... )</li>
+</ul>
+
 <h4>KCommand</h4>
 KCommand has been renamed to K3Command and moved to kde3support. The header file was named k3command.h.
 
@@ -1189,6 +1168,12 @@ The constructors have been simplified to take an optional parent. Other paramete
 <li>Don't use setIconSet anymore, use setIcon instead, there is no compatibility class or function</li>
 </ul>
 
+<h4>KHistoryCombo</h4>
+<ul>
+<li>Moved from kcombobox.h to khistorycombobox.h</li>
+<li>Changed name from KHistoryCombo to KHistoryComboBox</li>
+</ul>
+
 <h4>KIcon</h4>
 <ul>
 <li>New class (old one renamed to K3Icon)</li>
@@ -1212,16 +1197,30 @@ The constructors have been simplified to take an optional parent. Other paramete
 <li>Deprecated. Use KPageWidget instead</li>
 </ul>
 
-<h4>KKeyDialog</h4>
+<h4>KKeyButton</h4>
 <ul>
-<li>removed KDE2 deprecated functions</li>
-<li>Added new constructor parameter: KKeyChooser::ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
+<li>Gone, two replacements: KKeySequenceWidget and KShortcutWidget. Use KShortcutWidget only if you really want two possible shortcuts.</li>
+<li>Both don't pop up a modal dialog.</li>
 </ul>
 
 <h4>KKeyChooser</h4>
 <ul>
+<li>Renamed to KShortcutsEditor.</li>
 <li>Added new constructor parameter: ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
 <li>Removed all functions dealing with old classes KShortcutList, KGlobalAccel (kde3 version)</li>
+<li>Global shortcut conflict checking functions moved to KGlobalAccel.</li>
+<li>Standard shortcuts checking functions were removed.</li>
+<li>See also: KKeyDialog.</li>
+</ul>
+
+<h4>KKeyDialog</h4>
+<ul>
+<li>Renamed to KShortcutsDialog</li>
+<li>Changed from edit/commit semantics to edit in-place/revert semantics. The old way didn't work in corner cases, the new way is quite a bit less complicated internally, and such cases only appear if a user opens multiple KKeyDialogs at the same time, which nobody does intentionally.</li>
+<li>Rewritten. It was hard to read, which stood in the way of future changes/improvements.</li>
+<li>Uses a new GUI layout.</li>
+<li>removed KDE2 deprecated functions</li>
+<li>Added new constructor parameter: KKeyChooser::ActionTypes types.  Allows you to filter the types of actions shown in the dialog.</li>
 </ul>
 
 <h4>KLed</h4>
