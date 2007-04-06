@@ -30,9 +30,9 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <qtextedit.h>
-#include <qtimer.h>
-#include <qcolor.h>
+#include <QtGui/QTextEdit>
+#include <QtCore/QTimer>
+#include <QtGui/QColor>
 #include <QHash>
 #include <QTextCursor>
 #include <QEvent>

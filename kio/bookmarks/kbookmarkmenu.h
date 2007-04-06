@@ -25,13 +25,12 @@
 
 #include <sys/types.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <QtCore/QStack>
 
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <kaction.h>
 #include <kicon.h>
 #include <krun.h>
 

@@ -33,11 +33,11 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kdesktopfile.h>
-#include <qdir.h>
-#include <qfileinfo.h>
-#include <qtextstream.h>
-#include <qstringlist.h>
-#include <qregexp.h>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTextIStream>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QRegExp>
 
 #include <sys/types.h>
 #include <utime.h>

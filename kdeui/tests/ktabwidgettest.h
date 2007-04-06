@@ -5,12 +5,12 @@
 #include <QtGui/QWidget>
 #include <ktabwidget.h>
 #include <QtGui/QLabel>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <stdlib.h>
 #include <kvbox.h>
 #include <time.h>
-#include <qcheckbox.h>
-#include <qtoolbutton.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QToolButton>
 
 class Test : public KVBox
 {

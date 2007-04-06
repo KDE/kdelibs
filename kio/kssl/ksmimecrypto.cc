@@ -19,7 +19,7 @@
  */
 
 
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 #include <QtCore/QString>
 #include <kdebug.h>
 

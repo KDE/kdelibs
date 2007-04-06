@@ -39,10 +39,10 @@
 #include <kmimetype.h>
 #include <ktemporaryfile.h>
 
-#include <qapplication.h>
-#include <qclipboard.h>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
 #include <QMimeData>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 
 static KUrl getNewFileName( const KUrl &u, const QString& text )
 {

@@ -22,7 +22,7 @@
 #ifndef __pixmaploader_h__
 #define __pixmaploader_h__
 
-#include <qcache.h>
+#include <QtCore/QCache>
 #include <QtGui/QImage>
 #include <QStyleOptionTab>
 

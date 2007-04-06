@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #define KMANAGERSELECTION_H
 
 #include <kdeui_export.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #ifdef Q_WS_X11 // FIXME(E)
 

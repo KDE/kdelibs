@@ -22,17 +22,17 @@
 #include "k3listview.h"
 #include "k3listviewlineedit.h"
 
-#include <q3dragobject.h>
-#include <qcursor.h>
-#include <qevent.h>
-#include <qtimer.h>
-#include <q3header.h>
-#include <qcursor.h>
-#include <qtooltip.h>
-#include <qstyle.h>
+#include <Qt3Support/Q3ColorDrag>
+#include <QtGui/QCursor>
+#include <QtGui/QActionEvent>
+#include <QtCore/QTimer>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QCursor>
+#include <QtGui/QToolTip>
+#include <QtGui/QStyle>
 #include <QStyleOptionFocusRect>
 #include <QApplication>
-#include <qpainter.h>
+#include <QtGui/QPainter>
 
 #include <kglobalsettings.h>
 #include <kconfig.h>

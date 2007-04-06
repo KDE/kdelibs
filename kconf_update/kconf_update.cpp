@@ -23,10 +23,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <qdatetime.h>
+#include <QtCore/QDate>
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <qtextcodec.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QTextCodec>
 
 #include <kconfig.h>
 #include <klocale.h>

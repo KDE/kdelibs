@@ -24,8 +24,8 @@
 #include <kdebug.h>
 #include <kio/kprotocolmanager.h>
 
-#include <qtextstream.h>
-#include <qmap.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QMap>
 
 #include <config.h>
 

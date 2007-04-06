@@ -26,10 +26,10 @@
 #include <klocale.h>
 #include <QtGui/QLabel>
 #include <kdebug.h>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <kmessagebox.h>
 #include <ksocketfactory.h>
-#include <qtcpsocket.h>
+#include <QtNetwork/QTcpSocket>
 
 static bool checkLpdQueue(const char *host, const char *queue);
 

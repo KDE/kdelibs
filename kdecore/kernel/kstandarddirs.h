@@ -23,9 +23,9 @@
 #ifndef SSK_KSTDDIRS_H
 #define SSK_KSTDDIRS_H
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 #include <kglobal.h>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class KStandardDirsPrivate;
 class KConfig;

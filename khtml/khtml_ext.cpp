@@ -35,11 +35,11 @@
 #include "misc/loader.h"
 #include "dom/html_form.h"
 #include "dom/html_image.h"
-#include <qclipboard.h>
-#include <qfileinfo.h>
-#include <qmenu.h>
-#include <qurl.h>
-#include <qmetaobject.h>
+#include <QtGui/QClipboard>
+#include <QtCore/QFileInfo>
+#include <QtGui/QMenu>
+#include <QtCore/QUrl>
+#include <QtCore/QMetaClassInfo>
 
 #include <kdebug.h>
 #include <klocale.h>

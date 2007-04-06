@@ -29,7 +29,7 @@
 
 #include "khtml_part.h"
 
-#include <qpointer.h>
+#include <QtCore/QPointer>
 
 #include <kselectaction.h>
 #include <kio/global.h>

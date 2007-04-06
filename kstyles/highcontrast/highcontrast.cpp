@@ -24,25 +24,25 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <qdrawutil.h>
-#include <qpainter.h>
-#include <q3pointarray.h>
-#include <qstyleplugin.h>
+#include <QtGui/qdrawutil.h>
+#include <QtGui/QPainter>
+#include <Qt3Support/Q3PointArray>
+#include <QtGui/QStyleFactoryInterface>
 
-#include <qfont.h>
-#include <qcombobox.h>
-#include <q3header.h>
-#include <qmenubar.h>
-#include <qpushbutton.h>
-#include <qscrollbar.h>
-#include <qslider.h>
-#include <qtabbar.h>
-#include <qtoolbutton.h>
-#include <q3toolbar.h>
-#include <qmenu.h>
-#include <qprogressbar.h>
-#include <q3listview.h>
-#include <qsettings.h>
+#include <QtGui/QFont>
+#include <QtGui/QComboBox>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QMenuBar>
+#include <QtGui/QPushButton>
+#include <QtGui/QScrollBar>
+#include <QtGui/QSlider>
+#include <QtGui/QTabBar>
+#include <QtGui/QToolButton>
+#include <Qt3Support/Q3ToolBar>
+#include <QtGui/QMenu>
+#include <QtGui/QProgressBar>
+#include <Qt3Support/Q3CheckListItem>
+#include <QtCore/QSettings>
 
 #include <kdrawutil.h>
 #include <kpixmapeffect.h>

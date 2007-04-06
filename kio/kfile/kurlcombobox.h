@@ -21,11 +21,11 @@
 
 #include <kio/kio_export.h>
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <QtCore/QList>
-#include <qmap.h>
-#include <qicon.h>
-#include <qstringlist.h>
+#include <QtCore/QMap>
+#include <QtGui/QIcon>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kcombobox.h>
 #include <kurl.h>

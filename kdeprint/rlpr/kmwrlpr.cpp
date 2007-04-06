@@ -21,13 +21,13 @@
 #include "kmprinter.h"
 #include "kmwizard.h"
 
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qlineedit.h>
-#include <q3header.h>
+#include <QtGui/QLineEdit>
+#include <Qt3Support/Q3Header>
 #include <k3listview.h>
 #include <klocale.h>
 #include <kiconloader.h>

@@ -22,9 +22,9 @@
 
 #include <knewstuff2/core/entry.h>
 
-#include <qdom.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <Qt/qdom.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 class KJob;
 

@@ -32,9 +32,9 @@
 #include <limits.h>
 #endif
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qhash.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QHash>
 
 #include "kaboutdata.h"
 #include "klocale.h"

@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <assert.h>
-#include <qhash.h>
+#include <QtCore/QHash>
 
 KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
   KServiceGroupFactory()

@@ -61,7 +61,7 @@
 #include <QTextStream>
 #include <QObject>
 
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 
 /**

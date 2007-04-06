@@ -23,7 +23,7 @@
 
 class KSSL;
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QtCore/QStringList>
 #include <ksslcertificate.h>
 

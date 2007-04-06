@@ -22,9 +22,9 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <QList>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 #include <cups/ipp.h>
 

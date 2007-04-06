@@ -30,8 +30,8 @@
 #include <kstandarddirs.h>
 
 #include <QtCore/QFile>
-#include <qfileinfo.h>
-#include <qregexp.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QRegExp>
 
 #include "blowfish.h"
 #include "sha1.h"

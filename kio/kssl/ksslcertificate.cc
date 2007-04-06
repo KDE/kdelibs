@@ -37,7 +37,7 @@
 #include <kstandarddirs.h>
 #include <kcodecs.h>
 #include <klocale.h>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 #include <ktemporaryfile.h>
 
 #include <sys/types.h>
@@ -59,7 +59,7 @@
 #endif
 
 #include <kopenssl.h>
-#include <q3cstring.h>
+#include <Qt3Support/Q3CString>
 #include <kdebug.h>
 #include "ksslx509v3.h"
 

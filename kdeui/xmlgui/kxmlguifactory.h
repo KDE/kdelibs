@@ -24,7 +24,7 @@
 #include <kdeui_export.h>
 #include <kcomponentdata.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class QAction;
 class KXMLGUIFactoryPrivate;

@@ -20,8 +20,8 @@
 
 #include "kdxscomment.h"
 
-#include <qlayout.h>
-#include <qtextedit.h>
+#include <QtGui/QLayout>
+#include <QtGui/QTextEdit>
 
 #include <klocale.h>
 

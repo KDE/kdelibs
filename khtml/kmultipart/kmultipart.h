@@ -26,7 +26,7 @@
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
 #include <kaboutdata.h>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 class KHTMLPart;
 class KComponentData;

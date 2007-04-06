@@ -9,11 +9,11 @@
 #include <kdebug.h>
 #include <kicon.h>
 
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qlistwidget.h>
-#include <qtabwidget.h>
-#include <qtablewidget.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QLayout>
+#include <QtGui/QListWidget>
+#include <QtGui/QTabWidget>
+#include <QtGui/QTableWidget>
 //FIXME just include as needed
 #include <QtGui>
 

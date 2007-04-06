@@ -18,7 +18,7 @@
 
 #include "kcompletioncoretest.h"
 #include "kcompletioncoretest.moc"
-#include "QtTest/qsignalspy.h"
+#include "QtTest/QSignalSpy"
 
 #define clampet strings[0]
 #define coolcat strings[1]

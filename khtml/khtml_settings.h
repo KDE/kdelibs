@@ -23,12 +23,12 @@
 class KConfig;
 class KConfigGroup;
 #include <khtml_export.h>
-#include <qcolor.h>
+#include <QtGui/QColor>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qfont.h>
-#include <qmap.h>
-#include <qpair.h>
+#include <QtGui/QFont>
+#include <QtCore/QMap>
+#include <QtCore/QPair>
 
 
 struct KPerDomainSettings;

@@ -34,13 +34,13 @@
 #include <sys/time.h>
 #include <unistd.h> // must be explicitly included for MacOSX
 
-#include <qdom.h>
+#include <Qt/qdom.h>
 #include <QtCore/QFile>
-#include <qregexp.h>
-#include <qdatetime.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QDate>
 #include <QtDBus/QtDBus>
-#include <qtcpsocket.h>
-#include <qhostinfo.h>
+#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QHostInfo>
 
 #include <kurl.h>
 #include <kdebug.h>

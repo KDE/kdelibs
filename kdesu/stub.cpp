@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #include <kapplication.h>
 #include <kdebug.h>

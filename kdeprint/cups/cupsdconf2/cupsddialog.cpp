@@ -35,15 +35,15 @@
 #include "cupsdbrowsingpage.h"
 #include "cupsdsecuritypage.h"
 
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QWhatsThis>
 #include <kvbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <QtCore/QFile>
-#include <qfileinfo.h>
-#include <qicon.h>
-#include <qpixmap.h>
+#include <QtCore/QFileInfo>
+#include <QtGui/QIcon>
+#include <QtGui/QPixmap>
 #include <kglobal.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -52,7 +52,7 @@
 #include <QtCore/QStringList>
 #include <kpassworddialog.h>
 #include <kguiitem.h>
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 
 #include <signal.h>
 #include <cups/cups.h>

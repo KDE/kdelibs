@@ -20,9 +20,9 @@
 #define LPDTOOLS_H
 
 #include <QtCore/QString>
-#include <qmap.h>
-#include <qlist.h>
-#include <qtextstream.h>
+#include <QtCore/QMap>
+#include <QtCore/QList>
+#include <QtCore/QTextIStream>
 
 class KMLpdManager;
 class DrMain;

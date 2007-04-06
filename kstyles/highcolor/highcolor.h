@@ -28,7 +28,7 @@
 #ifndef __HIGHCOLOR_H
 #define __HIGHCOLOR_H
 
-#include <qbitmap.h>
+#include <QtGui/QBitmap>
 #include <kdrawutil.h>
 #include <kpixmap.h>
 #include <kstyle.h>

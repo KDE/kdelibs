@@ -22,13 +22,13 @@
 #include "kxmlcommanddlg.h"
 #include "kdeprintcheck.h"
 
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <kpushbutton.h>
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
-#include <qtooltip.h>
-#include <qlineedit.h>
+#include <QtGui/QToolTip>
+#include <QtGui/QLineEdit>
 #include <kinputdialog.h>
 #include <klocale.h>
 #include <kiconloader.h>

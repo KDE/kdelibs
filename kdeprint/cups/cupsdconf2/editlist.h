@@ -21,7 +21,7 @@
 #define EDITLIST_H
 
 #include <QtGui/QWidget>
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 class KListWidget;
 class QPushButton;

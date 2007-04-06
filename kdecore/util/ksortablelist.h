@@ -22,7 +22,7 @@
 
 #include <kdecore_export.h>
 
-#include <qpair.h>
+#include <QtCore/QPair>
 #include <QtCore/QList>
 
 /**

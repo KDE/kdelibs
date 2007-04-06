@@ -21,14 +21,14 @@
 #include "cupsinfos.h"
 #include "sidepixmap.h"
 
-#include <qtimer.h>
-#include <qprogressbar.h>
+#include <QtCore/QTimer>
+#include <QtGui/QProgressBar>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <qmessagebox.h>
+#include <QtGui/QMessageBox>
 #include <QtCore/QFile>
 #include <kdebug.h>
 #include <kseparator.h>

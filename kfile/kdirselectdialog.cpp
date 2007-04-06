@@ -19,10 +19,10 @@
 
 #include "kdirselectdialog.h"
 
-#include <qdir.h>
-#include <qlayout.h>
-#include <qmenu.h>
-#include <qstringlist.h>
+#include <QtCore/QDir>
+#include <QtGui/QLayout>
+#include <QtGui/QMenu>
+#include <QtCore/QMutableStringListIterator>
 #include <QStack>
 
 #include <kapplication.h>
@@ -30,7 +30,7 @@
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
-#include <kfilespeedbar.h>
+#include "kfilespeedbar.h"
 #include <kglobalsettings.h>
 #include <kicon.h>
 #include <kiconloader.h>

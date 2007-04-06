@@ -23,10 +23,10 @@
 
 #include "kshell.h"
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 #include <stdlib.h>
 #include <pwd.h>

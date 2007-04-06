@@ -20,7 +20,7 @@
 #ifndef KFILELIST_H
 #define KFILELIST_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include <kurl.h>
 
 class QTreeWidget;

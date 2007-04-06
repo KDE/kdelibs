@@ -27,7 +27,7 @@
 #include <khtml_export.h>
 #include "kjavaprocess.h"
 #include <QtCore/QObject>
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QSize>
 
 /**

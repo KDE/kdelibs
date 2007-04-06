@@ -57,9 +57,9 @@
 #include <time.h>
 #endif
 
-#include <qdir.h>
-#include <qhostaddress.h>
-#include <qtcpserver.h>
+#include <QtCore/QDir>
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QTcpServer>
 
 #include <kdebug.h>
 #include <kglobal.h>

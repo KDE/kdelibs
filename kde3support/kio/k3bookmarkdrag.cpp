@@ -21,7 +21,7 @@
 #include "k3bookmarkdrag.h"
 #include <k3urldrag.h>
 #include <kdebug.h>
-#include <q3cstring.h>
+#include <Qt3Support/Q3CString>
 
 K3BookmarkDrag * K3BookmarkDrag::newDrag( const Q3ValueList<KBookmark> & bookmarks, QWidget * dragSource, const char * name )
 {

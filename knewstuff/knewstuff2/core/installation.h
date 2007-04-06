@@ -22,7 +22,7 @@
 
 #include <knewstuff2/knewstuff_export.h>
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 namespace KNS {
 

@@ -25,13 +25,13 @@
 #if 0
 #include <k3filetreeview.h>
 #endif
-#include <qdatetime.h>
-#include <qdialog.h>
-#include <qdir.h>
+#include <QtCore/QDate>
+#include <QtGui/QDialog>
+#include <QtCore/QDir>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qlineedit.h>
-#include <qpushbutton.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QPushButton>
 
 int main(int argc, char **argv)
 {

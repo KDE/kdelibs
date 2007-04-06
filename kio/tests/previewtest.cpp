@@ -1,7 +1,7 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 
 #include <kapplication.h>
 #include <kdebug.h>

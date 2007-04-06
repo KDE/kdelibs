@@ -35,7 +35,6 @@
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>
-#include <kconfiggroup.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
 

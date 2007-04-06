@@ -1,6 +1,6 @@
 #include <break_lines.h>
 #include <klibloader.h>
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 #include <stdio.h>
 #include <stdlib.h>
 #include <config.h>

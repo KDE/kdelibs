@@ -38,14 +38,14 @@
 #endif
 
 #include <stdlib.h>
-#include <qobject.h>
-#include <q3ptrdict.h>
-#include <q3dict.h>
-#include <qpixmap.h>
-#include <qbuffer.h>
-#include <qstringlist.h>
-#include <qtextcodec.h>
-#include <qtimer.h>
+#include <QtCore/QObject>
+#include <Qt3Support/Q3PtrDict>
+#include <Qt3Support/Q3Dict>
+#include <QtGui/QPixmap>
+#include <QtCore/QBuffer>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTimer>
 
 #include <QLinkedList>
 

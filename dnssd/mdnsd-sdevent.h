@@ -21,9 +21,9 @@
 #ifndef DNSSDSDEVENT_H
 #define DNSSDSDEVENT_H
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <QtCore/QString>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 namespace DNSSD
 {

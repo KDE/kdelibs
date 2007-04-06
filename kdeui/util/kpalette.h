@@ -24,10 +24,10 @@
 
 #include <kdeui_export.h>
 
-#include <qcolor.h>
+#include <QtGui/QColor>
 #include <QtCore/QList>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 class KPalettePrivate;
 

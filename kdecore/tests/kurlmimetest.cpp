@@ -17,7 +17,7 @@
 */
 
 #include <qtest_kde.h>
-#include <qmimedata.h>
+#include <QtCore/QMimeData>
 #include <kurl.h>
 #include <kdebug.h>
 

@@ -20,7 +20,7 @@
 #include "cupsdsplash.h"
 
 #include <QtGui/QLabel>
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 #include <QtGui/QLayout>
 #include <klocale.h>
 #include <kstandarddirs.h>

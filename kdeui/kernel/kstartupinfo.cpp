@@ -28,10 +28,10 @@ DEALINGS IN THE SOFTWARE.
 #warning Extra KStartupInfo debug messages enabled.
 #endif
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include "config.h"
-#include <qglobal.h>
+#include <QtCore/QBool>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -46,8 +46,8 @@ DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #include <sys/time.h>
 #include <stdlib.h>
-#include <qtimer.h>
-#include <qevent.h>
+#include <QtCore/QTimer>
+#include <QtGui/QActionEvent>
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #include <netwm.h>

@@ -18,8 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <qdir.h>
-#include <qeventloop.h>
+#include <QtCore/QDir>
+#include <QtCore/QEventLoop>
 #include <config.h>
 
 #include "kbuildsycoca.h"
@@ -35,9 +35,9 @@
 #include "kbuildprotocolinfofactory.h"
 #include "kctimefactory.h"
 #include <ktemporaryfile.h>
-#include <qdatastream.h>
+#include <QtCore/QDataStream>
 #include <QtCore/QFile>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 #include <errno.h>
 

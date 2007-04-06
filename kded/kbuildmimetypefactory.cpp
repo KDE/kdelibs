@@ -29,7 +29,7 @@
 #include <klocale.h>
 #include <assert.h>
 #include <kdesktopfile.h>
-#include <qhash.h>
+#include <QtCore/QHash>
 #include <QFile>
 #include <QDomDocument>
 #include "kmimefileparser.h"

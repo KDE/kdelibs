@@ -22,8 +22,8 @@
 
 #include <config.h>
 
-#include <qnamespace.h>
-#include <qwindowdefs.h>
+#include <QtCore/QCOORD>
+#include <QtGui/QWidgetList>
 #include <QFlags>
 
 #include "kkeyserver_x11.h"

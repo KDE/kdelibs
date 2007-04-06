@@ -24,7 +24,7 @@
 #include <QCoreApplication>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 using namespace KSpell2;
 

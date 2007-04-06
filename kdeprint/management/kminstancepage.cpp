@@ -27,8 +27,8 @@
 #include "kmtimer.h"
 
 #include <QtGui/QLayout>
-#include <qregexp.h>
-#include <qpushbutton.h>
+#include <QtCore/QRegExp>
+#include <QtGui/QPushButton>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
 #include <klistwidget.h>

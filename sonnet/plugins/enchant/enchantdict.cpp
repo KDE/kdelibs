@@ -19,8 +19,8 @@
  */
 #include "enchantdict.h"
 
-#include <qtextcodec.h>
-#include <qdebug.h>
+#include <QtCore/QTextCodec>
+#include <QtCore/QDebug>
 
 using namespace KSpell2;
 

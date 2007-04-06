@@ -21,7 +21,7 @@
 #define PRINTERFILTER_H
 
 #include <QtCore/QObject>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <QtCore/QStringList>
 
 class KMPrinter;

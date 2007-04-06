@@ -19,11 +19,11 @@
 
 #include "kfilesharedialog.h"
 #include <kvbox.h>
-#include <qlabel.h>
-#include <qdir.h>
-#include <qradiobutton.h>
-#include <qbuttongroup.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtCore/QDir>
+#include <QtGui/QRadioButton>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QLayout>
 #include <k3process.h>
 #include <k3procio.h>
 #include <klocale.h>
@@ -35,7 +35,7 @@
 #include <errno.h>
 #include <kio/kfileshare.h>
 #include <kseparator.h>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kmessagebox.h>

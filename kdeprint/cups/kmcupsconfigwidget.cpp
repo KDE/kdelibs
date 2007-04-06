@@ -22,11 +22,11 @@
 
 #include <QtGui/QLabel>
 #include <QGroupBox>
-#include <qlineedit.h>
-#include <qcheckbox.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
-#include <qpushbutton.h>
-#include <qvalidator.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QDoubleValidator>
 
 #include <klocale.h>
 #include <kcursor.h>

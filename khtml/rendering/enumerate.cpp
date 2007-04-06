@@ -25,8 +25,8 @@
 
 #include "rendering/enumerate.h"
 
-#include <qstring.h>
-#include <qlist.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QList>
 
 namespace khtml {
 

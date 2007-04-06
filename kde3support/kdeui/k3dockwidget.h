@@ -49,11 +49,11 @@
 #define _KDOCKWIDGET_2_2_
 
 #include <kde3support_export.h>
-#include <qpoint.h>
-#include <q3ptrlist.h>
-#include <qframe.h>
-#include <qdom.h>
-#include <qtabwidget.h>
+#include <QtCore/QPoint>
+#include <Qt3Support/Q3PtrList>
+#include <QtGui/QFrame>
+#include <Qt/qdom.h>
+#include <QtGui/QTabWidget>
 
 #ifndef NO_KDE2
 #include <kmainwindow.h>

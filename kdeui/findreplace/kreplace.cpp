@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <kapplication.h>
 #include <kdebug.h>
 
@@ -26,7 +26,7 @@
 #include <kmessagebox.h>
 #include "kreplace.h"
 #include "kreplacedialog.h"
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 //#define DEBUG_REPLACE
 #define INDEX_NOMATCH -1

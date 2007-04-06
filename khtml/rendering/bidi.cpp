@@ -32,8 +32,8 @@
 #include <QVector>
 
 #include "kdebug.h"
-#include "qdatetime.h"
-#include "qfontmetrics.h"
+#include "QtCore/QDate"
+#include "QtGui/QFontMetrics"
 
 #include <limits.h>
 

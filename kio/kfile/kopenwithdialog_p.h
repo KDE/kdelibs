@@ -20,7 +20,7 @@
 #ifndef OPENWITHDIALOG_P_H
 #define OPENWITHDIALOG_P_H
 
-#include <q3listview.h>
+#include <Qt3Support/Q3CheckListItem>
 
 /**
  * @internal

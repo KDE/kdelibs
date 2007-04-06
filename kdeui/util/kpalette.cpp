@@ -21,8 +21,8 @@
 
 #include "kpalette.h"
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QtCore/QFile>
+#include <QtCore/QTextIStream>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <ksavefile.h>

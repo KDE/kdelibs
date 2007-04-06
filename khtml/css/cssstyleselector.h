@@ -23,7 +23,7 @@
 #ifndef _CSS_cssstyleselector_h_
 #define _CSS_cssstyleselector_h_
 
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 #include <Q3MemArray>
 
 #include "rendering/render_style.h"

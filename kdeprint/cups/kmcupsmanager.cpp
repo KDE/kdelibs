@@ -34,11 +34,11 @@
 #include "ppdloader.h"
 
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qdatetime.h>
-#include <qtcpsocket.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
+#include <QtCore/QTimer>
+#include <QtCore/QDate>
+#include <QtNetwork/QTcpSocket>
 
 #include <kdebug.h>
 #include <krandom.h>

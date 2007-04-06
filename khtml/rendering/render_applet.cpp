@@ -30,7 +30,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
 

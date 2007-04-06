@@ -20,9 +20,9 @@
 
 #include <kconfiggroup.h>
 
-#include <qstringlist.h>
-#include <qcolor.h>
-#include <qfont.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtGui/QColor>
+#include <QtGui/QFont>
 
 #include <kconfiggroup_p.h>
 

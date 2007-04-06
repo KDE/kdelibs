@@ -23,10 +23,10 @@
 #include <QVBoxLayout>
 #include <kpushbutton.h>
 #include <QtGui/QLayout>
-#include <q3header.h>
+#include <Qt3Support/Q3Header>
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
-#include <qsettings.h>
+#include <QtGui/QCheckBox>
+#include <QtCore/QSettings>
 
 #include <klocale.h>
 #include <kconfig.h>

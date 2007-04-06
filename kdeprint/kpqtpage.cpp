@@ -24,8 +24,8 @@
 #include "driver.h"
 #include "util.h"
 
-#include <qcombobox.h>
-#include <qradiobutton.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QRadioButton>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 

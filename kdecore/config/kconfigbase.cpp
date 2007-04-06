@@ -32,15 +32,15 @@
 #include "kstringhandler.h"
 #include "kcomponentdata.h"
 
-#include <qcolor.h>
-#include <qdatetime.h>
-#include <qdir.h>
-#include <qfile.h>
-#include <qfont.h>
-#include <qpoint.h>
-#include <qrect.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
+#include <QtGui/QColor>
+#include <QtCore/QDate>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtGui/QFont>
+#include <QtCore/QPoint>
+#include <QtCore/QRect>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTextIStream>
 
 class KConfigBase::Private
 {

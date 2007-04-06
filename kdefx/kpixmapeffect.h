@@ -10,8 +10,8 @@
 
 #include <kdefx_export.h>
 
-#include <qsize.h>
-#include <qpixmap.h>
+#include <QtCore/QSize>
+#include <QtGui/QPixmap>
 class QColor;
 
 /**

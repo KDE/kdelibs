@@ -41,12 +41,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui/QLabel>
 #include <QtGui/QImage>
 #include <QtGui/QLayout>
-#include <qgroupbox.h>
-#include <qdatetime.h>
-#include <qmessagebox.h>
-#include <qpushbutton.h>
-#include <qradiobutton.h>
-#include <qshortcut.h>
+#include <QtGui/QGroupBox>
+#include <QtCore/QDate>
+#include <QtGui/QMessageBox>
+#include <QtGui/QPushButton>
+#include <QtGui/QRadioButton>
+#include <QtGui/QShortcut>
 
 #ifndef QT_NO_TOOLTIP
 #include <qtooltip.h>

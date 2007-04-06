@@ -505,8 +505,8 @@ char *kdeprint_foomatic2text;
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <qvariant.h>
-#include <qiodevice.h>
+#include <QtCore/QVariant>
+#include <QtCore/QIODevice>
 #if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty
 #include <io.h>

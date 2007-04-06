@@ -22,15 +22,15 @@
 #include "driveritem.h"
 
 #include <math.h>
-#include <qlineedit.h>
-#include <qslider.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QSlider>
 #include <QtGui/QLabel>
 #include <klistwidget.h>
 #include <kbuttongroup.h>
-#include <qradiobutton.h>
+#include <QtGui/QRadioButton>
 #include <QStackedWidget>
 #include <QtGui/QLayout>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 
 #include <kcursor.h>
 #include <kdialog.h>

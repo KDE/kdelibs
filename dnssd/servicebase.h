@@ -21,7 +21,7 @@
 #ifndef DNSSDSERVICEBASE_H
 #define DNSSDSERVICEBASE_H
 
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QString>
 #include <ksharedptr.h>
 #include <dnssd/dnssd_export.h>

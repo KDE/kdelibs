@@ -23,11 +23,11 @@
 #include <unistd.h>
 #include <limits.h>
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <kdebug.h>
 #include "kfiltertest.h"
-#include <qdir.h>
-#include <qfileinfo.h>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 
 QTEST_KDEMAIN_CORE(KFilterTest)
 

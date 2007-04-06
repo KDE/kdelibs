@@ -25,7 +25,7 @@
 #include <QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qradiobutton.h>
+#include <QtGui/QRadioButton>
 #include <kbuttongroup.h>
 #include <knuminput.h>
 #include <klocale.h>

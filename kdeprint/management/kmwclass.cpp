@@ -25,7 +25,7 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qtoolbutton.h>
+#include <QtGui/QToolButton>
 #include <klistwidget.h>
 #include <klocale.h>
 #include <kiconloader.h>

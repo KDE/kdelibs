@@ -22,7 +22,7 @@
 
 #include <kiconloader.h>
 
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 JobItem::JobItem(QTreeWidget *parent, KMJob *job)
 : QTreeWidgetItem(parent)

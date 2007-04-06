@@ -31,7 +31,7 @@
 #include <unistd.h>
 
 #include <QtCore/QFile>
-#include <q3sortedlist.h>
+#include <Qt3Support/Q3SortedList>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>

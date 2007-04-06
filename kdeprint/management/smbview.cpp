@@ -21,8 +21,8 @@
 
 #include <k3process.h>
 #include <ktemporaryfile.h>
-#include <q3header.h>
-#include <qapplication.h>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QApplication>
 #include <QTextStream>
 
 #include <kiconloader.h>
@@ -32,7 +32,7 @@
 #include <kcursor.h>
 
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <cstdlib>
 
 

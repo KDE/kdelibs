@@ -29,7 +29,7 @@
 #include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 #include <kmimetypefactory.h>
 #include <ktemporaryfile.h>
 

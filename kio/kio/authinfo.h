@@ -23,9 +23,9 @@
 
 #include <kio/kio_export.h>
 
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QList>
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 #include <kurl.h>
 
 namespace KIO {

@@ -25,9 +25,9 @@
 
 #include "k3iconviewsearchline.h"
 
-#include <q3iconview.h>
+#include <Qt3Support/Q3IconDrag>
 #include <klocale.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <kdebug.h>
 
 #define DEFAULT_CASESENSITIVE false

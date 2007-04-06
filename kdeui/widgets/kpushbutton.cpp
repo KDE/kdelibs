@@ -19,12 +19,12 @@
 
 #include "kpushbutton.h"
 
-#include <qdrag.h>
-#include <qevent.h>
-#include <qmenu.h>
-#include <qpointer.h>
-#include <qstyle.h>
-#include <qtimer.h>
+#include <QtGui/QDrag>
+#include <QtGui/QActionEvent>
+#include <QtGui/QMenu>
+#include <QtCore/QPointer>
+#include <QtGui/QStyle>
+#include <QtCore/QTimer>
 
 #include "config.h"
 

@@ -37,7 +37,7 @@
 #ifndef __HIGHCONTRAST_H
 #define __HIGHCONTRAST_H
 
-#include <qbitmap.h>
+#include <QtGui/QBitmap>
 #include <kdrawutil.h>
 #include <kpixmap.h>
 #include <kstyle.h>

@@ -22,9 +22,9 @@
 #include "sizewidget.h"
 
 #include <QtGui/QLabel>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLayout>
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 
 #include <klocale.h>
 #include <knuminput.h>

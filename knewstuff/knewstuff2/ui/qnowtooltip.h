@@ -21,9 +21,9 @@
 #ifndef KNEWSTUFF2_UI_QNOWTOOLTIP_H
 #define KNEWSTUFF2_UI_QNOWTOOLTIP_H
 
-#include <qrect.h>
-#include <qstring.h>
-#include <qwidget.h>
+#include <QtCore/QRect>
+#include <QtCore/QCharRef>
+#include <QtGui/QWidget>
 
 class QNowToolTip
 {

@@ -23,7 +23,7 @@
 #include <ksycocatype.h>
 #include <ksharedptr.h>
 
-#include <qdatastream.h>
+#include <QtCore/QDataStream>
 #include <QtCore/QList>
 
 class QString;

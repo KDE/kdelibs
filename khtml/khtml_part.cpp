@@ -107,9 +107,9 @@ using namespace DOM;
 #include <kstatusbar.h>
 #include <kurllabel.h>
 
-#include <qclipboard.h>
+#include <QtGui/QClipboard>
 #include <QtCore/QFile>
-#include <qmetaobject.h>
+#include <QtCore/QMetaClassInfo>
 #include <QTextDocument>
 #include <Q3CString>
 

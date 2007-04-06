@@ -21,8 +21,8 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qtimer.h>
-#include <qpixmap.h>
+#include <QtCore/QTimer>
+#include <QtGui/QPixmap>
 
 #include <kiconloader.h>
 #include <kapplication.h>

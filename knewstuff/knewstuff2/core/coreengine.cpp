@@ -37,9 +37,9 @@
 #include <ktar.h>
 #include <kzip.h>
 
-#include <qdir.h>
-#include <qdom.h>
-#include <qprocess.h>
+#include <QtCore/QDir>
+#include <Qt/qdom.h>
+#include <QtCore/Q_PID>
 
 using namespace KNS;
 

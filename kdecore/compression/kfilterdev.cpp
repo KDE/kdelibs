@@ -22,7 +22,7 @@
 #include <stdio.h> // for EOF
 #include <stdlib.h>
 #include <assert.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #define BUFFER_SIZE 8*1024
 

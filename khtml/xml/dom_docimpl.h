@@ -34,12 +34,12 @@
 #include "misc/loader.h"
 #include "misc/seed.h"
 
-#include <qstringlist.h>
-#include <q3ptrlist.h>
-#include <qobject.h>
-#include <q3intdict.h>
-#include <q3dict.h>
-#include <qmap.h>
+#include <QtCore/QMutableStringListIterator>
+#include <Qt3Support/Q3PtrList>
+#include <QtCore/QObject>
+#include <Qt3Support/Q3IntDict>
+#include <Qt3Support/Q3Dict>
+#include <QtCore/QMap>
 //Added by qt3to4:
 #include <QTimerEvent>
 

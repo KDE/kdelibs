@@ -20,7 +20,7 @@
 #include "static_binding.h"
 #include <kjs/interpreter.h>
 #include <kjs/function_object.h>
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 namespace KJSEmbed {
     static QHash<QString,const Constructor*> g_ctorHash;

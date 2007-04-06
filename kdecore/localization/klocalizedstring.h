@@ -20,7 +20,7 @@
 #define KLOCALIZEDSTRING_H
 
 #include <kdecore_export.h>
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 class KLocale;
 class KLocalizedStringPrivate;

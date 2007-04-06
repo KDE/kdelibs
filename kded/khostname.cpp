@@ -23,9 +23,9 @@
 #include <stdio.h>
 
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <qprocess.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
+#include <QtCore/Q_PID>
 
 #include <kcmdlineargs.h>
 #include <kapplication.h>

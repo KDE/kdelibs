@@ -22,7 +22,7 @@
 
 #include <QtGui/QWidget>
 #include <QtCore/QString>
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 class ImagePosition : public QWidget
 {

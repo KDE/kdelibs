@@ -20,7 +20,7 @@
 
 #include "connection.h"
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <kde_file.h>	// KDE_fdopen
 
 #include <sys/types.h>
@@ -39,7 +39,7 @@
 #include <network/k3socketdevice.h>
 
 #include <kdebug.h>
-#include <qsocketnotifier.h>
+#include <QtCore/QSocketNotifier>
 
 using namespace KIO;
 

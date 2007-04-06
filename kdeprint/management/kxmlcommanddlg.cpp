@@ -23,18 +23,18 @@
 #include <QStackedWidget>
 
 #include <QtGui/QLayout>
-#include <q3header.h>
+#include <Qt3Support/Q3Header>
 #include <QtGui/QLabel>
-#include <qlineedit.h>
-#include <qcombobox.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <qtoolbutton.h>
+#include <QtGui/QToolButton>
 #include <kpushbutton.h>
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <ktextedit.h>
-#include <qregexp.h>
-#include <qapplication.h>
+#include <QtCore/QRegExp>
+#include <QtGui/QApplication>
 
 #include <k3listview.h>
 #include <klocale.h>

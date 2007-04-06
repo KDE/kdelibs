@@ -23,7 +23,7 @@
 #include "sizewidget.h"
 
 #include <QtGui/QLabel>
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <QtGui/QLayout>
 
 #include <klocale.h>

@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qobjectdefs.h>
+#include <QtCore/QArgument>
 #include <QDebug>
 
 #include "static_binding.h"

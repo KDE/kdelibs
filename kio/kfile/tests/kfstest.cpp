@@ -21,10 +21,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <qdir.h>
-#include <qlayout.h>
-#include <qstringlist.h>
-#include <qwidget.h>
+#include <QtCore/QDir>
+#include <QtGui/QLayout>
+#include <QtCore/QMutableStringListIterator>
+#include <QtGui/QWidget>
 
 #include <kfiledialog.h>
 #include <kmessagebox.h>

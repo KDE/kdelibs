@@ -23,7 +23,7 @@
 
 #include "providerhandler.h"
 
-#include <qbytearray.h>
+#include <QtCore/QByteArray>
 
 #include <kconfig.h>
 #include <kdebug.h>

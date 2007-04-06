@@ -34,7 +34,7 @@
 
 #include "khtmlview.h"
 #include "khtml_part.h"
-#include <qvariant.h>
+#include <QtCore/QVariant>
 #include <kdebug.h>
 #include <klocale.h>
 

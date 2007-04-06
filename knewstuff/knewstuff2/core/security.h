@@ -22,7 +22,7 @@
 #define KNEWSTUFF2_SECURITY_H
 
 //qt includes
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QtCore/QObject>
 
 class K3ProcIO;

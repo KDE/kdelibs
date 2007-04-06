@@ -24,7 +24,7 @@
 #define INCLUDE_MENUITEM_DEF
 #include <QMenu>
 #include <QtGui/QLayout>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <QMenuItem>
 
 #include "klanguagebutton.h"

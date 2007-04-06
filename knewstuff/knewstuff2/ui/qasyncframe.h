@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_UI_QASYNCFRAME_H
 #define KNEWSTUFF2_UI_QASYNCFRAME_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
 
 class QPixmap;
 

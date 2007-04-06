@@ -22,8 +22,8 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qtextstream.h>
-#include <qpair.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QPair>
 #include <QList>
 
 #include "cupsdcomment.h"

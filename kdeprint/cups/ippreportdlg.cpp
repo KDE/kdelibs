@@ -26,8 +26,8 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <ktextedit.h>
-#include <q3simplerichtext.h>
-#include <qpainter.h>
+#include <Qt3Support/Q3SimpleRichText>
+#include <QtGui/QPainter>
 
 IppReportDlg::IppReportDlg(QWidget *parent, const char *name)
 : KDialog( parent )

@@ -20,11 +20,11 @@
 #ifndef __kbookmarkmanager_h
 #define __kbookmarkmanager_h
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qobject.h>
-#include <qdom.h>
-#include <qpair.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QObject>
+#include <Qt/qdom.h>
+#include <QtCore/QPair>
 #include "kbookmark.h"
 #include "kbookmarknotifier.h"
 

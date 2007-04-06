@@ -30,7 +30,7 @@
 #include "driver.h"
 
 #include <QtCore/QFile>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <QtDBus/QtDBus>
 #include <kinputdialog.h>
 #include <klocale.h>
@@ -40,7 +40,7 @@
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <k3process.h>
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 #include <kconfig.h>
 #include <kapplication.h>
 

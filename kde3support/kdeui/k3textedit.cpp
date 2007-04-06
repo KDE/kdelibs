@@ -19,9 +19,9 @@
 
 #include "k3textedit.h"
 
-#include <qapplication.h>
-#include <qclipboard.h>
-#include <q3popupmenu.h>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
+#include <Qt3Support/Q3PopupMenu>
 
 #include <k3syntaxhighlighter.h>
 #include <k3spell.h>

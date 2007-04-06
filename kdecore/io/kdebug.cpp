@@ -41,10 +41,10 @@
 #include <kconfiggroup.h>
 #include <kurl.h>
 
-#include <qfile.h>
-#include <qhash.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QFile>
+#include <QtCore/QHash>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 #include <stdlib.h>	// abort
 #include <unistd.h>	// getpid

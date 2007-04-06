@@ -18,9 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <qpair.h>
+#include <QtCore/QPair>
 #include <QtCore/QString>
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 
 #include <kdebug.h>
 #include <kstaticdeleter.h>

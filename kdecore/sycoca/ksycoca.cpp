@@ -26,10 +26,10 @@
 #include "kdebug.h"
 #include "kstandarddirs.h"
 
-#include <qdatastream.h>
-#include <qcoreapplication.h>
-#include <qfile.h>
-#include <qbuffer.h>
+#include <QtCore/QDataStream>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QFile>
+#include <QtCore/QBuffer>
 #include <QProcess>
 #include <QtDBus/QtDBus>
 

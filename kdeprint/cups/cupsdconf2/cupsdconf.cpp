@@ -21,7 +21,7 @@
 #include "cupsdconf.h"
 
 #include <QtCore/QFile>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kconfig.h>

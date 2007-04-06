@@ -21,7 +21,7 @@
 #define FOOMATIC2LOADER_H
 
 #include <kdeprint_export.h>
-#include <qvariant.h>
+#include <QtCore/QVariant>
 
 // This include fixes linker errors under msvc:
 // In qdbusmessage.h QList<QVariant> is instantiated because

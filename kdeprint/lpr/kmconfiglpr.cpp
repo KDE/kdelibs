@@ -20,7 +20,7 @@
 #include "kmconfiglpr.h"
 #include "lprsettings.h"
 
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QGroupBox>

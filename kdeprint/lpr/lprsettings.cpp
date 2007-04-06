@@ -24,7 +24,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 
 #define LPDCONF "/etc/lpd.conf"
 #define PRINTCAP "/etc/printcap"

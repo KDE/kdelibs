@@ -46,7 +46,7 @@
 #include "css/cssproperties.h"
 #include "xml/dom_xmlimpl.h"
 
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <QTextDocument>
 #include <kdebug.h>
 #include <stdlib.h>

@@ -18,9 +18,9 @@
 #ifndef _KDIRWATCH_H
 #define _KDIRWATCH_H
 
-#include <qtimer.h>
-#include <qdatetime.h>
-#include <qmap.h>
+#include <QtCore/QTimer>
+#include <QtCore/QDate>
+#include <QtCore/QMap>
 
 #include <kio/kio_export.h>
 

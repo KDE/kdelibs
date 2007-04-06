@@ -24,7 +24,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 
 // By default, unit tests get no gui.
 // Pass GUI if you use any GUI classes

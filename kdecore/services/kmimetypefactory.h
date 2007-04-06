@@ -22,7 +22,7 @@
 
 #include <assert.h>
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 #include "ksycocafactory.h"
 #include "kmimetype.h"

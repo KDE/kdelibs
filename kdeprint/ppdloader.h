@@ -25,8 +25,8 @@
 #include <QStack>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qvariant.h>
-#include <qhash.h>
+#include <QtCore/QVariant>
+#include <QtCore/QHash>
 
 class DrGroup;
 class DrBase;

@@ -23,8 +23,8 @@
 #define __kio_rename_dialog__
 
 #include <kurl.h>
-#include <qdialog.h>
-#include <qstring.h>
+#include <QtGui/QDialog>
+#include <QtCore/QCharRef>
 #include <sys/types.h>
 
 #include <kio/global.h>

@@ -45,11 +45,11 @@
 #include <QLibrary>
 #include <QtCore/QString>
 #include <QtCore/QFile>
-#include <qdatetime.h>
-#include <qfileinfo.h>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <qfont.h>
+#include <QtCore/QDate>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
+#include <QtGui/QFont>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>

@@ -22,12 +22,12 @@
 #ifndef _KWALLET_H
 #define _KWALLET_H
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QObject>
-#include <qwindowdefs.h>
+#include <QtGui/QWidgetList>
 
 #include <kwallet_export.h>
 

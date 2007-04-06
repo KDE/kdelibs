@@ -24,7 +24,7 @@
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <kaction.h>
-#include <qclipboard.h>
+#include <QtGui/QClipboard>
 
 
 KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)

@@ -22,10 +22,10 @@
 
 #include "kfileitem.h"
 
-#include <qmap.h>
-#include <q3dict.h>
-#include <q3cache.h>
-#include <qwidget.h>
+#include <QtCore/QMap>
+#include <Qt3Support/Q3Dict>
+#include <Qt3Support/Q3Cache>
+#include <QtGui/QWidget>
 
 #include <kurl.h>
 #include <kio/global.h>

@@ -25,7 +25,7 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <klocale.h>
 #include <keditlistbox.h>
 

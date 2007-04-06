@@ -22,19 +22,19 @@
 
 #include "kmwsocketutil.h"
 
-#include <qprogressbar.h>
-#include <qlineedit.h>
+#include <QtGui/QProgressBar>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
-#include <qcombobox.h>
-#include <qpushbutton.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QPushButton>
 #include <kmessagebox.h>
 #include <QtGui/QLayout>
-#include <qregexp.h>
-#include <qhostinfo.h>
+#include <QtCore/QRegExp>
+#include <QtNetwork/QHostInfo>
 #include <knumvalidator.h>
 
-#include <qapplication.h>
-#include <qtcpsocket.h>
+#include <QtGui/QApplication>
+#include <QtNetwork/QTcpSocket>
 #include <klocale.h>
 #include <kdebug.h>
 #include <ksocketfactory.h>

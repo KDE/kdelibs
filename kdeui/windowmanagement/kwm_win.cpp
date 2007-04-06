@@ -24,9 +24,9 @@
 #include <klocale.h>
 #include <kuniqueapplication.h>
 #include <kxerrorhandler.h>
-#include <qbitmap.h>
+#include <QtGui/QBitmap>
 #include <QDesktopWidget>
-#include <qdialog.h>
+#include <QtGui/QDialog>
 #include <QtDBus/QtDBus>
 #include <kdebug.h>
 

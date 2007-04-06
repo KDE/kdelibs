@@ -22,9 +22,9 @@
 
 #include <kio/kio_export.h>
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 #include <QtCore/QList>
-#include <qdom.h>
+#include <Qt/qdom.h>
 #include <kurl.h>
 
 class KBookmarkManager;

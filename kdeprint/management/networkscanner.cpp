@@ -21,15 +21,15 @@
 
 #include "networkscanner.h"
 
-#include <qprogressbar.h>
+#include <QtGui/QProgressBar>
 #include <QtGui/QLayout>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QtGui/QLabel>
-#include <qcombobox.h>
-#include <qlineedit.h>
-#include <qregexp.h>
-#include <qtcpsocket.h>
-#include <qhostinfo.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QLineEdit>
+#include <QtCore/QRegExp>
+#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QHostInfo>
 
 #include <kpushbutton.h>
 #include <klocale.h>

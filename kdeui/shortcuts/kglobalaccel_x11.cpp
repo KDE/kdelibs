@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#include <qwindowdefs.h>
+#include <QtGui/QWidgetList>
 
 #include "kaction.h"
 #include "kglobalaccel_x11.h"
@@ -29,10 +29,10 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
-#include <qregexp.h>
-#include <qwidget.h>
-#include <qmetaobject.h>
-#include <qmenu.h>
+#include <QtCore/QRegExp>
+#include <QtGui/QWidget>
+#include <QtCore/QMetaClassInfo>
+#include <QtGui/QMenu>
 
 #include <kxerrorhandler.h>
 

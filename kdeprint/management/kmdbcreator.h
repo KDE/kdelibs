@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 #include <k3process.h>
 
 class QWidget;

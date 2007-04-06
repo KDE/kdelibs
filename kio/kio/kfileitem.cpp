@@ -31,10 +31,10 @@
 #include <assert.h>
 #include <unistd.h>
 
-#include <qdatetime.h>
-#include <qdir.h>
-#include <qfile.h>
-#include <qmap.h>
+#include <QtCore/QDate>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QMap>
 #include <QTextDocument>
 
 #include <kdebug.h>

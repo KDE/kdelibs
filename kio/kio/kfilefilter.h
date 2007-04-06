@@ -21,7 +21,7 @@
 #ifndef KFILEFILTER_H
 #define KFILEFILTER_H
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 #include <sys/types.h>
 #include <sys/stat.h>

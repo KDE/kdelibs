@@ -26,13 +26,13 @@
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 
-#include <qfileinfo.h>
-#include <qeventloop.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QEventLoop>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <qdir.h>
+#include <QtCore/QDir>
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 

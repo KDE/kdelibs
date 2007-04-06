@@ -22,7 +22,7 @@
 
 #include <kdeprint_export.h>
 #include "kmwizardpage.h"
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class KVisibleButtonGroup;
 

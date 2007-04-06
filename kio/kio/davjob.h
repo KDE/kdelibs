@@ -23,11 +23,11 @@
 
 #include <kurl.h>
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qpointer.h>
-#include <qdom.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QPointer>
+#include <Qt/qdom.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

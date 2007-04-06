@@ -126,7 +126,7 @@ extern "C" {
 #include <kdebug.h>
 #include <kstandarddirs.h>	// locate
 
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 
 // not defined on HP-UX for example
 #ifndef CTRL

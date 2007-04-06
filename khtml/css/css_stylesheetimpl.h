@@ -23,8 +23,8 @@
 #ifndef _CSS_css_stylesheetimpl_h_
 #define _CSS_css_stylesheetimpl_h_
 
-#include <q3valuelist.h>
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3ValueList>
+#include <Qt3Support/Q3PtrList>
 
 #include "dom/dom_string.h"
 #include "css/css_base.h"

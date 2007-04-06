@@ -14,7 +14,7 @@
 
 #include "kdockwidgettest.h"
 
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 //Added by qt3to4:
 #include <QPixmap>
 #include <kcmdlineargs.h>
@@ -24,7 +24,7 @@
 #include <kstatusbar.h>
 #include <kmenubar.h>
 #include <ktoolbar.h>
-#include <q3popupmenu.h>
+#include <Qt3Support/Q3PopupMenu>
 
 static const char*folder[]={
 "16 16 9 1",

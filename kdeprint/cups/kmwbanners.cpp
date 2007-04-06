@@ -23,10 +23,10 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <klocale.h>
 
 static QStringList defaultBanners()

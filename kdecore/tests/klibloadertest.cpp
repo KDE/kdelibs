@@ -24,7 +24,7 @@ QTEST_KDEMAIN_CORE( KLibLoaderTest )
 
 #include <klibloader.h>
 #include <kstandarddirs.h>
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <kdebug.h>
 
 void KLibLoaderTest::initTestCase()

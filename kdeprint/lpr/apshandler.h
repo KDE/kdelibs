@@ -22,7 +22,7 @@
 
 #include "lprhandler.h"
 
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class ApsHandler : public LprHandler
 {

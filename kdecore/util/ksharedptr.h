@@ -27,7 +27,7 @@
 #ifndef KSHAREDPTR_H
 #define KSHAREDPTR_H
 
-#include <qshareddata.h>
+#include <QtCore/QExplicitlySharedDataPointer>
 #include <kdemacros.h>
 
 typedef QSharedData KShared;

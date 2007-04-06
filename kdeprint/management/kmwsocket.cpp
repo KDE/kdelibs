@@ -23,8 +23,8 @@
 #include "kmprinter.h"
 
 #include <k3listview.h>
-#include <q3header.h>
-#include <qlineedit.h>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
 #include <kmessagebox.h>
 #include <QtGui/QLayout>

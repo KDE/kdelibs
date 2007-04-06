@@ -23,8 +23,8 @@
 #ifndef __kio_netaccess_h
 #define __kio_netaccess_h
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 #include <kio/global.h>
 #include <kurl.h>
 

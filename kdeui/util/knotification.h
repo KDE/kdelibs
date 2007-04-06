@@ -23,9 +23,9 @@
 #include <kdeui_export.h>
 #include <kcomponentdata.h>
 
-#include <qpixmap.h>
-#include <qobject.h>
-#include <qpair.h>
+#include <QtGui/QPixmap>
+#include <QtCore/QObject>
+#include <QtCore/QPair>
 
 class QWidget;
 

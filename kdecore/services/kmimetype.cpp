@@ -34,9 +34,9 @@
 #include <ksycoca.h>
 #include <kurl.h>
 
-#include <qset.h>
-#include <qstring.h>
-#include <qfile.h>
+#include <QtCore/QMutableSetIterator>
+#include <QtCore/QCharRef>
+#include <QtCore/QFile>
 #include <QtDBus/QtDBus>
 #include <QBuffer>
 

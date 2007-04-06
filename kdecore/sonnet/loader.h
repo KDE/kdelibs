@@ -25,9 +25,9 @@
 #include <kdecore_export.h>
 #include <ksharedptr.h>
 
-#include <qobject.h>
-#include <qstringlist.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QCharRef>
 #include <ksharedconfig.h>
 
 class KService;

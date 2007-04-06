@@ -39,7 +39,7 @@
 #include <paths.h>
 #endif
 
-#include <qdir.h>
+#include <QtCore/QDir>
 
 #include "kglobal.h"
 #include "krandom.h"

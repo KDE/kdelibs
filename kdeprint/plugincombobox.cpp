@@ -21,7 +21,7 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <klocale.h>

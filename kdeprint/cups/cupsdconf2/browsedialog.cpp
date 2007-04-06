@@ -20,12 +20,12 @@
 #include "browsedialog.h"
 #include "cupsdconf.h"
 
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QPushButton>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 #include <klocale.h>
 

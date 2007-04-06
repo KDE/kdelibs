@@ -27,7 +27,7 @@
 #include <k3fileiconview.h>
 #include <k3filedetailview.h>
 
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #include "config-kfile.h"
 

@@ -27,8 +27,8 @@
 
 #include <QtGui/QLayout>
 #include <QtCore/QString>
-#include <qlist.h>
-#include <qpushbutton.h>
+#include <QtCore/QList>
+#include <QtGui/QPushButton>
 
 #include <kutils_export.h>
 

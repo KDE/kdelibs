@@ -2,7 +2,7 @@
 #define FORM1_H
 
 #include <QtCore/QStringList>
-#include <qvariant.h>
+#include <QtCore/QVariant>
 #include <QtGui/QWidget>
 class QVBoxLayout;
 class QHBoxLayout;

@@ -1,7 +1,7 @@
-#include <qtextstream.h>
-#include <qtimer.h>
-#include <qmap.h>
-#include <qapplication.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QTimer>
+#include <QtCore/QMap>
+#include <QtGui/QApplication>
 
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
@@ -10,9 +10,9 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kwallet.h>
-#include <qdbusconnectioninterface.h>
-#include <qdbusconnection.h>
-#include <qdbusreply.h>
+#include <QtDBus/QDBusConnectionInterface>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusReply>
 
 #include "kwallettest.h"
 

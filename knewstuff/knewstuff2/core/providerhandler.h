@@ -23,9 +23,9 @@
 
 #include <knewstuff2/core/provider.h>
 
-#include <qdom.h>
-#include <qobject.h>
-#include <qstring.h>
+#include <Qt/qdom.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 namespace KIO { class Job; }
 

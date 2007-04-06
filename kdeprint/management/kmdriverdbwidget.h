@@ -20,7 +20,7 @@
 #ifndef KMDRIVERDBWIDGET_H
 #define KMDRIVERDBWIDGET_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #include "kmdbentry.h"
 
 class QListWidget;

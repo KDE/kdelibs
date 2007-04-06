@@ -21,7 +21,7 @@
 #define KMCONFIGDIALOG_H
 
 #include <kpagedialog.h>
-#include <qlist.h>
+#include <QtCore/QList>
 
 #include "kmconfigpage.h"
 

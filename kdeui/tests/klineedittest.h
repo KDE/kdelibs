@@ -2,7 +2,7 @@
 #define _KLINEEDITTEST_H
 
 #include <QtGui/QWidget>
-#include <qpointer.h>
+#include <QtCore/QPointer>
 
 class QString;
 class QPushButton;

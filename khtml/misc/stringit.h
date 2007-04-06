@@ -28,8 +28,8 @@
 
 #include "dom/dom_string.h"
 
-#include <qstring.h>
-#include <q3valuelist.h>
+#include <QtCore/QCharRef>
+#include <Qt3Support/Q3ValueList>
 
 #include <assert.h>
 

@@ -28,9 +28,9 @@
 
 #include <stdio.h>
 #include <setjmp.h>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 #include <kglobal.h>
-#include <qimage.h>
+#include <QtGui/QImage>
 
 #include "imageloader.h"
 

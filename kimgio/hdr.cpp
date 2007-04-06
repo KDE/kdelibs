@@ -11,7 +11,7 @@
 #include "hdr.h"
 
 #include <QtGui/QImage>
-#include <qdatastream.h>
+#include <QtCore/QDataStream>
 
 #include <kdebug.h>
 #include <kglobal.h>

@@ -20,7 +20,7 @@
 #define KCMDLINEARGS_H
 
 #include <kdecore_export.h>
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 template <class T> class QList;
 typedef QList<QByteArray> QByteArrayList;

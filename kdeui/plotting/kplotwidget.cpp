@@ -21,7 +21,7 @@
 #include <math.h>
 #include <kdebug.h>
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <QHash>
 #include <QPainter>
 #include <QPixmap>

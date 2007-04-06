@@ -22,8 +22,8 @@
 
 #include <kdeprint_export.h>
 
-#include <qframe.h>
-#include <qpixmap.h>
+#include <QtGui/QFrame>
+#include <QtGui/QPixmap>
 
 class KDEPRINT_MANAGEMENT_EXPORT SidePixmap : public QFrame
 {

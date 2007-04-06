@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <kcomponentdata.h>
 #include <kurl.h>

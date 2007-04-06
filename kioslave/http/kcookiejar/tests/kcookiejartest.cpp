@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qdatetime.h>
+#include <QtCore/QDate>
 #include <QtCore/QString>
 
 #include <kapplication.h>

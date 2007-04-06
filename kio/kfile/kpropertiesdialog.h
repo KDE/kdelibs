@@ -28,7 +28,7 @@
 #ifndef __propsdialog_h
 #define __propsdialog_h
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 #include <kdemacros.h>
 #include <kurl.h>

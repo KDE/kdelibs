@@ -25,9 +25,9 @@
 #include "k3fileiconview.h"
 #include "config-kfile.h"
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 
-#include <qdir.h>
+#include <QtCore/QDir>
 
 #include <kapplication.h>
 #include <kconfig.h>

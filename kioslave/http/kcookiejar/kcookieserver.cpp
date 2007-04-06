@@ -28,8 +28,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <unistd.h>
 
-#include <qtimer.h>
-#include <q3ptrlist.h>
+#include <QtCore/QTimer>
+#include <Qt3Support/Q3PtrList>
 #include <QtCore/QFile>
 
 #include <QtDBus/QtDBus>

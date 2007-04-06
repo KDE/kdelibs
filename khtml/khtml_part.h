@@ -35,7 +35,7 @@
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <klocalizedstring.h>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;

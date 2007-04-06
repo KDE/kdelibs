@@ -19,7 +19,7 @@
 #ifndef ksambashare_h
 #define ksambashare_h
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kio/kio_export.h>
 

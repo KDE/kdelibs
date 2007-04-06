@@ -20,14 +20,14 @@
 
 
 #include "kstyle.h"
-#include <qdrawutil.h>
-#include <qpainter.h>
-#include <qstyleoption.h>
+#include <QtGui/qdrawutil.h>
+#include <QtGui/QPainter>
+#include <QtGui/QStyleHintReturn>
 #include "colorutil.h"
 #include "pixmaploader.h"
 #include "gradients.h"
 #include "keramikimage.h"
-#include <qpolygon.h>
+#include <QtGui/QPolygon>
 #include <QStyleOptionTab>
 
 #define loader Keramik::PixmapLoader::the()

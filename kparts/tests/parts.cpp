@@ -3,12 +3,12 @@
 
 #include "parts.h"
 
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtCore/QFile>
-#include <qdir.h>
-#include <qtextstream.h>
+#include <QtCore/QDir>
+#include <QtCore/QTextIStream>
 #include <QTextEdit>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 
 #include <kiconloader.h>
 #include <kapplication.h>

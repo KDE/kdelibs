@@ -10,7 +10,7 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <unistd.h> // for exit()
 #include <stdio.h> // for stdout

@@ -28,7 +28,7 @@
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 
 void KServiceTest::initTestCase()
 {

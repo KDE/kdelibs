@@ -22,10 +22,10 @@
 #include "kmprinter.h"
 
 #include <QtGui/QLabel>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 KMWName::KMWName(QWidget *parent)
     : KMWInfoBase(3,parent)

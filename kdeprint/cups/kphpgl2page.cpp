@@ -19,7 +19,7 @@
 
 #include "kphpgl2page.h"
 
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QGroupBox>
 #include <QtGui/QLayout>
 #include <klocale.h>

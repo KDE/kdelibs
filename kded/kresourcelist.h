@@ -18,9 +18,9 @@
 #ifndef __kresourcelist_h__
 #define __kresourcelist_h__
 
-#include <qlinkedlist.h>
+#include <QtCore/QLinkedList>
 #include <QtCore/QString>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 class QDataStream;
 class KSycocaEntry;

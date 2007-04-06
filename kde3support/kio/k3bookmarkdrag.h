@@ -24,8 +24,8 @@
 #include <kde3support_export.h>
 
 #include <kbookmark.h>
-#include <q3dragobject.h>
-#include <q3valuelist.h>
+#include <Qt3Support/Q3ColorDrag>
+#include <Qt3Support/Q3ValueList>
 
 // Clipboard/dnd data : URLs + XML for bookmarks
 class KDE3SUPPORT_EXPORT K3BookmarkDrag : public Q3UriDrag

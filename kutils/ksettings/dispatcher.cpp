@@ -19,7 +19,7 @@
 
 #include "ksettings/dispatcher.h"
 
-#include <q3signal.h>
+#include <Qt3Support/Q3Signal>
 
 #include <kstaticdeleter.h>
 #include <kdebug.h>

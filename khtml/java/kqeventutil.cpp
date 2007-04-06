@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include "kqeventutil.h"
 
 QString KQEventUtil::getQtEventName( QEvent* e )

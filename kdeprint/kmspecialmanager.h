@@ -21,7 +21,7 @@
 #define KMSPECIALMANAGER_H
 
 #include <QtCore/QObject>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class KMPrinter;
 class KMManager;

@@ -20,11 +20,11 @@
 
 #include "kdxstranslation.h"
 
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qtextedit.h>
-#include <qcombobox.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QTextEdit>
+#include <QtGui/QComboBox>
 
 #include <kurlrequester.h>
 #include <klocale.h>

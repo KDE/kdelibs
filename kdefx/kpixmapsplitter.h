@@ -22,9 +22,9 @@
 
 #include <kdefx_export.h>
 
-#include <qpixmap.h>
-#include <qrect.h>
-#include <qsize.h>
+#include <QtGui/QPixmap>
+#include <QtCore/QRect>
+#include <QtCore/QSize>
 #include <QtCore/QString>
 
 /**

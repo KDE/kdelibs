@@ -23,9 +23,9 @@
 
 #include <stdlib.h>
 
-#include <qcoreapplication.h>
-#include <qbytearray.h>
-#include <qstring.h>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QByteArray>
+#include <QtCore/QCharRef>
 
 #include "kaboutdata.h"
 #include "kcmdlineargs.h"

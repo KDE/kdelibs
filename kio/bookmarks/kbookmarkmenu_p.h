@@ -24,7 +24,7 @@
 
 #include <sys/types.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kdialog.h>
 #include <kicon.h>

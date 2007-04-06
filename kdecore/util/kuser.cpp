@@ -21,7 +21,7 @@
 
 #include <kuser.h>
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 #include <pwd.h>
 #include <unistd.h>

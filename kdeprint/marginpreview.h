@@ -20,7 +20,7 @@
 #ifndef	MARGINPREVIEW_H
 #define	MARGINPREVIEW_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class MarginPreview : public QWidget
 {

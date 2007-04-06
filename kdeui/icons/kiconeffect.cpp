@@ -14,18 +14,18 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <qapplication.h>
-#include <qpaintengine.h>
-#include <qdesktopwidget.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qbitmap.h>
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qcolor.h>
-#include <qwidget.h>
-#include <qpainter.h>
-#include <qpen.h>
+#include <QtGui/QApplication>
+#include <QtGui/QPaintEngine>
+#include <QtGui/QDesktopWidget>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtGui/QBitmap>
+#include <QtGui/QPixmap>
+#include <QtGui/QImage>
+#include <QtGui/QColor>
+#include <QtGui/QWidget>
+#include <QtGui/QPainter>
+#include <QtGui/QPen>
 
 #include <kdebug.h>
 #include <kglobal.h>

@@ -24,9 +24,9 @@
 #include <kdeprint_export.h>
 #include <kdeprint/kpreloadobject.h>
 
-#include <qpaintdevice.h>
-#include <qprinter.h>
-#include <qmap.h>
+#include <QtGui/QPaintDevice>
+#include <QtGui/QPrinter>
+#include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 

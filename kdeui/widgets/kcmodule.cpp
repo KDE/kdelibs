@@ -25,7 +25,7 @@
 #include "kcmodule.h"
 #undef KDE3_SUPPORT
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 #include <QTimer>
 
 #include <kaboutdata.h>

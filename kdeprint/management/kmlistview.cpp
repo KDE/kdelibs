@@ -21,8 +21,8 @@
 #include "kmprinter.h"
 #include "kmobject.h"
 
-#include <q3header.h>
-#include <qpainter.h>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QPainter>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kcursor.h>

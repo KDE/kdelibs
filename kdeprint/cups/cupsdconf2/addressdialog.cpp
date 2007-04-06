@@ -19,8 +19,8 @@
 
 #include "addressdialog.h"
 
-#include <qcombobox.h>
-#include <qlineedit.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 

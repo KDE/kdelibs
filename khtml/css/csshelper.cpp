@@ -21,11 +21,11 @@
  */
 #include "csshelper.h"
 
-#include <qfontmetrics.h>
-#include <qfontinfo.h>
-#include <qpaintdevice.h>
-#include <q3paintdevicemetrics.h>
-#include <qfontdatabase.h>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QFontInfo>
+#include <QtGui/QPaintDevice>
+#include <Qt3Support/Q3PaintDeviceMetrics>
+#include <QtGui/QFontDatabase>
 
 #include <kcharsets.h>
 #include <kglobal.h>

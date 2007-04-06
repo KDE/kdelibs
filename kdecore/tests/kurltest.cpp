@@ -32,9 +32,9 @@ QTEST_KDEMAIN_CORE( KUrlTest )
 #include <kglobal.h>
 #include <kcharsets.h>
 #include <kuser.h>
-#include <qtextcodec.h>
-#include <qdatastream.h>
-#include <qmap.h>
+#include <QtCore/QTextCodec>
+#include <QtCore/QDataStream>
+#include <QtCore/QMap>
 #include <stdio.h>
 #include <stdlib.h>
 

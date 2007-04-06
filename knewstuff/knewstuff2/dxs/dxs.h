@@ -22,7 +22,7 @@
 #define KNEWSTUFF2_DXS_DXS_H
 
 #include <knewstuff2/knewstuff_export.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kurl.h>
 

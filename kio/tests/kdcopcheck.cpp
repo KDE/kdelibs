@@ -6,7 +6,7 @@
 #include <kservicegroup.h>
 #include <kprotocolinfo.h>
 #include <k3process.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <kcmdlineargs.h>
 #include "kdcopcheck.h"
 #include <dcopclient.h>

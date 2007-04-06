@@ -24,7 +24,7 @@
 
 class QColorGroup;
 
-#include <q3listview.h>
+#include <Qt3Support/Q3CheckListItem>
 
 #include <kfileitem.h>
 #include <kio/global.h>

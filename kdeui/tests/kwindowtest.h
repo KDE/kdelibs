@@ -1,8 +1,8 @@
 #ifndef testwindow_h
 #define testwindow_h
 
-#include <qtimer.h>
-#include <qprogressbar.h>
+#include <QtCore/QTimer>
+#include <QtGui/QProgressBar>
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>

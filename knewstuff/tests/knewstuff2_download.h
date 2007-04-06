@@ -4,7 +4,7 @@
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 namespace KNS
 {

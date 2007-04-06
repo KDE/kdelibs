@@ -22,11 +22,11 @@
 #include "editlist.h"
 #include "addressdialog.h"
 
-#include <qlineedit.h>
-#include <qcombobox.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 
 #include <klocale.h>
 #include <kiconloader.h>

@@ -21,8 +21,8 @@
 #include <config.h>
 #include <ksslconfig.h>
 
-#include <qregexp.h>
-#include <qurl.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QUrl>
 
 #include "ksslpeerinfo.h"
 #include <kdebug.h>

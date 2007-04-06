@@ -23,8 +23,8 @@
  */
 
 #include "kdiskfreesp.h"
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QtCore/QFile>
+#include <QtCore/QTextIStream>
 
 #include <kdebug.h>
 #include <k3process.h>

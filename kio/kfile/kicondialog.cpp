@@ -26,15 +26,15 @@
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
 
-#include <qlayout.h>
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qtimer.h>
-#include <qradiobutton.h>
-#include <qfileinfo.h>
-#include <qprogressbar.h>
+#include <QtGui/QLayout>
+#include <QtGui/QImage>
+#include <QtGui/QPixmap>
+#include <QtGui/QLabel>
+#include <QtGui/QComboBox>
+#include <QtCore/QTimer>
+#include <QtGui/QRadioButton>
+#include <QtCore/QFileInfo>
+#include <QtGui/QProgressBar>
 #include <ksvgrenderer.h>
 
 #include <QImage>

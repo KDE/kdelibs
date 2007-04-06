@@ -20,9 +20,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qcheckbox.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QCheckBox>
 
 #include <kauthorized.h>
 #include <kcombobox.h>

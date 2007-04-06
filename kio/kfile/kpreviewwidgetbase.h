@@ -21,8 +21,8 @@
 #ifndef __KPREVIEWWIDGETBASE_H__
 #define __KPREVIEWWIDGETBASE_H__
 
-#include <qhash.h>
-#include <qwidget.h>
+#include <QtCore/QHash>
+#include <QtGui/QWidget>
 
 #include <kio/kio_export.h>
 

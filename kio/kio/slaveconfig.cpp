@@ -20,7 +20,7 @@
 
 #include <assert.h>
 
-#include <qhash.h>
+#include <QtCore/QHash>
 
 #include <kconfig.h>
 #include <ksharedconfig.h>

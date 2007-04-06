@@ -21,10 +21,10 @@
 
 #include "kshortcut.h"
 
-#include <qevent.h>
-#include <qkeysequence.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtGui/QActionEvent>
+#include <QtGui/QKeySequence>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 #include "kdebug.h"
 #include "kglobal.h"

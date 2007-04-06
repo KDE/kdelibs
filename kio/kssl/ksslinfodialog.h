@@ -27,7 +27,7 @@
 #include "ksslx509map.h"
 #include "ksslcertificate.h"
 #include "kssl.h"
-#include <q3scrollview.h>
+#include <Qt3Support/Q3ScrollView>
 
 class QWidget;
 class KSSLCertBox;

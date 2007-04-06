@@ -3,7 +3,7 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QImage>
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 class KColorWidget : public QWidget
 {

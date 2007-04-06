@@ -20,9 +20,9 @@
 #include "k3filetreeview.h"
 #include "kfiletreebranch.h"
 
-#include <q3header.h>
-#include <qevent.h>
-#include <qtimer.h>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QActionEvent>
+#include <QtCore/QTimer>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>

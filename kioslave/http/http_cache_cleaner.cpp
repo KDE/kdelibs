@@ -27,7 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <time.h>
 #include <stdlib.h>
 
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QtCore/QString>
 #include <QtDBus/QtDBus>
 

@@ -21,7 +21,7 @@
 #include "cupsdconf.h"
 
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 
 #include <klocale.h>

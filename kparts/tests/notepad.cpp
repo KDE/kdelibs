@@ -3,9 +3,9 @@
 #include <kparts/partmanager.h>
 #include <kparts/mainwindow.h>
 
-#include <qsplitter.h>
+#include <QtGui/QSplitter>
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <QTextEdit>
 
 #include <kaboutdata.h>

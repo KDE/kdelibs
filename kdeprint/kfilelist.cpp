@@ -19,7 +19,7 @@
 
 #include "kfilelist.h"
 
-#include <qtoolbutton.h>
+#include <QtGui/QToolButton>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QDragEnterEvent>

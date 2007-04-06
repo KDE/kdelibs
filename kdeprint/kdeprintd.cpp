@@ -34,8 +34,8 @@
 #include <kwm.h>
 #include <krandom.h>
 #include <QtGui/QLayout>
-#include <qtimer.h>
-#include <qregexp.h>
+#include <QtCore/QTimer>
+#include <QtCore/QRegExp>
 #include <QtDBus/QtDBus>
 
 #include <unistd.h>

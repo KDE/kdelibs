@@ -1,22 +1,22 @@
 #include "kdockwidgetdemo.h"
 
-#include <q3header.h>
-#include <qtoolbutton.h>
-#include <qtooltip.h>
-#include <q3textview.h>
-#include <qfileinfo.h>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QToolButton>
+#include <QtGui/QToolTip>
+#include <Qt3Support/Q3TextView>
+#include <QtCore/QFileInfo>
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <QtGui/QLabel>
-#include <q3multilineedit.h>
-#include <qevent.h>
-#include <q3popupmenu.h>
-#include <qpushbutton.h>
-#include <qpoint.h>
-#include <qmessagebox.h>
-#include <qmime.h>
-#include <q3strlist.h>
-#include <qpainter.h>
+#include <Qt3Support/Q3MultiLineEdit>
+#include <QtGui/QActionEvent>
+#include <Qt3Support/Q3PopupMenu>
+#include <QtGui/QPushButton>
+#include <QtCore/QPoint>
+#include <QtGui/QMessageBox>
+#include <QtGui/QMacMime>
+#include <Qt3Support/Q3StrIList>
+#include <QtGui/QPainter>
 //Added by qt3to4:
 #include <QPixmap>
 #include <QShowEvent>

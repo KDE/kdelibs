@@ -26,7 +26,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QFile>
-#include <q3cstring.h>
+#include <Qt3Support/Q3CString>
 
 #include <ksslall.h>
 #include <kdebug.h>

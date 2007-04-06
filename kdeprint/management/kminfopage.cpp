@@ -20,7 +20,7 @@
 #include "kminfopage.h"
 #include "kmprinter.h"
 
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <kdialog.h>

@@ -28,8 +28,8 @@
 #include "rendering/render_replaced.h"
 #include "dom/dom_string.h"
 
-#include <qmap.h>
-#include <qpixmap.h>
+#include <QtCore/QMap>
+#include <QtGui/QPixmap>
 
 namespace khtml {
 

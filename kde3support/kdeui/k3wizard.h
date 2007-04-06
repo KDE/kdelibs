@@ -24,7 +24,7 @@
 #define K3WIZARD_H
 
 #include <kde3support_export.h>
-#include <q3wizard.h>
+#include <Qt3Support/Q3Wizard>
 
 /**
 * General-purpose multi-page dialog.

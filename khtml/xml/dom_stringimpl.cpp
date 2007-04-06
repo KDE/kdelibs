@@ -28,7 +28,7 @@
 #include <kdebug.h>
 
 #include <string.h>
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 using namespace DOM;
 using namespace khtml;

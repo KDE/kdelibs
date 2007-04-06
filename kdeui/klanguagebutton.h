@@ -29,7 +29,7 @@
 
 #include <kdeui_export.h>
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QIcon;
 class QMenu;

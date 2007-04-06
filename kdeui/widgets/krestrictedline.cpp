@@ -21,7 +21,7 @@
  *
  */
 
-#include <qnamespace.h>
+#include <QtCore/QCOORD>
 #include <QKeyEvent>
 
 #include "krestrictedline.h"

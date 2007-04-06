@@ -27,10 +27,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include <kdeui_export.h>
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qcoreevent.h>
-#include <qwindowdefs.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
+#include <QtCore/QChildEvent>
+#include <QtGui/QWidgetList>
 
 #include <sys/types.h>
 

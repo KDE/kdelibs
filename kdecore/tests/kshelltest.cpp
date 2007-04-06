@@ -23,7 +23,7 @@
 #include "kuser.h"
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qdir.h>
+#include <QtCore/QDir>
 
 #include "kshelltest.moc"
 

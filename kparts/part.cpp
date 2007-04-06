@@ -25,12 +25,12 @@
 #include "partmanager.h"
 #include "browserextension.h"
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <QtCore/QFile>
-#include <qfileinfo.h>
-#include <qpainter.h>
-#include <qpoint.h>
-#include <qtextstream.h>
+#include <QtCore/QFileInfo>
+#include <QtGui/QPainter>
+#include <QtCore/QPoint>
+#include <QtCore/QTextIStream>
 
 #include <kdirnotify.h>
 #include <kfiledialog.h>

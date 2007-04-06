@@ -7,7 +7,7 @@
  */
 
 #include "kpreviewwidgetbase.h"
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 class KPreviewWidgetBase::KPreviewWidgetBasePrivate
 {

@@ -26,10 +26,10 @@
 
 #include <kde3support_export.h>
 
-#include <q3textedit.h>
-#include <q3syntaxhighlighter.h>
-#include <qcolor.h>
-#include <qstringlist.h>
+#include <Qt3Support/Q3TextEdit>
+#include <Qt3Support/Q3SyntaxHighlighter>
+#include <QtGui/QColor>
+#include <QtCore/QMutableStringListIterator>
 
 class Q3Accel;
 class QTimer;

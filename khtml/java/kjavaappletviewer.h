@@ -32,7 +32,7 @@
 #include <kurl.h>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <qpointer.h>
+#include <QtCore/QPointer>
 
 #include "kjavaappletwidget.h"
 

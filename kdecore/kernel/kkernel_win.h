@@ -19,7 +19,7 @@
 #ifndef KKERNEL_WIN_H
 #define KKERNEL_WIN_H
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #ifdef Q_OS_WIN
 

@@ -32,7 +32,7 @@
 #include "rendering/render_layer.h"
 #include "khtmlview.h"
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <kdebug.h>
 
 using namespace DOM;

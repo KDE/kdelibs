@@ -322,8 +322,8 @@ using namespace std;
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <qhash.h>
-#include <qtextstream.h>
+#include <QtCore/QHash>
+#include <QtCore/QTextIStream>
 
 #include <kunittest_export.h>
 

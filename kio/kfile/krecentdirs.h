@@ -28,7 +28,7 @@
 #ifndef __KRECENTDIRS_H
 #define __KRECENTDIRS_H
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kio/kio_export.h>
 

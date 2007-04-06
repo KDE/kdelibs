@@ -60,13 +60,13 @@ using namespace DOM;
 #include <kglobal.h>
 #include <kconfig.h>
 #include <QtCore/QFile>
-#include <q3valuelist.h>
+#include <Qt3Support/Q3ValueList>
 #include <QtCore/QString>
-#include <qtooltip.h>
+#include <QtGui/QToolTip>
 #include <kdebug.h>
 #include <kurl.h>
 #include <assert.h>
-#include <q3paintdevicemetrics.h>
+#include <Qt3Support/Q3PaintDeviceMetrics>
 #include <stdlib.h>
 
 #undef RELATIVE

@@ -69,9 +69,9 @@
 #include <pwd.h>
 #include <grp.h>
 
-#include <qmap.h>
-#include <qfile.h>
-#include <qsocketnotifier.h>
+#include <QtCore/QMap>
+#include <QtCore/QFile>
+#include <QtCore/QSocketNotifier>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

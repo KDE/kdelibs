@@ -23,8 +23,8 @@
 #define KCONFIGDATA_H
 
 #include <kdecore_export.h>
-#include <qmap.h>
-#include <qbytearray.h>
+#include <QtCore/QMap>
+#include <QtCore/QByteArray>
 
 /**
  * map/dict/list config node entry.

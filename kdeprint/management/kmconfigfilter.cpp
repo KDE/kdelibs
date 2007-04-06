@@ -23,11 +23,11 @@
 
 #include <QGroupBox>
 #include <QVBoxLayout>
-#include <qlineedit.h>
-#include <qtoolbutton.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QToolButton>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 
 #include <klocale.h>
 #include <kconfiggroup.h>

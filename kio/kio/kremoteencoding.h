@@ -21,9 +21,9 @@
 
 #include <kio/kio_export.h>
 #include <kurl.h>
-#include <qstring.h>
-#include <qbytearray.h>
-#include <qtextcodec.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QByteArray>
+#include <QtCore/QTextCodec>
 
 class KRemoteEncodingPrivate;
 /**

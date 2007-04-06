@@ -24,7 +24,7 @@
 #include <kdeprint/kpreloadobject.h>
 #include "kmprinterpage.h"
 #include "cjanuswidget.h"
-#include <qlist.h>
+#include <QtCore/QList>
 
 class KMPropWidget;
 class KMPrinter;

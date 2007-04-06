@@ -21,7 +21,7 @@
 
 #include <QtGui/QLayout>
 #include <QListWidget>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <klocale.h>
 #include <kfiledialog.h>
 #include <kiconloader.h>

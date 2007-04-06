@@ -32,9 +32,9 @@
 #include "kdxschanges.h"
 #include "kdxstranslation.h"
 
-#include <qlayout.h>
-#include <qdom.h>
-#include <qtoolbutton.h>
+#include <QtGui/QLayout>
+#include <Qt/qdom.h>
+#include <QtGui/QToolButton>
 
 #include <ktoolinvocation.h>
 #include <kmessagebox.h>
@@ -45,7 +45,6 @@
 #include <kmenu.h>
 #include <kiconloader.h>
 #include <kapplication.h>
-#include <klocale.h>
 #include <k3process.h>
 
 #include <kio/passworddialog.h>

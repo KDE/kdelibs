@@ -23,7 +23,7 @@
 #define KJOBUIPROXY_H
 
 #include <kdecore_export.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class KJob;
 

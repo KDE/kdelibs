@@ -22,16 +22,16 @@
 #ifndef CONVERSION_CHECK_H
 #define CONVERSION_CHECK_H
 
-#include <qstring.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qdatetime.h>
-#include <qpoint.h>
-#include <qpoint.h>
-#include <qsize.h>
-#include <qrect.h>
+#include <QtCore/QCharRef>
+#include <QtGui/QColor>
+#include <QtGui/QFont>
+#include <QtCore/QDate>
+#include <QtCore/QPoint>
+#include <QtCore/QPoint>
+#include <QtCore/QSize>
+#include <QtCore/QRect>
 #include <kurl.h>
-#include <qvariant.h>
+#include <QtCore/QVariant>
 
 namespace ConversionCheck {
 

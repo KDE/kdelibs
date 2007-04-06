@@ -1,9 +1,9 @@
 #include "richpage.h"
 
 #include <QtGui/QLabel>
-#include <qspinbox.h>
-#include <qcombobox.h>
-#include <qfontdatabase.h>
+#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QComboBox>
+#include <QtGui/QFontDatabase>
 #include <QtGui/QLayout>
 
 RichPage::RichPage(QWidget *parent)

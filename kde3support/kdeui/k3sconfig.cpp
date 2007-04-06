@@ -18,12 +18,12 @@
 */
 
 
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qfileinfo.h>
-#include <qdir.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
 
 #include <ktoolinvocation.h>
 #include <kconfig.h>

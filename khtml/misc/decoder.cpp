@@ -37,8 +37,8 @@ using namespace khtml;
 
 #include "htmlhashes.h"
 
-#include <qregexp.h>
-#include <qtextcodec.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QTextCodec>
 
 #include <kglobal.h>
 #include <kcharsets.h>

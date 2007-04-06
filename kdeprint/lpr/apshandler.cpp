@@ -27,8 +27,8 @@
 #include "kprinter.h"
 
 #include <QtCore/QFile>
-#include <qdir.h>
-#include <qtextstream.h>
+#include <QtCore/QDir>
+#include <QtCore/QTextIStream>
 #include <QStack>
 #include <kstandarddirs.h>
 #include <klocale.h>

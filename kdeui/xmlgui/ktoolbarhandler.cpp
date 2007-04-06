@@ -18,7 +18,7 @@
 
 #include <assert.h>
 
-#include <qdom.h>
+#include <Qt/qdom.h>
 
 #include <kaction.h>
 #include <kactioncollection.h>

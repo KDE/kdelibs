@@ -23,8 +23,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <qstring.h>
-#include <qvector.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableVectorIterator>
 
 typedef qulonglong pluraln;
 

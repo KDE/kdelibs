@@ -18,10 +18,10 @@
 */
 
 #include <QtGui/QLayout>
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 #include <QtCore/QStringList>
-#include <qtabwidget.h>
-#include <qtooltip.h>
+#include <QtGui/QTabWidget>
+#include <QtGui/QToolTip>
 
 
 #include <kcmodule.h>

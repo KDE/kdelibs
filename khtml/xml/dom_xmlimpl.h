@@ -26,7 +26,7 @@
 #include "xml/dom_nodeimpl.h"
 #include "misc/loader_client.h"
 
-#include <qxml.h>
+#include <Qt/qxml.h>
 
 namespace khtml {
 class CachedCSSStyleSheet;

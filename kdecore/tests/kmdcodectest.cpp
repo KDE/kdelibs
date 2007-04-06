@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-#include <qbuffer.h>
+#include <QtCore/QBuffer>
 #include <QtCore/QFile>
 
 #include <kdebug.h>

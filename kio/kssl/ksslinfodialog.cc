@@ -23,13 +23,13 @@
 
 #include <kssl.h>
 
-#include <qframe.h>
-#include <q3scrollview.h>
-#include <qdatetime.h>
+#include <QtGui/QFrame>
+#include <Qt3Support/Q3ScrollView>
+#include <QtCore/QDate>
 #include <QtCore/QFile>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 
 #include <kapplication.h>
 #include <kcombobox.h>

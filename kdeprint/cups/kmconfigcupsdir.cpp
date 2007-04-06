@@ -19,7 +19,7 @@
 
 #include "kmconfigcupsdir.h"
 
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <kurlrequester.h>
 #include <klocale.h>
 #include <kdialog.h>

@@ -26,18 +26,18 @@ Boston, MA 02110-1301, USA.
 #include "kfontchooser.h"
 
 
-#include <qcombobox.h>
-#include <qcheckbox.h>
-#include <qfile.h>
-#include <qfont.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qscrollbar.h>
-#include <qstringlist.h>
-#include <qfontdatabase.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QCheckBox>
+#include <QtCore/QFile>
+#include <QtGui/QFont>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QLineEdit>
+#include <QtGui/QScrollBar>
+#include <QtCore/QMutableStringListIterator>
+#include <QtGui/QFontDatabase>
 #include <QList>
-#include <qgroupbox.h>
+#include <QtGui/QGroupBox>
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kdialog.h>

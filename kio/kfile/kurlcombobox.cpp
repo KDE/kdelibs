@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qdir.h>
+#include <QtCore/QDir>
 
 #include <kdebug.h>
 #include <kglobal.h>

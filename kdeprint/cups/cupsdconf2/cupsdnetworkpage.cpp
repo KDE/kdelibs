@@ -24,8 +24,8 @@
 #include "sizewidget.h"
 
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
-#include <qcombobox.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 #include <QtGui/QLayout>
 
 #include <klocale.h>

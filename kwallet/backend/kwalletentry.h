@@ -23,7 +23,7 @@
 #define _KWALLETENTRY_H
 
 #include <QtCore/QString>
-#include <qdatastream.h>
+#include <QtCore/QDataStream>
 
 #include "kwallet.h"
 

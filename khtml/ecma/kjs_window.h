@@ -23,10 +23,10 @@
 #define _KJS_WINDOW_H_
 
 #include <QtCore/QObject>
-#include <qpointer.h>
-#include <qmap.h>
+#include <QtCore/QPointer>
+#include <QtCore/QMap>
 #include <QList>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 #include "khtmlpart_p.h"
 #include "kjs_binding.h"

@@ -32,7 +32,7 @@
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 #include <QtGui/QMainWindow>
-#include <qmetaobject.h>
+#include <QtCore/QMetaClassInfo>
 
 class KMenu;
 class KXMLGUIFactory;

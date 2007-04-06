@@ -19,8 +19,8 @@
 #ifndef __auto_mount_h__
 #define __auto_mount_h__
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 #include <kio/kio_export.h>
 

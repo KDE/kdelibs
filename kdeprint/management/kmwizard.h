@@ -21,7 +21,7 @@
 #define KMWIZARD_H
 
 #include <kdeprint_export.h>
-#include <qdialog.h>
+#include <QtGui/QDialog>
 #include <QMultiHash>
 #include <QStack>
 

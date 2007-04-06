@@ -11,7 +11,7 @@
 #include <klistwidget.h>
 
 #include <QtCore/QString>
-#include <qvalidator.h>
+#include <QtGui/QDoubleValidator>
 #include <kcmdlineargs.h>
 
 

@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 /**
  * @short A Java applet

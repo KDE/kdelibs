@@ -29,8 +29,8 @@
 #include <kde_file.h>
 #include <kmimetype.h>
 
-#include <qbytearray.h>
-#include <qdatetime.h>
+#include <QtCore/QByteArray>
+#include <QtCore/QDate>
 #include <QTextDocument>
 
 #include <sys/types.h>

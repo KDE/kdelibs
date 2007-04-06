@@ -40,8 +40,8 @@ extern "C" {
 #include <pwd.h>
 #include <grp.h>
 }
-#include <qtimer.h>
-#include <qfile.h>
+#include <QtCore/QTimer>
+#include <QtCore/QFile>
 
 #include <kapplication.h>
 #include <kauthorized.h>

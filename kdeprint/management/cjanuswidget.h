@@ -20,9 +20,9 @@
 #ifndef CJANUSWIDGET_H
 #define CJANUSWIDGET_H
 
-#include <qwidget.h>
-#include <qpixmap.h>
-#include <qlist.h>
+#include <QtGui/QWidget>
+#include <QtGui/QPixmap>
+#include <QtCore/QList>
 
 class QStackedWidget;
 class QLabel;

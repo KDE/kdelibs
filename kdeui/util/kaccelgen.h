@@ -22,9 +22,9 @@
 
 #include <kdeui_export.h>
 
-#include <qmap.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QMap>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 /**
  * Provides functions that, given a collection of QStrings, will

@@ -21,7 +21,7 @@
 #define __kbookmarkdombuilder_h
 
 #include <QtCore/QStack>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kbookmark.h>
 
 class KIO_EXPORT KBookmarkDomBuilder : public QObject {

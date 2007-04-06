@@ -26,9 +26,9 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qlist.h>
+#include <QtCore/QList>
 #include <QtCore/QObject>
-#include <qpair.h>
+#include <QtCore/QPair>
 
 class KMManager;
 class KMJobManager;

@@ -21,9 +21,9 @@
 #define LPRNGTOOLHANDLER_H
 
 #include "lprhandler.h"
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QtCore/QStringList>
-#include <qpair.h>
+#include <QtCore/QPair>
 
 class LPRngToolHandler : public LprHandler
 {

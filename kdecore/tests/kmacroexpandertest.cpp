@@ -20,7 +20,7 @@
 #include "qtest_kde.h"
 #include "kmacroexpander.h"
 #include "kmacroexpandertest.moc"
-#include <qhash.h>
+#include <QtCore/QHash>
 
 class MyCExpander : public KCharMacroExpander
 {

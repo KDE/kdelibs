@@ -23,8 +23,8 @@
 
 #include "loader.h"
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QMutableStringListIterator>
 
 namespace KSpell2
 {

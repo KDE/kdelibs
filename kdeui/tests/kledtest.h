@@ -2,7 +2,7 @@
 #define kledtest_h
 
 #include <QtGui/QWidget>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <stdlib.h>
 #include <kled.h>
 

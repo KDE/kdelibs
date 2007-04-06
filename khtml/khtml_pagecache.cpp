@@ -24,9 +24,9 @@
 #include <ktemporaryfile.h>
 #include <kstandarddirs.h>
 
-#include <q3intdict.h>
+#include <Qt3Support/Q3IntDict>
 #include <Q3PtrList>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <errno.h>
 #include <sys/types.h>

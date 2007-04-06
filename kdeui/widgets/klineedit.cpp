@@ -28,7 +28,7 @@
 #include "klineedit.h"
 
 #include <kconfig.h>
-#include <qtooltip.h>
+#include <QtGui/QToolTip>
 #include <kcursor.h>
 #include <klocale.h>
 #include <kstandardshortcut.h>

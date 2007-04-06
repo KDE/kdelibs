@@ -22,7 +22,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdeversion.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <QtGui/QWidget>
 #include <QtDBus/QtDBus>
 #include "kwallet_interface.h"

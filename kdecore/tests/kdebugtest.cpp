@@ -3,8 +3,8 @@
 #include <kcomponentdata.h>
 #include <iostream>
 #include <QApplication>
-#include <qpen.h>
-#include <qvariant.h>
+#include <QtGui/QPen>
+#include <QtCore/QVariant>
 
 void testKDebug()
 {

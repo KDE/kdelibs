@@ -34,7 +34,7 @@
 #include <ksslcertchain.h>
 #include <kmessagebox.h>
 #include <time.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 #include <QPointer>
 

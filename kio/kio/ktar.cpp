@@ -21,8 +21,8 @@
 #include <time.h> // time()
 #include <assert.h>
 
-#include <qdir.h>
-#include <qfile.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <ktemporaryfile.h>

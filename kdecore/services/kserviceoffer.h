@@ -20,7 +20,7 @@
 #ifndef KSERVICEOFFER_H
 #define KSERVICEOFFER_H
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 #include <kservice.h>
 
 /**

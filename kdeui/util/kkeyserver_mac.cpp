@@ -19,7 +19,7 @@
 
 #include <config.h>
 
-#include <qnamespace.h>
+#include <QtCore/QCOORD>
 
 #ifdef Q_WS_MACX // Only compile this module if we're compiling for Mac OS X
 

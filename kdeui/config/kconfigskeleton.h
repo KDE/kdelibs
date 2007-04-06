@@ -29,13 +29,13 @@
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
-#include <qcolor.h>
-#include <qdatetime.h>
-#include <qfont.h>
-#include <qhash.h>
-#include <qrect.h>
-#include <qstringlist.h>
-#include <qvariant.h>
+#include <QtGui/QColor>
+#include <QtCore/QDate>
+#include <QtGui/QFont>
+#include <QtCore/QHash>
+#include <QtCore/QRect>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QVariant>
 
   /**
    * @short Class for storing a preferences setting

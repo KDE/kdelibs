@@ -13,7 +13,7 @@
 
 #include <sys/types.h>
 
-#include <qbytearray.h>
+#include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QList>

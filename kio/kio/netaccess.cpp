@@ -27,11 +27,11 @@
 
 #include <cstring>
 
-#include <qstring.h>
-#include <qapplication.h>
-#include <qfile.h>
-#include <qmetaobject.h>
-#include <qtextstream.h>
+#include <QtCore/QCharRef>
+#include <QtGui/QApplication>
+#include <QtCore/QFile>
+#include <QtCore/QMetaClassInfo>
+#include <QtCore/QTextIStream>
 
 #include <kapplication.h>
 #include <klocale.h>

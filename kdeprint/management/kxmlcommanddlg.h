@@ -21,7 +21,7 @@
 #define KXMLCOMMANDDLG_H
 
 #include <QtGui/QImage>
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QtCore/QStringList>
 #include <kdialog.h>
 

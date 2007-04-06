@@ -1,5 +1,5 @@
 #include "QBrush_bind.h"
-#include <qbrush.h>
+#include <QtGui/QBrush>
 #include <value_binding.h>
 #include <object_binding.h>
 

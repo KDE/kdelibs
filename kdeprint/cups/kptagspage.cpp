@@ -24,7 +24,7 @@
 #include <QHeaderView>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 #include <klocale.h>
 

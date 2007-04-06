@@ -21,8 +21,8 @@
 #ifndef __kservicetypeprofile_h__
 #define __kservicetypeprofile_h__
 
-#include <qmap.h>
-#include <qstring.h>
+#include <QtCore/QMap>
+#include <QtCore/QCharRef>
 #include <QtCore/QList>
 
 #include <kservicetypetrader.h>

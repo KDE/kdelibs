@@ -38,16 +38,16 @@ Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
 #ifndef KTHEMESTYLE_H
 #define KTHEMESTYLE_H
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #include "kthemebase.h"
-#include <qwindowdefs.h>
+#include <QtGui/QWidgetList>
 #include <QtCore/QObject>
-#include <qpushbutton.h>
-#include <qscrollbar.h>
-#include <qtabbar.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QScrollBar>
+#include <QtGui/QTabBar>
 #include <QtCore/QString>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 
 /**

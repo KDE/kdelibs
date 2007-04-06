@@ -17,7 +17,7 @@
 */
 
 #include <QtCore/QString>
-#include <qhash.h>
+#include <QtCore/QHash>
 #include <stdio.h>
 
 class A { qint64 foo; };

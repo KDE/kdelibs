@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qmap.h>
-#include <qobject.h>
+#include <QtCore/QMap>
+#include <QtCore/QObject>
 
 #include <kcompletion.h>
 

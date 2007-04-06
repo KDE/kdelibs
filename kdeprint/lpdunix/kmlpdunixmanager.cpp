@@ -22,10 +22,10 @@
 #include "kmprinter.h"
 
 #include <QtCore/QFile>
-#include <qdir.h>
-#include <qfileinfo.h>
-#include <qtextstream.h>
-#include <qregexp.h>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>

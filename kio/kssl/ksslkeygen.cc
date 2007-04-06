@@ -32,9 +32,9 @@
 #include <ktemporaryfile.h>
 #include <kwallet.h>
 
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qprogressdialog.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QPushButton>
+#include <QtGui/QProgressDialog>
 
 #include <assert.h>
 

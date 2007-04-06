@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 using namespace KIO;
 

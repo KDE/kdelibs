@@ -22,7 +22,7 @@
 #include <klocale.h>
 #include <knotification.h>
 #include <kglobal.h>
-#include <qvector.h>
+#include <QtCore/QMutableVectorIterator>
 
 #include "kcompletion.h"
 #include "kcompletion_p.h"

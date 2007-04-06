@@ -22,7 +22,7 @@
 
 #include <kdebug.h>
 
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 
 using namespace KSpell2;
 

@@ -19,10 +19,10 @@
 
 #include "sizewidget.h"
 
-#include <qcombobox.h>
-#include <qspinbox.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QDoubleSpinBox>
 #include <QtGui/QLayout>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <klocale.h>
 
 SizeWidget::SizeWidget( QWidget *parent )

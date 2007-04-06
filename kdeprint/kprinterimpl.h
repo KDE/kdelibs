@@ -25,7 +25,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class KPrinter;
 class KMPrinter;

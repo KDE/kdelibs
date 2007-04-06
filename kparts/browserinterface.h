@@ -2,7 +2,7 @@
 #define __browserinterface_h__
 
 #include <QtCore/QObject>
-#include <qvariant.h>
+#include <QtCore/QVariant>
 
 #include <kparts/kparts_export.h>
 

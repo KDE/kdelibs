@@ -21,16 +21,16 @@
 
 #include "k3fileiconview.h"
 
-#include <qapplication.h>
-#include <qevent.h>
-#include <qfontmetrics.h>
-#include <qnamespace.h>
-#include <qlabel.h>
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qtooltip.h>
+#include <QtGui/QApplication>
+#include <QtGui/QActionEvent>
+#include <QtGui/QFontMetrics>
+#include <QtCore/QCOORD>
+#include <QtGui/QLabel>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
+#include <QtCore/QRegExp>
+#include <QtCore/QTimer>
+#include <QtGui/QToolTip>
 
 #include <kaction.h>
 #include <klocale.h>

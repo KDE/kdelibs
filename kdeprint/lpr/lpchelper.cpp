@@ -23,8 +23,8 @@
 #include "lprsettings.h"
 
 #include <kstandarddirs.h>
-#include <qtextstream.h>
-#include <qregexp.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
 #include <kdebug.h>
 #include <klocale.h>
 #include <k3process.h>

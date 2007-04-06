@@ -26,8 +26,8 @@ DEALINGS IN THE SOFTWARE.
 #define KXMESSAGES_H
 
 #include <kdeui_export.h>
-#include <qwidget.h>
-#include <qmap.h>
+#include <QtGui/QWidget>
+#include <QtCore/QMap>
 #ifdef Q_WS_X11
 #include <X11/X.h>
 

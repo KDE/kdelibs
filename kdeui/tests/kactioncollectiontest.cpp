@@ -1,6 +1,6 @@
 
 #include "kactioncollectiontest.h"
-#include <qpointer.h>
+#include <QtCore/QPointer>
 
 #include <kapplication.h>
 #include <kaction.h>

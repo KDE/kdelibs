@@ -20,11 +20,11 @@
 */
 
 #include "k3filedetailview.h"
-#include <qevent.h>
-#include <qnamespace.h>
-#include <q3header.h>
-#include <qpainter.h>
-#include <qpixmap.h>
+#include <QtGui/QActionEvent>
+#include <QtCore/QCOORD>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
 
 #include <kapplication.h>
 #include <kfileitem.h>

@@ -26,8 +26,8 @@
 #include "kdebug.h"
 #include "klocale.h"
 
-#include <qdatetime.h>
-#include <qstring.h>
+#include <QtCore/QDate>
+#include <QtCore/QCharRef>
 
 static int hebrewDaysElapsed(int y);
 static QString num2heb(int num, bool includeMillenium);

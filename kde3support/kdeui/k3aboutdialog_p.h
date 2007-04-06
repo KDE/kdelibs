@@ -23,7 +23,7 @@
 #ifndef K3ABOUTDIALOG_P_H
 #define K3ABOUTDIALOG_P_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QLabel;
 class QFrame;

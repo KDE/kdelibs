@@ -24,7 +24,7 @@
 #define _KIDNA_H
 
 #include <kdecore_export.h>
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 namespace KIDNA {
     /**

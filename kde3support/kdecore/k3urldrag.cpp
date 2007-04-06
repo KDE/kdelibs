@@ -18,10 +18,10 @@
 */
 
 #include "k3urldrag.h"
-#include <q3cstring.h>
-#include <q3strlist.h>
-#include <q3dragobject.h>
-#include <qfont.h>
+#include <Qt3Support/Q3CString>
+#include <Qt3Support/Q3StrIList>
+#include <Qt3Support/Q3ColorDrag>
+#include <QtGui/QFont>
 #include <unistd.h>
 
 #include <kglobal.h>

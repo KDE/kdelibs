@@ -22,8 +22,8 @@
 
 #include "kmmanager.h"
 
-#include <qhash.h>
-#include <qdatetime.h>
+#include <QtCore/QHash>
+#include <QtCore/QDate>
 #include <kurl.h>
 
 class LprHandler;

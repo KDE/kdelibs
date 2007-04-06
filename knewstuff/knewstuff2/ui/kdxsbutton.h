@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_UI_KDXSBUTTON_H
 #define KNEWSTUFF2_UI_KDXSBUTTON_H
 
-#include <qtoolbutton.h>
+#include <QtGui/QToolButton>
 
 class KMenu;
 class QAction;

@@ -20,7 +20,7 @@
 #ifndef KMPROPCONTAINER_H
 #define KMPROPCONTAINER_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class KMPropWidget;
 class QPushButton;

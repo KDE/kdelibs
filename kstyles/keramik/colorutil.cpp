@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qcolor.h>
+#include <QtGui/QColor>
 
 #include "colorutil.h"
 

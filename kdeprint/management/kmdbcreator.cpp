@@ -22,9 +22,9 @@
 #include "kmmanager.h"
 
 #include <QByteArray>
-#include <qprogressdialog.h>
-#include <qfileinfo.h>
-#include <qdir.h>
+#include <QtGui/QProgressDialog>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
 #include <klocale.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>

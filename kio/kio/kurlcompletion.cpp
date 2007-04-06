@@ -31,14 +31,14 @@
 #include <assert.h>
 #include <limits.h>
 
-#include <qstringlist.h>
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qdir.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qthread.h>
-#include <qevent.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QRegExp>
+#include <QtCore/QTimer>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QTextIStream>
+#include <QtCore/QThread>
+#include <QtGui/QActionEvent>
 
 #include <kapplication.h>
 #include <kauthorized.h>

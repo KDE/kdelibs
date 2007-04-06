@@ -25,7 +25,7 @@
 #define K_FONT_CHOOSER_H
 
 #include <kdeui_export.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QFont;
 class QStringList;

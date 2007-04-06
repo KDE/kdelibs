@@ -23,7 +23,7 @@
 #ifndef KCONFIGFLAGS_H_
 #define KCONFIGFLAGS_H_
 
-#include <qmap.h>
+#include <QtCore/QMap>
 
 struct KEntry;
 struct KEntryKey;

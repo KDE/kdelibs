@@ -20,7 +20,7 @@
 #define KDIRWATCHTEST_GUI_H
 
 #include <kmainwindow.h>
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
 class KDirWatchTest_GUI : public QWidget
 {

@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 #include "kdrawutil.h"
-#include <qdrawutil.h>
+#include <QtGui/qdrawutil.h>
 #include <QtGui/QPolygon>
 
 KDEFX_EXPORT void kDrawNextButton(QPainter *p, int x, int y, int w, int h,

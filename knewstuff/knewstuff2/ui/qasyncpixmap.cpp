@@ -26,7 +26,7 @@
 #include <krandom.h>
 #include <kdebug.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 
 QAsyncPixmap::QAsyncPixmap(QString url)
 : QPixmap()

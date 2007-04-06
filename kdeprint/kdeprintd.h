@@ -21,10 +21,10 @@
 #define KDEPRINTD_H
 
 #include <kdedmodule.h>
-#include <qlist.h>
+#include <QtCore/QList>
 #include <QtCore/QStringList>
-#include <qpointer.h>
-#include <qhash.h>
+#include <QtCore/QPointer>
+#include <QtCore/QHash>
 #include <QtDBus/QtDBus>
 
 class KPrintProcess;

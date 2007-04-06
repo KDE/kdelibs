@@ -19,9 +19,9 @@
 
 #include "kfileshare.h"
 #include "kfileshare_p.h"
-#include <qdir.h>
-#include <qfile.h>
-#include <qprocess.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/Q_PID>
 #include <klocale.h>
 #include <kstaticdeleter.h>
 #include <kstandarddirs.h>

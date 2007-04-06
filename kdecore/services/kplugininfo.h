@@ -20,9 +20,9 @@
 #ifndef KPLUGININFO_H
 #define KPLUGININFO_H
 
-#include <qstring.h>
-#include <qmap.h>
-#include <qstringlist.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMap>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kservice.h>
 #include <QtCore/QList>

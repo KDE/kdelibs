@@ -19,7 +19,7 @@
 
 #include "imageposition.h"
 
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <kstandarddirs.h>
 
 static void draw3DPage(QPainter *p, QRect r)

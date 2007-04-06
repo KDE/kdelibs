@@ -27,10 +27,10 @@
 #endif
 
 
-#include <qpainter.h>
-#include <qimage.h>
-#include <qcolor.h>
-#include <qapplication.h>
+#include <QtGui/QPainter>
+#include <QtGui/QImage>
+#include <QtGui/QColor>
+#include <QtGui/QApplication>
 #include <kpixmapeffect.h>
 #include "kled.h"
 

@@ -26,15 +26,15 @@
 #include <kstringvalidator.h>
 #include <kdebug.h>
 
-#include <qlabel.h>
-#include <qcheckbox.h>
-#include <qspinbox.h>
-#include <qdatetimeedit.h>
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qlayout.h>
-#include <qsizepolicy.h>
-#include <qvalidator.h>
+#include <QtGui/QLabel>
+#include <QtGui/QCheckBox>
+#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QDateEdit>
+#include <QtGui/QPixmap>
+#include <QtGui/QImage>
+#include <QtGui/QLayout>
+#include <QtGui/QSizePolicy>
+#include <QtGui/QDoubleValidator>
 
 /*
   Widgets used for different types:

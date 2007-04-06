@@ -34,10 +34,10 @@
 #include <krandom.h>
 #include <kdebug.h>
 #include <k3process.h>
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <qregexp.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
 
 #include <stdlib.h>
 #include <sys/wait.h>

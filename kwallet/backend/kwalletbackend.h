@@ -26,7 +26,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qmap.h>
+#include <QtCore/QMap>
 #include "kwalletentry.h"
 
 

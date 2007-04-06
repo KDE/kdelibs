@@ -31,9 +31,9 @@
 #include "html/html_documentimpl.h"
 #include "rendering/render_frames.h"
 
-#include <qtimer.h>
-#include <q3paintdevicemetrics.h>
-#include <qapplication.h>
+#include <QtCore/QTimer>
+#include <Qt3Support/Q3PaintDeviceMetrics>
+#include <QtGui/QApplication>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
@@ -47,7 +47,7 @@
 #endif
 #include <kglobalsettings.h>
 #include <assert.h>
-#include <qstyle.h>
+#include <QtGui/QStyle>
 #include <QtCore/QObject>
 #include <QTextDocument>
 #include <kstringhandler.h>

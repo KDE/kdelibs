@@ -1,7 +1,7 @@
 #ifndef KNTLM_DES_H
 #define KNTLM_DES_H
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 typedef struct des_key
 {

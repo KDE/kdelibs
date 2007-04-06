@@ -18,13 +18,13 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qapplication.h>
-#include <qbitmap.h>
-#include <qglobal.h>
+#include <QtGui/QApplication>
+#include <QtGui/QBitmap>
+#include <QtCore/QBool>
 #include <QtGui/QImage>
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qpixmapcache.h>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
 
 #include "pixmaploader.h"
 

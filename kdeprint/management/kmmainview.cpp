@@ -36,8 +36,8 @@
 #include "messagewindow.h"
 
 #include <kmenubar.h>
-#include <qtimer.h>
-#include <qcombobox.h>
+#include <QtCore/QTimer>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <kmessagebox.h>

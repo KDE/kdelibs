@@ -28,7 +28,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QVector>
 
 class KConfig;

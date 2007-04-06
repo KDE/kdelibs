@@ -23,11 +23,11 @@
 #include <kicon.h>
 #include <kdialog.h> // for spacingHint()
 #include <kdebug.h>
-#include <qapplication.h>
-#include <qtoolbutton.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qevent.h>
+#include <QtGui/QApplication>
+#include <QtGui/QToolButton>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QActionEvent>
 #include <QListWidget>
 
 class KActionSelectorPrivate {

@@ -16,11 +16,11 @@
 # include <stdlib.h>
 #endif
 
-#include <qfileinfo.h>
+#include <QtCore/QFileInfo>
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <qtextcodec.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
+#include <QtCore/QTextCodec>
 
 #include <kdebug.h>
 #include <kurl.h>

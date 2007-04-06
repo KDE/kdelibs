@@ -19,7 +19,7 @@
 #define K3LISTBOX_H
 
 #include <kde3support_export.h>
-#include <q3listbox.h>
+#include <Qt3Support/Q3ListBox>
 
 /**
  * @short A variant of QListBox that honors KDE's system-wide settings.

@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kio/global.h>
 #include <kio/authinfo.h>

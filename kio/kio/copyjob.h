@@ -22,8 +22,8 @@
 #ifndef KIO_COPYJOB_H
 #define KIO_COPYJOB_H
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QMutableStringListIterator>
 
 #include <sys/types.h> // time_t
 

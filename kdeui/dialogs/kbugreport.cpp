@@ -17,12 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qpushbutton.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qtextedit.h>
-#include <qradiobutton.h>
-#include <qregexp.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QTextEdit>
+#include <QtGui/QRadioButton>
+#include <QtCore/QRegExp>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QCloseEvent>
@@ -31,7 +31,7 @@
 
 #include <kaboutdata.h>
 #include "ktoolinvocation.h"
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klineedit.h>
@@ -54,7 +54,7 @@
 #include "kdepackages.h"
 #include <kcombobox.h>
 #include <config.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <config-compiler.h>
 

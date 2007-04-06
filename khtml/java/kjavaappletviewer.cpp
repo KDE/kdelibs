@@ -22,11 +22,11 @@
 #ifdef KDE_USE_FINAL
 #undef Always
 #endif
-#include <qdir.h>
-#include <q3table.h>
-#include <qpair.h>
-#include <qtimer.h>
-#include <qpointer.h>
+#include <QtCore/QDir>
+#include <Qt3Support/Q3CheckTableItem>
+#include <QtCore/QPair>
+#include <QtCore/QTimer>
+#include <QtCore/QPointer>
 #include <QtGui/QLabel>
 #include <QtDBus/QtDBus>
 

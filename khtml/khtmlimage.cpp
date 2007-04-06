@@ -27,7 +27,7 @@
 #include "misc/loader.h"
 
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 #include <kjobuidelegate.h>
 #include <kio/job.h>

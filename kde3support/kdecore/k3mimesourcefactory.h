@@ -25,7 +25,7 @@
 #include <kde3support_export.h>
 #include <kglobal.h>
 
-#include <qmime.h>
+#include <QtGui/QMacMime>
 #include <Qt3Support/Q3MimeSourceFactory>
 
 class K3MimeSourceFactoryPrivate;

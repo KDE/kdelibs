@@ -25,10 +25,10 @@
 
 #include <kurl.h>
 
-#include <qdom.h>
-#include <qobject.h>
-#include <qlist.h>
-#include <qstring.h>
+#include <Qt/qdom.h>
+#include <QtCore/QObject>
+#include <QtCore/QList>
+#include <QtCore/QCharRef>
 
 namespace KIO { class Job; }
 

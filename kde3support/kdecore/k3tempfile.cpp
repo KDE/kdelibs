@@ -41,11 +41,11 @@
 #define _PATH_TMP "/tmp"
 #endif
 
-#include <qstring.h>
-#include <qdatetime.h>
-#include <qfile.h>
-#include <qdatastream.h>
-#include <qtextstream.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QDate>
+#include <QtCore/QFile>
+#include <QtCore/QDataStream>
+#include <QtCore/QTextIStream>
 
 #include "kglobal.h"
 #include "krandom.h"

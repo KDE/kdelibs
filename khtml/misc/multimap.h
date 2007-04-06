@@ -77,7 +77,7 @@ private:
 };
 #endif
 
-#include <q3ptrdict.h>
+#include <Qt3Support/Q3PtrDict>
 
 template<class T> class MultiMapPtrList;
 

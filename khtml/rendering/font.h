@@ -26,10 +26,10 @@
 #define KHTMLFONT_H
 
 #include <QCache>
-#include <qfont.h>
+#include <QtGui/QFont>
 #include <QFontDatabase>
-#include <qfontmetrics.h>
-#include <qpainter.h>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QPainter>
 
 class Q3PaintDeviceMetrics;
 

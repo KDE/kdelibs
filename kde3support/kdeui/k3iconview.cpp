@@ -18,10 +18,10 @@
 
 //#include <config.h>
 
-#include <qtimer.h>
-#include <qpainter.h>
-#include <qpixmapcache.h>
-#include <qevent.h>
+#include <QtCore/QTimer>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmapCache>
+#include <QtGui/QActionEvent>
 
 #include "k3iconview.h"
 #include "kwordwrap.h"

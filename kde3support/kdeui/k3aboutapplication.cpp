@@ -27,10 +27,10 @@
 #include <k3aboutdialog_p.h>
 #include <kaboutdata.h>
 #include <kapplication.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 #include <kglobal.h>
 #include <klocale.h>
-#include <qstyle.h>
+#include <QtGui/QStyle>
 
 K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
   :K3AboutDialog( Tabbed|Product, aboutData->programName(), parent ),

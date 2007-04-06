@@ -22,8 +22,8 @@
 #define __kbookmarkimporter_kde1_h
 
 #include <kio/kio_export.h>
-#include <qdom.h>
-#include <qstringlist.h>
+#include <Qt/qdom.h>
+#include <QtCore/QMutableStringListIterator>
 #include <kconfig.h>
 
 /**

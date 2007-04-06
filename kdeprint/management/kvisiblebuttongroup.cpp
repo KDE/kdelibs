@@ -22,9 +22,9 @@
 #include <kdialog.h>
 #include <kcursor.h>
 
-#include <qgroupbox.h>
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
+#include <QtGui/QGroupBox>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QRadioButton>
 #include <QtGui/QLayout>
 
 KVisibleButtonGroup::KVisibleButtonGroup(QWidget *parent)

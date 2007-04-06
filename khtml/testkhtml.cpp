@@ -14,7 +14,7 @@
 #include "testkhtml.h"
 #include "testkhtml.moc"
 #include "misc/loader.h"
-#include <qcursor.h>
+#include <QtGui/QCursor>
 #include <dom_string.h>
 #include "dom/dom2_range.h"
 #include "dom/html_document.h"

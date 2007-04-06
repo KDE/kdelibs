@@ -39,7 +39,7 @@
 #include <resolv.h>
 #include <sys/utsname.h>
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 #include <klocale.h>
 #include <k3procio.h>

@@ -41,11 +41,11 @@
 #include <kwalletentry.h>
 #include <kwm.h>
 
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qpushbutton.h>
-#include <qregexp.h>
+#include <QtGui/QPushButton>
+#include <QtCore/QRegExp>
 #include <QTextDocument>
 
 #include <assert.h>

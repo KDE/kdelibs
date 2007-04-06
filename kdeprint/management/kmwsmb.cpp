@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <QtGui/QLayout>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
 
 KMWSmb::KMWSmb(QWidget *parent)

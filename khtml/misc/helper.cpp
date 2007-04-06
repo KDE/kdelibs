@@ -22,14 +22,14 @@
  */
 #include "helper.h"
 #include "khtmllayout.h"
-#include <qmap.h>
-#include <qpainter.h>
+#include <QtCore/QMap>
+#include <QtGui/QPainter>
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
 #include <kapplication.h>
 #include <kconfig.h>
-#include <qtooltip.h>
+#include <QtGui/QToolTip>
 #include "css/cssvalues.h"
 
 using namespace DOM;

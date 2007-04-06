@@ -21,7 +21,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 #include "ksplashscreen.h"
 

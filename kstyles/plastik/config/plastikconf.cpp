@@ -25,11 +25,11 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #define QT3_SUPPORT
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 #include <khbox.h>
-#include <qsettings.h>
-#include <qcolor.h>
+#include <QtCore/QSettings>
+#include <QtGui/QColor>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcolorbutton.h>

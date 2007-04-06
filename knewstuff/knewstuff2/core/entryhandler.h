@@ -23,8 +23,8 @@
 
 #include <knewstuff2/core/entry.h>
 
-#include <qdom.h>
-#include <qstring.h>
+#include <Qt/qdom.h>
+#include <QtCore/QCharRef>
 
 namespace KNS
 {

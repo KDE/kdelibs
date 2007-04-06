@@ -20,8 +20,8 @@
 #ifndef PLUGINCOMBOBOX_H
 #define PLUGINCOMBOBOX_H
 
-#include <qwidget.h>
-#include <qstringlist.h>
+#include <QtGui/QWidget>
+#include <QtCore/QMutableStringListIterator>
 
 #include "kpreloadobject.h"
 

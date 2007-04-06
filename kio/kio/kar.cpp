@@ -17,12 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qfile.h>
-#include <qdir.h>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <time.h>
 #include <kdebug.h>
 #include <kmimetype.h>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 #include "kfilterdev.h"
 #include "kar.h"

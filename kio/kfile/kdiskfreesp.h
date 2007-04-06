@@ -26,8 +26,8 @@
 #ifndef KDISKFREESP_H
 #define KDISKFREESP_H
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 #include <kio/kio_export.h>
 

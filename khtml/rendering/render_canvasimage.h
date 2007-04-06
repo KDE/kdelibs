@@ -31,9 +31,9 @@
 #include "rendering/render_image.h"
 #include "dom/dom_string.h"
 
-#include <qmap.h>
-#include <qimage.h>
-#include <qpainter.h>
+#include <QtCore/QMap>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
 
 namespace khtml {
 

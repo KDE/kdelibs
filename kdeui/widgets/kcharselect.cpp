@@ -22,28 +22,28 @@
 
 #include "kcharselect_p.h"
 
-#include <qcolor.h>
-#include <qfontcombobox.h>
-#include <qcombobox.h>
-#include <qevent.h>
-#include <qfont.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qpainter.h>
-#include <qpen.h>
-#include <qspinbox.h>
-#include <qstyle.h>
-#include <qtooltip.h>
-#include <qboxlayout.h>
-#include <qsplitter.h>
-#include <qtextbrowser.h>
-#include <qpushbutton.h>
-#include <qtimer.h>
+#include <QtGui/QColor>
+#include <QtGui/QFontComboBox>
+#include <QtGui/QComboBox>
+#include <QtGui/QActionEvent>
+#include <QtGui/QFont>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QPainter>
+#include <QtGui/QPen>
+#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QStyle>
+#include <QtGui/QToolTip>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QSplitter>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QPushButton>
+#include <QtCore/QTimer>
 
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocale.h>
-#include <qheaderview.h>
+#include <QtGui/QHeaderView>
 #include <klineedit.h>
 
 class KCharSelectTablePrivate

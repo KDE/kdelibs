@@ -22,9 +22,9 @@
 #include "kmprinter.h"
 
 #include <QtGui/QLabel>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <klocale.h>
-#include <qvalidator.h>
+#include <QtGui/QDoubleValidator>
 
 #include <cups/http.h>
 

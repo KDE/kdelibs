@@ -1,6 +1,6 @@
-#include <qtextstream.h>
-#include <qapplication.h>
-#include <qtimer.h>
+#include <QtCore/QTextIStream>
+#include <QtGui/QApplication>
+#include <QtCore/QTimer>
 
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
@@ -9,9 +9,9 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kwallet.h>
-#include <qdbusconnectioninterface.h>
-#include <qdbusconnection.h>
-#include <qdbusreply.h>
+#include <QtDBus/QDBusConnectionInterface>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusReply>
 
 static QTextStream _out( stdout, QIODevice::WriteOnly );
 

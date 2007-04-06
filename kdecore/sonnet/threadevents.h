@@ -21,8 +21,8 @@
 #ifndef KSPELL_THREADEVENTS_H
 #define KSPELL_THREADEVENTS_H
 
-#include <qevent.h>
-#include <qstring.h>
+#include <QtGui/QActionEvent>
+#include <QtCore/QCharRef>
 
 namespace KSpell2
 {

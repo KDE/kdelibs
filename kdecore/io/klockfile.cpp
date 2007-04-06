@@ -33,9 +33,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qdatetime.h>
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QtCore/QDate>
+#include <QtCore/QFile>
+#include <QtCore/QTextIStream>
 
 #include "krandom.h"
 #include "kglobal.h"

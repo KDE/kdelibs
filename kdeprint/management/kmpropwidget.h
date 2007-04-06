@@ -20,7 +20,7 @@
 #ifndef KMPROPWIDGET_H
 #define KMPROPWIDGET_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include <kdeprint_export.h>
 

@@ -27,16 +27,16 @@ Copyright (C) 1998, 1999, 2000 KDE Team
 #ifndef KTHEMEBASE_H
 #define KTHEMEBASE_H
 
-#include <qtimer.h>
-#include <qdatetime.h>
+#include <QtCore/QTimer>
+#include <QtCore/QDate>
 #include <kpixmap.h>
-#include <q3intcache.h>
+#include <Qt3Support/Q3IntCache>
 #include <QtCore/QString>
 #include <kstyle.h>
-#include <qsettings.h>
-#include <qpalette.h> // for QColorGroup
+#include <QtCore/QSettings>
+#include <QtGui/QColorGroup> // for QColorGroup
 #include "kstyledirs.h"
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class QImage;
 

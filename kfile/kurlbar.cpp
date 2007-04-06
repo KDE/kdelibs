@@ -33,17 +33,17 @@
 #include <kstringhandler.h>
 #include <kurlrequester.h>
 
-#include <qapplication.h>
-#include <qcheckbox.h>
-#include <qdrawutil.h>
-#include <qfontmetrics.h>
-#include <qlabel.h>
-#include <qmimedata.h>
-#include <q3grid.h>
-#include <qpainter.h>
-#include <qmenu.h>
-#include <qstyle.h>
-#include <qitemdelegate.h>
+#include <QtGui/QApplication>
+#include <QtGui/QCheckBox>
+#include <QtGui/qdrawutil.h>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QLabel>
+#include <QtCore/QMimeData>
+#include <Qt3Support/Q3Grid>
+#include <QtGui/QPainter>
+#include <QtGui/QMenu>
+#include <QtGui/QStyle>
+#include <QtGui/QItemDelegate>
 
 #include <unistd.h>
 #include <kvbox.h>

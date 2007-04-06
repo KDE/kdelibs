@@ -20,8 +20,8 @@
 #include "qtest_kde.h"
 #include "kjobtest.h"
 
-#include <qtimer.h>
-#include <qsignalspy.h>
+#include <QtCore/QTimer>
+#include <QtTest/QSignalSpy>
 
 QTEST_KDEMAIN_CORE( KJobTest )
 

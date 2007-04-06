@@ -16,14 +16,14 @@
 #include <stdlib.h>
 
 #include <QtGui/QAction>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmap.h>
-#include <qpixmap.h>
-#include <qpixmapcache.h>
-#include <qimage.h>
-#include <qfileinfo.h>
-#include <qdir.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QMap>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
+#include <QtGui/QImage>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
 
 #include <kdebug.h>
 #include <kicon.h>

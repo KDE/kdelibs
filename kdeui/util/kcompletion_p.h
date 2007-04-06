@@ -21,7 +21,7 @@
 #ifndef KCOMPLETION_PRIVATE_H
 #define KCOMPLETION_PRIVATE_H
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 #include <ksortablelist.h>
 
 class KCompTreeNode;

@@ -23,7 +23,7 @@
 #include "kmprinter.h"
 
 #include <QtGui/QLayout>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 #include <klocale.h>
 #include <kseparator.h>

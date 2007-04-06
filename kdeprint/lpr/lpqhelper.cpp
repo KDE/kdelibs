@@ -25,7 +25,7 @@
 #include <kstandarddirs.h>
 #include <k3process.h>
 #include <kdebug.h>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 
 LpqHelper::LpqHelper(QObject *parent)
 : QObject(parent)

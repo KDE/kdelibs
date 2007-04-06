@@ -34,12 +34,12 @@
 #include <signal.h>
 #include <setjmp.h>
 
-#include <qdatetime.h>
-#include <qdir.h>
-#include <qfileinfo.h>
-#include <qprocess.h>
-#include <qtextcodec.h>
-#include <qtextstream.h>
+#include <QtCore/QDate>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/Q_PID>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTextIStream>
 
 #include "kconfigini.h"
 

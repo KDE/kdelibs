@@ -20,7 +20,7 @@
 #include "kmiconview.h"
 #include "kmprinter.h"
 
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <kiconloader.h>
 #include <kdebug.h>
 

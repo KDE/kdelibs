@@ -21,7 +21,7 @@
 #define KMEXTMANAGER_H
 
 #include "kmmanager.h"
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 class KMExtManager : public KMManager
 {

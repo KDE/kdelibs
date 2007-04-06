@@ -22,8 +22,8 @@
 #include "kdialogbuttonbox.h"
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qdialog.h>
-#include <qpushbutton.h>
+#include <QtGui/QDialog>
+#include <QtGui/QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 

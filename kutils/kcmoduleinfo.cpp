@@ -21,7 +21,7 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <qvariant.h>
+#include <QtCore/QVariant>
 
 #include <kdesktopfile.h>
 #include <kdebug.h>

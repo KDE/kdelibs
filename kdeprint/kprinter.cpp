@@ -30,10 +30,10 @@
 #include "driver.h"
 
 #include <QtCore/QFile>
-#include <qdir.h>
-#include <qpaintengine.h>
-#include <qpointer.h>
-#include <qprintengine.h>
+#include <QtCore/QDir>
+#include <QtGui/QPaintEngine>
+#include <QtCore/QPointer>
+#include <QtGui/QPrintEngine>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kstandarddirs.h>

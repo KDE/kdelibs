@@ -24,10 +24,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qhash.h>
+#include <QtCore/QDate>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QHash>
 
 #include <kio/kio_export.h>
 

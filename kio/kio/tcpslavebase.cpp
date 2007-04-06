@@ -43,9 +43,9 @@
 #include <kmessagebox.h>
 
 #include <klocale.h>
-#include <qdatastream.h>
-#include <qtcpsocket.h>
-#include <qhostinfo.h>
+#include <QtCore/QDataStream>
+#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>

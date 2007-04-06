@@ -47,7 +47,7 @@
 #include <ksslsession.h>
 #include <klocale.h>
 
-#include <qabstractsocket.h>
+#include <QtNetwork/QAbstractSocket>
 
 #ifdef __GNUC__
 #warning "kssl.cc contains temporary functions! Clean up"

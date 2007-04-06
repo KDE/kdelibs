@@ -2,8 +2,8 @@
 #define SMTP_H
 
 #include <QtCore/QObject>
-#include <qtimer.h>
-#include <qtcpsocket.h>
+#include <QtCore/QTimer>
+#include <QtNetwork/QTcpSocket>
 #include <ksocketfactory.h>
 
 #ifdef Q_WS_WIN

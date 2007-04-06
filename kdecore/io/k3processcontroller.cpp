@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <qsocketnotifier.h>
+#include <QtCore/QSocketNotifier>
 
 class K3ProcessController::Private
 {

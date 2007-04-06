@@ -32,8 +32,8 @@
 #include "klocale.h"
 #include "kstandarddirs.h"
 #include "kmessage.h"
-#include <qcoreapplication.h>
-#include <qhash.h>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QHash>
 #include <QtDBus/QtDBus>
 #include <QDebug>
 
@@ -56,7 +56,7 @@
 #endif
 
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QFile>
 #include <errno.h>
 #include <kconfiggroup.h>

@@ -19,7 +19,7 @@
 
 #include <config.h>
 
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <kdebug.h>
 

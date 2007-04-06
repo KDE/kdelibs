@@ -20,8 +20,8 @@
 
 #include "qnowtooltip.h"
 
-#include <qlabel.h>
-#include <qtimer.h>
+#include <QtGui/QLabel>
+#include <QtCore/QTimer>
 
 void QNowToolTip::display(QWidget *parent, const QRect& rect, const QString& text)
 {

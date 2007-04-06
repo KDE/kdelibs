@@ -27,10 +27,10 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 
-#include <qlabel.h>
-#include <qregexp.h>
-#include <qpointer.h>
-#include <qhash.h>
+#include <QtGui/QLabel>
+#include <QtCore/QRegExp>
+#include <QtCore/QPointer>
+#include <QtCore/QHash>
 #include <QTextDocument>
 
 //#define DEBUG_FIND

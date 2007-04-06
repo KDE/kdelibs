@@ -20,10 +20,10 @@
 #include "portdialog.h"
 #include "cupsdconf.h"
 
-#include <qlineedit.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
+#include <QtGui/QLineEdit>
+#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QCheckBox>
+#include <QtGui/QPushButton>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 

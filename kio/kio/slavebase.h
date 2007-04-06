@@ -23,7 +23,7 @@
 #include <kio/global.h>
 #include <kio/authinfo.h>
 
-#include <qbytearray.h>
+#include <QtCore/QByteArray>
 
 class KConfigGroup;
 class KRemoteEncoding;

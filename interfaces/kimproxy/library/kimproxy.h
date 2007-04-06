@@ -24,10 +24,10 @@
 #ifndef KIMPROXY_H
 #define KIMPROXY_H
 
-#include <qhash.h>
-#include <qmap.h>
+#include <QtCore/QHash>
+#include <QtCore/QMap>
 #include <QtCore/QStringList>
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 #include <kimproxy_export.h>
 

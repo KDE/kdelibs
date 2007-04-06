@@ -25,9 +25,9 @@
 
 #include <stdlib.h>
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <qdir.h>
-#include <qfileinfo.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kurl.h>

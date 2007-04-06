@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #include <kdebug.h>
 

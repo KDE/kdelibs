@@ -22,7 +22,7 @@
 
 #include "kmprinterpage.h"
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class KListWidget;
 class KMPrinter;

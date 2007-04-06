@@ -23,8 +23,8 @@
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
 
-#include <qapplication.h>
-#include <qeventloop.h>
+#include <QtGui/QApplication>
+#include <QtCore/QEventLoop>
 
 #include "forwardingslavebase.h"
 

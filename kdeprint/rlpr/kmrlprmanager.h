@@ -21,7 +21,7 @@
 #define KMRLPRMANAGER_H
 
 #include "kmmanager.h"
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 class KMRlprManager : public KMManager
 {

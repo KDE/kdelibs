@@ -22,16 +22,16 @@
 #include "kdatetable.h"
 #include "kdatetable_p.h"
 
-#include <qapplication.h>
-#include <qcombobox.h>
-#include <qfont.h>
-#include <qlayout.h>
+#include <QtGui/QApplication>
+#include <QtGui/QComboBox>
+#include <QtGui/QFont>
+#include <QtGui/QLayout>
 #include <QKeyEvent>
-#include <qmenu.h>
-#include <qpainter.h>
-#include <qstyle.h>
-#include <qtoolbutton.h>
-#include <qvalidator.h>
+#include <QtGui/QMenu>
+#include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtGui/QToolButton>
+#include <QtGui/QDoubleValidator>
 
 #include <kcalendarsystem.h>
 #include <kdebug.h>

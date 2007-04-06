@@ -26,7 +26,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QObject>
-#include <qfileinfo.h>
+#include <QtCore/QFileInfo>
 
 #include <klibloader.h>
 #include <kcomponentdata.h>

@@ -22,7 +22,7 @@
 
 #include <QtGui/QLayout>
 #include <QtCore/QStringList>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <klocale.h>
 #include <kiconloader.h>
 

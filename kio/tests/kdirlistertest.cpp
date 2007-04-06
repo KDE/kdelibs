@@ -19,7 +19,7 @@
 */
 
 #include <QtGui/QLayout>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <QDir>
 
 #include <kapplication.h>

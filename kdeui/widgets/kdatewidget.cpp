@@ -18,11 +18,11 @@
 
 #include "kdatewidget.h"
 
-#include <qcombobox.h>
-#include <qdatetime.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qspinbox.h>
+#include <QtGui/QComboBox>
+#include <QtCore/QDate>
+#include <QtGui/QLayout>
+#include <QtGui/QLineEdit>
+#include <QtGui/QDoubleSpinBox>
 
 #include "kcalendarsystem.h"
 #include "kdialog.h"

@@ -27,18 +27,17 @@
 
 #include <stdlib.h> // getenv
 
-#include <qtextcodec.h>
-#include <qfile.h>
-#include <qprinter.h>
-#include <qfileinfo.h>
-#include <qregexp.h>
+#include <QtCore/QTextCodec>
+#include <QtCore/QFile>
+#include <QtGui/QPrinter>
+#include <QtCore/QFileInfo>
+#include <QtCore/QRegExp>
 
 #include "kcatalog.h"
 #include "kglobal.h"
 #include "kstandarddirs.h"
 #include "kconfig.h"
 #include "kcomponentdata.h"
-#include "kconfig.h"
 #include "kdebug.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"

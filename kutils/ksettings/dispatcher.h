@@ -21,7 +21,7 @@
 #define KSETTINGS_DISPATCHER_H
 
 #include <QtCore/QObject>
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <kutils_export.h>
 #include <kcomponentdata.h>
 

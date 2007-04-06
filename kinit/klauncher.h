@@ -24,9 +24,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <QtCore/QString>
-#include <qsocketnotifier.h>
-#include <qtimer.h>
-#include <qlist.h>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QTimer>
+#include <QtCore/QList>
 #include <QtCore/QObject>
 
 #include <kurl.h>

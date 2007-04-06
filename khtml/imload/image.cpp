@@ -22,7 +22,7 @@
 
 */
 
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <limits.h>
 
 #include "image.h"

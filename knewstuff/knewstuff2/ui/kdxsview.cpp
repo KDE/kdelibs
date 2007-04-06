@@ -28,11 +28,11 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qcombobox.h>
-#include <qpushbutton.h>
-#include <qmessagebox.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QComboBox>
+#include <QtGui/QPushButton>
+#include <QtGui/QMessageBox>
 
 using namespace KNS;
 

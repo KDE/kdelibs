@@ -17,9 +17,9 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qvalidator.h>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QDoubleValidator>
 
 #include <kguiitem.h>
 #include <klineedit.h>

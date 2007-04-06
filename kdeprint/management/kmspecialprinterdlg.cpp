@@ -26,10 +26,10 @@
 #include "kxmlcommand.h"
 #include "driver.h"
 
-#include <qpushbutton.h>
-#include <qlineedit.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QLineEdit>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QGroupBox>

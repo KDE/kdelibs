@@ -23,7 +23,7 @@
 #include <kfilemetainfo.h>
 #include <kservicetypetrader.h>
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 #include "metainfojob.moc"
 

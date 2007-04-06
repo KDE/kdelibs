@@ -24,8 +24,8 @@
 #include <kglobal.h>
 #include <kdebug.h>
 
-#include <qapplication.h>
-#include <qscrollbar.h>
+#include <QtGui/QApplication>
+#include <QtGui/QScrollBar>
 #include <kcomponentdata.h>
 
 //#define DEBUG_PARTMANAGER

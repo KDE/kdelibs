@@ -21,7 +21,7 @@
 #define KSTYLE_DIRS_H
 
 
-#include <qsettings.h>
+#include <QtCore/QSettings>
 #include <QtCore/QStringList>
 #include <kstandarddirs.h>
 

@@ -14,8 +14,8 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qglobal.h>
-#include <qprocess.h>
+#include <QtCore/QBool>
+#include <QtCore/Q_PID>
 
 #include <kdebug.h>
 #include "kcookie.h"

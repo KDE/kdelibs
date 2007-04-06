@@ -21,7 +21,7 @@
 #include "enchantdict.h"
 
 #include <kgenericfactory.h>
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 typedef KGenericFactory<QSpellEnchantClient> EnchantClientFactory;
 K_EXPORT_COMPONENT_FACTORY(kspell_enchant, EnchantClientFactory("kspell_enchant"))

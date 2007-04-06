@@ -25,8 +25,8 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qlineedit.h>
-#include <q3header.h>
+#include <QtGui/QLineEdit>
+#include <Qt3Support/Q3Header>
 #include <QHash>
 
 #include <klocale.h>

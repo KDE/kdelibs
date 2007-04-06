@@ -41,12 +41,12 @@
 #include <pwd.h>
 #include <grp.h>
 
-#include <qregexp.h>
-#include <qdir.h>
-#include <qfileinfo.h>
-#include <qsettings.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 #include "kstandarddirs.h"
 #include "kconfig.h"

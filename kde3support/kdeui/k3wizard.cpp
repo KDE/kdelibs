@@ -19,8 +19,8 @@
 
 #include "k3wizard.h"
 
-#include <qpushbutton.h>
-#include <qstring.h>
+#include <QtGui/QPushButton>
+#include <QtCore/QCharRef>
 
 #include <kiconloader.h>
 #include <klocale.h>

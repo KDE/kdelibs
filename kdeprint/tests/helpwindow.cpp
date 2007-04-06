@@ -9,28 +9,28 @@
 
 #include "helpwindow.h"
 #include "richpage.h"
-#include <qstatusbar.h>
-#include <qpixmap.h>
+#include <QtGui/QStatusBar>
+#include <QtGui/QPixmap>
 #include <kmenubar.h>
 #include <ktoolbar.h>
 #include <kstatusbar.h>
-#include <qtoolbutton.h>
-#include <qicon.h>
+#include <QtGui/QToolButton>
+#include <QtGui/QIcon>
 #include <QtCore/QFile>
-#include <qtextstream.h>
-#include <q3stylesheet.h>
-#include <qmessagebox.h>
-#include <qfiledialog.h>
-#include <qapplication.h>
-#include <qcombobox.h>
-#include <qevent.h>
-#include <qlineedit.h>
+#include <QtCore/QTextIStream>
+#include <Qt3Support/Q3StyleSheet>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFileDialog>
+#include <QtGui/QApplication>
+#include <QtGui/QComboBox>
+#include <QtGui/QActionEvent>
+#include <QtGui/QLineEdit>
 #include <QtCore/QObject>
-#include <qfileinfo.h>
-#include <qdatastream.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDataStream>
 #include <kprinter.h>
-#include <q3simplerichtext.h>
-#include <qpainter.h>
+#include <Qt3Support/Q3SimpleRichText>
+#include <QtGui/QPainter>
 
 #include <ctype.h>
 

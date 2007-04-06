@@ -17,16 +17,16 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qapplication.h>
-#include <qcursor.h>
-#include <qdatastream.h>
-#include <qevent.h>
-#include <qfileinfo.h>
-#include <qframe.h>
+#include <QtGui/QApplication>
+#include <QtGui/QCursor>
+#include <QtCore/QDataStream>
+#include <QtGui/QActionEvent>
+#include <QtCore/QFileInfo>
+#include <QtGui/QFrame>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qpoint.h>
-#include <qtextstream.h>
+#include <QtCore/QPoint>
+#include <QtCore/QTextIStream>
 
 #include <QtGui/QImage>
 

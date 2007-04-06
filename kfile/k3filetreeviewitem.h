@@ -22,7 +22,7 @@
 
 #include "kfile_export.h"
 
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 #include <k3listview.h>
 
 #include <kfileitem.h>

@@ -22,9 +22,9 @@
 
 #include "kdirlister.h"
 
-#include <qregexp.h>
-#include <q3ptrlist.h>
-#include <qtimer.h>
+#include <QtCore/QRegExp>
+#include <Qt3Support/Q3PtrList>
+#include <QtCore/QTimer>
 
 #include <kapplication.h>
 #include <kdebug.h>

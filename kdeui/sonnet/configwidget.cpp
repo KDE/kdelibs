@@ -28,7 +28,7 @@
 #include <kcombobox.h>
 #include <klocale.h>
 
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 
 using namespace KSpell2;

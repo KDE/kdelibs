@@ -38,9 +38,9 @@ class QListboxItem;
 #include <ktextedit.h>
 #include <kurlrequester.h>
 #include <klineedit.h>
-#include <qcheckbox.h>
-#include <qradiobutton.h>
-#include <qpushbutton.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QRadioButton>
+#include <QtGui/QPushButton>
 #include <klistwidget.h>
 #include <kcombobox.h>
 #include "dom/dom_misc.h"

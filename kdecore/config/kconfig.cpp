@@ -37,9 +37,9 @@
 #include "ktoolinvocation.h"
 #include "kcomponentdata.h"
 
-#include <qdir.h>
-#include <qtimer.h>
-#include <qfileinfo.h>
+#include <QtCore/QDir>
+#include <QtCore/QTimer>
+#include <QtCore/QFileInfo>
 
 class KConfig::Private
 {

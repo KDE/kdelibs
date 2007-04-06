@@ -17,9 +17,9 @@
 */
 
 #include <QSet>
-#include <qfile.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
+#include <QtCore/QFile>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTextIStream>
 
 #include <kdirwatch.h>
 #include <kstaticdeleter.h>

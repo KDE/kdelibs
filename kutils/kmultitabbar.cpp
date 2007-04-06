@@ -27,16 +27,16 @@
 #include "kmultitabbar_p.h"
 #include "kmultitabbar_p.moc"
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <QtGui/QLayout>
-#include <qpainter.h>
-#include <qfontmetrics.h>
-#include <qstyle.h>
+#include <QtGui/QPainter>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QStyle>
 #include <QStyleOptionButton>
 
 #include <kiconloader.h>
 #include <kdebug.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <math.h>
 
 class KMultiTabBarPrivate

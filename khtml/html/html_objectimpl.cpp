@@ -27,10 +27,10 @@
 #include "misc/htmlhashes.h"
 #include "imload/imagemanager.h"
 #include "khtmlview.h"
-#include <qstring.h>
-#include <qvariant.h>
-#include <qmap.h>
-#include <qtimer.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QVariant>
+#include <QtCore/QMap>
+#include <QtCore/QTimer>
 #include <QImageReader>
 
 #include <kdebug.h>

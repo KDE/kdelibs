@@ -26,8 +26,8 @@
 #ifndef render_object_h
 #define render_object_h
 
-#include <qcolor.h>
-#include <qrect.h>
+#include <QtGui/QColor>
+#include <QtCore/QRect>
 #include <assert.h>
 #include <QList>
 
@@ -39,7 +39,7 @@
 #include "misc/loader_client.h"
 #include "misc/helper.h"
 #include "rendering/render_style.h"
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 
 class QPainter;
 class QTextStream;

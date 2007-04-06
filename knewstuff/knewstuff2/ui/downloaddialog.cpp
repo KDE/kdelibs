@@ -9,21 +9,21 @@
  ***************************************************************************/
 
 // qt/kde includes
-#include <qfile.h>
-#include <qwidget.h>
-#include <qtimer.h>
-#include <qlayout.h>
-#include <qpixmap.h>
-#include <qfont.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qcombobox.h>
-#include <qpushbutton.h>
-#include <qvector.h>
-#include <qrect.h>
-#include <qpainter.h>
-#include <qscrollarea.h>
-#include <qapplication.h>
+#include <QtCore/QFile>
+#include <QtGui/QWidget>
+#include <QtCore/QTimer>
+#include <QtGui/QLayout>
+#include <QtGui/QPixmap>
+#include <QtGui/QFont>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
+#include <QtGui/QPushButton>
+#include <QtCore/QMutableVectorIterator>
+#include <QtCore/QRect>
+#include <QtGui/QPainter>
+#include <QtGui/QScrollArea>
+#include <QtGui/QApplication>
 #include <kapplication.h>
 #include <kglobalsettings.h>
 #include <klocale.h>

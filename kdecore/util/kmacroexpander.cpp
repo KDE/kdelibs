@@ -24,10 +24,10 @@
 #include "kdebug.h"
 
 #include <QStack>
-#include <qregexp.h>
-#include <qhash.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QHash>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 KMacroExpanderBase::KMacroExpanderBase( QChar c )
 {

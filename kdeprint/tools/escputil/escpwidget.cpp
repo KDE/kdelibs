@@ -19,12 +19,12 @@
 
 #include "escpwidget.h"
 
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
-#include <q3accel.h>
-#include <qbytearray.h>
+#include <QtGui/QCheckBox>
+#include <Qt3Support/Q3Accel>
+#include <QtCore/QByteArray>
 #include <kdemacros.h>
 #include <klocale.h>
 #include <kmessagebox.h>

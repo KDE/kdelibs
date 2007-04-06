@@ -20,10 +20,10 @@
 
 #include <kdefx_export.h>
 
-#include <qnamespace.h>
-#include <qpainter.h>
-#include <qbitmap.h>
-#include <qpalette.h>
+#include <QtCore/QCOORD>
+#include <QtGui/QPainter>
+#include <QtGui/QBitmap>
+#include <QtGui/QColorGroup>
 
 /*
  * Various drawing routines. Also see Qt's qdrawutil.h for some more routines

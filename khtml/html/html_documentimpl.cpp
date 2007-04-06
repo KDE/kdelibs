@@ -56,7 +56,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include <stdlib.h>
-#include <q3ptrstack.h>
+#include <Qt3Support/Q3PtrStack>
 
 // Turn off inlining to avoid warning with newer gcc.
 #undef __inline

@@ -25,8 +25,8 @@
 #include "ksycocadict.h"
 #include "kdebug.h"
 
-#include <qstringlist.h>
-#include <qhash.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QHash>
 
 class KSycocaFactory::Private
 {

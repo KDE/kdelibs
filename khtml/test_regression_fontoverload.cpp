@@ -25,8 +25,8 @@
 #define QT_NO_FONTCONFIG 1
 #define QT_NO_FREETYPE   1
 #include <private/qfontengine_p.h>
-#include <qfontdatabase.h>
-#include <qfont.h>
+#include <QtGui/QFontDatabase>
+#include <QtGui/QFont>
 #include "khtml_settings.h"
 #include <QtGui/QImage>
 #include <assert.h>
@@ -560,8 +560,8 @@ void DCOPClient::processSocketData( int )
 {
 }*/
 
-#include <qapplication.h>
-#include <qpalette.h>
+#include <QtGui/QApplication>
+#include <QtGui/QColorGroup>
 
 #if 0
 KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,

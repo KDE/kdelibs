@@ -32,12 +32,12 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <qlistview.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
-#include <qlineedit.h>
+#include <QtGui/QListView>
+#include <QtGui/QPushButton>
+#include <QtGui/QComboBox>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 namespace KSpell2
 {

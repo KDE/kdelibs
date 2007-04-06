@@ -19,9 +19,9 @@
 
 #include "kfontrequester.h"
 
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
+#include <QtGui/QLabel>
+#include <QtGui/QPushButton>
+#include <QtGui/QLayout>
 
 #include <kfontdialog.h>
 #include <klocale.h>

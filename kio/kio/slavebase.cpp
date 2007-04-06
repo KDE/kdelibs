@@ -37,8 +37,8 @@
 #include <signal.h>
 #include <time.h>
 
-#include <qfile.h>
-#include <qlist.h>
+#include <QtCore/QFile>
+#include <QtCore/QList>
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>

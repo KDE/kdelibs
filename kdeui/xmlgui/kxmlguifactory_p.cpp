@@ -21,7 +21,7 @@
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include <kglobal.h>
 #include <kdebug.h>

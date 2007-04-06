@@ -22,7 +22,7 @@
 #define KFIND_H
 
 #include <kdialog.h>
-#include <qrect.h>
+#include <QtCore/QRect>
 
 /**
  * @brief A generic implementation of the "find" function.

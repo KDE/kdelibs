@@ -37,11 +37,11 @@
 
 #include <sys/stat.h>
 #include <assert.h>
-#include <qdir.h>
-#include <qfile.h>
-#include <qsocketnotifier.h>
-#include <qstringlist.h>
-#include <qtimer.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTimer>
 
 #include <kapplication.h>
 #include <kdebug.h>

@@ -10,7 +10,7 @@
 #include <klibloader.h>
 
 #include <QtGui/QWidget>
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 
 #include <kparts/componentfactory.h>

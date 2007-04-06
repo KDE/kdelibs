@@ -20,7 +20,7 @@
 
 #include "qasyncframe.h"
 
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 
 QAsyncFrame::QAsyncFrame(QWidget *parent)
 : QFrame(parent)

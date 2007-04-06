@@ -37,7 +37,7 @@ COMPATIBLE. THIS HEADER IS ONLY INSTALLED, BECAUSE IT IS NEEDED IN
 #define KDOCKWIDGET_P_H
 
 #include <k3dockwidget.h>
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 // Add some describing comment !!
 
 class KDE3SUPPORT_EXPORT K3DockContainer

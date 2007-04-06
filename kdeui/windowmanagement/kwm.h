@@ -25,8 +25,8 @@
 #define KWM_H
 
 #include <kdeui_export.h>
-#include <qobject.h>
-#include <qwindowdefs.h> //For WId
+#include <QtCore/QObject>
+#include <QtGui/QWidgetList> //For WId
 #include <netwm_def.h>
 
 #ifdef Q_WS_X11

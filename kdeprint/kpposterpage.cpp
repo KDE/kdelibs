@@ -23,11 +23,11 @@
 #include "kmfactory.h"
 #include "util.h"
 
-#include <qcheckbox.h>
-#include <qcombobox.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <kpushbutton.h>
 #include <klocale.h>
 #include <knuminput.h>

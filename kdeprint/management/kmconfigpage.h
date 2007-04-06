@@ -21,7 +21,7 @@
 #define KMCONFIGPAGE_H
 
 #include <kdeprint_export.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class KConfig;
 class KConfigGroup;

@@ -25,7 +25,7 @@
 
 #include <kdebug.h>
 #include <assert.h>
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <kglobal.h>
 
 #include "rendering/render_flow.h"

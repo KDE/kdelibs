@@ -20,10 +20,10 @@
 #include "cupsdserverpage.h"
 #include "cupsdconf.h"
 
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
-#include <qcombobox.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 #include <QtGui/QLayout>
 
 #include <klocale.h>

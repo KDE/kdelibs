@@ -41,10 +41,10 @@
 #include "xml/dom2_eventsimpl.h"
 #include "misc/htmltags.h"
 
-#include <qstring.h>
-#include <qpoint.h>
-#include <qregion.h>
-#include <qimage.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QPoint>
+#include <QtGui/QRegion>
+#include <QtGui/QImage>
 
 using namespace DOM;
 using namespace khtml;

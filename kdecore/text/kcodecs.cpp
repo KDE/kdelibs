@@ -43,7 +43,7 @@
 
 #include "kcodecs.h"
 #include "kdebug.h"
-#include <qiodevice.h>
+#include <QtCore/QIODevice>
 
 #define KMD5_S11 7
 #define KMD5_S12 12

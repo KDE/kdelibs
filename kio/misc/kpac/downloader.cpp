@@ -21,7 +21,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 
 #include <kcharsets.h>
 #include <kglobal.h>

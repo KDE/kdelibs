@@ -22,8 +22,8 @@
 #include <config.h>
 #endif
 
-#include <qlist.h>
-#include <qtextcodec.h>
+#include <QtCore/QList>
+#include <QtCore/QTextCodec>
 
 #include <kdebug.h>
 #include <kconfig.h>

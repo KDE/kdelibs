@@ -1,4 +1,4 @@
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <kcomponentdata.h>
 #include <kicondialog.h>
 

@@ -29,7 +29,7 @@
 #include <kstaticdeleter.h>
 #include <kconfiggroup.h>
 
-#include <qhash.h>
+#include <QtCore/QHash>
 #include <QtAlgorithms>
 
 // servicetype -> profile

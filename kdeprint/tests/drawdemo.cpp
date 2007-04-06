@@ -9,13 +9,13 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QImage>
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <kprinter.h>
-#include <qpushbutton.h>
-#include <qradiobutton.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QRadioButton>
 #include <kapplication.h>
 #include <kbuttongroup.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <math.h>
 #include <kcmdlineargs.h>
 

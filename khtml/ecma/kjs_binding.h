@@ -27,8 +27,8 @@
 #include <wtf/HashMap.h>
 
 #include <dom/dom_node.h>
-#include <qvariant.h>
-#include <qhash.h>
+#include <QtCore/QVariant>
+#include <QtCore/QHash>
 #include <QtCore/QString>
 #include <kurl.h>
 #include <kjs/lookup.h>

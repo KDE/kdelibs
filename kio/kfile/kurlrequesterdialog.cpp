@@ -22,10 +22,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qstring.h>
-#include <qtoolbutton.h>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtCore/QCharRef>
+#include <QtGui/QToolButton>
 
 #include <kfiledialog.h>
 #include <kglobal.h>

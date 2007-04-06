@@ -18,7 +18,7 @@
 
 #include "qtest_kde.h"
 
-#include <qdir.h>
+#include <QtCore/QDir>
 
 #include "ktempdirtest.h"
 #include "ktempdir.h"

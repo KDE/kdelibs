@@ -19,16 +19,16 @@
 */
 #include <kedittoolbar.h>
 
-#include <qdom.h>
-#include <qlayout.h>
-#include <qdir.h>
-#include <qfile.h>
+#include <Qt/qdom.h>
+#include <QtGui/QLayout>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QHeaderView>
-#include <qcombobox.h>
-#include <qtoolbutton.h>
-#include <qlabel.h>
-#include <qapplication.h>
-#include <qtextstream.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QToolButton>
+#include <QtGui/QLabel>
+#include <QtGui/QApplication>
+#include <QtCore/QTextIStream>
 #include <QTreeWidget>
 #include <QMimeData>
 

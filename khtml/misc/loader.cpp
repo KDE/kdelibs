@@ -53,11 +53,11 @@
 
 //#include <qasyncio.h>
 //#include <qasyncimageio.h>
-#include <qpainter.h>
-#include <qbitmap.h>
-#include <qmovie.h>
-#include <qwidget.h>
-#include <qdebug.h>
+#include <QtGui/QPainter>
+#include <QtGui/QBitmap>
+#include <QtGui/QMovie>
+#include <QtGui/QWidget>
+#include <QtCore/QDebug>
 
 #include <kapplication.h>
 #include <kauthorized.h>

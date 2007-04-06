@@ -24,7 +24,7 @@
 #include <kzip.h>
 
 #include <qtest_kde.h>
-#include <qfileinfo.h>
+#include <QtCore/QFileInfo>
 #include <kdebug.h>
 #include <kfilterdev.h>
 #include <ktempdir.h>

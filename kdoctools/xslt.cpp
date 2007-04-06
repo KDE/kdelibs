@@ -11,9 +11,9 @@
 #include <libxml/catalog.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <qdatetime.h>
-#include <qdir.h>
-#include <qregexp.h>
+#include <QtCore/QDate>
+#include <QtCore/QDir>
+#include <QtCore/QRegExp>
 #include "xslt.h"
 #include <kcomponentdata.h>
 #include "kio_help.h"
@@ -21,7 +21,7 @@
 #include <assert.h>
 #include <kfilterbase.h>
 #include <kfilterdev.h>
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 #include <stdlib.h>
 #include <config.h>
 #include <stdarg.h>

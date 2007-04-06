@@ -38,36 +38,36 @@ Port version 0.9.7
 
 #include "kthemestyle.h"
 #include "kthemebase.h"
-#include <qstyleplugin.h>
-#include <qstylefactory.h>
+#include <QtGui/QStyleFactoryInterface>
+#include <QtGui/QStyleFactory>
 #include <kimageeffect.h>
 
-#include <qbitmap.h>
-#include <qcheckbox.h>
+#include <QtGui/QBitmap>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
 #define INCLUDE_MENUITEM_DEF
-#include <qmenudata.h>
+#include <QtGui/qmenudata.h>
 #include <qpopupmenu.h>
-#include <qpalette.h>
-#include <qtabbar.h>
-#include <qtoolbutton.h>
+#include <QtGui/QColorGroup>
+#include <QtGui/QTabBar>
+#include <QtGui/QToolButton>
 #include <kglobalsettings.h>
 #include <kdrawutil.h>
-#include <qdrawutil.h>
-#include <qprogressbar.h>
-#include <qdir.h>
-#include <qapplication.h>
-#include <qmenubar.h>
-#include <q3rangecontrol.h>
-#include <qslider.h>
-#include <qtooltip.h>
+#include <QtGui/qdrawutil.h>
+#include <QtGui/QProgressBar>
+#include <QtCore/QDir>
+#include <QtGui/QApplication>
+#include <QtGui/QMenuBar>
+#include <Qt3Support/Q3RangeControl>
+#include <QtGui/QSlider>
+#include <QtGui/QToolTip>
 #include <QtCore/QObject>
-#include <qradiobutton.h>
-#include <qstatusbar.h>
+#include <QtGui/QRadioButton>
+#include <QtGui/QStatusBar>
 #include "kstyledirs.h"
 
 #include <QtGui/QImage>
-#include <q3pointarray.h>
+#include <Qt3Support/Q3PointArray>
 
 #include <limits.h>
 

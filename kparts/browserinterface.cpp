@@ -1,7 +1,7 @@
 
 #include "browserinterface.h"
 
-#include <qmetaobject.h>
+#include <QtCore/QMetaClassInfo>
 #include <QtCore/QStringList>
 
 #include <config.h>

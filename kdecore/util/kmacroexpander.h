@@ -23,7 +23,7 @@
 #define KMACROEXPANDER_H
 
 #include <kdecore_export.h>
-#include <qchar.h>
+#include <QtCore/QChar>
 
 class QString;
 class QStringList;

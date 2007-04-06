@@ -24,12 +24,12 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <qdatetime.h>
-#include <qfileinfo.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qdir.h>
+#include <QtCore/QDate>
+#include <QtCore/QFileInfo>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QLineEdit>
+#include <QtCore/QDir>
 
 #include <kmessagebox.h>
 #include <kpushbutton.h>

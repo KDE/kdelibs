@@ -20,12 +20,12 @@
 
 #include "kreplacedialog.h"
 
-#include <qcheckbox.h>
-#include <qgroupbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qregexp.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QGroupBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QLineEdit>
+#include <QtCore/QRegExp>
 #include <kcombobox.h>
 #include <klocale.h>
 #include <kmessagebox.h>

@@ -24,7 +24,7 @@
 class KSSLCertificate;
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 #include <kio/kio_export.h>
 

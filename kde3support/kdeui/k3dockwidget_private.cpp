@@ -21,11 +21,11 @@
 #include "k3dockwidget_p.h"
 #include "k3dockwidget_private.h"
 
-#include <qpainter.h>
-#include <qcursor.h>
+#include <QtGui/QPainter>
+#include <QtGui/QCursor>
 #include <kdebug.h>
-#include <qtimer.h>
-#include <qapplication.h>
+#include <QtCore/QTimer>
+#include <QtGui/QApplication>
 #include <QResizeEvent>
 
 #include <math.h> // need ceil

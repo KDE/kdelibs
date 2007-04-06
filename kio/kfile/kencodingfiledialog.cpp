@@ -27,7 +27,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 #include <krecentdocument.h>
 
 struct KEncodingFileDialogPrivate

@@ -21,10 +21,10 @@
 #ifndef kfile_tree_view_h
 #define kfile_tree_view_h
 
-#include <qmap.h>
-#include <qpoint.h>
-#include <qpixmap.h>
-#include <qtooltip.h>
+#include <QtCore/QMap>
+#include <QtCore/QPoint>
+#include <QtGui/QPixmap>
+#include <QtGui/QToolTip>
 
 class QColorGroup;
 

@@ -19,7 +19,7 @@
 #include "kfilespeedbar.h"
 #include "config-kfile.h"
 
-#include <qdir.h>
+#include <QtCore/QDir>
 
 #include <kconfig.h>
 #include <kglobal.h>

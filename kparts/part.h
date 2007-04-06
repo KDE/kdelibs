@@ -20,10 +20,10 @@
 #ifndef _KPART_H
 #define _KPART_H
 
-#include <qdom.h>
+#include <Qt/qdom.h>
 #include <QtCore/QPointer>
 #include <kurl.h>
-#include <qcoreevent.h>
+#include <QtCore/QChildEvent>
 #include <kxmlguiclient.h>
 
 #include <kparts/kparts_export.h>

@@ -1,5 +1,5 @@
 #include "kdatepicker.h"
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kapplication.h>

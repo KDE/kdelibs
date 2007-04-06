@@ -25,13 +25,13 @@
 
 #include <assert.h>
 
-#include <qdir.h>
-#include <qdom.h>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <qwidget.h>
-#include <qdatetime.h>
-#include <qvariant.h>
+#include <QtCore/QDir>
+#include <Qt/qdom.h>
+#include <QtCore/QFile>
+#include <QtCore/QTextIStream>
+#include <QtGui/QWidget>
+#include <QtCore/QDate>
+#include <QtCore/QVariant>
 #include <QTextCodec>
 
 #include <kdebug.h>

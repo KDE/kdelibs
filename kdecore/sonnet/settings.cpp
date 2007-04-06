@@ -29,8 +29,8 @@
 #include <ksharedconfig.h>
 #include <kdebug.h>
 
-#include <qmap.h>
-#include <qstringlist.h>
+#include <QtCore/QMap>
+#include <QtCore/QMutableStringListIterator>
 #include <kconfiggroup.h>
 
 namespace KSpell2

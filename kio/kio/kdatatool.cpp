@@ -31,8 +31,8 @@
 
 #include <kservicetypetrader.h>
 
-#include <qpixmap.h>
-#include <qfile.h>
+#include <QtGui/QPixmap>
+#include <QtCore/QFile>
 
 /*************************************************
  *

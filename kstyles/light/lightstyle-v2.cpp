@@ -22,23 +22,23 @@
 
 #include "lightstyle-v2.h"
 
-#include "qmenubar.h"
-#include "qapplication.h"
-#include "qpainter.h"
-#include "qpalette.h"
-#include "qpushbutton.h"
-#include "qdrawutil.h"
-#include "qprogressbar.h"
-#include "qscrollbar.h"
-#include "qtabbar.h"
-#include "qpointer.h"
+#include "QtGui/QMenuBar"
+#include "QtGui/QApplication"
+#include "QtGui/QPainter"
+#include "QtGui/QColorGroup"
+#include "QtGui/QPushButton"
+#include "QtGui/qdrawutil.h"
+#include "QtGui/QProgressBar"
+#include "QtGui/QScrollBar"
+#include "QtGui/QTabBar"
+#include "QtCore/QPointer"
 #include "QtGui/QLayout"
-#include "qlineedit.h"
+#include "QtGui/QLineEdit"
 #include "QtGui/QImage"
-#include "qcombobox.h"
-#include "qslider.h"
-#include "qstylefactory.h"
-#include <q3pointarray.h>
+#include "QtGui/QComboBox"
+#include "QtGui/QSlider"
+#include "QtGui/QStyleFactory"
+#include <Qt3Support/Q3PointArray>
 
 
 class LightStyleV2Private

@@ -23,8 +23,8 @@
 #include "khtmlview.h"
 #include "khtml_ext.h"
 #include <kio/global.h>
-#include <qapplication.h>
-#include <qvariant.h>
+#include <QtGui/QApplication>
+#include <QtCore/QVariant>
 
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
     : QObject( _part ), part(_part)

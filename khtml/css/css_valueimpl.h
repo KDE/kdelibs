@@ -30,7 +30,7 @@
 #include "misc/loader_client.h"
 #include "misc/shared.h"
 
-#include <q3intdict.h>
+#include <Qt3Support/Q3IntDict>
 #include <Q3PaintDeviceMetrics>
 
 namespace khtml {

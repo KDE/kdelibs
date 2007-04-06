@@ -21,18 +21,18 @@
 #include "config.h"
 
 #undef QT_NO_TRANSLATION
-#include <qtranslator.h>
+#include <QtCore/QTranslator>
 #define QT_NO_TRANSLATION
-#include <qdir.h>
-#include <qfile.h>
-#include <qicon.h>
-#include <qsessionmanager.h>
-#include <qstylefactory.h>
-#include <qtimer.h>
-#include <qwidget.h>
-#include <qlist.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtGui/QIcon>
+#include <QtGui/QSessionManager>
+#include <QtGui/QStyleFactory>
+#include <QtCore/QTimer>
+#include <QtGui/QWidget>
+#include <QtCore/QList>
 #include <QtDBus/QtDBus>
-#include <qmetatype.h>
+#include <QtCore/QMetaType>
 
 #undef QT_NO_TRANSLATION
 #include "kapplication.h"
@@ -107,7 +107,7 @@
 #include <signal.h>
 #endif
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <kcomponentdata.h>
 #include <klibloader.h>
 

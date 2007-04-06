@@ -20,7 +20,7 @@
 #ifndef _KGLOBALACCEL_MAC_H
 #define _KGLOBALACCEL_MAC_H
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include "kshortcut.h"
 

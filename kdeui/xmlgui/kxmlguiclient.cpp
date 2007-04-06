@@ -21,12 +21,12 @@
 #include "kxmlguifactory.h"
 #include "kxmlguibuilder.h"
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qdom.h>
-#include <qtextstream.h>
-#include <qregexp.h>
-#include <qpointer.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <Qt/qdom.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QRegExp>
+#include <QtCore/QPointer>
 
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>

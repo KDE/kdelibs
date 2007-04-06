@@ -3,16 +3,16 @@
 
 #include <k3dockwidget.h>
 
-#include <qdialog.h>
-#include <q3listview.h>
+#include <QtGui/QDialog>
+#include <Qt3Support/Q3CheckListItem>
 #include <QtCore/QString>
 #include <QtCore/QFile>
-#include <qfileinfo.h>
-#include <qtimer.h>
-#include <q3scrollview.h>
-#include <q3filedialog.h>
-#include <q3widgetstack.h>
-#include <qpixmap.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTimer>
+#include <Qt3Support/Q3ScrollView>
+#include <Qt3Support/Q3FileDialog>
+#include <Qt3Support/Q3WidgetStack>
+#include <QtGui/QPixmap>
 
 class Q3MultiLineEdit;
 class Q3TextView;

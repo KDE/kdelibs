@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF2_UI_QSTARFRAME_H
 #define KNEWSTUFF2_UI_QSTARFRAME_H
 
-#include <qframe.h>
+#include <QtGui/QFrame>
 
 class QStarFrame: public QFrame
 {

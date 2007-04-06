@@ -19,9 +19,9 @@
 #ifndef kxmlguifactory_p_h
 #define kxmlguifactory_p_h
 
-#include <qstringlist.h>
-#include <qmap.h>
-#include <qdom.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QMap>
+#include <Qt/qdom.h>
 #include <QStack>
 
 #include <kaction.h>

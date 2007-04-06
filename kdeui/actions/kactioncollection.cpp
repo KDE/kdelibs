@@ -35,9 +35,9 @@
 #include <kglobal.h>
 #include <kaction.h>
 
-#include <qdom.h>
+#include <Qt/qdom.h>
 #include <QSet>
-#include <qvariant.h>
+#include <QtCore/QVariant>
 #include <QHash>
 #include <QChildEvent>
 #include <QTimer>

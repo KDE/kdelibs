@@ -27,9 +27,9 @@
 #include "kdeprintcheck.h"
 #include "kxmlcommand.h"
 
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <qsettings.h>
+#include <QtCore/QSettings>
 
 #include <klibloader.h>
 #include <kconfig.h>

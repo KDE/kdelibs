@@ -19,7 +19,7 @@
 
 #include "kpreviewprops.h"
 
-#include <qlayout.h>
+#include <QtGui/QLayout>
 
 #include <kfilemetapreview.h>
 #include <kglobalsettings.h>

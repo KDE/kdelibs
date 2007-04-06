@@ -26,7 +26,7 @@
 #ifndef _KCOOKIEWIN_H_
 #define _KCOOKIEWIN_H_
 
-#include <qgroupbox.h>
+#include <QtGui/QGroupBox>
 #include <QRadioButton>
 #include <kdialog.h>
 #include "kcookiejar.h"

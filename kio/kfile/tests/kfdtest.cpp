@@ -1,10 +1,10 @@
 #include "kfdtest.h"
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 #include <kfiledialog.h>
 #include <kapplication.h>
 #include <kmessagebox.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 KFDTest::KFDTest( const KUrl& startDir, QObject *parent, const char *name )
     : QObject( parent ),

@@ -42,8 +42,8 @@
 #endif
 #include <assert.h>
 
-#include <qtimer.h>
-#include <qfile.h>
+#include <QtCore/QTimer>
+#include <QtCore/QFile>
 #include <sys/stat.h> // mode_t
 #include <QPointer>
 

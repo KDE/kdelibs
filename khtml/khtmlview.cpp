@@ -81,18 +81,18 @@
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
 
-#include <qbitmap.h>
+#include <QtGui/QBitmap>
 #include <QtGui/QLabel>
 #include <QtCore/QObject>
-#include <q3paintdevicemetrics.h>
-#include <qpainter.h>
-#include <q3ptrdict.h>
-#include <qtooltip.h>
+#include <Qt3Support/Q3PaintDeviceMetrics>
+#include <QtGui/QPainter>
+#include <Qt3Support/Q3PtrDict>
+#include <QtGui/QToolTip>
 #include <QtCore/QString>
 #include <QTextDocument>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QAbstractEventDispatcher>
-#include <qvector.h>
+#include <QtCore/QMutableVectorIterator>
 #include <Q3ListBox>
 #include <QAbstractScrollArea>
 

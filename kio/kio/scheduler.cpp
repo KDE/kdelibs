@@ -31,8 +31,8 @@
 #include <kstaticdeleter.h>
 #include <kdesu/client.h>
 
-#include <qhash.h>
-#include <qwidget.h>
+#include <QtCore/QHash>
+#include <QtGui/QWidget>
 #include <QtDBus/QtDBus>
 
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned

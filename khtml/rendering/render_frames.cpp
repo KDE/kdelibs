@@ -42,9 +42,9 @@
 #include <kmimetype.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <qtimer.h>
-#include <qpainter.h>
-#include <qcursor.h>
+#include <QtCore/QTimer>
+#include <QtGui/QPainter>
+#include <QtGui/QCursor>
 
 #include <assert.h>
 

@@ -24,10 +24,10 @@
 #include "driverview.h"
 
 #include <QtCore/QFile>
-#include <qregexp.h>
-#include <qdir.h>
-#include <qinputdialog.h>
-#include <qmap.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QDir>
+#include <QtGui/QInputDialog>
+#include <QtCore/QMap>
 #include <QTextStream>
 
 

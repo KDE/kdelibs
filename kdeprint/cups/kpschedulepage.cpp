@@ -21,11 +21,11 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qcombobox.h>
-#include <qregexp.h>
+#include <QtGui/QComboBox>
+#include <QtCore/QRegExp>
 #include <QDateTimeEdit>
-#include <qdatetime.h>
-#include <qlineedit.h>
+#include <QtCore/QDate>
+#include <QtGui/QLineEdit>
 #include <klocale.h>
 #include <kseparator.h>
 #include <knuminput.h>

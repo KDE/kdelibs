@@ -19,7 +19,7 @@
 #include <kapplication.h>
 #include <kurlcompletion.h>
 #include <kdebug.h>
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <assert.h>
 #include <QtCore/QFile>
 #include <ktempdir.h>

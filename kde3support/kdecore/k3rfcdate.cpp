@@ -26,9 +26,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include <qstringlist.h>
-#include <qstring.h>
-#include <qbytearray.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QCharRef>
+#include <QtCore/QByteArray>
 
 static unsigned int ymdhms_to_seconds(int year, int mon, int day, int hour, int minute, int second)
 {

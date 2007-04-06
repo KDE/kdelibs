@@ -20,7 +20,7 @@
 #include "kmwinfobase.h"
 
 #include <QtGui/QLabel>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLayout>
 
 KMWInfoBase::KMWInfoBase(int n, QWidget *parent)

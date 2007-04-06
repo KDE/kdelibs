@@ -28,9 +28,9 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#include <qglobal.h>
-#include <qfile.h>
-#include <qtimer.h>
+#include <QtCore/QBool>
+#include <QtCore/QFile>
+#include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 
 #include <kdebug.h>

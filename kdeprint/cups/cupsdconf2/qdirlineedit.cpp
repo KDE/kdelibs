@@ -19,7 +19,7 @@
 
 #include "qdirlineedit.h"
 
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLayout>
 #include <kpushbutton.h>
 #include <kfiledialog.h>

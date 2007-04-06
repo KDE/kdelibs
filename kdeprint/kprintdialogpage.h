@@ -23,8 +23,8 @@
 
 #include <kdeprint_export.h>
 
-#include <qwidget.h>
-#include <qmap.h>
+#include <QtGui/QWidget>
+#include <QtCore/QMap>
 
 class KMPrinter;
 class DrMain;

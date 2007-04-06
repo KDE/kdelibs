@@ -8,10 +8,10 @@
 #define KGRADIENT_TEST_H
 
 #include <QtGui/QWidget>
-#include <qpixmap.h>
-#include <qslider.h>
+#include <QtGui/QPixmap>
+#include <QtGui/QSlider>
 #include <QtGui/QLabel>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 class KGradientWidget : public QWidget
 {

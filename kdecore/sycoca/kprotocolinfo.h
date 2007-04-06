@@ -24,8 +24,8 @@
 #include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
-#include <qvariant.h>
-#include <qstringlist.h>
+#include <QtCore/QVariant>
+#include <QtCore/QMutableStringListIterator>
 
 class QDataStream;
 

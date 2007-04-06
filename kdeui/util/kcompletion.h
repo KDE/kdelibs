@@ -25,11 +25,11 @@
 #include <ksortablelist.h>
 #include <kshortcut.h>
 
-#include <qmap.h>
-#include <qobject.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qpointer.h>
+#include <QtCore/QMap>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QPointer>
 
 class KCompTreeNode;
 class KCompletionPrivate;

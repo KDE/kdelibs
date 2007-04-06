@@ -21,8 +21,8 @@
 #ifndef KDIROPERATOR_H_
 #define KDIROPERATOR_H_
 
-#include <qwidget.h>
-#include <qstack.h>
+#include <QtGui/QWidget>
+#include <QtCore/QStack>
 
 #include <ktoggleaction.h>
 #include <kcompletion.h>

@@ -22,8 +22,8 @@
 #include "marginvaluewidget.h"
 #include "kprinter.h"
 
-#include <qcombobox.h>
-#include <qcheckbox.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <klocale.h>

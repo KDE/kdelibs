@@ -26,7 +26,7 @@
 #include <QPainter>
 #include <QAbstractTextDocumentLayout>
 #include <QToolTip>
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 #include "numberedtextview.h"
 

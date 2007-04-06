@@ -21,9 +21,9 @@
 #include "kmprinter.h"
 
 #include <QtCore/QFile>
-#include <qfileinfo.h>
-#include <qtextstream.h>
-#include <qmap.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTextIStream>
+#include <QtCore/QMap>
 
 #include <kstandarddirs.h>
 #include <klocale.h>

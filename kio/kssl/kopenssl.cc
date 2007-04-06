@@ -27,7 +27,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kstaticdeleter.h>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 
 #include <stdio.h>

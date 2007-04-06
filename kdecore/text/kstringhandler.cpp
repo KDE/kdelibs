@@ -22,9 +22,9 @@
 #include "kstringhandler.h"
 #include "kglobal.h"
 
-#include <qregexp.h>            // for the word ranges
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QRegExp>            // for the word ranges
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 static void parsePythonRange( const QByteArray &range, int &start, int &end )
 {

@@ -25,8 +25,8 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <qdatetime.h>
-#include <qregexp.h>
+#include <QtCore/QDate>
+#include <QtCore/QRegExp>
 
 #include <cups/cups.h>
 

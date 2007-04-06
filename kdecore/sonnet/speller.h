@@ -22,8 +22,8 @@
 #ifndef KSPELL_DICTIONARY_H
 #define KSPELL_DICTIONARY_H
 
-#include <qstringlist.h>
-#include <qstring.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QCharRef>
 
 #include <kdecore_export.h>
 

@@ -31,8 +31,8 @@
 
 #include "kcolorcombo.h"
 
-#include <qabstractitemdelegate.h>
-#include <qstylepainter.h>
+#include <QtGui/QAbstractItemDelegate>
+#include <QtGui/QStylePainter>
 
 #include <klocale.h>
 #include <kstaticdeleter.h>

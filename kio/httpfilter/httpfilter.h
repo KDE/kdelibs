@@ -30,7 +30,7 @@
 #include <zlib.h>
 #endif
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kcodecs.h>
 
 class HTTPFilterBase : public QObject

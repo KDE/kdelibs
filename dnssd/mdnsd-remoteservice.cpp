@@ -19,8 +19,8 @@
  */
 
 #include <netinet/in.h>
-#include <qeventloop.h>
-#include <qapplication.h>
+#include <QtCore/QEventLoop>
+#include <QtGui/QApplication>
 #include <kdebug.h>
 #include "remoteservice.h"
 #include "mdnsd-responder.h"

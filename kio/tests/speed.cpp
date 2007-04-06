@@ -22,7 +22,7 @@
 #include "speed.h"
 #include <kio/job.h>
 #include <kcmdlineargs.h>
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <kio/global.h>
 
 using namespace KIO;

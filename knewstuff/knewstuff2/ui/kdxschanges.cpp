@@ -24,8 +24,8 @@
 #include <khtmlview.h>
 #include <klocale.h>
 
-#include <qlayout.h>
-#include <qapplication.h>
+#include <QtGui/QLayout>
+#include <QtGui/QApplication>
 
 KDXSChanges::KDXSChanges(QWidget *parent)
 : KDialog(parent)

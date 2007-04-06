@@ -27,7 +27,7 @@
 #include "xml/dom_docimpl.h"
 #include "html/html_miscimpl.h"
 
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class KHTMLView;
 class QString;

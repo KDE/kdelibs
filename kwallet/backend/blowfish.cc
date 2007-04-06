@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #include "blowfish.h"
 #include "blowfishtables.h"

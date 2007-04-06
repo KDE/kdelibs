@@ -600,7 +600,7 @@ char *kdeprint_ppdtext;
  **/
 
 #include <QtCore/QStringList>
-#include <qiodevice.h>
+#include <QtCore/QIODevice>
 #if defined(__MINGW32__) || defined(_MSC_VER)
 // isatty
 #include <io.h>

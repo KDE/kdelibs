@@ -25,8 +25,8 @@
 
 #include "kfilewidget.h"
 
-#include <kfilespeedbar.h>
-#include <kfilebookmarkhandler.h>
+#include "kfilespeedbar.h"
+#include "kfilebookmarkhandler.h"
 #include "kurlcombobox.h"
 #include "config-kfile.h"
 

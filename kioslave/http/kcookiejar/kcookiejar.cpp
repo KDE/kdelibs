@@ -56,8 +56,8 @@
 
 #include <QtCore/QString>
 #include <QtCore/QFile>
-#include <qdir.h>
-#include <qregexp.h>
+#include <QtCore/QDir>
+#include <QtCore/QRegExp>
 
 #include <kurl.h>
 #include <kdatetime.h>

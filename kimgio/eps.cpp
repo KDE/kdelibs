@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <QtGui/QImage>
 #include <QtCore/QFile>
-#include <qpainter.h>
-#include <qprinter.h>
+#include <QtGui/QPainter>
+#include <QtGui/QPrinter>
 #include <QTextStream>
 #include <kapplication.h>
 #include <ktemporaryfile.h>

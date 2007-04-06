@@ -19,7 +19,7 @@
  */
 
 #include <dnssd/servicebase.h>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <QDataStream>
 #include <QtCore/QUrl>
 

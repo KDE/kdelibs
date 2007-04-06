@@ -1,6 +1,6 @@
 #include <knotificationrestrictions.h>
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <QtGui/QLabel>
 
 int main(int argc, char* argv[])

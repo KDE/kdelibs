@@ -22,7 +22,7 @@
 
 */
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 #ifdef Q_WS_X11 //FIXME
 
 #include "kxerrorhandler.h"

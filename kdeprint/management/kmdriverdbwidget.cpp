@@ -25,8 +25,8 @@
 
 #include <klistwidget.h>
 #include <kpushbutton.h>
-#include <qcheckbox.h>
-#include <qapplication.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QApplication>
 #include <kmessagebox.h>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>

@@ -25,9 +25,9 @@
 
 #include <knewstuff2/knewstuff_export.h>
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qmap.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
+#include <QtCore/QMap>
 
 class KJob;
 

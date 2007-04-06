@@ -56,18 +56,18 @@ extern "C" {
 #include <algorithm>
 #include <functional>
 
-#include <qfile.h>
-#include <qdir.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qcheckbox.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
-#include <qpainter.h>
-#include <qlayout.h>
-#include <qcombobox.h>
-#include <qstyle.h>
-#include <qprogressbar.h>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtGui/QLabel>
+#include <QtGui/QPushButton>
+#include <QtGui/QCheckBox>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTextIStream>
+#include <QtGui/QPainter>
+#include <QtGui/QLayout>
+#include <QtGui/QComboBox>
+#include <QtGui/QStyle>
+#include <QtGui/QProgressBar>
 #include <QVector>
 
 #ifdef HAVE_POSIX_ACL

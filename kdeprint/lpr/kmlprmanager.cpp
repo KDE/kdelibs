@@ -28,13 +28,13 @@
 #include "driver.h"
 #include "editentrydialog.h"
 
-#include <qfileinfo.h>
+#include <QtCore/QFileInfo>
 #include <kicon.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kprinter.h>
-#include <qprocess.h>
+#include <QtCore/Q_PID>
 #include <kaction.h>
 #include <kmessagebox.h>
 #include <klibloader.h>

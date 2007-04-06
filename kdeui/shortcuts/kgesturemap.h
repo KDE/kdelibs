@@ -20,8 +20,8 @@
 #ifndef KGESTUREMAP_H
 #define KGESTUREMAP_H
 
-#include <qobject.h>
-#include <qhash.h>
+#include <QtCore/QObject>
+#include <QtCore/QHash>
 #include <QTimer>
 #include <QPolygon>
 

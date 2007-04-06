@@ -21,9 +21,9 @@
 #define KVISIBLEBUTTONGROUP_H
 
 
-#include <qgroupbox.h>
-#include <qbuttongroup.h>
-#include <qradiobutton.h>
+#include <QtGui/QGroupBox>
+#include <QtGui/QButtonGroup>
+#include <QtGui/QRadioButton>
 #include <QtGui/QLayout>
 
 

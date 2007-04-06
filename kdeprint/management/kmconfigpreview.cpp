@@ -19,7 +19,7 @@
 
 #include "kmconfigpreview.h"
 
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 #include <QGroupBox>
 #include <QtGui/QLabel>

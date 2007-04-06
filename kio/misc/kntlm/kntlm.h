@@ -20,7 +20,7 @@
 #ifndef KNTLM_H
 #define KNTLM_H
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QByteArray>
 #include <QString>
 

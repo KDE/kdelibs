@@ -26,11 +26,11 @@
 #include <kuniqueapplication.h>
 #include <kxerrorhandler.h>
 #include <netwm.h>
-#include <qbitmap.h>
+#include <QtGui/QBitmap>
 #include <QDesktopWidget>
-#include <qdialog.h>
+#include <QtGui/QDialog>
 #include <QtDBus/QtDBus>
-#include <qx11info_x11.h>
+#include <QtGui/QX11Info>
 #include <X11/Xatom.h>
 
 class KWMStaticContainer {

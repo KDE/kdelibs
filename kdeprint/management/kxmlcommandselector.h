@@ -22,8 +22,8 @@
 
 #include <kdeprint_export.h>
 
-#include <qwidget.h>
-#include <qstringlist.h>
+#include <QtGui/QWidget>
+#include <QtCore/QMutableStringListIterator>
 
 class QComboBox;
 class QLineEdit;

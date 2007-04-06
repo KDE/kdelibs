@@ -20,9 +20,9 @@
 #ifndef KFONTREQUESTER_H
 #define KFONTREQUESTER_H
 
-#include <qwidget.h>
-#include <qfont.h>
-#include <qstring.h>
+#include <QtGui/QWidget>
+#include <QtGui/QFont>
+#include <QtCore/QCharRef>
 
 #include <kdeui_export.h>
 

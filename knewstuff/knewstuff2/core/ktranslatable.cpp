@@ -22,7 +22,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 using namespace KNS;
 

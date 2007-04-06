@@ -19,7 +19,7 @@
 
 #include <kapplication.h>
 #include <kaction.h>
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 
 #include <kglobal.h>
 

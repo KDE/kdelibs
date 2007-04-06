@@ -28,8 +28,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <qtimer.h>
-#include <qfile.h>
+#include <QtCore/QTimer>
+#include <QtCore/QFile>
 
 #include <config.h>
 

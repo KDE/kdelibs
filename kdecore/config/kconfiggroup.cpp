@@ -27,13 +27,13 @@
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
 
-#include <qdatetime.h>
-#include <qdir.h>
-#include <qfile.h>
-#include <qpoint.h>
-#include <qrect.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
+#include <QtCore/QDate>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QPoint>
+#include <QtCore/QRect>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTextIStream>
 
 #include "kconfiggroup_p.h"
 

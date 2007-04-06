@@ -4,7 +4,7 @@
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 namespace KNS
 {

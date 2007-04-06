@@ -25,8 +25,8 @@
 #include "kdebug.h"
 #include "klocale.h"
 
-#include <qdatetime.h>
-#include <qstring.h>
+#include <QtCore/QDate>
+#include <QtCore/QCharRef>
 
 /*
   The following C++ code is translated from the Lisp code

@@ -20,8 +20,8 @@
 
 #include <k3listview.h>
 #include <kdebug.h>
-#include <q3listview.h>
-#include <q3ptrdict.h>
+#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3PtrDict>
 #include "dom/dom_core.h"
 
 class DOMTreeView : public K3ListView

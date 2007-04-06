@@ -28,7 +28,7 @@
 #include <QFont>
 #include <QApplication>
 #include <QMimeData>
-#include <qtableview.h>
+#include <QtGui/QTableView>
 #include <klocale.h>
 
 #include <QDebug>

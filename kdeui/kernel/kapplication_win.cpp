@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <kstandarddirs.h>
 #include <klocale.h>
 

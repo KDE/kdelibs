@@ -26,8 +26,8 @@
 #include <kdecore_export.h>
 #include <kdebug.h>
 #include <kconfigflags.h>
-#include <qcolor.h>
-#include <qvariant.h>
+#include <QtGui/QColor>
+#include <QtCore/QVariant>
 
 class KConfigBase;
 class KSharedConfigPtr;

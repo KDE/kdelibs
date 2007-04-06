@@ -19,7 +19,7 @@
 #include <time.h>
 #include <zlib.h>
 #include <kdebug.h>
-#include <qiodevice.h>
+#include <QtCore/QIODevice>
 
 #include "kgzipfilter.h"
 

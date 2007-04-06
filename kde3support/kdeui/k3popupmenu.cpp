@@ -16,10 +16,10 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include <qcursor.h>
-#include <qpainter.h>
-#include <qtimer.h>
-#include <qfontmetrics.h>
+#include <QtGui/QCursor>
+#include <QtGui/QPainter>
+#include <QtCore/QTimer>
+#include <QtGui/QFontMetrics>
 #include <QKeyEvent>
 #include <QPointer>
 #include <QMenuItem>

@@ -19,8 +19,8 @@
 #include "kwordwrap.h"
 #include <kdebug.h>
 
-#include <qpainter.h>
-#include <qvector.h>
+#include <QtGui/QPainter>
+#include <QtCore/QMutableVectorIterator>
 
 class KWordWrapPrivate {
 public:

@@ -26,11 +26,11 @@
 
 #include "config.h"
 #include <stdio.h>
-#include <qevent.h>
-#include <qobject.h>
-#include <qpainter.h>
-#include <qstyle.h>
-#include <qtimer.h>
+#include <QtGui/QActionEvent>
+#include <QtCore/QObject>
+#include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtCore/QTimer>
 #include <QDesktopWidget>
 #include <QMenuItem>
 #include <QStyleOptionMenuItem>

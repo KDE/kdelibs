@@ -22,7 +22,7 @@
 #ifndef _KJS_PROXY_H_
 #define _KJS_PROXY_H_
 
-#include <qvariant.h>
+#include <QtCore/QVariant>
 #include <QtCore/QString>
 #include <sys/time.h>
 

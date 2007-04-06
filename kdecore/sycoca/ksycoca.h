@@ -22,8 +22,8 @@
 #include <kdecore_export.h>
 #include <ksycocatype.h>
 
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QMutableStringListIterator>
 
 class QDataStream;
 class KSycocaFactory;

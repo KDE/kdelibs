@@ -19,15 +19,15 @@
 */
 
 #include "kfinddialog.h"
-#include <qcheckbox.h>
-#include <qcursor.h>
-#include <qgroupbox.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qlineedit.h>
-#include <qmenu.h>
-#include <qpushbutton.h>
-#include <qregexp.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QCursor>
+#include <QtGui/QGroupBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QLineEdit>
+#include <QtGui/QMenu>
+#include <QtGui/QPushButton>
+#include <QtCore/QRegExp>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <klocale.h>

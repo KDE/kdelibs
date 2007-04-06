@@ -19,9 +19,9 @@
 
 #include "klistwidgetsearchline.h"
 
-#include <qlistwidget.h>
+#include <QtGui/QListWidget>
 #include <klocale.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <kdebug.h>
 
 #define DEFAULT_CASESENSITIVE Qt::CaseInsensitive

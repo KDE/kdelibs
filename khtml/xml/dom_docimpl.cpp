@@ -43,8 +43,8 @@
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_binding.h"
 
-#include <q3ptrstack.h>
-#include <q3paintdevicemetrics.h>
+#include <Qt3Support/Q3PtrStack>
+#include <Qt3Support/Q3PaintDeviceMetrics>
 //Added by qt3to4:
 #include <QTimerEvent>
 #include <Q3PtrList>

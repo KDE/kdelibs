@@ -27,9 +27,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qfile.h>
-#include <qlist.h>
-#include <qtimer.h>
+#include <QtCore/QFile>
+#include <QtCore/QList>
+#include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 
 #include <kcmdlineargs.h>

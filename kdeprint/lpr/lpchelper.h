@@ -21,8 +21,8 @@
 #define LPCHELPER_H
 
 #include <QtCore/QObject>
-#include <qmap.h>
-#include <qtextstream.h>
+#include <QtCore/QMap>
+#include <QtCore/QTextIStream>
 #include "kmprinter.h"
 
 class KMJob;

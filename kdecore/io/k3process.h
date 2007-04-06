@@ -22,7 +22,7 @@
 
 #include <kdecore_export.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <sys/types.h> // for pid_t
 #include <sys/wait.h>

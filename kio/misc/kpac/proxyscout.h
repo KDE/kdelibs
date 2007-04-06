@@ -22,7 +22,7 @@
 #define KPAC_PROXYSCOUT_H
 
 
-#include <qmap.h>
+#include <QtCore/QMap>
 
 #include <kdedmodule.h>
 #include <kurl.h>

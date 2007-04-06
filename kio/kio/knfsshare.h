@@ -19,7 +19,7 @@
 #ifndef knfsshare_h
 #define knfsshare_h
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kio/kio_export.h>
 

@@ -20,7 +20,7 @@
 
 #include "ksslx509map.h"
 #include <QtCore/QStringList>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 KSSLX509Map::KSSLX509Map(const QString& name) {
   parse(name);

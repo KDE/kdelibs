@@ -23,12 +23,12 @@
 #ifndef _XML_Tokenizer_h_
 #define _XML_Tokenizer_h_
 
-#include <qxml.h>
-#include <q3ptrlist.h>
-#include <q3ptrstack.h>
+#include <Qt/qxml.h>
+#include <Qt3Support/Q3PtrList>
+#include <Qt3Support/Q3PtrStack>
 #include <QStack>
 #include <QMap>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include "misc/loader_client.h"
 #include "misc/stringit.h"
 

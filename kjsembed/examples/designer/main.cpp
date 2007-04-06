@@ -28,7 +28,7 @@
 #include <QtDesigner/abstractformeditor.h>
 #include <QtDesigner/QDesignerFormEditorPluginInterface>
 
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 int main(int argc, char *argv[])
 {

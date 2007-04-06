@@ -21,7 +21,7 @@
 #define KMINFOPAGE_H
 
 #include "kmprinterpage.h"
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QLabel;
 

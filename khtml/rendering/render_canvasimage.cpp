@@ -30,8 +30,8 @@
 #include "render_canvasimage.h"
 #include "render_canvas.h"
 
-#include <qpainter.h>
-#include <qdebug.h>
+#include <QtGui/QPainter>
+#include <QtCore/QDebug>
 
 #include "css/csshelper.h"
 #include "misc/helper.h"

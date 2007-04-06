@@ -17,7 +17,7 @@
 */
 
 #include <config.h>
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #ifdef Q_OS_WIN
 

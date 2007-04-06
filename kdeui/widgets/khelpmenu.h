@@ -24,8 +24,8 @@
 
 #include <kdeui_export.h>
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 class KActionCollection;
 class KMenu;

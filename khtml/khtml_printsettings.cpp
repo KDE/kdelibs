@@ -20,7 +20,7 @@
 #include "khtml_printsettings.h"
 
 #include <klocale.h>
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 
 KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)

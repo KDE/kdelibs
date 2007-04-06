@@ -22,7 +22,7 @@
 
 #include <kdeprint_export.h>
 
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class MarginValueWidget;
 class MarginPreview;

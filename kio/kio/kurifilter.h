@@ -26,8 +26,8 @@
 #define __kurifilter_h__
 
 #include <kio/kio_export.h>
-#include <qobject.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kurl.h>
 

@@ -23,7 +23,7 @@
 #include "ksycoca.h"
 #include "kdebug.h"
 
-#include <qbitarray.h>
+#include <QtCore/QBitArray>
 
 namespace
 {

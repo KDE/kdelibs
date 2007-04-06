@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <qfontdatabase.h>
+#include <QtGui/QFontDatabase>
 
 #include "khtml_settings.h"
 #include "khtmldefaults.h"
@@ -26,7 +26,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <kmessagebox.h>
 
 /**

@@ -30,8 +30,8 @@
 #include "xml/dom_nodeimpl.h"
 #include "misc/shared.h"
 #include <kdemacros.h>
-#include <qdatetime.h>
-#include <q3ptrlist.h>
+#include <QtCore/QDate>
+#include <Qt3Support/Q3PtrList>
 
 namespace DOM {
 

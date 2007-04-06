@@ -47,12 +47,12 @@
 #include <kdebug.h>
 #include <kwm.h>
 #include <kio/netaccess.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QtGui/QLayout>
 #include <stdlib.h>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <kdialog.h>
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <kconfig.h>
 #include <QDropEvent>
 #include <QMenuItem>

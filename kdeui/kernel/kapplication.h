@@ -43,7 +43,7 @@ typedef unsigned long Atom;
 typedef void Display;
 #endif
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <kcomponentdata.h>
 #include <kglobal.h>
 

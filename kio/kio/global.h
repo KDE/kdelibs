@@ -21,9 +21,9 @@
 
 #include <kio/kio_export.h>
 
-#include <qstring.h>
-#include <qhash.h>
-#include <qmap.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QHash>
+#include <QtCore/QMap>
 #include <QList>
 
 #include <kicontheme.h> // K3Icon (for pixmapForUrl)

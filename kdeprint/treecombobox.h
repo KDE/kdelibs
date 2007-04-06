@@ -20,7 +20,7 @@
 #ifndef TREECOMBOBOX_H
 #define TREECOMBOBOX_H
 
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 
 class TreeComboBox : public QComboBox
 {

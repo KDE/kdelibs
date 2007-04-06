@@ -36,9 +36,9 @@
 #include "k3spell.h"
 
 
-#include <qapplication.h>
-#include <qtextcodec.h>
-#include <qtimer.h>
+#include <QtGui/QApplication>
+#include <QtCore/QTextCodec>
+#include <QtCore/QTimer>
 
 #include <kmessagebox.h>
 #include <kdebug.h>

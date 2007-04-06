@@ -22,7 +22,7 @@
 
 #include <kde3support_export.h>
 
-#include <q3textedit.h>
+#include <Qt3Support/Q3TextEdit>
 
 class K3Spell;
 

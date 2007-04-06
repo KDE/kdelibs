@@ -11,7 +11,7 @@
 #ifndef KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 
-#include <qdialog.h>
+#include <QtGui/QDialog>
 
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>

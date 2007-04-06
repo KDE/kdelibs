@@ -25,7 +25,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 #include <kurl.h>
 

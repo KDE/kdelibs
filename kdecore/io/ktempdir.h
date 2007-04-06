@@ -21,7 +21,7 @@
 #define KTEMPDIR_H
 
 #include <kdecore_export.h>
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 /**
  * @brief Create a unique directory for temporary use.

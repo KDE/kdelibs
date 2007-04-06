@@ -25,9 +25,9 @@
 
 #include "kfileview.h"
 
-#include <qsplitter.h>
-#include <qwidget.h>
-#include <qstring.h>
+#include <QtGui/QSplitter>
+#include <QtGui/QWidget>
+#include <QtCore/QCharRef>
 
 #include <kurl.h>
 

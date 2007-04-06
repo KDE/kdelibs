@@ -1,5 +1,5 @@
 #include "khboxtest.h"
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>

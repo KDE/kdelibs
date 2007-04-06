@@ -26,10 +26,10 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <qmap.h>
-#include <qpointer.h>
+#include <QtCore/QMap>
+#include <QtCore/QPointer>
 #include <QtCore/QStringList>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 // This file was using 6002, but kdebug.areas didn't know about that number
 #define DEBUGAREA 6100

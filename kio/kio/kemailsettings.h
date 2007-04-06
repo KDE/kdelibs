@@ -28,8 +28,8 @@
 #ifndef _KEMAILSETTINGS_H
 #define _KEMAILSETTINGS_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kio/kio_export.h>
 

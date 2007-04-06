@@ -35,11 +35,11 @@
  * and produce invaliud results.
  */
 
-#include <qcolor.h>
-#include <qfont.h>
-#include <qfontmetrics.h>
-#include <qpalette.h>
-#include <qapplication.h>
+#include <QtGui/QColor>
+#include <QtGui/QFont>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QColorGroup>
+#include <QtGui/QApplication>
 
 #include "dom/dom_misc.h"
 #include "dom/dom_string.h"

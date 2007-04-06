@@ -26,10 +26,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <qstring.h>
-#include <qfile.h>
-#include <qdir.h>
-#include <qmap.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtCore/QMap>
 
 #include <kauthorized.h>
 #include <kdebug.h>

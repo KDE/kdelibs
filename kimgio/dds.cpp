@@ -23,7 +23,7 @@
 
 #include <QtCore/QStringList>
 #include <QtGui/QImage>
-#include <qdatastream.h>
+#include <QtCore/QDataStream>
 
 #include <kglobal.h>
 #include <kdebug.h>

@@ -24,7 +24,7 @@
 #ifndef __dptrtemplate_h__
 #define __dptrtemplate_h__
 
-#include <qhash.h>
+#include <QtCore/QHash>
 
 /* A lazily-created hash from Instance to PrivateData */
 template<class Instance, class PrivateData>

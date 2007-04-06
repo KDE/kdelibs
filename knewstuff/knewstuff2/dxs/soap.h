@@ -21,8 +21,8 @@
 #ifndef KNEWSTUFF2_DXS_SOAP_H
 #define KNEWSTUFF2_DXS_SOAP_H
 
-#include <qobject.h>
-#include <qabstractsocket.h>
+#include <QtCore/QObject>
+#include <QtNetwork/QAbstractSocket>
 
 namespace KIO
 {

@@ -48,14 +48,14 @@
 #include "kactioncollection.h"
 #include "kaction.h"
 
-#include <qdatetime.h>
-#include <qstring.h>
-#include <qpen.h>
-#include <qpainter.h>
-#include <qdialog.h>
-#include <qevent.h>
-#include <qhash.h>
-#include <qapplication.h>
+#include <QtCore/QDate>
+#include <QtCore/QCharRef>
+#include <QtGui/QPen>
+#include <QtGui/QPainter>
+#include <QtGui/QDialog>
+#include <QtGui/QActionEvent>
+#include <QtCore/QHash>
+#include <QtGui/QApplication>
 #include <assert.h>
 
 #include <cmath>

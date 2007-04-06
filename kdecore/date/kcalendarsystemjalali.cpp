@@ -23,8 +23,8 @@
 
 #include "kcalendarsystemjalali.h"
 
-#include <qdatetime.h>
-#include <qstring.h>
+#include <QtCore/QDate>
+#include <QtCore/QCharRef>
 #include <math.h>
 
 #include <kglobal.h>

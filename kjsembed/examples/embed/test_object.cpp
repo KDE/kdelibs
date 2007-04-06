@@ -21,7 +21,7 @@
 #include <kjsembed/variant_binding.h>
 
 #include <kjs/object.h>
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 using namespace KJSEmbed;
 

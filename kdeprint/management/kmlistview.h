@@ -20,7 +20,7 @@
 #ifndef KMLISTVIEW_H
 #define KMLISTVIEW_H
 
-#include <q3listview.h>
+#include <Qt3Support/Q3CheckListItem>
 #include <QList>
 
 class KMListViewItem;

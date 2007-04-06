@@ -11,10 +11,10 @@
 #define HELPWINDOW_H
 
 #include <kmainwindow.h>
-#include <q3textbrowser.h>
+#include <Qt3Support/Q3TextBrowser>
 #include <QtCore/QStringList>
-#include <qmap.h>
-#include <qdir.h>
+#include <QtCore/QMap>
+#include <QtCore/QDir>
 
 class QAction;
 class QComboBox;

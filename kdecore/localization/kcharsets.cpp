@@ -27,11 +27,11 @@
 #include "kglobal.h"
 #include "klocale.h"
 
-#include <qdir.h>
-#include <qregexp.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qtextcodec.h>
+#include <QtCore/QDir>
+#include <QtCore/QRegExp>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QTextCodec>
 
 #include <assert.h>
 #include <QHash>

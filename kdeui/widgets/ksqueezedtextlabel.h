@@ -20,7 +20,7 @@
 #define KSQUEEZEDTEXTLABEL_H
 
 #include <kdeui_export.h>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 class KSqueezedTextLabelPrivate;
 

@@ -22,9 +22,9 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <qtimer.h>
-#include <qhash.h>
-#include <qset.h>
+#include <QtCore/QTimer>
+#include <QtCore/QHash>
+#include <QtCore/QMutableSetIterator>
 
 #include <QtDBus/QtDBus>
 

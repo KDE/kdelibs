@@ -22,9 +22,9 @@
 // Not exported anymore, only used internally.
 //#include <kfile_export.h>
 
-#include <qevent.h>
+#include <QtGui/QActionEvent>
 #include <QtGui/QFrame>
-#include <qtooltip.h>
+#include <QtGui/QToolTip>
 
 #include <kdialog.h>
 #include <kicontheme.h>

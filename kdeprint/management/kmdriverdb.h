@@ -21,7 +21,7 @@
 #define KMDRIVERDB_H
 
 #include <QtCore/QObject>
-#include <qhash.h>
+#include <QtCore/QHash>
 #include <QtCore/QString>
 
 #include "kmdbentry.h"

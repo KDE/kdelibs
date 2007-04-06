@@ -20,8 +20,8 @@
 #ifndef KSHELLCOMPLETION_H
 #define KSHELLCOMPLETION_H
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 #include "kurlcompletion.h"
 

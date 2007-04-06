@@ -43,7 +43,7 @@
 
 #include <QAbstractItemView>
 #include <QAbstractTextDocumentLayout>
-#include <qstyle.h>
+#include <QtGui/QStyle>
 #include <QStyleOptionButton>
 
 #include "misc/helper.h"
@@ -58,8 +58,8 @@
 #include "khtml_ext.h"
 #include "xml/dom_docimpl.h"
 
-#include <qmenu.h>
-#include <qbitmap.h>
+#include <QtGui/QMenu>
+#include <QtGui/QBitmap>
 
 using namespace khtml;
 

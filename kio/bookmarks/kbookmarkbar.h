@@ -21,8 +21,8 @@
 #ifndef KBOOKMARKBAR_H
 #define KBOOKMARKBAR_H
 
-#include <qobject.h>
-#include <qpointer.h>
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QList>
 #include <kbookmark.h>
 #include <kaction.h>

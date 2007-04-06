@@ -22,9 +22,9 @@
 #ifndef __kio_jobclasses_h__
 #define __kio_jobclasses_h__
 
-#include <qobject.h>
-#include <qlinkedlist.h>
-#include <qstringlist.h>
+#include <QtCore/QObject>
+#include <QtCore/QLinkedList>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kurl.h>
 #include <kio/global.h>

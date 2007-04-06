@@ -20,7 +20,7 @@
 #ifndef __kprotocolmanager_h__
 #define __kprotocolmanager_h__
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kio/global.h>
 #include "kprotocolinfo.h"

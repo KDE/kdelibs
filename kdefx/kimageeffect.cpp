@@ -35,9 +35,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QtGui/QImage>
 #include <stdlib.h>
 #include <iostream>
-#include <qcolor.h>
-#include <qpixmap.h>
-#include <qvector.h>
+#include <QtGui/QColor>
+#include <QtGui/QPixmap>
+#include <QtCore/QMutableVectorIterator>
 
 #include "kimageeffect.h"
 #include "kcpuinfo.h"

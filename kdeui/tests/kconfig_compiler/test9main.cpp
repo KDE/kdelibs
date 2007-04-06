@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "test9.h"
 #include "kcomponentdata.h"
 #include <kdebug.h>
-#include <qdir.h>
+#include <QtCore/QDir>
 
 int main( int, char** )
 {

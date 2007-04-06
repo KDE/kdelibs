@@ -26,7 +26,7 @@
 #include "speller.h"
 
 #include <kdebug.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 
 using namespace KSpell2;
 

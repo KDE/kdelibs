@@ -29,10 +29,10 @@
 #include <kservice.h>
 #include <kde_file.h>
 
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QtCore/QFile>
-#include <qdir.h>
-#include <qregexp.h>
+#include <QtCore/QDir>
+#include <QtCore/QRegExp>
 
 #include "vfolder_menu.h"
 

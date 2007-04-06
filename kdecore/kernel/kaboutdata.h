@@ -23,7 +23,7 @@
 #define KABOUTDATA_H
 
 #include <kdecore_export.h>
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 template <class T> class QList;
 class KLocalizedString;

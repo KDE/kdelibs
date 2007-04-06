@@ -28,9 +28,9 @@
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H
 
-#include <qstring.h>
-#include <qobject.h>
-#include <q3ptrqueue.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QObject>
+#include <Qt3Support/Q3PtrQueue>
 
 #include "misc/loader_client.h"
 #include "misc/htmltags.h"

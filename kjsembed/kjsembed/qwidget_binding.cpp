@@ -23,7 +23,7 @@
 #include "kjseglobal.h"
 
 #include <kjs/object.h>
-#include <qdebug.h>
+#include <QtCore/QDebug>
 
 #include <QWidget>
 #include <QAction>

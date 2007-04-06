@@ -30,7 +30,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <QtCore/QString>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QHostInfo>

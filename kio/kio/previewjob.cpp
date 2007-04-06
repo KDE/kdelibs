@@ -34,11 +34,11 @@
 #include <sys/shm.h>
 #endif
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qimage.h>
-#include <qtimer.h>
-#include <qregexp.h>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtGui/QImage>
+#include <QtCore/QTimer>
+#include <QtCore/QRegExp>
 
 #include <kfileitem.h>
 #include <kapplication.h>
@@ -48,7 +48,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kservice.h>
-#include <qlinkedlist.h>
+#include <QtCore/QLinkedList>
 #include <kconfiggroup.h>
 
 #include "previewjob.moc"

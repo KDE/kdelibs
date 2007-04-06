@@ -24,10 +24,10 @@
 
 #undef KDE3_SUPPORT
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QList>
-#include <qset.h>
-#include <qwindowdefs.h>
+#include <QtCore/QMutableSetIterator>
+#include <QtGui/QWidgetList>
 #include "kglobal.h"
 
 #include <kaboutdata.h>
@@ -36,7 +36,7 @@
 #include <kcharsets.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
-#include <qcoreapplication.h>
+#include <QtCore/QCoreApplication>
 #include "kstaticdeleter.h"
 #include "kcmdlineargs.h"
 

@@ -34,11 +34,11 @@
 #include <kparts/statusbarextension.h>
 #include <kparts/browserextension.h>
 
-#include <qdatetime.h>
-#include <qpointer.h>
-#include <qmap.h>
-#include <qtimer.h>
-#include <q3valuelist.h>
+#include <QtCore/QDate>
+#include <QtCore/QPointer>
+#include <QtCore/QMap>
+#include <QtCore/QTimer>
+#include <Qt3Support/Q3ValueList>
 
 #include "html/html_formimpl.h"
 #include "khtml_run.h"

@@ -221,16 +221,16 @@ public:
 #include <kconfig.h>
 #include <kglobalsettings.h>
 
-#include <qcolor.h>
-#include <qcursor.h>
-#include <qdir.h>
+#include <QtGui/QColor>
+#include <QtGui/QCursor>
+#include <QtCore/QDir>
 #include <QtCore/QObject>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <QtCore/QString>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <QtGui/QImage>
-#include <qfileinfo.h>
-#include <qtimer.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTimer>
 #include <kstatusbar.h>
 
 #include "misc/decoder.h"

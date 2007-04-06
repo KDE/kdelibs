@@ -40,13 +40,13 @@
 #include "kthemebase.h"
 #include <kpixmapeffect.h>
 #include <QtGui/QImage>
-#include <qpainter.h>
-#include <qbitmap.h>
+#include <QtGui/QPainter>
+#include <QtGui/QBitmap>
 #include <stdlib.h>
 
-#include <qsettings.h>
-#include <qapplication.h>
-#include <qscrollbar.h>
+#include <QtCore/QSettings>
+#include <QtGui/QApplication>
+#include <QtGui/QScrollBar>
 
 typedef QMap<QString, QString> Prop;
 

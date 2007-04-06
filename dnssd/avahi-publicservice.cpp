@@ -31,7 +31,6 @@
 #include "avahi_server_interface.h"
 #include "avahi_entrygroup_interface.h"
 #include "avahi-publicservice_p.h"
-#include "avahi_server_interface.h"
 
 Q_DECLARE_METATYPE(QList<QByteArray>);
 

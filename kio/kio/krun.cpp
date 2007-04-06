@@ -28,8 +28,8 @@
 #include <unistd.h>
 #include <typeinfo>
 
-#include <qwidget.h>
-#include <qpointer.h>
+#include <QtGui/QWidget>
+#include <QtCore/QPointer>
 
 #include "kmimetypetrader.h"
 #include "kmimetype.h"
@@ -52,11 +52,11 @@
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
 #include <k3process.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qtextstream.h>
-#include <qdatetime.h>
-#include <qregexp.h>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QTextIStream>
+#include <QtCore/QDate>
+#include <QtCore/QRegExp>
 #include <kdesktopfile.h>
 #include <kstartupinfo.h>
 #include <kmacroexpander.h>

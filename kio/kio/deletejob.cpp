@@ -37,8 +37,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <qtimer.h>
-#include <qfile.h>
+#include <QtCore/QTimer>
+#include <QtCore/QFile>
 #include <QPointer>
 
 using namespace KIO;

@@ -10,9 +10,9 @@
  */
 
 #include <QtGui/QLayout>
-#include <qmessagebox.h>
-#include <qdir.h>
-#include <qgroupbox.h>
+#include <QtGui/QMessageBox>
+#include <QtCore/QDir>
+#include <QtGui/QGroupBox>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -26,7 +26,7 @@
 #include <kio/deletejob.h>
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 #include "kioslavetest.h"
 

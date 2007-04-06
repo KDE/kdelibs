@@ -25,10 +25,10 @@
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <kbuttongroup.h>
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qradiobutton.h>
+#include <QtGui/QRadioButton>
 
 #include <kcursor.h>
 #include <kdebug.h>

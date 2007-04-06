@@ -30,9 +30,9 @@
 #include "misc/khtmllayout.h"
 #include "rendering/render_object.h"
 
-#include <qregion.h>
-#include <qmap.h>
-#include <qpixmap.h>
+#include <QtGui/QRegion>
+#include <QtCore/QMap>
+#include <QtGui/QPixmap>
 
 namespace DOM {
 

@@ -21,7 +21,7 @@
 */
 
 #include "kdedmodule.h"
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
 
 #include "kconfigdata.h"

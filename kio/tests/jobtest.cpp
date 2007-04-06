@@ -30,11 +30,11 @@
 #include <klocale.h>
 #include <kcmdlineargs.h>
 
-#include <qfileinfo.h>
-#include <qeventloop.h>
-#include <qdir.h>
-#include <qhash.h>
-#include <qvariant.h>
+#include <QtCore/QFileInfo>
+#include <QtCore/QEventLoop>
+#include <QtCore/QDir>
+#include <QtCore/QHash>
+#include <QtCore/QVariant>
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -3,9 +3,9 @@
 #include "parts.h"
 #include "notepad.h"
 
-#include <qsplitter.h>
-#include <qcheckbox.h>
-#include <qdir.h>
+#include <QtGui/QSplitter>
+#include <QtGui/QCheckBox>
+#include <QtCore/QDir>
 #include <QMenu>
 
 #include <kiconloader.h>

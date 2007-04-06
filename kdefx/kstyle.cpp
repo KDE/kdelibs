@@ -46,7 +46,7 @@
 #include "kstyle.h"
 #include "kstyle.moc"
 
-#include <qalgorithms.h>
+#include <QtCore/qalgorithms.h>
 #include <QtCore/QEvent>
 #include <QtCore/QVariant>
 #include <QtGui/QApplication>

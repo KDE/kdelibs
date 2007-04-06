@@ -20,8 +20,8 @@
 
 #include "kauthorized.h"
 
-#include <qdir.h>
-#include <qregexp.h>
+#include <QtCore/QDir>
+#include <QtCore/QRegExp>
 #include <QList>
 
 #include <QString>
@@ -38,7 +38,7 @@
 
 #include <QMutex>
 #include <QMutexLocker>
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #ifdef __GNUC__
 #warning used non public api for now

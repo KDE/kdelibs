@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 #include <QQueue>
-#include <qobject.h>
+#include <QtCore/QObject>
 
 namespace KNetwork { class KStreamSocket; }
 class QSocketNotifier;

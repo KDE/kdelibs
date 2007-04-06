@@ -40,20 +40,20 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <kcomponentdata.h>
 #include "kstaticdeleter.h"
 
-#include <qcolor.h>
-#include <qcursor.h>
-#include <qdesktopwidget.h>
-#include <qdir.h>
-#include <qfont.h>
-#include <qfontdatabase.h>
-#include <qfontinfo.h>
-#include <qkeysequence.h>
-#include <qpixmap.h>
-#include <qpixmapcache.h>
+#include <QtGui/QColor>
+#include <QtGui/QCursor>
+#include <QtGui/QDesktopWidget>
+#include <QtCore/QDir>
+#include <QtGui/QFont>
+#include <QtGui/QFontDatabase>
+#include <QtGui/QFontInfo>
+#include <QtGui/QKeySequence>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
 //#include <q3stylesheet.h> // no equivalent in Qt4
 #include <QApplication>
 #include <QtDBus/QtDBus>
-#include <qstylefactory.h>
+#include <QtGui/QStyleFactory>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>

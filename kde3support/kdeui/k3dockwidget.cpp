@@ -21,15 +21,15 @@
 #include "k3dockwidget_private.h"
 #include "k3dockwidget_p.h"
 
-#include <qapplication.h>
-#include <qlayout.h>
-#include <qpainter.h>
-#include <q3strlist.h>
-#include <qcursor.h>
-#include <qwidget.h>
-#include <qtabwidget.h>
-#include <qtooltip.h>
-#include <qstyle.h>
+#include <QtGui/QApplication>
+#include <QtGui/QLayout>
+#include <QtGui/QPainter>
+#include <Qt3Support/Q3StrIList>
+#include <QtGui/QCursor>
+#include <QtGui/QWidget>
+#include <QtGui/QTabWidget>
+#include <QtGui/QToolTip>
+#include <QtGui/QStyle>
 #include <QMouseEvent>
 #include <QObject>
 #include <QStylePainter>

@@ -41,11 +41,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qdir.h>
-#include <qstringlist.h>
-#include <qregexp.h>
-#include <qmimedata.h>
-#include <qtextcodec.h>
+#include <QtCore/QDir>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QRegExp>
+#include <QtCore/QMimeData>
+#include <QtCore/QTextCodec>
 
 static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool decodeDots )
 {

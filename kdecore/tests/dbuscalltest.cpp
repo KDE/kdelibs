@@ -2,8 +2,8 @@
 #include <kaboutdata.h>
 //#include <kapplication.h>
 #include <kdebug.h>
-#include <qdbusinterface.h>
-#include <qdbusreply.h>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusReply>
 
 int main( int argc, char** argv )
 {

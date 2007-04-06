@@ -24,8 +24,8 @@
 #include "kstandarddirs.h"
 #include "klocalizedstring.h"
 
-#include <qfile.h>
-#include <qtextstream.h>
+#include <QtCore/QFile>
+#include <QtCore/QTextIStream>
 #include <QVariant>
 #include <QList>
 

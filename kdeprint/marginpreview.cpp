@@ -21,8 +21,8 @@
 
 #include <klocale.h>
 #include <kdebug.h>
-#include <qpainter.h>
-#include <qcursor.h>
+#include <QtGui/QPainter>
+#include <QtGui/QCursor>
 #include <QMouseEvent>
 
 #define	A4_WIDTH	595

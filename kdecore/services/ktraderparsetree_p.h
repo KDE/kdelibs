@@ -20,9 +20,9 @@
 #ifndef __ktrader_parse_tree_h__
 #define __ktrader_parse_tree_h__
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qmap.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QMap>
 
 #include <kservice.h>
 

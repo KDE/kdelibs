@@ -20,7 +20,7 @@
 #define klimitediodevice_h
 
 #include <kdebug.h>
-#include <qiodevice.h>
+#include <QtCore/QIODevice>
 /**
  * A readonly device that reads from an underlying device
  * from a given point to another (e.g. to give access to a single

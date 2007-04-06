@@ -17,7 +17,7 @@
 
 #include <k3dockwidget.h>
 #include <k3dockwidget_p.h>
-#include <qtabwidget.h>
+#include <QtGui/QTabWidget>
 #include <QtGui/QLabel>
 class QPushButton;
 

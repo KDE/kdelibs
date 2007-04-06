@@ -21,10 +21,10 @@
 
  //qt includes
 #include <QtCore/QFile>
-#include <qfileinfo.h>
+#include <QtCore/QFileInfo>
 #include <QtCore/QStringList>
-#include <qtextstream.h>
-#include <qtimer.h>
+#include <QtCore/QTextIStream>
+#include <QtCore/QTimer>
 
  //kde includes
 #include <kdebug.h>

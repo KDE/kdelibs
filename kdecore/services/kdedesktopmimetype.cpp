@@ -23,7 +23,7 @@
 #include <kstandarddirs.h>
 #include <kmountpoint.h>
 #include <dirent.h>
-#include <qfile.h>
+#include <QtCore/QFile>
 
 class KDEDesktopMimeTypePrivate: public KMimeTypePrivate
 {

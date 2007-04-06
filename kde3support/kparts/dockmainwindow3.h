@@ -21,7 +21,7 @@
 #ifndef __DOCKMAINWINDOW_H
 #define __DOCKMAINWINDOW_H
 
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 #include <kaction.h>
 
 #include <k3dockwidget.h>

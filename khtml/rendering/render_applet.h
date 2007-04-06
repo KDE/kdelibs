@@ -25,8 +25,8 @@
 #include "rendering/render_replaced.h"
 #include "html/html_objectimpl.h"
 
-#include <qwidget.h>
-#include <qmap.h>
+#include <QtGui/QWidget>
+#include <QtCore/QMap>
 
 class KHTMLView;
 

@@ -23,7 +23,7 @@
 #include "kmprinter.h"
 
 #include <QtGui/QLabel>
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLayout>
 #include <klocale.h>
 

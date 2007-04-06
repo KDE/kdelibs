@@ -22,12 +22,12 @@
 #include "imagepreview.h"
 #include "driver.h"
 
-#include <qcombobox.h>
+#include <QtGui/QComboBox>
 #include <QButtonGroup>
-#include <qradiobutton.h>
+#include <QtGui/QRadioButton>
 #include <QGroupBox>
-#include <qpushbutton.h>
-#include <qapplication.h>
+#include <QtGui/QPushButton>
+#include <QtGui/QApplication>
 #include <QtGui/QImage>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>

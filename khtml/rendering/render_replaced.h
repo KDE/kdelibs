@@ -24,8 +24,8 @@
 #define render_replaced_h
 
 #include "rendering/render_block.h"
-#include <qobject.h>
-#include <q3scrollview.h>
+#include <QtCore/QObject>
+#include <Qt3Support/Q3ScrollView>
 #include <QAbstractScrollArea>
 #include <QScrollBar>
 

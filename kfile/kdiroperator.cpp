@@ -31,15 +31,15 @@
 
 #include <unistd.h>
 
-#include <qdir.h>
-#include <qapplication.h>
-#include <qdialog.h>
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpushbutton.h>
-#include <qregexp.h>
-#include <qtimer.h>
-#include <qprogressbar.h>
+#include <QtCore/QDir>
+#include <QtGui/QApplication>
+#include <QtGui/QDialog>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QPushButton>
+#include <QtCore/QRegExp>
+#include <QtCore/QTimer>
+#include <QtGui/QProgressBar>
 
 #include <kaction.h>
 #include <kapplication.h>

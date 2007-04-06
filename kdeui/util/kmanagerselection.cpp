@@ -38,7 +38,7 @@ DEALINGS IN THE SOFTWARE.
 #include <unistd.h>
 #endif
 
-#include <qobject.h>
+#include <QtCore/QObject>
 #ifdef Q_WS_X11 // FIXME(E)
 
 #include <qx11info_x11.h>

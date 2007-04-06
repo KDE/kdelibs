@@ -3,7 +3,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <QtGui/QWidget>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <stdlib.h>
 #include "kpalette.h"
 #include "kledtest.h"

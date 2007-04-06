@@ -23,9 +23,9 @@
 #include <sys/un.h>
 #include <sys/stat.h>
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QtCore/QFile>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

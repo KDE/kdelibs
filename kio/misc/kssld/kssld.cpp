@@ -24,7 +24,7 @@
 #include <config.h>
 #endif
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include <Q3CString>
 
 #include "kssld.h"
@@ -35,7 +35,7 @@
 #include <ksslcertificatehome.h>
 #include <ksslpkcs12.h>
 #include <ksslx509map.h>
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -46,7 +46,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <qdatetime.h>
+#include <QtCore/QDate>
 
 #include <kcodecs.h>
 #include <kopenssl.h>

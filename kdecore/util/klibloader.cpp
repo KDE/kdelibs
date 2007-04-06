@@ -19,10 +19,10 @@
 #include "config.h"
 #include "klibloader.h"
 
-#include <qfile.h>
-#include <qdir.h>
-#include <qtimer.h>
-#include <qlibrary.h>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtCore/QTimer>
+#include <QtCore/QLibrary>
 #include <QStack>
 
 #include "kstandarddirs.h"

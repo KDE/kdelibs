@@ -21,8 +21,8 @@
 #include "driver.h"
 
 #include <QtCore/QFile>
-#include <qregexp.h>
-#include <qbuffer.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QBuffer>
 #include <QStringList>
 #include <kdebug.h>
 #include <klocale.h>

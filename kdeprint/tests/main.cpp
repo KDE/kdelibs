@@ -9,7 +9,7 @@
 
 #include "helpwindow.h"
 #include <kapplication.h>
-#include <qwindowsstyle.h>
+#include <QtGui/QWindowsStyle>
 #include <stdlib.h>
 #include <QDesktopWidget>
 #include <kcmdlineargs.h>

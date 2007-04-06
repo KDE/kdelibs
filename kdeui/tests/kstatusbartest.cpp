@@ -3,11 +3,11 @@
 
 #include <QtGui/QWidget>
 #include <QtCore/QString>
-#include <qmessagebox.h>
-#include <qtextedit.h>
-#include <qnamespace.h>
-#include <qpixmap.h>
-#include <qcursor.h>
+#include <QtGui/QMessageBox>
+#include <QtGui/QTextEdit>
+#include <QtCore/QCOORD>
+#include <QtGui/QPixmap>
+#include <QtGui/QCursor>
 
 #include <stdlib.h>
 

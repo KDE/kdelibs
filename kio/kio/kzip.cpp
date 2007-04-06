@@ -42,12 +42,12 @@
 #include "klimitediodevice.h"
 #include <kdebug.h>
 
-#include <qhash.h>
-#include <qbytearray.h>
-#include <qfile.h>
-#include <qdir.h>
-#include <qdatetime.h>
-#include <qlist.h>
+#include <QtCore/QHash>
+#include <QtCore/QByteArray>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtCore/QDate>
+#include <QtCore/QList>
 
 #include <zlib.h>
 #include <time.h>

@@ -46,7 +46,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include "khtmlview.h"
 #include <khtml_part.h>
 #include <QBitmap>

@@ -18,12 +18,12 @@
 
 #include "kstandardaction.h"
 
-#include <qstringlist.h>
-#include <qtoolbutton.h>
+#include <QtCore/QMutableStringListIterator>
+#include <QtGui/QToolButton>
 
 #include <kaboutdata.h>
 #include <kaction.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kglobal.h>

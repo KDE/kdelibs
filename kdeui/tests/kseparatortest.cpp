@@ -18,7 +18,7 @@
  */
 
 
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <QtGui/QLayout>
 #include <QtGui/QWidget>
 #include <QBoxLayout>

@@ -27,7 +27,7 @@
 
 #include <QGroupBox>
 #include <QtGui/QLayout>
-#include <qprinter.h>
+#include <QtGui/QPrinter>
 
 #include <kiconloader.h>
 #include <klocale.h>

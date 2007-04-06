@@ -25,7 +25,7 @@
 #include <QObjectCleanupHandler>
 #include <QDebug>
 #include <QFlags>
-#include <qglobal.h>
+#include <QtCore/QBool>
 
 #include <kjs/function.h>
 #include <kdemacros.h>

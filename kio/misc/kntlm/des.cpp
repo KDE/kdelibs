@@ -15,7 +15,7 @@
  */
 
 #include <string.h>
-#include <qendian.h>
+#include <QtCore/qendian.h>
 #include "des.h"
 
 static void permute_ip (unsigned char *inblock, DES_KEY * key, unsigned char *outblock);

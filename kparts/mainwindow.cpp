@@ -26,7 +26,7 @@
 #include <kstatusbar.h>
 #include <khelpmenu.h>
 #include <kstandarddirs.h>
-#include <qapplication.h>
+#include <QtGui/QApplication>
 #include <kxmlguifactory.h>
 
 #include <kdebug.h>

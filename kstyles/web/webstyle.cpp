@@ -21,16 +21,16 @@
 #define INCLUDE_MENUITEM_DEF
 #endif
 
-#include <qmenudata.h>
-#include <qpalette.h>
-#include <qbitmap.h>
-#include <qtabbar.h>
-#include <q3pointarray.h>
-#include <qscrollbar.h>
-#include <qframe.h>
-#include <qpushbutton.h>
-#include <qdrawutil.h>
-#include <qpainter.h>
+#include <QtGui/qmenudata.h>
+#include <QtGui/QColorGroup>
+#include <QtGui/QBitmap>
+#include <QtGui/QTabBar>
+#include <Qt3Support/Q3PointArray>
+#include <QtGui/QScrollBar>
+#include <QtGui/QFrame>
+#include <QtGui/QPushButton>
+#include <QtGui/qdrawutil.h>
+#include <QtGui/QPainter>
 
 #include <kapplication.h>
 #include <kdrawutil.h>

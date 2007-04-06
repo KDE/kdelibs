@@ -20,7 +20,7 @@
 #include <config.h>
 
 #include <kdebug.h>
-#include <qiodevice.h>
+#include <QtCore/QIODevice>
 #include "kgzipfilter.h"
 #ifdef HAVE_BZIP2_SUPPORT
 #include "kbzip2filter.h"

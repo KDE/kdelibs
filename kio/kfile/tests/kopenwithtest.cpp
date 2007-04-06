@@ -19,9 +19,9 @@
 */
 
 #include <kapplication.h>
-#include <qwidget.h>
-#include <qstringlist.h>
-#include <qdir.h>
+#include <QtGui/QWidget>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QDir>
 #include <kopenwithdialog.h>
 #include <kurl.h>
 #include <kdebug.h>

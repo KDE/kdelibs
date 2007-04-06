@@ -20,7 +20,7 @@
 #include "driveritem.h"
 #include "driver.h"
 
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <kiconloader.h>
 #include <kdebug.h>
 

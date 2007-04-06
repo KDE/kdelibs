@@ -32,7 +32,7 @@
 using namespace std;
 
 #include <QtCore/QObject>
-#include <qhash.h>
+#include <QtCore/QHash>
 #include <QtCore/QString>
 
 #include <kunittest_export.h>

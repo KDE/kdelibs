@@ -22,9 +22,9 @@
 #include <sys/time.h>
 #endif
 
-#include <qfile.h>
-#include <qstring.h>
-#include <qmap.h>
+#include <QtCore/QFile>
+#include <QtCore/QCharRef>
+#include <QtCore/QMap>
 
 #include <klocale.h>
 #include <kdebug.h>

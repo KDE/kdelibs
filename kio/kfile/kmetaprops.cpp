@@ -26,17 +26,17 @@
 #include <klocale.h>
 #include <kprotocolinfo.h>
 
-#include <qvalidator.h>
-#include <qlayout.h>
-#include <qlabel.h>
-#include <qfileinfo.h>
-#include <qdatetime.h>
-#include <qgroupbox.h>
+#include <QtGui/QDoubleValidator>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDate>
+#include <QtGui/QGroupBox>
 #include <QResizeEvent>
-#include <qlinkedlist.h>
+#include <QtCore/QLinkedList>
 #include <Q3ScrollView>
 #include <QTextDocument>
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 
 #undef Bool
 

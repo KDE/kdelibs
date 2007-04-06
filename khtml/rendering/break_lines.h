@@ -1,7 +1,7 @@
 #ifndef BREAK_LINES_H
 #define BREAK_LINES_H
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 namespace khtml {
 

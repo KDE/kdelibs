@@ -49,8 +49,6 @@
 #include <kpagedialog.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kpushbutton.h>
-#include <kfiledialog.h>
 #include <kurlrequester.h>
 #include <kicondialog.h>
 

@@ -24,14 +24,14 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <kcomponentdata.h>
 #include "xslt.h"
 #include <QtCore/QFile>
-#include <qdir.h>
+#include <QtCore/QDir>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <stdlib.h>
 #include <kdebug.h>
-#include <qtextcodec.h>
-#include <qfileinfo.h>
+#include <QtCore/QTextCodec>
+#include <QtCore/QFileInfo>
 #include <k3process.h>
 #include <QList>
 

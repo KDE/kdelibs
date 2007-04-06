@@ -19,9 +19,9 @@
 
 #include "treecombobox.h"
 
-#include <qheaderview.h>
-#include <qstandarditemmodel.h>
-#include <qtreewidget.h>
+#include <QtGui/QHeaderView>
+#include <QtGui/QStandardItem>
+#include <QtGui/QTreeWidget>
 
 #include <kdebug.h>
 

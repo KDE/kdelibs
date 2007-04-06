@@ -59,7 +59,7 @@
 #include "html/html_blockimpl.h"
 #include "xml/dom_restyler.h"
 
-#include <qstyle.h>
+#include <QtGui/QStyle>
 
 using namespace DOM;
 using namespace khtml;

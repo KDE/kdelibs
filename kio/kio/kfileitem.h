@@ -20,7 +20,7 @@
 #ifndef __kfileitem_h__
 #define __kfileitem_h__
 
-#include <qlist.h>
+#include <QtCore/QList>
 #include <sys/stat.h>
 
 #include <kio/global.h>
@@ -29,7 +29,7 @@
 #include <kacl.h>
 #include <kmimetype.h>
 #include <kfilemetainfo.h>
-#include <qlist.h>
+#include <QtCore/QList>
 
 class KFileItemPrivate;
 

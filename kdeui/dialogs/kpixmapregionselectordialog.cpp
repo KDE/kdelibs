@@ -19,10 +19,10 @@
 
 #include "kpixmapregionselectordialog.h"
 
-#include <qdialog.h>
-#include <qdesktopwidget.h>
+#include <QtGui/QDialog>
+#include <QtGui/QDesktopWidget>
 #include <QImage>
-#include <qlabel.h>
+#include <QtGui/QLabel>
 
 #include <klocale.h>
 #include <kdialog.h>

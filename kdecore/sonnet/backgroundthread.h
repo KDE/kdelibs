@@ -23,8 +23,8 @@
 
 #include "loader.h"
 
-#include <qthread.h>
-#include <qmutex.h>
+#include <QtCore/QThread>
+#include <QtCore/QMutex>
 
 class QObject;
 

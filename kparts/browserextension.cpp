@@ -19,13 +19,13 @@
 */
 #include "browserextension.h"
 
-#include <qapplication.h>
-#include <qclipboard.h>
-#include <qtimer.h>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
+#include <QtCore/QTimer>
 #include <QtCore/QObject>
-#include <qmap.h>
-#include <qmetaobject.h>
-#include <qregexp.h>
+#include <QtCore/QMap>
+#include <QtCore/QMetaClassInfo>
+#include <QtCore/QRegExp>
 #include <QTextDocument>
 
 #include <kdebug.h>

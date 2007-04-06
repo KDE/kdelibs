@@ -31,9 +31,9 @@
 #include <kde_file.h>
 
 #include <QStack>
-#include <qmap.h>
-#include <qdir.h>
-#include <qfile.h>
+#include <QtCore/QMap>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -19,7 +19,7 @@
 
 #include "sidepixmap.h"
 
-#include <qpainter.h>
+#include <QtGui/QPainter>
 #include <kstandarddirs.h>
 
 SidePixmap::SidePixmap(QWidget *parent)

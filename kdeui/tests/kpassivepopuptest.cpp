@@ -3,7 +3,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kpassivepopup.h>
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <ksystemtrayicon.h>
 
 QPushButton *pb;

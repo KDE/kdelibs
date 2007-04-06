@@ -21,8 +21,8 @@
 
 #include <kdecore_export.h>
 
-#include <qobject.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QCharRef>
 
 #ifdef Q_WS_WIN
 #undef ERROR //avoid conflicts

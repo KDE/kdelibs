@@ -23,7 +23,7 @@
 
 class QColorGroup;
 
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 #include "ksslpkcs12.h"
 #include "ksslcertificate.h"
 

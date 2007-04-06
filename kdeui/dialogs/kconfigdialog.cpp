@@ -30,8 +30,8 @@
 #include <kpagewidgetmodel.h>
 #include <kvbox.h>
 
-#include <qlayout.h>
-#include <qmap.h>
+#include <QtGui/QLayout>
+#include <QtCore/QMap>
 
 // This class is here purely so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate

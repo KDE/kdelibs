@@ -21,7 +21,7 @@
 #ifndef _KSSLX509MAP_H
 #define _KSSLX509MAP_H
 
-#include <qmap.h>
+#include <QtCore/QMap>
 #include <QtCore/QString>
 
 #include <kio/kio_export.h>

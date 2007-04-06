@@ -38,9 +38,9 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
-#include <qpainter.h>
-#include <qfontdatabase.h>
-#include <q3paintdevicemetrics.h>
+#include <QtGui/QPainter>
+#include <QtGui/QFontDatabase>
+#include <Qt3Support/Q3PaintDeviceMetrics>
 
 using namespace khtml;
 

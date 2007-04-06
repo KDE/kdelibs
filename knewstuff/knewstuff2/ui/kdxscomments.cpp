@@ -26,10 +26,10 @@
 #include <khtmlview.h>
 #include <klocale.h>
 
-#include <qlayout.h>
-#include <qapplication.h>
-#include <qtooltip.h>
-#include <qcursor.h>
+#include <QtGui/QLayout>
+#include <QtGui/QApplication>
+#include <QtGui/QToolTip>
+#include <QtGui/QCursor>
 
 KDXSComments::KDXSComments(QWidget *parent)
 : KDialog(parent)

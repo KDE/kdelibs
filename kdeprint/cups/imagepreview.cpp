@@ -19,9 +19,9 @@
 
 #include "imagepreview.h"
 
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qpaintdevice.h>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
+#include <QtGui/QPaintDevice>
 
 // forward definition
 QImage convertImage(const QImage& image, int hue, int saturation, int brightness, int gamma);

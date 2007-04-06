@@ -23,8 +23,8 @@
 #include <kio/slavebase.h>
 #include <kio/jobclasses.h>
 
-#include <qobject.h>
-#include <qeventloop.h>
+#include <QtCore/QObject>
+#include <QtCore/QEventLoop>
 
 namespace KIO
 {

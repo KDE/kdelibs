@@ -24,11 +24,11 @@
 #include "kxmlcommand.h"
 
 #include <QtGui/QLabel>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qradiobutton.h>
-#include <qlineedit.h>
-#include <qcheckbox.h>
+#include <QtGui/QComboBox>
+#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QRadioButton>
+#include <QtGui/QLineEdit>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 
 #include <kapplication.h>

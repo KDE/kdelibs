@@ -21,8 +21,8 @@
 #ifndef _KSSLCERTCHAIN_H
 #define _KSSLCERTCHAIN_H
 
-#include <qglobal.h>
-#include <q3ptrlist.h>
+#include <QtCore/QBool>
+#include <Qt3Support/Q3PtrList>
 #include <kdemacros.h>
 
 class QString;

@@ -21,7 +21,7 @@
 #include <kdecore_export.h>
 #include <k3process.h>
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
 class KProcIOPrivate;
 class QTextCodec;

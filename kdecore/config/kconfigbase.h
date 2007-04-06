@@ -28,8 +28,8 @@
 #include <kconfigflags.h>
 #include <kdebug.h>
 
-#include <qcolor.h>
-#include <qvariant.h>
+#include <QtGui/QColor>
+#include <QtCore/QVariant>
 
 // This include fixes linker errors under msvc:
 // In qdbusmessage.h QList<QVariant> is instantiated because

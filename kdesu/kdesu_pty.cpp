@@ -35,7 +35,7 @@
 #include <pty.h>
 #endif
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QFile>
 
 #include <kdebug.h>

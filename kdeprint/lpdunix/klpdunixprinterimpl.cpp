@@ -21,7 +21,7 @@
 #include "kprinter.h"
 
 #include <QtCore/QFile>
-#include <qhash.h>
+#include <QtCore/QHash>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kmacroexpander.h>

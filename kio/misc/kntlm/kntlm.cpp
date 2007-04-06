@@ -23,8 +23,8 @@
 
 #include <string.h>
 
-#include <qdatetime.h>
-#include <qendian.h>
+#include <QtCore/QDate>
+#include <QtCore/qendian.h>
 
 #include <krandom.h>
 #include <kcodecs.h>

@@ -22,7 +22,7 @@
 #include <klocale.h>
 #include <kglobal.h>
 
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 
 // Acording to http://www.iana.org/assignments/ianacharset-mib
 // the default/unknown mib value is 2.

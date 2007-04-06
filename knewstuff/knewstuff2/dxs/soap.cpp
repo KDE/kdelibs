@@ -20,10 +20,10 @@
 
 #include "soap.h"
 
-#include <qdom.h>
-#include <qtcpsocket.h>
-#include <qsocketnotifier.h>
-#include <qregexp.h>
+#include <Qt/qdom.h>
+#include <QtNetwork/QTcpSocket>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QRegExp>
 
 #include <kio/job.h>
 #include <kurl.h>

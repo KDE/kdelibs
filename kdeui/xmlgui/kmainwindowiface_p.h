@@ -23,7 +23,7 @@
 
 #include <kdeui_export.h>
 #include <QtDBus/QtDBus>
-#include <qmap.h>
+#include <QtCore/QMap>
 
 class KDCOPActionProxy;
 class KDCOPPropertyProxy;

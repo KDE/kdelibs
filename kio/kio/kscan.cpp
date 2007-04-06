@@ -18,7 +18,7 @@
 */
 
 
-#include <qfile.h>
+#include <QtCore/QFile>
 
 #include <klocale.h>
 #include <kservicetypetrader.h>

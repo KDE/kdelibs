@@ -19,11 +19,11 @@
 
 #include "kmproxywidget.h"
 
-#include <qlineedit.h>
+#include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
-#include <qcheckbox.h>
+#include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
-#include <qvalidator.h>
+#include <QtGui/QDoubleValidator>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kcursor.h>

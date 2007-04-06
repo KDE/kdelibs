@@ -41,7 +41,7 @@
 #include <sys/select.h>                // Needed on some systems.
 #endif
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QtCore/QFile>
 
 #include <ksharedconfig.h>

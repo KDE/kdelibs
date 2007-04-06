@@ -22,9 +22,9 @@
 #define KACCELMANAGER_PRIVATE_H
 
 
-#include <qstring.h>
+#include <QtCore/QCharRef>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class QStackedWidget;
 

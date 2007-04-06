@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#include <qwindowdefs.h>
+#include <QtGui/QWidgetList>
 #ifdef Q_WS_WIN
 
 #include "kglobalaccel_win.h"

@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 // See description in kstartupconfig.cpp .
 #include <config.h>
 #include <QtCore/QFile>
-#include <qtextstream.h>
+#include <QtCore/QTextIStream>
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>

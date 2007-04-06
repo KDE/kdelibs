@@ -24,7 +24,7 @@
 #include <config.h>
 #include <config-acl.h>
 
-#include <qglobal.h> //for Q_OS_XXX
+#include <QtCore/QBool> //for Q_OS_XXX
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -67,7 +67,7 @@
 #include <QDateTime>
 #include <QVarLengthArray>
 #include <QCoreApplication>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #ifdef Q_WS_WIN
 #include <QDir>
 #include <QFileInfo>

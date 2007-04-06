@@ -40,7 +40,7 @@
 #define __PLASTIK_H
 
 #include <kstyle.h>
-#include <qbitmap.h>
+#include <QtGui/QBitmap>
 #include <QCache>
 
 #define u_arrow -4,1, 2,1, -3,0, 1,0, -2,-1, 0,-1, -1,-2

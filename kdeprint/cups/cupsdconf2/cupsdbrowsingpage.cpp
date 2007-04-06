@@ -24,8 +24,8 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <qcheckbox.h>
-#include <qcombobox.h>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 
 #include <klocale.h>
 #include <knuminput.h>

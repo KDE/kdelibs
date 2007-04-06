@@ -11,15 +11,15 @@
  * kiconloader.cpp: An icon loader for KDE with theming functionality.
  */
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qpixmap.h>
-#include <qpixmapcache.h>
-#include <qimage.h>
-#include <qfileinfo.h>
-#include <qdir.h>
-#include <qicon.h>
-#include <qbitmap.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtGui/QPixmap>
+#include <QtGui/QPixmapCache>
+#include <QtGui/QImage>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+#include <QtGui/QIcon>
+#include <QtGui/QBitmap>
 #include <QHash>
 #include <QPainter>
 #include <QMovie>

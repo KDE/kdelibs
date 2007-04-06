@@ -24,7 +24,7 @@
 
 #include <kdeui_export.h>
 
-#include <qmenubar.h>
+#include <QtGui/QMenuBar>
 
 /**
  * %KDE Style-able menubar.

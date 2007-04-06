@@ -107,7 +107,7 @@
 #define YYDEBUG 1
 
 #include <stdlib.h>
-#include <qvariant.h>
+#include <QtCore/QVariant>
 #include "foomatic2loader.h"
 
 void yyerror(const char*) {}

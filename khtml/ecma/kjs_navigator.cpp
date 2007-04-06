@@ -38,7 +38,7 @@
 #include <sys/utsname.h>
 #include "kjs_navigator.lut.h"
 
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3PtrList>
 
 using namespace KJS;
 

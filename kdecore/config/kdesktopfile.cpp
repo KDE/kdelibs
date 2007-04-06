@@ -24,9 +24,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <qfile.h>
-#include <qdir.h>
-#include <qtextstream.h>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtCore/QTextIStream>
 
 #include "kdesktopfile.h"
 #include "kdebug.h"

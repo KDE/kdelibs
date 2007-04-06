@@ -26,7 +26,7 @@ class QPoint;
 class KActionCollection;
 
 #include "kfile_export.h"
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 #include "kfileitem.h"
 #include "kfile.h"

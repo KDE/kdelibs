@@ -22,7 +22,7 @@
 #ifndef KIMIFACE_H
 #define KIMIFACE_H
 
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 #include <dcopobject.h>
 #include <QtCore/QStringList>
 #include <kurl.h>

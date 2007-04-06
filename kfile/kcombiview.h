@@ -22,7 +22,7 @@
 #ifndef _KCOMBIVIEW_H
 #define _KCOMBIVIEW_H
 
-#include <qsplitter.h>
+#include <QtGui/QSplitter>
 #include <klocale.h>
 
 #include <kfile.h>

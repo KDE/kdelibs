@@ -15,10 +15,10 @@
 
 #include <kdeui_export.h>
 
-#include <qimage.h>
-#include <qpixmap.h>
-#include <qcolor.h>
-#include <qrect.h>
+#include <QtGui/QImage>
+#include <QtGui/QPixmap>
+#include <QtGui/QColor>
+#include <QtCore/QRect>
 
 class QWidget;
 

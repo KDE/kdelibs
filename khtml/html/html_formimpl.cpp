@@ -59,12 +59,12 @@
 #endif
 #include <netaccess.h>
 #include <kfileitem.h>
-#include <qfile.h>
-#include <qdir.h>
-#include <qtextcodec.h>
+#include <QtCore/QFile>
+#include <QtCore/QDir>
+#include <QtCore/QTextCodec>
 
 // for keygen
-#include <qstring.h>
+#include <QtCore/QCharRef>
 #include <ksslkeygen.h>
 
 #include <assert.h>

@@ -26,7 +26,7 @@
 #include <kio/job.h>
 #include <kfileitem.h>
 
-#include <qlinkedlist.h>
+#include <QtCore/QLinkedList>
 
 namespace KIO {
 

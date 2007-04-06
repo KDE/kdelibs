@@ -29,9 +29,9 @@
 #include <iostream>
 using namespace std;
 
-#include <qregexp.h>
-#include <qdir.h>
-#include <qmetaobject.h>
+#include <QtCore/QRegExp>
+#include <QtCore/QDir>
+#include <QtCore/QMetaClassInfo>
 
 #include <kdebug.h>
 #include <klibloader.h>

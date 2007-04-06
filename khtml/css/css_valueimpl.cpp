@@ -41,9 +41,9 @@
 #include "rendering/render_style.h"
 
 #include <kdebug.h>
-#include <qregexp.h>
-#include <qpaintdevice.h>
-#include <q3paintdevicemetrics.h>
+#include <QtCore/QRegExp>
+#include <QtGui/QPaintDevice>
+#include <Qt3Support/Q3PaintDeviceMetrics>
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);

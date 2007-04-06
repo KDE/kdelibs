@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <signal.h>
 
-#include <qglobal.h>
+#include <QtCore/QBool>
 #include <QFile>
 #include <QProcess>
 #include <QCoreApplication>

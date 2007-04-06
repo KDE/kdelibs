@@ -22,8 +22,8 @@
 
 #include <kdeprint_export.h>
 
-#include <qdom.h>
-#include <qmap.h>
+#include <Qt/qdom.h>
+#include <QtCore/QMap>
 #include <QtCore/QObject>
 
 class DrMain;

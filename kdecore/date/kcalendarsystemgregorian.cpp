@@ -26,8 +26,8 @@
 #include "kdebug.h"
 #include "klocale.h"
 
-#include <qdatetime.h>
-#include <qstring.h>
+#include <QtCore/QDate>
+#include <QtCore/QCharRef>
 
 KCalendarSystemGregorian::KCalendarSystemGregorian(const KLocale * locale)
   : KCalendarSystem(locale), d(0)

@@ -40,11 +40,11 @@
 #include "css/csshelper.h"
 #include "xml/dom2_eventsimpl.h"
 
-#include <qstring.h>
-#include <qpoint.h>
-#include <qregion.h>
-#include <q3ptrstack.h>
-#include <qimage.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QPoint>
+#include <QtGui/QRegion>
+#include <Qt3Support/Q3PtrStack>
+#include <QtGui/QImage>
 
 using namespace DOM;
 using namespace khtml;

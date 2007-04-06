@@ -20,7 +20,7 @@
 #define _KACTION_SELECTOR_H_
 
 #include <kdeui_export.h>
-#include <qwidget.h>
+#include <QtGui/QWidget>
 
 class QListWidget;
 class QListWidgetItem;

@@ -30,7 +30,7 @@
 #include <kstandardaction.h>
 #include <kcomponentdata.h>
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class QAction;
 class KConfigBase;

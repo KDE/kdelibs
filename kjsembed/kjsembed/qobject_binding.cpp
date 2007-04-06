@@ -25,7 +25,7 @@
 #include <QVariant>
 #include <QVector>
 #include <QDebug>
-#include <qobjectdefs.h>
+#include <QtCore/QArgument>
 
 #include "slotproxy.h"
 #include "eventproxy.h"

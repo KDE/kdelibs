@@ -27,10 +27,10 @@
 #define KIO_RENAMEDIALOGPLUGIN_H
 
 #include <kio/renamedialog.h>
-#include <qdialog.h>
+#include <QtGui/QDialog>
 #include <sys/types.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
 
 
 namespace KIO {

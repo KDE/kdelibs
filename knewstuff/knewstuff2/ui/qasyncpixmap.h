@@ -21,8 +21,8 @@
 #ifndef KNEWSTUFF2_UI_QASYNCPIXMAP_H
 #define KNEWSTUFF2_UI_QASYNCPIXMAP_H
 
-#include <qpixmap.h>
-#include <qobject.h>
+#include <QtGui/QPixmap>
+#include <QtCore/QObject>
 
 class KJob;
 

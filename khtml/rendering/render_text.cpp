@@ -43,9 +43,9 @@
 #include "misc/loader.h"
 #include "misc/helper.h"
 
-#include <qbitmap.h>
-#include <qimage.h>
-#include <qpainter.h>
+#include <QtGui/QBitmap>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <assert.h>

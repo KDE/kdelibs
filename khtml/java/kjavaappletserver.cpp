@@ -39,17 +39,17 @@
 #include <ksslcertchain.h>
 #include <kssl.h>
 
-#include <qtimer.h>
-#include <qpointer.h>
-#include <q3ptrlist.h>
-#include <qdir.h>
-#include <qeventloop.h>
-#include <qapplication.h>
+#include <QtCore/QTimer>
+#include <QtCore/QPointer>
+#include <Qt3Support/Q3PtrList>
+#include <QtCore/QDir>
+#include <QtCore/QEventLoop>
+#include <QtGui/QApplication>
 #include <QtGui/QLabel>
-#include <qdialog.h>
-#include <qpushbutton.h>
+#include <QtGui/QDialog>
+#include <QtGui/QPushButton>
 #include <QtGui/QLayout>
-#include <qregexp.h>
+#include <QtCore/QRegExp>
 #include <Q3CString>
 
 #include <stdlib.h>

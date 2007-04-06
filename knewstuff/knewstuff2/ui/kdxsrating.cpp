@@ -22,9 +22,9 @@
 
 #include "qstarframe.h"
 
-#include <qlayout.h>
-#include <qslider.h>
-#include <qlabel.h>
+#include <QtGui/QLayout>
+#include <QtGui/QSlider>
+#include <QtGui/QLabel>
 
 #include <klocale.h>
 #include <kstandarddirs.h>

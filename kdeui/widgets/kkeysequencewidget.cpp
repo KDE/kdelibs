@@ -29,9 +29,9 @@
 #include "kiconloader.h"
 
 //TODO: remove unneeded includes
-#include <qcursor.h>
-#include <qdrawutil.h>
-#include <qpainter.h>
+#include <QtGui/QCursor>
+#include <QtGui/qdrawutil.h>
+#include <QtGui/QPainter>
 #include <QPolygon>
 #include <QStyle>
 #include <QKeyEvent>

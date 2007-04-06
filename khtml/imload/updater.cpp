@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-#include <qtimer.h>
+#include <QtCore/QTimer>
 #include "image.h"
 #include "updater.h"
 

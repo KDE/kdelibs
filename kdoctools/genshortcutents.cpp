@@ -28,7 +28,7 @@
 #include "klocale.h"
 #include "kstandardshortcut.h"
 
-#include <qdatetime.h>
+#include <QtCore/QDate>
 #include <QtCore/QFile>
 #include <QCoreApplication>
 #include <QTextStream>

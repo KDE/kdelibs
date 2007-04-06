@@ -19,9 +19,9 @@
 
 #include <stdlib.h>
 #include <kdebug.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qregexp.h>
+#include <QtCore/QCharRef>
+#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QRegExp>
 #include <kcompletion.h>
 
 #include "kshellcompletion.h"

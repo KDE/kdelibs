@@ -27,9 +27,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <qobject.h>
-#include <qtimer.h>
-#include <qstring.h>
+#include <QtCore/QObject>
+#include <QtCore/QTimer>
+#include <QtCore/QCharRef>
 #include <kurl.h>
 #include <kstartupinfo.h>
 

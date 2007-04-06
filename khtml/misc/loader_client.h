@@ -1,7 +1,7 @@
 #ifndef LOADER_CLIENT_H
 #define LOADER_CLIENT_H
 
-#include <qpixmap.h>
+#include <QtGui/QPixmap>
 #include "dom/dom_string.h"
 
 namespace khtml {

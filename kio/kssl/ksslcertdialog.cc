@@ -23,10 +23,10 @@
 #include <kssl.h>
 
 #include <QtGui/QLayout>
-#include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <q3listview.h>
-#include <qframe.h>
+#include <QtGui/QRadioButton>
+#include <QtGui/QCheckBox>
+#include <Qt3Support/Q3CheckListItem>
+#include <QtGui/QFrame>
 #include <QtGui/QLabel>
 
 #include <kapplication.h>

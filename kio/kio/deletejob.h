@@ -22,7 +22,7 @@
 #ifndef KIO_DELETEJOB_H
 #define KIO_DELETEJOB_H
 
-#include <qstringlist.h>
+#include <QtCore/QMutableStringListIterator>
 
 #include <kurl.h>
 #include <kio/global.h>

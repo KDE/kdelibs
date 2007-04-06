@@ -32,8 +32,8 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 
-#include <qhash.h>
-#include <qmap.h>
+#include <QtCore/QHash>
+#include <QtCore/QMap>
 
 #define DEFAULT_CONFIG_FILE   "sonnetrc"
 

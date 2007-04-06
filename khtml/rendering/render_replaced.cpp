@@ -30,17 +30,17 @@
 #include "render_arena.h"
 
 #include <assert.h>
-#include <qwidget.h>
-#include <qpainter.h>
-#include <qevent.h>
-#include <qapplication.h>
-#include <qlineedit.h>
+#include <QtGui/QWidget>
+#include <QtGui/QPainter>
+#include <QtGui/QActionEvent>
+#include <QtGui/QApplication>
+#include <QtGui/QLineEdit>
 #include <kglobalsettings.h>
 #include <kurlrequester.h>
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <QVector>
 #include <QMatrix>
-#include <qpaintengine.h>
+#include <QtGui/QPaintEngine>
 #include <Q3ListBox>
 #include <Q3ScrollView>
 
