@@ -1387,15 +1387,21 @@ int main( int argc, char **argv )
     }
   }
   if ( hasSignals ) {
-   h << "\n    enum { ";
+   h << "\n    enum {" << endl;
+   unsigned val = 1;
    QList<Signal>::ConstIterator it, itEnd = signalList.constEnd();
-   for ( it = signalList.constBegin(); it != itEnd; ) {
+   for ( it = signalList.constBegin(); it != itEnd; val <<= 1) {
+     if ( !val ) {
+       std::cerr << "Too many signals to create unique bit masks" << std::endl;
+       exit(1);
+     }
      Signal signal = *it;
-     h << signalEnumName(signal.name);
+     h << "      " << signalEnumName(signal.name) << " = 0x" << hex << val;
      if ( ++it != itEnd )
-      h << ", ";
+      h << ",";
+     h << endl;
    }
-   h << " };" << endl;
+   h << " };" << dec << endl;
   }
   h << endl;
 
