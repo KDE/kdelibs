@@ -67,9 +67,9 @@ KGestureMap::KGestureMap()
 
 void KGestureMap::addGesture(const KShapeGesture &gesture, KAction *act)
 {
-    kDebug(283) << "KGestureMap::addGesture(KShapeGesture ...)"<< endl;
     if (!gesture.isValid() || !act)
         return;
+    kDebug(283) << "KGestureMap::addGesture(KShapeGesture ...)"<< endl;
     if (!m_shapeGestures.contains(gesture))
         m_shapeGestures.insert(gesture, act);
     else
@@ -79,9 +79,9 @@ void KGestureMap::addGesture(const KShapeGesture &gesture, KAction *act)
 
 void KGestureMap::addGesture(const KRockerGesture &gesture, KAction *act)
 {
-    kDebug(283) << "KGestureMap::addGesture(KRockerGesture ...)"<< endl;
     if (!gesture.isValid() || !act)
         return;
+    kDebug(283) << "KGestureMap::addGesture(KRockerGesture ...)"<< endl;
     if (!m_rockerGestures.contains(gesture))
         m_rockerGestures.insert(gesture, act);
     else
@@ -91,9 +91,9 @@ void KGestureMap::addGesture(const KRockerGesture &gesture, KAction *act)
 
 void KGestureMap::removeGesture(const KShapeGesture &gesture, KAction *act)
 {
-    kDebug(283) << "KGestureMap::removeGesture(KShapeGesture ...)"<< endl;
     if (!gesture.isValid())
         return;
+    kDebug(283) << "KGestureMap::removeGesture(KShapeGesture ...)"<< endl;
     KAction *oldAct = m_shapeGestures.value(gesture);
     if (oldAct == act || !act /*wildcard*/)
         m_shapeGestures.remove(gesture);
@@ -102,9 +102,9 @@ void KGestureMap::removeGesture(const KShapeGesture &gesture, KAction *act)
 
 void KGestureMap::removeGesture(const KRockerGesture &gesture, KAction *act)
 {
-    kDebug(283) << "KGestureMap::removeGesture(KRockerGesture ...)"<< endl;
     if (!gesture.isValid())
         return;
+    kDebug(283) << "KGestureMap::removeGesture(KRockerGesture ...)"<< endl;
     KAction *oldAct = m_rockerGestures.value(gesture);
     if (oldAct == act || !act /*wildcard*/)
         m_rockerGestures.remove(gesture);
