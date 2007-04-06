@@ -43,7 +43,6 @@
 //#include <kdiroperator.h>
 //#include <kshell.h>
 #include <kicon.h>
-#include <kurlbar.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
