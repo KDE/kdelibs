@@ -151,8 +151,11 @@ KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
 {
     // must have this as parent
     editWidget->setParent( this );
-    d->edit = qobject_cast<KLineEdit*>( editWidget );
     d->combo = qobject_cast<KComboBox*>( editWidget );
+    d->edit = qobject_cast<KLineEdit*>( editWidget );
+    if ( d->edit ) {
+        d->edit->setClearButtonShown( true );
+    }
 
     init();
 }
@@ -187,8 +190,10 @@ void KUrlRequester::init()
 
     myFileDialog = 0L;
 
-    if ( !d->combo && !d->edit )
-        d->edit = new KLineEdit( this);
+    if ( !d->combo && !d->edit ) {
+        d->edit = new KLineEdit( this );
+        d->edit->setClearButtonShown( true );
+    }
 
     myButton = new KUrlDragPushButton( this);
     myButton->setIcon( KIcon(QLatin1String("document-open")) );
