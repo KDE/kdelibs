@@ -29,7 +29,7 @@
 #include <kjob.h>
 #include <solid/volume.h>
 
-#include "kurlbar.h"
+#include "kfileplaceeditdialog.h"
 #include "kfileplacesmodel.h"
 
 class KFilePlacesView::Private
@@ -111,8 +111,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         QString iconName;
         bool appLocal = false;
 
-        if (KUrlBarItemDialog::getInformation(true, url, description,
-                                              iconName, appLocal, 64, this))
+        if (KFilePlaceEditDialog::getInformation(true, url, description,
+                                                 iconName, appLocal, 64, this))
         {
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();
@@ -127,8 +127,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         QString iconName = bookmark.icon();
         bool appLocal = !bookmark.metaDataItem("OnlyInApp").isEmpty();
 
-        if (KUrlBarItemDialog::getInformation(true, url, description,
-                                              iconName, appLocal, 64, this))
+        if (KFilePlaceEditDialog::getInformation(true, url, description,
+                                                 iconName, appLocal, 64, this))
         {
             QString appName;
             if (appLocal) appName = KGlobal::mainComponent().componentName();

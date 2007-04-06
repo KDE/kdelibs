@@ -22,7 +22,6 @@ set(kfile_LIB_SRCS
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
   kfilepreview.cpp
-  kfilespeedbar.cpp
   kfiletreebranch.cpp
   kfileview.cpp
   kfilewidget.cpp
@@ -30,8 +29,8 @@ set(kfile_LIB_SRCS
   kfileplacesmodel.cpp
   kfileplacesselector.cpp
   kfileplacesview.cpp
+  kfileplaceeditdialog.cpp
   kprotocolcombo.cpp
-  kurlbar.cpp
   kurlbutton.cpp
   kurlnavigatorbutton.cpp
   kurlnavigator.cpp
