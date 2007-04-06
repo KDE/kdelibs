@@ -30,7 +30,8 @@
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
-#include "kfilespeedbar.h"
+#include "kfileplacesview.h"
+#include "kfileplacesmodel.h"
 #include <kglobalsettings.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -63,7 +64,7 @@ public:
     }
 
     KActionCollection *actions;
-    KFileSpeedBar *speedBar;
+    KFilePlacesView *placesView;
     KHistoryCombo *urlCombo;
     KFileTreeBranch *branch;
     QString recentDirClass;
@@ -112,11 +113,12 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     hlay->setSpacing(spacingHint());
     m_mainLayout = new QVBoxLayout();
     d->actions=new KActionCollection(this);
-    d->speedBar = new KFileSpeedBar( page );
-    d->speedBar->setObjectName( QLatin1String( "speedbar" ) );
-    connect( d->speedBar, SIGNAL( activated( const KUrl& )),
+    d->placesView = new KFilePlacesView( page );
+    d->placesView->setModel(new KFilePlacesModel(d->placesView));
+    d->placesView->setObjectName( QLatin1String( "speedbar" ) );
+    connect( d->placesView, SIGNAL( urlChanged( const KUrl& )),
              SLOT( setCurrentUrl( const KUrl& )) );
-    hlay->addWidget( d->speedBar, 0 );
+    hlay->addWidget( d->placesView, 0 );
     hlay->addLayout( m_mainLayout, 1 );
 
     // Create dir list
@@ -215,10 +217,10 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
         d->branch = createBranch( root );
     }
 
-    d->branch->disconnect( SIGNAL( populateFinished( KFileTreeViewItem * )),
-                           this, SLOT( slotNextDirToList( KFileTreeViewItem *)));
-    connect( d->branch, SIGNAL( populateFinished( KFileTreeViewItem * )),
-             SLOT( slotNextDirToList( KFileTreeViewItem * ) ));
+    d->branch->disconnect( SIGNAL( populateFinished( K3FileTreeViewItem * )),
+                           this, SLOT( slotNextDirToList( K3FileTreeViewItem *)));
+    connect( d->branch, SIGNAL( populateFinished( K3FileTreeViewItem * )),
+             SLOT( slotNextDirToList( K3FileTreeViewItem * ) ));
 
     KUrl dirToList = root;
     d->dirsToList.clear();
@@ -305,8 +307,6 @@ void KDirSelectDialog::saveConfig(KSharedConfig::Ptr config, const QString& grou
                      KConfigBase::Persistent|KConfigBase::Global);
     conf.writeEntry( "DirSelectDialog Size", size(),
                      KConfigBase::Persistent|KConfigBase::Global );
-
-    d->speedBar->save( config );
 
     config->sync();
 }
