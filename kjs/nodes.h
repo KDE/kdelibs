@@ -1240,7 +1240,6 @@ namespace KJS {
     int numParams() const { return m_paramList.size(); }
     int paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
     const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
-    UString    paramString() const;
    
   private:
     UString m_sourceURL;

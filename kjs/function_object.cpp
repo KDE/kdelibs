@@ -81,12 +81,7 @@ JSValue* FunctionProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, c
       return throwError(exec, TypeError);
     }
     if (thisObj->inherits(&DeclaredFunctionImp::info)) {
-        DeclaredFunctionImp *fi = static_cast<DeclaredFunctionImp*>(thisObj);
-        Identifier ident = fi->functionName();
-        UString prettyIdent = escapeStringForPrettyPrinting(ident.ustring());
-        return jsString("function " + prettyIdent +
-                        "(" + fi->body->paramString() + ") " +
-                        fi->body->toString());
+        return jsString(static_cast<DeclaredFunctionImp*>(thisObj)->toSource());
      } else if (thisObj->inherits(&InternalFunctionImp::info) &&
                 !static_cast<InternalFunctionImp*>(thisObj)->functionName().isNull()) {
        result = jsString("\nfunction " + static_cast<InternalFunctionImp*>(thisObj)->functionName().ustring() + "() {\n"
@@ -212,7 +207,7 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
   FunctionBodyNode *bodyNode = progNode.get();
 
   FunctionImp* fimp = new DeclaredFunctionImp(exec, functionName, bodyNode, scopeChain);
-  
+
   // parse parameter list. throw syntax error on illegal identifiers
   int len = p.size();
   const UChar *c = p.data();
@@ -243,7 +238,7 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
       }
       return throwError(exec, SyntaxError, "Syntax error in parameter list");
   }
-  
+
   List consArgs;
 
   JSObject* objCons = exec->lexicalInterpreter()->builtinObject();

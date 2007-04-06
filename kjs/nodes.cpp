@@ -2854,18 +2854,6 @@ void FunctionBodyNode::addParam(const Identifier& ident)
   m_paramList.append(Parameter(ident, id));
 }
 
-UString FunctionBodyNode::paramString() const
-{
-  UString s;
-  for (int pos = 0; pos < numParams(); ++pos) {
-    if (!s.isEmpty())
-        s += ", ";
-    s += paramName(pos).ustring();
-  }
-
-  return s;
-}
-
 
 // ------------------------------ FuncDeclNode ---------------------------------
 

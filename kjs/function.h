@@ -85,7 +85,7 @@ namespace KJS {
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
-    //Note: unlike body->paramName, this returns Identifier::null for parameters 
+    //Note: unlike body->paramName, this returns Identifier::null for parameters
     //that will never get set, due to later param having the same name
     Identifier getParameterName(int index);
     virtual CodeType codeType() const = 0;
@@ -147,6 +147,7 @@ namespace KJS {
 
     virtual Completion execute(ExecState *exec);
     CodeType codeType() const { return FunctionCode; }
+    UString toSource() const;
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
@@ -192,7 +193,7 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-    
+
     enum RoCheck {
       CheckReadOnly, DontCheckReadOnly
     };
@@ -232,8 +233,8 @@ namespace KJS {
     List _arguments;
 
 
-    //List of locals, but the entry 0 is special: 
-    //the value here is the arguments object, 
+    //List of locals, but the entry 0 is special:
+    //the value here is the arguments object,
     //the attr is the length of the array (e.g. numLocals + 1)
     Local *_locals;
 
@@ -255,8 +256,6 @@ namespace KJS {
   private:
     int id;
   };
-
-UString escapeStringForPrettyPrinting(const UString& s);
 
 } // namespace
 
