@@ -33,7 +33,7 @@ class KLibraryPrivate;
 class KLibLoaderPrivate;
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
-    extern "C" { KDE_EXPORT void *init_##libname() { return new factory; } }
+    extern "C" { KDE_EXPORT KLibFactory *init_##libname() { return new factory; } }
 
 // identical to Q_EXPORT_PLUGIN but supports arguments for the constructor
 // ### get rid with Qt 4.3
