@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>KPropertiesDesktopBase</class>
  <widget class="QWidget" name="KPropertiesDesktopBase" >
   <property name="geometry" >
@@ -13,10 +10,22 @@
    </rect>
   </property>
   <layout class="QGridLayout" >
-   <property name="margin" >
+   <property name="leftMargin" >
     <number>0</number>
    </property>
-   <property name="spacing" >
+   <property name="topMargin" >
+    <number>0</number>
+   </property>
+   <property name="rightMargin" >
+    <number>0</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>0</number>
+   </property>
+   <property name="horizontalSpacing" >
+    <number>6</number>
+   </property>
+   <property name="verticalSpacing" >
     <number>6</number>
    </property>
    <item row="5" column="3" colspan="2" >
@@ -51,11 +60,9 @@
     </widget>
    </item>
    <item row="7" column="0" colspan="7" >
-    <widget class="Q3ListView" name="filetypeList" >
+    <widget class="QTreeWidget" name="filetypeList" >
      <property name="sizePolicy" >
-      <sizepolicy>
-       <hsizetype>7</hsizetype>
-       <vsizetype>7</vsizetype>
+      <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
        <horstretch>0</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
@@ -65,6 +72,25 @@
 &lt;p>MIME, Multipurpose Internet (e)Mail Extension, is a standard protocol for identifying the type of data based on filename extensions and correspondent &lt;u>mimetypes&lt;/u>. Example: the "bmp" part that comes after the dot in flower.bmp indicates that it is a specific kind of image, &lt;u>image/x-bmp&lt;/u>. To know which application should open each type of file, the system should be informed about the abilities of each application to handle these extensions and mimetypes.&lt;/p>
 &lt;p>If you want to associate this application with one or more mimetypes that are not in this list, click on the button &lt;b>Add&lt;/b> below. If there are one or more filetypes that this application cannot handle, you may want to remove them from the list clicking on the button &lt;b>Remove&lt;/b> below.&lt;/p>&lt;/qt></string>
      </property>
+     <property name="rootIsDecorated" >
+      <bool>false</bool>
+     </property>
+     <property name="sortingEnabled" >
+      <bool>true</bool>
+     </property>
+     <property name="allColumnsShowFocus" >
+      <bool>true</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Mimetype</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Description</string>
+      </property>
+     </column>
     </widget>
    </item>
    <item row="0" column="0" colspan="2" >
@@ -268,31 +294,15 @@ Following the command, you can have several place holders which will be replaced
  <customwidgets>
   <customwidget>
    <class>KLineEdit</class>
-   <extends>QWidget</extends>
+   <extends>QLineEdit</extends>
    <header>klineedit.h</header>
    <container>1</container>
-   <pixmap></pixmap>
   </customwidget>
   <customwidget>
    <class>KUrlRequester</class>
-   <extends>QWidget</extends>
+   <extends>QFrame</extends>
    <header>kurlrequester.h</header>
    <container>1</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>Q3ListView</class>
-   <extends></extends>
-   <header>q3listview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
-   <class>Q3ListView</class>
-   <extends>Q3ListView</extends>
-   <header>q3listview.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -3150,12 +3150,9 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
   w->commentEdit->setText( commentStr );
   w->commandEdit->setText( commandStr );
   w->pathEdit->lineEdit()->setText( pathStr );
-  w->filetypeList->setAllColumnsShowFocus(true);
 
-  w->filetypeList->addColumn(i18n("Mimetype"));
-  w->filetypeList->addColumn(i18n("Description"));
   // was: w->filetypeList->setFullWidth(true);
-  w->filetypeList->header()->setStretchEnabled(true, w->filetypeList->columns()-1);
+//  w->filetypeList->header()->setStretchEnabled(true, w->filetypeList->columns()-1);
 
   KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
   for(QStringList::ConstIterator it = mimeTypes.begin();
@@ -3176,9 +3173,14 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     }
     if (p && (p != defaultMimetype))
     {
-       new Q3ListViewItem(w->filetypeList, p->name(), p->comment(), preference);
+      QTreeWidgetItem *item = new QTreeWidgetItem();
+      item->setText(0, p->name());
+      item->setText(1, p->comment());
+      item->setText(2, preference);
+      w->filetypeList->addTopLevelItem(item);
     }
   }
+  w->filetypeList->resizeColumnToContents(0);
 
 }
 
@@ -3206,19 +3208,19 @@ void KDesktopPropsPlugin::slotAddFiletype()
                 continue;
 
             bool found = false;
-            Q3ListViewItem *item = w->filetypeList->firstChild();
-            while (item)
-            {
-                if (mimetype == item->text(0))
-                {
-                    found = true;
-                    break;
-                }
-                item = item->nextSibling();
+            int count = w->filetypeList->topLevelItemCount();
+            for (int i = 0; !found && i < count; ++i) {
+              if (w->filetypeList->topLevelItem(i)->text(0) == mimetype) {
+                found = true;
+              }
             }
             if (!found) {
-                new Q3ListViewItem(w->filetypeList, p->name(), p->comment());
+              QTreeWidgetItem *item = new QTreeWidgetItem();
+              item->setText(0, p->name());
+              item->setText(1, p->comment());
+              w->filetypeList->addTopLevelItem(item);
             }
+            w->filetypeList->resizeColumnToContents(0);
         }
     }
     emit changed();
@@ -3226,8 +3228,11 @@ void KDesktopPropsPlugin::slotAddFiletype()
 
 void KDesktopPropsPlugin::slotDelFiletype()
 {
-    delete w->filetypeList->currentItem();
-    emit changed();
+    QTreeWidgetItem *cur = w->filetypeList->currentItem();
+    if (cur) {
+      delete cur;
+      emit changed();
+    }
 }
 
 void KDesktopPropsPlugin::checkCommandChanged()
@@ -3274,9 +3279,9 @@ void KDesktopPropsPlugin::applyChanges()
 
   // Write mimeTypes
   QStringList mimeTypes;
-  for( Q3ListViewItem *item = w->filetypeList->firstChild();
-       item; item = item->nextSibling() )
-  {
+  int count = w->filetypeList->topLevelItemCount();
+  for (int i = 0; i < count; ++i) {
+    QTreeWidgetItem *item = w->filetypeList->topLevelItem(i);
     QString preference = item->text(2);
     mimeTypes.append(item->text(0));
     if (!preference.isEmpty())
