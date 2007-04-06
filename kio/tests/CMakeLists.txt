@@ -54,7 +54,7 @@ KIO_BUILD_TESTS(
   kiopassdlgtest
   kscantest
   safesitetest
-  kdirlistertest
+  kdirlistertest_gui
   previewtest
   kionetrctest
   kpropsdlgtest

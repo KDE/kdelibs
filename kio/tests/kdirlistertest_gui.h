@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef _KDIRLISTERTEST_H_
-#define _KDIRLISTERTEST_H_
+#ifndef _KDIRLISTERTEST_GUI_H_
+#define _KDIRLISTERTEST_GUI_H_
 
 #include <QtGui/QWidget>
 #include <QtCore/QString>

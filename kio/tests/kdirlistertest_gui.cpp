@@ -26,7 +26,7 @@
 #include <kdirlister.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
-#include "kdirlistertest.h"
+#include "kdirlistertest_gui.h"
 
 #include <cstdlib>
 
@@ -164,4 +164,4 @@ int main ( int argc, char *argv[] )
   return app.exec();
 }
 
-#include "kdirlistertest.moc"
+#include "kdirlistertest_gui.moc"
