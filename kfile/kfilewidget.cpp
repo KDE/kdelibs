@@ -25,7 +25,8 @@
 
 #include "kfilewidget.h"
 
-#include "kfilespeedbar.h"
+#include "kfileplacesview.h"
+#include "kfileplacesmodel.h"
 #include "kfilebookmarkhandler.h"
 #include "kurlcombobox.h"
 #include "config-kfile.h"
@@ -129,8 +130,8 @@ public:
     QLabel *filterLabel;
     KUrlComboBox *pathCombo;
     KPushButton *okButton, *cancelButton;
-    KFileSpeedBar *urlBar;
-    QHBoxLayout *urlBarLayout;
+    KFilePlacesView *placesView;
+    QHBoxLayout *placesViewLayout;
     QWidget *customWidget;
 
     // Automatically Select Extension stuff
@@ -211,7 +212,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     d->autoSelectExtCheckBox = 0; // delayed loading
     d->autoSelectExtChecked = false;
-    d->urlBar = 0; // delayed loading
+    d->placesView = 0; // delayed loading
 
     QtMsgHandler oldHandler = qInstallMsgHandler( silenceQToolBar );
     d->toolbar = new KToolBar( this, "KFileWidget::toolbar", true);
@@ -442,9 +443,6 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 KFileWidget::~KFileWidget()
 {
     KSharedConfig::Ptr config = KGlobal::config();
-
-    if (d->urlBar)
-        d->urlBar->save( config );
 
     config->sync();
 
@@ -1016,20 +1014,21 @@ void KFileWidgetPrivate::updateLocationWhatsThis()
 
 void KFileWidgetPrivate::initSpeedbar()
 {
-    urlBar = new KFileSpeedBar( q );
-    urlBar->setFrameStyle( QFrame::Box | QFrame::Plain );
+    placesView = new KFilePlacesView( q );
+    placesView->setModel(new KFilePlacesModel(placesView));
+    placesView->setFrameStyle( QFrame::Box | QFrame::Plain );
 
-    urlBar->setObjectName( QLatin1String( "url bar" ) );
-    QObject::connect( urlBar, SIGNAL( activated( const KUrl& )),
+    placesView->setObjectName( QLatin1String( "url bar" ) );
+    QObject::connect( placesView, SIGNAL( urlChanged( const KUrl& )),
                       q, SLOT( enterUrl( const KUrl& )) );
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
     // one that will be set later (and then urlEntered() won't be emitted).
     // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
-    urlBar->setCurrentItem( url );
+    placesView->setUrl( url );
 
-    urlBarLayout->insertWidget( 0, urlBar );
+    placesViewLayout->insertWidget( 0, placesView );
 }
 
 void KFileWidgetPrivate::initGUI()
@@ -1042,11 +1041,11 @@ void KFileWidgetPrivate::initGUI()
     boxLayout->setMargin(0); // no additional margin to the already existing
     q->layout()->setMargin(KDialog::marginHint());
 
-    urlBarLayout = new QHBoxLayout();
-    boxLayout->addItem(urlBarLayout ); // needed for the urlBar that may appear
+    placesViewLayout = new QHBoxLayout();
+    boxLayout->addItem(placesViewLayout); // needed for the placesView that may appear
     vbox = new QVBoxLayout();
     vbox->setMargin(KDialog::marginHint());
-    urlBarLayout->addItem(vbox);
+    placesViewLayout->addItem(vbox);
 
     vbox->addWidget(ops, 4);
     vbox->addSpacing(KDialog::spacingHint());
@@ -1130,8 +1129,8 @@ void KFileWidget::urlEntered(const KUrl& url)
     static_cast<KUrlCompletion*>( d->pathCombo->completionObject() )->setDir( dir );
     static_cast<KUrlCompletion*>( d->locationEdit->completionObject() )->setDir( dir );
 
-    if ( d->urlBar )
-        d->urlBar->setCurrentItem( url );
+    if ( d->placesView )
+        d->placesView->setUrl( url );
 }
 
 void KFileWidget::locationActivated( const QString& url )
@@ -1463,7 +1462,7 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     //saveDialogSize( configGroup, KConfigBase::Persistent | KConfigBase::Global );
     configGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
     configGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
-    configGroup.writeEntry( ShowSpeedbar, urlBar && !urlBar->isHidden() );
+    configGroup.writeEntry( ShowSpeedbar, placesView && !placesView->isHidden() );
     configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
     configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
 
@@ -1501,7 +1500,7 @@ KPushButton * KFileWidget::cancelButton() const
 
 KUrlBar * KFileWidget::speedBar()
 {
-    return d->urlBar;
+    return 0;
 }
 
 // Called by KFileDialog
@@ -1913,19 +1912,22 @@ void KFileWidget::toggleSpeedbar( bool show )
 {
     if ( show )
     {
-        if ( !d->urlBar )
+        if ( !d->placesView )
             d->initSpeedbar();
 
-        d->urlBar->show();
+        d->placesView->show();
 
         // check to see if they have a home item defined, if not show the home button
         KUrl homeURL;
         homeURL.setPath( QDir::homePath() );
-        for ( int rowIndex = 0 ; rowIndex < d->urlBar->listBox()->count() ; rowIndex++ )
+        KFilePlacesModel *model = static_cast<KFilePlacesModel*>(d->placesView->model());
+        int rowCount = model->rowCount();
+        for ( int rowIndex = 0 ; rowIndex < d->placesView->model()->rowCount() ; rowIndex++ )
         {
-            KUrlBarItem *urlItem = static_cast<KUrlBarItem*>( d->urlBar->listBox()->item(rowIndex) );
+            QModelIndex index = model->index(rowIndex, 0);
+            KUrl url = model->url(index);
 
-            if ( homeURL.equals( urlItem->url(), KUrl::CompareWithoutTrailingSlash ) ) {
+            if ( homeURL.equals( url, KUrl::CompareWithoutTrailingSlash ) ) {
                 d->toolbar->removeAction( d->ops->actionCollection()->action( "home" ) );
                 break;
             }
@@ -1933,8 +1935,8 @@ void KFileWidget::toggleSpeedbar( bool show )
     }
     else
     {
-        if (d->urlBar)
-            d->urlBar->hide();
+        if (d->placesView)
+            d->placesView->hide();
 
         QAction* homeAction = d->ops->actionCollection()->action( "home" );
         QAction* reloadAction = d->ops->actionCollection()->action( "reload" );
