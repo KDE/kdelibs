@@ -36,22 +36,22 @@ namespace khtmlImLoad {
 class PixmapTile: public Tile
 {
 public:
-    //### consider making this a pointer, seems quite heavy
-    QPixmap       pixmap;
+    QPixmap*       pixmap;
     
     virtual void discard()
     {
-        //Set the pixmap to be null
-        pixmap = QPixmap();
+        delete pixmap;
+        pixmap = 0;
     }
 
-    PixmapTile()
+    PixmapTile() : pixmap(0)
     {}
 
     virtual ~PixmapTile()
     {
         if (cacheNode)
             ImageManager::pixmapCache()->removeEntry(this);
+        delete pixmap;
     }
 };
 

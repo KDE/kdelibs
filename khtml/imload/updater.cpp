@@ -55,7 +55,6 @@ void Updater::haveUpdates(Image* frame)
 
 void Updater::unregisterImage(Image* frame)
 {
-    QVector<Image*>::const_iterator iter;
     for (int i = 0; i < 10; ++i)
     {
         int pos = frames[i].indexOf(frame);

@@ -29,7 +29,7 @@ namespace khtmlImLoad {
 bool ScaledImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
                             PixmapTile* tile)
 {
-    if (tile->pixmap.isNull()) return false;
+    if (!tile->pixmap) return false;
 
     for (unsigned int line = 0; line < tileHeight(tileY); ++line)
     {

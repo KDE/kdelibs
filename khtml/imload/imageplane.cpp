@@ -32,7 +32,7 @@ namespace khtmlImLoad {
 bool ImagePlane::checkUpToDate(const unsigned char* versions, PixmapTile* tile)
 {
     //If the tile is discarded, it's clearly not up-to-date ;-)
-    if (tile->pixmap.isNull())
+    if (!tile->pixmap)
         return false;
 
     //Now, just check the version array. It's enough to memcmp,
@@ -43,7 +43,7 @@ bool ImagePlane::checkUpToDate(const unsigned char* versions, PixmapTile* tile)
 
 void ImagePlane::setupTile(unsigned int tileX, unsigned int tileY, PixmapTile* tile)
 {
-    tile->pixmap = QPixmap(tileWidth (tileX), tileHeight(tileY));
+    tile->pixmap = new QPixmap(tileWidth (tileX), tileHeight(tileY));
     ImageManager::pixmapCache()->addEntry(tile);
 }
 
@@ -54,7 +54,7 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
 {
     //Determine the range which needs pushing.
     unsigned int first = 0xFFFF, last;
-    if (tile->pixmap.isNull())
+    if (!tile->pixmap)
     {
         //### this can be wasteful if we do conversion
         setupTile(tileX, tileY, tile);
@@ -78,13 +78,16 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
         }
     }
 
+    assert( tile->pixmap );
+
     //Special case, hopefully-fast path: if we just wants to push
     //the whole image to the whole tile, do convertFromImage directly.
     if (offX == 0 && offY == 0 && first == 0  && last == image.height() - 1 &&
-        tile->pixmap.width()  == image.width() &&
-        tile->pixmap.height() == image.height())
+        tile->pixmap->width()  == image.width() &&
+        tile->pixmap->height() == image.height())
     {
-       tile->pixmap = QPixmap::fromImage(image);
+       tile->discard();
+       tile->pixmap = new QPixmap(QPixmap::fromImage(image));
     }
     else
     {
@@ -92,24 +95,24 @@ void ImagePlane::updatePixmap(PixmapTile* tile, const QImage& image,
         {
             //### When supported, use the src op.
             QRect imagePortion(offX, offY,
-                               tile->pixmap.width(),
-                               tile->pixmap.height());
+                               tile->pixmap->width(),
+                               tile->pixmap->height());
 
             //Note: we're copying the entire tile-size here,
             //and not just the dirty portion. 
             QImage portion = image.copy(imagePortion);
-            tile->pixmap.fill(Qt::transparent);
-            QPainter p(&tile->pixmap);
+            tile->pixmap->fill(Qt::transparent);
+            QPainter p(tile->pixmap);
             p.drawImage(0, 0, portion);
         }
         else
         {
             QRect imagePortion(offX, offY + first,
-                               tile->pixmap.width(), last - first + 1);
+                               tile->pixmap->width(), last - first + 1);
 
             QImage portion = image.copy(imagePortion);
             //Push the image portion update
-            QPainter p(&tile->pixmap);
+            QPainter p(tile->pixmap);
             p.drawImage(QPoint(0, first), portion);
         }
     }

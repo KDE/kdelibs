@@ -107,7 +107,7 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
                 parent->ensureUpToDate(tileX, tileY, &tile);
 
             //Draw as much as we have
-            if (!tile.pixmap.isNull())
+            if (tile.pixmap)
             {
                 //Scan the versions to see how much to paint.
                 unsigned int h = 0;
@@ -115,7 +115,7 @@ void PixmapPlane::paint(int dx, int dy, QPainter* p,
                 {}
 
                 //Draw it.
-                p->drawPixmap(paintX, paintY, tile.pixmap, startX, startY,
+                p->drawPixmap(paintX, paintY, *tile.pixmap, startX, startY,
                               paintWidth, qMin(h, paintHeight));
             }
             paintX += paintWidth;
