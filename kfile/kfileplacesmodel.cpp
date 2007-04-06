@@ -62,11 +62,8 @@ public:
 KFilePlacesModel::KFilePlacesModel(QObject *parent)
     : QAbstractItemModel(parent), d(new Private(this))
 {
-    QString basePath = KGlobal::mainComponent().componentName();
-    basePath.append("/bookmarks.xml");
-    const QString file = KStandardDirs::locateLocal("data", basePath);
-
-    d->bookmarkManager = KBookmarkManager::managerForFile(file, "dolphin", false);
+    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces", false);
 
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();
