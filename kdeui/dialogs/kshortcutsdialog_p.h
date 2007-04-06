@@ -20,9 +20,17 @@
 #ifndef KSHORTCUTSDIALOG_P_H
 #define KSHORTCUTSDIALOG_P_H
 
+#include "kgesture.h"
 
 #include <kextendableitemdelegate.h>
+#include <QKeySequence>
+#include <QModelIndex>
+#include <QMetaType>
+
 class QAbstractItemView;
+class QRadioButton;
+class KKeySequenceWidget;
+
 class KShortcutsEditorDelegate : public KExtendableItemDelegate
 {
 	Q_OBJECT
@@ -30,12 +38,37 @@ public:
 	KShortcutsEditorDelegate(QAbstractItemView *parent);
 	//virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 Q_SIGNALS:
-	void editInstead(QModelIndex index);
+	void shortcutChanged(QVariant, const QModelIndex &);
 private:
-	//mutable QModelIndex *m_index;
+	mutable QModelIndex m_editingIndex;
 private Q_SLOTS:
 	void itemActivated(QModelIndex index);
+	void keySequenceChanged(const QKeySequence &);
+	void shapeGestureChanged(const KShapeGesture &);
+	void rockerGestureChanged(const KRockerGesture &);
 };
+
+
+class ShortcutEditWidget : public QWidget
+{
+	Q_OBJECT
+public:
+	ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq, const QKeySequence &activeSeq);
+Q_SIGNALS:
+	void keySequenceChanged(const QKeySequence &);
+private Q_SLOTS:
+	void defaultChecked(bool);
+	void setCustom(const QKeySequence &);
+private:
+	QKeySequence m_defaultKeySequence;
+	QRadioButton *m_defaultRadio;
+	QRadioButton *m_customRadio;
+	KKeySequenceWidget *m_customEditor;
+	bool m_ignoreKeySequenceChanged;
+};
+
+Q_DECLARE_METATYPE(KShapeGesture)
+Q_DECLARE_METATYPE(KRockerGesture)
 
 
 #endif /* KSHORTCUTSDIALOG_P_H */

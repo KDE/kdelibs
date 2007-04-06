@@ -25,6 +25,7 @@
 #define KSHORTCUTSEDITOR_H
 
 #include <QWidget>
+#include "kgesture.h"
 
 class QCheckBox;
 class QLabel;
@@ -188,12 +189,7 @@ protected:
 	virtual void showEvent(QShowEvent* event);
 
 private:
-	Q_PRIVATE_SLOT(d, void capturedKeyShortcut(QKeySequence))
-	Q_PRIVATE_SLOT(d, void capturedShapeGesture(KShapeGesture))
-	Q_PRIVATE_SLOT(d, void capturedRockerGesture(KRockerGesture))
-
-	Q_PRIVATE_SLOT(d, void startEditing(QWidget *, QModelIndex))
-	Q_PRIVATE_SLOT(d, void doneEditingCurrent())
+	Q_PRIVATE_SLOT(d, void capturedShortcut(QVariant, const QModelIndex &))
 
 	Q_PRIVATE_SLOT(d, void globalSettingsChangedSystemwide(int))
 

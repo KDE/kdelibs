@@ -46,7 +46,6 @@ protected:
 
 private:
 	KKeySequenceWidgetPrivate *const d;
-
 };
 
 #endif //KKEYSEQUENCEWIDGET_P_H

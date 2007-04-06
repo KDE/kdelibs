@@ -489,7 +489,6 @@ QString KRockerGesture::rockerName() const
 
 bool KRockerGesture::isValid() const
 {
-    //### stricter checking might be in order (maybe done in setButtons)
     return (m_hold != Qt::NoButton);
 }
 

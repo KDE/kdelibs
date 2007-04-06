@@ -35,6 +35,8 @@
 #include <QTreeWidgetItem>
 #include <QTimer>
 #include <QHeaderView>
+#include <QRadioButton>
+#include <QLabel>
 
 #include <kaction.h>
 #include <kconfig.h>
@@ -42,6 +44,7 @@
 #include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kicon.h>
+#include "kiconloader.h"
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -53,7 +56,6 @@
 #include <kconfiggroup.h>
 
 #include "kactioncollection.h"
-#include "kgesture.h"
 
 #ifdef Q_WS_X11
 #define XK_XKB_KEYS
@@ -85,7 +87,9 @@ enum ColumnDesignation {
 };
 
 
-enum reallyEvilRole {
+enum myRoles {
+	ShortcutRole = Qt::UserRole,
+	DefaultShortcutRole,
 	ItemPointerRole = Qt::UserRole + 2342
 };
 
@@ -144,25 +148,20 @@ public:
 	bool stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gest);
 	bool stealRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &gest);
 
-	//these functions do the conflict resolution
+	//conflict resolution functions
 	void changeKeyShortcut(KShortcutsEditorItem *item, uint column, const QKeySequence &capture);
 	void changeShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &capture);
 	void changeRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &capture);
 
 // private slots
-	void capturedKeyShortcut(const QKeySequence &);
-	void capturedShapeGesture(const KShapeGesture &);
-	void capturedRockerGesture(const KRockerGesture &);
-
-	void startEditing(QWidget *, QModelIndex);
-	void doneEditingCurrent();
+	//this invokes the appropriate conflict resolution function
+	void capturedShortcut(QVariant, const QModelIndex &);
 
 	void globalSettingsChangedSystemwide(int);
 
 // members
 	QList<KActionCollection *> actionCollections;
 	KShortcutsEditor *q;
-	QModelIndex editingIndex;
 
 	Ui::KShortcutsDialog ui;
 
@@ -180,12 +179,9 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
  : KExtendableItemDelegate(parent)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
-	//connect(this, SIGNAL(editInstead(QModelIndex)), parent, SLOT(setCurrentIndex(QModelIndex)));
-	//connect(this, SIGNAL(editInstead(QModelIndex)), parent, SLOT(edit(QModelIndex)));
-	//HNOTEDITOR
+	m_extendIcon = SmallIcon("go-down.png");
+	m_contractIcon = SmallIcon("go-up.png");
 	connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
-	//connect(this, SIGNAL(editInstead(QModelIndex)), parent, SLOT(edit(QModelIndex)));
-	//HNOTEDITOR/
 }
 
 
@@ -194,7 +190,7 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
 	kDebug() << "itemActivated" <<endl;
-	//TODO: here, we only want maximum ONE extender open at any time.
+	//in this case, we only want maximum ONE extender open at any time.
 
 	//testing hack
 	if (index.column() == 2) {
@@ -205,21 +201,116 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		const QAbstractItemModel *model = index.model();
 		index = model->index(index.row(), 1, index.parent());
 	}
+
 	if (!isExtended(index)) {
-		// //TODO:fix the leak!!! (make a "real" KShortcutEditor widget)
-		// Ui::KShortcutEditor *kseui = new Ui::KShortcutEditor;
-		// QWidget *editor = new QWidget(static_cast<QAbstractItemView*>(parent())->viewport());
-		// kseui->setupUi(editor);
-		// extendItem(editor, index);
+		if (m_editingIndex.isValid())
+			contractItem(m_editingIndex);
+		
+		m_editingIndex = index;
+		const QAbstractItemModel *model = index.model();
+		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
+		ShortcutEditWidget *editor = new ShortcutEditWidget(viewport,
+		        model->data(index, DefaultShortcutRole).value<QKeySequence>(),
+		        model->data(index, ShortcutRole).value<QKeySequence>());
+
+		connect(editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+		        this, SLOT(keySequenceChanged(const QKeySequence &)));
+		extendItem(editor, index);
 	} else {
 		contractItem(index);
+		m_editingIndex = QModelIndex();
 	}
 }
 
-/*bool KShortcutsEditorDelegate::eventFilter(QObject *object, QEvent *event)
+
+//slot
+void KShortcutsEditorDelegate::keySequenceChanged(const QKeySequence &seq)
 {
-	return false;
-}*/
+	QVariant ret;
+	ret.setValue(seq);
+	emit shortcutChanged(ret, m_editingIndex);
+}
+
+
+//slot
+void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)
+{
+	//this is somewhat verbose because the gesture types are not "built in" to QVariant
+	QVariant ret;
+	ret.setValue(gest);
+	emit shortcutChanged(ret, m_editingIndex);
+}
+
+
+//slot
+void KShortcutsEditorDelegate::rockerGestureChanged(const KRockerGesture &gest)
+{
+	QVariant ret;
+	ret.setValue(gest);
+	emit shortcutChanged(ret, m_editingIndex);
+}
+
+
+ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
+    const QKeySequence &activeSeq)
+ : QWidget(viewport),
+   m_defaultKeySequence(defaultSeq),
+   m_ignoreKeySequenceChanged(false)
+{
+	QGridLayout *layout = new QGridLayout(this);
+
+	m_defaultRadio = new QRadioButton("Default:", this);
+	QString defaultText = defaultSeq.toString();
+	if (defaultText.isEmpty())
+		defaultText = i18n("None");
+	QLabel *defaultLabel = new QLabel(defaultText, this);
+
+	m_customRadio = new QRadioButton("Custom:", this);
+	m_customEditor = new KKeySequenceWidget(this);
+
+	if (activeSeq == defaultSeq) {
+		m_defaultRadio->setChecked(true);
+	} else {
+		m_customRadio->setChecked(true);
+		m_customEditor->setKeySequence(activeSeq);
+	}
+
+	layout->addWidget(m_defaultRadio, 0, 0);
+	layout->addWidget(defaultLabel, 0, 1);
+	layout->addWidget(m_customRadio, 1, 0);
+	layout->addWidget(m_customEditor, 1, 1);
+	layout->setColumnStretch(2, 1);
+	//layout->addItem(new QSpacerItem(0, 0), 0, 2);
+	
+	connect(m_defaultRadio, SIGNAL(toggled(bool)),
+	        this, SLOT(defaultChecked(bool)));
+	connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+	        this, SLOT(setCustom(const QKeySequence &)));
+}
+
+
+void ShortcutEditWidget::defaultChecked(bool checked)
+{
+	if (!checked)
+		return;
+
+	//avoid a spurious signal
+	m_ignoreKeySequenceChanged = true;
+	m_customEditor->clearKeySequence();
+	m_ignoreKeySequenceChanged = false;
+	m_defaultRadio->setChecked(true);
+	emit keySequenceChanged(m_defaultKeySequence);
+}
+
+
+void ShortcutEditWidget::setCustom(const QKeySequence &seq)
+{
+	if (m_ignoreKeySequenceChanged)
+		return;
+	m_customRadio->setChecked(true);
+	emit keySequenceChanged(seq);
+}
+
 
 //---------------------------------------------------------------------
 // KShortcutsEditor
@@ -323,10 +414,8 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 
 	QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
 	                 q, SLOT(globalSettingsChangedSystemwide(int)));
-	QObject::connect(delegate, SIGNAL(extenderCreated(QWidget *, QModelIndex)),
-	                 q, SLOT(startEditing(QWidget *, QModelIndex)));	
-	QObject::connect(delegate, SIGNAL(extenderDestroyed(QWidget *, QModelIndex)),
-	                 q, SLOT(doneEditingCurrent()));
+	QObject::connect(delegate, SIGNAL(shortcutChanged(QVariant, const QModelIndex &)),
+	                 q, SLOT(capturedShortcut(QVariant, const QModelIndex &)));
 }
 
 
@@ -354,30 +443,22 @@ QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent
 }
 
 
-//slot
-void KShortcutsEditorPrivate::startEditing(QWidget *editor, QModelIndex index)
+//private slot
+void KShortcutsEditorPrivate::capturedShortcut(QVariant newShortcut, const QModelIndex &index)
 {
-	editingIndex = index;
-}
-
-
-//slot
-void KShortcutsEditorPrivate::doneEditingCurrent()
-{
-	editingIndex = QModelIndex();
-}
-
-
-//slot
-void KShortcutsEditorPrivate::capturedKeyShortcut(const QKeySequence &capture)
-{
-	//TODO: make sure letter shortcuts only go in if allowed. modify KKeyButton.
-	if (!editingIndex.isValid())
+	//dispatch to the right handler
+	//TODO: make sure that letter shortcuts only go in if allowed. modify KKeySequenceWidget.
+	if (!index.isValid())
 		return;
-
-	KShortcutsEditorItem *item = itemFromIndex(editingIndex);
-	int column = editingIndex.column();
-	changeKeyShortcut(item, column, capture);
+	int column = index.column();
+	KShortcutsEditorItem *item = itemFromIndex(index);
+	
+	if (column >= LocalPrimary && column <= GlobalAlternate)
+		changeKeyShortcut(item, column, newShortcut.value<QKeySequence>());
+	else if (column == ShapeGesture)
+		changeShapeGesture(item, newShortcut.value<KShapeGesture>());
+	else if (column == RockerGesture)
+		changeRockerGesture(item, newShortcut.value<KRockerGesture>());
 }
 
 
@@ -387,9 +468,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 		return;
 
 	if (!capture.isEmpty()) {
-		bool conflict = false;
 		unsigned int i;
-		KShortcutsEditorItem *otherItem;
 
 		//refuse to assign a global shortcut occupied by a standard shortcut
 		if (column == GlobalPrimary || column == GlobalAlternate) {
@@ -401,19 +480,21 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 		}
 
 		//find conflicting shortcuts in this application
-		for (QTreeWidgetItemIterator it(ui.list); (*it); ++it) {
+        bool conflict = false;
+		KShortcutsEditorItem *otherItem;
+		for (QTreeWidgetItemIterator it(ui.list); (*it) && !conflict; ++it) {
 			if ((*it)->childCount())
 				continue;
 
 			otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
-			for (i = LocalPrimary; i <= GlobalAlternate; i++)
+			for (i = LocalPrimary; i <= GlobalAlternate; i++) {
 				if (capture == otherItem->keySequence(i)) {
 					conflict = true;
-					goto out;
+					break;
 				}
+			}
 		}
-		out:
 
 		if (conflict && !stealShortcut(otherItem, i, capture))
 			return;
@@ -425,21 +506,13 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 	}
 
 	item->setKeySequence(column, capture);
+	//force view update
+	item->setText(column, capture.toString());
 	//update global configuration to reflect our changes
 	//TODO:: much better to do this in setKeySequence
 	if (column == GlobalPrimary || column == GlobalAlternate) {
 
 	}
-}
-
-
-//slot
-void KShortcutsEditorPrivate::capturedShapeGesture(const KShapeGesture &capture)
-{
-	if (!editingIndex.isValid())
-		return;
-
-	changeShapeGesture(itemFromIndex(editingIndex), capture);
 }
 
 
@@ -474,16 +547,6 @@ void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, con
 	}
 
 	item->setShapeGesture(capture);
-}
-
-
-//slot
-void KShortcutsEditorPrivate::capturedRockerGesture(const KRockerGesture &capture)
-{
-	if (!editingIndex.isValid())
-		return;
-
-	changeRockerGesture(itemFromIndex(editingIndex), capture);
 }
 
 
@@ -662,7 +725,7 @@ KShortcutsEditorItem::~KShortcutsEditorItem()
 QVariant KShortcutsEditorItem::data(int column, int role) const
 {
 	if (role == Qt::SizeHintRole) {
-		return QSize(0, 30);
+		return QSize(0, 20);
 	}
 
 	switch (role) {
@@ -689,13 +752,12 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 		break;
 	case Qt::WhatsThisRole:
 		return m_action->whatsThis();
-		break;
 	case Qt::ToolTipRole:
 		return m_action->toolTip();
-		break;
 	case Qt::ForegroundRole:
-		if (isModified(column))
-			return QColor(Qt::blue);
+		//looks not that great, really
+		//if (isModified(column))
+		//	return QColor(Qt::blue);
 		break;
 	case Qt::FontRole:
 		if (!isModified(column)) {
@@ -704,16 +766,53 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 			QFont modifiedFont = treeWidget()->font();
 			modifiedFont.setBold(true);
 			return modifiedFont;
-			break;
 		}
 	case KExtendableItemDelegate::ShowExtensionIndicatorRole:
 		if (column == Name)
 			return false;
 		else
 			return true;
-		break;
+//the following are custom roles, defined in this source file only
 	case ItemPointerRole:
 		return reinterpret_cast<qulonglong>(this);
+
+	case ShortcutRole:
+		switch(column) {
+		case LocalPrimary:
+		case LocalAlternate:
+		case GlobalPrimary:
+		case GlobalAlternate:
+			return keySequence(column);
+		case ShapeGesture: { //scoping of "ret"
+			QVariant ret;
+			ret.setValue(m_action->shapeGesture());
+			return ret; }
+		case RockerGesture: {
+			QVariant ret;
+			ret.setValue(m_action->rockerGesture());
+			return ret; }
+		}
+
+	case DefaultShortcutRole:
+		switch(column) {
+		case LocalPrimary:
+			return m_action->shortcut(KAction::DefaultShortcut).primary();
+		case LocalAlternate:
+			return m_action->shortcut(KAction::DefaultShortcut).alternate();
+		case GlobalPrimary:
+			return m_action->globalShortcut(KAction::DefaultShortcut).primary();
+		case GlobalAlternate:
+			return m_action->globalShortcut(KAction::DefaultShortcut).alternate();
+		case ShapeGesture: {
+			QVariant ret;
+			ret.setValue(m_action->shapeGesture(KAction::DefaultShortcut));
+			return ret; }
+		case RockerGesture: {
+			QVariant ret;
+			ret.setValue(m_action->rockerGesture(KAction::DefaultShortcut));
+			return ret; }
+		}
+
 	default:
 		break;
 	}
@@ -725,8 +824,6 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 QKeySequence KShortcutsEditorItem::keySequence(uint column) const
 {
 	switch (column) {
-	//"safe" but useless
-	default:
 	case LocalPrimary:
 		return m_action->shortcut().primary();
 	case LocalAlternate:
@@ -735,6 +832,8 @@ QKeySequence KShortcutsEditorItem::keySequence(uint column) const
 		return m_action->globalShortcut().primary();
 	case GlobalAlternate:
 		return m_action->globalShortcut().alternate();
+	default:
+		return QKeySequence();
 	}
 }
 
@@ -758,10 +857,11 @@ void KShortcutsEditorItem::setKeySequence(uint column, const QKeySequence &seq)
 	else
 		ks.setPrimary(seq);
 
+	//avoid also setting the default shortcut - what we are setting here is custom by definition
 	if (column == GlobalPrimary || column == GlobalAlternate)
-		m_action->setGlobalShortcut(ks);
+		m_action->setGlobalShortcut(ks, KAction::ActiveShortcut);
 	else
-		m_action->setShortcut(ks);
+		m_action->setShortcut(ks, KAction::ActiveShortcut);
 
 	updateModified();
 }
@@ -819,17 +919,17 @@ bool KShortcutsEditorItem::isModified(uint column) const
 		if (!m_oldLocalShortcut)
 			return false;
 		if (column == LocalPrimary)
-			return m_oldLocalShortcut->primary() == m_action->shortcut().primary();
+			return m_oldLocalShortcut->primary() != m_action->shortcut().primary();
 		else
-			return m_oldLocalShortcut->alternate() == m_action->shortcut().alternate();
+			return m_oldLocalShortcut->alternate() != m_action->shortcut().alternate();
 	case GlobalPrimary:
 	case GlobalAlternate:
 		if (!m_oldGlobalShortcut)
 			return false;
 		if (column == GlobalPrimary)
-			return m_oldGlobalShortcut->primary() == m_action->globalShortcut().primary();
+			return m_oldGlobalShortcut->primary() != m_action->globalShortcut().primary();
 		else
-			return m_oldGlobalShortcut->alternate() == m_action->globalShortcut().alternate();
+			return m_oldGlobalShortcut->alternate() != m_action->globalShortcut().alternate();
 	case ShapeGesture:
 		return static_cast<bool>(m_oldShapeGesture);
 	case RockerGesture:

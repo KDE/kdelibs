@@ -71,7 +71,7 @@ const int XKeyRelease = KeyRelease;
 #endif
 
 /***********************************************************************/
-/* KKeySequenceWidget                                                          */
+/* KKeySequenceWidget                                                  */
 /*                                                                     */
 /* Initially added by Mark Donohoe <donohoe@kde.org>                   */
 /*                                                                     */
@@ -296,8 +296,6 @@ void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 	QString s = keySequence.toString();
 	s.replace('&', QLatin1String("&&"));
 
-	//### really needed???
-	keyButton->setFocus();
 	if (isRecording) {
 		// Display modifiers for the first key in the QKeySequence
 		if (nKey == 0) {
@@ -341,8 +339,9 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 	//if key is a letter, it must be stored as lowercase
 	//TODO: umlauts are *very* broken, change that!
 	int keyQt = QChar( e->key() & 0xff ).isLetter() ?
-		(QChar( e->key() & 0xff ).toLower().toLatin1() | (e->key() & 0xffff00) )
+		(QChar( e->key() & 0xff ).toUpper().toLatin1() | (e->key() & 0xffff00) )
 		: e->key();
+
 
 	uint newModifiers = e->modifiers() & (Qt::SHIFT | Qt::CTRL | Qt::ALT | Qt::META);
 	//TODO: don't have the return key appear as first key of the sequence when it was pressed to start editing!
@@ -382,10 +381,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		if (d->nKey > 0 && keyQt == Qt::Key_Return)
 			d->doneRecording();
 		else if (keyQt) {
-			if (d->nKey == 0)
+			//if (d->nKey == 0)
 				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt | d->modifierKeys);
-			else
-				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
+			//else
+				//d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
 
 			d->nKey++;
 			if (d->nKey >= 4) {

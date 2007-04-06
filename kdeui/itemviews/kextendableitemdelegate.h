@@ -91,7 +91,10 @@ Q_SIGNALS:
 
 protected:
 	/**
-	 * Reimplement this function to 
+	 * Reimplement this function to fine-tune the position of the extender. @p option.rect will be a rectangle
+	 * that is as wide as the viewport and as high as the usual item height plus the extender size hint's height.
+	 * Its upper left corner will be at the upper left corner of the usual item.
+	 * You can place the returned rectangle of this function anywhere inside that area.
 	 */
 	QRect extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	//these two must have the same (screen) size!
