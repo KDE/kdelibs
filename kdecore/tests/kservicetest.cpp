@@ -82,6 +82,15 @@ void KServiceTest::testProperty()
     KService::Ptr kjavaappletviewer = KService::serviceByDesktopPath("kjavaappletviewer.desktop");
     QVERIFY(kjavaappletviewer);
     QCOMPARE(kjavaappletviewer->property("X-KDE-BrowserView-PluginsInfo").toString(), QString("kjava/pluginsinfo"));
+
+    // Test property("MimeTypes"), which triggers the KServiceReadProperty code.
+    // Didn't find any desktop file in kdelibs that had a stringlist property, so this one needs kdebase/workspace installed.
+    KService::Ptr fontthumbnail = KService::serviceByDesktopPath("fontthumbnail.desktop");
+    if (fontthumbnail) {
+        QVERIFY(fontthumbnail->property("MimeTypes").toStringList().contains("application/x-font-ttf"));
+    } else {
+        qDebug("Skipping property(\"MimeTypes\") test, fontthumbnail.desktop not found (kdebase/workspace not installed)");
+    }
 }
 
 void KServiceTest::testAllServiceTypes()
