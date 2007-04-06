@@ -301,23 +301,25 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 		setupDialog( wiz, wId, appid, modal );
 		int rc = wiz->exec();
 		if (rc == QDialog::Accepted) {
+			bool useWallet = wiz->field("useWallet").toBool();
 			KConfig kwalletrc("kwalletrc");
 			KConfigGroup cfg(&kwalletrc, "Wallet");
 			cfg.writeEntry("First Use", false);
-			cfg.writeEntry("Enabled", wiz->_useWallet->isChecked());
-			cfg.writeEntry("Close When Idle", wiz->_closeIdle->isChecked());
-			cfg.writeEntry("Use One Wallet", !wiz->_networkWallet->isChecked());
+			cfg.writeEntry("Enabled", useWallet);
+			cfg.writeEntry("Close When Idle", wiz->field("closeWhenIdle").toBool());
+			cfg.writeEntry("Use One Wallet", !wiz->field("networkWallet").toBool());
 			cfg.sync();
 			reconfigure();
 
-			if (!wiz->_useWallet->isChecked()) {
+			if (!useWallet) {
 				delete wiz;
 				return -1;
 			}
 
 			// Create the wallet
 			KWallet::Backend *b = new KWallet::Backend(KWallet::Wallet::LocalWallet());
-			QByteArray p(wiz->_pass1->text().toUtf8(), wiz->_pass1->text().length());
+			QString pass = wiz->field("pass1").toString();
+			QByteArray p(pass.toUtf8(), pass.length());
 			b->open(p);
 			b->createFolder(KWallet::Wallet::PasswordFolder());
 			b->createFolder(KWallet::Wallet::FormDataFolder());

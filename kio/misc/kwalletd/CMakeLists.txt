@@ -1,6 +1,7 @@
 
 include_directories( ${CMAKE_SOURCE_DIR}/kwallet/backend ${CMAKE_SOURCE_DIR}/kwallet/client )
 
+add_subdirectory(tests)
 
 ########### next target ###############
 
@@ -14,8 +15,11 @@ set(kded_kwalletd_PART_SRCS
 kde4_automoc(${kded_kwalletd_PART_SRCS})
 
 kde4_add_ui_files(kded_kwalletd_PART_SRCS
-   kwalletwizardbase.ui
    kbetterthankdialogbase.ui
+   kwalletwizardpageexplanation.ui
+   kwalletwizardpageintro.ui
+   kwalletwizardpageoptions.ui
+   kwalletwizardpagepassword.ui
 )
 
 kde4_add_plugin(kded_kwalletd ${kded_kwalletd_PART_SRCS})
