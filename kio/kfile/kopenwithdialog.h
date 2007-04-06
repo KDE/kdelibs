@@ -150,7 +150,7 @@ protected:
     KUrlRequester * edit;
     QString m_command;
 
-    KApplicationTree* m_pTree;
+    KApplicationTree* m_pTree; // ### REMOVE ME!
     QLabel *label;
 
     QString qName, qMimeType;

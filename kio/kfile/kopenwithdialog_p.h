@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Faure <faure@kde.org>
+    Copyright (C) 2007 Pino Toscano <pino@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,67 +21,75 @@
 #ifndef OPENWITHDIALOG_P_H
 #define OPENWITHDIALOG_P_H
 
-#include <Qt3Support/Q3CheckListItem>
+#include <QtCore/QAbstractItemModel>
+#include <QtGui/QTreeView>
+
+class KApplicationModelPrivate;
 
 /**
  * @internal
  */
-class KAppTreeListItem : public Q3ListViewItem
-{
-    bool parsed;
-    bool directory;
-    QString path;
-    QString exec;
-
-protected:
-    int compare(Q3ListViewItem *i, int col, bool ascending ) const;
-    QString key(int column, bool ascending) const;
-
-    void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &exec);
-
-public:
-    KAppTreeListItem( Q3ListView* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, const QString &p, const QString &c );
-    KAppTreeListItem( Q3ListViewItem* parent, const QString & name, const QPixmap& pixmap,
-                      bool parse, bool dir, const QString &p, const QString &c );
-    bool isDirectory();
-
-protected:
-    virtual void activate();
-    virtual void setOpen( bool o );
-
-    friend class KApplicationTree;
-};
-
-
-/**
- * @internal
- */
-class KApplicationTree : public Q3ListView
+class KApplicationModel : public QAbstractItemModel
 {
     Q_OBJECT
-public:
-    KApplicationTree( QWidget *parent );
 
-    /**
-     * Add a group of .desktop/.kdelnk entries
-     */
-    void addDesktopGroup( const QString &relPath, KAppTreeListItem *item = 0 );
+    public:
+        KApplicationModel(QObject *parent = 0);
+        virtual ~KApplicationModel();
+        virtual bool canFetchMore(const QModelIndex &parent) const;
+        virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+        virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+        virtual void fetchMore(const QModelIndex &parent);
+//        virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+        virtual bool hasChildren(const QModelIndex &parent = QModelIndex()) const;
+        virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+        virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+        virtual QModelIndex parent(const QModelIndex &index) const;
+        virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-    bool isDirSel();
+        QString nameFor(const QModelIndex &index) const;
+        QString execFor(const QModelIndex &index) const;
+        bool isDirectory(const QModelIndex &index) const;
 
-protected:
-    void resizeEvent( QResizeEvent *_ev );
-    KAppTreeListItem* currentitem;
-    void cleanupTree();
+    private:
+        friend class KApplicationModelPrivate;
+        KApplicationModelPrivate *const d;
 
-public Q_SLOTS:
-    void slotItemHighlighted(Q3ListViewItem* i);
-    void slotSelectionChanged(Q3ListViewItem* i);
+        Q_DISABLE_COPY(KApplicationModel)
+};
 
-Q_SIGNALS:
-    void selected( const QString& _name, const QString& _exec );
-    void highlighted( const QString& _name, const  QString& _exec );
+class KApplicationViewPrivate;
+
+/**
+ * @internal
+ */
+class KApplicationView : public QTreeView
+{
+    Q_OBJECT
+
+    public:
+        KApplicationView(QWidget *parent = 0);
+        ~KApplicationView();
+
+        virtual void setModel(QAbstractItemModel *model);
+
+        bool isDirSel() const;
+
+    Q_SIGNALS:
+        void selected(const QString &_name, const QString &_exec);
+        void highlighted(const QString &_name, const QString &_exec);
+
+    protected Q_SLOTS:
+        virtual void currentChanged(const QModelIndex &current, const QModelIndex &previous);
+
+    private Q_SLOTS:
+        void slotSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
+    private:
+        friend class KApplicationViewPrivate;
+        KApplicationViewPrivate *const d;
+
+        Q_DISABLE_COPY(KApplicationView)
 };
 
 #endif

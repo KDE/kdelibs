@@ -3,6 +3,7 @@
     Copyright (C) 1997 Torben Weis <weis@stud.uni-frankfurt.de>
     Copyright (C) 1999 Dirk Mueller <mueller@kde.org>
     Portions copyright (C) 1999 Preston Brown <pbrown@kde.org>
+    Copyright (C) 2007 Pino Toscano <pino@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,6 +21,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QtCore/QtAlgorithms>
+#include <QtCore/QList>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QCheckBox>
@@ -55,135 +58,81 @@ void KConfigGroup::writeEntry( const char *pKey,
   writeEntry(pKey, int(aValue), flags);
 }
 
-// ----------------------------------------------------------------------
-
-KAppTreeListItem::KAppTreeListItem( Q3ListView* parent, const QString & name,
-                                    const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
-    : Q3ListViewItem( parent, name )
+class AppNode
 {
-    init(pixmap, parse, dir, p, c);
-}
-
-
-// ----------------------------------------------------------------------
-
-KAppTreeListItem::KAppTreeListItem( Q3ListViewItem* parent, const QString & name,
-                                    const QPixmap& pixmap, bool parse, bool dir, const QString &p, const QString &c )
-    : Q3ListViewItem( parent, name )
-{
-    init(pixmap, parse, dir, p, c);
-}
-
-
-// ----------------------------------------------------------------------
-
-void KAppTreeListItem::init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &_exec)
-{
-    setPixmap(0, pixmap);
-    parsed = parse;
-    directory = dir;
-    path = _path; // relative path
-    exec = _exec;
-}
-
-
-/* Ensures that directories sort before non-directories */
-int KAppTreeListItem::compare(Q3ListViewItem *i, int col, bool ascending) const
-{
-	KAppTreeListItem *other = static_cast<KAppTreeListItem *>(i);
-
-	// Directories sort first
-	if (directory && !other->directory)
-		return -1;
-
-	else if (!directory && other->directory)
-		return 1;
-
-	else // both directories or both not
-		return Q3ListViewItem::compare(i, col, ascending);
-}
-
-// ----------------------------------------------------------------------
-// Ensure that case is ignored
-QString KAppTreeListItem::key(int column, bool /*ascending*/) const
-{
-        return text(column).toUpper();
-}
-
-void KAppTreeListItem::activate()
-{
-    if ( directory )
-        setOpen(!isOpen());
-}
-
-void KAppTreeListItem::setOpen( bool o )
-{
-    if( o && !parsed ) { // fill the children before opening
-        ((KApplicationTree *) parent())->addDesktopGroup( path, this );
-        parsed = true;
-    }
-    Q3ListViewItem::setOpen( o );
-}
-
-bool KAppTreeListItem::isDirectory()
-{
-    return directory;
-}
-
-// ----------------------------------------------------------------------
-
-KApplicationTree::KApplicationTree( QWidget *parent )
-    : Q3ListView( parent ), currentitem(0)
-{
-    addColumn( i18n("Known Applications") );
-    setRootIsDecorated( true );
-
-    addDesktopGroup( QString() );
-    cleanupTree();
-
-    connect( this, SIGNAL( currentChanged(Q3ListViewItem*) ),
-            SLOT( slotItemHighlighted(Q3ListViewItem*) ) );
-    connect( this, SIGNAL( selectionChanged(Q3ListViewItem*) ),
-            SLOT( slotSelectionChanged(Q3ListViewItem*) ) );
-}
-
-// ----------------------------------------------------------------------
-
-bool KApplicationTree::isDirSel()
-{
-    if (!currentitem) return false; // if currentitem isn't set
-    return currentitem->isDirectory();
-}
-
-// ----------------------------------------------------------------------
-
-static QPixmap appIcon(const QString &iconName)
-{
-    QPixmap normal = KIconLoader::global()->loadIcon(iconName, K3Icon::Small, 0, K3Icon::DefaultState, 0L, true);
-    // make sure they are not larger than 20x20
-    if (normal.width() > 20 || normal.height() > 20)
+public:
+    AppNode()
+        : isDir(false), parent(0), fetched(false)
     {
-       QImage tmp = normal.toImage();
-       tmp = tmp.scaled(20, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-       normal = QPixmap::fromImage(tmp);
     }
-    return normal;
+    ~AppNode()
+    {
+        qDeleteAll(children);
+    }
+
+    QString icon;
+    QString text;
+    QString relPath;
+    QString exec;
+    bool isDir;
+
+    AppNode *parent;
+    bool fetched;
+
+    QList<AppNode*> children;
+};
+
+static bool AppNodeLessThan(AppNode *n1, AppNode *n2)
+{
+    if (n1->isDir) {
+        if (n2->isDir) {
+            return n1->text.toLower() < n2->text.toLower();
+        } else {
+            return true;
+        }
+    } else {
+        if (n2->isDir) {
+            return false;
+        } else {
+            return n1->text.toLower() < n2->text.toLower();
+        }
+    }
+    return true;
 }
 
-void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem *item)
+
+class KApplicationModelPrivate
 {
-   KServiceGroup::Ptr root = KServiceGroup::group(relPath);
+public:
+    KApplicationModelPrivate(KApplicationModel *qq)
+        : q(qq), root(new AppNode())
+    {
+    }
+    ~KApplicationModelPrivate()
+    {
+        delete root;
+    }
+
+    void fillNode(const QString &relPath, AppNode *node);
+
+    KApplicationModel *q;
+
+    AppNode *root;
+};
+
+void KApplicationModelPrivate::fillNode(const QString &_relPath, AppNode *node)
+{
+   KServiceGroup::Ptr root = KServiceGroup::group(_relPath);
    if (!root || !root->isValid()) return;
 
    KServiceGroup::List list = root->entries();
 
-   KAppTreeListItem * newItem;
    for( KServiceGroup::List::ConstIterator it = list.begin();
        it != list.end(); it++)
    {
       QString icon;
       QString text;
-      QString relPath;
+      QString relPath = _relPath;
       QString exec;
       bool isDir = false;
       const KSycocaEntry::Ptr p = (*it);
@@ -216,79 +165,248 @@ void KApplicationTree::addDesktopGroup( const QString &relPath, KAppTreeListItem
          continue;
       }
 
-      QPixmap pixmap = appIcon( icon );
-
-      if (item)
-         newItem = new KAppTreeListItem( item, text, pixmap, false, isDir,
-                                         relPath, exec );
-      else
-         newItem = new KAppTreeListItem( this, text, pixmap, false, isDir,
-                                         relPath, exec );
-      if (isDir)
-         newItem->setExpandable( true );
+      AppNode *newnode = new AppNode();
+      newnode->icon = icon;
+      newnode->text = text;
+      newnode->relPath = relPath;
+      newnode->exec = exec;
+      newnode->isDir = isDir;
+      newnode->parent = node;
+      node->children.append(newnode);
    }
+   qStableSort(node->children.begin(), node->children.end(), AppNodeLessThan);
 }
 
 
-// ----------------------------------------------------------------------
 
-void KApplicationTree::slotItemHighlighted(Q3ListViewItem* i)
+KApplicationModel::KApplicationModel(QObject *parent)
+    : QAbstractItemModel(parent), d(new KApplicationModelPrivate(this))
 {
-    // i may be 0 (see documentation)
-    if(!i)
+    d->fillNode(QString(), d->root);
+}
+
+KApplicationModel::~KApplicationModel()
+{
+    delete d;
+}
+
+bool KApplicationModel::canFetchMore(const QModelIndex &parent) const
+{
+    if (!parent.isValid())
+        return false;
+
+    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    return node->isDir && !node->fetched;
+}
+
+int KApplicationModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent)
+    return 1;
+}
+
+QVariant KApplicationModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid())
+        return QVariant();
+
+    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+
+    switch (role) {
+    case Qt::DisplayRole:
+        return node->text;
+        break;
+    case Qt::DecorationRole:
+        if (!node->icon.isEmpty()) {
+            return KIcon(node->icon);
+        }
+        break;
+    default:
+        ;
+    }
+    return QVariant();
+}
+
+void KApplicationModel::fetchMore(const QModelIndex &parent)
+{
+    if (!parent.isValid())
         return;
 
-    KAppTreeListItem *item = (KAppTreeListItem *) i;
-
-    currentitem = item;
-
-    if( (!item->directory ) && (!item->exec.isEmpty()) )
-        emit highlighted( item->text(0), item->exec );
-}
-
-
-// ----------------------------------------------------------------------
-
-void KApplicationTree::slotSelectionChanged(Q3ListViewItem* i)
-{
-    // i may be 0 (see documentation)
-    if(!i)
+    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    if (!node->isDir)
         return;
 
-    KAppTreeListItem *item = (KAppTreeListItem *) i;
-
-    currentitem = item;
-
-    if( ( !item->directory ) && (!item->exec.isEmpty() ) )
-        emit selected( item->text(0), item->exec );
+    emit layoutAboutToBeChanged();
+    d->fillNode(node->relPath, node);
+    node->fetched = true;
+    emit layoutChanged();
 }
 
-// ----------------------------------------------------------------------
-
-void KApplicationTree::resizeEvent( QResizeEvent * e)
+bool KApplicationModel::hasChildren(const QModelIndex &parent) const
 {
-    setColumnWidth(0, width()-style()->pixelMetric(QStyle::PM_ScrollBarExtent)
-                         -2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth));
-    Q3ListView::resizeEvent(e);
+    if (!parent.isValid())
+        return true;
+
+    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    return node->isDir;
 }
 
-// Prune empty directories from the tree
-void KApplicationTree::cleanupTree()
+QVariant KApplicationModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	Q3ListViewItem *item=firstChild();
-	while(item!=0)
-	{
-		if(item->isExpandable())
-		{
-			Q3ListViewItem *temp=item->itemBelow();
-			if(item->text(0)!=i18n("Applications"))
-				item->setOpen(false);
-			item=temp;
-			continue;
-		}
-		item=item->itemBelow();
-	}
+    if (orientation != Qt::Horizontal || section != 0)
+        return QVariant();
+
+    switch (role) {
+    case Qt::DisplayRole:
+        return i18n("Known Applications");
+        break;
+    default:
+        return QVariant();
+    }
 }
+
+QModelIndex KApplicationModel::index(int row, int column, const QModelIndex &parent) const
+{
+    if (row < 0 || column != 0)
+        return QModelIndex();
+
+    Q_UNUSED(column)
+    AppNode *node = d->root;
+    if (parent.isValid())
+        node = static_cast<AppNode*>(parent.internalPointer());
+
+    if (row >= node->children.count())
+        return QModelIndex();
+    else
+        return createIndex(row, 0, node->children.at(row));
+}
+
+QModelIndex KApplicationModel::parent(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return QModelIndex();
+
+    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    if (node->parent->parent) {
+        int id = node->parent->parent->children.indexOf(node->parent);
+
+        if (id >= 0 && id < node->parent->parent->children.count())
+           return createIndex(id, 0, node->parent);
+        else
+            return QModelIndex();
+    }
+    else
+        return QModelIndex();
+}
+
+int KApplicationModel::rowCount(const QModelIndex &parent) const
+{
+    if (!parent.isValid())
+        return d->root->children.count();
+
+    AppNode *node = static_cast<AppNode*>(parent.internalPointer());
+    return node->children.count();
+}
+
+QString KApplicationModel::nameFor(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return QString();
+
+    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    return node->text;
+}
+
+QString KApplicationModel::execFor(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return QString();
+
+    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    return node->exec;
+}
+
+bool KApplicationModel::isDirectory(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return false;
+
+    AppNode *node = static_cast<AppNode*>(index.internalPointer());
+    return node->isDir;
+}
+
+class KApplicationViewPrivate
+{
+public:
+    KApplicationViewPrivate()
+        : appModel(0)
+    {
+    }
+
+    KApplicationModel *appModel;
+};
+
+KApplicationView::KApplicationView(QWidget *parent)
+    : QTreeView(parent), d(new KApplicationViewPrivate)
+{
+}
+
+KApplicationView::~KApplicationView()
+{
+    delete d;
+}
+
+void KApplicationView::setModel(QAbstractItemModel *model)
+{
+    if (d->appModel) {
+        disconnect(selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
+                this, SLOT(slotSelectionChanged(QItemSelection, QItemSelection)));
+    }
+
+    QTreeView::setModel(model);
+
+    d->appModel = qobject_cast<KApplicationModel*>(model);
+    if (d->appModel) {
+        connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
+                this, SLOT(slotSelectionChanged(QItemSelection, QItemSelection)));
+    }
+}
+
+bool KApplicationView::isDirSel() const
+{
+    if (d->appModel) {
+        QModelIndex index = selectionModel()->currentIndex();
+        return d->appModel->isDirectory(index);
+    }
+    return false;
+}
+
+void KApplicationView::currentChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+    QTreeView::currentChanged(current, previous);
+
+    if (d->appModel && !d->appModel->isDirectory(current)) {
+        QString exec = d->appModel->execFor(current);
+        if (!exec.isEmpty()) {
+            emit highlighted(d->appModel->nameFor(current), exec);
+        }
+    }
+}
+
+void KApplicationView::slotSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    Q_UNUSED(deselected)
+
+    QModelIndexList indexes = selected.indexes();
+    if (indexes.count() == 1 && !d->appModel->isDirectory(indexes.at(0))) {
+        QString exec = d->appModel->execFor(indexes.at(0));
+        if (!exec.isEmpty()) {
+            emit this->selected(d->appModel->nameFor(indexes.at(0)), exec);
+        }
+    }
+}
+
+
 
 /***************************************************************
  *
@@ -301,6 +419,7 @@ public:
     KOpenWithDialogPrivate() : saveNewApps(false) { }
     bool saveNewApps;
     KService::Ptr curService;
+    KApplicationView *view;
 };
 
 KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, QWidget* parent )
@@ -384,6 +503,7 @@ void KOpenWithDialog::init( const QString& _text, const QString& _value )
   bool bReadOnly = !KAuthorized::authorize("shell_access");
   m_terminaldirty = false;
   m_pTree = 0L;
+  d->view = 0;
   m_pService = 0L;
   d->curService = 0L;
 
@@ -451,14 +571,15 @@ void KOpenWithDialog::init( const QString& _text, const QString& _value )
   connect ( this, SIGNAL(okClicked()),SLOT(slotOK()));
   connect ( edit, SIGNAL(textChanged(const QString&)), SLOT(slotTextChanged()) );
 
-  m_pTree = new KApplicationTree( mainWidget );
-  topLayout->addWidget(m_pTree);
+  d->view = new KApplicationView(mainWidget);
+  d->view->setModel(new KApplicationModel(d->view));
+  topLayout->addWidget(d->view);
 
-  connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ),
+  connect(d->view, SIGNAL(selected(QString, QString)),
            SLOT( slotSelected( const QString&, const QString& ) ) );
-  connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ),
+  connect(d->view, SIGNAL(highlighted(const QString&, const QString&)),
            SLOT( slotHighlighted( const QString&, const QString& ) ) );
-  connect( m_pTree, SIGNAL( doubleClicked(Q3ListViewItem*) ),
+  connect(d->view, SIGNAL(doubleClicked(QModelIndex)),
            SLOT( slotDbClick() ) );
 
   terminal = new QCheckBox( i18n("Run in &terminal"), mainWidget );
@@ -566,7 +687,7 @@ void KOpenWithDialog::slotTerminalToggled(bool)
 
 void KOpenWithDialog::slotDbClick()
 {
-   if (m_pTree->isDirSel() ) return; // check if a directory is selected
+   if (d->view->isDirSel() ) return; // check if a directory is selected
    slotOK();
 }
 
