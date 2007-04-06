@@ -34,6 +34,7 @@ namespace WTF {
     {
     public:
         RefPtr() : m_ptr(0) {}
+        RefPtr(T& ptr) : m_ptr(&ptr) {}
         RefPtr(T *ptr) : m_ptr(ptr) { if (ptr) ptr->ref(); }
         RefPtr(const RefPtr& o) : m_ptr(o.m_ptr) { if (T *ptr = m_ptr) ptr->ref(); }
         // see comment in PassRefPtr.h for why this takes const reference
@@ -45,6 +46,9 @@ namespace WTF {
         
         T *get() const { return m_ptr; }
         
+        void assign(T& ptr) { m_ptr = &ptr; }
+        void retain(T& ptr) { m_ptr = &ptr; ptr.ref(); }
+        void reset(T& ptr) { T* optr = m_ptr; m_ptr = &ptr; if (optr) optr->deref(); }
         PassRefPtr<T> release() { PassRefPtr<T> tmp = adoptRef(m_ptr); m_ptr = 0; return tmp; }
 
         T& operator*() const { return *m_ptr; }
@@ -62,6 +66,7 @@ namespace WTF {
         RefPtr& operator=(const RefPtr&);
         RefPtr& operator=(T *);
         RefPtr& operator=(const PassRefPtr<T>&);
+        RefPtr& operator=(T& ptr) { T* optr = m_ptr; m_ptr = &ptr; if (optr) optr->deref(); return *this; }
 
 	/**
 	   Template version of copy (assignment) operator
