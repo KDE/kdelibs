@@ -514,7 +514,7 @@ void KOpenWithDialog::init( const QString& _text, const QString& _value )
   setMainWidget( mainWidget );
 
   QBoxLayout *topLayout = new QVBoxLayout( mainWidget );
-  topLayout->setMargin( KDialog::marginHint() );
+  topLayout->setMargin(0);
   topLayout->setSpacing( KDialog::spacingHint() );
   label = new QLabel( _text, this );
   label->setWordWrap(true);
