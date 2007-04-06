@@ -106,52 +106,64 @@ bool KMimeMagicRule::match(QIODevice* device, const QByteArray& beginning) const
 
 bool KMimeMagicMatch::match(QIODevice* device, const QByteArray& beginning) const
 {
-    // First, check that I match, then we'll dive into subMatches if any.
+    // First, check that "this" matches, then we'll dive into subMatches if any.
+
     const qint64 deviceSize = device->size();
-    const qint64 rangeLength = qMin(m_rangeLength, deviceSize);
+    const qint64 mDataSize = m_data.size();
+    if (m_rangeStart + mDataSize > deviceSize)
+        return false; // file is too small
 
     // Read in one block all the data we'll need
+    // Example: m_data="ABC", m_rangeLength=3 -> we need 3+3-1=5 bytes (ABCxx,xABCx,xxABC would match)
+    const int dataNeeded = qMin(mDataSize + m_rangeLength - 1, deviceSize - m_rangeStart);
     QByteArray readData;
-    const qint64 dataNeeded = m_data.size() + rangeLength - 1;
 
-    /*kDebug() << "need data from " << m_rangeStart
-             << " to " << m_rangeStart + dataNeeded
+    /*kDebug() << "need " << dataNeeded << " bytes of data starting at " << m_rangeStart
              << "  - beginning has " << beginning.size() << " bytes,"
              << " device has " << deviceSize << " bytes." << endl;*/
 
     if (m_rangeStart + dataNeeded > beginning.size() && beginning.size() < deviceSize) {
         // Need to read from device
-        if (m_rangeStart > deviceSize)
-            return false;
         if (!device->seek(m_rangeStart))
             return false;
         readData.resize(dataNeeded);
         const int nread = device->read(readData.data(), dataNeeded);
-        if (nread < m_data.size())
-            return false;
+        if (nread < mDataSize)
+            return false; // error (or not enough data but we checked for that already)
         if (nread < readData.size()) {
+            // File big enough to contain m_data, but not big enough for the full rangeLength.
+            // Pad with zeros.
             memset(readData.data() + nread, 0, dataNeeded - nread);
         }
         //kDebug() << "readData (from device) at pos " << m_rangeStart << ":" << readData << endl;
     } else {
         readData = QByteArray::fromRawData(beginning.constData() + m_rangeStart,
                                            dataNeeded);
+        // Warning, readData isn't null-terminated so this kDebug
+        // gives valgrind warnings (when printing as char* data).
         //kDebug() << "readData (from beginning) at pos " << m_rangeStart << ":" << readData << endl;
     }
 
-    bool found = false;
+    // All we need to do now, is to look for m_data in readData (whose size is dataNeeded).
+    // Either as a simple indexOf search, or applying the mask.
 
+    bool found = false;
     if (m_mask.isEmpty()) {
         //kDebug() << "m_data=" << m_data << endl;
         found = ::indexOf(readData, m_data) != -1;
     } else {
-        const char* mask = m_mask.data();
-        const char* refData = m_data.data();
-        const char* readDataBase = readData.data();
-        for (int i = 0; i < rangeLength; ++i) {
+        const char* mask = m_mask.constData();
+        const char* refData = m_data.constData();
+        const char* readDataBase = readData.constData();
+        // Example (continued from above):
+        // deviceSize is 4, so dataNeeded was max'ed to 4.
+        // maxStartPos = 4 - 3 + 1 = 2, and indeed
+        // we need to check for a match a positions 0 and 1 (ABCx and xABC).
+        const qint64 maxStartPos = dataNeeded - mDataSize + 1;
+        for (int i = 0; i < maxStartPos; ++i) {
             const char* d = readDataBase + i;
             bool valid = true;
-            for (int off = 0; off < m_data.size(); ++off ) {
+            for (int off = 0; off < mDataSize; ++off ) {
                 if ( ((*d++) & mask[off]) != ((refData[off] & mask[off])) ) {
                     valid = false;
                     break;
