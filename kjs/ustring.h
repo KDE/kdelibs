@@ -157,7 +157,9 @@ namespace KJS {
 
     ~CString();
 
-    CString &append(const CString &);
+    CString& append(const char* str, int len);
+    CString& append(const char* cstr);
+    CString& append(const CString& t) { return append(t.data, t.length); }
     CString &operator=(const char *c);
     CString &operator=(const CString &);
     CString &operator+=(const CString &c) { return append(c); }
@@ -181,20 +183,23 @@ namespace KJS {
      */
     struct KJS_EXPORT Rep {
 
-      static PassRefPtr<Rep> create(UChar *d, int l);
-      static PassRefPtr<Rep> createCopying(const UChar *d, int l);
-      static PassRefPtr<Rep> create(PassRefPtr<Rep> base, int offset, int length);
+      static Rep& create(UChar *d, int length);
+      static Rep& createCopying(const UChar *d, int length);
+      static Rep& create(Rep* base, int offset, int length);
+      static Rep& create(const RefPtr<Rep>& base, int offset, int length)
+					{ return create(base.get(), offset, length); }
 
       void destroy();
       
-      UChar *data() const { return baseString ? (baseString->buf + baseString->preCapacity + offset) : (buf + preCapacity + offset); }
+      UChar *data() const { return offset + (baseString ? (baseString->buf + baseString->preCapacity) : (buf + preCapacity)); }
       int size() const { return len; }
       
       unsigned hash() const { if (_hash == 0) _hash = computeHash(data(), len); return _hash; }
       static unsigned computeHash(const UChar *, int length);
+      static unsigned computeHash(const char* s, int length);
       static unsigned computeHash(const char *);
 
-      Rep* ref() { ++rc; return this; }
+      void ref() { ++rc; }
       void deref() { if (--rc == 0) destroy(); }
 
       // unshared data
@@ -222,6 +227,11 @@ namespace KJS {
      */
     UString();
     /**
+     * Constructs an empty string.
+     */
+    enum Empty { empty };
+    UString(Empty);
+    /**
      * Constructs a string from the single character c.
      */
     explicit UString(char c);
@@ -229,6 +239,7 @@ namespace KJS {
      * Constructs a string from a classical zero determined char string.
      */
     UString(const char *c);
+    UString(const char* c, int length);
     /**
      * Constructs a string from an array of Unicode characters of the specified
      * length.
@@ -302,7 +313,9 @@ namespace KJS {
      * Append another string.
      */
     UString &append(const UString &);
+    UString &append(const UChar* t, int tSize);
     UString &append(const char *);
+    UString &append(const char* t, int tSize);
     UString &append(unsigned short);
     UString &append(char c) { return append(static_cast<unsigned short>(static_cast<unsigned char>(c))); }
     UString &append(UChar c) { return append(c.uc); }
@@ -346,6 +359,7 @@ namespace KJS {
      * Assignment operator.
      */
     UString &operator=(const char *c);
+    UString& operator=(Empty);
     /**
      * Appends the specified string.
      */
@@ -448,11 +462,13 @@ namespace KJS {
     void copyForWriting();
 
   private:
-    int expandedSize(int size, int otherSize) const;
+    UString(Rep& r) : m_rep(r) {}
+    static int expandedSize(int size, int otherSize);
     int usedCapacity() const;
     int usedPreCapacity() const;
     void expandCapacity(int requiredLength);
     void expandPreCapacity(int requiredPreCap);
+    void set(const char* c, int len);
 
     RefPtr<Rep> m_rep;
   };

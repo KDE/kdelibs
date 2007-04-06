@@ -109,7 +109,7 @@ struct CStringTranslator
         for (size_t i = 0; i != length; i++)
             d[i] = c[i];
 
-        UString::Rep *r = UString::Rep::create(d, static_cast<int>(length)).release();
+        UString::Rep *r = &UString::Rep::create(d, static_cast<int>(length));
         r->isIdentifier = 1;
         r->rc = 0;
         r->_hash = hash;
@@ -152,7 +152,7 @@ struct UCharBufferTranslator
         for (unsigned i = 0; i != buf.length; i++)
             d[i] = buf.s[i];
 
-        UString::Rep *r = UString::Rep::create(d, buf.length).release();
+        UString::Rep *r = &UString::Rep::create(d, buf.length);
         r->isIdentifier = 1;
         r->rc = 0;
         r->_hash = hash;

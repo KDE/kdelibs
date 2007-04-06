@@ -166,8 +166,11 @@ private:
 
 KJS_EXPORT JSValue *jsNumberCell(double);
 
-KJS_EXPORT JSCell *jsString(const UString &); // returns empty string if passed null string
-KJS_EXPORT JSCell *jsString(const char * = ""); // returns empty string if passed 0
+KJS_EXPORT JSCell* jsString(); // returns empty string
+KJS_EXPORT JSCell* jsString(const UString& s); // returns empty string if passed null string
+KJS_EXPORT JSCell* jsString(const char* s); // returns empty string if passed 0
+KJS_EXPORT JSCell* jsString(const char* s, int len);
+KJS_EXPORT JSCell* jsString(ExecState* exec, const JSValue* value);
 
 extern const double NaN;
 extern const double Inf;
@@ -277,8 +280,8 @@ inline bool JSValue::isBoolean() const
 
 inline bool JSValue::isNumber() const
 {
-    return JSImmediate::isNumber(this) || 
-        (!JSImmediate::isImmediate(this) && downcast()->isNumber());
+    return JSImmediate::isNumber(this) ||
+           (!JSImmediate::isImmediate(this) && downcast()->isNumber());
 }
 
 inline bool JSValue::isString() const
@@ -297,7 +300,7 @@ inline bool JSValue::getBoolean(bool& v) const
         v = JSImmediate::toBoolean(this);
         return true;
     }
-    
+
     return false;
 }
 
@@ -398,7 +401,7 @@ inline JSValue *jsZero()
 {
     return JSImmediate::fromDouble(0.0);
 }
- 
+
 inline JSValue *jsOne()
 {
     return JSImmediate::fromDouble(1.0);

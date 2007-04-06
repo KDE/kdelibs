@@ -68,7 +68,7 @@ namespace KJS {
      * @param
      * @return
      */
-    Identifier target() const { return tar; }
+    const Identifier& target() const { return tar; }
 
     /**
      *

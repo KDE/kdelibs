@@ -139,9 +139,7 @@ const ClassInfo *JSObject::classInfo() const
 UString JSObject::className() const
 {
   const ClassInfo *ci = classInfo();
-  if ( ci )
-    return ci->className;
-  return "Object";
+  return ci ? ci->className : "Object";
 }
 
 JSValue *JSObject::get(ExecState *exec, const Identifier &propertyName) const
@@ -342,21 +340,21 @@ static ALWAYS_INLINE JSValue *tryGetAndCallProperty(ExecState *exec, const JSObj
 // ECMA 8.6.2.6
 JSValue *JSObject::defaultValue(ExecState *exec, JSType hint) const
 {
-  Identifier firstPropertyName;
-  Identifier secondPropertyName;
+  const Identifier* firstPropertyName;
+  const Identifier* secondPropertyName;
   /* Prefer String for Date objects */
   if ((hint == StringType) || (hint != StringType) && (hint != NumberType) && (_proto == exec->lexicalInterpreter()->builtinDatePrototype())) {
-    firstPropertyName = exec->propertyNames().toString;
-    secondPropertyName = exec->propertyNames().valueOf;
+    firstPropertyName = &exec->propertyNames().toString;
+    secondPropertyName = &exec->propertyNames().valueOf;
   } else {
-    firstPropertyName = exec->propertyNames().valueOf;
-    secondPropertyName = exec->propertyNames().toString;
+    firstPropertyName = &exec->propertyNames().valueOf;
+    secondPropertyName = &exec->propertyNames().toString;
   }
 
   JSValue *v;
-  if ((v = tryGetAndCallProperty(exec, this, firstPropertyName)))
+  if ((v = tryGetAndCallProperty(exec, this, *firstPropertyName)))
     return v;
-  if ((v = tryGetAndCallProperty(exec, this, secondPropertyName)))
+  if ((v = tryGetAndCallProperty(exec, this, *secondPropertyName)))
     return v;
 
   if (exec->hadException())
@@ -444,7 +442,7 @@ bool JSObject::hasInstance(ExecState* exec, JSValue* value)
 {
     JSValue* proto = get(exec, exec->propertyNames().prototype);
     if (!proto->isObject()) {
-        throwError(exec, TypeError, "intanceof called on an object with an invalid prototype property.");
+        throwError(exec, TypeError, "instanceof called on an object with an invalid prototype property.");
         return false;
     }
     
@@ -522,18 +520,13 @@ UString JSObject::toString(ExecState *exec) const
 {
   JSValue *prim = toPrimitive(exec,StringType);
   if (exec->hadException()) // should be picked up soon in nodes.cpp
-    return "";
+    return UString(UString::empty);
   return prim->toString(exec);
 }
 
 JSObject *JSObject::toObject(ExecState * /*exec*/) const
 {
   return const_cast<JSObject*>(this);
-}
-
-void JSObject::putDirect(const Identifier &propertyName, JSValue *value, int attr)
-{
-    _prop.put(propertyName, value, attr);
 }
 
 void JSObject::putDirect(const Identifier &propertyName, int value, int attr)
@@ -573,28 +566,29 @@ const char * const * const Error::errorNames = errorNamesArr;
 JSObject *Error::create(ExecState *exec, ErrorType errtype, const UString &message,
                          int lineno, int sourceId, const UString &sourceURL)
 {
+  Interpreter* interp = exec->lexicalInterpreter();
   JSObject *cons;
   switch (errtype) {
   case EvalError:
-    cons = exec->lexicalInterpreter()->builtinEvalError();
+    cons = interp->builtinEvalError();
     break;
   case RangeError:
-    cons = exec->lexicalInterpreter()->builtinRangeError();
+    cons = interp->builtinRangeError();
     break;
   case ReferenceError:
-    cons = exec->lexicalInterpreter()->builtinReferenceError();
+    cons = interp->builtinReferenceError();
     break;
   case SyntaxError:
-    cons = exec->lexicalInterpreter()->builtinSyntaxError();
+    cons = interp->builtinSyntaxError();
     break;
   case TypeError:
-    cons = exec->lexicalInterpreter()->builtinTypeError();
+    cons = interp->builtinTypeError();
     break;
   case URIError:
-    cons = exec->lexicalInterpreter()->builtinURIError();
+    cons = interp->builtinURIError();
     break;
   default:
-    cons = exec->lexicalInterpreter()->builtinError();
+    cons = interp->builtinError();
     break;
   }
 

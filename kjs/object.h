@@ -433,7 +433,8 @@ namespace KJS {
         { return _prop.get(propertyName); }
     JSValue **getDirectLocation(const Identifier& propertyName)
         { return _prop.getLocation(propertyName); }
-    void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0);
+    void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0)
+        { _prop.put(propertyName, value, attr); }
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
 
     // convenience to add a function property under the function's own built-in name
@@ -454,7 +455,7 @@ namespace KJS {
     void saveProperties(SavedProperties &p) const { _prop.save(p); }
     void restoreProperties(const SavedProperties &p) { _prop.restore(p); }
 
-    virtual bool isActivation() { return false; }
+    virtual bool isActivation() const { return false; }
   protected:
     PropertyMap _prop;
   private:

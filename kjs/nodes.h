@@ -30,7 +30,6 @@
 #include "internal.h"
 #include <wtf/ListRefPtr.h>
 #include <wtf/Vector.h>
-#include <wtf/HashMap.h>
 
 namespace KJS {
 
@@ -526,7 +525,7 @@ namespace KJS {
     ArgumentsNode(ArgumentListNode *l)
       : list(l->next.release()) { Parser::removeNodeCycle(list.get()); }
     JSValue* evaluate(ExecState*);
-    List evaluateList(ExecState *exec) { return list ? list->evaluateList(exec) : List(); }
+    List evaluateList(ExecState *exec) { return list ? list->evaluateList(exec) : List::empty(); }
     virtual void streamTo(SourceStream&) const;
 
     virtual void recurseVisit(NodeVisitor *visitor);
@@ -1172,8 +1171,8 @@ namespace KJS {
     ParameterNode(ParameterNode *next, const Identifier &i)
       : id(i), next(next->next) { next->next = this; }
     JSValue* evaluate(ExecState*);
-    Identifier ident() { return id; }
-    ParameterNode *nextParam() { return next.get(); }
+    const Identifier& ident() const { return id; }
+    ParameterNode *nextParam() const { return next.get(); }
     virtual void streamTo(SourceStream&) const;
     PassRefPtr<ParameterNode> releaseNext() { return next.release(); }
     virtual void breakCycle();
@@ -1240,13 +1239,13 @@ namespace KJS {
 
     int numParams() const { return m_paramList.size(); }
     int paramSymbolID(int pos) const { return m_paramList[pos].symbolID; }
-    Identifier paramName(int pos) const { return m_paramList[pos].name; }
+    const Identifier& paramName(int pos) const { return m_paramList[pos].name; }
     UString    paramString() const;
    
   private:
     UString m_sourceURL;
     int m_sourceId : 31;
-    bool m_builtSymbolList      : 1;
+    bool m_builtSymbolList : 1;
 
     int  addSymbol(const Identifier& ident, int attr, FuncDeclNode* funcDecl = 0);
 

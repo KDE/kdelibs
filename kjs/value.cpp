@@ -159,14 +159,31 @@ const JSObject *JSCell::getObject() const
     return isObject() ? static_cast<const JSObject *>(this) : 0;
 }
 
-JSCell *jsString(const char *s)
+JSCell* jsString()
 {
-    return new StringImp(s ? s : "");
+    return new StringImp();
 }
 
-JSCell *jsString(const UString &s)
+JSCell* jsString(const char* s)
 {
-    return s.isNull() ? new StringImp("") : new StringImp(s);
+    return new StringImp(s, s ? strlen(s) : 0);
+}
+
+JSCell* jsString(const char* s, int len)
+{
+    return new StringImp(s, len);
+}
+
+JSCell* jsString(const UString& s)
+{
+    return s.isNull() ? new StringImp() : new StringImp(s);
+}
+
+JSCell* jsString(ExecState* exec, const JSValue* value)
+{
+    if (value->isString())
+        return jsString(static_cast<const StringImp*>(value)->value());
+    return jsString(value->toString(exec));
 }
 
 // This method includes a PIC branch to set up the NumberImp's vtable, so we quarantine

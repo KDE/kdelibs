@@ -214,8 +214,7 @@ namespace KJS {
     static const ClassInfo info;
 
     virtual void mark();
-
-    bool isActivation() { return true; }
+    virtual bool isActivation() const { return true; }
 
     void setupLocals();
     void setupFunctionLocals(ExecState *exec);

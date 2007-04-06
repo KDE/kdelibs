@@ -49,8 +49,11 @@ namespace KJS {
 
   class StringImp : public JSCell {
   public:
+    StringImp() : val(UString::empty) { }
     StringImp(const UString& v) : val(v) { }
-    UString value() const { return val; }
+    StringImp(const char* v) : val(v) { }
+    StringImp(const char* v, int len) : val(v, len) { }
+    const UString& value() const { return val; }
 
     JSType type() const { return StringType; }
 
