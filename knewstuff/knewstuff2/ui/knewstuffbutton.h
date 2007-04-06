@@ -21,6 +21,8 @@
 #ifndef KNEWSTUFF2_UI_BUTTON_H
 #define KNEWSTUFF2_UI_BUTTON_H
 
+#include <knewstuff2/knewstuff_export.h>
+
 #include <kpushbutton.h>
 
 namespace KNS
