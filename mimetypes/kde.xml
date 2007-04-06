@@ -436,10 +436,16 @@ Notes:
   </mime-type>
   <mime-type type="application/x-kolf">
     <comment>Kolf saved game</comment>
+    <magic priority="80">
+      <match type="string" value="[0 Saved Game]" />
+    </magic>
     <glob pattern="*.kolfgame"/>
   </mime-type>
   <mime-type type="application/x-kourse">
     <comment>Kolf course</comment>
+    <magic priority="80">
+      <match type="string" value="[0-course@-50,-50]" />
+    </magic>
     <glob pattern="*.kolf"/>
     <glob pattern="*.course"/>
     <glob pattern="*.kourse"/>
