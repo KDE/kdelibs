@@ -25,9 +25,11 @@
 #include <kopenwithdialog.h>
 #include <kurl.h>
 #include <kdebug.h>
+#include <kcmdlineargs.h>
 
 int main(int argc, char **argv)
 {
+    KCmdLineArgs::init(argc, argv, "kopenwithdialogtest", "kopenwithdialogtest", "kopenwithdialogtest", "0.1");
     KApplication app;
     KUrl::List list;
 
