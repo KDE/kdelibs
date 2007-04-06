@@ -20,7 +20,7 @@
 #include "klibloadertest_module.h"
 
 typedef KGenericFactory<KLibLoaderTestObject> KLibLoaderTestFactory;
-K_EXPORT_PLUGIN( KLibLoaderTestFactory("klibloader4testfactory") )
+Q_EXPORT_PLUGIN( KLibLoaderTestFactory("klibloader4testfactory") )
 
 KLibLoaderTestObject::KLibLoaderTestObject( QObject* parent, const QStringList& )
     : QObject( parent )

@@ -24,7 +24,7 @@
 #include <kgenericfactory.h>
 
 typedef KGenericFactory<KFileModule> KFileModuleFactory;
-K_EXPORT_PLUGIN( KFileModuleFactory("kfile") )
+Q_EXPORT_PLUGIN( KFileModuleFactory("kfile") )
 
 KFileModule::KFileModule(QObject* parent, const QStringList&)
     : KAbstractFileModule(parent)
