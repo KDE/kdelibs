@@ -2057,9 +2057,12 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
             KateTextLine::Ptr l = m_doc->kateTextLine( newCursor.line() );
 
-            for ( c = newCursor.col(); c < l->length(); c++ )
-              if ( !m_doc->highlight()->isInWord( l->getChar( c ) ) )
-                break;
+            c = newCursor.col();
+            if ( c > 0 && m_doc->highlight()->isInWord( l->getChar( c-1 ) ) ) {
+              for (; c < l->length(); c++ )
+                if ( !m_doc->highlight()->isInWord( l->getChar( c ) ) )
+                  break;
+            }
 
             newCursor.setCol( c );
           }
@@ -2069,11 +2072,16 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
             KateTextLine::Ptr l = m_doc->kateTextLine( newCursor.line() );
 
-            for ( c = newCursor.col(); c >= 0; c-- )
-              if ( !m_doc->highlight()->isInWord( l->getChar( c ) ) )
-                break;
+            c = newCursor.col();
+            if ( c < m_doc->textLine( newCursor.line() ).length()
+                 && m_doc->highlight()->isInWord( l->getChar( c ) ) 
+                 && m_doc->highlight()->isInWord( l->getChar( c-1 ) ) ) {
+              for ( c -= 2; c >= 0; c-- )
+                if ( !m_doc->highlight()->isInWord( l->getChar( c ) ) )
+                  break;
+              newCursor.setCol( c+1 );
+            }
 
-            newCursor.setCol( c+1 );
           }
           else
             doSelect = false;
