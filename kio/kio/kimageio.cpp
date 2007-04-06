@@ -13,7 +13,7 @@
 #include <kdebug.h>
 
 QString
-KImageIO::pattern(Mode _mode)
+KImageIO::pattern(Mode mode)
 {
     QStringList patterns;
     QString allPatterns;
@@ -23,8 +23,8 @@ KImageIO::pattern(Mode _mode)
     KService::Ptr service;
     foreach(service, services)
     {
-        if ( (service->property("X-KDE-Read").toBool() && _mode == Reading) ||
-             (service->property("X-KDE-Write").toBool() && _mode == Writing ) ) {
+        if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
+             (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
             QString mimeType = service->property("X-KDE-MimeType").toString();
             if ( mimeType.isEmpty() ) continue;
@@ -60,15 +60,15 @@ QStringList KImageIO::typeForMime(const QString& mimeType)
     return QStringList();
 }
 
-QStringList KImageIO::mimeTypes( Mode _mode )
+QStringList KImageIO::mimeTypes( Mode mode )
 {
     QStringList mimeList, allFormats;
 
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     KService::Ptr service;
     foreach(service, services) {
-        if ( (service->property("X-KDE-Read").toBool() && _mode == Reading) ||
-             (service->property("X-KDE-Write").toBool() && _mode == Writing ) ) {
+        if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
+             (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
             mimeList.append( service->property("X-KDE-MimeType").toString() );
         }
@@ -77,14 +77,14 @@ QStringList KImageIO::mimeTypes( Mode _mode )
     return mimeList;
 }
 
-QStringList KImageIO::types( Mode _mode )
+QStringList KImageIO::types( Mode mode )
 {
     QStringList imagetypes;
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     KService::Ptr service;
     foreach(service, services) {
-        if ( (service->property("X-KDE-Read").toBool() && _mode == Reading) ||
-             (service->property("X-KDE-Write").toBool() && _mode == Writing ) ) {
+        if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
+             (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
             imagetypes += service->property("X-KDE-ImageFormat").toStringList();
 
@@ -93,15 +93,15 @@ QStringList KImageIO::types( Mode _mode )
     return imagetypes;
 }
 
-bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
+bool KImageIO::isSupported( const QString& mimeType, Mode mode )
 {
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     KService::Ptr service;
     foreach(service, services) {
-        if ( _mimeType == service->property("X-KDE-MimeType").toString() ) {
+        if ( mimeType == service->property("X-KDE-MimeType").toString() ) {
 
-            if ( (service->property("X-KDE-Read").toBool() && _mode == Reading) ||
-                 (service->property("X-KDE-Write").toBool() && _mode == Writing ) ) {
+            if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
+                 (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
                 return true;
             } else {

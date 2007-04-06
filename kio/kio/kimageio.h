@@ -94,9 +94,8 @@ public:
    * @param _mode Tells whether to check for reading or writing capabilities
    * @return true if the type is supported
    **/
-  static bool isSupported( const QString& _mimeType, Mode _mode = Writing );
+  static bool isSupported( const QString& mimeType, Mode mode = Writing );
 };
 
 
 #endif
-
