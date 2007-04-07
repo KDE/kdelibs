@@ -223,7 +223,7 @@ void KColorCells::setColor( int column, const QColor &color )
         setItem(tableRow,tableColumn,tableItem);
     }
 
-	d->colors[column] = column;
+	d->colors[column] = color;
     tableItem->setData(Qt::BackgroundRole , QBrush(color));
 }
 
