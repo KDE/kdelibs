@@ -74,7 +74,7 @@ class KNEWSTUFF_EXPORT EntryLoader : public QObject
      */
     const Feed *feed() const;
 
-  signals:
+  Q_SIGNALS:
     /**
      * Indicates that the list of entries has been successfully loaded.
      */
@@ -85,7 +85,7 @@ class KNEWSTUFF_EXPORT EntryLoader : public QObject
      */
     void signalEntriesFailed();
 
-  protected slots:
+  protected Q_SLOTS:
     void slotJobData(KIO::Job *, const QByteArray &);
     void slotJobResult(KJob *);
 

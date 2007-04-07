@@ -60,14 +60,14 @@ class KNEWSTUFF_EXPORT ProviderLoader : public QObject
      */
     void load(const QString &providersurl);
 
-  signals:
+  Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
      */
     void signalProvidersLoaded(KNS::Provider::List);
     void signalProvidersFailed();
 
-  protected slots:
+  protected Q_SLOTS:
     void slotJobData(KIO::Job *, const QByteArray &);
     void slotJobResult(KJob *);
 

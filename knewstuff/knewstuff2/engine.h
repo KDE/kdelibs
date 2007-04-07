@@ -88,7 +88,7 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      */
     void uploadDialog(QString file);
 
-  private slots:
+  private Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
     void slotProvidersFailed();
     void slotEntryLoaded(KNS::Entry *entry, const Feed *feed, const Provider *provider);

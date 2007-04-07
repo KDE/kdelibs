@@ -32,10 +32,10 @@ class QAsyncPixmap : public QObject, public QPixmap
     public:
         QAsyncPixmap(QString url);
 
-    signals:
+    Q_SIGNALS:
         void signalLoaded(QPixmap *pix);
 
-    private slots:
+    private Q_SLOTS:
         void slotDownload(KJob *job);
 
     private:

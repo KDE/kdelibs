@@ -169,7 +169,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
      */
     bool uninstall(KNS::Entry *entry);
 
-  signals:
+  Q_SIGNALS:
     /**
      * Indicates that the list of providers has been successfully loaded.
      * This signal might occur twice, for the local cache and for updated provider
@@ -195,7 +195,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     void signalInstallationFinished();
     void signalInstallationFailed();
 
-  private slots:
+  private Q_SLOTS:
     void slotProvidersLoaded(KNS::Provider::List list);
     void slotProvidersFailed();
     void slotEntriesLoaded(KNS::Entry::List list);
