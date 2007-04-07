@@ -370,7 +370,7 @@ void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 		d->selected = cell;
 		
         const int newRow = cell/columnCount();
-        const int newColumn = cell/rowCount();
+        const int newColumn = cell%columnCount();
 
         item(newRow,newColumn)->setSelected(true);
     }
