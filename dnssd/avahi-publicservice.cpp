@@ -145,8 +145,12 @@ bool PublicServicePrivate::fillEntryGroup()
 	QDBusReply<QDBusObjectPath> rep=m_server->EntryGroupNew();
 	if (!rep.isValid()) return false;
 	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
-	//FIXME: monitor server state changes too
         connect(m_group,SIGNAL(StateChanged(int,const QString&)), this, SLOT(groupStateChanged(int,const QString&)));
+    }
+    if (m_parent->m_serviceName.isNull()) {
+	QDBusReply<QString> rep=m_server->GetHostName();
+	if (!rep.isValid()) return false;
+	m_parent->m_serviceName=rep.value();
     }
 	
     QList<QByteArray> txt;
