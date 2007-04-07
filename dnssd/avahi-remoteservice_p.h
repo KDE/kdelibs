@@ -32,7 +32,7 @@ Q_OBJECT
 public:
 	RemoteServicePrivate(RemoteService* parent) : QObject(), m_resolved(false), m_running(false), m_resolver(0), m_parent(parent)
 	{}
-        ~RemoteServicePrivate() {  if (m_resolver) m_resolver->Free(); }
+        ~RemoteServicePrivate() {  if (m_resolver) m_resolver->Free(); delete m_resolver; }
 	bool m_resolved;
 	bool m_running;
 	org::freedesktop::Avahi::ServiceResolver* m_resolver;

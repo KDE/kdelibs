@@ -142,10 +142,11 @@ bool PublicServicePrivate::fillEntryGroup()
 {
     registerTypes();
     if (!m_group) {
-	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
-	QDBusReply<QDBusObjectPath> rep=s.EntryGroupNew();
+	QDBusReply<QDBusObjectPath> rep=m_server->EntryGroupNew();
 	if (!rep.isValid()) return false;
 	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
+	//FIXME: monitor server state changes too
+        connect(m_group,SIGNAL(StateChanged(int,const QString&)), this, SLOT(groupStateChanged(int,const QString&)));
     }
 	
     QList<QByteArray> txt;
@@ -185,13 +186,13 @@ void PublicService::publishAsync()
 {
 	if (d->m_running) stop();
 	
-	if (!d->m_group) {
-	    emit published(false);
-	    return;
+	if (!d->m_server) {
+    	    d->m_server = new org::freedesktop::Avahi::Server("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+	    connect(d->m_server,SIGNAL(StateChanged(int,const QString&)),d,SLOT(serverStateChanged(int,const QString&)));
 	}
-	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
+	
 	int state=AVAHI_CLIENT_FAILURE;
-	QDBusReply<int> rep=s.GetState();
+	QDBusReply<int> rep=d->m_server->GetState();
 	
 	if (rep.isValid()) state=rep.value();
 
@@ -205,8 +206,7 @@ void PublicServicePrivate::groupStateChanged(int s,  const QString& reason)
 {
     switch (s) {
     case AVAHI_ENTRY_GROUP_COLLISION: {
-    	    org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
-	    QDBusReply<QString> rep=s.GetAlternativeServiceName(m_parent->m_serviceName);
+	    QDBusReply<QString> rep=m_server->GetAlternativeServiceName(m_parent->m_serviceName);
 	    if (rep.isValid())  m_parent->setServiceName(rep.value());
 	    else serverStateChanged(AVAHI_CLIENT_FAILURE, reason);
 	    break;

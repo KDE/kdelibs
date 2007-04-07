@@ -48,6 +48,7 @@ ServiceBrowser::State ServiceBrowser::isAvailable()
 }
 ServiceBrowser::~ ServiceBrowser()
 {
+    delete d;
 }
 
 

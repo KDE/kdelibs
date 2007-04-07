@@ -41,14 +41,19 @@ class PublicServicePrivate : public QObject
 {
 Q_OBJECT
 public:
-	PublicServicePrivate(PublicService* parent) : QObject(), m_published(false), m_running(false), m_group(0), m_collision(false),
+	PublicServicePrivate(PublicService* parent) : QObject(), m_published(false), m_running(false), m_group(0), m_server(0), m_collision(false),
 	     m_parent(parent)
 	{}
-        ~PublicServicePrivate() {  if (m_group) m_group->Free(); }
+        ~PublicServicePrivate() {  
+	    if (m_group) m_group->Free(); 
+	    delete m_group;
+	    delete m_server;
+	}
 
 	bool m_published;
 	bool m_running;
 	org::freedesktop::Avahi::EntryGroup* m_group;
+	org::freedesktop::Avahi::Server* m_server;
 	bool m_collision;
 	QStringList m_subtypes;
 	PublicService* m_parent;

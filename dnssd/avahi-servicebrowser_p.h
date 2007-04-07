@@ -33,7 +33,7 @@ Q_OBJECT
 public:
 	ServiceBrowserPrivate(ServiceBrowser* parent) : QObject(), m_running(false), m_browser(0), m_parent(parent)
 	{}
-        ~ServiceBrowserPrivate() {  if (m_browser) m_browser->Free(); }
+        ~ServiceBrowserPrivate() {  if (m_browser) m_browser->Free(); delete m_browser;}
 	QList<RemoteService::Ptr> m_services;
 	QList<RemoteService::Ptr> m_duringResolve;
 	QString m_type;
