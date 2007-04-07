@@ -119,13 +119,13 @@ static void millisecondsToTM(double milli, bool utc, tm *t);
 static CFDateFormatterStyle styleFromArgString(const UString& string, CFDateFormatterStyle defaultStyle)
 {
     if (string == "short")
-	return kCFDateFormatterShortStyle;
+        return kCFDateFormatterShortStyle;
     if (string == "medium")
-	return kCFDateFormatterMediumStyle;
+        return kCFDateFormatterMediumStyle;
     if (string == "long")
-	return kCFDateFormatterLongStyle;
+        return kCFDateFormatterLongStyle;
     if (string == "full")
-	return kCFDateFormatterFullStyle;
+        return kCFDateFormatterFullStyle;
     return defaultStyle;
 }
 
@@ -137,17 +137,19 @@ static UString formatLocaleDate(ExecState *exec, double time, bool includeDate, 
     bool useCustomFormat = false;
     UString customFormatString;
 
-    UString arg0String = args[0]->toString(exec);
-    if (arg0String == "custom" && !args[1]->isUndefined()) {
-	useCustomFormat = true;
-	customFormatString = args[1]->toString(exec);
-    } else if (includeDate && includeTime && !args[1]->isUndefined()) {
-	dateStyle = styleFromArgString(arg0String, dateStyle);
-	timeStyle = styleFromArgString(args[1]->toString(exec), timeStyle);
-    } else if (includeDate && !args[0]->isUndefined()) {
-	dateStyle = styleFromArgString(arg0String, dateStyle);
-    } else if (includeTime && !args[0]->isUndefined()) {
-	timeStyle = styleFromArgString(arg0String, timeStyle);
+    JSValue* arg0 = args[0];
+    JSValue* arg1 = args[1];
+    UString arg0String = arg0->toString(exec);
+    if (arg0String == "custom" && !arg1->isUndefined()) {
+        useCustomFormat = true;
+        customFormatString = arg1->toString(exec);
+    } else if (includeDate && includeTime && !arg1->isUndefined()) {
+        dateStyle = styleFromArgString(arg0String, dateStyle);
+        timeStyle = styleFromArgString(arg1->toString(exec), timeStyle);
+    } else if (includeDate && !arg0->isUndefined()) {
+        dateStyle = styleFromArgString(arg0String, dateStyle);
+    } else if (includeTime && !arg0->isUndefined()) {
+        timeStyle = styleFromArgString(arg0String, timeStyle);
     }
 
     CFLocaleRef locale = CFLocaleCopyCurrent();
@@ -155,9 +157,9 @@ static UString formatLocaleDate(ExecState *exec, double time, bool includeDate, 
     CFRelease(locale);
 
     if (useCustomFormat) {
-	CFStringRef customFormatCFString = CFStringCreateWithCharacters(0, (UniChar *)customFormatString.data(), customFormatString.size());
-	CFDateFormatterSetFormat(formatter, customFormatCFString);
-	CFRelease(customFormatCFString);
+        CFStringRef customFormatCFString = CFStringCreateWithCharacters(0, (UniChar *)customFormatString.data(), customFormatString.size());
+        CFDateFormatterSetFormat(formatter, customFormatCFString);
+        CFRelease(customFormatCFString);
     }
 
     CFStringRef string = CFDateFormatterCreateStringWithAbsoluteTime(0, formatter, time - kCFAbsoluteTimeIntervalSince1970);
@@ -184,37 +186,38 @@ static UString formatLocaleDate(ExecState *exec, double time, bool includeDate, 
 static UString formatDate(const tm &t)
 {
     char buffer[100];
-    snprintf(buffer, sizeof(buffer), "%s %s %02d %04d",
+    int len = snprintf(buffer, sizeof(buffer), "%s %s %02d %04d",
         weekdayName[(t.tm_wday + 6) % 7],
         monthName[t.tm_mon], t.tm_mday, t.tm_year + 1900);
-    return buffer;
+    return UString(buffer, len);
 }
 
 static UString formatDateUTCVariant(const tm &t)
 {
     char buffer[100];
-    snprintf(buffer, sizeof(buffer), "%s, %02d %s %04d",
+    int len = snprintf(buffer, sizeof(buffer), "%s, %02d %s %04d",
         weekdayName[(t.tm_wday + 6) % 7],
         t.tm_mday, monthName[t.tm_mon], t.tm_year + 1900);
-    return buffer;
+    return UString(buffer, len);
 }
 
 static UString formatTime(const tm &t, bool utc)
 {
     char buffer[100];
+    int len;
     if (utc) {
         // FIXME: why not on windows?
 #if !PLATFORM(WIN_OS)
         ASSERT(t.tm_gmtoff == 0);
 #endif
-        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
+        len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT", t.tm_hour, t.tm_min, t.tm_sec);
     } else {
         int offset = abs(gmtoffset(t));
-        snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
+        len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
             t.tm_hour, t.tm_min, t.tm_sec,
             gmtoffset(t) < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
     }
-    return UString(buffer);
+    return UString(buffer, len);
 }
 
 static int day(double t)
@@ -282,8 +285,16 @@ static int weekDay(double t)
 // ms (representing milliseconds) and t (representing the rest of the date structure) appropriately.
 //
 // Format of member function: f([hour,] [min,] [sec,] [ms])
-static void fillStructuresUsingTimeArgs(ExecState *exec, const List &args, int maxArgs, double *ms, tm *t)
+static double setTimeFields(ExecState* exec, const List& args, int id, double ms, tm* t)
 {
+    assert(DateProtoFunc::SetSeconds - DateProtoFunc::SetMilliSeconds + 1 == 2);
+    assert(DateProtoFunc::SetMinutes - DateProtoFunc::SetMilliSeconds + 1 == 3);
+    assert(DateProtoFunc::SetHours   - DateProtoFunc::SetMilliSeconds + 1 == 4);
+
+    assert(id == DateProtoFunc::SetMilliSeconds || id == DateProtoFunc::SetSeconds ||
+           id == DateProtoFunc::SetMinutes || id == DateProtoFunc::SetHours);
+
+    int maxArgs = id - DateProtoFunc::SetMilliSeconds + 1;
     double milliseconds = 0;
     int idx = 0;
     int numArgs = args.size();
@@ -314,18 +325,24 @@ static void fillStructuresUsingTimeArgs(ExecState *exec, const List &args, int m
     if (idx < numArgs) {
         milliseconds += roundValue(exec, args[idx]);
     } else {
-        milliseconds += *ms;
+        milliseconds += ms;
     }
 
-    *ms = milliseconds;
+    return milliseconds;
 }
 
 // Converts a list of arguments sent to a Date member function into years, months, and milliseconds, updating
 // ms (representing milliseconds) and t (representing the rest of the date structure) appropriately.
 //
 // Format of member function: f([years,] [months,] [days])
-static void fillStructuresUsingDateArgs(ExecState *exec, const List &args, int maxArgs, double *ms, tm *t)
+static double setDateFields(ExecState* exec, const List& args, int id, double ms, tm* t)
 {
+    assert(DateProtoFunc::SetMonth    - DateProtoFunc::SetDate + 1 == 2);
+    assert(DateProtoFunc::SetFullYear - DateProtoFunc::SetDate + 1 == 3);
+
+    assert(id == DateProtoFunc::SetDate || id == DateProtoFunc::SetMonth || id == DateProtoFunc::SetFullYear);
+
+    int maxArgs = id - DateProtoFunc::SetDate + 1;
     int idx = 0;
     int numArgs = args.size();
 
@@ -344,8 +361,10 @@ static void fillStructuresUsingDateArgs(ExecState *exec, const List &args, int m
     // days
     if (idx < numArgs) {
         t->tm_mday = 0;
-        *ms += args[idx]->toInt32(exec) * msPerDay;
+        ms += args[idx]->toInt32(exec) * msPerDay;
     }
+
+    return ms;
 }
 
 // ------------------------------ DateInstance ------------------------------
@@ -528,7 +547,6 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   DateInstance* thisDateObj = static_cast<DateInstance*>(thisObj);
 
   JSValue *result = 0;
-  UString s;
 #if !PLATFORM(MAC)
   const int bufsize=100;
   char timebuffer[bufsize];
@@ -549,7 +567,7 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
       case ToLocaleString:
       case ToLocaleDateString:
       case ToLocaleTimeString:
-        return jsString("Invalid Date");
+        return jsString("Invalid Date", 12);
       case ValueOf:
       case GetTime:
       case GetYear:
@@ -588,40 +606,38 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
 
   switch (id) {
   case ToString:
-    return jsString(formatDate(t) + " " + formatTime(t, utc));
+    return jsString(formatDate(t).append(' ').append(formatTime(t, utc)));
+
   case ToDateString:
     return jsString(formatDate(t));
-    break;
+
   case ToTimeString:
     return jsString(formatTime(t, utc));
-    break;
+
   case ToGMTString:
   case ToUTCString:
-    return jsString(formatDateUTCVariant(t) + " " + formatTime(t, utc));
-    break;
+    return jsString(formatDateUTCVariant(t).append(' ').append(formatTime(t, utc)));
+
 #if PLATFORM(MAC)
   case ToLocaleString:
     return jsString(formatLocaleDate(exec, secs, true, true, args));
-    break;
+
   case ToLocaleDateString:
     return jsString(formatLocaleDate(exec, secs, true, false, args));
-    break;
+
   case ToLocaleTimeString:
     return jsString(formatLocaleDate(exec, secs, false, true, args));
-    break;
+
 #else
   case ToLocaleString:
-    strftime(timebuffer, bufsize, "%c", &t);
-    return jsString(timebuffer);
-    break;
+    return jsString(timebuffer, strftime(timebuffer, bufsize, "%c", &t));
+
   case ToLocaleDateString:
-    strftime(timebuffer, bufsize, "%x", &t);
-    return jsString(timebuffer);
-    break;
+    return jsString(timebuffer, strftime(timebuffer, bufsize, "%x", &t));
+
   case ToLocaleTimeString:
-    strftime(timebuffer, bufsize, "%X", &t);
-    return jsString(timebuffer);
-    break;
+    return jsString(timebuffer, strftime(timebuffer, bufsize, "%X", &t));
+
 #endif
   case ValueOf:
   case GetTime:
@@ -649,30 +665,25 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     return jsNumber(ms);
   case GetTimezoneOffset:
     return jsNumber(-gmtoffset(t) / 60);
+
   case SetMilliSeconds:
-    fillStructuresUsingTimeArgs(exec, args, 1, &ms, &t);
-    break;
   case SetSeconds:
-    fillStructuresUsingTimeArgs(exec, args, 2, &ms, &t);
-    break;
   case SetMinutes:
-    fillStructuresUsingTimeArgs(exec, args, 3, &ms, &t);
-    break;
   case SetHours:
-    fillStructuresUsingTimeArgs(exec, args, 4, &ms, &t);
+    ms = setTimeFields(exec, args, id, ms, &t);
     break;
+
   case SetDate:
-    fillStructuresUsingDateArgs(exec, args, 1, &ms, &t);
-    break;
   case SetMonth:
-    fillStructuresUsingDateArgs(exec, args, 2, &ms, &t);
-    break;
   case SetFullYear:
-    fillStructuresUsingDateArgs(exec, args, 3, &ms, &t);
+    ms = setDateFields(exec, args, id, ms, &t);
     break;
-  case SetYear:
-    t.tm_year = (args[0]->toInt32(exec) > 99 || args[0]->toInt32(exec) < 0) ? args[0]->toInt32(exec) - 1900 : args[0]->toInt32(exec);
-    break;
+
+  case SetYear: {
+      int32_t year = args[0]->toInt32(exec);
+      t.tm_year = (year > 99 || year < 0) ? year - 1900 : year;
+      break;
+    }
   }
 
   if (id == SetYear || id == SetMilliSeconds || id == SetSeconds ||
@@ -713,7 +724,6 @@ bool DateObjectImp::implementsConstruct() const
 JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
 {
   int numArgs = args.size();
-
   double value;
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
@@ -733,17 +743,19 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
 #endif
     value = utc;
   } else if (numArgs == 1) {
-    if (args[0]->isObject(&DateInstance::info))
-      value = static_cast<DateInstance*>(args[0])->internalValue()->toNumber(exec);
+    JSValue* arg0 = args[0];
+    if (arg0->isObject(&DateInstance::info))
+      value = static_cast<DateInstance*>(arg0)->internalValue()->toNumber(exec);
     else {
-      JSValue* primitive = args[0]->toPrimitive(exec);
+      JSValue* primitive = arg0->toPrimitive(exec);
       if (primitive->isString())
         value = parseDate(primitive->getString());
       else
         value = primitive->toNumber(exec);
     }
   } else {
-    if (isNaN(args[0]->toNumber(exec))
+    JSValue* arg0 = args[0];
+    if (isNaN(arg0->toNumber(exec))
         || isNaN(args[1]->toNumber(exec))
         || (numArgs >= 3 && isNaN(args[2]->toNumber(exec)))
         || (numArgs >= 4 && isNaN(args[3]->toNumber(exec)))
@@ -754,7 +766,7 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
     } else {
       tm t;
       memset(&t, 0, sizeof(t));
-      int year = args[0]->toInt32(exec);
+      int year = arg0->toInt32(exec);
       t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
       t.tm_mon = args[1]->toInt32(exec);
       t.tm_mday = (numArgs >= 3) ? args[2]->toInt32(exec) : 1;
@@ -777,7 +789,7 @@ JSValue *DateObjectImp::callAsFunction(ExecState * /*exec*/, JSObject * /*thisOb
 {
     time_t t = time(0);
     tm ts = *localtime(&t);
-    return jsString(formatDate(ts) + " " + formatTime(ts, false));
+    return jsString(formatDate(ts).append(' ').append(formatTime(ts, false)));
 }
 
 // ------------------------------ DateObjectFuncImp ----------------------------
@@ -824,7 +836,7 @@ JSValue *DateObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const Lis
 
 // Code originally from krfcdate.cpp, but we don't want to use kdecore, and we want double range.
 
-static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, int second)
+static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, double second)
 {
     // in which case is the floor() needed? breaks day value of
     // "new Date('Thu Nov 5 2065 18:15:30 GMT+0500')"
@@ -925,7 +937,7 @@ inline static bool isSpaceLike(char c)
     return isspace(c) || c == ',' || c == ':' || c == '-';
 }
 
-inline static void skipSpacesAndComments(const char *&s)
+static const char* skipSpacesAndComments(const char* s)
 {
     int nesting = 0;
     char ch;
@@ -940,6 +952,7 @@ inline static void skipSpacesAndComments(const char *&s)
         }
         s++;
     }
+    return s;
 }
 
 // returns 0-11 (Jan-Dec); -1 on failure
@@ -963,6 +976,16 @@ static int findMonth(const char *monthStr)
     return -1;
 }
 
+static bool isTwoDigits (const char* str)
+{
+    return isdigit(str[0]) && isdigit(str[1]);
+}
+
+static int twoDigit (const char* str)
+{
+    return (str[0] - '0') * 10 + str[1] - '0';
+}
+
 static double parseDate(const UString &date)
 {
     // This parses a date in the form:
@@ -983,7 +1006,75 @@ static double parseDate(const UString &date)
     const char *dateString = dateCString.c_str();
 
     // Skip leading space
-    skipSpacesAndComments(dateString);
+    dateString = skipSpacesAndComments(dateString);
+
+    // ISO 8601: "YYYY-MM-DD('T'|'t')hh:mm:ss[.S+]['Z']"
+    // e.g. "2006-06-15T23:12:10.207830Z"
+    if (isTwoDigits(dateString) &&
+        isTwoDigits(dateString + 2) &&
+        dateString[4] == '-' &&
+        isTwoDigits(dateString + 5) &&
+        dateString[7] == '-' &&
+        isTwoDigits(dateString + 8))
+    {
+        int year  = twoDigit(dateString) * 100 + twoDigit(dateString + 2);
+        int month = twoDigit(dateString + 5) - 1;
+        int day   = twoDigit(dateString + 8);
+        if (month > 11 || day < 1 || day > 31)
+            return NaN;
+        int hour = 0, minute = 0;
+        double second = 0;
+        dateString += 10;
+        if ((dateString[0] | 0x20) == 't' &&
+            isTwoDigits(dateString + 1) &&
+            dateString[3] == ':' &&
+            isTwoDigits(dateString + 4))
+        {
+            hour   = twoDigit(dateString + 1);
+            minute = twoDigit(dateString + 4);
+            if (hour > 23 || minute > 59)
+                return NaN;
+            dateString += 6;
+            if (dateString[0] == ':' &&
+                isTwoDigits(dateString + 1))
+            {
+                second = twoDigit(dateString + 1);
+                if (second > 59)
+                    return NaN;
+                dateString += 3;
+                if (dateString[0] == '.' &&
+                    isdigit(dateString[1]))
+                {
+                    dateString++;
+                    double div = 10;
+                    do {
+                        second += (dateString[0] - '0') / div;
+                        div *= 10;
+                    } while (isdigit(*++dateString));
+                }
+            }
+        }
+
+        if (dateString[0] == 'Z')
+        {
+            tm t;
+            memset(&t, 0, sizeof(tm));
+            int secs = int(second);
+            t.tm_sec   = secs;
+            t.tm_min   = minute;
+            t.tm_hour  = hour;
+            t.tm_mday  = day;
+            t.tm_mon   = month;
+            t.tm_year  = year - 1900;
+        //  t.tm_isdst = -1;
+
+            // Use our makeTime() rather than mktime() as the latter can't handle the full year range.
+            return makeTime(&t, (second - secs) * 1000, true);
+        }
+
+        int offset = 0;
+        return (ymdhmsToSeconds(year, month + 1, day, hour, minute, second) - (offset * 60.0)) * msPerSecond;
+    }
 
     long month = -1;
     const char *wordStart = dateString;
@@ -992,7 +1083,7 @@ static double parseDate(const UString &date)
         if (isspace(*dateString) || *dateString == '(') {
             if (dateString - wordStart >= 3)
                 month = findMonth(wordStart);
-            skipSpacesAndComments(dateString);
+            dateString = skipSpacesAndComments(dateString);
             wordStart = dateString;
         } else
            dateString++;
@@ -1002,7 +1093,7 @@ static double parseDate(const UString &date)
     if (month == -1 && dateString && wordStart != dateString)
         month = findMonth(wordStart);
 
-    skipSpacesAndComments(dateString);
+    dateString = skipSpacesAndComments(dateString);
 
     if (!*dateString)
         return NaN;
@@ -1011,14 +1102,9 @@ static double parseDate(const UString &date)
     char *newPosStr;
     errno = 0;
     long day = strtol(dateString, &newPosStr, 10);
-    if (errno)
-        return NaN;
     dateString = newPosStr;
 
-    if (!*dateString)
-        return NaN;
-
-    if (day < 0)
+    if (errno || day < 0 || !*dateString)
         return NaN;
 
     long year = 0;
@@ -1041,7 +1127,7 @@ static double parseDate(const UString &date)
             return NaN;
         dateString = newPosStr;
     } else if (*dateString == '/' && month == -1) {
-     	dateString++;
+        dateString++;
         // This looks like a MM/DD/YYYY date, not an RFC date.
         month = day - 1; // 0-based
         day = strtol(dateString, &newPosStr, 10);
@@ -1056,7 +1142,7 @@ static double parseDate(const UString &date)
         if (*dateString == '-')
             dateString++;
 
-        skipSpacesAndComments(dateString);
+        dateString = skipSpacesAndComments(dateString);
 
         if (*dateString == ',')
             dateString++;
@@ -1101,10 +1187,8 @@ static double parseDate(const UString &date)
             // There was no year; the number was the hour.
             year = -1;
         } else if (isSpaceLike(*newPosStr)) {
-            // in the normal case (we parsed the year), advance to the
-            // next number
-            dateString = ++newPosStr;
-            skipSpacesAndComments(dateString);
+            // in the normal case (we parsed the year), advance to the next number
+            dateString = skipSpacesAndComments(newPosStr + 1);
         } else {
             return NaN;
         }
@@ -1157,22 +1241,20 @@ static double parseDate(const UString &date)
                     return NaN;
             }
 
-            skipSpacesAndComments(dateString);
+            dateString = skipSpacesAndComments(dateString);
 
             if (strncasecmp(dateString, "AM", 2) == 0) {
                 if (hour > 12)
                     return NaN;
                 if (hour == 12)
                     hour = 0;
-                dateString += 2;
-                skipSpacesAndComments(dateString);
+                dateString = skipSpacesAndComments(dateString + 2);
             } else if (strncasecmp(dateString, "PM", 2) == 0) {
                 if (hour > 12)
                     return NaN;
                 if (hour != 12)
                     hour += 12;
-                dateString += 2;
-                skipSpacesAndComments(dateString);
+                dateString = skipSpacesAndComments(dateString + 2);
             }
         }
     }
@@ -1223,7 +1305,7 @@ static double parseDate(const UString &date)
         }
     }
 
-    skipSpacesAndComments(dateString);
+    dateString = skipSpacesAndComments(dateString);
 
     if (*dateString && year == -1) {
         year = strtol(dateString, &newPosStr, 10);
@@ -1232,7 +1314,7 @@ static double parseDate(const UString &date)
         dateString = newPosStr;
     }
 
-    skipSpacesAndComments(dateString);
+    dateString = skipSpacesAndComments(dateString);
 
     // Trailing garbage
     if (*dateString)
@@ -1275,4 +1357,4 @@ double timeClip(double t)
     return copysign(floor(at), t);
 }
 
-}
+}   // namespace KJS
