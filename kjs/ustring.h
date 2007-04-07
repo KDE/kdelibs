@@ -312,13 +312,14 @@ namespace KJS {
     /**
      * Append another string.
      */
-    UString &append(const UString &);
-    UString &append(const UChar* t, int tSize);
-    UString &append(const char *);
-    UString &append(const char* t, int tSize);
-    UString &append(unsigned short);
-    UString &append(char c) { return append(static_cast<unsigned short>(static_cast<unsigned char>(c))); }
-    UString &append(UChar c) { return append(c.uc); }
+    UString& append(const UString& subStr, int subPos, int subLength = -1);
+    UString& append(const UString& t);
+    UString& append(const UChar* t, int tSize);
+    UString& append(const char* t);
+    UString& append(const char* t, int tSize);
+    UString& append(unsigned short);
+    UString& append(char c) { return append(static_cast<unsigned short>(static_cast<unsigned char>(c))); }
+    UString& append(UChar c) { return append(c.uc); }
 
     /**
      * @return The string converted to the 8-bit string type CString().

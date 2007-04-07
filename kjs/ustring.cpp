@@ -688,6 +688,24 @@ UString UString::spliceSubstringsWithSeparators(const Range *substringRanges, in
   return UString(Rep::create(buffer, totalLength));
 }
 
+// Append a sub-string of <subStr> to this string.
+// Equivalent to append(subStr.substr(subPos, subLength))
+
+UString& UString::append(const UString& subStr, int subPos, int subLength)
+{
+  int subSize = subStr.size();
+
+  if (subPos < 0)
+    subPos = 0;
+  else if (subPos >= subSize)
+    subPos = subSize;
+  if (subLength < 0)
+    subLength = subSize;
+  if (subPos + subLength >= subSize)
+    subLength = subSize - subPos;
+
+  return append(subStr.data() + subPos, subLength);
+}
 
 UString &UString::append(const UString &t)
 {
