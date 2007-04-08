@@ -26,6 +26,7 @@
 #include <kurl.h>
 
 class QAbstractItemModel;
+class QResizeEvent;
 class QContextMenuEvent;
 
 /**
@@ -43,6 +44,7 @@ public Q_SLOTS:
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 protected Q_SLOTS:
     void rowsInserted(const QModelIndex &parent, int start, int end);

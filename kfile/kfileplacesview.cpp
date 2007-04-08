@@ -41,6 +41,8 @@ public:
 
     KUrl currentUrl;
 
+    void adaptItemSize();
+
     void _k_placeClicked(const QModelIndex &index);
 };
 
@@ -48,7 +50,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     : QListView(parent), d(new Private(this))
 {
     setSelectionRectVisible(false);
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    setSelectionMode(SingleSelection);
 
     setDragEnabled(true);
     setAcceptDrops(true);
@@ -143,10 +145,50 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     setUrl(d->currentUrl);
 }
 
+void KFilePlacesView::resizeEvent(QResizeEvent *event)
+{
+    d->adaptItemSize();
+    QListView::resizeEvent(event);
+}
+
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
 {
     QListView::rowsInserted(parent, start, end);
+    d->adaptItemSize();
     setUrl(d->currentUrl);
+}
+
+void KFilePlacesView::Private::adaptItemSize()
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
+
+    if (placesModel==0) return;
+
+    const int rowCount = placesModel->rowCount();
+
+    if (rowCount==0) return; // We've nothing to display anyway
+
+    const int minSize = 16;
+    const int maxSize = 64;
+
+    const int maxWidth = q->width()/4;
+    const int maxHeight = (q->height()/rowCount)-1;
+
+    int size = qMin(maxHeight, maxWidth);
+
+    if (size<minSize) {
+        size = minSize;
+    } else if (size>maxSize) {
+        size = maxSize;
+    } else {
+        // Make it a multiple of 16
+        size>>= 4;
+        size<<= 4;
+    }
+
+    if (size!=q->iconSize().height()) {
+        q->setIconSize(QSize(size, size));
+    }
 }
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
