@@ -266,6 +266,13 @@ Notes:
     <comment>printer model</comment>
   </mime-type>
 
+
+  <!-- inode/ fake mime types -->
+  <mime-type type="inode/system_directory">
+    <sub-class-of type="inode/directory"/>
+    <comment>System Folder</comment>
+  </mime-type>
+
   <!-- media/ fake mime types -->
   <mime-type type="media/audiocd">
     <sub-class-of type="inode/directory"/>
