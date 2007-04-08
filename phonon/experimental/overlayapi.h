@@ -70,9 +70,7 @@ class PHONONEXPERIMENTAL_EXPORT OverlayApi : public QObject
 
         /**
          * Creates an overlay (takes ownership of the widget).
-         * Note that you can only have one overlay per video widget;
-         * the exception is that you can have one overlay of the type
-         * OverlayScaled and one of OverlayOpaque at the same time.
+         * Note that you can only have one overlay per video widget.
          * You can remove the overlay either by deleting or by reparenting
          * the widget.
          * @return whether the creation was successful
