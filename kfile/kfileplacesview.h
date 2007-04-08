@@ -41,6 +41,7 @@ public:
 
 public Q_SLOTS:
     void setUrl(const KUrl &url);
+    void setShowAll(bool showAll);
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);
@@ -48,6 +49,7 @@ protected:
 
 protected Q_SLOTS:
     void rowsInserted(const QModelIndex &parent, int start, int end);
+    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
 Q_SIGNALS:
     void urlChanged(const KUrl &url);

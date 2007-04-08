@@ -21,6 +21,7 @@
 #include "kfileplacesitem_p.h"
 
 #include <QMimeData>
+#include <QColor>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -111,6 +112,11 @@ QString KFilePlacesModel::text(const QModelIndex &index) const
     return data(index, Qt::DisplayRole).toString();
 }
 
+bool KFilePlacesModel::isHidden(const QModelIndex &index) const
+{
+    return data(index, HiddenRole).toBool();
+}
+
 bool KFilePlacesModel::isDevice(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -158,7 +164,7 @@ QVariant KFilePlacesModel::data(const QModelIndex &index, int role) const
 
     KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
 
-    if (item->isDevice()) {
+    if (item->isDevice() && role!=HiddenRole && role!=Qt::BackgroundRole) {
         returnData = d->deviceData(item->deviceIndex(), role);
     } else {
         returnData = d->bookmarkData(item->bookmarkAddress(), role);
@@ -243,10 +249,18 @@ QVariant KFilePlacesModel::Private::bookmarkData(const QString &address, int rol
         return bookmark.text();
     case Qt::DecorationRole:
         return KIcon(bookmark.icon());
+    case Qt::BackgroundRole:
+        if (bookmark.metaDataItem("IsHidden")=="true") {
+            return Qt::lightGray;
+        } else {
+            return QVariant();
+        }
     case UrlRole:
         return QUrl(bookmark.url());
     case MountNeededRole:
         return false;
+    case HiddenRole:
+        return bookmark.metaDataItem("IsHidden")=="true";
     default:
         return QVariant();
     }
@@ -548,6 +562,37 @@ void KFilePlacesModel::removePlace(const QModelIndex &index) const
 
     d->bookmarkManager->root().deleteBookmark(bookmark);
     d->reloadAndSignal();
+}
+
+void KFilePlacesModel::setPlaceHidden(const QModelIndex &index, bool hidden)
+{
+    if (!index.isValid()) return;
+
+    KFilePlacesItem *item = static_cast<KFilePlacesItem*>(index.internalPointer());
+
+    KBookmark bookmark = d->bookmarkManager->findByAddress(item->bookmarkAddress());
+
+    if (bookmark.isNull()) return;
+
+    bookmark.setMetaDataItem("IsHidden", (hidden ? "true" : "false"));
+
+    d->bookmarkManager->save();
+
+    emit dataChanged(index, index);
+}
+
+int KFilePlacesModel::hiddenCount() const
+{
+    int rows = rowCount();
+    int hidden = 0;
+
+    for (int i=0; i<rows; ++i) {
+        if (isHidden(index(i, 0))) {
+            hidden++;
+        }
+    }
+
+    return hidden;
 }
 
 #include "kfileplacesmodel.moc"

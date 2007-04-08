@@ -40,8 +40,10 @@ public:
     KFilePlacesView * const q;
 
     KUrl currentUrl;
+    bool showAll;
 
     void adaptItemSize();
+    void updateHiddenRows();
 
     void _k_placeClicked(const QModelIndex &index);
 };
@@ -49,6 +51,8 @@ public:
 KFilePlacesView::KFilePlacesView(QWidget *parent)
     : QListView(parent), d(new Private(this))
 {
+    d->showAll = false;
+
     setSelectionRectVisible(false);
     setSelectionMode(SingleSelection);
 
@@ -80,6 +84,17 @@ void KFilePlacesView::setUrl(const KUrl &url)
         d->currentUrl = KUrl();
         selectionModel()->clear();
     }
+    d->updateHiddenRows();
+}
+
+void KFilePlacesView::setShowAll(bool showAll)
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
+
+    if (placesModel==0) return;
+
+    d->showAll = showAll;
+    d->updateHiddenRows();
 }
 
 void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
@@ -93,10 +108,27 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QMenu menu;
 
     QAction *edit = 0;
-    if (index.isValid() && !placesModel->isDevice(index)) {
-        edit = menu.addAction(KIcon("edit"), i18n("&Edit Entry..."));
+    QAction *hide = 0;
+    if (index.isValid()) {
+        if (!placesModel->isDevice(index)) {
+            edit = menu.addAction(KIcon("edit"), i18n("&Edit Entry..."));
+        }
+
         menu.addSeparator();
+
+        hide = menu.addAction(i18n("&Hide Entry"));
+        hide->setCheckable(true);
+        hide->setChecked(placesModel->isHidden(index));
     }
+
+    QAction *showAll = 0;
+    if (placesModel->hiddenCount()>0) {
+        showAll = menu.addAction(i18n("&Show All Entries"));
+        showAll->setCheckable(true);
+        showAll->setChecked(d->showAll);
+    }
+
+    menu.addSeparator();
 
     QAction *add = menu.addAction(KIcon("document-new"), i18n("&Add Entry..."));
 
@@ -140,6 +172,10 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     } else if (remove != 0 && result == remove) {
         placesModel->removePlace(index);
+    } else if (hide != 0 && result == hide) {
+        placesModel->setPlaceHidden(index, hide->isChecked());
+    } else if (showAll != 0 && result == showAll) {
+        setShowAll(showAll->isChecked());
     }
 
     setUrl(d->currentUrl);
@@ -154,7 +190,6 @@ void KFilePlacesView::resizeEvent(QResizeEvent *event)
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
 {
     QListView::rowsInserted(parent, start, end);
-    d->adaptItemSize();
     setUrl(d->currentUrl);
 }
 
@@ -164,7 +199,17 @@ void KFilePlacesView::Private::adaptItemSize()
 
     if (placesModel==0) return;
 
-    const int rowCount = placesModel->rowCount();
+    int rowCount = placesModel->rowCount();
+
+    if (!showAll) {
+        rowCount-= placesModel->hiddenCount();
+
+        QModelIndex current = placesModel->closestItem(currentUrl);
+
+        if (placesModel->isHidden(current)) {
+            rowCount++;
+        }
+    }
 
     if (rowCount==0) return; // We've nothing to display anyway
 
@@ -191,6 +236,27 @@ void KFilePlacesView::Private::adaptItemSize()
     }
 }
 
+void KFilePlacesView::Private::updateHiddenRows()
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
+
+    if (placesModel==0) return;
+
+    int rowCount = placesModel->rowCount();
+    QModelIndex current = placesModel->closestItem(currentUrl);
+
+    for (int i=0; i<rowCount; ++i) {
+        QModelIndex index = placesModel->index(i, 0);
+        if (index!=current && placesModel->isHidden(index)) {
+            q->setRowHidden(i, !showAll);
+        } else {
+            q->setRowHidden(i, false);
+        }
+    }
+
+    adaptItemSize();
+}
+
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
@@ -209,10 +275,16 @@ void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 
     if (url.isValid()) {
         currentUrl = url;
+        updateHiddenRows();
         emit q->urlChanged(url);
     } else {
         q->setUrl(currentUrl);
     }
+}
+
+void KFilePlacesView::dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
+{
+    d->updateHiddenRows();
 }
 
 #include "kfileplacesview.moc"
