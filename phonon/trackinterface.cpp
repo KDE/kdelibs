@@ -87,12 +87,8 @@ int TrackInterface::currentTrack() const
 void TrackInterface::setCurrentTrack(int trackNumber)
 {
     IFACE();
-    State s = d->media->state();
     iface->interfaceCall(AddonInterface::TrackInterface,
             AddonInterface::setTrack, QList<QVariant>() << QVariant(trackNumber));
-    if ((s == PlayingState || s == BufferingState) && autoplayTracks()) {
-        d->media->play();
-    }
 }
 
 bool TrackInterface::autoplayTracks() const
