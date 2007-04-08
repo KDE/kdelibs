@@ -189,8 +189,6 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
-	kDebug() << "itemActivated" <<endl;
-	//in this case, we only want maximum ONE extender open at any time.
 
 	//testing hack
 	if (index.column() == 2) {
@@ -203,6 +201,7 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 	}
 
 	if (!isExtended(index)) {
+		//in this case, we only want maximum ONE extender open at any time.
 		if (m_editingIndex.isValid())
 			contractItem(m_editingIndex);
 		
@@ -387,6 +386,12 @@ void KShortcutsEditor::save()
 
 void KShortcutsEditor::undoChanges()
 {
+	for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
+		if ((*it)->childCount())
+			continue;
+
+		static_cast<KShortcutsEditorItem *>(*it)->undoChanges();
+	}
 }
 
 
@@ -398,11 +403,12 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	ui.setupUi(q);
 	//ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
 	ui.list->header()->setStretchLastSection(false);
+	ui.list->header()->hideSection(GlobalAlternate);  //undesirable for user friendlyness...
 	if (!(actionTypes & KShortcutsEditor::GlobalAction)) {
-		ui.list->header()->hideSection(3);
+		ui.list->header()->hideSection(GlobalPrimary);
 	} else if (!(actionTypes & ~KShortcutsEditor::GlobalAction)) {
-		ui.list->header()->hideSection(1);
-		ui.list->header()->hideSection(2);
+		ui.list->header()->hideSection(LocalPrimary);
+		ui.list->header()->hideSection(LocalAlternate);
 	}
 
 	KShortcutsEditorDelegate *delegate = new KShortcutsEditorDelegate(ui.list);
@@ -609,7 +615,7 @@ void KShortcutsEditorPrivate::wontStealStandardShortcut(KStandardShortcut::Stand
 {
 	QString title = i18n("Conflict with Standard Application Shortcut");
 	QString message = i18n("The '%1' key combination has already been allocated to the standard action "
-	                       "\"%2\"that many applications use.\n"
+	                       "\"%2\" that many applications use.\n"
 	                       "You cannot use it for global shortcuts for this reason.",
 	                       seq.toString(), KStandardShortcut::name(std));
 
@@ -657,6 +663,7 @@ void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
 }
 
 
+//TODO: undoChanges does not ask about conflicts, is that better?
 //slot
 void KShortcutsEditor::allDefault()
 {
@@ -754,10 +761,10 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 		return m_action->whatsThis();
 	case Qt::ToolTipRole:
 		return m_action->toolTip();
-	case Qt::ForegroundRole:
+	case Qt::BackgroundRole:
 		//looks not that great, really
-		//if (isModified(column))
-		//	return QColor(Qt::blue);
+		if (isModified(column))
+			return QColor(Qt::blue);
 		break;
 	case Qt::FontRole:
 		if (!isModified(column)) {
@@ -1014,21 +1021,13 @@ void KShortcutsDialog::addCollection(KActionCollection *collection, const QStrin
 bool KShortcutsDialog::configure(bool saveSettings)
 {
 	int retcode = exec();
-	if( retcode == Accepted ) {
-		if(saveSettings)
-			d->m_keyChooser->save();
-		else
-			//commitChanges(); //TODO: needed? review semantics.
-			return retcode;
-	}
+	if (retcode != Accepted)
+		d->m_keyChooser->undoChanges();
+	else if (saveSettings)
+		d->m_keyChooser->save();
+
 	return retcode;
 }
-
-
-/*void KShortcutsDialog::commitChanges()
-{
-	d->m_keyChooser->commitChanges();
-}*/
 
 
 int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor::LetterShortcuts allowLetterShortcuts,

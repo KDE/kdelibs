@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>442</width>
+    <width>532</width>
     <height>549</height>
    </rect>
   </property>
@@ -52,6 +52,11 @@
      <column>
       <property name="text" >
        <string>Global</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Global Alternate</string>
       </property>
      </column>
     </widget>
