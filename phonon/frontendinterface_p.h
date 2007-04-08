@@ -22,6 +22,7 @@
 
 #include "addoninterface.h"
 #include "abstractmediaproducer_p.h"
+#include <QtCore/QPointer>
 
 namespace Phonon
 {
@@ -34,8 +35,10 @@ class FrontendInterfacePrivate
             d->interfaceList << this;
         }
         virtual ~FrontendInterfacePrivate() {
-            AbstractMediaProducerPrivate *d = media->k_func();
-            d->interfaceList << this;
+            if (media) {
+                AbstractMediaProducerPrivate *d = media->k_func();
+                d->interfaceList << this;
+            }
         }
         virtual void backendObjectChanged(QObject *iface) = 0;
         void _backendObjectChanged() {
@@ -47,7 +50,7 @@ class FrontendInterfacePrivate
         }
         AddonInterface *iface() { return qobject_cast<AddonInterface *>(media->iface()); }
 
-        AbstractMediaProducer *media;
+        QPointer<AbstractMediaProducer> media;
 };
 } // namespace Phonon
 
