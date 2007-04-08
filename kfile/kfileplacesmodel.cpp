@@ -255,12 +255,25 @@ QVariant KFilePlacesModel::Private::bookmarkData(const QString &address, int rol
 QVariant KFilePlacesModel::Private::deviceData(const QPersistentModelIndex &index, int role) const
 {
     if (index.isValid()) {
+        Solid::Device device = deviceModel->deviceForIndex(index);
+        Solid::Volume *volume = 0;
+
+        if (device.isValid()) volume = device.as<Solid::Volume>();
+
         switch (role)
         {
         case UrlRole:
-            return QUrl(KUrl(deviceModel->deviceForIndex(index).as<Solid::Volume>()->mountPoint()));
+            if (volume) {
+                return QUrl(KUrl(volume->mountPoint()));
+            } else {
+                return QVariant();
+            }
         case MountNeededRole:
-            return !deviceModel->deviceForIndex(index).as<Solid::Volume>()->isMounted();
+            if (volume) {
+                return !volume->isMounted();
+            } else {
+                return QVariant();
+            }
         default:
             return deviceModel->data(index, role);
         }
