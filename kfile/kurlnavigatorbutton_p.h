@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Peter Penz (peter.penz@gmx.at)                  *
+ *   Copyright (C) 2006 by Peter Penz (<peter.penz@gmx.at>)                *
  *   Copyright (C) 2006 by Aaron J. Seigo (<aseigo@kde.org>)               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,10 +22,10 @@
 #define KURLNAVIGATORBUTTON_P_H
 
 #include <kio/global.h>
+#include <kurl.h>
 #include "kurlbutton_p.h"
 
 class KJob;
-class KUrl;
 class KUrlNavigator;
 class QPainter;
 class QPaintEvent;
@@ -55,6 +55,14 @@ public:
 
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
+
+Q_SIGNALS:
+    /**
+     * Is emitted if the URLs \a urls have been dropped
+     * to the destination \a destination.
+     */
+    void urlsDropped(const KUrl::List& urls,
+                     const KUrl& destination);
 
 protected:
     virtual void paintEvent(QPaintEvent* event);

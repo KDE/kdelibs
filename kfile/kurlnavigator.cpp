@@ -118,6 +118,9 @@ public:
      */
     void switchView();
 
+    /** Emits the signal urlsDropped(). */
+    void dropUrls(const KUrl::List& urls, const KUrl& destination);
+
     /**
      * Updates the history element with the current file item
      * and the contents position.
@@ -143,7 +146,6 @@ public:
 
 
     bool m_active;
-    bool m_showHiddenFiles;
     int m_historyIndex;
 
     QHBoxLayout* m_layout;
@@ -165,7 +167,6 @@ public:
 KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     :
     m_active(true),
-    m_showHiddenFiles(false),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
     m_protocols(0),
@@ -359,6 +360,12 @@ void KUrlNavigator::Private::switchView()
     emit q->requestActivation();
 }
 
+void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
+                                      const KUrl& destination)
+{
+    emit q->urlsDropped(urls, destination);
+}
+
 void KUrlNavigator::Private::updateHistoryElem()
 {
     assert(m_historyIndex >= 0);
@@ -528,6 +535,8 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             KUrlNavigatorButton* button = 0;
             if (createButton) {
                 button = new KUrlNavigatorButton(idx, q);
+                connect(button, SIGNAL(urlsDropped(const KUrl::List&, const KUrl&)),
+                        q, SLOT(dropUrls(const KUrl::List&, const KUrl&)));
                 appendWidget(button);
             }
             else {
@@ -605,41 +614,32 @@ const KUrl& KUrlNavigator::url() const
 
 KUrl KUrlNavigator::url(int index) const
 {
-    assert(index >= 0);
-    // keep scheme, hostname etc. maybe we will need this in the future
-    // for e.g. browsing ftp repositories.
-    KUrl newurl(url());
-    newurl.setPath(QString());
-    QString path(url().path());
-
-    if (!path.isEmpty()) {
-        if (index == 0) //prevent the last "/" from being stripped
-            path = "/"; //or we end up with an empty path
-        else
-            path = path.section('/', 0, index);
+    if (index < 0) {
+        index = 0;
     }
 
-    newurl.setPath(path);
-    return newurl;
+    // keep scheme, hostname etc. maybe we will need this in the future
+    // for e.g. browsing ftp repositories.
+    KUrl newUrl(url());
+    newUrl.setPath(QString());
+
+    QString path(url().path());
+    if (!path.isEmpty()) {
+        if (index == 0) {
+            // prevent the last "/" from being stripped
+            // or we end up with an empty path
+            path = "/";
+        }
+        else {
+            path = path.section('/', 0, index);
+        }
+    }
+
+    newUrl.setPath(path);
+    return newUrl;
 }
 
-QPoint KUrlNavigator::savedPosition() const
-{
-    const HistoryElem& histElem = d->m_history[d->m_historyIndex];
-    return QPoint( histElem.contentsX(), histElem.contentsY() );
-}
-
-int KUrlNavigator::historySize() const
-{
-    return d->m_history.count();
-}
-
-int KUrlNavigator::historyIndex() const
-{
-    return d->m_historyIndex;
-}
-
-void KUrlNavigator::goBack()
+bool KUrlNavigator::goBack()
 {
     d->updateHistoryElem();
 
@@ -649,35 +649,51 @@ void KUrlNavigator::goBack()
         d->updateContent();
         emit urlChanged(url());
         emit historyChanged();
+        return true;
     }
+
+    return false;
 }
 
-void KUrlNavigator::goForward()
+bool KUrlNavigator::goForward()
 {
     if (d->m_historyIndex > 0) {
         --d->m_historyIndex;
         d->updateContent();
         emit urlChanged(url());
         emit historyChanged();
+        return true;
     }
+
+    return false;
 }
 
-void KUrlNavigator::goUp()
+bool KUrlNavigator::goUp()
 {
-    setUrl(url().upUrl());
+    const KUrl& currentUrl = url();
+    const KUrl upUrl = currentUrl.upUrl();
+    if (upUrl != currentUrl) {
+        setUrl(upUrl);
+        return true;
+    }
+
+    return false;
 }
 
 void KUrlNavigator::goHome()
 {
-    if (d->m_homeUrl.isEmpty())
+    if (d->m_homeUrl.isEmpty()) {
         setUrl(QDir::homePath());
-    else
+    }
+    else {
         setUrl(d->m_homeUrl);
+    }
 }
 
-bool KUrlNavigator::isUrlEditable() const
+
+void KUrlNavigator::setHomeUrl(const QString& homeUrl)
 {
-    return d->m_toggleButton->isChecked();
+    d->m_homeUrl = homeUrl;
 }
 
 void KUrlNavigator::setUrlEditable(bool editable)
@@ -686,6 +702,11 @@ void KUrlNavigator::setUrlEditable(bool editable)
         d->m_toggleButton->toggle();
         d->switchView();
     }
+}
+
+bool KUrlNavigator::isUrlEditable() const
+{
+    return d->m_toggleButton->isChecked();
 }
 
 void KUrlNavigator::setActive(bool active)
@@ -697,17 +718,6 @@ void KUrlNavigator::setActive(bool active)
             emit activated();
         }
     }
-}
-
-void KUrlNavigator::setShowHiddenFiles( bool show )
-{
-    d->m_showHiddenFiles = show;
-}
-
-void KUrlNavigator::dropUrls(const KUrl::List& urls,
-                            const KUrl& destination)
-{
-    emit urlsDropped(urls, destination);
 }
 
 void KUrlNavigator::setUrl(const KUrl& url)
@@ -781,7 +791,7 @@ void KUrlNavigator::requestActivation()
     setActive(true);
 }
 
-void KUrlNavigator::storeContentsPosition(int x, int y)
+void KUrlNavigator::savePosition(int x, int y)
 {
     HistoryElem& hist = d->m_history[d->m_historyIndex];
     hist.setContentsX(x);
@@ -814,14 +824,20 @@ bool KUrlNavigator::isActive() const
     return d->m_active;
 }
 
-bool KUrlNavigator::showHiddenFiles() const
+int KUrlNavigator::historySize() const
 {
-    return d->m_showHiddenFiles;
+    return d->m_history.count();
 }
 
-void KUrlNavigator::setHomeUrl(const QString& homeUrl)
+int KUrlNavigator::historyIndex() const
 {
-    d->m_homeUrl = homeUrl;
+    return d->m_historyIndex;
+}
+
+QPoint KUrlNavigator::savedPosition() const
+{
+    const HistoryElem& histElem = d->m_history[d->m_historyIndex];
+    return QPoint( histElem.contentsX(), histElem.contentsY() );
 }
 
 #include "kurlnavigator.moc"

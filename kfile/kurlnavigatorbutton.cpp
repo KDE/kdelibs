@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Peter Penz (peter.penz@gmx.at)                  *
+ *   Copyright (C) 2006 by Peter Penz (<peter.penz@gmx.at>)                *
  *   Copyright (C) 2006 by Aaron J. Seigo (<aseigo@kde.org>)               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -200,7 +200,7 @@ void KUrlNavigatorButton::dropEvent(QDropEvent* event)
         QString path(urlNavigator()->url().prettyUrl());
         path = path.section('/', 0, m_index + 2);
 
-        urlNavigator()->dropUrls(urls, KUrl(path));
+        emit urlsDropped(urls, KUrl(path));
 
         setDisplayHintEnabled(DraggedHint, false);
         update();
@@ -262,7 +262,7 @@ void KUrlNavigatorButton::startListJob()
     }
 
     const KUrl& url = urlNavigator()->url(m_index);
-    m_listJob = KIO::listDir(url, false, urlNavigator()->showHiddenFiles());
+    m_listJob = KIO::listDir(url, false, false);
     m_subdirs.clear(); // just to be ++safe
 
     connect(m_listJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
@@ -277,15 +277,13 @@ void KUrlNavigatorButton::entriesList(KIO::Job* job, const KIO::UDSEntryList& en
     }
 
     KIO::UDSEntryList::const_iterator it = entries.constBegin();
-    KIO::UDSEntryList::const_iterator itEnd = entries.constEnd();
+    const KIO::UDSEntryList::const_iterator itEnd = entries.constEnd();
 
-    bool showHidden = urlNavigator()->showHiddenFiles();
     while (it != itEnd) {
         const KIO::UDSEntry entry = *it;
         if (entry.isDir()) {
-            QString name = entry.stringValue(KIO::UDS_NAME);
-
-            if (!showHidden || (name != "." && name != "..")) {
+            const QString name = entry.stringValue(KIO::UDS_NAME);
+            if ((name != ".") && (name != "..")) {
                 m_subdirs.append(name);
             }
         }

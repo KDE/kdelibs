@@ -63,7 +63,7 @@ class KFILE_EXPORT KUrlNavigator : public QWidget
 
 public:
     /**
-     * @param placesModel    Model for the places which are selectable inside a 
+     * @param placesModel    Model for the places which are selectable inside a
      *                       menu. A place can be a bookmark or a device.
      * @param url            URL which is used for the navigation or editing.
      * @param parent         Parent widget.
@@ -85,41 +85,32 @@ public:
      */
     KUrl url(int index) const;
 
-    /** Returns the amount of items in the history. */
-    int historySize() const;
-
-    /**
-     * Returns the history index of the current URL, where
-     * 0 <= history index < KUrlNavigator::historySize().
-     */
-    int historyIndex() const;
-
-    /**
-     * Returns the saved contents position of the upper left corner
-     * for the current URL.
-     */
-    QPoint savedPosition() const; // TODO: check naming of storeContentsPosition() counterpart
-
     /**
      * Goes back one step in the URL history. The signals
      * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
-     * are emitted.
+     * are emitted if true is returned. False is returned if the beginning
+     * of the history has already been reached and hence going back was not
+     * possible.
      */
-    void goBack(); // TODO: provide a bool return value
+    bool goBack();
 
     /**
      * Goes forward one step in the URL history. The signals
      * KUrlNavigator::urlChanged() and KUrlNavigator::historyChanged()
-     * are emitted.
+     * are emitted if true is returned. False is returned if the end
+     * of the history has already been reached and hence going forward
+     * was not possible.
      */
-    void goForward(); // TODO: provide a bool return value
+    bool goForward();
 
     /**
      * Goes up one step of the URL path and remembers the old path
      * in the history. The signals KUrlNavigator::urlChanged() and
-     * KUrlNavigator::historyChanged() are emitted.
+     * KUrlNavigator::historyChanged() are emitted if true is returned.
+     * False is returned if going up was not possible as the root has
+     * been reached.
      */
-    void goUp(); // TODO: provide a bool return value
+    bool goUp();
 
     /**
      * Goes to the home URL and remembers the old URL in the history.
@@ -137,19 +128,19 @@ public:
     void setHomeUrl(const QString& homeUrl);
 
     /**
-     * @return True, if the URL is editable within a line editor.
-     *         If false is returned, each part of the URL is presented by a button
-     *         for fast navigation ("breadcrumb view").
-     */
-    bool isUrlEditable() const;
-
-    /**
      * Allows to edit the URL of the navigation bar if \a editable
      * is true, and sets the focus accordingly.
      * If \a editable is false, each part of
      * the URL is presented by a button for a fast navigation ("breadcrumb view").
      */
     void setUrlEditable(bool editable);
+
+    /**
+     * @return True, if the URL is editable within a line editor.
+     *         If false is returned, each part of the URL is presented by a button
+     *         for fast navigation ("breadcrumb view").
+     */
+    bool isUrlEditable() const;
 
     /**
      * Set the URL navigator to the active mode, if \a active
@@ -168,22 +159,20 @@ public:
      */
     bool isActive() const;
 
-    /**
-     * Sets whether or not to show hidden files in lists.
-     */
-    void setShowHiddenFiles( bool show ); // TODO: remove, is a relict from the KDE3 version of Dolphin
+    /** Returns the amount of items in the history. */
+    int historySize() const;
 
     /**
-     * Returns true if the URL navigator is set to show hidden files.
+     * Returns the history index of the current URL, where
+     * 0 <= history index < KUrlNavigator::historySize().
      */
-    bool showHiddenFiles() const; // TODO: remove, is a relict from the KDE3 version of Dolphin
+    int historyIndex() const;
 
     /**
-     * Handles the dropping of the URLs \a urls to the given
-     * destination \a destination and emits the signal KUrlNavigator::urlsDropped().
+     * Returns the saved contents position of the upper left corner
+     * for the current URL.
      */
-    void dropUrls(const KUrl::List& urls,
-                  const KUrl& destination); // TODO: this is no public API, emit a signal in KUrlNavigatorButton instead
+    QPoint savedPosition() const;
 
 public Q_SLOTS:
     /**
@@ -200,13 +189,15 @@ public Q_SLOTS:
     void requestActivation();
 
     /**
-     * Stores the coordinates of the contents into
+     * Saves the coordinates of the contents for
      * the current history element. The contents of the URL is usually shown
      * inside an instance of QAbstractItemView. It is recommended to invoke this
      * slot whenever the upper left position of the QAbstractItemView has been
      * changed to be able to restore the position when going back in history.
+     *
+     * @see KUrlNavigator::savedPosition()
      */
-    void storeContentsPosition(int x, int y); // TODO: rename to be aligned with savedPosition()
+    void savePosition(int x, int y);
 
 Q_SIGNALS:
     /**
@@ -253,6 +244,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotRemoteHostActivated())
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())
+    Q_PRIVATE_SLOT(d, void dropUrls(const KUrl::List& list, const KUrl& destination))
     //Q_PRIVATE_SLOT(d, void slotRedirection(const KUrl&, const KUrl&))
 
 private:
