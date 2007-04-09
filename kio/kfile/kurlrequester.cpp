@@ -137,11 +137,16 @@ public:
             return KUrl( txt );
     }
 
+    // slots
+    void _k_slotUpdateUrl();
+
     KLineEdit *edit;
     KComboBox *combo;
     KFile::Modes fileDialogMode;
     QString fileDialogFilter;
     KEditListBox::CustomEditor editor;
+    KUrlDragPushButton *myButton;
+    KFileDialog *myFileDialog;
 };
 
 
@@ -179,7 +184,7 @@ KUrlRequester::KUrlRequester( const KUrl& url, QWidget *parent)
 KUrlRequester::~KUrlRequester()
 {
     delete myCompletion;
-    delete myFileDialog;
+    delete d->myFileDialog;
     delete d;
 }
 
@@ -188,20 +193,20 @@ void KUrlRequester::init()
 {
     setMargin(0);
 
-    myFileDialog = 0L;
+    d->myFileDialog = 0L;
 
     if ( !d->combo && !d->edit ) {
         d->edit = new KLineEdit( this );
         d->edit->setClearButtonShown( true );
     }
 
-    myButton = new KUrlDragPushButton( this);
-    myButton->setIcon( KIcon(QLatin1String("document-open")) );
+    d->myButton = new KUrlDragPushButton(this);
+    d->myButton->setIcon(KIcon(QLatin1String("document-open")));
     const int pixmapSize = style()->pixelMetric(QStyle::PM_SmallIconSize);
-    myButton->setFixedSize( pixmapSize+8, pixmapSize+8 );
-    myButton->setToolTip(i18n("Open file dialog"));
+    d->myButton->setFixedSize(pixmapSize + 8, pixmapSize + 8);
+    d->myButton->setToolTip(i18n("Open file dialog"));
 
-    connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateUrl() ));
+    connect(d->myButton, SIGNAL(pressed()), SLOT(_k_slotUpdateUrl()));
 
     setSpacing( KDialog::spacingHint() );
 
@@ -211,7 +216,7 @@ void KUrlRequester::init()
     setFocusPolicy(Qt::StrongFocus);
 
     d->connectSignals( this );
-    connect( myButton, SIGNAL( clicked() ), this, SLOT( slotOpenDialog() ));
+    connect(d->myButton, SIGNAL(clicked()), this, SLOT(slotOpenDialog()));
 
     myCompletion = new KUrlCompletion();
     d->setCompletionObject( myCompletion );
@@ -234,8 +239,8 @@ void KUrlRequester::setPath( const QString& path )
 void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
-     if (myFileDialog) {
-        myFileDialog->setWindowTitle( windowTitle() );
+     if (d->myFileDialog) {
+        d->myFileDialog->setWindowTitle(windowTitle());
      }
    }
    KHBox::changeEvent(e);
@@ -251,8 +256,8 @@ void KUrlRequester::slotOpenDialog()
     KUrl newurl;
     if ( (d->fileDialogMode & KFile::Directory) && !(d->fileDialogMode & KFile::File) ||
          /* catch possible fileDialog()->setMode( KFile::Directory ) changes */
-         (myFileDialog && ( (myFileDialog->mode() & KFile::Directory) &&
-         (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
+         (d->myFileDialog && ((d->myFileDialog->mode() & KFile::Directory) &&
+         (d->myFileDialog->mode() & (KFile::File | KFile::Files)) == 0 ) ) )
     {
         if (d->fileDialogMode & KFile::LocalOnly)
             newurl = KFileDialog::getExistingDirectory(url(), this);
@@ -294,8 +299,9 @@ void KUrlRequester::setMode( KFile::Modes mode)
     if ( (mode & KFile::Directory) && !(mode & KFile::File) )
         myCompletion->setMode( KUrlCompletion::DirCompletion );
 
-    if (myFileDialog)
-       myFileDialog->setMode( d->fileDialogMode );
+    if (d->myFileDialog) {
+        d->myFileDialog->setMode(d->fileDialogMode);
+    }
 }
 
 KFile::Modes KUrlRequester::mode() const
@@ -306,8 +312,9 @@ KFile::Modes KUrlRequester::mode() const
 void KUrlRequester::setFilter(const QString &filter)
 {
     d->fileDialogFilter = filter;
-    if (myFileDialog)
-       myFileDialog->setFilter( d->fileDialogFilter );
+    if (d->myFileDialog) {
+        d->myFileDialog->setFilter(d->fileDialogFilter);
+    }
 }
 
 QString KUrlRequester::filter( ) const
@@ -317,15 +324,15 @@ QString KUrlRequester::filter( ) const
 
 KFileDialog * KUrlRequester::fileDialog() const
 {
-    if ( !myFileDialog ) {
+    if (!d->myFileDialog) {
         QWidget *p = parentWidget();
-        myFileDialog = new KFileDialog( QString(), d->fileDialogFilter, p);
-        myFileDialog->setModal(true);
-        myFileDialog->setMode( d->fileDialogMode );
-        myFileDialog->setWindowTitle( windowTitle() );
+        d->myFileDialog = new KFileDialog(QString(), d->fileDialogFilter, p);
+        d->myFileDialog->setModal(true);
+        d->myFileDialog->setMode(d->fileDialogMode);
+        d->myFileDialog->setWindowTitle(windowTitle());
     }
 
-    return myFileDialog;
+    return d->myFileDialog;
 }
 
 void KUrlRequester::clear()
@@ -343,7 +350,7 @@ KComboBox * KUrlRequester::comboBox() const
     return d->combo;
 }
 
-void KUrlRequester::slotUpdateUrl()
+void KUrlRequester::KUrlRequesterPrivate::_k_slotUpdateUrl()
 {
     KUrl u( KUrl::fromPath( QDir::currentPath() + '/' ), url().url() );
     myButton->setURL( u );
@@ -362,7 +369,7 @@ bool KUrlRequester::eventFilter( QObject *obj, QEvent *ev )
 
 KPushButton * KUrlRequester::button() const
 {
-    return myButton;
+    return d->myButton;
 }
 
 const KEditListBox::CustomEditor &KUrlRequester::customEditor()

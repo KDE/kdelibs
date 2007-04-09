@@ -29,7 +29,6 @@ class KComboBox;
 class KFileDialog;
 class KLineEdit;
 class KUrlCompletion;
-class KUrlDragPushButton;
 
 class QString;
 class QEvent;
@@ -225,12 +224,6 @@ protected:
 
     KUrlCompletion * myCompletion;
 
-
-private:
-    KUrlDragPushButton * myButton;
-    mutable KFileDialog * myFileDialog;
-
-
 protected Q_SLOTS:
     /**
      * Called when the button is pressed to open the filedialog.
@@ -238,15 +231,16 @@ protected Q_SLOTS:
      */
     void slotOpenDialog();
 
-private Q_SLOTS:
-    void slotUpdateUrl();
-
 protected:
     virtual void changeEvent (QEvent *e);
     bool eventFilter( QObject *obj, QEvent *ev );
 private:
     class KUrlRequesterPrivate;
     KUrlRequesterPrivate* const d;
+
+    Q_DISABLE_COPY(KUrlRequester)
+
+    Q_PRIVATE_SLOT(d, void _k_slotUpdateUrl())
 };
 
 class KIO_EXPORT KUrlComboRequester : public KUrlRequester // For use in Qt Designer
@@ -256,7 +250,7 @@ public:
     /**
      * Constructs a KUrlRequester widget with a combobox.
      */
-    KUrlComboRequester( QWidget *parent=0);
+    explicit KUrlComboRequester(QWidget *parent = 0);
 };
 
 #endif // KURLREQUESTER_H

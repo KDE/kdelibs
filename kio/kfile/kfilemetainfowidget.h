@@ -24,6 +24,8 @@
 #include <QtCore/QVariant>
 #include <kfilemetainfo.h>
 
+class KFileMetaInfoWidgetPrivate;
+
 /*!
  * A widget to display file meta infos (like id3 for mp3)
  */
@@ -46,15 +48,12 @@ public:
 
     virtual ~KFileMetaInfoWidget();
 
-    bool apply()
-    {
-        return m_item.isEditable() && m_item.setValue(m_value);
-    }
+    bool apply();
 
-    void setValue(const QVariant& value)  { m_value = value;    }
-    QVariant value()const                      { return m_value;     }
-    QValidator* validator() const              { return m_validator; }
-    KFileMetaInfoItem item()const              { return m_item;      }
+    void setValue(const QVariant &value);
+    QVariant value() const;
+    QValidator* validator() const;
+    KFileMetaInfoItem item() const;
 
 Q_SIGNALS:
     void valueChanged(const QVariant& value);
@@ -83,13 +82,10 @@ private Q_SLOTS:
     void slotDateTimeChanged(const QDateTime& value);
 
 private:
-    void init(KFileMetaInfoItem item, Mode mode);
+    friend class KFileMetaInfoWidgetPrivate;
+    KFileMetaInfoWidgetPrivate *const d;
 
-    QVariant          m_value;  // the value will be saved here until apply() is called
-    KFileMetaInfoItem m_item;
-    QWidget*          m_widget;
-    QValidator*       m_validator;
-    bool              m_dirty : 1;
+    Q_DISABLE_COPY(KFileMetaInfoWidget)
 };
 
 #endif

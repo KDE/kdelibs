@@ -19,94 +19,105 @@
 
 #include "kurlrequesterdialog.h"
 
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QtCore/QCharRef>
-#include <QtGui/QToolButton>
 
 #include <kfiledialog.h>
-#include <kglobal.h>
 #include <kguiitem.h>
-#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <krecentdocument.h>
 #include <kurl.h>
 #include <kurlrequester.h>
 
+class KUrlRequesterDialogPrivate
+{
+public:
+    KUrlRequesterDialogPrivate(KUrlRequesterDialog *qq)
+        : q(qq)
+    {
+    }
+
+    KUrlRequesterDialog *q;
+
+    void initDialog(const QString &text, const QString &url);
+
+    // slots
+    void _k_slotClear();
+    void _k_slotTextChanged(const QString &);
+
+    KUrlRequester *urlRequester;
+};
+
 
 KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, QWidget *parent)
-    :   KDialog( parent )
+    : KDialog(parent), d(new KUrlRequesterDialogPrivate(this))
 {
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStandardGuiItem::clear() );
 
-  initDialog(i18n( "Location:" ), urlName);
+    d->initDialog(i18n("Location:"), urlName);
 }
 
 KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, const QString& _text, QWidget *parent)
-    :   KDialog( parent )
+    : KDialog(parent), d(new KUrlRequesterDialogPrivate(this))
 {
   setButtons( Ok | Cancel | User1 );
   setButtonGuiItem( User1, KStandardGuiItem::clear() );
 
-  initDialog(_text, urlName);
+    d->initDialog(_text, urlName);
 }
 
 KUrlRequesterDialog::~KUrlRequesterDialog()
 {
 }
 
-void KUrlRequesterDialog::initDialog(const QString &text,const QString &urlName)
+void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QString &urlName)
 {
-  setDefaultButton(Ok);
-  showButtonSeparator(true);
-   QFrame *plainPage=new QFrame(this);
-   setMainWidget(plainPage);
+    q->setDefaultButton(KDialog::Ok);
+    q->showButtonSeparator(true);
+    QWidget *plainPage = q->mainWidget();
    QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
    topLayout->setMargin( 0 );
-   topLayout->setSpacing( spacingHint() );
+    topLayout->setSpacing(KDialog::spacingHint());
 
     QLabel * label = new QLabel( text , plainPage );
     topLayout->addWidget( label );
 
-    urlRequester_ = new KUrlRequester( urlName, plainPage);
-    urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
-    topLayout->addWidget( urlRequester_ );
-    urlRequester_->setFocus();
-    connect( urlRequester_->lineEdit(), SIGNAL(textChanged(const QString&)),
-             SLOT(slotTextChanged(const QString&)) );
+    urlRequester = new KUrlRequester(urlName, plainPage);
+    urlRequester->setMinimumWidth(urlRequester->sizeHint().width() * 3);
+    topLayout->addWidget(urlRequester);
+    urlRequester->setFocus();
+    QObject::connect(urlRequester->lineEdit(), SIGNAL(textChanged(QString)),
+                     q, SLOT(_k_slotTextChanged(QString)));
     bool state = !urlName.isEmpty();
-    enableButtonOk( state );
-    enableButton( KDialog::User1, state );
+    q->enableButtonOk(state);
+    q->enableButton(KDialog::User1, state);
     /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
             KFile::ExistingOnly );
 	urlRequester_->setMode( mode );
     */
-    connect( this, SIGNAL( user1Clicked() ), SLOT( slotClear() ) );
-    resize(minimumSize());
+    QObject::connect(q, SIGNAL(user1Clicked()), q, SLOT(_k_slotClear()));
+    q->resize(q->minimumSize());
 }
 
-void KUrlRequesterDialog::slotTextChanged(const QString & text)
+void KUrlRequesterDialogPrivate::_k_slotTextChanged(const QString & text)
 {
     bool state = !text.trimmed().isEmpty();
-    enableButtonOk( state );
-    enableButton( KDialog::User1, state );
+    q->enableButtonOk(state);
+    q->enableButton(KDialog::User1, state);
 }
 
-void KUrlRequesterDialog::slotClear()
+void KUrlRequesterDialogPrivate::_k_slotClear()
 {
-    urlRequester_->clear();
+    urlRequester->clear();
 }
 
 KUrl KUrlRequesterDialog::selectedUrl() const
 {
     if ( result() == QDialog::Accepted )
-        return urlRequester_->url();
+        return d->urlRequester->url();
     else
         return KUrl();
 }
@@ -130,12 +141,12 @@ KUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
 
 KFileDialog * KUrlRequesterDialog::fileDialog()
 {
-    return urlRequester_->fileDialog();
+    return d->urlRequester->fileDialog();
 }
 
 KUrlRequester * KUrlRequesterDialog::urlRequester()
 {
-    return urlRequester_;
+    return d->urlRequester;
 }
 
 #include "kurlrequesterdialog.moc"

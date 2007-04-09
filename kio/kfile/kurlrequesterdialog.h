@@ -25,9 +25,9 @@
 #include <kdialog.h>
 #include <kurl.h>
 
-class KUrlCompletion;
 class KUrlRequester;
 class KFileDialog;
+class KUrlRequesterDialogPrivate;
 /**
  * Dialog in which a user can enter a filename or url. It is a dialog
  * encapsulating KUrlRequester. The API is derived from
@@ -49,7 +49,7 @@ public:
      *               directory where a file has been selected.
      * @param parent The parent object of this widget.
      */
-    KUrlRequesterDialog( const QString& url, QWidget *parent);
+    explicit KUrlRequesterDialog(const QString &url, QWidget *parent = 0);
 
     /**
      * Constructs a KUrlRequesterDialog.
@@ -91,16 +91,14 @@ public:
      */
     KUrlRequester *urlRequester();
 
-private Q_SLOTS:
-    void slotClear();
-    void slotTextChanged(const QString &);
 private:
-    void initDialog(const QString &text, const QString &url);
-    KUrlRequester *urlRequester_;
+    friend class KUrlRequesterDialogPrivate;
+    KUrlRequesterDialogPrivate *const d;
 
-    class KUrlRequesterDialogPrivate;
-    KUrlRequesterDialogPrivate *d;
+    Q_DISABLE_COPY(KUrlRequesterDialog)
 
+    Q_PRIVATE_SLOT(d, void _k_slotClear())
+    Q_PRIVATE_SLOT(d, void _k_slotTextChanged(const QString &))
 };
 
 #endif // KURLREQUESTERDIALOG_H

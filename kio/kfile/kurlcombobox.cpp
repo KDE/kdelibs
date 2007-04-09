@@ -34,6 +34,10 @@ public:
     {}
 
     KIcon dirIcon;
+    bool urlAdded;
+    int myMaximum;
+    Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )
+                 // to specify if we want a trailing slash or not
 };
 
 
@@ -61,10 +65,9 @@ KUrlComboBox::~KUrlComboBox()
 
 void KUrlComboBox::init( Mode mode )
 {
-
-    myMode    = mode;
-    urlAdded  = false;
-    myMaximum = 10; // default
+    d->myMode = mode;
+    d->urlAdded = false;
+    d->myMaximum = 10; // default
     setInsertPolicy( NoInsert );
     setTrapReturnKey( true );
     setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
@@ -109,7 +112,7 @@ void KUrlComboBox::addDefaultUrl( const KUrl& url, const QIcon& icon,
     item->icon = icon;
     if ( text.isEmpty() ) {
         KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-        if (myMode == Directories)
+        if (d->myMode == Directories)
           mode = KUrl::AddTrailingSlash;
         else
           mode = KUrl::RemoveTrailingSlash;
@@ -164,7 +167,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
     // limit to myMaximum items
     /* Note: overload is an (old) C++ keyword, some compilers (KCC) choke
        on that, so call it Overload (capital 'O').  (matz) */
-    int Overload = urls.count() - myMaximum + defaultList.count();
+    int Overload = urls.count() - d->myMaximum + defaultList.count();
     while ( Overload > 0 ) {
         if (remove == RemoveBottom)
             urls.removeLast();
@@ -197,7 +200,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
         if ( u.isLocalFile() )
         {
           KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-          if (myMode == Directories)
+          if (d->myMode == Directories)
               mode = KUrl::AddTrailingSlash;
           else
               mode = KUrl::RemoveTrailingSlash;
@@ -227,7 +230,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
       if ( urlToInsert == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
             setCurrentIndex( mit.key() );
 
-            if ( myMode == Directories )
+            if (d->myMode == Directories)
                 updateItem( mit.value(), mit.key(), opendirIcon );
 
             blockSignals( blocked );
@@ -239,9 +242,9 @@ void KUrlComboBox::setUrl( const KUrl& url )
     // not in the combo yet -> create a new item and insert it
 
     // first remove the old item
-    if ( urlAdded ) {
+    if (d->urlAdded) {
         itemList.removeLast();
-        urlAdded = false;
+        d->urlAdded = false;
     }
 
     setDefaults();
@@ -251,7 +254,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
         insertUrlItem( it.next() );
 
     KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-    if (myMode == Directories)
+    if (d->myMode == Directories)
       mode = KUrl::AddTrailingSlash;
     else
       mode = KUrl::RemoveTrailingSlash;
@@ -267,7 +270,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
     int id = count();
     QString text = /*isEditable() ? item->url.prettyUrl( (KUrl::AdjustPathOption)myMode ) : */ item->text;
 
-    if ( myMode == Directories )
+    if (d->myMode == Directories)
         KComboBox::insertItem( id,opendirIcon, text);
     else
         KComboBox::insertItem( id,item->icon, text);
@@ -275,7 +278,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
     itemList.append( item );
 
     setCurrentIndex( id );
-    urlAdded = true;
+    d->urlAdded = true;
     blockSignals( blocked );
 }
 
@@ -302,15 +305,15 @@ void KUrlComboBox::insertUrlItem( const KUrlComboItem *item )
 
 void KUrlComboBox::setMaxItems( int max )
 {
-    myMaximum = max;
+    d->myMaximum = max;
 
-    if ( count() > myMaximum ) {
+    if (count() > d->myMaximum) {
         int oldCurrent = currentIndex();
 
         setDefaults();
 
         QListIterator<const KUrlComboItem*> it( itemList );
-        int Overload = itemList.count() - myMaximum + defaultList.count();
+        int Overload = itemList.count() - d->myMaximum + defaultList.count();
         for ( int i = 0; i <= Overload; i++ )
             it.next();
 
@@ -325,6 +328,10 @@ void KUrlComboBox::setMaxItems( int max )
     }
 }
 
+int KUrlComboBox::maxItems() const
+{
+    return d->myMaximum;
+}
 
 void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
 {
@@ -349,7 +356,7 @@ void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
 
 QIcon KUrlComboBox::getIcon( const KUrl& url ) const
 {
-    if ( myMode == Directories )
+    if (d->myMode == Directories)
         return d->dirIcon;
     else
         return KIcon(KMimeType::iconNameForUrl(url, 0));
@@ -364,7 +371,7 @@ void KUrlComboBox::updateItem( const KUrlComboItem *item,
 
     if ( isEditable() ) {
         KUrl::AdjustPathOption mode = KUrl::LeaveTrailingSlash;
-        if (myMode == Directories)
+        if (d->myMode == Directories)
             mode = KUrl::AddTrailingSlash;
         else
             mode = KUrl::RemoveTrailingSlash;

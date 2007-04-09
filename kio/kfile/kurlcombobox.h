@@ -21,11 +21,10 @@
 
 #include <kio/kio_export.h>
 
-#include <QtGui/QActionEvent>
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QStringList>
 #include <QtGui/QIcon>
-#include <QtCore/QMutableStringListIterator>
 
 #include <kcombobox.h>
 #include <kurl.h>
@@ -74,7 +73,7 @@ public:
      * @li Both  Don't mess with anything, just show the url as given.
      * @param parent The parent object of this widget.
      */
-    KUrlComboBox( Mode mode, QWidget *parent=0);
+    explicit KUrlComboBox(Mode mode, QWidget *parent = 0);
     KUrlComboBox( Mode mode, bool rw, QWidget *parent=0);
     /**
      * Destructs the combo box.
@@ -135,7 +134,7 @@ public:
      * @returns the maximum of items the combobox handles.
      * @see setMaxItems
      */
-    int maxItems() const { return myMaximum; }
+    int maxItems() const;
 
     /**
      * Adds a url that will always be shown in the combobox, it can't be
@@ -179,10 +178,8 @@ Q_SIGNALS:
      */
     void urlActivated( const KUrl& url );
 
-
 protected Q_SLOTS:
     void slotActivated( int );
-
 
 protected:
     struct _KUrlComboItem {
@@ -213,16 +210,11 @@ protected:
     QIcon opendirIcon;
     int firstItemIndex;
 
-
-private:
-    bool urlAdded;
-    int myMaximum;
-    Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )
-                 // to specify if we want a trailing slash or not
-
 private:
     class KUrlComboBoxPrivate;
     KUrlComboBoxPrivate* const d;
+
+    Q_DISABLE_COPY(KUrlComboBox)
 };
 
 
