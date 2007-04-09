@@ -1232,6 +1232,16 @@ bool KRun::isExecutable( const QString& serviceType )
 
 /****************/
 
+class KProcessRunner::KProcessRunnerPrivate
+{
+public:
+    K3Process *process;
+    QString binName;
+#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
+    KStartupInfoId id;
+#endif
+};
+
 pid_t
 KProcessRunner::run(K3Process * p, const QString & binName)
 {
@@ -1247,78 +1257,77 @@ KProcessRunner::run(K3Process * p, const QString & binName, const KStartupInfoId
 #endif
 
 KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName )
-  : QObject(),
-    process_(p),
-    binName( _binName )
+    : QObject(), d(new KProcessRunnerPrivate)
 {
-  QObject::connect(
-      process_, SIGNAL(processExited(K3Process *)),
-      this,     SLOT(slotProcessExited(K3Process *)));
+    d->process = p;
+    d->binName = _binName;
+    connect(d->process, SIGNAL(processExited(K3Process *)),
+            this, SLOT(slotProcessExited(K3Process *)));
 
-  process_->start();
-  if ( !process_->pid() )
-      slotProcessExited( process_ );
+    d->process->start();
+    if (!d->process->pid()) {
+        slotProcessExited(d->process);
+    }
 }
 
 #ifdef Q_WS_X11
 KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName, const KStartupInfoId& id )
-  : QObject(),
-    process_(p),
-    binName( _binName ),
-    id_( id )
+    : QObject(), d(new KProcessRunnerPrivate)
 {
-  QObject::connect(
-      process_, SIGNAL(processExited(K3Process *)),
-      this,     SLOT(slotProcessExited(K3Process *)));
+    d->process = p;
+    d->binName = _binName;
+    d->id = id;
+    connect(d->process, SIGNAL(processExited(K3Process *)),
+            this, SLOT(slotProcessExited(K3Process *)));
 
-  process_->start();
-  if ( !process_->pid() )
-      slotProcessExited( process_ );
+    d->process->start();
+    if (!d->process->pid()) {
+        slotProcessExited(d->process);
+    }
 }
 #endif
 
 KProcessRunner::~KProcessRunner()
 {
-  delete process_;
+    delete d->process;
+    delete d;
 }
 
   pid_t
 KProcessRunner::pid() const
 {
-  return process_->pid();
+    return d->process->pid();
 }
 
   void
 KProcessRunner::slotProcessExited(K3Process * p)
 {
-  if (p != process_)
-    return; // Eh ?
+    if (p != d->process) {
+        return; // Eh ?
+    }
 
-  kDebug(7010) << "slotProcessExited " << binName << endl;
-  kDebug(7010) << "normalExit " << process_->normalExit() << endl;
-  kDebug(7010) << "exitStatus " << process_->exitStatus() << endl;
-  bool showErr = process_->normalExit()
-                 && ( process_->exitStatus() == 127 || process_->exitStatus() == 1 );
-  if ( !binName.isEmpty() && ( showErr || process_->pid() == 0 ) )
-  {
+    kDebug(7010) << "slotProcessExited " << d->binName << endl;
+    kDebug(7010) << "normalExit " << d->process->normalExit() << endl;
+    kDebug(7010) << "exitStatus " << d->process->exitStatus() << endl;
+    bool showErr = d->process->normalExit()
+                   && (d->process->exitStatus() == 127 || d->process->exitStatus() == 1);
+    if (!d->binName.isEmpty() && (showErr || d->process->pid() == 0 )) {
     // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
     // We can't just rely on that, but it's a good hint.
     // Before assuming its really so, we'll try to find the binName
     // relatively to current directory,  and then in the PATH.
-    if ( !QFile( binName ).exists() && KStandardDirs::findExe( binName ).isEmpty() )
-    {
+        if (!QFile(d->binName).exists() && KStandardDirs::findExe(d->binName).isEmpty()) {
       KGlobal::ref();
-      KMessageBox::sorry( 0L, i18n("Could not find the program '%1'",  binName ) );
+            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", d->binName));
       KGlobal::deref();
     }
   }
 #ifdef Q_WS_X11
-  if( !id_.none())
-  {
+    if (!d->id.none()) {
       KStartupInfoData data;
       data.addPid( pid()); // announce this pid for the startup notification has finished
       data.setHostname();
-      KStartupInfo::sendFinish( id_, data );
+        KStartupInfo::sendFinish(d->id, data);
   }
 #endif
   deleteLater();

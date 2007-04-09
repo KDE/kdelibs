@@ -35,6 +35,7 @@
 
 class K3Process;
 class KService;
+class KStartupInfo;
 class KJob;
 namespace KIO {
    class Job;
@@ -410,18 +411,16 @@ class KIO_EXPORT KProcessRunner : public QObject
     void slotProcessExited(K3Process *);
 
   private:
-
     KProcessRunner(K3Process *, const QString & binName);
 #ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     KProcessRunner(K3Process *, const QString & binName, const KStartupInfoId& id );
 #endif
     KProcessRunner();
 
-    K3Process * process_;
-    QString binName;
-#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
-    KStartupInfoId id_;
-#endif
+    class KProcessRunnerPrivate;
+    KProcessRunnerPrivate *const d;
+
+    Q_DISABLE_COPY(KProcessRunner)
 };
 
 #endif
