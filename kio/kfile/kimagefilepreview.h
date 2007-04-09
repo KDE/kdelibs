@@ -16,15 +16,9 @@
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>
 
-class QCheckBox;
-class QPushButton;
-class QLabel;
-class QTimer;
-
-class KFileDialog;
 class KFileItem;
 class KJob;
-namespace KIO { class Job; class PreviewJob; }
+namespace KIO { class PreviewJob; }
 
 /**
  * Image preview widget for the file dialog.
@@ -34,7 +28,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 	Q_OBJECT
 
 	public:
-		KImageFilePreview(QWidget *parent);
+        explicit KImageFilePreview(QWidget *parent);
 		~KImageFilePreview();
 
 		virtual QSize sizeHint() const;
@@ -59,18 +53,11 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		void slotResult( KJob * );
 		virtual void slotFailed( const KFileItem* );
 
-	private:
-		bool autoMode;
-		KUrl currentURL;
-		QTimer *timer;
-		QLabel *imageLabel;
-		QLabel *infoLabel;
-		QCheckBox *autoPreview;
-		QPushButton *previewButton;
-		KIO::PreviewJob *m_job;
         private:
                 class KImageFilePreviewPrivate;
-                KImageFilePreviewPrivate *d;
+        KImageFilePreviewPrivate *const d;
+
+        Q_DISABLE_COPY(KImageFilePreview)
 };
 
 #endif // KIMAGEFILEPREVIEW_H
