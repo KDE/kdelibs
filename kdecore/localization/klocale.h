@@ -444,15 +444,67 @@ public:
    bool nounDeclension() const;
 
   /**
+   * Format for date string.
+   */
+  enum DateFormat {
+    ShortDate,   /**< Short (numeric) date format, e.g. 08-04-2007 */
+    LongDate,    /**< Long (text) date format, e.g. Sunday 08 April 2007 */
+    FancyDate    /**< Same as LongDate for dates a week or more ago. For more
+                      recent dates, it is represented as Today, Yesterday, or
+                      the weekday name. */
+  };
+
+  /**
    * Returns a string formatted to the current locale's conventions
    * regarding dates.
    *
-   * @param pDate The date to be formatted.
-   * @param shortFormat True for non text dates.
+   * @param date the date to be formatted.
+   * @param format category of date format to use
    *
    * @return The date as a string
    */
-  QString formatDate(const QDate &pDate, bool shortFormat = false) const;
+  QString formatDate(const QDate &date, DateFormat format = LongDate) const;
+  KDE_DEPRECATED QString formatDate(const QDate &pDate, bool shortFormat) const;
+
+  /**
+   * Returns a string formatted to the current locale's conventions
+   * regarding both date and time.
+   *
+   * @param dateTime the date and time to be formatted
+   * @param format category of date format to use
+   * @param options additional output options
+   *
+   * @return The date and time as a string
+   */
+  QString formatDateTime(const QDateTime &dateTime, DateFormat format = ShortDate,
+                         bool includeSecs = false) const;
+  KDE_DEPRECATED QString formatDateTime(const QDateTime &pDateTime,
+                         bool shortFormat, bool includeSecs = false) const;
+
+  /**
+   * Options for formatting date-time values.
+   */
+  enum DateTimeFormatOption {
+    TimeZone = 0x01,    /**< Include a time zone string */
+    Seconds  = 0x02     /**< Include the seconds value */
+  };
+  Q_DECLARE_FLAGS(DateTimeFormatOptions, DateTimeFormatOption)
+
+  /**
+   * Returns a string formatted to the current locale's conventions
+   * regarding both date and time.
+   *
+   * @param dateTime the date and time to be formatted
+   * @param format category of date format to use
+   * @param options additional output options
+   *
+   * @return The date and time as a string
+   */
+  QString formatDateTime(const KDateTime &dateTime, DateFormat format = ShortDate,
+                         DateTimeFormatOptions options = 0) const;
+  KDE_DEPRECATED QString formatDateTime(const KDateTime &pDateTime,
+                         bool shortFormat, bool includeSecs = false,
+                         bool includeTimeZone = false) const;
 
   /**
    * Use this to determine whether in dates a possessive form of month
@@ -514,36 +566,6 @@ public:
    * @param calendarType the name of the calendar type
    */
   void setCalendar(const QString & calendarType);
-
-  /**
-   * Returns a string formatted to the current locale's conventions
-   * regarding both date and time.
-   *
-   * @param pDateTime the date and time to be formatted
-   * @param shortFormat using the short date format
-   * @param includeSecs include the seconds value
-   *
-   * @return The date and time as a string
-   */
-  QString formatDateTime(const QDateTime &pDateTime,
-			 bool shortFormat = true,
-			 bool includeSecs = false) const;
-
-  /**
-   * Returns a string formatted to the current locale's conventions
-   * regarding both date and time.
-   *
-   * @param pDateTime the date and time to be formatted
-   * @param shortFormat using the short date format
-   * @param includeSecs include the seconds value
-   * @param includeTimeZone include a time zone string
-   *
-   * @return The date and time as a string
-   */
-  QString formatDateTime(const KDateTime &pDateTime,
-			 bool shortFormat = true,
-			 bool includeSecs = false,
-                         bool includeTimeZone = false) const;
 
   /**
    * Converts a localized monetary string to a double.
@@ -1065,5 +1087,7 @@ protected:
 private:
   KLocalePrivate * const d;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KLocale::DateTimeFormatOptions)
 
 #endif

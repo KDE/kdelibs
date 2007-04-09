@@ -149,6 +149,16 @@ public:
    */
   bool isApplicationTranslatedInto( const QString & language);
 
+  /**
+   * @internal Formats a date/time according to specified format.
+   */
+  static QString formatDateTime(const KLocale *locale, const QDateTime &dateTime,
+                                KLocale::DateFormat, bool includeSeconds, int daysToNow);
+  /**
+   * @internal Formats a date as a 'fancy' date.
+   */
+  static QString fancyDate(const KLocale *locale, const QDate &date, int daysToNow);
+
   // Numbers and money
   QString decimalSymbol;
   QString thousandsSeparator;
@@ -1119,9 +1129,23 @@ QString KLocale::formatDuration( unsigned long mSec) const
 
    return i18n( "%1 milliseconds", formatNumber(mSec, 0));
 }
+
+// Deprecated
 QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 {
-  const QString rst = shortFormat?dateFormatShort():dateFormat();
+  return formatDate(pDate, shortFormat ? ShortDate : LongDate);
+}
+
+QString KLocale::formatDate(const QDate &pDate, DateFormat format) const
+{
+  if (format == FancyDate)
+  {
+    int days = pDate.daysTo(QDate::currentDate());
+    if (days >= 0 && days < 7)
+      return KLocalePrivate::fancyDate(this, pDate, days);
+    format = LongDate;
+  }
+  const QString rst = (format == ShortDate) ? dateFormatShort() : dateFormat();
 
   QString buffer;
 
@@ -1192,6 +1216,19 @@ QString KLocale::formatDate(const QDate &pDate, bool shortFormat) const
 	}
     }
   return buffer;
+}
+
+QString KLocalePrivate::fancyDate(const KLocale *locale, const QDate &date, int days)
+{
+  switch (days)
+  {
+    case 0:
+      return i18n("Today");
+    case 1:
+      return i18n("Yesterday");
+    default:
+      return locale->calendar()->weekDayName(date);
+  }
 }
 
 void KLocale::setMainCatalog(const char *catalog)
@@ -1736,36 +1773,90 @@ QStringList KLocale::languageList() const
   return d->languageList;
 }
 
+// Deprecated
 QString KLocale::formatDateTime(const QDateTime &pDateTime,
 				bool shortFormat,
 				bool includeSeconds) const
 {
-  return i18nc( "concatenation of dates and time", "%1 %2",
-                formatDate( pDateTime.date(), shortFormat ),
-                formatTime( pDateTime.time(), includeSeconds ) );
+  return formatDateTime(pDateTime, shortFormat ? ShortDate : LongDate, includeSeconds);
 }
 
+// Deprecated
 QString KLocale::formatDateTime(const KDateTime &pDateTime,
 				bool shortFormat,
 				bool includeSeconds,
                                 bool includeTimeZone) const
 {
-  QString dt;
-  if (pDateTime.isDateOnly())
-    dt = formatDate( pDateTime.date(), shortFormat );
-  else
-    dt = formatDateTime( pDateTime.dateTime(), shortFormat, includeSeconds );
+  DateTimeFormatOptions options;
+  if (includeSeconds)
+    options = Seconds;
   if (includeTimeZone)
+    options |= TimeZone;
+  return formatDateTime(pDateTime, shortFormat ? ShortDate : LongDate, options);
+}
+
+QString KLocalePrivate::formatDateTime(const KLocale *locale, const QDateTime &dateTime,
+                                KLocale::DateFormat format, bool includeSeconds, int daysTo)
+{
+  QString dateStr = (format == KLocale::FancyDate)
+                  ? KLocalePrivate::fancyDate(locale, dateTime.date(), daysTo)
+                  : locale->formatDate(dateTime.date(), format);
+  return i18nc("concatenation of dates and time", "%1 %2",
+               dateStr, locale->formatTime(dateTime.time(), includeSeconds));
+}
+
+QString KLocale::formatDateTime(const QDateTime &dateTime, DateFormat format,
+				bool includeSeconds) const
+{
+  QString dateStr;
+  int days = -1;
+  if (format == FancyDate)
+  {
+    QDateTime now = QDateTime::currentDateTime();
+    days = dateTime.date().daysTo(now.date());
+    if ((days == 0 && now.secsTo(dateTime) <= 3600)   // not more than an hour in the future
+    ||  (days > 0 && days < 7))
+      ;  // use fancy date format
+    else
+      format = LongDate;   // default if fancy date not applicable
+  }
+  return KLocalePrivate::formatDateTime(this, dateTime, format, includeSeconds, days);
+}
+
+QString KLocale::formatDateTime(const KDateTime &dateTime, DateFormat format,
+				DateTimeFormatOptions options) const
+{
+  QString dt;
+  if (dateTime.isDateOnly())
+    dt = formatDate( dateTime.date(), format );
+  else
+  {
+    int days = -1;
+    if (format == FancyDate)
+    {
+      // Use the time specification (i.e. time zone, etc.) of 'dateTime' to
+      // check whether it's less than a week ago.
+      KDateTime now = KDateTime::currentDateTime(dateTime.timeSpec());
+      days = dateTime.date().daysTo(now.date());
+      if ((days == 0 && now.secsTo(dateTime) <= 3600)   // not more than an hour in the future
+      ||  (days > 0 && days < 7))
+        ;  // use fancy date format
+      else
+        format = LongDate;   // default if fancy date not applicable
+    }
+    dt = KLocalePrivate::formatDateTime(this, dateTime.dateTime(), format, (options & Seconds), days);
+  }
+  if (options & TimeZone)
   {
     QString tz;
-    switch (pDateTime.timeType())
+    switch (dateTime.timeType())
     {
       case KDateTime::OffsetFromUTC:
-        tz = i18n(pDateTime.toString("%z").toUtf8());
+        tz = i18n(dateTime.toString("%z").toUtf8());
         break;
       case KDateTime::UTC:
       case KDateTime::TimeZone:
-        tz = i18n(pDateTime.toString(shortFormat ? "%Z" : "%:Z").toUtf8());
+        tz = i18n(dateTime.toString((format == ShortDate) ? "%Z" : "%:Z").toUtf8());
         break;
       case KDateTime::ClockTime:
       default:

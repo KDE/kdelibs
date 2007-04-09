@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (c) 2005 Thomas Braxton <brax108@cox.net>
+    Copyright (c) 2007 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,6 +22,9 @@
 
 #include "klocale.h"
 #include "kglobal.h"
+#include "kcalendarsystem.h"
+#include "kdatetime.h"
+#include "ksystemtimezone.h"
 #include <QtCore/QString>
 #include <QtCore/QDate>
 
@@ -116,11 +120,28 @@ KLocaleTest::formatDate()
 
 	date.setYMD(2002, 5, 3);
 	QCOMPARE(locale.formatDate(date), date.toString(full));
-	QCOMPARE(locale.formatDate(date, true), date.toString(small));
+	QCOMPARE(locale.formatDate(date, KLocale::ShortDate), date.toString(small));
 
 	date = QDate::currentDate();
 	QCOMPARE(locale.formatDate(date), date.toString(full));
-	QCOMPARE(locale.formatDate(date, true), date.toString(small));
+	QCOMPARE(locale.formatDate(date, KLocale::ShortDate), date.toString(small));
+
+	QCOMPARE(locale.formatDate(date, KLocale::FancyDate), QString("Today"));
+	QCOMPARE(locale.formatDate(date.addDays(-1), KLocale::FancyDate), QString("Yesterday"));
+	QDate dat = date.addDays(-2);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	dat = date.addDays(-3);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	dat = date.addDays(-4);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	dat = date.addDays(-5);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	dat = date.addDays(-6);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	dat = date.addDays(-7);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), dat.toString(full));
+	dat = date.addDays(1);
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), dat.toString(full));
 }
 
 void
@@ -165,6 +186,98 @@ KLocaleTest::formatTime()
 	locale.setTimeFormat("%H:%M:%S %p");
 	QCOMPARE(locale.formatTime(time, true, false), QString("00:22:33 am"));
 	QCOMPARE(locale.formatTime(time, true, true), QString("00:22:33"));
+}
+
+void
+KLocaleTest::formatDateTime()
+{
+	KLocale locale(*KGlobal::locale());
+	QString small("yyyy-MM-dd hh:mm");
+	QString smallsecs("yyyy-MM-dd hh:mm:ss");
+	QString full("dddd dd MMMM yyyy hh:mm");
+	QString fullsecs("dddd dd MMMM yyyy hh:mm:ss");
+	QString tfmt(" hh:mm");
+	QDateTime qdt;
+
+        // Ensure that user configuration isn't messing with us;
+        // shouldn't happen though, since qtest_kde.h sets KDEHOME.
+        QCOMPARE(locale.dateFormat(), QString("%A %d %B %Y"));
+
+	qdt = QDateTime(QDate(2002, 5, 3), QTime(10, 20, 30));
+	QCOMPARE(locale.formatDateTime(qdt), qdt.toString(small));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::LongDate), qdt.toString(full));
+
+	qdt = QDateTime::currentDateTime();
+	QDate today = qdt.date();
+	QTime nowt = qdt.time();
+	QCOMPARE(locale.formatDateTime(qdt), qdt.toString(small));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::LongDate), qdt.toString(full));
+
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Today") + qdt.time().toString(tfmt));
+	qdt = qdt.addSecs(3605);  // more than 1 hour from now
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), qdt.toString(full));
+	qdt.setDate(today);
+	qdt.setTime(QTime(0,0,0));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Today") + qdt.time().toString(tfmt));
+	qdt = qdt.addSecs(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Yesterday") + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(2);   // tomorrow
+	qdt.setTime(nowt);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), qdt.toString(full));
+	qdt = qdt.addDays(-2);   // yesterday
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Yesterday") + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	qdt = qdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), qdt.toString(full));
+
+	small = "%Y-%m-%d %H:%M";
+	smallsecs = "%Y-%m-%d %H:%M:%S";
+	full = "%A %d %B %Y %H:%M";
+	fullsecs = "%A %d %B %Y %H:%M:%S";
+	KDateTime kdt;
+	const KTimeZone *tz = KSystemTimeZones::zone("Pacific/Fiji");
+	kdt = KDateTime::currentDateTime(tz);
+	today = kdt.date();
+	nowt = kdt.time();
+	QCOMPARE(locale.formatDateTime(kdt), kdt.toString(small));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::ShortDate, KLocale::Seconds), kdt.toString(smallsecs));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::LongDate), kdt.toString(full));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::LongDate, KLocale::Seconds), kdt.toString(fullsecs));
+
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Today") + kdt.time().toString(tfmt));
+	kdt = kdt.addSecs(3605);  // more than 1 hour from now
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), kdt.toString(full));
+	kdt.setDate(today);
+	kdt.setTime(QTime(0,0,0));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Today") + kdt.time().toString(tfmt));
+	kdt = kdt.addSecs(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Yesterday") + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(2);   // tomorrow
+	kdt.setTime(nowt);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), kdt.toString(full));
+	kdt = kdt.addDays(-2);   // yesterday
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Yesterday") + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	kdt = kdt.addDays(-1);
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), kdt.toString(full));
 }
 
 void
