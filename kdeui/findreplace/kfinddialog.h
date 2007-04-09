@@ -23,7 +23,7 @@
 
 #include <kdialog.h>
 
-class KHistoryCombo;
+class KHistoryComboBox;
 class QPushButton;
 class QMenu;
 class QGridLayout;
@@ -243,7 +243,7 @@ private Q_SLOTS:
 private:
 
     QGroupBox *m_findGrp;
-    KHistoryCombo *m_find;
+    KHistoryComboBox *m_find;
     QCheckBox *m_regExp;
     QPushButton *m_regExpItem;
     QGridLayout *m_findLayout;
@@ -271,7 +271,7 @@ private:
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
 
     QGroupBox *m_replaceGrp;
-    KHistoryCombo *m_replace;
+    KHistoryComboBox *m_replace;
     QCheckBox* m_backRef;
     QPushButton* m_backRefItem;
     QGridLayout *m_replaceLayout;

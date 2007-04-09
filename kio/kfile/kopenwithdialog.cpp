@@ -28,7 +28,7 @@
 #include <QtGui/QCheckBox>
 
 #include <kauthorized.h>
-#include <kcombobox.h>
+#include <khistorycombobox.h>
 #include <kdesktopfile.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -522,7 +522,7 @@ void KOpenWithDialog::init( const QString& _text, const QString& _value )
   if (!bReadOnly)
   {
     // init the history combo and insert it into the URL-Requester
-    KHistoryCombo *combo = new KHistoryCombo();
+    KHistoryComboBox *combo = new KHistoryComboBox();
     KLineEdit *lineEdit = new KLineEdit();
     lineEdit->setClearButtonShown(true);
     combo->setLineEdit(lineEdit);
@@ -904,7 +904,7 @@ void KOpenWithDialog::hideRunInTerminal()
 
 void KOpenWithDialog::accept()
 {
-    KHistoryCombo *combo = static_cast<KHistoryCombo*>( edit->comboBox() );
+    KHistoryComboBox *combo = static_cast<KHistoryComboBox*>( edit->comboBox() );
     if ( combo ) {
         combo->addToHistory( edit->url().url() );
 

@@ -238,7 +238,7 @@ install( FILES
   KHTMLSettings
   KHTMLView
   KHelpMenu
-  KHistoryCombo
+  KHistoryComboBox
   KHueSaturationSelector
   KIEBookmarkExporterImpl
   KIEBookmarkImporter

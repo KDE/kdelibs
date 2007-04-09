@@ -8,7 +8,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <klineedit.h>
-#include <kcombobox.h>
+#include <khistorycombobox.h>
 #include <klocale.h>
 #include "kcompletionuitest.h"
 
@@ -65,14 +65,14 @@ Form1::Form1( QWidget* parent )
     Layout2->setSpacing( 6 );
     Layout2->setMargin( 0 );
 
-    combo = new KHistoryCombo( GroupBox1 );
+    combo = new KHistoryComboBox( GroupBox1 );
     combo->setObjectName( "history combo" );
     combo->setCompletionObject( edit->completionObject() );
     // combo->setMaxCount( 5 );
     combo->setHistoryItems( defaultItems(), true );
     connect( combo, SIGNAL( activated( const QString& )),
 	     combo, SLOT( addToHistory( const QString& )));
-    combo->setToolTip( "KHistoryCombo" );
+    combo->setToolTip( "KHistoryComboBox" );
     Layout2->addWidget( combo );
 
     LineEdit1 = new KLineEdit( GroupBox1 );

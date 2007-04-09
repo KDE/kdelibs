@@ -13,7 +13,7 @@ class QListWidget;
 class QListWidgetItem;
 class QPushButton;
 
-class KHistoryCombo;
+class KHistoryComboBox;
 class KLineEdit;
 
 
@@ -35,7 +35,7 @@ public:
     QPushButton* PushButton1_2;
 
     KLineEdit* edit;
-    KHistoryCombo *combo;
+    KHistoryComboBox *combo;
 
 protected Q_SLOTS:
     void slotList();

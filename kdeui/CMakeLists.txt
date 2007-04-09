@@ -111,6 +111,7 @@ set(kdeui_LIB_SRCS
  paged/kpagewidget.cpp
  paged/kpagewidgetmodel.cpp
  plotting/kplotaxis.cpp
+ plotting/kplotpoint.cpp
  plotting/kplotobject.cpp
  plotting/kplotwidget.cpp
  shortcuts/kshortcut.cpp
@@ -166,6 +167,7 @@ set(kdeui_LIB_SRCS
  widgets/keditlistbox.cpp
  widgets/khbox.cpp
  widgets/khelpmenu.cpp
+ widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
  widgets/kinformationlabel.cpp
  widgets/kled.cpp
@@ -333,6 +335,7 @@ install( FILES
  paged/kpagewidget.h
  paged/kpagewidgetmodel.h
  plotting/kplotwidget.h
+ plotting/kplotpoint.h
  plotting/kplotobject.h
  plotting/kplotaxis.h
  shortcuts/kshortcut.h
@@ -368,8 +371,8 @@ install( FILES
  widgets/karrowbutton.h
  widgets/kdatepicker.h
  widgets/kcmodule.h
- widgets/kcompletionbox.h
  widgets/kcombobox.h
+ widgets/kcompletionbox.h
  widgets/kbuttonbox.h
  widgets/kbuttongroup.h
  widgets/kcharselect.h
@@ -380,6 +383,7 @@ install( FILES
  widgets/keditlistbox.h
  widgets/khbox.h
  widgets/khelpmenu.h
+ widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
  widgets/kinformationlabel.h
  widgets/kled.h

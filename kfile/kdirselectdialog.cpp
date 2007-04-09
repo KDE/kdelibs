@@ -27,7 +27,7 @@
 
 #include <kapplication.h>
 #include <kauthorized.h>
-#include <kcombobox.h>
+#include <khistorycombobox.h>
 #include <kconfig.h>
 #include <kfiledialog.h>
 #include "kfileplacesview.h"
@@ -65,7 +65,7 @@ public:
 
     KActionCollection *actions;
     KFilePlacesView *placesView;
-    KHistoryCombo *urlCombo;
+    KHistoryComboBox *urlCombo;
     KFileTreeBranch *branch;
     QString recentDirClass;
     KUrl startURL;
@@ -127,7 +127,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     m_treeView->setColumnWidthMode( 0, Q3ListView::Maximum );
     m_treeView->setResizeMode( Q3ListView::AllColumns );
 
-    d->urlCombo = new KHistoryCombo( page);
+    d->urlCombo = new KHistoryComboBox( page);
     d->urlCombo->setTrapReturnKey( true );
     d->urlCombo->setPixmapProvider( new KUrlPixmapProvider() );
     KUrlCompletion *comp = new KUrlCompletion();

@@ -23,7 +23,7 @@
 
 #include "kfinddialog.h"
 
-class KHistoryCombo;
+class KHistoryComboBox;
 class QCheckBox;
 class QLabel;
 class QPushButton;

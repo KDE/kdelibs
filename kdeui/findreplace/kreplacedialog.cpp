@@ -26,7 +26,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QLineEdit>
 #include <QtCore/QRegExp>
-#include <kcombobox.h>
+#include <khistorycombobox.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kdebug.h>

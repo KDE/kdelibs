@@ -53,8 +53,8 @@ ToolTip=Font Requester (KDE)
 WhatsThis=A compact font selection and preview widget
 Group=Input (KDE)
 
-[KHistoryCombo]
-IncludeFile=kcombobox.h
+[KHistoryComboBox]
+IncludeFile=khistorycombobox.h
 ToolTip=A combobox for offering a history and completion (KDE)
 WhatsThis=A combobox which implements a history like a unix shell
 Group=Input (KDE)

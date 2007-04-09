@@ -29,6 +29,7 @@
 #include <QtGui/QPushButton>
 #include <QtCore/QRegExp>
 #include <kcombobox.h>
+#include <khistorycombobox.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
@@ -139,7 +140,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
    // m_findLayout->setMargin( KDialog::marginHint() );
 
     QLabel *findLabel = new QLabel(i18n("&Text to find:"), m_findGrp);
-    m_find = new KHistoryCombo(true, m_findGrp);
+    m_find = new KHistoryComboBox(true, m_findGrp);
     m_find->setMaxCount(10);
     m_find->setDuplicatesEnabled(false);
     m_regExp = new QCheckBox(i18n("Regular e&xpression"), m_findGrp);
@@ -159,7 +160,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
 //    m_replaceLayout->setMargin( KDialog::marginHint() );
 
     QLabel *replaceLabel = new QLabel(i18n("Replace&ment text:"), m_replaceGrp);
-    m_replace = new KHistoryCombo(true, m_replaceGrp);
+    m_replace = new KHistoryComboBox(true, m_replaceGrp);
     m_replace->setMaxCount(10);
     m_replace->setDuplicatesEnabled(false);
     m_backRef = new QCheckBox(i18n("Use p&laceholders"), m_replaceGrp);
