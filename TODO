@@ -214,7 +214,7 @@ informations
 - Merge classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
 
 - It looks like most of the functions KStringHandler can be removed.  At least, insword, setword, 
-  remrange, and remword could be removed.  Those four don't seem to be used anywhere inside of KDE.  Other
+  remrange, and remword could be removed [DONE] .  Those four don't seem to be used anywhere inside of KDE.  Other
   functions like capitalize and reverse seem to be sparsely used. 
   (Caleb)
 

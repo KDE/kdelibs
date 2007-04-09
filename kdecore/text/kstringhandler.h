@@ -49,91 +49,12 @@ class QStringList;
  * This class contains no data members of it own. All strings are cut
  * on the fly and returned as new qstrings/qstringlists.
  *
- * Quick example on how to use:
- *
- * \code
- * KStringHandler kstr;
- * QString line = "This is a test of the strings";
- *
- * cout << "2> " << kstr.remrange( line , "2:5" ) << "\n";
- * cout << "2> " << kstr.reverse( line ) << "\n";
- * cout << "2> " << kstr.center( kstr.word( line , 4 ) , 15 ) << "\n";
- * \endcode
- *
- * and so forth.
- *
  * @short Namespace for manipulating words and sentences in strings
  * @author Ian Zepp <icszepp@islc.net>
  * @see KShell
  */
 namespace KStringHandler
 {
-    /** Returns a range of words from that string.
-      * Ie:
-      * @li "0" returns the very first word
-      * @li "0:" returns the first to the last word
-      * @li "0:3" returns the first to fourth words
-      * @li ":3" returns everything up to the fourth word
-      *
-      * If you grok python, you're set.
-      * @param text the string to search for the words
-      * @param range the words to return (see description)
-      * @return the words, or an empty string if not found
-      */
-    KDECORE_EXPORT QString word( const QString &text, const char *range );
-
-    /** Inserts a word into the string, and returns
-      * a new string with the word included. the first
-      * index is zero (0). If there are not @p pos words in the original
-      * string, the new word will be appended to the end.
-      * @param text the original text
-      * @param word the word to insert
-      * @param pos the position (in words) for the new word
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString insword( const QString &text, const QString &word, int pos );
-
-    /** Replaces a word in the string, and returns
-      * a new string with the word included. the first
-      * index is zero (0). If there are not @p pos words in the original
-      * string, the new word will be appended to the end.
-      * @param text the original text
-      * @param word the word to insert
-      * @param pos the position (in words) for the new word
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString setword( const QString &text, const QString &word, int pos );
-
-    /** Removes a word or ranges of words from the string,
-      * and returns a new string. The ranges definitions
-      * follow the definitions for the word() function.
-      *
-      * @li "0"        removes the very first word
-      * @li "0:"    removes the first the the last word
-      * @li "0:3"    removes the first to fourth words
-      * @li ":3"    removes everything up to the fourth word
-      * @param text the original text
-      * @param range the words to remove (see description)
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString remrange( const QString &text , const char *range );
-
-
-    /** Removes a word at the given index, and returns a
-      * new string. The first index is zero (0).
-      * @param text the original text
-      * @param pos the position (in words) of thw word to delete
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString remword( const QString &text , int pos );
-
-    /** Removes a matching word from the string, and returns
-      * a new string. Note that only ONE match is removed.
-      * @param text the original text
-      * @param word the word to remove
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString remword( const QString &text , const QString &word );
 
     /** Capitalizes each word in the string
       * "hello there" becomes "Hello There"        (string)
@@ -148,31 +69,6 @@ namespace KStringHandler
       * @return the resulting list
       */
     KDECORE_EXPORT QStringList capwords( const QStringList &list );
-
-    /** Reverses the order of the words in a string
-      * "hello there" becomes "there hello"        (string)
-      * @param text the text to reverse
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString reverse( const QString &text );
-
-    /** Reverses the order of the words in a list
-      * [hello, there] becomes [there, hello]    (list)
-      * @param list the list to reverse
-      * @return the resulting list
-      */
-    KDECORE_EXPORT QStringList reverse( const QStringList &list );
-
-
-    /** Centers a string and returns a string at least 'width' characters
-      * wide.
-      * If the string is longer than the @p width, the original
-      * string is returned. It is never truncated.
-      * @param text the text to justify
-      * @param width the desired width of the new string
-      * @return the resulting string
-      */
-    KDECORE_EXPORT QString center( const QString &text , int width );
 
     /** Substitute characters at the beginning of a string by "...".
      * @param str is the string to modify

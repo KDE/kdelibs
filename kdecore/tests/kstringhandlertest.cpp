@@ -9,60 +9,10 @@ QTEST_KDEMAIN_CORE(KStringHandlerTest)
 
 QString KStringHandlerTest::test = "The quick brown fox jumped over the lazy bridge. ";
 
-void KStringHandlerTest::word()
-{
-    QCOMPARE(KStringHandler::word(test, "2"),
-            QString("brown"));
-    QCOMPARE(KStringHandler::word(test, "2:4"),
-            QString("brown fox jumped"));
-}
-
-void KStringHandlerTest::insword()
-{
-    QCOMPARE(KStringHandler::insword(test, "very", 1),
-            QString("The very quick brown fox jumped over the lazy bridge. "));
-}
-
-void KStringHandlerTest::setword()
-{
-    QCOMPARE(KStringHandler::setword(test, "very", 1),
-            QString("The very brown fox jumped over the lazy bridge. "));
-}
-
-void KStringHandlerTest::remrange()
-{
-    QCOMPARE(KStringHandler::remrange(test, "4:6"),
-            QString("The quick brown fox lazy bridge. " ));
-    QCOMPARE(KStringHandler::remrange(test, "4:8"),
-            QString("The quick brown fox "));
-}
-
-void KStringHandlerTest::remword()
-{
-    QCOMPARE(KStringHandler::remword(test, 4),
-            QString("The quick brown fox over the lazy bridge. "));
-    QCOMPARE(KStringHandler::remword(test, "lazy"),
-            QString("The quick brown fox jumped over the bridge. "));
-}
-
 void KStringHandlerTest::capwords()
 {
     QCOMPARE(KStringHandler::capwords(test),
             QString("The Quick Brown Fox Jumped Over The Lazy Bridge. "));
-}
-
-void KStringHandlerTest::reverse()
-{
-    QCOMPARE(KStringHandler::reverse(test),
-            QString(" bridge. lazy the over jumped fox brown quick The"));
-}
-
-void KStringHandlerTest::center()
-{
-    QString result = KStringHandler::center(test, 70);
-    QCOMPARE(result.length(), 70);
-    QCOMPARE(result,
-            QString("           The quick brown fox jumped over the lazy bridge.           "));
 }
 
 void KStringHandlerTest::tagURLs()
