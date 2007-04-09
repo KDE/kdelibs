@@ -81,45 +81,45 @@ QIODeviceInputStream::fillBuffer(char* start, int32_t space) {
 class KMetaInfoWriter : public IndexWriter {
 public:
     // irrelevant for KFileMetaInfo
-    void startAnalysis(AnalysisResult*) {
+    void startAnalysis(const AnalysisResult*) {
     }
     // irrelevant for KFileMetaInfo
     // we do not store text as metainfo
     void addText(const AnalysisResult*, const char* /*s*/, int32_t /*n*/) {
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const AnalysisResult* idx, const RegisteredField* field,
             const string& value) {
         if (idx->writerData()) {
             QString val = QString::fromUtf8(value.c_str(), value.size());
-            addField(idx, field, val);
+            addValue(idx, field, val);
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const AnalysisResult* idx, const RegisteredField* field,
         const unsigned char* data, uint32_t size) {
         if (idx->writerData()) {
             QByteArray d((const char*)data, size);
-            addField(idx, field, QVariant(d));
+            addValue(idx, field, QVariant(d));
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const AnalysisResult* idx, const RegisteredField* field,
             uint32_t value) {
         if (idx->writerData()) {
-            addField(idx, field, QVariant(value));
+            addValue(idx, field, QVariant(value));
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const AnalysisResult* idx, const RegisteredField* field,
             int32_t value) {
         if (idx->writerData()) {
-            addField(idx, field, QVariant(value));
+            addValue(idx, field, QVariant(value));
         }
     }
-    void addField(const AnalysisResult* idx, const RegisteredField* field,
+    void addValue(const AnalysisResult* idx, const RegisteredField* field,
             double value) {
         if (idx->writerData()) {
-            addField(idx, field, QVariant(value));
+            addValue(idx, field, QVariant(value));
         }
     }
-    void addField(const AnalysisResult* idx,
+    void addValue(const AnalysisResult* idx,
             const RegisteredField* field, const QVariant& value) {
         QHash<QString, KFileMetaInfoItem>* info
             = static_cast<QHash<QString, KFileMetaInfoItem>*>(
@@ -143,7 +143,7 @@ public:
         if (ar->writerData()) {
             QVariantMap m;
             m.insert(name.c_str(), value.c_str());
-            addField(ar, field, m);
+            addValue(ar, field, m);
         }
     }
     /* irrelevant for KFileMetaInfo: These triples does not convey information
