@@ -934,8 +934,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                     end++;
                 if (*end == '\0' || end == pEnd)
                     break;
-                QByteArray str(ptr, end - ptr + 1); //+1 as it must include the \0 terminator
-                str[str.size() - 1]='\0';
+                QByteArray str(ptr, end - ptr); // qbytearray provides the \0 terminator
                 int length;
                 int pos = findXMLEncoding(str, length);
                 // also handles the case when specified encoding aint correct
