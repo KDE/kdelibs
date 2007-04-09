@@ -1718,7 +1718,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   url = reqUrl.prettyUrl();
   protocol = reqUrl.protocol();
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
-                                                false );
+                                                KLocale::LongDate );
 
   QString doc = QLatin1String( "<html><head><title>" );
   doc += i18n( "Error: " );

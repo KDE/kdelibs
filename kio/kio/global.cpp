@@ -446,7 +446,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
   }
 
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
-                                                false );
+                                                KLocale::LongDate );
 
   ret << errorName;
   ret << QLatin1String( "<qt><p><b>" ) + errorName +
@@ -528,7 +528,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   }
 
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
-                                                false );
+                                                KLocale::LongDate );
 
   QString errorName, techName, description;
   QStringList causes, solutions;

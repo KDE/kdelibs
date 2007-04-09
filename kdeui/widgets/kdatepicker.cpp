@@ -275,7 +275,7 @@ KDatePicker::dateChangedSlot(const QDate &date)
 
     const KCalendarSystem * calendar = KGlobal::locale()->calendar();
 
-    d->line->setText(KGlobal::locale()->formatDate(date, true));
+    d->line->setText(KGlobal::locale()->formatDate(date, KLocale::ShortDate));
     d->selectMonth->setText(calendar->monthName(date, false));
     fillWeeksCombo(date);
 

@@ -200,7 +200,7 @@ class ItemsViewPart : public KHTMLPart
                         // contents footer: author's name/date
                         "<div class='contentsFooter'>"
                           "<em>" + authorString + "</em>, "
-                          + KGlobal::locale()->formatDate( entry->releaseDate(), true ) +
+                          + KGlobal::locale()->formatDate( entry->releaseDate(), KLocale::ShortDate ) +
                         "</div>"
                      "</td>"
                   "</tr></table>" )
