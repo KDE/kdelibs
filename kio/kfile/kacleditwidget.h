@@ -24,34 +24,29 @@
 
 #if defined(HAVE_POSIX_ACL) || defined(Q_MOC_RUN)
 
-#include <k3listview.h>
-#include <kacl.h>
-#include <kfileitem.h>
+#include <QtGui/QWidget>
 
-class KACLListViewItem;
-class KACLListView;
-class QPushButton;
+#include <kacl.h>
 
 class KACLEditWidget : public QWidget
 {
   Q_OBJECT
 public:
-  KACLEditWidget( QWidget *parent = 0 );
+    explicit KACLEditWidget(QWidget *parent = 0);
   KACL getACL() const;
   KACL getDefaultACL() const;
   void setACL( const KACL & );
   void setDefaultACL( const KACL & );
   void setAllowDefaults( bool value );
-private Q_SLOTS:
-  void slotUpdateButtons();
 
 private:
-  KACLListView* m_listView;
-  QPushButton *m_AddBtn;
-  QPushButton *m_EditBtn;
-  QPushButton *m_DelBtn;
-};
+    class KACLEditWidgetPrivate;
+    KACLEditWidgetPrivate *const d;
 
+    Q_DISABLE_COPY(KACLEditWidget)
+
+    Q_PRIVATE_SLOT(d, void _k_slotUpdateButtons())
+};
 
 #endif
 #endif
