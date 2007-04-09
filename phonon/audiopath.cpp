@@ -44,8 +44,7 @@ bool AudioPath::addOutput( AbstractAudioOutput* audioOutput )
 	if( d->outputs.contains( audioOutput ) )
 		return false;
 
-	if( iface() )
-	{
+    if (iface() && audioOutput->iface()) {
 		bool success;
 		BACKEND_GET1( bool, success, "addOutput", QObject*, audioOutput->iface() );
 		if( success )
@@ -64,8 +63,7 @@ bool AudioPath::removeOutput( AbstractAudioOutput* audioOutput )
 	if( !d->outputs.contains( audioOutput ) )
 		return false;
 
-	if( d->backendObject )
-	{
+    if (d->backendObject && audioOutput->iface()) {
 		bool success;
 		BACKEND_GET1( bool, success, "removeOutput", QObject*, audioOutput->iface() );
 		if( success )
@@ -91,8 +89,7 @@ bool AudioPath::insertEffect( AudioEffect* newEffect, AudioEffect* insertBefore 
 	if( d->effects.contains( newEffect ) )
 		return false;
 
-	if( iface() )
-	{
+    if (iface() && newEffect->iface()) {
 		bool success;
 		BACKEND_GET2( bool, success, "insertEffect", QObject*, newEffect->iface(), QObject*, insertBefore ? insertBefore->iface() : 0 );
 		if( success )
@@ -148,7 +145,11 @@ void AudioPath::setupIface()
 	QList<AbstractAudioOutput*> outputList = d->outputs;
 	foreach( AbstractAudioOutput* output, outputList )
 	{
-		BACKEND_GET1( bool, success, "addOutput", QObject*, output->iface() );
+        if (output->iface()) {
+            BACKEND_GET1(bool, success, "addOutput", QObject*, output->iface());
+        } else {
+            success = false;
+        }
 		if( !success )
 			d->outputs.removeAll( output );
 	}
@@ -156,7 +157,11 @@ void AudioPath::setupIface()
 	QList<AudioEffect*> effectList = d->effects;
 	foreach( AudioEffect* effect, effectList )
 	{
-		BACKEND_GET1( bool, success, "insertEffect", QObject*, effect->iface() );
+        if (effect->iface()) {
+            BACKEND_GET1( bool, success, "insertEffect", QObject*, effect->iface() );
+        } else {
+            success = false;
+        }
 		if( !success )
 			d->effects.removeAll( effect );
 	}
@@ -172,14 +177,16 @@ void AudioPathPrivate::phononObjectDestroyed( Base* o )
 	AudioEffect* audioEffect = static_cast<AudioEffect*>( o );
 	if( outputs.contains( output ) )
 	{
-		if( backendObject )
+        if (backendObject && output->iface()) {
 			pBACKEND_CALL1( "removeOutput", QObject*, output->iface() );
+        }
 		outputs.removeAll( output );
 	}
 	else if( effects.contains( audioEffect ) )
 	{
-		if( backendObject )
+        if (backendObject && audioEffect->iface()) {
 			pBACKEND_CALL1( "removeEffect", QObject*, audioEffect->iface() );
+        }
 		effects.removeAll( audioEffect );
 	}
 }
