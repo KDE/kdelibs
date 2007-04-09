@@ -36,22 +36,15 @@
 class KIO::JobUiDelegate::Private
 {
 public:
-    Private() : showProgressInfo(true),
-                userTimestamp(0) { }
+    Private() : showProgressInfo(true) { }
 
     bool showProgressInfo;
-    QPointer<QWidget> errorParentWidget;
-    unsigned long userTimestamp;
 };
 
 KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
     : d(new Private())
 {
     d->showProgressInfo = showProgressInfo;
-    d->errorParentWidget = 0L;
-#if defined Q_WS_X11
-    d->userTimestamp = QX11Info::appUserTime();
-#endif
 }
 
 KIO::JobUiDelegate::~JobUiDelegate()
@@ -61,49 +54,8 @@ KIO::JobUiDelegate::~JobUiDelegate()
 
 void KIO::JobUiDelegate::setWindow(QWidget *window)
 {
-    d->errorParentWidget = window;
+    KDialogJobUiDelegate::setWindow(window);
     KIO::Scheduler::registerWindow(window);
-}
-
-QWidget *KIO::JobUiDelegate::window() const
-{
-    return d->errorParentWidget;
-}
-
-void KIO::JobUiDelegate::updateUserTimestamp( unsigned long time )
-{
-#if defined Q_WS_X11
-  if( d->userTimestamp == 0 || NET::timestampCompare( time, d->userTimestamp ) > 0 )
-      d->userTimestamp = time;
-#endif
-}
-
-unsigned long KIO::JobUiDelegate::userTimestamp() const
-{
-    return d->userTimestamp;
-}
-
-void KIO::JobUiDelegate::showErrorMessage()
-{
-    if ( job()->error() != KJob::KilledJobError )
-    {
-        KMessageBox::queuedMessageBox( d->errorParentWidget, KMessageBox::Error, job()->errorString() );
-    }
-}
-
-void KIO::JobUiDelegate::slotWarning(KJob */*job*/, const QString &plain, const QString &/*rich*/)
-{
-    if (isAutoWarningHandlingEnabled())
-    {
-        static uint msgBoxDisplayed = 0;
-        if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
-        {
-            msgBoxDisplayed++;
-            KMessageBox::information( d->errorParentWidget, plain );
-            msgBoxDisplayed--;
-        }
-        // otherwise just discard it.
-    }
 }
 
 KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,

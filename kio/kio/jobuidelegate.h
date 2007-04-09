@@ -22,7 +22,7 @@
 #ifndef KIO_JOBUIDELEGATE_H
 #define KIO_JOBUIDELEGATE_H
 
-#include <kjobuidelegate.h>
+#include <kdialogjobuidelegate.h>
 #include <kio/skipdialog.h>
 #include <kio/renamedialog.h>
 
@@ -36,7 +36,7 @@ class Job;
  *
  * It uses KIO::Observer to do the tracking.
  */
-class KIO_EXPORT JobUiDelegate : public KJobUiDelegate
+class KIO_EXPORT JobUiDelegate : public KDialogJobUiDelegate
 {
     Q_OBJECT
 
@@ -61,27 +61,7 @@ public:
      * @param window the window to associate to
      * @see window()
      */
-    void setWindow(QWidget *window);
-
-    /**
-     * Returns the window this job is associated with.
-     * @return the associated window
-     * @see setWindow()
-     */
-    QWidget *window() const;
-
-    /**
-     * Updates the last user action timestamp to the given time.
-     * See KApplication::updateUserTimestamp().
-     */
-    void updateUserTimestamp( unsigned long time );
-
-    /**
-     * @internal
-     */
-    unsigned long userTimestamp() const;
-
-    virtual void showErrorMessage();
+    virtual void setWindow(QWidget *window);
 
     /**
      * \relates KIO::RenameDialog
@@ -123,9 +103,6 @@ public:
     virtual SkipDialog_Result askSkip(KJob * job,
                                       bool multi,
                                       const QString & error_text);
-
-protected Q_SLOTS:
-    virtual void slotWarning(KJob *job, const QString &plain, const QString &rich);
 
 private:
     class Private;
