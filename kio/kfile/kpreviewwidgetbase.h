@@ -21,7 +21,6 @@
 #ifndef __KPREVIEWWIDGETBASE_H__
 #define __KPREVIEWWIDGETBASE_H__
 
-#include <QtCore/QHash>
 #include <QtGui/QWidget>
 
 #include <kio/kio_export.h>
@@ -79,10 +78,9 @@ protected:
 
 private:
     class KPreviewWidgetBasePrivate;
-    KPreviewWidgetBasePrivate * d() const {
-        return s_private->value( const_cast<KPreviewWidgetBase*>( this ) );
-    }
-    static QHash<KPreviewWidgetBase*, KPreviewWidgetBase::KPreviewWidgetBasePrivate*> * s_private;
+    KPreviewWidgetBasePrivate *const d;
+
+    Q_DISABLE_COPY(KPreviewWidgetBase)
 };
 
 #endif

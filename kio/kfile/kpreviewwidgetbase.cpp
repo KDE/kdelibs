@@ -7,7 +7,6 @@
  */
 
 #include "kpreviewwidgetbase.h"
-#include <QtCore/QMutableStringListIterator>
 
 class KPreviewWidgetBase::KPreviewWidgetBasePrivate
 {
@@ -15,35 +14,24 @@ public:
     QStringList supportedMimeTypes;
 };
 
-QHash<KPreviewWidgetBase*, KPreviewWidgetBase::KPreviewWidgetBasePrivate*> * KPreviewWidgetBase::s_private;
-
 KPreviewWidgetBase::KPreviewWidgetBase( QWidget *parent )
-    : QWidget( parent )
+    : QWidget(parent), d(new KPreviewWidgetBasePrivate)
 {
-    if ( !s_private )
-        s_private = new QHash<KPreviewWidgetBase*, KPreviewWidgetBasePrivate*>();
-
-    s_private->insert( this, new KPreviewWidgetBasePrivate() );
 }
 
 KPreviewWidgetBase::~KPreviewWidgetBase()
 {
-    delete s_private->take( this );
-    if ( s_private->isEmpty() )
-    {
-        delete s_private;
-        s_private = 0L;
-    }
+    delete d;
 }
 
 void KPreviewWidgetBase::setSupportedMimeTypes( const QStringList& mimeTypes )
 {
-    d()->supportedMimeTypes = mimeTypes;
+    d->supportedMimeTypes = mimeTypes;
 }
 
 QStringList KPreviewWidgetBase::supportedMimeTypes() const
 {
-    return d()->supportedMimeTypes;
+    return d->supportedMimeTypes;
 }
 
 #include "kpreviewwidgetbase.moc"
