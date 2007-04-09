@@ -48,10 +48,6 @@ DeleteJob::DeleteJob( const KUrl::List& src, bool showProgressInfo )
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
   m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
 {
-    // AWFUL HACK... We really shouldn't try to set the delegate inside a constructor
-    // That'll break in subclasses if it introspects. (ervin)
-    setUiDelegate( new JobUiDelegate( showProgressInfo ) );
-
     m_reportTimer=new QTimer(this);
     connect(m_reportTimer,SIGNAL(timeout()),this,SLOT(slotReport()));
     //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX

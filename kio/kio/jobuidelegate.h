@@ -43,11 +43,8 @@ class KIO_EXPORT JobUiDelegate : public KDialogJobUiDelegate
 public:
     /**
      * Constructs a new KIO Job UI delegate.
-     *
-     * @param showProgressInfo indicates if this delegate should
-     * show the progress of the job or not
      */
-    JobUiDelegate( bool showProgressInfo );
+    JobUiDelegate();
 
     /**
      * Destroys the KIO Job UI delegate.

@@ -88,10 +88,6 @@ CopyJob::CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool a
     m_dest(dest), m_bAutoSkip( false ), m_bOverwriteAll( false ),
     m_conflictError(0), m_reportTimer(0),d(new CopyJobPrivate)
 {
-    // AWFUL HACK... We really shouldn't try to set the delegate inside a constructor
-    // That'll break in subclasses if it introspects. (ervin)
-    setUiDelegate( new JobUiDelegate( showProgressInfo ) );
-
     d->m_globalDest = dest;
     d->m_globalDestinationState = destinationState;
 

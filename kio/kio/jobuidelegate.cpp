@@ -36,15 +36,11 @@
 class KIO::JobUiDelegate::Private
 {
 public:
-    Private() : showProgressInfo(true) { }
-
-    bool showProgressInfo;
 };
 
-KIO::JobUiDelegate::JobUiDelegate( bool showProgressInfo )
+KIO::JobUiDelegate::JobUiDelegate()
     : d(new Private())
 {
-    d->showProgressInfo = showProgressInfo;
 }
 
 KIO::JobUiDelegate::~JobUiDelegate()

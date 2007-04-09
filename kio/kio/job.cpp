@@ -94,7 +94,7 @@ public:
 Job::Job(bool showProgressInfo) : KCompositeJob(0), d( new JobPrivate )
 {
     setCapabilities( KJob::Killable | KJob::Suspendable );
-    setUiDelegate( new JobUiDelegate( showProgressInfo ) );
+    setUiDelegate(new JobUiDelegate());
 }
 
 Job::~Job()
