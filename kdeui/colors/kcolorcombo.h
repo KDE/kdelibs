@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
+    Copyright (c) 2007 David Jarvie (software@astrojar.org.uk)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,6 +28,7 @@
 #define KCOLORCOMBO_H
 
 #include <QtGui/QComboBox>
+#include <QtCore/QList>
 
 #include <kdeui_export.h>
 
@@ -42,6 +44,7 @@ class KDEUI_EXPORT KColorCombo : public QComboBox
 {
     Q_OBJECT
     Q_PROPERTY( QColor color READ color WRITE setColor )
+    Q_PROPERTY( QList<QColor> colors READ colors WRITE setColors )
 
 public:
     /**
@@ -58,6 +61,26 @@ public:
      * Returns the currently selected color.
      **/
     QColor color() const;
+
+    /**
+     * Find whether the currently selected color is a custom color selected
+     * using a color dialog.
+     **/
+    bool isCustomColor() const;
+
+    /**
+     * Set a custom list of colors to choose from, in place of the standard
+     * list.
+     * @param cols list of colors. If empty, the selection list reverts to
+     *             the standard list.
+     **/
+    void setColors(const QList<QColor> &colors );
+
+    /**
+     * Return the list of colors available for selection.
+     * @return list of colors
+     **/
+    QList<QColor> colors() const;
 
     /**
      * Clear the color list and don't show it, till the next setColor() call

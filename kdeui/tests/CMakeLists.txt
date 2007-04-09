@@ -47,6 +47,7 @@ KDEUI_BUILD_TESTS(
   kcharselecttest
   kcolortest
   kcolordlgtest
+  kcolorcombotest
   kcomboboxtest
   kcompletionuitest
   kdatepicktest

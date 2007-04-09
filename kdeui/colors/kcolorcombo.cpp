@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
     Copyright (C) 2007 Pino Toscano (pino@kde.org)
+    Copyright (c) 2007 David Jarvie (software@astrojar.org.uk)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -194,6 +195,7 @@ class KColorComboPrivate
         void _k_slotHighlighted(int index);
 
         KColorCombo *q;
+	QList<QColor> colorList;
 	QColor customColor;
 	QColor internalcolor;
 };
@@ -206,17 +208,22 @@ KColorComboPrivate::KColorComboPrivate(KColorCombo *qq)
 void KColorComboPrivate::setCustomColor(const QColor &color, bool lookupInPresets)
 {
     if (lookupInPresets) {
-        bool found = false;
-        for (int i = 0; !found && i < STANDARD_PAL_SIZE; ++i) {
-            if (standardPalette[i] == color) {
+        if (colorList.isEmpty()) {
+            for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
+                if (standardPalette[i] == color) {
+                    q->setCurrentIndex(i + 1);
+                    internalcolor = color;
+                    return;
+                }
+            }
+        } else {
+            int i = colorList.indexOf(color);
+            if (i >= 0) {
                 q->setCurrentIndex(i + 1);
                 internalcolor = color;
-                found = true;
+                return;
             }
         }
-
-        if (found)
-            return;
     }
 
     internalcolor = color;
@@ -246,6 +253,27 @@ KColorCombo::~KColorCombo()
 {
 	delete d;
 }
+
+void KColorCombo::setColors( const QList<QColor> &colors )
+{
+    clear();
+    d->colorList = colors;
+    d->addColors();
+}
+
+QList<QColor> KColorCombo::colors() const
+{
+    if (d->colorList.isEmpty()) {
+        QList<QColor> list;
+        for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
+            list += standardPalette[i];
+	}
+        return list;
+    } else {
+        return d->colorList;
+    }
+}
+
 /**
    Sets the current color
  */
@@ -268,6 +296,11 @@ void KColorCombo::setColor( const QColor &col )
  */
 QColor KColorCombo::color() const {
   return d->internalcolor;
+}
+
+bool KColorCombo::isCustomColor() const
+{
+    return d->internalcolor == d->customColor;
 }
 
 void KColorCombo::paintEvent(QPaintEvent *event)
@@ -298,8 +331,10 @@ void KColorComboPrivate::_k_slotActivated(int index)
         if (KColorDialog::getColor(customColor, q) == QDialog::Accepted) {
             setCustomColor(customColor, false);
         }
-    } else {
+    } else if (colorList.isEmpty()) {
         internalcolor = standardPalette[index - 1];
+    } else {
+        internalcolor = colorList[index - 1];
     }
 
     emit q->activated(internalcolor);
@@ -309,8 +344,10 @@ void KColorComboPrivate::_k_slotHighlighted(int index)
 {
     if (index == 0) {
         internalcolor = customColor;
-    } else {
+    } else if (colorList.isEmpty()) {
         internalcolor = standardPalette[index - 1];
+    } else {
+        internalcolor = colorList[index - 1];
     }
 
     emit q->highlighted(internalcolor);
@@ -320,9 +357,16 @@ void KColorComboPrivate::addColors()
 {
     q->addItem(i18nc("Custom color", "Custom..."));
 
-    for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
-        q->addItem(QString::null);
-        q->setItemData(i + 1, standardPalette[i], KColorComboDelegate::ColorRole);
+    if (colorList.isEmpty()) {
+        for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
+            q->addItem(QString());
+            q->setItemData(i + 1, standardPalette[i], KColorComboDelegate::ColorRole);
+        }
+    } else {
+        for (int i = 0, count = colorList.count(); i < count; ++i) {
+            q->addItem(QString());
+            q->setItemData(i + 1, colorList[i], KColorComboDelegate::ColorRole);
+        }
     }
 }
 
