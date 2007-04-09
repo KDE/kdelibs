@@ -212,6 +212,11 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
     int cp1251_a_capital=0;
     int cp1251_a=0;
 
+    int koi_s_capital=0;
+    int koi_s=0;
+    int cp1251_s_capital=0;
+    int cp1251_s=0;
+
     int koi_i_capital=0;
     int koi_i=0;
     int cp1251_i_capital=0;
@@ -234,6 +239,8 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
                 ++cp1251_a;
             else if (ptr[i]==0xe8)//small i
                 ++cp1251_i;
+            else if (ptr[i]==0xf1)//small s
+                ++cp1251_s;
             else if (ptr[i]==0xf2 && ptr[i-1]==0xf1)//small st
                 ++cp1251_st;
 
@@ -243,6 +250,8 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
                 ++koi_a_capital;
             else if (ptr[i]==0xe9)
                 ++koi_i_capital;
+            else if (ptr[i]==0xf3)
+                ++koi_s_capital;
 
         }
         else if (ptr[i]>0xbf)
@@ -257,6 +266,8 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
                 ++koi_a;
             else if (ptr[i]==0xc9)//small i
                 ++koi_i;
+            else if (ptr[i]==0xd3)//small s
+                ++koi_s;
             else if (ptr[i]==0xd4 && ptr[i-1]==0xd3)//small st
                 ++koi_st;
 
@@ -266,16 +277,18 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
                 ++cp1251_a_capital;
             else if (ptr[i]==0xc8)
                 ++cp1251_i_capital;
+            else if (ptr[i]==0xd1)
+                ++cp1251_s_capital;
         }
         else if (ptr[i]>0x9f && ptr[i]<0xb0) //first 16 letterz is 60%
             ++ibm866_small_range;
 
     }
-    if (cp1251_small_range+koi_small_range+ibm866_small_range<20)
+
+    //cannot decide?
+    if (cp1251_small_range+koi_small_range+ibm866_small_range<8)
     {
         return "";
-//         setEncoding("iso8859-1",DefaultEncoding);
-//         return false;
     }
 
     if (3*utf8_mark>cp1251_small_range+koi_small_range+ibm866_small_range)
@@ -297,7 +310,7 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
     else if (koi_st==0 && cp1251_st>1)
         cp1251_score+=10;
 
-    if (cp1251_st>0 && koi_st>0)
+    if (cp1251_st && koi_st)
     {
         if (cp1251_st/koi_st>2)
             cp1251_score+=20;
@@ -307,35 +320,47 @@ static QByteArray automaticDetectionForCyrillic( const unsigned char* ptr, int s
 
     if (cp1251_a>koi_a)
         cp1251_score+=10;
-    else
+    else if (cp1251_a || koi_a)
         koi_score+=10;
 
     if (cp1251_o>koi_o)
         cp1251_score+=10;
-    else
+    else if (cp1251_o || koi_o)
         koi_score+=10;
 
     if (cp1251_i>koi_i)
         cp1251_score+=10;
-    else
+    else if (cp1251_i || koi_i)
+        koi_score+=10;
+
+    if (cp1251_s>koi_s)
+        cp1251_score+=10;
+    else if (cp1251_s || koi_s)
         koi_score+=10;
 
     if (cp1251_a_capital>koi_a_capital)
-        cp1251_score+=5;
-    else
-        koi_score+=5;
+        cp1251_score+=9;
+    else if (cp1251_a_capital || koi_a_capital)
+        koi_score+=9;
 
     if (cp1251_o_capital>koi_o_capital)
-        cp1251_score+=5;
-    else
-        koi_score+=5;
+        cp1251_score+=9;
+    else if (cp1251_o_capital || koi_o_capital)
+        koi_score+=9;
 
     if (cp1251_i_capital>koi_i_capital)
-        cp1251_score+=5;
-    else
-        koi_score+=5;
+        cp1251_score+=9;
+    else if (cp1251_i_capital || koi_i_capital)
+        koi_score+=9;
 
-    if (abs(koi_score-cp1251_score)<20)
+    if (cp1251_s_capital>koi_s_capital)
+        cp1251_score+=9;
+    else if (cp1251_s_capital || koi_s_capital)
+        koi_score+=9;
+#ifdef DECODE_DEBUG
+    kWarning()<<"koi_score " << koi_score << " cp1251_score " << cp1251_score <<endl;
+#endif
+    if (abs(koi_score-cp1251_score)<10)
     {
         //fallback...
         cp1251_score=cp1251_small_range;
