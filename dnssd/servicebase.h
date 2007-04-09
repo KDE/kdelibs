@@ -62,22 +62,22 @@ public:
 	/**
 	Returns name of service.
 	 */
-	const QString& serviceName() const;
+	QString serviceName() const;
 
 	/**
 	Returns type of service. It always in format _sometype._udp or _sometype._tcp.
 	 */
-	const QString& type() const;
+	QString type() const;
 
 	/**
 	Returns domain that given service belongs to. It is "local." for link-local services.
 	 */
-	const QString& domain() const;
+	QString domain() const;
 
 	/**
 	Returns hostname. It is only valid for local and resolved remote services.
 	 */
-	const QString& hostName() const;
+	QString hostName() const;
 
 	/**
 	Returns port number. It is only valid for local and resolved remote services.
@@ -87,7 +87,7 @@ public:
 	/**
 	Returns read only map of text properties.  It is only valid for local and resolved remote services.
 	 */
-	const QMap<QString,QByteArray>& textData() const;
+	QMap<QString,QByteArray> textData() const;
 
 protected:
 	QString m_serviceName;

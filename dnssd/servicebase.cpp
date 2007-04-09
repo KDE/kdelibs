@@ -34,22 +34,22 @@ ServiceBase::ServiceBase(const QString& name, const QString& type, const QString
 ServiceBase::~ServiceBase()
 {}
 
-const QString& ServiceBase::serviceName() const
+QString ServiceBase::serviceName() const
 {
 	return m_serviceName;
 }
 
-const QString& ServiceBase::type() const
+QString ServiceBase::type() const
 {
 	return m_type;
 }
 
-const QString& ServiceBase::domain() const
+QString ServiceBase::domain() const
 {
 	return m_domain;
 }
 
-const QString& ServiceBase::hostName() const
+QString ServiceBase::hostName() const
 {
 	return m_hostName;
 }
@@ -58,7 +58,7 @@ unsigned short ServiceBase::port() const
 {
 	return m_port;
 }
-const QMap<QString,QByteArray>& ServiceBase::textData() const
+QMap<QString,QByteArray> ServiceBase::textData() const
 {
 	return m_textData;
 }
