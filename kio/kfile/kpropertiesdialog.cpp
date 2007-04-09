@@ -156,45 +156,74 @@ mode_t KFilePermissionsPropsPlugin::fperm[3][4] = {
 class KPropertiesDialog::KPropertiesDialogPrivate
 {
 public:
-  KPropertiesDialogPrivate()
+  KPropertiesDialogPrivate(KPropertiesDialog *qq)
   {
+        q = qq;
     m_aborted = false;
     fileSharePage = 0;
   }
   ~KPropertiesDialogPrivate()
   {
   }
+
+    /**
+     * Common initialization for all constructors
+     */
+    void init();
+    /**
+     * Inserts all pages in the dialog.
+     */
+    void insertPages();
+
+    KPropertiesDialog *q;
   bool m_aborted:1;
   QWidget* fileSharePage;
+    /**
+     * The URL of the props dialog (when shown for only one file)
+     */
+    KUrl m_singleUrl;
+    /**
+     * List of items this props dialog is shown for
+     */
+    KFileItemList m_items;
+    /**
+     * For templates
+     */
+    QString m_defaultName;
+    KUrl m_currentDir;
+    /**
+     * List of all plugins inserted ( first one first )
+     */
+    QList<KPropertiesDialogPlugin*> m_pageList;
 };
 
 KPropertiesDialog::KPropertiesDialog (KFileItem* item,
                                       QWidget* parent)
-  : KPageDialog ( parent ),d(new KPropertiesDialogPrivate)
+    : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
   setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item->url().fileName())) );
 
   assert( item );
-  m_items.append( new KFileItem(*item) ); // deep copy
+    d->m_items.append(new KFileItem(*item)); // deep copy
 
-  m_singleUrl = item->url();
-  assert(!m_singleUrl.isEmpty());
+    d->m_singleUrl = item->url();
+    assert(!d->m_singleUrl.isEmpty());
 
-  init();
+    d->init();
 }
 
 KPropertiesDialog::KPropertiesDialog (const QString& title,
                                       QWidget* parent)
-  : KPageDialog( parent ), d(new KPropertiesDialogPrivate)
+    : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
   setCaption( i18n( "Properties for %1", title ) );
 
-  init();
+    d->init();
 }
 
 KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
                                      QWidget* parent)
-  : KPageDialog( parent ), d(new KPropertiesDialogPrivate)
+    : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
   if ( _items.count() > 1 )
     setCaption( i18np( "Properties for 1 item", "Properties for %1 Selected Items", _items.count() ) );
@@ -202,50 +231,49 @@ KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
     setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first()->url().fileName())) );
 
   assert( !_items.isEmpty() );
-  m_singleUrl = _items.first()->url();
-  assert(!m_singleUrl.isEmpty());
+    d->m_singleUrl = _items.first()->url();
+    assert(!d->m_singleUrl.isEmpty());
 
   // Make copies
   // TODO turn m_items into a list of KFileItems by values instead of by pointers
   KFileItemList::const_iterator kit = _items.begin();
   const KFileItemList::const_iterator kend = _items.end();
   for ( ; kit != kend; ++kit )
-      m_items.append( new KFileItem( **kit ) );
+        d->m_items.append(new KFileItem(**kit));
 
-  init();
+    d->init();
 }
 
 KPropertiesDialog::KPropertiesDialog (const KUrl& _url,
                                       QWidget* parent)
-  : KPageDialog( parent ),
-    m_singleUrl( _url ),
-    d(new KPropertiesDialogPrivate)
+    : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
   setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_url.fileName()))  );
+
+    d->m_singleUrl = _url;
 
   KIO::UDSEntry entry;
   KIO::NetAccess::stat(_url, entry, parent);
 
-  m_items.append( new KFileItem( entry, _url ) );
-  init();
+    d->m_items.append(new KFileItem(entry, _url));
+    d->init();
 }
 
 KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _currentDir,
                                       const QString& _defaultName,
                                       QWidget* parent)
-  : KPageDialog( parent ),
-
-  m_singleUrl( _tempUrl ),
-  m_defaultName( _defaultName ),
-  m_currentDir( _currentDir ),d(new KPropertiesDialogPrivate)
+    : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
   setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_tempUrl.fileName()))  );
 
-  assert(!m_singleUrl.isEmpty());
+    d->m_singleUrl = _tempUrl;
+    d->m_defaultName = _defaultName;
+    d->m_currentDir = _currentDir;
+    assert(!d->m_singleUrl.isEmpty());
 
   // Create the KFileItem for the _template_ file, in order to read from it.
-  m_items.append( new KFileItem( KFileItem::Unknown, KFileItem::Unknown, m_singleUrl ) );
-  init ();
+    d->m_items.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->m_singleUrl));
+    d->init();
 }
 
 bool KPropertiesDialog::showDialog(KFileItem* item, QWidget* parent,
@@ -305,16 +333,16 @@ bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
   return true;
 }
 
-void KPropertiesDialog::init()
+void KPropertiesDialog::KPropertiesDialogPrivate::init()
 {
-  setFaceType( KPageDialog::Tabbed );
-  setButtons( KDialog::Ok | KDialog::Cancel );
-  setDefaultButton( KDialog::Ok );
+    q->setFaceType(KPageDialog::Tabbed);
+    q->setButtons(KDialog::Ok | KDialog::Cancel);
+    q->setDefaultButton(KDialog::Ok);
 
-  connect(this,SIGNAL(okClicked()),this,SLOT(slotOk()));
-  connect(this,SIGNAL(cancelClicked()),this,SLOT(slotCancel()));
+    connect(q, SIGNAL(okClicked()), q, SLOT(slotOk()));
+    connect(q, SIGNAL(cancelClicked()), q, SLOT(slotCancel()));
 
-  insertPages();
+    insertPages();
 }
 
 void KPropertiesDialog::showFileSharingPage()
@@ -332,7 +360,7 @@ void KPropertiesDialog::setFileSharingPage(QWidget* page) {
 
 void KPropertiesDialog::setFileNameReadOnly( bool ro )
 {
-    foreach(KPropertiesDialogPlugin *it, m_pageList) {
+    foreach(KPropertiesDialogPlugin *it, d->m_pageList) {
         KFilePropsPlugin* plugin = dynamic_cast<KFilePropsPlugin*>(it);
         if ( plugin ) {
             plugin->setFileNameReadOnly( ro );
@@ -341,14 +369,10 @@ void KPropertiesDialog::setFileNameReadOnly( bool ro )
     }
 }
 
-void KPropertiesDialog::slotStatResult( KJob * )
-{
-}
-
 KPropertiesDialog::~KPropertiesDialog()
 {
-  qDeleteAll( m_items );
-  qDeleteAll( m_pageList );
+    qDeleteAll(d->m_items);
+    qDeleteAll(d->m_pageList);
   delete d;
 }
 
@@ -357,7 +381,32 @@ void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)
   connect (plugin, SIGNAL (changed ()),
            plugin, SLOT (setDirty ()));
 
-  m_pageList.append (plugin);
+    d->m_pageList.append(plugin);
+}
+
+const KUrl& KPropertiesDialog::kurl() const
+{
+    return d->m_singleUrl;
+}
+
+KFileItem* KPropertiesDialog::item()
+{
+    return d->m_items.first();
+}
+
+KFileItemList KPropertiesDialog::items() const
+{
+    return d->m_items;
+}
+
+const KUrl& KPropertiesDialog::currentDir() const
+{
+    return d->m_currentDir;
+}
+
+const QString& KPropertiesDialog::defaultName() const
+{
+    return d->m_defaultName;
 }
 
 bool KPropertiesDialog::canDisplay( const KFileItemList& _items )
@@ -379,13 +428,13 @@ void KPropertiesDialog::slotOk()
   d->m_aborted = false;
 
   KFilePropsPlugin * filePropsPlugin = 0L;
-  if ( qobject_cast<KFilePropsPlugin*>(m_pageList.first()) )
-    filePropsPlugin = static_cast<KFilePropsPlugin *>(m_pageList.first());
+    if (qobject_cast<KFilePropsPlugin*>(d->m_pageList.first()))
+        filePropsPlugin = static_cast<KFilePropsPlugin *>(d->m_pageList.first());
 
   // If any page is dirty, then set the main one (KFilePropsPlugin) as
   // dirty too. This is what makes it possible to save changes to a global
   // desktop file into a local one. In other cases, it doesn't hurt.
-  for ( pageListIt = m_pageList.constBegin(); pageListIt != m_pageList.constEnd(); ++pageListIt ) {
+  for (pageListIt = d->m_pageList.constBegin(); pageListIt != d->m_pageList.constEnd(); ++pageListIt) {
     if ( (*pageListIt)->isDirty() && filePropsPlugin )
     {
         filePropsPlugin->setDirty();
@@ -397,7 +446,7 @@ void KPropertiesDialog::slotOk()
   // This is because in case of renaming a file, KFilePropsPlugin will call
   // KPropertiesDialog::rename, so other tab will be ok with whatever order
   // BUT for file copied from templates, we need to do the renaming first !
-  for ( pageListIt = m_pageList.constBegin(); pageListIt != m_pageList.constEnd() && !d->m_aborted; ++pageListIt ) {
+  for (pageListIt = d->m_pageList.constBegin(); pageListIt != d->m_pageList.constEnd() && !d->m_aborted; ++pageListIt) {
     if ( (*pageListIt)->isDirty() )
     {
       kDebug( 250 ) << "applying changes for " << (*pageListIt)->metaObject()->className() << endl;
@@ -430,64 +479,64 @@ void KPropertiesDialog::slotCancel()
   done( Rejected );
 }
 
-void KPropertiesDialog::insertPages()
+void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
 {
   if (m_items.isEmpty())
     return;
 
   if ( KFilePropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KFilePropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KFilePropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KFilePermissionsPropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KFilePermissionsPropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KFilePermissionsPropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KDesktopPropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KDesktopPropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KDesktopPropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KBindingPropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KBindingPropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KBindingPropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KUrlPropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KUrlPropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KUrlPropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KDevicePropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KDevicePropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KDevicePropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KFileMetaPropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KFileMetaPropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KFileMetaPropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KPreviewPropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KPreviewPropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KPreviewPropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   if ( KAuthorized::authorizeKAction("sharefile") &&
        KFileSharePropsPlugin::supports( m_items ) )
   {
-    KPropertiesDialogPlugin *p = new KFileSharePropsPlugin( this );
-    insertPlugin (p);
+        KPropertiesDialogPlugin *p = new KFileSharePropsPlugin(q);
+        q->insertPlugin(p);
   }
 
   //plugins
@@ -513,30 +562,29 @@ void KPropertiesDialog::insertPages()
   for (; it != end; ++it )
   {
     KPropertiesDialogPlugin *plugin = KLibLoader
-        ::createInstance<KPropertiesDialogPlugin>( (*it)->library().toLocal8Bit().data(),
-                                           this );
+        ::createInstance<KPropertiesDialogPlugin>( (*it)->library().toLocal8Bit().data(), q);
     if ( !plugin )
         continue;
     plugin->setObjectName( (*it)->name() );
 
-    insertPlugin( plugin );
+        q->insertPlugin(plugin);
   }
 }
 
 void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
 {
-  Q_ASSERT( m_items.count() == 1 );
+    Q_ASSERT(d->m_items.count() == 1);
   kDebug(250) << "KPropertiesDialog::updateUrl (pre)" << _newUrl.url() << endl;
   KUrl newUrl = _newUrl;
-  emit saveAs(m_singleUrl, newUrl);
+    emit saveAs(d->m_singleUrl, newUrl);
   kDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl.url() << endl;
 
-  m_singleUrl = newUrl;
-  m_items.first()->setUrl( newUrl );
-  assert(!m_singleUrl.isEmpty());
+    d->m_singleUrl = newUrl;
+    d->m_items.first()->setUrl(newUrl);
+    assert(!d->m_singleUrl.isEmpty());
   // If we have an Desktop page, set it dirty, so that a full file is saved locally
   // Same for a URL page (because of the Name= hack)
-  foreach (KPropertiesDialogPlugin *it, m_pageList) {
+    foreach (KPropertiesDialogPlugin *it, d->m_pageList) {
    if ( qobject_cast<KUrlPropsPlugin*>(it) ||
         qobject_cast<KDesktopPropsPlugin*>(it) )
    {
@@ -549,18 +597,17 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
 
 void KPropertiesDialog::rename( const QString& _name )
 {
-  Q_ASSERT( m_items.count() == 1 );
+    Q_ASSERT(d->m_items.count() == 1);
   kDebug(250) << "KPropertiesDialog::rename " << _name << endl;
   KUrl newUrl;
   // if we're creating from a template : use currentdir
-  if ( !m_currentDir.isEmpty() )
-  {
-    newUrl = m_currentDir;
+    if (!d->m_currentDir.isEmpty()) {
+        newUrl = d->m_currentDir;
     newUrl.addPath( _name );
   }
   else
   {
-    QString tmpurl = m_singleUrl.url();
+        QString tmpurl = d->m_singleUrl.url();
     if ( tmpurl.at(tmpurl.length() - 1) == '/')
       // It's a directory, so strip the trailing slash first
       tmpurl.truncate( tmpurl.length() - 1);

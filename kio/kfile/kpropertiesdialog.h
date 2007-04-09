@@ -220,7 +220,7 @@ public:
    *
    * @return a parsed URL.
    */
-  const KUrl& kurl() const { return m_singleUrl; }
+  const KUrl& kurl() const;
 
   /**
    * @return the file item for which the dialog is shown
@@ -229,12 +229,12 @@ public:
    * This means that you should use this only if you are sure the dialog is used
    * for a single item. Otherwise, you probably want items() instead.
    */
-  KFileItem *item() { return m_items.first(); }
+  KFileItem *item();
 
   /**
    * @return the items for which the dialog is shown
    */
-  KFileItemList items() const { return m_items; }
+  KFileItemList items() const;
 
   /**
    * If the dialog is being built from a template, this method
@@ -243,7 +243,7 @@ public:
    *
    * @return the current directory or QString()
    */
-  const KUrl& currentDir() const { return m_currentDir; }
+  const KUrl& currentDir() const;
 
   /**
    * If the dialog is being built from a template, this method
@@ -251,7 +251,7 @@ public:
    * See the template form of the constructor.
    * @return the default name or QString()
    */
-  const QString& defaultName() const { return m_defaultName; }
+  const QString& defaultName() const;
 
   /**
    * Updates the item URL (either called by rename or because
@@ -334,46 +334,13 @@ Q_SIGNALS:
    */
   void saveAs(const KUrl &oldUrl, KUrl &newUrl);
 
-private:
-
-  /**
-   * Common initialization for all constructors
-   */
-  void init();
-
-  /**
-   * Inserts all pages in the dialog.
-   */
-  void insertPages();
-
-  /**
-   * The URL of the props dialog (when shown for only one file)
-   */
-  KUrl m_singleUrl;
-
-  /**
-   * List of items this props dialog is shown for
-   */
-  KFileItemList m_items;
-
-  /**
-   * For templates
-   */
-  QString m_defaultName;
-  KUrl m_currentDir;
-
-  /**
-   * List of all plugins inserted ( first one first )
-   */
-  QList<KPropertiesDialogPlugin*> m_pageList;
-
-private Q_SLOTS:
-  void slotStatResult( KJob * ); // No longer used
 Q_SIGNALS:
   void leaveModality();
 private:
   class KPropertiesDialogPrivate;
   KPropertiesDialogPrivate* const d;
+
+    Q_DISABLE_COPY(KPropertiesDialog)
 };
 
 /**
