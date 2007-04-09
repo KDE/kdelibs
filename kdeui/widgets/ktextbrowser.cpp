@@ -107,11 +107,6 @@ void KTextBrowser::keyPressEvent( QKeyEvent *event )
     QTextBrowser::keyPressEvent( event );
 }
 
-void KTextBrowser::mouseMoveEvent( QMouseEvent *event )
-{
-  QTextBrowser::mouseMoveEvent( event );
-}
-
 void KTextBrowser::wheelEvent( QWheelEvent *event )
 {
   if ( KGlobalSettings::wheelMouseZooms() )
