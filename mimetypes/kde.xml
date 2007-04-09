@@ -108,7 +108,7 @@ Notes:
   </mime-type>
   <mime-type type="application/x-superkaramba">
     <sub-class-of type="application/zip"/>
-    <comment>Superkaramba theme</comment>
+    <comment>SuperKaramba theme</comment>
     <glob pattern="*.skz"/>
   </mime-type>
   <mime-type type="application/x-vnd.kde.kexi"> <!-- ??? -->
