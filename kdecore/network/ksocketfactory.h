@@ -29,6 +29,7 @@
 class QTcpSocket;
 class QTcpServer;
 class QUdpSocket;
+class QUrl;
 
 /**
  * @class KSocketFactory
@@ -100,6 +101,11 @@ public:
                                      quint16 port, QObject *parent = 0);
 
     /**
+     * @overload
+     */
+    static QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
+
+    /**
      * This function behaves exactly like connectionTo() above, except
      * that the socket it returns is either in
      * QAbstractSocket::Connected state, or it has failed connecting
@@ -128,6 +134,12 @@ public:
      */
     static QTcpSocket *synchronousConnectToHost(const QString &protocol, const QString &host,
                                                 quint16 port, int msecs = 30000,
+                                                QObject *parent = 0);
+
+    /**
+     * @overload
+     */
+    static QTcpSocket *synchronousConnectToHost(const QUrl &url, int msecs = 30000,
                                                 QObject *parent = 0);
 
     /**

@@ -24,6 +24,7 @@
 #include <QTcpSocket>
 #include <QTcpServer>
 #include <QUdpSocket>
+#include <QUrl>
 
 #include "klocalizedstring.h"
 
@@ -57,6 +58,11 @@ QTcpSocket *KSocketFactory::connectToHost(const QString &protocol, const QString
     return socket;
 }
 
+QTcpSocket *KSocketFactory::connectToHost(const QUrl &url, QObject *parent)
+{
+    return connectToHost(url.scheme(), url.host(), url.port(), parent);
+}
+
 QTcpSocket *KSocketFactory::synchronousConnectToHost(const QString &protocol, const QString &host,
                                                      quint16 port, int msecs, QObject *parent)
 {
@@ -65,6 +71,11 @@ QTcpSocket *KSocketFactory::synchronousConnectToHost(const QString &protocol, co
         setError(socket, QAbstractSocket::SocketTimeoutError,
                  i18n("Timed out trying to connect to remote host"));
     return socket;
+}
+
+QTcpSocket *KSocketFactory::synchronousConnectToHost(const QUrl &url, int msecs, QObject *parent)
+{
+    return synchronousConnectToHost(url.scheme(), url.host(), url.port(), msecs, parent);
 }
 
 QTcpServer *KSocketFactory::listen(const QString &protocol, const QHostAddress &address, quint16 port,
