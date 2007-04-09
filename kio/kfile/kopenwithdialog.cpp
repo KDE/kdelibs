@@ -86,7 +86,7 @@ static bool AppNodeLessThan(AppNode *n1, AppNode *n2)
 {
     if (n1->isDir) {
         if (n2->isDir) {
-            return n1->text.toLower() < n2->text.toLower();
+            return n1->text.compare(n2->text, Qt::CaseInsensitive) < 0;
         } else {
             return true;
         }
@@ -94,7 +94,7 @@ static bool AppNodeLessThan(AppNode *n1, AppNode *n2)
         if (n2->isDir) {
             return false;
         } else {
-            return n1->text.toLower() < n2->text.toLower();
+            return n1->text.compare(n2->text, Qt::CaseInsensitive) < 0;
         }
     }
     return true;
