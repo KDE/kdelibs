@@ -164,9 +164,9 @@ bool KKeySequenceWidget::isModifierlessAllowed()
 }
 
 
-void KKeySequenceWidget::setHaveClearButton(bool haveClear)
+void KKeySequenceWidget::setClearButtonShown(bool show)
 {
-	d->clearButton->setVisible(haveClear);
+	d->clearButton->setVisible(show);
 }
 
 

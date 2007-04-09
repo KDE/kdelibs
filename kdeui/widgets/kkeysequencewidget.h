@@ -60,7 +60,7 @@ public:
 	void setModifierlessAllowed(bool allow);
 	bool isModifierlessAllowed();
 	
-	void setHaveClearButton(bool show);
+	void setClearButtonShown(bool show);
 
 	QKeySequence keySequence() const;
 

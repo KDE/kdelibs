@@ -69,10 +69,10 @@ bool KShortcutWidget::isModifierlessAllowed()
 }
 
 
-void KShortcutWidget::setHaveClearButtons(bool show)
+void KShortcutWidget::setClearButtonsShown(bool show)
 {
-    d->ui.priEditor->setVisible(show);
-    d->ui.altEditor->setVisible(show);
+    d->ui.priEditor->setClearButtonShown(show);
+    d->ui.altEditor->setClearButtonShown(show);
 }
 
 

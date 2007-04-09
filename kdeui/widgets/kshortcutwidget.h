@@ -34,7 +34,7 @@ public:
     void setModifierlessAllowed(bool allow);
     bool isModifierlessAllowed();
 
-    void setHaveClearButtons(bool show);
+    void setClearButtonsShown(bool show);
 
     KShortcut shortcut() const;
 
