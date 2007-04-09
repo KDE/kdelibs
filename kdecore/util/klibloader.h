@@ -18,11 +18,12 @@
 #ifndef KLIBLOADER_H
 #define KLIBLOADER_H
 
+#include <kglobal.h>
+
 #include <QtCore/QObject>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QHash>
-#include <kglobal.h>
-#include <QLibrary>
+#include <QtCore/QLibrary>
 #include <QtCore/qplugin.h>
 
 class QString;

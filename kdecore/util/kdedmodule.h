@@ -24,8 +24,8 @@
 
 #include <kdecore_export.h>
 
-#include <QtCore/qobject.h>
-#include <QtCore/qbytearray.h>
+#include <QtCore/QObject>
+#include <QtCore/QByteArray>
 
 class KDEDModulePrivate;
 class Kded;

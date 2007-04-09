@@ -27,7 +27,6 @@
 #include <QtGui/QFont>
 #include <QtCore/QDate>
 #include <QtCore/QPoint>
-#include <QtCore/QPoint>
 #include <QtCore/QSize>
 #include <QtCore/QRect>
 #include <kurl.h>
