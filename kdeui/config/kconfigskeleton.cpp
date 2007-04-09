@@ -135,7 +135,7 @@ void KConfigSkeleton::ItemUrl::readConfig( KConfig *config )
 
 void KConfigSkeleton::ItemUrl::setProperty(const QVariant & p)
 {
-    mReference = qVariantValue<KUrl>(p);
+    mReference = qvariant_cast<KUrl>(p);
 }
 
 QVariant KConfigSkeleton::ItemUrl::property() const
@@ -795,7 +795,7 @@ void KConfigSkeleton::ItemUrlList::writeConfig( KConfig *config )
 
 void KConfigSkeleton::ItemUrlList::setProperty(const QVariant & p)
 {
-    mReference = qVariantValue<KUrl::List>(p);
+    mReference = qvariant_cast<KUrl::List>(p);
 }
 
 QVariant KConfigSkeleton::ItemUrlList::property() const
