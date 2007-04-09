@@ -1340,7 +1340,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  virtual void slotSetEncoding(const QString &);;
+  virtual void slotSetEncoding(const QString &);
 
   /**
    * @internal
