@@ -94,6 +94,7 @@ set(kdeui_LIB_SRCS
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
  itemviews/kextendableitemdelegate.cpp
+ jobs/kdialogjobuidelegate.cpp
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
  jobs/kstatusbarjobtracker.cpp
@@ -321,6 +322,7 @@ install( FILES
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h
+ jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h
  jobs/kstatusbarjobtracker.h
