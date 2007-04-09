@@ -79,7 +79,6 @@ namespace KIO {
 	 * @param mode specifies whether the job should copy, move or link
 	 * @param asMethod if true, behaves like KIO::copyAs(),
 	 * KIO::moveAs() or KIO::linkAs()
-	 * @param showProgressInfo true to show progress information to the user
 	 * @see KIO::copy()
 	 * @see KIO::copyAs()
 	 * @see KIO::move()
@@ -87,7 +86,7 @@ namespace KIO {
 	 * @see KIO::link()
 	 * @see KIO::linkAs()
 	 */
-        CopyJob( const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod, bool showProgressInfo );
+        CopyJob(const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod);
 
         virtual ~CopyJob();
 

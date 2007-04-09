@@ -66,6 +66,7 @@ extern "C" {
 
 #include <kdirnotify.h>
 #include <ktemporaryfile.h>
+#include <kuiserverjobtracker.h>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -91,10 +92,9 @@ public:
     int m_extraFlags;
 };
 
-Job::Job(bool showProgressInfo) : KCompositeJob(0), d( new JobPrivate )
+Job::Job() : KCompositeJob(0), d( new JobPrivate )
 {
     setCapabilities( KJob::Killable | KJob::Suspendable );
-    setUiDelegate(new JobUiDelegate());
 }
 
 Job::~Job()
@@ -320,9 +320,8 @@ MetaData Job::outgoingMetaData() const
 }
 
 
-SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
-                     bool showProgressInfo )
-  : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
+SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs)
+  : Job(), m_slave(0), m_packedArgs(packedArgs),
     m_url(url), m_command(command)
 {
     if (!m_url.isValid())
@@ -573,9 +572,9 @@ void SimpleJob::storeSSLSessionFromJob(const KUrl &m_redirectionURL) {
 }
 
 //////////
-MkdirJob::MkdirJob( const KUrl& url, int command,
-                    const QByteArray &packedArgs, bool showProgressInfo )
-    : SimpleJob(url, command, packedArgs, showProgressInfo)
+MkdirJob::MkdirJob(const KUrl& url, int command,
+                   const QByteArray &packedArgs)
+    : SimpleJob(url, command, packedArgs)
 {
 }
 
@@ -636,41 +635,59 @@ SimpleJob *KIO::mkdir( const KUrl& url, int permissions )
 {
     //kDebug(7007) << "mkdir " << url << endl;
     KIO_ARGS << url << permissions;
-    return new MkdirJob(url, CMD_MKDIR, packedArgs, false);
+    SimpleJob *job = new MkdirJob(url, CMD_MKDIR, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 
 SimpleJob *KIO::rmdir( const KUrl& url )
 {
     //kDebug(7007) << "rmdir " << url << endl;
     KIO_ARGS << url << qint8(false); // isFile is false
-    return new SimpleJob(url, CMD_DEL, packedArgs, false);
+    SimpleJob *job = new SimpleJob(url, CMD_DEL, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 
 SimpleJob *KIO::chmod( const KUrl& url, int permissions )
 {
     //kDebug(7007) << "chmod " << url << endl;
     KIO_ARGS << url << permissions;
-    return new SimpleJob(url, CMD_CHMOD, packedArgs, false);
+    SimpleJob *job = new SimpleJob(url, CMD_CHMOD, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 
 SimpleJob *KIO::rename( const KUrl& src, const KUrl & dest, bool overwrite )
 {
     //kDebug(7007) << "rename " << src << " " << dest << endl;
     KIO_ARGS << src << dest << (qint8) overwrite;
-    return new SimpleJob(src, CMD_RENAME, packedArgs, false);
+    SimpleJob *job = new SimpleJob(src, CMD_RENAME, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 
 SimpleJob *KIO::symlink( const QString& target, const KUrl & dest, bool overwrite, bool showProgressInfo )
 {
     //kDebug(7007) << "symlink target=" << target << " " << dest << endl;
     KIO_ARGS << target << dest << (qint8) overwrite;
-    return new SimpleJob(dest, CMD_SYMLINK, packedArgs, showProgressInfo);
+    SimpleJob *job = new SimpleJob(dest, CMD_SYMLINK, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
+    return job;
 }
 
 SimpleJob *KIO::special(const KUrl& url, const QByteArray & data, bool showProgressInfo)
 {
     //kDebug(7007) << "special " << url << endl;
-    return new SimpleJob(url, CMD_SPECIAL, data, showProgressInfo);
+    SimpleJob *job = new SimpleJob(url, CMD_SPECIAL, data);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
+    return job;
 }
 
 SimpleJob *KIO::mount( bool ro, const QByteArray& fstype, const QString& dev, const QString& point, bool showProgressInfo )
@@ -678,8 +695,11 @@ SimpleJob *KIO::mount( bool ro, const QByteArray& fstype, const QString& dev, co
     KIO_ARGS << int(1) << qint8( ro ? 1 : 0 )
              << QString::fromLatin1(fstype) << dev << point;
     SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
-    if ( showProgressInfo )
-         job->emitMounting( dev, point );
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+        job->emitMounting(dev, point);
+    }
     return job;
 }
 
@@ -687,8 +707,11 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 {
     KIO_ARGS << int(2) << point;
     SimpleJob *job = special( KUrl("file:/"), packedArgs, showProgressInfo );
-    if ( showProgressInfo )
-         job->emitUnmounting( point );
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+        job->emitUnmounting(point);
+    }
     return job;
 }
 
@@ -696,9 +719,9 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 
 //////////
 
-StatJob::StatJob( const KUrl& url, int command,
-                  const QByteArray &packedArgs, bool showProgressInfo )
-    : SimpleJob(url, command, packedArgs, showProgressInfo),
+StatJob::StatJob(const KUrl& url, int command,
+                 const QByteArray &packedArgs)
+    : SimpleJob(url, command, packedArgs),
     m_bSource(true), m_details(2)
 {
 }
@@ -777,11 +800,14 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, bool s
 {
     kDebug(7007) << "stat " << url << endl;
     KIO_ARGS << url;
-    StatJob * job = new StatJob(url, CMD_STAT, packedArgs, showProgressInfo );
+    StatJob * job = new StatJob(url, CMD_STAT, packedArgs);
     job->setSide( sideIsSource );
     job->setDetails( details );
-    if ( showProgressInfo )
-      job->emitStating( url );
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+        job->emitStating(url);
+    }
     return job;
 }
 
@@ -790,18 +816,18 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
     assert( (url.protocol() == "http") || (url.protocol() == "https") );
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
-    SimpleJob * job = new SimpleJob( url, CMD_SPECIAL, packedArgs, false );
+    SimpleJob * job = new SimpleJob(url, CMD_SPECIAL, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
     Scheduler::scheduleJob(job);
     return job;
 }
 
 //////////
 
-TransferJob::TransferJob( const KUrl& url, int command,
-                          const QByteArray &packedArgs,
-                          const QByteArray &_staticData,
-                          bool showProgressInfo)
-    : SimpleJob(url, command, packedArgs, showProgressInfo), staticData( _staticData)
+TransferJob::TransferJob(const KUrl& url, int command,
+                         const QByteArray &packedArgs,
+                         const QByteArray &_staticData)
+    : SimpleJob(url, command, packedArgs), staticData( _staticData)
 {
     m_internalSuspended = false;
     m_errorPage = false;
@@ -1106,7 +1132,11 @@ TransferJob *KIO::get( const KUrl& url, bool reload, bool showProgressInfo )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
-    TransferJob * job = new TransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
+    TransferJob * job = new TransferJob(url, CMD_GET, packedArgs, QByteArray());
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
     if (reload)
        job->addMetaData("cache", "reload");
     return job;
@@ -1116,7 +1146,8 @@ FileJob *KIO::open(const KUrl &url, QIODevice::OpenMode mode)
 {
     // Send decoded path and encoded query
     KIO_ARGS << url << mode;
-    FileJob * job = new FileJob( url, packedArgs );
+    FileJob * job = new FileJob(url, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
     return job;
 }
 
@@ -1124,8 +1155,8 @@ class PostErrorJob : public TransferJob
 {
 public:
 
-  PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData, bool showProgressInfo)
-      : TransferJob(KUrl(), CMD_SPECIAL, packedArgs, postData, showProgressInfo)
+  PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData)
+      : TransferJob(KUrl(), CMD_SPECIAL, packedArgs, postData)
   {
     setError( _error );
     setErrorText( url );
@@ -1245,14 +1276,22 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, bool s
     if (_error)
     {
         KIO_ARGS << (int)1 << url;
-        TransferJob * job = new PostErrorJob(_error, url.prettyUrl(), packedArgs, postData, showProgressInfo);
+        TransferJob * job = new PostErrorJob(_error, url.prettyUrl(), packedArgs, postData);
+        job->setUiDelegate(new JobUiDelegate());
+        if (showProgressInfo) {
+            KIO::getJobTracker()->registerJob(job);
+        }
         return job;
     }
 
     // Send http post command (1), decoded path and encoded query
     KIO_ARGS << (int)1 << _url;
-    TransferJob * job = new TransferJob( _url, CMD_SPECIAL,
-                                         packedArgs, postData, showProgressInfo );
+    TransferJob * job = new TransferJob(_url, CMD_SPECIAL,
+                                        packedArgs, postData);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
 
     if (redirection)
       QTimer::singleShot(0, job, SLOT(slotPostRedirection()) );
@@ -1275,7 +1314,11 @@ TransferJob *KIO::put( const KUrl& url, int permissions,
                   bool overwrite, bool resume, bool showProgressInfo )
 {
     KIO_ARGS << url << qint8( overwrite ? 1 : 0 ) << qint8( resume ? 1 : 0 ) << permissions;
-    TransferJob * job = new TransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
+    TransferJob * job = new TransferJob(url, CMD_PUT, packedArgs, QByteArray());
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
     return job;
 }
 
@@ -1283,9 +1326,8 @@ TransferJob *KIO::put( const KUrl& url, int permissions,
 
 StoredTransferJob::StoredTransferJob(const KUrl& url, int command,
                                      const QByteArray &packedArgs,
-                                     const QByteArray &_staticData,
-                                     bool showProgressInfo)
-    : TransferJob( url, command, packedArgs, _staticData, showProgressInfo ),
+                                     const QByteArray &_staticData)
+    : TransferJob(url, command, packedArgs, _staticData),
       m_uploadOffset( 0 )
 {
     connect( this, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
@@ -1336,7 +1378,11 @@ StoredTransferJob *KIO::storedGet( const KUrl& url, bool reload, bool showProgre
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
-    StoredTransferJob * job = new StoredTransferJob( url, CMD_GET, packedArgs, QByteArray(), showProgressInfo );
+    StoredTransferJob * job = new StoredTransferJob(url, CMD_GET, packedArgs, QByteArray());
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
     if (reload)
        job->addMetaData("cache", "reload");
     return job;
@@ -1346,16 +1392,20 @@ StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KUrl& url, int p
                                    bool overwrite, bool resume, bool showProgressInfo )
 {
     KIO_ARGS << url << qint8( overwrite ? 1 : 0 ) << qint8( resume ? 1 : 0 ) << permissions;
-    StoredTransferJob * job = new StoredTransferJob( url, CMD_PUT, packedArgs, QByteArray(), showProgressInfo );
+    StoredTransferJob * job = new StoredTransferJob(url, CMD_PUT, packedArgs, QByteArray());
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
     job->setData( arr );
     return job;
 }
 
 //////////
 
-MimetypeJob::MimetypeJob( const KUrl& url, int command,
-                  const QByteArray &packedArgs, bool showProgressInfo )
-    : TransferJob(url, command, packedArgs, QByteArray(), showProgressInfo)
+MimetypeJob::MimetypeJob(const KUrl& url, int command,
+                  const QByteArray &packedArgs)
+    : TransferJob(url, command, packedArgs, QByteArray())
 {
 }
 
@@ -1403,17 +1453,20 @@ void MimetypeJob::slotFinished( )
 MimetypeJob *KIO::mimetype(const KUrl& url, bool showProgressInfo )
 {
     KIO_ARGS << url;
-    MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs, showProgressInfo);
-    if ( showProgressInfo )
-      job->emitStating( url );
+    MimetypeJob * job = new MimetypeJob(url, CMD_MIMETYPE, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        job->emitStating(url);
+        KIO::getJobTracker()->registerJob(job);
+    }
     return job;
 }
 
 //////////////////////////
 
-DirectCopyJob::DirectCopyJob( const KUrl& url, int command,
-                              const QByteArray &packedArgs, bool showProgressInfo )
-    : SimpleJob(url, command, packedArgs, showProgressInfo)
+DirectCopyJob::DirectCopyJob(const KUrl& url, int command,
+                             const QByteArray &packedArgs)
+    : SimpleJob(url, command, packedArgs)
 {
 }
 
@@ -1447,9 +1500,9 @@ public:
  * Tranlated to io-slaves: We alternate between receiving a block of data
  * and sending it away.
  */
-FileCopyJob::FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
-                          bool move, bool overwrite, bool resume, bool showProgressInfo)
-    : Job(showProgressInfo), m_src(src), m_dest(dest),
+FileCopyJob::FileCopyJob(const KUrl& src, const KUrl& dest, int permissions,
+                         bool move, bool overwrite, bool resume)
+    : Job(), m_src(src), m_dest(dest),
       m_permissions(permissions), m_move(move), m_overwrite(overwrite), m_resume(resume),
       d(new FileCopyJobPrivate)
 {
@@ -1550,7 +1603,8 @@ void FileCopyJob::startCopyJob(const KUrl &slave_url)
 {
     //kDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
     KIO_ARGS << m_src << m_dest << m_permissions << (qint8) m_overwrite;
-    m_copyJob = new DirectCopyJob(slave_url, CMD_COPY, packedArgs, false);
+    m_copyJob = new DirectCopyJob(slave_url, CMD_COPY, packedArgs);
+    m_copyJob->setUiDelegate(new JobUiDelegate());
     addSubjob( m_copyJob );
     connectSubjob( m_copyJob );
     connect( m_copyJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
@@ -1560,7 +1614,8 @@ void FileCopyJob::startCopyJob(const KUrl &slave_url)
 void FileCopyJob::startRenameJob(const KUrl &slave_url)
 {
     KIO_ARGS << m_src << m_dest << (qint8) m_overwrite;
-    m_moveJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs, false);
+    m_moveJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs);
+    m_moveJob->setUiDelegate(new JobUiDelegate());
     addSubjob( m_moveJob );
     connectSubjob( m_moveJob );
 }
@@ -1846,25 +1901,40 @@ void FileCopyJob::slotResult( KJob *job)
 FileCopyJob *KIO::file_copy( const KUrl& src, const KUrl& dest, int permissions,
                              bool overwrite, bool resume, bool showProgressInfo)
 {
-   return new FileCopyJob( src, dest, permissions, false, overwrite, resume, showProgressInfo );
+    FileCopyJob *job = new FileCopyJob(src, dest, permissions, false, overwrite, resume);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
+    return job;
 }
 
 FileCopyJob *KIO::file_move( const KUrl& src, const KUrl& dest, int permissions,
                              bool overwrite, bool resume, bool showProgressInfo)
 {
-   return new FileCopyJob( src, dest, permissions, true, overwrite, resume, showProgressInfo );
+    FileCopyJob *job = new FileCopyJob(src, dest, permissions, true, overwrite, resume);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
+    return job;
 }
 
 SimpleJob *KIO::file_delete( const KUrl& src, bool showProgressInfo)
 {
     KIO_ARGS << src << qint8(true); // isFile
-    return new SimpleJob(src, CMD_DEL, packedArgs, showProgressInfo );
+    SimpleJob *job = new SimpleJob(src, CMD_DEL, packedArgs);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
+    return job;
 }
 
 //////////
 
-ListJob::ListJob(const KUrl& u, bool showProgressInfo, bool _recursive, const QString &_prefix, bool _includeHidden) :
-    SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
+ListJob::ListJob(const KUrl& u, bool _recursive, const QString &_prefix, bool _includeHidden) :
+    SimpleJob(u, CMD_LISTDIR, QByteArray()),
     recursive(_recursive), includeHidden(_includeHidden), prefix(_prefix), m_processedEntries(0)
 {
     // We couldn't set the args when calling the parent constructor,
@@ -1902,10 +1972,10 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                 // skip hidden dirs when listing if requested
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
                     ListJob *job = new ListJob(itemURL,
-                                               false /*no progress info!*/,
                                                true /*recursive*/,
                                                prefix + filename + '/',
                                                includeHidden);
+                    job->setUiDelegate(new JobUiDelegate());
                     Scheduler::scheduleJob(job);
                     connect(job, SIGNAL(entries( KIO::Job *,
                                                  const KIO::UDSEntryList& )),
@@ -2018,13 +2088,21 @@ void ListJob::slotMetaData( const KIO::MetaData &_metaData) {
 
 ListJob *KIO::listDir( const KUrl& url, bool showProgressInfo, bool includeHidden )
 {
-    ListJob * job = new ListJob(url, showProgressInfo,false,QString(),includeHidden);
+    ListJob * job = new ListJob(url, false, QString(), includeHidden);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
     return job;
 }
 
 ListJob *KIO::listRecursive( const KUrl& url, bool showProgressInfo, bool includeHidden )
 {
-    ListJob * job = new ListJob(url, showProgressInfo, true,QString(),includeHidden);
+    ListJob * job = new ListJob(url, true, QString(), includeHidden);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo) {
+        KIO::getJobTracker()->registerJob(job);
+    }
     return job;
 }
 
@@ -2057,9 +2135,8 @@ void ListJob::start(Slave *slave)
 
 ////
 
-MultiGetJob::MultiGetJob(const KUrl& url,
-                         bool showProgressInfo)
- : TransferJob(url, 0, QByteArray(), QByteArray(), showProgressInfo),
+MultiGetJob::MultiGetJob(const KUrl& url)
+ : TransferJob(url, 0, QByteArray(), QByteArray()),
    m_currentEntry( 0, KUrl(), MetaData() )
 {
 }
@@ -2233,8 +2310,9 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
 
 MultiGetJob *KIO::multi_get(long id, const KUrl &url, const MetaData &metaData)
 {
-    MultiGetJob * job = new MultiGetJob( url, false );
+    MultiGetJob * job = new MultiGetJob(url);
     job->get(id, url, metaData);
+    job->setUiDelegate(new JobUiDelegate());
     return job;
 }
 

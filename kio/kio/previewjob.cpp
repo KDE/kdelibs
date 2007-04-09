@@ -51,6 +51,8 @@
 #include <QtCore/QLinkedList>
 #include <kconfiggroup.h>
 
+#include "jobuidelegate.h"
+
 #include "previewjob.moc"
 
 namespace KIO { struct PreviewItem; }
@@ -118,7 +120,7 @@ struct KIO::PreviewJobPrivate
 PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins, bool deleteItems )
-    : KIO::Job( false /* no GUI */ ),d(new PreviewJobPrivate)
+    : KIO::Job(),d(new PreviewJobPrivate)
 {
     d->tOrig = 0;
     d->shmid = -1;
@@ -559,7 +561,9 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     KFileItemList fileItems;
     for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
         fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
-    return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
-                          scale, save, enabledPlugins, true);
+    PreviewJob *job = new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
+                                     scale, save, enabledPlugins, true);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 

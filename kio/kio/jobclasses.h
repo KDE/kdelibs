@@ -64,7 +64,7 @@ namespace KIO {
         Q_OBJECT
 
     protected:
-        Job( bool showProgressInfo );
+        Job();
 
     public:
         virtual ~Job();
@@ -321,10 +321,8 @@ public:
 	 * @param url the url of the job
 	 * @param command the command of the job
 	 * @param packedArgs the arguments
-	 * @param showProgressInfo true to show progress information to the user
 	 */
-        SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs,
-                  bool showProgressInfo);
+        SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs);
 
         ~SimpleJob();
 
@@ -484,9 +482,8 @@ public:
 	 * @param url the url of the file or directory to check
 	 * @param command the command to issue
 	 * @param packedArgs the arguments
-	 * @param showProgressInfo true to show progress information to the user
 	 */
-        StatJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+        StatJob(const KUrl& url, int command, const QByteArray &packedArgs);
 
         /**
 	 * A stat() can have two meanings. Either we want to read from this URL,
@@ -572,9 +569,8 @@ public:
 	 * @param url the url of the file or directory to check
 	 * @param command the command to issue
 	 * @param packedArgs the arguments
-	 * @param showProgressInfo true to show progress information to the user
 	 */
-        MkdirJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+        MkdirJob(const KUrl& url, int command, const QByteArray &packedArgs);
 
         /**
 	 * @internal
@@ -626,8 +622,8 @@ public:
         /**
          * Do not create a DirectCopyJob. Use KIO::copy() or KIO::file_copy() instead.
          */
-        DirectCopyJob(const KUrl& url, int command, const QByteArray &packedArgs,
-                      bool showProgressInfo);
+        DirectCopyJob(const KUrl& url, int command, const QByteArray &packedArgs);
+
         /**
 	 * @internal
          * Called by the scheduler when a @p slave gets to
@@ -666,12 +662,10 @@ public:
 	* @param command the command to issue
 	* @param packedArgs the arguments
 	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
-	* @param showProgressInfo true to show progress information to the user
 	*/
         TransferJob(const KUrl& url, int command,
                     const QByteArray &packedArgs,
-                    const QByteArray &_staticData,
-                    bool showProgressInfo);
+                    const QByteArray &_staticData);
 
         /**
          * Sets the modification time of the file to be created (by KIO::put)
@@ -870,12 +864,10 @@ public:
 	* @param command the command to issue
 	* @param packedArgs the arguments
 	* @param _staticData additional data to transmit (e.g. in a HTTP Post)
-	* @param showProgressInfo true to show progress information to the user
 	*/
         StoredTransferJob(const KUrl& url, int command,
                           const QByteArray &packedArgs,
-                          const QByteArray &_staticData,
-                          bool showProgressInfo);
+                          const QByteArray &_staticData);
 
         /**
          * Set data to be uploaded. This is for put jobs.
@@ -913,9 +905,8 @@ public:
 	 * instead.
 	 *
 	 * @param url the first url to get
-	 * @param showProgressInfo true to show progress information to the user
 	 */
-        MultiGetJob(const KUrl& url, bool showProgressInfo);
+        MultiGetJob(const KUrl& url);
 
         virtual ~MultiGetJob();
 
@@ -1004,9 +995,8 @@ public:
 	* @param url the url to get
 	* @param command the command to issue
 	* @param packedArgs the arguments
-	* @param showProgressInfo true to show progress information to the user
 	*/
-        MimetypeJob(const KUrl& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+        MimetypeJob(const KUrl& url, int command, const QByteArray &packedArgs);
 
         /**
 	 * @internal
@@ -1040,10 +1030,9 @@ public:
 	* @param move true to move, false to copy
 	* @param overwrite true to allow overwriting, false otherwise
 	* @param resume true to resume an operation, false otherwise
-	* @param showProgressInfo true to show progress information to the user
 	 */
         FileCopyJob( const KUrl& src, const KUrl& dest, int permissions,
-                     bool move, bool overwrite, bool resume, bool showProgressInfo);
+                     bool move, bool overwrite, bool resume);
 
         ~FileCopyJob();
         /**
@@ -1169,13 +1158,12 @@ public:
 	* Do not create a ListJob directly. Use KIO::listDir() or
 	* KIO::listRecursive() instead.
 	* @param url the url of the directory
-	* @param showProgressInfo true to show progress information to the user
 	* @param recursive true to get the data recursively from child directories,
 	*        false to get only the content of the specified dir
 	* @param prefix the prefix of the files, or QString() for no prefix
 	* @param includeHidden true to include hidden files (those starting with '.')
 	*/
-        ListJob(const KUrl& url, bool showProgressInfo,
+        ListJob(const KUrl& url,
                 bool recursive = false, const QString &prefix = QString(),
                 bool includeHidden = true);
 

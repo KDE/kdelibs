@@ -27,6 +27,7 @@
 #include "kprotocolmanager.h"
 #include "kio/jobuidelegate.h"
 #include <kdirnotify.h>
+#include <kuiserverjobtracker.h>
 
 #include <kauthorized.h>
 #include <klocale.h>
@@ -43,8 +44,8 @@
 
 using namespace KIO;
 
-DeleteJob::DeleteJob( const KUrl::List& src, bool showProgressInfo )
-: Job(showProgressInfo), m_totalSize( 0 ), m_processedSize( 0 ), m_fileProcessedSize( 0 ),
+DeleteJob::DeleteJob(const KUrl::List& src)
+: Job(), m_totalSize( 0 ), m_processedSize( 0 ), m_fileProcessedSize( 0 ),
   m_processedFiles( 0 ), m_processedDirs( 0 ), m_totalFilesDirs( 0 ),
   m_srcList(src), m_currentStat(m_srcList.begin()), m_reportTimer(0)
 {
@@ -382,13 +383,21 @@ DeleteJob *KIO::del( const KUrl& src, bool /*shred*/, bool showProgressInfo )
 {
   KUrl::List srcList;
   srcList.append( src );
-  DeleteJob *job = new DeleteJob( srcList, showProgressInfo );
+  DeleteJob *job = new DeleteJob(srcList);
+  job->setUiDelegate(new JobUiDelegate());
+  if (showProgressInfo) {
+      KIO::getJobTracker()->registerJob(job);
+  }
   return job;
 }
 
 DeleteJob *KIO::del( const KUrl::List& src, bool /*shred*/, bool showProgressInfo )
 {
-  DeleteJob *job = new DeleteJob( src, showProgressInfo );
+  DeleteJob *job = new DeleteJob(src);
+  job->setUiDelegate(new JobUiDelegate());
+  if (showProgressInfo) {
+      KIO::getJobTracker()->registerJob(job);
+  }
   return job;
 }
 

@@ -21,16 +21,18 @@
 #include <kdebug.h>
 #include <QtCore/QTimer>
 
+#include "jobuidelegate.h"
+
 using namespace KIO;
 
 DirectorySizeJob::DirectorySizeJob( const KUrl & directory )
-    : KIO::Job(false /*No GUI*/), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_currentItem(0)
+    : KIO::Job(), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_currentItem(0)
 {
     startNextJob( directory );
 }
 
 DirectorySizeJob::DirectorySizeJob( const KFileItemList & lstItems )
-    : KIO::Job(false /*No GUI*/), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_lstItems(lstItems), m_currentItem(0)
+    : KIO::Job(), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_lstItems(lstItems), m_currentItem(0)
 {
     QTimer::singleShot( 0, this, SLOT(processNextItem()) );
 }
@@ -121,13 +123,17 @@ void DirectorySizeJob::slotResult( KJob * job )
 //static
 DirectorySizeJob * KIO::directorySize( const KUrl & directory )
 {
-    return new DirectorySizeJob( directory ); // useless - but consistent with other jobs
+    DirectorySizeJob *job = new DirectorySizeJob(directory); // useless - but consistent with other jobs
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 
 //static
 DirectorySizeJob * KIO::directorySize( const KFileItemList & lstItems )
 {
-    return new DirectorySizeJob( lstItems );
+    DirectorySizeJob *job = new DirectorySizeJob(lstItems);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 
 #include "directorysizejob.moc"

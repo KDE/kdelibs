@@ -28,6 +28,7 @@
 #include <kprotocolmanager.h>
 #include <kde_file.h>
 #include <kmimetype.h>
+#include <kuiserverjobtracker.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>
@@ -47,6 +48,8 @@
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
 #endif
+
+K_GLOBAL_STATIC(KUiServerJobTracker, globalJobTracker)
 
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
 // a hidden kconfig option and getting the code from #57240 into the same
@@ -1978,4 +1981,9 @@ QPixmap KIO::pixmapForUrl( const KUrl & _url, mode_t _mode, K3Icon::Group _group
 {
     const QString iconName = KMimeType::iconNameForUrl( _url, _mode );
     return KIconLoader::global()->loadMimeTypeIcon( iconName, _group, _force_size, _state, _path );
+}
+
+KUiServerJobTracker *KIO::getJobTracker()
+{
+    return globalJobTracker;
 }

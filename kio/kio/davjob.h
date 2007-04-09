@@ -61,7 +61,7 @@ namespace KIO {
 	 * KIO::davSearch() to create a new DavJob.
 	 */
         DavJob(const KUrl& url, int method,
-                    const QString& request, bool showProgressInfo);
+                    const QString& request);
         /**
 	 * Returns the response as a QDomDocument.
 	 * @return the response document

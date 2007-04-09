@@ -49,10 +49,9 @@ namespace KIO {
 	 * instead.
 	 *
 	 * @param src the list of URLs to delete
-	 * @param showProgressInfo true to show progress information to the user
 	 * @see KIO::del()
 	 */
-        DeleteJob( const KUrl::List& src, bool showProgressInfo );
+        DeleteJob(const KUrl::List& src);
 
 	/**
 	 * Returns the list of URLs.

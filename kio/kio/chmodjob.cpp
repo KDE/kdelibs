@@ -22,8 +22,10 @@
 #include "kio/chmodjob.h"
 
 #include "kio/job.h"
+#include "kio/jobuidelegate.h"
 
 #include <kglobal.h>
+#include <kuiserverjobtracker.h>
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -43,8 +45,8 @@ using namespace KIO;
 
 ChmodJob::ChmodJob( const KFileItemList& lstItems, int permissions, int mask,
                     int newOwner, int newGroup,
-                    bool recursive, bool showProgressInfo )
-    : KIO::Job( showProgressInfo ), state( STATE_LISTING ),
+                    bool recursive)
+    : KIO::Job(), state( STATE_LISTING ),
       m_permissions( permissions ), m_mask( mask ),
       m_newOwner( newOwner ), m_newGroup( newGroup ),
       m_recursive( recursive ), m_lstItems( lstItems )
@@ -230,7 +232,11 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
         else
             newGroupID = g->gr_gid;
     }
-    return new ChmodJob( lstItems, permissions, mask, newOwnerID, newGroupID, recursive, showProgressInfo );
+    ChmodJob *job = new ChmodJob(lstItems, permissions, mask, newOwnerID, newGroupID, recursive);
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo)
+        KIO::getJobTracker()->registerJob(job);
+    return job;
 }
 
 #include "chmodjob.moc"

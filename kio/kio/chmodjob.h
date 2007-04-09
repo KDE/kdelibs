@@ -44,7 +44,7 @@ namespace KIO {
 	 */
         ChmodJob( const KFileItemList & lstItems,  int permissions, int mask,
                   int newOwner, int newGroup,
-                  bool recursive, bool showProgressInfo );
+                  bool recursive);
 
     protected:
         void chmodNextFile();

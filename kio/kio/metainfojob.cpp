@@ -25,6 +25,8 @@
 
 #include <QtCore/QTimer>
 
+#include "jobuidelegate.h"
+
 #include "metainfojob.moc"
 
 using namespace KIO;
@@ -38,7 +40,7 @@ struct KIO::MetaInfoJobPrivate
 };
 
 MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
-    : KIO::Job(false /* no GUI */),d(new MetaInfoJobPrivate)
+    : KIO::Job(),d(new MetaInfoJobPrivate)
 {
     d->deleteItems  = deleteItems;
     d->succeeded    = false;
@@ -177,6 +179,8 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KUrl::List &items)
     KFileItemList fileItems;
     for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
         fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
-    return new MetaInfoJob(fileItems, true);
+    MetaInfoJob *job = new MetaInfoJob(fileItems, true);
+    job->setUiDelegate(new JobUiDelegate());
+    return job;
 }
 

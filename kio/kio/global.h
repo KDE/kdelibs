@@ -38,6 +38,7 @@ template class KDE_EXPORT QMap<QString, QString>;
 #endif
 
 class KUrl;
+class KUiServerJobTracker;
 
 class QTime;
 
@@ -427,6 +428,8 @@ namespace KIO
    */
   KIO_EXPORT QPixmap pixmapForUrl( const KUrl & _url, mode_t _mode = 0, K3Icon::Group _group = K3Icon::Desktop,
                                    int _force_size = 0, int _state = 0, QString * _path = 0 );
+
+  KIO_EXPORT KUiServerJobTracker *getJobTracker();
 
   /**
    * Constants used to specify the type of a UDSField.

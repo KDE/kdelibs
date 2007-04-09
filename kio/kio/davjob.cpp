@@ -30,12 +30,15 @@
 #include <sys/stat.h>
 
 #include <kdebug.h>
+#include <kuiserverjobtracker.h>
 #include <kio/jobclasses.h>
 #include <kio/global.h>
 #include <kio/http.h>
 #include <kio/davjob.h>
 #include <kio/job.h>
 #include <kio/slaveinterface.h>
+
+#include "jobuidelegate.h"
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
@@ -49,8 +52,8 @@ public:
 	QByteArray str_response; // replaces the QString previously used in DavJob itself
 };
 
-DavJob::DavJob( const KUrl& url, int method, const QString& request, bool showProgressInfo )
-  : TransferJob( url, KIO::CMD_SPECIAL, QByteArray(), QByteArray(), showProgressInfo ),d(new DavJobPrivate)
+DavJob::DavJob(const KUrl& url, int method, const QString& request)
+  : TransferJob(url, KIO::CMD_SPECIAL, QByteArray(), QByteArray()),d(new DavJobPrivate)
 {
   // We couldn't set the args when calling the parent constructor,
   // so do it now.
@@ -112,15 +115,22 @@ void DavJob::slotFinished()
 
 DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, bool showProgressInfo )
 {
-  DavJob *job = new DavJob( url, (int) KIO::DAV_PROPFIND, properties.toString(), showProgressInfo );
+  DavJob *job = new DavJob(url, (int) KIO::DAV_PROPFIND, properties.toString());
   job->addMetaData( "davDepth", depth );
+  job->setUiDelegate(new JobUiDelegate());
+  if (showProgressInfo)
+      KIO::getJobTracker()->registerJob(job);
   return job;
 }
 
 
 DavJob* KIO::davPropPatch( const KUrl& url, const QDomDocument& properties, bool showProgressInfo )
 {
-  return new DavJob( url, (int) KIO::DAV_PROPPATCH, properties.toString(), showProgressInfo );
+    DavJob *job = new DavJob(url, (int) KIO::DAV_PROPPATCH, properties.toString());
+    job->setUiDelegate(new JobUiDelegate());
+    if (showProgressInfo)
+        KIO::getJobTracker()->registerJob(job);
+    return job;
 }
 
 DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qName, const QString& query, bool showProgressInfo )
@@ -132,7 +142,11 @@ DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qN
   searchelement.appendChild( text );
   searchrequest.appendChild( searchelement );
   doc.appendChild( searchrequest );
-  return new DavJob( url, KIO::DAV_SEARCH, doc.toString(), showProgressInfo );
+  DavJob *job = new DavJob(url, KIO::DAV_SEARCH, doc.toString());
+  job->setUiDelegate(new JobUiDelegate());
+  if (showProgressInfo)
+      KIO::getJobTracker()->registerJob(job);
+  return job;
 }
 
 #include "davjob.moc"
