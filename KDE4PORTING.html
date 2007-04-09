@@ -365,7 +365,7 @@ Desktop Entry Spec</a>
 
 <h4>KExtendedSocket</h4>
 <ul>
-<li>This class has been removed. Use KNetwork::KStreamSocket or KNetwork::KServerSocket instead.</li>
+<li>This class has been removed. See below on KNetwork::K*Socket.</li>
 </ul>
 
 <h4>KFilterDev</h4>
@@ -492,15 +492,93 @@ Internally it is reference counted and the data deleted when the last reference 
   <li>
 </ul>
 
+<h4>KNetwork::KIpAddress</h4>
+<ul>
+<li>This class is gone. Use QHostAddress instead.</li>
+</ul>
+
 <h4>KNetwork::KResolver</h4>
 <ul>
-<li>the signal finished(KResolverResults) is now finished(const KNetwork::KResolverResults&amp;)</li>
+<li>This class is gone. If you need to resolve a hostname, use
+  QHostInfo from QtNetwork.</li>
+</ul>
+
+<h4>KNetwork::KSocketAddress and KNetwork::KInetSocketAddress</h4>
+<ul>
+<li>These classes are gone. Use QHostAddress and an integer (a quint16_t)
+  to store the port number.</li>
+</ul>
+
+<h4>KNetwork::KUnixSocketAddress</h4>
+<ul>
+<li>This class is gone. Simply use a QString to represent the path or
+  identifier. See the documentation on KLocalSocket.</li>
 </ul>
 
 <h4>KNetwork::K*Socket</h4>
 <ul>
-<li>readBlock, writeBlock and peekBlock are now called simply read, write and peek</li>
-<li>connect() now has an extra parameter (QIODevice::OpenMode)</li>
+<li>All of these classes are deprecated. Use the QTcpSocket,
+  QUdpSocket and QTcpServer equivalents from QtNetwork.</li>
+<li>When porting, use KSocketFactory when creating any sockets that
+  are used to communicate with remote hosts (that is, anything that is
+  not "localhost"). Examples follow:<br>
+
+<b>Connecting to a remote host:</b>
+<p><em>Old code:</em></p>
+<pre>
+  QString host;
+  int port;
+
+  KBufferedSocket *socket = new KBufferedSocket(parent);
+  if (!socket->connect(host, QString::number(port))) {
+      // error happened
+      // deal with it
+  }
+  connect(socket, SIGNAL(connected(KResolverEntry)), SLOT(socketConnected()));
+  connect(socket, SIGNAL(gotError(int)), SLOT(socketError(int)));
+</pre>
+
+<p>New code:</p>
+<pre>
+  QString protocol;
+  QString host;
+  int port;
+  QUrl url(QString("%1://%2:%3").arg(prototocol, host).arg(port));
+
+  QTcpSocket *socket = KSocketFactory::connectToHost(protocol, host, port, parent);
+  // alternatively:
+  // QTcpSocket *socket = KSocketFactory::connectToHost(url, parent);
+  connect(socket, SIGNAL(connected()), SLOT(socketConnected()));
+  connect(socket, SIGNAL(error(QAbstractSocket::SocketError), SLOT(QAbstractSocket::SocketError)));
+</pre>
+
+<b>Opening a socket for receiving remote connections:</b>
+<p><em>Old code:</em></p>
+<pre>
+  int port;
+
+  KServerSocket *ss = new KServerSocket(QString::number(port), parent);
+  connect(ss, SIGNAL(readyAccept()), this, SLOT(slotReadyAccept()));
+  connect(ss, SIGNAL(gotError(int)), this, SLOT(slotSocketError(int)));
+  ss->listen();
+</pre>
+
+<p>New code:</p>
+<pre>
+  QString protocol;
+  int port;
+
+  QTcpServer *ts = KSocketFactory::listen(protocol, QHostAddress::Any, port, parent);
+  connect(ts, SIGNAL(newConnection()), this, SLOT(slotReadyAccept()));
+</pre>
+</li>
+<li><b>Caveat:</b> all member functions in QTcpSocket
+  are <em>asynchronous</em> and buffered. There's no equivalent
+  "blocking" mode for QTcpSocket. If you need an action to complete,
+  you have to use <tt>waitForReadyRead</tt> and <tt>flush</tt>
+  (or <tt>waitForBytesWritten</tt>) in the socket object. If you need
+  to wait for a connection to be established,
+  use <tt>KSocketFactory::synchronousConnectToHost</tt>.</li>
 </ul>
 
 <h4>KNotifyClient</h4>
