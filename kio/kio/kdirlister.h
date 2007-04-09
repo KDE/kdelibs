@@ -595,11 +595,6 @@ protected:
    */
   virtual bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
 
-  /**
-   * @internal
-   */
-  bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
-
   /** Reimplement to customize error handling */
   virtual void handleError( KIO::Job * );
 
@@ -611,19 +606,20 @@ private Q_SLOTS:
   void slotSpeed( KJob *, unsigned long );
 
 private:
+  bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
+
   void jobStarted( KIO::ListJob * );
   void connectJob( KIO::ListJob * );
   void jobDone( KIO::ListJob * );
 
   uint numJobs();
 
-private:
-  virtual void addNewItem( KFileItem *item );
-  virtual void addNewItems( const KFileItemList& items );
-  virtual void aboutToRefreshItem( const KFileItem *item );
-  virtual void addRefreshItem( KFileItem *item );
-  virtual void emitItems();
-  virtual void emitDeleteItem( KFileItem *item );
+  void addNewItem( KFileItem *item );
+  void addNewItems( const KFileItemList& items );
+  void aboutToRefreshItem( const KFileItem *item );
+  void addRefreshItem( KFileItem *item );
+  void emitItems();
+  void emitDeleteItem( KFileItem *item );
 
   KDirListerPrivate* const d;
 };

@@ -365,7 +365,7 @@ namespace KIO
    *
    * @deprecated use KMountPoint::currentMountPoints() and findByPath().
    */
-  KIO_EXPORT QString findPathMountPoint( const QString & filename );
+  KIO_EXPORT_DEPRECATED QString findPathMountPoint( const QString & filename );
 
   /**
    * Checks if the path belongs to a filesystem that is probably
