@@ -1,7 +1,6 @@
 // program to test the new khtml implementation
 
 #include <stdlib.h>
-#include "decoder.h"
 #include "kapplication.h"
 #include "khtmlview.h"
 #include "html_document.h"
