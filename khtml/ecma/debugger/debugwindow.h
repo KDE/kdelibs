@@ -38,7 +38,6 @@
 
 #include "khtml_pagecache.h"
 #include "khtml_part.h"
-#include "misc/decoder.h"
 #include "dom/dom_misc.h"
 
 class KActionCollection;

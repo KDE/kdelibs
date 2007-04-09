@@ -65,7 +65,7 @@
 #include "khtml_pagecache.h"
 #include "khtml_settings.h"
 #include "khtml_factory.h"
-#include "misc/decoder.h"
+#include <kencodingdetector.h>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
@@ -255,7 +255,7 @@ QString SourceFile::getCode()
   if (interpreter) {
     KHTMLPart *part = qobject_cast<KHTMLPart*>(static_cast<ScriptInterpreter*>(interpreter)->part());
     if (part && url == part->url().url() && KHTMLPageCache::self()->isValid(part->cacheId())) {
-      Decoder *decoder = part->createDecoder();
+      KEncodingDetector *decoder = part->createDecoder();
       QByteArray data;
       QDataStream stream(&data,QIODevice::WriteOnly);
       KHTMLPageCache::self()->saveData(part->cacheId(),&stream);
@@ -263,7 +263,9 @@ QString SourceFile::getCode()
       if (data.size() == 0)
         str = "";
       else
-        str = decoder->decode(data.data(),data.size()) + decoder->flush();
+      {
+        str = decoder->decode(data);
+      }
       delete decoder;
       return str;
     }

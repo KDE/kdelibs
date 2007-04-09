@@ -32,7 +32,7 @@
 #include "html/htmltokenizer.h"
 #include "html/html_imageimpl.h"
 
-#include "misc/decoder.h"
+#include "misc/kencodingdetector.h"
 #include "misc/loader.h"
 
 #include "rendering/render_style.h"

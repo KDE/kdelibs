@@ -46,13 +46,13 @@
 #include "khtml_events.h"
 #include "khtml_ext.h"
 #include "khtml_settings.h"
-#include "misc/decoder.h"
+#include <kencodingdetector.h>
 #include "ecma/kjs_proxy.h"
 
 class KFind;
 class KFindDialog;
 class KMenu;
-class KSelectAction;
+class KCodecAction;
 class KUrlLabel;
 class KJavaAppletContext;
 class KJSErrorDlg;
@@ -195,7 +195,7 @@ public:
     m_bFirstData = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
-    m_autoDetectLanguage = khtml::Decoder::SemiautomaticDetection;
+    m_autoDetectLanguage = KEncodingDetector::SemiautomaticDetection;
 
     // inherit settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -264,7 +264,8 @@ public:
   QList<KHTMLPart *> m_suppressedPopupOriginParts;
   int m_openableSuppressedPopups;
   DOM::DocumentImpl *m_doc;
-  khtml::Decoder *m_decoder;
+  KEncodingDetector::AutoDetectScript m_autoDetectLanguage;
+  KEncodingDetector *m_decoder;
   QString m_encoding;
   QString m_sheetUsed;
   qlonglong m_cacheId;
@@ -344,7 +345,7 @@ public:
   QAction *m_paSaveBackground;
   QAction *m_paSaveDocument;
   QAction *m_paSaveFrame;
-  KActionMenu *m_paSetEncoding;
+  KCodecAction *m_paSetEncoding;
   KSelectAction *m_paUseStylesheet;
   KSelectAction *m_paIncZoomFactor;
   KSelectAction *m_paDecZoomFactor;
@@ -490,10 +491,6 @@ public:
   QPointer<KHTMLPart> m_opener;
   bool m_openedByJS;
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
-
-  khtml::Decoder::AutoDetectLanguage m_autoDetectLanguage;
-  KMenu *m_automaticDetection;
-  KSelectAction *m_manualDetection;
 
   void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);
   /** returns the caret node */

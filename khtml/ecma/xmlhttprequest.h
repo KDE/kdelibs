@@ -23,7 +23,7 @@
 
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
-#include "misc/decoder.h"
+#include <kencodingdetector.h>
 #include "kio/jobclasses.h"
 #include <QPointer>
 
@@ -108,7 +108,7 @@ namespace KJS {
     JSEventListener *onReadyStateChangeListener;
     JSEventListener *onLoadListener;
 
-    khtml::Decoder *decoder;
+    KEncodingDetector *decoder;
     QString encoding;
     QString responseHeaders;
 

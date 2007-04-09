@@ -35,6 +35,7 @@
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <klocalizedstring.h>
+#include <kencodingdetector.h>
 #include <QtCore/QRegExp>
 
 class KHTMLPartPrivate;
@@ -85,7 +86,6 @@ namespace khtml
   class RenderWidget;
   class CSSStyleSelector;
   class HTMLTokenizer;
-  class Decoder;
   class XMLTokenizer;
 }
 
@@ -1340,7 +1340,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  virtual void slotSetEncoding();
+  virtual void slotSetEncoding(const QString &);;
 
   /**
    * @internal
@@ -1466,7 +1466,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  void slotAutomaticDetectionLanguage( int _id );
+  void slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript scri);
 
   /**
    * @internal
@@ -1634,7 +1634,7 @@ private:
    * @return @p true if a selection is extended by the mouse.
    */
   bool isExtendingSelection() const;
-  khtml::Decoder *createDecoder();
+  KEncodingDetector *createDecoder();
   QString defaultEncoding() const;
 
   /** .html, .xhtml or .xml */

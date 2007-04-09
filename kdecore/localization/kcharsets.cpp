@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999 Lars Knoll (knoll@kde.org)
     Copyright (C) 2001, 2003, 2004, 2005, 2006 Nicolas GOUTTE <goutte@kde.org>
+    Copyright (C) 2007 Nick Shaforostoff <shafff@ukr.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -501,6 +502,9 @@ public:
     // Hash for the encoding names (sensitive case)
     QHash<QByteArray,QTextCodec*> codecForNameDict;
     KCharsets* kc;
+
+    //Cache list so QStrings can be implicitly shared
+    QList<QStringList> encodingsByScript;
 };
 
 // --------------------------------------------------------------------------
@@ -685,6 +689,30 @@ QStringList KCharsets::descriptiveEncodingNames() const
     }
     encodings.sort();
     return encodings;
+}
+
+QList<QStringList> KCharsets::encodingsByScript() const
+{
+    if (!d->encodingsByScript.isEmpty())
+        return d->encodingsByScript;
+    int i;
+    for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
+        const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
+        const QString description = i18n( language_for_encoding_string + p[1] );
+
+        for (i=0; i<d->encodingsByScript.size(); ++i) {
+            if (d->encodingsByScript.at(i).at(0) == description) {
+                d->encodingsByScript[i].append(name);
+                break;
+            }
+        }
+
+        if (i==d->encodingsByScript.size()) {
+            d->encodingsByScript.append(QStringList() << description << name);
+        }
+
+    }
+    return d->encodingsByScript;
 }
 
 QTextCodec* KCharsets::codecForName(const QString &n) const

@@ -179,6 +179,8 @@ set(kdecore_LIB_SRCS
    network/netsupp.cpp
    localization/kcatalog.cpp
    localization/kcharsets.cpp
+   localization/kencodingdetector.cpp
+   localization/guess_ja.cpp
    localization/klocale.cpp
    localization/klocalizedstring.cpp
    sycoca/ksycoca.cpp
@@ -329,6 +331,7 @@ install( FILES
    services/kplugininfo.h
    localization/kcatalog.h
    localization/kcharsets.h
+   localization/kencodingdetector.h
    localization/klocale.h
    localization/klocalizedstring.h
    sycoca/kprotocolinfo.h

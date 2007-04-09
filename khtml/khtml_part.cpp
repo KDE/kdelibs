@@ -98,6 +98,8 @@ using namespace DOM;
 #include "kfind.h"
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
+#include <kcodecaction.h>
+#include <kselectaction.h>
 
 #include <ksslcertchain.h>
 #include <ksslinfodialog.h>
@@ -112,6 +114,7 @@ using namespace DOM;
 #include <QtCore/QMetaClassInfo>
 #include <QTextDocument>
 #include <Q3CString>
+#include <QTime>
 
 #include "khtmlpart_p.h"
 #include "khtmlpartadaptor.h"
@@ -290,92 +293,44 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "stopAnimations", d->m_paStopAnimations );
   connect( d->m_paStopAnimations, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
 
-  d->m_paSetEncoding = new KActionMenu( KIcon("character-set"), i18n( "Set &Encoding" ), this );
+  d->m_paSetEncoding = new KCodecAction( KIcon("character-set"), i18n( "Set &Encoding" ), this, true );
   actionCollection()->addAction( "setEncoding", d->m_paSetEncoding );
-  d->m_paSetEncoding->setDelayed( false );
+//   d->m_paSetEncoding->setDelayed( false );
 
-  d->m_automaticDetection = new KMenu( 0L );
-
-  d->m_automaticDetection->insertItem( i18n( "Semi-Automatic" ), 0 );
-  d->m_automaticDetection->insertItem( i18n( "Arabic" ), 1 );
-  d->m_automaticDetection->insertItem( i18n( "Baltic" ), 2 );
-  d->m_automaticDetection->insertItem( i18n( "Central European" ), 3 );
-  //d->m_automaticDetection->insertItem( i18n( "Chinese" ), 4 );
-  d->m_automaticDetection->insertItem( i18n( "Greek" ), 5 );
-  d->m_automaticDetection->insertItem( i18n( "Hebrew" ), 6 );
-  d->m_automaticDetection->insertItem( i18n( "Japanese" ), 7 );
-  //d->m_automaticDetection->insertItem( i18n( "Korean" ), 8 );
-  d->m_automaticDetection->insertItem( i18n( "Russian" ), 9 );
-  //d->m_automaticDetection->insertItem( i18n( "Thai" ), 10 );
-  d->m_automaticDetection->insertItem( i18n( "Turkish" ), 11 );
-  d->m_automaticDetection->insertItem( i18n( "Ukrainian" ), 12 );
-  //d->m_automaticDetection->insertItem( i18n( "Unicode" ), 13 );
-  d->m_automaticDetection->insertItem( i18n( "Western European" ), 14 );
-
-  connect( d->m_automaticDetection, SIGNAL( activated( int ) ), this, SLOT( slotAutomaticDetectionLanguage( int ) ) );
-
-  d->m_paSetEncoding->menu()->insertItem( i18n( "Automatic Detection" ), d->m_automaticDetection, 0 );
-
-  QAction *sep_act = new QAction( this );
-  sep_act->setSeparator( true );
-  d->m_paSetEncoding->addAction( sep_act );
-
-
-  d->m_manualDetection = new KSelectAction( i18nc( "short for Manual Detection", "Manual" ), this );
-  actionCollection()->addAction( "manualDetection", d->m_manualDetection );
-  connect( d->m_manualDetection, SIGNAL( triggered( bool ) ), this, SLOT( slotSetEncoding() ) );
-  QStringList encodings = KGlobal::charsets()->descriptiveEncodingNames();
-  d->m_manualDetection->setItems( encodings );
-  d->m_manualDetection->setCurrentItem( -1 );
-  d->m_paSetEncoding->addAction( d->m_manualDetection );
-
+  connect( d->m_paSetEncoding, SIGNAL(triggered(const QString&)), this, SLOT( slotSetEncoding(const QString &)));
+  connect( d->m_paSetEncoding, SIGNAL(triggered(KEncodingDetector::AutoDetectScript)), this, SLOT( slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript)));
 
   if ( KGlobal::config()->hasGroup( "HTML Settings" ) ) {
     KConfigGroup config( KGlobal::config(), "HTML Settings" );
-    khtml::Decoder::AutoDetectLanguage language;
-    QByteArray name = QTextCodec::codecForLocale()->name();
-    name = name.toLower();
 
-    if ( name == "cp1256" || name == "iso-8859-6" ) {
-      language = khtml::Decoder::Arabic;
+    d->m_autoDetectLanguage = static_cast<KEncodingDetector::AutoDetectScript>(config.readEntry( "AutomaticDetectionLanguage", /*static_cast<int>(language) */0));
+    if (d->m_autoDetectLanguage==KEncodingDetector::None) {
+      const QByteArray name = KGlobal::locale()->encoding().toLower();
+//       kWarning() << "00000000 " << endl;
+      if (name.endsWith("1251")||name.startsWith("koi")||name=="iso-8859-5")
+        d->m_autoDetectLanguage=KEncodingDetector::Cyrillic;
+      else if (name.endsWith("1256")||name=="iso-8859-6")
+        d->m_autoDetectLanguage=KEncodingDetector::Arabic;
+      else if (name.endsWith("1257")||name=="iso-8859-13"||name=="iso-8859-4")
+        d->m_autoDetectLanguage=KEncodingDetector::Baltic;
+      else if (name.endsWith("1250")|| name=="ibm852" || name=="iso-8859-2" || name=="iso-8859-3" )
+        d->m_autoDetectLanguage=KEncodingDetector::CentralEuropean;
+      else if (name.endsWith("1253")|| name=="iso-8859-7" )
+        d->m_autoDetectLanguage=KEncodingDetector::Greek;
+      else if (name.endsWith("1255")|| name=="iso-8859-8" || name=="iso-8859-8-i" )
+        d->m_autoDetectLanguage=KEncodingDetector::Hebrew;
+      else if (name=="jis7" || name=="eucjp" || name=="sjis"  )
+        d->m_autoDetectLanguage=KEncodingDetector::Japanese;
+      else if (name.endsWith("1254")|| name=="iso-8859-9" )
+        d->m_autoDetectLanguage=KEncodingDetector::Turkish;
+      else if (name.endsWith("1252")|| name=="iso-8859-1" || name=="iso-8859-15" )
+        d->m_autoDetectLanguage=KEncodingDetector::WesternEuropean;
+      else
+        d->m_autoDetectLanguage=KEncodingDetector::SemiautomaticDetection;
+//         kWarning() << "0000000end " << d->m_autoDetectLanguage << " " << KGlobal::locale()->encodingMib() << endl;
     }
-    else if ( name == "cp1257" || name == "iso-8859-13" || name == "iso-8859-4" ) {
-      language = khtml::Decoder::Baltic;
-    }
-    else if ( name == "cp1250" || name == "ibm852" || name == "iso-8859-2" || name == "iso-8859-3" ) {
-      language = khtml::Decoder::CentralEuropean;
-    }
-    else if ( name == "cp1251" || name == "koi8-r" || name == "iso-8859-5" ) {
-      language = khtml::Decoder::Russian;
-    }
-    else if ( name == "koi8-u" ) {
-      language = khtml::Decoder::Ukrainian;
-    }
-    else if ( name == "cp1253" || name == "iso-8859-7" ) {
-      language = khtml::Decoder::Greek;
-    }
-    else if ( name == "cp1255" || name == "iso-8859-8" || name == "iso-8859-8-i" ) {
-      language = khtml::Decoder::Hebrew;
-    }
-    else if ( name == "jis7" || name == "eucjp" || name == "sjis"  ) {
-      language = khtml::Decoder::Japanese;
-    }
-    else if ( name == "cp1254" || name == "iso-8859-9" ) {
-      language = khtml::Decoder::Turkish;
-    }
-    else if ( name == "cp1252" || name == "iso-8859-1" || name == "iso-8859-15" ) {
-      language = khtml::Decoder::WesternEuropean;
-    }
-    else
-      language = khtml::Decoder::SemiautomaticDetection;
-
-    int _id = config.readEntry( "AutomaticDetectionLanguage", static_cast<int>(language) );
-    d->m_automaticDetection->setItemChecked( _id, true );
-    d->m_paSetEncoding->menu()->setItemChecked( 0, true );
-
-    d->m_autoDetectLanguage = static_cast< khtml::Decoder::AutoDetectLanguage >( _id );
+    d->m_paSetEncoding->setCurrentAutoDetectScript(d->m_autoDetectLanguage);
   }
-
 
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), this );
   actionCollection()->addAction( "useStylesheet", d->m_paUseStylesheet );
@@ -516,9 +471,6 @@ KHTMLPart::~KHTMLPart()
   //kDebug(6050) << "KHTMLPart::~KHTMLPart " << this << endl;
   KConfigGroup config( KGlobal::config(), "HTML Settings" );
   config.writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
-
-  delete d->m_automaticDetection;
-  delete d->m_manualDetection;
 
   slotWalletClosed();
   if (!parentPart()) { // only delete it if the top khtml_part closes
@@ -1658,19 +1610,23 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     // Support for Content-Language
     QString language = d->m_job->queryMetaData("content-language");
     if (!language.isEmpty())
-        d->m_doc->setContentLanguage(language);
+      d->m_doc->setContentLanguage(language);
 
-    if ( !url().isLocalFile() ) {
-        // Support for http last-modified
-        d->m_lastModified = d->m_job->queryMetaData("modified");
-    } else
-        d->m_lastModified.clear(); // done on-demand by lastModified()
+    if ( !url().isLocalFile() )
+    {
+      // Support for http last-modified
+      d->m_lastModified = d->m_job->queryMetaData("modified");
+    }
+    else
+      d->m_lastModified.clear(); // done on-demand by lastModified()
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
   write( data.data(), data.size() );
+
   if (d->m_frame && d->m_frame->m_jscript)
     d->m_frame->m_jscript->dataReceived();
+
 }
 
 void KHTMLPart::slotRestoreData(const QByteArray &data )
@@ -1960,22 +1916,24 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   d->m_doc->setParsing(true);
 }
 
-void KHTMLPart::write( const char *str, int len )
+void KHTMLPart::write( const char *data, int len )
 {
   if ( !d->m_decoder )
     d->m_decoder = createDecoder();
 
   if ( len == -1 )
-    len = strlen( str );
+    len = strlen( data );
 
   if ( len == 0 )
     return;
 
-  QString decoded = d->m_decoder->decode( str, len );
+  QString decoded=d->m_decoder->decodeWithBuffering(data,len);
 
-  if(decoded.isEmpty()) return;
+  if(decoded.isEmpty())
+      return;
 
-  if(d->m_bFirstData) {
+  if(d->m_bFirstData)
+  {
       // determine the parse mode
       d->m_doc->determineParseMode( decoded );
       d->m_bFirstData = false;
@@ -2012,13 +1970,16 @@ void KHTMLPart::write( const QString &str )
 void KHTMLPart::end()
 {
     if (d->m_doc) {
-        if (d->m_decoder) {
-            QString decoded = d->m_decoder->flush();
-            if (d->m_bFirstData) {
+        if (d->m_decoder)
+        {
+            QString decoded=d->m_decoder->flush();
+            if (d->m_bFirstData)
+            {
                 d->m_bFirstData = false;
                 d->m_doc->determineParseMode(decoded);
             }
-            write(decoded);
+            if (!decoded.isEmpty())
+                write(decoded);
         }
         d->m_doc->finishParsing();
     }
@@ -4233,14 +4194,16 @@ void KHTMLPart::slotSaveFrame()
     KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save Frame As" ), srcURL, metaData, "text/html" );
 }
 
-void KHTMLPart::slotSetEncoding()
+void KHTMLPart::slotSetEncoding(const QString &enc)
 {
-  d->m_automaticDetection->setItemChecked( int( d->m_autoDetectLanguage ), false );
-  d->m_paSetEncoding->menu()->setItemChecked( 0, false );
-  d->m_paSetEncoding->menu()->actions()[2]->setChecked(true);
+    d->m_autoDetectLanguage=KEncodingDetector::None;
+    setEncoding( enc, true);
+}
 
-  QString enc = KGlobal::charsets()->encodingForName( d->m_manualDetection->currentText() );
-  setEncoding( enc, true );
+void KHTMLPart::slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript scri)
+{
+  d->m_autoDetectLanguage=scri;
+  setEncoding( QString(), false );
 }
 
 void KHTMLPart::slotUseStylesheet()
@@ -7025,86 +6988,17 @@ void KHTMLPart::setPluginPageQuestionAsked(const QString& mimetype)
   d->m_pluginPageQuestionAsked.append(mimetype);
 }
 
-void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
+KEncodingDetector *KHTMLPart::createDecoder()
 {
-  d->m_automaticDetection->setItemChecked( _id, true );
-
-  switch ( _id ) {
-    case 0 :
-      d->m_autoDetectLanguage = khtml::Decoder::SemiautomaticDetection;
-      break;
-    case 1 :
-      d->m_autoDetectLanguage = khtml::Decoder::Arabic;
-      break;
-    case 2 :
-      d->m_autoDetectLanguage = khtml::Decoder::Baltic;
-      break;
-    case 3 :
-      d->m_autoDetectLanguage = khtml::Decoder::CentralEuropean;
-      break;
-    case 4 :
-      d->m_autoDetectLanguage = khtml::Decoder::Chinese;
-      break;
-    case 5 :
-      d->m_autoDetectLanguage = khtml::Decoder::Greek;
-      break;
-    case 6 :
-      d->m_autoDetectLanguage = khtml::Decoder::Hebrew;
-      break;
-    case 7 :
-      d->m_autoDetectLanguage = khtml::Decoder::Japanese;
-      break;
-    case 8 :
-      d->m_autoDetectLanguage = khtml::Decoder::Korean;
-      break;
-    case 9 :
-      d->m_autoDetectLanguage = khtml::Decoder::Russian;
-      break;
-    case 10 :
-      d->m_autoDetectLanguage = khtml::Decoder::Thai;
-      break;
-    case 11 :
-      d->m_autoDetectLanguage = khtml::Decoder::Turkish;
-      break;
-    case 12 :
-      d->m_autoDetectLanguage = khtml::Decoder::Ukrainian;
-      break;
-    case 13 :
-      d->m_autoDetectLanguage = khtml::Decoder::Unicode;
-      break;
-    case 14 :
-      d->m_autoDetectLanguage = khtml::Decoder::WesternEuropean;
-      break;
-    default :
-      d->m_autoDetectLanguage = khtml::Decoder::SemiautomaticDetection;
-      break;
-  }
-
-  for ( int i = 0; i <= 14; ++i ) {
-    if ( i != _id )
-      d->m_automaticDetection->setItemChecked( i, false );
-  }
-
-  d->m_paSetEncoding->menu()->setItemChecked( 0, true );
-
-  setEncoding( QString(), false );
-
-  if( d->m_manualDetection )
-    d->m_manualDetection->setCurrentItem( -1 );
-  d->m_paSetEncoding->menu()->actions()[2]->setChecked(false);
-}
-
-khtml::Decoder *KHTMLPart::createDecoder()
-{
-    khtml::Decoder *dec = new khtml::Decoder();
+    KEncodingDetector *dec = new KEncodingDetector();
     if( !d->m_encoding.isNull() )
         dec->setEncoding( d->m_encoding.toLatin1().constData(),
-            d->m_haveEncoding ? khtml::Decoder::UserChosenEncoding : khtml::Decoder::EncodingFromHTTPHeader);
+            d->m_haveEncoding ? KEncodingDetector::UserChosenEncoding : KEncodingDetector::EncodingFromHTTPHeader);
     else {
         // Inherit the default encoding from the parent frame if there is one.
         const char *defaultEncoding = (parentPart() && parentPart()->d->m_decoder)
             ? parentPart()->d->m_decoder->encoding() : settings()->encoding().toLatin1().constData();
-        dec->setEncoding(defaultEncoding, khtml::Decoder::DefaultEncoding);
+        dec->setEncoding(defaultEncoding, KEncodingDetector::DefaultEncoding);
     }
 #ifdef APPLE_CHANGES
     if (d->m_doc)
@@ -7489,3 +7383,4 @@ using namespace KParts;
 #ifndef KHTML_NO_WALLET
 #include "khtml_wallet_p.moc"
 #endif
+

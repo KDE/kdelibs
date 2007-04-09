@@ -57,7 +57,6 @@
 #include "khtml_pagecache.h"
 #include "khtml_settings.h"
 #include "khtml_factory.h"
-#include "misc/decoder.h"
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/function.h>

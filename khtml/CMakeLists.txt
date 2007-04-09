@@ -57,9 +57,7 @@ set(khtmldom_STAT_SRCS
 # khtml/misc/Makefile.am: khtmlmisc
 
 set(khtmlmisc_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/khtml/misc/decoder.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/loader.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/misc/guess_ja.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/htmlhashes.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/helper.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/arena.cpp

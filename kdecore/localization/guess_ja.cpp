@@ -40,10 +40,7 @@
  * Maybe we should use QTextCodec::heuristicContentMatch()
  * But it fails detection. It's not useful.
  */
-#include "decoder.h"
 #include "guess_ja.h"
-
-using namespace khtml;
 
 /* DFA tables */
 const dfa_table guess_eucj_st[] = {
@@ -308,7 +305,7 @@ guess_arc guess_utf8_ar[11] = {
 enum JapaneseCode::Type JapaneseCode::guess_jp(const char *buf, int buflen)
 {
     int i;
-    guess_dfa *top = NULL;
+    guess_dfa *top = 0;
 
     for (i=0; i<buflen; i++) {
         int c = (unsigned char)buf[i];

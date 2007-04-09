@@ -52,8 +52,7 @@ using KIO::NetAccess;
                             "mkcol,lock,unlock,options,via"
 
 using namespace KJS;
-using khtml::Decoder;
-
+// 
 ////////////////////// XMLHttpRequest Object ////////////////////////
 
 /* Source for XMLHttpRequestProtoTable.
@@ -634,9 +633,9 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
         encoding = type.mid( index+1 ).remove(QRegExp("charset[ ]*=[ ]*", Qt::CaseInsensitive)).trimmed();
     }
 
-    decoder = new Decoder;
+    decoder = new KEncodingDetector;
     if (!encoding.isNull())
-      decoder->setEncoding(encoding.toLatin1().constData(), Decoder::EncodingFromHTTPHeader);
+      decoder->setEncoding(encoding.toLatin1().constData(), KEncodingDetector::EncodingFromHTTPHeader);
     else {
       // FIXME: Inherit the default encoding from the parent document?
     }
@@ -647,7 +646,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   if (len == -1)
     len = strlen(data);
 
-  QString decoded = decoder->decode(data, len);
+  QString decoded = decoder->decodeWithBuffering(data, len);
 
   response += decoded;
 

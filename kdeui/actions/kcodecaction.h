@@ -4,6 +4,7 @@
     Copyright (c) 2003      by Jason Keirstead        <jason@keirstead.org>
     Copyright (c) 2003-2006 by Michel Hermier         <michel.hermier@gmail.com>
     Kopete    (c) 2003-2006 by the Kopete developers  <kopete-devel@kde.org>
+    Copyright (C) 2007 Nick Shaforostoff              <shafff@ukr.net>
 
     *************************************************************************
     *                                                                       *
@@ -17,6 +18,7 @@
 #ifndef KCODECACTION_H
 #define KCODECACTION_H
 
+#include <kencodingdetector.h>
 #include <kselectaction.h>
 
 /**
@@ -35,11 +37,11 @@ class KDEUI_EXPORT KCodecAction
 	Q_PROPERTY(int codecMib READ currentCodecMib)
 
 public:
-	explicit KCodecAction(QObject *parent);
+	explicit KCodecAction(QObject *parent,bool showAutoOptions=false);
 
-	KCodecAction(const QString &text, QObject *parent);
+	KCodecAction(const QString &text, QObject *parent,bool showAutoOptions=false);
 
-	KCodecAction(const KIcon &icon, const QString &text, QObject *parent);
+	KCodecAction(const KIcon &icon, const QString &text, QObject *parent,bool showAutoOptions=false);
 
 	virtual ~KCodecAction();
 
@@ -56,14 +58,53 @@ public:
 	int currentCodecMib() const;
 	bool setCurrentCodec(int mib);
 
+        /**
+         * Applicable only if showAutoOptions in c'tor was true
+         *
+         * @returns KEncodingDetector::None if specific encoding is selected, not autodetection, otherwise... you know it!
+         */
+	KEncodingDetector::AutoDetectScript currentAutoDetectScript() const;
+        /**
+         * Applicable only if showAutoOptions in c'tor was true
+         *
+         * KEncodingDetector::SemiautomaticDetection means 'Default' item
+         */
+	bool setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScript);
+
+
 Q_SIGNALS:
+        /**
+         * Specific (proper) codec was selected
+         */
 	void triggered(QTextCodec *codec);
 
+        /**
+         * Specific (proper) codec was selected
+         *
+         * @returns codec name
+         */
+        void triggered(const QString&);
+
+        /**
+         * Autodetection has been selected.
+         * emits KEncodingDetector::SemiautomaticDetection if Default was selected.
+         *
+         * Applicable only if showAutoOptions in c'tor was true
+         */
+        void triggered(KEncodingDetector::AutoDetectScript);
+
+        /**
+         * If showAutoOptions==true, then better handle triggered(KEncodingDetector::AutoDetectScript) signal
+         */
+        void defaultItemTriggered();
+
+
 protected Q_SLOTS:
-	virtual void actionTriggered(QAction *action);
+	virtual void actionTriggered(QAction*);
+        void subActionTriggered(QAction*);
 
 private:
-	void init();
+	void init(bool);
 
 	class Private;
 	Private* const d;

@@ -12,6 +12,7 @@
               (C) 2006 Albert Astals Cid <aacid@kde.org>
               (C) 2006 Clarence Dang <dang@kde.org>
               (C) 2006 Michel Hermier <michel.hermier@gmail.com>
+              (C) 2007 Nick Shaforostoff <shafff@ukr.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -128,6 +129,7 @@ void KSelectAction::KSelectActionPrivate::init(KSelectAction *q_ptr)
 {
   q = q_ptr;
   QObject::connect(q->selectableActionGroup(), SIGNAL(triggered(QAction*)), q, SLOT(actionTriggered(QAction*)));
+  QObject::connect(q, SIGNAL(toggled(bool)),q, SLOT(slotToggled(bool)));
   q->setMenu(new KMenu());
 }
 
@@ -166,6 +168,8 @@ bool KSelectAction::setCurrentAction(QAction* action)
     if (actions().contains(action)) {
       if (action->isVisible() && action->isEnabled() && action->isCheckable()) {
         action->setChecked(true);
+        if (isCheckable())
+            setChecked(true);
         return true;
       } else
         kWarning (129) << k_funcinfo << "Action don't have the correct properties to be current:" << action->text() << endl;
@@ -318,6 +322,9 @@ void KSelectAction::actionTriggered(QAction* action)
   //kDebug (129) << "KSelectAction::actionTriggered(" << action << ") text=" << text
   //          << " index=" << index  << " emitting triggered()" << endl;
 
+  if (isCheckable()) // if this is subsidiary of other KSelectAction-derived class
+    trigger();       // then imitate usual QAction behaviour so that other submenus (and their items) become unchecked
+
   emit triggered(action);
   emit triggered(index);
   emit triggered(text);
@@ -407,6 +414,13 @@ void KSelectAction::setEditable( bool edit )
 bool KSelectAction::isEditable() const
 {
   return d->m_edit;
+}
+
+void KSelectAction::slotToggled(bool checked)
+{
+    //if (checked && selectableActionGroup()->checkedAction())
+    if (!checked && currentAction()) // other's submenu item has been selected
+        currentAction()->setChecked(false);
 }
 
 KSelectAction::ToolBarMode KSelectAction::toolBarMode() const

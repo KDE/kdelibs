@@ -23,7 +23,6 @@
 
 #include "ecma/kjs_binding.h"
 #include "ecma/kjs_dom.h"
-#include "misc/decoder.h"
 #include "kio/jobclasses.h"
 
 namespace KJS {

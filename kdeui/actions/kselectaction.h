@@ -11,6 +11,7 @@
               (C) 2006 Albert Astals Cid <aacid@kde.org>
               (C) 2006 Clarence Dang <dang@kde.org>
               (C) 2006 Michel Hermier <michel.hermier@gmail.com>
+              (C) 2007 Nick Shaforostoff <shafff@ukr.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -339,6 +340,11 @@ protected Q_SLOTS:
      * This function is called whenever an action from the selections is triggered.
      */
     virtual void actionTriggered(QAction* action);
+
+    /**
+     * For structured menu building. Deselects all items if the action was unchecked by the top menu
+     */
+    void slotToggled(bool);
 
 protected:
     virtual QWidget *createWidget(QWidget *parent);

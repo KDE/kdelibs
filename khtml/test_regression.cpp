@@ -233,7 +233,7 @@ public:
 #include <QtCore/QTimer>
 #include <kstatusbar.h>
 
-#include "misc/decoder.h"
+#include "misc/kencodingdetector.h"
 #include "dom/dom2_range.h"
 #include "dom/dom_exception.h"
 #include "dom/html_document.h"

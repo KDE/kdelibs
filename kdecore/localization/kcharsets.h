@@ -21,6 +21,7 @@
 
 #include <kdemacros.h>
 #include <kdecore_export.h>
+#include <QList>
 
 class KGlobal;
 class KCharsetsPrivate;
@@ -123,6 +124,12 @@ public:
      * @return the list of descriptive encoding names
      */
     QStringList descriptiveEncodingNames() const;
+
+    /**
+     * Lists the available encoding names grouped by script (or language that uses them).
+     * @returns the list of lists consisting of description followed by encoding names (i.e. encodingsByScript().at(i).at(0) is a description for encodingsByScript().at(i).at(k), k>0)
+     */
+    QList<QStringList> encodingsByScript() const;
 
     /**
      * Returns the language the encoding is used for.
