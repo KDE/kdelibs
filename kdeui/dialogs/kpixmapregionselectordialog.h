@@ -48,6 +48,7 @@ public:
     * the new object.
     */
    explicit KPixmapRegionSelectorDialog( QWidget *parent = 0 );
+
    /**
     * The destructor of the dialog
     */
@@ -66,7 +67,7 @@ public:
     * @returns the selected rectangle, or an invalid rectangle if the user 
     * pressed the Cancel button.
     */
-   static QRect selectedRegion( const QPixmap &pixmap, QWidget *parent = 0L );
+   static QRect getSelectedRegion( const QPixmap &pixmap, QWidget *parent = 0L );
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -76,8 +77,8 @@ public:
     * @returns the selected rectangle, or an invalid rectangle if the user 
     * pressed the Cancel button.
     */
-   static QRect selectedRegion( const QPixmap &pixmap, int aspectRatioWidth,
-                                int aspectRatioHeight, QWidget *parent = 0L );
+   static QRect getSelectedRegion( const QPixmap &pixmap, int aspectRatioWidth,
+                                   int aspectRatioHeight, QWidget *parent = 0L );
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -86,7 +87,7 @@ public:
     * @returns the selected image, or an invalid image if the user 
     * pressed the Cancel button.
     */
-   static QImage selectedImage( const QPixmap &pixmap, QWidget *parent = 0L );
+   static QImage getSelectedImage( const QPixmap &pixmap, QWidget *parent = 0L );
 
    /**
     * Creates a modal dialog, lets the user to select a region of the @p pixmap
@@ -96,8 +97,8 @@ public:
     * @returns the selected image, or an invalid image if the user 
     * pressed the Cancel button.
     */
-   static QImage selectedImage( const QPixmap &pixmap, int aspectRatioWidth,
-                                int aspectRatioHeight, QWidget *parent = 0L );
+   static QImage getSelectedImage( const QPixmap &pixmap, int aspectRatioWidth,
+                                   int aspectRatioHeight, QWidget *parent = 0L );
 
 private:
     class Private;

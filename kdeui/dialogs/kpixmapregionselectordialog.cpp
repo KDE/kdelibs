@@ -66,7 +66,7 @@ KPixmapRegionSelectorWidget *KPixmapRegionSelectorDialog::pixmapRegionSelectorWi
     return d->pixmapSelectorWidget;
 }
 
-QRect KPixmapRegionSelectorDialog::selectedRegion(const QPixmap &pixmap, QWidget *parent )
+QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
@@ -87,7 +87,7 @@ QRect KPixmapRegionSelectorDialog::selectedRegion(const QPixmap &pixmap, QWidget
   return rect;
 }
 
-QRect KPixmapRegionSelectorDialog::selectedRegion(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
+QRect KPixmapRegionSelectorDialog::getSelectedRegion(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
@@ -109,7 +109,7 @@ QRect KPixmapRegionSelectorDialog::selectedRegion(const QPixmap &pixmap, int asp
   return rect;
 }
 
-QImage KPixmapRegionSelectorDialog::selectedImage(const QPixmap &pixmap, QWidget *parent )
+QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
@@ -129,7 +129,7 @@ QImage KPixmapRegionSelectorDialog::selectedImage(const QPixmap &pixmap, QWidget
   return image;
 }
 
-QImage KPixmapRegionSelectorDialog::selectedImage(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
+QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, int aspectRatioWidth, int aspectRatioHeight, QWidget *parent )
 {
   KPixmapRegionSelectorDialog dialog(parent);
 
