@@ -326,22 +326,6 @@ public:
     KPushButton *cancelButton() const;
 
     /**
-     * @returns the KUrlBar object used as the "speed bar". You can add custom
-     * entries to it like that:
-     * \code
-     * KUrlBar *urlBar = fileDialog->speedBar();
-     * if ( urlBar )
-     *     urlBar->insertDynamicItem( someURL, i18n("The URL's description") );
-     * \endcode
-     *
-     * Note that this method may return a null-pointer if the user configured
-     * to not use the speed-bar.
-     * @see KUrlBar
-     * @see KUrlBar::insertDynamicItem
-     */
-    KUrlBar *speedBar();
-
-    /**
      * @returns the combobox used to type the filename or full location of the file.
      */
     KUrlComboBox *locationEdit() const;

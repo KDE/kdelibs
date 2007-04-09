@@ -432,11 +432,6 @@ KPushButton * KFileDialog::cancelButton() const
     return d->w->cancelButton();
 }
 
-KUrlBar * KFileDialog::speedBar()
-{
-    return d->w->speedBar();
-}
-
 KUrlComboBox* KFileDialog::locationEdit() const
 {
     return d->w->locationEdit();

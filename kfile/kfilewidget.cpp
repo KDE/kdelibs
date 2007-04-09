@@ -1498,11 +1498,6 @@ KPushButton * KFileWidget::cancelButton() const
     return d->cancelButton;
 }
 
-KUrlBar * KFileWidget::speedBar()
-{
-    return 0;
-}
-
 // Called by KFileDialog
 void KFileWidget::slotCancel()
 {
