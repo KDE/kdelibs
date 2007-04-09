@@ -202,12 +202,6 @@ Group=Input (KDE)
 IncludeFile=kdatetable.h
 Group=Input (KDE)
 
-[KLanguageButton]
-IncludeFile=klanguagebutton.h
-ToolTip=A widget for selecting a language
-WhatsThis=A combobox suitable for selecting a language
-Group=Input (KDE)
-
 [KImageFilePreview]
 IncludeFile=kimagefilepreview.h
 ToolTip=A widget that provides a image preview of a URL

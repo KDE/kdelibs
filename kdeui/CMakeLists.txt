@@ -35,7 +35,6 @@ add_subdirectory( sonnet/tests )
 ########### next target ###############
 
 set(kdeui_LIB_SRCS
- klanguagebutton.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
  actions/kactionmenu.cpp
@@ -263,7 +262,6 @@ install( FILES dialogs/aboutkde.png dialogs/ktip-bulb.png dialogs/ktip-backgroun
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  kdeui_export.h
- klanguagebutton.h
  actions/kactioncollection.h
  actions/kaction.h
  actions/kactionmenu.h
