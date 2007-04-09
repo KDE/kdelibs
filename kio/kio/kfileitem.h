@@ -20,7 +20,6 @@
 #ifndef __kfileitem_h__
 #define __kfileitem_h__
 
-#include <QtCore/QList>
 #include <sys/stat.h>
 
 #include <kio/global.h>
