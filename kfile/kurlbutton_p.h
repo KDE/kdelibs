@@ -41,7 +41,10 @@ public:
     explicit KUrlButton(KUrlNavigator* parent);
     virtual ~KUrlButton();
 
-    KUrlNavigator* urlNavigator() const { return m_urlNavigator; }
+    KUrlNavigator* urlNavigator() const
+    {
+        return m_urlNavigator;
+    }
 
 protected:
     enum DisplayHint {

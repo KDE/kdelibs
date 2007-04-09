@@ -32,7 +32,7 @@ class QPaintEvent;
 
 namespace KIO
 {
-    class Job;
+class Job;
 }
 
 /**
@@ -51,7 +51,10 @@ public:
     explicit KUrlNavigatorButton(int index, KUrlNavigator* parent);
     virtual ~KUrlNavigatorButton();
     void setIndex(int index);
-    int index() const { return m_index; }
+    int index() const
+    {
+        return m_index;
+    }
 
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;

@@ -23,9 +23,9 @@
 #include "kurlnavigator.h"
 
 KUrlButton::KUrlButton(KUrlNavigator* parent) :
-    QPushButton(parent),
-    m_displayHint(0),
-    m_urlNavigator(parent)
+        QPushButton(parent),
+        m_displayHint(0),
+        m_urlNavigator(parent)
 {
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
@@ -35,16 +35,14 @@ KUrlButton::KUrlButton(KUrlNavigator* parent) :
 }
 
 KUrlButton::~KUrlButton()
-{
-}
+{}
 
 void KUrlButton::setDisplayHintEnabled(DisplayHint hint,
-                                      bool enable)
+                                       bool enable)
 {
     if (enable) {
         m_displayHint = m_displayHint | hint;
-    }
-    else {
+    } else {
         m_displayHint = m_displayHint & ~hint;
     }
     update();
@@ -70,7 +68,7 @@ void KUrlButton::leaveEvent(QEvent* event)
 }
 
 QColor KUrlButton::mixColors(const QColor& c1,
-                            const QColor& c2) const
+                             const QColor& c2) const
 {
     const int red   = (c1.red()   + c2.red())   / 2;
     const int green = (c1.green() + c2.green()) / 2;

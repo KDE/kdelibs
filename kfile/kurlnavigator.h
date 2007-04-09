@@ -251,7 +251,7 @@ private:
     class Private;
     Private* const d;
 
-    Q_DISABLE_COPY( KUrlNavigator )
+    Q_DISABLE_COPY(KUrlNavigator)
 };
 
 #endif

@@ -34,10 +34,10 @@
 #include <QTimer>
 
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
-    KUrlButton(parent),
-    m_index(-1),
-    m_popupDelay(0),
-    m_listJob(0)
+        KUrlButton(parent),
+        m_index(-1),
+        m_popupDelay(0),
+        m_listJob(0)
 {
     setAcceptDrops(true);
     setMinimumWidth(arrowWidth());
@@ -51,8 +51,7 @@ KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
-{
-}
+{}
 
 void KUrlNavigatorButton::setIndex(int index)
 {
@@ -72,8 +71,7 @@ void KUrlNavigatorButton::setIndex(int index)
     if (path.section('/', index, index).isEmpty()) {
         setDisplayHintEnabled(ActivatedHint, true);
         adjustedFont.setBold(true);
-    }
-    else {
+    } else {
         setDisplayHintEnabled(ActivatedHint, false);
         adjustedFont.setBold(false);
     }
@@ -103,8 +101,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     if (isHighlighted) {
         backgroundColor = KGlobalSettings::highlightColor();
         foregroundColor = KGlobalSettings::highlightedTextColor();
-    }
-    else {
+    } else {
         backgroundColor = palette().brush(QPalette::Background).color();
         foregroundColor = KGlobalSettings::buttonTextColor();
     }
@@ -127,8 +124,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     int textWidth = buttonWidth;
     if (isDisplayHintEnabled(ActivatedHint) && isActive || isHighlighted) {
         painter.setPen(foregroundColor);
-    }
-    else {
+    } else {
         // dimm the foreground color by mixing it with the background
         foregroundColor = mixColors(foregroundColor, backgroundColor);
         painter.setPen(foregroundColor);
@@ -162,8 +158,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         pen.setBrush(QBrush(gradient));
         painter.setPen(pen);
         painter.drawText(textRect, align, text());
-    }
-    else {
+    } else {
         painter.drawText(textRect, align, text());
     }
 }

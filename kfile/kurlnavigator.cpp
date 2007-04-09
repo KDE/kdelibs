@@ -51,22 +51,44 @@
  * (the 'current file' is the file where the cursor is located) and
  * the x- and y-position of the content.
  */
-class HistoryElem {
+class HistoryElem
+{
 public:
     HistoryElem();
     HistoryElem(const KUrl& url);
     ~HistoryElem(); // non virtual
 
-    const KUrl& url() const { return m_url; }
+    const KUrl& url() const
+    {
+        return m_url;
+    }
 
-    void setCurrentFileName(const QString& name) { m_currentFileName = name; }
-    const QString& currentFileName() const { return m_currentFileName; }
+    void setCurrentFileName(const QString& name)
+    {
+        m_currentFileName = name;
+    }
+    const QString& currentFileName() const
+    {
+        return m_currentFileName;
+    }
 
-    void setContentsX(int x) { m_contentsX = x; }
-    int contentsX() const { return m_contentsX; }
+    void setContentsX(int x)
+    {
+        m_contentsX = x;
+    }
+    int contentsX() const
+    {
+        return m_contentsX;
+    }
 
-    void setContentsY(int y) { m_contentsY = y; }
-    int contentsY() const { return m_contentsY; }
+    void setContentsY(int y)
+    {
+        m_contentsY = y;
+    }
+    int contentsY() const
+    {
+        return m_contentsY;
+    }
 
 private:
     KUrl m_url;
@@ -76,24 +98,21 @@ private:
 };
 
 HistoryElem::HistoryElem() :
-    m_url(),
-    m_currentFileName(),
-    m_contentsX(0),
-    m_contentsY(0)
-{
-}
+        m_url(),
+        m_currentFileName(),
+        m_contentsX(0),
+        m_contentsY(0)
+{}
 
 HistoryElem::HistoryElem(const KUrl& url) :
-    m_url(url),
-    m_currentFileName(),
-    m_contentsX(0),
-    m_contentsY(0)
-{
-}
+        m_url(url),
+        m_currentFileName(),
+        m_contentsX(0),
+        m_contentsY(0)
+{}
 
 HistoryElem::~HistoryElem()
-{
-}
+{}
 
 class KUrlNavigator::Private
 {
@@ -165,15 +184,15 @@ public:
 
 
 KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
-    :
-    m_active(true),
-    m_historyIndex(0),
-    m_layout(new QHBoxLayout),
-    m_protocols(0),
-    m_protocolSeparator(0),
-    m_host(0),
-    m_filler(0),
-    q(q)
+        :
+        m_active(true),
+        m_historyIndex(0),
+        m_layout(new QHBoxLayout),
+        m_protocols(0),
+        m_protocolSeparator(0),
+        m_host(0),
+        m_filler(0),
+        q(q)
 {
     m_layout->setSpacing(0);
     m_layout->setMargin(0);
@@ -256,37 +275,30 @@ void KUrlNavigator::Private::slotRemoteHostActivated()
     QString user;
 
     int marker = host.indexOf("@");
-    if (marker != -1)
-    {
+    if (marker != -1) {
         user = host.left(marker);
         u.setUser(user);
         host = host.right(host.length() - marker - 1);
     }
 
     marker = host.indexOf("/");
-    if (marker != -1)
-    {
+    if (marker != -1) {
         u.setPath(host.right(host.length() - marker));
         host.truncate(marker);
-    }
-    else
-    {
+    } else {
         u.setPath("");
     }
 
     if (m_protocols->currentProtocol() != u.protocol() ||
-        host != u.host() ||
-        user != u.user())
-    {
+            host != u.host() ||
+            user != u.user()) {
         u.setProtocol(m_protocols->currentProtocol());
         u.setHost(m_host->text());
 
         //TODO: get rid of this HACK for file:///!
-        if (u.protocol() == "file")
-        {
+        if (u.protocol() == "file") {
             u.setHost("");
-            if (u.path().isEmpty())
-            {
+            if (u.path().isEmpty()) {
                 u.setPath("/");
             }
         }
@@ -312,8 +324,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 
     if (KProtocolInfo::protocolClass(protocol) == ":local") {
         q->setUrl(url);
-    }
-    else {
+    } else {
         if (!m_host) {
             m_protocolSeparator = new QLabel("://", q);
             appendWidget(m_protocolSeparator);
@@ -324,8 +335,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
                     q, SLOT(slotRemoteHostActivated()));
             connect(m_host, SIGNAL(returnPressed()),
                     q, SLOT(slotRemoteHostActivated()));
-        }
-        else {
+        } else {
             m_host->setText("");
         }
         m_protocolSeparator->show();
@@ -338,14 +348,14 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 {
 // kDebug() << "received redirection to " << newUrl << endl;
-kDebug() << "received redirection from " << oldUrl << " to " << newUrl << endl;
-/*    UrlStack::iterator it = m_urls.find(oldUrl);
-    if (it != m_urls.end())
-    {
-        m_urls.erase(++it, m_urls.end());
-    }
+    kDebug() << "received redirection from " << oldUrl << " to " << newUrl << endl;
+    /*    UrlStack::iterator it = m_urls.find(oldUrl);
+        if (it != m_urls.end())
+        {
+            m_urls.erase(++it, m_urls.end());
+        }
 
-    m_urls.append(newUrl);*/
+        m_urls.append(newUrl);*/
 }
 #endif
 
@@ -401,8 +411,7 @@ void KUrlNavigator::Private::updateContent()
         q->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
         m_pathBox->show();
         m_pathBox->setUrl(q->url());
-    }
-    else {
+    } else {
         m_toggleButton->setToolTip(i18n("Edit location (%1)", shortcut));
 
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -422,8 +431,7 @@ void KUrlNavigator::Private::updateContent()
             int idx = path.indexOf(QString("//"));
             idx = path.indexOf("/", (idx < 0) ? 0 : idx + 2);
             placePath = (idx < 0) ? path : path.left(idx);
-        }
-        else {
+        } else {
             placePath = placeUrl.pathOrUrl();
         }
         const uint len = placePath.length();
@@ -450,8 +458,7 @@ void KUrlNavigator::Private::updateContent()
                 appendWidget(m_protocols);
                 connect(m_protocols, SIGNAL(activated(QString)),
                         q, SLOT(slotProtocolChanged(QString)));
-            }
-            else {
+            } else {
                 m_protocols->setProtocol(protocol);
             }
             m_protocols->show();
@@ -474,19 +481,16 @@ void KUrlNavigator::Private::updateContent()
                             q, SLOT(slotRemoteHostActivated()));
                     connect(m_host, SIGNAL(returnPressed()),
                             q, SLOT(slotRemoteHostActivated()));
-                }
-                else {
+                } else {
                     m_host->setText(hostText);
                 }
                 m_protocolSeparator->show();
                 m_host->show();
-            }
-            else {
+            } else {
                 delete m_protocolSeparator; m_protocolSeparator = 0;
                 delete m_host; m_host = 0;
             }
-        }
-        else if (m_protocols) {
+        } else if (m_protocols) {
             m_protocols->hide();
 
             if (m_host) {
@@ -524,8 +528,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
                 if (text.isEmpty()) {
                     if (currentUrl.isLocalFile()) {
                         text = i18n("Custom Path");
-                    }
-                    else {
+                    } else {
                         ++idx;
                         continue;
                     }
@@ -538,8 +541,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
                 connect(button, SIGNAL(urlsDropped(const KUrl::List&, const KUrl&)),
                         q, SLOT(dropUrls(const KUrl::List&, const KUrl&)));
                 appendWidget(button);
-            }
-            else {
+            } else {
                 button = *it;
                 button->setIndex(idx);
             }
@@ -551,8 +553,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             if (createButton) {
                 button->show();
                 m_navButtons.append(button);
-            }
-            else {
+            } else {
                 ++it;
             }
             ++idx;
@@ -586,10 +587,10 @@ void KUrlNavigator::Private::deleteButtons()
 
 
 KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
-                           const KUrl& url,
-                           QWidget* parent) :
-    QWidget(parent),
-    d( new Private(this, placesModel) )
+                             const KUrl& url,
+                             QWidget* parent) :
+        QWidget(parent),
+        d(new Private(this, placesModel))
 {
     d->m_history.prepend(HistoryElem(url));
 
@@ -629,8 +630,7 @@ KUrl KUrlNavigator::url(int index) const
             // prevent the last "/" from being stripped
             // or we end up with an empty path
             path = "/";
-        }
-        else {
+        } else {
             path = path.section('/', 0, index);
         }
     }
@@ -684,8 +684,7 @@ void KUrlNavigator::goHome()
 {
     if (d->m_homeUrl.isEmpty()) {
         setUrl(QDir::homePath());
-    }
-    else {
+    } else {
         setUrl(d->m_homeUrl);
     }
 }
@@ -732,7 +731,7 @@ void KUrlNavigator::setUrl(const KUrl& url)
     // this use case.
 
     //kDebug() << "setUrl(" << url << ")" << endl;
-    if ( urlStr.length() > 0 && urlStr.at(0) == '~') {
+    if (urlStr.length() > 0 && urlStr.at(0) == '~') {
         // replace '~' by the home directory
         urlStr.remove(0, 1);
         urlStr.insert(0, QDir::homePath());
@@ -773,15 +772,15 @@ void KUrlNavigator::setUrl(const KUrl& url)
         --d->m_historyIndex;
     }
 
-/*    kDebug() << "history starting ====================" << endl;
-    int i = 0;
-    for (QValueListIterator<KUrlNavigator::HistoryElem> it = d->m_history.begin();
-         it != d->m_history.end();
-         ++it, ++i)
-    {
-        kDebug() << i << ": " << (*it).url() << endl;
-    }
-    kDebug() << "history done ========================" << endl;*/
+    /*    kDebug() << "history starting ====================" << endl;
+        int i = 0;
+        for (QValueListIterator<KUrlNavigator::HistoryElem> it = d->m_history.begin();
+             it != d->m_history.end();
+             ++it, ++i)
+        {
+            kDebug() << i << ": " << (*it).url() << endl;
+        }
+        kDebug() << "history done ========================" << endl;*/
 
     requestActivation();
 }
@@ -837,7 +836,7 @@ int KUrlNavigator::historyIndex() const
 QPoint KUrlNavigator::savedPosition() const
 {
     const HistoryElem& histElem = d->m_history[d->m_historyIndex];
-    return QPoint( histElem.contentsX(), histElem.contentsY() );
+    return QPoint(histElem.contentsX(), histElem.contentsY());
 }
 
 #include "kurlnavigator.moc"
