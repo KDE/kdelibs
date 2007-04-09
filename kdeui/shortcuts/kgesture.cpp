@@ -479,8 +479,9 @@ QString KRockerGesture::mouseButtonName(Qt::MouseButton button)
 QString KRockerGesture::rockerName() const
 {
     if (!isValid())
-        return i18nc("an invalid mouse gesture of type \"hold down one button, then press another button\"",
-                     "invalid rocker gesture");
+        return QString();
+        //return i18nc("an invalid mouse gesture of type \"hold down one button, then press another button\"",
+        //             "invalid rocker gesture");
     else
         return i18nc("a kind of mouse gesture: hold down one mouse button, then press another button",
                      "Hold %1, then push %2", mouseButtonName(m_hold), mouseButtonName(m_thenPush));

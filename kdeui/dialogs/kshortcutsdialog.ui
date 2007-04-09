@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>532</width>
+    <width>761</width>
     <height>549</height>
    </rect>
   </property>
@@ -57,6 +57,16 @@
      <column>
       <property name="text" >
        <string>Global Alternate</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Mouse button gesture</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Mouse shape gesture</string>
       </property>
      </column>
     </widget>

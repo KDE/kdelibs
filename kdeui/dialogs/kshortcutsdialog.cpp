@@ -189,15 +189,17 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
 //slot
 void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 {
-
-	//testing hack
-	if (index.column() == 2) {
-		//KShapeGestureSelector *ksgs = new KShapeGestureSelector(0);
-		//ksgs->exec();
-	}
-	if (index.column() == 0) {
+	//check if we are dealing with a KShortcutsEditorItem
+	if (index.model()->data(index, ItemPointerRole).isNull())
+		return;
+		
+	//TODO: make clicking on the Name column do *exactly* the same thing
+	//as clicking on the LocalPrimary column, i.e. select LocalPrimary
+	int column = index.column();
+	if (column == 0) {
 		const QAbstractItemModel *model = index.model();
 		index = model->index(index.row(), 1, index.parent());
+		column = 1;
 	}
 
 	if (!isExtended(index)) {
@@ -208,13 +210,27 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 		m_editingIndex = index;
 		const QAbstractItemModel *model = index.model();
 		QWidget *viewport = static_cast<QAbstractItemView*>(parent())->viewport();
-		ShortcutEditWidget *editor = new ShortcutEditWidget(viewport,
-		        model->data(index, DefaultShortcutRole).value<QKeySequence>(),
-		        model->data(index, ShortcutRole).value<QKeySequence>());
+		QWidget *editor;
 
-		connect(editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-		        this, SLOT(keySequenceChanged(const QKeySequence &)));
+		if (column >= LocalPrimary && column <= GlobalAlternate) {
+			editor = new ShortcutEditWidget(viewport,
+			        model->data(index, DefaultShortcutRole).value<QKeySequence>(),
+			        model->data(index, ShortcutRole).value<QKeySequence>());
+
+			connect(editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
+			        this, SLOT(keySequenceChanged(const QKeySequence &)));
+
+		} else if (column == RockerGesture) {
+			editor = new QLabel("A lame placeholder", viewport);
+
+		} else if (column == ShapeGesture) {
+			editor = new QLabel("<i>A towel</i>", viewport);
+
+		} else
+			return;
+
 		extendItem(editor, index);
+
 	} else {
 		contractItem(index);
 		m_editingIndex = QModelIndex();
@@ -251,7 +267,7 @@ void KShortcutsEditorDelegate::rockerGestureChanged(const KRockerGesture &gest)
 
 
 ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &defaultSeq,
-    const QKeySequence &activeSeq)
+                                       const QKeySequence &activeSeq)
  : QWidget(viewport),
    m_defaultKeySequence(defaultSeq),
    m_ignoreKeySequenceChanged(false)
@@ -386,6 +402,8 @@ void KShortcutsEditor::save()
 
 void KShortcutsEditor::undoChanges()
 {
+	//TODO: make this crash-proof. The tree widget does not seem to live long enough.
+	//Now I know what the list in the old implementation was for. Still, is there a better way?
 	for (QTreeWidgetItemIterator it(d->ui.list); (*it); ++it) {
 		if ((*it)->childCount())
 			continue;
@@ -790,7 +808,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 		case GlobalPrimary:
 		case GlobalAlternate:
 			return keySequence(column);
-		case ShapeGesture: { //scoping of "ret"
+		case ShapeGesture: { //scoping for "ret"
 			QVariant ret;
 			ret.setValue(m_action->shapeGesture());
 			return ret; }
