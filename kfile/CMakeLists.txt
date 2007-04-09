@@ -39,7 +39,7 @@ set(kfile_LIB_SRCS
 kde4_automoc(${kfile_LIB_SRCS})
 kde4_add_library(kfile SHARED ${kfile_LIB_SRCS})
 target_link_libraries(kfile ${KDE4_KIO_LIBS} ${KDE4_KDE3SUPPORT_LIBS} ${ZLIB_LIBRARY} ${STRIGI_LIBRARIES} ${KDE4_SOLID_LIBS})
-set_target_properties(kfile PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kfile  DESTINATION ${LIB_INSTALL_DIR} )
 
 install( FILES

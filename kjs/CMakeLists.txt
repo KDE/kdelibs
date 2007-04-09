@@ -126,7 +126,7 @@ if(PCRE_FOUND)
    target_link_libraries(${KJSLIBNAME} ${PCRE_LIBRARIES})
 endif(PCRE_FOUND)
 
-set_target_properties(${KJSLIBNAME} PROPERTIES VERSION 2.0.0 SOVERSION 2 )
+set_target_properties(${KJSLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS ${KJSLIBNAME}  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### js - basic shell ###############

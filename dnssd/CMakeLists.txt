@@ -60,7 +60,7 @@ else (HAVE_DNSSD)
   target_link_libraries(kdnssd ${KDE4_KDEUI_LIBS})
 endif (HAVE_DNSSD)
 
-set_target_properties(kdnssd PROPERTIES VERSION 2.0.0 SOVERSION 2 )
+set_target_properties(kdnssd PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kdnssd  DESTINATION ${LIB_INSTALL_DIR} )
 
 

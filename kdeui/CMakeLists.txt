@@ -249,7 +249,7 @@ if(X11_XTest_FOUND)
    target_link_libraries(kdeui ${X11_XTest_LIB})
 endif(X11_XTest_FOUND)
 
-set_target_properties(kdeui PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(kdeui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kdeui  DESTINATION ${LIB_INSTALL_DIR} )
 
 

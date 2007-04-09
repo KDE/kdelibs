@@ -75,7 +75,7 @@ add_subdirectory( sonnet/tests )
 if (UNIX)
 
    kde4_add_library(kdefakes SHARED fakes.c)
-   set_target_properties(kdefakes PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+   set_target_properties(kdefakes PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
    install(TARGETS kdefakes DESTINATION ${LIB_INSTALL_DIR} )
 
    #no ttyname on windows
@@ -214,7 +214,7 @@ kde4_add_library(kdecore SHARED ${kdecore_LIB_SRCS})
 
 target_link_libraries(kdecore  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${UTIL_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
-set_target_properties(kdecore PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(kdecore PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kdecore DESTINATION ${LIB_INSTALL_DIR} )
 
 

@@ -326,7 +326,7 @@ kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} ktexteditor kparts kdeprint kutils kde3support kwalletclient kjs phononcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
-set_target_properties(khtml PROPERTIES VERSION 5.0.0 SOVERSION 5 )
+set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
 
 
