@@ -935,7 +935,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 if (*end == '\0' || end == pEnd)
                     break;
                 QByteArray str(ptr, end - ptr + 1); //+1 as it must include the \0 terminator
-                str[end-ptr]='\0';
+                str[str.size() - 1]='\0';
                 int length;
                 int pos = findXMLEncoding(str, length);
                 // also handles the case when specified encoding aint correct
@@ -1071,6 +1071,9 @@ bool KEncodingDetector::analyze(const char *data, int len)
         case KEncodingDetector::Korean:
         case KEncodingDetector::Thai:
         case KEncodingDetector::Unicode:
+        case KEncodingDetector::NorthernSaami:
+        case KEncodingDetector::SouthEasternEurope:
+        case KEncodingDetector::None:
             // huh. somethings broken in this code ### FIXME
             //enc = 0; //Reset invalid codec we tried, so we get back to latin1 fallback.
             break;
