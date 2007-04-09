@@ -561,8 +561,14 @@ QVariant KConfigGroup::readEntry( const char *pKey, const QVariant &aDefault ) c
       }
 
       default:
+          if( aDefault.canConvert<KUrl>() )
+          {
+              const KUrl url( readEntry( pKey, qvariant_cast<KUrl>(aDefault).url() ) );
+              return qVariantFromValue<KUrl>( url );
+          }
           break;
   }
+
 
   Q_ASSERT( 0 );
   return QVariant();
@@ -933,8 +939,14 @@ void KConfigGroup::writeEntry ( const char *pKey, const QVariant &prop,
     case QVariant::BitArray:
     case QVariant::Pen:
     default:
+        if( prop.canConvert<KUrl>() )
+        {
+            writeEntry( pKey, qvariant_cast<KUrl>(prop).url(), pFlags );
+            return;
+        }
         break;
     }
+
 
   Q_ASSERT( 0 );
 }
