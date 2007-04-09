@@ -44,8 +44,7 @@ bool VideoPath::addOutput( AbstractVideoOutput* videoOutput )
 	if( d->outputs.contains( videoOutput ) )
 		return false;
 
-	if( iface() )
-	{
+    if (iface() && videoOutput->iface()) {
 		bool success;
 		BACKEND_GET1( bool, success, "addOutput", QObject*, videoOutput->iface() );
 		if( success )
@@ -64,8 +63,7 @@ bool VideoPath::removeOutput( AbstractVideoOutput* videoOutput )
 	if( !d->outputs.contains( videoOutput ) )
 		return false;
 
-	if( d->backendObject )
-	{
+    if (d->backendObject && videoOutput->iface()) {
 		bool success;
 		BACKEND_GET1( bool, success, "removeOutput", QObject*, videoOutput->iface() );
 		if( success )
@@ -91,8 +89,7 @@ bool VideoPath::insertEffect( VideoEffect* newEffect, VideoEffect* insertBefore 
 	if( d->effects.contains( newEffect ) )
 		return false;
 
-	if( iface() )
-	{
+    if (iface() && newEffect->iface()) {
 		bool success;
 		BACKEND_GET2( bool, success, "insertEffect", QObject*, newEffect->iface(), QObject*, insertBefore ? insertBefore->iface() : 0 );
 		if( success )
@@ -148,7 +145,11 @@ void VideoPath::setupIface()
 	QList<AbstractVideoOutput*> outputList = d->outputs;
 	foreach( AbstractVideoOutput* output, outputList )
 	{
-		BACKEND_GET1( bool, success, "addOutput", QObject*, output->iface() );
+        if (output->iface()) {
+            BACKEND_GET1(bool, success, "addOutput", QObject*, output->iface());
+        } else {
+            success = false;
+        }
 		if( !success )
 			d->outputs.removeAll( output );
 	}
@@ -156,7 +157,11 @@ void VideoPath::setupIface()
 	QList<VideoEffect*> effectList = d->effects;
 	foreach( VideoEffect* effect, effectList )
 	{
-		BACKEND_GET1( bool, success, "insertEffect", QObject*, effect->iface() );
+        if (effect->iface()) {
+            BACKEND_GET1( bool, success, "insertEffect", QObject*, effect->iface() );
+        } else {
+            success = false;
+        }
 		if( !success )
 			d->effects.removeAll( effect );
 	}
@@ -172,14 +177,16 @@ void VideoPathPrivate::phononObjectDestroyed( Base* o )
 	VideoEffect* videoEffect = static_cast<VideoEffect*>( o );
 	if( outputs.contains( output ) )
 	{
-		if( backendObject )
+        if (backendObject && output->iface()) {
 			pBACKEND_CALL1( "removeOutput", QObject*, output->iface() );
+        }
 		outputs.removeAll( output );
 	}
 	else if( effects.contains( videoEffect ) )
 	{
-		if( backendObject )
+        if (backendObject && videoEffect->iface()) {
 			pBACKEND_CALL1( "removeEffect", QObject*, videoEffect->iface() );
+        }
 		effects.removeAll( videoEffect );
 	}
 }
