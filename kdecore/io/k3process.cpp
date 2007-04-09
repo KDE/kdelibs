@@ -27,8 +27,6 @@
 #include "k3processcontroller.h"
 #include "kpty.h"
 
-#include <config.h>
-
 #ifdef __osf__
 #define _OSF_SOURCE
 #include <float.h>

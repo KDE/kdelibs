@@ -25,7 +25,6 @@
 
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QList>
-#include <QtCore/qobjectdefs.h>
 
 #include <kurl.h>
 #include <ksycocatype.h>
