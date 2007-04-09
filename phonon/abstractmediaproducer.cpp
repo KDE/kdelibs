@@ -73,8 +73,7 @@ bool AbstractMediaProducer::addVideoPath( VideoPath* videoPath )
 	if( d->videoPaths.contains( videoPath ) )
 		return false;
 
-	if( iface() )
-	{
+    if (iface() && videoPath->iface()) {
 		if( qobject_cast<MediaProducerInterface*>( d->backendObject )->addVideoPath( videoPath->iface() ) )
 		{
             d->addDestructionHandler(videoPath, d);
@@ -91,8 +90,7 @@ bool AbstractMediaProducer::addAudioPath( AudioPath* audioPath )
 	if( d->audioPaths.contains( audioPath ) )
 		return false;
 
-	if( iface() )
-	{
+    if (iface() && audioPath->iface()) {
 		if( qobject_cast<MediaProducerInterface*>( d->backendObject )->addAudioPath( audioPath->iface() ) )
 		{
             d->addDestructionHandler(audioPath, d);
@@ -127,28 +125,31 @@ PHONON_INTERFACE_GETTER( QStringList, availableSubtitleStreams, QStringList() )
 void AbstractMediaProducer::selectAudioStream( const QString& streamName, AudioPath* audioPath )
 {
 	K_D( AbstractMediaProducer );
-	if( iface() )
+    if (iface() && audioPath->iface()) {
         INTERFACE_CALL(selectAudioStream(streamName, audioPath->iface()));
-	else
+    } else {
 		d->selectedAudioStream[ audioPath ] = streamName;
+    }
 }
 
 void AbstractMediaProducer::selectVideoStream( const QString& streamName, VideoPath* videoPath )
 {
 	K_D( AbstractMediaProducer );
-	if( iface() )
+    if (iface() && videoPath->iface()) {
         INTERFACE_CALL(selectVideoStream(streamName, videoPath->iface()));
-	else
+    } else {
 		d->selectedVideoStream[ videoPath ] = streamName;
+    }
 }
 
 void AbstractMediaProducer::selectSubtitleStream( const QString& streamName, VideoPath* videoPath )
 {
 	K_D( AbstractMediaProducer );
-	if( iface() )
+    if (iface() && videoPath->iface()) {
         INTERFACE_CALL(selectSubtitleStream(streamName, videoPath->iface()));
-	else
+    } else {
 		d->selectedSubtitleStream[ videoPath ] = streamName;
+    }
 }
 
 QList<VideoPath*> AbstractMediaProducer::videoPaths() const
@@ -296,13 +297,15 @@ void AbstractMediaProducer::setupIface()
 
 	foreach( AudioPath* a, d->audioPaths )
 	{
-		if( !qobject_cast<MediaProducerInterface*>( d->backendObject )->addAudioPath( a->iface() ) )
+        if (!a->iface() || !INTERFACE_CALL(addAudioPath(a->iface()))) {
 			d->audioPaths.removeAll( a );
+        }
 	}
 	foreach( VideoPath* v, d->videoPaths )
 	{
-		if( !qobject_cast<MediaProducerInterface*>( d->backendObject )->addVideoPath( v->iface() ) )
+        if (!v->iface() || !INTERFACE_CALL(addVideoPath(v->iface()))) {
 			d->videoPaths.removeAll( v );
+        }
 	}
 
 	switch( d->state )
@@ -377,14 +380,16 @@ void AbstractMediaProducerPrivate::phononObjectDestroyed( Base* o )
 	VideoPath* videoPath = static_cast<VideoPath*>( o );
 	if( audioPaths.contains( audioPath ) )
 	{
-		if( backendObject )
-			qobject_cast<MediaProducerInterface*>( backendObject )->removeAudioPath( audioPath->iface() );
+        if (backendObject && audioPath->iface()) {
+            pINTERFACE_CALL(removeAudioPath(audioPath->iface()));
+        }
 		audioPaths.removeAll( audioPath );
 	}
 	else if( videoPaths.contains( videoPath ) )
 	{
-		if( backendObject )
-			qobject_cast<MediaProducerInterface*>( backendObject )->removeVideoPath( videoPath->iface() );
+        if (backendObject && videoPath->iface()) {
+            pINTERFACE_CALL(removeVideoPath(videoPath->iface()));
+        }
 		videoPaths.removeAll( videoPath );
 	}
 }
