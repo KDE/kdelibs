@@ -40,16 +40,16 @@ namespace DNSSD
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
 			      const QString& domain, const QStringList& subtypes)
-  		: QObject(), ServiceBase(name, type, QString::null, domain, port), d(new PublicServicePrivate(this))
+  		: QObject(), ServiceBase(new PublicServicePrivate(this, name, type, domain, port))
 {
-	if (domain.isNull()) m_domain="local.";
+	K_D;
+	if (domain.isNull()) d->m_domain="local.";
 	d->m_subtypes=subtypes;
 }
 
 
 PublicService::~PublicService()
 {
-	delete d;
 }
 
 void PublicServicePrivate::tryApply()
@@ -63,7 +63,8 @@ void PublicServicePrivate::tryApply()
 
 void PublicService::setServiceName(const QString& serviceName)
 {
-	m_serviceName = serviceName;
+	K_D;
+	d->m_serviceName = serviceName;
 	if (d->m_running) {
 	    d->m_group->Reset();
 	    d->tryApply();
@@ -72,7 +73,8 @@ void PublicService::setServiceName(const QString& serviceName)
 
 void PublicService::setDomain(const QString& domain)
 {
-	m_domain = domain;
+	K_D;
+	d->m_domain = domain;
 	if (d->m_running) {
 	    d->m_group->Reset();
 	    d->tryApply();
@@ -82,7 +84,8 @@ void PublicService::setDomain(const QString& domain)
 
 void PublicService::setType(const QString& type)
 {
-	m_type = type;
+	K_D;
+	d->m_type = type;
 	if (d->m_running) {
 	    d->m_group->Reset();
 	    d->tryApply();
@@ -91,6 +94,7 @@ void PublicService::setType(const QString& type)
 
 void PublicService::setSubTypes(const QStringList& subtypes)
 {
+	K_D;
 	d->m_subtypes = subtypes;
 	if (d->m_running) {
 	    d->m_group->Reset();
@@ -100,12 +104,14 @@ void PublicService::setSubTypes(const QStringList& subtypes)
 
 QStringList PublicService::subtypes() const
 {
+	K_D;
 	return d->m_subtypes;
 }
 
 void PublicService::setPort(unsigned short port)
 {
-	m_port = port;
+	K_D;
+	d->m_port = port;
 	if (d->m_running) {
 	    d->m_group->Reset();
 	    d->tryApply();
@@ -114,7 +120,8 @@ void PublicService::setPort(unsigned short port)
 
 void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 {
-	m_textData = textData;
+	K_D;
+	d->m_textData = textData;
 	if (d->m_running) {
 	    d->m_group->Reset();
 	    d->tryApply();
@@ -123,11 +130,13 @@ void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 
 bool PublicService::isPublished() const
 {
+	K_D;
 	return d->m_published;
 }
 
 bool PublicService::publish()
 {
+	K_D;
 	publishAsync();
 	while (d->m_running && !d->m_published) QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 	return d->m_published;
@@ -135,8 +144,9 @@ bool PublicService::publish()
 
 void PublicService::stop()
 {
-    if (d->m_group) d->m_group->Reset();
-    d->m_published = false;
+	K_D;
+        if (d->m_group) d->m_group->Reset();
+	d->m_published = false;
 }
 bool PublicServicePrivate::fillEntryGroup()
 {
@@ -147,21 +157,21 @@ bool PublicServicePrivate::fillEntryGroup()
 	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
         connect(m_group,SIGNAL(StateChanged(int,const QString&)), this, SLOT(groupStateChanged(int,const QString&)));
     }
-    if (m_parent->m_serviceName.isNull()) {
+    if (m_serviceName.isNull()) {
 	QDBusReply<QString> rep=m_server->GetHostName();
 	if (!rep.isValid()) return false;
-	m_parent->m_serviceName=rep.value();
+	m_serviceName=rep.value();
     }
 	
     QList<QByteArray> txt;
-    QMap<QString,QByteArray>::ConstIterator itEnd = m_parent->m_textData.end();
-    for (QMap<QString,QByteArray>::ConstIterator it = m_parent->m_textData.begin(); it!=itEnd ; ++it) 
+    QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.end();
+    for (QMap<QString,QByteArray>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
     	if (it.value().isNull()) txt.append(it.key().toAscii());
 	else txt.append(it.key().toAscii()+'='+it.value());
-    m_group->AddService(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type , domainToDNS(m_parent->m_domain) ,
-	m_parent->m_hostName,m_parent->m_port,txt);
+    m_group->AddService(-1,-1, 0, m_serviceName, m_type , domainToDNS(m_domain) ,
+	m_hostName, m_port,txt);
     Q_FOREACH(QString subtype, m_subtypes) 
-	m_group->AddServiceSubtype(-1,-1, 0, m_parent->m_serviceName, m_parent->m_type, domainToDNS(m_parent->m_domain) , subtype);
+	m_group->AddServiceSubtype(-1,-1, 0, m_serviceName, m_type, domainToDNS(m_domain) , subtype);
     return true;
 }
 
@@ -188,6 +198,7 @@ void PublicServicePrivate::serverStateChanged(int s,const QString&)
 
 void PublicService::publishAsync()
 {
+	K_D;
 	if (d->m_running) stop();
 	
 	if (!d->m_server) {
@@ -210,7 +221,7 @@ void PublicServicePrivate::groupStateChanged(int s,  const QString& reason)
 {
     switch (s) {
     case AVAHI_ENTRY_GROUP_COLLISION: {
-	    QDBusReply<QString> rep=m_server->GetAlternativeServiceName(m_parent->m_serviceName);
+	    QDBusReply<QString> rep=m_server->GetAlternativeServiceName(m_serviceName);
 	    if (rep.isValid())  m_parent->setServiceName(rep.value());
 	    else serverStateChanged(AVAHI_CLIENT_FAILURE, reason);
 	    break;

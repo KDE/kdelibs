@@ -33,18 +33,18 @@ namespace DNSSD
 {
 
 RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
-		: ServiceBase(name, type, domain), d(new RemoteServicePrivate(this))
+		: ServiceBase(new RemoteServicePrivate(this, name,type,domain))
 {
 }
 
 
 RemoteService::~RemoteService()
 {
-	delete d;
 }
 
 bool RemoteService::resolve()
 {
+	K_D;
 	resolveAsync();
 	while (d->m_running && !d->m_resolved) QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 	return d->m_resolved;
@@ -52,13 +52,15 @@ bool RemoteService::resolve()
 
 void RemoteService::resolveAsync()
 {
+	K_D;
 	if (d->m_running) return;
 	d->m_resolved = false;
         registerTypes();
-	kDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
+	kDebug() << this << ":Starting resolve of : " << d->m_serviceName << " " << d->m_type << " " << d->m_domain << "\n";
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	//FIXME: don't use LOOKUP_NO_ADDRESS if NSS unavailable 
-	QDBusReply<QDBusObjectPath> rep=s.ServiceResolverNew(-1, -1, m_serviceName, m_type, domainToDNS(m_domain), -1, 8 /*AVAHI_LOOKUP_NO_ADDRESS*/);
+	QDBusReply<QDBusObjectPath> rep=s.ServiceResolverNew(-1, -1, d->m_serviceName, d->m_type, 
+	    domainToDNS(d->m_domain), -1, 8 /*AVAHI_LOOKUP_NO_ADDRESS*/);
 	if (!rep.isValid()) {
 	    emit resolved(false);
 	    return;
@@ -75,6 +77,7 @@ void RemoteService::resolveAsync()
 
 bool RemoteService::isResolved() const
 {
+	K_D;
 	return d->m_resolved;
 }
 
@@ -88,14 +91,14 @@ void RemoteServicePrivate::gotError()
 
 void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int, const QString &, ushort port, const QList<QByteArray> &txt, uint)
 {
-	m_parent->m_serviceName = name;
-	m_parent->m_hostName = host;
-	m_parent->m_port = port;
-	m_parent->m_domain=DNSToDomain(domain);
+	m_serviceName = name;
+	m_hostName = host;
+	m_port = port;
+	m_domain=DNSToDomain(domain);
 	Q_FOREACH(QByteArray x, txt) {
 		int pos=x.indexOf("=");
-		if (pos==-1) m_parent->m_textData[x]=QByteArray();
-		else m_parent->m_textData[x.mid(0,pos)]=x.mid(pos+1,x.size()-pos);
+		if (pos==-1) m_textData[x]=QByteArray();
+		else m_textData[x.mid(0,pos)]=x.mid(pos+1,x.size()-pos);
 	}
 	m_resolved = true;
 	emit m_parent->resolved(true);
@@ -114,24 +117,6 @@ void RemoteService::virtual_hook(int, void*)
 	// BASE::virtual_hook(int, void*);
 }
 
-QDataStream & operator<< (QDataStream & s, const RemoteService & a)
-{
-	s << (static_cast<ServiceBase>(a));
-	qint8 resolved = a.d->m_resolved ? 1:0;
-	s << resolved;
-	return s;
-}
-
-QDataStream & operator>> (QDataStream & s, RemoteService & a)
-{
-	// stop any possible resolve going on
-	a.d->stop();
-	qint8 resolved;
-	operator>>(s,(static_cast<ServiceBase&>(a)));
-	s >> resolved;
-	a.d->m_resolved = (resolved == 1);	
-	return s;
-}
 
 }
 

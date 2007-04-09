@@ -82,10 +82,6 @@ protected:
 	virtual void virtual_hook(int id, void *data);
 private:
 	friend class RemoteServicePrivate;
-	RemoteServicePrivate* const d;
-
-	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const RemoteService & a);
-	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, RemoteService & a);
 
 };
 

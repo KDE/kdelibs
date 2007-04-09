@@ -22,15 +22,20 @@
 #define DNSSDREMOTESERVICE_P_H
 
 #include <QtCore/QObject>
+#include "servicebase_p.h"
+
+
+#define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(dptr)
 
 namespace DNSSD
 {
 
-class RemoteServicePrivate : public QObject
+class RemoteServicePrivate : public QObject, public ServiceBasePrivate
 {
 Q_OBJECT
 public:
-	RemoteServicePrivate(RemoteService* parent) : QObject(), m_resolved(false), m_running(false), m_resolver(0), m_parent(parent)
+	RemoteServicePrivate(RemoteService* parent, const QString& name, const QString& type, const QString& domain) : QObject(), 
+	ServiceBasePrivate(name, type, domain, QString(), 0), m_resolved(false), m_running(false), m_resolver(0), m_parent(parent)
 	{}
         ~RemoteServicePrivate() {  if (m_resolver) m_resolver->Free(); delete m_resolver; }
 	bool m_resolved;

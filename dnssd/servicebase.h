@@ -90,23 +90,9 @@ public:
 	QMap<QString,QByteArray> textData() const;
 
 protected:
-	QString m_serviceName;
-	QString m_type;
-	QString m_domain;
-	QString m_hostName;
-	unsigned short m_port;
-
-	/**
-	Map of TXT properties
-	 */
-	QMap<QString,QByteArray> m_textData;
-
-	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const ServiceBase & a);
-	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, ServiceBase & a);
-
+	ServiceBase(ServiceBasePrivate* const dptr);
 	virtual void virtual_hook(int, void*);
-private:
-	ServiceBasePrivate* const d;
+	ServiceBasePrivate* const dptr;
 
 };
 

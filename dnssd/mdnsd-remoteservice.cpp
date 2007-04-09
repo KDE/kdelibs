@@ -23,6 +23,7 @@
 #include <QtGui/QApplication>
 #include <kdebug.h>
 #include "remoteservice.h"
+#include "servicebase_p.h"
 #include "mdnsd-responder.h"
 #include "mdnsd-sdevent.h"
 
@@ -40,10 +41,13 @@ void resolve_callback    (    DNSServiceRef,
 				void                                *context
 			 );
 
-class RemoteServicePrivate : public Responder
+#define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(dptr)
+
+class RemoteServicePrivate : public Responder, public ServiceBasePrivate
 {
 public:
-	RemoteServicePrivate(RemoteService* parent) : Responder(), m_resolved(false), m_parent(parent)
+	RemoteServicePrivate(RemoteService* parent, const QString& name,const QString& type,const QString& domain) : 
+	    Responder(), ServiceBasePrivate(name, type, domain, QString(), 0), 	m_resolved(false), m_parent(parent)
 	{}
 	bool m_resolved;
 	RemoteService* m_parent;
@@ -51,18 +55,17 @@ public:
 };
 
 RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
-		: ServiceBase(name, type, domain), d(new RemoteServicePrivate(this))
+		: ServiceBase(new RemoteServicePrivate(this, name, type, domain))
 {
 }
 
 
 RemoteService::~RemoteService()
-{
-	delete d;
-}
+{}
 
 bool RemoteService::resolve()
 {
+	K_D;
 	resolveAsync();
 	while (d->isRunning() && !d->m_resolved) d->process();
 	d->stop();
@@ -71,18 +74,20 @@ bool RemoteService::resolve()
 
 void RemoteService::resolveAsync()
 {
+	K_D;
 	if (d->isRunning()) return;
 	d->m_resolved = false;
-	kDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
+	kDebug() << this << ":Starting resolve of : " << d->m_serviceName << " " << d->m_type << " " << d->m_domain << "\n";
 	DNSServiceRef ref;
-	if (DNSServiceResolve(&ref,0,0,m_serviceName.toUtf8(), m_type.toAscii().constData(), 
- 		domainToDNS(m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(d))
+	if (DNSServiceResolve(&ref,0,0,d->m_serviceName.toUtf8(), d->m_type.toAscii().constData(), 
+ 		domainToDNS(d->m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(d))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 	if (!d->isRunning()) emit resolved(false);
 }
 
 bool RemoteService::isResolved() const
 {
+	K_D;
 	return d->m_resolved;
 }
 
@@ -95,9 +100,9 @@ void RemoteServicePrivate::customEvent(QEvent* event)
 	}
 	if (event->type() == QEvent::User+SD_RESOLVE) {
 		ResolveEvent* rev = static_cast<ResolveEvent*>(event);
-		m_parent->m_hostName = rev->m_hostname;
-		m_parent->m_port = rev->m_port;
-		m_parent->m_textData = rev->m_txtdata;
+		m_hostName = rev->m_hostname;
+		m_port = rev->m_port;
+		m_textData = rev->m_txtdata;
 		m_resolved = true;
 		emit m_parent->resolved(true);
 	}
@@ -106,25 +111,6 @@ void RemoteServicePrivate::customEvent(QEvent* event)
 void RemoteService::virtual_hook(int, void*)
 {
 	// BASE::virtual_hook(int, void*);
-}
-
-QDataStream & operator<< (QDataStream & s, const RemoteService & a)
-{
-	s << (static_cast<ServiceBase>(a));
-	qint8 resolved = a.d->m_resolved ? 1:0;
-	s << resolved;
-	return s;
-}
-
-QDataStream & operator>> (QDataStream & s, RemoteService & a)
-{
-	// stop any possible resolve going on
-	a.d->stop();
-	qint8 resolved;
-	operator>>(s,(static_cast<ServiceBase&>(a)));
-	s >> resolved;
-	a.d->m_resolved = (resolved == 1);	
-	return s;
 }
 
 

@@ -22,18 +22,23 @@
 #include <QStringList>
 #include <netinet/in.h>
 #include "publicservice.h"
+#include "servicebase_p.h"
 #include "mdnsd-sdevent.h"
 #include "mdnsd-responder.h"
 #include "settings.h"
+
+#define K_D PublicServicePrivate* d=static_cast<PublicServicePrivate*>(dptr)
 
 namespace DNSSD
 {
 void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType errorCode, const char *name,
 		       const char*, const char*, void *context);
-class PublicServicePrivate : public Responder
+class PublicServicePrivate : public Responder, public ServiceBasePrivate
 {
 public:
-	PublicServicePrivate(PublicService* parent) : m_published(false), m_parent(parent)
+	PublicServicePrivate(PublicService* parent, const QString& name, const QString& type, unsigned int port,
+			      const QString& domain) : Responder(), ServiceBasePrivate(name, type, domain, QString(), port),
+	    m_published(false), m_parent(parent)
 	{}
 	bool m_published;
 	PublicService* m_parent;
@@ -43,9 +48,10 @@ public:
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
 			      const QString& domain, const QStringList& subtypes)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port),d(new PublicServicePrivate( this))
+  		: QObject(), ServiceBase(new PublicServicePrivate(this, name, type, port, domain))
 {
-	if (domain.isNull())  m_domain="local.";
+	K_D;
+	if (domain.isNull())  d->m_domain="local.";
 	d->m_subtypes=subtypes;
 }
 
@@ -53,12 +59,12 @@ PublicService::PublicService(const QString& name, const QString& type, unsigned 
 PublicService::~PublicService()
 {
 	stop();
-	delete d;
 }
 
 void PublicService::setServiceName(const QString& serviceName)
 {
-	m_serviceName = serviceName;
+	K_D;
+	d->m_serviceName = serviceName;
 	if (d->isRunning()) {
 		stop();
 		publishAsync();
@@ -67,7 +73,8 @@ void PublicService::setServiceName(const QString& serviceName)
 
 void PublicService::setDomain(const QString& domain)
 {
-	m_domain = domain;
+	K_D;
+	d->m_domain = domain;
 	if (d->isRunning()) {
 	stop();
 	publishAsync();
@@ -76,12 +83,14 @@ void PublicService::setDomain(const QString& domain)
 
 QStringList PublicService::subtypes() const
 {
+	K_D;
 	return d->m_subtypes;
 }
 
 void PublicService::setType(const QString& type)
 {
-	m_type = type;
+	K_D;
+	d->m_type = type;
 	if (d->isRunning()) {
 		stop();
 		publishAsync();
@@ -90,6 +99,7 @@ void PublicService::setType(const QString& type)
 
 void PublicService::setSubTypes(const QStringList& subtypes)
 {
+	K_D;
 	d->m_subtypes = subtypes;
 	if (d->isRunning()) {
 		stop();
@@ -99,7 +109,8 @@ void PublicService::setSubTypes(const QStringList& subtypes)
 
 void PublicService::setPort(unsigned short port)
 {
-	m_port = port;
+	K_D;
+	d->m_port = port;
 	if (d->isRunning()) {
 		stop();
 		publishAsync();
@@ -108,12 +119,14 @@ void PublicService::setPort(unsigned short port)
 
 bool PublicService::isPublished() const
 {
+	K_D;
 	return d->m_published;
 }
 
 void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 {
-	m_textData = textData;
+	K_D;
+	d->m_textData = textData;
 	if (d->isRunning()) {
 		stop();
 		publishAsync();
@@ -122,6 +135,7 @@ void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
 
 bool PublicService::publish()
 {
+	K_D;
 	publishAsync();
 	while (d->isRunning() && !d->m_published) d->process();
 	return d->m_published;
@@ -129,17 +143,19 @@ bool PublicService::publish()
 
 void PublicService::stop()
 {
+	K_D;
 	d->stop();
 	d->m_published = false;
 }
 
 void PublicService::publishAsync()
 {
+	K_D;
 	if (d->isRunning()) stop();
 	TXTRecordRef txt;
 	TXTRecordCreate(&txt,0,0);
-	QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.end();
-	for (QMap<QString,QByteArray>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) {
+	QMap<QString,QByteArray>::ConstIterator itEnd = d->m_textData.end();
+	for (QMap<QString,QByteArray>::ConstIterator it = d->m_textData.begin(); it!=itEnd ; ++it) {
 		if (TXTRecordSetValue(&txt,it.key().toUtf8(),it.value().length(),it.value())!=kDNSServiceErr_NoError) {
 			TXTRecordDeallocate(&txt);
 			emit published(false);
@@ -147,10 +163,10 @@ void PublicService::publishAsync()
 		}
 	}
 	DNSServiceRef ref;
-	QString fullType=m_type;
+	QString fullType=d->m_type;
 	Q_FOREACH(QString subtype, d->m_subtypes) fullType+=","+subtype;
-	if (DNSServiceRegister(&ref,0,0,m_serviceName.toUtf8(),fullType.toAscii().constData(),domainToDNS(m_domain),NULL,
-	    htons(m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
+	if (DNSServiceRegister(&ref,0,0,d->m_serviceName.toUtf8(),fullType.toAscii().constData(),domainToDNS(d->m_domain),NULL,
+	    htons(d->m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
 	    reinterpret_cast<void*>(d)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);
 	if (!d->isRunning()) emit published(false);
@@ -178,7 +194,7 @@ void PublicServicePrivate::customEvent(QEvent* event)
 	if (event->type()==QEvent::User+SD_PUBLISH) {
 		m_published=true;
 		emit m_parent->published(true);
-		m_parent->m_serviceName = static_cast<PublishEvent*>(event)->m_name;
+		m_serviceName = static_cast<PublishEvent*>(event)->m_name;
 	}
 }
 

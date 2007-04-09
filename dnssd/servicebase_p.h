@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2004, 2005 Jakub Stachowski <qbast@go2.pl>
+ * Copyright (C) 2004, 2007 Jakub Stachowski <qbast@go2.pl>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,44 +18,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "remoteservice.h"
-#include <QtCore/QDataStream>
+#ifndef SERVICEBASE_P_H
+#define SERVICEBASE_P_H
+namespace DNSSD {
 
-namespace DNSSD
-{
+struct ServiceBasePrivate {
+	ServiceBasePrivate(const QString& name, const QString& type, const QString& domain, 
+		const QString& host, unsigned short port) : m_serviceName(name), m_type(type),
+		m_domain(domain), m_hostName(host), m_port(port) {}
+	QString m_serviceName;
+	QString m_type;
+	QString m_domain;
+	QString m_hostName;
+	unsigned short m_port;
 
-RemoteService::RemoteService(const QString& name,const QString& type,const QString& domain)
-		: ServiceBase(name, type, domain)
-{
+	/**
+	Map of TXT properties
+	 */
+	QMap<QString,QByteArray> m_textData;
+};
 }
-
-
-RemoteService::~RemoteService()
-{
-}
-
-bool RemoteService::resolve()
-{
-    return false;
-}
-
-void RemoteService::resolveAsync()
-{
-	emit resolved(false);
-}
-
-bool RemoteService::isResolved() const
-{
-	return false;
-}
-
-
-void RemoteService::virtual_hook(int, void*)
-{
-	// BASE::virtual_hook(int, void*);
-}
-
-
-}
-
-#include "remoteservice.moc"
+#endif

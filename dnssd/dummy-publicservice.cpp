@@ -19,6 +19,7 @@
  */
 
 #include "publicservice.h"
+#include "servicebase_p.h"
 #include <QStringList>
 
 namespace DNSSD
@@ -26,9 +27,9 @@ namespace DNSSD
 
 PublicService::PublicService(const QString& name, const QString& type, unsigned int port,
 			      const QString& domain, const QStringList&)
-  		: QObject(), ServiceBase(name, type, QString(), domain, port), d(0)
+  		: QObject(), ServiceBase(name, type, QString(), domain, port)
 {
-	if (domain.isNull())  m_domain="local.";
+	if (domain.isNull())  dptr->m_domain="local.";
 }
 
 
@@ -37,28 +38,27 @@ PublicService::~PublicService()
 
 void PublicService::setServiceName(const QString& serviceName)
 {
-	m_serviceName = serviceName;
+	dptr->m_serviceName = serviceName;
 }
 
 void PublicService::setDomain(const QString& domain)
 {
-	m_domain = domain;
+	dptr->m_domain = domain;
 }
 
+void PublicService::setTextData(const QMap<QString,QByteArray>& textData)
+{
+	dptr->m_textData = textData;
+}
 
 void PublicService::setType(const QString& type)
 {
-	m_type = type;
+	dptr->m_type = type;
 }
-
-//X void PublicService::setSubType(const QString& type)
-//X {
-//X 	m_subtype = type;
-//X }
 
 void PublicService::setPort(unsigned short port)
 {
-	m_port = port;
+	dptr->m_port = port;
 }
 
 QStringList PublicService::subtypes() const
@@ -70,11 +70,6 @@ bool PublicService::isPublished() const
 {
 	return false;
 }
-
-//X void PublicService::setTextData(const QMap<QString,QString>& textData)
-//X {
-//X 	m_textData = textData;
-//X }
 
 bool PublicService::publish()
 {

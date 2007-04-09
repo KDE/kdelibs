@@ -141,7 +141,6 @@ Q_SIGNALS:
 	void published(bool);
 private:
 	friend class PublicServicePrivate;
-	PublicServicePrivate* const d;
 
 protected:
 	virtual void virtual_hook(int, void*);

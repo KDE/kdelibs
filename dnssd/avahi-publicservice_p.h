@@ -22,6 +22,9 @@
 #define DNSSDPUBLICSERVICE_P_H
 
 #include <QtCore/QObject>
+#include "servicebase_p.h"
+
+#define K_D PublicServicePrivate* d=static_cast<PublicServicePrivate*>(dptr)
 
 namespace DNSSD
 {
@@ -37,12 +40,13 @@ namespace DNSSD
 #define AVAHI_CLIENT_S_COLLISION 3
 #define AVAHI_CLIENT_FAILURE 100
 
-class PublicServicePrivate : public QObject
+class PublicServicePrivate : public QObject, public ServiceBasePrivate
 {
 Q_OBJECT
 public:
-	PublicServicePrivate(PublicService* parent) : QObject(), m_published(false), m_running(false), m_group(0), m_server(0), m_collision(false),
-	     m_parent(parent)
+	PublicServicePrivate(PublicService* parent, const QString& name, const QString& type, const QString& domain, unsigned int port) : 
+	    QObject(), ServiceBasePrivate(name, type, domain, QString(), port), m_published(false), m_running(false), m_group(0), 
+	     m_server(0), m_collision(false), m_parent(parent)
 	{}
         ~PublicServicePrivate() {  
 	    if (m_group) m_group->Free(); 

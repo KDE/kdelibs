@@ -18,7 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <dnssd/servicebase.h>
+#include "servicebase.h"
+#include "servicebase_p.h"
 #include <QtCore/QRegExp>
 #include <QDataStream>
 #include <QtCore/QUrl>
@@ -27,8 +28,10 @@ namespace DNSSD
 {
 
 ServiceBase::ServiceBase(const QString& name, const QString& type, const QString& domain,
-			 const QString& host, unsigned short port) : 
-    		m_serviceName(name), m_type(type), m_domain(domain), m_hostName(host), m_port(port), d(0)
+			 const QString& host, unsigned short port) :  dptr(new ServiceBasePrivate(name,type,domain,host,port))
+{}
+
+ServiceBase::ServiceBase(ServiceBasePrivate* const d) :  dptr(d)
 {}
 
 ServiceBase::~ServiceBase()
@@ -36,49 +39,35 @@ ServiceBase::~ServiceBase()
 
 QString ServiceBase::serviceName() const
 {
-	return m_serviceName;
+	return dptr->m_serviceName;
 }
 
 QString ServiceBase::type() const
 {
-	return m_type;
+	return dptr->m_type;
 }
 
 QString ServiceBase::domain() const
 {
-	return m_domain;
+	return dptr->m_domain;
 }
 
 QString ServiceBase::hostName() const
 {
-	return m_hostName;
+	return dptr->m_hostName;
 }
 
 unsigned short ServiceBase::port() const
 {
-	return m_port;
+	return dptr->m_port;
 }
 QMap<QString,QByteArray> ServiceBase::textData() const
 {
-	return m_textData;
+	return dptr->m_textData;
 }
 
 void ServiceBase::virtual_hook(int, void*)
 {}
-
-QDataStream & operator<< (QDataStream & s, const ServiceBase & a)
-{
-	s << a.m_serviceName << a.m_type << a.m_domain << a.m_hostName << qint16(a.m_port) << a.m_textData;
-	return s;
-}
-
-QDataStream & operator>> (QDataStream & s, ServiceBase & a)
-{
-	qint16 port;
-	s >> a.m_serviceName >> a.m_type >> a.m_domain >> a.m_hostName >> port >> a.m_textData;
-	a.m_port = port;	
-	return s;
-}
 
 bool domainIsLocal(const QString& domain)
 {
