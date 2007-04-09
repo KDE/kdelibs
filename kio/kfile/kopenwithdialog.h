@@ -20,16 +20,11 @@
 #ifndef OPENWITHDIALOG_H
 #define OPENWITHDIALOG_H
 
+#include <kio/kio_export.h>
+
 #include <kdialog.h>
 #include <kurl.h>
-#include <krun.h>
 #include <kservice.h>
-
-class KApplicationTree;
-class KUrlRequester;
-
-class QCheckBox;
-class QLabel;
 
 class KOpenWithDialogPrivate;
 
@@ -51,7 +46,7 @@ public:
      * if the dialog is used to choose an application but not for some particular URLs.
      * @param parent parent widget
      */
-    KOpenWithDialog( const KUrl::List& urls, QWidget *parent = 0 );
+    explicit KOpenWithDialog(const KUrl::List &urls, QWidget *parent = 0);
 
     /**
      * Create a dialog that asks for a application to open a given
@@ -105,7 +100,7 @@ public:
      * @return the chosen service in the application tree
      * Can be null, if the user typed some text and didn't select a service.
      */
-    KService::Ptr service() const { return m_pService; }
+    KService::Ptr service() const;
     /**
      * Set whether a new .desktop file should be created if the user selects an
      * application for which no corresponding .desktop file can be found.
@@ -122,8 +117,6 @@ public Q_SLOTS:
     void slotHighlighted( const QString& _name, const QString& _exec );
     void slotTextChanged();
     void slotTerminalToggled(bool);
-    void slotDbClick();
-    void slotOK();
 
 protected Q_SLOTS:
     /**
@@ -131,35 +124,14 @@ protected Q_SLOTS:
      */
     virtual void accept();
 
-protected:
-
-    /**
-     * Determine mime type from URLs
-     */
-    void setMimeType( const KUrl::List& _urls );
-
-    /**
-     * Create a dialog that asks for a application to open a given
-     * URL(s) with.
-     *
-     * @param text   appears as a label on top of the entry box.
-     * @param value  is the initial value of the line
-     */
-    void init( const QString& text, const QString& value );
-
-    KUrlRequester * edit;
-    QString m_command;
-
-    KApplicationTree* m_pTree; // ### REMOVE ME!
-    QLabel *label;
-
-    QString qName, qMimeType;
-    bool m_terminaldirty;
-    QCheckBox   *terminal, *remember, *nocloseonexit;
-
-    KService::Ptr m_pService;
-
+private:
+    friend class KOpenWithDialogPrivate;
     KOpenWithDialogPrivate* const d;
+
+    Q_DISABLE_COPY(KOpenWithDialog)
+
+    Q_PRIVATE_SLOT(d, void _k_slotDbClick())
+    Q_PRIVATE_SLOT(d, void _k_slotOK())
 };
 
 #endif
