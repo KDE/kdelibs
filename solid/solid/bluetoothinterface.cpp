@@ -39,7 +39,8 @@ namespace Solid
 class BluetoothInterfacePrivate : public FrontendObjectPrivate
 {
 public:
-    mutable QMap<QString, BluetoothRemoteDevice*> remoteDeviceMap;
+
+    mutable QMap<QString, QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> > remoteDeviceMap;
     mutable BluetoothRemoteDevice invalidDevice;
 };
 }
@@ -71,10 +72,13 @@ Solid::BluetoothInterface::~BluetoothInterface()
 {
     Q_D(BluetoothInterface);
 
-    typedef QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> DeviceIfacePair;
+    // Delete all the interfaces, they are now outdated
+    typedef QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> BluetoothRemoteDeviceIfacePair;
 
-    foreach(QObject *remoteDevice, d->remoteDeviceMap) {
-        delete remoteDevice;
+    // Delete all the devices, they are now outdated
+    foreach(const BluetoothRemoteDeviceIfacePair &pair, d->remoteDeviceMap.values()) {
+        delete pair.first;
+        delete pair.second;
     }
 }
 
@@ -91,16 +95,16 @@ QString Solid::BluetoothInterface::ubi() const
     return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), QString(), ubi());
 }
 
-Solid::BluetoothRemoteDevice *Solid::BluetoothInterface::findBluetoothRemoteDevice(const QString &ubi) const
+const Solid::BluetoothRemoteDevice &Solid::BluetoothInterface::findBluetoothRemoteDevice(const QString &ubi) const
 {
     Q_D(const BluetoothInterface);
 
-    BluetoothRemoteDevice *remoteDevice = findRegisteredBluetoothRemoteDevice(ubi);
+    QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> pair = findRegisteredBluetoothRemoteDevice(ubi);
 
-    if (remoteDevice != 0) {
-        return remoteDevice;
+    if (pair.first != 0) {
+        return *pair.first;
     } else {
-        return &(d->invalidDevice);
+        return d->invalidDevice;
     }
 }
 
@@ -154,11 +158,8 @@ Solid::BluetoothRemoteDeviceList Solid::BluetoothInterface::listConnections() co
     QStringList ubis = backend->listConnections();
 
     foreach(const QString &ubi, ubis) {
-        BluetoothRemoteDevice *remoteDevice = findRegisteredBluetoothRemoteDevice(ubi);
-
-        if (remoteDevice != 0) {
-            list.append(remoteDevice);
-        }
+        BluetoothRemoteDevice remoteDevice = findBluetoothRemoteDevice(ubi);
+        list.append(remoteDevice);
     }
 
     return list;
@@ -308,28 +309,33 @@ void Solid::BluetoothInterface::unregisterBackendObject()
     setBackendObject(0);
 }
 
-Solid::BluetoothRemoteDevice *Solid::BluetoothInterface::findRegisteredBluetoothRemoteDevice(const QString &ubi) const
+QPair<Solid::BluetoothRemoteDevice*, Solid::Ifaces::BluetoothRemoteDevice*> Solid::BluetoothInterface::findRegisteredBluetoothRemoteDevice(const QString &ubi) const
 {
     Q_D(const BluetoothInterface);
 
-    BluetoothRemoteDevice *remoteDevice = 0;
 
     if (d->remoteDeviceMap.contains(ubi)) {
-        remoteDevice = d->remoteDeviceMap[ubi];
+        return d->remoteDeviceMap[ubi];
     } else {
-        Ifaces::BluetoothInterface *device = qobject_cast<Ifaces::BluetoothInterface*>(backendObject());
+        Ifaces::BluetoothInterface *backend = qobject_cast<Ifaces::BluetoothInterface*>(backendObject());
+        Ifaces::BluetoothRemoteDevice *iface = 0;
 
-        if (device != 0) {
-            QObject *iface = device->createBluetoothRemoteDevice(ubi);
-            remoteDevice = new BluetoothRemoteDevice(iface);
-
-            if (remoteDevice != 0) {
-                d->remoteDeviceMap[ubi] = remoteDevice;
-            }
+        if (backend != 0) {
+            iface = qobject_cast<Ifaces::BluetoothRemoteDevice*>(backend->createBluetoothRemoteDevice(ubi));
         }
-    }
 
-    return remoteDevice;
+        if (iface != 0) {
+            BluetoothRemoteDevice *device = new BluetoothRemoteDevice(iface);
+
+            QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> pair(device, iface);
+            d->remoteDeviceMap[ubi] = pair;
+
+            return pair;
+        } else {
+            return QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*>(0, 0);
+        }
+
+    }
 }
 
 #include "bluetoothinterface.moc"

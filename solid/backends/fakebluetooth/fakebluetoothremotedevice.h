@@ -106,6 +106,7 @@ public:
     {
         return mEncryptionKeySize;
     }
+    KJob *createBonding();
 
 private:
     QString mUbi;
@@ -138,10 +139,6 @@ public Q_SLOTS:
     void disconnect()
     {
         mConnected = false;
-    }
-    void createBonding()
-    {
-        mBonded = true;
     }
     void cancelBondingProcess()
     {}

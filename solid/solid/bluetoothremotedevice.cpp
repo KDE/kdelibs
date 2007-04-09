@@ -138,6 +138,11 @@ int Solid::BluetoothRemoteDevice::encryptionKeySize() const
     return_SOLID_CALL(Ifaces::BluetoothRemoteDevice*, backendObject(), 0, encryptionKeySize());
 }
 
+KJob *Solid::BluetoothRemoteDevice::createBonding()
+{
+    return_SOLID_CALL(Ifaces::BluetoothRemoteDevice*, backendObject(), 0, createBonding());
+}
+
 void Solid::BluetoothRemoteDevice::setAlias(const QString &alias)
 {
     SOLID_CALL(Ifaces::BluetoothRemoteDevice*, backendObject(), setAlias(alias));
@@ -151,11 +156,6 @@ void Solid::BluetoothRemoteDevice::clearAlias()
 void Solid::BluetoothRemoteDevice::disconnect()
 {
     SOLID_CALL(Ifaces::BluetoothRemoteDevice*, backendObject(), disconnect());
-}
-
-void Solid::BluetoothRemoteDevice::createBonding()
-{
-    SOLID_CALL(Ifaces::BluetoothRemoteDevice*, backendObject(), createBonding());
 }
 
 void Solid::BluetoothRemoteDevice::cancelBondingProcess()

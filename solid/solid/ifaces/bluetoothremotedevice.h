@@ -25,6 +25,8 @@
 #include <QObject>
 #include <solid/solid_export.h>
 
+class KJob;
+
 namespace Solid
 {
 namespace Ifaces
@@ -180,6 +182,14 @@ public:
      */
     virtual int encryptionKeySize() const = 0;
 
+    /**
+     * Create bonding ("pairing") with remote device.
+     *
+     * @returns the job handling of the operation.
+     */
+    virtual KJob *createBonding() = 0;
+
+
 public Q_SLOTS:
     /**
      * Set alias for remote device.
@@ -197,11 +207,6 @@ public Q_SLOTS:
      * Disconnect remote device.
      */
     virtual void disconnect() = 0;
-
-    /**
-     * Create bonding ("pairing") with remote device.
-     */
-    virtual void createBonding() = 0;
 
     /**
      * Cancel bonding process of remote device.

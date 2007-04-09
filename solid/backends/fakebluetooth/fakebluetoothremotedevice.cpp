@@ -56,4 +56,11 @@ FakeBluetoothRemoteDevice::FakeBluetoothRemoteDevice(const QMap<QString, QVarian
 FakeBluetoothRemoteDevice::~FakeBluetoothRemoteDevice()
 {}
 
+// TODO
+KJob *FakeBluetoothRemoteDevice::createBonding()
+{
+    mBonded = true;
+    return NULL;
+}
+
 #include "fakebluetoothremotedevice.moc"

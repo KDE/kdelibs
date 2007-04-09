@@ -22,8 +22,13 @@
 #ifndef SOLID_BLUETOOTHINTERFACE_H
 #define SOLID_BLUETOOTHINTERFACE_H
 
+#include <QPair>
+
 #include <solid/frontendobject.h>
 #include <solid/bluetoothremotedevice.h>
+#include <solid/ifaces/bluetoothremotedevice.h>
+
+
 
 namespace Solid
 {
@@ -94,7 +99,7 @@ public:
      * @param ubi the identifier of the bluetooth instantiated
      * @returns a bluetooth object if there's a bluetooth interface/device having the given UBI for this device, 0 otherwise
      */
-//        BluetoothRemoteDevice *createBluetoothRemoteDevice( const QString & ubi );
+    BluetoothRemoteDevice *createBluetoothRemoteDevice(const QString & ubi);
 
     /**
      * Finds BluetoothRemoteDevice object given its UBI.
@@ -103,7 +108,7 @@ public:
      * @returns a valid BluetoothRemoteDevice object if there's a remote device having the given UB for this device, an invalid BluetoothRemoteDevice object otherwise
      */
 
-    BluetoothRemoteDevice *findBluetoothRemoteDevice(const QString &ubi) const;
+    const BluetoothRemoteDevice &findBluetoothRemoteDevice(const QString &ubi) const;
 
     /**
      * Retrieves the MAC address of the bluetooth interface/adapter.
@@ -394,7 +399,8 @@ private:
     void registerBackendObject(QObject *backendObject);
     void unregisterBackendObject();
 
-    BluetoothRemoteDevice *findRegisteredBluetoothRemoteDevice(const QString &ubi) const;
+    QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> findRegisteredBluetoothRemoteDevice(const QString &ubi) const;
+
 };
 
 } //Solid

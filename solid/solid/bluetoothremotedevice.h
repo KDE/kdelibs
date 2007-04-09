@@ -27,6 +27,8 @@
 #include <solid/bluetoothmanager.h>
 #include <solid/bluetoothinterface.h>
 
+class KJob;
+
 namespace Solid
 {
 class BluetoothRemoteDevicePrivate;
@@ -199,6 +201,13 @@ public:
      */
     int encryptionKeySize() const;
 
+    /**
+     * Create bonding ("pairing") with remote device.
+     *
+     * @returns the job handling of the operation.
+     */
+    KJob *createBonding();
+
 public Q_SLOTS:
     /**
      * Set alias for remote device.
@@ -216,11 +225,6 @@ public Q_SLOTS:
      * Disconnect remote device.
      */
     void disconnect();
-
-    /**
-     * Create bonding ("pairing") with remote device.
-     */
-    void createBonding();
 
     /**
      * Cancel bonding process of remote device.
