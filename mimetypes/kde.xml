@@ -239,6 +239,10 @@ Notes:
     <sub-class-of type="inode/directory"/>
     <comment>locked folder</comment>
   </mime-type>
+  <mime-type type="inode/system_directory">
+    <sub-class-of type="inode/directory"/>
+    <comment>system folder</comment>
+  </mime-type>
 
   <!-- print/ fake mime types -->
   <mime-type type="print/class">
@@ -264,13 +268,6 @@ Notes:
   </mime-type>
   <mime-type type="print/printermodel">
     <comment>printer model</comment>
-  </mime-type>
-
-
-  <!-- inode/ fake mime types -->
-  <mime-type type="inode/system_directory">
-    <sub-class-of type="inode/directory"/>
-    <comment>System Folder</comment>
   </mime-type>
 
   <!-- media/ fake mime types -->
@@ -402,7 +399,6 @@ Notes:
     <comment>system fonts folder</comment>
   </mime-type>
 
-  
   <mime-type type="application/x-konsole">
     <comment>file to open a shell</comment>
     <glob pattern="*.shell"/>
