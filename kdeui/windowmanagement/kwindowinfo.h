@@ -40,7 +40,7 @@ public:
     /**
      * Reads all the info about the given window.
      */
-    KWindowInfo( WId window, unsigned long properties, unsigned long properties2 );
+    KWindowInfo( WId window, unsigned long properties, unsigned long properties2 = 0 );
     KWindowInfo(); // to make QValueList and others happy
     ~KWindowInfo();
     /**
