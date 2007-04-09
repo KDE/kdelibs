@@ -216,6 +216,7 @@ endif (Q_WS_WIN)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_x11.cpp
+                                         windowmanagement/kwindowinfo_x11.cpp
                                          windowmanagement/netwm.cpp
        )
 endif (Q_WS_X11)
@@ -411,6 +412,7 @@ install( FILES
  widgets/kvbox.h
  widgets/kxyselector.h
  windowmanagement/kwm.h
+ windowmanagement/kwindowinfo.h
  windowmanagement/netwm_def.h
  windowmanagement/netwm.h
  xmlgui/kmainwindow.h

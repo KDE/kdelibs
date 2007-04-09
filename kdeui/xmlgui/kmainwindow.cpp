@@ -904,7 +904,7 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
   int w, h;
 #if defined Q_WS_X11
   // save maximalization as desktop size + 1 in that direction
-  KWM::WindowInfo info = KWM::windowInfo( winId(), NET::WMState );
+  KWindowInfo info = KWM::windowInfo( winId(), NET::WMState );
   w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
   h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
 #else
