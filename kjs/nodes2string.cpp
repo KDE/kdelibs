@@ -24,6 +24,7 @@
 #include "config.h"
 #include "nodes.h"
 #include "function.h"
+#include "scriptfunction.h"
 
 #define NOINLINE
 #if COMPILER(CWP)

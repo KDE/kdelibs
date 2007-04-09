@@ -25,7 +25,7 @@
 
 #include "config.h"
 #include "function.h"
-
+#include "scriptfunction.h"
 #include "internal.h"
 #include "function_object.h"
 #include "lexer.h"

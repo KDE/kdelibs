@@ -24,6 +24,7 @@
 
 #include "config.h"
 #include "nodes.h"
+#include "scriptfunction.h"
 
 #include <math.h>
 #ifdef KJS_DEBUG_MEM

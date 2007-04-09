@@ -30,6 +30,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_canvas.h"
 #include "khtml_part.h"
+#include <kjs/scriptfunction.h> // private API
 
 #include <kdebug.h>
 
@@ -751,7 +752,7 @@ const ClassInfo DOMTextEvent::info = { "TextEvent", &DOMKeyEventBase::info, &DOM
 */
 KJS_DEFINE_PROTOTYPE_WITH_PROTOTYPE(DOMTextEventProto,DOMUIEventProto)//Note: no proto in KeyBase
 KJS_IMPLEMENT_PROTOFUNC(DOMTextEventProtoFunc)
-KJS_IMPLEMENT_PROTOTYPE("DOMTextEvent", DOMTextEventProto,DOMTextEventProtoFunc) 
+KJS_IMPLEMENT_PROTOTYPE("DOMTextEvent", DOMTextEventProto,DOMTextEventProtoFunc)
 
 DOMTextEvent::DOMTextEvent(ExecState *exec, DOM::TextEventImpl* ke) :
   DOMKeyEventBase(DOMTextEventProto::self(exec), ke) {}

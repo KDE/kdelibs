@@ -30,6 +30,8 @@
 
 namespace KJS  {
 
+  class FunctionBodyNode;
+
   /**
    * @short Execution context.
    *

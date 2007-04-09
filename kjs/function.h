@@ -31,7 +31,6 @@ namespace KJS {
 
   class ActivationImp;
   class FunctionPrototype;
-  class FunctionBodyNode;
 
   enum CodeType { GlobalCode,
                   EvalCode,
@@ -68,89 +67,6 @@ namespace KJS {
     virtual ~FunctionPrototype();
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
-  };
-
-  /**
-   * @short Implementation class for internal Functions.
-   */
-  class KJS_EXPORT FunctionImp : public InternalFunctionImp {
-    friend class ActivationImp;
-  public:
-    FunctionImp(ExecState* exec, const Identifier& n, FunctionBodyNode* b);
-    virtual ~FunctionImp();
-
-    virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
-    virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
-    virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-
-    virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
-
-    //Note: unlike body->paramName, this returns Identifier::null for parameters
-    //that will never get set, due to later param having the same name
-    Identifier getParameterName(int index);
-    virtual CodeType codeType() const = 0;
-
-    virtual Completion execute(ExecState *exec) = 0;
-
-    virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
-
-    RefPtr<FunctionBodyNode> body;
-
-    /**
-     * Returns the scope of this object. This is used when execution declared
-     * functions - the execution context for the function is initialized with
-     * extra object in it's scope. An example of this is functions declared
-     * inside other functions:
-     *
-     * \code
-     * function f() {
-     *
-     *   function b() {
-     *     return prototype;
-     *   }
-     *
-     *   var x = 4;
-     *   // do some stuff
-     * }
-     * f.prototype = new String();
-     * \endcode
-     *
-     * When the function f.b is executed, its scope will include properties of
-     * f. So in the example above the return value of f.b() would be the new
-     * String object that was assigned to f.prototype.
-     *
-     * @param exec The current execution state
-     * @return The function's scope
-     */
-    const ScopeChain &scope() const { return _scope; }
-    void setScope(const ScopeChain &s) { _scope = s; }
-
-    virtual void mark();
-  private:
-    ScopeChain _scope;
-
-    static JSValue *argumentsGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
-    static JSValue *callerGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
-    static JSValue *lengthGetter(ExecState *, JSObject *, const Identifier &, const PropertySlot&);
-
-    void passInParameters(ExecState *exec, const List &);
-  };
-
-  class KJS_EXPORT DeclaredFunctionImp : public FunctionImp {
-  public:
-    DeclaredFunctionImp(ExecState *exec, const Identifier &n,
-                        FunctionBodyNode *b, const ScopeChain &sc);
-
-    bool implementsConstruct() const;
-    JSObject *construct(ExecState *exec, const List &args);
-
-    virtual Completion execute(ExecState *exec);
-    CodeType codeType() const { return FunctionCode; }
-    UString toSource() const;
-
-    virtual const ClassInfo *classInfo() const { return &info; }
-    static const ClassInfo info;
   };
 
   class IndexToNameMap {
