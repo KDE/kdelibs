@@ -71,6 +71,8 @@ class PHONONEXPERIMENTAL_EXPORT OverlayApi : public QObject
         /**
          * Creates an overlay (takes ownership of the widget).
          * Note that you can only have one overlay per video widget.
+         * When using an opaque overlay you have to set the mask of the overlay
+         * via QWidget::setMask().
          * You can remove the overlay either by deleting or by reparenting
          * the widget.
          * @return whether the creation was successful
