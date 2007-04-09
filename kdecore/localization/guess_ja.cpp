@@ -40,7 +40,7 @@
  * Maybe we should use QTextCodec::heuristicContentMatch()
  * But it fails detection. It's not useful.
  */
-#include "guess_ja.h"
+#include "guess_ja_p.h"
 
 /* DFA tables */
 const dfa_table guess_eucj_st[] = {

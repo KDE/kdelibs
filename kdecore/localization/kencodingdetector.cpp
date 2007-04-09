@@ -35,7 +35,7 @@
 #include <klocale.h>
 
 #include "kencodingdetector.h"
-#include "guess_ja.h"
+#include "guess_ja_p.h"
 
 #include <QRegExp>
 #include <QTextCodec>
