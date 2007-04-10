@@ -250,7 +250,6 @@ install( FILES
   KIconCanvas
   KIconDialog
   KIconEffect
-  KIconEngine
   KIconLoader
   KIconTheme
   KImageEffect
