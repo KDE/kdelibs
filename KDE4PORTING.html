@@ -1877,6 +1877,7 @@ and subjobs.isEmpty() with !hasSubjobs()</li>
 <li><code>job-&gt;setInteractive( false )</code> becomes <code>job-&gt;setUiDelegate( 0 )</code></li>
 <li>Also note that you must now include &lt;kio/copyjob.h&gt; if you use KIO::copy, KIO::move or KIO::trash,
 and you must include &lt;kio/deletejob.h&gt; if you use KIO::del.</li>
+<li>For Job subclasses, there's no showProgressInfo flag in the constructor anymore. You should use KIO::getJobTracker()-&gt;registerJob(job) instead.</li>
 </ul>
 
 <h4>KIO::UDSEntry</h4>
