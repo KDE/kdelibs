@@ -49,7 +49,7 @@ void KMessageBoxMessageHandler::showMessageBox(KMessage::MessageType messageType
             break;
     }
 
-    KMessageBox::messageBox( parentWidget(), dlgType, text, caption );
+    KMessageBox::queuedMessageBox( parentWidget(), dlgType, text, caption );
 }
 
 QWidget *KMessageBoxMessageHandler::parentWidget()
