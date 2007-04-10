@@ -125,7 +125,7 @@ instead.</li>
 <li>klargefile.h =&gt; kde_file.h</li>
 <li>kcatalogue.h =&gt; kcatalog.h</li>
 <li>kaccelmanager.h =&gt; kacceleratormanager.h</li>
-<li>kprocctrl.h =&gt; kprotocolcontroller.h</li>
+<li>kprocctrl.h =&gt; k3protocolcontroller.h</li>
 </ul>
 
 <h4>KAboutData</h4>
@@ -593,16 +593,21 @@ Internally it is reference counted and the data deleted when the last reference 
 
 <h4>KPixmapSplitter</h4>
 
-<h4>K3Process</h4>
+<h4>KProcess</h4>
 <ul>
+<li>renamed to K3Process, header is now k3process.h; use QProcess instead</li>
 <li>setExecutable() was removed in favor of using operator &lt;&lt; </li>
 <li>getPid() was removed for just pid()</li>
 </ul>
 
+<h4>KProcCtrl</h4>
+Deprecated and renamed to K3ProcessController, header is k3processcontroller.h
+
+<h4>KProcIO</h4>
+Deprecated and renamed to K3ProcIO, header is k3procio.h
+
 <h4>KRegExp</h4>
-<ul>
-<li>This class has been removed.  Use QRegExp instead</li>
-</ul>
+This class has been removed.  Use QRegExp instead
 
 <h4>KRFCDate</h4>
 This class has been deprecated by KDateTime. It has been renamed K3RFCDate and moved to the libkde3support. The following method changes make porting easy:
