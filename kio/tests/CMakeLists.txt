@@ -39,6 +39,7 @@ set(kio_unittests
   kbookmarktest
   kacltest
   kdirmodeltest
+  kdirlistertest
 )
  
 KIO_BUILD_TESTS(

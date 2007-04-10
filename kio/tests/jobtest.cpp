@@ -24,7 +24,6 @@
 #include <config.h>
 
 #include <kurl.h>
-#include <kde_file.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -39,15 +38,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <utime.h>
 #include <kprotocolinfo.h>
 #include <kio/scheduler.h>
 #include <kio/directorysizejob.h>
 #include <kio/copyjob.h>
+#include "kiotesthelper.h"
 
 QTEST_KDEMAIN( JobTest, GUI )
 
@@ -84,6 +82,8 @@ static QString realSystemPath()
 
 void JobTest::initTestCase()
 {
+    s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
+
     // Start with a clean base dir
     cleanupTestCase();
     QDir dir; // TT: why not a static method?
@@ -113,62 +113,6 @@ void JobTest::cleanupTestCase()
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         KIO::NetAccess::del( systemTmpDir(), 0 );
     }
-}
-
-static void setTimeStamp( const QString& path )
-{
-#ifdef Q_OS_UNIX
-    // Put timestamp in the past so that we can check that the
-    // copy actually preserves it.
-    struct timeval tp;
-    gettimeofday( &tp, 0 );
-    struct utimbuf utbuf;
-    utbuf.actime = tp.tv_sec - 30; // 30 seconds ago
-    utbuf.modtime = tp.tv_sec - 60; // 60 second ago
-    utime( QFile::encodeName( path ), &utbuf );
-    kDebug() << "Time changed for " << path << endl;
-#endif
-}
-
-static void createTestFile( const QString& path )
-{
-    QFile f( path );
-    if ( !f.open( QIODevice::WriteOnly ) )
-        kFatal() << "Can't create " << path << endl;
-    f.write( QByteArray( "Hello world" ) );
-    f.close();
-    setTimeStamp( path );
-}
-
-static void createTestSymlink( const QString& path )
-{
-    // Create symlink if it doesn't exist yet
-    KDE_struct_stat buf;
-    if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
-        bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
-        if ( !ok )
-            kFatal() << "couldn't create symlink: " << strerror( errno ) << endl;
-        QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
-        QVERIFY( S_ISLNK( buf.st_mode ) );
-    } else {
-        QVERIFY( S_ISLNK( buf.st_mode ) );
-    }
-    //qDebug( "symlink %s created", qPrintable( path ) );
-    QVERIFY( QFileInfo( path ).isSymLink() );
-}
-
-static void createTestDirectory( const QString& path )
-{
-    QDir dir;
-    bool ok = dir.mkdir( path );
-    if ( !ok && !dir.exists() )
-        kFatal() << "couldn't create " << path << endl;
-    createTestFile( path + "/testfile" );
-#ifndef Q_WS_WIN
-    createTestSymlink( path + "/testlink" );
-    QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
-#endif
-    setTimeStamp( path );
 }
 
 void JobTest::enterLoop()

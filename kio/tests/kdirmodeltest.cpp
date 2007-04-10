@@ -31,44 +31,9 @@
 #include <kio/deletejob.h>
 #include <kio/netaccess.h>
 #include <kdirwatch.h>
+#include "kiotesthelper.h"
 
 QTEST_KDEMAIN( KDirModelTest, NoGUI )
-
-QDateTime s_referenceTimeStamp;
-
-static void setTimeStamp( const QString& path, const QDateTime& mtime )
-{
-#ifdef Q_OS_UNIX
-    // Put timestamp in the past so that we can check that the listing is correct
-    struct utimbuf utbuf;
-    utbuf.actime = mtime.toTime_t();
-    utbuf.modtime = utbuf.actime;
-    utime( QFile::encodeName( path ), &utbuf );
-    qDebug( "Time changed for %s", qPrintable( path ) );
-#endif
-}
-
-static void createTestFile( const QString& path )
-{
-    QFile f( path );
-    if ( !f.open( QIODevice::WriteOnly ) )
-        kFatal() << "Can't create " << path << endl;
-    f.write( QByteArray( "Hello world" ) );
-    f.close();
-    setTimeStamp( path, s_referenceTimeStamp );
-}
-
-static void createTestDirectory( const QString& path )
-{
-    QDir dir;
-    bool ok = dir.mkdir( path );
-    if ( !ok && !dir.exists() )
-        kFatal() << "couldn't create " << path << endl;
-    createTestFile( path + "/testfile" );
-    //createTestSymlink( path + "/testlink" );
-    //QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
-    setTimeStamp( path, s_referenceTimeStamp );
-}
 
 void KDirModelTest::initTestCase()
 {
