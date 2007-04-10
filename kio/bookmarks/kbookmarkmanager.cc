@@ -34,11 +34,9 @@
 #include <kconfiggroup.h>
 #include <qdatetime.h>
 #include <qfile.h>
-#include <kconfiggroup.h>
 #include <qfileinfo.h>
-#include <qtextstream.h>
 #include <QtDBus/QtDBus>
-#include <QTextStream>
+#include <QtCore/QTextStream>
 #include <kstaticdeleter.h>
 #include "kbookmarkmanageradaptor_p.h"
 

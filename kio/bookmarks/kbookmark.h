@@ -24,7 +24,7 @@
 
 #include <QtCore/QCharRef>
 #include <QtCore/QList>
-#include <Qt/qdom.h>
+#include <QtXml/QDomElement>
 #include <kurl.h>
 
 class KBookmarkManager;

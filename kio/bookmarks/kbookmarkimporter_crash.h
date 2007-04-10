@@ -21,7 +21,6 @@
 #ifndef __kbookmarkimporter_crash_h
 #define __kbookmarkimporter_crash_h
 
-#include <Qt/qdom.h>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QMap>
 #include <kconfig.h>

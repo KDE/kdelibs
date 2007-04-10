@@ -22,7 +22,7 @@
 
 #include <kio/kio_export.h>
 
-#include <QAbstractItemModel>
+#include <QtCore/QAbstractItemModel>
 
 #include <solid/device.h>
 #include <solid/predicate.h>

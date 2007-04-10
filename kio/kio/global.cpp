@@ -32,7 +32,7 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 
 #include <sys/types.h>
 #include <sys/wait.h>

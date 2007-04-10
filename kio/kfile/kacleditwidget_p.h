@@ -30,8 +30,7 @@
 #include <kdialog.h>
 #include <qpixmap.h>
 #include <qcombobox.h>
-#include <q3listview.h>
-#include <QHash>
+#include <QtCore/QHash>
 
 class KACLListViewItem;
 class QPushButton;

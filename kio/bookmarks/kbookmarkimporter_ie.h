@@ -21,7 +21,6 @@
 #ifndef __kbookmarkimporter_ie_h
 #define __kbookmarkimporter_ie_h
 
-#include <Qt/qdom.h>
 #include <QtCore/QMutableStringListIterator>
 #include <kconfig.h>
 #include <kdemacros.h>

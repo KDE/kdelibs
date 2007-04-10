@@ -19,7 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #include "kencodingfiledialog.h"
 #include <kcombobox.h>

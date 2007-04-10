@@ -25,16 +25,16 @@
 #include "kfiledialog.h"
 #include "kabstractfilewidget.h"
 
-#include <QCheckBox>
-#include <QKeyEvent>
+#include <QtGui/QCheckBox>
+#include <QtGui/QKeyEvent>
 #ifdef Q_WS_WIN
-# include <QFileDialog>
+# include <QtGui/QFileDialog>
 #endif
 
 #include <kimageio.h>
 #include <klocale.h>
 #include <kpushbutton.h>
-#include "config-kfile.h"
+#include <config-kfile.h>
 #include <krecentdocument.h>
 #include <kimagefilepreview.h>
 #include <klibloader.h>

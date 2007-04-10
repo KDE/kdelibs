@@ -142,7 +142,6 @@ void SMTP::sendMessage(void)
         interactTimer.start(timeOut);
     }
 }
-#include <stdio.h>
 
 void SMTP::connectTimerTick(void)
 {

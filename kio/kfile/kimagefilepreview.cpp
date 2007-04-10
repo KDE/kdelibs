@@ -27,7 +27,7 @@
 #include <kconfiggroup.h>
 
 #include "kimagefilepreview.h"
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 /**** KImageFilePreview ****/
 

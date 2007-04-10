@@ -21,8 +21,8 @@
 #define KNTLM_H
 
 #include <QtCore/QBool>
-#include <QByteArray>
-#include <QString>
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
 
 #include "kntlm_export.h"
 

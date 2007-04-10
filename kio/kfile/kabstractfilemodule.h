@@ -21,7 +21,7 @@
 #define KABSTRACTFILEMODULE_H
 
 #include <kio/kio_export.h>
-#include <QObject>
+#include <QtCore/QObject>
 #include <kurl.h>
 class QWidget;
 

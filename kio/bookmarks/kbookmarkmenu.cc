@@ -36,7 +36,6 @@
 #include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>
-#include <kstringhandler.h>
 #include <kactioncollection.h>
 
 #include <qclipboard.h>
@@ -48,8 +47,8 @@
 #include <qmimedata.h>
 
 
-#include <QStack>
-#include <QHeaderView>
+#include <QtCore/QStack>
+#include <QtGui/QHeaderView>
 
 static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);

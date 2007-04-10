@@ -23,8 +23,9 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QObject>
-#include <Qt/qdom.h>
 #include <QtCore/QPair>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
 #include "kbookmark.h"
 #include "kbookmarknotifier.h"
 
