@@ -428,7 +428,6 @@ signals:
   /**
    * Tell the view that the listing of the directory @p _url is finished.
    * There might be other running jobs left.
-   * This signal is only emitted if KDirLister is watching more than one directory.
    * @param _url the directory URL
    */
   void completed( const KURL& _url );
@@ -441,7 +440,6 @@ signals:
   /**
    * Tell the view that the listing of the directory @p _url was canceled.
    * There might be other running jobs left.
-   * This signal is only emitted if KDirLister is watching more than one directory.
    * @param _url the directory URL
    */
   void canceled( const KURL& _url );
