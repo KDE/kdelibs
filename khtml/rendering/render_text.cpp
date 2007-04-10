@@ -26,9 +26,7 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>

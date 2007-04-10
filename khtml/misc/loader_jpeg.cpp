@@ -22,9 +22,7 @@
 
 */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #ifdef HAVE_LIBJPEG
 // on some systems, libjpeg installs its config.h file which causes a conflict

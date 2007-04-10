@@ -15,9 +15,7 @@
 
 #include "setproctitle.h"
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 /* _GNU_SOURCE might already be defined in <config.h> */
 #ifndef _GNU_SOURCE

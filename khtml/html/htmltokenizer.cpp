@@ -32,9 +32,7 @@
 //#define TOKEN_DEBUG 1
 //#define TOKEN_DEBUG 2
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "html/htmltokenizer.h"
 #include "html/html_documentimpl.h"

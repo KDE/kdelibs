@@ -19,9 +19,7 @@
 */
 
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "k3process.h"
 #include "k3processcontroller.h"

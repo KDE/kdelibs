@@ -90,7 +90,7 @@ macro_optional_find_package(OpenSSL)
 macro_optional_find_package(Gettext)
 
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DHAVE_CONFIG_H=1)
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 link_directories(${QJS_LIB_DIR})

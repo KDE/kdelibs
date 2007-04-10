@@ -32,9 +32,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "config.h"
 #include <QtCore/QBool>
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 // need to resolve INT32(qglobal.h)<>INT32(Xlibint.h) conflict
 #ifndef QT_CLEAN_NAMESPACE

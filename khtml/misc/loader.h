@@ -26,10 +26,7 @@
 #ifndef _khtml_loader_h
 #define _khtml_loader_h
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
 #include <time.h>
 
 #include "loader_client.h"

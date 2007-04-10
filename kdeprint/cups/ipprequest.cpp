@@ -30,9 +30,7 @@
 
 #include <cups/cups.h>
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #ifdef HAVE_CUPS_NO_PWD_CACHE
 static QByteArray cups_authstring = "";
