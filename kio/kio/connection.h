@@ -25,7 +25,7 @@
 #include <kio/kio_export.h>
 
 #include <stdio.h>
-#include <QQueue>
+#include <QtCore/QQueue>
 #include <QtCore/QObject>
 
 namespace KNetwork { class KStreamSocket; }

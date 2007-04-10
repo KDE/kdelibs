@@ -22,7 +22,7 @@
 #ifndef __KFILEITEMDELEGATE_H
 #define __KFILEITEMDELEGATE_H
 
-#include <QAbstractItemDelegate>
+#include <QtGui/QAbstractItemDelegate>
 #include <kio/global.h>
 
 

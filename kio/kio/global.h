@@ -24,7 +24,7 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QHash>
 #include <QtCore/QMap>
-#include <QList>
+#include <QtCore/QList>
 
 #include <kicontheme.h> // K3Icon (for pixmapForUrl)
 #include <QtGui/QPixmap> // for pixmapForUrl

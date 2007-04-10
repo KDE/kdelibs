@@ -21,8 +21,8 @@
 #define PREDICATEPROPERTIES_H
 
 #include <kio/kio_export.h>
-#include <QSharedData>
-#include <QVariant>
+#include <QtCore/QSharedData>
+#include <QtCore/QVariant>
 class QValidator;
 
 /**

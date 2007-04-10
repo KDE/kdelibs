@@ -21,7 +21,7 @@
 #define KFILEWRITEPLUGIN_H
 
 #include <kio/kio_export.h>
-#include <QVariant>
+#include <QtCore/QVariant>
 
 class QIODevice;
 class KUrl;

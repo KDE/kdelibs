@@ -22,7 +22,7 @@
 #define KFILEMETAINFOITEM_H
 
 #include <kio/kio_export.h>
-#include <QSharedData>
+#include <QtCore/QSharedData>
 
 class KFileWritePlugin;
 class QVariant;

@@ -24,7 +24,7 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QMap>
-#include <QList>
+#include <QtCore/QList>
 #include <QtCore/QMutableStringListIterator>
 #include <kurl.h>
 

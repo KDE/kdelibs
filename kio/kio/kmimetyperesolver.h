@@ -21,7 +21,7 @@
 #ifndef KMIMETYPERESOLVER_H
 #define KMIMETYPERESOLVER_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kio/kio_export.h>
 class QModelIndex;
 class KFileItemList;

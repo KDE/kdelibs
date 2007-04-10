@@ -23,8 +23,8 @@
 
 #include "predicateproperties.h"
 #include "kfilemetainfoitem.h"
-#include <QList>
-#include <QStringList>
+#include <QtCore/QList>
+#include <QtCore/QStringList>
 class KUrl;
 
 typedef QList<KFileMetaInfoItem> KFileMetaInfoItemList;

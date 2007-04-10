@@ -19,7 +19,7 @@
 #ifndef KDIRMODEL_H
 #define KDIRMODEL_H
 
-#include <QAbstractItemModel>
+#include <QtCore/QAbstractItemModel>
 #include <kio/kio_export.h>
 #include <kfileitem.h>
 
