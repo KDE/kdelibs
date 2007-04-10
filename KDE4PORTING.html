@@ -469,6 +469,8 @@ Internally it is reference counted and the data deleted when the last reference 
 <li> QString weekDayName(int i, bool shortName = false) const -&gt; calendar()-&gt;weekDayName</li>
 <li> QString monthNamePossessive(int i, bool shortName = false) const -&gt; calendar()-&gt;monthNamePossessive()</li>
 <li> void setWeekStartsMonday(bool start) -&gt; setWeekStartDay</li>
+<li> QString formatDate(const QDate&amp;, bool shortFormat = false) const -&gt; QString formatDate(const QDate&amp;, DateFormat = LongDate) const</li>
+<li> QString formatDateTime(const QDateTime&amp;, bool shortFormat = true, bool includeSecs = false) const -&gt; QString formatDateTime(const QDateTime&amp;, DateFormat = ShortDate, bool includeSecs = false) const</li>
 <li> languages() -&gt; languageList()</li>
 <li> formatMoney(const QString &amp;numStr) -&gt;   QString formatMoney(double num, const QString &amp; currency = QString::null, int digits = -1) const;</li>
 <li> charset() -&gt; gone</li>
