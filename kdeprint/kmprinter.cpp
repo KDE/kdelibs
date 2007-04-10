@@ -28,6 +28,7 @@ KMPrinter::KMPrinter()
 : KMObject()
 {
 	m_type = KMPrinter::Printer;
+	m_state = KMPrinter::Unknown;
 	m_dbentry = 0;
 	m_harddefault = m_softdefault = m_ownsoftdefault = false;
 	m_driver = 0;
