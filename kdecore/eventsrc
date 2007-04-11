@@ -1729,6 +1729,7 @@ default_sound=KDE_Logout_3.ogg
 [cancellogout]
 Name=Logout canceled
 Name[bg]=Излизането от системата отменено
+Name[ca]=S'ha anul·lat la desconnexió
 Name[cs]=Odhlášení zrušeno
 Name[da]=Log af annulleret
 Name[el]=Η αποσύνδεση ακυρώθηκε
@@ -1750,6 +1751,7 @@ Name[uk]=Вихід скасовано
 Name[zh_TW]=取消登出
 Comment=KDE logout was canceled
 Comment[bg]=Излзането от KDE беше отменено
+Comment[ca]=S'ha anul·lat la desconnexió del KDE
 Comment[cs]=Odhlášení z KDE bylo zrušeno
 Comment[da]=log af fra KDE blev annulleret
 Comment[el]=Η αποσύνδεση από το KDE ακυρώθηκε
