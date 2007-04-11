@@ -113,20 +113,20 @@ void KGlobalAccel::setConfigGroup( const QString& s )
 
 bool KGlobalAccel::readSettings( KConfigBase* config )
 {
-    if (!config) {
-        config = KGlobal::config().data();
-    }
+	if (!config) {
+		config = KGlobal::config().data();
+	}
 
 	QMapIterator<QString, QString> it = config->entryMap( configGroup() );
 	while (it.hasNext()) {
 		it.next();
 		foreach (KActionCollection* collection, KActionCollection::allCollections()) {
 			if (QAction* action = collection->action(it.key().toAscii().constData())) {
-                            KAction *kaction = qobject_cast<KAction*>(action);
-                            if (kaction!=0) {
-				kaction->setGlobalShortcut(KShortcut(it.value()), KAction::ActiveShortcut);
-                            }
-                            goto found;
+				KAction *kaction = qobject_cast<KAction*>(action);
+				if (kaction) {
+					kaction->setGlobalShortcut(KShortcut(it.value()), KAction::ActiveShortcut);
+				}
+				goto found;
 			}
 
 			kDebug(125) << k_funcinfo << "Warning: Could not find action '" << it.key() << "' - was this function called too early?" << endl;
@@ -141,9 +141,9 @@ bool KGlobalAccel::readSettings( KConfigBase* config )
 
 bool KGlobalAccel::writeSettings( KConfigBase* config, bool writeDefaults, KAction* oneAction ) const
 {
-    if (!config) {
-        config = KGlobal::config().data();
-    }
+	if (!config) {
+		config = KGlobal::config().data();
+	}
 
     KConfigGroup cg(config, configGroup());
 
