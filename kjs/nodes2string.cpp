@@ -21,6 +21,7 @@
  */
 
 #include <ctype.h>
+#include <stdio.h>
 #include "config.h"
 #include "nodes.h"
 #include "function.h"
