@@ -27,7 +27,6 @@
 #include <phonon/volumefadereffect.h>
 #include <phonon/ui/videowidget.h>
 #include <phonon/ui/effectwidget.h>
-#include <phonon/trackinterface.h>
 
 #include <QApplication>
 #include <QPushButton>
@@ -59,8 +58,179 @@
 #include <QProgressBar>
 #include <kmessagebox.h>
 #include <QGroupBox>
+#include <QSpinBox>
 
 using namespace Phonon;
+
+TrackWidget::TrackWidget(QWidget *parent)
+    : QWidget(parent), m_iface(0)
+{
+    setAttribute(Qt::WA_QuitOnClose, false);
+    QVBoxLayout *topLayout = new QVBoxLayout(this);
+
+    QHBoxLayout *hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    QLabel *l = new QLabel("current track:", this);
+    m_currentTrack = new QSpinBox(this);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_currentTrack);
+    l->setBuddy(m_currentTrack);
+    m_currentTrack->setRange(1, 1);
+
+    hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    l = new QLabel("available tracks:", this);
+    m_availableTracks = new QLabel("0", this);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_availableTracks);
+
+    hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    l = new QLabel("autoplay:", this);
+    m_autoplay = new QToolButton(this);
+    m_autoplay->setCheckable(true);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_autoplay);
+}
+
+TrackWidget::~TrackWidget()
+{
+}
+
+void TrackWidget::setInterface(TrackInterface *i)
+{
+    if (m_iface) {
+        disconnect(m_iface, 0, m_currentTrack, 0);
+        disconnect(m_currentTrack, 0, m_iface, 0);
+        disconnect(m_iface, 0, m_availableTracks, 0);
+        disconnect(m_autoplay, 0, m_iface, 0);
+    }
+    m_iface = i;
+    if (m_iface) {
+        const int a = m_iface->availableTracks();
+        m_currentTrack->setMaximum(a);
+        m_availableTracks->setNum(a);
+        m_currentTrack->setValue(m_iface->currentTrack());
+        m_autoplay->setChecked(m_iface->autoplayTracks());
+
+        connect(m_iface, SIGNAL(availableTracksChanged(int)), SLOT(availableTracksChanged(int)));
+        connect(m_iface, SIGNAL(availableTracksChanged(int)), m_availableTracks, SLOT(setNum(int)));
+        connect(m_iface, SIGNAL(trackChanged(int)), m_currentTrack, SLOT(setValue(int)));
+        connect(m_currentTrack, SIGNAL(valueChanged(int)), m_iface, SLOT(setCurrentTrack(int)));
+        connect(m_autoplay, SIGNAL(toggled(bool)), m_iface, SLOT(setAutoplayTracks(bool)));
+    }
+}
+
+void TrackWidget::availableTracksChanged(int x) { m_currentTrack->setMaximum(x); }
+
+ChapterWidget::ChapterWidget(QWidget *parent)
+    : QWidget(parent), m_iface(0)
+{
+    setAttribute(Qt::WA_QuitOnClose, false);
+    QVBoxLayout *topLayout = new QVBoxLayout(this);
+
+    QHBoxLayout *hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    QLabel *l = new QLabel("current chapter:", this);
+    m_currentChapter = new QSpinBox(this);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_currentChapter);
+    l->setBuddy(m_currentChapter);
+    m_currentChapter->setRange(1, 1);
+
+    hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    l = new QLabel("available chapters:", this);
+    m_availableChapters = new QLabel("0", this);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_availableChapters);
+}
+
+ChapterWidget::~ChapterWidget()
+{
+}
+
+void ChapterWidget::setInterface(ChapterInterface *i)
+{
+    if (m_iface) {
+        disconnect(m_iface, 0, m_currentChapter, 0);
+        disconnect(m_currentChapter, 0, m_iface, 0);
+        disconnect(m_iface, 0, m_availableChapters, 0);
+    }
+    m_iface = i;
+    if (m_iface) {
+        connect(m_iface, SIGNAL(availableChaptersChanged(int)), SLOT(availableChaptersChanged(int)));
+        connect(m_iface, SIGNAL(availableChaptersChanged(int)), m_availableChapters, SLOT(setNum(int)));
+        connect(m_iface, SIGNAL(chapterChanged(int)), m_currentChapter, SLOT(setValue(int)));
+        connect(m_currentChapter, SIGNAL(valueChanged(int)), m_iface, SLOT(setCurrentChapter(int)));
+    }
+}
+
+void ChapterWidget::availableChaptersChanged(int x) { m_currentChapter->setMaximum(x); }
+
+AngleWidget::AngleWidget(QWidget *parent)
+    : QWidget(parent), m_iface(0)
+{
+    setAttribute(Qt::WA_QuitOnClose, false);
+    QVBoxLayout *topLayout = new QVBoxLayout(this);
+
+    QHBoxLayout *hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    QLabel *l = new QLabel("current angle:", this);
+    m_currentAngle = new QSpinBox(this);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_currentAngle);
+    l->setBuddy(m_currentAngle);
+    m_currentAngle->setRange(1, 1);
+
+    hlayout = new QHBoxLayout(this);
+    topLayout->addLayout(hlayout);
+    l = new QLabel("available angles:", this);
+    m_availableAngles = new QLabel("0", this);
+    hlayout->addWidget(l);
+    hlayout->addWidget(m_availableAngles);
+}
+
+AngleWidget::~AngleWidget()
+{
+}
+
+void AngleWidget::setInterface(AngleInterface *i)
+{
+    if (m_iface) {
+        disconnect(m_iface, 0, m_currentAngle, 0);
+        disconnect(m_currentAngle, 0, m_iface, 0);
+        disconnect(m_iface, 0, m_availableAngles, 0);
+    }
+    m_iface = i;
+    if (m_iface) {
+        connect(m_iface, SIGNAL(availableAnglesChanged(int)), SLOT(availableAnglesChanged(int)));
+        connect(m_iface, SIGNAL(availableAnglesChanged(int)), m_availableAngles, SLOT(setNum(int)));
+        connect(m_iface, SIGNAL(angleChanged(int)), m_currentAngle, SLOT(setValue(int)));
+        connect(m_currentAngle, SIGNAL(valueChanged(int)), m_iface, SLOT(setCurrentAngle(int)));
+    }
+}
+
+void AngleWidget::availableAnglesChanged(int x) { m_currentAngle->setMaximum(x); }
+
+NavigationWidget::NavigationWidget(QWidget *parent)
+    : QWidget(parent), m_iface(0)
+{
+    setAttribute(Qt::WA_QuitOnClose, false);
+}
+
+NavigationWidget::~NavigationWidget()
+{
+}
+
+void NavigationWidget::setInterface(NavigationInterface *i)
+{
+    if (m_iface) {
+    }
+    m_iface = i;
+    if (m_iface) {
+    }
+}
 
 OutputWidget::OutputWidget( QWidget *parent )
 	: QFrame( parent )
@@ -193,7 +363,12 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     m_media(0),
     m_length(-1),
     m_vpath(0),
-    m_vout(0)
+    m_vout(0),
+    m_trackWidget(0),
+    m_chapterWidget(0),
+    m_angleWidget(0),
+    m_navigationWidget(0)
+
 {
 	setFrameShape( QFrame::Box );
 	setFrameShadow( QFrame::Sunken );
@@ -228,6 +403,7 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     QHBoxLayout *vlayout = new QHBoxLayout(frame1);
 	vlayout->setMargin( 0 );
 
+    // playback controls
 	m_play = new QToolButton( frame1 );
     m_play->setIconSize(QSize(32, 32));
 	m_play->setText( "play" );
@@ -246,33 +422,43 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     m_stop->setIcon(KIcon("media-playback-stop"));
 	vlayout->addWidget( m_stop );
 
-    m_next = new QToolButton(frame1);
-    m_next->setIconSize(QSize(32, 32));
-    m_next->setText("next");
-    m_next->setIcon(KIcon("media-skip-forward"));
-    vlayout->addWidget(m_next);
-    connect(m_next, SIGNAL(clicked()), SLOT(nextTrack()));
-
-    m_prev = new QToolButton(frame1);
-    m_prev->setIconSize(QSize(32, 32));
-    m_prev->setText("prev");
-    m_prev->setIcon(KIcon("media-skip-backward"));
-    vlayout->addWidget(m_prev);
-    connect(m_prev, SIGNAL(clicked()), SLOT(prevTrack()));
+    m_trackButton = new QToolButton(frame1);
+    m_trackButton->setText("Track");
+    m_trackButton->setCheckable(true);
+    vlayout->addWidget(m_trackButton);
+    m_chapterButton = new QToolButton(frame1);
+    m_chapterButton->setText("Chapter");
+    m_chapterButton->setCheckable(true);
+    vlayout->addWidget(m_chapterButton);
+    m_angleButton = new QToolButton(frame1);
+    m_angleButton->setText("Angle");
+    m_angleButton->setCheckable(true);
+    vlayout->addWidget(m_angleButton);
+    m_navigationButton = new QToolButton(frame1);
+    m_navigationButton->setText("Navigation");
+    m_navigationButton->setCheckable(true);
+    vlayout->addWidget(m_navigationButton);
+    connect(m_trackButton, SIGNAL(toggled(bool)), SLOT(showTrackWidget(bool)));
+    connect(m_chapterButton, SIGNAL(toggled(bool)), SLOT(showChapterWidget(bool)));
+    connect(m_angleButton, SIGNAL(toggled(bool)), SLOT(showAngleWidget(bool)));
+    connect(m_navigationButton, SIGNAL(toggled(bool)), SLOT(showNavigationWidget(bool)));
 
 	QFrame *frame2 = new QFrame( frame0 );
 	hlayout->addWidget( frame2 );
 	QVBoxLayout *vlayout2 = new QVBoxLayout( frame2 );
 	vlayout2->setMargin( 0 );
 
+    // state label
 	m_statelabel = new QLabel( frame2 );
 	vlayout2->addWidget( m_statelabel );
 
+    // buffer progressbar
     m_bufferProgress = new QProgressBar(frame2);
     m_bufferProgress->setMaximumSize(100, 16);
     m_bufferProgress->setTextVisible(false);
     vlayout2->addWidget(m_bufferProgress);
 
+    // time info
 	m_totaltime = new QLabel( frame2 );
 	vlayout2->addWidget( m_totaltime );
 	
@@ -282,6 +468,7 @@ ProducerWidget::ProducerWidget( QWidget *parent )
 	m_remainingtime = new QLabel( frame2 );
 	vlayout2->addWidget( m_remainingtime );
 
+    // meta data
 	m_metaDataLabel = new QLabel( this );
 	topLayout->addWidget( m_metaDataLabel );
 
@@ -311,6 +498,7 @@ void ProducerWidget::checkVideoWidget()
         VideoPath *m_vpath = new VideoPath(m_media);
         m_media->addVideoPath(m_vpath);
         VideoWidget *m_vout = new VideoWidget(0);
+        m_vout->setAttribute(Qt::WA_QuitOnClose, false);
         connect(m_vpath, SIGNAL(destroyed()), m_vout, SLOT(deleteLater()));
         m_vpath->addOutput(m_vout);
 
@@ -325,11 +513,13 @@ void ProducerWidget::checkVideoWidget()
 
 void ProducerWidget::stateChanged(Phonon::State newstate, Phonon::State oldstate)
 {
-    if (oldstate == LoadingState) {
-        const bool hasTracks = m_media->hasInterface<TrackInterface>();
-        m_next->setEnabled(hasTracks);
-        m_prev->setEnabled(hasTracks);
-    }
+    Q_UNUSED(oldstate);
+//X     if (oldstate == LoadingState) {
+//X         m_trackButton       ->setEnabled(m_media->hasInterface<TrackInterface>());
+//X         m_chapterButton     ->setEnabled(m_media->hasInterface<ChapterInterface>());
+//X         m_angleButton       ->setEnabled(m_media->hasInterface<AngleInterface>());
+//X         m_navigationButton  ->setEnabled(m_media->hasInterface<NavigationInterface>());
+//X     }
 	switch( newstate )
 	{
 		case Phonon::ErrorState:
@@ -407,46 +597,104 @@ void ProducerWidget::openCD()
     ensureMedia();
     m_media->openMedia(MediaObject::CD);
 
-    const bool hasTracks = m_media->hasInterface<TrackInterface>();
-    m_next->setEnabled(hasTracks);
-    m_prev->setEnabled(hasTracks);
-}
-
-void ProducerWidget::nextTrack()
-{
-    if (m_media->hasInterface<TrackInterface>()) {
-        TrackInterface iface(m_media);
-        State s = m_media->state();
-        kDebug() << s << endl;
-        iface.setCurrentTrack(iface.currentTrack() + 1);
-        if (s == PlayingState || s == BufferingState) {
-            kDebug() << "play()" << endl;
-            m_media->play();
-        }
-    }
-}
-
-void ProducerWidget::prevTrack()
-{
-    if (m_media->hasInterface<TrackInterface>()) {
-        TrackInterface iface(m_media);
-        State s = m_media->state();
-        kDebug() << s << endl;
-        iface.setCurrentTrack(iface.currentTrack() - 1);
-        if (s == PlayingState || s == BufferingState) {
-            kDebug() << "play()" << endl;
-            m_media->play();
-        }
-    }
+//X     m_trackButton       ->setEnabled(m_media->hasInterface<TrackInterface>());
+//X     m_chapterButton     ->setEnabled(m_media->hasInterface<ChapterInterface>());
+//X     m_angleButton       ->setEnabled(m_media->hasInterface<AngleInterface>());
+//X     m_navigationButton  ->setEnabled(m_media->hasInterface<NavigationInterface>());
 }
 
 void ProducerWidget::openDVD()
 {
     ensureMedia();
     m_media->openMedia(MediaObject::DVD);
-    const bool hasTracks = m_media->hasInterface<TrackInterface>();
-    m_next->setEnabled(hasTracks);
-    m_prev->setEnabled(hasTracks);
+//X     m_trackButton       ->setEnabled(m_media->hasInterface<TrackInterface>());
+//X     m_chapterButton     ->setEnabled(m_media->hasInterface<ChapterInterface>());
+//X     m_angleButton       ->setEnabled(m_media->hasInterface<AngleInterface>());
+//X     m_navigationButton  ->setEnabled(m_media->hasInterface<NavigationInterface>());
+}
+
+void ProducerWidget::showTrackWidget(bool b)
+{
+    if (b) {
+        if (!m_trackWidget) {
+            m_trackWidget = new TrackWidget;
+            connect(m_trackWidget, SIGNAL(destroyed()), SLOT(updateIfaceButtons()));
+        }
+        if (!m_trackIface && m_media) {
+            m_trackIface = new TrackInterface(m_media);
+        }
+        if (m_trackIface) {
+            m_trackWidget->setInterface(m_trackIface);
+        }
+        m_trackWidget->show();
+    } else {
+        if (m_trackWidget) {
+            m_trackWidget->hide();
+        }
+    }
+}
+
+void ProducerWidget::showChapterWidget(bool b)
+{
+    if (b) {
+        if (!m_chapterWidget) {
+            m_chapterWidget = new ChapterWidget;
+            connect(m_chapterWidget, SIGNAL(destroyed()), SLOT(updateIfaceButtons()));
+        }
+        if (!m_chapterIface && m_media) {
+            m_chapterIface = new ChapterInterface(m_media);
+        }
+        if (m_chapterIface) {
+            m_chapterWidget->setInterface(m_chapterIface);
+        }
+        m_chapterWidget->show();
+    } else {
+        if (m_chapterWidget) {
+            m_chapterWidget->hide();
+        }
+    }
+}
+
+void ProducerWidget::showAngleWidget(bool b)
+{
+    if (b) {
+        if (!m_angleWidget) {
+            m_angleWidget = new AngleWidget;
+            connect(m_angleWidget, SIGNAL(destroyed()), SLOT(updateIfaceButtons()));
+        }
+        if (!m_angleIface && m_media) {
+            m_angleIface = new AngleInterface(m_media);
+        }
+        if (m_angleIface) {
+            m_angleWidget->setInterface(m_angleIface);
+        }
+        m_angleWidget->show();
+    } else {
+        if (m_angleWidget) {
+            m_angleWidget->hide();
+        }
+    }
+}
+
+void ProducerWidget::showNavigationWidget(bool b)
+{
+    if (b) {
+        if (!m_navigationWidget) {
+            m_navigationWidget = new NavigationWidget;
+            connect(m_navigationWidget, SIGNAL(destroyed()), SLOT(updateIfaceButtons()));
+        }
+        if (!m_navigationIface && m_media) {
+            m_navigationIface = new NavigationInterface(m_media);
+        }
+        if (m_navigationIface) {
+            m_navigationWidget->setInterface(m_navigationIface);
+        }
+        m_navigationWidget->show();
+    } else {
+        if (m_navigationWidget) {
+            m_navigationWidget->hide();
+        }
+    }
 }
 
 void ProducerWidget::loadFile( const QString & file )
@@ -456,9 +704,10 @@ void ProducerWidget::loadFile( const QString & file )
     ensureMedia();
     Q_ASSERT(m_media);
 	m_media->setUrl( KUrl( file ) );
-    const bool hasTracks = m_media->hasInterface<TrackInterface>();
-    m_next->setEnabled(hasTracks);
-    m_prev->setEnabled(hasTracks);
+//X     m_trackButton       ->setEnabled(m_media->hasInterface<TrackInterface>());
+//X     m_chapterButton     ->setEnabled(m_media->hasInterface<ChapterInterface>());
+//X     m_angleButton       ->setEnabled(m_media->hasInterface<AngleInterface>());
+//X     m_navigationButton  ->setEnabled(m_media->hasInterface<NavigationInterface>());
 }
 
 void ProducerWidget::updateMetaData()

@@ -21,11 +21,17 @@
 #define TESTWIDGET_H
 
 #include <QWidget>
-#include <phonon/phononnamespace.h>
 #include <QList>
 #include <QFrame>
 #include <QPoint>
 #include <QLine>
+#include <QPointer>
+
+#include <phonon/phononnamespace.h>
+#include <phonon/trackinterface.h>
+#include <phonon/angleinterface.h>
+#include <phonon/chapterinterface.h>
+#include <phonon/navigationinterface.h>
 
 class QLabel;
 class QString;
@@ -45,12 +51,79 @@ namespace Phonon
 	class VolumeSlider;
     class VideoPath;
     class VideoWidget;
+    class TrackInterface;
+    class ChapterInterface;
+    class NavigationInterface;
+    class AngleInterface;
 }
 
 using namespace Phonon;
 
 class PathWidget;
 class OutputWidget;
+class QSpinBox;
+class QToolButton;
+
+class NavigationWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        NavigationWidget(QWidget *parent = 0);
+        ~NavigationWidget();
+        void setInterface(NavigationInterface *i);
+
+    private:
+        NavigationInterface *m_iface;
+};
+
+class TrackWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        TrackWidget(QWidget *parent = 0);
+        ~TrackWidget();
+        void setInterface(TrackInterface *i);
+
+    private slots:
+        void availableTracksChanged(int);
+    private:
+        TrackInterface *m_iface;
+        QSpinBox *m_currentTrack;
+        QLabel *m_availableTracks;
+        QToolButton *m_autoplay;
+};
+
+class ChapterWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        ChapterWidget(QWidget *parent = 0);
+        ~ChapterWidget();
+        void setInterface(ChapterInterface *i);
+
+    private slots:
+        void availableChaptersChanged(int);
+    private:
+        ChapterInterface *m_iface;
+        QSpinBox *m_currentChapter;
+        QLabel *m_availableChapters;
+};
+
+class AngleWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        AngleWidget(QWidget *parent = 0);
+        ~AngleWidget();
+        void setInterface(AngleInterface *i);
+
+    private slots:
+        void availableAnglesChanged(int);
+    private:
+        AngleInterface *m_iface;
+        QSpinBox *m_currentAngle;
+        QLabel *m_availableAngles;
+};
 
 class ProducerWidget : public QFrame
 {
@@ -71,8 +144,10 @@ class ProducerWidget : public QFrame
         void checkVideoWidget();
         void openCD();
         void openDVD();
-        void nextTrack();
-        void prevTrack();
+        void showTrackWidget(bool);
+        void showChapterWidget(bool);
+        void showAngleWidget(bool);
+        void showNavigationWidget(bool);
 
 	private:
         void ensureMedia();
@@ -80,13 +155,28 @@ class ProducerWidget : public QFrame
 		SeekSlider *m_seekslider;
 		QLabel *m_statelabel, *m_totaltime, *m_currenttime, *m_remainingtime;
 		QLabel *m_metaDataLabel;
-		QAbstractButton *m_pause, *m_play, *m_stop, *m_next, *m_prev;
+        QAbstractButton *m_pause, *m_play, *m_stop;
 		MediaObject *m_media;
 		qint64 m_length;
 		QList<AudioPath*> m_audioPaths;
         QProgressBar *m_bufferProgress;
         VideoPath *m_vpath;
         VideoWidget *m_vout;
+
+        QAbstractButton *m_trackButton;
+        QAbstractButton *m_chapterButton;
+        QAbstractButton *m_angleButton;
+        QAbstractButton *m_navigationButton;
+
+        QPointer<TrackInterface> m_trackIface;
+        QPointer<ChapterInterface> m_chapterIface;
+        QPointer<AngleInterface> m_angleIface;
+        QPointer<NavigationInterface> m_navigationIface;
+
+        TrackWidget *m_trackWidget;
+        ChapterWidget *m_chapterWidget;
+        AngleWidget *m_angleWidget;
+        NavigationWidget *m_navigationWidget;
 };
 
 class PathWidget : public QFrame
