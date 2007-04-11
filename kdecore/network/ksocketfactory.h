@@ -41,7 +41,7 @@ class QUrl;
  * connection. The typical use-case is:
  *
  * <code>
- *   d->socket = KSocketFactory::connectionTo("www.kde.org", "http");
+ *   d->socket = KSocketFactory::connectToHost("www.kde.org", "http");
  *   d->socket->setParent(this);
  *   QObject::connect(d->socket, SIGNAL(connected()),
  *                    this, SLOT(socketConnected()));
@@ -55,7 +55,7 @@ class QUrl;
  * possible to use something equivalent to synchronous mode:
  *
  * <code>
- *   d->socket = KSocketFactory::synchronousConnectionTo("www.kde.org", "http");
+ *   d->socket = KSocketFactory::synchronousConnectToHost("www.kde.org", "http");
  *   d->socket->setParent(this);
  * </code>
  *
@@ -106,7 +106,7 @@ public:
     static QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
 
     /**
-     * This function behaves exactly like connectionTo() above, except
+     * This function behaves exactly like connectToHost() above, except
      * that the socket it returns is either in
      * QAbstractSocket::Connected state, or it has failed connecting
      * altogether.
@@ -114,7 +114,7 @@ public:
      * This function should be used if a synchronous connection is
      * necessary instead of calling
      * QAbstractSocket::waitForConnected(), since that may not work on
-     * all objects returned from connectionTo().
+     * all objects returned from connectToHost().
      *
      * This function does not return 0. If the connection attempt
      * failed for some reason, the socket state will be
