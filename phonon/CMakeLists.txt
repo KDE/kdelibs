@@ -1,18 +1,19 @@
-
 # Those apply to all subdirs
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/solid)
 
-# phonon specific configure checks
-# maybe they could be moved into a separate file which is then included here, Alex
-
-include(CheckIncludeFiles)
-
-check_include_files(sys/soundcard.h HAVE_SYS_SOUNDCARD_H)
-
-configure_file(config-phonon.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-phonon.h )
-
-
-# and now on to the rest
+FIND_PACKAGE(Alsa)
+ALSA_CONFIGURE_FILE(${CMAKE_CURRENT_BINARY_DIR}/config-alsa.h)
+ALSA_VERSION_STRING(ALSA_VERSION_STR)
+IF(ALSA_VERSION_STR)
+    SET(ALSA_VERSION_STR_Z "${ALSA_VERSION_STR}z") # append z so that 1.0.14 is greater than 1.0.14rc1
+    SET(RECOMMENDED_MIN_VERSION "1.0.14rc1")
+    STRING(COMPARE LESS ${RECOMMENDED_MIN_VERSION} ${ALSA_VERSION_STR_Z} VERSION_LESS)
+    IF(VERSION_LESS)
+        MESSAGE(STATUS "libasound version '${ALSA_VERSION_STR}' is recent enough")
+    ELSE(VERSION_LESS)
+        MESSAGE(STATUS "WARNING: libasound version '${ALSA_VERSION_STR}' is not recent enough. The recommended minimum version is '${RECOMMENDED_MIN_VERSION}'. Older versions will compile correctly, but break on dmix usage.")
+    ENDIF(VERSION_LESS)
+ENDIF(ALSA_VERSION_STR)
 
 add_subdirectory( ui )
 add_subdirectory( tests )
