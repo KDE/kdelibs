@@ -1,5 +1,7 @@
 project(libkmetadata)
 
+find_package(Konto REQUIRED)
+
 include(KMetaDataMacros)
 
 KMETADATA_GENERATE_FROM_ONTOLOGY(
@@ -31,6 +33,7 @@ include_directories(
   ${QT_INCLUDES}
   ${KDE4_INCLUDES}
   ${KNEPOMUK_INCLUDE_DIR}
+  ${KONTO_INCLUDES}
 )
 
 set(kmetadata_LIB_SRCS
@@ -64,6 +67,7 @@ target_link_libraries(kmetadata
   ${KDE4_KDECORE_LIBRARY}
   ${KDE4_KDEUI_LIBRARY}
   ${KDE4_KDEFX_LIBRARY}
+  ${KONTO_LIBRARIES}
 )
 
 set_target_properties(kmetadata PROPERTIES VERSION 1.0.0 SOVERSION 1 )

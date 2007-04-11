@@ -27,7 +27,7 @@ namespace Nepomuk {
 	class Variant;
 
 	// do not remove. Will be replaced with class declarations by the KMetaData class generator.
-	KMETADATA_OTHERCLASSES
+KMETADATA_OTHERCLASSES
 
 	enum ErrorCode {
 	    ERROR_SUCCESS = 0,
@@ -69,15 +69,13 @@ namespace Nepomuk {
             Resource( const Resource& );
 
             /**
-             * Creates a new Resource object representing the data referenced by \a uri
-             * which is of type \a type. If the uri already exists the type is ignored and
-             * the existing data's type is used.
+             * Creates a new Resource object.
              *
              * The actual resource data is loaded on demand. Thus, it is possible to work
              * with Resources as if they were in memory all the time.
              *
              * \param uriOrIdentifier The unique URI or an arbitrary identifier of the resource.
-             *                        If the URI exists in the RDF store it is used to load the
+             *                        If it exists as a resource URI in the RDF store it is used to load the
              *                        related properties. If not the passed string is treated
              *                        as an identifier.
              *                        If a resource exists in the store which has this identifier
@@ -86,6 +84,15 @@ namespace Nepomuk {
              *                        with a new random URI which can be accessed through \a uri
              *                        after the resource has been synced. The resource can later
              *                        again be found through the same identifier.
+             *                        In KMetaData there are two ways of identifying a resource
+             *                        uniquely:
+             *                        \li The URI of the resource which is generated randomly
+             *                        by the framework and can only be accessed in a read-only
+             *                        fashion.
+             *                        \li An identifier in combination with the resource type (Be
+             *                        aware that this identification can only be guranteed if identifiers
+             *                        are never set manually via addIdentifier but only through the
+             *                        constructor.
              *
              * \param type The URI identifying the type of the resource. If it is empty
              *             Resource falls back to http://www.w3.org/2000/01/rdf-schema\#Resource or
@@ -293,7 +300,7 @@ namespace Nepomuk {
             bool operator==( const Resource& ) const;
 
             // do not remove. Will be replaced with method declarations by the KMetaData class generator.
-            KMETADATA_METHODS
+KMETADATA_METHODS
 
         private:
             ResourceData* m_data;

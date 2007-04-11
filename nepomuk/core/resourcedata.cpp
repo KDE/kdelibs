@@ -21,6 +21,8 @@
 #include <knepomuk/services/resourceidservice.h>
 #include <knepomuk/rdf/statementlistiterator.h>
 
+#include <konto/class.h>
+
 #include <kdebug.h>
 
 #include <QMutex>
@@ -29,7 +31,7 @@
 using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
 
-typedef QHash<QString, Nepomuk::KMetaData::ResourceData*> ResourceDataHash;
+typedef QMap<QString, Nepomuk::KMetaData::ResourceData*> ResourceDataHash;
 
 Q_GLOBAL_STATIC( ResourceDataHash, initializedData );
 Q_GLOBAL_STATIC( ResourceDataHash, kickoffData );
@@ -299,6 +301,8 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
     if( m_uri.isEmpty() ) {
         Q_ASSERT( !m_kickoffUriOrId.isEmpty() );
 
+        m_modificationMutex.lock();
+
         RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
         if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) )
@@ -324,8 +328,54 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                 //
                 // The kickoffUriOrId is an identifier
                 //
-                m_uri = sl.first().subject.value;
-                kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri() << endl;
+                // Identifiers are not unique!
+                // Thus, we do the following:
+                // - If we have Ontology support, i.e. we know the classes:
+                //   We reuse a resource if its type is derived from the
+                //   current type of the other way around (example: an ImageFile
+                //   is a File and if we open an ImageFile as File we do want it to
+                //   keep its ImageFile type)
+                // - If we do not have Ontology support:
+                //   Fallback to the default behaviour of always reusing existing
+                //   data.
+                //
+                // TODO: basicly it is perfectly valid to store both types in the first case
+                //
+                const Konto::Class* wantedType = Konto::Class::load( m_type );
+                if ( wantedType && m_type != s_defaultType ) {
+                    for ( QList<Statement>::const_iterator it = sl.constBegin(); it != sl.constEnd(); ++it ) {
+                        // get the type of the stored resource
+                        QList<Statement> resourceSl = rr.listStatements( KMetaData::defaultGraph(),
+                                                                         Statement( it->subject,
+                                                                                    Node(typePredicate()),
+                                                                                    Node() ) );
+                        if ( !resourceSl.isEmpty() ) {
+                            const Konto::Class* storedType = Konto::Class::load( resourceSl.first().object.value );
+                            if ( storedType ) {
+                                if ( wantedType->isSubClassOf( storedType ) ) {
+                                    // Keep the type that is further down the hierarchy
+                                    m_type = wantedType->uri().toString();
+                                    m_uri = it->subject.value;
+                                    break;
+                                }
+                                else if ( storedType->isSubClassOf( wantedType ) ) {
+                                    // just use the existing data with the finer grained type
+                                    m_uri = it->subject.value;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if ( m_uri.isEmpty() ) {
+                        m_uri = ResourceManager::instance()->generateUniqueUri();
+                        kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already used as identifier with incompatible type. Generated new URI " << uri() << endl;
+                    }
+                }
+                else {
+                    m_uri = sl.first().subject.value;
+                    kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri() << endl;
+                }
             }
             else {
                 //
@@ -340,9 +390,10 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
             // store the kickoffUriOrId as an identifier
             //
             // FIXME: do not use the URI of hasIdentifier here but use some method like Resource::addIdentifier
+            // FIXME: just calling determineUri should not mark the resource modified!
             QStringList ids = getProperty( s_identifierUri ).toStringList();
             ids += kickoffUriOrId();
-            setProperty( s_identifierUri, ids );
+            m_properties[s_identifierUri] = qMakePair<Variant, Flags>( ids, ResourceData::Modified );
 
             // FIXME: We probably should already store the URI now since otherwise ResourceManager::generateUniqueUri could in
             // theorie create the same URI again!
@@ -361,6 +412,8 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                 m_proxyData->mergeIn( this );
             }
         }
+
+        m_modificationMutex.unlock();
 
         return !uri().isEmpty();
     }
@@ -858,7 +911,7 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
 {
     Q_ASSERT( !uriOrId.isEmpty() );
 
-    QHash<QString, ResourceData*>::iterator it = initializedData()->find( uriOrId );
+    ResourceDataHash::iterator it = initializedData()->find( uriOrId );
 
     bool resFound = ( it != initializedData()->end() );
 
@@ -867,7 +920,29 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
     //
     if( it == initializedData()->end() ) {
         it = kickoffData()->find( uriOrId );
-        resFound = ( it != kickoffData()->end() );
+
+        // check if the type matches (see determineUri for details)
+        if ( type != s_defaultType ) {
+            const Konto::Class* wantedType = Konto::Class::load( type );
+            if ( wantedType ) {
+                while ( it != kickoffData()->end() &&
+                        it.key() == uriOrId ) {
+                    const Konto::Class* storedType = Konto::Class::load( it.value()->type() );
+                    if ( storedType ) {
+                        if ( storedType->isSubClassOf( wantedType ) ) {
+                            break;
+                        }
+                        else if ( wantedType->isSubClassOf( storedType ) ) {
+                            it.value()->m_type = type;
+                            break;
+                        }
+                    }
+                    ++it;
+                }
+            }
+        }
+
+        resFound = ( it != kickoffData()->end() && it.key() == uriOrId );
     }
 
     //
@@ -897,7 +972,7 @@ QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allRe
     QList<ResourceData*> l;
 
     if( !type.isEmpty() ) {
-        for( QHash<QString, ResourceData*>::iterator rdIt = kickoffData()->begin();
+        for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
              rdIt != kickoffData()->end(); ++rdIt ) {
             if( rdIt.value()->type() == type ) {
                 l.append( rdIt.value() );
@@ -913,7 +988,7 @@ QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allRe
 {
     QList<ResourceData*> l;
 
-    for( QHash<QString, ResourceData*>::iterator rdIt = kickoffData()->begin();
+    for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
          rdIt != kickoffData()->end(); ++rdIt ) {
 
         if( rdIt.value()->hasProperty( _uri ) &&
@@ -930,7 +1005,7 @@ QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allRe
 {
     QList<ResourceData*> l;
 
-    for( QHash<QString, ResourceData*>::iterator rdIt = kickoffData()->begin();
+    for( ResourceDataHash::iterator rdIt = kickoffData()->begin();
          rdIt != kickoffData()->end(); ++rdIt ) {
         l.append( rdIt.value() );
     }
