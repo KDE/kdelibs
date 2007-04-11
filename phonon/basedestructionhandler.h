@@ -43,7 +43,7 @@ protected:
      * called from Base::~Base if this object was registered
      * using BasePrivate::addDestructionHandler().
      */
-    virtual void phononObjectDestroyed( Base* ) = 0;
+    virtual void phononObjectDestroyed(Base *) = 0;
 };
 }
 

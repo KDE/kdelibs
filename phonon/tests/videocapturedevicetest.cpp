@@ -31,22 +31,22 @@ void VideoCaptureDeviceTest::initTestCase()
 
 void VideoCaptureDeviceTest::sensibleValues()
 {
-	VideoCaptureDevice a;
-	QCOMPARE( a.isValid(), false );
-	VideoCaptureDevice b( a );
-	QCOMPARE( a, b );
-	QCOMPARE( b.isValid(), false );
-	VideoCaptureDevice c = VideoCaptureDevice::fromIndex( 1 ); //no backend loaded -> invalid
-	QCOMPARE( c.isValid(), false );
-	c = a;
-	QCOMPARE( a, c );
-	QCOMPARE( b, c );
+    VideoCaptureDevice a;
+    QCOMPARE(a.isValid(), false);
+    VideoCaptureDevice b(a);
+    QCOMPARE(a, b);
+    QCOMPARE(b.isValid(), false);
+    VideoCaptureDevice c = VideoCaptureDevice::fromIndex(1); //no backend loaded -> invalid
+    QCOMPARE(c.isValid(), false);
+    c = a;
+    QCOMPARE(a, c);
+    QCOMPARE(b, c);
 }
 
 void VideoCaptureDeviceTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN( VideoCaptureDeviceTest, NoGUI )
+QTEST_KDEMAIN(VideoCaptureDeviceTest, NoGUI)
 #include "videocapturedevicetest.moc"
 // vim: sw=4 ts=4

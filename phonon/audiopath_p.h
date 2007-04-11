@@ -28,18 +28,18 @@ namespace Phonon
 {
 class AudioPathPrivate : public BasePrivate, private BaseDestructionHandler
 {
-	K_DECLARE_PUBLIC( AudioPath )
+    K_DECLARE_PUBLIC(AudioPath)
     PHONON_PRIVATECLASS
-	protected:
-		AudioPathPrivate()
-		{
-		}
+    protected:
+        AudioPathPrivate()
+        {
+        }
 
-		QList<AbstractAudioOutput*> outputs;
-		QList<AudioEffect*> effects;
+        QList<AbstractAudioOutput *> outputs;
+        QList<AudioEffect *> effects;
 
-	private:
-		virtual void phononObjectDestroyed( Base* );
+    private:
+        virtual void phononObjectDestroyed(Base *);
 };
 }
 

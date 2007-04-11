@@ -60,7 +60,7 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     deviceList->setDragDropMode(QAbstractItemView::InternalMove);
     /*qApp->setStyleSheet("QListView { background-image: url(/home/mkretz/KDE/src/kdelibs/phonon/kcm/speaker.svg);"
            "background-position: bottom left;"
-          "background-repeat: no-repeat; }");*/
+          "background-repeat: no-repeat; }"); */
     deviceList->setAlternatingRowColors(true);
     QStandardItem *parentItem = m_categoryModel.invisibleRootItem();
     QStandardItem *outputItem = new QStandardItem(i18n("Audio Output"));
@@ -87,19 +87,19 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     categoryTree->expandAll();
 
     connect(categoryTree->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
+            SIGNAL(currentChanged(const QModelIndex &,const QModelIndex &)),
             SLOT(updateDeviceList()));
 
     for (int i = 0; i <= Phonon::LastCategory; ++i) {
-        connect(m_outputModel[i], SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SIGNAL(changed()));
-        connect(m_outputModel[i], SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SIGNAL(changed()));
+        connect(m_outputModel[i], SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SIGNAL(changed()));
+        connect(m_outputModel[i], SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SIGNAL(changed()));
         connect(m_outputModel[i], SIGNAL(layoutChanged()), this, SIGNAL(changed()));
-        connect(m_outputModel[i], SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SIGNAL(changed()));
+        connect(m_outputModel[i], SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), this, SIGNAL(changed()));
     }
-    connect(&m_captureModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SIGNAL(changed()));
-    connect(&m_captureModel, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SIGNAL(changed()));
+    connect(&m_captureModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SIGNAL(changed()));
+    connect(&m_captureModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SIGNAL(changed()));
     connect(&m_captureModel, SIGNAL(layoutChanged()), this, SIGNAL(changed()));
-    connect(&m_captureModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SIGNAL(changed()));
+    connect(&m_captureModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), this, SIGNAL(changed()));
 }
 
 void OutputDeviceChoice::updateDeviceList()
@@ -107,11 +107,11 @@ void OutputDeviceChoice::updateDeviceList()
     QStandardItem *currentItem = m_categoryModel.itemFromIndex(categoryTree->currentIndex());
     if (deviceList->selectionModel()) {
         disconnect(deviceList->selectionModel(),
-                SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
+                SIGNAL(currentRowChanged(const QModelIndex &,const QModelIndex &)),
                 this, SLOT(updateButtonsEnabled()));
     }
     if (currentItem->type() == 1001) {
-        CategoryItem *catItem = static_cast<CategoryItem*>(currentItem);
+        CategoryItem *catItem = static_cast<CategoryItem *>(currentItem);
         deviceList->setModel(m_outputModel[catItem->category()]);
     } else if (currentItem == m_captureItem) {
         deviceList->setModel(&m_captureModel);
@@ -121,7 +121,7 @@ void OutputDeviceChoice::updateDeviceList()
     updateButtonsEnabled();
     if (deviceList->selectionModel()) {
         connect(deviceList->selectionModel(),
-                SIGNAL(currentRowChanged(const QModelIndex&,const QModelIndex&)),
+                SIGNAL(currentRowChanged(const QModelIndex &,const QModelIndex &)),
                 this, SLOT(updateButtonsEnabled()));
     }
 }
@@ -204,7 +204,7 @@ void OutputDeviceChoice::defaults()
 void OutputDeviceChoice::on_preferButton_clicked()
 {
     QAbstractItemModel *model = deviceList->model();
-    Phonon::AudioOutputDeviceModel *deviceModel = qobject_cast<Phonon::AudioOutputDeviceModel*>(model);
+    Phonon::AudioOutputDeviceModel *deviceModel = qobject_cast<Phonon::AudioOutputDeviceModel *>(model);
     if (deviceModel) {
         deviceModel->moveUp(deviceList->currentIndex());
         updateButtonsEnabled();
@@ -215,7 +215,7 @@ void OutputDeviceChoice::on_preferButton_clicked()
 void OutputDeviceChoice::on_deferButton_clicked()
 {
     QAbstractItemModel *model = deviceList->model();
-    Phonon::AudioOutputDeviceModel *deviceModel = qobject_cast<Phonon::AudioOutputDeviceModel*>(model);
+    Phonon::AudioOutputDeviceModel *deviceModel = qobject_cast<Phonon::AudioOutputDeviceModel *>(model);
     if (deviceModel) {
         deviceModel->moveDown(deviceList->currentIndex());
         updateButtonsEnabled();
@@ -228,7 +228,7 @@ void OutputDeviceChoice::on_removeButton_clicked()
     QModelIndex idx = deviceList->currentIndex();
 
     QAbstractItemModel *model = deviceList->model();
-    Phonon::AudioOutputDeviceModel *playbackModel = qobject_cast<Phonon::AudioOutputDeviceModel*>(model);
+    Phonon::AudioOutputDeviceModel *playbackModel = qobject_cast<Phonon::AudioOutputDeviceModel *>(model);
     if (playbackModel && idx.isValid()) {
         Phonon::AudioOutputDevice deviceToRemove = playbackModel->modelData(idx);
         QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availablePlaybackDevices();
@@ -252,7 +252,7 @@ void OutputDeviceChoice::on_removeButton_clicked()
             }
         }
     } else {
-        Phonon::AudioCaptureDeviceModel *captureModel = qobject_cast<Phonon::AudioCaptureDeviceModel*>(model);
+        Phonon::AudioCaptureDeviceModel *captureModel = qobject_cast<Phonon::AudioCaptureDeviceModel *>(model);
         if (captureModel && idx.isValid()) {
             Phonon::AudioCaptureDevice deviceToRemove = captureModel->modelData(idx);
             QList<Phonon::AudioDevice> deviceList = Phonon::AudioDeviceEnumerator::availableCaptureDevices();
@@ -278,7 +278,7 @@ void OutputDeviceChoice::updateButtonsEnabled()
         QModelIndex idx = deviceList->currentIndex();
         preferButton->setEnabled(idx.isValid() && idx.row() > 0);
         deferButton->setEnabled(idx.isValid() && idx.row() < deviceList->model()->rowCount() - 1);
-        removeButton->setEnabled(idx.isValid() && !(idx.flags() & Qt::ItemIsEnabled));
+        removeButton->setEnabled(idx.isValid() && !(idx.flags()  & Qt::ItemIsEnabled));
     } else {
         preferButton->setEnabled(false);
         deferButton->setEnabled(false);

@@ -25,16 +25,16 @@
 
 namespace Phonon
 {
-	class AbstractAudioOutputPrivate;
+    class AbstractAudioOutputPrivate;
 
-	class PHONONCORE_EXPORT AbstractAudioOutput : public QObject, public Base
-	{
-		friend class AudioPath;
-		friend class AudioPathPrivate;
-		Q_OBJECT
-		K_DECLARE_PRIVATE( AbstractAudioOutput )
-		PHONON_ABSTRACTBASE( AbstractAudioOutput )
-	};
+    class PHONONCORE_EXPORT AbstractAudioOutput : public QObject, public Base
+    {
+        friend class AudioPath;
+        friend class AudioPathPrivate;
+        Q_OBJECT
+        K_DECLARE_PRIVATE(AbstractAudioOutput)
+        PHONON_ABSTRACTBASE(AbstractAudioOutput)
+    };
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

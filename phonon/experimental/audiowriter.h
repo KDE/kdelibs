@@ -32,23 +32,23 @@ namespace Experimental
 class AudioWriterPrivate;
 class PHONONEXPERIMENTAL_EXPORT AudioWriter : public AbstractAudioOutput
 {
-	Q_OBJECT
-	K_DECLARE_PRIVATE( AudioWriter )
-	PHONON_HEIR( AudioWriter )
-	/**
-	 * This property defines the codec to be used for encoding the audio signal.
-	 * Possible codecs can be retrieved from BackendCapabilities using the
-	 * availableAudioCodecs() function.
-	 *
-	 * The default codec is an invalid codec (audioCodec().isValid() == false)
-	 */
-	Q_PROPERTY( AudioCodec audioCodec READ audioCodec WRITE setAudioCodec )
-	public:
-		AudioCodec audioCodec() const;
-		
-	public Q_SLOTS:
-		setAudioCodec( AudioCodec audioCodec );
-		// codec parameters? reuse EffectParameter class?
+    Q_OBJECT
+    K_DECLARE_PRIVATE(AudioWriter)
+    PHONON_HEIR(AudioWriter)
+    /**
+     * This property defines the codec to be used for encoding the audio signal.
+     * Possible codecs can be retrieved from BackendCapabilities using the
+     * availableAudioCodecs() function.
+     *
+     * The default codec is an invalid codec (audioCodec().isValid() == false)
+     */
+    Q_PROPERTY(AudioCodec audioCodec READ audioCodec WRITE setAudioCodec)
+    public:
+        AudioCodec audioCodec() const;
+        
+    public Q_SLOTS:
+        setAudioCodec(AudioCodec audioCodec);
+        // codec parameters? reuse EffectParameter class?
 };
 
 } // namespace Experimental

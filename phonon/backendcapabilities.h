@@ -112,7 +112,7 @@ namespace BackendCapabilities
      *
      * \see knownMimeTypes();
      */
-    PHONONCORE_EXPORT bool isMimeTypeKnown( const QString& mimeType );
+    PHONONCORE_EXPORT bool isMimeTypeKnown(const QString &mimeType);
 
 #if 0
     /**

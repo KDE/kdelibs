@@ -35,27 +35,27 @@
 
 class MediaPlayer : public QWidget
 {
-	Q_OBJECT
-	public:
-		MediaPlayer( QWidget* parent = 0 );
-		void setUrl( const KUrl& url );
+    Q_OBJECT
+    public:
+        MediaPlayer(QWidget *parent = 0);
+        void setUrl(const KUrl &url);
 
-	private Q_SLOTS:
-		void openEffectWidget();
+    private Q_SLOTS:
+        void openEffectWidget();
         void toggleDeinterlacing(bool);
         void toggleScaleMode(bool);
         void switchAspectRatio(int x);
 
-	private:
-		Phonon::MediaObject* m_media;
-		Phonon::AudioPath* m_apath;
-		Phonon::AudioOutput* m_aoutput;
-		Phonon::VideoPath* m_vpath;
-		Phonon::AudioEffect* m_effect;
-		Phonon::BrightnessControl* m_brightness;
-		Phonon::VideoWidget* m_vwidget;
-		Phonon::MediaControls* m_controls;
-		Phonon::EffectWidget* m_effectWidget;
+    private:
+        Phonon::MediaObject *m_media;
+        Phonon::AudioPath *m_apath;
+        Phonon::AudioOutput *m_aoutput;
+        Phonon::VideoPath *m_vpath;
+        Phonon::AudioEffect *m_effect;
+        Phonon::BrightnessControl *m_brightness;
+        Phonon::VideoWidget *m_vwidget;
+        Phonon::MediaControls *m_controls;
+        Phonon::EffectWidget *m_effectWidget;
         Phonon::DeinterlaceFilter *m_deinterlaceFilter;
 };
 

@@ -70,7 +70,7 @@ namespace Phonon
             /**
              * Assignment operator. The data is implicitly shared, so copying is cheap.
              */
-            AudioDevice& operator=(const AudioDevice &rhs);
+            AudioDevice &operator=(const AudioDevice &rhs);
             /**
              * Equality operator.
              */

@@ -31,132 +31,132 @@ namespace Phonon
 
 class VideoPlayer::Private
 {
-	public:
-		Private()
-			: player( 0 )
-		{
-		}
+    public:
+        Private()
+            : player(0)
+        {
+        }
 
-		MediaObject* player;
-		AudioPath* apath;
-		VideoPath* vpath;
-		AudioOutput* aoutput;
-		VideoWidget* voutput;
+        MediaObject *player;
+        AudioPath *apath;
+        VideoPath *vpath;
+        AudioOutput *aoutput;
+        VideoWidget *voutput;
 
-		KUrl url;
+        KUrl url;
 
-		void _k_stateChanged( Phonon::State, Phonon::State );
+        void _k_stateChanged(Phonon::State, Phonon::State);
 };
 
-VideoPlayer::VideoPlayer( Phonon::Category category, QWidget* parent )
-	: QWidget( parent )
-	, d( new Private )
+VideoPlayer::VideoPlayer(Phonon::Category category, QWidget *parent)
+    : QWidget(parent)
+    , d(new Private)
 {
-	QVBoxLayout* layout = new QVBoxLayout( this );
+    QVBoxLayout *layout = new QVBoxLayout(this);
 
-	d->aoutput = new AudioOutput( category, this );
-	d->apath = new AudioPath( this );
-	d->apath->addOutput( d->aoutput );
+    d->aoutput = new AudioOutput(category, this);
+    d->apath = new AudioPath(this);
+    d->apath->addOutput(d->aoutput);
 
-	d->voutput = new VideoWidget( this );
-	layout->addWidget( d->voutput );
-	d->vpath = new VideoPath( this );
-	d->vpath->addOutput( d->voutput );
+    d->voutput = new VideoWidget(this);
+    layout->addWidget(d->voutput);
+    d->vpath = new VideoPath(this);
+    d->vpath->addOutput(d->voutput);
 
-	d->player = new MediaObject( this );
-	d->player->addAudioPath( d->apath );
-	d->player->addVideoPath( d->vpath );
+    d->player = new MediaObject(this);
+    d->player->addAudioPath(d->apath);
+    d->player->addVideoPath(d->vpath);
 
-	connect( d->player, SIGNAL( _k_stateChanged( Phonon::State, Phonon::State ) ),
-			SLOT( _k_stateChanged( Phonon::State, Phonon::State ) ) );
-	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
+    connect(d->player, SIGNAL(_k_stateChanged(Phonon::State, Phonon::State)),
+            SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
+    connect(d->player, SIGNAL(finished()), SIGNAL(finished()));
 }
 
 VideoPlayer::~VideoPlayer()
 {
 }
 
-void VideoPlayer::load( const KUrl& url )
+void VideoPlayer::load(const KUrl &url)
 {
-	// new URL
-	d->player->setUrl( url );
-	d->url = url;
+    // new URL
+    d->player->setUrl(url);
+    d->url = url;
 }
 
-void VideoPlayer::play( const KUrl& url )
+void VideoPlayer::play(const KUrl &url)
 {
-	if( url == d->url )
-	{
-		if( !isPlaying() )
-			d->player->play();
-		return;
-	}
-	// new URL
-	d->player->setUrl( url );
-		
-	if( ErrorState == d->player->state() )
-		return;
+    if (url == d->url)
+    {
+        if (!isPlaying())
+            d->player->play();
+        return;
+    }
+    // new URL
+    d->player->setUrl(url);
+        
+    if (ErrorState == d->player->state())
+        return;
 
-	d->url = url;
+    d->url = url;
 
-	if( StoppedState == d->player->state() )
-		d->player->play();
+    if (StoppedState == d->player->state())
+        d->player->play();
 }
 
 void VideoPlayer::play()
 {
-	play( d->url );
+    play(d->url);
 }
 
 void VideoPlayer::pause()
 {
-	d->player->pause();
+    d->player->pause();
 }
 
 void VideoPlayer::stop()
 {
-	d->player->stop();
+    d->player->stop();
 }
 
 qint64 VideoPlayer::totalTime() const
 {
-	return d->player->totalTime();
+    return d->player->totalTime();
 }
 
 qint64 VideoPlayer::currentTime() const
 {
-	return d->player->currentTime();
+    return d->player->currentTime();
 }
 
-void VideoPlayer::seek( qint64 ms )
+void VideoPlayer::seek(qint64 ms)
 {
-	d->player->seek( ms );
+    d->player->seek(ms);
 }
 
 float VideoPlayer::volume() const
 {
-	return d->aoutput->volume();
+    return d->aoutput->volume();
 }
 
-void VideoPlayer::setVolume( float v )
+void VideoPlayer::setVolume(float v)
 {
-	d->aoutput->setVolume( v );
+    d->aoutput->setVolume(v);
 }
 
 bool VideoPlayer::isPlaying() const
 {
-	return ( d->player->state() == PlayingState );
+    return (d->player->state() == PlayingState);
 }
 
 bool VideoPlayer::isPaused() const
 {
-	return ( d->player->state() == PausedState );
+    return (d->player->state() == PausedState);
 }
 
-void VideoPlayer::Private::_k_stateChanged( State ns, State os )
+void VideoPlayer::Private::_k_stateChanged(State ns, State os)
 {
-	if( os == LoadingState && ns == StoppedState )
-		player->play();
+    if (os == LoadingState && ns == StoppedState)
+        player->play();
 }
 
 } // namespaces

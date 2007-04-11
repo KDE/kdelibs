@@ -29,15 +29,15 @@ namespace Fake
 
 class AbstractVideoOutput
 {
-	public:
-		virtual ~AbstractVideoOutput() {}
+    public:
+        virtual ~AbstractVideoOutput() {}
         virtual void processFrame(Phonon::Experimental::VideoFrame &frame) = 0;
-		virtual void* internal1( void* = 0 ) { return 0; }
+        virtual void *internal1(void * = 0) { return 0; }
 };
 
 }} //namespace Phonon::Fake
 
-Q_DECLARE_INTERFACE( Phonon::Fake::AbstractVideoOutput, "org.kde.Phonon.Fake.AbstractVideoOutput/0.1" )
+Q_DECLARE_INTERFACE(Phonon::Fake::AbstractVideoOutput, "org.kde.Phonon.Fake.AbstractVideoOutput/0.1")
 
 #endif // PHONON_FAKE_ABSTRACTVIDEOOUTPUT_H
 // vim: sw=4 ts=4

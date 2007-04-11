@@ -30,26 +30,26 @@ namespace Fake
 
 class MediaQueue : public QObject
 {
-	Q_OBJECT
-	public:
-		MediaQueue( QObject* parent );
+    Q_OBJECT
+    public:
+        MediaQueue(QObject *parent);
 
-		Q_INVOKABLE KUrl nextUrl() const;
-		Q_INVOKABLE void setNextUrl( const KUrl & );
+        Q_INVOKABLE KUrl nextUrl() const;
+        Q_INVOKABLE void setNextUrl(const KUrl  &);
 
-		Q_INVOKABLE qint32 timeBetweenMedia() const;
-		Q_INVOKABLE void setTimeBetweenMedia( qint32 milliseconds );
+        Q_INVOKABLE qint32 timeBetweenMedia() const;
+        Q_INVOKABLE void setTimeBetweenMedia(qint32 milliseconds);
 
-		Q_INVOKABLE bool doCrossfade() const;
-		Q_INVOKABLE void setDoCrossfade( bool doCrossfade );
+        Q_INVOKABLE bool doCrossfade() const;
+        Q_INVOKABLE void setDoCrossfade(bool doCrossfade);
 
-	Q_SIGNALS:
+    Q_SIGNALS:
         void needNextUrl();
 
-	private:
-		qint32 m_timeBetweenMedia;
-		bool m_doCrossfade;
-		KUrl m_nextUrl;
+    private:
+        qint32 m_timeBetweenMedia;
+        bool m_doCrossfade;
+        KUrl m_nextUrl;
 };
 
 }} // namespace Phonon::Fake

@@ -30,26 +30,26 @@ class KCModuleProxy;
 
 class BackendSelection : public QWidget, private Ui::BackendSelection
 {
-	Q_OBJECT
-	public:
-		BackendSelection( QWidget* parent = 0 );
+    Q_OBJECT
+    public:
+        BackendSelection(QWidget *parent = 0);
 
-		void load();
-		void save();
-		void defaults();
+        void load();
+        void save();
+        void defaults();
 
-	private Q_SLOTS:
-		void selectionChanged();
-		void up();
-		void down();
+    private Q_SLOTS:
+        void selectionChanged();
+        void up();
+        void down();
 
  Q_SIGNALS:
-		void changed();
+        void changed();
 
-	private:
+    private:
         void showBackendKcm(const KService::Ptr &backendService);
-		void loadServices( const KService::List& offers );
-		QHash<QString, KService::Ptr> m_services;
+        void loadServices(const KService::List &offers);
+        QHash<QString, KService::Ptr> m_services;
         QHash<QString, KCModuleProxy *> m_kcms;
         int m_emptyPage;
 };

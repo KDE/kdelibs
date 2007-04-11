@@ -35,20 +35,20 @@ class VolumeSliderPrivate;
  */
 class PHONONUI_EXPORT VolumeSlider : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
     Q_DECLARE_PRIVATE(VolumeSlider)
-	/**
-	 * This property holds the maximum volume that can be set with this slider.
-	 *
-	 * By default the maximum value is 1.0 (100%).
-	 */
-	Q_PROPERTY( float maximumVolume READ maximumVolume WRITE setMaximumVolume )
-	/**
-	 * This property holds the orientation of the slider.
-	 *
-	 * The orientation must be Qt::Vertical (the default) or Qt::Horizontal.
-	 */
-	Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+    /**
+     * This property holds the maximum volume that can be set with this slider.
+     *
+     * By default the maximum value is 1.0 (100%).
+     */
+    Q_PROPERTY(float maximumVolume READ maximumVolume WRITE setMaximumVolume)
+    /**
+     * This property holds the orientation of the slider.
+     *
+     * The orientation must be Qt::Vertical (the default) or Qt::Horizontal.
+     */
+    Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation)
 
     /**
      * This property holds whether slider tracking is enabled.
@@ -58,7 +58,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
      * disabled, the volume changes only when the user
      * releases the slider.
      */
-    Q_PROPERTY( bool tracking READ hasTracking WRITE setTracking )
+    Q_PROPERTY(bool tracking READ hasTracking WRITE setTracking)
 
     /**
      * This property holds the page step.
@@ -68,7 +68,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
      *
      * Defaults to 5 (5% of the voltage).
      */
-    Q_PROPERTY( int pageStep READ pageStep WRITE setPageStep )
+    Q_PROPERTY(int pageStep READ pageStep WRITE setPageStep)
 
     /**
      * This property holds the single step.
@@ -78,7 +78,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
      *
      * Defaults to 1 (1% of the voltage).
      */
-    Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
+    Q_PROPERTY(int singleStep READ singleStep WRITE setSingleStep)
 
     /**
      * This property holds whether the mute button/icon next to the slider is visible.
@@ -93,34 +93,34 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
      * The default size is defined by the GUI style.
      */
     Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
-	public:
-		/**
-		 * Constructs a new volume slider with a \p parent.
-		 */
-		VolumeSlider( QWidget* parent = 0 );
-		~VolumeSlider();
+    public:
+        /**
+         * Constructs a new volume slider with a \p parent.
+         */
+        VolumeSlider(QWidget *parent = 0);
+        ~VolumeSlider();
 
         bool hasTracking() const;
-        void setTracking( bool tracking );
+        void setTracking(bool tracking);
         int pageStep() const;
-        void setPageStep( int milliseconds );
+        void setPageStep(int milliseconds);
         int singleStep() const;
-        void setSingleStep( int milliseconds );
+        void setSingleStep(int milliseconds);
         bool isMuteVisible() const;
         QSize iconSize() const;
-		float maximumVolume() const;
-		Qt::Orientation orientation() const;
+        float maximumVolume() const;
+        Qt::Orientation orientation() const;
 
-	public Q_SLOTS:
-		void setMaximumVolume( float );
-		void setOrientation( Qt::Orientation );
+    public Q_SLOTS:
+        void setMaximumVolume(float);
+        void setOrientation(Qt::Orientation);
         void setMuteVisible(bool);
         void setIconSize(const QSize &size);
 
-		/**
-		 * Sets the audio output object to be controlled by this slider.
-		 */
-		void setAudioOutput( AudioOutput* );
+        /**
+         * Sets the audio output object to be controlled by this slider.
+         */
+        void setAudioOutput(AudioOutput *);
 
     private:
         Q_PRIVATE_SLOT(d_ptr, void _k_outputDestroyed())
@@ -130,7 +130,7 @@ class PHONONUI_EXPORT VolumeSlider : public QWidget
         Q_PRIVATE_SLOT(d_ptr, void _k_buttonClicked())
 
     protected:
-        VolumeSliderPrivate* d_ptr;
+        VolumeSliderPrivate *d_ptr;
 };
 
 } // namespace Phonon

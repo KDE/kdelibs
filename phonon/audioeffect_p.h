@@ -29,15 +29,15 @@ namespace Phonon
 {
 class AudioEffectPrivate : public BasePrivate
 {
-	K_DECLARE_PUBLIC( AudioEffect )
+    K_DECLARE_PUBLIC(AudioEffect)
     PHONON_PRIVATECLASS
-	protected:
-		AudioEffectPrivate()
-		{
-		}
-	private:
-		int type;
-		QHash<int, QVariant> parameterValues;
+    protected:
+        AudioEffectPrivate()
+        {
+        }
+    private:
+        int type;
+        QHash<int, QVariant> parameterValues;
 };
 } //namespace Phonon
 

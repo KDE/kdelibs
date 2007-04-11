@@ -31,60 +31,60 @@ namespace Phonon
 namespace Fake
 {
 
-VideoWidget::VideoWidget( QWidget* parent )
-	: QWidget( parent ), overlay(0)
+VideoWidget::VideoWidget(QWidget *parent)
+    : QWidget(parent), overlay(0)
 {
-	QPalette p = palette();
-	p.setColor( QPalette::Window, Qt::blue );
-	setPalette( p );
-	setBackgroundRole( QPalette::Window );
-	setAutoFillBackground( true );
-	setMinimumSize( 100, 100 );
+    QPalette p = palette();
+    p.setColor(QPalette::Window, Qt::blue);
+    setPalette(p);
+    setBackgroundRole(QPalette::Window);
+    setAutoFillBackground(true);
+    setMinimumSize(100, 100);
 }
 
 Phonon::VideoWidget::AspectRatio VideoWidget::aspectRatio() const
 {
-	return m_aspectRatio;
+    return m_aspectRatio;
 }
 
-void VideoWidget::setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio )
+void VideoWidget::setAspectRatio(Phonon::VideoWidget::AspectRatio aspectRatio)
 {
-	m_aspectRatio = aspectRatio;
-	m_videoSize = size();
-	const int w = width();
-	const int h = height();
-	switch( m_aspectRatio )
-	{
-		case Phonon::VideoWidget::AspectRatioWidget:
-			break;
-		case Phonon::VideoWidget::AspectRatioAuto:
-		case Phonon::VideoWidget::AspectRatio4_3:
-			if( h * 4 / 3 < w )
-				m_videoSize.setWidth( h * 4 / 3 );
-			else
-				m_videoSize.setHeight( w * 3 / 4 );
-			break;
-//X 		case Phonon::VideoWidget::AspectRatioSquare:
-//X 			if( h < w )
-//X 				m_videoSize.setWidth( h );
-//X 			else
-//X 				m_videoSize.setHeight( w );
-//X 			break;
-        case Phonon::VideoWidget::AspectRatio16_9:
-			if( h * 16 / 9 < w )
-				m_videoSize.setWidth( h * 16 / 9 );
-			else
-				m_videoSize.setHeight( w * 9 / 16 );
-			break;
-//X 		case Phonon::VideoWidget::AspectRatioDvb:
-//X 			if( h * 211 / 100 < w )
-//X 				m_videoSize.setWidth( h * 211 / 100 );
-//X 			else
-//X 				m_videoSize.setHeight( w * 100 / 211 );
-//X 			break;
-		default:
-			Q_ASSERT( false ); // this may not happen
-	}
+    m_aspectRatio = aspectRatio;
+    m_videoSize = size();
+    const int w = width();
+    const int h = height();
+    switch(m_aspectRatio)
+    {
+    case Phonon::VideoWidget::AspectRatioWidget:
+        break;
+    case Phonon::VideoWidget::AspectRatioAuto:
+    case Phonon::VideoWidget::AspectRatio4_3:
+        if (h * 4 / 3 < w)
+            m_videoSize.setWidth(h * 4 / 3);
+        else
+            m_videoSize.setHeight(w * 3 / 4);
+        break;
+//X     case Phonon::VideoWidget::AspectRatioSquare:
+//X         if (h < w)
+//X             m_videoSize.setWidth(h);
+//X         else
+//X             m_videoSize.setHeight(w);
+//X         break;
+    case Phonon::VideoWidget::AspectRatio16_9:
+        if (h * 16 / 9 < w)
+            m_videoSize.setWidth(h * 16 / 9);
+        else
+            m_videoSize.setHeight(w * 9 / 16);
+        break;
+//X     case Phonon::VideoWidget::AspectRatioDvb:
+//X         if (h * 211 / 100 < w)
+//X             m_videoSize.setWidth(h * 211 / 100);
+//X         else
+//X             m_videoSize.setHeight(w * 100 / 211);
+//X         break;
+    default:
+        Q_ASSERT(false); // this may not happen
+    }
 }
 
 Phonon::VideoWidget::ScaleMode VideoWidget::scaleMode() const
@@ -99,19 +99,19 @@ void VideoWidget::setScaleMode(Phonon::VideoWidget::ScaleMode scaleMode)
 
 void VideoWidget::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
-	switch( frame.fourcc )
-	{
-		case 0x00000000:
-			{
-				QImage image( reinterpret_cast<uchar*>( frame.data.data() ), frame.width, frame.height, QImage::Format_RGB32 );
-				image = image.scaled( m_videoSize, Qt::IgnoreAspectRatio, Qt::FastTransformation );
-				m_pixmap = QPixmap::fromImage( image );
-				repaint();
-			}
-			break;
-		default:
-			kError( 604 ) << "video frame format not implemented" << endl;
-	}
+    switch(frame.fourcc)
+    {
+    case 0x00000000:
+        {
+            QImage image(reinterpret_cast<uchar *>(frame.data.data()), frame.width, frame.height, QImage::Format_RGB32);
+            image = image.scaled(m_videoSize, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+            m_pixmap = QPixmap::fromImage(image);
+            repaint();
+        }
+        break;
+    default:
+        kError(604) << "video frame format not implemented" << endl;
+    }
 }
 
 int VideoWidget::overlayCapabilities() const
@@ -125,35 +125,35 @@ bool VideoWidget::createOverlay(QWidget *widget, int type)
         return false;
     }
 
-	if (layout() == 0) {
-		QLayout *layout = new QVBoxLayout(this);
-		layout->setMargin(0);
-		setLayout(layout);
-	}
+    if (layout() == 0) {
+        QLayout *layout = new QVBoxLayout(this);
+        layout->setMargin(0);
+        setLayout(layout);
+    }
 
-	layout()->addWidget(widget);
-	overlay = widget;
+    layout()->addWidget(widget);
+    overlay = widget;
 
-	return true;
+    return true;
 }
 
 void VideoWidget::childEvent(QChildEvent *event)
 {
-	if (event->removed() && (event->child() == overlay))
-		overlay = 0;
-	QWidget::childEvent(event);
+    if (event->removed() && (event->child() == overlay))
+        overlay = 0;
+    QWidget::childEvent(event);
 }
 
-void VideoWidget::paintEvent( QPaintEvent* ev )
+void VideoWidget::paintEvent(QPaintEvent *ev)
 {
-	QPainter p( this );
-	p.drawPixmap( 0, 0, m_pixmap );
+    QPainter p(this);
+    p.drawPixmap(0, 0, m_pixmap);
 }
 
-void VideoWidget::resizeEvent( QResizeEvent* ev )
+void VideoWidget::resizeEvent(QResizeEvent *ev)
 {
-	setAspectRatio( m_aspectRatio );
-	QWidget::resizeEvent( ev );
+    setAspectRatio(m_aspectRatio);
+    QWidget::resizeEvent(ev);
 }
 
 }} //namespace Phonon::Fake

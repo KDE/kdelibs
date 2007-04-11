@@ -27,23 +27,23 @@ namespace Phonon
 {
 namespace Fake
 {
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class DelayAudioEffect : public EffectInterface
-	{
-		public:
-			DelayAudioEffect();
-			~DelayAudioEffect();
+    /**
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class DelayAudioEffect : public EffectInterface
+    {
+        public:
+            DelayAudioEffect();
+            ~DelayAudioEffect();
 
-			virtual QVariant value( int parameterId ) const;
-			virtual void setValue( int parameterId, QVariant newValue );
-			virtual void processBuffer( QVector<float>& buffer );
+            virtual QVariant value(int parameterId) const;
+            virtual void setValue(int parameterId, QVariant newValue);
+            virtual void processBuffer(QVector<float> &buffer);
 
-		private:
-			QQueue<float> m_delayBuffer;
-			float m_feedback, m_level;
-	};
+        private:
+            QQueue<float> m_delayBuffer;
+            float m_feedback, m_level;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

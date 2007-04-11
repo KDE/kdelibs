@@ -31,22 +31,22 @@ namespace Experimental
 {
 class VideoDataOutputPrivate : public AbstractVideoOutputPrivate
 {
-	K_DECLARE_PUBLIC( VideoDataOutput )
+    K_DECLARE_PUBLIC(VideoDataOutput)
     PHONON_PRIVATECLASS
-	protected:
-		VideoDataOutputPrivate()
-			: format( 0x00000000 ) //BI_RGB TODO: what should be the default?
-			// after changing the default -> change the dox accordingly
-			, displayLatency( 0 )
-			, frameRate( -1 )
-		{
-		}
+    protected:
+        VideoDataOutputPrivate()
+            : format(0x00000000) //BI_RGB TODO: what should be the default?
+            // after changing the default -> change the dox accordingly
+            , displayLatency(0)
+            , frameRate(-1)
+        {
+        }
 
-		quint32 format;
-		int displayLatency;
-		int frameRate;
-		QSize frameSize;
-		Qt::AspectRatioMode frameAspectRatioMode;
+        quint32 format;
+        int displayLatency;
+        int frameRate;
+        QSize frameSize;
+        Qt::AspectRatioMode frameAspectRatioMode;
 };
 
 } // namespace Experimental

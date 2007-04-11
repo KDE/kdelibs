@@ -36,14 +36,14 @@ ObjectDescription<T>::ObjectDescription()
 }
 
 template<ObjectDescriptionType T>
-ObjectDescription<T>::ObjectDescription(int index, const QHash<QByteArray, QVariant>& properties)
+ObjectDescription<T>::ObjectDescription(int index, const QHash<QByteArray, QVariant> &properties)
     : d(new ObjectDescriptionPrivate(index, properties))
 {
 }
 
 template<ObjectDescriptionType T>
-ObjectDescription<T>::ObjectDescription( const ObjectDescription<T>& rhs )
-	: d( rhs.d )
+ObjectDescription<T>::ObjectDescription(const ObjectDescription<T> &rhs)
+    : d(rhs.d)
 {
 }
 
@@ -53,34 +53,34 @@ ObjectDescription<T>::~ObjectDescription()
 }
 
 template<ObjectDescriptionType T>
-ObjectDescription<T>& ObjectDescription<T>::operator=( const ObjectDescription<T>& rhs )
+ObjectDescription<T> &ObjectDescription<T>::operator=(const ObjectDescription<T> &rhs)
 {
-	d = rhs.d;
-	return *this;
+    d = rhs.d;
+    return *this;
 }
 
 template<ObjectDescriptionType T>
-bool ObjectDescription<T>::operator==( const ObjectDescription<T>& otherDescription ) const
+bool ObjectDescription<T>::operator==(const ObjectDescription<T> &otherDescription) const
 {
-	return *d == *otherDescription.d;
+    return *d == *otherDescription.d;
 }
 
 template<ObjectDescriptionType T>
 int ObjectDescription<T>::index() const
 {
-	return d->index;
+    return d->index;
 }
 
 template<ObjectDescriptionType T>
-const QString& ObjectDescription<T>::name() const
+const QString &ObjectDescription<T>::name() const
 {
-	return d->name;
+    return d->name;
 }
 
 template<ObjectDescriptionType T>
-const QString& ObjectDescription<T>::description() const
+const QString &ObjectDescription<T>::description() const
 {
-	return d->description;
+    return d->description;
 }
 
 template<ObjectDescriptionType T>
@@ -98,14 +98,14 @@ QList<QByteArray> ObjectDescription<T>::propertyNames() const
 template<ObjectDescriptionType T>
 bool ObjectDescription<T>::isValid() const
 {
-	return d->index != -1;
+    return d->index != -1;
 }
 
 template<ObjectDescriptionType T>
-ObjectDescription<T> ObjectDescription<T>::fromIndex( int index )
+ObjectDescription<T> ObjectDescription<T>::fromIndex(int index)
 {
-    QObject* b = Factory::backend();
-    BackendInterface *iface = qobject_cast<BackendInterface*>(b);
+    QObject *b = Factory::backend();
+    BackendInterface *iface = qobject_cast<BackendInterface *>(b);
     QSet<int> indexes = iface->objectDescriptionIndexes(T);
     if (!indexes.contains(index)) {
         return ObjectDescription<T>(); //isValid() == false

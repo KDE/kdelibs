@@ -28,20 +28,20 @@ namespace Phonon { class ByteStream; }
 
 class PcmPlayer : public QWidget
 {
-	Q_OBJECT
-	public:
-		PcmPlayer( QWidget* parent = 0 );
+    Q_OBJECT
+    public:
+        PcmPlayer(QWidget *parent = 0);
 
-	private Q_SLOTS:
-		void setFrequency( int f );
-		void sendData();
+    private Q_SLOTS:
+        void setFrequency(int f);
+        void sendData();
 
-	private:
-		QByteArray wavHeader() const;
-		QByteArray pcmBlock( int freq ) const;
-		int m_frequency;
-		Phonon::ByteStream* m_stream;
-		QLabel* m_fLabel;
+    private:
+        QByteArray wavHeader() const;
+        QByteArray pcmBlock(int freq) const;
+        int m_frequency;
+        Phonon::ByteStream *m_stream;
+        QLabel *m_fLabel;
 };
 
 #endif // PCMOUTPUT_H

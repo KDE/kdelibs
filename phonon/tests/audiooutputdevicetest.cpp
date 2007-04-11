@@ -31,22 +31,22 @@ void AudioOutputDeviceTest::initTestCase()
 
 void AudioOutputDeviceTest::sensibleValues()
 {
-	AudioOutputDevice a;
-	QCOMPARE( a.isValid(), false );
-	AudioOutputDevice b( a );
-	QCOMPARE( a, b );
-	QCOMPARE( b.isValid(), false );
-	AudioOutputDevice c = AudioOutputDevice::fromIndex( 1 ); //no backend loaded -> invalid
-	QCOMPARE( c.isValid(), false );
-	c = a;
-	QCOMPARE( a, c );
-	QCOMPARE( b, c );
+    AudioOutputDevice a;
+    QCOMPARE(a.isValid(), false);
+    AudioOutputDevice b(a);
+    QCOMPARE(a, b);
+    QCOMPARE(b.isValid(), false);
+    AudioOutputDevice c = AudioOutputDevice::fromIndex(1); //no backend loaded -> invalid
+    QCOMPARE(c.isValid(), false);
+    c = a;
+    QCOMPARE(a, c);
+    QCOMPARE(b, c);
 }
 
 void AudioOutputDeviceTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN( AudioOutputDeviceTest, NoGUI )
+QTEST_KDEMAIN(AudioOutputDeviceTest, NoGUI)
 #include "audiooutputdevicetest.moc"
 // vim: sw=4 ts=4

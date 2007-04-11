@@ -30,48 +30,48 @@ namespace Phonon
 {
 namespace Fake
 {
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class VideoDataOutput : public QObject, public AbstractVideoOutput
-	{
-		Q_OBJECT
-		Q_INTERFACES( Phonon::Fake::AbstractVideoOutput )
-		public:
-			VideoDataOutput( QObject* parent );
-			~VideoDataOutput();
+    /**
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class VideoDataOutput : public QObject, public AbstractVideoOutput
+    {
+        Q_OBJECT
+        Q_INTERFACES(Phonon::Fake::AbstractVideoOutput)
+        public:
+            VideoDataOutput(QObject *parent);
+            ~VideoDataOutput();
 
-		public Q_SLOTS:
-			int frameRate() const;
-			void setFrameRate( int frameRate );
+        public Q_SLOTS:
+            int frameRate() const;
+            void setFrameRate(int frameRate);
 
-			QSize naturalFrameSize() const;
-			QSize frameSize() const;
-			void setFrameSize( const QSize& frameSize );
+            QSize naturalFrameSize() const;
+            QSize frameSize() const;
+            void setFrameSize(const QSize &frameSize);
 
-			quint32 format() const;
-			void setFormat( quint32 fourcc );
+            quint32 format() const;
+            void setFormat(quint32 fourcc);
 
-			//int displayLatency() const;
-			//void setDisplayLatency( int milliseconds );
+            //int displayLatency() const;
+            //void setDisplayLatency(int milliseconds);
 
-		public:
-			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
+        public:
+            virtual void *internal1(void * = 0) { return static_cast<Phonon::Fake::AbstractVideoOutput *>(this); }
 
-			// Fake specific:
+            // Fake specific:
             virtual void processFrame(Phonon::Experimental::VideoFrame &frame);
 
-		signals:
+        signals:
             void frameReady(const Phonon::Experimental::VideoFrame &frame);
-			void endOfMedia();
+            void endOfMedia();
 
-		private:
-			quint32 m_fourcc;
-			QByteArray m_pendingData;
-			//int m_latency;
-			int m_frameRate;
-			QSize m_frameSize;
-	};
+        private:
+            quint32 m_fourcc;
+            QByteArray m_pendingData;
+            //int m_latency;
+            int m_frameRate;
+            QSize m_frameSize;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

@@ -34,7 +34,7 @@ QList<EffectParameter> DeinterlaceFilter::parameterList() const
     QList<EffectParameter> ret;
     //EffectParameter par(1, i18n("Brightness"), EffectParameter::IntegerHint, 0,
             //lowerBound(), upperBound(), i18n("controls the brightness of the video images"));
-    //par.setEffect(const_cast<DeinterlaceFilter*>(this));
+    //par.setEffect(const_cast<DeinterlaceFilter *>(this));
     return ret;
 }
 

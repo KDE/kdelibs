@@ -26,35 +26,35 @@ namespace Phonon
 namespace Fake
 {
 
-Visualization::Visualization( QObject* parent )
-	: QObject( parent )
+Visualization::Visualization(QObject *parent)
+    : QObject(parent)
 {
 }
 
 int Visualization::visualization() const
 {
-	return m_visualization;
+    return m_visualization;
 }
 
-void Visualization::setVisualization( int newVisualization )
+void Visualization::setVisualization(int newVisualization)
 {
-	m_visualization = newVisualization;
+    m_visualization = newVisualization;
 }
 
-void Visualization::setAudioPath( QObject* audioPath )
+void Visualization::setAudioPath(QObject *audioPath)
 {
-	Q_ASSERT( audioPath );
-	AudioPath* ap = qobject_cast<AudioPath*>( audioPath );
-	Q_ASSERT( ap );
-	m_audioPath = ap;
+    Q_ASSERT(audioPath);
+    AudioPath *ap = qobject_cast<AudioPath *>(audioPath);
+    Q_ASSERT(ap);
+    m_audioPath = ap;
 }
 
-void Visualization::setVideoOutput( QObject* videoOutputIface )
+void Visualization::setVideoOutput(QObject *videoOutputIface)
 {
-	Q_ASSERT( videoOutputIface );
-	AbstractVideoOutput* vo = qobject_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
-	Q_ASSERT( vo );
-	m_videoOutput = vo;
+    Q_ASSERT(videoOutputIface);
+    AbstractVideoOutput *vo = qobject_cast<Phonon::Fake::AbstractVideoOutput *>(videoOutputIface);
+    Q_ASSERT(vo);
+    m_videoOutput = vo;
 }
 
 }} //namespace Phonon::Fake

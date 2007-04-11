@@ -30,27 +30,27 @@
 #include <QtDBus/QtDBus>
 #include <kcmoduleproxy.h>
 
-BackendSelection::BackendSelection( QWidget* parent )
-	: QWidget( parent )
+BackendSelection::BackendSelection(QWidget *parent)
+    : QWidget(parent)
 {
-	setupUi( this );
+    setupUi(this);
     m_comment->setWordWrap(true);
 
     m_emptyPage = stackedWidget->addWidget(new QWidget());
 
-	connect( m_select, SIGNAL( itemSelectionChanged() ),
-			SLOT( selectionChanged() ) );
-	//connect( m_website, SIGNAL( leftClickedUrl( const QString & ) ),
-			//kapp, SLOT( invokeBrowser( const QString & ) ) );
-	connect( m_up, SIGNAL( clicked() ), SLOT( up() ) );
-	connect( m_down, SIGNAL( clicked() ), SLOT( down() ) );
+    connect(m_select, SIGNAL(itemSelectionChanged()),
+            SLOT(selectionChanged()));
+    //connect(m_website, SIGNAL(leftClickedUrl(const QString  &)),
+            //kapp, SLOT(invokeBrowser(const QString  &)));
+    connect(m_up, SIGNAL(clicked()), SLOT(up()));
+    connect(m_down, SIGNAL(clicked()), SLOT(down()));
 }
 
 void BackendSelection::load()
 {
-	const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
-			"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
-	// the offers are already sorted for preference
+    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+    // the offers are already sorted for preference
     loadServices(offers);
     foreach (KCModuleProxy *proxy, m_kcms) {
         if (proxy) {
@@ -82,20 +82,20 @@ void BackendSelection::showBackendKcm(const KService::Ptr &backendService)
     }
 }
 
-void BackendSelection::loadServices( const KService::List& offers )
+void BackendSelection::loadServices(const KService::List &offers)
 {
-	m_services.clear();
-	m_select->clear();
+    m_services.clear();
+    m_select->clear();
 
     KService::List::const_iterator it = offers.begin();
-	const KService::List::const_iterator end = offers.end();
-	for( ; it != end; ++it )
-	{
-		KService::Ptr service = *it;
-		m_select->addItem( service->name() );
-		m_services[ service->name() ] = service;
-	}
-	m_select->setItemSelected( m_select->item( 0 ), true );
+    const KService::List::const_iterator end = offers.end();
+    for (; it != end; ++it)
+    {
+        KService::Ptr service = *it;
+        m_select->addItem(service->name());
+        m_services[service->name()] = service;
+    }
+    m_select->setItemSelected(m_select->item(0), true);
 }
 
 void BackendSelection::save()
@@ -107,19 +107,19 @@ void BackendSelection::save()
         }
     }
 
-	// save to servicetype profile
-	KService::List services;
-	unsigned int count = m_select->count();
-	for( unsigned int i = 0; i < count; ++i )
-	{
-		QListWidgetItem* item = m_select->item( i );
-		KService::Ptr service = m_services[ item->text() ];
-		services.append( service );
-	}
-	KServiceTypeProfile::writeServiceTypeProfile( "PhononBackend", services );
+    // save to servicetype profile
+    KService::List services;
+    unsigned int count = m_select->count();
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        QListWidgetItem *item = m_select->item(i);
+        KService::Ptr service = m_services[item->text()];
+        services.append(service);
+    }
+    KServiceTypeProfile::writeServiceTypeProfile("PhononBackend", services);
 
-	QDBusMessage signal = QDBusMessage::createSignal( "/", "org.kde.Phonon.Factory", "phononBackendChanged" );
-	QDBusConnection::sessionBus().send(signal);
+    QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.Phonon.Factory", "phononBackendChanged");
+    QDBusConnection::sessionBus().send(signal);
 }
 
 void BackendSelection::defaults()
@@ -130,12 +130,12 @@ void BackendSelection::defaults()
         }
     }
 
-	loadServices( KServiceTypeTrader::self()->defaultOffers( "PhononBackend" ) );
+    loadServices(KServiceTypeTrader::self()->defaultOffers("PhononBackend"));
 }
 
 void BackendSelection::selectionChanged()
 {
-	KService::Ptr service;
+    KService::Ptr service;
     foreach (QListWidgetItem *item, m_select->selectedItems()) {
         service = m_services[item->text()];
         m_up->setEnabled(m_select->row(item) > 0);
@@ -158,32 +158,32 @@ void BackendSelection::selectionChanged()
 
 void BackendSelection::up()
 {
-	QList<QListWidgetItem*> selectedList = m_select->selectedItems();
-	foreach( QListWidgetItem* selected, selectedList )
-	{
-		int row = m_select->row( selected );
-		if( row > 0 )
-		{
-			QListWidgetItem* taken = m_select->takeItem( row - 1 );
-			m_select->insertItem( row, taken );
-			emit changed();
-		}
-	}
+    QList<QListWidgetItem *> selectedList = m_select->selectedItems();
+    foreach (QListWidgetItem *selected, selectedList)
+    {
+        int row = m_select->row(selected);
+        if (row > 0)
+        {
+            QListWidgetItem *taken = m_select->takeItem(row - 1);
+            m_select->insertItem(row, taken);
+            emit changed();
+        }
+    }
 }
 
 void BackendSelection::down()
 {
-	QList<QListWidgetItem*> selectedList = m_select->selectedItems();
-	foreach( QListWidgetItem* selected, selectedList )
-	{
-		int row = m_select->row( selected );
-		if( row + 1 < m_select->count() )
-		{
-			QListWidgetItem* taken = m_select->takeItem( row + 1 );
-			m_select->insertItem( row, taken );
-			emit changed();
-		}
-	}
+    QList<QListWidgetItem *> selectedList = m_select->selectedItems();
+    foreach (QListWidgetItem *selected, selectedList)
+    {
+        int row = m_select->row(selected);
+        if (row + 1 < m_select->count())
+        {
+            QListWidgetItem *taken = m_select->takeItem(row + 1);
+            m_select->insertItem(row, taken);
+            emit changed();
+        }
+    }
 }
 
 #include "backendselection.moc"

@@ -34,10 +34,10 @@ namespace Phonon
 {
 namespace Fake
 {
-AudioOutput::AudioOutput( QObject* parent )
-	: AbstractAudioOutput( parent )
-	, m_device( 10000 )
-	, m_dsp( "/dev/dsp" )
+AudioOutput::AudioOutput(QObject *parent)
+    : AbstractAudioOutput(parent)
+    , m_device(10000)
+    , m_dsp("/dev/dsp")
 {
 }
 
@@ -47,97 +47,97 @@ AudioOutput::~AudioOutput()
 
 float AudioOutput::volume() const
 {
-	return m_volume;
+    return m_volume;
 }
 
 int AudioOutput::outputDevice() const
 {
-	return m_device;
+    return m_device;
 }
 
-void AudioOutput::setVolume( float newVolume )
+void AudioOutput::setVolume(float newVolume)
 {
-	m_volume = newVolume;
-	emit volumeChanged( m_volume );
+    m_volume = newVolume;
+    emit volumeChanged(m_volume);
 }
 
 bool AudioOutput::setOutputDevice(int newDevice)
 {
-	Q_ASSERT( newDevice >= 10000 );
-	Q_ASSERT( newDevice <= 10001 );
-	m_device = newDevice;
+    Q_ASSERT(newDevice >= 10000);
+    Q_ASSERT(newDevice <= 10001);
+    m_device = newDevice;
     return true;
 }
 
-void AudioOutput::processBuffer( const QVector<float>& buffer )
+void AudioOutput::processBuffer(const QVector<float> &buffer)
 {
     // be nice to everybody using KDE with the fake backend and don't play this awful noise :)
     return;
 
-	//static QFile indump( "indump" );
-	//if( !indump.isOpen() )
-		//indump.open( QIODevice::WriteOnly );
-	//static QFile outdump( "outdump" );
-	//if( !outdump.isOpen() )
-		//outdump.open( QIODevice::WriteOnly );
-	openDevice();
-	if( !m_dsp.isOpen() )
-		return;
+    //static QFile indump("indump");
+    //if (!indump.isOpen())
+        //indump.open(QIODevice::WriteOnly);
+    //static QFile outdump("outdump");
+    //if (!outdump.isOpen())
+        //outdump.open(QIODevice::WriteOnly);
+    openDevice();
+    if (!m_dsp.isOpen())
+        return;
 
-	// we dump the data in /dev/dsp
-	qint16* pcm = new qint16[ 2*buffer.size() ]; // 2* for stereo
-	char* towrite = reinterpret_cast<char*>( pcm );
-	int converted;
-	for( int i = 0; i < buffer.size(); ++i )
-	{
-		//indump.write( QByteArray::number( buffer[ i ] ) + "\n" );
-		converted = static_cast<qint16>( m_volume * buffer[ i ] * static_cast<float>( 0x7FFF ) );
-		//outdump.write( QByteArray::number( converted ) + "\n" );
-		*pcm++ = converted;
-		*pcm++ = converted;
-	}
-	int size = sizeof( qint16 ) * 2 * buffer.size();
-	int written;
-	while( size > 0 )
-	{
-		written = m_dsp.write( towrite, size );
-		// QFSFileEngine loops until errno != EINTR
-		if( written < 0 )
-			break;
-		size = size - written;
-		if( size > 0 )
-		{
-			towrite += written;
-			kWarning() << "only " << written << " bytes written to /dev/dsp" << endl;
-		}
-	}
+    // we dump the data in /dev/dsp
+    qint16 *pcm = new qint16[2 *buffer.size()]; // 2 *for stereo
+    char *towrite = reinterpret_cast<char *>(pcm);
+    int converted;
+    for (int i = 0; i < buffer.size(); ++i)
+    {
+        //indump.write(QByteArray::number(buffer[i]) + "\n");
+        converted = static_cast<qint16>(m_volume * buffer[i] * static_cast<float>(0x7FFF));
+        //outdump.write(QByteArray::number(converted) + "\n");
+         *pcm++ = converted;
+         *pcm++ = converted;
+    }
+    int size = sizeof(qint16) * 2 * buffer.size();
+    int written;
+    while (size > 0)
+    {
+        written = m_dsp.write(towrite, size);
+        // QFSFileEngine loops until errno != EINTR
+        if (written < 0)
+            break;
+        size = size - written;
+        if (size > 0)
+        {
+            towrite += written;
+            kWarning() << "only " << written << " bytes written to /dev/dsp" << endl;
+        }
+    }
 
-	pcm -= 2*buffer.size();
-	delete[] pcm;
+    pcm -= 2 *buffer.size();
+    delete[] pcm;
 }
 
 void AudioOutput::openDevice()
 {
-	if( m_dsp.isOpen() )
-		return;
+    if (m_dsp.isOpen())
+        return;
 
 #ifdef HAVE_SYS_SOUNDCARD_H
-	if( m_dsp.open( QIODevice::WriteOnly ) )
-	{
-		int fd = m_dsp.handle();
-		int format = AFMT_S16_LE;
-		int stereo = 1;
-		int samplingRate = 44100;
-		ioctl( fd, SNDCTL_DSP_SETFMT, &format );
-		ioctl( fd, SNDCTL_DSP_STEREO, &stereo );
-		ioctl( fd, SNDCTL_DSP_SPEED, &samplingRate );
-	}
+    if (m_dsp.open(QIODevice::WriteOnly))
+    {
+        int fd = m_dsp.handle();
+        int format = AFMT_S16_LE;
+        int stereo = 1;
+        int samplingRate = 44100;
+        ioctl(fd, SNDCTL_DSP_SETFMT, &format);
+        ioctl(fd, SNDCTL_DSP_STEREO, &stereo);
+        ioctl(fd, SNDCTL_DSP_SPEED, &samplingRate);
+    }
 #endif
 }
 
 void AudioOutput::closeDevice()
 {
-	m_dsp.close();
+    m_dsp.close();
 }
 
 }} //namespace Phonon::Fake

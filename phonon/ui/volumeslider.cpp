@@ -26,12 +26,12 @@ namespace Phonon
 {
 
 
-VolumeSlider::VolumeSlider( QWidget* parent )
-    : QWidget( parent ),
-    d_ptr( new VolumeSliderPrivate( this ) )
+VolumeSlider::VolumeSlider(QWidget *parent)
+    : QWidget(parent),
+    d_ptr(new VolumeSliderPrivate(this))
 {
-	setToolTip( i18n( "Volume: %1%", 100 ) );
-	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", 100 ) );
+    setToolTip(i18n("Volume: %1%", 100));
+    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", 100));
 }
 
 VolumeSlider::~VolumeSlider()
@@ -65,11 +65,11 @@ float VolumeSlider::maximumVolume() const
     return d_ptr->slider.maximum() * 0.01;
 }
 
-void VolumeSlider::setMaximumVolume( float volume )
+void VolumeSlider::setMaximumVolume(float volume)
 {
-	int max = static_cast<int>( volume * 100 );
+    int max = static_cast<int>(volume * 100);
     d_ptr->slider.setMaximum(max);
-	setWhatsThis( i18n( "Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ,  max ) );
+    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ,  max));
 }
 
 Qt::Orientation VolumeSlider::orientation() const

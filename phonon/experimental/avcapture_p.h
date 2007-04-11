@@ -30,7 +30,7 @@ namespace Experimental
 
 class AvCapturePrivate : public AbstractMediaProducerPrivate
 {
-	K_DECLARE_PUBLIC( AvCapture )
+    K_DECLARE_PUBLIC(AvCapture)
     PHONON_PRIVATECLASS
     public:
         AvCapturePrivate()
@@ -38,9 +38,9 @@ class AvCapturePrivate : public AbstractMediaProducerPrivate
             videoCaptureDevice(-1)
         {
         }
-	protected:
-		int audioCaptureDevice;
-		int videoCaptureDevice;
+    protected:
+        int audioCaptureDevice;
+        int videoCaptureDevice;
 };
 
 } // namespace Experimental

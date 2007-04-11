@@ -28,37 +28,37 @@ namespace Phonon
 namespace Fake
 {
     class AudioOutput : public AbstractAudioOutput, public AudioOutputInterface
-	{
-		Q_OBJECT
+    {
+        Q_OBJECT
         Q_INTERFACES(Phonon::AudioOutputInterface)
-		public:
-			AudioOutput( QObject* parent );
-			~AudioOutput();
+        public:
+            AudioOutput(QObject *parent);
+            ~AudioOutput();
 
-		public Q_SLOTS:
-			// Attributes Getters:
-			float volume() const;
-			int outputDevice() const;
+        public Q_SLOTS:
+            // Attributes Getters:
+            float volume() const;
+            int outputDevice() const;
 
-			// Attributes Setters:
-			void setVolume( float newVolume );
+            // Attributes Setters:
+            void setVolume(float newVolume);
             bool setOutputDevice(int newDevice);
 
-		public:
-			virtual void processBuffer( const QVector<float>& buffer );
+        public:
+            virtual void processBuffer(const QVector<float> &buffer);
 
-			void openDevice();
-			void closeDevice();
+            void openDevice();
+            void closeDevice();
 
-		Q_SIGNALS:
-			void volumeChanged( float newVolume );
+        Q_SIGNALS:
+            void volumeChanged(float newVolume);
             void audioDeviceFailed();
 
-		private:
-			float m_volume;
-			int m_device;
-			QFile m_dsp;
-	};
+        private:
+            float m_volume;
+            int m_device;
+            QFile m_dsp;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

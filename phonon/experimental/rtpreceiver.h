@@ -29,12 +29,12 @@ namespace Experimental
 
 class RtpReceiver : public AbstractMediaProducer
 {
-	Q_OBJECT
-	K_DECLARE_PRIVATE( RtpReceiver )
-	PHONON_HEIR( VideoDataOutput )
-	public:
-		setUrl( const KUrl& );
-		setBandwidth( int kiloBitPerSecond );
+    Q_OBJECT
+    K_DECLARE_PRIVATE(RtpReceiver)
+    PHONON_HEIR(VideoDataOutput)
+    public:
+        setUrl(const KUrl &);
+        setBandwidth(int kiloBitPerSecond);
 };
 
 } // namespace Experimental

@@ -289,7 +289,7 @@ class PHONONCORE_EXPORT MediaProducerInterface
 
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE( Phonon::MediaProducerInterface, "org.kde.Phonon.MediaProducerInterface/0.2" )
+Q_DECLARE_INTERFACE(Phonon::MediaProducerInterface, "org.kde.Phonon.MediaProducerInterface/0.2")
 
 #endif // PHONON_MEDIAPRODUCERINTERFACE_H
 // vim: sw=4 ts=4 tw=80

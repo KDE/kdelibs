@@ -27,25 +27,25 @@ namespace Phonon
 {
 class Effect;
 
-	class EffectWidgetPrivate;
+    class EffectWidgetPrivate;
 
-	class PHONONUI_EXPORT EffectWidget : public QWidget
-	{
-		Q_OBJECT
-		Q_DECLARE_PRIVATE( EffectWidget )
-		public:
+    class PHONONUI_EXPORT EffectWidget : public QWidget
+    {
+        Q_OBJECT
+        Q_DECLARE_PRIVATE(EffectWidget)
+        public:
             explicit EffectWidget(Effect *effect, QWidget *parent = 0);
-			~EffectWidget();
+            ~EffectWidget();
 
-		protected:
+        protected:
             //EffectWidget(EffectWidgetPrivate &dd, QWidget *parent);
-			EffectWidgetPrivate* d_ptr;
+            EffectWidgetPrivate *d_ptr;
 
         private:
             Q_PRIVATE_SLOT(d_func(), void _k_setToggleParameter(bool checked))
             Q_PRIVATE_SLOT(d_func(), void _k_setIntParameter(int value))
             Q_PRIVATE_SLOT(d_func(), void _k_setDoubleParameter(double value))
-	};
+    };
 } // namespace Phonon
 #endif // PHONON_UI_EFFECTWIDGET_H
 

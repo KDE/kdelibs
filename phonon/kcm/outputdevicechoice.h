@@ -48,7 +48,7 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
         void updateDeviceList();
 
     private:
-        QMap<int, Phonon::AudioOutputDeviceModel*> m_outputModel;
+        QMap<int, Phonon::AudioOutputDeviceModel *> m_outputModel;
         Phonon::AudioCaptureDeviceModel m_captureModel;
         QStandardItemModel m_categoryModel;
         QStandardItem *m_captureItem;

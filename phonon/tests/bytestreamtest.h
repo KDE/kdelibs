@@ -30,72 +30,72 @@
 
 class ByteStreamTest : public QObject
 {
-	Q_OBJECT
-	public:
-		ByteStreamTest()
-			: m_job( 0 ),
-			m_media( 0 ),
-			m_stateChangedSignalSpy( 0 ),
-			m_audioPath( 0 ),
-			m_audioOutput( 0 )
-		{}
+    Q_OBJECT
+    public:
+        ByteStreamTest()
+            : m_job(0),
+            m_media(0),
+            m_stateChangedSignalSpy(0),
+            m_audioPath(0),
+            m_audioOutput(0)
+        {}
 
     Q_SIGNALS:
         void continueTestPlayOnFinish();
 
-	private Q_SLOTS:
+    private Q_SLOTS:
         void init();
         void cleanup();
 
-		void initTestCase();
-		void checkForDefaults();
+        void initTestCase();
+        void checkForDefaults();
 
-		// state change tests
-		void stopToStop();
-		void stopToPause();
-		void stopToPlay();
-		void playToPlay();
-		void playToPause();
-		void playToStop();
-		void pauseToPause();
-		void pauseToPlay();
-		void pauseToStop();
+        // state change tests
+        void stopToStop();
+        void stopToPause();
+        void stopToPlay();
+        void playToPlay();
+        void playToPause();
+        void playToStop();
+        void pauseToPause();
+        void pauseToPlay();
+        void pauseToStop();
 
         void testTickSignal();
-		void testSeek();
-		void testAboutToFinish();
+        void testSeek();
+        void testAboutToFinish();
 
-		void cleanupTestCase();
+        void cleanupTestCase();
 
     protected Q_SLOTS:
-		void kioTotalSize(KJob*,qulonglong size);
-		void kioData(KIO::Job*,const QByteArray&);
-		void kioResult(KJob*);
-        void kioSeekDone(KIO::Job*, KIO::filesize_t);
+        void kioTotalSize(KJob *,qulonglong size);
+        void kioData(KIO::Job *,const QByteArray &);
+        void kioResult(KJob *);
+        void kioSeekDone(KIO::Job *, KIO::filesize_t);
         void needData();
         void enoughData();
         void seekStream(qint64 offset);
-        void kioJobOpen(KIO::Job*);
+        void kioJobOpen(KIO::Job *);
 
     private:
         void setMedia();
         void addPaths();
         void initOutput();
 
-		void initByteStream();
+        void initByteStream();
 
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
-		void stopPlayback( Phonon::State currentState );
+        void stopPlayback(Phonon::State currentState);
         void pausePlayback();
         void waitForSignal(QObject *obj, const char *signalName, int timeout = 0);
         void testOneSeek(qint64 seekTo);
 
-		KUrl m_url;
-		KIO::Job* m_job;
-		Phonon::ByteStream* m_media;
-		QSignalSpy* m_stateChangedSignalSpy;
-		Phonon::AudioPath* m_audioPath;
-		Phonon::AudioOutput* m_audioOutput;
+        KUrl m_url;
+        KIO::Job *m_job;
+        Phonon::ByteStream *m_media;
+        QSignalSpy *m_stateChangedSignalSpy;
+        Phonon::AudioPath *m_audioPath;
+        Phonon::AudioOutput *m_audioOutput;
         bool m_endOfDataSent;
         bool m_reading;
         bool m_seeking;

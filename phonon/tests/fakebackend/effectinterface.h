@@ -27,17 +27,17 @@ namespace Phonon
 {
 namespace Fake
 {
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class EffectInterface
-	{
-		public:
-			virtual ~EffectInterface() {}
-			virtual QVariant value( int parameterId ) const = 0;
-			virtual void setValue( int parameterId, QVariant newValue ) = 0;
-			virtual void processBuffer( QVector<float>& buffer ) = 0;
-	};
+    /**
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class EffectInterface
+    {
+        public:
+            virtual ~EffectInterface() {}
+            virtual QVariant value(int parameterId) const = 0;
+            virtual void setValue(int parameterId, QVariant newValue) = 0;
+            virtual void processBuffer(QVector<float> &buffer) = 0;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

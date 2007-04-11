@@ -28,18 +28,18 @@ namespace QTest
     char *toString(const Phonon::State &state)
     {
         switch (state) {
-            case Phonon::LoadingState:
-                return qstrdup("LoadingState");
-            case Phonon::StoppedState:
-                return qstrdup("StoppedState");
-            case Phonon::PlayingState:
-                return qstrdup("PlayingState");
-            case Phonon::BufferingState:
-                return qstrdup("BufferingState");
-            case Phonon::PausedState:
-                return qstrdup("PausedState");
-            case Phonon::ErrorState:
-                return qstrdup("ErrorState");
+        case Phonon::LoadingState:
+            return qstrdup("LoadingState");
+        case Phonon::StoppedState:
+            return qstrdup("StoppedState");
+        case Phonon::PlayingState:
+            return qstrdup("PlayingState");
+        case Phonon::BufferingState:
+            return qstrdup("BufferingState");
+        case Phonon::PausedState:
+            return qstrdup("PausedState");
+        case Phonon::ErrorState:
+            return qstrdup("ErrorState");
         }
         return 0;
     }

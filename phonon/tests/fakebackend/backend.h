@@ -33,40 +33,40 @@ namespace Phonon
 {
 namespace Fake
 {
-	class AudioOutput;
+    class AudioOutput;
 
     class Backend : public QObject, public BackendInterface
-	{
-		Q_OBJECT
+    {
+        Q_OBJECT
         Q_INTERFACES(Phonon::BackendInterface)
-		public:
-			Backend( QObject* parent, const QStringList& args );
-			virtual ~Backend();
+        public:
+            Backend(QObject *parent, const QStringList &args);
+            virtual ~Backend();
 
-            QObject* createObject0(BackendInterface::Class0, QObject *parent);
-            QObject* createObject1(BackendInterface::Class1, QObject *parent, QVariant arg1);
+            QObject *createObject0(BackendInterface::Class0, QObject *parent);
+            QObject *createObject1(BackendInterface::Class1, QObject *parent, QVariant arg1);
 
-			Q_INVOKABLE bool supportsVideo() const;
-			Q_INVOKABLE bool supportsOSD() const;
-			Q_INVOKABLE bool supportsFourcc( quint32 fourcc ) const;
-			Q_INVOKABLE bool supportsSubtitles() const;
-			Q_INVOKABLE QStringList knownMimeTypes() const;
+            Q_INVOKABLE bool supportsVideo() const;
+            Q_INVOKABLE bool supportsOSD() const;
+            Q_INVOKABLE bool supportsFourcc(quint32 fourcc) const;
+            Q_INVOKABLE bool supportsSubtitles() const;
+            Q_INVOKABLE QStringList knownMimeTypes() const;
 
-			void freeSoundcardDevices();
+            void freeSoundcardDevices();
 
             QSet<int> objectDescriptionIndexes(ObjectDescriptionType type) const;
             QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const;
 
-			Q_INVOKABLE char const* uiLibrary() const;
-			// Q_INVOKABLE char* uiSymbol() const;
+            Q_INVOKABLE char const *uiLibrary() const;
+            // Q_INVOKABLE char *uiSymbol() const;
 
         Q_SIGNALS:
             void objectDescriptionChanged(ObjectDescriptionType);
 
-		private:
-			QStringList m_supportedMimeTypes;
-			QList<QPointer<AudioOutput> > m_audioOutputs;
-	};
+        private:
+            QStringList m_supportedMimeTypes;
+            QList<QPointer<AudioOutput> > m_audioOutputs;
+    };
 }} // namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

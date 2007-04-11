@@ -80,12 +80,12 @@ void Factory::createBackend(const QString &library, const QString &version)
 
 bool FactoryPrivate::createBackend(KService::Ptr newService)
 {
-    KLibFactory* factory = 0;
+    KLibFactory *factory = 0;
 #ifdef PHONON_LOAD_BACKEND_GLOBAL
     // This code is in here temporarily until NMM gets fixed.
     // Currently the NMM backend will fail with undefined symbols if
     // the backend is not loaded with global symbol resolution
-    KLibrary* library = KLibLoader::self()->library(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
+    KLibrary *library = KLibLoader::self()->library(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
     if (library) {
         factory = library->factory();
     }
@@ -162,7 +162,7 @@ FactoryPrivate::~FactoryPrivate()
 {
     emit aboutToBeDestroyed();
 
-    foreach(BasePrivate* bp, basePrivateList) {
+    foreach (BasePrivate *bp, basePrivateList) {
         bp->deleteIface();
     }
     if (objects.size() > 0) {
@@ -176,17 +176,17 @@ void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
 {
     kDebug(600) << k_funcinfo << type << endl;
     switch (type) {
-        case AudioOutputDeviceType:
-            // tell all AudioOutput objects to check their output device preference
-            foreach (BasePrivate *obj, globalFactory->basePrivateList) {
-                AudioOutputPrivate *output = dynamic_cast<AudioOutputPrivate *>(obj);
-                if (output) {
-                    output->deviceListChanged();
-                }
+    case AudioOutputDeviceType:
+        // tell all AudioOutput objects to check their output device preference
+        foreach (BasePrivate *obj, globalFactory->basePrivateList) {
+            AudioOutputPrivate *output = dynamic_cast<AudioOutputPrivate *>(obj);
+            if (output) {
+                output->deviceListChanged();
             }
-            break;
-        default:
-            break;
+        }
+        break;
+    default:
+        break;
     }
     //emit capabilitiesChanged();
 }
@@ -196,12 +196,12 @@ Factory::Sender *Factory::sender()
     return globalFactory;
 }
 
-void Factory::registerFrontendObject(BasePrivate* bp)
+void Factory::registerFrontendObject(BasePrivate *bp)
 {
     globalFactory->basePrivateList.prepend(bp); // inserted last => deleted first
 }
 
-void Factory::deregisterFrontendObject(BasePrivate* bp)
+void Factory::deregisterFrontendObject(BasePrivate *bp)
 {
     // The Factory can already be cleaned up while there are other frontend objects still alive.
     // When those are deleted they'll call deregisterFrontendObject through ~BasePrivate
@@ -213,7 +213,7 @@ void Factory::deregisterFrontendObject(BasePrivate* bp)
 void FactoryPrivate::phononBackendChanged()
 {
     if (backendObject) {
-        foreach(BasePrivate* bp, basePrivateList) {
+        foreach (BasePrivate *bp, basePrivateList) {
             bp->deleteIface();
         }
         if (objects.size() > 0) {
@@ -223,7 +223,7 @@ void FactoryPrivate::phononBackendChanged()
                 "backendswitching possible." << endl;
             // in case there were objects deleted give 'em a chance to recreate
             // them now
-            foreach(BasePrivate* bp, basePrivateList) {
+            foreach (BasePrivate *bp, basePrivateList) {
                 bp->createIface();
             }
             return;
@@ -232,7 +232,7 @@ void FactoryPrivate::phononBackendChanged()
         backendObject = 0;
     }
     createBackend();
-    foreach(BasePrivate* bp, basePrivateList) {
+    foreach (BasePrivate *bp, basePrivateList) {
         bp->createIface();
     }
     emit backendChanged();
@@ -252,18 +252,18 @@ void FactoryPrivate::objectDestroyed(QObject * obj)
 }
 
 #define FACTORY_IMPL(classname) \
-QObject* Factory::create ## classname(QObject* parent) \
+QObject *Factory::create ## classname(QObject *parent) \
 { \
     if (backend()) { \
-        return registerQObject(qobject_cast<BackendInterface*>(backend())->createObject0(BackendInterface::classname##Class, parent)); \
+        return registerQObject(qobject_cast<BackendInterface *>(backend())->createObject0(BackendInterface::classname##Class, parent)); \
     } \
     return 0; \
 }
 #define FACTORY_IMPL_1ARG(classname) \
-QObject* Factory::create ## classname(int arg1, QObject* parent) \
+QObject *Factory::create ## classname(int arg1, QObject *parent) \
 { \
     if (backend()) { \
-        return registerQObject(qobject_cast<BackendInterface*>(backend())->createObject1(BackendInterface::classname##Class, parent, arg1)); \
+        return registerQObject(qobject_cast<BackendInterface *>(backend())->createObject1(BackendInterface::classname##Class, parent, arg1)); \
     } \
     return 0; \
 }
@@ -286,7 +286,7 @@ FACTORY_IMPL(VideoDataOutput)
 
 #undef FACTORY_IMPL
 
-QObject* Factory::backend(bool createWhenNull)
+QObject *Factory::backend(bool createWhenNull)
 {
     if (createWhenNull && globalFactory->backendObject == 0) {
         globalFactory->createBackend();
@@ -298,26 +298,26 @@ QObject* Factory::backend(bool createWhenNull)
     return globalFactory->backendObject;
 }
 
-const char* Factory::uiLibrary()
+const char *Factory::uiLibrary()
 {
     if (!backend()) {
         return 0;
     }
-    const char* ret = 0;
-    QMetaObject::invokeMethod(globalFactory->backendObject, "uiLibrary", Qt::DirectConnection, Q_RETURN_ARG(const char*, ret));
+    const char *ret = 0;
+    QMetaObject::invokeMethod(globalFactory->backendObject, "uiLibrary", Qt::DirectConnection, Q_RETURN_ARG(const char *, ret));
     return ret;
 }
 
-const char* Factory::uiSymbol()
+const char *Factory::uiSymbol()
 {
-	if (!backend())
-		return 0;
-	const char* ret = 0;
-	// the backend doesn't have to implement the symbol - the default factory
-	// symbol will be used then
-	if (QMetaObject::invokeMethod(globalFactory->backendObject, "uiSymbol", Qt::DirectConnection, Q_RETURN_ARG(const char*, ret)))
-		return ret;
-	return 0;
+    if (!backend())
+        return 0;
+    const char *ret = 0;
+    // the backend doesn't have to implement the symbol - the default factory
+    // symbol will be used then
+    if (QMetaObject::invokeMethod(globalFactory->backendObject, "uiSymbol", Qt::DirectConnection, Q_RETURN_ARG(const char *, ret)))
+        return ret;
+    return 0;
 }
 
 QString Factory::identifier()
@@ -330,48 +330,48 @@ QString Factory::identifier()
 
 QString Factory::backendName()
 {
-	if (globalFactory->service)
-		return globalFactory->service->name();
-	else
-		return QString();
+    if (globalFactory->service)
+        return globalFactory->service->name();
+    else
+        return QString();
 }
 
 QString Factory::backendComment()
 {
-	if (globalFactory->service)
-		return globalFactory->service->comment();
-	else
-		return QString();
+    if (globalFactory->service)
+        return globalFactory->service->comment();
+    else
+        return QString();
 }
 
 QString Factory::backendVersion()
 {
-	if (globalFactory->service)
-		return globalFactory->service->property("X-KDE-PhononBackendInfo-Version").toString();
-	else
-		return QString();
+    if (globalFactory->service)
+        return globalFactory->service->property("X-KDE-PhononBackendInfo-Version").toString();
+    else
+        return QString();
 }
 
 QString Factory::backendIcon()
 {
-	if (globalFactory->service)
-		return globalFactory->service->icon();
-	else
-		return QString();
+    if (globalFactory->service)
+        return globalFactory->service->icon();
+    else
+        return QString();
 }
 
 QString Factory::backendWebsite()
 {
-	if (globalFactory->service)
-		return globalFactory->service->property("X-KDE-PhononBackendInfo-Website").toString();
-	else
-		return QString();
+    if (globalFactory->service)
+        return globalFactory->service->property("X-KDE-PhononBackendInfo-Website").toString();
+    else
+        return QString();
 }
 
-QObject* Factory::registerQObject(QObject* o)
+QObject *Factory::registerQObject(QObject *o)
 {
     if (o) {
-        QObject::connect(o, SIGNAL(destroyed(QObject*)), globalFactory, SLOT(objectDestroyed(QObject*)), Qt::DirectConnection);
+        QObject::connect(o, SIGNAL(destroyed(QObject *)), globalFactory, SLOT(objectDestroyed(QObject *)), Qt::DirectConnection);
         globalFactory->objects.append(o);
     }
     return o;

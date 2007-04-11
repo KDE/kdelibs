@@ -20,141 +20,141 @@
 #ifndef PHONONDEFS_P_H
 #define PHONONDEFS_P_H
 
-#define PHONON_CONCAT_HELPER_INTERNAL( x, y ) x ## y
-#define PHONON_CONCAT_HELPER( x, y ) PHONON_CONCAT_HELPER_INTERNAL( x, y )
+#define PHONON_CONCAT_HELPER_INTERNAL(x, y) x ## y
+#define PHONON_CONCAT_HELPER(x, y) PHONON_CONCAT_HELPER_INTERNAL(x, y)
 
-#define K_DECLARE_PUBLIC( classname ) \
-	inline classname* q_func() { return static_cast<classname*>( q_ptr ); } \
-	inline const classname* q_func() const { return static_cast<classname*>( q_ptr ); } \
-	friend class classname;
-#define K_D( classname ) PHONON_CONCAT_HELPER( classname, Private )* const d = k_func()
-#define K_Q( classname ) classname* const q = q_func()
+#define K_DECLARE_PUBLIC(classname) \
+    inline classname *q_func() { return static_cast<classname *>(q_ptr); } \
+    inline const classname *q_func() const { return static_cast<classname *>(q_ptr); } \
+    friend class classname;
+#define K_D(classname) PHONON_CONCAT_HELPER(classname, Private) *const d = k_func()
+#define K_Q(classname) classname *const q = q_func()
 
 #define PHONON_PRIVATECLASS \
 protected: \
-	virtual bool aboutToDeleteIface(); \
-	virtual void createIface(); \
+    virtual bool aboutToDeleteIface(); \
+    virtual void createIface(); \
 
 #define PHONON_PRIVATEABSTRACTCLASS \
 protected: \
-	virtual bool aboutToDeleteIface(); \
+    virtual bool aboutToDeleteIface(); \
 
 #define PHONON_ABSTRACTBASE_IMPL \
-PHONON_CLASSNAME::PHONON_CLASSNAME( PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private )& dd, QObject* parent ) \
-	: QObject( parent ) \
-	, Base( dd ) \
+PHONON_CLASSNAME::PHONON_CLASSNAME(PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private) &dd, QObject *parent) \
+    : QObject(parent) \
+    , Base(dd) \
 { \
 }
 
 #define PHONON_OBJECT_IMPL \
-PHONON_CLASSNAME::PHONON_CLASSNAME( QObject* parent ) \
-	: QObject( parent ) \
-	, Base( *new PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private )() ) \
+PHONON_CLASSNAME::PHONON_CLASSNAME(QObject *parent) \
+    : QObject(parent) \
+    , Base(*new PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)()) \
 { \
-	K_D( PHONON_CLASSNAME ); \
-	d->createIface(); \
+    K_D(PHONON_CLASSNAME); \
+    d->createIface(); \
 } \
-void PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private )::createIface() \
+void PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)::createIface() \
 { \
-	if( backendObject ) \
-		return; \
-	K_Q( PHONON_CLASSNAME ); \
-	backendObject = Factory::PHONON_CONCAT_HELPER( create, PHONON_CLASSNAME )( q ); \
-	if( backendObject ) \
-		q->setupIface(); \
+    if (backendObject) \
+        return; \
+    K_Q(PHONON_CLASSNAME); \
+    backendObject = Factory::PHONON_CONCAT_HELPER(create, PHONON_CLASSNAME)(q); \
+    if (backendObject) \
+        q->setupIface(); \
 }
 
-#define PHONON_HEIR_IMPL( parentclass ) \
-PHONON_CLASSNAME::PHONON_CLASSNAME( QObject* parent ) \
-	: parentclass( *new PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private ), parent ) \
+#define PHONON_HEIR_IMPL(parentclass) \
+PHONON_CLASSNAME::PHONON_CLASSNAME(QObject *parent) \
+    : parentclass(*new PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private), parent) \
 { \
-	K_D( PHONON_CLASSNAME ); \
-	d->createIface(); \
+    K_D(PHONON_CLASSNAME); \
+    d->createIface(); \
 } \
-void PHONON_CONCAT_HELPER( PHONON_CLASSNAME, Private )::createIface() \
+void PHONON_CONCAT_HELPER(PHONON_CLASSNAME, Private)::createIface() \
 { \
-	if( backendObject ) \
-		return; \
-	K_Q( PHONON_CLASSNAME ); \
-	backendObject = Factory::PHONON_CONCAT_HELPER( create, PHONON_CLASSNAME )( q ); \
-	if( backendObject ) \
-		q->setupIface(); \
+    if (backendObject) \
+        return; \
+    K_Q(PHONON_CLASSNAME); \
+    backendObject = Factory::PHONON_CONCAT_HELPER(create, PHONON_CLASSNAME)(q); \
+    if (backendObject) \
+        q->setupIface(); \
 }
 
-#define BACKEND_GET( returnType, returnVar, methodName ) \
-QMetaObject::invokeMethod( d->backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG( returnType, returnVar ) )
-#define BACKEND_GET1( returnType, returnVar, methodName, varType1, var1 ) \
-QMetaObject::invokeMethod( d->backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG( returnType, returnVar ), Q_ARG( varType1, var1 ) )
-#define BACKEND_GET2( returnType, returnVar, methodName, varType1, var1, varType2, var2 ) \
-QMetaObject::invokeMethod( d->backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG( returnType, returnVar ), Q_ARG( varType1, var1 ), Q_ARG( varType2, var2 ) )
-#define BACKEND_CALL( methodName ) \
-QMetaObject::invokeMethod( d->backendObject, methodName, Qt::DirectConnection )
-#define BACKEND_CALL1( methodName, varType1, var1 ) \
-QMetaObject::invokeMethod( d->backendObject, methodName, Qt::DirectConnection, Q_ARG( varType1, var1 ) )
-#define BACKEND_CALL2( methodName, varType1, var1, varType2, var2 ) \
-QMetaObject::invokeMethod( d->backendObject, methodName, Qt::DirectConnection, Q_ARG( varType1, var1 ), Q_ARG( varType2, var2 ) )
+#define BACKEND_GET(returnType, returnVar, methodName) \
+QMetaObject::invokeMethod(d->backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG(returnType, returnVar))
+#define BACKEND_GET1(returnType, returnVar, methodName, varType1, var1) \
+QMetaObject::invokeMethod(d->backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG(returnType, returnVar), Q_ARG(varType1, var1))
+#define BACKEND_GET2(returnType, returnVar, methodName, varType1, var1, varType2, var2) \
+QMetaObject::invokeMethod(d->backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG(returnType, returnVar), Q_ARG(varType1, var1), Q_ARG(varType2, var2))
+#define BACKEND_CALL(methodName) \
+QMetaObject::invokeMethod(d->backendObject, methodName, Qt::DirectConnection)
+#define BACKEND_CALL1(methodName, varType1, var1) \
+QMetaObject::invokeMethod(d->backendObject, methodName, Qt::DirectConnection, Q_ARG(varType1, var1))
+#define BACKEND_CALL2(methodName, varType1, var1, varType2, var2) \
+QMetaObject::invokeMethod(d->backendObject, methodName, Qt::DirectConnection, Q_ARG(varType1, var1), Q_ARG(varType2, var2))
 
-#define pBACKEND_GET( returnType, returnVar, methodName ) \
-QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG( returnType, returnVar ) )
-#define pBACKEND_GET1( returnType, returnVar, methodName, varType1, var1 ) \
-QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG( returnType, returnVar ), Q_ARG( varType1, var1 ) )
-#define pBACKEND_GET2( returnType, returnVar, methodName, varType1, var1, varType2, var2 ) \
-QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG( returnType, returnVar ), Q_ARG( varType1, var1 ), Q_ARG( varType2, var2 ) )
-#define pBACKEND_CALL( methodName ) \
-QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection )
-#define pBACKEND_CALL1( methodName, varType1, var1 ) \
-QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_ARG( varType1, var1 ) )
-#define pBACKEND_CALL2( methodName, varType1, var1, varType2, var2 ) \
-QMetaObject::invokeMethod( backendObject, methodName, Qt::DirectConnection, Q_ARG( varType1, var1 ), Q_ARG( varType2, var2 ) )
+#define pBACKEND_GET(returnType, returnVar, methodName) \
+QMetaObject::invokeMethod(backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG(returnType, returnVar))
+#define pBACKEND_GET1(returnType, returnVar, methodName, varType1, var1) \
+QMetaObject::invokeMethod(backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG(returnType, returnVar), Q_ARG(varType1, var1))
+#define pBACKEND_GET2(returnType, returnVar, methodName, varType1, var1, varType2, var2) \
+QMetaObject::invokeMethod(backendObject, methodName, Qt::DirectConnection, Q_RETURN_ARG(returnType, returnVar), Q_ARG(varType1, var1), Q_ARG(varType2, var2))
+#define pBACKEND_CALL(methodName) \
+QMetaObject::invokeMethod(backendObject, methodName, Qt::DirectConnection)
+#define pBACKEND_CALL1(methodName, varType1, var1) \
+QMetaObject::invokeMethod(backendObject, methodName, Qt::DirectConnection, Q_ARG(varType1, var1))
+#define pBACKEND_CALL2(methodName, varType1, var1, varType2, var2) \
+QMetaObject::invokeMethod(backendObject, methodName, Qt::DirectConnection, Q_ARG(varType1, var1), Q_ARG(varType2, var2))
 
 #define INTERFACE_CALL(function) \
-qobject_cast<PHONON_INTERFACENAME*>(d->backendObject)->function
+qobject_cast<PHONON_INTERFACENAME *>(d->backendObject)->function
 
 #define pINTERFACE_CALL(function) \
-qobject_cast<PHONON_INTERFACENAME*>(backendObject)->function
+qobject_cast<PHONON_INTERFACENAME *>(backendObject)->function
 
-#define PHONON_GETTER( rettype, name, retdefault ) \
+#define PHONON_GETTER(rettype, name, retdefault) \
 rettype PHONON_CLASSNAME::name() const \
 { \
-	K_D( const PHONON_CLASSNAME ); \
-	if( !d->backendObject ) \
-		return retdefault; \
-	rettype ret; \
-	BACKEND_GET( rettype, ret, #name ); \
-	return ret; \
+    K_D(const PHONON_CLASSNAME); \
+    if (!d->backendObject) \
+        return retdefault; \
+    rettype ret; \
+    BACKEND_GET(rettype, ret, #name); \
+    return ret; \
 }
 
-#define PHONON_INTERFACE_GETTER( rettype, name, retdefault ) \
+#define PHONON_INTERFACE_GETTER(rettype, name, retdefault) \
 rettype PHONON_CLASSNAME::name() const \
 { \
-	K_D( const PHONON_CLASSNAME ); \
-	if( !d->backendObject ) \
-		return retdefault; \
-	return qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->name(); \
+    K_D(const PHONON_CLASSNAME); \
+    if (!d->backendObject) \
+        return retdefault; \
+    return qobject_cast<PHONON_INTERFACENAME *>(d->backendObject)->name(); \
 }
 
-#define PHONON_GETTER1( rettype, name, retdefault, argtype1, argvar1 ) \
-rettype PHONON_CLASSNAME::name( argtype1 argvar1 ) const \
+#define PHONON_GETTER1(rettype, name, retdefault, argtype1, argvar1) \
+rettype PHONON_CLASSNAME::name(argtype1 argvar1) const \
 { \
-	K_D( const PHONON_CLASSNAME ); \
-	if( !d->backendObject ) \
-		return retdefault; \
-	rettype ret; \
-	BACKEND_GET1( rettype, ret, #name, const QObject*, argvar1->iface() ); \
-	return ret; \
+    K_D(const PHONON_CLASSNAME); \
+    if (!d->backendObject) \
+        return retdefault; \
+    rettype ret; \
+    BACKEND_GET1(rettype, ret, #name, const QObject *, argvar1->iface()); \
+    return ret; \
 }
 
-#define PHONON_INTERFACE_GETTER1( rettype, name, retdefault, argtype1, argvar1 ) \
-rettype PHONON_CLASSNAME::name( argtype1 argvar1 ) const \
+#define PHONON_INTERFACE_GETTER1(rettype, name, retdefault, argtype1, argvar1) \
+rettype PHONON_CLASSNAME::name(argtype1 argvar1) const \
 { \
-	K_D( const PHONON_CLASSNAME ); \
-	if( !d->backendObject ) \
-		return retdefault; \
-	return qobject_cast<PHONON_INTERFACENAME*>( d->backendObject )->name( argvar1->iface() ); \
+    K_D(const PHONON_CLASSNAME); \
+    if (!d->backendObject) \
+        return retdefault; \
+    return qobject_cast<PHONON_INTERFACENAME *>(d->backendObject)->name(argvar1->iface()); \
 }
 
-#define PHONON_SETTER( functionname, privatevar, argtype1 ) \
-void PHONON_CLASSNAME::functionname( argtype1 x ) \
+#define PHONON_SETTER(functionname, privatevar, argtype1) \
+void PHONON_CLASSNAME::functionname(argtype1 x) \
 { \
     K_D(PHONON_CLASSNAME); \
     d->privatevar = x; \
@@ -163,13 +163,13 @@ void PHONON_CLASSNAME::functionname( argtype1 x ) \
     } \
 }
 
-#define PHONON_INTERFACE_SETTER( functionname, privatevar, argtype1 ) \
-void PHONON_CLASSNAME::functionname( argtype1 x ) \
+#define PHONON_INTERFACE_SETTER(functionname, privatevar, argtype1) \
+void PHONON_CLASSNAME::functionname(argtype1 x) \
 { \
     K_D(PHONON_CLASSNAME); \
     d->privatevar = x; \
     if (iface()) { \
-        qobject_cast<PHONON_INTERFACENAME*>(d->backendObject)->functionname(x); \
+        qobject_cast<PHONON_INTERFACENAME *>(d->backendObject)->functionname(x); \
     } \
 }
 

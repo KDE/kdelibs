@@ -117,9 +117,9 @@ void KioFallbackImpl::setupKioJob()
         m_open = false;
 
         BACKEND_CALL1("setStreamSeekable", bool, true);
-        connect(m_kiojob, SIGNAL(open(KIO::Job*)), this, SLOT(bytestreamFileJobOpen(KIO::Job*)));
-        connect(m_kiojob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
-                this, SLOT(bytestreamSeekDone(KIO::Job*, KIO::filesize_t)));
+        connect(m_kiojob, SIGNAL(open(KIO::Job *)), this, SLOT(bytestreamFileJobOpen(KIO::Job *)));
+        connect(m_kiojob, SIGNAL(position(KIO::Job *, KIO::filesize_t)),
+                this, SLOT(bytestreamSeekDone(KIO::Job *, KIO::filesize_t)));
     } else {
         m_kiojob = KIO::get(d->url, false, false);
         if (!m_kiojob) {
@@ -127,14 +127,14 @@ void KioFallbackImpl::setupKioJob()
         }
 
         BACKEND_CALL1("setStreamSeekable", bool, false);
-        connect(m_kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
-                this, SLOT(bytestreamTotalSize(KJob*,qulonglong)));
+        connect(m_kiojob, SIGNAL(totalSize(KJob *, qulonglong)),
+                this, SLOT(bytestreamTotalSize(KJob *,qulonglong)));
     }
 
     m_kiojob->addMetaData("UserAgent", QLatin1String("KDE Phonon"));
-    connect(m_kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
-            this, SLOT(bytestreamData(KIO::Job*,const QByteArray&)));
-    connect(m_kiojob, SIGNAL(result(KJob*)), this, SLOT(bytestreamResult(KJob*)));
+    connect(m_kiojob, SIGNAL(data(KIO::Job *,const QByteArray &)),
+            this, SLOT(bytestreamData(KIO::Job *,const QByteArray &)));
+    connect(m_kiojob, SIGNAL(result(KJob *)), this, SLOT(bytestreamResult(KJob *)));
 }
 
 void KioFallbackImpl::bytestreamNeedData()
@@ -160,7 +160,7 @@ void KioFallbackImpl::bytestreamEnoughData()
     kDebug(600) << k_funcinfo << endl;
     // Don't suspend when using a FileJob. The FileJob is controlled by calls to
     // FileJob::read()
-    if (m_kiojob && !qobject_cast<KIO::FileJob*>(m_kiojob) && !m_kiojob->isSuspended()) {
+    if (m_kiojob && !qobject_cast<KIO::FileJob *>(m_kiojob) && !m_kiojob->isSuspended()) {
         m_kiojob->suspend();
     } else {
         m_reading = false;
@@ -204,19 +204,19 @@ void KioFallbackImpl::bytestreamResult(KJob *job)
     if (job->error()) {
         QString kioErrorString = job->errorString();
         kDebug(600) << "KIO Job error: " << kioErrorString << endl;
-        disconnect(m_kiojob, SIGNAL(data(KIO::Job*,const QByteArray&)),
-                this, SLOT(bytestreamData(KIO::Job*,const QByteArray&)));
-        disconnect(m_kiojob, SIGNAL(result(KJob*)),
-                this, SLOT(bytestreamResult(KJob*)));
+        disconnect(m_kiojob, SIGNAL(data(KIO::Job *,const QByteArray &)),
+                this, SLOT(bytestreamData(KIO::Job *,const QByteArray &)));
+        disconnect(m_kiojob, SIGNAL(result(KJob *)),
+                this, SLOT(bytestreamResult(KJob *)));
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(m_kiojob);
         if (filejob) {
-            disconnect(m_kiojob, SIGNAL(open(KIO::Job*)),
-                    this, SLOT(bytestreamFileJobOpen(KIO::Job*)));
-            disconnect(m_kiojob, SIGNAL(position(KIO::Job*, KIO::filesize_t)),
-                    this, SLOT(bytestreamSeekDone(KIO::Job*, KIO::filesize_t)));
+            disconnect(m_kiojob, SIGNAL(open(KIO::Job *)),
+                    this, SLOT(bytestreamFileJobOpen(KIO::Job *)));
+            disconnect(m_kiojob, SIGNAL(position(KIO::Job *, KIO::filesize_t)),
+                    this, SLOT(bytestreamSeekDone(KIO::Job *, KIO::filesize_t)));
         } else {
-            disconnect(m_kiojob, SIGNAL(totalSize(KJob*, qulonglong)),
-                    this, SLOT(bytestreamTotalSize(KJob*,qulonglong)));
+            disconnect(m_kiojob, SIGNAL(totalSize(KJob *, qulonglong)),
+                    this, SLOT(bytestreamTotalSize(KJob *,qulonglong)));
         }
         // go to ErrorState - NormalError
         MediaObject *q = static_cast<MediaObject *>(parent());

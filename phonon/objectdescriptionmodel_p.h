@@ -30,11 +30,11 @@ namespace Phonon
 template<ObjectDescriptionType type>
 class ObjectDescriptionModelPrivate
 {
-	Q_DECLARE_PUBLIC( ObjectDescriptionModel<type> )
-	protected:
-		ObjectDescriptionModel<type>* q_ptr;
+    Q_DECLARE_PUBLIC(ObjectDescriptionModel<type>)
+    protected:
+        ObjectDescriptionModel<type> *q_ptr;
 
-		QList<ObjectDescription<type> > data;
+        QList<ObjectDescription<type> > data;
 };
 
 }

@@ -42,40 +42,40 @@ namespace Experimental
 
 namespace Fake
 {
-	class KDE_EXPORT AbstractMediaProducer : public QObject, public Phonon::MediaProducerInterface, public Phonon::AddonInterface
-	{
-		Q_OBJECT
+    class KDE_EXPORT AbstractMediaProducer : public QObject, public Phonon::MediaProducerInterface, public Phonon::AddonInterface
+    {
+        Q_OBJECT
         Q_INTERFACES(Phonon::MediaProducerInterface Phonon::AddonInterface)
-		public:
-			AbstractMediaProducer( QObject* parent );
-			~AbstractMediaProducer();
-			bool addVideoPath( QObject* videoPath );
-			bool addAudioPath( QObject* audioPath );
-			void removeVideoPath( QObject* videoPath );
-			void removeAudioPath( QObject* audioPath );
-			Phonon::State state() const;
-			bool hasVideo() const;
-			bool isSeekable() const;
-			qint64 currentTime() const;
-			qint32 tickInterval() const;
+        public:
+            AbstractMediaProducer(QObject *parent);
+            ~AbstractMediaProducer();
+            bool addVideoPath(QObject *videoPath);
+            bool addAudioPath(QObject *audioPath);
+            void removeVideoPath(QObject *videoPath);
+            void removeAudioPath(QObject *audioPath);
+            Phonon::State state() const;
+            bool hasVideo() const;
+            bool isSeekable() const;
+            qint64 currentTime() const;
+            qint32 tickInterval() const;
 
-			QStringList availableAudioStreams() const;
-			QStringList availableVideoStreams() const;
-			QStringList availableSubtitleStreams() const;
+            QStringList availableAudioStreams() const;
+            QStringList availableVideoStreams() const;
+            QStringList availableSubtitleStreams() const;
 
-			QString selectedAudioStream( const QObject* audioPath ) const;
-			QString selectedVideoStream( const QObject* videoPath ) const;
-			QString selectedSubtitleStream( const QObject* videoPath ) const;
+            QString selectedAudioStream(const QObject *audioPath) const;
+            QString selectedVideoStream(const QObject *videoPath) const;
+            QString selectedSubtitleStream(const QObject *videoPath) const;
 
-			void selectAudioStream( const QString& streamName, const QObject* audioPath );
-			void selectVideoStream( const QString& streamName, const QObject* videoPath );
-			void selectSubtitleStream( const QString& streamName, const QObject* videoPath );
+            void selectAudioStream(const QString &streamName, const QObject *audioPath);
+            void selectVideoStream(const QString &streamName, const QObject *videoPath);
+            void selectSubtitleStream(const QString &streamName, const QObject *videoPath);
 
-			void setTickInterval( qint32 newTickInterval );
-			void play();
-			void pause();
-			void stop();
-			void seek( qint64 time );
+            void setTickInterval(qint32 newTickInterval);
+            void play();
+            void pause();
+            void stop();
+            void seek(qint64 time);
 
             QString errorString() const;
             Phonon::ErrorType errorType() const;
@@ -83,12 +83,12 @@ namespace Fake
             bool hasInterface(Interface) const { return false; }
             QVariant interfaceCall(Interface, int, const QList<QVariant> &) { return QVariant(); }
 
-			void setBufferSize( int size );
+            void setBufferSize(int size);
 
-		Q_SIGNALS:
-			void stateChanged( Phonon::State newstate, Phonon::State oldstate );
-			void tick( qint64 time );
-			void metaDataChanged( QMultiMap<QString, QString> );
+        Q_SIGNALS:
+            void stateChanged(Phonon::State newstate, Phonon::State oldstate);
+            void tick(qint64 time);
+            void metaDataChanged(QMultiMap<QString, QString>);
             void seekableChanged(bool);
             void hasVideoChanged(bool);
             void bufferStatus(int);
@@ -101,31 +101,31 @@ namespace Fake
             void angleChanged(int);
             void availableAnglesChanged(int);
 
-		protected:
-			void fillBuffer( QVector<float>* buffer );
+        protected:
+            void fillBuffer(QVector<float> *buffer);
             void fillFrameData(Phonon::Experimental::VideoFrame *frame);
-			void setState( State );
+            void setState(State);
 
-		protected Q_SLOTS:
-			virtual void emitTick();
+        protected Q_SLOTS:
+            virtual void emitTick();
 
-		private:
-			State m_state;
-			QTimer* m_tickTimer;
-			qint32 m_tickInterval;
-			QTime m_startTime, m_pauseTime;
-			int m_bufferSize;
-			QList<AudioPath*> m_audioPathList;
-			QList<VideoPath*> m_videoPathList;
-			int m_lastSamplesMissing;
+        private:
+            State m_state;
+            QTimer *m_tickTimer;
+            qint32 m_tickInterval;
+            QTime m_startTime, m_pauseTime;
+            int m_bufferSize;
+            QList<AudioPath *> m_audioPathList;
+            QList<VideoPath *> m_videoPathList;
+            int m_lastSamplesMissing;
 
-			// for sound synthesis
-			float m_position, m_frequency;
+            // for sound synthesis
+            float m_position, m_frequency;
 
-			QHash<const QObject*, QString> m_selectedAudioStream;
-			QHash<const QObject*, QString> m_selectedVideoStream;
-			QHash<const QObject*, QString> m_selectedSubtitleStream;
-	};
+            QHash<const QObject *, QString> m_selectedAudioStream;
+            QHash<const QObject *, QString> m_selectedVideoStream;
+            QHash<const QObject *, QString> m_selectedSubtitleStream;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

@@ -41,38 +41,38 @@ class AvWriterPrivate;
 // specific frame/sample? Chapter support is probably overkill for Phonon.
 class PHONONEXPERIMENTAL_EXPORT AvWriter : public QObject
 {
-	Q_OBJECT
-	Q_DECLARE_PRIVATE( AvWriter )
-	Q_PROPERTY( ContainerFormat containerFormat READ containerFormat WRITE setContainerFormat )
-	Q_PROPERTY( KUrl url READ url WRITE setUrl )
-	public:
-		/**
-		 * Standard QObject constructor.
-		 *
-		 * \param parent QObject parent
-		 */
-		AvWriter( QObject* parent );
-		
-		KUrl url() const;
-		setUrl( const KUrl& url );
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(AvWriter)
+    Q_PROPERTY(ContainerFormat containerFormat READ containerFormat WRITE setContainerFormat)
+    Q_PROPERTY(KUrl url READ url WRITE setUrl)
+    public:
+        /**
+         * Standard QObject constructor.
+         *
+         * \param parent QObject parent
+         */
+        AvWriter(QObject *parent);
+        
+        KUrl url() const;
+        setUrl(const KUrl &url);
 
-		/**
-		 * Creates a new AudioWriter object to be used for sending the audio
-		 * data to this file
-		 *
-		 * \param streamName A name identifying the stream. Often this name is
-		 * used for the language identifier.
-		 *
-		 * \return Returns the new AudioWriter object or 0 if the container
-		 * format does not support multiple audio streams.
-		 */
-		AudioWriter* addAudioStream( const QString& streamName );
-		VideoWriter* addVideoStream( const QString& streamName );
+        /**
+         * Creates a new AudioWriter object to be used for sending the audio
+         * data to this file
+         *
+         * \param streamName A name identifying the stream. Often this name is
+         * used for the language identifier.
+         *
+         * \return Returns the new AudioWriter object or 0 if the container
+         * format does not support multiple audio streams.
+         */
+        AudioWriter *addAudioStream(const QString &streamName);
+        VideoWriter *addVideoStream(const QString &streamName);
 
-		ContainerFormat containerFormat() const;
+        ContainerFormat containerFormat() const;
 
-	public Q_SLOTS:
-		void setContainerFormat( ContainerFormat format );
+    public Q_SLOTS:
+        void setContainerFormat(ContainerFormat format);
 };
 
 } // namespace Experimental

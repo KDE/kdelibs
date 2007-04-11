@@ -30,7 +30,7 @@ class OverlayApiPrivate
 {
     Q_DECLARE_PUBLIC(OverlayApi)
     protected:
-        OverlayApi* q_ptr;
+        OverlayApi *q_ptr;
         VideoWidget *videowidget;
 };
 } // namespace Experimental

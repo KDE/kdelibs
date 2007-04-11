@@ -59,7 +59,7 @@ void AudioOutputAdaptor::setMuted(bool value)
 QString AudioOutputAdaptor::category()
 {
     // handle method call org.kde.Phonon.AudioOutput.category
-    return Phonon::categoryToString( static_cast<Phonon::AudioOutput *>( parent() )->category() );
+    return Phonon::categoryToString(static_cast<Phonon::AudioOutput *>(parent())->category());
 }
 
 QString AudioOutputAdaptor::name()

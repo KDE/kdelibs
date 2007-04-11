@@ -23,25 +23,25 @@
 #include <QObject>
 
 namespace Phonon {
-	class MediaQueue;
-	class AudioPath;
-	class AudioOutput;
+    class MediaQueue;
+    class AudioPath;
+    class AudioOutput;
 }
 class KUrl;
 using namespace Phonon;
 
 class Crossfader : public QObject
 {
-	Q_OBJECT
-	public:
-		Crossfader( const KUrl& url1, const KUrl& url2, QObject* parent = 0 );
+    Q_OBJECT
+    public:
+        Crossfader(const KUrl &url1, const KUrl &url2, QObject *parent = 0);
 
-	private Q_SLOTS:
-		void finished();
+    private Q_SLOTS:
+        void finished();
 
-	private:
-		MediaQueue *media;
-		AudioPath *path;
-		AudioOutput *output;
+    private:
+        MediaQueue *media;
+        AudioPath *path;
+        AudioOutput *output;
 };
 #endif // CROSSFADE_H

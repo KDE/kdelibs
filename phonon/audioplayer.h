@@ -41,125 +41,125 @@ namespace Phonon
  *
  * A play and forget code example:
  * \code
- * AudioPlayer* player = new AudioPlayer( Phonon::NotificationCategory );
- * connect( player, SIGNAL( finished() ), player, SLOT( deleteLater() ) );
- * player->play( url );
+ * AudioPlayer *player = new AudioPlayer(Phonon::NotificationCategory);
+ * connect(player, SIGNAL(finished()), player, SLOT(deleteLater()));
+ * player->play(url);
  * \endcode
  *
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONONCORE_EXPORT AudioPlayer : public QObject
 {
-	Q_OBJECT
-	public:
-		/**
-		 * Constructs a new %AudioPlayer instance.
-		 *
-		 * \param category The category used for the audio output device.
-		 * \param parent The QObject parent.
-		 */
+    Q_OBJECT
+    public:
+        /**
+         * Constructs a new %AudioPlayer instance.
+         *
+         * \param category The category used for the audio output device.
+         * \param parent The QObject parent.
+         */
         explicit AudioPlayer(Phonon::Category category, QObject *parent = 0);
 
-		/**
-		 * On destruction the playback is stopped, also the audio output is
-		 * removed so that the desktop mixer will not show the application
-		 * anymore. If you need a persistent audio output don't use
-		 * %AudioPlayer but MediaObject, AudioPath and AudioOutput.
-		 */
-		~AudioPlayer();
+        /**
+         * On destruction the playback is stopped, also the audio output is
+         * removed so that the desktop mixer will not show the application
+         * anymore. If you need a persistent audio output don't use
+         * %AudioPlayer but MediaObject, AudioPath and AudioOutput.
+         */
+        ~AudioPlayer();
 
-		/**
-		 * Get the total time (in milliseconds) of the file currently being played.
-		 */
-		qint64 totalTime() const;
-		/**
-		 * Get the current time (in milliseconds) of the file currently being played.
-		 */
-		qint64 currentTime() const;
-		/**
-		 * This is the current volume of the output as voltage factor.
-		 *
-		 * 1.0 means 100%, 0.5 means 50% voltage/25% power, 0.0 means 0%
-		 */
-		float volume() const;
+        /**
+         * Get the total time (in milliseconds) of the file currently being played.
+         */
+        qint64 totalTime() const;
+        /**
+         * Get the current time (in milliseconds) of the file currently being played.
+         */
+        qint64 currentTime() const;
+        /**
+         * This is the current volume of the output as voltage factor.
+         *
+         * 1.0 means 100%, 0.5 means 50% voltage/25% power, 0.0 means 0%
+         */
+        float volume() const;
 
-		/**
-		 * \returns \c true if it is currently playing
-		 * \returns \c false if it is currently stopped or paused
-		 */
-		bool isPlaying() const;
-		/**
-		 * \returns \c true if it is currently paused
-		 * \returns \c false if it is currently playing or stopped
-		 */
-		bool isPaused() const;
+        /**
+         * \returns \c true if it is currently playing
+         * \returns \c false if it is currently stopped or paused
+         */
+        bool isPlaying() const;
+        /**
+         * \returns \c true if it is currently paused
+         * \returns \c false if it is currently playing or stopped
+         */
+        bool isPaused() const;
 
-	public Q_SLOTS:
-		/**
-		 * Starts preloading the media data and fill audiobuffers in the
-		 * backend.
-		 *
-		 * When there's already a media playing (or paused) it will be stopped
-		 * (the finished signal will not be emitted).
-		 */
-		void load( const KUrl& url );
+    public Q_SLOTS:
+        /**
+         * Starts preloading the media data and fill audiobuffers in the
+         * backend.
+         *
+         * When there's already a media playing (or paused) it will be stopped
+         * (the finished signal will not be emitted).
+         */
+        void load(const KUrl &url);
 
-		/**
-		 * Play the media at the given URL. Starts playback as fast as possible.
-		 * This can take a considerable time depending on the URL and the
-		 * backend.
-		 *
-		 * If you need low latency between calling play() and the sound actually
-		 * starting to play on your output device you need to use MediaObject
-		 * and be able to set the URL before calling play(). Note that
-		 * \code
-		 * audioPlayer->load( url );
-		 * audioPlayer->play();
-		 * \endcode
-		 * doesn't make a difference: the application should be idle between the
-		 * load and play calls so that the backend can start preloading the
-		 * media and fill audio buffers.
-		 */
-		void play( const KUrl& url );
-		/**
-		 * Continues playback of a paused media. Restarts playback of a stopped
-		 * media.
-		 */
-		void play();
-		/**
-		 * Pauses the playback.
-		 */
-		void pause();
-		/**
-		 * Stops the playback.
-		 */
-		void stop();
+        /**
+         * Play the media at the given URL. Starts playback as fast as possible.
+         * This can take a considerable time depending on the URL and the
+         * backend.
+         *
+         * If you need low latency between calling play() and the sound actually
+         * starting to play on your output device you need to use MediaObject
+         * and be able to set the URL before calling play(). Note that
+         * \code
+         * audioPlayer->load(url);
+         * audioPlayer->play();
+         * \endcode
+         * doesn't make a difference: the application should be idle between the
+         * load and play calls so that the backend can start preloading the
+         * media and fill audio buffers.
+         */
+        void play(const KUrl &url);
+        /**
+         * Continues playback of a paused media. Restarts playback of a stopped
+         * media.
+         */
+        void play();
+        /**
+         * Pauses the playback.
+         */
+        void pause();
+        /**
+         * Stops the playback.
+         */
+        void stop();
 
-		/**
-		 * Seeks to the requested time. Note that the backend is free to ignore
-		 * the seek request if the media source isn't seekable.
-		 *
-		 * \param ms Time in milliseconds from the start of the media.
-		 */
-		void seek( qint64 ms );
-		/**
-		 * Sets the volume of the output as voltage factor.
-		 *
-		 * 1.0 means 100%, 0.5 means 50% voltage/25% power, 0.0 means 0%
-		 */
-		void setVolume( float volume );
+        /**
+         * Seeks to the requested time. Note that the backend is free to ignore
+         * the seek request if the media source isn't seekable.
+         *
+         * \param ms Time in milliseconds from the start of the media.
+         */
+        void seek(qint64 ms);
+        /**
+         * Sets the volume of the output as voltage factor.
+         *
+         * 1.0 means 100%, 0.5 means 50% voltage/25% power, 0.0 means 0%
+         */
+        void setVolume(float volume);
 
-	Q_SIGNALS:
-		/**
-		 * This signal is emitted when the playback finished.
-		 */
-		void finished();
+    Q_SIGNALS:
+        /**
+         * This signal is emitted when the playback finished.
+         */
+        void finished();
 
-	private:
-		class Private;
-		Private * d;
+    private:
+        class Private;
+        Private * d;
 
-		Q_PRIVATE_SLOT( d, void _k_stateChanged( Phonon::State, Phonon::State ) )
+        Q_PRIVATE_SLOT(d, void _k_stateChanged(Phonon::State, Phonon::State))
 };
 
 } //namespace Phonon

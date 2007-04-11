@@ -23,25 +23,25 @@
 
 namespace Phonon
 {
-	QString categoryToString( Category c )
-	{
-		switch( c )
-		{
-			case Phonon::NotificationCategory:
-				return i18n( "Notifications" );
-			case Phonon::MusicCategory:
-				return i18n( "Music" );
-			case Phonon::VideoCategory:
-				return i18n( "Video" );
-			case Phonon::CommunicationCategory:
-				return i18n( "Communication" );
-			case Phonon::GameCategory:
-				return i18n( "Games" );
-			case Phonon::AccessibilityCategory:
-				return i18n( "Accessibility" );
-		}
-		return QString();
-	}
+    QString categoryToString(Category c)
+    {
+        switch(c)
+        {
+        case Phonon::NotificationCategory:
+            return i18n("Notifications");
+        case Phonon::MusicCategory:
+            return i18n("Music");
+        case Phonon::VideoCategory:
+            return i18n("Video");
+        case Phonon::CommunicationCategory:
+            return i18n("Communication");
+        case Phonon::GameCategory:
+            return i18n("Games");
+        case Phonon::AccessibilityCategory:
+            return i18n("Accessibility");
+        }
+        return QString();
+    }
 }
 
 static int registerPhononMetaTypes()

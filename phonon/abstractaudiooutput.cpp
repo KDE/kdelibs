@@ -29,15 +29,15 @@ PHONON_ABSTRACTBASE_IMPL
 
 bool AbstractAudioOutputPrivate::aboutToDeleteIface()
 {
-	return true;
+    return true;
 }
 
 void AbstractAudioOutput::setupIface()
 {
-	K_D( AbstractAudioOutput );
-	Q_ASSERT( d->backendObject );
+    K_D(AbstractAudioOutput);
+    Q_ASSERT(d->backendObject);
 
-	// set up attributes
+    // set up attributes
 }
 
 } //namespace Phonon

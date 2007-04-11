@@ -28,82 +28,82 @@ namespace Phonon
 namespace Experimental
 {
 
-PHONON_HEIR_IMPL( AbstractMediaProducer )
+PHONON_HEIR_IMPL(AbstractMediaProducer)
 
 AudioCaptureDevice AvCapture::audioCaptureDevice() const
 {
-	K_D( const AvCapture );
-	int index;
-	if( d->backendObject )
-		BACKEND_GET( int, index, "audioCaptureDevice" );
-	else
-		index = d->audioCaptureDevice;
-	return AudioCaptureDevice::fromIndex( index );
+    K_D(const AvCapture);
+    int index;
+    if (d->backendObject)
+        BACKEND_GET(int, index, "audioCaptureDevice");
+    else
+        index = d->audioCaptureDevice;
+    return AudioCaptureDevice::fromIndex(index);
 }
 
-void AvCapture::setAudioCaptureDevice( const AudioCaptureDevice& audioCaptureDevice )
+void AvCapture::setAudioCaptureDevice(const AudioCaptureDevice &audioCaptureDevice)
 {
-	K_D( AvCapture );
-	if( d->backendObject )
-		BACKEND_CALL1( "setAudioCaptureDevice", int, audioCaptureDevice.index() );
-	else
-		d->audioCaptureDevice = audioCaptureDevice.index();
+    K_D(AvCapture);
+    if (d->backendObject)
+        BACKEND_CALL1("setAudioCaptureDevice", int, audioCaptureDevice.index());
+    else
+        d->audioCaptureDevice = audioCaptureDevice.index();
 }
 
-void AvCapture::setAudioCaptureDevice( int audioCaptureDeviceIndex )
+void AvCapture::setAudioCaptureDevice(int audioCaptureDeviceIndex)
 {
-	K_D( AvCapture );
-	if( d->backendObject )
-		BACKEND_CALL1( "setAudioCaptureDevice", int, audioCaptureDeviceIndex );
-	else
-		d->audioCaptureDevice = audioCaptureDeviceIndex;
+    K_D(AvCapture);
+    if (d->backendObject)
+        BACKEND_CALL1("setAudioCaptureDevice", int, audioCaptureDeviceIndex);
+    else
+        d->audioCaptureDevice = audioCaptureDeviceIndex;
 }
 
 VideoCaptureDevice AvCapture::videoCaptureDevice() const
 {
-	K_D( const AvCapture );
-	int index;
-	if( d->backendObject )
-		BACKEND_GET( int, index, "videoCaptureDevice" );
-	else
-		index = d->videoCaptureDevice;
-	return VideoCaptureDevice::fromIndex( index );
+    K_D(const AvCapture);
+    int index;
+    if (d->backendObject)
+        BACKEND_GET(int, index, "videoCaptureDevice");
+    else
+        index = d->videoCaptureDevice;
+    return VideoCaptureDevice::fromIndex(index);
 }
 
-void AvCapture::setVideoCaptureDevice( const VideoCaptureDevice& videoCaptureDevice )
+void AvCapture::setVideoCaptureDevice(const VideoCaptureDevice &videoCaptureDevice)
 {
-	K_D( AvCapture );
-	if( d->backendObject )
-		BACKEND_CALL1( "setVideoCaptureDevice", int, videoCaptureDevice.index() );
-	else
-		d->videoCaptureDevice = videoCaptureDevice.index();
+    K_D(AvCapture);
+    if (d->backendObject)
+        BACKEND_CALL1("setVideoCaptureDevice", int, videoCaptureDevice.index());
+    else
+        d->videoCaptureDevice = videoCaptureDevice.index();
 }
 
-void AvCapture::setVideoCaptureDevice( int videoCaptureDeviceIndex )
+void AvCapture::setVideoCaptureDevice(int videoCaptureDeviceIndex)
 {
-	K_D( AvCapture );
-	if( d->backendObject )
-		BACKEND_CALL1( "setVideoCaptureDevice", int, videoCaptureDeviceIndex );
-	else
-		d->videoCaptureDevice = videoCaptureDeviceIndex;
+    K_D(AvCapture);
+    if (d->backendObject)
+        BACKEND_CALL1("setVideoCaptureDevice", int, videoCaptureDeviceIndex);
+    else
+        d->videoCaptureDevice = videoCaptureDeviceIndex;
 }
 
 bool AvCapturePrivate::aboutToDeleteIface()
 {
-	pBACKEND_GET( int, audioCaptureDevice, "audioCaptureDevice" );
-	pBACKEND_GET( int, videoCaptureDevice, "videoCaptureDevice" );
-	return AbstractMediaProducerPrivate::aboutToDeleteIface();
+    pBACKEND_GET(int, audioCaptureDevice, "audioCaptureDevice");
+    pBACKEND_GET(int, videoCaptureDevice, "videoCaptureDevice");
+    return AbstractMediaProducerPrivate::aboutToDeleteIface();
 }
 
 void AvCapture::setupIface()
 {
-	K_D( AvCapture );
-	Q_ASSERT( d->backendObject );
-	AbstractMediaProducer::setupIface();
+    K_D(AvCapture);
+    Q_ASSERT(d->backendObject);
+    AbstractMediaProducer::setupIface();
 
-	// set up attributes
-	BACKEND_CALL1( "setAudioCaptureDevice", int, d->audioCaptureDevice );
-	BACKEND_CALL1( "setVideoCaptureDevice", int, d->videoCaptureDevice );
+    // set up attributes
+    BACKEND_CALL1("setAudioCaptureDevice", int, d->audioCaptureDevice);
+    BACKEND_CALL1("setVideoCaptureDevice", int, d->videoCaptureDevice);
 }
 
 } // namespace Experimental

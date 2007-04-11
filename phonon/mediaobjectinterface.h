@@ -35,11 +35,11 @@ namespace Phonon
  */
 class PHONONCORE_EXPORT MediaObjectInterface
 {
-	public:
-		virtual ~MediaObjectInterface() {}
-		virtual qint64 totalTime() const = 0;
-		virtual KUrl url() const = 0;
-		virtual void setUrl( const KUrl& url ) = 0;
+    public:
+        virtual ~MediaObjectInterface() {}
+        virtual qint64 totalTime() const = 0;
+        virtual KUrl url() const = 0;
+        virtual void setUrl(const KUrl &url) = 0;
         virtual void openMedia(MediaObject::Media media, const QString &mediaDevice) = 0;
 };
 }

@@ -28,123 +28,123 @@ namespace Phonon
 
 class AudioPlayer::Private
 {
-	public:
-		Private()
-			: player( 0 )
-		{
-		}
+    public:
+        Private()
+            : player(0)
+        {
+        }
 
-		MediaObject* player;
-		AudioPath* path;
-		AudioOutput* output;
-		KUrl url;
+        MediaObject *player;
+        AudioPath *path;
+        AudioOutput *output;
+        KUrl url;
 
-		void _k_stateChanged( Phonon::State, Phonon::State );
+        void _k_stateChanged(Phonon::State, Phonon::State);
 };
 
-AudioPlayer::AudioPlayer( Phonon::Category category, QObject* parent )
-	: QObject( parent )
-	, d( new Private )
+AudioPlayer::AudioPlayer(Phonon::Category category, QObject *parent)
+    : QObject(parent)
+    , d(new Private)
 {
-	d->output = new AudioOutput( category, this );
-	d->path = new AudioPath( this );
-	d->path->addOutput( d->output );
-	d->player = new MediaObject( this );
-	d->player->addAudioPath( d->path );
+    d->output = new AudioOutput(category, this);
+    d->path = new AudioPath(this);
+    d->path->addOutput(d->output);
+    d->player = new MediaObject(this);
+    d->player->addAudioPath(d->path);
 
     connect(d->player, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
             SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
-	connect( d->player, SIGNAL( finished() ), SIGNAL( finished() ) );
+    connect(d->player, SIGNAL(finished()), SIGNAL(finished()));
 }
 
 AudioPlayer::~AudioPlayer()
 {
-	delete d->player;
-	delete d->path;
-	delete d->output;
+    delete d->player;
+    delete d->path;
+    delete d->output;
 }
 
-void AudioPlayer::load( const KUrl& url )
+void AudioPlayer::load(const KUrl &url)
 {
-	// new URL
-	d->player->setUrl( url );
-	d->url = url;
+    // new URL
+    d->player->setUrl(url);
+    d->url = url;
 }
 
-void AudioPlayer::play( const KUrl& url )
+void AudioPlayer::play(const KUrl &url)
 {
-	if( url == d->url )
-	{
-		if( !isPlaying() )
-			d->player->play();
-		return;
-	}
-	// new URL
-	d->player->setUrl( url );
-		
-	if( ErrorState == d->player->state() )
-		return;
+    if (url == d->url)
+    {
+        if (!isPlaying())
+            d->player->play();
+        return;
+    }
+    // new URL
+    d->player->setUrl(url);
+        
+    if (ErrorState == d->player->state())
+        return;
 
-	d->url = url;
+    d->url = url;
 
-	if( StoppedState == d->player->state() )
-		d->player->play();
+    if (StoppedState == d->player->state())
+        d->player->play();
 }
 
 void AudioPlayer::play()
 {
-	play( d->url );
+    play(d->url);
 }
 
 void AudioPlayer::pause()
 {
-	d->player->pause();
+    d->player->pause();
 }
 
 void AudioPlayer::stop()
 {
-	d->player->stop();
+    d->player->stop();
 }
 
 qint64 AudioPlayer::totalTime() const
 {
-	return d->player->totalTime();
+    return d->player->totalTime();
 }
 
 qint64 AudioPlayer::currentTime() const
 {
-	return d->player->currentTime();
+    return d->player->currentTime();
 }
 
-void AudioPlayer::seek( qint64 ms )
+void AudioPlayer::seek(qint64 ms)
 {
-	d->player->seek( ms );
+    d->player->seek(ms);
 }
 
 float AudioPlayer::volume() const
 {
-	return d->output->volume();
+    return d->output->volume();
 }
 
-void AudioPlayer::setVolume( float v )
+void AudioPlayer::setVolume(float v)
 {
-	d->output->setVolume( v );
+    d->output->setVolume(v);
 }
 
 bool AudioPlayer::isPlaying() const
 {
-	return ( d->player->state() == PlayingState );
+    return (d->player->state() == PlayingState);
 }
 
 bool AudioPlayer::isPaused() const
 {
-	return ( d->player->state() == PausedState );
+    return (d->player->state() == PausedState);
 }
 
-void AudioPlayer::Private::_k_stateChanged( State ns, State os )
+void AudioPlayer::Private::_k_stateChanged(State ns, State os)
 {
-	if( os == LoadingState && ns == StoppedState )
-		player->play();
+    if (os == LoadingState && ns == StoppedState)
+        player->play();
 }
 
 } // namespaces

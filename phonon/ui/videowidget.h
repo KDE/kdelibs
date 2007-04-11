@@ -34,43 +34,43 @@ namespace Experimental
     class OverlayApi;
 } // namespace Experimental
 
-	class VideoWidgetPrivate;
-	/**
-	 * \short Widget to display video.
-	 *
-	 * This widget shows the video signal and provides an object that can be
-	 * plugged into the VideoPath.
-	 *
-	 * \code
-	 * VideoWidget* vwidget = new VideoWidget( this );
-	 * videoPath->addOutput( vwidget );
-	 * \endcode
-	 *
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class PHONONUI_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
-	{
+    class VideoWidgetPrivate;
+    /**
+     * \short Widget to display video.
+     *
+     * This widget shows the video signal and provides an object that can be
+     * plugged into the VideoPath.
+     *
+     * \code
+     * VideoWidget *vwidget = new VideoWidget(this);
+     * videoPath->addOutput(vwidget);
+     * \endcode
+     *
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class PHONONUI_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput
+    {
         friend class Experimental::OverlayApi;
-		K_DECLARE_PRIVATE( VideoWidget )
-		Q_OBJECT
+        K_DECLARE_PRIVATE(VideoWidget)
+        Q_OBJECT
         Q_ENUMS(AspectRatio ScaleMode)
-		/**
-		 * This property holds whether the video is shown using the complete
-		 * screen.
-		 *
-		 * The property differs from QWidget::fullScreen in that it is
-		 * writeable.
-		 *
-		 * By default the widget is not shown in fullScreen.
-		 */
-		Q_PROPERTY( bool fullScreen READ isFullScreen WRITE setFullScreen )
-		/**
-		 *
-		 * Defaults to AspectRatioAuto.
-		 *
-		 * \see AspectRatio
-		 */
-		Q_PROPERTY( AspectRatio aspectRatio READ aspectRatio WRITE setAspectRatio )
+        /**
+         * This property holds whether the video is shown using the complete
+         * screen.
+         *
+         * The property differs from QWidget::fullScreen in that it is
+         * writeable.
+         *
+         * By default the widget is not shown in fullScreen.
+         */
+        Q_PROPERTY(bool fullScreen READ isFullScreen WRITE setFullScreen)
+        /**
+         *
+         * Defaults to AspectRatioAuto.
+         *
+         * \see AspectRatio
+         */
+        Q_PROPERTY(AspectRatio aspectRatio READ aspectRatio WRITE setAspectRatio)
 
         /**
          * If the size of the widget and the size of the video are not equal.
@@ -83,28 +83,28 @@ namespace Experimental
          */
         Q_PROPERTY(ScaleMode scaleMode READ scaleMode WRITE setScaleMode)
 
-		public:
-			/**
-			 * Defines the width:height to be used for the video.
-			 */
-			enum AspectRatio
-			{
+        public:
+            /**
+             * Defines the width:height to be used for the video.
+             */
+            enum AspectRatio
+            {
                 /**
                  * Let the decoder find the aspect ratio automatically from the
                  * media file (this is the default).
                  */
                 AspectRatioAuto = 0,
-				/**
-				 * Fits the video into the widget making the aspect ratio depend
-				 * solely on the size of the widget. This way the aspect ratio
-				 * is freely resizeable by the user.
-				 */
-				AspectRatioWidget = 1,
-				/**
-				 * Make width/height == 4/3, which is the old TV size and
-				 * monitor size (1024/768 == 4/3). (4:3)
-				 */
-				AspectRatio4_3 = 2,
+                /**
+                 * Fits the video into the widget making the aspect ratio depend
+                 * solely on the size of the widget. This way the aspect ratio
+                 * is freely resizeable by the user.
+                 */
+                AspectRatioWidget = 1,
+                /**
+                 * Make width/height == 4/3, which is the old TV size and
+                 * monitor size (1024/768 == 4/3). (4:3)
+                 */
+                AspectRatio4_3 = 2,
                 /**
                  * Make width/height == 16/9, which is the size of most current
                  * media. (16:9)
@@ -116,56 +116,56 @@ namespace Experimental
 //X                  * = imageheight)
 //X                  */
 //X                 AspectRatioSquare = 4,
-			};
+            };
 
             enum ScaleMode {
                 AddBarsScaleMode = 0,
                 ExpandMode = 1
             };
 
-			/**
-			 * Constructs a new video widget with a \p parent.
-			 */
-			VideoWidget( QWidget* parent = 0 );
+            /**
+             * Constructs a new video widget with a \p parent.
+             */
+            VideoWidget(QWidget *parent = 0);
 
-			AspectRatio aspectRatio() const;
+            AspectRatio aspectRatio() const;
             ScaleMode scaleMode() const;
 
-		public Q_SLOTS:
-			void setFullScreen( bool fullscreen );
+        public Q_SLOTS:
+            void setFullScreen(bool fullscreen);
 
-			/**
-			 * Convenience slot, calling setFullScreen( false )
-			 */
-			void exitFullScreen();
+            /**
+             * Convenience slot, calling setFullScreen(false)
+             */
+            void exitFullScreen();
 
-			/**
-			 * Convenience slot, calling setFullScreen( true )
-			 */
-			void enterFullScreen();
+            /**
+             * Convenience slot, calling setFullScreen(true)
+             */
+            void enterFullScreen();
 
             void setAspectRatio(AspectRatio);
             void setScaleMode(ScaleMode);
 
-		protected:
-			/**
-			 * \internal
-			 *
-			 * Constructs a new video widget with private data pointer \p d and
-			 * a \p parent.
-			 */
-			VideoWidget( VideoWidgetPrivate& d, QWidget* parent );
-			
-			/**
-			 * \copydoc Phonon::AbstractVideoOutput::setupIface
-			 */
-			void setupIface();
+        protected:
+            /**
+             * \internal
+             *
+             * Constructs a new video widget with private data pointer \p d and
+             * a \p parent.
+             */
+            VideoWidget(VideoWidgetPrivate &d, QWidget *parent);
+            
+            /**
+             * \copydoc Phonon::AbstractVideoOutput::setupIface
+             */
+            void setupIface();
 
             void mouseMoveEvent(QMouseEvent *);
 
-		private:
+        private:
             Q_PRIVATE_SLOT(k_func(), void _k_cursorTimeout())
-	};
+    };
 
 } //namespace Phonon
 

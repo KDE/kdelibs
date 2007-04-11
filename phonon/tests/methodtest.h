@@ -25,51 +25,51 @@
 
 class MethodTest : public QObject
 {
-	Q_OBJECT
-	private Q_SLOTS:
+    Q_OBJECT
+    private Q_SLOTS:
         void initTestCase() { Phonon::loadFakeBackend(); }
         void checkBackendInterface();
 
         void checkAudioDataOutputMethods_data();
         void checkAudioDataOutputMethods();
-		void checkAudioEffectMethods_data();
-		void checkAudioEffectMethods();
+        void checkAudioEffectMethods_data();
+        void checkAudioEffectMethods();
         void checkAudioOutputMethods_data();
         void checkAudioOutputMethods();
-		void checkAudioPathMethods_data();
-		void checkAudioPathMethods();
-		void checkAvCaptureMethods_data();
-		void checkAvCaptureMethods();
-		void checkBackendMethods_data();
-		void checkBackendMethods();
-		void checkBrightnessControlMethods_data();
-		void checkBrightnessControlMethods();
-		void checkByteStreamMethods_data();
-		void checkByteStreamMethods();
-		void checkMediaObjectMethods_data();
-		void checkMediaObjectMethods();
-		void checkMediaQueueMethods_data();
-		void checkMediaQueueMethods();
-		void checkVideoDataOutputMethods_data();
-		void checkVideoDataOutputMethods();
-		void checkVideoEffectMethods_data();
-		void checkVideoEffectMethods();
-		void checkVideoPathMethods_data();
-		void checkVideoPathMethods();
-		void checkVisualizationMethods_data();
-		void checkVisualizationMethods();
-		void checkVolumeFaderEffectMethods_data();
-		void checkVolumeFaderEffectMethods();
-		void checkByteStreamInterfaces();
-		void checkMediaObjectInterfaces();
-		void checkAvCapturetInterfaces();
+        void checkAudioPathMethods_data();
+        void checkAudioPathMethods();
+        void checkAvCaptureMethods_data();
+        void checkAvCaptureMethods();
+        void checkBackendMethods_data();
+        void checkBackendMethods();
+        void checkBrightnessControlMethods_data();
+        void checkBrightnessControlMethods();
+        void checkByteStreamMethods_data();
+        void checkByteStreamMethods();
+        void checkMediaObjectMethods_data();
+        void checkMediaObjectMethods();
+        void checkMediaQueueMethods_data();
+        void checkMediaQueueMethods();
+        void checkVideoDataOutputMethods_data();
+        void checkVideoDataOutputMethods();
+        void checkVideoEffectMethods_data();
+        void checkVideoEffectMethods();
+        void checkVideoPathMethods_data();
+        void checkVideoPathMethods();
+        void checkVisualizationMethods_data();
+        void checkVisualizationMethods();
+        void checkVolumeFaderEffectMethods_data();
+        void checkVolumeFaderEffectMethods();
+        void checkByteStreamInterfaces();
+        void checkMediaObjectInterfaces();
+        void checkAvCapturetInterfaces();
         void checkAudioOutputInterface();
 
-	private:
-		void addColumns();
-		void addMethod( const char* returnType, const char* signature, bool optional = false );
+    private:
+        void addColumns();
+        void addMethod(const char *returnType, const char *signature, bool optional = false);
         void addSignal(const char *signature);
-		void checkMethods( QObject* backendObject );
+        void checkMethods(QObject *backendObject);
 };
 #endif // PHONON_METHODTEST_H
 

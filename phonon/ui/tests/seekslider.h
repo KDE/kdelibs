@@ -23,28 +23,28 @@
 #include <QObject>
 
 namespace Phonon {
-	class MediaObject;
-	class SeekSlider;
+    class MediaObject;
+    class SeekSlider;
 }
 class QSlider;
 class QLabel;
 
 class SeekSliderTest : public QObject
 {
-	Q_OBJECT
-	private Q_SLOTS:
-		void initTestCase();
-		void testEnabled();
-		void setMedia();
-		void playMedia();
-		void seekWithSlider();
-		void cleanupTestCase();
-	private:
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void testEnabled();
+        void setMedia();
+        void playMedia();
+        void seekWithSlider();
+        void cleanupTestCase();
+    private:
         void waitForSignal(QObject *obj, const char *signalName, int timeout);
-		Phonon::SeekSlider* ss;
-		QSlider* qslider;
-		QLabel* qlabel;
-		Phonon::MediaObject* media;
+        Phonon::SeekSlider *ss;
+        QSlider *qslider;
+        QLabel *qlabel;
+        Phonon::MediaObject *media;
 };
 
 #endif // SEEKSLIDER_H

@@ -23,13 +23,13 @@
 
 class BackendCapabilitiesTest : public QObject
 {
-	Q_OBJECT
-	private Q_SLOTS:
-		void initTestCase();
-		void checkMimeTypes();
-		void sensibleValues();
-		void checkSignals();
-		void cleanupTestCase();
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void checkMimeTypes();
+        void sensibleValues();
+        void checkSignals();
+        void cleanupTestCase();
 };
 
 // vim: sw=4 ts=4

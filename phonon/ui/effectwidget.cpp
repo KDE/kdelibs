@@ -35,7 +35,7 @@
 namespace Phonon
 {
 
-EffectWidget::EffectWidget( Effect* effect, QWidget* parent )
+EffectWidget::EffectWidget(Effect *effect, QWidget *parent)
     : QWidget(parent),
     d_ptr(new EffectWidgetPrivate(effect))
 {
@@ -46,14 +46,14 @@ EffectWidget::EffectWidget( Effect* effect, QWidget* parent )
 
 EffectWidget::~EffectWidget()
 {
-	delete d_ptr;
-	d_ptr = 0;
+    delete d_ptr;
+    d_ptr = 0;
 }
 
 /*
-EffectWidget::EffectWidget( EffectWidgetPrivate& dd, QWidget* parent )
-	: QWidget( parent )
-	, d_ptr( &dd )
+EffectWidget::EffectWidget(EffectWidgetPrivate &dd, QWidget *parent)
+    : QWidget(parent)
+    , d_ptr(&dd)
 {
     Q_D(EffectWidget);
     d->q_ptr = this;
@@ -74,87 +74,87 @@ void EffectWidgetPrivate::autogenerateUi()
 {
     Q_Q(EffectWidget);
     QVBoxLayout *mainLayout = new QVBoxLayout(q);
-	QList<EffectParameter> plist = effect->parameterList();
-	qSort( plist );
-	foreach( EffectParameter para, plist )
-	{
-		QHBoxLayout* pLayout = new QHBoxLayout;
-		mainLayout->addLayout( pLayout );
+    QList<EffectParameter> plist = effect->parameterList();
+    qSort(plist);
+    foreach (EffectParameter para, plist)
+    {
+        QHBoxLayout *pLayout = new QHBoxLayout;
+        mainLayout->addLayout(pLayout);
 
         QLabel *label = new QLabel(q);
-		pLayout->addWidget( label );
-		label->setText( para.name() );
-		label->setToolTip( para.description() );
+        pLayout->addWidget(label);
+        label->setText(para.name());
+        label->setToolTip(para.description());
 
-		QWidget* control;
-		if( para.isToggleControl() )
-		{
+        QWidget *control;
+        if (para.isToggleControl())
+        {
             QCheckBox *cb = new QCheckBox(q);
-			control = cb;
-			cb->setChecked( para.value().toBool() );
+            control = cb;
+            cb->setChecked(para.value().toBool());
             QObject::connect(cb, SIGNAL(toggled(bool)), q, SLOT(_k_setToggleParameter(bool)));
-		}
-		else if( para.minimumValue().isValid() && para.maximumValue().isValid() )
-		{
-			if( para.isIntegerControl() )
-			{
+        }
+        else if (para.minimumValue().isValid() && para.maximumValue().isValid())
+        {
+            if (para.isIntegerControl())
+            {
                 QSpinBox *sb = new QSpinBox(q);
-				control = sb;
-				sb->setRange( para.minimumValue().toInt(),
-						para.maximumValue().toInt() );
-				sb->setValue( para.value().toInt() );
+                control = sb;
+                sb->setRange(para.minimumValue().toInt(),
+                        para.maximumValue().toInt());
+                sb->setValue(para.value().toInt());
                 QObject::connect(sb, SIGNAL(valueChanged(int)), q, SLOT(_k_setIntParameter(int)));
-			}
-			else
-			{
+            }
+            else
+            {
                 QDoubleSpinBox *sb = new QDoubleSpinBox(q);
-				control = sb;
-				sb->setRange( para.minimumValue().toDouble(),
-						para.maximumValue().toDouble() );
-				sb->setValue( para.value().toDouble() );
+                control = sb;
+                sb->setRange(para.minimumValue().toDouble(),
+                        para.maximumValue().toDouble());
+                sb->setValue(para.value().toDouble());
                 sb->setSingleStep((para.maximumValue().toDouble() - para.minimumValue().toDouble()) / 20);
                 QObject::connect(sb, SIGNAL(valueChanged(double)), q,
                         SLOT(_k_setDoubleParameter(double)));
-			}
-		}
-		else
-		{
+            }
+        }
+        else
+        {
             QDoubleSpinBox *sb = new QDoubleSpinBox(q);
-			control = sb;
-			sb->setDecimals( 7 );
-			sb->setRange( -1e100, 1e100 );
+            control = sb;
+            sb->setDecimals(7);
+            sb->setRange(-1e100, 1e100);
             QObject::connect(sb, SIGNAL(valueChanged(double)), q,
                     SLOT(_k_setDoubleParameter(double)));
-		}
-		control->setToolTip( para.description() );
-		label->setBuddy( control );
-		pLayout->addWidget( control );
-		parameterForObject.insert( control, para );
-	}
+        }
+        control->setToolTip(para.description());
+        label->setBuddy(control);
+        pLayout->addWidget(control);
+        parameterForObject.insert(control, para);
+    }
 }
 
 void EffectWidgetPrivate::_k_setToggleParameter(bool checked)
 {
     Q_Q(EffectWidget);
     EffectParameter p = parameterForObject.value(q->sender());
-	if( p.isValid() )
-		p.setValue( checked );
+    if (p.isValid())
+        p.setValue(checked);
 }
 
 void EffectWidgetPrivate::_k_setIntParameter(int value)
 {
     Q_Q(EffectWidget);
     EffectParameter p = parameterForObject.value(q->sender());
-	if( p.isValid() )
-		p.setValue( value );
+    if (p.isValid())
+        p.setValue(value);
 }
 
 void EffectWidgetPrivate::_k_setDoubleParameter(double value)
 {
     Q_Q(EffectWidget);
     EffectParameter p = parameterForObject.value(q->sender());
-	if( p.isValid() )
-		p.setValue( value );
+    if (p.isValid())
+        p.setValue(value);
 }
 
 } // namespace Phonon

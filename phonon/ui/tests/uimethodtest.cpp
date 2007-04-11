@@ -30,23 +30,23 @@ void UiMethodTest::checkVideoWidgetMethods_data() { addColumns();
 #include "methods/videowidget.cpp"
 #include "methods/overlayapi.cpp"
 }
-void UiMethodTest::checkUiBackendMethods()   { checkMethods( UiFactory::self()->backend() ); }
-void UiMethodTest::checkVideoWidgetMethods() { checkMethods( UiFactory::self()->createVideoWidget() ); }
+void UiMethodTest::checkUiBackendMethods()   { checkMethods(UiFactory::self()->backend()); }
+void UiMethodTest::checkVideoWidgetMethods() { checkMethods(UiFactory::self()->createVideoWidget()); }
 
 void UiMethodTest::addColumns()
 {
-	QTest::addColumn<QByteArray>( "returnType" );
-	QTest::addColumn<QByteArray>( "signature" );
-	QTest::addColumn<bool>( "optional" );
+    QTest::addColumn<QByteArray>("returnType");
+    QTest::addColumn<QByteArray>("signature");
+    QTest::addColumn<bool>("optional");
     QTest::addColumn<bool>("isSignal");
 }
 
 void UiMethodTest::addMethod(const char *returnType, const char *signature, bool optional)
 {
-	QByteArray name( returnType );
-	name += ' ';
-	name += signature;
-	QTest::newRow( name.constData() ) << QByteArray( returnType ) << QByteArray( signature ) << optional << false;
+    QByteArray name(returnType);
+    name += ' ';
+    name += signature;
+    QTest::newRow(name.constData()) << QByteArray(returnType) << QByteArray(signature) << optional << false;
 }
 
 void UiMethodTest::addSignal(const char *signature)
@@ -56,13 +56,13 @@ void UiMethodTest::addSignal(const char *signature)
 
 void UiMethodTest::checkMethods(QObject *backendObject)
 {
-	if( !backendObject )
-		QSKIP( "The back-end's create method returned 0. No tests possible.", SkipAll );
+    if (!backendObject)
+        QSKIP("The back-end's create method returned 0. No tests possible.", SkipAll);
     const QMetaObject *meta = backendObject->metaObject();
 
-	QFETCH( QByteArray, returnType );
-	QFETCH( QByteArray, signature );
-	QFETCH( bool, optional );
+    QFETCH(QByteArray, returnType);
+    QFETCH(QByteArray, signature);
+    QFETCH(bool, optional);
     QFETCH(bool, isSignal);
 
     if (isSignal) {

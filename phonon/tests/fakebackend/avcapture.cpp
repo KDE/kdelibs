@@ -23,8 +23,8 @@ namespace Phonon
 {
 namespace Fake
 {
-AvCapture::AvCapture( QObject* parent )
-	: AbstractMediaProducer( parent )
+AvCapture::AvCapture(QObject *parent)
+    : AbstractMediaProducer(parent)
 {
 }
 
@@ -34,22 +34,22 @@ AvCapture::~AvCapture()
 
 int AvCapture::audioCaptureDevice() const
 {
-	return 1;
+    return 1;
 }
 
-void AvCapture::setAudioCaptureDevice( int index )
+void AvCapture::setAudioCaptureDevice(int index)
 {
-	Q_UNUSED( index );
+    Q_UNUSED(index);
 }
 
 int AvCapture::videoCaptureDevice() const
 {
-	return 1;
+    return 1;
 }
 
-void AvCapture::setVideoCaptureDevice( int index )
+void AvCapture::setVideoCaptureDevice(int index)
 {
-	Q_UNUSED( index );
+    Q_UNUSED(index);
 }
 
 }} //namespace Phonon::Fake

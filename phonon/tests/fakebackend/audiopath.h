@@ -26,28 +26,28 @@ namespace Phonon
 {
 namespace Fake
 {
-	class AudioEffect;
-	class AbstractAudioOutput;
+    class AudioEffect;
+    class AbstractAudioOutput;
 
-	class AudioPath : public QObject
-	{
-		Q_OBJECT
-		public:
-			AudioPath( QObject* parent );
-			~AudioPath();
+    class AudioPath : public QObject
+    {
+        Q_OBJECT
+        public:
+            AudioPath(QObject *parent);
+            ~AudioPath();
 
-			Q_INVOKABLE bool addOutput( QObject* audioOutput );
-			Q_INVOKABLE bool removeOutput( QObject* audioOutput );
-			Q_INVOKABLE bool insertEffect( QObject* newEffect, QObject* insertBefore = 0 );
-			Q_INVOKABLE bool removeEffect( QObject* effect );
+            Q_INVOKABLE bool addOutput(QObject *audioOutput);
+            Q_INVOKABLE bool removeOutput(QObject *audioOutput);
+            Q_INVOKABLE bool insertEffect(QObject *newEffect, QObject *insertBefore = 0);
+            Q_INVOKABLE bool removeEffect(QObject *effect);
 
-			// fake specific
-			void processBuffer( const QVector<float>& buffer );
+            // fake specific
+            void processBuffer(const QVector<float> &buffer);
 
-		private:
-			QList<AudioEffect*> m_effects;
-			QList<AbstractAudioOutput*> m_outputs;
-	};
+        private:
+            QList<AudioEffect *> m_effects;
+            QList<AbstractAudioOutput *> m_outputs;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

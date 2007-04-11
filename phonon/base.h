@@ -26,8 +26,8 @@
 class QObject;
 namespace Phonon
 {
-	class BasePrivate;
-	class BaseDestructionHandler;
+    class BasePrivate;
+    class BaseDestructionHandler;
 
     /**
      * Base class for all %Phonon frontend classes. This class is mostly an
@@ -35,54 +35,54 @@ namespace Phonon
      *
      * \author Matthias Kretz <kretz@kde.org>
      */
-	class PHONONCORE_EXPORT Base
-	{
-		K_DECLARE_PRIVATE( Base )
-		protected:
-			/**
-			 * \internal
-			 * \param d private object
-			 */
-			Base( BasePrivate& d );
+    class PHONONCORE_EXPORT Base
+    {
+        K_DECLARE_PRIVATE(Base)
+        protected:
+            /**
+             * \internal
+             * \param d private object
+             */
+            Base(BasePrivate &d);
 
             /**
              * \internal
              * Delete the object.
              * calls phononObjectDestroyed for all registered BaseDestructionHandler objects.
              */
-			virtual ~Base();
+            virtual ~Base();
 
-		public:
+        public:
 
-			/**
-			 * Tells whether the backend provides an implementation of this
-			 * class.
-			 *
-			 * \return \c true if backend provides an implementation
-			 * \return \c false if the object is not implemented by the backend
-			 */
-			bool isValid();
+            /**
+             * Tells whether the backend provides an implementation of this
+             * class.
+             *
+             * \return \c true if backend provides an implementation
+             * \return \c false if the object is not implemented by the backend
+             */
+            bool isValid();
 
-		protected:
-			/**
-			 * \internal
-			 * private data pointer
-			 */
+        protected:
+            /**
+             * \internal
+             * private data pointer
+             */
             BasePrivate *const k_ptr;
 
-			/**
-			 * \internal
-			 * Returns the backend object. If the object does not exist it tries to
-			 * create it before returning.
-			 *
-			 * \return the Iface object, might return \c 0
-			 */
-			QObject* iface();
+            /**
+             * \internal
+             * Returns the backend object. If the object does not exist it tries to
+             * create it before returning.
+             *
+             * \return the Iface object, might return \c 0
+             */
+            QObject *iface();
 
         private:
-            Base(const Base&);
-            Base& operator=(const Base&);
-	};
+            Base(const Base &);
+            Base &operator=(const Base &);
+    };
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

@@ -29,22 +29,22 @@
 
 class VideoPathTest : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	private Q_SLOTS:
-		void initTestCase();
-		void checkForDefaults();
+    private Q_SLOTS:
+        void initTestCase();
+        void checkForDefaults();
 
-		void addOutputs();
-		void addEffects();
+        void addOutputs();
+        void addEffects();
 
-		void cleanupTestCase();
+        void cleanupTestCase();
 
-	private:
-		KUrl m_url;
-		Phonon::MediaObject* m_media;
-		Phonon::VideoPath* m_path;
-		Phonon::VideoOutput* m_output; //FIXME VideoWidget is in Phonon::Ui
+    private:
+        KUrl m_url;
+        Phonon::MediaObject *m_media;
+        Phonon::VideoPath *m_path;
+        Phonon::VideoOutput *m_output; //FIXME VideoWidget is in Phonon::Ui
 };
 
 // vim: sw=4 ts=4

@@ -33,40 +33,40 @@
 
 namespace Phonon
 {
-AudioOutput::AudioOutput( Phonon::Category category, QObject* parent )
-	: AbstractAudioOutput( *new AudioOutputPrivate, parent )
+AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
+    : AbstractAudioOutput(*new AudioOutputPrivate, parent)
 {
-	K_D( AudioOutput );
-	d->category = category;
+    K_D(AudioOutput);
+    d->category = category;
 
-	// select hardware device according to the category
-	d->outputDeviceIndex = GlobalConfig().audioOutputDeviceFor( d->category );
+    // select hardware device according to the category
+    d->outputDeviceIndex = GlobalConfig().audioOutputDeviceFor(d->category);
 
-	d->createIface();
-	new AudioOutputAdaptor( this );
-	for( int i = 0; !QDBusConnection::sessionBus().registerObject( "/AudioOutputs/" + QString::number( i ), this ); ++i );
+    d->createIface();
+    new AudioOutputAdaptor(this);
+    for (int i = 0; !QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(i), this); ++i);
 }
 
 void AudioOutputPrivate::createIface()
 {
-	if( backendObject )
-		return;
-	K_Q( AudioOutput );
+    if (backendObject)
+        return;
+    K_Q(AudioOutput);
     backendObject = Factory::createAudioOutput(q);
-	if( backendObject )
-		q->setupIface();
+    if (backendObject)
+        q->setupIface();
 }
 
 QString AudioOutput::name() const
 {
-	K_D( const AudioOutput );
-	return d->name;
+    K_D(const AudioOutput);
+    return d->name;
 }
 
-void AudioOutput::setName( const QString& newName )
+void AudioOutput::setName(const QString &newName)
 {
-	K_D( AudioOutput );
-	d->name = newName;
+    K_D(AudioOutput);
+    d->name = newName;
 }
 
 void AudioOutput::setVolume(float volume)
@@ -96,12 +96,12 @@ static const double log10over20 = 0.1151292546497022842; // ln(10) / 20
 
 double AudioOutput::volumeDecibel() const
 {
-	return -log( volume() ) / log10over20;
+    return -log(volume()) / log10over20;
 }
 
-void AudioOutput::setVolumeDecibel( double newVolumeDecibel )
+void AudioOutput::setVolumeDecibel(double newVolumeDecibel)
 {
-	setVolume( exp( -newVolumeDecibel * log10over20 ) );
+    setVolume(exp(-newVolumeDecibel * log10over20));
 }
 
 bool AudioOutput::isMuted() const
@@ -127,19 +127,19 @@ void AudioOutput::setMuted(bool mute)
 
 Category AudioOutput::category() const
 {
-	K_D( const AudioOutput );
-	return d->category;
+    K_D(const AudioOutput);
+    return d->category;
 }
 
 AudioOutputDevice AudioOutput::outputDevice() const
 {
-	K_D( const AudioOutput );
-	int index;
-	if( d->backendObject )
+    K_D(const AudioOutput);
+    int index;
+    if (d->backendObject)
         index = INTERFACE_CALL(outputDevice());
-	else
-		index = d->outputDeviceIndex;
-	return AudioOutputDevice::fromIndex( index );
+    else
+        index = d->outputDeviceIndex;
+    return AudioOutputDevice::fromIndex(index);
 }
 
 bool AudioOutput::setOutputDevice(const AudioOutputDevice &newAudioOutputDevice)
@@ -168,14 +168,14 @@ bool AudioOutputPrivate::aboutToDeleteIface()
 
 void AudioOutput::setupIface()
 {
-	K_D( AudioOutput );
-	Q_ASSERT( d->backendObject );
-	AbstractAudioOutput::setupIface();
+    K_D(AudioOutput);
+    Q_ASSERT(d->backendObject);
+    AbstractAudioOutput::setupIface();
 
     connect(d->backendObject, SIGNAL(volumeChanged(float)), SLOT(_k_volumeChanged(float)));
     connect(d->backendObject, SIGNAL(audioDeviceFailed()), SLOT(_k_audioDeviceFailed()));
 
-	// set up attributes
+    // set up attributes
     INTERFACE_CALL(setVolume(d->volume));
 
     // if the output device is not available and the device was not explicitly set

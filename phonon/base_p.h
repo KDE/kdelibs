@@ -32,57 +32,57 @@ namespace Phonon
 
 class BasePrivate
 {
-	K_DECLARE_PUBLIC( Base )
+    K_DECLARE_PUBLIC(Base)
     friend class Phonon::FactoryPrivate;
-	protected:
-		BasePrivate()
+    protected:
+        BasePrivate()
             : q_ptr(0),
-            backendObject( 0 )
-		{
-			Factory::registerFrontendObject( this );
-		}
+            backendObject(0)
+        {
+            Factory::registerFrontendObject(this);
+        }
 
-		virtual ~BasePrivate()
-		{
-			Factory::deregisterFrontendObject( this );
-			delete backendObject;
-			backendObject = 0;
-		}
+        virtual ~BasePrivate()
+        {
+            Factory::deregisterFrontendObject(this);
+            delete backendObject;
+            backendObject = 0;
+        }
 
-		/**
-		 * \internal
-		 * This method cleanly deletes the Iface object. It is called on
-		 * destruction and before a backend change.
-		 */
-		void deleteIface()
-		{
-			if( backendObject && aboutToDeleteIface() )
-			{
-				delete backendObject;
-				backendObject = 0;
-			}
-		}
+        /**
+         * \internal
+         * This method cleanly deletes the Iface object. It is called on
+         * destruction and before a backend change.
+         */
+        void deleteIface()
+        {
+            if (backendObject && aboutToDeleteIface())
+            {
+                delete backendObject;
+                backendObject = 0;
+            }
+        }
 
-		virtual bool aboutToDeleteIface() = 0;
+        virtual bool aboutToDeleteIface() = 0;
 
-		/**
-		 * \internal
-		 * Creates the Iface object belonging to this class. For most cases the
-		 * implementation is
-		 * \code
-		 * Q_Q( ClassName );
-		 * m_iface = Factory::createClassName( this );
-		 * return m_iface;
-		 * \endcode
-		 *
-		 * This function should not be called except from slotCreateIface.
-		 *
-		 * \see slotCreateIface
-		 */
-		virtual void createIface() = 0;
+        /**
+         * \internal
+         * Creates the Iface object belonging to this class. For most cases the
+         * implementation is
+         * \code
+         * Q_Q(ClassName);
+         * m_iface = Factory::createClassName(this);
+         * return m_iface;
+         * \endcode
+         *
+         * This function should not be called except from slotCreateIface.
+         *
+         * \see slotCreateIface
+         */
+        virtual void createIface() = 0;
 
-		Base* q_ptr;
-		QObject* backendObject;
+        Base *q_ptr;
+        QObject *backendObject;
 
     protected:
         /**
@@ -115,10 +115,10 @@ class BasePrivate
             from->k_ptr->handlers.removeAll(handler);
         }
 
-	private:
-		QList<BaseDestructionHandler*> handlers;
-        BasePrivate(const BasePrivate&);
-        BasePrivate& operator=(const BasePrivate&);
+    private:
+        QList<BaseDestructionHandler *> handlers;
+        BasePrivate(const BasePrivate &);
+        BasePrivate &operator=(const BasePrivate &);
 };
 } //namespace Phonon
 

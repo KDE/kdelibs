@@ -42,23 +42,23 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     d->cardName = audioHw->name();
     d->deviceIds = audioHw->driverHandles();
     switch (audioHw->soundcardType()) {
-        case Solid::AudioHw::InternalSoundcard:
-            d->icon = QLatin1String("pci-card");
-            break;
-        case Solid::AudioHw::UsbSoundcard:
-            d->icon = QLatin1String("usb-device");
-            break;
-        case Solid::AudioHw::FirewireSoundcard:
-            d->icon = QLatin1String("firewire-device");
-            break;
-        case Solid::AudioHw::Headset:
-            d->icon = QLatin1String("headset");
-            break;
-        case Solid::AudioHw::Modem:
-            d->icon = QLatin1String("modem");
-            // should a modem be a valid device so that it's shown to the user?
-            d->valid = false;
-            return;
+    case Solid::AudioHw::InternalSoundcard:
+        d->icon = QLatin1String("pci-card");
+        break;
+    case Solid::AudioHw::UsbSoundcard:
+        d->icon = QLatin1String("usb-device");
+        break;
+    case Solid::AudioHw::FirewireSoundcard:
+        d->icon = QLatin1String("firewire-device");
+        break;
+    case Solid::AudioHw::Headset:
+        d->icon = QLatin1String("headset");
+        break;
+    case Solid::AudioHw::Modem:
+        d->icon = QLatin1String("modem");
+        // should a modem be a valid device so that it's shown to the user?
+        d->valid = false;
+        return;
     }
     d->driver = audioHw->driver();
     d->available = true;
@@ -130,7 +130,7 @@ void AudioDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
     snd_ctl_card_info_malloc(&cardInfo);
 
     snd_ctl_t *ctl;
-    if (0 == snd_ctl_open(&ctl, deviceName.toLatin1().constData(), 0 /*open mode: blocking, sync*/)) {
+    if (0 == snd_ctl_open(&ctl, deviceName.toLatin1().constData(), 0 /*open mode: blocking, sync */)) {
         if (0 == snd_ctl_card_info(ctl, cardInfo)) {
             //Get card identifier from a CTL card info.
             internalId = snd_ctl_card_info_get_id(cardInfo);
@@ -171,7 +171,7 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
     snd_pcm_info_malloc(&pcmInfo);
 
     snd_pcm_t *pcm;
-    if (0 == snd_pcm_open(&pcm, deviceName.toLatin1().constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK /*open mode: non-blocking, sync*/)) {
+    if (0 == snd_pcm_open(&pcm, deviceName.toLatin1().constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK /*open mode: non-blocking, sync */)) {
         if (0 == snd_pcm_info(pcm, pcmInfo)) {
             if (internalId.isNull()) {
                 internalId = snd_pcm_info_get_id(pcmInfo);
@@ -207,7 +207,7 @@ bool AudioDevice::ceaseToExist()
         return false; // you cannot remove devices that are plugged in
     }
     d->valid = false;
-    KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals );
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("phonondevicesrc", KConfig::NoGlobals);
     QString groupName;
     if (d->captureDevice) {
         if (d->playbackDevice) {
@@ -239,7 +239,7 @@ bool AudioDevice::isPlaybackDevice() const
     return d->playbackDevice;
 }
 
-AudioDevice::AudioDevice(const AudioDevice& rhs)
+AudioDevice::AudioDevice(const AudioDevice &rhs)
     : d(rhs.d)
 {
     ++d->refCount;

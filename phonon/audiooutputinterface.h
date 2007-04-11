@@ -44,6 +44,6 @@ class PHONONCORE_EXPORT AudioOutputInterface
 };
 } // namespace Phonon
 
-Q_DECLARE_INTERFACE(Phonon::AudioOutputInterface, "org.kde.Phonon.AudioOutputInterface/0.1" )
+Q_DECLARE_INTERFACE(Phonon::AudioOutputInterface, "org.kde.Phonon.AudioOutputInterface/0.1")
 
 #endif // PHONON_AUDIOOUTPUTINTERFACE_H

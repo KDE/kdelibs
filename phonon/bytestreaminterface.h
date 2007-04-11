@@ -34,15 +34,15 @@ namespace Phonon
  */
 class PHONONCORE_EXPORT ByteStreamInterface
 {
-	public:
-		virtual ~ByteStreamInterface() {}
-		virtual qint64 totalTime() const = 0;
-		virtual void writeData( const QByteArray& ) = 0;
-		virtual void endOfData() = 0;
+    public:
+        virtual ~ByteStreamInterface() {}
+        virtual qint64 totalTime() const = 0;
+        virtual void writeData(const QByteArray &) = 0;
+        virtual void endOfData() = 0;
 };
 }
 
-Q_DECLARE_INTERFACE( Phonon::ByteStreamInterface, "org.kde.Phonon.ByteStreamInterface/0.1" )
+Q_DECLARE_INTERFACE(Phonon::ByteStreamInterface, "org.kde.Phonon.ByteStreamInterface/0.1")
 
 #endif // PHONON_BYTESTREAMINTERFACE_H
 // vim: sw=4 ts=4 tw=80

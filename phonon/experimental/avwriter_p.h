@@ -29,9 +29,9 @@ namespace Experimental
 
 class AvWriterPrivate
 {
-	Q_DECLARE_PUBLIC( AvWriter )
-	protected:
-		AvWriter* q_ptr;
+    Q_DECLARE_PUBLIC(AvWriter)
+    protected:
+        AvWriter *q_ptr;
 };
 
 } // namespace Experimental

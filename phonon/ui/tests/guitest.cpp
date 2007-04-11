@@ -232,16 +232,16 @@ void NavigationWidget::setInterface(NavigationInterface *i)
     }
 }
 
-OutputWidget::OutputWidget( QWidget *parent )
-	: QFrame( parent )
-	, m_output( new AudioOutput( Phonon::MusicCategory, this ) )
+OutputWidget::OutputWidget(QWidget *parent)
+    : QFrame(parent)
+    , m_output(new AudioOutput(Phonon::MusicCategory, this))
 {
-	setFrameShape( QFrame::Box );
-	setFrameShadow( QFrame::Sunken );
+    setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Sunken);
 
-	m_output->setName( "GUI-Test" );
+    m_output->setName("GUI-Test");
 
-	QVBoxLayout *vlayout = new QVBoxLayout( this );
+    QVBoxLayout *vlayout = new QVBoxLayout(this);
 
     QComboBox *deviceComboBox = new QComboBox(this);
     vlayout->addWidget(deviceComboBox);
@@ -250,10 +250,10 @@ OutputWidget::OutputWidget( QWidget *parent )
     deviceComboBox->setCurrentIndex(deviceList.indexOf(m_output->outputDevice()));
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)), SLOT(deviceChange(int)));
 
-	m_volslider = new VolumeSlider( this );
+    m_volslider = new VolumeSlider(this);
     m_volslider->setOrientation(Qt::Vertical);
-	m_volslider->setAudioOutput( m_output );
-	vlayout->addWidget( m_volslider );
+    m_volslider->setAudioOutput(m_output);
+    vlayout->addWidget(m_volslider);
 }
 
 void OutputWidget::deviceChange(int modelIndex)
@@ -264,12 +264,12 @@ void OutputWidget::deviceChange(int modelIndex)
     }
 }
 
-PathWidget::PathWidget( QWidget *parent )
-	: QFrame( parent )
-	, m_path( new AudioPath( this ) )
+PathWidget::PathWidget(QWidget *parent)
+    : QFrame(parent)
+    , m_path(new AudioPath(this))
 {
-	setFrameShape( QFrame::Box );
-	setFrameShadow( QFrame::Raised );
+    setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Raised);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -302,7 +302,7 @@ void PathWidget::addEffect()
         gb->setChecked(true);
         (new QHBoxLayout(gb))->addWidget(new EffectWidget(effect, gb));
         m_path->insertEffect(effect);
-        gb->setProperty("AudioEffect", QVariant::fromValue(static_cast<QObject*>(effect)));
+        gb->setProperty("AudioEffect", QVariant::fromValue(static_cast<QObject *>(effect)));
         connect(gb, SIGNAL(toggled(bool)), SLOT(effectToggled(bool)));
     }
 }
@@ -334,31 +334,31 @@ void PathWidget::addVolumeFader()
     gb->setChecked(true);
     (new QHBoxLayout(gb))->addWidget(new EffectWidget(effect, gb));
     m_path->insertEffect(effect);
-    gb->setProperty("AudioEffect", QVariant::fromValue(static_cast<QObject*>(effect)));
+    gb->setProperty("AudioEffect", QVariant::fromValue(static_cast<QObject *>(effect)));
     connect(gb, SIGNAL(toggled(bool)), SLOT(effectToggled(bool)));
 }
 
-bool PathWidget::connectOutput( OutputWidget *w )
+bool PathWidget::connectOutput(OutputWidget *w)
 {
-	return m_path->addOutput( w->output() );
+    return m_path->addOutput(w->output());
 }
 
-bool ProducerWidget::connectPath( PathWidget *w )
+bool ProducerWidget::connectPath(PathWidget *w)
 {
-	if( m_media )
-	{
+    if (m_media)
+    {
         if (m_media->addAudioPath(w->path())) {
-            m_audioPaths.append( w->path() );
+            m_audioPaths.append(w->path());
             return true;
         }
-	}
-	if( m_audioPaths.contains( w->path() ) )
-		return false;
-	m_audioPaths.append( w->path() );
-	return true;
+    }
+    if (m_audioPaths.contains(w->path()))
+        return false;
+    m_audioPaths.append(w->path());
+    return true;
 }
 
-ProducerWidget::ProducerWidget( QWidget *parent )
+ProducerWidget::ProducerWidget(QWidget *parent)
     : QFrame(parent),
     m_media(0),
     m_length(-1),
@@ -370,16 +370,16 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     m_navigationWidget(0)
 
 {
-	setFrameShape( QFrame::Box );
-	setFrameShadow( QFrame::Sunken );
+    setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Sunken);
 
-	QVBoxLayout *topLayout = new QVBoxLayout( this );
+    QVBoxLayout *topLayout = new QVBoxLayout(this);
 
-	KLineEdit *file = new KLineEdit( this );
-	file->setCompletionObject( new KUrlCompletion( KUrlCompletion::FileCompletion ) );
-	file->setText( getenv( "PHONON_TESTURL" ) );
-	connect( file, SIGNAL( returnPressed( const QString & ) ), SLOT( loadFile( const QString & ) ) );
-	topLayout->addWidget( file );
+    KLineEdit *file = new KLineEdit(this);
+    file->setCompletionObject(new KUrlCompletion(KUrlCompletion::FileCompletion));
+    file->setText(getenv("PHONON_TESTURL"));
+    connect(file, SIGNAL(returnPressed(const QString  &)), SLOT(loadFile(const QString  &)));
+    topLayout->addWidget(file);
 
     QHBoxLayout *mediaLayout = new QHBoxLayout(this);
     topLayout->addLayout(mediaLayout);
@@ -390,37 +390,37 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     connect(audiocdButton, SIGNAL(clicked()), SLOT(openCD()));
     connect(dvdButton,     SIGNAL(clicked()), SLOT(openDVD()));
 
-	m_seekslider = new SeekSlider( this );
-	topLayout->addWidget( m_seekslider );
+    m_seekslider = new SeekSlider(this);
+    topLayout->addWidget(m_seekslider);
 
-	QFrame *frame0 = new QFrame( this );
-	topLayout->addWidget( frame0 );
-	QHBoxLayout *hlayout = new QHBoxLayout( frame0 );
-	hlayout->setMargin( 0 );
+    QFrame *frame0 = new QFrame(this);
+    topLayout->addWidget(frame0);
+    QHBoxLayout *hlayout = new QHBoxLayout(frame0);
+    hlayout->setMargin(0);
 
-	QFrame *frame1 = new QFrame( frame0 );
-	hlayout->addWidget( frame1 );
+    QFrame *frame1 = new QFrame(frame0);
+    hlayout->addWidget(frame1);
     QHBoxLayout *vlayout = new QHBoxLayout(frame1);
-	vlayout->setMargin( 0 );
+    vlayout->setMargin(0);
 
     // playback controls
-	m_play = new QToolButton( frame1 );
+    m_play = new QToolButton(frame1);
     m_play->setIconSize(QSize(32, 32));
-	m_play->setText( "play" );
+    m_play->setText("play");
     m_play->setIcon(KIcon("media-playback-start"));
-	vlayout->addWidget( m_play );
+    vlayout->addWidget(m_play);
 
-	m_pause = new QToolButton( frame1 );
+    m_pause = new QToolButton(frame1);
     m_pause->setIconSize(QSize(32, 32));
-	m_pause->setText( "pause" );
+    m_pause->setText("pause");
     m_pause->setIcon(KIcon("media-playback-pause"));
-	vlayout->addWidget( m_pause );
+    vlayout->addWidget(m_pause);
 
-	m_stop = new QToolButton( frame1 );
+    m_stop = new QToolButton(frame1);
     m_stop->setIconSize(QSize(32, 32));
-	m_stop->setText( "stop" );
+    m_stop->setText("stop");
     m_stop->setIcon(KIcon("media-playback-stop"));
-	vlayout->addWidget( m_stop );
+    vlayout->addWidget(m_stop);
 
     m_trackButton = new QToolButton(frame1);
     m_trackButton->setText("Track");
@@ -443,14 +443,14 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     connect(m_angleButton, SIGNAL(toggled(bool)), SLOT(showAngleWidget(bool)));
     connect(m_navigationButton, SIGNAL(toggled(bool)), SLOT(showNavigationWidget(bool)));
 
-	QFrame *frame2 = new QFrame( frame0 );
-	hlayout->addWidget( frame2 );
-	QVBoxLayout *vlayout2 = new QVBoxLayout( frame2 );
-	vlayout2->setMargin( 0 );
+    QFrame *frame2 = new QFrame(frame0);
+    hlayout->addWidget(frame2);
+    QVBoxLayout *vlayout2 = new QVBoxLayout(frame2);
+    vlayout2->setMargin(0);
 
     // state label
-	m_statelabel = new QLabel( frame2 );
-	vlayout2->addWidget( m_statelabel );
+    m_statelabel = new QLabel(frame2);
+    vlayout2->addWidget(m_statelabel);
 
     // buffer progressbar
     m_bufferProgress = new QProgressBar(frame2);
@@ -459,20 +459,20 @@ ProducerWidget::ProducerWidget( QWidget *parent )
     vlayout2->addWidget(m_bufferProgress);
 
     // time info
-	m_totaltime = new QLabel( frame2 );
-	vlayout2->addWidget( m_totaltime );
-	
-	m_currenttime = new QLabel( frame2 );
-	vlayout2->addWidget( m_currenttime );
-	
-	m_remainingtime = new QLabel( frame2 );
-	vlayout2->addWidget( m_remainingtime );
+    m_totaltime = new QLabel(frame2);
+    vlayout2->addWidget(m_totaltime);
+    
+    m_currenttime = new QLabel(frame2);
+    vlayout2->addWidget(m_currenttime);
+    
+    m_remainingtime = new QLabel(frame2);
+    vlayout2->addWidget(m_remainingtime);
 
     // meta data
-	m_metaDataLabel = new QLabel( this );
-	topLayout->addWidget( m_metaDataLabel );
+    m_metaDataLabel = new QLabel(this);
+    topLayout->addWidget(m_metaDataLabel);
 
-	loadFile( getenv( "PHONON_TESTURL" ) );
+    loadFile(getenv("PHONON_TESTURL"));
 }
 
 ProducerWidget::~ProducerWidget()
@@ -480,16 +480,16 @@ ProducerWidget::~ProducerWidget()
     delete m_media;
 }
 
-void ProducerWidget::tick( qint64 t )
+void ProducerWidget::tick(qint64 t)
 {
-	QTime x( 0, 0 );
-	x = x.addMSecs( t );
-	m_currenttime->setText( x.toString( "m:ss.zzz" ) );
-	x.setHMS( 0, 0, 0, 0 );
-	qint64 r = m_media->remainingTime();
-	if( r >= 0 )
-		x = x.addMSecs( r );
-	m_remainingtime->setText( x.toString( "m:ss.zzz" ) );
+    QTime x(0, 0);
+    x = x.addMSecs(t);
+    m_currenttime->setText(x.toString("m:ss.zzz"));
+    x.setHMS(0, 0, 0, 0);
+    qint64 r = m_media->remainingTime();
+    if (r >= 0)
+        x = x.addMSecs(r);
+    m_remainingtime->setText(x.toString("m:ss.zzz"));
 }
 
 void ProducerWidget::checkVideoWidget()
@@ -520,44 +520,44 @@ void ProducerWidget::stateChanged(Phonon::State newstate, Phonon::State oldstate
 //X         m_angleButton       ->setEnabled(m_media->hasInterface<AngleInterface>());
 //X         m_navigationButton  ->setEnabled(m_media->hasInterface<NavigationInterface>());
 //X     }
-	switch( newstate )
-	{
-		case Phonon::ErrorState:
-			m_statelabel->setText( "Error" );
-            {
-                QString text = m_media->errorString();
-                if (!text.isEmpty()) {
-                    KMessageBox::error(this, text);
-                }
+    switch(newstate)
+    {
+    case Phonon::ErrorState:
+        m_statelabel->setText("Error");
+        {
+            QString text = m_media->errorString();
+            if (!text.isEmpty()) {
+                KMessageBox::error(this, text);
             }
-			break;
-		case Phonon::LoadingState:
-			m_statelabel->setText( "Loading" );
-			break;
-		case Phonon::StoppedState:
-			m_statelabel->setText( "Stopped" );
-			break;
-		case Phonon::PausedState:
-			m_statelabel->setText( "Paused" );
-			break;
-		case Phonon::BufferingState:
-			m_statelabel->setText( "Buffering" );
-            m_bufferProgress->reset();
-            m_bufferProgress->show();
-			break;
-		case Phonon::PlayingState:
-			m_statelabel->setText( "Playing" );
-			break;
-	}
+        }
+        break;
+    case Phonon::LoadingState:
+        m_statelabel->setText("Loading");
+        break;
+    case Phonon::StoppedState:
+        m_statelabel->setText("Stopped");
+        break;
+    case Phonon::PausedState:
+        m_statelabel->setText("Paused");
+        break;
+    case Phonon::BufferingState:
+        m_statelabel->setText("Buffering");
+        m_bufferProgress->reset();
+        m_bufferProgress->show();
+        break;
+    case Phonon::PlayingState:
+        m_statelabel->setText("Playing");
+        break;
+    }
 }
 
-void ProducerWidget::length( qint64 ms )
+void ProducerWidget::length(qint64 ms)
 {
-	m_length = ms;
-	QTime x( 0, 0 );
-	x = x.addMSecs( m_length );
-	m_totaltime->setText( x.toString( "m:ss.zzz" ) );
-	tick( m_media->currentTime() );
+    m_length = ms;
+    QTime x(0, 0);
+    x = x.addMSecs(m_length);
+    m_totaltime->setText(x.toString("m:ss.zzz"));
+    tick(m_media->currentTime());
 }
 
 void ProducerWidget::ensureMedia()
@@ -697,13 +697,13 @@ void ProducerWidget::showNavigationWidget(bool b)
     }
 }
 
-void ProducerWidget::loadFile( const QString & file )
+void ProducerWidget::loadFile(const QString  & file)
 {
     delete m_media;
     m_media = 0;
     ensureMedia();
     Q_ASSERT(m_media);
-	m_media->setUrl( KUrl( file ) );
+    m_media->setUrl(KUrl(file));
 //X     m_trackButton       ->setEnabled(m_media->hasInterface<TrackInterface>());
 //X     m_chapterButton     ->setEnabled(m_media->hasInterface<ChapterInterface>());
 //X     m_angleButton       ->setEnabled(m_media->hasInterface<AngleInterface>());
@@ -712,253 +712,253 @@ void ProducerWidget::loadFile( const QString & file )
 
 void ProducerWidget::updateMetaData()
 {
-	QString metaData;
-	QStringList keys = m_media->metaDataKeys();
-	foreach( QString key, keys )
-	{
-		metaData += key + QLatin1String( ": " ) + m_media->metaDataItems( key ).join(QLatin1String("\n")) + "\n";
-	}
-	m_metaDataLabel->setText( metaData.left( metaData.length() - 1 ) );
+    QString metaData;
+    QStringList keys = m_media->metaDataKeys();
+    foreach (QString key, keys)
+    {
+        metaData += key + QLatin1String(": ") + m_media->metaDataItems(key).join(QLatin1String("\n")) + "\n";
+    }
+    m_metaDataLabel->setText(metaData.left(metaData.length() - 1));
 }
 
 void ProducerWidget::slotFinished()
 {
-	kDebug() << "finished signal from MediaObject with URL " << m_media->url() << endl;
+    kDebug() << "finished signal from MediaObject with URL " << m_media->url() << endl;
 }
 
-void ProducerWidget::slotAboutToFinish( qint32 remaining )
+void ProducerWidget::slotAboutToFinish(qint32 remaining)
 {
-	kDebug() << "aboutToFinish(" << remaining << ") signal from MediaObject with URL " << m_media->url() << endl;
+    kDebug() << "aboutToFinish(" << remaining << ") signal from MediaObject with URL " << m_media->url() << endl;
 }
 
-ConnectionWidget::ConnectionWidget( QWidget *parent )
-	: QFrame( parent )
+ConnectionWidget::ConnectionWidget(QWidget *parent)
+    : QFrame(parent)
 {
-	setFrameShape( QFrame::StyledPanel );
-	setFrameShadow( QFrame::Sunken );
-	setMinimumWidth( 120 );
+    setFrameShape(QFrame::StyledPanel);
+    setFrameShadow(QFrame::Sunken);
+    setMinimumWidth(120);
 }
 
-void ConnectionWidget::mousePressEvent( QMouseEvent *me )
+void ConnectionWidget::mousePressEvent(QMouseEvent *me)
 {
-	m_pressPos = me->pos();
+    m_pressPos = me->pos();
 }
 
-void ConnectionWidget::mouseReleaseEvent( QMouseEvent *me )
+void ConnectionWidget::mouseReleaseEvent(QMouseEvent *me)
 {
-	emit madeConnection( m_pressPos, me->pos() );
-	m_pressPos = QPoint();
-	m_currentLine = QLine();
-	update();
+    emit madeConnection(m_pressPos, me->pos());
+    m_pressPos = QPoint();
+    m_currentLine = QLine();
+    update();
 }
 
-void ConnectionWidget::mouseMoveEvent( QMouseEvent *me )
+void ConnectionWidget::mouseMoveEvent(QMouseEvent *me)
 {
-	if( m_pressPos.isNull() )
-		return;
+    if (m_pressPos.isNull())
+        return;
 
-	m_currentLine = QLine( m_pressPos, me->pos() );
-	update();
+    m_currentLine = QLine(m_pressPos, me->pos());
+    update();
 }
 
-void ConnectionWidget::addConnection( QWidget *a, QWidget *b )
+void ConnectionWidget::addConnection(QWidget *a, QWidget *b)
 {
-	m_lines.append( WidgetConnection( a, b ) );
-	update();
+    m_lines.append(WidgetConnection(a, b));
+    update();
 }
 
-void ConnectionWidget::paintEvent( QPaintEvent *pe )
+void ConnectionWidget::paintEvent(QPaintEvent *pe)
 {
-	QFrame::paintEvent( pe );
-	QPainter p( this );
-	foreach( WidgetConnection x, m_lines )
-	{
-		QLine l( 0, x.a->geometry().center().y(),
-				width(), x.b->geometry().center().y() );
-		p.drawLine( l );
-	}
-	p.setPen( Qt::darkRed );
-	p.drawLine( m_currentLine );
+    QFrame::paintEvent(pe);
+    QPainter p(this);
+    foreach (WidgetConnection x, m_lines)
+    {
+        QLine l(0, x.a->geometry().center().y(),
+                width(), x.b->geometry().center().y());
+        p.drawLine(l);
+    }
+    p.setPen(Qt::darkRed);
+    p.drawLine(m_currentLine);
 }
 
-MainWidget::MainWidget( QWidget *parent )
-	: QWidget( parent )
+MainWidget::MainWidget(QWidget *parent)
+    : QWidget(parent)
 {
-	QHBoxLayout *topLayout = new QHBoxLayout( this );
+    QHBoxLayout *topLayout = new QHBoxLayout(this);
 
-	m_producerFrame = new QFrame( this );
-	topLayout->addWidget( m_producerFrame );
-	new QVBoxLayout( m_producerFrame );
-	m_producerFrame->layout()->setMargin( 0 );
+    m_producerFrame = new QFrame(this);
+    topLayout->addWidget(m_producerFrame);
+    new QVBoxLayout(m_producerFrame);
+    m_producerFrame->layout()->setMargin(0);
 
-	m_connectionFrame1 = new ConnectionWidget( this );
-	topLayout->addWidget( m_connectionFrame1 );
-	connect( m_connectionFrame1, SIGNAL( madeConnection( const QPoint&, const QPoint& ) ),
-			SLOT( madeConnection1( const QPoint&, const QPoint& ) ) );
+    m_connectionFrame1 = new ConnectionWidget(this);
+    topLayout->addWidget(m_connectionFrame1);
+    connect(m_connectionFrame1, SIGNAL(madeConnection(const QPoint &, const QPoint &)),
+            SLOT(madeConnection1(const QPoint &, const QPoint &)));
 
-	m_pathFrame = new QFrame( this );
-	topLayout->addWidget( m_pathFrame );
-	new QVBoxLayout( m_pathFrame );
-	m_pathFrame->layout()->setMargin( 0 );
+    m_pathFrame = new QFrame(this);
+    topLayout->addWidget(m_pathFrame);
+    new QVBoxLayout(m_pathFrame);
+    m_pathFrame->layout()->setMargin(0);
 
-	m_connectionFrame2 = new ConnectionWidget( this );
-	topLayout->addWidget( m_connectionFrame2 );
-	connect( m_connectionFrame2, SIGNAL( madeConnection( const QPoint&, const QPoint& ) ),
-			SLOT( madeConnection2( const QPoint&, const QPoint& ) ) );
+    m_connectionFrame2 = new ConnectionWidget(this);
+    topLayout->addWidget(m_connectionFrame2);
+    connect(m_connectionFrame2, SIGNAL(madeConnection(const QPoint &, const QPoint &)),
+            SLOT(madeConnection2(const QPoint &, const QPoint &)));
 
-	m_outputFrame = new QFrame( this );
-	topLayout->addWidget( m_outputFrame );
-	new QVBoxLayout( m_outputFrame );
-	m_outputFrame->layout()->setMargin( 0 );
+    m_outputFrame = new QFrame(this);
+    topLayout->addWidget(m_outputFrame);
+    new QVBoxLayout(m_outputFrame);
+    m_outputFrame->layout()->setMargin(0);
 
-	QPushButton *addProducerButton = new QPushButton( "add Producer", m_producerFrame );
-	m_producerFrame->layout()->addWidget( addProducerButton );
-	connect( addProducerButton, SIGNAL( clicked() ), SLOT( addProducer() ) );
+    QPushButton *addProducerButton = new QPushButton("add Producer", m_producerFrame);
+    m_producerFrame->layout()->addWidget(addProducerButton);
+    connect(addProducerButton, SIGNAL(clicked()), SLOT(addProducer()));
 
-	QPushButton *addPathButton = new QPushButton( "add Path", m_pathFrame );
-	m_pathFrame->layout()->addWidget( addPathButton );
-	connect( addPathButton, SIGNAL( clicked() ), SLOT( addPath() ) );
+    QPushButton *addPathButton = new QPushButton("add Path", m_pathFrame);
+    m_pathFrame->layout()->addWidget(addPathButton);
+    connect(addPathButton, SIGNAL(clicked()), SLOT(addPath()));
 
-	QPushButton *addOutputButton = new QPushButton( "add Output", m_outputFrame );
-	m_outputFrame->layout()->addWidget( addOutputButton );
-	connect( addOutputButton, SIGNAL( clicked() ), SLOT( addOutput() ) );
+    QPushButton *addOutputButton = new QPushButton("add Output", m_outputFrame);
+    m_outputFrame->layout()->addWidget(addOutputButton);
+    connect(addOutputButton, SIGNAL(clicked()), SLOT(addOutput()));
 
-	addProducer();
-	addPath();
-	addOutput();
-	if( m_producers.first()->connectPath( m_paths.first() ) )
-		m_connectionFrame1->addConnection( m_producers.first(), m_paths.first() );
-	if( m_paths.first()->connectOutput( m_outputs.first() ) )
-		m_connectionFrame2->addConnection( m_paths.first(), m_outputs.first() );
+    addProducer();
+    addPath();
+    addOutput();
+    if (m_producers.first()->connectPath(m_paths.first()))
+        m_connectionFrame1->addConnection(m_producers.first(), m_paths.first());
+    if (m_paths.first()->connectOutput(m_outputs.first()))
+        m_connectionFrame2->addConnection(m_paths.first(), m_outputs.first());
 }
 
 void MainWidget::addProducer()
 {
-	ProducerWidget* x = new ProducerWidget( m_producerFrame );
-	m_producerFrame->layout()->addWidget( x );
-	m_producers << x;
-	m_connectionFrame1->update();
+    ProducerWidget *x = new ProducerWidget(m_producerFrame);
+    m_producerFrame->layout()->addWidget(x);
+    m_producers << x;
+    m_connectionFrame1->update();
 }
 
 void MainWidget::addPath()
 {
-	PathWidget* x = new PathWidget( m_pathFrame );
-	m_pathFrame->layout()->addWidget( x );
-	m_paths << x;
-	m_connectionFrame1->update();
-	m_connectionFrame2->update();
+    PathWidget *x = new PathWidget(m_pathFrame);
+    m_pathFrame->layout()->addWidget(x);
+    m_paths << x;
+    m_connectionFrame1->update();
+    m_connectionFrame2->update();
 }
 
 void MainWidget::addOutput()
 {
-	OutputWidget* x = new OutputWidget( m_outputFrame );
-	m_outputFrame->layout()->addWidget( x );
-	m_outputs << x;
-	m_connectionFrame2->update();
+    OutputWidget *x = new OutputWidget(m_outputFrame);
+    m_outputFrame->layout()->addWidget(x);
+    m_outputs << x;
+    m_connectionFrame2->update();
 }
 
-void MainWidget::madeConnection1( const QPoint &a, const QPoint &b )
+void MainWidget::madeConnection1(const QPoint &a, const QPoint &b)
 {
-	QPoint left;
-	QPoint right;
-	if( a.x() < m_connectionFrame1->width() / 3 )
-		left = a;
-	else if( a.x() > m_connectionFrame1->width() * 2 / 3 )
-		right = a;
-	if( b.x() < m_connectionFrame1->width() / 3 )
-		left = b;
-	else if( b.x() > m_connectionFrame1->width() * 2 / 3 )
-		right = b;
-	if( left.isNull() || right.isNull() )
-		return;
+    QPoint left;
+    QPoint right;
+    if (a.x() < m_connectionFrame1->width() / 3)
+        left = a;
+    else if (a.x() > m_connectionFrame1->width() * 2 / 3)
+        right = a;
+    if (b.x() < m_connectionFrame1->width() / 3)
+        left = b;
+    else if (b.x() > m_connectionFrame1->width() * 2 / 3)
+        right = b;
+    if (left.isNull() || right.isNull())
+        return;
 
-	kDebug() << k_funcinfo << left << right << endl;
+    kDebug() << k_funcinfo << left << right << endl;
 
-	ProducerWidget *producer = 0;
-	foreach( ProducerWidget *x, m_producers )
-	{
-		QRect rect = x->geometry();
-		kDebug() << rect << endl;
-		left.setX( rect.center().x() );
-		if( rect.contains( left ) )
-			producer = x;
-	}
-	if( !producer )
-		return;
+    ProducerWidget *producer = 0;
+    foreach (ProducerWidget *x, m_producers)
+    {
+        QRect rect = x->geometry();
+        kDebug() << rect << endl;
+        left.setX(rect.center().x());
+        if (rect.contains(left))
+            producer = x;
+    }
+    if (!producer)
+        return;
 
-	PathWidget *path = 0;
-	foreach( PathWidget *x, m_paths )
-	{
-		QRect rect = x->geometry();
-		kDebug() << rect << endl;
-		right.setX( rect.center().x() );
-		if( rect.contains( right ) )
-			path = x;
-	}
-	if( !path )
-		return;
+    PathWidget *path = 0;
+    foreach (PathWidget *x, m_paths)
+    {
+        QRect rect = x->geometry();
+        kDebug() << rect << endl;
+        right.setX(rect.center().x());
+        if (rect.contains(right))
+            path = x;
+    }
+    if (!path)
+        return;
 
-	if( producer->connectPath( path ) )
-		m_connectionFrame1->addConnection( producer, path );
+    if (producer->connectPath(path))
+        m_connectionFrame1->addConnection(producer, path);
 }
 
-void MainWidget::madeConnection2( const QPoint &a, const QPoint &b )
+void MainWidget::madeConnection2(const QPoint &a, const QPoint &b)
 {
-	QPoint left;
-	QPoint right;
-	if( a.x() < m_connectionFrame2->width() / 3 )
-		left = a;
-	else if( a.x() > m_connectionFrame2->width() * 2 / 3 )
-		right = a;
-	if( b.x() < m_connectionFrame2->width() / 3 )
-		left = b;
-	else if( b.x() > m_connectionFrame2->width() * 2 / 3 )
-		right = b;
-	if( left.isNull() || right.isNull() )
-		return;
+    QPoint left;
+    QPoint right;
+    if (a.x() < m_connectionFrame2->width() / 3)
+        left = a;
+    else if (a.x() > m_connectionFrame2->width() * 2 / 3)
+        right = a;
+    if (b.x() < m_connectionFrame2->width() / 3)
+        left = b;
+    else if (b.x() > m_connectionFrame2->width() * 2 / 3)
+        right = b;
+    if (left.isNull() || right.isNull())
+        return;
 
-	kDebug() << k_funcinfo << left << right << endl;
+    kDebug() << k_funcinfo << left << right << endl;
 
-	PathWidget *path = 0;
-	foreach( PathWidget *x, m_paths )
-	{
-		QRect rect = x->geometry();
-		kDebug() << rect << endl;
-		left.setX( rect.center().x() );
-		if( rect.contains( left ) )
-			path = x;
-	}
-	if( !path )
-		return;
+    PathWidget *path = 0;
+    foreach (PathWidget *x, m_paths)
+    {
+        QRect rect = x->geometry();
+        kDebug() << rect << endl;
+        left.setX(rect.center().x());
+        if (rect.contains(left))
+            path = x;
+    }
+    if (!path)
+        return;
 
-	OutputWidget *output = 0;
-	foreach( OutputWidget *x, m_outputs )
-	{
-		QRect rect = x->geometry();
-		kDebug() << rect << endl;
-		right.setX( rect.center().x() );
-		if( rect.contains( right ) )
-			output = x;
-	}
-	if( !output )
-		return;
+    OutputWidget *output = 0;
+    foreach (OutputWidget *x, m_outputs)
+    {
+        QRect rect = x->geometry();
+        kDebug() << rect << endl;
+        right.setX(rect.center().x());
+        if (rect.contains(right))
+            output = x;
+    }
+    if (!output)
+        return;
 
-	if( path->connectOutput( output ) )
-		m_connectionFrame2->addConnection( path, output );
+    if (path->connectOutput(output))
+        m_connectionFrame2->addConnection(path, output);
 }
 
-int main( int argc, char **argv )
+int main(int argc, char **argv)
 {
-	KAboutData about( "phonontest", "KDE Multimedia Test",
-			"0.2", "Testprogram",
-			KAboutData::License_LGPL, 0 );
-	about.addAuthor( "Matthias Kretz", 0, "kretz@kde.org" );
-	KCmdLineArgs::init( argc, argv, &about );
-	KApplication app;
-	MainWidget w;
+    KAboutData about("phonontest", "KDE Multimedia Test",
+            "0.2", "Testprogram",
+            KAboutData::License_LGPL, 0);
+    about.addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    KCmdLineArgs::init(argc, argv, &about);
+    KApplication app;
+    MainWidget w;
     w.setWindowIcon(KIcon("phonon"));
-	w.show();
-	return app.exec();
+    w.show();
+    return app.exec();
 }
 
 #include "guitest.moc"

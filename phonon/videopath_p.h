@@ -28,14 +28,14 @@ namespace Phonon
 {
 class VideoPathPrivate : public BasePrivate, private BaseDestructionHandler
 {
-	K_DECLARE_PUBLIC( VideoPath )
+    K_DECLARE_PUBLIC(VideoPath)
     PHONON_PRIVATECLASS
-	protected:
-		QList<AbstractVideoOutput*> outputs;
-		QList<VideoEffect*> effects;
+    protected:
+        QList<AbstractVideoOutput *> outputs;
+        QList<VideoEffect *> effects;
 
-	private:
-		virtual void phononObjectDestroyed( Base* );
+    private:
+        virtual void phononObjectDestroyed(Base *);
 };
 } //namespace Phonon
 

@@ -30,17 +30,17 @@ namespace Experimental
 
 class AudioDataOutputPrivate : public AbstractAudioOutputPrivate
 {
-	K_DECLARE_PUBLIC( AudioDataOutput )
+    K_DECLARE_PUBLIC(AudioDataOutput)
     PHONON_PRIVATECLASS
-	protected:
-		AudioDataOutputPrivate()
-			: format( AudioDataOutput::IntegerFormat )
-			, dataSize( 512 )
-		{
-		}
+    protected:
+        AudioDataOutputPrivate()
+            : format(AudioDataOutput::IntegerFormat)
+            , dataSize(512)
+        {
+        }
 
-		AudioDataOutput::Format format;
-		int dataSize;
+        AudioDataOutput::Format format;
+        int dataSize;
 };
 
 } // namespace Experimental

@@ -25,17 +25,17 @@ namespace Phonon
 {
 namespace Fake
 {
-	class AbstractAudioOutput : public QObject
-	{
-		Q_OBJECT
-		public:
-			AbstractAudioOutput( QObject* parent );
-			virtual ~AbstractAudioOutput();
+    class AbstractAudioOutput : public QObject
+    {
+        Q_OBJECT
+        public:
+            AbstractAudioOutput(QObject *parent);
+            virtual ~AbstractAudioOutput();
 
-			virtual void processBuffer( const QVector<float>& buffer ) = 0;
+            virtual void processBuffer(const QVector<float> &buffer) = 0;
 
-		private:
-	};
+        private:
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

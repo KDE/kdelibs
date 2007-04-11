@@ -25,21 +25,21 @@
 
 class UiMethodTest : public QObject
 {
-	Q_OBJECT
-	private Q_SLOTS:
+    Q_OBJECT
+    private Q_SLOTS:
         void initTestCase() { Phonon::loadFakeBackend(); }
-		void checkUiBackendMethods_data();
-		void checkUiBackendMethods();
-		void checkVideoWidgetMethods_data();
-		void checkVideoWidgetMethods();
+        void checkUiBackendMethods_data();
+        void checkUiBackendMethods();
+        void checkVideoWidgetMethods_data();
+        void checkVideoWidgetMethods();
 
-	private:
-		void addColumns();
-		void addMethod( const char* returnType, const char* signature, bool optional = false );
+    private:
+        void addColumns();
+        void addMethod(const char *returnType, const char *signature, bool optional = false);
                 void addSignal(const char *signature);
-		void checkMethods( QObject* backendObject );
-		QObject* backendObject;
-		const QMetaObject* meta;
+        void checkMethods(QObject *backendObject);
+        QObject *backendObject;
+        const QMetaObject *meta;
 };
 #endif // PHONON_UIMETHODTEST_H
 // vim: ts=4

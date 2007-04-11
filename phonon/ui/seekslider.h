@@ -37,51 +37,51 @@ class SeekSliderPrivate;
  */
 class PHONONUI_EXPORT SeekSlider : public QWidget
 {
-	Q_OBJECT
-	Q_DECLARE_PRIVATE( SeekSlider )
-	/**
-	 * This property holds whether the icon next to the slider is visible.
-	 *
-	 * By default the icon is visible.
-	 */
-	Q_PROPERTY( bool iconVisible READ isIconVisible WRITE setIconVisible )
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(SeekSlider)
+    /**
+     * This property holds whether the icon next to the slider is visible.
+     *
+     * By default the icon is visible.
+     */
+    Q_PROPERTY(bool iconVisible READ isIconVisible WRITE setIconVisible)
 
-	/**
-	 * This property holds whether slider tracking is enabled.
-	 *
-	 * If tracking is enabled (the default), the media seeks
-	 * while the slider is being dragged. If tracking is
-	 * disabled, the media seeks only when the user
-	 * releases the slider.
-	 */
-	Q_PROPERTY( bool tracking READ hasTracking WRITE setTracking )
+    /**
+     * This property holds whether slider tracking is enabled.
+     *
+     * If tracking is enabled (the default), the media seeks
+     * while the slider is being dragged. If tracking is
+     * disabled, the media seeks only when the user
+     * releases the slider.
+     */
+    Q_PROPERTY(bool tracking READ hasTracking WRITE setTracking)
 
-	/**
-	 * This property holds the page step.
-	 *
-	 * The larger of two natural steps that a slider provides and
-	 * typically corresponds to the user pressing PageUp or PageDown.
-	 *
-	 * Defaults to 5 seconds.
-	 */
-	Q_PROPERTY( int pageStep READ pageStep WRITE setPageStep )
+    /**
+     * This property holds the page step.
+     *
+     * The larger of two natural steps that a slider provides and
+     * typically corresponds to the user pressing PageUp or PageDown.
+     *
+     * Defaults to 5 seconds.
+     */
+    Q_PROPERTY(int pageStep READ pageStep WRITE setPageStep)
 
-	/**
-	 * This property holds the single step.
-	 *
-	 * The smaller of two natural steps that a slider provides and
-	 * typically corresponds to the user pressing an arrow key.
-	 *
-	 * Defaults to 0.5 seconds.
-	 */
-	Q_PROPERTY( int singleStep READ singleStep WRITE setSingleStep )
+    /**
+     * This property holds the single step.
+     *
+     * The smaller of two natural steps that a slider provides and
+     * typically corresponds to the user pressing an arrow key.
+     *
+     * Defaults to 0.5 seconds.
+     */
+    Q_PROPERTY(int singleStep READ singleStep WRITE setSingleStep)
 
     /**
      * This property holds the orientation of the slider.
      *
      * The orientation must be Qt::Vertical or Qt::Horizontal (the default).
      */
-    Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )
+    Q_PROPERTY(Qt::Orientation orientation READ orientation WRITE setOrientation)
 
     /**
      * \brief the icon size used for the mute button/icon.
@@ -90,23 +90,23 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
      */
     Q_PROPERTY(QSize iconSize READ iconSize WRITE setIconSize)
 
-	public:
-		/**
+    public:
+        /**
          * Constructs a seek slider widget with the given \p parent.
-		 */
-		SeekSlider( QWidget* parent = 0 );
+         */
+        SeekSlider(QWidget *parent = 0);
 
         /**
          * Destroys the seek slider.
          */
-		~SeekSlider();
+        ~SeekSlider();
 
-		bool hasTracking() const;
-		void setTracking( bool tracking );
-		int pageStep() const;
-		void setPageStep( int milliseconds );
-		int singleStep() const;
-		void setSingleStep( int milliseconds );
+        bool hasTracking() const;
+        void setTracking(bool tracking);
+        int pageStep() const;
+        void setPageStep(int milliseconds);
+        int singleStep() const;
+        void setSingleStep(int milliseconds);
         Qt::Orientation orientation() const;
         bool isIconVisible() const;
         QSize iconSize() const;
@@ -116,10 +116,10 @@ class PHONONUI_EXPORT SeekSlider : public QWidget
         void setIconVisible(bool);
         void setIconSize(const QSize &size);
 
-		/**
-		 * Sets the media producer object to be controlled by this slider.
-		 */
-		void setMediaProducer( AbstractMediaProducer* );
+        /**
+         * Sets the media producer object to be controlled by this slider.
+         */
+        void setMediaProducer(AbstractMediaProducer *);
 
     private:
         Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State))

@@ -26,10 +26,10 @@
 
 namespace Phonon
 {
-	class ObjectDescriptionPrivate : public QSharedData
-	{
-		public:
-            ObjectDescriptionPrivate(int _index, const QHash<QByteArray, QVariant>& _properties)
+    class ObjectDescriptionPrivate : public QSharedData
+    {
+        public:
+            ObjectDescriptionPrivate(int _index, const QHash<QByteArray, QVariant> &_properties)
                 : index(_index),
                 name(_properties["name"].toString()),
                 description(_properties["description"].toString()),
@@ -37,18 +37,18 @@ namespace Phonon
             {
             }
 
-			bool operator==( const ObjectDescriptionPrivate& rhs ) const
-			{
-				if( index == rhs.index && ( name != rhs.name || description != rhs.description ) )
-					kError( 600 ) << "Same index (" << index <<
-						"), but different name/description. This is a bug in the Phonon backend." << endl;
-				return index == rhs.index;// && name == rhs.name && description == rhs.description;
-			}
+            bool operator==(const ObjectDescriptionPrivate &rhs) const
+            {
+                if (index == rhs.index && (name != rhs.name || description != rhs.description))
+                    kError(600) << "Same index (" << index <<
+                        "), but different name/description. This is a bug in the Phonon backend." << endl;
+                return index == rhs.index;// && name == rhs.name && description == rhs.description;
+            }
 
-			int index;
-			QString name, description;
+            int index;
+            QString name, description;
             QHash<QByteArray, QVariant> properties;
-	};
+    };
 } // namespace Phonon
 
 #endif // PHONON_OBJECTDESCRIPTION_P_H

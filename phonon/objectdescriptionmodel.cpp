@@ -120,7 +120,7 @@ void *ObjectDescriptionModel<type>::qt_metacast(const char *_clname)
         return 0;
     }
     if (!strcmp(_clname, ObjectDescriptionModel<type>::staticMetaObject.className())) {
-        return static_cast<void*>(const_cast<ObjectDescriptionModel<type>*>(this));
+        return static_cast<void *>(const_cast<ObjectDescriptionModel<type> *>(this));
     }
     return QAbstractListModel::qt_metacast(_clname);
 }
@@ -134,11 +134,11 @@ int ObjectDescriptionModel<type>::qt_metacall(QMetaObject::Call _c, int _id, voi
 */
 
 template<ObjectDescriptionType type>
-ObjectDescriptionModel<type>::ObjectDescriptionModel( QObject* parent )
-	: QAbstractListModel( parent )
-	, d_ptr( new ObjectDescriptionModelPrivate<type> )
+ObjectDescriptionModel<type>::ObjectDescriptionModel(QObject *parent)
+    : QAbstractListModel(parent)
+    , d_ptr(new ObjectDescriptionModelPrivate<type>)
 {
-	d_ptr->q_ptr = this;
+    d_ptr->q_ptr = this;
 }
 
 template<ObjectDescriptionType type>
@@ -153,16 +153,16 @@ ObjectDescriptionModel<type>::ObjectDescriptionModel(const QList<ObjectDescripti
 template<ObjectDescriptionType type>
 ObjectDescriptionModel<type>::~ObjectDescriptionModel()
 {
-	delete d_ptr;
-	d_ptr = 0;
+    delete d_ptr;
+    d_ptr = 0;
 }
 
 template<ObjectDescriptionType type>
-void ObjectDescriptionModel<type>::setModelData( const QList<ObjectDescription<type> >& newData )
+void ObjectDescriptionModel<type>::setModelData(const QList<ObjectDescription<type> > &newData)
 {
-	Q_D( ObjectDescriptionModel );
-	d->data = newData;
-	reset();
+    Q_D(ObjectDescriptionModel);
+    d->data = newData;
+    reset();
 }
 
 template<ObjectDescriptionType type>
@@ -183,46 +183,46 @@ ObjectDescription<type> ObjectDescriptionModel<type>::modelData(const QModelInde
 }
 
 template<ObjectDescriptionType type>
-int ObjectDescriptionModel<type>::rowCount( const QModelIndex& parent ) const
+int ObjectDescriptionModel<type>::rowCount(const QModelIndex &parent) const
 {
-	if( parent.isValid() )
-		return 0;
+    if (parent.isValid())
+        return 0;
 
-	Q_D( const ObjectDescriptionModel );
-	return d->data.size();
+    Q_D(const ObjectDescriptionModel);
+    return d->data.size();
 }
 
 template<ObjectDescriptionType type>
-QVariant ObjectDescriptionModel<type>::data( const QModelIndex& index, int role ) const
+QVariant ObjectDescriptionModel<type>::data(const QModelIndex &index, int role) const
 {
-	Q_D( const ObjectDescriptionModel );
-	if( !index.isValid() || index.row() >= d->data.size() || index.column() != 0 )
-		return QVariant();
+    Q_D(const ObjectDescriptionModel);
+    if (!index.isValid() || index.row() >= d->data.size() || index.column() != 0)
+        return QVariant();
 
-	switch( role )
-	{
-		case Qt::EditRole:
-		case Qt::DisplayRole:
-			return d->data.at( index.row() ).name();
-			break;
-		case Qt::ToolTipRole:
-			return d->data.at( index.row() ).description();
-			break;
-        case Qt::DecorationRole:
-            {
-                QVariant icon = d->data.at(index.row()).property("icon");
-                if (icon.isValid()) {
-                    if (icon.type() == QVariant::String) {
-                        return GuiInterface::instance()->icon(icon.toString());
-                    } else if (icon.type() == QVariant::Icon) {
-                        return icon;
-                    }
+    switch(role)
+    {
+    case Qt::EditRole:
+    case Qt::DisplayRole:
+        return d->data.at(index.row()).name();
+        break;
+    case Qt::ToolTipRole:
+        return d->data.at(index.row()).description();
+        break;
+    case Qt::DecorationRole:
+        {
+            QVariant icon = d->data.at(index.row()).property("icon");
+            if (icon.isValid()) {
+                if (icon.type() == QVariant::String) {
+                    return GuiInterface::instance()->icon(icon.toString());
+                } else if (icon.type() == QVariant::Icon) {
+                    return icon;
                 }
             }
-            return QVariant();
-		default:
-			return QVariant();
-	}
+        }
+        return QVariant();
+    default:
+        return QVariant();
+}
 }
 
 template<ObjectDescriptionType type>
@@ -241,53 +241,53 @@ Qt::ItemFlags ObjectDescriptionModel<type>::flags(const QModelIndex &index) cons
 }
 
 template<ObjectDescriptionType type>
-void ObjectDescriptionModel<type>::moveUp( const QModelIndex& index )
+void ObjectDescriptionModel<type>::moveUp(const QModelIndex &index)
 {
-	Q_D( ObjectDescriptionModel );
-	if( !index.isValid() || index.row() >= d->data.size() || index.row() < 1 || index.column() != 0 )
-		return;
+    Q_D(ObjectDescriptionModel);
+    if (!index.isValid() || index.row() >= d->data.size() || index.row() < 1 || index.column() != 0)
+        return;
 
     emit layoutAboutToBeChanged();
-	QModelIndex above = index.sibling( index.row() - 1, index.column() );
-	d->data.swap( index.row(), above.row() );
-	QModelIndexList from, to;
-	from << index << above;
-	to << above << index;
-	changePersistentIndexList( from, to );
+    QModelIndex above = index.sibling(index.row() - 1, index.column());
+    d->data.swap(index.row(), above.row());
+    QModelIndexList from, to;
+    from << index << above;
+    to << above << index;
+    changePersistentIndexList(from, to);
     emit layoutChanged();
 }
 
 template<ObjectDescriptionType type>
-void ObjectDescriptionModel<type>::moveDown( const QModelIndex& index )
+void ObjectDescriptionModel<type>::moveDown(const QModelIndex &index)
 {
-	Q_D( ObjectDescriptionModel );
-	if( !index.isValid() || index.row() >= d->data.size() - 1 || index.column() != 0 )
-		return;
+    Q_D(ObjectDescriptionModel);
+    if (!index.isValid() || index.row() >= d->data.size() - 1 || index.column() != 0)
+        return;
 
     emit layoutAboutToBeChanged();
-	QModelIndex below = index.sibling( index.row() + 1, index.column() );
-	d->data.swap( index.row(), below.row() );
-	QModelIndexList from, to;
-	from << index << below;
-	to << below << index;
-	changePersistentIndexList( from, to );
+    QModelIndex below = index.sibling(index.row() + 1, index.column());
+    d->data.swap(index.row(), below.row());
+    QModelIndexList from, to;
+    from << index << below;
+    to << below << index;
+    changePersistentIndexList(from, to);
     emit layoutChanged();
 }
 
 template<ObjectDescriptionType type>
 QList<int> ObjectDescriptionModel<type>::tupleIndexOrder() const
 {
-	Q_D( const ObjectDescriptionModel );
-	QList<int> ret;
-	for( int i = 0; i < d->data.size(); ++i )
-		ret.append( d->data.at( i ).index() );
-	return ret;
+    Q_D(const ObjectDescriptionModel);
+    QList<int> ret;
+    for (int i = 0; i < d->data.size(); ++i)
+        ret.append(d->data.at(i).index());
+    return ret;
 }
 
 template<ObjectDescriptionType type>
-int ObjectDescriptionModel<type>::tupleIndexAtPositionIndex( int positionIndex ) const
+int ObjectDescriptionModel<type>::tupleIndexAtPositionIndex(int positionIndex) const
 {
-	return d_func()->data.at( positionIndex ).index();
+    return d_func()->data.at(positionIndex).index();
 }
 
 template<ObjectDescriptionType type>

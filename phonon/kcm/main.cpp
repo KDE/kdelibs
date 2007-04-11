@@ -28,50 +28,50 @@
 #include "backendselection.h"
 
 typedef KGenericFactory<PhononKcm, QWidget> PhononKcmFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_phonon, PhononKcmFactory("kcm_phonon"))
+K_EXPORT_COMPONENT_FACTORY(kcm_phonon, PhononKcmFactory("kcm_phonon"))
 
-PhononKcm::PhononKcm( QWidget* parent, const QStringList& args )
-	: KCModule( PhononKcmFactory::componentData(), parent, args )
+PhononKcm::PhononKcm(QWidget *parent, const QStringList &args)
+    : KCModule(PhononKcmFactory::componentData(), parent, args)
 {
-	KAboutData *about = new KAboutData(
-			"kcm_phonon", I18N_NOOP( "Phonon Configuration Module" ),
-			KDE_VERSION_STRING, 0, KAboutData::License_GPL,
-			I18N_NOOP( "Copyright 2006 Matthias Kretz" ) );
-	about->addAuthor( "Matthias Kretz", 0, "kretz@kde.org" );
-	setAboutData( about );
+    KAboutData *about = new KAboutData(
+            "kcm_phonon", I18N_NOOP("Phonon Configuration Module"),
+            KDE_VERSION_STRING, 0, KAboutData::License_GPL,
+            I18N_NOOP("Copyright 2006 Matthias Kretz"));
+    about->addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    setAboutData(about);
 
-	setLayout( new QHBoxLayout );
-	layout()->setMargin( 0 );
-	layout()->setSpacing( 0 );
+    setLayout(new QHBoxLayout);
+    layout()->setMargin(0);
+    layout()->setSpacing(0);
 
-	QTabWidget* tabs = new QTabWidget( this );
-	layout()->addWidget( tabs );
+    QTabWidget *tabs = new QTabWidget(this);
+    layout()->addWidget(tabs);
 
-	m_outputDeviceWidget = new OutputDeviceChoice;
+    m_outputDeviceWidget = new OutputDeviceChoice;
     tabs->addTab(m_outputDeviceWidget, i18n("Device Preference"));
-	m_backendSelection = new BackendSelection;
-	tabs->addTab( m_backendSelection, i18n( "Backend" ) );
-	load();
-	connect( m_backendSelection, SIGNAL( changed() ), SLOT( changed() ) );
+    m_backendSelection = new BackendSelection;
+    tabs->addTab(m_backendSelection, i18n("Backend"));
+    load();
+    connect(m_backendSelection, SIGNAL(changed()), SLOT(changed()));
     connect(m_outputDeviceWidget, SIGNAL(changed()), SLOT(changed()));
 }
 
 void PhononKcm::load()
 {
-	m_outputDeviceWidget->load();
-	m_backendSelection->load();
+    m_outputDeviceWidget->load();
+    m_backendSelection->load();
 }
 
 void PhononKcm::save()
 {
-	m_outputDeviceWidget->save();
-	m_backendSelection->save();
+    m_outputDeviceWidget->save();
+    m_backendSelection->save();
 }
 
 void PhononKcm::defaults()
 {
-	m_outputDeviceWidget->defaults();
-	m_backendSelection->defaults();
+    m_outputDeviceWidget->defaults();
+    m_backendSelection->defaults();
 }
 
 #include "main.moc"

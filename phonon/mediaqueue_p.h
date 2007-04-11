@@ -28,20 +28,20 @@ namespace Phonon
 
 class MediaQueuePrivate : public MediaObjectPrivate
 {
-	K_DECLARE_PUBLIC( MediaQueue )
+    K_DECLARE_PUBLIC(MediaQueue)
     PHONON_PRIVATECLASS
-	protected:
-		MediaQueuePrivate()
-			: doCrossfade( true )
-			, timeBetweenMedia( 0 ) //gapless playback
-		{
-		}
+    protected:
+        MediaQueuePrivate()
+            : doCrossfade(true)
+            , timeBetweenMedia(0) //gapless playback
+        {
+        }
 
-		void _k_needNextUrl();
+        void _k_needNextUrl();
 
-		KUrl nextUrl;
-		bool doCrossfade;
-		qint32 timeBetweenMedia;
+        KUrl nextUrl;
+        bool doCrossfade;
+        qint32 timeBetweenMedia;
 };
 } // namespace Phonon
 

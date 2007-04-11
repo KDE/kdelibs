@@ -46,27 +46,27 @@ class EffectParameter;
  */
 class PHONONCORE_EXPORT Effect
 {
-	friend class EffectParameter;
-	public:
-		virtual ~Effect();
+    friend class EffectParameter;
+    public:
+        virtual ~Effect();
 
-		/**
-		 * Returns a list of all parameters of the effect.
-		 *
-		 * \see EffectParameter
-		 */
-		virtual QList<EffectParameter> parameterList() const = 0;
+        /**
+         * Returns a list of all parameters of the effect.
+         *
+         * \see EffectParameter
+         */
+        virtual QList<EffectParameter> parameterList() const = 0;
 
-	protected:
-		/**
-		 * Gets the value of the parameter with the id \p parameterId.
-		 */
-		virtual QVariant value( int parameterId ) const = 0;
+    protected:
+        /**
+         * Gets the value of the parameter with the id \p parameterId.
+         */
+        virtual QVariant value(int parameterId) const = 0;
 
-		/**
-		 * Sets the value of the parameter with the id \p parameterId.
-		 */
-		virtual void setValue( int parameterId, QVariant newValue ) = 0;
+        /**
+         * Sets the value of the parameter with the id \p parameterId.
+         */
+        virtual void setValue(int parameterId, QVariant newValue) = 0;
 };
 
 } // namespace Phonon

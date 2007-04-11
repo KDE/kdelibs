@@ -32,38 +32,38 @@ namespace Experimental
     class Visualization;
 } // namespace Experimental
 
-	class AbstractVideoOutputPrivate;
+    class AbstractVideoOutputPrivate;
 
-	class PHONONCORE_EXPORT AbstractVideoOutput : public Base
-	{
-		friend class VideoPath;
-		friend class VideoPathPrivate;
-		friend class Experimental::Visualization;
-		K_DECLARE_PRIVATE( AbstractVideoOutput )
-		protected:
-			/**
-			 * \internal
-			 * Constructor that is called from derived classes.
-			 *
-			 * \param parent Standard QObject parent.
-			 */
-			AbstractVideoOutput( AbstractVideoOutputPrivate& d );
+    class PHONONCORE_EXPORT AbstractVideoOutput : public Base
+    {
+        friend class VideoPath;
+        friend class VideoPathPrivate;
+        friend class Experimental::Visualization;
+        K_DECLARE_PRIVATE(AbstractVideoOutput)
+        protected:
+            /**
+             * \internal
+             * Constructor that is called from derived classes.
+             *
+             * \param parent Standard QObject parent.
+             */
+            AbstractVideoOutput(AbstractVideoOutputPrivate &d);
 
-			/**
-			 * \internal
-			 * After construction of the Iface object this method is called
-			 * throughout the complete class hierarchy in order to set up the
-			 * properties that were already set on the public interface.
-			 *
-			 * An example implementation could look like this:
-			 * \code
-			 * ParentClass::setupIface();
-			 * m_iface->setPropertyA( d->propertyA );
-			 * m_iface->setPropertyB( d->propertyB );
-			 * \endcode
-			 */
-			void setupIface();
-	};
+            /**
+             * \internal
+             * After construction of the Iface object this method is called
+             * throughout the complete class hierarchy in order to set up the
+             * properties that were already set on the public interface.
+             *
+             * An example implementation could look like this:
+             * \code
+             * ParentClass::setupIface();
+             * m_iface->setPropertyA(d->propertyA);
+             * m_iface->setPropertyB(d->propertyB);
+             * \endcode
+             */
+            void setupIface();
+    };
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

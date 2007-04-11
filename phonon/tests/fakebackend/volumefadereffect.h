@@ -27,29 +27,29 @@ namespace Phonon
 {
 namespace Fake
 {
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class VolumeFaderEffect : public AudioEffect
-	{
-		Q_OBJECT
-		public:
-			VolumeFaderEffect( QObject* parent );
-			~VolumeFaderEffect();
+    /**
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class VolumeFaderEffect : public AudioEffect
+    {
+        Q_OBJECT
+        public:
+            VolumeFaderEffect(QObject *parent);
+            ~VolumeFaderEffect();
 
-			Q_INVOKABLE float volume() const;
-			Q_INVOKABLE void setVolume( float volume );
-			Q_INVOKABLE Phonon::VolumeFaderEffect::FadeCurve fadeCurve() const;
-			Q_INVOKABLE void setFadeCurve( Phonon::VolumeFaderEffect::FadeCurve curve );
-			Q_INVOKABLE void fadeTo( float volume, int fadeTime );
+            Q_INVOKABLE float volume() const;
+            Q_INVOKABLE void setVolume(float volume);
+            Q_INVOKABLE Phonon::VolumeFaderEffect::FadeCurve fadeCurve() const;
+            Q_INVOKABLE void setFadeCurve(Phonon::VolumeFaderEffect::FadeCurve curve);
+            Q_INVOKABLE void fadeTo(float volume, int fadeTime);
 
-		private:
-			float m_volume;
-			float m_endvolume;
-			int m_fadeTime;
-			QTime m_fadeStart;
-			Phonon::VolumeFaderEffect::FadeCurve m_fadeCurve;
-	};
+        private:
+            float m_volume;
+            float m_endvolume;
+            int m_fadeTime;
+            QTime m_fadeStart;
+            Phonon::VolumeFaderEffect::FadeCurve m_fadeCurve;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

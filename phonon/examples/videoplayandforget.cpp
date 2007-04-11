@@ -28,34 +28,34 @@ using namespace Phonon;
 
 static const KCmdLineOptions options[] =
 {
-	{ "+URL", I18N_NOOP( "An URL to a video" ), 0 },
-	KCmdLineLastOption // End of options.
+    { "+URL", I18N_NOOP("An URL to a video"), 0 },
+    KCmdLineLastOption // End of options.
 };
 
-int main( int argc, char ** argv )
+int main(int argc, char ** argv)
 {
-	KAboutData about( "videoplayandforget", "Phonon VideoPlayer Example",
-			"1.0", "",
-			KAboutData::License_LGPL, 0 );
-	about.addAuthor( "Matthias Kretz", 0, "kretz@kde.org" );
-	KCmdLineArgs::init( argc, argv, &about );
-	KCmdLineArgs::addCmdLineOptions( options );
-	KApplication app;
-	KUrl url;
-	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-	if( args->count() == 1 )
-	{
-		url = args->url( 0 );
-		if( url.isValid() )
-		{
-			VideoPlayer player( Phonon::VideoCategory );
-			QObject::connect( &player, SIGNAL( finished() ), &app, SLOT( quit() ) );
-			player.show();
-			player.resize( 640, 480 );
-			player.play( url );
-			player.seek( player.totalTime() * 9 / 10 );
-			return app.exec();
-		}
-	}
-	return 1;
+    KAboutData about("videoplayandforget", "Phonon VideoPlayer Example",
+            "1.0", "",
+            KAboutData::License_LGPL, 0);
+    about.addAuthor("Matthias Kretz", 0, "kretz@kde.org");
+    KCmdLineArgs::init(argc, argv, &about);
+    KCmdLineArgs::addCmdLineOptions(options);
+    KApplication app;
+    KUrl url;
+    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    if (args->count() == 1)
+    {
+        url = args->url(0);
+        if (url.isValid())
+        {
+            VideoPlayer player(Phonon::VideoCategory);
+            QObject::connect(&player, SIGNAL(finished()), &app, SLOT(quit()));
+            player.show();
+            player.resize(640, 480);
+            player.play(url);
+            player.seek(player.totalTime() * 9 / 10);
+            return app.exec();
+        }
+    }
+    return 1;
 }

@@ -92,7 +92,7 @@ class MediaControlsPrivate
         QToolButton loopButton;
         SeekSlider seekSlider;
         VolumeSlider volumeSlider;
-        AbstractMediaProducer* media;
+        AbstractMediaProducer *media;
 
     private:
         void _k_stateChanged(Phonon::State, Phonon::State);

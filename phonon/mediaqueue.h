@@ -56,47 +56,47 @@ class MediaQueuePrivate;
  */
 class PHONONCORE_EXPORT MediaQueue : public MediaObject
 {
-	K_DECLARE_PRIVATE( MediaQueue )
-	Q_OBJECT
-	PHONON_HEIR( MediaQueue )
+    K_DECLARE_PRIVATE(MediaQueue)
+    Q_OBJECT
+    PHONON_HEIR(MediaQueue)
 
-	/**
-	 * Time between the end of the first media and the start of the next
-	 * media. A value of 0ms means gapless playback. A value less than zero
-	 * means that the next song will start playing while the first is about
-	 * to finish.
-	 *
-	 * Defaults to 0 (gapless playback)
-	 */
-	Q_PROPERTY( qint32 timeBetweenMedia READ timeBetweenMedia WRITE setTimeBetweenMedia )
+    /**
+     * Time between the end of the first media and the start of the next
+     * media. A value of 0ms means gapless playback. A value less than zero
+     * means that the next song will start playing while the first is about
+     * to finish.
+     *
+     * Defaults to 0 (gapless playback)
+     */
+    Q_PROPERTY(qint32 timeBetweenMedia READ timeBetweenMedia WRITE setTimeBetweenMedia)
 
-	/**
-	 * If the timeBetweenMedia is less than 0 this property determines whether a
-	 * crossfade is done or not.
-	 *
-	 * Defaults to \c true (crossfades if timeBetweenMedia < 0)
-	 */
-	Q_PROPERTY( bool doCrossfade READ doCrossfade WRITE setDoCrossfade )
+    /**
+     * If the timeBetweenMedia is less than 0 this property determines whether a
+     * crossfade is done or not.
+     *
+     * Defaults to \c true (crossfades if timeBetweenMedia < 0)
+     */
+    Q_PROPERTY(bool doCrossfade READ doCrossfade WRITE setDoCrossfade)
 
-	/**
-	 * The URL for the media to be played after the current one.
-	 */
-	Q_PROPERTY( KUrl nextUrl READ nextUrl WRITE setNextUrl )
-	public:
-		KUrl nextUrl() const;
-		void setNextUrl( const KUrl& nextUrl );
+    /**
+     * The URL for the media to be played after the current one.
+     */
+    Q_PROPERTY(KUrl nextUrl READ nextUrl WRITE setNextUrl)
+    public:
+        KUrl nextUrl() const;
+        void setNextUrl(const KUrl &nextUrl);
 
-		qint32 timeBetweenMedia() const;
-		void setTimeBetweenMedia( qint32 milliseconds );
+        qint32 timeBetweenMedia() const;
+        void setTimeBetweenMedia(qint32 milliseconds);
 
-		bool doCrossfade() const;
-		void setDoCrossfade( bool doCrossfade );
+        bool doCrossfade() const;
+        void setDoCrossfade(bool doCrossfade);
 
-	Q_SIGNALS:
-		void needNextUrl();
+    Q_SIGNALS:
+        void needNextUrl();
 
-	private:
-		Q_PRIVATE_SLOT( k_func(), void _k_needNextUrl() )
+    private:
+        Q_PRIVATE_SLOT(k_func(), void _k_needNextUrl())
 };
 
 } // namespace Phonon

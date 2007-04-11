@@ -29,22 +29,22 @@
 
 class AudioPathTest : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	private Q_SLOTS:
-		void initTestCase();
-		void checkForDefaults();
+    private Q_SLOTS:
+        void initTestCase();
+        void checkForDefaults();
 
-		void addOutputs();
-		void addEffects();
+        void addOutputs();
+        void addEffects();
 
-		void cleanupTestCase();
+        void cleanupTestCase();
 
-	private:
-		KUrl m_url;
-		Phonon::MediaObject* m_media;
-		Phonon::AudioPath* m_path;
-		Phonon::AudioOutput* m_output;
+    private:
+        KUrl m_url;
+        Phonon::MediaObject *m_media;
+        Phonon::AudioPath *m_path;
+        Phonon::AudioOutput *m_output;
 };
 
 // vim: sw=4 ts=4

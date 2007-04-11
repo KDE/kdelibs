@@ -27,53 +27,53 @@
 
 class MediaObjectTest : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
     Q_SIGNALS:
         void continueTestPlayOnFinish();
     protected Q_SLOTS:
         void setMediaAndPlay();
 
-	private Q_SLOTS:
+    private Q_SLOTS:
         void init();
         void cleanup();
 
-		void initTestCase();
-		void checkForDefaults();
+        void initTestCase();
+        void checkForDefaults();
 
-		// state change tests
-		void stopToStop();
-		void stopToPause();
-		void stopToPlay();
-		void playToPlay();
-		void playToPause();
-		void playToStop();
-		void pauseToPause();
-		void pauseToPlay();
-		void pauseToStop();
+        // state change tests
+        void stopToStop();
+        void stopToPause();
+        void stopToPlay();
+        void playToPlay();
+        void playToPause();
+        void playToStop();
+        void pauseToPause();
+        void pauseToPlay();
+        void pauseToStop();
 
         void testTickSignal();
-		void testSeek();
-		void testAboutToFinish();
+        void testSeek();
+        void testAboutToFinish();
         void testPlayOnFinish();
         void testPlayBeforeFinish();
 
-		void cleanupTestCase();
+        void cleanupTestCase();
 
-	private:
+    private:
         void setMedia();
         void addPaths();
         void initOutput();
 
         void startPlayback(Phonon::State currentState = Phonon::StoppedState);
-		void stopPlayback( Phonon::State currentState );
+        void stopPlayback(Phonon::State currentState);
         void pausePlayback();
         void waitForSignal(QObject *obj, const char *signalName, int timeout = 0);
         void testOneSeek(qint64 seekTo);
 
-		KUrl m_url;
-		Phonon::MediaObject* m_media;
-		QSignalSpy* m_stateChangedSignalSpy;
+        KUrl m_url;
+        Phonon::MediaObject *m_media;
+        QSignalSpy *m_stateChangedSignalSpy;
 };
 
 // vim: sw=4 ts=4

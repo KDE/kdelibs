@@ -23,9 +23,9 @@ namespace Phonon
 {
 namespace Fake
 {
-BrightnessControl::BrightnessControl( QObject* parent )
-	: VideoEffect( -1, parent )
-	, m_brightness( 0 )
+BrightnessControl::BrightnessControl(QObject *parent)
+    : VideoEffect(-1, parent)
+    , m_brightness(0)
 {
 }
 
@@ -35,22 +35,22 @@ BrightnessControl::~BrightnessControl()
 
 int BrightnessControl::brightness() const
 {
-	return m_brightness;
+    return m_brightness;
 }
 
-void BrightnessControl::setBrightness( int brightness )
+void BrightnessControl::setBrightness(int brightness)
 {
-	m_brightness = brightness;
+    m_brightness = brightness;
 }
 
 int BrightnessControl::lowerBound() const
 {
-	return -1000;
+    return -1000;
 }
 
 int BrightnessControl::upperBound() const
 {
-	return 1000;
+    return 1000;
 }
 
 }} //namespace Phonon::Fake

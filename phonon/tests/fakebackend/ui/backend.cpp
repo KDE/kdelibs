@@ -22,15 +22,15 @@
 #include <kgenericfactory.h>
 
 typedef KGenericFactory<Phonon::Fake::UiBackend, Phonon::Fake::UiBackend> FakeUiBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( phonon_fakeui, FakeUiBackendFactory( "fakeuibackend" ) )
+K_EXPORT_COMPONENT_FACTORY(phonon_fakeui, FakeUiBackendFactory("fakeuibackend"))
 
 namespace Phonon
 {
 namespace Fake
 {
 
-UiBackend::UiBackend( QObject* parent, const QStringList& )
-	: QObject( parent )
+UiBackend::UiBackend(QObject *parent, const QStringList &)
+    : QObject(parent)
 {
 }
 
@@ -38,9 +38,9 @@ UiBackend::~UiBackend()
 {
 }
 
-QObject* UiBackend::createVideoWidget( QWidget* parent )
+QObject *UiBackend::createVideoWidget(QWidget *parent)
 {
-	return new Fake::VideoWidget( parent );
+    return new Fake::VideoWidget(parent);
 }
 
 }}

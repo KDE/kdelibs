@@ -27,55 +27,55 @@ namespace Phonon
 {
 namespace Fake
 {
-	class ByteStream : public AbstractMediaProducer, public Phonon::ByteStreamInterface
-	{
-		Q_OBJECT
-		Q_INTERFACES( Phonon::ByteStreamInterface )
-		public:
-			ByteStream( QObject* parent );
-			~ByteStream();
+    class ByteStream : public AbstractMediaProducer, public Phonon::ByteStreamInterface
+    {
+        Q_OBJECT
+        Q_INTERFACES(Phonon::ByteStreamInterface)
+        public:
+            ByteStream(QObject *parent);
+            ~ByteStream();
 
-			qint64 currentTime() const;
-			qint64 totalTime() const;
-			Q_INVOKABLE qint32 aboutToFinishTime() const;
-			Q_INVOKABLE qint64 streamSize() const;
-			Q_INVOKABLE bool streamSeekable() const;
-			bool isSeekable() const;
+            qint64 currentTime() const;
+            qint64 totalTime() const;
+            Q_INVOKABLE qint32 aboutToFinishTime() const;
+            Q_INVOKABLE qint64 streamSize() const;
+            Q_INVOKABLE bool streamSeekable() const;
+            bool isSeekable() const;
 
-			Q_INVOKABLE void setStreamSeekable( bool );
-			void writeData( const QByteArray& data );
-			Q_INVOKABLE void setStreamSize( qint64 );
-			void endOfData();
-			Q_INVOKABLE void setAboutToFinishTime( qint32 );
+            Q_INVOKABLE void setStreamSeekable(bool);
+            void writeData(const QByteArray &data);
+            Q_INVOKABLE void setStreamSize(qint64);
+            void endOfData();
+            Q_INVOKABLE void setAboutToFinishTime(qint32);
 
-			void play();
-			void pause();
-			void seek( qint64 time );
+            void play();
+            void pause();
+            void seek(qint64 time);
 
-		public Q_SLOTS:
-			virtual void stop();
+        public Q_SLOTS:
+            virtual void stop();
 
-		Q_SIGNALS:
-			void finished();
-			void aboutToFinish( qint32 );
-			void length( qint64 );
-			void needData();
-			void enoughData();
-			void seekStream( qint64 );
+        Q_SIGNALS:
+            void finished();
+            void aboutToFinish(qint32);
+            void length(qint64);
+            void needData();
+            void enoughData();
+            void seekStream(qint64);
 
-		private Q_SLOTS:
-			void consumeStream();
+        private Q_SLOTS:
+            void consumeStream();
 
-		private:
-			qint64 m_aboutToFinishBytes;
-			qint64 m_streamSize;
-			qint64 m_bufferSize;
-			qint64 m_streamPosition;
-			bool m_streamSeekable;
-			bool m_eof;
-			bool m_aboutToFinishEmitted;
-			QTimer* m_streamConsumeTimer;
-	};
+        private:
+            qint64 m_aboutToFinishBytes;
+            qint64 m_streamSize;
+            qint64 m_bufferSize;
+            qint64 m_streamPosition;
+            bool m_streamSeekable;
+            bool m_eof;
+            bool m_aboutToFinishEmitted;
+            QTimer *m_streamConsumeTimer;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

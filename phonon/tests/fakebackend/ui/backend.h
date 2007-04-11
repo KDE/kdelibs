@@ -27,14 +27,14 @@ namespace Phonon
 namespace Fake
 {
     class UiBackend : public QObject
-	{
-		Q_OBJECT
-		public:
-			UiBackend( QObject* parent, const QStringList& args );
-			virtual ~UiBackend();
+    {
+        Q_OBJECT
+        public:
+            UiBackend(QObject *parent, const QStringList &args);
+            virtual ~UiBackend();
 
-			Q_INVOKABLE QObject* createVideoWidget( QWidget* parent );
-	};
+            Q_INVOKABLE QObject *createVideoWidget(QWidget *parent);
+    };
 }} // namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

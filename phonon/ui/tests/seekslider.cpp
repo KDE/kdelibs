@@ -33,13 +33,13 @@ using namespace Phonon;
 void SeekSliderTest::initTestCase()
 {
     Phonon::loadFakeBackend();
-	ss = new SeekSlider;
-	QVERIFY( ss != 0 );
-	qslider = ss->findChild<QSlider*>();
-	qlabel = ss->findChild<QLabel*>();
-	QVERIFY( qslider != 0 );
-	QVERIFY( qlabel != 0 );
-	media = new MediaObject( this );
+    ss = new SeekSlider;
+    QVERIFY(ss != 0);
+    qslider = ss->findChild<QSlider *>();
+    qlabel = ss->findChild<QLabel *>();
+    QVERIFY(qslider != 0);
+    QVERIFY(qlabel != 0);
+    media = new MediaObject(this);
 }
 
 void SeekSliderTest::waitForSignal(QObject *obj, const char *signalName, int timeout)
@@ -54,25 +54,25 @@ void SeekSliderTest::waitForSignal(QObject *obj, const char *signalName, int tim
 
 void SeekSliderTest::testEnabled()
 {
-	QVERIFY( !qslider->isEnabled() );
-	ss->setMediaProducer( 0 );
-	QVERIFY( !qslider->isEnabled() );
+    QVERIFY(!qslider->isEnabled());
+    ss->setMediaProducer(0);
+    QVERIFY(!qslider->isEnabled());
 }
 
 void SeekSliderTest::setMedia()
 {
-	QVERIFY( media->state() == Phonon::LoadingState );
-	KUrl url( getenv( "PHONON_TESTURL" ) );
-	if( !url.isValid() )
-		QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
-	media->setUrl( url );
-	ss->setMediaProducer( media );
-	QVERIFY( !qslider->isEnabled() );
+    QVERIFY(media->state() == Phonon::LoadingState);
+    KUrl url(getenv("PHONON_TESTURL"));
+    if (!url.isValid())
+        QFAIL("You need to set PHONON_TESTURL to a valid URL");
+    media->setUrl(url);
+    ss->setMediaProducer(media);
+    QVERIFY(!qslider->isEnabled());
 }
 
 void SeekSliderTest::playMedia()
 {
-	media->play();
+    media->play();
     QSignalSpy stateSpy(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
     while (media->state() != Phonon::PlayingState) {
         waitForSignal(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), 4000);
@@ -94,16 +94,16 @@ void SeekSliderTest::playMedia()
 
 void SeekSliderTest::seekWithSlider()
 {
-	// click on the slider to seek
+    // click on the slider to seek
 }
 
 void SeekSliderTest::cleanupTestCase()
 {
-	delete media;
-	qslider = 0;
-	delete ss;
+    delete media;
+    qslider = 0;
+    delete ss;
 }
 
-QTEST_KDEMAIN( SeekSliderTest, GUI )
+QTEST_KDEMAIN(SeekSliderTest, GUI)
 #include "seekslider.moc"
 // vim: ts=4

@@ -32,14 +32,14 @@ class FrontendInterfacePrivate;
 
 class PHONONCORE_EXPORT AbstractMediaProducerPrivate : public BasePrivate, private BaseDestructionHandler
 {
-	K_DECLARE_PUBLIC( AbstractMediaProducer )
-	PHONON_PRIVATEABSTRACTCLASS
+    K_DECLARE_PUBLIC(AbstractMediaProducer)
+    PHONON_PRIVATEABSTRACTCLASS
     public:
         QList<FrontendInterfacePrivate *> interfaceList;
-	protected:
-		AbstractMediaProducerPrivate()
-			: state( Phonon::LoadingState )
-			, currentTime( 0 )
+    protected:
+        AbstractMediaProducerPrivate()
+            : state(Phonon::LoadingState)
+            , currentTime(0)
             , tickInterval(0),
             videoPaths(),
             audioPaths(),
@@ -50,27 +50,27 @@ class PHONONCORE_EXPORT AbstractMediaProducerPrivate : public BasePrivate, priva
             errorOverride(false),
             errorString(),
             errorType(Phonon::NormalError)
-		{ }
+        { }
 
-		State state;
-		qint64 currentTime;
-		qint32 tickInterval;
-		QList<VideoPath*> videoPaths;
-		QList<AudioPath*> audioPaths;
-		QHash<AudioPath*, QString> selectedAudioStream;
-		QHash<VideoPath*, QString> selectedVideoStream;
-		QHash<VideoPath*, QString> selectedSubtitleStream;
-		QMultiMap<QString, QString> metaData;
+        State state;
+        qint64 currentTime;
+        qint32 tickInterval;
+        QList<VideoPath *> videoPaths;
+        QList<AudioPath *> audioPaths;
+        QHash<AudioPath *, QString> selectedAudioStream;
+        QHash<VideoPath *, QString> selectedVideoStream;
+        QHash<VideoPath *, QString> selectedSubtitleStream;
+        QMultiMap<QString, QString> metaData;
         bool errorOverride;
         QString errorString;
         ErrorType errorType;
 
-	private:
-		void _k_resumePlay();
-		void _k_resumePause();
-		void _k_metaDataChanged( const QMultiMap<QString, QString>& );
+    private:
+        void _k_resumePlay();
+        void _k_resumePause();
+        void _k_metaDataChanged(const QMultiMap<QString, QString> &);
 
-		virtual void phononObjectDestroyed( Base* );
+        virtual void phononObjectDestroyed(Base *);
 };
 } //namespace Phonon
 

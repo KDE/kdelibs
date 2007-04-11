@@ -24,13 +24,13 @@
 
 class AudioDataOutputTest : public QObject
 {
-	Q_OBJECT
-	private slots:
-		void initTestCase();
-		void testSampleRate();
-		void testFormat();
-		void testDataSize();
-		void cleanupTestCase();
+    Q_OBJECT
+    private slots:
+        void initTestCase();
+        void testSampleRate();
+        void testFormat();
+        void testDataSize();
+        void cleanupTestCase();
 };
 
 #endif // AUDIODATAOUTPUTTEST_H

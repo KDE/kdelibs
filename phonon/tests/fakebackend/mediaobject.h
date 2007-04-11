@@ -30,43 +30,43 @@ namespace Phonon
 {
 namespace Fake
 {
-	class MediaObject : public AbstractMediaProducer, public MediaObjectInterface
-	{
-		Q_OBJECT
-		Q_INTERFACES( Phonon::MediaObjectInterface )
-		public:
-			MediaObject( QObject* parent );
-			~MediaObject();
+    class MediaObject : public AbstractMediaProducer, public MediaObjectInterface
+    {
+        Q_OBJECT
+        Q_INTERFACES(Phonon::MediaObjectInterface)
+        public:
+            MediaObject(QObject *parent);
+            ~MediaObject();
             KUrl url() const;
             qint64 totalTime() const;
-			Q_INVOKABLE qint32 aboutToFinishTime() const;
-            void setUrl( const KUrl& url );
+            Q_INVOKABLE qint32 aboutToFinishTime() const;
+            void setUrl(const KUrl &url);
             void openMedia(Phonon::MediaObject::Media media, const QString &mediaDevice);
-			Q_INVOKABLE void setAboutToFinishTime( qint32 newAboutToFinishTime );
+            Q_INVOKABLE void setAboutToFinishTime(qint32 newAboutToFinishTime);
 
             void play();
             void pause();
             void seek(qint64 time);
 
-		public Q_SLOTS:
-			void stop();
+        public Q_SLOTS:
+            void stop();
 
-		Q_SIGNALS:
-			void finished();
-			void aboutToFinish( qint32 msec );
-			void length( qint64 length );
+        Q_SIGNALS:
+            void finished();
+            void aboutToFinish(qint32 msec);
+            void length(qint64 length);
 
-		protected:
-			virtual void emitTick();
+        protected:
+            virtual void emitTick();
 
         private Q_SLOTS:
             void loadingComplete();
 
-		private:
-			KUrl m_url;
-			qint32 m_aboutToFinishTime;
-			bool m_aboutToFinishNotEmitted;
-	};
+        private:
+            KUrl m_url;
+            qint32 m_aboutToFinishTime;
+            bool m_aboutToFinishNotEmitted;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

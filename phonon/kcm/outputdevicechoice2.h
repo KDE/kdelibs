@@ -25,24 +25,24 @@
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {
-	Q_OBJECT
-	public:
-		OutputDeviceChoice( QWidget* parent = 0 );
-		void load();
-		void save();
-		void defaults();
+    Q_OBJECT
+    public:
+        OutputDeviceChoice(QWidget *parent = 0);
+        void load();
+        void save();
+        void defaults();
 
-	private Q_SLOTS:
-		void on_notificationCombo_activated();
-		void on_musicCombo_activated();
-		//void on_videoCombo_activated();
-		void on_communicationCombo_activated();
+    private Q_SLOTS:
+        void on_notificationCombo_activated();
+        void on_musicCombo_activated();
+        //void on_videoCombo_activated();
+        void on_communicationCombo_activated();
 
-	private:
-		Phonon::NameDescriptionTupleModel m_notificationModel, m_musicModel,
-			m_videoModel, m_communicationModel;
-		Phonon::NameDescriptionTupleModel m_notificationModel2, m_musicModel2,
-			m_videoModel2, m_communicationModel2;
+    private:
+        Phonon::NameDescriptionTupleModel m_notificationModel, m_musicModel,
+            m_videoModel, m_communicationModel;
+        Phonon::NameDescriptionTupleModel m_notificationModel2, m_musicModel2,
+            m_videoModel2, m_communicationModel2;
 };
 
 #endif // OUTPUTDEVICECHOICE2_H_STUPID_UIC

@@ -34,7 +34,7 @@ class AbstractVideoOutput;
 
 namespace Experimental
 {
-	class VisualizationPrivate;
+    class VisualizationPrivate;
 
 /**
  * \short A class to create visual effects from an audio signal.
@@ -48,13 +48,13 @@ namespace Experimental
  * to display a visualization on a new VideoWidget.
  * \code
  * QList<VisualizationDescription> list = BackendCapabilities::availableVisualizationEffects();
- * if( list.size() > 0 )
+ * if (list.size() > 0)
  * {
- *   VideoWidget* visWidget = new VideoWidget( parent );
- *   Visualization* vis = new Visualization( visWidget );
- *   vis->setAudioPath( audioPath );
- *   vis->setVideoOutput( visWidget );
- *   vis->setVisualization( list.first() );
+ *   VideoWidget *visWidget = new VideoWidget(parent);
+ *   Visualization *vis = new Visualization(visWidget);
+ *   vis->setAudioPath(audioPath);
+ *   vis->setVideoOutput(visWidget);
+ *   vis->setVisualization(list.first());
  * }
  * \endcode
  *
@@ -64,37 +64,37 @@ namespace Experimental
  */
 class PHONONEXPERIMENTAL_EXPORT Visualization : public QObject, public Base
 {
-	Q_OBJECT
-	K_DECLARE_PRIVATE( Visualization )
-	PHONON_OBJECT( Visualization )
-	Q_PROPERTY( VisualizationDescription visualization READ visualization WRITE setVisualization )
+    Q_OBJECT
+    K_DECLARE_PRIVATE(Visualization)
+    PHONON_OBJECT(Visualization)
+    Q_PROPERTY(VisualizationDescription visualization READ visualization WRITE setVisualization)
 
-	public:
-		~Visualization();
+    public:
+        ~Visualization();
 
-		AudioPath* audioPath() const;
-		void setAudioPath( AudioPath* audioPath );
+        AudioPath *audioPath() const;
+        void setAudioPath(AudioPath *audioPath);
 
-		AbstractVideoOutput* videoOutput() const;
-		void setVideoOutput( AbstractVideoOutput* output );
+        AbstractVideoOutput *videoOutput() const;
+        void setVideoOutput(AbstractVideoOutput *output);
 
-		VisualizationDescription visualization() const;
-		void setVisualization( const VisualizationDescription& newVisualization );
+        VisualizationDescription visualization() const;
+        void setVisualization(const VisualizationDescription &newVisualization);
 
-		/**
-		 * Returns whether the selected visualization effect can be configured
-		 * by the user with a widget returned by createParameterWidget(). In
-		 * short it tells you whether createParameterWidget() will return 0 or
-		 * not.
-		 */
-		//bool hasParameterWidget() const;
+        /**
+         * Returns whether the selected visualization effect can be configured
+         * by the user with a widget returned by createParameterWidget(). In
+         * short it tells you whether createParameterWidget() will return 0 or
+         * not.
+         */
+        //bool hasParameterWidget() const;
 
-		/**
-		 * Returns a widget that displays effect parameter controls to the user.
-		 *
-		 * \param parent The parent widget for the new widget.
-		 */
-		//QWidget* createParameterWidget( QWidget* parent = 0 );
+        /**
+         * Returns a widget that displays effect parameter controls to the user.
+         *
+         * \param parent The parent widget for the new widget.
+         */
+        //QWidget *createParameterWidget(QWidget *parent = 0);
 };
 
 } // namespace Experimental

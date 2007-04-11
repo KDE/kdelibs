@@ -24,8 +24,8 @@ namespace Phonon
 {
 namespace Fake
 {
-VideoDataOutput::VideoDataOutput( QObject* parent )
-	: QObject( parent )
+VideoDataOutput::VideoDataOutput(QObject *parent)
+    : QObject(parent)
 {
 }
 
@@ -35,56 +35,56 @@ VideoDataOutput::~VideoDataOutput()
 
 quint32 VideoDataOutput::format() const
 {
-	return m_fourcc;
+    return m_fourcc;
 }
 
 //X int VideoDataOutput::displayLatency() const
 //X {
-//X 	return m_latency;
+//X     return m_latency;
 //X }
 
 int VideoDataOutput::frameRate() const
 {
-	return m_frameRate;
+    return m_frameRate;
 }
 
-void VideoDataOutput::setFrameRate( int frameRate )
+void VideoDataOutput::setFrameRate(int frameRate)
 {
-	m_frameRate = frameRate;
+    m_frameRate = frameRate;
 }
 
 QSize VideoDataOutput::naturalFrameSize() const
 {
-	return QSize( 320, 240 );
+    return QSize(320, 240);
 }
 
 QSize VideoDataOutput::frameSize() const
 {
-	return m_frameSize;
+    return m_frameSize;
 }
 
-void VideoDataOutput::setFrameSize( const QSize& frameSize )
+void VideoDataOutput::setFrameSize(const QSize &frameSize)
 {
-	m_frameSize = frameSize;
+    m_frameSize = frameSize;
 }
 
-void VideoDataOutput::setFormat( quint32 fourcc )
+void VideoDataOutput::setFormat(quint32 fourcc)
 {
-	m_fourcc = fourcc;
+    m_fourcc = fourcc;
 }
 
-//X void VideoDataOutput::setDisplayLatency( int milliseconds )
+//X void VideoDataOutput::setDisplayLatency(int milliseconds)
 //X {
-//X 	m_latency = milliseconds;
+//X     m_latency = milliseconds;
 //X }
 
 void VideoDataOutput::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
-	if( frame.fourcc == m_fourcc )
-		emit frameReady( frame );
-	else
-		kError( 604 ) << "format conversion not implemented" << endl;
-	// TODO emit endOfMedia
+    if (frame.fourcc == m_fourcc)
+        emit frameReady(frame);
+    else
+        kError(604) << "format conversion not implemented" << endl;
+    // TODO emit endOfMedia
 }
 
 }} //namespace Phonon::Fake

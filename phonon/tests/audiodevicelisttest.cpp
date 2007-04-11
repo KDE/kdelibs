@@ -56,6 +56,6 @@ void SimpleTest::checkCopy()
     QVERIFY(dev1 != dev2);
 }
 
-QTEST_KDEMAIN( SimpleTest, NoGUI )
+QTEST_KDEMAIN(SimpleTest, NoGUI)
 #include "audiodevicelisttest.moc"
 // vim: sw=4 ts=4 et tw=100

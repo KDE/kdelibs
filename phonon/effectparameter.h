@@ -42,217 +42,217 @@ class AudioEffect;
  */
 class PHONONCORE_EXPORT EffectParameter
 {
-	friend class AudioEffect;
-	friend class AudioEffectPrivate;
-	friend class VideoEffect;
-	friend class VideoEffectPrivate;
-	friend class BrightnessControl;
-	public:
-		/**
-		 * \internal
-		 *
-		 * Creates an invalid effect parameter.
-		 *
-		 * \see isValid()
-		 */
-		EffectParameter();
+    friend class AudioEffect;
+    friend class AudioEffectPrivate;
+    friend class VideoEffect;
+    friend class VideoEffectPrivate;
+    friend class BrightnessControl;
+    public:
+        /**
+         * \internal
+         *
+         * Creates an invalid effect parameter.
+         *
+         * \see isValid()
+         */
+        EffectParameter();
 
-		/**
-		 * \internal
-		 *
-		 * A parameter that has no pointer to an effect is invalid.
-		 */
-		bool isValid() const;
+        /**
+         * \internal
+         *
+         * A parameter that has no pointer to an effect is invalid.
+         */
+        bool isValid() const;
 
-		/**
-		 * The name of the parameter. Can be used as the label.
-		 *
-		 * \return A label for the parameter.
-		 */
-		const QString& name() const;
+        /**
+         * The name of the parameter. Can be used as the label.
+         *
+         * \return A label for the parameter.
+         */
+        const QString &name() const;
 
-		/**
-		 * The parameter may come with a description (LADSPA doesn't have a
-		 * field for this, so don't expect many effects to provide a
-		 * description).
-		 *
-		 * The description can be used for a tooltip or WhatsThis help.
-		 *
-		 * \return A text describing the parameter.
-		 */
-		const QString& description() const;
+        /**
+         * The parameter may come with a description (LADSPA doesn't have a
+         * field for this, so don't expect many effects to provide a
+         * description).
+         *
+         * The description can be used for a tooltip or WhatsThis help.
+         *
+         * \return A text describing the parameter.
+         */
+        const QString &description() const;
 
-		/**
-		 * Returns whether the parameter should be considered a boolean toggle.
-		 *
-		 * \return \c true: all values are booleans
-		 * \return \c false: all values are doubles or integers depending on
-		 * isIntegerControl()
-		 */
-		bool isToggleControl() const;
+        /**
+         * Returns whether the parameter should be considered a boolean toggle.
+         *
+         * \return \c true: all values are booleans
+         * \return \c false: all values are doubles or integers depending on
+         * isIntegerControl()
+         */
+        bool isToggleControl() const;
 
-		/**
-		 * Returns whether the parameter should be
-		 * displayed in a logarithmic scale. This is particularly useful for
-		 * frequencies and gains.
-		 */
-		bool isLogarithmicControl() const;
+        /**
+         * Returns whether the parameter should be
+         * displayed in a logarithmic scale. This is particularly useful for
+         * frequencies and gains.
+         */
+        bool isLogarithmicControl() const;
 
-		/**
-		 * Returns whether the parameter should be displayed as integers using
-		 * a stepped control.
-		 *
-		 * \return \c true: all values are integers
-		 * \return \c false: all values are doubles or booleans depending on
-		 * isToggleControl()
-		 */
-		bool isIntegerControl() const;
+        /**
+         * Returns whether the parameter should be displayed as integers using
+         * a stepped control.
+         *
+         * \return \c true: all values are integers
+         * \return \c false: all values are doubles or booleans depending on
+         * isToggleControl()
+         */
+        bool isIntegerControl() const;
 
-		/**
-		 * The minimum value to be used for the control to edit the parameter.
-		 *
-		 * If the returned QVariant is invalid the value is not bounded from
-		 * below.
-		 */
-		QVariant minimumValue() const;
+        /**
+         * The minimum value to be used for the control to edit the parameter.
+         *
+         * If the returned QVariant is invalid the value is not bounded from
+         * below.
+         */
+        QVariant minimumValue() const;
 
-		/**
-		 * The maximum value to be used for the control to edit the parameter.
-		 *
-		 * If the returned QVariant is invalid the value is not bounded from
-		 * above.
-		 */
-		QVariant maximumValue() const;
+        /**
+         * The maximum value to be used for the control to edit the parameter.
+         *
+         * If the returned QVariant is invalid the value is not bounded from
+         * above.
+         */
+        QVariant maximumValue() const;
 
-		/**
-		 * The default value.
-		 */
-		QVariant defaultValue() const;
+        /**
+         * The default value.
+         */
+        QVariant defaultValue() const;
 
-		/**
-		 * The current value of the parameter.
-		 */
-		QVariant value() const;
+        /**
+         * The current value of the parameter.
+         */
+        QVariant value() const;
 
-		/**
-		 * Sets the new value for the parameter.
-		 *
-		 * \param newValue Depending on the isIntegerControl() hint the QVariant
-		 * is expected either as an integer or a double.
-		 */
-		void setValue( QVariant newValue );
+        /**
+         * Sets the new value for the parameter.
+         *
+         * \param newValue Depending on the isIntegerControl() hint the QVariant
+         * is expected either as an integer or a double.
+         */
+        void setValue(QVariant newValue);
 
-		/**
-		 * Equality operator
-		 */
-		bool operator==( const EffectParameter& rhs ) const;
+        /**
+         * Equality operator
+         */
+        bool operator==(const EffectParameter &rhs) const;
 
-		/**
-		 * Inequality operator
-		 */
-		inline bool operator!=( const EffectParameter& rhs ) const { return ! operator==( rhs ); }
+        /**
+         * Inequality operator
+         */
+        inline bool operator!=(const EffectParameter &rhs) const { return ! operator==(rhs); }
 
-		/**
-		 * \internal
-		 * compares the ids of the parameters
-		 */
-		bool operator<( const EffectParameter& rhs ) const;
+        /**
+         * \internal
+         * compares the ids of the parameters
+         */
+        bool operator<(const EffectParameter &rhs) const;
 
-		/**
-		 * \internal
-		 * compares the ids of the parameters
-		 */
-		bool operator>( const EffectParameter& rhs ) const;
+        /**
+         * \internal
+         * compares the ids of the parameters
+         */
+        bool operator>(const EffectParameter &rhs) const;
 
-		/* dtor, cctor and operator= for forward decl of EffectParameterPrivate */
-		~EffectParameter();
-		EffectParameter( const EffectParameter& rhs );
-		EffectParameter& operator=( const EffectParameter& rhs );
+        /* dtor, cctor and operator= for forward decl of EffectParameterPrivate */
+        ~EffectParameter();
+        EffectParameter(const EffectParameter &rhs);
+        EffectParameter &operator=(const EffectParameter &rhs);
 
-		/**
-		 * Only for backend developers:
-		 *
-		 * Flags to set the return values of isToggleControl(),
-		 * isLogarithmicControl(), isIntegerControl(), isBoundedBelow() and
-		 * isBoundedAbove(). The values of the flags correspond to the values
-		 * used for LADSPA effects.
-		 */
-		enum Hint {
-			/**
-			 * If this hint is set it means that
-			 * the the control has only two states: zero and non-zero.
-			 *
-			 * \see isToggleControl()
-			 */
-			ToggledHint      = 0x04,
+        /**
+         * Only for backend developers:
+         *
+         * Flags to set the return values of isToggleControl(),
+         * isLogarithmicControl(), isIntegerControl(), isBoundedBelow() and
+         * isBoundedAbove(). The values of the flags correspond to the values
+         * used for LADSPA effects.
+         */
+        enum Hint {
+            /**
+             * If this hint is set it means that
+             * the the control has only two states: zero and non-zero.
+             *
+             * \see isToggleControl()
+             */
+            ToggledHint      = 0x04,
 
-			/* LADSPA's SAMPLE_RATE hint needs to be translated by the backend
-			 * to normal bounds, as the backend knows the sample rate - and the
-			 * frontend doesn't */
+            /* LADSPA's SAMPLE_RATE hint needs to be translated by the backend
+             * to normal bounds, as the backend knows the sample rate - and the
+             * frontend doesn't */
 
-			/**
-			 * \see isLogarithmicControl()
-			 */
-			LogarithmicHint  = 0x10,
-			/**
-			 * \see isIntegerControl
-			 */
-			IntegerHint      = 0x20
-		};
-		Q_DECLARE_FLAGS( Hints, Hint )
+            /**
+             * \see isLogarithmicControl()
+             */
+            LogarithmicHint  = 0x10,
+            /**
+             * \see isIntegerControl
+             */
+            IntegerHint      = 0x20
+        };
+        Q_DECLARE_FLAGS(Hints, Hint)
 
-		/**
-		 * Only to be used by backend implementations:
-		 *
-		 * Creates a new effect parameter.
-		 *
-		 * \param parameterId This is a number to uniquely identify the
-		 * parameter. The id is used for value() and setValue().
-		 *
-		 * \param name The name/label for this parameter.
-		 *
-		 * \param hints Sets the hints for the type of parameter.
-		 *
-		 * \param defaultValue The value that should be used as a default.
-		 *
-		 * \param min The minium value allowed for this parameter. You only
-		 * need to set this if the BoundedBelowHint is set.
-		 *
-		 * \param max The maxium value allowed for this parameter. You only
-		 * need to set this if the BoundedAboveHint is set.
-		 *
-		 * \param description A descriptive text for the parameter
-		 * (explaining what it controls) to be used as a tooltip or
-		 * WhatsThis help.
-		 */
-		EffectParameter( int parameterId, const QString& name, EffectParameter::Hints hints,
+        /**
+         * Only to be used by backend implementations:
+         *
+         * Creates a new effect parameter.
+         *
+         * \param parameterId This is a number to uniquely identify the
+         * parameter. The id is used for value() and setValue().
+         *
+         * \param name The name/label for this parameter.
+         *
+         * \param hints Sets the hints for the type of parameter.
+         *
+         * \param defaultValue The value that should be used as a default.
+         *
+         * \param min The minium value allowed for this parameter. You only
+         * need to set this if the BoundedBelowHint is set.
+         *
+         * \param max The maxium value allowed for this parameter. You only
+         * need to set this if the BoundedAboveHint is set.
+         *
+         * \param description A descriptive text for the parameter
+         * (explaining what it controls) to be used as a tooltip or
+         * WhatsThis help.
+         */
+        EffectParameter(int parameterId, const QString &name, EffectParameter::Hints hints,
                 const QVariant &defaultValue, const QVariant &min = QVariant(),
                 const QVariant &max = QVariant(), const QString &description = QString());
 
-	protected:
-		/**
-		 * \internal
-		 * Sets the pointer to the Effect object for value() and setValue().
-		 */
-		void setEffect( Effect* effect );
+    protected:
+        /**
+         * \internal
+         * Sets the pointer to the Effect object for value() and setValue().
+         */
+        void setEffect(Effect *effect);
 
-		/**
-		 * \internal
-		 *
-		 * Returns the parameter's id.
-		 */
-		int id() const;
+        /**
+         * \internal
+         *
+         * Returns the parameter's id.
+         */
+        int id() const;
 
-	private:
-		/**
-		 * The data is implicitly shared.
-		 */
+    private:
+        /**
+         * The data is implicitly shared.
+         */
         KSharedPtr<EffectParameterPrivate> d;
 };
 
 } // namespace Phonon
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( Phonon::EffectParameter::Hints )
+Q_DECLARE_OPERATORS_FOR_FLAGS(Phonon::EffectParameter::Hints)
 
 #endif // PHONON_EFFECTPARAMETER_H
 // vim: sw=4 ts=4 tw=80

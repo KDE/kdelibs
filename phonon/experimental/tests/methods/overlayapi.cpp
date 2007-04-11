@@ -1,1 +1,1 @@
-addMethod("bool", "createOverlay(QWidget*,int)", true);
+addMethod("bool", "createOverlay(QWidget *,int)", true);

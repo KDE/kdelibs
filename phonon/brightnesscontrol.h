@@ -25,52 +25,52 @@
 
 namespace Phonon
 {
-	class BrightnessControlPrivate;
+    class BrightnessControlPrivate;
 
-	/**
-	 * Video effect to control the brightness of the image.
-	 *
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class PHONONCORE_EXPORT BrightnessControl : public VideoEffect
-	{
-		Q_OBJECT
-		K_DECLARE_PRIVATE( BrightnessControl )
-		PHONON_HEIR( BrightnessControl )
-		/**
-		 * This property controls the brightness of the video signal.
-		 *
-		 * Depending on the backend and hardware this effect can be implemented
-		 * in software or using hardware features like an Xv output would
-		 * provide.
-		 */
-		Q_PROPERTY( int brightness READ brightness WRITE setBrightness )
-		public:
-			virtual QList<EffectParameter> parameterList() const;
+    /**
+     * Video effect to control the brightness of the image.
+     *
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class PHONONCORE_EXPORT BrightnessControl : public VideoEffect
+    {
+        Q_OBJECT
+        K_DECLARE_PRIVATE(BrightnessControl)
+        PHONON_HEIR(BrightnessControl)
+        /**
+         * This property controls the brightness of the video signal.
+         *
+         * Depending on the backend and hardware this effect can be implemented
+         * in software or using hardware features like an Xv output would
+         * provide.
+         */
+        Q_PROPERTY(int brightness READ brightness WRITE setBrightness)
+        public:
+            virtual QList<EffectParameter> parameterList() const;
 
-			int brightness() const;
-			/**
-			 * The smallest value that is possible to set when calling
-			 * setBrightness.
-			 *
-			 * Xv (often) returns -1000
-			 */
-			int lowerBound() const;
-			/**
-			 * The biggest value that is possible to set when calling
-			 * setBrightness.
-			 *
-			 * Xv (often) returns 1000
-			 */
-			int upperBound() const;
+            int brightness() const;
+            /**
+             * The smallest value that is possible to set when calling
+             * setBrightness.
+             *
+             * Xv (often) returns -1000
+             */
+            int lowerBound() const;
+            /**
+             * The biggest value that is possible to set when calling
+             * setBrightness.
+             *
+             * Xv (often) returns 1000
+             */
+            int upperBound() const;
 
-		public Q_SLOTS:
-			void setBrightness( int brightness );
+        public Q_SLOTS:
+            void setBrightness(int brightness);
 
-		protected:
-			virtual QVariant value( int parameterId ) const;
-			virtual void setValue( int parameterId, QVariant newValue );
-	};
+        protected:
+            virtual QVariant value(int parameterId) const;
+            virtual void setValue(int parameterId, QVariant newValue);
+    };
 } //namespace Phonon
 
 // vim: sw=4 ts=4 tw=80

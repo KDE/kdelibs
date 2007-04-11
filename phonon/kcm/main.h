@@ -26,17 +26,17 @@ class BackendSelection;
 
 class PhononKcm : public KCModule
 {
-	Q_OBJECT
-	public:
-		PhononKcm( QWidget* parent, const QStringList& );
+    Q_OBJECT
+    public:
+        PhononKcm(QWidget *parent, const QStringList &);
 
-		void load();
-		void save();
-		void defaults();
+        void load();
+        void save();
+        void defaults();
 
-	private:
-		OutputDeviceChoice* m_outputDeviceWidget;
-		BackendSelection* m_backendSelection;
+    private:
+        OutputDeviceChoice *m_outputDeviceWidget;
+        BackendSelection *m_backendSelection;
 };
 
 #endif // MAIN_H

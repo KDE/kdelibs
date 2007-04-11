@@ -31,21 +31,21 @@ class QString;
 
 namespace Phonon
 {
-	class ObjectDescriptionPrivate;
+    class ObjectDescriptionPrivate;
 
-	enum ObjectDescriptionType
-	{
-		AudioOutputDeviceType,
-		AudioCaptureDeviceType,
-		VideoOutputDeviceType,
-		VideoCaptureDeviceType,
-		AudioEffectType,
-		VideoEffectType,
-		AudioCodecType,
-		VideoCodecType,
-		ContainerFormatType,
-		VisualizationType
-	};
+    enum ObjectDescriptionType
+    {
+        AudioOutputDeviceType,
+        AudioCaptureDeviceType,
+        VideoOutputDeviceType,
+        VideoCaptureDeviceType,
+        AudioEffectType,
+        VideoEffectType,
+        AudioCodecType,
+        VideoCodecType,
+        ContainerFormatType,
+        VisualizationType
+    };
 
 /**
  * \short Provides a tuple of enduser visible name and description.
@@ -62,34 +62,34 @@ namespace Phonon
 template<ObjectDescriptionType T>
 class PHONONCORE_EXPORT ObjectDescription
 {
-	public:
-		ObjectDescription( const ObjectDescription<T>& rhs );
-		ObjectDescription<T>& operator=( const ObjectDescription<T>& rhs );
-		ObjectDescription();
-		~ObjectDescription();
+    public:
+        ObjectDescription(const ObjectDescription<T> &rhs);
+        ObjectDescription<T> &operator=(const ObjectDescription<T> &rhs);
+        ObjectDescription();
+        ~ObjectDescription();
 
-		/**
-		 * Returns \c true if this ObjectDescription describes the same
-		 * as \p otherDescription; otherwise returns \c false.
-		 */
-		bool operator==( const ObjectDescription<T>& otherDescription ) const;
+        /**
+         * Returns \c true if this ObjectDescription describes the same
+         * as \p otherDescription; otherwise returns \c false.
+         */
+        bool operator==(const ObjectDescription<T> &otherDescription) const;
 
-		/**
-		 * Returns the name of the capture source.
-		 *
-		 * \return A string that should be presented to the user to
-		 * choose the capture source.
-		 */
-		const QString& name() const;
+        /**
+         * Returns the name of the capture source.
+         *
+         * \return A string that should be presented to the user to
+         * choose the capture source.
+         */
+        const QString &name() const;
 
-		/**
-		 * Returns a description of the capture source. This text should
-		 * make clear what sound source this is, which is sometimes hard
-		 * to describe or understand from just the name.
-		 *
-		 * \return A string describing the capture source.
-		 */
-		const QString& description() const;
+        /**
+         * Returns a description of the capture source. This text should
+         * make clear what sound source this is, which is sometimes hard
+         * to describe or understand from just the name.
+         *
+         * \return A string describing the capture source.
+         */
+        const QString &description() const;
 
         /**
          * Returns a named property.
@@ -107,41 +107,41 @@ class PHONONCORE_EXPORT ObjectDescription
          */
         QList<QByteArray> propertyNames() const;
 
-		/**
-		 * A unique identifier for this capture source. Used internally
-		 * to distinguish between the capture sources.
-		 *
-		 * \return An integer that uniquely identifies every capture
-		 * source.
-		 */
-		int index() const;
+        /**
+         * A unique identifier for this capture source. Used internally
+         * to distinguish between the capture sources.
+         *
+         * \return An integer that uniquely identifies every capture
+         * source.
+         */
+        int index() const;
 
-		/**
-		 * Returns \c true if the Tuple is valid (index != -1); otherwise returns
-		 * \c false.
-		 */
-		bool isValid() const;
+        /**
+         * Returns \c true if the Tuple is valid (index != -1); otherwise returns
+         * \c false.
+         */
+        bool isValid() const;
 
-		/**
-		 * \internal
-		 * Returns a new description object that describes the
-		 * device/effect/codec/...  with the given \p index.
-		 */
-		static ObjectDescription<T> fromIndex( int index );
+        /**
+         * \internal
+         * Returns a new description object that describes the
+         * device/effect/codec/...  with the given \p index.
+         */
+        static ObjectDescription<T> fromIndex(int index);
 
-	protected:
-		/**
-		 * \internal
-		 * Sets the data.
-		 */
-        ObjectDescription(int index, const QHash<QByteArray, QVariant>& properties);
+    protected:
+        /**
+         * \internal
+         * Sets the data.
+         */
+        ObjectDescription(int index, const QHash<QByteArray, QVariant> &properties);
 
-	private:
-		/**
-		 * \internal
-		 * The data is implicitly shared.
-		 */
-		QSharedDataPointer<ObjectDescriptionPrivate> d;
+    private:
+        /**
+         * \internal
+         * The data is implicitly shared.
+         */
+        QSharedDataPointer<ObjectDescriptionPrivate> d;
 };
 
 typedef ObjectDescription<AudioOutputDeviceType> AudioOutputDevice;

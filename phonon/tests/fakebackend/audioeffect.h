@@ -26,26 +26,26 @@ namespace Phonon
 {
 namespace Fake
 {
-	class EffectInterface;
+    class EffectInterface;
 
-	class AudioEffect : public QObject
-	{
-		Q_OBJECT
-		public:
-			AudioEffect( int effectId, QObject* parent );
-			~AudioEffect();
-			Q_INVOKABLE QVariant value( int parameterId ) const;
-			Q_INVOKABLE void setValue( int parameterId, QVariant newValue );
+    class AudioEffect : public QObject
+    {
+        Q_OBJECT
+        public:
+            AudioEffect(int effectId, QObject *parent);
+            ~AudioEffect();
+            Q_INVOKABLE QVariant value(int parameterId) const;
+            Q_INVOKABLE void setValue(int parameterId, QVariant newValue);
 
-			Q_INVOKABLE QList<EffectParameter> parameterList() const;
+            Q_INVOKABLE QList<EffectParameter> parameterList() const;
 
-			// Fake specific:
-			virtual void processBuffer( QVector<float>& buffer );
+            // Fake specific:
+            virtual void processBuffer(QVector<float> &buffer);
 
-		private:
-			EffectInterface* m_effect;
-			QList<Phonon::EffectParameter> m_parameterList;
-	};
+        private:
+            EffectInterface *m_effect;
+            QList<Phonon::EffectParameter> m_parameterList;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

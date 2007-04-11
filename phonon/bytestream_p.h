@@ -27,19 +27,19 @@ namespace Phonon
 {
 class ByteStreamPrivate : public AbstractMediaProducerPrivate
 {
-	K_DECLARE_PUBLIC( ByteStream )
+    K_DECLARE_PUBLIC(ByteStream)
     PHONON_PRIVATECLASS
-	protected:
-		ByteStreamPrivate()
-			: aboutToFinishTime( 0 )
-			, streamSize( -1 )
-			, streamSeekable( false )
-		{
-		}
+    protected:
+        ByteStreamPrivate()
+            : aboutToFinishTime(0)
+            , streamSize(-1)
+            , streamSeekable(false)
+        {
+        }
 
-		qint32 aboutToFinishTime;
-		qint64 streamSize;
-		bool streamSeekable;
+        qint32 aboutToFinishTime;
+        qint64 streamSize;
+        bool streamSeekable;
 };
 }
 

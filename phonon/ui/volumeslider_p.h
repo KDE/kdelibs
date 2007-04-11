@@ -33,9 +33,9 @@ namespace Phonon
 class AudioOutput;
 class VolumeSliderPrivate
 {
-    Q_DECLARE_PUBLIC( VolumeSlider )
+    Q_DECLARE_PUBLIC(VolumeSlider)
     protected:
-        VolumeSliderPrivate( VolumeSlider* parent )
+        VolumeSliderPrivate(VolumeSlider *parent)
             : q_ptr(parent),
             layout(QBoxLayout::LeftToRight, parent),
             slider(Qt::Horizontal, parent),

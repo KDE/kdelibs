@@ -27,23 +27,23 @@ namespace Phonon
 {
 namespace Fake
 {
-	class VideoEffect : public QObject
-	{
-		Q_OBJECT
-		public:
-			VideoEffect( int effectId, QObject* parent );
-			~VideoEffect();
-			Q_INVOKABLE QVariant value( int parameterId ) const;
-			Q_INVOKABLE void setValue( int parameterId, QVariant newValue );
+    class VideoEffect : public QObject
+    {
+        Q_OBJECT
+        public:
+            VideoEffect(int effectId, QObject *parent);
+            ~VideoEffect();
+            Q_INVOKABLE QVariant value(int parameterId) const;
+            Q_INVOKABLE void setValue(int parameterId, QVariant newValue);
 
-			Q_INVOKABLE QList<EffectParameter> parameterList() const;
+            Q_INVOKABLE QList<EffectParameter> parameterList() const;
 
-			// Fake specific:
+            // Fake specific:
             virtual void processFrame(Phonon::Experimental::VideoFrame &frame);
 
-		private:
-			QList<Phonon::EffectParameter> m_parameterList;
-	};
+        private:
+            QList<Phonon::EffectParameter> m_parameterList;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

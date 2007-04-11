@@ -27,39 +27,39 @@ namespace Phonon
 {
 namespace Fake
 {
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class AudioDataOutput : public AbstractAudioOutput
-	{
-		Q_OBJECT
-		public:
-			AudioDataOutput( QObject* parent );
-			~AudioDataOutput();
+    /**
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class AudioDataOutput : public AbstractAudioOutput
+    {
+        Q_OBJECT
+        public:
+            AudioDataOutput(QObject *parent);
+            ~AudioDataOutput();
 
-		public Q_SLOTS:
+        public Q_SLOTS:
             Phonon::Experimental::AudioDataOutput::Format format() const;
-			int dataSize() const;
-			int sampleRate() const;
+            int dataSize() const;
+            int sampleRate() const;
             void setFormat(Phonon::Experimental::AudioDataOutput::Format format);
-			void setDataSize( int size );
+            void setDataSize(int size);
 
-		public:
-			// Fake specific:
-			virtual void processBuffer( const QVector<float>& buffer );
+        public:
+            // Fake specific:
+            virtual void processBuffer(const QVector<float> &buffer);
 
-		signals:
+        signals:
             void dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > &data);
             void dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > &data);
-			void endOfMedia( int remainingSamples );
+            void endOfMedia(int remainingSamples);
 
-		private:
-			void convertAndEmit( const QVector<float>& buffer );
+        private:
+            void convertAndEmit(const QVector<float> &buffer);
 
-			Phonon::Experimental::AudioDataOutput::Format m_format;
-			int m_dataSize;
-			QVector<float> m_pendingData;
-	};
+            Phonon::Experimental::AudioDataOutput::Format m_format;
+            int m_dataSize;
+            QVector<float> m_pendingData;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

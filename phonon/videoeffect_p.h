@@ -29,16 +29,16 @@ namespace Phonon
 {
 class VideoEffectPrivate : public BasePrivate
 {
-	K_DECLARE_PUBLIC( VideoEffect )
+    K_DECLARE_PUBLIC(VideoEffect)
     PHONON_PRIVATECLASS
-	protected:
-		VideoEffectPrivate()
-		{
-		}
+    protected:
+        VideoEffectPrivate()
+        {
+        }
 
-	private:
-		int type;
-		QHash<int, QVariant> parameterValues;
+    private:
+        int type;
+        QHash<int, QVariant> parameterValues;
 };
 }
 

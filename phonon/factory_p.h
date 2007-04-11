@@ -39,8 +39,8 @@ class FactoryPrivate : public Phonon::Factory::Sender
         QPointer<QObject> backendObject;
         KService::Ptr service;
 
-        QList<QObject*> objects;
-        QList<BasePrivate*> basePrivateList;
+        QList<QObject *> objects;
+        QList<BasePrivate *> basePrivateList;
         KComponentData componentData;
 
     private Q_SLOTS:

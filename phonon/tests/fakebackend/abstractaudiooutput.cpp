@@ -23,8 +23,8 @@ namespace Phonon
 {
 namespace Fake
 {
-AbstractAudioOutput::AbstractAudioOutput( QObject* parent )
-	: QObject( parent )
+AbstractAudioOutput::AbstractAudioOutput(QObject *parent)
+    : QObject(parent)
 {
 }
 

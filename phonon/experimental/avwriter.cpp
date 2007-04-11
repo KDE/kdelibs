@@ -25,12 +25,12 @@ namespace Phonon
 namespace Experimental
 {
 
-AvWriter::AvWriter( QObject* parent )
-	: QObject( parent )
-	, d_ptr( new AvWriterPrivate )
+AvWriter::AvWriter(QObject *parent)
+    : QObject(parent)
+    , d_ptr(new AvWriterPrivate)
 {
-	Q_D( AvWriter );
-	d->q_ptr = this;
+    Q_D(AvWriter);
+    d->q_ptr = this;
 }
 
 } // namespace Experimental

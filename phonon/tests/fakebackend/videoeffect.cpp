@@ -24,8 +24,8 @@ namespace Phonon
 {
 namespace Fake
 {
-VideoEffect::VideoEffect( int effectId, QObject* parent )
-	: QObject( parent )
+VideoEffect::VideoEffect(int effectId, QObject *parent)
+    : QObject(parent)
 {
 }
 
@@ -35,21 +35,21 @@ VideoEffect::~VideoEffect()
 
 QList<Phonon::EffectParameter> VideoEffect::parameterList() const
 {
-	return m_parameterList;
+    return m_parameterList;
 }
 
-QVariant VideoEffect::value( int parameterId ) const
+QVariant VideoEffect::value(int parameterId) const
 {
-	return QVariant(); // invalid
+    return QVariant(); // invalid
 }
 
-void VideoEffect::setValue( int parameterId, QVariant newValue )
+void VideoEffect::setValue(int parameterId, QVariant newValue)
 {
 }
 
 void VideoEffect::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
-	// do nothing
+    // do nothing
 }
 
 }} //namespace Phonon::Fake

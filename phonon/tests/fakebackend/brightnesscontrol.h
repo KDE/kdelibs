@@ -26,26 +26,26 @@ namespace Phonon
 {
 namespace Fake
 {
-	/**
-	 * \author Matthias Kretz <kretz@kde.org>
-	 */
-	class BrightnessControl : public VideoEffect
-	{
-		Q_OBJECT
-		public:
-			BrightnessControl( QObject* parent );
-			~BrightnessControl();
+    /**
+     * \author Matthias Kretz <kretz@kde.org>
+     */
+    class BrightnessControl : public VideoEffect
+    {
+        Q_OBJECT
+        public:
+            BrightnessControl(QObject *parent);
+            ~BrightnessControl();
 
-		public Q_SLOTS:
-			int brightness() const;
-			void setBrightness( int brightness );
+        public Q_SLOTS:
+            int brightness() const;
+            void setBrightness(int brightness);
 
-			int lowerBound() const;
-			int upperBound() const;
+            int lowerBound() const;
+            int upperBound() const;
 
-		private:
-			int m_brightness;
-	};
+        private:
+            int m_brightness;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

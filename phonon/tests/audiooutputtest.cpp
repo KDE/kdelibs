@@ -34,27 +34,27 @@ void AudioOutputTest::initTestCase()
 
 void AudioOutputTest::checkName()
 {
-	AudioOutput ao( Phonon::NotificationCategory, this );
-	QCOMPARE( ao.name(), QLatin1String( "qttest" ) );
-	QString n( "lsdf" );
-	ao.setName( n );
-	QCOMPARE( ao.name(), n );
+    AudioOutput ao(Phonon::NotificationCategory, this);
+    QCOMPARE(ao.name(), QLatin1String("qttest"));
+    QString n("lsdf");
+    ao.setName(n);
+    QCOMPARE(ao.name(), n);
 }
 
 void AudioOutputTest::checkVolume()
 {
-	AudioOutput ao( Phonon::NotificationCategory, this );
-	QSignalSpy volumeSignalSpy( &ao, SIGNAL( volumeChanged( float ) ) );
-	float v = 1.0;
-	QCOMPARE( ao.volume(), v );
-	QCOMPARE( volumeSignalSpy.size(), 0 );
-	for( v = 0.0; v <= 10.0; v += 0.01 )
-	{
-		ao.setVolume( v );
-		QCOMPARE( ao.volume(), v );
-		QCOMPARE( volumeSignalSpy.size(), 1 );
-		QCOMPARE( qvariant_cast<float>( volumeSignalSpy.takeFirst().at( 0 ) ), v );
-	}
+    AudioOutput ao(Phonon::NotificationCategory, this);
+    QSignalSpy volumeSignalSpy(&ao, SIGNAL(volumeChanged(float)));
+    float v = 1.0;
+    QCOMPARE(ao.volume(), v);
+    QCOMPARE(volumeSignalSpy.size(), 0);
+    for (v = 0.0; v <= 10.0; v += 0.01)
+    {
+        ao.setVolume(v);
+        QCOMPARE(ao.volume(), v);
+        QCOMPARE(volumeSignalSpy.size(), 1);
+        QCOMPARE(qvariant_cast<float>(volumeSignalSpy.takeFirst().at(0)), v);
+    }
 }
 
 void AudioOutputTest::checkMute()
@@ -134,6 +134,6 @@ void AudioOutputTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN( AudioOutputTest, NoGUI )
+QTEST_KDEMAIN(AudioOutputTest, NoGUI)
 #include "audiooutputtest.moc"
 // vim: sw=4 ts=4

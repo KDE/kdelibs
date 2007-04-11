@@ -27,17 +27,17 @@ namespace Phonon
 {
 class VolumeFaderEffectPrivate : public AudioEffectPrivate
 {
-	K_DECLARE_PUBLIC( VolumeFaderEffect )
+    K_DECLARE_PUBLIC(VolumeFaderEffect)
     PHONON_PRIVATECLASS
-	protected:
-		VolumeFaderEffectPrivate()
-			: currentVolume( 1.0 )
-			, fadeCurve( VolumeFaderEffect::Fade3Decibel )
-		{
-		}
+    protected:
+        VolumeFaderEffectPrivate()
+            : currentVolume(1.0)
+            , fadeCurve(VolumeFaderEffect::Fade3Decibel)
+        {
+        }
 
-		float currentVolume;
-		VolumeFaderEffect::FadeCurve fadeCurve;
+        float currentVolume;
+        VolumeFaderEffect::FadeCurve fadeCurve;
 };
 }
 

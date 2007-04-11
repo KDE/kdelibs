@@ -33,23 +33,23 @@ class KioFallbackImpl;
 class MediaObjectPrivate : public AbstractMediaProducerPrivate
 {
     friend class KioFallbackImpl;
-	K_DECLARE_PUBLIC( MediaObject )
+    K_DECLARE_PUBLIC(MediaObject)
     PHONON_PRIVATECLASS
-	protected:
-		MediaObjectPrivate()
+    protected:
+        MediaObjectPrivate()
             : media(MediaObject::None),
             aboutToFinishTime(0),
             kiofallback(0),
             ignoreLoadingToBufferingStateChange(false)
-		{
-		}
+        {
+        }
 
         PHONONCORE_EXPORT void _k_stateChanged(Phonon::State, Phonon::State);
 
-		KUrl url;
+        KUrl url;
         MediaObject::Media media;
         QString mediaDevice;
-		qint32 aboutToFinishTime;
+        qint32 aboutToFinishTime;
         KioFallback *kiofallback;
         bool ignoreLoadingToBufferingStateChange;
 };

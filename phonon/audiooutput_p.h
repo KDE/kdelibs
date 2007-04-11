@@ -30,25 +30,25 @@ namespace Phonon
 {
 class AudioOutputPrivate : public AbstractAudioOutputPrivate
 {
-	K_DECLARE_PUBLIC( AudioOutput )
+    K_DECLARE_PUBLIC(AudioOutput)
     PHONON_PRIVATECLASS
     public:
         void deviceListChanged();
 
-	protected:
-		AudioOutputPrivate()
+    protected:
+        AudioOutputPrivate()
             : volume(1.0),
             outputDeviceIndex(-1),
             deviceBeforeFallback(-1),
             outputDeviceOverridden(false),
             muted(false)
-		{
-			const KAboutData* ad = KGlobal::mainComponent().aboutData();
-			if( ad )
-				name = ad->programName();
-			else
-				name = KGlobal::mainComponent().componentName();
-		}
+        {
+            const KAboutData *ad = KGlobal::mainComponent().aboutData();
+            if (ad)
+                name = ad->programName();
+            else
+                name = KGlobal::mainComponent().componentName();
+        }
 
         enum DeviceChangeType {
             FallbackChange,
@@ -60,11 +60,11 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
         void _k_revertFallback();
         void _k_audioDeviceFailed();
 
-	private:
-		float volume;
-		Category category;
-		QString name;
-		int outputDeviceIndex;
+    private:
+        float volume;
+        Category category;
+        QString name;
+        int outputDeviceIndex;
         int deviceBeforeFallback;
         bool outputDeviceOverridden;
         bool muted;

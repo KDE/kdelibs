@@ -27,49 +27,49 @@
 
 namespace Phonon
 {
-PHONON_HEIR_IMPL( VideoEffect )
+PHONON_HEIR_IMPL(VideoEffect)
 
 QList<EffectParameter> BrightnessControl::parameterList() const
 {
-	QList<EffectParameter> ret;
-	EffectParameter par( 1, i18n( "Brightness" ), EffectParameter::IntegerHint, 0,
-			lowerBound(), upperBound(), i18n( "controls the brightness of the video images" ) );
-	par.setEffect( const_cast<BrightnessControl*>( this ) );
-	return ret;
+    QList<EffectParameter> ret;
+    EffectParameter par(1, i18n("Brightness"), EffectParameter::IntegerHint, 0,
+            lowerBound(), upperBound(), i18n("controls the brightness of the video images"));
+    par.setEffect(const_cast<BrightnessControl *>(this));
+    return ret;
 }
 
-QVariant BrightnessControl::value( int parameterId ) const
+QVariant BrightnessControl::value(int parameterId) const
 {
-	if( parameterId == 1 )
-		return brightness();
-	return QVariant();
+    if (parameterId == 1)
+        return brightness();
+    return QVariant();
 }
 
-void BrightnessControl::setValue( int parameterId, QVariant newValue )
+void BrightnessControl::setValue(int parameterId, QVariant newValue)
 {
-	if( parameterId == 1 )
-		setBrightness( newValue.toInt() );
+    if (parameterId == 1)
+        setBrightness(newValue.toInt());
 }
 
-PHONON_GETTER( int, brightness, d->brightness )
-PHONON_GETTER( int, lowerBound, -1000 )
-PHONON_GETTER( int, upperBound,  1000 )
-PHONON_SETTER( setBrightness, brightness, int )
+PHONON_GETTER(int, brightness, d->brightness)
+PHONON_GETTER(int, lowerBound, -1000)
+PHONON_GETTER(int, upperBound,  1000)
+PHONON_SETTER(setBrightness, brightness, int)
 
 bool BrightnessControlPrivate::aboutToDeleteIface()
 {
-	if( backendObject )
-		pBACKEND_GET( int, brightness, "brightness" );
-	return true;
+    if (backendObject)
+        pBACKEND_GET(int, brightness, "brightness");
+    return true;
 }
 
 void BrightnessControl::setupIface()
 {
-	K_D( BrightnessControl );
-	Q_ASSERT( d->backendObject );
+    K_D(BrightnessControl);
+    Q_ASSERT(d->backendObject);
 
-	// set up attributes
-	BACKEND_CALL1( "setBrightness", int, d->brightness );
+    // set up attributes
+    BACKEND_CALL1("setBrightness", int, d->brightness);
 }
 } // namespace Phonon
 

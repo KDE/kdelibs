@@ -40,97 +40,97 @@ BackendCapabilities::Notifier *BackendCapabilities::notifier()
     return globalBCPrivate;
 }
 
-#define SUPPORTS( foo ) \
+#define SUPPORTS(foo) \
 bool BackendCapabilities::supports ## foo() \
 { \
-	QObject* backendObject = Factory::backend(); \
-	if( !backendObject ) \
-		return false; \
-	bool ret; \
-	pBACKEND_GET( bool, ret, "supports"#foo ); \
-	return ret; \
+    QObject *backendObject = Factory::backend(); \
+    if (!backendObject) \
+        return false; \
+    bool ret; \
+    pBACKEND_GET(bool, ret, "supports"#foo); \
+    return ret; \
 }
 
-SUPPORTS( Video )
-SUPPORTS( OSD )
-SUPPORTS( Subtitles )
+SUPPORTS(Video)
+SUPPORTS(OSD)
+SUPPORTS(Subtitles)
 
 QStringList BackendCapabilities::knownMimeTypes()
 {
-	QObject* backendObject = Factory::backend( false );
-	if( backendObject )
-	{
-		QStringList ret;
-		pBACKEND_GET( QStringList, ret, "knownMimeTypes" );
-		return ret;
-	}
-	else
-	{
-		const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
-				"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
-		if ( !offers.isEmpty() ) {
-			QStringList mimeTypes = offers.first()->serviceTypes();
-			mimeTypes.removeAll( "PhononBackend" );
-			return mimeTypes;
-		}
-		return QStringList();
-	}
+    QObject *backendObject = Factory::backend(false);
+    if (backendObject)
+    {
+        QStringList ret;
+        pBACKEND_GET(QStringList, ret, "knownMimeTypes");
+        return ret;
+    }
+    else
+    {
+        const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+                "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+        if (!offers.isEmpty()) {
+            QStringList mimeTypes = offers.first()->serviceTypes();
+            mimeTypes.removeAll("PhononBackend");
+            return mimeTypes;
+        }
+        return QStringList();
+    }
 }
 
-bool BackendCapabilities::isMimeTypeKnown( const QString& mimeType )
+bool BackendCapabilities::isMimeTypeKnown(const QString &mimeType)
 {
-	QObject* backendObject = Factory::backend( false );
-	if( backendObject )
-	{
-		QStringList ret;
-		pBACKEND_GET( QStringList, ret, "knownMimeTypes" );
-		return ret.contains( mimeType );
-	}
-	else
-	{
-		const KService::List offers = KServiceTypeTrader::self()->query( "PhononBackend",
-				"Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1" );
-		if ( !offers.isEmpty() )
-			return offers.first()->hasMimeType( KMimeType::mimeType(mimeType).data() );
-		return false;
-	}
+    QObject *backendObject = Factory::backend(false);
+    if (backendObject)
+    {
+        QStringList ret;
+        pBACKEND_GET(QStringList, ret, "knownMimeTypes");
+        return ret.contains(mimeType);
+    }
+    else
+    {
+        const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+                "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+        if (!offers.isEmpty())
+            return offers.first()->hasMimeType(KMimeType::mimeType(mimeType).data());
+        return false;
+    }
 }
 
-#define availableDevicesImpl( T ) \
+#define availableDevicesImpl(T) \
 QList<T> BackendCapabilities::available ## T ## s() \
 { \
-    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::backend()); \
-	QList<T> ret; \
+    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend()); \
+    QList<T> ret; \
     if (backendIface) { \
         QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
-		foreach( int i, deviceIndexes ) \
-			ret.append( T::fromIndex( i ) ); \
-	} \
-	return ret; \
+        foreach (int i, deviceIndexes) \
+            ret.append(T::fromIndex(i)); \
+    } \
+    return ret; \
 }
 
-#define availableDevicesImpl2( T ) \
+#define availableDevicesImpl2(T) \
 QList<T ## Description> BackendCapabilities::available ## T ## s() \
 { \
-    BackendInterface* backendIface = qobject_cast<BackendInterface*>(Factory::backend()); \
-	QList<T ## Description> ret; \
-	if (backendIface) { \
+    BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend()); \
+    QList<T ## Description> ret; \
+    if (backendIface) { \
         QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::T ## Type); \
-		foreach( int i, deviceIndexes ) \
-			ret.append( T ## Description::fromIndex( i ) ); \
-	} \
-	return ret; \
+        foreach (int i, deviceIndexes) \
+            ret.append(T ## Description::fromIndex(i)); \
+    } \
+    return ret; \
 }
-availableDevicesImpl( AudioOutputDevice )
-availableDevicesImpl( AudioCaptureDevice )
-availableDevicesImpl( VideoOutputDevice )
-availableDevicesImpl( VideoCaptureDevice )
-availableDevicesImpl2( Visualization )
-availableDevicesImpl2( AudioCodec )
-availableDevicesImpl2( VideoCodec )
-availableDevicesImpl2( ContainerFormat )
-availableDevicesImpl2( AudioEffect )
-availableDevicesImpl2( VideoEffect )
+availableDevicesImpl(AudioOutputDevice)
+availableDevicesImpl(AudioCaptureDevice)
+availableDevicesImpl(VideoOutputDevice)
+availableDevicesImpl(VideoCaptureDevice)
+availableDevicesImpl2(Visualization)
+availableDevicesImpl2(AudioCodec)
+availableDevicesImpl2(VideoCodec)
+availableDevicesImpl2(ContainerFormat)
+availableDevicesImpl2(AudioEffect)
+availableDevicesImpl2(VideoEffect)
 
 } // namespace Phonon
 

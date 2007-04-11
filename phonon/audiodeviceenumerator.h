@@ -53,7 +53,7 @@ namespace Phonon
             /**
              * Returns a pointer to an instance of AudioDeviceEnumerator.
              */
-            static AudioDeviceEnumerator* self();
+            static AudioDeviceEnumerator *self();
 
             /**
              * Returns a list of the available ALSA playback devices.

@@ -79,7 +79,7 @@ class PHONONCORE_EXPORT BackendInterface
          * \param c The requested class.
          * \param parent The parent object.
          */
-        virtual QObject* createObject0(Class0 c, QObject *parent) = 0;
+        virtual QObject *createObject0(Class0 c, QObject *parent) = 0;
         /**
          * Returns a new instance of the requested class.
          *
@@ -87,7 +87,7 @@ class PHONONCORE_EXPORT BackendInterface
          * \param parent The parent object.
          * \param arg1 An additional argument (documented in \ref Class1).
          */
-        virtual QObject* createObject1(Class1 c, QObject *parent, QVariant arg1) = 0;
+        virtual QObject *createObject1(Class1 c, QObject *parent, QVariant arg1) = 0;
 
         virtual QSet<int> objectDescriptionIndexes(ObjectDescriptionType type) const = 0;
         virtual QHash<QByteArray, QVariant> objectDescriptionProperties(ObjectDescriptionType type, int index) const = 0;

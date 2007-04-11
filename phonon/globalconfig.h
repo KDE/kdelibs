@@ -26,24 +26,24 @@
 
 namespace Phonon
 {
-	class GlobalConfig : public QObject
-	{
-		Q_OBJECT
-		public:
-			GlobalConfig( QObject *parent = 0 );
-			~GlobalConfig();
+    class GlobalConfig : public QObject
+    {
+        Q_OBJECT
+        public:
+            GlobalConfig(QObject *parent = 0);
+            ~GlobalConfig();
 
-			QList<int> audioOutputDeviceListFor( Phonon::Category category ) const;
-			int audioOutputDeviceFor( Phonon::Category category ) const;
+            QList<int> audioOutputDeviceListFor(Phonon::Category category) const;
+            int audioOutputDeviceFor(Phonon::Category category) const;
 
                         QList<int> audioCaptureDeviceList() const;
                         int audioCaptureDevice() const;
 
                 Q_SIGNALS:
-			void audioOutputDeviceConfigChanged();
+            void audioOutputDeviceConfigChanged();
 
-		private:
-			KSharedConfig::Ptr m_config;
-	};
+        private:
+            KSharedConfig::Ptr m_config;
+    };
 } // namespace Phonon
 #endif // PHONON_GLOBALCONFIG_H

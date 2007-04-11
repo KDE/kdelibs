@@ -28,83 +28,83 @@ namespace Phonon
 namespace Experimental
 {
 
-VideoDataOutput::VideoDataOutput( QObject* parent )
-	: QObject( parent )
-	, AbstractVideoOutput( *new VideoDataOutputPrivate )
+VideoDataOutput::VideoDataOutput(QObject *parent)
+    : QObject(parent)
+    , AbstractVideoOutput(*new VideoDataOutputPrivate)
 {
-	K_D( VideoDataOutput );
-	d->createIface();
+    K_D(VideoDataOutput);
+    d->createIface();
 }
 
 void VideoDataOutputPrivate::createIface()
 {
-	if( backendObject )
-		return;
-	K_Q( VideoDataOutput );
+    if (backendObject)
+        return;
+    K_Q(VideoDataOutput);
     backendObject = Factory::createVideoDataOutput(q);
-	if( backendObject )
-		q->setupIface();
+    if (backendObject)
+        q->setupIface();
 }
 
-PHONON_GETTER( quint32, format, d->format )
+PHONON_GETTER(quint32, format, d->format)
 
-bool VideoDataOutput::formatSupported( quint32 fourcc )
+bool VideoDataOutput::formatSupported(quint32 fourcc)
 {
     QObject *backend = Factory::backend();
-	if( backend )
-	{
-		bool ret;
-		QMetaObject::invokeMethod( backend, "supportsFourcc", Q_RETURN_ARG( bool, ret ), Q_ARG( quint32, fourcc ) );
-		return ret;
-	}
-	return false;
+    if (backend)
+    {
+        bool ret;
+        QMetaObject::invokeMethod(backend, "supportsFourcc", Q_RETURN_ARG(bool, ret), Q_ARG(quint32, fourcc));
+        return ret;
+    }
+    return false;
 }
 
-PHONON_GETTER( int, frameRate, d->frameRate )
-PHONON_SETTER( setFrameRate, frameRate, int )
-PHONON_SETTER( setFormat, format, quint32 )
-PHONON_GETTER( QSize, frameSize, d->frameSize )
+PHONON_GETTER(int, frameRate, d->frameRate)
+PHONON_SETTER(setFrameRate, frameRate, int)
+PHONON_SETTER(setFormat, format, quint32)
+PHONON_GETTER(QSize, frameSize, d->frameSize)
 
-void VideoDataOutput::setFrameSize( const QSize& size, Qt::AspectRatioMode aspectRatioMode )
+void VideoDataOutput::setFrameSize(const QSize &size, Qt::AspectRatioMode aspectRatioMode)
 {
-	K_D( VideoDataOutput );
-	d->frameSize = size;
-	d->frameAspectRatioMode = aspectRatioMode;
+    K_D(VideoDataOutput);
+    d->frameSize = size;
+    d->frameAspectRatioMode = aspectRatioMode;
 
-	if( iface() )
-	{
-		QSize newsize;
-		BACKEND_GET( QSize, newsize, "naturalFrameSize" );
-		newsize.scale( size, aspectRatioMode );
-		BACKEND_CALL1( "setFrameSize", QSize, newsize );
-	}
+    if (iface())
+    {
+        QSize newsize;
+        BACKEND_GET(QSize, newsize, "naturalFrameSize");
+        newsize.scale(size, aspectRatioMode);
+        BACKEND_CALL1("setFrameSize", QSize, newsize);
+    }
 }
 
-void VideoDataOutput::setFrameSize( int width, int height, Qt::AspectRatioMode aspectRatioMode )
+void VideoDataOutput::setFrameSize(int width, int height, Qt::AspectRatioMode aspectRatioMode)
 {
-	setFrameSize( QSize( width, height ), aspectRatioMode );
+    setFrameSize(QSize(width, height), aspectRatioMode);
 }
 
 bool VideoDataOutputPrivate::aboutToDeleteIface()
 {
-	Q_ASSERT( backendObject );
-	pBACKEND_GET( quint32, format, "format" );
+    Q_ASSERT(backendObject);
+    pBACKEND_GET(quint32, format, "format");
 
-	return AbstractVideoOutputPrivate::aboutToDeleteIface();
+    return AbstractVideoOutputPrivate::aboutToDeleteIface();
 }
 
 void VideoDataOutput::setupIface()
 {
-	K_D( VideoDataOutput );
-	Q_ASSERT( d->backendObject );
-	AbstractVideoOutput::setupIface();
+    K_D(VideoDataOutput);
+    Q_ASSERT(d->backendObject);
+    AbstractVideoOutput::setupIface();
 
-	// set up attributes
-	BACKEND_CALL1( "setFormat", quint32, d->format );
-	//d->backendObject->setDisplayLatency( d->displayLatency );
+    // set up attributes
+    BACKEND_CALL1("setFormat", quint32, d->format);
+    //d->backendObject->setDisplayLatency(d->displayLatency);
     connect(d->backendObject, SIGNAL(frameReady(const Phonon::Experimental::VideoFrame &)),
             SIGNAL(frameReady(const Phonon::Experimental::VideoFrame &)));
-	connect( d->backendObject, SIGNAL( endOfMedia() ), SIGNAL( endOfMedia() ) );
+    connect(d->backendObject, SIGNAL(endOfMedia()), SIGNAL(endOfMedia()));
 }
 
 } // namespace Experimental

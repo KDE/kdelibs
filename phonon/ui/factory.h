@@ -43,53 +43,53 @@ namespace Phonon
  */
 class PHONONUI_EXPORT UiFactory : public QObject
 {
-	Q_OBJECT
-	public:
-		/**
-		 * Returns a pointer to the factory.
-		 * Use this function to get an instance of UiFactory.
-		 *
-		 * @return a pointer to the factory. If no factory exists until now then
-		 * one is created
-		 */
-		static UiFactory* self();
+    Q_OBJECT
+    public:
+        /**
+         * Returns a pointer to the factory.
+         * Use this function to get an instance of UiFactory.
+         *
+         * @return a pointer to the factory. If no factory exists until now then
+         * one is created
+         */
+        static UiFactory *self();
 
         /**
          * Create a new backend object for a VideoWidget.
          *
          * \return a pointer to the VideoWidget the backend provides.
          */
-		QObject* createVideoWidget( QWidget* parent = 0 );
+        QObject *createVideoWidget(QWidget *parent = 0);
 
-		/**
-		 * \return a pointer to the backend interface.
-		 */
-		QObject* backend() const;
+        /**
+         * \return a pointer to the backend interface.
+         */
+        QObject *backend() const;
 
-	Q_SIGNALS:
-		/**
-		 * Emitted after the backend has successfully been changed.
-		 */
-		void backendChanged();
+    Q_SIGNALS:
+        /**
+         * Emitted after the backend has successfully been changed.
+         */
+        void backendChanged();
 
-	protected:
-		/**
-		 * \internal
-		 * Singleton constructor
-		 */
-		UiFactory();
-		~UiFactory();
+    protected:
+        /**
+         * \internal
+         * Singleton constructor
+         */
+        UiFactory();
+        ~UiFactory();
 
-	private Q_SLOTS:
-		/**
-		 * deletes itself - called from the destructor of Phonon::Factory
-		 */
-		void deleteNow();
+    private Q_SLOTS:
+        /**
+         * deletes itself - called from the destructor of Phonon::Factory
+         */
+        void deleteNow();
 
-	private:
-		static UiFactory * m_self;
-		class Private;
-		Private *const d;
+    private:
+        static UiFactory * m_self;
+        class Private;
+        Private *const d;
 };
 } // namespace Phonon
 

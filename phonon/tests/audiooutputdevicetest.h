@@ -23,11 +23,11 @@
 
 class AudioOutputDeviceTest : public QObject
 {
-	Q_OBJECT
-	private Q_SLOTS:
-		void initTestCase();
-		void sensibleValues();
-		void cleanupTestCase();
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void sensibleValues();
+        void cleanupTestCase();
 };
 
 // vim: sw=4 ts=4

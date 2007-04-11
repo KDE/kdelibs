@@ -27,29 +27,29 @@ namespace Phonon
 {
 namespace Fake
 {
-	class VideoEffect;
-	class AbstractVideoOutput;
+    class VideoEffect;
+    class AbstractVideoOutput;
 
-	class VideoPath : public QObject
-	{
-		Q_OBJECT
-		public:
-			VideoPath( QObject* parent );
-			~VideoPath();
+    class VideoPath : public QObject
+    {
+        Q_OBJECT
+        public:
+            VideoPath(QObject *parent);
+            ~VideoPath();
 
-			// Operations:
-			Q_INVOKABLE bool addOutput( QObject* videoOutput );
-			Q_INVOKABLE bool removeOutput( QObject* videoOutput );
-			Q_INVOKABLE bool insertEffect( QObject* newEffect, QObject* insertBefore = 0 );
-			Q_INVOKABLE bool removeEffect( QObject* effect );
+            // Operations:
+            Q_INVOKABLE bool addOutput(QObject *videoOutput);
+            Q_INVOKABLE bool removeOutput(QObject *videoOutput);
+            Q_INVOKABLE bool insertEffect(QObject *newEffect, QObject *insertBefore = 0);
+            Q_INVOKABLE bool removeEffect(QObject *effect);
 
-			// fake specific
+            // fake specific
             void processFrame(Phonon::Experimental::VideoFrame &frame);
 
-		private:
-			QList<VideoEffect*> m_effects;
-			QList<AbstractVideoOutput*> m_outputs;
-	};
+        private:
+            QList<VideoEffect *> m_effects;
+            QList<AbstractVideoOutput *> m_outputs;
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

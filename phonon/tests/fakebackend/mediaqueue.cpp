@@ -24,39 +24,39 @@ namespace Phonon
 namespace Fake
 {
 
-MediaQueue::MediaQueue( QObject* parent )
-	: QObject( parent )
+MediaQueue::MediaQueue(QObject *parent)
+    : QObject(parent)
 {
 }
 
 KUrl MediaQueue::nextUrl() const
 {
-	return m_nextUrl;
+    return m_nextUrl;
 }
 
-void MediaQueue::setNextUrl( const KUrl &url )
+void MediaQueue::setNextUrl(const KUrl &url)
 {
-	m_nextUrl = url;
+    m_nextUrl = url;
 }
 
 qint32 MediaQueue::timeBetweenMedia() const
 {
-	return m_timeBetweenMedia;
+    return m_timeBetweenMedia;
 }
 
-void MediaQueue::setTimeBetweenMedia( qint32 milliseconds )
+void MediaQueue::setTimeBetweenMedia(qint32 milliseconds)
 {
-	m_timeBetweenMedia = milliseconds;
+    m_timeBetweenMedia = milliseconds;
 }
 
 bool MediaQueue::doCrossfade() const
 {
-	return m_doCrossfade;
+    return m_doCrossfade;
 }
 
-void MediaQueue::setDoCrossfade( bool doCrossfade )
+void MediaQueue::setDoCrossfade(bool doCrossfade)
 {
-	m_doCrossfade = doCrossfade;
+    m_doCrossfade = doCrossfade;
 }
 
 }} // namespace Phonon::Fake

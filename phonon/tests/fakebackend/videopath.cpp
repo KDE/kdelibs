@@ -26,8 +26,8 @@ namespace Phonon
 namespace Fake
 {
 
-VideoPath::VideoPath( QObject* parent )
-	: QObject( parent )
+VideoPath::VideoPath(QObject *parent)
+    : QObject(parent)
 {
 }
 
@@ -35,62 +35,62 @@ VideoPath::~VideoPath()
 {
 }
 
-bool VideoPath::addOutput( QObject* videoOutputIface )
+bool VideoPath::addOutput(QObject *videoOutputIface)
 {
-	Q_ASSERT( videoOutputIface );
-	AbstractVideoOutput* vo = qobject_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
-	Q_ASSERT( vo );
-	Q_ASSERT( !m_outputs.contains( vo ) );
-	m_outputs.append( vo );
-	return true;
+    Q_ASSERT(videoOutputIface);
+    AbstractVideoOutput *vo = qobject_cast<Phonon::Fake::AbstractVideoOutput *>(videoOutputIface);
+    Q_ASSERT(vo);
+    Q_ASSERT(!m_outputs.contains(vo));
+    m_outputs.append(vo);
+    return true;
 }
 
-bool VideoPath::removeOutput( QObject* videoOutputIface )
+bool VideoPath::removeOutput(QObject *videoOutputIface)
 {
-	Q_ASSERT( videoOutputIface );
-	AbstractVideoOutput* vo = qobject_cast<Phonon::Fake::AbstractVideoOutput*>( videoOutputIface );
-	// this should be changed to an "if( vo ) { ..." for production backends
-	Q_ASSERT( vo );
-	Q_ASSERT( m_outputs.removeAll( vo ) == 1 );
-	return true;
+    Q_ASSERT(videoOutputIface);
+    AbstractVideoOutput *vo = qobject_cast<Phonon::Fake::AbstractVideoOutput *>(videoOutputIface);
+    // this should be changed to an "if (vo) { ..." for production backends
+    Q_ASSERT(vo);
+    Q_ASSERT(m_outputs.removeAll(vo) == 1);
+    return true;
 }
 
-bool VideoPath::insertEffect( QObject* newEffect, QObject* insertBefore )
+bool VideoPath::insertEffect(QObject *newEffect, QObject *insertBefore)
 {
-	Q_ASSERT( newEffect );
-	VideoEffect* ve = qobject_cast<VideoEffect*>( newEffect );
-	Q_ASSERT( ve );
-	VideoEffect* before = 0;
-	if( insertBefore )
-	{
-		before = qobject_cast<VideoEffect*>( insertBefore );
-		Q_ASSERT( before );
-		if( !m_effects.contains( before ) )
-			return false;
-		m_effects.insert( m_effects.indexOf( before ), ve );
-	}
-	else
-		m_effects.append( ve );
+    Q_ASSERT(newEffect);
+    VideoEffect *ve = qobject_cast<VideoEffect *>(newEffect);
+    Q_ASSERT(ve);
+    VideoEffect *before = 0;
+    if (insertBefore)
+    {
+        before = qobject_cast<VideoEffect *>(insertBefore);
+        Q_ASSERT(before);
+        if (!m_effects.contains(before))
+            return false;
+        m_effects.insert(m_effects.indexOf(before), ve);
+    }
+    else
+        m_effects.append(ve);
 
-	return true;
+    return true;
 }
 
-bool VideoPath::removeEffect( QObject* effect )
+bool VideoPath::removeEffect(QObject *effect)
 {
-	Q_ASSERT( effect );
-	VideoEffect* ve = qobject_cast<VideoEffect*>( effect );
-	Q_ASSERT( ve );
-	if( m_effects.removeAll( ve ) > 0 )
-		return true;
-	return false;
+    Q_ASSERT(effect);
+    VideoEffect *ve = qobject_cast<VideoEffect *>(effect);
+    Q_ASSERT(ve);
+    if (m_effects.removeAll(ve) > 0)
+        return true;
+    return false;
 }
 
 void VideoPath::processFrame(Phonon::Experimental::VideoFrame &frame)
 {
-	foreach( VideoEffect* effect, m_effects )
-		effect->processFrame( frame ); //modifies the frame
-	foreach( AbstractVideoOutput* output, m_outputs )
-		output->processFrame( frame );
+    foreach (VideoEffect *effect, m_effects)
+        effect->processFrame(frame); //modifies the frame
+    foreach (AbstractVideoOutput *output, m_outputs)
+        output->processFrame(frame);
 }
 
 }}

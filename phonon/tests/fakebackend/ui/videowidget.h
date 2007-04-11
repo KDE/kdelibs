@@ -31,40 +31,40 @@ namespace Phonon
 {
 namespace Fake
 {
-	class VideoWidget : public QWidget, public Phonon::Fake::AbstractVideoOutput
-	{
-		Q_OBJECT
-		Q_INTERFACES( Phonon::Fake::AbstractVideoOutput )
-		public:
-			VideoWidget( QWidget* parent = 0 );
+    class VideoWidget : public QWidget, public Phonon::Fake::AbstractVideoOutput
+    {
+        Q_OBJECT
+        Q_INTERFACES(Phonon::Fake::AbstractVideoOutput)
+        public:
+            VideoWidget(QWidget *parent = 0);
 
-			Q_INVOKABLE Phonon::VideoWidget::AspectRatio aspectRatio() const;
-			Q_INVOKABLE void setAspectRatio( Phonon::VideoWidget::AspectRatio aspectRatio );
+            Q_INVOKABLE Phonon::VideoWidget::AspectRatio aspectRatio() const;
+            Q_INVOKABLE void setAspectRatio(Phonon::VideoWidget::AspectRatio aspectRatio);
             Q_INVOKABLE Phonon::VideoWidget::ScaleMode scaleMode() const;
             Q_INVOKABLE void setScaleMode(Phonon::VideoWidget::ScaleMode);
 
-			// Fake specific:
-			virtual void* internal1( void* = 0 ) { return static_cast<Phonon::Fake::AbstractVideoOutput*>( this ); }
+            // Fake specific:
+            virtual void *internal1(void * = 0) { return static_cast<Phonon::Fake::AbstractVideoOutput *>(this); }
             virtual void processFrame(Phonon::Experimental::VideoFrame &frame);
 
-		public slots:
-			QWidget *widget() { return this; }
+        public slots:
+            QWidget *widget() { return this; }
             int overlayCapabilities() const;
             bool createOverlay(QWidget *widget, int type);
 
-		protected:
-			virtual void childEvent(QChildEvent *event);
-			virtual void paintEvent( QPaintEvent* ev );
-			virtual void resizeEvent( QResizeEvent* ev );
+        protected:
+            virtual void childEvent(QChildEvent *event);
+            virtual void paintEvent(QPaintEvent *ev);
+            virtual void resizeEvent(QResizeEvent *ev);
 
-		private:
-			QWidget *overlay;
-			bool m_fullscreen;
-			QPixmap m_pixmap;
-			QSize m_videoSize;
-			Phonon::VideoWidget::AspectRatio m_aspectRatio;
+        private:
+            QWidget *overlay;
+            bool m_fullscreen;
+            QPixmap m_pixmap;
+            QSize m_videoSize;
+            Phonon::VideoWidget::AspectRatio m_aspectRatio;
             Phonon::VideoWidget::ScaleMode m_scaleMode;
-	};
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

@@ -36,14 +36,14 @@ const qint64 ALLOWED_TICK_INACCURACY = 350; // allow +/- 350 ms inaccuracy
 
 using namespace Phonon;
 
-static qint64 castQVariantToInt64( const QVariant& variant )
+static qint64 castQVariantToInt64(const QVariant &variant)
 {
-	return *reinterpret_cast<const qint64*>( variant.constData() );
+    return *reinterpret_cast<const qint64 *>(variant.constData());
 }
 
-static qint32 castQVariantToInt32( const QVariant& variant )
+static qint32 castQVariantToInt32(const QVariant &variant)
 {
-	return *reinterpret_cast<const qint32*>( variant.constData() );
+    return *reinterpret_cast<const qint32 *>(variant.constData());
 }
 
 void MediaObjectTest::init()
@@ -96,7 +96,7 @@ void MediaObjectTest::startPlayback(Phonon::State currentState)
     QCOMPARE(m_media->state(), Phonon::PlayingState);
 }
 
-void MediaObjectTest::stopPlayback( Phonon::State currentState )
+void MediaObjectTest::stopPlayback(Phonon::State currentState)
 {
     m_stateChangedSignalSpy->clear();
     Phonon::State s = m_media->state();
@@ -163,14 +163,14 @@ void MediaObjectTest::initTestCase()
     Phonon::loadFakeBackend();
     m_url.setUrl("file:///foo.ogg");
 #else
-	m_url.setUrl( getenv( "PHONON_TESTURL" ) );
-	if( !m_url.isValid() )
-		QFAIL( "You need to set PHONON_TESTURL to a valid URL" );
+    m_url.setUrl(getenv("PHONON_TESTURL"));
+    if (!m_url.isValid())
+        QFAIL("You need to set PHONON_TESTURL to a valid URL");
 #endif
-	m_media = new MediaObject( this );
-	m_stateChangedSignalSpy = new QSignalSpy( m_media, SIGNAL( stateChanged( Phonon::State, Phonon::State ) ) );
-	QVERIFY( m_stateChangedSignalSpy->isValid() );
-	m_stateChangedSignalSpy->clear();
+    m_media = new MediaObject(this);
+    m_stateChangedSignalSpy = new QSignalSpy(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
+    QVERIFY(m_stateChangedSignalSpy->isValid());
+    m_stateChangedSignalSpy->clear();
 
     setMedia();
     addPaths();
@@ -179,113 +179,113 @@ void MediaObjectTest::initTestCase()
 
 void MediaObjectTest::setMedia()
 {
-	QSignalSpy lengthSignalSpy( m_media, SIGNAL( length( qint64 ) ) );
-	QVERIFY( m_media->url().isEmpty() );
-	QCOMPARE( m_media->state(), Phonon::LoadingState );
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	m_media->setUrl( m_url );
-	QCOMPARE( m_url, m_media->url() );
-	int emits = m_stateChangedSignalSpy->count();
-	Phonon::State s = m_media->state();
-	if( s == Phonon::LoadingState )
-	{
-		// still in LoadingState, there should be no state change
-		QCOMPARE( emits, 0 );
+    QSignalSpy lengthSignalSpy(m_media, SIGNAL(length(qint64)));
+    QVERIFY(m_media->url().isEmpty());
+    QCOMPARE(m_media->state(), Phonon::LoadingState);
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    m_media->setUrl(m_url);
+    QCOMPARE(m_url, m_media->url());
+    int emits = m_stateChangedSignalSpy->count();
+    Phonon::State s = m_media->state();
+    if (s == Phonon::LoadingState)
+    {
+        // still in LoadingState, there should be no state change
+        QCOMPARE(emits, 0);
         waitForSignal(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
-		emits = m_stateChangedSignalSpy->count();
-		s = m_media->state();
-	}
-	if( s != Phonon::LoadingState )
-	{
-		// there should exactly be one state change
-		QCOMPARE( emits, 1 );
-		QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
-		Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
-		Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
+        emits = m_stateChangedSignalSpy->count();
+        s = m_media->state();
+    }
+    if (s != Phonon::LoadingState)
+    {
+        // there should exactly be one state change
+        QCOMPARE(emits, 1);
+        QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
+        Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
+        Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
 
-		QCOMPARE( Phonon::LoadingState, oldstate );
-		QCOMPARE( s, newstate );
-		if( Phonon::ErrorState == s )
-			QFAIL( "Loading the URL put the MediaObject into the ErrorState. Check that PHONON_TESTURL is set to a valid URL." );
-		QCOMPARE( Phonon::StoppedState, s );
-		QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
+        QCOMPARE(Phonon::LoadingState, oldstate);
+        QCOMPARE(s, newstate);
+        if (Phonon::ErrorState == s)
+            QFAIL("Loading the URL put the MediaObject into the ErrorState. Check that PHONON_TESTURL is set to a valid URL.");
+        QCOMPARE(Phonon::StoppedState, s);
+        QCOMPARE(m_stateChangedSignalSpy->count(), 0);
 
-		// check for length signal
-		QVERIFY( lengthSignalSpy.count() > 0 );
-		args = lengthSignalSpy.takeLast();
-		QCOMPARE( m_media->totalTime(), castQVariantToInt64( args.at( 0 ) ) );
-	}
-	else
-	{
-		QFAIL( "Still in LoadingState after a stateChange signal was emitted. Cannot go on." );
-	}
+        // check for length signal
+        QVERIFY(lengthSignalSpy.count() > 0);
+        args = lengthSignalSpy.takeLast();
+        QCOMPARE(m_media->totalTime(), castQVariantToInt64(args.at(0)));
+    }
+    else
+    {
+        QFAIL("Still in LoadingState after a stateChange signal was emitted. Cannot go on.");
+    }
 }
 
 void MediaObjectTest::checkForDefaults()
 {
-	QCOMPARE( m_media->tickInterval(), qint32( 0 ) );
-	QCOMPARE( m_media->aboutToFinishTime(), qint32( 0 ) );
+    QCOMPARE(m_media->tickInterval(), qint32(0));
+    QCOMPARE(m_media->aboutToFinishTime(), qint32(0));
 }
 
 void MediaObjectTest::stopToStop()
 {
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
-	m_media->stop();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    QCOMPARE(m_media->state(), Phonon::StoppedState);
+    m_media->stop();
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    QCOMPARE(m_media->state(), Phonon::StoppedState);
 }
 
 void MediaObjectTest::stopToPause()
 {
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
-	m_media->pause();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    QCOMPARE(m_media->state(), Phonon::StoppedState);
+    m_media->pause();
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    QCOMPARE(m_media->state(), Phonon::StoppedState);
 }
 
 void MediaObjectTest::stopToPlay()
 {
-	startPlayback();
+    startPlayback();
     ::sleep(1);
-	stopPlayback( Phonon::PlayingState );
+    stopPlayback(Phonon::PlayingState);
 }
 
 void MediaObjectTest::playToPlay()
 {
-	startPlayback();
+    startPlayback();
 
-	m_media->play();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::PlayingState );
+    m_media->play();
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    QCOMPARE(m_media->state(), Phonon::PlayingState);
 
-	stopPlayback( Phonon::PlayingState );
+    stopPlayback(Phonon::PlayingState);
 }
 
 void MediaObjectTest::playToPause()
 {
-	startPlayback();
+    startPlayback();
     pausePlayback();
-	stopPlayback( Phonon::PausedState );
+    stopPlayback(Phonon::PausedState);
 }
 
 void MediaObjectTest::playToStop()
 {
-	startPlayback();
-	stopPlayback( Phonon::PlayingState );
+    startPlayback();
+    stopPlayback(Phonon::PlayingState);
 }
 
 void MediaObjectTest::pauseToPause()
 {
-	startPlayback();
+    startPlayback();
     pausePlayback();
 
-	m_media->pause();
-	QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
-	QCOMPARE( m_media->state(), Phonon::PausedState );
+    m_media->pause();
+    QCOMPARE(m_stateChangedSignalSpy->count(), 0);
+    QCOMPARE(m_media->state(), Phonon::PausedState);
 
-	stopPlayback( Phonon::PausedState );
+    stopPlayback(Phonon::PausedState);
 }
 
 void MediaObjectTest::pauseToPlay()
@@ -298,9 +298,9 @@ void MediaObjectTest::pauseToPlay()
 
 void MediaObjectTest::pauseToStop()
 {
-	startPlayback();
+    startPlayback();
     pausePlayback();
-	stopPlayback( Phonon::PausedState );
+    stopPlayback(Phonon::PausedState);
 }
 
 void MediaObjectTest::testOneSeek(qint64 seekTo)
@@ -331,7 +331,7 @@ void MediaObjectTest::testOneSeek(qint64 seekTo)
     while (
             (oldTime < seekTo && c < seekTo) || // seek forwards
             (oldTime > seekTo && c >= oldTime) // seek backwards
-          ) {
+         ) {
         QTimer::singleShot(ALLOWED_TIME_FOR_SEEKING, &loop, SLOT(quit()));
         loop.exec();
         c = m_media->currentTime();
@@ -374,12 +374,12 @@ void MediaObjectTest::testOneSeek(qint64 seekTo)
 
 void MediaObjectTest::testSeek()
 {
-	startPlayback();
+    startPlayback();
     QTime timer;
     timer.start();
     qint64 t = m_media->totalTime();
-	qint64 c = m_media->currentTime();
-	qint64 r = m_media->remainingTime();
+    qint64 c = m_media->currentTime();
+    qint64 r = m_media->remainingTime();
     int elapsed = timer.elapsed();
     if (c + r > t + elapsed || c + r < t - elapsed) {
         qDebug() << "currentTime:" << c
@@ -389,9 +389,9 @@ void MediaObjectTest::testSeek()
     }
     QVERIFY(c + r <= t + elapsed);
     QVERIFY(c + r >= t - elapsed);
-	if( m_media->isSeekable() )
-		if( r > 0 )
-		{
+    if (m_media->isSeekable())
+        if (r > 0)
+        {
             m_media->setTickInterval(20);
             qint64 s = c + r / 2;
             testOneSeek(s);
@@ -439,14 +439,14 @@ void MediaObjectTest::testSeek()
             testOneSeek(s);
 
             m_media->setTickInterval(0);
-			stopPlayback( Phonon::PausedState );
-			return;
-		}
-		else
-			QWARN( "didn't test seeking as the MediaObject reported a remaining size <= 0" );
-	else
-		QWARN( "didn't test seeking as the MediaObject is not seekable" );
-	stopPlayback( Phonon::PlayingState );
+            stopPlayback(Phonon::PausedState);
+            return;
+        }
+        else
+            QWARN("didn't test seeking as the MediaObject reported a remaining size <= 0");
+    else
+        QWARN("didn't test seeking as the MediaObject is not seekable");
+    stopPlayback(Phonon::PlayingState);
 }
 
 void MediaObjectTest::testAboutToFinish()
@@ -454,9 +454,9 @@ void MediaObjectTest::testAboutToFinish()
     const qint32 requestedAboutToFinishTime = 2000;
     m_media->setAboutToFinishTime(requestedAboutToFinishTime);
     QCOMPARE(m_media->aboutToFinishTime(), requestedAboutToFinishTime);
-	QSignalSpy aboutToFinishSpy( m_media, SIGNAL( aboutToFinish( qint32 ) ) );
-	QSignalSpy finishSpy( m_media, SIGNAL( finished() ) );
-	startPlayback();
+    QSignalSpy aboutToFinishSpy(m_media, SIGNAL(aboutToFinish(qint32)));
+    QSignalSpy finishSpy(m_media, SIGNAL(finished()));
+    startPlayback();
     State s = m_media->state();
     if (m_media->isSeekable()) {
         m_media->seek(m_media->totalTime() - 4000 - requestedAboutToFinishTime); // give it 4 seconds
@@ -467,11 +467,11 @@ void MediaObjectTest::testAboutToFinish()
         wait = qMax(1000, wait / 2);
         waitForSignal(m_media, SIGNAL(aboutToFinish(qint32)), wait);
     }
-	// at this point the media should be about to finish playing
-	qint64 r = m_media->remainingTime();
-	Phonon::State state = m_media->state();
-	QCOMPARE( aboutToFinishSpy.count(), 1 );
-	const qint32 aboutToFinishTime = castQVariantToInt32( aboutToFinishSpy.first().at( 0 ) );
+    // at this point the media should be about to finish playing
+    qint64 r = m_media->remainingTime();
+    Phonon::State state = m_media->state();
+    QCOMPARE(aboutToFinishSpy.count(), 1);
+    const qint32 aboutToFinishTime = castQVariantToInt32(aboutToFinishSpy.first().at(0));
     QVERIFY(aboutToFinishTime <= requestedAboutToFinishTime + 150); // allow it to be up to 150ms too early
     qDebug() << "received aboutToFinishTime" << aboutToFinishTime << ", requested" << requestedAboutToFinishTime;
     if (state == Phonon::PlayingState || state == Phonon::BufferingState) {
@@ -499,13 +499,13 @@ void MediaObjectTest::testAboutToFinish()
     }
     QCOMPARE(s, Phonon::PlayingState);
 
-	QCOMPARE( m_stateChangedSignalSpy->count(), 1 );
-	QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
-	Phonon::State newstate = qvariant_cast<Phonon::State>( args.at( 0 ) );
-	Phonon::State oldstate = qvariant_cast<Phonon::State>( args.at( 1 ) );
-	QCOMPARE( oldstate, Phonon::PlayingState );
-	QCOMPARE( newstate, Phonon::StoppedState );
-	QCOMPARE( m_media->state(), Phonon::StoppedState );
+    QCOMPARE(m_stateChangedSignalSpy->count(), 1);
+    QList<QVariant> args = m_stateChangedSignalSpy->takeFirst();
+    Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
+    Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
+    QCOMPARE(oldstate, Phonon::PlayingState);
+    QCOMPARE(newstate, Phonon::StoppedState);
+    QCOMPARE(m_media->state(), Phonon::StoppedState);
     QCoreApplication::processEvents();
     QCOMPARE(aboutToFinishSpy.count(), 1);
 }
@@ -551,17 +551,17 @@ void MediaObjectTest::setMediaAndPlay()
     Phonon::State newstate = qvariant_cast<Phonon::State>(args.at(0));
     Phonon::State oldstate = qvariant_cast<Phonon::State>(args.at(1));
 
-		QCOMPARE( Phonon::LoadingState, oldstate );
-		QCOMPARE( state, newstate );
-		if( Phonon::ErrorState == state )
-			QFAIL( "Loading the URL put the MediaObject into the ErrorState. Check that PHONON_TESTURL is set to a valid URL." );
-		QCOMPARE( Phonon::StoppedState, state );
-		QCOMPARE( m_stateChangedSignalSpy->count(), 0 );
+        QCOMPARE(Phonon::LoadingState, oldstate);
+        QCOMPARE(state, newstate);
+        if (Phonon::ErrorState == state)
+            QFAIL("Loading the URL put the MediaObject into the ErrorState. Check that PHONON_TESTURL is set to a valid URL.");
+        QCOMPARE(Phonon::StoppedState, state);
+        QCOMPARE(m_stateChangedSignalSpy->count(), 0);
 
-		// check for length signal
-		QVERIFY( lengthSignalSpy.count() > 0 );
-		args = lengthSignalSpy.takeLast();
-		QCOMPARE( m_media->totalTime(), castQVariantToInt64( args.at( 0 ) ) );
+        // check for length signal
+        QVERIFY(lengthSignalSpy.count() > 0);
+        args = lengthSignalSpy.takeLast();
+        QCOMPARE(m_media->totalTime(), castQVariantToInt64(args.at(0)));
         */
 
     emit continueTestPlayOnFinish();
@@ -641,33 +641,33 @@ void MediaObjectTest::testTickSignal()
 {
     QTime start1;
     QTime start2;
-	for( qint32 tickInterval = 80; tickInterval <= 500; tickInterval *= 2 )
-	{
+    for (qint32 tickInterval = 80; tickInterval <= 500; tickInterval *= 2)
+    {
         QSignalSpy tickSpy(m_media, SIGNAL(tick(qint64)));
-		qDebug() << "Test 20 ticks with an interval of" <<  tickInterval << "ms";
-		m_media->setTickInterval( tickInterval );
-		QVERIFY( m_media->tickInterval() <= tickInterval );
-		QVERIFY( m_media->tickInterval() >= tickInterval/2 );
+        qDebug() << "Test 20 ticks with an interval of" <<  tickInterval << "ms";
+        m_media->setTickInterval(tickInterval);
+        QVERIFY(m_media->tickInterval() <= tickInterval);
+        QVERIFY(m_media->tickInterval() >= tickInterval/2);
         QVERIFY(tickSpy.isEmpty());
         start1.start();
-		startPlayback();
+        startPlayback();
         start2.start();
-		int lastCount = 0;
-		qint64 s1, s2 = start2.elapsed();
-		while( tickSpy.count() < 20 && ( m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState ) )
-		{
-			if( tickSpy.count() > lastCount )
-			{
-				s1 = start1.elapsed();
-				qint64 tickTime = castQVariantToInt64( tickSpy.last().at( 0 ) );
-				lastCount = tickSpy.count();
-				// s1 is the time from before the beginning of the playback to
-				// after the tick signal
-				// s2 is the time from after the beginning of the playback to
-				// before the tick signal
-				// so: s2 <= s1
+        int lastCount = 0;
+        qint64 s1, s2 = start2.elapsed();
+        while (tickSpy.count() < 20 && (m_media->state() == Phonon::PlayingState || m_media->state() == Phonon::BufferingState))
+        {
+            if (tickSpy.count() > lastCount)
+            {
+                s1 = start1.elapsed();
+                qint64 tickTime = castQVariantToInt64(tickSpy.last().at(0));
+                lastCount = tickSpy.count();
+                // s1 is the time from before the beginning of the playback to
+                // after the tick signal
+                // s2 is the time from after the beginning of the playback to
+                // before the tick signal
+                // so: s2 <= s1
 
-				QVERIFY( tickTime <= m_media->currentTime() );
+                QVERIFY(tickTime <= m_media->currentTime());
                 if (s1 + ALLOWED_TICK_INACCURACY < tickTime || s2 - ALLOWED_TICK_INACCURACY > tickTime) {
                     qDebug()
                         << "\n" << lastCount << "ticks have been received"
@@ -679,119 +679,119 @@ void MediaObjectTest::testTickSignal()
                         qDebug() << castQVariantToInt64(tickSpy[i].at(0));
                     }
                 }
-				QVERIFY( s1 + ALLOWED_TICK_INACCURACY >= tickTime );
-				QVERIFY( s2 - ALLOWED_TICK_INACCURACY <= tickTime );
-				QVERIFY( s1 >= lastCount * m_media->tickInterval() );
-				if( s2 > ( lastCount + 1 ) * m_media->tickInterval() )
-					QWARN( qPrintable( QString( "%1. tick came too late: %2ms elapsed while this tick should have come before %3ms" )
-							.arg( lastCount ).arg( s2 ).arg( ( lastCount + 1 ) * m_media->tickInterval() ) ) );
+                QVERIFY(s1 + ALLOWED_TICK_INACCURACY >= tickTime);
+                QVERIFY(s2 - ALLOWED_TICK_INACCURACY <= tickTime);
+                QVERIFY(s1 >= lastCount * m_media->tickInterval());
+                if (s2 > (lastCount + 1) * m_media->tickInterval())
+                    QWARN(qPrintable(QString("%1. tick came too late: %2ms elapsed while this tick should have come before %3ms")
+                            .arg(lastCount).arg(s2).arg((lastCount + 1) * m_media->tickInterval())));
             } else if (lastCount == 0 && s2 > 20 * m_media->tickInterval()) {
                 QFAIL("no tick signals are being received");
             }
-			s2 = start2.elapsed();
+            s2 = start2.elapsed();
             waitForSignal(m_media, SIGNAL(tick(qint64)), 2000);
-		}
-		stopPlayback( Phonon::PlayingState );
-	}
+        }
+        stopPlayback(Phonon::PlayingState);
+    }
 }
 
 void MediaObjectTest::addPaths()
 {
-	AudioPath *a1 = new AudioPath( this );
-	AudioPath *a2 = new AudioPath( this );
-	VideoPath *v1 = new VideoPath( this );
-	VideoPath *v2 = new VideoPath( this );
-	QCOMPARE( m_media->audioPaths().size(), 0 );
-	QCOMPARE( m_media->videoPaths().size(), 0 );
-	m_media->addAudioPath( a1 );
-	QCOMPARE( m_media->audioPaths().size(), 1 ); // one should always work
-	QVERIFY( m_media->audioPaths().contains( a1 ) );
-	QCOMPARE( m_media->addAudioPath( a1 ), false ); // adding the same one should not work
-	QCOMPARE( m_media->audioPaths().size(), 1 );
-	QVERIFY( m_media->audioPaths().contains( a1 ) );
-	if( m_media->addAudioPath( a2 ) )
-	{
-		QCOMPARE( m_media->audioPaths().size(), 2 );
-		QVERIFY( m_media->audioPaths().contains( a1 ) );
-		QVERIFY( m_media->audioPaths().contains( a2 ) );
-		QCOMPARE( m_media->addAudioPath( a1 ), false ); // adding the same one should not work
-		QCOMPARE( m_media->audioPaths().size(), 2 );
-		QCOMPARE( m_media->addAudioPath( a2 ), false ); // adding the same one should not work
-		QCOMPARE( m_media->audioPaths().size(), 2 );
-		delete a2;
-		QCOMPARE( m_media->audioPaths().size(), 1 );
-		QVERIFY( m_media->audioPaths().contains( a1 ) );
-		QVERIFY( !m_media->audioPaths().contains( a2 ) );
-		a2 = new AudioPath( this );
-		QCOMPARE( m_media->addAudioPath( a2 ), true );
-		QCOMPARE( m_media->audioPaths().size(), 2 );
-		QVERIFY( m_media->audioPaths().contains( a1 ) );
-		QVERIFY( m_media->audioPaths().contains( a2 ) );
-		delete a2;
-		QCOMPARE( m_media->audioPaths().size(), 1 );
-		QVERIFY( m_media->audioPaths().contains( a1 ) );
-		QVERIFY( !m_media->audioPaths().contains( a2 ) );
-		a2 = 0;
-	}
-	else
-		QWARN( "backend does not allow usage of more than one AudioPath" );
-	delete a1;
-	QCOMPARE( m_media->audioPaths().size(), 0 );
-	a1 = 0;
+    AudioPath *a1 = new AudioPath(this);
+    AudioPath *a2 = new AudioPath(this);
+    VideoPath *v1 = new VideoPath(this);
+    VideoPath *v2 = new VideoPath(this);
+    QCOMPARE(m_media->audioPaths().size(), 0);
+    QCOMPARE(m_media->videoPaths().size(), 0);
+    m_media->addAudioPath(a1);
+    QCOMPARE(m_media->audioPaths().size(), 1); // one should always work
+    QVERIFY(m_media->audioPaths().contains(a1));
+    QCOMPARE(m_media->addAudioPath(a1), false); // adding the same one should not work
+    QCOMPARE(m_media->audioPaths().size(), 1);
+    QVERIFY(m_media->audioPaths().contains(a1));
+    if (m_media->addAudioPath(a2))
+    {
+        QCOMPARE(m_media->audioPaths().size(), 2);
+        QVERIFY(m_media->audioPaths().contains(a1));
+        QVERIFY(m_media->audioPaths().contains(a2));
+        QCOMPARE(m_media->addAudioPath(a1), false); // adding the same one should not work
+        QCOMPARE(m_media->audioPaths().size(), 2);
+        QCOMPARE(m_media->addAudioPath(a2), false); // adding the same one should not work
+        QCOMPARE(m_media->audioPaths().size(), 2);
+        delete a2;
+        QCOMPARE(m_media->audioPaths().size(), 1);
+        QVERIFY(m_media->audioPaths().contains(a1));
+        QVERIFY(!m_media->audioPaths().contains(a2));
+        a2 = new AudioPath(this);
+        QCOMPARE(m_media->addAudioPath(a2), true);
+        QCOMPARE(m_media->audioPaths().size(), 2);
+        QVERIFY(m_media->audioPaths().contains(a1));
+        QVERIFY(m_media->audioPaths().contains(a2));
+        delete a2;
+        QCOMPARE(m_media->audioPaths().size(), 1);
+        QVERIFY(m_media->audioPaths().contains(a1));
+        QVERIFY(!m_media->audioPaths().contains(a2));
+        a2 = 0;
+    }
+    else
+        QWARN("backend does not allow usage of more than one AudioPath");
+    delete a1;
+    QCOMPARE(m_media->audioPaths().size(), 0);
+    a1 = 0;
 
-	m_media->addVideoPath( v1 );
-	QCOMPARE( m_media->videoPaths().size(), 1 ); // one should always work
-	QVERIFY( m_media->videoPaths().contains( v1 ) );
-	QCOMPARE( m_media->addVideoPath( v1 ), false ); // adding the same one should not work
-	QCOMPARE( m_media->videoPaths().size(), 1 );
-	QVERIFY( m_media->videoPaths().contains( v1 ) );
-	if( m_media->addVideoPath( v2 ) )
-	{
-		QCOMPARE( m_media->videoPaths().size(), 2 );
-		QVERIFY( m_media->videoPaths().contains( v1 ) );
-		QVERIFY( m_media->videoPaths().contains( v2 ) );
-		QCOMPARE( m_media->addVideoPath( v1 ), false ); // adding the same one should not work
-		QCOMPARE( m_media->videoPaths().size(), 2 );
-		QCOMPARE( m_media->addVideoPath( v2 ), false ); // adding the same one should not work
-		QCOMPARE( m_media->videoPaths().size(), 2 );
-		delete v2;
-		QCOMPARE( m_media->videoPaths().size(), 1 );
-		QVERIFY( m_media->videoPaths().contains( v1 ) );
-		QVERIFY( !m_media->videoPaths().contains( v2 ) );
-		v2 = new VideoPath( this );
-		QCOMPARE( m_media->addVideoPath( v2 ), true );
-		QCOMPARE( m_media->videoPaths().size(), 2 );
-		QVERIFY( m_media->videoPaths().contains( v1 ) );
-		QVERIFY( m_media->videoPaths().contains( v2 ) );
-		delete v2;
-		QCOMPARE( m_media->videoPaths().size(), 1 );
-		QVERIFY( m_media->videoPaths().contains( v1 ) );
-		QVERIFY( !m_media->videoPaths().contains( v2 ) );
-		v2 = 0;
-	}
-	else
-		QWARN( "backend does not allow usage of more than one VideoPath" );
-	delete v1;
-	QCOMPARE( m_media->videoPaths().size(), 0 );
-	v1 = 0;
+    m_media->addVideoPath(v1);
+    QCOMPARE(m_media->videoPaths().size(), 1); // one should always work
+    QVERIFY(m_media->videoPaths().contains(v1));
+    QCOMPARE(m_media->addVideoPath(v1), false); // adding the same one should not work
+    QCOMPARE(m_media->videoPaths().size(), 1);
+    QVERIFY(m_media->videoPaths().contains(v1));
+    if (m_media->addVideoPath(v2))
+    {
+        QCOMPARE(m_media->videoPaths().size(), 2);
+        QVERIFY(m_media->videoPaths().contains(v1));
+        QVERIFY(m_media->videoPaths().contains(v2));
+        QCOMPARE(m_media->addVideoPath(v1), false); // adding the same one should not work
+        QCOMPARE(m_media->videoPaths().size(), 2);
+        QCOMPARE(m_media->addVideoPath(v2), false); // adding the same one should not work
+        QCOMPARE(m_media->videoPaths().size(), 2);
+        delete v2;
+        QCOMPARE(m_media->videoPaths().size(), 1);
+        QVERIFY(m_media->videoPaths().contains(v1));
+        QVERIFY(!m_media->videoPaths().contains(v2));
+        v2 = new VideoPath(this);
+        QCOMPARE(m_media->addVideoPath(v2), true);
+        QCOMPARE(m_media->videoPaths().size(), 2);
+        QVERIFY(m_media->videoPaths().contains(v1));
+        QVERIFY(m_media->videoPaths().contains(v2));
+        delete v2;
+        QCOMPARE(m_media->videoPaths().size(), 1);
+        QVERIFY(m_media->videoPaths().contains(v1));
+        QVERIFY(!m_media->videoPaths().contains(v2));
+        v2 = 0;
+    }
+    else
+        QWARN("backend does not allow usage of more than one VideoPath");
+    delete v1;
+    QCOMPARE(m_media->videoPaths().size(), 0);
+    v1 = 0;
 }
 
 void MediaObjectTest::initOutput()
 {
-	// AudioPath and AudioOutput are needed else the backend might finish in no time
-	AudioPath* audioPath = new AudioPath( this );
-	AudioOutput* audioOutput = new AudioOutput( Phonon::MusicCategory, this );
+    // AudioPath and AudioOutput are needed else the backend might finish in no time
+    AudioPath *audioPath = new AudioPath(this);
+    AudioOutput *audioOutput = new AudioOutput(Phonon::MusicCategory, this);
     //audioOutput->setVolume(0.0f);
-	audioPath->addOutput( audioOutput );
-	m_media->addAudioPath( audioPath );
+    audioPath->addOutput(audioOutput);
+    m_media->addAudioPath(audioPath);
 }
 
 void MediaObjectTest::cleanupTestCase()
 {
-	delete m_stateChangedSignalSpy;
-	delete m_media;
+    delete m_stateChangedSignalSpy;
+    delete m_media;
 }
 
-QTEST_KDEMAIN( MediaObjectTest, NoGUI )
+QTEST_KDEMAIN(MediaObjectTest, NoGUI)
 #include "mediaobjecttest.moc"
 // vim: sw=4 ts=4

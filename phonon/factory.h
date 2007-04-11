@@ -73,82 +73,82 @@ namespace Factory
      *
      * \return a pointer to the MediaObject the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createMediaObject(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createMediaObject(QObject *parent = 0);
     /**
      * Create a new backend object for a MediaQueue.
      *
      * \return a pointer to the MediaQueue the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createMediaQueue(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createMediaQueue(QObject *parent = 0);
     /**
      * Create a new backend object for a AvCapture.
      *
      * \return a pointer to the AvCapture the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createAvCapture(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createAvCapture(QObject *parent = 0);
     /**
      * Create a new backend object for a ByteStream.
      *
      * \return a pointer to the ByteStream the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createByteStream(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createByteStream(QObject *parent = 0);
 
     /**
      * Create a new backend object for a AudioPath.
      *
      * \return a pointer to the AudioPath the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createAudioPath(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createAudioPath(QObject *parent = 0);
     /**
      * Create a new backend object for a AudioEffect.
      *
      * \return a pointer to the AudioEffect the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createAudioEffect(int effectId, QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createAudioEffect(int effectId, QObject *parent = 0);
     /**
      * Create a new backend object for a VolumeFaderEffect.
      *
      * \return a pointer to the VolumeFaderEffect the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createVolumeFaderEffect(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createVolumeFaderEffect(QObject *parent = 0);
     /**
      * Create a new backend object for a AudioOutput.
      *
      * \return a pointer to the AudioOutput the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createAudioOutput(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createAudioOutput(QObject *parent = 0);
     /**
      * Create a new backend object for a AudioDataOutput.
      *
      * \return a pointer to the AudioDataOutput the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createAudioDataOutput(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createAudioDataOutput(QObject *parent = 0);
 
     /**
      * Create a new backend object for a Visualization.
      *
      * \return a pointer to the Visualization the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createVisualization(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createVisualization(QObject *parent = 0);
 
     /**
      * Create a new backend object for a VideoPath.
      *
      * \return a pointer to the VideoPath the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createVideoPath(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createVideoPath(QObject *parent = 0);
     /**
      * Create a new backend object for a VideoEffect.
      *
      * \return a pointer to the VideoEffect the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createVideoEffect(int effectId, QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createVideoEffect(int effectId, QObject *parent = 0);
     /**
      * Create a new backend object for a BrightnessControl.
      *
      * \return a pointer to the BrightnessControl the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createBrightnessControl(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createBrightnessControl(QObject *parent = 0);
     /**
      * Create a new backend object for a BrightnessControl.
      *
@@ -160,12 +160,12 @@ namespace Factory
      *
      * \return a pointer to the VideoDataOutput the backend provides.
      */
-    PHONONCORE_EXPORT QObject* createVideoDataOutput(QObject *parent = 0);
+    PHONONCORE_EXPORT QObject *createVideoDataOutput(QObject *parent = 0);
 
     /**
      * \return a pointer to the backend interface.
      */
-    PHONONCORE_EXPORT QObject* backend( bool createWhenNull = true );
+    PHONONCORE_EXPORT QObject *backend(bool createWhenNull = true);
 
     /**
      * \returns The name of the library that needs to be loaded to get access to the
@@ -173,7 +173,7 @@ namespace Factory
      *
      * \see \ref phonon_UiBackend
      */
-    PHONONCORE_EXPORT const char* uiLibrary();
+    PHONONCORE_EXPORT const char *uiLibrary();
 
     /**
      * This method is useful if you want to put the GUI dependent and GUI indepentend
@@ -182,7 +182,7 @@ namespace Factory
      * \returns The symbol in the library that needs to be called to get access to the
      * \ref phonon_UiBackend "UiBackend" instance.
      */
-    PHONONCORE_EXPORT const char* uiSymbol();
+    PHONONCORE_EXPORT const char *uiSymbol();
 
     /**
      * Unique identifier for the Backend. Can be used in configuration files
@@ -222,7 +222,7 @@ namespace Factory
     /**
      * registers the backend object
      */
-    PHONONCORE_EXPORT QObject* registerQObject( QObject* o );
+    PHONONCORE_EXPORT QObject *registerQObject(QObject *o);
     PHONONCORE_EXPORT void registerFrontendObject(BasePrivate *);
     PHONONCORE_EXPORT void deregisterFrontendObject(BasePrivate *);
     PHONONCORE_EXPORT const KComponentData &componentData();

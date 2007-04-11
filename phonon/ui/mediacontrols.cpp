@@ -89,26 +89,26 @@ void MediaControls::setMediaProducer(AbstractMediaProducer *media)
     d->seekSlider.setMediaProducer(media);
 }
 
-void MediaControls::setAudioOutput( AudioOutput* audioOutput )
+void MediaControls::setAudioOutput(AudioOutput *audioOutput)
 {
     Q_D(MediaControls);
     d->volumeSlider.setAudioOutput(audioOutput);
     d->volumeSlider.setVisible(audioOutput != 0);
 }
 
-void MediaControls::setSeekSliderVisible( bool vis )
+void MediaControls::setSeekSliderVisible(bool vis)
 {
     Q_D(MediaControls);
     d->seekSlider.setVisible(vis);
 }
 
-void MediaControls::setVolumeControlVisible( bool vis )
+void MediaControls::setVolumeControlVisible(bool vis)
 {
     Q_D(MediaControls);
     d->volumeSlider.setVisible(vis);
 }
 
-void MediaControls::setLoopControlVisible( bool vis )
+void MediaControls::setLoopControlVisible(bool vis)
 {
     Q_D(MediaControls);
     d->loopButton.setVisible(vis);
@@ -116,21 +116,21 @@ void MediaControls::setLoopControlVisible( bool vis )
 
 void MediaControlsPrivate::_k_stateChanged(State newstate, State)
 {
-    switch( newstate )
+    switch(newstate)
     {
-        case Phonon::LoadingState:
-        case Phonon::PausedState:
-        case Phonon::StoppedState:
-            playButton.show();
-            pauseButton.hide();
-            break;
-        case Phonon::BufferingState:
-        case Phonon::PlayingState:
-            playButton.hide();
-            pauseButton.show();
-            break;
-        case Phonon::ErrorState:
-            return;
+    case Phonon::LoadingState:
+    case Phonon::PausedState:
+    case Phonon::StoppedState:
+        playButton.show();
+        pauseButton.hide();
+        break;
+    case Phonon::BufferingState:
+    case Phonon::PlayingState:
+        playButton.hide();
+        pauseButton.show();
+        break;
+    case Phonon::ErrorState:
+        return;
     }
 }
 

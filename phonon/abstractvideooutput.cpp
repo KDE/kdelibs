@@ -23,20 +23,20 @@
 namespace Phonon
 {
 
-AbstractVideoOutput::AbstractVideoOutput( AbstractVideoOutputPrivate& d )
-	: Base( d )
+AbstractVideoOutput::AbstractVideoOutput(AbstractVideoOutputPrivate &d)
+    : Base(d)
 {
 }
 
 bool AbstractVideoOutputPrivate::aboutToDeleteIface()
 {
-	return true;
+    return true;
 }
 
 void AbstractVideoOutput::setupIface()
 {
-	K_D( AbstractVideoOutput );
-	Q_ASSERT( d->backendObject );
+    K_D(AbstractVideoOutput);
+    Q_ASSERT(d->backendObject);
 }
 
 } //namespace Phonon

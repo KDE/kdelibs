@@ -80,7 +80,7 @@ void AudioDeviceEnumeratorPrivate::findDevices()
 
     QSet<QString> alreadyFoundCards;
 
-    Solid::DeviceList devices = manager.findDevicesFromQuery("AudioHw.deviceType & 'AudioInput|AudioOutput'");
+    Solid::DeviceList devices = manager.findDevicesFromQuery("AudioHw.deviceType  & 'AudioInput|AudioOutput'");
     foreach (Solid::Device device, devices) {
         AudioDevice dev(device, config);
         if (dev.isValid()) {
@@ -128,7 +128,7 @@ void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     Solid::Device _device = manager.findDevice(udi);
     Solid::AudioHw *audiohw = _device.as<Solid::AudioHw>();
-    if (audiohw && (audiohw->deviceType() & (Solid::AudioHw::AudioInput | Solid::AudioHw::AudioOutput))) {
+    if (audiohw && (audiohw->deviceType()  & (Solid::AudioHw::AudioInput | Solid::AudioHw::AudioOutput))) {
         // an audio i/o device was plugged in
         AudioDevice dev(_device, config);
         if (dev.isValid()) {

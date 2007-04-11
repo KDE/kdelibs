@@ -23,9 +23,9 @@ namespace Phonon
 {
 namespace Fake
 {
-VolumeFaderEffect::VolumeFaderEffect( QObject* parent )
-	: AudioEffect( -1, parent )
-	, m_fadeTime( 0 )
+VolumeFaderEffect::VolumeFaderEffect(QObject *parent)
+    : AudioEffect(-1, parent)
+    , m_fadeTime(0)
 {
 }
 
@@ -35,43 +35,43 @@ VolumeFaderEffect::~VolumeFaderEffect()
 
 float VolumeFaderEffect::volume() const
 {
-	if( m_fadeTime > 0 )
-	{
-		float v = m_volume + ( m_endvolume - m_volume ) / m_fadeTime * m_fadeStart.elapsed();
-		if( ( m_volume < m_endvolume && v > m_endvolume ) || ( m_volume > m_endvolume && v < m_endvolume ) )
-		{
-			VolumeFaderEffect* t = const_cast<VolumeFaderEffect*>( this );
-			t->m_volume = m_endvolume;
-			t->m_fadeTime = 0;
-		}
-		else
-			return v;
-	}
-	return m_volume;
+    if (m_fadeTime > 0)
+    {
+        float v = m_volume + (m_endvolume - m_volume) / m_fadeTime * m_fadeStart.elapsed();
+        if ((m_volume < m_endvolume && v > m_endvolume) || (m_volume > m_endvolume && v < m_endvolume))
+        {
+            VolumeFaderEffect *t = const_cast<VolumeFaderEffect *>(this);
+            t->m_volume = m_endvolume;
+            t->m_fadeTime = 0;
+        }
+        else
+            return v;
+    }
+    return m_volume;
 }
 
-void VolumeFaderEffect::setVolume( float volume )
+void VolumeFaderEffect::setVolume(float volume)
 {
-	m_volume = volume;
+    m_volume = volume;
 }
 
 Phonon::VolumeFaderEffect::FadeCurve VolumeFaderEffect::fadeCurve() const
 {
-	return m_fadeCurve;
+    return m_fadeCurve;
 }
 
-void VolumeFaderEffect::setFadeCurve( Phonon::VolumeFaderEffect::FadeCurve curve )
+void VolumeFaderEffect::setFadeCurve(Phonon::VolumeFaderEffect::FadeCurve curve)
 {
-	m_fadeCurve = curve;
+    m_fadeCurve = curve;
 }
 
-void VolumeFaderEffect::fadeTo( float volume, int fadeTime )
+void VolumeFaderEffect::fadeTo(float volume, int fadeTime)
 {
-	if( m_fadeTime > 0 )
-		m_volume = this->volume();
-	m_fadeStart.start();
-	m_fadeTime = fadeTime;
-	m_endvolume = volume;
+    if (m_fadeTime > 0)
+        m_volume = this->volume();
+    m_fadeStart.start();
+    m_fadeTime = fadeTime;
+    m_endvolume = volume;
 }
 
 }} //namespace Phonon::Fake

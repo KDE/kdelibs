@@ -24,34 +24,34 @@
 
 namespace Phonon
 {
-	Base::Base( BasePrivate& d )
-		: k_ptr( &d )
-	{
-		k_ptr->q_ptr = this;
-		// cannot call k_ptr->createIface(); from here as that calls setupIface
-		// on the classes that inherit Base - and they're not constructed at
-		// this point
-	}
+    Base::Base(BasePrivate &d)
+        : k_ptr(&d)
+    {
+        k_ptr->q_ptr = this;
+        // cannot call k_ptr->createIface(); from here as that calls setupIface
+        // on the classes that inherit Base - and they're not constructed at
+        // this point
+    }
 
-	Base::~Base()
-	{
-		K_D( Base );
-		foreach( BaseDestructionHandler* handler, d->handlers )
-			handler->phononObjectDestroyed( this );
-		delete k_ptr;
-	}
+    Base::~Base()
+    {
+        K_D(Base);
+        foreach (BaseDestructionHandler *handler, d->handlers)
+            handler->phononObjectDestroyed(this);
+        delete k_ptr;
+    }
 
-	QObject* Base::iface()
-	{
-		K_D( Base );
-		if( !d->backendObject )
-			d->createIface();
-		return d->backendObject;
-	}
+    QObject *Base::iface()
+    {
+        K_D(Base);
+        if (!d->backendObject)
+            d->createIface();
+        return d->backendObject;
+    }
 
-	bool Base::isValid()
-	{
-		return( iface() != 0 );
-	}
+    bool Base::isValid()
+    {
+        return(iface() != 0);
+    }
 } //namespace Phonon
 // vim: sw=4 ts=4

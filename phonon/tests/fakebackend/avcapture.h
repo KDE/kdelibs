@@ -25,19 +25,19 @@ namespace Phonon
 {
 namespace Fake
 {
-	class AvCapture : public AbstractMediaProducer
-	{
-		Q_OBJECT
-		public:
-			AvCapture( QObject* parent );
-			~AvCapture();
+    class AvCapture : public AbstractMediaProducer
+    {
+        Q_OBJECT
+        public:
+            AvCapture(QObject *parent);
+            ~AvCapture();
 
-		public slots:
-			int audioCaptureDevice() const;
-			void setAudioCaptureDevice( int index );
-			int videoCaptureDevice() const;
-			void setVideoCaptureDevice( int index );
-	};
+        public slots:
+            int audioCaptureDevice() const;
+            void setAudioCaptureDevice(int index);
+            int videoCaptureDevice() const;
+            void setVideoCaptureDevice(int index);
+    };
 }} //namespace Phonon::Fake
 
 // vim: sw=4 ts=4 tw=80

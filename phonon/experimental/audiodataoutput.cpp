@@ -27,39 +27,39 @@ namespace Phonon
 namespace Experimental
 {
 
-PHONON_HEIR_IMPL( AbstractAudioOutput )
+PHONON_HEIR_IMPL(AbstractAudioOutput)
 
-PHONON_GETTER( Phonon::Experimental::AudioDataOutput::Format, format, d->format )
-PHONON_GETTER( int, dataSize, d->dataSize )
-PHONON_GETTER( int, sampleRate, -1 )
-PHONON_SETTER( setFormat, format, Phonon::Experimental::AudioDataOutput::Format )
-PHONON_SETTER( setDataSize, dataSize, int )
+PHONON_GETTER(Phonon::Experimental::AudioDataOutput::Format, format, d->format)
+PHONON_GETTER(int, dataSize, d->dataSize)
+PHONON_GETTER(int, sampleRate, -1)
+PHONON_SETTER(setFormat, format, Phonon::Experimental::AudioDataOutput::Format)
+PHONON_SETTER(setDataSize, dataSize, int)
 
 bool AudioDataOutputPrivate::aboutToDeleteIface()
 {
-	Q_ASSERT( backendObject );
-	pBACKEND_GET( Phonon::Experimental::AudioDataOutput::Format, format, "format" );
-	pBACKEND_GET( int, dataSize, "dataSize" );
+    Q_ASSERT(backendObject);
+    pBACKEND_GET(Phonon::Experimental::AudioDataOutput::Format, format, "format");
+    pBACKEND_GET(int, dataSize, "dataSize");
 
-	return AbstractAudioOutputPrivate::aboutToDeleteIface();
+    return AbstractAudioOutputPrivate::aboutToDeleteIface();
 }
 
 void AudioDataOutput::setupIface()
 {
-	K_D( AudioDataOutput );
-	Q_ASSERT( d->backendObject );
-	AbstractAudioOutput::setupIface();
+    K_D(AudioDataOutput);
+    Q_ASSERT(d->backendObject);
+    AbstractAudioOutput::setupIface();
 
-	// set up attributes
-	BACKEND_CALL1( "setFormat", Phonon::Experimental::AudioDataOutput::Format, d->format );
-	BACKEND_CALL1( "setDataSize", int, d->dataSize );
-	connect( d->backendObject,
-			SIGNAL( dataReady( const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> >& ) ),
-			SIGNAL( dataReady( const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> >& ) ) );
-	connect( d->backendObject,
-			SIGNAL( dataReady( const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> >& ) ),
-			SIGNAL( dataReady( const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> >& ) ) );
-	connect( d->backendObject, SIGNAL( endOfMedia( int ) ), SIGNAL( endOfMedia( int ) ) );
+    // set up attributes
+    BACKEND_CALL1("setFormat", Phonon::Experimental::AudioDataOutput::Format, d->format);
+    BACKEND_CALL1("setDataSize", int, d->dataSize);
+    connect(d->backendObject,
+            SIGNAL(dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > &)),
+            SIGNAL(dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<qint16> > &)));
+    connect(d->backendObject,
+            SIGNAL(dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > &)),
+            SIGNAL(dataReady(const QMap<Phonon::Experimental::AudioDataOutput::Channel, QVector<float> > &)));
+    connect(d->backendObject, SIGNAL(endOfMedia(int)), SIGNAL(endOfMedia(int)));
 }
 
 } // namespace Experimental
