@@ -23,11 +23,11 @@
 ResourceClass* ResourceClass::s_defaultResource = new ResourceClass( "http://www.w3.org/2000/01/rdf-schema#Resource" );
 
 static const QString s_typeComment =
-"   // We always store all Resource types as plain Resource objects.\n"
-"   // It does not introduce any overhead (due to the implicit sharing of\n"
-"   // the data and has the advantage that we can mix setProperty calls\n"
-"   // with the special Resource subclass methods.\n"
-"   // More importantly Resource loads the data as Resource objects anyway.\n";
+"    // We always store all Resource types as plain Resource objects.\n"
+"    // It does not introduce any overhead (due to the implicit sharing of\n"
+"    // the data and has the advantage that we can mix setProperty calls\n"
+"    // with the special Resource subclass methods.\n"
+"    // More importantly Resource loads the data as Resource objects anyway.\n";
 
 
 static QString writeComment( const QString& comment, int indent )
@@ -185,7 +185,7 @@ QString Property::adderDeclaration( const ResourceClass* rc, bool withNamespace 
 QString Property::reversePropertyGetterDeclaration( const ResourceClass* rc, bool withNamespace ) const
 {
     return QString( "%1 %2%3Of() const" )
-        .arg( ( list ? QString("QList<") : QString() ) + domain->name( withNamespace ) + ( list ? QString(">") : QString() ) )
+        .arg( QString("QList<") + domain->name( withNamespace ) + QString(">") )
         .arg( withNamespace ? QString("Nepomuk::KMetaData::%1::").arg(rc->name()) : QString() )
         .arg( name() );
 }
@@ -197,18 +197,19 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
 
     if( hasSimpleType() || typeString( true ) == "Resource" || !list ) {
         s += QString("{\n"
-                     "   setProperty( \"%1\", Variant( value ) );\n"
+                     "    setProperty( \"%1\", Variant( value ) );\n"
                      "}\n" )
              .arg( uri );
     }
     else if( list ) {
         s += QString("{\n"
                      "%1"
-                     "   QList<Resource> l;\n"
-                     "   for( %2::const_iterator it = value.constBegin();\n"
-                     "        it != value.constEnd(); ++it )\n"
-                     "      l.append( Resource( (*it) ) );\n"
-                     "   setProperty( \"%3\", Variant( l ) );\n"
+                     "    QList<Resource> l;\n"
+                     "    for( %2::const_iterator it = value.constBegin();\n"
+                     "         it != value.constEnd(); ++it ) {\n"
+                     "        l.append( Resource( (*it) ) );\n"
+                     "    }\n"
+                     "    setProperty( \"%3\", Variant( l ) );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( typeString() )
@@ -217,7 +218,7 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
     else {
         s += QString("{\n"
                      "%1"
-                     "   setProperty( \"%2\", Variant( Resource( value ) ) );\n"
+                     "    setProperty( \"%2\", Variant( Resource( value ) ) );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( uri );
@@ -235,18 +236,18 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
         // string lists have to be handled separately
         if( typeString( false ) == "QStringList" )
             s += QString( "{\n"
-                          "   return getProperty( \"%1\" ).toStringList();\n"
+                          "    return getProperty( \"%1\" ).toStringList();\n"
                           "}\n" )
                  .arg( uri );
         else if( list )
             s += QString( "{\n"
-                          "   return getProperty( \"%2\" ).listValue<%1>();\n"
+                          "    return getProperty( \"%2\" ).listValue<%1>();\n"
                           "}\n" )
                  .arg( typeString( true ) )
                  .arg( uri );
         else
             s += QString( "{\n"
-                          "   return getProperty( \"%2\" ).value<%1>();\n"
+                          "    return getProperty( \"%2\" ).value<%1>();\n"
                           "}\n" )
                  .arg( typeString( true ) )
                  .arg( uri );
@@ -254,7 +255,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
     else if( list ) {
         s += QString("{\n"
                      "%1"
-                     "   return convertResourceList<%3>( getProperty( \"%2\" ).toResourceList() );\n"
+                     "    return convertResourceList<%3>( getProperty( \"%2\" ).toResourceList() );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( uri )
@@ -263,7 +264,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
     else {
         s += QString("{\n"
                      "%1"
-                     "   return %2( getProperty( \"%3\" ).toResource().uri() );\n"
+                     "    return %2( getProperty( \"%3\" ).toResource().uri() );\n"
                      "}\n" )
              .arg( s_typeComment )
              .arg( typeString( true ) )
@@ -280,18 +281,18 @@ QString Property::adderDefinition( const ResourceClass* rc ) const
 
     if( hasSimpleType() ) {
         s += QString( "{\n"
-                      "   Variant v = getProperty( \"%1\" );\n"
-                      "   v.append( value );\n"
-                      "   setProperty( \"%1\", v );\n"
+                      "    Variant v = getProperty( \"%1\" );\n"
+                      "    v.append( value );\n"
+                      "    setProperty( \"%1\", v );\n"
                       "}\n" )
              .arg( uri );
     }
     else {
         s += QString( "{\n"
                       "%1"
-                      "   Variant v = getProperty( \"%2\" );\n"
-                      "   v.append( Resource( value ) );\n"
-                      "   setProperty( \"%2\", v );\n"
+                      "    Variant v = getProperty( \"%2\" );\n"
+                      "    v.append( Resource( value ) );\n"
+                      "    setProperty( \"%2\", v );\n"
                       "}\n" )
              .arg( s_typeComment )
              .arg( uri );
@@ -305,22 +306,11 @@ QString Property::reversePropertyGetterDefinition( const ResourceClass* rc ) con
 {
     QString s = reversePropertyGetterDeclaration( rc, true ) + "\n";
 
-    if( list )
-        s += QString( "{\n"
-                      "   return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this ) );\n"
-                      "}\n" )
-             .arg( uri )
-             .arg( domain->name() );
-    else
-        s += QString( "{\n"
-                      "   QList<Resource> resources = ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this );\n"
-                      "   if( resources.isEmpty() )\n"
-                      "      return %2();\n"
-                      "   else\n"
-                      "      return %2( resources.first().uri() );\n"
-                      "}\n" )
-             .arg( uri )
-             .arg( domain->name() );
+    s += QString( "{\n"
+                  "    return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this ) );\n"
+                  "}\n" )
+         .arg( uri )
+         .arg( domain->name() );
 
     return s;
 }
@@ -379,7 +369,7 @@ QString ResourceClass::allResourcesDefinition() const
 {
     return QString( "%1\n"
                     "{\n"
-                    "   return Nepomuk::KMetaData::convertResourceList<%3>( ResourceManager::instance()->allResourcesOfType( \"%2\" ) );\n"
+                    "    return Nepomuk::KMetaData::convertResourceList<%3>( ResourceManager::instance()->allResourcesOfType( \"%2\" ) );\n"
                     "}\n" )
         .arg( allResourcesDeclaration( true ) )
         .arg( uri )
@@ -400,7 +390,7 @@ QString ResourceClass::pseudoInheritanceDefinition( ResourceClass* rc ) const
 {
     return QString( "%1\n"
                     "{\n"
-                    "   return %2( *this );\n"
+                    "    return %2( *this );\n"
                     "}\n" )
         .arg( pseudoInheritanceDeclaration( rc, true ) )
         .arg( rc->name( true ) );
@@ -437,19 +427,23 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
             continue;
         }
 
-        ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
-        ms << "   " << p->getterDeclaration( this ) << ";" << endl;
+        ms << writeComment( QString("Get property '%1'. ").arg(p->name()) + p->comment, 3*4 ) << endl;
+        ms << "            " << p->getterDeclaration( this ) << ";" << endl;
         ms << endl;
 
-        ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
-        ms << "   " << p->setterDeclaration( this ) << ";" << endl;
+        ms << writeComment( QString("Set property '%1'. ").arg(p->name()) + p->comment, 3*4 ) << endl;
+        ms << "            " << p->setterDeclaration( this ) << ";" << endl;
         ms << endl;
 
         if( p->list ) {
-            ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment, 3 ) << endl;
-            ms << "   " << p->adderDeclaration( this ) << ";" << endl;
+            ms << writeComment( QString("Add a value to property '%1'. ").arg(p->name()) + p->comment, 3*4 ) << endl;
+            ms << "            " << p->adderDeclaration( this ) << ";" << endl;
             ms << endl;
         }
+
+        ms << writeComment( QString( "\\return The URI of the property '%1'." ).arg( p->name() ), 3*4 ) << endl;
+        ms << "            " << "static QString " << p->name() << "Uri();" << endl;
+        ms << endl;
 
         if( !p->hasSimpleType() )
             includes.insert( p->typeString( true ) );
@@ -466,8 +460,8 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
         }
 
         ms << writeComment( QString("Get all resources that have this resource set as property '%1'. ")
-                            .arg(p->name()) + p->comment + QString(" \\sa ResourceManager::allResourcesWithProperty"), 3 ) << endl;
-        ms << "   " << p->reversePropertyGetterDeclaration( this ) << ";" << endl;
+                            .arg(p->name()) + p->comment + QString(" \\sa ResourceManager::allResourcesWithProperty"), 3*4 ) << endl;
+        ms << "            " << p->reversePropertyGetterDeclaration( this ) << ";" << endl;
         ms << endl;
 
         if( !p->hasSimpleType() )
@@ -485,8 +479,8 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
             if( rc != parent ) {
                 ms << writeComment( QString("KMetaData does not support multiple inheritance. Thus, to access "
                                             "properties from all parent classes helper methods like this are "
-                                            "introduced. The object returned represents the exact same resource."), 3 ) << endl
-                   << "   " << pseudoInheritanceDeclaration( rc, false ) << ";" << endl << endl;
+                                            "introduced. The object returned represents the exact same resource."), 3*4 ) << endl
+                   << "            " << pseudoInheritanceDeclaration( rc, false ) << ";" << endl << endl;
 
                 includes.insert( rc->name() );
             }
@@ -497,13 +491,13 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
                                 "This list consists of all resource of type %1 that are stored "
                                 "in the local Nepomuk meta data storage and any changes made locally. "
                                 "Be aware that in some cases this list can get very big. Then it might "
-                                "be better to use libKNep directly.").arg( name() ), 3 ) << endl;
-    ms << "   static " << allResourcesDeclaration( false ) << ";" << endl;
+                                "be better to use libKNep directly.").arg( name() ), 3*4 ) << endl;
+    ms << "            static " << allResourcesDeclaration( false ) << ";" << endl;
 
     QString includeString;
     QSetIterator<QString> includeIt( includes );
     while( includeIt.hasNext() ) {
-        includeString += "class " + includeIt.next() + ";\n";
+        includeString += "        class " + includeIt.next() + ";\n";
     }
 
     s.replace( "KMETADATA_OTHERCLASSES", includeString );
@@ -547,6 +541,12 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
            << p->setterDefinition( this ) << endl;
         if( p->list )
             ms << p->adderDefinition( this ) << endl;
+
+        // write the static method that returns the property's Uri
+        ms << "QString " << name( true ) << "::" << p->name() << "Uri()" << endl
+           << "{" << endl
+           << "    return \"" << p->uri << "\";" << endl
+           << "}" << endl << endl;
     }
 
     it = reverseProperties;
