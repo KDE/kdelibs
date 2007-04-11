@@ -267,6 +267,10 @@ struct addrinfo
 # define NI_NAMEREQD	8	/* Don't return numeric addresses.  */
 # define NI_DGRAM	16	/* Look up UDP service rather than TCP.  */
 
+# ifdef gai_strerror
+#  undef gai_strerror
+# endif
+
 # ifdef getaddrinfo
 #  undef getaddrinfo
 # endif
@@ -280,8 +284,6 @@ namespace KDE
   /** \internal */
   extern KDECORE_EXPORT void freeaddrinfo(struct addrinfo* ai);
   /** \internal */
-  extern KDECORE_EXPORT char *gai_strerror(int errorcode);
-  /** \internal */
   extern KDECORE_EXPORT int getnameinfo(const struct sockaddr *sa,
 			 kde_socklen_t salen,
 			 char *host, size_t hostlen,
@@ -289,9 +291,11 @@ namespace KDE
 			 int flags);
 }
 
+/** \internal */
+extern KDECORE_EXPORT char *gai_strerror(int errorcode);
+  
 # define getaddrinfo	KDE::getaddrinfo
 # define freeaddrinfo	KDE::freeaddrinfo
-# define gai_strerror	KDE::gai_strerror
 # define getnameinfo	KDE::getnameinfo
 
 
