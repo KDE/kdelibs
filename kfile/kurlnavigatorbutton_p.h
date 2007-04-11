@@ -32,7 +32,7 @@ class QPaintEvent;
 
 namespace KIO
 {
-class Job;
+    class Job;
 }
 
 /**

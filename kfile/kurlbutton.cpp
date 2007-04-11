@@ -23,9 +23,9 @@
 #include "kurlnavigator.h"
 
 KUrlButton::KUrlButton(KUrlNavigator* parent) :
-        QPushButton(parent),
-        m_displayHint(0),
-        m_urlNavigator(parent)
+    QPushButton(parent),
+    m_displayHint(0),
+    m_urlNavigator(parent)
 {
     setFocusPolicy(Qt::NoFocus);
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
@@ -35,7 +35,8 @@ KUrlButton::KUrlButton(KUrlNavigator* parent) :
 }
 
 KUrlButton::~KUrlButton()
-{}
+{
+}
 
 void KUrlButton::setDisplayHintEnabled(DisplayHint hint,
                                        bool enable)
