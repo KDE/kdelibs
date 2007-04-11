@@ -22,9 +22,7 @@
 
 //solid specific includes
 #include <solid/devicemanager.h>
-#include <solid/device.h>
-#include <solid/capability.h>
-#include <solid/processor.h>
+#include <solid/networkmanager.h>
 
 //kde specific includes
 #include <kcomponentdata.h>
@@ -38,22 +36,21 @@ using namespace std;
 
 int main(int args, char **argv)
 {
-    KComponentData componentData("tutorial3");
+    KComponentData data("tutorial4");
     
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    //get a reference to the network manager
+    Solid::NetworkManager &netmanager = Solid::NetworkManager::self();
     
-    //get a Processor
-    Solid::DeviceList list = manager.findDevicesFromQuery(Solid::Capability::Processor, QString());
-
-    //take the first processor
-    Solid::Device device = list[0];
-    if(device.is<Solid::Processor>() ) kDebug() << "We've got a processor!" << endl;
-    else kDebug() << "Device is not a processor." << endl;
-
-    Solid::Processor *processor = device.as<Solid::Processor>();
-    kDebug() << "This processors maximum speed is: " << processor->maxSpeed() << endl;
-    
+    //test to see if networking is enabled on the system
+    if(netmanager.isNetworkingEnabled() )
+    {
+        kDebug() << "Networking is enabled.  Feel free to go online!" << endl;
+    }
+    else
+    {
+        kDebug() << "Network not available." << endl;
+    }
     return 0;
 }
 
-#include "tutorial3.moc"
+#include "tutorial4.moc"

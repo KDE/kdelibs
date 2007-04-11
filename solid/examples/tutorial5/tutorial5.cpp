@@ -22,9 +22,9 @@
 
 //solid specific includes
 #include <solid/devicemanager.h>
+#include <solid/networkmanager.h>
 #include <solid/device.h>
-#include <solid/capability.h>
-#include <solid/processor.h>
+#include <solid/networkhw.h>
 
 //kde specific includes
 #include <kcomponentdata.h>
@@ -38,22 +38,33 @@ using namespace std;
 
 int main(int args, char **argv)
 {
-    KComponentData componentData("tutorial3");
+    KComponentData data("tutorial5");
     
+    //get a reference to the device manager
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     
-    //get a Processor
-    Solid::DeviceList list = manager.findDevicesFromQuery(Solid::Capability::Processor, QString());
-
-    //take the first processor
-    Solid::Device device = list[0];
-    if(device.is<Solid::Processor>() ) kDebug() << "We've got a processor!" << endl;
-    else kDebug() << "Device is not a processor." << endl;
-
-    Solid::Processor *processor = device.as<Solid::Processor>();
-    kDebug() << "This processors maximum speed is: " << processor->maxSpeed() << endl;
+    //get a network device
+    Solid::DeviceList netlist = manager.findDevicesFromQuery(Solid::Capability::NetworkHw, QString());
+    
+    //check to see if no network devices were found
+    if(netlist.empty() )
+    {
+        kDebug() << "No network devices found!" << endl;
+        return 0;
+    }
+    
+    Solid::Device device = netlist[0];
+    Solid::NetworkHw *netdev = device.as<Solid::NetworkHw>();
+    //keep the program from crashing in the event that there's a bug in solid
+    if(!netdev)
+    {
+        kDebug() << "Device could not be converted.  There is a bug." << endl;
+        return 0;
+    }
+    
+    kDebug() << "The iface of " << device.udi() << " is " << netdev->ifaceName() << endl;
     
     return 0;
 }
 
-#include "tutorial3.moc"
+#include "tutorial5.moc"

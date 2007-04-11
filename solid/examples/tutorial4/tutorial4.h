@@ -17,36 +17,3 @@
 
 */
 
-//QT specific includes
-#include <QList>
-
-//solid specific includes
-#include <solid/devicemanager.h>
-#include <solid/device.h>
-#include <solid/capability.h>
-
-//kde specific includes
-#include <kcomponentdata.h>
-#include <kcmdlineargs.h>
-#include <klocale.h>
-#include <kdebug.h>
-
-#include <iostream>
-
-using namespace std;
-
-int main(int args, char **argv)
-{
-    KComponentData componentData("tutorial2");
-    
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-    
-    //get a list of all devices that are AudioHw
-    foreach(Solid::Device device, manager.findDevicesFromQuery(Solid::Capability::AudioHw, QString()) )
-    {
-        kDebug() << device.udi().toLatin1().constData() << endl;
-    }
-    return 0;
-}
-
-#include "tutorial2.moc"
