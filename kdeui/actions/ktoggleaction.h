@@ -34,8 +34,6 @@ class KGuiItem;
 /**
  *  @short Checkbox like action.
  *
- *  Checkbox like action.
- *
  *  This action provides two states: checked or not.
  *
  */
