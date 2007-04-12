@@ -16,8 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <ksycoca.h>
 #include <ksycocaentry.h>
+#include <ksycoca.h>
 
 class KSycocaEntry::Private
 {

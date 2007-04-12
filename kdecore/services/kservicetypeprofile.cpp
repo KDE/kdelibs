@@ -18,11 +18,11 @@
  */
 
 #include "kservicetypeprofile.h"
+#include "kservicetypeprofile_p.h"
 #include "kservice.h"
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
-#include "kservicetypeprofile_p.h"
 
 #include <kconfig.h>
 #include <kdebug.h>

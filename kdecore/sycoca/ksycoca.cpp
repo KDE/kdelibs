@@ -16,8 +16,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
@@ -32,6 +30,8 @@
 #include <QtCore/QBuffer>
 #include <QProcess>
 #include <QtDBus/QtDBus>
+
+#include <config.h>
 
 #include <stdlib.h>
 #include <fcntl.h>

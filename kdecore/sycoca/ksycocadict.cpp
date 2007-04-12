@@ -16,8 +16,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "ksycocadict.h"
 #include "ksycocaentry.h"
 #include "ksycoca.h"

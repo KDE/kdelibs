@@ -35,14 +35,13 @@
    written by Colin Plumb in 1993.
 */
 
-#include <config.h>
+#include "kcodecs.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "kcodecs.h"
-#include "kdebug.h"
+#include <kdebug.h>
 #include <QtCore/QIODevice>
 
 #define KMD5_S11 7

@@ -17,14 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kprotocolinfofactory.h"
+
 #include <kstandarddirs.h>
-#include <kglobal.h>
 #include <kdebug.h>
 #include <ksycoca.h>
 #include <ksycocadict.h>
-
-#include "kprotocolinfofactory.h"
-
 
 KProtocolInfoFactory* KProtocolInfoFactory::_self = 0;
 

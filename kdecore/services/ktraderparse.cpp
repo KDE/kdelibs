@@ -17,10 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <assert.h>
-#include <stdlib.h>
-#include <kdebug.h>
-
 // TODO: Torben: On error free memory!
 
 extern "C"
@@ -31,6 +27,10 @@ void KTraderParse_mainParse( const char *_code );
 }
 
 #include "ktraderparsetree_p.h"
+
+#include <assert.h>
+#include <stdlib.h>
+#include <kdebug.h>
 
 using namespace KTraderParse;
 

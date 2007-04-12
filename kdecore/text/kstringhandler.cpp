@@ -17,10 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kstringhandler.h"
+
 #include <stdlib.h>		// random()
 
-#include "kstringhandler.h"
-#include "kglobal.h"
+#include <kglobal.h>
 
 #include <QtCore/QRegExp>            // for the word ranges
 #include <QtCore/QCharRef>
