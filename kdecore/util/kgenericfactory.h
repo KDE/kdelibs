@@ -49,7 +49,8 @@ public:
     virtual ~KGenericFactoryBase()
     {
         if (s_componentData) {
-            KGlobal::locale()->removeCatalog(QString::fromAscii(s_componentData->componentName()));
+            if (KGlobal::hasLocale() && s_componentData->isValid())
+                KGlobal::locale()->removeCatalog(QString::fromAscii(s_componentData->componentName()));
             delete s_componentData;
             s_componentData = 0;
         }
@@ -74,7 +75,7 @@ protected:
     virtual void setupTranslations( void )
     {
         if (componentData().isValid()) {
-            KGlobal::locale()->insertCatalog(QString::fromAscii(componentData().componentName()));
+            KGlobal::locale()->insertCatalog(QString::fromAscii(s_componentData->componentName()));
         }
     }
 
