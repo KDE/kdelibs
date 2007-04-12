@@ -24,8 +24,10 @@
 #include <kapplication.h>
 
 /**
- * Maintains only a single
- * instance of a running application at a time.
+ * Maintains only a single instance of a running application at a time.
+ * Please note that this supports only one instance per KDE session. If
+ * your application can only be opened once per user or once per host, you
+ * need to make this sure independently on KUniqueApplication.
  *
  * If another instance
  * is started, it will determine (via DBUS) whether it is the first instance
@@ -39,7 +41,7 @@
  * option (see KCmdLineArgs::addTempFileOption()), to delete tempfiles after use.
  * Add X-KDE-HasTempFileOption=true to the .desktop file to indicate this.
  *
- * @see KApplication DCOPObject
+ * @see KApplication
  * @author Preston Brown <pbrown@kde.org>
  */
 class KDEUI_EXPORT KUniqueApplication : public KApplication
