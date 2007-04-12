@@ -25,8 +25,8 @@
 #include <QCheckBox>
 #include <QDateTime>
 #include <QLineEdit>
-#include <q3listview.h>
-#include <q3ptrlist.h>
+#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3PtrList>
 #include <QTabWidget>
 //Added by qt3to4:
 #include <QGridLayout>

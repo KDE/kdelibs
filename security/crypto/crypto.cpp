@@ -31,13 +31,13 @@
 #include <pwd.h>
 #include <unistd.h>
 
-#include <q3buttongroup.h>
-#include <q3cstring.h>
+#include <Qt3Support/Q3ButtonGroup>
+#include <Qt3Support/Q3CString>
 #include <QCheckBox>
 #include <QFile>
 #include <QFileInfo>
-#include <qframe.h>
-#include <q3groupbox.h>
+#include <QtGui/QFrame>
+#include <Qt3Support/Q3GroupBox>
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
