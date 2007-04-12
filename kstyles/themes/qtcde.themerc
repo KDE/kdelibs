@@ -1,5 +1,6 @@
 [Misc]
 Name=CDE
+Name[te]=సిడిఈ
 Name[x-test]=xxCDExx
 Comment=Built-in unthemed CDE style
 Comment[af]=Ingeboude ongetemade Cde styl
@@ -54,6 +55,7 @@ Comment[sr]=Уграђени, без теме, CDE стил
 Comment[sr@Latn]=Ugrađeni, bez teme, CDE stil
 Comment[sv]=Inbyggd otemad CDE-stil
 Comment[ta]=உள்ளமைந்த மேம்படுத்திய CDE பாணி
+Comment[te]=అంతర్గత వైవిద్యాంశంలేని సిడిఈ శైలి
 Comment[tg]=Донистани тарҳи аз нав сохтани CDE сабк аст
 Comment[tr]=Yerleşik, temasız CDE stili
 Comment[uk]=Вбудований стиль CDE без теми

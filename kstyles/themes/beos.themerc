@@ -1,6 +1,7 @@
 [Misc]
 Name=BeOS
 Name[af]=Beos
+Name[te]=బిఈఓఎస్
 Name[x-test]=xxBeOSxx
 Comment=Unthemed BeOS-like style
 Comment[af]=Onbenoemde BeOS-tipe styl
@@ -55,6 +56,7 @@ Comment[sr]=Стил без теме који личи на BeOS
 Comment[sr@Latn]=Stil bez teme koji liči na BeOS
 Comment[sv]=Otemad Beos-liknande stil
 Comment[ta]=தலைப்பில்லா Beos-போன்ற பாணி
+Comment[te]=వైవిద్యాంశం లేని బిఈఓఎస్ లాంటి ఒక శైలి
 Comment[tg]=Бояд донист тарҳи BeOS ва сабук шуданашро
 Comment[tr]=BeOS benzeri temasız stil
 Comment[uk]=Стиль схожий на BeOS без встановленої теми

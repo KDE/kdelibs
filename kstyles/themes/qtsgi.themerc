@@ -1,6 +1,7 @@
 [Misc]
 Name=SGI
 Name[nl]=SIG
+Name[te]=ఏస్ జిఐ
 Name[x-test]=xxSGIxx
 Comment=Built-in SGI style
 Comment[af]=Ingeboude Sgi styl
@@ -55,6 +56,7 @@ Comment[sr]=Уграђени SGI стил
 Comment[sr@Latn]=Ugrađeni SGI stil
 Comment[sv]=Inbyggd SGI-stil
 Comment[ta]=உள்ளமைந்த SGI பாணி
+Comment[te]=అంతర్గత ఎస్ జిఐ శైలి
 Comment[tg]=Аз нав сохтани  SGI сабк
 Comment[tr]=SGI stili
 Comment[uk]=Вбудований стиль SGI
