@@ -138,8 +138,6 @@ public:
   void modulate(int i);
 
 private:
-  void Draw(); // Generate the random number
-
   class Private;
   Private *const d;
 };

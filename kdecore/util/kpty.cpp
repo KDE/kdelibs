@@ -21,9 +21,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "kpty.h"
+
+#include <config.h>
 
 #ifdef __sgi
 #define __svr4__

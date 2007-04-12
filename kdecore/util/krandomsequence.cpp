@@ -18,25 +18,23 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "krandomsequence.h"
 #include "krandom.h"
 #include <string.h>
+#include <config.h>
 
-static const int m_nShuffleTableSize = 32;
+static const int s_nShuffleTableSize = 32;
 
 class KRandomSequence::Private
 {
 public:
-  long _lngSeed1;
-#define m_lngSeed1 d->_lngSeed1
-  long _lngSeed2;
-#define m_lngSeed2 d->_lngSeed2
-  long _lngShufflePos;
-#define m_lngShufflePos d->_lngShufflePos
-  long _ShuffleArray[m_nShuffleTableSize];
-#define m_ShuffleArray d->_ShuffleArray
+  // Generate the random number
+  void draw();
+
+  long lngSeed1;
+  long lngSeed2;
+  long lngShufflePos;
+  long shuffleArray[s_nShuffleTableSize];
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -74,28 +72,28 @@ KRandomSequence & KRandomSequence::operator=(const KRandomSequence &a)
 
 void KRandomSequence::setSeed( long lngSeed1 )
 {
-  // Convert the positive seed number to a negative one so that the Draw()
+  // Convert the positive seed number to a negative one so that the draw()
   // function can intialise itself the first time it is called. We just have
   // to make sure that the seed used != 0 as zero perpetuates itself in a
   // sequence of random numbers.
   if ( lngSeed1 < 0 )
   {
-    m_lngSeed1 = -1;
+    d->lngSeed1 = -1;
   }
   else if (lngSeed1 == 0)
   {
-    m_lngSeed1 = -((KRandom::random() & ~1)+1);
+    d->lngSeed1 = -((KRandom::random() & ~1)+1);
   }
   else
   {
-    m_lngSeed1 = -lngSeed1;
+    d->lngSeed1 = -lngSeed1;
   }
 }
 
 static const long sMod1           = 2147483563;
 static const long sMod2           = 2147483399;
 
-void KRandomSequence::Draw()
+void KRandomSequence::Private::draw()
 {
   static const long sMM1            = sMod1 - 1;
   static const long sA1             = 40014;
@@ -104,7 +102,7 @@ void KRandomSequence::Draw()
   static const long sQ2             = 52774;
   static const long sR1             = 12211;
   static const long sR2             = 3791;
-  static const long sDiv            = 1 + sMM1 / m_nShuffleTableSize;
+  static const long sDiv            = 1 + sMM1 / s_nShuffleTableSize;
 
   // Long period (>2 * 10^18) random number generator of L'Ecuyer with
   // Bayes-Durham shuffle and added safeguards. Returns a uniform random
@@ -117,74 +115,74 @@ void KRandomSequence::Draw()
   long k;
 
   // Initialise
-  if ( m_lngSeed1 <= 0 )
+  if ( lngSeed1 <= 0 )
   {
-    m_lngSeed2 = m_lngSeed1;
+    lngSeed2 = lngSeed1;
 
     // Load the shuffle table after 8 warm-ups
-    for ( j = m_nShuffleTableSize + 7; j >= 0; j-- )
+    for ( j = s_nShuffleTableSize + 7; j >= 0; j-- )
     {
-      k = m_lngSeed1 / sQ1;
-      m_lngSeed1 = sA1 * ( m_lngSeed1 - k*sQ1) - k*sR1;
-      if ( m_lngSeed1 < 0 )
+      k = lngSeed1 / sQ1;
+      lngSeed1 = sA1 * ( lngSeed1 - k*sQ1) - k*sR1;
+      if ( lngSeed1 < 0 )
       {
-        m_lngSeed1 += sMod1;
+        lngSeed1 += sMod1;
       }
 
-      if ( j < m_nShuffleTableSize )
+      if ( j < s_nShuffleTableSize )
       {
- 	m_ShuffleArray[j] = m_lngSeed1;
+ 	shuffleArray[j] = lngSeed1;
       }
     }
 
-    m_lngShufflePos = m_ShuffleArray[0];
+    lngShufflePos = shuffleArray[0];
   }
 
   // Start here when not initializing
 
-  // Compute m_lngSeed1 = ( lngIA1*m_lngSeed1 ) % lngIM1 without overflows
+  // Compute lngSeed1 = ( lngIA1*lngSeed1 ) % lngIM1 without overflows
   // by Schrage's method
-  k = m_lngSeed1 / sQ1;
-  m_lngSeed1 = sA1 * ( m_lngSeed1 - k*sQ1 ) - k*sR1;
-  if ( m_lngSeed1 < 0 )
+  k = lngSeed1 / sQ1;
+  lngSeed1 = sA1 * ( lngSeed1 - k*sQ1 ) - k*sR1;
+  if ( lngSeed1 < 0 )
   {
-    m_lngSeed1 += sMod1;
+    lngSeed1 += sMod1;
   }
 
-  // Compute m_lngSeed2 = ( lngIA2*m_lngSeed2 ) % lngIM2 without overflows
+  // Compute lngSeed2 = ( lngIA2*lngSeed2 ) % lngIM2 without overflows
   // by Schrage's method
-  k = m_lngSeed2 / sQ2;
-  m_lngSeed2 = sA2 * ( m_lngSeed2 - k*sQ2 ) - k*sR2;
-  if ( m_lngSeed2 < 0 )
+  k = lngSeed2 / sQ2;
+  lngSeed2 = sA2 * ( lngSeed2 - k*sQ2 ) - k*sR2;
+  if ( lngSeed2 < 0 )
   {
-    m_lngSeed2 += sMod2;
+    lngSeed2 += sMod2;
   }
 
-  j = m_lngShufflePos / sDiv;
-  m_lngShufflePos = m_ShuffleArray[j] - m_lngSeed2;
-  m_ShuffleArray[j] = m_lngSeed1;
+  j = lngShufflePos / sDiv;
+  lngShufflePos = shuffleArray[j] - lngSeed2;
+  shuffleArray[j] = lngSeed1;
 
-  if ( m_lngShufflePos < 1 )
+  if ( lngShufflePos < 1 )
   {
-    m_lngShufflePos += sMM1;
+    lngShufflePos += sMM1;
   }
 }
 
 void
 KRandomSequence::modulate(int i)
 {
-  m_lngSeed2 -= i;
-  if ( m_lngSeed2 < 0 )
+  d->lngSeed2 -= i;
+  if ( d->lngSeed2 < 0 )
   {
-    m_lngShufflePos += sMod2;
+    d->lngShufflePos += sMod2;
   }
-  Draw();
-  m_lngSeed1 -= i;
-  if ( m_lngSeed1 < 0 )
+  d->draw();
+  d->lngSeed1 -= i;
+  if ( d->lngSeed1 < 0 )
   {
-    m_lngSeed1 += sMod1;
+    d->lngSeed1 += sMod1;
   }
-  Draw();
+  d->draw();
 }
 
 double
@@ -194,9 +192,9 @@ KRandomSequence::getDouble()
   static const double epsilon          = 1.2E-7;
   static const double maxRand          = 1.0 - epsilon;
   double temp;
-  Draw();
+  d->draw();
   // Return a value that is not one of the endpoints
-  if ( ( temp = finalAmp * m_lngShufflePos ) > maxRand )
+  if ( ( temp = finalAmp * d->lngShufflePos ) > maxRand )
   {
     // We don't want to return 1.0
     return maxRand;
@@ -210,15 +208,15 @@ KRandomSequence::getDouble()
 unsigned long
 KRandomSequence::getLong(unsigned long max)
 {
-  Draw();
+  d->draw();
 
-  return max ? (((unsigned long) m_lngShufflePos) % max) : 0;
+  return max ? (((unsigned long) d->lngShufflePos) % max) : 0;
 }
 
 bool
 KRandomSequence::getBool()
 {
-  Draw();
+  d->draw();
 
-  return (((unsigned long) m_lngShufflePos) & 1);
+  return (((unsigned long) d->lngShufflePos) & 1);
 }

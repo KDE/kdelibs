@@ -19,14 +19,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "kshell.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
 
 #include <stdlib.h>
 #include <pwd.h>

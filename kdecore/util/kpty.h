@@ -24,7 +24,6 @@
 #define kpty_h
 
 #include <kdecore_export.h>
-#include <QtCore/QBool>
 
 #ifdef Q_OS_UNIX
 
