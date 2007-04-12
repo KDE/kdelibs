@@ -1141,6 +1141,22 @@ void KHTMLView::tripleClickTimeout()
     d->clickCount = 0;
 }
 
+static bool targetOpensNewWindow(KHTMLPart *part, QString target)
+{
+    if (!target.isEmpty() && (target.toLower() != "_top") &&
+       (target.toLower() != "_self") && (target.toLower() != "_parent")) {
+        if (target.toLower() == "_blank")
+            return true;
+        else {
+            while (part->parentPart())
+                part = part->parentPart();
+            if (!part->frameExists(target))
+                return true;
+        }
+    }
+    return false;
+}
+
 void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( d->m_mouseScrollTimer ) {
@@ -1211,21 +1227,8 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             c = m_part->urlCursor();
 	    if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
                 mailtoCursor = true;
-            else {
-                const QString target = mev.target.string();
-                if (!target.isEmpty() && (target.toLower() != "_top") &&
-                     (target.toLower() != "_self") && (target.toLower() != "_parent")) {
-                    if (target.toLower() == "_blank")
-                        newWindowCursor = true;
-                    else {
-	                KHTMLPart *p = m_part;
-	                while (p->parentPart())
-	                    p = p->parentPart();
-	                if (!p->frameExists(target))
-                            newWindowCursor = true;
-                    }
-                }
-            }
+            else
+               newWindowCursor = targetOpensNewWindow( m_part, mev.target.string() );
         }
 
         if (r && r->isFrameSet() && !static_cast<RenderFrameSet*>(r)->noResize())
@@ -1236,27 +1239,12 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         c = QCursor(Qt::CrossCursor);
         break;
     case CURSOR_POINTER:
-      {
         c = m_part->urlCursor();
 	if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
             mailtoCursor = true;
-        else {
-            const QString target = mev.target.string();
-            if (!target.isEmpty() && (target.toLower() != "_top") &&
-                (target.toLower() != "_self") && (target.toLower() != "_parent")) {
-                if (target.toLower() == "_blank")
-                    newWindowCursor = true;
-                else {
-	            KHTMLPart *p = m_part;
-	            while (p->parentPart())
-	                p = p->parentPart();
-	            if (!p->frameExists(target))
-                        newWindowCursor = true;
-                }
-            }
-        }
+        else
+            newWindowCursor = targetOpensNewWindow( m_part, mev.target.string() );
         break;
-      }
     case CURSOR_PROGRESS:
         c = QCursor(Qt::BusyCursor); // working_cursor
         break;
