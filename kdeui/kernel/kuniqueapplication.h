@@ -27,7 +27,7 @@
  * Maintains only a single instance of a running application at a time.
  * Please note that this supports only one instance per KDE session. If
  * your application can only be opened once per user or once per host, you
- * need to make this sure independently on KUniqueApplication.
+ * need to ensure this independently of KUniqueApplication.
  *
  * If another instance
  * is started, it will determine (via DBUS) whether it is the first instance
