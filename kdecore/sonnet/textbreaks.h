@@ -20,17 +20,17 @@
 #ifndef TEXTBREAKS
 #define TEXTBREAKS
 
-#include <QList>
-#include <QString>
-#include <QHash>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QHash>
 
-class textBreaks
+class TextBreaks
 {
 public:
 
     typedef QList<int> Positions;
 
-    textBreaks( const QString & text = QString() );
+    TextBreaks( const QString & text = QString() );
     QString text() const;
     void setText( const QString & text );
     static Positions graphemeBreaks( const QString & text );

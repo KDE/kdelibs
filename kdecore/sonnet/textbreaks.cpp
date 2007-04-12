@@ -18,17 +18,16 @@
 */
 
 #include "textbreaks.h"
-#include <QtCore>
 
-QHash<quint32,qint8> textBreaks::data;
-QHash<QString,qint8> textBreaks::catalog;
+QHash<quint32,qint8> TextBreaks::data;
+QHash<QString,qint8> TextBreaks::catalog;
 
-textBreaks::textBreaks( const QString & text ) : m_text(text)
+TextBreaks::TextBreaks( const QString & text ) : m_text(text)
 {
     init();
 }
 
-void textBreaks::init()
+void TextBreaks::init()
 {
     if ( catalog.size() || data.size() )
         return;
@@ -59,22 +58,22 @@ void textBreaks::init()
     }
 }
 
-QString textBreaks::text() const
+QString TextBreaks::text() const
 {
     return    m_text;
 }
 
-void textBreaks::setText( const QString & text )
+void TextBreaks::setText( const QString & text )
 {
     m_text = text;
 }
-textBreaks::Positions textBreaks::graphemeBreaks( const QString & text )
+TextBreaks::Positions TextBreaks::graphemeBreaks( const QString & text )
 {
     init();
     Q_UNUSED(text);
     return Positions();
 }
-textBreaks::Positions textBreaks::wordBreaks( const QString & text )
+TextBreaks::Positions TextBreaks::wordBreaks( const QString & text )
 {
     init();
     const QChar * grapheme  = text.constData();
@@ -88,7 +87,7 @@ textBreaks::Positions textBreaks::wordBreaks( const QString & text )
     bool bk = true;
     int pos(1);
     while (!grapheme->isNull())
-    {     
+    {
         qint8 catagory0( data[(quint32)(grapheme-1)->unicode()] );
         qint8 catagory( data[(quint32)grapheme->unicode()] );
         qint8 catagory2( data[(quint32)(grapheme+1)->unicode()] );
@@ -229,7 +228,7 @@ textBreaks::Positions textBreaks::wordBreaks( const QString & text )
         if (bk)
             breaks.append(pos);
         bk=true; // WB14
-        
+
         ++pos;
         ++grapheme;
     }
@@ -249,21 +248,21 @@ textBreaks::Positions textBreaks::wordBreaks( const QString & text )
 
     return Positions();
 }
-textBreaks::Positions textBreaks::sentenceBreaks( const QString & text )
+TextBreaks::Positions TextBreaks::sentenceBreaks( const QString & text )
 {
     init();
     Q_UNUSED(text);
     return Positions();
 }
-textBreaks::Positions textBreaks::graphemeBreaks( ) const
+TextBreaks::Positions TextBreaks::graphemeBreaks( ) const
 {
     return graphemeBreaks(m_text);
 }
-textBreaks::Positions textBreaks::wordBreaks( ) const
+TextBreaks::Positions TextBreaks::wordBreaks( ) const
 {
     return wordBreaks(m_text);
 }
-textBreaks::Positions textBreaks::sentenceBreaks( ) const
+TextBreaks::Positions TextBreaks::sentenceBreaks( ) const
 {
     return sentenceBreaks(m_text);
 }
