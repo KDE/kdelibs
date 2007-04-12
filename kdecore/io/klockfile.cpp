@@ -17,9 +17,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "klockfile.h"
+
+#include <config.h>
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -193,7 +193,7 @@ static KLockFile::LockResult deleteStaleLock(const QString &lockFile, KDE_struct
 {
    // This is dangerous, we could be deleting a new lock instead of
    // the old stale one, let's be very careful
-   
+
    // Create temp file
    KTemporaryFile *ktmpFile = new KTemporaryFile(componentData);
    ktmpFile->setFileTemplate(lockFile);

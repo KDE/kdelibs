@@ -18,9 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-
 #include "ktoolinvocation.h"
+#include <config.h>
+
 #include "klauncher_iface.h"
 #include "kcmdlineargs.h"
 #include "kconfig.h"

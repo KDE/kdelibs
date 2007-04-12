@@ -16,10 +16,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3procio.h"
+
 #include <config.h>
 #include <stdio.h>
-
-#include "k3procio.h"
 
 #include <kdebug.h>
 #include <QtCore/QTextCodec>
@@ -97,7 +97,7 @@ bool K3ProcIO::start (RunMode runmode, bool includeStderr)
 {
   connect (this, SIGNAL (receivedStdout (K3Process *, char *, int)),
 	   this, SLOT (received (K3Process *, char *, int)));
-  
+
   if (includeStderr)
   {
      connect (this, SIGNAL (receivedStderr (K3Process *, char *, int)),
@@ -106,7 +106,7 @@ bool K3ProcIO::start (RunMode runmode, bool includeStderr)
 
   connect (this, SIGNAL (wroteStdin(K3Process *)),
 	   this, SLOT (sent (K3Process *)));
-           
+
   return K3Process::start (runmode, d->comm);
 }
 
@@ -125,7 +125,7 @@ bool K3ProcIO::writeStdin (const QByteArray &line, bool appendnewline)
   }
 
   int l = qs->length();
-  if (!l) 
+  if (!l)
   {
      delete qs;
      return true;
@@ -237,7 +237,7 @@ int K3ProcIO::readln (QString &line, bool autoAck, bool *partial)
   //kDebug(174) << "KPIO::readln" << endl;
 
   //in case there's no '\n' at the end of the buffer
-  if ( ( len < 0 ) && 
+  if ( ( len < 0 ) &&
        ( d->rbi < d->recvbuffer.length() ) ) {
      d->recvbuffer = d->recvbuffer.mid( d->rbi );
      d->rbi = 0;

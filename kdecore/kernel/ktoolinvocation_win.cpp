@@ -23,9 +23,8 @@
 #if 1
 
 #define THREADGUARD
-#include "config.h"
-
 #include "ktoolinvocation.h"
+#include <config.h>
 #include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kcodecs.h"

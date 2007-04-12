@@ -24,11 +24,10 @@
 
 #undef KDE3_SUPPORT
 
-#include <QtCore/QBool>
-#include <QList>
-#include <QtCore/QMutableSetIterator>
-#include <QtGui/QWidgetList>
 #include "kglobal.h"
+
+#include <QtCore/QList>
+#include <QtCore/QSet>
 
 #include <kaboutdata.h>
 #include <kconfig.h>

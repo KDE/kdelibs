@@ -24,7 +24,7 @@
 #include <kdecore_export.h>
 #include <ksharedptr.h>
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 /**
  * The KMountPoint class provides information about mounted and unmounted disks.

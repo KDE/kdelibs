@@ -17,14 +17,14 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kcatalog.h"
+#include "kstandarddirs.h"
+
 #include <config.h>
 
 #include <QtCore/QFile>
 
 #include <kdebug.h>
-
-#include "kcatalog.h"
-#include "kstandarddirs.h"
 
 #include <stdlib.h>
 #include <locale.h>

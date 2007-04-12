@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "ktempdir.h"
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -44,7 +46,6 @@
 #include "kglobal.h"
 #include "krandom.h"
 #include "kcomponentdata.h"
-#include "ktempdir.h"
 #include "kstandarddirs.h"
 #include <kdebug.h>
 #include "kde_file.h"
@@ -56,7 +57,7 @@ public:
     QString tmpName;
     bool exists;
     bool autoRemove;
-    
+
     Private()
     {
         autoRemove = true;

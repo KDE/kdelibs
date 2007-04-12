@@ -21,7 +21,7 @@
 
 #include <kdemacros.h>
 #include <kdecore_export.h>
-#include <QList>
+#include <QtCore/QList>
 
 class KGlobal;
 class KCharsetsPrivate;
@@ -136,7 +136,7 @@ public:
      * @param encoding the encoding for the language
      * @return the language of the encoding
      * @deprecated Please use descriptionForEncoding instead.
-     * This function will be removed before KDE4 is released. 
+     * This function will be removed before KDE4 is released.
      */
     KDE_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
 
@@ -144,7 +144,7 @@ public:
      * @brief Returns a long description for an encoding name.
      * @param encoding the encoding for the language
      * @return the long description for the encoding
-     */ 
+     */
     QString descriptionForEncoding( const QString& encoding ) const;
 
     /**

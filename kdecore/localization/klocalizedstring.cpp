@@ -17,14 +17,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
 #include <klocalizedstring.h>
+
 #include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
 
 #include <QtCore/QCharRef>
-#include <QtCore/QMutableVectorIterator>
+#include <QtCore/QVector>
 
 typedef qulonglong pluraln;
 

@@ -23,14 +23,14 @@
 */
 //----------------------------------------------------------------------------
 //
-// KDE HTML Widget -- decoder for input stream
+// decoder for input stream
+
+#include "kencodingdetector.h"
 
 #undef DECODE_DEBUG
 //#define DECODE_DEBUG
 
 #define MAX_BUFFER 16*1024
-
-#include "kencodingdetector.h"
 
 #include <assert.h>
 #include <klocale.h>
@@ -934,7 +934,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
         // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
         const char *ptr = data;
         const char *pEnd = data+len;
-    
+
         while(ptr != pEnd)
         {
             if(*ptr!='<')
@@ -950,7 +950,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 skipComment(ptr, pEnd);
                 continue;
             }
-    
+
             // Handle XML header, which can have encoding in it.
             if (ptr[0]=='?' && ptr[1]=='x' && ptr[2]=='m' && ptr[3]=='l')
             {
@@ -968,7 +968,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                     return true;
                 }
             }
-    
+
             //look for <meta>, stop if we reach <body>
             while (
                         !((*ptr >= 'a') && (*ptr <= 'z') ||
@@ -976,7 +976,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                         && ptr < pEnd
                 )
                 ++ptr;
-    
+
             char tmp[5];
             int length=0;
             const char* max=ptr+4;
@@ -1013,13 +1013,13 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 // skip to '='
                 if( (pos = str.indexOf("=", pos)) == -1)
                     continue;
-    
+
                 // skip whitespace before encoding itself
                 while (pos < (int)str.length() && str[pos] <= ' ')
                     ++pos;
                 if ( pos == (int)str.length())
                     continue;
-    
+
                 int endpos = pos;
                 while( endpos < str.length() &&
                         (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != '\''

@@ -23,6 +23,17 @@
  * Generated: Thu Mar  5 16:05:28 EST 1998
  */
 
+#include "kstandarddirs.h"
+#include "kconfig.h"
+#include "kconfiggroup.h"
+#include "kdebug.h"
+#include "kcomponentdata.h"
+#include "kshell.h"
+#include "kuser.h"
+#include "kstaticdeleter.h"
+#include "kde_file.h"
+#include "kkernel_win.h"
+
 #include <config.h>
 #include <config-prefix.h> // for KDESYSCONFDIR, __KDE_BINDIR and KDEDIR
 
@@ -47,17 +58,6 @@
 #include <QtCore/QSettings>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
-
-#include "kstandarddirs.h"
-#include "kconfig.h"
-#include "kconfiggroup.h"
-#include "kdebug.h"
-#include "kcomponentdata.h"
-#include "kshell.h"
-#include "kuser.h"
-#include "kstaticdeleter.h"
-#include "kde_file.h"
-#include "kkernel_win.h"
 
 class KStandardDirs::KStandardDirsPrivate
 {

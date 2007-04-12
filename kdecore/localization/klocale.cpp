@@ -21,9 +21,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "klocale.h"
+
+#include <config.h>
 
 #include <stdlib.h> // getenv
 

@@ -17,15 +17,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
 #include "kcomponentdata.h"
 #include "kcomponentdata_p.h"
 
-#include <stdlib.h>
-
 #include <QtCore/QCoreApplication>
-#include <QtCore/QByteArray>
-#include <QtCore/QCharRef>
 
 #include "kaboutdata.h"
 #include "kcmdlineargs.h"

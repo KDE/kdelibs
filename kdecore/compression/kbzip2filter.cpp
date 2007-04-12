@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbzip2filter.h"
+
 #include <config.h>
 
 #if defined( HAVE_BZIP2_SUPPORT )
@@ -37,7 +39,6 @@ extern "C" {
 
 #include <kdebug.h>
 
-#include "kbzip2filter.h"
 #include <qiodevice.h>
 
 // For docu on this, see /usr/doc/bzip2-0.9.5d/bzip2-0.9.5d/manual_3.html

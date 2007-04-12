@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "k3process.h"
 #include "k3processcontroller.h"
+#include "k3process.h"
 
 #include <config.h>
 

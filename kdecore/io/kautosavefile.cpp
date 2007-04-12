@@ -17,11 +17,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kautosavefile.h"
+
 #include <stdio.h> // for FILENAME_MAX
 
 #include <QtCore/QLatin1Char>
 #include <QtCore/QCoreApplication>
-#include "kautosavefile.h"
 #include "klockfile.h"
 #include "krandom.h"
 #include "kglobal.h"

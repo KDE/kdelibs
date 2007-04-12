@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "kmountpoint.h"
+
 #include <config.h>
 #include <stdlib.h>
 
@@ -25,8 +27,6 @@
 #include <QtCore/QTextIStream>
 
 #include "kstandarddirs.h"
-
-#include "kmountpoint.h"
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
