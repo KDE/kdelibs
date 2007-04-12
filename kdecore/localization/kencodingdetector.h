@@ -22,11 +22,11 @@
 */
 #ifndef KENCODINGDETECTOR_H
 #define KENCODINGDETECTOR_H
-#include <kdemacros.h>
-#include <kdecore_export.h>
-#include <QString>
 
-#include <QTextCodec>
+#include <kdecore_export.h>
+#include <QtCore/QString>
+
+class QTextCodec;
 class QTextDecoder;
 class KEncodingDetectorPrivate;
 
@@ -124,7 +124,7 @@ public:
     EncodingChoiceSource encodingChoiceSource() const;
 
     /**
-    * The main class method 
+    * The main class method
     *
     * Calls protected analyze() only the first time of the whole object life
     *
@@ -133,13 +133,13 @@ public:
     QString decode(const char *data, int len);
     QString decode(const QByteArray &data);
 
-    //* You dont need to call analyze() if you use this method.
+    //* You don't need to call analyze() if you use this method.
     /**
     * Convenience method that uses buffering. It waits for full html head to be buffered
-    * (i.e. calls analyze everytime until it returns true).
+    * (i.e. calls analyze every time until it returns true).
     *
     * Replaces all null chars with spaces.
-    * 
+    *
     * @returns Decoded data, or empty string, if there was not enough data for accurate detection
     * @see flush()
     */

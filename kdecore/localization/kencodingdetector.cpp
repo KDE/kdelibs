@@ -30,11 +30,11 @@
 
 #define MAX_BUFFER 16*1024
 
+#include "kencodingdetector.h"
 
 #include <assert.h>
 #include <klocale.h>
 
-#include "kencodingdetector.h"
 #include "guess_ja_p.h"
 
 #include <QRegExp>
@@ -42,10 +42,10 @@
 
 #include <kglobal.h>
 #include <kcharsets.h>
-
-#include <ctype.h>
 #include <kdebug.h>
 #include <klocale.h>
+
+#include <ctype.h>
 
 enum MIB
 {
@@ -908,7 +908,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
             if (is16Bit(d->m_codec) && c2==0x00)
             {
                 // utf16LE, we need to put the decoder in LE mode
-                char reverseUtf16[3] = {0xFF, 0xFE, 0x00};
+                char reverseUtf16[3] = {(char)0xFF, (char)0xFE, 0x00};
                 d->m_decoder->toUnicode(reverseUtf16, 2);
             }
             return true;
