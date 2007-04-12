@@ -207,7 +207,7 @@ private:
   /**
    * Remove all items in the items2 set from the items1 set
    */
-  void excludeItems(QHash<QString,KService::Ptr> items1, const QHash<QString,KService::Ptr>& items2);
+  void excludeItems(QHash<QString,KService::Ptr>& items1, const QHash<QString,KService::Ptr>& items2);
 
   /**
    * Search the parentMenu tree for the menu menuName and takes it
