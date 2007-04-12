@@ -394,28 +394,23 @@ KJS::UString QObjectBinding::toString(KJS::ExecState *exec) const
     return toUString( s );
 }
 
-PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const KJS::List &args, int idx)
+PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const KJS::List &args, int idx, QString& errorText)
 {
     //qDebug("Index %d, args size %d, types size %d", idx, args.size(), types.size() );
-    if ( args.size() <= idx )
-        return new NullPtr();
+
     if( types.size() == 0 && idx == 0 )
+        return new NullPtr();
+    if ( args.size() <= idx )
         return new NullPtr();
 
     if ( types.size() <= idx )
     {
-        KJS::throwError(exec, KJS::GeneralError, i18n("The slot sked for %1 arguments but there are only %2 arguments available.",
-                        idx,
-                        types.size()));
-        //KJSEmbed::throwError(exec,
-        //                     i18n("The slot asked for %1 arguments but there are only are %2 arguments available.")
-        //                        .arg(idx)
-        //                        .arg(types.size() ) );
-        return new NullPtr();
+        errorText = i18n("The slot sked for %1 arguments but there are only %2 arguments available.", idx, types.size());
+        return 0;
     }
 
     QVariant::Type varianttype = QVariant::nameToType( types[idx].constData() );
-    //qDebug( QString("type=%1 argtype=%2").arg(types[idx].constData()).arg(args[idx]->type()).toLatin1() );
+    //qDebug( QString("type=%1 argtype=%2 variantType=%3 (%4)").arg(types[idx].constData()).arg(args[idx]->type()).arg(varianttype).arg(QVariant::typeToName(varianttype)).toLatin1() );
     switch( varianttype ) {
         case QVariant::Int:
             if( args[idx]->type() == KJS::NumberType )
@@ -457,29 +452,110 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             {
                 return new NullPtr();
             }
-            if( args[idx]->type() == KJS::ObjectType ) {
-                if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
+            if( args[idx]->type() == KJS::ObjectType ) 
+            {
+                if(QObjectBinding *objImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, args[idx]))
                 {
+                    //qDebug("\tQObjectBinding");
+                    QObject* qObj = objImp->qobject<QObject>();
+                    if (qObj)
+                    {
+                        QByteArray typeName = types[idx].constData();
+                        typeName.replace("*", "");
+                        if (qObj->inherits(typeName))
+                            return new Value<void*>(qObj);
+                    }
+                }
+                else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
+                {
+                    //qDebug("\tObjectBinding");
                     return new Value<void*>(objImp->voidStar());
                 }
                 if(VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]))
                 {
-                    return new Value<void*>(valImp->variant().data());
+                    //qDebug() << "\tVariantBinding typeName="  << valImp->variant().typeName() << "type="  << valImp->variant().type() << "userType="  << valImp->variant().userType() << " variant=" << valImp->variant();
+                    QVariant var = valImp->variant();
+                    
+                    // if the variant is the appropriate type, return its data
+                    if ((var.type() == varianttype) ||
+                        ((var.type() == QVariant::UserType) &&
+                         (types[idx].constData() == var.typeName())))
+                        return new Value<void*>(valImp->variant().data());
+                    else if ((var.type() != QVariant::UserType) && 
+                           var.canConvert(varianttype))
+                    {
+                        // is convertable type, so convert it, and return if successful
+                        if (var.convert(varianttype))
+                            return new Value<void*>(valImp->variant().data());
+                    }
+                    else if ((var.type() == QVariant::UserType) &&
+                             var.canConvert<QObject*>())
+                    {
+                        QObject* qObj = var.value<QObject*>();
+                        if (!qObj)
+                            qObj = reinterpret_cast<QObject*>(var.value<QWidget*>());
+                        if (qObj)
+                        {
+                            QByteArray typeName = types[idx].constData();
+                            typeName.replace("*", "");
+                            if (qObj->inherits(typeName))
+                                return new Value<void*>(qObj);
+                        }
+                    }
                 }
             }
             break;
     }
 
     qDebug("Cast failure %s value Type %d", types[idx].constData(), args[idx]->type() );
-    KJS::throwError(exec, KJS::GeneralError, i18n("Cast failure %1 value Type %2",
-                    types[idx].constData() ,
-                    args[idx]->type()) );
-    //KJSEmbed::throwError(exec,
-    //        i18n("Cast failure %1 value Type %2")
-    //                .arg(types[idx].constData())
-    //                .arg(args[idx].type() ) );
+    // construct a meaningful exception message
+    QString jsType;
+    KJS::JSObject* jsObj = args[idx]->getObject();
+    if (jsObj)
+    {
+        const KJS::ClassInfo* ci = jsObj->classInfo();
+        if (ci && ci->className)
+            jsType = ci->className;
+    }
+    
+    if (jsType.isEmpty())
+    {
+        switch(args[idx]->type())
+        {
+        case KJS::UnspecifiedType:
+            jsType = "jsUnspecified";
+            break;
+        case KJS::NumberType:
+            jsType = "jsNumber";
+            break;
+        case KJS::BooleanType:
+            jsType = "jsBoolean";
+            break;
+        case KJS::UndefinedType:
+            jsType = "jsUndefined";
+            break;
+        case KJS::NullType:
+            jsType = "jsNull";
+            break;
+        case KJS::StringType:
+            jsType = "jsString";
+            break;
+        case KJS::ObjectType:
+            jsType = "jsObject";
+            break;
+        case KJS::GetterSetterType:
+            jsType = "jsGetterSetter";
+            break;
+        default:
+            jsType = QString::number(args[idx]->type());
+            break;
+        }
+    }
 
-    return new NullPtr();
+    errorText = i18n("Failure to cast to %1 value from Type %2 (%3)",
+                     types[idx].constData(), jsType, toQString(args[idx]->toString(exec)));
+
+    return 0;
 }
 
 KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
@@ -521,9 +597,12 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
     QVariant returnValue( returnTypeId );
     QGenericReturnArgument returnArgument(metaMember.typeName(), &returnValue);
     param[0] = returnArgument.data();
+    QString errorText;
     for( int idx = 0; idx < 10; ++idx)
     {
-        qtArgs[idx] = getArg(exec, types, args, idx);
+        qtArgs[idx] = getArg(exec, types, args, idx, errorText);
+        if (!qtArgs[0])
+            return KJS::throwError(exec, KJS::GeneralError, i18n("Call to method '%1' failed, unable to get argument %2: %3",  m_memberName.constData(), idx, errorText));
         param[idx+1] = qtArgs[idx]->voidStar();
     }
 
