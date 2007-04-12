@@ -1102,6 +1102,23 @@ static inline void forwardPeripheralEvent(khtml::RenderWidget* r, QMouseEvent* m
         static_cast<khtml::RenderWidget::EventPropagator*>(w)->sendEvent(&fw);
 }
 
+
+static bool targetOpensNewWindow(KHTMLPart *part, QString target)
+{
+    if (!target.isEmpty() && (target.lower() != "_top") &&
+       (target.lower() != "_self") && (target.lower() != "_parent")) {
+        if (target.lower() == "_blank")
+            return true;
+        else {
+            while (part->parentPart())
+                part = part->parentPart();
+            if (!part->frameExists(target))
+                return true;
+        }
+    }
+    return false;
+}
+
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( d->m_mouseScrollTimer ) {
@@ -1161,6 +1178,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
     bool mailtoCursor = false;
+    bool newWindowCursor = false;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
         if ( r && r->isText() )
@@ -1169,6 +1187,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             c = m_part->urlCursor();
 	    if (mev.url.string().startsWith("mailto:") && mev.url.string().find('@')>0)
                 mailtoCursor = true;
+            else
+                newWindowCursor = targetOpensNewWindow( m_part, mev.target.string() );
         }
 
         if (r && r->isFrameSet() && !static_cast<RenderFrameSet*>(r)->noResize())
@@ -1182,6 +1202,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         c = m_part->urlCursor();
 	if (mev.url.string().startsWith("mailto:") && mev.url.string().find('@')>0)
             mailtoCursor = true;
+        else
+            newWindowCursor = targetOpensNewWindow( m_part, mev.target.string() );
         break;
     case CURSOR_PROGRESS:
         c = KCursor::workingCursor();
@@ -1228,10 +1250,10 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
         }
     }
 
-    if ( mailtoCursor && isVisible() && hasFocus() ) {
+    if ( ( mailtoCursor || newWindowCursor ) && isVisible() && hasFocus() ) {
 #ifdef Q_WS_X11
         if( !d->cursor_icon_widget ) {
-            QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( "mail_generic", KIcon::Small, 0, KIcon::DefaultState, 0, true );
+            QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( mailtoCursor ? "mail_generic" : "window_new", KIcon::Small, 0, KIcon::DefaultState, 0, true );
             d->cursor_icon_widget = new QWidget( NULL, NULL, WX11BypassWM );
             XSetWindowAttributes attr;
             attr.save_under = True;
