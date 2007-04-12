@@ -523,6 +523,12 @@ void KXMLGUIFactory::configureAction( QAction *action, const QDomAttr &attribute
     if ( attrName.toLower() == QLatin1String("name") )
         return;
 
+    if ( attrName.toLower() == QLatin1String("icon") )
+    {
+        action->setIcon( KIcon( attribute.value() ) );
+        return;
+    }
+
     QVariant propertyValue;
 
     QVariant::Type propertyType = action->property( attrName.toLatin1() ).type();
