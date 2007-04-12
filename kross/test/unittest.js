@@ -133,17 +133,20 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_bool_bool(true), true);
     tester.assert(testobj1.func_bool_bool(false), false);
 
-    //TODO segfault
-    //testobj1.func_bool_bool(17);
+    try {
+        testobj1.func_bool_bool(17);
+        tester.missingException("testobj1.func_bool_bool(17)");
+    } catch(error) { tester.passed(); }
 
-    //TODO does not throw an exception while it should imho
-    //try {
-    //    testobj1.func_bool_bool("SomeString");
-    //    tester.missingException("testobj1.func_bool_bool(\"SomeString\")");
-    //} catch(error) { tester.passed(); }
+    try {
+        testobj1.func_bool_bool("SomeString");
+        tester.missingException("testobj1.func_bool_bool(\"SomeString\")");
+    } catch(error) { tester.passed(); }
 
-    //TODO segfault
-    //testobj1.func_bool_bool([]);
+    try {
+        testobj1.func_bool_bool([]);
+        tester.missingException("testobj1.func_bool_bool([])");
+    } catch(error) { tester.passed(); }
 }
 
 // int
@@ -152,13 +155,30 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_int_int(177321), 177321);
     tester.assert(testobj1.func_int_int(-98765), -98765);
 
-    //TODO returns random values
-    //testobj1.func_int_int("SomeString")
-    //tester.assert(testobj1.func_int_int(true), 1);
-    //tester.assert(testobj1.func_int_int(false), 0);
+    try {
+        testobj1.func_int_int("SomeString")
+        tester.missingException("testobj1.func_int_int(\"SomeString\")");
+    } catch(error) { tester.passed(); }
 
-    //TODO segfault
-    //testobj1.func_int_int([])
+    try {
+        testobj1.func_int_int("SomeString")
+        tester.missingException("testobj1.func_int_int(\"SomeString\")");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_int_int(true)
+        tester.missingException("testobj1.func_int_int(true)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_int_int(false)
+        tester.missingException("testobj1.func_int_int(false)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_int_int([])
+        tester.missingException("testobj1.func_int_int([])");
+    } catch(error) { tester.passed(); }
 }
 
 // uint
@@ -166,13 +186,25 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_uint_uint(0), 0);
     tester.assert(testobj1.func_uint_uint(177321), 177321);
 
-    //TODO returns random values
-    //println( testobj1.func_uint_uint("SomeString") );
-    //tester.assert(testobj1.func_uint_uint(true), 1);
-    //tester.assert(testobj1.func_uint_uint(false), 0);
+    try {
+        testobj1.func_uint_uint("SomeString")
+        tester.missingException("testobj1.func_uint_uint(\"SomeString\")");
+    } catch(error) { tester.passed(); }
 
-    //TODO segfault
-    //testobj1.func_uint_uint([])
+    try {
+        testobj1.func_uint_uint(true)
+        tester.missingException("testobj1.func_uint_uint(true)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_uint_uint(false)
+        tester.missingException("testobj1.func_uint_uint(false)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_uint_uint([])
+        tester.missingException("testobj1.func_uint_uint([])");
+    } catch(error) { tester.passed(); }
 }
 
 // double
@@ -181,18 +213,30 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_double_double(1773.2177), 1773.2177);
     tester.assert(testobj1.func_double_double(-548993.271993), -548993.271993);
 
-    //TODO returns random values
-    //println( testobj1.func_double_double("SomeString") );
-    //println( testobj1.func_double_double(true) );
-    //println( testobj1.func_double_double(false) );
+    try {
+        testobj1.func_double_double("SomeString")
+        tester.missingException("testobj1.func_double_double(\"SomeString\")");
+    } catch(error) { tester.passed(); }
 
-    //TODO segfault
-    //testobj1.func_double_double([]);
+    try {
+        testobj1.func_double_double(true)
+        tester.missingException("testobj1.func_double_double(true)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_double_double(false)
+        tester.missingException("testobj1.func_double_double(false)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_double_double([])
+        tester.missingException("testobj1.func_double_double([])");
+    } catch(error) { tester.passed(); }
 }
 
 // longlong
 {
-    //TODO segfault
+    //TODO Failure to cast to qlonglong value from Type jsNumber
     //tester.assert(testobj1.func_qlonglong_qlonglong(0), 0);
     //tester.assert(testobj1.func_qlonglong_qlonglong(7379), 7379);
     //tester.assert(testobj1.func_qlonglong_qlonglong(-6384673), -6384673);
@@ -201,14 +245,14 @@ var testobj2 = TestObject2
 
 // ulonglong
 {
-    //TODO segfault
+    //TODO Failure to cast to qulonglong value from Type jsNumber
     //tester.assert(testobj1.func_qulonglong_qulonglong(0), 0);
     //tester.assert(testobj1.func_qulonglong_qulonglong(378972), 378972);
 }
 
 // bytearray
 {
-    //TODO handle in kjsembed/qobject_binding.h QByteArray for KJS::StringType
+    //TODO Failure to cast to QByteArray value from Type jsString
     //tester.assert(testobj1.func_qbytearray_qbytearray("  Some String as ByteArray  "), "  Some String as ByteArray  ");
     //tester.assert(testobj1.func_qbytearray_qbytearray(" \0\n\r\t\s\0 test "), " \0\n\r\t\s\0 test ");
 }
@@ -219,11 +263,25 @@ var testobj2 = TestObject2
     tester.assert(testobj1.func_qstring_qstring(" "), " ");
     tester.assert(testobj1.func_qstring_qstring(" Another \n\r Test!   $%&\" "), " Another \n\r Test!   $%&\" ");
 
-    //TODO segfault
-    //println( testobj1.func_qstring_qstring(true) );
-    //println( testobj1.func_qstring_qstring(false) );
-    //println( testobj1.func_qstring_qstring(123) );
-    //println( testobj1.func_qstring_qstring([]) );
+    try {
+        testobj1.func_qstring_qstring(-42.331)
+        tester.missingException("testobj1.func_qstring_qstring(-42.331)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_qstring_qstring(true)
+        tester.missingException("testobj1.func_qstring_qstring(true)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_qstring_qstring(false)
+        tester.missingException("testobj1.func_qstring_qstring(false)");
+    } catch(error) { tester.passed(); }
+
+    try {
+        testobj1.func_qstring_qstring([])
+        tester.missingException("testobj1.func_qstring_qstring([])");
+    } catch(error) { tester.passed(); }
 }
 
 // stringlist
