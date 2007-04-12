@@ -11,14 +11,17 @@ find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 include(MacroLibrary)
 
-find_package(GNUWIN32)
-
-#find_package(Soprano REQUIRED)
-# Soprano is in the same module now
-set(SOPRANO_INCLUDE_DIR ../../../qrdf)
-LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../../qrdf/soprano)
-set(SOPRANO_LIBRARIES soprano)
-set(SOPRANO_FOUND )
+if(WIN32)
+  find_package(GNUWIN32)
+  find_package(Soprano REQUIRED)
+else(WIN32)
+  # CE: this is an ugly hack and should be fixed!
+  # Soprano is in the same module now
+  set(SOPRANO_INCLUDE_DIR ../../../qrdf)
+  LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../../qrdf/soprano)
+  set(SOPRANO_LIBRARIES soprano)
+  set(SOPRANO_FOUND )
+endif(WIN32)
 
 include_directories(
   ${kmetadata_rcgen_SOURCE_DIR}
