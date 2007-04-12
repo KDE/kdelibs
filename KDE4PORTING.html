@@ -185,7 +185,7 @@ KComponentData object, but everything else probably is a bug).</li>
 <li>startService*, kdeinitExec* have been moved to KToolInvocation </li>
 <li>static void addCmdLineOptions(); has moved to KCmdLineArgs::addStdCmdLineOptions </li>
 <li>getDisplay() has been removed, its functionality is now provided by QX11Info::display() </li>
-<li>cut(), copy(), paste(), clear() and selectAll() were moved to KStdAction.  Rather then creating a copy action and connecting it to kapp just use the KStdAction::copy </li>
+<li>cut(), copy(), paste(), clear() and selectAll() were moved to KStandardAction.  Rather then creating a copy action and connecting it to kapp just use the KStandardAction::copy </li>
 <li>guiEnabled() was removed, use QApplication::type() instead.  </li>
 <li>ref()/deref() was moved to KGlobal (as static methods) </li>
 <li>geometryArgument was removed, please use:
@@ -653,7 +653,7 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 <h4>KShortcutList and derivatives</h4>
 <ul>
 <li>Removed - no longer needed</li>
-<li>Saving and loading of shortcuts now performed in KActionCollection, KGlobalAccel, and KStdAccel.</li>
+<li>Saving and loading of shortcuts now performed in KActionCollection, KGlobalAccel, and KStandardShortcut.</li>
 </ul>
 
 <h4>KSortableValueList</h4>
@@ -663,6 +663,7 @@ This class has been deprecated by KDateTime. It has been renamed K3RFCDate and m
 
 <h4>KStdAccel</h4>
 <ul>
+<li>Renamed to KStandardShortcut</li>
 <li>Removed deprecated methods</li>
 <li>Removed WhatThis, use WhatsThis</li>
 <li>shortcutDefault3() and shortcutDefault4() have been removed, use shortcutDefault() instead</li>
@@ -859,7 +860,6 @@ This class has been renamed KWindowInfo and moved to its own header: KWindowInfo
 
 <h4>KAboutWidget</h4>
 <ul>
-<li>This class has been removed. Use KAboutApplicationDialog or KAboutKDEDialog directly.</li>
 <li>This class has been renamed to K3AboutWidget and moved to kde3support. Use KAboutApplicationDialog or KAboutKdeDialog directly.</li>
 <li>signal void openURL() -&gt; void openUrl()</li>
 <li>void openURLSlot() -&gt; void openUrlSlot()</li>
@@ -1418,7 +1418,7 @@ use( dlg.password() );
 
 <h4>KPopupMenu</h4>
 <ul>
-<li>Renamed to KMenu to reflect change in Qt</li>
+<li>Renamed to KMenu to reflect change in Qt4</li>
 <li>indexes replaced by QAction*</li>
 <li>title, titlePixmap, and changeTitle removed - use QAction::text(), QAction::icon(), QAction::setText() and QAction::setIcon</li>
 <li>contextMenuFocusItem changed to contextMenuFocusAction in line with the change from indexes to actions</li>
@@ -1502,13 +1502,13 @@ use( dlg.password() );
   insertFixedItem(text,id,true) -&gt; insertPermanentFixedItem(text,id)</li>
 </ul>
 
-<h4>KStandardAction</h4>
+<h4>KStdAction</h4>
 <ul>
-<li>KStdAction was renamed to KStandardAction and the header moved from kstdaction.h to kstandardaction.h</li>
+<li>KStandardAction was renamed to KStandardAction and the header moved from kstdaction.h to kstandardaction.h</li>
 <li>showToolbar() methods have been removed, see KMainWindow::setStandardToolBarMenuEnabled()</li>
 </ul>
 
-<h4>KStandardGuiItem</h4>
+<h4>KStdGuiItem</h4>
 <ul>
 <li>KStdGuiItem was renamed to KStandardGuiItem and the header moved from kstdguiitem.h to kstandardguiitem.h</li>
 <li>The StdItem enum was renamed to StandardItem</li>
