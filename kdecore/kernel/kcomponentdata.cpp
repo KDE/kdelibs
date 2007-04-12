@@ -77,7 +77,7 @@ KComponentData::KComponentData(const QByteArray &name)
     d->aboutData = new KAboutData(name, "", 0);
 
     if (name != "kdeinit4") {
-        KGlobal::newComponentData(*this);
+        KGlobal::newComponentData(this);
     }
 }
 
@@ -90,10 +90,10 @@ KComponentData::KComponentData(const KAboutData *aboutData)
 
     Q_ASSERT(!d->name.isEmpty());
 
-    KGlobal::newComponentData(*this);
+    KGlobal::newComponentData(this);
 }
 
-void KComponentData::_checkConfig()
+void KComponentData::_checkConfig() // called by KSharedConfigPtr
 {
     d->checkConfig();
 }
@@ -129,6 +129,7 @@ void KComponentDataPrivate::checkConfig()
 KComponentData::~KComponentData()
 {
     if (d) {
+        KGlobal::deletedComponentData(this);
         d->deref();
         d = 0;
     }

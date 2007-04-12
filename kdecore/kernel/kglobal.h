@@ -418,7 +418,8 @@ public:
 private:
     friend class KComponentData;
     ///@internal
-    static void newComponentData(const KComponentData &c);
+    static void newComponentData(KComponentData *c);
+    static void deletedComponentData(KComponentData *c);
 };
 
 #ifdef KDE_SUPPORT

@@ -46,6 +46,7 @@ class KComponentDataPrivate;
 class KDECORE_EXPORT KComponentData
 {
     friend class KStandardDirs;
+    friend class KGlobal;
     KSharedConfig::Ptr &privateConfig() const;
 
 public:

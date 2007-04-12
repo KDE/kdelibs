@@ -65,7 +65,8 @@ class KGlobalPrivate
 {
     public:
         inline KGlobalPrivate()
-            : stringDict(0),
+            : mainComponentPtr(0),
+            stringDict(0),
             locale(0),
             charsets(0),
             staticDeleters(new KStaticDeleterList)
@@ -80,6 +81,7 @@ class KGlobalPrivate
             charsets = 0;
             delete stringDict;
             stringDict = 0;
+            mainComponentPtr = 0;
 
             deleteStaticDeleters();
         }
@@ -87,7 +89,8 @@ class KGlobalPrivate
         void deleteStaticDeleters();
 
         KComponentData activeComponent;
-        KComponentData mainComponent;
+        KComponentData mainComponent; // holds a refcount
+        KComponentData* mainComponentPtr; // remembers the address of the first created componentdata (usually in main()).
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
@@ -195,14 +198,32 @@ void KGlobal::setActiveComponent(const KComponentData &c)
     }
 }
 
-void KGlobal::newComponentData(const KComponentData &c)
+void KGlobal::newComponentData(KComponentData *c)
 {
     PRIVATE_DATA;
     if (d->mainComponent.isValid()) {
         return;
     }
-    d->mainComponent = c;
-    KGlobal::setActiveComponent(c);
+    d->mainComponent = *c;
+    d->mainComponentPtr = c;
+    KGlobal::setActiveComponent(*c);
+}
+
+void KGlobal::deletedComponentData(KComponentData *c)
+{
+    if (globalData.isDestroyed()) {
+        return;
+    }
+    PRIVATE_DATA;
+    if (d->mainComponentPtr == c) {
+        // The main component data (usually the one created on the stack in main())
+        // just got deleted. We better sync the global kconfig before the qt globals
+        // go away and prevent us from using things that require qt globals, like QTemporaryFile.
+        d->mainComponentPtr = 0;
+        if (c->privateConfig()) {
+            c->privateConfig()->sync();
+        }
+    }
 }
 
 void KGlobal::setLocale(KLocale *locale)
