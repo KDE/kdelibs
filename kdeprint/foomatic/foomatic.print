@@ -12,5 +12,6 @@ Comment[ne]=फुम्याटिक (CUPS, LPRng, PDQ)
 Comment[rw]=Fumatike (CUPS, LPRng, PDQ)
 Comment[sq]=Foomatik (CUPS, LPRng, PDQ)
 Comment[sv]=Foomatic (Cups, LPRng, PDQ)
+Comment[te]=ఫూమెటిక్ (సియుపిఎస్, ఎల్ పి ఆర్ అన్ జి,పిడిక్యు) 
 DetectUris=exec:/foomatic-configure,config:/foomatic/
 DetectPrecedence=0

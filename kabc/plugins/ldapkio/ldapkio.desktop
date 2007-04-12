@@ -3,6 +3,7 @@ Encoding=UTF-8
 Name=LDAP
 Name[bn]=এল-ডি-এ-পি (LDAP)
 Name[hi]=एलडीएपी (LDAP)
+Name[te]=ఎల్డిఏపి
 X-KDE-Library=kabc_ldapkio
 Type=Service
 ServiceTypes=KResources/Plugin

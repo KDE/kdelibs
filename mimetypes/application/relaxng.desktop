@@ -3,6 +3,7 @@ Encoding=UTF-8
 Comment=RELAX NG
 Comment[af]=Ontspannende NG
 Comment[hi]=रीलेक्स एनजी
+Comment[te]=రిలేక్స్ NG
 Icon=html
 Type=MimeType
 MimeType=application/xml
