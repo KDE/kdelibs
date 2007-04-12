@@ -34,18 +34,6 @@ using namespace KParts;
 // Helper Classes
 ///////////////////////////////////////////////////////////////////
 
-class KParts::StatusBarExtensionPrivate
-{
-public:
-  StatusBarExtensionPrivate(StatusBarExtension *q): q(q),
-                                                    m_statusBar(0) {}
-
-  StatusBarExtension *q;
-  QList<StatusBarItem> m_statusBarItems; // Our statusbar items
-  KStatusBar* m_statusBar;
-};
-
-
 class KParts::StatusBarItem {
   public:
     StatusBarItem() // for QValueList
@@ -83,6 +71,17 @@ class KParts::StatusBarItem {
     int m_stretch;
     bool m_permanent;
     bool m_visible;  // true when the item has been added to the statusbar
+};
+
+class KParts::StatusBarExtensionPrivate
+{
+public:
+  StatusBarExtensionPrivate(StatusBarExtension *q): q(q),
+                                                    m_statusBar(0) {}
+
+  StatusBarExtension *q;
+  QList<StatusBarItem> m_statusBarItems; // Our statusbar items
+  KStatusBar* m_statusBar;
 };
 
 ///////////////////////////////////////////////////////////////////
