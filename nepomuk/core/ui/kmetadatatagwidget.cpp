@@ -21,11 +21,11 @@
 
 #include "kmetadatatagwidget.h"
 #include "kautoscrollarea.h"
+#include "ktagdisplaywidget.h"
 
 #include <kmetadata/tools.h>
 #include <kmetadata/tag.h>
 
-#include <ktagdisplaywidget.h>
 #include <karrowbutton.h>
 #include <klocale.h>
 

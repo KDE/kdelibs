@@ -24,7 +24,7 @@
 
 #include <kmetadata/kmetadata_export.h>
 
-#include <ktagcloudwidget.h>
+#include "ktagcloudwidget.h"
 
 namespace Nepomuk {
     namespace KMetaData {

@@ -17,9 +17,9 @@
 */
 
 #include "ktagcloudwidget.h"
+#include "kblocklayout.h"
 
-#include <kurllabel.h>
-#include <kblocklayout.h>
+#include <KUrlLabel>
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
