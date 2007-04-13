@@ -682,6 +682,7 @@ protected:
     /**
      * Reimplemented to catch QEvent::Polish in order to adjust the object name
      * if needed, once all constructor code for the main window has run.
+     * Also reimplemented to catch when a QDockWidget is added or removed.
      */
     virtual bool event( QEvent * event );
 

@@ -1071,6 +1071,34 @@ bool KMainWindow::event( QEvent* ev )
     case QEvent::Polish:
         setUniqueName();
         break;
+    case QEvent::ChildAdded:
+        {
+            QChildEvent *event = static_cast<QChildEvent*>(ev);
+            QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
+            if (dock) {
+                connect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
+                        this, SLOT(setSettingsDirty()));
+                connect(dock, SIGNAL(visibilityChanged(bool)),
+                        this, SLOT(setSettingsDirty()));
+                connect(dock, SIGNAL(topLevelChanged(bool)),
+                        this, SLOT(setSettingsDirty()));
+            }
+        }
+        break;
+    case QEvent::ChildRemoved:
+        {
+            QChildEvent *event = static_cast<QChildEvent*>(ev);
+            QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
+            if (dock) {
+                disconnect(dock, SIGNAL(dockLocationChanged(Qt::DockWidgetArea)),
+                           this, SLOT(setSettingsDirty()));
+                disconnect(dock, SIGNAL(visibilityChanged(bool)),
+                           this, SLOT(setSettingsDirty()));
+                disconnect(dock, SIGNAL(topLevelChanged(bool)),
+                           this, SLOT(setSettingsDirty()));
+            }
+        }
+        break;
     default:
         break;
     }
