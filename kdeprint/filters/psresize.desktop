@@ -1,6 +1,7 @@
 [KDE Print Filter Entry]
 Name=psresize
 Name[af]=ps-weer grote bepaal
+Name[csb]=Skalowanié wëdrëkù
 Name[eo]=PS-grandecŝanĝilo
 Name[hu]=PSResize
 Name[nso]=psnbeabogolo la boswa
@@ -22,6 +23,7 @@ Comment[bn]=অন্য মাপের কাগজে ছাপানোর �
 Comment[bs]=Skaliraj štampani sadržaj kako bi stao na drugu veličinu papira
 Comment[ca]=Escala el contingut de la impressió per a ajustar-la a una altra mida de paper
 Comment[cs]=Roztáhne tištěný obsah na jiný rozměr papíru
+Comment[csb]=Skalowanié wëdrëkù tak, bë pasowôł do jinszi miarë starnë
 Comment[cy]=Graddu Cynnwys Argraffu i Ffitio ar Faint Papur Arall
 Comment[da]=Skalér udskriftsindhold til at passe på en anden papirstørrelse
 Comment[de]=Druckgröße der Seite anpassen

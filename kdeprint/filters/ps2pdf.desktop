@@ -1,6 +1,7 @@
 [KDE Print Filter Entry]
 Name=ps2pdf
 Name[af]=ps-na-pdf
+Name[csb]=Kònwersëjô PS do PDF
 Name[pl]=Konwersja PS do PDF
 Name[pt_BR]=Conversão de PS para PDF
 Name[sv]=Ps2pdf
@@ -14,6 +15,7 @@ Comment[be]=Пераўтварэнне з PostScript у PDF
 Comment[bs]=Pretvaranje PostScripta u PDF
 Comment[ca]=Convertidor de PostScript a PDF
 Comment[cs]=Konvertor Postscriptu do PDF
+Comment[csb]=Kònwerter lopków z fòrmatu PostScriptu do PDF
 Comment[cy]=Trosydd PostScript i PDF
 Comment[da]=PostScript-til-PDF-konvertering
 Comment[de]=Umwandlung von PDF-Dateien in PostScript

@@ -3,6 +3,7 @@
 Encoding=UTF-8
 Name=kab2kabc
 Name[af]=kab-na-kabc
+Name[csb]=Kònwersëjô adresowi knéżczi
 Name[eo]=Konvertilo de "kab" al "kabc"
 Name[fr]=KAB2KABC
 Name[fy]=Kab2kabc
@@ -28,6 +29,7 @@ Comment[bn]=libkab থেকে libkabc-তে পরিবর্তন কর�
 Comment[bs]=alat za pretvaranje libkab u libkabc.
 Comment[ca]=Eina de conversió de libkab a libkabc.
 Comment[cs]=Převod dat z libkab do libkabc.
+Comment[csb]=Nôrzãdze do kònwersëji z libkab do libkabc.
 Comment[cy]=erfyn trosi libkab i libkabc
 Comment[da]=libkab-til-libkabc-konverteringsværktøj.
 Comment[de]=Konvertierung von libkab in libkabc
