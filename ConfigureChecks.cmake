@@ -44,10 +44,6 @@ set(SVG_SUPPORT 1)              # unused yet, but for the future
 # CMAKE_REQUIRED_DEFINITIONS so they will be included in the build of
 # checks below.
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
-if (WIN32)
-   set(CMAKE_REQUIRED_LIBRARIES ${KDEWIN32_LIBRARIES} )
-   set(CMAKE_REQUIRED_INCLUDES  ${KDEWIN32_INCLUDES} )
-endif (WIN32)
 
 check_include_files(stdio.h       HAVE_STDIO_H)                        # various
 check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
