@@ -39,8 +39,8 @@
 #include <ksslall.h>
 
 
-KCertExport::KCertExport(QWidget *parent, const char *name)
-                             : KDialog(parent)
+KCertExport::KCertExport(QWidget *parent)
+ : KDialog(parent)
 {
     QGridLayout *grid = new QGridLayout(this );
     grid->setMargin( marginHint() );

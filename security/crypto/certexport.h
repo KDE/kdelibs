@@ -33,7 +33,7 @@ class KCertExport : public KDialog
 {
   Q_OBJECT
 public:
-  KCertExport(QWidget *parent = 0L, const char *name = 0L);
+  KCertExport(QWidget *parent = 0L);
   virtual ~KCertExport();
 
   void setCertificate(KSSLCertificate *c);

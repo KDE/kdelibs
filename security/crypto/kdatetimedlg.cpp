@@ -34,11 +34,12 @@
 #include <knuminput.h>
 #include <kstandardguiitem.h>
 
-KDateTimeDlg::KDateTimeDlg(QWidget *parent, const char *name)
-                             : KDialog(parent) {
-QGridLayout *grid = new QGridLayout(this);
-grid->setSpacing(spacingHint());
-grid->setMargin(marginHint());
+KDateTimeDlg::KDateTimeDlg(QWidget *parent)
+ : KDialog(parent)
+{
+   QGridLayout *grid = new QGridLayout(this);
+   grid->setSpacing(spacingHint());
+   grid->setMargin(marginHint());
 
    setCaption(i18n("Date & Time Selector"));
 

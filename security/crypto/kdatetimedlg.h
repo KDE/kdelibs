@@ -36,7 +36,7 @@ class KDateTimeDlg : public KDialog
 {
   Q_OBJECT
 public:
-  KDateTimeDlg(QWidget *parent = 0L, const char *name = 0L);
+  KDateTimeDlg(QWidget *parent = 0L);
   virtual ~KDateTimeDlg();
 
   virtual QTime     getTime();
