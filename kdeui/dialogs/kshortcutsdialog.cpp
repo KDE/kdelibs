@@ -27,7 +27,6 @@
 #include "kkeysequencewidget.h"
 
 #include "ui_kshortcutsdialog.h"
-//#include "ui_kshortcuteditor.h"
 
 #include <string.h>
 
@@ -179,8 +178,8 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QAbstractItemView *parent)
  : KExtendableItemDelegate(parent)
 {
 	Q_ASSERT(qobject_cast<QAbstractItemView *>(parent));
-	m_extendIcon = SmallIcon("go-down.png");
-	m_contractIcon = SmallIcon("go-up.png");
+	setExtendIcon(SmallIcon("go-down.png"));
+	setContractIcon(SmallIcon("go-up.png"));
 	connect(parent, SIGNAL(clicked(QModelIndex)), this, SLOT(itemActivated(QModelIndex)));
 }
 

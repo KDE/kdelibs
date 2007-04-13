@@ -316,7 +316,6 @@ install( FILES
  icons/kicon.h
  icons/kiconloader.h
  icons/kicontheme.h
- itemviews/kextendableitemdelegate.h
  itemviews/klistwidget.h
  itemviews/klistwidgetsearchline.h
  itemviews/ktreewidgetsearchline.h

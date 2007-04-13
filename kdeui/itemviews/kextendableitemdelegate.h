@@ -36,6 +36,7 @@ extendItem() and contractItem().
 
 class QAbstractItemView;
 class QPersistentModelIndex;
+class KExtendableItemDelegatePrivate;
 
 class KExtendableItemDelegate : public QItemDelegate {
 	Q_OBJECT
@@ -82,12 +83,12 @@ Q_SIGNALS:
 	/**
 	 * This signal indicates that the item at @p index was extended with @p extender.
 	 */
-	void extenderCreated(QWidget *extender, QModelIndex index);
+	void extenderCreated(QWidget *extender, const QModelIndex &index);
 
 	/**
 	 * This signal indicates that the @p extender belonging to @p index has emitted the destroyed() signal.
 	 */
-	void extenderDestroyed(QWidget *extender, QModelIndex index);
+	void extenderDestroyed(QWidget *extender, const QModelIndex &index);
 
 protected:
 	/**
@@ -98,22 +99,19 @@ protected:
 	 */
 	QRect extenderRect(QWidget *extender, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	//these two must have the same (screen) size!
-	QPixmap m_extendIcon;
-	QPixmap m_contractIcon;
+	void setExtendIcon(const QPixmap &);
+	void setContractIcon(const QPixmap &);
+	QPixmap extendIcon();
+	QPixmap contractIcon();
 
-protected Q_SLOTS:
+private Q_SLOTS:
 	void extenderDestructionHandler(QObject *destroyed);
 
 private:
-	inline QSize maybeExtendedSize(const QStyleOptionViewItem &option/*maybe superfluous?*/, const QModelIndex &index) const;
+	inline QSize maybeExtendedSize(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 	QModelIndex indexOfExtendedColumnInSameRow(const QModelIndex &index) const;
 	inline void scheduleUpdateViewLayout() const;
 	
-	//this will trigger a lot of auto-casting QModelIndex <-> QPersistentModelIndex
-	QHash<QPersistentModelIndex, QWidget *> m_extenders;
-	QHash<QWidget *, QPersistentModelIndex> m_extenderIndices;
-	//mostly for quick startup - don't look for extenders while the view
-	//is being populated.
-	mutable bool m_hasExtenders;
+	KExtendableItemDelegatePrivate *const d;
 };
 #endif // KEXTENDABLEITEMDELEGATE_H
