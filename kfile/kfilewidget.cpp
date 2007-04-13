@@ -1039,7 +1039,6 @@ void KFileWidgetPrivate::initGUI()
     boxLayout->setSpacing(KDialog::spacingHint());
     boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
     boxLayout->setMargin(0); // no additional margin to the already existing
-    q->layout()->setMargin(KDialog::marginHint());
 
     placesViewLayout = new QHBoxLayout();
     boxLayout->addItem(placesViewLayout); // needed for the placesView that may appear
