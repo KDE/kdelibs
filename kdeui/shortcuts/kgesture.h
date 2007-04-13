@@ -138,7 +138,6 @@ public:
     uint hashable() const;
 private:
     inline float metric(float dx, float dy) const;
-    friend class KShapeGestureMap;
     QPolygon m_shape;
     QVector<float> m_lengthTo;
     float m_curveLength;
