@@ -1088,29 +1088,30 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     grid->addWidget(sep, curRow, 0, 1, 3);
     ++curRow;
 
-    QString mountPoint = KIO::findPathMountPoint( url.path() );
+    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
+    if (mp) {
+      if (mp->mountPoint() != "/")
+      {
+          l = new QLabel(i18n("Mounted on:"), d->m_frame );
+          grid->addWidget(l, curRow, 0);
 
-    if (mountPoint != "/")
-    {
-        l = new QLabel(i18n("Mounted on:"), d->m_frame );
-        grid->addWidget(l, curRow, 0);
+          l = new KSqueezedTextLabel( mp->mountPoint(), d->m_frame );
+          grid->addWidget( l, curRow++, 2 );
+      }
 
-        l = new KSqueezedTextLabel( mountPoint, d->m_frame );
-        grid->addWidget( l, curRow++, 2 );
+      l = new QLabel(i18n("Free disk space:"), d->m_frame );
+      grid->addWidget(l, curRow, 0);
+
+      d->m_freeSpaceLabel = new QLabel( d->m_frame );
+      grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
+
+      KDiskFreeSp * job = new KDiskFreeSp;
+      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
+               const unsigned long&, const QString& ) ),
+               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
+            const unsigned long&, const QString& ) ) );
+      job->readDF( mp->mountPoint() );
     }
-
-    l = new QLabel(i18n("Free disk space:"), d->m_frame );
-    grid->addWidget(l, curRow, 0);
-
-    d->m_freeSpaceLabel = new QLabel( d->m_frame );
-    grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
-
-    KDiskFreeSp * job = new KDiskFreeSp;
-    connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
-             const unsigned long&, const QString& ) ),
-             this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
-          const unsigned long&, const QString& ) ) );
-    job->readDF( mountPoint );
   }
 
   vbl->addStretch(1);
@@ -1280,14 +1281,15 @@ void KFilePropsPlugin::slotSizeDetermine()
     bool isLocal;
     KFileItem * item = properties->item();
     KUrl url = item->mostLocalUrl( isLocal );
-    QString mountPoint = KIO::findPathMountPoint( url.path() );
-
-    KDiskFreeSp * job = new KDiskFreeSp;
-    connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
-             const unsigned long&, const QString& ) ),
-             this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
-          const unsigned long&, const QString& ) ) );
-    job->readDF( mountPoint );
+    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
+    if (mp) {
+      KDiskFreeSp * job = new KDiskFreeSp;
+      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
+               const unsigned long&, const QString& ) ),
+               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
+            const unsigned long&, const QString& ) ) );
+      job->readDF( mp->mountPoint() );
+    }
   }
 }
 
