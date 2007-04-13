@@ -52,6 +52,9 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 
 void KConfigTest::initTestCase()
 {
+  // to make sure all files from a previous failed run are deleted
+  cleanupTestCase();
+
   KConfig sc( "kconfigtest" );
 
   KConfigGroup cg(&sc, "AAA");

@@ -29,6 +29,7 @@
 
 class QFile;
 class QByteArray;
+class QTextStream;
 
 /**
  * Class for KDE INI-style configuration file loading/saving.
@@ -129,7 +130,7 @@ protected:
   bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
 
   /** Write the entries in @e aTempMap to the file stream.*/
-  void writeEntries(FILE *pStream, const KEntryMap &aTempMap);
+  void writeEntries(QTextStream &ts, const KEntryMap &aTempMap);
 
 private:
   void parseLocalConfig(const QString &fileName, const QString &localFileName);

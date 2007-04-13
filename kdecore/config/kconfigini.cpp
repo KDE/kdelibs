@@ -756,7 +756,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
 }
 
-static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
+static void writeEntries(QTextStream &ts, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
 {
     // now write out all other groups.
     QByteArray currentGroup;
@@ -803,39 +803,39 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 
         if (!defaultGroup && (currentGroup != key.mGroup)) {
             if (!firstEntry)
-                fprintf(pStream, "\n");
+                ts << '\n';
             currentGroup = key.mGroup;
-            fprintf(pStream, "[%s]\n", encodeGroup(currentGroup).data());
+            ts << '[' << encodeGroup(currentGroup).data() << "]\n";
         }
 
         firstEntry = false;
         // it is data for a group
-        fputs(key.mKey.data(), pStream); // Key
+        ts << key.mKey.data();   // Key
 
         if ( currentEntry.bNLS )
         {
-            fputc('[', pStream);
-            fputs(localeString.data(), pStream);
-            fputc(']', pStream);
+            ts << '['
+               << localeString.data()
+               << ']';
         }
 
         if (currentEntry.bDeleted) {
-            fputs("[$d]\n", pStream); // Deleted
+            ts << "[$d]\n"; // Deleted
         } else {
             if (currentEntry.bImmutable || currentEntry.bExpand)
             {
-                fputc('[', pStream);
-                fputc('$', pStream);
+                ts << '['
+                   << '$';
                 if (currentEntry.bImmutable)
-                    fputc('i', pStream);
+                    ts << 'i';
                 if (currentEntry.bExpand)
-                    fputc('e', pStream);
+                    ts << 'e';
 
-                fputc(']', pStream);
+                ts << ']';
             }
-            fputc('=', pStream);
-            fputs(stringToPrintable(currentEntry.mValue).data(), pStream);
-            fputc('\n', pStream);
+            ts << '='
+               << stringToPrintable(currentEntry.mValue).data()
+               << '\n';
         }
     } // for loop
 }
@@ -935,7 +935,7 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
     }
 
     KSaveFile *pConfigFile = 0;
-    FILE *pStream = 0;
+    QFile *f = 0;
 
     if (createNew)
     {
@@ -956,30 +956,24 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
             fchmod(pConfigFile->handle(), fileMode);
         }
 
-        pStream = pConfigFile->fstream();
+        f = pConfigFile;
     }
     else
     {
         // Open existing file.
         // We use open() to ensure that we call without O_CREAT.
-        int fd = KDE_open( QFile::encodeName(filename), O_WRONLY | O_TRUNC );
-        if (fd < 0)
+        f = new QFile( filename );
+        if (!f->open( QIODevice::WriteOnly | QIODevice::Append ))
         {
-            return bEntriesLeft;
-        }
-        pStream = KDE_fdopen( fd, "w");
-        if (!pStream)
-        {
-            close(fd);
             return bEntriesLeft;
         }
     }
-
-    writeEntries(pStream, aTempMap);
+    QTextStream ts( f );
+    writeEntries(ts, aTempMap);
 
     if (pConfigFile)
     {
-        bool bEmptyFile = (ftell(pStream) == 0);
+        bool bEmptyFile = ts.pos() > 0;
         if ( bEmptyFile && ((fileMode == -1) || (fileMode == 0600)) )
         {
             // File is empty and doesn't have special permissions: delete it.
@@ -1003,20 +997,20 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
     }
     else
     {
-        fclose(pStream);
+        f->close();
     }
 
     return bEntriesLeft;
 }
 
-void KConfigINIBackEnd::writeEntries(FILE *pStream, const KEntryMap &aTempMap)
+void KConfigINIBackEnd::writeEntries(QTextStream &ts, const KEntryMap &aTempMap)
 {
     bool firstEntry = true;
 
     // Write default group
-    ::writeEntries(pStream, aTempMap, true, firstEntry, localeString);
+    ::writeEntries(ts, aTempMap, true, firstEntry, localeString);
 
     // Write all other groups
-    ::writeEntries(pStream, aTempMap, false, firstEntry, localeString);
+    ::writeEntries(ts, aTempMap, false, firstEntry, localeString);
 }
 
