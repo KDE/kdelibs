@@ -57,6 +57,14 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
         return result; \
 }
 
+#define KJSO_VALUE_SIMPLE_BINDING_CTOR( NAME, JSNAME, TYPE, BASENAME )        \
+    NAME::NAME(KJS::ExecState *exec, const TYPE & value) \
+      : BASENAME( exec, #JSNAME , value )                    \
+    { \
+      StaticBinding::publish( exec, this, NAME::methods() ); \
+    }
+
+
 namespace KJSEmbed
 {
    /**

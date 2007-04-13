@@ -516,6 +516,8 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         const KJS::ClassInfo* ci = jsObj->classInfo();
         if (ci && ci->className)
             jsType = ci->className;
+        if (jsType.isEmpty())
+            jsType = toQString(jsObj->className());
     }
     
     if (jsType.isEmpty())

@@ -64,11 +64,29 @@ class KJSEMBED_EXPORT NAME : public BASENAME \
     static const KJSEmbed::Constructor *constructor() { return &p_constructor;} \
 };
 
+
 #define KJSO_BINDING_NOEXP( NAME, TYPE, BASENAME ) \
 class NAME : public BASENAME \
 { \
     public: \
     NAME(KJS::ExecState *exec, TYPE * obj); \
+    static const KJSEmbed::Method p_methods[]; \
+    static const KJSEmbed::Method p_statics[]; \
+    static const KJSEmbed::Enumerator p_enums[]; \
+    static const KJSEmbed::Constructor p_constructor; \
+    static KJS::JSObject *bindMethod( KJS::ExecState *exec, PointerBase& ptrObj );\
+    static KJS::JSObject *ctorMethod( KJS::ExecState *exec, const KJS::List &args );\
+    static const KJSEmbed::Enumerator *enums() { return p_enums;} \
+    static const KJSEmbed::Method *methods() { return p_methods;} \
+    static const KJSEmbed::Method *statics() { return p_statics;} \
+    static const KJSEmbed::Constructor *constructor() { return &p_constructor;} \
+};
+
+#define KJSO_VALUE_BINDING( NAME, TYPE, BASENAME ) \
+class KJSEMBED_EXPORT NAME : public BASENAME \
+{ \
+    public: \
+    NAME(KJS::ExecState *exec, const TYPE & val ); \
     static const KJSEmbed::Method p_methods[]; \
     static const KJSEmbed::Method p_statics[]; \
     static const KJSEmbed::Enumerator p_enums[]; \
@@ -93,6 +111,13 @@ class NAME : public BASENAME \
 #define KJSO_SIMPLE_BINDING_CTOR( NAME, TYPE, BASENAME ) \
     NAME::NAME(KJS::ExecState *exec, TYPE * obj) \
         : BASENAME( exec, obj ) \
+    { \
+      StaticBinding::publish( exec, this, NAME::methods() ); \
+    }
+
+#define KJSV_SIMPLE_BINDING_CTOR( NAME, JSNAME, TYPE, BASENAME )        \
+    NAME::NAME(KJS::ExecState *exec, const TYPE & value) \
+      : BASENAME( exec, #JSNAME , value )                    \
     { \
       StaticBinding::publish( exec, this, NAME::methods() ); \
     }
@@ -160,7 +185,6 @@ KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
 
 #define KJSO_END_BIND \
 }
-         
 
 #define KJSO_QOBJECT_START_BIND( NAME, TYPE )\
 KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
@@ -187,6 +211,27 @@ KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
         if (! object ) \
             return 0; \
         return new NAME(exec, object); \
+}
+
+#define KJSO_VALUE_START_BIND( NAME, TYPE )\
+KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
+{\
+        Q_UNUSED(exec);\
+        TYPE* object = pointer_cast<TYPE>(&ptrObj); \
+        if (! object ) \
+            return 0; \
+
+#define KJSO_VALUE_END_BIND \
+}
+
+#define KJSO_VALUE_BIND( NAME, TYPE )\
+KJS::JSObject *NAME::bindMethod( KJS::ExecState *exec, PointerBase& ptrObj )\
+{\
+        Q_UNUSED(exec);\
+        TYPE* object = pointer_cast<TYPE>(&ptrObj); \
+        if (! object ) \
+            return 0; \
+        return new NAME(exec, *object); \
 }
 
 namespace KJS
