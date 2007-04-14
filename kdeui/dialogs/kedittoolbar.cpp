@@ -415,7 +415,7 @@ void KEditToolBar::init()
 
     setDefaultToolBar( QString() );
 
-    setCaption(i18n("Configure ToolBars"));
+    setCaption(i18n("Configure Toolbars"));
     setButtons(Default|Ok|Apply|Cancel);
     setDefaultButton(Ok);
 
