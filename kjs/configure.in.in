@@ -1,18 +1,44 @@
 dnl KDE JavaScript specific configure tests
 
 AC_CHECK_HEADERS(ieeefp.h float.h)
-AC_CHECK_LIB(m, isinf, [
-  AC_DEFINE_UNQUOTED(HAVE_FUNC_ISINF, 1, [Define if you have isinf])
-])
 AC_CHECK_LIB(m, finite, [
   AC_DEFINE_UNQUOTED(HAVE_FUNC_FINITE, 1, [Define if you have finite])
 ])
 AC_CHECK_LIB(m, _finite, [
   AC_DEFINE_UNQUOTED(HAVE_FUNC__FINITE, 1, [Define if you have _finite])
 ])
-AC_CHECK_LIB(m, isnan, [
-  AC_DEFINE_UNQUOTED(HAVE_FUNC_ISNAN, 1, [Define if you have isnan])
+
+dnl The C99 standard says that isinf and isnan are macros, but they might
+dnl be functions on some platforms.
+AC_DEFUN([AC_CHECK_ISNAN],
+[
+    ac_save_libs="$LIBS"
+    LIBS="-lm"
+    AC_MSG_CHECKING([for isnan with <math.h>])
+    AC_TRY_LINK(
+	[#include <math.h>], [float f = 0.0; isnan(f)],
+	[AC_MSG_RESULT(yes)
+	    AC_DEFINE([HAVE_FUNC_ISNAN], [1], [Define if you have isnan])],
+	AC_MSG_RESULT(no)
+    )
+    LIBS="$ac_save_libs"
 ])
+AC_DEFUN([AC_CHECK_ISINF],
+[
+    ac_save_libs="$LIBS"
+    LIBS="-lm"
+    AC_MSG_CHECKING([for isinf with <math.h>])
+    AC_TRY_LINK(
+	[#include <math.h>], [float f = 0.0; isinf(f)],
+	[AC_MSG_RESULT(yes)
+	    AC_DEFINE([HAVE_FUNC_ISINF], [1], [Define if you have isinf])],
+	AC_MSG_RESULT(no)
+    )
+    LIBS="$ac_save_libs"
+])
+
+AC_CHECK_ISNAN
+AC_CHECK_ISINF
 
 AC_DEFUN([AC_CHECK_PCREPOSIX],
 [
