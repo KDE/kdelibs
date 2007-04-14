@@ -574,7 +574,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
   if (!m_bufPOST.isEmpty())
   {
     m_bufPOST.resize(0);
-    kDebug(7113) << "(" << m_pid << ") HTTP::retreiveHeader: Cleared POST "
+    kDebug(7113) << "(" << m_pid << ") HTTP::retrieveHeader: Cleared POST "
                      "buffer..." << endl;
   }
 
@@ -4449,7 +4449,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
   if (!m_bufPOST.isEmpty())
   {
     m_bufPOST.resize(0);
-    kDebug(7113) << "(" << m_pid << ") HTTP::retreiveHeader: Cleared POST "
+    kDebug(7113) << "(" << m_pid << ") HTTP::error: Cleared POST "
                      "buffer..." << endl;
   }
 
