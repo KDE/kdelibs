@@ -43,7 +43,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QItemDelegate::paint(painter, option, index);
 
-	kDebug(300) << k_funcinfo << prstring << endl;
+// 	kDebug(300) << k_funcinfo << prstring << endl;
 
 	QRect rect=option.rect;
 
@@ -198,9 +198,5 @@ void KNotifyEventListItem::update()
 	setIcon(5 , actions.contains("Taskbar") ? QIcon(ptaskbar) : QIcon() );
 	setIcon(6 , actions.contains("Logfile") ? QIcon(plogfile) : QIcon() );*/
 }
-
-
-
-
 
 #include "knotifyeventlist.moc"

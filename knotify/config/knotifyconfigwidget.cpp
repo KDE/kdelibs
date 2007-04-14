@@ -37,6 +37,7 @@ KNotifyConfigWidget::KNotifyConfigWidget( QWidget * parent )
 {
 	d->currentElement=0l;
 	d->eventList=new KNotifyEventList( this );
+	d->eventList->setFocus();
 	d->actionsconfig=new KNotifyConfigActionsWidget(this);
 	d->actionsconfig->setEnabled(false);
 	connect(d->eventList , SIGNAL(eventSelected( KNotifyConfigElement* )) , 
@@ -90,6 +91,7 @@ void KNotifyConfigWidget::save( )
 KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QString & appname )
 {
 	KDialog *dialog=new KDialog(parent);
+	dialog->setCaption(i18n("Configure Notifications"));
 	KNotifyConfigWidget *w=new KNotifyConfigWidget(dialog);
 	dialog->setMainWidget(w);
 	

@@ -24,7 +24,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	: QWidget(parent)
 {
 	m_ui.setupUi(this);
-	m_ui.Sound_play->setIcon( QIcon( SmallIcon("play")));
+	m_ui.Sound_play->setIcon(KIcon("media-playback-start"));
 	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Sound_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Popup_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
