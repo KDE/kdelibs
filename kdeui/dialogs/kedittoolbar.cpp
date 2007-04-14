@@ -1019,8 +1019,8 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
         // we have a match!
         ToolBarItem *act = new ToolBarItem(m_activeList, it.tagName(), action->objectName(), action->toolTip());
         act->setText(1, action->text().remove(QChar('&')));
-        if (!action->icon().isNull())
-          act->setIcon(0, action->icon());
+        act->setIcon(0, !action->icon().isNull() ? action->icon() : KIcon());
+        act->setIcon(1, KIcon());
 
         active_list.insert(action->objectName(), true);
         break;
@@ -1037,8 +1037,8 @@ void KEditToolBarWidgetPrivate::loadActionList(QDomElement& elem)
 
     ToolBarItem *act = new ToolBarItem(m_inactiveList, tagActionList, action->objectName(), action->toolTip());
     act->setText(1, action->text().remove(QChar('&')));
-    if (!action->icon().isNull())
-      act->setIcon(0, action->icon());
+    act->setIcon(0, !action->icon().isNull() ? action->icon() : KIcon());
+    act->setIcon(1, KIcon());
   }
 
   m_inactiveList->sortItems(1, Qt::AscendingOrder);
