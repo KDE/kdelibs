@@ -2,6 +2,7 @@
 Name=psnup
 Name[sv]=Psnup
 Name[te]=పిఏస్ నుప్
+Name[th]=อินเดีย
 Require=exec:/psnup
 Comment=Multiple Pages per Sheet Filter
 Comment[af]=Veelvuldige Bladsye per blaai Filter
@@ -69,6 +70,7 @@ Comment[sv]=Filter för flera sidor per blad
 Comment[ta]=ஒரு பக்க வடிகட்டிக்கான பல பக்கங்கள்
 Comment[te]=పత్ర గలని కి పలు పుటలు చొప్పున
 Comment[tg]=Чопи якчанд саҳифа дар варақа
+Comment[th]=ตัวกรองการพิมพ์หลายหน้าต่อหน้ากระดาษ
 Comment[tr]=Her Kağıda Birden Çok Sayfa Süzgeci
 Comment[tt]=Qäğäz Bitendä berniçä Basma Bite
 Comment[uk]=Фільтр укладання декількох сторінок на аркуш
