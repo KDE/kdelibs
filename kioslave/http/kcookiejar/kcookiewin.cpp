@@ -37,28 +37,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 
-#include <QButtonGroup>
 #include <QtGui/QLabel>
-#include <QtGui/QImage>
 #include <QtGui/QLayout>
 #include <QtGui/QGroupBox>
 #include <QtCore/QDate>
-#include <QtGui/QMessageBox>
 #include <QtGui/QPushButton>
 #include <QtGui/QRadioButton>
 #include <QtGui/QShortcut>
 
-#ifndef QT_NO_TOOLTIP
-#include <qtooltip.h>
-#endif
-
-#ifndef QT_NO_WHATSTHIS
-#endif
-
 #include <kwm.h>
 #include <klocale.h>
 #include <kglobal.h>
-#include <kurllabel.h>
 #include <klineedit.h>
 #include <kiconloader.h>
 #include <kapplication.h>
@@ -79,7 +68,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 	setButtons(User1|User2|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
-    setWindowIcon( SmallIcon("cookie") );
+    setWindowIcon( KIcon("cookie") );
     // all cookies in the list should have the same window at this time, so let's take the first
 # ifdef Q_WS_X11
     if( cookieList.first()->windowIds().count() > 0 )
@@ -100,10 +89,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // Cookie image and message to user
     KHBox* hBox = new KHBox( vBox1 );
     QLabel* icon = new QLabel( hBox );
-    icon->setPixmap( QMessageBox::standardIcon(QMessageBox::Warning) );
+    icon->setPixmap(KIcon("dialog-warning").pixmap(IconSize(K3Icon::Desktop)));
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
-   
+
     int count = cookieList.count();
 
     KVBox* vBox = new KVBox( hBox );
