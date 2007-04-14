@@ -27,7 +27,7 @@
 #include "avahi_serviceresolver_interface.h"
 #include "avahi-remoteservice_p.h"
 
-Q_DECLARE_METATYPE(QList<QByteArray>);
+Q_DECLARE_METATYPE(QList<QByteArray>)
 
 namespace DNSSD
 {
