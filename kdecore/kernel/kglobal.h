@@ -27,8 +27,6 @@ class KConfig;
 class KLocale;
 class KStandardDirs;
 class KStaticDeleterBase;
-class KStaticDeleterList;
-class KStringDict;
 class QString;
 class KSharedConfigPtr;
 
