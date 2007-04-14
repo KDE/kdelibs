@@ -10,10 +10,16 @@ check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
 check_include_files(ieeefp.h      HAVE_IEEEFP_H)
 check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)
 check_include_files(valgrind/memcheck.h   HAVE_MEMCHECK_H)
+
+MACRO_PUSH_REQUIRED_VARS()
+if(NOT WIN32)
+    set(CMAKE_REQUIRED_LIBRARIES "-lm")
+endif(NOT WIN32)
 check_function_exists(_finite    HAVE_FUNC__FINITE)
 check_function_exists(finite     HAVE_FUNC_FINITE)
-check_function_exists(isinf      HAVE_FUNC_ISINF)
-check_function_exists(isnan      HAVE_FUNC_ISNAN)
+check_symbol_exists(isnan   "math.h" HAVE_FUNC_ISNAN)
+check_symbol_exists(isinf   "math.h" HAVE_FUNC_ISINF)
+MACRO_POP_REQUIRED_VARS()
 
 
 
