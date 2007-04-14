@@ -25,7 +25,7 @@
 #include "avahi-servicebrowser_p.h"
 #include <QHash>
 
-Q_DECLARE_METATYPE(QList<QByteArray>);
+Q_DECLARE_METATYPE(QList<QByteArray>)
 
 namespace DNSSD
 {
