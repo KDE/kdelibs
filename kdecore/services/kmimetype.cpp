@@ -454,6 +454,7 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
 {
     const KMimeType::Ptr mt = findByUrl( _url, mode, _url.isLocalFile(),
                                          false /*HACK*/);
+    assert( mt );
     static const QString& unknown = KGlobal::staticQString("unknown");
     const QString mimeTypeIcon = mt->iconName( _url );
     QString i = mimeTypeIcon;
