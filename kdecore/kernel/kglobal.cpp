@@ -48,17 +48,8 @@
 #define MYASSERT(x) /* nope */
 #endif
 
-class KStringDict : public QSet<QString>
-{
-    public:
-        KStringDict() { }
-};
-
-class KStaticDeleterList : public QList<KStaticDeleterBase*>
-{
-    public:
-        KStaticDeleterList() { }
-};
+typedef QSet<QString> KStringDict;
+typedef QList<KStaticDeleterBase *> KStaticDeleterList;
 
 class KGlobalPrivate
 {
