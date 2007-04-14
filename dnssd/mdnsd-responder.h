@@ -23,12 +23,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QSocketNotifier>
-#include <config-dnssd.h>
-#ifdef HAVE_DNSSD
 #include <dns_sd.h>
-#else
-#define DNSServiceRef void*
-#endif
 
 namespace DNSSD
 {

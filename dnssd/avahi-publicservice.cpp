@@ -18,7 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "config.h"
 #include <QtCore/QCoreApplication>
 #include <QStringList>
 
@@ -179,16 +178,16 @@ void PublicServicePrivate::serverStateChanged(int s,const QString&)
 {
     if (!m_running) return;
     switch (s) {
-	case AVAHI_CLIENT_FAILURE:
+	case AVAHI_SERVER_INVALID:
 	    m_parent->stop();
 	    emit m_parent->published(false);
 	    break;
-	case AVAHI_CLIENT_S_REGISTERING:
-	case AVAHI_CLIENT_S_COLLISION:
+	case AVAHI_SERVER_REGISTERING:
+	case AVAHI_SERVER_COLLISION:
 	    m_group->Reset();
 	    m_collision=true;
 	    break;
-	case AVAHI_CLIENT_S_RUNNING:
+	case AVAHI_SERVER_RUNNING:
 	    if (m_collision) {
 		m_collision=false;
 		tryApply();
@@ -206,7 +205,7 @@ void PublicService::publishAsync()
 	    connect(d->m_server,SIGNAL(StateChanged(int,const QString&)),d,SLOT(serverStateChanged(int,const QString&)));
 	}
 	
-	int state=AVAHI_CLIENT_FAILURE;
+	int state=AVAHI_SERVER_INVALID;
 	QDBusReply<int> rep=d->m_server->GetState();
 	
 	if (rep.isValid()) state=rep.value();
@@ -223,7 +222,7 @@ void PublicServicePrivate::groupStateChanged(int s,  const QString& reason)
     case AVAHI_ENTRY_GROUP_COLLISION: {
 	    QDBusReply<QString> rep=m_server->GetAlternativeServiceName(m_serviceName);
 	    if (rep.isValid())  m_parent->setServiceName(rep.value());
-	    else serverStateChanged(AVAHI_CLIENT_FAILURE, reason);
+	    else serverStateChanged(AVAHI_SERVER_INVALID, reason);
 	    break;
 	    }
     case AVAHI_ENTRY_GROUP_ESTABLISHED:
@@ -231,7 +230,7 @@ void PublicServicePrivate::groupStateChanged(int s,  const QString& reason)
 	    emit m_parent->published(true);
 	    break;
     case AVAHI_ENTRY_GROUP_FAILURE:
-	    serverStateChanged(AVAHI_CLIENT_FAILURE, reason);
+	    serverStateChanged(AVAHI_SERVER_INVALID, reason);
     default: 
 	break;
     }

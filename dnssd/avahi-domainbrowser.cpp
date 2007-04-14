@@ -23,14 +23,12 @@
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
 #include <kstandarddirs.h>
+#include <avahi-common/defs.h>
 #include <stdlib.h>
 #include "avahi_server_interface.h"
 #include "domainbrowser.h"
 #include "avahi_domainbrowser_interface.h"
 #include "avahi-domainbrowser_p.h"
-
-#define AVAHI_DOMAIN_BROWSER_BROWSE 0            /**< Browse for a list of available browsing domains */
-#define AVAHI_DOMAIN_BROWSER_REGISTER 2          /**< Browse for a list of available registering domains */
 
 Q_DECLARE_METATYPE(QList<QByteArray>);
 

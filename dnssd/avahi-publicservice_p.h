@@ -23,22 +23,12 @@
 
 #include <QtCore/QObject>
 #include "servicebase_p.h"
+#include <avahi-common/defs.h>
 
 #define K_D PublicServicePrivate* d=static_cast<PublicServicePrivate*>(dptr)
 
 namespace DNSSD
 {
-
-#define AVAHI_ENTRY_GROUP_UNCOMMITED 0
-#define AVAHI_ENTRY_GROUP_REGISTERING 1
-#define AVAHI_ENTRY_GROUP_ESTABLISHED 2
-#define AVAHI_ENTRY_GROUP_COLLISION 3
-#define AVAHI_ENTRY_GROUP_FAILURE 4
-
-#define AVAHI_CLIENT_S_REGISTERING 1
-#define AVAHI_CLIENT_S_RUNNING 2
-#define AVAHI_CLIENT_S_COLLISION 3
-#define AVAHI_CLIENT_FAILURE 100
 
 class PublicServicePrivate : public QObject, public ServiceBasePrivate
 {

@@ -1,14 +1,13 @@
-
 project(dnssd)
-macro_optional_find_package(DNSSD)
-macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
+macro_optional_find_package(Avahi)
+macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 set(kdnssd_LIB_SRCS    servicebase.cpp )
 kde4_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc )
 
 if (HAVE_AVAHI) 
+  include_directories( ${AVAHI_INCLUDE_DIR} )
   set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
    avahi-domainbrowser.cpp
    avahi-servicebrowser.cpp
@@ -23,6 +22,9 @@ if (HAVE_AVAHI)
    qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceBrowser.xml avahi_servicebrowser_interface )
    qt4_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceTypeBrowser.xml avahi_servicetypebrowser_interface )
 else (HAVE_AVAHI)
+
+macro_optional_find_package(DNSSD)
+macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
     
 if (HAVE_DNSSD)
   include_directories( ${DNSSD_INCLUDE_DIR} )
