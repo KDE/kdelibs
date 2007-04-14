@@ -418,7 +418,7 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
 	this->allowLetterShortcuts = (allowLetterShortcuts == KShortcutsEditor::LetterShortcutsAllowed);
 
 	ui.setupUi(q);
-	//ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
+	ui.searchFilter->searchLine()->setTreeWidget(ui.list); // Plug into search line
 	ui.list->header()->setStretchLastSection(false);
 	ui.list->header()->hideSection(GlobalAlternate);  //undesirable for user friendlyness...
 	if (!(actionTypes & KShortcutsEditor::GlobalAction)) {
@@ -491,7 +491,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 		return;
 
 	if (!capture.isEmpty()) {
-		unsigned int i;
+		unsigned int i = 0;
 
 		//refuse to assign a global shortcut occupied by a standard shortcut
 		if (column == GlobalPrimary || column == GlobalAlternate) {
@@ -504,7 +504,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 
 		//find conflicting shortcuts in this application
         bool conflict = false;
-		KShortcutsEditorItem *otherItem;
+		KShortcutsEditorItem *otherItem = 0;
 		for (QTreeWidgetItemIterator it(ui.list); (*it) && !conflict; ++it) {
 			if ((*it)->childCount())
 				continue;
@@ -675,6 +675,7 @@ bool KShortcutsEditorPrivate::stealRockerGesture(KShortcutsEditorItem *item, con
 //slot
 void KShortcutsEditorPrivate::globalSettingsChangedSystemwide(int which)
 {
+	Q_UNUSED(which)
 	KGlobalAccel::self()->readSettings();
 	//TODO:do something about it, too?
 }
@@ -773,6 +774,8 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 	case Qt::DecorationRole:
 		if (column == Name)
 			return m_action->icon();
+		else
+			return KIcon();
 		break;
 	case Qt::WhatsThisRole:
 		return m_action->whatsThis();

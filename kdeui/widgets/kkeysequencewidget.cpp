@@ -40,6 +40,7 @@
 
 #include <kdebug.h>
 #include <kglobalaccel.h>
+#include <kicon.h>
 #include <klocale.h>
 
 #include "kkeysequencewidget_p.h"
@@ -131,16 +132,16 @@ void KKeySequenceWidgetPrivate::init()
 
 	keyButton = new KKeySequenceButton(this, q);
 	keyButton->setFocusPolicy(Qt::StrongFocus);
-	keyButton->setIcon(SmallIcon("configure.png"));
+	keyButton->setIcon(KIcon("configure"));
 	layout->addWidget(keyButton);
 
 	clearButton = new QToolButton(q);
 	layout->addWidget(clearButton);
 
 	if (qApp->isLeftToRight())
-		clearButton->setIcon(SmallIcon("clear-left.png"));
+		clearButton->setIcon(KIcon("clear-left"));
 	else
-		clearButton->setIcon(SmallIcon("locationbar-erase.png"));
+		clearButton->setIcon(KIcon("locationbar-erase"));
 }
 
 
