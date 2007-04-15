@@ -232,8 +232,10 @@ int main(int argc, char *argv[])
    QString arg2;
    QString result;
 
-   lastYear = new QString(QString("Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()-1));
-   nextYear = new QString(QString(" expires=Fri, 04-May-%1 01:00:00 GMT").arg(QDate::currentDate().year()+1));
+   KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
+
+   lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
+   nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
 
    KAboutData about("kcookietest", "kcookietest", "1.0", description, KAboutData::License_GPL, "(C) 2004 Waldo Bastian");
    KCmdLineArgs::init( argc, argv, &about);
