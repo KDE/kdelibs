@@ -21,15 +21,14 @@
 #ifndef _KTOOLINVOCATION_H
 #define _KTOOLINVOCATION_H
 
-#include "kdeversion.h" // TODO remove
 #include <kdecore_export.h>
 
-#include "kurl.h" // TODO replace with class KUrl;
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
 
 class OrgKdeKLauncherInterface;
+class KUrl;
 
 /**
  * KToolInvocation: for starting other programs
