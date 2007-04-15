@@ -58,6 +58,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
+#include <QtCore/QTextStream>
 
 #include <kurl.h>
 #include <kdatetime.h>
@@ -1258,15 +1259,15 @@ bool KCookieJar::saveCookies(const QString &_filename)
        return false;
     saveFile.setPermissions(QFile::ReadUser|QFile::WriteUser);
 
-    FILE *fStream = saveFile.fstream();
+    QTextStream ts(&saveFile);
 
     time_t curTime = time(0);
 
-    fprintf(fStream, "# KDE Cookie File v2\n#\n");
+    ts << "# KDE Cookie File v2\n#\n";
 
-    fprintf(fStream, "%-20s %-20s %-12s %-10s %-4s %-20s %-4s %s\n",
-                     "# Host", "Domain", "Path", "Exp.date", "Prot",
-                     "Name", "Sec", "Value");
+    ts << "%-20s %-20s %-12s %-10s %-4s %-20s %-4s %s\n",
+          "# Host", "Domain", "Path", "Exp.date", "Prot",
+          "Name", "Sec", "Value";
 
     for ( QStringList::Iterator it=m_domainList.begin(); it != m_domainList.end();
           it++ )
@@ -1291,7 +1292,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 if (!domainPrinted)
                 {
                     domainPrinted = true;
-                    fprintf(fStream, "[%s]\n", domain.toLocal8Bit().data());
+                    ts << '[' << domain.toLocal8Bit().data() << "]\n";
                 }
                 // Store persistent cookies
                 QString path = L1("\"");
@@ -1300,7 +1301,9 @@ bool KCookieJar::saveCookies(const QString &_filename)
                 QString domain = L1("\"");
                 domain += cookie->domain();
                 domain += '"';
-                fprintf(fStream, "%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
+                // TODO: replace with direct QTextStream output ?
+                QString s;
+                s.sprintf("%-20s %-20s %-12s %10lu  %3d %-20s %-4i %s\n",
                         cookie->host().toLatin1().constData(), domain.toLatin1().constData(),
                         path.toLatin1().constData(), (unsigned long) cookie->expireDate(),
                         cookie->protocolVersion(),
@@ -1308,6 +1311,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
                         (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0) +
                         (cookie->hasExplicitPath() ? 4 : 0) + (cookie->name().isEmpty() ? 8 : 0),
                         cookie->value().toLatin1().constData());
+                ts << s.toLatin1().constData();
                 cookie = cookieList->prev();
             }
             else
