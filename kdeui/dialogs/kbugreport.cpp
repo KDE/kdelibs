@@ -44,6 +44,7 @@
 #include <kurllabel.h>
 
 #include "kbugreport.h"
+#include "kdeversion.h"
 
 #include <stdio.h>
 #include <pwd.h>
