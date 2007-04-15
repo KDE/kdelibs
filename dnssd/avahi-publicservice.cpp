@@ -31,7 +31,7 @@
 #include "avahi_entrygroup_interface.h"
 #include "avahi-publicservice_p.h"
 
-Q_DECLARE_METATYPE(QList<QByteArray>);
+Q_DECLARE_METATYPE(QList<QByteArray>)
 
 
 namespace DNSSD

@@ -13,7 +13,7 @@
 #include "servicebase.h"
 #include <QtCore/QUrl>
 
-Q_DECLARE_METATYPE(QList<QByteArray>);
+Q_DECLARE_METATYPE(QList<QByteArray>)
 
 /*
  * Implementation of interface class OrgFreedesktopAvahiServerInterface

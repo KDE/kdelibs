@@ -27,7 +27,7 @@
 
 #define UNSPEC -1
 
-Q_DECLARE_METATYPE(QList<QByteArray>);
+Q_DECLARE_METATYPE(QList<QByteArray>)
 
 namespace DNSSD
 {

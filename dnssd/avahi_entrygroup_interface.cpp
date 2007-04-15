@@ -10,7 +10,7 @@
  */
 
 #include "avahi_entrygroup_interface.h"
-Q_DECLARE_METATYPE(QList<QByteArray>);
+Q_DECLARE_METATYPE(QList<QByteArray>)
 
 /*
  * Implementation of interface class OrgFreedesktopAvahiEntryGroupInterface
