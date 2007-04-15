@@ -184,12 +184,6 @@ void KGlobalAccelImpl::x11MappingNotify()
 
 bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 {
-	// do not change this line unless you really really know what you are doing (Matthias)
-	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() ) {
-		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
-		XFlush( QX11Info::display()); // avoid X(?) bug
-	}
-
 	uchar keyCodeX = pEvent->xkey.keycode;
 	uint keyModX = pEvent->xkey.state & (g_keyModMaskXAccel | KKeyServer::MODE_SWITCH);
 
@@ -229,6 +223,13 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	int keyQt = keyCodeQt | keyModQt;
 	
 	kDebug(125) << k_funcinfo << "Qt " << keyQt << " [Key: " << keyCodeQt << " Mod: " << keyModQt << "] X [Key: " << keySymX << " Mod: " << keyModX << "]" << endl;
+
+
+	// Keyboard needs to be ungrabed after XGrabKey() activates the grab, but only in such case.
+	if( m_owner->isHandled(keyQt) && !QWidget::keyboardGrabber() && !QApplication::activePopupWidget()) {
+		XUngrabKeyboard( QX11Info::display(), pEvent->xkey.time );
+		XFlush( QX11Info::display()); // avoid X(?) bug
+	}
 
 	// All that work for this hey... argh...
 	if (m_owner->keyPressed(keyQt))

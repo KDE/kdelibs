@@ -159,6 +159,10 @@ private:
 	/// Returns whether it was consumed
 	bool keyPressed(int key);
 
+        /// Returns true if the key will be consumed (i.e. like keyPressed()
+        /// without actually processing the key)        
+        bool isHandled( int key );
+
 	/// Something necessitates a repeat grabKey() for each key
 	void regrabKeys();
 

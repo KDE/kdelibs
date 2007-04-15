@@ -274,6 +274,11 @@ bool KGlobalAccel::keyPressed( int key )
 	return consumed;
 }
 
+bool KGlobalAccel::isHandled( int key )
+{
+	return !d->grabbedKeys.values(key).isEmpty();
+}
+
 void KGlobalAccel::regrabKeys( )
 {
 	QMutableMapIterator<int, KAction*> it2 = d->grabbedKeys;
