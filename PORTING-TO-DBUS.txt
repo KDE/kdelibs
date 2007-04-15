@@ -1,2 +1,0 @@
-Help with porting from DCOP to D-Bus can be found at
-http://techbase.kde.org/Development/Tutorials/Porting_to_D-Bus
