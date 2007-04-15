@@ -38,7 +38,10 @@
  */
 class KReplaceDialog::KReplaceDialogPrivate {
   public:
-    KReplaceDialogPrivate() : initialShowDone(false) {}
+    KReplaceDialogPrivate()
+    : initialShowDone(false)
+    , replaceExtension (0)
+    {}
 
     QStringList replaceStrings;
     bool initialShowDone;
