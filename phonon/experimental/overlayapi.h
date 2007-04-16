@@ -23,6 +23,8 @@
 #include <QObject>
 #include "export.h"
 
+class QImage;
+
 namespace Phonon
 {
 class VideoWidget;
@@ -78,6 +80,15 @@ class PHONONEXPERIMENTAL_EXPORT OverlayApi : public QObject
          * @return whether the creation was successful
          */
         bool createOverlay(QWidget *widget, OverlayType type);
+
+        /**
+         * Sets an image which is alpha-blended (scaled) over the video. This
+         * function doesn't do anything if you don't have an opaque overlay.
+         * It's useful to provide e.g. a shadow box behind the text (the text
+         * would be provided as the opaque overlay as scaling it makes it
+         * appearing quite ugly).
+         */
+        void setBackgroundForOpaqueOverlay(const QImage &image);
 
     protected:
         OverlayApiPrivate *const d_ptr;

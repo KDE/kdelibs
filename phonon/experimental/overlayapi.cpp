@@ -69,6 +69,11 @@ bool OverlayApi::createOverlay(QWidget *widget, OverlayType type)
     return false;
 }
 
+void OverlayApi::setBackgroundForOpaqueOverlay(const QImage & /* image */)
+{
+	// FIXME: implement
+}
+
 } // namespace Experimental
 } // namespace Phonon
 
