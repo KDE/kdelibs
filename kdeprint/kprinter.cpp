@@ -1011,7 +1011,7 @@ QString KPrinter::printerSelectionOption() const
 void KPrinter::setPrinterSelectionOption(const QString&)
 {}
 
-const QMap<QString,QString>& KPrinter::options() const
+QMap<QString,QString> KPrinter::options() const
 { return d->m_options; }
 
 QString KPrinter::searchName() const

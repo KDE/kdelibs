@@ -655,7 +655,7 @@ public:
 	 * Returns the complete set of print options from the KPrinter object. For internal use.
 	 * @returns the option set as a QMap object
 	 */
-	const QMap<QString,QString>& options() const;
+	QMap<QString,QString> options() const;
 	/**
 	 * Sets the option set in one operation. This method has some side effects like merging
 	 * the internal map with the one given in argument, but only for option in the form
