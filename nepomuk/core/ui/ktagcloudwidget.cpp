@@ -21,8 +21,8 @@
 
 #include <KUrlLabel>
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
 
 
 class KTagCloudWidget::Private
