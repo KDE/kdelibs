@@ -417,28 +417,6 @@ public:
      */
     void saveMainWindowSettings(const KConfigGroup &config);
 
-
-    /**
-     * Sets whether KMainWindow should provide a menu that allows showing/hiding
-     * of the statusbar ( using KToggleStatusBarAction ).
-     *
-     * The menu / menu item is implemented using xmlgui. It will be inserted
-     * in your menu structure in the 'Settings' menu.
-     *
-     * Note that you should enable this feature before calling createGUI()
-     * ( or similar ).
-     *
-     * If an application maintains the action on its own (i.e. never calls
-     * this function) a connection needs to be made to let KMainWindow
-     * know when that status (hidden/shown) of the statusbar has changed.
-     * For example:
-     * connect(action, SIGNAL(activated()),
-     *         kmainwindow, SLOT(setSettingsDirty()));
-     * Otherwise the status (hidden/show) of the statusbar might not be saved
-     * by KMainWindow.
-     */
-    void createStandardStatusBarAction();
-
     /**
      * @return true if a -geometry argument was given on the command line,
      * and this is the first window created (the one on which this option applies)
