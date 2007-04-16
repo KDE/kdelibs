@@ -28,7 +28,6 @@ class KSaveFileTest : public QObject
 
 private Q_SLOTS:
 
-    void test_fstream();
     void test_ksavefile();
     void test_numberedBackupFile();
     void test_rcsBackupFile();

@@ -381,20 +381,4 @@ void KSaveFileTest::cleanupTestCase()
     }
 }
 
-void KSaveFileTest::test_fstream()
-{
-// completly broken since Qt 4.3
-#ifndef Q_OS_WIN
-    // test to check portability
-    // remove this test together with KSaveFile::fstream
-    QString path=QDir::homePath();
-    path = path + QLatin1String("/test_KSaveFileTest_fstream.tmp");
-    KSaveFile sf(path);
-    FILE* fs = sf.fstream();
-    sf.finalize();
-    filesToRemove << path;
-#endif
-}
-
-
 #include "ksavefiletest.moc"
