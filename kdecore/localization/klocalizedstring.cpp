@@ -107,7 +107,7 @@ class KLocalizedStringPrivateStatics
         ktrs(NULL)
     {}
 };
-K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP);
+K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
 
 KLocalizedString::KLocalizedString ()
 : d(new KLocalizedStringPrivate)
