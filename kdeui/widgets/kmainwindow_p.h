@@ -43,8 +43,11 @@ public:
     QTimer* settingsTimer;
     QRect defaultWindowSize;
     KHelpMenu *helpMenu;
+    KMainWindow *q;
 
-    void init(KMainWindow *q);
+    void _k_shuttingDown();
+
+    void init(KMainWindow *_q);
     void polish(KMainWindow *q);
 };
 

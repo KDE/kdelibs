@@ -181,8 +181,10 @@ KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f)
     k_ptr->init(this);
 }
 
-void KMainWindowPrivate::init(KMainWindow *q)
+void KMainWindowPrivate::init(KMainWindow *_q)
 {
+    q = _q;
+
     q->setAttribute( Qt::WA_DeleteOnClose );
 
     KWhatsThisManager::init ();
@@ -196,7 +198,7 @@ void KMainWindowPrivate::init(KMainWindow *q)
 #endif
 
     //actionCollection()->setWidget( this );
-    QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(shuttingDown()));
+    QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(_k_shuttingDown()));
 
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManager());
@@ -467,7 +469,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
             if ( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown ) { // Yes, Quit app?
                 // don't call queryExit() twice
-                disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
+                disconnect(qApp, SIGNAL(aboutToQuit()), this, SLOT(_k_shuttingDown()));
                 d->shuttingDown = true;
                 KGlobal::deref();             // ...done with this window, the process will quit (unless it's doing something else)
             }  else {
@@ -917,7 +919,7 @@ KStatusBar *KMainWindow::statusBar()
     return sb;
 }
 
-void KMainWindow::shuttingDown()
+void KMainWindowPrivate::_k_shuttingDown()
 {
     // Needed for Qt <= 3.0.3 at least to prevent reentrancy
     // when queryExit() shows a dialog. Check before removing!
@@ -926,10 +928,9 @@ void KMainWindow::shuttingDown()
     {
        reentrancy_protection = true;
        // call the virtual queryExit
-       queryExit();
+       q->queryExit();
        reentrancy_protection = false;
     }
-
 }
 
 KToolBar *KMainWindow::toolBar( const QString& name )

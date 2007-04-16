@@ -716,16 +716,12 @@ protected Q_SLOTS:
     */
     void saveAutoSaveSettings();
 
-private Q_SLOTS:
-   /**
-    * Called when the app is shutting down.
-    */
-    void shuttingDown();
-
 protected:
     KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f);
 
     KMainWindowPrivate *k_ptr;
+private:
+    Q_PRIVATE_SLOT(k_func(), void _k_shuttingDown())
 };
 
 #define RESTORE(type) { int n = 1;\
