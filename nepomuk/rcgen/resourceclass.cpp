@@ -15,8 +15,11 @@
 #include "resourceclass.h"
 #include "resourcetemplate.h"
 
-#include <QFile>
-#include <QTextStream>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtCore/QRegExp>
+#include <QtCore/QDebug>
+#include <QtCore/QStringList>
 
 
 // dummy resource for low level resource inheritance
@@ -137,7 +140,7 @@ QString Property::typeString( bool simple, bool withNamespace ) const
         if( t == "QString" )
             return "QStringList";
         else
-            return "QList<" + t + ">";
+            return "QList<" + t + '>';
     }
     else
         return t;
@@ -193,7 +196,7 @@ QString Property::reversePropertyGetterDeclaration( const ResourceClass* rc, boo
 
 QString Property::setterDefinition( const ResourceClass* rc ) const
 {
-    QString s = setterDeclaration( rc, true ) + "\n";
+    QString s = setterDeclaration( rc, true ) + '\n';
 
     if( hasSimpleType() || typeString( true ) == "Resource" || !list ) {
         s += QString("{\n"
@@ -230,7 +233,7 @@ QString Property::setterDefinition( const ResourceClass* rc ) const
 
 QString Property::getterDefinition( const ResourceClass* rc ) const
 {
-    QString s = getterDeclaration( rc, true ) + "\n";
+    QString s = getterDeclaration( rc, true ) + '\n';
 
     if( hasSimpleType() ) {
         // string lists have to be handled separately
@@ -277,7 +280,7 @@ QString Property::getterDefinition( const ResourceClass* rc ) const
 
 QString Property::adderDefinition( const ResourceClass* rc ) const
 {
-    QString s = adderDeclaration( rc, true ) + "\n";
+    QString s = adderDeclaration( rc, true ) + '\n';
 
     if( hasSimpleType() ) {
         s += QString( "{\n"
@@ -304,7 +307,7 @@ QString Property::adderDefinition( const ResourceClass* rc ) const
 
 QString Property::reversePropertyGetterDefinition( const ResourceClass* rc ) const
 {
-    QString s = reversePropertyGetterDeclaration( rc, true ) + "\n";
+    QString s = reversePropertyGetterDeclaration( rc, true ) + '\n';
 
     s += QString( "{\n"
                   "    return convertResourceList<%2>( ResourceManager::instance()->allResourcesWithProperty( \"%1\", *this ) );\n"

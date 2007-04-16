@@ -18,7 +18,9 @@
 
 #include <soprano/soprano.h>
 
-#include <QtCore>
+#include <QtCore/QMap>
+#include <QtCore/QStringList>
+#include <QtCore/QFile>
 
 
 class OntologyParser::Private

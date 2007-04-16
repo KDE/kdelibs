@@ -96,9 +96,9 @@ public:
 
 
 KRatingWidget::KRatingWidget( QWidget* parent )
-    : QFrame( parent )
+    : QFrame( parent ),
+      d( new Private() )
 {
-    d = new Private;
     setPixmapSize( 16 );
     setMouseTracking( true );
 }

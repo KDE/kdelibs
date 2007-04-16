@@ -19,8 +19,8 @@
 #ifndef KTAGCLOUDWIDGET_H
 #define KTAGCLOUDWIDGET_H
 
-#include <QWidget>
-#include <QMap>
+#include <QtGui/QWidget>
+#include <QtCore/QMap>
 
 #include <kmetadata/kmetadata_export.h>
 
@@ -76,7 +76,7 @@ class KMETADATA_EXPORT KTagCloudWidget : public QWidget
     void buildTagCloud();
 
     class Private;
-    Private* d;
+    Private* const d;
 };
 
 #endif

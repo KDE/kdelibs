@@ -113,7 +113,7 @@ class KMETADATA_EXPORT KRatingWidget : public QFrame
     int posToRating( int pos ) const;
 
     class Private;
-    Private* d;
+    Private* const d;
 };
 
 #endif

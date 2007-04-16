@@ -15,7 +15,9 @@
 #ifndef _NEPOMUK_RESOURCE_CLASS_H_
 #define _NEPOMUK_RESOURCE_CLASS_H_
 
-#include <QtCore>
+#include <QtCore/QString>
+#include <QtCore/QList>
+#include <QtCore/QTextStream>
 
 class ResourceClass;
 

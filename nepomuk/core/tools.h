@@ -15,7 +15,9 @@
 #ifndef _NEPOMUK_KMETADATA_TOOLS_H_
 #define _NEPOMUK_KMETADATA_TOOLS_H_
 
-#include <QtCore>
+#include <QtCore/QString>
+#include <QtCore/QList>
+
 #include <kmetadata/variant.h>
 #include <kmetadata/kmetadata_export.h>
 

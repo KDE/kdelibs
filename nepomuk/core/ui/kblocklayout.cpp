@@ -21,9 +21,10 @@
   Copyright (C) 2004-2006 Trolltech ASA. All rights reserved.
 */
 
-#include <QtGui>
-
 #include "kblocklayout.h"
+
+#include <QtCore/QList>
+
 
 class KBlockLayout::Private
 {
@@ -39,16 +40,16 @@ public:
 
 
 KBlockLayout::KBlockLayout( QWidget* parent, int margin, int spacing )
-    : QLayout(parent)
+    : QLayout(parent),
+      d( new Private() )
 {
-    d = new Private();
     setMargin(margin);
     setSpacing(spacing);
 }
 
 KBlockLayout::KBlockLayout( int spacing )
+    : d( new Private() )
 {
-    d = new Private();
     setSpacing(spacing);
 }
 

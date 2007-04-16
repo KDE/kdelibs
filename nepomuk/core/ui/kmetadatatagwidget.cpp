@@ -63,17 +63,17 @@ public:
 
 
 Nepomuk::KMetaData::TagWidget::TagWidget( const Resource& resource, QWidget* parent )
-    : QWidget( parent )
+    : QWidget( parent ),
+      d( new Private( this ) )
 {
-    d = new Private( this );
     setTaggedResource( resource );
 }
 
 
 Nepomuk::KMetaData::TagWidget::TagWidget( QWidget* parent )
-    : QWidget( parent )
+    : QWidget( parent ),
+      d( new Private( this ) )
 {
-    d = new Private( this );
 }
 
 

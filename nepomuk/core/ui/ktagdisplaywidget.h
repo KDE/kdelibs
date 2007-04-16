@@ -22,7 +22,7 @@
 #ifndef _KTAG_DISPLAY_WIDGET_H_
 #define _KTAG_DISPLAY_WIDGET_H_
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 #include <kmetadata/kmetadata_export.h>
 
@@ -65,7 +65,7 @@ class KMETADATA_EXPORT KTagDisplayWidget : public QWidget
 
  private:
     class Private;
-    Private* d;
+    Private* const d;
 };
 
 #endif

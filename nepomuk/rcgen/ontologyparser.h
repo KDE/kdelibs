@@ -15,7 +15,7 @@
 #ifndef _ONTOLOGY_PARSER_H_
 #define _ONTOLOGY_PARSER_H_
 
-#include <QtCore>
+#include <QtCore/QStringList>
 
 class OntologyParser
 {

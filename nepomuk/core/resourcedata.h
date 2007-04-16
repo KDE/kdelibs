@@ -15,7 +15,10 @@
 #ifndef _NEPOMUK_KMETADATA_RESOURCE_DATA_H_
 #define _NEPOMUK_KMETADATA_RESOURCE_DATA_H_
 
-#include <QtCore>
+#include <QtCore/QString>
+#include <QtCore/QList>
+#include <QtCore/QHash>
+#include <QtCore/QMutex>
 
 #include <kmetadata/variant.h>
 
@@ -31,7 +34,7 @@ namespace Nepomuk {
 		~ResourceData();
 
 		/**
-		 * Used instead of the destructor in Resource. The reason for the existance of
+		 * Used instead of the destructor in Resource. The reason for the existence of
 		 * this method is that the destructor does not remove the uri from the global
 		 * data map. That behaviour is necessary since in certain situations temporary
 		 * ResourceData instances are created.

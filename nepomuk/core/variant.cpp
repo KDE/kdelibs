@@ -20,173 +20,205 @@
 #include <kdebug.h>
 
 
+class Nepomuk::KMetaData::Variant::Private
+{
+};
+
+
 Nepomuk::KMetaData::Variant::Variant()
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::~Variant()
 {
+    delete d;
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const Variant& other )
-    : QVariant( other )
+    : QVariant( other ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( int i )
-    : QVariant( i )
+    : QVariant( i ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( qlonglong i )
-    : QVariant( i )
+    : QVariant( i ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( uint i )
-    : QVariant( i )
+    : QVariant( i ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( qulonglong i )
-    : QVariant( i )
+    : QVariant( i ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( bool b )
-    : QVariant( b )
+    : QVariant( b ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( double d )
-    : QVariant( d )
+    : QVariant( d ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const char* string )
-    : QVariant( string )
+    : QVariant( string ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QString& string )
-    : QVariant( string )
+    : QVariant( string ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QDate& date )
-    : QVariant( date )
+    : QVariant( date ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QTime& time )
-    : QVariant( time )
+    : QVariant( time ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QDateTime& datetime )
-    : QVariant( datetime )
+    : QVariant( datetime ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QUrl& url )
-    : QVariant( url )
+    : QVariant( url ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const Nepomuk::KMetaData::Resource& r )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( r );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<int>& i )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<qlonglong>& i )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<uint>& i )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<qulonglong>& i )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<bool>& b )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( b );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<double>& d )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( d );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QStringList& stringlist )
-    : QVariant( stringlist )
+    : QVariant( stringlist ),
+      d( new Private )
 {
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QDate>& date )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( date );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QTime>& time )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( time );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QDateTime>& datetime )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( datetime );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QUrl>& url )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( url );
 }
@@ -194,7 +226,8 @@ Nepomuk::KMetaData::Variant::Variant( const QList<QUrl>& url )
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<Resource>& r )
-    : QVariant()
+    : QVariant(),
+      d( new Private )
 {
     setValue( r );
 }

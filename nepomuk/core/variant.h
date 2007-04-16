@@ -18,7 +18,7 @@
 #include <kmetadata/kmetadata_export.h>
 #include <kmetadata/resource.h>
 
-#include <QtCore>
+#include <QtCore/QVariant>
 
 namespace Nepomuk {
     namespace KMetaData {
@@ -257,6 +257,10 @@ namespace Nepomuk {
 		 * containing the plain string \a value.
 		 */
 		static Variant fromString( const QString& value, int type );
+
+	    private:
+		class Private;
+		Private* const d;
 	    };
     }
 }

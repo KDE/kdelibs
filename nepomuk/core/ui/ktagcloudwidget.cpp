@@ -76,9 +76,9 @@ public:
 
 
 KTagCloudWidget::KTagCloudWidget( QWidget* parent )
-    : QWidget( parent )
+    : QWidget( parent ),
+      d( new Private() )
 {
-    d = new Private;
     d->mainLay = new KBlockLayout( this );
     d->mainLay->setAlignment( Qt::AlignJustify|Qt::AlignVCenter );
 }

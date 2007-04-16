@@ -34,9 +34,9 @@ public:
 
 
 Nepomuk::KMetaData::TagCloud::TagCloud( QWidget* parent )
-    : KTagCloudWidget( parent )
+    : KTagCloudWidget( parent ),
+      d( new Private() )
 {
-    d = new Private;
     d->updateTimer = new QTimer( this );
     connect( d->updateTimer, SIGNAL(timeout()), this, SLOT(updateTags()) );
     updateTags();

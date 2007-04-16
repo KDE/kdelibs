@@ -24,7 +24,7 @@
 
 #include <kmetadata/kmetadata_export.h>
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 namespace Nepomuk {
     namespace KMetaData {
@@ -90,7 +90,7 @@ namespace Nepomuk {
 
 	    private:
 		class Private;
-		Private* d;
+		Private* const d;
 	    };
     }
 }

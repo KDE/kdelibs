@@ -25,8 +25,8 @@
 #include <kstaticdeleter.h>
 #include <kdebug.h>
 
-#include <QThread>
-#include <QMutex>
+#include <QtCore/QThread>
+#include <QtCore/QMutex>
 
 
 using namespace Nepomuk::Services;
@@ -65,9 +65,9 @@ private:
 
 
 Nepomuk::KMetaData::ResourceManager::ResourceManager()
-    : QObject()
+    : QObject(),
+      d( new Private( this ) )
 {
-    d = new Private( this );
     setAutoSync( true );
     // FIXME: Does D-Bus still not work from different threads or is there a bug in my D-Bus stuff that
     // results in all the QTimer warnings if I run syncAll from the Private thread?
@@ -223,7 +223,7 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
 //   bool success = rr.success();
 
     //
-    // Release all the resource datas.
+    // Release all the resource data instances.
     //
     for( QList<ResourceData*>::iterator it = syncedResources.begin();
          it != syncedResources.end(); ++it ) {

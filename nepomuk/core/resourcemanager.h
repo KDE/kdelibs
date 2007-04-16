@@ -17,7 +17,7 @@
 
 #include <kmetadata/kmetadata_export.h>
 
-#include <QtCore>
+#include <QtCore/QObject>
 
 #include <krandom.h>
 
@@ -195,7 +195,7 @@ namespace Nepomuk {
 		ResourceManager();
 
 		class Private;
-		Private* d;
+		Private* const d;
 	    };
     }
 }

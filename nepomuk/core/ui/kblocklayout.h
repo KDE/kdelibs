@@ -24,9 +24,8 @@
 #ifndef KBLOCKLAYOUT_H
 #define KBLOCKLAYOUT_H
 
-#include <QLayout>
-#include <QRect>
-#include <QWidgetItem>
+#include <QtGui/QLayout>
+#include <QtGui/QWidgetItem>
 
 /**
  * The KBlockLayout arranges widget in rows and columns like a text
@@ -64,7 +63,7 @@ class KBlockLayout : public QLayout
     int doLayout( const QRect& rect, bool testOnly ) const;
 
     class Private;
-    Private* d;
+    Private* const d;
 };
 
 #endif

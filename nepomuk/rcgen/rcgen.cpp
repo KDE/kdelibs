@@ -12,7 +12,11 @@
  * See the file "COPYING" for the exact licensing terms.
  */
 
-#include <QtCore>
+#include <QtCore/QTextStream>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QFile>
+#include <QtCore/QDebug>
+
 #include "resourceclass.h"
 #include "ontologyparser.h"
 

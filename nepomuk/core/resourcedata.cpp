@@ -25,8 +25,6 @@
 
 #include <kdebug.h>
 
-#include <QMutex>
-
 
 using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
@@ -339,7 +337,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                 //   Fallback to the default behaviour of always reusing existing
                 //   data.
                 //
-                // TODO: basicly it is perfectly valid to store both types in the first case
+                // TODO: basically it is perfectly valid to store both types in the first case
                 //
                 const Konto::Class* wantedType = Konto::Class::load( m_type );
                 if ( wantedType && m_type != s_defaultType ) {

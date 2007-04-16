@@ -23,7 +23,7 @@
 
 #include <kurllabel.h>
 
-#include <QHBoxLayout>
+#include <QtGui/QHBoxLayout>
 
 
 class KTagDisplayWidget::Private
@@ -75,9 +75,9 @@ private:
 
 
 KTagDisplayWidget::KTagDisplayWidget( QWidget* parent )
-    : QWidget( parent )
+    : QWidget( parent ),
+      d( new Private( this ) )
 {
-    d = new Private( this );
 }
 
 
