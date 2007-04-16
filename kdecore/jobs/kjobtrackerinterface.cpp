@@ -109,56 +109,70 @@ void KJobTrackerInterface::unregisterJob(KJob *job)
                         this, SLOT(speed(KJob*, unsigned long)));
 }
 
-void KJobTrackerInterface::finished(KJob */*job*/)
+void KJobTrackerInterface::finished(KJob *job)
 {
+    Q_UNUSED(job)
+}
+
+void KJobTrackerInterface::suspended(KJob *job)
+{
+    Q_UNUSED(job)
+}
+
+void KJobTrackerInterface::resumed(KJob *job)
+{
+    Q_UNUSED(job)
+}
+
+void KJobTrackerInterface::description(KJob *job, const QString &title,
+                                       const QPair<QString, QString> &field1,
+                                       const QPair<QString, QString> &field2)
+{
+    Q_UNUSED(job)
+    Q_UNUSED(title)
+    Q_UNUSED(field1)
+    Q_UNUSED(field2)
 
 }
 
-void KJobTrackerInterface::suspended(KJob */*job*/)
+void KJobTrackerInterface::infoMessage(KJob *job, const QString &plain, const QString &rich)
 {
-
+    Q_UNUSED(job)
+    Q_UNUSED(plain)
+    Q_UNUSED(rich)
 }
 
-void KJobTrackerInterface::resumed(KJob */*job*/)
+void KJobTrackerInterface::warning(KJob *job, const QString &plain, const QString &rich)
 {
-
+    Q_UNUSED(job)
+    Q_UNUSED(plain)
+    Q_UNUSED(rich)
 }
 
-void KJobTrackerInterface::description(KJob */*job*/, const QString &/*title*/,
-                                       const QPair<QString, QString> &/*field1*/,
-                                       const QPair<QString, QString> &/*field2*/)
+void KJobTrackerInterface::totalAmount(KJob *job, KJob::Unit unit, qulonglong amount)
 {
-
+    Q_UNUSED(job)
+    Q_UNUSED(unit)
+    Q_UNUSED(amount)
 }
 
-void KJobTrackerInterface::infoMessage(KJob */*job*/, const QString &/*plain*/, const QString &/*rich*/)
+void KJobTrackerInterface::processedAmount(KJob *job, KJob::Unit unit, qulonglong amount)
 {
-
+    Q_UNUSED(job)
+    Q_UNUSED(unit)
+    Q_UNUSED(amount)
 }
 
-void KJobTrackerInterface::warning(KJob */*job*/, const QString &/*plain*/, const QString &/*rich*/)
+void KJobTrackerInterface::percent(KJob *job, unsigned long percent)
 {
-
+    Q_UNUSED(job)
+    Q_UNUSED(percent)
 }
 
-void KJobTrackerInterface::totalAmount(KJob */*job*/, KJob::Unit /*unit*/, qulonglong /*amount*/)
+void KJobTrackerInterface::speed(KJob *job, unsigned long value)
 {
-
-}
-
-void KJobTrackerInterface::processedAmount(KJob */*job*/, KJob::Unit /*unit*/, qulonglong /*amount*/)
-{
-
-}
-
-void KJobTrackerInterface::percent(KJob */*job*/, unsigned long /*percent*/)
-{
-
-}
-
-void KJobTrackerInterface::speed(KJob */*job*/, unsigned long /*value*/)
-{
-
+    Q_UNUSED(job)
+    Q_UNUSED(value)
 }
 
 #include "kjobtrackerinterface.moc"

@@ -93,10 +93,12 @@ bool KJobUiDelegate::isAutoWarningHandlingEnabled() const
     return d->autoWarningHandling;
 }
 
-void KJobUiDelegate::slotWarning(KJob */*job*/, const QString &/*plain*/,
-                                  const QString &/*rich*/)
+void KJobUiDelegate::slotWarning(KJob *job, const QString &plain,
+                                  const QString &rich)
 {
-
+    Q_UNUSED(job)
+    Q_UNUSED(plain)
+    Q_UNUSED(rich)
 }
 
 void KJobUiDelegate::connectJob(KJob *job)
@@ -108,8 +110,9 @@ void KJobUiDelegate::connectJob(KJob *job)
             this, SLOT(slotWarning(KJob*, const QString&, const QString&)));
 }
 
-void KJobUiDelegate::Private::_k_result(KJob */*job*/)
+void KJobUiDelegate::Private::_k_result(KJob *job2)
 {
+    Q_UNUSED(job2)
     if ( job->error() && autoErrorHandling )
         q->showErrorMessage();
 }
