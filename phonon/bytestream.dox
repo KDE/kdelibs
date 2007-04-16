@@ -1,0 +1,92 @@
+/**
+\page phonon_ByteStream The ByteStream class
+
+\section phonon_ByteStream_derived Media Data Producing Class
+
+There are a few classes that can produce media data (often called a source in
+media frameworks). \ref phonon_MediaObject "MediaObject" is the most prominent of them,
+ByteStream and \ref phonon_AvCapture "AvCapture" the other
+two. For the backend implementation it might make sense to create a common
+parentclass for those three that implements the common methods documented in
+\ref phonon_AbstractMediaProducer "AbstractMediaProducer".
+
+\section phonon_ByteStream_requiredfunctions Required Functions
+\li qint64 \ref phonon_ByteStream_totalTime "totalTime()"
+
+\li qint32 \ref phonon_ByteStream_aboutToFinishTime "aboutToFinishTime()"
+\li void \ref phonon_ByteStream_setAboutToFinishTime "setAboutToFinishTime( qint32 msec )"
+
+\li qint64 \ref phonon_ByteStream_streamSize "streamSize()"
+\li void \ref phonon_ByteStream_setStreamSize "setStreamSize( qint64 streamSize )"
+\li bool \ref phonon_ByteStream_streamSeekable "streamSeekable()"
+\li void \ref phonon_ByteStream_setStreamSeekable "setStreamSeekable( bool seekable )"
+
+\li void \ref phonon_ByteStream_endOfData "endOfData()"
+\li void \ref phonon_ByteStream_writeData "writeData( const QByteArray& data )"
+
+\section phonon_ByteStream_optionalfunctions Optional Functions
+\li qint64 \ref phonon_ByteStream_remainingTime "remainingTime()"
+
+\section phonon_ByteStream_signals Signals
+\li void \ref phonon_ByteStream_length "length( qint64 length )"
+\li void \ref phonon_ByteStream_aboutToFinish "aboutToFinish( qint32 msec )"
+\li void \ref phonon_ByteStream_finished "finished()"
+\li void \ref phonon_ByteStream_needData "needData()"
+\li void \ref phonon_ByteStream_enoughData "enoughData()"
+\li void \ref phonon_ByteStream_seekStream "seekStream( qint64 streamPosition )"
+
+\section phonon_ByteStream_memberdocs Member Function Documentation
+
+\subsection phonon_ByteStream_totalTime qint64 totalTime()
+Get the total time (in milliseconds) of the stream currently being played. If
+the time is not known return -1.
+
+\see phonon_ByteStream_length
+
+\subsection phonon_ByteStream_remainingTime qint64 remainingTime()
+Get the remaining time (in milliseconds) of the file currently being played. If
+the method is not implemented in the backend the frontend will use the
+difference between \ref phonon_MediaObject_totalTime and \ref
+phonon_AbstractMediaProducer_currentTime.
+
+\subsection phonon_ByteStream_aboutToFinishTime qint32 aboutToFinishTime()
+Returns the time in milliseconds the \ref phonon_ByteStream_aboutToFinish
+"aboutToFinish" signal is emitted before the playback if finished and \ref
+phonon_ByteStream_finished "finished" is emitted.
+
+\subsection phonon_ByteStream_setAboutToFinishTime void setAboutToFinishTime(qint32)
+Sets the time in milliseconds the \ref phonon_ByteStream_aboutToFinish
+"aboutToFinish" signal is emitted before the playback if finished and \ref
+phonon_ByteStream_finished "finished" is emitted.
+
+\param msec The time in milliseconds. If the value is less than or equal to 0
+the \ref phonon_ByteStream_aboutToFinish "aboutToFinish" signal is disabled.
+
+\section phonon_ByteStream_signaldocs Signals Documentation
+\subsection phonon_ByteStream_aboutToFinish void aboutToFinish( qint32 msec )
+Emitted when the file has finished playing on its own.
+I.e. it is not emitted if you call stop(), pause() or
+load(), but only on end-of-file or a critical error.
+void finished()
+
+\param msec The remaining time until the playback finishes
+
+\subsection phonon_ByteStream_length void length( qint64 length )
+This signal is emitted as soon as the length of the media file is
+known or has changed. For most non-local media data the length of
+the media can only be known after some time. At that time the
+totalTime function can not return useful information. You have
+to wait for this signal to know the real length.
+
+\param length The length of the media file in milliseconds.
+
+\see phonon_ByteStream_totalTime
+
+\subsection phonon_ByteStream_finished void finished()
+This signal is emitted when the playback of the media finished (on its own).
+It is not emitted if stop() or pause() are called - only on end-of-file or a
+critical error (for example the media data stream is corrupted and playback of
+the media has to be finished).
+
+\see phonon_ByteStream_aboutToFinish
+*/

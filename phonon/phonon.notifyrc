@@ -1,0 +1,13 @@
+[Global]
+IconName=phonon
+Comment=Phonon: KDE's Multimedia Library
+
+[Context/Application]
+Name=Application
+#Comment=The name of the group of the contact
+
+[Event/AudioDeviceFallback]
+Name=Audio Device Fallback
+Comment=Notification on automatic fallback if the preferred devices in unavailable
+Contexts=Application
+Action=Popup
