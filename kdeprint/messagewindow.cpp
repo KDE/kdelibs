@@ -43,7 +43,7 @@ MessageWindow::MessageWindow( const QString& txt, int delay, QWidget *parent )
 	box->setSpacing( 10 );
 	box->setMargin( 5 );
 	QLabel *pix = new QLabel( box );
-	pix->setPixmap( DesktopIcon( "kdeprint_printer" ) );
+	pix->setPixmap( DesktopIcon( "kdeprint-printer" ) );
 	m_text = new QLabel( txt, box );
 
 	QHBoxLayout *l0 = new QHBoxLayout( this );

@@ -35,7 +35,7 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent)
 {
 	setPageLabel(i18n("Browsing"));
 	setHeader(i18n("Browsing Settings"));
-	setPixmap("kdeprint_printer_remote");
+	setPixmap("kdeprint-printer-remote");
 
 	browseinterval_ = new KIntNumInput(this);
 	browseport_ = new KIntNumInput(this);

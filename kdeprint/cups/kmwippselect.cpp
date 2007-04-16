@@ -87,7 +87,7 @@ void KMWIppSelect::initPrinter(KMPrinter *p)
 		{
 			if (attr->name && strcmp(attr->name,"printer-name") == 0) {
 				QListWidgetItem* item = new QListWidgetItem();
-                item->setIcon(SmallIcon("kdeprint_printer"));
+                item->setIcon(SmallIcon("kdeprint-printer"));
                 item->setText(QLatin1String(attr->values[0].string.text)); 
                 m_list->addItem(item);
             }

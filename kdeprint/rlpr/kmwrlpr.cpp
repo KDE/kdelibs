@@ -153,7 +153,7 @@ void KMWRlpr::initialize()
 				for (QStringList::ConstIterator it=prs.begin(); it!=prs.end(); ++it)
 				{
 					Q3ListViewItem	*pitem = new Q3ListViewItem(hitem,*it);
-					pitem->setPixmap(0,SmallIcon("kdeprint_printer"));
+					pitem->setPixmap(0,SmallIcon("kdeprint-printer"));
 				}
 			}
 		}
@@ -194,7 +194,7 @@ void KMWRlpr::initialize()
 					hitem->setPixmap(0,SmallIcon("kdeprint_computer"));
 				}
 				Q3ListViewItem	*pitem = new Q3ListViewItem(hitem,name);
-				pitem->setPixmap(0,SmallIcon("kdeprint_printer"));
+				pitem->setPixmap(0,SmallIcon("kdeprint-printer"));
 			}
 		}
 	}

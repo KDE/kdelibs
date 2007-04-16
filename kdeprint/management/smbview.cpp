@@ -277,7 +277,7 @@ void SmbView::processShares()
 			//	comm += (words[i]+" ");
 			//QListViewItem	*item = new QListViewItem(m_current,words[0],comm);
 			Q3ListViewItem	*item = new Q3ListViewItem(m_current,sharen,comm);
-			item->setPixmap(0,SmallIcon("kdeprint_printer"));
+			item->setPixmap(0,SmallIcon("kdeprint-printer"));
 		}
 	}
 }

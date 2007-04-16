@@ -203,7 +203,7 @@ void KMWLocal::initialize()
 		{
 			Q3ListViewItem	*pItem = new Q3ListViewItem(last[index], printer);
 			last[index]->setOpen(true);
-			pItem->setPixmap(0, SmallIcon("kdeprint_printer"));
+			pItem->setPixmap(0, SmallIcon("kdeprint-printer"));
 		}
 	}
 	m_initialized = true;

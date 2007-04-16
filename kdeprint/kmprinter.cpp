@@ -91,20 +91,20 @@ QString KMPrinter::pixmap()
 {
 	if (!m_pixmap.isEmpty()) return m_pixmap;
 
-	QString	str("kdeprint_printer");
-	if (!isValid()) str.append("_defect");
+	QString	str("kdeprint-printer");
+	if (!isValid()) str.append("-defect");
 	else
 	{
 		//if (isHardDefault()) str.append("_default");
-		if (isClass(true)) str.append("_class");
-		else if (isRemote()) str.append("_remote");
+		if (isClass(true)) str.append("-class");
+		else if (isRemote()) str.append("-remote");
 		switch (state())
 		{
 			case KMPrinter::Stopped:
-				str.append("_stopped");
+				str.append("-stopped");
 				break;
 			case KMPrinter::Processing:
-				str.append("_process");
+				str.append("-process");
 				break;
 			default:
 				break;

@@ -879,9 +879,9 @@ QString CupsResource::typeToIconName(int type)
 	   case RESOURCE_GLOBAL:
 	   	return QString("folder");
 	   case RESOURCE_PRINTER:
-	   	return QString("kdeprint_printer");
+	   	return QString("kdeprint-printer");
 	   case RESOURCE_CLASS:
-	   	return QString("kdeprint_printer_class");
+	   	return QString("kdeprint-printer-class");
 	}
 	return QString("folder");
 }

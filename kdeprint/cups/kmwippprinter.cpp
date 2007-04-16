@@ -140,7 +140,7 @@ void KMWIppPrinter::slotScanFinished()
 		else
 		name = info->Name;
 		Q3ListViewItem	*item = new Q3ListViewItem(m_list,name,info->IP,QString::number(info->Port));
-		item->setPixmap(0,SmallIcon("kdeprint_printer"));
+		item->setPixmap(0,SmallIcon("kdeprint-printer"));
 	}
 }
 

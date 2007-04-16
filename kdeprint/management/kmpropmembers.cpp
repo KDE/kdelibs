@@ -37,7 +37,7 @@ KMPropMembers::KMPropMembers(QWidget *parent)
 	main_->setSpacing(0);
 	main_->addWidget(m_members);
 
-	m_pixmap = "kdeprint_printer_class";
+	m_pixmap = "kdeprint-printer-class";
 	m_title = i18n("Members");
 	m_header = i18n("Class Members");
 }

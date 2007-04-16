@@ -121,7 +121,7 @@ KMListView::KMListView(QWidget *parent, const char *name)
 	connect(this,SIGNAL(onViewport()),SLOT(slotOnViewport()));
 
 	m_root = new KMListViewItem(this,i18n("Print System"));
-	m_root->setPixmap(0,SmallIcon("kdeprint_printer"));
+	m_root->setPixmap(0,SmallIcon("kdeprint-printer"));
 	m_root->setOpen(true);
 	m_classes = new KMListViewItem(m_root,i18n("Classes"));
 	m_classes->setPixmap(0,SmallIcon("package"));
