@@ -201,7 +201,7 @@ QString expt2str (ExecState *exec)
 
 // ----------------------------------------------------------------------
 // Dynamic loading.
-K_GLOBAL_STATIC(KTranscriptImp, globalKTI);
+K_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
 {
     KDECORE_EXPORT KTranscript *load_transcript ()
