@@ -94,11 +94,10 @@ namespace Phonon
              * Constructs new video effect with private data \p dd and a
              * \p parent.
              */
-            VideoEffect(VideoEffectPrivate &dd, QObject *parent, const VideoEffectDescription &type = VideoEffectDescription());
+            KDE_NO_EXPORT VideoEffect(VideoEffectPrivate &dd, QObject *parent, const VideoEffectDescription &type = VideoEffectDescription());
 
-        protected:
-            virtual QVariant value(int parameterId) const;
-            virtual void setValue(int parameterId, QVariant newValue);
+            KDE_NO_EXPORT virtual QVariant value(int parameterId) const;
+            KDE_NO_EXPORT virtual void setValue(int parameterId, QVariant newValue);
     };
 } //namespace Phonon
 
