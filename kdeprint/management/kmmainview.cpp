@@ -267,7 +267,7 @@ void KMMainView::initActions()
 	KIconSelectAction *dact = new KIconSelectAction(i18n("&Orientation"), this);
 	m_actions->addAction( "orientation_change", dact );
 	iconlst.clear();
-	iconlst << "view_top_bottom" << "view_left_right";
+	iconlst << "view-top-bottom" << "view-left-right";
 	dact->setItems(i18n("&Vertical,&Horizontal").split(',', QString::SkipEmptyParts), iconlst);
 	dact->setCurrentItem(0);
 	connect(dact,SIGNAL(triggered(int)),SLOT(slotChangeDirection(int)));
