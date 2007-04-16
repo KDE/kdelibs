@@ -34,12 +34,9 @@
 #include <signal.h>
 #include <setjmp.h>
 
-#include <QtCore/QDate>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/Q_PID>
-#include <QtCore/QTextCodec>
-#include <QtCore/QTextIStream>
+#include <QtCore/QDateTime>
 
 #include "kconfigini.h"
 
@@ -216,11 +213,27 @@ static QByteArray encodeGroup(const QByteArray &str)
     return result;
 }
 
+class KConfigINIBackEnd::KConfigINIBackEndPrivate
+{
+public:
+    KConfigINIBackEndPrivate()
+     : m_localLastSize(0)
+    {}
+
+    uint m_localLastSize;
+    QDateTime m_localLastModified;
+};
+
 KConfigINIBackEnd::KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
                                      const char * _resType, bool _useKDEGlobals)
     : KConfigBackEnd(_config, _fileName, _resType, _useKDEGlobals),
-      m_localLastSize(0)
+      d(new KConfigINIBackEndPrivate)
 {
+}
+
+KConfigINIBackEnd::~KConfigINIBackEnd()
+{
+    delete d;
 }
 
 void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString &localFileName)
@@ -246,8 +259,8 @@ void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString 
             }
         }
         QFileInfo info(localFileName);
-        m_localLastModified = info.lastModified();
-        m_localLastSize = info.size();
+        d->m_localLastModified = info.lastModified();
+        d->m_localLastSize = info.size();
     }
 
     bool bReadFile = !fileName.isEmpty();
@@ -699,8 +712,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
                 }
 
                 QFileInfo info(fileName);
-                if ((m_localLastSize == info.size()) &&
-                    (m_localLastModified == info.lastModified()))
+                if ((d->m_localLastSize == info.size()) &&
+                    (d->m_localLastModified == info.lastModified()))
                 {
                     // Not changed, don't merge.
                     mergeFile = false;
@@ -708,8 +721,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
                 else
                 {
                     // Changed...
-                    m_localLastModified = QDateTime();
-                    m_localLastSize = 0;
+                    d->m_localLastModified = QDateTime();
+                    d->m_localLastSize = 0;
                 }
             }
 
@@ -726,8 +739,8 @@ void KConfigINIBackEnd::sync(bool bMerge)
             if (!mergeFile)
             {
                 QFileInfo info(fileName);
-                m_localLastModified = info.lastModified();
-                m_localLastSize = info.size();
+                d->m_localLastModified = info.lastModified();
+                d->m_localLastSize = info.size();
             }
             if (lf) lf->unlock();
         }

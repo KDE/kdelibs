@@ -25,10 +25,7 @@
 #include <kdecore_export.h>
 #include <kconfigbackend.h>
 
-#include <QDateTime>
-
 class QFile;
-class QByteArray;
 class QTextStream;
 
 /**
@@ -62,7 +59,7 @@ public:
   /**
    * Destructs the configuration backend.
    */
-  virtual ~KConfigINIBackEnd() {}
+  virtual ~KConfigINIBackEnd();
 
   /**
    * Parses all INI-style configuration files for a config object.
@@ -129,14 +126,14 @@ protected:
    */
   bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
 
-  /** Write the entries in @e aTempMap to the file stream.*/
+  /** Write the entries in @e aTempMap to the text stream.*/
   void writeEntries(QTextStream &ts, const KEntryMap &aTempMap);
 
 private:
   void parseLocalConfig(const QString &fileName, const QString &localFileName);
 
-  uint m_localLastSize;
-  QDateTime m_localLastModified;
+  class KConfigINIBackEndPrivate;
+  KConfigINIBackEndPrivate * const d;
 };
 
 #endif
