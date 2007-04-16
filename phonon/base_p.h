@@ -33,6 +33,7 @@ namespace Phonon
 class BasePrivate
 {
     K_DECLARE_PUBLIC(Base)
+    friend class AudioOutputPrivate;
     friend class Phonon::FactoryPrivate;
     protected:
         enum CastId {
