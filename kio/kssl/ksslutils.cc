@@ -73,7 +73,7 @@ QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm) {
   int gmt;
   QDateTime qdt = ASN1_UTCTIME_QDateTime(tm, &gmt);
 
-  qstr = KGlobal::locale()->formatDateTime(qdt, KLocale::ShortDate, KLocale::Seconds);
+  qstr = KGlobal::locale()->formatDateTime(qdt, KLocale::LongDate, KLocale::Seconds);
   if (gmt) { 
     qstr += ' ';
     qstr += i18n("GMT");
