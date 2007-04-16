@@ -69,7 +69,9 @@ namespace Solid
         const NetworkInterface &findNetworkInterface( const QString & uni ) const;
 
         /**
-         * Retrieves the activation status of networking (as a whole) in the system.
+         * Retrieves the status of networking (as a whole) in the system.
+         * This is distinct from whether the system's networking is online or offline. 
+         * To check that, see @ref NetworkStatus.
          *
          * @return true if this networking is enabled, false otherwise
          */
