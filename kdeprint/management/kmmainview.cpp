@@ -314,7 +314,7 @@ void KMMainView::initActions()
 	action->setIcon( KIcon( "network-wired" ) );
 	connect( action, SIGNAL( triggered( bool ) ), this, SLOT( slotHelp() ) );
 
-	KActionMenu	*mact = new KActionMenu(KIcon("package_utilities"), i18n("Pri&nter Tools"), this);
+	KActionMenu	*mact = new KActionMenu(KIcon("package-utilities"), i18n("Pri&nter Tools"), this);
 	m_actions->addAction( "printer_tool", mact );
 	mact->setDelayed(false);
 	connect(mact->menu(), SIGNAL(triggered(QAction*)), SLOT(slotToolSelected(QAction*)));
