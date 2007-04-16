@@ -21,6 +21,7 @@
 #define PHONON_OBJECTDESCRIPTION_H
 
 #include "phonon_export.h"
+#include "objectdescription_p.h"
 
 #include <QtGlobal>
 #include <QSharedDataPointer>

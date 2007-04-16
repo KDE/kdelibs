@@ -20,9 +20,12 @@
 #ifndef PHONON_OBJECTDESCRIPTION_P_H
 #define PHONON_OBJECTDESCRIPTION_P_H
 
-#include <QString>
+#include <QtCore/QByteArray>
+#include <QtCore/QHash>
+#include <QtCore/QString>
+#include <QtCore/QSharedData>
+#include <QtCore/QVariant>
 #include <kdebug.h>
-#include <QSharedData>
 
 namespace Phonon
 {
