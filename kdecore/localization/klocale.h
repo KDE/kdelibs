@@ -1070,6 +1070,12 @@ public:
    */
   static QString defaultCountry();
 
+  /**
+   * Reports whether evaluation of translation scripts is enabled.
+   *
+   * @return true if script evaluation is enabled, false otherwise.
+   */
+  bool useTranscript() const;
 
   /**
    * @internal Called from KConfigBackend to initialize language.

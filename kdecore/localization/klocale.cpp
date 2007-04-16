@@ -188,6 +188,7 @@ public:
   QStringList catalogNames; // list of all catalogs (regardless of language)
   QList<KCatalog> catalogs; // list of all found catalogs, one instance per catalog name and language
   int numberOfSysCatalogs; // number of catalogs that each app draws from
+  bool useTranscript; // indicates if scripted messages are to be executed
 
   // Misc
   QString encoding;
@@ -232,6 +233,8 @@ KLocale::KLocale( const QString & catalog, KSharedConfig::Ptr config )
   d->appName = catalog;
   d->initLanguageList(cfg.data(), !config);
   d->initMainCatalogs(catalog);
+
+  d->useTranscript = false;
 }
 
 QString KLocale::_initLanguage(KConfigBase *config)
@@ -393,6 +396,8 @@ void KLocalePrivate::initFormat(KLocale *parent)
   readConfigEntry("CalendarSystem", "gregorian", calendarType);
   delete calendar;
   calendar = 0; // ### HPB Is this the correct place?
+
+  readConfigEntry("Transcript", true, useTranscript);
 
   //Grammatical
   //Precedence here is l10n / i18n / config file
@@ -580,6 +585,9 @@ void KLocalePrivate::updateCatalogs( )
         catalogs.append( KCatalog( name, lang ) );
         //kDebug(173) << "Catalog: " << name << ":" << lang << endl;
       }
+
+  // notify KLocalizedString of catalog update.
+  KLocalizedString::notifyCatalogsUpdated(languageList, catalogNames);
 }
 
 void KLocale::removeCatalog(const QString &catalog)
@@ -2121,6 +2129,12 @@ QString KLocale::defaultLanguage()
 QString KLocale::defaultCountry()
 {
   return QString::fromLatin1("C");
+}
+
+bool KLocale::useTranscript() const
+{
+  d->doFormatInit(this);
+  return d->useTranscript;
 }
 
 const QByteArray KLocale::encoding() const

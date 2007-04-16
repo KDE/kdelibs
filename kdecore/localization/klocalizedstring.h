@@ -20,7 +20,11 @@
 #define KLOCALIZEDSTRING_H
 
 #include <kdecore_export.h>
-#include <QtCore/QCharRef>
+
+#include <QString>
+#include <QChar>
+#include <QLatin1Char>
+#include <QStringList>
 
 class KLocale;
 class KLocalizedStringPrivate;
@@ -396,6 +400,12 @@ public:
      */
     KLocalizedString subs (const QString &a, int fieldWidth = 0,
                            const QChar &fillChar = QLatin1Char(' ')) const;
+
+    /**
+     * @internal Called from KLocale on addition or removal of catalogs.
+     */
+    static void notifyCatalogsUpdated (const QStringList &languages,
+                                       const QStringList &catalogs);
 
 private:
     KLocalizedString (const char *ctxt,

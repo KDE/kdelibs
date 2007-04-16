@@ -258,6 +258,34 @@ target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
 install(TARGETS kde4-config DESTINATION ${BIN_INSTALL_DIR} )
 
 
+########### next target ###############
+
+# kjs hash stuff for transcript plugin
+set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
+
+add_custom_command(
+   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
+   COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE}
+           ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
+           > ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
+   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
+)
+
+macro_add_file_dependencies(
+   ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+
+# the transcript plugin
+set( ktranscript_LIB_SRCS
+   localization/ktranscript.cpp
+)
+
+kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
+
+target_link_libraries( ktranscript kjs )
+
+install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
+
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES kdebug.areas kdebugrc localization/language.codes DESTINATION ${CONFIG_INSTALL_DIR} )
