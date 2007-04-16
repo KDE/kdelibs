@@ -89,6 +89,11 @@ ToolTip=QTreeWidget Search Line (KDE)
 Group=Input (KDE)
 ConstructorArgs=(parent, 0)
 
+[KListWidgetSearchLine]
+ToolTip=QListWidget Search Line (KDE)
+Group=Input (KDE)
+ConstructorArgs=(parent, 0)
+
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
