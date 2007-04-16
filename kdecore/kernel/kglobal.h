@@ -88,9 +88,12 @@ class KCleanUpGlobalStatic
  * class A { ... };
  *
  * K_GLOBAL_STATIC(A, globalA)
+ * // The above creates a new globally static variable named 'globalA' which you
+ * // can use as a pointer to an instance of A.
  *
  * void doSomething()
  * {
+ *     //  The first time you acess globalA a new instance of A will be created automatically.
  *     A *a = globalA;
  *     ...
  * }
@@ -106,6 +109,8 @@ class KCleanUpGlobalStatic
  *
  * void installPostRoutine()
  * {
+ *     // A post routine can be used to delete the object when QCoreApplication destructs,
+ *     // not adding such a post routine will delete the object normally at program unload
  *     qAddPostRoutine(globalA.destroy);
  * }
  * \endcode
@@ -128,6 +133,7 @@ class KCleanUpGlobalStatic
  * \endcode
  * in the .cpp file:
  * \code
+ * // This class will be instantiated and referenced as a singleton in this example
  * class MySingletonPrivate
  * {
  * public:
@@ -139,10 +145,12 @@ class KCleanUpGlobalStatic
  *
  * MySingleton *MySingleton::self()
  * {
+ *     // returns the singleton; automatically creates a new instance if that has not happened yet.
  *     return &mySingletonPrivate->instance;
  * }
  * QString MySingleton::someFunction()
  * {
+ *     // Refencing the singleton directly is possible for your convenience
  *     return mySingletonPrivate->foo;
  * }
  * \endcode
@@ -200,9 +208,12 @@ class KCleanUpGlobalStatic
  * };
  *
  * K_GLOBAL_STATIC_WITH_ARG(A, globalA, ("foo", 0))
+ * // The above creates a new globally static variable named 'globalA' which you
+ * // can use as a pointer to an instance of A.
  *
  * void doSomething()
  * {
+ *     //  The first time you acess globalA a new instance of A will be created automatically.
  *     A *a = globalA;
  *     ...
  * }
