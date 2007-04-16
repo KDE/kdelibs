@@ -226,7 +226,7 @@ install(TARGETS kdecore DESTINATION ${LIB_INSTALL_DIR} )
 
 set(prefix              ${CMAKE_INSTALL_PREFIX})
 set(datadir             ${DATA_INSTALL_DIR})
-set(exec_prefix         ${BIN_INSTALL_DIR})
+set(exec_prefix         ${EXEC_INSTALL_PREFIX})
 set(libdir              ${LIB_INSTALL_DIR})
 set(includedir          ${INCLUDE_INSTALL_DIR})
 set(kde_appsdir         ${APPLNK_INSTALL_DIR} )
