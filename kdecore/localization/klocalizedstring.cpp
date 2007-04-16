@@ -537,7 +537,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
         }
 
         // Add token to arguments, possibly substituting placeholders.
-        if (!token.isEmpty() or quoted) // don't add empty unquoted tokens
+        if (!token.isEmpty() || quoted) // don't add empty unquoted tokens
             argv.append(substituteSimple(token, s->scriptPlchar, true));
     }
     tpos += elen; // skip to first character after closing sequence

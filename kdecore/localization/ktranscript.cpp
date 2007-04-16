@@ -204,7 +204,7 @@ QString expt2str (ExecState *exec)
 K_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
 {
-    KDECORE_EXPORT KTranscript *load_transcript ()
+    KDE_EXPORT KTranscript *load_transcript ()
     {
         return globalKTI;
     }
