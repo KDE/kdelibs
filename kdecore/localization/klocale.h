@@ -447,11 +447,14 @@ public:
    * Format for date string.
    */
   enum DateFormat {
-    ShortDate,   /**< Short (numeric) date format, e.g. 08-04-2007 */
-    LongDate,    /**< Long (text) date format, e.g. Sunday 08 April 2007 */
-    FancyDate    /**< Same as LongDate for dates a week or more ago. For more
-                      recent dates, it is represented as Today, Yesterday, or
-                      the weekday name. */
+    ShortDate,      /**< Short (numeric) date format, e.g. 08-04-2007 */
+    LongDate,       /**< Long (text) date format, e.g. Sunday 08 April 2007 */
+    FancyShortDate, /**< Same as ShortDate for dates a week or more ago. For more
+                         recent dates, it is represented as Today, Yesterday, or
+                         the weekday name. */
+    FancyLongDate   /**< Same as LongDate for dates a week or more ago. For more
+                         recent dates, it is represented as Today, Yesterday, or
+                         the weekday name. */
   };
 
   /**
@@ -464,7 +467,6 @@ public:
    * @return The date as a string
    */
   QString formatDate(const QDate &date, DateFormat format = LongDate) const;
-  KDE_DEPRECATED QString formatDate(const QDate &pDate, bool shortFormat) const;
 
   /**
    * Returns a string formatted to the current locale's conventions
@@ -478,8 +480,6 @@ public:
    */
   QString formatDateTime(const QDateTime &dateTime, DateFormat format = ShortDate,
                          bool includeSecs = false) const;
-  KDE_DEPRECATED QString formatDateTime(const QDateTime &pDateTime,
-                         bool shortFormat, bool includeSecs = false) const;
 
   /**
    * Options for formatting date-time values.
@@ -502,9 +502,6 @@ public:
    */
   QString formatDateTime(const KDateTime &dateTime, DateFormat format = ShortDate,
                          DateTimeFormatOptions options = 0) const;
-  KDE_DEPRECATED QString formatDateTime(const KDateTime &pDateTime,
-                         bool shortFormat, bool includeSecs = false,
-                         bool includeTimeZone = false) const;
 
   /**
    * Use this to determine whether in dates a possessive form of month
@@ -1076,6 +1073,7 @@ public:
    * @return true if script evaluation is enabled, false otherwise.
    */
   bool useTranscript() const;
+
 
   /**
    * @internal Called from KConfigBackend to initialize language.

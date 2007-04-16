@@ -126,22 +126,22 @@ KLocaleTest::formatDate()
 	QCOMPARE(locale.formatDate(date), date.toString(full));
 	QCOMPARE(locale.formatDate(date, KLocale::ShortDate), date.toString(small));
 
-	QCOMPARE(locale.formatDate(date, KLocale::FancyDate), QString("Today"));
-	QCOMPARE(locale.formatDate(date.addDays(-1), KLocale::FancyDate), QString("Yesterday"));
+	QCOMPARE(locale.formatDate(date, KLocale::FancyLongDate), QString("Today"));
+	QCOMPARE(locale.formatDate(date.addDays(-1), KLocale::FancyLongDate), QString("Yesterday"));
 	QDate dat = date.addDays(-2);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), locale.calendar()->weekDayName(dat));
 	dat = date.addDays(-3);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), locale.calendar()->weekDayName(dat));
 	dat = date.addDays(-4);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), locale.calendar()->weekDayName(dat));
 	dat = date.addDays(-5);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), locale.calendar()->weekDayName(dat));
 	dat = date.addDays(-6);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), locale.calendar()->weekDayName(dat));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), locale.calendar()->weekDayName(dat));
 	dat = date.addDays(-7);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), dat.toString(full));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), dat.toString(full));
 	dat = date.addDays(1);
-	QCOMPARE(locale.formatDate(dat, KLocale::FancyDate), dat.toString(full));
+	QCOMPARE(locale.formatDate(dat, KLocale::FancyLongDate), dat.toString(full));
 }
 
 void
@@ -213,31 +213,31 @@ KLocaleTest::formatDateTime()
 	QCOMPARE(locale.formatDateTime(qdt), qdt.toString(small));
 	QCOMPARE(locale.formatDateTime(qdt, KLocale::LongDate), qdt.toString(full));
 
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Today") + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), QString("Today") + qdt.time().toString(tfmt));
 	qdt = qdt.addSecs(3605);  // more than 1 hour from now
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), qdt.toString(full));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), qdt.toString(full));
 	qdt.setDate(today);
 	qdt.setTime(QTime(0,0,0));
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Today") + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), QString("Today") + qdt.time().toString(tfmt));
 	qdt = qdt.addSecs(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Yesterday") + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), QString("Yesterday") + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(2);   // tomorrow
 	qdt.setTime(nowt);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), qdt.toString(full));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), qdt.toString(full));
 	qdt = qdt.addDays(-2);   // yesterday
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), QString("Yesterday") + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), QString("Yesterday") + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(qdt.date()) + qdt.time().toString(tfmt));
 	qdt = qdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyDate), qdt.toString(full));
+	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), qdt.toString(full));
 
 	small = "%Y-%m-%d %H:%M";
 	smallsecs = "%Y-%m-%d %H:%M:%S";
@@ -253,31 +253,31 @@ KLocaleTest::formatDateTime()
 	QCOMPARE(locale.formatDateTime(kdt, KLocale::LongDate), kdt.toString(full));
 //	QCOMPARE(locale.formatDateTime(kdt, KLocale::LongDate, KLocale::Seconds), kdt.toString(fullsecs));
 
-//	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Today") + kdt.time().toString(tfmt));
+//	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), QString("Today") + kdt.time().toString(tfmt));
 	kdt = kdt.addSecs(3605);  // more than 1 hour from now
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), kdt.toString(full));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), kdt.toString(full));
 	kdt.setDate(today);
 	kdt.setTime(QTime(0,0,0));
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Today") + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), QString("Today") + kdt.time().toString(tfmt));
 	kdt = kdt.addSecs(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Yesterday") + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), QString("Yesterday") + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(2);   // tomorrow
 	kdt.setTime(nowt);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), kdt.toString(full));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), kdt.toString(full));
 	kdt = kdt.addDays(-2);   // yesterday
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), QString("Yesterday") + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), QString("Yesterday") + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), locale.calendar()->weekDayName(kdt.date()) + kdt.time().toString(tfmt));
 	kdt = kdt.addDays(-1);
-	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyDate), kdt.toString(full));
+	QCOMPARE(locale.formatDateTime(kdt, KLocale::FancyLongDate), kdt.toString(full));
 }
 
 void
