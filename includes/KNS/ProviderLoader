@@ -1,1 +1,1 @@
-#include "../../knewstuff/provider.h"
+#include "../../knewstuff2/core/providerloader.h"

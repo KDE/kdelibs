@@ -265,7 +265,6 @@ install( FILES
   KKeyButton
   KKeyChooser
   KKeyDialog
-  KLanguageButton
   KLed
   KLibFactory
   KLibLoader
@@ -810,12 +809,22 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
 install( FILES 
+  KNS/Action
+  KNS/Author
   KNS/Button
+  KNS/Category
   KNS/DownloadDialog
+  KNS/DxsEngine
   KNS/Engine
   KNS/Entry
+  KNS/EntryHandler
+  KNS/EntryLoader
+  KNS/Feed
+  KNS/Installation
+  KNS/KTranslatable
   KNS/Provider
   KNS/ProviderDialog
+  KNS/ProviderHandler
   KNS/ProviderLoader
   KNS/UploadDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
