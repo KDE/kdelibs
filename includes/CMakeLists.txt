@@ -514,6 +514,7 @@ install( FILES
   KXMLGUIBuilder
   KXMLGUIClient
   KXMLGUIFactory
+  KXmlGuiWindow
   KXMessages
   KXYSelector
   KZip

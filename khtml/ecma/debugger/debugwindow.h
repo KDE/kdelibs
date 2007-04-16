@@ -23,7 +23,7 @@
 #define KJS_DEBUGGER
 
 #include <kcomponentdata.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 #include <kjs/debugger.h>
 #include <kjs/completion.h>
@@ -64,7 +64,7 @@ namespace KJS
 *
 * There is only one debug window per program. This can be obtained by calling #instance
 */
-class DebugWindow : public KMainWindow, public KJS::Debugger, public KComponentData
+class DebugWindow : public KXmlGuiWindow, public KJS::Debugger, public KComponentData
 {
     Q_OBJECT
 public:

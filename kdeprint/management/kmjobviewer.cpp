@@ -84,7 +84,7 @@ void KJobListView::dragEnterEvent( QDragEnterEvent *event )
 }
 
 KMJobViewer::KMJobViewer(QWidget *parent)
-: KMainWindow(parent)
+: KXmlGuiWindow(parent)
 {
 	m_view = 0;
 	m_pop = 0;

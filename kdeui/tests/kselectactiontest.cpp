@@ -22,7 +22,7 @@ int main( int argc, char **argv )
 }
 
 SelectActionTest::SelectActionTest(QWidget *parent)
-    : KMainWindow(parent)
+    : KXmlGuiWindow(parent)
     , m_comboSelect(new KSelectAction("Combo Selection", this))
     , m_buttonSelect(new KSelectAction("Button Selection", this))
 {

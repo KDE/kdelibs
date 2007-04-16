@@ -22,7 +22,7 @@
 
 #include <kaction.h>
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 #include <kparts/part.h>
 
@@ -43,7 +43,7 @@ class MainWindowPrivate;
  * KMainWindow as host: the builder and servant interface (for menu
  * merging).
  */
-class KPARTS_EXPORT MainWindow : public KMainWindow, virtual public PartBase
+class KPARTS_EXPORT MainWindow : public KXmlGuiWindow, virtual public PartBase
 {
   Q_OBJECT
  public:

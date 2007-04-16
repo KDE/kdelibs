@@ -1,7 +1,7 @@
 #ifndef TESTKHTMLNEW_H
 #define TESTKHTMLNEW_H
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 class KHTMLPart;
 class QComboBox;
@@ -19,7 +19,7 @@ namespace KParts
 /**
  * @internal
  */
-class TestKHTML : public KMainWindow
+class TestKHTML : public KXmlGuiWindow
 {
     Q_OBJECT
 public:

@@ -57,13 +57,13 @@ public:
 }
 
 MainWindow::MainWindow( QWidget* parent, Qt::WindowFlags f )
-    : KMainWindow( parent, f ), d(new MainWindowPrivate())
+    : KXmlGuiWindow( parent, f ), d(new MainWindowPrivate())
 {
   PartBase::setPartObject( this );
 }
 
 MainWindow::MainWindow( QWidget* parent, const char *name, Qt::WindowFlags f )
-  : KMainWindow( parent, f ),d(new MainWindowPrivate())
+  : KXmlGuiWindow( parent, f ),d(new MainWindowPrivate())
 {
   setObjectName( name );
   PartBase::setPartObject( this );

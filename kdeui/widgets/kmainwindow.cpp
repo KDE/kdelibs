@@ -24,12 +24,11 @@
  */
 #include "config.h"
 
-#include "kactioncollection.h"
 #include "kmainwindow.h"
+#include "kmainwindow_p.h"
 #include "kmainwindowiface_p.h"
 #include "ktoolbarhandler.h"
 #include "kwhatsthismanager_p.h"
-#include "kxmlguifactory.h"
 #include "kcmdlineargs.h"
 #include "ktoggleaction.h"
 #include "ksessionmanager.h"
@@ -72,27 +71,19 @@
 #include <ctype.h>
 #include <assert.h>
 
-class KMainWindowPrivate {
-public:
-    bool showHelpMenu:1;
-
-    bool autoSaveSettings:1;
-    bool settingsDirty:1;
-    bool autoSaveWindowSize:1;
-    bool care_about_geometry:1;
-    bool shuttingDown:1;
-    QString autoSaveGroup;
-    KDEPrivate::ToolBarHandler *toolBarHandler;
-    QTimer* settingsTimer;
-    KToggleAction *showStatusBarAction;
-    QRect defaultWindowSize;
-    KEditToolBar* toolBarEditor;
-};
-
-QList<KMainWindow*> KMainWindow::sMemberList;
 static bool no_query_exit = false;
 static KMWSessionManager* ksm = 0;
 static KStaticDeleter<KMWSessionManager> ksmd;
+
+static KMenuBar *internalMenuBar(KMainWindow *mw)
+{
+    return qFindChild<KMenuBar *>(mw);
+}
+
+static KStatusBar *internalStatusBar(KMainWindow *mw)
+{
+    return qFindChild<KStatusBar *>(mw);
+}
 
 class KMWSessionManager : public KSessionManager
 {
@@ -175,55 +166,50 @@ public:
     }
 };
 
+static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
 static bool being_first = true;
 
-KMainWindow::KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f )
-    : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
-{
-    setObjectName( name );
-    initKMainWindow();
-}
-
 KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
-    : QMainWindow( parent, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+    : QMainWindow(parent, f), k_ptr(new KMainWindowPrivate)
 {
-    initKMainWindow();
+    k_ptr->init(this);
 }
 
-void KMainWindow::initKMainWindow()
+KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f)
+    : QMainWindow(parent, f), k_ptr(&dd)
 {
-    setAttribute( Qt::WA_DeleteOnClose );
+    k_ptr->init(this);
+}
+
+void KMainWindowPrivate::init(KMainWindow *q)
+{
+    q->setAttribute( Qt::WA_DeleteOnClose );
 
     KWhatsThisManager::init ();
 
-    mHelpMenu = 0;
+    helpMenu = 0;
 
 #if defined Q_WS_X11
     // set the app startup notification window property
     if ( kapp )
-        KStartupInfo::setWindowStartupId( winId(), kapp->startupId() );
+        KStartupInfo::setWindowStartupId( q->winId(), kapp->startupId() );
 #endif
 
     //actionCollection()->setWidget( this );
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shuttingDown()));
+    QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(shuttingDown()));
 
     if ( !ksm )
         ksm = ksmd.setObject(ksm, new KMWSessionManager());
 
-    sMemberList.append( this );
+    sMemberList.append( q );
 
-    d = new KMainWindowPrivate;
-    d->showHelpMenu = true;
-    d->settingsDirty = false;
-    d->autoSaveSettings = false;
-    d->autoSaveWindowSize = true; // for compatibility
+    settingsDirty = false;
+    autoSaveSettings = false;
+    autoSaveWindowSize = true; // for compatibility
     //d->kaccel = actionCollection()->kaccel();
-    d->toolBarHandler = 0;
-    d->settingsTimer = 0;
-    d->toolBarEditor = 0;
-    d->showStatusBarAction = NULL;
-    d->shuttingDown = false;
-    if ((d->care_about_geometry = being_first)) {
+    settingsTimer = 0;
+    shuttingDown = false;
+    if ((care_about_geometry = being_first)) {
         being_first = false;
 
         QString geometry;
@@ -232,27 +218,27 @@ void KMainWindow::initKMainWindow()
             geometry = args->getOption("geometry");
 
         if ( geometry.isNull() ) // if there is no geometry, it doesn't matter
-            d->care_about_geometry = false;
+            care_about_geometry = false;
         else
-            parseGeometry(false);
+            q->parseGeometry(false);
     }
 
     if ( kapp )
-        setWindowTitle( KGlobal::caption() );
-    new KMainWindowInterface(this);
+        q->setWindowTitle( KGlobal::caption() );
+    //new KMainWindowInterface(this);
 
     // Get notified when settings change
-    connect( this, SIGNAL( iconSizeChanged(const QSize&) ), SLOT( setSettingsDirty() ) );
-    connect( this, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), SLOT( setSettingsDirty() ) );
+    QObject::connect( q, SIGNAL( iconSizeChanged(const QSize&) ), q, SLOT( setSettingsDirty() ) );
+    QObject::connect( q, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), q, SLOT( setSettingsDirty() ) );
 }
 
-void KMainWindow::setUniqueName()
+void KMainWindowPrivate::polish(KMainWindow *q)
 {
     // Set a unique object name. Required by session management, window management, and for the dbus interface.
     QString objname;
     QString s;
     int unusedNumber = 1;
-    const QString name = objectName();
+    const QString name = q->objectName();
     bool startNumberingImmediately = true;
     if ( name.isEmpty() )
     {   // no name given
@@ -284,7 +270,7 @@ void KMainWindow::setUniqueName()
         QList<QWidget*> list = qApp->topLevelWidgets();
         bool found = false;
         foreach ( QWidget* w, list ) {
-            if( w != this && w->objectName() == s )
+            if( w != q && w->objectName() == s )
             {
                 found = true;
                 break;
@@ -295,40 +281,19 @@ void KMainWindow::setUniqueName()
         s.setNum( ++unusedNumber );
         s = objname + s;
     }
-    setObjectName( s );
+    q->setObjectName( s );
 
-    const QString pathname = '/' + objectName();
-    QDBusConnection::sessionBus().registerObject(pathname, this, QDBusConnection::ExportScriptableSlots |
+    const QString pathname = '/' + q->objectName();
+    QDBusConnection::sessionBus().registerObject(pathname, q, QDBusConnection::ExportScriptableSlots |
                                        QDBusConnection::ExportScriptableProperties |
                                        QDBusConnection::ExportNonScriptableSlots |
                                        QDBusConnection::ExportNonScriptableProperties |
                                        QDBusConnection::ExportAdaptors);
-    QDBusConnection::sessionBus().registerObject(pathname + "/actions", actionCollection(),
-                                       QDBusConnection::ExportScriptableSlots |
-                                       QDBusConnection::ExportScriptableProperties |
-                                       QDBusConnection::ExportNonScriptableSlots |
-                                       QDBusConnection::ExportNonScriptableProperties |
-                                       QDBusConnection::ExportChildObjects);
-
-}
-
-QAction *KMainWindow::toolBarMenuAction()
-{
-    if ( !d->toolBarHandler )
-	return 0;
-
-    return d->toolBarHandler->toolBarMenuAction();
-}
-
-
-void KMainWindow::setupToolbarMenuActions()
-{
-    if ( d->toolBarHandler )
-        d->toolBarHandler->setupActions();
 }
 
 void KMainWindow::parseGeometry(bool parsewidth)
 {
+    K_D(KMainWindow);
     QString cmdlineGeometry;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     if (args->isSet("geometry"))
@@ -370,37 +335,35 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
-    delete d->settingsTimer;
-    QMenuBar* mb = internalMenuBar();
-    delete mb;
-    delete d;
-    sMemberList.removeAll( this );
+    delete k_ptr;
 }
 
 KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 {
-    if( !mHelpMenu ) {
+    K_D(KMainWindow);
+    if(!d->helpMenu) {
         if ( aboutAppText.isEmpty() )
-            mHelpMenu = new KHelpMenu( this, componentData().aboutData(), showWhatsThis);
+            d->helpMenu = new KHelpMenu( this, KGlobal::mainComponent().aboutData(), showWhatsThis);
         else
-            mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
+            d->helpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
 
-        if ( !mHelpMenu )
+        if (!d->helpMenu)
             return 0;
     }
 
-    return mHelpMenu->menu();
+    return d->helpMenu->menu();
 }
 
 KMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 {
-    if( !mHelpMenu ) {
-        mHelpMenu = new KHelpMenu( this, QString(), showWhatsThis );
-        connect( mHelpMenu, SIGNAL( showAboutApplication() ),
-                 this, SLOT( showAboutApplication() ) );
+    K_D(KMainWindow);
+    if (!d->helpMenu) {
+        d->helpMenu = new KHelpMenu( this, QString(), showWhatsThis );
+        connect(d->helpMenu, SIGNAL( showAboutApplication()),
+                this, SLOT( showAboutApplication() ));
     }
 
-    return mHelpMenu->menu();
+    return d->helpMenu->menu();
 }
 
 bool KMainWindow::canBeRestored( int number )
@@ -447,135 +410,6 @@ bool KMainWindow::restore( int number, bool show )
     return false;
 }
 
-KXMLGUIFactory *KMainWindow::guiFactory()
-{
-    if ( !factory_ ) {
-        factory_ = new KXMLGUIFactory( this, this );
-        factory_->setObjectName( "guifactory" );
-    }
-    return factory_;
-}
-
-void KMainWindow::configureToolbars()
-{
-    KConfigGroup cg(KGlobal::config(), QString());
-    saveMainWindowSettings(cg);
-    if (!d->toolBarEditor) {
-      d->toolBarEditor = new KEditToolBar(actionCollection(), this);
-      d->toolBarEditor->setResourceFile( xmlFile() );
-      connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
-    }
-    d->toolBarEditor->show();
-}
-
-void KMainWindow::saveNewToolbarConfig()
-{
-    createGUI(xmlFile());
-    KConfigGroup cg(KGlobal::config(), QString());
-    applyMainWindowSettings(cg);
-}
-
-void KMainWindow::setupGUI( StandardWindowOptions options, const QString & xmlfile ) {
-    setupGUI(QSize(), options, xmlfile);
-}
-
-void KMainWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
-    if( options & Keys ){
-        KStandardAction::keyBindings(guiFactory(),
-                    SLOT(configureShortcuts()), actionCollection());
-    }
-
-    if( (options & StatusBar) && internalStatusBar() ){
-        createStandardStatusBarAction();
-    }
-
-    if( options & ToolBar ){
-        setStandardToolBarMenuEnabled( true );
-        KStandardAction::configureToolbars(this,
-                      SLOT(configureToolbars() ), actionCollection());
-    }
-
-    if( options & Create ){
-        createGUI(xmlfile);
-    }
-
-    if( options & Save ){
-        // setupGUI() is typically called in the constructor before show(),
-        // so the default window size will be incorrect unless the application
-        // hard coded the size which they should try not to do (i.e. use
-        // size hints).
-        if(initialGeometrySet())
-        {
-          // Do nothing...
-        }
-        else if(defaultSize.isValid())
-        {
-          resize(defaultSize);
-        }
-        else if(isHidden())
-        {
-          adjustSize();
-        }
-        setAutoSaveSettings();
-    }
-
-}
-
-void KMainWindow::createGUI( const QString &xmlfile )
-{
-    // disabling the updates prevents unnecessary redraws
-    //setUpdatesEnabled( false );
-
-    // just in case we are rebuilding, let's remove our old client
-    guiFactory()->removeClient( this );
-
-    // make sure to have an empty GUI
-    QMenuBar* mb = internalMenuBar();
-    if ( mb )
-        mb->clear();
-
-    qDeleteAll( toolBars() ); // delete all toolbars
-
-    // don't build a help menu unless the user ask for it
-    if (d->showHelpMenu) {
-        // we always want a help menu
-        if (!helpMenu2)
-            helpMenu2 = new KHelpMenu(this, componentData().aboutData(), true,
-                                      actionCollection());
-    }
-
-    // we always want to load in our global standards file
-    setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
-
-    // now, merge in our local xml file.  if this is null, then that
-    // means that we will be only using the global file
-    if ( !xmlfile.isNull() ) {
-        setXMLFile( xmlfile, true );
-    } else {
-        QString auto_file(componentData().componentName() + "ui.rc");
-        setXMLFile( auto_file, true );
-    }
-
-    // make sure we don't have any state saved already
-    setXMLGUIBuildDocument( QDomDocument() );
-
-    // do the actual GUI building
-    guiFactory()->addClient( this );
-
-    //  setUpdatesEnabled( true );
-    updateGeometry();
-}
-
-void KMainWindow::setHelpMenuEnabled(bool showHelpMenu)
-{
-    d->showHelpMenu = showHelpMenu;
-}
-
-bool KMainWindow::isHelpMenuEnabled()
-{
-    return d->showHelpMenu;
-}
-
 void KMainWindow::setCaption( const QString &caption )
 {
     setPlainCaption( KDialog::makeStandardCaption( caption, this ) );
@@ -605,28 +439,18 @@ void KMainWindow::setPlainCaption( const QString &caption )
 
 void KMainWindow::appHelpActivated( void )
 {
-    if( !mHelpMenu ) {
-        mHelpMenu = new KHelpMenu( this );
-        if ( !mHelpMenu )
+    K_D(KMainWindow);
+    if( !d->helpMenu ) {
+        d->helpMenu = new KHelpMenu( this );
+        if ( !d->helpMenu )
             return;
     }
-    mHelpMenu->appHelpActivated();
-}
-
-void KMainWindow::slotStateChanged(const QString &newstate)
-{
-  stateChanged(newstate, KXMLGUIClient::StateNoReverse);
-}
-
-void KMainWindow::slotStateChanged(const QString &newstate,
-                                   bool reverse)
-{
-  stateChanged(newstate,
-               reverse ? KXMLGUIClient::StateReverse : KXMLGUIClient::StateNoReverse);
+    d->helpMenu->appHelpActivated();
 }
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
+    K_D(KMainWindow);
     // Save settings if auto-save is enabled, and settings have changed
     if (d->settingsDirty && d->autoSaveSettings)
         saveAutoSaveSettings();
@@ -684,6 +508,7 @@ void KMainWindow::showAboutApplication()
 
 void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 {
+    K_D(KMainWindow);
     bool oldASWS = d->autoSaveWindowSize;
     d->autoSaveWindowSize = true; // make saveMainWindowSettings save the window size
 
@@ -708,6 +533,7 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 {
+    K_D(KMainWindow);
     kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.group() << endl;
 
     // Called by session management - or if we want to save the window size anyway
@@ -716,7 +542,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
 
     KConfigGroup cg(_cg); // for saving
 
-    QStatusBar* sb = internalStatusBar();
+    QStatusBar* sb = internalStatusBar(this);
     if (sb) {
        if(!cg.hasDefault("StatusBar") && !sb->isHidden() )
            cg.revertToDefault("StatusBar");
@@ -724,7 +550,7 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
            cg.writeEntry("StatusBar", sb->isHidden() ? "Disabled" : "Enabled");
     }
 
-    QMenuBar* mb = internalMenuBar();
+    QMenuBar* mb = internalMenuBar(this);
     if (mb) {
        QString MenuBar = QLatin1String("MenuBar");
        if(!cg.hasDefault("MenuBar") && !mb->isHidden() )
@@ -757,42 +583,6 @@ void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
     }
 }
 
-void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
-{
-    if ( enable ) {
-        if ( d->toolBarHandler )
-            return;
-
-    d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
-
-    if ( factory() )
-        factory()->addClient( d->toolBarHandler );
-    } else {
-        if ( !d->toolBarHandler )
-            return;
-
-        if ( factory() )
-            factory()->removeClient( d->toolBarHandler );
-
-        delete d->toolBarHandler;
-        d->toolBarHandler = 0;
-    }
-}
-
-bool KMainWindow::isStandardToolBarMenuEnabled() const
-{
-    return ( d->toolBarHandler );
-}
-
-void KMainWindow::createStandardStatusBarAction(){
-  if(!d->showStatusBarAction){
-    d->showStatusBarAction = KStandardAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
-    KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
-    connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
-    d->showStatusBarAction->setChecked(sb->isHidden());
-  }
-}
-
 bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 {
     if ( number == 1 )
@@ -819,22 +609,21 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 
 void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 {
+    K_D(KMainWindow);
     kDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
 
     restoreWindowSize(cg);
 
-    QStatusBar* sb = internalStatusBar();
+    QStatusBar* sb = internalStatusBar(this);
     if (sb) {
         QString entry = cg.readEntry("StatusBar", "Enabled");
         if ( entry == "Disabled" )
            sb->hide();
         else
            sb->show();
-        if(d->showStatusBarAction)
-            d->showStatusBarAction->setChecked(!sb->isHidden());
     }
 
-    QMenuBar* mb = internalMenuBar();
+    QMenuBar* mb = internalMenuBar(this);
     if (mb) {
         QString entry = cg.readEntry ("MenuBar", "Enabled");
         if ( entry == "Disabled" )
@@ -871,29 +660,12 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
         n++;
     }
 
-    finalizeGUI( true );
-}
-
-void KMainWindow::finalizeGUI( bool /*force*/ )
-{
-    //kDebug(200) << "KMainWindow::finalizeGUI force=" << force << endl;
-    // The whole reason for this is that moveToolBar relies on the indexes
-    // of the other toolbars, so in theory it should be called only once per
-    // toolbar, but in increasing order of indexes.
-    // Since we can't do that immediately, we move them, and _then_
-    // we call positionYourself again for each of them, but this time
-    // the toolbariterator should give them in the proper order.
-    // Both the XMLGUI and applySettings call this, hence "force" for the latter.
-    /* FIXME KAction port - not needed?
-    foreach (KToolBar* toolbar, toolBars()) {
-        toolbar->positionYourself( force );
-    }*/
-
     d->settingsDirty = false;
 }
 
 void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
 {
+  K_D(const KMainWindow);
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
 
@@ -936,6 +708,7 @@ void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
 
 void KMainWindow::restoreWindowSize( const KConfigGroup & config )
 {
+    K_D(KMainWindow);
     if (d->care_about_geometry) {
         parseGeometry(true);
     } else {
@@ -989,16 +762,19 @@ void KMainWindow::restoreWindowSize( const KConfigGroup & config )
 
 bool KMainWindow::initialGeometrySet() const
 {
+    K_D(const KMainWindow);
     return d->care_about_geometry;
 }
 
 void KMainWindow::ignoreInitialGeometry()
 {
+    K_D(KMainWindow);
     d->care_about_geometry = false;
 }
 
 void KMainWindow::setSettingsDirty()
 {
+    K_D(KMainWindow);
     //kDebug(200) << "KMainWindow::setSettingsDirty" << endl;
     d->settingsDirty = true;
     if ( d->autoSaveSettings )
@@ -1018,11 +794,13 @@ void KMainWindow::setSettingsDirty()
 
 bool KMainWindow::settingsDirty() const
 {
+    K_D(const KMainWindow);
     return d->settingsDirty;
 }
 
 void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
 {
+    K_D(KMainWindow);
     d->autoSaveSettings = true;
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
@@ -1034,6 +812,7 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
 
 void KMainWindow::resetAutoSaveSettings()
 {
+    K_D(KMainWindow);
     d->autoSaveSettings = false;
     if ( d->settingsTimer )
         d->settingsTimer->stop();
@@ -1041,16 +820,19 @@ void KMainWindow::resetAutoSaveSettings()
 
 bool KMainWindow::autoSaveSettings() const
 {
+    K_D(const KMainWindow);
     return d->autoSaveSettings;
 }
 
 QString KMainWindow::autoSaveGroup() const
 {
+    K_D(const KMainWindow);
     return d->autoSaveGroup;
 }
 
 void KMainWindow::saveAutoSaveSettings()
 {
+    K_D(KMainWindow);
     Q_ASSERT( d->autoSaveSettings );
     //kDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
     KConfigGroup cg(KGlobal::config(), d->autoSaveGroup);
@@ -1063,13 +845,14 @@ void KMainWindow::saveAutoSaveSettings()
 
 bool KMainWindow::event( QEvent* ev )
 {
+    K_D(KMainWindow);
     switch( ev->type() ) {
     case QEvent::Resize:
         if ( d->autoSaveWindowSize )
             setSettingsDirty();
         break;
     case QEvent::Polish:
-        setUniqueName();
+        d->polish(this);
         break;
     case QEvent::ChildAdded:
         {
@@ -1107,12 +890,12 @@ bool KMainWindow::event( QEvent* ev )
 
 bool KMainWindow::hasMenuBar()
 {
-    return (internalMenuBar());
+    return internalMenuBar(this);
 }
 
 KMenuBar *KMainWindow::menuBar()
 {
-    KMenuBar * mb = internalMenuBar();
+    KMenuBar * mb = internalMenuBar(this);
     if ( !mb ) {
         mb = new KMenuBar( this );
         // trigger a re-layout and trigger a call to the private
@@ -1124,7 +907,7 @@ KMenuBar *KMainWindow::menuBar()
 
 KStatusBar *KMainWindow::statusBar()
 {
-    KStatusBar * sb = internalStatusBar();
+    KStatusBar * sb = internalStatusBar(this);
     if ( !sb ) {
         sb = new KStatusBar( this );
         // trigger a re-layout and trigger a call to the private
@@ -1149,16 +932,6 @@ void KMainWindow::shuttingDown()
 
 }
 
-KMenuBar *KMainWindow::internalMenuBar()
-{
-    return qFindChild<KMenuBar *>(this);
-}
-
-KStatusBar *KMainWindow::internalStatusBar()
-{
-    return qFindChild<KStatusBar *>(this);
-}
-
 KToolBar *KMainWindow::toolBar( const QString& name )
 {
     QString childName = name;
@@ -1170,11 +943,7 @@ KToolBar *KMainWindow::toolBar( const QString& name )
         return tb;
     bool honor_mode = name != "mainToolBar";
 
-    KToolBar* toolbar;
-    if ( builderClient() )
-        toolbar = new KToolBar(this, honor_mode); // XMLGUI constructor
-    else
-        toolbar = new KToolBar(this, false, honor_mode ); // non-XMLGUI
+    KToolBar* toolbar = new KToolBar(this, false, honor_mode ); // non-XMLGUI
 
     toolbar->setObjectName(childName);
     addToolBar(toolbar);
@@ -1194,11 +963,6 @@ QList<KToolBar*> KMainWindow::toolBars() const
 }
 
 const QList<KMainWindow*>& KMainWindow::memberList() { return sMemberList; }
-
-// why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
-// DF: because they compile KDE much faster :)
-void KMainWindow::finalizeGUI( KXMLGUIClient *client )
-{ KXMLGUIBuilder::finalizeGUI( client ); }
 
 #include "kmainwindow.moc"
 

@@ -18,7 +18,7 @@
 
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <klineedit.h>
 #include <kstandarddirs.h>
 #include <ktoolbarlabelaction.h>
@@ -28,7 +28,7 @@
 
 #include <assert.h>
 
-class MainWindow : public KMainWindow
+class MainWindow : public KXmlGuiWindow
 {
   public:
 

@@ -44,7 +44,7 @@
 #include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
 #include <ktoggleaction.h>
@@ -457,7 +457,7 @@ void KToolBar::Private::slotContextAboutToShow()
    * So we currently plug/unplug the last two actions of the menu.
    * Another way would be to keep around the actions and plug them all into a (new each time) popupmenu.
    */
-  KMainWindow *kmw = qobject_cast<KMainWindow *>( parent->mainWindow() );
+  KXmlGuiWindow *kmw = qobject_cast<KXmlGuiWindow *>( parent->mainWindow() );
   if ( kmw ) {
     kmw->setupToolbarMenuActions();
     // Only allow hiding a toolbar if the action is also plugged somewhere else (e.g. menubar)
@@ -527,7 +527,7 @@ void KToolBar::Private::slotContextAboutToHide()
 {
   // We have to unplug whatever slotContextAboutToShow plugged into the menu.
   // Unplug the toolbar menu action
-  KMainWindow *kmw = qobject_cast<KMainWindow *>( parent->mainWindow() );
+  KXmlGuiWindow *kmw = qobject_cast<KXmlGuiWindow *>( parent->mainWindow() );
   if ( kmw && kmw->toolBarMenuAction() )
     if ( kmw->toolBarMenuAction()->associatedWidgets().count() > 1 )
       contextMenu()->removeAction( kmw->toolBarMenuAction() );

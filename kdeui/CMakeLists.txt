@@ -172,6 +172,7 @@ set(kdeui_LIB_SRCS
  widgets/kinformationlabel.cpp
  widgets/kled.cpp
  widgets/klineedit.cpp
+ widgets/kmainwindow.cpp
  widgets/kmenu.cpp
  widgets/kmenubar.cpp
  widgets/knuminput.cpp
@@ -194,8 +195,8 @@ set(kdeui_LIB_SRCS
  widgets/kurllabel.cpp
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
- xmlgui/kmainwindow.cpp
- xmlgui/kmainwindowiface.cpp
+ xmlgui/kxmlguiwindow.cpp
+ # xmlgui/kmainwindowiface.cpp
  xmlgui/kmenumenuhandler_p.cpp
  xmlgui/ktoolbarhandler.cpp
  xmlgui/kxmlguiclient.cpp
@@ -388,6 +389,7 @@ install( FILES
  widgets/kinformationlabel.h
  widgets/kled.h
  widgets/klineedit.h
+ widgets/kmainwindow.h
  widgets/kmenu.h
  widgets/kmenubar.h
  widgets/knuminput.h
@@ -414,7 +416,7 @@ install( FILES
  windowmanagement/kwindowinfo.h
  windowmanagement/netwm_def.h
  windowmanagement/netwm.h
- xmlgui/kmainwindow.h
+ xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h

@@ -103,7 +103,7 @@ static const char* const not_close_xpm[]={
  * @author Max Judin.
 */
 K3DockMainWindow::K3DockMainWindow( QWidget* parent, const char *name, Qt::WFlags f)
-    : KMainWindow( parent, f )
+    : KXmlGuiWindow( parent, f )
 {
     setObjectName( name );
     QString new_name = QString(name) + QString("_DockManager");
@@ -131,7 +131,7 @@ void K3DockMainWindow::setView( QWidget *view )
   }
 
 #ifndef NO_KDE2
-  KMainWindow::setCentralWidget(view);
+  KXmlGuiWindow::setCentralWidget(view);
 #else
   Q3MainWindow::setCentralWidget(view);
 #endif

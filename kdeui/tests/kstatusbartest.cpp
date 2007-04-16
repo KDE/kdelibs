@@ -19,7 +19,7 @@
 #include "kstatusbartest.h"
 
 testWindow::testWindow (QWidget *)
-    : KMainWindow (0)
+    : KXmlGuiWindow (0)
  {
     // Setup Menus
     menuBar = new KMenuBar (this);

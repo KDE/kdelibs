@@ -6,13 +6,13 @@
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 class QTextEdit;
 class KToolBarRadioGroup;
 class KHelpMenu;
 
-class testWindow  : public KMainWindow
+class testWindow  : public KXmlGuiWindow
 {
     Q_OBJECT
 

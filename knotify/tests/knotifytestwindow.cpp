@@ -19,7 +19,7 @@
 // ------------------------------------------------------------------------
 
 KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
-  : KMainWindow(parent) , m_nbNewMessage(0)
+  : KXmlGuiWindow(parent) , m_nbNewMessage(0)
 {
 	QWidget *w=new QWidget(this);
 	view.setupUi(w);

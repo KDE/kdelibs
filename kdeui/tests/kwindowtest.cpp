@@ -31,7 +31,7 @@
  */
 
 testWindow::testWindow (QWidget *parent)
-    : KMainWindow (parent)
+    : KXmlGuiWindow (parent)
 {
     ena=false;
     setCaption("test window");

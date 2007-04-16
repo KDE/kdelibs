@@ -25,7 +25,7 @@
 #include "css/cssstyleselector.h"
 #include "html/html_imageimpl.h"
 #include "rendering/render_style.h"
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     KHTMLFactory *fac = new KHTMLFactory(true);
 #endif
 
-    KMainWindow *toplevel = new KMainWindow();
+    KXmlGuiWindow *toplevel = new KXmlGuiWindow();
     KHTMLPart *doc = new KHTMLPart( toplevel, toplevel, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );

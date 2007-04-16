@@ -112,7 +112,7 @@ void DebugWindow::setNextSourceInfo(QString url, int baseLine)
 // ----------------------------------------------
 
 DebugWindow::DebugWindow(QWidget *parent)
-  : KMainWindow(parent, Qt::WType_TopLevel),
+  : KXmlGuiWindow(parent, Qt::WType_TopLevel),
     KComponentData("kjs_debugger")
 {
     setObjectName(QLatin1String("DebugWindow"));

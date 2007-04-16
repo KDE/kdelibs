@@ -1,0 +1,342 @@
+ /* This file is part of the KDE libraries
+     Copyright
+     (C) 2000 Reginald Stadlbauer (reggie@kde.org)
+     (C) 1997 Stephan Kulow (coolo@kde.org)
+     (C) 1997-2000 Sven Radej (radej@kde.org)
+     (C) 1997-2000 Matthias Ettrich (ettrich@kde.org)
+     (C) 1999 Chris Schlaeger (cs@kde.org)
+     (C) 2002 Joseph Wenninger (jowenn@kde.org)
+     (C) 2005-2006 Hamish Rodda (rodda@kde.org)
+
+     This library is free software; you can redistribute it and/or
+     modify it under the terms of the GNU Library General Public
+     License version 2 as published by the Free Software Foundation.
+
+     This library is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+     Library General Public License for more details.
+
+     You should have received a copy of the GNU Library General Public License
+     along with this library; see the file COPYING.LIB.  If not, write to
+     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+     Boston, MA 02110-1301, USA.
+ */
+#include "config.h"
+
+#include "kxmlguiwindow.h"
+#include "kmainwindow_p.h"
+#include "kactioncollection.h"
+#include "kmainwindowiface_p.h"
+#include "ktoolbarhandler.h"
+#include "kwhatsthismanager_p.h"
+#include "kxmlguifactory.h"
+#include "kcmdlineargs.h"
+#include "ktoggleaction.h"
+#include "ksessionmanager.h"
+#include "kstandardaction.h"
+
+#include <QCloseEvent>
+#include <QDesktopWidget>
+#include <QDockWidget>
+#include <Qt/qdom.h>
+#include <QtGui/QLayout>
+#include <QtCore/QObject>
+#include <QtGui/QSessionManager>
+#include <QtGui/QStyle>
+#include <QtCore/QTimer>
+#include <QtGui/QWidget>
+#include <QtCore/QList>
+#include <kaction.h>
+#include <kapplication.h>
+#include <kauthorized.h>
+#include <kconfig.h>
+#include <kdebug.h>
+#include <kedittoolbar.h>
+#include <khelpmenu.h>
+#include <klocale.h>
+#include <kmenubar.h>
+#include <kstandarddirs.h>
+#include <kstaticdeleter.h>
+#include <kstatusbar.h>
+#include <ktoolbar.h>
+#include <kwm.h>
+#include <kconfiggroup.h>
+
+#if defined Q_WS_X11
+#include <qx11info_x11.h>
+#include <netwm.h>
+#include <kstartupinfo.h>
+#endif
+
+#include <stdlib.h>
+#include <ctype.h>
+#include <assert.h>
+
+class KXmlGuiWindowPrivate : public KMainWindowPrivate {
+public:
+    bool showHelpMenu:1;
+
+    KDEPrivate::ToolBarHandler *toolBarHandler;
+    KToggleAction *showStatusBarAction;
+    KEditToolBar* toolBarEditor;
+    KXMLGUIFactory *factory;
+};
+
+KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
+    : KMainWindow(*new KXmlGuiWindowPrivate, parent, f), KXMLGUIBuilder( this )
+{
+    K_D(KXmlGuiWindow);
+    d->showHelpMenu = true;
+    d->toolBarHandler = 0;
+    d->showStatusBarAction = 0;
+    d->toolBarEditor = 0;
+    d->factory = 0;
+}
+
+
+QAction *KXmlGuiWindow::toolBarMenuAction()
+{
+    K_D(KXmlGuiWindow);
+    if ( !d->toolBarHandler )
+	return 0;
+
+    return d->toolBarHandler->toolBarMenuAction();
+}
+
+
+void KXmlGuiWindow::setupToolbarMenuActions()
+{
+    K_D(KXmlGuiWindow);
+    if ( d->toolBarHandler )
+        d->toolBarHandler->setupActions();
+}
+
+
+KXmlGuiWindow::~KXmlGuiWindow()
+{
+}
+
+bool KXmlGuiWindow::event( QEvent* ev )
+{
+    bool ret = KMainWindow::event(ev);
+    if (ev->type()==QEvent::Polish) {
+        const QString pathname = '/' + objectName();
+        QDBusConnection::sessionBus().registerObject(pathname + "/actions", actionCollection(),
+                                                     QDBusConnection::ExportScriptableSlots |
+                                                     QDBusConnection::ExportScriptableProperties |
+                                                     QDBusConnection::ExportNonScriptableSlots |
+                                                     QDBusConnection::ExportNonScriptableProperties |
+                                                     QDBusConnection::ExportChildObjects);
+    }
+    return ret;
+}
+
+void KXmlGuiWindow::setHelpMenuEnabled(bool showHelpMenu)
+{
+    K_D(KXmlGuiWindow);
+    d->showHelpMenu = showHelpMenu;
+}
+
+bool KXmlGuiWindow::isHelpMenuEnabled()
+{
+    K_D(const KXmlGuiWindow);
+    return d->showHelpMenu;
+}
+
+KXMLGUIFactory *KXmlGuiWindow::guiFactory()
+{
+    K_D(KXmlGuiWindow);
+    if (!d->factory)
+        d->factory = new KXMLGUIFactory( this, this );
+    return d->factory;
+}
+
+void KXmlGuiWindow::configureToolbars()
+{
+    K_D(KXmlGuiWindow);
+    KConfigGroup cg(KGlobal::config(), QString());
+    saveMainWindowSettings(cg);
+    if (!d->toolBarEditor) {
+      d->toolBarEditor = new KEditToolBar(actionCollection(), this);
+      d->toolBarEditor->setResourceFile( xmlFile() );
+      connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
+    }
+    d->toolBarEditor->show();
+}
+
+void KXmlGuiWindow::saveNewToolbarConfig()
+{
+    createGUI(xmlFile());
+    KConfigGroup cg(KGlobal::config(), QString());
+    applyMainWindowSettings(cg);
+}
+
+void KXmlGuiWindow::setupGUI( StandardWindowOptions options, const QString & xmlfile ) {
+    setupGUI(QSize(), options, xmlfile);
+}
+
+void KXmlGuiWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, const QString & xmlfile ) {
+    if( options & Keys ){
+        KStandardAction::keyBindings(guiFactory(),
+                    SLOT(configureShortcuts()), actionCollection());
+    }
+
+    if( (options & StatusBar) && statusBar() ){
+        createStandardStatusBarAction();
+    }
+
+    if( options & ToolBar ){
+        setStandardToolBarMenuEnabled( true );
+        KStandardAction::configureToolbars(this,
+                      SLOT(configureToolbars() ), actionCollection());
+    }
+
+    if( options & Create ){
+        createGUI(xmlfile);
+    }
+
+    if( options & Save ){
+        // setupGUI() is typically called in the constructor before show(),
+        // so the default window size will be incorrect unless the application
+        // hard coded the size which they should try not to do (i.e. use
+        // size hints).
+        if(initialGeometrySet())
+        {
+          // Do nothing...
+        }
+        else if(defaultSize.isValid())
+        {
+          resize(defaultSize);
+        }
+        else if(isHidden())
+        {
+          adjustSize();
+        }
+        setAutoSaveSettings();
+    }
+
+}
+
+void KXmlGuiWindow::createGUI( const QString &xmlfile )
+{
+    // disabling the updates prevents unnecessary redraws
+    //setUpdatesEnabled( false );
+
+    // just in case we are rebuilding, let's remove our old client
+    guiFactory()->removeClient( this );
+
+    // make sure to have an empty GUI
+    QMenuBar* mb = menuBar();
+    if ( mb )
+        mb->clear();
+
+    qDeleteAll( toolBars() ); // delete all toolbars
+
+    // we always want to load in our global standards file
+    setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
+
+    // now, merge in our local xml file.  if this is null, then that
+    // means that we will be only using the global file
+    if ( !xmlfile.isNull() ) {
+        setXMLFile( xmlfile, true );
+    } else {
+        QString auto_file(componentData().componentName() + "ui.rc");
+        setXMLFile( auto_file, true );
+    }
+
+    // make sure we don't have any state saved already
+    setXMLGUIBuildDocument( QDomDocument() );
+
+    // do the actual GUI building
+    guiFactory()->addClient( this );
+
+    //  setUpdatesEnabled( true );
+    updateGeometry();
+}
+
+void KXmlGuiWindow::slotStateChanged(const QString &newstate)
+{
+  stateChanged(newstate, KXMLGUIClient::StateNoReverse);
+}
+
+void KXmlGuiWindow::slotStateChanged(const QString &newstate,
+                                   bool reverse)
+{
+  stateChanged(newstate,
+               reverse ? KXMLGUIClient::StateReverse : KXMLGUIClient::StateNoReverse);
+}
+
+void KXmlGuiWindow::setStandardToolBarMenuEnabled( bool enable )
+{
+    K_D(KXmlGuiWindow);
+    if ( enable ) {
+        if ( d->toolBarHandler )
+            return;
+
+    d->toolBarHandler = new KDEPrivate::ToolBarHandler( this );
+
+    if ( factory() )
+        factory()->addClient( d->toolBarHandler );
+    } else {
+        if ( !d->toolBarHandler )
+            return;
+
+        if ( factory() )
+            factory()->removeClient( d->toolBarHandler );
+
+        delete d->toolBarHandler;
+        d->toolBarHandler = 0;
+    }
+}
+
+bool KXmlGuiWindow::isStandardToolBarMenuEnabled() const
+{
+    K_D(const KXmlGuiWindow);
+    return ( d->toolBarHandler );
+}
+
+void KXmlGuiWindow::createStandardStatusBarAction(){
+    K_D(KXmlGuiWindow);
+    if(!d->showStatusBarAction){
+        d->showStatusBarAction = KStandardAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
+        KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
+        connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
+        d->showStatusBarAction->setChecked(sb->isHidden());
+    }
+}
+
+void KXmlGuiWindow::finalizeGUI( bool /*force*/ )
+{
+    //kDebug(200) << "KXmlGuiWindow::finalizeGUI force=" << force << endl;
+    // The whole reason for this is that moveToolBar relies on the indexes
+    // of the other toolbars, so in theory it should be called only once per
+    // toolbar, but in increasing order of indexes.
+    // Since we can't do that immediately, we move them, and _then_
+    // we call positionYourself again for each of them, but this time
+    // the toolbariterator should give them in the proper order.
+    // Both the XMLGUI and applySettings call this, hence "force" for the latter.
+    /* FIXME KAction port - not needed?
+    foreach (KToolBar* toolbar, toolBars()) {
+        toolbar->positionYourself( force );
+    }*/
+
+    //d->settingsDirty = false;
+}
+
+void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool force)
+{
+    K_D(KXmlGuiWindow);
+    KMainWindow::applyMainWindowSettings(config, force);
+    KStatusBar *sb = qFindChild<KStatusBar *>(this);
+    if (sb && d->showStatusBarAction)
+        d->showStatusBarAction->setChecked(!sb->isHidden());
+}
+
+// why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
+// DF: because they compile KDE much faster :)
+void KXmlGuiWindow::finalizeGUI( KXMLGUIClient *client )
+{ KXMLGUIBuilder::finalizeGUI( client ); }
+
+#include "kxmlguiwindow.moc"
+

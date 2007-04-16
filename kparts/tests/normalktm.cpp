@@ -20,7 +20,7 @@
 #include <kicon.h>
 
 Shell::Shell()
-    : KMainWindow()
+    : KXmlGuiWindow()
 {
     // We can do this "switch active part" because we have a splitter with
     // two items in it.

@@ -5,14 +5,14 @@
 #ifndef __KNotifyTestWINDOW_H__
 #define __KNotifyTestWINDOW_H__
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include "ui_knotifytestview.h"
 #include <QPointer>
 
 class KNotification;
 
 
-class KNotifyTestWindow : public KMainWindow
+class KNotifyTestWindow : public KXmlGuiWindow
 {
 	Q_OBJECT
 	

@@ -3,11 +3,11 @@
 
 #include <kmenubar.h>
 #include <kstatusbar.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 class QTextEdit;
 
-class testWindow  : public KMainWindow
+class testWindow  : public KXmlGuiWindow
 {
     Q_OBJECT
 

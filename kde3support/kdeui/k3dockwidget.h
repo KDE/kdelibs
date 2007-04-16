@@ -56,7 +56,7 @@
 #include <QtGui/QTabWidget>
 
 #ifndef NO_KDE2
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <netwm_def.h>
 #else
 
@@ -1279,7 +1279,7 @@ private:
  *
  * @author Max Judin (documentation: Falk Brettschneider).
  */
-class KDE3SUPPORT_EXPORT K3DockMainWindow : public KMainWindow
+class KDE3SUPPORT_EXPORT K3DockMainWindow : public KXmlGuiWindow
 {
   Q_OBJECT
 

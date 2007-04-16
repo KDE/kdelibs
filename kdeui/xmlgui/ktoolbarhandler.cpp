@@ -26,7 +26,7 @@
 #include <kauthorized.h>
 #include <kguiitem.h>
 #include <klocale.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <kmenu.h>
 #include <ktoggletoolbaraction.h>
 #include <ktoolbar.h>
@@ -52,7 +52,7 @@ namespace
   class BarActionBuilder
   {
     public:
-      BarActionBuilder( KActionCollection *actionCollection, KMainWindow *mainWindow,
+      BarActionBuilder( KActionCollection *actionCollection, KXmlGuiWindow *mainWindow,
                         QLinkedList<KToolBar*> &oldToolBarList )
         : m_actionCollection( actionCollection ), m_mainWindow( mainWindow ), m_needsRebuild( false )
       {
@@ -126,7 +126,7 @@ namespace
       }
 
       KActionCollection *m_actionCollection;
-      KMainWindow *m_mainWindow;
+      KXmlGuiWindow *m_mainWindow;
 
       QLinkedList<KToolBar*> m_toolBars;
       QList<QAction*> m_toolBarActions;
@@ -151,18 +151,18 @@ class ToolBarHandler::Private
         parent->setupActions();
     }
 
-    void init( KMainWindow *mainWindow );
+    void init( KXmlGuiWindow *mainWindow );
     void connectToActionContainers();
     void connectToActionContainer( QAction *action );
     void connectToActionContainer( QWidget *container );
 
     ToolBarHandler *parent;
-    QPointer<KMainWindow> mainWindow;
+    QPointer<KXmlGuiWindow> mainWindow;
     QList<QAction*> actions;
     QLinkedList<KToolBar*> toolBars;
 };
 
-void ToolBarHandler::Private::init( KMainWindow *mw )
+void ToolBarHandler::Private::init( KXmlGuiWindow *mw )
 {
   mainWindow = mw;
 
@@ -202,14 +202,14 @@ void ToolBarHandler::Private::connectToActionContainer( QWidget *container )
            parent, SLOT( setupActions() ) );
 }
 
-ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow )
+ToolBarHandler::ToolBarHandler( KXmlGuiWindow *mainWindow )
   : QObject( mainWindow ), KXMLGUIClient( mainWindow ),
     d( new Private( this ) )
 {
   d->init( mainWindow );
 }
 
-ToolBarHandler::ToolBarHandler( KMainWindow *mainWindow, QObject *parent )
+ToolBarHandler::ToolBarHandler( KXmlGuiWindow *mainWindow, QObject *parent )
   : QObject( parent ), KXMLGUIClient( mainWindow ),
     d( new Private( this ) )
 {

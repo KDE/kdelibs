@@ -25,7 +25,7 @@
 
 #include <kxmlguiclient.h>
 
-class KMainWindow;
+class KXmlGuiWindow;
 class KToolBar;
 
 namespace KDEPrivate
@@ -40,13 +40,13 @@ class ToolBarHandler : public QObject, public KXMLGUIClient
      * Creates a new tool bar handler for the supplied
      * @param mainWindow.
      */
-    explicit ToolBarHandler( KMainWindow *mainWindow );
+    explicit ToolBarHandler( KXmlGuiWindow *mainWindow );
 
     /**
      * Creates a new tool bar handler for the supplied
      * @param mainWindow and with the supplied parent.
      */
-    ToolBarHandler( KMainWindow *mainWindow, QObject *parent );
+    ToolBarHandler( KXmlGuiWindow *mainWindow, QObject *parent );
 
     /**
      * Destroys the tool bar handler.

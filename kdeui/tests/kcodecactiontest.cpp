@@ -23,7 +23,7 @@ int main( int argc, char **argv )
 }
 
 CodecActionTest::CodecActionTest(QWidget *parent)
-    : KMainWindow(parent)
+    : KXmlGuiWindow(parent)
     , m_comboCodec(new KCodecAction("Combo Codec Action", this))
     , m_buttonCodec(new KCodecAction("Button Codec Action", this))
 {

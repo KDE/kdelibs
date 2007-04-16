@@ -1,11 +1,11 @@
 #ifndef KSELECTACTION_TEST_H
 #define KSELECTACTION_TEST_H
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 class KCodecAction;
 
-class CodecActionTest : public KMainWindow
+class CodecActionTest : public KXmlGuiWindow
 {
     Q_OBJECT
 

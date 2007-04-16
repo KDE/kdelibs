@@ -24,11 +24,13 @@
 #include "kapplication.h"
 #include "kauthorized.h"
 #include "kxmlguibuilder.h"
+#include "kxmlguiclient.h"
 #include "kmenubar.h"
 #include "kmenu.h"
 #include "ktoolbar.h"
 #include "kstatusbar.h"
 #include "kmainwindow.h"
+#include "kxmlguiwindow.h"
 #include "kaction.h"
 #include "kglobalsettings.h"
 #include <klocale.h>
@@ -416,7 +418,7 @@ void KXMLGUIBuilder::setBuilderComponentData(const KComponentData &componentData
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
-    if ( !d->m_widget || !qobject_cast<KMainWindow*>( d->m_widget ) )
+    if ( !d->m_widget || !qobject_cast<KXmlGuiWindow*>( d->m_widget ) )
         return;
 #if 0
     KToolBar *toolbar = 0;
@@ -427,7 +429,7 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
         toolbar->positionYourself();
     }
 #else
-    static_cast<KMainWindow *>(d->m_widget)->finalizeGUI( false );
+    static_cast<KXmlGuiWindow *>(d->m_widget)->finalizeGUI( false );
 #endif
 }
 

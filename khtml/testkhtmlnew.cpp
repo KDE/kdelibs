@@ -13,7 +13,7 @@
 
 #include <kapplication.h>
 #include <kxmlguifactory.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
 #include <kcombobox.h>
@@ -52,7 +52,7 @@
 #include "testkhtmlnew.moc"
 
 TestKHTML::TestKHTML()
-    : KMainWindow()
+    : KXmlGuiWindow()
 {
 #ifndef __KDE_HAVE_GCC_VISIBILITY
     m_factory = new KHTMLFactory(true);

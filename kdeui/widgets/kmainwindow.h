@@ -29,8 +29,8 @@
 #ifndef KMAINWINDOW_H
 #define KMAINWINDOW_H
 
-#include "kxmlguiclient.h"
-#include "kxmlguibuilder.h"
+#include <kdeui_export.h>
+
 #include <QtGui/QMainWindow>
 #include <QtCore/QMetaClassInfo>
 
@@ -45,6 +45,12 @@ class KMenuBar;
 class KMWSessionManager;
 class KMainWindowPrivate;
 class KToolBar;
+
+// internal, not public API, may change any time
+#define KDEUI_DECLARE_PRIVATE(classname) \
+    inline classname ## Private *k_func() { return reinterpret_cast<classname ## Private *>(k_ptr); } \
+    inline const classname ## Private *k_func() const { return reinterpret_cast<classname ## Private *>(k_ptr); } \
+    friend class classname ## Private;
 
 #define KDE_DEFAULT_WINDOWFLAGS 0
 
@@ -99,15 +105,14 @@ class KToolBar;
 
  */
 
-class KDEUI_EXPORT KMainWindow : public QMainWindow, public KXMLGUIBuilder, virtual public KXMLGUIClient
+class KDEUI_EXPORT KMainWindow : public QMainWindow
 {
     friend class KMWSessionManager;
+    KDEUI_DECLARE_PRIVATE(KMainWindow)
     Q_OBJECT
     Q_PROPERTY( bool hasMenuBar READ hasMenuBar )
     Q_PROPERTY( bool autoSaveSettings READ autoSaveSettings )
     Q_PROPERTY( QString autoSaveGroup READ autoSaveGroup )
-    Q_PROPERTY( bool standardToolBarMenuEnabled READ isStandardToolBarMenuEnabled WRITE setStandardToolBarMenuEnabled )
-    Q_FLAGS( StandardWindowOption )
     Q_PROPERTY( bool initialGeometrySet READ initialGeometrySet )
 
 public:
@@ -146,9 +151,6 @@ public:
      *
      */
     explicit KMainWindow( QWidget* parent = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
-
-    /// @deprecated, remove the name argument and use setObjectName instead
-    KDE_CONSTRUCTOR_DEPRECATED KMainWindow( QWidget* parent, const char* name, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
 
     /**
      * \brief Destructor.
@@ -296,35 +298,6 @@ public:
      */
     bool restore( int number, bool show = true );
 
-    virtual KXMLGUIFactory *guiFactory();
-
-    /**
-     * Create a GUI given a local XML file.
-     *
-     * If @p xmlfile is NULL,
-     * then it will try to construct a local XML filename like
-     * appnameui.rc where 'appname' is your app's name.  If that file
-     * does not exist, then the XML UI code will only use the global
-     * (standard) XML file for the layout purposes.
-     *
-     * @param xmlfile The local xmlfile (relative or absolute)
-     */
-    void createGUI( const QString &xmlfile = QString() );
-
-    /**
-     * Enables the build of a standard help menu when calling createGUI().
-     *
-     * The default behavior is to build one, you must call this function
-     * to disable it
-     */
-    void setHelpMenuEnabled(bool showHelpMenu = true);
-
-    /**
-     * Return @p true when the help menu is enabled
-     */
-    bool isHelpMenuEnabled();
-
-
     /**
      * Returns true, if there is a menubar
      */
@@ -434,7 +407,7 @@ public:
      * @param config Config group to read the settings from.
      * @param force if set, even default settings are re-applied
      */
-    void applyMainWindowSettings( const KConfigGroup &config, bool force = false);
+    virtual void applyMainWindowSettings( const KConfigGroup &config, bool force = false);
 
     /**
      * Save settings for statusbar, menubar and toolbar to their respective
@@ -443,25 +416,6 @@ public:
      * @param config Config group to save the settings to.
      */
     void saveMainWindowSettings(const KConfigGroup &config);
-
-    /**
-     * Sets whether KMainWindow should provide a menu that allows showing/hiding
-     * the available toolbars ( using KToggleToolBarAction ) . In case there
-     * is only one toolbar configured a simple 'Show \<toolbar name here\>' menu item
-     * is shown.
-     *
-     * The menu / menu item is implemented using xmlgui. It will be inserted in your
-     * menu structure in the 'Settings' menu.
-     *
-     * If your application uses a non-standard xmlgui resource file then you can
-     * specify the exact position of the menu / menu item by adding a
-     * &lt;Merge name="StandardToolBarMenuHandler" /&gt;
-     * line to the settings menu section of your resource file ( usually appname.rc ).
-     *
-     * Note that you should enable this feature before calling createGUI() ( or similar ) .
-     */
-    void setStandardToolBarMenuEnabled( bool enable );
-    bool isStandardToolBarMenuEnabled() const;
 
 
     /**
@@ -486,98 +440,6 @@ public:
     void createStandardStatusBarAction();
 
     /**
-     * @see setupGUI()
-     */
-    enum StandardWindowOption
-    {
-        /**
-         * adds action to show/hide the toolbar(s) and adds
-         * action to configure the toolbar(s).
-         * @see setStandardToolBarMenuEnabled
-         */
-        ToolBar = 1,
-
-        /**
-         * adds action to show the key configure action.
-         */
-        Keys = 2,
-
-        /**
-         * adds action to show/hide the statusbar if the
-         * statusbar exists.  @see createStandardStatusBarAction
-         */
-        StatusBar = 4,
-
-        /**
-         * auto-saves (and loads) the toolbar/menubar/statusbar settings and
-         * window size using the default name.  @see setAutoSaveSettings
-         *
-         * Typically you want to let the default window size be determined by
-         * the widgets size hints. Make sure that setupGUI() is called after
-         * all the widgets are created ( including setCentralWidget ) so the
-         * default size's will be correct. @see setAutoSaveSettings for
-         * more information on this topic.
-         */
-        Save = 8,
-
-        /**
-         * calls createGUI() once ToolBar, Keys and Statusbar have been
-         * taken care of.  @see createGUI
-         */
-        Create = 16,
-
-        /**
-         * All the above option
-         * (this is the default)
-         */
-        Default = ToolBar | Keys | StatusBar | Save | Create
-    };
-    Q_DECLARE_FLAGS(StandardWindowOptions, StandardWindowOption)
-
-    /**
-     * Configures the current windows and its actions in the typical KDE
-     * fashion.  The options are all enabled by default but can be turned
-     * off if desired through the params or if the prereqs don't exists.
-     *
-     * Typically this function replaces createGUI().
-     *
-     * @see StandardWindowOptions
-     *
-     */
-    void setupGUI( StandardWindowOptions options = Default, const QString& xmlfile = QString() );
-
-    /**
-     * Configures the current windows and its actions in the typical KDE
-     * fashion.  The options are all enabled by default but can be turned
-     * off if desired through the params or if the prereqs don't exists.
-     *
-     * @p defaultSize The default size of the window
-     *
-     * Typically this function replaces createGUI().
-     *
-     * @see StandardWindowOptions
-     */
-    void setupGUI( QSize defaultSize, StandardWindowOptions options = Default, const QString& xmlfile = QString() );
-
-    /**
-     * Returns a pointer to the mainwindows action responsible for the toolbars menu
-     */
-    QAction *toolBarMenuAction();
-
-    /**
-     * @internal for KToolBar
-     */
-    void setupToolbarMenuActions();
-
-    // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
-    virtual void finalizeGUI( KXMLGUIClient *client );
-
-    /**
-     * @internal
-     */
-    void finalizeGUI( bool force );
-
-    /**
      * @return true if a -geometry argument was given on the command line,
      * and this is the first window created (the one on which this option applies)
      */
@@ -590,18 +452,6 @@ public:
     void ignoreInitialGeometry();
 
 public Q_SLOTS:
-    /**
-     * Show a standard configure toolbar dialog.
-     *
-     * This slot can be connected directly to the action to configure toolbar.
-     * This is very simple to do that by adding a single line
-     * \code
-     * KStdAction::configureToolbars( this, SLOT( configureToolbars() ),
-     *                                actionCollection() );
-     * \endcode
-     */
-    virtual void configureToolbars(); // TODO KDE4: reimplement in KParts::MainWindow
-
     /**
      * Makes a KDE compliant caption.
      *
@@ -651,23 +501,6 @@ public Q_SLOTS:
      *
      */
     void appHelpActivated( void );
-
-    /**
-     * Apply a state change
-     *
-     * Enable and disable actions as defined in the XML rc file
-     */
-    virtual void slotStateChanged(const QString &newstate);
-
-    /**
-     * Apply a state change
-     *
-     * Enable and disable actions as defined in the XML rc file,
-     * can "reverse" the state (disable the actions which should be
-     * enabled, and vice-versa) if specified.
-     */
-     void slotStateChanged(const QString &newstate,
-                           bool reverse);
 
     /**
      * Tell the main window that it should save its settings when being closed.
@@ -834,12 +667,6 @@ protected:
     void parseGeometry(bool parsewidth);
 
 protected Q_SLOTS:
-   /**
-    * Rebuilds the GUI after KEditToolbar changed the toolbar layout.
-    * @see configureToolbars()
-    */
-   virtual void saveNewToolbarConfig(); // TODO KDE4: reimplement in KParts::MainWindow
-
     /**
     * This slot does nothing.
     *
@@ -895,21 +722,11 @@ private Q_SLOTS:
     */
     void shuttingDown();
 
-private:
-    KMenuBar *internalMenuBar();
-    KStatusBar *internalStatusBar();
-    void initKMainWindow();
-    void setUniqueName();
+protected:
+    KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f);
 
-    // TODO move to d pointer
-    KHelpMenu *mHelpMenu, *helpMenu2;
-    KXMLGUIFactory *factory_;
-    static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
-private:
-    KMainWindowPrivate *d;
+    KMainWindowPrivate *k_ptr;
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(KMainWindow::StandardWindowOptions)
 
 #define RESTORE(type) { int n = 1;\
     while (KMainWindow::canBeRestored(n)){\
