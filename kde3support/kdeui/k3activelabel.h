@@ -40,12 +40,12 @@ public:
     /**
      * Constructor.
      */
-    explicit KDE_CONSTRUCTOR_DEPRECATED K3ActiveLabel(QWidget * parent = 0);
+    explicit K3ActiveLabel(QWidget * parent = 0);
 
     /**
      * Constructor.
      */
-    explicit KDE_CONSTRUCTOR_DEPRECATED K3ActiveLabel(const QString & text, QWidget * parent = 0);
+    explicit K3ActiveLabel(const QString & text, QWidget * parent = 0);
 
     virtual ~K3ActiveLabel();
 
