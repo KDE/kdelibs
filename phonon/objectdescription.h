@@ -107,13 +107,15 @@ class PHONONCORE_EXPORT ObjectDescriptionBase
         ObjectDescriptionBase(ObjectDescriptionPrivate * = 0);
         ObjectDescriptionBase(const ObjectDescriptionBase &rhs);
         ~ObjectDescriptionBase();
-        ObjectDescriptionBase &operator=(const ObjectDescriptionBase &rhs);
 
         /**
          * \internal
          * The data is implicitly shared.
          */
         QSharedDataPointer<ObjectDescriptionPrivate> d;
+
+    private:
+        ObjectDescriptionBase &operator=(const ObjectDescriptionBase &rhs);
 };
 
 /**
