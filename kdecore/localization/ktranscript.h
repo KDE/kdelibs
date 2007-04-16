@@ -68,7 +68,7 @@ class KTranscript
     /**
      * Destructor.
      */
-    virtual ~KTranscript () {};
+    virtual ~KTranscript () {}
 };
 
 #endif
