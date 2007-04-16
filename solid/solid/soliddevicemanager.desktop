@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=SolidDeviceManager
 
 Comment=Hardware Discovery Backend
+Comment[de]=Hardware-Erkennung
 Comment[nl]=Hardware-detectie-backend
 Comment[pa]=ਹਾਰਡਵੇਅਰ ਖੋਜ ਬੈਕ-ਐਂਡ
 Comment[sv]=Gränssnitt för att upptäcka hårdvara

@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=DBUS/Text-to-Speech
 Comment=Text-to-Speech Service with a D-Bus interface
+Comment[de]=Sprachausgabe mit D-Bus-Schnittstelle
 Comment[nl]=Tekst-tot-spraak-dienst met een DCOP interface
 Comment[pa]=ਇੱਕ D-Bus ਇੰਟਰਫੇਸ ਨਾਲ ਪਾਠ-ਤੋਂ-ਬੋਲੀ ਸੇਵਾ
 Comment[sv]=Text till tal-tjänst med ett D-bus gränssnitt

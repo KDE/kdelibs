@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=QImageIOPlugins
 Comment=QImageIOHandler plugin
+Comment[de]=QImageIOHandler-Modul
 Comment[nl]=QImageIOHandler-plugin
 Comment[pa]=QImageIOHandler ਪਲੱਗਇਨ
 Comment[sv]=Insticksprogram för QImage I/O-hantering

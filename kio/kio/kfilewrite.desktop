@@ -4,6 +4,7 @@ Type=ServiceType
 X-KDE-ServiceType=KFileWrite
 
 Comment=KFileWrite plugin
+Comment[de]=KFileWrite-Modul
 Comment[ja]=KFileWrite プラグイン
 Comment[nl]=KFileWrite-plugin
 Comment[pa]=KFileWrite ਪਲੱਗਇਨ

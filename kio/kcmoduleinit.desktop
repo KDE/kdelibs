@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModuleInit
 Name=KDE Configuration Initialization
+Name[de]=KDE Kontrolmodul-Initialisierung
 Name[ja]=KDE 設定の初期化
 Name[nl]=KDE-configuratie initialiseren
 Name[pa]=KDE ਸੰਰਚਨਾ ਸ਼ੁਰੂਆਤ

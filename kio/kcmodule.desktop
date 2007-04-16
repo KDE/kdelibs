@@ -3,6 +3,7 @@ Encoding=UTF-8
 Type=ServiceType
 X-KDE-ServiceType=KCModule
 Name=KDE Configuration Module
+Name[de]=KDE-Kontrollmodul
 Name[ja]=KDE 設定モジュール
 Name[nl]=KDE-configuratiemodule
 Name[pa]=KDE ਕੰਟਰੋਲ ਮੋਡੀਊਲ
