@@ -21,7 +21,6 @@
 #define PHONON_OBJECTDESCRIPTION_H
 
 #include "phonon_export.h"
-#include "objectdescription_p.h"
 
 #include <QtGlobal>
 #include <QSharedDataPointer>
@@ -108,6 +107,7 @@ class PHONONCORE_EXPORT ObjectDescriptionBase
         ObjectDescriptionBase(ObjectDescriptionPrivate * = 0);
         ObjectDescriptionBase(const ObjectDescriptionBase &rhs);
         ~ObjectDescriptionBase();
+        ObjectDescriptionBase &operator=(const ObjectDescriptionBase &rhs);
 
         /**
          * \internal

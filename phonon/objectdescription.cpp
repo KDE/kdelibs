@@ -106,6 +106,12 @@ bool ObjectDescriptionBase::isValid() const
     return d.constData() != 0;
 }
 
+ObjectDescriptionBase &ObjectDescriptionBase::operator=(const ObjectDescriptionBase &rhs)
+{
+    d = rhs.d;
+    return *this;
+}
+
 template<ObjectDescriptionType T>
 ObjectDescription<T> ObjectDescription<T>::fromIndex(int index)
 {
