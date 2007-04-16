@@ -83,6 +83,9 @@ install(FILES
 install(FILES
   ui/knewstuffbutton.h
   ui/knewstuffaction.h
+  ui/downloaddialog.h
+  ui/providerdialog.h
+  ui/uploaddialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff2/ui
 )
 
