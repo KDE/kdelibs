@@ -24,10 +24,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QCharRef>
 
-#ifdef Q_WS_WIN
-#undef ERROR //avoid conflicts
-#endif
-
 class QIODevice;
 
 /**
@@ -82,7 +78,7 @@ public:
     virtual int  outBufferAvailable() const = 0;
 
     /** \internal */
-    enum Result { OK, END, ERROR };
+    enum Result { Ok, End, Error };
     /** \internal */
     virtual Result uncompress() = 0;
     /** \internal */

@@ -16,13 +16,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kgzipfilter.h"
 
 #include <time.h>
 #include <zlib.h>
 #include <kdebug.h>
 #include <QtCore/QIODevice>
 
-#include "kgzipfilter.h"
 
 /* gzip flag byte */
 #define ASCII_FLAG   0x01 /* bit 0 set: file probably ascii text */
@@ -279,9 +279,9 @@ KGzipFilter::Result KGzipFilter::uncompress_noop()
         d->zStream.avail_out -= n;
         d->zStream.next_in += n;
         d->zStream.avail_in -= n;
-        return OK;
+        return KFilterBase::Ok;
     } else
-        return END;
+        return KFilterBase::End;
 }
 
 KGzipFilter::Result KGzipFilter::uncompress()
@@ -302,7 +302,7 @@ KGzipFilter::Result KGzipFilter::uncompress()
         if ( result != Z_OK && result != Z_STREAM_END )
             kDebug(7005) << "Warning: inflate() returned " << result << endl;
 #endif
-        return ( result == Z_OK ? OK : ( result == Z_STREAM_END ? END : ERROR ) );
+        return ( result == Z_OK ? KFilterBase::Ok : ( result == Z_STREAM_END ? KFilterBase::End : KFilterBase::Error ) );
     } else
         return uncompress_noop();
 }
@@ -330,5 +330,5 @@ KGzipFilter::Result KGzipFilter::compress( bool finish )
         //kDebug(7005) << "KGzipFilter::compress finished, write footer" << endl;
         writeFooter();
     }
-    return ( result == Z_OK ? OK : ( result == Z_STREAM_END ? END : ERROR ) );
+    return ( result == Z_OK ? KFilterBase::Ok : ( result == Z_STREAM_END ? KFilterBase::End : KFilterBase::Error ) );
 }

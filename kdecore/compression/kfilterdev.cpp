@@ -110,7 +110,7 @@ bool KFilterDev::open( QIODevice::OpenMode mode )
     d->filter->init( mode );
     d->bOpenedUnderlyingDevice = !d->filter->device()->isOpen();
     bool ret = d->bOpenedUnderlyingDevice ? d->filter->device()->open( mode ) : true;
-    d->result = KFilterBase::OK;
+    d->result = KFilterBase::Ok;
 
     if ( !ret )
         kWarning(7005) << "KFilterDev::open: Couldn't open underlying device" << endl;
@@ -149,7 +149,7 @@ bool KFilterDev::seek( qint64 pos )
     {
         // We can forget about the cached data
         d->bNeedHeader = !d->bSkipHeaders;
-        d->result = KFilterBase::OK;
+        d->result = KFilterBase::Ok;
         d->filter->setInBuffer(0L,0);
         d->filter->reset();
         QIODevice::seek(pos);
@@ -177,7 +177,7 @@ bool KFilterDev::seek( qint64 pos )
 
 bool KFilterDev::atEnd() const
 {
-    return (d->result == KFilterBase::END)
+    return (d->result == KFilterBase::End)
         && QIODevice::atEnd() // take QIODevice's internal buffer into account
         && d->filter->device()->atEnd();
 }
@@ -191,11 +191,11 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
     uint dataReceived = 0;
 
     // We came to the end of the stream
-    if ( d->result == KFilterBase::END )
+    if ( d->result == KFilterBase::End )
         return dataReceived;
 
     // If we had an error, return -1.
-    if ( d->result != KFilterBase::OK )
+    if ( d->result != KFilterBase::Ok )
         return -1;
 
 
@@ -230,7 +230,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
                 {
                     // We decoded everything there was to decode. So -> done.
                     //kDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
-                    d->result = KFilterBase::END;
+                    d->result = KFilterBase::End;
                     break;
                 }
             }
@@ -244,7 +244,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
 
         d->result = filter->uncompress();
 
-        if (d->result == KFilterBase::ERROR)
+        if (d->result == KFilterBase::Error)
         {
             kWarning(7005) << "KFilterDev: Error when uncompressing data" << endl;
             break;
@@ -266,7 +266,7 @@ qint64 KFilterDev::readData( char *data, qint64 maxlen )
         {
             availOut = maxlen - dataReceived;
         }
-        if (d->result == KFilterBase::END)
+        if (d->result == KFilterBase::End)
         {
             //kDebug(7005) << "KFilterDev::read got END. dataReceived=" << dataReceived << endl;
             break; // Finished.
@@ -286,7 +286,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
     KFilterBase* filter = d->filter;
     Q_ASSERT ( filter->mode() == QIODevice::WriteOnly );
     // If we had an error, return 0.
-    if ( d->result != KFilterBase::OK )
+    if ( d->result != KFilterBase::Ok )
         return 0;
 
     bool finish = (data == 0L);
@@ -307,7 +307,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
 
         d->result = filter->compress( finish );
 
-        if (d->result == KFilterBase::ERROR)
+        if (d->result == KFilterBase::Error)
         {
             kWarning(7005) << "KFilterDev: Error when compressing data" << endl;
             // What to do ?
@@ -315,7 +315,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
         }
 
         // Wrote everything ?
-        if (filter->inBufferEmpty() || (d->result == KFilterBase::END))
+        if (filter->inBufferEmpty() || (d->result == KFilterBase::End))
         {
             // We got that much data since the last time we went here
             uint wrote = availIn - filter->inBufferAvailable();
@@ -332,7 +332,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
                 filter->setInBuffer( data, availIn );
         }
 
-        if (filter->outBufferFull() || (d->result == KFilterBase::END))
+        if (filter->outBufferFull() || (d->result == KFilterBase::End))
         {
             //kDebug(7005) << " KFilterDev::write writing to underlying. avail_out=" << filter->outBufferAvailable() << endl;
             int towrite = d->buffer.size() - filter->outBufferAvailable();
@@ -349,7 +349,7 @@ qint64 KFilterDev::writeData( const char *data /*0 to finish*/, qint64 len )
             }
             d->buffer.resize( 8*1024 );
             filter->setOutBuffer( d->buffer.data(), d->buffer.size() );
-            if (d->result == KFilterBase::END)
+            if (d->result == KFilterBase::End)
             {
                 //kDebug(7005) << " KFilterDev::write END" << endl;
                 Q_ASSERT(finish); // hopefully we don't get end before finishing

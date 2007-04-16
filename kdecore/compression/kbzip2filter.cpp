@@ -16,6 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbzip2filter.h"
 
 #include <config.h>
 
@@ -40,7 +41,6 @@ extern "C" {
 
 #include <qiodevice.h>
 
-#include "kbzip2filter.h"
 
 
 // For docu on this, see /usr/doc/bzip2-0.9.5d/bzip2-0.9.5d/manual_3.html
@@ -143,16 +143,16 @@ KBzip2Filter::Result KBzip2Filter::uncompress()
     if ( result != BZ_OK )
     {
         kDebug(7118) << "bzDecompress returned " << result << endl;
-        kDebug(7118) << "KBzip2Filter::uncompress " << ( result == BZ_STREAM_END ? END : ERROR ) << endl;
+        kDebug(7118) << "KBzip2Filter::uncompress " << ( result == BZ_STREAM_END ? KFilterBase::End : KFilterBase::Error ) << endl;
     }
 
     switch (result) {
         case BZ_OK:
-                return OK;
+                return KFilterBase::Ok;
         case BZ_STREAM_END:
-                return END;
+                return KFilterBase::End;
         default:
-                return ERROR;
+                return KFilterBase::Error;
     }
 }
 
@@ -166,15 +166,15 @@ KBzip2Filter::Result KBzip2Filter::compress( bool finish )
         case BZ_FLUSH_OK:
         case BZ_RUN_OK:
         case BZ_FINISH_OK:
-                return OK;
+                return KFilterBase::Ok;
                 break;
         case BZ_STREAM_END:
                 kDebug(7118) << "  bzCompress returned " << result << endl;
-                return END;
+                return KFilterBase::End;
 		break;
         default:
                 kDebug(7118) << "  bzCompress returned " << result << endl;
-                return ERROR;
+                return KFilterBase::Error;
                 break;
     }
 }
