@@ -18,6 +18,9 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.             *
  ***************************************************************************/
 
+// remove when KACLListViewItem is ported
+#define QT3_SUPPORT
+#define QT3_SUPPORT_WARNINGS
 
 #include "kacleditwidget.h"
 #include "kacleditwidget_p.h"

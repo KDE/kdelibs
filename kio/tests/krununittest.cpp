@@ -63,7 +63,7 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
                      const KUrl::List &urls, bool tf, const QString& b)
 {
     QFile out( "kruntest.desktop" );
-    if ( !out.open( IO_WriteOnly ) )
+    if ( !out.open( QIODevice::WriteOnly ) )
         abort();
     QByteArray str = "[Desktop Entry]\n"
                      "Type=Application\n"

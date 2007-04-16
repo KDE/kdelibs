@@ -75,9 +75,10 @@ class KSSLInfoDialog::KSSLInfoDialogPrivate {
 
 
 KSSLInfoDialog::KSSLInfoDialog(bool secureConnection, QWidget *parent, const char *name, bool modal)
-	: KDialog(parent, Qt::WDestructiveClose), d(new KSSLInfoDialogPrivate) {
+	: KDialog(parent), d(new KSSLInfoDialogPrivate) {
         setObjectName(name);
         setModal(modal);
+        setAttribute(Qt::WA_DeleteOnClose);
         QVBoxLayout *topLayout = new QVBoxLayout(this);
         topLayout->setMargin(KDialog::marginHint());
         topLayout->setSpacing(KDialog::spacingHint());
