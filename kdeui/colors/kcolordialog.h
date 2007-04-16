@@ -34,7 +34,6 @@
 #include <qpixmap.h>
 #include <qscrollarea.h>
 #include <qtablewidget.h>
-#include <khuesaturationselect.h> // TODO remove
 #include <kcolorchoosermode.h>
 
 class QComboBox;

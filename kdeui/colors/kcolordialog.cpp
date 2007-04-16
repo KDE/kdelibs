@@ -305,6 +305,9 @@ int KColorCells::positionToCell(const QPoint &pos, bool ignoreBorders) const
 
    QTableWidgetItem* tableItem = itemAt(pos);
 
+   if (!tableItem)
+        return -1;
+
    const int itemRow = row(tableItem);
    const int itemColumn = column(tableItem);
    int cell = itemRow * columnCount() + itemColumn;
@@ -368,9 +371,11 @@ void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 	if ( (cell != -1) && (d->selected != cell) )
 	{
 		d->selected = cell;
-		
+
         const int newRow = cell/columnCount();
         const int newColumn = cell%columnCount();
+
+        clearSelection(); // we do not want old violet selected cells
 
         item(newRow,newColumn)->setSelected(true);
     }
@@ -844,7 +849,7 @@ public:
     void slotHtmlChanged( void );
     void slotHSChanged( int, int );
     void slotVChanged( int );
-    
+
     void setHMode ();
     void setSMode ();
     void setVMode ();
@@ -853,7 +858,7 @@ public:
     void setBMode ();
 
     void updateModeButtons ();
-            
+
     void slotColorSelected( const QColor &col );
     void slotColorSelected( const QColor &col, const QString &name );
     void slotColorDoubleClicked( const QColor &col, const QString &name );
@@ -864,7 +869,7 @@ public:
       * Write the settings of the dialog to config file.
      **/
     void slotWriteSettings();
-    
+
 	/**
 	 * Returns the mode.
 	 */
@@ -1005,8 +1010,6 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   l_ltop->addWidget(d->valuePal, 1);
   connect( d->valuePal, SIGNAL( valueChanged( int ) ),
 	   SLOT( slotVChanged( int ) ) );
-  connect( d->valuePal, SIGNAL( modeChanged() ),
-           SLOT ( updateModeButtons () ) );
 
   //
   // add the HSV fields
@@ -1193,8 +1196,10 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   col.setHsv( 0, 0, 255 );
   d->_setColor( col );
 
-  d->htmlName->installEventFilter(this);
-  d->hsSelector->installEventFilter(this);
+// FIXME: with enabled event filters, it crashes after ever enter of a drag.
+// better disable drag and drop than crashing it...
+//   d->htmlName->installEventFilter(this);
+//   d->hsSelector->installEventFilter(this);
   d->hsSelector->setAcceptDrops(true);
 
   d->setVMode();
