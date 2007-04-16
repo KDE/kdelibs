@@ -183,6 +183,9 @@ void AudioOutputPrivate::setupBackendObject()
     if (!pINTERFACE_CALL(setOutputDevice(outputDeviceIndex)) && !outputDeviceOverridden) {
         // fall back in the preference list of output devices
         QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(category);
+        if (deviceList.isEmpty()) {
+            return;
+        }
         if (outputDeviceIndex == deviceList.takeFirst()) { // removing the first device so that
             // if it's the same device as the one we tried we only try all the following
             foreach (int devIndex, deviceList) {
