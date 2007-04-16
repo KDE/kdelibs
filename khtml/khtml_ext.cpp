@@ -342,7 +342,7 @@ void KHTMLPartBrowserExtension::updateEditActions()
         if ( qobject_cast<QLineEdit*>(m_editableFormWidget))
             hasSelection = static_cast<QLineEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
         else if(qobject_cast<QTextEdit*>(m_editableFormWidget))
-            hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->hasSelectedText();
+            hasSelection = static_cast<QTextEdit *>( &(*m_editableFormWidget) )->textCursor().hasSelection();
     }
 
     enableAction( "copy", hasSelection );
