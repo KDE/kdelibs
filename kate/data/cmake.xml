@@ -23,6 +23,7 @@
       <item> CONFIGURE_FILE </item>
       <item> CREATE_TEST_SOURCELIST </item>
       <item> ELSE </item>
+      <item> ELSEIF </item>
       <item> ENABLE_TESTING </item>
       <item> ENDFOREACH </item>
       <item> ENDIF </item>
@@ -54,6 +55,7 @@
       <item> ITK_WRAP_TCL </item>
       <item> LINK_DIRECTORIES </item>
       <item> LINK_LIBRARIES </item>
+      <item> LIST </item>
       <item> LOAD_CACHE </item>
       <item> LOAD_COMMAND </item>
       <item> MACRO </item>
@@ -150,6 +152,7 @@
       <item> INCLUDE_DIRECTORIES </item>
       <item> INCLUDE_INTERNALS </item>
       <item> INCLUDE_REGULAR_EXPRESSION </item>
+      <item> INTERNAL </item>
       <item> LESS </item>
       <item> LIBRARY </item>
       <item> LINK_DIRECTORIES </item>
@@ -224,18 +227,21 @@
     <contexts>
       <context attribute="Normal Text" lineEndContext="#stay" name="Normal Text">
         <DetectSpaces/>
-        <keyword attribute="Commands" context="Function Args" String="commands"/>
+        <keyword attribute="Commands" context="Function Args" String="commands" insensitive="true"/>
         <RegExpr attribute="Region Marker" context="#stay" String="#\s*BEGIN.*$" beginRegion="block" firstNonSpace="true"/>
         <RegExpr attribute="Region Marker" context="#stay" String="#\s*END.*$" endRegion="block" firstNonSpace="true"/>
-        <RegExpr attribute="Comment" context="#stay" String="#.*$"/>
+        <DetectChar attribute="Comment" context="Comment" char="#"/>
         <RegExpr attribute="Variable" context="#stay" String="\$\{\s*\w+\s*\}"/>
-        <RegExpr attribute="Macros" context="#stay" String="\w+\s*(?=\(.*\))"/>
+        <RegExpr attribute="Macros" context="#stay" String="\w+\s*(?=\()"/>
       </context>
       <context attribute="Normal Text" lineEndContext="#stay" name="Function Args">
         <DetectChar attribute="Normal Text" context="#pop" char=")"/>
         <keyword attribute="Special Args" context="#stay" String="special_args"/>
         <RegExpr attribute="Comment" context="#stay" String="#.*$"/>
         <RegExpr attribute="Variable" context="#stay" String="\$\{\s*\w+\s*\}"/>
+      </context>
+      <context attribute="Comment" lineEndContext="#pop" name="Comment">
+        <IncludeRules context="##Alerts" />
       </context>
 
     </contexts>
