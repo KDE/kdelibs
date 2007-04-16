@@ -170,14 +170,6 @@ public:
     bool finalize();
 
     /**
-     * @brief Return a FILE pointer to the save file.
-     * @deprecated Use a QTextStream or QString::sprintf() instead.
-     * This function is provided for older code that is dificult to port.
-     * New code should <b>not</b> use this function.
-     */
-    KDE_DEPRECATED FILE *fstream ( void );
-
-    /**
      * @brief Static method to create a backup file before saving.
      *
      * If empty (the default), the backup will be in the same directory as @p filename.

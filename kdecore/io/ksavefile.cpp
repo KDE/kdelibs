@@ -223,21 +223,6 @@ bool KSaveFile::finalize()
     return success;
 }
 
-// DEPRECATED. Provided to ease porting issues ONLY.
-// Please, PLEASE don't use this. Use a QTextStream instead.
-// If you need to emulate fprintf() then use QString::sprintf()
-FILE* KSaveFile::fstream()
-{
-    if ( !d->stream ) {
-        if (!isOpen())
-            open();
-        //Provide a hack for old code that should be updated.
-        d->stream = KDE_fdopen(dup(handle()), "r+");
-    }
-
-    return d->stream;
-}
-
 bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
 {
     // get backup type from config, by default use "simple"
