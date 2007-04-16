@@ -52,38 +52,52 @@ ObjectDescription<T> &ObjectDescription<T>::operator=(const ObjectDescription<T>
 
 bool ObjectDescriptionBase::operator==(const ObjectDescriptionBase &otherDescription) const
 {
-    Q_ASSERT(isValid());
-    Q_ASSERT(otherDescription.isValid());
+    if (!isValid()) {
+        return !otherDescription.isValid();
+    }
+    if (!otherDescription.isValid()) {
+        return false;
+    }
     return *d == *otherDescription.d;
 }
 
 int ObjectDescriptionBase::index() const
 {
-    Q_ASSERT(isValid());
+    if (!isValid()) {
+        return -1;
+    }
     return d->index;
 }
 
-const QString &ObjectDescriptionBase::name() const
+QString ObjectDescriptionBase::name() const
 {
-    Q_ASSERT(isValid());
+    if (!isValid()) {
+        return QString();
+    }
     return d->name;
 }
 
-const QString &ObjectDescriptionBase::description() const
+QString ObjectDescriptionBase::description() const
 {
-    Q_ASSERT(isValid());
+    if (!isValid()) {
+        return QString();
+    }
     return d->description;
 }
 
 QVariant ObjectDescriptionBase::property(const char *name) const
 {
-    Q_ASSERT(isValid());
+    if (!isValid()) {
+        return QVariant();
+    }
     return d->properties.value(name);
 }
 
 QList<QByteArray> ObjectDescriptionBase::propertyNames() const
 {
-    Q_ASSERT(isValid());
+    if (!isValid()) {
+        return QList<QByteArray>();
+    }
     return d->properties.keys();
 }
 

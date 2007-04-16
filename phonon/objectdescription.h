@@ -62,7 +62,7 @@ class PHONONCORE_EXPORT ObjectDescriptionBase
          * \return A string that should be presented to the user to
          * choose the capture source.
          */
-        const QString &name() const;
+        QString name() const;
 
         /**
          * Returns a description of the capture source. This text should
@@ -71,7 +71,7 @@ class PHONONCORE_EXPORT ObjectDescriptionBase
          *
          * \return A string describing the capture source.
          */
-        const QString &description() const;
+        QString description() const;
 
         /**
          * Returns a named property.
