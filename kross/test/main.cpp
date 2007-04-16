@@ -106,8 +106,8 @@ int runScriptFile(const QString& scriptfile)
     action->setCode( scriptcode );
 
     // Publish other both testobject instance to the script.
-    action->addObject( testobj3 );
-    action->addObject( testobj4 );
+    action->addObject( testobj3, "TestObject3", Kross::ChildrenInterface::AutoConnectSignals );
+    action->addObject( testobj4, "TestObject4" );
 
     // Now execute the Action.
     std::cout << "Execute scriptfile " << scriptfile.toLatin1().data() << " now" << std::endl;

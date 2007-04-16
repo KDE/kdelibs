@@ -19,12 +19,13 @@
  ***************************************************************************/
 
 #include "view.h"
-#include "manager.h"
-#include "action.h"
-#include "actioncollection.h"
-//#include "guiclient.h"
 #include "model.h"
-#include "interpreter.h"
+#include "guiclient.h"
+
+#include <kross/core/manager.h>
+#include <kross/core/action.h>
+#include <kross/core/actioncollection.h>
+#include <kross/core/interpreter.h>
 
 #include <QFileInfo>
 #include <QDir>
@@ -39,8 +40,6 @@
 #include <kapplication.h>
 //#include <kdeversion.h>
 #include <kconfig.h>
-#include <klocale.h>
-#include <kicon.h>
 #include <kstandarddirs.h>
 #include <kmessagebox.h>
 #include <kpushbutton.h>
@@ -349,7 +348,7 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
     manageraction->setObjectName("manager");
     manageraction->setToolTip( i18n("Script Manager to configure scripts.") );
     d->collection->addAction("manager", manageraction);
-    connect(manageraction, SIGNAL(triggered()), &Manager::self(), SLOT(showScriptManager()) );
+    connect(manageraction, SIGNAL(triggered()), this, SLOT(slotShowScriptManager()) );
 
     connect(this, SIGNAL(enabledChanged(const QString&)), this, SLOT(slotEnabledChanged(const QString&)));
     //expandAll();
@@ -463,6 +462,11 @@ void ActionCollectionView::slotSelectionChanged()
 void ActionCollectionView::slotDataChanged(const QModelIndex&, const QModelIndex&)
 {
     d->modified = true;
+}
+
+void ActionCollectionView::slotShowScriptManager()
+{
+    GUIClient::showScriptManager();
 }
 
 void ActionCollectionView::slotRun()

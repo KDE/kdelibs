@@ -18,15 +18,13 @@
  ***************************************************************************/
 
 #include "model.h"
-#include "action.h"
-#include "actioncollection.h"
-#include "manager.h"
+
+#include <kross/core/action.h>
+#include <kross/core/actioncollection.h>
+#include <kross/core/manager.h>
 
 #include <QEvent>
 #include <QMimeData>
-
-#include <kicon.h>
-#include <kmenu.h>
 
 using namespace Kross;
 

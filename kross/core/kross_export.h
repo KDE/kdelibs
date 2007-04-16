@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2007 David Faure <faure@kde.org>
+    Copyright (C) 2007 Sebastian Sauer <mail@dipe.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -46,10 +47,21 @@
 # endif
 #endif
 
+#ifndef KROSSUI_EXPORT
+# if defined(MAKE_KROSSUI_LIB)
+   /* We are building this library */
+#  define KROSSUI_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */
+#  define KROSSUI_EXPORT KDE_IMPORT
+# endif
+#endif
+
 #else /* UNIX */
 
 #define KROSS_EXPORT KDE_EXPORT
 #define KROSSCORE_EXPORT KDE_EXPORT
+#define KROSSUI_EXPORT KDE_EXPORT
 
 #endif
 

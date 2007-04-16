@@ -32,8 +32,9 @@ namespace Kross {
      * The MetaFunction class implements a QObject to provide an adaptor
      * between Qt signals+slots and scripting functions.
      *
-     * For example the \a Kross::PythonFunction does inherit this class
-     * to connect a QObject signal together with a callable python object.
+     * For example the Kross::PythonFunction and the Kross::RubyFunction
+     * classes located in kdebindings inherit this class to connect a
+     * QObject signal together with a callable python or ruby method.
      */
     class MetaFunction : public QObject
     {

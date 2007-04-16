@@ -20,7 +20,7 @@
 #ifndef KROSS_MODEL_H
 #define KROSS_MODEL_H
 
-#include "krossconfig.h"
+#include <kross/core/krossconfig.h>
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -36,7 +36,7 @@ namespace Kross {
      * a model for views of a \a ActionCollection instance that manages a
      * collection of \a Action instances.
      */
-    class KROSSCORE_EXPORT ActionCollectionModel : public QAbstractItemModel
+    class KROSSUI_EXPORT ActionCollectionModel : public QAbstractItemModel
     {
             Q_OBJECT
         public:
@@ -97,7 +97,7 @@ namespace Kross {
      * The ActionCollectionProxyModel class implements a QSortFilterProxyModel 
      * for a \a ActionCollectionModel instance.
      */
-    class KROSSCORE_EXPORT ActionCollectionProxyModel : public QSortFilterProxyModel
+    class KROSSUI_EXPORT ActionCollectionProxyModel : public QSortFilterProxyModel
     {
         public:
             explicit ActionCollectionProxyModel(QObject* parent, ActionCollectionModel* model = 0);

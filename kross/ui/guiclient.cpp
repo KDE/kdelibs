@@ -18,25 +18,25 @@
  ***************************************************************************/
 
 #include "guiclient.h"
-#include "manager.h"
-#include "interpreter.h"
-#include "actioncollection.h"
 
-//#include <QRegExp>
-//#include <qdom.h>
+#include <kross/core/manager.h>
+#include <kross/core/interpreter.h>
+#include <kross/core/actioncollection.h>
 
 #include <kapplication.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 #include <kmenu.h>
-//#include <kdialog.h>
-//#include <kstandarddirs.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
-#include <klocale.h>
 #include <kurl.h>
-#include <kicon.h>
+
+//#include <kconfig.h>
+//#include <kstandarddirs.h>
+//#include <kmimetype.h>
+//#include <kfiledialog.h>
+//#include <kmessagebox.h>
 
 using namespace Kross;
 
@@ -69,20 +69,16 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     d->scriptsmenu = new KActionMenu(i18n("Scripts"), this);
     actionCollection()->addAction("scripts", d->scriptsmenu);
     connect(d->scriptsmenu->menu(), SIGNAL(aboutToShow()), this, SLOT(slotMenuAboutToShow()));
-    //connect(d->actions, SIGNAL(inserted(KAction*)), scriptsmenu, SLOT(addAction(QAction*)));
-    //connect(d->actions, SIGNAL(removed(KAction*)), scriptsmenu, SLOT(removeAction(QAction*)));
 
     // action to execute a scriptfile.
     KAction* execfileaction = new KAction(i18n("Execute Script File..."), this);
     actionCollection()->addAction("executescriptfile", execfileaction);
-    connect(execfileaction, SIGNAL(triggered(Qt::MouseButtons, Qt::KeyboardModifiers)),
-            &Manager::self(), SLOT(showExecuteScriptFile()));
+    connect(execfileaction, SIGNAL( triggered() ), this, SLOT( slotShowExecuteScriptFile() ));
 
     // action to show the ScriptManagerGUI dialog.
     KAction* manageraction =  new KAction(i18n("Script Manager..."), this);
     actionCollection()->addAction("configurescripts", manageraction);
-    connect(manageraction, SIGNAL(triggered(Qt::MouseButtons, Qt::KeyboardModifiers)),
-            &Manager::self(), SLOT(showScriptManager()));
+    connect(manageraction, SIGNAL( triggered() ), this, SLOT( slotShowScriptManager() ));
 
     // The GUIClient provides feedback if e.g. an execution failed.
     connect(&Manager::self(), SIGNAL( started(Kross::Action*) ), this, SLOT( started(Kross::Action*) ));
@@ -95,7 +91,7 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
 
 GUIClient::~GUIClient()
 {
-    krossdebug("GUIClient::~GUIClient()");
+    //krossdebug("GUIClient::~GUIClient()");
     delete d;
 }
 
@@ -217,6 +213,18 @@ void GUIClient::slotMenuAboutToShow()
     addMenu(d->scriptsmenu->menu(), collection);
 }
 
+void GUIClient::slotShowExecuteScriptFile()
+{
+    krossdebug( QString("GUIClient::slotShowExecuteScriptFile") );
+    showExecuteScriptFile();
+}
+
+void GUIClient::slotShowScriptManager()
+{
+    krossdebug( QString("GUIClient::slotShowScriptManager") );
+    showScriptManager();
+}
+
 void GUIClient::started(Kross::Action* action)
 {
     Q_UNUSED(action);
@@ -235,19 +243,34 @@ void GUIClient::finished(Kross::Action* action)
     //emit executionFinished(action);
 }
 
-bool GUIClient::executeFile()
+bool GUIClient::showExecuteScriptFile()
 {
-    return Manager::self().showExecuteScriptFile();
+    QStringList mimetypes;
+    foreach(QString interpretername, Manager::self().interpreters()) {
+        InterpreterInfo* info = Manager::self().interpreterInfo(interpretername);
+        Q_ASSERT( info );
+        mimetypes.append( info->mimeTypes().join(" ").trimmed() );
+    }
+    KFileDialog* filedialog = new KFileDialog(
+        KUrl("kfiledialog:///KrossExecuteScript"), // startdir
+        mimetypes.join(" "), // filter
+        0, // custom widget
+        0 // parent
+    );
+    filedialog->setCaption( i18n("Execute Script File") );
+    filedialog->setOperationMode( KFileDialog::Opening );
+    filedialog->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
+    return filedialog->exec() ? Manager::self().executeScriptFile( filedialog->selectedUrl().path() ) : false;
 }
 
-bool GUIClient::executeFile(const KUrl& file)
+bool GUIClient::showScriptManager()
 {
-    return Manager::self().executeScriptFile( file.path() );
-}
-
-bool GUIClient::showManager()
-{
-    return Manager::self().showScriptManager();
+    QObject* obj = Manager::self().module("scriptmanager");
+    if( obj )
+        if( QMetaObject::invokeMethod(obj, "showManagerDialog") )
+            return true; // successfully called the method.
+    KMessageBox::sorry(0, i18n("Failed to load the Script Manager."));
+    return false;
 }
 
 #include "guiclient.moc"

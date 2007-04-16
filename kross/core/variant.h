@@ -29,8 +29,6 @@
 #include <QDate>
 #include <QTime>
 #include <QDateTime>
-//#include <QVariant>
-//#include <QMetaType>
 #include <QMetaObject>
 #include <QMetaEnum>
 

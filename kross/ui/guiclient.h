@@ -20,8 +20,8 @@
 #ifndef KROSS_GUICLIENT_H
 #define KROSS_GUICLIENT_H
 
-#include "../core/krossconfig.h"
-#include "../core/action.h"
+#include <kross/core/krossconfig.h>
+#include <kross/core/action.h>
 
 #include <QObject>
 
@@ -35,7 +35,7 @@ namespace Kross {
      * abstract access to the Kross Scripting Framework to an
      * application.
      */
-    class KROSSCORE_EXPORT GUIClient
+    class KROSSUI_EXPORT GUIClient
         : public QObject
         , public KXMLGUIClient
     {
@@ -83,32 +83,30 @@ namespace Kross {
             bool writeConfigFromPackages();
 #endif
 
+            /**
+            * Show a KFileDialog to select a script file that should be executed.
+            */
+            static bool showExecuteScriptFile();
+
+            /**
+            * Show the "Script Manager" dialog defined in the \a ScriptManagerModule
+            * to let the user manage the script files.
+            */
+            static bool showScriptManager();
+
         public Q_SLOTS:
 
             /**
-            * A KFileDialog will be displayed to let the user choose the scriptfile
-            * that should be executed.
-            * \deprecated use Kross::Manager::showExecuteScriptFile()
+            * Show a modal KFileDialog to select a script file that should be executed.
             */
-            KDE_DEPRECATED bool executeFile();
+            void slotShowExecuteScriptFile();
 
             /**
-            * Execute the scriptfile \p file . Internaly we try to use
-            * the defined filename to auto-detect the \a Interpreter which
-            * should be used for the execution.
-            * \deprecated use Kross::Manager::executeScriptFile()
+            * Show the modal "Script Manager" dialog.
             */
-            KDE_DEPRECATED bool executeFile(const KUrl& file);
-
-            /**
-            * The \a ScriptManagerGUI dialog will be displayed to
-            * let the user manage the scriptfiles.
-            * \deprecated use Kross::Manager::showScriptManager()
-            */
-            KDE_DEPRECATED bool showManager();
+            void slotShowScriptManager();
 
         private Q_SLOTS:
-
             /**
              * Called before the "Scripts" menu is shown to update the list of displayed scripts.
              */

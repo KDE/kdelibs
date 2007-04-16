@@ -26,8 +26,7 @@
 #include <QDir>
 #include <QtXml/QDomElement>
 #include <QAction>
-
-#include <kurl.h>
+#include <QUrl>
 
 #include "errorinterface.h"
 #include "childreninterface.h"
@@ -116,7 +115,7 @@ namespace Kross {
              * it's content and it's also tried to determinate the
              * \a interpreter ).
              */
-            Action(QObject* parent, const KUrl& url);
+            Action(QObject* parent, const QUrl& url);
 
             /**
              * Destructor.
@@ -273,34 +272,6 @@ namespace Kross {
              * an empty string if there is no current path defined.
              */
             QString currentPath() const;
-
-            /**
-             * Returns the names of all properties.
-             */
-            QStringList propertyNames() const;
-
-            /**
-             * Returns true if there exist a property with the name \p name .
-             */
-            bool hasProperty(const QString& name);
-
-            /**
-             * Return the value of the property with the name \p name . If there
-             * exist no such property the \p defaultvalue got returned.
-             */
-            QString property(const QString& name, const QString& defaultvalue = QString());
-
-            /**
-             * Set the value of the property with the name \p name . If there
-             * exist no such property a new one got added. If \p persistent is
-             * true the property will be automatically saved and restored.
-             */
-            void setProperty(const QString& name, const QString& value, bool persistent = false);
-
-            /**
-             * Remove the property with the name \p name .
-             */
-            void removeProperty(const QString& name);
 
         Q_SIGNALS:
 

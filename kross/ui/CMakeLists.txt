@@ -1,0 +1,25 @@
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${KDE4_KDECORE_INCLUDES}
+    ${KDE4_KDEUI_INCLUDES}
+    ${KDE4_KIO_INCLUDES}
+)
+
+########### next target ###############
+
+set(krossui_LIB_SRCS
+   model.cpp
+   view.cpp
+   guiclient.cpp
+   )
+
+kde4_automoc(${krossui_LIB_SRCS})
+kde4_add_library(krossui SHARED ${krossui_LIB_SRCS})
+target_link_libraries(krossui krosscore ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+set_target_properties(krossui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+install(TARGETS krossui DESTINATION ${LIB_INSTALL_DIR})
+
+########### install files ###############
+
+install(FILES guiclient.h model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui)
+

@@ -29,9 +29,6 @@
 #include <QFileInfo>
 #include <QDomElement>
 
-//#include <klocale.h>
-#include <kicon.h>
-#include <kmimetype.h>
 #include <kstandarddirs.h>
 
 using namespace Kross;

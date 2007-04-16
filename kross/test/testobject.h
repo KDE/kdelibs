@@ -97,6 +97,11 @@ class TestObject : public QObject
         void signalObject(QObject* obj);
 
     public Q_SLOTS:
+        void emitSignalVoid() { emit signalVoid(); }
+        void emitSignalBool(bool b) { emit signalBool(b); }
+        void emitSignalInt(int i) { emit signalInt(i); }
+        void emitSignalString(const QString& s) { emit signalString(s); }
+        void emitSignalObject(QObject* obj) { emit signalObject(obj); }
 
         // return the objectname
         QString name();

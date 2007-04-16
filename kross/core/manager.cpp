@@ -21,27 +21,16 @@
 #include "interpreter.h"
 #include "action.h"
 #include "actioncollection.h"
-#include "variant.h"
+//#include "variant.h"
 
 #include <QObject>
 #include <QMetaObject>
 #include <QFile>
 #include <QRegExp>
-#include <QAbstractItemModel>
 #include <QFileInfo>
 
-#include <kapplication.h>
 #include <klibloader.h>
-#include <klocale.h>
 #include <kstaticdeleter.h>
-#include <kdialog.h>
-#include <kicon.h>
-#include <kconfig.h>
-#include <kmenu.h>
-#include <kstandarddirs.h>
-#include <kmimetype.h>
-#include <kfiledialog.h>
-#include <kmessagebox.h>
 
 extern "C"
 {
@@ -128,6 +117,25 @@ Manager::Manager()
     } else {
         #ifdef KROSS_INTERPRETER_DEBUG
             krossdebug("Ruby interpreter for kross is unavailable");
+        #endif
+    }
+#endif
+
+#ifdef KROSS_JAVA_LIBRARY
+    QString javalib = QFile::encodeName( KLibLoader::self()->findLibrary(KROSS_JAVA_LIBRARY) );
+    if(! javalib.isEmpty()) {
+        InterpreterInfo::Option::Map javaoptions;
+        d->interpreterinfos.insert("java",
+            new InterpreterInfo("java",
+                javalib, // library
+                "*.java", // file filter-wildcard
+                QStringList() << "application/java", // mimetypes
+                javaoptions // options
+            )
+        );
+    } else {
+        #ifdef KROSS_INTERPRETER_DEBUG
+            krossdebug("KDE Java interpreter for kross is unavailable");
         #endif
     }
 #endif
@@ -285,61 +293,14 @@ QObject* Manager::module(const QString& modulename)
     return module;
 }
 
-QObject* Manager::color() { return new Color(this); }
-QObject* Manager::font() { return new Font(this); }
-QObject* Manager::brush() { return new Brush(this); }
-QObject* Manager::datetime() { return new DateTime(this); }
-
 bool Manager::executeScriptFile(const QString& file)
 {
     krossdebug( QString("Manager::executeScriptFile() file='%1'").arg(file) );
-    Action* action = new Action(0 /*no parent*/, KUrl(file));
+    Action* action = new Action(0 /*no parent*/, QUrl(file));
     action->trigger();
     bool ok = ! action->hadError();
     delete action; //action->delayedDestruct();
     return ok;
-}
-
-bool Manager::showExecuteScriptFile()
-{
-    QStringList mimetypes;
-    foreach(QString interpretername, interpreters()) {
-        InterpreterInfo* info = interpreterInfo(interpretername);
-        Q_ASSERT( info );
-        mimetypes.append( info->mimeTypes().join(" ").trimmed() );
-    }
-    KFileDialog* filedialog = new KFileDialog(
-        KUrl("kfiledialog:///KrossExecuteScript"), // startdir
-        mimetypes.join(" "), // filter
-        0, // custom widget
-        0 // parent
-    );
-    filedialog->setCaption( i18n("Execute Script File") );
-    filedialog->setOperationMode( KFileDialog::Opening );
-    filedialog->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
-    return filedialog->exec() ? executeScriptFile( filedialog->selectedUrl().path() ) : false;
-}
-
-/*
-QWidget* Manager::createScriptManager(QWidget* parent)
-{
-    QObject* obj = Manager::self().module("scriptmanager");
-    QWidget* widget = 0;
-    if( obj )
-        if( QMetaObject::invokeMethod(obj, "createManagerWidget", Q_RETURN_ARG(QWidget*,widget), Q_ARG(QWidget*,parent)) )
-            return widget; // successfully called the method.
-    return 0;
-}
-*/
-
-bool Manager::showScriptManager()
-{
-    QObject* obj = Manager::self().module("scriptmanager");
-    if( obj )
-        if( QMetaObject::invokeMethod(obj, "showManagerDialog") )
-            return true; // successfully called the method.
-    KMessageBox::sorry(0, i18n("Failed to load the Script Manager."));
-    return false;
 }
 
 #include "manager.moc"

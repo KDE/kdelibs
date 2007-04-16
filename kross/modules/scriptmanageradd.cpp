@@ -20,11 +20,11 @@
 #include "scriptmanageradd.h"
 #include "scriptmanager.h"
 
-#include "../core/manager.h"
-#include "../core/interpreter.h"
-#include "../core/action.h"
-#include "../core/actioncollection.h"
-#include "../core/view.h"
+#include <kross/core/manager.h>
+#include <kross/core/interpreter.h>
+#include <kross/core/action.h>
+#include <kross/core/actioncollection.h>
+#include <kross/ui/view.h>
 
 #include <QFileInfo>
 #include <QVBoxLayout>
@@ -32,7 +32,6 @@
 #include <QLabel>
 #include <QRadioButton>
 
-//#include <kdeversion.h>
 #include <klocale.h>
 #include <kurl.h>
 #include <kmimetype.h>

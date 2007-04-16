@@ -23,6 +23,9 @@
 #include <kross/core/kross_export.h>
 #include <QString>
 
+#include <klocale.h>
+#include <kicon.h>
+
 namespace Kross {
 
     // Debugging enabled. Comment the line out to disable all kind of debugging.
@@ -53,8 +56,10 @@ namespace Kross {
     //#define KROSS_ACTION_DEBUG
     //#define KROSS_ACTIONCOLLECTION_DEBUG
 
-    // The version number of Kross.
-    #define KROSS_VERSION 5
+    // The version number of Kross. For example the interpreters use
+    // it do be sure there are linked against the correct core version
+    // and if the numbers don't match, the interpreter is not loaded.
+    #define KROSS_VERSION 6
 
     // The export macro for interpreter plugins.
     #define KROSS_EXPORT_INTERPRETER( InterpreterImpl ) \
@@ -76,6 +81,7 @@ namespace Kross {
     #define KROSS_PYTHON_LIBRARY "krosspython"
     #define KROSS_RUBY_LIBRARY "krossruby"
     #define KROSS_KJS_LIBRARY "krosskjs"
+    #define KROSS_JAVA_LIBRARY "krossjava"
 
 }
 

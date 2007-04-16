@@ -22,7 +22,6 @@
 #include "action.h"
 #include "manager.h"
 
-#include <klocale.h>
 #include <klibloader.h>
 
 extern "C"
@@ -129,7 +128,7 @@ Interpreter* InterpreterInfo::interpreter()
 
     KLibrary* library = libloader->globalLibrary( d->library.toLatin1().data() );
     if(! library) {
-        setError(i18n("Could not load interpreter library \"%1\".",d->library));
+        setError(i18n("Could not load interpreter library \"%1\"",d->library));
         return 0;
     }
 

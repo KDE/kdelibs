@@ -293,6 +293,38 @@ class TestKross < Test::Unit::TestCase
 		#self.assert_( self.object1.testEnum( self.object1.TESTENUM3 ) == 4 )
 	end
 
+	def testSignalString
+		@mySignalString = ""
+		def callbackSignalString(s)
+			@mySignalString = s
+		end
+		TestObject1.connect("signalString(const QString&)", method("callbackSignalString"))
+		TestObject1.signalString("Some string")
+		assert( @mySignalString == "Some string" )
+	end
+
+	def testSignalBool
+		@mySignalBool = nil
+		def callbackSignalBool(b)
+			@mySignalBool = b
+		end
+		TestObject1.connect("signalBool(bool)", method("callbackSignalBool"))
+		TestObject1.signalBool(true)
+		assert( @mySignalBool == true )
+		TestObject1.signalBool(false)
+		assert( @mySignalBool == false )
+	end
+
+	#def testSignalObject
+	#	@myTestObject = nil
+	#	def callbackSignalObject(obj)
+	#		@myTestObject = obj
+	#	end
+	#	TestObject1.connect("signalObject(QObject*)", method("callbackSignalObject"))
+	#	TestObject1.signalObject(TestObject2)
+	#	assert( @myTestObject == TestObject2 )
+	#end
+
 end
 
 require 'test/unit/ui/console/testrunner'

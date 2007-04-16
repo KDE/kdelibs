@@ -21,13 +21,12 @@
 #include "scriptmanager.h"
 #include "scriptmanageradd.h"
 
-#include "../core/manager.h"
-#include "../core/action.h"
-#include "../core/actioncollection.h"
-#include "../core/guiclient.h"
-//#include "../core/interpreter.h"
-#include "../core/model.h"
-#include "../core/view.h"
+#include <kross/core/manager.h>
+#include <kross/core/action.h>
+#include <kross/core/actioncollection.h>
+#include <kross/ui/model.h>
+#include <kross/ui/guiclient.h>
+#include <kross/ui/view.h>
 
 #include <QFileInfo>
 #include <QDir>
@@ -38,7 +37,6 @@
 #include <QSignalMapper>
 
 #include <kapplication.h>
-//#include <kdeversion.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kicon.h>

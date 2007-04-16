@@ -21,7 +21,7 @@
 #ifndef KROSS_VIEW_H
 #define KROSS_VIEW_H
 
-#include "krossconfig.h"
+#include <kross/core/krossconfig.h>
 
 #include <QObject>
 #include <QWidget>
@@ -62,7 +62,7 @@ namespace Kross {
     * d.exec();
     * \endcode
     */
-    class KROSSCORE_EXPORT ActionCollectionEditor : public QWidget
+    class KROSSUI_EXPORT ActionCollectionEditor : public QWidget
     {
         public:
 
@@ -160,7 +160,7 @@ namespace Kross {
     * d.exec();
     * \endcode
     */
-    class KROSSCORE_EXPORT ActionCollectionView : public QTreeView
+    class KROSSUI_EXPORT ActionCollectionView : public QTreeView
     {
             Q_OBJECT
         public:
@@ -266,7 +266,6 @@ namespace Kross {
 
         protected Q_SLOTS:
 
-
             /**
             * This slot got called if the data changed.
             */
@@ -281,6 +280,11 @@ namespace Kross {
             * This slot got called if the selected item changed.
             */
             virtual void slotSelectionChanged();
+
+            /**
+            * This slot got called if the "Script Manager" should be displayed.
+            */
+            virtual void slotShowScriptManager();
 
         protected:
 

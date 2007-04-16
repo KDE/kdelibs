@@ -29,7 +29,6 @@
 #include "childreninterface.h"
 
 class QAbstractItemModel;
-class KMenu;
 
 namespace Kross {
 
@@ -114,19 +113,6 @@ namespace Kross {
              */
             Interpreter* interpreter(const QString& interpretername) const;
 
-#if 0
-            /**
-             * Read the configurations like e.g. the installed script-packages
-             * from the KConfig configuration-backend.
-             */
-            bool readConfig();
-
-            /**
-             * Write the configurations to the KConfig configuration-backend.
-             */
-            bool writeConfig();
-#endif
-
             /**
              * \return the root \a ActionCollection instance. Each collection
              * could have children of other collections and/or
@@ -168,32 +154,11 @@ namespace Kross {
              */
             QObject* module(const QString& modulename);
 
-            //TODO remove those testcases?
-            /** Return a new \a Color object. */
-            QObject* color();
-            /** Return a new \a Font object. */
-            QObject* font();
-            /** Return a new \a Brush object. */
-            QObject* brush();
-            /** Return a new \a DateTime object. */
-            QObject* datetime();
-
             /**
             * Execute a script file.
             * \param file The script file that should be executed.
             */
             bool executeScriptFile(const QString& file = QString());
-
-            /**
-            * Show a KFileDialog to select a script file that should be executed.
-            */
-            bool showExecuteScriptFile();
-
-            /**
-            * Show the "Script Manager" dialog defined in the \a ScriptManagerModule
-            * to let the user manage the script files.
-            */
-            bool showScriptManager();
 
         Q_SIGNALS:
 
