@@ -162,9 +162,10 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
     if (d->block)
     {
         // mimic blocking mode
-        while (d->socket->isOpen() && d->socket->bytesToWrite())
+        while (d->socket->state() == QAbstractSocket::ConnectedState &&
+               d->socket->bytesToWrite())
             d->socket->waitForBytesWritten(-1);
-        if (!d->socket->isOpen())
+        if (d->socket->state() != QAbstractSocket::ConnectedState)
             // connection closed due to error
             return -1;
     }
@@ -369,7 +370,7 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
 
     d->socket = KSocketFactory::synchronousConnectToHost(protocol, host, port,
                                                          d->timeout > -1 ? d->timeout * 1000 : -1);
-    if (!d->socket->isOpen())
+    if (d->socket->state() != QAbstractSocket::ConnectedState)
     {
         d->status = d->socket->error();
         if ( sendError )
@@ -403,8 +404,11 @@ void TCPSlaveBase::closeDescriptor()
     if (m_bIsSSL)
       d->kssl->close();
     if (d->socket) {
+        d->socket->disconnectFromHost();
+        if (d->socket->state() != QAbstractSocket::UnconnectedState)
+            d->socket->waitForDisconnected(); // wait for unsent data to be sent
+
         d->socket->close();
-        d->socket->waitForDisconnected();
         delete d->socket;
         d->socket = 0;
     }
@@ -1107,7 +1111,7 @@ int TCPSlaveBase::verifyCertificate()
 
 bool TCPSlaveBase::isConnectionValid()
 {
-    if ( !d->socket || !d->socket->isOpen() )
+    if ( !d->socket || d->socket->state() != QAbstractSocket::ConnectedState)
       return false;
 
     qint64 retval = -1;
