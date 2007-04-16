@@ -57,7 +57,6 @@ public:
     q = 0;
     m_parentGUIClient = 0L;
 
-    defaultShortcutContext = static_cast<Qt::ShortcutContext>(-1);
     configIsGlobal = false;
 
     connectHighlighted = connectTriggered = false;
@@ -71,7 +70,6 @@ public:
   void _k_actionDestroyed(QObject *obj);
 
   KComponentData m_componentData;
-  QList<KActionCollection*> m_docList;
 
   QMap<QString, QAction*> actionByName;
   QHash<QAction *, QString> nameByAction;
@@ -82,8 +80,6 @@ public:
 
   bool configIsGlobal;
   QString configGroup;
-
-  Qt::ShortcutContext defaultShortcutContext;
 
   bool connectTriggered, connectHighlighted;
 
@@ -124,30 +120,6 @@ KActionCollection::~KActionCollection()
   delete d;
 }
 
-void KActionCollection::setDefaultShortcutContext( Qt::ShortcutContext context )
-{
-  d->defaultShortcutContext = context;
-}
-
-Qt::ShortcutContext KActionCollection::defaultShortcutContext( ) const
-{
-  return d->defaultShortcutContext;
-}
-
-void KActionCollection::applyDefaultShortcutContext()
-{
-  if (defaultShortcutContext() == -1)
-    return;
-
-  foreach (QAction* action, actions())
-    action->setShortcutContext(defaultShortcutContext());
-}
-
-void KActionCollection::addDocCollection( KActionCollection* pDoc )
-{
-  d->m_docList.append( pDoc );
-}
-
 void KActionCollection::clear()
 {
   QList<QAction *> actions = d->nameByAction.keys();
@@ -162,11 +134,6 @@ QAction* KActionCollection::action( const QString& name ) const
 
   if ( !name.isEmpty() )
     action = d->actionByName.value (name);
-
-  if( !action ) {
-    for( int i = 0; i < d->m_docList.count() && !action; i++ )
-      action = d->m_docList[i]->action( name );
-  }
 
   return action;
 }
@@ -271,15 +238,11 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
         connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
 
     if (d->associatedWidgets.count()) {
-        if (defaultShortcutContext() != -1)
-            action->setShortcutContext(defaultShortcutContext());
-        else
-            action->setShortcutContext(Qt::WidgetShortcut);
+        action->setShortcutContext(Qt::WidgetShortcut);
+
         foreach (QWidget* w, d->associatedWidgets)
             w->addAction(action);
 
-    } else if (defaultShortcutContext() != -1) {
-        action->setShortcutContext(defaultShortcutContext());
     }
 
     if (d->enabled != KActionCollectionPrivate::Unchanged)
@@ -352,8 +315,7 @@ void KActionCollection::addAssociatedWidget(QWidget* widget)
   connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(_k_widgetDestroyed(QObject*)));
 
   foreach (QAction* action, actions()) {
-    if (defaultShortcutContext() == -1)
-      action->setShortcutContext(Qt::WidgetShortcut);
+    action->setShortcutContext(Qt::WidgetShortcut);
     widget->addAction(action);
   }
 }
