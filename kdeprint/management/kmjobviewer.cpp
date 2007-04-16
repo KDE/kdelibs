@@ -324,7 +324,7 @@ void KMJobViewer::initActions()
 	}
 
 	// Filter actions
-	KActionMenu	*fact = new KActionMenu(KIcon("kdeprint_printer"), i18n("&Select Printer"), this);
+	KActionMenu	*fact = new KActionMenu(KIcon("kdeprint-printer"), i18n("&Select Printer"), this);
 	actionCollection()->addAction( "filter_modify", fact );
 	fact->setDelayed(false);
 	connect(fact->menu(),SIGNAL(triggered(QAction*)),SLOT(slotPrinterSelected(QAction*)));
