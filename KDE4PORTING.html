@@ -2269,12 +2269,23 @@ need to adapt them, as xgettext does not automatically know about the
 the other the singular form of a plural-form messages. For Gettext, this is
 the same message and therefore this creates problems. (Note: there is not
 any similar problem when you use contexts.)</li>
+
+<h4>Translator Comments</h4>
+
+<p>Translator comments are a feature that already exited in KDE3, but which
+was seldom used.</p>
+<ul>
+<li>Translator comments: now translator comments should start with TRANSLATORS (all upper case), as it is Gettext's habit: // TRANSLATORS: or /* TRANSLATORS: .
+The translator comment must be <em>before</em> the message string.
+Note: the old //i18n: and /*i18n: are still availablei as in KDE3,
+but may be deprectaed in future (as they seem to be less intuitive).</li>
 <li>As in Gettext 0.16.1, contexts are supposed to be short, please consider
-using a special comment instead of a context to give long hints to translators.
-The special comment starts with //i18n: ot /*i18n: and must be <em>before</em>
-the message code. (Note: this is not new to KDE4, but very seldomly used in
-KDE3.)</li>
+using a translator comment instead of a context to give long hints to translators.</li>
 </ul>
+<pre>
+// TRANSLATORS: this is a test sentence
+i18n("The quick brown fox jumps over the lazy dog");
+</pre>
 
 <h4>i18n calls</h4>
 
