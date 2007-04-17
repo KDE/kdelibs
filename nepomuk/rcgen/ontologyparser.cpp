@@ -21,6 +21,8 @@
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
 #include <QtCore/QFile>
+#include <QtCore/QHash>
+#include <QtCore/QDebug>
 
 
 class OntologyParser::Private

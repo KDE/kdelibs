@@ -30,7 +30,7 @@ namespace Nepomuk {
 	class ResourceData
 	    {
 	    public:
-		ResourceData( const QString& uri_ = QString(), const QString& type_ = QString() );
+		explicit ResourceData( const QString& uri_ = QString(), const QString& type_ = QString() );
 		~ResourceData();
 
 		/**
