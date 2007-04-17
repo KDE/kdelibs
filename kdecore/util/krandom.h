@@ -33,7 +33,8 @@
 namespace KRandom {
     /**
      * Generates a uniform random number.
-     * @return A truly unpredictable number in the range [0, RAND_MAX)
+     * @return A random number in the range [0, RAND_MAX). The RNG is seeded
+     *   on first use.
      */
     KDECORE_EXPORT int random();
 
