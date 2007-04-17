@@ -78,7 +78,7 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
 {
     // FIXME: do an actual class name mapping by parsing the class
     foreach( QString tf, templates ) {
-        QString filename = tf.section( QDir::separator(), -1 );
+        QString filename = QFileInfo( tf ).fileName();
         for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
              it != d->resources.end(); ++it ) {
             // we use startsWith() for a hackish handling of such suffixes as ".in"
