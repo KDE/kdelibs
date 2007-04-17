@@ -42,10 +42,10 @@ namespace Ifaces
         virtual ~Network();
 
         /**
-         * Retrieves the Universal Network Identifier (UNI) of the Network.
+         * Retrieves the Unique Network Identifier (UNI) of the Network.
          * This identifier is unique for each network and network interface in the system.
          *
-         * @returns the Universal Network Identifier of the current network
+         * @returns the Unique Network Identifier of the current network
          */
         virtual QString uni() const = 0;
 

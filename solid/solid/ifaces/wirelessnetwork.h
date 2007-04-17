@@ -61,7 +61,7 @@ namespace Ifaces
         virtual int bitrate() const = 0;
 
         /**
-         * Retrieves the frequency of this wifi network.
+         * Retrieves the radio channel frequency that this wifi network is visible on.
          *
          * @return the frequency
          */
@@ -130,7 +130,7 @@ namespace Ifaces
         virtual Solid::Authentication *authentication() const = 0;
 
         /**
-         * Sets the authentication object to with this network.
+         * Sets the authentication object to use with this network.
          *
          * @param authentication the new authentication scheme to use
          */

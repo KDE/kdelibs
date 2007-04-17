@@ -52,7 +52,7 @@ namespace Ifaces
 
 
         /**
-         * Retrieves the list of all the network interfaces Universal Network Identifiers (UNIs)
+         * Retrieves the list of all the network interfaces Unique Network Identifiers (UNIs)
          * in the system. It includes both hardware and virtual devices.
          *
          * @return the list of network interfaces available in this system

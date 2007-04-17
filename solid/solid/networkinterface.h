@@ -77,7 +77,7 @@ namespace Solid
         NetworkInterface();
 
         /**
-         * Constructs a network interface for a given Universal Network Identifier (UNI).
+         * Constructs a network interface for a given Unique Network Identifier (UNI).
          *
          * @param uni the uni of the network interface to create
          */
@@ -111,10 +111,10 @@ namespace Solid
         NetworkInterface &operator=( const NetworkInterface &device );
 
         /**
-         * Retrieves the Universal Network Identifier (UNI) of the NetworkInterface.
+         * Retrieves the Unique Network Identifier (UNI) of the NetworkInterface.
          * This identifier is unique for each network and network interface in the system.
          *
-         * @returns the Universal Network Identifier of the current network interface
+         * @returns the Unique Network Identifier of the current network interface
          */
         QString uni() const;
 
