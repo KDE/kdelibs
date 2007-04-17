@@ -23,6 +23,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QHash>
 #include <QtCore/QDebug>
+#include <QtCore/QDir>
 
 
 class OntologyParser::Private
@@ -77,7 +78,7 @@ bool OntologyParser::assignTemplates( const QStringList& templates )
 {
     // FIXME: do an actual class name mapping by parsing the class
     foreach( QString tf, templates ) {
-        QString filename = tf.section( '/', -1 );
+        QString filename = tf.section( QDir::separator(), -1 );
         for( QMap<QString, ResourceClass>::iterator it = d->resources.begin();
              it != d->resources.end(); ++it ) {
             // we use startsWith() for a hackish handling of such suffixes as ".in"
@@ -194,7 +195,7 @@ bool OntologyParser::writeSources( const QString& dir )
     for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
          it != d->resources.constEnd(); ++it ) {
         if( (*it).generateClass() )
-            success &= (*it).write( dir + '/' );
+            success &= (*it).write( dir + QDir::separator() );
     }
 
     return success;
