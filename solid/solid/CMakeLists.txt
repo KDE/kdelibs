@@ -53,7 +53,7 @@ install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES  soliddevicemanager.desktop solidpowermanager.desktop solidnetworkmanager.desktop solidbluetoothmanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
-install( FILES solid_export.h frontendobject.h device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h predicate.h powermanager.h networkinterface.h network.h wirelessnetwork.h networkmanager.h authentication.h bluetoothmanager.h bluetoothinterface.h bluetoothremotedevice.h bluetoothinputdevice.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES solid_export.h singletondefs.h frontendobject.h device.h devicemanager.h capability.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h predicate.h powermanager.h networkinterface.h network.h wirelessnetwork.h networkmanager.h authentication.h bluetoothmanager.h bluetoothinterface.h bluetoothremotedevice.h bluetoothinputdevice.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 
