@@ -198,7 +198,7 @@ KComponentData object, but everything else probably is a bug).</li>
     </pre>
 </li>
 <li>installSigpipeHandler() was removed.  </li>
-<li>propagateSessionManager() and requestShutDown() have been moved into the kworkspace library (which is found in kdebase/workspace/lib) and are static functions in that namespace.  </li>
+<li>propagateSessionManager(), requestShutDown() methods and associated ShutdownConfirm, ShutdownType and ShutdownMode enums have been moved into the kworkspace library (which is found in kdebase/workspace/lib); the methods are static functions in KWorkspace namespace. </li>
 <li>The shutDown() signal has been removed, use QApplication's signal aboutToQuit() </li>
 <li>enableStyles(), disableStyles(), and the constructor argument has been removed.  </li>
 <li>installKDEPropertyMap has been moved into k3sqlpropertymap.h and renamed to kInstallKDEPropertyMap. It can be used to keep old c
@@ -216,7 +216,7 @@ ode that uses the Q3Data* classes working.For new code, use User in the meta obj
 </li>
 <li>caption() has moved to KInstance </li>
 <li>makeStdCaption(const QString&amp;, bool, bool) has moved to KDialog and changed signature to makeStdCaption(const QString&amp;, CaptionFlags) </li>
-<li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. have moved to KGlobalSettings::self()</li>
+<li>addKipcEventMask() is unneeded now, and the signals like settingsChanged(), fontChanged() etc. with enums SettingsCategory have moved to KGlobalSettings::self() which is now a QObject</li>
 </ul>
 
 <h4>KAudioPlayer</h4>
@@ -397,6 +397,7 @@ hasMainComponent()</li>
 
 <h4>KGlobalSettings</h4>
 <ul>
+<li>KGlobalSettings is now a QObject so can emit signals like kdisplayPaletteChanged() instead of KApplication</li>
 <li> deprecated &quot;static QString trashPath()&quot; has been removed. use KIO::trash instead</li>
 </ul>
 
