@@ -2359,11 +2359,11 @@ int KateHighlighting::getIdFromString(QStringList *ContextNameList, QString tmpL
     }
   }
 
-  else if ( tmpLineEndContext.startsWith("##"))
+  else if ( tmpLineEndContext.contains("##"))
   {
-    QString tmp=tmpLineEndContext.right(tmpLineEndContext.length()-2);
+    QString tmp=tmpLineEndContext.mid(tmpLineEndContext.find("##")+2);
     if (!embeddedHls.contains(tmp))  embeddedHls.insert(tmp,KateEmbeddedHlInfo());
-    unres=tmp;
+    unres=tmpLineEndContext;
     context=0;
   }
 
@@ -2453,17 +2453,25 @@ void KateHighlighting::makeContextList()
 
 
   // at this point all needed highlighing (sub)definitions are loaded. It's time
-  // to resolve cross file  references (if there are any )
+  // to resolve cross file  references (if there are any)
   kdDebug(13010)<<"Unresolved contexts, which need attention: "<<unresolvedContextReferences.count()<<endl;
 
   //optimize this a littlebit
   for (KateHlUnresolvedCtxRefs::iterator unresIt=unresolvedContextReferences.begin();
     unresIt!=unresolvedContextReferences.end();++unresIt)
   {
-    //try to find the context0 id for a given unresolvedReference
-    KateEmbeddedHlInfos::const_iterator hlIt=embeddedHls.find(unresIt.data());
-    if (hlIt!=embeddedHls.end())
-      *(unresIt.key())=hlIt.data().context0;
+    QString incCtx = unresIt.data();
+    kdDebug(13010)<<"Context "<<incCtx<<" is unresolved"<<endl;
+    // only resolve '##Name' contexts here; handleKateHlIncludeRules() can figure
+    // out 'Name##Name'-style inclusions, but we screw it up
+    if (incCtx.endsWith(":")) {
+      kdDebug(13010)<<"Looking up context0 for ruleset "<<incCtx<<endl;
+      incCtx = incCtx.left(incCtx.length()-1);
+      //try to find the context0 id for a given unresolvedReference
+      KateEmbeddedHlInfos::const_iterator hlIt=embeddedHls.find(incCtx);
+      if (hlIt!=embeddedHls.end())
+        *(unresIt.key())=hlIt.data().context0;
+    }
   }
 
   // eventually handle KateHlIncludeRules items, if they exist.
@@ -2527,7 +2535,7 @@ void KateHighlighting::handleKateHlIncludeRules()
         // It would be good to look here somehow, if the result is valid
       }
     }
-    else ++it; //nothing to do, already resolved (by the cross defintion reference resolver
+    else ++it; //nothing to do, already resolved (by the cross defintion reference resolver)
   }
 
   // now that all KateHlIncludeRule items should be valid and completely resolved,
@@ -2745,30 +2753,35 @@ int KateHighlighting::addToContextList(const QString &ident, int ctx0)
         QString incCtx = KateHlManager::self()->syntax->groupItemData( data, QString("context"));
         QString incAttrib = KateHlManager::self()->syntax->groupItemData( data, QString("includeAttrib"));
         bool includeAttrib = IS_TRUE( incAttrib );
-        // only context refernces of type NAME and ##Name are allowed
+        // only context refernces of type Name, ##Name, and Subname##Name are allowed
         if (incCtx.startsWith("##") || (!incCtx.startsWith("#")))
         {
+          int incCtxi = incCtx.find("##");
           //#stay, #pop is not interesting here
-          if (!incCtx.startsWith("#"))
+          if (incCtxi >= 0)
+          {
+            QString incSet = incCtx.mid(incCtxi + 2);
+            QString incCtxN = incSet + ":" + incCtx.left(incCtxi);
+
+            //a cross highlighting reference
+            kdDebug(13010)<<"Cross highlight reference <IncludeRules>, context "<<incCtxN<<endl;
+            KateHlIncludeRule *ir=new KateHlIncludeRule(i,m_contexts[i]->items.count(),incCtxN,includeAttrib);
+
+            //use the same way to determine cross hl file references as other items do
+            if (!embeddedHls.contains(incSet))
+              embeddedHls.insert(incSet,KateEmbeddedHlInfo());
+            else
+              kdDebug(13010)<<"Skipping embeddedHls.insert for "<<incCtxN<<endl;
+
+            unresolvedContextReferences.insert(&(ir->incCtx), incCtxN);
+
+            includeRules.append(ir);
+          }
+          else
           {
             // a local reference -> just initialize the include rule structure
             incCtx=buildPrefix+incCtx.simplifyWhiteSpace();
             includeRules.append(new KateHlIncludeRule(i,m_contexts[i]->items.count(),incCtx, includeAttrib));
-          }
-          else
-          {
-            //a cross highlighting reference
-            kdDebug(13010)<<"Cross highlight reference <IncludeRules>"<<endl;
-            KateHlIncludeRule *ir=new KateHlIncludeRule(i,m_contexts[i]->items.count(),"",includeAttrib);
-
-            //use the same way to determine cross hl file references as other items do
-            if (!embeddedHls.contains(incCtx.right(incCtx.length()-2)))
-              embeddedHls.insert(incCtx.right(incCtx.length()-2),KateEmbeddedHlInfo());
-
-            unresolvedContextReferences.insert(&(ir->incCtx),
-                incCtx.right(incCtx.length()-2));
-
-            includeRules.append(ir);
           }
         }
 
