@@ -3956,11 +3956,10 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
     insertText( cl, n, s );
   }
   }
+  editEnd();
 
   if ( ! selectionRestored )
     v->setCursorPosition( cl, cc );
-
-  editEnd();
 }
 
 void KateDocument::joinLines( uint first, uint last )
