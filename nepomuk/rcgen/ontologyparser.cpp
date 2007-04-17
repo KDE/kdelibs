@@ -103,7 +103,7 @@ bool OntologyParser::parse( const QString& filename )
 
     // get the namespaces the hacky way
     QFile f( filename );
-    if( f.open( QIODevice::ReadOnly ) ) {
+    if( f.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
         QString s = QTextStream( &f ).readAll();
         QRegExp nsr( "xmlns:(\\S*)=\"(\\S*\\#)\"" );
         int pos = 0;
