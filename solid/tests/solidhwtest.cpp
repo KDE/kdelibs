@@ -29,6 +29,7 @@
 #include <solid/processor.h>
 #include <solid/volume.h>
 #include <solid/predicate.h>
+#include "solid/managerbase_p.h"
 
 #include <fakemanager.h>
 #include <fakedevice.h>
@@ -42,7 +43,7 @@ QTEST_KDEMAIN_CORE( SolidHwTest )
 void SolidHwTest::initTestCase()
 {
     fakeManager = new FakeManager(0, QStringList(), FAKE_COMPUTER_XML);
-    Solid::DeviceManager::selfForceBackend( fakeManager );
+    Solid::ManagerBasePrivate::_k_forcePreloadedBackend("Solid::Ifaces::DeviceManager", fakeManager);
 }
 
 void SolidHwTest::testAllDevices()

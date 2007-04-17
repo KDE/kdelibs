@@ -21,8 +21,9 @@
 #ifndef SOLID_NETWORKMANAGER
 #define SOLID_NETWORKMANAGER
 
+#include <QtCore/QObject>
+
 #include <solid/singletondefs.h>
-#include <solid/managerbase.h>
 #include <solid/solid_export.h>
 
 namespace Solid
@@ -35,6 +36,7 @@ namespace Solid
     class NetworkInterface;
     typedef QList<NetworkInterface> NetworkInterfaceList;
     class NetworkManagerPrivate;
+    class AuthenticationValidator;
 
     /**
      * This class allow to query the underlying system to discover the available
@@ -46,10 +48,9 @@ namespace Solid
      *
      * Note that it's implemented as a singleton and encapsulates the backend logic.
      */
-    class SOLID_EXPORT NetworkManager : public ManagerBase
+    class SOLID_EXPORT NetworkManager : public QObject
     {
         Q_OBJECT
-        Q_DECLARE_PRIVATE(NetworkManager)
         SOLID_SINGLETON(NetworkManager)
 
     public:
@@ -128,13 +129,14 @@ namespace Solid
         virtual ~NetworkManager();
         NetworkInterfaceList buildDeviceList( const QStringList & udiList ) const;
 
-    protected:
-        void setManagerBackend( QObject *backend );
-
     private:
-        Q_PRIVATE_SLOT(d_func(), void _k_networkInterfaceAdded(const QString&))
-        Q_PRIVATE_SLOT(d_func(), void _k_networkInterfaceRemoved(const QString&))
-        Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
+        Q_PRIVATE_SLOT(d, void _k_networkInterfaceAdded(const QString&))
+        Q_PRIVATE_SLOT(d, void _k_networkInterfaceRemoved(const QString&))
+        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
+
+        NetworkManagerPrivate * const d;
+        friend class NetworkManagerPrivate;
+        friend class AuthenticationValidator;
     };
 
 } // Solid

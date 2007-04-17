@@ -152,6 +152,4 @@ Q_SIGNALS:
 
 } // Solid
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::BluetoothManager, "org.kde.Solid.Ifaces.BluetoothManager/0.1")
-
 #endif

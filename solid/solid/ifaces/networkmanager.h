@@ -132,6 +132,4 @@ namespace Ifaces
 
 } // Solid
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::NetworkManager, "org.kde.Solid.Ifaces.NetworkManager/0.1" )
-
 #endif

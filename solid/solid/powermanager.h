@@ -20,10 +20,11 @@
 #ifndef SOLID_POWERMANAGER_H
 #define SOLID_POWERMANAGER_H
 
+#include <QtCore/QObject>
+
 #include <solid/solid_export.h>
 
 #include <solid/singletondefs.h>
-#include <solid/managerbase.h>
 
 class KJob;
 
@@ -42,12 +43,11 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT PowerManager : public ManagerBase
+    class SOLID_EXPORT PowerManager : public QObject
     {
         Q_OBJECT
         Q_ENUMS( BatteryState AcAdapterState ButtonType SuspendMethod CpuFreqPolicy )
         Q_FLAGS( SuspendMethods CpuFreqPolicies )
-        Q_DECLARE_PRIVATE(PowerManager)
         SOLID_SINGLETON( PowerManager )
 
     public:
@@ -268,8 +268,7 @@ namespace Solid
         PowerManager();
         ~PowerManager();
 
-    protected:
-        void setManagerBackend( QObject *backend );
+        PowerManagerPrivate * const d;
     };
 }
 

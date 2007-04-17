@@ -25,6 +25,7 @@
 
 #include <solid/bluetoothmanager.h>
 #include <solid/bluetoothinterface.h>
+#include "solid/managerbase_p.h"
 #include <kdebug.h>
 
 #include <fakebluetoothmanager.h>
@@ -38,7 +39,7 @@ QTEST_KDEMAIN_CORE(SolidBluetoothTest)
 void SolidBluetoothTest::initTestCase()
 {
     fakeManager = new FakeBluetoothManager(0, QStringList(), FAKE_BLUETOOTH_XML);
-    Solid::BluetoothManager::selfForceBackend(fakeManager);
+    Solid::ManagerBasePrivate::_k_forcePreloadedBackend("Solid::Ifaces::BluetoothManager", fakeManager);
 }
 
 void SolidBluetoothTest::testBluetoothInterfaces()

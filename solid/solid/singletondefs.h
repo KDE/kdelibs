@@ -47,15 +47,6 @@ private:                                                          \
         Solid::SingletonHelper< Type > *singleton = global##Name; \
                                                                   \
         return singleton->instance;                               \
-    }                                                             \
-                                                                  \
-    Type &Type::selfForceBackend( QObject *backend )              \
-    {                                                             \
-        Solid::SingletonHelper< Type > *singleton = global##Name; \
-                                                                  \
-        singleton->instance.setManagerBackend( backend );         \
-                                                                  \
-        return singleton->instance;                               \
     }
 }
 

@@ -23,8 +23,9 @@
 #ifndef SOLID_BLUETOOTHMANAGER
 #define SOLID_BLUETOOTHMANAGER
 
+#include <QtCore/QObject>
+
 #include <solid/singletondefs.h>
-#include <solid/managerbase.h>
 #include <solid/solid_export.h>
 
 #include <solid/bluetoothinterface.h>
@@ -52,10 +53,9 @@ class BluetoothManagerPrivate;
  * A bluetooth manager allow to query the underlying platform to discover the
  * available bluetooth interfaces.
  */
-class SOLID_EXPORT BluetoothManager : public ManagerBase
+class SOLID_EXPORT BluetoothManager : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(BluetoothManager)
     SOLID_SINGLETON(BluetoothManager)
 
 public:
@@ -167,16 +167,16 @@ private:
 
     BluetoothInterfaceList buildDeviceList(const QStringList & ubiList) const;
 
-    Q_PRIVATE_SLOT(d_func(), void _k_interfaceAdded(const QString&))
-    Q_PRIVATE_SLOT(d_func(), void _k_interfaceRemoved(const QString&))
-    Q_PRIVATE_SLOT(d_func(), void _k_interfaceDestroyed(QObject*))
+    Q_PRIVATE_SLOT(d, void _k_interfaceAdded(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_interfaceRemoved(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_interfaceDestroyed(QObject*))
 
-    Q_PRIVATE_SLOT(d_func(), void _k_inputDeviceCreated(const QString&))
-    Q_PRIVATE_SLOT(d_func(), void _k_inputDeviceRemoved(const QString&))
-    Q_PRIVATE_SLOT(d_func(), void _k_inputDeviceDestroyed(QObject*))
+    Q_PRIVATE_SLOT(d, void _k_inputDeviceCreated(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_inputDeviceRemoved(const QString&))
+    Q_PRIVATE_SLOT(d, void _k_inputDeviceDestroyed(QObject*))
 
-protected:
-    void setManagerBackend(QObject *backend);
+    BluetoothManagerPrivate * const d;
+    friend class BluetoothManagerPrivate;
 };
 } // Solid
 

@@ -42,7 +42,6 @@ namespace Solid {
 class KDE_EXPORT FakeNetworkManager : public Solid::Ifaces::NetworkManager
 {
 Q_OBJECT
-Q_INTERFACES( Solid::Ifaces::NetworkManager )
     public:
         FakeNetworkManager( QObject * parent, const QStringList & args );
         FakeNetworkManager( QObject * parent, const QStringList & args, const QString & xmlFile );

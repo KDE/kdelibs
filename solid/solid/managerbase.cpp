@@ -17,10 +17,7 @@
 
 */
 
-#include "devicemanager.h"
-
-#include <QFile>
-#include <QPair>
+#include "managerbase_p.h"
 
 #include <kservicetypetrader.h>
 #include <kservice.h>
@@ -29,76 +26,33 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include "device.h"
-#include "ifaces/devicemanager.h"
-#include "ifaces/device.h"
-#include "managerbase.h"
-#include "managerbase_p.h"
+static QMap<QString, QObject*> _k_preloadedBackends;
 
-Solid::ManagerBase::ManagerBase( ManagerBasePrivate &dd, const QString &description,
-                                 const char *serviceName, const char *backendClassName )
-    : QObject(), d_ptr(&dd)
+Solid::ManagerBasePrivate::ManagerBasePrivate()
+    : backend(0)
 {
-    d_ptr->q_ptr = this;
+}
 
-    QObject *backend = loadBackend( description, serviceName, backendClassName );
+Solid::ManagerBasePrivate::~ManagerBasePrivate()
+{
+}
 
-    if ( backend != 0 )
-    {
-        setManagerBackend( backend );
+void Solid::ManagerBasePrivate::loadBackend(const QString &description, const char *serviceName,
+                                            const char *backendClassName)
+{
+    if (_k_preloadedBackends.contains(backendClassName)) {
+        backend = _k_preloadedBackends[backendClassName];
+        return;
     }
-}
-
-Solid::ManagerBase::~ManagerBase()
-{
-    Q_D(ManagerBase);
-
-    delete d;
-    d_ptr = 0;
-}
-
-const QString &Solid::ManagerBase::errorText() const
-{
-    Q_D(const ManagerBase);
-
-    return d->errorText;
-}
-
-QObject *Solid::ManagerBase::managerBackend() const
-{
-    Q_D(const ManagerBase);
-
-    return d->backend;
-}
-
-void Solid::ManagerBase::setManagerBackend( QObject *backend )
-{
-    Q_D(ManagerBase);
-
-    if ( d->backend )
-    {
-        disconnect( d->backend );
-        d->backend->disconnect( this );
-    }
-
-    d->backend = backend;
-}
-
-QObject *Solid::ManagerBase::loadBackend( const QString &description, const char *serviceName,
-                                          const char *backendClassName )
-{
-    Q_D(ManagerBase);
 
     QStringList error_msg;
 
-    QObject *backend = 0;
+    KService::List offers = KServiceTypeTrader::self()->query(serviceName, "(Type == 'Service')");
 
-    KService::List offers = KServiceTypeTrader::self()->query( serviceName, "(Type == 'Service')" );
-
-    foreach ( KService::Ptr ptr, offers )
+    foreach (KService::Ptr ptr, offers)
     {
         int error = 0;
-        backend = KService::createInstance<QObject>( ptr, 0, QStringList(), &error );
+        backend = KService::createInstance<QObject>(ptr, 0, QStringList(), &error);
 
         if( backend != 0 )
         {
@@ -131,27 +85,29 @@ QObject *Solid::ManagerBase::loadBackend( const QString &description, const char
     {
         if ( offers.size() == 0 )
         {
-            d->errorText = i18n( "No %1 Backend found", description );
+            errorText = i18n("No %1 Backend found", description);
         }
         else
         {
-            d->errorText = "<qt>";
-            d->errorText+= i18n( "Unable to use any of the %1 Backends", description );
-            d->errorText+= "<table>";
+            errorText = "<qt>";
+            errorText+= i18n("Unable to use any of the %1 Backends", description);
+            errorText+= "<table>";
 
             QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";
 
             for ( int i = 0; i< offers.size(); i++ )
             {
-                d->errorText+= line.arg( offers[i]->name() ).arg( error_msg[i] );
+                errorText+= line.arg(offers[i]->name()).arg(error_msg[i]);
             }
 
-            d->errorText+= "</table></qt>";
+            errorText+= "</table></qt>";
         }
     }
-
-    return backend;
 }
 
-#include "managerbase.moc"
+void Solid::ManagerBasePrivate::_k_forcePreloadedBackend(const char *backendClassName, QObject *backend)
+{
+    _k_preloadedBackends[backendClassName] = backend;
+}
+
 

@@ -20,12 +20,12 @@
 #ifndef SOLID_DEVICEMANAGER_H
 #define SOLID_DEVICEMANAGER_H
 
+#include <QtCore/QObject>
 #include <QList>
 
 #include <solid/solid_export.h>
 
 #include <solid/singletondefs.h>
-#include <solid/managerbase.h>
 #include <solid/predicate.h>
 
 namespace Solid
@@ -45,13 +45,20 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT DeviceManager : public ManagerBase
+    class SOLID_EXPORT DeviceManager : public QObject
     {
         Q_OBJECT
-        Q_DECLARE_PRIVATE(DeviceManager)
         SOLID_SINGLETON(DeviceManager)
 
     public:
+        /**
+         * Returns a text describing the error that occurred while loading
+         * the backend.
+         *
+         * @return the error description, or QString() if the backend loaded successfully
+         */
+        QString errorText() const;
+
         /**
          * Retrieves all the devices available in the underlying system.
          *
@@ -141,14 +148,14 @@ namespace Solid
         DeviceManager();
         ~DeviceManager();
 
-    protected:
-        void setManagerBackend( QObject *backend );
-
     private:
-        Q_PRIVATE_SLOT(d_func(), void _k_deviceAdded(const QString&))
-        Q_PRIVATE_SLOT(d_func(), void _k_deviceRemoved(const QString&))
-        Q_PRIVATE_SLOT(d_func(), void _k_newCapability(const QString&, int))
-        Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
+        Q_PRIVATE_SLOT(d, void _k_deviceAdded(const QString&))
+        Q_PRIVATE_SLOT(d, void _k_deviceRemoved(const QString&))
+        Q_PRIVATE_SLOT(d, void _k_newCapability(const QString&, int))
+        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
+
+        DeviceManagerPrivate * const d;
+        friend class DeviceManagerPrivate;
     };
 }
 

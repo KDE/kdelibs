@@ -23,6 +23,7 @@
 
 #include <solid/networkmanager.h>
 #include <solid/networkinterface.h>
+#include <solid/managerbase_p.h>
 #include <kdebug.h>
 
 #include <fakenetworkmanager.h>
@@ -36,7 +37,7 @@ QTEST_KDEMAIN_CORE( SolidNetTest )
 void SolidNetTest::initTestCase()
 {
     fakeManager = new FakeNetworkManager(0, QStringList(), FAKE_NETWORKING_XML);
-    Solid::NetworkManager::selfForceBackend( fakeManager );
+    Solid::ManagerBasePrivate::_k_forcePreloadedBackend("Solid::Ifaces::NetworkManager", fakeManager);
 }
 
 void SolidNetTest::testNetworkInterfaces()

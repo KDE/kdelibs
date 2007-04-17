@@ -35,7 +35,6 @@ class QDomElement;
 class KDE_EXPORT FakeBluetoothManager : public Solid::Ifaces::BluetoothManager
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::BluetoothManager)
 public:
     FakeBluetoothManager(QObject * parent, const QStringList & args);
     FakeBluetoothManager(QObject * parent, const QStringList & args, const QString & xmlFile);

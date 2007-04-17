@@ -32,9 +32,12 @@ namespace Solid
 {
     class DeviceManagerPrivate : public ManagerBasePrivate
     {
-        Q_DECLARE_PUBLIC(DeviceManager)
-
     public:
+        DeviceManagerPrivate(DeviceManager *parent)
+            : q(parent) { }
+
+        DeviceManager * const q;
+
         QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi ) const;
         void connectBackend( QObject *newBackend );
 
@@ -45,29 +48,25 @@ namespace Solid
 
         mutable QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
         Device invalidDevice;
-
-        QString errorText;
     };
 }
 
 SOLID_SINGLETON_IMPLEMENTATION( Solid::DeviceManager, DeviceManager )
 
 Solid::DeviceManager::DeviceManager()
-    : ManagerBase(*new DeviceManagerPrivate, "Hardware Discovery",
-                  "SolidDeviceManager", "Solid::Ifaces::DeviceManager")
+    : QObject(), d(new DeviceManagerPrivate(this))
 {
-    Q_D(DeviceManager);
+    d->loadBackend("Hardware Discovery",
+                   "SolidDeviceManager",
+                   "Solid::Ifaces::DeviceManager");
 
-    if ( managerBackend() != 0 )
-    {
-        d->connectBackend( managerBackend() );
+    if (d->backend!=0) {
+        d->connectBackend(d->backend);
     }
 }
 
 Solid::DeviceManager::~DeviceManager()
 {
-    Q_D(DeviceManager);
-
     typedef QPair<Device*, Ifaces::Device*> DeviceIfacePair;
 
     foreach( const DeviceIfacePair &pair, d->devicesMap.values() )
@@ -77,14 +76,18 @@ Solid::DeviceManager::~DeviceManager()
     }
 
     d->devicesMap.clear();
+    delete d;
+}
+
+QString Solid::DeviceManager::errorText() const
+{
+    return d->errorText;
 }
 
 Solid::DeviceList Solid::DeviceManager::allDevices() const
 {
-    Q_D(const DeviceManager);
-
     DeviceList list;
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
 
     if ( backend == 0 ) return list;
 
@@ -105,9 +108,7 @@ Solid::DeviceList Solid::DeviceManager::allDevices() const
 
 bool Solid::DeviceManager::deviceExists( const QString &udi ) const
 {
-    Q_D(const DeviceManager);
-
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
 
     if ( backend == 0 ) return false;
 
@@ -123,9 +124,7 @@ bool Solid::DeviceManager::deviceExists( const QString &udi ) const
 
 const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi ) const
 {
-    Q_D(const DeviceManager);
-
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
 
     if ( backend == 0 ) return d->invalidDevice;
 
@@ -159,11 +158,9 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &pre
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::Type &capability,
                                                               const QString &parentUdi ) const
 {
-    Q_D(const DeviceManager);
-
     DeviceList list;
 
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
 
     if ( backend == 0 ) return list;
 
@@ -182,11 +179,9 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::
 Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &predicate,
                                                               const QString &parentUdi ) const
 {
-    Q_D(const DeviceManager);
-
     DeviceList list;
 
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( managerBackend() );
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
 
     if ( backend == 0 ) return list;
 
@@ -223,20 +218,8 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
     return list;
 }
 
-void Solid::DeviceManager::setManagerBackend( QObject *backend )
-{
-    Q_D(DeviceManager);
-
-    ManagerBase::setManagerBackend(backend);
-    if (backend) {
-        d->connectBackend(backend);
-    }
-}
-
 void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
 {
-    Q_Q(DeviceManager);
-
     QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
 
     if ( pair.first!= 0 )
@@ -253,8 +236,6 @@ void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
 
 void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
 {
-    Q_Q(DeviceManager);
-
     QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
 
     if ( pair.first!= 0 )
@@ -268,8 +249,6 @@ void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
 
 void Solid::DeviceManagerPrivate::_k_newCapability(const QString &udi, int capability)
 {
-    Q_Q(DeviceManager);
-
     emit q->newCapability(udi, capability);
 }
 
@@ -287,15 +266,13 @@ void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)
 
 QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findRegisteredDevice( const QString &udi ) const
 {
-    Q_Q(const DeviceManager);
-
     if ( devicesMap.contains( udi ) )
     {
         return devicesMap[udi];
     }
     else
     {
-        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( q->managerBackend() );
+        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( this->backend );
         Ifaces::Device *iface = 0;
 
         if ( backend!= 0 )
@@ -321,8 +298,6 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findR
 
 void Solid::DeviceManagerPrivate::connectBackend( QObject *newBackend )
 {
-    Q_Q(DeviceManager);
-
     QObject::connect( newBackend, SIGNAL( deviceAdded( QString ) ),
                       q, SLOT( _k_deviceAdded( QString ) ) );
     QObject::connect( newBackend, SIGNAL( deviceRemoved( QString ) ),

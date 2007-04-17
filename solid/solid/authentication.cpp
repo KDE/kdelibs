@@ -20,6 +20,7 @@
 
 #include "soliddefs_p.h"
 #include "authentication.h"
+#include "networkmanager_p.h"
 #include <solid/networkmanager.h>
 #include <solid/ifaces/networkmanager.h>
 #include <solid/ifaces/authentication.h>
@@ -307,7 +308,7 @@ QString Solid::AuthenticationWpaEnterprise::certPrivatePasswordKey() const
 Solid::AuthenticationValidator::AuthenticationValidator()
     : d( new Private )
 {
-    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( NetworkManager::self().managerBackend() );
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( NetworkManager::self().d->backend );
 
     if ( backend )
     {
