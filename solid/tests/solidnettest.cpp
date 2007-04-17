@@ -155,10 +155,8 @@ void SolidNetTest::testInterfaceBasicFeatures()
 
     QVERIFY( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0 " )!=0 );
     QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->isValid(), true );
-    
-    QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->ipV4Addresses().size(), 1 );
-    QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->ipV6Addresses().size(), 2 );
 
+    QCOMPARE( valid_iface.findNetwork( "/org/kde/solid/fakenet/eth0/net0" )->addressEntries().size(), 1 );
     QCOMPARE( valid_iface.networks().size(), 4 );
 }
 

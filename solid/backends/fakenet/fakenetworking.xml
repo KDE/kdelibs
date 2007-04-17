@@ -10,8 +10,7 @@
         <property key="capabilities">manageable,carrierdetect,wirelessscan</property>
 
         <wireless uni="/org/kde/solid/fakenet/eth0/net0">
-            <property key="ipv4addresses">193.1.234.22</property>
-            <property key="ipv6addresses">fe80::215:ff:fe39:208e/64,fe80::20d:e1ef:fe12:76c2/64</property>
+            <property key="addresses">193.1.234.22</property>
             <property key="subnet">193.1.234.0</property>
             <property key="broadcast">193.1.234.255</property>
             <property key="dns">193.1.214.50,193.1.214.55</property>

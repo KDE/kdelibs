@@ -62,7 +62,7 @@ FakeNetwork::~FakeNetwork()
 
 QList<QNetworkAddressEntry> FakeNetwork::addressEntries() const
 {
-    return stringlistsToQNetworkAddressEntries( mPropertyMap[ "ipv4addresses" ].toStringList(),
+    return stringlistsToQNetworkAddressEntries( mPropertyMap[ "addresses" ].toStringList(),
                                    mPropertyMap[ "subnet" ].toStringList(),
                                    mPropertyMap[ "broadcast" ].toStringList()
                                  );
