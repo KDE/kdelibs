@@ -3887,6 +3887,7 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
         end = t;
       }
       QString s = text( ln, start, ln, end );
+      QString o = s;
 
       if ( t == Uppercase )
         s = s.upper();
@@ -3912,8 +3913,11 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
         }
       }
 
+      if ( o != s )
+      {
       removeText( ln, start, ln, end );
       insertText( ln, start, s );
+      }
 
       ln++;
     }
@@ -3923,28 +3927,34 @@ void KateDocument::transform( KateView *v, const KateTextCursor &c,
     selectionRestored = true;
 
   } else {  // no selection
+    QString o = text( cl, cc, cl, cc + 1 );
     QString s;
     int n ( cc );
     switch ( t ) {
       case Uppercase:
-      s = text( cl, cc, cl, cc + 1 ).upper();
+      s = o.upper();
       break;
       case Lowercase:
-      s = text( cl, cc, cl, cc + 1 ).lower();
+      s = o.lower();
       break;
       case Capitalize:
       {
         KateTextLine::Ptr l = m_buffer->plainLine( cl );
         while ( n > 0 && highlight()->isInWord( l->getChar( n-1 ), l->attribute( n-1 ) ) )
           n--;
-        s = text( cl, n, cl, n + 1 ).upper();
+        o = text( cl, n, cl, n + 1 );
+        s = o.upper();
       }
       break;
       default:
       break;
     }
+
+    if ( s != o )
+    {
     removeText( cl, n, cl, n+1 );
     insertText( cl, n, s );
+  }
   }
 
   if ( ! selectionRestored )
