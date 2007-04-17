@@ -61,12 +61,12 @@
      </column>
      <column>
       <property name="text" >
-       <string>Mouse button gesture</string>
+       <string>Mouse Button Gesture</string>
       </property>
      </column>
      <column>
       <property name="text" >
-       <string>Mouse shape gesture</string>
+       <string>Mouse Shape Gesture</string>
       </property>
      </column>
     </widget>
