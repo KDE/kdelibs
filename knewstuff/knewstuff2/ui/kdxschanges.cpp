@@ -59,7 +59,7 @@ void KDXSChanges::addChangelog(QString version, QString log)
 	m_part->write("<tr>");
 	m_part->write("<td class='contentsColumn'>");
 	m_part->write("<table class='contentsHeader' cellspacing='2' cellpadding='0'><tr>");
-	m_part->write("<td>" + i18n("Version %1").arg(version) + "</td>");
+	m_part->write("<td>" + i18n("Version %1", version) + "</td>");
 	m_part->write("</tr></table>");
 	m_part->write("<div class='contentsBody'>");
 	m_part->write(log);
