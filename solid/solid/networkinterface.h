@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006,2007 Will Stephenson <wstephenson@kde.org>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ namespace Solid
     /**
      * Represents a network interface as seen by the networking subsystem.
      *
-     * For non network specific hardware details,
+     * For non-networking specific hardware details,
      * @see Solid::NetworkHw
      */
     class SOLID_EXPORT NetworkInterface : public FrontendObject
@@ -102,8 +102,6 @@ namespace Solid
          */
         ~NetworkInterface();
 
-
-
         /**
          * Assigns a network interface to this network interface and returns a reference to it.
          *
@@ -111,8 +109,6 @@ namespace Solid
          * @return a reference to the network interface
          */
         NetworkInterface &operator=( const NetworkInterface &device );
-
-
 
         /**
          * Retrieves the Universal Network Identifier (UNI) of the NetworkInterface.
@@ -140,8 +136,8 @@ namespace Solid
 
         /**
          * Retrieves the current state of the network connection held by this device.
-         * It's a high level view of the connection. It's user oriented so technically
-         * it provides states coming from different layers.
+         * It's a high level view of the connection. It is user oriented, so 
+         * actually it provides state coming from different layers.
          *
          * @return the current connection state
          * @see Solid::NetworkInterface::ConnectionState
@@ -149,22 +145,25 @@ namespace Solid
         ConnectionState connectionState() const;
 
         /**
-         * Retrieves the current signal strength of this network interface. It ranges from 0 to 100.
+         * Retrieves the current signal strength of this network interface.
+         * It ranges from 0 to 100.
          *
-         * @return the signal strength as a percentage, for ethernet device it reports 100
+         * @return the signal strength as a percentage, for ethernet devices it always reports 100.
          */
         int signalStrength() const;
 
         /**
-         * Retrieves the maximum speed as reported by the device. Note that it's a design
-         * related information and that the device might not reach this maximum.
+         * Retrieves the maximum speed as reported by the device.
+         * Note that this is only a design related piece of information, and that
+         * the device might not reach this maximum.
          *
-         * @return the device maximum speed
+         * @return the device's maximum speed
          */
         int designSpeed() const;
 
         /**
-         * Indicates if the network interfaces sees a carrier.
+         * Indicates if the network interface sees a carrier, e.g. that an
+         * ethernet device is connected, or a wireless device is associated.
          *
          * @return true if there's a carrier, false otherwise
          */
@@ -178,10 +177,10 @@ namespace Solid
         Capabilities capabilities() const;
 
         /**
-         * Finds Network object given its UNI.
+         * Finds Network object given its Unique Network Identifier.
          *
          * @param uni the identifier of the network to find from this network interface
-         * @returns a valid Network object if there's a network having the given UNI for this device, an invalid Network object otherwise
+         * @returns a valid Network object if a network having the given UNI for this device is known to the system, an invalid Network object otherwise
          */
         Network *findNetwork( const QString & uni ) const;
 

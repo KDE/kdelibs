@@ -20,7 +20,6 @@
 #ifndef FAKE_NETWORK_H
 #define FAKE_NETWORK_H
 
-#include <QObject>
 #include <QStringList>
 #include <QVariant>
 
@@ -39,11 +38,7 @@ public:
                  QObject * parent = 0 );
     virtual ~FakeNetwork();
 
-    QList<QHostAddress> ipV4Addresses() const;
-    QList<QHostAddress> ipV6Addresses() const;
-
-    QString subnetMask() const;
-    QString broadcastAddress() const;
+    QList<QNetworkAddressEntry> addressEntries() const;
 
     QString route() const;
 
@@ -58,7 +53,8 @@ Q_SIGNALS:
     void activationStateChanged( bool );
 
 protected:
-    QList<QHostAddress> stringlistToKIpAddress( const QStringList & ) const;
+    QList<QHostAddress> stringlistToKIpAddress(  const QStringList & addrStringList ) const;
+    QList<QNetworkAddressEntry> stringlistsToQNetworkAddressEntries( const QStringList &,const QStringList &,const QStringList & ) const;
     QMap<QString, QVariant> mPropertyMap;
 };
 

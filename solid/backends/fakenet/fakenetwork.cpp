@@ -19,16 +19,32 @@
 
 #include "fakenetwork.h"
 
-
-QList<QHostAddress> FakeNetwork::stringlistToKIpAddress( const QStringList & addrStringList ) const
+QList<QHostAddress> FakeNetwork::stringlistToKIpAddress(  const QStringList & addrStringList ) const
 {
     QList<QHostAddress> ipv4Addrs;
     foreach ( const QString &addrString, addrStringList )
     {
-        QHostAddress addr( addrString );
-        ipv4Addrs.append( addr );
+        QHostAddress addr(  addrString );
+        ipv4Addrs.append(  addr );
     }
     return ipv4Addrs;
+}
+
+QList<QNetworkAddressEntry> FakeNetwork::stringlistsToQNetworkAddressEntries( const QStringList & addrStringList, const QStringList & subnets, const QStringList & bcasts ) const
+{
+    if ( !( addrStringList.count() == subnets.count() == bcasts.count() ) )
+        return QList<QNetworkAddressEntry>();
+
+    QList<QNetworkAddressEntry> entries;
+    for ( int i = 0; i< addrStringList.count(); ++i )
+    {
+        QNetworkAddressEntry addr;
+        addr.setIp( QHostAddress( addrStringList[ i ] ) );
+        addr.setNetmask( QHostAddress( subnets[ i ] ) );
+        addr.setBroadcast( QHostAddress( bcasts[ i ] ) );
+        entries.append( addr );
+    }
+    return entries;
 
 }
 
@@ -44,24 +60,12 @@ FakeNetwork::~FakeNetwork()
 
 }
 
-QList<QHostAddress> FakeNetwork::ipV4Addresses() const
+QList<QNetworkAddressEntry> FakeNetwork::addressEntries() const
 {
-    return stringlistToKIpAddress( mPropertyMap[ "ipv4addresses" ].toStringList() );
-}
-
-QList<QHostAddress> FakeNetwork::ipV6Addresses() const
-{
-    return stringlistToKIpAddress( mPropertyMap[ "ipv6addresses" ].toString().simplified().split( ',' ) );
-}
-
-QString FakeNetwork::subnetMask() const
-{
-    return mPropertyMap[ "subnet" ].toString();
-}
-
-QString FakeNetwork::broadcastAddress() const
-{
-    return mPropertyMap[ "broadcast" ].toString();
+    return stringlistsToQNetworkAddressEntries( mPropertyMap[ "ipv4addresses" ].toStringList(),
+                                   mPropertyMap[ "subnet" ].toStringList(),
+                                   mPropertyMap[ "broadcast" ].toStringList()
+                                 );
 }
 
 QString FakeNetwork::route() const

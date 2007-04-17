@@ -105,8 +105,6 @@ namespace Solid
          */
         Capabilities capabilities() const;
 
-
-
         /**
          * Retrieves the Extended Service Set Identifier (ESSID) of this wifi network.
          *

@@ -53,24 +53,9 @@ Solid::Network::~Network()
 
 }
 
-QList<QHostAddress> Solid::Network::ipV4Addresses() const
+QList<QNetworkAddressEntry> Solid::Network::addressEntries() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<QHostAddress>(), ipV4Addresses() );
-}
-
-QList<QHostAddress> Solid::Network::ipV6Addresses() const
-{
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<QHostAddress>(), ipV6Addresses() );
-}
-
-QString Solid::Network::subnetMask() const
-{
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), subnetMask() );
-}
-
-QString Solid::Network::broadcastAddress() const
-{
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), broadcastAddress() );
+    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<QNetworkAddressEntry>(), addressEntries() );
 }
 
 QString Solid::Network::route() const

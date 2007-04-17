@@ -20,7 +20,6 @@
 #ifndef FAKE_WIRELESSNETWORK_H
 #define FAKE_WIRELESSNETWORK_H
 
-#include <QObject>
 #include <QString>
 #include <QVariant>
 
