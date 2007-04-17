@@ -32,7 +32,7 @@ public:
 	KDXSComments(QWidget *parent);
 	void addComment(QString username, QString comment);
 	void finish();
-private slots:
+private Q_SLOTS:
 	void slotURL(const QString& url);
 private:
 	void prepare();

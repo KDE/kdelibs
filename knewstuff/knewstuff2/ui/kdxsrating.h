@@ -33,7 +33,7 @@ Q_OBJECT
 public:
 	KDXSRating(QWidget *parent);
 	int rating();
-public slots:
+public Q_SLOTS:
 	void slotRating(int rating);
 private:
 	QLabel *m_rating;

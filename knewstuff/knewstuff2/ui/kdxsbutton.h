@@ -47,7 +47,7 @@ public:
 	void setProvider(KNS::Provider *provider);
 	void setEngine(KNS::DxsEngine *engine);
 
-public slots:
+public Q_SLOTS:
 	void slotTriggered(QAction *action);
 	void slotVersionsActivated(int id);
 	void slotVersionsHighlighted(int id);

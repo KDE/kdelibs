@@ -82,7 +82,7 @@ class KNEWSTUFF_EXPORT UploadDialog : public KDialog
 
     Entry *entry() const;
 
-  protected slots:
+  protected Q_SLOTS:
     void slotOk();
 
   private:

@@ -63,7 +63,7 @@ class KNEWSTUFF_EXPORT ProviderDialog : public KDialog
 
     Provider *provider() const;
 
-  protected slots:
+  protected Q_SLOTS:
     void slotOk();
 
   private:

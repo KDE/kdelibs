@@ -35,7 +35,7 @@ class KNEWSTUFF_EXPORT KDXSView : public KDialog
 Q_OBJECT
 public:
 	KDXSView(QWidget *parent = NULL);
-private slots:
+private Q_SLOTS:
 	void slotRun();
 	void slotProvidersLoaded(KNS::Provider::List providers);
 	void slotProvidersFailed();

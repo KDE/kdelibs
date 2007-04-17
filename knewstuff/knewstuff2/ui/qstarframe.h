@@ -28,7 +28,7 @@ class QStarFrame: public QFrame
 Q_OBJECT
 public:
 	QStarFrame(QWidget *parent);
-public slots:
+public Q_SLOTS:
 	void slotRating(int rating);
 protected:
 	void paintEvent(QPaintEvent *e);

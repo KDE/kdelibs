@@ -31,7 +31,7 @@ class QAsyncFrame : public QFrame
     public:
         QAsyncFrame(QWidget *parent = 0);
 
-    private slots:
+    private Q_SLOTS:
         void slotLoaded(QPixmap *pix);
 };
 

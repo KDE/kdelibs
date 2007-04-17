@@ -54,7 +54,7 @@ class DownloadDialog : public QDialog
 	//QList<Entry*> m_entries;
 	QMap<const Feed*, KNS::Entry::List> m_entries;
 
-    private slots:
+    private Q_SLOTS:
         void slotResetMessageColors();
         void slotNetworkTimeout();
         void slotSortingSelected( int sortType );
