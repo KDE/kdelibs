@@ -22,6 +22,7 @@
 
 #include <solid/solid_export.h>
 
+#include <solid/singletondefs.h>
 #include <solid/managerbase.h>
 
 class KJob;

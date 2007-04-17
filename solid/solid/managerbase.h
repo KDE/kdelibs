@@ -91,38 +91,6 @@ namespace Solid
     protected:
         ManagerBasePrivate *d_ptr;
     };
-
-    /**
-     * @internal
-     */
-    template<typename T>
-    class SingletonHelper { public: T instance; };
-
-#define SOLID_SINGLETON( Type )                                   \
-public:                                                           \
-    static Type &self();                                          \
-    static Type &selfForceBackend( QObject *backend );            \
-private:                                                          \
-    friend class Solid::SingletonHelper< Type >;
-
-#define SOLID_SINGLETON_IMPLEMENTATION( Type, Name )              \
-    K_GLOBAL_STATIC(Solid::SingletonHelper< Type >, global##Name) \
-                                                                  \
-    Type &Type::self()                                            \
-    {                                                             \
-        Solid::SingletonHelper< Type > *singleton = global##Name; \
-                                                                  \
-        return singleton->instance;                               \
-    }                                                             \
-                                                                  \
-    Type &Type::selfForceBackend( QObject *backend )              \
-    {                                                             \
-        Solid::SingletonHelper< Type > *singleton = global##Name; \
-                                                                  \
-        singleton->instance.setManagerBackend( backend );         \
-                                                                  \
-        return singleton->instance;                               \
-    }
 }
 
 #endif

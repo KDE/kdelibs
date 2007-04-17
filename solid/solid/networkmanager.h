@@ -21,6 +21,7 @@
 #ifndef SOLID_NETWORKMANAGER
 #define SOLID_NETWORKMANAGER
 
+#include <solid/singletondefs.h>
 #include <solid/managerbase.h>
 #include <solid/solid_export.h>
 
@@ -70,7 +71,7 @@ namespace Solid
 
         /**
          * Retrieves the status of networking (as a whole) in the system.
-         * This is distinct from whether the system's networking is online or offline. 
+         * This is distinct from whether the system's networking is online or offline.
          * To check that, see @ref NetworkStatus.
          *
          * @return true if this networking is enabled, false otherwise

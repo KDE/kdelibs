@@ -24,6 +24,7 @@
 
 #include <solid/solid_export.h>
 
+#include <solid/singletondefs.h>
 #include <solid/managerbase.h>
 #include <solid/predicate.h>
 

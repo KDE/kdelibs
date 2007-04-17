@@ -23,6 +23,7 @@
 #ifndef SOLID_BLUETOOTHMANAGER
 #define SOLID_BLUETOOTHMANAGER
 
+#include <solid/singletondefs.h>
 #include <solid/managerbase.h>
 #include <solid/solid_export.h>
 
@@ -139,7 +140,7 @@ Q_SIGNALS:
     void interfaceRemoved(const QString & ubi);
 
     /**
-     * This signal is emitted when the default bluetooth interface changed. 
+     * This signal is emitted when the default bluetooth interface changed.
      *
      * @param ubi the bluetooth interface identifier
      */
