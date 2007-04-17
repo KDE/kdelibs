@@ -1,7 +1,3 @@
-#ifdef _WIN32
-#define LIBXML_DLL_IMPORT __declspec(dllimport)
-#endif
-
 #include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
@@ -185,15 +181,13 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
 
     if ( srcdir.isEmpty() ) {
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
-#ifdef Q_OS_WIN
-        catalogs += ';';
-#else
-        catalogs += ':';
-#endif
+        catalogs += ' ';
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
         ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
     } else {
-        catalogs += srcdir +"/customization/catalog:" + srcdir + "/docbook/xml-dtd-4.2/docbook.cat";
+        catalogs += srcdir +"/customization/catalog";
+        catalogs += ' ';
+        catalogs += srcdir + "/docbook/xml-dtd-4.2/docbook.cat";
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
