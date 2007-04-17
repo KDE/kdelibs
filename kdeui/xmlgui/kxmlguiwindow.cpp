@@ -221,6 +221,7 @@ void KXmlGuiWindow::setupGUI( QSize defaultSize, StandardWindowOptions options, 
 
 void KXmlGuiWindow::createGUI( const QString &xmlfile )
 {
+    K_D(KXmlGuiWindow);
     // disabling the updates prevents unnecessary redraws
     //setUpdatesEnabled( false );
 
@@ -233,6 +234,13 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
         mb->clear();
 
     qDeleteAll( toolBars() ); // delete all toolbars
+
+    // don't build a help menu unless the user ask for it
+    if (d->showHelpMenu) {
+        delete d->helpMenu;
+        // we always want a help menu
+        d->helpMenu = new KHelpMenu(this, componentData().aboutData(), true, actionCollection());
+    }
 
     // we always want to load in our global standards file
     setXMLFile(KStandardDirs::locate("config", "ui/ui_standards.rc", componentData()));
