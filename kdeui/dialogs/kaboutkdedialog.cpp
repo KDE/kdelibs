@@ -54,6 +54,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     about->setAlignment(Qt::AlignTop);
     about->setWordWrap(true);
     about->setOpenExternalLinks(true);
+    about->setTextInteractionFlags(Qt::TextBrowserInteraction);
     about->setText(i18n(""
         "The <b>K Desktop Environment</b> is written and maintained by the "
         "KDE Team, a world-wide network of software engineers committed to "
@@ -68,6 +69,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     report->setAlignment(Qt::AlignTop);
     report->setWordWrap(true);
     report->setOpenExternalLinks(true);
+    report->setTextInteractionFlags(Qt::TextBrowserInteraction);
     report->setText(i18n(""
         "Software can always be improved, and the KDE Team is ready to "
         "do so. However, you - the user - must tell us when "
@@ -84,6 +86,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     join->setAlignment(Qt::AlignTop);
     join->setWordWrap(true);
     join->setOpenExternalLinks(true);
+    join->setTextInteractionFlags(Qt::TextBrowserInteraction);
     join->setText(i18n(""
         "You do not have to be a software developer to be a member of the "
         "KDE team. You can join the national teams that translate "
@@ -103,6 +106,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     support->setAlignment(Qt::AlignTop);
     support->setWordWrap(true);
     support->setOpenExternalLinks(true);
+    support->setTextInteractionFlags(Qt::TextBrowserInteraction);
     support->setText(i18n(""
         "KDE is available free of charge, but making it is not free.<br><br>"
         "Thus, the KDE team formed the KDE e.V., a non-profit organization"
