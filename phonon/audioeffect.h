@@ -94,11 +94,17 @@ namespace Phonon
              * Constructs new audio effect with private data \p dd and a
              * \p parent.
              */
-            AudioEffect(AudioEffectPrivate &dd, QObject *parent, const AudioEffectDescription &type = AudioEffectDescription());
+            KDE_NO_EXPORT AudioEffect(AudioEffectPrivate &dd, QObject *parent, const AudioEffectDescription &type = AudioEffectDescription());
 
-        protected:
-            virtual QVariant value(int parameterId) const;
-            virtual void setValue(int parameterId, QVariant newValue);
+            /**
+             * \copydoc Effect::value(int)
+             */
+            KDE_NO_EXPORT virtual QVariant value(int parameterId) const;
+
+            /**
+             * \copydoc Effect::setValue(int, QVariant)
+             */
+            KDE_NO_EXPORT virtual void setValue(int parameterId, QVariant newValue);
     };
 } //namespace Phonon
 

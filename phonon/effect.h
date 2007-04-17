@@ -61,12 +61,12 @@ class PHONONCORE_EXPORT Effect
         /**
          * Gets the value of the parameter with the id \p parameterId.
          */
-        virtual QVariant value(int parameterId) const = 0;
+        KDE_NO_EXPORT virtual QVariant value(int parameterId) const = 0;
 
         /**
          * Sets the value of the parameter with the id \p parameterId.
          */
-        virtual void setValue(int parameterId, QVariant newValue) = 0;
+        KDE_NO_EXPORT virtual void setValue(int parameterId, QVariant newValue) = 0;
 };
 
 } // namespace Phonon

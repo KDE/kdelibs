@@ -96,7 +96,14 @@ namespace Phonon
              */
             KDE_NO_EXPORT VideoEffect(VideoEffectPrivate &dd, QObject *parent, const VideoEffectDescription &type = VideoEffectDescription());
 
+            /**
+             * \copydoc Effect::value(int)
+             */
             KDE_NO_EXPORT virtual QVariant value(int parameterId) const;
+
+            /**
+             * \copydoc Effect::setValue(int, QVariant)
+             */
             KDE_NO_EXPORT virtual void setValue(int parameterId, QVariant newValue);
     };
 } //namespace Phonon
