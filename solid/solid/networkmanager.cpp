@@ -195,7 +195,7 @@ QPair<Solid::NetworkInterface*, Solid::Ifaces::NetworkInterface*> Solid::Network
     }
     else
     {
-        Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(backend);
+        Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(this->backend);
         Ifaces::NetworkInterface *iface = 0;
 
         if ( backend!=0 )

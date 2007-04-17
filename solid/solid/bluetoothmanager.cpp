@@ -287,7 +287,7 @@ QPair<Solid::BluetoothInterface*, Solid::Ifaces::BluetoothInterface*> Solid::Blu
     if (bluetoothInterfaceMap.contains(ubi)) {
         return bluetoothInterfaceMap[ubi];
     } else {
-        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(backend);
+        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(this->backend);
         Ifaces::BluetoothInterface *iface = 0;
 
         if (backend != 0) {
@@ -312,7 +312,7 @@ QPair<Solid::BluetoothInputDevice*, Solid::Ifaces::BluetoothInputDevice*> Solid:
     if (bluetoothInputDeviceMap.contains(ubi)) {
         return bluetoothInputDeviceMap[ubi];
     } else {
-        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(backend);
+        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(this->backend);
         Ifaces::BluetoothInputDevice *iface = 0;
 
         if (backend != 0) {
