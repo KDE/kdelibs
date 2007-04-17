@@ -49,12 +49,6 @@ VideoWidget::VideoWidget(VideoWidgetPrivate &dd, QWidget *parent)
 void VideoWidgetPrivate::init()
 {
     Q_Q(VideoWidget);
-    fullScreenAction = new QAction(SmallIcon("view-fullscreen"), i18n("F &ull Screen Mode"), q);
-    fullScreenAction->setShortcut(Qt::Key_F);
-    fullScreenAction->setCheckable(true);
-    fullScreenAction->setChecked(false);
-    QObject::connect(fullScreenAction, SIGNAL(triggered(bool)), q, SLOT(setFullScreen(bool)));
-
     QObject::connect(&cursorTimer, SIGNAL(timeout()), q, SLOT(_k_cursorTimeout()));
     cursorTimer.start();
     q->setMouseTracking(true);
@@ -108,28 +102,25 @@ void VideoWidget::setFullScreen(bool newFullScreen)
     K_D(VideoWidget);
     // TODO: disable screensaver? or should we leave that responsibility to the
     // application?
-    if (! d->fullScreenWidget)
-        d->fullScreenWidget = new FullScreenVideoWidget(this);
-    QWidget *w = 0;
-    if (k_ptr->backendObject())
-        BACKEND_GET(QWidget *, w, "widget");
-    if (newFullScreen)
-    {
-        d->fullScreenWidget->show();
-        if (w)
-            w->setParent(d->fullScreenWidget);
+    bool wasVisible = isVisible();
+    Qt::WindowFlags flags = windowFlags();
+    if (newFullScreen) {
+        d->changeFlags = !(flags & Qt::Window);
+        if (d->changeFlags) {
+            flags &= ~Qt::SubWindow;
+            flags |= Qt::Window;
+        } // else it's a toplevel window already
+    } else if (d->changeFlags && parent()) {
+        flags &= ~Qt::Window;
+        flags |= Qt::SubWindow;
     }
-    else
-    {
-        if (w)
-        {
-            w->setParent(this);
-            layout()->addWidget(w);
-        }
-        d->fullScreenWidget->hide();
+    setWindowFlags(flags);
+    setVisible(wasVisible);
+    if (newFullScreen) {
+        showFullScreen();
+    } else {
+        showNormal();
     }
-    // make sure the action is in the right state
-    d->fullScreenAction->setChecked(newFullScreen);
 }
 
 void VideoWidget::exitFullScreen()
@@ -161,7 +152,6 @@ void VideoWidgetPrivate::setupBackendObject()
     QWidget *w = 0;
     pBACKEND_GET(QWidget *, w, "widget");
     if (w) {
-        w->addAction(fullScreenAction);
         layout.addWidget(w);
         q->setSizePolicy(w->sizePolicy());
     }
@@ -200,7 +190,6 @@ QSize VideoWidget::minimumSizeHint()
 } //namespace Phonon
 
 #include "videowidget.moc"
-#include "videowidget_p.moc"
 
 #undef PHONON_CLASSNAME
 // vim: sw=4 ts=4 tw=80

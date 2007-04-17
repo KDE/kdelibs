@@ -23,7 +23,6 @@
 #include "videowidget.h"
 #include "../abstractvideooutput_p.h"
 #include <QHBoxLayout>
-#include <QAction>
 #include <QChildEvent>
 #include <QCoreApplication>
 #include <QPalette>
@@ -32,98 +31,6 @@
 
 namespace Phonon
 {
-class FullScreenVideoWidget : public QWidget
-{
-    Q_OBJECT
-    public:
-        FullScreenVideoWidget(QWidget *parent);
-    protected:
-        void childEvent(QChildEvent *e);
-        void closeEvent(QCloseEvent *e);
-        void mouseMoveEvent(QMouseEvent *);
-        bool event(QEvent *e);
-
-    private Q_SLOTS:
-        void cursorTimeout();
-    private:
-        QWidget *child;
-        QTimer cursorTimer;
-};
-
-void FullScreenVideoWidget::mouseMoveEvent(QMouseEvent *)
-{
-    if (child && Qt::BlankCursor == child->cursor().shape()) {
-        child->unsetCursor();
-        cursorTimer.start();
-    }
-}
-
-void FullScreenVideoWidget::cursorTimeout()
-{
-    if (child && Qt::ArrowCursor == child->cursor().shape()) {
-        child->setCursor(Qt::BlankCursor);
-    }
-}
-
-FullScreenVideoWidget::FullScreenVideoWidget(QWidget *parent)
-    : QWidget(parent, Qt::Window),
-    child(0)
-{
-    setAttribute(Qt::WA_QuitOnClose, false); // if the other windows are closed but the fullscreen
-    // video widget is still open quit the application
-
-    QPalette pal = palette();
-    pal.setColor(QPalette::Window, Qt::black);
-    setPalette(pal);
-    setCursor(QCursor(Qt::BlankCursor));
-    setAttribute(Qt::WA_OpaquePaintEvent, true);
-    setLayout(new QHBoxLayout);
-    layout()->setMargin(0);
-    hide();
-
-    cursorTimer.setInterval(1000); // 1s timeout until the cursor disappears
-    cursorTimer.setSingleShot(true);
-    connect(&cursorTimer, SIGNAL(timeout()), SLOT(cursorTimeout()));
-    setMouseTracking(true);
-}
-
-void FullScreenVideoWidget::childEvent(QChildEvent *e)
-{
-    if (!(e->child() && e->child()->isWidgetType()))
-        return;
-
-    child = qobject_cast<QWidget *>(e->child());
-    Q_ASSERT(child);
-    if (e->added())
-    {
-        layout()->addWidget(child);
-        showFullScreen();
-    }
-    else if (e->removed())
-    {
-        layout()->removeWidget(child);
-        hide();
-    }
-}
-
-void FullScreenVideoWidget::closeEvent(QCloseEvent *e)
-{
-    e->ignore();
-    VideoWidget *vw = qobject_cast<VideoWidget *>(parent());
-    vw->exitFullScreen();
-}
-
-bool FullScreenVideoWidget::event(QEvent *e)
-{
-    bool ret = QWidget::event(e);
-    if (e->isAccepted())
-        return ret;
-    else 
-    {
-        QCoreApplication::sendEvent(parent(), e);
-        return true;
-    }
-}
 
 class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 {
@@ -137,7 +44,6 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
 
         VideoWidgetPrivate(VideoWidget *parent)
             : layout(parent),
-            fullScreenWidget(0),
             aspectRatio(VideoWidget::AspectRatioAuto),
             scaleMode(VideoWidget::AddBarsScaleMode)
         {
@@ -147,15 +53,15 @@ class VideoWidgetPrivate : public Phonon::AbstractVideoOutputPrivate
         }
 
         QHBoxLayout layout;
-        QAction *fullScreenAction;
-        FullScreenVideoWidget *fullScreenWidget;
         VideoWidget::AspectRatio aspectRatio;
         VideoWidget::ScaleMode scaleMode;
         QTimer cursorTimer;
+        bool changeFlags;
 
     private:
         void init();
 };
+
 } // namespace Phonon
 
 #endif // VIDEOWIDGET_P_H
