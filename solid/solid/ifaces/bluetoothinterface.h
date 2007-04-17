@@ -110,7 +110,7 @@ public:
      *
      * @returns current mode of bluetooth interface/adaoter
      */
-    virtual QString mode() const = 0;
+    virtual Solid::BluetoothInterface::Mode mode() const = 0;
 
     /**
      * Retrieves the discoverable timeout of the bluetooth interface/adapter.
@@ -185,7 +185,7 @@ public:
      *
      * @returns true if periodic discovery is already active otherwise false
      */
-    virtual bool isPeriodicDiscovery() const = 0;
+    virtual bool isPeriodicDiscoveryActive() const = 0;
 
     /**
      * Name resolving status of periodic discovery routing. 
@@ -193,7 +193,7 @@ public:
      * @returns true if name got resolved while periodic discovery of this bluetooth
      * interface/adapter
      */
-    virtual bool isPeriodicDiscoveryNameResolving() const = 0;
+    virtual bool isPeriodicDiscoveryNameResolvingActive() const = 0;
 
     /**
      * List the Universal Bluetooth Identifier (UBI) of all known remote devices, which are
@@ -215,7 +215,7 @@ public:
      * @param date the datestamp of the beginning of recent used devices
      * @returns a QStringList of UBIs of all known remote bluetooth devices
      */
-    virtual QStringList listRecentRemoteDevices(const QString &date) const = 0;
+    virtual QStringList listRecentRemoteDevices(const QDateTime &date) const = 0;
 
 public Q_SLOTS:
     /**
@@ -224,7 +224,7 @@ public Q_SLOTS:
      *
      * @param mode the mode of the bluetooth interface/adapter
      */
-    virtual void setMode(const QString &mode) = 0;
+    virtual void setMode(const Solid::BluetoothInterface::Mode mode) = 0;
 
     /**
      * Set discoverable timeout of bluetooth interface/adapter.
@@ -295,7 +295,7 @@ Q_SIGNALS:
      *
      * @param mode the changed mode
      */
-    void modeChanged(const QString &mode);
+    void modeChanged( Solid::BluetoothInterface::Mode );
 
     /**
      * The signal is emitted if the discoverable timeout of the bluetooth interface/adapter

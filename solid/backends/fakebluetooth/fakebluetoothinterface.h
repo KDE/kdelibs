@@ -72,7 +72,7 @@ public:
     {
         return mCompany;
     }
-    QString mode() const
+    Solid::BluetoothInterface::Mode mode() const
     {
         return mMode;
     }
@@ -112,11 +112,11 @@ public:
     {
         return mBondings;
     }
-    bool isPeriodicDiscovery() const
+    bool isPeriodicDiscoveryActive() const
     {
         return mPeriodicDiscovery;
     }
-    bool isPeriodicDiscoveryNameResolving() const
+    bool isPeriodicDiscoveryNameResolvingActive() const
     {
         return mPeriodicDiscoveryNameResolving;
     }
@@ -124,7 +124,7 @@ public:
     {
         return mRemoteDevices;
     }
-    QStringList listRecentRemoteDevices(const QString&) const
+    QStringList listRecentRemoteDevices(const QDateTime&) const
     {
         return mRecentRemoteDevices;
     }
@@ -139,7 +139,7 @@ private:
     QString mRevision;
     QString mManufacturer;
     QString mCompany;
-    QString mMode;
+    Solid::BluetoothInterface::Mode mMode;
     int mDiscoverableTimeout;
     bool mDiscoverable;
     QStringList mConnections;
@@ -154,7 +154,7 @@ private:
     QStringList mRecentRemoteDevices;
 
 public Q_SLOTS:
-    void setMode(const QString &mode)
+    void setMode(const Solid::BluetoothInterface::Mode mode)
     {
         mMode = mode; /* emit modeChanged( mMode );*/
     }
@@ -185,7 +185,7 @@ public Q_SLOTS:
     }
 
 Q_SIGNALS:
-    void modeChanged(const QString &mode);
+    void modeChanged( Solid::BluetoothInterface::Mode mode);
     void discoverableTimeoutChanged(int timeout);
     void minorClassChanged(const QString &minor);
     void nameChanged(const QString &name);

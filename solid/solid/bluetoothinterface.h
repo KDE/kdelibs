@@ -22,6 +22,7 @@
 #ifndef SOLID_BLUETOOTHINTERFACE_H
 #define SOLID_BLUETOOTHINTERFACE_H
 
+#include <QDateTime>
 #include <QPair>
 
 #include <solid/frontendobject.h>
@@ -37,7 +38,7 @@ typedef QList<BluetoothRemoteDevice> BluetoothRemoteDeviceList;
 class BluetoothInterfacePrivate;
 
 /**
- * Represents a bluetooth interface as seen by the bluetoothing subsystem.
+ * Represents a bluetooth interface as seen by the bluetooth subsystem.
  */
 class SOLID_EXPORT BluetoothInterface : public FrontendObject
 {
@@ -46,12 +47,20 @@ class SOLID_EXPORT BluetoothInterface : public FrontendObject
 
 public:
     /**
+     * Describes the operating mode of a bluetooth interface
+     *
+     * - Off : The interface's transceiver is turned off
+     * - Discoverable : The interface may be discovered by other devices and connected to
+     * - Connectable : The interface may only be connected to but not discovered
+     */
+    enum Mode { Off, Discoverable, Connectable };
+    /**
      * Constructs an invalid bluetooth interface
      */
     BluetoothInterface();
 
     /**
-     * Constructs a bluetooth interface for a given Universal Network Identifier (UBI).
+     * Constructs a bluetooth interface for a given Unique Bluetooth Identifier (UBI).
      *
      * @param ubi the ubi of the bluetooth interface to create
      */
@@ -86,28 +95,27 @@ public:
     BluetoothInterface &operator=(const BluetoothInterface &device);
 
     /**
-     * Retrieves the Universal Network Identifier (UBI) of the BluetoothInterface.
+     * Retrieves the Unique Bluetooth Identifier (UBI) of the BluetoothInterface.
      * This identifier is ubique for each bluetooth and bluetooth interface in the system.
      *
-     * @returns the Universal Network Identifier of the current bluetooth interface
+     * @returns the Unique Bluetooth Identifier of the current bluetooth interface
      */
     QString ubi() const;
 
     /**
-     * Create new RemoteBluetoothDevice object from the given its UBI.
+     * Create new BluetoothRemoteDevice object from this interface given its UBI.
      *
-     * @param ubi the identifier of the bluetooth instantiated
-     * @returns a bluetooth object if there's a bluetooth interface/device having the given UBI for this device, 0 otherwise
+     * @param ubi the identifier of the bluetooth device to instantiate
+     * @returns a bluetooth object, if a bluetooth device having the given UBI, for this interface exists, 0 otherwise
      */
     BluetoothRemoteDevice *createBluetoothRemoteDevice(const QString & ubi);
 
     /**
-     * Finds BluetoothRemoteDevice object given its UBI.
+     * Finds a BluetoothRemoteDevice object given its UBI.
      *
-     * @param ubi the identifier of the bluetooth remote device  to find from this bluetooth  interface
-     * @returns a valid BluetoothRemoteDevice object if there's a remote device having the given UB for this device, an invalid BluetoothRemoteDevice object otherwise
+     * @param ubi the identifier of the bluetooth remote device to find from this bluetooth interface
+     * @returns a valid BluetoothRemoteDevice object if a remote device having the given UBI for this interface exists, an invalid BluetoothRemoteDevice object otherwise.
      */
-
     const BluetoothRemoteDevice &findBluetoothRemoteDevice(const QString &ubi) const;
 
     /**
@@ -135,14 +143,15 @@ public:
 
     /**
      * Retrieves the name of the bluetooth chip manufacturer.
-     * Example: "Cambdirge Silicon Radio"
+     * Example: "Cambridge Silicon Radio"
      *
      * @returns manufacturer string of bluetooth interface/adapter
      */
     QString manufacturer() const;
 
     /**
-     * Retrieves the name of the bluetooth chip company.
+     * Retrieves the name of the manufacturer of the bluetooth interface,
+     * using the chip supplied by BluetoothInterface::manufacterer()
      * Based on device address.
      *
      * @returns company string of bluetooth interface/adapter
@@ -151,14 +160,10 @@ public:
 
     /**
      * Retrieves the current mode of the bluetooth interface/adapter.
-     * Valid modes: "off", "connectable", "discoverable"
      *
-     * @todo determine unify type for valid modes.. enum?! what about other bluetooth APIs?
-     * three modes?
-     *
-     * @returns current mode of bluetooth interface/adaoter
+     * @returns the current mode of bluetooth interface/adapter
      */
-    QString mode() const;
+    Mode mode() const;
 
     /**
      * Retrieves the discoverable timeout of the bluetooth interface/adapter.
@@ -185,21 +190,23 @@ public:
 
     /**
      * Retrieves major class of the bluetooth interface/adapter.
-     *
+     * @todo enum
      * @returns current major class of the bluetooth interface/adapter
      */
     QString majorClass() const;
 
     /**
      * List supported minor classes of the bluetooth interface/adapter.
+     * @todo enum
      *
      * @returns list of supported minor classes by bluetooth interface/adapter
      */
     QStringList listAvailableMinorClasses() const;
 
     /**
-     * Retrievies minor class of the bluetooth interface/adapter.
+     * Retrieves minor class of the bluetooth interface/adapter.
      * Valid classes, see listAvailableMinorClasses()
+     * @todo enum
      *
      * @returns minor class of the bluetooth interface/adapter.
      */
@@ -207,6 +214,7 @@ public:
 
     /**
      * List services class of the bluetooth interface/adapter.
+     * @todo enum
      *
      * @returns list of service classes or empty list if no services registered
      */
@@ -214,6 +222,7 @@ public:
 
     /**
      * Retrieves name of bluetooth interface/adapter.
+     * @todo enum
      *
      * @returns name of bluetooth interface/adapter
      */
@@ -232,7 +241,7 @@ public:
      *
      * @returns true if periodic discovery is already active otherwise false
      */
-    bool isPeriodicDiscovery() const;
+    bool isPeriodicDiscoveryActive() const;
 
     /**
      * Name resolving status of periodic discovery routing. 
@@ -240,11 +249,11 @@ public:
      * @returns true if name got resolved while periodic discovery of this bluetooth
      * interface/adapter
      */
-    bool isPeriodicDiscoveryNameResolving() const;
+    bool isPeriodicDiscoveryNameResolvingActive() const;
 
     /**
-     * List the Universal Bluetooth Identifier (UBI) of all known remote devices, which are
-     * seen, used or paired/bonded.
+     * List the Unique Bluetooth Identifier (UBI) of all known remote devices, 
+     * whether they are seen, used or paired/bonded.
      *
      * See listConnections()
      *
@@ -253,8 +262,8 @@ public:
     QStringList listRemoteDevices() const;
 
     /**
-     * List the Universal Bluetooth Identifier (UBI) of all known remote devices since a specifc
-     * datestamp. Known remote  devices means remote bluetooth which are seen, used or
+     * List the Unique Bluetooth Identifier (UBI) of all known remote devices since a specific
+     * datestamp. Known remote devices means remote bluetooth which are seen, used or
      * paired/bonded.
      *
      * See listConnections(), listRemoteDevices()
@@ -262,7 +271,7 @@ public:
      * @param date the datestamp of the beginning of recent used devices
      * @returns a QStringList of UBIs of all known remote bluetooth devices
      */
-    QStringList listRecentRemoteDevices(const QString &date) const;
+    QStringList listRecentRemoteDevices(const QDateTime &date) const;
 
 public Q_SLOTS:
     /**
@@ -271,7 +280,7 @@ public Q_SLOTS:
      *
      * @param mode the mode of the bluetooth interface/adapter
      */
-    void setMode(const QString &mode);
+    void setMode(const Mode mode);
 
     /**
      * Set discoverable timeout of bluetooth interface/adapter.
@@ -333,7 +342,7 @@ Q_SIGNALS:
      *
      * @param mode the changed mode
      */
-    void modeChanged(const QString &mode);
+    void modeChanged( Solid::BluetoothInterface::Mode );
 
     /**
      * The signal is emitted if the discoverable timeout of the bluetooth interface/adapter
@@ -373,8 +382,8 @@ Q_SIGNALS:
      * @todo change arguments types of deviceClass (uint32) and rssi (int16)
      *
      * @param ubi the new bluetooth identifier
-     * @param deviceClass the device Class of the remote device
-     * @param rssi the RSSI link of the remote device
+     * @param deviceClass the device class of the remote device
+     * @param rssi the Received Signal Strength Information (RSSI) of the remote device
      */
     void remoteDeviceFound(const QString &ubi, int deviceClass, int rssi);
 
@@ -400,9 +409,9 @@ private:
     void unregisterBackendObject();
 
     QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> findRegisteredBluetoothRemoteDevice(const QString &ubi) const;
-
 };
 
 } //Solid
 
 #endif
+

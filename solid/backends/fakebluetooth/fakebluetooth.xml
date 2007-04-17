@@ -6,7 +6,7 @@
         <property key="revision">Build 525</property>
         <property key="manufacturer">Cambridge Silicon Radio</property>
         <property key="company">Longshine</property>
-        <property key="mode">connectable</property>
+        <property key="mode">1</property>
         <property key="discoverableTimeout">120</property>
         <property key="isDiscoverable">true</property>
         <property key="listConnections">/org/kde/solid/fakebluetooth/hci0/FF:FF:FF:FF:FF:FF,/org/kde/solid/fakebluetooth/hci0/AA:BB:CC:DD:EE:FF</property>
@@ -106,7 +106,7 @@
         <property key="revision">Build 525</property>
         <property key="manufacturer">Cambridge Silicon Radio</property>
         <property key="company">Longshine</property>
-        <property key="mode">connectable</property>
+        <property key="mode">2</property>
         <property key="discoverableTimeout">120</property>
         <property key="isDiscoverable">true</property>
         <property key="listConnections">/org/kde/solid/fakebluetooth/hci0/FF:FF:FF:FF:FF:FF,/org/kde/solid/fakebluetooth/hci0/AA:BB:CC:DD:EE:FF</property>
@@ -128,7 +128,7 @@
         <property key="revision"></property>
         <property key="manufacturer">Cambridge Silicon Radio</property>
         <property key="company"></property>
-        <property key="mode">off</property>
+        <property key="mode">0</property>
         <property key="discoverableTimeout">120</property>
         <property key="isDiscoverable">true</property>
         <property key="listConnections">/org/kde/solid/fakebluetooth/hci0/FF:FF:FF:FF:FF:FF,/org/kde/solid/fakebluetooth/hci0/AA:BB:CC:DD:EE:FF</property>
@@ -149,7 +149,7 @@
         <property key="revision">Build 525</property>
         <property key="manufacturer">Cambridge Silicon Radio</property>
         <property key="company"></property>
-        <property key="mode">discoverable</property>
+        <property key="mode">1</property>
         <property key="discoverableTimeout">180</property>
         <property key="isDiscoverable">true</property>
         <property key="listConnections">/org/kde/solid/fakebluetooth/hci0/FF:FF:FF:FF:FF:FF,/org/kde/solid/fakebluetooth/hci0/AA:BB:CC:DD:EE:FF</property>

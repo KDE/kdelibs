@@ -133,9 +133,9 @@ QString Solid::BluetoothInterface::company() const
     return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), QString(), company());
 }
 
-QString Solid::BluetoothInterface::mode() const
+Solid::BluetoothInterface::Mode Solid::BluetoothInterface::mode() const
 {
-    return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), QString(), mode());
+    return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), Solid::BluetoothInterface::Off, mode());
 }
 
 int Solid::BluetoothInterface::discoverableTimeout() const
@@ -195,15 +195,15 @@ QStringList Solid::BluetoothInterface::listBondings() const
     return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), QStringList(), listBondings());
 }
 
-bool Solid::BluetoothInterface::isPeriodicDiscovery() const
+bool Solid::BluetoothInterface::isPeriodicDiscoveryActive() const
 {
-    return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), false, isPeriodicDiscovery());
+    return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), false, isPeriodicDiscoveryActive());
 }
 
-bool Solid::BluetoothInterface::isPeriodicDiscoveryNameResolving() const
+bool Solid::BluetoothInterface::isPeriodicDiscoveryNameResolvingActive() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), false,
-                      isPeriodicDiscoveryNameResolving());
+                      isPeriodicDiscoveryNameResolvingActive());
 }
 
 // TODO: QStringList or BluetoothRemoteDeviceList?
@@ -214,7 +214,7 @@ QStringList Solid::BluetoothInterface::listRemoteDevices() const
 }
 
 // TODO: QStringList or BluetoothRemoteDeviceList?
-QStringList Solid::BluetoothInterface::listRecentRemoteDevices(const QString &date) const
+QStringList Solid::BluetoothInterface::listRecentRemoteDevices(const QDateTime &date) const
 {
     return_SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), QStringList(),
                       listRecentRemoteDevices(date));
@@ -222,7 +222,7 @@ QStringList Solid::BluetoothInterface::listRecentRemoteDevices(const QString &da
 
 /***************************************************************/
 
-void Solid::BluetoothInterface::setMode(const QString &mode)
+void Solid::BluetoothInterface::setMode(const Solid::BluetoothInterface::Mode mode)
 {
     SOLID_CALL(Ifaces::BluetoothInterface*, backendObject(), setMode(mode));
 }

@@ -34,7 +34,7 @@ FakeBluetoothInterface::FakeBluetoothInterface(const QMap<QString, QVariant> & p
     mRevision = mPropertyMap["revision"].toString();
     mManufacturer = mPropertyMap["manufacturer"].toString();
     mCompany = mPropertyMap["company"].toString();
-    mMode = mPropertyMap["mode"].toString();
+    mMode = ( Solid::BluetoothInterface::Mode) mPropertyMap["mode"].toInt();
     mDiscoverableTimeout = mPropertyMap["discoverableTimeout"].toInt();
     mDiscoverable = mPropertyMap["isDiscoverable"].toBool();
     mConnections.append(mPropertyMap["connections"].toString());
