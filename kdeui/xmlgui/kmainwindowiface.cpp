@@ -22,12 +22,12 @@
 
 #include <kactioncollection.h>
 #include <kapplication.h>
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 #include <kaction.h>
 #include <QtGui/QClipboard>
 
 
-KMainWindowInterface::KMainWindowInterface(KMainWindow * mainWindow)
+KMainWindowInterface::KMainWindowInterface(KXmlGuiWindow * mainWindow)
         : QDBusAbstractAdaptor(mainWindow)
 {
 	m_MainWindow = mainWindow;

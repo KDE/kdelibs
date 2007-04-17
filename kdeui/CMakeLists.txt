@@ -196,7 +196,7 @@ set(kdeui_LIB_SRCS
  widgets/kvbox.cpp
  widgets/kxyselector.cpp
  xmlgui/kxmlguiwindow.cpp
- # xmlgui/kmainwindowiface.cpp
+ xmlgui/kmainwindowiface.cpp
  xmlgui/kmenumenuhandler_p.cpp
  xmlgui/ktoolbarhandler.cpp
  xmlgui/kxmlguiclient.cpp

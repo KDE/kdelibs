@@ -227,7 +227,6 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     if ( kapp )
         q->setWindowTitle( KGlobal::caption() );
-    //new KMainWindowInterface(this);
 
     // Get notified when settings change
     QObject::connect( q, SIGNAL( iconSizeChanged(const QSize&) ), q, SLOT( setSettingsDirty() ) );

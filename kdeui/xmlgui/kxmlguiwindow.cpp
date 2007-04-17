@@ -92,6 +92,7 @@ KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
     d->showStatusBarAction = 0;
     d->toolBarEditor = 0;
     d->factory = 0;
+    new KMainWindowInterface(this);
 }
 
 

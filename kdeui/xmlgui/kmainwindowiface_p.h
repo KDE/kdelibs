@@ -27,7 +27,7 @@
 
 class KDCOPActionProxy;
 class KDCOPPropertyProxy;
-class KMainWindow;
+class KXmlGuiWindow;
 
 /**
  * @short D-Bus interface to KMainWindow.
@@ -48,7 +48,7 @@ public:
 	@param mainWindow - The parent KMainWindow object
 	that will provide us with the KAction objects.
 	*/
-	KMainWindowInterface( KMainWindow * mainWindow );
+	KMainWindowInterface( KXmlGuiWindow * mainWindow );
 	/**
 	Destructor
 	Cleans up the dcop action proxy object.
@@ -115,7 +115,7 @@ public Q_SLOTS:
 	**/
 	void grabWindowToClipBoard();
 private:
-	KMainWindow *m_MainWindow;
+	KXmlGuiWindow *m_MainWindow;
 };
 
 #endif
