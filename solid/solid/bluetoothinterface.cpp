@@ -276,7 +276,7 @@ void Solid::BluetoothInterface::setPeriodicDiscoveryNameResolving(bool resolveNa
 
 void Solid::BluetoothInterfacePrivate::setBackendObject(QObject *object)
 {
-    setBackendObject(object);
+    FrontendObjectPrivate::setBackendObject(object);
 
     if (object) {
         QObject::connect(object, SIGNAL(modeChanged(const QString&)),

@@ -106,7 +106,7 @@ void Solid::BluetoothInputDevice::slotDisconnect()
 
 void Solid::BluetoothInputDevicePrivate::setBackendObject(QObject *object)
 {
-    setBackendObject(object);
+    FrontendObjectPrivate::setBackendObject(object);
 
     if (object) {
         QObject::connect(object, SIGNAL(connected()),

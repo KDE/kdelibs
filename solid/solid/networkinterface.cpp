@@ -198,7 +198,7 @@ void Solid::NetworkInterfacePrivate::setBackendObject(QObject *object)
     networkMap.clear();
 
 
-    setBackendObject(object);
+    FrontendObjectPrivate::setBackendObject(object);
 
     if (object) {
         QObject::connect(object, SIGNAL(activeChanged(bool)),

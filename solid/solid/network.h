@@ -80,9 +80,9 @@ namespace Solid
 
 
         /**
-         * Retrieves the IP version 4 addresses the device has on this network.
+         * Retrieves the addresses that the device has on this network.
          *
-         * @return the list of IP version 4 addresses
+         * @return the list of addresses
          */
         QList<QNetworkAddressEntry> addressEntries() const;
 
