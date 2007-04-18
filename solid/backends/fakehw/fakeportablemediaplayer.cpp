@@ -22,7 +22,7 @@
 #include "fakeportablemediaplayer.h"
 
 FakePortableMediaPlayer::FakePortableMediaPlayer( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 
 }

@@ -27,7 +27,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
@@ -76,16 +76,16 @@ namespace Ifaces
 
         /**
          * Retrieves the Universal Device Identifier (UDI) of all the devices
-         * matching the given constraints (parent and capability)
+         * matching the given constraints (parent and device interface)
          *
          * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
          * if there's no constraint on the parent
-         * @param capability Capability of the devices we're searching for, or Capability::Unknown
-         * if there's no constraint on the capabilities
-         * @returns the UDIs of all the devices having the given parent and capability
+         * @param type DeviceInterface type available on the devices we're looking for, or DeviceInterface::Unknown
+         * if there's no constraint on the device interfaces
+         * @returns the UDIs of all the devices having the given parent and device interface
          */
         virtual QStringList devicesFromQuery( const QString &parentUdi,
-                                              Solid::Capability::Type capability = Solid::Capability::Unknown ) = 0;
+                                              Solid::DeviceInterface::Type type = Solid::DeviceInterface::Unknown ) = 0;
 
         /**
          * Instantiates a new Device object from this backend given its UDI.
@@ -111,12 +111,12 @@ namespace Ifaces
         void deviceRemoved( const QString &udi );
 
         /**
-         * This signal is emitted when a new capability is detected on a device.
+         * This signal is emitted when a new device interface is detected on a device.
          *
          * @param udi the device identifier
-         * @param capability the new capability detected
+         * @param type the new device interface detected
          */
-        void newCapability( const QString &udi, int capability );
+        void newDeviceInterface( const QString &udi, int type );
     };
 }
 }

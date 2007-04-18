@@ -16,21 +16,21 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKECAPABILITY_H
-#define FAKECAPABILITY_H
+#ifndef FAKEDEVICEINTERFACE_H
+#define FAKEDEVICEINTERFACE_H
 
 #include <QObject>
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 #include "fakedevice.h"
 
-class FakeCapability : public QObject, virtual public Solid::Ifaces::Capability
+class FakeDeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Capability )
+    Q_INTERFACES( Solid::Ifaces::DeviceInterface )
 public:
-    explicit FakeCapability( FakeDevice *device );
-    ~FakeCapability();
+    explicit FakeDeviceInterface( FakeDevice *device );
+    ~FakeDeviceInterface();
 
 protected:
     FakeDevice *fakeDevice() const

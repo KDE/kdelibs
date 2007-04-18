@@ -86,16 +86,16 @@ namespace Solid
 
         /**
          * Retrieves a list of devices of the system given matching the given
-         * constraints (parent and capability)
+         * constraints (parent and device interface type)
          *
-         * @param capability Capability of the devices we're searching for, or Capability::Unknown
-         * if there's no constraint on the capabilities
+         * @param type device interface type available on the devices we're looking for, or DeviceInterface::Unknown
+         * if there's no constraint on the device interfaces
          * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
          * if there's no constraint on the parent
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
-        DeviceList findDevicesFromQuery( const Capability::Type &capability,
+        DeviceList findDevicesFromQuery( const DeviceInterface::Type &type,
                                          const QString &parentUdi = QString() ) const;
 
         /**
@@ -137,12 +137,12 @@ namespace Solid
         void deviceRemoved( const QString &udi );
 
         /**
-         * This signal is emitted when a new capability is detected in a device.
+         * This signal is emitted when a new device interface is detected in a device.
          *
-         * @param udi the UDI of the device getting a new capability
-         * @param capability the capability type
+         * @param udi the UDI of the device getting a new device interface
+         * @param type the device interface type
          */
-        void newCapability( const QString &udi, int capability );
+        void newDeviceInterface(const QString &udi, int type);
 
     private:
         DeviceManager();
@@ -151,7 +151,7 @@ namespace Solid
     private:
         Q_PRIVATE_SLOT(d, void _k_deviceAdded(const QString&))
         Q_PRIVATE_SLOT(d, void _k_deviceRemoved(const QString&))
-        Q_PRIVATE_SLOT(d, void _k_newCapability(const QString&, int))
+        Q_PRIVATE_SLOT(d, void _k_newDeviceInterface(const QString&, int))
         Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
 
         DeviceManagerPrivate * const d;

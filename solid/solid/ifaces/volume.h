@@ -32,7 +32,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on volume devices.
+     * This device interface is available on volume devices.
      *
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.

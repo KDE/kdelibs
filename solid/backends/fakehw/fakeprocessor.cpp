@@ -20,7 +20,7 @@
 #include "fakeprocessor.h"
 
 FakeProcessor::FakeProcessor(FakeDevice *device)
- : FakeCapability(device)
+ : FakeDeviceInterface(device)
 {
     
 }

@@ -23,16 +23,16 @@
 #include <solid/solid_export.h>
 
 #include <solid/battery.h>
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
 {
 namespace Ifaces
 {
     /**
-     * This capability is available on batteries.
+     * This device interface is available on batteries.
      */
-    class SOLIDIFACES_EXPORT Battery : virtual public Capability
+    class SOLIDIFACES_EXPORT Battery : virtual public DeviceInterface
     {
     public:
         /**

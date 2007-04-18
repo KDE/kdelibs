@@ -20,7 +20,7 @@
 #include "fakegenericinterface.h"
 
 FakeGenericInterface::FakeGenericInterface(FakeDevice *device)
-    : FakeCapability(device)
+    : FakeDeviceInterface(device)
 {
     connect(device, SIGNAL(propertyChanged(const QMap<QString,int>&)),
             this, SIGNAL(propertyChanged(const QMap<QString,int>&)));

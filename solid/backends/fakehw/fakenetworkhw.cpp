@@ -20,7 +20,7 @@
 #include "fakenetworkhw.h"
 
 FakeNetworkHw::FakeNetworkHw(FakeDevice *device)
- : FakeCapability(device)
+ : FakeDeviceInterface(device)
 {
 
 }

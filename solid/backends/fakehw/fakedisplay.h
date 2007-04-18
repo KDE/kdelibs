@@ -20,10 +20,10 @@
 #ifndef FAKEDISPLAY_H
 #define FAKEDISPLAY_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/display.h>
 
-class FakeDisplay : public FakeCapability, public virtual Solid::Ifaces::Display
+class FakeDisplay : public FakeDeviceInterface, public virtual Solid::Ifaces::Display
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Display )

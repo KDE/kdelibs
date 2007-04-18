@@ -20,7 +20,7 @@
 #include "fakebattery.h"
 
 FakeBattery::FakeBattery( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 }
 

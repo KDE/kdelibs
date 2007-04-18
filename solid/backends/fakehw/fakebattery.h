@@ -21,9 +21,9 @@
 #define FAKEBATTERY_H
 
 #include <solid/ifaces/battery.h>
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 
-class FakeBattery : public FakeCapability, virtual public Solid::Ifaces::Battery
+class FakeBattery : public FakeDeviceInterface, virtual public Solid::Ifaces::Battery
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Battery )

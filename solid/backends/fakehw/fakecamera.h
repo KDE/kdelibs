@@ -20,10 +20,10 @@
 #ifndef FAKECAMERA_H
 #define FAKECAMERA_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/camera.h>
 
-class FakeCamera : public FakeCapability, virtual public Solid::Ifaces::Camera
+class FakeCamera : public FakeDeviceInterface, virtual public Solid::Ifaces::Camera
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Camera )

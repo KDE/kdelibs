@@ -20,10 +20,10 @@
 #ifndef FAKEBLOCK_H
 #define FAKEBLOCK_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/block.h>
 
-class FakeBlock : public FakeCapability, virtual public Solid::Ifaces::Block
+class FakeBlock : public FakeDeviceInterface, virtual public Solid::Ifaces::Block
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Block )

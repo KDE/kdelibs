@@ -8,7 +8,7 @@ set(solid_fakehw_PART_SRCS
    fakemanager.cpp 
    fakedevice.cpp 
    fakejob.cpp 
-   fakecapability.cpp 
+   fakedeviceinterface.cpp 
    fakegenericinterface.cpp 
    fakeblock.cpp 
    fakestorage.cpp 

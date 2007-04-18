@@ -26,7 +26,7 @@
 
 // Solid includes
 #include <solid/ifaces/device.h>
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 #include <solid/ifaces/processor.h>
 
 // Local includes
@@ -54,10 +54,10 @@ void FakeHardwareTest::testFakeBackend()
     QVERIFY( device->propertyExists("number") );
     QVERIFY( !device->propertyExists("youstfuqewerrernoob") );
 
-    QVERIFY( device->queryCapability(Solid::Capability::Processor) );
+    QVERIFY( device->queryDeviceInterface(Solid::DeviceInterface::Processor) );
 
-    QObject *capability = device->createCapability( Solid::Capability::Processor );
-    Solid::Ifaces::Processor *processor = qobject_cast<Solid::Ifaces::Processor*>( capability );
+    QObject *interface = device->createDeviceInterface( Solid::DeviceInterface::Processor );
+    Solid::Ifaces::Processor *processor = qobject_cast<Solid::Ifaces::Processor*>( interface );
 
     QCOMPARE( processor->number(), 0 );
     QCOMPARE( processor->canThrottle(), true );

@@ -20,15 +20,15 @@
 #ifndef SOLID_CAMERA_P_H
 #define SOLID_CAMERA_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class CameraPrivate : public CapabilityPrivate
+    class CameraPrivate : public DeviceInterfacePrivate
     {
     public:
         CameraPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

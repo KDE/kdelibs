@@ -20,10 +20,10 @@
 #ifndef FAKEBUTTON_H
 #define FAKEBUTTON_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/button.h>
 
-class FakeButton : public FakeCapability, virtual public Solid::Ifaces::Button
+class FakeButton : public FakeDeviceInterface, virtual public Solid::Ifaces::Button
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Button )

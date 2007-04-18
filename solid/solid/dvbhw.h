@@ -22,21 +22,21 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class DvbHwPrivate;
 
     /**
-     * This capability is available on Digital Video Broadcast (DVB) devices.
+     * This device interface is available on Digital Video Broadcast (DVB) devices.
      *
      * A DVB device is a device implementing the open standards for digital
      * television maintained by the DVB Project
      * It is possible to interact with such a device using a special device
      * file in the system.
      */
-    class SOLID_EXPORT DvbHw : public Capability
+    class SOLID_EXPORT DvbHw : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( DeviceType )
@@ -70,7 +70,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit DvbHw( QObject *backendObject );
@@ -82,12 +82,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the DvbHw capability.
+         * Get the Solid::DeviceInterface::Type of the DvbHw device interface.
          *
-         * @return the DvbHw capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the DvbHw device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::DvbHw; }
+        static Type deviceInterfaceType() { return DeviceInterface::DvbHw; }
 
 
         /**

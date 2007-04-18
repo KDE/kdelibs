@@ -44,7 +44,7 @@ namespace Solid
 
         void _k_deviceAdded(const QString &udi);
         void _k_deviceRemoved(const QString &udi);
-        void _k_newCapability(const QString &udi, int capability);
+        void _k_newDeviceInterface(const QString &udi, int type);
         void _k_destroyed(QObject *object);
 
         mutable QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
@@ -156,8 +156,8 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &pre
     }
 }
 
-Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::Type &capability,
-                                                              const QString &parentUdi ) const
+Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery(const DeviceInterface::Type &type,
+                                                             const QString &parentUdi) const
 {
     DeviceList list;
 
@@ -165,7 +165,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Capability::
 
     if ( backend == 0 ) return list;
 
-    QStringList udis = backend->devicesFromQuery( parentUdi, capability );
+    QStringList udis = backend->devicesFromQuery(parentUdi, type);
 
     foreach( const QString &udi, udis )
     {
@@ -188,10 +188,10 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
 
     QSet<QString> udis;
     if ( predicate.isValid() ) {
-        QSet<Capability::Type> capabilities = predicate.usedCapabilities();
+        QSet<DeviceInterface::Type> types = predicate.usedTypes();
 
-        foreach (Capability::Type capability, capabilities) {
-            udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, capability));
+        foreach (DeviceInterface::Type type, types) {
+            udis+= QSet<QString>::fromList(backend->devicesFromQuery(parentUdi, type));
         }
     } else {
         udis+= QSet<QString>::fromList(backend->allDevices());
@@ -248,9 +248,9 @@ void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
     emit q->deviceRemoved(udi);
 }
 
-void Solid::DeviceManagerPrivate::_k_newCapability(const QString &udi, int capability)
+void Solid::DeviceManagerPrivate::_k_newDeviceInterface(const QString &udi, int type)
 {
-    emit q->newCapability(udi, capability);
+    emit q->newDeviceInterface(udi, type);
 }
 
 void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)
@@ -307,8 +307,8 @@ void Solid::DeviceManagerPrivate::connectBackend( QObject *newBackend )
                       q, SLOT( _k_deviceAdded( QString ) ) );
     QObject::connect( newBackend, SIGNAL( deviceRemoved( QString ) ),
                       q, SLOT( _k_deviceRemoved( QString ) ) );
-    QObject::connect( newBackend, SIGNAL( newCapability( QString, int ) ),
-                      q, SLOT( _k_newCapability( QString, int ) ) );
+    QObject::connect( newBackend, SIGNAL( newDeviceInterface( QString, int ) ),
+                      q, SLOT( _k_newDeviceInterface( QString, int ) ) );
 }
 
 #include "devicemanager.moc"

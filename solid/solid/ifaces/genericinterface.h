@@ -37,7 +37,7 @@ namespace Ifaces
      *
      * Warning: Using this class could expose some backend specific details
      * and lead to non portable code. Use it at your own risk, or during
-     * transitional phases when the provided capabilities interfaces don't
+     * transitional phases when the provided device interfaces don't
      * provide the necessary methods.
      */
     class SOLIDIFACES_EXPORT GenericInterface

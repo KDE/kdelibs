@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_CAPABILITY_H
-#define SOLID_CAPABILITY_H
+#ifndef SOLID_DEVICEINTERFACE_H
+#define SOLID_DEVICEINTERFACE_H
 
 #include <QObject>
 #include <QFlags>
@@ -30,25 +30,25 @@ namespace Solid
     class Device;
     class DevicePrivate;
     class Predicate;
-    class CapabilityPrivate;
+    class DeviceInterfacePrivate;
 
     /**
-     * Base class of all the capabilities.
+     * Base class of all the device interfaces.
      *
-     * A capability describes what a device can do. A device generally has
-     * a set of capabilities.
+     * A device interface describes what a device can do. A device generally has
+     * a set of device interfaces.
      */
-    class SOLID_EXPORT Capability : public QObject
+    class SOLID_EXPORT DeviceInterface : public QObject
     {
         Q_OBJECT
         Q_ENUMS(Type)
-        Q_DECLARE_PRIVATE(Capability)
+        Q_DECLARE_PRIVATE(DeviceInterface)
 
     public:
         /**
-         * This enum type defines the type of capability that a Device can have.
+         * This enum type defines the type of device interface that a Device can have.
          *
-         * - Unknown : An undetermined capability
+         * - Unknown : An undetermined device interface
          * - Processor : A processor
          * - Block : A block device
          * - Storage : A storage drive
@@ -69,41 +69,41 @@ namespace Solid
                     DvbHw = 16 };
 
         /**
-         * Destroys a Capability object.
+         * Destroys a DeviceInterface object.
          */
-        virtual ~Capability();
+        virtual ~DeviceInterface();
 
         /**
-         * Indicates if this capability is valid.
-         * A capability is considered valid if the device it is referring is available in the system.
+         * Indicates if this device interface is valid.
+         * A device interface is considered valid if the device it is referring is available in the system.
          *
-         * @return true if this capability's device is available, false otherwise
+         * @return true if this device interface's device is available, false otherwise
          */
         bool isValid() const;
 
         /**
          *
-         * @return the name of the capability type
+         * @return the name of the device interface type
          */
         static QString typeToString(Type type);
 
         /**
          *
-         * @return the capability type for the given name
+         * @return the device interface type for the given name
          */
         static Type stringToType(const QString &type);
 
     protected:
         /**
          * @internal
-         * Creates a new Capability object.
+         * Creates a new DeviceInterface object.
          *
          * @param dd the private d member
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          */
-        Capability(CapabilityPrivate &dd, QObject *backendObject);
+        DeviceInterface(DeviceInterfacePrivate &dd, QObject *backendObject);
 
-        CapabilityPrivate *d_ptr;
+        DeviceInterfacePrivate *d_ptr;
 
     private:
         Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))

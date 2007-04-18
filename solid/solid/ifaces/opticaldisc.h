@@ -30,7 +30,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on optical discs.
+     * This device interface is available on optical discs.
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */

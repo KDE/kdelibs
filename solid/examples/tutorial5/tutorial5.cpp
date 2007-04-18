@@ -44,7 +44,7 @@ int main(int args, char **argv)
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     
     //get a network device
-    Solid::DeviceList netlist = manager.findDevicesFromQuery(Solid::Capability::NetworkHw, QString());
+    Solid::DeviceList netlist = manager.findDevicesFromQuery(Solid::DeviceInterface::NetworkHw, QString());
     
     //check to see if no network devices were found
     if(netlist.empty() )

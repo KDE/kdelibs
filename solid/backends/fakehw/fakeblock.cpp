@@ -20,7 +20,7 @@
 #include "fakeblock.h"
 
 FakeBlock::FakeBlock( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 
 }

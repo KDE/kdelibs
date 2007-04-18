@@ -20,10 +20,10 @@
 #ifndef FAKEDVBHW_H
 #define FAKEDVBHW_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/dvbhw.h>
 
-class FakeDvbHw : public FakeCapability, virtual public Solid::Ifaces::DvbHw
+class FakeDvbHw : public FakeDeviceInterface, virtual public Solid::Ifaces::DvbHw
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::DvbHw )

@@ -53,8 +53,8 @@ public Q_SLOTS:
     void raiseCondition( const QString &condition, const QString &reason );
 
 public:
-    virtual bool queryCapability(const Solid::Capability::Type &capability) const;
-    virtual QObject *createCapability(const Solid::Capability::Type &capability);
+    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
+    virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);

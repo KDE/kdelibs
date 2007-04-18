@@ -12,14 +12,14 @@
         <!-- A system with its own AC adapter and a battery (like a laptop) -->
         <device udi="/org/kde/solid/fakehw/acpi_AC">
             <property key="name">AC Adapter</property>
-            <property key="capability">AcAdapter</property>
+            <property key="interfaces">AcAdapter</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="isPlugged">false</property>
         </device>
         <device udi="/org/kde/solid/fakehw/acpi_BAT0">
             <property key="name">Battery Bay</property>
             <property key="vendor">Acme Corporation</property>
-            <property key="capability">Battery</property>
+            <property key="interfaces">Battery</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="isPlugged">true</property>
             <property key="batteryType">primary</property>
@@ -44,7 +44,7 @@
                - lid switch -->
         <device udi="/org/kde/solid/fakehw/acpi_PWB">
             <property key="name">Power Button</property>
-            <property key="capability">Button</property>
+            <property key="interfaces">Button</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
 
             <property key="type">PowerButton</property>
@@ -52,7 +52,7 @@
         </device>
         <device udi="/org/kde/solid/fakehw/acpi_SLPB">
             <property key="name">Sleep Button</property>
-            <property key="capability">Button</property>
+            <property key="interfaces">Button</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
 
             <property key="type">SleepButton</property>
@@ -60,7 +60,7 @@
         </device>
         <device udi="/org/kde/solid/fakehw/acpi_LID0">
             <property key="name">Lid Switch</property>
-            <property key="capability">Button</property>
+            <property key="interfaces">Button</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
 
             <property key="type">LidButton</property>
@@ -73,7 +73,7 @@
         <!-- Two CPUs -->
         <device udi="/org/kde/solid/fakehw/acpi_CPU0">
             <property key="name">Solid Processor #0</property>
-            <property key="capability">Processor</property>
+            <property key="interfaces">Processor</property>
             <property key="vendor">Acme Corporation</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="number">0</property>
@@ -82,7 +82,7 @@
         </device>
         <device udi="/org/kde/solid/fakehw/acpi_CPU1">
             <property key="name">Solid Processor #1</property>
-            <property key="capability">Processor</property>
+            <property key="interfaces">Processor</property>
             <property key="vendor">Acme Corporation</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="number">1</property>
@@ -100,7 +100,7 @@
             <!-- The actual floppy device -->
             <device udi="/org/kde/solid/fakehw/platform_floppy_0_storage">
                 <property key="name">PC Floppy Drive</property>
-                <property key="capability">Storage,Block</property>
+                <property key="interfaces">Storage,Block</property>
                 <property key="parent">/org/kde/solid/fakehw/platform_floppy_0</property>
 
                 <property key="minor">0</property>
@@ -117,7 +117,7 @@
                 <!-- A (generally) virtual volume tracking the floppy drive state -->
                 <device udi="/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume">
                     <property key="name">Floppy Disk</property>
-                    <property key="capability">Block,Volume</property>
+                    <property key="interfaces">Block,Volume</property>
                     <property key="parent">/org/kde/solid/fakehw/platform_floppy_0_storage</property>
 
                     <property key="minor">0</property>
@@ -148,7 +148,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_serial_HD56890I">
                     <property key="name">HD250GB</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="capability">Storage,Block</property>
+                    <property key="interfaces">Storage,Block</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_001_ide_0_0</property>
 
                     <property key="minor">0</property>
@@ -172,7 +172,7 @@
                     -->
                     <device udi="/org/kde/solid/fakehw/volume_uuid_feedface">
                         <property key="name">/</property>
-                        <property key="capability">Block,Volume</property>
+                        <property key="interfaces">Block,Volume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">1</property>
@@ -190,7 +190,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_uuid_c0ffee">
                         <property key="name">/home</property>
-                        <property key="capability">Block,Volume</property>
+                        <property key="interfaces">Block,Volume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">6</property>
@@ -208,7 +208,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_uuid_f00ba7">
                         <property key="name">/foreign</property>
-                        <property key="capability">Block,Volume</property>
+                        <property key="interfaces">Block,Volume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">7</property>
@@ -226,7 +226,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_part2_size_1024">
                         <property key="name">Volume</property>
-                        <property key="capability">Block,Volume</property>
+                        <property key="interfaces">Block,Volume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">2</property>
@@ -240,7 +240,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_part5_size_1048576">
                         <property key="name">Volume (swap)</property>
-                        <property key="capability">Block,Volume</property>
+                        <property key="interfaces">Block,Volume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">5</property>
@@ -271,7 +271,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_model_solid_writer">
                     <property key="name">Solid IDE DVD Writer</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="capability">Block,Storage,Cdrom</property>
+                    <property key="interfaces">Block,Storage,Cdrom</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_002_ide_1_0</property>
 
                     <property key="minor">0</property>
@@ -294,7 +294,7 @@
                     <!-- ... with a cd-r in it -->
                     <device udi="/org/kde/solid/fakehw/volume_uuid_5011">
                         <property key="name">FooDistro i386</property>
-                        <property key="capability">Block,Volume,OpticalDisc</property>
+                        <property key="interfaces">Block,Volume,OpticalDisc</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_writer</property>
 
                         <property key="discType">cd_rw</property>
@@ -317,7 +317,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_model_solid_reader">
                     <property key="name">Solid IDE DVD Reader</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="capability">Block,Storage,Cdrom</property>
+                    <property key="interfaces">Block,Storage,Cdrom</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_002_ide_1_1</property>
 
                     <property key="minor">0</property>
@@ -338,7 +338,7 @@
                     <!-- ... with a DVD Video in it -->
                     <device udi="/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS">
                         <property key="name">SolidMan Begins</property>
-                        <property key="capability">Block,Volume,OpticalDisc</property>
+                        <property key="interfaces">Block,Volume,OpticalDisc</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_reader</property>
 
                         <property key="discType">dvd_rom</property>
@@ -390,7 +390,7 @@
                                 <device udi="/org/kde/solid/fakehw/storage_serial_XOY4_5206">
                                     <property key="name">XO-Y4</property>
                                     <property key="vendor">Acme Electronics</property>
-                                    <property key="capability">Storage,Block,PortableMediaPlayer</property>
+                                    <property key="interfaces">Storage,Block,PortableMediaPlayer</property>
                                     <property key="parent">/org/kde/solid/fakehw/usb_device_4e8_5041_if0_scsi_host_scsi_device_lun0</property>
 
                                     <property key="minor">0</property>
@@ -413,7 +413,7 @@
                                     <!-- ... with a partition since it's a USB Mass Storage device -->
                                     <device udi="/org/kde/solid/fakehw/volume_part1_size_993284096">
                                         <property key="name">Volume (vfat)</property>
-                                        <property key="capability">Block,Volume</property>
+                                        <property key="interfaces">Block,Volume</property>
                                         <property key="parent">/org/kde/solid/fakehw/storage_serial_XOY4_5206</property>
 
                                         <property key="minor">1</property>
@@ -452,7 +452,7 @@
                     <!-- We finally find the camera interface -->
                     <device udi="/org/kde/solid/fakehw/usb_device_4a9_30b9_noserial_if0">
                         <property key="name">USB Imaging Interface</property>
-                        <property key="capability">Camera</property>
+                        <property key="interfaces">Camera</property>
                         <property key="parent">/org/kde/solid/fakehw/usb_device_4a9_30b9_noserial</property>
                         <property key="accessMethod">ptp</property>
                         <property key="gphotoSupport">true</property>
@@ -463,7 +463,7 @@
                     <property key="name">ZX Cordless Mouse</property>
                     <property key="vendor">Logi4 Inc.</property>
                     <property key="parent">/org/kde/solid/fakehw/usb_device_0_0_1d_2</property>
-                    <property key="capability">Battery</property>
+                    <property key="interfaces">Battery</property>
 
                     <property key="isPlugged">true</property>
                     <property key="batteryType">mouse</property>
@@ -487,7 +487,7 @@
                         <device udi="/org/kde/solid/fakehw/usb_device_1267_210_noserial_if0_logical_dev_input">
                             <property key="name">Logi4 Receiver</property>
                             <property key="parent">/org/kde/solid/fakehw/usb_device_1267_210_noserial_if0</property>
-                            <!-- TODO: Complete this if we get input (mouse and keyb) related capabilities -->
+                            <!-- TODO: Complete this if we get input (mouse and keyb) related interfaces -->
                         </device>
 
                 <!-- USB Device #3 -->
@@ -506,7 +506,7 @@
                             <property key="name">ORB 2400 series</property>
                             <property key="vendor">Acme</property>
                             <property key="parent">/org/kde/solid/fakehw/usb_device_4f1_5d33_HF8459_if0</property>
-                            <!-- TODO: Complete this if we get printer related capabilities -->
+                            <!-- TODO: Complete this if we get printer related interfaces -->
                         </device>
 
 
@@ -527,7 +527,7 @@
                 <!-- Wireless network interface -->
                 <device udi="/org/kde/solid/fakehw/net_00_1a_eb_c9_64_16">
                     <property key="name">WLAN Interface</property>
-                    <property key="capability">NetworkHw</property>
+                    <property key="interfaces">NetworkHw</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_3452_7890</property>
                     <property key="ifaceName">wlan0</property>
                     <property key="wireless">true</property>
@@ -544,7 +544,7 @@
                 <!-- Ethernet network interface -->
                 <device udi="/org/kde/solid/fakehw/net_00_1a_eb_c9_64_15">
                     <property key="name">Networking Interface</property>
-                    <property key="capability">NetworkHw</property>
+                    <property key="interfaces">NetworkHw</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_8904_5e21</property>
                     <property key="ifaceName">eth0</property>
                     <property key="wireless">false</property>
@@ -561,7 +561,7 @@
                 <!-- Digital video broadcasting interface -->
                 <device udi="/org/kde/solid/fakehw/pci_8843_6a11_dvb1">
                     <property key="name">DVB Interface</property>
-                    <property key="capability">DvbHw</property>
+                    <property key="interfaces">DvbHw</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_8843_6a11</property>
                     <property key="device">/dev/broadcast0/demux</property>
                     <property key="deviceAdapter">2</property>
@@ -579,7 +579,7 @@
         </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_capture_0">
                 <property key="name">Acme ALSA Capture</property>
-                <property key="capability">AudioHw</property>
+                <property key="interfaces">AudioHw</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0,0</property>
@@ -588,7 +588,7 @@
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_playback_0">
                 <property key="name">Acme ALSA Playback</property>
-                <property key="capability">AudioHw</property>
+                <property key="interfaces">AudioHw</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0,1</property>
@@ -597,7 +597,7 @@
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_control_1">
                 <property key="name">Acme ALSA Control</property>
-                <property key="capability">AudioHw</property>
+                <property key="interfaces">AudioHw</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0</property>
@@ -606,7 +606,7 @@
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0">
                 <property key="name">Acme OSS PCM Device</property>
-                <property key="capability">AudioHw</property>
+                <property key="interfaces">AudioHw</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">oss</property>
                 <property key="driverHandler">/dev/dsp</property>
@@ -621,7 +621,7 @@
         <device udi="/org/kde/solid/fakehw/display0">
             <property key="name">Display #0</property>
             <property key="vendor">Acme Corporation</property>
-            <property key="capability">Display</property>
+            <property key="interfaces">Display</property>
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="type">lcd</property>
             <property key="lcdBrightness">50</property>

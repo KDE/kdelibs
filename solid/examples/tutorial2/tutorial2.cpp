@@ -23,7 +23,7 @@
 //solid specific includes
 #include <solid/devicemanager.h>
 #include <solid/device.h>
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 //kde specific includes
 #include <kcomponentdata.h>
@@ -42,7 +42,7 @@ int main(int args, char **argv)
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     
     //get a list of all devices that are AudioHw
-    foreach(Solid::Device device, manager.findDevicesFromQuery(Solid::Capability::AudioHw, QString()) )
+    foreach(Solid::Device device, manager.findDevicesFromQuery(Solid::DeviceInterface::AudioHw, QString()) )
     {
         kDebug() << device.udi().toLatin1().constData() << endl;
     }

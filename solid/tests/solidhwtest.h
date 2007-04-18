@@ -35,10 +35,10 @@ private slots:
     void testDeviceBasicFeatures();
     void testManagerSignals();
     void testDeviceSignals();
-    void testCapabilityIntrospection_data();
-    void testCapabilityIntrospection();
-    void testCapabilityIntrospectionCornerCases();
-    void testDeviceCapabilities();
+    void testDeviceInterfaceIntrospection_data();
+    void testDeviceInterfaceIntrospection();
+    void testDeviceInterfaceIntrospectionCornerCases();
+    void testDeviceInterfaces();
     void testPredicate();
 
     void slotPropertyChanged( const QMap<QString,int> &changes );

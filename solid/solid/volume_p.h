@@ -20,15 +20,15 @@
 #ifndef SOLID_VOLUME_P_H
 #define SOLID_VOLUME_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class VolumePrivate : public CapabilityPrivate
+    class VolumePrivate : public DeviceInterfacePrivate
     {
     public:
         VolumePrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 #include <solid/button.h>
 
 namespace Solid
@@ -30,14 +30,14 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on button devices.
+     * This device interface is available on button devices.
      *
      * A button is a device, like power button or lid switch, that can be pressed by user.
      * Some buttons can have two states (Enabled/Disabled, On/Off ...), other buttons haven't state.
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT Button : virtual public Capability
+    class SOLIDIFACES_EXPORT Button : virtual public DeviceInterface
     {
     public:
         /**

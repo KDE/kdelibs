@@ -18,7 +18,7 @@
 */
 #include "fakedevice.h"
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include "fakegenericinterface.h"
 #include "fakeprocessor.h"
 #include "fakeblock.h"
@@ -46,7 +46,7 @@ class FakeDevice::Private
 public:
     QString udi;
     QMap<QString, QVariant> propertyMap;
-    QStringList capabilityList;
+    QStringList interfaceList;
     bool locked;
     QString lockReason;
     bool broken;
@@ -57,21 +57,21 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
 {
     d->udi = udi;
     d->propertyMap = propertyMap;
-    d->capabilityList = d->propertyMap["capability"].toString().simplified().split(',');
-    d->capabilityList << "GenericInterface";
+    d->interfaceList = d->propertyMap["interfaces"].toString().simplified().split(',');
+    d->interfaceList << "GenericInterface";
     d->locked = false;
     d->broken = false;
 
     QDBusConnection::sessionBus().registerObject( udi, this, QDBusConnection::ExportNonScriptableSlots );
 
-    // Force instantiation of all the capabilities
+    // Force instantiation of all the device interfaces
     // this way they'll get exported on the bus
     // that means they'll be created twice, but that won't be
     // a problem for unit testing.
-    foreach ( const QString &capability, d->capabilityList )
+    foreach ( const QString &interface, d->interfaceList )
     {
-        Solid::Capability::Type type = Solid::Capability::stringToType( capability );
-        createCapability( type );
+        Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType( interface );
+        createDeviceInterface( type );
     }
 }
 
@@ -195,76 +195,76 @@ void FakeDevice::raiseCondition( const QString &condition, const QString &reason
     emit conditionRaised( condition, reason );
 }
 
-bool FakeDevice::queryCapability(const Solid::Capability::Type &capability) const
+bool FakeDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
-    return d->capabilityList.contains( Solid::Capability::typeToString(capability) );
+    return d->interfaceList.contains( Solid::DeviceInterface::typeToString(type) );
 }
 
-QObject *FakeDevice::createCapability(const Solid::Capability::Type &capability)
+QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
-    // Do not try to cast with a unsupported capability.
-    if( !queryCapability(capability) )
+    // Do not try to cast with a unsupported device interface.
+    if( !queryDeviceInterface(type) )
         return 0;
 
-    FakeCapability *iface = 0;
+    FakeDeviceInterface *iface = 0;
 
-    switch(capability)
+    switch(type)
     {
-    case Solid::Capability::GenericInterface:
+    case Solid::DeviceInterface::GenericInterface:
         iface = new FakeGenericInterface(this);
         break;
-    case Solid::Capability::Processor:
+    case Solid::DeviceInterface::Processor:
         iface = new FakeProcessor(this);
         break;
-    case Solid::Capability::Block:
+    case Solid::DeviceInterface::Block:
         iface = new FakeBlock(this);
         break;
-    case Solid::Capability::Storage:
+    case Solid::DeviceInterface::Storage:
         iface = new FakeStorage(this);
         break;
-    case Solid::Capability::Cdrom:
+    case Solid::DeviceInterface::Cdrom:
         iface = new FakeCdrom(this);
         break;
-    case Solid::Capability::Volume:
+    case Solid::DeviceInterface::Volume:
         iface = new FakeVolume(this);
         break;
-    case Solid::Capability::OpticalDisc:
+    case Solid::DeviceInterface::OpticalDisc:
         iface = new FakeOpticalDisc(this);
         break;
-    case Solid::Capability::Camera:
+    case Solid::DeviceInterface::Camera:
         iface = new FakeCamera(this);
         break;
-    case Solid::Capability::PortableMediaPlayer:
+    case Solid::DeviceInterface::PortableMediaPlayer:
         iface = new FakePortableMediaPlayer(this);
         break;
-    case Solid::Capability::NetworkHw:
+    case Solid::DeviceInterface::NetworkHw:
         iface = new FakeNetworkHw(this);
         break;
-    case Solid::Capability::AcAdapter:
+    case Solid::DeviceInterface::AcAdapter:
         iface = new FakeAcAdapter(this);
         break;
-    case Solid::Capability::Battery:
+    case Solid::DeviceInterface::Battery:
         iface = new FakeBattery(this);
         break;
-    case Solid::Capability::Button:
+    case Solid::DeviceInterface::Button:
         iface = new FakeButton(this);
         break;
-    case Solid::Capability::Display:
+    case Solid::DeviceInterface::Display:
         iface = new FakeDisplay(this);
         break;
-    case Solid::Capability::AudioHw:
+    case Solid::DeviceInterface::AudioHw:
         iface = new FakeAudioHw(this);
         break;
-    case Solid::Capability::DvbHw:
+    case Solid::DeviceInterface::DvbHw:
         iface = new FakeDvbHw(this);
         break;
-    case Solid::Capability::Unknown:
+    case Solid::DeviceInterface::Unknown:
         break;
     }
 
     if(iface)
     {
-        QDBusConnection::sessionBus().registerObject( d->udi+'/'+Solid::Capability::typeToString( capability ), iface,
+        QDBusConnection::sessionBus().registerObject( d->udi+'/'+Solid::DeviceInterface::typeToString(type), iface,
                                                       QDBusConnection::ExportNonScriptableSlots );
     }
 

@@ -19,10 +19,10 @@
 #ifndef FAKEPROCESSOR_H
 #define FAKEPROCESSOR_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/processor.h>
 
-class FakeProcessor : public FakeCapability, public Solid::Ifaces::Processor
+class FakeProcessor : public FakeDeviceInterface, public Solid::Ifaces::Processor
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::Processor )

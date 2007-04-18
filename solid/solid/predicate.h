@@ -25,7 +25,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
@@ -36,7 +36,7 @@ namespace Solid
      *
      * A predicate is a logical condition that a given device can match or not.
      * It's a constraint about the value a property must have in a given device
-     * capability, or any combination (conjunction, disjunction) of such
+     * interface, or any combination (conjunction, disjunction) of such
      * constraints.
      *
      * FIXME: Add an example.
@@ -66,43 +66,43 @@ namespace Solid
 
         /**
          * Constructs a predicate matching the value of a property in
-         * a given capability.
+         * a given device interface.
          *
-         * @param capability the capability the device must have
-         * @param property the property name of the capability
+         * @param ifaceType the device interface type the device must have
+         * @param property the property name of the device interface
          * @param value the value the property must have to make the device match
          * @param compOperator the operator to apply between the property and the value when matching
          */
-        Predicate( const Capability::Type &capability,
+        Predicate( const DeviceInterface::Type &ifaceType,
                    const QString &property, const QVariant &value,
                    ComparisonOperator compOperator = Equals );
 
         /**
          * Constructs a predicate matching the value of a property in
-         * a given capability.
+         * a given device interface.
          *
-         * @param capability the capability the device must have
-         * @param property the property name of the capability
+         * @param ifaceName the name of the device interface the device must have
+         * @param property the property name of the device interface
          * @param value the value the property must have to make the device match
          * @param compOperator the operator to apply between the property and the value when matching
          */
-        Predicate( const QString &capability,
+        Predicate( const QString &ifaceName,
                    const QString &property, const QVariant &value,
                    ComparisonOperator compOperator = Equals );
 
         /**
-         * Constructs a predicate matching devices being of a particular capability
+         * Constructs a predicate matching devices being of a particular device interface
          *
-         * @param capability the capability the device must have
+         * @param ifaceType the device interface the device must have
          */
-        explicit Predicate(const Capability::Type &capability);
+        explicit Predicate(const DeviceInterface::Type &ifaceType);
 
         /**
-         * Constructs a predicate matching devices being of a particular capability
+         * Constructs a predicate matching devices being of a particular device interface
          *
-         * @param capability the capability the device must have
+         * @param ifaceName the name of the device interface the device must have
          */
-        explicit Predicate(const QString &capability);
+        explicit Predicate(const QString &ifaceName);
 
         /**
          * Destroys a Predicate object.
@@ -154,11 +154,11 @@ namespace Solid
         bool matches( const Device &device ) const;
 
         /**
-         * Retrieves the capabilities used in this predicate.
+         * Retrieves the device interface types used in this predicate.
          *
-         * @return all the capabilities used in this predicate
+         * @return all the device interface types used in this predicate
          */
-        QSet<Capability::Type> usedCapabilities() const;
+        QSet<DeviceInterface::Type> usedTypes() const;
 
         /**
          * Converts the predicate to its string form.

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,20 +17,37 @@
 
 */
 
-#ifndef SOLID_CAPABILITY_P_H
-#define SOLID_CAPABILITY_P_H
+#ifndef SOLID_IFACES_DEVICEINTERFACE_H
+#define SOLID_IFACES_DEVICEINTERFACE_H
 
-#include "frontendobject_p.h"
+#include <QObject>
+#include <QFlags>
+
+#include <solid/solid_export.h>
 
 namespace Solid
 {
-    class CapabilityPrivate : public FrontendObjectPrivate
+namespace Ifaces
+{
+    /**
+     * Base interface of all the device interfaces.
+     *
+     * A device interface describes what a device can do. A device generally has
+     * a set of device interfaces.
+     *
+     * @see Solid::Ifaces::AbstractDeviceInterface
+     */
+    class SOLIDIFACES_EXPORT DeviceInterface
     {
     public:
-        CapabilityPrivate(QObject *parent)
-            : FrontendObjectPrivate(parent) { }
-
+        /**
+         * Destroys a DeviceInterface object.
+         */
+        virtual ~DeviceInterface();
     };
 }
+}
+
+Q_DECLARE_INTERFACE( Solid::Ifaces::DeviceInterface, "org.kde.Solid.Ifaces.DeviceInterface/0.1" )
 
 #endif

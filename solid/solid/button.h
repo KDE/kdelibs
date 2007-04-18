@@ -23,21 +23,21 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class ButtonPrivate;
 
     /**
-     * This capability is available on button devices.
+     * This device interface is available on button devices.
      *
      * A button is a device, like power button or lid switch, that can be pressed by user.
      * Some buttons can have two states (Enabled/Disabled, On/Off ...), other buttons haven't state.
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLID_EXPORT Button : public Capability
+    class SOLID_EXPORT Button : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( ButtonType )
@@ -64,7 +64,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Button( QObject *backendObject );
@@ -75,12 +75,12 @@ namespace Solid
         virtual ~Button();
 
         /**
-         * Get the Solid::Capability::Type of the Button capability.
+         * Get the Solid::DeviceInterface::Type of the Button device interface.
          *
-         * @return the Button capability type
-         * @see Solid::Capability::Type
+         * @return the Button device interface type
+         * @see Solid::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Button; }
+        static Type deviceInterfaceType() { return DeviceInterface::Button; }
 
         /**
          * Retrieves the type of button device.

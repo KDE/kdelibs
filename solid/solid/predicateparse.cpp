@@ -66,44 +66,44 @@ void PredicateParse_errorDetected()
     }
 }
 
-void *PredicateParse_newAtom( char *capability, char *property, void *value )
+void *PredicateParse_newAtom(char *interface, char *property, void *value)
 {
-    QString cap( capability );
+    QString iface(interface);
     QString prop( property );
     QVariant *val = (QVariant*)value;
 
-    Solid::Predicate *result = new Solid::Predicate( cap, prop, *val );
+    Solid::Predicate *result = new Solid::Predicate(iface, prop, *val);
 
     delete val;
-    free( capability );
+    free(interface);
     free( property );
 
     return result;
 }
 
-void *PredicateParse_newMaskAtom( char *capability, char *property, void *value )
+void *PredicateParse_newMaskAtom(char *interface, char *property, void *value)
 {
-    QString cap( capability );
+    QString iface(interface);
     QString prop( property );
     QVariant *val = (QVariant*)value;
 
-    Solid::Predicate *result = new Solid::Predicate( cap, prop, *val, Solid::Predicate::Mask );
+    Solid::Predicate *result = new Solid::Predicate(iface, prop, *val, Solid::Predicate::Mask);
 
     delete val;
-    free( capability );
+    free(interface);
     free( property );
 
     return result;
 }
 
 
-void *PredicateParse_newIsAtom( char *capability )
+void *PredicateParse_newIsAtom(char *interface)
 {
-    QString cap( capability );
+    QString iface(interface);
 
-    Solid::Predicate *result = new Solid::Predicate( cap );
+    Solid::Predicate *result = new Solid::Predicate(iface);
 
-    free( capability );
+    free(interface);
 
     return result;
 }

@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
 {
 namespace Ifaces
 {
     /**
-     * This capability is available on network interfaces.
+     * This device interface is available on network interfaces.
      */
-    class SOLIDIFACES_EXPORT NetworkHw : virtual public Capability
+    class SOLIDIFACES_EXPORT NetworkHw : virtual public DeviceInterface
     {
     public:
         /**

@@ -20,7 +20,7 @@
 #include "fakeacadapter.h"
 
 FakeAcAdapter::FakeAcAdapter( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 }
 

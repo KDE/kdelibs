@@ -20,15 +20,15 @@
 #ifndef SOLID_DVBHW_P_H
 #define SOLID_DVBHW_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class DvbHwPrivate : public CapabilityPrivate
+    class DvbHwPrivate : public DeviceInterfacePrivate
     {
     public:
         DvbHwPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

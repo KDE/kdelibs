@@ -24,7 +24,7 @@
 #include <solid/ifaces/networkhw.h>
 
 Solid::NetworkHw::NetworkHw( QObject *backendObject )
-    : Capability(*new NetworkHwPrivate(this), backendObject)
+    : DeviceInterface(*new NetworkHwPrivate(this), backendObject)
 {
 }
 

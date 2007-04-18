@@ -17,46 +17,46 @@
 
 */
 
-#include "capability.h"
-#include "capability_p.h"
+#include "deviceinterface.h"
+#include "deviceinterface_p.h"
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 #include <QMetaEnum>
 
 
-Solid::Capability::Capability(CapabilityPrivate &dd, QObject *backendObject)
+Solid::DeviceInterface::DeviceInterface(DeviceInterfacePrivate &dd, QObject *backendObject)
     : d_ptr(&dd)
 {
-    Q_D(Capability);
+    Q_D(DeviceInterface);
 
     d->setBackendObject(backendObject);
 }
 
 
-Solid::Capability::~Capability()
+Solid::DeviceInterface::~DeviceInterface()
 {
 
 }
 
-bool Solid::Capability::isValid() const
+bool Solid::DeviceInterface::isValid() const
 {
-    Q_D(const Capability);
+    Q_D(const DeviceInterface);
     return d->backendObject()!=0;
 }
 
-QString Solid::Capability::typeToString(Type type)
+QString Solid::DeviceInterface::typeToString(Type type)
 {
     int index = staticMetaObject.indexOfEnumerator("Type");
     QMetaEnum metaEnum = staticMetaObject.enumerator(index);
     return QString(metaEnum.valueToKey((int)type));
 }
 
-Solid::Capability::Type Solid::Capability::stringToType(const QString &type)
+Solid::DeviceInterface::Type Solid::DeviceInterface::stringToType(const QString &type)
 {
     int index = staticMetaObject.indexOfEnumerator("Type");
     QMetaEnum metaEnum = staticMetaObject.enumerator(index);
     return (Type)metaEnum.keyToValue(type.toUtf8());
 }
 
-#include "capability.moc"
+#include "deviceinterface.moc"

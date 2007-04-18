@@ -19,10 +19,10 @@
 #ifndef FAKENETWORKHW_H
 #define FAKENETWORKHW_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/networkhw.h>
 
-class FakeNetworkHw : public FakeCapability, public Solid::Ifaces::NetworkHw
+class FakeNetworkHw : public FakeDeviceInterface, public Solid::Ifaces::NetworkHw
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::NetworkHw )

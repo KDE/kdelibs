@@ -31,7 +31,7 @@ namespace Solid
     class CdromPrivate;
 
     /**
-     * This capability is available on CD-ROM drives.
+     * This device interface is available on CD-ROM drives.
      *
      * A Cdrom is a storage that can handle optical discs.
      */
@@ -76,7 +76,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Cdrom( QObject *backendObject );
@@ -88,12 +88,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the Cdrom capability.
+         * Get the Solid::DeviceInterface::Type of the Cdrom device interface.
          *
-         * @return the Cdrom capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the Cdrom device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Cdrom; }
+        static Type deviceInterfaceType() { return DeviceInterface::Cdrom; }
 
 
         /**

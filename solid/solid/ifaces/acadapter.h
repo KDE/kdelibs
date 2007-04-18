@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
 {
 namespace Ifaces
 {
     /**
-     * This capability is available on A/C adapters.
+     * This device interface is available on A/C adapters.
      */
-    class SOLIDIFACES_EXPORT AcAdapter : virtual public Capability
+    class SOLIDIFACES_EXPORT AcAdapter : virtual public DeviceInterface
     {
     public:
         /**

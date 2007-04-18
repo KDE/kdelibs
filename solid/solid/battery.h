@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class BatteryPrivate;
 
     /**
-     * This capability is available on batteries.
+     * This device interface is available on batteries.
      */
-    class SOLID_EXPORT Battery : public Capability
+    class SOLID_EXPORT Battery : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( BatteryType LevelType ChargeState )
@@ -91,7 +91,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Battery( QObject *backendObject );
@@ -103,12 +103,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the Battery capability.
+         * Get the Solid::DeviceInterface::Type of the Battery device interface.
          *
-         * @return the Battery capability type
-         * @see Solid::Capability::Type
+         * @return the Battery device interface type
+         * @see Solid::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Battery; }
+        static Type deviceInterfaceType() { return DeviceInterface::Battery; }
 
         /**
          * Indicates if this battery is plugged.

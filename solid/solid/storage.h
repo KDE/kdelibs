@@ -22,19 +22,19 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class StoragePrivate;
 
     /**
-     * This capability is available on storage devices.
+     * This device interface is available on storage devices.
      *
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Storage : public Capability
+    class SOLID_EXPORT Storage : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( Bus DriveType )
@@ -82,7 +82,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Storage( QObject *backendObject );
@@ -94,12 +94,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the Storage capability.
+         * Get the Solid::DeviceInterface::Type of the Storage device interface.
          *
-         * @return the Storage capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the Storage device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Storage; }
+        static Type deviceInterfaceType() { return DeviceInterface::Storage; }
 
 
         /**

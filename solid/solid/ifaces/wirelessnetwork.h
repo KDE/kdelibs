@@ -71,7 +71,7 @@ namespace Ifaces
          * Retrieves the capabilities of this wifi network.
          *
          * @return the flag set describing the capabilities
-         * @see Solid::WirelessNetwork::Capability
+         * @see Solid::WirelessNetwork::DeviceInterface
          */
         virtual Solid::WirelessNetwork::Capabilities capabilities() const = 0;
 

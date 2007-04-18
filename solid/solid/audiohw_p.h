@@ -20,17 +20,17 @@
 #ifndef SOLID_AUDIOHW_P_H
 #define SOLID_AUDIOHW_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 #include <QStringList>
 
 namespace Solid
 {
-    class AudioHwPrivate : public CapabilityPrivate
+    class AudioHwPrivate : public DeviceInterfacePrivate
     {
     public:
         AudioHwPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
 
         mutable QStringList driverHandles;
     };

@@ -30,7 +30,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on storage devices.
+     * This device interface is available on storage devices.
      *
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.

@@ -20,15 +20,15 @@
 #ifndef SOLID_BATTERY_P_H
 #define SOLID_BATTERY_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class BatteryPrivate : public CapabilityPrivate
+    class BatteryPrivate : public DeviceInterfacePrivate
     {
     public:
         BatteryPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

@@ -21,9 +21,9 @@
 #define FAKEACADAPTER_H
 
 #include <solid/ifaces/acadapter.h>
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 
-class FakeAcAdapter : public FakeCapability, virtual public Solid::Ifaces::AcAdapter
+class FakeAcAdapter : public FakeDeviceInterface, virtual public Solid::Ifaces::AcAdapter
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::AcAdapter )

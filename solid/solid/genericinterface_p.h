@@ -20,15 +20,15 @@
 #ifndef SOLID_GENERICINTERFACE_P_H
 #define SOLID_GENERICINTERFACE_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class GenericInterfacePrivate : public CapabilityPrivate
+    class GenericInterfacePrivate : public DeviceInterfacePrivate
     {
     public:
         GenericInterfacePrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

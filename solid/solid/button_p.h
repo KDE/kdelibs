@@ -21,15 +21,15 @@
 #ifndef SOLID_BUTTON_P_H
 #define SOLID_BUTTON_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class ButtonPrivate : public CapabilityPrivate
+    class ButtonPrivate : public DeviceInterfacePrivate
     {
     public:
         ButtonPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

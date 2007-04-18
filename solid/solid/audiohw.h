@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class AudioHwPrivate;
 
     /**
-     * This capability is available on interfaces exposed by sound cards.
+     * This device interface is available on interfaces exposed by sound cards.
      */
-    class SOLID_EXPORT AudioHw : public Capability
+    class SOLID_EXPORT AudioHw : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( AudioDriver AudioHwType SoundcardType )
@@ -131,7 +131,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit AudioHw( QObject *backendObject );
@@ -143,12 +143,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the AudioHw capability.
+         * Get the Solid::DeviceInterface::Type of the AudioHw device interface.
          *
-         * @return the AudioHw capability type
-         * @see Solid::Capability::Type
+         * @return the AudioHw device interface type
+         * @see Solid::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::AudioHw; }
+        static Type deviceInterfaceType() { return DeviceInterface::AudioHw; }
 
 
 

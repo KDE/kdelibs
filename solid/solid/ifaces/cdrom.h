@@ -32,7 +32,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on CD-ROM drives.
+     * This device interface is available on CD-ROM drives.
      *
      * A Cdrom is a storage that can handle optical discs.
      */

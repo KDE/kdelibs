@@ -39,7 +39,7 @@ namespace Solid
 
     public:
         QString udi;
-        mutable QMap<Capability::Type,Capability*> ifaces;
+        mutable QMap<DeviceInterface::Type,DeviceInterface*> ifaces;
     };
 }
 

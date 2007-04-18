@@ -27,7 +27,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
@@ -46,7 +46,7 @@ namespace Solid
      * Warning: This class provides methods related to device properties,
      * using these methods could expose some backend specific details
      * and lead to non portable code. Use them at your own risk, or during
-     * transitional phases when the provided capabilities interfaces don't
+     * transitional phases when the provided device interfaces don't
      * provide the necessary methods.
      *
      * @author Kevin Ottens <ervin@kde.org>
@@ -142,65 +142,65 @@ namespace Solid
 
 
         /**
-         * Tests if a capability is available from the device.
+         * Tests if a device interface is available from the device.
          *
-         * @param capability the capability to query
-         * @return true if the capability is available, false otherwise
+         * @param type the device interface type to query
+         * @return true if the device interface is available, false otherwise
          */
-        bool queryCapability( const Capability::Type &capability ) const;
+        bool queryDeviceInterface(const DeviceInterface::Type &type) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
-         * a particular capability.
+         * a particular device interface.
          *
-         * @param capability the capability type
-         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         * @param type the device interface type
+         * @returns a pointer to the device interface interface if it exists, 0 otherwise
          */
-        Capability *asCapability( const Capability::Type &capability );
+        DeviceInterface *asDeviceInterface(const DeviceInterface::Type &type);
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
-         * a particular capability.
+         * a particular device interface.
          *
-         * @param capability the capability type
-         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         * @param type the device interface type
+         * @returns a pointer to the device interface interface if it exists, 0 otherwise
          */
-        const Capability *asCapability( const Capability::Type &capability ) const;
+        const DeviceInterface *asDeviceInterface(const DeviceInterface::Type &type) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding
-         * to a given capability interface.
+         * to a given device interface.
          *
-         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         * @returns a pointer to the device interface if it exists, 0 otherwise
          */
-        template <class Cap> Cap *as()
+        template <class DevIface> DevIface *as()
         {
-            Capability::Type type = Cap::capabilityType();
-            Capability *iface = asCapability( type );
-            return qobject_cast<Cap*>( iface );
+            DeviceInterface::Type type = DevIface::deviceInterfaceType();
+            DeviceInterface *iface = asDeviceInterface(type);
+            return qobject_cast<DevIface*>(iface);
         }
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding
-         * to a given capability interface.
+         * to a given device interface.
          *
-         * @returns a pointer to the capability interface if it exists, 0 otherwise
+         * @returns a pointer to the device interface if it exists, 0 otherwise
          */
-        template <class Cap> const Cap *as() const
+        template <class DevIface> const DevIface *as() const
         {
-            Capability::Type type = Cap::capabilityType();
-            const Capability *iface = asCapability( type );
-            return qobject_cast<const Cap*>( iface );
+            DeviceInterface::Type type = DevIface::deviceInterfaceType();
+            const DeviceInterface *iface = asDeviceInterface(type);
+            return qobject_cast<const DevIface*>(iface);
         }
 
         /**
-         * Tests if a device provides a given capability interface.
+         * Tests if a device provides a given device interface.
          *
          * @returns true if the interface is available, false otherwise
          */
-        template <class Cap> bool is()
+        template <class DevIface> bool is() const
         {
-            return queryCapability( Cap::capabilityType() );
+            return queryDeviceInterface(DevIface::deviceInterfaceType());
         }
 
     private:

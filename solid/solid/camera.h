@@ -22,23 +22,23 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class CameraPrivate;
 
     /**
-     * This capability is available on digital camera devices.
+     * This device interface is available on digital camera devices.
      *
      * A digital camera is a device used to transform images into
      * data. Nowaday most digital cameras are multifunctional and
      * able to take photographs, video or sound. On the system side
      * they are a particular type of device holding data, the access
      * method can be different from the typical storage device, hence
-     * why it's a separate capability.
+     * why it's a separate device interface.
      */
-    class SOLID_EXPORT Camera : public Capability
+    class SOLID_EXPORT Camera : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( AccessType )
@@ -63,7 +63,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Camera( QObject *backendObject );
@@ -75,12 +75,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the Camera capability.
+         * Get the Solid::DeviceInterface::Type of the Camera device interface.
          *
-         * @return the Camera capability type
-         * @see Solid::Capability::Type
+         * @return the Camera device interface type
+         * @see Solid::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Camera; }
+        static Type deviceInterfaceType() { return DeviceInterface::Camera; }
 
 
         /**

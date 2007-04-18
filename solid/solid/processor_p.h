@@ -20,15 +20,15 @@
 #ifndef SOLID_PROCESSOR_P_H
 #define SOLID_PROCESSOR_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class ProcessorPrivate : public CapabilityPrivate
+    class ProcessorPrivate : public DeviceInterfacePrivate
     {
     public:
         ProcessorPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

@@ -19,10 +19,10 @@
 #ifndef FAKEGENERICINTERFACE_H
 #define FAKEGENERICINTERFACE_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/genericinterface.h>
 
-class FakeGenericInterface : public FakeCapability, public Solid::Ifaces::GenericInterface
+class FakeGenericInterface : public FakeDeviceInterface, public Solid::Ifaces::GenericInterface
 {
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::GenericInterface)

@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 #include <solid/portablemediaplayer.h>
 
 namespace Solid
@@ -30,13 +30,13 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This class implement Portable Media Player capability interface and represent
+     * This class implement Portable Media Player device interface and represent
      * a portable media player attached to the system.
      * A portable media player is a portable device able to play multimedia files.
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public Capability
+    class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public DeviceInterface
     {
     public:
         /**

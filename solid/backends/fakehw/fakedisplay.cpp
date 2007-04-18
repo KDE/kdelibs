@@ -20,7 +20,7 @@
 #include "fakedisplay.h"
 
 FakeDisplay::FakeDisplay(FakeDevice *device)
-    : FakeCapability(device)
+    : FakeDeviceInterface(device)
 {
 
 }

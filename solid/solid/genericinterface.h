@@ -24,7 +24,7 @@
 #include <QtCore/QVariant>
 
 #include <solid/solid_export.h>
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
@@ -36,10 +36,10 @@ namespace Solid
      *
      * Warning: Using this class could expose some backend specific details
      * and lead to non portable code. Use it at your own risk, or during
-     * transitional phases when the provided capabilities interfaces don't
+     * transitional phases when the provided device interfaces don't
      * provide the necessary methods.
      */
-    class SOLID_EXPORT GenericInterface : public Capability
+    class SOLID_EXPORT GenericInterface : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS(PropertyChange)
@@ -61,7 +61,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit GenericInterface(QObject *backendObject);
@@ -73,19 +73,19 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the Processor capability.
+         * Get the Solid::DeviceInterface::Type of the GenericInterface device interface.
          *
-         * @return the Processor capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the Processor device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::GenericInterface; }
+        static Type deviceInterfaceType() { return DeviceInterface::GenericInterface; }
 
         /**
          * Retrieves a property of the device.
          *
          * Warning: Using this method could expose some backend specific details
          * and lead to non portable code. Use it at your own risk, or during
-         * transitional phases when the provided capabilities interfaces don't
+         * transitional phases when the provided device interfaces don't
          * provide the necessary methods.
          *
          * @param key the property key
@@ -99,7 +99,7 @@ namespace Solid
          *
          * Warning: Using this method could expose some backend specific details
          * and lead to non portable code. Use it at your own risk, or during
-         * transitional phases when the provided capabilities interfaces don't
+         * transitional phases when the provided device interfaces don't
          * provide the necessary methods.
          *
          * @return all the properties of the device
@@ -111,7 +111,7 @@ namespace Solid
          *
          * Warning: Using this method could expose some backend specific details
          * and lead to non portable code. Use it at your own risk, or during
-         * transitional phases when the provided capabilities interfaces don't
+         * transitional phases when the provided device interfaces don't
          * provide the necessary methods.
          *
          * @param key the property key

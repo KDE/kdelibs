@@ -23,7 +23,7 @@
 
 
 FakeAudioHw::FakeAudioHw( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 
 }

@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class AcAdapterPrivate;
 
     /**
-     * This capability is available on A/C adapters.
+     * This device interface is available on A/C adapters.
      */
-    class SOLID_EXPORT AcAdapter : public Capability
+    class SOLID_EXPORT AcAdapter : public DeviceInterface
     {
         Q_OBJECT
         Q_PROPERTY( bool plugged READ isPlugged )
@@ -43,7 +43,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit AcAdapter( QObject *backendObject );
@@ -55,12 +55,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the AcAdapter capability.
+         * Get the Solid::DeviceInterface::Type of the AcAdapter device interface.
          *
-         * @return the AcAdapter capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the AcAdapter device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::AcAdapter; }
+        static Type deviceInterfaceType() { return DeviceInterface::AcAdapter; }
 
         /**
          * Indicates if this A/C adapter is plugged.

@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 class KJob;
 
@@ -31,12 +31,12 @@ namespace Solid
     class VolumePrivate;
 
     /**
-     * This capability is available on volume devices.
+     * This device interface is available on volume devices.
      *
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Volume : public Capability
+    class SOLID_EXPORT Volume : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( UsageType )
@@ -69,7 +69,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Volume( QObject *backendObject );
@@ -81,12 +81,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the Volume capability.
+         * Get the Solid::DeviceInterface::Type of the Volume device interface.
          *
-         * @return the Volume capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the Volume device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Volume; }
+        static Type deviceInterfaceType() { return DeviceInterface::Volume; }
 
 
         /**

@@ -20,15 +20,15 @@
 #ifndef SOLID_BLOCK_P_H
 #define SOLID_BLOCK_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class BlockPrivate : public CapabilityPrivate
+    class BlockPrivate : public DeviceInterfacePrivate
     {
     public:
         BlockPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

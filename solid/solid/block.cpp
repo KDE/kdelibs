@@ -24,7 +24,7 @@
 #include <solid/ifaces/block.h>
 
 Solid::Block::Block( QObject *backendObject )
-    : Capability(*new BlockPrivate(this), backendObject)
+    : DeviceInterface(*new BlockPrivate(this), backendObject)
 {
 }
 

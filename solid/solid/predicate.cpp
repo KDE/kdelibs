@@ -20,7 +20,7 @@
 #include "predicate.h"
 
 #include <solid/device.h>
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 #include <QStringList>
 #include <QMetaProperty>
 #include <QMetaEnum>
@@ -39,7 +39,7 @@ namespace Solid
         bool isValid;
         OperatorType type;
 
-        Capability::Type capability;
+        DeviceInterface::Type ifaceType;
         QString property;
         QVariant value;
         Predicate::ComparisonOperator compOperator;
@@ -61,53 +61,53 @@ Solid::Predicate::Predicate( const Predicate &other )
     *this = other;
 }
 
-Solid::Predicate::Predicate( const Capability::Type &capability,
-                             const QString &property, const QVariant &value,
-                             ComparisonOperator compOperator )
+Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType,
+                            const QString &property, const QVariant &value,
+                            ComparisonOperator compOperator)
     : d( new Private() )
 {
     d->isValid = true;
-    d->capability = capability;
+    d->ifaceType = ifaceType;
     d->property = property;
     d->value = value;
     d->compOperator = compOperator;
 }
 
-Solid::Predicate::Predicate( const QString &capability,
-                             const QString &property, const QVariant &value,
-                             ComparisonOperator compOperator )
+Solid::Predicate::Predicate(const QString &ifaceName,
+                            const QString &property, const QVariant &value,
+                            ComparisonOperator compOperator)
     : d( new Private() )
 {
-    Capability::Type cap_type = Capability::stringToType(capability);
+    DeviceInterface::Type ifaceType = DeviceInterface::stringToType(ifaceName);
 
-    if ( ((int)cap_type)!=-1 )
+    if (((int)ifaceType)!=-1)
     {
         d->isValid = true;
-        d->capability = cap_type;
+        d->ifaceType = ifaceType;
         d->property = property;
         d->value = value;
         d->compOperator = compOperator;
     }
 }
 
-Solid::Predicate::Predicate( const Capability::Type &capability )
+Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType)
     : d( new Private() )
 {
     d->isValid = true;
     d->type = Private::IsType;
-    d->capability = capability;
+    d->ifaceType = ifaceType;
 }
 
-Solid::Predicate::Predicate( const QString &capability )
+Solid::Predicate::Predicate(const QString &ifaceName)
     : d( new Private() )
 {
-    Capability::Type cap_type = Capability::stringToType(capability);
+    DeviceInterface::Type ifaceType = DeviceInterface::stringToType(ifaceName);
 
-    if ( ((int)cap_type)!=-1 )
+    if (((int)ifaceType)!=-1)
     {
         d->isValid = true;
         d->type = Private::IsType;
-        d->capability = cap_type;
+        d->ifaceType = ifaceType;
     }
 }
 
@@ -133,7 +133,7 @@ Solid::Predicate &Solid::Predicate::operator=( const Predicate &other )
     }
     else
     {
-        d->capability = other.d->capability;
+        d->ifaceType = other.d->ifaceType;
         d->property = other.d->property;
         d->value = other.d->value;
         d->compOperator = other.d->compOperator;
@@ -185,7 +185,7 @@ bool Solid::Predicate::matches( const Device &device ) const
             && d->operand2->matches( device );
     case Private::AtomType:
     {
-        const Capability *iface = device.asCapability( d->capability );
+        const DeviceInterface *iface = device.asDeviceInterface(d->ifaceType);
 
         if ( iface!=0 )
         {
@@ -214,15 +214,15 @@ bool Solid::Predicate::matches( const Device &device ) const
         break;
     }
     case Private::IsType:
-        return device.queryCapability(d->capability);
+        return device.queryDeviceInterface(d->ifaceType);
     }
 
     return false;
 }
 
-QSet<Solid::Capability::Type> Solid::Predicate::usedCapabilities() const
+QSet<Solid::DeviceInterface::Type> Solid::Predicate::usedTypes() const
 {
-    QSet<Capability::Type> res;
+    QSet<DeviceInterface::Type> res;
 
     if (d->isValid) {
 
@@ -230,12 +230,12 @@ QSet<Solid::Capability::Type> Solid::Predicate::usedCapabilities() const
         {
         case Private::OrType:
         case Private::AndType:
-            res+= d->operand1->usedCapabilities();
-            res+= d->operand2->usedCapabilities();
+            res+= d->operand1->usedTypes();
+            res+= d->operand2->usedTypes();
             break;
         case Private::AtomType:
         case Private::IsType:
-            res << d->capability;
+            res << d->ifaceType;
             break;
         }
 
@@ -258,12 +258,12 @@ QString Solid::Predicate::toString() const
     }
     else
     {
-        QString capability = Capability::typeToString(d->capability);
+        QString ifaceName = DeviceInterface::typeToString(d->ifaceType);
 
-        if (capability.isEmpty()) capability = "Unknown";
+        if (ifaceName.isEmpty()) ifaceName = "Unknown";
 
         if (d->type==Private::IsType) {
-            return "IS "+capability;
+            return "IS "+ifaceName;
         }
 
         QString value;
@@ -310,7 +310,7 @@ QString Solid::Predicate::toString() const
         if (d->compOperator!=Equals) str_operator = "&";
 
 
-        return capability+'.'+d->property+' '+str_operator+' '+value;
+        return ifaceName+'.'+d->property+' '+str_operator+' '+value;
     }
 }
 

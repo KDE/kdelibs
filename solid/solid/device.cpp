@@ -21,7 +21,7 @@
 #include "device_p.h"
 #include "devicemanager.h"
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 #include "soliddefs_p.h"
 
 #include <solid/ifaces/device.h>
@@ -125,19 +125,19 @@ QString Solid::Device::product() const
     return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), product() );
 }
 
-bool Solid::Device::queryCapability( const Capability::Type &capability ) const
+bool Solid::Device::queryDeviceInterface(const DeviceInterface::Type &type) const
 {
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, queryCapability( capability ) );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, queryDeviceInterface(type) );
 }
 
-template<typename IfaceType, typename CapType>
-inline CapType* capability_cast( QObject *backendObject )
+template<typename IfaceType, typename DevType>
+inline DevType* deviceinterface_cast( QObject *backendObject )
 {
     IfaceType *iface = qobject_cast<IfaceType*>( backendObject );
 
     if ( iface )
     {
-        return new CapType( backendObject );
+        return new DevType( backendObject );
     }
     else
     {
@@ -145,87 +145,86 @@ inline CapType* capability_cast( QObject *backendObject )
     }
 }
 
-Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability )
+Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type)
 {
-    const Solid::Capability *cap = const_cast<const Device *>(this)->asCapability(capability);
-    return const_cast<Solid::Capability*>( cap );
+    const Solid::DeviceInterface *interface = const_cast<const Device *>(this)->asDeviceInterface(type);
+    return const_cast<Solid::DeviceInterface*>(interface);
 }
 
-const Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability ) const
+const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type) const
 {
     Ifaces::Device *device = qobject_cast<Ifaces::Device*>( d->backendObject() );
 
     if ( device!=0 )
     {
-        if ( d->ifaces.contains( capability ) )
-        {
-            return d->ifaces.value( capability );
+        if (d->ifaces.contains(type)) {
+            return d->ifaces.value(type);
         }
 
-        QObject *cap_iface = device->createCapability( capability );
+        QObject *dev_iface = device->createDeviceInterface(type);
 
-        Capability *iface = 0;
+        DeviceInterface *iface = 0;
 
-        if ( cap_iface!=0 )
+        if ( dev_iface!=0 )
         {
-            switch ( capability )
+            switch (type)
             {
-            case Capability::GenericInterface:
-                iface = capability_cast<Ifaces::GenericInterface, GenericInterface>( cap_iface );
+            case DeviceInterface::GenericInterface:
+                iface = deviceinterface_cast<Ifaces::GenericInterface, GenericInterface>(dev_iface);
                 break;
-            case Capability::Processor:
-                iface = capability_cast<Ifaces::Processor, Processor>( cap_iface );
+            case DeviceInterface::Processor:
+                iface = deviceinterface_cast<Ifaces::Processor, Processor>(dev_iface);
                 break;
-            case Capability::Block:
-                iface = capability_cast<Ifaces::Block, Block>( cap_iface );
+            case DeviceInterface::Block:
+                iface = deviceinterface_cast<Ifaces::Block, Block>(dev_iface);
                 break;
-            case Capability::Storage:
-                iface = capability_cast<Ifaces::Storage, Storage>( cap_iface );
+            case DeviceInterface::Storage:
+                iface = deviceinterface_cast<Ifaces::Storage, Storage>(dev_iface);
                 break;
-            case Capability::Cdrom:
-                iface = capability_cast<Ifaces::Cdrom, Cdrom>( cap_iface );
+            case DeviceInterface::Cdrom:
+                iface = deviceinterface_cast<Ifaces::Cdrom, Cdrom>(dev_iface);
                 break;
-            case Capability::Volume:
-                iface = capability_cast<Ifaces::Volume, Volume>( cap_iface );
+            case DeviceInterface::Volume:
+                iface = deviceinterface_cast<Ifaces::Volume, Volume>(dev_iface);
                 break;
-            case Capability::OpticalDisc:
-                iface = capability_cast<Ifaces::OpticalDisc, OpticalDisc>( cap_iface );
+            case DeviceInterface::OpticalDisc:
+                iface = deviceinterface_cast<Ifaces::OpticalDisc, OpticalDisc>(dev_iface);
                 break;
-            case Capability::Camera:
-                iface = capability_cast<Ifaces::Camera, Camera>( cap_iface );
+            case DeviceInterface::Camera:
+                iface = deviceinterface_cast<Ifaces::Camera, Camera>(dev_iface);
                 break;
-            case Capability::PortableMediaPlayer:
-                iface = capability_cast<Ifaces::PortableMediaPlayer, PortableMediaPlayer>( cap_iface );
+            case DeviceInterface::PortableMediaPlayer:
+                iface = deviceinterface_cast<Ifaces::PortableMediaPlayer, PortableMediaPlayer>(dev_iface);
                 break;
-            case Capability::NetworkHw:
-                iface = capability_cast<Ifaces::NetworkHw, NetworkHw>( cap_iface );
+            case DeviceInterface::NetworkHw:
+                iface = deviceinterface_cast<Ifaces::NetworkHw, NetworkHw>(dev_iface);
                 break;
-            case Capability::AcAdapter:
-                iface = capability_cast<Ifaces::AcAdapter, AcAdapter>( cap_iface );
+            case DeviceInterface::AcAdapter:
+                iface = deviceinterface_cast<Ifaces::AcAdapter, AcAdapter>(dev_iface);
                 break;
-            case Capability::Battery:
-                iface = capability_cast<Ifaces::Battery, Battery>( cap_iface );
+            case DeviceInterface::Battery:
+                iface = deviceinterface_cast<Ifaces::Battery, Battery>(dev_iface);
                 break;
-            case Capability::Button:
-                iface = capability_cast<Ifaces::Button, Button>( cap_iface );
+            case DeviceInterface::Button:
+                iface = deviceinterface_cast<Ifaces::Button, Button>(dev_iface);
                 break;
-            case Capability::Display:
-                iface = capability_cast<Ifaces::Display, Display>( cap_iface );
+            case DeviceInterface::Display:
+                iface = deviceinterface_cast<Ifaces::Display, Display>(dev_iface);
                 break;
-            case Capability::AudioHw:
-                iface = capability_cast<Ifaces::AudioHw, AudioHw>( cap_iface );
+            case DeviceInterface::AudioHw:
+                iface = deviceinterface_cast<Ifaces::AudioHw, AudioHw>(dev_iface);
                 break;
-            case Capability::DvbHw:
-                iface = capability_cast<Ifaces::DvbHw, DvbHw>( cap_iface );
+            case DeviceInterface::DvbHw:
+                iface = deviceinterface_cast<Ifaces::DvbHw, DvbHw>(dev_iface);
                 break;
-            case Capability::Unknown:
+            case DeviceInterface::Unknown:
                 break;
             }
         }
 
         if ( iface!=0 )
         {
-            d->ifaces[capability] = iface;
+            d->ifaces[type] = iface;
         }
 
         return iface;
@@ -252,7 +251,7 @@ void Solid::DevicePrivate::_k_destroyed(QObject *object)
     if (object == backendObject()) {
         FrontendObjectPrivate::_k_destroyed(object);
 
-        foreach( Capability *iface, ifaces.values() )
+        foreach( DeviceInterface *iface, ifaces.values() )
         {
             delete iface->d_ptr->backendObject();
             delete iface;
@@ -264,7 +263,7 @@ void Solid::DevicePrivate::_k_destroyed(QObject *object)
 
 void Solid::DevicePrivate::setBackendObject(QObject *object)
 {
-    foreach (Capability *iface, ifaces.values()) {
+    foreach (DeviceInterface *iface, ifaces.values()) {
         delete iface->d_ptr->backendObject();
         delete iface;
     }

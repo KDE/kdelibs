@@ -24,7 +24,7 @@
 #include <solid/ifaces/acadapter.h>
 
 Solid::AcAdapter::AcAdapter( QObject *backendObject )
-    : Capability(*new AcAdapterPrivate(this), backendObject)
+    : DeviceInterface(*new AcAdapterPrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
              this, SIGNAL( plugStateChanged( bool ) ) );

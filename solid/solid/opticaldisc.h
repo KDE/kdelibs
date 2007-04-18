@@ -29,7 +29,7 @@ namespace Solid
     class OpticalDiscPrivate;
 
     /**
-     * This capability is available on optical discs.
+     * This device interface is available on optical discs.
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
@@ -87,7 +87,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit OpticalDisc( QObject *backendObject );
@@ -99,12 +99,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the OpticalDisc capability.
+         * Get the Solid::DeviceInterface::Type of the OpticalDisc device interface.
          *
-         * @return the OpticalDisc capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the OpticalDisc device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::OpticalDisc; }
+        static Type deviceInterfaceType() { return DeviceInterface::OpticalDisc; }
 
 
         /**

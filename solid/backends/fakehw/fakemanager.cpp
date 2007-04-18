@@ -88,13 +88,13 @@ bool FakeManager::deviceExists(const QString &udi)
     return d->loadedDevices.contains(udi);
 }
 
-QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Capability::Type capability)
+QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type)
 {
     if( !parentUdi.isEmpty() )
     {
         QStringList found = findDeviceStringMatch(QLatin1String("parent"), parentUdi);
 
-        if( capability == Solid::Capability::Unknown )
+        if( type == Solid::DeviceInterface::Unknown )
         {
             return found;
         }
@@ -108,7 +108,7 @@ QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Capab
         {
             FakeDevice *device = d->loadedDevices[*it];
 
-            if ( device->queryCapability( capability ) )
+            if ( device->queryDeviceInterface(type) )
             {
                 result << *it;
             }
@@ -116,9 +116,9 @@ QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Capab
 
         return result;
     }
-    else if( capability != Solid::Capability::Unknown )
+    else if(type != Solid::DeviceInterface::Unknown)
     {
-        return findDeviceByCapability( capability );
+        return findDeviceByDeviceInterface(type);
     }
     else
     {
@@ -161,13 +161,13 @@ QStringList FakeManager::findDeviceStringMatch(const QString &key, const QString
     return result;
 }
 
-QStringList FakeManager::findDeviceByCapability( const Solid::Capability::Type &capability )
+QStringList FakeManager::findDeviceByDeviceInterface( const Solid::DeviceInterface::Type &type )
 {
     QStringList result;
     FakeDevice *device;
     foreach(device, d->loadedDevices.values())
     {
-        if( device->queryCapability(capability) )
+        if( device->queryDeviceInterface(type) )
         {
             result.append( device->udi() );
         }
@@ -176,9 +176,9 @@ QStringList FakeManager::findDeviceByCapability( const Solid::Capability::Type &
     return result;
 }
 
-void FakeManager::raiseCapabilityAdded( const QString &udi, Solid::Capability::Type capability )
+void FakeManager::raiseDeviceInterfaceAdded( const QString &udi, Solid::DeviceInterface::Type type )
 {
-    emit newCapability( udi, capability );
+    emit newDeviceInterface( udi, type );
 }
 
 void FakeManager::plug( const QString &udi )

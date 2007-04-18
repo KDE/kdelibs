@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 #include <solid/dvbhw.h>
 
@@ -31,14 +31,14 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on Digital Video Broadcast (DVB) devices.
+     * This device interface is available on Digital Video Broadcast (DVB) devices.
      *
      * A DVB device is a device implementing the open standards for digital
      * television maintained by the DVB Project
      * It is possible to interact with such a device using a special device
      * file in the system.
      */
-    class SOLIDIFACES_EXPORT DvbHw : virtual public Capability
+    class SOLIDIFACES_EXPORT DvbHw : virtual public DeviceInterface
     {
     public:
         /**

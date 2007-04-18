@@ -22,20 +22,20 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
 {
 namespace Ifaces
 {
     /**
-     * This capability is available on block devices.
+     * This device interface is available on block devices.
      *
      * A block device is an adressable device such as drive or partition.
      * It is possible to interact with such a device using a special file
      * in the system.
      */
-    class SOLIDIFACES_EXPORT Block : virtual public Capability
+    class SOLIDIFACES_EXPORT Block : virtual public DeviceInterface
     {
     public:
         /**

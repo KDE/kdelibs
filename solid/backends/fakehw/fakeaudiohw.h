@@ -21,9 +21,9 @@
 #define FAKEAUDIOHW_H
 
 #include <solid/ifaces/audiohw.h>
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 
-class FakeAudioHw : public FakeCapability, virtual public Solid::Ifaces::AudioHw
+class FakeAudioHw : public FakeDeviceInterface, virtual public Solid::Ifaces::AudioHw
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::AudioHw )

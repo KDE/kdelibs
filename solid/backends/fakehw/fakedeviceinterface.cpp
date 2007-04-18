@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Michaël Larouche <michael.larouche@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,10 +16,15 @@
     Boston, MA 02110-1301, USA.
 
 */
+#include "fakedeviceinterface.h"
 
-#include "capability.h"
-
-Solid::Ifaces::Capability::~Capability()
+FakeDeviceInterface::FakeDeviceInterface( FakeDevice *device )
+    : QObject( device ), m_device( device )
 {
 }
 
+FakeDeviceInterface::~FakeDeviceInterface()
+{
+}
+
+#include "fakedeviceinterface.moc"

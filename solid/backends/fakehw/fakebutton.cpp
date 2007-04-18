@@ -20,7 +20,7 @@
 #include "fakebutton.h"
 
 FakeButton::FakeButton( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 
 }

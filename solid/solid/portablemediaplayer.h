@@ -25,20 +25,20 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class PortableMediaPlayerPrivate;
 
     /**
-     * This class implement Portable Media Player capability interface and represent
+     * This class implement Portable Media Player device interface and represent
      * a portable media player attached to the system.
      * A portable media player is a portable device able to play multimedia files.
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLID_EXPORT PortableMediaPlayer : public Capability
+    class SOLID_EXPORT PortableMediaPlayer : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( AccessType )
@@ -64,7 +64,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit PortableMediaPlayer( QObject *backendObject );
@@ -75,12 +75,12 @@ namespace Solid
         virtual ~PortableMediaPlayer();
 
         /**
-         * Get the Solid::Capability::Type of the PortableMediaPlayer capability.
+         * Get the Solid::DeviceInterface::Type of the PortableMediaPlayer device interface.
          *
-         * @return the PortableMediaPlayer capability type
-         * @see Solid::Capability::Type
+         * @return the PortableMediaPlayer device interface type
+         * @see Solid::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::PortableMediaPlayer; }
+        static Type deviceInterfaceType() { return DeviceInterface::PortableMediaPlayer; }
 
         /**
          * Retrieves the type of method that should be used to access this

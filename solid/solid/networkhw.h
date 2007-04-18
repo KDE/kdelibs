@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class NetworkHwPrivate;
 
     /**
-     * This capability is available on network interfaces.
+     * This device interface is available on network interfaces.
      */
-    class SOLID_EXPORT NetworkHw : public Capability
+    class SOLID_EXPORT NetworkHw : public DeviceInterface
     {
         Q_OBJECT
         Q_PROPERTY( QString ifaceName READ ifaceName )
@@ -46,7 +46,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit NetworkHw( QObject *backendObject );
@@ -58,12 +58,12 @@ namespace Solid
 
 
         /**
-         * Get the Solid::Capability::Type of the NetworkHw capability.
+         * Get the Solid::DeviceInterface::Type of the NetworkHw device interface.
          *
-         * @return the NetworkHw capability type
-         * @see Solid::Ifaces::Enums::Capability::Type
+         * @return the NetworkHw device interface type
+         * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::NetworkHw; }
+        static Type deviceInterfaceType() { return DeviceInterface::NetworkHw; }
 
 
         /**

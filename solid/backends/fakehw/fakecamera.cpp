@@ -20,7 +20,7 @@
 #include "fakecamera.h"
 
 FakeCamera::FakeCamera( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 
 }

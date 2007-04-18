@@ -118,13 +118,13 @@ void SolidHwTest::testDeviceBasicFeatures()
     QCOMPARE( valid_dev.as<Solid::GenericInterface>()->allProperties(), expected_properties );
 
 
-    // Query capabilities
-    QCOMPARE( valid_dev.queryCapability( Solid::Capability::Storage ), true );
-    QCOMPARE( valid_dev.queryCapability( Solid::Capability::Cdrom ), true );
-    QCOMPARE( valid_dev.queryCapability( Solid::Capability::Volume ), false );
+    // Query device interfaces
+    QCOMPARE( valid_dev.queryDeviceInterface( Solid::DeviceInterface::Storage ), true );
+    QCOMPARE( valid_dev.queryDeviceInterface( Solid::DeviceInterface::Cdrom ), true );
+    QCOMPARE( valid_dev.queryDeviceInterface( Solid::DeviceInterface::Volume ), false );
 
-    QCOMPARE( invalid_dev.queryCapability( Solid::Capability::Unknown ), false );
-    QCOMPARE( invalid_dev.queryCapability( Solid::Capability::Storage ), false );
+    QCOMPARE( invalid_dev.queryDeviceInterface( Solid::DeviceInterface::Unknown ), false );
+    QCOMPARE( invalid_dev.queryDeviceInterface( Solid::DeviceInterface::Storage ), false );
 
 
     // Query parent
@@ -163,12 +163,12 @@ void SolidHwTest::testManagerSignals()
     QVERIFY( cpu.isValid() );
 
 
-    // Now we add a capability to the newly created device, and spy the signal
-    QSignalSpy new_capability( &manager, SIGNAL( newCapability( QString, int ) ) );
-    fakeManager->raiseCapabilityAdded( "/org/kde/solid/fakehw/acpi_CPU0", Solid::Capability::Processor );
-    QCOMPARE( new_capability.count(), 1 );
-    QCOMPARE( new_capability.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( new_capability.at( 0 ).at( 1 ), QVariant( Solid::Capability::Processor ) );
+    // Now we add a device interface to the newly created device, and spy the signal
+    QSignalSpy new_interface( &manager, SIGNAL( newDeviceInterface( QString, int ) ) );
+    fakeManager->raiseDeviceInterfaceAdded( "/org/kde/solid/fakehw/acpi_CPU0", Solid::DeviceInterface::Processor );
+    QCOMPARE( new_interface.count(), 1 );
+    QCOMPARE( new_interface.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
+    QCOMPARE( new_interface.at( 0 ).at( 1 ), QVariant( Solid::DeviceInterface::Processor ) );
 
 
     // Finally we remove the device and spy the corresponding signal again
@@ -233,14 +233,14 @@ void SolidHwTest::testDeviceSignals()
     QCOMPARE( condition_raised.at( 0 ).at( 1 ).toString(), QString( "Why not?" ) );
 }
 
-void SolidHwTest::testDeviceCapabilities()
+void SolidHwTest::testDeviceInterfaces()
 {
     Solid::Device cpu( "/org/kde/solid/fakehw/acpi_CPU0" );
 
-    Solid::Capability *iface = cpu.asCapability( Solid::Capability::Processor );
+    Solid::DeviceInterface *iface = cpu.asDeviceInterface( Solid::DeviceInterface::Processor );
     Solid::Processor *processor = cpu.as<Solid::Processor>();
 
-    QVERIFY( cpu.queryCapability( Solid::Capability::Processor ) );
+    QVERIFY( cpu.queryDeviceInterface( Solid::DeviceInterface::Processor ) );
     QVERIFY( iface!=0 );
     QCOMPARE( iface, processor );
 
@@ -249,41 +249,41 @@ void SolidHwTest::testDeviceCapabilities()
     QCOMPARE(cpu.as<Solid::GenericInterface>(), cpu2.as<Solid::GenericInterface>());
 }
 
-void SolidHwTest::testCapabilityIntrospection_data()
+void SolidHwTest::testDeviceInterfaceIntrospection_data()
 {
     QTest::addColumn<QString>("name");
     QTest::addColumn<int>("value");
 
-    QTest::newRow("Capability: Unknown") << "Unknown" << (int)Solid::Capability::Unknown;
-    QTest::newRow("Capability: Processor") << "Processor" << (int)Solid::Capability::Processor;
-    QTest::newRow("Capability: Block") << "Block" << (int)Solid::Capability::Block;
-    QTest::newRow("Capability: Storage") << "Storage" << (int)Solid::Capability::Storage;
-    QTest::newRow("Capability: Cdrom") << "Cdrom" << (int)Solid::Capability::Cdrom;
-    QTest::newRow("Capability: Volume") << "Volume" << (int)Solid::Capability::Volume;
-    QTest::newRow("Capability: OpticalDisc") << "OpticalDisc" << (int)Solid::Capability::OpticalDisc;
-    QTest::newRow("Capability: Camera") << "Camera" << (int)Solid::Capability::Camera;
-    QTest::newRow("Capability: PortableMediaPlayer") << "PortableMediaPlayer" << (int)Solid::Capability::PortableMediaPlayer;
-    QTest::newRow("Capability: NetworkHw") << "NetworkHw" << (int)Solid::Capability::NetworkHw;
-    QTest::newRow("Capability: AcAdapter") << "AcAdapter" << (int)Solid::Capability::AcAdapter;
-    QTest::newRow("Capability: Battery") << "Battery" << (int)Solid::Capability::Battery;
-    QTest::newRow("Capability: Button") << "Button" << (int)Solid::Capability::Button;
-    QTest::newRow("Capability: Display") << "Display" << (int)Solid::Capability::Display;
-    QTest::newRow("Capability: AudioHw") << "AudioHw" << (int)Solid::Capability::AudioHw;
+    QTest::newRow("DeviceInterface: Unknown") << "Unknown" << (int)Solid::DeviceInterface::Unknown;
+    QTest::newRow("DeviceInterface: Processor") << "Processor" << (int)Solid::DeviceInterface::Processor;
+    QTest::newRow("DeviceInterface: Block") << "Block" << (int)Solid::DeviceInterface::Block;
+    QTest::newRow("DeviceInterface: Storage") << "Storage" << (int)Solid::DeviceInterface::Storage;
+    QTest::newRow("DeviceInterface: Cdrom") << "Cdrom" << (int)Solid::DeviceInterface::Cdrom;
+    QTest::newRow("DeviceInterface: Volume") << "Volume" << (int)Solid::DeviceInterface::Volume;
+    QTest::newRow("DeviceInterface: OpticalDisc") << "OpticalDisc" << (int)Solid::DeviceInterface::OpticalDisc;
+    QTest::newRow("DeviceInterface: Camera") << "Camera" << (int)Solid::DeviceInterface::Camera;
+    QTest::newRow("DeviceInterface: PortableMediaPlayer") << "PortableMediaPlayer" << (int)Solid::DeviceInterface::PortableMediaPlayer;
+    QTest::newRow("DeviceInterface: NetworkHw") << "NetworkHw" << (int)Solid::DeviceInterface::NetworkHw;
+    QTest::newRow("DeviceInterface: AcAdapter") << "AcAdapter" << (int)Solid::DeviceInterface::AcAdapter;
+    QTest::newRow("DeviceInterface: Battery") << "Battery" << (int)Solid::DeviceInterface::Battery;
+    QTest::newRow("DeviceInterface: Button") << "Button" << (int)Solid::DeviceInterface::Button;
+    QTest::newRow("DeviceInterface: Display") << "Display" << (int)Solid::DeviceInterface::Display;
+    QTest::newRow("DeviceInterface: AudioHw") << "AudioHw" << (int)Solid::DeviceInterface::AudioHw;
 }
 
-void SolidHwTest::testCapabilityIntrospection()
+void SolidHwTest::testDeviceInterfaceIntrospection()
 {
     QFETCH(QString, name);
     QFETCH(int, value);
 
-    QCOMPARE(Solid::Capability::typeToString((Solid::Capability::Type)value), name);
-    QCOMPARE((int)Solid::Capability::stringToType(name), value);
+    QCOMPARE(Solid::DeviceInterface::typeToString((Solid::DeviceInterface::Type)value), name);
+    QCOMPARE((int)Solid::DeviceInterface::stringToType(name), value);
 }
 
-void SolidHwTest::testCapabilityIntrospectionCornerCases()
+void SolidHwTest::testDeviceInterfaceIntrospectionCornerCases()
 {
-    QCOMPARE(Solid::Capability::typeToString((Solid::Capability::Type)-1), QString());
-    QCOMPARE((int)Solid::Capability::stringToType("blup"), -1);
+    QCOMPARE(Solid::DeviceInterface::typeToString((Solid::DeviceInterface::Type)-1), QString());
+    QCOMPARE((int)Solid::DeviceInterface::stringToType("blup"), -1);
 }
 
 static QSet<QString> to_string_set(const Solid::DeviceList &list)
@@ -301,14 +301,14 @@ void SolidHwTest::testPredicate()
 {
     Solid::Device dev( "/org/kde/solid/fakehw/acpi_CPU0" );
 
-    Solid::Predicate p1 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3200 )
-                        & Solid::Predicate( Solid::Capability::Processor, "canThrottle", true );
-    Solid::Predicate p2 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3200 )
-                        & Solid::Predicate( Solid::Capability::Processor, "canThrottle", false );
-    Solid::Predicate p3 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3201 )
-                        | Solid::Predicate( Solid::Capability::Processor, "canThrottle", true );
-    Solid::Predicate p4 = Solid::Predicate( Solid::Capability::Processor, "maxSpeed", 3201 )
-                        | Solid::Predicate( Solid::Capability::Processor, "canThrottle", false );
+    Solid::Predicate p1 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3200 )
+                        & Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", true );
+    Solid::Predicate p2 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3200 )
+                        & Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", false );
+    Solid::Predicate p3 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3201 )
+                        | Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", true );
+    Solid::Predicate p4 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3201 )
+                        | Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", false );
     Solid::Predicate p5 = Solid::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
 
     QVERIFY( p1.matches( dev ) );
@@ -341,26 +341,26 @@ void SolidHwTest::testPredicate()
 
 
     QString parentUdi = "/org/kde/solid/fakehw/storage_model_solid_reader";
-    Solid::Capability::Type capability = Solid::Capability::Unknown;
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 1 );
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
+    Solid::DeviceInterface::Type ifaceType = Solid::DeviceInterface::Unknown;
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).size(), 1 );
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).at( 0 ),
               QString( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ) );
 
-    capability = Solid::Capability::Processor;
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 0 );
+    ifaceType = Solid::DeviceInterface::Processor;
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).size(), 0 );
 
     parentUdi = "/org/kde/solid/fakehw/computer";
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).size(), 2 );
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 0 ),
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).size(), 2 );
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).at( 0 ),
               QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, capability ).at( 1 ),
+    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).at( 1 ),
               QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
 
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
 
     parentUdi = QString();
-    capability = Solid::Capability::Unknown;
+    ifaceType = Solid::DeviceInterface::Unknown;
     Solid::DeviceList list;
 
     list = manager.findDevicesFromQuery( p1, parentUdi );
@@ -408,13 +408,13 @@ void SolidHwTest::testPredicate()
     set << "/org/kde/solid/fakehw/acpi_CPU0";
     QCOMPARE( set, to_string_set( list ) );
 
-    capability = Solid::Capability::Processor;
-    list = manager.findDevicesFromQuery( capability, parentUdi );
+    ifaceType = Solid::DeviceInterface::Processor;
+    list = manager.findDevicesFromQuery( ifaceType, parentUdi );
     QCOMPARE( list.size(), 2 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
     QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
-    capability = Solid::Capability::Unknown;
+    ifaceType = Solid::DeviceInterface::Unknown;
     list = manager.findDevicesFromQuery( "blup", parentUdi );
     QCOMPARE( list.size(), 0 );
 }

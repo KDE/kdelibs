@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 #include <solid/camera.h>
 
 namespace Solid
@@ -30,16 +30,16 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on digital camera devices.
+     * This device interface is available on digital camera devices.
      *
      * A digital camera is a device used to transform images into
      * data. Nowaday most digital cameras are multifunctional and
      * able to take photographs, video or sound. On the system side
      * they are a particular type of device holding data, the access
      * method can be different from the typical storage device, hence
-     * why it's a separate capability.
+     * why it's a separate device interface.
      */
-    class SOLIDIFACES_EXPORT Camera : virtual public Capability
+    class SOLIDIFACES_EXPORT Camera : virtual public DeviceInterface
     {
     public:
         /**

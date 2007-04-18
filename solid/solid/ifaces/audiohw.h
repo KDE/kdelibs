@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 #include <solid/audiohw.h>
 
 namespace Solid
@@ -30,9 +30,9 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on interfaces exposed by sound cards.
+     * This device interface is available on interfaces exposed by sound cards.
      */
-    class SOLIDIFACES_EXPORT AudioHw : virtual public Capability
+    class SOLIDIFACES_EXPORT AudioHw : virtual public DeviceInterface
     {
     public:
         /**

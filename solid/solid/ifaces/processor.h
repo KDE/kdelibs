@@ -22,16 +22,16 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
 {
 namespace Ifaces
 {
     /**
-     * This capability is available on processors.
+     * This device interface is available on processors.
      */
-    class SOLIDIFACES_EXPORT Processor : virtual public Capability
+    class SOLIDIFACES_EXPORT Processor : virtual public DeviceInterface
     {
     public:
         /**

@@ -27,7 +27,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 #include <solid/device.h>
 
 namespace Solid
@@ -38,7 +38,7 @@ namespace Ifaces
      * This class specifies the interface a device will have to comply to in order to be used in the system.
      *
      * Backends will have to implement it to gather and modify data in the underlying system.
-     * Each device has a set of key/values pair describing its properties. It has also a list of capabilities
+     * Each device has a set of key/values pair describing its properties. It has also a list of interfaces
      * describing what the device actually is (a cdrom drive, a portable media player, etc.)
      *
      * @author Kevin Ottens <ervin@kde.org>
@@ -93,19 +93,19 @@ namespace Ifaces
         /**
          * Tests if a property exist.
          *
-         * @param capability the capability type
-         * @returns true if the capability is provided by this device, false otherwise
+         * @param type the device interface type
+         * @returns true if the device interface is provided by this device, false otherwise
          */
-        virtual bool queryCapability( const Solid::Capability::Type &capability ) const = 0;
+        virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const = 0;
 
         /**
          * Create a specialized interface to interact with the device corresponding to
-         * a particular capability.
+         * a particular device interface.
          *
-         * @param capability the capability type
-         * @returns a pointer to the capability interfaces if supported by the device, 0 otherwise
+         * @param type the device interface type
+         * @returns a pointer to the device interface if supported by the device, 0 otherwise
          */
-        virtual QObject *createCapability( const Solid::Capability::Type &capability ) = 0;
+        virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type) = 0;
     };
 }
 }

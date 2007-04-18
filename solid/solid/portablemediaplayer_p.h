@@ -21,15 +21,15 @@
 #ifndef SOLID_PORTABLEMEDIAPLAYER_P_H
 #define SOLID_PORTABLEMEDIAPLAYER_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class PortableMediaPlayerPrivate : public CapabilityPrivate
+    class PortableMediaPlayerPrivate : public DeviceInterfacePrivate
     {
     public:
         PortableMediaPlayerPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

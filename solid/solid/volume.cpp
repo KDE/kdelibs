@@ -24,14 +24,14 @@
 #include <solid/ifaces/volume.h>
 
 Solid::Volume::Volume( QObject *backendObject )
-    : Capability(*new VolumePrivate(this), backendObject)
+    : DeviceInterface(*new VolumePrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );
 }
 
 Solid::Volume::Volume(VolumePrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
+    : DeviceInterface(dd, backendObject)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );

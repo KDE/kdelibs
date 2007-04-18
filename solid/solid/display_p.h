@@ -21,15 +21,15 @@
 #ifndef SOLID_DISPLAY_P_H
 #define SOLID_DISPLAY_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class DisplayPrivate : public CapabilityPrivate
+    class DisplayPrivate : public DeviceInterfacePrivate
     {
     public:
         DisplayPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

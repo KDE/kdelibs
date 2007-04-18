@@ -23,7 +23,7 @@
 //solid specific includes
 #include <solid/devicemanager.h>
 #include <solid/device.h>
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 #include <solid/processor.h>
 
 //kde specific includes
@@ -43,7 +43,7 @@ int main(int args, char **argv)
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     
     //get a Processor
-    Solid::DeviceList list = manager.findDevicesFromQuery(Solid::Capability::Processor, QString());
+    Solid::DeviceList list = manager.findDevicesFromQuery(Solid::DeviceInterface::Processor, QString());
 
     //take the first processor
     Solid::Device device = list[0];

@@ -24,7 +24,7 @@
 #include <solid/ifaces/battery.h>
 
 Solid::Battery::Battery(QObject *backendObject)
-    : Capability(*new BatteryPrivate(this), backendObject)
+    : DeviceInterface(*new BatteryPrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( chargePercentChanged( int ) ),
              this, SIGNAL( chargePercentChanged( int ) ) );

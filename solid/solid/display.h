@@ -23,20 +23,20 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/capability.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class DisplayPrivate;
 
     /**
-     * This capability is available on display devices.
+     * This device interface is available on display devices.
      *
      * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLID_EXPORT Display : public Capability
+    class SOLID_EXPORT Display : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS( DisplayType )
@@ -62,7 +62,7 @@ namespace Solid
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
-         * @param backendObject the capability object provided by the backend
+         * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
         explicit Display( QObject *backendObject );
@@ -73,12 +73,12 @@ namespace Solid
         virtual ~Display();
 
         /**
-         * Get the Solid::Capability::Type of the Button capability.
+         * Get the Solid::DeviceInterface::Type of the Button device interface.
          *
-         * @return the Button capability type
-         * @see Solid::Capability::Type
+         * @return the Button device interface type
+         * @see Solid::DeviceInterface::Type
          */
-        static Type capabilityType() { return Capability::Display; }
+        static Type deviceInterfaceType() { return DeviceInterface::Display; }
 
         /**
          * Retrieves the type of display device.

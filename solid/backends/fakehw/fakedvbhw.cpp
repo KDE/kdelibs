@@ -20,7 +20,7 @@
 #include "fakedvbhw.h"
 
 FakeDvbHw::FakeDvbHw( FakeDevice *device )
-    : FakeCapability( device )
+    : FakeDeviceInterface( device )
 {
 
 }

@@ -37,17 +37,17 @@ namespace Solid
     class SOLID_EXPORT WirelessNetwork : public Network
     {
         Q_OBJECT
-        Q_ENUMS( OperationMode Capability )
+        Q_ENUMS( OperationMode DeviceInterface )
         Q_FLAGS( Capabilities )
         Q_DECLARE_PRIVATE(WirelessNetwork)
 
     public:
         enum OperationMode { Unassociated, Adhoc, Managed, Master, Repeater };
         // corresponding to 802.11 capabilities defined in NetworkManager.h
-        enum Capability { Unencrypted = 0x1, Wep = 0x2, Wpa = 0x4, Wpa2 = 0x8, Psk = 0x10,
+        enum DeviceInterface { Unencrypted = 0x1, Wep = 0x2, Wpa = 0x4, Wpa2 = 0x8, Psk = 0x10,
                           Ieee8021x = 0x20, Wep40 = 0x40, Wep104 = 0x80, Wep192 = 0x100, Wep256 = 0x200,
                           WepOther = 0x400, Tkip = 0x800, Ccmp = 0x1000 };
-        Q_DECLARE_FLAGS( Capabilities, Capability )
+        Q_DECLARE_FLAGS( Capabilities, DeviceInterface )
 
 
 
@@ -101,7 +101,7 @@ namespace Solid
          * Retrieves the capabilities of this wifi network.
          *
          * @return the flag set describing the capabilities
-         * @see Solid::WirelessNetwork::Capability
+         * @see Solid::WirelessNetwork::DeviceInterface
          */
         Capabilities capabilities() const;
 

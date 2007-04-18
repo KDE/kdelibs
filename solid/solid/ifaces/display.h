@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/ifaces/capability.h>
+#include <solid/ifaces/deviceinterface.h>
 #include <solid/display.h>
 
 namespace Solid
@@ -30,13 +30,13 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This capability is available on display devices.
+     * This device interface is available on display devices.
      *
      * A display is a device, like CRT monitor, LCD screen and TVs, able to show something to the user.
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT Display : virtual public Capability
+    class SOLIDIFACES_EXPORT Display : virtual public DeviceInterface
     {
     public:
         /**

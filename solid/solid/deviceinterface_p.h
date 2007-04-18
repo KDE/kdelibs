@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,37 +17,20 @@
 
 */
 
-#ifndef SOLID_IFACES_CAPABILITY_H
-#define SOLID_IFACES_CAPABILITY_H
+#ifndef SOLID_DEVICEINTERFACE_P_H
+#define SOLID_DEVICEINTERFACE_P_H
 
-#include <QObject>
-#include <QFlags>
-
-#include <solid/solid_export.h>
+#include "frontendobject_p.h"
 
 namespace Solid
 {
-namespace Ifaces
-{
-    /**
-     * Base interface of all the capabilities.
-     *
-     * A capability describes what a device can do. A device generally has
-     * a set of capabilities.
-     *
-     * @see Solid::Ifaces::AbstractCapability
-     */
-    class SOLIDIFACES_EXPORT Capability
+    class DeviceInterfacePrivate : public FrontendObjectPrivate
     {
     public:
-        /**
-         * Destroys a Capability object.
-         */
-        virtual ~Capability();
+        DeviceInterfacePrivate(QObject *parent)
+            : FrontendObjectPrivate(parent) { }
+
     };
 }
-}
-
-Q_DECLARE_INTERFACE( Solid::Ifaces::Capability, "org.kde.Solid.Ifaces.Capability/0.1" )
 
 #endif

@@ -20,10 +20,10 @@
 #ifndef FAKEPORTABLEMEDIAPLAYER_H
 #define FAKEPORTABLEMEDIAPLAYER_H
 
-#include "fakecapability.h"
+#include "fakedeviceinterface.h"
 #include <solid/ifaces/portablemediaplayer.h>
 
-class FakePortableMediaPlayer : public FakeCapability, virtual public Solid::Ifaces::PortableMediaPlayer
+class FakePortableMediaPlayer : public FakeDeviceInterface, virtual public Solid::Ifaces::PortableMediaPlayer
 {
     Q_OBJECT
     Q_INTERFACES( Solid::Ifaces::PortableMediaPlayer )

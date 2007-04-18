@@ -20,15 +20,15 @@
 #ifndef SOLID_ACADAPTER_P_H
 #define SOLID_ACADAPTER_P_H
 
-#include "capability_p.h"
+#include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class AcAdapterPrivate : public CapabilityPrivate
+    class AcAdapterPrivate : public DeviceInterfacePrivate
     {
     public:
         AcAdapterPrivate(QObject *parent)
-            : CapabilityPrivate(parent) { }
+            : DeviceInterfacePrivate(parent) { }
     };
 }
 

@@ -26,7 +26,7 @@
 #include <kdebug.h>
 
 Solid::AudioHw::AudioHw( QObject *backendObject )
-    : Capability(*new AudioHwPrivate(this), backendObject)
+    : DeviceInterface(*new AudioHwPrivate(this), backendObject)
 {
 }
 

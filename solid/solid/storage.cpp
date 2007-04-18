@@ -24,12 +24,12 @@
 #include <solid/ifaces/storage.h>
 
 Solid::Storage::Storage(QObject *backendObject)
-    : Capability(*new StoragePrivate(this), backendObject)
+    : DeviceInterface(*new StoragePrivate(this), backendObject)
 {
 }
 
 Solid::Storage::Storage(StoragePrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
+    : DeviceInterface(dd, backendObject)
 {
 
 }

@@ -52,12 +52,12 @@ public:
      */
     virtual bool deviceExists(const QString &udi);
 
-    virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::Capability::Type capability);
+    virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type);
 
     virtual QObject *createDevice( const QString &udi );
     virtual FakeDevice *findDevice( const QString &udi );
 
-    void raiseCapabilityAdded( const QString &udi, Solid::Capability::Type capability );
+    void raiseDeviceInterfaceAdded( const QString &udi, Solid::DeviceInterface::Type type );
 
 public Q_SLOTS:
     void plug( const QString &udi );
@@ -77,7 +77,7 @@ private Q_SLOTS:
 
 private:
     virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
-    virtual QStringList findDeviceByCapability( const Solid::Capability::Type &capability );
+    virtual QStringList findDeviceByDeviceInterface( const Solid::DeviceInterface::Type &type );
 
     class Private;
     Private *d;
