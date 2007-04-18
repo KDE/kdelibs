@@ -75,7 +75,7 @@ Solid::Device::Device( const Device &device )
 
 Solid::Device::~Device()
 {
-    qDeleteAll( d->ifaces.values() );
+    //qDeleteAll( d->ifaces.values() );
 }
 
 Solid::Device &Solid::Device::operator=( const Solid::Device &device )
