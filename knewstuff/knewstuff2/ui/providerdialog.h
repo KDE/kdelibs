@@ -20,6 +20,8 @@
 #ifndef KNEWSTUFF2_UI_PROVIDERDIALOG_H
 #define KNEWSTUFF2_UI_PROVIDERDIALOG_H
 
+#include <knewstuff2/knewstuff_export.h>
+
 #include <kdialog.h>
 
 class QTreeWidget;
