@@ -42,7 +42,6 @@ namespace Solid
     {
         Q_OBJECT
         Q_ENUMS(Type)
-        Q_FLAGS(Types)
         Q_DECLARE_PRIVATE(Capability)
 
     public:
@@ -61,20 +60,13 @@ namespace Solid
          * - NetworkHw: A network interface
          * - Display : A video display
          */
-        enum Type { Unknown = 0, Processor = 1, Block = 2,
-                    Storage = 4, Cdrom = 8,
-                    Volume = 16, OpticalDisc = 32,
-                    Camera = 64, PortableMediaPlayer = 128,
-                    NetworkHw = 256, AcAdapter = 512,
-                    Battery = 1024, Button = 2048,
-                    Display = 4096, AudioHw = 8192,
-                    DvbHw = 16384, GenericInterface = 32768 };
-
-        /**
-         * This type stores an OR combination of Type values.
-         */
-        Q_DECLARE_FLAGS( Types, Type )
-
+        enum Type { Unknown = 0, GenericInterface = 1, Processor = 2,
+                    Block = 3, Storage = 4, Cdrom = 5,
+                    Volume = 6, OpticalDisc = 7,
+                    Camera = 8, PortableMediaPlayer = 9,
+                    NetworkHw = 10, AcAdapter = 11, Battery = 12,
+                    Button = 13, Display = 14, AudioHw = 15,
+                    DvbHw = 16 };
 
         /**
          * Destroys a Capability object.
@@ -120,7 +112,5 @@ namespace Solid
         friend class DevicePrivate;
     };
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::Capability::Types )
 
 #endif
