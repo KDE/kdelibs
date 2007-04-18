@@ -2698,7 +2698,7 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           selStartCached.setLine( -1 ); // invalidate
         }
 
-        if( isTargetSelected( e->pos() ) )
+        if( !( e->state() & Qt::ShiftButton ) && isTargetSelected( e->pos() ) )
         {
           dragInfo.state = diPending;
           dragInfo.start = e->pos();
