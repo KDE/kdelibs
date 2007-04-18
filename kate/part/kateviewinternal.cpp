@@ -2074,7 +2074,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
             c = newCursor.col();
             if ( c < m_doc->textLine( newCursor.line() ).length()
-                 && m_doc->highlight()->isInWord( l->getChar( c ) ) 
+                 && m_doc->highlight()->isInWord( l->getChar( c ) )
                  && m_doc->highlight()->isInWord( l->getChar( c-1 ) ) ) {
               for ( c -= 2; c >= 0; c-- )
                 if ( !m_doc->highlight()->isInWord( l->getChar( c ) ) )
