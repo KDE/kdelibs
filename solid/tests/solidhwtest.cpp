@@ -243,6 +243,10 @@ void SolidHwTest::testDeviceCapabilities()
     QVERIFY( cpu.queryCapability( Solid::Capability::Processor ) );
     QVERIFY( iface!=0 );
     QCOMPARE( iface, processor );
+
+    Solid::Device cpu2("/org/kde/solid/fakehw/acpi_CPU0");
+    QCOMPARE(cpu.as<Solid::Processor>(), cpu2.as<Solid::Processor>());
+    QCOMPARE(cpu.as<Solid::GenericInterface>(), cpu2.as<Solid::GenericInterface>());
 }
 
 void SolidHwTest::testCapabilityIntrospection_data()
