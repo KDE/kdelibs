@@ -23,6 +23,7 @@
 
 #include <kdialog.h>
 #include <kurl.h>
+#include <knewstuff2/knewstuff_export.h>
 
 class QLineEdit;
 class QSpinBox;
