@@ -462,8 +462,47 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                     {
                         QByteArray typeName = types[idx].constData();
                         typeName.replace("*", "");
+
+                        // try the basic QObject inheritance check
                         if (qObj->inherits(typeName))
                             return new Value<void*>(qObj);
+
+                        // ok, we'll have to check the hard way, and we'll 
+                        // have to play fast and loose with namespace checking
+                        // since the QMetaMethod parameterTypes doesn't 
+                        // include implicit namespace information.
+
+                        QByteArray className;
+                        int pos;
+                        
+                        //qDebug() << "\tMaking sure " << qObj << " inherits from " << typeName << " inherits(typeName)=" << qObj->inherits(typeName);
+                        const QMetaObject* meta = qObj->metaObject();
+                        do 
+                        {
+                            //qDebug() << "1: Checking if " << typeName << " matches " << meta->className();
+                            //if (typeName == meta->className())
+                            {
+                                //qDebug("Yeah! we found a winnder!");
+                                return new Value<void*>(qObj);
+                            }
+                            
+                            // try with all leading namespacing stripped
+                            className = meta->className();
+                            if ((pos = className.lastIndexOf("::")) != -1)
+                                className.remove(0, pos + 2);
+                            
+                            //qDebug() << "2: Checking if " << typeName << " matches " << className;
+                            if (typeName == className)
+                            {
+                                //qDebug() << "Yeah! we found a winnder!" << typeName << " ~= " << className << "(" << meta->className() << ")";
+                                return new Value<void*>(qObj);
+                            }
+                            
+                            meta = meta->superClass();
+                            
+                        }
+                        while (meta);
+                       
                     }
                 }
                 else if(ObjectBinding *objImp = KJSEmbed::extractBindingImp<ObjectBinding>(exec, args[idx]))
