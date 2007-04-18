@@ -24,8 +24,7 @@
 #include "kfileplacesselector_p.h"
 #include "kprotocolcombo_p.h"
 #include "kurlnavigatorbutton_p.h"
-
-#include <assert.h>
+#include "kurltogglebutton_p.h"
 
 #include <kfileitem.h>
 #include <kicon.h>
@@ -34,15 +33,14 @@
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
 
-#include <QApplication>
-#include <QClipboard>
-#include <QDir>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QLinkedList>
-#include <QMouseEvent>
-#include <QToolButton>
+#include <QtCore/QDir>
+#include <QtCore/QLinkedList>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
 
 /**
  * @brief Represents the history element of an URL.
@@ -67,6 +65,7 @@ public:
     {
         m_currentFileName = name;
     }
+
     const QString& currentFileName() const
     {
         return m_currentFileName;
@@ -76,6 +75,7 @@ public:
     {
         m_contentsX = x;
     }
+
     int contentsX() const
     {
         return m_contentsX;
@@ -98,21 +98,24 @@ private:
 };
 
 HistoryElem::HistoryElem() :
-        m_url(),
-        m_currentFileName(),
-        m_contentsX(0),
-        m_contentsY(0)
-{}
+    m_url(),
+    m_currentFileName(),
+    m_contentsX(0),
+    m_contentsY(0)
+{
+}
 
 HistoryElem::HistoryElem(const KUrl& url) :
-        m_url(url),
-        m_currentFileName(),
-        m_contentsX(0),
-        m_contentsY(0)
-{}
+    m_url(url),
+    m_currentFileName(),
+    m_contentsX(0),
+    m_contentsY(0)
+{
+}
 
 HistoryElem::~HistoryElem()
-{}
+{
+}
 
 class KUrlNavigator::Private
 {
@@ -163,50 +166,38 @@ public:
      */
     void deleteButtons();
 
-
+    bool m_editable;
     bool m_active;
     int m_historyIndex;
 
     QHBoxLayout* m_layout;
 
     QList<HistoryElem> m_history;
-    QToolButton* m_toggleButton;
     KFilePlacesSelector* m_placesSelector;
     KUrlComboBox* m_pathBox;
     KProtocolCombo* m_protocols;
     QLabel* m_protocolSeparator;
     QLineEdit* m_host;
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
-    QWidget* m_filler;
+    KUrlButton* m_toggleEditableMode;
     QString m_homeUrl;
     KUrlNavigator* q;
 };
 
 
-KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
-        :
-        m_active(true),
-        m_historyIndex(0),
-        m_layout(new QHBoxLayout),
-        m_protocols(0),
-        m_protocolSeparator(0),
-        m_host(0),
-        m_filler(0),
-        q(q)
+KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel) :
+    m_editable(false),
+    m_active(true),
+    m_historyIndex(0),
+    m_layout(new QHBoxLayout),
+    m_protocols(0),
+    m_protocolSeparator(0),
+    m_host(0),
+    m_toggleEditableMode(0),
+    q(q)
 {
     m_layout->setSpacing(0);
     m_layout->setMargin(0);
-
-    // initialize toggle button which switches between the breadcrumb view
-    // and the traditional view
-    m_toggleButton = new QToolButton();
-    m_toggleButton->setCheckable(true);
-    m_toggleButton->setAutoRaise(true);
-    m_toggleButton->setIcon(KIcon("editinput")); // TODO: is just a placeholder icon (?)
-    m_toggleButton->setFocusPolicy(Qt::NoFocus);
-    m_toggleButton->setMinimumHeight(q->minimumHeight());
-    connect(m_toggleButton, SIGNAL(clicked()),
-            q, SLOT(switchView()));
 
     // initialize the places selector
     m_placesSelector = new KFilePlacesSelector(q, placesModel);
@@ -225,16 +216,13 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
             q, SLOT(setUrl(KUrl)));
 
-    // Append a filler widget at the end, which automatically resizes to the
-    // maximum available width. This assures that the URL navigator uses the
-    // whole width, so that the clipboard content can be dropped.
-    m_filler = new QWidget();
-    m_filler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    m_toggleEditableMode = new KUrlToggleButton(q);
+    connect(m_toggleEditableMode, SIGNAL(clicked()),
+            q, SLOT(switchView()));
 
-    m_layout->addWidget(m_toggleButton);
     m_layout->addWidget(m_placesSelector);
     m_layout->addWidget(m_pathBox);
-    m_layout->addWidget(m_filler);
+    m_layout->addWidget(m_toggleEditableMode);
 }
 
 void KUrlNavigator::Private::appendWidget(QWidget* widget)
@@ -361,6 +349,7 @@ void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 
 void KUrlNavigator::Private::switchView()
 {
+    m_editable = !m_editable;
     updateContent();
     if (q->isUrlEditable()) {
         m_pathBox->setFocus();
@@ -378,7 +367,7 @@ void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
 
 void KUrlNavigator::Private::updateHistoryElem()
 {
-    assert(m_historyIndex >= 0);
+    Q_ASSERT(m_historyIndex >= 0);
     const KFileItem* item = 0; // TODO: m_dolphinView->currentFileItem();
     if (item != 0) {
         HistoryElem& hist = m_history[m_historyIndex];
@@ -390,33 +379,21 @@ void KUrlNavigator::Private::updateContent()
 {
     m_placesSelector->updateSelection(q->url());
 
-    m_toggleButton->setToolTip(QString());
     QString path(q->url().pathOrUrl());
-
-    // TODO: prevent accessing the DolphinMainWindow out from this scope
-    //const QAction* action = dolphinView()->mainWindow()->actionCollection()->action("editable_location");
-    // TODO: registry of default shortcuts
-    //QString shortcut = action? action->shortcut().toString() : "Ctrl+L";
-    const QString shortcut = "Ctrl+L";
-
-    if (m_toggleButton->isChecked()) {
+    if (m_editable) {
         delete m_protocols; m_protocols = 0;
         delete m_protocolSeparator; m_protocolSeparator = 0;
         delete m_host; m_host = 0;
         deleteButtons();
-        m_filler->hide();
-
-        m_toggleButton->setToolTip(i18n("Browse (%1, Escape)", shortcut));
+        m_toggleEditableMode->hide();
 
         q->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
         m_pathBox->show();
         m_pathBox->setUrl(q->url());
     } else {
-        m_toggleButton->setToolTip(i18n("Edit location (%1)", shortcut));
-
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         m_pathBox->hide();
-        m_filler->show();
+        m_toggleEditableMode->show();
 
         // get the data from the currently selected place
         KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
@@ -445,7 +422,7 @@ void KUrlNavigator::Private::updateContent()
             }
         }
         if ((len > 0) && placePath.at(len - 1) == QChar('/')) {
-            assert(slashCount > 0);
+            Q_ASSERT(slashCount > 0);
             --slashCount;
         }
 
@@ -585,12 +562,11 @@ void KUrlNavigator::Private::deleteButtons()
 
 ////
 
-
 KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
                              const KUrl& url,
                              QWidget* parent) :
-        QWidget(parent),
-        d(new Private(this, placesModel))
+    QWidget(parent),
+    d(new Private(this, placesModel))
 {
     d->m_history.prepend(HistoryElem(url));
 
@@ -609,7 +585,7 @@ KUrlNavigator::~KUrlNavigator()
 
 const KUrl& KUrlNavigator::url() const
 {
-    assert(!d->m_history.empty());
+    Q_ASSERT(!d->m_history.empty());
     return d->m_history[d->m_historyIndex].url();
 }
 
@@ -697,15 +673,14 @@ void KUrlNavigator::setHomeUrl(const QString& homeUrl)
 
 void KUrlNavigator::setUrlEditable(bool editable)
 {
-    if (isUrlEditable() != editable) {
-        d->m_toggleButton->toggle();
+    if (d->m_editable != editable) {
         d->switchView();
     }
 }
 
 bool KUrlNavigator::isUrlEditable() const
 {
-    return d->m_toggleButton->isChecked();
+    return d->m_editable;
 }
 
 void KUrlNavigator::setActive(bool active)

@@ -34,6 +34,7 @@ set(kfile_LIB_SRCS
   kurlbutton.cpp
   kurlnavigatorbutton.cpp
   kurlnavigator.cpp
+  kurltogglebutton.cpp
 )
 
 kde4_automoc(${kfile_LIB_SRCS})

@@ -21,9 +21,10 @@
 #ifndef KURLNAVIGATORBUTTON_P_H
 #define KURLNAVIGATORBUTTON_P_H
 
+#include "kurltogglebutton_p.h"
+
 #include <kio/global.h>
 #include <kurl.h>
-#include "kurlbutton_p.h"
 
 class KJob;
 class KUrlNavigator;

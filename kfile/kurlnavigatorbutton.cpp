@@ -34,10 +34,10 @@
 #include <QTimer>
 
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
-        KUrlButton(parent),
-        m_index(-1),
-        m_popupDelay(0),
-        m_listJob(0)
+    KUrlButton(parent),
+    m_index(-1),
+    m_popupDelay(0),
+    m_listJob(0)
 {
     setAcceptDrops(true);
     setMinimumWidth(arrowWidth());
@@ -51,7 +51,8 @@ KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
 }
 
 KUrlNavigatorButton::~KUrlNavigatorButton()
-{}
+{
+}
 
 void KUrlNavigatorButton::setIndex(int index)
 {
