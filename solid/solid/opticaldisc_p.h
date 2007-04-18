@@ -27,6 +27,8 @@ namespace Solid
     class OpticalDiscPrivate : public VolumePrivate
     {
     public:
+        OpticalDiscPrivate(QObject *parent)
+            : VolumePrivate(parent) { }
     };
 }
 

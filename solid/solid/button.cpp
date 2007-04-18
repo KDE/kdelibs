@@ -25,14 +25,7 @@
 #include <solid/ifaces/button.h>
 
 Solid::Button::Button( QObject *backendObject )
-    : Capability(*new ButtonPrivate, backendObject)
-{
-    connect( backendObject, SIGNAL( pressed( int ) ),
-             this, SIGNAL( pressed( int ) ) );
-}
-
-Solid::Button::Button(ButtonPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
+    : Capability(*new ButtonPrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( pressed( int ) ),
              this, SIGNAL( pressed( int ) ) );
@@ -45,17 +38,20 @@ Solid::Button::~Button()
 
 Solid::Button::ButtonType Solid::Button::type() const
 {
-    return_SOLID_CALL( Ifaces::Button*, backendObject(), UnknownButtonType, type() );
+    Q_D(const Button);
+    return_SOLID_CALL(Ifaces::Button*, d->backendObject(), UnknownButtonType, type());
 }
 
 bool Solid::Button::hasState() const
 {
-    return_SOLID_CALL( Ifaces::Button*, backendObject(), false, hasState() );
+    Q_D(const Button);
+    return_SOLID_CALL(Ifaces::Button*, d->backendObject(), false, hasState());
 }
 
 bool Solid::Button::stateValue() const
 {
-    return_SOLID_CALL( Ifaces::Button*, backendObject(), false, stateValue() );
+    Q_D(const Button);
+    return_SOLID_CALL(Ifaces::Button*, d->backendObject(), false, stateValue());
 }
 
 #include "button.moc"

@@ -17,74 +17,49 @@
 
 */
 
-#include "frontendobject.h"
 #include "frontendobject_p.h"
 
-Solid::FrontendObject::FrontendObject( QObject *parent )
-    : QObject( parent ), d_ptr(new FrontendObjectPrivate)
-{
-    Q_D(FrontendObject);
+#include <QtCore/QObject>
 
-    d->backendObject = 0;
+Solid::FrontendObjectPrivate::FrontendObjectPrivate(QObject *parent)
+    : m_parent(parent), m_backendObject(0)
+{
 }
 
-Solid::FrontendObject::FrontendObject( FrontendObjectPrivate &dd, QObject *parent )
-    : QObject(parent), d_ptr(&dd)
+Solid::FrontendObjectPrivate::~FrontendObjectPrivate()
 {
-    Q_D(FrontendObject);
-
-    d->backendObject = 0;
 }
 
-Solid::FrontendObject::~FrontendObject()
+QObject *Solid::FrontendObjectPrivate::parent() const
 {
-    Q_D(FrontendObject);
-
-    delete d;
-    d_ptr = 0;
+    return m_parent;
 }
 
-bool Solid::FrontendObject::isValid() const
+QObject *Solid::FrontendObjectPrivate::backendObject() const
 {
-    Q_D(const FrontendObject);
-
-    return d->backendObject!=0;
+    return m_backendObject;
 }
 
-QObject *Solid::FrontendObject::backendObject() const
+void Solid::FrontendObjectPrivate::setBackendObject(QObject *object)
 {
-    Q_D(const FrontendObject);
-
-    return d->backendObject;
-}
-
-void Solid::FrontendObject::setBackendObject( QObject *backendObject )
-{
-    Q_D(FrontendObject);
-
-    if ( d->backendObject )
+    if (m_backendObject)
     {
-        disconnect( d->backendObject );
-        d->backendObject->disconnect( this );
+        QObject::disconnect(m_parent, 0, m_backendObject, 0);
+        m_backendObject->disconnect(m_parent);
     }
 
-    d->backendObject = backendObject;
+    m_backendObject = object;
 
-    if ( d->backendObject )
+    if (m_backendObject)
     {
-        connect( backendObject, SIGNAL( destroyed( QObject* ) ),
-                 this, SLOT( slotDestroyed( QObject* ) ) );
+        QObject::connect(m_backendObject, SIGNAL(destroyed(QObject*)),
+                         m_parent, SLOT(_k_destroyed(QObject*)));
     }
 }
 
-void Solid::FrontendObject::slotDestroyed( QObject *object )
+void Solid::FrontendObjectPrivate::_k_destroyed(QObject *object)
 {
-    Q_D(FrontendObject);
-
-    if ( d->backendObject == object )
-    {
-        d->backendObject = 0;
+    if (m_backendObject == object) {
+        m_backendObject = 0;
     }
 }
-
-#include "frontendobject.moc"

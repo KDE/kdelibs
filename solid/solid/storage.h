@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/block.h>
+#include <solid/capability.h>
 
 namespace Solid
 {
@@ -34,7 +34,7 @@ namespace Solid
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Storage : public Block
+    class SOLID_EXPORT Storage : public Capability
     {
         Q_OBJECT
         Q_ENUMS( Bus DriveType )

@@ -27,6 +27,8 @@ namespace Solid
     class CameraPrivate : public CapabilityPrivate
     {
     public:
+        CameraPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

@@ -87,12 +87,6 @@ namespace Solid
          * @return true if the processor can throttle, false otherwise
          */
         bool canThrottle() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        Processor(ProcessorPrivate &dd, QObject *backendObject);
     };
 }
 

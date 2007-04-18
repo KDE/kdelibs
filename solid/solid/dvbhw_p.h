@@ -27,6 +27,8 @@ namespace Solid
     class DvbHwPrivate : public CapabilityPrivate
     {
     public:
+        DvbHwPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

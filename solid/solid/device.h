@@ -24,10 +24,10 @@
 #include <QString>
 #include <QMap>
 #include <QList>
+#include <QtCore/QObject>
 
 #include <solid/solid_export.h>
 
-#include <solid/frontendobject.h>
 #include <solid/capability.h>
 
 namespace Solid
@@ -52,11 +52,9 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT Device : public FrontendObject
+    class SOLID_EXPORT Device : public QObject
     {
         Q_OBJECT
-        Q_DECLARE_PRIVATE(Device)
-
     public:
         /**
          * This enum type defines the type of change that can occur to a Device
@@ -90,13 +88,6 @@ namespace Solid
         Device( const Device &device );
 
         /**
-         * Constructs a new device taking its data from a backend.
-         *
-         * @param backendObject the object given by the backend
-         */
-        explicit Device( QObject *backendObject );
-
-        /**
          * Destroys the device.
          */
         ~Device();
@@ -111,6 +102,13 @@ namespace Solid
          */
         Device &operator=( const Device &device );
 
+        /**
+         * Indicates if this device is valid.
+         * A device is considered valid if it's available in the system.
+         *
+         * @return true if this device is available, false otherwise
+         */
+        bool isValid() const;
 
 
         /**
@@ -153,7 +151,6 @@ namespace Solid
          * @return the product name
          */
         QString product() const;
-
 
 
 
@@ -273,7 +270,6 @@ namespace Solid
             return queryCapability( Cap::capabilityType() );
         }
 
-
         /**
          * Acquires a lock on the device for the given reason.
          *
@@ -323,12 +319,11 @@ namespace Solid
          */
         void conditionRaised( const QString &condition, const QString &reason );
 
-    protected Q_SLOTS:
-        void slotDestroyed( QObject *object );
-
     private:
-        void registerBackendObject( QObject *backendObject );
-        void unregisterBackendObject();
+        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
+
+        DevicePrivate *d;
+        friend class DeviceManagerPrivate;
     };
 
     typedef QList<Device> DeviceList;

@@ -96,12 +96,6 @@ namespace Solid
          * @return the MAC address
          */
         qulonglong macAddress() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        NetworkHw(NetworkHwPrivate &dd, QObject *backendObject);
     };
 }
 

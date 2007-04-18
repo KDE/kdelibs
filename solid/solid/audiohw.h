@@ -198,12 +198,6 @@ namespace Solid
          * @see Solid::AudioHw::SoundcardType
          */
         SoundcardType soundcardType() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        AudioHw(AudioHwPrivate &dd, QObject *backendObject);
     };
 }
 

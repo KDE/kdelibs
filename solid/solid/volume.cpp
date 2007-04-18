@@ -24,14 +24,14 @@
 #include <solid/ifaces/volume.h>
 
 Solid::Volume::Volume( QObject *backendObject )
-    : Block(*new VolumePrivate, backendObject)
+    : Capability(*new VolumePrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );
 }
 
 Solid::Volume::Volume(VolumePrivate &dd, QObject *backendObject)
-    : Block(dd, backendObject)
+    : Capability(dd, backendObject)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );
@@ -44,57 +44,68 @@ Solid::Volume::~Volume()
 
 bool Solid::Volume::isIgnored() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), true, isIgnored() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), true, isIgnored());
 }
 
 bool Solid::Volume::isMounted() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), false, isMounted() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), false, isMounted());
 }
 
 QString Solid::Volume::mountPoint() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), mountPoint() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), QString(), mountPoint());
 }
 
 Solid::Volume::UsageType Solid::Volume::usage() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), Unused, usage() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), Unused, usage());
 }
 
 QString Solid::Volume::fsType() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), fsType() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), QString(), fsType());
 }
 
 QString Solid::Volume::label() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), label() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), QString(), label());
 }
 
 QString Solid::Volume::uuid() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), QString(), uuid() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), QString(), uuid());
 }
 
 qulonglong Solid::Volume::size() const
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, size() );
+    Q_D(const Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), 0, size());
 }
 
 KJob *Solid::Volume::mount()
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, mount() );
+    Q_D(Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), 0, mount());
 }
 
 KJob *Solid::Volume::unmount()
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, unmount() );
+    Q_D(Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), 0, unmount());
 }
 
 KJob *Solid::Volume::eject()
 {
-    return_SOLID_CALL( Ifaces::Volume*, backendObject(), 0, eject() );
+    Q_D(Volume);
+    return_SOLID_CALL(Ifaces::Volume*, d->backendObject(), 0, eject());
 }
 
 #include "volume.moc"

@@ -28,6 +28,8 @@ namespace Solid
     class DisplayPrivate : public CapabilityPrivate
     {
     public:
+        DisplayPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

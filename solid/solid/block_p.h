@@ -27,6 +27,8 @@ namespace Solid
     class BlockPrivate : public CapabilityPrivate
     {
     public:
+        BlockPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

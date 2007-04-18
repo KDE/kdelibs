@@ -18,9 +18,10 @@
 */
 
 #include "device.h"
+#include "device_p.h"
 #include "devicemanager.h"
 
-#include "frontendobject_p.h"
+#include "capability_p.h"
 #include "soliddefs_p.h"
 
 #include <solid/ifaces/device.h>
@@ -56,62 +57,46 @@
 #include <solid/dvbhw.h>
 #include <solid/ifaces/dvbhw.h>
 
-namespace Solid
-{
-    class DevicePrivate : public FrontendObjectPrivate
-    {
-    public:
-        mutable QMap<Capability::Type,Capability*> ifaces;
-    };
-}
 
 Solid::Device::Device()
-    : FrontendObject(*new DevicePrivate)
+    : QObject(), d(new DevicePrivate())
 {
 }
 
 Solid::Device::Device( const QString &udi )
-    : FrontendObject(*new DevicePrivate)
+    : QObject(), d(DeviceManager::self().findDevice(udi).d)
 {
-    const Device &device = DeviceManager::self().findDevice( udi );
-    registerBackendObject( device.backendObject() );
 }
 
 Solid::Device::Device( const Device &device )
-    : FrontendObject(*new DevicePrivate)
+    : QObject(), d(device.d)
 {
-    registerBackendObject( device.backendObject() );
-}
-
-Solid::Device::Device( QObject *backendObject )
-    : FrontendObject(*new DevicePrivate)
-{
-    registerBackendObject( backendObject );
 }
 
 Solid::Device::~Device()
 {
-    Q_D(Device);
-
     qDeleteAll( d->ifaces.values() );
 }
 
 Solid::Device &Solid::Device::operator=( const Solid::Device &device )
 {
-    unregisterBackendObject();
-    registerBackendObject( device.backendObject() );
-
+    d = device.d;
     return *this;
+}
+
+bool Solid::Device::isValid() const
+{
+    return d->backendObject()!=0;
 }
 
 QString Solid::Device::udi() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QString(), udi() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), udi() );
 }
 
 QString Solid::Device::parentUdi() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QString(), parentUdi() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), parentUdi() );
 }
 
 Solid::Device Solid::Device::parent() const
@@ -130,37 +115,37 @@ Solid::Device Solid::Device::parent() const
 
 QString Solid::Device::vendor() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QString(), vendor() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), vendor() );
 }
 
 QString Solid::Device::product() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QString(), product() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), product() );
 }
 
 bool Solid::Device::setProperty( const QString &key, const QVariant &value )
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), false, setProperty( key, value ) );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, setProperty( key, value ) );
 }
 
 QVariant Solid::Device::property( const QString &key ) const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QVariant(), property( key ) );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QVariant(), property( key ) );
 }
 
 QMap<QString, QVariant> Solid::Device::allProperties() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QVariantMap(), allProperties() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QVariantMap(), allProperties() );
 }
 
 bool Solid::Device::propertyExists( const QString &key ) const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), false, propertyExists( key ) );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, propertyExists( key ) );
 }
 
 bool Solid::Device::queryCapability( const Capability::Type &capability ) const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), false, queryCapability( capability ) );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, queryCapability( capability ) );
 }
 
 template<typename IfaceType, typename CapType>
@@ -186,9 +171,7 @@ Solid::Capability *Solid::Device::asCapability( const Capability::Type &capabili
 
 const Solid::Capability *Solid::Device::asCapability( const Capability::Type &capability ) const
 {
-    Q_D(const Device);
-
-    Ifaces::Device *device = qobject_cast<Ifaces::Device*>( backendObject() );
+    Ifaces::Device *device = qobject_cast<Ifaces::Device*>( d->backendObject() );
 
     if ( device!=0 )
     {
@@ -270,68 +253,61 @@ const Solid::Capability *Solid::Device::asCapability( const Capability::Type &ca
 
 bool Solid::Device::lock(const QString &reason)
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), false, lock( reason ) );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, lock( reason ) );
 }
 
 bool Solid::Device::unlock()
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), false, unlock() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, unlock() );
 }
 
 bool Solid::Device::isLocked() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), false, isLocked() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, isLocked() );
 }
 
 QString Solid::Device::lockReason() const
 {
-    return_SOLID_CALL( Ifaces::Device*, backendObject(), QString(), lockReason() );
+    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), lockReason() );
 }
 
-void Solid::Device::slotDestroyed( QObject *object )
+Solid::DevicePrivate::DevicePrivate(const QString &udi)
+    : QObject(), FrontendObjectPrivate(this)
 {
-    Q_D(Device);
+    this->udi = udi;
+}
 
-    if ( object == backendObject() )
-    {
-        FrontendObject::slotDestroyed(object);
+Solid::DevicePrivate::~DevicePrivate()
+{
+    qDeleteAll( ifaces.values() );
+}
 
-        foreach( Capability *iface, d->ifaces.values() )
+void Solid::DevicePrivate::_k_destroyed(QObject *object)
+{
+    if (object == backendObject()) {
+        FrontendObjectPrivate::_k_destroyed(object);
+
+        foreach( Capability *iface, ifaces.values() )
         {
-            delete iface->backendObject();
+            delete iface->d_ptr->backendObject();
             delete iface;
         }
 
-        d->ifaces.clear();
+        ifaces.clear();
     }
 }
 
-void Solid::Device::registerBackendObject( QObject *backendObject )
+void Solid::DevicePrivate::setBackendObject(QObject *object)
 {
-    setBackendObject( backendObject );
-
-    if ( backendObject )
-    {
-        connect( backendObject, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-                 this, SIGNAL( propertyChanged( const QMap<QString,int>& ) ) );
-        connect( backendObject, SIGNAL( conditionRaised( const QString &, const QString & ) ),
-                 this, SIGNAL( conditionRaised( const QString &, const QString & ) ) );
-    }
-}
-
-void Solid::Device::unregisterBackendObject()
-{
-    Q_D(Device);
-
-    setBackendObject( 0 );
-
-    foreach( Capability *iface, d->ifaces.values() )
-    {
-        delete iface->backendObject();
+    foreach (Capability *iface, ifaces.values()) {
+        delete iface->d_ptr->backendObject();
         delete iface;
     }
 
-    d->ifaces.clear();
+    ifaces.clear();
+
+    FrontendObjectPrivate::setBackendObject(object);
 }
 
 #include "device.moc"
+#include "device_p.moc"

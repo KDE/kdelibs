@@ -25,12 +25,7 @@
 
 
 Solid::Processor::Processor(QObject *backendObject)
-    : Capability(*new ProcessorPrivate, backendObject)
-{
-}
-
-Solid::Processor::Processor(ProcessorPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
+    : Capability(*new ProcessorPrivate(this), backendObject)
 {
 }
 
@@ -41,17 +36,20 @@ Solid::Processor::~Processor()
 
 int Solid::Processor::number() const
 {
-    return_SOLID_CALL( Ifaces::Processor*, backendObject(), 0, number() );
+    Q_D(const Processor);
+    return_SOLID_CALL(Ifaces::Processor*, d->backendObject(), 0, number());
 }
 
 qulonglong Solid::Processor::maxSpeed() const
 {
-    return_SOLID_CALL( Ifaces::Processor*, backendObject(), 0, maxSpeed() );
+    Q_D(const Processor);
+    return_SOLID_CALL(Ifaces::Processor*, d->backendObject(), 0, maxSpeed());
 }
 
 bool Solid::Processor::canThrottle() const
 {
-    return_SOLID_CALL( Ifaces::Processor*, backendObject(), false, canThrottle() );
+    Q_D(const Processor);
+    return_SOLID_CALL(Ifaces::Processor*, d->backendObject(), false, canThrottle());
 }
 
 #include "processor.moc"

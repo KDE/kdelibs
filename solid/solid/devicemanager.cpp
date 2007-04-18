@@ -24,6 +24,7 @@
 #include "soliddefs_p.h"
 #include "managerbase_p.h"
 #include "device.h"
+#include "device_p.h"
 #include "ifaces/devicemanager.h"
 #include "ifaces/device.h"
 
@@ -282,7 +283,11 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findR
 
         if ( iface!=0 )
         {
-            Device *device = new Device( iface );
+            // TODO: clean up this...
+            DevicePrivate *dev_p = new DevicePrivate(udi);
+            dev_p->setBackendObject(iface);
+            Device *device = new Device();
+            device->d = dev_p;
             QPair<Device*, Ifaces::Device*> pair( device, iface );
             devicesMap[udi] = pair;
             QObject::connect( iface, SIGNAL( destroyed( QObject* ) ),

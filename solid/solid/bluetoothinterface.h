@@ -24,8 +24,8 @@
 
 #include <QDateTime>
 #include <QPair>
+#include <QtCore/QObject>
 
-#include <solid/frontendobject.h>
 #include <solid/bluetoothremotedevice.h>
 #include <solid/ifaces/bluetoothremotedevice.h>
 
@@ -40,10 +40,9 @@ class BluetoothInterfacePrivate;
 /**
  * Represents a bluetooth interface as seen by the bluetooth subsystem.
  */
-class SOLID_EXPORT BluetoothInterface : public FrontendObject
+class SOLID_EXPORT BluetoothInterface : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(BluetoothInterface)
 
 public:
     /**
@@ -244,7 +243,7 @@ public:
     bool isPeriodicDiscoveryActive() const;
 
     /**
-     * Name resolving status of periodic discovery routing. 
+     * Name resolving status of periodic discovery routing.
      *
      * @returns true if name got resolved while periodic discovery of this bluetooth
      * interface/adapter
@@ -395,20 +394,10 @@ Q_SIGNALS:
      */
     void remoteDeviceDisappeared(const QString &ubi);
 
-protected Q_SLOTS:
-    /**
-     * @internal
-     * Notifies when the backend object disappears.
-     *
-     * @param object the backend object destroyed
-     */
-    void slotDestroyed(QObject *object);
-
 private:
-    void registerBackendObject(QObject *backendObject);
-    void unregisterBackendObject();
+    Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
 
-    QPair<BluetoothRemoteDevice*, Ifaces::BluetoothRemoteDevice*> findRegisteredBluetoothRemoteDevice(const QString &ubi) const;
+    BluetoothInterfacePrivate * const d;
 };
 
 } //Solid

@@ -28,6 +28,10 @@ namespace Solid
     class NetworkPrivate : public FrontendObjectPrivate
     {
     public:
+        NetworkPrivate(QObject *parent)
+            : FrontendObjectPrivate(parent) { }
+
+        void setBackendObject(QObject *object);
     };
 }
 

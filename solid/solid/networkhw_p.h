@@ -27,6 +27,8 @@ namespace Solid
     class NetworkHwPrivate : public CapabilityPrivate
     {
     public:
+        NetworkHwPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

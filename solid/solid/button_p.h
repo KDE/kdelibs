@@ -28,6 +28,8 @@ namespace Solid
     class ButtonPrivate : public CapabilityPrivate
     {
     public:
+        ButtonPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

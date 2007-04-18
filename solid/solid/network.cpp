@@ -25,27 +25,31 @@
 #include <solid/ifaces/network.h>
 
 Solid::Network::Network( QObject *backendObject )
-    : FrontendObject(*new NetworkPrivate)
+    : QObject(), d_ptr(new NetworkPrivate(this))
 {
-    registerBackendObject( backendObject );
+    Q_D(Network);
+    d->setBackendObject(backendObject);
 }
 
 Solid::Network::Network( const Network &network )
-    : FrontendObject(*new NetworkPrivate)
+    : QObject(), d_ptr(new NetworkPrivate(this))
 {
-    registerBackendObject( network.backendObject() );
+    Q_D(Network);
+    d->setBackendObject(network.d_ptr->backendObject());
 }
 
 Solid::Network::Network(NetworkPrivate &dd, QObject *backendObject)
-    : FrontendObject(dd)
+    : QObject(), d_ptr(&dd)
 {
-    registerBackendObject( backendObject );
+    Q_D(Network);
+    d->setBackendObject(backendObject);
 }
 
 Solid::Network::Network(NetworkPrivate &dd, const Network &network)
-    : FrontendObject(dd)
+    : d_ptr(&dd)
 {
-    registerBackendObject( network.backendObject() );
+    Q_D(Network);
+    d->setBackendObject(network.d_ptr->backendObject());
 }
 
 Solid::Network::~Network()
@@ -53,46 +57,57 @@ Solid::Network::~Network()
 
 }
 
+bool Solid::Network::isValid() const
+{
+    Q_D(const Network);
+    return d->backendObject()!=0;
+}
+
 QList<QNetworkAddressEntry> Solid::Network::addressEntries() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<QNetworkAddressEntry>(), addressEntries() );
+    Q_D(const Network);
+    return_SOLID_CALL(Ifaces::Network*, d->backendObject(), QList<QNetworkAddressEntry>(), addressEntries());
 }
 
 QString Solid::Network::route() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), route() );
+    Q_D(const Network);
+    return_SOLID_CALL(Ifaces::Network*, d->backendObject(), QString(), route());
 }
 
 QList<QHostAddress> Solid::Network::dnsServers() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QList<QHostAddress>(), dnsServers() );
+    Q_D(const Network);
+    return_SOLID_CALL(Ifaces::Network*, d->backendObject(), QList<QHostAddress>(), dnsServers());
 }
 
 void Solid::Network::setActivated( bool active )
 {
-    SOLID_CALL( Ifaces::Network*, backendObject(), setActivated(active) );
+    Q_D(const Network);
+    SOLID_CALL(Ifaces::Network*, d->backendObject(), setActivated(active));
 }
 
 bool Solid::Network::isActive() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), false, isActive() );
+    Q_D(const Network);
+    return_SOLID_CALL(Ifaces::Network*, d->backendObject(), false, isActive());
 }
 
 QString Solid::Network::uni() const
 {
-    return_SOLID_CALL( Ifaces::Network*, backendObject(), QString(), uni() );
+    Q_D(const Network);
+    return_SOLID_CALL(Ifaces::Network*, d->backendObject(), QString(), uni());
 }
 
-void Solid::Network::registerBackendObject( QObject *backendObject )
+void Solid::NetworkPrivate::setBackendObject(QObject *object)
 {
-    setBackendObject( backendObject );
+    FrontendObjectPrivate::setBackendObject(object);
 
-    if ( backendObject )
-    {
-        connect( backendObject, SIGNAL( ipDetailsChanged() ),
-                 this, SIGNAL( ipDetailsChanged() ) );
-        connect( backendObject, SIGNAL( activationStateChanged( bool ) ),
-                 this, SIGNAL( activationStateChanged( bool ) ) );
+    if (object) {
+        QObject::connect(object, SIGNAL(ipDetailsChanged()),
+                         parent(), SIGNAL(ipDetailsChanged()));
+        QObject::connect(object, SIGNAL(activationStateChanged(bool)),
+                         parent(), SIGNAL(activationStateChanged(bool)));
     }
 }
 

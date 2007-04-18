@@ -27,6 +27,8 @@ namespace Solid
     class BatteryPrivate : public CapabilityPrivate
     {
     public:
+        BatteryPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

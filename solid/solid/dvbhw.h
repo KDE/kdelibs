@@ -128,12 +128,6 @@ namespace Solid
           * @see Solid::DvbHw::deviceType
           */
          int deviceIndex() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        DvbHw(DvbHwPrivate &dd, QObject *backendObject);
     };
 }
 

@@ -22,7 +22,7 @@
 #ifndef SOLID_BLUETOOTHINPUTDEVICE_H
 #define SOLID_BLUETOOTHINPUTDEVICE_H
 
-#include <solid/frontendobject.h>
+#include <QtCore/QObject>
 
 namespace Solid
 {
@@ -31,10 +31,9 @@ class BluetoothInputDevicePrivate;
 /**
  * Represents a bluetooth remote device as seen by the bluetoothing subsystem.
  */
-class SOLID_EXPORT BluetoothInputDevice : public FrontendObject
+class SOLID_EXPORT BluetoothInputDevice : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(BluetoothInputDevice)
 
 public:
     /**
@@ -131,18 +130,10 @@ Q_SIGNALS:
      */
     void disconnected();
 
-protected Q_SLOTS:
-    /**
-     * @internal
-     * Notifies when the backend object disappears.
-     *
-     * @param object the backend object destroyed
-     */
-    void slotDestroyed(QObject *object);
-
 private:
-    void registerBackendObject(QObject *backendObject);
-    void unregisterBackendObject();
+    Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
+
+    BluetoothInputDevicePrivate * const d;
 };
 
 } //Solid

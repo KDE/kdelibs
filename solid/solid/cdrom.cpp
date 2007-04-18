@@ -24,14 +24,7 @@
 #include <solid/ifaces/cdrom.h>
 
 Solid::Cdrom::Cdrom(QObject *backendObject)
-    : Storage(*new CdromPrivate, backendObject)
-{
-    connect( backendObject, SIGNAL( ejectPressed() ),
-             this, SIGNAL( ejectPressed() ) );
-}
-
-Solid::Cdrom::Cdrom(CdromPrivate &dd, QObject *backendObject)
-    : Storage(dd, backendObject)
+    : Storage(*new CdromPrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( ejectPressed() ),
              this, SIGNAL( ejectPressed() ) );
@@ -44,22 +37,26 @@ Solid::Cdrom::~Cdrom()
 
 Solid::Cdrom::MediumTypes Solid::Cdrom::supportedMedia() const
 {
-    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), MediumTypes(), supportedMedia() );
+    Q_D(const Cdrom);
+    return_SOLID_CALL(Ifaces::Cdrom*, d->backendObject(), MediumTypes(), supportedMedia());
 }
 
 int Solid::Cdrom::readSpeed() const
 {
-    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), 0, readSpeed() );
+    Q_D(const Cdrom);
+    return_SOLID_CALL(Ifaces::Cdrom*, d->backendObject(), 0, readSpeed());
 }
 
 int Solid::Cdrom::writeSpeed() const
 {
-    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), 0, writeSpeed() );
+    Q_D(const Cdrom);
+    return_SOLID_CALL(Ifaces::Cdrom*, d->backendObject(), 0, writeSpeed());
 }
 
 QList<int> Solid::Cdrom::writeSpeeds() const
 {
-    return_SOLID_CALL( Ifaces::Cdrom*, backendObject(), QList<int>(), writeSpeeds() );
+    Q_D(const Cdrom);
+    return_SOLID_CALL(Ifaces::Cdrom*, d->backendObject(), QList<int>(), writeSpeeds());
 }
 
 #include "cdrom.moc"

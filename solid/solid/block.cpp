@@ -24,14 +24,8 @@
 #include <solid/ifaces/block.h>
 
 Solid::Block::Block( QObject *backendObject )
-    : Capability(*new BlockPrivate, backendObject)
+    : Capability(*new BlockPrivate(this), backendObject)
 {
-}
-
-Solid::Block::Block(BlockPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
 }
 
 Solid::Block::~Block()
@@ -41,17 +35,20 @@ Solid::Block::~Block()
 
 int Solid::Block::deviceMajor() const
 {
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, deviceMajor() );
+    Q_D(const Block);
+    return_SOLID_CALL(Ifaces::Block*, d->backendObject(), 0, deviceMajor());
 }
 
 int Solid::Block::deviceMinor() const
 {
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), 0, deviceMinor() );
+    Q_D(const Block);
+    return_SOLID_CALL(Ifaces::Block*, d->backendObject(), 0, deviceMinor());
 }
 
 QString Solid::Block::device() const
 {
-    return_SOLID_CALL( Ifaces::Block*, backendObject(), QString(), device() );
+    Q_D(const Block);
+    return_SOLID_CALL(Ifaces::Block*, d->backendObject(), QString(), device());
 }
 
 #include "block.moc"

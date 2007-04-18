@@ -209,12 +209,6 @@ namespace Solid
          * @see Solid::Battery::ChargeState
          */
         void chargeStateChanged( int newState );
-
-    protected:
-        /**
-         * @internal
-         */
-        Battery(BatteryPrivate &dd, QObject *backendObject);
     };
 }
 

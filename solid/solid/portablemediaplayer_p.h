@@ -28,6 +28,8 @@ namespace Solid
     class PortableMediaPlayerPrivate : public CapabilityPrivate
     {
     public:
+        PortableMediaPlayerPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

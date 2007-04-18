@@ -24,14 +24,8 @@
 #include <solid/ifaces/opticaldisc.h>
 
 Solid::OpticalDisc::OpticalDisc( QObject *backendObject )
-    : Volume(*new OpticalDiscPrivate, backendObject)
+    : Volume(*new OpticalDiscPrivate(this), backendObject)
 {
-}
-
-Solid::OpticalDisc::OpticalDisc(OpticalDiscPrivate &dd, QObject *backendObject)
-    : Volume(dd, backendObject)
-{
-
 }
 
 Solid::OpticalDisc::~OpticalDisc()
@@ -41,32 +35,38 @@ Solid::OpticalDisc::~OpticalDisc()
 
 Solid::OpticalDisc::ContentTypes Solid::OpticalDisc::availableContent() const
 {
-    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), ContentTypes(), availableContent() );
+    Q_D(const OpticalDisc);
+    return_SOLID_CALL(Ifaces::OpticalDisc*, d->backendObject(), ContentTypes(), availableContent());
 }
 
 Solid::OpticalDisc::DiscType Solid::OpticalDisc::discType() const
 {
-    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), UnknownDiscType, discType() );
+    Q_D(const OpticalDisc);
+    return_SOLID_CALL(Ifaces::OpticalDisc*, d->backendObject(), UnknownDiscType, discType());
 }
 
 bool Solid::OpticalDisc::isAppendable() const
 {
-    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), false, isAppendable() );
+    Q_D(const OpticalDisc);
+    return_SOLID_CALL(Ifaces::OpticalDisc*, d->backendObject(), false, isAppendable());
 }
 
 bool Solid::OpticalDisc::isBlank() const
 {
-    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), false, isBlank() );
+    Q_D(const OpticalDisc);
+    return_SOLID_CALL(Ifaces::OpticalDisc*, d->backendObject(), false, isBlank());
 }
 
 bool Solid::OpticalDisc::isRewritable() const
 {
-    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), false, isRewritable() );
+    Q_D(const OpticalDisc);
+    return_SOLID_CALL(Ifaces::OpticalDisc*, d->backendObject(), false, isRewritable());
 }
 
 qulonglong Solid::OpticalDisc::capacity() const
 {
-    return_SOLID_CALL( Ifaces::OpticalDisc*, backendObject(), 0, capacity() );
+    Q_D(const OpticalDisc);
+    return_SOLID_CALL(Ifaces::OpticalDisc*, d->backendObject(), 0, capacity());
 }
 
 #include "opticaldisc.moc"

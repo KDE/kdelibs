@@ -26,15 +26,23 @@
 
 
 Solid::Capability::Capability(CapabilityPrivate &dd, QObject *backendObject)
-    : FrontendObject(dd)
+    : d_ptr(&dd)
 {
-    setBackendObject( backendObject );
+    Q_D(Capability);
+
+    d->setBackendObject(backendObject);
 }
 
 
 Solid::Capability::~Capability()
 {
 
+}
+
+bool Solid::Capability::isValid() const
+{
+    Q_D(const Capability);
+    return d->backendObject()!=0;
 }
 
 QString Solid::Capability::typeToString(Type type)

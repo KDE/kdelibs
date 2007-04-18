@@ -27,6 +27,9 @@ namespace Solid
     class CapabilityPrivate : public FrontendObjectPrivate
     {
     public:
+        CapabilityPrivate(QObject *parent)
+            : FrontendObjectPrivate(parent) { }
+
     };
 }
 

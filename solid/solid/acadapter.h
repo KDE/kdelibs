@@ -76,12 +76,6 @@ namespace Solid
          * @param newState true if the A/C adapter is plugged is mounted, false otherwise
          */
         void plugStateChanged( bool newState );
-
-    protected:
-        /**
-         * @internal
-         */
-        AcAdapter(AcAdapterPrivate &dd, QObject *backendObject);
     };
 }
 

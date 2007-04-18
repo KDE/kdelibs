@@ -117,12 +117,6 @@ namespace Solid
          * @see Solid::Button::ButtonType
          */
         void pressed( int type );
-
-    protected:
-        /**
-         * @internal
-         */
-        Button(ButtonPrivate &dd, QObject *backendObject);
     };
 }
 

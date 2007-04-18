@@ -21,20 +21,22 @@
 #ifndef SOLID_NETWORK_H
 #define SOLID_NETWORK_H
 
-#include <solid/frontendobject.h>
-
+#include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtNetwork/QNetworkAddressEntry>
+
+#include <solid/solid_export.h>
 
 namespace Solid
 {
     class NetworkInterface;
+    class NetworkInterfacePrivate;
     class NetworkPrivate;
 
     /**
      * This interface represents a generic Internet Protocol (IP) network which we may be connected to.
      */
-    class SOLID_EXPORT Network : public FrontendObject
+    class SOLID_EXPORT Network : public QObject
     {
         Q_OBJECT
         Q_DECLARE_PRIVATE(Network)
@@ -58,6 +60,14 @@ namespace Solid
          * Destroys a Network object.
          */
         virtual ~Network();
+
+        /**
+         * Indicates if this network is valid.
+         * A network is considered valid if it's available to the system.
+         *
+         * @return true if this network is available, false otherwise
+         */
+        bool isValid() const;
 
         /**
          * Retrieves the Unique Network Identifier (UNI) of the Network.
@@ -120,8 +130,6 @@ namespace Solid
         void activationStateChanged( bool activated );
 
     protected:
-        void registerBackendObject( QObject * );
-
         /**
          * @internal
          */
@@ -132,8 +140,11 @@ namespace Solid
          */
         Network(NetworkPrivate &dd, const Network &network);
 
+        NetworkPrivate *d_ptr;
+
     private:
         friend class NetworkInterface;
+        friend class NetworkInterfacePrivate;
     //HACK: to make NetworkList polymorphic (containing both wired and wireless networks, I used Network * here - Will.
     };
     typedef QList<Network*> NetworkList;

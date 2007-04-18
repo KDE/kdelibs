@@ -21,7 +21,7 @@
 #ifndef SOLID_NETWORKINTERFACE_H
 #define SOLID_NETWORKINTERFACE_H
 
-#include <solid/frontendobject.h>
+#include <QtCore/QObject>
 #include <solid/network.h>
 
 namespace Solid
@@ -34,12 +34,11 @@ namespace Solid
      * For non-networking specific hardware details,
      * @see Solid::NetworkHw
      */
-    class SOLID_EXPORT NetworkInterface : public FrontendObject
+    class SOLID_EXPORT NetworkInterface : public QObject
     {
         Q_OBJECT
         Q_ENUMS( ConnectionState Capability Type )
         Q_FLAGS( Capabilities )
-        Q_DECLARE_PRIVATE(NetworkInterface)
 
     public:
         // == NM ActivationStage
@@ -111,6 +110,14 @@ namespace Solid
         NetworkInterface &operator=( const NetworkInterface &device );
 
         /**
+         * Indicates if this network interface is valid.
+         * A network interface is considered valid if it's available in the system.
+         *
+         * @return true if this network interface is available, false otherwise
+         */
+        bool isValid() const;
+
+        /**
          * Retrieves the Unique Network Identifier (UNI) of the NetworkInterface.
          * This identifier is unique for each network and network interface in the system.
          *
@@ -136,7 +143,7 @@ namespace Solid
 
         /**
          * Retrieves the current state of the network connection held by this device.
-         * It's a high level view of the connection. It is user oriented, so 
+         * It's a high level view of the connection. It is user oriented, so
          * actually it provides state coming from different layers.
          *
          * @return the current connection state
@@ -242,20 +249,10 @@ namespace Solid
         void networkDisappeared( const QString & uni );
 
 
-    protected Q_SLOTS:
-        /**
-         * @internal
-         * Notifies when the backend object disappears.
-         *
-         * @param object the backend object destroyed
-         */
-        void slotDestroyed( QObject *object );
-
     private:
-        void registerBackendObject( QObject *backendObject );
-        void unregisterBackendObject();
+        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
 
-        Network *findRegisteredNetwork( const QString &uni ) const;
+        NetworkInterfacePrivate * const d;
     };
 
 } //Solid

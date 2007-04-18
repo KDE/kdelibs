@@ -24,12 +24,12 @@
 #include <solid/ifaces/storage.h>
 
 Solid::Storage::Storage(QObject *backendObject)
-    : Block(*new StoragePrivate, backendObject)
+    : Capability(*new StoragePrivate(this), backendObject)
 {
 }
 
 Solid::Storage::Storage(StoragePrivate &dd, QObject *backendObject)
-    : Block(dd, backendObject)
+    : Capability(dd, backendObject)
 {
 
 }
@@ -41,42 +41,50 @@ Solid::Storage::~Storage()
 
 Solid::Storage::Bus Solid::Storage::bus() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), Platform, bus() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), Platform, bus());
 }
 
 Solid::Storage::DriveType Solid::Storage::driveType() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), HardDisk, driveType() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), HardDisk, driveType());
 }
 
 bool Solid::Storage::isRemovable() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isRemovable() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isRemovable());
 }
 
 bool Solid::Storage::isEjectRequired() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isEjectRequired() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isEjectRequired());
 }
 
 bool Solid::Storage::isHotpluggable() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isHotpluggable() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isHotpluggable());
 }
 
 bool Solid::Storage::isMediaCheckEnabled() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), false, isMediaCheckEnabled() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isMediaCheckEnabled());
 }
 
 QString Solid::Storage::vendor() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), QString(), vendor() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), QString(), vendor());
 }
 
 QString Solid::Storage::product() const
 {
-    return_SOLID_CALL( Ifaces::Storage*, backendObject(), QString(), product() );
+    Q_D(const Storage);
+    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), QString(), product());
 }
 
 #include "storage.moc"

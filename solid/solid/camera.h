@@ -98,12 +98,6 @@ namespace Solid
          * @return true if the camera is supported by libgphoto2, false otherwise.
          */
         bool isGphotoSupported() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        Camera(CameraPrivate &dd, QObject *backendObject);
     };
 }
 

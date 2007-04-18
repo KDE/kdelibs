@@ -26,14 +26,8 @@
 #include <kdebug.h>
 
 Solid::AudioHw::AudioHw( QObject *backendObject )
-    : Capability(*new AudioHwPrivate, backendObject)
+    : Capability(*new AudioHwPrivate(this), backendObject)
 {
-}
-
-Solid::AudioHw::AudioHw(AudioHwPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
 }
 
 Solid::AudioHw::~AudioHw()
@@ -44,7 +38,8 @@ Solid::AudioHw::~AudioHw()
 
 Solid::AudioHw::AudioDriver Solid::AudioHw::driver() const
 {
-    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioDriver, driver() );
+    Q_D(const AudioHw);
+    return_SOLID_CALL(Ifaces::AudioHw*, d->backendObject(), UnknownAudioDriver, driver());
 }
 
 QStringList Solid::AudioHw::driverHandles() const
@@ -57,7 +52,7 @@ QStringList Solid::AudioHw::driverHandles() const
         return d->driverHandles;
     }
 
-    Ifaces::AudioHw *iface = qobject_cast<Ifaces::AudioHw*>( backendObject() );
+    Ifaces::AudioHw *iface = qobject_cast<Ifaces::AudioHw*>(d->backendObject());
     if ( iface )
     {
         QString handle = iface->driverHandler();
@@ -131,17 +126,20 @@ QStringList Solid::AudioHw::driverHandles() const
 
 QString Solid::AudioHw::name() const
 {
-    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), QString(), name() );
+    Q_D(const AudioHw);
+    return_SOLID_CALL(Ifaces::AudioHw*, d->backendObject(), QString(), name());
 }
 
 Solid::AudioHw::AudioHwTypes Solid::AudioHw::deviceType() const
 {
-    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), UnknownAudioHwType, deviceType() );
+    Q_D(const AudioHw);
+    return_SOLID_CALL(Ifaces::AudioHw*, d->backendObject(), UnknownAudioHwType, deviceType());
 }
 
 Solid::AudioHw::SoundcardType Solid::AudioHw::soundcardType() const
 {
-    return_SOLID_CALL( Ifaces::AudioHw*, backendObject(), InternalSoundcard, soundcardType() );
+    Q_D(const AudioHw);
+    return_SOLID_CALL(Ifaces::AudioHw*, d->backendObject(), InternalSoundcard, soundcardType());
 }
 
 #include "audiohw.moc"

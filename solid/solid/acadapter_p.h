@@ -27,6 +27,8 @@ namespace Solid
     class AcAdapterPrivate : public CapabilityPrivate
     {
     public:
+        AcAdapterPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

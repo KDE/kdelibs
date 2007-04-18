@@ -110,6 +110,7 @@ namespace Solid
          *
          * @return the network essid
          */
+
         QString essid() const;
 
         /**
@@ -194,8 +195,6 @@ namespace Solid
          * to be able to connect. Respond to this by calling setAuthentication().
          */
         void authenticationNeeded();
-    protected:
-        void registerBackendObject( QObject * backendObject );
     };
 
 } //Solid

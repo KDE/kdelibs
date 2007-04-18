@@ -22,7 +22,7 @@
 #ifndef SOLID_BLUETOOTHREMOTEDEVICE_H
 #define SOLID_BLUETOOTHREMOTEDEVICE_H
 
-#include <solid/frontendobject.h>
+#include <QtCore/QObject>
 
 #include <solid/bluetoothmanager.h>
 #include <solid/bluetoothinterface.h>
@@ -36,7 +36,7 @@ class BluetoothRemoteDevicePrivate;
 /**
  * Represents a bluetooth remote device as seen by the bluetoothing subsystem.
  */
-class SOLID_EXPORT BluetoothRemoteDevice : public FrontendObject
+class SOLID_EXPORT BluetoothRemoteDevice : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(BluetoothRemoteDevice)
@@ -294,19 +294,11 @@ Q_SIGNALS:
      */
     void bondingRemoved();
 
-
-protected Q_SLOTS:
-    /**
-     * @internal
-     * Notifies when the backend object disappears.
-     *
-     * @param object the backend object destroyed
-     */
-    void slotDestroyed(QObject *object);
+protected:
+    BluetoothRemoteDevicePrivate *d_ptr;
 
 private:
-    void registerBackendObject(QObject *backendObject);
-    void unregisterBackendObject();
+    Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
 };
 
 } //Solid

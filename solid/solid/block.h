@@ -93,12 +93,6 @@ namespace Solid
          * the device
          */
         QString device() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        Block(BlockPrivate &dd, QObject *backendObject);
     };
 }
 

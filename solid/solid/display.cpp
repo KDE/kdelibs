@@ -25,14 +25,8 @@
 #include <solid/ifaces/display.h>
 
 Solid::Display::Display( QObject *backendObject )
-    : Capability(*new DisplayPrivate, backendObject)
+    : Capability(*new DisplayPrivate(this), backendObject)
 {
-}
-
-Solid::Display::Display(DisplayPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
 }
 
 Solid::Display::~Display()
@@ -42,12 +36,14 @@ Solid::Display::~Display()
 
 Solid::Display::DisplayType Solid::Display::type() const
 {
-    return_SOLID_CALL( Ifaces::Display*, backendObject(), UnknownDisplayType, type() );
+    Q_D(const Display);
+    return_SOLID_CALL(Ifaces::Display*, d->backendObject(), UnknownDisplayType, type());
 }
 
 int Solid::Display::lcdBrightness() const
 {
-    return_SOLID_CALL( Ifaces::Display*, backendObject(), 100, lcdBrightness() );
+    Q_D(const Display);
+    return_SOLID_CALL(Ifaces::Display*, d->backendObject(), 100, lcdBrightness());
 }
 
 #include "display.moc"

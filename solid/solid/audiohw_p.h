@@ -29,6 +29,9 @@ namespace Solid
     class AudioHwPrivate : public CapabilityPrivate
     {
     public:
+        AudioHwPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
+
         mutable QStringList driverHandles;
     };
 }

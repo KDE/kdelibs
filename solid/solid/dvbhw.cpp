@@ -24,14 +24,8 @@
 #include <solid/ifaces/dvbhw.h>
 
 Solid::DvbHw::DvbHw( QObject *backendObject )
-    : Capability(*new DvbHwPrivate, backendObject)
+    : Capability(*new DvbHwPrivate(this), backendObject)
 {
-}
-
-Solid::DvbHw::DvbHw(DvbHwPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
 }
 
 Solid::DvbHw::~DvbHw()
@@ -41,22 +35,26 @@ Solid::DvbHw::~DvbHw()
 
 QString Solid::DvbHw::device() const
 {
-    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), QString(), device() );
+    Q_D(const DvbHw);
+    return_SOLID_CALL(Ifaces::DvbHw*, d->backendObject(), QString(), device());
 }
 
 int Solid::DvbHw::deviceAdapter() const
 {
-    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), -1, deviceAdapter() );
+    Q_D(const DvbHw);
+    return_SOLID_CALL(Ifaces::DvbHw*, d->backendObject(), -1, deviceAdapter());
 }
 
 Solid::DvbHw::DeviceType Solid::DvbHw::deviceType() const
 {
-    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), DvbUnknown, deviceType() );
+    Q_D(const DvbHw);
+    return_SOLID_CALL(Ifaces::DvbHw*, d->backendObject(), DvbUnknown, deviceType());
 }
 
 int Solid::DvbHw::deviceIndex() const
 {
-    return_SOLID_CALL( Ifaces::DvbHw*, backendObject(), -1, deviceIndex() );
+    Q_D(const DvbHw);
+    return_SOLID_CALL(Ifaces::DvbHw*, d->backendObject(), -1, deviceIndex());
 }
 
 #include "dvbhw.moc"

@@ -24,14 +24,8 @@
 #include <solid/ifaces/camera.h>
 
 Solid::Camera::Camera(QObject *backendObject)
-    : Capability(*new CameraPrivate, backendObject)
+    : Capability(*new CameraPrivate(this), backendObject)
 {
-}
-
-Solid::Camera::Camera(CameraPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
-{
-
 }
 
 Solid::Camera::~Camera()
@@ -42,12 +36,14 @@ Solid::Camera::~Camera()
 
 Solid::Camera::AccessType Solid::Camera::accessMethod() const
 {
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), Proprietary, accessMethod() );
+    Q_D(const Camera);
+    return_SOLID_CALL(Ifaces::Camera*, d->backendObject(), Proprietary, accessMethod());
 }
 
 bool Solid::Camera::isGphotoSupported() const
 {
-    return_SOLID_CALL( Ifaces::Camera*, backendObject(), false, isGphotoSupported() );
+    Q_D(const Camera);
+    return_SOLID_CALL(Ifaces::Camera*, d->backendObject(), false, isGphotoSupported());
 }
 
 #include "camera.moc"

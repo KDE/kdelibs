@@ -115,12 +115,6 @@ namespace Solid
          * @return a MIME-type list of the supported playlist formats
          */
         QStringList playlistFormats() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        PortableMediaPlayer(PortableMediaPlayerPrivate &dd, QObject *backendObject);
     };
 }
 

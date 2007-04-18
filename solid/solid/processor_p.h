@@ -27,6 +27,8 @@ namespace Solid
     class ProcessorPrivate : public CapabilityPrivate
     {
     public:
+        ProcessorPrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

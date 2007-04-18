@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/block.h>
+#include <solid/capability.h>
 
 class KJob;
 
@@ -36,7 +36,7 @@ namespace Solid
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Volume : public Block
+    class SOLID_EXPORT Volume : public Capability
     {
         Q_OBJECT
         Q_ENUMS( UsageType )

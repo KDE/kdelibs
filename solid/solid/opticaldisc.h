@@ -152,12 +152,6 @@ namespace Solid
          * @return the capacity of the disc in bytes
          */
         qulonglong capacity() const;
-
-    protected:
-        /**
-         * @internal
-         */
-        OpticalDisc(OpticalDiscPrivate &dd, QObject *backendObject);
     };
 }
 

@@ -20,13 +20,15 @@
 #ifndef SOLID_STORAGE_P_H
 #define SOLID_STORAGE_P_H
 
-#include "block_p.h"
+#include "capability_p.h"
 
 namespace Solid
 {
-    class StoragePrivate : public BlockPrivate
+    class StoragePrivate : public CapabilityPrivate
     {
     public:
+        StoragePrivate(QObject *parent)
+            : CapabilityPrivate(parent) { }
     };
 }
 

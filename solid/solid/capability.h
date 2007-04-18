@@ -25,11 +25,10 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/frontendobject.h>
-
 namespace Solid
 {
     class Device;
+    class DevicePrivate;
     class Predicate;
     class CapabilityPrivate;
 
@@ -39,7 +38,7 @@ namespace Solid
      * A capability describes what a device can do. A device generally has
      * a set of capabilities.
      */
-    class SOLID_EXPORT Capability : public FrontendObject
+    class SOLID_EXPORT Capability : public QObject
     {
         Q_OBJECT
         Q_ENUMS(Type)
@@ -83,6 +82,14 @@ namespace Solid
         virtual ~Capability();
 
         /**
+         * Indicates if this capability is valid.
+         * A capability is considered valid if the device it is referring is available in the system.
+         *
+         * @return true if this capability's device is available, false otherwise
+         */
+        bool isValid() const;
+
+        /**
          *
          * @return the name of the capability type
          */
@@ -104,8 +111,13 @@ namespace Solid
          */
         Capability(CapabilityPrivate &dd, QObject *backendObject);
 
+        CapabilityPrivate *d_ptr;
+
     private:
+        Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
+
         friend class Device;
+        friend class DevicePrivate;
     };
 }
 

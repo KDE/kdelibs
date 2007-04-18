@@ -24,14 +24,7 @@
 #include <solid/ifaces/acadapter.h>
 
 Solid::AcAdapter::AcAdapter( QObject *backendObject )
-    : Capability(*new AcAdapterPrivate, backendObject)
-{
-    connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
-             this, SIGNAL( plugStateChanged( bool ) ) );
-}
-
-Solid::AcAdapter::AcAdapter(AcAdapterPrivate &dd, QObject *backendObject)
-    : Capability(dd, backendObject)
+    : Capability(*new AcAdapterPrivate(this), backendObject)
 {
     connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
              this, SIGNAL( plugStateChanged( bool ) ) );
@@ -44,7 +37,8 @@ Solid::AcAdapter::~AcAdapter()
 
 bool Solid::AcAdapter::isPlugged() const
 {
-    return_SOLID_CALL( Ifaces::AcAdapter*, backendObject(), false, isPlugged() );
+    Q_D(const AcAdapter);
+    return_SOLID_CALL(Ifaces::AcAdapter*, d->backendObject(), false, isPlugged());
 }
 
 #include "acadapter.moc"

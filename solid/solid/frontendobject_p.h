@@ -20,15 +20,26 @@
 #ifndef SOLID_FRONTENDOBJECT_P_H
 #define SOLID_FRONTENDOBJECT_P_H
 
-#include <QObject>
+class QObject;
 
 namespace Solid
 {
     class FrontendObjectPrivate
     {
     public:
-        virtual ~FrontendObjectPrivate() {}
-        QObject *backendObject;
+        FrontendObjectPrivate(QObject *parent);
+        virtual ~FrontendObjectPrivate();
+
+        QObject *parent() const;
+
+        QObject *backendObject() const;
+        virtual void setBackendObject(QObject *object);
+
+        virtual void _k_destroyed(QObject *object);
+
+    private:
+        QObject *m_parent;
+        QObject *m_backendObject;
     };
 }
 

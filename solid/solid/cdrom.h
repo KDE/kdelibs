@@ -133,12 +133,6 @@ namespace Solid
          * Please note that some (broken) drives doesn't report this event.
          */
         void ejectPressed();
-
-    protected:
-        /**
-         * @internal
-         */
-        Cdrom(CdromPrivate &dd, QObject *backendObject);
     };
 }
 

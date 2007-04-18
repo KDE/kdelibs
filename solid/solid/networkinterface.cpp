@@ -30,6 +30,7 @@
 #include "soliddefs_p.h"
 #include "networkmanager.h"
 #include "network.h"
+#include "network_p.h"
 #include "networkinterface.h"
 #include "wirelessnetwork.h"
 
@@ -38,6 +39,15 @@ namespace Solid
     class NetworkInterfacePrivate : public FrontendObjectPrivate
     {
     public:
+        NetworkInterfacePrivate(QObject *parent)
+            : FrontendObjectPrivate(parent) { }
+
+        void setBackendObject(QObject *object);
+        void _k_destroyed(QObject *object);
+
+        Solid::Network *findRegisteredNetwork(const QString &uni) const;
+
+
         mutable QMap<QString, Network*> networkMap;
         mutable Network invalidNetwork;
     };
@@ -45,33 +55,31 @@ namespace Solid
 
 
 Solid::NetworkInterface::NetworkInterface()
-    : FrontendObject(*new NetworkInterfacePrivate)
+    : QObject(), d(new NetworkInterfacePrivate(this))
 {
 }
 
 Solid::NetworkInterface::NetworkInterface( const QString &uni )
-    : FrontendObject(*new NetworkInterfacePrivate)
+    : QObject(), d(new NetworkInterfacePrivate(this))
 {
     const NetworkInterface &device = NetworkManager::self().findNetworkInterface( uni );
-    registerBackendObject( device.backendObject() );
+    d->setBackendObject(device.d->backendObject());
 }
 
 Solid::NetworkInterface::NetworkInterface( QObject *backendObject )
-    : FrontendObject(*new NetworkInterfacePrivate)
+    : QObject(), d(new NetworkInterfacePrivate(this))
 {
-    registerBackendObject( backendObject );
+    d->setBackendObject(backendObject);
 }
 
 Solid::NetworkInterface::NetworkInterface( const NetworkInterface &device )
-    : FrontendObject(*new NetworkInterfacePrivate)
+    : QObject(), d(new NetworkInterfacePrivate(this))
 {
-    registerBackendObject( device.backendObject() );
+    d->setBackendObject(device.d->backendObject());
 }
 
 Solid::NetworkInterface::~NetworkInterface()
 {
-    Q_D(NetworkInterface);
-
     foreach( QObject *network, d->networkMap )
     {
         delete network;
@@ -80,58 +88,59 @@ Solid::NetworkInterface::~NetworkInterface()
 
 Solid::NetworkInterface &Solid::NetworkInterface::operator=( const Solid::NetworkInterface & dev )
 {
-    unregisterBackendObject();
-    registerBackendObject( dev.backendObject() );
-
+    d->setBackendObject(dev.d->backendObject());
     return *this;
+}
+
+bool Solid::NetworkInterface::isValid() const
+{
+    return d->backendObject()!=0;
 }
 
 QString Solid::NetworkInterface::uni() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), QString(), uni() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), QString(), uni());
 }
 
 bool Solid::NetworkInterface::isActive() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), false, isActive() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), false, isActive());
 }
 
 Solid::NetworkInterface::Type Solid::NetworkInterface::type() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), UnknownType, type() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), UnknownType, type());
 }
 Solid::NetworkInterface::ConnectionState Solid::NetworkInterface::connectionState() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), UnknownState, connectionState() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), UnknownState, connectionState());
 }
 
 int Solid::NetworkInterface::signalStrength() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), 0, signalStrength() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), 0, signalStrength());
 }
 
 int Solid::NetworkInterface::designSpeed() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), 0, designSpeed() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), 0, designSpeed());
 }
 
 bool Solid::NetworkInterface::isLinkUp() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), false, isLinkUp() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), false, isLinkUp());
 }
 
 Solid::NetworkInterface::Capabilities Solid::NetworkInterface::capabilities() const
 {
-    return_SOLID_CALL( Ifaces::NetworkInterface*, backendObject(), Capabilities(), capabilities() );
+    return_SOLID_CALL(Ifaces::NetworkInterface*, d->backendObject(), Capabilities(), capabilities());
 }
 
 Solid::Network * Solid::NetworkInterface::findNetwork( const QString & uni ) const
 {
-    Q_D(const NetworkInterface);
-
     if ( !isValid() ) return 0;
 
-    Network *network = findRegisteredNetwork( uni );
+    Network *network = d->findRegisteredNetwork( uni );
 
     if ( network!=0 )
     {
@@ -146,7 +155,7 @@ Solid::Network * Solid::NetworkInterface::findNetwork( const QString & uni ) con
 Solid::NetworkList Solid::NetworkInterface::networks() const
 {
     NetworkList list;
-    Ifaces::NetworkInterface *device = qobject_cast<Ifaces::NetworkInterface*>( backendObject() );
+    Ifaces::NetworkInterface *device = qobject_cast<Ifaces::NetworkInterface*>(d->backendObject());
 
     if ( device==0 ) return list;
 
@@ -154,7 +163,7 @@ Solid::NetworkList Solid::NetworkInterface::networks() const
 
     foreach( const QString &uni, uniList )
     {
-        Network *network = findRegisteredNetwork( uni );
+        Network *network = d->findRegisteredNetwork(uni);
         if ( network!=0 )
         {
             list.append( network );
@@ -164,72 +173,57 @@ Solid::NetworkList Solid::NetworkInterface::networks() const
     return list;
 }
 
-void Solid::NetworkInterface::slotDestroyed( QObject *object )
+void Solid::NetworkInterfacePrivate::_k_destroyed(QObject *object)
 {
-    Q_D(NetworkInterface);
-
     if ( object == backendObject() )
     {
-        FrontendObject::slotDestroyed(object);
+        FrontendObjectPrivate::_k_destroyed(object);
 
-        foreach( Network *network, d->networkMap )
+        foreach( Network *network, networkMap )
         {
-            delete network->backendObject();
+            delete network->d_func()->backendObject();
             delete network;
         }
 
-        d->networkMap.clear();
+        networkMap.clear();
     }
 }
 
-void Solid::NetworkInterface::registerBackendObject( QObject *backendObject )
+void Solid::NetworkInterfacePrivate::setBackendObject(QObject *object)
 {
-    setBackendObject( backendObject );
-
-    if ( backendObject )
-    {
-        connect( backendObject, SIGNAL( activeChanged( bool ) ),
-                 this, SIGNAL( activeChanged( bool ) ) );
-        connect( backendObject, SIGNAL( linkUpChanged( bool ) ),
-                 this, SIGNAL( linkUpChanged( bool ) ) );
-        connect( backendObject, SIGNAL( signalStrengthChanged( int ) ),
-                 this, SIGNAL( signalStrengthChanged( int ) ) );
-        connect( backendObject, SIGNAL( connectionStateChanged( int ) ),
-                 this, SIGNAL( connectionStateChanged( int ) ) );
-        connect( backendObject, SIGNAL( networkAppeared( const QString & ) ),
-                 this, SIGNAL( networkAppeared( const QString & ) ) );
-        connect( backendObject, SIGNAL( networkDisappeared( const QString & ) ),
-                 this, SIGNAL( networkDisappeared( const QString & ) ) );
-    }
-}
-
-void Solid::NetworkInterface::unregisterBackendObject()
-{
-    Q_D(NetworkInterface);
-
-    setBackendObject( 0 );
-
-    foreach( QObject *network, d->networkMap )
-    {
+    foreach (QObject *network, networkMap) {
         delete network;
     }
 
-    d->networkMap.clear();
+    networkMap.clear();
+
+
+    setBackendObject(object);
+
+    if (object) {
+        QObject::connect(object, SIGNAL(activeChanged(bool)),
+                         parent(), SIGNAL(activeChanged(bool)));
+        QObject::connect(object, SIGNAL(linkUpChanged(bool)),
+                         parent(), SIGNAL(linkUpChanged(bool)));
+        QObject::connect(object, SIGNAL(signalStrengthChanged(int)),
+                         parent(), SIGNAL(signalStrengthChanged(int)));
+        QObject::connect(object, SIGNAL(connectionStateChanged(int)),
+                         parent(), SIGNAL(connectionStateChanged(int)));
+        QObject::connect(object, SIGNAL(networkAppeared(const QString&)),
+                         parent(), SIGNAL(networkAppeared(const QString&)));
+        QObject::connect(object, SIGNAL(networkDisappeared(const QString&)),
+                         parent(), SIGNAL(networkDisappeared(const QString&)));
+    }
 }
 
-Solid::Network *Solid::NetworkInterface::findRegisteredNetwork( const QString &uni ) const
+Solid::Network *Solid::NetworkInterfacePrivate::findRegisteredNetwork(const QString &uni) const
 {
-    Q_D(const NetworkInterface);
-
     Network *network = 0;
 
-    if ( d->networkMap.contains( uni ) )
-    {
-        network = d->networkMap[uni];
-    }
-    else
-    {
-        Ifaces::NetworkInterface *device = qobject_cast<Ifaces::NetworkInterface*>( backendObject() );
+    if (networkMap.contains(uni)) {
+        network = networkMap[uni];
+    } else {
+        Ifaces::NetworkInterface *device = qobject_cast<Ifaces::NetworkInterface*>(backendObject());
 
         if ( device!=0 )
         {
@@ -246,7 +240,7 @@ Solid::Network *Solid::NetworkInterface::findRegisteredNetwork( const QString &u
 
             if ( network != 0 )
             {
-                d->networkMap[uni] = network;
+                networkMap[uni] = network;
             }
         }
     }
