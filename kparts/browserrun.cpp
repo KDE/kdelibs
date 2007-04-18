@@ -338,9 +338,10 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
 
     QString question = makeQuestion( url, mimeType, suggestedFileName );
 
+    // don't use KStandardGuiItem::open() here which has trailing ellipsis!
     int choice = KMessageBox::questionYesNoCancel(
         0L, question, url.host(),
-        KStandardGuiItem::saveAs(), KStandardGuiItem::open(), KStandardGuiItem::cancel(),
+        KStandardGuiItem::saveAs(), KGuiItem( i18n( "&Open" ), "document-open"), KStandardGuiItem::cancel(),
         QLatin1String("askEmbedOrSave")+ mimeType ); // dontAskAgainName, KEEP IN SYNC!!!
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
     // SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC SYNC

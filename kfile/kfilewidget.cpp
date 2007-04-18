@@ -1525,7 +1525,8 @@ void KFileWidget::setOperationMode( OperationMode mode )
     d->keepLocation = (mode == Saving);
     d->filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     if ( mode == Opening )
-       d->okButton->setGuiItem( KStandardGuiItem::open() );
+       // don't use KStandardGuiItem::open() here which has trailing ellipsis!
+       d->okButton->setGuiItem( KGuiItem( i18n( "&Open" ), "document-open") );
     else if ( mode == Saving ) {
        d->okButton->setGuiItem( KStandardGuiItem::save() );
        d->setNonExtSelection();

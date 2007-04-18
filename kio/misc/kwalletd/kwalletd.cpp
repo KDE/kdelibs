@@ -389,7 +389,8 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 					kpd->setPrompt(i18n("<qt>The application '<b>%1</b>' has requested to open the wallet '<b>%2</b>'. Please enter the password for this wallet below.", Qt::escape(appid), Qt::escape(wallet)));
 				}
 				brandNew = false;
-				kpd->setButtonGuiItem(KDialog::Ok,KStandardGuiItem::open());
+				// don't use KStdGuiItem::open() here which has trailing ellipsis!
+				kpd->setButtonGuiItem(KDialog::Ok,KGuiItem( i18n( "&Open" ), "document-open"));
 				kpd->setCaption(i18n("KDE Wallet Service"));
 				while (!b->isOpen()) {
 					setupDialog( kpd, w, appid, modal );
