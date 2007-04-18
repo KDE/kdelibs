@@ -24,7 +24,6 @@
 #include <QString>
 #include <QMap>
 #include <QList>
-#include <QtCore/QObject>
 
 #include <solid/solid_export.h>
 
@@ -52,9 +51,8 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT Device : public QObject
+    class SOLID_EXPORT Device
     {
-        Q_OBJECT
     public:
 
         /**
@@ -206,8 +204,6 @@ namespace Solid
         }
 
     private:
-        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
-
         DevicePrivate *d;
         friend class DeviceManagerPrivate;
     };

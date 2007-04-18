@@ -61,17 +61,17 @@
 
 
 Solid::Device::Device()
-    : QObject(), d(new DevicePrivate())
+    : d(new DevicePrivate())
 {
 }
 
 Solid::Device::Device( const QString &udi )
-    : QObject(), d(DeviceManager::self().findDevice(udi).d)
+    : d(DeviceManager::self().findDevice(udi).d)
 {
 }
 
 Solid::Device::Device( const Device &device )
-    : QObject(), d(device.d)
+    : d(device.d)
 {
 }
 
@@ -274,5 +274,4 @@ void Solid::DevicePrivate::setBackendObject(QObject *object)
     FrontendObjectPrivate::setBackendObject(object);
 }
 
-#include "device.moc"
 #include "device_p.moc"
