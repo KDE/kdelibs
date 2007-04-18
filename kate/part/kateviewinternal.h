@@ -273,7 +273,7 @@ class KateViewInternal : public QWidget
     bool m_selChangedByUser;
     KateTextCursor selectAnchor;
 
-    enum SelectionMode { Default=0, Word, Line }; ///< for drag selection. @since 2.3
+    enum SelectionMode { Default=0, Word, Line, Mouse }; ///< for drag selection. @since 2.3
     uint m_selectionMode;
     // when drag selecting after double/triple click, keep the initial selected
     // word/line independant of direction.
@@ -288,7 +288,7 @@ class KateViewInternal : public QWidget
 
     // maximal lenght of textlines visible from given startLine
     int maxLen(uint startLine);
-    
+
     // are we allowed to scroll columns?
     bool columnScrollingPossible ();
 

@@ -2115,14 +2115,24 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
           else // same line, ignore
             doSelect = false;
         break;
+        case Mouse:
+        {
+          if ( selStartCached.line() < 0 ) // invalid
+            break;
+
+          if ( newCursor > selEndCached )
+            selectAnchor = selStartCached;
+          else if ( newCursor < selStartCached )
+            selectAnchor = selEndCached;
+          else
+            doSelect = false;
+        }
+        break;
         default:
         {
           if ( selectAnchor.line() < 0 ) // invalid
             break;
-
-          doSelect = true;
         }
-//         break;
       }
 
       if ( doSelect )
@@ -2687,6 +2697,10 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           e->accept ();
           return;
         }
+        else if (m_selectionMode == Default)
+        {
+          m_selectionMode = Mouse;
+        }
 
         if ( e->state() & Qt::ShiftButton )
         {
@@ -2802,6 +2816,10 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
 
         selStartCached = m_view->selectStart;
         selEndCached = m_view->selectEnd;
+        // FIXME this isn't right in the case of a shift+DC
+        // for shift+DC, we might want to use selStartCached!!
+        // This also breaks shift+TC because it nukes the cursor
+        // order for when the TC handler does its thing. Oops.
         updateCursor( selEndCached );
       }
 
