@@ -35,19 +35,4 @@ QString Solid::Ifaces::Device::parentUdi() const
     return QString();
 }
 
-bool Solid::Ifaces::Device::setProperty( const QString &/*key*/, const QVariant &/*value*/ )
-{
-    return false;
-}
-
-bool Solid::Ifaces::Device::removeProperty( const QString &/*key*/ )
-{
-    return false;
-}
-
-bool Solid::Ifaces::Device::addCapability( const Capability::Type &/*capability*/ )
-{
-    return false;
-}
-
 #include "device.moc"

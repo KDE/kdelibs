@@ -155,20 +155,6 @@ namespace Solid
 
 
         /**
-         * Assigns a new value to a given property.
-         *
-         * Warning: Using this method could expose some backend specific details
-         * and lead to non portable code. Use it at your own risk, or during
-         * transitional phases when the provided capabilities interfaces don't
-         * provide the necessary methods.
-         *
-         * @param key the key of the property to modify
-         * @param value the new value for the property
-         * @return true if the change succeeded, false otherwise
-         */
-        bool setProperty( const QString &key, const QVariant &value );
-
-        /**
          * Retrieves a property of the device.
          *
          * Warning: Using this method could expose some backend specific details

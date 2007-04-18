@@ -123,11 +123,6 @@ QString Solid::Device::product() const
     return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), product() );
 }
 
-bool Solid::Device::setProperty( const QString &key, const QVariant &value )
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, setProperty( key, value ) );
-}
-
 QVariant Solid::Device::property( const QString &key ) const
 {
     return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QVariant(), property( key ) );

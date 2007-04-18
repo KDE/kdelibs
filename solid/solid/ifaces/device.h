@@ -91,15 +91,6 @@ namespace Ifaces
 
 
         /**
-         * Changes the value of a property.
-         *
-         * @param key the property name
-         * @param value the new value of this property
-         * @returns true if the operation succeeded, false otherwise
-         */
-        virtual bool setProperty( const QString &key, const QVariant &value );
-
-        /**
          * Retrieves the value of a property.
          *
          * @param key the property name
@@ -115,28 +106,12 @@ namespace Ifaces
         virtual QMap<QString, QVariant> allProperties() const = 0;
 
         /**
-         * Removes a property.
-         *
-         * @param key the property name
-         * @returns true if the operation succeeded, false otherwise
-         */
-        virtual bool removeProperty( const QString &key );
-
-        /**
          * Tests if a property exist.
          *
          * @param key the property name
          * @returns true if the property exists in this device, false otherwise
          */
         virtual bool propertyExists( const QString &key ) const = 0;
-
-        /**
-         * Adds a capability to this device.
-         *
-         * @param capability the capability type
-         * @returns true if the operation succeeded, false otherwise
-         */
-        virtual bool addCapability( const Solid::Capability::Type &capability );
 
         /**
          * Tests if a property exist.
