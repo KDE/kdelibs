@@ -146,47 +146,6 @@ void SolidHwTest::testDeviceBasicFeatures()
     QCOMPARE( invalid_dev.product(), QString() );
 }
 
-void SolidHwTest::testDeviceLocking()
-{
-    Solid::Device device( "/org/kde/solid/fakehw/computer" );
-
-    // Test locking on a device that refuses it
-    fakeManager->findDevice( "/org/kde/solid/fakehw/computer" )->setBroken( true );
-    QCOMPARE( device.lock( "need a reason?" ), false );
-    QVERIFY( !device.isLocked() );
-    QCOMPARE( device.lockReason(), QString() );
-    QCOMPARE( device.lock( "really need one!?" ), false );
-    QVERIFY( !device.isLocked() );
-    QCOMPARE( device.lockReason(), QString() );
-    QCOMPARE( device.unlock(), false );
-    QCOMPARE( device.unlock(), false );
-
-
-    // Test locking on a "normal" device
-    fakeManager->findDevice( "/org/kde/solid/fakehw/computer" )->setBroken( false );
-    QCOMPARE( device.lock( "sure I have a good reason" ), true );
-    QVERIFY( device.isLocked() );
-    QCOMPARE( device.lockReason(), QString( "sure I have a good reason" ) );
-    QCOMPARE( device.lock( "hope it won't fail" ), false );
-    QVERIFY( device.isLocked() );
-    QCOMPARE( device.unlock(), true );
-    QVERIFY( !device.isLocked() );
-    QCOMPARE( device.unlock(), false );
-    QVERIFY( !device.isLocked() );
-
-
-    // Test locking on an invalid Device object
-    device = Solid::Device();
-    QCOMPARE( device.lock( "won't work!" ), false );
-    QVERIFY( !device.isLocked() );
-    QCOMPARE( device.lockReason(), QString() );
-    QCOMPARE( device.lock( "..." ), false );
-    QVERIFY( !device.isLocked() );
-    QCOMPARE( device.lockReason(), QString() );
-    QCOMPARE( device.unlock(), false );
-    QCOMPARE( device.unlock(), false );
-}
-
 void SolidHwTest::testManagerSignals()
 {
     fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );

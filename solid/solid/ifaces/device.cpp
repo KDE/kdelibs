@@ -50,24 +50,4 @@ bool Solid::Ifaces::Device::addCapability( const Capability::Type &/*capability*
     return false;
 }
 
-bool Solid::Ifaces::Device::lock(const QString &/*reason*/)
-{
-    return false;
-}
-
-bool Solid::Ifaces::Device::unlock()
-{
-    return false;
-}
-
-bool Solid::Ifaces::Device::isLocked() const
-{
-    return false;
-}
-
-QString Solid::Ifaces::Device::lockReason() const
-{
-    return QString();
-}
-
 #include "device.moc"

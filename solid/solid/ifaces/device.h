@@ -155,36 +155,6 @@ namespace Ifaces
          */
         virtual QObject *createCapability( const Solid::Capability::Type &capability ) = 0;
 
-        /**
-         * Locks a device, giving a reason for such a lock.
-         * A localized version of the provided reason can be displayed to the user.
-         *
-         * @param reason a message explaining why we locked the device
-         * @returns true if the operation succeeded, false otherwise
-         */
-        virtual bool lock(const QString &reason);
-
-        /**
-         * Unlocks a previously locked device.
-         *
-         * @returns true if the operation succeeded, false otherwise
-         */
-        virtual bool unlock();
-
-        /**
-         * Tests if the device is locked.
-         *
-         * @return true if the device is locked, false otherwise
-         */
-        virtual bool isLocked() const;
-
-        /**
-         * Retrieves the reason for a lock.
-         *
-         * @return the lock reason if the device is locked, QString() otherwise
-         */
-        virtual QString lockReason() const;
-
     Q_SIGNALS:
         /**
          * This signal is emitted when a property is changed in the device.

@@ -270,35 +270,6 @@ namespace Solid
             return queryCapability( Cap::capabilityType() );
         }
 
-        /**
-         * Acquires a lock on the device for the given reason.
-         *
-         * @param reason a message describing the reason for the lock
-         * @return true if the lock has been successfully acquired, false otherwise
-         */
-        bool lock(const QString &reason);
-
-        /**
-         * Releases a lock on the device.
-         *
-         * @return true if the lock has been successfully released
-         */
-        bool unlock();
-
-        /**
-         * Tests if the device is locked.
-         *
-         * @return true if the device is locked, false otherwise
-         */
-        bool isLocked() const;
-
-        /**
-         * Retrieves the reason for a lock.
-         *
-         * @return the lock reason if the device is locked, QString() otherwise
-         */
-        QString lockReason() const;
-
     Q_SIGNALS:
         /**
          * This signal is emitted when a property is changed in the device.

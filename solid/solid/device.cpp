@@ -251,26 +251,6 @@ const Solid::Capability *Solid::Device::asCapability( const Capability::Type &ca
     }
 }
 
-bool Solid::Device::lock(const QString &reason)
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, lock( reason ) );
-}
-
-bool Solid::Device::unlock()
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, unlock() );
-}
-
-bool Solid::Device::isLocked() const
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, isLocked() );
-}
-
-QString Solid::Device::lockReason() const
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), lockReason() );
-}
-
 Solid::DevicePrivate::DevicePrivate(const QString &udi)
     : QObject(), FrontendObjectPrivate(this)
 {

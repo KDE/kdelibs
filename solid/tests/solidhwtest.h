@@ -33,7 +33,6 @@ private slots:
     void testAllDevices();
     void testDeviceExists();
     void testDeviceBasicFeatures();
-    void testDeviceLocking();
     void testManagerSignals();
     void testDeviceSignals();
     void testCapabilityIntrospection_data();
