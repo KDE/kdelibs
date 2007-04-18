@@ -91,29 +91,6 @@ namespace Ifaces
 
 
         /**
-         * Retrieves the value of a property.
-         *
-         * @param key the property name
-         * @returns the property value or QVariant() if the property doesn't exist
-         */
-        virtual QVariant property( const QString &key ) const = 0;
-
-        /**
-         * Retrieves all the properties of this device.
-         *
-         * @returns all properties in a map
-         */
-        virtual QMap<QString, QVariant> allProperties() const = 0;
-
-        /**
-         * Tests if a property exist.
-         *
-         * @param key the property name
-         * @returns true if the property exists in this device, false otherwise
-         */
-        virtual bool propertyExists( const QString &key ) const = 0;
-
-        /**
          * Tests if a property exist.
          *
          * @param capability the capability type
@@ -129,26 +106,6 @@ namespace Ifaces
          * @returns a pointer to the capability interfaces if supported by the device, 0 otherwise
          */
         virtual QObject *createCapability( const Solid::Capability::Type &capability ) = 0;
-
-    Q_SIGNALS:
-        /**
-         * This signal is emitted when a property is changed in the device.
-         *
-         * @param changes the map describing the property changes that
-         * occurred in the device, keys are property name and values
-         * describe the kind of change done on the device property
-         * (added/removed/modified), it's one of the type Solid::Device::PropertyChange
-         */
-        void propertyChanged( const QMap<QString,int> &changes );
-
-        /**
-         * This signal is emitted when an event occurred in the device.
-         * For example when a button is pressed.
-         *
-         * @param condition the condition name
-         * @param reason a message explaining why the condition has been raised
-         */
-        void conditionRaised( const QString &condition, const QString &reason );
     };
 }
 }

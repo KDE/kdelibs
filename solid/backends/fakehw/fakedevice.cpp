@@ -19,6 +19,7 @@
 #include "fakedevice.h"
 
 #include "fakecapability.h"
+#include "fakegenericinterface.h"
 #include "fakeprocessor.h"
 #include "fakeblock.h"
 #include "fakestorage.h"
@@ -38,6 +39,7 @@
 #include <QStringList>
 #include <QDBusConnection>
 
+#include <solid/genericinterface.h>
 
 class FakeDevice::Private
 {
@@ -56,6 +58,7 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
     d->udi = udi;
     d->propertyMap = propertyMap;
     d->capabilityList = d->propertyMap["capability"].toString().simplified().split(',');
+    d->capabilityList << "GenericInterface";
     d->locked = false;
     d->broken = false;
 
@@ -116,11 +119,11 @@ bool FakeDevice::setProperty(const QString &key, const QVariant &value)
 {
     if ( d->broken ) return false;
 
-    Solid::Device::PropertyChange change_type = Solid::Device::PropertyModified;
+    Solid::GenericInterface::PropertyChange change_type = Solid::GenericInterface::PropertyModified;
 
     if (!d->propertyMap.contains(key))
     {
-        change_type = Solid::Device::PropertyAdded;
+        change_type = Solid::GenericInterface::PropertyAdded;
     }
 
     d->propertyMap[key] = value;
@@ -140,7 +143,7 @@ bool FakeDevice::removeProperty(const QString &key)
     d->propertyMap.remove( key );
 
     QMap<QString,int> change;
-    change[key] = Solid::Device::PropertyRemoved;
+    change[key] = Solid::GenericInterface::PropertyRemoved;
 
     emit propertyChanged( change );
 
@@ -207,6 +210,9 @@ QObject *FakeDevice::createCapability(const Solid::Capability::Type &capability)
 
     switch(capability)
     {
+    case Solid::Capability::GenericInterface:
+        iface = new FakeGenericInterface(this);
+        break;
     case Solid::Capability::Processor:
         iface = new FakeProcessor(this);
         break;

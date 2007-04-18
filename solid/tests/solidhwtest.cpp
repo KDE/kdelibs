@@ -26,6 +26,7 @@
 
 #include <solid/devicemanager.h>
 #include <solid/device.h>
+#include <solid/genericinterface.h>
 #include <solid/processor.h>
 #include <solid/volume.h>
 #include <solid/predicate.h>
@@ -104,21 +105,17 @@ void SolidHwTest::testDeviceBasicFeatures()
 
 
     // Query properties
-    QCOMPARE( valid_dev.propertyExists("name"), true );
-    QCOMPARE( valid_dev.propertyExists("foo.bar"), false );
-    QCOMPARE( invalid_dev.propertyExists("name"), false );
-    QCOMPARE( invalid_dev.propertyExists("foo.bar"), false );
+    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->propertyExists("name"), true );
+    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->propertyExists("foo.bar"), false );
+    QCOMPARE( (QObject*)invalid_dev.as<Solid::GenericInterface>(), (QObject*)0 );
 
-    QCOMPARE( valid_dev.property("name"), QVariant( "Solid IDE DVD Writer" ) );
-    QVERIFY( !valid_dev.property("foo.bar").isValid() );
-    QVERIFY( !invalid_dev.property("name").isValid() );
-    QVERIFY( !invalid_dev.property("foo.bar").isValid() );
+    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->property("name"), QVariant( "Solid IDE DVD Writer" ) );
+    QVERIFY( !valid_dev.as<Solid::GenericInterface>()->property("foo.bar").isValid() );
 
     FakeDevice *fake_device = fakeManager->findDevice( "/org/kde/solid/fakehw/storage_model_solid_writer" );
     QMap<QString, QVariant> expected_properties = fake_device->allProperties();
 
-    QCOMPARE( valid_dev.allProperties(), expected_properties );
-    QVERIFY( invalid_dev.allProperties().isEmpty() );
+    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->allProperties(), expected_properties );
 
 
     // Query capabilities
@@ -194,9 +191,9 @@ void SolidHwTest::testDeviceSignals()
     Solid::Device device( "/org/kde/solid/fakehw/acpi_LID0" );
 
     // We'll spy our button
-    connect( &device, SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
+    connect( device.as<Solid::GenericInterface>(), SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
              this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
-    QSignalSpy condition_raised( &device, SIGNAL( conditionRaised( QString, QString ) ) );
+    QSignalSpy condition_raised( device.as<Solid::GenericInterface>(), SIGNAL( conditionRaised( QString, QString ) ) );
 
     fake->setProperty( "stateValue", true ); // The button is now pressed (modified property)
     fake->raiseCondition( "Lid Closed", "Why not?" ); // Since it's a LID we notify this change
@@ -212,19 +209,19 @@ void SolidHwTest::testDeviceSignals()
     changes = m_changesList.at( 0 );
     QCOMPARE( changes.count(), 1 );
     QVERIFY( changes.contains( "stateValue" ) );
-    QCOMPARE( changes["stateValue"], (int)Solid::Device::PropertyModified );
+    QCOMPARE( changes["stateValue"], (int)Solid::GenericInterface::PropertyModified );
 
     // Second one is a "PropertyAdded" for "hactar"
     changes = m_changesList.at( 1 );
     QCOMPARE( changes.count(), 1 );
     QVERIFY( changes.contains( "hactar" ) );
-    QCOMPARE( changes["hactar"], (int)Solid::Device::PropertyAdded );
+    QCOMPARE( changes["hactar"], (int)Solid::GenericInterface::PropertyAdded );
 
     // Third one is a "PropertyRemoved" for "hactar"
     changes = m_changesList.at( 2 );
     QCOMPARE( changes.count(), 1 );
     QVERIFY( changes.contains( "hactar" ) );
-    QCOMPARE( changes["hactar"], (int)Solid::Device::PropertyRemoved );
+    QCOMPARE( changes["hactar"], (int)Solid::GenericInterface::PropertyRemoved );
 
 
 

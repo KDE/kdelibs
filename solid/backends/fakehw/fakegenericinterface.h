@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Michaël Larouche <michael.larouche@kdemail.net>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,54 +16,28 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKEDEVICE_H
-#define FAKEDEVICE_H
+#ifndef FAKEGENERICINTERFACE_H
+#define FAKEGENERICINTERFACE_H
 
-#include <solid/ifaces/device.h>
+#include "fakecapability.h"
+#include <solid/ifaces/genericinterface.h>
 
-#include <QMap>
-
-
-class FakeDevice : public Solid::Ifaces::Device
+class FakeGenericInterface : public FakeCapability, public Solid::Ifaces::GenericInterface
 {
     Q_OBJECT
-public:
-    FakeDevice(const QString &udi, const QMap<QString, QVariant> &propertyMap);
-    ~FakeDevice();
+    Q_INTERFACES(Solid::Ifaces::GenericInterface)
 
-public Q_SLOTS:
-    virtual QString udi() const;
-    virtual QString parentUdi() const;
-    virtual QString vendor() const;
-    virtual QString product() const;
+public:
+    explicit FakeGenericInterface(FakeDevice *device);
+    ~FakeGenericInterface();
 
     virtual QVariant property(const QString &key) const;
     virtual QMap<QString, QVariant> allProperties() const;
     virtual bool propertyExists(const QString &key) const;
-    virtual bool setProperty(const QString &key, const QVariant &value);
-    virtual bool removeProperty( const QString &key );
-
-    virtual bool lock( const QString &reason );
-    virtual bool unlock();
-    virtual bool isLocked() const;
-    virtual QString lockReason() const;
-
-    void setBroken( bool broken );
-    bool isBroken();
-    void raiseCondition( const QString &condition, const QString &reason );
-
-public:
-    virtual bool queryCapability(const Solid::Capability::Type &capability) const;
-    virtual QObject *createCapability(const Solid::Capability::Type &capability);
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
     void conditionRaised(const QString &condition, const QString &reason);
-
-
-private:
-    class Private;
-    Private *d;
 };
 
 #endif

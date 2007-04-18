@@ -26,6 +26,8 @@
 
 #include <solid/ifaces/device.h>
 
+#include <solid/genericinterface.h>
+#include <solid/ifaces/genericinterface.h>
 #include <solid/processor.h>
 #include <solid/ifaces/processor.h>
 #include <solid/block.h>
@@ -123,21 +125,6 @@ QString Solid::Device::product() const
     return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), product() );
 }
 
-QVariant Solid::Device::property( const QString &key ) const
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QVariant(), property( key ) );
-}
-
-QMap<QString, QVariant> Solid::Device::allProperties() const
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QVariantMap(), allProperties() );
-}
-
-bool Solid::Device::propertyExists( const QString &key ) const
-{
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, propertyExists( key ) );
-}
-
 bool Solid::Device::queryCapability( const Capability::Type &capability ) const
 {
     return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, queryCapability( capability ) );
@@ -183,6 +170,9 @@ const Solid::Capability *Solid::Device::asCapability( const Capability::Type &ca
         {
             switch ( capability )
             {
+            case Capability::GenericInterface:
+                iface = capability_cast<Ifaces::GenericInterface, GenericInterface>( cap_iface );
+                break;
             case Capability::Processor:
                 iface = capability_cast<Ifaces::Processor, Processor>( cap_iface );
                 break;
