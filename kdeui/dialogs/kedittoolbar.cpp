@@ -771,7 +771,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
 void KEditToolBarWidgetPrivate::setupLayout()
 {
   // the toolbar name combo
-  m_comboLabel = new QLabel(i18n("&ToolBar:"), m_widget);
+  m_comboLabel = new QLabel(i18n("&Toolbar:"), m_widget);
   m_toolbarCombo = new QComboBox(m_widget);
   m_toolbarCombo->setEnabled(false);
   m_comboLabel->setBuddy(m_toolbarCombo);
