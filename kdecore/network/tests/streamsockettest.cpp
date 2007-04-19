@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QString>
 #include <QByteArray>
+#include <QStringList>
 #include "k3socketaddress.h"
 
 #include "streamsockettest.h"
@@ -114,6 +115,30 @@ int main(int argc, char **argv)
   QCoreApplication a(argc, argv);
 
   bool blocking = false;
+#ifdef Q_OS_WIN
+  QStringList &args = QCoreApplication::arguments(); 
+  QStringList params; 
+  for (int i = 0; i < args.size(); ++i) {
+    if (args[i] == "-b")
+      blocking = true;
+    else if (args[i] == "-t") {
+      timeout = args[i+1].toInt();
+      i++;  
+    }  
+    else 
+	  params += args[i];
+  }
+  if (params.size() < 2) {
+    qDebug() << "syntax:" << argv[0] << "<remote host> <remote port> [<local host> [<local port>]]";
+	return 1;
+  }
+  QString lhost, lservice;
+  if (params.size() > 2)
+    lhost = params[2];
+  if (params.size() >3)
+    lservice = params[3];
+  Test test(params[0], params[1], lhost, lservice, blocking);
+#else
   int c;
   while ((c = getopt(argc, argv, "bt:")) != -1)
     switch (c)
@@ -137,7 +162,7 @@ int main(int argc, char **argv)
     lservice = QString::fromLocal8Bit(argv[optind + 3]);
   Test test(QString::fromLocal8Bit(argv[optind]), QString::fromLocal8Bit(argv[optind + 1]),
 	    lhost, lservice, blocking);
-
+#endif
   return a.exec();
 }
 

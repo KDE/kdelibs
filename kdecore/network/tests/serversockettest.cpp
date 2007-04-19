@@ -1,11 +1,14 @@
 #include <unistd.h>
 
+
 #include <QCoreApplication>
 #include <QString>
 #include <QByteArray>
+#include <QStringList>
 
 #include <iostream>
 #include <stdlib.h>
+#include <kdebug.h>
 
 using namespace std;
 
@@ -97,8 +100,28 @@ int main(int argc, char **argv)
   QCoreApplication a(argc, argv);
 
   bool blocking = false;
-  int c;
-  while ((c = getopt(argc, argv, "bt:")) != -1)
+#ifdef Q_OS_WIN
+  QStringList &args = QCoreApplication::arguments(); 
+  QStringList params; 
+  for (int i = 0; i < args.size(); ++i) {
+      if (args.[i] == "-b")
+         blocking = true;
+     else if (args.[i] == "-t") {
+		 timeout = args[i+1].toInt();
+		 i++;
+	 }
+	 else 
+		 params += args[i];
+  }
+  if (params.size() < 2) {
+    qDebug() << "syntax:" << argv[0] << "<remote host> <remote port>";
+	return 1;
+  }
+
+  Test test(params[0], params[1], blocking);
+#else
+ char c;
+ while ((c = getopt(argc, argv, "bt:")) != -1)
     switch (c)
       {
       case 'b':
@@ -117,7 +140,7 @@ int main(int argc, char **argv)
     }
   Test test(QString::fromLocal8Bit(argv[optind]), QString::fromLocal8Bit(argv[optind + 1]), 
 	    blocking);
-
+#endif
   return a.exec();
 }
 
