@@ -87,7 +87,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		 */
 		bool initialize();
 
-        protected Q_SLOTS:
+        public Q_SLOTS:
 		/**
 		 * Obtain a list of IM-contactable entries in the KDE
 		 * address book.

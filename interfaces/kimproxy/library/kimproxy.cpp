@@ -228,7 +228,7 @@ bool KIMProxy::initialize()
 				//for each offer
 				for ( offer = offers.begin(); offer != offers.end(); ++offer )
 				{
-					QString dcopService = (*offer)->property("X-DCOP-ServiceName").toString();
+					QString dcopService = (*offer)->property("X-DBUS-ServiceName").toString();
 					if ( !dcopService.isEmpty() )
 					{
 						//kDebug( 790 ) << " is it: " << dcopService << "?" << endl;
@@ -288,7 +288,7 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 		KService::List::const_iterator it;
 		for ( it = offers.begin(); it != offers.end(); ++it )
 		{
-			QString dcopService = (*it)->property("X-DCOP-ServiceName").toString();
+			QString dcopService = (*it)->property("X-DBUS-ServiceName").toString();
 			if ( appId.startsWith( dcopService ) )
 			{
 				// if it's not already known, insert it
@@ -592,7 +592,10 @@ void KIMProxy::pollApp( const QString & appId )
 		ContactPresenceListCurrent current = d->presence_map[ *it ];
 		AppPresenceCurrent ap;
 		ap.appId = appId;
-		ap.presence = appStub->presenceStatus( *it );
+#ifdef __GNUC__
+# warning "KIMProxy::pollApp( const QString & appId ).presenceStatus() function doesn't exist Need to fix it"
+#endif		
+		//ap.presence = appStub->presenceStatus( *it );
 		current.append( ap );
 
 		d->presence_map.insert( *it, current );
@@ -612,6 +615,10 @@ OrgKdeKIMInterface * KIMProxy::stubForUid( const QString &uid )
 
 OrgKdeKIMInterface * KIMProxy::stubForProtocol( const QString &protocol)
 {
+#ifdef __GNUC__
+# warning "KIMProxy::stubForProtocol( const QString &protocol) code disabled: protocols() function doesn't exist. Need to fix it"
+#endif
+#if 0
 	OrgKdeKIMInterface * app;
 	// see if the preferred client supports this protocol
 	QString preferred = preferredApp();
@@ -628,6 +635,7 @@ OrgKdeKIMInterface * KIMProxy::stubForProtocol( const QString &protocol)
 		if ( it.value()->protocols().value().filter( protocol ).count() > 0 )
 			return it.value();
 	}
+#endif
 	return 0L;
 }
 

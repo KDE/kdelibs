@@ -26,10 +26,6 @@
       <arg name="uid" type="s" direction="in"/>
       <arg type="s" direction="out"/>
     </method>
-    <method name="presenceStatus">
-      <arg name="uid" type="s" direction="in"/>
-      <arg type="i" direction="out"/>
-    </method>
     <method name="canReceiveFiles">
       <arg name="uid" type="s" direction="in"/>
       <arg type="b" direction="out"/>
@@ -43,24 +39,13 @@
       <arg name="protocol" type="s" direction="in"/>
       <arg type="s" direction="out"/>
     </method>
-    <method name="icon">
-      <arg name="uid" type="s" direction="in"/>
-      <arg type="ay" direction="out"/>
-    </method>
     <method name="context">
       <arg name="uid" type="s" direction="in"/>
       <arg type="s" direction="out"/>
     </method>
-    <method name="protocols">
-      <arg type="as" direction="out"/>
-    </method>
     <method name="messageContact">
       <arg name="uid" type="s" direction="in"/>
       <arg name="message" type="s" direction="in"/>
-    </method>
-    <method name="messageNewContact">
-      <arg name="contactId" type="s" direction="in"/>
-      <arg name="protocol" type="s" direction="in"/>
     </method>
     <method name="chatWithContact">
       <arg name="uid" type="s" direction="in"/>

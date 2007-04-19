@@ -7,9 +7,11 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 set(kimproxy_LIB_SRCS
   kimproxy.cpp
-  kimadaptor.cpp
-  kimiface.cpp
 )
+
+qt4_add_dbus_adaptor( kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimproxy.h  KIMProxy)
+
+QT4_ADD_DBUS_INTERFACE(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
 
 kde4_automoc(${kimproxy_LIB_SRCS})
 
