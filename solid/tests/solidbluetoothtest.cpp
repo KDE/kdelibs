@@ -23,9 +23,9 @@
 
 #include <qtest_kde.h>
 
-#include <solid/bluetoothmanager.h>
-#include <solid/bluetoothinterface.h>
-#include "solid/managerbase_p.h"
+#include <solid/experimental/bluetoothmanager.h>
+#include <solid/experimental/bluetoothinterface.h>
+#include "solid/experimental/managerbase_p.h"
 #include <kdebug.h>
 
 #include <fakebluetoothmanager.h>
@@ -39,14 +39,14 @@ QTEST_KDEMAIN_CORE(SolidBluetoothTest)
 void SolidBluetoothTest::initTestCase()
 {
     fakeManager = new FakeBluetoothManager(0, QStringList(), FAKE_BLUETOOTH_XML);
-    Solid::ManagerBasePrivate::_k_forcePreloadedBackend("Solid::Ifaces::BluetoothManager", fakeManager);
+    SolidExperimental::ManagerBasePrivate::_k_forcePreloadedBackend("SolidExperimental::Ifaces::BluetoothManager", fakeManager);
 }
 
 void SolidBluetoothTest::testBluetoothInterfaces()
 {
-    Solid::BluetoothManager &manager = Solid::BluetoothManager::self();
+    SolidExperimental::BluetoothManager &manager = SolidExperimental::BluetoothManager::self();
 
-    Solid::BluetoothInterfaceList interfaces = manager.bluetoothInterfaces();
+    SolidExperimental::BluetoothInterfaceList interfaces = manager.bluetoothInterfaces();
 
     // Verify that the framework reported correctly the interfaces available
     // in the backend.
@@ -54,7 +54,7 @@ void SolidBluetoothTest::testBluetoothInterfaces()
 
     expected_ubis = QSet<QString>::fromList(fakeManager->bluetoothInterfaces());
 
-    foreach(Solid::BluetoothInterface iface , interfaces) {
+    foreach(SolidExperimental::BluetoothInterface iface , interfaces) {
         received_ubis << iface.ubi();
     }
 
@@ -63,16 +63,16 @@ void SolidBluetoothTest::testBluetoothInterfaces()
 
 void SolidBluetoothTest::testManagerBasicFeatures()
 {
-    //Solid::BluetoothManager &manager = Solid::BluetoothManager::self();
+    //SolidExperimental::BluetoothManager &manager = SolidExperimental::BluetoothManager::self();
 
 }
 
 void SolidBluetoothTest::testInterfaceBasicFeatures()
 {
-    //Solid::BluetoothManager &manager = Solid::BluetoothManager::self();
+    //SolidExperimental::BluetoothManager &manager = SolidExperimental::BluetoothManager::self();
 
     // Retrieve a valid BluetoothInterface object
-    Solid::BluetoothInterface valid_iface("/org/kde/solid/fakebluetooth/hci0");
+    SolidExperimental::BluetoothInterface valid_iface("/org/kde/solid/fakebluetooth/hci0");
 
 }
 

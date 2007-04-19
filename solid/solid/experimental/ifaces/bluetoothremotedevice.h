@@ -19,55 +19,36 @@
 
 */
 
-#ifndef SOLID_BLUETOOTHREMOTEDEVICE_H
-#define SOLID_BLUETOOTHREMOTEDEVICE_H
+#ifndef SOLID_IFACES_BLUETOOTHREMOTEDEVICE
+#define SOLID_IFACES_BLUETOOTHREMOTEDEVICE
 
-#include <QtCore/QObject>
-
-#include <solid/bluetoothmanager.h>
-#include <solid/bluetoothinterface.h>
+#include <QObject>
+#include <solid/solid_export.h>
 
 class KJob;
 
-namespace Solid
+namespace SolidExperimental
 {
-class BluetoothRemoteDevicePrivate;
-
+namespace Ifaces
+{
 /**
- * Represents a bluetooth remote device as seen by the bluetoothing subsystem.
+ * This interface represents a remote bluetooth device which we may be connected to.
  */
-class SOLID_EXPORT BluetoothRemoteDevice : public QObject
+class SOLIDIFACES_EXPORT BluetoothRemoteDevice : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(BluetoothRemoteDevice)
-
 public:
     /**
-     * Creates a new BluetoothRemoteDevice object.
+     * Create a BluetoothRemoteDevice.
      *
-     * @param backendObject the bluetooth remote device object provided by the backend
+     * @param parent the parent object
      */
-    BluetoothRemoteDevice(QObject *backendObject = 0);
+    BluetoothRemoteDevice(QObject *parent = 0);
 
     /**
-     * Constructs a copy of a bluetooth remote device.
-     *
-     * @param device the bluetooth remote device to copy
+     * Destructs a BluetoothRemoteDevice object.
      */
-    BluetoothRemoteDevice(const BluetoothRemoteDevice &device);
-
-    /**
-     * Destroys the device.
-     */
-    ~BluetoothRemoteDevice();
-
-    /**
-     * Assigns a bluetooth remote device to this bluetooth remote device and returns a reference to it.
-     *
-     * @param device the bluetooth remote device to assign
-     * @return a reference to the bluetooth remote device
-     */
-    BluetoothRemoteDevice &operator=(const BluetoothRemoteDevice &device);
+    virtual ~BluetoothRemoteDevice();
 
     /**
      * Retrieves the Universal Bluetooth Identifier (UBI) of the remote device.
@@ -75,14 +56,14 @@ public:
      *
      * @returns the Universal Bluetooth Identifier of the current remote device.
      */
-    QString ubi() const;
+    virtual QString ubi() const = 0;
 
     /**
      * Retrieves MAC address of the bluetooth remote device.
      *
      * @returns MAC address of remote device.
      */
-    QString address() const;
+    virtual QString address() const = 0;
 
 
     /**
@@ -90,7 +71,7 @@ public:
      *
      * @returns true if remote bluetooth device is connected otherwise false.
      */
-    bool isConnected() const;
+    virtual bool isConnected() const = 0;
 
     /**
      * Retrieves the bluetooth version of the remote device.
@@ -98,28 +79,28 @@ public:
      *
      * @returns version of bluetooth chip.
      */
-    QString version() const;
+    virtual QString version() const = 0;
 
     /**
      * Retrieves the revision of the bluetooth chip of the remote device.
      *
      * @returns revision of bluetooth chip.
      */
-    QString revision() const;
+    virtual QString revision() const = 0;
 
     /**
      * Retrieves company name based on the device address.
      *
      * @returns manufacturer string of bluetooth chip.
      */
-    QString manufacturer() const;
+    virtual QString manufacturer() const = 0;
 
     /**
      * Retrieves the manufacturer of the bluetooth chip of the remote device.
      *
      * @returns company string of the bluetooth chip.
      */
-    QString company() const;
+    virtual QString company() const = 0;
 
     /**
      * Retrieves the major class of the remote device.
@@ -127,7 +108,7 @@ public:
      *
      * @returns major class of remote device.
      */
-    QString majorClass() const;
+    virtual QString majorClass() const = 0;
 
     /**
      * Retrieves the minor class of the remote device.
@@ -135,7 +116,7 @@ public:
      *
      * @returns minor class of the remote device.
      */
-    QString minorClass() const;
+    virtual QString minorClass() const = 0;
 
     /**
      * Retrieves a list of service classes of the remote device.
@@ -143,7 +124,7 @@ public:
      *
      * @returns list of service classes of the remote device.
      */
-    QStringList serviceClasses() const;
+    virtual QStringList serviceClasses() const = 0;
 
     /**
      * Retrieves the real name of the remote device. See also alias().
@@ -151,7 +132,7 @@ public:
      *
      * @returns name of remote device.
      */
-    QString name() const;
+    virtual QString name() const = 0;
 
     /**
      * Retrieves alias of remote device. This is a local alias name for the remote device.
@@ -162,7 +143,7 @@ public:
      *
      * @retuns local alias of remote device.
      */
-    QString alias() const;
+    virtual QString alias() const = 0;
 
     /**
      * Retrieves the date and time when the remote device has been seen.
@@ -170,7 +151,7 @@ public:
      *
      * @returns date and time when the remote device has been seen.
      */
-    QString lastSeen() const;
+    virtual QString lastSeen() const = 0;
 
     /**
      * Retrieves the date and time when the remote device has been used.
@@ -178,35 +159,36 @@ public:
      *
      * @returns date and time when the remote device has been used.
      */
-    QString lastUsed() const;
+    virtual QString lastUsed() const = 0;
 
     /**
      * Retrieves true if remote device has bonding.
      *
      * @returns true if remote device has bonding.
      */
-    bool hasBonding() const;
+    virtual bool hasBonding() const = 0;
 
     /**
      * Retrieves PIN code length that was used in the pairing process of remote device.
      *
      * @returns PIN code length of pairing.
      */
-    int pinCodeLength() const;
+    virtual int pinCodeLength() const = 0;
 
     /**
      * Retrieves currently used encryption key size of remote device.
      *
      * @returns encryption key size.
      */
-    int encryptionKeySize() const;
+    virtual int encryptionKeySize() const = 0;
 
     /**
      * Create bonding ("pairing") with remote device.
      *
      * @returns the job handling of the operation.
      */
-    KJob *createBonding();
+    virtual KJob *createBonding() = 0;
+
 
 public Q_SLOTS:
     /**
@@ -214,27 +196,27 @@ public Q_SLOTS:
      *
      * @param alias new alias name
      */
-    void setAlias(const QString &alias);
+    virtual void setAlias(const QString &alias) = 0;
 
     /**
      * Clear alias for remote device.
      */
-    void clearAlias();
+    virtual void clearAlias() = 0;
 
     /**
      * Disconnect remote device.
      */
-    void disconnect();
+    virtual void disconnect() = 0;
 
     /**
      * Cancel bonding process of remote device.
      */
-    void cancelBondingProcess();
+    virtual void cancelBondingProcess() = 0;
 
     /**
      * Remove bonding bonding of remote device.
      */
-    void removeBonding();
+    virtual void removeBonding() = 0;
 
 
 Q_SIGNALS:
@@ -243,64 +225,63 @@ Q_SIGNALS:
      *
      * @params deviceClass the device class of the remote device
      */
-    void classChanged(uint deviceClass);
+    virtual void classChanged(uint deviceClass) = 0;
 
     /**
      * Name has beend changed of remote device.
      *
      * @params name the name of the remote device
      */
-    void nameChanged(const QString &name);
+    virtual void nameChanged(const QString &name) = 0;
 
     /**
      * Resolving of remote device name failed.
      */
-    void nameResolvingFailed();
+    virtual void nameResolvingFailed() = 0;
 
     /**
      * Alias has been changed of remote device.
      *
      * @params alias the alias of the remote device
      */
-    void aliasChanged(const QString &alias);
+    virtual void aliasChanged(const QString &alias) = 0;
 
     /**
      * Alias got cleared of remote device.
      */
-    void aliasCleared();
+    virtual void aliasCleared() = 0;
 
     /**
      * Remote device has been connected.
      */
-    void connected();
+    virtual void connected() = 0;
 
     /**
      * Disconnection has been requested for remote device.
      */
-    void requestDisconnection();
+    virtual void requestDisconnection() = 0;
 
     /**
      * Remote device has been disconnected.
      */
-    void disconnected();
+    virtual void disconnected() = 0;
 
     /**
      * Bonding with remote device has been created.
      */
-    void bondingCreated();
+    virtual void bondingCreated() = 0;
 
     /**
      * Bonding has been removed of remote device.
      */
-    void bondingRemoved();
+    virtual void bondingRemoved() = 0;
 
-protected:
-    BluetoothRemoteDevicePrivate *d_ptr;
-
-private:
-    Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
 };
 
-} //Solid
+} // Ifaces
+
+} // Solid
+
+Q_DECLARE_INTERFACE(SolidExperimental::Ifaces::BluetoothRemoteDevice, "org.kde.Solid.Ifaces.BluetoothRemoteDevice/0.1")
 
 #endif

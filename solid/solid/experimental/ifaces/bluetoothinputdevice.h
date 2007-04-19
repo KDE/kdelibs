@@ -19,125 +19,108 @@
 
 */
 
-#ifndef SOLID_BLUETOOTHINPUTDEVICE_H
-#define SOLID_BLUETOOTHINPUTDEVICE_H
+#ifndef SOLID_IFACES_BLUETOOTHINPUTDEVICE
+#define SOLID_IFACES_BLUETOOTHINPUTDEVICE
 
-#include <QtCore/QObject>
+#include <QObject>
+#include <solid/solid_export.h>
 
-namespace Solid
+namespace SolidExperimental
 {
-class BluetoothInputDevicePrivate;
-
+namespace Ifaces
+{
 /**
- * Represents a bluetooth remote device as seen by the bluetoothing subsystem.
+ * A BluetoothInputDevice object allows to manage the connection of a bluetooth input device.
  */
-class SOLID_EXPORT BluetoothInputDevice : public QObject
+class SOLIDIFACES_EXPORT BluetoothInputDevice : public QObject
 {
     Q_OBJECT
-
 public:
     /**
-     * Creates a new BluetoothInputDevice object.
+     * Constructs a BluetoothInputDevice.
      *
-     * @param backendObject the bluetooth remote device object provided by the backend
+     * @param parent the parent object
      */
-    BluetoothInputDevice(QObject *backendObject = 0);
+    BluetoothInputDevice(QObject * parent = 0);
 
     /**
-     * Constructs a copy of a bluetooth remote device.
-     *
-     * @param device the bluetooth remote device to copy
+     * Destructs a BluetoothInputDevice object.
      */
-    BluetoothInputDevice(const BluetoothInputDevice &device);
+    virtual ~BluetoothInputDevice();
 
     /**
-     * Destroys the device.
-     */
-    ~BluetoothInputDevice();
-
-    /**
-     * Assigns a bluetooth remote device to this bluetooth remote device and returns a reference to it.
+     * Retrieves ubi of bluetooth input device.
      *
-     * @param device the bluetooth remote device to assign
-     * @return a reference to the bluetooth remote device
+     * @returns ubi of bluetooth input device
      */
-    BluetoothInputDevice &operator=(const BluetoothInputDevice &device);
-
-    /**
-     * Retrieves the Universal Network Identifier (UBI) of the BluetoothInputDevice.
-     * This identifier is ubique for each bluetooth and bluetooth remote device in the system.
-     *
-     * @returns the Universal Network Identifier of the current bluetooth remote device
-     */
-    QString ubi() const;
+    virtual QString ubi() const = 0;
 
     /**
      * Retrieves connection status of bluetooth input device.
      *
      * @returns true if bluetooth input device is connected
      */
-    bool isConnected() const;
+    virtual bool isConnected() const = 0;
 
     /**
      * Retrieves MAC address of bluetooth input device.
      *
      * @returns MAC address of bluetooth input device
      */
-    QString address() const;
+    virtual QString address() const = 0;
 
     /**
      * Retrievies Name of bluetooth input device.
      *
      * @returns Name of bluetooth input device
      */
-    QString name() const;
+    virtual QString name() const = 0;
 
     /**
      * Retrieves Product ID of bluetooth input device.
      *
      * @returns Product ID of bluetooth input device
      */
-    QString productID() const;
+    virtual QString productID() const = 0;
 
     /**
      * Retrieves Vendor ID of bluetooth input device.
      *
      * @returns Vendor ID of bluetooth input device
      */
-    QString vendorID() const;
-
+    virtual QString vendorID() const = 0;
 
 public Q_SLOTS:
     /**
      * Connect bluetooth input device.
      */
-    void slotConnect();
+    virtual void slotConnect() = 0;
 
     /**
      * Disconnect bluetooth input device.
      */
-    void slotDisconnect();
-
+    virtual void slotDisconnect() = 0;
 
 Q_SIGNALS:
     /**
      * This signal is emitted when the bluetooth input device is connected.
+     *
+     * @param ubi the bluetooth input device identifier
      */
-    void connected();
+    virtual void connected() = 0;
 
     /**
      * This signal is emitted when the bluetooth input device is not available anymore.
+     *
+     * @param ubi the bluetooth input device identifier
      */
-    void disconnected();
-
-private:
-    Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
-
-    BluetoothInputDevicePrivate * const d;
+    virtual void disconnected() = 0;
 };
 
-} //Solid
+} // Ifaces
 
-//Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::BluetoothInputDevice::Capabilities )
+} // Solid
+
+Q_DECLARE_INTERFACE(SolidExperimental::Ifaces::BluetoothInputDevice, "org.kde.Solid.Ifaces.BluetoothInputDevice/0.1")
 
 #endif

@@ -48,7 +48,7 @@ add_definitions(-DFAKE_BLUETOOTH_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backends
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakebluetooth )
 
-target_link_libraries(solidbluetoothtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakebluetooth_static)
+target_link_libraries(solidbluetoothtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solidexperimental solidexperimentalifaces solid_fakebluetooth_static)
 
 add_test(solidbluetoothtest ${EXECUTABLE_OUTPUT_PATH}/solidbluetoothtest)
 

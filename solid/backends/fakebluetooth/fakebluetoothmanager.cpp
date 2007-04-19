@@ -26,7 +26,7 @@
 
 #include "fakebluetoothmanager.h"
 
-FakeBluetoothManager::FakeBluetoothManager(QObject * parent, const QStringList &) : Solid::Ifaces::BluetoothManager(parent)
+FakeBluetoothManager::FakeBluetoothManager(QObject * parent, const QStringList &) : SolidExperimental::Ifaces::BluetoothManager(parent)
 {
     kDebug() << k_funcinfo << endl;
 
@@ -37,7 +37,7 @@ FakeBluetoothManager::FakeBluetoothManager(QObject * parent, const QStringList &
     parseBluetoothFile();
 }
 
-FakeBluetoothManager::FakeBluetoothManager(QObject * parent, const QStringList &, const QString& xmlFile) : Solid::Ifaces::BluetoothManager(parent)
+FakeBluetoothManager::FakeBluetoothManager(QObject * parent, const QStringList &, const QString& xmlFile) : SolidExperimental::Ifaces::BluetoothManager(parent)
 {
     kDebug() << k_funcinfo << endl;
     mXmlFile = xmlFile;

@@ -26,14 +26,14 @@
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/bluetoothinputdevice.h>
+#include <solid/experimental/ifaces/bluetoothinputdevice.h>
 
-using namespace Solid::Ifaces;
+using namespace SolidExperimental::Ifaces;
 
-class KDE_EXPORT FakeBluetoothInputDevice : public Solid::Ifaces::BluetoothInputDevice
+class KDE_EXPORT FakeBluetoothInputDevice : public SolidExperimental::Ifaces::BluetoothInputDevice
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::BluetoothInputDevice)
+    Q_INTERFACES(SolidExperimental::Ifaces::BluetoothInputDevice)
 public:
     FakeBluetoothInputDevice(const QMap<QString, QVariant> & propertyMap,
                              QObject *parent = 0);

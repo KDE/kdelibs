@@ -26,12 +26,12 @@
 #include <QPair>
 #include <QtCore/QObject>
 
-#include <solid/bluetoothremotedevice.h>
-#include <solid/ifaces/bluetoothremotedevice.h>
+#include <solid/experimental/bluetoothremotedevice.h>
+#include <solid/experimental/ifaces/bluetoothremotedevice.h>
 
 
 
-namespace Solid
+namespace SolidExperimental
 {
 class BluetoothRemoteDevice;
 typedef QList<BluetoothRemoteDevice> BluetoothRemoteDeviceList;
@@ -341,7 +341,7 @@ Q_SIGNALS:
      *
      * @param mode the changed mode
      */
-    void modeChanged( Solid::BluetoothInterface::Mode );
+    void modeChanged( SolidExperimental::BluetoothInterface::Mode );
 
     /**
      * The signal is emitted if the discoverable timeout of the bluetooth interface/adapter

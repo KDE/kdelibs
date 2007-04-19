@@ -28,17 +28,17 @@
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/bluetoothinterface.h>
+#include <solid/experimental/ifaces/bluetoothinterface.h>
 
 #include "fakebluetoothremotedevice.h"
 
-using namespace Solid::Ifaces;
+using namespace SolidExperimental::Ifaces;
 
-class KDE_EXPORT FakeBluetoothInterface : public Solid::Ifaces::BluetoothInterface
+class KDE_EXPORT FakeBluetoothInterface : public SolidExperimental::Ifaces::BluetoothInterface
 {
     friend class FakeBluetoothManager;
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::BluetoothInterface)
+    Q_INTERFACES(SolidExperimental::Ifaces::BluetoothInterface)
 public:
     FakeBluetoothInterface(const QMap<QString, QVariant> & propertyMap,
                            QObject *parent = 0);
@@ -72,7 +72,7 @@ public:
     {
         return mCompany;
     }
-    Solid::BluetoothInterface::Mode mode() const
+    SolidExperimental::BluetoothInterface::Mode mode() const
     {
         return mMode;
     }
@@ -139,7 +139,7 @@ private:
     QString mRevision;
     QString mManufacturer;
     QString mCompany;
-    Solid::BluetoothInterface::Mode mMode;
+    SolidExperimental::BluetoothInterface::Mode mMode;
     int mDiscoverableTimeout;
     bool mDiscoverable;
     QStringList mConnections;
@@ -154,7 +154,7 @@ private:
     QStringList mRecentRemoteDevices;
 
 public Q_SLOTS:
-    void setMode(const Solid::BluetoothInterface::Mode mode)
+    void setMode(const SolidExperimental::BluetoothInterface::Mode mode)
     {
         mMode = mode; /* emit modeChanged( mMode );*/
     }
@@ -185,7 +185,7 @@ public Q_SLOTS:
     }
 
 Q_SIGNALS:
-    void modeChanged( Solid::BluetoothInterface::Mode mode);
+    void modeChanged( SolidExperimental::BluetoothInterface::Mode mode);
     void discoverableTimeoutChanged(int timeout);
     void minorClassChanged(const QString &minor);
     void nameChanged(const QString &name);

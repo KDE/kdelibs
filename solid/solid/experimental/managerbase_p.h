@@ -1,6 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Daniel Gollub <dgollub@suse.de>
-
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,11 +17,32 @@
 
 */
 
-#include "fakebluetoothmanager.h"
+#ifndef SOLID_MANAGERBASE_P_H
+#define SOLID_MANAGERBASE_P_H
 
-// KDE includes
-#include <kgenericfactory.h>
+#include <QObject>
+#include <QString>
 
-typedef KGenericFactory<FakeBluetoothManager, SolidExperimental::Ifaces::BluetoothManager> FakeBluetoothBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fake_bluetoothmgmt, FakeBluetoothBackendFactory( "fakebluetoothbackend" ) )
+#include "solid/solid_export.h"
 
+namespace SolidExperimental
+{
+    class ManagerBasePrivate
+    {
+    public:
+        ManagerBasePrivate();
+        virtual ~ManagerBasePrivate();
+        void loadBackend(const QString &description, const char *serviceName, const char *backendClassName);
+
+        SOLID_EXPORT static void _k_forcePreloadedBackend(const char *backendClassName, QObject *backend);
+
+        QObject *managerBackend() const;
+        QString errorText() const;
+
+    private:
+        QObject *m_backend;
+        QString m_errorText;
+    };
+}
+
+#endif

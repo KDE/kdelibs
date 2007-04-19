@@ -27,7 +27,7 @@
 
 class KJob;
 
-namespace Solid
+namespace SolidExperimental
 {
 namespace Ifaces
 {

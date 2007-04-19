@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2007 Will Stephenson <wstephenson@kde.org>
     Copyright (C) 2007 Daniel Gollub <dgollub@suse.de>
 
 
@@ -19,13 +19,12 @@
 
 */
 
-#include "bluetoothinterface.h"
+#include "bluetoothinputdevice.h"
 
-Solid::Ifaces::BluetoothInterface::BluetoothInterface(QObject *parent)
-        : QObject(parent)
+SolidExperimental::Ifaces::BluetoothInputDevice::BluetoothInputDevice(QObject * parent) : QObject(parent)
 {}
 
-Solid::Ifaces::BluetoothInterface::~BluetoothInterface()
+SolidExperimental::Ifaces::BluetoothInputDevice::~BluetoothInputDevice()
 {}
 
-#include "bluetoothinterface.moc"
+#include "bluetoothinputdevice.moc"

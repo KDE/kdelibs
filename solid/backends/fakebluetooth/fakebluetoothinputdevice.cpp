@@ -25,7 +25,7 @@
 #include <kdebug.h>
 
 FakeBluetoothInputDevice::FakeBluetoothInputDevice(const QMap<QString, QVariant> & propertyMap, QObject * parent)
-        : Solid::Ifaces::BluetoothInputDevice(parent), mPropertyMap(propertyMap)
+        : SolidExperimental::Ifaces::BluetoothInputDevice(parent), mPropertyMap(propertyMap)
 {
 
     mUbi = mPropertyMap["ubi"].toString();

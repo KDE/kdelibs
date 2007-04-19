@@ -28,13 +28,13 @@
 #include "ifaces/bluetoothinterface.h"
 #include "ifaces/bluetoothinputdevice.h"
 
-#include "soliddefs_p.h"
+#include "../soliddefs_p.h"
 #include "managerbase_p.h"
 
 #include "bluetoothinterface.h"
 #include "bluetoothmanager.h"
 
-namespace Solid
+namespace SolidExperimental
 {
 class BluetoothManagerPrivate : public ManagerBasePrivate
 {
@@ -65,22 +65,22 @@ public:
 };
 }
 
-SOLID_SINGLETON_IMPLEMENTATION(Solid::BluetoothManager, BluetoothManager)
+SOLID_SINGLETON_IMPLEMENTATION(SolidExperimental::BluetoothManager, BluetoothManager)
 
 
-Solid::BluetoothManager::BluetoothManager()
+SolidExperimental::BluetoothManager::BluetoothManager()
         : QObject(), d(new BluetoothManagerPrivate(this))
 {
     d->loadBackend("Bluetooth Management",
                    "SolidBluetoothManager",
-                   "Solid::Ifaces::BluetoothManager");
+                   "SolidExperimental::Ifaces::BluetoothManager");
 
     if (d->managerBackend() != 0) {
         d->connectBackend(d->managerBackend());
     }
 }
 
-Solid::BluetoothManager::~BluetoothManager()
+SolidExperimental::BluetoothManager::~BluetoothManager()
 {
     // Delete all the interfaces, they are now outdated
     typedef QPair<BluetoothInterface*, Ifaces::BluetoothInterface*> BluetoothInterfaceIfacePair;
@@ -94,7 +94,7 @@ Solid::BluetoothManager::~BluetoothManager()
     d->bluetoothInterfaceMap.clear();
 }
 
-Solid::BluetoothInterfaceList Solid::BluetoothManager::buildDeviceList(const QStringList & ubiList) const
+SolidExperimental::BluetoothInterfaceList SolidExperimental::BluetoothManager::buildDeviceList(const QStringList & ubiList) const
 {
     BluetoothInterfaceList list;
     Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
@@ -112,7 +112,7 @@ Solid::BluetoothInterfaceList Solid::BluetoothManager::buildDeviceList(const QSt
     return list;
 }
 
-Solid::BluetoothInterfaceList Solid::BluetoothManager::bluetoothInterfaces() const
+SolidExperimental::BluetoothInterfaceList SolidExperimental::BluetoothManager::bluetoothInterfaces() const
 {
     Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
@@ -123,12 +123,12 @@ Solid::BluetoothInterfaceList Solid::BluetoothManager::bluetoothInterfaces() con
     }
 }
 
-QString Solid::BluetoothManager::defaultInterface() const
+QString SolidExperimental::BluetoothManager::defaultInterface() const
 {
     return_SOLID_CALL(Ifaces::BluetoothManager*, d->managerBackend(), QString(), defaultInterface());
 }
 
-const Solid::BluetoothInterface &Solid::BluetoothManager::findBluetoothInterface(const QString &ubi) const
+const SolidExperimental::BluetoothInterface &SolidExperimental::BluetoothManager::findBluetoothInterface(const QString &ubi) const
 {
     Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
@@ -143,7 +143,7 @@ const Solid::BluetoothInterface &Solid::BluetoothManager::findBluetoothInterface
     }
 }
 
-const Solid::BluetoothInputDevice &Solid::BluetoothManager::findBluetoothInputDevice(const QString &ubi) const
+const SolidExperimental::BluetoothInputDevice &SolidExperimental::BluetoothManager::findBluetoothInputDevice(const QString &ubi) const
 {
     Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
@@ -158,12 +158,12 @@ const Solid::BluetoothInputDevice &Solid::BluetoothManager::findBluetoothInputDe
     }
 }
 
-KJob *Solid::BluetoothManager::setupInputDevice(const QString &ubi)
+KJob *SolidExperimental::BluetoothManager::setupInputDevice(const QString &ubi)
 {
     return_SOLID_CALL(Ifaces::BluetoothManager*, d->managerBackend(), 0, setupInputDevice(ubi));
 }
 
-Solid::BluetoothInputDeviceList Solid::BluetoothManager::bluetoothInputDevices() const
+SolidExperimental::BluetoothInputDeviceList SolidExperimental::BluetoothManager::bluetoothInputDevices() const
 {
     BluetoothInputDeviceList list;
     Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
@@ -184,12 +184,12 @@ Solid::BluetoothInputDeviceList Solid::BluetoothManager::bluetoothInputDevices()
     return list;
 }
 
-void Solid::BluetoothManager::removeInputDevice(const QString &ubi)
+void SolidExperimental::BluetoothManager::removeInputDevice(const QString &ubi)
 {
     SOLID_CALL(Ifaces::BluetoothManager*, d->managerBackend(), removeInputDevice(ubi));
 }
 
-void Solid::BluetoothManagerPrivate::_k_interfaceAdded(const QString &ubi)
+void SolidExperimental::BluetoothManagerPrivate::_k_interfaceAdded(const QString &ubi)
 {
     QPair<BluetoothInterface*, Ifaces::BluetoothInterface*> pair = bluetoothInterfaceMap.take(ubi);
 
@@ -204,7 +204,7 @@ void Solid::BluetoothManagerPrivate::_k_interfaceAdded(const QString &ubi)
     emit q->interfaceAdded(ubi);
 }
 
-void Solid::BluetoothManagerPrivate::_k_interfaceRemoved(const QString &ubi)
+void SolidExperimental::BluetoothManagerPrivate::_k_interfaceRemoved(const QString &ubi)
 {
     QPair<BluetoothInterface*, Ifaces::BluetoothInterface*> pair = bluetoothInterfaceMap.take(ubi);
 
@@ -216,7 +216,7 @@ void Solid::BluetoothManagerPrivate::_k_interfaceRemoved(const QString &ubi)
     emit q->interfaceRemoved(ubi);
 }
 
-void Solid::BluetoothManagerPrivate::_k_interfaceDestroyed(QObject *object)
+void SolidExperimental::BluetoothManagerPrivate::_k_interfaceDestroyed(QObject *object)
 {
     Ifaces::BluetoothInterface *device = qobject_cast<Ifaces::BluetoothInterface*>(object);
 
@@ -227,7 +227,7 @@ void Solid::BluetoothManagerPrivate::_k_interfaceDestroyed(QObject *object)
     }
 }
 
-void Solid::BluetoothManagerPrivate::_k_inputDeviceCreated(const QString &ubi)
+void SolidExperimental::BluetoothManagerPrivate::_k_inputDeviceCreated(const QString &ubi)
 {
     QPair<BluetoothInputDevice*, Ifaces::BluetoothInputDevice*> pair = bluetoothInputDeviceMap.take(ubi);
 
@@ -242,7 +242,7 @@ void Solid::BluetoothManagerPrivate::_k_inputDeviceCreated(const QString &ubi)
     emit q->inputDeviceCreated(ubi);
 }
 
-void Solid::BluetoothManagerPrivate::_k_inputDeviceRemoved(const QString &ubi)
+void SolidExperimental::BluetoothManagerPrivate::_k_inputDeviceRemoved(const QString &ubi)
 {
     QPair<BluetoothInputDevice*, Ifaces::BluetoothInputDevice*> pair = bluetoothInputDeviceMap.take(ubi);
 
@@ -254,7 +254,7 @@ void Solid::BluetoothManagerPrivate::_k_inputDeviceRemoved(const QString &ubi)
     emit q->inputDeviceRemoved(ubi);
 }
 
-void Solid::BluetoothManagerPrivate::_k_inputDeviceDestroyed(QObject *object)
+void SolidExperimental::BluetoothManagerPrivate::_k_inputDeviceDestroyed(QObject *object)
 {
     Ifaces::BluetoothInputDevice *device = qobject_cast<Ifaces::BluetoothInputDevice*>(object);
 
@@ -268,7 +268,7 @@ void Solid::BluetoothManagerPrivate::_k_inputDeviceDestroyed(QObject *object)
 
 /***************************************************************************/
 
-void Solid::BluetoothManagerPrivate::connectBackend(QObject *newBackend)
+void SolidExperimental::BluetoothManagerPrivate::connectBackend(QObject *newBackend)
 {
     QObject::connect(newBackend, SIGNAL(interfaceAdded(const QString &)),
                      q, SLOT(_k_interfaceAdded(const QString &)));
@@ -282,7 +282,7 @@ void Solid::BluetoothManagerPrivate::connectBackend(QObject *newBackend)
 
 }
 
-QPair<Solid::BluetoothInterface*, Solid::Ifaces::BluetoothInterface*> Solid::BluetoothManagerPrivate::findRegisteredBluetoothInterface(const QString &ubi) const
+QPair<SolidExperimental::BluetoothInterface*, SolidExperimental::Ifaces::BluetoothInterface*> SolidExperimental::BluetoothManagerPrivate::findRegisteredBluetoothInterface(const QString &ubi) const
 {
     if (bluetoothInterfaceMap.contains(ubi)) {
         return bluetoothInterfaceMap[ubi];
@@ -307,7 +307,7 @@ QPair<Solid::BluetoothInterface*, Solid::Ifaces::BluetoothInterface*> Solid::Blu
     }
 }
 
-QPair<Solid::BluetoothInputDevice*, Solid::Ifaces::BluetoothInputDevice*> Solid::BluetoothManagerPrivate::findRegisteredBluetoothInputDevice(const QString &ubi) const
+QPair<SolidExperimental::BluetoothInputDevice*, SolidExperimental::Ifaces::BluetoothInputDevice*> SolidExperimental::BluetoothManagerPrivate::findRegisteredBluetoothInputDevice(const QString &ubi) const
 {
     if (bluetoothInputDeviceMap.contains(ubi)) {
         return bluetoothInputDeviceMap[ubi];

@@ -26,13 +26,13 @@
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/bluetoothmanager.h>
+#include <solid/experimental/ifaces/bluetoothmanager.h>
 #include "fakebluetoothinterface.h"
 #include "fakebluetoothinputdevice.h"
 
 class QDomElement;
 
-class KDE_EXPORT FakeBluetoothManager : public Solid::Ifaces::BluetoothManager
+class KDE_EXPORT FakeBluetoothManager : public SolidExperimental::Ifaces::BluetoothManager
 {
     Q_OBJECT
 public:

@@ -28,12 +28,12 @@
 #include <solid/singletondefs.h>
 #include <solid/solid_export.h>
 
-#include <solid/bluetoothinterface.h>
-#include <solid/bluetoothinputdevice.h>
+#include <solid/experimental/bluetoothinterface.h>
+#include <solid/experimental/bluetoothinputdevice.h>
 
 class KJob;
 
-namespace Solid
+namespace SolidExperimental
 {
 namespace Ifaces
 {

@@ -22,15 +22,15 @@
 #include <QMap>
 #include <QStringList>
 
-#include <solid/ifaces/bluetoothinputdevice.h>
+#include <solid/experimental/ifaces/bluetoothinputdevice.h>
 
 #include "frontendobject_p.h"
 
-#include "soliddefs_p.h"
+#include "../soliddefs_p.h"
 
 #include "bluetoothinputdevice.h"
 
-namespace Solid
+namespace SolidExperimental
 {
     class BluetoothInputDevicePrivate : public FrontendObjectPrivate
     {
@@ -42,69 +42,69 @@ namespace Solid
     };
 }
 
-Solid::BluetoothInputDevice::BluetoothInputDevice(QObject *backendObject)
+SolidExperimental::BluetoothInputDevice::BluetoothInputDevice(QObject *backendObject)
     : QObject(), d(new BluetoothInputDevicePrivate(this))
 {
     d->setBackendObject(backendObject);
 }
 
-Solid::BluetoothInputDevice::BluetoothInputDevice(const BluetoothInputDevice &device)
+SolidExperimental::BluetoothInputDevice::BluetoothInputDevice(const BluetoothInputDevice &device)
     : QObject(), d(new BluetoothInputDevicePrivate(this))
 {
     d->setBackendObject(device.d->backendObject());
 }
 
-Solid::BluetoothInputDevice::~BluetoothInputDevice()
+SolidExperimental::BluetoothInputDevice::~BluetoothInputDevice()
 {}
 
-Solid::BluetoothInputDevice &Solid::BluetoothInputDevice::operator=(const Solid::BluetoothInputDevice & dev)
+SolidExperimental::BluetoothInputDevice &SolidExperimental::BluetoothInputDevice::operator=(const SolidExperimental::BluetoothInputDevice & dev)
 {
     d->setBackendObject(dev.d->backendObject());
 
     return *this;
 }
 
-QString Solid::BluetoothInputDevice::ubi() const
+QString SolidExperimental::BluetoothInputDevice::ubi() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), QString(), ubi());
 }
 
-bool Solid::BluetoothInputDevice::isConnected() const
+bool SolidExperimental::BluetoothInputDevice::isConnected() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), false, isConnected());
 }
 
-QString Solid::BluetoothInputDevice::name() const
+QString SolidExperimental::BluetoothInputDevice::name() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), QString(), name());
 }
 
-QString Solid::BluetoothInputDevice::address() const
+QString SolidExperimental::BluetoothInputDevice::address() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), QString(), address());
 }
 
-QString Solid::BluetoothInputDevice::productID() const
+QString SolidExperimental::BluetoothInputDevice::productID() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), QString(), productID());
 }
 
-QString Solid::BluetoothInputDevice::vendorID() const
+QString SolidExperimental::BluetoothInputDevice::vendorID() const
 {
     return_SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), QString(), vendorID());
 }
 
-void Solid::BluetoothInputDevice::slotConnect()
+void SolidExperimental::BluetoothInputDevice::slotConnect()
 {
     SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), slotConnect());
 }
 
-void Solid::BluetoothInputDevice::slotDisconnect()
+void SolidExperimental::BluetoothInputDevice::slotDisconnect()
 {
     SOLID_CALL(Ifaces::BluetoothInputDevice*, d->backendObject(), slotDisconnect());
 }
 
-void Solid::BluetoothInputDevicePrivate::setBackendObject(QObject *object)
+void SolidExperimental::BluetoothInputDevicePrivate::setBackendObject(QObject *object)
 {
     FrontendObjectPrivate::setBackendObject(object);
 

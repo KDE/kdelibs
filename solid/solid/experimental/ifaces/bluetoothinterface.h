@@ -25,12 +25,12 @@
 #include <QList>
 #include <solid/solid_export.h>
 
-#include <solid/bluetoothinterface.h>
-#include <solid/ifaces/bluetoothremotedevice.h>
+#include <solid/experimental/bluetoothinterface.h>
+#include <solid/experimental/ifaces/bluetoothremotedevice.h>
 
 #include <QObject>
 
-namespace Solid
+namespace SolidExperimental
 {
 namespace Ifaces
 {
@@ -110,7 +110,7 @@ public:
      *
      * @returns current mode of bluetooth interface/adaoter
      */
-    virtual Solid::BluetoothInterface::Mode mode() const = 0;
+    virtual SolidExperimental::BluetoothInterface::Mode mode() const = 0;
 
     /**
      * Retrieves the discoverable timeout of the bluetooth interface/adapter.
@@ -224,7 +224,7 @@ public Q_SLOTS:
      *
      * @param mode the mode of the bluetooth interface/adapter
      */
-    virtual void setMode(const Solid::BluetoothInterface::Mode mode) = 0;
+    virtual void setMode(const SolidExperimental::BluetoothInterface::Mode mode) = 0;
 
     /**
      * Set discoverable timeout of bluetooth interface/adapter.
@@ -295,7 +295,7 @@ Q_SIGNALS:
      *
      * @param mode the changed mode
      */
-    void modeChanged( Solid::BluetoothInterface::Mode );
+    void modeChanged( SolidExperimental::BluetoothInterface::Mode );
 
     /**
      * The signal is emitted if the discoverable timeout of the bluetooth interface/adapter
@@ -352,6 +352,6 @@ Q_SIGNALS:
 } //Ifaces
 } //Solid
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::BluetoothInterface, "org.kde.Solid.Ifaces.BluetoothInterface/0.1")
+Q_DECLARE_INTERFACE(SolidExperimental::Ifaces::BluetoothInterface, "org.kde.Solid.Ifaces.BluetoothInterface/0.1")
 
 #endif
