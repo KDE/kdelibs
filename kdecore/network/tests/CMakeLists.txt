@@ -28,26 +28,6 @@ kde4_add_executable(socketdevicetest NOGUI ${socketdevicetest_SRCS})
 target_link_libraries(socketdevicetest  ${KDE4_KDECORE_LIBS} )
 
 
-########### next target ###############
-
-set(streamsockettest_SRCS streamsockettest.cpp )
-
-kde4_automoc(${streamsockettest_SRCS})
-
-kde4_add_executable(streamsockettest NOGUI ${streamsockettest_SRCS})
-
-target_link_libraries(streamsockettest  ${KDE4_KDECORE_LIBS} )
-
-
-########### next target ###############
-
-set(serversockettest_SRCS serversockettest.cpp )
-
-kde4_automoc(${serversockettest_SRCS})
-
-kde4_add_executable(serversockettest NOGUI ${serversockettest_SRCS})
-
-target_link_libraries(serversockettest  ${KDE4_KDECORE_LIBS} )
 
 endif(KDE4_BUILD_TESTS)
 
