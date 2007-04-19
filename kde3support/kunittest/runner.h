@@ -35,8 +35,7 @@ using namespace std;
 #include <QtCore/QHash>
 #include <QtCore/QString>
 
-#include <kunittest_export.h>
-
+#include "kunittest_export.h"
 #include "tester.h"
 
 class QSocketNotifier;
