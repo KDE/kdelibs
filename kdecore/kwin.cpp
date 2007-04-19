@@ -65,6 +65,7 @@ static Atom kde_wm_change_state;
 static Atom kde_wm_window_opacity;
 static Atom kde_wm_window_shadow;
 static Atom kwin_UTF8_STRING;
+static Atom net_wm_cm;
 
 static void kwin_net_create_atoms() {
     if (!atoms_created){
@@ -85,6 +86,11 @@ static void kwin_net_create_atoms() {
 
         atoms[n] = &kde_wm_window_shadow;
         names[n++] = (char*) "_KDE_WM_WINDOW_SHADOW";
+
+        char net_wm_cm_name[ 100 ];
+        sprintf( net_wm_cm_name, "_NET_WM_CM_S%d", DefaultScreen( qt_xdisplay()));
+        atoms[n] = &net_wm_cm;
+        names[n++] = net_wm_cm_name;
 
 	// we need a const_cast for the shitty X API
 	XInternAtoms( qt_xdisplay(), const_cast<char**>(names), n, false, atoms_return );
@@ -138,6 +144,16 @@ static void sendClientMessage(Window w, Atom a, long x){
   XSendEvent(qt_xdisplay(), w, False, mask, &ev);
 }
 #endif
+
+bool KWin::compositingActive()
+{
+#ifdef Q_WS_X11
+    kwin_net_create_atoms();
+    return XGetSelectionOwner( qt_xdisplay(), net_wm_cm ) != None;
+#else
+    return false;
+#endif
+}
 
 #ifdef Q_WS_X11
 namespace
