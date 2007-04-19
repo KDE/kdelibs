@@ -21,6 +21,7 @@
 #define KURLTOGGLEBUTTON_P_H
 
 #include "kurlbutton_p.h"
+#include <QtGui/QPixmap>
 
 class KUrlNavigator;
 
@@ -40,6 +41,12 @@ public:
 
 protected:
     virtual void paintEvent(QPaintEvent* event);
+
+private slots:
+    void updateToolTip();
+
+private:
+    QPixmap m_pixmap;
 };
 
 #endif

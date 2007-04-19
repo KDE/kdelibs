@@ -385,7 +385,7 @@ void KUrlNavigator::Private::updateContent()
         delete m_protocolSeparator; m_protocolSeparator = 0;
         delete m_host; m_host = 0;
         deleteButtons();
-        m_toggleEditableMode->hide();
+        m_toggleEditableMode->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
         q->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
         m_pathBox->show();
@@ -393,7 +393,7 @@ void KUrlNavigator::Private::updateContent()
     } else {
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         m_pathBox->hide();
-        m_toggleEditableMode->show();
+        m_toggleEditableMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         // get the data from the currently selected place
         KUrl placeUrl = m_placesSelector->selectedPlaceUrl();

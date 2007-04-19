@@ -21,6 +21,7 @@
 #include "kurlnavigator.h"
 
 #include <kglobalsettings.h>
+#include <kicon.h>
 #include <klocale.h>
 
 #include <QtGui/QPainter>
@@ -29,8 +30,12 @@
 KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     KUrlButton(parent)
 {
-    setToolTip(i18n("Click to Edit Location"));
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    setCheckable(true);
+    updateToolTip();
+    connect(this, SIGNAL(clicked()),
+            this, SLOT(updateToolTip()));
+    m_pixmap = KIcon("edit-undo").pixmap(16, 16);
 }
 
 KUrlToggleButton::~KUrlToggleButton()
@@ -39,10 +44,16 @@ KUrlToggleButton::~KUrlToggleButton()
 
 void KUrlToggleButton::paintEvent(QPaintEvent* event)
 {
-    if (isDisplayHintEnabled(EnteredHint)) {
-        QPainter painter(this);
-        painter.setClipRect(event->rect());
+    QPainter painter(this);
+    painter.setClipRect(event->rect());
 
+    const int buttonWidth = width();
+    const int buttonHeight = height();
+    if (isChecked()) {
+        const int x = (buttonWidth - m_pixmap.width()) / 2;
+        const int y = (buttonHeight - m_pixmap.height()) / 2;
+        painter.drawPixmap(QRect(x, y, m_pixmap.width(), m_pixmap.height()), m_pixmap);
+    } else if (isDisplayHintEnabled(EnteredHint)) {
         QColor foregroundColor = KGlobalSettings::buttonTextColor();
         if (!urlNavigator()->isActive()) {
             QColor dimmColor(palette().brush(QPalette::Background).color());
@@ -51,7 +62,16 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(foregroundColor);
-        painter.drawRect(0, 2, 2, height() - 6);
+        painter.drawRect(0, 2, 2, buttonHeight - 6);
+    }
+}
+
+void KUrlToggleButton::updateToolTip()
+{
+    if (isChecked()) {
+        setToolTip(i18n("Click for Location Navigation"));
+    } else {
+        setToolTip(i18n("Click to Edit Location"));
     }
 }
 
