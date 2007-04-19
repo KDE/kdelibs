@@ -42,13 +42,6 @@ namespace Solid
      * Pointers on Device objects are generally not needed, copying such objects
      * is quite cheap.
      *
-     *
-     * Warning: This class provides methods related to device properties,
-     * using these methods could expose some backend specific details
-     * and lead to non portable code. Use them at your own risk, or during
-     * transitional phases when the provided device interfaces don't
-     * provide the necessary methods.
-     *
      * @author Kevin Ottens <ervin@kde.org>
      */
     class SOLID_EXPORT Device
