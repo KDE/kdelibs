@@ -163,7 +163,7 @@ public:
   /**
    * Returns the minimal value of the ruler pointer.
    **/
-  inline KDE_DEPRECATED int minValue() const;
+  KDE_DEPRECATED int minValue() const;
 
   /**
    * Sets the maximum value of the ruler pointer (default is 100).
@@ -176,7 +176,7 @@ public:
   /**
    * Returns the maximal value of the ruler pointer.
    */
-  inline KDE_DEPRECATED int maxValue() const;
+  KDE_DEPRECATED int maxValue() const;
 
 
   /**
@@ -188,7 +188,7 @@ public:
   /**
    * Returns the distance between tiny marks.
    **/
-  inline int tinyMarkDistance() const;
+  int tinyMarkDistance() const;
 
   /**
    * Sets the distance between little marks.
@@ -200,7 +200,7 @@ public:
   /**
    * Returns the distance between little marks.
    */
-  inline int littleMarkDistance() const;
+  int littleMarkDistance() const;
 
   /**
    * Sets the distance between medium marks.
@@ -209,7 +209,7 @@ public:
    * For metric styles it defaults to five times the little mark distance.
    **/
   void setMediumMarkDistance(int);
-  inline int mediumMarkDistance() const;
+  int mediumMarkDistance() const;
 
   /**
    * Sets distance between big marks.
@@ -220,7 +220,7 @@ public:
   /**
    * Returns the distance between big marks.
    **/
-  inline int bigMarkDistance() const;
+  int bigMarkDistance() const;
 
   /**
    * Shows/hides tiny marks.
@@ -322,7 +322,7 @@ public:
   /**
    * Returns the number of pixels between two base marks.
    **/
-  inline double pixelPerMark() const;
+  double pixelPerMark() const;
 
   /**
    * Sets the length of the ruler, i.e. the difference between
