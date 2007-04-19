@@ -9,7 +9,6 @@ add_subdirectory( tests )
 
 set(kcookiejar_SRCS
 main.cpp
-#kcookiejariface.cpp
 )
 
 kde4_automoc(${kcookiejar_SRCS})
@@ -34,13 +33,14 @@ set(kded_kcookiejar_PART_SRCS
    kcookiejar.cpp
    kcookieserver.cpp
    kcookiewin.cpp
-   kcookiejaradaptor.cpp
 )
+
+qt4_add_dbus_adaptor( kded_kcookiejar_PART_SRCS org.kde.KCookieServer.xml kcookieserver.h KCookieServer )
 
 kde4_automoc(${kded_kcookiejar_PART_SRCS})
 
-# The adaptor is hand-edited to add QDBusMessage
-# qt4_add_dbus_adaptor(kded_kcookiejar_PART_SRCS org.kde.KCookieServer.xml kcookieserver.h KCookieServer)
+
+qt4_add_dbus_adaptor( kcookiejar_SRCS org.kde.KCookieServer.xml kcookieserver.h KCookieServer )
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 

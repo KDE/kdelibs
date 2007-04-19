@@ -43,7 +43,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 #include "kcookieserver.h"
-#include "kcookiejaradaptor.h"
+#include "kcookieserveradaptor.h"
 
 extern "C" {
     KDE_EXPORT KDEDModule *create_kcookiejar()
@@ -359,13 +359,13 @@ bool KCookieServer::cookieMatches( KHttpCookiePtr c,
 
 // DBUS function
 QString
-KCookieServer::findCookies(const QString &url, qlonglong windowId, const QDBusMessage &msg)
+KCookieServer::findCookies(const QString &url, qlonglong windowId)
 {
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
-      msg.setDelayedReply(true);
-      request->reply = msg;
+      message().setDelayedReply(true);
+      request->reply = message();
       request->url = url;
       request->DOM = false;
       request->windowId = windowId;

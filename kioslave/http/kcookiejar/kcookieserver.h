@@ -27,6 +27,7 @@
 #include <QtCore/QStringList>
 #include <kdedmodule.h>
 #include <QtDBus/QtDBus>
+#include <QDBusContext>
 
 class KHttpCookieList;
 class KCookieJar;
@@ -35,7 +36,7 @@ class QTimer;
 class RequestList;
 class KConfig;
 
-class KCookieServer : public KDEDModule
+class KCookieServer : public KDEDModule, protected QDBusContext
 {
   Q_OBJECT
 public:
@@ -43,7 +44,7 @@ public:
   ~KCookieServer();
 
 public Q_SLOTS:
-  QString findCookies(const QString &url, qlonglong windowId, const QDBusMessage &msg);
+  QString findCookies(const QString &url, qlonglong windowId);
   QStringList findDomains();
   QStringList findCookies(const QList<int> &fields,const QString &domain,const QString& fqdn,const QString &path, const QString &name);
   QString findDOMCookies(const QString &url);
