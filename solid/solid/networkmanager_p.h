@@ -35,25 +35,28 @@ namespace Solid
     {
         class NetworkInterface;
     }
-    class NetworkManager;
 
-    class NetworkManagerPrivate : public ManagerBasePrivate
+    class NetworkManagerPrivate : public NetworkManager::Notifier, public ManagerBasePrivate
     {
+        Q_OBJECT
     public:
-        NetworkManagerPrivate(NetworkManager *parent)
-            : q(parent) { }
+        NetworkManagerPrivate();
+        ~NetworkManagerPrivate();
 
-        NetworkManager * const q;
+        NetworkInterfaceList networkInterfaces();
+        const NetworkInterface &findNetworkInterface(const QString &uni);
 
-        QPair<NetworkInterface*, Ifaces::NetworkInterface*> findRegisteredNetworkInterface( const QString &uni ) const;
-        void connectBackend( QObject *newBackend );
-
+    private Q_SLOTS:
         void _k_networkInterfaceAdded(const QString &uni);
         void _k_networkInterfaceRemoved(const QString &uni);
         void _k_destroyed(QObject *object);
 
-        mutable QMap<QString, QPair<NetworkInterface*, Ifaces::NetworkInterface*> > networkInterfaceMap;
-        NetworkInterface invalidDevice;
+    private:
+        NetworkInterfaceList buildDeviceList(const QStringList &uniList);
+        QPair<NetworkInterface*, Ifaces::NetworkInterface*> findRegisteredNetworkInterface(const QString &uni);
+
+        QMap<QString, QPair<NetworkInterface*, Ifaces::NetworkInterface*> > m_networkInterfaceMap;
+        NetworkInterface m_invalidDevice;
     };
 }
 

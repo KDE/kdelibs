@@ -308,12 +308,14 @@ QString Solid::AuthenticationWpaEnterprise::certPrivatePasswordKey() const
 Solid::AuthenticationValidator::AuthenticationValidator()
     : d( new Private )
 {
+#if 0
     Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>( NetworkManager::self().d->managerBackend() );
 
     if ( backend )
     {
         d->backendObject = backend->createAuthenticationValidator();
     }
+#endif
 }
 
 Solid::AuthenticationValidator::~AuthenticationValidator()

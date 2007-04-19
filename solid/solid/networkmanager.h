@@ -23,7 +23,6 @@
 
 #include <QtCore/QObject>
 
-#include <solid/singletondefs.h>
 #include <solid/solid_export.h>
 
 namespace Solid
@@ -48,19 +47,15 @@ namespace Solid
      *
      * Note that it's implemented as a singleton and encapsulates the backend logic.
      */
-    class SOLID_EXPORT NetworkManager : public QObject
+    namespace NetworkManager
     {
-        Q_OBJECT
-        SOLID_SINGLETON(NetworkManager)
-
-    public:
         /**
          * Retrieves the list of all the network interfaces in the system.
          * It includes both hardware and virtual devices.
          *
          * @return the list of network interfaces available in this system
          */
-        NetworkInterfaceList networkInterfaces() const;
+        SOLID_EXPORT NetworkInterfaceList networkInterfaces();
 
         /**
          * Find a new NetworkInterface object given its UNI.
@@ -68,7 +63,7 @@ namespace Solid
          * @param uni the identifier of the network interface to find
          * @returns a valid NetworkInterface object if there's a device having the given UNI, an invalid one otherwise
          */
-        const NetworkInterface &findNetworkInterface( const QString & uni ) const;
+        SOLID_EXPORT const NetworkInterface &findNetworkInterface(const QString& uni);
 
         /**
          * Retrieves the status of networking (as a whole) in the system.
@@ -77,67 +72,58 @@ namespace Solid
          *
          * @return true if this networking is enabled, false otherwise
          */
-        bool isNetworkingEnabled() const;
+        SOLID_EXPORT bool isNetworkingEnabled();
 
         /**
          * Retrieves the activation status of wireless networking in the system.
          *
          * @return true if this wireless networking is enabled, false otherwise
          */
-        bool isWirelessEnabled() const;
+        SOLID_EXPORT bool isWirelessEnabled();
 
 
-    public Q_SLOTS:
         /**
          * Activates or deactivates networking (as a whole).
          *
          * @param enabled true to activate networking, false otherwise
          */
-        void setNetworkingEnabled( bool enabled );
+        SOLID_EXPORT void setNetworkingEnabled(bool enabled);
 
         /**
          * Activates or deactivates wireless networking.
          *
          * @param enabled true to activate wireless networking, false otherwise
          */
-        void setWirelessEnabled( bool enabled );
+        SOLID_EXPORT void setWirelessEnabled(bool enabled);
 
         /**
          * Informs the system of hidden networks.
          *
          * @param networkName the name of the hidden network that could be discovered
          */
-        void notifyHiddenNetwork( const QString &networkName );
+        SOLID_EXPORT void notifyHiddenNetwork(const QString &networkName);
 
-    Q_SIGNALS:
-        /**
-         * This signal is emitted when a new network interface is available.
-         *
-         * @param uni the network interface identifier
-         */
-        void networkInterfaceAdded( const QString & uni );
+        class Notifier : public QObject
+        {
+            Q_OBJECT
+        Q_SIGNALS:
+            /**
+             * This signal is emitted when a new network interface is available.
+             *
+             * @param uni the network interface identifier
+             */
+            void networkInterfaceAdded(const QString &uni);
 
-        /**
-         * This signal is emitted when a network interface is not available anymore.
-         *
-         * @param uni the network interface identifier
-         */
-        void networkInterfaceRemoved( const QString & uni );
+            /**
+             * This signal is emitted when a network interface is not available anymore.
+             *
+             * @param uni the network interface identifier
+             */
+            void networkInterfaceRemoved(const QString &uni);
+        };
 
-    private:
-        NetworkManager();
-        virtual ~NetworkManager();
-        NetworkInterfaceList buildDeviceList( const QStringList & udiList ) const;
-
-    private:
-        Q_PRIVATE_SLOT(d, void _k_networkInterfaceAdded(const QString&))
-        Q_PRIVATE_SLOT(d, void _k_networkInterfaceRemoved(const QString&))
-        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
-
-        NetworkManagerPrivate * const d;
-        friend class NetworkManagerPrivate;
-        friend class AuthenticationValidator;
-    };
+        SOLID_EXPORT Notifier *notifier();
+    }
 
 } // Solid
 

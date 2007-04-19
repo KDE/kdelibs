@@ -42,9 +42,7 @@ void SolidNetTest::initTestCase()
 
 void SolidNetTest::testNetworkInterfaces()
 {
-    Solid::NetworkManager &manager = Solid::NetworkManager::self();
-
-    Solid::NetworkInterfaceList interfaces = manager.networkInterfaces();
+    Solid::NetworkInterfaceList interfaces = Solid::NetworkManager::networkInterfaces();
 
     // Verify that the framework reported correctly the interfaces available
     // in the backend.
@@ -62,59 +60,53 @@ void SolidNetTest::testNetworkInterfaces()
 
 void SolidNetTest::testFindNetworkInterface()
 {
-    Solid::NetworkManager &manager = Solid::NetworkManager::self();
-
-    QCOMPARE( manager.findNetworkInterface( "/org/kde/solid/fakenet/eth0" ).isValid(), true );
-    QCOMPARE( manager.findNetworkInterface( "/org/kde/solid/fakenet/eth1" ).isValid(), true );
+    QCOMPARE( Solid::NetworkManager::findNetworkInterface( "/org/kde/solid/fakenet/eth0" ).isValid(), true );
+    QCOMPARE( Solid::NetworkManager::findNetworkInterface( "/org/kde/solid/fakenet/eth1" ).isValid(), true );
 
     // Note the extra space
-    QCOMPARE( manager.findNetworkInterface( "/org/kde/solid/fakenet/eth0 " ).isValid(), false );
-    QCOMPARE( manager.findNetworkInterface( "#'({(�" ).isValid(), false );
-    QCOMPARE( manager.findNetworkInterface( QString() ).isValid(), false );
+    QCOMPARE( Solid::NetworkManager::findNetworkInterface( "/org/kde/solid/fakenet/eth0 " ).isValid(), false );
+    QCOMPARE( Solid::NetworkManager::findNetworkInterface( "#'({(�" ).isValid(), false );
+    QCOMPARE( Solid::NetworkManager::findNetworkInterface( QString() ).isValid(), false );
 }
 
 void SolidNetTest::testManagerBasicFeatures()
 {
-    Solid::NetworkManager &manager = Solid::NetworkManager::self();
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), true );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), true );
 
-    QCOMPARE( manager.isNetworkingEnabled(), true );
-    QCOMPARE( manager.isWirelessEnabled(), true );
+    Solid::NetworkManager::setNetworkingEnabled( false );
 
-    manager.setNetworkingEnabled( false );
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), false );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), false );
 
-    QCOMPARE( manager.isNetworkingEnabled(), false );
-    QCOMPARE( manager.isWirelessEnabled(), false );
+    Solid::NetworkManager::setNetworkingEnabled( true );
 
-    manager.setNetworkingEnabled( true );
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), true );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), true );
 
-    QCOMPARE( manager.isNetworkingEnabled(), true );
-    QCOMPARE( manager.isWirelessEnabled(), true );
+    Solid::NetworkManager::setWirelessEnabled( false );
 
-    manager.setWirelessEnabled( false );
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), true );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), false );
 
-    QCOMPARE( manager.isNetworkingEnabled(), true );
-    QCOMPARE( manager.isWirelessEnabled(), false );
+    Solid::NetworkManager::setNetworkingEnabled( false );
 
-    manager.setNetworkingEnabled( false );
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), false );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), false );
 
-    QCOMPARE( manager.isNetworkingEnabled(), false );
-    QCOMPARE( manager.isWirelessEnabled(), false );
+    Solid::NetworkManager::setNetworkingEnabled( true );
 
-    manager.setNetworkingEnabled( true );
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), true );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), false );
 
-    QCOMPARE( manager.isNetworkingEnabled(), true );
-    QCOMPARE( manager.isWirelessEnabled(), false );
+    Solid::NetworkManager::setWirelessEnabled( true );
 
-    manager.setWirelessEnabled( true );
-
-    QCOMPARE( manager.isNetworkingEnabled(), true );
-    QCOMPARE( manager.isWirelessEnabled(), true );
+    QCOMPARE( Solid::NetworkManager::isNetworkingEnabled(), true );
+    QCOMPARE( Solid::NetworkManager::isWirelessEnabled(), true );
 }
 
 void SolidNetTest::testInterfaceBasicFeatures()
 {
-    Solid::NetworkManager &manager = Solid::NetworkManager::self();
-
     // Retrieve a valid NetworkInterface object
     Solid::NetworkInterface valid_iface( "/org/kde/solid/fakenet/eth0" );
 
@@ -124,7 +116,7 @@ void SolidNetTest::testInterfaceBasicFeatures()
     // A few attempts at creating invalid Device objects
     Solid::NetworkInterface invalid_iface( "uhoh? doesn't exist, I guess" );
     QCOMPARE( invalid_iface.isValid(), false );
-    invalid_iface = manager.findNetworkInterface( QString() );
+    invalid_iface = Solid::NetworkManager::findNetworkInterface( QString() );
     QCOMPARE( invalid_iface.isValid(), false );
     invalid_iface = Solid::NetworkInterface();
     QCOMPARE( invalid_iface.isValid(), false );

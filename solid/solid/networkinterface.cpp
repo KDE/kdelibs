@@ -62,7 +62,7 @@ Solid::NetworkInterface::NetworkInterface()
 Solid::NetworkInterface::NetworkInterface( const QString &uni )
     : QObject(), d(new NetworkInterfacePrivate(this))
 {
-    const NetworkInterface &device = NetworkManager::self().findNetworkInterface( uni );
+    const NetworkInterface &device = NetworkManager::findNetworkInterface(uni);
     d->setBackendObject(device.d->backendObject());
 }
 
