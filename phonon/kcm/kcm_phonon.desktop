@@ -20,6 +20,7 @@ Comment[nl]=Geluidssysteem instellen
 Comment[pa]=ਸਾਊਂਡ ਸਿਸਟਮ ਸੰਰਚਨਾ
 Comment[sv]=Ljudsysteminställning
 Comment[x-test]=xxSound System Configurationxx
+Comment[zh_TW]=聲音系統設定
 Keywords=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine
 Keywords[ja]=サウンド,Phonon,オーディオ,ビデオ,動画,出力,デバイス,通知,音楽,通信,メディア,NMM,GStreamer,Xine
 Keywords[nl]=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine,Geluid,Muziek,Communicatie,Uitvoer

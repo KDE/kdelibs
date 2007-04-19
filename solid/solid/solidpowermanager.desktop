@@ -10,6 +10,7 @@ Comment[nl]=Energiebeheer-backend
 Comment[pa]=ਊਰਜਾ ਪਰਬੰਧ ਬੈਕ-ਐਂਡ
 Comment[sv]=Gränssnitt för strömsparhantering
 Comment[x-test]=xxPower Management Backendxx
+Comment[zh_TW]=電源管理員後端介面
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString

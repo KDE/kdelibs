@@ -10,6 +10,7 @@ Comment[nl]=Netwerkbeheer-backend
 Comment[pa]=ਨੈੱਟਵਰਕ ਪਰਬੰਧ ਬੈਕ-ਐਂਡ
 Comment[sv]=Gränssnitt för nätverkshantering
 Comment[x-test]=xxNetwork Management Backendxx
+Comment[zh_TW]=網路管理員後端介面
 
 [PropertyDef::X-KDE-SolidBackendInfo-Version]
 Type=QString

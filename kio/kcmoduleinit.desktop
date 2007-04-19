@@ -9,6 +9,7 @@ Name[nl]=KDE-configuratie initialiseren
 Name[pa]=KDE ਸੰਰਚਨਾ ਸ਼ੁਰੂਆਤ
 Name[sv]=Initiering av KDE-inställningar
 Name[x-test]=xxKDE Configuration Initializationxx
+Name[zh_TW]=KDE 控制初始化
 
 # the symbol (with or without the kcminit_ prefix) used by kcminit
 [PropertyDef::X-KDE-Init-Symbol]

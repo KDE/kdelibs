@@ -8,6 +8,7 @@ Name[nl]=KDE-multimedia-backend
 Name[pa]=KDE ਮਲਟੀਮੀਡਿਆ ਬੈਕ-ਐਂਡ
 Name[sv]=KDE:s multimediagränssnitt
 Name[x-test]=xxKDE Multimedia Backendxx
+Name[zh_TW]=KDE 多媒體後端介面
 
 ##
 # The interface version is used by phonon to be able to only load binary

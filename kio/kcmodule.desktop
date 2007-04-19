@@ -9,6 +9,7 @@ Name[nl]=KDE-configuratiemodule
 Name[pa]=KDE ਕੰਟਰੋਲ ਮੋਡੀਊਲ
 Name[sv]=KDE-inställningsmodul
 Name[x-test]=xxKDE Configuration Modulexx
+Name[zh_TW]=KDE 控制模組
 
 # the name of the method (with or without the init_ prefix) returning the factory object
 [PropertyDef::X-KDE-FactoryName]

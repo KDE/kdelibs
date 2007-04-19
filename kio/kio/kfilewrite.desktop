@@ -9,6 +9,7 @@ Comment[ja]=KFileWrite プラグイン
 Comment[nl]=KFileWrite-plugin
 Comment[pa]=KFileWrite ਪਲੱਗਇਨ
 Comment[sv]=KFileWrite-insticksprogram
+Comment[zh_TW]=KFileWrite 外掛程式
 
 [PropertyDef::MetaDataKeys]
 Type=QStringList
