@@ -274,6 +274,21 @@ public:
        
        @li TopMenu indicates a toplevel menu (AKA macmenu). This is a KDE extension to the
        _NET_WM_WINDOW_TYPE mechanism.
+
+       @li DropdownMenu - dropdown menu (from a menubar typically)
+       
+       @li PopupMenu - a popup menu (a context menu typically)
+       
+       @li Tooltip - a tooltip window
+       
+       @li Notification - a notification window
+       
+       @li ComboBox - a list window for a combobox
+
+       @li DNDIcon - a window that represents the dragged object during DND operation
+
+       Note that some window types are typically used only on override-redirect
+       windows (WX11BypassWM flag).
     **/
 
     enum WindowType {
@@ -288,7 +303,13 @@ public:
         TopMenu  = 7, // NON STANDARD
 	Tool     = Toolbar, // This will go away soon, COMPAT (How soon? :)
 	Utility  = 8,	///< @since 3.2
-	Splash   = 9	///< @since 3.2
+	Splash   = 9,   ///< @since 3.2
+        DropdownMenu = 10,  ///< @since 3.5.7
+        PopupMenu    = 11,  ///< @since 3.5.7
+        Tooltip      = 12,  ///< @since 3.5.7
+        Notification = 13,  ///< @since 3.5.7
+        ComboBox     = 14,  ///< @since 3.5.7
+        DNDIcon      = 15   ///< @since 3.5.7
     };
     
     /**
@@ -306,7 +327,13 @@ public:
 	OverrideMask = 1<<6,
         TopMenuMask  = 1<<7,
 	UtilityMask  = 1<<8,
-	SplashMask   = 1<<9
+	SplashMask   = 1<<9,
+        DropdownMenuMask = 1<<10,  ///< @since 3.5.7
+        PopupMenuMask    = 1<<11,  ///< @since 3.5.7
+        TooltipMask      = 1<<12,  ///< @since 3.5.7
+        NotificationMask = 1<<13,  ///< @since 3.5.7
+        ComboBoxMask     = 1<<14,  ///< @since 3.5.7
+        DNDIconMask      = 1<<15   ///< @since 3.5.7
     };
 
     // KDE4 move to WindowTypeMask

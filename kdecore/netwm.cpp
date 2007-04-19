@@ -105,6 +105,12 @@ static Atom net_wm_window_type_menu    = 0;
 static Atom net_wm_window_type_dialog  = 0;
 static Atom net_wm_window_type_utility = 0;
 static Atom net_wm_window_type_splash  = 0;
+static Atom net_wm_window_type_dropdown_menu = 0;
+static Atom net_wm_window_type_popup_menu    = 0;
+static Atom net_wm_window_type_tooltip       = 0;
+static Atom net_wm_window_type_notification  = 0;
+static Atom net_wm_window_type_combobox      = 0;
+static Atom net_wm_window_type_dnd           = 0;
 
 // application window state
 static Atom net_wm_state_modal        = 0;
@@ -229,7 +235,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 77;
+static const int netAtomCount = 83;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -281,6 +287,12 @@ static void create_atoms(Display *d) {
 	    "_NET_WM_WINDOW_TYPE_DIALOG",
 	    "_NET_WM_WINDOW_TYPE_UTILITY",
 	    "_NET_WM_WINDOW_TYPE_SPLASH",
+	    "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU",
+	    "_NET_WM_WINDOW_TYPE_POPUP_MENU",
+	    "_NET_WM_WINDOW_TYPE_TOOLTIP",
+	    "_NET_WM_WINDOW_TYPE_NOTIFICATION",
+	    "_NET_WM_WINDOW_TYPE_COMBOBOX",
+	    "_NET_WM_WINDOW_TYPE_DND",
 
 	    "_NET_WM_STATE_MODAL",
 	    "_NET_WM_STATE_STICKY",
@@ -369,6 +381,12 @@ static void create_atoms(Display *d) {
 	    &net_wm_window_type_dialog,
 	    &net_wm_window_type_utility,
 	    &net_wm_window_type_splash,
+	    &net_wm_window_type_dropdown_menu,
+	    &net_wm_window_type_popup_menu,
+	    &net_wm_window_type_tooltip,
+	    &net_wm_window_type_notification,
+	    &net_wm_window_type_combobox,
+	    &net_wm_window_type_dnd,
 
 	    &net_wm_state_modal,
 	    &net_wm_state_sticky,
@@ -1199,6 +1217,18 @@ void NETRootInfo::setSupported() {
 	    atoms[pnum++] = net_wm_window_type_utility;
         if (p->properties[ WINDOW_TYPES ] & SplashMask)
 	    atoms[pnum++] = net_wm_window_type_splash;
+        if (p->properties[ WINDOW_TYPES ] & DropdownMenuMask)
+	    atoms[pnum++] = net_wm_window_type_dropdown_menu;
+        if (p->properties[ WINDOW_TYPES ] & PopupMenuMask)
+	    atoms[pnum++] = net_wm_window_type_popup_menu;
+        if (p->properties[ WINDOW_TYPES ] & TooltipMask)
+	    atoms[pnum++] = net_wm_window_type_tooltip;
+        if (p->properties[ WINDOW_TYPES ] & NotificationMask)
+	    atoms[pnum++] = net_wm_window_type_notification;
+        if (p->properties[ WINDOW_TYPES ] & ComboBoxMask)
+	    atoms[pnum++] = net_wm_window_type_combobox;
+        if (p->properties[ WINDOW_TYPES ] & DNDIconMask)
+	    atoms[pnum++] = net_wm_window_type_dnd;
 	// KDE extensions
         if (p->properties[ WINDOW_TYPES ] & OverrideMask)
 	    atoms[pnum++] = kde_net_wm_window_type_override;
@@ -1419,6 +1449,18 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ WINDOW_TYPES ] |= UtilityMask;
     else if( atom == net_wm_window_type_splash )
         p->properties[ WINDOW_TYPES ] |= SplashMask;
+    else if( atom == net_wm_window_type_dropdown_menu )
+        p->properties[ WINDOW_TYPES ] |= DropdownMenuMask;
+    else if( atom == net_wm_window_type_popup_menu )
+        p->properties[ WINDOW_TYPES ] |= PopupMenuMask;
+    else if( atom == net_wm_window_type_tooltip )
+        p->properties[ WINDOW_TYPES ] |= TooltipMask;
+    else if( atom == net_wm_window_type_notification )
+        p->properties[ WINDOW_TYPES ] |= NotificationMask;
+    else if( atom == net_wm_window_type_combobox )
+        p->properties[ WINDOW_TYPES ] |= ComboBoxMask;
+    else if( atom == net_wm_window_type_dnd )
+        p->properties[ WINDOW_TYPES ] |= DNDIconMask;
 	// KDE extensions
     else if( atom == kde_net_wm_window_type_override )
         p->properties[ WINDOW_TYPES ] |= OverrideMask;
@@ -3221,6 +3263,42 @@ void NETWinInfo::setWindowType(WindowType type) {
 	len = 2;
 	break;
 
+    case DropdownMenu:
+	data[0] = net_wm_window_type_dropdown_menu;
+	data[1] = None;
+	len = 1;
+	break;
+
+    case PopupMenu:
+	data[0] = net_wm_window_type_popup_menu;
+	data[1] = None;
+	len = 1;
+	break;
+
+    case Tooltip:
+	data[0] = net_wm_window_type_tooltip;
+	data[1] = None;
+	len = 1;
+	break;
+
+    case Notification:
+	data[0] = net_wm_window_type_notification;
+	data[1] = None;
+	len = 1;
+	break;
+
+    case ComboBox:
+	data[0] = net_wm_window_type_combobox;
+	data[1] = None;
+	len = 1;
+	break;
+
+    case DNDIcon:
+	data[0] = net_wm_window_type_dnd;
+	data[1] = None;
+	len = 1;
+	break;
+
     default:
     case Normal:
 	data[0] = net_wm_window_type_normal;
@@ -3960,6 +4038,18 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 			p->types[ pos++ ] = Utility;
 		    else if ((Atom) types[count] == net_wm_window_type_splash)
 			p->types[ pos++ ] = Splash;
+		    else if ((Atom) types[count] == net_wm_window_type_dropdown_menu)
+			p->types[ pos++ ] = DropdownMenu;
+		    else if ((Atom) types[count] == net_wm_window_type_popup_menu)
+			p->types[ pos++ ] = PopupMenu;
+		    else if ((Atom) types[count] == net_wm_window_type_tooltip)
+			p->types[ pos++ ] = Tooltip;
+		    else if ((Atom) types[count] == net_wm_window_type_notification)
+			p->types[ pos++ ] = Notification;
+		    else if ((Atom) types[count] == net_wm_window_type_combobox)
+			p->types[ pos++ ] = ComboBox;
+		    else if ((Atom) types[count] == net_wm_window_type_dnd)
+			p->types[ pos++ ] = DNDIcon;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
 			p->types[ pos++ ] = Override;
 		    else if ((Atom) types[count] == kde_net_wm_window_type_topmenu)
@@ -4287,6 +4377,12 @@ bool NET::typeMatchesMask( WindowType type, unsigned long mask ) {
         CHECK_TYPE_MASK( TopMenu )
         CHECK_TYPE_MASK( Utility )
         CHECK_TYPE_MASK( Splash )
+        CHECK_TYPE_MASK( DropdownMenu )
+        CHECK_TYPE_MASK( PopupMenu )
+        CHECK_TYPE_MASK( Tooltip )
+        CHECK_TYPE_MASK( Notification )
+        CHECK_TYPE_MASK( ComboBox )
+        CHECK_TYPE_MASK( DNDIcon )
 #undef CHECK_TYPE_MASK
         default:
             break;
