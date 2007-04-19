@@ -25,11 +25,6 @@
 #ifndef KCOLORDIALOG_H
 #define KCOLORDIALOG_H
 
-#ifdef Q_WS_QWS
-// FIXME(E): Do we need the KColorDialog extra functionality in Qt Embedded?
-#include <qcolordialog.h>
-#define KColorDialog QColorDialog
-#else //UNIX, WIN32
 #include <kdialog.h>
 #include <qpixmap.h>
 #include <qscrollarea.h>
@@ -342,6 +337,4 @@ class KDEUI_EXPORT KColorDialog : public KDialog
     Q_DISABLE_COPY(KColorDialog)
 };
 
-#endif		// !Q_WS_QWS
 #endif		// KCOLORDIALOG_H
-
