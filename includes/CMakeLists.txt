@@ -1,5 +1,5 @@
 
-install( FILES 
+install( FILES
   DrBase
   DrBooleanOption
   DrFloatOption
@@ -501,7 +501,7 @@ install( FILES
   KUrlPixmapProvider
   KUrlPropsPlugin
   KUrlRequester
-  KUrlRequesterDlg
+  KUrlRequesterDialog
   KUser
   KUserGroup
   KVBox
@@ -545,14 +545,14 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
 
-install( FILES 
+install( FILES
   ConversionCheck/QVconvertible
   ConversionCheck/type_toQString
   ConversionCheck/type_toQVariant
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ConversionCheck )
 
 
-install( FILES 
+install( FILES
   DNSSD/Configuration
   DNSSD/DomainBrowser
   DNSSD/PublicService
@@ -563,7 +563,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD )
 
 
-install( FILES 
+install( FILES
   DOM/AbstractView
   DOM/Attr
   DOM/CDATASection
@@ -683,13 +683,13 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DOM )
 
 
-install( FILES 
+install( FILES
   KAccelGen/Deref
   KAccelGen/Deref_Key
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen )
 
 
-install( FILES 
+install( FILES
   KDEPrivate/ConcreteFactory
   KDEPrivate/If
   KDEPrivate/InheritanceDetector
@@ -700,7 +700,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDEPrivate )
 
 
-install( FILES 
+install( FILES
   KHE/CharColumnInterface
   KHE/ClipboardInterface
   KHE/ValueColumnInterface
@@ -708,7 +708,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KHE )
 
 
-install( FILES 
+install( FILES
   KIO/AuthInfo
   KIO/ChmodJob
   KIO/Connection
@@ -754,7 +754,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO )
 
 
-install( FILES 
+install( FILES
   KJS/CString
   KJS/Collector
   KJS/Completion
@@ -785,7 +785,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJS )
 
 
-install( FILES 
+install( FILES
   KJSEmbed/Constructor
   KJSEmbed/Engine
   KJSEmbed/Enumerator
@@ -803,13 +803,13 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KJSEmbed )
 
 
-install( FILES 
+install( FILES
   KMediaPlayer/Player
   KMediaPlayer/View
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KMediaPlayer )
 
 
-install( FILES 
+install( FILES
   KNS/Action
   KNS/Author
   KNS/Button
@@ -831,7 +831,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS )
 
 
-install( FILES 
+install( FILES
   KNetwork/KActiveSocketBase
   KNetwork/KBufferedSocket
   KNetwork/KClientSocketBase
@@ -857,7 +857,7 @@ install( FILES
   KNetwork/KUnixSocketAddress
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNetwork )
 
-install( FILES 
+install( FILES
   KParts/BrowserExtension
   KParts/BrowserHostExtension
   KParts/BrowserInterface
@@ -887,7 +887,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KParts )
 
 
-install( FILES 
+install( FILES
   KSettings/ComponentsDialog
   KSettings/Dialog
   KSettings/Dispatcher
@@ -895,7 +895,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings )
 
 
-install( FILES 
+install( FILES
   Sonnet/GuessLanguage
   Sonnet/UnicodeData
   Sonnet/TextBreaks
@@ -903,7 +903,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Sonnet )
 
 
-install( FILES 
+install( FILES
   KTextEditor/Attribute
   KTextEditor/CodeCompletionInterface
   KTextEditor/CodeCompletionModel
@@ -938,7 +938,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KTextEditor )
 
 
-install( FILES 
+install( FILES
   KUnitTest/Runner
   KUnitTest/SlotTester
   KUnitTest/TestResults
@@ -946,12 +946,12 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KUnitTest )
 
 
-install( FILES 
+install( FILES
   KWallet/Wallet
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
 
 
-install( FILES 
+install( FILES
   KXMLCore/DefaultHash
   KXMLCore/DeletedValueAssigner
   KXMLCore/GenericHashTraits
@@ -1003,7 +1003,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KXMLCore )
 
 
-install( FILES 
+install( FILES
   Phonon/AbstractAudioOutput
   Phonon/AbstractMediaProducer
   Phonon/AbstractVideoOutput
@@ -1041,14 +1041,14 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon )
 
 
-install( FILES 
+install( FILES
   SafeSite/Agent
   SafeSite/Report
   SafeSite/ServiceInfo
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/SafeSite )
 
 
-install( FILES 
+install( FILES
   Solid/AcAdapter
   Solid/AudioHw
   Solid/Battery
@@ -1077,7 +1077,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid )
 
 
-install( FILES 
+install( FILES
   Solid/Ifaces/AcAdapter
   Solid/Ifaces/AudioHw
   Solid/Ifaces/AuthenticationValidator
@@ -1104,7 +1104,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid/Ifaces )
 
 
-install( FILES 
+install( FILES
   ThreadWeaver/DependencyPolicy
   ThreadWeaver/Job
   ThreadWeaver/JobCollection
@@ -1119,7 +1119,7 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ThreadWeaver )
 
 
-install( FILES 
+install( FILES
   khtml/DrawContentsEvent
   khtml/MouseDoubleClickEvent
   khtml/MouseEvent
