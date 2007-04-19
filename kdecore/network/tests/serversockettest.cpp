@@ -101,12 +101,12 @@ int main(int argc, char **argv)
 
   bool blocking = false;
 #ifdef Q_OS_WIN
-  QStringList &args = QCoreApplication::arguments(); 
+  QStringList args = QCoreApplication::arguments(); 
   QStringList params; 
   for (int i = 0; i < args.size(); ++i) {
-      if (args.[i] == "-b")
+      if (args[i] == "-b")
          blocking = true;
-     else if (args.[i] == "-t") {
+     else if (args[i] == "-t") {
 		 timeout = args[i+1].toInt();
 		 i++;
 	 }
