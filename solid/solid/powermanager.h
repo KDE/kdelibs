@@ -24,16 +24,12 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/singletondefs.h>
-
 class KJob;
 
 namespace Solid
 {
-    class PowerManagerPrivate;
-
     /**
-     * This class allow to query the underlying system to obtain information
+     * This namespace allows to query the underlying system to obtain information
      * about the hardware available.
      *
      * It's the unique entry point for power management. Applications should use
@@ -43,14 +39,8 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT PowerManager : public QObject
+    namespace PowerManager
     {
-        Q_OBJECT
-        Q_ENUMS( BatteryState AcAdapterState ButtonType SuspendMethod CpuFreqPolicy )
-        Q_FLAGS( SuspendMethods CpuFreqPolicies )
-        SOLID_SINGLETON( PowerManager )
-
-    public:
        /**
          * This enum type defines the different states of the system battery.
          *
@@ -120,7 +110,7 @@ namespace Solid
          *
          * @return the available power management schemes
          */
-        QStringList supportedSchemes() const;
+        SOLID_EXPORT QStringList supportedSchemes();
 
         /**
          * Retrieves a localized description corresponding to the given scheme.
@@ -128,7 +118,7 @@ namespace Solid
          * @param schemeName the name of the scheme we request the description for
          * @return the associated description
          */
-        QString schemeDescription( const QString &schemeName ) const;
+        SOLID_EXPORT QString schemeDescription(const QString &schemeName);
 
         /**
          * Retrieves the name of the current power management scheme used
@@ -136,7 +126,7 @@ namespace Solid
          *
          * @return the current scheme
          */
-        QString scheme() const;
+        SOLID_EXPORT QString scheme();
 
         /**
          * Changes the current power management scheme.
@@ -144,7 +134,7 @@ namespace Solid
          * @param name the name of the new scheme
          * @return true if the scheme change succeeded, false otherwise
          */
-        bool setScheme( const QString &name );
+        SOLID_EXPORT bool setScheme(const QString &name);
 
 
         /**
@@ -153,14 +143,14 @@ namespace Solid
          * @return the current battery state
          * @see Solid::PowerManager::BatteryState
          */
-        BatteryState batteryState() const;
+        SOLID_EXPORT BatteryState batteryState();
 
         /**
          * Retrieves the current charge percentage of the system batteries.
          *
          * @return the current global battery charge percentage
          */
-        int batteryChargePercent() const;
+        SOLID_EXPORT int batteryChargePercent();
 
         /**
          * Retrieves the current state of the system AC adapter.
@@ -168,7 +158,7 @@ namespace Solid
          * @return the current AC adapter state
          * @see Solid::PowerManager::AcAdapterState
          */
-        AcAdapterState acAdapterState() const;
+        SOLID_EXPORT AcAdapterState acAdapterState();
 
 
         /**
@@ -178,7 +168,7 @@ namespace Solid
          * @see Solid::PowerManager::SuspendMethod
          * @see Solid::PowerManager::SuspendMethods
          */
-        SuspendMethods supportedSuspendMethods() const;
+        SOLID_EXPORT SuspendMethods supportedSuspendMethods();
 
         /**
          * Requests a suspend of the system.
@@ -186,7 +176,7 @@ namespace Solid
          * @param method the suspend method to use
          * @return the job handling the operation
          */
-        KJob *suspend( SuspendMethod method ) const;
+        SOLID_EXPORT KJob *suspend(SuspendMethod method);
 
 
         /**
@@ -196,7 +186,7 @@ namespace Solid
          * @see Solid::PowerManager::CpuFreqPolicy
          * @see Solid::PowerManager::CpuFreqPolicies
          */
-        CpuFreqPolicies supportedCpuFreqPolicies() const;
+        SOLID_EXPORT CpuFreqPolicies supportedCpuFreqPolicies();
 
         /**
          * Retrieves the current CPU frequency policy of the system.
@@ -204,7 +194,7 @@ namespace Solid
          * @return the current CPU frequency policy used by the system
          * @see Solid::PowerManager::CpuFreqPolicy
          */
-        CpuFreqPolicy cpuFreqPolicy() const;
+        SOLID_EXPORT CpuFreqPolicy cpuFreqPolicy();
 
         /**
          * Changes the current CPU frequency policy of the system.
@@ -213,7 +203,7 @@ namespace Solid
          * @return true if the policy change succeeded, false otherwise
          * @see Solid::PowerManager::CpuFreqPolicy
          */
-        bool setCpuFreqPolicy( CpuFreqPolicy newPolicy );
+        SOLID_EXPORT bool setCpuFreqPolicy(CpuFreqPolicy newPolicy);
 
         /**
          * Checks if a CPU can be disabled.
@@ -221,7 +211,7 @@ namespace Solid
          * @param cpuNum the number of the CPU we want to check
          * @return true if the given CPU can be disabled, false otherwise
          */
-        bool canDisableCpu( int cpuNum ) const;
+        SOLID_EXPORT bool canDisableCpu(int cpuNum);
 
         /**
          * Enables or disables a CPU.
@@ -230,46 +220,46 @@ namespace Solid
          * @param enabled the new state of the CPU
          * @return true if the state change succeeded, false otherwise
          */
-        bool setCpuEnabled( int cpuNum, bool enabled );
+        SOLID_EXPORT bool setCpuEnabled(int cpuNum, bool enabled);
 
-    Q_SIGNALS:
-        /**
-         * This signal is emitted when the power management scheme has changed.
-         *
-         * @param newScheme the new scheme name
-         */
-        void schemeChanged( QString newScheme );
+        class Notifier : public QObject
+        {
+            Q_OBJECT
+        Q_SIGNALS:
+            /**
+             * This signal is emitted when the power management scheme has changed.
+             *
+             * @param newScheme the new scheme name
+             */
+            void schemeChanged(QString newScheme);
 
-        /**
-         * This signal is emitted when the AC adapter is plugged or unplugged.
-         *
-         * @param newState the new state of the AC adapter, it's one of the
-         * type @see Solid::PowerManager::AcAdapterState
-         */
-        void acAdapterStateChanged( int newState );
+            /**
+             * This signal is emitted when the AC adapter is plugged or unplugged.
+             *
+             * @param newState the new state of the AC adapter, it's one of the
+             * type @see Solid::PowerManager::AcAdapterState
+             */
+            void acAdapterStateChanged(int newState);
 
-        /**
-         * This signal is emitted when the system battery state changed.
-         *
-         * @param newState the new state of the system battery, it's one of the
-         * type @see Solid::PowerManager::BatteryState
-         */
-        void batteryStateChanged( int newState );
+            /**
+             * This signal is emitted when the system battery state changed.
+             *
+             * @param newState the new state of the system battery, it's one of the
+             * type @see Solid::PowerManager::BatteryState
+             */
+            void batteryStateChanged(int newState);
 
-        /**
-         * This signal is emitted when a button has been pressed.
-         *
-         * @param buttonType the pressed button type, it's one of the
-         * type @see Solid::PowerManager::ButtonType
-         */
-        void buttonPressed( int buttonType );
+            /**
+             * This signal is emitted when a button has been pressed.
+             *
+             * @param buttonType the pressed button type, it's one of the
+             * type @see Solid::PowerManager::ButtonType
+             */
+            void buttonPressed(int buttonType);
+        };
 
-    private:
-        PowerManager();
-        ~PowerManager();
-
-        PowerManagerPrivate * const d;
-    };
+        SOLID_EXPORT Notifier *notifier();
+    }
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::PowerManager::SuspendMethods )
