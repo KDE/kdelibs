@@ -16,7 +16,7 @@ Action=Popup
 
 
 [Event/message]
-Name=Message received
+Name=Message Received
 Comment=A Message has been received
 Contexts=group
 Action=Popup

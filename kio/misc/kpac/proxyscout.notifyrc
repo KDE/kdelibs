@@ -3,14 +3,14 @@ IconName=proxy
 Comment=Automatic Proxy Configuration
 
 [Event/script-error]
-Name=Invalid proxy script
+Name=Invalid Proxy Script
 Comment=The downloaded proxy configuration script is invalid
 Comment[fr]=Le script téléchargé de configuration du proxy n'est pas valable
 Comment[x-test]=xxThe downloaded proxy configuration script is invalidxx
 Action=Popup
 
 [Event/download-error]
-Name=Script download error
+Name=Script Download Error
 Name[fr]=Erreur de téléchargement du script
 Name[x-test]=xxScript download errorxx
 Comment=The proxy configuration script could not be downloaded
@@ -19,7 +19,7 @@ Comment[x-test]=xxThe proxy configuration script could not be downloadedxx
 Action=Popup
 
 [Event/evaluation-error]
-Name=Script evaluation error
+Name=Script Evaluation Error
 Name[fr]=Erreur d'évaluation du script
 Name[x-test]=xxScript evaluation errorxx
 Comment=There was an error executing the proxy configuration script
