@@ -61,24 +61,6 @@ namespace Solid
         SOLID_EXPORT QList<Device> allDevices();
 
         /**
-         * Tests if a device exists in the underlying system given its
-         * Universal Device Identifier (UDI).
-         *
-         * @param udi the identifier of the device to check
-         * @return true if a device has the given udi in the system, false otherwise
-         */
-        SOLID_EXPORT bool deviceExists(const QString &udi);
-
-        /**
-         * Retrieves a device of the system given it's UDI.
-         *
-         * @param udi the identifier of the device to find
-         * @return a device that has the given UDI in the system if possible, an
-         * invalid device otherwise
-         */
-        SOLID_EXPORT Device findDevice(const QString &udi);
-
-        /**
          * Retrieves a list of devices of the system given matching the given
          * constraints (parent and device interface type)
          *
@@ -133,14 +115,6 @@ namespace Solid
              * @param udi the old device UDI
              */
             void deviceRemoved(const QString &udi);
-
-            /**
-             * This signal is emitted when a new device interface is detected in a device.
-             *
-             * @param udi the UDI of the device getting a new device interface
-             * @param type the device interface type
-             */
-            void newDeviceInterface(const QString &udi, int type);
         };
 
         SOLID_EXPORT Notifier *notifier();

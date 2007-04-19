@@ -40,8 +40,8 @@ void FakeHardwareTest::testFakeBackend()
     FakeManager *fakeManager = new FakeManager(0, QStringList(), TEST_DATA );
 
     QVERIFY( !fakeManager->allDevices().isEmpty() );
-    QVERIFY( fakeManager->deviceExists("/org/kde/solid/fakehw/computer") );
-    QVERIFY( !fakeManager->deviceExists("/com/helloworld/troll/compiutor") );
+    QVERIFY( fakeManager->createDevice("/org/kde/solid/fakehw/computer")!=0 );
+    QVERIFY( fakeManager->createDevice("/com/helloworld/troll/compiutor")==0 );
 
     FakeDevice *device = static_cast<FakeDevice*>(fakeManager->createDevice("/org/kde/solid/fakehw/acpi_CPU0"));
 

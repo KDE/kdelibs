@@ -31,10 +31,10 @@ class SolidHwTest : public QObject
 private slots:
     void initTestCase();
     void testAllDevices();
-    void testDeviceExists();
     void testDeviceBasicFeatures();
     void testManagerSignals();
     void testDeviceSignals();
+    void testDeviceExistence();
     void testDeviceInterfaceIntrospection_data();
     void testDeviceInterfaceIntrospection();
     void testDeviceInterfaceIntrospectionCornerCases();

@@ -21,25 +21,38 @@
 #define SOLID_DEVICE_P_H
 
 #include <QtCore/QObject>
-#include "frontendobject_p.h"
+#include <QtCore/QSharedData>
+#include <QtCore/QPointer>
 
 namespace Solid
 {
-    class DevicePrivate : public QObject, public FrontendObjectPrivate
+    namespace Ifaces
+    {
+        class Device;
+    }
+
+    class DevicePrivate : public QObject, public QSharedData
     {
         Q_OBJECT
     public:
-        explicit DevicePrivate(const QString &udi = QString());
+        explicit DevicePrivate(const QString &udi);
         ~DevicePrivate();
 
-        virtual void setBackendObject(QObject *object);
+        QString udi() const { return m_udi; }
+
+        Ifaces::Device *backendObject() const { return m_backendObject; }
+        void setBackendObject(Ifaces::Device *object);
+
+        DeviceInterface *interface(const DeviceInterface::Type &type) const;
+        void setInterface(const DeviceInterface::Type &type, DeviceInterface *interface) const;
 
     public Q_SLOTS:
-        virtual void _k_destroyed(QObject *object);
+        void _k_destroyed(QObject *object);
 
-    public:
-        QString udi;
-        mutable QMap<DeviceInterface::Type,DeviceInterface*> ifaces;
+    private:
+        QString m_udi;
+        QPointer<Ifaces::Device> m_backendObject;
+        mutable QMap<DeviceInterface::Type, DeviceInterface*> m_ifaces;
     };
 }
 

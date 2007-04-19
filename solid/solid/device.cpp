@@ -20,6 +20,7 @@
 #include "device.h"
 #include "device_p.h"
 #include "devicemanager.h"
+#include "devicemanager_p.h"
 
 #include "deviceinterface_p.h"
 #include "soliddefs_p.h"
@@ -60,14 +61,11 @@
 #include <solid/ifaces/dvbhw.h>
 
 
-Solid::Device::Device()
-    : d(new DevicePrivate())
-{
-}
-
 Solid::Device::Device( const QString &udi )
-    : d(DeviceManager::findDevice(udi).d)
 {
+    DeviceManagerPrivate *manager
+        = static_cast<DeviceManagerPrivate*>(Solid::DeviceManager::notifier());
+    d = manager->findRegisteredDevice(udi);
 }
 
 Solid::Device::Device( const Device &device )
@@ -77,7 +75,6 @@ Solid::Device::Device( const Device &device )
 
 Solid::Device::~Device()
 {
-    //qDeleteAll( d->ifaces.values() );
 }
 
 Solid::Device &Solid::Device::operator=( const Solid::Device &device )
@@ -93,7 +90,7 @@ bool Solid::Device::isValid() const
 
 QString Solid::Device::udi() const
 {
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), udi() );
+    return d->udi();
 }
 
 QString Solid::Device::parentUdi() const
@@ -111,7 +108,7 @@ Solid::Device Solid::Device::parent() const
     }
     else
     {
-        return DeviceManager::findDevice(udi);
+        return Device(udi);
     }
 }
 
@@ -157,13 +154,13 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
 
     if ( device!=0 )
     {
-        if (d->ifaces.contains(type)) {
-            return d->ifaces.value(type);
+        DeviceInterface *iface = d->interface(type);
+
+        if (iface!=0) {
+            return iface;
         }
 
         QObject *dev_iface = device->createDeviceInterface(type);
-
-        DeviceInterface *iface = 0;
 
         if ( dev_iface!=0 )
         {
@@ -224,7 +221,7 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
 
         if ( iface!=0 )
         {
-            d->ifaces[type] = iface;
+            d->setInterface(type, iface);
         }
 
         return iface;
@@ -235,42 +232,51 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
     }
 }
 
+
+//////////////////////////////////////////////////////////////////////
+
+
 Solid::DevicePrivate::DevicePrivate(const QString &udi)
-    : QObject(), FrontendObjectPrivate(this)
+    : QObject(), QSharedData(), m_udi(udi)
 {
-    this->udi = udi;
 }
 
 Solid::DevicePrivate::~DevicePrivate()
 {
-    qDeleteAll( ifaces.values() );
+    qDeleteAll( m_ifaces.values() );
 }
 
 void Solid::DevicePrivate::_k_destroyed(QObject *object)
 {
-    if (object == backendObject()) {
-        FrontendObjectPrivate::_k_destroyed(object);
-
-        foreach( DeviceInterface *iface, ifaces.values() )
-        {
-            delete iface->d_ptr->backendObject();
-            delete iface;
-        }
-
-        ifaces.clear();
-    }
+    Q_UNUSED(object);
+    setBackendObject(0);
 }
 
-void Solid::DevicePrivate::setBackendObject(QObject *object)
+void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
 {
-    foreach (DeviceInterface *iface, ifaces.values()) {
+    foreach (DeviceInterface *iface, m_ifaces.values()) {
         delete iface->d_ptr->backendObject();
         delete iface;
     }
 
-    ifaces.clear();
+    m_ifaces.clear();
 
-    FrontendObjectPrivate::setBackendObject(object);
+    m_backendObject = object;
+
+    if (m_backendObject) {
+        connect(m_backendObject, SIGNAL(destroyed(QObject*)),
+                this, SLOT(_k_destroyed(QObject*)));
+    }
+}
+
+Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::Type &type) const
+{
+    return m_ifaces[type];
+}
+
+void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface) const
+{
+    m_ifaces[type] = interface;
 }
 
 #include "device_p.moc"

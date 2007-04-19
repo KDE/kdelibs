@@ -65,17 +65,6 @@ void SolidHwTest::testAllDevices()
     QCOMPARE( expected_udis, received_udis );
 }
 
-void SolidHwTest::testDeviceExists()
-{
-    QCOMPARE( Solid::DeviceManager::deviceExists( "/org/kde/solid/fakehw/acpi_LID0" ), true );
-    QCOMPARE( Solid::DeviceManager::deviceExists( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ), true );
-
-    // Note the extra space
-    QCOMPARE( Solid::DeviceManager::deviceExists( "/org/kde/solid/fakehw/computer " ), false );
-    QCOMPARE( Solid::DeviceManager::deviceExists( "#'({(à]" ), false );
-    QCOMPARE( Solid::DeviceManager::deviceExists( QString() ), false );
-}
-
 void SolidHwTest::testDeviceBasicFeatures()
 {
     // Retrieve a valid Device object
@@ -87,7 +76,7 @@ void SolidHwTest::testDeviceBasicFeatures()
     // A few attempts at creating invalid Device objects
     Solid::Device invalid_dev( "uhoh? doesn't exist, I guess" );
     QCOMPARE( invalid_dev.isValid(), false );
-    invalid_dev = Solid::DeviceManager::findDevice( QString() );
+    invalid_dev = Solid::Device( QString() );
     QCOMPARE( invalid_dev.isValid(), false );
     invalid_dev = Solid::Device();
     QCOMPARE( invalid_dev.isValid(), false );
@@ -154,14 +143,6 @@ void SolidHwTest::testManagerSignals()
     QVERIFY( cpu.isValid() );
 
 
-    // Now we add a device interface to the newly created device, and spy the signal
-    QSignalSpy new_interface( Solid::DeviceManager::notifier(), SIGNAL( newDeviceInterface( QString, int ) ) );
-    fakeManager->raiseDeviceInterfaceAdded( "/org/kde/solid/fakehw/acpi_CPU0", Solid::DeviceInterface::Processor );
-    QCOMPARE( new_interface.count(), 1 );
-    QCOMPARE( new_interface.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( new_interface.at( 0 ).at( 1 ), QVariant( Solid::DeviceInterface::Processor ) );
-
-
     // Finally we remove the device and spy the corresponding signal again
     QSignalSpy removed( Solid::DeviceManager::notifier(), SIGNAL( deviceRemoved( QString ) ) );
     fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );
@@ -222,6 +203,25 @@ void SolidHwTest::testDeviceSignals()
     // It must be identical to the condition we raised by hand
     QCOMPARE( condition_raised.at( 0 ).at( 0 ).toString(), QString( "Lid Closed" ) );
     QCOMPARE( condition_raised.at( 0 ).at( 1 ).toString(), QString( "Why not?" ) );
+}
+
+void SolidHwTest::testDeviceExistence()
+{
+    QCOMPARE(Solid::Device("/org/kde/solid/fakehw/acpi_LID0").isValid(), true);
+    QCOMPARE(Solid::Device("/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS").isValid(), true);
+
+    // Note the extra space
+    QCOMPARE(Solid::Device("/org/kde/solid/fakehw/computer ").isValid(), false);
+    QCOMPARE(Solid::Device("#'({(à]").isValid(), false);
+    QCOMPARE(Solid::Device(QString()).isValid(), false);
+
+    // Now try to see if isValid() changes on plug/unplug events
+    Solid::Device cpu("/org/kde/solid/fakehw/acpi_CPU0");
+    QVERIFY(cpu.isValid());
+    fakeManager->unplug("/org/kde/solid/fakehw/acpi_CPU0");
+    QVERIFY(!cpu.isValid());
+    fakeManager->plug("/org/kde/solid/fakehw/acpi_CPU0");
+    QVERIFY(cpu.isValid());
 }
 
 void SolidHwTest::testDeviceInterfaces()

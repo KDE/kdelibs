@@ -83,11 +83,6 @@ QStringList FakeManager::allDevices()
     return deviceUdiList;
 }
 
-bool FakeManager::deviceExists(const QString &udi)
-{
-    return d->loadedDevices.contains(udi);
-}
-
 QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type)
 {
     if( !parentUdi.isEmpty() )
@@ -174,11 +169,6 @@ QStringList FakeManager::findDeviceByDeviceInterface( const Solid::DeviceInterfa
     }
 
     return result;
-}
-
-void FakeManager::raiseDeviceInterfaceAdded( const QString &udi, Solid::DeviceInterface::Type type )
-{
-    emit newDeviceInterface( udi, type );
 }
 
 void FakeManager::plug( const QString &udi )

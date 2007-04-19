@@ -24,6 +24,7 @@
 #include <QString>
 #include <QMap>
 #include <QList>
+#include <QtCore/QExplicitlySharedDataPointer>
 
 #include <solid/solid_export.h>
 
@@ -48,16 +49,11 @@ namespace Solid
     public:
 
         /**
-         * Constructs an invalid device.
-         */
-        Device();
-
-        /**
          * Constructs a device for a given Universal Device Identifier (UDI).
          *
          * @param udi the udi of the device to create
          */
-        explicit Device( const QString &udi );
+        explicit Device(const QString &udi = QString());
 
         /**
          * Constructs a copy of a device.
@@ -196,7 +192,7 @@ namespace Solid
         }
 
     private:
-        DevicePrivate *d;
+        QExplicitlySharedDataPointer<DevicePrivate> d;
         friend class DeviceManagerPrivate;
     };
 

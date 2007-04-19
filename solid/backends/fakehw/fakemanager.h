@@ -47,17 +47,10 @@ public:
      */
     virtual QStringList allDevices();
 
-    /**
-     * Check if the device exists.
-     */
-    virtual bool deviceExists(const QString &udi);
-
     virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type);
 
     virtual QObject *createDevice( const QString &udi );
     virtual FakeDevice *findDevice( const QString &udi );
-
-    void raiseDeviceInterfaceAdded( const QString &udi, Solid::DeviceInterface::Type type );
 
 public Q_SLOTS:
     void plug( const QString &udi );

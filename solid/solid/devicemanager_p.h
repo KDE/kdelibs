@@ -23,14 +23,19 @@
 #include "managerbase_p.h"
 
 #include "devicemanager.h"
-#include "device.h"
-#include "ifaces/device.h"
 
-#include <QPair>
-
+#include <QMap>
+#include <QExplicitlySharedDataPointer>
 
 namespace Solid
 {
+    namespace Ifaces
+    {
+        class Device;
+    }
+    class DevicePrivate;
+
+
     class DeviceManagerPrivate : public DeviceManager::Notifier, public ManagerBasePrivate
     {
         Q_OBJECT
@@ -38,27 +43,19 @@ namespace Solid
         DeviceManagerPrivate();
         ~DeviceManagerPrivate();
 
-        QList<Device> allDevices();
-        bool deviceExists(const QString &udi);
-        Device findDevice(const QString &udi);
-        QList<Device> findDevicesFromQuery(const DeviceInterface::Type &type,
-                                           const QString &parentUdi = QString());
-        QList<Device> findDevicesFromQuery(const Predicate &predicate,
-                                           const QString &parentUdi = QString());
-        QList<Device> findDevicesFromQuery(const QString &predicate,
-                                           const QString &parentUdi = QString());
+        DevicePrivate *findRegisteredDevice(const QString &udi);
 
     private Q_SLOTS:
         void _k_deviceAdded(const QString &udi);
         void _k_deviceRemoved(const QString &udi);
-        void _k_newDeviceInterface(const QString &udi, int type);
         void _k_destroyed(QObject *object);
 
     private:
-        QPair<Device*, Ifaces::Device*> findRegisteredDevice(const QString &udi);
+        Ifaces::Device *createBackendObject(const QString &udi);
 
-        QMap<QString, QPair<Device*, Ifaces::Device*> > m_devicesMap;
-        Device m_invalidDevice;
+        QExplicitlySharedDataPointer<DevicePrivate> m_nullDevice;
+        QMap<QString, DevicePrivate*> m_devicesMap;
+        QMap<QObject*, QString> m_reverseMap;
     };
 }
 

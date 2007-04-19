@@ -67,14 +67,6 @@ namespace Ifaces
         virtual QStringList allDevices() = 0;
 
         /**
-         * Tests if a particular device exists given its UDI.
-         *
-         * @param udi the identifier of the device tested
-         * @returns true if there's a device having this UDI, false otherwise
-         */
-        virtual bool deviceExists( const QString &udi ) = 0;
-
-        /**
          * Retrieves the Universal Device Identifier (UDI) of all the devices
          * matching the given constraints (parent and device interface)
          *
@@ -109,14 +101,6 @@ namespace Ifaces
          * @param udi the old device identifier
          */
         void deviceRemoved( const QString &udi );
-
-        /**
-         * This signal is emitted when a new device interface is detected on a device.
-         *
-         * @param udi the device identifier
-         * @param type the new device interface detected
-         */
-        void newDeviceInterface( const QString &udi, int type );
     };
 }
 }
