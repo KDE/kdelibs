@@ -31,7 +31,6 @@
 
 namespace Solid
 {
-    class DeviceManager;
     class DevicePrivate;
 
     /**

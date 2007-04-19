@@ -49,9 +49,7 @@ void SolidHwTest::initTestCase()
 
 void SolidHwTest::testAllDevices()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
-    Solid::DeviceList devices = manager.allDevices();
+    Solid::DeviceList devices = Solid::DeviceManager::allDevices();
 
     // Verify that the framework reported correctly the devices available
     // in the backend.
@@ -69,21 +67,17 @@ void SolidHwTest::testAllDevices()
 
 void SolidHwTest::testDeviceExists()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
-    QCOMPARE( manager.deviceExists( "/org/kde/solid/fakehw/acpi_LID0" ), true );
-    QCOMPARE( manager.deviceExists( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ), true );
+    QCOMPARE( Solid::DeviceManager::deviceExists( "/org/kde/solid/fakehw/acpi_LID0" ), true );
+    QCOMPARE( Solid::DeviceManager::deviceExists( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ), true );
 
     // Note the extra space
-    QCOMPARE( manager.deviceExists( "/org/kde/solid/fakehw/computer " ), false );
-    QCOMPARE( manager.deviceExists( "#'({(à]" ), false );
-    QCOMPARE( manager.deviceExists( QString() ), false );
+    QCOMPARE( Solid::DeviceManager::deviceExists( "/org/kde/solid/fakehw/computer " ), false );
+    QCOMPARE( Solid::DeviceManager::deviceExists( "#'({(à]" ), false );
+    QCOMPARE( Solid::DeviceManager::deviceExists( QString() ), false );
 }
 
 void SolidHwTest::testDeviceBasicFeatures()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
     // Retrieve a valid Device object
     Solid::Device valid_dev( "/org/kde/solid/fakehw/storage_model_solid_writer" );
 
@@ -93,7 +87,7 @@ void SolidHwTest::testDeviceBasicFeatures()
     // A few attempts at creating invalid Device objects
     Solid::Device invalid_dev( "uhoh? doesn't exist, I guess" );
     QCOMPARE( invalid_dev.isValid(), false );
-    invalid_dev = manager.findDevice( QString() );
+    invalid_dev = Solid::DeviceManager::findDevice( QString() );
     QCOMPARE( invalid_dev.isValid(), false );
     invalid_dev = Solid::Device();
     QCOMPARE( invalid_dev.isValid(), false );
@@ -147,13 +141,10 @@ void SolidHwTest::testManagerSignals()
 {
     fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );
 
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
-
     // Heh, we missed a processor in this system ;-)
     // We're going to add this device, and check that the signal has been
     // properly emitted by the manager
-    QSignalSpy added( &manager, SIGNAL( deviceAdded( QString ) ) );
+    QSignalSpy added( Solid::DeviceManager::notifier(), SIGNAL( deviceAdded( QString ) ) );
     fakeManager->plug( "/org/kde/solid/fakehw/acpi_CPU0" );
     QCOMPARE( added.count(), 1 );
     QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
@@ -164,7 +155,7 @@ void SolidHwTest::testManagerSignals()
 
 
     // Now we add a device interface to the newly created device, and spy the signal
-    QSignalSpy new_interface( &manager, SIGNAL( newDeviceInterface( QString, int ) ) );
+    QSignalSpy new_interface( Solid::DeviceManager::notifier(), SIGNAL( newDeviceInterface( QString, int ) ) );
     fakeManager->raiseDeviceInterfaceAdded( "/org/kde/solid/fakehw/acpi_CPU0", Solid::DeviceInterface::Processor );
     QCOMPARE( new_interface.count(), 1 );
     QCOMPARE( new_interface.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
@@ -172,7 +163,7 @@ void SolidHwTest::testManagerSignals()
 
 
     // Finally we remove the device and spy the corresponding signal again
-    QSignalSpy removed( &manager, SIGNAL( deviceRemoved( QString ) ) );
+    QSignalSpy removed( Solid::DeviceManager::notifier(), SIGNAL( deviceRemoved( QString ) ) );
     fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );
     QCOMPARE( added.count(), 1 );
     QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
@@ -357,35 +348,33 @@ void SolidHwTest::testPredicate()
               QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
 
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-
     parentUdi = QString();
     ifaceType = Solid::DeviceInterface::Unknown;
     Solid::DeviceList list;
 
-    list = manager.findDevicesFromQuery( p1, parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( p1, parentUdi );
     QCOMPARE( list.size(), 2 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
     QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
-    list = manager.findDevicesFromQuery( p2, parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( p2, parentUdi );
     QCOMPARE( list.size(), 0 );
 
-    list = manager.findDevicesFromQuery( p3, parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( p3, parentUdi );
     QCOMPARE( list.size(), 2 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
     QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
-    list = manager.findDevicesFromQuery( p4, parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( p4, parentUdi );
     QCOMPARE( list.size(), 0 );
 
-    list = manager.findDevicesFromQuery( "[Processor.canThrottle==true AND Processor.number==1]",
-                                         parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( "[Processor.canThrottle==true AND Processor.number==1]",
+                                                       parentUdi );
     QCOMPARE( list.size(), 1 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
-    list = manager.findDevicesFromQuery( "[Processor.number==1 OR IS Volume]",
-                                         parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( "[Processor.number==1 OR IS Volume]",
+                                                       parentUdi );
 
     QSet<QString> set;
 
@@ -402,20 +391,20 @@ void SolidHwTest::testPredicate()
         << "/org/kde/solid/fakehw/volume_uuid_feedface";
     QCOMPARE( set, to_string_set( list ) );
 
-    list = manager.findDevicesFromQuery( "[IS Processor OR IS Volume]",
+    list = Solid::DeviceManager::findDevicesFromQuery( "[IS Processor OR IS Volume]",
                                          parentUdi );
     QCOMPARE( list.size(), 11 );
     set << "/org/kde/solid/fakehw/acpi_CPU0";
     QCOMPARE( set, to_string_set( list ) );
 
     ifaceType = Solid::DeviceInterface::Processor;
-    list = manager.findDevicesFromQuery( ifaceType, parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( ifaceType, parentUdi );
     QCOMPARE( list.size(), 2 );
     QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
     QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
 
     ifaceType = Solid::DeviceInterface::Unknown;
-    list = manager.findDevicesFromQuery( "blup", parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery( "blup", parentUdi );
     QCOMPARE( list.size(), 0 );
 }
 

@@ -66,7 +66,7 @@ Solid::Device::Device()
 }
 
 Solid::Device::Device( const QString &udi )
-    : d(DeviceManager::self().findDevice(udi).d)
+    : d(DeviceManager::findDevice(udi).d)
 {
 }
 
@@ -111,7 +111,7 @@ Solid::Device Solid::Device::parent() const
     }
     else
     {
-        return DeviceManager::self().findDevice( udi );
+        return DeviceManager::findDevice(udi);
     }
 }
 

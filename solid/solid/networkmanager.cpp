@@ -38,8 +38,8 @@ Solid::NetworkManager::NetworkManager()
                    "SolidNetworkManager",
                    "Solid::Ifaces::NetworkManager");
 
-    if (d->backend!=0) {
-        d->connectBackend(d->backend);
+    if (d->managerBackend()!=0) {
+        d->connectBackend(d->managerBackend());
     }
 }
 
@@ -62,7 +62,7 @@ Solid::NetworkManager::~NetworkManager()
 Solid::NetworkInterfaceList Solid::NetworkManager::buildDeviceList( const QStringList & uniList ) const
 {
     NetworkInterfaceList list;
-    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(d->backend);
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(d->managerBackend());
 
     if ( backend == 0 ) return list;
 
@@ -81,7 +81,7 @@ Solid::NetworkInterfaceList Solid::NetworkManager::buildDeviceList( const QStrin
 
 Solid::NetworkInterfaceList Solid::NetworkManager::networkInterfaces() const
 {
-    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(d->backend);
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(d->managerBackend());
 
     if ( backend!= 0 )
     {
@@ -95,32 +95,32 @@ Solid::NetworkInterfaceList Solid::NetworkManager::networkInterfaces() const
 
 bool Solid::NetworkManager::isNetworkingEnabled() const
 {
-    return_SOLID_CALL( Ifaces::NetworkManager*, d->backend, false, isNetworkingEnabled() );
+    return_SOLID_CALL( Ifaces::NetworkManager*, d->managerBackend(), false, isNetworkingEnabled() );
 }
 
 bool Solid::NetworkManager::isWirelessEnabled() const
 {
-    return_SOLID_CALL( Ifaces::NetworkManager*, d->backend, false, isWirelessEnabled() );
+    return_SOLID_CALL( Ifaces::NetworkManager*, d->managerBackend(), false, isWirelessEnabled() );
 }
 
 void Solid::NetworkManager::setNetworkingEnabled( bool enabled )
 {
-    SOLID_CALL( Ifaces::NetworkManager*, d->backend, setNetworkingEnabled( enabled ) );
+    SOLID_CALL( Ifaces::NetworkManager*, d->managerBackend(), setNetworkingEnabled( enabled ) );
 }
 
 void Solid::NetworkManager::setWirelessEnabled( bool enabled )
 {
-    SOLID_CALL( Ifaces::NetworkManager*, d->backend, setWirelessEnabled( enabled ) );
+    SOLID_CALL( Ifaces::NetworkManager*, d->managerBackend(), setWirelessEnabled( enabled ) );
 }
 
 void Solid::NetworkManager::notifyHiddenNetwork( const QString &networkName )
 {
-    SOLID_CALL( Ifaces::NetworkManager*, d->backend, notifyHiddenNetwork( networkName ) );
+    SOLID_CALL( Ifaces::NetworkManager*, d->managerBackend(), notifyHiddenNetwork( networkName ) );
 }
 
 const Solid::NetworkInterface &Solid::NetworkManager::findNetworkInterface( const QString &uni ) const
 {
-    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(d->backend);
+    Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(d->managerBackend());
 
     if ( backend == 0 ) return d->invalidDevice;
 
@@ -195,7 +195,7 @@ QPair<Solid::NetworkInterface*, Solid::Ifaces::NetworkInterface*> Solid::Network
     }
     else
     {
-        Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(this->backend);
+        Ifaces::NetworkManager *backend = qobject_cast<Ifaces::NetworkManager*>(managerBackend());
         Ifaces::NetworkInterface *iface = 0;
 
         if ( backend!=0 )

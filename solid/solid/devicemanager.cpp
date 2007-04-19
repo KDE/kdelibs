@@ -18,77 +18,48 @@
 */
 
 #include "devicemanager.h"
+#include "devicemanager_p.h"
 
-#include <QPair>
-
-#include "soliddefs_p.h"
-#include "managerbase_p.h"
 #include "device.h"
 #include "device_p.h"
+#include "predicate.h"
 #include "ifaces/devicemanager.h"
-#include "ifaces/device.h"
+#include <kglobal.h>
 
+K_GLOBAL_STATIC(Solid::DeviceManagerPrivate, globalDeviceManager)
 
-namespace Solid
+Solid::DeviceManagerPrivate::DeviceManagerPrivate()
 {
-    class DeviceManagerPrivate : public ManagerBasePrivate
-    {
-    public:
-        DeviceManagerPrivate(DeviceManager *parent)
-            : q(parent) { }
+    loadBackend("Hardware Discovery",
+                "SolidDeviceManager",
+                "Solid::Ifaces::DeviceManager");
 
-        DeviceManager * const q;
-
-        QPair<Device*, Ifaces::Device*> findRegisteredDevice( const QString &udi ) const;
-        void connectBackend( QObject *newBackend );
-
-        void _k_deviceAdded(const QString &udi);
-        void _k_deviceRemoved(const QString &udi);
-        void _k_newDeviceInterface(const QString &udi, int type);
-        void _k_destroyed(QObject *object);
-
-        mutable QMap<QString, QPair<Device*, Ifaces::Device*> > devicesMap;
-        Device invalidDevice;
-    };
-}
-
-SOLID_SINGLETON_IMPLEMENTATION( Solid::DeviceManager, DeviceManager )
-
-Solid::DeviceManager::DeviceManager()
-    : QObject(), d(new DeviceManagerPrivate(this))
-{
-    d->loadBackend("Hardware Discovery",
-                   "SolidDeviceManager",
-                   "Solid::Ifaces::DeviceManager");
-
-    if (d->backend!=0) {
-        d->connectBackend(d->backend);
+    if (managerBackend()!=0) {
+        connect(managerBackend(), SIGNAL(deviceAdded(QString)),
+                this, SLOT(_k_deviceAdded(QString)));
+        connect(managerBackend(), SIGNAL(deviceRemoved(QString)),
+                this, SLOT(_k_deviceRemoved(QString)));
+        connect(managerBackend(), SIGNAL(newDeviceInterface(QString, int)),
+                this, SLOT(_k_newDeviceInterface(QString, int)));
     }
 }
 
-Solid::DeviceManager::~DeviceManager()
+Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
 {
     typedef QPair<Device*, Ifaces::Device*> DeviceIfacePair;
 
-    foreach( const DeviceIfacePair &pair, d->devicesMap.values() )
-    {
+    foreach (const DeviceIfacePair &pair, m_devicesMap.values()) {
         delete pair.first;
         delete pair.second;
     }
 
-    d->devicesMap.clear();
-    delete d;
+    m_devicesMap.clear();
 }
 
-QString Solid::DeviceManager::errorText() const
+QList<Solid::Device> Solid::DeviceManagerPrivate::allDevices()
 {
-    return d->errorText;
-}
-
-Solid::DeviceList Solid::DeviceManager::allDevices() const
-{
-    DeviceList list;
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
+    QList<Device> list;
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(managerBackend());
 
     if ( backend == 0 ) return list;
 
@@ -96,7 +67,7 @@ Solid::DeviceList Solid::DeviceManager::allDevices() const
 
     foreach( const QString &udi, udis )
     {
-        QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
+        QPair<Device*, Ifaces::Device*> pair = findRegisteredDevice(udi);
 
         if ( pair.first!=0 )
         {
@@ -107,29 +78,26 @@ Solid::DeviceList Solid::DeviceManager::allDevices() const
     return list;
 }
 
-bool Solid::DeviceManager::deviceExists( const QString &udi ) const
+bool Solid::DeviceManagerPrivate::deviceExists(const QString &udi)
 {
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(managerBackend());
 
     if ( backend == 0 ) return false;
 
-    if ( d->devicesMap.contains( udi ) )
-    {
+    if (m_devicesMap.contains(udi)) {
         return true;
-    }
-    else
-    {
+    } else {
         return backend->deviceExists( udi );
     }
 }
 
-const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi ) const
+Solid::Device Solid::DeviceManagerPrivate::findDevice(const QString &udi)
 {
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(managerBackend());
 
-    if ( backend == 0 ) return d->invalidDevice;
+    if ( backend == 0 ) return m_invalidDevice;
 
-    QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
+    QPair<Device*, Ifaces::Device*> pair = findRegisteredDevice( udi );
 
     if ( pair.first!=0 )
     {
@@ -137,12 +105,12 @@ const Solid::Device &Solid::DeviceManager::findDevice( const QString &udi ) cons
     }
     else
     {
-        return d->invalidDevice;
+        return m_invalidDevice;
     }
 }
 
-Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &predicate,
-                                                              const QString &parentUdi ) const
+QList<Solid::Device> Solid::DeviceManagerPrivate::findDevicesFromQuery(const QString &predicate,
+                                                                       const QString &parentUdi)
 {
     Predicate p = Predicate::fromString( predicate );
 
@@ -152,16 +120,16 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const QString &pre
     }
     else
     {
-        return DeviceList();
+        return QList<Device>();
     }
 }
 
-Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery(const DeviceInterface::Type &type,
-                                                             const QString &parentUdi) const
+QList<Solid::Device> Solid::DeviceManagerPrivate::findDevicesFromQuery(const DeviceInterface::Type &type,
+                                                                       const QString &parentUdi)
 {
-    DeviceList list;
+    QList<Device> list;
 
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(managerBackend());
 
     if ( backend == 0 ) return list;
 
@@ -169,7 +137,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery(const DeviceInterfa
 
     foreach( const QString &udi, udis )
     {
-        QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
+        QPair<Device*, Ifaces::Device*> pair = findRegisteredDevice( udi );
 
         list.append( *pair.first );
     }
@@ -177,12 +145,12 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery(const DeviceInterfa
     return list;
 }
 
-Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &predicate,
-                                                              const QString &parentUdi ) const
+QList<Solid::Device> Solid::DeviceManagerPrivate::findDevicesFromQuery(const Predicate &predicate,
+                                                                       const QString &parentUdi)
 {
-    DeviceList list;
+    QList<Device> list;
 
-    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(d->backend);
+    Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(managerBackend());
 
     if ( backend == 0 ) return list;
 
@@ -199,7 +167,7 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
 
     foreach( const QString &udi, udis )
     {
-        QPair<Device*, Ifaces::Device*> pair = d->findRegisteredDevice( udi );
+        QPair<Device*, Ifaces::Device*> pair = findRegisteredDevice(udi);
 
         bool matches = false;
         if ( pair.first )
@@ -219,9 +187,14 @@ Solid::DeviceList Solid::DeviceManager::findDevicesFromQuery( const Predicate &p
     return list;
 }
 
+Solid::DeviceManager::Notifier *Solid::DeviceManager::notifier()
+{
+    return globalDeviceManager;
+}
+
 void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
 {
-    QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
+    QPair<Device*, Ifaces::Device*> pair = m_devicesMap.take(udi);
 
     if ( pair.first!= 0 )
     {
@@ -232,12 +205,12 @@ void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
         delete pair.second;
     }
 
-    emit q->deviceAdded(udi);
+    emit deviceAdded(udi);
 }
 
 void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
 {
-    QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
+    QPair<Device*, Ifaces::Device*> pair = m_devicesMap.take(udi);
 
     if ( pair.first!= 0 )
     {
@@ -245,12 +218,12 @@ void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
         delete pair.second;
     }
 
-    emit q->deviceRemoved(udi);
+    emit deviceRemoved(udi);
 }
 
 void Solid::DeviceManagerPrivate::_k_newDeviceInterface(const QString &udi, int type)
 {
-    emit q->newDeviceInterface(udi, type);
+    emit newDeviceInterface(udi, type);
 }
 
 void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)
@@ -260,20 +233,20 @@ void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)
     if ( device!=0 )
     {
         QString udi = device->udi();
-        QPair<Device*, Ifaces::Device*> pair = devicesMap.take(udi);
+        QPair<Device*, Ifaces::Device*> pair = m_devicesMap.take(udi);
         delete pair.first;
     }
 }
 
-QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findRegisteredDevice( const QString &udi ) const
+QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findRegisteredDevice(const QString &udi)
 {
-    if ( devicesMap.contains( udi ) )
+    if ( m_devicesMap.contains( udi ) )
     {
-        return devicesMap[udi];
+        return m_devicesMap[udi];
     }
     else
     {
-        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>( this->backend );
+        Ifaces::DeviceManager *backend = qobject_cast<Ifaces::DeviceManager*>(managerBackend());
         Ifaces::Device *iface = 0;
 
         if ( backend!= 0 )
@@ -289,9 +262,9 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findR
             Device *device = new Device();
             device->d = dev_p;
             QPair<Device*, Ifaces::Device*> pair( device, iface );
-            devicesMap[udi] = pair;
-            QObject::connect( iface, SIGNAL( destroyed( QObject* ) ),
-                              q, SLOT( _k_destroyed( QObject* ) ) );
+            m_devicesMap[udi] = pair;
+            QObject::connect(iface, SIGNAL(destroyed(QObject*)),
+                             this, SLOT(_k_destroyed(QObject*)));
             return pair;
         }
         else
@@ -301,15 +274,44 @@ QPair<Solid::Device*, Solid::Ifaces::Device*> Solid::DeviceManagerPrivate::findR
     }
 }
 
-void Solid::DeviceManagerPrivate::connectBackend( QObject *newBackend )
+QString Solid::DeviceManager::errorText()
 {
-    QObject::connect( newBackend, SIGNAL( deviceAdded( QString ) ),
-                      q, SLOT( _k_deviceAdded( QString ) ) );
-    QObject::connect( newBackend, SIGNAL( deviceRemoved( QString ) ),
-                      q, SLOT( _k_deviceRemoved( QString ) ) );
-    QObject::connect( newBackend, SIGNAL( newDeviceInterface( QString, int ) ),
-                      q, SLOT( _k_newDeviceInterface( QString, int ) ) );
+    return globalDeviceManager->errorText();
+}
+
+QList<Solid::Device> Solid::DeviceManager::allDevices()
+{
+    return globalDeviceManager->allDevices();
+}
+
+bool Solid::DeviceManager::deviceExists(const QString &udi)
+{
+    return globalDeviceManager->deviceExists(udi);
+}
+
+Solid::Device Solid::DeviceManager::findDevice(const QString &udi)
+{
+    return globalDeviceManager->findDevice(udi);
+}
+
+QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const DeviceInterface::Type &type,
+                                                                const QString &parentUdi)
+{
+    return globalDeviceManager->findDevicesFromQuery(type, parentUdi);
+}
+
+QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const Predicate &predicate,
+                                                                const QString &parentUdi)
+{
+    return globalDeviceManager->findDevicesFromQuery(predicate, parentUdi);
+}
+
+QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const QString &predicate,
+                                                                const QString &parentUdi)
+{
+    return globalDeviceManager->findDevicesFromQuery(predicate, parentUdi);
 }
 
 #include "devicemanager.moc"
+#include "devicemanager_p.moc"
 

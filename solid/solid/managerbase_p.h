@@ -36,8 +36,12 @@ namespace Solid
 
         SOLID_EXPORT static void _k_forcePreloadedBackend(const char *backendClassName, QObject *backend);
 
-        QObject *backend;
-        QString errorText;
+        QObject *managerBackend() const;
+        QString errorText() const;
+
+    private:
+        QObject *m_backend;
+        QString m_errorText;
     };
 }
 

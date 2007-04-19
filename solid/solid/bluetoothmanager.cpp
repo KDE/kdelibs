@@ -75,8 +75,8 @@ Solid::BluetoothManager::BluetoothManager()
                    "SolidBluetoothManager",
                    "Solid::Ifaces::BluetoothManager");
 
-    if (d->backend != 0) {
-        d->connectBackend(d->backend);
+    if (d->managerBackend() != 0) {
+        d->connectBackend(d->managerBackend());
     }
 }
 
@@ -97,7 +97,7 @@ Solid::BluetoothManager::~BluetoothManager()
 Solid::BluetoothInterfaceList Solid::BluetoothManager::buildDeviceList(const QStringList & ubiList) const
 {
     BluetoothInterfaceList list;
-    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->backend);
+    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
     if (backend == 0) return list;
 
@@ -114,7 +114,7 @@ Solid::BluetoothInterfaceList Solid::BluetoothManager::buildDeviceList(const QSt
 
 Solid::BluetoothInterfaceList Solid::BluetoothManager::bluetoothInterfaces() const
 {
-    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->backend);
+    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
     if (backend != 0) {
         return buildDeviceList(backend->bluetoothInterfaces());
@@ -125,12 +125,12 @@ Solid::BluetoothInterfaceList Solid::BluetoothManager::bluetoothInterfaces() con
 
 QString Solid::BluetoothManager::defaultInterface() const
 {
-    return_SOLID_CALL(Ifaces::BluetoothManager*, d->backend, QString(), defaultInterface());
+    return_SOLID_CALL(Ifaces::BluetoothManager*, d->managerBackend(), QString(), defaultInterface());
 }
 
 const Solid::BluetoothInterface &Solid::BluetoothManager::findBluetoothInterface(const QString &ubi) const
 {
-    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->backend);
+    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
     if (backend == 0) return d->invalidInterface;
 
@@ -145,7 +145,7 @@ const Solid::BluetoothInterface &Solid::BluetoothManager::findBluetoothInterface
 
 const Solid::BluetoothInputDevice &Solid::BluetoothManager::findBluetoothInputDevice(const QString &ubi) const
 {
-    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->backend);
+    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
     if (backend == 0) return d->invalidInputDevice;
 
@@ -160,13 +160,13 @@ const Solid::BluetoothInputDevice &Solid::BluetoothManager::findBluetoothInputDe
 
 KJob *Solid::BluetoothManager::setupInputDevice(const QString &ubi)
 {
-    return_SOLID_CALL(Ifaces::BluetoothManager*, d->backend, 0, setupInputDevice(ubi));
+    return_SOLID_CALL(Ifaces::BluetoothManager*, d->managerBackend(), 0, setupInputDevice(ubi));
 }
 
 Solid::BluetoothInputDeviceList Solid::BluetoothManager::bluetoothInputDevices() const
 {
     BluetoothInputDeviceList list;
-    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->backend);
+    Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(d->managerBackend());
 
     if (backend == 0) return list;
 
@@ -186,7 +186,7 @@ Solid::BluetoothInputDeviceList Solid::BluetoothManager::bluetoothInputDevices()
 
 void Solid::BluetoothManager::removeInputDevice(const QString &ubi)
 {
-    SOLID_CALL(Ifaces::BluetoothManager*, d->backend, removeInputDevice(ubi));
+    SOLID_CALL(Ifaces::BluetoothManager*, d->managerBackend(), removeInputDevice(ubi));
 }
 
 void Solid::BluetoothManagerPrivate::_k_interfaceAdded(const QString &ubi)
@@ -287,7 +287,7 @@ QPair<Solid::BluetoothInterface*, Solid::Ifaces::BluetoothInterface*> Solid::Blu
     if (bluetoothInterfaceMap.contains(ubi)) {
         return bluetoothInterfaceMap[ubi];
     } else {
-        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(this->backend);
+        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(managerBackend());
         Ifaces::BluetoothInterface *iface = 0;
 
         if (backend != 0) {
@@ -312,7 +312,7 @@ QPair<Solid::BluetoothInputDevice*, Solid::Ifaces::BluetoothInputDevice*> Solid:
     if (bluetoothInputDeviceMap.contains(ubi)) {
         return bluetoothInputDeviceMap[ubi];
     } else {
-        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(this->backend);
+        Ifaces::BluetoothManager *backend = qobject_cast<Ifaces::BluetoothManager*>(managerBackend());
         Ifaces::BluetoothInputDevice *iface = 0;
 
         if (backend != 0) {

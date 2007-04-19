@@ -25,14 +25,12 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/singletondefs.h>
-#include <solid/predicate.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid
 {
     class Device;
-    typedef QList<Device> DeviceList;
-    class DeviceManagerPrivate;
+    class Predicate;
 
     /**
      * This class allow to query the underlying system to obtain information
@@ -45,26 +43,22 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT DeviceManager : public QObject
+    namespace DeviceManager
     {
-        Q_OBJECT
-        SOLID_SINGLETON(DeviceManager)
-
-    public:
         /**
          * Returns a text describing the error that occurred while loading
          * the backend.
          *
          * @return the error description, or QString() if the backend loaded successfully
          */
-        QString errorText() const;
+        SOLID_EXPORT QString errorText();
 
         /**
          * Retrieves all the devices available in the underlying system.
          *
          * @return the list of the devices available
          */
-        DeviceList allDevices() const;
+        SOLID_EXPORT QList<Device> allDevices();
 
         /**
          * Tests if a device exists in the underlying system given its
@@ -73,7 +67,7 @@ namespace Solid
          * @param udi the identifier of the device to check
          * @return true if a device has the given udi in the system, false otherwise
          */
-        bool deviceExists( const QString &udi ) const;
+        SOLID_EXPORT bool deviceExists(const QString &udi);
 
         /**
          * Retrieves a device of the system given it's UDI.
@@ -82,7 +76,7 @@ namespace Solid
          * @return a device that has the given UDI in the system if possible, an
          * invalid device otherwise
          */
-        const Device &findDevice( const QString &udi ) const;
+        SOLID_EXPORT Device findDevice(const QString &udi);
 
         /**
          * Retrieves a list of devices of the system given matching the given
@@ -95,8 +89,8 @@ namespace Solid
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
-        DeviceList findDevicesFromQuery( const DeviceInterface::Type &type,
-                                         const QString &parentUdi = QString() ) const;
+        SOLID_EXPORT QList<Device> findDevicesFromQuery(const DeviceInterface::Type &type,
+                                                        const QString &parentUdi = QString());
 
         /**
          * Retrieves a list of devices of the system given matching the given
@@ -108,8 +102,8 @@ namespace Solid
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
-        DeviceList findDevicesFromQuery( const Predicate &predicate,
-                                         const QString &parentUdi = QString() ) const;
+        SOLID_EXPORT QList<Device> findDevicesFromQuery(const Predicate &predicate,
+                                                        const QString &parentUdi = QString());
 
         /**
          * Convenience function see above.
@@ -118,45 +112,39 @@ namespace Solid
          * @param parentUdi
          * @return the list of devices
          */
-        DeviceList findDevicesFromQuery( const QString &predicate,
-                                         const QString &parentUdi = QString() ) const;
+        SOLID_EXPORT QList<Device> findDevicesFromQuery(const QString &predicate,
+                                                        const QString &parentUdi = QString());
 
-    Q_SIGNALS:
-        /**
-         * This signal is emitted when a new device appear in the underlying system.
-         *
-         * @param udi the new device UDI
-         */
-        void deviceAdded( const QString &udi );
+        class SOLID_EXPORT Notifier : public QObject
+        {
+            Q_OBJECT
 
-        /**
-         * This signal is emitted when a device disappear from the underlying system.
-         *
-         * @param udi the old device UDI
-         */
-        void deviceRemoved( const QString &udi );
+        Q_SIGNALS:
+            /**
+             * This signal is emitted when a new device appear in the underlying system.
+             *
+             * @param udi the new device UDI
+             */
+            void deviceAdded(const QString &udi);
 
-        /**
-         * This signal is emitted when a new device interface is detected in a device.
-         *
-         * @param udi the UDI of the device getting a new device interface
-         * @param type the device interface type
-         */
-        void newDeviceInterface(const QString &udi, int type);
+            /**
+             * This signal is emitted when a device disappear from the underlying system.
+             *
+             * @param udi the old device UDI
+             */
+            void deviceRemoved(const QString &udi);
 
-    private:
-        DeviceManager();
-        ~DeviceManager();
+            /**
+             * This signal is emitted when a new device interface is detected in a device.
+             *
+             * @param udi the UDI of the device getting a new device interface
+             * @param type the device interface type
+             */
+            void newDeviceInterface(const QString &udi, int type);
+        };
 
-    private:
-        Q_PRIVATE_SLOT(d, void _k_deviceAdded(const QString&))
-        Q_PRIVATE_SLOT(d, void _k_deviceRemoved(const QString&))
-        Q_PRIVATE_SLOT(d, void _k_newDeviceInterface(const QString&, int))
-        Q_PRIVATE_SLOT(d, void _k_destroyed(QObject*))
-
-        DeviceManagerPrivate * const d;
-        friend class DeviceManagerPrivate;
-    };
+        SOLID_EXPORT Notifier *notifier();
+    }
 }
 
 #endif

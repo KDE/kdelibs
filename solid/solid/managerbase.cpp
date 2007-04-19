@@ -29,7 +29,7 @@
 static QMap<QString, QObject*> _k_preloadedBackends;
 
 Solid::ManagerBasePrivate::ManagerBasePrivate()
-    : backend(0)
+    : m_backend(0)
 {
 }
 
@@ -41,7 +41,7 @@ void Solid::ManagerBasePrivate::loadBackend(const QString &description, const ch
                                             const char *backendClassName)
 {
     if (_k_preloadedBackends.contains(backendClassName)) {
-        backend = _k_preloadedBackends[backendClassName];
+        m_backend = _k_preloadedBackends[backendClassName];
         return;
     }
 
@@ -52,57 +52,60 @@ void Solid::ManagerBasePrivate::loadBackend(const QString &description, const ch
     foreach (KService::Ptr ptr, offers)
     {
         int error = 0;
-        backend = KService::createInstance<QObject>(ptr, 0, QStringList(), &error);
+        m_backend = KService::createInstance<QObject>(ptr, 0, QStringList(), &error);
 
-        if( backend != 0 )
-        {
-            if ( backend->inherits( backendClassName ) )
-            {
+        if(m_backend!=0) {
+            if (m_backend->inherits(backendClassName)) {
                 kDebug() << "Backend loaded: " << ptr->name() << endl;
                 break;
-            }
-            else
-            {
+            } else {
                 QString error_string = i18n( "Backend loaded but wrong type obtained, expected %1",
                                              backendClassName );
 
                 kDebug() << "Error loading '" << ptr->name() << "': " << error_string << endl;
                 error_msg.append( error_string );
 
-                delete backend;
-                backend = 0;
+                delete m_backend;
+                m_backend = 0;
             }
-        }
-        else
-        {
+        } else {
             QString error_string = KLibLoader::errorString( error );
             kDebug() << "Error loading '" << ptr->name() << "', KLibLoader said: " << error_string << endl;
             error_msg.append( error_string );
         }
     }
 
-    if ( backend == 0 )
-    {
+    if (m_backend==0) {
         if ( offers.size() == 0 )
         {
-            errorText = i18n("No %1 Backend found", description);
+            m_errorText = i18n("No %1 Backend found", description);
         }
         else
         {
-            errorText = "<qt>";
-            errorText+= i18n("Unable to use any of the %1 Backends", description);
-            errorText+= "<table>";
+            m_errorText = "<qt>";
+            m_errorText+= i18n("Unable to use any of the %1 Backends", description);
+            m_errorText+= "<table>";
 
             QString line = "<tr><td><b>%1</b></td><td>%2</td></tr>";
 
             for ( int i = 0; i< offers.size(); i++ )
             {
-                errorText+= line.arg(offers[i]->name()).arg(error_msg[i]);
+                m_errorText+= line.arg(offers[i]->name()).arg(error_msg[i]);
             }
 
-            errorText+= "</table></qt>";
+            m_errorText+= "</table></qt>";
         }
     }
+}
+
+QString Solid::ManagerBasePrivate::errorText() const
+{
+    return m_errorText;
+}
+
+QObject *Solid::ManagerBasePrivate::managerBackend() const
+{
+    return m_backend;
 }
 
 void Solid::ManagerBasePrivate::_k_forcePreloadedBackend(const char *backendClassName, QObject *backend)
