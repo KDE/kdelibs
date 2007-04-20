@@ -321,13 +321,13 @@ KUrl::KUrl( const QString &str )
       kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) << endl;
       setPath( QUrl::fromPercentEncoding( str.mid(8).toLatin1() ) );
    	}
-    else if ( str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') ) {
+    else if ( str.length() > 9 && str.startsWith("file://") && str[7].isLetter() && str[8] == QLatin1Char(':') ) {
       kDebug(126) << "KUrl::KUrl " << "converting file schema from: " << str.toAscii().data() << " to: " << QUrl::fromPercentEncoding( str.mid(7).toLatin1() ) << endl;
       setPath( QUrl::fromPercentEncoding( str.mid(7).toLatin1() ) );
     }
-    else if ( str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
+    else if ( str.length() > 2 && str[0] == QLatin1Char('/') && str[1].isLetter() && str[2] == QLatin1Char(':') )
       setPath(str.mid(2));
-    else if ( str[0].isLetter() &&  str[1] == QLatin1Char(':') )
+    else if ( str.length() > 2 && str[0].isLetter() &&  str[1] == QLatin1Char(':') )
       setPath( str );
 #else
     if ( str[0] == QLatin1Char('/') || str[0] == QLatin1Char('~') )
