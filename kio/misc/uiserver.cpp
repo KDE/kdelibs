@@ -63,7 +63,6 @@
 #include <ksslcertdlg.h>
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
-#include <kwinmodule.h>
 
 
 // pointer for main instance of UIServer
@@ -406,14 +405,8 @@ void ProgressItem::slotCanceled() {
 void ProgressItem::slotShowDefaultProgress() {
   if (defaultProgress)
   {
-    if ( m_visible && m_defaultProgressVisible ) {
-      // Show, but don't take focus
-      KWinModule module( this, KWinModule::INFO_DESKTOP );
-      const WId activeWindow = module.activeWindow();
+    if ( m_visible && m_defaultProgressVisible )
       defaultProgress->show();
-      if ( activeWindow )
-        KWin::forceActiveWindow( activeWindow );
-    }
     else
       defaultProgress->hide();
   }
