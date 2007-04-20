@@ -21,6 +21,10 @@
 #ifndef DNSSDDOMAINBROWSER_P_H
 #define DNSSDDOMAINBROWSER_P_H
 
+#include <QtCore/QSet>
+#include "domainbrowser.h"
+#include "avahi_domainbrowser_interface.h"
+
 namespace DNSSD
 {
 

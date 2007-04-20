@@ -23,7 +23,7 @@
 
 #include <QtCore/QObject>
 #include <dnssd/servicebase.h>
-#include <QStringList>
+#include <QtCore/QStringList>
 
 namespace DNSSD
 {

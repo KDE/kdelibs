@@ -21,8 +21,12 @@
 #ifndef DNSSDREMOTESERVICE_P_H
 #define DNSSDREMOTESERVICE_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QList>
+#include <QtCore/QMap>
 #include "servicebase_p.h"
+#include "remoteservice.h"
+#include "avahi_serviceresolver_interface.h"
 
 
 #define K_D RemoteServicePrivate* d=static_cast<RemoteServicePrivate*>(dptr)

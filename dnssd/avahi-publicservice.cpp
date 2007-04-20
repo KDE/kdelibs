@@ -18,8 +18,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "avahi-publicservice_p.h"
+
 #include <QtCore/QCoreApplication>
-#include <QStringList>
+#include <QtCore/QStringList>
 
 #include "publicservice.h"
 #ifdef HAVE_SYS_TYPES_H
@@ -29,7 +31,6 @@
 #include "settings.h"
 #include "avahi_server_interface.h"
 #include "avahi_entrygroup_interface.h"
-#include "avahi-publicservice_p.h"
 
 Q_DECLARE_METATYPE(QList<QByteArray>)
 

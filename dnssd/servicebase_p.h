@@ -20,6 +20,10 @@
 
 #ifndef SERVICEBASE_P_H
 #define SERVICEBASE_P_H
+
+#include <QtCore/QMap>
+#include <QtCore/QString>
+
 namespace DNSSD {
 
 struct ServiceBasePrivate {

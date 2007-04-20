@@ -22,7 +22,7 @@
 #define DNSSDSERVICEBASE_H
 
 #include <QtCore/QMap>
-#include <QString>
+#include <QtCore/QString>
 #include <ksharedptr.h>
 #include <dnssd/dnssd_export.h>
 

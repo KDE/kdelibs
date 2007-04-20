@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "avahi-remoteservice_p.h"
 #include <netinet/in.h>
 #include <QtCore/QEventLoop>
 #include <QtGui/QApplication>
@@ -25,7 +26,6 @@
 #include "remoteservice.h"
 #include "avahi_server_interface.h"
 #include "avahi_serviceresolver_interface.h"
-#include "avahi-remoteservice_p.h"
 
 Q_DECLARE_METATYPE(QList<QByteArray>)
 

@@ -19,6 +19,7 @@
  */
 
 
+#include "avahi-domainbrowser_p.h"
 #include <QtCore/QSet>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
@@ -28,7 +29,6 @@
 #include "avahi_server_interface.h"
 #include "domainbrowser.h"
 #include "avahi_domainbrowser_interface.h"
-#include "avahi-domainbrowser_p.h"
 
 Q_DECLARE_METATYPE(QList<QByteArray>)
 

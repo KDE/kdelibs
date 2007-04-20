@@ -21,9 +21,12 @@
 #ifndef DNSSDPUBLICSERVICE_P_H
 #define DNSSDPUBLICSERVICE_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/QStringList>
 #include "servicebase_p.h"
 #include <avahi-common/defs.h>
+#include "publicservice.h"
+#include "avahi_server_interface.h"
+#include "avahi_entrygroup_interface.h"
 
 #define K_D PublicServicePrivate* d=static_cast<PublicServicePrivate*>(dptr)
 

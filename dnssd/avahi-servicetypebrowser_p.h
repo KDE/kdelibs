@@ -21,7 +21,10 @@
 #ifndef DNSSDSERVICETYPEBROWSER_P_H
 #define DNSSDSERVICETYPEBROWSER_P_H
 
+#include <QtCore/QStringList>
 #include <QtCore/QTimer>
+#include "servicetypebrowser.h"
+#include "avahi_servicetypebrowser_interface.h"
 
 namespace DNSSD
 {

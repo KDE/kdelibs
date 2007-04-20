@@ -18,11 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "avahi-servicebrowser_p.h"
 #include <QtCore/QStringList>
 #include "servicebrowser.h"
 #include "avahi_servicebrowser_interface.h"
 #include "avahi_server_interface.h"
-#include "avahi-servicebrowser_p.h"
 #include <QHash>
 
 Q_DECLARE_METATYPE(QList<QByteArray>)
