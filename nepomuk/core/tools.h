@@ -43,7 +43,7 @@ namespace Nepomuk {
 	 * Used internally by Resource.
 	 * \return The URI of the predicate used to state the type of a resource.
 	 */
-	QString typePredicate();
+	KMETADATA_EXPORT QString typePredicate();
 
 	/**
 	 * Used internally by Resource.
@@ -59,7 +59,7 @@ namespace Nepomuk {
 	 */
 	KMETADATA_EXPORT Variant RDFLiteralToValue( const RDF::Node& node );
 
-	template<typename T> KMETADATA_EXPORT QList<T> convertResourceList( const QList<Resource>& l ) {
+	template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
 	    QList<T> rl;
 	    for( QList<Resource>::const_iterator it = l.constBegin();
 		 it != l.constEnd(); ++it )
@@ -67,7 +67,7 @@ namespace Nepomuk {
 	    return rl;
 	}
 
-	template<typename T> KMETADATA_EXPORT QList<Resource> convertResourceList( const QList<T>& l ) {
+	template<typename T> QList<Resource> convertResourceList( const QList<T>& l ) {
 	    QList<Resource> rl;
 	    foreach( T r, l )
 /*       for( QList<T>::const_iterator it = l.constBegin(); */

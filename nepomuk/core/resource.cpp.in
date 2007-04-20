@@ -32,7 +32,7 @@ Nepomuk::KMetaData::Resource::Resource()
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource::Resource& res )
+Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource& res )
 {
     m_data = res.m_data;
     m_data->ref();
