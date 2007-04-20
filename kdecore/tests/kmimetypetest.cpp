@@ -107,7 +107,7 @@ void KMimeTypeTest::testFindByPath()
     QVERIFY( mime );
 
 #ifdef Q_WS_WIN
-    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-msdos-executable" ) );
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/x-ms-dos-executable" ) );
 #else
     QCOMPARE( mime->name(), QString::fromLatin1( "application/x-executable" ) );
 #endif
