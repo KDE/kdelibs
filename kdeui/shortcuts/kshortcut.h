@@ -30,6 +30,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QList>
+#include <QtCore/QMetaType>
 #include <QtGui/QKeySequence>
 
 class KShortcutPrivate;
@@ -148,6 +149,12 @@ public:
      * @param keySeq set alternate key sequence to this
      */
     void setAlternate(const QKeySequence &keySeq);
+    
+    /**
+     * Returns shortcut as QVariant 
+     */
+    operator QVariant() const;
+    
 };
 
 uint qHash(int);
@@ -163,5 +170,7 @@ inline uint qHash(const QKeySequence &key)
        hash += qHash(key[i]);
     return hash;
 }
+
+Q_DECLARE_METATYPE(KShortcut)
 
 #endif // KSHORTCUT_H

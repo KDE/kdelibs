@@ -30,19 +30,21 @@
 #include "kglobal.h"
 #include "klocale.h"
 
-
 KShortcut::KShortcut()
 {
+    qRegisterMetaType<KShortcut>();
 }
 
 KShortcut::KShortcut(const QKeySequence &primary)
 {
+    qRegisterMetaType<KShortcut>();
     if (!primary.isEmpty())
         append(primary);
 }
 
 KShortcut::KShortcut(const QKeySequence &primary, const QKeySequence &alternate)
 {
+    qRegisterMetaType<KShortcut>();
     if (!primary.isEmpty())
         append(primary);
     if (!alternate.isEmpty())
@@ -51,6 +53,7 @@ KShortcut::KShortcut(const QKeySequence &primary, const QKeySequence &alternate)
 
 KShortcut::KShortcut(int keyQtPri, int keyQtAlt)
 {
+    qRegisterMetaType<KShortcut>();
     if (keyQtPri)
         append(keyQtPri);
     if (keyQtAlt)
@@ -59,6 +62,7 @@ KShortcut::KShortcut(int keyQtPri, int keyQtAlt)
 
 KShortcut::KShortcut(const QString &s)
 {
+    qRegisterMetaType<KShortcut>();
     if (s == QLatin1String("none"))
         return;
 
@@ -78,6 +82,7 @@ KShortcut::KShortcut(const QString &s)
 KShortcut::KShortcut(const QList<QKeySequence> &seqs)
     : QList<QKeySequence>(seqs)
 {
+    qRegisterMetaType<KShortcut>();
 }
 
 void KShortcut::setPrimary(const QKeySequence &newPrimary)
@@ -105,3 +110,7 @@ QString KShortcut::toString() const
     return result;
 }
 
+KShortcut::operator QVariant() const
+{
+    return qVariantFromValue(*this);
+}

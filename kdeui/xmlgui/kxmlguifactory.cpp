@@ -537,9 +537,10 @@ void KXMLGUIFactory::configureAction( QAction *action, const QDomAttr &attribute
         propertyValue = QVariant( attribute.value().toInt() );
     else if ( propertyType == QVariant::UInt )
         propertyValue = QVariant( attribute.value().toUInt() );
+    else if ( propertyType == QVariant::UserType && action->property( attrName.toLatin1() ).userType() == qMetaTypeId<KShortcut>() )
+	propertyValue =  KShortcut( attribute.value() )  ;
     else
         propertyValue = QVariant( attribute.value() );
-
     action->setProperty( attrName.toLatin1(), propertyValue );
 }
 
