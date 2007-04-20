@@ -628,7 +628,7 @@ private:
      */
     void init();
 
-    void copy( bool clipboard ) const;
+    bool copySqueezedText( bool clipboard ) const;
 
     /**
      * Checks whether we should/should not consume a key used as

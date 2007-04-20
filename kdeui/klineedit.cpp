@@ -396,17 +396,18 @@ void KLineEdit::setSqueezedText()
 
 void KLineEdit::copy() const
 {
-    copy(true);
+    if( !copySqueezedText(true))
+        QLineEdit::copy();
 }
 
-void KLineEdit::copy(bool clipboard) const
+bool KLineEdit::copySqueezedText(bool clipboard) const
 {
    if (!d->squeezedText.isEmpty() && d->squeezedStart)
    {
       int start, end;
       KLineEdit *that = const_cast<KLineEdit *>(this);
       if (!that->getSelection(&start, &end))
-         return;
+         return false;
       if (start >= d->squeezedStart+3)
          start = start - 3 - d->squeezedStart + d->squeezedEnd;
       else if (start > d->squeezedStart)
@@ -416,17 +417,16 @@ void KLineEdit::copy(bool clipboard) const
       else if (end > d->squeezedStart)
          end = d->squeezedEnd;
       if (start == end)
-         return;
+         return false;
       QString t = d->squeezedText;
       t = t.mid(start, end - start);
       disconnect( QApplication::clipboard(), SIGNAL(selectionChanged()), this, 0);
       QApplication::clipboard()->setText( t, clipboard ? QClipboard::Clipboard : QClipboard::Selection );
       connect( QApplication::clipboard(), SIGNAL(selectionChanged()), this,
                SLOT(clipboardChanged()) );
-      return;
+      return true;
    }
-
-   QLineEdit::copy();
+   return false;
 }
 
 void KLineEdit::resizeEvent( QResizeEvent * ev )
@@ -840,10 +840,10 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
 void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 {
     QLineEdit::mouseReleaseEvent( e );
-    // Call our own copy() to fix copying of squeezed text
     if (QApplication::clipboard()->supportsSelection() ) {
         if ( e->button() == LeftButton ) {
-            copy( FALSE );
+            // Fix copying of squeezed text if needed
+            copySqueezedText( false );
         }
     }
 }
