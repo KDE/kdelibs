@@ -55,7 +55,6 @@
 #include <klocale.h>
 #include <kmenubar.h>
 #include <kstandarddirs.h>
-#include <kstaticdeleter.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwm.h>
@@ -72,8 +71,6 @@
 #include <assert.h>
 
 static bool no_query_exit = false;
-static KMWSessionManager* ksm = 0;
-static KStaticDeleter<KMWSessionManager> ksmd;
 
 static KMenuBar *internalMenuBar(KMainWindow *mw)
 {
@@ -94,6 +91,7 @@ public:
     ~KMWSessionManager()
     {
     }
+    bool dummyInit() { return true; }
     bool saveState( QSessionManager& )
     {
         KConfig* config = KApplication::kApplication()->sessionConfig();
@@ -166,6 +164,7 @@ public:
     }
 };
 
+K_GLOBAL_STATIC(KMWSessionManager, ksm)
 static QList<KMainWindow*> sMemberList; // ##### isn't the static object a problem?
 static bool being_first = true;
 
@@ -200,8 +199,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     //actionCollection()->setWidget( this );
     QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(_k_shuttingDown()));
 
-    if ( !ksm )
-        ksm = ksmd.setObject(ksm, new KMWSessionManager());
+    // force KMWSessionManager creation - someone a better idea? 
+    ksm->dummyInit();
 
     sMemberList.append( q );
 
