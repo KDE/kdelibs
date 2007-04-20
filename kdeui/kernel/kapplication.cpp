@@ -118,6 +118,7 @@ bool KApplication::loadedByKdeinit = false;
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
 static Atom kde_xdnd_drop;
+static QByteArray* startup_id_tmp;
 #endif
 
 // duplicated from patched Qt, so that there won't be unresolved symbols if Qt gets
@@ -316,7 +317,7 @@ static SmcConn mySmcConnection = 0;
 #endif
 
 KApplication::KApplication(bool GUIenabled)
-    : QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), GUIenabled),
+    : QApplication((preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
     d(new Private)
 {
     read_app_startup_id();
@@ -328,7 +329,7 @@ KApplication::KApplication(bool GUIenabled)
 
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
-    : QApplication(dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    : QApplication((preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
     d(new Private)
 {
     read_app_startup_id();
@@ -339,7 +340,7 @@ KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
 }
 
 KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap, const KComponentData &cData)
-    : QApplication(dpy, KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
+    : QApplication((preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
     d (new Private(cData))
 {
     read_app_startup_id();
@@ -351,7 +352,7 @@ KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
 #endif
 
 KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
-    : QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), GUIenabled),
+    : QApplication((preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
     d (new Private(cData))
 {
     read_app_startup_id();
@@ -364,7 +365,7 @@ KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
 #ifdef Q_WS_X11
 KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
         bool GUIenabled)
-    : QApplication(display),
+    : QApplication((preqapplicationhack(),display)),
     d(new Private(rAppName))
 {
     Q_UNUSED(GUIenabled);
@@ -375,6 +376,13 @@ KApplication::KApplication(Display *display, int& argc, char** argv, const QByte
     init();
 }
 #endif
+
+// this function is called in KApplication ctors while evaluating arguments to QApplication ctor,
+// i.e. before QApplication ctor is called
+void KApplication::preqapplicationhack()
+{
+    preread_app_startup_id();
+}
 
 int KApplication::xioErrhandler( Display* dpy )
 {
@@ -1106,14 +1114,26 @@ void KApplication::setStartupId( const QByteArray& startup_id )
         }
 }
 
+// Qt reads and unsets the value and doesn't provide any way to reach the value,
+// so steal it from it beforehand. If Qt gets API for taking (reading and unsetting)
+// the startup id from it, this can be dumped.
+void KApplication::preread_app_startup_id()
+{
+#if defined Q_WS_X11
+    KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
+    KStartupInfo::resetStartupEnv();
+    startup_id_tmp = new QByteArray( id.id());
+#endif
+}
+
 // read the startup notification env variable, save it and unset it in order
 // not to propagate it to processes started from this app
 void KApplication::read_app_startup_id()
 {
 #if defined Q_WS_X11
-    KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
-    KStartupInfo::resetStartupEnv();
-    d->startup_id = id.id();
+    d->startup_id = *startup_id_tmp;
+    delete startup_id_tmp;
+    startup_id_tmp = NULL;
 #endif
 }
 
