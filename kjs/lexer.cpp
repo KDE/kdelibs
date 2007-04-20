@@ -566,7 +566,7 @@ int Lexer::lex()
     // There are lots of other uses, we really have to get this into the grammar
     if ( token == FUNCTION &&
          ( lastToken == '=' || lastToken == ',' || lastToken == '(' ||
-	   lastToken == RETURN ) )
+	   lastToken == ':' || lastToken == RETURN ) )
             convertNextIdentifier = true;
 
     if (token == CONTINUE || token == BREAK ||
