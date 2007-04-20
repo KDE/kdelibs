@@ -790,8 +790,8 @@ void Nepomuk::KMetaData::ResourceData::mergeIn( const ResourceData* other )
     }
 
     // merge in possible remote changes
-    for( PropertiesMap::const_iterator it = other->m_properties.constBegin();
-         it != other->m_properties.constEnd(); ++it ) {
+    for( PropertiesMap::const_iterator it3 = other->m_properties.constBegin();
+         it3 != other->m_properties.constEnd(); ++it3 ) {
 
         // 1. the value exists here and has not been changed
 
@@ -809,15 +809,15 @@ void Nepomuk::KMetaData::ResourceData::mergeIn( const ResourceData* other )
         // 3. the value does not exist here
         //    -> copy it over
 
-        PropertiesMap::iterator it2 = this->m_properties.find( it.key() );
+        PropertiesMap::iterator it2 = this->m_properties.find( it3.key() );
 
         if( it2 != this->m_properties.constEnd() ) {
             if( !(it2.value().second & Modified) ) {
-                it2.value().first = it.value().first;
+                it2.value().first = it3.value().first;
             }
         }
         else {
-            this->m_properties.insert( it.key(), it.value() );
+            this->m_properties.insert( it3.key(), it3.value() );
         }
     }
 
