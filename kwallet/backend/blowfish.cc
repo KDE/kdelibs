@@ -25,6 +25,8 @@
  * _Applied_Cryptography_ (c) Bruce Schneier, 1996.
  */
 
+#include "blowfish.h"
+
 #include <config.h>
 
 #include <stdlib.h>
@@ -32,7 +34,6 @@
 #include <string.h>
 #include <QtCore/QBool>
 
-#include "blowfish.h"
 #include "blowfishtables.h"
 
 
