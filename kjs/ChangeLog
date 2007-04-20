@@ -1,3 +1,9 @@
+2007-04-20  Harri Porten  <porten@kde.org>
+
+	* number_object.cpp: fixed leading-zero loss on toFixed() call by
+	following the spec algorithm properly.  Nikolay Pavlov's bug
+	report: http://bugs.kde.org/144115.
+
 2007-03-13  Harri Porten  <porten@kde.org>
 
 	* function.cpp (decodeURI): don't drop last character of unescaped
