@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
 #include "HashTable.h"
+#include <config.h>
 
 namespace WTF {
 
