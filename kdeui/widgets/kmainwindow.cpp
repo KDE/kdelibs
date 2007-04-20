@@ -336,6 +336,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
+    sMemberList.removeAll( this );
     delete k_ptr;
 }
 
@@ -496,12 +497,6 @@ void KMainWindow::saveGlobalProperties( KConfig*  )
 void KMainWindow::readGlobalProperties( KConfig*  )
 {
 }
-
-#if defined(KDE_COMPAT)
-void KMainWindow::updateRects()
-{
-}
-#endif
 
 void KMainWindow::showAboutApplication()
 {

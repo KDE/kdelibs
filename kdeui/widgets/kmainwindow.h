@@ -35,11 +35,8 @@
 #include <QtCore/QMetaClassInfo>
 
 class KMenu;
-class KXMLGUIFactory;
 class KConfig;
 class KConfigGroup;
-class KConfigBase;
-class KHelpMenu;
 class KStatusBar;
 class KMenuBar;
 class KMWSessionManager;
@@ -697,7 +694,7 @@ protected Q_SLOTS:
 protected:
     KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f);
 
-    KMainWindowPrivate *k_ptr;
+    KMainWindowPrivate * const k_ptr;
 private:
     Q_PRIVATE_SLOT(k_func(), void _k_shuttingDown())
 };
