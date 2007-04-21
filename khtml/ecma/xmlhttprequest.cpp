@@ -736,22 +736,16 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
     request->abort();
     return Undefined();
   case XMLHttpRequest::GetAllResponseHeaders:
-    if (args.size() != 0) {
-    return Undefined();
-    }
-
     return request->getAllResponseHeaders();
   case XMLHttpRequest::GetResponseHeader:
-    if (args.size() != 1) {
-    return Undefined();
-    }
+    if (args.size() < 1)
+        return throwError(exec, SyntaxError, "Not enough arguments");
 
     return request->getResponseHeader(args[0]->toString(exec).qstring());
   case XMLHttpRequest::Open:
     {
-      if (args.size() < 2 || args.size() > 5) {
-        return Undefined();
-      }
+      if (args.size() < 2)
+          return throwError(exec, SyntaxError, "Not enough arguments");
 
       QString method = args[0]->toString(exec).qstring();
       KHTMLPart *part = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
