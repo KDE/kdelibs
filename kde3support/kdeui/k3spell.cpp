@@ -649,7 +649,7 @@ QString K3Spell::funnyWord( const QString & word )
   QString qs;
   unsigned int i=0;
 
-  for( i=0; word [i]!='\0';i++ )
+  for( i=0; i<word.size(); i++ )
   {
     if (word [i]=='+')
       continue;
@@ -659,7 +659,7 @@ QString K3Spell::funnyWord( const QString & word )
       unsigned int j;
       int k;
 
-      for( j = i+1; word[j] != '\0' && word[j] != '+' && word[j] != '-'; j++ )
+      for( j = i+1; j < word.size() && word[j] != '+' && word[j] != '-'; j++ )
         shorty += word[j];
 
       i = j-1;
