@@ -90,7 +90,8 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { Onload, Onreadystatechange, ReadyState, ResponseText, ResponseXML, Status, StatusText, Abort,
-           GetAllResponseHeaders, GetResponseHeader, Open, Send, SetRequestHeader };
+           GetAllResponseHeaders, GetResponseHeader, Open, Send, SetRequestHeader,
+           OverrideMIMEType };
 
   private:
     friend class XMLHttpRequestProtoFunc;
@@ -116,6 +117,7 @@ namespace KJS {
     void send(const QString& _body, int& ec);
     void abort();
     void setRequestHeader(const QString& name, const QString& value, int& ec);
+    void overrideMIMEType(const QString& override);
     ValueImp *getAllResponseHeaders() const;
     ValueImp *getResponseHeader(const QString& name) const;
 
@@ -127,6 +129,7 @@ namespace KJS {
     QString method;
     bool async;
     HTTPHeaderMap m_requestHeaders;
+    QString m_mimeTypeOverride;
     QString contentType;
 
     KIO::TransferJob * job;

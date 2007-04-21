@@ -58,6 +58,7 @@ using namespace DOM;
   getAllResponseHeaders	XMLHttpRequest::GetAllResponseHeaders	DontDelete|Function 0
   getResponseHeader	XMLHttpRequest::GetResponseHeader	DontDelete|Function 1
   open			XMLHttpRequest::Open			DontDelete|Function 5
+  overrideMimeType	XMLHttpRequest::OverrideMIMEType	DontDelete|Function 1
   send			XMLHttpRequest::Send			DontDelete|Function 1
   setRequestHeader	XMLHttpRequest::SetRequestHeader	DontDelete|Function 2
 @end
@@ -146,9 +147,12 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     if (!createdDocument) {
       QString mimeType = "text/xml";
 
-      ValueImp *header = getResponseHeader("Content-Type");
-      if (header->type() != UndefinedType) {
-	mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
+      if (!m_mimeTypeOverride.isEmpty()) {
+	  mimeType = m_mimeTypeOverride;
+      } else {
+	  ValueImp *header = getResponseHeader("Content-Type");
+	  if (header->type() != UndefinedType)
+	      mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
@@ -462,6 +466,11 @@ void XMLHttpRequest::abort()
   decoder = 0;
   aborted = true;
   changeState(XHRS_Uninitialized);
+}
+
+void XMLHttpRequest::overrideMIMEType(const QString& override)
+{
+    m_mimeTypeOverride = override;
 }
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _value, int& ec)
@@ -792,6 +801,7 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
       return jsUndefined();
     }
   case XMLHttpRequest::SetRequestHeader:
+      {
       if (args.size() < 2)
           return throwError(exec, SyntaxError, "Not enough arguments");
       JSValue* keyArgument = args[0];
@@ -803,6 +813,14 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
           val = valArgument->toString(exec).qstring();
       request->setRequestHeader(key, val, ec);
       setDOMException(exec, ec);
+      return jsUndefined();
+      }
+
+  case XMLHttpRequest::OverrideMIMEType:
+      if (args.size() < 1)
+          return throwError(exec, SyntaxError, "Not enough arguments");
+
+      request->overrideMIMEType(args[0]->toString(exec).qstring());
       return jsUndefined();
   }
 
