@@ -952,47 +952,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
 
 
 install( FILES
-  WTF/DefaultHash
-  WTF/DeletedValueAssigner
-  WTF/GenericHashTraits
-  WTF/HashCountedSet
-  WTF/HashKeyStorageTraits
-  WTF/HashMap
-  WTF/HashMapTranslator
-  WTF/HashSet
-  WTF/HashSetTranslator
-  WTF/HashSetTranslatorAdapter
-  WTF/HashTable
-  WTF/HashTableConstIterator
-  WTF/HashTableIterator
-  WTF/HashTableRefCounter
-  WTF/HashTableRefCounterBase
-  WTF/HashTraits
-  WTF/IdentityExtractor
-  WTF/IdentityHashTranslator
-  WTF/IntHash
-  WTF/IntTypes
-  WTF/IsInteger
-  WTF/IsPod
-  WTF/Mover
-  WTF/NeedsRef
-  WTF/OwnArrayPtr
-  WTF/OwnPtr
-  WTF/PairBaseHashTraits
-  WTF/PairFirstExtractor
-  WTF/PairHashTraits
-  WTF/PassRefPtr
-  WTF/PtrHash
-  WTF/RefCounter
-  WTF/RefCounterBase
-  WTF/RefPtr
-  WTF/SharedPtr
-  WTF/Vector
-  WTF/VectorTraits
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/WTF )
-
-
-install( FILES
   Phonon/AbstractAudioOutput
   Phonon/AbstractMediaProducer
   Phonon/AbstractVideoOutput
