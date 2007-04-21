@@ -50,7 +50,6 @@
 #include <kxmlguifactory.h>
 #include <kaboutdata.h>
 #include <kshortcut.h>
-#include <kstaticdeleter.h>
 #include <kstandardshortcut.h>
 #include <kconfiggroup.h>
 

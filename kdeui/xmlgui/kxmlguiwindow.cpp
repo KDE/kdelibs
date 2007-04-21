@@ -57,7 +57,6 @@
 #include <klocale.h>
 #include <kmenubar.h>
 #include <kstandarddirs.h>
-#include <kstaticdeleter.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwm.h>

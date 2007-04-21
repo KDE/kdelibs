@@ -36,7 +36,6 @@
 #include <QtGui/QStylePainter>
 
 #include <klocale.h>
-#include <kstaticdeleter.h>
 
 #include "kcolordialog.h"
 
@@ -151,15 +150,11 @@ QSize KColorComboDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 
 #define STANDARD_PAL_SIZE 17
 
-static QColor *standardPalette = 0;
-static KStaticDeleter<QColor> standardPaletteSD;
-
+K_GLOBAL_STATIC(QColor, standardPalette)
 static void createStandardPalette()
 {
     if ( standardPalette )
-	return;
-
-    standardPaletteSD.setObject(standardPalette, new QColor[STANDARD_PAL_SIZE], true);
+        return;
 
     int i = 0;
 

@@ -38,7 +38,6 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <klocale.h>
 #include <kprotocolinfo.h>
 #include <kcomponentdata.h>
-#include "kstaticdeleter.h"
 
 #include <QtGui/QColor>
 #include <QtGui/QCursor>
@@ -85,12 +84,10 @@ QColor *KGlobalSettings::_visitedLinkColor = 0;
 QColor *KGlobalSettings::alternateColor = 0;
 
 KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
-static KGlobalSettings* s_self = 0;
-static KStaticDeleter<KGlobalSettings> s_kglobalSettingsDeleter;
 
-KGlobalSettings* KGlobalSettings::self() {
-    if (!s_self)
-        s_kglobalSettingsDeleter.setObject(s_self, new KGlobalSettings);
+KGlobalSettings* KGlobalSettings::self()
+{
+    K_GLOBAL_STATIC(KGlobalSettings, s_self)
     return s_self;
 }
 

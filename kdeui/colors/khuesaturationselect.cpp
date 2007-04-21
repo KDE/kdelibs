@@ -17,20 +17,18 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QPainter>
-#include <kstaticdeleter.h>
-#include <kimageeffect.h>
 #include "khuesaturationselect.h"
 
+#include <QtGui/QPainter>
+#include <kglobal.h>
+#include <kimageeffect.h>
 
-static QVector<QColor> *s_standardPalette = 0;
-static KStaticDeleter<QVector<QColor> > spd;
+K_GLOBAL_STATIC(QVector<QColor>, s_standardPalette)
 
 // Shared with KColorValueSelector
 KDEUI_EXPORT QVector<QColor> kdeui_standardPalette()
 {
     if ( !s_standardPalette ) {
-        spd.setObject( s_standardPalette, new QVector<QColor> );
 
         int i = 0;
 #ifndef STANDARD_PAL_SIZE
