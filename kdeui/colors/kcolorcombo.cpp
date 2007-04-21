@@ -32,6 +32,7 @@
 
 #include "kcolorcombo.h"
 
+#include <QtCore/QVector>
 #include <QtGui/QAbstractItemDelegate>
 #include <QtGui/QStylePainter>
 
@@ -150,7 +151,7 @@ QSize KColorComboDelegate::sizeHint(const QStyleOptionViewItem &option, const QM
 
 #define STANDARD_PAL_SIZE 17
 
-K_GLOBAL_STATIC(QColor, standardPalette)
+K_GLOBAL_STATIC_WITH_ARGS(QVector<QColor>, standardPalette, (STANDARD_PAL_SIZE))
 static void createStandardPalette()
 {
     if ( standardPalette )
@@ -158,23 +159,23 @@ static void createStandardPalette()
 
     int i = 0;
 
-    standardPalette[i++] = Qt::red;
-    standardPalette[i++] = Qt::green;
-    standardPalette[i++] = Qt::blue;
-    standardPalette[i++] = Qt::cyan;
-    standardPalette[i++] = Qt::magenta;
-    standardPalette[i++] = Qt::yellow;
-    standardPalette[i++] = Qt::darkRed;
-    standardPalette[i++] = Qt::darkGreen;
-    standardPalette[i++] = Qt::darkBlue;
-    standardPalette[i++] = Qt::darkCyan;
-    standardPalette[i++] = Qt::darkMagenta;
-    standardPalette[i++] = Qt::darkYellow;
-    standardPalette[i++] = Qt::white;
-    standardPalette[i++] = Qt::lightGray;
-    standardPalette[i++] = Qt::gray;
-    standardPalette[i++] = Qt::darkGray;
-    standardPalette[i++] = Qt::black;
+    (*standardPalette)[i++] = Qt::red;
+    (*standardPalette)[i++] = Qt::green;
+    (*standardPalette)[i++] = Qt::blue;
+    (*standardPalette)[i++] = Qt::cyan;
+    (*standardPalette)[i++] = Qt::magenta;
+    (*standardPalette)[i++] = Qt::yellow;
+    (*standardPalette)[i++] = Qt::darkRed;
+    (*standardPalette)[i++] = Qt::darkGreen;
+    (*standardPalette)[i++] = Qt::darkBlue;
+    (*standardPalette)[i++] = Qt::darkCyan;
+    (*standardPalette)[i++] = Qt::darkMagenta;
+    (*standardPalette)[i++] = Qt::darkYellow;
+    (*standardPalette)[i++] = Qt::white;
+    (*standardPalette)[i++] = Qt::lightGray;
+    (*standardPalette)[i++] = Qt::gray;
+    (*standardPalette)[i++] = Qt::darkGray;
+    (*standardPalette)[i++] = Qt::black;
 }
 
 class KColorComboPrivate
@@ -205,7 +206,7 @@ void KColorComboPrivate::setCustomColor(const QColor &color, bool lookupInPreset
     if (lookupInPresets) {
         if (colorList.isEmpty()) {
             for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
-                if (standardPalette[i] == color) {
+                if (standardPalette->at(i) == color) {
                     q->setCurrentIndex(i + 1);
                     internalcolor = color;
                     return;
@@ -261,7 +262,7 @@ QList<QColor> KColorCombo::colors() const
     if (d->colorList.isEmpty()) {
         QList<QColor> list;
         for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
-            list += standardPalette[i];
+            list += standardPalette->at(i);
 	}
         return list;
     } else {
@@ -327,7 +328,7 @@ void KColorComboPrivate::_k_slotActivated(int index)
             setCustomColor(customColor, false);
         }
     } else if (colorList.isEmpty()) {
-        internalcolor = standardPalette[index - 1];
+        internalcolor = standardPalette->at(index - 1);
     } else {
         internalcolor = colorList[index - 1];
     }
@@ -340,7 +341,7 @@ void KColorComboPrivate::_k_slotHighlighted(int index)
     if (index == 0) {
         internalcolor = customColor;
     } else if (colorList.isEmpty()) {
-        internalcolor = standardPalette[index - 1];
+        internalcolor = standardPalette->at(index - 1);
     } else {
         internalcolor = colorList[index - 1];
     }
@@ -355,7 +356,7 @@ void KColorComboPrivate::addColors()
     if (colorList.isEmpty()) {
         for (int i = 0; i < STANDARD_PAL_SIZE; ++i) {
             q->addItem(QString());
-            q->setItemData(i + 1, standardPalette[i], KColorComboDelegate::ColorRole);
+            q->setItemData(i + 1, standardPalette->at(i), KColorComboDelegate::ColorRole);
         }
     } else {
         for (int i = 0, count = colorList.count(); i < count; ++i) {
