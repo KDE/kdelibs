@@ -112,7 +112,7 @@ void KDXSRating::paintEvent(QPaintEvent e)
 {
 	Q_UNUSED(e);
 
-	kdDebug() << "paint event!" << endl;
+	kDebug() << "paint event!" << endl;
 
 	int rating = m_slider->value();
 	slotRating(rating);

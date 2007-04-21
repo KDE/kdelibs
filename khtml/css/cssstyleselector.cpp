@@ -1265,7 +1265,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
                 // Handle unfinished parsing and dynamic DOM changes
                 addDependency(BackwardsStructuralDependency, static_cast<ElementImpl*>(e->parentNode()));
                 if (!e->parentNode()->closed()) {
-//                     kdDebug(6080) << e->nodeName().string() << "::last-child: Parent unclosed" << endl;
+//                     kDebug(6080) << e->nodeName().string() << "::last-child: Parent unclosed" << endl;
                     return false;
                 }
                 DOM::NodeImpl* n = e->nextSibling();
@@ -1969,7 +1969,7 @@ static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
 
 void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 {
-//     kdDebug( 6080 ) << "applying property " << getPropertyName(id) << endl;
+//     kDebug( 6080 ) << "applying property " << getPropertyName(id) << endl;
 
     CSSPrimitiveValueImpl *primitiveValue = 0;
     if(value->isPrimitiveValue()) primitiveValue = static_cast<CSSPrimitiveValueImpl *>(value);

@@ -276,7 +276,7 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     if(!tFirstBody() && !foot && !head)
         setTBody( new HTMLTableSectionElementImpl(docPtr(), ID_TBODY, true /* implicit */) );
 
-    //kdDebug(6030) << k_funcinfo << index << endl;
+    //kDebug(6030) << k_funcinfo << index << endl;
 
     long sectionIndex;
     HTMLTableSectionElementImpl* section;

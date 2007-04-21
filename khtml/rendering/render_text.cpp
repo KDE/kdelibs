@@ -184,7 +184,7 @@ void InlineTextBox::paint(RenderObject::PaintInfo& i, int tx, int ty)
     }
 
     if (haveSelection && i.phase == PaintActionSelection) {
-        //kdDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
+        //kDebug(6040) << this << " paintSelection with startPos=" << sPos << " endPos=" << ePos << endl;
         if ( sPos < ePos )
 	    paintSelection(font, renderText(), i.p, styleToUse, tx, ty, sPos, ePos, d);
     }

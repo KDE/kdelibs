@@ -1541,8 +1541,8 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                                         CSSValueImpl*& retValue1, CSSValueImpl*& retValue2)
 {
 #ifdef CSS_DEBUG
-    kdDebug(6080) << "parseBackgroundProperty()" << endl;
-    kdDebug(6080) << "LOOKING FOR: " << getPropertyName(propId).string() << endl;
+    kDebug(6080) << "parseBackgroundProperty()" << endl;
+    kDebug(6080) << "LOOKING FOR: " << getPropertyName(propId).string() << endl;
 #endif
     CSSValueListImpl *values = 0, *values2 = 0;
     Value* val;

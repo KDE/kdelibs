@@ -1678,7 +1678,7 @@ CopyJob *KIO::copyAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 
 CopyJob *KIO::copy( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
-    //kdDebug(7007) << src << " " << dest << endl;
+    //kDebug(7007) << src << " " << dest << endl;
     CopyJob *job = new CopyJob(src, dest, CopyJob::Copy, false);
     job->setUiDelegate(new JobUiDelegate());
     if (showProgressInfo) {
@@ -1715,7 +1715,7 @@ CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, bool showProgressInfo )
 
 CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, bool showProgressInfo )
 {
-    //kdDebug(7007) << src << " " << dest << endl;
+    //kDebug(7007) << src << " " << dest << endl;
     CopyJob *job = new CopyJob(src, dest, CopyJob::Move, false);
     job->setUiDelegate(new JobUiDelegate());
     if (showProgressInfo) {

@@ -1475,9 +1475,9 @@ void Cache::clear()
             QPtrDictIterator<CachedObjectClient> it(freeList->current()->m_clients);
             for(;it.current(); ++it) {
                 if (dynamic_cast<RenderObject*>(it.current())) {
-                    kdDebug( 6060 ) << " --> RenderObject" << endl;
+                    kDebug( 6060 ) << " --> RenderObject" << endl;
                 } else
-                    kdDebug( 6060 ) << " --> Something else" << endl;
+                    kDebug( 6060 ) << " --> Something else" << endl;
             }*/
         }
 //         assert(freeList->current()->canDelete());

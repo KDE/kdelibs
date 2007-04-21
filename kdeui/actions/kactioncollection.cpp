@@ -426,7 +426,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
       QString actionName = it.key();
 
       bool bSameAsDefault = (kaction->shortcut(KAction::ActiveShortcut) == kaction->shortcut(KAction::DefaultShortcut));
-      //kdDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
+      //kDebug(129) << "name = " << sName << " shortcut = " << shortcut(i).toStringInternal() << " def = " << shortcutDefault(i).toStringInternal() << endl;
 
       // now see if this element already exists
       // and create it if necessary (unless bSameAsDefault)
@@ -436,7 +436,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
 
       if( bSameAsDefault ) {
         act_elem.removeAttribute( attrShortcut );
-        //kdDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
+        //kDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count() << endl;
         if( act_elem.attributes().count() == 1 )
           elem.removeChild( act_elem );
       } else {
