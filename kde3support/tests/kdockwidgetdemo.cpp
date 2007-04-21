@@ -2,7 +2,7 @@
 
 #include <Qt3Support/Q3Header>
 #include <QtGui/QToolButton>
-#include <QtGui/QToolTip>
+
 #include <Qt3Support/Q3TextView>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>

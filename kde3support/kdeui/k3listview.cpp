@@ -28,7 +28,7 @@
 #include <QtCore/QTimer>
 #include <Qt3Support/Q3Header>
 #include <QtGui/QCursor>
-#include <QtGui/QToolTip>
+
 #include <QtGui/QStyle>
 #include <QStyleOptionFocusRect>
 #include <QApplication>

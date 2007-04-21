@@ -33,7 +33,7 @@
 #include <QtGui/QPen>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QStyle>
-#include <QtGui/QToolTip>
+
 #include <QtGui/QBoxLayout>
 #include <QtGui/QSplitter>
 #include <QtGui/QTextBrowser>

@@ -28,7 +28,7 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QApplication>
-#include <QtGui/QToolTip>
+
 #include <QtGui/QCursor>
 
 KDXSComments::KDXSComments(QWidget *parent)

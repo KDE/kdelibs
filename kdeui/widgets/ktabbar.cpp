@@ -24,7 +24,7 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPushButton>
 #include <QtGui/QStyle>
-#include <QtGui/QToolTip>
+
 
 #include <kglobalsettings.h>
 #include <kiconloader.h>

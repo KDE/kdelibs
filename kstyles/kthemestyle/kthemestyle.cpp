@@ -60,7 +60,7 @@ Port version 0.9.7
 #include <QtGui/QMenuBar>
 #include <Qt3Support/Q3RangeControl>
 #include <QtGui/QSlider>
-#include <QtGui/QToolTip>
+
 #include <QtCore/QObject>
 #include <QtGui/QRadioButton>
 #include <QtGui/QStatusBar>

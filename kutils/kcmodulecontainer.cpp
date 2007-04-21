@@ -21,7 +21,7 @@
 #include <QtGui/QPixmap>
 #include <QtCore/QStringList>
 #include <QtGui/QTabWidget>
-#include <QtGui/QToolTip>
+
 
 
 #include <kcmodule.h>

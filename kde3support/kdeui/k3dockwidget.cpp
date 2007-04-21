@@ -28,7 +28,7 @@
 #include <QtGui/QCursor>
 #include <QtGui/QWidget>
 #include <QtGui/QTabWidget>
-#include <QtGui/QToolTip>
+
 #include <QtGui/QStyle>
 #include <QMouseEvent>
 #include <QObject>

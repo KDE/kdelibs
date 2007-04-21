@@ -27,7 +27,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
-#include <QtGui/QToolTip>
+
 #include <QtGui/QLineEdit>
 #include <kinputdialog.h>
 #include <klocale.h>

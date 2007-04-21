@@ -62,7 +62,7 @@ using namespace DOM;
 #include <QtCore/QFile>
 #include <Qt3Support/Q3ValueList>
 #include <QtCore/QString>
-#include <QtGui/QToolTip>
+
 #include <kdebug.h>
 #include <kurl.h>
 #include <assert.h>

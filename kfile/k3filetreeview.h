@@ -24,7 +24,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QPoint>
 #include <QtGui/QPixmap>
-#include <QtGui/QToolTip>
+
 
 class QColorGroup;
 
