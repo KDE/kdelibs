@@ -37,6 +37,7 @@
 #include <kio/scheduler.h>
 #include <kio/job.h>
 #include <QtCore/QObject>
+#include <QtCore/QHash>
 #include <kdebug.h>
 
 #ifdef APPLE_CHANGES
@@ -45,11 +46,6 @@
 #include <kio/netaccess.h>
 using KIO::NetAccess;
 #endif
-
-#define BANNED_HTTP_HEADERS "authorization,proxy-authorization,"\
-                            "content-length,host,connect,copy,move,"\
-                            "delete,head,trace,put,propfind,proppatch,"\
-                            "mkcol,lock,unlock,options,via"
 
 using namespace KJS;
 // 
@@ -218,6 +214,49 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *valu
   default:
     kWarning() << "XMLHttpRequest::putValue unhandled token " << token << endl;
   }
+}
+
+static bool canSetRequestHeader(const QString& name)
+{
+    // ### case insensitive!!!
+    static QSet<QString> forbiddenHeaders;
+    
+    if (forbiddenHeaders.isEmpty()) {
+	static const char* hdrs[] = {
+	    "accept-charset",
+	    "accept-encoding",
+	    "authorization",
+	    "content-length",
+	    "connect",
+	    "copy",
+	    "date",
+	    "delete",
+	    "expect",
+	    "head",
+	    "host",
+	    "keep-alive",
+	    "lock",
+	    "mkcol",
+	    "move",
+	    "options",
+	    "put",
+	    "propfind",
+	    "proppatch",
+	    "proxy-authorization",
+	    "referer",
+	    "te",
+	    "trace",
+	    "trailer",
+	    "transfer-encoding",
+	    "unlock",
+	    "upgrade",
+	    "via" 
+	};
+	for (size_t i = 0; i < sizeof(hdrs)/sizeof(char*); ++i)
+	    forbiddenHeaders.insert(QLatin1String(hdrs[i]));
+    }
+    
+    return !forbiddenHeaders.contains(name);
 }
 
 XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
@@ -448,12 +487,12 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
     return;
   }
 
-  // Reject all banned headers. See BANNED_HTTP_HEADERS above.
-  // kDebug() << "Banned HTTP Headers: " << BANNED_HTTP_HEADERS << endl;
-  QStringList bannedHeaders = QString::fromLatin1(BANNED_HTTP_HEADERS).split(',');
-
-  if (bannedHeaders.contains(name))
-    return;   // Denied
+  // Reject all banned headers.
+  if (!canSetRequestHeader(name)) {
+      kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header "
+                     << name << endl;
+      return;
+  }
 
   requestHeaders[name] = value.trimmed();
 }
