@@ -196,7 +196,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
             used_width = document.idealWidth();
             pref_height = (int) document.size().height();
         }
-        if (used_width <= pref_width) {
+        if (used_width && used_width <= pref_width) {
             while (true) {
                 int new_width = (int) (used_width * 9) / 10;
                 document.setTextWidth(new_width);
