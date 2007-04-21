@@ -41,7 +41,6 @@
 #include <QTextDocument>
 
 #include <kstandardaction.h>
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kdeversion.h>
 
@@ -137,15 +136,12 @@ bool KAcceleratorManagerPrivate::programmers_mode = false;
 QString KAcceleratorManagerPrivate::changed_string;
 QString KAcceleratorManagerPrivate::added_string;
 QString KAcceleratorManagerPrivate::removed_string;
-static QStringList *kaccmp_sns = 0;
-static KStaticDeleter<QStringList> kaccmp_sns_d;
+K_GLOBAL_STATIC_WITH_ARGS(QStringList, kaccmp_sns, (KStandardAction::internal_stdNames()))
 QMap<QWidget*, int> KAcceleratorManagerPrivate::ignored_widgets;
 
 bool KAcceleratorManagerPrivate::standardName(const QString &str)
 {
-    if (!kaccmp_sns)
-        kaccmp_sns_d.setObject(kaccmp_sns, new QStringList(KStandardAction::internal_stdNames()));
-        return kaccmp_sns->contains(str);
+    return kaccmp_sns->contains(str);
 }
 
 KAcceleratorManagerPrivate::Item::~Item()
