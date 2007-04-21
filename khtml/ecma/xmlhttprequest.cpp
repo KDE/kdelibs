@@ -48,6 +48,7 @@ using KIO::NetAccess;
 #endif
 
 using namespace KJS;
+using namespace DOM;
 // 
 ////////////////////// XMLHttpRequest Object ////////////////////////
 
@@ -135,11 +136,11 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ReadyState:
-    return Number(state);
+    return Number(m_state);
   case ResponseText:
     return ::getStringOrNull(DOM::DOMString(response));
   case ResponseXML:
-    if (state != XHRS_Loaded) {
+    if (m_state != XHRS_Loaded) {
       return Undefined();
     }
     if (!createdDocument) {
@@ -264,7 +265,7 @@ XMLHttpRequest::XMLHttpRequest(ExecState *exec, DOM::DocumentImpl* d)
     async(true),
     contentType(QString()),
     job(0),
-    state(XHRS_Uninitialized),
+    m_state(XHRS_Uninitialized),
     onReadyStateChangeListener(0),
     onLoadListener(0),
     decoder(0),
@@ -289,8 +290,8 @@ XMLHttpRequest::~XMLHttpRequest()
 
 void XMLHttpRequest::changeState(XMLHttpRequestState newState)
 {
-  if (state != newState) {
-    state = newState;
+  if (m_state != newState) {
+    m_state = newState;
     ProtectedPtr<ObjectImp> ref(this);
 
     if (onReadyStateChangeListener != 0 && doc->view() && doc->view()->part()) {
@@ -299,7 +300,7 @@ void XMLHttpRequest::changeState(XMLHttpRequestState newState)
       onReadyStateChangeListener->handleEvent(ev);
     }
 
-    if (state == XHRS_Loaded && onLoadListener != 0 && doc->view() && doc->view()->part()) {
+    if (m_state == XHRS_Loaded && onLoadListener != 0 && doc->view() && doc->view()->part()) {
       DOM::Event ev = doc->view()->part()->document().createEvent("HTMLEvents");
       ev.initEvent("load", true, true);
       onLoadListener->handleEvent(ev);
@@ -488,7 +489,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   }
 
   // Reject all banned headers.
-  if (!canSetRequestHeader(name)) {
+  if (!canSetRequestHeader(nameTrimmed)) {
       kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header "
                      << name << endl;
       return;
@@ -640,7 +641,7 @@ void XMLHttpRequest::slotData( KIO::Job*, const char *data, int len )
 void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
 #endif
 {
-  if (state < XHRS_Sent ) {
+  if (m_state < XHRS_Sent ) {
     responseHeaders = job->queryMetaData("HTTP-Headers");
 
     // NOTE: Replace a 304 response with a 200! Both IE and Mozilla do this.
@@ -752,8 +753,9 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
         return Undefined();
       }
 
-      if (request->state != XHRS_Open) {
-	return Undefined();
+      if (request->m_state != XHRS_Open) {
+	  setDOMException(exec, DOMException::INVALID_STATE_ERR);
+	  return jsUndefined();
       }
 
       QString body;
@@ -776,16 +778,20 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
 
       request->send(body);
 
-      return Undefined();
+      return jsUndefined();
     }
   case XMLHttpRequest::SetRequestHeader:
     if (args.size() != 2) {
-      return Undefined();
+      return jsUndefined();
+    }
+    if (request->m_state != XHRS_Open) {
+	setDOMException(exec, DOMException::INVALID_STATE_ERR);
+	return jsUndefined();
     }
 
     request->setRequestHeader(args[0]->toString(exec).qstring(), args[1]->toString(exec).qstring());
 
-    return Undefined();
+    return jsUndefined();
   }
 
   return Undefined();

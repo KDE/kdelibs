@@ -49,7 +49,7 @@ namespace KJS {
   inline bool operator==(const CaseInsensitiveString& a,
                          const CaseInsensitiveString& b)
   {
-    return a.toLower() == b.toLower();
+      return a.original().compare(b.original(), Qt::CaseInsensitive) == 0;
   }
 
   inline uint qHash(const CaseInsensitiveString& key)
@@ -131,7 +131,7 @@ namespace KJS {
 
     KIO::TransferJob * job;
 
-    XMLHttpRequestState state;
+    XMLHttpRequestState m_state;
     JSEventListener *onReadyStateChangeListener;
     JSEventListener *onLoadListener;
 
