@@ -17,9 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-
-
-
 #ifndef KNOTIFICATIONMANAGER_H
 #define KNOTIFICATIONMANAGER_H
 
@@ -33,53 +30,50 @@ class QStringList;
  * @internal
  * @author Olivier Goffart
  */
-class KNotificationManager :  public QObject
+class KNotificationManager : public QObject
 {
 Q_OBJECT
 public: 
-    static KNotificationManager* self();		
+    static KNotificationManager* self();
     ~KNotificationManager();
-		
+
     /**
      * send the dcop call to the knotify server
      * @return the identification number
      */
-    unsigned int notify(KNotification *n, const QPixmap& pix, const QStringList &action ,
+    unsigned int notify(KNotification *n, const QPixmap& pix, const QStringList &action,
                         const KNotification::ContextList& contexts, const QString &appname);
-		
+
     /**
      * send the close dcop call to the knotify server for the notification with the identifier @p id .
      * @param id the id of the notification
      */
-    void close( int id);
-		
+    void close(int id);
+
     /**
      * remove the KNotification ptr from the internal map
      * To be called in the KNotification destructor
      */
-    void remove( int id);	
-	
-	/**
-	 * update one notification text and pixmap and actions
-	 */
-	void update(KNotification *n, int id);
-	
-	/**
-	 * re-emit the notification, eventually with new contexts
-	 */
-	void reemit(KNotification *n, int id);
-		
+    void remove(int id);
+
+    /**
+     * update one notification text and pixmap and actions
+     */
+    void update(KNotification *n, int id);
+
+    /**
+     * re-emit the notification, eventually with new contexts
+     */
+    void reemit(KNotification *n, int id);
+
 private Q_SLOTS:
     void notificationClosed( int id );
     void notificationActivated( int id,  int action);
 
 private:
     struct Private;
-    Private *d;
-    static KNotificationManager* s_self;
+    Private * const d;
     KNotificationManager();
-
 };
-
 
 #endif

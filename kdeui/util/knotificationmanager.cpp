@@ -23,7 +23,6 @@
 #include <QWidget>
 #include <QtDBus/QtDBus>
 
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <kiconloader.h>
@@ -38,13 +37,9 @@ struct KNotificationManager::Private
     QDBusInterface *knotify;
 };
 
-KNotificationManager * KNotificationManager::s_self = 0L;
-
 KNotificationManager * KNotificationManager::self()
 {
-    static KStaticDeleter<KNotificationManager> deleter;
-    if(!s_self)
-        deleter.setObject( s_self, new KNotificationManager() );
+    K_GLOBAL_STATIC(KNotificationManager, s_self)
     return s_self;
 }
 
@@ -66,7 +61,6 @@ KNotificationManager::KNotificationManager()
 
 KNotificationManager::~KNotificationManager()
 {
-    s_self = 0L;
     delete d->knotify;
     delete d;
 }
