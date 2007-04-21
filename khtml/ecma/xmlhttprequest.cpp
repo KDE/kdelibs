@@ -218,8 +218,7 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *valu
 
 static bool canSetRequestHeader(const QString& name)
 {
-    // ### case insensitive!!!
-    static QSet<QString> forbiddenHeaders;
+    static QSet<CaseInsensitiveString> forbiddenHeaders;
     
     if (forbiddenHeaders.isEmpty()) {
 	static const char* hdrs[] = {
@@ -253,7 +252,7 @@ static bool canSetRequestHeader(const QString& name)
 	    "via" 
 	};
 	for (size_t i = 0; i < sizeof(hdrs)/sizeof(char*); ++i)
-	    forbiddenHeaders.insert(QLatin1String(hdrs[i]));
+	    forbiddenHeaders.insert(CaseInsensitiveString(hdrs[i]));
     }
     
     return !forbiddenHeaders.contains(name);
@@ -337,7 +336,7 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
   aborted = false;
 
   // clear stuff from possible previous load
-  requestHeaders.clear();
+  m_requestHeaders.clear();
   responseHeaders.clear();
   response = QString::fromLatin1("");
   createdDocument = false;
@@ -384,14 +383,14 @@ void XMLHttpRequest::send(const QString& _body)
     job = KIO::get( url, false, false );
   }
 
-  if (!requestHeaders.isEmpty()) {
+  if (!m_requestHeaders.isEmpty()) {
     QString rh;
-    QMap<QString, QString>::ConstIterator begin = requestHeaders.begin();
-    QMap<QString, QString>::ConstIterator end = requestHeaders.end();
-    for (QMap<QString, QString>::ConstIterator i = begin; i != end; ++i) {
+    HTTPHeaderMap::ConstIterator begin = m_requestHeaders.begin();
+    HTTPHeaderMap::ConstIterator end = m_requestHeaders.end();
+    for (HTTPHeaderMap::ConstIterator i = begin; i != end; ++i) {
       if (i != begin)
         rh += "\r\n";
-      rh += i.key() + ": " + i.value();
+      rh += i.key().original() + ": " + i.value();
     }
 
     job->addMetaData("customHTTPHeader", rh);
@@ -402,7 +401,7 @@ void XMLHttpRequest::send(const QString& _body)
   // Set the default referrer if one is not already supplied
   // through setRequestHeader. NOTE: the user can still disable
   // this feature at the protocol level (kio_http).
-  if (requestHeaders.find("Referer") == requestHeaders.end()) {
+  if (m_requestHeaders.contains("Referer")) {
     KUrl documentURL(doc->URL());
     documentURL.setPass(QString());
     documentURL.setUser(QString());
@@ -461,7 +460,8 @@ void XMLHttpRequest::abort()
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
 {
-  QString name = _name.toLower().trimmed();
+  QString nameTrimmed = _name.trimmed();
+  QString name = nameTrimmed.toLower();
 
   // Content-type needs to be set separately from the other headers
   if(name == "content-type") {
@@ -473,7 +473,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
   if(name == "referer") {
     KUrl referrerURL(value);
     if (urlMatchesDocumentDomain(referrerURL))
-      requestHeaders[name] = referrerURL.url();
+      m_requestHeaders[name] = referrerURL.url();
     return;
   }
 
@@ -494,7 +494,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
       return;
   }
 
-  requestHeaders[name] = value.trimmed();
+  m_requestHeaders[nameTrimmed] = value.trimmed();
 }
 
 ValueImp *XMLHttpRequest::getAllResponseHeaders() const

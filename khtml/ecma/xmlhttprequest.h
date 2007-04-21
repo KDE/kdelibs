@@ -26,11 +26,38 @@
 #include <kencodingdetector.h>
 #include "kio/jobclasses.h"
 #include <QPointer>
+#include <QHash>
 
 namespace KJS {
 
   class JSEventListener;
   class XMLHttpRequestQObject;
+
+  class CaseInsensitiveString
+  {
+  public:
+    CaseInsensitiveString(const char* s) : str(QLatin1String(s)) { }
+    CaseInsensitiveString(const QString& s) : str(s) { }
+
+    QString original() const { return str; }
+    QString toLower() const { return str.toLower(); }
+
+  private:
+    QString str;
+  };
+
+  inline bool operator==(const CaseInsensitiveString& a,
+                         const CaseInsensitiveString& b)
+  {
+    return a.toLower() == b.toLower();
+  }
+
+  inline uint qHash(const CaseInsensitiveString& key)
+  {
+    return qHash(key.toLower());
+  }
+
+  typedef QHash<CaseInsensitiveString, QString> HTTPHeaderMap;
 
   // these exact numeric values are important because JS expects them
   enum XMLHttpRequestState {
@@ -99,7 +126,7 @@ namespace KJS {
     KUrl url;
     QString method;
     bool async;
-    QMap<QString,QString> requestHeaders;
+    HTTPHeaderMap m_requestHeaders;
     QString contentType;
 
     KIO::TransferJob * job;
