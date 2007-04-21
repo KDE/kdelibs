@@ -135,7 +135,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     m_bIsRoot(false),
     m_pManager(mgr), m_pOwner(_owner),
     m_parentMenu( _parentMenu ),
-    m_actionCollection( 0 ),
+    m_actionCollection( new KActionCollection(this) ),
     m_parentAddress( parentAddress )
 {
   m_parentMenu->setKeyboardShortcutsEnabled( true );
