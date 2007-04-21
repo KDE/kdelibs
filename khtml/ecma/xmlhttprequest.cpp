@@ -62,6 +62,7 @@ namespace KJS {
   getAllResponseHeaders	XMLHttpRequest::GetAllResponseHeaders	DontDelete|Function 0
   getResponseHeader	XMLHttpRequest::GetResponseHeader	DontDelete|Function 1
   open			XMLHttpRequest::Open			DontDelete|Function 5
+  overrideMimeType	XMLHttpRequest::OverrideMIMEType	DontDelete|Function 1
   send			XMLHttpRequest::Send			DontDelete|Function 1
   setRequestHeader	XMLHttpRequest::SetRequestHeader	DontDelete|Function 2
 @end
@@ -147,9 +148,13 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     if (!createdDocument) {
       QString mimeType = "text/xml";
 
-      Value header = getResponseHeader("Content-Type");
-      if (header.type() != UndefinedType) {
-	mimeType = QStringList::split(";", header.toString(exec).qstring())[0].stripWhiteSpace();
+      if (!m_mimeTypeOverride.isEmpty()) {
+        mimeType = m_mimeTypeOverride;
+      } else {
+	  Value header = getResponseHeader("Content-Type");
+          if (header.type() != UndefinedType) {
+            mimeType = QStringList::split(";", header.toString(exec).qstring())[0].stripWhiteSpace();
+	  }
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
@@ -433,6 +438,11 @@ void XMLHttpRequest::abort()
   delete decoder;
   decoder = 0;
   aborted = true;
+}
+
+void XMLHttpRequest::overrideMIMEType(const QString& override)
+{
+    m_mimeTypeOverride = override;
 }
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
@@ -766,6 +776,16 @@ Value XMLHttpRequestProtoFunc::tryCall(ExecState *exec, Object &thisObj, const L
 
     request->setRequestHeader(args[0].toString(exec).qstring(), args[1].toString(exec).qstring());
 
+    return Undefined();
+
+  case XMLHttpRequest::OverrideMIMEType:
+    if (args.size() < 1) {
+       Object err = Error::create(exec, SyntaxError, "Not enough arguments");
+       exec->setException(err);
+       return err;
+    }
+
+    request->overrideMIMEType(args[0].toString(exec).qstring());
     return Undefined();
   }
 
