@@ -1156,7 +1156,7 @@ bool TCPSlaveBase::waitForResponse( int t )
   else if (d->socket->bytesAvailable() > 0)
     return true;
 
-  return d->socket->waitForReadyRead(t * 1000) > 0;
+  return d->socket->waitForReadyRead(t * 1000);
 }
 
 int TCPSlaveBase::connectResult()
