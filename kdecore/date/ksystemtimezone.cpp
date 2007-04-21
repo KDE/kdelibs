@@ -362,69 +362,30 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
             // TZ specifies a file name, either relative to zoneinfo/ or absolute.
             TZfile = ++envZone;
         }
-	if (*envZone != '/')
+        if (*envZone != '/')
         {
             local = zone(envZone);
             if (local)
                 return local;
-	    TZfile = 0;   // relative file not found
+            TZfile = 0;   // relative file not found
         }
         if (TZfile)
         {
+#ifdef __GNUC__
+#warning What if TZfile IS a zoneinfo file?
+#endif
             local = matchZoneFile(TZfile);
             if (local)
                 return local;
         }
     }
 
-    if (!m_instance->m_zoneinfoDir.isEmpty())
-    {
-        // SOLUTION 2: DEFINITIVE.
-        // Try to follow any /etc/localtime symlink to a zoneinfo file.
-        // SOLUTION 3: DEFINITIVE.
-        // Try to match /etc/localtime against the list of zoneinfo files.
-        local = matchZoneFile("/etc/localtime");
-        if (local)
-            return local;
-    }
-
-    // SOLUTION 4: DEFINITIVE.
-    // BSD support.
+    // SOLUTION 2: DEFINITIVE.
+    // BSD & Linux support: local time zone id in /etc/timezone.
     QString fileZone;
     QFile f;
     f.setFileName("/etc/timezone");
-    if (!f.open(QIODevice::ReadOnly))
-    {
-        kDebug() << "Can't open " << f.fileName() << endl;
-
-        // SOLUTION 5: DEFINITIVE.
-        // Solaris support using /etc/default/init.
-        f.setFileName("/etc/default/init");
-        if (!f.open(QIODevice::ReadOnly))
-        {
-            kDebug() << "Can't open " << f.fileName() << endl;
-        }
-        else
-        {
-            QTextStream ts(&f);
-            ts.setCodec("ISO-8859-1");
-
-            // Read the last line starting "TZ=".
-            while (!ts.atEnd())
-            {
-                fileZone = ts.readLine();
-                if (fileZone.startsWith("TZ="))
-                {
-                    fileZone = fileZone.mid(3);
-
-                    // kDebug() << "local=" << fileZone << endl;
-                    local = zone(fileZone);
-                }
-            }
-            f.close();
-        }
-    }
-    else
+    if (f.open(QIODevice::ReadOnly))
     {
         QTextStream ts(&f);
         ts.setCodec("ISO-8859-1");
@@ -438,9 +399,54 @@ const KTimeZone *KSystemTimeZonesPrivate::local()
             local = zone(fileZone);
         }
         f.close();
+        if (local)
+        {
+            kDebug() << "Local time zone=" << fileZone << " from " << f.fileName() << endl;
+            return local;
+        }
     }
-    if (local)
-        return local;
+
+    if (!m_instance->m_zoneinfoDir.isEmpty())
+    {
+        // SOLUTION 3: DEFINITIVE.
+        // Try to follow any /etc/localtime symlink to a zoneinfo file.
+        // SOLUTION 4: DEFINITIVE.
+        // Try to match /etc/localtime against the list of zoneinfo files.
+        local = matchZoneFile("/etc/localtime");
+        if (local)
+        {
+            kDebug() << "Local time zone=" << local->name() << " from /etc/localtime" << endl;
+            return local;
+        }
+    }
+
+    // SOLUTION 5: DEFINITIVE.
+    // Solaris support using /etc/default/init.
+    f.setFileName("/etc/default/init");
+    if (f.open(QIODevice::ReadOnly))
+    {
+        QTextStream ts(&f);
+        ts.setCodec("ISO-8859-1");
+
+        // Read the last line starting "TZ=".
+        while (!ts.atEnd() && !local)
+        {
+            fileZone = ts.readLine();
+            if (fileZone.startsWith("TZ="))
+            {
+                fileZone = fileZone.mid(3);
+
+                // kDebug() << "local=" << fileZone << endl;
+                local = zone(fileZone);
+            }
+        }
+        f.close();
+        if (local)
+        {
+            kDebug() << "Local time zone=" << fileZone << " from " << f.fileName() << endl;
+            return local;
+        }
+    }
 
     // SOLUTION 6: HEURISTIC.
     // None of the deterministic stuff above has worked: try a heuristic. We
@@ -515,7 +521,7 @@ const KTimeZone *KSystemTimeZonesPrivate::matchZoneFile(const char *path)
         // SOLUTION 3: DEFINITIVE.
         // Try to match against the list of zoneinfo files.
 
-        // Compute the MD5 sum of /etc/localtime.
+        // Compute the file's MD5 sum
         KMD5 context("");
         context.reset();
         context.update(f);
