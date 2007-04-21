@@ -354,9 +354,14 @@ void XMLHttpRequest::open(const QString& _method, const KUrl& _url, bool _async)
   changeState(XHRS_Open);
 }
 
-void XMLHttpRequest::send(const QString& _body)
+void XMLHttpRequest::send(const QString& _body, int& ec)
 {
   aborted = false;
+
+  if (m_state != XHRS_Open) {
+      ec =  DOMException::INVALID_STATE_ERR;
+      return;
+  }
 
   if (method == "post") {
     QString protocol = url.protocol().toLower();
@@ -459,10 +464,22 @@ void XMLHttpRequest::abort()
   changeState(XHRS_Uninitialized);
 }
 
-void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value)
+void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _value, int& ec)
 {
+  if (m_state != XHRS_Open) {
+      ec = DOMException::INVALID_STATE_ERR;
+      return;
+  }
+
   QString nameTrimmed = _name.trimmed();
+  if (nameTrimmed.isEmpty()) {
+      ec = DOMException::SYNTAX_ERR;
+      return;
+  }
   QString name = nameTrimmed.toLower();
+  QString value = _value.trimmed();
+  if (value.isEmpty())
+      return;
 
   // Content-type needs to be set separately from the other headers
   if(name == "content-type") {
@@ -495,7 +512,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString &value
       return;
   }
 
-  m_requestHeaders[nameTrimmed] = value.trimmed();
+  m_requestHeaders[nameTrimmed] = value;
 }
 
 ValueImp *XMLHttpRequest::getAllResponseHeaders() const
@@ -702,6 +719,9 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
   }
 
   XMLHttpRequest *request = static_cast<XMLHttpRequest *>(thisObj);
+
+  int ec = 0;
+
   switch (id) {
   case XMLHttpRequest::Abort:
     request->abort();
@@ -749,15 +769,6 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
     }
   case XMLHttpRequest::Send:
     {
-      if (args.size() > 1) {
-        return Undefined();
-      }
-
-      if (request->m_state != XHRS_Open) {
-	  setDOMException(exec, DOMException::INVALID_STATE_ERR);
-	  return jsUndefined();
-      }
-
       QString body;
       if (args.size() >= 1) {
         DOM::NodeImpl* docNode = toNode(args[0]);
@@ -776,22 +787,23 @@ ValueImp *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, ObjectImp *th
         }
       }
 
-      request->send(body);
-
+      request->send(body, ec);
+      setDOMException(exec, ec);  
       return jsUndefined();
     }
   case XMLHttpRequest::SetRequestHeader:
-    if (args.size() != 2) {
+      if (args.size() < 2)
+          return throwError(exec, SyntaxError, "Not enough arguments");
+      JSValue* keyArgument = args[0];
+      JSValue* valArgument = args[1];
+      QString key, val;
+      if (!keyArgument->isUndefined() && !keyArgument->isNull())
+          key = keyArgument->toString(exec).qstring();
+      if (!valArgument->isUndefined() && !valArgument->isNull())
+          val = valArgument->toString(exec).qstring();
+      request->setRequestHeader(key, val, ec);
+      setDOMException(exec, ec);
       return jsUndefined();
-    }
-    if (request->m_state != XHRS_Open) {
-	setDOMException(exec, DOMException::INVALID_STATE_ERR);
-	return jsUndefined();
-    }
-
-    request->setRequestHeader(args[0]->toString(exec).qstring(), args[1]->toString(exec).qstring());
-
-    return jsUndefined();
   }
 
   return Undefined();
