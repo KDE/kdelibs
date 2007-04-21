@@ -24,7 +24,6 @@
 
 #include "settings.h"
 
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 
 #include <QString>
@@ -33,8 +32,7 @@ namespace KSpell2
 {
 
 static Word endWord;
-static KStaticDeleter<Filter> sd;
-static Filter* defFilter = 0;
+K_GLOBAL_STATIC(Filter, defFilter)
 
 class Filter::Private
 {
@@ -47,8 +45,6 @@ public:
 
 Filter* Filter::defaultFilter()
 {
-    if ( !defFilter )
-        sd.setObject( defFilter, new Filter() );
     return defFilter;
 }
 

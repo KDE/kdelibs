@@ -41,7 +41,6 @@
 #include <kmimetype.h>
 #include <kpushbutton.h>
 #include <krecentdocument.h>
-#include <kstaticdeleter.h>
 #include <ktoolbar.h>
 #include <kurlcompletion.h>
 #include <kuser.h>
@@ -177,14 +176,7 @@ public:
     KFileWidget* q;
 };
 
-static KUrl *lastDirectory; // to set the start path
-
-static KStaticDeleter<KUrl> ldd;
-static void initStatic()
-{
-    if ( !lastDirectory )
-        lastDirectory = ldd.setObject(lastDirectory, new KUrl());
-}
+K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 
 static const char autocompletionWhatsThisText[] = I18N_NOOP("<p>While typing in the text area, you may be presented "
                                                   "with possible matches. "
@@ -194,8 +186,6 @@ static const char autocompletionWhatsThisText[] = I18N_NOOP("<p>While typing in 
 KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
 {
-    initStatic();
-
     // TODO move most of this code for the KFileWidgetPrivate constructor
     d->keepLocation = false;
     d->operationMode = Opening;
@@ -1989,8 +1979,6 @@ QAction* KFileWidget::pathComboIndex()
 KUrl KFileWidget::getStartUrl( const KUrl& startDir,
                                QString& recentDirClass )
 {
-    initStatic();
-
     recentDirClass.clear();
     KUrl ret;
 
@@ -2038,7 +2026,6 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
 
 void KFileWidget::setStartDir( const KUrl& directory )
 {
-    initStatic();
     if ( directory.isValid() )
         *lastDirectory = directory;
 }

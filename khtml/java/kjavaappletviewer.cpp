@@ -33,7 +33,6 @@
 #include <kauthorized.h>
 #include <klibloader.h>
 #include <kaboutdata.h>
-#include <kstaticdeleter.h>
 #include <klocale.h>
 #include <kstatusbar.h>
 #include <kiconloader.h>
@@ -71,7 +70,6 @@ KParts::Part *KJavaAppletViewerFactory::createPartObject
 //-----------------------------------------------------------------------------
 
 class KJavaServerMaintainer;
-static KJavaServerMaintainer * serverMaintainer = 0;
 
 class KJavaServerMaintainer {
 public:
@@ -87,6 +85,7 @@ private:
             ContextMap;
     ContextMap m_contextmap;
 };
+K_GLOBAL_STATIC(KJavaServerMaintainer, serverMaintainer)
 
 KJavaServerMaintainer::~KJavaServerMaintainer () {
     delete server;
@@ -117,8 +116,6 @@ inline void KJavaServerMaintainer::setServer (KJavaAppletServer * s) {
     if (!server)
         server = s;
 }
-
-static KStaticDeleter <KJavaServerMaintainer> serverMaintainerDeleter;
 
 //-----------------------------------------------------------------------------
 
@@ -230,10 +227,6 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
    m_statusbar_icon (0L),
    m_closed (true)
 {
-    if (!serverMaintainer) {
-        serverMaintainerDeleter.setObject (serverMaintainer,
-                                           new KJavaServerMaintainer);
-    }
     m_view = new CoverWidget (wparent);
     QString classname, classid, codebase, khtml_codebase, src_param;
     int width = -1;

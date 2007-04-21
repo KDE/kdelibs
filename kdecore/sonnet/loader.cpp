@@ -29,7 +29,6 @@
 #include <kservicetypetrader.h>
 
 #include <ksharedconfig.h>
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 
 #include <QtCore/QHash>
@@ -53,8 +52,7 @@ public:
 };
 
 typedef QHash<KSharedConfig*, Loader*> LoaderConfigHash;
-static KStaticDeleter<LoaderConfigHash> s_loaderDeleter;
-static LoaderConfigHash *s_loaders = 0;
+K_GLOBAL_STATIC(LoaderConfigHash, s_loaders)
 
 Loader::Ptr Loader::openLoader(KSharedConfig::Ptr config)
 {
@@ -74,9 +72,6 @@ Loader::Ptr Loader::openLoader(KSharedConfig::Ptr config)
 Loader::Loader(KSharedConfig::Ptr config)
 	:d(new Private)
 {
-    if (!s_loaders) {
-        s_loaderDeleter.setObject(s_loaders, new LoaderConfigHash);
-    }
     s_loaders->insert(config.data(), this);
 
     d->settings = new Settings(this, config);

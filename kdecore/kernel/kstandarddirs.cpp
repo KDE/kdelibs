@@ -30,7 +30,6 @@
 #include "kcomponentdata.h"
 #include "kshell.h"
 #include "kuser.h"
-#include "kstaticdeleter.h"
 #include "kde_file.h"
 #include "kkernel_win.h"
 
@@ -99,14 +98,11 @@ public:
     QString defaultbindir;
     QString defaultlibexecdir;
     static KStandardDirsSingleton* self();
-private:
-    static KStandardDirsSingleton* s_self;
 };
-static KStaticDeleter<KStandardDirsSingleton> kstds_sd;
-KStandardDirsSingleton* KStandardDirsSingleton::s_self = 0;
-KStandardDirsSingleton* KStandardDirsSingleton::self() {
-    if ( !s_self )
-        kstds_sd.setObject( s_self, new KStandardDirsSingleton );
+
+KStandardDirsSingleton* KStandardDirsSingleton::self()
+{
+    K_GLOBAL_STATIC(KStandardDirsSingleton, s_self)
     return s_self;
 }
 

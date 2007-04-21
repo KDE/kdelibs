@@ -30,7 +30,6 @@
 #include <QFileInfo>
 
 #include <klibloader.h>
-#include <kstaticdeleter.h>
 
 extern "C"
 {
@@ -60,13 +59,10 @@ namespace Kross {
 
 }
 
-static KStaticDeleter<Manager> m_manager;
-static Manager* _self = 0;
 
 Manager& Manager::self()
 {
-    if(! _self)
-        m_manager.setObject(_self, new Manager());
+    K_GLOBAL_STATIC(Manager, _self)
     return *_self;
 }
 
