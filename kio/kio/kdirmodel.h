@@ -97,6 +97,7 @@ public:
         Permissions,
         Owner,
         Group,
+        Type,
         ColumnCount
     };
 

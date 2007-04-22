@@ -381,6 +381,8 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 return item->user();
             case Group:
                 return item->group();
+            case Type:
+                return item->mimeComment();
             }
             break;
         case Qt::DecorationRole:
@@ -560,6 +562,8 @@ QVariant KDirModel::headerData( int section, Qt::Orientation orientation, int ro
             return i18n("Owner");
         case Group:
             return i18n("Group");
+        case Type:
+            return i18n("Type");
         }
     }
     return QVariant();
