@@ -48,7 +48,10 @@ using KIO::NetAccess;
 #define BANNED_HTTP_HEADERS "authorization,proxy-authorization,"\
                             "content-length,host,connect,copy,move,"\
                             "delete,head,trace,put,propfind,proppatch,"\
-                            "mkcol,lock,unlock,options,via"
+                            "mkcol,lock,unlock,options,via,"\
+                            "accept-charset,accept-encoding,expect,date,"\
+                            "keep-alive,te,trailer,"\
+                            "transfer-encoding,upgrade"
 
 using khtml::Decoder;
 
@@ -384,6 +387,7 @@ void XMLHttpRequest::send(const QString& _body)
   // Set the default referrer if one is not already supplied
   // through setRequestHeader. NOTE: the user can still disable
   // this feature at the protocol level (kio_http).
+  // ### does find() ever succeed? the headers are stored in lower case!
   if (requestHeaders.find("Referer") == requestHeaders.end()) {
     KURL documentURL(doc->URL());
     documentURL.setPass(QString::null);
