@@ -21,7 +21,6 @@
 
 #include <Qt3Support/Q3Signal>
 
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kcomponentdata.h>
@@ -45,16 +44,11 @@ class Dispatcher::DispatcherPrivate
         QMap<QObject *, QByteArray> m_componentName;
 };
 
-static KStaticDeleter<Dispatcher> ksd_kpd;
-
-Dispatcher *Dispatcher::m_self = 0;
-
 Dispatcher *Dispatcher::self()
 {
+    K_GLOBAL_STATIC(Dispatcher, pSelf)
     kDebug(701) << k_funcinfo << endl;
-    if (m_self == 0)
-        ksd_kpd.setObject(m_self, new Dispatcher());
-    return m_self;
+    return pSelf;
 }
 
 Dispatcher::Dispatcher(QObject *parent)
@@ -92,7 +86,7 @@ void Dispatcher::registerComponent(const KComponentData &componentData, QObject 
     connect(recv, SIGNAL(destroyed(QObject *)), this, SLOT(unregisterComponent(QObject *)));
 }
 
-const KSharedConfig::Ptr &Dispatcher::configForComponentName(const QByteArray &componentName)
+KSharedConfig::Ptr Dispatcher::configForComponentName(const QByteArray &componentName)
 {
     kDebug(701) << k_funcinfo << endl;
     if (d->m_componentInfo.contains(componentName)) {

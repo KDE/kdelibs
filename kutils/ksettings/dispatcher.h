@@ -25,10 +25,6 @@
 #include <kutils_export.h>
 #include <kcomponentdata.h>
 
-class Q3Signal;
-template<class T> class KStaticDeleter;
-class KConfig;
-
 namespace KSettings
 {
 
@@ -46,8 +42,6 @@ namespace KSettings
  */
 class KUTILS_EXPORT Dispatcher : public QObject
 {
-    friend class KStaticDeleter<Dispatcher>;
-
     Q_OBJECT
     public:
         /**
@@ -72,7 +66,7 @@ class KUTILS_EXPORT Dispatcher : public QObject
         /**
          * @return the KConfig object that belongs to the componentName
          */
-        const KSharedConfig::Ptr &configForComponentName(const QByteArray &componentName);
+        KSharedConfig::Ptr configForComponentName(const QByteArray &componentName);
 
         /**
          * @return a list of all the componentData names that are currently
@@ -103,7 +97,6 @@ class KUTILS_EXPORT Dispatcher : public QObject
     private:
         Dispatcher(QObject *parent = 0);
         ~Dispatcher();
-        static Dispatcher *m_self;
 
         class DispatcherPrivate;
         DispatcherPrivate * const d;
