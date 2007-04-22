@@ -25,6 +25,9 @@
 #define QT_NO_FONTCONFIG 1
 #define QT_NO_FREETYPE   1
 #include <private/qfontengine_p.h>
+#ifdef Q_WS_X11
+#  include <private/qfontengine_x11_p.h>
+#endif
 #include <QtGui/QFontDatabase>
 #include <QtGui/QFont>
 #include "khtml_settings.h"
