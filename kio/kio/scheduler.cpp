@@ -28,7 +28,6 @@
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <assert.h>
-#include <kstaticdeleter.h>
 #include <kdesu/client.h>
 
 #include <QtCore/QHash>
@@ -42,8 +41,6 @@
 using namespace KIO;
 
 template class QHash<QString, KIO::Scheduler::ProtocolInfo*>;
-
-Scheduler *Scheduler::instance = 0;
 
 class KIO::SlaveList : public QList<Slave *>
 {
@@ -119,9 +116,14 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
     return info;
 }
 
+class KIO::SchedulerPrivate
+{
+public:
+    SchedulerPrivate() {}
+};
 
 Scheduler::Scheduler()
-    : QObject()
+    : QObject(), d(new SchedulerPrivate())
 {
     setObjectName( "scheduler" );
 
@@ -164,7 +166,7 @@ Scheduler::~Scheduler()
     delete slaveList; slaveList = 0;
     delete extraJobData; extraJobData = 0;
     delete sessionData; sessionData = 0;
-    instance = 0;
+    delete d;
 }
 
 void
@@ -869,12 +871,9 @@ Scheduler::slotUnregisterWindow(QObject *obj)
        call(QDBus::NoBlock, "unregisterWindowId", qlonglong(windowId));
 }
 
-static KStaticDeleter<Scheduler> kioSchedulerSd;
-
-Scheduler* Scheduler::self() {
-    if ( !instance ) {
-        kioSchedulerSd.setObject( instance, new Scheduler );
-    }
+Scheduler* Scheduler::self()
+{
+    K_GLOBAL_STATIC(Scheduler, instance)
     return instance;
 }
 

@@ -24,7 +24,6 @@
 
 #include <kconfig.h>
 #include <ksharedconfig.h>
-#include <kstaticdeleter.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
 
@@ -135,14 +134,9 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    while (pos > 0);
 }
 
-
-SlaveConfig *SlaveConfig::_self = 0;
-static KStaticDeleter<SlaveConfig> slaveconfigsd;
-
 SlaveConfig *SlaveConfig::self()
 {
-   if (!_self)
-      _self = slaveconfigsd.setObject(_self, new SlaveConfig);
+   K_GLOBAL_STATIC(SlaveConfig, _self)
    return _self;
 }
 
@@ -156,7 +150,6 @@ SlaveConfig::~SlaveConfig()
 {
    qDeleteAll(d->protocol);
    delete d;
-   _self = 0;
 }
 
 void SlaveConfig::setConfigData(const QString &protocol,

@@ -319,7 +319,6 @@ namespace KIO {
 
         Scheduler(const Scheduler&);
         static Scheduler *self();
-        static Scheduler *instance;
         void _doJob(SimpleJob *job);
         void _scheduleJob(SimpleJob *job);
         void _cancelJob(SimpleJob *job);
@@ -360,7 +359,7 @@ namespace KIO {
         bool checkOnHold;
         QMap<QObject *,WId> m_windowList;
     private:
-	class SchedulerPrivate* d;
+        class SchedulerPrivate * const d;
 };
 
 }

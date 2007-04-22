@@ -36,7 +36,6 @@ public:
   ~KFileSharePrivate();
   KDirWatch* m_watchFile;
   static KFileSharePrivate *self();
-  static KFileSharePrivate *_self;
 protected Q_SLOTS: // this is why this class needs to be in the .h
  void slotFileChange(const QString &);
 };

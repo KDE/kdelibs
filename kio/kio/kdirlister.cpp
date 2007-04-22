@@ -34,15 +34,11 @@
 #include <kmessagebox.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kstaticdeleter.h>
 #include "kprotocolmanager.h"
 
 #include "kdirlister_p.h"
 
 #include <assert.h>
-
-KDirListerCache* KDirListerCache::s_pSelf = 0;
-static KStaticDeleter<KDirListerCache> sd_KDirListerCache;
 
 // Enable this to get printDebug() called often, to see the contents of the cache
 //#define DEBUG_CACHE
@@ -863,9 +859,7 @@ void KDirListerCache::emitRefreshItem( KFileItem *fileitem )
 
 KDirListerCache* KDirListerCache::self()
 {
-  if ( !s_pSelf )
-    s_pSelf = sd_KDirListerCache.setObject( s_pSelf, new KDirListerCache );
-
+  K_GLOBAL_STATIC(KDirListerCache, s_pSelf)
   return s_pSelf;
 }
 

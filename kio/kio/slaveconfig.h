@@ -98,7 +98,6 @@ namespace KIO {
         void configNeeded(const QString &protocol, const QString &host);
     protected:
         SlaveConfig();
-        static SlaveConfig *_self;
         SlaveConfigPrivate* const d;
     };
 }

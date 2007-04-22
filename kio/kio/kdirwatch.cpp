@@ -47,7 +47,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kstaticdeleter.h>
 #include <kde_file.h>
 #include <kconfiggroup.h>
 
@@ -181,7 +180,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   kDebug(7001) << "Available methods: " << available << endl;
 }
 
-/* This is called on app exit (KStaticDeleter) */
+/* This is called on app exit (K_GLOBAL_STATIC) */
 KDirWatchPrivate::~KDirWatchPrivate()
 {
   timer.stop();
@@ -1241,21 +1240,15 @@ void KDirWatchPrivate::statistics()
 // Class KDirWatch
 //
 
-static KStaticDeleter<KDirWatch> sd_dw;
-KDirWatch* KDirWatch::s_pSelf = 0L;
-
+K_GLOBAL_STATIC(KDirWatch, s_pKDirWatchSelf)
 KDirWatch* KDirWatch::self()
 {
-  if ( !s_pSelf ) {
-    sd_dw.setObject( s_pSelf, new KDirWatch );
-  }
-
-  return s_pSelf;
+  return s_pKDirWatchSelf;
 }
 
 bool KDirWatch::exists()
 {
-  return s_pSelf != 0;
+  return s_pKDirWatchSelf != 0;
 }
 
 KDirWatch::KDirWatch (QObject* parent)

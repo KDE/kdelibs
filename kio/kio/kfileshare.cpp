@@ -23,7 +23,6 @@
 #include <QtCore/QFile>
 #include <QtCore/Q_PID>
 #include <klocale.h>
-#include <kstaticdeleter.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
@@ -34,9 +33,7 @@
 #include <kuser.h>
 
 static KFileShare::Authorization s_authorization = KFileShare::NotInitialized;
-static QStringList* s_shareList = 0L;
-static KStaticDeleter<QStringList> sdShareList;
-
+K_GLOBAL_STATIC(QStringList, s_shareList)
 static KFileShare::ShareMode s_shareMode;
 static bool s_sambaEnabled;
 static bool s_nfsEnabled;
@@ -76,14 +73,9 @@ KFileSharePrivate::~KFileSharePrivate()
   KDirWatch::self()->removeFile(FILESHARECONF);
 }
 
-KFileSharePrivate *KFileSharePrivate::_self=0L;
-
-static KStaticDeleter<KFileSharePrivate> kstFileShare;
-
 KFileSharePrivate* KFileSharePrivate::self()
 {
-   if (!_self)
-      _self = kstFileShare.setObject(_self, new KFileSharePrivate());
+   K_GLOBAL_STATIC(KFileSharePrivate, _self)
    return _self;
 }
 
@@ -178,10 +170,7 @@ bool KFileShare::nfsEnabled() {
 void KFileShare::readShareList()
 {
     KFileSharePrivate::self();
-    if ( !s_shareList )
-        sdShareList.setObject( s_shareList, new QStringList );
-    else
-        s_shareList->clear();
+    s_shareList->clear();
 
     QString exe = ::findExe( "filesharelist" );
     if (exe.isEmpty()) {
@@ -219,7 +208,7 @@ bool KFileShare::isDirectoryShared( const QString& _path )
     QString path( _path );
     if ( path[path.length()-1] != '/' )
         path += '/';
-    return s_shareList && s_shareList->contains( path );
+    return s_shareList->contains( path );
 }
 
 KFileShare::Authorization KFileShare::authorization()

@@ -350,8 +350,6 @@ private:
 
   // the KDirNotify signals
   OrgKdeKDirNotifyInterface *kdirnotify;
-
-  static KDirListerCache *s_pSelf;
 };
 
 const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
