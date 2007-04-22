@@ -233,7 +233,7 @@ public:
 #include <QtCore/QTimer>
 #include <kstatusbar.h>
 
-#include "misc/kencodingdetector.h"
+#include "localization/kencodingdetector.h"
 #include "dom/dom2_range.h"
 #include "dom/dom_exception.h"
 #include "dom/html_document.h"
@@ -1466,7 +1466,7 @@ void RegressionTest::testStaticFile(const QString & filename)
             {
                 ObjectImp* argArrayObj = comp.value()->toObject(exec);
                 unsigned int length = argArrayObj->
-                                      get(exec,lengthPropertyName)->
+                                      get(exec, "length")->
                                       toUInt32(exec);
                 if ( length == 1 )
                     functionname = argArrayObj->get(exec, 0)->toString(exec).qstring();
