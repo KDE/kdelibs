@@ -386,7 +386,7 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
 
     // store the IP for later
     d->ip = d->socket->peerAddress().toString();
-    m_port = d->socket->peerPort();
+    m_port = QString::number( d->socket->peerPort() );
 
     if (m_bIsSSL && !d->useSSLTunneling) {
         if ( !doSSLHandShake( sendError ) )
