@@ -325,7 +325,7 @@ using namespace std;
 #include <QtCore/QHash>
 #include <QtCore/QTextIStream>
 
-#include <kunittest_export.h>
+#include "kunittest_export.h"
 
 /*! @def CHECK(x,y)
  * Use this macro to perform an equality check. For example
