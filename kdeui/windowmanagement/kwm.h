@@ -70,8 +70,8 @@ public:
      * Iteration over this list can be done easily with
      * \code
      *  QList<WId>::ConstIterator it;
-     *  for ( it = module->windows().begin();
-     *        it != modules->windows().end(); ++it ) {
+     *  for ( it = KWM::windows().begin();
+     *        it != KWM::windows().end(); ++it ) {
      *     ... do something here,  (*it) is the current WId.
      *       }
      * \endcode
