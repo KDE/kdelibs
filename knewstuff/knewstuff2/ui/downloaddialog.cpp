@@ -414,8 +414,9 @@ class ItemsView : public QScrollArea
 };
 
 
-struct KNS::DownloadDialogPrivate
+class KNS::DownloadDialogPrivate
 {
+public:
     // Contents
     QList< Provider * > providers;
 
