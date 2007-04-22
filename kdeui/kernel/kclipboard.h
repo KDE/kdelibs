@@ -24,7 +24,6 @@
 #include <QtCore/QObject>
 #include <QtGui/QClipboard>
 
-template <class T> class KStaticDeleter;
 class QMimeData;
 
 /**
@@ -91,7 +90,6 @@ public:
 
 
 protected:
-    friend class KStaticDeleter<KClipboardSynchronizer>;
     ~KClipboardSynchronizer();
 
 private Q_SLOTS:
@@ -105,7 +103,6 @@ private:
 
     static void setClipboard( const QMimeData* data, QClipboard::Mode mode );
 
-    static KClipboardSynchronizer *s_self;
     static bool s_sync;
     static bool s_reverse_sync;
     static bool s_blocked;

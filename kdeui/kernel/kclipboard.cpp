@@ -20,7 +20,6 @@
 #include "ksharedconfig.h"
 #include "kglobal.h"
 #include "kglobalsettings.h"
-#include "kstaticdeleter.h"
 
 #include <QtCore/QMimeData>
 #include <QtDBus/QtDBus>
@@ -43,27 +42,19 @@
  *  especially the second one.
  */
 
-KClipboardSynchronizer * KClipboardSynchronizer::s_self = 0L;
-KStaticDeleter<KClipboardSynchronizer> kclipsync_sd;
 bool KClipboardSynchronizer::s_sync = false;
 bool KClipboardSynchronizer::s_reverse_sync = false;
 bool KClipboardSynchronizer::s_blocked = false;
 
 KClipboardSynchronizer * KClipboardSynchronizer::self()
 {
-    if ( !s_self ) {
-        kclipsync_sd.setObject( s_self, new KClipboardSynchronizer );
-        s_self->setObjectName( "KDE Clipboard" );
-    }
-
+    K_GLOBAL_STATIC(KClipboardSynchronizer, s_self)
     return s_self;
 }
 
 KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )
     : QObject( parent )
 {
-    s_self = this;
-
     KConfigGroup config( KGlobal::config(), "General" );
     s_sync = config.readEntry( "SynchronizeClipboardAndSelection", s_sync);
     s_reverse_sync = config.readEntry( "ClipboardSetSelection",
@@ -74,8 +65,6 @@ KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )
 
 KClipboardSynchronizer::~KClipboardSynchronizer()
 {
-    if ( s_self == this )
-        s_self = 0L;
 }
 
 void KClipboardSynchronizer::setupSignals()

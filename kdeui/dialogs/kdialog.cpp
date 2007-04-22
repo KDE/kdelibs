@@ -45,7 +45,6 @@
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
-#include <kstaticdeleter.h>
 #include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
@@ -1039,19 +1038,12 @@ class KDialogQueue::Private
     QList< QPointer<QDialog> > queue;
     bool busy;
     
-    static KDialogQueue *_self;
 };
-
-static KStaticDeleter<KDialogQueue> ksdkdq;
-
-KDialogQueue *KDialogQueue::Private::_self = 0;
 
 KDialogQueue* KDialogQueue::self()
 {
-  if ( !Private::_self )
-    Private::_self = ksdkdq.setObject( Private::_self, new KDialogQueue );
-
-  return Private::_self;
+  K_GLOBAL_STATIC(KDialogQueue, _self)
+  return _self;
 }
 
 KDialogQueue::KDialogQueue()
@@ -1063,7 +1055,6 @@ KDialogQueue::KDialogQueue()
 KDialogQueue::~KDialogQueue()
 {
   delete d;
-  Private::_self = 0;
 }
 
 // static
@@ -1095,8 +1086,6 @@ void KDialogQueue::Private::slotShowQueuedDialog()
 
   if ( !queue.isEmpty() )
     QTimer::singleShot( 20, q, SLOT( slotShowQueuedDialog() ) );
-  else
-    ksdkdq.destructObject(); // Suicide.
 }
 
 #include "kdialog.moc"

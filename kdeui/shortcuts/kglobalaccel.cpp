@@ -36,15 +36,11 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kstaticdeleter.h>
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kmessagebox.h"
 #include <kconfig.h>
 #include <kconfiggroup.h>
-
-KGlobalAccel* KGlobalAccel::s_instance = 0L;
-static KStaticDeleter<KGlobalAccel> sd;
 
 class KGlobalAccelData
 {
@@ -100,7 +96,7 @@ void KGlobalAccel::setEnabled( bool enabled )
 	}
 }
 
-const QString& KGlobalAccel::configGroup() const
+QString KGlobalAccel::configGroup() const
 {
 	return d->configGroup;
 }
@@ -170,9 +166,7 @@ bool KGlobalAccel::writeSettings( KConfigBase* config, bool writeDefaults, KActi
 
 KGlobalAccel * KGlobalAccel::self( )
 {
-	if (!s_instance)
-		sd.setObject(s_instance, new KGlobalAccel());
-
+    K_GLOBAL_STATIC(KGlobalAccel, s_instance)
 	return s_instance;
 }
 
@@ -299,7 +293,7 @@ void KGlobalAccel::regrabKeys( )
 	}
 }
 
-const QList< KAction * > KGlobalAccel::actionsWithGlobalShortcut( ) const
+QList< KAction * > KGlobalAccel::actionsWithGlobalShortcut( ) const
 {
 	return d->actionsWithGlobalShortcuts.toList();
 }

@@ -81,7 +81,7 @@ public:
 	 * @return the configuration group
 	 * @see KConfig
 	 */
-	const QString& configGroup() const;
+	QString configGroup() const;
 
 	/**
 	 * Sets the configuration group that is used to save the accelerators.
@@ -120,7 +120,7 @@ public:
 	/**
 	 * Return a list of all KActions which currently have a valid global shortcut assigned.
 	 */
-	const QList<KAction*> actionsWithGlobalShortcut() const;
+	QList<KAction*> actionsWithGlobalShortcut() const;
 
 	/**
 	 * Return the name of the action that uses the given key sequence. This applies to
