@@ -1590,7 +1590,7 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case BUTTON:
         case RESET:
-            // those buttons are never successful
+            // these types of buttons are never successful
             return false;
 
         case IMAGE:
