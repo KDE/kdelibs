@@ -20,27 +20,27 @@
 #ifndef FAKE_WIRELESSNETWORK_H
 #define FAKE_WIRELESSNETWORK_H
 
-
+#include <QString>
 #include <QVariant>
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/wirelessnetwork.h>
+#include <solid/experimental/ifaces/wirelessnetwork.h>
 #include "fakenetwork.h"
 
 namespace Solid {
     class Authentication;
 }
 
-using namespace Solid::Ifaces;
+using namespace SolidExperimental::Ifaces;
 /**
  * Fakes a wireless network.
  * TODO: Add some kind of dynamic behaviour
  */
-class KDE_EXPORT FakeWirelessNetwork : public FakeNetwork, virtual public Solid::Ifaces::WirelessNetwork
+class KDE_EXPORT FakeWirelessNetwork : public FakeNetwork, virtual public SolidExperimental::Ifaces::WirelessNetwork
 {
 Q_OBJECT
-Q_INTERFACES( Solid::Ifaces::WirelessNetwork )
+Q_INTERFACES( SolidExperimental::Ifaces::WirelessNetwork )
 
 public:
     FakeWirelessNetwork( const QString & uni, const QMap<QString, QVariant> & propertyMap,
@@ -54,12 +54,12 @@ public:
 
     double frequency() const;
 
-    Solid::WirelessNetwork::Capabilities capabilities() const;
+    SolidExperimental::WirelessNetwork::Capabilities capabilities() const;
 
     // Service Set stuff
     QString essid() const;
 
-    Solid::WirelessNetwork::OperationMode mode() const;
+    SolidExperimental::WirelessNetwork::OperationMode mode() const;
 
     bool isAssociated() const;
 
@@ -73,11 +73,11 @@ public:
      */
     MacAddressList bssList() const;
 
-    Solid::Authentication *authentication() const;
+    SolidExperimental::Authentication *authentication() const;
     /**
      * set the authentication currently in use on this network
      */
-    void setAuthentication( Solid::Authentication * );
+    void setAuthentication( SolidExperimental::Authentication * );
 Q_SIGNALS:
     void signalStrengthChanged( int );
     void bitrateChanged( int );
@@ -88,7 +88,7 @@ Q_SIGNALS:
         */
     void authenticationNeeded();
 private:
-    Solid::Authentication * mAuthentication;
+    SolidExperimental::Authentication * mAuthentication;
 };
 
 #endif

@@ -1,0 +1,16 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=SolidPowerManager
+
+Comment=Power Management Backend
+Comment[de]=Energie-Verwaltung
+Comment[ja]=電源管理のバックエンド
+Comment[nl]=Energiebeheer-backend
+Comment[pa]=ਊਰਜਾ ਪਰਬੰਧ ਬੈਕ-ਐਂਡ
+Comment[sv]=Gränssnitt för strömsparhantering
+Comment[x-test]=xxPower Management Backendxx
+
+[PropertyDef::X-KDE-SolidBackendInfo-Version]
+Type=QString
+

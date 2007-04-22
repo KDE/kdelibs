@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,11 +17,22 @@
 
 */
 
-#include "fakenetworkmanager.h"
+#ifndef SOLID_POWERMANAGEMENT_P_H
+#define SOLID_POWERMANAGEMENT_P_H
 
-// KDE includes
-#include <kgenericfactory.h>
+#include "managerbase_p.h"
 
-typedef KGenericFactory<FakeNetworkManager, SolidExperimental::Ifaces::NetworkManager> FakeNetBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fake_netmgmt, FakeNetBackendFactory( "fakenetbackend" ) )
+#include "powermanagement.h"
 
+namespace Solid
+{
+    class PowerManagementPrivate : public PowerManagement::Notifier, public ManagerBasePrivate
+    {
+        Q_OBJECT
+    public:
+        PowerManagementPrivate();
+        ~PowerManagementPrivate();
+    };
+}
+
+#endif

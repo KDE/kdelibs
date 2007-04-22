@@ -1,0 +1,16 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=SolidNetworkManager
+
+Comment=Network Management Backend
+Comment[de]=Netzwerk-Verwaltung
+Comment[ja]=ネットワーク管理のバックエンド
+Comment[nl]=Netwerkbeheer-backend
+Comment[pa]=ਨੈੱਟਵਰਕ ਪਰਬੰਧ ਬੈਕ-ਐਂਡ
+Comment[sv]=Gränssnitt för nätverkshantering
+Comment[x-test]=xxNetwork Management Backendxx
+
+[PropertyDef::X-KDE-SolidBackendInfo-Version]
+Type=QString
+

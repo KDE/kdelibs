@@ -5,6 +5,12 @@ add_subdirectory( ifaces )
 set(solidexperimental_LIB_SRCS 
    frontendobject.cpp
    managerbase.cpp
+   powermanager.cpp
+   networkmanager.cpp
+   networkinterface.cpp
+   network.cpp
+   wirelessnetwork.cpp
+   authentication.cpp
    bluetoothinterface.cpp
    bluetoothmanager.cpp
    bluetoothremotedevice.cpp
@@ -23,6 +29,6 @@ install(TARGETS solidexperimental DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 
-install( FILES solidbluetoothmanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
-install( FILES bluetoothmanager.h bluetoothinterface.h bluetoothremotedevice.h bluetoothinputdevice.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/experimental)
+install( FILES solidpowermanager.desktop solidnetworkmanager.desktop solidbluetoothmanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
+install( FILES powermanager.h networkmanager.h networkinterface.h network.h wirelessnetwork.h authentication.h bluetoothmanager.h bluetoothinterface.h bluetoothremotedevice.h bluetoothinputdevice.h singletondefs.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/experimental)
 

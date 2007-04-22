@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,11 +18,36 @@
 
 */
 
-#include "fakenetworkmanager.h"
+#include "soliddefs_p.h"
+#include "networking_p.h"
+#include "networking.h"
 
-// KDE includes
-#include <kgenericfactory.h>
+#include <kglobal.h>
 
-typedef KGenericFactory<FakeNetworkManager, SolidExperimental::Ifaces::NetworkManager> FakeNetBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fake_netmgmt, FakeNetBackendFactory( "fakenetbackend" ) )
+K_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
 
+Solid::NetworkingPrivate::NetworkingPrivate()
+{
+}
+
+Solid::NetworkingPrivate::~NetworkingPrivate()
+{
+}
+
+bool Solid::Networking::isNetworkingEnabled()
+{
+    return false;
+}
+
+void Solid::Networking::setNetworkingEnabled(bool enabled)
+{
+
+}
+
+Solid::Networking::Notifier *Solid::Networking::notifier()
+{
+    return globalNetworkManager;
+}
+
+#include "networking_p.moc"
+#include "networking.moc"

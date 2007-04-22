@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006,2007 Will Stephenson <wstephenson@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,11 +17,11 @@
 
 */
 
-#include "fakenetworkmanager.h"
+#include "authentication.h"
 
-// KDE includes
-#include <kgenericfactory.h>
 
-typedef KGenericFactory<FakeNetworkManager, SolidExperimental::Ifaces::NetworkManager> FakeNetBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fake_netmgmt, FakeNetBackendFactory( "fakenetbackend" ) )
+/******************************************************************************/
 
+SolidExperimental::Ifaces::AuthenticationValidator::~AuthenticationValidator()
+{
+}

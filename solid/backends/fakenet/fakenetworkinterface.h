@@ -20,34 +20,34 @@
 #ifndef FAKE_NETWORK_INTERFACE_H
 #define FAKE_NETWORK_INTERFACE_H
 
-
+#include <QString>
 #include <QVariant>
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/networkinterface.h>
+#include <solid/experimental/ifaces/networkinterface.h>
 
-using namespace Solid::Ifaces;
+using namespace SolidExperimental::Ifaces;
 
 class FakeNetwork;
 
-class KDE_EXPORT FakeNetworkInterface : public Solid::Ifaces::NetworkInterface
+class KDE_EXPORT FakeNetworkInterface : public SolidExperimental::Ifaces::NetworkInterface
 {
     friend class FakeNetworkManager;
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::NetworkInterface )
+    Q_INTERFACES( SolidExperimental::Ifaces::NetworkInterface )
 public:
         FakeNetworkInterface( const QMap<QString, QVariant> & propertyMap,
                           QObject *parent = 0 );
         virtual ~FakeNetworkInterface();
         QString uni() const;
         bool isActive() const;
-        Solid::NetworkInterface::Type type() const;
-        Solid::NetworkInterface::ConnectionState connectionState() const;
+        SolidExperimental::NetworkInterface::Type type() const;
+        SolidExperimental::NetworkInterface::ConnectionState connectionState() const;
         int signalStrength() const;
         int designSpeed() const;
         bool isLinkUp() const;
-        Solid::NetworkInterface::Capabilities capabilities() const;
+        SolidExperimental::NetworkInterface::Capabilities capabilities() const;
         QObject * createNetwork( const QString & uni );
         QStringList networks() const;
     Q_SIGNALS:

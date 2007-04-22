@@ -47,35 +47,35 @@ double FakeWirelessNetwork::frequency() const
     return mPropertyMap[ "frequency" ].toInt();
 }
 
-Solid::WirelessNetwork::Capabilities FakeWirelessNetwork::capabilities() const
+SolidExperimental::WirelessNetwork::Capabilities FakeWirelessNetwork::capabilities() const
 {
     QStringList capStrings = mPropertyMap[ "capabilities" ].toStringList();
 
-    Solid::WirelessNetwork::Capabilities caps = 0;
+    SolidExperimental::WirelessNetwork::Capabilities caps = 0;
     if ( capStrings.contains( "wep" ) )
-        caps |= Solid::WirelessNetwork::Wep;
+        caps |= SolidExperimental::WirelessNetwork::Wep;
     if ( capStrings.contains( "wpa" ) )
-        caps |= Solid::WirelessNetwork::Wpa;
+        caps |= SolidExperimental::WirelessNetwork::Wpa;
     if ( capStrings.contains( "wpa2" ) )
-        caps |= Solid::WirelessNetwork::Wpa2;
+        caps |= SolidExperimental::WirelessNetwork::Wpa2;
     if ( capStrings.contains( "psk" ) )
-        caps |= Solid::WirelessNetwork::Psk;
+        caps |= SolidExperimental::WirelessNetwork::Psk;
     if ( capStrings.contains( "ieee8021x" ) )
-        caps |= Solid::WirelessNetwork::Ieee8021x;
+        caps |= SolidExperimental::WirelessNetwork::Ieee8021x;
     if ( capStrings.contains( "wep40" ) )
-        caps |= Solid::WirelessNetwork::Wep40;
+        caps |= SolidExperimental::WirelessNetwork::Wep40;
     if ( capStrings.contains( "wep104" ) )
-        caps |= Solid::WirelessNetwork::Wep104;
+        caps |= SolidExperimental::WirelessNetwork::Wep104;
     if ( capStrings.contains( "wep192" ) )
-        caps |= Solid::WirelessNetwork::Wep192;
+        caps |= SolidExperimental::WirelessNetwork::Wep192;
     if ( capStrings.contains( "wep256" ) )
-        caps |= Solid::WirelessNetwork::Wep256;
+        caps |= SolidExperimental::WirelessNetwork::Wep256;
     if ( capStrings.contains( "wep_other" ) )
-        caps |= Solid::WirelessNetwork::WepOther;
+        caps |= SolidExperimental::WirelessNetwork::WepOther;
     if ( capStrings.contains( "tkip" ) )
-        caps |= Solid::WirelessNetwork::Tkip;
+        caps |= SolidExperimental::WirelessNetwork::Tkip;
     if ( capStrings.contains( "ccmp" ) )
-        caps |= Solid::WirelessNetwork::Ccmp;
+        caps |= SolidExperimental::WirelessNetwork::Ccmp;
 
     return caps;
 }
@@ -85,20 +85,20 @@ QString FakeWirelessNetwork::essid() const
     return mPropertyMap[ "essid" ].toString();
 }
 
-Solid::WirelessNetwork::OperationMode FakeWirelessNetwork::mode() const
+SolidExperimental::WirelessNetwork::OperationMode FakeWirelessNetwork::mode() const
 {
     QString modeName = mPropertyMap[ "mode" ].toString();
 
     if ( modeName == "adhoc" )
-        return Solid::WirelessNetwork::Adhoc;
+        return SolidExperimental::WirelessNetwork::Adhoc;
     else if ( modeName == "managed" )
-        return Solid::WirelessNetwork::Managed;
+        return SolidExperimental::WirelessNetwork::Managed;
     else if ( modeName == "master" )
-        return Solid::WirelessNetwork::Master;
+        return SolidExperimental::WirelessNetwork::Master;
     else if ( modeName == "repeater" )
-        return Solid::WirelessNetwork::Repeater;
+        return SolidExperimental::WirelessNetwork::Repeater;
     else
-        return Solid::WirelessNetwork::Unassociated;
+        return SolidExperimental::WirelessNetwork::Unassociated;
 }
 
 bool FakeWirelessNetwork::isAssociated() const
@@ -121,12 +121,12 @@ MacAddressList FakeWirelessNetwork::bssList() const
     return mPropertyMap[ "bsslist" ].toStringList();
 }
 
-Solid::Authentication *FakeWirelessNetwork::authentication() const
+SolidExperimental::Authentication *FakeWirelessNetwork::authentication() const
 {
     return mAuthentication;
 }
 
-void FakeWirelessNetwork::setAuthentication( Solid::Authentication *authentication )
+void FakeWirelessNetwork::setAuthentication( SolidExperimental::Authentication *authentication )
 {
     mAuthentication = authentication;
 }

@@ -35,12 +35,12 @@ FakeAuthenticationValidator::~FakeAuthenticationValidator()
 {
 }
 
-bool FakeAuthenticationValidator::validate( const Solid::Authentication * )
+bool FakeAuthenticationValidator::validate( const SolidExperimental::Authentication * )
 {
     return true;
 }
 
-FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList & ) : Solid::Ifaces::NetworkManager( parent ), mAuthValidator( 0 )
+FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList & ) : SolidExperimental::Ifaces::NetworkManager( parent ), mAuthValidator( 0 )
 {
     mUserNetworkingEnabled = true;
     mUserWirelessEnabled = true;
@@ -52,7 +52,7 @@ FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList & ) 
     parseNetworkingFile();
 }
 
-FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList &, const QString& xmlFile ) : Solid::Ifaces::NetworkManager( parent ), mAuthValidator( 0 )
+FakeNetworkManager::FakeNetworkManager( QObject * parent, const QStringList &, const QString& xmlFile ) : SolidExperimental::Ifaces::NetworkManager( parent ), mAuthValidator( 0 )
 {
     mUserNetworkingEnabled = true;
     mUserWirelessEnabled = true;
@@ -112,7 +112,7 @@ bool FakeNetworkManager::isWirelessEnabled() const
     {
         it.next();
         FakeNetworkInterface * netDevice = it.value();
-        if ( netDevice->type() == Solid::NetworkInterface::Ieee80211 )
+        if ( netDevice->type() == SolidExperimental::NetworkInterface::Ieee80211 )
             if ( netDevice->isActive() )
                 return true;
     }
@@ -141,7 +141,7 @@ void FakeNetworkManager::setWirelessEnabled( bool enabled )
         {
             it.next();
             FakeNetworkInterface * netDevice = it.value();
-            if ( netDevice->type() == Solid::NetworkInterface::Ieee80211 )
+            if ( netDevice->type() == SolidExperimental::NetworkInterface::Ieee80211 )
                 netDevice->setActive( enabled );
         }
     }
@@ -155,8 +155,8 @@ void FakeNetworkManager::setNetworkingEnabled( bool enabled )
     {
         it.next();
         FakeNetworkInterface * netDevice = it.value();
-        if ( ( netDevice->type() == Solid::NetworkInterface::Ieee80211 && mUserWirelessEnabled )
-           || netDevice->type() == Solid::NetworkInterface::Ieee8023 )
+        if ( ( netDevice->type() == SolidExperimental::NetworkInterface::Ieee80211 && mUserWirelessEnabled )
+           || netDevice->type() == SolidExperimental::NetworkInterface::Ieee8023 )
             netDevice->setActive( enabled );
     }
     mUserNetworkingEnabled = enabled;

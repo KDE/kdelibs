@@ -17,11 +17,16 @@
 
 */
 
-#include "fakenetworkmanager.h"
+#include "networkmanager.h"
 
-// KDE includes
-#include <kgenericfactory.h>
+SolidExperimental::Ifaces::NetworkManager::NetworkManager( QObject * parent ) : QObject( parent )
+{
 
-typedef KGenericFactory<FakeNetworkManager, SolidExperimental::Ifaces::NetworkManager> FakeNetBackendFactory;
-K_EXPORT_COMPONENT_FACTORY( solid_fake_netmgmt, FakeNetBackendFactory( "fakenetbackend" ) )
+}
 
+SolidExperimental::Ifaces::NetworkManager::~NetworkManager()
+{
+
+}
+
+#include "networkmanager.moc"

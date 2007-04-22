@@ -25,14 +25,14 @@
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/network.h>
+#include <solid/experimental/ifaces/network.h>
 
-using namespace Solid::Ifaces;
+using namespace SolidExperimental::Ifaces;
 
-class KDE_EXPORT FakeNetwork : public QObject, virtual public Solid::Ifaces::Network
+class KDE_EXPORT FakeNetwork : public QObject, virtual public SolidExperimental::Ifaces::Network
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Network )
+    Q_INTERFACES( SolidExperimental::Ifaces::Network )
 public:
     FakeNetwork( const QString & uni, const QMap<QString, QVariant> & propertyMap,
                  QObject * parent = 0 );

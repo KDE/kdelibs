@@ -25,8 +25,8 @@
 
 #include <kdemacros.h>
 
-#include <solid/ifaces/networkmanager.h>
-#include <solid/authentication.h>
+#include <solid/experimental/ifaces/networkmanager.h>
+#include <solid/experimental/authentication.h>
 
 #include "fakenetworkinterface.h"
 
@@ -39,7 +39,7 @@ namespace Solid {
     class Authentication;
 }
 
-class KDE_EXPORT FakeNetworkManager : public Solid::Ifaces::NetworkManager
+class KDE_EXPORT FakeNetworkManager : public SolidExperimental::Ifaces::NetworkManager
 {
 Q_OBJECT
     public:
@@ -70,14 +70,14 @@ Q_OBJECT
         QString mXmlFile;
 };
 
-class FakeAuthenticationValidator : public QObject, public Solid::Ifaces::AuthenticationValidator
+class FakeAuthenticationValidator : public QObject, public SolidExperimental::Ifaces::AuthenticationValidator
 {
 Q_OBJECT
-Q_INTERFACES( Solid::Ifaces::AuthenticationValidator )
+Q_INTERFACES( SolidExperimental::Ifaces::AuthenticationValidator )
     public:
         FakeAuthenticationValidator( QObject * parent );
         virtual ~FakeAuthenticationValidator();
-        bool validate( const Solid::Authentication * );
+        bool validate( const SolidExperimental::Authentication * );
 };
 
 #endif

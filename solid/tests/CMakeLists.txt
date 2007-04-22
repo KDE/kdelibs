@@ -32,7 +32,7 @@ add_definitions(-DFAKE_NETWORKING_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../backend
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../backends/fakenet )
 
-target_link_libraries(solidnettest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid solidifaces solid_fakenet_static)
+target_link_libraries(solidnettest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solidexperimental solidexperimentalifaces solid_fakenet_static)
 
 add_test(solidnettest ${EXECUTABLE_OUTPUT_PATH}/solidnettest)
 

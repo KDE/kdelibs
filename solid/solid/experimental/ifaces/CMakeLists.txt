@@ -3,6 +3,12 @@
 ########### next target ###############
 
 set(solidexperimentalifaces_LIB_SRCS 
+   powermanager.cpp
+   networkmanager.cpp
+   networkinterface.cpp
+   network.cpp
+   wirelessnetwork.cpp
+   authentication.cpp
    bluetoothremotedevice.cpp
    bluetoothinputdevice.cpp
    bluetoothinterface.cpp
@@ -20,5 +26,5 @@ install(TARGETS solidexperimentalifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 ########### install files ###############
 
-install( FILES bluetoothremotedevice.h bluetoothinputdevice.h bluetoothinterface.h bluetoothmanager.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/experimental/ifaces)
+install( FILES powermanager.h networkmanager.h networkinterface.h network.h wirelessnetwork.h authentication.h bluetoothremotedevice.h bluetoothinputdevice.h bluetoothinterface.h bluetoothmanager.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/experimental/ifaces)
 
