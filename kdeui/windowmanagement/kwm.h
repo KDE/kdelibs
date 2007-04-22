@@ -69,7 +69,7 @@ public:
      *
      * Iteration over this list can be done easily with
      * \code
-     *  QValueList<WId>::ConstIterator it;
+     *  QList<WId>::ConstIterator it;
      *  for ( it = module->windows().begin();
      *        it != modules->windows().end(); ++it ) {
      *     ... do something here,  (*it) is the current WId.
