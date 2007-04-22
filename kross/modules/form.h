@@ -20,7 +20,7 @@
 #ifndef KROSS_FORM_H
 #define KROSS_FORM_H
 
-#include <QString>
+
 #include <QWidget>
 #include <QUrl>
 

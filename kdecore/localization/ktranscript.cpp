@@ -31,7 +31,7 @@
 #include <kjs/string_object.h>
 #include <kjs/error_object.h>
 
-#include <QString>
+
 #include <QStringList>
 #include <QList>
 #include <QMap>

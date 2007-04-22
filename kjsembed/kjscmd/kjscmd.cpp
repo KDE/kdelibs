@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QString>
+
 #include <QApplication>
 #include <QDebug>
 #include <QStringList>

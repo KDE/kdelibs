@@ -21,7 +21,7 @@
 #define KROSS_MAIN_KROSSCONFIG_H
 
 #include <kross/core/kross_export.h>
-#include <QString>
+
 
 #include <klocale.h>
 #include <kicon.h>

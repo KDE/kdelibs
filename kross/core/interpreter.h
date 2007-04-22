@@ -20,7 +20,7 @@
 #ifndef KROSS_INTERPRETER_H
 #define KROSS_INTERPRETER_H
 
-#include <QString>
+
 #include <QStringList>
 #include <QVariant>
 #include <QMap>

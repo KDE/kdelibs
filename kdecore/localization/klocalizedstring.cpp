@@ -27,7 +27,7 @@
 #include <ktranscript.h>
 #include <kdebug.h>
 
-#include <QString>
+
 #include <QStringList>
 #include <QByteArray>
 #include <QChar>

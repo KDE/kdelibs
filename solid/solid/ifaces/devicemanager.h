@@ -22,12 +22,12 @@
 #define SOLID_IFACES_DEVICEMANAGER_H
 
 #include <QObject>
-#include <QString>
+
 #include <QStringList>
 
 #include <solid/solid_export.h>
 
-#include <solid/deviceinterface.h>
+#include <solid/capability.h>
 
 namespace Solid
 {
@@ -67,17 +67,25 @@ namespace Ifaces
         virtual QStringList allDevices() = 0;
 
         /**
+         * Tests if a particular device exists given its UDI.
+         *
+         * @param udi the identifier of the device tested
+         * @returns true if there's a device having this UDI, false otherwise
+         */
+        virtual bool deviceExists( const QString &udi ) = 0;
+
+        /**
          * Retrieves the Universal Device Identifier (UDI) of all the devices
-         * matching the given constraints (parent and device interface)
+         * matching the given constraints (parent and capability)
          *
          * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
          * if there's no constraint on the parent
-         * @param type DeviceInterface type available on the devices we're looking for, or DeviceInterface::Unknown
-         * if there's no constraint on the device interfaces
-         * @returns the UDIs of all the devices having the given parent and device interface
+         * @param capability Capability of the devices we're searching for, or Capability::Unknown
+         * if there's no constraint on the capabilities
+         * @returns the UDIs of all the devices having the given parent and capability
          */
         virtual QStringList devicesFromQuery( const QString &parentUdi,
-                                              Solid::DeviceInterface::Type type = Solid::DeviceInterface::Unknown ) = 0;
+                                              Solid::Capability::Type capability = Solid::Capability::Unknown ) = 0;
 
         /**
          * Instantiates a new Device object from this backend given its UDI.
@@ -101,6 +109,14 @@ namespace Ifaces
          * @param udi the old device identifier
          */
         void deviceRemoved( const QString &udi );
+
+        /**
+         * This signal is emitted when a new capability is detected on a device.
+         *
+         * @param udi the device identifier
+         * @param capability the new capability detected
+         */
+        void newCapability( const QString &udi, int capability );
     };
 }
 }

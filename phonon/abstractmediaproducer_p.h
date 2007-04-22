@@ -23,7 +23,7 @@
 #include "abstractmediaproducer.h"
 #include "base_p.h"
 #include <QHash>
-#include <QString>
+
 #include <QMultiMap>
 
 namespace Phonon

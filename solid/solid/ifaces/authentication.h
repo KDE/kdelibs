@@ -22,7 +22,7 @@
 
 #include <QObject>
 #include <QMap>
-#include <QString>
+
 
 #include <solid/solid_export.h>
 

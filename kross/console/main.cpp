@@ -21,7 +21,7 @@
 #include <iostream>
 
 // Qt
-#include <QString>
+
 #include <QFile>
 
 // KDE

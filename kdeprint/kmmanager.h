@@ -27,7 +27,7 @@
 
 #include <QList>
 #include <QObject>
-#include <QString>
+
 
 class DrMain;
 class KMDBEntry;

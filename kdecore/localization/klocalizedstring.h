@@ -21,7 +21,7 @@
 
 #include <kdecore_export.h>
 
-#include <QString>
+
 #include <QChar>
 #include <QLatin1Char>
 #include <QStringList>

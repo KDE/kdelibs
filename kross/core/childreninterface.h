@@ -20,7 +20,7 @@
 #ifndef KROSS_CHILDRENINTERFACE_H
 #define KROSS_CHILDRENINTERFACE_H
 
-#include <QString>
+
 #include <QHash>
 #include <QObject>
 

@@ -21,17 +21,18 @@
 #define SOLID_DEVICE_H
 
 #include <QVariant>
-#include <QString>
+
 #include <QMap>
 #include <QList>
-#include <QtCore/QExplicitlySharedDataPointer>
 
 #include <solid/solid_export.h>
 
-#include <solid/deviceinterface.h>
+#include <solid/frontendobject.h>
+#include <solid/capability.h>
 
 namespace Solid
 {
+    class DeviceManager;
     class DevicePrivate;
 
     /**
@@ -42,18 +43,44 @@ namespace Solid
      * Pointers on Device objects are generally not needed, copying such objects
      * is quite cheap.
      *
+     *
+     * Warning: This class provides methods related to device properties,
+     * using these methods could expose some backend specific details
+     * and lead to non portable code. Use them at your own risk, or during
+     * transitional phases when the provided capabilities interfaces don't
+     * provide the necessary methods.
+     *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT Device
+    class SOLID_EXPORT Device : public FrontendObject
     {
+        Q_OBJECT
+        Q_DECLARE_PRIVATE(Device)
+
     public:
+        /**
+         * This enum type defines the type of change that can occur to a Device
+         * property.
+         *
+         * - PropertyModified : A property value has changed in the device
+         * - PropertyAdded : A new property has been added to the device
+         * - PropertyRemoved : A property has been removed from the device
+         */
+        enum PropertyChange { PropertyModified, PropertyAdded, PropertyRemoved };
+
+
+
+        /**
+         * Constructs an invalid device.
+         */
+        Device();
 
         /**
          * Constructs a device for a given Universal Device Identifier (UDI).
          *
          * @param udi the udi of the device to create
          */
-        explicit Device(const QString &udi = QString());
+        explicit Device( const QString &udi );
 
         /**
          * Constructs a copy of a device.
@@ -61,6 +88,13 @@ namespace Solid
          * @param device the device to copy
          */
         Device( const Device &device );
+
+        /**
+         * Constructs a new device taking its data from a backend.
+         *
+         * @param backendObject the object given by the backend
+         */
+        explicit Device( QObject *backendObject );
 
         /**
          * Destroys the device.
@@ -77,13 +111,6 @@ namespace Solid
          */
         Device &operator=( const Device &device );
 
-        /**
-         * Indicates if this device is valid.
-         * A device is considered valid if it's available in the system.
-         *
-         * @return true if this device is available, false otherwise
-         */
-        bool isValid() const;
 
 
         /**
@@ -129,71 +156,179 @@ namespace Solid
 
 
 
+
         /**
-         * Tests if a device interface is available from the device.
+         * Assigns a new value to a given property.
          *
-         * @param type the device interface type to query
-         * @return true if the device interface is available, false otherwise
+         * Warning: Using this method could expose some backend specific details
+         * and lead to non portable code. Use it at your own risk, or during
+         * transitional phases when the provided capabilities interfaces don't
+         * provide the necessary methods.
+         *
+         * @param key the key of the property to modify
+         * @param value the new value for the property
+         * @return true if the change succeeded, false otherwise
          */
-        bool queryDeviceInterface(const DeviceInterface::Type &type) const;
+        bool setProperty( const QString &key, const QVariant &value );
+
+        /**
+         * Retrieves a property of the device.
+         *
+         * Warning: Using this method could expose some backend specific details
+         * and lead to non portable code. Use it at your own risk, or during
+         * transitional phases when the provided capabilities interfaces don't
+         * provide the necessary methods.
+         *
+         * @param key the property key
+         * @return the actual value of the property, or QVariant() if the
+         * property is unknown
+         */
+        QVariant property( const QString &key ) const;
+
+        /**
+         * Retrieves a key/value map of all the known properties for the device.
+         *
+         * Warning: Using this method could expose some backend specific details
+         * and lead to non portable code. Use it at your own risk, or during
+         * transitional phases when the provided capabilities interfaces don't
+         * provide the necessary methods.
+         *
+         * @return all the properties of the device
+         */
+        QMap<QString, QVariant> allProperties() const;
+
+        /**
+         * Tests if a property exist in the device.
+         *
+         * Warning: Using this method could expose some backend specific details
+         * and lead to non portable code. Use it at your own risk, or during
+         * transitional phases when the provided capabilities interfaces don't
+         * provide the necessary methods.
+         *
+         * @param key the property key
+         * @return true if the property is available in the device, false
+         * otherwise
+         */
+        bool propertyExists( const QString &key ) const;
+
+        /**
+         * Tests if a capability is available from the device.
+         *
+         * @param capability the capability to query
+         * @return true if the capability is available, false otherwise
+         */
+        bool queryCapability( const Capability::Type &capability ) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
-         * a particular device interface.
+         * a particular capability.
          *
-         * @param type the device interface type
-         * @returns a pointer to the device interface interface if it exists, 0 otherwise
+         * @param capability the capability type
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        DeviceInterface *asDeviceInterface(const DeviceInterface::Type &type);
+        Capability *asCapability( const Capability::Type &capability );
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
-         * a particular device interface.
+         * a particular capability.
          *
-         * @param type the device interface type
-         * @returns a pointer to the device interface interface if it exists, 0 otherwise
+         * @param capability the capability type
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        const DeviceInterface *asDeviceInterface(const DeviceInterface::Type &type) const;
+        const Capability *asCapability( const Capability::Type &capability ) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding
-         * to a given device interface.
+         * to a given capability interface.
          *
-         * @returns a pointer to the device interface if it exists, 0 otherwise
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        template <class DevIface> DevIface *as()
+        template <class Cap> Cap *as()
         {
-            DeviceInterface::Type type = DevIface::deviceInterfaceType();
-            DeviceInterface *iface = asDeviceInterface(type);
-            return qobject_cast<DevIface*>(iface);
+            Capability::Type type = Cap::capabilityType();
+            Capability *iface = asCapability( type );
+            return qobject_cast<Cap*>( iface );
         }
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding
-         * to a given device interface.
+         * to a given capability interface.
          *
-         * @returns a pointer to the device interface if it exists, 0 otherwise
+         * @returns a pointer to the capability interface if it exists, 0 otherwise
          */
-        template <class DevIface> const DevIface *as() const
+        template <class Cap> const Cap *as() const
         {
-            DeviceInterface::Type type = DevIface::deviceInterfaceType();
-            const DeviceInterface *iface = asDeviceInterface(type);
-            return qobject_cast<const DevIface*>(iface);
+            Capability::Type type = Cap::capabilityType();
+            const Capability *iface = asCapability( type );
+            return qobject_cast<const Cap*>( iface );
         }
 
         /**
-         * Tests if a device provides a given device interface.
+         * Tests if a device provides a given capability interface.
          *
          * @returns true if the interface is available, false otherwise
          */
-        template <class DevIface> bool is() const
+        template <class Cap> bool is()
         {
-            return queryDeviceInterface(DevIface::deviceInterfaceType());
+            return queryCapability( Cap::capabilityType() );
         }
 
+
+        /**
+         * Acquires a lock on the device for the given reason.
+         *
+         * @param reason a message describing the reason for the lock
+         * @return true if the lock has been successfully acquired, false otherwise
+         */
+        bool lock(const QString &reason);
+
+        /**
+         * Releases a lock on the device.
+         *
+         * @return true if the lock has been successfully released
+         */
+        bool unlock();
+
+        /**
+         * Tests if the device is locked.
+         *
+         * @return true if the device is locked, false otherwise
+         */
+        bool isLocked() const;
+
+        /**
+         * Retrieves the reason for a lock.
+         *
+         * @return the lock reason if the device is locked, QString() otherwise
+         */
+        QString lockReason() const;
+
+    Q_SIGNALS:
+        /**
+         * This signal is emitted when a property is changed in the device.
+         *
+         * @param changes the map describing the property changes that
+         * occurred in the device, keys are property name and values
+         * describe the kind of change done on the device property
+         * (added/removed/modified), it's one of the type Solid::Device::PropertyChange
+         */
+        void propertyChanged( const QMap<QString,int> &changes );
+
+        /**
+         * This signal is emitted when an event occurred in the device.
+         * For example when a button is pressed.
+         *
+         * @param condition the condition name
+         * @param reason a message explaining why the condition has been raised
+         */
+        void conditionRaised( const QString &condition, const QString &reason );
+
+    protected Q_SLOTS:
+        void slotDestroyed( QObject *object );
+
     private:
-        QExplicitlySharedDataPointer<DevicePrivate> d;
-        friend class DeviceManagerPrivate;
+        void registerBackendObject( QObject *backendObject );
+        void unregisterBackendObject();
     };
 
     typedef QList<Device> DeviceList;

@@ -20,7 +20,7 @@
 #ifndef KTRANSCRIPT_H
 #define KTRANSCRIPT_H
 
-#include <QString>
+
 #include <QList>
 #include <QStringList>
 

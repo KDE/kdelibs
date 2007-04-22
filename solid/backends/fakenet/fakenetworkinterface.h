@@ -20,7 +20,7 @@
 #ifndef FAKE_NETWORK_INTERFACE_H
 #define FAKE_NETWORK_INTERFACE_H
 
-#include <QString>
+
 #include <QVariant>
 
 #include <kdemacros.h>

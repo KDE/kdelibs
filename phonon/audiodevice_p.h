@@ -22,7 +22,7 @@
 
 #include "audiodevice.h"
 #include <QStringList>
-#include <QString>
+
 
 namespace Phonon
 {

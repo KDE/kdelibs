@@ -24,7 +24,7 @@
 #include "ksharedptrtest.h"
 #include "ksharedptr.h"
 
-#include <QString>
+
 
 #include <qtest_kde.h>
 

@@ -21,24 +21,24 @@
 #ifndef FAKE_BLUETOOTH_INTERFACE_H
 #define FAKE_BLUETOOTH_INTERFACE_H
 
-#include <QString>
+
 #include <QVariant>
 
 #include <kdebug.h>
 
 #include <kdemacros.h>
 
-#include <solid/experimental/ifaces/bluetoothinterface.h>
+#include <solid/ifaces/bluetoothinterface.h>
 
 #include "fakebluetoothremotedevice.h"
 
-using namespace SolidExperimental::Ifaces;
+using namespace Solid::Ifaces;
 
-class KDE_EXPORT FakeBluetoothInterface : public SolidExperimental::Ifaces::BluetoothInterface
+class KDE_EXPORT FakeBluetoothInterface : public Solid::Ifaces::BluetoothInterface
 {
     friend class FakeBluetoothManager;
     Q_OBJECT
-    Q_INTERFACES(SolidExperimental::Ifaces::BluetoothInterface)
+    Q_INTERFACES(Solid::Ifaces::BluetoothInterface)
 public:
     FakeBluetoothInterface(const QMap<QString, QVariant> & propertyMap,
                            QObject *parent = 0);
@@ -72,7 +72,7 @@ public:
     {
         return mCompany;
     }
-    SolidExperimental::BluetoothInterface::Mode mode() const
+    QString mode() const
     {
         return mMode;
     }
@@ -112,11 +112,11 @@ public:
     {
         return mBondings;
     }
-    bool isPeriodicDiscoveryActive() const
+    bool isPeriodicDiscovery() const
     {
         return mPeriodicDiscovery;
     }
-    bool isPeriodicDiscoveryNameResolvingActive() const
+    bool isPeriodicDiscoveryNameResolving() const
     {
         return mPeriodicDiscoveryNameResolving;
     }
@@ -124,7 +124,7 @@ public:
     {
         return mRemoteDevices;
     }
-    QStringList listRecentRemoteDevices(const QDateTime&) const
+    QStringList listRecentRemoteDevices(const QString&) const
     {
         return mRecentRemoteDevices;
     }
@@ -139,7 +139,7 @@ private:
     QString mRevision;
     QString mManufacturer;
     QString mCompany;
-    SolidExperimental::BluetoothInterface::Mode mMode;
+    QString mMode;
     int mDiscoverableTimeout;
     bool mDiscoverable;
     QStringList mConnections;
@@ -154,7 +154,7 @@ private:
     QStringList mRecentRemoteDevices;
 
 public Q_SLOTS:
-    void setMode(const SolidExperimental::BluetoothInterface::Mode mode)
+    void setMode(const QString &mode)
     {
         mMode = mode; /* emit modeChanged( mMode );*/
     }
@@ -185,7 +185,7 @@ public Q_SLOTS:
     }
 
 Q_SIGNALS:
-    void modeChanged( SolidExperimental::BluetoothInterface::Mode mode);
+    void modeChanged(const QString &mode);
     void discoverableTimeoutChanged(int timeout);
     void minorClassChanged(const QString &minor);
     void nameChanged(const QString &name);

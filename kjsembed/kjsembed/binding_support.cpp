@@ -19,7 +19,7 @@
 */
 #include "binding_support.h"
 #include <kjs/interpreter.h>
-#include <QString>
+
 
 using namespace KJSEmbed;
 

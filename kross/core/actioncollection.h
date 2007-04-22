@@ -23,7 +23,7 @@
 #include "krossconfig.h"
 #include "action.h"
 
-#include <QString>
+
 #include <QObject>
 #include <QDir>
 

@@ -3,7 +3,7 @@
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
 #include <kurl.h>
-#include <QString>
+
 
 int main( int argc, char **argv )
 {

@@ -32,7 +32,7 @@
 #include <windows.h>
 #include <psapi.h>
 
-#include <QString>
+
 #include <QProcess>
 #include <QtDBus/QtDBus>
 

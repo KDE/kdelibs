@@ -21,7 +21,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QTreeWidget>
-#include <QString>
+
 
 #include <klocale.h>
 #include <kmessagebox.h>

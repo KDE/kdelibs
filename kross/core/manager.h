@@ -20,7 +20,7 @@
 #ifndef KROSS_MANAGER_H
 #define KROSS_MANAGER_H
 
-#include <QString>
+
 #include <QStringList>
 #include <QMap>
 #include <QObject>

@@ -21,19 +21,19 @@
 #ifndef FAKE_BLUETOOTH_REMOTEDEVICE_H
 #define FAKE_BLUETOOTH_REMOTEDEVICE_H
 
-#include <QString>
+
 #include <QVariant>
 
 #include <kdemacros.h>
 
-#include <solid/experimental/ifaces/bluetoothremotedevice.h>
+#include <solid/ifaces/bluetoothremotedevice.h>
 
-using namespace SolidExperimental::Ifaces;
+using namespace Solid::Ifaces;
 
-class KDE_EXPORT FakeBluetoothRemoteDevice : public SolidExperimental::Ifaces::BluetoothRemoteDevice
+class KDE_EXPORT FakeBluetoothRemoteDevice : public Solid::Ifaces::BluetoothRemoteDevice
 {
     Q_OBJECT
-    Q_INTERFACES(SolidExperimental::Ifaces::BluetoothRemoteDevice)
+    Q_INTERFACES(Solid::Ifaces::BluetoothRemoteDevice)
 public:
     FakeBluetoothRemoteDevice(const QMap<QString, QVariant> & propertyMap,
                               QObject *parent = 0);

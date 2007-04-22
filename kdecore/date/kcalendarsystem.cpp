@@ -28,7 +28,7 @@
 #include "klocale.h"
 
 #include <QDateTime>
-#include <QString>
+
 
 #include "kcalendarsystemgregorian.h"
 #include "kcalendarsystemhijri.h"

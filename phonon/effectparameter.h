@@ -23,7 +23,7 @@
 #include "phonon_export.h"
 #include <ksharedptr.h>
 
-#include <QString>
+
 #include <QVariant>
 
 namespace Phonon

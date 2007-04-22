@@ -26,7 +26,7 @@
 
 #include <kdebug.h>
 
-#include <QString>
+
 
 namespace KSpell2
 {

@@ -41,7 +41,7 @@
 #include <QCoreApplication>
 #include <QPointer>
 #include <QSet>
-#include <QString>
+
 #include <QStringList>
 #include <QSharedData>
 #include <QTime>

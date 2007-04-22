@@ -19,7 +19,7 @@
 
 #include "objectdescription.h"
 #include "objectdescription_p.h"
-#include <QString>
+
 #include <QObject>
 #include <QSet>
 #include "factory.h"

@@ -5,7 +5,7 @@
 QTEST_KDEMAIN_CORE(KStringHandlerTest)
 
 #include "kstringhandler.h"
-#include <QString>
+
 
 QString KStringHandlerTest::test = "The quick brown fox jumped over the lazy bridge. ";
 

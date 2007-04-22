@@ -28,7 +28,7 @@
 #include <assert.h>
 
 #include <QByteArray>
-#include <QString>
+
 
 #include "k3resolver.h"
 #include "k3resolver_p.h"

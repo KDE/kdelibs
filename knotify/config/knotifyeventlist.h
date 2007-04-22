@@ -23,7 +23,7 @@
 #include "knotifyconfigelement.h"
 #include <kconfig.h>
 
-#include <QString>
+
 #include <QTreeWidget>
 
 class KNotifyConfigElement;

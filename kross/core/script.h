@@ -20,7 +20,7 @@
 #ifndef KROSS_SCRIPT_H
 #define KROSS_SCRIPT_H
 
-#include <QString>
+
 #include <QStringList>
 #include <QVariant>
 #include <QObject>

@@ -18,7 +18,7 @@
 #define SMIVItem_H
 
 #include <QObject>
-#include <QString>
+
 #include <QImage>
 
 #include <ThreadWeaver.h>

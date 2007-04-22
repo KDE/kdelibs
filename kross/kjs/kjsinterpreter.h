@@ -25,7 +25,7 @@
 #include "../core/action.h"
 #include "../core/manager.h"
 
-#include <QString>
+
 
 namespace Kross {
 

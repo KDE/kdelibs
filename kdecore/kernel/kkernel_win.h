@@ -23,7 +23,7 @@
 
 #ifdef Q_OS_WIN
 
-#include <QString>
+
 /**
  * @short Windows-specific functions needed in kdecore
  * @author Christian Ehrlicher <ch.ehrlicher@gmx.de>

@@ -29,7 +29,7 @@
 
 #include <QObject>
 #include <QHash>
-#include <QString>
+
 
 #include <sys/types.h>
 #include <sys/stat.h>

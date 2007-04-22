@@ -21,7 +21,7 @@
 
 #ifdef Q_OS_WIN
 
-#include <QString>
+
 #include <QDir>
 #include <windows.h>
 

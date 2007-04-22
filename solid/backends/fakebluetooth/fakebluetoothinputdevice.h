@@ -21,19 +21,19 @@
 #ifndef FAKE_BLUETOOTH_INPUTDEVICE_H
 #define FAKE_BLUETOOTH_INPUTDEVICE_H
 
-#include <QString>
+
 #include <QVariant>
 
 #include <kdemacros.h>
 
-#include <solid/experimental/ifaces/bluetoothinputdevice.h>
+#include <solid/ifaces/bluetoothinputdevice.h>
 
-using namespace SolidExperimental::Ifaces;
+using namespace Solid::Ifaces;
 
-class KDE_EXPORT FakeBluetoothInputDevice : public SolidExperimental::Ifaces::BluetoothInputDevice
+class KDE_EXPORT FakeBluetoothInputDevice : public Solid::Ifaces::BluetoothInputDevice
 {
     Q_OBJECT
-    Q_INTERFACES(SolidExperimental::Ifaces::BluetoothInputDevice)
+    Q_INTERFACES(Solid::Ifaces::BluetoothInputDevice)
 public:
     FakeBluetoothInputDevice(const QMap<QString, QVariant> & propertyMap,
                              QObject *parent = 0);

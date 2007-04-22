@@ -24,7 +24,7 @@
 
 #include <QWidget>
 #include <QHash>
-#include <QString>
+
 
 #include <kservice.h>
 

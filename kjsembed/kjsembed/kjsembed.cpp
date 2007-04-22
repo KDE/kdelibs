@@ -56,7 +56,7 @@
 
 #include <kjs/interpreter.h>
 #include <kjs/completion.h>
-#include <QString>
+
 #include <QFile>
 #include <QTextStream>
 #include <QObject>

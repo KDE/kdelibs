@@ -21,7 +21,7 @@
 #define	KMWSOCKETUTIL_H
 
 #include <QList>
-#include <QString>
+
 
 #include <kdialog.h>
 

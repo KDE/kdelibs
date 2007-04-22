@@ -1,7 +1,7 @@
 #include "DeleteTest.h"
 
 #include <QChar>
-#include <QString>
+
 #include <QObject>
 #include <QThread>
 #include <QtDebug>

@@ -23,7 +23,7 @@
 #include "ui_backendselection.h"
 #include <QWidget>
 #include <QHash>
-#include <QString>
+
 
 #include <kservice.h>
 class KCModuleProxy;

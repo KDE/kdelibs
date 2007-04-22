@@ -21,7 +21,7 @@
 #ifndef BINDING_SUPPORT_H
 #define BINDING_SUPPORT_H
 
-#include <QString>
+
 #include <QDateTime>
 #include <QStringList>
 

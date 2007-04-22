@@ -25,7 +25,7 @@
 #include "../core/manager.h"
 
 // Qt
-#include <QString>
+
 #include <QFile>
 #include <QMetaObject>
 #include <QMetaMethod>

@@ -24,7 +24,7 @@
 #include <QtCore/QRegExp>
 #include <QList>
 
-#include <QString>
+
 #include <QCoreApplication>
 #include <kglobal.h>
 #include <ksharedconfig.h>

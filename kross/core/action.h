@@ -20,7 +20,7 @@
 #ifndef KROSS_ACTION_H
 #define KROSS_ACTION_H
 
-#include <QString>
+
 #include <QVariant>
 #include <QObject>
 #include <QDir>

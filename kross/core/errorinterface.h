@@ -20,7 +20,7 @@
 #ifndef KROSS_ERRORINTERFACE_H
 #define KROSS_ERRORINTERFACE_H
 
-#include <QString>
+
 
 #include "krossconfig.h"
 

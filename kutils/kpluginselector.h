@@ -22,7 +22,7 @@
 #define KPLUGINSELECTOR_H
 
 #include <QWidget>
-#include <QString>
+
 #include <QList>
 
 #include <kutils_export.h>

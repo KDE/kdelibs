@@ -19,7 +19,7 @@
 #ifndef KFILEPLACESITEM_P_H
 #define KFILEPLACESITEM_P_H
 
-#include <QString>
+
 #include <QPersistentModelIndex>
 
 class KFilePlacesItem

@@ -29,7 +29,7 @@
 #include <config-network.h>
 #include <sys/types.h>
 
-#include <QString>
+
 #include <QByteArray>
 #include <QList>
 #include <QThread>

@@ -21,27 +21,21 @@
 #define SOLID_MANAGERBASE_P_H
 
 #include <QObject>
-#include <QString>
 
-#include "solid/solid_export.h"
 
 namespace Solid
 {
     class ManagerBasePrivate
     {
+        Q_DECLARE_PUBLIC(ManagerBase)
+
     public:
-        ManagerBasePrivate();
-        virtual ~ManagerBasePrivate();
-        void loadBackend(const QString &description, const char *serviceName, const char *backendClassName);
+        ManagerBasePrivate() : q_ptr(0), backend(0) {}
+        virtual ~ManagerBasePrivate() {}
 
-        SOLID_EXPORT static void _k_forcePreloadedBackend(const char *backendClassName, QObject *backend);
-
-        QObject *managerBackend() const;
-        QString errorText() const;
-
-    private:
-        QObject *m_backend;
-        QString m_errorText;
+        ManagerBase *q_ptr;
+        QObject *backend;
+        QString errorText;
     };
 }
 

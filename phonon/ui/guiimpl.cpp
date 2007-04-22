@@ -19,7 +19,7 @@
 
 #include "guiimpl.h"
 
-#include <QString>
+
 #include <QObject>
 
 #include <knotification.h>

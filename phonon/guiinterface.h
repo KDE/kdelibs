@@ -22,7 +22,7 @@
 
 #include "phonon_export.h"
 #include <QStringList>
-#include <QString>
+
 #include <QVariant>
 
 class QObject;

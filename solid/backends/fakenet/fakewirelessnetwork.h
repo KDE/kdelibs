@@ -20,7 +20,7 @@
 #ifndef FAKE_WIRELESSNETWORK_H
 #define FAKE_WIRELESSNETWORK_H
 
-#include <QString>
+
 #include <QVariant>
 
 #include <kdemacros.h>

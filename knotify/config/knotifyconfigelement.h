@@ -24,7 +24,7 @@
 #include "kconfig.h"
 
 #include <QMap>
-#include <QString>
+
 #include <kconfiggroup.h>
 
 /**

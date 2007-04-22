@@ -23,7 +23,7 @@
 #include "krossconfig.h"
 //#include "object.h"
 
-#include <QString>
+
 #include <QStringList>
 #include <QVariant>
 #include <QMetaType>

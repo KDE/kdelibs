@@ -46,7 +46,7 @@ extern "C" {
 #include <QMutex>
 #include <QQueue>
 #include <QSemaphore>
-#include <QString>
+
 #include <QThread>
 #include <QTimer>
 #include <QWaitCondition>

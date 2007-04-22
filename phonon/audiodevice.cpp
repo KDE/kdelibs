@@ -18,7 +18,7 @@
 */
 
 #include "audiodevice.h"
-#include <QString>
+
 #include "audiodevice_p.h"
 #include "audiodeviceenumerator.h"
 #include <kdebug.h>

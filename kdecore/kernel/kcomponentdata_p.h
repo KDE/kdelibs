@@ -23,7 +23,7 @@
 #include "kcomponentdata.h"
 #include <QtDebug>
 #include <QByteArray>
-#include <QString>
+
 #include <kconfig.h>
 #include <kaboutdata.h>
 #include <kstandarddirs.h>
