@@ -38,7 +38,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <kstaticdeleter.h>
 #include <kio/authinfo.h>
 
 #include <unistd.h>
@@ -52,29 +51,20 @@
 extern void qt_generate_epsf( bool b );
 #endif
 
-KMFactory* KMFactory::m_self = 0;
-static KStaticDeleter<KMFactory> s_kmfactorysd;
-
+K_GLOBAL_STATIC(KMFactory, pSelf)
 KMFactory* KMFactory::self()
 {
-	if (!m_self)
-		m_self = s_kmfactorysd.setObject(m_self, new KMFactory());
-	return m_self;
+    return pSelf;
 }
 
 bool KMFactory::exists()
 {
-    return m_self != 0L;
+    return pSelf != 0;
 }
 
 void KMFactory::release()
 {
-	if (m_self)
-	{
-		KMFactory* p = m_self;
-		m_self = 0; // so that exists() says false
-		delete p;
-	}
+    pSelf.reinit();
 }
 
 KMFactory::KMFactory()
@@ -119,7 +109,6 @@ KMFactory::~KMFactory()
 	// The only object to be destroyed is m_printconfig. All other objects have been
 	// created with "this" as parent, so we don't need to care about their destruction
 	UNLOAD_OBJECT(m_printconfig);
-	m_self = 0;
 }
 
 KMManager* KMFactory::manager()

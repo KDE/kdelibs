@@ -39,10 +39,6 @@
 
 #include <kservicetype.h>
 
-static KStaticDeleter<KIMProxy> _staticDeleter;
-
-KIMProxy * KIMProxy::s_instance = 0L;
-
 struct AppPresenceCurrent
 {
 	QString appId;
@@ -58,8 +54,9 @@ class ContactPresenceListCurrent : public QList<AppPresenceCurrent>
 };
 
 
-struct KIMProxy::Private
+class KIMProxy::Private
 {
+public:
 	// list of the strings in use by KIMIface
 	QStringList presence_strings;
 	// list of the icon names in use by KIMIface
@@ -171,8 +168,7 @@ OrgKdeKIMInterface * findInterface( const QString & app )
 
 KIMProxy * KIMProxy::instance()
 {
-	if ( !s_instance )
-		_staticDeleter.setObject( s_instance, new KIMProxy );
+	K_GLOBAL_STATIC(KIMProxy, s_instance)
 	return s_instance;
 }
 

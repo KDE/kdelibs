@@ -112,8 +112,6 @@ private:
 	QString autoDetect();
 
 private:
-	static KMFactory	*m_self;
-
 	KMManager		*m_manager;
 	KMJobManager		*m_jobmanager;
 	KMUiManager		*m_uimanager;

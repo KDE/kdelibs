@@ -105,8 +105,6 @@ private Q_SLOTS:
 private:  
   KHTMLPageCache();
 
-  static KHTMLPageCache *_self;
-
   KHTMLPageCachePrivate* const d;
 };
 

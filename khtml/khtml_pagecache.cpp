@@ -20,7 +20,6 @@
 
 #include "khtml_pagecache.h"
 
-#include <kstaticdeleter.h>
 #include <ktemporaryfile.h>
 #include <kstandarddirs.h>
 
@@ -116,15 +115,10 @@ KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
   return delivery;
 }
 
-static KStaticDeleter<KHTMLPageCache> pageCacheDeleter;
-
-KHTMLPageCache *KHTMLPageCache::_self = 0;
-
 KHTMLPageCache *
 KHTMLPageCache::self()
 {
-  if (!_self)
-     _self = pageCacheDeleter.setObject(_self, new KHTMLPageCache);
+  K_GLOBAL_STATIC(KHTMLPageCache, _self)
   return _self;
 }
 

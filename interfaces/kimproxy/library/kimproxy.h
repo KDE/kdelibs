@@ -68,12 +68,8 @@ typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
 class KIMPROXY_EXPORT KIMProxy : public QObject
 {
 	Q_OBJECT
-	struct Private;
-
-	template<class> friend class KStaticDeleter;
-	~KIMProxy();
-
 	public:
+		~KIMProxy();
 		/**
 		 * Obtain an instance of KIMProxy.
 		 * @return The singleton instance of this class.
@@ -285,14 +281,15 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		PresenceMap m_presence_map;
 		// cache of the client strings in use by each application
 		// dictionary of KIMIface_stub -> map of numeric presence -> string presence
-		Private * d;
+		class Private;
+
+		Private * const d;
 		bool m_apps_available;
 		bool m_initialized;
 		/**
 		 * Construct an instance of the proxy library.
 		 */
 		KIMProxy();
-		static KIMProxy * s_instance;
 };
 
 #endif
