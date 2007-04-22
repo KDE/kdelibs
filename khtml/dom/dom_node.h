@@ -837,6 +837,33 @@ public:
     bool dispatchEvent(const Event &evt);
 
     /**
+     * Introduced in DOM Level 2
+     *
+     * This attribute returns the text content of this node and its
+     * descendants. When it is defined to be null, setting it has no
+     * effect. On setting, any possible children this node may have
+     * are removed and, if it the new string is not empty or null,
+     * replaced by a single Text node containing the string this
+     * attribute is set to.
+     * On getting, no serialization is performed, the returned string
+     * does not contain any markup. No whitespace normalization is
+     * performed and the returned string does not contain the white
+     * spaces in element content (see the attribute
+     * Text.isElementContentWhitespace). Similarly, on setting, no
+     * parsing is performed either, the input string is taken as pure
+     * textual content.
+     */
+    QString textContent() const;
+    
+    /**
+     * see textContent()
+     * 
+     * @exception DOMException
+     * NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
+     */
+    void setTextContent(const QString& text);
+
+    /**
      * @internal
      * not part of the DOM.
      * @returns the element id, in case this is an element, 0 otherwise

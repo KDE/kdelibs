@@ -282,6 +282,11 @@ namespace KJS {
   ValueImp* getStringOrNull(DOM::DOMString s);
 
   /**
+   * Null string if the value is null
+   */
+  QString valueToStringWithNullCheck(ExecState* exec, JSValue* v);
+
+  /**
    * Convert a KJS value into a QVariant
    */
   QVariant ValueToVariant(ExecState* exec, ValueImp* val);
