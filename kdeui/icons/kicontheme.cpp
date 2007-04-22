@@ -34,17 +34,26 @@
 #include <kcomponentdata.h>
 
 #include "kicontheme.h"
-#include "kstaticdeleter.h"
 #include <kconfiggroup.h>
 
-class KIconThemePrivate
+class KIconTheme::KIconThemePrivate
 {
 public:
     QString example, screenshot;
     QString linkOverlay, lockOverlay, zipOverlay, shareOverlay;
     bool hidden;
     KSharedConfig::Ptr sharedConfig;
+
+    int mDefSize[8];
+    QList<int> mSizes[8];
+
+    int mDepth;
+    QString mDir, mName, mDesc;
+    QStringList mInherits;
+    QList<KIconThemeDir *> mDirs;
 };
+K_GLOBAL_STATIC(QString, _theme)
+K_GLOBAL_STATIC(QStringList, _theme_list)
 
 /**
  * A subdirectory in an icon theme.
@@ -116,24 +125,24 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         if (KStandardDirs::exists(cDir))
         {
             themeDirs += cDir;
-	    if (mDir.isEmpty()
-		    && (KStandardDirs::exists( cDir + "index.desktop") || KStandardDirs::exists( cDir + "index.theme")))
-		mDir = cDir;
+            if (d->mDir.isEmpty() &&
+                (KStandardDirs::exists( cDir + "index.desktop") || KStandardDirs::exists( cDir + "index.theme")))
+                d->mDir = cDir;
         }
     }
 
-    if (mDir.isEmpty())
+    if (d->mDir.isEmpty())
     {
         kDebug(264) << "Icon theme " << name << " not found.\n";
         return;
     }
 
     QString fileName, mainSection;
-    if(QFile::exists(mDir + "index.desktop")) {
-	fileName = mDir + "index.desktop";
+    if(QFile::exists(d->mDir + "index.desktop")) {
+	fileName = d->mDir + "index.desktop";
 	mainSection="KDE Icon Theme";
     } else {
-	fileName = mDir + "index.theme";
+	fileName = d->mDir + "index.theme";
 	mainSection="Icon Theme";
     }
     // Use KSharedConfig to avoid parsing the file many times, from each kinstance.
@@ -141,12 +150,12 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->sharedConfig = KSharedConfig::openConfig( fileName );
 
     KConfigGroup cfg(d->sharedConfig, mainSection);
-    mName = cfg.readEntry("Name");
-    mDesc = cfg.readEntry("Comment");
-    mDepth = cfg.readEntry("DisplayDepth", 32);
-    mInherits = cfg.readEntry("Inherits", QStringList());
+    d->mName = cfg.readEntry("Name");
+    d->mDesc = cfg.readEntry("Comment");
+    d->mDepth = cfg.readEntry("DisplayDepth", 32);
+    d->mInherits = cfg.readEntry("Inherits", QStringList());
     if ( name != defaultThemeName() ) {
-      for ( QStringList::Iterator it = mInherits.begin(); it != mInherits.end(); ++it ) {
+      for ( QStringList::Iterator it = d->mInherits.begin(); it != d->mInherits.end(); ++it ) {
          if ( *it == "default" || *it == "hicolor" ) {
              *it = defaultThemeName();
          }
@@ -176,7 +185,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 	            delete dir;
 	        }
 	        else
-	            mDirs.append(dir);
+	            d->mDirs.append(dir);
             }
         }
     }
@@ -184,7 +193,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     // Expand available sizes for scalable icons to their full range
     int i;
     QMap<int,QList<int> > scIcons;
-    foreach(KIconThemeDir *dir, mDirs)
+    foreach(KIconThemeDir *dir, d->mDirs)
     {
         if(!dir) break;
         if ((dir->type() == K3Icon::Scalable) && !scIcons.contains(dir->size()))
@@ -206,7 +215,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     KConfigGroup cg(d->sharedConfig, mainSection);
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {
-        mDefSize[i] = cg.readEntry(*it + "Default", defDefSizes[i]);
+        d->mDefSize[i] = cg.readEntry(*it + "Default", defDefSizes[i]);
         QList<int> exp, lst = cg.readEntry(*it + "Sizes", QList<int>());
         QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
@@ -216,20 +225,71 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
             else
                 exp += *it2;
         }
-        mSizes[i] = exp;
+        d->mSizes[i] = exp;
     }
 
 }
 
 KIconTheme::~KIconTheme()
 {
-    qDeleteAll(mDirs);
+    qDeleteAll(d->mDirs);
     delete d;
+}
+
+QString KIconTheme::name() const
+{
+    return d->mName;
+}
+
+QString KIconTheme::description() const
+{
+    return d->mDesc;
+}
+
+QString KIconTheme::example() const
+{ 
+    return d->example;
+}
+
+QString KIconTheme::screenshot() const
+{ 
+    return d->screenshot;
+}
+
+QString KIconTheme::linkOverlay() const
+{ 
+    return d->linkOverlay;
+}
+
+QString KIconTheme::lockOverlay() const
+{ 
+    
+    return d->lockOverlay;
+}
+
+QString KIconTheme::zipOverlay() const
+{ 
+    return d->zipOverlay;
+}
+
+QString KIconTheme::shareOverlay() const
+{ 
+    return d->shareOverlay;
+}
+
+QString KIconTheme::dir() const
+{
+    return d->mDir;
+}
+
+QStringList KIconTheme::inherits() const
+{
+    return d->mInherits;
 }
 
 bool KIconTheme::isValid() const
 {
-    return !mDirs.isEmpty();
+    return !d->mDirs.isEmpty();
 }
 
 bool KIconTheme::isHidden() const
@@ -237,12 +297,10 @@ bool KIconTheme::isHidden() const
     return d->hidden;
 }
 
-QString KIconTheme::example() const { return d->example; }
-QString KIconTheme::screenshot() const { return d->screenshot; }
-QString KIconTheme::linkOverlay() const { return d->linkOverlay; }
-QString KIconTheme::lockOverlay() const { return d->lockOverlay; }
-QString KIconTheme::zipOverlay() const { return d->zipOverlay; }
-QString KIconTheme::shareOverlay() const { return d->shareOverlay; }
+int KIconTheme::depth() const
+{
+    return d->mDepth;
+}
 
 int KIconTheme::defaultSize(K3Icon::Group group) const
 {
@@ -251,7 +309,7 @@ int KIconTheme::defaultSize(K3Icon::Group group) const
         kDebug(264) << "Illegal icon group: " << group << "\n";
         return -1;
     }
-    return mDefSize[group];
+    return d->mDefSize[group];
 }
 
 QList<int> KIconTheme::querySizes(K3Icon::Group group) const
@@ -262,7 +320,7 @@ QList<int> KIconTheme::querySizes(K3Icon::Group group) const
         kDebug(264) << "Illegal icon group: " << group << "\n";
         return empty;
     }
-    return mSizes[group];
+    return d->mSizes[group];
 }
 
 QStringList KIconTheme::queryIcons(int size, K3Icon::Context context) const
@@ -273,9 +331,9 @@ QStringList KIconTheme::queryIcons(int size, K3Icon::Context context) const
 
     // Try to find exact match
     QStringList result;
-    for(int i=0; i<mDirs.size(); ++i)
+    for(int i=0; i<d->mDirs.size(); ++i)
     {
-        dir = mDirs.at(i);
+        dir = d->mDirs.at(i);
         if ((context != K3Icon::Any) && (context != dir->context()))
             continue;
         if ((dir->type() == K3Icon::Fixed) && (dir->size() == size))
@@ -298,10 +356,10 @@ QStringList KIconTheme::queryIcons(int size, K3Icon::Context context) const
 
     // Find close match
     KIconThemeDir *best = 0L;
-    for(int i=0; i<mDirs.size(); ++i)
+    for(int i=0; i<d->mDirs.size(); ++i)
     {
-        dir = mDirs.at(i);
-      if ((context != K3Icon::Any) && (context != dir->context()))
+        dir = d->mDirs.at(i);
+        if ((context != K3Icon::Any) && (context != dir->context()))
             continue;
         dw = dir->size() - size;
         if ((dw > 6) || (abs(dw) >= abs(delta)))
@@ -328,9 +386,9 @@ QStringList KIconTheme::queryIconsByContext(int size, K3Icon::Context context) c
     // 26 (48-22) and 32 (48-16) will be used, but who knows if someone
     // will make icon themes with different icon sizes.
 
-    for(int i=0;i<mDirs.size();++i)
+    for(int i=0;i<d->mDirs.size();++i)
     {
-        dir = mDirs.at(i);
+        dir = d->mDirs.at(i);
         if ((context != K3Icon::Any) && (context != dir->context()))
             continue;
         dw = abs(dir->size() - size);
@@ -345,7 +403,7 @@ QStringList KIconTheme::queryIconsByContext(int size, K3Icon::Context context) c
 
 bool KIconTheme::hasContext(K3Icon::Context context) const
 {
-    foreach(KIconThemeDir *dir, mDirs)
+    foreach(KIconThemeDir *dir, d->mDirs)
         if ((context == K3Icon::Any) || (context == dir->context()))
             return true;
     return false;
@@ -360,9 +418,9 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType mat
 
     dw = 1000; // shut up, gcc
 
-    for(int i=0;i<mDirs.size();++i)
+    for(int i=0;i<d->mDirs.size();++i)
     {
-        dir = mDirs.at(i);
+        dir = d->mDirs.at(i);
 
         if (match == K3Icon::MatchExact)
         {
@@ -428,21 +486,11 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType mat
 }
 
 // static
-QString *KIconTheme::_theme = 0L;
-static KStaticDeleter<QString> themeStaticDeleter;
-
-// static
-QStringList *KIconTheme::_theme_list = 0L;
-static KStaticDeleter<QStringList> themelistStaticDeleter;
-
-// static
 QString KIconTheme::current()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (_theme != 0L)
+    if (_theme != 0)
         return *_theme;
-
-    themeStaticDeleter.setObject(_theme, new QString);
 
     KConfigGroup cg(KGlobal::config(), "Icons");
     *_theme = cg.readEntry("Theme", defaultThemeName());
@@ -461,10 +509,9 @@ QString KIconTheme::current()
 QStringList KIconTheme::list()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (_theme_list != 0L)
+    if (_theme_list != 0)
         return *_theme_list;
 
-    themelistStaticDeleter.setObject(_theme_list, new QStringList);
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
      << KGlobal::dirs()->resourceDirs("xdgdata-icon")
      << "/usr/share/pixmaps"
@@ -498,10 +545,9 @@ QStringList KIconTheme::list()
 // static
 void KIconTheme::reconfigure()
 {
-    delete _theme;
-    _theme=0L;
-    delete _theme_list;
-    _theme_list=0L;
+    _theme.reinit();
+    _theme_list.reinit();
+    
 }
 
 // static
@@ -590,7 +636,7 @@ KIconThemeDir::KIconThemeDir(const QString& dir, const KConfigGroup &config)
     else if (tmp == "Threshold")
         mType = K3Icon::Threshold;
     else {
-        kDebug(264) << "Invalid Type= line for icon theme: " <<  mDir << "\n";
+        kDebug(264) << "Invalid Type= line for icon theme: " << mDir << "\n";
         return;
     }
     if (mType == K3Icon::Scalable)

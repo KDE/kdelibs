@@ -23,8 +23,6 @@ class QAction;
 
 class KConfig;
 class KIconThemeDir;
-class KIconThemePrivate;
-class KIconPrivate;
 
 /**
  * One icon as found by KIconTheme. Also serves as a namespace containing
@@ -173,7 +171,8 @@ public:
     QString path;
 
 private:
-    KIconPrivate* d;
+    class KIconPrivate;
+    KIconPrivate * d;
 };
 
 inline K3Icon::Group& operator++(K3Icon::Group& group) { group = static_cast<K3Icon::Group>(group+1); return group; }
@@ -200,14 +199,14 @@ public:
      * The stylized name of the icon theme.
      * @return the (human-readable) name of the theme
      */
-    QString name() const { return mName; }
+    QString name() const;
 
     /**
      * A description for the icon theme.
      * @return a human-readable description of the theme, QString()
      *         if there is none
      */
-    QString description() const { return mDesc; }
+    QString description() const;
 
     /**
      * Return the name of the "example" icon. This can be used to
@@ -250,13 +249,13 @@ public:
      * Returns the toplevel theme directory.
      * @return the directory of the theme
      */
-    QString dir() const { return mDir; }
+    QString dir() const;
 
     /**
      * The themes this icon theme falls back on.
      * @return a list of icon themes that are used as fall-backs
      */
-    QStringList inherits() const { return mInherits; }
+    QStringList inherits() const;
 
     /**
      * The icon theme exists?
@@ -275,7 +274,7 @@ public:
      * be 8 or 32.
      * @return the minimum bpp (8 or 32)
      */
-    int depth() const { return mDepth; }
+    int depth() const;
 
     /**
      * The default size of this theme for a certain icon group.
@@ -366,17 +365,8 @@ public:
     static void assignIconsToContextMenu(ContextMenus type, QList<QAction*> actions);
 
 private:
-    int mDefSize[8];
-    QList<int> mSizes[8];
-
-    int mDepth;
-    QString mDir, mName, mDesc;
-    QStringList mInherits;
-    QList<KIconThemeDir *> mDirs;
-    KIconThemePrivate* const d;
-
-    static QString *_theme;
-    static QStringList *_theme_list;
+    class KIconThemePrivate;
+    KIconThemePrivate * const d;
 };
 
 #endif
