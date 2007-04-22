@@ -41,7 +41,7 @@ public:
      * Reads all the info about the given window.
      */
     KWindowInfo( WId window, unsigned long properties, unsigned long properties2 = 0 );
-    KWindowInfo(); // to make QValueList and others happy
+    KWindowInfo(); // to make QList and others happy
     ~KWindowInfo();
     /**
      * Returns false if this window info is not valid (most probably the given
