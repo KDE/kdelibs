@@ -221,6 +221,37 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, ValueImp *valu
   }
 }
 
+// Token according to RFC 2616
+static bool isValidFieldName(const QString& name)
+{
+    const QChar* c = name.constData();
+    int l = name.length();
+    if (l == 0)
+        return false;
+    for (int i = 0; i < l; ++i, ++c) {
+        int u = c->unicode();
+        if (u < 32 || u > 126)
+            return false;
+        switch (u) {
+        case '(': case ')': case '<': case '>':
+        case '@': case ',': case ';': case ':':
+        case '\\': case '"': case '/':
+        case '[': case ']': case '?': case '=':
+        case '{': case '}': case '\t': case ' ':
+	    return false;
+        default:
+            break;
+        }
+    }
+    return true;
+}
+
+static bool isValidFieldValue(const QString& name)
+{
+    // ### what is invalid?
+    return true;
+}
+
 static bool canSetRequestHeader(const QString& name)
 {
     static QSet<CaseInsensitiveString> forbiddenHeaders;
@@ -475,17 +506,17 @@ void XMLHttpRequest::overrideMIMEType(const QString& override)
 
 void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _value, int& ec)
 {
-  if (m_state != XHRS_Open) {
+  // throw exception if connection is not open or the send flag is set
+  if (m_state != XHRS_Open || job != 0) {
       ec = DOMException::INVALID_STATE_ERR;
       return;
   }
 
-  QString nameTrimmed = _name.trimmed();
-  if (nameTrimmed.isEmpty()) {
+  if (!isValidFieldName(_name) || !isValidFieldValue(_value)) {
       ec = DOMException::SYNTAX_ERR;
       return;
   }
-  QString name = nameTrimmed.toLower();
+  QString name = _name.toLower();
   QString value = _value.trimmed();
   if (value.isEmpty())
       return;
@@ -515,13 +546,13 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
   }
 
   // Reject all banned headers.
-  if (!canSetRequestHeader(nameTrimmed)) {
+  if (!canSetRequestHeader(_name)) {
       kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header "
                      << name << endl;
       return;
   }
 
-  m_requestHeaders[nameTrimmed] = value;
+  m_requestHeaders[_name] = value;
 }
 
 ValueImp *XMLHttpRequest::getAllResponseHeaders() const
