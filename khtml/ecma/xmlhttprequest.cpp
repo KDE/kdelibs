@@ -446,16 +446,13 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 
   job->addMetaData("PropagateHttpHeader", "true");
 
-  // Set the default referrer if one is not already supplied
-  // through setRequestHeader. NOTE: the user can still disable
+  // Set the default referrer. NOTE: the user can still disable
   // this feature at the protocol level (kio_http).
-  if (m_requestHeaders.contains("Referer")) {
-    KUrl documentURL(doc->URL());
-    documentURL.setPass(QString());
-    documentURL.setUser(QString());
-    job->addMetaData("referrer", documentURL.url());
-    // kDebug() << "Adding referrer: " << documentURL << endl;
-  }
+  KUrl documentURL(doc->URL());
+  documentURL.setPass(QString());
+  documentURL.setUser(QString());
+  job->addMetaData("referrer", documentURL.url());
+  // kDebug() << "Adding referrer: " << documentURL << endl;
 
   if (!async) {
     QByteArray data;
