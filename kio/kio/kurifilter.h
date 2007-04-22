@@ -35,7 +35,6 @@
 #undef ERROR
 #endif
 
-class KUriFilterPrivate;
 class KUriFilterDataPrivate;
 
 class KCModule;
@@ -576,9 +575,8 @@ protected:
     void loadPlugins();
 
 private:
-    static KUriFilter *m_self;
-    QList<KUriFilterPlugin *> m_lstPlugins;
-    KUriFilterPrivate *d;
+    class Private;
+    Private * const d;
 };
 
 #endif

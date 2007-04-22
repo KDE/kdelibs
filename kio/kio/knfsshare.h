@@ -23,8 +23,6 @@
 
 #include <kio/kio_export.h>
 
-class KNFSSharePrivate;
-
 /**
  * Similar functionality like KFileShare, 
  * but works only for NFS and do not need 
@@ -76,8 +74,8 @@ Q_SIGNALS:
   
 private:
   KNFSShare();
-  static KNFSShare* _instance;
-  KNFSSharePrivate* d;
+  class KNFSSharePrivate;
+  KNFSSharePrivate * const d;
   
 private Q_SLOTS:
   void slotFileChange(const QString&);  

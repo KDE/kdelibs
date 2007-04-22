@@ -22,13 +22,12 @@
 #include <QtCore/QTextIStream>
 
 #include <kdirwatch.h>
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kconfig.h>
 
 #include "ksambashare.h"
 
-class KSambaSharePrivate
+class KSambaShare::KSambaSharePrivate
 {
 public:
   KSambaSharePrivate();
@@ -41,7 +40,7 @@ public:
   QString smbConf;
 };
 
-KSambaSharePrivate::KSambaSharePrivate()
+KSambaShare::KSambaSharePrivate::KSambaSharePrivate()
 {
     load();
 }
@@ -49,7 +48,8 @@ KSambaSharePrivate::KSambaSharePrivate()
 
 #define FILESHARECONF "/etc/security/fileshare.conf"
 
-bool KSambaSharePrivate::load() {
+bool KSambaShare::KSambaSharePrivate::load()
+{
   if (!findSmbConf())
       return false;
 
@@ -62,7 +62,8 @@ bool KSambaSharePrivate::load() {
  * several well-known paths
  * @return wether a smb.conf was found.
  **/
-bool KSambaSharePrivate::findSmbConf() {
+bool KSambaShare::KSambaSharePrivate::findSmbConf()
+{
   KConfig config(QLatin1String(FILESHARECONF));
   const KConfigGroup group(&config, QString());
   smbConf = group.readEntry("SMBCONF");
@@ -100,7 +101,8 @@ bool KSambaSharePrivate::findSmbConf() {
  * Reads all path= entries from the smb.conf file
  * and fills the sharedPaths dict with the values
  */
-bool KSambaSharePrivate::readSmbConf() {
+bool KSambaShare::KSambaSharePrivate::readSmbConf()
+{
   QFile f(smbConf);
 
   kDebug(7000) << "KSambaShare::readSmbConf " << smbConf << endl;
@@ -177,8 +179,9 @@ bool KSambaSharePrivate::readSmbConf() {
 
 }
 
-KSambaShare::KSambaShare() {
-  d = new KSambaSharePrivate();
+KSambaShare::KSambaShare()
+  : d(new KSambaSharePrivate())
+{
   if (QFile::exists(d->smbConf)) {
     KDirWatch::self()->addFile(d->smbConf);
     KDirWatch::self()->addFile(FILESHARECONF);
@@ -187,7 +190,8 @@ KSambaShare::KSambaShare() {
   }
 }
 
-KSambaShare::~KSambaShare() {
+KSambaShare::~KSambaShare()
+{
   if (QFile::exists(d->smbConf)) {
         KDirWatch::self()->removeFile(d->smbConf);
         KDirWatch::self()->removeFile(FILESHARECONF);
@@ -195,11 +199,13 @@ KSambaShare::~KSambaShare() {
   delete d;
 }
 
-QString KSambaShare::smbConfPath() const {
+QString KSambaShare::smbConfPath() const
+{
   return d->smbConf;
 }
 
-bool KSambaShare::isDirectoryShared( const QString & path ) const {
+bool KSambaShare::isDirectoryShared( const QString & path ) const
+{
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
@@ -207,11 +213,13 @@ bool KSambaShare::isDirectoryShared( const QString & path ) const {
   return d->sharedPaths.contains(fixedPath);
 }
 
-QStringList KSambaShare::sharedDirectories() const {
+QStringList KSambaShare::sharedDirectories() const
+{
   return d->sharedPaths.values();
 }
 
-void KSambaShare::slotFileChange( const QString & path ) {
+void KSambaShare::slotFileChange( const QString & path )
+{
   if (path == d->smbConf)
      d->readSmbConf();
   else
@@ -221,13 +229,9 @@ void KSambaShare::slotFileChange( const QString & path ) {
   emit changed();
 }
 
-KSambaShare* KSambaShare::_instance = 0L;
-static KStaticDeleter<KSambaShare> ksdSambaShare;
-
-KSambaShare* KSambaShare::instance() {
-  if (! _instance )
-      _instance = ksdSambaShare.setObject(_instance, new KSambaShare());
-
+KSambaShare* KSambaShare::instance()
+{
+  K_GLOBAL_STATIC(KSambaShare, _instance)
   return _instance;
 }
 

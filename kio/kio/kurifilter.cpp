@@ -26,7 +26,6 @@
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
 #include <klibloader.h>
-#include <kstaticdeleter.h>
 
 #include "kurifilter.h"
 
@@ -257,25 +256,29 @@ void KUriFilterPlugin::setArguments( KUriFilterData& data, const QString& args )
 }
 
 //********************************************  KUriFilter **********************************************
-KUriFilter *KUriFilter::m_self;
-static KStaticDeleter<KUriFilter> kurifiltersd;
+class KUriFilter::Private
+{
+public:
+    Private() {}
+    QList<KUriFilterPlugin *> lstPlugins;
+};
 
 KUriFilter *KUriFilter::self()
 {
-    if (!m_self)
-        m_self = kurifiltersd.setObject(m_self, new KUriFilter);
+    K_GLOBAL_STATIC(KUriFilter, m_self)
     return m_self;
 }
 
 KUriFilter::KUriFilter()
+    : d(new Private())
 {
     loadPlugins();
 }
 
 KUriFilter::~KUriFilter()
 {
-    qDeleteAll(m_lstPlugins);
-    m_self = 0;
+    qDeleteAll(d->lstPlugins);
+    delete d;
 }
 
 static KUriFilterPlugin* findPluginByName( const KUriFilterPluginList& lst, const QString& name )
@@ -295,11 +298,11 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     // If we have a filter list, only include the once
     // explicitly specified by it. Otherwise, use all available filters...
     if( filters.isEmpty() )
-        use_plugins = m_lstPlugins;  // Use everything that is loaded...
+        use_plugins = d->lstPlugins;  // Use everything that is loaded...
     else {
         //kDebug() << "Named plugins requested..."  << endl;
         for( QStringList::ConstIterator lst = filters.begin(); lst != filters.end(); ++lst ) {
-            KUriFilterPlugin* plugin = findPluginByName( m_lstPlugins, *lst );
+            KUriFilterPlugin* plugin = findPluginByName( d->lstPlugins, *lst );
             if (plugin) {
                 //kDebug() << "Will use filter plugin named: " << plugin->name() << endl;
                 use_plugins.append(plugin);
@@ -308,7 +311,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     }
 
     //kDebug() << "Using " << use_plugins.count() << " out of the "
-    //          << m_lstPlugins.count() << " available plugins" << endl;
+    //          << d->lstPlugins.count() << " available plugins" << endl;
     bool filtered = false;
     for ( KUriFilterPluginList::const_iterator it = use_plugins.begin(), end = use_plugins.end();
           it != end; ++it ) {
@@ -352,7 +355,7 @@ QString KUriFilter::filteredUri( const QString &uri, const QStringList& filters 
 QStringList KUriFilter::pluginNames() const
 {
     QStringList list;
-    Q_FOREACH( KUriFilterPlugin* plugin, m_lstPlugins )
+    Q_FOREACH( KUriFilterPlugin* plugin, d->lstPlugins )
         list.append(plugin->objectName());
     return list;
 }
@@ -372,7 +375,7 @@ void KUriFilter::loadPlugins()
             // plugins set their name already
             //plugin->setObjectName( (*it)->desktopEntryName() );
             Q_ASSERT( !plugin->objectName().isEmpty() );
-            m_lstPlugins.append( plugin );
+            d->lstPlugins.append( plugin );
         }
     }
 
@@ -382,7 +385,7 @@ void KUriFilter::loadPlugins()
 
     // TODO: Config dialog to differentiate "system"
     // plugins from "user-defined" ones...
-    // m_lstPlugins.sort();
+    // d->lstPlugins.sort();
 }
 
 #include "kurifilter.moc"

@@ -23,8 +23,6 @@
 
 #include <kio/kio_export.h>
 
-class KSambaSharePrivate;
-
 /**
  * Similar functionality like KFileShare, 
  * but works only for Samba and do not need 
@@ -75,8 +73,8 @@ Q_SIGNALS:
   
 private:
   KSambaShare();
-  static KSambaShare* _instance;
-  KSambaSharePrivate* d;
+  class KSambaSharePrivate;
+  KSambaSharePrivate * const d;
   
 private Q_SLOTS:
   void slotFileChange(const QString&);  

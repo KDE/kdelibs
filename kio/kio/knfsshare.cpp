@@ -22,14 +22,13 @@
 #include <QtCore/QTextIStream>
 
 #include <kdirwatch.h>
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 
 #include "knfsshare.h"
 
-class KNFSSharePrivate
+class KNFSShare::KNFSSharePrivate
 {
 public:
   KNFSSharePrivate();
@@ -41,7 +40,7 @@ public:
   QString exportsFile;
 };
 
-KNFSSharePrivate::KNFSSharePrivate()
+KNFSShare::KNFSSharePrivate::KNFSSharePrivate()
 {
   if (findExportsFile())
       readExportsFile();
@@ -53,7 +52,8 @@ KNFSSharePrivate::KNFSSharePrivate()
  * several well-known paths
  * @return wether an 'exports' file was found.
  **/
-bool KNFSSharePrivate::findExportsFile() {
+bool KNFSShare::KNFSSharePrivate::findExportsFile()
+{
   KConfig knfsshare("knfsshare");
   KConfigGroup config(&knfsshare, "General");
   exportsFile = config.readPathEntry("exportsFile");
@@ -76,7 +76,8 @@ bool KNFSSharePrivate::findExportsFile() {
  * Reads all paths from the exports file
  * and fills the sharedPaths dict with the values
  */
-bool KNFSSharePrivate::readExportsFile() {
+bool KNFSShare::KNFSSharePrivate::readExportsFile()
+{
   QFile f(exportsFile);
 
   kDebug(7000) << "KNFSShare::readExportsFile " << exportsFile << endl;
@@ -154,11 +155,11 @@ bool KNFSSharePrivate::readExportsFile() {
   f.close();
 
   return true;
-
 }
 
-KNFSShare::KNFSShare() {
-  d = new KNFSSharePrivate();
+KNFSShare::KNFSShare()
+    : d(new KNFSSharePrivate())
+{
   if (QFile::exists(d->exportsFile)) {
     KDirWatch::self()->addFile(d->exportsFile);
     connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
@@ -166,7 +167,8 @@ KNFSShare::KNFSShare() {
   }
 }
 
-KNFSShare::~KNFSShare() {
+KNFSShare::~KNFSShare()
+{
   if (QFile::exists(d->exportsFile)) {
     KDirWatch::self()->removeFile(d->exportsFile);
   }
@@ -174,7 +176,8 @@ KNFSShare::~KNFSShare() {
 }
 
 
-bool KNFSShare::isDirectoryShared( const QString & path ) const {
+bool KNFSShare::isDirectoryShared( const QString & path ) const
+{
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
@@ -182,29 +185,29 @@ bool KNFSShare::isDirectoryShared( const QString & path ) const {
   return d->sharedPaths.contains(fixedPath);
 }
 
-QStringList KNFSShare::sharedDirectories() const {
+QStringList KNFSShare::sharedDirectories() const
+{
   return d->sharedPaths.values();
 }
 
-QString KNFSShare::exportsPath() const {
+QString KNFSShare::exportsPath() const
+{
   return d->exportsFile;
 }
 
 
 
-void KNFSShare::slotFileChange( const QString & path ) {
+void KNFSShare::slotFileChange( const QString & path )
+{
   if (path == d->exportsFile)
      d->readExportsFile();
 
   emit changed();
 }
 
-KNFSShare* KNFSShare::_instance = 0L;
-static KStaticDeleter<KNFSShare> ksdNFSShare;
-
-KNFSShare* KNFSShare::instance() {
-  if (! _instance )
-      _instance = ksdNFSShare.setObject(_instance, new KNFSShare());
+KNFSShare* KNFSShare::instance()
+{
+  K_GLOBAL_STATIC(KNFSShare, _instance)
 
   return _instance;
 }
