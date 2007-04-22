@@ -91,6 +91,10 @@ namespace KMessage
      * @brief Set the current KMessageHandler
      * Note that this method take ownership of the KMessageHandler.
      * @param handler Instance of a real KMessageHandler.
+     *
+     * @warning This function isn't thread-safe. You don't want to
+     *          change the message handler during the program's
+     *          execution anyways. Do so <b>only</b> at start-up.
      */
     KDECORE_EXPORT void setMessageHandler(KMessageHandler *handler);
 }

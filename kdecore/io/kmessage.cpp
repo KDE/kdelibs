@@ -21,8 +21,6 @@
 #include <kglobal.h>
 
 #include <QtCore/QLatin1String>
-#include <QtCore/QMutex>
-#include <QtCore/QMutexLocker>
 
 #include <iostream>
 
@@ -32,13 +30,11 @@ public:
     StaticMessageHandler() : m_handler(0) {}
     ~StaticMessageHandler()
     {
-        QMutexLocker l(&s_mutex);
         delete m_handler;
     }
-    /* Sets the new message handler and returns the old one */
+    /* Sets the new message handler and deletes the old one */
     void setHandler(KMessageHandler *handler)
     {
-        QMutexLocker l(&s_mutex);
         delete m_handler;
         m_handler = handler;
     }
@@ -46,15 +42,10 @@ public:
     {
         return m_handler;
     }
-    static QMutex *mutex()
-    {
-        return &s_mutex;
-    }
+
 protected:
-    static QMutex s_mutex;
     KMessageHandler *m_handler;
 };
-QMutex StaticMessageHandler::s_mutex(QMutex::NonRecursive);
 K_GLOBAL_STATIC(StaticMessageHandler, s_messageHandler)
 
 static void internalMessageFallback(KMessage::MessageType messageType, const QString &text, const QString &caption)
@@ -100,7 +91,6 @@ void KMessage::setMessageHandler(KMessageHandler *handler)
 
 void KMessage::message(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {
-    QMutexLocker l(StaticMessageHandler::mutex());
     // Use current message handler if available, else use stdout
     if(s_messageHandler->handler())
     {
