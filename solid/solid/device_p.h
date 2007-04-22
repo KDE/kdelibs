@@ -44,7 +44,7 @@ namespace Solid
         void setBackendObject(Ifaces::Device *object);
 
         DeviceInterface *interface(const DeviceInterface::Type &type) const;
-        void setInterface(const DeviceInterface::Type &type, DeviceInterface *interface) const;
+        void setInterface(const DeviceInterface::Type &type, DeviceInterface *interface);
 
     public Q_SLOTS:
         void _k_destroyed(QObject *object);
@@ -52,7 +52,8 @@ namespace Solid
     private:
         QString m_udi;
         QPointer<Ifaces::Device> m_backendObject;
-        mutable QMap<DeviceInterface::Type, DeviceInterface*> m_ifaces;
+        QMap<DeviceInterface::Type, DeviceInterface*> m_ifaces;
+        QExplicitlySharedDataPointer<DevicePrivate> m_refToSelf;
     };
 }
 

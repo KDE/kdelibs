@@ -221,7 +221,8 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
 
         if ( iface!=0 )
         {
-            d->setInterface(type, iface);
+            // Lie on the constness since we're simply doing caching here
+            const_cast<Device*>(this)->d->setInterface(type, iface);
         }
 
         return iface;
@@ -243,6 +244,10 @@ Solid::DevicePrivate::DevicePrivate(const QString &udi)
 
 Solid::DevicePrivate::~DevicePrivate()
 {
+    // In case we're still referencing ourself otherwise
+    // we get a double delete because of m_refToSelf deletion
+    ref.ref();
+
     qDeleteAll( m_ifaces.values() );
 }
 
@@ -267,6 +272,8 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
         connect(m_backendObject, SIGNAL(destroyed(QObject*)),
                 this, SLOT(_k_destroyed(QObject*)));
     }
+
+    m_refToSelf = 0;
 }
 
 Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::Type &type) const
@@ -274,8 +281,9 @@ Solid::DeviceInterface *Solid::DevicePrivate::interface(const DeviceInterface::T
     return m_ifaces[type];
 }
 
-void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface) const
+void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, DeviceInterface *interface)
 {
+    m_refToSelf = this;
     m_ifaces[type] = interface;
 }
 

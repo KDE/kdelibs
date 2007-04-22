@@ -238,6 +238,34 @@ void SolidHwTest::testDeviceInterfaces()
     Solid::Device cpu2("/org/kde/solid/fakehw/acpi_CPU0");
     QCOMPARE(cpu.as<Solid::Processor>(), cpu2.as<Solid::Processor>());
     QCOMPARE(cpu.as<Solid::GenericInterface>(), cpu2.as<Solid::GenericInterface>());
+
+    QPointer<Solid::Processor> p = cpu.as<Solid::Processor>();
+    QVERIFY(p!=0);
+    fakeManager->unplug("/org/kde/solid/fakehw/acpi_CPU0");
+    QVERIFY(p==0);
+    fakeManager->plug("/org/kde/solid/fakehw/acpi_CPU0");
+
+    QPointer<Solid::Volume> v;
+    QPointer<Solid::Volume> v2;
+    {
+        Solid::Device partition("/org/kde/solid/fakehw/volume_uuid_f00ba7");
+        v = partition.as<Solid::Volume>();
+        QVERIFY(v!=0);
+        {
+            Solid::Device partition2("/org/kde/solid/fakehw/volume_uuid_f00ba7");
+            v2 = partition2.as<Solid::Volume>();
+            QVERIFY(v2!=0);
+            QVERIFY(v==v2);
+        }
+        QVERIFY(v!=0);
+        QVERIFY(v2!=0);
+    }
+    QVERIFY(v!=0);
+    QVERIFY(v2!=0);
+    fakeManager->unplug("/org/kde/solid/fakehw/volume_uuid_f00ba7");
+    QVERIFY(v==0);
+    QVERIFY(v2==0);
+    fakeManager->plug("/org/kde/solid/fakehw/volume_uuid_f00ba7");
 }
 
 void SolidHwTest::testDeviceInterfaceIntrospection_data()
