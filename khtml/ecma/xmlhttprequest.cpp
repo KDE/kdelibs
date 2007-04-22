@@ -429,9 +429,16 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
     HTTPHeaderMap::ConstIterator begin = m_requestHeaders.begin();
     HTTPHeaderMap::ConstIterator end = m_requestHeaders.end();
     for (HTTPHeaderMap::ConstIterator i = begin; i != end; ++i) {
-      if (i != begin)
-        rh += "\r\n";
-      rh += i.key().original() + ": " + i.value();
+      QString key = i.key().original();
+      QString value = i.value();
+      if (key.toLower() == "accept") {
+        // The HTTP KIO slave supports an override this way
+        job->addMetaData("accept", value);
+      } else {
+        if (!rh.isEmpty())
+          rh += "\r\n";
+        rh += key + ": " + value;
+      }
     }
 
     job->addMetaData("customHTTPHeader", rh);
