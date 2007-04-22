@@ -26,7 +26,6 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kstaticdeleter.h>
 #include <kconfiggroup.h>
 
 #include <QtCore/QHash>
@@ -54,10 +53,9 @@ public:
     }
 };
 
-static KServiceTypeProfiles* s_serviceTypeProfiles = 0;
-static KStaticDeleter< KServiceTypeProfiles > serviceTypeProfilesDeleter;
-static KMimeTypeProfiles* s_mimeTypeProfiles = 0;
-static KStaticDeleter< KMimeTypeProfiles > mimeTypeProfilesDeleter;
+K_GLOBAL_STATIC(KServiceTypeProfiles, s_serviceTypeProfiles)
+K_GLOBAL_STATIC(KMimeTypeProfiles, s_mimeTypeProfiles)
+
 static bool s_configurationMode = false;
 
 static KMimeTypeProfileEntry* findMimeTypeProfile( const QString& mimeType, const QString& genservicetype )
@@ -81,9 +79,6 @@ static void initStatic()
 
     // Make sure that a KServiceTypeFactory gets created.
     (void) KServiceTypeFactory::self();
-
-    serviceTypeProfilesDeleter.setObject(s_serviceTypeProfiles, new KServiceTypeProfiles);
-    mimeTypeProfilesDeleter.setObject(s_mimeTypeProfiles, new KMimeTypeProfiles);
 
     {
         // Read the service type profiles from servicetype_profilerc (new in kde4)
@@ -154,8 +149,8 @@ static void initStatic()
 //static
 void KServiceTypeProfile::clearCache()
 {
-    serviceTypeProfilesDeleter.destructObject();
-    mimeTypeProfilesDeleter.destructObject();
+    s_serviceTypeProfiles.reinit();
+    s_mimeTypeProfiles.reinit();
 }
 
 void KMimeTypeProfileEntry::addService( const QString& _service,

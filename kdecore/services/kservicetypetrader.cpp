@@ -21,20 +21,14 @@
 
 #include "ktraderparsetree_p.h"
 #include <kservicetypeprofile.h>
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
 
-template class KStaticDeleter<KServiceTypeTrader>;
-
 using namespace KTraderParse;
 
 // --------------------------------------------------
-
-static KServiceTypeTrader* s_globalServiceTypeTrader = 0;
-static KStaticDeleter<KServiceTypeTrader> ktradersd;
 
 namespace KServiceTypeProfile {
     KServiceOfferList sortServiceTypeOffers( const KServiceOfferList& list, const QString& servicetype );
@@ -42,9 +36,7 @@ namespace KServiceTypeProfile {
 
 KServiceTypeTrader* KServiceTypeTrader::self()
 {
-    if ( !s_globalServiceTypeTrader )
-	ktradersd.setObject( s_globalServiceTypeTrader, new KServiceTypeTrader );
-
+    K_GLOBAL_STATIC(KServiceTypeTrader, s_globalServiceTypeTrader)
     return s_globalServiceTypeTrader;
 }
 

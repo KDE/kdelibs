@@ -32,7 +32,6 @@
 #include <kcalendarsystemgregorian.h>
 #include <ksystemtimezone.h>
 #include <kdebug.h>
-#include <kstaticdeleter.h>
 #include "kdatetime.h"
 
 #ifdef Q_OS_WIN
@@ -308,8 +307,7 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
 
 /*----------------------------------------------------------------------------*/
 
-static KDateTime::Spec* s_fromStringDefault = 0;
-static KStaticDeleter<KDateTime::Spec> s_fromStringDefaultStaticDeleter;
+K_GLOBAL_STATIC(KDateTime::Spec, s_fromStringDefault)
 
 class KDateTimePrivate : public QSharedData
 {
@@ -422,8 +420,6 @@ class KDateTimePrivate : public QSharedData
     // Default time spec used by fromString()
     static KDateTime::Spec& fromStringDefault()
     {
-        if (!s_fromStringDefault)
-            s_fromStringDefaultStaticDeleter.setObject(s_fromStringDefault, new KDateTime::Spec(KDateTime::ClockTime));
         return *s_fromStringDefault;
     }
 
