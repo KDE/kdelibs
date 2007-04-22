@@ -17,8 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <QtCore/QDir>
-
 #include "kded.h"
 #include "kdedmodule.h"
 
@@ -30,6 +28,7 @@
 #include <signal.h>
 #include <time.h>
 
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 

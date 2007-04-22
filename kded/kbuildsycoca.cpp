@@ -18,13 +18,11 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <QtCore/QDir>
-#include <QtCore/QEventLoop>
-#include <config.h>
-
 #include "kbuildsycoca.h"
 #include "kresourcelist.h"
 #include "vfolder_menu.h"
+
+#include <config.h>
 
 #include <kservice.h>
 #include <kmimetype.h>
@@ -36,6 +34,8 @@
 #include "kctimefactory.h"
 #include <ktemporaryfile.h>
 #include <QtCore/QDataStream>
+#include <QtCore/QDir>
+#include <QtCore/QEventLoop>
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QtDBus/QtDBus>

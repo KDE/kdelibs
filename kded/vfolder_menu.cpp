@@ -16,6 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "vfolder_menu.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -33,8 +35,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
-
-#include "vfolder_menu.h"
 
 static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString())
 {
