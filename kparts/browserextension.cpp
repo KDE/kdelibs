@@ -31,7 +31,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kstaticdeleter.h>
 #include <kurifilter.h>
 #include <assert.h>
 
@@ -325,45 +324,69 @@ public:
     }
 };
 
-class BrowserExtensionPrivate
+class BrowserExtension::BrowserExtensionPrivate
 {
 public:
   BrowserExtensionPrivate()
-  {
-      m_browserInterface = 0;
-  }
-  ~BrowserExtensionPrivate()
-  {
-  }
+    : m_browserInterface(0),
+      m_urlDropHandlingEnabled(false)
+  {}
 
   struct DelayedRequest {
     KUrl m_delayedURL;
     KParts::URLArgs m_delayedArgs;
   };
+
   QList<DelayedRequest> m_requests;
   bool m_urlDropHandlingEnabled;
   KBitArray m_actionStatus;
   QMap<int, QString> m_actionText;
   BrowserInterface *m_browserInterface;
+
+  static void createActionSlotMap();
 };
+
+K_GLOBAL_STATIC(BrowserExtension::ActionSlotMap, s_actionSlotMap)
+K_GLOBAL_STATIC(BrowserExtension::ActionNumberMap, s_actionNumberMap)
+
+void BrowserExtension::BrowserExtensionPrivate::createActionSlotMap()
+{
+    s_actionSlotMap->insert( "cut", SLOT( cut() ) );
+    s_actionSlotMap->insert( "copy", SLOT( copy() ) );
+    s_actionSlotMap->insert( "paste", SLOT( paste() ) );
+    s_actionSlotMap->insert( "rename", SLOT( rename() ) );
+    s_actionSlotMap->insert( "trash", SLOT( trash() ) );
+    s_actionSlotMap->insert( "del", SLOT( del() ) );
+    s_actionSlotMap->insert( "properties", SLOT( properties() ) );
+    s_actionSlotMap->insert( "editMimeType", SLOT( editMimeType() ) );
+    s_actionSlotMap->insert( "print", SLOT( print() ) );
+    // Tricky. Those aren't actions in fact, but simply methods that a browserextension
+    // can have or not. No need to return them here.
+    //s_actionSlotMap->insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
+    //s_actionSlotMap->insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
+    // nothing for setSaveViewPropertiesLocally either
+
+    // Create the action-number map
+    ActionSlotMap::ConstIterator it = s_actionSlotMap->constBegin();
+    ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->constEnd();
+    for ( int i=0 ; it != itEnd ; ++it, ++i )
+    {
+        //kDebug(1202) << " action " << it.key() << " number " << i << endl;
+        s_actionNumberMap->insert( it.key(), i );
+    }
+}
 
 }
 
-BrowserExtension::ActionSlotMap * BrowserExtension::s_actionSlotMap = 0;
-static KStaticDeleter<BrowserExtension::ActionSlotMap> actionSlotMapsd;
-BrowserExtension::ActionNumberMap * BrowserExtension::s_actionNumberMap = 0;
-static KStaticDeleter<BrowserExtension::ActionNumberMap> actionNumberMapsd;
-
 BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
-: QObject( parent), m_part( parent )
+: QObject( parent), m_part( parent ), d(new BrowserExtensionPrivate)
 {
   //kDebug() << "BrowserExtension::BrowserExtension() " << this << endl;
-  d = new BrowserExtensionPrivate;
   d->m_urlDropHandlingEnabled = false;
 
   if ( !s_actionSlotMap )
       // Create the action-slot map
-      createActionSlotMap();
+      BrowserExtensionPrivate::createActionSlotMap();
 
   // Build list with this extension's slot names.
   QList<QByteArray> slotNames;
@@ -378,8 +401,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
   // Set the initial status of the actions depending on whether
   // they're supported or not
-  ActionSlotMap::ConstIterator it = s_actionSlotMap->begin();
-  ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->end();
+  ActionSlotMap::ConstIterator it = s_actionSlotMap->constBegin();
+  ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->constEnd();
   for ( int i=0 ; it != itEnd ; ++it, ++i )
   {
       // Does the extension have a slot with the name of this action ?
@@ -534,7 +557,7 @@ void BrowserExtension::slotEnableAction( const char * name, bool enabled )
 {
     //kDebug() << "BrowserExtension::slotEnableAction " << name << " " << enabled << endl;
     ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
-    if ( it != s_actionNumberMap->end() )
+    if ( it != s_actionNumberMap->constEnd() )
     {
         d->m_actionStatus.setBit( it.value(), enabled );
         //kDebug() << "BrowserExtension::slotEnableAction setting bit " << it.data() << " to " << enabled << endl;
@@ -553,7 +576,7 @@ void BrowserExtension::slotSetActionText( const char * name, const QString& text
 {
     kDebug() << "BrowserExtension::slotSetActionText " << name << " " << text << endl;
     ActionNumberMap::ConstIterator it = s_actionNumberMap->find( name );
-    if ( it != s_actionNumberMap->end() )
+    if ( it != s_actionNumberMap->constEnd() )
     {
         d->m_actionText[ it.value() ] = text;
     }
@@ -579,40 +602,8 @@ BrowserExtension::ActionSlotMap BrowserExtension::actionSlotMap()
 BrowserExtension::ActionSlotMap * BrowserExtension::actionSlotMapPtr()
 {
     if (!s_actionSlotMap)
-        createActionSlotMap();
+        BrowserExtensionPrivate::createActionSlotMap();
     return s_actionSlotMap;
-}
-
-void BrowserExtension::createActionSlotMap()
-{
-    assert(!s_actionSlotMap);
-    s_actionSlotMap = actionSlotMapsd.setObject( s_actionSlotMap, new ActionSlotMap );
-
-    s_actionSlotMap->insert( "cut", SLOT( cut() ) );
-    s_actionSlotMap->insert( "copy", SLOT( copy() ) );
-    s_actionSlotMap->insert( "paste", SLOT( paste() ) );
-    s_actionSlotMap->insert( "rename", SLOT( rename() ) );
-    s_actionSlotMap->insert( "trash", SLOT( trash() ) );
-    s_actionSlotMap->insert( "del", SLOT( del() ) );
-    s_actionSlotMap->insert( "properties", SLOT( properties() ) );
-    s_actionSlotMap->insert( "editMimeType", SLOT( editMimeType() ) );
-    s_actionSlotMap->insert( "print", SLOT( print() ) );
-    // Tricky. Those aren't actions in fact, but simply methods that a browserextension
-    // can have or not. No need to return them here.
-    //s_actionSlotMap->insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
-    //s_actionSlotMap->insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
-    // nothing for setSaveViewPropertiesLocally either
-
-    // Create the action-number map
-    assert(!s_actionNumberMap);
-    s_actionNumberMap = actionNumberMapsd.setObject( s_actionNumberMap, new ActionNumberMap );
-    ActionSlotMap::ConstIterator it = s_actionSlotMap->begin();
-    ActionSlotMap::ConstIterator itEnd = s_actionSlotMap->end();
-    for ( int i=0 ; it != itEnd ; ++it, ++i )
-    {
-        //kDebug(1202) << " action " << it.key() << " number " << i << endl;
-        s_actionNumberMap->insert( it.key(), i );
-    }
 }
 
 BrowserExtension *BrowserExtension::childObject( QObject *obj )

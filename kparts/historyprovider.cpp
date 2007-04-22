@@ -22,12 +22,8 @@
 #include <kapplication.h>
 
 #include "historyprovider.h"
-#include <kstaticdeleter.h>
 
 using namespace KParts;
-
-HistoryProvider * HistoryProvider::s_self = 0;
-static KStaticDeleter<HistoryProvider> historyProviderSd;
 
 class HistoryProvider::HistoryProviderPrivate
 {
@@ -37,27 +33,21 @@ public:
 
 HistoryProvider * HistoryProvider::self()
 {
-    if ( !s_self ) {
-        historyProviderSd.setObject( s_self, new HistoryProvider() );
+    K_GLOBAL_STATIC(HistoryProvider, s_self)
+    if ( !s_self )
         s_self->setObjectName( "history provider" );
-    }
+
     return s_self;
 }
 
 HistoryProvider::HistoryProvider( QObject *parent )
     : QObject( parent ),d(new HistoryProviderPrivate)
 {
-    if ( !s_self )
-	s_self = this;
-
 }
 
 HistoryProvider::~HistoryProvider()
 {
     delete d;
-
-    if ( s_self == this )
-	s_self = 0;
 }
 
 bool HistoryProvider::contains( const QString& item ) const

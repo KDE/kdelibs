@@ -94,9 +94,6 @@ Q_SIGNALS:
     void inserted( const QString& item );
 
 private:
-    static HistoryProvider *s_self;
-
-private:
     class HistoryProviderPrivate;
     HistoryProviderPrivate* const d;
 };

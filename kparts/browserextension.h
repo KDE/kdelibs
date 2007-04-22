@@ -245,8 +245,6 @@ private:
   OpenURLEventPrivate *d;
 };
 
-class BrowserExtensionPrivate;
-
  /**
   * The Browser Extension is an extension (yes, no kidding) to
   * KParts::ReadOnlyPart, which allows a better integration of parts
@@ -697,10 +695,8 @@ public:
   typedef QMap<QByteArray,int> ActionNumberMap;
 
 private:
-  static ActionNumberMap * s_actionNumberMap;
-  static ActionSlotMap * s_actionSlotMap;
-  static void createActionSlotMap();
-  BrowserExtensionPrivate *d;
+  class BrowserExtensionPrivate;
+  BrowserExtensionPrivate * const d;
 };
 
 /**
