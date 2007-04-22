@@ -18,15 +18,44 @@
 */
 #include "kmessage.h"
 
-#include <QtCore/QLatin1String>
+#include <kglobal.h>
 
-#include <kstaticdeleter.h>
+#include <QtCore/QLatin1String>
+#include <QtCore/QMutex>
+#include <QtCore/QMutexLocker>
 
 #include <iostream>
 
-static KStaticDeleter<KMessageHandler> handleDeleter;
-
-static KMessageHandler *s_messageHandler = 0;
+class StaticMessageHandler
+{
+public:
+    StaticMessageHandler() : m_handler(0) {}
+    ~StaticMessageHandler()
+    {
+        QMutexLocker l(&s_mutex);
+        delete m_handler;
+    }
+    /* Sets the new message handler and returns the old one */
+    void setHandler(KMessageHandler *handler)
+    {
+        QMutexLocker l(&s_mutex);
+        delete m_handler;
+        m_handler = handler;
+    }
+    KMessageHandler *handler() const
+    {
+        return m_handler;
+    }
+    static QMutex *mutex()
+    {
+        return &s_mutex;
+    }
+protected:
+    static QMutex s_mutex;
+    KMessageHandler *m_handler;
+};
+QMutex StaticMessageHandler::s_mutex(QMutex::NonRecursive);
+K_GLOBAL_STATIC(StaticMessageHandler, s_messageHandler)
 
 static void internalMessageFallback(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {
@@ -66,18 +95,16 @@ static void internalMessageFallback(KMessage::MessageType messageType, const QSt
 void KMessage::setMessageHandler(KMessageHandler *handler)
 {
     // Delete old message handler.
-    delete s_messageHandler;
-    s_messageHandler = 0;
-
-    handleDeleter.setObject(s_messageHandler, handler);
+    s_messageHandler->setHandler(handler);
 }
 
 void KMessage::message(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {
+    QMutexLocker l(StaticMessageHandler::mutex());
     // Use current message handler if available, else use stdout
-    if(s_messageHandler)
+    if(s_messageHandler->handler())
     {
-        s_messageHandler->message(messageType, text, caption);
+        s_messageHandler->handler()->message(messageType, text, caption);
     }
     else
     {

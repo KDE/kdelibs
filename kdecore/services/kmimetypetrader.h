@@ -124,7 +124,8 @@ private:
     KMimeTypeTrader();
 
 private:
-    static KMimeTypeTrader* s_self;
+    class Private;
+    Private * const d;
 };
 
 #endif /* KMIMETYPETRADER_H */

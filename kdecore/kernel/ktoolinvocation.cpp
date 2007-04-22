@@ -21,7 +21,6 @@
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
 #include "kdebug.h"
-#include "kstaticdeleter.h"
 
 #include <QMutex>
 #include <QMutexLocker>
@@ -32,28 +31,18 @@
 
 #include <QThread>
 
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex,mutex,(QMutex::Recursive))
-
-KToolInvocation* KToolInvocation::s_self = 0L;
+KToolInvocation *KToolInvocation::self()
+{
+    K_GLOBAL_STATIC(KToolInvocation, s_self)
+    return s_self;
+}
 
 KToolInvocation::KToolInvocation() : QObject(0)
 {
 }
 
-KStaticDeleter<KToolInvocation> ktoolinvocation_sd;
-KToolInvocation *KToolInvocation::self()
-{
-    QMutexLocker locker(mutex());
-    if (s_self==0) {
-        ktoolinvocation_sd.setObject( s_self, new KToolInvocation );
-    }
-    return s_self;
-}
-
 KToolInvocation::~KToolInvocation()
 {
-    QMutexLocker locker(mutex());
-    s_self=0;
 }
 
 Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,

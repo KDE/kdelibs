@@ -66,7 +66,6 @@ class KDECORE_EXPORT KToolInvocation : public QObject
   Q_OBJECT
 private:
 	KToolInvocation();
-	static KToolInvocation *s_self;
 public:
 	// @internal
 	~KToolInvocation();

@@ -22,7 +22,6 @@
 /* "ksocks.h is not public API" */
 
 #include <kdecore_export.h>
-#include <kstaticdeleter.h>
 
 #include <qstringlist.h>
 #include <sys/types.h>
@@ -33,7 +32,6 @@
 
 class KConfigGroup;
 class KSocksTable;
-class KSocksPrivate;
 class KLibrary;
 class KConfigBase;
 struct sockaddr;
@@ -53,8 +51,6 @@ typedef unsigned ksocklen_t;
  * @short Access to a SOCKS Proxy.
  */
 class KDECORE_EXPORT KSocks {
-   friend class KStaticDeleter<KSocks>;
-
 public:
 
    /**
@@ -209,7 +205,8 @@ private:
 
 
    KSocksTable *_st;
-   KSocksPrivate* d;
+   class KSocksPrivate;
+   KSocksPrivate * const d;
 };
 
 #endif //Q_OS_UNIX

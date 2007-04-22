@@ -26,25 +26,28 @@
 #include "kservicefactory.h"
 #include "kmimetypefactory.h"
 
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 
-KMimeTypeTrader* KMimeTypeTrader::s_self = 0;
-static KStaticDeleter<KMimeTypeTrader> kmimetypetradersd;
+class KMimeTypeTrader::Private
+{
+public:
+    Private() {}
+};
 
 KMimeTypeTrader* KMimeTypeTrader::self()
 {
-    if ( !s_self )
-	kmimetypetradersd.setObject( s_self, new KMimeTypeTrader );
+    K_GLOBAL_STATIC(KMimeTypeTrader, s_self)
     return s_self;
+}
+
+KMimeTypeTrader::KMimeTypeTrader()
+    : d(new Private())
+{
 }
 
 KMimeTypeTrader::~KMimeTypeTrader()
 {
-}
-
-KMimeTypeTrader::KMimeTypeTrader()
-{
+    delete d;
 }
 
 #if 0

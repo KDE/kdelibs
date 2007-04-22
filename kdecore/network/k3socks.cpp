@@ -196,6 +196,11 @@ KDanteSocksTable::~KDanteSocksTable() {
 ///////        End of all symbol table definitions         ///////
 //////////////////////////////////////////////////////////////////
 
+class KSocks::KSocksPrivate
+{
+public:
+    KSocksPrivate() {}
+};
 
 KSocks *KSocks::_me = 0;
 #ifdef __CYGWIN__
@@ -203,7 +208,6 @@ bool KSocks::_disabled = true;
 #else
 bool KSocks::_disabled = false;
 #endif
-static KStaticDeleter<KSocks> med;
 
 void KSocks::disable()
 {
@@ -243,7 +247,9 @@ bool KSocks::activated() { return (_me != 0L); }
 // Function for the KControl module to test if the socks support works.
 KDECORE_EXPORT bool kdeHasSocks() { return KSocks::self()->hasSocks(); }
 
-KSocks::KSocks(const KConfigGroup *config) : _socksLib(0L), _st(0L) {
+KSocks::KSocks(const KConfigGroup *config)
+  : _socksLib(0L), _st(0L), d(new KSocksPrivate())
+{
    _hasSocks = false;
    _useSocks = false;
 
@@ -424,6 +430,7 @@ KSocks::KSocks(const KConfigGroup *config) : _socksLib(0L), _st(0L) {
 KSocks::~KSocks() {
    stopSocks();
    _me = 0;
+   delete d;
 }
 
 void KSocks::die() {
