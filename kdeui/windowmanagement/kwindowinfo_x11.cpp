@@ -89,7 +89,7 @@ KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long prop
     d->valid = !handler.error( false ); // no sync - NETWinInfo did roundtrips
 }
 
-// this one is only to make QValueList<> or similar happy
+// this one is only to make QList<> or similar happy
 KWindowInfo::KWindowInfo()
     : d( NULL )
 {
