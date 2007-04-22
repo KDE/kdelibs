@@ -379,13 +379,13 @@ bool Node::dispatchEvent(const Event &evt)
     return !evt.handle()->defaultPrevented();
 }
 
-QString Node::textContent() const
+DOMString Node::textContent() const
 {
-    if (!impl) return QString();
+    if (!impl) return DOMString();
     return impl->textContent();
 }
 
-void Node::setTextContent(const QString& content)
+void Node::setTextContent(const DOMString& content)
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;

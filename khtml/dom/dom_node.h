@@ -853,7 +853,7 @@ public:
      * parsing is performed either, the input string is taken as pure
      * textual content.
      */
-    QString textContent() const;
+    DOMString textContent() const;
     
     /**
      * see textContent()
@@ -861,7 +861,7 @@ public:
      * @exception DOMException
      * NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
      */
-    void setTextContent(const QString& text);
+    void setTextContent(const DOMString& text);
 
     /**
      * @internal

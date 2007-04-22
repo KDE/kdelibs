@@ -232,11 +232,11 @@ ValueImp* getStringOrNull(DOM::DOMString s)
     return String(s);
 }
 
-QString valueToStringWithNullCheck(ExecState* exec, JSValue* val)
+DOM::DOMString valueToStringWithNullCheck(ExecState* exec, JSValue* val)
 {
     if (val->isNull())
-        return QString();
-    return val->toString(exec).qstring();
+      return DOM::DOMString();
+    return val->toString(exec).domString();
 }
 
 QVariant ValueToVariant(ExecState* exec, ValueImp *val) {

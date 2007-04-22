@@ -209,21 +209,21 @@ void NodeImpl::setPrefix(const DOMString &/*_prefix*/, int &exceptioncode )
     exceptioncode = DOMException::NAMESPACE_ERR;
 }
 
-QString NodeImpl::textContent() const
+DOMString NodeImpl::textContent() const
 {
     switch (nodeType()) {
     case Node::TEXT_NODE:
     case Node::CDATA_SECTION_NODE:
     case Node::COMMENT_NODE:
     case Node::PROCESSING_INSTRUCTION_NODE:
-	return nodeValue().string();
+	return nodeValue();
         
     case Node::ELEMENT_NODE:
     case Node::ATTRIBUTE_NODE:
     case Node::ENTITY_NODE:
     case Node::ENTITY_REFERENCE_NODE:
     case Node::DOCUMENT_FRAGMENT_NODE: {
-        QString s = "";
+        DOMString s = "";
 
 	for (NodeImpl *child = firstChild(); child; child = child->nextSibling()) {
             if (child->nodeType() == Node::COMMENT_NODE ||
@@ -240,11 +240,11 @@ QString NodeImpl::textContent() const
     case Node::DOCUMENT_TYPE_NODE:
     case Node::NOTATION_NODE:
     default:
-	return QString();            
+	return DOMString();            
     }
 }
 
-void NodeImpl::setTextContent(const QString& text, int& ec)
+void NodeImpl::setTextContent(const DOMString& text, int& ec)
 {
     if (isReadOnly()) {
         ec = DOMException::NO_MODIFICATION_ALLOWED_ERR;
@@ -268,7 +268,7 @@ void NodeImpl::setTextContent(const QString& text, int& ec)
             container->removeChildren();
             
             if (!text.isEmpty())
-                appendChild(getDocument()->createTextNode(text), ec);
+                appendChild(getDocument()->createTextNode(text.implementation()), ec);
             break;
         }
         case Node::DOCUMENT_NODE:

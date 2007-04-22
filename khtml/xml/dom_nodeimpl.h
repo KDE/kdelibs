@@ -152,8 +152,8 @@ public:
     virtual bool containsOnlyWhitespace() const { return false; }
     virtual bool contentEditable() const;
 
-    QString textContent() const;
-    void setTextContent(const QString& text, int& ec);
+    DOMString textContent() const;
+    void setTextContent(const DOMString& text, int& ec);
 
     // helper functions not being part of the DOM
     // Attention: they assume that the caller did the consistency checking!

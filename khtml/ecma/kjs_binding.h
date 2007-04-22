@@ -284,7 +284,7 @@ namespace KJS {
   /**
    * Null string if the value is null
    */
-  QString valueToStringWithNullCheck(ExecState* exec, JSValue* v);
+  DOM::DOMString valueToStringWithNullCheck(ExecState* exec, JSValue* v);
 
   /**
    * Convert a KJS value into a QVariant
