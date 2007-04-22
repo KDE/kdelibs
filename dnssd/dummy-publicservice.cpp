@@ -29,7 +29,7 @@ PublicService::PublicService(const QString& name, const QString& type, unsigned 
 			      const QString& domain, const QStringList&)
   		: QObject(), ServiceBase(name, type, QString(), domain, port)
 {
-	if (domain.isNull())  dptr->m_domain="local.";
+	if (domain.isNull())  dptr->m_domain=QLatin1String("local.");
 }
 
 

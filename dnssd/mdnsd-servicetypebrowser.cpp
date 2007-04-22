@@ -18,9 +18,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "mdnsd-servicetypebrowser_p.h"
 #include "servicetypebrowser.h"
 #include "servicebrowser.h"
-#include "mdnsd-servicetypebrowser_p.h"
 
 namespace DNSSD
 {
@@ -57,14 +57,14 @@ bool ServiceTypeBrowser::isRunning() const
 
 void ServiceTypeBrowserPrivate::newService(DNSSD::RemoteService::Ptr srv)
 {
-    QString type=srv->serviceName()+"."+srv->type();
+    QString type=srv->serviceName()+'.'+srv->type();
     m_servicetypes+=type;
     emit m_parent->serviceTypeAdded(type);
 }    
 
 void ServiceTypeBrowserPrivate::removeService(DNSSD::RemoteService::Ptr srv)
 {
-    QString type=srv->serviceName()+"."+srv->type();
+    QString type=srv->serviceName()+'.'+srv->type();
     m_servicetypes.removeAll(type);    
     emit m_parent->serviceTypeRemoved(type);
 }

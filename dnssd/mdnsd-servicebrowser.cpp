@@ -18,17 +18,17 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
+#include "mdnsd-servicebrowser_p.h"
 #include "domainbrowser.h"
 #include "servicebrowser.h"
-#include <QtCore/QHash>
-#include <dns_sd.h>
 #include "mdnsd-responder.h"
 #include "remoteservice.h"
 #include "mdnsd-sdevent.h"
+#include <dns_sd.h>
+#include <QtCore/QStringList>
+#include <QtCore/QHash>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTimer>
-#include "mdnsd-servicebrowser_p.h"
 
 #define TIMEOUT_WAN 2000
 #define TIMEOUT_LAN 200
