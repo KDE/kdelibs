@@ -146,7 +146,7 @@ Value XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     return getString(DOM::DOMString(response));
   case ResponseXML:
     if (state != Completed) {
-      return Undefined();
+      return Null();
     }
     if (!createdDocument) {
       QString mimeType = "text/xml";
