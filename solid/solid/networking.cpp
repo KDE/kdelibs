@@ -18,30 +18,56 @@
 
 */
 
+#include <kglobal.h>
+
 #include "soliddefs_p.h"
 #include "networking_p.h"
 #include "networking.h"
-
-#include <kglobal.h>
+#include "org_kde_solid_networking.h"
 
 K_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
 
-Solid::NetworkingPrivate::NetworkingPrivate()
+Solid::NetworkingPrivate::NetworkingPrivate() : iface( 
+        new OrgKdeSolidNetworkingInterface( "org.kde.Solid.Networking",
+            "/status",
+            QDBusConnection::sessionBus(),
+            this ) )
 {
+    connect( iface, SIGNAL( statusChanged( uint ) ), globalNetworkManager, SIGNAL( statusChanged( uint ) ) );
 }
 
 Solid::NetworkingPrivate::~NetworkingPrivate()
 {
 }
 
-bool Solid::Networking::isNetworkingEnabled()
+uint Solid::NetworkingPrivate::requestConnection()
 {
-    return false;
+    return iface->requestConnection();
 }
 
-void Solid::Networking::setNetworkingEnabled(bool enabled)
+void Solid::NetworkingPrivate::releaseConnection()
 {
+    iface->releaseConnection();
+}
 
+uint Solid::NetworkingPrivate::status() const
+{
+    return iface->status();
+}
+
+Solid::Networking::Result Solid::Networking::requestConnection()
+{
+    return static_cast<Solid::Networking::Result>( globalNetworkManager->requestConnection() );
+}
+
+void Solid::Networking::releaseConnection()
+{
+    globalNetworkManager->releaseConnection();
+}
+
+Solid::Networking::Status Solid::Networking::status()
+{
+    return static_cast<Solid::Networking::Status>( globalNetworkManager->status() );
 }
 
 Solid::Networking::Notifier *Solid::Networking::notifier()

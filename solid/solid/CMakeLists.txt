@@ -30,7 +30,8 @@ set(solid_LIB_SRCS
    powermanagement.cpp
    networking.cpp
 )
-
+   #   wirelessnetwork.cpp
+QT4_ADD_DBUS_INTERFACE(solid_LIB_SRCS org.kde.Solid.Networking.xml org_kde_solid_networking)
 kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})

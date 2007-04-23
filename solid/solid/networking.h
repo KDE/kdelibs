@@ -40,25 +40,53 @@ namespace Solid
     namespace Networking
     {
         /**
-         * Retrieves the status of networking (as a whole) in the system.
-         * This is distinct from whether the system's networking is online or offline.
-         * To check that, see @ref NetworkStatus.
-         *
-         * @return true if this networking is enabled, false otherwise
+         * Describe the result of a connection request
+         * - Accepted : the request was accepted and is being acted upon
+         * - AlreadyConnected : the system was already connected
+         * - Denied : the request was denied
          */
-        SOLID_EXPORT bool isNetworkingEnabled();
+        enum Result { Accepted, AlreadyConnected, Denied };
+
+        /**
+         * Describes the state of the networking system
+         * - Unknown : the networking system is not active or unable to report its status - proceed
+         *   with caution
+         * - Disconnected : the system is not connected to any network
+         * - Connecting : the system is in the process of making a connection
+         * - Connected : the system is currently connected to a network
+         * - Disconnecting : the system is breaking the connection
+         */
+        enum Status { Unknown, Disconnected, Connecting, Connected, Disconnecting };
+
+        /**
+         * Requests that the networking subsystem makes a connection.  If an on-demand connection
+         * is started as a result of this request, the connection is refcounted and KDE's use of
+         * the connection is dropped when the last application uses it calls @ref
+         * releaseConnection().
+         */
+        Result SOLID_EXPORT requestConnection();
 
         /**
          * Activates or deactivates networking (as a whole).
          *
          * @param enabled true to activate networking, false otherwise
          */
-        SOLID_EXPORT void setNetworkingEnabled(bool enabled);
+        void SOLID_EXPORT releaseConnection();
 
+        /**
+         * Get the current networking status
+         */
+        Status SOLID_EXPORT status();
+
+        /**
+         * This object emits signals, if your application requires notification
+         * of changes to networking.
+         */
         class Notifier : public QObject
         {
-            Q_OBJECT
+        Q_OBJECT
         Q_SIGNALS:
+            void statusChanged( Status );
         };
 
         SOLID_EXPORT Notifier *notifier();

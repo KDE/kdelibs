@@ -22,14 +22,26 @@
 
 #include "networking.h"
 
+class OrgKdeSolidNetworkingInterface;
+
 namespace Solid
 {
     class NetworkingPrivate : public Networking::Notifier
     {
-        Q_OBJECT
+    Q_OBJECT
+    Q_PROPERTY( uint Status  READ status )
+    Q_CLASSINFO( "D-Bus Interface", "org.kde.Solid.Networking" )
     public:
         NetworkingPrivate();
         ~NetworkingPrivate();
+    public Q_SLOTS:
+        uint requestConnection(); /*Result*/
+        void releaseConnection();
+        uint status() const;
+    Q_SIGNALS:
+        void statusChanged( uint ); /*Status*/
+    private:
+        OrgKdeSolidNetworkingInterface * iface;
     };
 }
 
