@@ -41,26 +41,26 @@ bool Solid::PowerManagement::appShouldConserveResources()
     return false;
 }
 
-QList<Solid::PowerManagement::SleepAction> Solid::PowerManagement::supportedSleepActions()
+QList<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepStates()
 {
-    return QList<SleepAction>();
+    return QList<SleepState>();
 }
 
-QString Solid::PowerManagement::stringForSleepAction(SleepAction action)
+QString Solid::PowerManagement::stringForSleepState(SleepState state)
 {
-    switch (action)
+    switch (state)
     {
-    case StandbyAction:
+    case StandbyState:
         return i18n("Standby");
-    case SuspendAction:
+    case SuspendState:
         return i18n("Suspend");
-    case HibernateAction:
+    case HibernateState:
         return i18n("Hibernate");
     }
     return QString();
 }
 
-void Solid::PowerManagement::requestSleep(SleepAction action, QObject *receiver, const char *member)
+void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, const char *member)
 {
 
 }

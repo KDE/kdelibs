@@ -49,7 +49,7 @@ namespace Solid
          * - ToRam: Most devices are deactivated, only RAM is powered (ACPI S3)
          * - ToDisk: State of the machine is saved to disk, and it's powered down (ACPI S4)
          */
-        enum SleepAction { StandbyAction = 1, SuspendAction = 2, HibernateAction = 4 };
+        enum SleepState { StandbyState = 1, SuspendState = 2, HibernateState = 4 };
 
         /**
          * Retrieves the current state of the system AC adapter.
@@ -67,9 +67,9 @@ namespace Solid
          * @see Solid::PowerManager::SuspendMethod
          * @see Solid::PowerManager::SuspendMethods
          */
-        SOLID_EXPORT QList<SleepAction> supportedSleepActions();
+        SOLID_EXPORT QList<SleepState> supportedSleepStates();
 
-        SOLID_EXPORT QString stringForSleepAction(SleepAction action);
+        SOLID_EXPORT QString stringForSleepState(SleepState state);
 
         /**
          * Requests a suspend of the system.
@@ -77,7 +77,7 @@ namespace Solid
          * @param method the suspend method to use
          * @return the job handling the operation
          */
-        SOLID_EXPORT void requestSleep(SleepAction action, QObject *receiver, const char *member);
+        SOLID_EXPORT void requestSleep(SleepState state, QObject *receiver, const char *member);
 
         enum SuppressException { NoSuppressException = 0, ExceptUserTriggered = 1, ExceptOnLowBattery = 2,
                                  DefaultSuppressExceptions = ExceptUserTriggered|ExceptOnLowBattery };
