@@ -47,7 +47,7 @@ public:
     }
 };
 
-K_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf);
+K_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf)
 
 class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
