@@ -36,6 +36,6 @@ install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 ########### install files ###############
 
-install( FILES devicemanager.h device.h deviceinterface.h genericinterface.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
+#install( FILES devicemanager.h device.h deviceinterface.h genericinterface.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid/ifaces)
 
 
