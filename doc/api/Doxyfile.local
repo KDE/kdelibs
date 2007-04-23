@@ -7,6 +7,7 @@ PREDEFINED = KDECORE_EXPORT="" \
 	KDEUI_EXPORT="" \
 	KDEFX_EXPORT="" \
 	KDE_DEPRECATED="" \
+        Q_WS_X11="" \
 	Q_OS_UNIX="" \
 	Q_SLOTS="slots" \
 	Q_SIGNALS="signals"
