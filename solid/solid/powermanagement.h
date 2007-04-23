@@ -58,12 +58,7 @@ namespace Solid
          * - ToRam: Most devices are deactivated, only RAM is powered (ACPI S3)
          * - ToDisk: State of the machine is saved to disk, and it's powered down (ACPI S4)
          */
-        enum SuspendMethod{ UnknownSuspendMethod = 0, Standby = 1, ToRam = 2, ToDisk = 4};
-
-        /**
-         * This type stores an OR combination of SuspendMethod values.
-         */
-        Q_DECLARE_FLAGS( SuspendMethods, SuspendMethod )
+        enum Action { StandbyAction = 1, SuspendAction = 2, HibernateAction = 4 };
 
         /**
          * Retrieves the current state of the system AC adapter.
@@ -81,7 +76,9 @@ namespace Solid
          * @see Solid::PowerManager::SuspendMethod
          * @see Solid::PowerManager::SuspendMethods
          */
-        SOLID_EXPORT SuspendMethods supportedSuspendMethods();
+        SOLID_EXPORT QList<Action> supportedActions();
+
+        SOLID_EXPORT QString stringForAction(Action action);
 
         /**
          * Requests a suspend of the system.
@@ -89,8 +86,9 @@ namespace Solid
          * @param method the suspend method to use
          * @return the job handling the operation
          */
-        SOLID_EXPORT KJob *suspend(SuspendMethod method);
+        SOLID_EXPORT void request(Action action, QObject *receiver, const char *member);
 
+        SOLID_EXPORT bool inhibitAutoActions(bool inhibit, const QString &reason = QString());
 
         class Notifier : public QObject
         {
@@ -108,7 +106,5 @@ namespace Solid
         SOLID_EXPORT Notifier *notifier();
     }
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::PowerManagement::SuspendMethods )
 
 #endif

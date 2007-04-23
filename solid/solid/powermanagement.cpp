@@ -24,6 +24,7 @@
 #include "managerbase_p.h"
 
 #include <kglobal.h>
+#include <klocale.h>
 
 K_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
@@ -40,14 +41,33 @@ Solid::PowerManagement::AcAdapterState Solid::PowerManagement::acAdapterState()
     return UnknownAcAdapterState;
 }
 
-Solid::PowerManagement::SuspendMethods Solid::PowerManagement::supportedSuspendMethods()
+QList<Solid::PowerManagement::Action> Solid::PowerManagement::supportedActions()
 {
-    return UnknownSuspendMethod;
+    return QList<Action>();
 }
 
-KJob *Solid::PowerManagement::suspend(SuspendMethod method)
+QString Solid::PowerManagement::stringForAction(Action action)
 {
-    return 0;
+    switch (action)
+    {
+    case StandbyAction:
+        return i18n("Standby");
+    case SuspendAction:
+        return i18n("Suspend");
+    case HibernateAction:
+        return i18n("Hibernate");
+    }
+    return QString();
+}
+
+void Solid::PowerManagement::request(Action action, QObject *receiver, const char *member)
+{
+
+}
+
+bool Solid::PowerManagement::inhibitAutoActions(bool inhibit, const QString &reason)
+{
+    return false;
 }
 
 Solid::PowerManagement::Notifier *Solid::PowerManagement::notifier()
