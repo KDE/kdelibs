@@ -2986,7 +2986,7 @@ void KHTMLPart::findText()
 #endif
 
   // Now show the dialog in which the user can choose options.
-  d->m_findDialog = new KFindDialog( false /*non-modal*/, widget(), "khtmlfind" );
+  d->m_findDialog = new KFindDialog( widget() );
   d->m_findDialog->setHasSelection( hasSelection() );
   d->m_findDialog->setHasCursor( d->m_findNode != 0 );
   if ( d->m_findNode ) // has a cursor -> default to 'FromCursor'

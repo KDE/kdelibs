@@ -82,29 +82,12 @@ public:
      * Construct a modal find dialog
      *
      * @param parent The parent object of this widget.
-     * @param name The name of this widget.
      * @param options A bitfield of the Options to be checked.
      * @param findStrings The find history, see findHistory()
      * @param hasSelection Whether a selection exists
      */
-    KFindDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
+    explicit KFindDialog( QWidget *parent = 0, long options = 0,
                  const QStringList &findStrings = QStringList(), bool hasSelection = false );
-    // KDE4: fix ambiguity with private constructor
-    // Maybe remove options (there's setOptions) and findStrings (setFindHistory) and hasSelection (setHasSelection)
-
-    /**
-     * Construct a non-modal find dialog
-     *
-     * @param modal set to false to get a non-modal dialog
-     * @param parent The parent object of this widget.
-     * @param name The name of this widget.
-     * @param options A bitfield of the Options to be checked.
-     * @param findStrings The find history, see findHistory()
-     * @param hasSelection Whether a selection exists
-     */
-    KFindDialog( bool modal, QWidget *parent = 0, const char *name = 0, long options = 0,
-                 const QStringList &findStrings = QStringList(), bool hasSelection = false );
-    // KDE4: consider simplifying
 
     /**
      * Destructor.
@@ -261,13 +244,7 @@ private:
 
     friend class KReplaceDialog;
 
-    /**
-     * Construct a find dialog with a parent object and a name. This version of the
-     * constructor is for use by friends only!
-     *
-     * @param forReplace Is this a replace dialog?
-     */
-    KFindDialog( QWidget *parent, const char *name, bool forReplace );
+
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
 
     QGroupBox *m_replaceGrp;
@@ -280,7 +257,6 @@ private:
 
     QMenu *m_placeholders;
 
-    // Binary compatible extensibility.
     class KFindDialogPrivate;
     KFindDialogPrivate* const d;
 };

@@ -73,14 +73,13 @@ public:
      * parent object and a name.
      *
      * @param parent The parent object of this widget
-     * @param name The name of this widget
      * @param options A bitfield of the Options to be enabled.
      * @param findStrings A QStringList to insert in the combo box of text to find
      * @param replaceStrings A QStringList to insert in the combo box of text to
      *        replace with
      * @param hasSelection Whether a selection exists
      */
-    KReplaceDialog( QWidget *parent = 0, const char *name = 0, long options = 0,
+    KReplaceDialog( QWidget *parent = 0, long options = 0,
 		    const QStringList &findStrings = QStringList(),
 		    const QStringList &replaceStrings = QStringList(),
 		    bool hasSelection = true );
@@ -141,11 +140,8 @@ protected Q_SLOTS:
     virtual void showEvent ( QShowEvent * );
 
 private:
-
-    // Binary compatible extensibility.
     class KReplaceDialogPrivate;
     KReplaceDialogPrivate* const d;
 };
-
 
 #endif // KREPLACEDIALOG_H

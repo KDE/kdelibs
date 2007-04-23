@@ -56,12 +56,11 @@ public:
     QWidget *findExtension;
 };
 
-KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
+KFindDialog::KFindDialog(QWidget *parent, long options, const QStringList &findStrings, bool hasSelection) :
     KDialog(parent),
-	d(new KFindDialogPrivate)
+    d(new KFindDialogPrivate)
 {
-    setObjectName( name );
-    setModal( true );
+
     setCaption( i18n("Find Text") );
     setButtons( Ok | Cancel );
     setDefaultButton( Ok );
@@ -69,34 +68,6 @@ KFindDialog::KFindDialog(QWidget *parent, const char *name, long options, const 
     init(false, findStrings, hasSelection);
     setOptions(options);
     setButtonGuiItem( KDialog::Cancel, KStandardGuiItem::close() );
-}
-
-KFindDialog::KFindDialog(bool modal, QWidget *parent, const char *name, long options, const QStringList &findStrings, bool hasSelection) :
-    KDialog(parent),
-	d(new KFindDialogPrivate)
-{
-    setObjectName( name );
-    setModal( modal );
-    setCaption( i18n("Find Text") );
-    setButtons( Ok | Cancel );
-    setDefaultButton( Ok );
-
-    init(false, findStrings, hasSelection);
-    setOptions(options);
-    setButtonGuiItem( KDialog::Cancel, KStandardGuiItem::close() );
-}
-
-KFindDialog::KFindDialog(QWidget *parent, const char *name, bool /*forReplace*/) :
-    KDialog(parent),
-	d(new KFindDialogPrivate)
-{
-    setObjectName( name );
-    setModal( true );
-    setCaption( i18n("Replace Text") );
-    setButtons( Ok | Cancel );
-    setDefaultButton( Ok );
-
-    setButtonGuiItem( KDialog::Cancel,  KStandardGuiItem::close() );
 }
 
 KFindDialog::~KFindDialog()

@@ -247,7 +247,7 @@ static void testReplaceBackRef( int options, int button = 0 )
 
 static void testReplacementHistory( const QStringList& findHistory, const QStringList& replaceHistory )
 {
-    KReplaceDialog dlg( 0, 0, 0, findHistory, replaceHistory );
+    KReplaceDialog dlg( 0, 0, findHistory, replaceHistory );
     dlg.show();
     kDebug() << "testReplacementHistory:" << dlg.replacementHistory() << endl;
     assert( dlg.replacementHistory() == replaceHistory );

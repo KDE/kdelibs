@@ -48,8 +48,9 @@ class KReplaceDialog::KReplaceDialogPrivate {
     QWidget *replaceExtension;
 };
 
-KReplaceDialog::KReplaceDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, const QStringList &replaceStrings, bool hasSelection) :
-    KFindDialog(parent, name, true),
+KReplaceDialog::KReplaceDialog(QWidget *parent, long options, const QStringList &findStrings,
+                               const QStringList &replaceStrings, bool hasSelection) :
+    KFindDialog(parent),
 	d(new KReplaceDialogPrivate)
 {
     d->replaceStrings = replaceStrings;
