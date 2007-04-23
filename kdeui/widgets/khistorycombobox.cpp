@@ -44,9 +44,9 @@ class KHistoryComboBox::Private
 {
 public:
     Private(KHistoryComboBox *q): q(q), myPixProvider(0) {}
-  
+
     KHistoryComboBox *q;
-  
+
     /**
     * The current position (index) in the combobox, used for Up and Down
      */
@@ -66,15 +66,7 @@ public:
 };
 
 // we are always read-write
-KHistoryComboBox::KHistoryComboBox( QWidget *parent )
-    : KComboBox( true, parent ), d(new Private(this))
-{
-    init( true ); // using completion
-}
-
-// we are always read-write
-KHistoryComboBox::KHistoryComboBox( bool useCompletion,
-                              QWidget *parent )
+KHistoryComboBox::KHistoryComboBox( QWidget *parent, bool useCompletion )
     : KComboBox( true, parent ), d(new Private(this))
 {
     init( useCompletion );
@@ -149,6 +141,11 @@ QStringList KHistoryComboBox::historyItems() const
         list.append( itemText( i ) );
 
     return list;
+}
+
+bool KHistoryComboBox::useCompletion() const
+{
+    return compObj();
 }
 
 void KHistoryComboBox::clearHistory()

@@ -93,7 +93,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   lbl = new QLabel("&History Combo:", hbox);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-  m_hc = new KHistoryComboBox( true, hbox );
+  m_hc = new KHistoryComboBox( hbox );
   m_hc->setObjectName( "HistoryCombo" );
   lbl->setBuddy (m_hc);
   m_hc->setDuplicatesEnabled( true );
