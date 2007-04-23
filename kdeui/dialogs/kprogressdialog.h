@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 1996 Martynas Kunigelis
-   Copyright (C) 2006 Urs Wolfer <uwolfer at kde.org>
+   Copyright (C) 1996 Martynas Kunigelis // krazy:exclude=copyright (email unknown)
+   Copyright (C) 2006-2007 Urs Wolfer <uwolfer at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -40,7 +40,7 @@
  * to the progress bar widget via progressBar();
  *
  * @author Aaron J. Seigo
- * @author Urs Wolfer uwolfer @ fwo.ch
+ * @author Urs Wolfer uwolfer @ kde.org
  */
 class KDEUI_EXPORT KProgressDialog : public KDialog
 {
@@ -53,10 +53,10 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          * @param parent Parent of the widget
          * @param caption Text to display in window title bar
          * @param text Text to display in the dialog
-         * @param modal Set to true to make the dialog modal
+         * @param flags The widget flags
          */
         explicit KProgressDialog(QWidget* parent = 0, const QString& caption = QString(),
-                                 const QString& text = QString(), bool modal = false);
+                                 const QString& text = QString(), Qt::WFlags flags = 0);
 
         /**
          * Destructor
@@ -68,21 +68,21 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          * To set the number of steps or other progress bar related
          * settings, access the QProgressBar object directly via this method.
          */
-        QProgressBar* progressBar();
+        QProgressBar *progressBar();
 
         /**
          * Returns the QProgressBar used in this dialog.
          * To set the number of steps or other progress bar related
          * settings, access the QProgressBar object directly via this method.
          */
-        const QProgressBar* progressBar() const;
+        const QProgressBar *progressBar() const;
 
         /**
          * Sets the text in the dialog
          *
          * @param text the text to display
          */
-        void setLabel(const QString & text);
+        void setLabel(const QString &text);
 
         /**
          * Returns the current dialog text
@@ -95,6 +95,8 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          * and the user can close the window using the window decorations.
          * If the process is not (or should not be) interuptable,
          * set the dialog to be modal and not cancellable.
+         *
+         * The default is true.
          *
          * @param allowCancel Set to true to make the dialog non-closable
          */
@@ -109,6 +111,8 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          * Sets whether the cancel button is visible. setAllowCancel(false)
          * implies showCancelButton(false)
          *
+         * The default is true.
+         *
          * @param show Whether or not the cancel button should be shown
          */
         void showCancelButton(bool show);
@@ -116,6 +120,8 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         /**
          * Sets whether the dialog should close automagically when
          * all the steps in the QProgressBar have been completed.
+         *
+         * The default is true.
          */
         void setAutoClose(bool close);
 
@@ -129,6 +135,8 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          * Sets whether the dialog should reset the QProgressBar dialog
          * back to 0 steps compelete when all steps have been completed.
          * This is useful for KProgressDialogs that will be reused.
+         *
+         * The default is false.
          */
         void setAutoReset(bool autoReset);
 
@@ -155,7 +163,7 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         /**
          * Sets the text to appear on the cancel button.
          */
-        void setButtonText(const QString&);
+        void setButtonText(const QString &text);
 
         /**
          * Returns the text on the cancel button
@@ -171,7 +179,7 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         /**
          * Returns the wait duration in milliseconds
          */
-        int  minimumDuration() const;
+        int minimumDuration() const;
 
         virtual void reject();
 
@@ -186,7 +194,7 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
         class KProgressDialogPrivate;
         friend class KProgressDialogPrivate;
         KProgressDialogPrivate *const d;
-        
+
         Q_DISABLE_COPY(KProgressDialog)
 };
 

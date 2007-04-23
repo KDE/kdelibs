@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 1996 Martynas Kunigelis
-   Copyright (C) 2006 Urs Wolfer <uwolfer at kde.org>
+   Copyright (C) 1996 Martynas Kunigelis // krazy:exclude=copyright (email unknown)
+   Copyright (C) 2006-2007 Urs Wolfer <uwolfer at kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -16,9 +16,6 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-/**
- * KProgressDialog -- a dialog with a progress indicator
- */
 
 #include "kprogressdialog.h"
 
@@ -63,13 +60,12 @@ public:
 };
 
 KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
-                                 const QString& text, bool modal)
-  : KDialog(parent),
+                                 const QString& text, Qt::WFlags flags)
+  : KDialog(parent, flags),
     d(new KProgressDialogPrivate(this))
 {
-    setCaption( caption );
-    setButtons( KDialog::Cancel );
-    setModal(modal);
+    setCaption(caption);
+    setButtons(KDialog::Cancel);
 
     d->mShowTimer = new QTimer(this);
 
