@@ -139,13 +139,17 @@ class KStartupInfo::Private
 #endif
 	      flags( flags_P )
         {
+        }
+
+        void createConnections()
+        {
 #ifdef Q_WS_X11
             // d == NULL means "disabled"
             if( !KApplication::kApplication())
                 return;
             if( !QX11Info::display())
                 return;
-            
+
             if( !( flags & DisableKWinModule )) {
                 QObject::connect( KWM::self(), SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
                 QObject::connect( KWM::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
@@ -153,7 +157,7 @@ class KStartupInfo::Private
             QObject::connect( &msgs, SIGNAL( gotMessage( const QString& )), q, SLOT( got_message( const QString& )));
             cleanup = new QTimer( q );
             QObject::connect( cleanup, SIGNAL( timeout()), q, SLOT( startups_cleanup()));
-#endif            
+#endif
         }
     };
 
@@ -161,12 +165,14 @@ KStartupInfo::KStartupInfo( int flags_P, QObject* parent_P )
     : QObject( parent_P ),
       d(new Private(flags_P, this))
     {
+        d->createConnections();
     }
 
 KStartupInfo::KStartupInfo( bool clean_on_cantdetect_P, QObject* parent_P )
     : QObject( parent_P ),
       d(new Private(clean_on_cantdetect_P ? CleanOnCantDetect : 0, this))
     {
+        d->createConnections();
     }
 
 
