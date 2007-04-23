@@ -24,7 +24,7 @@
 #include <solid/ifaces/cdrom.h>
 
 Solid::Cdrom::Cdrom(QObject *backendObject)
-    : Storage(*new CdromPrivate(this), backendObject)
+    : Storage(*new CdromPrivate(), backendObject)
 {
     connect( backendObject, SIGNAL( ejectPressed() ),
              this, SIGNAL( ejectPressed() ) );

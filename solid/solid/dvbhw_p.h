@@ -27,8 +27,8 @@ namespace Solid
     class DvbHwPrivate : public DeviceInterfacePrivate
     {
     public:
-        DvbHwPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        DvbHwPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

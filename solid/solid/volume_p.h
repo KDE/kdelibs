@@ -27,8 +27,8 @@ namespace Solid
     class VolumePrivate : public DeviceInterfacePrivate
     {
     public:
-        VolumePrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        VolumePrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

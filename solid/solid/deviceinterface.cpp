@@ -59,4 +59,24 @@ Solid::DeviceInterface::Type Solid::DeviceInterface::stringToType(const QString 
     return (Type)metaEnum.keyToValue(type.toUtf8());
 }
 
+Solid::DeviceInterfacePrivate::DeviceInterfacePrivate()
+{
+
+}
+
+Solid::DeviceInterfacePrivate::~DeviceInterfacePrivate()
+{
+
+}
+
+QObject *Solid::DeviceInterfacePrivate::backendObject() const
+{
+    return m_backendObject;
+}
+
+void Solid::DeviceInterfacePrivate::setBackendObject(QObject *object)
+{
+    m_backendObject = object;
+}
+
 #include "deviceinterface.moc"

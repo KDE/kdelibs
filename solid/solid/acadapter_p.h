@@ -27,8 +27,8 @@ namespace Solid
     class AcAdapterPrivate : public DeviceInterfacePrivate
     {
     public:
-        AcAdapterPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        AcAdapterPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

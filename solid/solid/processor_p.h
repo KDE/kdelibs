@@ -27,8 +27,8 @@ namespace Solid
     class ProcessorPrivate : public DeviceInterfacePrivate
     {
     public:
-        ProcessorPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        ProcessorPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

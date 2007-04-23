@@ -27,8 +27,8 @@ namespace Solid
     class BatteryPrivate : public DeviceInterfacePrivate
     {
     public:
-        BatteryPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        BatteryPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

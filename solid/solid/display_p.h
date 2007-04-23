@@ -28,8 +28,8 @@ namespace Solid
     class DisplayPrivate : public DeviceInterfacePrivate
     {
     public:
-        DisplayPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        DisplayPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

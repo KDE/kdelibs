@@ -24,7 +24,7 @@
 #include <solid/ifaces/opticaldisc.h>
 
 Solid::OpticalDisc::OpticalDisc( QObject *backendObject )
-    : Volume(*new OpticalDiscPrivate(this), backendObject)
+    : Volume(*new OpticalDiscPrivate(), backendObject)
 {
 }
 

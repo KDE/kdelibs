@@ -27,8 +27,8 @@ namespace Solid
     class StoragePrivate : public DeviceInterfacePrivate
     {
     public:
-        StoragePrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        StoragePrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

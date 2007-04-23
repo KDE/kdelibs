@@ -25,7 +25,7 @@
 
 
 Solid::Processor::Processor(QObject *backendObject)
-    : DeviceInterface(*new ProcessorPrivate(this), backendObject)
+    : DeviceInterface(*new ProcessorPrivate(), backendObject)
 {
 }
 

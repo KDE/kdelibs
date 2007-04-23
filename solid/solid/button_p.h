@@ -28,8 +28,8 @@ namespace Solid
     class ButtonPrivate : public DeviceInterfacePrivate
     {
     public:
-        ButtonPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        ButtonPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

@@ -24,7 +24,7 @@
 #include <solid/ifaces/volume.h>
 
 Solid::Volume::Volume( QObject *backendObject )
-    : DeviceInterface(*new VolumePrivate(this), backendObject)
+    : DeviceInterface(*new VolumePrivate(), backendObject)
 {
     connect( backendObject, SIGNAL( mountStateChanged( bool ) ),
              this, SIGNAL( mountStateChanged( bool ) ) );

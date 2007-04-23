@@ -28,8 +28,8 @@ namespace Solid
     class PortableMediaPlayerPrivate : public DeviceInterfacePrivate
     {
     public:
-        PortableMediaPlayerPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        PortableMediaPlayerPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

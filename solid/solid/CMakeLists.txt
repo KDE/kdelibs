@@ -4,7 +4,6 @@ add_subdirectory( ifaces )
 
 set(solid_LIB_SRCS 
    managerbase.cpp 
-   frontendobject.cpp 
    device.cpp 
    devicemanager.cpp 
    deviceinterface.cpp 

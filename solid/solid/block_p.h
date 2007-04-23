@@ -27,8 +27,8 @@ namespace Solid
     class BlockPrivate : public DeviceInterfacePrivate
     {
     public:
-        BlockPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        BlockPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

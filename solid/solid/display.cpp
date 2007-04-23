@@ -25,7 +25,7 @@
 #include <solid/ifaces/display.h>
 
 Solid::Display::Display( QObject *backendObject )
-    : DeviceInterface(*new DisplayPrivate(this), backendObject)
+    : DeviceInterface(*new DisplayPrivate(), backendObject)
 {
 }
 

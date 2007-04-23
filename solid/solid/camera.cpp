@@ -24,7 +24,7 @@
 #include <solid/ifaces/camera.h>
 
 Solid::Camera::Camera(QObject *backendObject)
-    : DeviceInterface(*new CameraPrivate(this), backendObject)
+    : DeviceInterface(*new CameraPrivate(), backendObject)
 {
 }
 

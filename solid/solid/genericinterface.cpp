@@ -25,7 +25,7 @@
 
 
 Solid::GenericInterface::GenericInterface(QObject *backendObject)
-    : DeviceInterface(*new GenericInterfacePrivate(this), backendObject)
+    : DeviceInterface(*new GenericInterfacePrivate(), backendObject)
 {
     if (backendObject) {
         connect(backendObject, SIGNAL(propertyChanged(const QMap<QString,int>&)),

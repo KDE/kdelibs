@@ -106,8 +106,6 @@ namespace Solid
         DeviceInterfacePrivate *d_ptr;
 
     private:
-        Q_PRIVATE_SLOT(d_func(), void _k_destroyed(QObject*))
-
         friend class Device;
         friend class DevicePrivate;
     };

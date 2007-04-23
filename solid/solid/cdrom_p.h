@@ -27,8 +27,8 @@ namespace Solid
     class CdromPrivate : public StoragePrivate
     {
     public:
-        CdromPrivate(QObject *parent)
-            : StoragePrivate(parent) { }
+        CdromPrivate()
+            : StoragePrivate() { }
     };
 }
 

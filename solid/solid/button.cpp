@@ -25,7 +25,7 @@
 #include <solid/ifaces/button.h>
 
 Solid::Button::Button( QObject *backendObject )
-    : DeviceInterface(*new ButtonPrivate(this), backendObject)
+    : DeviceInterface(*new ButtonPrivate(), backendObject)
 {
     connect( backendObject, SIGNAL( pressed( int ) ),
              this, SIGNAL( pressed( int ) ) );

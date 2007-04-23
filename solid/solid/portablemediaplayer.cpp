@@ -25,7 +25,7 @@
 #include <solid/ifaces/portablemediaplayer.h>
 
 Solid::PortableMediaPlayer::PortableMediaPlayer( QObject *backendObject )
-    : DeviceInterface(*new PortableMediaPlayerPrivate(this), backendObject)
+    : DeviceInterface(*new PortableMediaPlayerPrivate(), backendObject)
 {
 }
 

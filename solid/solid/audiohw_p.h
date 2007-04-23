@@ -29,8 +29,8 @@ namespace Solid
     class AudioHwPrivate : public DeviceInterfacePrivate
     {
     public:
-        AudioHwPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        AudioHwPrivate()
+            : DeviceInterfacePrivate() { }
 
         mutable QStringList driverHandles;
     };

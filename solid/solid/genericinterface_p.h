@@ -27,8 +27,8 @@ namespace Solid
     class GenericInterfacePrivate : public DeviceInterfacePrivate
     {
     public:
-        GenericInterfacePrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        GenericInterfacePrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

@@ -27,8 +27,8 @@ namespace Solid
     class NetworkHwPrivate : public DeviceInterfacePrivate
     {
     public:
-        NetworkHwPrivate(QObject *parent)
-            : DeviceInterfacePrivate(parent) { }
+        NetworkHwPrivate()
+            : DeviceInterfacePrivate() { }
     };
 }
 

@@ -24,7 +24,7 @@
 #include <solid/ifaces/dvbhw.h>
 
 Solid::DvbHw::DvbHw( QObject *backendObject )
-    : DeviceInterface(*new DvbHwPrivate(this), backendObject)
+    : DeviceInterface(*new DvbHwPrivate(), backendObject)
 {
 }
 

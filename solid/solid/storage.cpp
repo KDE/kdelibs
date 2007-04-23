@@ -24,7 +24,7 @@
 #include <solid/ifaces/storage.h>
 
 Solid::Storage::Storage(QObject *backendObject)
-    : DeviceInterface(*new StoragePrivate(this), backendObject)
+    : DeviceInterface(*new StoragePrivate(), backendObject)
 {
 }
 

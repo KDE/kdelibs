@@ -20,16 +20,21 @@
 #ifndef SOLID_DEVICEINTERFACE_P_H
 #define SOLID_DEVICEINTERFACE_P_H
 
-#include "frontendobject_p.h"
+#include <QtCore/QPointer>
 
 namespace Solid
 {
-    class DeviceInterfacePrivate : public FrontendObjectPrivate
+    class DeviceInterfacePrivate
     {
     public:
-        DeviceInterfacePrivate(QObject *parent)
-            : FrontendObjectPrivate(parent) { }
+        DeviceInterfacePrivate();
+        virtual ~DeviceInterfacePrivate();
 
+        QObject *backendObject() const;
+        void setBackendObject(QObject *object);
+
+    private:
+        QPointer<QObject> m_backendObject;
     };
 }
 
