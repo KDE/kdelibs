@@ -7,7 +7,12 @@
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <klocale.h>
-#include <QtCore>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QHash>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QTextStream>
 
 static const char description[] = I18N_NOOP( "Builds Qt widget plugins from an ini style description file." );
 static const char version[] = "0.4";

@@ -2,9 +2,11 @@
 #define _MEIN_XSLT_H_
 
 #include <libxml/parser.h>
-#include <QVector>
+#include <QtCore/QString>
+#include <QtCore/QVector>
 
 class QByteArray;
+class KComponentData;
 
 QString transform(const QString &file, const QString& stylesheet,
                   const QVector<const char *> &params = QVector<const char *>());

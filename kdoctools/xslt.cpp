@@ -1,3 +1,5 @@
+#include "xslt.h"
+
 #include <libxslt/xsltconfig.h>
 #include <libxslt/xsltInternals.h>
 #include <libxslt/transform.h>
@@ -10,7 +12,6 @@
 #include <QtCore/QDate>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
-#include "xslt.h"
 #include <kcomponentdata.h>
 #include "kio_help.h"
 #include <klocale.h>

@@ -1,3 +1,5 @@
+#include "kio_help.h"
+
 #include <config.h>
 
 #ifdef HAVE_SYS_TYPES_H
@@ -29,7 +31,6 @@
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 
-#include "kio_help.h"
 #include <libxslt/xsltutils.h>
 #include <libxslt/transform.h>
 #include "xslt.h"
