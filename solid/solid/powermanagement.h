@@ -42,15 +42,6 @@ namespace Solid
     namespace PowerManagement
     {
         /**
-         * This enum type defines the different states of the AC adapter.
-         *
-         * - UnknownAcAdapterState: The AC adapter has an unknown state
-         * - Plugged: The AC adapter is plugged
-         * - Unplugged: The AC adapter is unplugged
-         */
-        enum AcAdapterState{ UnknownAcAdapterState, Plugged, Unplugged };
-
-        /**
          * This enum type defines the different suspend methods.
          *
          * - UnknownSuspendMethod: The name says it all
@@ -58,7 +49,7 @@ namespace Solid
          * - ToRam: Most devices are deactivated, only RAM is powered (ACPI S3)
          * - ToDisk: State of the machine is saved to disk, and it's powered down (ACPI S4)
          */
-        enum Action { StandbyAction = 1, SuspendAction = 2, HibernateAction = 4 };
+        enum SleepAction { StandbyAction = 1, SuspendAction = 2, HibernateAction = 4 };
 
         /**
          * Retrieves the current state of the system AC adapter.
@@ -66,7 +57,7 @@ namespace Solid
          * @return the current AC adapter state
          * @see Solid::PowerManager::AcAdapterState
          */
-        SOLID_EXPORT AcAdapterState acAdapterState();
+        SOLID_EXPORT bool appShouldConserveResources();
 
 
         /**
@@ -76,9 +67,9 @@ namespace Solid
          * @see Solid::PowerManager::SuspendMethod
          * @see Solid::PowerManager::SuspendMethods
          */
-        SOLID_EXPORT QList<Action> supportedActions();
+        SOLID_EXPORT QList<SleepAction> supportedSleepActions();
 
-        SOLID_EXPORT QString stringForAction(Action action);
+        SOLID_EXPORT QString stringForSleepAction(SleepAction action);
 
         /**
          * Requests a suspend of the system.
@@ -86,9 +77,15 @@ namespace Solid
          * @param method the suspend method to use
          * @return the job handling the operation
          */
-        SOLID_EXPORT void request(Action action, QObject *receiver, const char *member);
+        SOLID_EXPORT void requestSleep(SleepAction action, QObject *receiver, const char *member);
 
-        SOLID_EXPORT bool inhibitAutoActions(bool inhibit, const QString &reason = QString());
+        enum SuppressException { NoSuppressException = 0, ExceptUserTriggered = 1, ExceptOnLowBattery = 2,
+                                 DefaultSuppressExceptions = ExceptUserTriggered|ExceptOnLowBattery };
+
+        Q_DECLARE_FLAGS(SuppressExceptions, SuppressException)
+
+        SOLID_EXPORT bool suppressSleep(bool suppress, const QString &reason = QString(),
+                                        SuppressExceptions exceptions = DefaultSuppressExceptions);
 
         class Notifier : public QObject
         {
@@ -100,11 +97,13 @@ namespace Solid
              * @param newState the new state of the AC adapter, it's one of the
              * type @see Solid::PowerManager::AcAdapterState
              */
-            void acAdapterStateChanged(int newState);
+            void appShouldConserveResourcesChanged(bool newState);
         };
 
         SOLID_EXPORT Notifier *notifier();
     }
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::PowerManagement::SuppressExceptions)
 
 #endif

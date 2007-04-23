@@ -36,17 +36,17 @@ Solid::PowerManagementPrivate::~PowerManagementPrivate()
 {
 }
 
-Solid::PowerManagement::AcAdapterState Solid::PowerManagement::acAdapterState()
+bool Solid::PowerManagement::appShouldConserveResources()
 {
-    return UnknownAcAdapterState;
+    return false;
 }
 
-QList<Solid::PowerManagement::Action> Solid::PowerManagement::supportedActions()
+QList<Solid::PowerManagement::SleepAction> Solid::PowerManagement::supportedSleepActions()
 {
-    return QList<Action>();
+    return QList<SleepAction>();
 }
 
-QString Solid::PowerManagement::stringForAction(Action action)
+QString Solid::PowerManagement::stringForSleepAction(SleepAction action)
 {
     switch (action)
     {
@@ -60,12 +60,13 @@ QString Solid::PowerManagement::stringForAction(Action action)
     return QString();
 }
 
-void Solid::PowerManagement::request(Action action, QObject *receiver, const char *member)
+void Solid::PowerManagement::requestSleep(SleepAction action, QObject *receiver, const char *member)
 {
 
 }
 
-bool Solid::PowerManagement::inhibitAutoActions(bool inhibit, const QString &reason)
+bool Solid::PowerManagement::suppressSleep(bool inhibit, const QString &reason,
+                                           SuppressExceptions exceptions)
 {
     return false;
 }
