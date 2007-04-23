@@ -49,7 +49,8 @@ class KConfigDialogManager;
  * void KCoolApp::showSettings(){
  *   if(KConfigDialog::showDialog("settings"))
  *     return;
- *   KConfigDialog *dialog = new KConfigDialog(this, "settings", MySettings::self(), KPageDialog::IconList);
+ *   KConfigDialog *dialog = new KConfigDialog(this, "settings", MySettings::self());
+ *   dialog->setFaceType(KPageDialog::IconList);
  *   dialog->addPage(new General(0, "General"), i18n("General") );
  *   dialog->addPage(new Appearance(0, "Style"), i18n("Appearance") );
  *   connect(dialog, SIGNAL(settingsChanged(const QString&)), mainWidget, SLOT(loadSettings()));
@@ -62,8 +63,8 @@ class KConfigDialogManager;
  * have a loadSettings() type slot to read settings and perform any
  * necessary changes.
  *
- * Please note that using the setMainWidget method inherited from KPageDialog
- * currently yields broken behaviour at runtime; use @ref addPage() instead.
+ * For dialog appearance options (like buttons, default button, ...) please see
+ * @see KPageDialog
  *
  * @see KConfigSkeleton
  * @author Waldo Bastian <bastian@kde.org>
@@ -95,28 +96,10 @@ public:
    * "Font Settings" or "Color Settings" and not just "Settings" in
    * applications where there is more than one dialog.
    *
-   * @param faceType - Type used in creating the dialog.  @see KPageDialog
-   *
    * @param config - Config object containing settings.
-   *
-   * @param dialogButtons - Buttons that should show up on the dialog.
-   *
-   * @param defaultButton default button that is chosen by hitting the enter key.
-   *
-   * @param modal - Whether the dialog should be modal. To prevent more than one
-   * non-modal settings dialog from showing the static function showDialog() can be
-   * used in determining if the settings dialog already exists before creating
-   * a new KConfigDialog object.
    */
-  // KDE4: Add the "separator" parameter as in KPageDialog
-  //       Make "dialogType" an int - or a real qt4 enum
-  //   tokoe: No!!! strip down the ctor instead of making it more complex...
   KConfigDialog( QWidget *parent, const QString& name,
-                 KConfigSkeleton *config,
-                 FaceType faceType = List,
-                 ButtonCodes dialogButtons = Default|Ok|Apply|Cancel|Help,
-                 ButtonCode defaultButton = Ok,
-                 bool modal=false );
+                 KConfigSkeleton *config );
 
   /**
    * Deconstructor, removes name from the list of open dialogs.
@@ -140,9 +123,8 @@ public:
    * @param manage - Whether KConfigDialogManager should manage the page or not.
    * @returns The KPageWidgetItem associated with the page.
    */
-  // KDE4: Add a default value for itemName & pixmapName
   KPageWidgetItem* addPage( QWidget *page, const QString &itemName,
-                const QString &pixmapName,
+                const QString &pixmapName=QString(),
                 const QString &header=QString(),
                 bool manage=true );
 
@@ -163,10 +145,9 @@ public:
    *        mode. If empty, the itemName text is used when needed.
    * @returns The KPageWidgetItem associated with the page.
    */
-  // KDE4: Add a default value for itemName & pixmapName
   KPageWidgetItem* addPage( QWidget *page, KConfigSkeleton *config,
                 const QString &itemName,
-                const QString &pixmapName,
+                const QString &pixmapName=QString(),
                 const QString &header=QString() );
 
   /**
@@ -225,10 +206,10 @@ protected:
    * the same as the default configuration.
    */
   virtual bool isDefault() { return true; }
-  
+
   /**
-   * TODO Add a comment
-   */ 
+   * @internal
+   */
   virtual void showEvent(QShowEvent *e);
 
 protected Q_SLOTS:
@@ -262,7 +243,7 @@ private:
    * Private class.
    */
   KConfigDialogPrivate *const d;
-  
+
   Q_DISABLE_COPY(KConfigDialog)
 };
 

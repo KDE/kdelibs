@@ -33,7 +33,6 @@
 #include <QtGui/QLayout>
 #include <QtCore/QMap>
 
-// This class is here purely so we don't break binary compatibility down the road.
 class KConfigDialog::KConfigDialogPrivate
 {
 public:
@@ -44,7 +43,7 @@ public:
   bool shown;
   KConfigDialogManager *manager;
   QMap<QWidget *, KConfigDialogManager *> managerForPage;
-  
+
   /**
     * The list of existing dialogs.
    */
@@ -54,20 +53,15 @@ public:
 QHash<QString,KConfigDialog *> KConfigDialog::KConfigDialogPrivate::openDialogs;
 
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
-          KConfigSkeleton *config,
-          FaceType faceType,
-          ButtonCodes dialogButtons,
-          ButtonCode defaultButton,
-          bool modal ) :
+          KConfigSkeleton *config ) :
     KPageDialog( parent, Qt::MSWindowsFixedSizeDialogHint ),
     d(new KConfigDialogPrivate(this))
 {
   setCaption( i18n("Configure") );
-  setFaceType( faceType );
-  setButtons( dialogButtons );
-  setDefaultButton( defaultButton );
+  setFaceType( List );
+  setButtons( Default|Ok|Apply|Cancel|Help );
+  setDefaultButton( Ok );
   setObjectName( name );
-  setModal( modal );
 
   if ( !name.isEmpty() ) {
     KConfigDialogPrivate::openDialogs.insert(name, this);
