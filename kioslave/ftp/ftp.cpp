@@ -284,7 +284,7 @@ void Ftp::closeConnection()
   ftpCloseControlConnection();
 }
 
-void Ftp::setHost( const QString& _host, int _port, const QString& _user,
+void Ftp::setHost( const QString& _host, quint16 _port, const QString& _user,
                    const QString& _pass )
 {
   kDebug(7102) << "Ftp::setHost (" << getpid() << "): " << _host << " port=" << _port << endl;

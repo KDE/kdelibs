@@ -58,7 +58,7 @@ public:
   Ftp( const QByteArray &pool, const QByteArray &app );
   virtual ~Ftp();
 
-  virtual void setHost( const QString& host, int port, const QString& user, const QString& pass );
+  virtual void setHost( const QString& host, quint16 port, const QString& user, const QString& pass );
 
   /**
    * Connects to a ftp server and logs us in

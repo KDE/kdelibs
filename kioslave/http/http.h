@@ -183,7 +183,7 @@ public:
   };
 
 //---------------------- Re-implemented methods ----------------
-  virtual void setHost(const QString& host, int port, const QString& user,
+  virtual void setHost(const QString& host, quint16 port, const QString& user,
                        const QString& pass);
 
   virtual void slave_status();

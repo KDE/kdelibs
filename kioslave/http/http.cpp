@@ -221,19 +221,19 @@ HTTPProtocol::~HTTPProtocol()
 
 void HTTPProtocol::reparseConfiguration()
 {
-  kDebug(7113) << "(" << m_pid << ") HTTPProtocol::reparseConfiguration" << endl;
+    kDebug(7113) << "(" << m_pid << ") HTTPProtocol::reparseConfiguration" << endl;
 
-  m_strProxyRealm.clear();
-  m_strProxyAuthorization.clear();
-  ProxyAuthentication = AUTH_None;
-  m_bUseProxy = false;
+    m_strProxyRealm.clear();
+    m_strProxyAuthorization.clear();
+    ProxyAuthentication = AUTH_None;
+    m_bUseProxy = false;
 
-  if (m_protocol == "https" || m_protocol == "webdavs")
-    m_iDefaultPort = DEFAULT_HTTPS_PORT;
-  else if (m_protocol == "ftp")
-    m_iDefaultPort = DEFAULT_FTP_PORT;
-  else
-    m_iDefaultPort = DEFAULT_HTTP_PORT;
+    if (m_protocol == "https" || m_protocol == "webdavs")
+        setDefaultPort(DEFAULT_HTTPS_PORT);
+    else if (m_protocol == "ftp")
+        setDefaultPort(DEFAULT_FTP_PORT);
+    else
+        setDefaultPort(DEFAULT_HTTP_PORT);
 }
 
 void HTTPProtocol::resetConnectionSettings()
@@ -363,7 +363,7 @@ void HTTPProtocol::resetSessionSettings()
     cleanCache();
 
   // Deal with HTTP tunneling
-  if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" &&
+  if ( usingSSL() && m_bUseProxy && m_proxyURL.protocol() != "https" &&
        m_proxyURL.protocol() != "webdavs")
   {
     m_bNeedTunnel = true;
@@ -413,7 +413,7 @@ void HTTPProtocol::resetSessionSettings()
   m_bFirstRequest = false;
 }
 
-void HTTPProtocol::setHost( const QString& host, int port,
+void HTTPProtocol::setHost( const QString& host, quint16 port,
                             const QString& user, const QString& pass )
 {
   // Reset the webdav-capable flags for this host
@@ -436,7 +436,7 @@ void HTTPProtocol::setHost( const QString& host, int port,
 	// don't send the scope-id in IPv6 addresses to the server
 	m_request.encoded_hostname = '[' + host.left(pos) + ']';
     }
-  m_request.port = (port <= 0) ? m_iDefaultPort : port;
+  m_request.port = (port <= 0) ? defaultPort() : port;
   m_request.user = user;
   m_request.passwd = pass;
 
@@ -469,12 +469,12 @@ bool HTTPProtocol::checkRequestUrl( const KUrl& u )
 
   if ( m_protocol != u.protocol().toLatin1() )
   {
-    short unsigned int oldDefaultPort = m_iDefaultPort;
+    short unsigned int oldDefaultPort = defaultPort();
     m_protocol = u.protocol().toLatin1();
     reparseConfiguration();
-    if ( m_iDefaultPort != oldDefaultPort &&
+    if ( defaultPort() != oldDefaultPort &&
          m_request.port == oldDefaultPort )
-        m_request.port = m_iDefaultPort;
+        m_request.port = defaultPort();
   }
 
   resetSessionSettings();
@@ -538,7 +538,7 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       kDebug(7113) << "(" << m_pid << ") Current Response: "
                     << m_responseCode << endl;
 
-      if (isSSLTunnelEnabled() &&  m_bIsSSL && !m_bUnauthorized && !m_bError)
+      if (isSSLTunnelEnabled() && usingSSL() && !m_bUnauthorized && !m_bError)
       {
         // If there is no error, disable tunneling
         if ( m_responseCode < 400 )
@@ -2042,7 +2042,7 @@ bool HTTPProtocol::httpOpenConnection()
           break;*/
         default:
           errCode = ERR_COULD_NOT_CONNECT;
-          if (m_state.port != m_iDefaultPort)
+          if (m_state.port != defaultPort())
             errMsg = i18n("%1 (port %2)", m_state.hostname, m_state.port);
           else
             errMsg = m_state.hostname;
@@ -2093,7 +2093,7 @@ bool HTTPProtocol::httpOpen()
   // Cannot have an https request without the m_bIsSSL being set!  This can
   // only happen if TCPSlaveBase::InitializeSSL() function failed in which it
   // means the current installation does not support SSL...
-  if ( (m_protocol == "https" || m_protocol == "webdavs") && !m_bIsSSL )
+  if ( (m_protocol == "https" || m_protocol == "webdavs") && !usingSSL() )
   {
     error( ERR_UNSUPPORTED_PROTOCOL, m_protocol );
     return false;
@@ -2180,7 +2180,7 @@ bool HTTPProtocol::httpOpen()
     /* Add hostname information */
     header += "Host: " + m_state.encoded_hostname;
 
-    if (m_state.port != m_iDefaultPort)
+    if (m_state.port != defaultPort())
       header += QString(":%1").arg(m_state.port);
     header += "\r\n";
 
@@ -2319,7 +2319,7 @@ bool HTTPProtocol::httpOpen()
         u.setUser (m_state.user);
 
       u.setHost( m_state.hostname );
-      if (m_state.port != m_iDefaultPort)
+      if (m_state.port != defaultPort())
          u.setPort( m_state.port );
       u.setEncodedPathAndQuery( m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash,KUrl::AvoidEmptyPath) );
       header += u.url();
@@ -2399,7 +2399,7 @@ bool HTTPProtocol::httpOpen()
     /* support for virtual hosts and required by HTTP 1.1 */
     header += "Host: " + m_state.encoded_hostname;
 
-    if (m_state.port != m_iDefaultPort)
+    if (m_state.port != defaultPort())
       header += QString(":%1").arg(m_state.port);
     header += "\r\n";
 
@@ -3577,7 +3577,7 @@ try_again:
      // Do not cache secure pages or pages
      // originating from password protected sites
      // unless the webserver explicitly allows it.
-     if ( m_bIsSSL || (Authentication != AUTH_None) )
+     if (usingSSL() || (Authentication != AUTH_None) )
      {
         m_request.bCachedWrite = false;
         mayCache = false;
