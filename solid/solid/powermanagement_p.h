@@ -20,13 +20,11 @@
 #ifndef SOLID_POWERMANAGEMENT_P_H
 #define SOLID_POWERMANAGEMENT_P_H
 
-#include "managerbase_p.h"
-
 #include "powermanagement.h"
 
 namespace Solid
 {
-    class PowerManagementPrivate : public PowerManagement::Notifier, public ManagerBasePrivate
+    class PowerManagementPrivate : public PowerManagement::Notifier
     {
         Q_OBJECT
     public:

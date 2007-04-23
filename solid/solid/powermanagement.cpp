@@ -21,7 +21,6 @@
 #include "powermanagement_p.h"
 
 #include "soliddefs_p.h"
-#include "managerbase_p.h"
 
 #include <kglobal.h>
 #include <klocale.h>

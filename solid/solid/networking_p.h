@@ -20,13 +20,11 @@
 #ifndef SOLID_NETWORKING_P_H
 #define SOLID_NETWORKING_P_H
 
-#include "managerbase_p.h"
-
 #include "networking.h"
 
 namespace Solid
 {
-    class NetworkingPrivate : public Networking::Notifier, public ManagerBasePrivate
+    class NetworkingPrivate : public Networking::Notifier
     {
         Q_OBJECT
     public:
