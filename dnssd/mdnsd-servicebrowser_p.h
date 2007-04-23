@@ -22,7 +22,10 @@
 #define DNSSDSERVICEBROWSER_P_H
 
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
 
+#include "mdnsd-responder.h"
+#include "servicebrowser.h"
 
 namespace DNSSD
 {

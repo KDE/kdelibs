@@ -23,6 +23,9 @@
 
 #include <QtCore/QStringList>
 
+#include "servicebrowser.h"
+#include "servicetypebrowser.h"
+
 namespace DNSSD
 {
 
