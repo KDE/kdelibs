@@ -53,7 +53,7 @@ namespace KIO {
 
         virtual ~DataSlave();
 
-        virtual void setHost(const QString &host, int port,
+        virtual void setHost(const QString &host, quint16 port,
 			const QString &user, const QString &passwd);
 	virtual void setConfig(const MetaData &config);
 

@@ -72,7 +72,7 @@ namespace KIO {
          * @param user to login as
          * @param passwd to login with
          */
-        virtual void setHost( const QString &host, int port,
+        virtual void setHost( const QString &host, quint16 port,
                       const QString &user, const QString &passwd);
 
         /**
@@ -115,7 +115,7 @@ namespace KIO {
         /**
          * @return port this slave is (was?) connected to
          */
-        int port() { return m_port; }
+        quint16 port() { return m_port; }
 
         /**
          * @return User this slave is (was?) logged in as
@@ -204,12 +204,12 @@ namespace KIO {
         QString m_protocol;
         QString m_slaveProtocol;
         QString m_host;
-        int m_port;
         QString m_user;
         QString m_passwd;
-	KNetwork::KServerSocket *serv;
 	QString m_socket;
+	KNetwork::KServerSocket *serv;
 	pid_t m_pid;
+        quint16 m_port;
 	bool contacted;
 	bool dead;
 	time_t contact_started;

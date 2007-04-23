@@ -337,7 +337,7 @@ public:
      *
      * This method is called whenever a change in host, port or user occurs.
      */
-    virtual void setHost(const QString& host, int port, const QString& user, const QString& pass);
+    virtual void setHost(const QString& host, quint16 port, const QString& user, const QString& pass);
 
     /**
      * Prepare slave for streaming operation

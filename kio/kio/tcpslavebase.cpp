@@ -63,28 +63,38 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
 
-  TcpSlaveBasePrivate() : socket(0), rblockSz(256), militantSSL(false), userAborted(false) {}
-  ~TcpSlaveBasePrivate() {}
+    TcpSlaveBasePrivate() 
+        : socket(0),
+        rblockSz(256),
+        militantSSL(false),
+        userAborted(false),
+        isSSL(false) {}
+    ~TcpSlaveBasePrivate() {}
 
-  KSSL *kssl;
-  bool usingTLS;
-  KSSLCertificateCache *cc;
-  QString host;
-  QString realHost;
-  QString ip;
-  QTcpSocket *socket;
-  KSSLPKCS12 *pkcs;
+    KSSL *kssl;
+    bool usingTLS;
+    KSSLCertificateCache *cc;
+    QString host;
+    QString realHost;
+    QString ip;
+    QTcpSocket *socket;
+    KSSLPKCS12 *pkcs;
 
-  int status;
-  int timeout;
-  int rblockSz;      // Size for reading blocks in readLine()
-  bool block;
-  bool useSSLTunneling;
-  bool needSSLHandShake;
-  bool militantSSL;              // If true, we just drop a connection silently
-                                 // if SSL certificate check fails in any way.
-  bool userAborted;
-  MetaData savedMetaData;
+    int status;
+    int timeout;
+    int rblockSz;      // Size for reading blocks in readLine()
+    bool block;
+    bool useSSLTunneling;
+    bool needSSLHandShake;
+    bool militantSSL;              // If true, we just drop a connection silently
+    // if SSL certificate check fails in any way.
+    bool userAborted;
+    MetaData savedMetaData;
+
+    quint16 port;
+    quint16 defaultPort;
+    QByteArray serviceName;
+    bool isSSL;
 };
 
 QIODevice *TCPSlaveBase::socket() const
@@ -96,30 +106,16 @@ QIODevice *TCPSlaveBase::socket() const
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const QByteArray &protocol,
                            const QByteArray &poolSocket,
-                           const QByteArray &appSocket)
-             :SlaveBase (protocol, poolSocket, appSocket),
-              m_iDefaultPort(defaultPort),
-              m_sServiceName(protocol),d(new TcpSlaveBasePrivate)
-{
-    // We have to have two constructors, so don't add anything
-    // else in here. Put it in init() instead.
-    init();
-    m_bIsSSL = false;
-}
-
-TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
-                           const QByteArray &protocol,
-                           const QByteArray &poolSocket,
-                           const QByteArray &appSocket,
+                           const QByteArray &appSocket, 
                            bool useSSL)
              :SlaveBase (protocol, poolSocket, appSocket),
-              m_bIsSSL(useSSL),
-              m_iDefaultPort(defaultPort),
-              m_sServiceName(protocol),d(new TcpSlaveBasePrivate)
+              d(new TcpSlaveBasePrivate)
 {
+    d->defaultPort = defaultPort;
+    d->serviceName = protocol;
     init();
     if (useSSL)
-        m_bIsSSL = initializeSSL();
+        d->isSSL = initializeSSL();
 }
 
 // The constructor procedures go here
@@ -147,7 +143,7 @@ TCPSlaveBase::~TCPSlaveBase()
 ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 {
 #ifdef Q_OS_UNIX
-    if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
+    if ( (d->isSSL || d->usingTLS) && !d->useSSLTunneling )
     {
         if ( d->needSSLHandShake )
             (void) doSSLHandShake( true );
@@ -175,7 +171,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 ssize_t TCPSlaveBase::read(char* data, ssize_t len)
 {
 #ifdef Q_OS_UNIX
-    if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
+    if ( (d->isSSL || d->usingTLS) && !d->useSSLTunneling )
     {
         if ( d->needSSLHandShake )
             (void) doSSLHandShake( true );
@@ -334,7 +330,7 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
     if (metaData("main_frame_request") == "TRUE" &&
         metaData("ssl_activate_warnings") == "TRUE" &&
                metaData("ssl_was_in_use") == "TRUE" &&
-        !m_bIsSSL) {
+        !d->isSSL) {
        KSSLSettings kss;
        if (kss.warnOnLeave()) {
           int result = messageBox( i18n("You are about to leave secure "
@@ -366,7 +362,7 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
 #endif
     d->status = -1;
     d->host = host;
-    d->needSSLHandShake = m_bIsSSL;
+    d->needSSLHandShake = d->isSSL;
 
     d->socket = KSocketFactory::synchronousConnectToHost(protocol, host, port,
                                                          d->timeout > -1 ? d->timeout * 1000 : -1);
@@ -386,9 +382,9 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
 
     // store the IP for later
     d->ip = d->socket->peerAddress().toString();
-    m_port = QString::number( d->socket->peerPort() );
+    d->port = d->socket->peerPort();
 
-    if (m_bIsSSL && !d->useSSLTunneling) {
+    if (d->isSSL && !d->useSSLTunneling) {
         if ( !doSSLHandShake( sendError ) )
             return false;
     }
@@ -401,7 +397,7 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
 void TCPSlaveBase::closeDescriptor()
 {
     stopTLS();
-    if (m_bIsSSL)
+    if (d->isSSL)
       d->kssl->close();
     if (d->socket) {
         d->socket->disconnectFromHost();
@@ -418,27 +414,42 @@ void TCPSlaveBase::closeDescriptor()
 
 bool TCPSlaveBase::initializeSSL()
 {
-    if (m_bIsSSL) {
+    if (d->isSSL) {
         if (KSSL::doesSSLWork()) {
             d->kssl = new KSSL;
             return true;
         }
     }
-return false;
+    return false;
 }
 
 void TCPSlaveBase::cleanSSL()
 {
     delete d->cc;
 
-    if (m_bIsSSL) {
+    if (d->isSSL) {
         delete d->kssl;
         d->kssl = 0;
     }
     d->militantSSL = false;
 }
 
-bool TCPSlaveBase::atEnd()
+bool TCPSlaveBase::usingSSL() const
+{
+    return d->isSSL; 
+}
+
+void TCPSlaveBase::setDefaultPort(quint16 port)
+{
+    d->defaultPort = port;
+}
+
+quint16 TCPSlaveBase::defaultPort() const
+{
+    return d->defaultPort;
+}
+
+bool TCPSlaveBase::atEnd() const
 {
     // this doesn't work!!
     kError(7029) << k_funcinfo << " called! It doesn't work.  Fix caller"
@@ -448,7 +459,7 @@ bool TCPSlaveBase::atEnd()
 
 int TCPSlaveBase::startTLS()
 {
-    if (d->usingTLS || d->useSSLTunneling || m_bIsSSL || !KSSL::doesSSLWork())
+    if (d->usingTLS || d->useSSLTunneling || d->isSSL || !KSSL::doesSSLWork())
         return false;
 
     d->kssl = new KSSL(false);
@@ -515,16 +526,16 @@ void TCPSlaveBase::stopTLS()
 
 
 void TCPSlaveBase::setSSLMetaData() {
-  if (!(d->usingTLS || d->useSSLTunneling || m_bIsSSL))
+  if (!(d->usingTLS || d->useSSLTunneling || d->isSSL))
     return;
 
   mOutgoingMetaData = d->savedMetaData;
 }
 
 
-bool TCPSlaveBase::canUseTLS()
+bool TCPSlaveBase::canUseTLS() const
 {
-    return !(m_bIsSSL || d->needSSLHandShake || !KSSL::doesSSLWork());
+    return !(d->isSSL || d->needSSLHandShake || !KSSL::doesSSLWork());
 }
 
 
@@ -726,7 +737,7 @@ int TCPSlaveBase::verifyCertificate()
         ourHost = d->realHost;
     else ourHost = d->host;
 
-    QString theurl = QString(m_sServiceName)+"://"+ourHost+':'+m_port;
+    QString theurl = QString(d->serviceName)+"://"+ourHost+':'+ QString::number(d->port);
 
    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
      d->militantSSL = false;
@@ -1148,7 +1159,7 @@ bool TCPSlaveBase::isConnectionValid()
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
-  if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling && d->kssl )
+  if ( (d->isSSL || d->usingTLS) && !d->useSSLTunneling && d->kssl )
   {
     if (d->kssl->pending() > 0)
         return true;
@@ -1174,7 +1185,7 @@ void TCPSlaveBase::setConnectTimeout( int t )
     d->timeout = t;
 }
 
-bool TCPSlaveBase::isSSLTunnelEnabled()
+bool TCPSlaveBase::isSSLTunnelEnabled() const
 {
     return d->useSSLTunneling;
 }

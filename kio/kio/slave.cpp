@@ -254,7 +254,7 @@ void Slave::kill()
     }
 }
 
-void Slave::setHost( const QString &host, int port,
+void Slave::setHost( const QString &host, quint16 port,
                      const QString &user, const QString &passwd)
 {
     m_host = host;

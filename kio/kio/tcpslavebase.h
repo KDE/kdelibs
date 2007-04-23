@@ -46,11 +46,7 @@ class KIO_EXPORT TCPSlaveBase : public SlaveBase
 {
 public:
     TCPSlaveBase(unsigned short int defaultPort, const QByteArray &protocol,
-                 const QByteArray &poolSocket, const QByteArray &appSocket);
-
-    TCPSlaveBase(unsigned short int defaultPort, const QByteArray &protocol,
-                 const QByteArray &poolSocket, const QByteArray &appSocket,
-                 bool useSSL);
+                 const QByteArray &poolSocket, const QByteArray &appSocket, bool useSSL = false);
 
     virtual ~TCPSlaveBase();
 
@@ -116,13 +112,26 @@ protected:
     bool connectToHost( const QString &protocol, const QString& host, quint16 port,
                         bool sendError = true );
 
+
+    /**
+     * set the default port for this service
+     *
+     */
+    void setDefaultPort(quint16 port);
+
+    /**
+     * the current default port for this service
+     *
+     */
+    quint16 defaultPort() const;
+
     /**
      * Are we using SSL?
      *
      * @return if so, true is returned.
      *         if not, true isn't returned.
      */
-    bool usingSSL() const { return m_bIsSSL; }
+    bool usingSSL() const;
 
     /**
      * Are we using TLS?
@@ -138,7 +147,7 @@ protected:
      * @return if so, true is returned.
      *         if not, true isn't returned.
      */
-    bool canUseTLS();
+    bool canUseTLS() const;
 
     /**
      * Start using TLS on the connection.
@@ -169,7 +178,7 @@ protected:
     /**
      * Returns true when end of data is reached
      */
-    bool atEnd();
+    bool atEnd() const;
 
 
     /**
@@ -255,7 +264,7 @@ protected:
      *
      * @see setEnableSSlTunnel
      */
-    bool isSSLTunnelEnabled();
+    bool isSSLTunnelEnabled() const;
 
     /**
      * Set up SSL tunneling mode.
@@ -301,18 +310,12 @@ protected:
     QIODevice *socket() const;
 
 protected:
-    bool m_bIsSSL;
-    QString m_port;
-    unsigned short int m_iDefaultPort;
-    QByteArray m_sServiceName;
+    virtual void virtual_hook( int id, void* data );
 
 private:
     bool doSSLHandShake( bool sendError );
     void init();
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-private:
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate* const d;
 };

@@ -742,7 +742,7 @@ static void sigpipe_handler (int)
     // Don't add anything else here, especially no debug output
 }
 
-void SlaveBase::setHost(QString const &, int, QString const &, QString const &)
+void SlaveBase::setHost(QString const &, quint16, QString const &, QString const &)
 {
 }
 

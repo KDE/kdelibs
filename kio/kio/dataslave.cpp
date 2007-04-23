@@ -145,7 +145,7 @@ bool DataSlave::suspended() {
   return _suspended;
 }
 
-void DataSlave::setHost(const QString &/*host*/, int /*port*/,
+void DataSlave::setHost(const QString &/*host*/, quint16 /*port*/,
                      const QString &/*user*/, const QString &/*passwd*/) {
   // irrelevant -> will be ignored
 }
