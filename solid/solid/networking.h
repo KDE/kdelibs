@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006-2007 Will Stephenson <wstephenson@kde.org>
     Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -59,27 +59,53 @@ namespace Solid
         enum Status { Unknown, Disconnected, Connecting, Connected, Disconnecting };
 
         /**
+         * Magic network management for application's sockets.
+         * When the socket begins to connect it will automatically bring up
+         * networking, if not already available.
+         * When the network disconnects, optionally disconnects the socket early
+         * so that an application may continue.
+         * @param socket the socket to manage.
+         * @param autoDisconnectTimeout wait this many milliseconds after receiving a disconnected
+         * event from the networking subsystem before disconnecting the socket. A value of 0 means
+         * never automatically disconnect.
+         * @return whether the management request succeeded.
+         */
+        SOLID_EXPORT Result beginManagingSocket( QAbstractSocket * socket, uint autoDisconnectTimeout = 0 );
+
+        /**
+         * Remove the socket from the list of sockets to manage.  The socket's state is unaltered.
+         * @param socket the socket to stop managing.
+         */
+        SOLID_EXPORT void stopManagingSocket( QAbstractSocket * socket );
+
+        /**
          * Requests that the networking subsystem makes a connection.  If an on-demand connection
          * is started as a result of this request, the connection is refcounted and KDE's use of
          * the connection is dropped when the last application uses it calls @ref
          * releaseConnection().
+         * Optionally, pass in a QObject and slot to call on it, to receive notification when the
+         * connection is available or not.  The slot's signature may be (bool)to indicate success or
+         * failure.
+         * @param receiver the QObject to call a slot on.
+         * @param member the slot to call.
+         * @return a Result indication whether the request was accepted.
          */
-        Result SOLID_EXPORT requestConnection();
+        SOLID_EXPORT Result requestConnection( QObject * receiver = 0, const char * member = 0 );
 
         /**
          * Activates or deactivates networking (as a whole).
          *
          * @param enabled true to activate networking, false otherwise
          */
-        void SOLID_EXPORT releaseConnection();
+        SOLID_EXPORT void releaseConnection();
 
         /**
          * Get the current networking status
          */
-        Status SOLID_EXPORT status();
+        SOLID_EXPORT Status status();
 
         /**
-         * This object emits signals, if your application requires notification
+         * This object emits signals, for use if your application requires notification
          * of changes to networking.
          */
         class Notifier : public QObject

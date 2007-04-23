@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Will Stephenson <wstephenson@kde.org>
+    Copyright (C) 2006-2007 Will Stephenson <wstephenson@kde.org>
     Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -23,6 +23,8 @@
 #include "networking.h"
 
 class OrgKdeSolidNetworkingInterface;
+class QAbstractSocket;
+class QTimer;
 
 namespace Solid
 {
@@ -34,15 +36,38 @@ namespace Solid
     public:
         NetworkingPrivate();
         ~NetworkingPrivate();
+        Networking::Result beginManagingSocket( QAbstractSocket * socket, uint autoDisconnectTimeout );
+        void stopManagingSocket( QAbstractSocket * socket );
     public Q_SLOTS:
-        uint requestConnection(); /*Result*/
+        uint requestConnection( /*QObject*/ ); /*Result*/
         void releaseConnection();
         uint status() const;
     Q_SIGNALS:
-        void statusChanged( uint ); /*Status*/
+        //void statusChanged( uint ); /*Status*/
     private:
         OrgKdeSolidNetworkingInterface * iface;
     };
-}
 
+    class ManagedSocketContainer : public QObject
+    {
+    Q_OBJECT
+    public:
+        enum State { Disconnected, AwaitingConnection, Connected };
+        ManagedSocketContainer( QAbstractSocket * socket, int autoDisconnectTimeout = -1 );
+    private Q_SLOTS:
+        // the socket changed state, update our state and connect the socket if required
+        void socketStateChanged( QAbstractSocket::SocketState );
+        // the socket errored, maybe go to AwaitingConnection
+        void socketError( QAbstractSocket::SocketError );
+        // the network changed state
+        void statusChanged( Networking::Status );
+        // perform an automatic disconnect
+        void autoDisconnect();
+    private:
+        QAbstractSocket * mSocket;
+        QTimer * mAutoDisconnectTimer;
+        uint mAutoDisconnectTimeout;
+        State mState;
+    };
+}
 #endif
