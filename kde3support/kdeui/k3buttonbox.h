@@ -17,17 +17,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KBUTTONBOX_H
-#define KBUTTONBOX_H
+#ifndef K3BUTTONBOX_H
+#define K3BUTTONBOX_H
 
-#include <kdeui_export.h>
+#include <kde3support_export.h>
 
 #include <QtGui/QWidget>
 
 class QPushButton;
 class KGuiItem;
 
-class KButtonBoxPrivate;
+class K3ButtonBoxPrivate;
 /**
  * Container widget for buttons.
  *
@@ -41,7 +41,7 @@ class KButtonBoxPrivate;
  * @author Mario Weilguni <mweilguni@sime.com>
  **/
 
-class KDEUI_EXPORT_DEPRECATED KButtonBox : public QWidget
+class KDE3SUPPORT_EXPORT K3ButtonBox : public QWidget
 {
   Q_OBJECT
 
@@ -53,13 +53,13 @@ public:
     * addButton() are laid out from top to bottom, otherwise they
     * are laid out from left to right.
     */
-  explicit KButtonBox(QWidget *parent, Qt::Orientation _orientation = Qt::Horizontal,
+  explicit K3ButtonBox(QWidget *parent, Qt::Orientation _orientation = Qt::Horizontal,
                       int border = 0, int _autoborder = 6);
 
   /**
     * Free private data field
     */
-  ~KButtonBox();
+  ~K3ButtonBox();
 
   /**
     * @return The minimum size needed to fit all buttons.
@@ -160,7 +160,7 @@ protected:
   QSize buttonSizeHint(QPushButton *) const;
 
 private:
-  KButtonBoxPrivate* const data;
+  K3ButtonBoxPrivate* const data;
 };
 
 #endif

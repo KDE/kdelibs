@@ -152,7 +152,6 @@ set(kdeui_LIB_SRCS
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
  widgets/karrowbutton.cpp
- widgets/kbuttonbox.cpp
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
@@ -374,7 +373,6 @@ install( FILES
  widgets/kcmodule.h
  widgets/kcombobox.h
  widgets/kcompletionbox.h
- widgets/kbuttonbox.h
  widgets/kbuttongroup.h
  widgets/kcharselect.h
  widgets/kdatetable.h

@@ -18,7 +18,7 @@
 */
 
 /*
- * KButtonBox class
+ * K3ButtonBox class
  *
  * A container widget for buttons. Uses Qt layout control to place the
  * buttons, can handle both vertical and horizontal button placement.
@@ -35,7 +35,7 @@
  *
  * 11/13/98 Reginald Stadlbauer <reggie@kde.org>
  * Now in Qt 1.4x motif default buttons have no extra width/height anymore.
- * So the KButtonBox doesn't add this width/height to default buttons anymore
+ * So the K3ButtonBox doesn't add this width/height to default buttons anymore
  * which makes the buttons look better.
  *
  * 01/17/98  Mario Weilguni <mweilguni@sime.com>
@@ -49,7 +49,7 @@
  *
  */
 
-#include "kbuttonbox.moc"
+#include "k3buttonbox.moc"
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kpushbutton.h>
@@ -58,7 +58,7 @@
 
 #define minButtonWidth 50
 
-class KButtonBox::Item {
+class K3ButtonBox::Item {
 public:
   KPushButton* const button;
   bool noexpand;
@@ -68,20 +68,20 @@ public:
   Item(KPushButton* const _button) : button(_button) {}
 };
 
-template class QList<KButtonBox::Item *>;
+template class QList<K3ButtonBox::Item *>;
 
-class KButtonBoxPrivate {
+class K3ButtonBoxPrivate {
 public:
   unsigned short border;
   unsigned short autoborder;
   unsigned short orientation;
   bool activated;
-  QList<KButtonBox::Item *> buttons;
+  QList<K3ButtonBox::Item *> buttons;
 };
 
-KButtonBox::KButtonBox(QWidget *parent, Qt::Orientation _orientation,
+K3ButtonBox::K3ButtonBox(QWidget *parent, Qt::Orientation _orientation,
 		       int border, int autoborder)
-  :  QWidget(parent), data(new KButtonBoxPrivate)
+  :  QWidget(parent), data(new K3ButtonBoxPrivate)
 {
   assert(data);
 
@@ -90,14 +90,14 @@ KButtonBox::KButtonBox(QWidget *parent, Qt::Orientation _orientation,
   data->autoborder = autoborder < 0 ? border : autoborder;
 }
 
-KButtonBox::~KButtonBox() {
+K3ButtonBox::~K3ButtonBox() {
   while(!data->buttons.isEmpty())
     delete data->buttons.takeFirst();
 
   delete data;
 }
 
-QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
+QPushButton *K3ButtonBox::addButton(const QString& text, bool noexpand) {
   Item* const item = new Item(new KPushButton(text, this));
 
   item->noexpand  = noexpand;
@@ -109,7 +109,7 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
   return item->button;
 }
 
-QPushButton *KButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
+QPushButton *K3ButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
   Item* const item = new Item(new KPushButton(guiitem, this));
 
   item->noexpand  = noexpand;
@@ -122,7 +122,7 @@ QPushButton *KButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
 }
 
   QPushButton *
-KButtonBox::addButton(
+K3ButtonBox::addButton(
   const QString & text,
   QObject *       receiver,
   const char *    slot,
@@ -138,7 +138,7 @@ KButtonBox::addButton(
 }
 
   QPushButton *
-KButtonBox::addButton(
+K3ButtonBox::addButton(
   const KGuiItem& guiitem,
   QObject *       receiver,
   const char *    slot,
@@ -153,7 +153,7 @@ KButtonBox::addButton(
   return pb;
 }
 
-void KButtonBox::addStretch(int scale) {
+void K3ButtonBox::addStretch(int scale) {
   if(scale > 0) {
     Item* const item = new Item(0);
     item->noexpand  = false;
@@ -162,7 +162,7 @@ void KButtonBox::addStretch(int scale) {
   }
 }
 
-void KButtonBox::layout() {
+void K3ButtonBox::layout() {
   // resize all buttons
   const QSize bs = bestButtonSize();
 
@@ -179,7 +179,7 @@ void KButtonBox::layout() {
   setMinimumSize(sizeHint());
 }
 
-void KButtonBox::placeButtons() {
+void K3ButtonBox::placeButtons() {
 
   if(data->orientation == Qt::Horizontal) {
     // calculate free size and stretches
@@ -254,11 +254,11 @@ void KButtonBox::placeButtons() {
   }
 }
 
-void KButtonBox::resizeEvent(QResizeEvent *) {
+void K3ButtonBox::resizeEvent(QResizeEvent *) {
   placeButtons();
 }
 
-QSize KButtonBox::bestButtonSize() const {
+QSize K3ButtonBox::bestButtonSize() const {
   QSize s(0, 0);
 
   // calculate optimal size
@@ -282,7 +282,7 @@ QSize KButtonBox::bestButtonSize() const {
   return s;
 }
 
-QSize KButtonBox::sizeHint() const {
+QSize K3ButtonBox::sizeHint() const {
   unsigned int dw;
 
   if(data->buttons.isEmpty())
@@ -321,7 +321,7 @@ QSize KButtonBox::sizeHint() const {
   }
 }
 
-QSizePolicy KButtonBox::sizePolicy() const
+QSizePolicy K3ButtonBox::sizePolicy() const
 {
     return data->orientation == Qt::Horizontal?
         QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Fixed ) :
@@ -333,7 +333,7 @@ QSizePolicy KButtonBox::sizePolicy() const
  * minButtonWidth pixels wide, return minButtonWidth pixels
  * as minimum width
  */
-QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
+QSize K3ButtonBox::buttonSizeHint(QPushButton *b) const {
   QSize s = b->sizeHint();
   const QSize ms = b->minimumSize();
   if(s.width() < minButtonWidth)

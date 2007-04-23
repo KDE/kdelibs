@@ -45,6 +45,7 @@ set(kde3support_LIB_SRCS
   kdeui/k3sconfig.cpp
   kdeui/k3passworddialog.cpp
   kdeui/k3command.cpp
+  kdeui/k3buttonbox.cpp
   kio/k3bookmarkdrag.cpp
   kparts/dockmainwindow3.cpp
 )
@@ -98,6 +99,7 @@ install( FILES
   kdeui/k3command.h
   kdeui/k3listview.h
   kdeui/k3iconview.h
+  kdeui/k3buttonbox.h
   kio/k3bookmarkdrag.h
   kio/kio/skipdlg.h
   kio/kio/passdlg.h
