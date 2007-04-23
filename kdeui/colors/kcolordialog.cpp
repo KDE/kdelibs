@@ -29,6 +29,8 @@
 // <mweilguni@sime.com>
 //
 
+#include "kcolordialog.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -62,7 +64,6 @@
 #include <kseparator.h>
 #include <kpalette.h>
 
-#include "kcolordialog.h"
 #include "kcolormimedata.h"
 #include <config.h>
 #include <kdebug.h>
@@ -75,7 +76,6 @@
 
 #include <iostream>
 
-#include "config.h"
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #endif

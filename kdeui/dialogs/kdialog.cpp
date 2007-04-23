@@ -20,10 +20,10 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include "kdialog.h"
 #include "kdialogqueue_p.h"
+
+#include <config.h>
 
 #include <QApplication>
 #include <QDesktopWidget>

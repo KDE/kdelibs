@@ -17,9 +17,9 @@
     02110-1301 USA
 */
 
-#include <kdebug.h>
-
 #include "kstringvalidator.h"
+
+#include <kdebug.h>
 
 class KStringListValidator::Private
 {

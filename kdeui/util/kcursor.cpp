@@ -22,6 +22,9 @@
 #endif
 #endif
 
+#include "kcursor.h"
+#include "kcursor_p.h"
+
 #include <QBitmap>
 #include <QCursor>
 #include <QEvent>
@@ -31,8 +34,6 @@
 
 #include <kglobal.h>
 #include <ksharedconfig.h>
-#include <kcursor.h>
-#include "kcursor_p.h"
 #include <kconfiggroup.h>
 
 KCursor::KCursor( const QString& name, Qt::CursorShape fallback )

@@ -18,12 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kplotpoint.h"
+
 #include <QtAlgorithms>
 #include <QPainter>
 
 #include <kdebug.h>
-
-#include "kplotpoint.h"
 
 class KPlotPoint::Private
 {

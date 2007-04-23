@@ -17,15 +17,15 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <QApplication>
-#include <QVariant>
-#include <QWhatsThis>
-#include <QWhatsThisClickedEvent>
+#include "kwhatsthismanager_p.h"
+
+#include <QtCore/QVariant>
+#include <QtGui/QApplication>
+#include <QtGui/QWhatsThis>
+#include <QtGui/QWhatsThisClickedEvent>
 
 #include <klocale.h>
 #include <ktoolinvocation.h>
-
-#include "kwhatsthismanager_p.h"
 
 KWhatsThisManager *KWhatsThisManager::s_instance = 0;
 

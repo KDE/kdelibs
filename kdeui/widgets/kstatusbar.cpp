@@ -19,17 +19,18 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kstatusbar.h"
+
 #include <QtCore/QHash>
 #include <QtCore/QEvent>
 #include <QtGui/QLabel>
 
 #include <kdebug.h>
-#include <kstatusbar.h>
-#include <ksharedconfig.h>
 #include <kglobal.h>
-#include <ksqueezedtextlabel.h>
-
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
+
+#include "ksqueezedtextlabel.h"
 
 
 class KStatusBarPrivate

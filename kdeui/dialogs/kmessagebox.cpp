@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kmessagebox.h"
+
 #include <QtCore/QPointer>
 #include <QtGui/QCheckBox>
 #include <QtGui/QGroupBox>
@@ -34,8 +36,6 @@
 #include <knotification.h>
 #include <kiconloader.h>
 #include <kconfiggroup.h>
-
-#include "kmessagebox.h"
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>

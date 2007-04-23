@@ -20,7 +20,9 @@
 
 #define INCLUDE_MENUITEM_DEF
 
-#include "config.h"
+#include "kcheckaccelerators.h"
+
+#include <config.h>
 
 #include <QApplication>
 #include <QCheckBox>
@@ -40,7 +42,6 @@
 #include <kshortcut.h>
 
 #include "kacceleratormanager.h"
-#include "kcheckaccelerators.h"
 #include <kconfiggroup.h>
 
 /*

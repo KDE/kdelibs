@@ -15,8 +15,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtCore/qstring.h>
-#include <QtCore/qstringlist.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QList>
 
 class QAction;

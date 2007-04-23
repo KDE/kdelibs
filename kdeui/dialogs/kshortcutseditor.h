@@ -24,7 +24,7 @@
 #ifndef KSHORTCUTSEDITOR_H
 #define KSHORTCUTSEDITOR_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "kgesture.h"
 
 class QCheckBox;

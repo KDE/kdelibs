@@ -25,13 +25,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktogglefullscreenaction.h"
+
 #include <QtCore/QEvent>
 
 #include <kdebug.h>
 #include <kicon.h>
 #include <klocale.h>
-
-#include "ktogglefullscreenaction.h"
 
 class KToggleFullScreenAction::Private
 {

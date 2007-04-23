@@ -25,12 +25,13 @@
 
 //#define NETWMDEBUG
 
+#include "netwm.h"
+#include "netwm_p.h"
+
 #include <QtGui/QWidget>
 #ifdef Q_WS_X11 //FIXME
 
 #include <QtGui/qx11info_x11.h>
-
-#include "netwm.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -38,8 +39,6 @@
 #include <stdlib.h>
 
 #include <X11/Xmd.h>
-
-#include "netwm_p.h"
 
 // UTF-8 string
 static Atom UTF8_STRING = 0;

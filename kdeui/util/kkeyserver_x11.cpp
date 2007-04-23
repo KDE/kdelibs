@@ -20,14 +20,14 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kkeyserver_x11.h"
+#include "kshortcut.h"
+
 #include <config.h>
 
 #include <QtCore/QCOORD>
 #include <QtGui/QWidgetList>
 #include <QFlags>
-
-#include "kkeyserver_x11.h"
-#include "kshortcut.h"
 
 #include <kconfig.h>
 #include <kdebug.h>

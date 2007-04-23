@@ -20,7 +20,7 @@
 #define kwordwrap_h
 
 #include <kdeui_export.h>
-#include <Qt>
+#include <QtCore/Qt>
 
 class QFontMetrics;
 class QRect;

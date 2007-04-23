@@ -23,6 +23,8 @@ the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.
 */
 
+#include "kfontdialog.h"
+
 #include <config.h>
 
 #include <stdio.h>
@@ -52,8 +54,6 @@ Boston, MA 02110-1301, USA.
 #include <kdebug.h>
 #include <knuminput.h>
 #include <kconfiggroup.h>
-
-#include "kfontdialog.h"
 
 class KFontDialog::Private
 {

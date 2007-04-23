@@ -17,6 +17,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kinputdialog.h"
+
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QDoubleValidator>
@@ -29,8 +31,6 @@
 #include <kstandardguiitem.h>
 #include <ktextedit.h>
 #include <kcompletion.h>
-
-#include "kinputdialog.h"
 
 class KInputDialogPrivate
 {

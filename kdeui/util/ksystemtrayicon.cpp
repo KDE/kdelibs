@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#include "ksystemtrayicon.h"
 #include "kaboutdata.h"
 #include "kaction.h"
 #include "kcomponentdata.h"
@@ -26,9 +26,10 @@
 #include "kmenu.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
-#include "ksystemtrayicon.h"
 #include "kactioncollection.h"
 #include "kstandardaction.h"
+
+#include <config.h>
 
 #ifdef Q_WS_X11
 #include <kwm.h>

@@ -23,8 +23,8 @@
 
 #include "filter.h"
 
-#include <QSyntaxHighlighter>
-#include <QStringList>
+#include <QtGui/QSyntaxHighlighter>
+#include <QtCore/QStringList>
 #include <kdemacros.h>
 #include <kdeui_export.h>
 class QTextEdit;

@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "ktextbrowser.h"
+
 #include <QtGui/QAction>
 #include <QtGui/QMenu>
 #include <QtGui/QKeyEvent>
@@ -30,8 +32,6 @@
 #include <kicontheme.h>
 #include <kurl.h>
 #include <ktoolinvocation.h>
-
-#include "ktextbrowser.h"
 
 class KTextBrowser::Private
 {

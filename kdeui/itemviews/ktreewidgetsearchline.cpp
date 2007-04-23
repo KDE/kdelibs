@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ktreewidgetsearchline.h"
+
 #include <QtCore/QList>
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
@@ -33,8 +35,6 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <ktoolbar.h>
-
-#include "ktreewidgetsearchline.h"
 
 class KTreeWidgetSearchLine::Private
 {

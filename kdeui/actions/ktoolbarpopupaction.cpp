@@ -25,15 +25,15 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktoolbarpopupaction.h"
+#include "kmenu.h"
+
 #include <QtGui/QToolBar>
 #include <QtGui/QToolButton>
 
 #include <kdebug.h>
 #include <klocale.h>
 #include <kicon.h>
-
-#include "kmenu.h"
-#include "ktoolbarpopupaction.h"
 
 class KToolBarPopupAction::Private
 {

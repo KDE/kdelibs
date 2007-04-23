@@ -16,12 +16,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kstandardguiitem.h"
+
 #include <QtGui/QApplication>
 
 #include <kguiitem.h>
 #include <klocale.h>
-
-#include "kstandardguiitem.h"
 
 namespace KStandardGuiItem
 {

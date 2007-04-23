@@ -22,7 +22,9 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-#include "config.h"
+#include "kmanagerselection.h"
+
+#include <config.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -45,7 +47,6 @@ DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include <kxerrorhandler.h>
 #include <X11/Xatom.h>
-#include "kmanagerselection.h"
 
 
 class KSelectionOwner::Private : public QWidget

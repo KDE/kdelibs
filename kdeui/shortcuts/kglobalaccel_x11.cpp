@@ -17,12 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#include "kglobalaccel_x11.h"
+
+#include <config.h>
 
 #include <QtGui/QWidgetList>
 
 #include "kaction.h"
-#include "kglobalaccel_x11.h"
 #include "kglobalaccel.h"
 #include "kkeyserver_x11.h"
 

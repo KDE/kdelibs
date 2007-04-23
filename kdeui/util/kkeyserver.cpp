@@ -20,12 +20,12 @@
  Boston, MA 02110-1301, USA.
  */
 
+#include "kkeyserver.h"
+
 #include <config.h>
 #include <klocale.h>
-#include <kconfig.h>
 #include <kglobal.h>
-
-#include "kkeyserver.h"
+#include <kconfig.h>
 #include <kconfiggroup.h>
 
 namespace KKeyServer {

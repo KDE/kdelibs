@@ -17,6 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kled.h"
 
 #define PAINT_BENCH
 #undef PAINT_BENCH
@@ -32,7 +33,6 @@
 #include <QtGui/QColor>
 #include <QtGui/QApplication>
 #include <kpixmapeffect.h>
-#include "kled.h"
 
 
 class KLed::Private

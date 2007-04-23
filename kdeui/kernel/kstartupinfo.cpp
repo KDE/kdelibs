@@ -28,18 +28,17 @@ DEALINGS IN THE SOFTWARE.
 #warning Extra KStartupInfo debug messages enabled.
 #endif
 
-#include <QtGui/QWidget>
+#include "kstartupinfo.h"
 
-#include "config.h"
+#include <QtGui/QWidget>
 #include <QtCore/QBool>
+
 #include <config.h>
 
 // need to resolve INT32(qglobal.h)<>INT32(Xlibint.h) conflict
 #ifndef QT_CLEAN_NAMESPACE
 #define QT_CLEAN_NAMESPACE
 #endif
-
-#include "kstartupinfo.h"
 
 #include <unistd.h>
 #include <sys/time.h>

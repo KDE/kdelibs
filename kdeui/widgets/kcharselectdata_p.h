@@ -21,8 +21,10 @@
 #ifndef KCHARSELECTDATA_H
 #define KCHARSELECTDATA_H
 
-#include <QChar>
-#include <QList>
+#include <QtCore/QChar>
+#include <QtCore/QList>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 // Internal class used by KCharSelect
 

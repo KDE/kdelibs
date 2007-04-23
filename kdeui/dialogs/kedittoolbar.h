@@ -180,7 +180,7 @@ public:
 
   /**
    * Sets the default toolbar which will be auto-selected for all
-   * KEditToolBar instances. Can be overriden on a per-dialog basis
+   * KEditToolBar instances. Can be overridden on a per-dialog basis
    * by calling setDefaultToolBar( const QString& ) on the dialog.
    *   @param  toolbarName  the name of the tool bar
    */

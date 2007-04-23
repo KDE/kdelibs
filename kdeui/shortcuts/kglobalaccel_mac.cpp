@@ -18,7 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#include "kglobalaccel_mac.h"
+
+#include <config.h>
 
 #include <kdebug.h>
 
@@ -28,7 +30,6 @@
 #include <QList>
 
 #include "kglobalaccel.h"
-#include "kglobalaccel_mac.h"
 #include "kkeyserver.h"
 
 OSStatus hotKeyEventHandler(EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void * inUserData)

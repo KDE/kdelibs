@@ -24,13 +24,15 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktoolbar.h"
+
 #include <config.h>
 
+#include <QtCore/QPointer>
 #include <QtGui/QFrame>
 #include <QtGui/QLayout>
 #include <QtGui/QMouseEvent>
 #include <QtXml/QDomElement>
-#include <QtCore/QPointer>
 
 #include <kaction.h>
 #include <kactioncollection.h>
@@ -50,7 +52,6 @@
 #include <ktoggleaction.h>
 #include <kxmlguifactory.h>
 
-#include "ktoolbar.h"
 #include <kconfiggroup.h>
 
 class KToolBar::Private

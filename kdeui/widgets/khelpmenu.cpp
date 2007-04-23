@@ -21,10 +21,12 @@
 
 // I (espen) prefer that header files are included alphabetically
 
-#include <QLabel>
-#include <QTimer>
-#include <QWidget>
-#include <QWhatsThis>
+#include "khelpmenu.h"
+
+#include <QtCore/QTimer>
+#include <QtGui/QLabel>
+#include <QtGui/QWidget>
+#include <QtGui/QWhatsThis>
 
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
@@ -45,9 +47,7 @@
 #include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 
-#include "khelpmenu.h"
-
-#include "config.h"
+#include <config.h>
 #ifdef Q_WS_X11
 #include <QX11EmbedWidget>
 #endif

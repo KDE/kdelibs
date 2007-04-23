@@ -5,14 +5,14 @@
 
 */
 
+#include "kpixmapeffect.h"
+#include "kimageeffect.h"
+
 #include <QApplication>
 #include <QImage>
 #include <QPainter>
 #include <QPaintEngine>
 #include <QDesktopWidget>
-
-#include "kpixmapeffect.h"
-#include "kimageeffect.h"
 
 //======================================================================
 //

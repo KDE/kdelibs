@@ -22,7 +22,6 @@
      the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
      Boston, MA 02110-1301, USA.
  */
-#include "config.h"
 
 #include "kxmlguiwindow.h"
 #include "kmainwindow_p.h"
@@ -35,6 +34,8 @@
 #include "ktoggleaction.h"
 #include "ksessionmanager.h"
 #include "kstandardaction.h"
+
+#include <config.h>
 
 #include <QCloseEvent>
 #include <QDesktopWidget>

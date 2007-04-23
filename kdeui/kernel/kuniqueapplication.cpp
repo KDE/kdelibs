@@ -17,6 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kuniqueapplication.h"
+#include "kuniqueapplication_p.h"
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -48,7 +51,6 @@
 
 #include <kconfig.h>
 #include "kdebug.h"
-#include "kuniqueapplication.h"
 
 #if defined Q_WS_X11
 #include <netwm.h>
@@ -61,14 +63,6 @@
 #    define DISPLAY "DISPLAY"
 #  endif
 #endif
-
-class KUniqueApplication::Private
-{
-public:
-   bool processingRequest;
-   bool firstInstance;
-};
-#include "kuniqueapplication_p.h"
 
 bool KUniqueApplication::s_nofork = false;
 bool KUniqueApplication::s_multipleInstances = false;

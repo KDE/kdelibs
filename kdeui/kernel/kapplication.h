@@ -34,8 +34,8 @@ class KCharsets;
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
 #include <kicontheme.h>
-#include <qpixmap.h>
-#include <qicon.h>
+#include <QtGui/QPixmap>
+#include <QtGui/QIcon>
 #endif
 
 typedef unsigned long Atom;

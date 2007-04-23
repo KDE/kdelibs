@@ -23,6 +23,13 @@
 #include <QtDBus/QtDBus>
 #include <kcmdlineargs.h>
 
+class KUniqueApplication::Private
+{
+public:
+   bool processingRequest;
+   bool firstInstance;
+};
+
 class KUniqueApplicationAdaptor: public QDBusAbstractAdaptor
 {
   Q_OBJECT

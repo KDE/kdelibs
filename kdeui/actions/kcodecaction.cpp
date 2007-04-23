@@ -162,7 +162,7 @@ QTextCodec *KCodecAction::codecForMib(int mib) const
 
 void KCodecAction::actionTriggered(QAction *action)
 {
-//we dont wanna emit any signals from top-level items
+//we don't want to emit any signals from top-level items
 //except for the default one
     if (action==d->defaultAction)
     {

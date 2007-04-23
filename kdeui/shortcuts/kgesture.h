@@ -22,8 +22,8 @@
 
 #include <kdeui_export.h>
 
-#include <QString>
-#include <QPolygon>
+#include <QtCore/QString>
+#include <QtGui/QPolygon>
 
 /*
  kinds of gestures:

@@ -18,6 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kplotwidget.h"
+#include "kplotwidget.moc"
+
 #include <math.h>
 #include <kdebug.h>
 
@@ -27,9 +30,6 @@
 #include <QPixmap>
 #include <QToolTip>
 #include <QtAlgorithms>
-
-#include "kplotwidget.h"
-#include "kplotwidget.moc"
 
 #include "kplotaxis.h"
 #include "kplotpoint.h"

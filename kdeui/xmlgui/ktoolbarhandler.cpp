@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ktoolbarhandler.h"
+
 #include <assert.h>
 
 #include <Qt/qdom.h>
@@ -31,8 +33,6 @@
 #include <ktoggletoolbaraction.h>
 #include <ktoolbar.h>
 #include <kxmlguifactory.h>
-
-#include "ktoolbarhandler.h"
 
 namespace
 {

@@ -16,9 +16,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QToolBar>
-
 #include "ktoolbarspaceraction.h"
+
+#include <QToolBar>
 
 class KToolBarSpacerAction::Private
 {

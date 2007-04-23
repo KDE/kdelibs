@@ -18,10 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kplotaxis.h"
+
 #include <math.h> //for log10(), pow(), modf()
 #include <kdebug.h>
-
-#include "kplotaxis.h"
 
 class KPlotAxis::Private
 {

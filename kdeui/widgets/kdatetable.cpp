@@ -32,6 +32,9 @@
 // When a date is selected by the user, it emits a signal:
 //      dateSelected(QDate)
 
+#include "kdatetable.h"
+#include "kdatetable_p.h"
+
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
@@ -42,8 +45,6 @@
 #include <kshortcut.h>
 #include <kstandardshortcut.h>
 #include "kdatepicker.h"
-#include "kdatetable.h"
-#include "kdatetable_p.h"
 #include "kmenu.h"
 #include "kactioncollection.h"
 #include "kaction.h"

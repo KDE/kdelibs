@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kgesturemap.h"
+
 #include <kapplication.h>
 #include <kaction.h>
 #include <QtGui/QActionEvent>
@@ -24,8 +26,6 @@
 #include <kglobal.h>
 
 #include <kdebug.h>
-
-#include "kgesturemap.h"
 
 /*
  This is a class for internal use by the KDE libraries only. This class

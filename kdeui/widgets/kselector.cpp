@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kselector.h"
+
 #include <QImage>
 #include <QPainter>
 #include <QPaintEvent>
@@ -26,7 +28,6 @@
 
 #include <kimageeffect.h>
 
-#include "kselector.h"
 #include <stdio.h>
 
 //-----------------------------------------------------------------------------

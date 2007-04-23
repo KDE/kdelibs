@@ -10,6 +10,8 @@
  * exact licensing terms.
  */
 
+#include "kiconeffect.h"
+
 #include <config.h>
 #include <unistd.h>
 #include <math.h>
@@ -32,7 +34,6 @@
 #include <ksharedconfig.h>
 #include <kglobalsettings.h>
 #include <kicontheme.h>
-#include "kiconeffect.h"
 #include <kconfiggroup.h>
 
 

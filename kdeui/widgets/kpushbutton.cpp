@@ -26,7 +26,7 @@
 #include <QtGui/QStyle>
 #include <QtCore/QTimer>
 
-#include "config.h"
+#include <config.h>
 
 #include <kconfig.h>
 #include <kglobal.h>

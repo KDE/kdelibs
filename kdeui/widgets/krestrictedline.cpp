@@ -21,10 +21,10 @@
  *
  */
 
-#include <QtCore/QCOORD>
-#include <QKeyEvent>
-
 #include "krestrictedline.h"
+
+#include <QtCore/QCOORD>
+#include <QtGui/QKeyEvent>
 
 KRestrictedLine::KRestrictedLine( QWidget *parent )
   : KLineEdit( parent )

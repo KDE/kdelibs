@@ -17,13 +17,14 @@
  Boston, MA 02110-1301, USA.
  */
 
+#include "kkeyserver_mac.h"
+
 #include <config.h>
 
 #include <QtCore/QCOORD>
 
 #ifdef Q_WS_MACX // Only compile this module if we're compiling for Mac OS X
 
-#include "kkeyserver_mac.h"
 #include "kshortcut.h"
 #include <kdebug.h>
 #include <QMultiMap>

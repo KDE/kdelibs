@@ -17,13 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ksplashscreen.h"
+
 #include <kconfig.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 
 #include <QtGui/QPixmap>
-
-#include "ksplashscreen.h"
 
 KSplashScreen::KSplashScreen(const QPixmap &pixmap, Qt::WFlags f)
     : QSplashScreen( pixmap, f ),

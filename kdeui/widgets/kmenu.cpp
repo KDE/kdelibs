@@ -18,21 +18,21 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QCursor>
-#include <QtGui/QPainter>
-#include <QtCore/QTimer>
-#include <QtGui/QFontMetrics>
-#include <QKeyEvent>
-#include <QPointer>
-#include <QMenuItem>
-#include <QApplication>
-#include <QWidgetAction>
-#include <QLabel>
-#include <QStyle>
-#include <QHBoxLayout>
-
-#include "khbox.h"
 #include "kmenu.h"
+#include "khbox.h"
+
+#include <QtCore/QPointer>
+#include <QtCore/QTimer>
+#include <QtGui/QApplication>
+#include <QtGui/QCursor>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QMenuItem>
+#include <QtGui/QLabel>
+#include <QtGui/QPainter>
+#include <QtGui/QStyle>
+#include <QtGui/QWidgetAction>
 
 #include <kdebug.h>
 

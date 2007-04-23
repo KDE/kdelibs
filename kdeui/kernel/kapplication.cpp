@@ -18,7 +18,11 @@
     Boston, MA 02110-1301, USA.
         */
 
-#include "config.h"
+#undef QT_NO_TRANSLATION
+#include "kapplication.h"
+#define QT_NO_TRANSLATION
+
+#include <config.h>
 
 #undef QT_NO_TRANSLATION
 #include <QtCore/QTranslator>
@@ -34,9 +38,6 @@
 #include <QtDBus/QtDBus>
 #include <QtCore/QMetaType>
 
-#undef QT_NO_TRANSLATION
-#include "kapplication.h"
-#define QT_NO_TRANSLATION
 #include "kauthorized.h"
 #include "kaboutdata.h"
 #include "kcheckaccelerators.h"

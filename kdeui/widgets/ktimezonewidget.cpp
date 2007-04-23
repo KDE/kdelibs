@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktimezonewidget.h"
+
 #include <QtCore/QFile>
 #include <QtGui/QPixmap>
 
@@ -24,8 +26,6 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <ktimezones.h>
-
-#include "ktimezonewidget.h"
 
 class KTimeZoneWidget::Private
 {

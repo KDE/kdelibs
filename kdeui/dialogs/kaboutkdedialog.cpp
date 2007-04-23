@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kaboutkdedialog.h"
+
 #include <QFrame>
 #include <QLabel>
 #include <QLayout>
@@ -28,8 +30,6 @@
 #include <kglobalsettings.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-
-#include "kaboutkdedialog.h"
 
 KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
   : KDialog(parent),

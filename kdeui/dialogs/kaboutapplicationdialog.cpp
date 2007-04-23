@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kaboutapplicationdialog.h"
+
 #include <QLabel>
 #include <QLayout>
 #include <QTabWidget>
@@ -30,8 +32,6 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <ktextbrowser.h>
-
-#include "kaboutapplicationdialog.h"
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
   : KDialog(parent),

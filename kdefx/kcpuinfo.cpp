@@ -24,12 +24,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "kcpuinfo.h"
+
 #include <csignal>
 #include <csetjmp>
 
 #include <config.h>
 #include <config-processor.h>
-#include "kcpuinfo.h"
 
 
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)

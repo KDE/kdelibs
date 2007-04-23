@@ -22,10 +22,11 @@
 **
 *****************************************************************************/
 
+#include "knumvalidator.h"
+
 #include <QtGui/QWidget>
 #include <QtCore/QCharRef>
 
-#include "knumvalidator.h"
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>

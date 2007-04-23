@@ -23,6 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include "ktip.h"
+
 #include <QtCore/QDateTime>
 #include <QtCore/QEvent>
 #include <QtCore/QFile>
@@ -50,8 +52,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstandardguiitem.h>
 #include <ktextbrowser.h>
 #include <kconfiggroup.h>
-
-#include "ktip.h"
 
 class KTipDatabase::Private
 {

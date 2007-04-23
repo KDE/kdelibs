@@ -19,9 +19,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "kkeysequencewidget.h"
+#include "kkeysequencewidget_p.h"
+
+#include <config.h>
 
 #include "kkeyserver.h"
 #include "kiconloader.h"
@@ -43,7 +44,6 @@
 #include <kicon.h>
 #include <klocale.h>
 
-#include "kkeysequencewidget_p.h"
 
 #if 0
 #ifdef Q_WS_X11

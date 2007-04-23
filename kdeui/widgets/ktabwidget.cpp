@@ -18,6 +18,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "ktabwidget.h"
+
 #include <QtGui/QApplication>
 #include <QtGui/QDragMoveEvent>
 #include <QtGui/QDropEvent>
@@ -33,7 +35,6 @@
 
 #include <ktabbar.h>
 
-#include "ktabwidget.h"
 #include <kconfiggroup.h>
 
 class KTabWidget::Private

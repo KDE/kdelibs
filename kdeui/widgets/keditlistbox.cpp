@@ -18,12 +18,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "keditlistbox.h"
 
-#include <QLabel>
-#include <QLayout>
-#include <QListView>
-#include <QStringList>
-#include <QPushButton>
+#include <QtCore/QStringList>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QListView>
+#include <QtGui/QPushButton>
 
 #include <kcombobox.h>
 #include <kdebug.h>
@@ -31,8 +32,6 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <knotification.h>
-
-#include "keditlistbox.h"
 
 #include <assert.h>
 

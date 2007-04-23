@@ -25,6 +25,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktoggletoolbaraction.h"
+
 #include <QtCore/QByteArray>
 #include <QtCore/QEvent>
 #include <QtCore/QPointer>
@@ -33,8 +35,6 @@
 #include <klocale.h>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
-
-#include "ktoggletoolbaraction.h"
 
 class KToggleToolBarAction::Private
 {

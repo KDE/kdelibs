@@ -212,14 +212,12 @@ public:
     /**
      * Returns the number of viewports on the virtual desktop
      * @return the number of virtual desktops
-     * @since 3.5
      **/
     static int numberOfViewports(int desktop);
 
     /**
      * Returns the number of viewports on the virtual desktop
      * @return the number of virtual desktops
-     * @since 3.5
      **/
     static int currentViewport(int desktop);
 

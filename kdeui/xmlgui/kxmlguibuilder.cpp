@@ -21,9 +21,10 @@
 #define QT3_SUPPORT
 #define QT3_SUPPORT_WARNINGS
 
+#include "kxmlguibuilder.h"
+
 #include "kapplication.h"
 #include "kauthorized.h"
-#include "kxmlguibuilder.h"
 #include "kxmlguiclient.h"
 #include "kmenubar.h"
 #include "kmenu.h"

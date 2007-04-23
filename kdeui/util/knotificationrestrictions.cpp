@@ -17,10 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-
 #include "knotificationrestrictions.h"
-#include "kdebug.h"
+
+#include <kdebug.h>
+
+#include <config.h>
 
 #include <QTimer>
 

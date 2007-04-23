@@ -18,13 +18,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kcharselectdata_p.h"
 
 #include <QStringList>
 
 #include <QDebug>
 #include <QTime>
 
-#include "kcharselectdata_p.h"
 #include "kcharselect_unicodedata.h"
 
 /* constants for hangul (de)composition, see UAX #15 */

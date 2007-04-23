@@ -16,12 +16,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "khbox.h"
+
 #include <QtCore/QEvent>
 #include <QtGui/QApplication>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
-
-#include "khbox.h"
 
 KHBox::KHBox( QWidget* parent )
   : QFrame( parent ),

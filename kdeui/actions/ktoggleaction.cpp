@@ -25,12 +25,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktoggleaction.h"
+
 #include <kdebug.h>
 #include <kguiitem.h>
 #include <kicon.h>
 #include <klocale.h>
-
-#include "ktoggleaction.h"
 
 class KToggleAction::Private
 {

@@ -22,7 +22,6 @@
      the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
      Boston, MA 02110-1301, USA.
  */
-#include "config.h"
 
 #include "kmainwindow.h"
 #include "kmainwindow_p.h"
@@ -34,17 +33,20 @@
 #include "ksessionmanager.h"
 #include "kstandardaction.h"
 
-#include <QCloseEvent>
-#include <QDesktopWidget>
-#include <QDockWidget>
-#include <Qt/qdom.h>
-#include <QtGui/QLayout>
+#include <QtCore/QList>
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
+#include <QtGui/QCloseEvent>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QDockWidget>
+#include <QtGui/QLayout>
 #include <QtGui/QSessionManager>
 #include <QtGui/QStyle>
-#include <QtCore/QTimer>
 #include <QtGui/QWidget>
-#include <QtCore/QList>
+#if 0
+#include <qdom.h>
+#endif
+
 #include <kaction.h>
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -69,6 +71,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
+
+#include <config.h>
 
 static bool no_query_exit = false;
 

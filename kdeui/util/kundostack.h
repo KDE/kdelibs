@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 
-#include <QUndoStack>
+#include <QtGui/QUndoStack>
 
 class KActionCollection;
 

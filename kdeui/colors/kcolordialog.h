@@ -26,9 +26,9 @@
 #define KCOLORDIALOG_H
 
 #include <kdialog.h>
-#include <qpixmap.h>
-#include <qscrollarea.h>
-#include <qtablewidget.h>
+#include <QtGui/QPixmap>
+#include <QtGui/QScrollArea>
+#include <QtGui/QTableWidget>
 #include <kcolorchoosermode.h>
 
 class QComboBox;

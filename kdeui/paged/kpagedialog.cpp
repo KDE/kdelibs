@@ -22,10 +22,10 @@
  *
  */
 
+#include "kpagedialog.h"
+
 #include <QTimer>
 #include <QLayout>
-
-#include "kpagedialog.h"
 
 class KPageDialog::Private
 {

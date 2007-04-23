@@ -18,6 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktabbar.h"
+#include "ktabwidget.h"
+
 #include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QCursor>
@@ -25,13 +28,9 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QStyle>
 
-
 #include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocale.h>
-
-#include "ktabbar.h"
-#include "ktabwidget.h"
 
 class KTabBar::Private
 {

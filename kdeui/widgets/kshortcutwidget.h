@@ -19,7 +19,7 @@
 #ifndef KSHORTCUTWIDGET_H
 #define KSHORTCUTWIDGET_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include "kshortcut.h"
 
 class KShortcutWidgetPrivate;

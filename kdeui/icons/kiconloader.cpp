@@ -11,6 +11,10 @@
  * kiconloader.cpp: An icon loader for KDE with theming functionality.
  */
 
+#include "kiconloader.h"
+#include "kicontheme.h"
+#include "kiconeffect.h"
+
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtGui/QPixmap>
@@ -32,10 +36,6 @@
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
 #include <ksvgrenderer.h>
-
-#include <kicontheme.h>
-#include <kiconloader.h>
-#include <kiconeffect.h>
 
 #include <sys/types.h>
 #include <stdlib.h>	//for abs

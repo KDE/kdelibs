@@ -21,11 +21,11 @@
 #ifndef KCURSOR_P_H
 #define KCURSOR_P_H
 
-#include <QCursor>
-#include <QHash>
-#include <QObject>
+#include <QtCore/QHash>
+#include <QtCore/QObject>
+#include <QtCore/QTimer>
+#include <QtGui/QCursor>
 
-class QTimer;
 class QWidget;
 
 /**

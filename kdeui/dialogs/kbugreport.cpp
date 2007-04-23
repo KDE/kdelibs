@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbugreport.h"
+
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -43,7 +45,6 @@
 #include <kurl.h>
 #include <kurllabel.h>
 
-#include "kbugreport.h"
 #include "kdeversion.h"
 
 #include <stdio.h>

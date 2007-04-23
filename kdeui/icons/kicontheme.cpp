@@ -11,6 +11,8 @@
  * kicontheme.cpp: Lowlevel icon theme handling.
  */
 
+#include "kicontheme.h"
+
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -33,7 +35,6 @@
 #include <kconfig.h>
 #include <kcomponentdata.h>
 
-#include "kicontheme.h"
 #include <kconfiggroup.h>
 
 class KIconTheme::KIconThemePrivate

@@ -19,12 +19,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kpageview_p.h"
+
 #include <QApplication>
 #include <QHeaderView>
 #include <QPainter>
 #include <QVBoxLayout>
-
-#include "kpageview_p.h"
 
 using namespace KDEPrivate;
 

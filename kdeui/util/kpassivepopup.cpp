@@ -6,6 +6,8 @@
  *   email                : sascha.cunz@tiscali.de
  */
 
+#include "kpassivepopup.h"
+#include "kpassivepopup.moc"
 
 // Qt
 #include <QApplication>
@@ -33,9 +35,7 @@
 #include <netwm.h>
 #endif
 
-#include "config.h"
-#include "kpassivepopup.h"
-#include "kpassivepopup.moc"
+#include <config.h>
 
 static const int DEFAULT_POPUP_TYPE = KPassivePopup::Boxed;
 static const int DEFAULT_POPUP_TIME = 6*1000;

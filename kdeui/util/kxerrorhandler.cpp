@@ -22,10 +22,10 @@
 
 */
 
-#include <QtGui/QWidget>
+#include "kxerrorhandler.h"
+
 #ifdef Q_WS_X11 //FIXME
 
-#include "kxerrorhandler.h"
 #include "netwm_def.h"
 
 KXErrorHandler** KXErrorHandler::handlers = NULL;

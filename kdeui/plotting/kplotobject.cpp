@@ -18,12 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kplotobject.h"
+
 #include <QtAlgorithms>
 #include <QPainter>
 
 #include <kdebug.h>
 
-#include "kplotobject.h"
 #include "kplotpoint.h"
 #include "kplotwidget.h"
 

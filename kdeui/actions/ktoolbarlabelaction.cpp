@@ -16,12 +16,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "ktoolbarlabelaction.h"
+#include "ktoolbar.h"
+
 #include <QtCore/QPointer>
 #include <QtGui/QApplication>
 #include <QtGui/QLabel>
-
-#include "ktoolbar.h"
-#include "ktoolbarlabelaction.h"
 
 class KToolBarLabelAction::Private
 {

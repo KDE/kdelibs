@@ -17,6 +17,8 @@
 */
 
 #include "kstandardaction.h"
+#include "kstandardaction_p.h"
+#include "kstandardaction_p.moc"
 
 #include <QtCore/QMutableStringListIterator>
 #include <QtGui/QToolButton>
@@ -38,9 +40,6 @@
 #include "ktogglefullscreenaction.h"
 #include "kpastetextaction.h"
 #include "kactioncollection.h"
-
-#include "kstandardaction_p.h"
-#include "kstandardaction_p.moc"
 
 namespace KStandardAction
 {

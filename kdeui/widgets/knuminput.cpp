@@ -23,6 +23,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "knuminput.h"
+
 #include <config.h>
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
@@ -30,19 +32,17 @@
 #include <assert.h>
 #include <math.h>
 
-#include <QApplication>
-#include <QLabel>
-#include <QLineEdit>
-#include <QResizeEvent>
-#include <QSlider>
+#include <QtGui/QApplication>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QResizeEvent>
+#include <QtGui/QSlider>
 
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <knumvalidator.h>
-
-#include "knuminput.h"
 
 static inline int calcDiffByTen( int x, int y ) {
     // calculate ( x - y ) / 10 without overflowing ints:

@@ -17,12 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
+#include "kglobalaccel_win.h"
+
+#include <config.h>
 
 #include <QtGui/QWidgetList>
 #ifdef Q_WS_WIN
 
-#include "kglobalaccel_win.h"
 #include "kglobalaccel.h"
 
 #include <kapplication.h>

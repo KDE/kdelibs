@@ -18,13 +18,14 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kreplace.h"
+
 #include <QtGui/QLabel>
 #include <kapplication.h>
 #include <kdebug.h>
 
 #include <klocale.h>
 #include <kmessagebox.h>
-#include "kreplace.h"
 #include "kreplacedialog.h"
 #include <QtCore/QRegExp>
 

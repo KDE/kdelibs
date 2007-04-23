@@ -24,20 +24,23 @@
 #define INCLUDE_MENUITEM_DEF
 #endif
 
-#include "config.h"
+#include "kmenubar.h"
+
+#include <config.h>
+
 #include <stdio.h>
-#include <QtGui/QActionEvent>
+
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
+#include <QtGui/QActionEvent>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QMenuItem>
 #include <QtGui/QPainter>
 #include <QtGui/QStyle>
-#include <QtCore/QTimer>
-#include <QDesktopWidget>
-#include <QMenuItem>
-#include <QStyleOptionMenuItem>
+#include <QtGui/QStyleOptionMenuItem>
 
 #include <kconfig.h>
 #include <kglobalsettings.h>
-#include <kmenubar.h>
 #include <kapplication.h>
 #include <kglobal.h>
 #include <kdebug.h>

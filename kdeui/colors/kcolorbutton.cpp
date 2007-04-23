@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kcolorbutton.h"
+
 #include <config.h>
 
 #include <QtGui/QPainter>
@@ -30,7 +32,6 @@
 #include <QMouseEvent>
 #include <QStyleOptionButton>
 #include "kcolordialog.h"
-#include "kcolorbutton.h"
 #include "kcolormimedata.h"
 
 class KColorButton::KColorButtonPrivate

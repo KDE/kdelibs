@@ -21,18 +21,18 @@
 */
 
 
-#include <QApplication>
-#include <QComboBox>
-#include <QEvent>
-#include <QStyle>
-#include <QScrollBar>
-#include <QKeyEvent>
+#include "kcompletionbox.h"
+
+#include <QtCore/QEvent>
+#include <QtGui/QApplication>
+#include <QtGui/QComboBox>
+#include <QtGui/QStyle>
+#include <QtGui/QScrollBar>
+#include <QtGui/QKeyEvent>
 
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>
-
-#include "kcompletionbox.h"
 
 class KCompletionBox::KCompletionBoxPrivate
 {

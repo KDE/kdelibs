@@ -29,6 +29,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
+#include "kimageeffect.h"
+#include "kcpuinfo.h"
+
 #include <math.h>
 #include <assert.h>
 
@@ -38,9 +41,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QtGui/QColor>
 #include <QtGui/QPixmap>
 #include <QtCore/QMutableVectorIterator>
-
-#include "kimageeffect.h"
-#include "kcpuinfo.h"
 
 #include <config.h>
 #include <config-processor.h>
