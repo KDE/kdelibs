@@ -142,7 +142,7 @@ ValueImp *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
     return ::getStringOrNull(DOM::DOMString(response));
   case ResponseXML:
     if (m_state != XHRS_Loaded) {
-      return Undefined();
+      return jsNull();
     }
     if (!createdDocument) {
       QString mimeType = "text/xml";
