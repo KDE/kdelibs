@@ -19,8 +19,8 @@
 
 #include "fakebutton.h"
 
-FakeButton::FakeButton( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeButton::FakeButton(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }
@@ -32,17 +32,17 @@ FakeButton::~FakeButton()
 
 Solid::Button::ButtonType FakeButton::type() const
 {
-    QString buttontype = fakeDevice()->property( "type" ).toString();
+    QString buttontype = fakeDevice()->property("type").toString();
 
-    if ( buttontype=="LidButton" )
+    if (buttontype=="LidButton")
     {
         return Solid::Button::LidButton;
     }
-    else if ( buttontype=="PowerButton" )
+    else if (buttontype=="PowerButton")
     {
         return Solid::Button::PowerButton;
     }
-    else if ( buttontype=="SleepButton" )
+    else if (buttontype=="SleepButton")
     {
         return Solid::Button::SleepButton;
     }
@@ -54,18 +54,18 @@ Solid::Button::ButtonType FakeButton::type() const
 
 bool FakeButton::hasState() const
 {
-    return fakeDevice()->property( "hasState" ).toBool();
+    return fakeDevice()->property("hasState").toBool();
 }
 
 bool FakeButton::stateValue() const
 {
-    return fakeDevice()->property( "stateValue" ).toBool();
+    return fakeDevice()->property("stateValue").toBool();
 }
 
 void FakeButton::press()
 {
-    if ( hasState() ) fakeDevice()->setProperty( "stateValue", !stateValue() );
-    emit pressed( type() );
+    if (hasState()) fakeDevice()->setProperty("stateValue", !stateValue());
+    emit pressed(type());
 }
 
 #include "fakebutton.moc"

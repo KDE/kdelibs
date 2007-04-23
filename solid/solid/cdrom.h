@@ -38,12 +38,12 @@ namespace Solid
     class SOLID_EXPORT Cdrom : public Storage
     {
         Q_OBJECT
-        Q_ENUMS( MediumType )
-        Q_FLAGS( MediumTypes )
-        Q_PROPERTY( MediumTypes supportedMedia READ supportedMedia )
-        Q_PROPERTY( int readSpeed READ readSpeed )
-        Q_PROPERTY( int writeSpeed READ writeSpeed )
-        Q_PROPERTY( QList<int> writeSpeeds READ writeSpeeds )
+        Q_ENUMS(MediumType)
+        Q_FLAGS(MediumTypes)
+        Q_PROPERTY(MediumTypes supportedMedia READ supportedMedia)
+        Q_PROPERTY(int readSpeed READ readSpeed)
+        Q_PROPERTY(int writeSpeed READ writeSpeed)
+        Q_PROPERTY(QList<int> writeSpeeds READ writeSpeeds)
         Q_DECLARE_PRIVATE(Cdrom)
 
     public:
@@ -67,7 +67,7 @@ namespace Solid
         /**
          * This type stores an OR combination of MediumType values.
          */
-        Q_DECLARE_FLAGS( MediumTypes, MediumType )
+        Q_DECLARE_FLAGS(MediumTypes, MediumType)
 
 
 
@@ -79,7 +79,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Cdrom( QObject *backendObject );
+        explicit Cdrom(QObject *backendObject);
 
         /**
          * Destroys a Cdrom object.
@@ -136,6 +136,6 @@ namespace Solid
     };
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::Cdrom::MediumTypes )
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Cdrom::MediumTypes)
 
 #endif

@@ -21,8 +21,8 @@
 
 #include <QStringList>
 
-FakeCdrom::FakeCdrom( FakeDevice *device )
-    : FakeStorage( device )
+FakeCdrom::FakeCdrom(FakeDevice *device)
+    : FakeStorage(device)
 {
 
 }
@@ -49,9 +49,9 @@ Solid::Cdrom::MediumTypes FakeCdrom::supportedMedia() const
 
     QStringList supported_medialist = fakeDevice()->property("supportedMedia").toString().simplified().split(',');
 
-    foreach( const Solid::Cdrom::MediumType type, map.keys() )
+    foreach (const Solid::Cdrom::MediumType type, map.keys())
     {
-        if ( supported_medialist.indexOf(map[type]) != -1 )
+        if (supported_medialist.indexOf(map[type]) != -1)
         {
             supported|= type;
         }
@@ -75,7 +75,7 @@ QList<int> FakeCdrom::writeSpeeds() const
     QList<int> speeds;
     QStringList speed_strlist = fakeDevice()->property("writeSpeeds").toString().simplified().split(',');
 
-    foreach(const QString &speed_str, speed_strlist)
+    foreach (const QString &speed_str, speed_strlist)
     {
         speeds << speed_str.toInt();
     }

@@ -62,7 +62,7 @@ namespace Solid
          *
          * @param other the predicate to copy
          */
-        Predicate( const Predicate &other );
+        Predicate(const Predicate &other);
 
         /**
          * Constructs a predicate matching the value of a property in
@@ -73,9 +73,9 @@ namespace Solid
          * @param value the value the property must have to make the device match
          * @param compOperator the operator to apply between the property and the value when matching
          */
-        Predicate( const DeviceInterface::Type &ifaceType,
+        Predicate(const DeviceInterface::Type &ifaceType,
                    const QString &property, const QVariant &value,
-                   ComparisonOperator compOperator = Equals );
+                   ComparisonOperator compOperator = Equals);
 
         /**
          * Constructs a predicate matching the value of a property in
@@ -86,9 +86,9 @@ namespace Solid
          * @param value the value the property must have to make the device match
          * @param compOperator the operator to apply between the property and the value when matching
          */
-        Predicate( const QString &ifaceName,
+        Predicate(const QString &ifaceName,
                    const QString &property, const QVariant &value,
-                   ComparisonOperator compOperator = Equals );
+                   ComparisonOperator compOperator = Equals);
 
         /**
          * Constructs a predicate matching devices being of a particular device interface
@@ -116,7 +116,7 @@ namespace Solid
          * @param other the predicate to assign
          * @return this predicate after having assigned 'other' to it
          */
-        Predicate &operator=( const Predicate &other );
+        Predicate &operator=(const Predicate &other);
 
 
         /**
@@ -125,7 +125,7 @@ namespace Solid
          * @param other the second operand
          * @return a new 'and' predicate having 'this' and 'other' as operands
          */
-        Predicate operator&( const Predicate &other );
+        Predicate operator &(const Predicate &other);
 
         /**
          * 'Or' operator.
@@ -133,7 +133,7 @@ namespace Solid
          * @param other the second operand
          * @return a new 'or' predicate having 'this' and 'other' as operands
          */
-        Predicate operator|( const Predicate &other );
+        Predicate operator|(const Predicate &other);
 
 
         /**
@@ -151,7 +151,7 @@ namespace Solid
          * @param device the device to match against the predicate
          * @return true if the given device matches the predicate, false otherwise
          */
-        bool matches( const Device &device ) const;
+        bool matches(const Device &device) const;
 
         /**
          * Retrieves the device interface types used in this predicate.
@@ -174,7 +174,7 @@ namespace Solid
          * @return a new valid predicate if the given string is syntactically
          * correct, Predicate() otherwise
          */
-        static Predicate fromString( const QString &predicate );
+        static Predicate fromString(const QString &predicate);
 
     private:
         class Private;

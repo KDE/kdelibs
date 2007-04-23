@@ -18,8 +18,8 @@
 */
 #include "fakedeviceinterface.h"
 
-FakeDeviceInterface::FakeDeviceInterface( FakeDevice *device )
-    : QObject( device ), m_device( device )
+FakeDeviceInterface::FakeDeviceInterface(FakeDevice *device)
+    : QObject(device), m_device(device)
 {
 }
 

@@ -92,6 +92,6 @@ namespace Ifaces
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::OpticalDisc, "org.kde.Solid.Ifaces.OpticalDisc/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::OpticalDisc, "org.kde.Solid.Ifaces.OpticalDisc/0.1")
 
 #endif

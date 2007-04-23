@@ -25,7 +25,7 @@
 class FakeNetworkHw : public FakeDeviceInterface, public Solid::Ifaces::NetworkHw
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::NetworkHw )
+    Q_INTERFACES(Solid::Ifaces::NetworkHw)
 
 public:
     explicit FakeNetworkHw(FakeDevice *device);

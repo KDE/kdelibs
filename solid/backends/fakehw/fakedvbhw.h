@@ -26,10 +26,10 @@
 class FakeDvbHw : public FakeDeviceInterface, virtual public Solid::Ifaces::DvbHw
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::DvbHw )
+    Q_INTERFACES(Solid::Ifaces::DvbHw)
 
 public:
-    explicit FakeDvbHw( FakeDevice *device );
+    explicit FakeDvbHw(FakeDevice *device);
     ~FakeDvbHw();
 
 public Q_SLOTS:

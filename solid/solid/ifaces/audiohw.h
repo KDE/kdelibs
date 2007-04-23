@@ -88,6 +88,6 @@ namespace Ifaces
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::AudioHw, "org.kde.Solid.Ifaces.AudioHw/0.1.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::AudioHw, "org.kde.Solid.Ifaces.AudioHw/0.1.1")
 
 #endif

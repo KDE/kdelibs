@@ -26,10 +26,10 @@
 class FakeBattery : public FakeDeviceInterface, virtual public Solid::Ifaces::Battery
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Battery )
+    Q_INTERFACES(Solid::Ifaces::Battery)
 
 public:
-    explicit FakeBattery( FakeDevice *device );
+    explicit FakeBattery(FakeDevice *device);
     virtual ~FakeBattery();
 
 public Q_SLOTS:
@@ -37,7 +37,7 @@ public Q_SLOTS:
     virtual Solid::Battery::BatteryType type() const;
 
     virtual QString chargeLevelUnit() const;
-    virtual int charge( Solid::Battery::LevelType type = Solid::Battery::CurrentLevel ) const;
+    virtual int charge(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const;
     virtual int chargePercent() const;
 
     virtual QString voltageUnit() const;
@@ -46,12 +46,12 @@ public Q_SLOTS:
     virtual bool isRechargeable() const;
     virtual Solid::Battery::ChargeState chargeState() const;
 
-    void setChargeState( Solid::Battery::ChargeState newState );
-    void setChargeLevel( int newLevel );
+    void setChargeState(Solid::Battery::ChargeState newState);
+    void setChargeLevel(int newLevel);
 
 Q_SIGNALS:
-    void chargePercentChanged( int value );
-    void chargeStateChanged( int newState );
+    void chargePercentChanged(int value);
+    void chargeStateChanged(int newState);
 };
 
 #endif

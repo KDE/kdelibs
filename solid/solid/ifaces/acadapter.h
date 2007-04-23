@@ -54,11 +54,11 @@ namespace Ifaces
          *
          * @param newState true if the A/C adapter is plugged is mounted, false otherwise
          */
-        virtual void plugStateChanged( bool newState ) = 0;
+        virtual void plugStateChanged(bool newState) = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::AcAdapter, "org.kde.Solid.Ifaces.AcAdapter/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::AcAdapter, "org.kde.Solid.Ifaces.AcAdapter/0.1")
 
 #endif

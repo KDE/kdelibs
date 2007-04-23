@@ -39,9 +39,9 @@ namespace Solid
     class SOLID_EXPORT Display : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( DisplayType )
-        Q_PROPERTY( DisplayType type READ type )
-        Q_PROPERTY( int lcdBrightness READ lcdBrightness )
+        Q_ENUMS(DisplayType)
+        Q_PROPERTY(DisplayType type READ type)
+        Q_PROPERTY(int lcdBrightness READ lcdBrightness)
         Q_DECLARE_PRIVATE(Display)
 
     public:
@@ -65,7 +65,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Display( QObject *backendObject );
+        explicit Display(QObject *backendObject);
 
         /**
          * Destroys a Display object.

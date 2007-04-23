@@ -77,7 +77,7 @@ namespace Ifaces
          * @return the requested charge level
          * @see Solid::Battery::LevelType
          */
-        virtual int charge( Solid::Battery::LevelType type = Solid::Battery::CurrentLevel ) const = 0;
+        virtual int charge(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const = 0;
 
         /**
          * Retrieves the current charge level of the battery normalised
@@ -131,7 +131,7 @@ namespace Ifaces
          *
          * @param value the new charge percent value of the battery
          */
-        virtual void chargePercentChanged( int value ) = 0;
+        virtual void chargePercentChanged(int value) = 0;
 
         /**
          * This signal is emitted when the charge state of this battery
@@ -141,11 +141,11 @@ namespace Ifaces
          * the type Solid::Battery::ChargeState
          * @see Solid::Battery::ChargeState
          */
-        virtual void chargeStateChanged( int newState ) = 0;
+        virtual void chargeStateChanged(int newState) = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::Battery, "org.kde.Solid.Ifaces.Battery/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::Battery, "org.kde.Solid.Ifaces.Battery/0.1")
 
 #endif

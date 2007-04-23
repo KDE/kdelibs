@@ -25,7 +25,7 @@
 class FakeProcessor : public FakeDeviceInterface, public Solid::Ifaces::Processor
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Processor )
+    Q_INTERFACES(Solid::Ifaces::Processor)
 
 public:
     explicit FakeProcessor(FakeDevice *device);

@@ -24,7 +24,7 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/display.h>
 
-Solid::Display::Display( QObject *backendObject )
+Solid::Display::Display(QObject *backendObject)
     : DeviceInterface(*new DisplayPrivate(), backendObject)
 {
 }
@@ -37,13 +37,13 @@ Solid::Display::~Display()
 Solid::Display::DisplayType Solid::Display::type() const
 {
     Q_D(const Display);
-    return_SOLID_CALL(Ifaces::Display*, d->backendObject(), UnknownDisplayType, type());
+    return_SOLID_CALL(Ifaces::Display *, d->backendObject(), UnknownDisplayType, type());
 }
 
 int Solid::Display::lcdBrightness() const
 {
     Q_D(const Display);
-    return_SOLID_CALL(Ifaces::Display*, d->backendObject(), 100, lcdBrightness());
+    return_SOLID_CALL(Ifaces::Display *, d->backendObject(), 100, lcdBrightness());
 }
 
 #include "display.moc"

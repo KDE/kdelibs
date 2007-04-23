@@ -41,9 +41,9 @@ namespace Solid
     class SOLID_EXPORT Camera : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( AccessType )
-        Q_PROPERTY( AccessType accessMethod READ accessMethod )
-        Q_PROPERTY( bool gphotoSupport READ isGphotoSupported )
+        Q_ENUMS(AccessType)
+        Q_PROPERTY(AccessType accessMethod READ accessMethod)
+        Q_PROPERTY(bool gphotoSupport READ isGphotoSupported)
         Q_DECLARE_PRIVATE(Camera)
 
     public:
@@ -66,7 +66,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Camera( QObject *backendObject );
+        explicit Camera(QObject *backendObject);
 
         /**
          * Destroys a Camera object.

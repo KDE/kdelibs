@@ -26,10 +26,10 @@
 class FakeAcAdapter : public FakeDeviceInterface, virtual public Solid::Ifaces::AcAdapter
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::AcAdapter )
+    Q_INTERFACES(Solid::Ifaces::AcAdapter)
 
 public:
-    explicit FakeAcAdapter( FakeDevice *device );
+    explicit FakeAcAdapter(FakeDevice *device);
     virtual ~FakeAcAdapter();
 
 public Q_SLOTS:
@@ -39,7 +39,7 @@ public Q_SLOTS:
     void unplug();
 
 Q_SIGNALS:
-    void plugStateChanged( bool newState );
+    void plugStateChanged(bool newState);
 };
 
 #endif

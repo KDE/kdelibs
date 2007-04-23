@@ -26,10 +26,10 @@
 class FakePortableMediaPlayer : public FakeDeviceInterface, virtual public Solid::Ifaces::PortableMediaPlayer
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::PortableMediaPlayer )
+    Q_INTERFACES(Solid::Ifaces::PortableMediaPlayer)
 
 public:
-    explicit FakePortableMediaPlayer( FakeDevice *device );
+    explicit FakePortableMediaPlayer(FakeDevice *device);
     ~FakePortableMediaPlayer();
 
 public Q_SLOTS:

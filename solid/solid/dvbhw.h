@@ -39,11 +39,11 @@ namespace Solid
     class SOLID_EXPORT DvbHw : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( DeviceType )
-        Q_PROPERTY( QString device READ device )
-        Q_PROPERTY( int deviceAdapter READ deviceAdapter )
-        Q_PROPERTY( DeviceType deviceType READ deviceType )
-        Q_PROPERTY( int deviceIndex READ deviceIndex )
+        Q_ENUMS(DeviceType)
+        Q_PROPERTY(QString device READ device)
+        Q_PROPERTY(int deviceAdapter READ deviceAdapter)
+        Q_PROPERTY(DeviceType deviceType READ deviceType)
+        Q_PROPERTY(int deviceIndex READ deviceIndex)
         Q_DECLARE_PRIVATE(DvbHw)
 
     public:
@@ -73,7 +73,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit DvbHw( QObject *backendObject );
+        explicit DvbHw(QObject *backendObject);
 
         /**
          * Destroys a DvbHw object.

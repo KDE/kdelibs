@@ -28,14 +28,14 @@ class KcmSolid : public KCModule
 {
     Q_OBJECT
 public:
-    KcmSolid( QWidget* parent, const QStringList& );
+    KcmSolid(QWidget *parent, const QStringList &);
 
     virtual void load();
     virtual void save();
     virtual void defaults();
 
 private Q_SLOTS:
-    void slotChooserChanged( bool state );
+    void slotChooserChanged(bool state);
 
 private:
     int m_changedChooser;

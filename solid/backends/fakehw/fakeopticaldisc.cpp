@@ -21,8 +21,8 @@
 
 #include <QStringList>
 
-FakeOpticalDisc::FakeOpticalDisc( FakeDevice *device )
-    : FakeVolume( device )
+FakeOpticalDisc::FakeOpticalDisc(FakeDevice *device)
+    : FakeVolume(device)
 {
 
 }
@@ -45,9 +45,9 @@ Solid::OpticalDisc::ContentTypes FakeOpticalDisc::availableContent() const
 
     QStringList content_typelist = fakeDevice()->property("availableContent").toString().split(',');
 
-    foreach( const Solid::OpticalDisc::ContentType type, map.keys() )
+    foreach (const Solid::OpticalDisc::ContentType type, map.keys())
     {
-        if ( content_typelist.indexOf(map[type]) != -1 )
+        if (content_typelist.indexOf(map[type]) != -1)
         {
             content|= type;
         }
@@ -60,39 +60,39 @@ Solid::OpticalDisc::DiscType FakeOpticalDisc::discType() const
 {
     QString type = fakeDevice()->property("discType").toString();
 
-    if ( type == "cd_rom" )
+    if (type == "cd_rom")
     {
         return Solid::OpticalDisc::CdRom;
     }
-    else if ( type == "cd_r" )
+    else if (type == "cd_r")
     {
         return Solid::OpticalDisc::CdRecordable;
     }
-    else if ( type == "cd_rw" )
+    else if (type == "cd_rw")
     {
         return Solid::OpticalDisc::CdRewritable;
     }
-    else if ( type == "dvd_rom" )
+    else if (type == "dvd_rom")
     {
         return Solid::OpticalDisc::DvdRom;
     }
-    else if ( type == "dvd_ram" )
+    else if (type == "dvd_ram")
     {
         return Solid::OpticalDisc::DvdRam;
     }
-    else if ( type == "dvd_r" )
+    else if (type == "dvd_r")
     {
         return Solid::OpticalDisc::DvdRecordable;
     }
-    else if ( type == "dvd_rw" )
+    else if (type == "dvd_rw")
     {
         return Solid::OpticalDisc::DvdRewritable;
     }
-    else if ( type == "dvd_plus_r" )
+    else if (type == "dvd_plus_r")
     {
         return Solid::OpticalDisc::DvdPlusRecordable;
     }
-    else if ( type == "dvd_plus_rw" )
+    else if (type == "dvd_plus_rw")
     {
         return Solid::OpticalDisc::DvdPlusRewritable;
     }

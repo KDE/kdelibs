@@ -24,11 +24,11 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/button.h>
 
-Solid::Button::Button( QObject *backendObject )
+Solid::Button::Button(QObject *backendObject)
     : DeviceInterface(*new ButtonPrivate(), backendObject)
 {
-    connect( backendObject, SIGNAL( pressed( int ) ),
-             this, SIGNAL( pressed( int ) ) );
+    connect(backendObject, SIGNAL(pressed(int)),
+             this, SIGNAL(pressed(int)));
 }
 
 Solid::Button::~Button()
@@ -39,19 +39,19 @@ Solid::Button::~Button()
 Solid::Button::ButtonType Solid::Button::type() const
 {
     Q_D(const Button);
-    return_SOLID_CALL(Ifaces::Button*, d->backendObject(), UnknownButtonType, type());
+    return_SOLID_CALL(Ifaces::Button *, d->backendObject(), UnknownButtonType, type());
 }
 
 bool Solid::Button::hasState() const
 {
     Q_D(const Button);
-    return_SOLID_CALL(Ifaces::Button*, d->backendObject(), false, hasState());
+    return_SOLID_CALL(Ifaces::Button *, d->backendObject(), false, hasState());
 }
 
 bool Solid::Button::stateValue() const
 {
     Q_D(const Button);
-    return_SOLID_CALL(Ifaces::Button*, d->backendObject(), false, stateValue());
+    return_SOLID_CALL(Ifaces::Button *, d->backendObject(), false, stateValue());
 }
 
 #include "button.moc"

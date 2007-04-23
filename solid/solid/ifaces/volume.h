@@ -143,11 +143,11 @@ namespace Ifaces
          *
          * @param newState true if the volume is mounted, false otherwise
          */
-        virtual void mountStateChanged( bool newState ) = 0;
+        virtual void mountStateChanged(bool newState) = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::Volume, "org.kde.Solid.Ifaces.Volume/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::Volume, "org.kde.Solid.Ifaces.Volume/0.1")
 
 #endif

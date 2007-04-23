@@ -19,8 +19,8 @@
 
 #include "fakebattery.h"
 
-FakeBattery::FakeBattery( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeBattery::FakeBattery(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 }
 
@@ -31,38 +31,38 @@ FakeBattery::~FakeBattery()
 
 bool FakeBattery::isPlugged() const
 {
-    return fakeDevice()->property( "isPlugged" ).toBool();
+    return fakeDevice()->property("isPlugged").toBool();
 }
 
 Solid::Battery::BatteryType FakeBattery::type() const
 {
-    QString name = fakeDevice()->property( "batteryType" ).toString();
+    QString name = fakeDevice()->property("batteryType").toString();
 
-    if ( name == "pda" )
+    if (name == "pda")
     {
         return Solid::Battery::PdaBattery;
     }
-    else if ( name == "ups" )
+    else if (name == "ups")
     {
         return Solid::Battery::UpsBattery;
     }
-    else if ( name == "primary" )
+    else if (name == "primary")
     {
         return Solid::Battery::PrimaryBattery;
     }
-    else if ( name == "mouse" )
+    else if (name == "mouse")
     {
         return Solid::Battery::MouseBattery;
     }
-    else if ( name == "keyboard" )
+    else if (name == "keyboard")
     {
         return Solid::Battery::KeyboardBattery;
     }
-    else if ( name == "keyboard_mouse" )
+    else if (name == "keyboard_mouse")
     {
         return Solid::Battery::KeyboardMouseBattery;
     }
-    else if ( name == "camera" )
+    else if (name == "camera")
     {
         return Solid::Battery::CameraBattery;
     }
@@ -74,23 +74,23 @@ Solid::Battery::BatteryType FakeBattery::type() const
 
 QString FakeBattery::chargeLevelUnit() const
 {
-    return fakeDevice()->property( "chargeLevelUnit" ).toString();
+    return fakeDevice()->property("chargeLevelUnit").toString();
 }
 
-int FakeBattery::charge( Solid::Battery::LevelType type ) const
+int FakeBattery::charge(Solid::Battery::LevelType type) const
 {
-    switch( type )
+    switch(type)
     {
     case Solid::Battery::MaxLevel:
-        return fakeDevice()->property( "maxLevel" ).toInt();
+        return fakeDevice()->property("maxLevel").toInt();
     case Solid::Battery::LastFullLevel:
-        return fakeDevice()->property( "lastFullLevel" ).toInt();
+        return fakeDevice()->property("lastFullLevel").toInt();
     case Solid::Battery::CurrentLevel:
-        return fakeDevice()->property( "currentLevel" ).toInt();
+        return fakeDevice()->property("currentLevel").toInt();
     case Solid::Battery::WarningLevel:
-        return fakeDevice()->property( "warningLevel" ).toInt();
+        return fakeDevice()->property("warningLevel").toInt();
     case Solid::Battery::LowLevel:
-        return fakeDevice()->property( "lowLevel" ).toInt();
+        return fakeDevice()->property("lowLevel").toInt();
     }
 
     // Shouldn't happen...
@@ -99,38 +99,38 @@ int FakeBattery::charge( Solid::Battery::LevelType type ) const
 
 int FakeBattery::chargePercent() const
 {
-    int last_full = charge( Solid::Battery::LastFullLevel );
-    int current = charge( Solid::Battery::CurrentLevel );
+    int last_full = charge(Solid::Battery::LastFullLevel);
+    int current = charge(Solid::Battery::CurrentLevel);
 
-    int percent = ( 100 * current ) / last_full;
+    int percent = (100 * current) / last_full;
 
     return percent;
 }
 
 QString FakeBattery::voltageUnit() const
 {
-    return fakeDevice()->property( "voltageUnit" ).toString();
+    return fakeDevice()->property("voltageUnit").toString();
 }
 
 int FakeBattery::voltage() const
 {
-    return fakeDevice()->property( "voltage" ).toInt();
+    return fakeDevice()->property("voltage").toInt();
 }
 
 bool FakeBattery::isRechargeable() const
 {
-    return fakeDevice()->property( "isRechargeable" ).toBool();
+    return fakeDevice()->property("isRechargeable").toBool();
 }
 
 Solid::Battery::ChargeState FakeBattery::chargeState() const
 {
-    QString state = fakeDevice()->property( "chargeState" ).toString();
+    QString state = fakeDevice()->property("chargeState").toString();
 
-    if ( state == "charging" )
+    if (state == "charging")
     {
         return Solid::Battery::Charging;
     }
-    else if ( state == "discharging" )
+    else if (state == "discharging")
     {
         return Solid::Battery::Discharging;
     }
@@ -140,11 +140,11 @@ Solid::Battery::ChargeState FakeBattery::chargeState() const
     }
 }
 
-void FakeBattery::setChargeState( Solid::Battery::ChargeState newState )
+void FakeBattery::setChargeState(Solid::Battery::ChargeState newState)
 {
     QString name;
 
-    switch( newState )
+    switch(newState)
     {
     case Solid::Battery::Charging:
         name = "charging";
@@ -155,14 +155,14 @@ void FakeBattery::setChargeState( Solid::Battery::ChargeState newState )
         name = "noCharge";
     }
 
-    fakeDevice()->setProperty( "chargeState", name );
-    emit chargeStateChanged( newState );
+    fakeDevice()->setProperty("chargeState", name);
+    emit chargeStateChanged(newState);
 }
 
-void FakeBattery::setChargeLevel( int newLevel )
+void FakeBattery::setChargeLevel(int newLevel)
 {
-    fakeDevice()->setProperty( "currentLevel", newLevel );
-    emit chargePercentChanged( chargePercent() );
+    fakeDevice()->setProperty("currentLevel", newLevel);
+    emit chargePercentChanged(chargePercent());
 }
 
 #include "fakebattery.moc"

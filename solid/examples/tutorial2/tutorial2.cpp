@@ -42,7 +42,7 @@ int main(int args, char **argv)
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     
     //get a list of all devices that are AudioHw
-    foreach(Solid::Device device, manager.findDevicesFromQuery(Solid::DeviceInterface::AudioHw, QString()) )
+    foreach (Solid::Device device, manager.findDevicesFromQuery(Solid::DeviceInterface::AudioHw, QString()))
     {
         kDebug() << device.udi().toLatin1().constData() << endl;
     }

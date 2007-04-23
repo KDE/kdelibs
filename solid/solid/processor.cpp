@@ -37,19 +37,19 @@ Solid::Processor::~Processor()
 int Solid::Processor::number() const
 {
     Q_D(const Processor);
-    return_SOLID_CALL(Ifaces::Processor*, d->backendObject(), 0, number());
+    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), 0, number());
 }
 
 qulonglong Solid::Processor::maxSpeed() const
 {
     Q_D(const Processor);
-    return_SOLID_CALL(Ifaces::Processor*, d->backendObject(), 0, maxSpeed());
+    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), 0, maxSpeed());
 }
 
 bool Solid::Processor::canThrottle() const
 {
     Q_D(const Processor);
-    return_SOLID_CALL(Ifaces::Processor*, d->backendObject(), false, canThrottle());
+    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), false, canThrottle());
 }
 
 #include "processor.moc"

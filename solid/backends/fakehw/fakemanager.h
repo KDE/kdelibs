@@ -49,12 +49,12 @@ public:
 
     virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type);
 
-    virtual QObject *createDevice( const QString &udi );
-    virtual FakeDevice *findDevice( const QString &udi );
+    virtual QObject *createDevice(const QString &udi);
+    virtual FakeDevice *findDevice(const QString &udi);
 
 public Q_SLOTS:
-    void plug( const QString &udi );
-    void unplug( const QString &udi );
+    void plug(const QString &udi);
+    void unplug(const QString &udi);
 
 private Q_SLOTS:
     /**
@@ -69,8 +69,8 @@ private Q_SLOTS:
     FakeDevice *parseDeviceElement(const QDomElement &element);
 
 private:
-    virtual QStringList findDeviceStringMatch( const QString &key, const QString &value );
-    virtual QStringList findDeviceByDeviceInterface( const Solid::DeviceInterface::Type &type );
+    virtual QStringList findDeviceStringMatch(const QString &key, const QString &value);
+    virtual QStringList findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type);
 
     class Private;
     Private *d;

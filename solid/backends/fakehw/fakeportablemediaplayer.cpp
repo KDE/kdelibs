@@ -21,8 +21,8 @@
 
 #include "fakeportablemediaplayer.h"
 
-FakePortableMediaPlayer::FakePortableMediaPlayer( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakePortableMediaPlayer::FakePortableMediaPlayer(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }
@@ -36,7 +36,7 @@ Solid::PortableMediaPlayer::AccessType FakePortableMediaPlayer::accessMethod() c
 {
     QString type = fakeDevice()->property("accessMethod").toString();
 
-    if ( type == "MassStorage" )
+    if (type == "MassStorage")
     {
         return Solid::PortableMediaPlayer::MassStorage;
     }

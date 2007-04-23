@@ -23,11 +23,11 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/acadapter.h>
 
-Solid::AcAdapter::AcAdapter( QObject *backendObject )
+Solid::AcAdapter::AcAdapter(QObject *backendObject)
     : DeviceInterface(*new AcAdapterPrivate(), backendObject)
 {
-    connect( backendObject, SIGNAL( plugStateChanged( bool ) ),
-             this, SIGNAL( plugStateChanged( bool ) ) );
+    connect(backendObject, SIGNAL(plugStateChanged(bool)),
+             this, SIGNAL(plugStateChanged(bool)));
 }
 
 Solid::AcAdapter::~AcAdapter()
@@ -38,7 +38,7 @@ Solid::AcAdapter::~AcAdapter()
 bool Solid::AcAdapter::isPlugged() const
 {
     Q_D(const AcAdapter);
-    return_SOLID_CALL(Ifaces::AcAdapter*, d->backendObject(), false, isPlugged());
+    return_SOLID_CALL(Ifaces::AcAdapter *, d->backendObject(), false, isPlugged());
 }
 
 #include "acadapter.moc"

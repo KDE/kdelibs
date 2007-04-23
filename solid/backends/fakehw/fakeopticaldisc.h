@@ -26,10 +26,10 @@
 class FakeOpticalDisc : public FakeVolume, virtual public Solid::Ifaces::OpticalDisc
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::OpticalDisc )
+    Q_INTERFACES(Solid::Ifaces::OpticalDisc)
 
 public:
-    explicit FakeOpticalDisc( FakeDevice *device );
+    explicit FakeOpticalDisc(FakeDevice *device);
     virtual ~FakeOpticalDisc();
 
 public Q_SLOTS:

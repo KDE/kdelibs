@@ -26,10 +26,10 @@
 class FakeAudioHw : public FakeDeviceInterface, virtual public Solid::Ifaces::AudioHw
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::AudioHw )
+    Q_INTERFACES(Solid::Ifaces::AudioHw)
 
 public:
-    explicit FakeAudioHw( FakeDevice *device );
+    explicit FakeAudioHw(FakeDevice *device);
     virtual ~FakeAudioHw();
 
 public Q_SLOTS:

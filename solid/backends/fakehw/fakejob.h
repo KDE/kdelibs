@@ -28,14 +28,14 @@ class FakeJob : public KJob
 {
     Q_OBJECT
 public:
-    FakeJob( QObject *parent = 0 );
+    FakeJob(QObject *parent = 0);
     virtual ~FakeJob();
 
 public Q_SLOTS:
     void start();
 
 public:
-    void setBroken( bool broken );
+    void setBroken(bool broken);
     bool isBroken();
 
 private Q_SLOTS:

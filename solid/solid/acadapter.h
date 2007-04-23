@@ -34,7 +34,7 @@ namespace Solid
     class SOLID_EXPORT AcAdapter : public DeviceInterface
     {
         Q_OBJECT
-        Q_PROPERTY( bool plugged READ isPlugged )
+        Q_PROPERTY(bool plugged READ isPlugged)
         Q_DECLARE_PRIVATE(AcAdapter)
 
     public:
@@ -46,7 +46,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit AcAdapter( QObject *backendObject );
+        explicit AcAdapter(QObject *backendObject);
 
         /**
          * Destroys an AcAdapter object.
@@ -75,7 +75,7 @@ namespace Solid
          *
          * @param newState true if the A/C adapter is plugged is mounted, false otherwise
          */
-        void plugStateChanged( bool newState );
+        void plugStateChanged(bool newState);
     };
 }
 

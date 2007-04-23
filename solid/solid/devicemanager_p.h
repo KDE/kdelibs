@@ -54,8 +54,8 @@ namespace Solid
         Ifaces::Device *createBackendObject(const QString &udi);
 
         QExplicitlySharedDataPointer<DevicePrivate> m_nullDevice;
-        QMap<QString, DevicePrivate*> m_devicesMap;
-        QMap<QObject*, QString> m_reverseMap;
+        QMap<QString, DevicePrivate *> m_devicesMap;
+        QMap<QObject *, QString> m_reverseMap;
     };
 }
 

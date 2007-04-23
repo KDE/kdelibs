@@ -34,16 +34,16 @@ namespace Solid
     class SOLID_EXPORT Battery : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( BatteryType LevelType ChargeState )
-        Q_PROPERTY( bool plugged READ isPlugged )
-        Q_PROPERTY( BatteryType type READ type )
-        Q_PROPERTY( QString chargeLevelUnit READ chargeLevelUnit )
-        Q_PROPERTY( int charge READ charge )
-        Q_PROPERTY( int chargePercent READ chargePercent )
-        Q_PROPERTY( QString voltageUnit READ voltageUnit )
-        Q_PROPERTY( int voltage READ voltage )
-        Q_PROPERTY( bool rechargeable READ isRechargeable )
-        Q_PROPERTY( ChargeState chargeState READ chargeState )
+        Q_ENUMS(BatteryType LevelType ChargeState)
+        Q_PROPERTY(bool plugged READ isPlugged)
+        Q_PROPERTY(BatteryType type READ type)
+        Q_PROPERTY(QString chargeLevelUnit READ chargeLevelUnit)
+        Q_PROPERTY(int charge READ charge)
+        Q_PROPERTY(int chargePercent READ chargePercent)
+        Q_PROPERTY(QString voltageUnit READ voltageUnit)
+        Q_PROPERTY(int voltage READ voltage)
+        Q_PROPERTY(bool rechargeable READ isRechargeable)
+        Q_PROPERTY(ChargeState chargeState READ chargeState)
         Q_DECLARE_PRIVATE(Battery)
 
     public:
@@ -94,7 +94,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Battery( QObject *backendObject );
+        explicit Battery(QObject *backendObject);
 
         /**
          * Destroys a Battery object.
@@ -145,7 +145,7 @@ namespace Solid
          * @return the requested charge level
          * @see Solid::Battery::LevelType
          */
-        int charge( LevelType type = CurrentLevel ) const;
+        int charge(LevelType type = CurrentLevel) const;
 
         /**
          * Retrieves the current charge level of the battery normalised
@@ -198,7 +198,7 @@ namespace Solid
          *
          * @param value the new charge percent value of the battery
          */
-        void chargePercentChanged( int value );
+        void chargePercentChanged(int value);
 
         /**
          * This signal is emitted when the charge state of this battery
@@ -208,7 +208,7 @@ namespace Solid
          * the type Solid::Battery::ChargeState
          * @see Solid::Battery::ChargeState
          */
-        void chargeStateChanged( int newState );
+        void chargeStateChanged(int newState);
     };
 }
 

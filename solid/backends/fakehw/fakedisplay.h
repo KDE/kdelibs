@@ -26,7 +26,7 @@
 class FakeDisplay : public FakeDeviceInterface, public virtual Solid::Ifaces::Display
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Display )
+    Q_INTERFACES(Solid::Ifaces::Display)
 
 public:
     explicit FakeDisplay(FakeDevice *device);

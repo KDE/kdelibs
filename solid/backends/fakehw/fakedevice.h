@@ -41,16 +41,16 @@ public Q_SLOTS:
     virtual QMap<QString, QVariant> allProperties() const;
     virtual bool propertyExists(const QString &key) const;
     virtual bool setProperty(const QString &key, const QVariant &value);
-    virtual bool removeProperty( const QString &key );
+    virtual bool removeProperty(const QString &key);
 
-    virtual bool lock( const QString &reason );
+    virtual bool lock(const QString &reason);
     virtual bool unlock();
     virtual bool isLocked() const;
     virtual QString lockReason() const;
 
-    void setBroken( bool broken );
+    void setBroken(bool broken);
     bool isBroken();
-    void raiseCondition( const QString &condition, const QString &reason );
+    void raiseCondition(const QString &condition, const QString &reason);
 
 public:
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;

@@ -52,7 +52,7 @@ namespace Solid
     private:
         QString m_udi;
         QPointer<Ifaces::Device> m_backendObject;
-        QMap<DeviceInterface::Type, DeviceInterface*> m_ifaces;
+        QMap<DeviceInterface::Type, DeviceInterface *> m_ifaces;
         QExplicitlySharedDataPointer<DevicePrivate> m_refToSelf;
     };
 }

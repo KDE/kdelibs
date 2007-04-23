@@ -38,9 +38,9 @@ namespace Solid
     class SOLID_EXPORT Block : public DeviceInterface
     {
         Q_OBJECT
-        Q_PROPERTY( int major READ deviceMajor )
-        Q_PROPERTY( int minor READ deviceMinor )
-        Q_PROPERTY( QString device READ device )
+        Q_PROPERTY(int major READ deviceMajor)
+        Q_PROPERTY(int minor READ deviceMinor)
+        Q_PROPERTY(QString device READ device)
         Q_DECLARE_PRIVATE(Block)
 
     public:
@@ -52,7 +52,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Block( QObject *backendObject );
+        explicit Block(QObject *backendObject);
 
         /**
          * Destroys a Block object.

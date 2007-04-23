@@ -23,8 +23,8 @@
 
 #include <QDBusConnection>
 
-FakeVolume::FakeVolume( FakeDevice *device )
-    : FakeBlock( device )
+FakeVolume::FakeVolume(FakeDevice *device)
+    : FakeBlock(device)
 {
 
 }
@@ -53,19 +53,19 @@ Solid::Volume::UsageType FakeVolume::usage() const
 {
     QString usage = fakeDevice()->property("usage").toString();
 
-    if ( usage == "filesystem" )
+    if (usage == "filesystem")
     {
         return Solid::Volume::FileSystem;
     }
-    else if ( usage == "partitiontable" )
+    else if (usage == "partitiontable")
     {
         return Solid::Volume::PartitionTable;
     }
-    else if ( usage == "raid" )
+    else if (usage == "raid")
     {
         return Solid::Volume::Raid;
     }
-    else if ( usage == "unused" )
+    else if (usage == "unused")
     {
         return Solid::Volume::Unused;
     }
@@ -98,21 +98,21 @@ qulonglong FakeVolume::size() const
 KJob *FakeVolume::mount()
 {
     FakeJob *job = new FakeJob(this);
-    job->setBroken( fakeDevice()->isBroken() );
+    job->setBroken(fakeDevice()->isBroken());
     return job;
 }
 
 KJob *FakeVolume::unmount()
 {
     FakeJob *job = new FakeJob(this);
-    job->setBroken( fakeDevice()->isBroken() );
+    job->setBroken(fakeDevice()->isBroken());
     return job;
 }
 
 KJob *FakeVolume::eject()
 {
     FakeJob *job = new FakeJob(this);
-    job->setBroken( fakeDevice()->isBroken() );
+    job->setBroken(fakeDevice()->isBroken());
     return job;
 }
 
@@ -125,7 +125,7 @@ QString FakeVolume::createMountJob()
     KJob *job = mount();
 
     QString path = fakeDevice()->udi()+QString("/volume/mount_%1").arg(count);
-    QDBusConnection::sessionBus().registerObject( path, job, QDBusConnection::ExportNonScriptableSlots );
+    QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
 
     return path;
 }
@@ -139,7 +139,7 @@ QString FakeVolume::createUnmountJob()
     KJob *job = unmount();
 
     QString path = fakeDevice()->udi()+QString("/volume/unmount_%1").arg(count);
-    QDBusConnection::sessionBus().registerObject( path, job, QDBusConnection::ExportNonScriptableSlots );
+    QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
 
     return path;
 }
@@ -153,7 +153,7 @@ QString FakeVolume::createEjectJob()
     KJob *job = eject();
 
     QString path = fakeDevice()->udi()+QString("/volume/eject_%1").arg(count);
-    QDBusConnection::sessionBus().registerObject( path, job, QDBusConnection::ExportNonScriptableSlots );
+    QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
 
     return path;
 }

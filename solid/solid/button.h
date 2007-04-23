@@ -40,10 +40,10 @@ namespace Solid
     class SOLID_EXPORT Button : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( ButtonType )
-        Q_PROPERTY( ButtonType type READ type )
-        Q_PROPERTY( bool hasState READ hasState )
-        Q_PROPERTY( bool stateValue READ stateValue )
+        Q_ENUMS(ButtonType)
+        Q_PROPERTY(ButtonType type READ type)
+        Q_PROPERTY(bool hasState READ hasState)
+        Q_PROPERTY(bool stateValue READ stateValue)
         Q_DECLARE_PRIVATE(Button)
 
     public:
@@ -67,7 +67,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Button( QObject *backendObject );
+        explicit Button(QObject *backendObject);
 
         /**
          * Destroys a Button object.
@@ -116,7 +116,7 @@ namespace Solid
          * the type Solid::Button::ButtonType
          * @see Solid::Button::ButtonType
          */
-        void pressed( int type );
+        void pressed(int type);
     };
 }
 

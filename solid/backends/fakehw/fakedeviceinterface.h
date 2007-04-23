@@ -27,9 +27,9 @@
 class FakeDeviceInterface : public QObject, virtual public Solid::Ifaces::DeviceInterface
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::DeviceInterface )
+    Q_INTERFACES(Solid::Ifaces::DeviceInterface)
 public:
-    explicit FakeDeviceInterface( FakeDevice *device );
+    explicit FakeDeviceInterface(FakeDevice *device);
     ~FakeDeviceInterface();
 
 protected:

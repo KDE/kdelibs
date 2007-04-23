@@ -26,10 +26,10 @@
 class FakeCamera : public FakeDeviceInterface, virtual public Solid::Ifaces::Camera
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Camera )
+    Q_INTERFACES(Solid::Ifaces::Camera)
 
 public:
-    explicit FakeCamera( FakeDevice *device );
+    explicit FakeCamera(FakeDevice *device);
     ~FakeCamera();
 
 public Q_SLOTS:

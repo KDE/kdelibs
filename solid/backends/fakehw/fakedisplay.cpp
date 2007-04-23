@@ -35,7 +35,7 @@ Solid::Display::DisplayType FakeDisplay::type() const
 
     QString displaytype = fakeDevice()->property("type").toString();
 
-    if ( displaytype=="lcd" )
+    if (displaytype=="lcd")
     {
         return Solid::Display::Lcd;
     }

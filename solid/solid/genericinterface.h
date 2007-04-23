@@ -92,7 +92,7 @@ namespace Solid
          * @return the actual value of the property, or QVariant() if the
          * property is unknown
          */
-        QVariant property( const QString &key ) const;
+        QVariant property(const QString &key) const;
 
         /**
          * Retrieves a key/value map of all the known properties for the device.
@@ -118,7 +118,7 @@ namespace Solid
          * @return true if the property is available in the device, false
          * otherwise
          */
-        bool propertyExists( const QString &key ) const;
+        bool propertyExists(const QString &key) const;
 
     Q_SIGNALS:
         /**
@@ -129,7 +129,7 @@ namespace Solid
          * describe the kind of change done on the device property
          * (added/removed/modified), it's one of the type Solid::Device::PropertyChange
          */
-        void propertyChanged( const QMap<QString,int> &changes );
+        void propertyChanged(const QMap<QString,int> &changes);
 
         /**
          * This signal is emitted when an event occurred in the device.
@@ -138,7 +138,7 @@ namespace Solid
          * @param condition the condition name
          * @param reason a message explaining why the condition has been raised
          */
-        void conditionRaised( const QString &condition, const QString &reason );
+        void conditionRaised(const QString &condition, const QString &reason);
     };
 }
 

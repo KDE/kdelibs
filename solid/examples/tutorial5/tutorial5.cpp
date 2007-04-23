@@ -47,7 +47,7 @@ int main(int args, char **argv)
     Solid::DeviceList netlist = manager.findDevicesFromQuery(Solid::DeviceInterface::NetworkHw, QString());
     
     //check to see if no network devices were found
-    if(netlist.empty() )
+    if(netlist.empty())
     {
         kDebug() << "No network devices found!" << endl;
         return 0;

@@ -24,7 +24,7 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/portablemediaplayer.h>
 
-Solid::PortableMediaPlayer::PortableMediaPlayer( QObject *backendObject )
+Solid::PortableMediaPlayer::PortableMediaPlayer(QObject *backendObject)
     : DeviceInterface(*new PortableMediaPlayerPrivate(), backendObject)
 {
 }
@@ -37,25 +37,25 @@ Solid::PortableMediaPlayer::~PortableMediaPlayer()
 Solid::PortableMediaPlayer::AccessType Solid::PortableMediaPlayer::accessMethod() const
 {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(), Proprietary, accessMethod());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), Proprietary, accessMethod());
 }
 
 QStringList Solid::PortableMediaPlayer::outputFormats() const
 {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(), QStringList(), outputFormats());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), outputFormats());
 }
 
 QStringList Solid::PortableMediaPlayer::inputFormats() const
 {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(), QStringList(), inputFormats());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), inputFormats());
 }
 
 QStringList Solid::PortableMediaPlayer::playlistFormats() const
 {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer*, d->backendObject(), QStringList(), playlistFormats());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), playlistFormats());
 }
 
 #include "portablemediaplayer.moc"

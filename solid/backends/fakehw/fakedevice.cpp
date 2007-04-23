@@ -62,16 +62,16 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
     d->locked = false;
     d->broken = false;
 
-    QDBusConnection::sessionBus().registerObject( udi, this, QDBusConnection::ExportNonScriptableSlots );
+    QDBusConnection::sessionBus().registerObject(udi, this, QDBusConnection::ExportNonScriptableSlots);
 
     // Force instantiation of all the device interfaces
     // this way they'll get exported on the bus
     // that means they'll be created twice, but that won't be
     // a problem for unit testing.
-    foreach ( const QString &interface, d->interfaceList )
+    foreach (const QString &interface, d->interfaceList)
     {
-        Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType( interface );
-        createDeviceInterface( type );
+        Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType(interface);
+        createDeviceInterface(type);
     }
 }
 
@@ -117,7 +117,7 @@ bool FakeDevice::propertyExists(const QString &key) const
 
 bool FakeDevice::setProperty(const QString &key, const QVariant &value)
 {
-    if ( d->broken ) return false;
+    if (d->broken) return false;
 
     Solid::GenericInterface::PropertyChange change_type = Solid::GenericInterface::PropertyModified;
 
@@ -131,26 +131,26 @@ bool FakeDevice::setProperty(const QString &key, const QVariant &value)
     QMap<QString,int> change;
     change[key] = change_type;
 
-    emit propertyChanged( change );
+    emit propertyChanged(change);
 
     return true;
 }
 
 bool FakeDevice::removeProperty(const QString &key)
 {
-    if ( d->broken || !d->propertyMap.contains( key ) ) return false;
+    if (d->broken || !d->propertyMap.contains(key)) return false;
 
-    d->propertyMap.remove( key );
+    d->propertyMap.remove(key);
 
     QMap<QString,int> change;
     change[key] = Solid::GenericInterface::PropertyRemoved;
 
-    emit propertyChanged( change );
+    emit propertyChanged(change);
 
     return true;
 }
 
-void FakeDevice::setBroken( bool broken )
+void FakeDevice::setBroken(bool broken)
 {
     d->broken = broken;
 }
@@ -160,9 +160,9 @@ bool FakeDevice::isBroken()
     return d->broken;
 }
 
-bool FakeDevice::lock( const QString &reason )
+bool FakeDevice::lock(const QString &reason)
 {
-    if ( d->broken || d->locked ) return false;
+    if (d->broken || d->locked) return false;
 
     d->locked = true;
     d->lockReason = reason;
@@ -172,7 +172,7 @@ bool FakeDevice::lock( const QString &reason )
 
 bool FakeDevice::unlock()
 {
-    if ( d->broken || !d->locked ) return false;
+    if (d->broken || !d->locked) return false;
 
     d->locked = false;
     d->lockReason = QString();
@@ -190,20 +190,20 @@ QString FakeDevice::lockReason() const
     return d->lockReason;
 }
 
-void FakeDevice::raiseCondition( const QString &condition, const QString &reason )
+void FakeDevice::raiseCondition(const QString &condition, const QString &reason)
 {
-    emit conditionRaised( condition, reason );
+    emit conditionRaised(condition, reason);
 }
 
 bool FakeDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
-    return d->interfaceList.contains( Solid::DeviceInterface::typeToString(type) );
+    return d->interfaceList.contains(Solid::DeviceInterface::typeToString(type));
 }
 
 QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
     // Do not try to cast with a unsupported device interface.
-    if( !queryDeviceInterface(type) )
+    if (!queryDeviceInterface(type))
         return 0;
 
     FakeDeviceInterface *iface = 0;
@@ -264,8 +264,8 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     if(iface)
     {
-        QDBusConnection::sessionBus().registerObject( d->udi+'/'+Solid::DeviceInterface::typeToString(type), iface,
-                                                      QDBusConnection::ExportNonScriptableSlots );
+        QDBusConnection::sessionBus().registerObject(d->udi+'/'+Solid::DeviceInterface::typeToString(type), iface,
+                                                      QDBusConnection::ExportNonScriptableSlots);
     }
 
     return iface;

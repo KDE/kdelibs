@@ -26,10 +26,10 @@
 class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::Volume
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Volume )
+    Q_INTERFACES(Solid::Ifaces::Volume)
 
 public:
-    explicit FakeVolume( FakeDevice *device );
+    explicit FakeVolume(FakeDevice *device);
     virtual ~FakeVolume();
 
 public Q_SLOTS:
@@ -53,7 +53,7 @@ public Q_SLOTS:
     QString createEjectJob();
 
 Q_SIGNALS:
-    void mountStateChanged( bool newState );
+    void mountStateChanged(bool newState);
 };
 
 #endif

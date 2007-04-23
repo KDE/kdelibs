@@ -26,10 +26,10 @@
 class FakeStorage : public FakeBlock, virtual public Solid::Ifaces::Storage
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Storage )
+    Q_INTERFACES(Solid::Ifaces::Storage)
 
 public:
-    explicit FakeStorage( FakeDevice *device );
+    explicit FakeStorage(FakeDevice *device);
     ~FakeStorage();
 
 public Q_SLOTS:

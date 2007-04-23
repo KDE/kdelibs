@@ -34,10 +34,10 @@ namespace Solid
     class SOLID_EXPORT NetworkHw : public DeviceInterface
     {
         Q_OBJECT
-        Q_PROPERTY( QString ifaceName READ ifaceName )
-        Q_PROPERTY( bool wireless READ isWireless )
-        Q_PROPERTY( QString hwAddress READ hwAddress )
-        Q_PROPERTY( qulonglong macAddress READ macAddress )
+        Q_PROPERTY(QString ifaceName READ ifaceName)
+        Q_PROPERTY(bool wireless READ isWireless)
+        Q_PROPERTY(QString hwAddress READ hwAddress)
+        Q_PROPERTY(qulonglong macAddress READ macAddress)
         Q_DECLARE_PRIVATE(NetworkHw)
 
     public:
@@ -49,7 +49,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit NetworkHw( QObject *backendObject );
+        explicit NetworkHw(QObject *backendObject);
 
         /**
          * Destroys a NetworkHw object.

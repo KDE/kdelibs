@@ -30,44 +30,44 @@
 
 
 typedef KGenericFactory<KcmSolid, QWidget> KcmSolidFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_solid, KcmSolidFactory("kcm_solid"))
+K_EXPORT_COMPONENT_FACTORY(kcm_solid, KcmSolidFactory("kcm_solid"))
 
 
-KcmSolid::KcmSolid( QWidget* parent, const QStringList& args )
-    : KCModule( KcmSolidFactory::componentData(), parent, args ),
-      m_changedChooser( 0 )
+KcmSolid::KcmSolid(QWidget *parent, const QStringList &args)
+    : KCModule(KcmSolidFactory::componentData(), parent, args),
+      m_changedChooser(0)
 {
     KAboutData *about = new KAboutData(
-        "kcm_solid", I18N_NOOP( "Solid Configuration Module" ),
+        "kcm_solid", I18N_NOOP("Solid Configuration Module"),
         KDE_VERSION_STRING, 0, KAboutData::License_GPL,
-        I18N_NOOP( "Copyright 2006 Kevin Ottens" ) );
-    about->addAuthor( "Kevin Ottens", 0, "ervin@kde.org" );
-    setAboutData( about );
+        I18N_NOOP("Copyright 2006 Kevin Ottens"));
+    about->addAuthor("Kevin Ottens", 0, "ervin@kde.org");
+    setAboutData(about);
 
-    setLayout( new QVBoxLayout );
-    layout()->setMargin( 0 );
-    layout()->setSpacing( 0 );
+    setLayout(new QVBoxLayout);
+    layout()->setMargin(0);
+    layout()->setSpacing(0);
 
-    m_hardwareChooser = new BackendChooser( this, "SolidDeviceManager" );
-    m_powerChooser = new BackendChooser( this, "SolidPowerManager" );
-    m_networkChooser = new BackendChooser( this, "SolidNetworkManager" );
-    m_bluetoothChooser = new BackendChooser( this, "SolidBluetoothManager" );
+    m_hardwareChooser = new BackendChooser(this, "SolidDeviceManager");
+    m_powerChooser = new BackendChooser(this, "SolidPowerManager");
+    m_networkChooser = new BackendChooser(this, "SolidNetworkManager");
+    m_bluetoothChooser = new BackendChooser(this, "SolidBluetoothManager");
 
-    layout()->addWidget( m_hardwareChooser );
-    layout()->addWidget( m_powerChooser );
-    layout()->addWidget( m_networkChooser );
-    layout()->addWidget( m_bluetoothChooser );
+    layout()->addWidget(m_hardwareChooser);
+    layout()->addWidget(m_powerChooser);
+    layout()->addWidget(m_networkChooser);
+    layout()->addWidget(m_bluetoothChooser);
 
     load();
 
-    connect( m_hardwareChooser, SIGNAL( changed(bool) ),
-             this, SLOT( slotChooserChanged(bool) ) );
-    connect( m_powerChooser, SIGNAL( changed(bool) ),
-             this, SLOT( slotChooserChanged(bool) ) );
-    connect( m_networkChooser, SIGNAL( changed(bool) ),
-             this, SLOT( slotChooserChanged(bool) ) );
-    connect( m_bluetoothChooser, SIGNAL( changed(bool) ),
-             this, SLOT( slotChooserChanged(bool) ) );
+    connect(m_hardwareChooser, SIGNAL(changed(bool)),
+             this, SLOT(slotChooserChanged(bool)));
+    connect(m_powerChooser, SIGNAL(changed(bool)),
+             this, SLOT(slotChooserChanged(bool)));
+    connect(m_networkChooser, SIGNAL(changed(bool)),
+             this, SLOT(slotChooserChanged(bool)));
+    connect(m_bluetoothChooser, SIGNAL(changed(bool)),
+             this, SLOT(slotChooserChanged(bool)));
 
 }
 
@@ -95,9 +95,9 @@ void KcmSolid::defaults()
     m_bluetoothChooser->defaults();
 }
 
-void KcmSolid::slotChooserChanged( bool state )
+void KcmSolid::slotChooserChanged(bool state)
 {
-    if ( state )
+    if (state)
     {
         m_changedChooser++;
     }
@@ -107,7 +107,7 @@ void KcmSolid::slotChooserChanged( bool state )
     }
 
 
-    emit changed( m_changedChooser!= 0 );
+    emit changed(m_changedChooser!= 0);
 }
 
 #include "kcmsolid.moc"

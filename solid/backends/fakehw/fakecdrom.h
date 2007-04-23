@@ -26,10 +26,10 @@
 class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::Cdrom
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Cdrom )
+    Q_INTERFACES(Solid::Ifaces::Cdrom)
 
 public:
-    explicit FakeCdrom( FakeDevice *device );
+    explicit FakeCdrom(FakeDevice *device);
     virtual ~FakeCdrom();
 
 public Q_SLOTS:

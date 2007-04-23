@@ -37,15 +37,15 @@ namespace Solid
     class SOLID_EXPORT Storage : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( Bus DriveType )
-        Q_PROPERTY( Bus bus READ bus )
-        Q_PROPERTY( DriveType driveType READ driveType )
-        Q_PROPERTY( bool removable READ isRemovable )
-        Q_PROPERTY( bool ejectRequired READ isEjectRequired )
-        Q_PROPERTY( bool hotpluggable READ isHotpluggable )
-        Q_PROPERTY( bool mediaCheckEnabled READ isMediaCheckEnabled )
-        Q_PROPERTY( QString vendor READ vendor )
-        Q_PROPERTY( QString product READ product )
+        Q_ENUMS(Bus DriveType)
+        Q_PROPERTY(Bus bus READ bus)
+        Q_PROPERTY(DriveType driveType READ driveType)
+        Q_PROPERTY(bool removable READ isRemovable)
+        Q_PROPERTY(bool ejectRequired READ isEjectRequired)
+        Q_PROPERTY(bool hotpluggable READ isHotpluggable)
+        Q_PROPERTY(bool mediaCheckEnabled READ isMediaCheckEnabled)
+        Q_PROPERTY(QString vendor READ vendor)
+        Q_PROPERTY(QString product READ product)
         Q_DECLARE_PRIVATE(Storage)
 
     public:
@@ -85,7 +85,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Storage( QObject *backendObject );
+        explicit Storage(QObject *backendObject);
 
         /**
          * Destroys a Storage object.

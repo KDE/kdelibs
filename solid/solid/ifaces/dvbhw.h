@@ -85,6 +85,6 @@ namespace Ifaces
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::DvbHw, "org.kde.Solid.Ifaces.DvbHw/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::DvbHw, "org.kde.Solid.Ifaces.DvbHw/0.1")
 
 #endif

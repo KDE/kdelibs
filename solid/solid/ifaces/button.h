@@ -80,11 +80,11 @@ namespace Ifaces
          * the type Solid::Button::ButtonType
          * @see Solid::Button::ButtonType
          */
-        virtual void pressed( int type ) = 0;
+        virtual void pressed(int type) = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::Button, "org.kde.Solid.Ifaces.Button/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::Button, "org.kde.Solid.Ifaces.Button/0.1")
 
 #endif

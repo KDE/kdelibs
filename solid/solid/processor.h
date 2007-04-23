@@ -34,9 +34,9 @@ namespace Solid
     class SOLID_EXPORT Processor : public DeviceInterface
     {
         Q_OBJECT
-        Q_PROPERTY( int number READ number )
-        Q_PROPERTY( qulonglong maxSpeed READ maxSpeed )
-        Q_PROPERTY( bool canThrottle READ canThrottle )
+        Q_PROPERTY(int number READ number)
+        Q_PROPERTY(qulonglong maxSpeed READ maxSpeed)
+        Q_PROPERTY(bool canThrottle READ canThrottle)
         Q_DECLARE_PRIVATE(Processor)
 
     public:
@@ -48,7 +48,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Processor( QObject *backendObject );
+        explicit Processor(QObject *backendObject);
 
         /**
          * Destroys a Processor object.

@@ -42,7 +42,7 @@ int main(int args, char **argv)
     Solid::NetworkManager &netmanager = Solid::NetworkManager::self();
     
     //test to see if networking is enabled on the system
-    if(netmanager.isNetworkingEnabled() )
+    if(netmanager.isNetworkingEnabled())
     {
         kDebug() << "Networking is enabled.  Feel free to go online!" << endl;
     }

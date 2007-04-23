@@ -61,14 +61,14 @@
 #include <solid/ifaces/dvbhw.h>
 
 
-Solid::Device::Device( const QString &udi )
+Solid::Device::Device(const QString &udi)
 {
     DeviceManagerPrivate *manager
-        = static_cast<DeviceManagerPrivate*>(Solid::DeviceManager::notifier());
+        = static_cast<DeviceManagerPrivate *>(Solid::DeviceManager::notifier());
     d = manager->findRegisteredDevice(udi);
 }
 
-Solid::Device::Device( const Device &device )
+Solid::Device::Device(const Device &device)
     : d(device.d)
 {
 }
@@ -77,7 +77,7 @@ Solid::Device::~Device()
 {
 }
 
-Solid::Device &Solid::Device::operator=( const Solid::Device &device )
+Solid::Device &Solid::Device::operator=(const Solid::Device &device)
 {
     d = device.d;
     return *this;
@@ -95,14 +95,14 @@ QString Solid::Device::udi() const
 
 QString Solid::Device::parentUdi() const
 {
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), parentUdi() );
+    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), parentUdi());
 }
 
 Solid::Device Solid::Device::parent() const
 {
     QString udi = parentUdi();
 
-    if ( udi.isEmpty() )
+    if (udi.isEmpty())
     {
         return Device();
     }
@@ -114,27 +114,27 @@ Solid::Device Solid::Device::parent() const
 
 QString Solid::Device::vendor() const
 {
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), vendor() );
+    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), vendor());
 }
 
 QString Solid::Device::product() const
 {
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), QString(), product() );
+    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), product());
 }
 
 bool Solid::Device::queryDeviceInterface(const DeviceInterface::Type &type) const
 {
-    return_SOLID_CALL( Ifaces::Device*, d->backendObject(), false, queryDeviceInterface(type) );
+    return_SOLID_CALL(Ifaces::Device *, d->backendObject(), false, queryDeviceInterface(type));
 }
 
 template<typename IfaceType, typename DevType>
-inline DevType* deviceinterface_cast( QObject *backendObject )
+inline DevType *deviceinterface_cast(QObject *backendObject)
 {
-    IfaceType *iface = qobject_cast<IfaceType*>( backendObject );
+    IfaceType *iface = qobject_cast<IfaceType *>(backendObject);
 
-    if ( iface )
+    if (iface)
     {
-        return new DevType( backendObject );
+        return new DevType(backendObject);
     }
     else
     {
@@ -145,14 +145,14 @@ inline DevType* deviceinterface_cast( QObject *backendObject )
 Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type)
 {
     const Solid::DeviceInterface *interface = const_cast<const Device *>(this)->asDeviceInterface(type);
-    return const_cast<Solid::DeviceInterface*>(interface);
+    return const_cast<Solid::DeviceInterface *>(interface);
 }
 
 const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type) const
 {
-    Ifaces::Device *device = qobject_cast<Ifaces::Device*>( d->backendObject() );
+    Ifaces::Device *device = qobject_cast<Ifaces::Device *>(d->backendObject());
 
-    if ( device!=0 )
+    if (device!=0)
     {
         DeviceInterface *iface = d->interface(type);
 
@@ -162,7 +162,7 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
 
         QObject *dev_iface = device->createDeviceInterface(type);
 
-        if ( dev_iface!=0 )
+        if (dev_iface!=0)
         {
             switch (type)
             {
@@ -219,10 +219,10 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
             }
         }
 
-        if ( iface!=0 )
+        if (iface!=0)
         {
             // Lie on the constness since we're simply doing caching here
-            const_cast<Device*>(this)->d->setInterface(type, iface);
+            const_cast<Device *>(this)->d->setInterface(type, iface);
         }
 
         return iface;
@@ -248,7 +248,7 @@ Solid::DevicePrivate::~DevicePrivate()
     // we get a double delete because of m_refToSelf deletion
     ref.ref();
 
-    qDeleteAll( m_ifaces.values() );
+    qDeleteAll(m_ifaces.values());
 }
 
 void Solid::DevicePrivate::_k_destroyed(QObject *object)
@@ -269,8 +269,8 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
     m_backendObject = object;
 
     if (m_backendObject) {
-        connect(m_backendObject, SIGNAL(destroyed(QObject*)),
-                this, SLOT(_k_destroyed(QObject*)));
+        connect(m_backendObject, SIGNAL(destroyed(QObject *)),
+                this, SLOT(_k_destroyed(QObject *)));
     }
 
     m_refToSelf = 0;

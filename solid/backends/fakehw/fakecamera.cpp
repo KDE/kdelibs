@@ -19,8 +19,8 @@
 
 #include "fakecamera.h"
 
-FakeCamera::FakeCamera( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeCamera::FakeCamera(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }
@@ -32,13 +32,13 @@ FakeCamera::~FakeCamera()
 
 Solid::Camera::AccessType FakeCamera::accessMethod() const
 {
-    QString method = fakeDevice()->property( "accessMethod" ).toString();
+    QString method = fakeDevice()->property("accessMethod").toString();
 
-    if ( method=="storage" )
+    if (method=="storage")
     {
         return Solid::Camera::MassStorage;
     }
-    else if ( method=="ptp" )
+    else if (method=="ptp")
     {
         return Solid::Camera::Ptp;
     }
@@ -50,7 +50,7 @@ Solid::Camera::AccessType FakeCamera::accessMethod() const
 
 bool FakeCamera::isGphotoSupported() const
 {
-    return fakeDevice()->property( "gphotoSupport" ).toBool();
+    return fakeDevice()->property("gphotoSupport").toBool();
 }
 
 #include "fakecamera.moc"

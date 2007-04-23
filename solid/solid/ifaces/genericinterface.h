@@ -81,7 +81,7 @@ namespace Ifaces
          * describe the kind of change done on the device property
          * (added/removed/modified), it's one of the type Solid::Device::PropertyChange
          */
-        virtual void propertyChanged( const QMap<QString,int> &changes ) = 0;
+        virtual void propertyChanged(const QMap<QString,int> &changes) = 0;
 
         /**
          * This signal is emitted when an event occurred in the device.
@@ -90,11 +90,11 @@ namespace Ifaces
          * @param condition the condition name
          * @param reason a message explaining why the condition has been raised
          */
-        virtual void conditionRaised( const QString &condition, const QString &reason ) = 0;
+        virtual void conditionRaised(const QString &condition, const QString &reason) = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE( Solid::Ifaces::GenericInterface, "org.kde.Solid.Ifaces.GenericInterface/0.1" )
+Q_DECLARE_INTERFACE(Solid::Ifaces::GenericInterface, "org.kde.Solid.Ifaces.GenericInterface/0.1")
 
 #endif

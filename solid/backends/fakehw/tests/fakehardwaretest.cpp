@@ -33,35 +33,35 @@
 #include "fakemanager.h"
 #include "fakedevice.h"
 
-QTEST_KDEMAIN_CORE( FakeHardwareTest )
+QTEST_KDEMAIN_CORE(FakeHardwareTest)
 
 void FakeHardwareTest::testFakeBackend()
 {
-    FakeManager *fakeManager = new FakeManager(0, QStringList(), TEST_DATA );
+    FakeManager *fakeManager = new FakeManager(0, QStringList(), TEST_DATA);
 
-    QVERIFY( !fakeManager->allDevices().isEmpty() );
-    QVERIFY( fakeManager->createDevice("/org/kde/solid/fakehw/computer")!=0 );
-    QVERIFY( fakeManager->createDevice("/com/helloworld/troll/compiutor")==0 );
+    QVERIFY(!fakeManager->allDevices().isEmpty());
+    QVERIFY(fakeManager->createDevice("/org/kde/solid/fakehw/computer")!=0);
+    QVERIFY(fakeManager->createDevice("/com/helloworld/troll/compiutor")==0);
 
-    FakeDevice *device = static_cast<FakeDevice*>(fakeManager->createDevice("/org/kde/solid/fakehw/acpi_CPU0"));
+    FakeDevice *device = static_cast<FakeDevice *>(fakeManager->createDevice("/org/kde/solid/fakehw/acpi_CPU0"));
 
-    QCOMPARE( device->udi(), QString("/org/kde/solid/fakehw/acpi_CPU0") );
-    QCOMPARE( device->parentUdi(), QString("/org/kde/solid/fakehw/computer") );
-    QCOMPARE( device->vendor(), QString("Acme Corporation") );
-    QCOMPARE( device->product(), QString("Solid Processor #0") );
+    QCOMPARE(device->udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
+    QCOMPARE(device->parentUdi(), QString("/org/kde/solid/fakehw/computer"));
+    QCOMPARE(device->vendor(), QString("Acme Corporation"));
+    QCOMPARE(device->product(), QString("Solid Processor #0"));
 
-    QCOMPARE( device->property("number").toString(), QString("0") );
-    QVERIFY( device->propertyExists("number") );
-    QVERIFY( !device->propertyExists("youstfuqewerrernoob") );
+    QCOMPARE(device->property("number").toString(), QString("0"));
+    QVERIFY(device->propertyExists("number"));
+    QVERIFY(!device->propertyExists("youstfuqewerrernoob"));
 
-    QVERIFY( device->queryDeviceInterface(Solid::DeviceInterface::Processor) );
+    QVERIFY(device->queryDeviceInterface(Solid::DeviceInterface::Processor));
 
-    QObject *interface = device->createDeviceInterface( Solid::DeviceInterface::Processor );
-    Solid::Ifaces::Processor *processor = qobject_cast<Solid::Ifaces::Processor*>( interface );
+    QObject *interface = device->createDeviceInterface(Solid::DeviceInterface::Processor);
+    Solid::Ifaces::Processor *processor = qobject_cast<Solid::Ifaces::Processor *>(interface);
 
-    QCOMPARE( processor->number(), 0 );
-    QCOMPARE( processor->canThrottle(), true );
-    QCOMPARE( (int)processor->maxSpeed(), 3200 );
+    QCOMPARE(processor->number(), 0);
+    QCOMPARE(processor->canThrottle(), true);
+    QCOMPARE((int)processor->maxSpeed(), 3200);
 }
 
 #include "fakehardwaretest.moc"

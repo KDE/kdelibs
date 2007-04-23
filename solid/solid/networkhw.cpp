@@ -23,7 +23,7 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/networkhw.h>
 
-Solid::NetworkHw::NetworkHw( QObject *backendObject )
+Solid::NetworkHw::NetworkHw(QObject *backendObject)
     : DeviceInterface(*new NetworkHwPrivate(), backendObject)
 {
 }
@@ -36,25 +36,25 @@ Solid::NetworkHw::~NetworkHw()
 QString Solid::NetworkHw::ifaceName() const
 {
     Q_D(const NetworkHw);
-    return_SOLID_CALL(Ifaces::NetworkHw*, d->backendObject(), QString(), ifaceName());
+    return_SOLID_CALL(Ifaces::NetworkHw *, d->backendObject(), QString(), ifaceName());
 }
 
 bool Solid::NetworkHw::isWireless() const
 {
     Q_D(const NetworkHw);
-    return_SOLID_CALL(Ifaces::NetworkHw*, d->backendObject(), false, isWireless());
+    return_SOLID_CALL(Ifaces::NetworkHw *, d->backendObject(), false, isWireless());
 }
 
 QString Solid::NetworkHw::hwAddress() const
 {
     Q_D(const NetworkHw);
-    return_SOLID_CALL(Ifaces::NetworkHw*, d->backendObject(), QString(), hwAddress());
+    return_SOLID_CALL(Ifaces::NetworkHw *, d->backendObject(), QString(), hwAddress());
 }
 
 qulonglong Solid::NetworkHw::macAddress() const
 {
     Q_D(const NetworkHw);
-    return_SOLID_CALL(Ifaces::NetworkHw*, d->backendObject(), 0, macAddress());
+    return_SOLID_CALL(Ifaces::NetworkHw *, d->backendObject(), 0, macAddress());
 }
 
 #include "networkhw.moc"

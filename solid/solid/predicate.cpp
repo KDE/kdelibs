@@ -32,9 +32,9 @@ namespace Solid
     public:
         enum OperatorType { AtomType, AndType, OrType, IsType };
 
-        Private() : isValid( false ), type( AtomType ),
-                    compOperator( Predicate::Equals ),
-                    operand1( 0 ), operand2( 0 ) {}
+        Private() : isValid(false), type(AtomType),
+                    compOperator(Predicate::Equals),
+                    operand1(0), operand2(0) {}
 
         bool isValid;
         OperatorType type;
@@ -51,12 +51,12 @@ namespace Solid
 
 
 Solid::Predicate::Predicate()
-    : d( new Private() )
+    : d(new Private())
 {
 }
 
-Solid::Predicate::Predicate( const Predicate &other )
-    : d( new Private() )
+Solid::Predicate::Predicate(const Predicate &other)
+    : d(new Private())
 {
     *this = other;
 }
@@ -64,7 +64,7 @@ Solid::Predicate::Predicate( const Predicate &other )
 Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType,
                             const QString &property, const QVariant &value,
                             ComparisonOperator compOperator)
-    : d( new Private() )
+    : d(new Private())
 {
     d->isValid = true;
     d->ifaceType = ifaceType;
@@ -76,7 +76,7 @@ Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType,
 Solid::Predicate::Predicate(const QString &ifaceName,
                             const QString &property, const QVariant &value,
                             ComparisonOperator compOperator)
-    : d( new Private() )
+    : d(new Private())
 {
     DeviceInterface::Type ifaceType = DeviceInterface::stringToType(ifaceName);
 
@@ -91,7 +91,7 @@ Solid::Predicate::Predicate(const QString &ifaceName,
 }
 
 Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType)
-    : d( new Private() )
+    : d(new Private())
 {
     d->isValid = true;
     d->type = Private::IsType;
@@ -99,7 +99,7 @@ Solid::Predicate::Predicate(const DeviceInterface::Type &ifaceType)
 }
 
 Solid::Predicate::Predicate(const QString &ifaceName)
-    : d( new Private() )
+    : d(new Private())
 {
     DeviceInterface::Type ifaceType = DeviceInterface::stringToType(ifaceName);
 
@@ -121,15 +121,15 @@ Solid::Predicate::~Predicate()
     delete d;
 }
 
-Solid::Predicate &Solid::Predicate::operator=( const Predicate &other )
+Solid::Predicate &Solid::Predicate::operator=(const Predicate &other)
 {
     d->isValid = other.d->isValid;
     d->type = other.d->type;
 
-    if ( d->type!=Private::AtomType && d->type!=Private::IsType )
+    if (d->type!=Private::AtomType && d->type!=Private::IsType)
     {
-        d->operand1 = new Predicate( *( other.d->operand1 ) );
-        d->operand2 = new Predicate( *( other.d->operand2 ) );
+        d->operand1 = new Predicate(*(other.d->operand1));
+        d->operand2 = new Predicate(*(other.d->operand2));
     }
     else
     {
@@ -142,26 +142,26 @@ Solid::Predicate &Solid::Predicate::operator=( const Predicate &other )
     return *this;
 }
 
-Solid::Predicate Solid::Predicate::operator&( const Predicate &other )
+Solid::Predicate Solid::Predicate::operator &(const Predicate &other)
 {
     Predicate result;
 
     result.d->isValid = true;
     result.d->type = Private::AndType;
-    result.d->operand1 = new Predicate( *this );
-    result.d->operand2 = new Predicate( other );
+    result.d->operand1 = new Predicate(*this);
+    result.d->operand2 = new Predicate(other);
 
     return result;
 }
 
-Solid::Predicate Solid::Predicate::operator|( const Predicate &other )
+Solid::Predicate Solid::Predicate::operator|(const Predicate &other)
 {
     Predicate result;
 
     result.d->isValid = true;
     result.d->type = Private::OrType;
-    result.d->operand1 = new Predicate( *this );
-    result.d->operand2 = new Predicate( other );
+    result.d->operand1 = new Predicate(*this);
+    result.d->operand2 = new Predicate(other);
 
     return result;
 }
@@ -171,25 +171,25 @@ bool Solid::Predicate::isValid() const
     return d->isValid;
 }
 
-bool Solid::Predicate::matches( const Device &device ) const
+bool Solid::Predicate::matches(const Device &device) const
 {
-    if ( !d->isValid ) return false;
+    if (!d->isValid) return false;
 
-    switch( d->type )
+    switch(d->type)
     {
     case Private::OrType:
-        return d->operand1->matches( device )
-            || d->operand2->matches( device );
+        return d->operand1->matches(device)
+            || d->operand2->matches(device);
     case Private::AndType:
-        return d->operand1->matches( device )
-            && d->operand2->matches( device );
+        return d->operand1->matches(device)
+            && d->operand2->matches(device);
     case Private::AtomType:
     {
         const DeviceInterface *iface = device.asDeviceInterface(d->ifaceType);
 
-        if ( iface!=0 )
+        if (iface!=0)
         {
-            QVariant value = iface->property( d->property.toLatin1() );
+            QVariant value = iface->property(d->property.toLatin1());
             QVariant expected = d->value;
 
             int index = iface->metaObject()->indexOfProperty(d->property.toLatin1());
@@ -197,7 +197,7 @@ bool Solid::Predicate::matches( const Device &device ) const
 
             if (metaProp.isEnumType() && expected.type()==QVariant::String) {
                 QMetaEnum metaEnum = metaProp.enumerator();
-                expected = QVariant( metaEnum.keysToValue(d->value.toString().toLatin1()) );
+                expected = QVariant(metaEnum.keysToValue(d->value.toString().toLatin1()));
             }
 
             if (d->compOperator==Mask) {
@@ -206,7 +206,7 @@ bool Solid::Predicate::matches( const Device &device ) const
                 bool e_ok;
                 int e = expected.toInt(&e_ok);
 
-                return (e_ok && v_ok && (v&e));
+                return (e_ok && v_ok && (v &e));
             } else {
                 return (value == expected);
             }
@@ -226,7 +226,7 @@ QSet<Solid::DeviceInterface::Type> Solid::Predicate::usedTypes() const
 
     if (d->isValid) {
 
-        switch( d->type )
+        switch(d->type)
         {
         case Private::OrType:
         case Private::AndType:
@@ -247,14 +247,14 @@ QSet<Solid::DeviceInterface::Type> Solid::Predicate::usedTypes() const
 
 QString Solid::Predicate::toString() const
 {
-    if ( !d->isValid ) return "False";
+    if (!d->isValid) return "False";
 
-    if ( d->type!=Private::AtomType && d->type!=Private::IsType )
+    if (d->type!=Private::AtomType && d->type!=Private::IsType)
     {
         QString op = " AND ";
-        if ( d->type==Private::OrType ) op = " OR ";
+        if (d->type==Private::OrType) op = " OR ";
 
-        return "[ "+d->operand1->toString()+op+d->operand2->toString()+" ]";
+        return "["+d->operand1->toString()+op+d->operand2->toString()+"]";
     }
     else
     {
@@ -268,7 +268,7 @@ QString Solid::Predicate::toString() const
 
         QString value;
 
-        switch ( d->value.type() )
+        switch (d->value.type())
         {
         case QVariant::StringList:
         {
@@ -279,11 +279,11 @@ QString Solid::Predicate::toString() const
             QStringList::ConstIterator it = list.begin();
             QStringList::ConstIterator end = list.end();
 
-            for ( ; it!=end; ++it )
+            for (; it!=end; ++it)
             {
-                value+= '\''+*it+'\'';
+                value+= '\''+ *it+'\'';
 
-                if ( it+1!=end )
+                if (it+1!=end)
                 {
                     value+= ", ";
                 }
@@ -293,7 +293,7 @@ QString Solid::Predicate::toString() const
             break;
         }
         case QVariant::Bool:
-            value = ( d->value.toBool()?"true":"false" );
+            value = (d->value.toBool()?"true":"false");
             break;
         case QVariant::Int:
         case QVariant::UInt:
@@ -307,7 +307,7 @@ QString Solid::Predicate::toString() const
         }
 
         QString str_operator = "==";
-        if (d->compOperator!=Equals) str_operator = "&";
+        if (d->compOperator!=Equals) str_operator = " &";
 
 
         return ifaceName+'.'+d->property+' '+str_operator+' '+value;

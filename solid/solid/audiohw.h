@@ -34,13 +34,13 @@ namespace Solid
     class SOLID_EXPORT AudioHw : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( AudioDriver AudioHwType SoundcardType )
-        Q_FLAGS( AudioHwTypes )
-        Q_PROPERTY( AudioDriver driver READ driver )
-        Q_PROPERTY( QStringList driverHandles READ driverHandles )
-        Q_PROPERTY( QString name READ name )
-        Q_PROPERTY( AudioHwTypes deviceType READ deviceType )
-        Q_PROPERTY( SoundcardType soundcardType READ soundcardType )
+        Q_ENUMS(AudioDriver AudioHwType SoundcardType)
+        Q_FLAGS(AudioHwTypes)
+        Q_PROPERTY(AudioDriver driver READ driver)
+        Q_PROPERTY(QStringList driverHandles READ driverHandles)
+        Q_PROPERTY(QString name READ name)
+        Q_PROPERTY(AudioHwTypes deviceType READ deviceType)
+        Q_PROPERTY(SoundcardType soundcardType READ soundcardType)
         Q_DECLARE_PRIVATE(AudioHw)
 
     public:
@@ -91,7 +91,7 @@ namespace Solid
         /**
          * This type stores an OR combination of AudioHwType values.
          */
-        Q_DECLARE_FLAGS( AudioHwTypes, AudioHwType )
+        Q_DECLARE_FLAGS(AudioHwTypes, AudioHwType)
 
         /**
          * This enum defines the type of soundcard of this device.
@@ -134,7 +134,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit AudioHw( QObject *backendObject );
+        explicit AudioHw(QObject *backendObject);
 
         /**
          * Destroys an AudioHw object.
@@ -201,6 +201,6 @@ namespace Solid
     };
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS( Solid::AudioHw::AudioHwTypes )
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::AudioHw::AudioHwTypes)
 
 #endif

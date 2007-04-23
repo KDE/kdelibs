@@ -22,15 +22,15 @@
 
 #include <QTimer>
 
-FakeJob::FakeJob( QObject *parent )
+FakeJob::FakeJob(QObject *parent)
     : KJob(parent)
 {
     m_stepsCount = 0;
     m_stepsTotal = 10;
     m_stepsIncrement = 1;
 
-    connect( &m_timer, SIGNAL( timeout() ),
-             this, SLOT( slotTimeout() ) );
+    connect(&m_timer, SIGNAL(timeout()),
+             this, SLOT(slotTimeout()));
 }
 
 FakeJob::~FakeJob()
@@ -40,12 +40,12 @@ FakeJob::~FakeJob()
 
 void FakeJob::start()
 {
-    setTotalAmount( KJob::Bytes, m_stepsTotal );
+    setTotalAmount(KJob::Bytes, m_stepsTotal);
 
-    m_timer.start( 250 );
+    m_timer.start(250);
 }
 
-void FakeJob::setBroken( bool broken )
+void FakeJob::setBroken(bool broken)
 {
     m_broken = broken;
 }
@@ -57,19 +57,19 @@ bool FakeJob::isBroken()
 
 void FakeJob::slotTimeout()
 {
-    if ( isBroken() )
+    if (isBroken())
     {
-        setError( UserDefinedError+1 );
-        setErrorText( "Failed: Fake backend, job broken." );
+        setError(UserDefinedError+1);
+        setErrorText("Failed: Fake backend, job broken.");
         m_timer.stop();
         emitResult();
         return;
     }
 
     m_stepsCount+=m_stepsIncrement;
-    setProcessedAmount( KJob::Bytes, m_stepsCount );
+    setProcessedAmount(KJob::Bytes, m_stepsCount);
 
-    if ( m_stepsCount >= m_stepsTotal )
+    if (m_stepsCount >= m_stepsTotal)
     {
         m_timer.stop();
         emitResult();

@@ -41,7 +41,7 @@ private slots:
     void testDeviceInterfaces();
     void testPredicate();
 
-    void slotPropertyChanged( const QMap<QString,int> &changes );
+    void slotPropertyChanged(const QMap<QString,int> &changes);
 private:
     FakeManager *fakeManager;
     QList< QMap<QString,int> > m_changesList;

@@ -24,7 +24,7 @@
 
 #include <QWidget>
 #include <QHash>
-
+#include <QString>
 
 #include <kservice.h>
 
@@ -32,7 +32,7 @@ class BackendChooser : public QWidget
 {
     Q_OBJECT
 public:
-    BackendChooser( QWidget *parent, const QString &backendType );
+    BackendChooser(QWidget *parent, const QString &backendType);
 
     void load();
     void save();
@@ -44,10 +44,10 @@ private Q_SLOTS:
     void slotDownClicked();
 
 Q_SIGNALS:
-    void changed( bool state );
+    void changed(bool state);
 
 private:
-    void loadServicesInView( const KService::List& offers );
+    void loadServicesInView(const KService::List &offers);
     KService::List servicesFromView();
 
     Ui::BackendChooser m_ui;

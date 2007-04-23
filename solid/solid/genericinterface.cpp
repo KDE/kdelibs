@@ -28,10 +28,10 @@ Solid::GenericInterface::GenericInterface(QObject *backendObject)
     : DeviceInterface(*new GenericInterfacePrivate(), backendObject)
 {
     if (backendObject) {
-        connect(backendObject, SIGNAL(propertyChanged(const QMap<QString,int>&)),
-                this, SIGNAL(propertyChanged(const QMap<QString,int>&)));
-        connect(backendObject, SIGNAL(conditionRaised(const QString&, const QString&)),
-                this, SIGNAL(conditionRaised(const QString&, const QString&)));
+        connect(backendObject, SIGNAL(propertyChanged(const QMap<QString,int> &)),
+                this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
+        connect(backendObject, SIGNAL(conditionRaised(const QString &, const QString &)),
+                this, SIGNAL(conditionRaised(const QString &, const QString &)));
     }
 }
 
@@ -44,19 +44,19 @@ Solid::GenericInterface::~GenericInterface()
 QVariant Solid::GenericInterface::property(const QString &key) const
 {
     Q_D(const GenericInterface);
-    return_SOLID_CALL(Ifaces::GenericInterface*, d->backendObject(), QVariant(), property(key));
+    return_SOLID_CALL(Ifaces::GenericInterface *, d->backendObject(), QVariant(), property(key));
 }
 
 QMap<QString, QVariant> Solid::GenericInterface::allProperties() const
 {
     Q_D(const GenericInterface);
-    return_SOLID_CALL(Ifaces::GenericInterface*, d->backendObject(), QVariantMap(), allProperties());
+    return_SOLID_CALL(Ifaces::GenericInterface *, d->backendObject(), QVariantMap(), allProperties());
 }
 
 bool Solid::GenericInterface::propertyExists(const QString &key) const
 {
     Q_D(const GenericInterface);
-    return_SOLID_CALL(Ifaces::GenericInterface*, d->backendObject(), false, propertyExists(key));
+    return_SOLID_CALL(Ifaces::GenericInterface *, d->backendObject(), false, propertyExists(key));
 }
 
 #include "genericinterface.moc"

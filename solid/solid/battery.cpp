@@ -26,11 +26,11 @@
 Solid::Battery::Battery(QObject *backendObject)
     : DeviceInterface(*new BatteryPrivate(), backendObject)
 {
-    connect( backendObject, SIGNAL( chargePercentChanged( int ) ),
-             this, SIGNAL( chargePercentChanged( int ) ) );
+    connect(backendObject, SIGNAL(chargePercentChanged(int)),
+             this, SIGNAL(chargePercentChanged(int)));
 
-    connect( backendObject, SIGNAL( chargeStateChanged( int ) ),
-             this, SIGNAL( chargeStateChanged( int ) ) );
+    connect(backendObject, SIGNAL(chargeStateChanged(int)),
+             this, SIGNAL(chargeStateChanged(int)));
 }
 
 Solid::Battery::~Battery()
@@ -41,55 +41,55 @@ Solid::Battery::~Battery()
 bool Solid::Battery::isPlugged() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), false, isPlugged());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), false, isPlugged());
 }
 
 Solid::Battery::BatteryType Solid::Battery::type() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), UnknownBattery, type());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), UnknownBattery, type());
 }
 
 QString Solid::Battery::chargeLevelUnit() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), QString(), chargeLevelUnit());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), QString(), chargeLevelUnit());
 }
 
-int Solid::Battery::charge( LevelType type ) const
+int Solid::Battery::charge(LevelType type) const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), 0, charge(type));
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, charge(type));
 }
 
 int Solid::Battery::chargePercent() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), 0, chargePercent());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, chargePercent());
 }
 
 QString Solid::Battery::voltageUnit() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), QString(), voltageUnit());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), QString(), voltageUnit());
 }
 
 int Solid::Battery::voltage() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), 0, voltage());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, voltage());
 }
 
 bool Solid::Battery::isRechargeable() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), false, isRechargeable());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), false, isRechargeable());
 }
 
 Solid::Battery::ChargeState Solid::Battery::chargeState() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery*, d->backendObject(), NoCharge, chargeState());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), NoCharge, chargeState());
 }
 
 #include "battery.moc"

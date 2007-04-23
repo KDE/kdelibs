@@ -19,8 +19,8 @@
 
 #include "fakeblock.h"
 
-FakeBlock::FakeBlock( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeBlock::FakeBlock(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }

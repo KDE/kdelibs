@@ -42,49 +42,49 @@ Solid::Storage::~Storage()
 Solid::Storage::Bus Solid::Storage::bus() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), Platform, bus());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), Platform, bus());
 }
 
 Solid::Storage::DriveType Solid::Storage::driveType() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), HardDisk, driveType());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), HardDisk, driveType());
 }
 
 bool Solid::Storage::isRemovable() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isRemovable());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), false, isRemovable());
 }
 
 bool Solid::Storage::isEjectRequired() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isEjectRequired());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), false, isEjectRequired());
 }
 
 bool Solid::Storage::isHotpluggable() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isHotpluggable());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), false, isHotpluggable());
 }
 
 bool Solid::Storage::isMediaCheckEnabled() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), false, isMediaCheckEnabled());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), false, isMediaCheckEnabled());
 }
 
 QString Solid::Storage::vendor() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), QString(), vendor());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), QString(), vendor());
 }
 
 QString Solid::Storage::product() const
 {
     Q_D(const Storage);
-    return_SOLID_CALL(Ifaces::Storage*, d->backendObject(), QString(), product());
+    return_SOLID_CALL(Ifaces::Storage *, d->backendObject(), QString(), product());
 }
 
 #include "storage.moc"

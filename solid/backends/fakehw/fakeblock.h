@@ -26,10 +26,10 @@
 class FakeBlock : public FakeDeviceInterface, virtual public Solid::Ifaces::Block
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Block )
+    Q_INTERFACES(Solid::Ifaces::Block)
 
 public:
-    explicit FakeBlock( FakeDevice *device );
+    explicit FakeBlock(FakeDevice *device);
     ~FakeBlock();
 
 public Q_SLOTS:

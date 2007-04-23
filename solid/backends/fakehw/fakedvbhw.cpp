@@ -19,8 +19,8 @@
 
 #include "fakedvbhw.h"
 
-FakeDvbHw::FakeDvbHw( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeDvbHw::FakeDvbHw(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }

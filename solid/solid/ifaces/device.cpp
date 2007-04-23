@@ -19,8 +19,8 @@
 
 #include "device.h"
 
-Solid::Ifaces::Device::Device( QObject *parent )
-    : QObject( parent )
+Solid::Ifaces::Device::Device(QObject *parent)
+    : QObject(parent)
 {
 
 }

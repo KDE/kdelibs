@@ -19,8 +19,8 @@
 
 #include "fakeacadapter.h"
 
-FakeAcAdapter::FakeAcAdapter( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeAcAdapter::FakeAcAdapter(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 }
 
@@ -30,20 +30,20 @@ FakeAcAdapter::~FakeAcAdapter()
 
 bool FakeAcAdapter::isPlugged() const
 {
-    return fakeDevice()->property( "isPlugged" ).toBool();
+    return fakeDevice()->property("isPlugged").toBool();
 }
 
 
 void FakeAcAdapter::plug()
 {
-    fakeDevice()->setProperty( "isPlugged", true );
-    emit plugStateChanged( true );
+    fakeDevice()->setProperty("isPlugged", true);
+    emit plugStateChanged(true);
 }
 
 void FakeAcAdapter::unplug()
 {
-    fakeDevice()->setProperty( "isPlugged", false );
-    emit plugStateChanged( false );
+    fakeDevice()->setProperty("isPlugged", false);
+    emit plugStateChanged(false);
 }
 
 #include "fakeacadapter.moc"

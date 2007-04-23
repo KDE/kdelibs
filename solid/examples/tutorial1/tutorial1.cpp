@@ -40,7 +40,7 @@ int main(int args, char **argv)
     
     Solid::DeviceManager &manager = Solid::DeviceManager::self();
     
-    foreach(Solid::Device device, manager.allDevices() )
+    foreach (Solid::Device device, manager.allDevices())
     {
         kDebug() << device.udi().toLatin1().constData() << endl;
     }

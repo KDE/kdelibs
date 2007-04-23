@@ -22,8 +22,8 @@
 #include "fakeaudiohw.h"
 
 
-FakeAudioHw::FakeAudioHw( FakeDevice *device )
-    : FakeDeviceInterface( device )
+FakeAudioHw::FakeAudioHw(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }
@@ -36,13 +36,13 @@ FakeAudioHw::~FakeAudioHw()
 
 Solid::AudioHw::AudioDriver FakeAudioHw::driver() const
 {
-    QString driver = fakeDevice()->property( "driver" ).toString();
+    QString driver = fakeDevice()->property("driver").toString();
 
-    if ( driver == "alsa" )
+    if (driver == "alsa")
     {
         return Solid::AudioHw::Alsa;
     }
-    else if ( driver == "oss" )
+    else if (driver == "oss")
     {
         return Solid::AudioHw::OpenSoundSystem;
     }
@@ -54,31 +54,31 @@ Solid::AudioHw::AudioDriver FakeAudioHw::driver() const
 
 QString FakeAudioHw::driverHandler() const
 {
-    return fakeDevice()->property( "driverHandler" ).toString();
+    return fakeDevice()->property("driverHandler").toString();
 }
 
 QString FakeAudioHw::name() const
 {
-    return fakeDevice()->property( "name" ).toString();
+    return fakeDevice()->property("name").toString();
 }
 
 Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType() const
 {
     Solid::AudioHw::AudioHwTypes result;
 
-    QStringList type_list = fakeDevice()->property( "type" ).toString().split( "," );
+    QStringList type_list = fakeDevice()->property("type").toString().split(",");
 
-    foreach( const QString &type_str, type_list )
+    foreach (const QString &type_str, type_list)
     {
-        if ( type_str == "control" )
+        if (type_str == "control")
         {
             result|=Solid::AudioHw::AudioControl;
         }
-        else if ( type_str == "input" )
+        else if (type_str == "input")
         {
             result|=Solid::AudioHw::AudioInput;
         }
-        else if ( type_str == "output" )
+        else if (type_str == "output")
         {
             result|=Solid::AudioHw::AudioOutput;
         }
@@ -89,21 +89,21 @@ Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType() const
 
 Solid::AudioHw::SoundcardType FakeAudioHw::soundcardType() const
 {
-    QString type_str = fakeDevice()->property( "soundcardType" ).toString();
+    QString type_str = fakeDevice()->property("soundcardType").toString();
 
-    if ( type_str == "internal" )
+    if (type_str == "internal")
     {
         return Solid::AudioHw::InternalSoundcard;
     }
-    else if ( type_str == "usb" )
+    else if (type_str == "usb")
     {
         return Solid::AudioHw::UsbSoundcard;
     }
-    else if ( type_str == "firewire" )
+    else if (type_str == "firewire")
     {
         return Solid::AudioHw::FirewireSoundcard;
     }
-    else if ( type_str == "headset" )
+    else if (type_str == "headset")
     {
         return Solid::AudioHw::Headset;
     }

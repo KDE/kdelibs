@@ -35,32 +35,32 @@
 class FakeManager::Private
 {
 public:
-    QMap<QString, FakeDevice*> loadedDevices;
+    QMap<QString, FakeDevice *> loadedDevices;
     QMap<QString, QMap<QString,QVariant> > hiddenDevices;
     QString xmlFile;
 };
 
-FakeManager::FakeManager(QObject *parent, const QStringList&)
+FakeManager::FakeManager(QObject *parent, const QStringList &)
  : Solid::Ifaces::DeviceManager(parent), d(new Private)
 {
     d->xmlFile = KStandardDirs::locate("data", "solidfakehwbackend/fakecomputer.xml");
 
-    QDBusConnection::sessionBus().registerObject( "/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots );
+    QDBusConnection::sessionBus().registerObject("/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots);
 
     parseMachineFile();
 }
 
-FakeManager::FakeManager(QObject *parent, const QStringList&, const QString &xmlFile)
+FakeManager::FakeManager(QObject *parent, const QStringList &, const QString &xmlFile)
  : Solid::Ifaces::DeviceManager(parent), d(new Private)
 {
     QString machineXmlFile = xmlFile;
-    if( machineXmlFile.isEmpty() )
+    if (machineXmlFile.isEmpty())
     {
         machineXmlFile = KStandardDirs::locate("data", "solidfakehwbackend/fakecomputer.xml");
     }
     d->xmlFile = machineXmlFile;
 
-    QDBusConnection::sessionBus().registerObject( "/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots );
+    QDBusConnection::sessionBus().registerObject("/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots);
 
     parseMachineFile();
 }
@@ -75,7 +75,7 @@ QStringList FakeManager::allDevices()
 {
     QStringList deviceUdiList;
 
-    foreach(FakeDevice *device, d->loadedDevices.values())
+    foreach (FakeDevice *device, d->loadedDevices.values())
     {
         deviceUdiList.append(device->udi());
     }
@@ -85,11 +85,11 @@ QStringList FakeManager::allDevices()
 
 QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type)
 {
-    if( !parentUdi.isEmpty() )
+    if (!parentUdi.isEmpty())
     {
         QStringList found = findDeviceStringMatch(QLatin1String("parent"), parentUdi);
 
-        if( type == Solid::DeviceInterface::Unknown )
+        if (type == Solid::DeviceInterface::Unknown)
         {
             return found;
         }
@@ -99,11 +99,11 @@ QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Devic
         QStringList::Iterator it = found.begin();
         QStringList::ConstIterator end = found.end();
 
-        for ( ; it!=end; ++it )
+        for (; it!=end; ++it)
         {
             FakeDevice *device = d->loadedDevices[*it];
 
-            if ( device->queryDeviceInterface(type) )
+            if (device->queryDeviceInterface(type))
             {
                 result << *it;
             }
@@ -123,7 +123,7 @@ QStringList FakeManager::devicesFromQuery(const QString &parentUdi, Solid::Devic
 
 QObject *FakeManager::createDevice(const QString &udi)
 {
-    if( d->loadedDevices.contains(udi) )
+    if (d->loadedDevices.contains(udi))
     {
         return d->loadedDevices[udi];
     }
@@ -133,7 +133,7 @@ QObject *FakeManager::createDevice(const QString &udi)
 
 FakeDevice *FakeManager::findDevice(const QString &udi)
 {
-    if( d->loadedDevices.contains(udi) )
+    if (d->loadedDevices.contains(udi))
     {
         return d->loadedDevices[udi];
     }
@@ -145,63 +145,63 @@ QStringList FakeManager::findDeviceStringMatch(const QString &key, const QString
 {
     QStringList result;
     FakeDevice *device;
-    foreach(device, d->loadedDevices.values())
+    foreach (device, d->loadedDevices.values())
     {
-        if( device->property(key).toString() == value )
+        if (device->property(key).toString() == value)
         {
-            result.append( device->udi() );
+            result.append(device->udi());
         }
     }
 
     return result;
 }
 
-QStringList FakeManager::findDeviceByDeviceInterface( const Solid::DeviceInterface::Type &type )
+QStringList FakeManager::findDeviceByDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
     QStringList result;
     FakeDevice *device;
-    foreach(device, d->loadedDevices.values())
+    foreach (device, d->loadedDevices.values())
     {
-        if( device->queryDeviceInterface(type) )
+        if (device->queryDeviceInterface(type))
         {
-            result.append( device->udi() );
+            result.append(device->udi());
         }
     }
 
     return result;
 }
 
-void FakeManager::plug( const QString &udi )
+void FakeManager::plug(const QString &udi)
 {
-    if ( d->hiddenDevices.contains( udi ) )
+    if (d->hiddenDevices.contains(udi))
     {
-        QMap<QString, QVariant> properties = d->hiddenDevices.take( udi );
-        d->loadedDevices[udi] = new FakeDevice( udi, properties );
-        emit deviceAdded( udi );
+        QMap<QString, QVariant> properties = d->hiddenDevices.take(udi);
+        d->loadedDevices[udi] = new FakeDevice(udi, properties);
+        emit deviceAdded(udi);
     }
 }
 
-void FakeManager::unplug( const QString &udi )
+void FakeManager::unplug(const QString &udi)
 {
-    if ( d->loadedDevices.contains( udi ) )
+    if (d->loadedDevices.contains(udi))
     {
-        FakeDevice *dev = d->loadedDevices.take( udi );
+        FakeDevice *dev = d->loadedDevices.take(udi);
         d->hiddenDevices[udi] = dev->allProperties();
-        emit deviceRemoved( udi );
+        emit deviceRemoved(udi);
     }
 }
 
 void FakeManager::parseMachineFile()
 {
     QFile machineFile(d->xmlFile);
-    if( !machineFile.open(QIODevice::ReadOnly) )
+    if (!machineFile.open(QIODevice::ReadOnly))
     {
         kDebug() << k_funcinfo << "Error while opening " << d->xmlFile << endl;
         return;
     }
 
     QDomDocument fakeDocument;
-    if( !fakeDocument.setContent(&machineFile) )
+    if (!fakeDocument.setContent(&machineFile))
     {
         kDebug() << k_funcinfo << "Error while creating the QDomDocument." << endl;
         machineFile.close();
@@ -212,10 +212,10 @@ void FakeManager::parseMachineFile()
     kDebug() << k_funcinfo << "Parsing fake computer XML: " << d->xmlFile << endl;
     QDomElement mainElement = fakeDocument.documentElement();
     QDomNode node = mainElement.firstChild();
-    while( !node.isNull() )
+    while (!node.isNull())
     {
         QDomElement tempElement = node.toElement();
-        if( !tempElement.isNull() && tempElement.tagName() == QLatin1String("device") )
+        if (!tempElement.isNull() && tempElement.tagName() == QLatin1String("device"))
         {
             FakeDevice *tempDevice = parseDeviceElement(tempElement);
             if(tempDevice)
@@ -237,10 +237,10 @@ FakeDevice *FakeManager::parseDeviceElement(const QDomElement &deviceElement)
     kDebug() << k_funcinfo << "Listing device: " << udi << endl;
 
     QDomNode propertyNode = deviceElement.firstChild();
-    while( !propertyNode.isNull() )
+    while (!propertyNode.isNull())
     {
         QDomElement propertyElement = propertyNode.toElement();
-        if( !propertyElement.isNull() && propertyElement.tagName() == QLatin1String("property") )
+        if (!propertyElement.isNull() && propertyElement.tagName() == QLatin1String("property"))
         {
             QString propertyKey;
             QVariant propertyValue;
@@ -248,13 +248,13 @@ FakeDevice *FakeManager::parseDeviceElement(const QDomElement &deviceElement)
             propertyKey = propertyElement.attribute("key");
             propertyValue = QVariant(propertyElement.text());
 
-            propertyMap.insert( propertyKey, propertyValue );
+            propertyMap.insert(propertyKey, propertyValue);
         }
 
         propertyNode = propertyNode.nextSibling();
     }
 
-    if( !propertyMap.isEmpty() )
+    if (!propertyMap.isEmpty())
     {
         kDebug() << k_funcinfo << "Creating FakeDevice for " << udi << endl;
         device = new FakeDevice(udi, propertyMap);

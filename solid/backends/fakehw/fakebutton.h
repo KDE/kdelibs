@@ -26,10 +26,10 @@
 class FakeButton : public FakeDeviceInterface, virtual public Solid::Ifaces::Button
 {
     Q_OBJECT
-    Q_INTERFACES( Solid::Ifaces::Button )
+    Q_INTERFACES(Solid::Ifaces::Button)
 
 public:
-    explicit FakeButton( FakeDevice *device );
+    explicit FakeButton(FakeDevice *device);
     ~FakeButton();
 
 public Q_SLOTS:
@@ -40,7 +40,7 @@ public Q_SLOTS:
     void press();
 
 Q_SIGNALS:
-    void pressed( int type );
+    void pressed(int type);
 };
 
 #endif

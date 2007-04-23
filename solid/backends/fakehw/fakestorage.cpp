@@ -19,8 +19,8 @@
 
 #include "fakestorage.h"
 
-FakeStorage::FakeStorage( FakeDevice *device )
-    : FakeBlock( device )
+FakeStorage::FakeStorage(FakeDevice *device)
+    : FakeBlock(device)
 {
 
 }
@@ -34,23 +34,23 @@ Solid::Storage::Bus FakeStorage::bus() const
 {
     QString bus = fakeDevice()->property("bus").toString();
 
-    if ( bus=="ide" )
+    if (bus=="ide")
     {
         return Solid::Storage::Ide;
     }
-    else if ( bus=="usb" )
+    else if (bus=="usb")
     {
         return Solid::Storage::Usb;
     }
-    else if ( bus=="ieee1394" )
+    else if (bus=="ieee1394")
     {
         return Solid::Storage::Ieee1394;
     }
-    else if ( bus=="scsi" )
+    else if (bus=="scsi")
     {
         return Solid::Storage::Scsi;
     }
-    else if ( bus=="sata" )
+    else if (bus=="sata")
     {
         return Solid::Storage::Sata;
     }
@@ -64,35 +64,35 @@ Solid::Storage::DriveType FakeStorage::driveType() const
 {
     QString type = fakeDevice()->property("major").toString();
 
-    if ( type=="disk" )
+    if (type=="disk")
     {
         return Solid::Storage::HardDisk;
     }
-    else if ( type=="cdrom" )
+    else if (type=="cdrom")
     {
         return Solid::Storage::CdromDrive;
     }
-    else if ( type=="floppy" )
+    else if (type=="floppy")
     {
         return Solid::Storage::Floppy;
     }
-    else if ( type=="tape" )
+    else if (type=="tape")
     {
         return Solid::Storage::Tape;
     }
-    else if ( type=="compact_flash" )
+    else if (type=="compact_flash")
     {
         return Solid::Storage::CompactFlash;
     }
-    else if ( type=="memory_stick" )
+    else if (type=="memory_stick")
     {
         return Solid::Storage::MemoryStick;
     }
-    else if ( type=="smart_media" )
+    else if (type=="smart_media")
     {
         return Solid::Storage::SmartMedia;
     }
-    else if ( type=="sd_mmc" )
+    else if (type=="sd_mmc")
     {
         return Solid::Storage::SdMmc;
     }

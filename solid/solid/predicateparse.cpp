@@ -21,7 +21,7 @@ extern "C"
 {
 #include "predicateparse.h"
 
-void PredicateParse_mainParse( const char *_code );
+void PredicateParse_mainParse(const char *_code);
 }
 
 #include "predicate.h"
@@ -34,17 +34,17 @@ void PredicateParse_mainParse( const char *_code );
 
 static Solid::Predicate *s_result = 0;
 
-Solid::Predicate Solid::Predicate::fromString( const QString &predicate )
+Solid::Predicate Solid::Predicate::fromString(const QString &predicate)
 {
-    PredicateParse_mainParse( predicate.toAscii() );
+    PredicateParse_mainParse(predicate.toAscii());
 
-    if ( s_result == 0 )
+    if (s_result == 0)
     {
         return Predicate();
     }
     else
     {
-        Predicate result( *s_result );
+        Predicate result(*s_result);
         delete s_result;
         s_result = 0;
         return result;
@@ -52,14 +52,14 @@ Solid::Predicate Solid::Predicate::fromString( const QString &predicate )
 }
 
 
-void PredicateParse_setResult( void *result )
+void PredicateParse_setResult(void *result)
 {
-    s_result = (Solid::Predicate*) result;
+    s_result = (Solid::Predicate *) result;
 }
 
 void PredicateParse_errorDetected()
 {
-    if ( s_result != 0 )
+    if (s_result != 0)
     {
         delete s_result;
         s_result = 0;
@@ -69,14 +69,14 @@ void PredicateParse_errorDetected()
 void *PredicateParse_newAtom(char *interface, char *property, void *value)
 {
     QString iface(interface);
-    QString prop( property );
-    QVariant *val = (QVariant*)value;
+    QString prop(property);
+    QVariant *val = (QVariant *)value;
 
     Solid::Predicate *result = new Solid::Predicate(iface, prop, *val);
 
     delete val;
     free(interface);
-    free( property );
+    free(property);
 
     return result;
 }
@@ -84,14 +84,14 @@ void *PredicateParse_newAtom(char *interface, char *property, void *value)
 void *PredicateParse_newMaskAtom(char *interface, char *property, void *value)
 {
     QString iface(interface);
-    QString prop( property );
-    QVariant *val = (QVariant*)value;
+    QString prop(property);
+    QVariant *val = (QVariant *)value;
 
     Solid::Predicate *result = new Solid::Predicate(iface, prop, *val, Solid::Predicate::Mask);
 
     delete val;
     free(interface);
-    free( property );
+    free(property);
 
     return result;
 }
@@ -109,14 +109,14 @@ void *PredicateParse_newIsAtom(char *interface)
 }
 
 
-void *PredicateParse_newAnd( void *pred1, void *pred2 )
+void *PredicateParse_newAnd(void *pred1, void *pred2)
 {
     Solid::Predicate *result = new Solid::Predicate();
 
-    Solid::Predicate *p1 = (Solid::Predicate*)pred1;
-    Solid::Predicate *p2 = (Solid::Predicate*)pred2;
+    Solid::Predicate *p1 = (Solid::Predicate *)pred1;
+    Solid::Predicate *p2 = (Solid::Predicate *)pred2;
 
-    *result = *p1 & *p2;
+    *result = *p1  & *p2;
 
     delete p1;
     delete p2;
@@ -125,12 +125,12 @@ void *PredicateParse_newAnd( void *pred1, void *pred2 )
 }
 
 
-void *PredicateParse_newOr( void *pred1, void *pred2 )
+void *PredicateParse_newOr(void *pred1, void *pred2)
 {
     Solid::Predicate *result = new Solid::Predicate();
 
-    Solid::Predicate *p1 = (Solid::Predicate*)pred1;
-    Solid::Predicate *p2 = (Solid::Predicate*)pred2;
+    Solid::Predicate *p1 = (Solid::Predicate *)pred1;
+    Solid::Predicate *p2 = (Solid::Predicate *)pred2;
 
     *result = *p1 | *p2;
 
@@ -141,62 +141,62 @@ void *PredicateParse_newOr( void *pred1, void *pred2 )
 }
 
 
-void *PredicateParse_newStringValue( char *val )
+void *PredicateParse_newStringValue(char *val)
 {
-    QString s( val );
+    QString s(val);
 
-    free( val );
+    free(val);
 
-    return new QVariant( s );
+    return new QVariant(s);
 }
 
 
-void *PredicateParse_newBoolValue( int val )
+void *PredicateParse_newBoolValue(int val)
 {
-    bool b = ( val != 0 );
-    return new QVariant( b );
+    bool b = (val != 0);
+    return new QVariant(b);
 }
 
 
-void *PredicateParse_newNumValue( int val )
+void *PredicateParse_newNumValue(int val)
 {
-    return new QVariant( val );
+    return new QVariant(val);
 }
 
 
-void *PredicateParse_newDoubleValue( double val )
+void *PredicateParse_newDoubleValue(double val)
 {
-    return new QVariant( val );
+    return new QVariant(val);
 }
 
 
 void *PredicateParse_newEmptyStringListValue()
 {
-    return new QVariant( QStringList() );
+    return new QVariant(QStringList());
 }
 
 
-void *PredicateParse_newStringListValue( char *name )
+void *PredicateParse_newStringListValue(char *name)
 {
     QStringList list;
-    list << QString( name );
+    list << QString(name);
 
-    free( name );
+    free(name);
 
-    return new QVariant( list );
+    return new QVariant(list);
 }
 
 
-void *PredicateParse_appendStringListValue( char *name, void *list )
+void *PredicateParse_appendStringListValue(char *name, void *list)
 {
-    QVariant *variant = (QVariant*)list;
+    QVariant *variant = (QVariant *)list;
 
     QStringList new_list = variant->toStringList();
 
-    new_list << QString( name );
+    new_list << QString(name);
 
     delete variant;
-    free( name );
+    free(name);
 
-    return new QVariant( new_list );
+    return new QVariant(new_list);
 }

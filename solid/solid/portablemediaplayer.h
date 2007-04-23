@@ -41,11 +41,11 @@ namespace Solid
     class SOLID_EXPORT PortableMediaPlayer : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS( AccessType )
-        Q_PROPERTY( AccessType accessMethod READ accessMethod )
-        Q_PROPERTY( QStringList outputFormats READ outputFormats )
-        Q_PROPERTY( QStringList inputFormats READ inputFormats )
-        Q_PROPERTY( QStringList playlistFormats READ playlistFormats )
+        Q_ENUMS(AccessType)
+        Q_PROPERTY(AccessType accessMethod READ accessMethod)
+        Q_PROPERTY(QStringList outputFormats READ outputFormats)
+        Q_PROPERTY(QStringList inputFormats READ inputFormats)
+        Q_PROPERTY(QStringList playlistFormats READ playlistFormats)
         Q_DECLARE_PRIVATE(PortableMediaPlayer)
 
     public:
@@ -67,7 +67,7 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit PortableMediaPlayer( QObject *backendObject );
+        explicit PortableMediaPlayer(QObject *backendObject);
 
         /**
          * Destroys a portable media player object.

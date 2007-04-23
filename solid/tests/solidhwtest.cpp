@@ -39,7 +39,7 @@
     #error "FAKE_COMPUTER_XML not set. An XML file describing a computer is required for this test"
 #endif
 
-QTEST_KDEMAIN_CORE( SolidHwTest )
+QTEST_KDEMAIN_CORE(SolidHwTest)
 
 void SolidHwTest::initTestCase()
 {
@@ -55,154 +55,154 @@ void SolidHwTest::testAllDevices()
     // in the backend.
     QSet<QString> expected_udis, received_udis;
 
-    expected_udis = QSet<QString>::fromList( fakeManager->allDevices() );
+    expected_udis = QSet<QString>::fromList(fakeManager->allDevices());
 
-    foreach ( Solid::Device dev , devices )
+    foreach (Solid::Device dev , devices)
     {
         received_udis << dev.udi();
     }
 
-    QCOMPARE( expected_udis, received_udis );
+    QCOMPARE(expected_udis, received_udis);
 }
 
 void SolidHwTest::testDeviceBasicFeatures()
 {
     // Retrieve a valid Device object
-    Solid::Device valid_dev( "/org/kde/solid/fakehw/storage_model_solid_writer" );
+    Solid::Device valid_dev("/org/kde/solid/fakehw/storage_model_solid_writer");
 
-    QCOMPARE( valid_dev.isValid(), true );
+    QCOMPARE(valid_dev.isValid(), true);
 
 
     // A few attempts at creating invalid Device objects
-    Solid::Device invalid_dev( "uhoh? doesn't exist, I guess" );
-    QCOMPARE( invalid_dev.isValid(), false );
-    invalid_dev = Solid::Device( QString() );
-    QCOMPARE( invalid_dev.isValid(), false );
+    Solid::Device invalid_dev("uhoh? doesn't exist, I guess");
+    QCOMPARE(invalid_dev.isValid(), false);
+    invalid_dev = Solid::Device(QString());
+    QCOMPARE(invalid_dev.isValid(), false);
     invalid_dev = Solid::Device();
-    QCOMPARE( invalid_dev.isValid(), false );
+    QCOMPARE(invalid_dev.isValid(), false);
 
 
 
-    QCOMPARE( valid_dev.udi(), QString( "/org/kde/solid/fakehw/storage_model_solid_writer" ) );
-    QCOMPARE( invalid_dev.udi(), QString() );
+    QCOMPARE(valid_dev.udi(), QString("/org/kde/solid/fakehw/storage_model_solid_writer"));
+    QCOMPARE(invalid_dev.udi(), QString());
 
 
     // Query properties
-    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->propertyExists("name"), true );
-    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->propertyExists("foo.bar"), false );
-    QCOMPARE( (QObject*)invalid_dev.as<Solid::GenericInterface>(), (QObject*)0 );
+    QCOMPARE(valid_dev.as<Solid::GenericInterface>()->propertyExists("name"), true);
+    QCOMPARE(valid_dev.as<Solid::GenericInterface>()->propertyExists("foo.bar"), false);
+    QCOMPARE((QObject *)invalid_dev.as<Solid::GenericInterface>(), (QObject *)0);
 
-    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->property("name"), QVariant( "Solid IDE DVD Writer" ) );
-    QVERIFY( !valid_dev.as<Solid::GenericInterface>()->property("foo.bar").isValid() );
+    QCOMPARE(valid_dev.as<Solid::GenericInterface>()->property("name"), QVariant("Solid IDE DVD Writer"));
+    QVERIFY(!valid_dev.as<Solid::GenericInterface>()->property("foo.bar").isValid());
 
-    FakeDevice *fake_device = fakeManager->findDevice( "/org/kde/solid/fakehw/storage_model_solid_writer" );
+    FakeDevice *fake_device = fakeManager->findDevice("/org/kde/solid/fakehw/storage_model_solid_writer");
     QMap<QString, QVariant> expected_properties = fake_device->allProperties();
 
-    QCOMPARE( valid_dev.as<Solid::GenericInterface>()->allProperties(), expected_properties );
+    QCOMPARE(valid_dev.as<Solid::GenericInterface>()->allProperties(), expected_properties);
 
 
     // Query device interfaces
-    QCOMPARE( valid_dev.queryDeviceInterface( Solid::DeviceInterface::Storage ), true );
-    QCOMPARE( valid_dev.queryDeviceInterface( Solid::DeviceInterface::Cdrom ), true );
-    QCOMPARE( valid_dev.queryDeviceInterface( Solid::DeviceInterface::Volume ), false );
+    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Storage), true);
+    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Cdrom), true);
+    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Volume), false);
 
-    QCOMPARE( invalid_dev.queryDeviceInterface( Solid::DeviceInterface::Unknown ), false );
-    QCOMPARE( invalid_dev.queryDeviceInterface( Solid::DeviceInterface::Storage ), false );
+    QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::Unknown), false);
+    QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::Storage), false);
 
 
     // Query parent
-    QCOMPARE( valid_dev.parentUdi(), QString( "/org/kde/solid/fakehw/pci_002_ide_1_0" ) );
-    QCOMPARE( valid_dev.parent().udi(), Solid::Device( "/org/kde/solid/fakehw/pci_002_ide_1_0" ).udi() );
+    QCOMPARE(valid_dev.parentUdi(), QString("/org/kde/solid/fakehw/pci_002_ide_1_0"));
+    QCOMPARE(valid_dev.parent().udi(), Solid::Device("/org/kde/solid/fakehw/pci_002_ide_1_0").udi());
 
-    QVERIFY( !invalid_dev.parent().isValid() );
-    QVERIFY( invalid_dev.parentUdi().isEmpty() );
+    QVERIFY(!invalid_dev.parent().isValid());
+    QVERIFY(invalid_dev.parentUdi().isEmpty());
 
 
     // Query vendor/product
-    QCOMPARE( valid_dev.vendor(), QString( "Acme Corporation" ) );
-    QCOMPARE( valid_dev.product(), QString( "Solid IDE DVD Writer" ) );
+    QCOMPARE(valid_dev.vendor(), QString("Acme Corporation"));
+    QCOMPARE(valid_dev.product(), QString("Solid IDE DVD Writer"));
 
-    QCOMPARE( invalid_dev.vendor(), QString() );
-    QCOMPARE( invalid_dev.product(), QString() );
+    QCOMPARE(invalid_dev.vendor(), QString());
+    QCOMPARE(invalid_dev.product(), QString());
 }
 
 void SolidHwTest::testManagerSignals()
 {
-    fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );
+    fakeManager->unplug("/org/kde/solid/fakehw/acpi_CPU0");
 
     // Heh, we missed a processor in this system ;-)
     // We're going to add this device, and check that the signal has been
     // properly emitted by the manager
-    QSignalSpy added( Solid::DeviceManager::notifier(), SIGNAL( deviceAdded( QString ) ) );
-    fakeManager->plug( "/org/kde/solid/fakehw/acpi_CPU0" );
-    QCOMPARE( added.count(), 1 );
-    QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
+    QSignalSpy added(Solid::DeviceManager::notifier(), SIGNAL(deviceAdded(QString)));
+    fakeManager->plug("/org/kde/solid/fakehw/acpi_CPU0");
+    QCOMPARE(added.count(), 1);
+    QCOMPARE(added.at(0).at(0).toString(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
 
     // Moreover we check that the device is really available
-    Solid::Device cpu( "/org/kde/solid/fakehw/acpi_CPU0" );
-    QVERIFY( cpu.isValid() );
+    Solid::Device cpu("/org/kde/solid/fakehw/acpi_CPU0");
+    QVERIFY(cpu.isValid());
 
 
     // Finally we remove the device and spy the corresponding signal again
-    QSignalSpy removed( Solid::DeviceManager::notifier(), SIGNAL( deviceRemoved( QString ) ) );
-    fakeManager->unplug( "/org/kde/solid/fakehw/acpi_CPU0" );
-    QCOMPARE( added.count(), 1 );
-    QCOMPARE( added.at( 0 ).at( 0 ).toString(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
+    QSignalSpy removed(Solid::DeviceManager::notifier(), SIGNAL(deviceRemoved(QString)));
+    fakeManager->unplug("/org/kde/solid/fakehw/acpi_CPU0");
+    QCOMPARE(added.count(), 1);
+    QCOMPARE(added.at(0).at(0).toString(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
 
     // The Device object should become automatically invalid
-    QVERIFY( !cpu.isValid() );
+    QVERIFY(!cpu.isValid());
 
     // Restore original state
-    fakeManager->plug( "/org/kde/solid/fakehw/acpi_CPU0" );
+    fakeManager->plug("/org/kde/solid/fakehw/acpi_CPU0");
 }
 
 void SolidHwTest::testDeviceSignals()
 {
     // A button is a nice device for testing state changes, isn't it?
-    FakeDevice *fake = fakeManager->findDevice( "/org/kde/solid/fakehw/acpi_LID0" );
-    Solid::Device device( "/org/kde/solid/fakehw/acpi_LID0" );
+    FakeDevice *fake = fakeManager->findDevice("/org/kde/solid/fakehw/acpi_LID0");
+    Solid::Device device("/org/kde/solid/fakehw/acpi_LID0");
 
     // We'll spy our button
-    connect( device.as<Solid::GenericInterface>(), SIGNAL( propertyChanged( const QMap<QString,int>& ) ),
-             this, SLOT( slotPropertyChanged( const QMap<QString,int>& ) ) );
-    QSignalSpy condition_raised( device.as<Solid::GenericInterface>(), SIGNAL( conditionRaised( QString, QString ) ) );
+    connect(device.as<Solid::GenericInterface>(), SIGNAL(propertyChanged(const QMap<QString,int> &)),
+             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+    QSignalSpy condition_raised(device.as<Solid::GenericInterface>(), SIGNAL(conditionRaised(QString, QString)));
 
-    fake->setProperty( "stateValue", true ); // The button is now pressed (modified property)
-    fake->raiseCondition( "Lid Closed", "Why not?" ); // Since it's a LID we notify this change
-    fake->setProperty( "hactar", 42 ); // We add a property
-    fake->removeProperty( "hactar" ); // We remove a property
+    fake->setProperty("stateValue", true); // The button is now pressed (modified property)
+    fake->raiseCondition("Lid Closed", "Why not?"); // Since it's a LID we notify this change
+    fake->setProperty("hactar", 42); // We add a property
+    fake->removeProperty("hactar"); // We remove a property
 
     // 3 property changes occurred in the device
-    QCOMPARE( m_changesList.count(), 3 );
+    QCOMPARE(m_changesList.count(), 3);
 
     QMap<QString,int> changes;
 
     // First one is a "PropertyModified" for "button.state"
-    changes = m_changesList.at( 0 );
-    QCOMPARE( changes.count(), 1 );
-    QVERIFY( changes.contains( "stateValue" ) );
-    QCOMPARE( changes["stateValue"], (int)Solid::GenericInterface::PropertyModified );
+    changes = m_changesList.at(0);
+    QCOMPARE(changes.count(), 1);
+    QVERIFY(changes.contains("stateValue"));
+    QCOMPARE(changes["stateValue"], (int)Solid::GenericInterface::PropertyModified);
 
     // Second one is a "PropertyAdded" for "hactar"
-    changes = m_changesList.at( 1 );
-    QCOMPARE( changes.count(), 1 );
-    QVERIFY( changes.contains( "hactar" ) );
-    QCOMPARE( changes["hactar"], (int)Solid::GenericInterface::PropertyAdded );
+    changes = m_changesList.at(1);
+    QCOMPARE(changes.count(), 1);
+    QVERIFY(changes.contains("hactar"));
+    QCOMPARE(changes["hactar"], (int)Solid::GenericInterface::PropertyAdded);
 
     // Third one is a "PropertyRemoved" for "hactar"
-    changes = m_changesList.at( 2 );
-    QCOMPARE( changes.count(), 1 );
-    QVERIFY( changes.contains( "hactar" ) );
-    QCOMPARE( changes["hactar"], (int)Solid::GenericInterface::PropertyRemoved );
+    changes = m_changesList.at(2);
+    QCOMPARE(changes.count(), 1);
+    QVERIFY(changes.contains("hactar"));
+    QCOMPARE(changes["hactar"], (int)Solid::GenericInterface::PropertyRemoved);
 
 
 
     // Only one condition has been raised in the device
-    QCOMPARE( condition_raised.count(), 1 );
+    QCOMPARE(condition_raised.count(), 1);
 
     // It must be identical to the condition we raised by hand
-    QCOMPARE( condition_raised.at( 0 ).at( 0 ).toString(), QString( "Lid Closed" ) );
-    QCOMPARE( condition_raised.at( 0 ).at( 1 ).toString(), QString( "Why not?" ) );
+    QCOMPARE(condition_raised.at(0).at(0).toString(), QString("Lid Closed"));
+    QCOMPARE(condition_raised.at(0).at(1).toString(), QString("Why not?"));
 }
 
 void SolidHwTest::testDeviceExistence()
@@ -226,14 +226,14 @@ void SolidHwTest::testDeviceExistence()
 
 void SolidHwTest::testDeviceInterfaces()
 {
-    Solid::Device cpu( "/org/kde/solid/fakehw/acpi_CPU0" );
+    Solid::Device cpu("/org/kde/solid/fakehw/acpi_CPU0");
 
-    Solid::DeviceInterface *iface = cpu.asDeviceInterface( Solid::DeviceInterface::Processor );
+    Solid::DeviceInterface *iface = cpu.asDeviceInterface(Solid::DeviceInterface::Processor);
     Solid::Processor *processor = cpu.as<Solid::Processor>();
 
-    QVERIFY( cpu.queryDeviceInterface( Solid::DeviceInterface::Processor ) );
-    QVERIFY( iface!=0 );
-    QCOMPARE( iface, processor );
+    QVERIFY(cpu.queryDeviceInterface(Solid::DeviceInterface::Processor));
+    QVERIFY(iface!=0);
+    QCOMPARE(iface, processor);
 
     Solid::Device cpu2("/org/kde/solid/fakehw/acpi_CPU0");
     QCOMPARE(cpu.as<Solid::Processor>(), cpu2.as<Solid::Processor>());
@@ -318,95 +318,95 @@ static QSet<QString> to_string_set(const Solid::DeviceList &list)
 
 void SolidHwTest::testPredicate()
 {
-    Solid::Device dev( "/org/kde/solid/fakehw/acpi_CPU0" );
+    Solid::Device dev("/org/kde/solid/fakehw/acpi_CPU0");
 
-    Solid::Predicate p1 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3200 )
-                        & Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", true );
-    Solid::Predicate p2 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3200 )
-                        & Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", false );
-    Solid::Predicate p3 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3201 )
-                        | Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", true );
-    Solid::Predicate p4 = Solid::Predicate( Solid::DeviceInterface::Processor, "maxSpeed", 3201 )
-                        | Solid::Predicate( Solid::DeviceInterface::Processor, "canThrottle", false );
-    Solid::Predicate p5 = Solid::Predicate::fromString( "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]" );
+    Solid::Predicate p1 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3200)
+                         & Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", true);
+    Solid::Predicate p2 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3200)
+                         & Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", false);
+    Solid::Predicate p3 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3201)
+                        | Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", true);
+    Solid::Predicate p4 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3201)
+                        | Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", false);
+    Solid::Predicate p5 = Solid::Predicate::fromString("[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR Volume.mountPoint == '/media/blup']");
 
-    QVERIFY( p1.matches( dev ) );
-    QVERIFY( !p2.matches( dev ) );
-    QVERIFY( p3.matches( dev ) );
-    QVERIFY( !p4.matches( dev ) );
+    QVERIFY(p1.matches(dev));
+    QVERIFY(!p2.matches(dev));
+    QVERIFY(p3.matches(dev));
+    QVERIFY(!p4.matches(dev));
 
-    Solid::Predicate p6 = Solid::Predicate::fromString( "Volume.usage == 'Other'" );
-    Solid::Predicate p7 = Solid::Predicate::fromString( QString("Volume.usage == %1").arg((int)Solid::Volume::Other) );
-    QVERIFY( !p6.matches( dev ) );
-    QVERIFY( !p7.matches( dev ) );
-    dev = Solid::Device( "/org/kde/solid/fakehw/volume_part2_size_1024" );
-    QVERIFY( p6.matches( dev ) );
-    QVERIFY( p7.matches( dev ) );
+    Solid::Predicate p6 = Solid::Predicate::fromString("Volume.usage == 'Other'");
+    Solid::Predicate p7 = Solid::Predicate::fromString(QString("Volume.usage == %1").arg((int)Solid::Volume::Other));
+    QVERIFY(!p6.matches(dev));
+    QVERIFY(!p7.matches(dev));
+    dev = Solid::Device("/org/kde/solid/fakehw/volume_part2_size_1024");
+    QVERIFY(p6.matches(dev));
+    QVERIFY(p7.matches(dev));
 
-    Solid::Predicate p8 = Solid::Predicate::fromString( "AudioHw.deviceType == 'AudioInput|AudioOutput'" );
-    Solid::Predicate p9 = Solid::Predicate::fromString( "AudioHw.deviceType == 'AudioInput'" );
-    Solid::Predicate p10 = Solid::Predicate::fromString( "AudioHw.deviceType & 'AudioInput'" );
-    QVERIFY( !p8.matches( dev ) );
-    QVERIFY( !p9.matches( dev ) );
-    QVERIFY( !p10.matches( dev ) );
-    dev = Solid::Device( "/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0" );
-    QVERIFY( p8.matches( dev ) );
-    QVERIFY( !p9.matches( dev ) );
-    QVERIFY( p10.matches( dev ) );
+    Solid::Predicate p8 = Solid::Predicate::fromString("AudioHw.deviceType == 'AudioInput|AudioOutput'");
+    Solid::Predicate p9 = Solid::Predicate::fromString("AudioHw.deviceType == 'AudioInput'");
+    Solid::Predicate p10 = Solid::Predicate::fromString("AudioHw.deviceType  & 'AudioInput'");
+    QVERIFY(!p8.matches(dev));
+    QVERIFY(!p9.matches(dev));
+    QVERIFY(!p10.matches(dev));
+    dev = Solid::Device("/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0");
+    QVERIFY(p8.matches(dev));
+    QVERIFY(!p9.matches(dev));
+    QVERIFY(p10.matches(dev));
 
-    QString str_pred = "[ [ Processor.maxSpeed == 3201 AND Processor.canThrottle == false ] OR Volume.mountPoint == '/media/blup' ]";
+    QString str_pred = "[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR Volume.mountPoint == '/media/blup']";
     // Since str_pred is canonicalized, fromString().toString() should be invariant
-    QCOMPARE( Solid::Predicate::fromString( str_pred ).toString(), str_pred );
+    QCOMPARE(Solid::Predicate::fromString(str_pred).toString(), str_pred);
 
 
     QString parentUdi = "/org/kde/solid/fakehw/storage_model_solid_reader";
     Solid::DeviceInterface::Type ifaceType = Solid::DeviceInterface::Unknown;
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).size(), 1 );
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).at( 0 ),
-              QString( "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS" ) );
+    QCOMPARE(fakeManager->devicesFromQuery(parentUdi, ifaceType).size(), 1);
+    QCOMPARE(fakeManager->devicesFromQuery(parentUdi, ifaceType).at(0),
+              QString("/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS"));
 
     ifaceType = Solid::DeviceInterface::Processor;
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).size(), 0 );
+    QCOMPARE(fakeManager->devicesFromQuery(parentUdi, ifaceType).size(), 0);
 
     parentUdi = "/org/kde/solid/fakehw/computer";
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).size(), 2 );
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).at( 0 ),
-              QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( fakeManager->devicesFromQuery( parentUdi, ifaceType ).at( 1 ),
-              QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    QCOMPARE(fakeManager->devicesFromQuery(parentUdi, ifaceType).size(), 2);
+    QCOMPARE(fakeManager->devicesFromQuery(parentUdi, ifaceType).at(0),
+              QString("/org/kde/solid/fakehw/acpi_CPU0"));
+    QCOMPARE(fakeManager->devicesFromQuery(parentUdi, ifaceType).at(1),
+              QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
 
     parentUdi = QString();
     ifaceType = Solid::DeviceInterface::Unknown;
     Solid::DeviceList list;
 
-    list = Solid::DeviceManager::findDevicesFromQuery( p1, parentUdi );
-    QCOMPARE( list.size(), 2 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    list = Solid::DeviceManager::findDevicesFromQuery(p1, parentUdi);
+    QCOMPARE(list.size(), 2);
+    QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
+    QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::DeviceManager::findDevicesFromQuery( p2, parentUdi );
-    QCOMPARE( list.size(), 0 );
+    list = Solid::DeviceManager::findDevicesFromQuery(p2, parentUdi);
+    QCOMPARE(list.size(), 0);
 
-    list = Solid::DeviceManager::findDevicesFromQuery( p3, parentUdi );
-    QCOMPARE( list.size(), 2 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    list = Solid::DeviceManager::findDevicesFromQuery(p3, parentUdi);
+    QCOMPARE(list.size(), 2);
+    QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
+    QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::DeviceManager::findDevicesFromQuery( p4, parentUdi );
-    QCOMPARE( list.size(), 0 );
+    list = Solid::DeviceManager::findDevicesFromQuery(p4, parentUdi);
+    QCOMPARE(list.size(), 0);
 
-    list = Solid::DeviceManager::findDevicesFromQuery( "[Processor.canThrottle==true AND Processor.number==1]",
-                                                       parentUdi );
-    QCOMPARE( list.size(), 1 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    list = Solid::DeviceManager::findDevicesFromQuery("[Processor.canThrottle==true AND Processor.number==1]",
+                                                       parentUdi);
+    QCOMPARE(list.size(), 1);
+    QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::DeviceManager::findDevicesFromQuery( "[Processor.number==1 OR IS Volume]",
-                                                       parentUdi );
+    list = Solid::DeviceManager::findDevicesFromQuery("[Processor.number==1 OR IS Volume]",
+                                                       parentUdi);
 
     QSet<QString> set;
 
-    QCOMPARE( list.size(), 10 );
+    QCOMPARE(list.size(), 10);
     set << "/org/kde/solid/fakehw/acpi_CPU1"
         << "/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume"
         << "/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS"
@@ -417,26 +417,26 @@ void SolidHwTest::testPredicate()
         << "/org/kde/solid/fakehw/volume_uuid_c0ffee"
         << "/org/kde/solid/fakehw/volume_uuid_f00ba7"
         << "/org/kde/solid/fakehw/volume_uuid_feedface";
-    QCOMPARE( set, to_string_set( list ) );
+    QCOMPARE(set, to_string_set(list));
 
-    list = Solid::DeviceManager::findDevicesFromQuery( "[IS Processor OR IS Volume]",
-                                         parentUdi );
-    QCOMPARE( list.size(), 11 );
+    list = Solid::DeviceManager::findDevicesFromQuery("[IS Processor OR IS Volume]",
+                                         parentUdi);
+    QCOMPARE(list.size(), 11);
     set << "/org/kde/solid/fakehw/acpi_CPU0";
-    QCOMPARE( set, to_string_set( list ) );
+    QCOMPARE(set, to_string_set(list));
 
     ifaceType = Solid::DeviceInterface::Processor;
-    list = Solid::DeviceManager::findDevicesFromQuery( ifaceType, parentUdi );
-    QCOMPARE( list.size(), 2 );
-    QCOMPARE( list.at( 0 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU0" ) );
-    QCOMPARE( list.at( 1 ).udi(), QString( "/org/kde/solid/fakehw/acpi_CPU1" ) );
+    list = Solid::DeviceManager::findDevicesFromQuery(ifaceType, parentUdi);
+    QCOMPARE(list.size(), 2);
+    QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
+    QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
     ifaceType = Solid::DeviceInterface::Unknown;
-    list = Solid::DeviceManager::findDevicesFromQuery( "blup", parentUdi );
-    QCOMPARE( list.size(), 0 );
+    list = Solid::DeviceManager::findDevicesFromQuery("blup", parentUdi);
+    QCOMPARE(list.size(), 0);
 }
 
-void SolidHwTest::slotPropertyChanged( const QMap<QString,int> &changes )
+void SolidHwTest::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     m_changesList << changes;
 }
