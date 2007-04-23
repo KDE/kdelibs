@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2005 Brad Hards
+    Copyright (C) 2005 Brad Hards <bradh@frogmouth.net>
     Copyright (C) 2006 Thiago Macieira <thiago@kde.org>
 
     This library is free software; you can redistribute it and/or
