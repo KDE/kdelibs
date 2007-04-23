@@ -283,8 +283,8 @@ KConfigGroup config = KGlobal::config()-&gt;group("Group");
 config.writeEntry("Key", 0);
 </pre>
 </li>
-<li>setDesktopGroup is gone. Use KDesktopFile if you want to read .desktop files - or
-use group("Desktop Entry") instead</li>
+<li>setDesktopGroup is gone. Use KDesktopFile (and its desktopGroup() method) if
+you want to read .desktop files - or use group("Desktop Entry") instead</li>
 <li>It's no longer necessary to specify a KConfig object is read-only - they are always
 unless you use change it</li>
 <li>The KConfig constructors were changed to receive flags instead of boolean values, i.e.
@@ -298,7 +298,7 @@ unless you use change it</li>
 
 <h4>KConfigBase</h4>
 <ul>
-<li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b>.
+<li>all read*Entry methods deprecated, use <b>template &lt;typename T&gt; readEntry(key, const T&amp;)</b> in KConfigGroup instead.
 This uses QVariant in the background so only types that QVariant can convert to QString work. The use of QVariant allows some ambiguous conversions, so it might be necessary to use <em>explicit</em> construction to disambiguate the type wanted, i.e.
  <ul>
      <li>bool var = readEntry(key, <b>false</b>);</li>
@@ -314,12 +314,12 @@ second argument.
 to QVariant. You need to cast to a type that is directly convertible to QVariant. i.e.
 <pre>
 time_t timeVal;
-writeEntry("someKey", timeVal); // ambiguous conversion
-writeEntry("someKey", int(timeVal)); // ok
+group.writeEntry("someKey", timeVal); // ambiguous conversion
+group.writeEntry("someKey", int(timeVal)); // ok
 </pre>
 </li>
-<li>all read*ListEntry methods deprecated, renamed to readEntry. Most types use the template version.<br/>
-<b>template &lt;typename T&gt; readEntry(key, const QList&lt;T&gt;&amp;)</b><br/>If you just write readEntry(key, list) it should work for any type that QVariant can convert to QString.
+<li>all read*ListEntry methods deprecated, renamed to KConfigGroup::readEntry. Most types use the template version.<br/>
+<b>template &lt;typename T&gt; readEntry(key, const QList&lt;T&gt;&amp;)</b><br/>If you just write group.readEntry(key, list) it should work for any type that QVariant can convert to QString.
 </li>
 <li>writeEntry, deleteGroup, and deleteEntry do not take several boolean options (persistent,global,localized) anymore, but instead one QFlags</li>
 </ul>
@@ -358,10 +358,13 @@ cg.readXXX("entry name");
 Desktop Entry Spec</a>
  <ul>
   <li>.kdelnk files are no longer supported, rename to .desktop.</li>
-  <li>deprecated header [KDE Desktop Entry], change to [Desktop Entry]</li>
+  <li>deprecated header [KDE Desktop Entry], change to [Desktop Entry], using desktopGroup()</li>
   <li>type FSDev is no longer supported, change to FSDevice</li>
  </ul>
 </li>
+<li>Same as in KConfig: the use of readEntry() or writeEntry() on a KDesktopFile should
+be replaced by readEntry/writeEntry on a KConfigGroup. By default the desktopGroup() of
+the KDesktopFile was used, otherwise use group("another_group").</li>
 </ul>
 
 <h4>KExtendedSocket</h4>
