@@ -66,10 +66,16 @@ public:
      * Use QComboBox::setMaxCount() to limit the history.
      *
      * @p parent the parent object of this widget.
-     * If set to @p true, KHistoryComboBox will sync the completion to the
-     * contents of the combobox. The default is true.
      */
-    explicit KHistoryComboBox( QWidget *parent = 0, bool useCompletion = true );
+    explicit KHistoryComboBox( QWidget *parent = 0 );
+
+     /**
+     * Same as the previous constructor, but additionally has the option
+     * to specify whether you want to let KHistoryComboBox handle completion
+     * or not. If set to @p true, KHistoryComboBox will sync the completion to the
+     * contents of the combobox.
+     */
+    explicit KHistoryComboBox( bool useCompletion, QWidget *parent = 0 );
 
     /**
      * Destructs the combo, the completion-object and the pixmap-provider
@@ -82,9 +88,7 @@ public:
      *
      * @see historyItems
      */
-    inline void setHistoryItems( const QStringList &items ) {
-        setHistoryItems(items, false);
-    }
+    void setHistoryItems( const QStringList &items );
 
     /**
      * Inserts @p items into the combobox. @p items might get

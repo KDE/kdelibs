@@ -66,7 +66,15 @@ public:
 };
 
 // we are always read-write
-KHistoryComboBox::KHistoryComboBox( QWidget *parent, bool useCompletion )
+KHistoryComboBox::KHistoryComboBox( QWidget *parent )
+     : KComboBox( true, parent ), d(new Private(this))
+{
+    init( true ); // using completion
+}
+
+// we are always read-write
+KHistoryComboBox::KHistoryComboBox( bool useCompletion,
+                              QWidget *parent )
     : KComboBox( true, parent ), d(new Private(this))
 {
     init( useCompletion );
@@ -101,6 +109,11 @@ KHistoryComboBox::~KHistoryComboBox()
 {
     delete d->myPixProvider;
     delete d;
+}
+
+void KHistoryComboBox::setHistoryItems( const QStringList &items )
+{
+    setHistoryItems(items, false);
 }
 
 void KHistoryComboBox::setHistoryItems( const QStringList &items,
