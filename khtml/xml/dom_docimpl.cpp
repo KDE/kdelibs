@@ -48,9 +48,9 @@
 //Added by qt3to4:
 #include <QTimerEvent>
 #include <Q3PtrList>
+#include <QtCore/QList>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kstaticdeleter.h>
 
 #include "rendering/counter_tree.h"
 #include "rendering/render_canvas.h"
@@ -299,8 +299,8 @@ ElementMappingCache::ItemInfo* ElementMappingCache::get(const QString& id)
     return m_dict.find(id);
 }
 
-static KStaticDeleter< Q3PtrList<DocumentImpl> > s_changedDocumentsDeleter;
-Q3PtrList<DocumentImpl> * DocumentImpl::changedDocuments;
+typedef QList<DocumentImpl*> ChangedDocuments ;
+K_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
@@ -443,8 +443,8 @@ DocumentImpl::~DocumentImpl()
 
     if (m_loadingXMLDoc)
 	m_loadingXMLDoc->deref(this);
-    if (changedDocuments && m_docChanged)
-        changedDocuments->remove(this);
+    if (s_changedDocuments && m_docChanged)
+        s_changedDocuments->removeAll(this);
     delete m_tokenizer;
     m_document.resetSkippingRef(0);
     delete m_styleSelector;
@@ -1103,13 +1103,10 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(NodeImpl *root, unsigned long wha
 
 void DocumentImpl::setDocumentChanged(bool b)
 {
-    if (!changedDocuments)
-        changedDocuments = s_changedDocumentsDeleter.setObject( changedDocuments, new Q3PtrList<DocumentImpl>() );
-
     if (b && !m_docChanged)
-        changedDocuments->append(this);
+        s_changedDocuments->append(this);
     else if (!b && m_docChanged)
-        changedDocuments->remove(this);
+        s_changedDocuments->removeAll(this);
     m_docChanged = b;
 }
 
@@ -1202,12 +1199,11 @@ void DocumentImpl::updateRendering()
 
 void DocumentImpl::updateDocumentsRendering()
 {
-    if (!changedDocuments)
+    if (!s_changedDocuments)
         return;
 
-    while ( !changedDocuments->isEmpty() ) {
-        changedDocuments->first();
-        DocumentImpl* it = changedDocuments->take();
+    while ( !s_changedDocuments->isEmpty() ) {
+        DocumentImpl* it = s_changedDocuments->takeFirst();
         if (it->isDocumentChanged())
             it->updateRendering();
     }
@@ -2674,12 +2670,21 @@ DOMString DocumentImpl::toString() const
     DOMString result;
 
     for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
-	result += child->toString();
+        result += child->toString();
     }
 
     return result;
 }
 
+void DOM::DocumentImpl::setRestoreState( const QStringList &s)
+{
+    m_state = s;
+}
+
+KHTMLView* DOM::DocumentImpl::view() const
+{
+    return m_view;
+}
 
 KHTMLPart* DOM::DocumentImpl::part() const
 {

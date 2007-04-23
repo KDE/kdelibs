@@ -278,9 +278,9 @@ public:
     void deregisterMaintainsState(NodeImpl* e) { m_maintainsState.removeRef(e); }
 
     // Set the state the document should restore to
-    void setRestoreState( const QStringList &s) { m_state = s; }
+    void setRestoreState( const QStringList &s);
 
-    KHTMLView *view() const { return m_view; }
+    KHTMLView *view() const;
     KHTMLPart* part() const;
 
     RangeImpl *createRange();
@@ -292,7 +292,6 @@ public:
                             bool entityReferenceExpansion, int &exceptioncode);
 
     virtual void recalcStyle( StyleChange = NoChange );
-    static Q3PtrList<DocumentImpl> * changedDocuments;
     virtual void updateRendering();
     void updateLayout();
     static void updateDocumentsRendering();
