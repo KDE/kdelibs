@@ -1,5 +1,4 @@
 add_subdirectory( ifaces )
-add_subdirectory( experimental )
 
 ########### next target ###############
 
