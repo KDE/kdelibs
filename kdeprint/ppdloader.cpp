@@ -260,7 +260,7 @@ bool PPDLoader::putStatement( const QString& keyword, const QString& name, const
 				if ( fv.isEmpty() )
 					fv = name;
 				else
-					fv.append( "|" + name );
+					fv.append( '|' + name );
 				m_option->set( "fixedvals", fv );
 			}
 		}
@@ -357,7 +357,7 @@ bool PPDLoader::putFooData( const QString& data )
 {
 	if ( !m_option && m_groups.size() == 1 )
 	{
-		m_groups.top()->set( "foodata", m_groups.top()->get( "foodata" ) + data + "\n" );
+		m_groups.top()->set( "foodata", m_groups.top()->get( "foodata" ) + data + '\n' );
 	}
 	return true;
 }

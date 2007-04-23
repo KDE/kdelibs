@@ -287,7 +287,7 @@ void KDEPrintd::processRequest()
 			output >> result;
 
 			if ( result.isModified() )
-				authString = result.username + ":" + result.password + ":" + QString::number( seqNbr );
+				authString = result.username + ':' + result.password + ':' + QString::number( seqNbr );
 		}
 		else
 			kWarning( 500 ) << "D-BUS returned invalid reply" << endl;

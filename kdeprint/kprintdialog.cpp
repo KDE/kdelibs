@@ -605,7 +605,7 @@ void KPrintDialog::initialize(KPrinter *printer)
 	if (!d->m_printer->outputFileName().isEmpty())
 		d->m_file->setUrl( KUrl(d->m_printer->outputFileName()) );
 	else if (!d->m_printer->docFileName().isEmpty())
-		d->m_file->setUrl( KUrl(d->m_printer->docDirectory()+"/"+d->m_printer->docFileName()+".ps") );
+		d->m_file->setUrl( KUrl(d->m_printer->docDirectory()+'/'+d->m_printer->docFileName()+".ps") );
 
 	if ( d->m_printers->count() > 0 )
 		slotPrinterSelected( d->m_printers->currentIndex() );
@@ -830,7 +830,7 @@ void KPrintDialog::setOutputFileExtension(const QString& ext)
 		// change "file.ext"; don't change "file", "file." or ".file" but do change ".file.ext"
 		if ( p > 0 && p != int (f.length () - 1) )
 		{
-			url.setFileName( f.left( p ) + "." + ext );
+			url.setFileName( f.left( p ) + '.' + ext );
 			d->m_file->setUrl( url );
 		}
 	}

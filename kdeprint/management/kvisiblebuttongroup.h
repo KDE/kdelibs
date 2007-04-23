@@ -48,7 +48,7 @@ private:
 class KRadioButtonWithHandOver : public QRadioButton
 {
 public:
-	KRadioButtonWithHandOver(const QString& txt, QWidget *parent = 0);
+	explicit KRadioButtonWithHandOver(const QString& txt, QWidget *parent = 0);
 };
 
 #endif

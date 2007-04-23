@@ -204,7 +204,7 @@ public:
 	 * @param restore if true, options will be restored/saved between successive KPrinter objects
 	 * @param m the mode to establish the KPrinter in (see QPrinter::PrinterMode)
 	 */
-	KPrinter(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution );
+	explicit KPrinter(bool restore = true, QPrinter::PrinterMode m = QPrinter::ScreenResolution );
 	/**
 	 * Destructor. This also saves the current KPrinter state for future printing.
 	 */

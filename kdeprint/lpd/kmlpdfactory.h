@@ -25,7 +25,7 @@
 class KLpdFactory : public KLibFactory
 {
 public:
-	KLpdFactory(QObject *parent = 0, const char *name = 0);
+	explicit KLpdFactory(QObject *parent = 0, const char *name = 0);
 	virtual ~KLpdFactory();
 
 protected:

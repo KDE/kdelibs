@@ -33,7 +33,7 @@ class KMPrinterView : public QStackedWidget
 public:
 	enum ViewType { Icons = 0, List, Tree };
 
-	KMPrinterView(QWidget *parent = 0, const char *name = 0);
+	explicit KMPrinterView(QWidget *parent = 0, const char *name = 0);
 	~KMPrinterView();
 
 	void setPrinterList(QList<KMPrinter*> *list);

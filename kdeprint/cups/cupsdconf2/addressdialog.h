@@ -28,7 +28,7 @@ class QLineEdit;
 class AddressDialog : public KDialog
 {
 public:
-	AddressDialog(QWidget *parent = 0, const char *name = 0);
+	explicit AddressDialog(QWidget *parent = 0, const char *name = 0);
 
 	QString addressString();
 	static QString newAddress(QWidget *parent = 0);

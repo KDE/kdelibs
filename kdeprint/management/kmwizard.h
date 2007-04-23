@@ -59,7 +59,7 @@ public:
 		Custom  = 100
 	};
 
-	KMWizard(QWidget *parent = 0, const char *name = 0);
+	explicit KMWizard(QWidget *parent = 0, const char *name = 0);
 	~KMWizard();
 
 	void configure(int start, int end, bool inclusive = true);

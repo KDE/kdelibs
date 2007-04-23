@@ -29,7 +29,7 @@ class KMDriverDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	KMDriverDialog(QWidget *parent = 0, const char *name = 0);
+	explicit KMDriverDialog(QWidget *parent = 0, const char *name = 0);
 	~KMDriverDialog();
 
 	void setDriver(DrMain*);

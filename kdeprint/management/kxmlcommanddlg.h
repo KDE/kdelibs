@@ -96,7 +96,7 @@ class KXmlCommandDlg : public KDialog
 {
 	Q_OBJECT
 public:
-	KXmlCommandDlg(QWidget *parent = 0, const char *name = 0);
+	explicit KXmlCommandDlg(QWidget *parent = 0, const char *name = 0);
 
 	void setCommand(KXmlCommand*);
 	static bool editCommand(KXmlCommand*, QWidget *parent = 0);

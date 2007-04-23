@@ -30,7 +30,7 @@ struct CupsdConf;
 class PortDialog : public KDialog
 {
 public:
-	PortDialog(QWidget *parent = 0, const char *name = 0);
+	explicit PortDialog(QWidget *parent = 0, const char *name = 0);
 
 	QString listenString();
 	void setInfos(CupsdConf*);

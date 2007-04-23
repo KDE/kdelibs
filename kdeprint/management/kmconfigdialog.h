@@ -29,7 +29,7 @@ class KDEPRINT_MANAGEMENT_EXPORT KMConfigDialog : public KPageDialog
 {
 	Q_OBJECT
 public:
-	KMConfigDialog(QWidget *parent = 0, const char *name = 0);
+	explicit KMConfigDialog(QWidget *parent = 0, const char *name = 0);
 
 	void addConfigPage(KMConfigPage*);
 

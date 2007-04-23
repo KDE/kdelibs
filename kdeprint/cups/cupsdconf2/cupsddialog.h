@@ -30,7 +30,7 @@ class CupsdDialog : public KPageDialog
 {
 	Q_OBJECT
 public:
-	CupsdDialog(QWidget *parent = 0, const char *name = 0);
+	explicit CupsdDialog(QWidget *parent = 0, const char *name = 0);
 	~CupsdDialog();
 
 	bool setConfigFile(const QString& filename);

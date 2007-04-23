@@ -33,7 +33,7 @@ class KDEPRINT_EXPORT MarginWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	MarginWidget(QWidget *parent = 0, bool allowMetricUnit = true);
+	explicit MarginWidget(QWidget *parent = 0, bool allowMetricUnit = true);
 	~MarginWidget();
 
 	void setSymetricMargins(bool on);

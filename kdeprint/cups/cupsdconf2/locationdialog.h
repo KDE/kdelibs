@@ -32,7 +32,7 @@ class LocationDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	LocationDialog(QWidget *parent = 0, const char *name = 0);
+	explicit LocationDialog(QWidget *parent = 0, const char *name = 0);
 
 	void setInfos(CupsdConf*);
 	void fillLocation(CupsLocation*);

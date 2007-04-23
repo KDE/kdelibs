@@ -32,7 +32,7 @@ class KDEPRINT_MANAGEMENT_EXPORT NetworkScanner : public QWidget
 	Q_OBJECT
 
 public:
-	NetworkScanner( int port = 9100, QWidget *parent = 0 );
+	explicit NetworkScanner( int port = 9100, QWidget *parent = 0 );
 	~NetworkScanner();
 
 	struct SocketInfo
@@ -82,7 +82,7 @@ class NetworkScannerConfig : public KDialog
 	Q_OBJECT
 
 public:
-	NetworkScannerConfig(NetworkScanner *scanner, const char *name = 0);
+	explicit NetworkScannerConfig(NetworkScanner *scanner, const char *name = 0);
 	~NetworkScannerConfig();
 
 protected Q_SLOTS:

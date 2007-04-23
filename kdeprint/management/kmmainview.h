@@ -52,7 +52,7 @@ class KDEPRINT_MANAGEMENT_EXPORT KMMainView : public QWidget, public KPReloadObj
 {
 	Q_OBJECT
 public:
-	KMMainView(QWidget *parent = 0, KActionCollection *coll = 0);
+	explicit KMMainView(QWidget *parent = 0, KActionCollection *coll = 0);
 	~KMMainView();
 
 	void setOrientation(int);

@@ -101,7 +101,7 @@ void PosterPreview::updatePoster()
 	m_buffer = "";
 	m_process->clearArguments();
 	*m_process << "poster" << "-F" << "-m" + m_mediasize << "-p" + m_postersize
-		<< "-c" + QString::number( m_cutmargin ) + "%";
+		<< "-c" + QString::number( m_cutmargin ) + '%';
 	if ( !m_process->start( K3Process::NotifyOnExit, K3Process::Stderr ) )
 	{
 		m_rows = m_cols = 0;
@@ -294,7 +294,7 @@ void PosterPreview::emitSelectedPages()
 	if ( m_selectedpages.count() > 0 )
 	{
 		for ( QList<int>::ConstIterator it=m_selectedpages.begin(); it!=m_selectedpages.end(); ++it )
-			s.append( QString::number( *it ) + "," );
+			s.append( QString::number( *it ) + ',' );
 		s.truncate( s.length()-1 );
 	}
 	emit selectionChanged( s );

@@ -25,7 +25,7 @@
 class KLpdPrinterImpl : public KPrinterImpl
 {
 public:
-	KLpdPrinterImpl(QObject *parent = 0, const char *name = 0);
+	explicit KLpdPrinterImpl(QObject *parent = 0, const char *name = 0);
 	~KLpdPrinterImpl();
 
 	bool setupCommand(QString&, KPrinter*);

@@ -37,7 +37,7 @@ class CupsAddSmb : public KDialog
 
 public:
 	enum State { None, Start, MkDir, Copy, AddDriver, AddPrinter };
-	CupsAddSmb(QWidget *parent = 0, const char *name = 0);
+	explicit CupsAddSmb(QWidget *parent = 0, const char *name = 0);
 	~CupsAddSmb();
 
 	static bool exportDest(const QString& dest, const QString& datadir);

@@ -31,7 +31,7 @@ class KPrintPreview : public KDialog
 {
 	Q_OBJECT
 public:
-	KPrintPreview(QWidget *parent = 0, bool previewOnly = false);
+	explicit KPrintPreview(QWidget *parent = 0, bool previewOnly = false);
 	~KPrintPreview();
 
 	void openFile(const QString& file);

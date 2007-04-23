@@ -29,7 +29,7 @@ class QCheckBox;
 class KMProxyWidget : public QGroupBox
 {
 public:
-	KMProxyWidget(QWidget *parent = 0, const char *name = 0);
+	explicit KMProxyWidget(QWidget *parent = 0, const char *name = 0);
 
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);

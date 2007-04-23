@@ -356,7 +356,7 @@ DrBase* KXmlCommand::parseArgument(const QDomElement& e)
 	else
 		return 0;
 
-	opt->setName("_kde-" + d->m_name + "-" + e.attribute("name"));
+	opt->setName("_kde-" + d->m_name + '-' + e.attribute("name"));
 	setOptionText(opt, e.attribute("description"));
 	opt->set("format", e.attribute("format"));
 	opt->set("default", e.attribute("default"));
@@ -466,7 +466,7 @@ void KXmlCommand::saveXml()
 QDomElement KXmlCommand::createIO(QDomDocument& doc, int n, const QString& tag)
 {
 	QDomElement	elem = doc.createElement(tag);
-	if (d->m_command.indexOf("%"+tag) != -1)
+	if (d->m_command.indexOf('%'+tag) != -1)
 	{
 		for (int i=0; i<2; i++)
 		{

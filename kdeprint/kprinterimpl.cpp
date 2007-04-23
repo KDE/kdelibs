@@ -148,7 +148,7 @@ bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 			KUrl url( p->outputFileName() );
 			if ( !url.isLocalFile() )
 			{
-				cmd = ( flag ? "mv" : "cp" ) + ( " %in $out{" + p->outputFileName() + "}" );
+				cmd = ( flag ? "mv" : "cp" ) + ( " %in $out{" + p->outputFileName() + '}' );
 			}
 			else
 			{
@@ -207,7 +207,7 @@ void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 
 	QString	message(msg);
 	if (printer && !msg.isEmpty())
-		message.prepend(i18n("Printing document: %1", printer->docName())+"\n");
+		message.prepend(i18n("Printing document: %1", printer->docName())+'\n');
 
         QDBusInterface kdeprintd( "org.kde.kded", "/modules/kdeprintd", "org.kde.KDEPrintd" );
         (void)kdeprintd.call( "statusMessage", msg, int(getpid()), KGlobal::caption() );
@@ -535,7 +535,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 	// XXX use KMacroExpander
 	s.replace("%psl", ps.toLower());
 	s.replace("%psu", ps);
-	s.replace("%out", "$out{" + p->outputFileName() + "}"); // Replace as last
+	s.replace("%out", "$out{" + p->outputFileName() + '}'); // Replace as last
 	cmd = s;
 	return true;
 }

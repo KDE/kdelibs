@@ -50,7 +50,7 @@ class KMIconView : public K3IconView
 public:
 	enum ViewMode { Big, Small };
 
-	KMIconView(QWidget *parent = 0, const char *name = 0);
+	explicit KMIconView(QWidget *parent = 0, const char *name = 0);
 	~KMIconView();
 
 	void setPrinterList(QList<KMPrinter*> *list);

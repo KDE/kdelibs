@@ -142,7 +142,7 @@ QString KMPrinter::stateString() const
 		case KMPrinter::Stopped: s = i18n("Stopped"); break;
 		default: return i18nc("Unknown State", "Unknown");
 	}
-	s += (" " + (m_state & Rejecting ? i18n("(rejecting jobs)") : i18n("(accepting jobs)")));
+	s += (' ' + (m_state & Rejecting ? i18n("(rejecting jobs)") : i18n("(accepting jobs)")));
 	return s;
 }
 
@@ -163,7 +163,7 @@ bool KMPrinter::autoConfigure(KPrinter *printer, QWidget *parent)
 			// build-up default filename/directory
 			QString fName = printer->docFileName(), ext = option( "kde-special-extension" );
 			if ( fName.isEmpty() )
-				fName = ( printer->docName() + "." + ext );
+				fName = ( printer->docName() + '.' + ext );
 			else
 			{
 				int p = fName.lastIndexOf( '.' );

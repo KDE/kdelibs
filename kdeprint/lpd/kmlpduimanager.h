@@ -25,7 +25,7 @@
 class KMLpdUiManager : public KMUiManager
 {
 public:
-	KMLpdUiManager(QObject *parent = 0, const char *name = 0);
+	explicit KMLpdUiManager(QObject *parent = 0, const char *name = 0);
 	~KMLpdUiManager();
 
 	void setupWizard(KMWizard*);

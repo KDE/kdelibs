@@ -30,7 +30,7 @@ class GsChecker;
 class KMLpdManager : public KMManager
 {
 public:
-	KMLpdManager(QObject *parent = 0, const char *name = 0);
+	explicit KMLpdManager(QObject *parent = 0, const char *name = 0);
 	~KMLpdManager();
 
 	bool completePrinterShort(KMPrinter*);

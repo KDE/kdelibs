@@ -36,7 +36,7 @@ class KDEPRINT_MANAGEMENT_EXPORT KXmlCommandSelector : public QWidget
 {
 	Q_OBJECT
 public:
-	KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, KDialog *dlg = 0);
+	explicit KXmlCommandSelector(bool canBeNull = true, QWidget *parent = 0, KDialog *dlg = 0);
 
 	void setCommand(const QString&);
 	QString command() const;

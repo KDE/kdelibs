@@ -27,12 +27,12 @@ KUrl smbToUrl(const QString& work, const QString& server, const QString& printer
 	if (!work.isEmpty())
 	{
 		url.setHost(work);
-		url.setPath("/" + server + "/" + printer);
+		url.setPath('/' + server + '/' + printer);
 	}
 	else
 	{
 		url.setHost(server);
-		url.setPath("/" + printer);
+		url.setPath('/' + printer);
 	}
 	return url;
 }
@@ -110,14 +110,14 @@ int findIndex(int ID)
 
 QString buildSmbURI( const QString& work, const QString& server, const QString& printer, const QString& user, const QString& passwd )
 {
-	QString uri = server + "/" + printer;
+	QString uri = server + '/' + printer;
 	if ( !work.isEmpty() )
-		uri.prepend( work + "/" );
+		uri.prepend( work + '/' );
 	if ( !user.isEmpty() )
 	{
 		uri.prepend( "@" );
 		if ( !passwd.isEmpty() )
-			uri.prepend( ":" + passwd );
+			uri.prepend( ':' + passwd );
 		uri.prepend( user );
 	}
 	uri.prepend( "smb://" );

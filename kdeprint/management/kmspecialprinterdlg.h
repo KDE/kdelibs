@@ -33,7 +33,7 @@ class KMSpecialPrinterDlg : public KDialog
 {
 	Q_OBJECT
 public:
-	KMSpecialPrinterDlg(QWidget *parent = 0, const char *name = 0);
+	explicit KMSpecialPrinterDlg(QWidget *parent = 0, const char *name = 0);
 
 	void setPrinter(KMPrinter*);
 	KMPrinter* printer();

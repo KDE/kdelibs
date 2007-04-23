@@ -40,7 +40,7 @@ static QString instanceName(const QString& prname, const QString& instname)
 {
 	QString	str(prname);
 	if (!instname.isEmpty())
-		str.append("/"+instname);
+		str.append('/'+instname);
 	return str;
 }
 

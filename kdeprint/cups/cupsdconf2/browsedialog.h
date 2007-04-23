@@ -31,7 +31,7 @@ class BrowseDialog : public KDialog
 	Q_OBJECT
 
 public:
-	BrowseDialog(QWidget *parent = 0, const char *name = 0);
+	explicit BrowseDialog(QWidget *parent = 0, const char *name = 0);
 
 	QString addressString();
 	void setInfos(CupsdConf*);

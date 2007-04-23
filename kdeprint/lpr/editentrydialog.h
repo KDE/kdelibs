@@ -36,7 +36,7 @@ class EditEntryDialog : public KDialog
 {
 	Q_OBJECT
 public:
-	EditEntryDialog(PrintcapEntry *entry, QWidget *parent = 0, const char *name = 0);
+	explicit EditEntryDialog(PrintcapEntry *entry, QWidget *parent = 0, const char *name = 0);
 
 	void fillEntry(PrintcapEntry *entry);
 
