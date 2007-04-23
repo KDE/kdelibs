@@ -22,7 +22,7 @@
 
 #if defined( _KDEPRINT_COMPILE )
 
-#include <qstring.h>
+#include <QtCore/QString>
 
 class PrintcapEntry;
 class KMPrinter;

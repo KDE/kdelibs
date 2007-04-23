@@ -17,11 +17,11 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kmwquota.h"
 #include "kmwizard.h"
 #include "kmprinter.h"
+
+#include <config.h>
 
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QLabel>

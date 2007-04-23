@@ -17,8 +17,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
 #include "cupsdconf.h"
+
+#include <config.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>

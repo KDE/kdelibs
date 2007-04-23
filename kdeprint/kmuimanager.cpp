@@ -17,8 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kmuimanager.h"
 #include "kprintdialog.h"
 #include "kprintdialogpage.h"
@@ -35,6 +33,8 @@
 #include "kpfileselectpage.h"
 #include "kxmlcommand.h"
 #include "kpposterpage.h"
+
+#include <config.h>
 
 #include <klocale.h>
 #include <kdebug.h>

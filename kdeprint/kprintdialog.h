@@ -26,7 +26,7 @@
 #include <kdialog.h>
 #include <kdeprint/kpreloadobject.h>
 
-#include <QList>
+#include <QtCore/QList>
 
 class KPrinter;
 class KPrintDialogPage;

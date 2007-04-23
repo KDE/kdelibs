@@ -25,8 +25,8 @@
 
 #include <kdeprint_export.h>
 
-#include <qstring.h>
-#include <QVector>
+#include <QtCore/QString>
+#include <QtCore/QVector>
 #include <kdeprint/kmobject.h>
 
 /**

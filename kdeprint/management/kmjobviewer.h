@@ -28,7 +28,7 @@
 #include <kxmlguiwindow.h>
 #include "kmprinterpage.h"
 #include "kpreloadobject.h"
-#include <QList>
+#include <QtCore/QList>
 
 class KMJobManager;
 class KMJob;

@@ -17,11 +17,11 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "config.h"
+#include "cupsddialog.h"
+
+#include <config.h>
 
 #include <kdeprint_export.h>
-
-#include "cupsddialog.h"
 
 #include "cupsdpage.h"
 #include "cupsdconf.h"

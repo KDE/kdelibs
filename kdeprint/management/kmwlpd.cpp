@@ -17,10 +17,11 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
 #include "kmwlpd.h"
 #include "kmwizard.h"
 #include "kmprinter.h"
+
+#include <config.h>
 
 #include <kurl.h>
 #include <klocale.h>

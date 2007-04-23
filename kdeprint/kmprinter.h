@@ -28,10 +28,10 @@
 #include <kdeprint/kmobject.h>
 #include <kurl.h>
 
-#include <qstring.h>
-#include <qstringlist.h>
-#include <QList>
-#include <qmap.h>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QList>
+#include <QtCore/QMap>
 
 class KMDBEntry;
 class DrMain;

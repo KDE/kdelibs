@@ -18,8 +18,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kprinter.h"
 #include "kprinterimpl.h"
 #include "kprintdialog.h"
@@ -28,6 +26,8 @@
 #include "kmuimanager.h"
 #include "kmmanager.h"
 #include "driver.h"
+
+#include <config.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>

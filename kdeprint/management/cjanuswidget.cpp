@@ -17,6 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "cjanuswidget.h"
+
 #include <QEvent>
 #include <QLabel>
 #include <QLayout>
@@ -27,8 +29,6 @@
 
 #include <klistwidget.h>
 #include <kseparator.h>
-
-#include "cjanuswidget.h"
 
 class CJanusWidget::CPage
 {

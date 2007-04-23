@@ -25,8 +25,8 @@
 
 #include <kdeprint/kmprinter.h>
 
-#include <QList>
-#include <QObject>
+#include <QtCore/QList>
+#include <QtCore/QObject>
 
 
 class DrMain;

@@ -17,9 +17,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <kdeprint_export.h>
-
 #include "networkscanner.h"
+
+#include <kdeprint_export.h>
 
 #include <QtGui/QProgressBar>
 #include <QtGui/QLayout>

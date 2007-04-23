@@ -23,10 +23,10 @@
 #if defined( _KDEPRINT_COMPILE )
 /* internal header, do not use except if you are a KDEPrint developer */
 
-#include <qstring.h>
-#include <qmap.h>
-#include <qstringlist.h>
-#include <qtextstream.h>
+#include <QtCore/QString>
+#include <QtCore/QMap>
+#include <QtCore/QStringList>
+#include <QtCore/QTextStream>
 
 /**
  * @internal

@@ -17,8 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kmcupsmanager.h"
 #include "kmprinter.h"
 #include "ipprequest.h"
@@ -32,6 +30,8 @@
 #include "util.h"
 #include "foomatic2loader.h"
 #include "ppdloader.h"
+
+#include <config.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>

@@ -21,6 +21,7 @@
 #define NETWORKSCANNER_H
 
 #include <kdialog.h>
+#include <kdeprint_export.h>
 
 #include <QtCore/QList>
 #include <QtGui/QWidget>

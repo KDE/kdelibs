@@ -24,7 +24,7 @@
 /* internal header, do not use except if you are a KDEPrint developer */
 
 #include <kdeprint_export.h>
-#include <qtimer.h>
+#include <QtCore/QTimer>
 
 /**
  * @internal

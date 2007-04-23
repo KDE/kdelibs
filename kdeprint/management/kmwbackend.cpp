@@ -17,8 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "kvisiblebuttongroup.h"
 #include "kmwbackend.h"
+#include "kvisiblebuttongroup.h"
 #include "kmwizard.h"
 #include "kmprinter.h"
 

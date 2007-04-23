@@ -25,9 +25,9 @@
 
 #include <kdeprint_export.h>
 
-#include <QHash>
-#include <QList>
-#include <QObject>
+#include <QtCore/QHash>
+#include <QtCore/QList>
+#include <QtCore/QObject>
 
 class KMJob;
 class KMThreadJob;

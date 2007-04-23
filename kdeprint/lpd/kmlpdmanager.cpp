@@ -17,7 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
 #include "kmlpdmanager.h"
 #include "kmprinter.h"
 #include "kmdbentry.h"
@@ -26,6 +25,8 @@
 #include "lpdtools.h"
 #include "gschecker.h"
 #include "kpipeprocess.h"
+
+#include <config.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>

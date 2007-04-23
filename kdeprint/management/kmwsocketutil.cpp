@@ -18,9 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kmwsocketutil.h"
+
+#include <config.h>
 
 #include <QtGui/QProgressBar>
 #include <QtGui/QLineEdit>

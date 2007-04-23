@@ -21,7 +21,7 @@
 #define LPRSETTINGS_H
 
 #if defined( _KDEPRINT_COMPILE )
-#include <qobject.h>
+#include <QtCore/QObject>
 #include <kdeprint/kpreloadobject.h>
 
 /**

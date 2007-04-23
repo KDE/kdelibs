@@ -18,12 +18,12 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "kpmarginpage.h"
 #include "kprinter.h"
 #include "driver.h"
 #include "marginwidget.h"
+
+#include <config.h>
 
 #include <QGroupBox>
 #include <QtGui/QLayout>
