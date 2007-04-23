@@ -138,7 +138,7 @@ public:
      * @internal
      * @return the path containing the bookmarks
      */
-    QString path() { return m_bookmarksFile; }
+    QString path() const;
 
     /**
      * This will return the root bookmark.  It is used to iterate
@@ -281,17 +281,8 @@ private:
     static KBookmarkManager* managerForFile( const QString&, int);
     void init( const QString& dbusPath );
 
-    QString m_bookmarksFile;
-    mutable QDomDocument m_doc;
-    mutable QDomDocument m_toolbarDoc;
-    mutable bool m_docIsLoaded;
-    bool m_update;
-    QString m_dbusObjectName;
-    static KBookmarkManagerList* s_pSelf;
-
-    QString m_editorCaption;
-    bool m_browserEditor;
-    class KBookmarkManagerPrivate* d;
+    class Private;
+    Private * const d;
 
     friend class KBookmarkGroup;
 };
