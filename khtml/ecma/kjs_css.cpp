@@ -170,7 +170,7 @@ ValueImp *DOMCSSStyleDeclaration::indexGetter(ExecState* , unsigned index)
   return String(m_impl->item(index));
 }
 
-ValueImp *DOMCSSStyleDeclaration::cssPropertyGetter(ExecState *exec, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
+ValueImp *DOMCSSStyleDeclaration::cssPropertyGetter(ExecState*, JSObject*, const Identifier& propertyName, const PropertySlot& slot)
 {
   DOMCSSStyleDeclaration *thisObj = static_cast<DOMCSSStyleDeclaration *>(slot.slotBase());
 
@@ -399,7 +399,7 @@ DOMStyleSheetList::~DOMStyleSheetList()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMStyleSheetList::getValueProperty(ExecState *exec, int token) const
+ValueImp *DOMStyleSheetList::getValueProperty(ExecState*, int token) const
 {
     switch(token) {
     case Length:
@@ -515,7 +515,7 @@ DOMMediaList::~DOMMediaList()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp* DOMMediaList::getValueProperty(ExecState *exec, int token) const
+ValueImp* DOMMediaList::getValueProperty(ExecState*, int token) const
 {
   const MediaListImpl& mediaList = *m_impl;
   switch (token)
@@ -530,7 +530,7 @@ ValueImp* DOMMediaList::getValueProperty(ExecState *exec, int token) const
   }
 }
 
-ValueImp *DOMMediaList::indexGetter(ExecState* exec, unsigned index)
+ValueImp *DOMMediaList::indexGetter(ExecState*, unsigned index)
 {
   return String(m_impl->item(index));
 }
@@ -688,7 +688,7 @@ DOMCSSRuleList::~DOMCSSRuleList()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMCSSRuleList::getValueProperty(ExecState *exec, int token) const
+ValueImp *DOMCSSRuleList::getValueProperty(ExecState*, int token) const
 {
   switch (token) {
   case Length:
@@ -1014,7 +1014,7 @@ DOMCSSValue::~DOMCSSValue()
   ScriptInterpreter::forgetDOMObject(m_impl.get());
 }
 
-ValueImp *DOMCSSValue::getValueProperty(ExecState *exec, int token) const
+ValueImp *DOMCSSValue::getValueProperty(ExecState*, int token) const
 {
   CSSValueImpl &cssValue = *m_impl;
   switch (token) {
@@ -1133,7 +1133,7 @@ DOMCSSPrimitiveValue::DOMCSSPrimitiveValue(ExecState *exec, DOM::CSSPrimitiveVal
   setPrototype(DOMCSSPrimitiveValueProto::self(exec));
 }
 
-ValueImp *DOMCSSPrimitiveValue::getValueProperty(ExecState *exec, int token)
+ValueImp *DOMCSSPrimitiveValue::getValueProperty(ExecState*, int token)
 {
   assert(token == PrimitiveType);
   return Number(static_cast<CSSPrimitiveValueImpl *>(impl())->primitiveType());
