@@ -19,6 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kconfigini.h"
+
 #include <config.h>
 
 #include <unistd.h>
@@ -37,8 +39,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
-
-#include "kconfigini.h"
 
 #include "kconfigbase.h"
 #include "kconfigdata.h"

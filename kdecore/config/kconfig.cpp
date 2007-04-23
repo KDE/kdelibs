@@ -19,6 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kconfig.h"
+
 #include <config.h>
 
 #ifdef HAVE_SYS_STAT_H
@@ -29,7 +31,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "kconfig.h"
 #include "kconfigbackend.h"
 #include "kconfigini.h"
 #include "kglobal.h"

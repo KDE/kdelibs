@@ -23,7 +23,7 @@
 
 #include <kdecore_export.h>
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 class KCalendarSystemPrivate;
 class KLocale;

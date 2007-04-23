@@ -19,7 +19,7 @@
 #define _KGLOBAL_H
 
 #include <kdecore_export.h>
-#include <QAtomicPointer>
+#include <QtCore/QAtomicPointer>
 
 class KComponentData;
 class KCharsets;
@@ -81,7 +81,7 @@ class KCleanUpGlobalStatic
  * for that using the isDestroyed() function.
  *
  * With reinit() you can delete the current object. It's recreated on next use. This is
- * usefull when you want to force a reinitialization of the object.
+ * useful when you want to force a reinitialization of the object.
  *
  * If needed you can also install a post routine (\ref qAddPostRoutine) to clean up the object
  * using the destroy() method.

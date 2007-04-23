@@ -28,7 +28,7 @@
 
 #include "klocalizedstring.h"
 
-#include "config-network.h"
+#include <config-network.h>
 
 class _k_internal_QTcpSocketSetError: public QAbstractSocket
 {

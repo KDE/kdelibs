@@ -19,9 +19,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kconfiggroup.h"
+#include "kconfiggroup_p.h"
+
 #include <config.h>
 
-#include "kconfiggroup.h"
 #include "kconfig.h"
 #include "kstringhandler.h"
 #include "kcomponentdata.h"
@@ -35,7 +37,6 @@
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QTextIStream>
 
-#include "kconfiggroup_p.h"
 
 class KConfigGroup::Private
 {

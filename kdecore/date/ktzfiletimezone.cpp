@@ -17,14 +17,15 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ktzfiletimezone.h"
+
 #include <config.h>
 
-#include <QFile>
-#include <QDataStream>
-#include <QVector>
+#include <QtCore/QFile>
+#include <QtCore/QDataStream>
+#include <QtCore/QVector>
 
 #include <kdebug.h>
-#include <ktzfiletimezone.h>
 
 
 // Use this replacement for QDateTime::setTime_t(uint) since our time

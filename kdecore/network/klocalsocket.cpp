@@ -19,10 +19,10 @@
  */
 
 #include "klocalsocket.h"
+#include "klocalsocket_p.h"
 
 #include <QtCore/QSocketNotifier>
 
-#include "klocalsocket_p.h"
 
 //#define LocalSocket (QAbstractSocket::SocketType(int(QAbstractSocket::UdpSocket) + 1))
 

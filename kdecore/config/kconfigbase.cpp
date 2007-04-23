@@ -19,9 +19,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
 #include "kconfigdata.h"
@@ -31,6 +28,9 @@
 #include "kstandarddirs.h"
 #include "kstringhandler.h"
 #include "kcomponentdata.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <QtGui/QColor>
 #include <QtCore/QDate>

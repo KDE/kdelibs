@@ -21,16 +21,17 @@
 // This file requires HAVE_STRUCT_TM_TM_ZONE to be defined if struct tm member tm_zone is available.
 // This file requires HAVE_TM_GMTOFF to be defined if struct tm member tm_gmtoff is available.
 
+#include "ktimezones.h"
+
 #include <config.h>
 
 #include <climits>
 #include <cstdlib>
 
-#include <QSet>
-#include <QSharedData>
+#include <QtCore/QSet>
+#include <QtCore/QSharedData>
 
 #include <kdebug.h>
-#include <ktimezones.h>
 
 int gmtoff(time_t t);   // defined in ksystemtimezone.cpp
 

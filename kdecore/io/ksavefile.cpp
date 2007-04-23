@@ -21,19 +21,20 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "ksavefile.h"
+
 #include <config.h>
 
 #include <QtCore/QDir>
 #include <QProcess>
 
-#include "kconfig.h"
-#include "kde_file.h"
-#include "klocale.h"
-#include "ksavefile.h"
-#include "kstandarddirs.h"
-#include "ktemporaryfile.h"
+#include <kconfig.h>
+#include <kde_file.h>
+#include <klocale.h>
+#include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <kcomponentdata.h>
+#include "ktemporaryfile.h"
 
 class KSaveFile::Private
 {

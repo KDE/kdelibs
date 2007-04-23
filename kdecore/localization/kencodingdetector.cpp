@@ -33,7 +33,6 @@
 #define MAX_BUFFER 16*1024
 
 #include <assert.h>
-#include <klocale.h>
 
 #include "guess_ja_p.h"
 

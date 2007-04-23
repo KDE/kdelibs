@@ -236,7 +236,7 @@ const QString KTranscriptImp::eval (const QStringList &argv,
 {
     //error = "debug"; return QString();
 
-    error.clear(); // empty error message means successfull evaluation
+    error.clear(); // empty error message means successful evaluation
     fallback = false; // fallback not requested
 
     #if 0
@@ -321,7 +321,7 @@ const QString KTranscriptImp::eval (const QStringList &argv,
         return QString();
     }
     else if (!exec->hadException())
-    // Evaluation successfull.
+    // Evaluation successful.
     {
         if (val->isString())
         // Good to go.

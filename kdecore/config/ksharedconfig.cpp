@@ -19,9 +19,9 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "ksharedconfig.h"
 #include "kconfigbackend.h"
 #include "kcomponentdata.h"
-#include "ksharedconfig.h"
 
 K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 

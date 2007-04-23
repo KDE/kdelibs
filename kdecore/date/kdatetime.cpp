@@ -18,21 +18,22 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kdatetime.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 
-#include <QDateTime>
-#include <QRegExp>
-#include <QStringList>
-#include <QSharedData>
+#include <QtCore/QDateTime>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
+#include <QtCore/QSharedData>
 
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcalendarsystemgregorian.h>
 #include <ksystemtimezone.h>
 #include <kdebug.h>
-#include "kdatetime.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h>    // SYSTEMTIME

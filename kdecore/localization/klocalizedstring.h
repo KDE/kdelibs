@@ -22,9 +22,9 @@
 #include <kdecore_export.h>
 
 
-#include <QChar>
-#include <QLatin1Char>
-#include <QStringList>
+#include <QtCore/QChar>
+#include <QtCore/QLatin1Char>
+#include <QtCore/QStringList>
 
 class KLocale;
 class KLocalizedStringPrivate;

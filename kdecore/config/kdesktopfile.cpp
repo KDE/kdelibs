@@ -19,6 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kdesktopfile.h"
+
 #include <config.h>
 
 #include <stdlib.h>
@@ -28,7 +30,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QTextIStream>
 
-#include "kdesktopfile.h"
 #include "kdebug.h"
 #include "kurl.h"
 #include "kconfigbackend.h"

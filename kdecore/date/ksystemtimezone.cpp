@@ -21,17 +21,19 @@
 // This file requires HAVE_STRUCT_TM_TM_ZONE to be defined if struct tm member tm_zone is available.
 // This file requires HAVE_TM_GMTOFF to be defined if struct tm member tm_gmtoff is available.
 
+#include "ksystemtimezone.h"
+
 #include <config.h>
 
 #include <climits>
 #include <cstdlib>
 
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
-#include <QRegExp>
-#include <QStringList>
-#include <QTextStream>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
+#include <QtCore/QTextStream>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -39,8 +41,7 @@
 #include <kstringhandler.h>
 #include <ktemporaryfile.h>
 #include <kdebug.h>
-#include <ksystemtimezone.h>
-#include <ktzfiletimezone.h>
+#include "ktzfiletimezone.h"
 
 
 /* Return the offset to UTC in the current time zone at the specified UTC time.

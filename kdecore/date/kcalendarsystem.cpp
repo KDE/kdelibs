@@ -27,7 +27,7 @@
 #include "kglobal.h"
 #include "klocale.h"
 
-#include <QDateTime>
+#include <QtCore/QDateTime>
 
 
 #include "kcalendarsystemgregorian.h"

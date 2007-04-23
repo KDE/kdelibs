@@ -16,14 +16,14 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include "ksycocafactory.h"
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocaentry.h"
 #include "ksycocadict.h"
-#include "kdebug.h"
+
+#include <config.h>
+#include <kdebug.h>
 
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QHash>

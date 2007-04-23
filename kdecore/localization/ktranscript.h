@@ -52,7 +52,7 @@ class KTranscript
                     failed; set to empty otherwise
      * @param fallback set to true if the script requested fallback to ordinary
                        translation; set to false otherwise
-     * @return resolved interpolation if evaluation succeded,
+     * @return resolved interpolation if evaluation succeeded,
      *         empty string otherwise
      */
     virtual const QString eval (const QStringList &argv,
