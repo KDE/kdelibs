@@ -61,7 +61,7 @@
 #  if defined(MAKE_KHTML_LIB) || defined(MAKE_KJSEMBED_LIB) || defined(MAKE_KATEPART_LIB)
 #   define KJS_EXTERNAL_EXPORT __declspec(dllexport)
 #  else 
-#   define KJS_EXTERNAL_EXPORT __declspec(dllimport)
+#   define KJS_EXTERNAL_EXPORT 
 #  endif
 # else 
 #   define KJS_EXTERNAL_EXPORT
