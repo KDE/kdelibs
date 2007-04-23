@@ -65,8 +65,8 @@ namespace Solid
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
-        static QList<Device> findDevicesFromQuery(const DeviceInterface::Type &type,
-                                                  const QString &parentUdi = QString());
+        static QList<Device> listFromType(const DeviceInterface::Type &type,
+                                          const QString &parentUdi = QString());
 
         /**
          * Retrieves a list of devices of the system given matching the given
@@ -78,8 +78,8 @@ namespace Solid
          * @return the list of devices corresponding to the given constraints
          * @see Solid::Predicate
          */
-        static QList<Device> findDevicesFromQuery(const Predicate &predicate,
-                                                  const QString &parentUdi = QString());
+        static QList<Device> listFromQuery(const Predicate &predicate,
+                                           const QString &parentUdi = QString());
 
         /**
          * Convenience function see above.
@@ -88,8 +88,8 @@ namespace Solid
          * @param parentUdi
          * @return the list of devices
          */
-        static QList<Device> findDevicesFromQuery(const QString &predicate,
-                                                  const QString &parentUdi = QString());
+        static QList<Device> listFromQuery(const QString &predicate,
+                                           const QString &parentUdi = QString());
 
 
         /**

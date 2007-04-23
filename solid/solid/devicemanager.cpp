@@ -73,14 +73,14 @@ QList<Solid::Device> Solid::Device::allDevices()
     return list;
 }
 
-QList<Solid::Device> Solid::Device::findDevicesFromQuery(const QString &predicate,
-                                                         const QString &parentUdi)
+QList<Solid::Device> Solid::Device::listFromQuery(const QString &predicate,
+                                                  const QString &parentUdi)
 {
     Predicate p = Predicate::fromString(predicate);
 
     if (p.isValid())
     {
-        return findDevicesFromQuery(p, parentUdi);
+        return listFromQuery(p, parentUdi);
     }
     else
     {
@@ -88,8 +88,8 @@ QList<Solid::Device> Solid::Device::findDevicesFromQuery(const QString &predicat
     }
 }
 
-QList<Solid::Device> Solid::Device::findDevicesFromQuery(const DeviceInterface::Type &type,
-                                                         const QString &parentUdi)
+QList<Solid::Device> Solid::Device::listFromType(const DeviceInterface::Type &type,
+                                                 const QString &parentUdi)
 {
     QList<Device> list;
 
@@ -108,8 +108,8 @@ QList<Solid::Device> Solid::Device::findDevicesFromQuery(const DeviceInterface::
     return list;
 }
 
-QList<Solid::Device> Solid::Device::findDevicesFromQuery(const Predicate &predicate,
-                                                         const QString &parentUdi)
+QList<Solid::Device> Solid::Device::listFromQuery(const Predicate &predicate,
+                                                  const QString &parentUdi)
 {
     QList<Device> list;
 

@@ -380,28 +380,28 @@ void SolidHwTest::testPredicate()
     ifaceType = Solid::DeviceInterface::Unknown;
     Solid::DeviceList list;
 
-    list = Solid::Device::findDevicesFromQuery(p1, parentUdi);
+    list = Solid::Device::listFromQuery(p1, parentUdi);
     QCOMPARE(list.size(), 2);
     QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
     QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::Device::findDevicesFromQuery(p2, parentUdi);
+    list = Solid::Device::listFromQuery(p2, parentUdi);
     QCOMPARE(list.size(), 0);
 
-    list = Solid::Device::findDevicesFromQuery(p3, parentUdi);
+    list = Solid::Device::listFromQuery(p3, parentUdi);
     QCOMPARE(list.size(), 2);
     QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
     QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::Device::findDevicesFromQuery(p4, parentUdi);
+    list = Solid::Device::listFromQuery(p4, parentUdi);
     QCOMPARE(list.size(), 0);
 
-    list = Solid::Device::findDevicesFromQuery("[Processor.canThrottle==true AND Processor.number==1]",
+    list = Solid::Device::listFromQuery("[Processor.canThrottle==true AND Processor.number==1]",
                                                        parentUdi);
     QCOMPARE(list.size(), 1);
     QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::Device::findDevicesFromQuery("[Processor.number==1 OR IS Volume]",
+    list = Solid::Device::listFromQuery("[Processor.number==1 OR IS Volume]",
                                                        parentUdi);
 
     QSet<QString> set;
@@ -419,20 +419,20 @@ void SolidHwTest::testPredicate()
         << "/org/kde/solid/fakehw/volume_uuid_feedface";
     QCOMPARE(set, to_string_set(list));
 
-    list = Solid::Device::findDevicesFromQuery("[IS Processor OR IS Volume]",
+    list = Solid::Device::listFromQuery("[IS Processor OR IS Volume]",
                                          parentUdi);
     QCOMPARE(list.size(), 11);
     set << "/org/kde/solid/fakehw/acpi_CPU0";
     QCOMPARE(set, to_string_set(list));
 
     ifaceType = Solid::DeviceInterface::Processor;
-    list = Solid::Device::findDevicesFromQuery(ifaceType, parentUdi);
+    list = Solid::Device::listFromType(ifaceType, parentUdi);
     QCOMPARE(list.size(), 2);
     QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
     QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
     ifaceType = Solid::DeviceInterface::Unknown;
-    list = Solid::Device::findDevicesFromQuery("blup", parentUdi);
+    list = Solid::Device::listFromQuery("blup", parentUdi);
     QCOMPARE(list.size(), 0);
 }
 
