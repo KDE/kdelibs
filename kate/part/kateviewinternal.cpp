@@ -2690,6 +2690,8 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           m_view->copy();
           QApplication::clipboard()->setSelectionMode( false );
 
+          // FIXME this is overzealous, only the line at selectAnchor should
+          // be cached on shift+TC
           selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
           updateCursor( selEndCached );
@@ -2775,11 +2777,42 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
 
       if ( e->state() & Qt::ShiftButton )
       {
-        // FIXME this is totally broken right now
-//         selStartCached = m_view->selectStart;
-//         selEndCached = m_view->selectEnd;
-//         updateSelection( cursor, true );
-//         updateCursor( selEndCached );
+        KateTextCursor oldSelectStart = m_view->selectStart;
+        KateTextCursor oldSelectEnd = m_view->selectEnd;
+
+        // Now select the word under the select anchor
+        int cs, ce;
+        KateTextLine::Ptr l = m_doc->kateTextLine( selectAnchor.line() );
+
+        ce = selectAnchor.col();
+        if ( ce > 0 && m_doc->highlight()->isInWord( l->getChar( ce-1 ) ) ) {
+          for (; ce < l->length(); ce++ )
+            if ( !m_doc->highlight()->isInWord( l->getChar( ce ) ) )
+              break;
+        }
+
+        cs = selectAnchor.col();
+        if ( cs < m_doc->textLine( selectAnchor.line() ).length()
+              && m_doc->highlight()->isInWord( l->getChar( cs ) )
+              && m_doc->highlight()->isInWord( l->getChar( cs-1 ) ) ) {
+          for ( cs -= 2; cs >= 0; cs-- )
+            if ( !m_doc->highlight()->isInWord( l->getChar( cs ) ) )
+              break;
+        }
+
+        // ...and keep it selected
+        if (cs+1 < ce)
+        {
+          selStartCached = KateTextCursor( selectAnchor.line(), cs+1 );
+          selEndCached = KateTextCursor( selectAnchor.line(), ce );
+        }
+        else
+        {
+          selStartCached = selectAnchor;
+          selEndCached = selectAnchor;
+        }
+        // Now word select to the mouse cursor
+        placeCursor( e->pos(), true );
       }
       else
       {
@@ -2797,7 +2830,6 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         {
           selectAnchor = selStartCached = m_view->selectStart;
           selEndCached = m_view->selectEnd;
-          updateCursor( selEndCached );
         }
         else
         {
@@ -2807,20 +2839,19 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         }
       }
 
-      // Move cursor to end of selected word
+      // Move cursor to end (or beginning) of selected word
       if (m_view->hasSelection())
       {
         QApplication::clipboard()->setSelectionMode( true );
         m_view->copy();
         QApplication::clipboard()->setSelectionMode( false );
 
-        selStartCached = m_view->selectStart;
-        selEndCached = m_view->selectEnd;
-        // FIXME this isn't right in the case of a shift+DC
-        // for shift+DC, we might want to use selStartCached!!
-        // This also breaks shift+TC because it nukes the cursor
-        // order for when the TC handler does its thing. Oops.
-        updateCursor( selEndCached );
+        // Shift+DC before the "cached" word should move the cursor to the
+        // beginning of the selection, not the end
+        if (m_view->selectStart < selStartCached)
+          updateCursor( m_view->selectStart );
+        else
+          updateCursor( m_view->selectEnd );
       }
 
       possibleTripleClick = true;
