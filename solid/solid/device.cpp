@@ -19,7 +19,7 @@
 
 #include "device.h"
 #include "device_p.h"
-#include "devicemanager.h"
+#include "devicenotifier.h"
 #include "devicemanager_p.h"
 
 #include "deviceinterface_p.h"
@@ -64,7 +64,7 @@
 Solid::Device::Device(const QString &udi)
 {
     DeviceManagerPrivate *manager
-        = static_cast<DeviceManagerPrivate *>(Solid::DeviceManager::notifier());
+        = static_cast<DeviceManagerPrivate *>(Solid::DeviceNotifier::instance());
     d = manager->findRegisteredDevice(udi);
 }
 

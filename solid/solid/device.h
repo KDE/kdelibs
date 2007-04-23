@@ -47,6 +47,50 @@ namespace Solid
     class SOLID_EXPORT Device
     {
     public:
+        /**
+         * Retrieves all the devices available in the underlying system.
+         *
+         * @return the list of the devices available
+         */
+        static QList<Device> allDevices();
+
+        /**
+         * Retrieves a list of devices of the system given matching the given
+         * constraints (parent and device interface type)
+         *
+         * @param type device interface type available on the devices we're looking for, or DeviceInterface::Unknown
+         * if there's no constraint on the device interfaces
+         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
+         * if there's no constraint on the parent
+         * @return the list of devices corresponding to the given constraints
+         * @see Solid::Predicate
+         */
+        static QList<Device> findDevicesFromQuery(const DeviceInterface::Type &type,
+                                                  const QString &parentUdi = QString());
+
+        /**
+         * Retrieves a list of devices of the system given matching the given
+         * constraints (parent and predicate)
+         *
+         * @param predicate Predicate that the devices we're searching for must verify
+         * @param parentUdi UDI of the parent of the devices we're searching for, or QString()
+         * if there's no constraint on the parent
+         * @return the list of devices corresponding to the given constraints
+         * @see Solid::Predicate
+         */
+        static QList<Device> findDevicesFromQuery(const Predicate &predicate,
+                                                  const QString &parentUdi = QString());
+
+        /**
+         * Convenience function see above.
+         *
+         * @param predicate
+         * @param parentUdi
+         * @return the list of devices
+         */
+        static QList<Device> findDevicesFromQuery(const QString &predicate,
+                                                  const QString &parentUdi = QString());
+
 
         /**
          * Constructs a device for a given Universal Device Identifier (UDI).

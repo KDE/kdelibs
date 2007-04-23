@@ -17,7 +17,7 @@
 
 */
 
-#include "devicemanager.h"
+#include "devicenotifier.h"
 #include "devicemanager_p.h"
 
 #include "device.h"
@@ -55,12 +55,7 @@ Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
     m_devicesMap.clear();
 }
 
-QString Solid::DeviceManager::errorText()
-{
-    return globalDeviceManager->errorText();
-}
-
-QList<Solid::Device> Solid::DeviceManager::allDevices()
+QList<Solid::Device> Solid::Device::allDevices()
 {
     QList<Device> list;
     Ifaces::DeviceManager *backend
@@ -78,8 +73,8 @@ QList<Solid::Device> Solid::DeviceManager::allDevices()
     return list;
 }
 
-QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const QString &predicate,
-                                                                const QString &parentUdi)
+QList<Solid::Device> Solid::Device::findDevicesFromQuery(const QString &predicate,
+                                                         const QString &parentUdi)
 {
     Predicate p = Predicate::fromString(predicate);
 
@@ -93,8 +88,8 @@ QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const QString &p
     }
 }
 
-QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const DeviceInterface::Type &type,
-                                                                const QString &parentUdi)
+QList<Solid::Device> Solid::Device::findDevicesFromQuery(const DeviceInterface::Type &type,
+                                                         const QString &parentUdi)
 {
     QList<Device> list;
 
@@ -113,8 +108,8 @@ QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const DeviceInte
     return list;
 }
 
-QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const Predicate &predicate,
-                                                                const QString &parentUdi)
+QList<Solid::Device> Solid::Device::findDevicesFromQuery(const Predicate &predicate,
+                                                         const QString &parentUdi)
 {
     QList<Device> list;
 
@@ -155,7 +150,7 @@ QList<Solid::Device> Solid::DeviceManager::findDevicesFromQuery(const Predicate 
     return list;
 }
 
-Solid::DeviceManager::Notifier *Solid::DeviceManager::notifier()
+Solid::DeviceNotifier *Solid::DeviceNotifier::instance()
 {
     return globalDeviceManager;
 }
@@ -240,6 +235,6 @@ Solid::Ifaces::Device *Solid::DeviceManagerPrivate::createBackendObject(const QS
     return iface;
 }
 
-#include "devicemanager.moc"
+#include "devicenotifier.moc"
 #include "devicemanager_p.moc"
 

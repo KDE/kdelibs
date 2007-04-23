@@ -22,7 +22,7 @@
 
 #include "managerbase_p.h"
 
-#include "devicemanager.h"
+#include "devicenotifier.h"
 
 #include <QMap>
 #include <QExplicitlySharedDataPointer>
@@ -36,7 +36,7 @@ namespace Solid
     class DevicePrivate;
 
 
-    class DeviceManagerPrivate : public DeviceManager::Notifier, public ManagerBasePrivate
+    class DeviceManagerPrivate : public DeviceNotifier, public ManagerBasePrivate
     {
         Q_OBJECT
     public:
