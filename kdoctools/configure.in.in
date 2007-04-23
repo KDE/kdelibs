@@ -15,6 +15,7 @@ if test -n "$XML_CONFIG"; then
      LIBXML_RPATH=
      for args in $LIBXML_LIBS; do
 	  case $args in
+	    -L/usr/lib) ;;
 	    -L*)
   	       LIBXML_RPATH="$LIBXML_RPATH $args"
  	       ;;
@@ -45,6 +46,7 @@ if test -n "$HELP_SUBDIR"; then
        LIBXSLT_RPATH=
        for args in $LIBXSLT_LIBS; do
 	  case $args in
+	    -L/usr/lib) ;;
 	    -L*)
   	       LIBXSLT_RPATH="$LIBXSLT_RPATH $args"
  	       ;;

@@ -24,6 +24,7 @@ if test "x$with_gssapi" = "xCHECK" ; then
     if test "$USE_RPATH" = yes; then
       for args in $GSSAPI_LIBS; do
         case $args in
+          -L/usr/lib) ;;
           -L*)
              GSSAPI_RPATH="$GSSAPI_RPATH $args"
              ;;

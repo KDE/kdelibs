@@ -191,6 +191,7 @@ if test "x$with_libart" != xno; then
       LIBART_RPATH=
       for args in $LIBART_LIBS; do
 	  case $args in
+	    -L/usr/lib) ;;
 	    -L*)
   	       LIBART_RPATH="$LIBART_RPATH $args"
  	       ;;

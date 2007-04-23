@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 
     filter( "/", "/", KURIFilterData::LOCAL_DIR );
     filter( "/", "/", KURIFilterData::LOCAL_DIR, "kshorturifilter" );
-    filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
+    filter( "~/.bashrc", QDir::homeDirPath().local8Bit()+"/.bashrc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
     filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, "kshorturifilter", "/tmp" );
     filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
     filter( "user@host.domain", "mailto:user@host.domain", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2

@@ -407,7 +407,7 @@ bool KZip::openArchive( int mode )
     char buffer[47];
 
     // Check that it's a valid ZIP file
-    // KArchive::open() opened the underlying device already.
+    // the above code opened the underlying device already.
     QIODevice* dev = device();
 
     if (!dev) {
