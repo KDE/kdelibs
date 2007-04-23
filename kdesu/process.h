@@ -16,7 +16,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QList>
+#include <QtCore/QList>
 
 #include <kdesu/kdesu_export.h>
 

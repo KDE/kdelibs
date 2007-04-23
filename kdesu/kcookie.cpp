@@ -10,6 +10,8 @@
  * kcookie.cpp: KDE authentication cookies.
  */
 
+#include "kcookie.h"
+
 #include <stdlib.h>
 
 #include <QtCore/QString>
@@ -18,7 +20,6 @@
 #include <QtCore/Q_PID>
 
 #include <kdebug.h>
-#include "kcookie.h"
 
 
 KCookie::KCookie()

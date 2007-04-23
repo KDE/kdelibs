@@ -10,6 +10,9 @@
  * stub.cpp: Conversation with kdesu_stub.
  */
 
+#include "stub.h"
+#include "kcookie.h"
+
 #include <config.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,9 +21,6 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
-
-#include "stub.h"
-#include "kcookie.h"
 
 
 StubProcess::StubProcess()

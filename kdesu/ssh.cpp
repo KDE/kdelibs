@@ -10,6 +10,9 @@
 * ssh.cpp: Execute a program on a remote machine using ssh.
 */
 
+#include "ssh.h"
+#include "kcookie.h"
+
 #include <config.h>
 
 #include <stdio.h>
@@ -30,9 +33,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-
-#include "ssh.h"
-#include "kcookie.h"
 
 
 SshProcess::SshProcess(const QByteArray &host, const QByteArray &user, const QByteArray &command)

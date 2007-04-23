@@ -11,8 +11,8 @@
 #ifndef __Stub_h_Included__
 #define __Stub_h_Included__
 
-#include <QtCore/qbytearray.h>
-#include <QtCore/qlist.h>
+#include <QtCore/QByteArray>
+#include <QtCore/QList>
 
 #include "process.h"
 #include "kcookie.h"

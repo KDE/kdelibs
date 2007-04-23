@@ -14,6 +14,10 @@
  *  terminal programs.
  */
 
+#include "process.h"
+#include "kdesu_pty.h"
+#include "kcookie.h"
+
 #include <config.h>
 
 #include <stdio.h>
@@ -48,10 +52,6 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
-
-#include "process.h"
-#include "kdesu_pty.h"
-#include "kcookie.h"
 
 /*
 ** Wait for @p ms miliseconds

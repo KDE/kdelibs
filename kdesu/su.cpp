@@ -4,7 +4,7 @@
 * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
 *
 * Sudo support added by Jonathan Riddell <jriddell@ ubuntu.com>
-* Copyright (C) 2005 Canonical Ltd
+* Copyright (C) 2005 Canonical Ltd  // krazy:exclude=copyright (no email)
 *
 * This is free software; you can use this library under the GNU Library
 * General Public License, version 2. See the file "COPYING.LIB" for the
@@ -12,6 +12,9 @@
 *
 * su.cpp: Execute a program as another user with "class SuProcess".
 */
+
+#include "su.h"
+#include "kcookie.h"
 
 #include <config.h>
 #include <config-prefix.h> // for __KDE_BINDIR
@@ -36,9 +39,6 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kuser.h>
-
-#include "su.h"
-#include "kcookie.h"
 
 
 #ifndef __PATH_SU
@@ -126,7 +126,7 @@ int SuProcess::exec(const char *password, int check)
         args += "-c";
     }
     args += QByteArray(__KDE_BINDIR) + "/kdesu_stub";
-    args += "-";
+    args += "-"; // krazy:exclude=doublequote_chars (QList, not QString)
 
     QByteArray command;
     if (m_superUserCommand == "sudo") {

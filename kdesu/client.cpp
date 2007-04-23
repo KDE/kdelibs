@@ -10,6 +10,8 @@
  * client.cpp: A client for kdesud.
  */
 
+#include "client.h"
+
 #include <config.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -32,8 +34,6 @@
 #include <kapplication.h>
 #include <ktoolinvocation.h>
 #include <kde_file.h>
-
-#include "client.h"
 
 class KDEsuClient::KDEsuClientPrivate {
 public:
