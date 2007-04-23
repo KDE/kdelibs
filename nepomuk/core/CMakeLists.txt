@@ -36,7 +36,6 @@ include_directories(
 
 set(kmetadata_LIB_SRCS
   variant.cpp
-  datetime.cpp
   resourcedata.cpp
   resourcemanager.cpp
   tools.cpp

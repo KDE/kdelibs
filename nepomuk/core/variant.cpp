@@ -13,9 +13,10 @@
  */
 
 #include "variant.h"
-#include "datetime.h"
 
 #include <kmetadata/resource.h>
+
+#include <soprano/literalvalue.h>
 
 #include <kdebug.h>
 
@@ -42,6 +43,39 @@ Nepomuk::KMetaData::Variant::Variant( const Variant& other )
     : QVariant( other ),
       d( new Private )
 {
+}
+
+
+Nepomuk::KMetaData::Variant::Variant( const QVariant& other )
+    : QVariant(),
+      d( new Private )
+{
+    if ( other.userType() == QVariant::Int ||
+         other.userType() == QVariant::LongLong ||
+         other.userType() == QVariant::UInt ||
+         other.userType() == QVariant::ULongLong ||
+         other.userType() == QVariant::Bool ||
+         other.userType() == QVariant::Double ||
+         other.userType() == QVariant::String ||
+         other.userType() == QVariant::Date ||
+         other.userType() == QVariant::Time ||
+         other.userType() == QVariant::DateTime ||
+         other.userType() == QVariant::Url ||
+         other.userType() == qMetaTypeId<Resource>() ||
+         other.userType() == qMetaTypeId<QList<int> >() ||
+         other.userType() == qMetaTypeId<QList<qlonglong> >() ||
+         other.userType() == qMetaTypeId<QList<uint> >() ||
+         other.userType() == qMetaTypeId<QList<qulonglong> >() ||
+         other.userType() == qMetaTypeId<QList<bool> >() ||
+         other.userType() == qMetaTypeId<QList<double> >() ||
+         other.userType() == QVariant::StringList ||
+         other.userType() == qMetaTypeId<QList<QDate> >() ||
+         other.userType() == qMetaTypeId<QList<QTime> >() ||
+         other.userType() == qMetaTypeId<QList<QDateTime> >() ||
+         other.userType() == qMetaTypeId<QList<QUrl> >() ||
+         other.userType() == qMetaTypeId<QList<Resource> >() ) {
+        QVariant::operator=( other );
+    }
 }
 
 
@@ -748,11 +782,11 @@ QString Nepomuk::KMetaData::Variant::toString() const
         return QString::number( toDouble(), 'e', 10 );
     // FIXME: use the correct data and time encoding of XML Schema
     else if( isDate() )
-        return DateTime::toString( toDate() );
+        return Soprano::LiteralValue( toDate() ).toString();
     else if( isTime() )
-        return DateTime::toString( toTime() );
+        return Soprano::LiteralValue( toTime() ).toString();
     else if( isDateTime() )
-        return DateTime::toString( toDateTime() );
+        return Soprano::LiteralValue( toDateTime() ).toString();
     else if( isUrl() )
         return toUrl().toString();
     else if( isResource() ) {
@@ -967,37 +1001,17 @@ int Nepomuk::KMetaData::Variant::simpleType() const
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Variant::fromString( const QString& value, int type )
 {
-    switch( type ) {
-    case QVariant::Int:
-        return Variant( value.toInt() );
-    case QVariant::LongLong:
-        return Variant( value.toLongLong() );
-    case QVariant::UInt:
-        return Variant( value.toUInt() );
-    case QVariant::ULongLong:
-        return Variant( value.toULongLong() );
-    case QVariant::Bool:
-        return Variant( ( value.toLower() == "true" || value.toLower() == "yes" || value.toInt() != 0 ) );
-    case QVariant::Double:
-        return Variant( value.toDouble() );
-    case QVariant::String:
-        return Variant( value );
-    case QVariant::Date:
-        return Variant( DateTime::fromDateString( value ) );
-    case QVariant::Time:
-        return Variant( DateTime::fromTimeString( value ) );
-    case QVariant::DateTime:
-        return Variant( DateTime::fromDateTimeString( value ) );
-    case QVariant::Url:
+    // first check the types that are not supported by Soprano since they are not literal types
+    if( type == qMetaTypeId<Resource>() ) {
+        return Variant( Resource( value ) );
+    }
+    else if ( type == int( QVariant::Url ) ) {
         return Variant( QUrl( value ) );
-    default:
-        if( type == qMetaTypeId<Resource>() ) {
-            return Variant( Resource( value ) );
-        }
-        else {
-            kDebug(300004) << "(Variant) unknown type: " << type << endl;
-            return Variant( value );
-        }
+    }
+
+    // let Soprano do the rest
+    else {
+        return Variant( Soprano::LiteralValue::fromString( value, ( QVariant::Type )type ).variant() );
     }
 }
 
@@ -1039,6 +1053,12 @@ bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
 bool Nepomuk::KMetaData::Variant::operator!=( const Variant& other ) const
 {
     return !operator==( other );
+}
+
+
+QVariant Nepomuk::KMetaData::Variant::variant() const
+{
+    return *this;
 }
 
 

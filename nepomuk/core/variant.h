@@ -20,6 +20,7 @@
 
 #include <QtCore/QVariant>
 
+
 namespace Nepomuk {
     namespace KMetaData {
 
@@ -47,6 +48,11 @@ namespace Nepomuk {
 		Variant();
 		~Variant();
 		Variant( const Variant& other );
+
+		/**
+		 * Will create an invalid Variant if other has an unsupported type.
+		 */
+		Variant( const QVariant& other );
 		Variant( int i );
 		Variant( qlonglong i );
 		Variant( uint i );
@@ -187,6 +193,8 @@ namespace Nepomuk {
 		bool isDateTimeList() const;
 		bool isUrlList() const;
 		bool isResourceList() const;
+
+		QVariant variant() const;
 
 		int toInt() const;
 		qlonglong toInt64() const;

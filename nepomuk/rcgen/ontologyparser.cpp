@@ -147,7 +147,7 @@ bool OntologyParser::parse( const QString& filename )
             d->getProperty(s.subject().uri().toString()).list = ( s.object().literal().toInt() > 1 );
         }
         else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
-            d->comments[d->ensureNS(s.subject().uri().toString())] = s.object().literal();
+            d->comments[d->ensureNS(s.subject().uri().toString())] = s.object().literal().toString();
         }
     }
 

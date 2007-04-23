@@ -22,7 +22,7 @@
 
 #include <kmetadata/variant.h>
 
-#include <knepomuk/rdf/statement.h>
+#include <soprano/statement.h>
 
 
 namespace Nepomuk {
@@ -196,7 +196,7 @@ namespace Nepomuk {
 		 *
 		 * \sa determinePropertyUris
 		 */
-		QList<RDF::Statement> allStatements( Flags flagsSet, Flags flagsNotSet = 0 ) const;
+		QList<Soprano::Statement> allStatements( Flags flagsSet, Flags flagsNotSet = 0 ) const;
 
 		/**
 		 * \return A list of all statements that have to be added to the store in a sync. This does not
@@ -207,7 +207,7 @@ namespace Nepomuk {
 		 *
 		 * \sa determinePropertyUris
 		 */
-		QList<RDF::Statement> allStatementsToAdd() const;
+		QList<Soprano::Statement> allStatementsToAdd() const;
 
 		/**
 		 * \return a list of all statements that need to be removed from the store in a sync, i.e. those
@@ -220,7 +220,7 @@ namespace Nepomuk {
 		 *
 		 * \sa determinePropertyUris
 		 */
-		QList<RDF::Statement> allStatementsToRemove() const;
+		QList<Soprano::Statement> allStatementsToRemove() const;
 
 		/**
 		 * Compares the properties of two ResourceData objects taking into account the Deleted flag

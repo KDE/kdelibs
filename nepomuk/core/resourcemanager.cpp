@@ -31,6 +31,7 @@
 
 using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
+using namespace Soprano;
 
 
 static const char* KMETADATA_NAMESPACE = "http://kmetadata.kde.org/resources#";
@@ -268,12 +269,12 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
         // check remote data
         RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
         StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
-                                                            Statement( Node(), KMetaData::typePredicate(), Node(type) ),
+                                                            Statement( Node(), QUrl( KMetaData::typePredicate() ), QUrl(type) ),
                                                             100 ),
                                   &rdfr );
         while( it.hasNext() ) {
             const Statement& s = it.next();
-            Resource res( s.subject.value );
+            Resource res( s.subject().toString() );
             if( !l.contains( res ) )
                 l.append( res );
         }
@@ -304,20 +305,19 @@ QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::ResourceManager::allReso
         RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
         Node n;
         if( v.isResource() ) {
-            n.value = v.toResource().uri();
-            n.type = RDF::NodeResource;
+            n = QUrl( v.toResource().uri() );
         }
         else {
             n = KMetaData::valueToRDFNode( v );
         }
 
         StatementListIterator it( rdfr.queryListStatements( KMetaData::defaultGraph(),
-                                                            Statement( Node(), Node(uri), n ),
+                                                            Statement( Node(), QUrl(uri), n ),
                                                             100 ), &rdfr );
 
         while( it.hasNext() ) {
             const Statement& s = it.next();
-            Resource res( s.subject.value );
+            Resource res( s.subject().toString() );
             if( !l.contains( res ) )
                 l.append( res );
         }
@@ -331,7 +331,7 @@ QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
 {
     RDFRepository rdfr( serviceRegistry()->discoverRDFRepository() );
 
-    QString s;
+    QUrl s;
     while( 1 ) {
         // Should we use the Nepomuk localhost whatever namespace here?
         s = KMETADATA_NAMESPACE + KRandom::randomString( 20 );
@@ -339,7 +339,7 @@ QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
             ( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
               !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
               !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) ) )
-            return s;
+            return s.toString();
     }
 }
 

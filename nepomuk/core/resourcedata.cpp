@@ -21,13 +21,17 @@
 #include <knepomuk/services/resourceidservice.h>
 #include <knepomuk/rdf/statementlistiterator.h>
 
-#include <konto/class.h>
+#include <soprano/statement.h>
+
+#include "../konto/class.h"
 
 #include <kdebug.h>
 
 
-using namespace Nepomuk::Services;
 using namespace Nepomuk::RDF;
+using namespace Nepomuk::Services;
+using namespace Soprano;
+
 
 typedef QMap<QString, Nepomuk::KMetaData::ResourceData*> ResourceDataHash;
 
@@ -245,10 +249,10 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
         // If we have no final URI yet check if the kickoffUriOrId is in the store
         //
         if( uri().isEmpty() )
-            return( rr.contains( KMetaData::defaultGraph(), Statement( kickoffUriOrId(), Node(), Node() ) ) ||
+            return( rr.contains( KMetaData::defaultGraph(), Statement( QUrl( kickoffUriOrId() ), Node(), Node() ) ) ||
                     rr.contains( KMetaData::defaultGraph(),
                                  Statement( Node(),
-                                            Node(s_identifierUri),
+                                            Node( QUrl( s_identifierUri ) ),
                                             KMetaData::valueToRDFNode(kickoffUriOrId()) ) ) );
 
         //
@@ -256,8 +260,8 @@ bool Nepomuk::KMetaData::ResourceData::exists() const
         // the resource has to exists either as a subject or as an object (I think subject would be sufficient here)
         //
         else
-            return( rr.contains( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) ) ||
-                    rr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), m_uri ) ) );
+            return( rr.contains( KMetaData::defaultGraph(), Statement( QUrl( m_uri ), Node(), Node() ) ) ||
+                    rr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), QUrl( m_uri ) ) ) );
     }
     else
         return false;
@@ -306,7 +310,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
         if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) )
             rr.createRepository( KMetaData::defaultGraph() );
 
-        if( rr.contains( KMetaData::defaultGraph(), Statement( kickoffUriOrId(), Node(), Node() ) ) ) {
+        if( rr.contains( KMetaData::defaultGraph(), Statement( QUrl( kickoffUriOrId() ), Node(), Node() ) ) ) {
             //
             // The kickoffUriOrId is actually a URI
             //
@@ -319,8 +323,8 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
             //
             QList<Statement> sl = rr.listStatements( KMetaData::defaultGraph(),
                                                      Statement( Node(),
-                                                                Node(s_identifierUri),
-                                                                KMetaData::valueToRDFNode(kickoffUriOrId()) ) );
+                                                                Node(QUrl( s_identifierUri )),
+                                                                LiteralValue( kickoffUriOrId() ) ) );
 
             if( !sl.isEmpty() ) {
                 //
@@ -344,21 +348,21 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                     for ( QList<Statement>::const_iterator it = sl.constBegin(); it != sl.constEnd(); ++it ) {
                         // get the type of the stored resource
                         QList<Statement> resourceSl = rr.listStatements( KMetaData::defaultGraph(),
-                                                                         Statement( it->subject,
-                                                                                    Node(typePredicate()),
+                                                                         Statement( it->subject(),
+                                                                                    QUrl( typePredicate() ),
                                                                                     Node() ) );
                         if ( !resourceSl.isEmpty() ) {
-                            const Konto::Class* storedType = Konto::Class::load( resourceSl.first().object.value );
+                            const Konto::Class* storedType = Konto::Class::load( resourceSl.first().object().uri() );
                             if ( storedType ) {
                                 if ( wantedType->isSubClassOf( storedType ) ) {
                                     // Keep the type that is further down the hierarchy
                                     m_type = wantedType->uri().toString();
-                                    m_uri = it->subject.value;
+                                    m_uri = it->subject().toString();
                                     break;
                                 }
                                 else if ( storedType->isSubClassOf( wantedType ) ) {
                                     // just use the existing data with the finer grained type
-                                    m_uri = it->subject.value;
+                                    m_uri = it->subject().toString();
                                     break;
                                 }
                             }
@@ -371,7 +375,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                     }
                 }
                 else {
-                    m_uri = sl.first().subject.value;
+                    m_uri = sl.first().subject().toString();
                     kDebug(300004) << k_funcinfo << " kickoff identifier " << kickoffUriOrId() << " already exists with URI " << uri() << endl;
                 }
             }
@@ -474,7 +478,7 @@ bool Nepomuk::KMetaData::ResourceData::load()
         RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
         StatementListIterator it( rr.queryListStatements( KMetaData::defaultGraph(),
-                                                          Statement( uri(), Node(), Node() ),
+                                                          Statement( QUrl( uri() ), Node(), Node() ),
                                                           100 ),
                                   &rr );
         while( it.hasNext() ) {
@@ -483,20 +487,20 @@ bool Nepomuk::KMetaData::ResourceData::load()
             kDebug(300004) << "   (ResourceData) Loading statement " << s << endl;
 
             // load the type if we have no type or the default
-            if( s.predicate.value == KMetaData::typePredicate() ) {
+            if( s.predicate().toString() == KMetaData::typePredicate() ) {
                 if( m_type.isEmpty() || m_type == s_defaultType )
-                    m_type = s.object.value;
+                    m_type = s.object().toString();
             }
             else {
-                PropertiesMap::iterator oldProp = m_properties.find( s.predicate.value );
-                if( s.object.type == NodeResource ) {
-                    if( !loadProperty( s.predicate.value, Resource( s.object.value ) ) ) {
+                PropertiesMap::iterator oldProp = m_properties.find( s.predicate().toString() );
+                if( s.object().isResource() ) {
+                    if( !loadProperty( s.predicate().toString(), Resource( s.object().toString() ) ) ) {
                         m_modificationMutex.unlock();
                         return false;
                     }
                 }
                 else {
-                    if( !loadProperty( s.predicate.value, KMetaData::RDFLiteralToValue( s.object ) ) ) {
+                    if( !loadProperty( s.predicate().toString(), KMetaData::RDFLiteralToValue( s.object() ) ) ) {
                         m_modificationMutex.unlock();
                         return false;
                     }
@@ -606,7 +610,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
 
     // remove everything about this resource from the store
     // ====================================================
-    rr.removeAllStatements( KMetaData::defaultGraph(), Statement( m_uri, Node(), Node() ) );
+    rr.removeAllStatements( KMetaData::defaultGraph(), Statement( QUrl( m_uri ), Node(), Node() ) );
     if( !rr.success() ) {
         kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
         ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
@@ -652,7 +656,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
 }
 
 
-QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( Flags flags, Flags flagsNot ) const
+QList<Soprano::Statement> Nepomuk::KMetaData::ResourceData::allStatements( Flags flags, Flags flagsNot ) const
 {
     if( m_proxyData )
         return m_proxyData->allStatements( flags, flagsNot );
@@ -671,19 +675,19 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
 
             kDebug(300004) << "(ResourceData::allStatements) selecting property " << it.key() << endl;
 
-            QString predicate = it.key();
+            QUrl predicate = it.key();
             const Variant& val = it.value().first;
 
             // one-to-one Resource
             if( val.isResource() ) {
-                statements.append( Statement( m_uri, predicate, val.toResource().uri() ) );
+                statements.append( Statement( QUrl( m_uri ), predicate, QUrl( val.toResource().uri() ) ) );
             }
 
             // one-to-many Resource
             else if( val.isResourceList() ) {
                 const QList<Resource>& l = val.toResourceList();
                 for( QList<Resource>::const_iterator resIt = l.constBegin(); resIt != l.constEnd(); ++resIt ) {
-                    statements.append( Statement( m_uri, predicate, (*resIt).uri() ) );
+                    statements.append( Statement( QUrl( m_uri ), predicate, QUrl( (*resIt).uri() ) ) );
                 }
             }
 
@@ -691,13 +695,13 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
             else if( val.isList() ) {
                 QList<Node> nl = KMetaData::valuesToRDFNodes( val );
                 for( QList<Node>::const_iterator nIt = nl.constBegin(); nIt != nl.constEnd(); ++nIt ) {
-                    statements.append( Statement( m_uri, predicate, *nIt ) );
+                    statements.append( Statement( QUrl( m_uri ), predicate, *nIt ) );
                 }
             }
 
             // one-to-one literal
             else {
-                statements.append( Statement( m_uri,
+                statements.append( Statement( QUrl( m_uri ),
                                               predicate,
                                               KMetaData::valueToRDFNode( val ) ) );
             }
@@ -715,7 +719,7 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatements( 
 }
 
 
-QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
+QList<Soprano::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToAdd() const
 {
     if( m_proxyData )
         return m_proxyData->allStatementsToAdd();
@@ -729,7 +733,7 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
 
     // always save the type
     // ====================
-    statements.append( Statement( Node(m_uri), Node(KMetaData::typePredicate()), Node(m_type) ) );
+    statements.append( Statement( QUrl(m_uri), QUrl(KMetaData::typePredicate()), QUrl(m_type) ) );
 
     return statements;
 }
@@ -738,7 +742,7 @@ QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsTo
 // FIXME: the result from this method is wrong:
 //        if a value is changed we locally loose the information of which statements to remove
 //        Solution: remember the original value from the last load()
-QList<Nepomuk::RDF::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
+QList<Soprano::Statement> Nepomuk::KMetaData::ResourceData::allStatementsToRemove() const
 {
     if( m_proxyData )
         return m_proxyData->allStatementsToRemove();

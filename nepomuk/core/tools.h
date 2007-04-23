@@ -21,7 +21,7 @@
 #include <kmetadata/variant.h>
 #include <kmetadata/kmetadata_export.h>
 
-#include <knepomuk/rdf/node.h>
+#include <soprano/node.h>
 
 namespace Nepomuk {
     namespace KMetaData {
@@ -50,14 +50,14 @@ namespace Nepomuk {
 	 * Converts a Variant into a literal value to be used in the RDF store.
 	 * Uses the language set in the current KDE session.
 	 */
-	KMETADATA_EXPORT QList<RDF::Node> valuesToRDFNodes( const Variant& );
-	KMETADATA_EXPORT RDF::Node valueToRDFNode( const Variant& );
+	KMETADATA_EXPORT QList<Soprano::Node> valuesToRDFNodes( const Variant& );
+	KMETADATA_EXPORT Soprano::Node valueToRDFNode( const Variant& );
 
 	/**
 	 * Used internally by Resource.
 	 * Converts a literal value from the RDF store into a Variant.
 	 */
-	KMETADATA_EXPORT Variant RDFLiteralToValue( const RDF::Node& node );
+	KMETADATA_EXPORT Variant RDFLiteralToValue( const Soprano::Node& node );
 
 	template<typename T> QList<T> convertResourceList( const QList<Resource>& l ) {
 	    QList<T> rl;

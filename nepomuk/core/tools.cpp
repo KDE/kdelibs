@@ -19,53 +19,12 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-
 static const char* RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 static const char* RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
 static const char* NRL_NAMESPACE = "http://semanticdesktop.org/ontologies/2006/11/24/nrl#";
 static const char* NAO_NAMESPACE = "http://semanticdesktop.org/ontologies/2007/03/31/nao#";
-static const char* XS_NAMESPACE = "http://www.w3.org/2001/XMLSchema#";
 
-static QHash<QString, int> s_xmlSchemaTypes;
-static QHash<int, QString> s_variantSchemaTypeHash;
 static QString s_customRep;
-
-static void initXmlSchemaTypes()
-{
-    // FIXME: add proper support for short and byte
-    // FIXME: fail if an ontology uses on of the crappy types like integer or negativeInteger
-    if( s_xmlSchemaTypes.isEmpty() ) {
-        s_xmlSchemaTypes.insert( "int", QVariant::Int );
-        s_xmlSchemaTypes.insert( "integer", QVariant::Int );
-        s_xmlSchemaTypes.insert( "negativeInteger", QVariant::Int );
-        s_xmlSchemaTypes.insert( "decimal", QVariant::Int );
-        s_xmlSchemaTypes.insert( "short", QVariant::Int );
-        s_xmlSchemaTypes.insert( "long", QVariant::LongLong );
-        s_xmlSchemaTypes.insert( "unsignedInt", QVariant::UInt );
-        s_xmlSchemaTypes.insert( "unsignedShort", QVariant::UInt );
-        s_xmlSchemaTypes.insert( "unsignedLong", QVariant::ULongLong );
-        s_xmlSchemaTypes.insert( "boolean", QVariant::Bool );
-        s_xmlSchemaTypes.insert( "double", QVariant::Double );
-        s_xmlSchemaTypes.insert( "string", QVariant::String );
-        s_xmlSchemaTypes.insert( "date", QVariant::Date );
-        s_xmlSchemaTypes.insert( "time", QVariant::Time );
-        s_xmlSchemaTypes.insert( "dateTime", QVariant::DateTime );
-        //    s_xmlSchemaTypes.insert( "", QVariant::Url );
-    }
-
-    if( s_variantSchemaTypeHash.isEmpty() ) {
-        s_variantSchemaTypeHash.insert( QVariant::Int, "int" );
-        s_variantSchemaTypeHash.insert( QVariant::LongLong, "long" );
-        s_variantSchemaTypeHash.insert( QVariant::UInt, "unsignedInt" );
-        s_variantSchemaTypeHash.insert( QVariant::ULongLong, "unsignedLong" );
-        s_variantSchemaTypeHash.insert( QVariant::Bool, "boolean" );
-        s_variantSchemaTypeHash.insert( QVariant::Double, "double" );
-        s_variantSchemaTypeHash.insert( QVariant::String, "string" );
-        s_variantSchemaTypeHash.insert( QVariant::Date, "date" );
-        s_variantSchemaTypeHash.insert( QVariant::Time, "time" );
-        s_variantSchemaTypeHash.insert( QVariant::DateTime, "dateTime" );
-    }
-}
 
 
 static QString getLocaleLang()
@@ -100,38 +59,20 @@ QString Nepomuk::KMetaData::typePredicate()
 }
 
 
-Nepomuk::RDF::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData::Variant& v )
+Soprano::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData::Variant& v )
 {
-    initXmlSchemaTypes();
-
-    Q_ASSERT( s_variantSchemaTypeHash.contains( v.simpleType() ) );
-
-    Nepomuk::RDF::Node node;
-    node.type = Nepomuk::RDF::NodeLiteral;
-    //  node.language = getLocaleLang();
-    node.dataTypeUri = XS_NAMESPACE + s_variantSchemaTypeHash[v.simpleType()];
-    node.value = v.toString();
-    return node;
+    return Soprano::Node( Soprano::LiteralValue( v.variant() ) );
 }
 
 
-QList<Nepomuk::RDF::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::KMetaData::Variant& v )
+QList<Soprano::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::KMetaData::Variant& v )
 {
-    initXmlSchemaTypes();
-
-    Q_ASSERT( s_variantSchemaTypeHash.contains( v.simpleType() ) );
-
-    QList<Nepomuk::RDF::Node> nl;
+    QList<Soprano::Node> nl;
 
     if( v.isList() ) {
         QStringList vl = v.toStringList();
         for( QStringList::const_iterator it = vl.begin(); it != vl.end(); ++it ) {
-            Nepomuk::RDF::Node node;
-            node.type = Nepomuk::RDF::NodeLiteral;
-            //      node.language = getLocaleLang();
-            node.dataTypeUri = XS_NAMESPACE + s_variantSchemaTypeHash[v.simpleType()];
-            node.value = *it;
-            nl.append( node );
+            nl.append( Soprano::Node( Soprano::LiteralValue::fromString( *it, ( QVariant::Type )v.simpleType() ) ) );
         }
     }
     else {
@@ -142,21 +83,9 @@ QList<Nepomuk::RDF::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::K
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Nepomuk::RDF::Node& node )
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Soprano::Node& node )
 {
-    initXmlSchemaTypes();
-
-    QString dataType = node.dataTypeUri.mid( node.dataTypeUri.lastIndexOf(QRegExp("[\\#\\:]")) + 1 );
-    int variantType = QVariant::String;
-
-    if( s_xmlSchemaTypes.contains( dataType ) )
-        variantType = s_xmlSchemaTypes[dataType];
-    else
-        kDebug(300004) << "Unknown literal data type: " << dataType
-                       << " (URI: " << node.dataTypeUri << ")" << endl;
-
-    kDebug(300004) << k_funcinfo << " value: " << node.value << " with type " << QMetaType::typeName( variantType ) << endl;
-    return Variant::fromString( node.value, variantType );
+    return node.literal().variant();
 }
 
 
