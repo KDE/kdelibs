@@ -42,6 +42,7 @@ public:
 public Q_SLOTS:
     void setUrl(const KUrl &url);
     void setShowAll(bool showAll);
+    virtual QSize sizeHint() const;
 
 protected:
     void contextMenuEvent(QContextMenuEvent *event);

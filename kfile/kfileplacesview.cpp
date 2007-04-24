@@ -60,6 +60,8 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     setAcceptDrops(true);
     setDropIndicatorShown(true);
 
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
 }
@@ -193,6 +195,22 @@ void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end
     setUrl(d->currentUrl);
 }
 
+QSize KFilePlacesView::sizeHint() const
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
+    const int height = QListView::sizeHint().height();
+    QFontMetrics fm = d->q->fontMetrics();
+    int textWidth = 0;
+
+    for (int i=0; i<placesModel->rowCount(); ++i) {
+        QModelIndex index = placesModel->index(i, 0);
+        if (!placesModel->isHidden(index))
+           textWidth = qMax(textWidth,fm.width(placesModel->bookmarkForIndex(index).text()));
+    }
+
+    return QSize(48 + 10 + textWidth + 2*KDialog::marginHint(), height);
+}
+
 void KFilePlacesView::Private::adaptItemSize()
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
@@ -216,7 +234,15 @@ void KFilePlacesView::Private::adaptItemSize()
     const int minSize = 16;
     const int maxSize = 64;
 
-    const int maxWidth = q->width()/4;
+    int textWidth = 0;
+    QFontMetrics fm = q->fontMetrics();
+    for (int i=0; i<rowCount; ++i) {
+        QModelIndex index = placesModel->index(i, 0);
+        if (!placesModel->isHidden(index))
+           textWidth = qMax(textWidth,fm.width(placesModel->bookmarkForIndex(index).text()));
+    }
+
+    const int maxWidth = q->width() - textWidth - 2 * KDialog::marginHint();
     const int maxHeight = (q->height()/rowCount)-1;
 
     int size = qMin(maxHeight, maxWidth);
