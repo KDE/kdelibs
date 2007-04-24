@@ -20,8 +20,23 @@ target_link_libraries(solidhwtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} soli
 
 add_test(solidhwtest ${EXECUTABLE_OUTPUT_PATH}/solidhwtest)
 
-########### install files ###############
+########### solidnettestdbusservice ###############
 
+set(solidnettestdbusservice_SRCS
+   solidnettestdbusservice.cpp )
+
+kde4_automoc(${solidnettestdbusservice_SRCS})
+
+QT4_ADD_DBUS_ADAPTOR(solidnettestdbusservice_SRCS ../solid/org.kde.Solid.Networking.xml
+                         solidnettestdbusservice.h TestNetworkingService)
+
+kde4_add_executable(solidnettestdbusservice NOGUI RUN_UNINSTALLED ${solidnettestdbusservice_SRCS})
+
+target_link_libraries(solidnettestdbusservice ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTDBUS_LIBRARY})
+
+add_test(solidnettestdbusservice ${EXECUTABLE_OUTPUT_PATH}/solidnettestdbusservice)
+
+########### install files ###############
 
 endif(KDE4_BUILD_TESTS)
 
