@@ -33,6 +33,8 @@ public:
     Q_DECLARE_FLAGS(Flags, bits)
 
 private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
     void testSimple();
     void testLists();
     void testComplex();
@@ -40,8 +42,6 @@ private Q_SLOTS:
     void testInvalid();
     void testDelete();
     void testRevertAllEntries();
-    void initTestCase();
-    void cleanupTestCase();
 
     // unrelated
     void testKAboutDataOrganizationDomain();

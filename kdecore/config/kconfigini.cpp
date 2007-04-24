@@ -769,7 +769,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
 }
 
-static void writeEntries(QTextStream &ts, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
+static void writeEntries(QFile &file, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
 {
     // now write out all other groups.
     QByteArray currentGroup;
@@ -816,39 +816,41 @@ static void writeEntries(QTextStream &ts, const KEntryMap& entryMap, bool defaul
 
         if (!defaultGroup && (currentGroup != key.mGroup)) {
             if (!firstEntry)
-                ts << '\n';
+                file.putChar('\n');
             currentGroup = key.mGroup;
-            ts << '[' << encodeGroup(currentGroup).data() << "]\n";
+            file.putChar('[');
+            file.write(encodeGroup(currentGroup));
+            file.write("]\n", 2);
         }
 
         firstEntry = false;
         // it is data for a group
-        ts << key.mKey.data();   // Key
+        file.write(key.mKey);   // Key
 
         if ( currentEntry.bNLS )
         {
-            ts << '['
-               << localeString.data()
-               << ']';
+            file.putChar('[');
+            file.write(localeString);
+            file.putChar(']');
         }
 
         if (currentEntry.bDeleted) {
-            ts << "[$d]\n"; // Deleted
+            file.write("[$d]\n"); // Deleted
         } else {
             if (currentEntry.bImmutable || currentEntry.bExpand)
             {
-                ts << '['
-                   << '$';
+                file.putChar('[');
+                file.putChar('$');
                 if (currentEntry.bImmutable)
-                    ts << 'i';
+                    file.putChar('i');
                 if (currentEntry.bExpand)
-                    ts << 'e';
+                    file.putChar('e');
 
-                ts << ']';
+                file.putChar(']');
             }
-            ts << '='
-               << stringToPrintable(currentEntry.mValue).data()
-               << '\n';
+            file.putChar('=');
+            file.write(stringToPrintable(currentEntry.mValue));
+            file.putChar('\n');
         }
     } // for loop
 }
@@ -978,15 +980,15 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
         f = new QFile( filename );
         if (!f->open( QIODevice::WriteOnly | QIODevice::Append ))
         {
+            delete f;
             return bEntriesLeft;
         }
     }
-    QTextStream ts( f );
-    writeEntries(ts, aTempMap);
+    writeEntries(*f, aTempMap);
 
     if (pConfigFile)
     {
-        bool bEmptyFile = ts.pos() > 0;
+        bool bEmptyFile = f->pos() == 0;
         if ( bEmptyFile && ((fileMode == -1) || (fileMode == 0600)) )
         {
             // File is empty and doesn't have special permissions: delete it.
@@ -1016,14 +1018,13 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
     return bEntriesLeft;
 }
 
-void KConfigINIBackEnd::writeEntries(QTextStream &ts, const KEntryMap &aTempMap)
+void KConfigINIBackEnd::writeEntries(QFile &f, const KEntryMap &aTempMap)
 {
     bool firstEntry = true;
 
     // Write default group
-    ::writeEntries(ts, aTempMap, true, firstEntry, localeString);
+    ::writeEntries(f, aTempMap, true, firstEntry, localeString);
 
     // Write all other groups
-    ::writeEntries(ts, aTempMap, false, firstEntry, localeString);
+    ::writeEntries(f, aTempMap, false, firstEntry, localeString);
 }
-

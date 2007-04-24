@@ -126,10 +126,10 @@ protected:
    */
   bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
 
-  /** Write the entries in @e aTempMap to the text stream.*/
-  void writeEntries(QTextStream &ts, const KEntryMap &aTempMap);
-
 private:
+  /** Write the entries in @e aTempMap to the file.*/
+  void writeEntries(QFile &ts, const KEntryMap &aTempMap);
+
   void parseLocalConfig(const QString &fileName, const QString &localFileName);
 
   class KConfigINIBackEndPrivate;

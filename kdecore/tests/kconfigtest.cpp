@@ -68,6 +68,7 @@ void KConfigTest::initTestCase()
 
   QByteArray data( UTF8BITENTRY );
   QCOMPARE( data.size(), 12 ); // the source file is in utf8
+  QCOMPARE( QString::fromUtf8(data).length(), 9 );
   cg.writeEntry( "Test", QVariant( data ) ); // passing "data" converts it to char* and KConfigBase calls fromLatin1!
   cg.writeEntry( "Test2", "");
   cg.writeEntry( "stringEntry1", STRINGENTRY1 );
