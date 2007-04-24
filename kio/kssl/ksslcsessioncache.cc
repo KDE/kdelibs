@@ -50,7 +50,7 @@
 #ifdef KSSL_HAVE_SSL
 
 typedef QPair<QString,QString> KSSLCSession;
-typedef Q3PtrList<KSSLCSession> KSSLCSessions;
+typedef QList<KSSLCSession> KSSLCSessions;
 
 static KSSLCSessions *sessions = 0L;
 static KStaticDeleter<KSSLCSessions> med;
@@ -63,7 +63,6 @@ static QString URLtoKey(const KUrl &kurl) {
 
 static void setup() {
     KSSLCSessions *ses = new KSSLCSessions;
-    ses->setAutoDelete(true);
     med.setObject(sessions, ses);
 }
 
@@ -74,11 +73,11 @@ QString KSSLCSessionCache::getSessionForUrl(const KUrl &kurl) {
     if (!sessions) return QString();
     QString key = URLtoKey(kurl);
 
-    for(KSSLCSession *it = sessions->first(); it; it=sessions->next()) {
-	if (it->first == key) {
-	    sessions->take();
-	    sessions->prepend(it);
-	    return it->second;
+    for (int i = 0; i < sessions->size(); ++i) {
+	if (sessions->at(i).first == key) {
+            QString snd = sessions->at(i).second;
+            sessions->prepend(sessions->takeAt(i));
+	    return snd;
 	}
     }
 
@@ -98,18 +97,21 @@ void KSSLCSessionCache::putSessionForUrl(const KUrl &kurl, const QString &sessio
 #ifdef KSSL_HAVE_SSL
     if (!sessions) setup();
     QString key = URLtoKey(kurl);
-    KSSLCSession *it;
+    KSSLCSessions::iterator it = sessions->begin();
 
-    for(it = sessions->first(); it && it->first != key; it=sessions->next());
-
-    if (it) {
-	sessions->take();
-	it->second = session;
-    } else {
-	it = new KSSLCSession(key, session);
-	if (sessions->count() >= MAX_ENTRIES) sessions->removeLast();
+    while ( it != sessions->end() ) {
+        if ( it->first == key )
+            break;
+        ++it;
     }
 
-    sessions->prepend(it);
+    if (it != sessions->end()) {
+	it->second = session;
+    } else {
+        if (sessions->size() >= MAX_ENTRIES)
+            sessions->removeLast();
+        sessions->prepend(KSSLCSession(key, session));
+    }
+
 #endif
 }
