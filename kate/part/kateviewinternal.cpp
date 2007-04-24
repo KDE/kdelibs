@@ -2857,6 +2857,11 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
       possibleTripleClick = true;
       QTimer::singleShot ( QApplication::doubleClickInterval(), this, SLOT(tripleClickTimeout()) );
 
+      scrollX = 0;
+      scrollY = 0;
+
+      m_scrollTimer.start (50);
+
       e->accept ();
       break;
 
