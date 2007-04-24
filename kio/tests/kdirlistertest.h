@@ -31,10 +31,10 @@ class KDirListerTest : public QObject
 private Q_SLOTS:
     void initTestCase();
     void testOpenUrl();
+    void testOpenUrlFromCache();
     void testOpenAndStop();
     // TODO test concurrent listings
-    // TODO test sequential listings (use of the cache)
-    // TODO testDeleteItem
+    void testDeleteItem();
     // TODO testRefreshItems
     // TODO test filtering
 

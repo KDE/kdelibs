@@ -35,7 +35,7 @@ static void setTimeStamp( const QString& path, const QDateTime& mtime )
     utbuf.actime = mtime.toTime_t();
     utbuf.modtime = utbuf.actime;
     utime( QFile::encodeName( path ), &utbuf );
-    qDebug( "Time changed for %s", qPrintable( path ) );
+    //qDebug( "Time changed for %s", qPrintable( path ) );
 #endif
 }
 
