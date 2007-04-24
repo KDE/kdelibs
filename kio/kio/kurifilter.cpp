@@ -110,6 +110,7 @@ void KUriFilterData::init( const KUrl& url )
 void KUriFilterData::init( const QString& url )
 {
     init( KUrl( url ) );
+    d->typedString = url;
 }
 
 KUrl KUriFilterData::uri() const
