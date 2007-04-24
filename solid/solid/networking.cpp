@@ -37,15 +37,16 @@ Solid::NetworkingPrivate::NetworkingPrivate() : iface(
             this ) )
 {
     connect( iface, SIGNAL( statusChanged( uint ) ), globalNetworkManager, SIGNAL( statusChanged( Networking::Status ) ) );
+    connect( iface, SIGNAL( statusChanged( uint ) ), this, SLOT( networkStatusChanged( Networking::Status ) ) );
 }
 
 Solid::NetworkingPrivate::~NetworkingPrivate()
 {
 }
 
-uint Solid::NetworkingPrivate::requestConnection(/* QObject * receiver, const char * member*/ )
+uint Solid::NetworkingPrivate::requestConnection( QObject * receiver, const char * member )
 {
-    // register the slot and member to call when the connection attempt completes
+    connect( this, SIGNAL( connectionResult( bool ) ), receiver, member );
     return iface->requestConnection();
 }
 
@@ -59,9 +60,35 @@ uint Solid::NetworkingPrivate::status() const
     return iface->status();
 }
 
+Solid::Networking::Result Solid::NetworkingPrivate::beginManagingSocket( QAbstractSocket * socket, int autoDisconnectTimeout )
+{
+    mManagedSockets.insert( socket, new ManagedSocketContainer( socket, autoDisconnectTimeout ) );
+    return Solid::Networking::Accepted;
+}
+
+void Solid::NetworkingPrivate::stopManagingSocket( QAbstractSocket * socket )
+{
+    ManagedSocketContainer * removed = mManagedSockets.take( socket );
+    delete removed;
+}
+
+void Solid::NetworkingPrivate::networkStatusChanged( Networking::Status status )
+{
+    if ( mNotifyConnectionResult )
+    {
+        if ( status == Networking::Unconnected || status == Networking::Connected )
+        {
+            emit connectionResult( status );
+        }
+        mNotifyConnectionResult = false;
+    }
+}
+
+/*=========================================================================*/
+
 Solid::Networking::Result Solid::Networking::requestConnection( QObject * receiver, const char * member )
 {
-    return static_cast<Solid::Networking::Result>( globalNetworkManager->requestConnection() );
+    return static_cast<Solid::Networking::Result>( globalNetworkManager->requestConnection( receiver, member ) );
 }
 
 void Solid::Networking::releaseConnection()
@@ -79,67 +106,251 @@ Solid::Networking::Notifier *Solid::Networking::notifier()
     return globalNetworkManager;
 }
 
-/* ************************************************************************ *
- * ManagedSocketContainer manages a single socket's state in accordance     *
- * with what the network management backend does.  If it detects that the   *
- * socket tries to connect and fails, it initiates a Networking connection, *
- * waits for the connection to come up, then connects the socket to its     *
- * original host.                                                           *
- *
- * STATE DIAGRAM
- *
- * Disconnected
- *      |
- * (sock connecting)
- *      |
- *      V
- * Connecting
- *      |
- *  ( TBD :) )
- */
+/*=========================================================================*/
 
 Solid::ManagedSocketContainer::ManagedSocketContainer( QAbstractSocket * socket, int autoDisconnectTimeout ) : mSocket( socket ), mAutoDisconnectTimer( 0 )
 {
-    if ( autoDisconnectTimeout )
+    if ( autoDisconnectTimeout >= 0 )
     {
         mAutoDisconnectTimer = new QTimer( this );
+        mAutoDisconnectTimer->setSingleShot( true );
         mAutoDisconnectTimer->setInterval( autoDisconnectTimeout );
         connect( mAutoDisconnectTimer, SIGNAL( timeout() ), SLOT( autoDisconnect() ) );
     }
-    connect( globalNetworkManager, SIGNAL( statusChanged( uint ) ), this, SLOT( statusChanged( Networking::Status ) ) );
+    // react to network management events
+    connect( globalNetworkManager, SIGNAL( statusChanged( uint ) ), this, SLOT( networkStatusChanged( Networking::Status ) ) );
+
+    if ( socket )
+    {
+        // react to socket events
+        connect( socket, SIGNAL( destroyed() ), SLOT( socketDestroyed() ) );
+        connect( socket, SIGNAL( error( QAbstractSocket::SocketError ) ), SLOT( socketError( QAbstractSocket::SocketError ) ) );
+        connect( socket, SIGNAL( stateChanged( QAbstractSocket::SocketState ) ), SLOT( socketStateChanged( QAbstractSocket::SocketState ) ) );
+        // initialise our state from that of the socket
+        switch ( socket->state() )
+        {
+            case QAbstractSocket::UnconnectedState:
+                mState = SocketUnconnected;
+                break;
+            case QAbstractSocket::HostLookupState:
+            case QAbstractSocket::ConnectingState:
+                mState = SocketConnecting;
+                break;
+            case QAbstractSocket::ConnectedState:
+            case QAbstractSocket::ClosingState:
+                mState = SocketConnected;
+                break;
+            default:
+                mState = SocketUnconnected;
+        }
+    }
 }
 
-void Solid::ManagedSocketContainer::statusChanged( Networking::Status status )
+void Solid::ManagedSocketContainer::networkStatusChanged( Networking::Status netStatus )
 {
-    // state can be offline but awaiting connection, in which case on a Connected we call
-    // connectToHost on the socket
-    // OR can be connected.  in which case if the status goes offline we start the disconnect timer 
-    if ( mSocket->state() != QAbstractSocket::UnconnectedState )
+    switch ( mState )
     {
-        if ( mAutoDisconnectTimer )
-            mAutoDisconnectTimer->start();
+        case SocketUnconnected:
+            break;
+        case SocketConnecting:
+            break;
+        case AwaitingNetworkConnection:
+            switch ( netStatus )
+            {
+                case Networking::Connected:
+                    performConnectToHost();
+                    break;
+                default:
+                    //do nothing
+                    ;
+            }
+            break;
+        case SocketConnected:
+            switch ( netStatus )
+            {
+                case Solid::Networking::Unconnected:
+                case Solid::Networking::Disconnecting:
+                    mState = DisconnectWait;
+                    if ( mAutoDisconnectTimer )
+                    {
+                        mAutoDisconnectTimer->start();
+                    }
+                    break;
+                default:
+                    // do nothing
+                    ;
+            }
+            break;
+        case DisconnectWait:
+            switch ( netStatus )
+            {
+                case Solid::Networking::Connected:
+                    // RECOVERED
+                    mState = SocketConnected;
+                    if ( mAutoDisconnectTimer )
+                    {
+                        mAutoDisconnectTimer->stop();
+                    }
+                    break;
+                default:
+                    // do nothing
+                    ;
+            }
+            break;
+    }
+}
+
+void Solid::ManagedSocketContainer::socketError( QAbstractSocket::SocketError socketError )
+{
+    switch ( mState )
+    {
+        case SocketUnconnected:
+            break;
+        case SocketConnecting:
+            switch ( socketError )
+            {
+                case QAbstractSocket::HostNotFoundError:
+                case QAbstractSocket::NetworkError:
+                    // socket tried to resolve and failed
+                    // Either the host doesn't exist at all
+                    // or the resolve failed because we're offline, so request that we go online
+                    if ( globalNetworkManager->status() != Solid::Networking::Connected )
+                    {
+                        mState = AwaitingNetworkConnection;
+                        globalNetworkManager->requestConnection();
+                    }
+                    else
+                    {
+                        mState = SocketUnconnected;
+                    }
+                    break;
+                default:
+                    mState = SocketUnconnected;
+            }
+            break;
+        case AwaitingNetworkConnection:
+        case SocketConnected:
+            // setup automatic reconnect now when/if we impl this
+        case DisconnectWait:
+            // maybe check the socket state that it thinks it is now unconnected too
+            mState = SocketUnconnected;
+            break;
+    }
+}
+
+void Solid::ManagedSocketContainer::socketStateChanged( QAbstractSocket::SocketState socketState )
+{
+    switch ( mState )
+    {
+        case SocketUnconnected:
+            switch ( socketState )
+            {
+                case QAbstractSocket::HostLookupState:
+                case QAbstractSocket::ConnectingState:
+                    // the socket is trying to connect, cache its connection parameter in case it
+                    // fails and we want to reconnect it when the network is available.
+                    mState = SocketConnecting;
+                    if ( mSocket )
+                    {
+                        mPeerName = mSocket->peerName();
+                        mPeerPort = mSocket->peerPort();
+                        mSocketOpenMode = mSocket->openMode();
+                    }
+                    break;
+                default:
+                    ;
+            }
+            break;
+        case SocketConnecting:
+            switch ( socketState )
+            {
+                case QAbstractSocket::HostLookupState:
+                case QAbstractSocket::ConnectingState:
+                    // still connecting, do nothing
+                    break;
+                case QAbstractSocket::BoundState:
+                case QAbstractSocket::ConnectedState:
+                case QAbstractSocket::ListeningState:
+                    // socket connected unaided
+                    mState = SocketConnected;
+                    break;
+                case QAbstractSocket::UnconnectedState:
+                    // this state is preceded by ClosingState, so no action needed
+                    break;
+                case QAbstractSocket::ClosingState:
+                    // it's unlikely that an unconnected socket can go to this state, but...
+                    mState = SocketUnconnected;
+                    break;
+            }
+            break;
+        case AwaitingNetworkConnection:
+            switch ( socketState )
+            {
+                case QAbstractSocket::ConnectedState:
+                    // somehow the socket connected itself when it shouldn't have been able to.
+                    mState = SocketConnected;
+
+                    break;
+                default:
+                    //do nothing
+                    ;
+            }
+            break;
+        case SocketConnected:
+            switch ( socketState )
+            {
+                case QAbstractSocket::UnconnectedState:
+                case QAbstractSocket::ClosingState:
+                    // socket disconnected
+                    mState = SocketUnconnected;
+                    break;
+                case QAbstractSocket::ConnectingState:
+                    mState = SocketConnected;
+                    break;
+                default:
+                    ;
+            }
+            break;
+        case DisconnectWait:
+            switch ( socketState )
+            {
+                case QAbstractSocket::UnconnectedState:
+                case QAbstractSocket::ClosingState:
+                    // socket disconnected anyway
+                    mState = SocketUnconnected;
+                    if ( mAutoDisconnectTimer )
+                    {
+                        mAutoDisconnectTimer->stop();
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
     }
 }
 
 void Solid::ManagedSocketContainer::autoDisconnect()
 {
-    if ( mSocket->state() != QAbstractSocket::UnconnectedState )
+    if ( mAutoDisconnectTimer && mSocket )
+        mSocket->disconnectFromHost();
+}
+
+void Solid::ManagedSocketContainer::socketDestroyed()
+{
+    mSocket = 0;
+    delete mAutoDisconnectTimer;
+    mAutoDisconnectTimer = 0;
+    disconnect( globalNetworkManager );
+}
+
+void Solid::ManagedSocketContainer::performConnectToHost()
+{
+    if ( mSocket )
     {
-        if ( mAutoDisconnectTimer )
-            mSocket->disconnectFromHost();
+        mSocket->connectToHost( mPeerName, mPeerPort, mSocketOpenMode );
     }
 }
-
-void Solid::ManagedSocketContainer::socketStateChanged( QAbstractSocket::SocketState state )
-{
-#warning unimplemented Solid::ManagedSocketContainer::socketStateChanged()
-}
-
-void Solid::ManagedSocketContainer::socketError( QAbstractSocket::SocketError error )
-{
-#warning unimplemented Solid::ManagedSocketContainer::socketError()
-}
-
 
 #include "networking_p.moc"
 #include "networking.moc"

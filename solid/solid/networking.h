@@ -56,7 +56,7 @@ namespace Solid
          * - Connected : the system is currently connected to a network
          * - Disconnecting : the system is breaking the connection
          */
-        enum Status { Unknown, Disconnected, Connecting, Connected, Disconnecting };
+        enum Status { Unknown, Unconnected, Connecting, Connected, Disconnecting };
 
         /**
          * Magic network management for application's sockets.
@@ -84,8 +84,9 @@ namespace Solid
          * the connection is dropped when the last application uses it calls @ref
          * releaseConnection().
          * Optionally, pass in a QObject and slot to call on it, to receive notification when the
-         * connection is available or not.  The slot's signature may be (bool)to indicate success or
-         * failure.
+         * connection is available or not.  The slot may take a Solid::Networking::Status to 
+         * indicate success or failure.
+         *
          * @param receiver the QObject to call a slot on.
          * @param member the slot to call.
          * @return a Result indication whether the request was accepted.
