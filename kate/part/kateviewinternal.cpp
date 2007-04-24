@@ -2690,11 +2690,34 @@ void KateViewInternal::mousePressEvent( QMouseEvent* e )
           m_view->copy();
           QApplication::clipboard()->setSelectionMode( false );
 
-          // FIXME this is overzealous, only the line at selectAnchor should
-          // be cached on shift+TC
-          selStartCached = m_view->selectStart;
-          selEndCached = m_view->selectEnd;
-          updateCursor( selEndCached );
+          // Keep the line at the select anchor selected during further
+          // mouse selection
+          if ( selectAnchor.line() > m_view->selectStart.line() )
+          {
+            // Preserve the last selected line
+            if ( selectAnchor == m_view->selectEnd && selectAnchor.col() == 0 )
+              selStartCached = KateTextCursor( selectAnchor.line()-1, 0 );
+            else
+              selStartCached = KateTextCursor( selectAnchor.line(), 0 );
+            selEndCached = m_view->selectEnd;
+          }
+          else
+          {
+            // Preserve the first selected line
+            selStartCached = m_view->selectStart;
+            if ( m_view->selectEnd.line() > m_view->selectStart.line() )
+              selEndCached = KateTextCursor( m_view->selectStart.line()+1, 0 );
+            else
+              selEndCached = m_view->selectEnd;
+          }
+
+          // Set cursor to edge of selection... which edge depends on what
+          // "direction" the selection was made in
+          if ( m_view->selectStart < selectAnchor
+               && selectAnchor.line() != m_view->selectStart.line() )
+            updateCursor( m_view->selectStart );
+          else
+            updateCursor( m_view->selectEnd );
 
           e->accept ();
           return;
