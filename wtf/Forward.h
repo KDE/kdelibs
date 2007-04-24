@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef KXMLCORE_FORWARD_H
-#define KXMLCORE_FORWARD_H
+#ifndef WTF_Forward_h
+#define WTF_Forward_h
 
 #include <stddef.h>
 

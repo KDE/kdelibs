@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef KXMLCORE_OWN_ARRAY_PTR_H
-#define KXMLCORE_OWN_ARRAY_PTR_H
+#ifndef WTF_OwnArrayPtr_h
+#define WTF_OwnArrayPtr_h
 
 #include <algorithm>
 #include "Assertions.h"
@@ -64,4 +64,4 @@ namespace WTF {
 
 using WTF::OwnArrayPtr;
 
-#endif // KXMLCORE_OWN_ARRAY_PTR_H
+#endif // WTF_OwnArrayPtr_h

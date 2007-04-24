@@ -23,6 +23,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
+#ifndef WTF_MathExtras_h
+#define WTF_MathExtras_h
+
 #include <math.h>
 
 #if PLATFORM(WIN)
@@ -51,3 +54,5 @@ inline double wtf_fmod(double x, double y) { return (!isinf(x) && isinf(y)) ? x 
 #endif
 
 #endif
+
+#endif // #ifndef WTF_MathExtras_h

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef KXMLCORE_SHARED_PTR_H
-#define KXMLCORE_SHARED_PTR_H
+#ifndef WTF_SharedPtr_h
+#define WTF_SharedPtr_h
 
 namespace WTF {
 
@@ -128,4 +128,4 @@ using WTF::SharedPtr;
 using WTF::static_pointer_cast;
 using WTF::const_pointer_cast;
 
-#endif // KXMLCORE_SHARED_PTR_H
+#endif // WTF_SharedPtr_h

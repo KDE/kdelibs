@@ -24,11 +24,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef KXMLCORE_ASSERTIONS_H
-#define KXMLCORE_ASSERTIONS_H
+#ifndef WTF_Assertions_h
+#define WTF_Assertions_h
 
 #include <assert.h>
 
 #define ASSERT(x) assert(x)
 
-#endif // KXMLCORE_ASSERTIONS_H
+#endif // WTF_Assertions_h

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef KXMLCORE_FAST_MALLOC_H
-#define KXMLCORE_FAST_MALLOC_H
+#ifndef WTF_FastMalloc_h
+#define WTF_FastMalloc_h
 
 #include "Platform.h"
 #if USE(MULTIPLE_THREADS)
@@ -61,4 +61,4 @@ using WTF::fastRealloc;
 using WTF::fastFree;
 
 
-#endif /* KXMLCORE_FAST_MALLOC_H */
+#endif /* WTF_FastMalloc_h */
