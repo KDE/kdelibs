@@ -18,7 +18,7 @@
 #ifndef FILELOADERJOB_H
 #define FILELOADERJOB_H
 
-#include <QFile>
+#include <QtCore/QFile>
 
 #include <WeaverImpl.h>
 #include <Job.h>

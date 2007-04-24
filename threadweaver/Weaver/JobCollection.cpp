@@ -26,15 +26,16 @@ http://www.hackerbuero.org $
 $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include <WeaverInterface.h>
-#include <DebuggingAids.h>
+#include "JobCollection.h"
+#include "JobCollection_p.h"
+
+#include "WeaverInterface.h"
+#include "DebuggingAids.h"
 
 #include <QList>
 #include <QObject>
 #include <QPointer>
 
-#include "JobCollection.h"
-#include "JobCollection_p.h"
 #include "DependencyPolicy.h"
 
 using namespace ThreadWeaver;

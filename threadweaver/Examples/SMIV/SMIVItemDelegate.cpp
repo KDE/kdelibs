@@ -14,14 +14,14 @@
    $Id: SMIVItemDelegate.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "SMIVItemDelegate.h"
+#include "SMIVModel.h"
+#include "SMIVItem.h"
+
 #include <QModelIndex>
 #include <QPainter>
 
 #include <DebuggingAids.h>
-
-#include "SMIVItemDelegate.h"
-#include "SMIVModel.h"
-#include "SMIVItem.h"
 
 const int SMIVItemDelegate::FrameWidth = 2;
 const int SMIVItemDelegate::ThumbHeight = 60;

@@ -25,9 +25,10 @@
 
    $Id: ThreadWeaver.h 32 2005-08-17 08:38:01Z mirko $
 */
+#include "WeaverThreadGrid.h"
+
 #include <QPainter>
 
-#include "WeaverThreadGrid.h"
 #include <Thread.h>
 
 namespace ThreadWeaver {

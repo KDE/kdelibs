@@ -14,11 +14,11 @@
    $Id: WeaverObserverTest.cpp 31 2005-08-16 16:21:10Z mirko $
 */
 
+#include "WeaverObserverTest.h"
+
 #include "DebuggingAids.h"
 #include "State.h"
 #include "Thread.h"
-
-#include "WeaverObserverTest.h"
 
 namespace ThreadWeaver {
 

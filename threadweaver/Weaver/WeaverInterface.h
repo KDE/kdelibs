@@ -29,7 +29,7 @@
 #ifndef WeaverInterface_H
 #define WeaverInterface_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include <threadweaver/threadweaver_export.h>
 

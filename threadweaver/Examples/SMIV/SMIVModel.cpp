@@ -14,12 +14,13 @@
    $Id: SMIVModel.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "SMIVModel.h"
+#include "SMIVItem.h"
+
 #include <QStringList>
 
 #include <DebuggingAids.h>
 
-#include "SMIVModel.h"
-#include "SMIVItem.h"
 
 SMIVModel::SMIVModel( QObject* parent )
     : QAbstractListModel( parent )

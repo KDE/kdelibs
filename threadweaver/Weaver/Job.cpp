@@ -26,6 +26,9 @@ http://www.hackerbuero.org $
 $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
+#include "Job.h"
+#include "Job_p.h"
+
 #include <QSet>
 #include <QList>
 #include <QMutex>
@@ -36,8 +39,6 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include <DebuggingAids.h>
 #include <Thread.h>
 
-#include "Job.h"
-#include "Job_p.h"
 #include "QueuePolicy.h"
 #include "DependencyPolicy.h"
 

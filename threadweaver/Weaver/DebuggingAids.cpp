@@ -26,9 +26,10 @@
    $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
+#include "DebuggingAids.h"
+
 #include <QMutex>
 
-#include "DebuggingAids.h"
 #include <threadweaver/threadweaver_export.h>
 
 /** A global mutex for the ThreadWeaver objects.

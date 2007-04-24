@@ -29,7 +29,7 @@ class ComputeThumbNailJob : public Job
 {
     Q_OBJECT
 public:
-    ComputeThumbNailJob ( QImageLoaderJob *imageLoader,
+    explicit ComputeThumbNailJob ( QImageLoaderJob *imageLoader,
 			  QObject *parent = 0);
     /** Returns the "ready made" thumbnail. */
   QImage thumb();

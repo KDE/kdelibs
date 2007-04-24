@@ -26,9 +26,9 @@ http://www.hackerbuero.org $
 $Id: State.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
-#include <QString>
+#include "State.h"
 
-#include <State.h>
+#include <QString>
 
 using namespace ThreadWeaver;
 

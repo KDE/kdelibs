@@ -26,10 +26,9 @@
    $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include <WeaverInterface.h>
-#include <DebuggingAids.h>
-
 #include "JobSequence.h"
+#include "WeaverInterface.h"
+#include "DebuggingAids.h"
 #include "DependencyPolicy.h"
 
 using namespace ThreadWeaver;

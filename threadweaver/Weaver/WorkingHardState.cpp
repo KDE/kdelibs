@@ -26,6 +26,7 @@ http://www.hackerbuero.org $
 $Id: WorkingHardState.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "WorkingHardState.h"
 
 #include <QByteArray>
 
@@ -34,7 +35,6 @@ $Id: WorkingHardState.cpp 30 2005-08-16 16:16:04Z mirko $
 #include "WeaverImpl.h"
 #include "ThreadWeaver.h"
 #include "DebuggingAids.h"
-#include "WorkingHardState.h"
 
 
 using namespace ThreadWeaver;

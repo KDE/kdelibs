@@ -30,7 +30,7 @@
 #ifndef THREADWEAVER_H
 #define THREADWEAVER_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include "WeaverInterface.h"
 
 namespace ThreadWeaver {

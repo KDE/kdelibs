@@ -14,6 +14,8 @@
    $Id: SMIVItem.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "SMIVItem.h"
+
 #include <QStringList>
 #include <QImage>
 #include <QTimer>
@@ -25,8 +27,6 @@
 #include "SMIVItemDelegate.h"
 #include "FileLoaderJob.h"
 #include "QImageLoaderJob.h"
-
-#include "SMIVItem.h"
 
 static QueuePolicy* resourceRestriction()
 {

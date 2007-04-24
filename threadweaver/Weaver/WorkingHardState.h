@@ -30,6 +30,7 @@
 #define WorkingHardState_H
 
 #include "StateImplementation.h"
+#include "WeaverImpl.h"
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API

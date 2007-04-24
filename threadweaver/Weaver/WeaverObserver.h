@@ -29,7 +29,7 @@
 #ifndef WEAVEROBSERVER_H
 #define WEAVEROBSERVER_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include <threadweaver/threadweaver_export.h>
 

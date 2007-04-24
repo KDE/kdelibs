@@ -31,8 +31,8 @@
 #ifndef THREADWEAVER_THREAD_H
 #define THREADWEAVER_THREAD_H
 
-#include <QMutex>
-#include <QThread>
+#include <QtCore/QMutex>
+#include <QtCore/QThread>
 
 #include <threadweaver/threadweaver_export.h>
 

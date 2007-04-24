@@ -14,9 +14,9 @@
    $Id: QImageLoaderJob.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include <DebuggingAids.h>
-
 #include "QImageLoaderJob.h"
+
+#include <DebuggingAids.h>
 
 namespace ThreadWeaver {
 

@@ -28,13 +28,14 @@
    $Id: Thread.cpp 25 2005-08-14 12:41:38Z mirko $
 */
 
+#include "Thread.h"
+#include "Thread_p.h"
+
 #include <QMutex>
 #include <QtDebug>
 
 #include "ThreadWeaver.h"
 #include "WeaverImpl.h"
-#include "Thread.h"
-#include "Thread_p.h"
 #include "Job.h"
 #include "DebuggingAids.h"
 

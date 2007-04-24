@@ -34,6 +34,7 @@
 #endif
 
 #include "StateImplementation.h"
+#include "WeaverImpl.h"
 
 namespace ThreadWeaver {
 

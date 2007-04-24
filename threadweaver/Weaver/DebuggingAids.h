@@ -38,8 +38,8 @@ extern "C"
 #include <assert.h>
 }
 
-#include <QMutex>
-#include <QString>
+#include <QtCore/QMutex>
+#include <QtCore/QString>
 #include "threadweaver/threadweaver_export.h"
 
 namespace ThreadWeaver {

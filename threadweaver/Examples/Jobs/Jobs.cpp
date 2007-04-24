@@ -15,6 +15,8 @@
    $Id: Jobs.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "Jobs.h"
+
 extern "C" {
 #include <stdlib.h>
 }
@@ -24,7 +26,6 @@ extern "C" {
 #include <QProgressBar>
 #include <QApplication>
 
-#include "Jobs.h"
 #include <Thread.h>
 #include <JobCollection.h>
 #include <DebuggingAids.h>

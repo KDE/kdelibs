@@ -26,12 +26,13 @@
    $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 */
 
+#include "ResourceRestrictionPolicy.h"
+
 #include <QList>
 #include <QMutex>
 #include <QMutexLocker>
 
 #include "DebuggingAids.h"
-#include "ResourceRestrictionPolicy.h"
 
 using namespace ThreadWeaver;
 

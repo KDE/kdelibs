@@ -26,10 +26,11 @@
    $Id: SuspendingState.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "SuspendingState.h"
+
 #include "State.h"
 #include "WeaverImpl.h"
 #include "ThreadWeaver.h"
-#include "SuspendingState.h"
 
 using namespace ThreadWeaver;
 

@@ -14,9 +14,10 @@
    $Id: ComputeThumbNailJob.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "ComputeThumbNailJob.h"
+
 #include <DebuggingAids.h>
 
-#include "ComputeThumbNailJob.h"
 #include "SMIVItemDelegate.h"
 
 #define NO_QIMAGE_SCALED 0

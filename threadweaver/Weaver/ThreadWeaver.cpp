@@ -26,11 +26,12 @@ http://www.hackerbuero.org $
 $Id: ThreadWeaver.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "ThreadWeaver.h"
+
 #include <QMutex>
 #include <QMutexLocker>
 
 #include "WeaverImpl.h"
-#include "ThreadWeaver.h"
 #include "WeaverObserver.h"
 
 using namespace ThreadWeaver;

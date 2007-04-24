@@ -14,9 +14,9 @@
    $Id: FileLoaderJob.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
-#include <QtDebug>
-
 #include "FileLoaderJob.h"
+
+#include <QtDebug>
 
 namespace ThreadWeaver {
 

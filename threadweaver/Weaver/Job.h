@@ -29,7 +29,7 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #ifndef THREADWEAVER_JOB_H
 #define THREADWEAVER_JOB_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include <threadweaver/threadweaver_export.h>
 

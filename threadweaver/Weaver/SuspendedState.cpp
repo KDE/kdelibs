@@ -26,9 +26,10 @@ http://www.hackerbuero.org $
 $Id: SuspendedState.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "SuspendedState.h"
+
 #include "ThreadWeaver.h"
 #include "WeaverImpl.h"
-#include "SuspendedState.h"
 
 using namespace ThreadWeaver;
 

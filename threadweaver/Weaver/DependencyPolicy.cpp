@@ -26,11 +26,12 @@ http://www.hackerbuero.org $
 $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
+#include "DependencyPolicy.h"
+
 #include <QMutex>
 #include <QtDebug>
 
 #include "Job.h"
-#include "DependencyPolicy.h"
 #include "DebuggingAids.h"
 
 using namespace ThreadWeaver;

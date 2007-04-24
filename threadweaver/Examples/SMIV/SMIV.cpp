@@ -14,6 +14,9 @@
    $Id: SMIV.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "SMIV.h"
+#include "SMIVItem.h"
+
 #include <QtDebug>
 #include <QFileDialog>
 #include <QApplication>
@@ -21,9 +24,6 @@
 #include <State.h>
 #include <ThreadWeaver.h>
 #include <DebuggingAids.h>
-
-#include "SMIV.h"
-#include "SMIVItem.h"
 
 using namespace ThreadWeaver;
 

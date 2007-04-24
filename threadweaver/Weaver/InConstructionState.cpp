@@ -26,9 +26,10 @@
    $Id: InConstructionState.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
+#include "InConstructionState.h"
+
 #include "WeaverImpl.h"
 #include "ThreadWeaver.h"
-#include "InConstructionState.h"
 
 namespace ThreadWeaver {
 

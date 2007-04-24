@@ -37,7 +37,7 @@ namespace ThreadWeaver {
             If file has not been finished at this point, it is considered a
             dependency.
         */
-        QImageLoaderJob (FileLoaderJob* file, QObject* parent=0);
+        explicit QImageLoaderJob (FileLoaderJob* file, QObject* parent=0);
         ~QImageLoaderJob ();
         /** Return the image. If it is not completely created, null will be
             returned. If an error occurred (for example, the data in file is a

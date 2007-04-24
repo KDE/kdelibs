@@ -30,6 +30,10 @@
 #define THREADWEAVER_JOBCOLLECTION_P_H
 
 #include "JobCollection.h"
+#include "WeaverInterface.h"
+
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
 
 using namespace ThreadWeaver;
 
