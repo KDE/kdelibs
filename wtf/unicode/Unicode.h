@@ -29,6 +29,8 @@
 #include "qt4/UnicodeQt4.h"
 #elif USE(ICU_UNICODE)
 #include "icu/UnicodeIcu.h"
+#elif USE(LIBC_UNICODE)
+#include "libc/UnicodeLibC.h"
 #else
 #error "Unknown Unicode implementation"
 #endif
