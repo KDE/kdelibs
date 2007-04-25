@@ -86,8 +86,16 @@ public:
             }
             else
             {
-               combo->addItem( text );
-               combo->setCurrentIndex( combo->count()-1 );
+               int i = combo->findText( text );
+               if ( i == -1 )
+               {
+                  combo->addItem( text );
+                  combo->setCurrentIndex( combo->count()-1 );
+               }
+               else
+               {
+                  combo->setCurrentIndex( i );
+               }
             }
         }
         else
