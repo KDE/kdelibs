@@ -125,9 +125,7 @@ QString KSSLSettings::getCipherList() {
 	QString tcipher;
 	bool firstcipher = true;
 	SSL_METHOD *meth = 0L;
-	Q3PtrList<CipherNode> cipherList;
-
-	cipherList.setAutoDelete(true);
+        QList<CipherNode> cipherList;
 
 	if (!d->kossl)
 		d->kossl = KOSSL::self();
@@ -153,26 +151,19 @@ QString KSSLSettings::getCipherList() {
                 tcipher.sprintf("cipher_%s", sc->name);
                 int bits = d->kossl->SSL_CIPHER_get_bits(sc, NULL);
                 if (cg.readEntry(tcipher, bits >= 56)) {
-                        CipherNode *xx = new CipherNode(sc->name,bits);
-                        if (!cipherList.contains(xx))
-                                cipherList.prepend(xx);
-                        else
-                                delete xx;
+                        cipherList.prepend(CipherNode(sc->name, bits));
                 }
         }
         d->kossl->SSL_free(ssl);
         d->kossl->SSL_CTX_free(ctx);
 
 	// Remove any ADH ciphers as per RFC2246
-	for (unsigned int i = 0; i < cipherList.count(); i++) {
-		CipherNode *j = 0L;
-		while ((j = cipherList.at(i)) != 0L) {
-			if (j->name.contains("ADH-") || j->name.contains("FZA-") || j->name.contains("NULL-") || j->name.contains("DES-CBC3-SHA")) {
-				cipherList.remove(j);
-			} else {
-				break;
-			}
-		}
+	for (unsigned int i = 0; i < cipherList.size(); i++) {
+                while (cipherList.at(i).name.contains("ADH-")
+                       || cipherList.at(i).name.contains("FZA-")
+                       || cipherList.at(i).name.contains("NULL-")
+                       || cipherList.at(i).name.contains("DES-CBC3-SHA"))
+                    cipherList.removeAt(i);
 	}
 
 	// now assemble the list  cipher1:cipher2:cipher3:...:ciphern
@@ -180,7 +171,7 @@ QString KSSLSettings::getCipherList() {
 		if (firstcipher)
 			firstcipher = false;
 		else clist.append(":");
-		clist.append(cipherList.getLast()->name);
+		clist.append(cipherList.last().name);
 		cipherList.removeLast();
 	} // while
 
