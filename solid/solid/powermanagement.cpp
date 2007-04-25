@@ -23,12 +23,33 @@
 #include "soliddefs_p.h"
 
 #include <kglobal.h>
+#include <kcomponentdata.h>
+#include <kaboutdata.h>
 #include <klocale.h>
 
 K_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
 Solid::PowerManagementPrivate::PowerManagementPrivate()
+    : managerIface("org.kde.Solid.PowerManagement",
+                   "/org/kde/Solid/PowerManagement",
+                   QDBusConnection::sessionBus()),
+      inhibitIface("org.kde.Solid.PowerManagement.Inhibit",
+                   "/org/kde/Solid/PowerManagement/Inhibit",
+                   QDBusConnection::sessionBus())
 {
+    powerSaveStatus = managerIface.GetPowerSaveStatus();
+
+    if (managerIface.CanSuspend())
+        supportedSleepStates+= Solid::PowerManagement::SuspendState;
+    if (managerIface.CanHibernate())
+        supportedSleepStates+= Solid::PowerManagement::HibernateState;
+
+    connect(&managerIface, SIGNAL(CanSuspendChanged(bool)),
+            this, SLOT(slotCanSuspendChanged(bool)));
+    connect(&managerIface, SIGNAL(CanHibernateChanged(bool)),
+            this, SLOT(slotCanHibernateChanged(bool)));
+    connect(&managerIface, SIGNAL(PowerSaveStatusChanged(bool)),
+            this, SLOT(slotPowerSaveStatusChanged(bool)));
 }
 
 Solid::PowerManagementPrivate::~PowerManagementPrivate()
@@ -37,12 +58,12 @@ Solid::PowerManagementPrivate::~PowerManagementPrivate()
 
 bool Solid::PowerManagement::appShouldConserveResources()
 {
-    return false;
+    return globalPowerManager->powerSaveStatus;
 }
 
-QList<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepStates()
+QSet<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepStates()
 {
-    return QList<SleepState>();
+    return globalPowerManager->supportedSleepStates;
 }
 
 QString Solid::PowerManagement::stringForSleepState(SleepState state)
@@ -61,18 +82,68 @@ QString Solid::PowerManagement::stringForSleepState(SleepState state)
 
 void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, const char *member)
 {
+    if (!globalPowerManager->supportedSleepStates.contains(state)) {
+        return;
+    }
 
+    switch (state)
+    {
+    case StandbyState:
+        break;
+    case SuspendState:
+        globalPowerManager->managerIface.Suspend();
+        break;
+    case HibernateState:
+        globalPowerManager->managerIface.Hibernate();
+        break;
+    }
 }
 
-bool Solid::PowerManagement::suppressSleep(bool inhibit, const QString &reason,
-                                           SuppressExceptions exceptions)
+int Solid::PowerManagement::beginSuppressingSleep(const QString &reason,
+                                                  SuppressExceptions exceptions)
 {
-    return false;
+    KComponentData componentData = KGlobal::mainComponent();
+
+    QDBusReply<uint> reply = globalPowerManager->inhibitIface.Inhibit(
+        componentData.aboutData()->appName(), reason);
+
+    if (reply.isValid())
+        return reply;
+    else
+        return -1;
+}
+
+bool Solid::PowerManagement::stopSuppressingSleep(int cookie)
+{
+    return globalPowerManager->inhibitIface.UnInhibit(cookie).isValid();
 }
 
 Solid::PowerManagement::Notifier *Solid::PowerManagement::notifier()
 {
     return globalPowerManager;
+}
+
+void Solid::PowerManagementPrivate::slotCanSuspendChanged(bool newState)
+{
+    if (newState) {
+        supportedSleepStates+= Solid::PowerManagement::SuspendState;
+    } else {
+        supportedSleepStates-= Solid::PowerManagement::SuspendState;
+    }
+}
+
+void Solid::PowerManagementPrivate::slotCanHibernateChanged(bool newState)
+{
+    if (newState) {
+        supportedSleepStates+= Solid::PowerManagement::HibernateState;
+    } else {
+        supportedSleepStates-= Solid::PowerManagement::HibernateState;
+    }
+}
+
+void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
+{
+    powerSaveStatus = newState;
 }
 
 #include "powermanagement_p.moc"

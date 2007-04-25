@@ -22,6 +22,9 @@
 
 #include "powermanagement.h"
 
+#include "powermanagementinterface.h"
+#include "inhibitinterface.h"
+
 namespace Solid
 {
     class PowerManagementPrivate : public PowerManagement::Notifier
@@ -30,6 +33,18 @@ namespace Solid
     public:
         PowerManagementPrivate();
         ~PowerManagementPrivate();
+
+    public Q_SLOTS:
+        void slotCanSuspendChanged(bool newState);
+        void slotCanHibernateChanged(bool newState);
+        void slotPowerSaveStatusChanged(bool newState);
+
+    public:
+        OrgKdeSolidPowerManagementInterface managerIface;
+        OrgKdeSolidPowerManagementInhibitInterface inhibitIface;
+
+        bool powerSaveStatus;
+        QSet<Solid::PowerManagement::SleepState> supportedSleepStates;
     };
 }
 

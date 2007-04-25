@@ -21,6 +21,7 @@
 #define SOLID_POWERMANAGEMENT_H
 
 #include <QtCore/QObject>
+#include <QtCore/QSet>
 
 #include <solid/solid_export.h>
 
@@ -67,7 +68,7 @@ namespace Solid
          * @see Solid::PowerManager::SuspendMethod
          * @see Solid::PowerManager::SuspendMethods
          */
-        SOLID_EXPORT QList<SleepState> supportedSleepStates();
+        SOLID_EXPORT QSet<SleepState> supportedSleepStates();
 
         SOLID_EXPORT QString stringForSleepState(SleepState state);
 
@@ -84,8 +85,9 @@ namespace Solid
 
         Q_DECLARE_FLAGS(SuppressExceptions, SuppressException)
 
-        SOLID_EXPORT bool suppressSleep(bool suppress, const QString &reason = QString(),
-                                        SuppressExceptions exceptions = DefaultSuppressExceptions);
+        SOLID_EXPORT int beginSuppressingSleep(const QString &reason = QString(),
+                                               SuppressExceptions exceptions = DefaultSuppressExceptions);
+        SOLID_EXPORT bool stopSuppressingSleep(int cookie);
 
         class Notifier : public QObject
         {
