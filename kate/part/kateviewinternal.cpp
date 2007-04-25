@@ -2050,6 +2050,16 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
       {
         case Word:
         {
+          // Restore selStartCached if needed. It gets nuked by
+          // viewSelectionChanged if we drag the selection into non-existence,
+          // which can legitimately happen if a shift+DC selection is unable to
+          // set a "proper" (i.e. non-empty) cached selection, e.g. because the
+          // start was on something that isn't a word. Word select mode relies
+          // on the cached selection being set properly, even if it is empty
+          // (i.e. selStartCached == selEndCached).
+          if ( selStartCached.line() == -1 )
+            selStartCached = selEndCached;
+
           int c;
           if ( newCursor > selEndCached )
           {
