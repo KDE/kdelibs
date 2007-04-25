@@ -2808,17 +2808,16 @@ void KateViewInternal::mouseDoubleClickEvent(QMouseEvent *e)
         KateTextLine::Ptr l = m_doc->kateTextLine( selectAnchor.line() );
 
         ce = selectAnchor.col();
-        if ( ce > 0 && m_doc->highlight()->isInWord( l->getChar( ce-1 ) ) ) {
+        if ( ce > 0 && m_doc->highlight()->isInWord( l->getChar( ce ) ) ) {
           for (; ce < l->length(); ce++ )
             if ( !m_doc->highlight()->isInWord( l->getChar( ce ) ) )
               break;
         }
 
-        cs = selectAnchor.col();
+        cs = selectAnchor.col() - 1;
         if ( cs < m_doc->textLine( selectAnchor.line() ).length()
-              && m_doc->highlight()->isInWord( l->getChar( cs ) )
-              && m_doc->highlight()->isInWord( l->getChar( cs-1 ) ) ) {
-          for ( cs -= 2; cs >= 0; cs-- )
+              && m_doc->highlight()->isInWord( l->getChar( cs ) ) ) {
+          for ( cs--; cs >= 0; cs-- )
             if ( !m_doc->highlight()->isInWord( l->getChar( cs ) ) )
               break;
         }
