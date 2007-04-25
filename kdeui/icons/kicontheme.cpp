@@ -546,7 +546,7 @@ QStringList KIconTheme::list()
 // static
 void KIconTheme::reconfigure()
 {
-    _theme = QString();
+    _theme->clear();
     _theme_list->clear();
     
 }
