@@ -490,7 +490,7 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, K3Icon::MatchType mat
 QString KIconTheme::current()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (_theme != 0)
+    if (!_theme->isEmpty())
         return *_theme;
 
     KConfigGroup cg(KGlobal::config(), "Icons");
@@ -510,7 +510,7 @@ QString KIconTheme::current()
 QStringList KIconTheme::list()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (_theme_list != 0)
+    if (!_theme_list->isEmpty())
         return *_theme_list;
 
     QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
@@ -546,8 +546,8 @@ QStringList KIconTheme::list()
 // static
 void KIconTheme::reconfigure()
 {
-    _theme.reinit();
-    _theme_list.reinit();
+    _theme = QString();
+    _theme_list->clear();
     
 }
 
