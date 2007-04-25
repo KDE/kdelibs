@@ -38,7 +38,6 @@ public:
     static QList<QChar> blockContents(int block);
     static QList<int> sectionContents(int section);
 
-    static QStringList blockList();
     static QStringList sectionList();
 
     static QString block(const QChar& c);

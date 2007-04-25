@@ -470,7 +470,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     if (!aliases.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(QString alias, aliases) {
-            html += "<li>" + createLinks(Qt::escape(alias)) + "</li>";
+            html += "<li>" + Qt::escape(alias) + "</li>";
         }
         html += "</ul>";
     }
@@ -609,6 +609,9 @@ void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
 {
     int block = blockCombo->itemData(index).toInt();
     QList<QChar> contents = KCharSelectData::blockContents(block);
+    if(contents.count() <= index) {
+        return;
+    }
     charTable->setContents(contents);
     emit q->displayedCharsChanged();
     charTable->setChar(contents[0]);

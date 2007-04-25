@@ -21,11 +21,13 @@
 #include "kcharselectdata_p.h"
 
 #include <QStringList>
-
 #include <QDebug>
 #include <QTime>
+#include <QFile>
 
-#include "kcharselect_unicodedata.h"
+#include <string.h>
+#include <klocalizedstring.h>
+#include <kstandarddirs.h>
 
 /* constants for hangul (de)composition, see UAX #15 */
 #define SBase 0xAC00
@@ -37,6 +39,8 @@
 #define TCount 28
 #define NCount (VCount * TCount)
 #define SCount (LCount * NCount)
+
+static QByteArray *dataFile = 0;
 
 static const char JAMO_L_TABLE[][4] =
     {
@@ -58,18 +62,36 @@ static const char JAMO_T_TABLE[][4] =
         "S", "SS", "NG", "J", "C", "K", "T", "P", "H"
     };
 
-static const NamesList* getNamesList(const QChar& c)
+static bool openDataFile()
 {
+    if(dataFile != 0) {
+        return true;
+    } else {
+        QFile file(KStandardDirs::locate("data", "kcharselect/kcharselect-data"));
+        if (!file.open(QIODevice::ReadOnly)) {
+            return false;
+        }
+        dataFile = new QByteArray(file.readAll());
+        file.close();
+        return true;
+    }
+}
+
+static const quint32 getDetailIndex(const QChar& c)
+{
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+12);
+    const quint32 offsetEnd = * (quint32*) (data+16);
+
     int min = 0;
     int mid;
-    int max = sizeof(names_list) / sizeof(NamesList) - 1;
-    int unicode = c.unicode();
+    int max = ((offsetEnd - offsetBegin) / 27) - 1;
 
-    static ushort most_recent_searched;
-    static const NamesList *most_recent_result;
+    quint16 unicode = c.unicode();
 
-    if (unicode < names_list[0].index || unicode > names_list[max].index)
-        return 0;
+    static quint16 most_recent_searched;
+    static quint32 most_recent_result;
+
 
     if (unicode == most_recent_searched)
         return most_recent_result;
@@ -77,15 +99,16 @@ static const NamesList* getNamesList(const QChar& c)
     most_recent_searched = unicode;
 
     while (max >= min) {
-
         mid = (min + max) / 2;
-        if (unicode > names_list[mid].index)
+        const quint16 midUnicode = * (quint16*) (data + offsetBegin + mid*27);
+        if (unicode > midUnicode)
             min = mid + 1;
-        else if (unicode < names_list[mid].index)
+        else if (unicode < midUnicode)
             max = mid - 1;
         else {
-            most_recent_result = names_list + mid;
-            return names_list + mid;
+            most_recent_result = offsetBegin + mid*27;
+
+            return most_recent_result;
         }
     }
 
@@ -104,19 +127,27 @@ QString KCharSelectData::formatCode(ushort code, int length, const QString& pref
 
 QList<QChar> KCharSelectData::blockContents(int block)
 {
+    if(!openDataFile()) {
+        return QList<QChar>();
+    }
+
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+20);
+    const quint32 offsetEnd = * (quint32*) (data+24);
+
+    int max = ((offsetEnd - offsetBegin) / 4) - 1;
+
     QList<QChar> res;
-    int size = sizeof(unicode_blocks) / sizeof(UnicodeBlock);
-    if (block >= size)
+
+    if(block > max)
         return res;
 
-    UnicodeBlock b = unicode_blocks[block];
+    quint16 unicodeBegin = * (quint16*) (data + offsetBegin + block*4);
+    quint16 unicodeEnd = * (quint16*) (data + offsetBegin + block*4 + 2);
 
-    ushort c = b.start;
-    res.append(c);
-
-    while (c != b.end) {
-        ++c;
-        res.append(c);
+    while(unicodeBegin <= unicodeEnd) {
+        res.append(unicodeBegin);
+        unicodeBegin++;
     }
 
     return res;
@@ -124,55 +155,62 @@ QList<QChar> KCharSelectData::blockContents(int block)
 
 QList<int> KCharSelectData::sectionContents(int section)
 {
+    if(!openDataFile()) {
+        return QList<int>();
+    }
+
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+28);
+    const quint32 offsetEnd = * (quint32*) (data+32);
+
+    int max = ((offsetEnd - offsetBegin) / 4) - 1;
+
     QList<int> res;
-    int size = sizeof(unicode_sections) / sizeof(UnicodeSection);
-    if (section >= size)
+
+    if(section > max)
         return res;
 
-    for (int i = 0; i < size; i++) {
-        if (unicode_sections[i].section_index != section)
-            continue;
-
-        res.append(unicode_sections[i].block_index);
+    for(int i = 0; i <= max; i++) {
+        const quint16 currSection = * (quint16*) (data + offsetBegin + i*4);
+        if(currSection == section) {
+            res.append( * (quint16*) (data + offsetBegin + i*4 + 2) );
+        }
     }
 
     return res;
 }
 
-QStringList KCharSelectData::blockList()
-{
-    QStringList list;
-    int blocks_size = sizeof(unicode_blocks) / sizeof(UnicodeBlock);
-    for (int i = 0; i < blocks_size; i++) {
-        list.append(unicode_blocks[i].block_name);
-    }
-    return list;
-}
-
 QStringList KCharSelectData::sectionList()
 {
-    QStringList list;
-    int sections_size = sizeof(unicode_section_list) / sizeof(unicode_section_list[0]);
-    for (int i = 0; i < sections_size; i++) {
-        list.append(unicode_section_list[i]);
+    if(!openDataFile()) {
+        return QStringList();
     }
+
+    const char* data = dataFile->constData();
+    const quint32 stringBegin = * (quint32*) (data+24);
+    const quint32 stringEnd = * (quint32*) (data+28);
+
+    QStringList list;
+    quint32 i = stringBegin;
+    while(i < stringEnd) {
+        list.append(data + i);
+        i += strlen(data + i) + 1;
+    }
+
     return list;
 }
 
 QString KCharSelectData::block(const QChar& c)
 {
-    ushort unicode = c.unicode();
-    int max = sizeof(unicode_blocks) / sizeof(UnicodeBlock) - 1;
-    int i = 0;
-
-    while (unicode > unicode_blocks[i].end && i < max)
-        i++;
-
-    return unicode_blocks[i].block_name;
+    return blockName(blockIndex(c));
 }
 
 QString KCharSelectData::name(const QChar& c)
 {
+    if(!openDataFile()) {
+        return QString();
+    }
+
     ushort unicode = c.unicode();
     if ((unicode >= 0x3400 && unicode <= 0x4DB5)
             || (unicode >= 0x4e00 && unicode <= 0x9fa5)) {
@@ -204,212 +242,251 @@ QString KCharSelectData::name(const QChar& c)
 //  else if (unicode >= 0x100000 && unicode <= 0x10FFFD)
 //   return i18n("<Plane 16 Private Use>");
     else {
+        const char* data = dataFile->constData();
+        const quint32 offsetBegin = * (quint32*) (data+4);
+        const quint32 offsetEnd = * (quint32*) (data+8);
+
         int min = 0;
         int mid;
-        int max = (sizeof(unicode_names) / sizeof(unicode_names[0])) - 1;
+        int max = ((offsetEnd - offsetBegin) / 6) - 1;
         QString s;
-
-        if (unicode < unicode_names[0].index || unicode > unicode_names[max].index)
-            return QString();
 
         while (max >= min) {
             mid = (min + max) / 2;
-            if (unicode > unicode_names[mid].index)
+            const quint16 midUnicode = * (quint16*) (data + offsetBegin + mid*6);
+            if (unicode > midUnicode)
                 min = mid + 1;
-            else if (unicode < unicode_names[mid].index)
+            else if (unicode < midUnicode)
                 max = mid - 1;
             else {
-                s = unicode_names_strings + unicode_names[mid].name_offset;
+                quint32 offset = * (quint32*) (data + offsetBegin + mid*6 + 2);
+                s = data + offset;
                 break;
             }
         }
 
-        if (s.isNull())
+        if (s.isNull()) {
             return i18n("<not assigned>");
-        else
+        } else {
             return s;
+        }
     }
 }
 
 int KCharSelectData::blockIndex(const QChar& c)
 {
-    ushort unicode = c.unicode();
-    int max = sizeof(unicode_blocks) / sizeof(UnicodeBlock) - 1;
+    if(!openDataFile()) {
+        return 0;
+    }
+
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+20);
+    const quint32 offsetEnd = * (quint32*) (data+24);
+    const quint16 unicode = c.unicode();
+
+    int max = ((offsetEnd - offsetBegin) / 4) - 1;
+
     int i = 0;
 
-    while (unicode > unicode_blocks[i].end && i < max)
+    while (unicode > * (quint16*) (data + offsetBegin + i*4 + 2) && i < max) {
         i++;
+    }
 
     return i;
 }
 
 int KCharSelectData::sectionIndex(int block)
 {
-    int max = sizeof(unicode_sections) / sizeof(UnicodeSection) - 1;
-    int i = 0;
+    if(!openDataFile()) {
+        return 0;
+    }
 
-    while (block != unicode_sections[i].block_index && i < max)
-        i++;
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+28);
+    const quint32 offsetEnd = * (quint32*) (data+32);
 
-    return unicode_sections[i].section_index;
+    int max = ((offsetEnd - offsetBegin) / 4) - 1;
+
+    for(int i = 0; i <= max; i++) {
+        if( * (quint16*) (data + offsetBegin + i*4 + 2) == block) {
+            return * (quint16*) (data + offsetBegin + i*4);
+        }
+    }
+
+    return 0;
 }
 
 QString KCharSelectData::blockName(int index)
 {
-    int max = sizeof(unicode_blocks) / sizeof(UnicodeBlock) - 1;
-    if (index > max)
+    if(!openDataFile()) {
         return QString();
-    return i18n(unicode_blocks[index].block_name);
+    }
+
+    const char* data = dataFile->constData();
+    const quint32 stringBegin = * (quint32*) (data+16);
+    const quint32 stringEnd = * (quint32*) (data+20);
+
+    quint32 i = stringBegin;
+    int currIndex = 0;
+
+    while(i < stringEnd && currIndex < index) {
+        i += strlen(data + i) + 1;
+        currIndex++;
+    }
+
+    return i18n(data + i);
 }
 
 QStringList KCharSelectData::aliases(const QChar& c)
 {
-    const NamesList* namesList = getNamesList(c);
-    int count;
-    ushort unicode = c.unicode();
+    if(!openDataFile()) {
+        return QStringList();
+    }
+    const char* data = dataFile->constData();
+    const int detailIndex = getDetailIndex(c);
+    if(detailIndex == 0) {
+        return QStringList();
+    }
+
+    const quint8 count = * (const quint8 *) (data + detailIndex + 6);
+    quint32 offset = * (const quint32 *) (data + detailIndex + 2);
 
     QStringList aliases;
 
-    if (namesList == 0 || namesList->equals_index == -1)
-        return QStringList();
-
-    for (count = 0;  names_list_equals[namesList->equals_index + count].index == unicode;  count++);
-
-    for (int i = 0;  i < count;  i++)
-        aliases.append(QString::fromUtf8(names_list_equals[namesList->equals_index + i].value));
+    for (int i = 0;  i < count;  i++) {
+        aliases.append(QString::fromUtf8(data + offset));
+        offset += strlen(data + offset) + 1;
+    }
     return aliases;
 }
 
 QStringList KCharSelectData::notes(const QChar& c)
 {
-    const NamesList* namesList = getNamesList(c);
-    int count;
-    ushort unicode = c.unicode();
+    if(!openDataFile()) {
+        return QStringList();
+    }
+    const char* data = dataFile->constData();
+    const int detailIndex = getDetailIndex(c);
+    if(detailIndex == 0) {
+        return QStringList();
+    }
+
+    const quint8 count = * (const quint8 *) (data + detailIndex + 11);
+    quint32 offset = * (const quint32 *) (data + detailIndex + 7);
 
     QStringList notes;
 
-    if (namesList == 0 || namesList->stars_index == -1)
-        return QStringList();
+    for (int i = 0;  i < count;  i++) {
+        notes.append(QString::fromUtf8(data + offset));
+        offset += strlen(data + offset) + 1;
+    }
 
-    count = 0;
-
-    for (count = 0;  names_list_stars[namesList->stars_index + count].index == unicode;  count++);
-    for (int i = 0;  i < count;  i++)
-        notes.append(QString::fromUtf8(names_list_stars[namesList->stars_index + i].value));
     return notes;
 }
 
 QList<QChar> KCharSelectData::seeAlso(const QChar& c)
 {
-    const NamesList* namesList = getNamesList(c);
-    int count;
-    ushort unicode = c.unicode();
+    if(!openDataFile()) {
+        return QList<QChar>();
+    }
+    const char* data = dataFile->constData();
+    const int detailIndex = getDetailIndex(c);
+    if(detailIndex == 0) {
+        return QList<QChar>();
+    }
+
+    const quint8 count = * (const quint8 *) (data + detailIndex + 26);
+    quint32 offset = * (const quint32 *) (data + detailIndex + 22);
 
     QList<QChar> seeAlso;
 
-    if (namesList == 0 || namesList->exes_index == -1)
-        return QList<QChar>();
+    for (int i = 0;  i < count;  i++) {
+        seeAlso.append(* (const quint16 *) (data + offset));
+        offset += 2;
+    }
 
-    count = 0;
-
-    for (count = 0;  names_list_exes[namesList->exes_index + count].index == unicode;  count++);
-    for (int i = 0;  i < count;  i++)
-        seeAlso.append(names_list_exes[namesList->exes_index + i].value);
     return seeAlso;
 }
 
 QStringList KCharSelectData::equivalents(const QChar& c)
 {
-    const NamesList* namesList = getNamesList(c);
-    int count;
-    ushort unicode = c.unicode();
+    if(!openDataFile()) {
+        return QStringList();
+    }
+    const char* data = dataFile->constData();
+    const int detailIndex = getDetailIndex(c);
+    if(detailIndex == 0) {
+        return QStringList();
+    }
+
+    const quint8 count = * (const quint8 *) (data + detailIndex + 21);
+    quint32 offset = * (const quint32 *) (data + detailIndex + 17);
 
     QStringList equivalents;
 
-    if (namesList == 0 || namesList->colons_index == -1)
-        return QStringList();
+    for (int i = 0;  i < count;  i++) {
+        equivalents.append(QString::fromUtf8(data + offset));
+        offset += strlen(data + offset) + 1;
+    }
 
-    count = 0;
-
-    for (count = 0;  names_list_colons[namesList->colons_index + count].index == unicode;  count++);
-    for (int i = 0;  i < count;  i++)
-        equivalents.append(QString::fromUtf8(names_list_colons[namesList->colons_index + i].value));
     return equivalents;
 }
 
 QStringList KCharSelectData::approximateEquivalents(const QChar& c)
 {
-    const NamesList* namesList = getNamesList(c);
-    int count;
-    ushort unicode = c.unicode();
+    if(!openDataFile()) {
+        return QStringList();
+    }
+    const char* data = dataFile->constData();
+    const int detailIndex = getDetailIndex(c);
+    if(detailIndex == 0) {
+        return QStringList();
+    }
+
+    const quint8 count = * (const quint8 *) (data + detailIndex + 16);
+    quint32 offset = * (const quint32 *) (data + detailIndex + 12);
 
     QStringList approxEquivalents;
 
-    if (namesList == 0 || namesList->pounds_index == -1)
-        return QStringList();
+    for (int i = 0;  i < count;  i++) {
+        approxEquivalents.append(QString::fromUtf8(data + offset));
+        offset += strlen(data + offset) + 1;
+    }
 
-    count = 0;
-
-    for (count = 0;  names_list_pounds[namesList->pounds_index + count].index == unicode;  count++);
-    for (int i = 0;  i < count;  i++)
-        approxEquivalents.append(QString::fromUtf8(names_list_pounds[namesList->pounds_index + i].value));
     return approxEquivalents;
 }
 
 QStringList KCharSelectData::unihanInfo(const QChar& c)
 {
+    if(!openDataFile()) {
+        return QStringList();
+    }
+
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+36);
+    const quint32 offsetEnd = dataFile->size();
+
     int min = 0;
     int mid;
-    int max = sizeof(unihan) / sizeof(Unihan) - 1;
-    int unicode = c.unicode();
-
-    if (unicode < unihan[0].index || unicode > unihan[max].index)
-        return QStringList();
-
+    int max = ((offsetEnd - offsetBegin) / 30) - 1;
+    quint16 unicode = c.unicode();
 
     while (max >= min) {
-
         mid = (min + max) / 2;
-        if (unicode > unihan[mid].index)
+        const quint16 midUnicode = * (quint16*) (data + offsetBegin + mid*30);
+        if (unicode > midUnicode)
             min = mid + 1;
-        else if (unicode < unihan[mid].index)
+        else if (unicode < midUnicode)
             max = mid - 1;
         else {
             QStringList res;
-            if (unihan[mid].kDefinition != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kDefinition]));
-            } else {
-                res.append(QString());
-            }
-            if (unihan[mid].kCantonese != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kCantonese]));
-            } else {
-                res.append(QString());
-            }
-            if (unihan[mid].kMandarin != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kMandarin]));
-            } else {
-                res.append(QString());
-            }
-            if (unihan[mid].kTang != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kTang]));
-            } else {
-                res.append(QString());
-            }
-            if (unihan[mid].kKorean != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kKorean]));
-            } else {
-                res.append(QString());
-            }
-            if (unihan[mid].kJapaneseKun != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kJapaneseKun]));
-            } else {
-                res.append(QString());
-            }
-            if (unihan[mid].kJapaneseOn != -1) {
-                res.append(QString::fromUtf8(&unihan_strings[unihan[mid].kJapaneseOn]));
-            } else {
-                res.append(QString());
+            for(int i = 0; i < 7; i++) {
+                quint32 offset = * (quint32*) (data + offsetBegin + mid*30 + 2 + i*4);
+                if(offset != 0) {
+                    res.append(data + offset);
+                } else {
+                    res.append(QString());
+                }
             }
             return res;
         }
@@ -507,9 +584,15 @@ QList<QChar> KCharSelectData::find(QString s, SearchRange range)
     QString longestStr = searchStrings[longestStrIndex];
     searchStrings.removeAt(longestStrIndex);
 
-    int names_size = (sizeof(unicode_names) / sizeof(UnicodeName));
-    for (int i = 0; i < names_size; i++) {
-        QString name = QString::fromUtf8(unicode_names_strings + unicode_names[i].name_offset);
+    const char* data = dataFile->constData();
+    const quint32 offsetBegin = * (quint32*) (data+4);
+    const quint32 offsetEnd = * (quint32*) (data+8);
+
+    int max = ((offsetEnd - offsetBegin) / 6) - 1;
+
+    for (int i = 0; i <= max; i++) {
+        quint32 offset = * (quint32*) (data + offsetBegin + i*6 + 2);
+        QString name = data + offset;
         if (name.contains(longestStr, Qt::CaseInsensitive)) {
             bool valid = true;
             foreach(QString s, searchStrings) {
@@ -519,7 +602,7 @@ QList<QChar> KCharSelectData::find(QString s, SearchRange range)
                 }
             }
             if (valid) {
-                res.append(unicode_names[i].index);
+                res.append(* (quint16*) (data + offsetBegin + i*6));
             }
         }
     }
