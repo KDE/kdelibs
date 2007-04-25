@@ -79,12 +79,14 @@ KConfigDialogManager::~KConfigDialogManager()
 
 void KConfigDialogManager::initMaps()
 {
-  if ( s_propertyMap == 0 ) {
+  if ( s_propertyMap->isEmpty() ) {
     s_propertyMap->insert( "KButtonGroup", "current" );
     s_propertyMap->insert( "KColorButton", "color" );
+    //s_propertyMap->insert( "KUrlRequester", "url" );
+    //s_propertyMap->insert( "KUrlComboRequester", "url" );
   }
 
-  if( s_changedMap == 0 )
+  if( s_changedMap->isEmpty() )
   {
     // QT
     s_changedMap->insert("QButton", SIGNAL(stateChanged(int)));
@@ -130,9 +132,8 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
     s_changedMap->insert( "KTextBrowser", SIGNAL(sourceChanged(const QString &)));
     s_changedMap->insert( "KTextEdit", SIGNAL(textChanged()));
-    s_changedMap->insert( "KUrlRequester",  SIGNAL(returnPressed (const QString& )));
-    s_changedMap->insert( "KUrlRequester",  SIGNAL(urlSelected (const KUrl& )));
     s_changedMap->insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
+    s_changedMap->insert( "KUrlComboRequester",  SIGNAL(textChanged (const QString& )));
     s_changedMap->insert( "KUrlComboBox",  SIGNAL(urlActivated (const KUrl& )));
     s_changedMap->insert( "KIntNumInput", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
