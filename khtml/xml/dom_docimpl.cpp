@@ -2506,7 +2506,7 @@ void DocumentImpl::error(int err, const QString &text)
 void DocumentImpl::defaultEventHandler(EventImpl *evt)
 {
     // if any html event listeners are registered on the window, then dispatch them here
-    if (!m_windowEventListeners.listeners)
+    if (!m_windowEventListeners.listeners || evt->propagationStopped())
         return;
 
     QValueList<RegisteredEventListener>::iterator it;
