@@ -30,16 +30,22 @@
 KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     KUrlButton(parent)
 {
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     setCheckable(true);
-    updateToolTip();
     connect(this, SIGNAL(clicked()),
             this, SLOT(updateToolTip()));
     m_pixmap = KIcon("edit-undo").pixmap(16, 16);
+    updateToolTip();
 }
 
 KUrlToggleButton::~KUrlToggleButton()
 {
+}
+
+QSize KUrlToggleButton::sizeHint() const
+{
+    QSize size = KUrlButton::sizeHint();
+    size.setWidth(m_pixmap.width() + 4);
+    return size;
 }
 
 void KUrlToggleButton::paintEvent(QPaintEvent* event)

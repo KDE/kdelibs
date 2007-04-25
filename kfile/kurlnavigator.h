@@ -239,6 +239,9 @@ protected:
      */
     virtual void mouseReleaseEvent(QMouseEvent* event);
 
+    /** @see QWidget::resizeEvent() */
+    virtual void resizeEvent(QResizeEvent* event);
+
 private:
     Q_PRIVATE_SLOT(d, void slotReturnPressed(const QString& text))
     Q_PRIVATE_SLOT(d, void slotRemoteHostActivated())

@@ -39,6 +39,9 @@ public:
     explicit KUrlToggleButton(KUrlNavigator* parent);
     virtual ~KUrlToggleButton();
 
+    /** @see QWidget::sizeHint() */
+    virtual QSize sizeHint() const;
+
 protected:
     virtual void paintEvent(QPaintEvent* event);
 

@@ -224,6 +224,8 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     // initialize the path box of the traditional view
     m_pathBox = new KUrlComboBox(KUrlComboBox::Directories, true, q);
+    m_pathBox->setMinimumWidth(50);
+    m_pathBox->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 
     KUrlCompletion* kurlCompletion = new KUrlCompletion(KUrlCompletion::DirCompletion);
     m_pathBox->setCompletionObject(kurlCompletion);
@@ -396,6 +398,7 @@ void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 void KUrlNavigator::Private::switchView()
 {
     m_editable = !m_editable;
+    m_toggleEditableMode->setChecked(m_editable);
     updateContent();
     if (q->isUrlEditable()) {
         m_pathBox->setFocus();
@@ -432,7 +435,7 @@ void KUrlNavigator::Private::updateContent()
         delete m_host; m_host = 0;
         m_dropDownButton->hide();
         deleteButtons();
-        m_toggleEditableMode->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+        m_toggleEditableMode->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
 
         q->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
         m_pathBox->show();
@@ -447,7 +450,7 @@ void KUrlNavigator::Private::updateContent()
 
         QString placePath;
         if (!placeUrl.isValid()) {
-            // No place is a part of the current Url.
+            // No place is a part of the current URL.
             // The following code tries to guess the place
             // path. E. g. "fish://root@192.168.0.2/var/lib" writes
             // "fish://root@192.168.0.2" to 'placePath', which leads to the
@@ -597,6 +600,10 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
 
 void KUrlNavigator::Private::updateButtonVisibility()
 {
+    if (m_editable) {
+        return;
+    }
+
     int hiddenButtonsCount = 0;
 
     int availableWidth = q->width() - m_placesSelector->width();
@@ -617,24 +624,11 @@ void KUrlNavigator::Private::updateButtonVisibility()
         }
     }
 
-    if (hiddenButtonsCount > 0) {
-        if (hiddenButtonsCount == 1) {
-            // prevent one hidden button and try to increase the
-            // number of hidden buttons
-            hiddenButtonsCount = 2;
-        }
-
-        const int buttonsCount = m_navButtons.count();
-        if (buttonsCount - hiddenButtonsCount < 1) {
-            // assure that at least one button is visible
-            hiddenButtonsCount = buttonsCount - 1;
-            if (hiddenButtonsCount == 1) {
-                // Now only one button is hidden, which means that
-                // only two buttons are available. In this case show
-                // both buttons.
-                hiddenButtonsCount = 0;
-            }
-        }
+    const int buttonsCount = m_navButtons.count();
+    Q_ASSERT(hiddenButtonsCount <= buttonsCount);
+    if (hiddenButtonsCount == buttonsCount) {
+        // assure that at least one button is visible
+        hiddenButtonsCount = buttonsCount - 1;
     }
 
     int index = 0;
@@ -893,6 +887,12 @@ void KUrlNavigator::mouseReleaseEvent(QMouseEvent* event)
         }
     }
     QWidget::mouseReleaseEvent(event);
+}
+
+void KUrlNavigator::resizeEvent(QResizeEvent* event)
+{
+    d->updateButtonVisibility();
+    QWidget::resizeEvent(event);
 }
 
 bool KUrlNavigator::isActive() const
