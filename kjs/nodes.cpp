@@ -3044,7 +3044,6 @@ Completion PackageNameNode::loadSymbol(ExecState* exec, bool wildcard)
 	// if a .* is specified the last identifier should
 	// denote another package name
 	PackageObject* pobj = resolvePackage(exec, baseObject, basePackage);
-	fprintf(stderr, "wildcard pbj: %p\n", pobj);
 	if (!pobj)
 	    return Completion(Normal);
 	basePackage = pobj->package();
