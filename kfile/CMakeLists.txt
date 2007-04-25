@@ -32,6 +32,7 @@ set(kfile_LIB_SRCS
   kfileplaceeditdialog.cpp
   kprotocolcombo.cpp
   kurlbutton.cpp
+  kurldropdownbutton.cpp
   kurlnavigatorbutton.cpp
   kurlnavigator.cpp
   kurltogglebutton.cpp

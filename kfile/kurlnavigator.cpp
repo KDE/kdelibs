@@ -23,12 +23,14 @@
 
 #include "kfileplacesselector_p.h"
 #include "kprotocolcombo_p.h"
+#include "kurldropdownbutton_p.h"
 #include "kurlnavigatorbutton_p.h"
 #include "kurltogglebutton_p.h"
 
 #include <kfileitem.h>
 #include <kicon.h>
 #include <klocale.h>
+#include <kmenu.h>
 #include <kprotocolinfo.h>
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
@@ -125,6 +127,7 @@ public:
     void slotReturnPressed(const QString&);
     void slotRemoteHostActivated();
     void slotProtocolChanged(const QString&);
+    void openPathSelectorMenu();
 
     /**
      * Appends the widget at the end of the URL navigator. It is assured
@@ -161,6 +164,13 @@ public:
     void updateButtons(const QString& path, int startIndex);
 
     /**
+     * Updates the visibility state of all buttons describing the URL. If the
+     * width of the URL navigator is too small, the buttons representing the upper
+     * paths of the URL will be hidden and moved to a drop down menu.
+     */
+    void updateButtonVisibility();
+
+    /**
      * Deletes all URL navigator buttons. m_navButtons is
      * empty after this operation.
      */
@@ -178,6 +188,7 @@ public:
     KProtocolCombo* m_protocols;
     QLabel* m_protocolSeparator;
     QLineEdit* m_host;
+    KUrlDropDownButton* m_dropDownButton;
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
     KUrlButton* m_toggleEditableMode;
     QString m_homeUrl;
@@ -190,9 +201,12 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_active(true),
     m_historyIndex(0),
     m_layout(new QHBoxLayout),
+    m_placesSelector(0),
+    m_pathBox(0),
     m_protocols(0),
     m_protocolSeparator(0),
     m_host(0),
+    m_dropDownButton(0),
     m_toggleEditableMode(0),
     q(q)
 {
@@ -203,6 +217,10 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_placesSelector = new KFilePlacesSelector(q, placesModel);
     connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
             q, SLOT(setUrl(const KUrl&)));
+
+    m_dropDownButton = new KUrlDropDownButton(q);
+    connect(m_dropDownButton, SIGNAL(clicked()),
+            q, SLOT(openPathSelectorMenu()));
 
     // initialize the path box of the traditional view
     m_pathBox = new KUrlComboBox(KUrlComboBox::Directories, true, q);
@@ -221,6 +239,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
             q, SLOT(switchView()));
 
     m_layout->addWidget(m_placesSelector);
+    m_layout->addWidget(m_dropDownButton);
     m_layout->addWidget(m_pathBox);
     m_layout->addWidget(m_toggleEditableMode);
 }
@@ -332,6 +351,33 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     }
 }
 
+void KUrlNavigator::Private::openPathSelectorMenu()
+{
+    KMenu* popup = new KMenu(q);
+
+    QString spacer;
+    QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.begin();
+    const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
+    while (it != itEnd) {
+        const QString text = spacer + (*it)->text();
+        spacer.append("  ");
+
+        QAction* action = new QAction(text, popup);
+        action->setData(QVariant((*it)->index()));
+        popup->addAction(action);
+
+        ++it;
+    }
+
+    const QAction* activatedAction = popup->exec(QCursor::pos());
+    if (activatedAction != 0) {
+        const int index = activatedAction->data().toInt();
+        q->setUrl(q->url(index));
+    }
+
+    popup->deleteLater();
+}
+
 #if 0
 void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 {
@@ -384,6 +430,7 @@ void KUrlNavigator::Private::updateContent()
         delete m_protocols; m_protocols = 0;
         delete m_protocolSeparator; m_protocolSeparator = 0;
         delete m_host; m_host = 0;
+        m_dropDownButton->hide();
         deleteButtons();
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
 
@@ -528,7 +575,6 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             }
 
             if (createButton) {
-                button->show();
                 m_navButtons.append(button);
             } else {
                 ++it;
@@ -545,6 +591,62 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
         ++it;
     }
     m_navButtons.erase(itBegin, m_navButtons.end());
+
+    updateButtonVisibility();
+}
+
+void KUrlNavigator::Private::updateButtonVisibility()
+{
+    int hiddenButtonsCount = 0;
+
+    int availableWidth = q->width() - m_placesSelector->width();
+
+    QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.end();
+    const QLinkedList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.begin();
+    while (it != itBegin) {
+        --it;
+        KUrlNavigatorButton* button = (*it);
+        availableWidth -= button->preferredWidth();
+
+        if (availableWidth <= 0) {
+            button->hide();
+            ++hiddenButtonsCount;
+        }
+        else {
+            button->show();
+        }
+    }
+
+    if (hiddenButtonsCount > 0) {
+        if (hiddenButtonsCount == 1) {
+            // prevent one hidden button and try to increase the
+            // number of hidden buttons
+            hiddenButtonsCount = 2;
+        }
+
+        const int buttonsCount = m_navButtons.count();
+        if (buttonsCount - hiddenButtonsCount < 1) {
+            // assure that at least one button is visible
+            hiddenButtonsCount = buttonsCount - 1;
+            if (hiddenButtonsCount == 1) {
+                // Now only one button is hidden, which means that
+                // only two buttons are available. In this case show
+                // both buttons.
+                hiddenButtonsCount = 0;
+            }
+        }
+    }
+
+    int index = 0;
+    it = m_navButtons.begin();
+    const QLinkedList<KUrlNavigatorButton*>::const_iterator itEnd = m_navButtons.end();
+    while (it != itEnd) {
+        (*it)->setVisible(index >= hiddenButtonsCount);
+        ++it;
+        ++index;
+    }
+
+    m_dropDownButton->setVisible(hiddenButtonsCount != 0);
 }
 
 void KUrlNavigator::Private::deleteButtons()

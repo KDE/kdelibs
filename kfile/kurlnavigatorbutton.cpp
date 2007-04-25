@@ -36,11 +36,12 @@
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),
     m_index(-1),
+    m_preferredWidth(0),
     m_popupDelay(0),
     m_listJob(0)
 {
     setAcceptDrops(true);
-    setMinimumWidth(arrowWidth());
+    setMinimumWidth(50);
     setIndex(index);
     connect(this, SIGNAL(clicked()), this, SLOT(updateNavigatorUrl()));
 
@@ -63,9 +64,10 @@ void KUrlNavigatorButton::setIndex(int index)
     }
 
     QString path(urlNavigator()->url().pathOrUrl());
-    setText(path.section('/', index, index));
+    const QString buttonText = path.section('/', index, index);
+    setText(buttonText);
 
-    // Check whether the button indicates the full path of the Url. If
+    // Check whether the button indicates the full path of the URL. If
     // this is the case, the button is marked as 'active'.
     ++index;
     QFont adjustedFont(font());
@@ -78,6 +80,15 @@ void KUrlNavigatorButton::setIndex(int index)
     }
 
     setFont(adjustedFont);
+
+    QFontMetrics fontMetrics(adjustedFont);
+    int textWidth = fontMetrics.width(buttonText);
+    if (textWidth > 100) {
+        // don't let an overlong path name waste all the URL navigator space
+        textWidth = 100;
+    }
+    m_preferredWidth = textWidth + arrowWidth();
+
     update();
 }
 
@@ -94,41 +105,26 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     const int buttonWidth  = width();
     const int buttonHeight = height();
 
-    QColor backgroundColor;
-    QColor foregroundColor;
+    QColor bgColor = backgroundColor();
+    QColor fgColor = foregroundColor();
+
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
                                isDisplayHintEnabled(DraggedHint) ||
                                isDisplayHintEnabled(PopupActiveHint);
-    if (isHighlighted) {
-        backgroundColor = KGlobalSettings::highlightColor();
-        foregroundColor = KGlobalSettings::highlightedTextColor();
-    } else {
-        backgroundColor = palette().brush(QPalette::Background).color();
-        foregroundColor = KGlobalSettings::buttonTextColor();
-    }
-
-    // dimm the colors if the parent view does not have the focus
     const bool isActive = urlNavigator()->isActive();
-    if (!isActive) {
-        QColor dimmColor(palette().brush(QPalette::Background).color());
-        foregroundColor = mixColors(foregroundColor, dimmColor);
-        if (isHighlighted) {
-            backgroundColor = mixColors(backgroundColor, dimmColor);
-        }
-    }
 
     // draw button background
     painter.setPen(Qt::NoPen);
-    painter.setBrush(backgroundColor);
+    painter.setBrush(bgColor);
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
     int textWidth = buttonWidth;
     if (isDisplayHintEnabled(ActivatedHint) && isActive || isHighlighted) {
-        painter.setPen(foregroundColor);
+        painter.setPen(fgColor);
     } else {
         // dimm the foreground color by mixing it with the background
-        foregroundColor = mixColors(foregroundColor, backgroundColor);
-        painter.setPen(foregroundColor);
+        fgColor = mixColors(fgColor, bgColor);
+        painter.setPen(fgColor);
     }
 
     if (!isDisplayHintEnabled(ActivatedHint)) {
@@ -152,8 +148,8 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     const QRect textRect(0, 0, textWidth, buttonHeight);
     if (clipped) {
         QLinearGradient gradient(textRect.topLeft(), textRect.topRight());
-        gradient.setColorAt(0.8, foregroundColor);
-        gradient.setColorAt(1.0, backgroundColor);
+        gradient.setColorAt(0.8, fgColor);
+        gradient.setColorAt(1.0, bgColor);
 
         QPen pen;
         pen.setBrush(QBrush(gradient));

@@ -42,8 +42,8 @@ class QMouseEvent;
  *                 of the URL. By clicking on a button the path will get
  *                 activated. This mode also supports drag and drop of items.
  *
- * The mode can be changed by a toggle button which is part of the
- * URL navigator. It is recommended that the application remembers the setting
+ * The mode can be changed by clicking on the empty area of the URL navigator.
+ * It is recommended that the application remembers the setting
  * of the mode or allows the user to configure the default mode
  * (see KUrlNavigator::setUrlEditable()).
  *
@@ -245,6 +245,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())
     Q_PRIVATE_SLOT(d, void dropUrls(const KUrl::List& list, const KUrl& destination))
+    Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     //Q_PRIVATE_SLOT(d, void slotRedirection(const KUrl&, const KUrl&))
 
 private:

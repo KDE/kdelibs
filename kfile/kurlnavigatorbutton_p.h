@@ -57,6 +57,11 @@ public:
         return m_index;
     }
 
+    int preferredWidth() const
+    {
+        return m_preferredWidth;
+    }
+
     /** @see QWidget::sizeHint() */
     virtual QSize sizeHint() const;
 
@@ -90,6 +95,7 @@ private:
 
 private:
     int m_index;
+    int m_preferredWidth;
     QTimer* m_popupDelay;
     KIO::Job* m_listJob;
     QStringList m_subdirs;

@@ -91,7 +91,6 @@ private Q_SLOTS:
 
 private:
     int m_selectedItem;
-    KUrlNavigator* m_urlNavigator;
     KMenu* m_placesMenu;
     KFilePlacesModel* m_placesModel;
 };

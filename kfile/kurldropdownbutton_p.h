@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2006 by Peter Penz (peter.penz@gmx.at)                  *
- *   Copyright (C) 2006 by Aaron J. Seigo (<aseigo@kde.org>)               *
+ *   Copyright (C) 2006 by Peter Penz (<peter.penz@gmx.at>)                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,61 +17,30 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA          *
  ***************************************************************************/
 
-#ifndef KURLBUTTON_P_H
-#define KURLBUTTON_P_H
+#ifndef KURLDROPDOWNBUTTON_P_H
+#define KURLDROPDOWNBUTTON_P_H
 
-#include <QColor>
-#include <QPushButton>
+#include "kurlbutton_p.h"
 
-class KUrl;
-class QEvent;
 class KUrlNavigator;
 
 /**
- * @brief Base class for buttons of the URL navigator.
+ * @brief Button of the URL navigator which offers a drop down menu
+ *        of hidden paths.
  *
- * Each button of the URL navigator contains an URL, which
- * is set as soon as the button has been clicked.
+ * The button will only be shown if the width of the URL navigator is
+ * too small to show the whole path.
  */
-class KUrlButton : public QPushButton
+class KUrlDropDownButton : public KUrlButton
 {
     Q_OBJECT
 
 public:
-    explicit KUrlButton(KUrlNavigator* parent);
-    virtual ~KUrlButton();
-
-    KUrlNavigator* urlNavigator() const
-    {
-        return m_urlNavigator;
-    }
+    explicit KUrlDropDownButton(KUrlNavigator* parent);
+    virtual ~KUrlDropDownButton();
 
 protected:
-    enum DisplayHint {
-        ActivatedHint = 1,
-        EnteredHint = 2,
-        DraggedHint = 4,
-        PopupActiveHint = 8
-    };
-
-    void setDisplayHintEnabled(DisplayHint hint, bool enable);
-    bool isDisplayHintEnabled(DisplayHint hint) const;
-
-    virtual void enterEvent(QEvent* event);
-    virtual void leaveEvent(QEvent* event);
-
-    /** Returns the foreground color by respecting the current display hint. */
-    QColor foregroundColor() const;
-
-    /** Returns the background color by respecting the current display hint. */
-    QColor backgroundColor() const;
-
-    /** Mixes the colors \a c1 and \a c2 to 50 %. */
-    QColor mixColors(const QColor& c1, const QColor& c2) const;
-
-private:
-    int m_displayHint;
-    KUrlNavigator* m_urlNavigator;
+    virtual void paintEvent(QPaintEvent* event);
 };
 
 #endif

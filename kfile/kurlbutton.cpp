@@ -22,6 +22,8 @@
 
 #include "kurlnavigator.h"
 
+#include <kglobalsettings.h>
+
 KUrlButton::KUrlButton(KUrlNavigator* parent) :
     QPushButton(parent),
     m_displayHint(0),
@@ -66,6 +68,39 @@ void KUrlButton::leaveEvent(QEvent* event)
     QPushButton::leaveEvent(event);
     setDisplayHintEnabled(EnteredHint, false);
     update();
+}
+
+QColor KUrlButton::foregroundColor() const
+{
+    const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
+                               isDisplayHintEnabled(DraggedHint) ||
+                               isDisplayHintEnabled(PopupActiveHint);
+
+    QColor foregroundColor = isHighlighted ? KGlobalSettings::highlightedTextColor() :
+                                             KGlobalSettings::buttonTextColor();
+
+    if (!urlNavigator()->isActive()) {
+        QColor dimmColor(palette().brush(QPalette::Background).color());
+        foregroundColor = mixColors(foregroundColor, dimmColor);
+    }
+
+    return foregroundColor;
+}
+
+QColor KUrlButton::backgroundColor() const
+{
+    const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
+                               isDisplayHintEnabled(DraggedHint) ||
+                               isDisplayHintEnabled(PopupActiveHint);
+
+    QColor backgroundColor = isHighlighted ? KGlobalSettings::highlightColor() :
+                                             palette().brush(QPalette::Background).color();
+    if (!urlNavigator()->isActive() && isHighlighted) {
+        QColor dimmColor(palette().brush(QPalette::Background).color());
+        backgroundColor = mixColors(backgroundColor, dimmColor);
+    }
+
+    return backgroundColor;
 }
 
 QColor KUrlButton::mixColors(const QColor& c1,

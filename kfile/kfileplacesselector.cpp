@@ -22,8 +22,6 @@
 
 #include "kurlnavigator.h"
 
-#include <assert.h>
-
 #include <kiconloader.h>
 #include <kglobalsettings.h>
 #include <kfileplacesmodel.h>
@@ -37,7 +35,6 @@
 KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel* placesModel) :
     KUrlButton(parent),
     m_selectedItem(-1),
-    m_urlNavigator(parent),
     m_placesModel(placesModel)
 {
     setFocusPolicy(Qt::NoFocus);
@@ -65,7 +62,7 @@ void KFilePlacesSelector::updateMenu()
     m_placesMenu->clear();
 
     const int rowCount = m_placesModel->rowCount();
-    for (int i=0; i<rowCount; ++i) {
+    for (int i = 0; i < rowCount; ++i) {
         QModelIndex index = m_placesModel->index(i, 0);
         QAction* action = new QAction(m_placesModel->icon(index),
                                       m_placesModel->text(index),
@@ -132,38 +129,21 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
     const int buttonWidth  = width();
     const int buttonHeight = height();
 
-    QColor backgroundColor;
-    QColor foregroundColor;
+    QColor bgColor = backgroundColor();
+    QColor fgColor = foregroundColor();
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
                                isDisplayHintEnabled(DraggedHint);
-    if (isHighlighted) {
-        backgroundColor = KGlobalSettings::highlightColor();
-        foregroundColor = KGlobalSettings::highlightedTextColor();
-    }
-    else {
-        backgroundColor = palette().brush(QPalette::Background).color();
-        foregroundColor = KGlobalSettings::buttonTextColor();
-    }
-
-    // dimm the colors if the parent view does not have the focus
-    const bool isActive = m_urlNavigator->isActive();
-    if (!isActive) {
-        QColor dimmColor(palette().brush(QPalette::Background).color());
-        foregroundColor = mixColors(foregroundColor, dimmColor);
-        if (isHighlighted) {
-            backgroundColor = mixColors(backgroundColor, dimmColor);
-        }
-    }
+    const bool isActive = urlNavigator()->isActive();
 
     if (!(isDisplayHintEnabled(ActivatedHint) && isActive) && !isHighlighted) {
         // dimm the foreground color by mixing it with the background
-        foregroundColor = mixColors(foregroundColor, backgroundColor);
-        painter.setPen(foregroundColor);
+        fgColor = mixColors(fgColor, bgColor);
+        painter.setPen(fgColor);
     }
 
     // draw button backround
     painter.setPen(Qt::NoPen);
-    painter.setBrush(backgroundColor);
+    painter.setBrush(bgColor);
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
     // draw icon
@@ -175,7 +155,7 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
 
 void KFilePlacesSelector::activatePlace(QAction* action)
 {
-    assert(action != 0);
+    Q_ASSERT(action != 0);
     m_selectedItem = action->data().toInt();
 
     QModelIndex index = m_placesModel->index(m_selectedItem, 0);
