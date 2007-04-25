@@ -366,12 +366,12 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         {
             QMap<QString,QVariant> map = value.toMap();
             QMap<QString,QVariant>::Iterator idx = map.begin();
-            KJS::JSObject *array = exec->lexicalInterpreter()->builtinArray()->construct( exec, KJS::List() );
+            KJS::JSObject *obj = exec->lexicalInterpreter()->builtinObject()->construct( exec, KJS::List() );
             for ( ; idx != map.end(); ++idx )
             {
-                array->put(exec, KJS::Identifier( toUString(idx.key()) ), convertToValue( exec,  idx.value() ) );
+                obj->put(exec, KJS::Identifier( toUString(idx.key()) ), convertToValue( exec,  idx.value() ) );
             }
-            returnValue =  array;
+            returnValue =  obj;
             break;
         }
         case QVariant::Date:

@@ -58,10 +58,28 @@ KJS::JSValue *METHODNAME( KJS::ExecState *exec, KJS::JSObject *self, const KJS::
 }
 
 #define KJSO_VALUE_SIMPLE_BINDING_CTOR( NAME, JSNAME, TYPE, BASENAME )        \
+    NAME::NAME(KJS::ExecState *exec, const char* typeName ) \
+      : BASENAME( exec, typeName )                    \
+    { \
+      StaticBinding::publish( exec, this, NAME::methods() ); \
+    } \
     NAME::NAME(KJS::ExecState *exec, const TYPE & value) \
       : BASENAME( exec, #JSNAME , value )                    \
     { \
       StaticBinding::publish( exec, this, NAME::methods() ); \
+    }
+
+#define KJSO_VALUE_DERIVED_BINDING_CTOR( NAME, JSNAME, TYPE, BASENAME )  \
+    NAME::NAME(KJS::ExecState *exec, const char* typeName ) \
+      : BASENAME( exec, typeName )                    \
+    { \
+      StaticBinding::publish( exec, this, NAME::methods() ); \
+    } \
+    NAME::NAME(KJS::ExecState *exec, const TYPE & value)                \
+    : BASENAME( exec, #JSNAME )                                         \
+    {                                                                   \
+        setValue(value);                                                \
+        StaticBinding::publish( exec, this, NAME::methods() );          \
     }
 
 
@@ -78,7 +96,7 @@ namespace KJSEmbed
     };
 
    /**
-    * QVariant bindinging implementation.
+    * Value binding implementation.
     */
     class ValueBinding : public ProxyBinding
     {
@@ -91,7 +109,8 @@ namespace KJSEmbed
                 m_value = new Value<T>(val);
                 StaticBinding::publish( exec, this, ValueFactory::methods() );
             }
-            virtual ~ValueBinding() {delete m_value;}
+            ValueBinding( KJS::ExecState *exec, const char *typeName);
+            virtual ~ValueBinding();
 
             KJS::UString toString(KJS::ExecState *exec) const;
             KJS::UString className() const { return m_name; }

@@ -19,11 +19,15 @@
 */
 #include <QMetaMethod>
 #include <QMetaType>
+#include <QtDebug>
 
 #include <kjs/interpreter.h>
 
 #include "slotproxy.h"
 #include "variant_binding.h"
+#include "qobject_binding.h"
+
+//#define DEBUG_SLOTPROXY 1
 
 using namespace KJSEmbed;
 using namespace KJS;
@@ -82,6 +86,9 @@ void *SlotProxy::qt_metacast(const char *_clname)
 
 KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 {
+#ifdef DEBUG_SLOTPROXY
+    qDebug() << "SlotProxy::callMethod(" << methodName << ",_a)";
+#endif
     KJS::ExecState *exec = m_interpreter->globalExec();
     // Crash
     // KJS::Interpreter::globalExec()->context().thisValue()
@@ -118,21 +125,109 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
     QMetaMethod method = metaObject()->method(offset);
     QList<QByteArray> params = method.parameterTypes();
     int idx = 1;
+#ifdef DEBUG_SLOTPROXY
+    qDebug() << "SlotProxy::convertArguments(): m_signature" << m_signature << " offset=" << offset << " params=" << params;
+#endif
     foreach( QByteArray param, params )
     {
-        // int type = QMetaType::type( param.constData() );
-        //qDebug("Got a %d - %s", type, param.data());
-
+#ifdef DEBUG_SLOTPROXY
+        int type = QMetaType::type( param.constData() );
+        qDebug("\tGot a %d - %s - _a[%d] = %p", type, param.data(), idx, _a[idx]);
+        qDebug("\t QMetaType::type()=%d", QMetaType::type(QByteArray("Pinya::") + param.constData()));
+#endif
         int tp = QVariant::nameToType(param.constData());
-        //qDebug("Try to convert a %d", tp);
-        if(tp != QVariant::Invalid)
+        switch(tp)
         {
+        case QVariant::Int:
+            args.append(KJS::jsNumber(*(int*)_a[idx]));
+            break;
+        case QVariant::UInt:
+            args.append(KJS::jsNumber(*(uint*)_a[idx]));
+            break;
+        case QVariant::LongLong:
+            args.append(KJS::jsNumber(*(qlonglong*)_a[idx]));
+            break;
+        case QVariant::ULongLong:
+            args.append(KJS::jsNumber(*(qulonglong*)_a[idx]));
+            break;
+        case QVariant::Double:
+            args.append(KJS::jsNumber(*(double*)_a[idx]));
+            break;
+        case QVariant::Bool:
+            args.append(KJS::jsBoolean(*(bool*)_a[idx]));
+            break;
+        case QVariant::String:
+            args.append(KJS::jsString((*reinterpret_cast<QString(*)>(_a[2]))));
+            break;
+        case QVariant::UserType:
+        {
+            KJS::JSObject* returnValue;
+            KJS::JSObject* parent = exec->dynamicInterpreter()->globalObject();
+            QByteArray typeName = param.constData();
+            bool isPtr = typeName.contains("*");
+            if (isPtr)
+                typeName.replace("*", "");
+#ifdef DEBUG_SLOTPROXY
+            qDebug() << "\tQVariant::UserType: typeName=" << typeName << " param=" << param.constData() << " isPtr" << isPtr;
+#endif
+            if ( parent->hasProperty( exec, KJS::Identifier(toUString(typeName))) )
+            {
+                QObject* qObj;
+                if (isPtr &&
+                    ((qObj = *reinterpret_cast<QObject**>(_a[idx])) != 0))
+                {
+#ifdef DEBUG_SLOTPROXY
+                    qDebug() << "qObj=" << qObj;
+#endif
+                    Pointer<QObject> pov(*reinterpret_cast<QObject*(*)>(_a[idx]));
+                    returnValue = StaticConstructor::bind(exec, typeName, pov);
+                    if ( returnValue )
+                    {
+                        args.append(returnValue);
+                        break;
+                    }
+                    else
+                    {
+#ifdef DEBUG_SLOTPROXY
+                        qDebug("\t\tNo binding retrieved");
+#endif
+                        returnValue = StaticConstructor::construct( exec, parent, toUString(typeName) );
+                        if( returnValue )
+                        {
+                            if(QObjectBinding *objImp = KJSEmbed::extractBindingImp<QObjectBinding>(exec, returnValue))
+                            {
+#ifdef DEBUG_SLOTPROXY
+                                qDebug() << "\t\t\tFound QObjectBinding";
+#endif
+                                
+                                objImp->setOwnership( KJSEmbed::ObjectBinding::JSOwned );
+                                objImp->setObject(qObj);
+                                if (qObj->parent() != 0)
+                                    objImp->setOwnership(KJSEmbed::ObjectBinding::QObjOwned);
+                                else
+                                    objImp->setOwnership(KJSEmbed::ObjectBinding::CPPOwned);
+                                args.append(returnValue);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+#ifdef DEBUG_SLOTPROXY
+                qDebug("\t\tNo binding registered");
+#endif
+            }
+        }
+        case QVariant::StringList:
+        case QVariant::List:
+        case QVariant::Map:
+        default:
+            //qDebug("\t\tconverting to variant");
             QVariant variant(tp, _a[idx]);
             args.append( KJSEmbed::convertToValue(exec,variant) );
-        }
-        else
-        {
-            qDebug("not supported yet");
+            break;
         }
         ++idx;
     }
@@ -142,6 +237,9 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 
 int SlotProxy::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
+#if defined(DEBUG_SLOTPROXY) && (DEBUG_SLOTPROXY > 1)
+    qDebug("SlotProxy::qt_metacall(_c=%d, _id=%d, _a=%p _a[0]=%p _a[1]=%p", _c, _id, _a, _a[0], _a[1]);
+#endif
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
             return _id;

@@ -48,6 +48,18 @@ const Method *ValueFactory::methods()
     return ValueMethods;
 }
 
+ValueBinding::ValueBinding( KJS::ExecState *exec, const char *typeName)
+    : ProxyBinding( exec ),
+      m_name(typeName)
+{
+    StaticBinding::publish( exec, this, ValueFactory::methods() );
+}
+
+ValueBinding::~ValueBinding() 
+{
+    delete m_value;
+}
+
 KJS::UString ValueBinding::toString(KJS::ExecState *exec) const
 {
     Q_UNUSED(exec);

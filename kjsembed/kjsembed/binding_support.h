@@ -21,7 +21,6 @@
 #ifndef BINDING_SUPPORT_H
 #define BINDING_SUPPORT_H
 
-
 #include <QDateTime>
 #include <QStringList>
 
@@ -87,6 +86,7 @@ class KJSEMBED_EXPORT NAME : public BASENAME \
 { \
     public: \
     NAME(KJS::ExecState *exec, const TYPE & val ); \
+    NAME(KJS::ExecState *exec, const char *typeName ); \
     static const KJSEmbed::Method p_methods[]; \
     static const KJSEmbed::Method p_statics[]; \
     static const KJSEmbed::Enumerator p_enums[]; \
