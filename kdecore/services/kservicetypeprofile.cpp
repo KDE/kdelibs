@@ -74,7 +74,7 @@ static KMimeTypeProfileEntry* findMimeTypeProfile( const QString& mimeType, cons
 
 static void initStatic()
 {
-    if ( s_serviceTypeProfiles && s_mimeTypeProfiles )
+    if ( s_serviceTypeProfiles->count() != 0 && s_mimeTypeProfiles ->count() != 0)
         return;
 
     // Make sure that a KServiceTypeFactory gets created.
@@ -149,8 +149,8 @@ static void initStatic()
 //static
 void KServiceTypeProfile::clearCache()
 {
-    s_serviceTypeProfiles.reinit();
-    s_mimeTypeProfiles.reinit();
+    s_serviceTypeProfiles->clear();
+    s_mimeTypeProfiles->clear();
 }
 
 void KMimeTypeProfileEntry::addService( const QString& _service,
