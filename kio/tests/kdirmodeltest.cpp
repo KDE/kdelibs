@@ -54,7 +54,7 @@ void KDirModelTest::initTestCase()
     createTestFile(path+"toplevelfile_2");
     createTestFile(path+"toplevelfile_3");
     createTestDirectory(path+"subdir");
-    createTestDirectory(path+"subdir/subsubdir");
+    createTestDirectory(path+"subdir/subsubdir", NoSymlink);
 
     fillModel( false );
 }
@@ -94,11 +94,11 @@ void KDirModelTest::fillModel( bool reload )
     // Index of a file inside a directory (subdir/testfile)
     QModelIndex subdirIndex;
     m_fileInDirIndex = QModelIndex();
-    for (int row = 0; row < 2; ++row) {
+    for (int row = 0; row < 3; ++row) {
         QModelIndex idx = m_dirModel.index(row, 0, m_dirIndex);
         if (m_dirModel.itemForIndex(idx)->isDir())
             subdirIndex = idx;
-        else
+        else if (m_dirModel.itemForIndex(idx)->name() == "testfile")
             m_fileInDirIndex = idx;
     }
 
@@ -125,7 +125,7 @@ void KDirModelTest::testRowCount()
 {
     const int topLevelRowCount = m_dirModel.rowCount();
     QCOMPARE(topLevelRowCount, 4);
-    QCOMPARE(m_dirModel.rowCount(m_dirIndex), 2);
+    QCOMPARE(m_dirModel.rowCount(m_dirIndex), 3);
 }
 
 void KDirModelTest::testIndex()
@@ -256,7 +256,7 @@ void KDirModelTest::testData()
     QCOMPARE(display2, QString("toplevelfile_2"));
 
     // Subdir: check child count
-    QCOMPARE(m_dirModel.data(m_dirIndex, KDirModel::ChildCountRole).toInt(), 2);
+    QCOMPARE(m_dirModel.data(m_dirIndex, KDirModel::ChildCountRole).toInt(), 3);
 
     // Subsubdir: check child count
     QCOMPARE(m_dirModel.data(m_fileInSubdirIndex.parent(), KDirModel::ChildCountRole).toInt(), 1);

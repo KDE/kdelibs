@@ -66,7 +66,8 @@ static void createTestSymlink( const QString& path )
     QVERIFY( QFileInfo( path ).isSymLink() );
 }
 
-static void createTestDirectory( const QString& path )
+enum CreateTestDirectoryOptions { DefaultOptions = 0, NoSymlink = 1 };
+static void createTestDirectory( const QString& path, CreateTestDirectoryOptions opt = DefaultOptions )
 {
     QDir dir;
     bool ok = dir.mkdir( path );
@@ -74,8 +75,11 @@ static void createTestDirectory( const QString& path )
         kFatal() << "couldn't create " << path << endl;
     createTestFile( path + "/testfile" );
 #ifndef Q_WS_WIN
-    createTestSymlink( path + "/testlink" );
-    QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
+    if ( (opt & NoSymlink) == 0 ) {
+        createTestSymlink( path + "/testlink" );
+        QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
+    }
 #endif
     setTimeStamp( path, s_referenceTimeStamp );
 }
+
