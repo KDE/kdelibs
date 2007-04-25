@@ -836,11 +836,12 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
     if ( !typeChecked )
     {
         // don't attempt incremental loading if we have all the data already
-        assert(!eof);
-
-        formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
-        if ( formatType && strcmp( formatType, "PNG" ) == 0 )
-            formatType = 0; // Some png files contain multiple images, we want to show only the first one
+        if (!eof)
+        {
+            formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
+            if ( formatType && strcmp( formatType, "PNG" ) == 0 )
+                formatType = 0; // Some png files contain multiple images, we want to show only the first one
+        }
 
         typeChecked = true;
 
