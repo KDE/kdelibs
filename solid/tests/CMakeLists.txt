@@ -34,8 +34,6 @@ kde4_add_executable(solidnettestdbusservice NOGUI RUN_UNINSTALLED ${solidnettest
 
 target_link_libraries(solidnettestdbusservice ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTDBUS_LIBRARY})
 
-add_test(solidnettestdbusservice ${EXECUTABLE_OUTPUT_PATH}/solidnettestdbusservice)
-
 ########### install files ###############
 
 endif(KDE4_BUILD_TESTS)
