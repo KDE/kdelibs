@@ -277,6 +277,7 @@ public:
     LineEditWidget(DOM::HTMLInputElementImpl* input,
                    KHTMLView* view, QWidget* parent);
     ~LineEditWidget();
+    void setFocus();
     void highLightWord( unsigned int length, unsigned int pos );
 
 protected:

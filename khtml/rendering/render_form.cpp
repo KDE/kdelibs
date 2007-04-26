@@ -383,6 +383,12 @@ void LineEditWidget::spellCheckerMisspelling( const QString &_text, const QStrin
     highLightWord( _text.length(),pos );
 }
 
+void LineEditWidget::setFocus()
+{
+    KLineEdit::setFocus();
+    end( false );
+}
+
 void LineEditWidget::highLightWord( unsigned int length, unsigned int pos )
 {
     setSelection ( pos, length );
