@@ -1658,8 +1658,9 @@ QString KDateTime::toString(TimeFormat format) const
                 if (d->dt().time().msec())
                 {
                     // Comma is preferred by ISO8601 as the decimal point symbol,
-                    // so use it unless '.' is the symbol used in this locale.
-                    result += (KGlobal::locale()->decimalSymbol() == QLatin1String(".")) ? QLatin1Char('.') : QLatin1Char(',');
+                    // so use it unless '.' is the symbol used in this locale or we don't have a locale.
+                    KLocale *locale = KGlobal::locale();
+                    result += (locale && locale->decimalSymbol() == QLatin1String(".")) ? QLatin1Char('.') : QLatin1Char(',');
                     result += s.sprintf("%03d", d->dt().time().msec());
                 }
             }
@@ -2481,7 +2482,8 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 {
                     if (str[s] != QLatin1Char('.'))
                     {
-                        QString dpt = locale->decimalSymbol();
+                        // If no locale, try comma, it is preferred by ISO8601 as the decimal point symbol
+                        QString dpt = locale == 0 ? "," : locale->decimalSymbol();
                         if (!str.mid(s).startsWith(dpt))
                             return QDateTime();
                         s += dpt.length() - 1;
