@@ -17,6 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "config.h"
+
 #include "kmfactory.h"
 #include "kmmanager.h"
 #include "kmjobmanager.h"
@@ -27,6 +29,7 @@
 #include "kdeprintcheck.h"
 #include "kxmlcommand.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QSettings>
@@ -40,7 +43,9 @@
 #include <klocale.h>
 #include <kio/authinfo.h>
 
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 
 #include "kmfactoryadaptor.h"
 #include "kmfactoryinterface.h"
@@ -51,9 +56,20 @@
 extern void qt_generate_epsf( bool b );
 #endif
 
-K_GLOBAL_STATIC(KMFactory, pSelf)
+// FIXME: move to Private class
+static KMFactory *pSelf = 0;
+static void delete_kmfactory_self()
+{
+    delete pSelf;
+    pSelf = 0;
+}
+
 KMFactory* KMFactory::self()
 {
+    if(!pSelf) {
+        qAddPostRoutine(delete_kmfactory_self);
+        pSelf = new KMFactory();
+    }
     return pSelf;
 }
 
@@ -64,7 +80,7 @@ bool KMFactory::exists()
 
 void KMFactory::release()
 {
-    pSelf.reinit();
+    delete_kmfactory_self();
 }
 
 KMFactory::KMFactory()
