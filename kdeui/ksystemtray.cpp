@@ -94,6 +94,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
         d->on_all_desktops = false;
     }
     setCaption( KGlobal::instance()->aboutData()->programName());
+    setAlignment( alignment() | Qt::AlignVCenter | Qt::AlignHCenter );
 }
 
 KSystemTray::~KSystemTray()
