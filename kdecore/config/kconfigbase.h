@@ -32,11 +32,13 @@
 #include <QtCore/QVariant>
 
 // This include fixes linker errors under msvc:
-// In qdbusmessage.h QList<QVariant> is instantiated because
-// it is a base class of an exported class. This must be
-// known here to avoid an additional instantiation.
+// The QDBusMessage class header instantiates
+// QList<QVariant> because it is used as a return
+// type and an argument type of an exported class.
+// This must be known here to avoid an additional
+// instantiation.
 #ifdef Q_CC_MSVC
-#include <QtDBus/qdbusmessage.h>
+#include <QtDBus/QDBusMessage>
 #endif
 
 template <typename KT, typename KV> class QMap;

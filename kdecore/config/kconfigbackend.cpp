@@ -19,6 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kconfigbackend.h"
+
 #include <config.h>
 
 #include <unistd.h>
@@ -40,8 +42,6 @@
 #include <QtCore/Q_PID>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTextIStream>
-
-#include "kconfigbackend.h"
 
 #include "kconfigbase.h"
 #include "kconfigdata.h"
