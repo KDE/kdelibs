@@ -3,7 +3,7 @@ KDE4_NO_ENABLE_FINAL(kjsembed)
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/kjsembed 
-		${CMAKE_BINARY_DIR}/kjs
+    ${KDE4_KJS_INCLUDES}
     ${KDE4_KDECORE_INCLUDES}
 )
 

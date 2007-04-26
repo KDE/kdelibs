@@ -128,14 +128,14 @@ o fix compile it and remove KDE4_NO_ENABLE_FINAL macro. Thanks")
    endif(KDE4_ENABLE_FINAL)
 ENDMACRO(KDE4_NO_ENABLE_FINAL _project_name)
 if (NOT QTONLY_WEBKIT)
-include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../kxmlcore ${CMAKE_SOURCE_DIR}/../../kjsembed ${CMAKE_BINARY_DIR}/kjs ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
 else (NOT QTONLY_WEBKIT)
 include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
 endif (NOT QTONLY_WEBKIT)
 
 # list the subdirectories
 if (NOT QTONLY_WEBKIT)
-#add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kxmlcore kxmlcore )
+#add_subdirectory( ${CMAKE_SOURCE_DIR}/../../wtf wtf )
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kjs kjs )
 endif (NOT QTONLY_WEBKIT)
 
