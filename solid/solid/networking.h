@@ -24,6 +24,7 @@
 #include <QtCore/QObject>
 
 #include <solid/solid_export.h>
+class QAbstractSocket;
 
 namespace Solid
 {
