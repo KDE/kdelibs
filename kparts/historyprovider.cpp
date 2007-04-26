@@ -31,9 +31,10 @@ public:
     QSet<QString> dict;
 };
 
+K_GLOBAL_STATIC(HistoryProvider, s_self)
+
 HistoryProvider * HistoryProvider::self()
 {
-    K_GLOBAL_STATIC(HistoryProvider, s_self)
     if ( !s_self )
         s_self->setObjectName( "history provider" );
 
@@ -43,6 +44,7 @@ HistoryProvider * HistoryProvider::self()
 HistoryProvider::HistoryProvider( QObject *parent )
     : QObject( parent ),d(new HistoryProviderPrivate)
 {
+    K_GLOBAL_STATIC_INSTANCE(s_self).testAndSet(0, this);
 }
 
 HistoryProvider::~HistoryProvider()

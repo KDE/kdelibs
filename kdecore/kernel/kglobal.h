@@ -222,8 +222,9 @@ class KCleanUpGlobalStatic
  * }
  * \endcode
  */
+#define K_GLOBAL_STATIC_INSTANCE(NAME) _k_static_##NAME
 #define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
-static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
+static QBasicAtomicPointer<TYPE > K_GLOBAL_STATIC_INSTANCE(NAME) = Q_ATOMIC_INIT(0);      \
 static bool _k_static_##NAME##_destroyed;                                      \
 static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 {                                                                              \
@@ -237,19 +238,19 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
     }                                                                          \
     inline TYPE *operator->()                                                  \
     {                                                                          \
-        if (!_k_static_##NAME) {                                               \
+        if (!K_GLOBAL_STATIC_INSTANCE(NAME)) {                                 \
             if (isDestroyed()) {                                               \
                 qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
                        "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
             }                                                                  \
             TYPE *x = new TYPE ARGS;                                           \
-            if (!_k_static_##NAME.testAndSet(0, x)) {                          \
+            if (!K_GLOBAL_STATIC_INSTANCE(NAME).testAndSet(0, x)) {            \
                 delete x;                                                      \
             } else {                                                           \
                 static KCleanUpGlobalStatic cleanUpObject = { destroy };       \
             }                                                                  \
         }                                                                      \
-        return _k_static_##NAME;                                               \
+        return K_GLOBAL_STATIC_INSTANCE(NAME);                                 \
     }                                                                          \
     inline TYPE &operator*()                                                   \
     {                                                                          \
@@ -258,15 +259,15 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
     static void destroy()                                                      \
     {                                                                          \
         _k_static_##NAME##_destroyed = true;                                   \
-        TYPE *x = _k_static_##NAME;                                            \
-        _k_static_##NAME.init(0);                                              \
+        TYPE *x = K_GLOBAL_STATIC_INSTANCE(NAME);                              \
+        K_GLOBAL_STATIC_INSTANCE(NAME).init(0);                                \
         delete x;                                                              \
     }                                                                          \
     static void reinit()                                                       \
     {                                                                          \
-        if (_k_static_##NAME) {                                                \
-            TYPE *x = _k_static_##NAME;                                        \
-            if (_k_static_##NAME.testAndSet(x, 0)) {                           \
+        if (K_GLOBAL_STATIC_INSTANCE(NAME)) {                                  \
+            TYPE *x = K_GLOBAL_STATIC_INSTANCE(NAME);                          \
+            if (K_GLOBAL_STATIC_INSTANCE(NAME).testAndSet(x, 0)) {             \
                 delete x;                                                      \
             }                                                                  \
         }                                                                      \
