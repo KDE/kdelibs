@@ -157,7 +157,7 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
             args.append(KJS::jsBoolean(*(bool*)_a[idx]));
             break;
         case QVariant::String:
-            args.append(KJS::jsString((*reinterpret_cast<QString(*)>(_a[2]))));
+            args.append(KJS::jsString((*reinterpret_cast<QString(*)>(_a[idx]))));
             break;
         case QVariant::UserType:
         {
