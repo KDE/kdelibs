@@ -209,8 +209,6 @@ informations
    * install /share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
    * win32: fix path delimiter problem generated *.bat wrapper (using ' ' instead of ';')
 
-- Increase version numbers in sonames of our libraries (*.so.version). 
-
 - Merge classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
 
 - It looks like most of the functions KStringHandler can be removed.  At least, insword, setword, 
