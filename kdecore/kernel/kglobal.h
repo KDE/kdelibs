@@ -241,7 +241,8 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
                        "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
             }                                                                  \
             TYPE *x = new TYPE ARGS;                                           \
-            if (!K_GLOBAL_STATIC_INSTANCE(NAME).testAndSet(0, x)) {            \
+            if (!K_GLOBAL_STATIC_INSTANCE(NAME).testAndSet(0, x)               \
+                && K_GLOBAL_STATIC_INSTANCE(NAME) != x ) {                     \
                 delete x;                                                      \
             } else {                                                           \
                 static KCleanUpGlobalStatic cleanUpObject = { destroy };       \
