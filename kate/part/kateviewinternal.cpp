@@ -2147,7 +2147,7 @@ void KateViewInternal::updateSelection( const KateTextCursor& _newCursor, bool k
 
       if ( doSelect )
         m_view->setSelection( selectAnchor, newCursor);
-      else if ( selStartCached.line() > 0 ) // we have a cached selection, so we restore that
+      else if ( selStartCached.line() >= 0 ) // we have a cached selection, so we restore that
         m_view->setSelection( selStartCached, selEndCached );
     }
 
