@@ -28,6 +28,7 @@
 #include <climits>
 #include <cstdlib>
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
@@ -100,6 +101,7 @@ public:
     const KTimeZone *local();
     static QString zoneinfoDir()   { return instance()->m_zoneinfoDir; }
     static KTimeZone *readZone(const QString &name);
+    static void cleanup();
 
 private:
     typedef QMap<QString, QString> MD5Map;    // zone name, checksum
@@ -173,14 +175,27 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
     {
         m_instance = new KSystemTimeZonesPrivate;
         // Go read the database.
+#ifdef Q_OS_WIN
         //
         // On Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones
         // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
+        // work in progress :)
+#else
         //
         // For Unix, read zone.tab.
         m_instance->readZoneTab();
+#endif
+        
+        qAddPostRoutine(KSystemTimeZonesPrivate::cleanup);
     }
     return m_instance;
+}
+
+void KSystemTimeZonesPrivate::cleanup()
+{
+    delete m_instance;
+    delete m_source;
+    delete m_tzfileSource;
 }
 
 bool KSystemTimeZonesPrivate::findZoneTab(QFile& f)
