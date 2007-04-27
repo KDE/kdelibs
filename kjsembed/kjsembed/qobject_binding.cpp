@@ -701,15 +701,25 @@ KJS::JSObject* KJSEmbed::createQObject(KJS::ExecState *exec, QObject *value, KJS
     const QMetaObject *meta = value->metaObject();
     KJS::JSObject *parent = exec->dynamicInterpreter()->globalObject();
     KJS::JSObject *returnValue;
-
+    int pos;
     QString clazz;
     do
     {
         clazz = meta->className();
+        
+#ifdef CREATEQOBJ_DIAG
+        qDebug() << "clazz=" << clazz;
+#endif
+        // strip off namespace since they aren't included
+        if ((pos = clazz.lastIndexOf("::")) != -1)
+            clazz.remove(0, pos + 2);
+#ifdef CREATEQOBJ_DIAG
+        qDebug() << "cleaned clazz=" << clazz;
+#endif
         if ( parent->hasProperty( exec, KJS::Identifier(toUString(clazz)) ) )
         {
 #ifdef CREATEQOBJ_DIAG
-            qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;// << " typeid(T)=" << typeid(T).name();
+            qDebug() << "createQObject(): clazz=" << clazz << " value=" << value;
 #endif
             Pointer<QObject> pov(value);
             returnValue = StaticConstructor::bind(exec, clazz, pov);

@@ -230,7 +230,7 @@ KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UStri
 
 //    qDebug() << "Loaded code: " << toQString(code);
     
-    return interpreter->evaluate( KJS::UString(""), 0, code, 0 );
+    return interpreter->evaluate( fileName, 0, code, 0 );
 }
 
 Engine::ExitStatus Engine::runFile( const KJS::UString &fileName )

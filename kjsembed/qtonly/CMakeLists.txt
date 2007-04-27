@@ -102,6 +102,9 @@ include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
 # Use the one variable for the lib you depend upon.
 # E.g. kdeui uses ${QJS_KDECORE_INCLUDES}. Something that depends on kparts uses ${QJS_KPARTS_INCLUDES}.
 
+set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/kjs
+                      ${CMAKE_BINARY_DIR}/kjs)
+
 # kdecore depends on Qt
 set(QJS_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${_QJS_PLATFORM_INCLUDE_DIRS})
 

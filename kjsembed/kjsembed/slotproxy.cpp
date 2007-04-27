@@ -65,10 +65,16 @@ SlotProxy::SlotProxy(KJS::JSObject *obj, KJS::Interpreter *interpreter, QObject 
     staticMetaObject.d.stringdata = m_stringData.data();
     staticMetaObject.d.data = m_data;
     staticMetaObject.d.extradata = 0;
+#ifdef DEBUG_SLOTPROXY
+		qDebug() << "SlotProxy() obj=" << this <<  " m_signature=" << m_signature;
+#endif
 }
 
 SlotProxy::~SlotProxy()
 {
+#ifdef DEBUG_SLOTPROXY
+	qDebug() << "??????SlotProxy::~SlotProxy() obj=" << this <<" m_signature=" << m_signature;
+#endif
 }
 
 const QMetaObject *SlotProxy::metaObject() const
@@ -87,7 +93,7 @@ void *SlotProxy::qt_metacast(const char *_clname)
 KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 {
 #ifdef DEBUG_SLOTPROXY
-    qDebug() << "SlotProxy::callMethod(" << methodName << ",_a)";
+	qDebug() << "SlotProxy::callMethod(" << methodName << ",_a) obj=" << this;
 #endif
     KJS::ExecState *exec = m_interpreter->globalExec();
     // Crash
@@ -104,9 +110,22 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 
     if( exec->hadException() )
     {
-    //TODO ext the script here with the error
-      m_interpreter->deref();
-      return KJS::jsNull();
+        if (m_interpreter->shouldPrintExceptions())
+        {
+            KJS::JSLock lock;
+            KJS::JSObject* exceptObj = retValue->toObject(exec);
+            QString message = toQString(exceptObj->toString(exec));
+            QString sourceURL = toQString(exceptObj->get(exec, "sourceURL")->toString(exec));
+            int sourceId = exceptObj->get(exec, "sourceId")->toUInt32(exec);
+            // would include the line number, but it's always last line of file
+            //int line = exceptObj->get(exec, "line")->toUInt32(exec);
+            (*KJSEmbed::conerr()) << i18n("Exception calling '%1' slot from %2:%3", QString(methodName), !sourceURL.isEmpty() ? sourceURL : QString::number(sourceId), message) << endl;
+
+            // clear it so it doesn't stop other things
+            exec->clearException();
+        }
+
+        return KJS::jsNull();
     }
     else
     {
@@ -126,7 +145,7 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
     QList<QByteArray> params = method.parameterTypes();
     int idx = 1;
 #ifdef DEBUG_SLOTPROXY
-    qDebug() << "SlotProxy::convertArguments(): m_signature" << m_signature << " offset=" << offset << " params=" << params;
+    qDebug() << "SlotProxy::convertArguments(): obj=" << this << " m_signature=" << m_signature << " offset=" << offset << " params=" << params ;
 #endif
     foreach( QByteArray param, params )
     {
@@ -238,7 +257,7 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 int SlotProxy::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
 #if defined(DEBUG_SLOTPROXY) && (DEBUG_SLOTPROXY > 1)
-    qDebug("SlotProxy::qt_metacall(_c=%d, _id=%d, _a=%p _a[0]=%p _a[1]=%p", _c, _id, _a, _a[0], _a[1]);
+	qDebug("SlotProxy::qt_metacall(_c=%d, _id=%d, _a=%p _a[0]=%p _a[1]=%p) obj=", _c, _id, _a, _a[0], _a[1], this);
 #endif
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
