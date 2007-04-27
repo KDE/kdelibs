@@ -2279,14 +2279,15 @@ any similar problem with contexts.)</li>
 <p>Translator comments are a feature that already existed in KDE3, but which
 was seldom used.</p>
 <ul>
-<li>Translator comments: now translator comments should start with TRANSLATORS (all upper case), as it is Gettext's habit: // TRANSLATORS: or /* TRANSLATORS: .
-The translator comment must be <em>before</em> the message string.
-Note: the old //i18n: and /*i18n: are still available as in KDE3.</li>
+<li>Translator comment are code comments before a i18n call. To avoid
+extracting comments that are of little interest for translators, translator
+comemnts must start with // i18n: or /* i18n: to mark such comments.
+(Note: translator comments starting with TRANSLATORS (all upper case), as it is Gettext's habit are not supported by KDE4.)</li>
 <li>As in Gettext 0.16.1, contexts are supposed to be short, please consider
 using a translator comment instead of a context to give long hints to translators.</li>
 </ul>
 <pre>
-// TRANSLATORS: this is a test sentence
+// i18n: this is a test sentence
 i18n("The quick brown fox jumps over the lazy dog");
 </pre>
 
