@@ -104,6 +104,7 @@
 <!ENTITY nagelezen.daniel     "<para>De vertaling werd nagelezen door &Daniel.Huisman;.</para>">
 <!ENTITY nagelezen.sander     "<para>De vertaling werd nagelezen door &Sander.Koning;.</para>">
 <!ENTITY nagelezen.natalie    "<para>De vertaling werd nagelezen door &Natalie.Koning;.</para>">
+<!ENTITY nagelezen.antoon     "<para>De vertaling werd nagelezen door &Antoon.Tolboom;.</para>">
 
 <!-- Algemene afkortingen -->
 <!ENTITY Alt     "<keycap>Alt</keycap>">
