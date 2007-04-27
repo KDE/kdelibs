@@ -80,9 +80,6 @@ class KCleanUpGlobalStatic
  * If you have code that might be called after the global object has been destroyed you can check
  * for that using the isDestroyed() function.
  *
- * With reinit() you can delete the current object. It's recreated on next use. This is
- * useful when you want to force a reinitialization of the object.
- *
  * If needed you can also install a post routine (\ref qAddPostRoutine) to clean up the object
  * using the destroy() method.
  *
@@ -262,15 +259,6 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
         TYPE *x = K_GLOBAL_STATIC_INSTANCE(NAME);                              \
         K_GLOBAL_STATIC_INSTANCE(NAME).init(0);                                \
         delete x;                                                              \
-    }                                                                          \
-    static void reinit()                                                       \
-    {                                                                          \
-        if (K_GLOBAL_STATIC_INSTANCE(NAME)) {                                  \
-            TYPE *x = K_GLOBAL_STATIC_INSTANCE(NAME);                          \
-            if (K_GLOBAL_STATIC_INSTANCE(NAME).testAndSet(x, 0)) {             \
-                delete x;                                                      \
-            }                                                                  \
-        }                                                                      \
     }                                                                          \
 } NAME;
 
