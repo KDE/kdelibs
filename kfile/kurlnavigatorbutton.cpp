@@ -35,12 +35,10 @@
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),
     m_index(-1),
-    m_preferredWidth(0),
     m_popupDelay(0),
     m_listJob(0)
 {
     setAcceptDrops(true);
-    setMinimumWidth(50);
     setIndex(index);
     connect(this, SIGNAL(clicked()), this, SLOT(updateNavigatorUrl()));
 
@@ -81,12 +79,15 @@ void KUrlNavigatorButton::setIndex(int index)
     setFont(adjustedFont);
 
     QFontMetrics fontMetrics(adjustedFont);
-    int textWidth = fontMetrics.width(buttonText);
-    if (textWidth > 100) {
-        // don't let an overlong path name waste all the URL navigator space
-        textWidth = 100;
+    int minWidth = fontMetrics.width(buttonText) + arrowWidth() + 3 * BorderWidth;
+    if (minWidth < 50) {
+        minWidth = 50;
     }
-    m_preferredWidth = textWidth + arrowWidth();
+    else if (minWidth > 150) {
+        // don't let an overlong path name waste all the URL navigator space
+        minWidth = 150;
+    }
+    setMinimumWidth(minWidth);
 
     update();
 }
@@ -128,10 +129,9 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 
     if (!isDisplayHintEnabled(ActivatedHint)) {
         // draw arrow
-        const int border = 2;  // horizontal border
         const int middleY = height() / 2;
         const int width = arrowWidth();
-        const int startX = (buttonWidth - width) - (2 * border);
+        const int startX = (buttonWidth - width) - (2 * BorderWidth);
         const int startTopY = middleY - (width - 1);
         const int startBottomY = middleY + (width - 1);
         for (int i = 0; i < width; ++i) {
@@ -139,7 +139,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
             painter.drawLine(startX, startBottomY - i, startX + i, startBottomY - i);
         }
 
-        textWidth = startX - border;
+        textWidth = startX - BorderWidth;
     }
 
     const bool clipped = isTextClipped();
@@ -338,9 +338,9 @@ int KUrlNavigatorButton::arrowWidth() const
 
 bool KUrlNavigatorButton::isTextClipped() const
 {
-    int availableWidth = width();
+    int availableWidth = width() - 2 * BorderWidth;
     if (!isDisplayHintEnabled(ActivatedHint)) {
-        availableWidth -= arrowWidth() + 1;
+        availableWidth -= arrowWidth() - BorderWidth;
     }
 
     QFontMetrics fontMetrics(font());

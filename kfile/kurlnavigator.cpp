@@ -605,15 +605,22 @@ void KUrlNavigator::Private::updateButtonVisibility()
 
     int hiddenButtonsCount = 0;
 
-    int availableWidth = q->width() - m_placesSelector->width();
+    int availableWidth = q->width() - m_placesSelector->width() - 20;
+
+    if (m_dropDownButton->isVisible()) {
+        availableWidth -= m_dropDownButton->width();
+    }
+
+    if ((m_protocols != 0) && m_protocols->isVisible()) {
+        availableWidth -= m_protocols->width();
+    }
 
     QLinkedList<KUrlNavigatorButton*>::iterator it = m_navButtons.end();
     const QLinkedList<KUrlNavigatorButton*>::const_iterator itBegin = m_navButtons.begin();
     while (it != itBegin) {
         --it;
         KUrlNavigatorButton* button = (*it);
-        availableWidth -= button->preferredWidth();
-
+        availableWidth -= button->minimumWidth();
         if (availableWidth <= 0) {
             button->hide();
             ++hiddenButtonsCount;
@@ -669,6 +676,7 @@ KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
     setMinimumHeight(fontMetrics.height() + 10);
 
     setLayout(d->m_layout);
+    setMinimumWidth(100);
 
     d->updateContent();
 }
