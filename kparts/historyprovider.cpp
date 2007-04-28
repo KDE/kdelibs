@@ -25,31 +25,44 @@
 
 using namespace KParts;
 
-class HistoryProvider::HistoryProviderPrivate
+class KParts::HistoryProviderPrivate
 {
 public:
+    HistoryProviderPrivate()
+        : q(0)
+    {
+    }
+
+    ~HistoryProviderPrivate()
+    {
+        delete q;
+    }
+
     QSet<QString> dict;
+    HistoryProvider *q;
 };
 
-K_GLOBAL_STATIC(HistoryProvider, s_self)
+K_GLOBAL_STATIC(HistoryProviderPrivate, historyProviderPrivate)
 
 HistoryProvider * HistoryProvider::self()
 {
-    if ( !s_self )
-        s_self->setObjectName( "history provider" );
+    if (!historyProviderPrivate->q) {
+        new HistoryProvider;
+    }
 
-    return s_self;
+    return historyProviderPrivate->q;
 }
 
 HistoryProvider::HistoryProvider( QObject *parent )
-    : QObject( parent ),d(new HistoryProviderPrivate)
+    : QObject( parent ), d(historyProviderPrivate)
 {
-    K_GLOBAL_STATIC_INSTANCE(s_self).testAndSet(0, this);
+    Q_ASSERT(!historyProviderPrivate->q);
+    historyProviderPrivate->q = this;
+    setObjectName("history provider");
 }
 
 HistoryProvider::~HistoryProvider()
 {
-    delete d;
 }
 
 bool HistoryProvider::contains( const QString& item ) const

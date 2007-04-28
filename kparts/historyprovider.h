@@ -26,6 +26,8 @@
 
 namespace KParts {
 
+class HistoryProviderPrivate;
+
 /**
  * Basic class to manage a history of "items". This class is only meant
  * for fast lookup, if an item is in the history or not.
@@ -40,19 +42,10 @@ namespace KParts {
 class KPARTS_EXPORT HistoryProvider : public QObject
 {
     Q_OBJECT
+    friend class ::KParts::HistoryProviderPrivate;
 
 public:
     static HistoryProvider * self();
-
-    /**
-     * Creates a KHistoryProvider with an optional parent and name
-     */
-    HistoryProvider( QObject *parent = 0 );
-
-    /**
-     * Destroys the provider.
-     */
-    virtual ~HistoryProvider();
 
     /**
      * @returns true if @p item is present in the history.
@@ -93,8 +86,18 @@ Q_SIGNALS:
      */
     void inserted( const QString& item );
 
+protected:
+    /**
+     * Creates a KHistoryProvider with an optional parent and name
+     */
+    HistoryProvider(QObject *parent = 0);
+
+    /**
+     * Destroys the provider.
+     */
+    virtual ~HistoryProvider();
+
 private:
-    class HistoryProviderPrivate;
     HistoryProviderPrivate* const d;
 };
 
