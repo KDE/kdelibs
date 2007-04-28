@@ -57,6 +57,7 @@ K_GLOBAL_STATIC(KServiceTypeProfiles, s_serviceTypeProfiles)
 K_GLOBAL_STATIC(KMimeTypeProfiles, s_mimeTypeProfiles)
 
 static bool s_configurationMode = false;
+static bool s_profilesParsed = false;
 
 static KMimeTypeProfileEntry* findMimeTypeProfile( const QString& mimeType, const QString& genservicetype )
 {
@@ -74,8 +75,9 @@ static KMimeTypeProfileEntry* findMimeTypeProfile( const QString& mimeType, cons
 
 static void initStatic()
 {
-    if ( s_serviceTypeProfiles->count() != 0 && s_mimeTypeProfiles ->count() != 0)
+    if ( s_profilesParsed )
         return;
+    s_profilesParsed = true;
 
     // Make sure that a KServiceTypeFactory gets created.
     (void) KServiceTypeFactory::self();
@@ -151,6 +153,7 @@ void KServiceTypeProfile::clearCache()
 {
     s_serviceTypeProfiles->clear();
     s_mimeTypeProfiles->clear();
+    s_profilesParsed = false;
 }
 
 void KMimeTypeProfileEntry::addService( const QString& _service,
