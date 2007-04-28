@@ -119,7 +119,6 @@ target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 ########### install files ###############
 
-install( FILES  soliddevicemanager.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR}  )
 install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storage.h cdrom.h volume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
