@@ -50,6 +50,7 @@ const Method *ValueFactory::methods()
 
 ValueBinding::ValueBinding( KJS::ExecState *exec, const char *typeName)
     : ProxyBinding( exec ),
+      m_value(0),
       m_name(typeName)
 {
     StaticBinding::publish( exec, this, ValueFactory::methods() );

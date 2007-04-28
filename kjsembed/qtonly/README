@@ -26,7 +26,7 @@ $ svn co $REPOSITORY/trunk/KDE/kdelibs
 $ cd kdelibs/kjsembed/qtonly
 $ mkdir build
 $ cd build
-$ cmake -DCMAKE_INSTALL_PREFIX=$QJSDIR
+$ cmake -DCMAKE_INSTALL_PREFIX=$QJSDIR ..
 $ make
 $ make install
 
