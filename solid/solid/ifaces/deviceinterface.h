@@ -23,8 +23,6 @@
 #include <QObject>
 #include <QFlags>
 
-#include <solid/solid_export.h>
-
 namespace Solid
 {
 namespace Ifaces
@@ -37,7 +35,7 @@ namespace Ifaces
      *
      * @see Solid::Ifaces::AbstractDeviceInterface
      */
-    class SOLIDIFACES_EXPORT DeviceInterface
+    class DeviceInterface
     {
     public:
         /**

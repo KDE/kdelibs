@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_AUDIOHW_H
 #define SOLID_IFACES_AUDIOHW_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/audiohw.h>
 
@@ -32,7 +30,7 @@ namespace Ifaces
     /**
      * This device interface is available on interfaces exposed by sound cards.
      */
-    class SOLIDIFACES_EXPORT AudioHw : virtual public DeviceInterface
+    class AudioHw : virtual public DeviceInterface
     {
     public:
         /**

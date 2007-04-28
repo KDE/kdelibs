@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_VOLUME_H
 #define SOLID_IFACES_VOLUME_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/block.h>
 #include <solid/volume.h>
 
@@ -37,7 +35,7 @@ namespace Ifaces
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class SOLIDIFACES_EXPORT Volume : virtual public Block
+    class Volume : virtual public Block
     {
     public:
         /**

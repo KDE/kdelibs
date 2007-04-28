@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_OPTICALDISC_H
 #define SOLID_IFACES_OPTICALDISC_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/volume.h>
 #include <solid/opticaldisc.h>
 
@@ -34,7 +32,7 @@ namespace Ifaces
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class SOLIDIFACES_EXPORT OpticalDisc : virtual public Volume
+    class OpticalDisc : virtual public Volume
     {
     public:
         /**

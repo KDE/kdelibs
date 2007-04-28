@@ -25,8 +25,6 @@
 #include <QString>
 #include <QStringList>
 
-#include <solid/solid_export.h>
-
 #include <solid/deviceinterface.h>
 
 namespace Solid
@@ -41,7 +39,7 @@ namespace Ifaces
      * available devices. It has also the responsibility to notify when a device
      * appear or disappear.
      */
-    class SOLIDIFACES_EXPORT DeviceManager : public QObject
+    class DeviceManager : public QObject
     {
         Q_OBJECT
 

@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_BLOCK_H
 #define SOLID_IFACES_BLOCK_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
@@ -35,7 +33,7 @@ namespace Ifaces
      * It is possible to interact with such a device using a special file
      * in the system.
      */
-    class SOLIDIFACES_EXPORT Block : virtual public DeviceInterface
+    class Block : virtual public DeviceInterface
     {
     public:
         /**

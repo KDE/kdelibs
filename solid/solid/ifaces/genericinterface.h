@@ -25,8 +25,6 @@
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 
-#include <solid/solid_export.h>
-
 namespace Solid
 {
 namespace Ifaces
@@ -40,7 +38,7 @@ namespace Ifaces
      * transitional phases when the provided device interfaces don't
      * provide the necessary methods.
      */
-    class SOLIDIFACES_EXPORT GenericInterface
+    class GenericInterface
     {
     public:
         /**

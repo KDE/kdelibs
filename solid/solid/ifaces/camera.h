@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_CAMERA_H
 #define SOLID_IFACES_CAMERA_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/camera.h>
 
@@ -39,7 +37,7 @@ namespace Ifaces
      * method can be different from the typical storage device, hence
      * why it's a separate device interface.
      */
-    class SOLIDIFACES_EXPORT Camera : virtual public DeviceInterface
+    class Camera : virtual public DeviceInterface
     {
     public:
         /**

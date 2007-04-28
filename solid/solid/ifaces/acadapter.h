@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_ACADAPTER_H
 #define SOLID_IFACES_ACADAPTER_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
@@ -31,7 +29,7 @@ namespace Ifaces
     /**
      * This device interface is available on A/C adapters.
      */
-    class SOLIDIFACES_EXPORT AcAdapter : virtual public DeviceInterface
+    class AcAdapter : virtual public DeviceInterface
     {
     public:
         /**

@@ -22,8 +22,6 @@
 
 #include <QList>
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/storage.h>
 #include <solid/cdrom.h>
 
@@ -36,7 +34,7 @@ namespace Ifaces
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class SOLIDIFACES_EXPORT Cdrom : virtual public Storage
+    class Cdrom : virtual public Storage
     {
     public:
         /**

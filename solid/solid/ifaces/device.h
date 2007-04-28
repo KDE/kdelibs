@@ -25,8 +25,6 @@
 #include <QString>
 #include <QMap>
 
-#include <solid/solid_export.h>
-
 #include <solid/deviceinterface.h>
 #include <solid/device.h>
 
@@ -43,7 +41,7 @@ namespace Ifaces
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLIDIFACES_EXPORT Device : public QObject
+    class Device : public QObject
     {
         Q_OBJECT
 

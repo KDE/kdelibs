@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_NETWORKHW_H
 #define SOLID_IFACES_NETWORKHW_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
@@ -31,7 +29,7 @@ namespace Ifaces
     /**
      * This device interface is available on network interfaces.
      */
-    class SOLIDIFACES_EXPORT NetworkHw : virtual public DeviceInterface
+    class NetworkHw : virtual public DeviceInterface
     {
     public:
         /**

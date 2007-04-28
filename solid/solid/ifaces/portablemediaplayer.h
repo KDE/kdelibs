@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_PORTABLEMEDIAPLAYER_H
 #define SOLID_IFACES_PORTABLEMEDIAPLAYER_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/portablemediaplayer.h>
 
@@ -36,7 +34,7 @@ namespace Ifaces
      * Some of them have even recording capabilities.
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT PortableMediaPlayer : virtual public DeviceInterface
+    class PortableMediaPlayer : virtual public DeviceInterface
     {
     public:
         /**

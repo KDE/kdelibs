@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_BUTTON_H
 #define SOLID_IFACES_BUTTON_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/button.h>
 
@@ -37,7 +35,7 @@ namespace Ifaces
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT Button : virtual public DeviceInterface
+    class Button : virtual public DeviceInterface
     {
     public:
         /**

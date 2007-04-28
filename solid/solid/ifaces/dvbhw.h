@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_DVBHW_H
 #define SOLID_IFACES_DVBHW_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 
 #include <solid/dvbhw.h>
@@ -38,7 +36,7 @@ namespace Ifaces
      * It is possible to interact with such a device using a special device
      * file in the system.
      */
-    class SOLIDIFACES_EXPORT DvbHw : virtual public DeviceInterface
+    class DvbHw : virtual public DeviceInterface
     {
     public:
         /**

@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_DISPLAY_H
 #define SOLID_IFACES_DISPLAY_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 #include <solid/display.h>
 
@@ -36,7 +34,7 @@ namespace Ifaces
      *
      * @author Davide Bettio <davbet@aliceposta.it>
      */
-    class SOLIDIFACES_EXPORT Display : virtual public DeviceInterface
+    class Display : virtual public DeviceInterface
     {
     public:
         /**

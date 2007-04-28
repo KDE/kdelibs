@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_BATTERY_H
 #define SOLID_IFACES_BATTERY_H
 
-#include <solid/solid_export.h>
-
 #include <solid/battery.h>
 #include <solid/ifaces/deviceinterface.h>
 
@@ -32,7 +30,7 @@ namespace Ifaces
     /**
      * This device interface is available on batteries.
      */
-    class SOLIDIFACES_EXPORT Battery : virtual public DeviceInterface
+    class Battery : virtual public DeviceInterface
     {
     public:
         /**

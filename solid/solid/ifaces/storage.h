@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_STORAGE_H
 #define SOLID_IFACES_STORAGE_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/block.h>
 #include <solid/storage.h>
 
@@ -35,7 +33,7 @@ namespace Ifaces
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class SOLIDIFACES_EXPORT Storage : virtual public Block
+    class Storage : virtual public Block
     {
     public:
         /**

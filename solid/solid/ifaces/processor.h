@@ -20,8 +20,6 @@
 #ifndef SOLID_IFACES_PROCESSOR_H
 #define SOLID_IFACES_PROCESSOR_H
 
-#include <solid/solid_export.h>
-
 #include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
@@ -31,7 +29,7 @@ namespace Ifaces
     /**
      * This device interface is available on processors.
      */
-    class SOLIDIFACES_EXPORT Processor : virtual public DeviceInterface
+    class Processor : virtual public DeviceInterface
     {
     public:
         /**
