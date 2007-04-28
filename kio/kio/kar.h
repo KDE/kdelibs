@@ -49,6 +49,8 @@ public:
      */
     virtual ~KAr();
 
+protected:
+
     /*
      * Writing not supported by this class, will always fail.
      * @return always false
@@ -85,7 +87,6 @@ public:
         return false;
     }
 
-protected:
     /**
      * Opens the archive for reading.
      * Parses the directory listing of the archive

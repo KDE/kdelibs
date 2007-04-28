@@ -113,14 +113,6 @@ public:
      */
     Compression compression() const;
 
-    /// Reimplemented from KArchive
-    virtual bool doWriteSymLink(const QString &name, const QString &target,
-                                const QString &user, const QString &group,
-                                mode_t perm, time_t atime, time_t mtime, time_t ctime);
-    /// Reimplemented from KArchive
-    virtual bool doPrepareWriting( const QString& name, const QString& user,
-                                 const QString& group, qint64 size, mode_t perm,
-                                 time_t atime, time_t mtime, time_t ctime );
     /**
      * Write data to a file that has been created using prepareWriting().
      * @param data a pointer to the data
@@ -129,6 +121,16 @@ public:
      */
     virtual bool writeData( const char* data, qint64 size );
 
+protected:
+    /// Reimplemented from KArchive
+    virtual bool doWriteSymLink(const QString &name, const QString &target,
+                                const QString &user, const QString &group,
+                                mode_t perm, time_t atime, time_t mtime, time_t ctime);
+    /// Reimplemented from KArchive
+    virtual bool doPrepareWriting( const QString& name, const QString& user,
+                                 const QString& group, qint64 size, mode_t perm,
+                                 time_t atime, time_t mtime, time_t ctime );
+
     /**
      * Write data to a file that has been created using prepareWriting().
      * @param size the size of the file
@@ -136,7 +138,6 @@ public:
      */
     virtual bool doFinishWriting( qint64 size );
 
-protected:
     /**
      * Opens the archive for reading.
      * Parses the directory listing of the archive
@@ -144,6 +145,7 @@ protected:
      * @param mode the mode of the file
      */
     virtual bool openArchive( QIODevice::OpenMode mode );
+
     /// Closes the archive
     virtual bool closeArchive();
 

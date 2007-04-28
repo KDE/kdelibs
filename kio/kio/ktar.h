@@ -68,6 +68,8 @@ public:
      */
     void setOrigFileName( const QByteArray & fileName );
 
+protected:
+
     /// Reimplemented from KArchive
     virtual bool doWriteSymLink(const QString &name, const QString &target,
                                 const QString &user, const QString &group,
@@ -82,7 +84,6 @@ public:
     /// Reimplemented from KArchive
     virtual bool doFinishWriting( qint64 size );
 
-protected:
     /**
      * Opens the archive for reading.
      * Parses the directory listing of the archive
