@@ -20,16 +20,15 @@
 #ifndef HALMANAGER_H
 #define HALMANAGER_H
 
-#include "ifaces/devicemanager.h"
+#include "solid/ifaces/devicemanager.h"
 #include <QVariant>
 #include <QStringList>
-#include <kdemacros.h>
 
-#include "deviceinterface.h"
+#include "solid/deviceinterface.h"
 
 class HalManagerPrivate;
 
-class KDE_EXPORT HalManager : public Solid::Ifaces::DeviceManager
+class HalManager : public Solid::Ifaces::DeviceManager
 {
     Q_OBJECT
 

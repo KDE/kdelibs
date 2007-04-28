@@ -20,7 +20,7 @@
 #ifndef HALDEVICE_H
 #define HALDEVICE_H
 
-#include "ifaces/device.h"
+#include "solid/ifaces/device.h"
 
 class HalManager;
 class HalDevicePrivate;

@@ -25,6 +25,7 @@
 
 #include "backends/hal/halmanager.h"
 #include "backends/hal/haldevice.h"
+#include "backends/hal/haldeviceinterface.h"
 
 class HalManagerPrivate
 {

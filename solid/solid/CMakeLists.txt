@@ -52,26 +52,26 @@ set(solid_LIB_SRCS
    ifaces/storage.cpp
    ifaces/volume.cpp
 
-   backends/hal/acadapter.cpp
-   backends/hal/audiohw.cpp
-   backends/hal/battery.cpp
-   backends/hal/block.cpp
-   backends/hal/button.cpp
-   backends/hal/camera.cpp
-   backends/hal/cdrom.cpp
-   backends/hal/deviceinterface.cpp
-   backends/hal/display.cpp
-   backends/hal/dvbhw.cpp
-   backends/hal/genericinterface.cpp
+   backends/hal/halacadapter.cpp
+   backends/hal/halaudiohw.cpp
+   backends/hal/halbattery.cpp
+   backends/hal/halblock.cpp
+   backends/hal/halbutton.cpp
+   backends/hal/halcamera.cpp
+   backends/hal/halcdrom.cpp
+   backends/hal/haldeviceinterface.cpp
+   backends/hal/haldisplay.cpp
+   backends/hal/haldvbhw.cpp
+   backends/hal/halgenericinterface.cpp
    backends/hal/halcalljob.cpp
    backends/hal/haldevice.cpp
    backends/hal/halmanager.cpp
-   backends/hal/networkhw.cpp
-   backends/hal/opticaldisc.cpp
-   backends/hal/portablemediaplayer.cpp
-   backends/hal/processor.cpp
-   backends/hal/storage.cpp
-   backends/hal/volume.cpp
+   backends/hal/halnetworkhw.cpp
+   backends/hal/halopticaldisc.cpp
+   backends/hal/halportablemediaplayer.cpp
+   backends/hal/halprocessor.cpp
+   backends/hal/halstorage.cpp
+   backends/hal/halvolume.cpp
 
    backends/fakehw/fakeacadapter.cpp
    backends/fakehw/fakeaudiohw.cpp
@@ -108,6 +108,13 @@ target_link_libraries(solid ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
+
+
+########### static lib for tests  ###############
+
+kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
+
+target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 
 ########### install files ###############

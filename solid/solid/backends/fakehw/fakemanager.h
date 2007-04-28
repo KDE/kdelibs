@@ -19,8 +19,6 @@
 #ifndef FAKEMANAGER_H
 #define FAKEMANAGER_H
 
-#include <kdemacros.h>
-
 #include <solid/ifaces/devicemanager.h>
 
 class FakeDevice;
@@ -34,7 +32,7 @@ using namespace Solid::Ifaces;
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KDE_EXPORT FakeManager : public Solid::Ifaces::DeviceManager
+class FakeManager : public Solid::Ifaces::DeviceManager
 {
     Q_OBJECT
 public:
