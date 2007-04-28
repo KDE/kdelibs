@@ -26,12 +26,12 @@ set(solidifaces_LIB_SRCS
 
 kde4_automoc(${solidifaces_LIB_SRCS})
 
-kde4_add_library(solidifaces SHARED ${solidifaces_LIB_SRCS})
+kde4_add_library(solidifaces_static STATIC ${solidifaces_LIB_SRCS})
 
-target_link_libraries(solidifaces  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(solidifaces_static  ${KDE4_KDECORE_LIBS} )
 
-set_target_properties(solidifaces PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
+#set_target_properties(solidifaces PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+#install(TARGETS solidifaces DESTINATION ${LIB_INSTALL_DIR}  )
 
 
 ########### install files ###############

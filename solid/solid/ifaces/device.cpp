@@ -17,7 +17,7 @@
 
 */
 
-#include "device.h"
+#include "ifaces/device.h"
 
 Solid::Ifaces::Device::Device(QObject *parent)
     : QObject(parent)
@@ -35,4 +35,4 @@ QString Solid::Ifaces::Device::parentUdi() const
     return QString();
 }
 
-#include "device.moc"
+#include "ifaces/device.moc"

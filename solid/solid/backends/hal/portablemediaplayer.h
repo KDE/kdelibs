@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,29 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef PORTABLEMEDIAPLAYER_H
+#define PORTABLEMEDIAPLAYER_H
 
+#include <QStringList>
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+#include "ifaces/portablemediaplayer.h"
+#include "backends/hal/deviceinterface.h"
+
+class HalDevice;
+
+class PortableMediaPlayer : public DeviceInterface, virtual public Solid::Ifaces::PortableMediaPlayer
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::PortableMediaPlayer)
 
-}
+public:
+    PortableMediaPlayer(HalDevice *device);
+    virtual ~PortableMediaPlayer();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::PortableMediaPlayer::AccessType accessMethod() const;
+    virtual QStringList outputFormats() const;
+    virtual QStringList inputFormats() const;
+    virtual QStringList playlistFormats() const;
+};
 
-}
-
-#include "ifaces/devicemanager.moc"
+#endif

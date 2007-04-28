@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,28 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef DVBHW_H
+#define DVBHW_H
 
+#include "ifaces/dvbhw.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class DvbHw : public DeviceInterface, virtual public Solid::Ifaces::DvbHw
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::DvbHw)
 
-}
+public:
+    DvbHw(HalDevice *device);
+    virtual ~DvbHw();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual QString device() const;
+    virtual int deviceAdapter() const;
+    virtual Solid::DvbHw::DeviceType deviceType() const;
+    virtual int deviceIndex() const;
 
-}
+private:
+    bool parseTypeIndex(Solid::DvbHw::DeviceType *type, int *index) const;
+};
 
-#include "ifaces/devicemanager.moc"
+#endif

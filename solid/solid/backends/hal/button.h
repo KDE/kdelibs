@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,32 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef BUTTON_H
+#define BUTTON_H
 
+#include "ifaces/button.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class HalDevice;
+
+class Button : public DeviceInterface, virtual public Solid::Ifaces::Button
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::Button)
 
-}
+public:
+    Button(HalDevice *device);
+    virtual ~Button();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::Button::ButtonType type() const;
+    virtual bool hasState() const;
+    virtual bool stateValue() const;
 
-}
+Q_SIGNALS:
+    void pressed(int type);
 
-#include "ifaces/devicemanager.moc"
+private Q_SLOTS:
+    void slotConditionRaised(const QString &condition, const QString &reason);
+};
+
+#endif

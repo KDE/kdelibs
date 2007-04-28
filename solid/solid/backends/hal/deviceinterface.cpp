@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,15 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/hal/deviceinterface.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+DeviceInterface::DeviceInterface(HalDevice *device)
+    : QObject(device), m_device(device)
 {
-
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+DeviceInterface::~DeviceInterface()
 {
-
 }
 
-#include "ifaces/devicemanager.moc"
+#include "backends/hal/deviceinterface.moc"

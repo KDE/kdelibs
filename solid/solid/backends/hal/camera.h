@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,23 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef CAMERA_H
+#define CAMERA_H
 
+#include "ifaces/camera.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class Camera : public DeviceInterface, virtual public Solid::Ifaces::Camera
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::Camera)
 
-}
+public:
+    Camera(HalDevice *device);
+    virtual ~Camera();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::Camera::AccessType accessMethod() const;
+    virtual bool isGphotoSupported() const;
+};
 
-}
-
-#include "ifaces/devicemanager.moc"
+#endif

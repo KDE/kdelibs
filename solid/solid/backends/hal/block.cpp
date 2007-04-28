@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,34 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/hal/block.h"
 
+#include "backends/hal/haldevice.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+Block::Block(HalDevice *device)
+    : DeviceInterface(device)
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+Block::~Block()
 {
 
 }
 
-#include "ifaces/devicemanager.moc"
+int Block::deviceMajor() const
+{
+    return m_device->property("block.major").toInt();
+}
+
+int Block::deviceMinor() const
+{
+    return m_device->property("block.minor").toInt();
+}
+
+QString Block::device() const
+{
+    return m_device->property("block.device").toString();
+}
+
+#include "backends/hal/block.moc"

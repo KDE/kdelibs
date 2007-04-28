@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,31 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/hal/acadapter.h"
 
+AcAdapter::AcAdapter(HalDevice *device)
+    : DeviceInterface(device)
+{
+    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
+             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+}
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+AcAdapter::~AcAdapter()
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+bool AcAdapter::isPlugged() const
 {
-
+    return m_device->property("ac_adapter.present").toBool();
 }
 
-#include "ifaces/devicemanager.moc"
+void AcAdapter::slotPropertyChanged(const QMap<QString,int> &changes)
+{
+    if (changes.contains("ac_adapter.present"))
+    {
+        emit plugStateChanged(isPlugged());
+    }
+}
+
+#include "backends/hal/acadapter.moc"

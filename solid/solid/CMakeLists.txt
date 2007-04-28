@@ -1,4 +1,6 @@
-add_subdirectory( ifaces )
+#add_subdirectory( ifaces )
+#add_subdirectory( backends )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
 ########### next target ###############
 
@@ -29,6 +31,68 @@ set(solid_LIB_SRCS
    predicate_parser.c
    powermanagement.cpp
    networking.cpp
+
+   ifaces/acadapter.cpp
+   ifaces/audiohw.cpp
+   ifaces/battery.cpp
+   ifaces/block.cpp
+   ifaces/button.cpp
+   ifaces/camera.cpp
+   ifaces/cdrom.cpp
+   ifaces/device.cpp
+   ifaces/deviceinterface.cpp
+   ifaces/devicemanager.cpp
+   ifaces/display.cpp
+   ifaces/dvbhw.cpp
+   ifaces/genericinterface.cpp
+   ifaces/networkhw.cpp
+   ifaces/opticaldisc.cpp
+   ifaces/portablemediaplayer.cpp
+   ifaces/processor.cpp
+   ifaces/storage.cpp
+   ifaces/volume.cpp
+
+   backends/hal/acadapter.cpp
+   backends/hal/audiohw.cpp
+   backends/hal/battery.cpp
+   backends/hal/block.cpp
+   backends/hal/button.cpp
+   backends/hal/camera.cpp
+   backends/hal/cdrom.cpp
+   backends/hal/deviceinterface.cpp
+   backends/hal/display.cpp
+   backends/hal/dvbhw.cpp
+   backends/hal/genericinterface.cpp
+   backends/hal/halcalljob.cpp
+   backends/hal/haldevice.cpp
+   backends/hal/halmanager.cpp
+   backends/hal/networkhw.cpp
+   backends/hal/opticaldisc.cpp
+   backends/hal/portablemediaplayer.cpp
+   backends/hal/processor.cpp
+   backends/hal/storage.cpp
+   backends/hal/volume.cpp
+
+   backends/fakehw/fakeacadapter.cpp
+   backends/fakehw/fakeaudiohw.cpp
+   backends/fakehw/fakebattery.cpp
+   backends/fakehw/fakeblock.cpp
+   backends/fakehw/fakebutton.cpp
+   backends/fakehw/fakecamera.cpp
+   backends/fakehw/fakecdrom.cpp
+   backends/fakehw/fakedevice.cpp
+   backends/fakehw/fakedeviceinterface.cpp
+   backends/fakehw/fakedisplay.cpp
+   backends/fakehw/fakedvbhw.cpp
+   backends/fakehw/fakegenericinterface.cpp
+   backends/fakehw/fakejob.cpp
+   backends/fakehw/fakemanager.cpp
+   backends/fakehw/fakenetworkhw.cpp
+   backends/fakehw/fakeopticaldisc.cpp
+   backends/fakehw/fakeportablemediaplayer.cpp
+   backends/fakehw/fakeprocessor.cpp
+   backends/fakehw/fakestorage.cpp
+   backends/fakehw/fakevolume.cpp
 )
 
 qt4_add_dbus_interfaces_no_namespace(solid_LIB_SRCS
@@ -40,7 +104,7 @@ kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${KDE4_KDECORE_LIBS} solidifaces )
+target_link_libraries(solid ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )

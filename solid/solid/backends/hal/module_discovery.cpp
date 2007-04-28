@@ -1,5 +1,5 @@
-/*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+ /*  This file is part of the KDE project
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,11 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include <kgenericfactory.h>
+
+#include "backends/hal/halmanager.h"
 
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
-{
+typedef KGenericFactory<HalManager, Solid::Ifaces::DeviceManager> HalBackendFactory;
+K_EXPORT_COMPONENT_FACTORY(solid_hal_discovery, HalBackendFactory("halbackend"))
 
-}
-
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
-
-}
-
-#include "ifaces/devicemanager.moc"

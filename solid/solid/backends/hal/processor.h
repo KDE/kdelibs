@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,26 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef PROCESSOR_H
+#define PROCESSOR_H
 
+#include "ifaces/processor.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class HalDevice;
+
+class Processor : public DeviceInterface, virtual public Solid::Ifaces::Processor
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::Processor)
 
-}
+public:
+    Processor(HalDevice *device);
+    virtual ~Processor();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual int number() const;
+    virtual qulonglong maxSpeed() const;
+    virtual bool canThrottle() const;
+};
 
-}
-
-#include "ifaces/devicemanager.moc"
+#endif

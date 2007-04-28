@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SOLID_DEVICEMANAGER_H
-#define SOLID_DEVICEMANAGER_H
+#ifndef SOLID_DEVICENOTIFIER_H
+#define SOLID_DEVICENOTIFIER_H
 
 #include <QtCore/QObject>
 #include <QList>

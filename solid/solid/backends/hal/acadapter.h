@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,28 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef ACADAPTER_H
+#define ACADAPTER_H
 
+#include "ifaces/acadapter.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class AcAdapter : public DeviceInterface, virtual public Solid::Ifaces::AcAdapter
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::AcAdapter)
 
-}
+public:
+    AcAdapter(HalDevice *device);
+    virtual ~AcAdapter();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual bool isPlugged() const;
 
-}
+Q_SIGNALS:
+    void plugStateChanged(bool newState);
 
-#include "ifaces/devicemanager.moc"
+private Q_SLOTS:
+    void slotPropertyChanged(const QMap<QString,int> &changes);
+};
+
+#endif

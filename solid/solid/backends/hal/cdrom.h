@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,31 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef CDROM_H
+#define CDROM_H
 
+#include "ifaces/cdrom.h"
+#include "backends/hal/storage.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class Cdrom : public Storage, virtual public Solid::Ifaces::Cdrom
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::Cdrom)
 
-}
+public:
+    Cdrom(HalDevice *device);
+    virtual ~Cdrom();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::Cdrom::MediumTypes supportedMedia() const;
+    virtual int readSpeed() const;
+    virtual int writeSpeed() const;
+    virtual QList<int> writeSpeeds() const;
 
-}
+Q_SIGNALS:
+    void ejectPressed();
 
-#include "ifaces/devicemanager.moc"
+private Q_SLOTS:
+    void slotCondition(const QString &name, const QString &reason);
+};
+
+#endif

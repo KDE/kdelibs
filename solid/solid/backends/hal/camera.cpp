@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,41 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/hal/camera.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+Camera::Camera(HalDevice *device)
+    : DeviceInterface(device)
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+Camera::~Camera()
 {
 
 }
 
-#include "ifaces/devicemanager.moc"
+
+Solid::Camera::AccessType Camera::accessMethod() const
+{
+    QString method = m_device->property("camera.access_method").toString();
+
+    if (method=="storage")
+    {
+        return Solid::Camera::MassStorage;
+    }
+    else if (method=="ptp")
+    {
+        return Solid::Camera::Ptp;
+    }
+    else
+    {
+        return Solid::Camera::Proprietary;
+    }
+}
+
+bool Camera::isGphotoSupported() const
+{
+    return m_device->property("camera.libgphoto2.support").toBool();
+}
+
+#include "backends/hal/camera.moc"

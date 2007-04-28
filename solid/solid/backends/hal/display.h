@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,25 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef DISPLAY_H
+#define DISPLAY_H
 
+#include "ifaces/display.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class HalDevice;
+
+class Display : public DeviceInterface, virtual public Solid::Ifaces::Display
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::Display)
 
-}
+public:
+    Display(HalDevice *device);
+    virtual ~Display();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::Display::DisplayType type() const;
+    virtual int lcdBrightness() const;
+};
 
-}
-
-#include "ifaces/devicemanager.moc"
+#endif

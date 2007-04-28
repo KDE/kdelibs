@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,27 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef NETWORKHW_H
+#define NETWORKHW_H
 
+#include "ifaces/networkhw.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class HalDevice;
+
+class NetworkHw : public DeviceInterface, virtual public Solid::Ifaces::NetworkHw
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::NetworkHw)
 
-}
+public:
+    NetworkHw(HalDevice *device);
+    virtual ~NetworkHw();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual QString ifaceName() const;
+    virtual bool isWireless() const;
+    virtual QString hwAddress() const;
+    virtual qulonglong macAddress() const;
+};
 
-}
-
-#include "ifaces/devicemanager.moc"
+#endif

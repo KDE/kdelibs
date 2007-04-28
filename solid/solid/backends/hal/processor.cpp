@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,34 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/hal/processor.h"
 
+#include "backends/hal/haldevice.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+Processor::Processor(HalDevice *device)
+    : DeviceInterface(device)
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+Processor::~Processor()
 {
 
 }
 
-#include "ifaces/devicemanager.moc"
+int Processor::number() const
+{
+    return m_device->property("processor.number").toInt();
+}
+
+qulonglong Processor::maxSpeed() const
+{
+    return m_device->property("processor.maximum_speed").toULongLong();
+}
+
+bool Processor::canThrottle() const
+{
+    return m_device->property("processor.can_throttle").toBool();
+}
+
+#include "backends/hal/processor.moc"

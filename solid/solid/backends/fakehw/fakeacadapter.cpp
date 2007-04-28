@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,33 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/fakehw/fakeacadapter.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+FakeAcAdapter::FakeAcAdapter(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
-
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+FakeAcAdapter::~FakeAcAdapter()
 {
-
 }
 
-#include "ifaces/devicemanager.moc"
+bool FakeAcAdapter::isPlugged() const
+{
+    return fakeDevice()->property("isPlugged").toBool();
+}
+
+
+void FakeAcAdapter::plug()
+{
+    fakeDevice()->setProperty("isPlugged", true);
+    emit plugStateChanged(true);
+}
+
+void FakeAcAdapter::unplug()
+{
+    fakeDevice()->setProperty("isPlugged", false);
+    emit plugStateChanged(false);
+}
+
+#include "backends/fakehw/fakeacadapter.moc"

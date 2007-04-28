@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,32 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/fakehw/fakeblock.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+FakeBlock::FakeBlock(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+FakeBlock::~FakeBlock()
 {
 
 }
 
-#include "ifaces/devicemanager.moc"
+int FakeBlock::deviceMajor() const
+{
+    return fakeDevice()->property("major").toInt();
+}
+
+int FakeBlock::deviceMinor() const
+{
+    return fakeDevice()->property("minor").toInt();
+}
+
+QString FakeBlock::device() const
+{
+    return fakeDevice()->property("device").toString();
+}
+
+#include "backends/fakehw/fakeblock.moc"

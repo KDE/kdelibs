@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Michaël Larouche <michael.larouche@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,19 +16,15 @@
     Boston, MA 02110-1301, USA.
 
 */
+#include "backends/fakehw/fakedeviceinterface.h"
 
-#include "ifaces/devicemanager.h"
-
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+FakeDeviceInterface::FakeDeviceInterface(FakeDevice *device)
+    : QObject(device), m_device(device)
 {
-
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+FakeDeviceInterface::~FakeDeviceInterface()
 {
-
 }
 
-#include "ifaces/devicemanager.moc"
+#include "backends/fakehw/fakedeviceinterface.moc"

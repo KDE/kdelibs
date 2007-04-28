@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,36 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/fakehw/fakenetworkhw.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+FakeNetworkHw::FakeNetworkHw(FakeDevice *device)
+ : FakeDeviceInterface(device)
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+FakeNetworkHw::~FakeNetworkHw()
 {
-
 }
 
-#include "ifaces/devicemanager.moc"
+QString FakeNetworkHw::ifaceName() const
+{
+    return fakeDevice()->property("ifaceName").toString();
+}
+
+bool FakeNetworkHw::isWireless() const
+{
+    return fakeDevice()->property("wireless").toBool();
+}
+
+QString FakeNetworkHw::hwAddress() const
+{
+    return fakeDevice()->property("hwAddress").toString();
+}
+
+qulonglong FakeNetworkHw::macAddress() const
+{
+    return fakeDevice()->property("macAddress").toULongLong();
+}
+
+#include "backends/fakehw/fakenetworkhw.moc"

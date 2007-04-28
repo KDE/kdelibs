@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,33 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef AUDIOHW_H
+#define AUDIOHW_H
 
+#include "ifaces/audiohw.h"
+#include "backends/hal/deviceinterface.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class HalDevice;
+
+class AudioHw : public DeviceInterface, virtual public Solid::Ifaces::AudioHw
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::AudioHw)
 
-}
+public:
+    AudioHw(HalDevice *device);
+    virtual ~AudioHw();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::AudioHw::AudioDriver driver() const;
+    virtual QString driverHandler() const;
 
-}
+    virtual QString name() const;
+    virtual Solid::AudioHw::AudioHwTypes deviceType() const;
+    virtual Solid::AudioHw::SoundcardType soundcardType() const;
 
-#include "ifaces/devicemanager.moc"
+private:
+    mutable Solid::AudioHw::SoundcardType m_soundcardType;
+    mutable bool m_soundcardTypeValid;
+};
+
+#endif

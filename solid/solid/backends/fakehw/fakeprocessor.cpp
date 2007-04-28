@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Michaël Larouche <michael.larouche@kdemail.net>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,31 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/fakehw/fakeprocessor.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+FakeProcessor::FakeProcessor(FakeDevice *device)
+ : FakeDeviceInterface(device)
 {
-
+    
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+FakeProcessor::~FakeProcessor()
 {
-
 }
 
-#include "ifaces/devicemanager.moc"
+int FakeProcessor::number() const
+{
+    return fakeDevice()->property("number").toInt();
+}
+
+qulonglong FakeProcessor::maxSpeed() const
+{
+    return fakeDevice()->property("maxSpeed").toULongLong();
+}
+
+bool FakeProcessor::canThrottle() const
+{
+    return fakeDevice()->property("canThrottle").toBool();
+}
+
+#include "backends/fakehw/fakeprocessor.moc"

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,40 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#include "backends/fakehw/fakecamera.h"
 
-
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+FakeCamera::FakeCamera(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
 
 }
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
+FakeCamera::~FakeCamera()
 {
 
 }
 
-#include "ifaces/devicemanager.moc"
+Solid::Camera::AccessType FakeCamera::accessMethod() const
+{
+    QString method = fakeDevice()->property("accessMethod").toString();
+
+    if (method=="storage")
+    {
+        return Solid::Camera::MassStorage;
+    }
+    else if (method=="ptp")
+    {
+        return Solid::Camera::Ptp;
+    }
+    else
+    {
+        return Solid::Camera::Proprietary;
+    }
+}
+
+bool FakeCamera::isGphotoSupported() const
+{
+    return fakeDevice()->property("gphotoSupport").toBool();
+}
+
+#include "backends/fakehw/fakecamera.moc"

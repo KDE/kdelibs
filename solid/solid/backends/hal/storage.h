@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2005 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,18 +17,31 @@
 
 */
 
-#include "ifaces/devicemanager.h"
+#ifndef STORAGE_H
+#define STORAGE_H
 
+#include "ifaces/storage.h"
+#include "backends/hal/block.h"
 
-Solid::Ifaces::DeviceManager::DeviceManager(QObject *parent)
-    : QObject(parent)
+class Storage : public Block, virtual public Solid::Ifaces::Storage
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::Storage)
 
-}
+public:
+    Storage(HalDevice *device);
+    virtual ~Storage();
 
-Solid::Ifaces::DeviceManager::~DeviceManager()
-{
+    virtual Solid::Storage::Bus bus() const;
+    virtual Solid::Storage::DriveType driveType() const;
 
-}
+    virtual bool isRemovable() const;
+    virtual bool isEjectRequired() const;
+    virtual bool isHotpluggable() const;
+    virtual bool isMediaCheckEnabled() const;
 
-#include "ifaces/devicemanager.moc"
+    virtual QString vendor() const;
+    virtual QString product() const;
+};
+
+#endif
