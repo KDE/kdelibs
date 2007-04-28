@@ -182,7 +182,8 @@ void KBookmarkManager::init( const QString& dbusPath )
 
 KBookmarkManager::~KBookmarkManager()
 {
-    s_pSelf->removeAll( this );
+    if(!s_pSelf.isDestroyed())
+        s_pSelf->removeAll( this );
     delete d;
 }
 
