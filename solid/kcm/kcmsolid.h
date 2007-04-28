@@ -40,7 +40,6 @@ private Q_SLOTS:
 private:
     int m_changedChooser;
 
-    BackendChooser *m_hardwareChooser;
     BackendChooser *m_powerChooser;
     BackendChooser *m_networkChooser;
     BackendChooser *m_bluetoothChooser;
