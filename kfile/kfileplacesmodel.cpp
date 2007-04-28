@@ -69,7 +69,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // Let's put some places in there if it's empty
     KBookmarkGroup root = d->bookmarkManager->root();
     if (root.first().isNull()) {
-        root.addBookmark(d->bookmarkManager, i18n("Home"), KUrl(KUser().homeDir()), "folder-home");
+        root.addBookmark(d->bookmarkManager, i18n("Home"), KUrl(KUser().homeDir()), "user-home");
         root.addBookmark(d->bookmarkManager, i18n("Network"), KUrl("remote:/"), "network-local");
         root.addBookmark(d->bookmarkManager, i18n("Root"), KUrl("/"), "folder-red");
         root.addBookmark(d->bookmarkManager, i18n("Trash"), KUrl("trash:/"), "user-trash");
