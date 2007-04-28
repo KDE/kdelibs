@@ -34,9 +34,7 @@ K_GLOBAL_STATIC(Solid::DeviceManagerPrivate, globalDeviceManager)
 Solid::DeviceManagerPrivate::DeviceManagerPrivate()
     : m_nullDevice(new DevicePrivate(QString()))
 {
-    loadBackend("Hardware Discovery",
-                "SolidDeviceManager",
-                "Solid::Ifaces::DeviceManager");
+    loadBackend();
 
     if (managerBackend()!=0) {
         connect(managerBackend(), SIGNAL(deviceAdded(QString)),

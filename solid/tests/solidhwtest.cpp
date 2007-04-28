@@ -35,6 +35,8 @@
 #include <fakemanager.h>
 #include <fakedevice.h>
 
+#include <stdlib.h>
+
 #ifndef FAKE_COMPUTER_XML
     #error "FAKE_COMPUTER_XML not set. An XML file describing a computer is required for this test"
 #endif
@@ -43,8 +45,10 @@ QTEST_KDEMAIN_CORE(SolidHwTest)
 
 void SolidHwTest::initTestCase()
 {
-    fakeManager = new FakeManager(0, QStringList(), FAKE_COMPUTER_XML);
-    Solid::ManagerBasePrivate::_k_forcePreloadedBackend("Solid::Ifaces::DeviceManager", fakeManager);
+    setenv("SOLID_FAKEHW", FAKE_COMPUTER_XML, 1);
+    Solid::ManagerBasePrivate *manager
+        = dynamic_cast<Solid::ManagerBasePrivate*>(Solid::DeviceNotifier::instance());
+    fakeManager = qobject_cast<FakeManager*>(manager->managerBackend());
 }
 
 void SolidHwTest::testAllDevices()
