@@ -25,6 +25,7 @@
 #include <QtCore/QMap>
 #include <Qt3Support/Q3Dict>
 #include <Qt3Support/Q3Cache>
+#include <Qt3Support/Q3PtrList>
 #include <QtGui/QWidget>
 
 #include <kurl.h>

@@ -19,10 +19,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kio/chmodjob.h"
+#include "chmodjob.h"
 
-#include "kio/job.h"
-#include "kio/jobuidelegate.h"
+#include "job.h"
+#include "jobuidelegate.h"
 
 #include <kglobal.h>
 #include <kuiserverjobtracker.h>

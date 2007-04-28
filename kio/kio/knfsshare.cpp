@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "knfsshare.h"
+
 #include <QSet>
 #include <QtCore/QFile>
 #include <QtCore/QMutableStringListIterator>
@@ -25,8 +27,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-
-#include "knfsshare.h"
 
 class KNFSShare::KNFSSharePrivate
 {

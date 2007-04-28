@@ -51,10 +51,9 @@
 
 #include "kremoteencoding.h"
 
-#include "kio/slavebase.h"
-#include "kio/connection.h"
-#include "kio/ioslave_defaults.h"
-#include "kio/slaveinterface.h"
+#include "connection.h"
+#include "ioslave_defaults.h"
+#include "slaveinterface.h"
 
 #ifndef NDEBUG
 #ifdef HAVE_BACKTRACE

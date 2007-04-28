@@ -18,6 +18,8 @@
 */
 // $Id: kacl.cpp 424977 2005-06-13 15:13:22Z tilladam $
 
+#include "kacl.h"
+
 #include <config-acl.h>
 
 #include <sys/types.h>
@@ -31,8 +33,6 @@
 #include <QHash>
 
 #include <kdebug.h>
-
-#include "kacl.h"
 
 #include <QList>
 #include <QPair>

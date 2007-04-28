@@ -32,6 +32,9 @@
 // deep copies for list of dirs. (sven)
 // Mar 28. 1998 - Created.  (sven)
 
+#include "kdirwatch.h"
+#include "kdirwatch_p.h"
+
 #include <config-kdirwatch.h>
 #include <config.h>
 
@@ -53,25 +56,9 @@
 // debug
 #include <sys/ioctl.h>
 
-#ifdef HAVE_SYS_INOTIFY_H
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/inotify.h>
-
-#ifndef IN_DONT_FOLLOW
-#define IN_DONT_FOLLOW 0x02000000
-#endif
-
-#ifndef IN_ONLYDIR
-#define IN_ONLYDIR 0x01000000
-#endif
-
-#endif
 
 #include <sys/utsname.h>
 
-#include "kdirwatch.h"
-#include "kdirwatch_p.h"
 #include "global.h" //  KIO::probably_slow_mounted
 
 #define NO_NOTIFY (time_t) 0

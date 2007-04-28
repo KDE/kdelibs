@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbookmarkimporter_ie.h"
+
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocale.h>
@@ -30,7 +32,6 @@
 #include <sys/stat.h>
 
 #include "kbookmarkimporter.h"
-#include "kbookmarkimporter_ie.h"
 
 void KIEBookmarkImporter::parseIEBookmarks_url_file( const QString &filename, const QString &name ) {
     static const int g_lineLimit = 16*1024;

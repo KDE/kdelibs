@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "davjob.h"
+
 #include <kurl.h>
 
 #include <QtCore/QObject>
@@ -31,12 +33,12 @@
 
 #include <kdebug.h>
 #include <kuiserverjobtracker.h>
-#include <kio/jobclasses.h>
-#include <kio/global.h>
 #include <kio/http.h>
-#include <kio/davjob.h>
-#include <kio/job.h>
-#include <kio/slaveinterface.h>
+
+#include "jobclasses.h"
+#include "global.h"
+#include "job.h"
+#include "slaveinterface.h"
 
 #include "jobuidelegate.h"
 

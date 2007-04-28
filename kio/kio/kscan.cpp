@@ -18,12 +18,12 @@
 */
 
 
+#include "kscan.h"
+
 #include <QtCore/QFile>
 
 #include <klocale.h>
 #include <kservicetypetrader.h>
-
-#include "kscan.h"
 
 // static factory method
 KScanDialog * KScanDialog::getScanDialog( QWidget *parent )

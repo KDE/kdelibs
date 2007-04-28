@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kopenssl.h"
+
 #include <config.h>
 #include <ksslconfig.h>
 
@@ -32,7 +34,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include "kopenssl.h"
 
 extern "C" {
 #ifdef KSSL_HAVE_SSL

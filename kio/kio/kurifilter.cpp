@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "kurifilter.h"
+
 #include <config.h>
 #include <QPixmap>
 
@@ -26,8 +28,6 @@
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
 #include <klibloader.h>
-
-#include "kurifilter.h"
 
 typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
 

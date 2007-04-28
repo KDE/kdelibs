@@ -7,9 +7,27 @@
 #ifndef KDIRWATCH_P_H
 #define KDIRWATCH_P_H
 
+#include <config-kdirwatch.h>
+#include "kdirwatch.h"
+
 #ifdef HAVE_FAM
 #include <limits.h>
 #include <fam.h>
+#endif
+
+#ifdef HAVE_SYS_INOTIFY_H
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/inotify.h>
+
+#ifndef IN_DONT_FOLLOW
+#define IN_DONT_FOLLOW 0x02000000
+#endif
+
+#ifndef IN_ONLYDIR
+#define IN_ONLYDIR 0x01000000
+#endif
+
 #endif
 
 #include <ctime>

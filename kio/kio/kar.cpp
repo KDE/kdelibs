@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kar.h"
+
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <time.h>
@@ -25,7 +27,6 @@
 #include <QtCore/QRegExp>
 
 #include "kfilterdev.h"
-#include "kar.h"
 //#include "klimitediodevice.h"
 
 ////////////////////////////////////////////////////////////////////////

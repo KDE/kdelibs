@@ -22,8 +22,8 @@
 #ifndef KIO_DATASLAVE_H
 #define KIO_DATASLAVE_H
 
-#include <kio/global.h>
-#include <kio/slave.h>
+#include "global.h"
+#include "slave.h"
 
 class QTimer;
 

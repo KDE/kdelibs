@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbookmarkdombuilder.h"
+
 #include <kbookmarkmanager.h>
 #include <kdebug.h>
-
-#include "kbookmarkdombuilder.h"
 
 KBookmarkDomBuilder::KBookmarkDomBuilder(
    const KBookmarkGroup &bkGroup, KBookmarkManager *manager

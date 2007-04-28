@@ -22,8 +22,8 @@
 #define KIO_CHMODJOB_H
 
 #include <kurl.h>
-#include <kio/global.h>
-#include <kio/job.h>
+#include "global.h"
+#include "job.h"
 #include <kfileitem.h>
 
 #include <QtCore/QLinkedList>

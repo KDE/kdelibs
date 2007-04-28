@@ -21,6 +21,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kntlm.h"
+
 #include <string.h>
 
 #include <QtCore/QDate>
@@ -31,7 +33,6 @@
 #include <kdebug.h>
 
 #include "des.h"
-#include "kntlm.h"
 
 QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unicode )
 {

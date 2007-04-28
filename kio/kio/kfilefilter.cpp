@@ -18,12 +18,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kfilefilter.h"
+
 #include <QtCore/QRegExp>
 
 #include <kfileitem.h>
 #include <kglobal.h>
-
-#include "kfilefilter.h"
 
 KSimpleFileFilter::KSimpleFileFilter()
     : m_filterDotFiles( true ),

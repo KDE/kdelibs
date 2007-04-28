@@ -21,9 +21,10 @@
 
 */
 
+#include "kwalletd.h"
+
 #include "kbetterthankdialog.h"
 #include "kwalletwizard.h"
-#include "kwalletd.h"
 #include "ktimeout.h"
 
 #include <kapplication.h>

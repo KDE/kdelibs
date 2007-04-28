@@ -25,9 +25,9 @@
 #include <QtCore/QMutableStringListIterator>
 
 #include <kurl.h>
-#include <kio/global.h>
+#include "global.h"
 
-#include <kio/jobclasses.h>
+#include "jobclasses.h"
 
 class Observer;
 class QTimer;

@@ -17,14 +17,14 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kshellcompletion.h"
+
 #include <stdlib.h>
 #include <kdebug.h>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QRegExp>
 #include <kcompletion.h>
-
-#include "kshellcompletion.h"
 
 class KShellCompletionPrivate
 {

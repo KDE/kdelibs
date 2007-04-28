@@ -21,7 +21,7 @@
 #ifndef _KSSLPKCS12_H
 #define _KSSLPKCS12_H
 
-#include "ksslconfig.h"
+#include <ksslconfig.h>
 
 #ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt

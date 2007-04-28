@@ -18,12 +18,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksslsigners.h"
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtDBus/QtDBus>
 #include "ksslcertificate.h"
-#include "ksslsigners.h"
 #include <stdlib.h>
 #include <kdebug.h>
 

@@ -16,6 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kurlcombobox.h"
+
 #include <QtCore/QDir>
 
 #include <kdebug.h>
@@ -23,8 +25,6 @@
 #include <kicon.h>
 #include <klocale.h>
 #include <kmimetype.h>
-
-#include <kurlcombobox.h>
 
 class KUrlComboBox::KUrlComboBoxPrivate
 {

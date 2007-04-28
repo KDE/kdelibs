@@ -19,10 +19,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "karchive.h"
 #include "klimitediodevice.h"
+
+#include <config.h>
 
 #include <kdebug.h>
 #include <ksavefile.h>

@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ktar.h"
+
 #include <stdlib.h> // strtol
 #include <time.h> // time()
 #include <assert.h>
@@ -30,7 +32,6 @@
 #include <kfilterdev.h>
 #include <kfilterbase.h>
 
-#include "ktar.h"
 #include <kstandarddirs.h>
 
 ////////////////////////////////////////////////////////////////////////

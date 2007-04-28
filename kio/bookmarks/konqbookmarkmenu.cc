@@ -17,6 +17,9 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
+#include "konqbookmarkmenu.h"
+
 #include <QMenu>
 #include <QFile>
 
@@ -31,8 +34,6 @@
 #include "kbookmarkimporter.h"
 #include "kbookmarkimporter_opera.h"
 #include "kbookmarkimporter_ie.h"
-
-#include "konqbookmarkmenu.h"
 
 KonqBookmarkContextMenu::KonqBookmarkContextMenu()
 {

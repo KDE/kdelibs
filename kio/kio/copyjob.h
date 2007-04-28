@@ -29,7 +29,7 @@
 
 #include <kurl.h>
 
-#include <kio/jobclasses.h>
+#include "jobclasses.h"
 
 class Observer;
 class QTimer;

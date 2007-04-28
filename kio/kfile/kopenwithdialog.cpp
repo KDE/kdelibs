@@ -21,6 +21,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kopenwithdialog.h"
+#include "kopenwithdialog_p.h"
+
 #include <QtCore/QtAlgorithms>
 #include <QtCore/QList>
 #include <QtGui/QLabel>
@@ -41,9 +44,6 @@
 #include <kurlrequester.h>
 #include <kmimetype.h>
 #include <kservicegroup.h>
-
-#include "kopenwithdialog.h"
-#include "kopenwithdialog_p.h"
 
 #include <assert.h>
 #include <stdlib.h>

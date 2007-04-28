@@ -18,6 +18,9 @@
    Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
+#include "sessiondata.h"
+#include "sessiondata.moc"
+
 #include <config.h>
 
 #include <QtCore/QList>
@@ -34,9 +37,6 @@
 #include <kdesu/client.h>
 #include <kio/slaveconfig.h>
 #include <kio/http_slave_defaults.h>
-
-#include "sessiondata.h"
-#include "sessiondata.moc"
 
 namespace KIO {
 

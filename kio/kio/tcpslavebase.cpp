@@ -21,6 +21,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "tcpslavebase.h"
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -50,8 +52,6 @@
 #include <ktoolinvocation.h>
 #include <ksocketfactory.h>
 #include <kprotocolmanager.h>
-
-#include "kio/tcpslavebase.h"
 
 using namespace KIO;
 

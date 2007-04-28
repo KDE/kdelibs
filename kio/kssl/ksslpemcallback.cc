@@ -18,12 +18,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksslpemcallback.h"
+
 #include <config.h>
 #include <ksslconfig.h>
 
 #include <kpassworddialog.h>
 #include <klocale.h>
-#include "ksslpemcallback.h"
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 #ifdef KSSL_HAVE_SSL

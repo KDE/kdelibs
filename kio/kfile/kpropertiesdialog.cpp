@@ -41,6 +41,8 @@
  *  Waldo Bastian <bastian@kde.org>
  */
 
+#include "kpropertiesdialog.h"
+
 #include <config.h>
 #include <config-acl.h>
 extern "C" {
@@ -125,7 +127,6 @@ extern "C" {
 #include "kacleditwidget.h"
 #endif
 
-#include "kpropertiesdialog.h"
 #include <kbuildsycocaprogressdialog.h>
 #include <kmimetypechooser.h>
 

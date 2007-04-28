@@ -16,10 +16,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
+#include "global.h"
+#include "job.h"
 
-#include "kio/global.h"
-#include "kio/job.h"
+#include <config.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -1220,12 +1220,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
 
 #ifdef Q_OS_UNIX
 
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <qfile.h>
-
-#include <config.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -1258,7 +1253,6 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
 #include <sys/mntctl.h>
 #include <sys/vmount.h>
 #include <sys/vfs.h>
-#include "global.h"
 
 /* AIX does not prototype mntctl anywhere that I can find */
 #ifndef mntctl

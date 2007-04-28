@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "slave.h"
+
 #include <config.h>
 
 #include <time.h>
@@ -44,8 +46,7 @@
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
 
-#include "kio/dataprotocol.h"
-#include "kio/slave.h"
+#include "dataprotocol.h"
 #include "kservice.h"
 #include <kio/global.h>
 #include <kprotocolmanager.h>

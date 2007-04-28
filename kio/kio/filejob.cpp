@@ -18,13 +18,13 @@
  *
  **/
 
-#include "kio/slaveinterface.h"
-#include "kio/slavebase.h"
-#include "kio/connection.h"
-#include "kio/scheduler.h"
-#include "kio/slave.h"
+#include "filejob.h"
 
-#include "kio/filejob.h"
+#include "slaveinterface.h"
+#include "slavebase.h"
+#include "connection.h"
+#include "scheduler.h"
+#include "slave.h"
 
 #include <QTimer>
 #include <kdebug.h>

@@ -32,8 +32,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <kio/jobclasses.h>
-#include <kio/global.h>
+#include "jobclasses.h"
+#include "global.h"
 
 class Observer;
 class QTimer;

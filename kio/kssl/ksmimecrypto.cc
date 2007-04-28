@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksmimecrypto.h"
 
 #include <Qt3Support/Q3PtrList>
 #include <QtCore/QString>
@@ -26,7 +27,6 @@
 #include "kopenssl.h"
 #include "ksslcertificate.h"
 #include "ksslpkcs12.h"
-#include "ksmimecrypto.h"
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems

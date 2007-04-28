@@ -18,10 +18,10 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "dataslave.h"
 #include "dataprotocol.h"
+
+#include <config.h>
 
 #include <klocale.h>
 #include <kdebug.h>

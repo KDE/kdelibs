@@ -17,11 +17,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kio/sessiondata.h"
-#include "kio/slaveconfig.h"
-#include "kio/scheduler.h"
-#include "kio/authinfo.h"
-#include "kio/slave.h"
+#include "scheduler.h"
+
+#include "sessiondata.h"
+#include "slaveconfig.h"
+#include "authinfo.h"
+#include "slave.h"
 
 #include <kdebug.h>
 #include <kglobal.h>

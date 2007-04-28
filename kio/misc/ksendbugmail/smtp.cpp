@@ -1,10 +1,10 @@
+#include "smtp.h"
+
 #include <sys/utsname.h>
 #include <unistd.h>
 #include <stdio.h>
 
 #include <kdebug.h>
-
-#include "smtp.h"
 
 SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 {

@@ -21,7 +21,7 @@
 #include <kdebug.h>
 #include <kcodecs.h>
 #include <kurl.h>
-#include <kio/global.h>
+#include "global.h"
 #include <kglobal.h>
 
 #include <QtCore/QByteArray>

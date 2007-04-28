@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbookmarkimporter_opera.h"
+
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocale.h>
@@ -30,7 +32,6 @@
 #include <sys/stat.h>
 
 #include "kbookmarkimporter.h"
-#include "kbookmarkimporter_opera.h"
 
 void KOperaBookmarkImporter::parseOperaBookmarks( )
 {

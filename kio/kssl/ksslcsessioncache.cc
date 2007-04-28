@@ -18,6 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksslcsessioncache.h"
+
 #include <QtCore/QPair>
 #include <QtCore/QString>
 #include <Qt3Support/Q3PtrList>
@@ -26,8 +28,7 @@
 #include <kstaticdeleter.h>
 #include <kurl.h>
 
-#include "ksslconfig.h"
-#include "ksslcsessioncache.h"
+#include <ksslconfig.h>
 
 /*
  * Operation:

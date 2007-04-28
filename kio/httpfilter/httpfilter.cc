@@ -17,13 +17,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "httpfilter.h"
+
 #include <kio/global.h>
 
 #include <klocale.h>
 
 #include <stdio.h>
-
-#include "httpfilter.h"
 
 HTTPFilterBase::HTTPFilterBase()
  : last(0)

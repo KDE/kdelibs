@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kbookmarkimporter.h"
+
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocale.h>
@@ -36,8 +38,6 @@
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter_opera.h"
 #include "kbookmarkimporter_ie.h"
-
-#include "kbookmarkimporter.h"
 
 void KXBELBookmarkImporterImpl::parse()
 {

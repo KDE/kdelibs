@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "slaveconfig.h"
+
 #include <assert.h>
 
 #include <QtCore/QHash>
@@ -26,8 +28,6 @@
 #include <ksharedconfig.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
-
-#include "slaveconfig.h"
 
 using namespace KIO;
 

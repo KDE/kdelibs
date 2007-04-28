@@ -18,6 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "kssl.h"
+
 #include <config.h>
 #include <ksslconfig.h>
 
@@ -35,8 +37,6 @@
 #include <openssl/rand.h>
 #undef crypt
 #endif
-
-#include "kssl.h"
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

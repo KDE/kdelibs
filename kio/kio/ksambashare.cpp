@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ksambashare.h"
+
 #include <QSet>
 #include <QtCore/QFile>
 #include <QtCore/QMutableStringListIterator>
@@ -24,8 +26,6 @@
 #include <kdirwatch.h>
 #include <kdebug.h>
 #include <kconfig.h>
-
-#include "ksambashare.h"
 
 class KSambaShare::KSambaSharePrivate
 {

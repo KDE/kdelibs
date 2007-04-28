@@ -16,11 +16,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kremoteencoding.h"
+
 #include <config.h>
 
 #include <kdebug.h>
 #include <kstringhandler.h>
-#include "kremoteencoding.h"
 
 KRemoteEncoding::KRemoteEncoding(const char *name)
   : codec(0), d(0)

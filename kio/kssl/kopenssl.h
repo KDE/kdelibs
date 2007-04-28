@@ -28,7 +28,7 @@ class KOpenSSLProxyPrivate;
 #include <kio/kio_export.h>
 
 #include <klibloader.h>
-#include "ksslconfig.h"
+#include <ksslconfig.h>
 
 #ifdef KSSL_HAVE_SSL
 #define crypt _openssl_crypt

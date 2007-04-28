@@ -18,13 +18,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksslpeerinfo.h"
+
 #include <config.h>
 #include <ksslconfig.h>
 
 #include <QtCore/QRegExp>
 #include <QtCore/QUrl>
 
-#include "ksslpeerinfo.h"
 #include <kdebug.h>
 
 #include "ksslx509map.h"

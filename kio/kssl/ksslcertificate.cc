@@ -18,6 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksslcertificate.h"
 
 #include <config.h>
 #include <ksslconfig.h>
@@ -30,7 +31,6 @@
 #include <QtCore/QFile>
 
 #include "kssldefs.h"
-#include "ksslcertificate.h"
 #include "ksslcertchain.h"
 #include "ksslutils.h"
 

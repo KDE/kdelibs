@@ -20,7 +20,7 @@
 #ifndef __kssldefs_h
 #define __kssldefs_h
 
-#include "ksslconfig.h"
+#include <ksslconfig.h>
 
 #ifdef HAVE_OLD_SSL_API
 #define OPENSSL_malloc Malloc

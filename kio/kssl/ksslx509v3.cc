@@ -18,10 +18,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "ksslx509v3.h"
+
 #include <config.h>
 #include <ksslconfig.h>
 
-#include "ksslx509v3.h"
 #include <kopenssl.h>
 #include <kdebug.h>
 

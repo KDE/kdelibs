@@ -11,9 +11,10 @@
  * exact licensing terms.
  */
 
+#include "kicondialog.h"
+
 #include <kio/kio_export.h>
 
-#include "kicondialog.h"
 #include <kbuttongroup.h>
 #include <klistwidgetsearchline.h>
 #include <assert.h>

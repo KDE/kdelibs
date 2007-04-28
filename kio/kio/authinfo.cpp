@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "authinfo.h"
+
 #include <config.h>
 
 #include <sys/stat.h> // don't move it down the include order, it breaks compilation on MSVC
@@ -34,8 +36,6 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <ksavefile.h>
-
-#include "kio/authinfo.h"
 
 #define NETRC_READ_BUF_SIZE 4096
 

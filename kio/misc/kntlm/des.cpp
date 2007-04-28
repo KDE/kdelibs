@@ -14,9 +14,10 @@
  * All modifications are placed under the license of libmcrypt.
  */
 
+#include "des.h"
+
 #include <string.h>
 #include <QtCore/qendian.h>
-#include "des.h"
 
 static void permute_ip (unsigned char *inblock, DES_KEY * key, unsigned char *outblock);
 static void permute_fp (unsigned char *inblock, DES_KEY * key, unsigned char *outblock);

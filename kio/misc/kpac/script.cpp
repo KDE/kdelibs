@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "script.h"
+
 
 #include <cstdlib>
 #include <vector>
@@ -37,8 +39,6 @@
 
 #include <kurl.h>
 #include <kjs/object.h>
-
-#include "script.h"
 
 using namespace KJS;
 

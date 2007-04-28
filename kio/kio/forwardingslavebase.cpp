@@ -17,16 +17,17 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "forwardingslavebase.h"
+
+#include "deletejob.h"
+#include "job.h"
+
 #include <kdebug.h>
-#include <kio/deletejob.h>
-#include <kio/job.h>
 #include <kmimetype.h>
 #include <kprotocolinfo.h>
 
 #include <QtGui/QApplication>
 #include <QtCore/QEventLoop>
-
-#include "forwardingslavebase.h"
 
 namespace KIO
 {

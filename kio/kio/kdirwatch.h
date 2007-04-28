@@ -21,6 +21,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QDate>
 #include <QtCore/QMap>
+#include <QtCore/QSocketNotifier>
 
 #include <kio/kio_export.h>
 

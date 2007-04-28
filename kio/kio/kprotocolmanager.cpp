@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kprotocolmanager.h"
+
 #include <string.h>
 #include <sys/utsname.h>
 #include <QtDBus/QtDBus>
@@ -37,7 +39,6 @@
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
 
-#include "kprotocolmanager.h"
 #include <kprotocolinfofactory.h>
 
 class

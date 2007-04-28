@@ -21,6 +21,7 @@
 */
 
 #include "kdirlister.h"
+#include "kdirlister_p.h"
 
 #include <QtCore/QRegExp>
 #include <Qt3Support/Q3PtrList>
@@ -35,8 +36,6 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include "kprotocolmanager.h"
-
-#include "kdirlister_p.h"
 
 #include <assert.h>
 

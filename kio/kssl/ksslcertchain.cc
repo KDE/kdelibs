@@ -17,12 +17,14 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+
+#include "ksslcertchain.h"
+
 #include <config.h>
 #include <ksslconfig.h>
 
 #include "kssldefs.h"
 #include "ksslcertificate.h"
-#include "ksslcertchain.h"
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems

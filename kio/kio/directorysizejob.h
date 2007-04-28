@@ -20,7 +20,7 @@
 #ifndef DIRECTORYSIZEJOB_H
 #define DIRECTORYSIZEJOB_H
 
-#include <kio/job.h>
+#include "job.h"
 #include <kfileitem.h>
 
 namespace KIO {

@@ -20,6 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "netaccess.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
@@ -39,13 +41,12 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
-#include <kio/job.h>
-#include <kio/copyjob.h>
-#include <kio/deletejob.h>
-#include <kio/jobuidelegate.h>
-#include <kio/scheduler.h>
 
-#include "kio/netaccess.h"
+#include "job.h"
+#include "copyjob.h"
+#include "deletejob.h"
+#include "jobuidelegate.h"
+#include "scheduler.h"
 
 using namespace KIO;
 

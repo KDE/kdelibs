@@ -21,7 +21,7 @@
 #define _INCLUDE_KSSLUTILS_H
 
 #include <kio/kio_export.h>
-#include "ksslconfig.h"
+#include <ksslconfig.h>
 
 #include <unistd.h>
 #ifdef KSSL_HAVE_SSL

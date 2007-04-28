@@ -25,7 +25,7 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
-#include "kio/jobuidelegate.h"
+#include "jobuidelegate.h"
 #include <kdirnotify.h>
 #include <kuiserverjobtracker.h>
 

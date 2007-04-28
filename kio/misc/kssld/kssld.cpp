@@ -20,12 +20,13 @@
 
 */
 
+#include "kssld.h"
+
 #include <config.h>
 
 #include <QtCore/QTimer>
 #include <Q3CString>
 
-#include "kssld.h"
 #include <ksharedconfig.h>
 #include <kconfig.h>
 #include <ksslcertchain.h>

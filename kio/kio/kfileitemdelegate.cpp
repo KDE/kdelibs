@@ -19,6 +19,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kfileitemdelegate.h"
+#include "kfileitemdelegate.moc"
+
 #include <QApplication>
 #include <QStyle>
 #include <QModelIndex>
@@ -35,9 +38,6 @@
 #include <kpixmapeffect.h>
 #include <kdirmodel.h>
 #include <kfileitem.h>
-
-#include "kfileitemdelegate.h"
-#include "kfileitemdelegate.moc"
 
 
 //#define DEBUG_RECTS

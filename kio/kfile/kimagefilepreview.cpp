@@ -7,6 +7,8 @@
  * License. See the file "COPYING" for the exact licensing terms.
  */
 
+#include "kimagefilepreview.h"
+
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
@@ -26,7 +28,6 @@
 #include <kio/previewjob.h>
 #include <kconfiggroup.h>
 
-#include "kimagefilepreview.h"
 #include <config-kfile.h>
 
 /**** KImageFilePreview ****/
