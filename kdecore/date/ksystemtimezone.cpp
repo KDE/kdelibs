@@ -21,7 +21,7 @@
 // This file requires HAVE_STRUCT_TM_TM_ZONE to be defined if struct tm member tm_zone is available.
 // This file requires HAVE_TM_GMTOFF to be defined if struct tm member tm_gmtoff is available.
 
-#include "ksystemtimezone.h"
+#include "ksystemtimezone.moc"
 
 #include <config.h>
 
@@ -128,6 +128,15 @@ KSystemTimeZonesPrivate::MD5Map  KSystemTimeZonesPrivate::m_md5Sums;
 bool                             KSystemTimeZonesPrivate::m_haveCountryCodes = false;
 
 
+KSystemTimeZones::KSystemTimeZones()
+  : d(0)
+{
+}
+
+KSystemTimeZones::~KSystemTimeZones()
+{
+}
+
 const KTimeZone *KSystemTimeZones::local()
 {
     return KSystemTimeZonesPrivate::instance()->local();
@@ -153,9 +162,19 @@ const KTimeZones::ZoneMap KSystemTimeZones::zones()
     return timeZones()->zones();
 }
 
-const KTimeZone * KSystemTimeZones::zone(const QString& name)
+const KTimeZone *KSystemTimeZones::zone(const QString& name)
 {
     return timeZones()->zone(name);
+}
+
+// Called by D-Bus signal when the time zone config file has changed.
+void KSystemTimeZones::configChanged()
+{
+}
+
+// Called by D-Bus signal when time zone definitions have changed.
+void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
+{
 }
 
 KTimeZone *KSystemTimeZonesPrivate::readZone(const QString &name)
