@@ -50,6 +50,25 @@ void KButtonGroupTest::initTestCase()
   QCOMPARE( kbuttongroup->selected(), -1 );
 }
 
+void KButtonGroupTest::directSelectionTestCase()
+{
+  // test where setSelected is called before the 
+  // ensurePolished() is called.
+  KButtonGroup* kbuttongroup2 = new KButtonGroup();
+  kbuttongroup2->setSelected( 3 );
+
+  QVBoxLayout* lay2 = new QVBoxLayout( kbuttongroup2 );
+  for ( int i = 0; i < 8; ++i )
+  {
+    QRadioButton* r = new QRadioButton( kbuttongroup2 );
+    r->setText( QString( "radio%1" ).arg( i ) );
+    lay2->addWidget( r );
+    buttons << r;
+  }
+  QTest::qWait(250); // events should occur.
+  QCOMPARE( kbuttongroup2->selected(), 3 );
+}
+
 void KButtonGroupTest::cleanupTestCase()
 {
   kbuttongroup->deleteLater();

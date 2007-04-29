@@ -31,7 +31,7 @@ class KButtonGroup::Private
   public:
     Private( KButtonGroup* q )
       : q(q), clickedMapper(), pressedMapper(), releasedMapper(),
-        currentId( -1 ), nextId( 0 )
+        currentId( -1 ), nextId( 0 ), wantToBeId( -1 )
     {
       connect( &clickedMapper, SIGNAL( mapped( int ) ), q, SLOT( slotClicked( int ) ) );
       connect( &pressedMapper, SIGNAL( mapped( int ) ), q, SIGNAL( pressed( int ) ) );
@@ -48,6 +48,7 @@ class KButtonGroup::Private
     QHash<QObject*, int> btnMap;
     int currentId;
     int nextId;
+    int wantToBeId;
 };
 
 KButtonGroup::KButtonGroup( QWidget* parent )
@@ -63,7 +64,11 @@ KButtonGroup::~KButtonGroup()
 void KButtonGroup::setSelected( int id )
 {
   if ( !testAttribute( Qt::WA_WState_Polished ) )
+  {
+    d->wantToBeId = id;
     ensurePolished();
+    return;
+  }
   
   QHash<QObject*, int>::Iterator it = d->btnMap.begin();
   QHash<QObject*, int>::Iterator itEnd = d->btnMap.end();
@@ -75,6 +80,7 @@ void KButtonGroup::setSelected( int id )
       radio->setChecked( true );
       d->currentId = id;
       emit changed( id );
+      d->wantToBeId = -1;
       return;
     }
   }
@@ -102,6 +108,14 @@ void KButtonGroup::childEvent( QChildEvent* event )
       d->releasedMapper.setMapping( radio, d->nextId );
 
       d->btnMap[ radio ] = d->nextId;
+     
+      if ( d->nextId == d->wantToBeId )
+      {
+        d->currentId = d->wantToBeId;
+        d->wantToBeId = -1;
+        radio->setChecked( true );
+        emit changed( d->currentId );
+      }
 
       ++d->nextId;
     }

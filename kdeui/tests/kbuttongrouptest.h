@@ -30,6 +30,7 @@ class KButtonGroupTest : public QObject
 
   private Q_SLOTS:
     void initTestCase();
+    void directSelectionTestCase();
     void cleanupTestCase();
 
     void testClicks();
