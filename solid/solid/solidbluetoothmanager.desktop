@@ -1,0 +1,15 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=ServiceType
+X-KDE-ServiceType=SolidBluetoothManager
+
+Comment=Bluetooth Management Backend
+Comment[de]=Bluetooth-Verwaltung
+Comment[pa]=ਬਲਿਊਟੁੱਥ ਨੈੱਟਵਰਕ ਪਰਬੰਧ ਬੈਕ-ਐਂਡ
+Comment[sv]=Blåtandshanteringsgränssnitt
+Comment[x-test]=xxBluetooth Management Backendxx
+Comment[zh_TW]=藍芽管理員後端介面
+
+[PropertyDef::X-KDE-SolidBackendInfo-Version]
+Type=QString
+
