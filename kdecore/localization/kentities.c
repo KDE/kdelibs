@@ -370,7 +370,7 @@ kde_findEntity (register const char *str, register unsigned int len)
 #line 256 "kentities.gperf"
       {"raquo", 0x00bb},
 #line 139 "kentities.gperf"
-      {"curren", 0x00a4},
+      {"curren", 0x00a4}, //krazy:exclude=spelling
 #line 213 "kentities.gperf"
       {"nbsp", 0x00a0},
 #line 260 "kentities.gperf"
