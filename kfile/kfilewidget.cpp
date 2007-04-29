@@ -2073,4 +2073,10 @@ void KFileWidget::setCustomWidget(QWidget* widget)
     setTabOrder(d->customWidget, d->pathCombo);
 }
 
+void KFileWidget::virtual_hook( int id, void* data )
+{
+    Q_UNUSED(id);
+    Q_UNUSED(data);
+}
+
 #include "kfilewidget.moc"

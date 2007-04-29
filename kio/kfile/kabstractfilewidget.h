@@ -341,6 +341,9 @@ public:
     virtual void slotOk() = 0;
     virtual void accept() = 0;
     virtual void slotCancel() = 0;
+
+    /// @internal for future extensions
+    virtual void virtual_hook( int id, void* data ) = 0;
 };
 
 Q_DECLARE_INTERFACE(KAbstractFileWidget, "org.kde.KAbstractFileWidget")
