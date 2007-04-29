@@ -43,7 +43,7 @@ class KBookmarkManagerList : public QList<KBookmarkManager *>
 {
 public:
     ~KBookmarkManagerList() {
-        qDeleteAll( *this ); // auto-delete functionality
+        qDeleteAll( begin() , end() ); // auto-delete functionality
     }
 };
 
