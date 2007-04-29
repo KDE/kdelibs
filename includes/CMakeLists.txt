@@ -11,6 +11,7 @@ install( FILES
   FileProtocol
   I18nTypeCheck
   K3BookmarkDrag
+  K3ButtonBox
   K3ColorDrag
   K3DictSpellingHighlighter
   K3DockArea
@@ -94,7 +95,6 @@ install( FILES
   KBookmarkOwner
   KBugReport
   KBuildSycocaProgressDialog
-  KButtonBox
   KButtonGroup
   KCModule
   KCModuleContainer
