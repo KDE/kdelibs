@@ -317,7 +317,7 @@ bool KPty::open()
   // the correct tc[gs]etattr
   struct ::termios ttmode;
 
-  _tcgetattr(d->slaveFd, &ttmode);
+  _tcgetattr(d->masterFd, &ttmode);
 
   if (!d->xonXoff)
     ttmode.c_iflag &= ~(IXOFF | IXON);
@@ -335,10 +335,10 @@ bool KPty::open()
   ttmode.c_cc[VQUIT] = CTRL('\\' - '@');
   ttmode.c_cc[VERASE] = 0177;
 
-  _tcsetattr(d->slaveFd, &ttmode);
+  _tcsetattr(d->masterFd, &ttmode);
 
   // set screen size
-  ioctl(d->slaveFd, TIOCSWINSZ, (char *)&d->winSize);
+  ioctl(d->masterFd, TIOCSWINSZ, (char *)&d->winSize);
 
   fcntl(d->masterFd, F_SETFD, FD_CLOEXEC);
   fcntl(d->slaveFd, F_SETFD, FD_CLOEXEC);
