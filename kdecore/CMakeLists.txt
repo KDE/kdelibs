@@ -60,7 +60,7 @@ if (UNIX)
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
-      util/kpty.cpp
+      io/kpty.cpp
       fakes.c )
 endif (UNIX)
 
@@ -315,6 +315,7 @@ install( FILES
    io/k3procio.h
    io/klockfile.h
    io/kmountpoint.h
+   io/kpty.h
    io/ksavefile.h
    io/ktempdir.h
    io/ktemporaryfile.h
@@ -379,7 +380,6 @@ install( FILES
    util/klauncher_iface.h
    util/klibloader.h
    util/kmacroexpander.h
-   util/kpty.h
    util/kshell.h
    util/krandom.h
    util/krandomsequence.h
