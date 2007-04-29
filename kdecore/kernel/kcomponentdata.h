@@ -130,7 +130,7 @@ public:
      * Returns the general config object ("appnamerc").
      * @return the KConfig object for the component.
      */
-    const KSharedConfig::Ptr &config() const;
+    const KSharedConfig::Ptr &config() const; //krazy:exclude=constref
 
     /**
      * Returns the about data of this component.

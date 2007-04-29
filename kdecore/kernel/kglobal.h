@@ -271,7 +271,7 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
  * @see KStaticDeleterBase
  * @author Sirtaj Singh Kang (taj@kde.org)
  */
-class KDECORE_EXPORT KGlobal
+class KDECORE_EXPORT KGlobal // krazy:exclude=dpointer (all static methods)
 {
 public:
 
