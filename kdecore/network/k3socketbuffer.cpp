@@ -22,6 +22,8 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "k3socketbuffer_p.h"
+
 #include <config.h>
 #include <config-network.h>
 
@@ -31,7 +33,6 @@
 #include <QMutableListIterator>
 
 #include "k3socketbase.h"
-#include "k3socketbuffer_p.h"
 
 using namespace KNetwork;
 using namespace KNetwork::Internal;

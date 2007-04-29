@@ -17,6 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "k3sockssocketdevice.h"
+
 #include <config.h>
 #include <config-network.h>
 
@@ -40,7 +42,6 @@
 #undef I_KNOW_KSOCKS_ISNT_PUBLIC
 #include "k3socketaddress.h"
 #include "k3resolver.h"
-#include "k3sockssocketdevice.h"
 
 using namespace KNetwork;
 

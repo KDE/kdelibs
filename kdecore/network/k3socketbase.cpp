@@ -22,12 +22,13 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "k3socketbase.h"
+
 #include <config.h>
 #include <config-network.h>
 #include <QMutex>
-#include "klocale.h"
+#include <klocale.h>
 
-#include "k3socketbase.h"
 #include "k3socketdevice.h"
 
 #ifdef Q_WS_WIN

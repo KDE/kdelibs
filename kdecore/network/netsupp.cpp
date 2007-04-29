@@ -37,8 +37,8 @@
 // broken getaddrinfo
 #include <netdb.h>
 
-#include "config.h"
-#include "config-network.h"
+#include <config.h>
+#include <config-network.h>
 #include "klocale.h"
 
 #ifndef IN6_IS_ADDR_V4MAPPED

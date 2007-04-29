@@ -22,6 +22,8 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "k3httpproxysocketdevice.h"
+
 #include <config.h>
 #include <config-network.h>
 
@@ -34,7 +36,6 @@
 #include "k3resolver.h"
 #include "k3socketaddress.h"
 #include "k3socketdevice.h"
-#include "k3httpproxysocketdevice.h"
 
 using namespace KNetwork;
 

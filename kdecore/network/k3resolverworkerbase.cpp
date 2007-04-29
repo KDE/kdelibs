@@ -22,7 +22,9 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "k3resolverworkerbase.h"
+
+#include <config.h>
 #include <config-network.h>
 
 #include <assert.h>
@@ -32,7 +34,6 @@
 
 #include "k3resolver.h"
 #include "k3resolver_p.h"
-#include "k3resolverworkerbase.h"
 
 using namespace KNetwork;
 using namespace KNetwork::Internal;

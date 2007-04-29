@@ -22,8 +22,11 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "config.h"
-#include "config-network.h"
+#include "k3resolver.h"
+#include "k3resolver_p.h"
+
+#include <config.h>
+#include <config-network.h>
 
 // System includes
 #include <sys/types.h>
@@ -51,8 +54,6 @@
 #include <klocale.h>
 
 // Us
-#include "k3resolver.h"
-#include "k3resolver_p.h"
 #include "k3socketaddress.h"
 
 #ifdef NEED_MUTEX

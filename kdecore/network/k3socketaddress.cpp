@@ -22,7 +22,9 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "k3socketaddress.h"
+
+#include <config.h>
 #include <config-network.h>
 
 #include <sys/types.h>
@@ -38,7 +40,6 @@
 #include <QObject>
 
 #include "klocale.h"
-#include "k3socketaddress.h"
 
 #ifndef Q_CC_MSVC
 #include "netsupp.h"

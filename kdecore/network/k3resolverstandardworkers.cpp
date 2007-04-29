@@ -22,6 +22,8 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "k3resolverstandardworkers_p.h"
+
 #include <config.h>
 #include <config-network.h>
 
@@ -54,7 +56,6 @@
 
 #include "k3resolver.h"
 #include "k3socketaddress.h"
-#include "k3resolverstandardworkers_p.h"
 
 struct hostent;
 struct addrinfo;

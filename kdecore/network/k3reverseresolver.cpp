@@ -22,7 +22,9 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "k3reverseresolver.h"
+
+#include <config.h>
 #include <config-network.h>
 
 // System includes
@@ -37,7 +39,6 @@
 #include <QCoreApplication>
 
 // Us
-#include "k3reverseresolver.h"
 #include "k3resolver_p.h"
 #include "k3resolverworkerbase.h"
 #include "k3socketaddress.h"

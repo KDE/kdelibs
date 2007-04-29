@@ -22,6 +22,8 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "k3serversocket.h"
+
 #include <config.h>
 #include <config-network.h>
 
@@ -33,7 +35,6 @@
 #include "k3socketbase.h"
 #include "k3socketdevice.h"
 #include "k3bufferedsocket.h"
-#include "k3serversocket.h"
 
 using namespace KNetwork;
 

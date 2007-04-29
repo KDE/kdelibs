@@ -24,7 +24,7 @@
 #include <kdecore_export.h>
 
 #include <config.h>
-#include "config-network.h"
+#include <config-network.h>
 
 #include <sys/socket.h>
 #include <netdb.h>
