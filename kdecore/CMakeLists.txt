@@ -79,7 +79,7 @@ if (UNIX)
    install(TARGETS kdefakes DESTINATION ${LIB_INSTALL_DIR} )
 
    #no ttyname on windows
-   kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
+   kde4_add_executable(kgrantpty NOGUI io/kgrantpty.c)
    target_link_libraries(kgrantpty  kdefakes )
    install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR} )
    
