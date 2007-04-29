@@ -51,6 +51,9 @@ KImageIO::pattern(Mode mode)
 
 QStringList KImageIO::typeForMime(const QString& mimeType)
 {
+    if ( mimeType.isEmpty() )
+        return QStringList();
+
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     KService::Ptr service;
     foreach(service, services) {
@@ -70,7 +73,9 @@ QStringList KImageIO::mimeTypes( Mode mode )
         if ( (service->property("X-KDE-Read").toBool() && mode == Reading) ||
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
-            mimeList.append( service->property("X-KDE-MimeType").toString() );
+            const QString mime = service->property("X-KDE-MimeType").toString();
+            if ( !mime.isEmpty() )
+                mimeList.append( mime );
         }
     }
 
@@ -87,7 +92,6 @@ QStringList KImageIO::types( Mode mode )
              (service->property("X-KDE-Write").toBool() && mode == Writing ) ) {
 
             imagetypes += service->property("X-KDE-ImageFormat").toStringList();
-
         }
     }
     return imagetypes;
@@ -95,6 +99,9 @@ QStringList KImageIO::types( Mode mode )
 
 bool KImageIO::isSupported( const QString& mimeType, Mode mode )
 {
+    if (mimeType.isEmpty() )
+        return false;
+
     KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     KService::Ptr service;
     foreach(service, services) {
