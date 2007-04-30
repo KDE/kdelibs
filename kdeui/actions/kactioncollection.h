@@ -56,7 +56,6 @@ class KDEUI_EXPORT KActionCollection : public QObject
 
   Q_OBJECT
 
-  //Q_PROPERTY( bool enabled READ isEnabled WRITE setEnabled RESET forgetEnabled )
   Q_PROPERTY( QString configGroup READ configGroup WRITE setConfigGroup )
   Q_PROPERTY( bool configIsGlobal READ configIsGlobal WRITE setConfigGlobal )
 
@@ -82,29 +81,6 @@ public:
    */
   void clear();
 
-#if 0
-  /**
-   * Returns whether this action collection as a whole has been disabled via
-   * setEnabled() or not.
-   *
-   * \note this does not check each action to see if its state has been changed
-   *       elsewhere.
-   */
-  bool isEnabled() const;
-
-  /**
-   * Allows you to enable or disable all actions in this action collection.
-   * The state is remembered, and returned in isEnabled().
-   */
-  void setEnabled(bool enable);
-
-  /**
-   * Forgets the enabled state of the action collection.  Actions added
-   * to the collection will not have their enabled state changed, unless there
-   * is a subsequent call to setEnabled().
-   */
-  void forgetEnabled();
-#endif
   /**
    * Set an associated widget (clears any others).  Associated widgets automatically have all actions
    * in the action collection added to themselves.

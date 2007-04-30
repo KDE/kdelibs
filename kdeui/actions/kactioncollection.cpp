@@ -83,12 +83,6 @@ public:
 
   bool connectTriggered, connectHighlighted;
 
-  enum ActionEnableStatus {
-    Enabled,
-    Disabled,
-    Unchanged
-  } enabled;
-
   KActionCollection *q;
 };
 
@@ -244,10 +238,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
             w->addAction(action);
 
     }
-#if 0
-    if (d->enabled != KActionCollectionPrivate::Unchanged)
-        action->setEnabled(isEnabled());
-#endif
+
     emit inserted( action );
     return action;
 }
@@ -547,25 +538,7 @@ const QList< KActionCollection * >& KActionCollection::allCollections( )
 {
 	return s_allCollections;
 }
-#if 0
-bool KActionCollection::isEnabled( ) const
-{
-  return d->enabled == KActionCollectionPrivate::Unchanged || d->enabled == KActionCollectionPrivate::Enabled;
-}
 
-void KActionCollection::setEnabled( bool enable )
-{
-  if ((d->enabled == KActionCollectionPrivate::Unchanged) || (enable ? d->enabled == KActionCollectionPrivate::Disabled : d->enabled == KActionCollectionPrivate::Enabled)) {
-    d->enabled = enable ? KActionCollectionPrivate::Enabled : KActionCollectionPrivate::Disabled;
-    foreach (QAction* action, actions())
-      action->setEnabled(enable);
-  }
-}
-
-void KActionCollection::forgetEnabled( )
-{
-  d->enabled = KActionCollectionPrivate::Unchanged;
-}
 #endif
 /* vim: et sw=2 ts=2
  */
