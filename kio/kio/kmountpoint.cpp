@@ -28,9 +28,9 @@
 
 #include "kstandarddirs.h"
 
-#include <solid/devicemanager.h>
 #include <solid/device.h>
 #include <solid/volume.h>
+#include <solid/block.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -164,7 +164,7 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
     if (mountedFrom.startsWith("UUID=")) {
         const QString uuid = mountedFrom.mid(5);
         const QString query = "Volume.uuid == '" + uuid + "'";
-        const Solid::DeviceList lst = Solid::DeviceManager::self().findDevicesFromQuery(query);
+        const QList<Solid::Device> lst = Solid::Device::listFromQuery(query);
         if (!lst.isEmpty()) {
             mountedFrom = lst.first().as<Solid::Block>()->device();
         }
