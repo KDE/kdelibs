@@ -35,10 +35,12 @@
 class KServiceTypeProfiles : public QHash<QString, KServiceTypeProfileEntry *>
 {
 public:
-    ~KServiceTypeProfiles() {
+    ~KServiceTypeProfiles() { clear(); }
+    void clear() {
         const_iterator it = begin();
         for ( ; it != end() ; ++it )
             delete *it;
+        QHash<QString, KServiceTypeProfileEntry *>::clear();
     }
 };
 
@@ -46,10 +48,12 @@ public:
 class KMimeTypeProfiles : public QMultiHash<QString, KMimeTypeProfileEntry *>
 {
 public:
-    ~KMimeTypeProfiles() {
+    ~KMimeTypeProfiles() { clear(); }
+    void clear() {
         const_iterator it = begin();
         for ( ; it != end() ; ++it )
             delete *it;
+        QMultiHash<QString, KMimeTypeProfileEntry *>::clear();
     }
 };
 
@@ -94,17 +98,17 @@ static void initStatic()
             const QString type = *aIt;
             KConfigGroup config(&configFile, type);
             const int count = config.readEntry( "NumberOfEntries", 0 );
+            KServiceTypeProfileEntry* p = s_serviceTypeProfiles->value( type, 0 );
+            if ( !p ) {
+                p = new KServiceTypeProfileEntry();
+                s_serviceTypeProfiles->insert( type, p );
+            }
+
             for ( int i = 0; i < count; ++i ) {
                 const QString num = QString::number(i);
                 const QString serviceId = config.readEntry( "Entry" + num + "_Service", QString() );
                 Q_ASSERT(!serviceId.isEmpty());
                 const int pref = config.readEntry( "Entry" + num + "_Preference", 0 );
-                KServiceTypeProfileEntry* p = s_serviceTypeProfiles->value( type, 0 );
-                if ( !p ) {
-                    p = new KServiceTypeProfileEntry();
-                    s_serviceTypeProfiles->insert( type, p );
-                }
-
                 kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << serviceId << " to profile for " << type << " with preference " << pref << endl;
                 p->addService( serviceId, pref );
             }
@@ -188,7 +192,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
     for( ; it != end; ++it )
     {
         const KService::Ptr servPtr = (*it).service();
-        //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->name() << endl;
+        //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->storageId() << endl;
         // Look into the profile (if there's one), to find this service's preference.
         bool foundInProfile = false;
         if ( profile )
