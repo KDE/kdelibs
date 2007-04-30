@@ -195,9 +195,6 @@ KConfigBase* KConfigGroup::config() const
   return d->master;
 }
 
-void KConfigGroup::virtual_hook( int , void*  )
-{ }
-
 bool KConfigGroup::entryIsImmutable(const QString &key) const
 {
   if ( d->master->getConfigState() != KConfigBase::ReadWrite ) {

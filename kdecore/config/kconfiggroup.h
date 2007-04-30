@@ -62,7 +62,7 @@ public:
     KConfigGroup(KSharedConfigPtr master, const QString &group);
     KConfigGroup(KSharedConfigPtr master, const char * group);
 
-    virtual ~KConfigGroup();
+    ~KConfigGroup();
 
     /**
      * Delete all entries in the entire group
@@ -80,11 +80,10 @@ public:
      */
     QMap<QString, QString> entryMap() const;
 
-    // The following functions are reimplemented:
-    virtual void setDirty(bool _bDirty);
-    virtual void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
-    virtual KEntry lookupData(const KEntryKey &_key) const;
-    virtual void sync();
+    void setDirty(bool _bDirty);
+    void putData(const KEntryKey &_key, const KEntry &_data, bool _checkGroup = true);
+    KEntry lookupData(const KEntryKey &_key) const;
+    void sync();
 
     /**
       * Changes the group of the object. This is a convenience function and should
@@ -562,11 +561,6 @@ protected:
 
     void init(KConfigBase *master);
 
-protected:
-    /** Virtual hook, used to add new "virtual" functions while maintaining
-        binary compatibility. Unused in this class.
-    */
-    virtual void virtual_hook( int id, void* data );
 private:
     class Private;
     Private * const d;
