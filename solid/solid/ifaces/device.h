@@ -22,7 +22,7 @@
 
 #include <QObject>
 #include <QVariant>
-#include <QString>
+
 #include <QMap>
 
 #include <solid/deviceinterface.h>

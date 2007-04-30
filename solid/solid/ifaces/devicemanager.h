@@ -22,7 +22,7 @@
 #define SOLID_IFACES_DEVICEMANAGER_H
 
 #include <QObject>
-#include <QString>
+
 #include <QStringList>
 
 #include <solid/deviceinterface.h>

@@ -21,7 +21,7 @@
 #define SOLID_DEVICE_H
 
 #include <QVariant>
-#include <QString>
+
 #include <QMap>
 #include <QList>
 #include <QtCore/QExplicitlySharedDataPointer>
