@@ -201,40 +201,23 @@ QString KDesktopFile::readGenericName() const
 
 QString KDesktopFile::readPath() const
 {
-  return d->group->readPathEntry("Path");
+    return d->group->readPathEntry("Path");
 }
 
 QString KDesktopFile::readDevice() const
 {
-  return d->group->readEntry("Dev");
+    return d->group->readEntry("Dev");
 }
 
 QString KDesktopFile::readUrl() const
 {
     if (hasDeviceType()) {
-        QString device = readDevice();
-        KMountPoint::List mountPoints = KMountPoint::possibleMountPoints();
-
-        for(KMountPoint::List::ConstIterator it = mountPoints.begin();
-            it != mountPoints.end(); ++it)
-        {
-            const KSharedPtr<KMountPoint> mp = *it;
-            if (mp->mountedFrom() == device)
-            {
-                KUrl u;
-                u.setPath( mp->mountPoint() );
-                return u.url();
-            }
-        }
-        return QString();
+        return d->group->readEntry("MountPoint");
     } else {
-        QString url = d->group->readPathEntry("URL");
-        if ( !url.isEmpty() && !QDir::isRelativePath(url) )
-        {
-            // Handle absolute paths as such (i.e. we need to escape them)
-            KUrl u;
-            u.setPath( url );
-            return u.url();
+        const QString url = d->group->readPathEntry("URL");
+        if ( !url.isEmpty() && !QDir::isRelativePath(url) ) {
+            // Handle both urls and absolute paths (we need KUrl to escape paths)
+            return KUrl( url ).url();
         }
         return url;
     }

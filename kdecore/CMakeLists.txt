@@ -134,7 +134,7 @@ set(kdecore_LIB_SRCS
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
-   services/kdedesktopmimetype.cpp
+   services/kfoldermimetype.cpp
    services/kmimetypefactory.cpp
    services/kmimemagicrule.cpp
    services/kmimetypetrader.cpp

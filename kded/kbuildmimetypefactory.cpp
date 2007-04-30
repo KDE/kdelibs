@@ -19,7 +19,7 @@
 
 #include "kbuildmimetypefactory.h"
 #include "ksycoca.h"
-#include "kdedesktopmimetype.h"
+#include "kfoldermimetype.h"
 #include "ksycocadict.h"
 #include "kresourcelist.h"
 
@@ -141,9 +141,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char
 
     KMimeType* e;
     if ( name == "inode/directory" )
-        e = new KFolderType( file, name, comment );
-    else if ( name == "application/x-desktop" )
-        e = new KDEDesktopMimeType( file, name, comment );
+        e = new KFolderMimeType( file, name, comment );
     else
         e = new KMimeType( file, name, comment );
 

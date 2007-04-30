@@ -17,43 +17,13 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#ifndef KDEDESKTOPMIMETYPE_H
-#define KDEDESKTOPMIMETYPE_H
+#ifndef KFOLDERMIMETYPE_H
+#define KFOLDERMIMETYPE_H
 
 #include "kmimetype.h"
 
 class KDesktopFile;
-class KDEDesktopMimeTypePrivate;
-class KFolderTypePrivate;
-
-/**
- * @internal  - this header is not installed
- * Mime type for desktop files.
- * Handles mount/umount icon, trash icon, reading the comment from the desktop file.
- * @short Mimetype for a .desktop file
- */
-class KDECORE_EXPORT KDEDesktopMimeType : public KMimeType
-{
-    K_SYCOCATYPE( KST_KDEDesktopMimeType, KMimeType )
-    Q_DECLARE_PRIVATE( KDEDesktopMimeType )
-
-public:
-    /** \internal */
-    KDEDesktopMimeType( const QString & fullpath, const QString& type,
-                        const QString& comment );
-
-    /** \internal */
-    KDEDesktopMimeType( QDataStream& str, int offset );
-
-    /** Destructor. */
-    ~KDEDesktopMimeType();
-
-    virtual QString iconName( const KUrl& url ) const;
-    virtual QString comment( const KUrl& url ) const;
-
-protected:
-    virtual void virtual_hook( int id, void* data );
-};
+class KFolderMimeTypePrivate;
 
 /**
  * @internal  - this header is not installed
@@ -61,20 +31,20 @@ protected:
  * Folder mime type. Handles locked folders, for instance.
  * @short Mimetype for a folder (inode/directory)
  */
-class KDECORE_EXPORT KFolderType : public KMimeType
+class KDECORE_EXPORT KFolderMimeType : public KMimeType
 {
-    K_SYCOCATYPE( KST_KFolderType, KMimeType )
-    Q_DECLARE_PRIVATE( KFolderType )
+    K_SYCOCATYPE( KST_KFolderMimeType, KMimeType )
+    Q_DECLARE_PRIVATE( KFolderMimeType )
 
 public:
     /** \internal */
-    KFolderType( const QString& fullpath, const QString& name, const QString& comment );
+    KFolderMimeType( const QString& fullpath, const QString& name, const QString& comment );
 
     /** \internal */
-    KFolderType( QDataStream& str, int offset );
+    KFolderMimeType( QDataStream& str, int offset );
 
     /** Destructor. */
-    ~KFolderType();
+    ~KFolderMimeType();
 
     virtual QString iconName( const KUrl& url ) const;
     virtual QString comment( const KUrl& url ) const;

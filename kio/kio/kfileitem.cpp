@@ -48,6 +48,8 @@
 #include <kmimetype.h>
 #include <krun.h>
 #include <kde_file.h>
+#include <kdesktopfile.h>
+#include <kmountpoint.h>
 
 class KFileItemPrivate : public QSharedData
 {
@@ -645,12 +647,55 @@ QString KFileItem::mimeComment() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
+    KMimeType::Ptr mime = mimeTypePtr();
+    if (isLocalUrl && mime->is("application/x-desktop")) {
+        KDesktopFile cfg( url.path() );
+        QString comment = cfg.desktopGroup().readEntry( "Comment" );
+        if (!comment.isEmpty())
+            return comment;
+    }
+
     QString comment = mType->comment( url );
     //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name() << endl;
     if (!comment.isEmpty())
         return comment;
     else
         return mType->name();
+}
+
+static QString iconFromDesktopFile(const QString& path)
+{
+    KDesktopFile cfg( path );
+    const KConfigGroup group = cfg.desktopGroup();
+    const QString icon = cfg.readIcon();
+    const QString type = cfg.readPath();
+
+    if ( type == "FSDevice" )
+    {
+        const QString unmount_icon = group.readEntry( "UnmountIcon" );
+        const QString dev = cfg.readDevice();
+        if ( !icon.isEmpty() && !unmount_icon.isEmpty() && !dev.isEmpty() )
+        {
+            KMountPoint::Ptr mountPoint = KMountPoint::currentMountPoints().findByDevice(dev);
+            if (!mountPoint) // not mounted?
+                return unmount_icon;
+        }
+    } else if ( type == "Link" ) {
+        const QString emptyIcon = group.readEntry( "EmptyIcon" );
+        if ( !emptyIcon.isEmpty() ) {
+            const QString u = group.readPathEntry( "URL" );
+            const KUrl url( u );
+            if ( url.protocol() == "trash" ) {
+                // We need to find if the trash is empty, preferrably without using a KIO job.
+                // So instead kio_trash leaves an entry in its config file for us.
+                KConfig trashConfig( "trashrc", KConfig::OnlyLocal );
+                if ( trashConfig.group("Status").readEntry( "Empty", true ) ) {
+                    return emptyIcon;
+                }
+            }
+        }
+    }
+    return icon;
 }
 
 QString KFileItem::iconName() const
@@ -662,8 +707,15 @@ QString KFileItem::iconName() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
+    KMimeType::Ptr mime = mimeTypePtr();
+    if (isLocalUrl && mime->is("application/x-desktop")) {
+        QString icon = iconFromDesktopFile(url.path());
+        if (!icon.isEmpty())
+            return icon;
+    }
+
     //kDebug() << "finding icon for " << url.url() << " : " << mimeTypePtr()->name() << endl;
-    return mimeTypePtr()->iconName(url);
+    return mime->iconName(url);
 }
 
 int KFileItem::overlays() const
@@ -839,7 +891,7 @@ QString KFileItem::getStatusBarInfo() const
 
     if ( d->m_bLink )
     {
-        QString comment = determineMimeType()->comment( d->m_url );
+        QString comment = mimeComment();
         QString tmp;
         if ( comment.isEmpty() )
             tmp = i18n ( "Symbolic Link" );

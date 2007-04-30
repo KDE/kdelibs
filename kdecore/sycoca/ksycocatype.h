@@ -29,10 +29,10 @@
  * at the top of your class definition.
  */
 enum KSycocaType { KST_KSycocaEntry = 0, KST_KService = 1, KST_KServiceType = 2, KST_KMimeType = 3,
-		 KST_KFolderType = 4, KST_KDEDesktopMimeType = 5, /*6 is unused*/
-		 KST_KServiceGroup = 7, KST_KImageIOFormat = 8, KST_KProtocolInfo = 9,
-		 KST_KServiceSeparator = 10,
-		 KST_KCustom = 1000 };
+                   KST_KFolderMimeType = 4, KST_KDEDesktopMimeType = 5 /*compat*/, /*6 is unused*/
+                   KST_KServiceGroup = 7, KST_KImageIOFormat = 8, KST_KProtocolInfo = 9,
+                   KST_KServiceSeparator = 10,
+                   KST_KCustom = 1000 };
 
 #define K_SYCOCATYPE( type, baseclass ) \
 public: \

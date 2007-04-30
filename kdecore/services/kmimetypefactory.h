@@ -29,12 +29,6 @@
 #include "kmimemagicrule_p.h"
 
 class KSycoca;
-class KSycocaDict;
-
-class KServiceType;
-class KFolderType;
-class KDEDesktopMimeType;
-class KExecMimeType;
 
 /**
  * @internal  - this header is not installed

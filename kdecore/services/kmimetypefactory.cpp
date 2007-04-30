@@ -19,7 +19,7 @@
 
 #include "kmimetypefactory.h"
 #include "kmimetype.h"
-#include "kdedesktopmimetype.h"
+#include "kfoldermimetype.h"
 #include <ksycoca.h>
 #include <ksycocadict.h>
 #include <kshell.h>
@@ -109,13 +109,11 @@ KMimeType * KMimeTypeFactory::createEntry(int offset) const
    switch(type)
    {
      case KST_KMimeType:
+     case KST_KDEDesktopMimeType: // old, compat only
         newEntry = new KMimeType(*str, offset);
         break;
-     case KST_KFolderType:
-        newEntry = new KFolderType(*str, offset);
-        break;
-     case KST_KDEDesktopMimeType:
-        newEntry = new KDEDesktopMimeType(*str, offset);
+     case KST_KFolderMimeType:
+        newEntry = new KFolderMimeType(*str, offset);
         break;
 
      default:
