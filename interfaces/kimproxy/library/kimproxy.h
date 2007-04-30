@@ -225,7 +225,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		/**
 		 * Just exists to let the idl compiler make the DCOP signal for this
 		 */
-		void contactPresenceChanged( QString uid, QString appId, int presence );
+		void contactPresenceChanged( const QString& uid, const QString& appId, int presence );
 
         private Q_SLOTS:
                 void nameOwnerChanged( const QString &name, const QString &oldOwner, const QString &newOwner);

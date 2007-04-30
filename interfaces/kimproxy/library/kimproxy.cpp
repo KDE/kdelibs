@@ -303,7 +303,7 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 	}
 }
 
-void KIMProxy::contactPresenceChanged( QString uid, QString appId, int presence )
+void KIMProxy::contactPresenceChanged( const QString& uid, const QString& appId, int presence )
 {
 	// update the presence map
 	//kDebug( 790 ) << k_funcinfo << "uid: " << uid << " appId: " << appId << " presence " << presence << endl;
