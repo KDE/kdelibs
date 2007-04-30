@@ -293,7 +293,7 @@ PluginFactory *FactoryPrivate::pluginFactory()
             libPath += suffix;
             const QDir dir(libPath);
             if (!dir.exists()) {
-                pDebug() << Q_FUNC_INFO << dir << "does not exist";
+                pDebug() << Q_FUNC_INFO << dir.canonicalPath() << "does not exist";
                 continue;
             }
             QLibrary pluginLib(libPath + QLatin1String("/kde"));
