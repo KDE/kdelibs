@@ -123,8 +123,8 @@ void KComponentDataPrivate::checkConfig()
 
 KComponentData::~KComponentData()
 {
+    KGlobal::deletedComponentData(this);
     if (d) {
-        KGlobal::deletedComponentData(this);
         d->deref();
         d = 0;
     }

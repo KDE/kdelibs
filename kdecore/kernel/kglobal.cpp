@@ -85,6 +85,7 @@ class KGlobalPrivate
         KLocale *locale;
         KCharsets *charsets;
         KStaticDeleterList *staticDeleters;
+        QList<KComponentData *> componentDataList;
 };
 
 void KGlobalPrivate::deleteStaticDeleters()
@@ -191,6 +192,7 @@ void KGlobal::setActiveComponent(const KComponentData &c)
 void KGlobal::newComponentData(KComponentData *c)
 {
     PRIVATE_DATA;
+    d->componentDataList.append(c);
     if (d->mainComponent.isValid()) {
         return;
     }
@@ -205,6 +207,7 @@ void KGlobal::deletedComponentData(KComponentData *c)
         return;
     }
     PRIVATE_DATA;
+    d->componentDataList.removeAll(c);
     if (d->mainComponentPtr == c) {
         // The main component data (usually the one created on the stack in main())
         // just got deleted. We better sync the global kconfig before the qt globals
@@ -212,6 +215,11 @@ void KGlobal::deletedComponentData(KComponentData *c)
         d->mainComponentPtr = 0;
         if (c->privateConfig()) {
             c->privateConfig()->sync();
+        }
+        foreach (KComponentData *cd, d->componentDataList) {
+            if (cd->privateConfig()) {
+                cd->privateConfig()->sync();
+            }
         }
     }
 }
