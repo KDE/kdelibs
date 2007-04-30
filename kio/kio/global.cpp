@@ -1595,9 +1595,8 @@ static void check_mount_point(const char *mounttype,
 }
 
 // returns the mount point, checks the mount state.
-// if ismanual == Wrong this function does not check the manual mount state
 static QString get_mount_info(const QString& filename,
-    MountState& isautofs, MountState& isslow, MountState& ismanual,
+    MountState& isautofs, MountState& isslow,
     QString& fstype)
 {
     static bool gotRoot = false;
@@ -1609,7 +1608,6 @@ static QString get_mount_info(const QString& filename,
        QString mountPoint;
        MountState isautofs;
        MountState isslow;
-       MountState ismanual;
        QString fstype;
     };
     static struct cachedDevice_t *cachedDevice = 0;
@@ -1632,20 +1630,15 @@ static QString get_mount_info(const QString& filename,
           static const QString &root = KGlobal::staticQString("/");
           isautofs = Wrong;
           isslow = Wrong;
-          ismanual = Wrong;
           fstype.clear(); // ### do we need it?
           return root;
        }
        if (cachedDevice && (stat_buf.st_dev == cachedDevice->device))
        {
-          bool interestedInIsManual = ismanual != Wrong;
           isautofs = cachedDevice->isautofs;
           isslow = cachedDevice->isslow;
-          ismanual = cachedDevice->ismanual;
           fstype = cachedDevice->fstype;
-          // Don't use the cache if it doesn't have the information we're looking for
-          if ( !interestedInIsManual || ismanual != Unseen )
-              return cachedDevice->mountPoint;
+          return cachedDevice->mountPoint;
        }
     }
 
@@ -1704,13 +1697,6 @@ static QString get_mount_info(const QString& filename,
             check_mount_point( mounttype, mounted[i].f_mntfromname,
                                isautofs, isslow );
             // keep going, looking for a potentially better one
-
-            if (ismanual == Unseen)
-            {
-                struct fstab *ft = getfsfile(mounted[i].f_mntonname);
-                if (!ft || strstr(ft->fs_mntops, "noauto"))
-                  ismanual = Right;
-            }
         }
     }
 
@@ -1769,13 +1755,6 @@ static QString get_mount_info(const QString& filename,
                 mountPoint = QFile::decodeName(mountedto);
                 fstype = QLatin1String(ent->vfsent_name);
                 check_mount_point(ent->vfsent_name, device_name, isautofs, isslow);
-
-                if (ismanual == Unseen)
-                {
-                    // TODO: add check for ismanual, I couldn't find any way
-                    // how to get the mount attribute from /etc/filesystems
-                    ismanual == Wrong;
-                }
             }
 
             free(mountedfrom);
@@ -1811,38 +1790,6 @@ static QString get_mount_info(const QString& filename,
             mountPoint = QFile::decodeName( MOUNTPOINT(me) );
             fstype = MOUNTTYPE(me);
             check_mount_point(MOUNTTYPE(me), FSNAME(me), isautofs, isslow);
-            // we don't check if ismanual is Right, if /a/b is manually
-            // mounted /a/b/c can't be automounted. At least IMO.
-            if (ismanual == Unseen)
-            {
-                // The next GETMNTENT call may destroy 'me'
-                // Copy out the info that we need
-                QByteArray fsname_me = FSNAME(me);
-                QByteArray mounttype_me = MOUNTTYPE(me);
-
-                STRUCT_SETMNTENT fstab;
-                if ((fstab = SETMNTENT(FSTAB, "r")) == 0) {
-                    continue;
-                }
-
-                bool found = false;
-                STRUCT_MNTENT fe;
-                while (GETMNTENT(fstab, fe))
-                {
-                    if (fsname_me == FSNAME(fe))
-                    {
-                        found = true;
-                        if (HASMNTOPT(fe, "noauto") ||
-                            !strcmp(MOUNTTYPE(fe), "supermount"))
-                            ismanual = Right;
-                        break;
-                    }
-                }
-                if (!found || (mounttype_me == "supermount"))
-                  ismanual = Right;
-
-                ENDMNTENT(fstab);
-            }
         }
     }
 
@@ -1862,7 +1809,6 @@ static QString get_mount_info(const QString& filename,
        cachedDevice->mountPoint = mountPoint;
        cachedDevice->isautofs = isautofs;
        cachedDevice->isslow = isslow;
-       cachedDevice->ismanual = ismanual;
        cachedDevice->fstype = fstype;
     }
 
@@ -1880,32 +1826,20 @@ QString KIO::findDeviceMountPoint( const QString& filename )
 QString KIO::findPathMountPoint(const QString& filename)
 {
 #ifdef Q_OS_UNIX
-  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
+  MountState isautofs = Unseen, isslow = Unseen;
   QString fstype;
-  return get_mount_info(filename, isautofs, isslow, ismanual, fstype);
+  return get_mount_info(filename, isautofs, isslow, fstype);
 #else //!Q_OS_UNIX
   return QString();
-#endif
-}
-
-bool KIO::manually_mounted(const QString& filename)
-{
-#ifdef Q_OS_UNIX
-  MountState isautofs = Unseen, isslow = Unseen, ismanual = Unseen;
-  QString fstype;
-  QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
-  return !mountPoint.isNull() && (ismanual == Right);
-#else //!Q_OS_UNIX
-  return false;
 #endif
 }
 
 bool KIO::probably_slow_mounted(const QString& filename)
 {
 #ifdef Q_OS_UNIX
-  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
+  MountState isautofs = Unseen, isslow = Unseen;
   QString fstype;
-  QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
+  QString mountPoint = get_mount_info(filename, isautofs, isslow, fstype);
   return !mountPoint.isNull() && (isslow == Right);
 #else //!Q_OS_UNIX
   return false;
@@ -1915,9 +1849,9 @@ bool KIO::probably_slow_mounted(const QString& filename)
 bool KIO::testFileSystemFlag(const QString& filename, FileSystemFlag flag)
 {
 #ifdef Q_OS_UNIX
-  MountState isautofs = Unseen, isslow = Unseen, ismanual = Wrong;
+  MountState isautofs = Unseen, isslow = Unseen;
   QString fstype;
-  QString mountPoint = get_mount_info(filename, isautofs, isslow, ismanual, fstype);
+  QString mountPoint = get_mount_info(filename, isautofs, isslow, fstype);
     kDebug() << "testFileSystemFlag: fstype=" << fstype << endl;
   if (mountPoint.isNull())
       return false;

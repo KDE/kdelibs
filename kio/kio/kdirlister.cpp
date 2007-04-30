@@ -36,6 +36,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include "kprotocolmanager.h"
+#include "kmountpoint.h"
 
 #include <assert.h>
 
@@ -450,6 +451,20 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
   }
 }
 
+static bool manually_mounted(const QString& path, const KMountPoint::List& possibleMountPoints)
+{
+    KMountPoint::Ptr mp = possibleMountPoints.findByPath(path);
+    if (!mp) // not listed in fstab -> yes, manually mounted
+        return true;
+    const bool supermount = mp->mountType() == "supermount";
+    if (supermount) {
+        return true;
+    }
+    // noauto -> manually mounted. Otherwise, mounted at boot time, won't be unmounted any time soon hopefully.
+    return mp->mountOptions().contains("noauto");
+}
+
+
 void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool notify )
 {
   kDebug(7004) << k_funcinfo << lister << " _url: " << _url << endl;
@@ -499,23 +514,26 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
         kDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
         itemsCached.insert( urlStr, item ); // TODO: may return false!!
 
+        const KMountPoint::List possibleMountPoints = KMountPoint::possibleMountPoints(KMountPoint::NeedMountOptions);
+
         // Should we forget the dir for good, or keep a watch on it?
         // Generally keep a watch, except when it would prevent
         // unmounting a removable device (#37780)
         const bool isLocal = item->url.isLocalFile();
-        const bool isManuallyMounted = isLocal && KIO::manually_mounted( item->url.path() );
+        bool isManuallyMounted = false;
         bool containsManuallyMounted = false;
-        if ( !isManuallyMounted && isLocal )
-        {
-          // Look for a manually-mounted directory inside
-          // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
-          // I hope this isn't too slow (manually_mounted caches the last device so most
-          // of the time this is just a stat per subdir)
-          KFileItemList::const_iterator kit = item->lstItems.begin();
-          const KFileItemList::const_iterator kend = item->lstItems.end();
-          for ( ; kit != kend && !containsManuallyMounted; ++kit )
-            if ( (*kit)->isDir() && KIO::manually_mounted( (*kit)->url().path() ) )
-              containsManuallyMounted = true;
+        if (isLocal) {
+            isManuallyMounted = manually_mounted( item->url.path(), possibleMountPoints );
+            if ( !isManuallyMounted ) {
+                // Look for a manually-mounted directory inside
+                // If there's one, we can't keep a watch either, FAM would prevent unmounting the CDROM
+                // I hope this isn't too slow
+                KFileItemList::const_iterator kit = item->lstItems.begin();
+                const KFileItemList::const_iterator kend = item->lstItems.end();
+                for ( ; kit != kend && !containsManuallyMounted; ++kit )
+                    if ( (*kit)->isDir() && manually_mounted((*kit)->url().path(), possibleMountPoints) )
+                        containsManuallyMounted = true;
+            }
         }
 
         if ( isManuallyMounted || containsManuallyMounted )

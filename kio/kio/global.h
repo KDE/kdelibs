@@ -376,14 +376,6 @@ namespace KIO
    */
   KIO_EXPORT bool probably_slow_mounted(const QString& filename);
 
-  /**
-   * Checks if the path belongs to a filesystem that is manually
-   * mounted.
-   * @param filename the file name to check
-   * @return true if the filesystem is manually mounted
-   */
-  KIO_EXPORT bool manually_mounted(const QString& filename);
-
   enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime,
                         SupportsSymlinks, CaseInsensitive };
   /**

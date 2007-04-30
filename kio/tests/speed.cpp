@@ -85,7 +85,6 @@ int main(int argc, char **argv) {
     const KMountPoint::List mountPoints = KMountPoint::currentMountPoints();
 
     kDebug() << url.url() << " is probably " << (KIO::probably_slow_mounted(url.path()) ? "slow" : "normal") << " mounted\n";
-    kDebug() << url.url() << " is " << (KIO::manually_mounted(url.path()) ? "manually" : "system") << " mounted\n";
     KMountPoint::Ptr mp = mountPoints.findByDevice(url.path());
     if (!mp) {
         kDebug() << "no mount point for device " << url << " found\n";
