@@ -63,7 +63,7 @@ public:
 
     configGroup = "Shortcuts";
 
-    enabled = Unchanged;
+    //enabled = Unchanged;
   }
 
   void _k_widgetDestroyed(QObject *obj);
