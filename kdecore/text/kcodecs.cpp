@@ -15,17 +15,17 @@
    License along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-   RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992.
+   RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992.             // krazy:exclude=copyright
    RSA Data Security, Inc. Created 1991. All rights reserved.
 
    The KMD5 class is based on a C++ implementation of
    "RSA Data Security, Inc. MD5 Message-Digest Algorithm" by
-   Mordechai T. Abzug,	Copyright (c) 1995.  This implementation
+   Mordechai T. Abzug,	Copyright (c) 1995.  This implementation                // krazy:exclude=copyright
    passes the test-suite as defined in RFC 1321.
 
    The encoding and decoding utilities in KCodecs with the exception of
    quoted-printable are based on the java implementation in HTTPClient
-   package by Ronald Tschalär Copyright (C) 1996-1999.
+   package by Ronald Tschalär Copyright (C) 1996-1999.                          // krazy:exclude=copyright
 
    The quoted-printable codec as described in RFC 2045, section 6.7. is by
    Rik Hemsley (C) 2001.
