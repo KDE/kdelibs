@@ -35,8 +35,8 @@ public:
     virtual bool isPlugged() const;
     virtual Solid::Battery::BatteryType type() const;
 
-    virtual QString chargeLevelUnit() const;
-    virtual int charge(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const;
+    virtual QString chargeValueUnit() const;
+    virtual int chargeValue(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const;
     virtual int chargePercent() const;
 
     virtual QString voltageUnit() const;
@@ -48,6 +48,7 @@ public:
 Q_SIGNALS:
     void chargePercentChanged(int value);
     void chargeStateChanged(int newState);
+    void plugStateChanged(bool newState);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);

@@ -37,8 +37,8 @@ namespace Solid
         Q_ENUMS(BatteryType LevelType ChargeState)
         Q_PROPERTY(bool plugged READ isPlugged)
         Q_PROPERTY(BatteryType type READ type)
-        Q_PROPERTY(QString chargeLevelUnit READ chargeLevelUnit)
-        Q_PROPERTY(int charge READ charge)
+        Q_PROPERTY(QString chargeValueUnit READ chargeValueUnit)
+        Q_PROPERTY(int chargeValue READ chargeValue)
         Q_PROPERTY(int chargePercent READ chargePercent)
         Q_PROPERTY(QString voltageUnit READ voltageUnit)
         Q_PROPERTY(int voltage READ voltage)
@@ -78,7 +78,8 @@ namespace Solid
         /**
          * This enum type defines charge state of a battery
          *
-         * - NoCharge : Battery charge is stable, not charging or discharging
+         * - NoCharge : Battery charge is stable, not charging or discharging or 
+         *              the state is Unknown
          * - Charging : Battery is charging
          * - Discharging : Battery is discharging
          */
@@ -132,9 +133,9 @@ namespace Solid
          * (for example mWh).
          *
          * @return the charge level unit as a string
-         * @see charge()
+         * @see chargeValue()
          */
-        QString chargeLevelUnit() const;
+        QString chargeValueUnit() const;
 
         /**
          * Retrieves one of the charge level of the battery as requested.
@@ -145,7 +146,7 @@ namespace Solid
          * @return the requested charge level
          * @see Solid::Battery::LevelType
          */
-        int charge(LevelType type = CurrentLevel) const;
+        int chargeValue(LevelType type = CurrentLevel) const;
 
         /**
          * Retrieves the current charge level of the battery normalised
@@ -209,6 +210,14 @@ namespace Solid
          * @see Solid::Battery::ChargeState
          */
         void chargeStateChanged(int newState);
+
+        /**
+         * This signal is emitted if the battery get plugged in/out of the
+         * battery bay.
+         *
+         * @param newState the new plugging state of the battery, type is boolean
+         */
+        void plugStateChanged(bool newState);
     };
 }
 

@@ -31,6 +31,9 @@ Solid::Battery::Battery(QObject *backendObject)
 
     connect(backendObject, SIGNAL(chargeStateChanged(int)),
              this, SIGNAL(chargeStateChanged(int)));
+
+    connect(backendObject, SIGNAL(plugStateChanged(bool)),
+             this, SIGNAL(plugStateChanged(bool)));
 }
 
 Solid::Battery::~Battery()
@@ -50,16 +53,16 @@ Solid::Battery::BatteryType Solid::Battery::type() const
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), UnknownBattery, type());
 }
 
-QString Solid::Battery::chargeLevelUnit() const
+QString Solid::Battery::chargeValueUnit() const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), QString(), chargeLevelUnit());
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), QString(), chargeValueUnit());
 }
 
-int Solid::Battery::charge(LevelType type) const
+int Solid::Battery::chargeValue(LevelType type) const
 {
     Q_D(const Battery);
-    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, charge(type));
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, chargeValue(type));
 }
 
 int Solid::Battery::chargePercent() const

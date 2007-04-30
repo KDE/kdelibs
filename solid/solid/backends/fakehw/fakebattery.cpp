@@ -72,12 +72,12 @@ Solid::Battery::BatteryType FakeBattery::type() const
     }
 }
 
-QString FakeBattery::chargeLevelUnit() const
+QString FakeBattery::chargeValueUnit() const
 {
     return fakeDevice()->property("chargeLevelUnit").toString();
 }
 
-int FakeBattery::charge(Solid::Battery::LevelType type) const
+int FakeBattery::chargeValue(Solid::Battery::LevelType type) const
 {
     switch(type)
     {
@@ -99,8 +99,8 @@ int FakeBattery::charge(Solid::Battery::LevelType type) const
 
 int FakeBattery::chargePercent() const
 {
-    int last_full = charge(Solid::Battery::LastFullLevel);
-    int current = charge(Solid::Battery::CurrentLevel);
+    int last_full = chargeValue(Solid::Battery::LastFullLevel);
+    int current = chargeValue(Solid::Battery::CurrentLevel);
 
     int percent = (100 * current) / last_full;
 

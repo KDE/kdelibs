@@ -75,12 +75,12 @@ Solid::Battery::BatteryType Battery::type() const
     }
 }
 
-QString Battery::chargeLevelUnit() const
+QString Battery::chargeValueUnit() const
 {
     return m_device->property("battery.charge_level.unit").toString();
 }
 
-int Battery::charge(Solid::Battery::LevelType type) const
+int Battery::chargeValue(Solid::Battery::LevelType type) const
 {
     switch(type)
     {
@@ -150,6 +150,11 @@ void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
     {
         emit chargeStateChanged(chargeState());
     }
+    else if ( changes.contains( "battery.present" ) )
+    {
+        emit plugStateChanged(isPlugged());
+    }
+
 }
 
 #include "backends/hal/halbattery.moc"

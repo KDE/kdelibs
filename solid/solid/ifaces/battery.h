@@ -62,9 +62,9 @@ namespace Ifaces
          * (for example mWh).
          *
          * @return the charge level unit as a string
-         * @see charge()
+         * @see chargeValue()
          */
-        virtual QString chargeLevelUnit() const = 0;
+        virtual QString chargeValueUnit() const = 0;
 
         /**
          * Retrieves one of the charge level of the battery as requested.
@@ -75,7 +75,7 @@ namespace Ifaces
          * @return the requested charge level
          * @see Solid::Battery::LevelType
          */
-        virtual int charge(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const = 0;
+        virtual int chargeValue(Solid::Battery::LevelType type = Solid::Battery::CurrentLevel) const = 0;
 
         /**
          * Retrieves the current charge level of the battery normalised
@@ -84,7 +84,6 @@ namespace Ifaces
          * @return the current charge level normalised to percent
          */
         virtual int chargePercent() const = 0;
-
 
 
         /**
@@ -140,6 +139,15 @@ namespace Ifaces
          * @see Solid::Battery::ChargeState
          */
         virtual void chargeStateChanged(int newState) = 0;
+
+        /**
+         * This signal is emitted if the battery get plugged in/out of the
+         * battery bay.
+         *
+         * @param newState the new plugging state of the battery, type is boolean
+         */
+        virtual void plugStateChanged(bool newState) = 0;
+
     };
 }
 }
