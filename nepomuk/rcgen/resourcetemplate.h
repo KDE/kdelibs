@@ -94,6 +94,8 @@ static const QString sourceTemplate = gplTemplate +
 "#include \"tools.h\"\n"
 "#include \"KMETADATA_RESOURCENAMELOWER.h\"\n"
 "\n"
+"KMETADATA_INCLUDES"
+"\n"
 "Nepomuk::KMetaData::KMETADATA_RESOURCENAME::KMETADATA_RESOURCENAME()\n"
 "  : KMETADATA_PARENTRESOURCE()\n"
 "{\n"

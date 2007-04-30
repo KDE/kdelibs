@@ -529,6 +529,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
     s.replace( "KMETADATA_PARENTRESOURCE", parent->name() );
 
     QString methods;
+    QString includes;
     QTextStream ms( &methods );
 
     QListIterator<const Property*> it( properties );
@@ -538,6 +539,10 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         if( p->type.isEmpty() ) {
             qDebug() << "(ResourceClass::writeSource) type not defined for property: " << p->name() << endl;
             continue;
+        }
+
+        if ( !p->hasSimpleType() ) {
+            includes.append( QString( "#include \"%1.h\"\n" ).arg( p->type.toLower() ) );
         }
 
         ms << p->getterDefinition( this ) << endl
@@ -580,6 +585,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
     ms << allResourcesDefinition() << endl;
 
     s.replace( "KMETADATA_METHODS", methods );
+    s.replace( "KMETADATA_INCLUDES", includes );
 
     stream << s;
 
