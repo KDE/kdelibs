@@ -982,6 +982,7 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
                 setText( newText );
             } else {
                 clear();
+                emit clearButtonClicked();
             }
             emit textChanged( newText );
         }

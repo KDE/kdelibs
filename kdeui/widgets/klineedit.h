@@ -406,6 +406,11 @@ Q_SIGNALS:
      */
     void aboutToShowContextMenu( QMenu * p );
 
+    /**
+     * Emitted when the user clicked on the clear button
+     */
+    void clearButtonClicked();
+
 public Q_SLOTS:
 
     /**
