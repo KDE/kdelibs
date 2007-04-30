@@ -63,6 +63,10 @@ public:
      **/
     bool isModified() const;
     /**
+     * @brief Has this value been skipped by analyzer due to performance or other considerations.
+     **/
+    bool isSkipped() const;
+    /**
      * @brief Retrieve the current value of this item
      **/
     const QVariant& value() const;
@@ -91,9 +95,16 @@ public:
      * This method returns a translated suffix to be displayed after the
      * value. Think of the kbps in 128kbps
      *
-     * @return the prefix
+     * @return the suffix
      */
     QString suffix() const;
+    /**
+     * This method returns a translated prefix to be displayed before the
+     * value.
+     *
+     * @return the prefix
+     */
+    QString prefix() const;
 private:
     QSharedDataPointer<KFileMetaInfoItemPrivate> p;
 

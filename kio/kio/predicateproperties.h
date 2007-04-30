@@ -84,6 +84,9 @@ public:
      **/
     const QString& description() const;
     QValidator* createValidator() const;
+    const QStringList& suggestedValues() const;
+    uint minCardinality() const;
+    uint maxCardinality() const;
     const PredicateProperties& parent() const;
     /**
      * Return a url that identifies the unit in which this property

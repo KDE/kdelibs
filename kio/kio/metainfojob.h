@@ -38,9 +38,30 @@ namespace KIO {
         /**
          * Creates a new MetaInfoJob.
          *  @param items   A list of KFileItems to get the metainfo for
-         *  @param deleteItems If true, the finished KFileItems are deleted
+         *  @param w       Flags which serve as a preset which can be customized
+         *                 with other parameters.
+         *  @param iocost  The allowed cost in terms of io to retrieve the
+         *                 metainfo. The approximate maximum number of bytes to
+         *                 be read is 10^iocost. Negative values mean that
+         *                 there is no limit on the cost. 0 means that no fields
+         *                 other than the required fields will be retrieved.
+         *                 The default value of 3 means about 1024 bytes per
+         *                 file may be read. This is merely a suggestion and not
+         *                 a hard limit.
+         *  @param cpucost The allowed cost in terms of cpu to determine the
+         *                 information in the fields. The number mean the amount
+         *                 of instructions allowed is 10^cpucost and is a suggestion only.
+         *                 The default value of 6 means that about a million
+         *                 instructions (10^6) are allowed. This is useful for
+         *                 expensive fields like md5 or thumbnails.
+         *  @param requiredfields The names of fields or groups of fields that should
+         *                  be retrieved regardless of cost.
+         *  @param requestedfields The names of fields or groups of fields that should
+         *                  be retrieved first.
          */
-        MetaInfoJob(const KFileItemList &items, bool deleteItems = false);
+        MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything,
+            int iocost = 3, int cpucost = 6, const QStringList& requiredfields = QStringList(),
+            const QStringList& requestedfields = QStringList());
         virtual ~MetaInfoJob();
 
         /**
@@ -48,22 +69,7 @@ namespace KIO {
          *
          * @param item the item that should be removed from the queue
          */
-        void removeItem( const KFileItem *item );
-
-        /**
-         * Returns a list of all available metainfo plugins. The list
-         * contains the basenames of the plugins' .desktop files (no path,
-         * no .desktop).
-	 * @return the list of available meta info plugins
-         */
-        static QStringList availablePlugins();
-
-        /**
-         * Returns a list of all supported MIME types. The list can
-         * contain entries like text/ * (without the space).
-	 * @return the list of MIME types that are supported
-         */
-        static QStringList supportedMimeTypes();
+        void removeItem( const KFileItem& item );
 
     Q_SIGNALS:
         /**
@@ -71,14 +77,14 @@ namespace KIO {
          * retrieved.
 	 * @param item the KFileItem describing the fetched item
          */
-        void gotMetaInfo( const KFileItem *item );
+        void gotMetaInfo( const KFileItem& item );
         /**
          * Emitted when metainfo for @p item could not be extracted,
          * either because a plugin for its MIME type does not
          * exist, or because something went wrong.
 	 * @param item the KFileItem of the file that failed
          */
-        void failed( const KFileItem *item );
+        void failed( const KFileItem& item );
 
     protected:
         void getMetaInfo();
@@ -104,7 +110,7 @@ namespace KIO {
      * @param items files to get metainfo for
      * @return the MetaInfoJob to retrieve the items
      */
-    KIO_EXPORT MetaInfoJob* fileMetaInfo(const KFileItemList& items);
+    KIO_EXPORT MetaInfoJob* fileMetaInfo(const QList<KFileItem>& items);
 
     /**
      * Retrieves meta information for the given items.

@@ -58,27 +58,31 @@ public:
     /**
      * This is used to specify what a KFileMetaInfo object should read, so
      * you can specify if you want to read "expensive" items or not.
-     * @deprecated
+     * This is like a preset which can be customized by passing additional
+     * parameters to constructors.
      */
     enum What
     {
-      Fastest       = 0x1,  /**< do the fastest possible read and omit all item
-s
+      Fastest       = 0x1,  /**< do the fastest possible read and omit all items
                                  that might need a significantly longer time
                                  than the others */
-      DontCare      = 0x2,  ///< let the plugin decide what to read
+// Deprecated
+//      DontCare      = 0x2,  ///< let the plugin decide what to read.
 
       TechnicalInfo = 0x4,  /**< extract technical details about the file, like
                                  e.g. play time, resolution or a compressioni
                                  type */
       ContentInfo   = 0x8,  /**< read information about the content of the file
-,
                                  like comments or id3 tags */
-      ExtenedAttr   = 0x10, /**< read filesystem based extended attributes if
-                                 they are supported for the filesystem */
+      ExternalSources = 0x10, /**<read external metadata sources such as
+                                 filesystem based extended attributes if
+                                 they are supported for the filesystem;
+                                 RDF storages etc */
       Thumbnail     = 0x20, /**< only read the file's thumbnail, if it contains
                                  one */
-      Preferred     = 0x40,  ///< get at least the preferred items
+// Deprecated
+//      Preferred     = 0x40,  ///< get at least the preferred items
+      LinkedData    = 0x80, //< extract linked/related files like html links, source #include etc
       Everything    = 0xffff ///< read everything, even if it might take a while
 
     };

@@ -28,6 +28,7 @@ using namespace std;
 class PredicateProperties::Private : public QSharedData {
 public:
     static const QString nullString;
+    static const QStringList nullStringList;
     static const PredicateProperties nullPP;
     PredicateProperties parent;
     QString key;
@@ -36,6 +37,7 @@ public:
     uint attributes;
 };
 const QString PredicateProperties::Private::nullString = QString();
+const QStringList PredicateProperties::Private::nullStringList = QStringList();
 const PredicateProperties PredicateProperties::Private::nullPP;
 
 PredicateProperties::PredicateProperties(const QString& predicate) {
@@ -59,6 +61,22 @@ PredicateProperties::name() const {
     if (p == 0) return Private::nullString;
     return (p->name.isEmpty()) ?p->key :p->name;
 }
+
+const QStringList&
+PredicateProperties::suggestedValues() const {
+    return Private::nullStringList;
+}
+
+uint
+PredicateProperties::minCardinality() const {
+    return 0;
+}
+
+uint
+PredicateProperties::maxCardinality() const {
+    return 0;
+}
+
 uint
 PredicateProperties::attributes() const {
     return (p) ?p->attributes :0;

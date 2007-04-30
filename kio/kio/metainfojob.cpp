@@ -33,16 +33,17 @@ using namespace KIO;
 
 struct KIO::MetaInfoJobPrivate
 {
-    KFileItemList          items;       // all the items we got
+    QList<KFileItem>       items;       // all the items we got
     int                    currentItem;
-    bool                   deleteItems; // Delete the KFileItems when done?
     bool                   succeeded;   // if the current item is ok
 };
 
-MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
+
+MetaInfoJob::MetaInfoJob(const QList<KFileItem>& items, KFileMetaInfo::WhatFlags w,
+     int iocost, int cpucost,
+     const QStringList& requiredfields, const QStringList& requestedfields)
     : KIO::Job(),d(new MetaInfoJobPrivate)
 {
-    d->deleteItems  = deleteItems;
     d->succeeded    = false;
     d->items        = items;
     d->currentItem  = 0;
@@ -63,8 +64,6 @@ MetaInfoJob::MetaInfoJob(const KFileItemList &items, bool deleteItems)
 
 MetaInfoJob::~MetaInfoJob()
 {
-    if ( d->deleteItems )
-        qDeleteAll( d->items );
     delete d;
 }
 
@@ -73,7 +72,7 @@ void MetaInfoJob::start()
     getMetaInfo();
 }
 
-void MetaInfoJob::removeItem(const KFileItem* item)
+void MetaInfoJob::removeItem(const KFileItem& item)
 {
     if (d->items.at( d->currentItem ) == item)
     {
@@ -83,7 +82,7 @@ void MetaInfoJob::removeItem(const KFileItem* item)
         determineNextFile();
     }
 
-    d->items.removeAll(const_cast<KFileItem *>(item));
+    d->items.removeAll(item);
 }
 
 void MetaInfoJob::determineNextFile()
@@ -99,8 +98,8 @@ void MetaInfoJob::determineNextFile()
     d->succeeded = false;
 
     // does the file item already have the needed info? Then shortcut
-    KFileItem* item = d->items.at( d->currentItem );
-    if (item->metaInfo(false).isValid())
+    KFileItem item = d->items.at( d->currentItem );
+    if (item.metaInfo(false).isValid())
     {
 //        kDebug(7007) << "Is already valid *************************\n";
         emit gotMetaInfo(item);
@@ -121,12 +120,12 @@ void MetaInfoJob::slotResult( KJob *job )
 
 void MetaInfoJob::getMetaInfo()
 {
-    KFileItem* item = d->items.at( d->currentItem );
-    Q_ASSERT(item);
+    KFileItem item = d->items.at( d->currentItem );
+    Q_ASSERT(!item.isNull());
 
     KUrl URL;
     URL.setProtocol("metainfo");
-    URL.setPath(item->url().path());
+    URL.setPath(item.url().path());
 
     KIO::TransferJob* job = KIO::get(URL, false, false);
     addSubjob(job);
@@ -134,7 +133,7 @@ void MetaInfoJob::getMetaInfo()
     connect(job,  SIGNAL(data(KIO::Job *, const QByteArray &)),
             this, SLOT(slotMetaInfo(KIO::Job *, const QByteArray &)));
 
-    job->addMetaData("mimeType", item->mimetype());
+    job->addMetaData("mimeType", item.mimetype());
 }
 
 
@@ -145,41 +144,25 @@ void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 
     s >> info;
 
-    KFileItem* item = d->items.at( d->currentItem );
-    item->setMetaInfo(info);
+    KFileItem item = d->items.at( d->currentItem );
+    item.setMetaInfo(info);
     emit gotMetaInfo(item);
     d->succeeded = true;
 }
 
-QStringList MetaInfoJob::availablePlugins()
+KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const QList<KFileItem>& items)
 {
-    QStringList result;
-    const KService::List plugins = KServiceTypeTrader::self()->query("KFilePlugin");
-    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
-        result.append((*it)->desktopEntryName());
-    return result;
-}
-
-QStringList MetaInfoJob::supportedMimeTypes()
-{
-    QStringList result;
-    const KService::List plugins = KServiceTypeTrader::self()->query("KFilePlugin");
-    for (KService::List::ConstIterator it = plugins.begin(); it != plugins.end(); ++it)
-        result += (*it)->property("MimeTypes").toStringList();
-    return result;
-}
-
-KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KFileItemList &items)
-{
-    return new MetaInfoJob(items, false);
+    return new MetaInfoJob(items);
 }
 
 KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KUrl::List &items)
 {
-    KFileItemList fileItems;
-    for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
-        fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
-    MetaInfoJob *job = new MetaInfoJob(fileItems, true);
+    QList<KFileItem> fileItems;
+    foreach (const KUrl& url, items) {
+        fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, url,
+            true));
+    }
+    MetaInfoJob *job = new MetaInfoJob(fileItems);
     job->setUiDelegate(new JobUiDelegate());
     return job;
 }

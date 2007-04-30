@@ -81,6 +81,11 @@ bool
 KFileMetaInfoItem::isValid() const {
     return true;
 }
+bool
+KFileMetaInfoItem::isSkipped() const {
+    // ########## TODO implement (vandenoever)
+    return false;
+}
 const PredicateProperties&
 KFileMetaInfoItem::properties() const {
     return p->pp;
@@ -91,6 +96,12 @@ KFileMetaInfoItem::isEditable() const {
 }
 QString
 KFileMetaInfoItem::suffix() const {
+    // ########## TODO implement (vandenoever)
+    return QString();
+}
+
+QString
+KFileMetaInfoItem::prefix() const {
     // ########## TODO implement (vandenoever)
     return QString();
 }
