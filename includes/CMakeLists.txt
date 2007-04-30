@@ -63,7 +63,7 @@ install( FILES
   KActionCollection
   KActionMenu
   KActionSelector
-  KActiveLabel
+  K3ActiveLabel
   KAnimatedButton
   KApplication
   KApplicationPropsPlugin
@@ -370,7 +370,7 @@ install( FILES
   KProtocolManager
   KPty
   KPushButton
-  KRFCDate
+  K3RFCDate
   KRandom
   KRandomSequence
   KRecentDocument
