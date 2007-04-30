@@ -25,6 +25,33 @@
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
 #include <QtGui/QApplication>
+#include <QtCore/QEventLoop>
+#include <QtTest/QSignalSpy>
+
+namespace QTest
+{
+    /**
+     * Starts an event loop that runs until the given signal is received. Optionally the event loop
+     * can return earlier on a timeout.
+     *
+     * \return \p true if the requested signal was received
+     *         \p false on timeout
+     */
+    inline bool kWaitForSignal(QObject *obj, const char *signal, int timeout = 0)
+    {
+        QEventLoop loop;
+        QObject::connect(obj, signal, &loop, SLOT(quit()));
+        QTimer timer;
+        QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
+        if (timeout > 0) {
+            QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+            timer.setSingleShot(true);
+            timer.start(timeout);
+        }
+        loop.exec();
+        return timeoutSpy.isEmpty();
+    }
+} // namespace QTest
 
 // By default, unit tests get no gui.
 // Pass GUI if you use any GUI classes

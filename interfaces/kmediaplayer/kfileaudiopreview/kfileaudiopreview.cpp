@@ -38,8 +38,8 @@
 #include <phonon/audiooutput.h>
 #include <phonon/videopath.h>
 #include <phonon/backendcapabilities.h>
-#include <phonon/ui/videowidget.h>
-#include <phonon/ui/mediacontrols.h>
+#include <phonon/videowidget.h>
+#include "mediacontrols.h"
 #include <kconfiggroup.h>
 
 class KFileAudioPreviewFactory : public KLibFactory
@@ -93,7 +93,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent )
 
     (void) new QWidget( box ); // spacer
 
-    setSupportedMimeTypes( BackendCapabilities::knownMimeTypes() );
+    setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 
     d->audioOutput = new AudioOutput( Phonon::VideoCategory, this );
     d->audioPath = new AudioPath( this );
@@ -136,7 +136,7 @@ void KFileAudioPreview::showPreview( const KUrl &url )
 {
     delete d->player;
     d->player = new MediaObject( this );
-    d->player->setUrl( url );
+    d->player->setCurrentSource(url);
     if( d->player->state() == Phonon::ErrorState )
     {
         delete d->player;
@@ -144,7 +144,7 @@ void KFileAudioPreview::showPreview( const KUrl &url )
         return;
     }
 
-    d->controls->setMediaProducer( d->player );
+    d->controls->setMediaObject(d->player);
     if( d->player->state() == Phonon::StoppedState )
         d->controls->setEnabled( true );
     else

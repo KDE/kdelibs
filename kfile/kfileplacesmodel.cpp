@@ -35,7 +35,7 @@
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
 
-#include <solid/volume.h>
+#include <solid/storagevolume.h>
 
 class KFilePlacesModel::Private
 {
@@ -75,7 +75,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
         root.addBookmark(d->bookmarkManager, i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
-    d->deviceModel = new KDeviceListModel("[ Volume.ignored == false AND Volume.usage == 'FileSystem' ]", this);
+    d->deviceModel = new KDeviceListModel("[ StorageVolume.ignored == false AND StorageVolume.usage == 'FileSystem' ]", this);
 
     connect(d->deviceModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
             this, SLOT(_k_devicesInserted(const QModelIndex&, int, int)));
@@ -270,9 +270,9 @@ QVariant KFilePlacesModel::Private::deviceData(const QPersistentModelIndex &inde
 {
     if (index.isValid()) {
         Solid::Device device = deviceModel->deviceForIndex(index);
-        Solid::Volume *volume = 0;
+        Solid::StorageVolume *volume = 0;
 
-        if (device.isValid()) volume = device.as<Solid::Volume>();
+        if (device.isValid()) volume = device.as<Solid::StorageVolume>();
 
         switch (role)
         {

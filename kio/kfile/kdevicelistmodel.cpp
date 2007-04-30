@@ -20,8 +20,9 @@
 #include "kdevicelistmodel.h"
 #include "kdevicelistitem_p.h"
 
-#include <solid/devicemanager.h>
+#include <solid/devicenotifier.h>
 #include <solid/device.h>
+#include <solid/deviceinterface.h>
 
 #include <QTimer>
 
@@ -108,31 +109,31 @@ QVariant KDeviceListModel::data(const QModelIndex &index, int role) const
         }
         else
         {
-            if (device.queryCapability(Solid::Capability::Cdrom))
+            if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive))
             {
                 iconName = "cdrom-unmount";
             }
-            else if (device.queryCapability(Solid::Capability::Display))
+            else if (device.queryDeviceInterface(Solid::DeviceInterface::Display))
             {
                 iconName = "view-remove";
             }
-            else if (device.queryCapability(Solid::Capability::PortableMediaPlayer))
+            else if (device.queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer))
             {
                 iconName = "ipod-unmount";
             }
-            else if (device.queryCapability(Solid::Capability::Camera))
+            else if (device.queryDeviceInterface(Solid::DeviceInterface::Camera))
             {
                 iconName = "camera-unmount";
             }
-            else if(device.queryCapability(Solid::Capability::Processor))
+            else if(device.queryDeviceInterface(Solid::DeviceInterface::Processor))
             {
                 iconName = "ksim-cpu";
             }
-            else if (device.queryCapability(Solid::Capability::Storage))
+            else if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
             {
                 iconName = "hdd-unmount";
             }
-            else if (device.queryCapability(Solid::Capability::Block))
+            else if (device.queryDeviceInterface(Solid::DeviceInterface::Block))
             {
                 iconName = "blockdevice";
             }
@@ -222,17 +223,18 @@ Solid::Device KDeviceListModel::deviceForIndex(const QModelIndex& index) const
 
 void KDeviceListModel::Private::_k_initDeviceList()
 {
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
 
-    connect(&manager, SIGNAL(deviceAdded(const QString&)),
+    connect(notifier, SIGNAL(deviceAdded(const QString&)),
             q, SLOT(_k_deviceAdded(const QString&)));
-    connect(&manager, SIGNAL(deviceRemoved(const QString&)),
+    connect(notifier, SIGNAL(deviceRemoved(const QString&)),
             q, SLOT(_k_deviceRemoved(const QString&)));
 
     // Use allDevices() from the manager if the predicate is not valid
     // otherwise the returned list is empty
     const Solid::DeviceList &deviceList = predicate.isValid()?
-            manager.findDevicesFromQuery(predicate) : manager.allDevices();
+                                          Solid::Device::listFromQuery(predicate)
+                                        : Solid::Device::allDevices();
 
     foreach(Solid::Device device, deviceList)
     {

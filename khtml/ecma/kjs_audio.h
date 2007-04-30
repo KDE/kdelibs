@@ -25,6 +25,7 @@
 #include <kjs/object.h>
 #include <QPointer>
 #include <phonon/phononnamespace.h>
+#include <phonon/abstractmediastream.h>
 
 #include "misc/loader.h"
 
@@ -90,7 +91,7 @@ namespace KJS {
 
   // Needs a separate class as QObjects confuse the hell out of
   // KJS's garbage collector
-  class AudioQObject: public QObject {
+  class AudioQObject: public Phonon::AbstractMediaStream {
       Q_OBJECT
   public:
       AudioQObject(Audio* jObj);
@@ -103,20 +104,21 @@ namespace KJS {
       void stop();
       void loop(int n=-1);
 
+  protected:
+      void needData();
+      void enoughData();
+      void seekStream(qint64 offset);
+
   protected Q_SLOTS:
-    void nextIteration();
     void refLoader();
     void finished();
-    void slotStateChanged(Phonon::State newstate, Phonon::State oldstate);
-    
-  protected:
-    void reset();
 
   private:
     Audio* m_jObj;
 
-    Phonon::ByteStream*  m_media;
+    Phonon::MediaObject* m_media;
     QByteArray m_sound;
+    qint64 m_offset;
     int m_playCount;
     bool m_stopping;
 

@@ -322,7 +322,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} ktexteditor kparts kdeprint kutils kde3support kjs phononcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
+target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} ktexteditor kparts kdeprint kutils kde3support kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )

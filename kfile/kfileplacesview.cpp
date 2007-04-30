@@ -27,7 +27,7 @@
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include <kjob.h>
-#include <solid/volume.h>
+#include <solid/storagevolume.h>
 
 #include "kfileplaceeditdialog.h"
 #include "kfileplacesmodel.h"
@@ -291,9 +291,8 @@ void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 
     if (placesModel->isDevice(index)) {
         Solid::Device device = placesModel->deviceForIndex(index);
-        if (device.is<Solid::Volume>() && !device.as<Solid::Volume>()->isMounted()) {
-            KJob *job = device.as<Solid::Volume>()->mount();
-            job->exec(); // FIXME: Do this asynchronously
+        if (device.is<Solid::StorageVolume>() && !device.as<Solid::StorageVolume>()->isMounted()) {
+            device.as<Solid::StorageVolume>()->mount(0, 0); // FIXME: add the missing slot
         }
     }
 

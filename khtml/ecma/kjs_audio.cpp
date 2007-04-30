@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2006 Germain Garand <germain@ebooksfrance.org>
+ *  Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -22,7 +23,7 @@
 #include "ecma/kjs_events.h"
 #include "khtmlview.h"
 
-#include <phonon/bytestream.h>
+#include <phonon/mediaobject.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
 
@@ -229,7 +230,8 @@ using namespace Phonon;
 
 AudioQObject::AudioQObject(Audio* jObj)
   : m_jObj( jObj ),
-    m_media(0), 
+    m_media(0),
+    m_offset(0),
     m_playCount(0),
     m_stopping(false)
 {
@@ -260,62 +262,57 @@ int AudioQObject::s_refs = 0;
 
 void AudioQObject::setupPlayer()
 {
-    m_media = new ByteStream( this );
-    if (!s_audioPath)
-        s_audioPath = new AudioPath();
-    if (!s_audioOutput)
-        s_audioOutput = new AudioOutput( MusicCategory );
+    m_media = new MediaObject( this );
+    if (!s_audioPath || !s_audioOutput) {
+        if (!s_audioPath)
+            s_audioPath = new AudioPath();
+        if (!s_audioOutput)
+            s_audioOutput = new AudioOutput( MusicCategory );
+        s_audioPath->addOutput( AudioQObject::s_audioOutput );
+    }
 
     s_refs++;
+    m_media->setCurrentSource(this);
 
+    // TODO addAudioPath may fail, it returns false in that case. You can still
+    // try to create another pair of path/output objects and connect to those
     m_media->addAudioPath( AudioQObject::s_audioPath );
-    s_audioPath->addOutput( AudioQObject::s_audioOutput );
-    
-    m_media->setStreamSeekable( true );
 
-    connect(m_media, SIGNAL(needData()), this, SLOT(nextIteration()));
+    setStreamSeekable( true );
+    setStreamSize( m_sound.size()-1 ); // why -1?
+
     connect(m_media, SIGNAL(finished()), this, SLOT(finished()));
-    connect(m_media, SIGNAL(stateChanged(Phonon::State,Phonon::State)), 
-            this,    SLOT(slotStateChanged(Phonon::State,Phonon::State)));
 
-    m_media->setStreamSize( m_sound.size()-1 );
     m_playCount = 1;
-    nextIteration();
 }
 
 void AudioQObject::finished()
 {
-    reset();
-    if (m_playCount > 0)
-        m_playCount--;
-    loop(m_playCount);
-}
-
-void AudioQObject::reset()
-{
-    if (!m_media || m_media->state() == LoadingState) 
-        return;
-    if (m_media->state() != StoppedState) {
-        // ### bah. it doesn't help.
-        //m_stopping = true;
-        m_media->stop();
-    }
-    //m_media->seek(0);
-}
-
-void AudioQObject::slotStateChanged(Phonon::State newstate, Phonon::State oldstate)
-{
-    qDebug("newstate %d oldstate %d m_stopping %d", newstate, oldstate, m_stopping); 
-    if (newstate == StoppedState && m_stopping) {
-        m_stopping = false;
-        loop(m_playCount);
+    --m_playCount;
+    if (m_playCount > 0) {
+        m_media->play();
     }
 }
 
-void AudioQObject::nextIteration()
+void AudioQObject::needData()
 {
-    m_media->writeData(m_sound);
-    m_media->endOfData();    
+    if (m_offset > 0) {
+        writeData(m_sound.right(m_sound.size() - m_offset));
+        m_offset = 0;
+    } else {
+        writeData(m_sound);
+    }
+    endOfData();
+}
+
+void AudioQObject::enoughData()
+{
+    // nothing to do
+}
+
+void AudioQObject::seekStream(qint64 offset)
+{
+    m_offset = offset;
 }
 
 void AudioQObject::play()
@@ -325,14 +322,14 @@ void AudioQObject::play()
 
 void AudioQObject::stop()
 {
+    m_media->stop();
     m_playCount = 0;
-    reset();
 }
 
 void AudioQObject::loop(int n)
 {
     m_playCount = n;
-    if (!m_media || !m_playCount || m_stopping || m_media->state() == PlayingState)
+    if (!m_media || m_playCount <= 0 || m_media->state() == PlayingState)
         return;
     m_media->play();
 }

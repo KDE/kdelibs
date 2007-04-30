@@ -1002,53 +1002,23 @@ install( FILES
   Solid/Block
   Solid/Button
   Solid/Camera
-  Solid/Capability
-  Solid/Cdrom
   Solid/Device
-  Solid/DeviceManager
+  Solid/DeviceInterface
+  Solid/DeviceNotifier
   Solid/Display
   Solid/DvbHw
-  Solid/FrontendObject
-  Solid/ManagerBase
-  Solid/Network
+  Solid/GenericInterface
   Solid/NetworkHw
-  Solid/NetworkInterface
+  Solid/Networking
   Solid/OpticalDisc
+  Solid/OpticalDrive
   Solid/PortableMediaPlayer
-  Solid/PowerManager
+  Solid/PowerManagement
   Solid/Predicate
   Solid/Processor
-  Solid/Storage
-  Solid/Volume
-  Solid/WirelessNetwork
+  Solid/StorageDrive
+  Solid/StorageVolume
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid )
-
-
-install( FILES
-  Solid/Ifaces/AcAdapter
-  Solid/Ifaces/AudioHw
-  Solid/Ifaces/AuthenticationValidator
-  Solid/Ifaces/Battery
-  Solid/Ifaces/Block
-  Solid/Ifaces/Button
-  Solid/Ifaces/Camera
-  Solid/Ifaces/Capability
-  Solid/Ifaces/Cdrom
-  Solid/Ifaces/Device
-  Solid/Ifaces/DeviceManager
-  Solid/Ifaces/Display
-  Solid/Ifaces/DvbHw
-  Solid/Ifaces/Network
-  Solid/Ifaces/NetworkHw
-  Solid/Ifaces/NetworkInterface
-  Solid/Ifaces/OpticalDisc
-  Solid/Ifaces/PortableMediaPlayer
-  Solid/Ifaces/PowerManager
-  Solid/Ifaces/Processor
-  Solid/Ifaces/Storage
-  Solid/Ifaces/Volume
-  Solid/Ifaces/WirelessNetwork
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid/Ifaces )
 
 
 install( FILES
