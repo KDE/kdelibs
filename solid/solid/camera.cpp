@@ -40,11 +40,5 @@ Solid::Camera::AccessType Solid::Camera::accessMethod() const
     return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), Proprietary, accessMethod());
 }
 
-bool Solid::Camera::isGphotoSupported() const
-{
-    Q_D(const Camera);
-    return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), false, isGphotoSupported());
-}
-
 #include "camera.moc"
 

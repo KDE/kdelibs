@@ -44,7 +44,6 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS(AccessType)
         Q_PROPERTY(AccessType accessMethod READ accessMethod)
-        Q_PROPERTY(bool gphotoSupport READ isGphotoSupported)
         Q_DECLARE_PRIVATE(Camera)
         friend class Device;
 
@@ -94,13 +93,6 @@ namespace Solid
          * @see Solid::Camera::AccessType
          */
         AccessType accessMethod() const;
-
-        /**
-         * Indicates if the camera is supported by a driver from the libgphoto2 project.
-         *
-         * @return true if the camera is supported by libgphoto2, false otherwise.
-         */
-        bool isGphotoSupported() const;
     };
 }
 

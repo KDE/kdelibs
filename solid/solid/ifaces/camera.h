@@ -54,13 +54,6 @@ namespace Ifaces
          * @see Solid::Camera::AccessType
          */
         virtual Solid::Camera::AccessType accessMethod() const = 0;
-
-        /**
-         * Indicates if the camera is supported by a driver from the libgphoto2 project.
-         *
-         * @return true if the camera is supported by libgphoto2, false otherwise.
-         */
-        virtual bool isGphotoSupported() const = 0;
     };
 }
 }
