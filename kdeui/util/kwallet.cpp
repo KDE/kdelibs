@@ -161,6 +161,8 @@ QStringList Wallet::walletList() {
 
 
 void Wallet::changePassword(const QString& name, WId w) {
+    if( w == 0 )
+        kWarning() << "Pass a valid window to KWallet::Wallet::changePassword()." << endl;
     org::kde::KWallet wallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
     wallet.changePassword(name, (qlonglong)w, appid());
 }
@@ -193,6 +195,8 @@ int Wallet::deleteWallet(const QString& name) {
 
 
 Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
+    if( w == 0 )
+        kWarning() << "Pass a valid window to KWallet::Wallet::openWallet()." << endl;
     if (ot == Asynchronous) {
         Wallet *wallet = new Wallet(-1, name);
 
@@ -271,6 +275,8 @@ bool Wallet::isOpen() const {
 
 
 void Wallet::requestChangePassword(WId w) {
+    if( w == 0 )
+        kWarning() << "Pass a valid window to KWallet::Wallet::requestChangePassword()." << endl;
     if (d->handle == -1) {
         return;
     }

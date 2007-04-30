@@ -132,7 +132,7 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  @return Returns a pointer to the wallet if successful,
 		 *          or a null pointer on error or if rejected.
 		 */
-		static Wallet* openWallet(const QString& name, WId w = 0, OpenType ot = Synchronous);
+		static Wallet* openWallet(const QString& name, WId w, OpenType ot = Synchronous);
 
 		/**
 		 *  List the applications that are using the wallet @p wallet.
@@ -174,7 +174,7 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  @param name The the wallet to change the password of.
 		 *  @param w The window id to associate any dialogs with.
 		 */
-		static void changePassword(const QString& name, WId w = 0);
+		static void changePassword(const QString& name, WId w);
 
 		/**
 		 *  This syncs the wallet file on disk with what is in memory.
@@ -208,7 +208,7 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  the current wallet.
 		 *  @param w The window id to associate any dialogs with.
 		 */
-		virtual void requestChangePassword(WId w = 0);
+		virtual void requestChangePassword(WId w);
 
 		/**
 		 *  Obtain the list of all folders contained in the wallet.

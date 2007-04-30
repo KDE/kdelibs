@@ -135,9 +135,6 @@ informations
 - Implement a "default" ctor for the widgets i.e. explicit Foo(QWidget* parent = 0).
   (André Wöbbeking)
 
-- KWallet::Wallet::* functions - remove the default = 0 argument for mainwindow for the dialog
-  (Lubos)
-
 - Get rid of libkdesu dependency in libkio, get rid of KIO::SessionData::AuthData*
   (Waldo)
 
