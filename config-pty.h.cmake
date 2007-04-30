@@ -1,3 +1,6 @@
+/* Defined to the path of the PTY multiplexer device, if any */
+#cmakedefine PTM_DEVICE "${PTM_DEVICE}"
+
 #cmakedefine HAVE_GETPT 1
 #cmakedefine HAVE_GRANTPT 1
 #cmakedefine HAVE_OPENPTY 1

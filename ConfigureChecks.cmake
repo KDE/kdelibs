@@ -145,6 +145,18 @@ if (UNIX)
     set(UTIL_LIBRARY util)
   endif (HAVE_OPENPTY)
 
+  EXECUTE_PROCESS(
+    COMMAND sh -c "
+      for ptm in ptc ptmx ptm ptym/clone; do
+        if test -c /dev/$ptm; then
+          echo /dev/$ptm
+          break
+        fi
+      done"
+    OUTPUT_VARIABLE PTM_DEVICE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  message(STATUS "PTY multiplexer: ${PTM_DEVICE}")
+
 endif (UNIX)
 
 # it seems this isn't used anywhere

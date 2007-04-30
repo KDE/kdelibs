@@ -209,11 +209,7 @@ bool KPty::open()
   // We try, as we know them, one by one.
 
 #if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT)
-#ifdef _AIX
-  d->masterFd = ::open("/dev/ptc",O_RDWR);
-#else
-  d->masterFd = ::open("/dev/ptmx",O_RDWR);
-#endif
+  d->masterFd = ::open(PTM_DEVICE, O_RDWR);
   if (d->masterFd >= 0)
   {
     char *ptsn = ptsname(d->masterFd);
