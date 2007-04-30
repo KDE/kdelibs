@@ -41,14 +41,14 @@ public:
     /** \internal */
     KDEDesktopMimeType( const QString & fullpath, const QString& type,
                         const QString& comment );
-  
+
     /** \internal */
     KDEDesktopMimeType( QDataStream& str, int offset );
 
     /** Destructor. */
     ~KDEDesktopMimeType();
-    
-    virtual QString icon( const KUrl& url ) const;
+
+    virtual QString iconName( const KUrl& url ) const;
     virtual QString comment( const KUrl& url ) const;
 
 protected:
@@ -69,14 +69,14 @@ class KDECORE_EXPORT KFolderType : public KMimeType
 public:
     /** \internal */
     KFolderType( const QString& fullpath, const QString& name, const QString& comment );
-  
+
     /** \internal */
     KFolderType( QDataStream& str, int offset );
-  
+
     /** Destructor. */
     ~KFolderType();
 
-    virtual QString icon( const KUrl& url ) const;
+    virtual QString iconName( const KUrl& url ) const;
     virtual QString comment( const KUrl& url ) const;
 
 protected:

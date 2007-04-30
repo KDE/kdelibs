@@ -48,7 +48,7 @@ KDEDesktopMimeType::~KDEDesktopMimeType()
 {
 }
 
-QString KDEDesktopMimeType::icon( const KUrl& _url ) const
+QString KDEDesktopMimeType::iconName( const KUrl& _url ) const
 {
     if ( _url.isEmpty() || !_url.isLocalFile() )
         return KMimeType::iconName( _url );
@@ -135,7 +135,7 @@ KFolderType::~KFolderType()
 {
 }
 
-QString KFolderType::icon( const KUrl& _url ) const
+QString KFolderType::iconName( const KUrl& _url ) const
 {
   if ( _url.isEmpty() || !_url.isLocalFile() )
     return KMimeType::iconName( _url );
