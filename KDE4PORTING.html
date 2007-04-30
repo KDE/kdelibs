@@ -759,7 +759,7 @@ by <pre>  KUrl::List uriList = KUrl::List::fromMimeData( e-&gt;mimeData() );
 </ul>
 
 <h4>KWin</h4>
-This class has been merged with KWinModule into class KWM.
+This class has been merged with KWinModule into class KWindowSystem.
 <ul>
 <li>appStarted() removed, use KStartupInfo::appStarted() instead</li>
 <li>info(WId win) removed, use windowInfo() instead</li>
@@ -767,8 +767,8 @@ This class has been merged with KWinModule into class KWM.
 </ul>
 
 <h4>KWinModule</h4>
-This class has been merged with KWinModule into class KWM. Don't create instances,
-use static functions and KWM::self() for connecting to signals.
+This class has been merged with KWinModule into class KWindowSystem. Don't create instances,
+use static functions and KWindowSystem::self() for connecting to signals.
 <ul>
 <li>Functions related to systemtray have been removed. They worked only with the obsolete
 KDE systray mechanism.</li>
