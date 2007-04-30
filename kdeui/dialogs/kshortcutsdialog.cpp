@@ -141,7 +141,6 @@ public:
 
 	//helper functions for conflict resolution
 	bool stealShortcut(KShortcutsEditorItem *item, unsigned int column, const QKeySequence &seq);
-	bool stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq);
 	void wontStealStandardShortcut(KStandardShortcut::StandardShortcut sa, const QKeySequence &seq);
 	bool stealShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &gest);
 	bool stealRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &gest);
@@ -393,8 +392,9 @@ void KShortcutsEditor::save()
 {
 	foreach (KActionCollection* collection, d->actionCollections)
 		collection->writeSettings();
-	if (!KGlobalAccel::self()->actionsWithGlobalShortcut().isEmpty())
-		KGlobalAccel::self()->writeSettings();
+	//if (!KGlobalAccel::self()->actionsWithGlobalShortcut().isEmpty())
+	//TODO: only do this when needed
+	KGlobalAccel::self()->writeSettings();
 }
 
 
@@ -522,9 +522,13 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 			return;
 
 		//check for conflicts with other applications' global shortcuts
-		QString conflicting = KGlobalAccel::findActionNameSystemwide(capture);
-		if (!conflicting.isEmpty() && !stealExternalGlobalShortcut(conflicting, capture))
-			return;
+		QStringList conflicting = KGlobalAccel::findActionNameSystemwide(capture);
+		if (!conflicting.isEmpty()) {
+            if (KGlobalAccel::promptStealShortcutSystemwide(0/*TODO:right?*/, conflicting, capture))
+				KGlobalAccel::stealShortcutSystemwide(capture);
+			else
+				return;
+        }
 	}
 
 	item->setKeySequence(column, capture);
@@ -614,16 +618,6 @@ bool KShortcutsEditorPrivate::stealShortcut(KShortcutsEditorItem *item, unsigned
 
 	item->setKeySequence(column - LocalPrimary, QKeySequence());
 	return true;
-}
-
-
-bool KShortcutsEditorPrivate::stealExternalGlobalShortcut(const QString &name, const QKeySequence &seq)
-{
-	if (KGlobalAccel::promptStealShortcutSystemwide(q, name, seq)) {
-		KGlobalAccel::stealShortcutSystemwide(name, seq);
-		return true;
-	} else
-		return false;
 }
 
 
