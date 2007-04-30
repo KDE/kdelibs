@@ -1,0 +1,7 @@
+This directory holds the Solid libraries: http://solid.kde.org
+
+They provide the following features for application developers:
+ - Hardware Discovery
+ - Power Management
+ - Network Management
+
