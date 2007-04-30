@@ -288,7 +288,7 @@ bool KPty::open()
       << "\nThis means the communication can be eavesdropped." << endl;
   }
 
-#ifdef BSD
+#ifdef HAVE_REVOKE
   revoke(d->ttyName.data());
 #endif
 
