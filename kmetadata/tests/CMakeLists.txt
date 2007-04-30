@@ -1,0 +1,73 @@
+project(kmetadata_tests)
+
+include_directories(
+  ${kmetadata_SOURCE_DIR}
+  ${libkmetadata_SOURCE_DIR}
+  ${kmetadata_ui_SOURCE_DIR}
+  ${QT_INCLUDES}
+  ${KDE4_INCLUDES}
+  ${SOPRANO_INCLUDE_DIR}
+)
+
+# The basis of all the tests handling statements
+qt4_automoc(testbase.cpp)
+add_library(kmetadata_testbase STATIC testbase.cpp)
+target_link_libraries(kmetadata_testbase knepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+
+# tests
+kde4_automoc(resourcetest.cpp)
+kde4_add_executable(resourcetest resourcetest.cpp)
+target_link_libraries(resourcetest
+  kmetadata_testbase
+  kmetadata
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+  ${QT_QTTEST_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${KDE4_KDECORE_LIBRARY})
+add_test(resourcetest ${EXECUTABLE_OUTPUT_PATH}/resourcetest)
+
+kde4_automoc(varianttest.cpp)
+kde4_add_executable(varianttest varianttest.cpp)
+target_link_libraries(varianttest kmetadata ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
+add_test(varianttest ${EXECUTABLE_OUTPUT_PATH}/varianttest)
+
+kde4_automoc(speedtest.cpp)
+kde4_add_executable(speedtest speedtest.cpp)
+target_link_libraries(speedtest
+  kmetadata_testbase
+  kmetadata
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+  ${QT_QTTEST_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${KDE4_KDECORE_LIBRARY})
+add_test(speedtest ${EXECUTABLE_OUTPUT_PATH}/speedtest)
+
+kde4_automoc(kmetadatadtest.cpp)
+kde4_add_executable(kmetadatadtest kmetadatadtest.cpp)
+target_link_libraries(kmetadatadtest kmetadata ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
+add_test(kmetadatadtest ${EXECUTABLE_OUTPUT_PATH}/kmetadatadtest)
+
+set(datatest_SRC 
+  resourcedatatest.cpp
+  ../kmetadata/resourcedata.cpp
+)
+kde4_automoc(${datatest_SRC})
+kde4_add_executable(resourcedatatest ${datatest_SRC})
+target_link_libraries(resourcedatatest
+  kmetadata_testbase
+  kmetadata
+  knepomuk
+  konto
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+  ${QT_QTTEST_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${KDE4_KDECORE_LIBRARY})
+add_test(resourcedatatest ${EXECUTABLE_OUTPUT_PATH}/resourcedatatest)
+
+# Not a real test, just a simple app for testing a widget manually
+kde4_automoc(tagcloudtest.cpp)
+kde4_add_executable(tagcloudtest tagcloudtest.cpp)
+target_link_libraries(tagcloudtest kmetadata)

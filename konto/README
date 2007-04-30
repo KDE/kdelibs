@@ -1,0 +1,9 @@
+Konto provides a slightly simplified view on ontologies defined using the NRL 
+ontology description language.
+
+Konto provides three classes: Konto::Ontology, Konto::Class, and Konto::Property
+whiche can be used to explore an ontology including internationalized names and
+comments if available.
+
+The ontologies are read from the Nepomuk RDF data store or the default ontology
+installation folder (see OntologyLoader subclasses).

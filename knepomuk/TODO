@@ -1,0 +1,8 @@
+* Is is maybe better not to cache the services but create service instances that the users
+  have to delete themselves once done?
+* Create WSDL files and ServicePublishers for the default services
+* Define a way to find these locally stored WSDL files, i.e. no fixed type url in
+  the code.
+* Implement some check if the connection to the registry was successful or start the registry on demand
+* allow service type shortcuts like storage.rdf.Query which will automatically be extended with the 
+  default service type location (in this case most likely the local wsdl file cache)

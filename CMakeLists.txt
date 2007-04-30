@@ -14,6 +14,10 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
 
+# Soprano can be found in kdesupport and is used
+# for Konto and KNepomuk
+find_package(Soprano)
+
 # set some default settings
 include(KDE4Defaults)
 
@@ -173,6 +177,12 @@ add_subdirectory( kimgio )
 add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( includes )
+
+if(Soprano_FOUND)
+  macro_optional_add_subdirectory(konto)
+  macro_optional_add_subdirectory(knepomuk)
+  macro_optional_add_subdirectory(kmetadata)
+endif(Soprano_FOUND)
 
 
 ########### install files ###############

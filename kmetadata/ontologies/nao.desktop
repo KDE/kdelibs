@@ -1,0 +1,19 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=Nepomuk Annotation Ontology
+Name[de]=Nepomuk-Anmerkungsontologie
+Name[it]=Ontologia dell'annotazione Nepomuk
+Name[pt]=Ontologia de Anotações do Nepomuk
+Name[pt_BR]=Ontologia de Anotações do Nepomuk
+Name[sv]=Nepomuks noteringsontologi
+Comment=The Nepomuk Annotation Ontology defines the basic annotation properties like tagging or rating.
+Comment[de]=Die Nepomuk-Anmerkungsontologie definiert die Standard-Anmerkungseigenschaften wie "Tagging" oder bewerten.
+Comment[it]=L'ontologia dell'annotazione Nepomuk definisce le proprietà base dell'annotazione come l'etichettatura e la valutazione.
+Comment[pt]=A Ontologia de Anotações do Nepomuk definem as propriedades de anotação básicas, como a marcação ou a classificação.
+Comment[pt_BR]=A Ontologia de Anotações do Nepomuk definem as propriedades de anotação básicas, como a marcação ou a classificação.
+Comment[sv]=Nepomuks noteringsontologi definierar grundläggande noteringsegenskaper som taggar eller klassificering.
+URL=http://semanticdesktop.org/ontologies/2007/03/31/nao
+Path=nao.nrl
+MimeType=application/rdf+xml
+Type=Link
