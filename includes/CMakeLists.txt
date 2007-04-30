@@ -504,7 +504,7 @@ install( FILES
   KUser
   KUserGroup
   KVBox
-  KWM
+  KWindowSystem
   KWindowListMenu
   KWordMacroExpander
   KWordWrap
