@@ -35,6 +35,8 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusMessage>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -98,39 +100,44 @@ class KSystemTimeZonesPrivate : public KTimeZones
 {
 public:
     static KSystemTimeZonesPrivate *instance();
-    const KTimeZone *local();
-    static QString zoneinfoDir()   { return instance()->m_zoneinfoDir; }
-    static KTimeZone *readZone(const QString &name);
     static void cleanup();
+    static void readConfig(bool init);
 
-private:
-    typedef QMap<QString, QString> MD5Map;    // zone name, checksum
-    KSystemTimeZonesPrivate() {}
-    bool findZoneTab( QFile& f );
-    void readZoneTab();
-    const KTimeZone *matchZoneFile(const char *path);
-    bool checkChecksum(MD5Map::ConstIterator, const QString &referenceMd5Sum, qlonglong size);
-    static QString calcChecksum(const QString &zoneName, qlonglong size);
-    static float convertCoordinate(const QString &coordinate);
-
-    static KSystemTimeZonesPrivate *m_instance;
+    static const KTimeZone *m_localZone;
+    static QString m_localZoneName;
+    static QString m_zoneinfoDir;
+    static QString m_zonetab;
     static KSystemTimeZoneSource *m_source;
     static KTzfileTimeZoneSource *m_tzfileSource;
-    static MD5Map  m_md5Sums;
-    static bool    m_haveCountryCodes;   // true if zone.tab contains any country codes
-    QString m_zoneinfoDir;
+
+private:
+    KSystemTimeZonesPrivate() {}
+#ifndef Q_OS_WIN
+    void readZoneTab();
+    static float convertCoordinate(const QString &coordinate);
+#endif
+
+    static KSystemTimeZones *m_parent;
+    static KSystemTimeZonesPrivate *m_instance;
 };
 
-KSystemTimeZonesPrivate         *KSystemTimeZonesPrivate::m_instance = 0;
-KSystemTimeZoneSource           *KSystemTimeZonesPrivate::m_source = 0;
-KTzfileTimeZoneSource           *KSystemTimeZonesPrivate::m_tzfileSource = 0;
-KSystemTimeZonesPrivate::MD5Map  KSystemTimeZonesPrivate::m_md5Sums;
-bool                             KSystemTimeZonesPrivate::m_haveCountryCodes = false;
+const KTimeZone         *KSystemTimeZonesPrivate::m_localZone = 0;
+QString                  KSystemTimeZonesPrivate::m_localZoneName;
+QString                  KSystemTimeZonesPrivate::m_zoneinfoDir;
+QString                  KSystemTimeZonesPrivate::m_zonetab;
+KSystemTimeZoneSource   *KSystemTimeZonesPrivate::m_source = 0;
+KTzfileTimeZoneSource   *KSystemTimeZonesPrivate::m_tzfileSource = 0;
+KSystemTimeZones        *KSystemTimeZonesPrivate::m_parent = 0;
+KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::m_instance = 0;
 
 
 KSystemTimeZones::KSystemTimeZones()
   : d(0)
 {
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    const QString dbusInterface = "org.kde.KTimeZoned";
+    dbus.connect(QString(), QString(), dbusInterface, "configChanged", this, SLOT(configChanged()));
+    dbus.connect(QString(), QString(), dbusInterface, "definitionChanged", this, SLOT(zoneDefinitionChanged(QString)));
 }
 
 KSystemTimeZones::~KSystemTimeZones()
@@ -139,12 +146,14 @@ KSystemTimeZones::~KSystemTimeZones()
 
 const KTimeZone *KSystemTimeZones::local()
 {
-    return KSystemTimeZonesPrivate::instance()->local();
+    KSystemTimeZonesPrivate::instance();
+    return KSystemTimeZonesPrivate::m_localZone;
 }
 
 QString KSystemTimeZones::zoneinfoDir()
 {
-    return KSystemTimeZonesPrivate::zoneinfoDir();
+    KSystemTimeZonesPrivate::instance();
+    return KSystemTimeZonesPrivate::m_zoneinfoDir;
 }
 
 KTimeZones *KSystemTimeZones::timeZones()
@@ -154,186 +163,102 @@ KTimeZones *KSystemTimeZones::timeZones()
 
 KTimeZone *KSystemTimeZones::readZone(const QString &name)
 {
-    return KSystemTimeZonesPrivate::readZone(name);
+    if (!KSystemTimeZonesPrivate::m_tzfileSource)
+    {
+        KSystemTimeZonesPrivate::instance();
+        KSystemTimeZonesPrivate::m_tzfileSource = new KTzfileTimeZoneSource(KSystemTimeZonesPrivate::m_zoneinfoDir);
+    }
+    return new KTzfileTimeZone(KSystemTimeZonesPrivate::m_tzfileSource, name);
 }
 
 const KTimeZones::ZoneMap KSystemTimeZones::zones()
 {
-    return timeZones()->zones();
+    return KSystemTimeZonesPrivate::instance()->zones();
 }
 
 const KTimeZone *KSystemTimeZones::zone(const QString& name)
 {
-    return timeZones()->zone(name);
+    return KSystemTimeZonesPrivate::instance()->zone(name);
 }
 
-// Called by D-Bus signal when the time zone config file has changed.
 void KSystemTimeZones::configChanged()
 {
+#warning Remove 1221 from kDebug() statements
+    kDebug(1221)<<"KSystemTimeZones::zoneConfigChanged()" << endl;
+    KSystemTimeZonesPrivate::readConfig(false);
 }
 
-// Called by D-Bus signal when time zone definitions have changed.
 void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
 {
+#ifdef __GNUC__
+#warning Not yet implemented
+#endif
 }
 
-KTimeZone *KSystemTimeZonesPrivate::readZone(const QString &name)
-{
-    if (!m_tzfileSource)
-        m_tzfileSource = new KTzfileTimeZoneSource(zoneinfoDir());
-    return new KTzfileTimeZone(m_tzfileSource, name);
-}
-
-/*
- * Initialisation can be very calculation intensive, so ensure that only one
- * instance is ever constructed by making the constructor private.
- */
+// Perform initialisation, create the unique KSystemTimeZones instance,
+// whose only function is to receive D-Bus signals from KTimeZoned,
+// and create the unique KSystemTimeZonesPrivate instance.
 KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
 {
     if (!m_instance)
     {
-        m_instance = new KSystemTimeZonesPrivate;
+	m_instance = new KSystemTimeZonesPrivate;
+
+	// A KSystemTimeZones instance is required only to catch D-Bus signals.
+        m_parent = new KSystemTimeZones;
+
+#ifdef __GNUC__
+#warning Ask ktimezoned to initialise if not already done?
+#endif
+        readConfig(true);
+
         // Go read the database.
 #ifdef Q_OS_WIN
-        //
         // On Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones
         // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
-        // work in progress :)
 #else
-        //
         // For Unix, read zone.tab.
         m_instance->readZoneTab();
 #endif
-        
-        qAddPostRoutine(KSystemTimeZonesPrivate::cleanup);
+        m_localZone = m_instance->zone(m_localZoneName);
+
+	qAddPostRoutine(KSystemTimeZonesPrivate::cleanup);
     }
     return m_instance;
 }
 
+void KSystemTimeZonesPrivate::readConfig(bool init)
+{
+    KConfig config(QLatin1String("ktimezonedrc"));
+    if (!init)
+        config.reparseConfiguration();
+    KConfigGroup group(&config, "TimeZones");
+    m_zoneinfoDir   = group.readPathEntry("ZoneinfoDir");
+    m_zonetab       = group.readPathEntry("Zonetab");
+    m_localZoneName = group.readEntry("LocalZone");
+    if (!init)
+        m_localZone = m_instance->zone(m_localZoneName);
+}
+
 void KSystemTimeZonesPrivate::cleanup()
 {
+    delete m_parent;
     delete m_instance;
     delete m_source;
     delete m_tzfileSource;
 }
 
-bool KSystemTimeZonesPrivate::findZoneTab(QFile& f)
-{
-#if defined(SOLARIS) || defined(USE_SOLARIS)
-    const QString ZONE_TAB_FILE = QLatin1String("/tab/zone_sun.tab");
-    const QString ZONE_INFO_DIR = QLatin1String("/usr/share/lib/zoneinfo");
-#else
-    const QString ZONE_TAB_FILE = QLatin1String("/zone.tab");
-    const QString ZONE_INFO_DIR = QLatin1String("/usr/share/zoneinfo");
-#endif
-
-    // Find and open zone.tab - it's all easy except knowing where to look. Try the LSB location first.
-    QDir dir;
-    QString zoneinfoDir = ZONE_INFO_DIR;
-    // make a note if the dir exists; whether it contains zone.tab or not
-    if (dir.exists(zoneinfoDir))
-    {
-        m_zoneinfoDir = zoneinfoDir;
-        f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
-        if (f.open(QIODevice::ReadOnly))
-            return true;
-        kDebug() << "Can't open " << f.fileName() << endl;
-    }
-
-    zoneinfoDir = QLatin1String("/usr/lib/zoneinfo");
-    if (dir.exists(zoneinfoDir))
-    {
-        m_zoneinfoDir = zoneinfoDir;
-        f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
-        if (f.open(QIODevice::ReadOnly))
-            return true;
-        kDebug() << "Can't open " << f.fileName() << endl;
-    }
-
-    zoneinfoDir = ::getenv("TZDIR");
-    if (!zoneinfoDir.isEmpty() && dir.exists(zoneinfoDir))
-    {
-        m_zoneinfoDir = zoneinfoDir;
-        f.setFileName(zoneinfoDir + ZONE_TAB_FILE);
-        if (f.open(QIODevice::ReadOnly))
-            return true;
-        kDebug() << "Can't open " << f.fileName() << endl;
-    }
-
-    zoneinfoDir = QLatin1String("/usr/share/lib/zoneinfo");
-    if (dir.exists(zoneinfoDir + QLatin1String("/src")))
-    {
-        m_zoneinfoDir = zoneinfoDir;
-        // Solaris support. Synthesise something that looks like a zone.tab.
-        //
-        // grep -h ^Zone /usr/share/lib/zoneinfo/src/* | awk '{print "??\t+9999+99999\t" $2}'
-        //
-        // where the country code is set to "??" and the latitude/longitude
-        // values are dummies.
-        //
-        QDir d(m_zoneinfoDir + QLatin1String("/src"));
-        d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
-        QStringList fileList = d.entryList();
-
-        KTemporaryFile f;
-        f.setAutoRemove(false);
-        if (!f.open())
-        {
-            kError() << "Could not open/create temp file for writing" << endl;
-            return false;
-        }
-
-        QFile zoneFile;
-        QList<QByteArray> tokens;
-        QByteArray line;
-        line.reserve(1024);
-        QTextStream tmpStream(&f);
-        qint64 r;
-        for (int i = 0, end = fileList.count();  i < end;  ++i)
-        {
-            zoneFile.setFileName(d.filePath(fileList[i].toLatin1()));
-            if (!zoneFile.open(QIODevice::ReadOnly))
-            {
-                kDebug() << "Could not open file '" << zoneFile.fileName().toLatin1() \
-                         << "' for reading." << endl;
-                continue;
-            }
-            while (!zoneFile.atEnd())
-            {
-                if ((r = zoneFile.readLine(line.data(), 1023)) > 0
-                &&  line.startsWith("Zone"))
-                {
-                    line.replace('\t', ' ');    // change tabs to spaces
-                    tokens = line.split(' ');
-                    for (int j = 0, jend = tokens.count();  j < jend;  ++j)
-                        if (tokens[j].endsWith(' '))
-                            tokens[j].chop(1);
-                    tmpStream << "??\t+9999+99999\t" << tokens[1] << "\n";
-                }
-            }
-            zoneFile.close();
-        }
-        f.close();
-        if (!f.open())
-        {
-            kError() << "Could not reopen temp file for reading." << endl;
-            return false;
-        }
-        return true;
-    }
-    return false;
-}
-
+#ifndef Q_OS_WIN
 /*
- * Find the location of the zoneinfo files and store in m_zoneinfoDir.
+ * Find the location of the zoneinfo files and store in mZoneinfoDir.
  * Parse zone.tab and for each time zone, create a KSystemTimeZone instance.
  */
 void KSystemTimeZonesPrivate::readZoneTab()
 {
     QFile f;
-    if ( !findZoneTab( f ) )
+    f.setFileName(m_zonetab);
+    if (!f.open(QIODevice::ReadOnly))
         return;
-    // Parse the zone.tab or the fake temp file.
     QTextStream str(&f);
     QRegExp lineSeparator("[ \t]");
     QRegExp ordinateSeparator("[+-]");
@@ -342,7 +267,7 @@ void KSystemTimeZonesPrivate::readZoneTab()
     while (!str.atEnd())
     {
         QString line = str.readLine();
-        if (line.isEmpty() || '#' == line[0])
+        if (line.isEmpty() || line[0] == '#')
             continue;
         QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
         int n = tokens.count();
@@ -366,8 +291,6 @@ void KSystemTimeZonesPrivate::readZoneTab()
         // Add entry to list.
         if (tokens[0] == "??")
             tokens[0] = "";
-        else if (!tokens[0].isEmpty())
-            m_haveCountryCodes = true;
         // Solaris sets the empty Comments field to '-', making it not empty.
         // Clean it up.
         if (n > 3  &&  tokens[3] == "-")
@@ -376,342 +299,6 @@ void KSystemTimeZonesPrivate::readZoneTab()
         add(tzone);
     }
     f.close();
-}
-
-const KTimeZone *KSystemTimeZonesPrivate::local()
-{
-    const KTimeZone *local = 0;
-
-    instance();    // initialize data
-
-    // SOLUTION 1: DEFINITIVE.
-    // First try the simplest solution of checking for well-formed TZ setting.
-    char *envZone = ::getenv("TZ");
-    if (envZone)
-    {
-        if (envZone[0] == '\0')
-            return utc();
-        char *TZfile = 0;
-        if (envZone[0] == ':')
-        {
-            // TZ specifies a file name, either relative to zoneinfo/ or absolute.
-            TZfile = ++envZone;
-        }
-        if (*envZone != '/')
-        {
-            local = zone(envZone);
-            if (local)
-                return local;
-            TZfile = 0;   // relative file not found
-        }
-        if (TZfile)
-        {
-#ifdef __GNUC__
-#warning What if TZfile IS a zoneinfo file?
-#endif
-            local = matchZoneFile(TZfile);
-            if (local)
-                return local;
-        }
-    }
-
-    // SOLUTION 2: DEFINITIVE.
-    // BSD & Linux support: local time zone id in /etc/timezone.
-    QString fileZone;
-    QFile f;
-    f.setFileName("/etc/timezone");
-    if (f.open(QIODevice::ReadOnly))
-    {
-        QTextStream ts(&f);
-        ts.setCodec("ISO-8859-1");
-
-        // Read the first line.
-        if (!ts.atEnd())
-        {
-            fileZone = ts.readLine();
-
-            // kDebug() << "local=" << fileZone << endl;
-            local = zone(fileZone);
-        }
-        f.close();
-        if (local)
-        {
-            kDebug() << "Local time zone=" << fileZone << " from " << f.fileName() << endl;
-            return local;
-        }
-    }
-
-    if (!m_instance->m_zoneinfoDir.isEmpty())
-    {
-        // SOLUTION 3: DEFINITIVE.
-        // Try to follow any /etc/localtime symlink to a zoneinfo file.
-        // SOLUTION 4: DEFINITIVE.
-        // Try to match /etc/localtime against the list of zoneinfo files.
-        local = matchZoneFile("/etc/localtime");
-        if (local)
-        {
-            kDebug() << "Local time zone=" << local->name() << " from /etc/localtime" << endl;
-            return local;
-        }
-    }
-
-    // SOLUTION 5: DEFINITIVE.
-    // Solaris support using /etc/default/init.
-    f.setFileName("/etc/default/init");
-    if (f.open(QIODevice::ReadOnly))
-    {
-        QTextStream ts(&f);
-        ts.setCodec("ISO-8859-1");
-
-        // Read the last line starting "TZ=".
-        while (!ts.atEnd() && !local)
-        {
-            fileZone = ts.readLine();
-            if (fileZone.startsWith("TZ="))
-            {
-                fileZone = fileZone.mid(3);
-
-                // kDebug() << "local=" << fileZone << endl;
-                local = zone(fileZone);
-            }
-        }
-        f.close();
-        if (local)
-        {
-            kDebug() << "Local time zone=" << fileZone << " from " << f.fileName() << endl;
-            return local;
-        }
-    }
-
-    // SOLUTION 6: HEURISTIC.
-    // None of the deterministic stuff above has worked: try a heuristic. We
-    // try to find a pair of matching time zone abbreviations...that way, we'll
-    // likely return a value in the user's own country.
-    if (!m_instance->m_zoneinfoDir.isEmpty())
-    {
-        tzset();
-        QByteArray tzname0(tzname[0]);   // store copies, because zone->parse() will change them
-        QByteArray tzname1(tzname[1]);
-        int bestOffset = INT_MAX;
-        KSystemTimeZoneSource::startParseBlock();
-        const ZoneMap zmap = zones();
-        for (ZoneMap::ConstIterator it = zmap.begin(), end = zmap.end();  it != end;  ++it)
-        {
-            const KSystemTimeZone *zone = static_cast<const KSystemTimeZone*>(it.value());
-            int candidateOffset = qAbs(zone->currentOffset(Qt::LocalTime));
-            if (candidateOffset < bestOffset
-            &&  zone->parse())
-            {
-                QList<QByteArray> abbrs = zone->abbreviations();
-                if (abbrs.contains(tzname0)  &&  abbrs.contains(tzname1))
-                {
-                    // kDebug() << "local=" << zone->name() << endl;
-                    local = zone;
-                    bestOffset = candidateOffset;
-                    if (!bestOffset)
-                        break;
-                }
-            }
-        }
-        KSystemTimeZoneSource::endParseBlock();
-    }
-    if (local)
-        return local;
-
-    // SOLUTION 7: FAILSAFE.
-    return KTimeZones::utc();
-}
-
-// Try to find a zoneinfo/ file which matches a given file.
-const KTimeZone *KSystemTimeZonesPrivate::matchZoneFile(const char *path)
-{
-    if (m_instance->m_zoneinfoDir.isEmpty())
-        return 0;
-
-    // SOLUTION 2: DEFINITIVE.
-    // Try to follow any symlink to a zoneinfo file.
-    const KTimeZone *local = 0;
-    QFile f;
-    f.setFileName(path);
-    QFileInfo fi(f);
-    if (fi.isSymLink())
-    {
-        // Get the path of the file which the symlink points to
-        QString zoneInfoFileName = fi.canonicalFilePath();
-        if (zoneInfoFileName.startsWith(m_instance->m_zoneinfoDir))
-        {
-            QFileInfo fiz(zoneInfoFileName);
-            if (fiz.exists() && fiz.isReadable())
-            {
-                // We've got the zoneinfo file path.
-                // The time zone name is the part of the path after the zoneinfo directory.
-                QString name = zoneInfoFileName.mid(m_instance->m_zoneinfoDir.length() + 1);
-                // kDebug() << "local=" << name << endl;
-                return zone(name);
-            }
-        }
-    }
-    else if (f.open(QIODevice::ReadOnly))
-    {
-        // SOLUTION 3: DEFINITIVE.
-        // Try to match against the list of zoneinfo files.
-
-        // Compute the file's MD5 sum
-        KMD5 context("");
-        context.reset();
-        context.update(f);
-        qlonglong referenceSize = f.size();
-        MD5Map::ConstIterator it5, end5;
-        QString referenceMd5Sum = context.hexDigest();
-        f.close();
-
-        if (m_haveCountryCodes && KGlobal::locale())
-        {
-            /* Look for time zones with the user's country code.
-             * This has two advantages: 1) it shortens the search;
-             * 2) it increases the chance of the correctly titled time zone
-             * being found, since multiple time zones can have identical
-             * definitions. For example, Europe/Guernsey is identical to
-             * Europe/London, but the latter is more likely to be the right
-             * zone for a user with 'gb' country code.
-             */
-            QString country = KGlobal::locale()->country().toUpper();
-            const ZoneMap zmap = zones();
-            for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
-            {
-                const KTimeZone *tzone = zit.value();
-                if (tzone->countryCode() == country)
-                {
-                    QString zonename = tzone->name();
-                    it5 = m_md5Sums.find(zonename);
-                    if (it5 == m_md5Sums.end())
-                    {
-                        QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
-                        if (candidateMd5Sum == referenceMd5Sum)
-                        {
-                            // kDebug() << "local=" << zonename << endl;
-                            return tzone;
-                        }
-                    }
-                    else
-                    {
-                        if (it5.value() == referenceMd5Sum)
-                        {
-                            // The cached checksum matches. Ensure that the file hasn't changed.
-                            if (checkChecksum(it5, referenceMd5Sum, referenceSize))
-                            {
-                                local = zone(it5.key());
-                                if (local)
-                                    return local;
-                            }
-                            break;    // cache has been cleared
-                        }
-                    }
-                }
-            }
-        }
-
-        // Look for a checksum match with the cached checksum values
-        MD5Map oldChecksums = m_md5Sums;   // save a copy of the existing checksums
-        for (it5 = m_md5Sums.begin(), end5 = m_md5Sums.end();  it5 != end5;  ++it5)
-        {
-            if (it5.value() == referenceMd5Sum)
-            {
-                // The cached checksum matches. Ensure that the file hasn't changed.
-                if (checkChecksum(it5, referenceMd5Sum, referenceSize))
-                {
-                    local = zone(it5.key());
-                    if (local)
-                        return local;
-                }
-                oldChecksums.clear();    // the cache has been cleared
-                break;
-            }
-        }
-
-        // The checksum didn't match any in the cache.
-        // Continue building missing entries in the cache on the assumption that
-        // we haven't previously looked at the zoneinfo file which matches.
-        const ZoneMap zmap = zones();
-        for (ZoneMap::ConstIterator zit = zmap.begin(), zend = zmap.end();  zit != zend;  ++zit)
-        {
-            const KTimeZone *zone = zit.value();
-            QString zonename = zone->name();
-            if (!m_md5Sums.contains(zonename))
-            {
-                QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
-                if (candidateMd5Sum == referenceMd5Sum)
-                {
-                    // kDebug() << "local=" << zone->name() << endl;
-                    return zone;
-                }
-            }
-        }
-
-        // Didn't find the file, so presumably a previously cached checksum must
-        // have changed. Delete all the old checksums.
-        MD5Map::ConstIterator mit;
-        MD5Map::ConstIterator mend = oldChecksums.end();
-        for (mit = oldChecksums.begin();  mit != mend;  ++mit)
-            m_md5Sums.remove(mit.key());
-
-        // And recalculate the old checksums
-        for (mit = oldChecksums.begin(); mit != mend; ++mit)
-        {
-            QString zonename = mit.key();
-            QString candidateMd5Sum = calcChecksum(zonename, referenceSize);
-            if (candidateMd5Sum == referenceMd5Sum)
-            {
-                // kDebug() << "local=" << zonename << endl;
-                local = zone(zonename);
-                break;
-            }
-        }
-    }
-    return local;
-}
-
-// Check whether a checksum matches a given saved checksum.
-// Returns false if file no longer matches and cache was cleared.
-bool KSystemTimeZonesPrivate::checkChecksum(MD5Map::ConstIterator it5, const QString &referenceMd5Sum, qlonglong size)
-{
-    // The cached checksum matches. Ensure that the file hasn't changed.
-    QString zoneName = it5.key();
-    QString candidateMd5Sum = calcChecksum(zoneName, size);
-    if (candidateMd5Sum.isNull())
-        m_md5Sums.remove(zoneName);    // no match - wrong file size
-    else if (candidateMd5Sum == referenceMd5Sum)
-        return true;
-
-    // File(s) have changed, so clear the cache
-    m_md5Sums.clear();
-    m_md5Sums[zoneName] = candidateMd5Sum;    // reinsert the newly calculated checksum
-    return false;
-}
-
-// Calculate the MD5 checksum for the given zone file, provided that its size matches.
-// The calculated checksum is cached.
-QString KSystemTimeZonesPrivate::calcChecksum(const QString &zoneName, qlonglong size)
-{
-    QString path = m_instance->m_zoneinfoDir + '/' + zoneName;
-    QFileInfo fi(path);
-    if (static_cast<qlonglong>(fi.size()) == size)
-    {
-        // Only do the heavy lifting for file sizes which match.
-        QFile f;
-        f.setFileName(path);
-        if (f.open(QIODevice::ReadOnly))
-        {
-            KMD5 context("");
-            context.reset();
-            context.update(f);
-            QString candidateMd5Sum = context.hexDigest();
-            f.close();
-            m_md5Sums[zoneName] = candidateMd5Sum;    // cache the new checksum
-            return candidateMd5Sum;
-        }
-    }
-    return QString();
 }
 
 /**
@@ -741,6 +328,7 @@ float KSystemTimeZonesPrivate::convertCoordinate(const QString &coordinate)
     value = degrees * 3600 + minutes * 60 + seconds;
     return value / 3600.0;
 }
+#endif
 
 
 /******************************************************************************/
@@ -754,7 +342,6 @@ KSystemTimeZone::KSystemTimeZone(KSystemTimeZoneSource *source, const QString &n
 
 KSystemTimeZone::~KSystemTimeZone()
 {
-//    delete d;
 }
 
 int KSystemTimeZone::offsetAtUtc(const QDateTime &utcDateTime) const
