@@ -197,10 +197,13 @@ QList<QKeySequence> KShortcut::toList(enum EmptyHandling handleEmpty) const
 
 QString KShortcut::toString() const
 {
-    QString result(d->primary.toString());
-    result.append(';');
-    result.append(d->alternate.toString());
-    return result;
+    QString ret;
+    foreach(QKeySequence seq, toList()) {
+        ret.append(seq.toString());
+        ret.append(';');
+    }
+    ret.truncate(ret.length() - 1);
+    return ret;
 }
 
 KShortcut::operator QVariant() const
