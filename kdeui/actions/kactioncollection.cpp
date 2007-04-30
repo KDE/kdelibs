@@ -62,8 +62,6 @@ public:
     connectHighlighted = connectTriggered = false;
 
     configGroup = "Shortcuts";
-
-    //enabled = Unchanged;
   }
 
   void _k_widgetDestroyed(QObject *obj);
