@@ -158,7 +158,7 @@ void KDiskFreeSpace::dfDone()
 
   readingDFStdErrOut=false;
   emit done();
-  delete this;
+  deleteLater();
 }
 
 KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )
