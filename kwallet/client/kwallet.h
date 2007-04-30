@@ -494,10 +494,6 @@ class KWALLETCLIENT_EXPORT Wallet : public QObject
 	private:
 		class WalletPrivate;
 		WalletPrivate* const d;
-		QString _name;
-		QString _folder;
-		int _handle;
-		OrgKdeKWalletInterface* _wallet;
 
 	protected:
 		/**

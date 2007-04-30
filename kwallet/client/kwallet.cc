@@ -103,42 +103,54 @@ const QString Wallet::FormDataFolder() {
     return "Form Data";
 }
 
+class Wallet::WalletPrivate
+{
+public:
+    WalletPrivate(int h, const QString &n)
+     : handle(h), name(n)
+    {}
+    QString name;
+    QString folder;
+    int handle;
+    OrgKdeKWalletInterface* wallet;
+};
 
 
 Wallet::Wallet(int handle, const QString& name)
-    : QObject(0L), d(0L), _name(name), _handle(handle) {
+    : QObject(0L), d(new WalletPrivate(handle, name)) {
 
-    _wallet = new org::kde::KWallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
-    _wallet->setParent(this);
+    d->wallet = new org::kde::KWallet("org.kde.kded", "/modules/kwalletd", QDBusConnection::sessionBus());
+    d->wallet->setParent(this);
 
     connect(QDBusConnection::sessionBus().interface(),
             SIGNAL(serviceOwnerChanged(QString,QString,QString)),
             this,
             SLOT(slotAppUnregistered(QString,QString,QString)));
 
-    connect(_wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
-    connect(_wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
-    connect(_wallet, SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
-    connect(_wallet, SIGNAL(applicationDisconnected(QString, QString)), SLOT(slotApplicationDisconnected(QString, QString)));
+    connect(d->wallet, SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
+    connect(d->wallet, SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
+    connect(d->wallet, SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
+    connect(d->wallet, SIGNAL(applicationDisconnected(QString, QString)), SLOT(slotApplicationDisconnected(QString, QString)));
 
     // Verify that the wallet is still open
-    if (_handle != -1) {
-        QDBusReply<bool> r = _wallet->isOpen(_handle);
+    if (d->handle != -1) {
+        QDBusReply<bool> r = d->wallet->isOpen(d->handle);
         if (r.isValid() && !r) {
-            _handle = -1;
-            _name.clear();
+            d->handle = -1;
+            d->name.clear();
         }
     }
 }
 
 
 Wallet::~Wallet() {
-    if (_handle != -1) {
-        _wallet->close(_handle, false, appid());
-        _handle = -1;
-        _folder.clear();
-        _name.clear();
+    if (d->handle != -1) {
+        d->wallet->close(d->handle, false, appid());
+        d->handle = -1;
+        d->folder.clear();
+        d->name.clear();
     }
+    delete d;
 }
 
 
@@ -187,7 +199,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         // place an asynchronous call
         QVariantList args;
         args << name << qlonglong(w);
-        wallet->_wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)));
+        wallet->d->wallet->callWithCallback("open", args, wallet, SLOT(walletOpenResult(int)));
 
         return wallet;
     }
@@ -223,24 +235,24 @@ QStringList Wallet::users(const QString& name) {
 
 
 int Wallet::sync() {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return -1;
     }
 
-    _wallet->sync(_handle, appid());
+    d->wallet->sync(d->handle, appid());
     return 0;
 }
 
 
 int Wallet::lockWallet() {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return -1;
     }
 
-    QDBusReply<int> r = _wallet->close(_handle, true, appid());
-    _handle = -1;
-    _folder.clear();
-    _name.clear();
+    QDBusReply<int> r = d->wallet->close(d->handle, true, appid());
+    d->handle = -1;
+    d->folder.clear();
+    d->name.clear();
     if (r.isValid()) {
         return r;
     }
@@ -249,71 +261,71 @@ int Wallet::lockWallet() {
 
 
 const QString& Wallet::walletName() const {
-    return _name;
+    return d->name;
 }
 
 
 bool Wallet::isOpen() const {
-    return _handle != -1;
+    return d->handle != -1;
 }
 
 
 void Wallet::requestChangePassword(WId w) {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return;
     }
 
-    _wallet->changePassword(_name, (qlonglong)w, appid());
+    d->wallet->changePassword(d->name, (qlonglong)w, appid());
 }
 
 
 void Wallet::slotWalletClosed(int handle) {
-    if (_handle == handle) {
-        _handle = -1;
-        _folder.clear();
-        _name.clear();
+    if (d->handle == handle) {
+        d->handle = -1;
+        d->folder.clear();
+        d->name.clear();
         emit walletClosed();
     }
 }
 
 
 QStringList Wallet::folderList() {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return QStringList();
     }
 
-    QDBusReply<QStringList> r = _wallet->folderList(_handle, appid());
+    QDBusReply<QStringList> r = d->wallet->folderList(d->handle, appid());
     return r;
 }
 
 
 QStringList Wallet::entryList() {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return QStringList();
     }
 
-    QDBusReply<QStringList> r = _wallet->entryList(_handle, _folder, appid());
+    QDBusReply<QStringList> r = d->wallet->entryList(d->handle, d->folder, appid());
     return r;
 }
 
 
 bool Wallet::hasFolder(const QString& f) {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return false;
     }
 
-    QDBusReply<bool> r = _wallet->hasFolder(_handle, f, appid());
+    QDBusReply<bool> r = d->wallet->hasFolder(d->handle, f, appid());
     return r; // default is false
 }
 
 
 bool Wallet::createFolder(const QString& f) {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return false;
     }
 
     if (!hasFolder(f)) {
-        QDBusReply<bool> r = _wallet->createFolder(_handle, f, appid());
+        QDBusReply<bool> r = d->wallet->createFolder(d->handle, f, appid());
         return r;
     }
 
@@ -324,19 +336,19 @@ bool Wallet::createFolder(const QString& f) {
 bool Wallet::setFolder(const QString& f) {
     bool rc = false;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
     // Don't do this - the folder could have disappeared?
 #if 0
-    if (f == _folder) {
+    if (f == d->folder) {
         return true;
     }
 #endif
 
     if (hasFolder(f)) {
-        _folder = f;
+        d->folder = f;
         rc = true;
     }
 
@@ -345,12 +357,12 @@ bool Wallet::setFolder(const QString& f) {
 
 
 bool Wallet::removeFolder(const QString& f) {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return false;
     }
 
-    QDBusReply<bool> r = _wallet->removeFolder(_handle, f, appid());
-    if (_folder == f) {
+    QDBusReply<bool> r = d->wallet->removeFolder(d->handle, f, appid());
+    if (d->folder == f) {
         setFolder(QString());
     }
 
@@ -359,18 +371,18 @@ bool Wallet::removeFolder(const QString& f) {
 
 
 const QString& Wallet::currentFolder() const {
-    return _folder;
+    return d->folder;
 }
 
 
 int Wallet::readEntry(const QString& key, QByteArray& value) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<QByteArray> r = _wallet->readEntry(_handle, _folder, key, appid());
+    QDBusReply<QByteArray> r = d->wallet->readEntry(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         value = r;
         rc = 0;
@@ -385,11 +397,11 @@ int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) 
 
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<QVariantMap> r = _wallet->readEntryList(_handle, _folder, key, appid());
+    QDBusReply<QVariantMap> r = d->wallet->readEntryList(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         // convert <QString, QVariant> to <QString, QByteArray>
@@ -406,11 +418,11 @@ int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) 
 int Wallet::renameEntry(const QString& oldName, const QString& newName) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<int> r = _wallet->renameEntry(_handle, _folder, oldName, newName, appid());
+    QDBusReply<int> r = d->wallet->renameEntry(d->handle, d->folder, oldName, newName, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -424,11 +436,11 @@ int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
 
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<QByteArray> r = _wallet->readMap(_handle, _folder, key, appid());
+    QDBusReply<QByteArray> r = d->wallet->readMap(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         QByteArray v = r;
@@ -447,12 +459,12 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
     QDBusReply<QVariantMap> r =
-        _wallet->readMapList(_handle, _folder, key, appid());
+        d->wallet->readMapList(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         const QVariantMap val = r.value();
@@ -474,11 +486,11 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 int Wallet::readPassword(const QString& key, QString& value) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<QString> r = _wallet->readPassword(_handle, _folder, key, appid());
+    QDBusReply<QString> r = d->wallet->readPassword(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         value = r;
         rc = 0;
@@ -493,11 +505,11 @@ int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) 
 
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<QVariantMap> r = _wallet->readPasswordList(_handle, _folder, key, appid());
+    QDBusReply<QVariantMap> r = d->wallet->readPasswordList(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = 0;
         const QVariantMap val = r.value();
@@ -513,11 +525,11 @@ int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) 
 int Wallet::writeEntry(const QString& key, const QByteArray& value, EntryType entryType) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<int> r = _wallet->writeEntry(_handle, _folder, key, value, int(entryType), appid());
+    QDBusReply<int> r = d->wallet->writeEntry(d->handle, d->folder, key, value, int(entryType), appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -529,11 +541,11 @@ int Wallet::writeEntry(const QString& key, const QByteArray& value, EntryType en
 int Wallet::writeEntry(const QString& key, const QByteArray& value) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<int> r = _wallet->writeEntry(_handle, _folder, key, value, appid());
+    QDBusReply<int> r = d->wallet->writeEntry(d->handle, d->folder, key, value, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -547,14 +559,14 @@ int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
 
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
     QByteArray mapData;
     QDataStream ds(&mapData, QIODevice::WriteOnly);
     ds << value;
-    QDBusReply<int> r = _wallet->writeMap(_handle, _folder, key, mapData, appid());
+    QDBusReply<int> r = d->wallet->writeMap(d->handle, d->folder, key, mapData, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -566,11 +578,11 @@ int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
 int Wallet::writePassword(const QString& key, const QString& value) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<int> r = _wallet->writePassword(_handle, _folder, key, value, appid());
+    QDBusReply<int> r = d->wallet->writePassword(d->handle, d->folder, key, value, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -580,11 +592,11 @@ int Wallet::writePassword(const QString& key, const QString& value) {
 
 
 bool Wallet::hasEntry(const QString& key) {
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return false;
     }
 
-    QDBusReply<bool> r = _wallet->hasEntry(_handle, _folder, key, appid());
+    QDBusReply<bool> r = d->wallet->hasEntry(d->handle, d->folder, key, appid());
     return r;					// default is false
 }
 
@@ -592,11 +604,11 @@ bool Wallet::hasEntry(const QString& key) {
 int Wallet::removeEntry(const QString& key) {
     int rc = -1;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return rc;
     }
 
-    QDBusReply<int> r = _wallet->removeEntry(_handle, _folder, key, appid());
+    QDBusReply<int> r = d->wallet->removeEntry(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -608,11 +620,11 @@ int Wallet::removeEntry(const QString& key) {
 Wallet::EntryType Wallet::entryType(const QString& key) {
     int rc = 0;
 
-    if (_handle == -1) {
+    if (d->handle == -1) {
         return Wallet::Unknown;
     }
 
-    QDBusReply<int> r = _wallet->entryType(_handle, _folder, key, appid());
+    QDBusReply<int> r = d->wallet->entryType(d->handle, d->folder, key, appid());
     if (r.isValid()) {
         rc = r;
     }
@@ -622,43 +634,43 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 
 
 void Wallet::slotAppUnregistered(const QString& app,const QString&,const QString&) {
-    if (_handle >= 0 && app == "org.kde.kded") {
-        slotWalletClosed(_handle);
+    if (d->handle >= 0 && app == "org.kde.kded") {
+        slotWalletClosed(d->handle);
     }
 }
 
 
 void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder) {
-    if (_name == wallet) {
+    if (d->name == wallet) {
         emit folderUpdated(folder);
     }
 }
 
 
 void Wallet::slotFolderListUpdated(const QString& wallet) {
-    if (_name == wallet) {
+    if (d->name == wallet) {
         emit folderListUpdated();
     }
 }
 
 
 void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& application) {
-    if (_handle >= 0
-        && _name == wallet
+    if (d->handle >= 0
+        && d->name == wallet
         && application == QDBusConnection::sessionBus().baseService()) {
-        slotWalletClosed(_handle);
+        slotWalletClosed(d->handle);
     }
 }
 
 
 void Wallet::walletOpenResult(int id) {
-    if (_handle != -1) {
+    if (d->handle != -1) {
         // This is BAD.
         return;
     }
 
     if (id > 0) {
-        _handle = id;
+        d->handle = id;
         emit walletOpened(true);
     } else if (id < 0) {
         emit walletOpened(false);
