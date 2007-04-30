@@ -27,7 +27,7 @@
 #define _KDATETIME_H_
 
 #include <kdecore_export.h>
-#include <ktimezones.h>
+#include <ktimezone.h>
 
 #include <QtCore/QSharedDataPointer>
 

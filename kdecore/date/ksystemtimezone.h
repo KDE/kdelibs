@@ -27,7 +27,7 @@
 #define _KSYSTEMTIMEZONE_H
 
 #include <kdecore_export.h>
-#include "ktimezones.h"
+#include "ktimezone.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QDateTime>
@@ -83,6 +83,14 @@ class KDECORE_EXPORT KSystemTimeZones : public QObject
     Q_OBJECT
 public:
     ~KSystemTimeZones();
+
+    /**
+     * Returns the unique KTimeZones instance containing the system time zones
+     * collection. It is first created if it does not already exist.
+     *
+     * @return time zones.
+     */
+    static  KTimeZones *timeZones();
 
     /**
      * Returns all the time zones defined in this collection.
@@ -149,14 +157,6 @@ public:
      */
     static QString zoneinfoDir();
 
-    /**
-     * Returns the unique KTimeZones instance containing the system time zones
-     * collection. It is first created if it does not already exist.
-     *
-     * @return time zones.
-     */
-    static KTimeZones *timeZones();
-
 private Q_SLOTS:
     // Connected to D-Bus signals
     void configChanged();
@@ -168,7 +168,6 @@ private:
     KSystemTimeZonesPrivate * const d;
     friend class KSystemTimeZonesPrivate;
 };
-
 
 /**
  * The KSystemTimeZone class represents a time zone in the system database.
@@ -361,7 +360,7 @@ public:
      * Creates a new copy of this object.
      * The caller is responsible for deleting the copy.
      * Derived classes must reimplement this method to return a copy of the
-     * calling instance 
+     * calling instance
      *
      * @return copy of this instance. This is a KSystemTimeZoneData pointer.
      */

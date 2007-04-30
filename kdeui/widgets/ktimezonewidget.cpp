@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <ktimezones.h>
+#include <ktimezone.h>
 
 class KTimeZoneWidget::Private
 {

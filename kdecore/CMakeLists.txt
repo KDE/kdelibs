@@ -106,7 +106,7 @@ set(kdecore_LIB_SRCS
    date/kcalendarsystemhebrew.cpp
    date/kcalendarsystemjalali.cpp
    date/kdatetime.cpp
-   date/ktimezones.cpp
+   date/ktimezone.cpp
    date/ksystemtimezone.cpp
    date/ktzfiletimezone.cpp
    io/kautosavefile.cpp
@@ -304,7 +304,7 @@ install( FILES
    date/kcalendarsystem.h
    date/kdatetime.h
    date/ksystemtimezone.h
-   date/ktimezones.h
+   date/ktimezone.h
    date/ktzfiletimezone.h
    io/kautosavefile.h
    io/kdebug.h

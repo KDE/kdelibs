@@ -26,7 +26,7 @@
 #define _KTZFILETIMEZONE_H
 
 #include <kdecore_export.h>
-#include <ktimezones.h>
+#include <ktimezone.h>
 
 #include <QtCore/QString>
 
