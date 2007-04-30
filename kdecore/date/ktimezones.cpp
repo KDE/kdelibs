@@ -753,6 +753,13 @@ time_t KTimeZone::toTime_t(const QDateTime &utcDateTime)
 
 /******************************************************************************/
 
+KTimeZoneSource::KTimeZoneSource()
+  : d(0)
+{
+}
+
+KTimeZoneSource::~KTimeZoneSource() {}
+
 KTimeZoneData *KTimeZoneSource::parse(const KTimeZone *) const
 {
     return new KTimeZoneData;

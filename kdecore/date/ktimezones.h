@@ -43,6 +43,7 @@ class KTimeZoneData;
 class KTimeZoneSource;
 class KTimeZonesPrivate;
 class KTimeZonePrivate;
+class KTimeZoneSourcePrivate;
 class KTimeZoneDataPrivate;
 class KTimeZoneTransitionPrivate;
 class KTimeZoneLeapSecondsPrivate;
@@ -1030,8 +1031,8 @@ private:
 class KDECORE_EXPORT KTimeZoneSource
 {
 public:
-    KTimeZoneSource()  {}
-    virtual ~KTimeZoneSource()  {}
+    KTimeZoneSource();
+    virtual ~KTimeZoneSource();
 
     /**
      * Extracts detail information for one time zone from the source database.
@@ -1046,6 +1047,9 @@ public:
      *         Null is returned on error.
      */
     virtual KTimeZoneData *parse(const KTimeZone *zone) const;
+
+private:
+    KTimeZoneSourcePrivate * const d;
 };
 
 
