@@ -17,27 +17,27 @@
 
 */
 
-#include "backends/hal/haldvbhw.h"
+#include "backends/hal/haldvbinterface.h"
 
 #include "backends/hal/haldevice.h"
 
-DvbHw::DvbHw(HalDevice *device)
+DvbInterface::DvbInterface(HalDevice *device)
     : DeviceInterface(device)
 {
 
 }
 
-DvbHw::~DvbHw()
+DvbInterface::~DvbInterface()
 {
 
 }
 
-QString DvbHw::device() const
+QString DvbInterface::device() const
 {
     return m_device->property("dvb.device").toString();
 }
 
-int DvbHw::deviceAdapter() const
+int DvbInterface::deviceAdapter() const
 {
     QString string = device();
     int pos = string.lastIndexOf('/');
@@ -62,20 +62,20 @@ int DvbHw::deviceAdapter() const
         return -1;
 }
 
-Solid::DvbHw::DeviceType DvbHw::deviceType() const
+Solid::DvbInterface::DeviceType DvbInterface::deviceType() const
 {
-    Solid::DvbHw::DeviceType type;
+    Solid::DvbInterface::DeviceType type;
     int index;
 
     if (parseTypeIndex(&type, &index))
         return type;
     else
-        return Solid::DvbHw::DvbUnknown;
+        return Solid::DvbInterface::DvbUnknown;
 }
 
-int DvbHw::deviceIndex() const
+int DvbInterface::deviceIndex() const
 {
-    Solid::DvbHw::DeviceType type;
+    Solid::DvbInterface::DeviceType type;
     int index;
 
     if (parseTypeIndex(&type, &index))
@@ -84,7 +84,7 @@ int DvbHw::deviceIndex() const
         return -1;
 }
 
-bool DvbHw::parseTypeIndex(Solid::DvbHw::DeviceType *type, int *index) const
+bool DvbInterface::parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *index) const
 {
     QString string = device();
     int pos = string.lastIndexOf('/');
@@ -93,31 +93,31 @@ bool DvbHw::parseTypeIndex(Solid::DvbHw::DeviceType *type, int *index) const
     string = string.mid(pos + 1);
 
     if (string.startsWith("audio")) {
-        *type = Solid::DvbHw::DvbAudio;
+        *type = Solid::DvbInterface::DvbAudio;
         string = string.mid(5);
     } else if (string.startsWith("ca")) {
-        *type = Solid::DvbHw::DvbCa;
+        *type = Solid::DvbInterface::DvbCa;
         string = string.mid(2);
     } else if (string.startsWith("demux")) {
-        *type = Solid::DvbHw::DvbDemux;
+        *type = Solid::DvbInterface::DvbDemux;
         string = string.mid(5);
     } else if (string.startsWith("dvr")) {
-        *type = Solid::DvbHw::DvbDvr;
+        *type = Solid::DvbInterface::DvbDvr;
         string = string.mid(3);
     } else if (string.startsWith("frontend")) {
-        *type = Solid::DvbHw::DvbFrontend;
+        *type = Solid::DvbInterface::DvbFrontend;
         string = string.mid(8);
     } else if (string.startsWith("net")) {
-        *type = Solid::DvbHw::DvbNet;
+        *type = Solid::DvbInterface::DvbNet;
         string = string.mid(3);
     } else if (string.startsWith("osd")) {
-        *type = Solid::DvbHw::DvbOsd;
+        *type = Solid::DvbInterface::DvbOsd;
         string = string.mid(3);
     } else if (string.startsWith("sec")) {
-        *type = Solid::DvbHw::DvbSec;
+        *type = Solid::DvbInterface::DvbSec;
         string = string.mid(3);
     } else if (string.startsWith("video")) {
-        *type = Solid::DvbHw::DvbVideo;
+        *type = Solid::DvbInterface::DvbVideo;
         string = string.mid(5);
     } else
         return false;
@@ -128,4 +128,4 @@ bool DvbHw::parseTypeIndex(Solid::DvbHw::DeviceType *type, int *index) const
     return ok;
 }
 
-#include "backends/hal/haldvbhw.moc"
+#include "backends/hal/haldvbinterface.moc"

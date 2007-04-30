@@ -28,12 +28,12 @@
 #include "backends/fakehw/fakeopticaldisc.h"
 #include "backends/fakehw/fakecamera.h"
 #include "backends/fakehw/fakeportablemediaplayer.h"
-#include "backends/fakehw/fakenetworkhw.h"
+#include "backends/fakehw/fakenetworkinterface.h"
 #include "backends/fakehw/fakeacadapter.h"
 #include "backends/fakehw/fakebattery.h"
 #include "backends/fakehw/fakebutton.h"
-#include "backends/fakehw/fakeaudiohw.h"
-#include "backends/fakehw/fakedvbhw.h"
+#include "backends/fakehw/fakeaudiointerface.h"
+#include "backends/fakehw/fakedvbinterface.h"
 
 #include <QStringList>
 #include <QDBusConnection>
@@ -236,8 +236,8 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::PortableMediaPlayer:
         iface = new FakePortableMediaPlayer(this);
         break;
-    case Solid::DeviceInterface::NetworkHw:
-        iface = new FakeNetworkHw(this);
+    case Solid::DeviceInterface::NetworkInterface:
+        iface = new FakeNetworkInterface(this);
         break;
     case Solid::DeviceInterface::AcAdapter:
         iface = new FakeAcAdapter(this);
@@ -248,11 +248,11 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::Button:
         iface = new FakeButton(this);
         break;
-    case Solid::DeviceInterface::AudioHw:
-        iface = new FakeAudioHw(this);
+    case Solid::DeviceInterface::AudioInterface:
+        iface = new FakeAudioInterface(this);
         break;
-    case Solid::DeviceInterface::DvbHw:
-        iface = new FakeDvbHw(this);
+    case Solid::DeviceInterface::DvbInterface:
+        iface = new FakeDvbInterface(this);
         break;
     case Solid::DeviceInterface::Unknown:
         break;

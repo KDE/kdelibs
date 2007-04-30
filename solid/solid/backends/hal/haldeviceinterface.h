@@ -72,7 +72,7 @@ public:
         case Solid::DeviceInterface::PortableMediaPlayer:
             list << "portable_audio_player";
             break;
-        case Solid::DeviceInterface::NetworkHw:
+        case Solid::DeviceInterface::NetworkInterface:
             list << "net";
             break;
         case Solid::DeviceInterface::AcAdapter:
@@ -84,10 +84,10 @@ public:
         case Solid::DeviceInterface::Button:
             list << "button";
             break;
-        case Solid::DeviceInterface::AudioHw:
+        case Solid::DeviceInterface::AudioInterface:
             list << "alsa" << "oss";
             break;
-        case Solid::DeviceInterface::DvbHw:
+        case Solid::DeviceInterface::DvbInterface:
             list << "dvb";
             break;
         case Solid::DeviceInterface::Unknown:
@@ -116,7 +116,7 @@ public:
         else if (capability == "portable_audio_player")
             return Solid::DeviceInterface::PortableMediaPlayer;
         else if (capability == "net")
-            return Solid::DeviceInterface::NetworkHw;
+            return Solid::DeviceInterface::NetworkInterface;
         else if (capability == "ac_adapter")
             return Solid::DeviceInterface::AcAdapter;
         else if (capability == "battery")
@@ -124,9 +124,9 @@ public:
         else if (capability == "button")
             return Solid::DeviceInterface::Button;
         else if (capability == "alsa" || capability == "oss")
-            return Solid::DeviceInterface::AudioHw;
+            return Solid::DeviceInterface::AudioInterface;
         else if (capability == "dvb")
-            return Solid::DeviceInterface::DvbHw;
+            return Solid::DeviceInterface::DvbInterface;
         else
             return Solid::DeviceInterface::Unknown;
     }

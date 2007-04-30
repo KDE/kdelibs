@@ -45,18 +45,18 @@
 #include <solid/ifaces/camera.h>
 #include <solid/portablemediaplayer.h>
 #include <solid/ifaces/portablemediaplayer.h>
-#include <solid/networkhw.h>
-#include <solid/ifaces/networkhw.h>
+#include <solid/networkinterface.h>
+#include <solid/ifaces/networkinterface.h>
 #include <solid/acadapter.h>
 #include <solid/ifaces/acadapter.h>
 #include <solid/battery.h>
 #include <solid/ifaces/battery.h>
 #include <solid/button.h>
 #include <solid/ifaces/button.h>
-#include <solid/audiohw.h>
-#include <solid/ifaces/audiohw.h>
-#include <solid/dvbhw.h>
-#include <solid/ifaces/dvbhw.h>
+#include <solid/audiointerface.h>
+#include <solid/ifaces/audiointerface.h>
+#include <solid/dvbinterface.h>
+#include <solid/ifaces/dvbinterface.h>
 
 
 Solid::Device::Device(const QString &udi)
@@ -179,8 +179,8 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
             case DeviceInterface::PortableMediaPlayer:
                 iface = deviceinterface_cast(Ifaces::PortableMediaPlayer, PortableMediaPlayer, dev_iface);
                 break;
-            case DeviceInterface::NetworkHw:
-                iface = deviceinterface_cast(Ifaces::NetworkHw, NetworkHw, dev_iface);
+            case DeviceInterface::NetworkInterface:
+                iface = deviceinterface_cast(Ifaces::NetworkInterface, NetworkInterface, dev_iface);
                 break;
             case DeviceInterface::AcAdapter:
                 iface = deviceinterface_cast(Ifaces::AcAdapter, AcAdapter, dev_iface);
@@ -191,11 +191,11 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
             case DeviceInterface::Button:
                 iface = deviceinterface_cast(Ifaces::Button, Button, dev_iface);
                 break;
-            case DeviceInterface::AudioHw:
-                iface = deviceinterface_cast(Ifaces::AudioHw, AudioHw, dev_iface);
+            case DeviceInterface::AudioInterface:
+                iface = deviceinterface_cast(Ifaces::AudioInterface, AudioInterface, dev_iface);
                 break;
-            case DeviceInterface::DvbHw:
-                iface = deviceinterface_cast(Ifaces::DvbHw, DvbHw, dev_iface);
+            case DeviceInterface::DvbInterface:
+                iface = deviceinterface_cast(Ifaces::DvbInterface, DvbInterface, dev_iface);
                 break;
             case DeviceInterface::Unknown:
                 break;

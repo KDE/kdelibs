@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,17 +17,17 @@
 
 */
 
-#ifndef SOLID_DVBHW_P_H
-#define SOLID_DVBHW_P_H
+#ifndef SOLID_NETWORKHW_P_H
+#define SOLID_NETWORKHW_P_H
 
 #include "deviceinterface_p.h"
 
 namespace Solid
 {
-    class DvbHwPrivate : public DeviceInterfacePrivate
+    class NetworkInterfacePrivate : public DeviceInterfacePrivate
     {
     public:
-        DvbHwPrivate()
+        NetworkInterfacePrivate()
             : DeviceInterfacePrivate() { }
     };
 }

@@ -527,7 +527,7 @@
                 <!-- Wireless network interface -->
                 <device udi="/org/kde/solid/fakehw/net_00_1a_eb_c9_64_16">
                     <property key="name">WLAN Interface</property>
-                    <property key="interfaces">NetworkHw</property>
+                    <property key="interfaces">NetworkInterface</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_3452_7890</property>
                     <property key="ifaceName">wlan0</property>
                     <property key="wireless">true</property>
@@ -544,7 +544,7 @@
                 <!-- Ethernet network interface -->
                 <device udi="/org/kde/solid/fakehw/net_00_1a_eb_c9_64_15">
                     <property key="name">Networking Interface</property>
-                    <property key="interfaces">NetworkHw</property>
+                    <property key="interfaces">NetworkInterface</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_8904_5e21</property>
                     <property key="ifaceName">eth0</property>
                     <property key="wireless">false</property>
@@ -561,7 +561,7 @@
                 <!-- Digital video broadcasting interface -->
                 <device udi="/org/kde/solid/fakehw/pci_8843_6a11_dvb1">
                     <property key="name">DVB Interface</property>
-                    <property key="interfaces">DvbHw</property>
+                    <property key="interfaces">DvbInterface</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_8843_6a11</property>
                     <property key="device">/dev/broadcast0/demux</property>
                     <property key="deviceAdapter">2</property>
@@ -579,7 +579,7 @@
         </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_capture_0">
                 <property key="name">Acme ALSA Capture</property>
-                <property key="interfaces">AudioHw</property>
+                <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0,0</property>
@@ -588,7 +588,7 @@
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_playback_0">
                 <property key="name">Acme ALSA Playback</property>
-                <property key="interfaces">AudioHw</property>
+                <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0,1</property>
@@ -597,7 +597,7 @@
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_alsa_control_1">
                 <property key="name">Acme ALSA Control</property>
-                <property key="interfaces">AudioHw</property>
+                <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">alsa</property>
                 <property key="driverHandler">hw:0</property>
@@ -606,7 +606,7 @@
             </device>
             <device udi="/org/kde/solid/fakehw/pci_8086_266e_oss_pcm_0">
                 <property key="name">Acme OSS PCM Device</property>
-                <property key="interfaces">AudioHw</property>
+                <property key="interfaces">AudioInterface</property>
                 <property key="parent">/org/kde/solid/fakehw/pci_8086_266e</property>
                 <property key="driver">oss</property>
                 <property key="driverHandler">/dev/dsp</property>

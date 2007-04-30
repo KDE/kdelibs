@@ -17,58 +17,58 @@
 
 */
 
-#include "backends/fakehw/fakedvbhw.h"
+#include "backends/fakehw/fakedvbinterface.h"
 
-FakeDvbHw::FakeDvbHw(FakeDevice *device)
+FakeDvbInterface::FakeDvbInterface(FakeDevice *device)
     : FakeDeviceInterface(device)
 {
 
 }
 
-FakeDvbHw::~FakeDvbHw()
+FakeDvbInterface::~FakeDvbInterface()
 {
 
 }
 
-QString FakeDvbHw::device() const
+QString FakeDvbInterface::device() const
 {
     return fakeDevice()->property("device").toString();
 }
 
-int FakeDvbHw::deviceAdapter() const
+int FakeDvbInterface::deviceAdapter() const
 {
     return fakeDevice()->property("deviceAdapter").toInt();
 }
 
-Solid::DvbHw::DeviceType FakeDvbHw::deviceType() const
+Solid::DvbInterface::DeviceType FakeDvbInterface::deviceType() const
 {
     QString string = fakeDevice()->property("deviceType").toString();
 
     if (string == "audio")
-        return Solid::DvbHw::DvbAudio;
+        return Solid::DvbInterface::DvbAudio;
     if (string == "ca")
-        return Solid::DvbHw::DvbCa;
+        return Solid::DvbInterface::DvbCa;
     if (string == "demux")
-        return Solid::DvbHw::DvbDemux;
+        return Solid::DvbInterface::DvbDemux;
     if (string == "dvr")
-        return Solid::DvbHw::DvbDvr;
+        return Solid::DvbInterface::DvbDvr;
     if (string == "frontend")
-        return Solid::DvbHw::DvbFrontend;
+        return Solid::DvbInterface::DvbFrontend;
     if (string == "net")
-        return Solid::DvbHw::DvbNet;
+        return Solid::DvbInterface::DvbNet;
     if (string == "osd")
-        return Solid::DvbHw::DvbOsd;
+        return Solid::DvbInterface::DvbOsd;
     if (string == "sec")
-        return Solid::DvbHw::DvbSec;
+        return Solid::DvbInterface::DvbSec;
     if (string == "video")
-        return Solid::DvbHw::DvbVideo;
+        return Solid::DvbInterface::DvbVideo;
 
-    return Solid::DvbHw::DvbUnknown;
+    return Solid::DvbInterface::DvbUnknown;
 }
 
-int FakeDvbHw::deviceIndex() const
+int FakeDvbInterface::deviceIndex() const
 {
     return fakeDevice()->property("deviceIndex").toInt();
 }
 
-#include "backends/fakehw/fakedvbhw.moc"
+#include "backends/fakehw/fakedvbinterface.moc"

@@ -17,41 +17,41 @@
 
 */
 
-#include "backends/hal/halnetworkhw.h"
+#include "backends/hal/halnetworkinterface.h"
 
 #include "backends/hal/haldevice.h"
 
 #include <QStringList>
 
-NetworkHw::NetworkHw(HalDevice *device)
+NetworkInterface::NetworkInterface(HalDevice *device)
     : DeviceInterface(device)
 {
 
 }
 
-NetworkHw::~NetworkHw()
+NetworkInterface::~NetworkInterface()
 {
 
 }
 
-QString NetworkHw::ifaceName() const
+QString NetworkInterface::ifaceName() const
 {
     return m_device->property("net.interface").toString();
 }
 
-bool NetworkHw::isWireless() const
+bool NetworkInterface::isWireless() const
 {
     QStringList capabilities = m_device->property("info.capabilities").toStringList();
 
     return capabilities.contains("net.80211");
 }
 
-QString NetworkHw::hwAddress() const
+QString NetworkInterface::hwAddress() const
 {
     return m_device->property("net.address").toString();
 }
 
-qulonglong NetworkHw::macAddress() const
+qulonglong NetworkInterface::macAddress() const
 {
     if (m_device->propertyExists("net.80211.mac_address"))
     {
@@ -63,4 +63,4 @@ qulonglong NetworkHw::macAddress() const
     }
 }
 
-#include "backends/hal/halnetworkhw.moc"
+#include "backends/hal/halnetworkinterface.moc"

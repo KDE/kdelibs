@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,56 +17,25 @@
 
 */
 
-#ifndef SOLID_NETWORKHW_H
-#define SOLID_NETWORKHW_H
+#ifndef SOLID_IFACES_NETWORKHW_H
+#define SOLID_IFACES_NETWORKHW_H
 
-#include <solid/solid_export.h>
-
-#include <solid/deviceinterface.h>
+#include <solid/ifaces/deviceinterface.h>
 
 namespace Solid
 {
-    class NetworkHwPrivate;
-    class Device;
-
+namespace Ifaces
+{
     /**
      * This device interface is available on network interfaces.
      */
-    class SOLID_EXPORT NetworkHw : public DeviceInterface
+    class NetworkInterface : virtual public DeviceInterface
     {
-        Q_OBJECT
-        Q_PROPERTY(QString ifaceName READ ifaceName)
-        Q_PROPERTY(bool wireless READ isWireless)
-        Q_PROPERTY(QString hwAddress READ hwAddress)
-        Q_PROPERTY(qulonglong macAddress READ macAddress)
-        Q_DECLARE_PRIVATE(NetworkHw)
-        friend class Device;
-
-    private:
-        /**
-         * Creates a new NetworkHw object.
-         * You generally won't need this. It's created when necessary using
-         * Device::as().
-         *
-         * @param backendObject the device interface object provided by the backend
-         * @see Solid::Device::as()
-         */
-        explicit NetworkHw(QObject *backendObject);
-
     public:
         /**
-         * Destroys a NetworkHw object.
+         * Destroys a NetworkInterface object.
          */
-        virtual ~NetworkHw();
-
-
-        /**
-         * Get the Solid::DeviceInterface::Type of the NetworkHw device interface.
-         *
-         * @return the NetworkHw device interface type
-         * @see Solid::Ifaces::Enums::DeviceInterface::Type
-         */
-        static Type deviceInterfaceType() { return DeviceInterface::NetworkHw; }
+        virtual ~NetworkInterface();
 
 
         /**
@@ -76,14 +45,14 @@ namespace Solid
          *
          * @return the interface name
          */
-        QString ifaceName() const;
+        virtual QString ifaceName() const = 0;
 
         /**
          * Indicates if this interface is wireless.
          *
          * @return true if the interface is wireless, false otherwise
          */
-        bool isWireless() const;
+        virtual bool isWireless() const = 0;
 
 
         /**
@@ -91,15 +60,18 @@ namespace Solid
          *
          * @return the hardware address as a string
          */
-        QString hwAddress() const;
+        virtual QString hwAddress() const = 0;
 
         /**
          * Retrieves the MAC address of the interface.
          *
          * @return the MAC address
          */
-        qulonglong macAddress() const;
+        virtual qulonglong macAddress() const = 0;
     };
 }
+}
+
+Q_DECLARE_INTERFACE(Solid::Ifaces::NetworkInterface, "org.kde.Solid.Ifaces.NetworkInterface/0.1")
 
 #endif

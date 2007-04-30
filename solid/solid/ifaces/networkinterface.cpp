@@ -17,19 +17,9 @@
 
 */
 
-#ifndef SOLID_NETWORKHW_P_H
-#define SOLID_NETWORKHW_P_H
+#include "networkinterface.h"
 
-#include "deviceinterface_p.h"
-
-namespace Solid
+Solid::Ifaces::NetworkInterface::~NetworkInterface()
 {
-    class NetworkHwPrivate : public DeviceInterfacePrivate
-    {
-    public:
-        NetworkHwPrivate()
-            : DeviceInterfacePrivate() { }
-    };
 }
 
-#endif

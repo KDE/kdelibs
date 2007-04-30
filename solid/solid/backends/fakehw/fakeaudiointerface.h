@@ -17,36 +17,28 @@
 
 */
 
-#include "backends/fakehw/fakenetworkhw.h"
+#ifndef FAKEAUDIOHW_H
+#define FAKEAUDIOHW_H
 
-FakeNetworkHw::FakeNetworkHw(FakeDevice *device)
- : FakeDeviceInterface(device)
+#include <solid/ifaces/audiointerface.h>
+#include "fakedeviceinterface.h"
+
+class FakeAudioInterface : public FakeDeviceInterface, virtual public Solid::Ifaces::AudioInterface
 {
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::AudioInterface)
 
-}
+public:
+    explicit FakeAudioInterface(FakeDevice *device);
+    virtual ~FakeAudioInterface();
 
-FakeNetworkHw::~FakeNetworkHw()
-{
-}
+public Q_SLOTS:
+    virtual Solid::AudioInterface::AudioDriver driver() const;
+    virtual QString driverHandler() const;
 
-QString FakeNetworkHw::ifaceName() const
-{
-    return fakeDevice()->property("ifaceName").toString();
-}
+    virtual QString name() const;
+    virtual Solid::AudioInterface::AudioInterfaceTypes deviceType() const;
+    virtual Solid::AudioInterface::SoundcardType soundcardType() const;
+};
 
-bool FakeNetworkHw::isWireless() const
-{
-    return fakeDevice()->property("wireless").toBool();
-}
-
-QString FakeNetworkHw::hwAddress() const
-{
-    return fakeDevice()->property("hwAddress").toString();
-}
-
-qulonglong FakeNetworkHw::macAddress() const
-{
-    return fakeDevice()->property("macAddress").toULongLong();
-}
-
-#include "backends/fakehw/fakenetworkhw.moc"
+#endif

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,28 +17,36 @@
 
 */
 
-#ifndef DVBHW_H
-#define DVBHW_H
+#include "backends/fakehw/fakenetworkinterface.h"
 
-#include "solid/ifaces/dvbhw.h"
-#include "solid/backends/hal/haldeviceinterface.h"
-
-class DvbHw : public DeviceInterface, virtual public Solid::Ifaces::DvbHw
+FakeNetworkInterface::FakeNetworkInterface(FakeDevice *device)
+ : FakeDeviceInterface(device)
 {
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::DvbHw)
 
-public:
-    DvbHw(HalDevice *device);
-    virtual ~DvbHw();
+}
 
-    virtual QString device() const;
-    virtual int deviceAdapter() const;
-    virtual Solid::DvbHw::DeviceType deviceType() const;
-    virtual int deviceIndex() const;
+FakeNetworkInterface::~FakeNetworkInterface()
+{
+}
 
-private:
-    bool parseTypeIndex(Solid::DvbHw::DeviceType *type, int *index) const;
-};
+QString FakeNetworkInterface::ifaceName() const
+{
+    return fakeDevice()->property("ifaceName").toString();
+}
 
-#endif
+bool FakeNetworkInterface::isWireless() const
+{
+    return fakeDevice()->property("wireless").toBool();
+}
+
+QString FakeNetworkInterface::hwAddress() const
+{
+    return fakeDevice()->property("hwAddress").toString();
+}
+
+qulonglong FakeNetworkInterface::macAddress() const
+{
+    return fakeDevice()->property("macAddress").toULongLong();
+}
+
+#include "backends/fakehw/fakenetworkinterface.moc"

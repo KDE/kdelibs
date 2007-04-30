@@ -18,12 +18,12 @@ set(solid_LIB_SRCS
    opticaldisc.cpp 
    camera.cpp 
    portablemediaplayer.cpp 
-   networkhw.cpp 
+   networkinterface.cpp 
    acadapter.cpp 
    battery.cpp 
    button.cpp
-   audiohw.cpp 
-   dvbhw.cpp
+   audiointerface.cpp 
+   dvbinterface.cpp
    predicate.cpp 
    predicateparse.cpp 
    predicate_lexer.c 
@@ -32,7 +32,7 @@ set(solid_LIB_SRCS
    networking.cpp
 
    ifaces/acadapter.cpp
-   ifaces/audiohw.cpp
+   ifaces/audiointerface.cpp
    ifaces/battery.cpp
    ifaces/block.cpp
    ifaces/button.cpp
@@ -41,9 +41,9 @@ set(solid_LIB_SRCS
    ifaces/device.cpp
    ifaces/deviceinterface.cpp
    ifaces/devicemanager.cpp
-   ifaces/dvbhw.cpp
+   ifaces/dvbinterface.cpp
    ifaces/genericinterface.cpp
-   ifaces/networkhw.cpp
+   ifaces/networkinterface.cpp
    ifaces/opticaldisc.cpp
    ifaces/portablemediaplayer.cpp
    ifaces/processor.cpp
@@ -51,19 +51,19 @@ set(solid_LIB_SRCS
    ifaces/storagevolume.cpp
 
    backends/hal/halacadapter.cpp
-   backends/hal/halaudiohw.cpp
+   backends/hal/halaudiointerface.cpp
    backends/hal/halbattery.cpp
    backends/hal/halblock.cpp
    backends/hal/halbutton.cpp
    backends/hal/halcamera.cpp
    backends/hal/halcdrom.cpp
    backends/hal/haldeviceinterface.cpp
-   backends/hal/haldvbhw.cpp
+   backends/hal/haldvbinterface.cpp
    backends/hal/halgenericinterface.cpp
    backends/hal/halcalljob.cpp
    backends/hal/haldevice.cpp
    backends/hal/halmanager.cpp
-   backends/hal/halnetworkhw.cpp
+   backends/hal/halnetworkinterface.cpp
    backends/hal/halopticaldisc.cpp
    backends/hal/halportablemediaplayer.cpp
    backends/hal/halprocessor.cpp
@@ -71,7 +71,7 @@ set(solid_LIB_SRCS
    backends/hal/halvolume.cpp
 
    backends/fakehw/fakeacadapter.cpp
-   backends/fakehw/fakeaudiohw.cpp
+   backends/fakehw/fakeaudiointerface.cpp
    backends/fakehw/fakebattery.cpp
    backends/fakehw/fakeblock.cpp
    backends/fakehw/fakebutton.cpp
@@ -79,11 +79,11 @@ set(solid_LIB_SRCS
    backends/fakehw/fakecdrom.cpp
    backends/fakehw/fakedevice.cpp
    backends/fakehw/fakedeviceinterface.cpp
-   backends/fakehw/fakedvbhw.cpp
+   backends/fakehw/fakedvbinterface.cpp
    backends/fakehw/fakegenericinterface.cpp
    backends/fakehw/fakejob.cpp
    backends/fakehw/fakemanager.cpp
-   backends/fakehw/fakenetworkhw.cpp
+   backends/fakehw/fakenetworkinterface.cpp
    backends/fakehw/fakeopticaldisc.cpp
    backends/fakehw/fakeportablemediaplayer.cpp
    backends/fakehw/fakeprocessor.cpp
@@ -115,7 +115,7 @@ target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 ########### install files ###############
 
-install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h audiohw.h dvbhw.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

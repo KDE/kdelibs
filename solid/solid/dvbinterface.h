@@ -26,7 +26,7 @@
 
 namespace Solid
 {
-    class DvbHwPrivate;
+    class DvbInterfacePrivate;
     class Device;
 
     /**
@@ -37,7 +37,7 @@ namespace Solid
      * It is possible to interact with such a device using a special device
      * file in the system.
      */
-    class SOLID_EXPORT DvbHw : public DeviceInterface
+    class SOLID_EXPORT DvbInterface : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS(DeviceType)
@@ -45,7 +45,7 @@ namespace Solid
         Q_PROPERTY(int deviceAdapter READ deviceAdapter)
         Q_PROPERTY(DeviceType deviceType READ deviceType)
         Q_PROPERTY(int deviceIndex READ deviceIndex)
-        Q_DECLARE_PRIVATE(DvbHw)
+        Q_DECLARE_PRIVATE(DvbInterface)
         friend class Device;
 
     public:
@@ -69,29 +69,29 @@ namespace Solid
 
     private:
         /**
-         * Creates a new DvbHw object.
+         * Creates a new DvbInterface object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit DvbHw(QObject *backendObject);
+        explicit DvbInterface(QObject *backendObject);
 
     public:
         /**
-         * Destroys a DvbHw object.
+         * Destroys a DvbInterface object.
          */
-        virtual ~DvbHw();
+        virtual ~DvbInterface();
 
 
         /**
-         * Get the Solid::DeviceInterface::Type of the DvbHw device interface.
+         * Get the Solid::DeviceInterface::Type of the DvbInterface device interface.
          *
-         * @return the DvbHw device interface type
+         * @return the DvbInterface device interface type
          * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type deviceInterfaceType() { return DeviceInterface::DvbHw; }
+        static Type deviceInterfaceType() { return DeviceInterface::DvbInterface; }
 
 
         /**
@@ -118,7 +118,7 @@ namespace Solid
           * Retrieves the type of this dvb device.
           *
           * @return the device type of this dvb device
-          * @see Solid::DvbHw::DeviceType
+          * @see Solid::DvbInterface::DeviceType
           */
          DeviceType deviceType() const;
 
@@ -129,7 +129,7 @@ namespace Solid
           * identified (deviceType() == DvbUnknown).
           *
           * @return the index of this dvb device or -1
-          * @see Solid::DvbHw::deviceType
+          * @see Solid::DvbInterface::deviceType
           */
          int deviceIndex() const;
     };

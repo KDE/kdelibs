@@ -37,12 +37,12 @@
 #include "backends/hal/halopticaldisc.h"
 #include "backends/hal/halcamera.h"
 #include "backends/hal/halportablemediaplayer.h"
-#include "backends/hal/halnetworkhw.h"
+#include "backends/hal/halnetworkinterface.h"
 #include "backends/hal/halacadapter.h"
 #include "backends/hal/halbattery.h"
 #include "backends/hal/halbutton.h"
-#include "backends/hal/halaudiohw.h"
-#include "backends/hal/haldvbhw.h"
+#include "backends/hal/halaudiointerface.h"
+#include "backends/hal/haldvbinterface.h"
 
 class HalDevicePrivate
 {
@@ -307,8 +307,8 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::PortableMediaPlayer:
         iface = new PortableMediaPlayer(this);
         break;
-    case Solid::DeviceInterface::NetworkHw:
-        iface = new NetworkHw(this);
+    case Solid::DeviceInterface::NetworkInterface:
+        iface = new NetworkInterface(this);
         break;
     case Solid::DeviceInterface::AcAdapter:
         iface = new AcAdapter(this);
@@ -319,11 +319,11 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::Button:
         iface = new Button(this);
         break;
-    case Solid::DeviceInterface::AudioHw:
-        iface = new AudioHw(this);
+    case Solid::DeviceInterface::AudioInterface:
+        iface = new AudioInterface(this);
         break;
-    case Solid::DeviceInterface::DvbHw:
-        iface = new DvbHw(this);
+    case Solid::DeviceInterface::DvbInterface:
+        iface = new DvbInterface(this);
         break;
     case Solid::DeviceInterface::Unknown:
         break;

@@ -22,7 +22,7 @@
 
 #include <solid/ifaces/deviceinterface.h>
 
-#include <solid/dvbhw.h>
+#include <solid/dvbinterface.h>
 
 namespace Solid
 {
@@ -36,13 +36,13 @@ namespace Ifaces
      * It is possible to interact with such a device using a special device
      * file in the system.
      */
-    class DvbHw : virtual public DeviceInterface
+    class DvbInterface : virtual public DeviceInterface
     {
     public:
         /**
-         * Destroys a DvbHw object.
+         * Destroys a DvbInterface object.
          */
-        virtual ~DvbHw();
+        virtual ~DvbInterface();
 
         /**
          * Retrieves the absolute path of the special file to interact
@@ -66,9 +66,9 @@ namespace Ifaces
          * Retrieves the type of this dvb device.
          *
          * @return the device type of this dvb device
-         * @see Solid::DvbHw::DeviceType
+         * @see Solid::DvbInterface::DeviceType
          */
-        virtual Solid::DvbHw::DeviceType deviceType() const = 0;
+        virtual Solid::DvbInterface::DeviceType deviceType() const = 0;
 
         /**
          * Retrieves the index of this dvb device.
@@ -76,13 +76,13 @@ namespace Ifaces
          * identified (deviceType() == DvbUnknown).
          *
          * @return the index of this dvb device or -1
-         * @see Solid::Ifaces::DvbHw::deviceType
+         * @see Solid::Ifaces::DvbInterface::deviceType
          */
         virtual int deviceIndex() const = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::DvbHw, "org.kde.Solid.Ifaces.DvbHw/0.1")
+Q_DECLARE_INTERFACE(Solid::Ifaces::DvbInterface, "org.kde.Solid.Ifaces.DvbInterface/0.1")
 
 #endif

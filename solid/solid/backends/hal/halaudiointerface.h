@@ -17,28 +17,33 @@
 
 */
 
-#ifndef FAKEAUDIOHW_H
-#define FAKEAUDIOHW_H
+#ifndef AUDIOHW_H
+#define AUDIOHW_H
 
-#include <solid/ifaces/audiohw.h>
-#include "fakedeviceinterface.h"
+#include "solid/ifaces/audiointerface.h"
+#include "solid/backends/hal/haldeviceinterface.h"
 
-class FakeAudioHw : public FakeDeviceInterface, virtual public Solid::Ifaces::AudioHw
+class HalDevice;
+
+class AudioInterface : public DeviceInterface, virtual public Solid::Ifaces::AudioInterface
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::AudioHw)
+    Q_INTERFACES(Solid::Ifaces::AudioInterface)
 
 public:
-    explicit FakeAudioHw(FakeDevice *device);
-    virtual ~FakeAudioHw();
+    AudioInterface(HalDevice *device);
+    virtual ~AudioInterface();
 
-public Q_SLOTS:
-    virtual Solid::AudioHw::AudioDriver driver() const;
+    virtual Solid::AudioInterface::AudioDriver driver() const;
     virtual QString driverHandler() const;
 
     virtual QString name() const;
-    virtual Solid::AudioHw::AudioHwTypes deviceType() const;
-    virtual Solid::AudioHw::SoundcardType soundcardType() const;
+    virtual Solid::AudioInterface::AudioInterfaceTypes deviceType() const;
+    virtual Solid::AudioInterface::SoundcardType soundcardType() const;
+
+private:
+    mutable Solid::AudioInterface::SoundcardType m_soundcardType;
+    mutable bool m_soundcardTypeValid;
 };
 
 #endif

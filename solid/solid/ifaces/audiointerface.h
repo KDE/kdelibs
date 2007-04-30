@@ -21,7 +21,7 @@
 #define SOLID_IFACES_AUDIOHW_H
 
 #include <solid/ifaces/deviceinterface.h>
-#include <solid/audiohw.h>
+#include <solid/audiointerface.h>
 
 namespace Solid
 {
@@ -30,13 +30,13 @@ namespace Ifaces
     /**
      * This device interface is available on interfaces exposed by sound cards.
      */
-    class AudioHw : virtual public DeviceInterface
+    class AudioInterface : virtual public DeviceInterface
     {
     public:
         /**
-         * Destroys an AudioHw object.
+         * Destroys an AudioInterface object.
          */
-        virtual ~AudioHw();
+        virtual ~AudioInterface();
 
 
 
@@ -44,9 +44,9 @@ namespace Ifaces
          * Retrieves the audio driver that should be used to access the device.
          *
          * @return the driver needed to access the device
-         * @see Solid::AudioHw::AudioDriver
+         * @see Solid::AudioInterface::AudioDriver
          */
-        virtual Solid::AudioHw::AudioDriver driver() const = 0;
+        virtual Solid::AudioInterface::AudioDriver driver() const = 0;
 
         /**
          * Retrieves a driver specific string allowing to access the device.
@@ -71,21 +71,21 @@ namespace Ifaces
          * Retrieves the type of this audio interface.
          *
          * @return the type of this audio interface
-         * @see Solid::AudioHw::AudioHwTypes
+         * @see Solid::AudioInterface::AudioInterfaceTypes
          */
-        virtual Solid::AudioHw::AudioHwTypes deviceType() const = 0;
+        virtual Solid::AudioInterface::AudioInterfaceTypes deviceType() const = 0;
 
         /**
          * Retrieves the type of soundcard (internal/headset/...).
          *
          * @return the type of soundcard
-         * @see Solid::AudioHw::SoundcardType
+         * @see Solid::AudioInterface::SoundcardType
          */
-        virtual Solid::AudioHw::SoundcardType soundcardType() const = 0;
+        virtual Solid::AudioInterface::SoundcardType soundcardType() const = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::AudioHw, "org.kde.Solid.Ifaces.AudioHw/0.1.1")
+Q_DECLARE_INTERFACE(Solid::Ifaces::AudioInterface, "org.kde.Solid.Ifaces.AudioInterface/0.1.1")
 
 #endif

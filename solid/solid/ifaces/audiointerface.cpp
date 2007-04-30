@@ -17,9 +17,9 @@
 
 */
 
-#include "audiohw.h"
+#include "audiointerface.h"
 
-Solid::Ifaces::AudioHw::~AudioHw()
+Solid::Ifaces::AudioInterface::~AudioInterface()
 {
 }
 

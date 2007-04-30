@@ -17,34 +17,34 @@
 
 */
 
-#include "audiohw.h"
-#include "audiohw_p.h"
+#include "audiointerface.h"
+#include "audiointerface_p.h"
 
 #include "soliddefs_p.h"
-#include <solid/ifaces/audiohw.h>
+#include <solid/ifaces/audiointerface.h>
 #include <QStringList>
 #include <kdebug.h>
 
-Solid::AudioHw::AudioHw(QObject *backendObject)
-    : DeviceInterface(*new AudioHwPrivate(), backendObject)
+Solid::AudioInterface::AudioInterface(QObject *backendObject)
+    : DeviceInterface(*new AudioInterfacePrivate(), backendObject)
 {
 }
 
-Solid::AudioHw::~AudioHw()
+Solid::AudioInterface::~AudioInterface()
 {
 
 }
 
 
-Solid::AudioHw::AudioDriver Solid::AudioHw::driver() const
+Solid::AudioInterface::AudioDriver Solid::AudioInterface::driver() const
 {
-    Q_D(const AudioHw);
-    return_SOLID_CALL(Ifaces::AudioHw *, d->backendObject(), UnknownAudioDriver, driver());
+    Q_D(const AudioInterface);
+    return_SOLID_CALL(Ifaces::AudioInterface *, d->backendObject(), UnknownAudioDriver, driver());
 }
 
-QStringList Solid::AudioHw::driverHandles() const
+QStringList Solid::AudioInterface::driverHandles() const
 {
-    Q_D(const AudioHw);
+    Q_D(const AudioInterface);
 
     if (!d->driverHandles.isEmpty())
     {
@@ -52,7 +52,7 @@ QStringList Solid::AudioHw::driverHandles() const
         return d->driverHandles;
     }
 
-    Ifaces::AudioHw *iface = qobject_cast<Ifaces::AudioHw *>(d->backendObject());
+    Ifaces::AudioInterface *iface = qobject_cast<Ifaces::AudioInterface *>(d->backendObject());
     if (iface)
     {
         QString handle = iface->driverHandler();
@@ -100,13 +100,13 @@ QStringList Solid::AudioHw::driverHandles() const
                 }
             }
 
-            if (iface->deviceType()  & Solid::AudioHw::AudioOutput)
+            if (iface->deviceType()  & Solid::AudioInterface::AudioOutput)
             {
                 // first try dmix for concurrent access then plain hw and if the hw formats don't
                 // work plughw
                 d->driverHandles << QLatin1String("dmix:") + handle;
             }
-            if (iface->deviceType()  & Solid::AudioHw::AudioInput)
+            if (iface->deviceType()  & Solid::AudioInterface::AudioInput)
             {
                 // first try dsnoop for concurrent access, then plain hw
                 d->driverHandles << QLatin1String("dsnoop:") + handle;
@@ -124,22 +124,22 @@ QStringList Solid::AudioHw::driverHandles() const
     return QStringList();
 }
 
-QString Solid::AudioHw::name() const
+QString Solid::AudioInterface::name() const
 {
-    Q_D(const AudioHw);
-    return_SOLID_CALL(Ifaces::AudioHw *, d->backendObject(), QString(), name());
+    Q_D(const AudioInterface);
+    return_SOLID_CALL(Ifaces::AudioInterface *, d->backendObject(), QString(), name());
 }
 
-Solid::AudioHw::AudioHwTypes Solid::AudioHw::deviceType() const
+Solid::AudioInterface::AudioInterfaceTypes Solid::AudioInterface::deviceType() const
 {
-    Q_D(const AudioHw);
-    return_SOLID_CALL(Ifaces::AudioHw *, d->backendObject(), UnknownAudioHwType, deviceType());
+    Q_D(const AudioInterface);
+    return_SOLID_CALL(Ifaces::AudioInterface *, d->backendObject(), UnknownAudioInterfaceType, deviceType());
 }
 
-Solid::AudioHw::SoundcardType Solid::AudioHw::soundcardType() const
+Solid::AudioInterface::SoundcardType Solid::AudioInterface::soundcardType() const
 {
-    Q_D(const AudioHw);
-    return_SOLID_CALL(Ifaces::AudioHw *, d->backendObject(), InternalSoundcard, soundcardType());
+    Q_D(const AudioInterface);
+    return_SOLID_CALL(Ifaces::AudioInterface *, d->backendObject(), InternalSoundcard, soundcardType());
 }
 
-#include "audiohw.moc"
+#include "audiointerface.moc"

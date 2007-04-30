@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,27 +17,27 @@
 
 */
 
-#ifndef NETWORKHW_H
-#define NETWORKHW_H
+#ifndef FAKEDVBHW_H
+#define FAKEDVBHW_H
 
-#include "solid/ifaces/networkhw.h"
-#include "solid/backends/hal/haldeviceinterface.h"
+#include "fakedeviceinterface.h"
+#include <solid/ifaces/dvbinterface.h>
 
-class HalDevice;
-
-class NetworkHw : public DeviceInterface, virtual public Solid::Ifaces::NetworkHw
+class FakeDvbInterface : public FakeDeviceInterface, virtual public Solid::Ifaces::DvbInterface
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::NetworkHw)
+    Q_INTERFACES(Solid::Ifaces::DvbInterface)
 
 public:
-    NetworkHw(HalDevice *device);
-    virtual ~NetworkHw();
+    explicit FakeDvbInterface(FakeDevice *device);
+    ~FakeDvbInterface();
 
-    virtual QString ifaceName() const;
-    virtual bool isWireless() const;
-    virtual QString hwAddress() const;
-    virtual qulonglong macAddress() const;
+public Q_SLOTS:
+    virtual QString device() const;
+    virtual int deviceAdapter() const;
+    virtual Solid::DvbInterface::DeviceType deviceType() const;
+    virtual int deviceIndex() const;
 };
 
 #endif
+

@@ -26,23 +26,23 @@
 
 namespace Solid
 {
-    class AudioHwPrivate;
+    class AudioInterfacePrivate;
     class Device;
 
     /**
      * This device interface is available on interfaces exposed by sound cards.
      */
-    class SOLID_EXPORT AudioHw : public DeviceInterface
+    class SOLID_EXPORT AudioInterface : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS(AudioDriver AudioHwType SoundcardType)
-        Q_FLAGS(AudioHwTypes)
+        Q_ENUMS(AudioDriver AudioInterfaceType SoundcardType)
+        Q_FLAGS(AudioInterfaceTypes)
         Q_PROPERTY(AudioDriver driver READ driver)
         Q_PROPERTY(QStringList driverHandles READ driverHandles)
         Q_PROPERTY(QString name READ name)
-        Q_PROPERTY(AudioHwTypes deviceType READ deviceType)
+        Q_PROPERTY(AudioInterfaceTypes deviceType READ deviceType)
         Q_PROPERTY(SoundcardType soundcardType READ soundcardType)
-        Q_DECLARE_PRIVATE(AudioHw)
+        Q_DECLARE_PRIVATE(AudioInterface)
         friend class Device;
 
     public:
@@ -70,12 +70,12 @@ namespace Solid
          * This enum type defines the type of audio interface this
          * device expose.
          */
-        enum AudioHwType
+        enum AudioInterfaceType
         {
             /**
              * An unknown audio interface
              */
-            UnknownAudioHwType = 0,
+            UnknownAudioInterfaceType = 0,
             /**
              * A control/mixer interface
              */
@@ -91,9 +91,9 @@ namespace Solid
         };
 
         /**
-         * This type stores an OR combination of AudioHwType values.
+         * This type stores an OR combination of AudioInterfaceType values.
          */
-        Q_DECLARE_FLAGS(AudioHwTypes, AudioHwType)
+        Q_DECLARE_FLAGS(AudioInterfaceTypes, AudioInterfaceType)
 
         /**
          * This enum defines the type of soundcard of this device.
@@ -129,29 +129,29 @@ namespace Solid
 
     private:
         /**
-         * Creates a new AudioHw object.
+         * Creates a new AudioInterface object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit AudioHw(QObject *backendObject);
+        explicit AudioInterface(QObject *backendObject);
 
     public:
         /**
-         * Destroys an AudioHw object.
+         * Destroys an AudioInterface object.
          */
-        virtual ~AudioHw();
+        virtual ~AudioInterface();
 
 
         /**
-         * Get the Solid::DeviceInterface::Type of the AudioHw device interface.
+         * Get the Solid::DeviceInterface::Type of the AudioInterface device interface.
          *
-         * @return the AudioHw device interface type
+         * @return the AudioInterface device interface type
          * @see Solid::DeviceInterface::Type
          */
-        static Type deviceInterfaceType() { return DeviceInterface::AudioHw; }
+        static Type deviceInterfaceType() { return DeviceInterface::AudioInterface; }
 
 
 
@@ -159,7 +159,7 @@ namespace Solid
          * Retrieves the audio driver that should be used to access the device.
          *
          * @return the driver needed to access the device
-         * @see Solid::AudioHw::AudioDriver
+         * @see Solid::AudioInterface::AudioDriver
          */
         AudioDriver driver() const;
 
@@ -190,20 +190,20 @@ namespace Solid
          * Retrieves the type of this audio interface (in/out/control).
          *
          * @return the type of this audio interface
-         * @see Solid::AudioHw::AudioHwTypes
+         * @see Solid::AudioInterface::AudioInterfaceTypes
          */
-        AudioHwTypes deviceType() const;
+        AudioInterfaceTypes deviceType() const;
 
         /**
          * Retrieves the type of soundcard (internal/headset/...).
          *
          * @return the type of soundcard
-         * @see Solid::AudioHw::SoundcardType
+         * @see Solid::AudioInterface::SoundcardType
          */
         SoundcardType soundcardType() const;
     };
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::AudioHw::AudioHwTypes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::AudioInterface::AudioInterfaceTypes)
 
 #endif

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -16,26 +16,10 @@
     Boston, MA 02110-1301, USA.
 
 */
-#ifndef FAKENETWORKHW_H
-#define FAKENETWORKHW_H
 
-#include "fakedeviceinterface.h"
-#include <solid/ifaces/networkhw.h>
+#include "dvbinterface.h"
 
-class FakeNetworkHw : public FakeDeviceInterface, public Solid::Ifaces::NetworkHw
+Solid::Ifaces::DvbInterface::~DvbInterface()
 {
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::NetworkHw)
+}
 
-public:
-    explicit FakeNetworkHw(FakeDevice *device);
-    ~FakeNetworkHw();
-
-public Q_SLOTS:
-    virtual QString ifaceName() const;
-    virtual bool isWireless() const;
-    virtual QString hwAddress() const;
-    virtual qulonglong macAddress() const;
-};
-
-#endif

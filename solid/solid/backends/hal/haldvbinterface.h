@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,23 +17,28 @@
 
 */
 
-#ifndef SOLID_AUDIOHW_P_H
-#define SOLID_AUDIOHW_P_H
+#ifndef DVBHW_H
+#define DVBHW_H
 
-#include "deviceinterface_p.h"
+#include "solid/ifaces/dvbinterface.h"
+#include "solid/backends/hal/haldeviceinterface.h"
 
-#include <QStringList>
-
-namespace Solid
+class DvbInterface : public DeviceInterface, virtual public Solid::Ifaces::DvbInterface
 {
-    class AudioHwPrivate : public DeviceInterfacePrivate
-    {
-    public:
-        AudioHwPrivate()
-            : DeviceInterfacePrivate() { }
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::DvbInterface)
 
-        mutable QStringList driverHandles;
-    };
-}
+public:
+    DvbInterface(HalDevice *device);
+    virtual ~DvbInterface();
+
+    virtual QString device() const;
+    virtual int deviceAdapter() const;
+    virtual Solid::DvbInterface::DeviceType deviceType() const;
+    virtual int deviceIndex() const;
+
+private:
+    bool parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *index) const;
+};
 
 #endif

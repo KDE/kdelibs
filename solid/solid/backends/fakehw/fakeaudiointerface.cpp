@@ -19,52 +19,52 @@
 
 #include <QStringList>
 
-#include "backends/fakehw/fakeaudiohw.h"
+#include "backends/fakehw/fakeaudiointerface.h"
 
 
-FakeAudioHw::FakeAudioHw(FakeDevice *device)
+FakeAudioInterface::FakeAudioInterface(FakeDevice *device)
     : FakeDeviceInterface(device)
 {
 
 }
 
-FakeAudioHw::~FakeAudioHw()
+FakeAudioInterface::~FakeAudioInterface()
 {
 
 }
 
 
-Solid::AudioHw::AudioDriver FakeAudioHw::driver() const
+Solid::AudioInterface::AudioDriver FakeAudioInterface::driver() const
 {
     QString driver = fakeDevice()->property("driver").toString();
 
     if (driver == "alsa")
     {
-        return Solid::AudioHw::Alsa;
+        return Solid::AudioInterface::Alsa;
     }
     else if (driver == "oss")
     {
-        return Solid::AudioHw::OpenSoundSystem;
+        return Solid::AudioInterface::OpenSoundSystem;
     }
     else
     {
-        return Solid::AudioHw::UnknownAudioDriver;
+        return Solid::AudioInterface::UnknownAudioDriver;
     }
 }
 
-QString FakeAudioHw::driverHandler() const
+QString FakeAudioInterface::driverHandler() const
 {
     return fakeDevice()->property("driverHandler").toString();
 }
 
-QString FakeAudioHw::name() const
+QString FakeAudioInterface::name() const
 {
     return fakeDevice()->property("name").toString();
 }
 
-Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType() const
+Solid::AudioInterface::AudioInterfaceTypes FakeAudioInterface::deviceType() const
 {
-    Solid::AudioHw::AudioHwTypes result;
+    Solid::AudioInterface::AudioInterfaceTypes result;
 
     QStringList type_list = fakeDevice()->property("type").toString().split(",");
 
@@ -72,42 +72,42 @@ Solid::AudioHw::AudioHwTypes FakeAudioHw::deviceType() const
     {
         if (type_str == "control")
         {
-            result|=Solid::AudioHw::AudioControl;
+            result|=Solid::AudioInterface::AudioControl;
         }
         else if (type_str == "input")
         {
-            result|=Solid::AudioHw::AudioInput;
+            result|=Solid::AudioInterface::AudioInput;
         }
         else if (type_str == "output")
         {
-            result|=Solid::AudioHw::AudioOutput;
+            result|=Solid::AudioInterface::AudioOutput;
         }
     }
 
     return result;
 }
 
-Solid::AudioHw::SoundcardType FakeAudioHw::soundcardType() const
+Solid::AudioInterface::SoundcardType FakeAudioInterface::soundcardType() const
 {
     QString type_str = fakeDevice()->property("soundcardType").toString();
 
     if (type_str == "internal")
     {
-        return Solid::AudioHw::InternalSoundcard;
+        return Solid::AudioInterface::InternalSoundcard;
     }
     else if (type_str == "usb")
     {
-        return Solid::AudioHw::UsbSoundcard;
+        return Solid::AudioInterface::UsbSoundcard;
     }
     else if (type_str == "firewire")
     {
-        return Solid::AudioHw::FirewireSoundcard;
+        return Solid::AudioInterface::FirewireSoundcard;
     }
     else if (type_str == "headset")
     {
-        return Solid::AudioHw::Headset;
+        return Solid::AudioInterface::Headset;
     }
-    return Solid::AudioHw::InternalSoundcard;
+    return Solid::AudioInterface::InternalSoundcard;
 }
 
-#include "backends/fakehw/fakeaudiohw.moc"
+#include "backends/fakehw/fakeaudiointerface.moc"
