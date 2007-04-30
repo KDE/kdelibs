@@ -32,7 +32,7 @@
 namespace KNetwork {
 
 class KSocketDevice;
-class KStreamSocket; 
+class KStreamSocket;
 class KResolver;
 class KResolverResults;
 
