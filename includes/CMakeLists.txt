@@ -193,8 +193,8 @@ install( FILES
   KFileDialog
   KFileFilter
   KFileFilterCombo
-  KFileIconView
-  KFileIconViewItem
+  K3FileIconView
+  K3FileIconViewItem
   KFileItem
   KFileItemList
   KFileItemDelegate
@@ -211,8 +211,8 @@ install( FILES
   KFileShare
   KFileSharePropsPlugin
   KFileTreeBranch
-  KFileTreeView
-  KFileTreeViewItem
+  K3FileTreeView
+  K3FileTreeViewItem
   KFileView
   KFileViewSignaler
   KFilterBase
