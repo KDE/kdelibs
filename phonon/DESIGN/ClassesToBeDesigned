@@ -1,9 +1,0 @@
-OSD:
-a class that is used for overlaying arbitrary bitmaps on the video
--> usefull for showing a play, pause, seek symbol, volume bar or progress bar
-
-Subtitles:
-There is media data with subtitles embedded (and there exist also external
-subtitle files). One possibility would be to add subtitle selection to the
-VideoPath, another to add it to the MediaProducer and a third to create a new
-class that operates on a MediaProducer or VideoPath.
