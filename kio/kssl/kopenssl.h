@@ -47,8 +47,6 @@ class KOpenSSLProxyPrivate;
 #undef crypt
 #endif
 
-#include <kstaticdeleter.h>
-
 /**
  * Dynamically load and wrap OpenSSL.
  *
@@ -58,7 +56,6 @@ class KOpenSSLProxyPrivate;
  * @internal
  */
 class KIO_EXPORT KOpenSSLProxy {
-friend class KStaticDeleter<KOpenSSLProxy>;
 public:
 
    /**
@@ -873,16 +870,10 @@ public:
 #endif
 
 private:
+   friend class KOpenSSLProxyPrivate;
    KOpenSSLProxy();
    ~KOpenSSLProxy();
-   KOpenSSLProxyPrivate *d;
-
-   KLibrary *_sslLib;
-   KLibrary *_cryptoLib;
-   static KOpenSSLProxy *_me;
-
-   bool _ok;
+   KOpenSSLProxyPrivate * const d;
 };
 
 #endif
-
