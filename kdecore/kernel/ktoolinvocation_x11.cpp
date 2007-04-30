@@ -401,7 +401,7 @@ static int my_system (const char *command) {
 void KToolInvocation::startKdeinit()
 {
   // Try to launch kdeinit.
-  QString srv = KStandardDirs::findExe(QLatin1String("kdeinit"));
+  QString srv = KStandardDirs::findExe(QLatin1String("kdeinit4"));
   if (srv.isEmpty())
      return;
 //   this is disabled because we are in kdecore

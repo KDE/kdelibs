@@ -179,7 +179,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 void KToolInvocation::startKdeinit()
 {
    QProcess kdeinit;
-   kdeinit.start("kdeinit");
+   kdeinit.start("kdeinit4");
    kdeinit.waitForFinished();
 }
 

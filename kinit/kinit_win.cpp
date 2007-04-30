@@ -50,7 +50,7 @@ int verbose=0;
 QList<QProcess*> startedProcesses;
 
 // internal launch function
-int launch(const QString &cmd) 
+int launch(const QString &cmd)
 {
     QProcess *proc = new QProcess();
     proc->start(cmd);
@@ -96,23 +96,23 @@ bool checkIfRegisteredInDBus(const QString &name, int _timeout=10)
 class ProcessListEntry {
     public:
        ProcessListEntry(HANDLE _handle,char *_name, int _pid ) {handle = _handle; name = _name; pid = _pid; name.replace(".exe","");}
-       QString name; 
+       QString name;
        int pid;
        HANDLE handle;
 };
 
-/** 
- holds system process list 
-*/ 
+/**
+ holds system process list
+*/
 class ProcessList {
-    public: 
+    public:
        ProcessList() {initProcessList(); }
        ~ProcessList();
        ProcessListEntry *hasProcessInList(const QString &name);
        bool terminateProcess(const QString &name);
        void dumpList();
     private:
-       void initProcessList(); 
+       void initProcessList();
        void getProcessNameAndID( DWORD processID );
        QList<ProcessListEntry *> processList;
 };
@@ -135,10 +135,10 @@ void ProcessList::getProcessNameAndID( DWORD processID )
        HMODULE hMod;
        DWORD cbNeeded;
 
-       if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod), 
+       if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod),
               &cbNeeded) )
        {
-             GetModuleBaseNameA( hProcess, hMod, szProcessName, 
+             GetModuleBaseNameA( hProcess, hMod, szProcessName,
                                            sizeof(szProcessName)/sizeof(TCHAR) );
        }
     }
@@ -150,9 +150,9 @@ void ProcessList::getProcessNameAndID( DWORD processID )
 }
 
 
-/** 
-    read process list from system and fill in global var aProcessList 
-*/ 
+/**
+    read process list from system and fill in global var aProcessList
+*/
 void ProcessList::initProcessList()
 {
     // Get the list of process identifiers.
@@ -193,9 +193,9 @@ void ProcessList::dumpList()
     }
 }
 
-/** 
+/**
  return process list entry of given name
-*/ 
+*/
 ProcessListEntry *ProcessList::hasProcessInList(const QString &name)
 {
     ProcessListEntry *ple;
@@ -223,7 +223,7 @@ bool ProcessList::terminateProcess(const QString &name)
            fprintf(stderr,"process %s not found\n",qPrintable(name));
        return false;
     }
-}    
+}
 
 
 int main(int argc, char **argv, char **envp)
@@ -256,7 +256,7 @@ int main(int argc, char **argv, char **envp)
             verbose = 1;
         if (strcmp(safe_argv[i], "--help") == 0)
         {
-           printf("Usage: kdeinit [options]\n");
+           printf("Usage: kdeinit4 [options]\n");
            printf("       --no-dbus              Do not start dcopserver\n");
            printf("       --no-klauncher         Do not start klauncher\n");
            printf("       --no-kded              Do not start kded\n");
@@ -287,14 +287,14 @@ int main(int argc, char **argv, char **envp)
     if (launch_dbus && !processList.hasProcessInList("dbus-daemon"))
     {
           pid = launch("dbus-launch.bat");
-          if (!pid) 
+          if (!pid)
               exit(1);
     }
 
     if (launch_klauncher && !processList.hasProcessInList("klauncher"))
     {
           pid = launch("klauncher");
-          if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher",10)) 
+          if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher",10))
 			        exit(1);
     }
 
@@ -329,7 +329,7 @@ int main(int argc, char **argv, char **envp)
     }
     free (safe_argv);
 
-    /** wait for termination of all (core) processes */ 
+    /** wait for termination of all (core) processes */
     if (suicide) {
         QProcess *proc;
         int can_exit=1;
@@ -338,7 +338,7 @@ int main(int argc, char **argv, char **envp)
              if (proc->state() != QProcess::NotRunning)
                 can_exit = 0;
            }
-           if (!can_exit) 
+           if (!can_exit)
              Sleep(2000);
         } while(!can_exit);
         return 0;

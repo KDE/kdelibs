@@ -1,14 +1,11 @@
-
 project(kdeinit)
 
 add_subdirectory( tests )
 
-
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 
-
-########### next target ###############
+########### kdeinit4 ###############
 if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp  )
   set(kdeinit_LIBS kparts psapi)
@@ -18,62 +15,53 @@ else (WIN32)
 endif (WIN32)
 kde4_automoc(${kdeinit_SRCS})
 
-kde4_add_executable(kdeinit NOGUI ${kdeinit_SRCS})
+kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
 
-target_link_libraries(kdeinit  ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
+target_link_libraries(kdeinit4 ${KDE4_KDECORE_LIBS} ${kdeinit_LIBS} )
 
-install(TARGETS kdeinit DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kdeinit4 DESTINATION ${BIN_INSTALL_DIR} )
 
-########### next target ###############
+########### kdeinit4_wrapper ###############
 
 if (WIN32)
 MESSAGE("-- warning: fix targets in kinit")
 else (WIN32)
-set(kdeinit_wrapper_SRCS wrapper.c )
 
-kde4_add_executable(kdeinit_wrapper NOGUI ${kdeinit_wrapper_SRCS})
+kde4_add_executable(kdeinit4_wrapper NOGUI wrapper.c)
 
-target_link_libraries(kdeinit_wrapper  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kdeinit4_wrapper  ${KDE4_KDECORE_LIBS} )
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 add_definitions(-DNO_DISPLAY)
 endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-install(TARGETS kdeinit_wrapper DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kdeinit4_wrapper DESTINATION ${BIN_INSTALL_DIR} )
 
-########### next target ###############
+########### kshell4 ###############
 
-set(kshell_SRCS shell.c )
+kde4_add_executable(kshell4 NOGUI shell.c)
 
-kde4_add_executable(kshell NOGUI ${kshell_SRCS})
+target_link_libraries(kshell4 ${KDE4_KDECORE_LIBS} )
 
-target_link_libraries(kshell  ${KDE4_KDECORE_LIBS} )
+install(TARGETS kshell4 DESTINATION ${BIN_INSTALL_DIR} )
 
-install(TARGETS kshell DESTINATION ${BIN_INSTALL_DIR} )
+########### kdeinit4_shutdown ###############
 
+kde4_add_executable(kdeinit4_shutdown NOGUI wrapper.c)
 
-########### next target ###############
+target_link_libraries(kdeinit4_shutdown  ${KDE4_KDECORE_LIBS} )
 
-set(kdeinit_shutdown_SRCS wrapper.c )
+install(TARGETS kdeinit4_shutdown DESTINATION ${BIN_INSTALL_DIR} )
 
-kde4_add_executable(kdeinit_shutdown NOGUI ${kdeinit_shutdown_SRCS})
+########### kwrapper4 ###############
 
-target_link_libraries(kdeinit_shutdown  ${KDE4_KDECORE_LIBS} )
+kde4_add_executable(kwrapper4 NOGUI kwrapper.c)
 
-install(TARGETS kdeinit_shutdown DESTINATION ${BIN_INSTALL_DIR} )
+target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS} )
 
-########### next target ###############
+install(TARGETS kwrapper4 DESTINATION ${BIN_INSTALL_DIR} )
 
-set(kwrapper_SRCS kwrapper.c )
-
-kde4_add_executable(kwrapper NOGUI ${kwrapper_SRCS})
-
-target_link_libraries(kwrapper  ${KDE4_KDECORE_LIBS} )
-
-install(TARGETS kwrapper DESTINATION ${BIN_INSTALL_DIR} )
-
-
-########### next target ###############
+########### lnusertemp ###############
 
 set(lnusertemp_SRCS lnusertemp.c )
 
@@ -98,7 +86,7 @@ target_link_libraries(kioslave  ${KDE4_KIO_LIBS} )
 install(TARGETS kioslave DESTINATION ${BIN_INSTALL_DIR} )
 
 
-########### next target ###############
+########### kstartupconfig ###############
 
 set(kstartupconfig_SRCS kstartupconfig.cpp )
 
@@ -115,7 +103,7 @@ endif(WIN32)
 install(TARGETS kstartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 
-########### next target ###############
+########### kdostartupconfig ###############
 
 set(kdostartupconfig_SRCS kdostartupconfig.cpp )
 
@@ -128,7 +116,7 @@ target_link_libraries(kdostartupconfig  ${KDE4_KDECORE_LIBS} )
 install(TARGETS kdostartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 
-########### next target ###############
+########### klauncher ###############
 if (WIN32)
 set(klauncher_KDEINIT_SRCS
    klauncher_win.cpp

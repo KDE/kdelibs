@@ -335,24 +335,24 @@ int main(int argc, char **argv)
       p++;
    start = p;
 
-   if (strcmp(start, "kdeinit_wrapper") == 0)
+   if (strcmp(start, "kdeinit4_wrapper") == 0)
       wrapper = 1;
    else if (strcmp(start, "kshell") == 0)
       ext_wrapper = 1;
    else if (strcmp(start, "kwrapper") == 0)
       kwrapper = 1;
-   else if (strcmp(start, "kdeinit_shutdown") == 0)
+   else if (strcmp(start, "kdeinit4_shutdown") == 0)
    {
       if( argc > 1)
       {
          fprintf(stderr, "Usage: %s\n\n", start);
-         fprintf(stderr, "Shuts down kdeinit master process and terminates all processes spawned from it.\n");
+         fprintf(stderr, "Shuts down kdeinit4 master process and terminates all processes spawned from it.\n");
          exit( 255 );
       }
       sock = openSocket();
       if( sock < 0 )
       {
-          fprintf( stderr, "Error: Can't contact kdeinit!\n" );
+          fprintf( stderr, "Error: Can't contact kdeinit4!\n" );
           exit( 255 );
       }
       header.cmd = LAUNCHER_TERMINATE_KDE;
@@ -374,7 +374,7 @@ int main(int argc, char **argv)
    }
 
    sock = openSocket();
-   if( sock < 0 ) /* couldn't contact kdeinit, start argv[ 0 ] directly */
+   if( sock < 0 ) /* couldn't contact kdeinit4, start argv[ 0 ] directly */
    {
       execvp( argv[ 0 ], argv );
       fprintf( stderr, "Error: Can't run %s !\n", argv[ 0 ] );

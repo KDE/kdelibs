@@ -1,13 +1,13 @@
 README
 
-kdeinit_wrapper, kshell and kwrapper are a programs that
-start programs via kdeinit.
+kdeinit4_wrapper, kshell4 and kwrapper4 are programs that
+start programs via kdeinit4.
 
 E.g. You can make a symbolic link from $KDEDIR/bin/konsole to 
-$KDEDIR/bin/kdeinit_wrapper. Typing 'konsole' on the command line 
-will then start 'konsole.la' through kdeinit instead.
+$KDEDIR/bin/kdeinit4_wrapper. Typing 'konsole' on the command line 
+will then start 'konsole.so' through kdeinit instead.
 
-kdeinit_wrapper is the simplest for, it only passes the program
+kdeinit4_wrapper is the simplest form, it only passes the program
 and arguments to kdeinit, nothing else
 
 kshell is usually the best choice, it passes the program,

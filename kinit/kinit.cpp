@@ -602,7 +602,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      if (d.debug_wait)
      {
         fprintf(stderr, "kdeinit4: Suspending process\n"
-                        "kdeinit4: 'gdb kdeinit %d' to debug\n"
+                        "kdeinit4: 'gdb kdeinit4 %d' to debug\n"
                         "kdeinit4: 'kill -SIGCONT %d' to continue\n",
                         getpid(), getpid());
         kill(getpid(), SIGSTOP);
@@ -1637,7 +1637,7 @@ int main(int argc, char **argv, char **envp)
          keep_running = 0;
       if (strcmp(safe_argv[i], "--help") == 0)
       {
-        printf("Usage: kdeinit [options]\n");
+        printf("Usage: kdeinit4 [options]\n");
      // printf("    --no-dcop         Do not start dcopserver\n");
      // printf("    --no-klauncher    Do not start klauncher\n");
         printf("    --no-kded         Do not start kded\n");
@@ -1678,7 +1678,7 @@ int main(int argc, char **argv, char **envp)
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
-   kdeinit_setproctitle("kdeinit Starting up...");
+   kdeinit_setproctitle("kdeinit4 Starting up...");
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
@@ -1703,7 +1703,7 @@ int main(int argc, char **argv, char **envp)
    if (keep_running)
    {
       /*
-       * Create ~/.kde/tmp-<hostname>/kdeinit-<display> socket for incoming wrapper
+       * Create ~/.kde/tmp-<hostname>/kdeinit4-<display> socket for incoming wrapper
        * requests.
        */
       init_kdeinit_socket();
@@ -1781,7 +1781,7 @@ int main(int argc, char **argv, char **envp)
    }
    free (safe_argv);
 
-   kdeinit_setproctitle("kdeinit Running...");
+   kdeinit_setproctitle("kdeinit4 Running...");
 
    if (!keep_running)
       return 0;

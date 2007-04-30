@@ -135,9 +135,9 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
 
     // A real-world use case would be kate.
-    // But I picked kdeinit since it's installed by kdelibs
-    QString kdeinit = KStandardDirs::findExe("kdeinit");
-    if (kdeinit.isEmpty()) kdeinit = "kdeinit";
+    // But I picked kdeinit4 since it's installed by kdelibs
+    QString kdeinit = KStandardDirs::findExe("kdeinit4");
+    if (kdeinit.isEmpty()) kdeinit = "kdeinit4";
 
     QString kmailservice = KStandardDirs::findExe("kmailservice");
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
@@ -146,25 +146,25 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
         QVERIFY(kmailservice.contains("kde4/libexec"));
     }
 
-    QTest::newRow("%U l0") << "kdeinit %U" << l0 << false << kdeinit;
-    QTest::newRow("%U l1") << "kdeinit %U" << l1 << false << kdeinit + " /tmp";
-    QTest::newRow("%U l2") << "kdeinit %U" << l2 << false << kdeinit + " http://localhost/foo";
-    QTest::newRow("%U l3") << "kdeinit %U" << l3 << false << kdeinit + " /local/file http://remotehost.org/bar";
+    QTest::newRow("%U l0") << "kdeinit4 %U" << l0 << false << kdeinit;
+    QTest::newRow("%U l1") << "kdeinit4 %U" << l1 << false << kdeinit + " /tmp";
+    QTest::newRow("%U l2") << "kdeinit4 %U" << l2 << false << kdeinit + " http://localhost/foo";
+    QTest::newRow("%U l3") << "kdeinit4 %U" << l3 << false << kdeinit + " /local/file http://remotehost.org/bar";
 
-    //QTest::newRow("%u l0") << "kdeinit %u" << l0 << false << kdeinit; // gives runtime warning
-    QTest::newRow("%u l1") << "kdeinit %u" << l1 << false << kdeinit + " /tmp";
-    QTest::newRow("%u l2") << "kdeinit %u" << l2 << false << kdeinit + " http://localhost/foo";
-    //QTest::newRow("%u l3") << "kdeinit %u" << l3 << false << kdeinit; // gives runtime warning
+    //QTest::newRow("%u l0") << "kdeinit4 %u" << l0 << false << kdeinit; // gives runtime warning
+    QTest::newRow("%u l1") << "kdeinit4 %u" << l1 << false << kdeinit + " /tmp";
+    QTest::newRow("%u l2") << "kdeinit4 %u" << l2 << false << kdeinit + " http://localhost/foo";
+    //QTest::newRow("%u l3") << "kdeinit4 %u" << l3 << false << kdeinit; // gives runtime warning
 
-    QTest::newRow("%F l0") << "kdeinit %F" << l0 << false << kdeinit;
-    QTest::newRow("%F l1") << "kdeinit %F" << l1 << false << kdeinit + " /tmp";
-    QTest::newRow("%F l2") << "kdeinit %F" << l2 << false << "kioexec 'kdeinit %F' http://localhost/foo";
-    QTest::newRow("%F l3") << "kdeinit %F" << l3 << false << "kioexec 'kdeinit %F' file:///local/file http://remotehost.org/bar";
+    QTest::newRow("%F l0") << "kdeinit4 %F" << l0 << false << kdeinit;
+    QTest::newRow("%F l1") << "kdeinit4 %F" << l1 << false << kdeinit + " /tmp";
+    QTest::newRow("%F l2") << "kdeinit4 %F" << l2 << false << "kioexec 'kdeinit4 %F' http://localhost/foo";
+    QTest::newRow("%F l3") << "kdeinit4 %F" << l3 << false << "kioexec 'kdeinit4 %F' file:///local/file http://remotehost.org/bar";
 
-    QTest::newRow("%F l1 tempfile") << "kdeinit %F" << l1 << true << "kioexec --tempfiles 'kdeinit %F' file:///tmp";
+    QTest::newRow("%F l1 tempfile") << "kdeinit4 %F" << l1 << true << "kioexec --tempfiles 'kdeinit4 %F' file:///tmp";
 
-    QTest::newRow("sh -c kdeinit %F") << "sh -c \"kdeinit \"'\\\"'\"%F\"'\\\"'"
-                                   << l1 << false << "/bin/sh -c 'kdeinit \\\"/tmp\\\"'";
+    QTest::newRow("sh -c kdeinit4 %F") << "sh -c \"kdeinit4 \"'\\\"'\"%F\"'\\\"'"
+                                   << l1 << false << "/bin/sh -c 'kdeinit4 \\\"/tmp\\\"'";
 
     QTest::newRow("kmailservice %u l1") << "kmailservice %u" << l1 << false << kmailservice + " /tmp";
 }
