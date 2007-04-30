@@ -36,7 +36,7 @@ namespace Solid
         Q_OBJECT
         Q_PROPERTY(int number READ number)
         Q_PROPERTY(qulonglong maxSpeed READ maxSpeed)
-        Q_PROPERTY(bool canThrottle READ canThrottle)
+        Q_PROPERTY(bool canChangeFrequency READ canChangeFrequency)
         Q_DECLARE_PRIVATE(Processor)
 
     public:
@@ -76,17 +76,17 @@ namespace Solid
          *
          * @return the maximum speed in MHz
          */
-        qulonglong maxSpeed() const;
+        int maxSpeed() const;
 
         /**
-         * Indicates if the processor can throttle.
+         * Indicates if the processor can change the CPU frequency.
          *
-         * A processor supports throttling when it's able of decreasing
-         * it's own clockspeed (generally for power management).
+         * True if a processor is able to change it's own CPU frequency.
+         *  (generally for power management).
          *
-         * @return true if the processor can throttle, false otherwise
+         * @return true if the processor can change CPU frequency, false otherwise
          */
-        bool canThrottle() const;
+        bool canChangeFrequency() const;
     };
 }
 

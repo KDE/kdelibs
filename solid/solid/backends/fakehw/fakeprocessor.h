@@ -33,8 +33,8 @@ public:
 
 public Q_SLOTS:
     virtual int number() const;
-    virtual qulonglong maxSpeed() const;
-    virtual bool canThrottle() const;
+    virtual int maxSpeed() const;
+    virtual bool canChangeFrequency() const;
 };
 
 #endif

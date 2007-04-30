@@ -78,7 +78,7 @@
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="number">0</property>
             <property key="maxSpeed">3200</property>
-            <property key="canThrottle">true</property>
+            <property key="canChangeFrequency">true</property>
         </device>
         <device udi="/org/kde/solid/fakehw/acpi_CPU1">
             <property key="name">Solid Processor #1</property>
@@ -87,7 +87,7 @@
             <property key="parent">/org/kde/solid/fakehw/computer</property>
             <property key="number">1</property>
             <property key="maxSpeed">3200</property>
-            <property key="canThrottle">true</property>
+            <property key="canChangeFrequency">true</property>
         </device>
 
 

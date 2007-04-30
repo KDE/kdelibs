@@ -22,7 +22,6 @@
 FakeProcessor::FakeProcessor(FakeDevice *device)
  : FakeDeviceInterface(device)
 {
-    
 }
 
 FakeProcessor::~FakeProcessor()
@@ -34,14 +33,14 @@ int FakeProcessor::number() const
     return fakeDevice()->property("number").toInt();
 }
 
-qulonglong FakeProcessor::maxSpeed() const
+int FakeProcessor::maxSpeed() const
 {
-    return fakeDevice()->property("maxSpeed").toULongLong();
+    return fakeDevice()->property("maxSpeed").toInt();
 }
 
-bool FakeProcessor::canThrottle() const
+bool FakeProcessor::canChangeFrequency() const
 {
-    return fakeDevice()->property("canThrottle").toBool();
+    return fakeDevice()->property("canChangeFrequency").toBool();
 }
 
 #include "backends/fakehw/fakeprocessor.moc"

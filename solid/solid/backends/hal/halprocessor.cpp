@@ -37,14 +37,16 @@ int Processor::number() const
     return m_device->property("processor.number").toInt();
 }
 
-qulonglong Processor::maxSpeed() const
+int Processor::maxSpeed() const
 {
-    return m_device->property("processor.maximum_speed").toULongLong();
+    // the property is not mandatory in HAL
+    return m_device->property("processor.maximum_speed").toInt();
 }
 
-bool Processor::canThrottle() const
+bool Processor::canChangeFrequency() const
 {
-    return m_device->property("processor.can_throttle").toBool();
+    // dummy for now, need some changes in HAL!
+    return false;
 }
 
 #include "backends/hal/halprocessor.moc"

@@ -49,17 +49,17 @@ namespace Ifaces
          *
          * @return the maximum speed in MHz
          */
-        virtual qulonglong maxSpeed() const = 0;
+        virtual int maxSpeed() const = 0;
 
         /**
-         * Indicates if the processor can throttle.
+         * Indicates if the processor can change the CPU frequency.
          *
-         * A processor supports throttling when it's able of decreasing
-         * it's own clockspeed (generally for power management).
+         * True if a processor is able to change it's own CPU frequency.
+         *  (generally for power management).
          *
-         * @return true if the processor can throttle, false otherwise
+         * @return true if the processor can change CPU frequency, false otherwise
          */
-        virtual bool canThrottle() const = 0;
+        virtual bool canChangeFrequency() const = 0;
     };
 }
 }

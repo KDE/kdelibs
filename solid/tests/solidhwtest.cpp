@@ -325,14 +325,14 @@ void SolidHwTest::testPredicate()
     Solid::Device dev("/org/kde/solid/fakehw/acpi_CPU0");
 
     Solid::Predicate p1 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3200)
-                         & Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", true);
+                         & Solid::Predicate(Solid::DeviceInterface::Processor, "canChangeFrequency", true);
     Solid::Predicate p2 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3200)
-                         & Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", false);
+                         & Solid::Predicate(Solid::DeviceInterface::Processor, "canChangeFrequency", false);
     Solid::Predicate p3 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3201)
-                        | Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", true);
+                        | Solid::Predicate(Solid::DeviceInterface::Processor, "canChangeFrequency", true);
     Solid::Predicate p4 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3201)
-                        | Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", false);
-    Solid::Predicate p5 = Solid::Predicate::fromString("[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR StorageVolume.mountPoint == '/media/blup']");
+                        | Solid::Predicate(Solid::DeviceInterface::Processor, "canChangeFrequency", false);
+    Solid::Predicate p5 = Solid::Predicate::fromString("[[Processor.maxSpeed == 3201 AND Processor.canChangeFrequency == false] OR StorageVolume.mountPoint == '/media/blup']");
 
     QVERIFY(p1.matches(dev));
     QVERIFY(!p2.matches(dev));
@@ -358,7 +358,7 @@ void SolidHwTest::testPredicate()
     QVERIFY(!p9.matches(dev));
     QVERIFY(p10.matches(dev));
 
-    QString str_pred = "[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR StorageVolume.mountPoint == '/media/blup']";
+    QString str_pred = "[[Processor.maxSpeed == 3201 AND Processor.canChangeFrequency == false] OR StorageVolume.mountPoint == '/media/blup']";
     // Since str_pred is canonicalized, fromString().toString() should be invariant
     QCOMPARE(Solid::Predicate::fromString(str_pred).toString(), str_pred);
 
@@ -400,7 +400,7 @@ void SolidHwTest::testPredicate()
     list = Solid::Device::listFromQuery(p4, parentUdi);
     QCOMPARE(list.size(), 0);
 
-    list = Solid::Device::listFromQuery("[Processor.canThrottle==true AND Processor.number==1]",
+    list = Solid::Device::listFromQuery("[Processor.canChangeFrequency==true AND Processor.number==1]",
                                                        parentUdi);
     QCOMPARE(list.size(), 1);
     QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));

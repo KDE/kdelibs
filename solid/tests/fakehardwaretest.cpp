@@ -60,7 +60,7 @@ void FakeHardwareTest::testFakeBackend()
     Solid::Ifaces::Processor *processor = qobject_cast<Solid::Ifaces::Processor *>(interface);
 
     QCOMPARE(processor->number(), 0);
-    QCOMPARE(processor->canThrottle(), true);
+    QCOMPARE(processor->canChangeFrequency(), true);
     QCOMPARE((int)processor->maxSpeed(), 3200);
 }
 

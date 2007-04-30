@@ -40,16 +40,16 @@ int Solid::Processor::number() const
     return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), 0, number());
 }
 
-qulonglong Solid::Processor::maxSpeed() const
+int Solid::Processor::maxSpeed() const
 {
     Q_D(const Processor);
     return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), 0, maxSpeed());
 }
 
-bool Solid::Processor::canThrottle() const
+bool Solid::Processor::canChangeFrequency() const
 {
     Q_D(const Processor);
-    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), false, canThrottle());
+    return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), false, canChangeFrequency());
 }
 
 #include "processor.moc"
