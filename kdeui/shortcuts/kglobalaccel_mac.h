@@ -51,11 +51,8 @@ public:
 	 */
 	bool grabKey(int key, bool grab);
 	
-	/// Enable all shortcuts.  There will not be any grabbed shortcuts at this point.
-	void enable();
-
-	/// Disable all shortcuts.  There will not be any grabbed shortcuts at this point.
-	void disable();
+	/// Enable/disable all shortcuts. There will not be any grabbed shortcuts at this point.
+	void setEnabled(bool);
 
     void keyboardLayoutChanged();
 private:

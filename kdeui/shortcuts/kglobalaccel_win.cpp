@@ -46,14 +46,14 @@ bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
 	return false;
 }
 
-void KGlobalAccelImpl::enable( )
+void KGlobalAccelImpl::setEnabled( bool enable )
 {
-//	kapp->installWinEventFilter( this );
-}
-
-void KGlobalAccelImpl::disable( )
-{
-//	kapp->removeWinEventFilter( this );
+#if 0
+	if ( enable )
+		kapp->installWinEventFilter( this );
+	else
+		kapp->removeWinEventFilter( this );
+#endif
 }
 
 #include "kglobalaccel_win.moc"

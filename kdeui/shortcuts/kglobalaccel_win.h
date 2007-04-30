@@ -50,12 +50,9 @@ public:
 	 */
 	bool grabKey(int key, bool grab);
 	
-	/// Enable all shortcuts.  There will not be any grabbed shortcuts at this point.
-	void enable();
+	/// Enable/disable all shortcuts. There will not be any grabbed shortcuts at this point.
+	void setEnabled(bool);
 
-	/// Disable all shortcuts.  There will not be any grabbed shortcuts at this point.
-	void disable();
-	
 private:
 
 	KGlobalAccel* m_owner;

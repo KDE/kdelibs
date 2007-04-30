@@ -239,15 +239,14 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 	return false;
 }
 
-void KGlobalAccelImpl::enable( )
+void KGlobalAccelImpl::setEnabled( bool enable )
 {
-	calculateGrabMasks();
-	kapp->installX11EventFilter( this );
+	if (enable) {
+		calculateGrabMasks();
+		kapp->installX11EventFilter( this );
+	} else
+		kapp->removeX11EventFilter( this );
 }
 
-void KGlobalAccelImpl::disable( )
-{
-	kapp->removeX11EventFilter( this );
-}
 
 #include "kglobalaccel_x11.moc"
