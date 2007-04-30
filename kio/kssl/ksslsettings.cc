@@ -31,7 +31,6 @@
 #include <unistd.h>
 
 #include <QtCore/QFile>
-#include <Qt3Support/Q3SortedList>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -158,7 +157,7 @@ QString KSSLSettings::getCipherList() {
         d->kossl->SSL_CTX_free(ctx);
 
 	// Remove any ADH ciphers as per RFC2246
-	for (unsigned int i = 0; i < cipherList.size(); i++) {
+	for (int i = 0; i < cipherList.size(); i++) {
                 while (cipherList.at(i).name.contains("ADH-")
                        || cipherList.at(i).name.contains("FZA-")
                        || cipherList.at(i).name.contains("NULL-")

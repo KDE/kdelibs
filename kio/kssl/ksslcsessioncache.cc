@@ -20,12 +20,11 @@
 
 #include "ksslcsessioncache.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QPair>
 #include <QtCore/QString>
-#include <Qt3Support/Q3PtrList>
 
 #include <kdebug.h>
-#include <kstaticdeleter.h>
 #include <kurl.h>
 
 #include <ksslconfig.h>
@@ -54,17 +53,20 @@ typedef QPair<QString,QString> KSSLCSession;
 typedef QList<KSSLCSession> KSSLCSessions;
 
 static KSSLCSessions *sessions = 0L;
-static KStaticDeleter<KSSLCSessions> med;
-
 
 static QString URLtoKey(const KUrl &kurl) {
     return kurl.host() + ':' + kurl.protocol() + ':' + QString::number(kurl.port());
 }
 
 
+static void cleanupKSSLCSessions() {
+    delete sessions;
+    sessions = 0;
+}
+
 static void setup() {
-    KSSLCSessions *ses = new KSSLCSessions;
-    med.setObject(sessions, ses);
+    sessions = new KSSLCSessions;
+    qAddPostRoutine(cleanupKSSLCSessions);
 }
 
 #endif
