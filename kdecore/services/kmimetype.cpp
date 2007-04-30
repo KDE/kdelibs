@@ -104,6 +104,11 @@ KMimeType::Ptr KMimeType::defaultMimeTypePtr()
     return s_pDefaultMimeType;
 }
 
+bool KMimeType::isDefault() const
+{
+    return this == defaultMimeTypePtr().data();
+}
+
 /**
  * This function makes sure that vital mime types are installed.
  */
@@ -497,6 +502,11 @@ QString KMimeType::favIconForUrl( const KUrl& url )
     return result;              // default is QString()
 }
 
+QString KMimeType::comment( const KUrl& ) const
+{
+    return KServiceType::comment();
+}
+
 QString KMimeType::parentMimeType() const
 {
     Q_D(const KMimeType);
@@ -539,7 +549,7 @@ bool KMimeType::is( const QString& mimeTypeName ) const
 }
 
 
-const QString & KMimeType::defaultMimeType()
+QString KMimeType::defaultMimeType()
 {
     static const QString & s_strDefaultMimeType =
         KGlobal::staticQString( "application/octet-stream" );
@@ -556,7 +566,7 @@ QString KMimeType::iconName( const KUrl& ) const
     return iconForMime( name() );
 }
 
-const QStringList& KMimeType::patterns() const
+QStringList KMimeType::patterns() const
 {
     Q_D(const KMimeType);
     return d->m_lstPatterns;

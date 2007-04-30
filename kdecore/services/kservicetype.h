@@ -159,7 +159,7 @@ public:
     QStringList propertyDefNames() const;
 
     /// @internal (for KBuildServiceTypeFactory)
-    const QMap<QString,QVariant::Type>& propertyDefs() const;
+    QMap<QString,QVariant::Type> propertyDefs() const;
 
     /**
      * @internal

@@ -192,62 +192,62 @@ bool KPluginInfo::isPluginEnabledByDefault() const
     return d->enabledbydefault;
 }
 
-const QString & KPluginInfo::name() const
+QString KPluginInfo::name() const
 {
     return d->name;
 }
 
-const QString & KPluginInfo::comment() const
+QString KPluginInfo::comment() const
 {
     return d->comment;
 }
 
-const QString & KPluginInfo::icon() const
+QString KPluginInfo::icon() const
 {
     return d->icon;
 }
 
-const QString & KPluginInfo::specfile() const
+QString KPluginInfo::specfile() const
 {
     return d->specfile;
 }
 
-const QString & KPluginInfo::author() const
+QString KPluginInfo::author() const
 {
     return d->author;
 }
 
-const QString & KPluginInfo::email() const
+QString KPluginInfo::email() const
 {
     return d->email;
 }
 
-const QString & KPluginInfo::category() const
+QString KPluginInfo::category() const
 {
     return d->category;
 }
 
-const QString & KPluginInfo::pluginName() const
+QString KPluginInfo::pluginName() const
 {
     return d->pluginName;
 }
 
-const QString & KPluginInfo::version() const
+QString KPluginInfo::version() const
 {
     return d->version;
 }
 
-const QString & KPluginInfo::website() const
+QString KPluginInfo::website() const
 {
     return d->website;
 }
 
-const QString & KPluginInfo::license() const
+QString KPluginInfo::license() const
 {
     return d->license;
 }
 
-const QStringList & KPluginInfo::dependencies() const
+QStringList KPluginInfo::dependencies() const
 {
     return d->dependencies;
 }
@@ -257,7 +257,7 @@ KService::Ptr KPluginInfo::service() const
     return d->service;
 }
 
-const QList<KService::Ptr> & KPluginInfo::kcmServices() const
+QList<KService::Ptr> KPluginInfo::kcmServices() const
 {
     if ( !d->kcmservicesCached )
     {
@@ -283,7 +283,7 @@ KConfig * KPluginInfo::config() const
     return d->config;
 }
 
-const QString & KPluginInfo::configgroup() const
+QString KPluginInfo::configgroup() const
 {
     return d->configgroup;
 }

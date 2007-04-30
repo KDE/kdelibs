@@ -327,7 +327,7 @@ QString KUserGroup::name() const {
 	return d->name;
 }
 
-const QList<KUser>& KUserGroup::users() const {
+QList<KUser> KUserGroup::users() const {
 	return d->users;
 }
 

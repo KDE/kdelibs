@@ -65,7 +65,7 @@ QString KAutoSaveFilePrivate::tempFileName()
     name += junk.right(3) + protocol + QLatin1Char('_');
     name += path + junk;
 
-    return QString::fromLatin1(QUrl::toPercentEncoding(name));
+    return QString::fromLatin1(KUrl::toPercentEncoding(name));
 }
 
 KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
@@ -215,8 +215,8 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
         int sepPos = file.indexOf(sep);
         int pathPos = file.indexOf(QChar::fromLatin1('_'), sepPos);
         name.setProtocol(file.mid(sepPos + 3, pathPos - sep.size() - 3));
-        name.setPath(QUrl::fromPercentEncoding(file.right(pathPos - 1).toLatin1()));
-        name.addPath(QUrl::fromPercentEncoding(file.left(sepPos).toLatin1()));
+        name.setPath(KUrl::fromPercentEncoding(file.right(pathPos - 1).toLatin1()));
+        name.addPath(KUrl::fromPercentEncoding(file.left(sepPos).toLatin1()));
 
         // sets managedFile
         asFile = new KAutoSaveFile(name);

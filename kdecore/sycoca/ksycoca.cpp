@@ -483,6 +483,11 @@ void KSycoca::flagError()
    }
 }
 
+bool KSycoca::isBuilding()
+{
+    return false;
+}
+
 void KSycoca::disableAutoRebuild()
 {
    d->autoRebuild = false;

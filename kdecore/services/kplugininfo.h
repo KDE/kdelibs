@@ -188,65 +188,65 @@ class KDECORE_EXPORT KPluginInfo
         /**
          * @return The user visible name of the plugin.
          */
-        const QString & name() const;
+        QString name() const;
 
         /**
          * @return A comment describing the plugin.
          */
-        const QString & comment() const;
+        QString comment() const;
 
         /**
          * @return The iconname for this plugin
          */
-        const QString & icon() const;
+        QString icon() const;
 
         /**
          * @return The file containing the information about the plugin.
          */
-        const QString & specfile() const;
+        QString specfile() const;
 
         /**
          * @return The author of this plugin.
          */
-        const QString & author() const;
+        QString author() const;
 
         /**
          * @return The email address of the author.
          */
-        const QString & email() const;
+        QString email() const;
 
         /**
          * @return The category of this plugin (e.g. playlist/skin).
          */
-        const QString & category() const;
+        QString category() const;
 
         /**
          * @return The internal name of the plugin (for KParts Plugins this is
          * the same name as set in the .rc file).
          */
-        const QString & pluginName() const;
+        QString pluginName() const;
 
         /**
          * @return The version of the plugin.
          */
-        const QString & version() const;
+        QString version() const;
 
         /**
          * @return The website of the plugin/author.
          */
-        const QString & website() const;
+        QString website() const;
 
 
         /**
          * @return The license of this plugin.
          */
-        const QString & license() const;
+        QString license() const;
 
         /**
          * @return A list of plugins required for this plugin to be enabled. Use
          *         the pluginName in this list.
          */
-        const QStringList & dependencies() const;
+        QStringList dependencies() const;
 
         /**
          * @return The KService object for this plugin. You might need it if you
@@ -263,7 +263,7 @@ class KDECORE_EXPORT KPluginInfo
          * @return A list of Service pointers if the plugin installs one or more
          *         KCModule
          */
-        const QList<KService::Ptr> & kcmServices() const;
+        QList<KService::Ptr> kcmServices() const;
 
         /**
          * Set the KConfigGroup to use for load()ing and save()ing the
@@ -282,7 +282,7 @@ class KDECORE_EXPORT KPluginInfo
          * @return The groupname used in the KConfig object for load()ing and
          * save()ing whether the plugin is enabled.
          */
-        const QString & configgroup() const;
+        QString configgroup() const;
 
         /**
          * Save state of the plugin - enabled or not. This function is provided

@@ -165,6 +165,21 @@ bool KJob::resume()
     return false;
 }
 
+bool KJob::doKill()
+{
+    return false;
+}
+
+bool KJob::doSuspend()
+{
+    return false;
+}
+
+bool KJob::doResume()
+{
+    return false;
+}
+
 void KJob::setCapabilities( KJob::Capabilities capabilities )
 {
     d->capabilities = capabilities;

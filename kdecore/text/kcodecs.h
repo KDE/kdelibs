@@ -398,7 +398,7 @@ public:
   /**
    * @return the raw representation of the digest
    */
-  const Digest& rawDigest ();
+  const Digest& rawDigest (); //krazy:exclude=constref (simple array)
 
   /**
    * Fills the given array with the binary representation of the

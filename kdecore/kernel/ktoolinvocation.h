@@ -29,6 +29,7 @@
 
 class OrgKdeKLauncherInterface;
 class KUrl;
+class KToolInvocationPrivate;
 
 /**
  * KToolInvocation: for starting other programs
@@ -346,6 +347,8 @@ private:
                            QString *error, QString *serviceName, int *pid,
                            const QByteArray& startup_id, bool noWait);
   static bool isMainThreadActive(QString* error = 0);
+
+  KToolInvocationPrivate * const d;
 };
 
 #endif

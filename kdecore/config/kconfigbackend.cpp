@@ -94,6 +94,26 @@ void KConfigBackEnd::changeFileName(const QString &_fileName,
     }
 }
 
+KConfigBase::ConfigState KConfigBackEnd::getConfigState() const
+{
+    return mConfigState;
+}
+
+QString KConfigBackEnd::fileName() const
+{
+    return mfileName;
+}
+
+const char * KConfigBackEnd::resource() const
+{
+    return resType;
+}
+
+void KConfigBackEnd::setLocaleString(const QByteArray &_localeString)
+{
+    localeString = _localeString;
+}
+
 QStringList KConfigBackEnd::extraConfigFiles() const
 {
     return mMergeStack.toList();

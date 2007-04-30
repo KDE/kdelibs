@@ -106,14 +106,14 @@ public:
      *
      * @return The descriptive comment associated with the MIME type, if any.
      */
-    virtual QString comment( const KUrl& = KUrl() ) const { return KServiceType::comment(); }
+    virtual QString comment( const KUrl& url = KUrl() ) const;
 
     /**
      * Retrieve the list of patterns associated with the MIME Type.
      * @return a list of file globs that describe the file names
      *         (or, usually, the extensions) of files with this mime type
      */
-    const QStringList& patterns() const;
+    QStringList patterns() const;
 
     /**
      * Load the mimetype from a stream.
@@ -307,7 +307,7 @@ public:
      * @return the name of the default mime type, always
      *         "application/octet-stream"
      */
-    static const QString & defaultMimeType();
+    static QString defaultMimeType();
 
     /**
      * Returns the default mimetype.
@@ -318,7 +318,7 @@ public:
     static KMimeType::Ptr defaultMimeTypePtr();
 
     /// Return true if this mimetype is the default mimetype
-    bool isDefault() const { return this == defaultMimeTypePtr().data(); }
+    bool isDefault() const;
 
     /**
      * If this mimetype inherits from ("is also") another mimetype,

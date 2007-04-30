@@ -92,8 +92,8 @@ public:
       * groups.
     */
     void changeGroup( const char *group );
-    void changeGroup( const QString &group ) { changeGroup(group.toLatin1()); }
-    void changeGroup( const QByteArray &group) { changeGroup(group.data()); }
+    void changeGroup( const QString &group );
+    void changeGroup( const QByteArray &group);
 
     bool hasKey(const char* key) const;
 
@@ -210,8 +210,7 @@ public:
      * @copydoc readEntry(const char*, const QStringList&, char) const
      */
     QStringList readEntry(const QString& pKey, const QStringList& aDefault,
-                          char sep=',') const
-    { return readEntry(pKey.toUtf8().constData(), aDefault, sep); }
+                          char sep=',') const;
 
     /**
      * Reads a path.
@@ -341,8 +340,7 @@ public:
      */
     void writeEntry( const QString& pKey, const QStringList &value,
                      char sep = ',',
-                     WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey.toUtf8().constData(), value, sep, pFlags ); }
+                     WriteConfigFlags pFlags = Normal );
 
     /**
      * writeEntry() overridden to accept a list of strings.
@@ -376,8 +374,7 @@ public:
      * @copydoc writeEntry(const char*, const QList<T>&, WriteConfigFlags)
      */
     void writeEntry( const char* pKey, const QVariantList& value,
-                     WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey, QVariant(value), pFlags ); }
+                     WriteConfigFlags pFlags = Normal );
 
     /**
      * Write a (key/value) pair where the value is a const char*.
@@ -390,8 +387,7 @@ public:
      *  @param pFlags       The flags to use when writing this entry.
      */
     void writeEntry( const char *pKey, const char *value,
-                     WriteConfigFlags pFlags = Normal )
-    { writeEntry(pKey, QString::fromLatin1(value), pFlags); }
+                     WriteConfigFlags pFlags = Normal );
 
     /**
      * Write a (key/value) pair where the value is a QByteArray.
@@ -407,8 +403,7 @@ public:
      * @param pFlags       The flags to use when writing this entry.
      */
     void writeEntry( const char *pKey, const QByteArray& value,
-                     WriteConfigFlags pFlags = Normal )
-    { writeEntry(pKey, QString::fromLatin1(value, value.size()), pFlags); }
+                     WriteConfigFlags pFlags = Normal );
 
     /**
      * Writes a file path.

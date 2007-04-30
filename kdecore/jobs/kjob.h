@@ -167,21 +167,21 @@ protected:
      *
      * @return true if the operation is supported and succeeded, false otherwise
      */
-    virtual bool doKill() { return false; }
+    virtual bool doKill();
 
     /**
      * Suspends this job.
      *
      * @return true if the operation is supported and succeeded, false otherwise
      */
-    virtual bool doSuspend() { return false; }
+    virtual bool doSuspend();
 
     /**
      * Resumes this job.
      *
      * @return true if the operation is supported and succeeded, false otherwise
      */
-    virtual bool doResume() { return false; }
+    virtual bool doResume();
 
     /**
      * Sets the capabilities for this job.

@@ -99,7 +99,7 @@ public:
    */
   virtual ~KConfigBase();
 
-  const KComponentData &componentData() const;
+  const KComponentData &componentData() const; //krazy:exclude=constref
 
   /**
    * Specifies the group in which keys will be read and written.
@@ -722,8 +722,7 @@ public:
    */
   KDE_DEPRECATED void writeEntry( const QString& pKey, const Q3StrList &value,
                                   char sep = ',', bool bPersistent = true,
-                                  bool bGlobal = false, bool bNLS = false )
-    { writeEntry(pKey.toUtf8().constData(), value, sep, bPersistent, bGlobal, bNLS); }
+                                  bool bGlobal = false, bool bNLS = false );
 
   /**
    * writeEntry() overridden to accept a list of strings.
@@ -759,8 +758,7 @@ public:
    */
   KDE_DEPRECATED  void writeEntry( const QString& pKey, const QStringList &value,
 		   char sep = ',',
-                   WriteConfigFlags pFlags = Normal )
-    { writeEntry( pKey.toUtf8().constData(), value, sep, pFlags ); }
+                   WriteConfigFlags pFlags = Normal );
 
   /**
    * writeEntry() overridden to accept a list of strings.

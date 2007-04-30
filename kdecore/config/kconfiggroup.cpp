@@ -145,6 +145,16 @@ void KConfigGroup::changeGroup(char const* group)
     }
 }
 
+void KConfigGroup::changeGroup( const QString &group )
+{
+    changeGroup(group.toLatin1());
+}
+
+void KConfigGroup::changeGroup( const QByteArray &group)
+{
+    changeGroup(group.data());
+}
+
 QString KConfigGroup::group() const
 {
     return d->group;
@@ -627,6 +637,12 @@ QStringList KConfigGroup::readEntry(const char* pKey, const QStringList& aDefaul
   return list;
 }
 
+QStringList KConfigGroup::readEntry(const QString& pKey, const QStringList& aDefault,
+                          char sep) const
+{
+    return readEntry(pKey.toUtf8().constData(), aDefault, sep);
+}
+
 QString KConfigGroup::readPathEntry( const QString& pKey, const QString& pDefault ) const
 {
   return readPathEntry(pKey.toUtf8().constData(), pDefault);
@@ -685,6 +701,31 @@ void KConfigGroup::writeEntry( const char *pKey, const QString& value,
 
     // rewrite the new value
     putData(entryKey, aEntryData, true);
+}
+
+void KConfigGroup::writeEntry( const QString& pKey, const QStringList &value,
+                 char sep,
+                 WriteConfigFlags pFlags )
+{
+    writeEntry( pKey.toUtf8().constData(), value, sep, pFlags );
+}
+
+void KConfigGroup::writeEntry( const char* pKey,
+        const QVariantList& value, WriteConfigFlags pFlags )
+{
+    writeEntry( pKey, QVariant(value), pFlags );
+}
+
+void KConfigGroup::writeEntry( const char *pKey, const char *value,
+                     WriteConfigFlags pFlags )
+{
+    writeEntry(pKey, QString::fromLatin1(value), pFlags);
+}
+
+void KConfigGroup::writeEntry( const char *pKey, const QByteArray& value,
+                     WriteConfigFlags pFlags )
+{
+    writeEntry(pKey, QString::fromLatin1(value, value.size()), pFlags);
 }
 
 void KConfigGroup::writePathEntry( const QString& pKey, const QString & path,

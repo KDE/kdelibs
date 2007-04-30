@@ -445,6 +445,13 @@ bool KConfigBase::localeInitialized() const
 }
 
 #ifdef KDE3_SUPPORT
+void KConfigBase::writeEntry( const QString& pKey, const Q3StrList &value,
+                 char sep, bool bPersistent,
+                 bool bGlobal, bool bNLS )
+{
+    writeEntry(pKey.toUtf8().constData(), value, sep, bPersistent, bGlobal, bNLS);
+}
+
 void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
                                char sep , bool bPersistent,
                                bool bGlobal, bool bNLS )
@@ -482,6 +489,12 @@ void KConfigBase::writeEntry ( const char *pKey, const Q3StrList &list,
   writeEntry( pKey, str_list, flags );
 }
 #endif
+
+void KConfigBase::writeEntry( const QString& pKey, const QStringList &value,
+		 char sep, WriteConfigFlags pFlags )
+{
+    writeEntry( pKey.toUtf8().constData(), value, sep, pFlags );
+}
 
 void KConfigBase::writeEntry ( const char *pKey, const QStringList &list,
                                char sep , WriteConfigFlags pFlags )

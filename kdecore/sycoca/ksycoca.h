@@ -139,7 +139,7 @@ public:
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);
     */
-   virtual bool isBuilding() { return false; }
+   virtual bool isBuilding();
 
    /**
     * @internal - disables launching of kbuildsycoca

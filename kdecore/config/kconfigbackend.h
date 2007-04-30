@@ -111,27 +111,26 @@ public:
    *
    * @see KConfig::getConfigState
    */
-  virtual KConfigBase::ConfigState getConfigState() const
-    { return mConfigState; }
+  virtual KConfigBase::ConfigState getConfigState() const;
 
   /**
    * Returns the filename as passed to the constructor.
    * @return the filename as passed to the constructor.
    */
-  QString fileName() const { return mfileName; }
+  QString fileName() const;
 
   /**
    * Returns the resource type as passed to the constructor.
    * @return the resource type as passed to the constructor.
    */
-  const char * resource() const { return resType; }
+  const char * resource() const;
 
   /**
    * Set the locale string that defines the current language.
    * @param _localeString the identifier of the language
    * @see KLocale
    */
-  void setLocaleString(const QByteArray &_localeString) { localeString = _localeString; }
+  void setLocaleString(const QByteArray &_localeString);
 
   /**
    * Set the file mode for newly created files.

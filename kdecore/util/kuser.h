@@ -336,7 +336,7 @@ public:
    * Returns a list of all users of the group.
    * @return a list of all users of the group
    */
-  const QList<KUser>& users() const;
+  QList<KUser> users() const;
 
   /**
    * Returns a list of all user login names of the group.

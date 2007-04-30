@@ -286,7 +286,7 @@ bool KServiceType::isValid() const
     return d->m_bValid;
 }
 
-const QMap<QString,QVariant::Type>& KServiceType::propertyDefs() const
+QMap<QString,QVariant::Type> KServiceType::propertyDefs() const
 {
     Q_D(const KServiceType);
     return d->m_mapPropDefs;
