@@ -22,14 +22,11 @@
 #ifndef _KWALLET_H
 #define _KWALLET_H
 
-#include <QtCore/QBool>
-
-#include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QObject>
-#include <QtGui/QWidgetList>
+#include <QtGui/qwindowdefs.h> // for WId
 
-#include <kwallet_export.h>
+#include <kdeui_export.h>
 
 class OrgKdeKWalletInterface;
 
@@ -44,7 +41,7 @@ namespace KWallet {
  * @author George Staikos <staikos@kde.org>
  * @short KDE Wallet Class
  */
-class KWALLETCLIENT_EXPORT Wallet : public QObject
+class KDEUI_EXPORT Wallet : public QObject
 {
 	Q_OBJECT
 	protected:

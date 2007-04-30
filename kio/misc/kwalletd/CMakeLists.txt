@@ -24,7 +24,8 @@ kde4_add_ui_files(kded_kwalletd_PART_SRCS
 
 kde4_add_plugin(kded_kwalletd ${kded_kwalletd_PART_SRCS})
 
-target_link_libraries(kded_kwalletd  ${KDE4_KDECORE_LIBS} kio kwalletbackend kwalletclient )
+# uses kio for KDirWatch
+target_link_libraries(kded_kwalletd  ${KDE4_KIO_LIBS} kwalletbackend )
 
 install(TARGETS kded_kwalletd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

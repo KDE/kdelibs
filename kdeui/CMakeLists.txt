@@ -144,6 +144,7 @@ set(kdeui_LIB_SRCS
  util/kstandardguiitem.cpp
  util/ksvgrenderer.cpp
  util/ksystemtrayicon.cpp
+ util/kwallet.cpp
  util/kwhatsthismanager.cpp
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
@@ -240,6 +241,16 @@ set( kdeui_UI
    )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
+
+set(kwallet_adaptor ${CMAKE_SOURCE_DIR}/kio/misc/kwalletd/kwalletdadaptor.h)
+set(kwallet_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml)
+ADD_CUSTOM_COMMAND(OUTPUT ${kwallet_xml}
+       COMMAND ${QT_DBUSCPP2XML_EXECUTABLE} ${kwallet_adaptor} > ${kwallet_xml}
+       DEPENDS ${kwallet_adaptor})
+QT4_ADD_DBUS_INTERFACE( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
+
+# I tried this, with the custom command in kwalletd, didn't work
+#QT4_ADD_DBUS_INTERFACE( kdeui_LIB_SRCS ${CMAKE_CURRENT_BINARY_DIR}/../kio/misc/kwalletd/org.kde.KWallet.xml kwallet_interface )
 
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServer.xml )
 qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServerCallbacks.xml kuiserverjobtracker_p.h KSharedUiServerProxy uiservercallbacks )
@@ -363,6 +374,7 @@ install( FILES
  util/kstandardguiitem.h
  util/ksvgrenderer.h
  util/ksystemtrayicon.h
+ util/kwallet.h
  util/kwordwrap.h
  util/kxerrorhandler.h
  util/kxmessages.h

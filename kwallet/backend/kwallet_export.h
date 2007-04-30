@@ -26,16 +26,6 @@
 /* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
 #if defined _WIN32 || defined _WIN64
 
-#ifndef KWALLETCLIENT_EXPORT
-# if defined(MAKE_KWALLETCLIENT_LIB)
-   /* We are building this library */ 
-#  define KWALLETCLIENT_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */ 
-#  define KWALLETCLIENT_EXPORT KDE_IMPORT
-# endif
-#endif
-
 #ifndef KWALLETBACKEND_EXPORT
 # if defined(MAKE_KWALLETBACKEND_LIB)
    /* We are building this library */
@@ -48,7 +38,6 @@
 
 #else /* UNIX */
 
-#define KWALLETCLIENT_EXPORT KDE_EXPORT
 #define KWALLETBACKEND_EXPORT KDE_EXPORT
 
 #endif

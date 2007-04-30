@@ -107,7 +107,7 @@ class Wallet::WalletPrivate
 {
 public:
     WalletPrivate(int h, const QString &n)
-     : handle(h), name(n)
+     : name(n), handle(h)
     {}
     QString name;
     QString folder;

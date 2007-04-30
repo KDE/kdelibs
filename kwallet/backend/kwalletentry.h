@@ -16,7 +16,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
- */ 
+ */
 
 
 #ifndef _KWALLETENTRY_H
@@ -25,6 +25,7 @@
 #include <QtCore/QString>
 #include <QtCore/QDataStream>
 
+#include "kwallet_export.h"
 #include "kwallet.h"
 
 namespace KWallet {
@@ -35,7 +36,7 @@ class KWALLETBACKEND_EXPORT Entry {
 	public:
 		Entry();
 		~Entry();
-		
+
 		const QString& key() const;
 		const QByteArray& value() const;
 		QString password() const;
