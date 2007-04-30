@@ -101,30 +101,37 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
     KJS::List args = convertArguments(exec, _a);
     KJS::Identifier id = KJS::Identifier( KJS::UString(methodName.data()));
     KJS::JSObject *fun = m_object->get(exec, id )->toObject( exec );
+    KJS::JSValue *retValue;
     if ( !fun->implementsCall() )
     {
-    // We need to create an exception here...
+        QString msg = i18n( "Bad slot handler: Object %1 Identifier %2 Method %3 Signature: %4.",
+                            m_object->className().ascii(),
+                            id.ascii(),
+                            methodName.data(),
+                            QString(m_signature));
+        
+        retValue = throwError(exec, KJS::TypeError, msg);
     }
-
-    KJS::JSValue *retValue = fun->call(exec, m_object, args);
-
+    else
+        retValue = fun->call(exec, m_object, args);
+    
     if( exec->hadException() )
     {
         if (m_interpreter->shouldPrintExceptions())
         {
             KJS::JSLock lock;
-            KJS::JSObject* exceptObj = retValue->toObject(exec);
+            KJS::JSObject* exceptObj = exec->exception()->toObject(exec);//retValue->toObject(exec);
             QString message = toQString(exceptObj->toString(exec));
             QString sourceURL = toQString(exceptObj->get(exec, "sourceURL")->toString(exec));
             int sourceId = exceptObj->get(exec, "sourceId")->toUInt32(exec);
             // would include the line number, but it's always last line of file
-            //int line = exceptObj->get(exec, "line")->toUInt32(exec);
-            (*KJSEmbed::conerr()) << i18n("Exception calling '%1' slot from %2:%3", QString(methodName), !sourceURL.isEmpty() ? sourceURL : QString::number(sourceId), message) << endl;
-
-            // clear it so it doesn't stop other things
-            exec->clearException();
+            int line = exceptObj->get(exec, "line")->toUInt32(exec);
+            (*KJSEmbed::conerr()) << i18n("Exception calling '%1' slot from %2:%3:%4", QString(methodName), !sourceURL.isEmpty() ? sourceURL : QString::number(sourceId), line, message) << endl;
         }
 
+        // clear it so it doesn't stop other things
+        exec->clearException();
+        
         return KJS::jsNull();
     }
     else

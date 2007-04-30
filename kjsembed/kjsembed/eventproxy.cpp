@@ -99,6 +99,7 @@ bool EventProxy::callHandler( QEvent *e )
     KJS::JSObject *jsobj(m_watch);
     KJS::JSObject *fun = jsobj->get(exec, id )->toObject( exec );
 
+    KJS::JSValue *retValue;
     if ( !fun->implementsCall() )
     {
         QString msg = i18n( "Bad event handler: Object %1 Identifier %2 Method %3 Type: %4.",
@@ -106,21 +107,35 @@ bool EventProxy::callHandler( QEvent *e )
           id.ascii(),
           fun->className().ascii(),
           e->type());
-        throwError(exec, KJS::TypeError, msg);
-        return false;
+        retValue = throwError(exec, KJS::TypeError, msg);
     }
-
-    // Process args
-    KJS::List args;
-    args.append( JSEventUtils::event(exec, e) );
-
-    // Call handler
-    fun->call( exec, jsobj, args );
-
-    if ( exec->hadException() ) {
-    //TODO ext the script here with the error
-      exec->clearException();
-      return false;
+    else
+    {
+        // Process args
+        KJS::List args;
+        args.append( JSEventUtils::event(exec, e) );
+        
+        // Call handler
+        retValue = fun->call( exec, jsobj, args );
+    }
+    
+    if ( exec->hadException() ) 
+    {
+        if (m_interpreter->shouldPrintExceptions())
+        {
+            KJS::JSLock lock;
+            KJS::JSObject* exceptObj = retValue->toObject(exec);
+            QString message = toQString(exceptObj->toString(exec));
+            QString sourceURL = toQString(exceptObj->get(exec, "sourceURL")->toString(exec));
+            int sourceId = exceptObj->get(exec, "sourceId")->toUInt32(exec);
+            int line = exceptObj->get(exec, "line")->toUInt32(exec);
+            (*KJSEmbed::conerr()) << i18n("Exception calling '%1' function from %2:%3:%4", id.ascii(), !sourceURL.isEmpty() ? sourceURL : QString::number(sourceId), line, message) << endl;
+        }
+        
+        
+        // clear it so it doesn't stop other things
+        exec->clearException();
+        return false;
     }
   
     return true;
