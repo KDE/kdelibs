@@ -542,7 +542,7 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         }
 
         if ( !p->hasSimpleType() ) {
-            includes.append( QString( "#include \"%1.h\"\n" ).arg( p->type.toLower() ) );
+            includes.append( QString( "#include \"%1.h\"\n" ).arg( p->typeString( true, false ).toLower() ) );
         }
 
         ms << p->getterDefinition( this ) << endl
