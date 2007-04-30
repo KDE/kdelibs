@@ -58,16 +58,16 @@ void KStandardShortcutTest::testFindStdAccel()
 void KStandardShortcutTest::testRemoveShortcut()
 {
     KShortcut cutShortCut = KStandardShortcut::shortcut( KStandardShortcut::Cut );
-    cutShortCut.removeAll( Qt::SHIFT + Qt::Key_Delete );
-    cutShortCut.removeAll( Qt::CTRL + Qt::Key_X );
+    cutShortCut.remove( Qt::SHIFT + Qt::Key_Delete, KShortcut::KeepEmpty );
+    cutShortCut.remove( Qt::CTRL + Qt::Key_X, KShortcut::KeepEmpty );
     //qDebug( "%s", qPrintable( cutShortCut.toString() ) );
     QVERIFY( cutShortCut.isEmpty() );
 
     cutShortCut = KStandardShortcut::shortcut( KStandardShortcut::Cut );
-	//remove primary shortcut. We expect the alternate to become primary.
-    cutShortCut.removeAll( Qt::CTRL + Qt::Key_X );
-	QVERIFY( cutShortCut.primary() == QKeySequence(Qt::SHIFT + Qt::Key_Delete) );
-	QVERIFY( cutShortCut.alternate().isEmpty() );
+    //remove primary shortcut. We expect the alternate to become primary.
+    cutShortCut.remove( Qt::CTRL + Qt::Key_X, KShortcut::RemoveEmpty );
+    QVERIFY( cutShortCut.primary() == QKeySequence(Qt::SHIFT + Qt::Key_Delete) );
+    QVERIFY( cutShortCut.alternate().isEmpty() );
 }
 
 void KStandardShortcutTest::testKShortcut()
