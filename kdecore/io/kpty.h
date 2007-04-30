@@ -2,7 +2,7 @@
 
     Copyright (C) 1997-2002 The Konsole Developers
     Copyright (C) 2002 Waldo Bastian <bastian@kde.org>
-    Copyright (C) 2002-2003 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (C) 2002-2003,2007 Oswald Buddenhagen <ossi@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -62,6 +62,20 @@ public:
    * Close the pty master/slave pair.
    */
   void close();
+
+  /**
+   * Close the pty slave descriptor.
+   *
+   * When creating the pty, KPty also opens the slave and keeps it open.
+   * Consequently the master will never receive an EOF notification.
+   * Usually this is the desired behavior, as a closed pty slave can be
+   * reopened any time - unlike a pipe or socket. However, in some cases
+   * pipe-alike behavior might be desired.
+   *
+   * After this function was called, slaveFd() and setCTty() cannot be
+   * used.
+   */
+  void closeSlave();
 
   /**
    * Creates a new session and process group and makes this pty the
@@ -129,7 +143,7 @@ public:
   /**
    * @return the file descriptor of the slave pty
    *
-   * This function should be called only while the pty is open.
+   * This function should be called only while the pty slave is open.
    */
   int slaveFd() const;
 

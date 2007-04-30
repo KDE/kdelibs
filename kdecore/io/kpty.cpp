@@ -3,7 +3,7 @@
    This file is part of the KDE libraries
    Copyright (C) 1997-2002 The Konsole Developers
    Copyright (C) 2002 Waldo Bastian <bastian@kde.org>
-   Copyright (C) 2002-2003 Oswald Buddenhagen <ossi@kde.org>
+   Copyright (C) 2002-2003,2007 Oswald Buddenhagen <ossi@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -125,7 +125,7 @@ extern "C" {
 #endif
 
 #include <kdebug.h>
-#include <kstandarddirs.h>	// locate
+#include <kstandarddirs.h>	// findExe
 
 #include <QtCore/Q_PID>
 
@@ -343,10 +343,19 @@ bool KPty::open()
   return true;
 }
 
+void KPty::closeSlave()
+{
+    if (d->slaveFd < 0)
+        return;
+    ::close(d->slaveFd);
+    d->slaveFd = -1;
+}
+
 void KPty::close()
 {
    if (d->masterFd < 0)
       return;
+   closeSlave();
    // don't bother resetting unix98 pty, it will go away after closing master anyway.
    if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
       if (!geteuid()) {
@@ -354,15 +363,14 @@ void KPty::close()
          if (!stat(d->ttyName.data(), &st)) {
             chown(d->ttyName.data(), 0, st.st_gid == getgid() ? 0 : -1);
             chmod(d->ttyName.data(), S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
-	 }
+         }
       } else {
          fcntl(d->masterFd, F_SETFD, 0);
          chownpty(false);
       }
    }
-   ::close(d->slaveFd);
    ::close(d->masterFd);
-   d->masterFd = d->slaveFd = -1;
+   d->masterFd = -1;
 }
 
 void KPty::setCTty()
@@ -384,7 +392,7 @@ void KPty::setCTty()
     // make our new process group the foreground group on the pty
     int pgrp = getpid();
 #if defined(_POSIX_VERSION) || defined(__svr4__)
-    tcsetpgrp (d->slaveFd, pgrp);
+    tcsetpgrp(d->slaveFd, pgrp);
 #elif defined(TIOCSPGRP)
     ioctl(d->slaveFd, TIOCSPGRP, (char *)&pgrp);
 #endif
