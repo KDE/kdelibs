@@ -290,7 +290,6 @@ void SolidHwTest::testDeviceInterfaceIntrospection_data()
     QTest::newRow("DeviceInterface: AcAdapter") << "AcAdapter" << (int)Solid::DeviceInterface::AcAdapter;
     QTest::newRow("DeviceInterface: Battery") << "Battery" << (int)Solid::DeviceInterface::Battery;
     QTest::newRow("DeviceInterface: Button") << "Button" << (int)Solid::DeviceInterface::Button;
-    QTest::newRow("DeviceInterface: Display") << "Display" << (int)Solid::DeviceInterface::Display;
     QTest::newRow("DeviceInterface: AudioHw") << "AudioHw" << (int)Solid::DeviceInterface::AudioHw;
 }
 

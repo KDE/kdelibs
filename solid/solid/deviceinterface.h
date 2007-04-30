@@ -58,15 +58,13 @@ namespace Solid
          * - Camera : A digital camera
          * - PortableMediaPlayer: A portable media player
          * - NetworkHw: A network interface
-         * - Display : A video display
          */
         enum Type { Unknown = 0, GenericInterface = 1, Processor = 2,
                     Block = 3, StorageDrive = 4, OpticalDrive = 5,
                     StorageVolume = 6, OpticalDisc = 7,
                     Camera = 8, PortableMediaPlayer = 9,
                     NetworkHw = 10, AcAdapter = 11, Battery = 12,
-                    Button = 13, Display = 14, AudioHw = 15,
-                    DvbHw = 16 };
+                    Button = 13, AudioHw = 14, DvbHw = 15 };
 
         /**
          * Destroys a DeviceInterface object.

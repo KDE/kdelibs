@@ -616,14 +616,4 @@
 
 
 
-
-        <!-- TODO: Probably needs more work... -->
-        <device udi="/org/kde/solid/fakehw/display0">
-            <property key="name">Display #0</property>
-            <property key="vendor">Acme Corporation</property>
-            <property key="interfaces">Display</property>
-            <property key="parent">/org/kde/solid/fakehw/computer</property>
-            <property key="type">lcd</property>
-            <property key="lcdBrightness">50</property>
-        </device>
 </machine>

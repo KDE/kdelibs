@@ -41,7 +41,6 @@
 #include "backends/hal/halacadapter.h"
 #include "backends/hal/halbattery.h"
 #include "backends/hal/halbutton.h"
-#include "backends/hal/haldisplay.h"
 #include "backends/hal/halaudiohw.h"
 #include "backends/hal/haldvbhw.h"
 
@@ -319,9 +318,6 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         break;
     case Solid::DeviceInterface::Button:
         iface = new Button(this);
-        break;
-    case Solid::DeviceInterface::Display:
-        iface = new Display(this);
         break;
     case Solid::DeviceInterface::AudioHw:
         iface = new AudioHw(this);

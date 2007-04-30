@@ -22,7 +22,6 @@ set(solid_LIB_SRCS
    acadapter.cpp 
    battery.cpp 
    button.cpp
-   display.cpp 
    audiohw.cpp 
    dvbhw.cpp
    predicate.cpp 
@@ -42,7 +41,6 @@ set(solid_LIB_SRCS
    ifaces/device.cpp
    ifaces/deviceinterface.cpp
    ifaces/devicemanager.cpp
-   ifaces/display.cpp
    ifaces/dvbhw.cpp
    ifaces/genericinterface.cpp
    ifaces/networkhw.cpp
@@ -60,7 +58,6 @@ set(solid_LIB_SRCS
    backends/hal/halcamera.cpp
    backends/hal/halcdrom.cpp
    backends/hal/haldeviceinterface.cpp
-   backends/hal/haldisplay.cpp
    backends/hal/haldvbhw.cpp
    backends/hal/halgenericinterface.cpp
    backends/hal/halcalljob.cpp
@@ -82,7 +79,6 @@ set(solid_LIB_SRCS
    backends/fakehw/fakecdrom.cpp
    backends/fakehw/fakedevice.cpp
    backends/fakehw/fakedeviceinterface.cpp
-   backends/fakehw/fakedisplay.cpp
    backends/fakehw/fakedvbhw.cpp
    backends/fakehw/fakegenericinterface.cpp
    backends/fakehw/fakejob.cpp
@@ -119,7 +115,7 @@ target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 ########### install files ###############
 
-install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h audiohw.h dvbhw.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

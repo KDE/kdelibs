@@ -84,9 +84,6 @@ public:
         case Solid::DeviceInterface::Button:
             list << "button";
             break;
-        case Solid::DeviceInterface::Display:
-            list << "display_device";
-            break;
         case Solid::DeviceInterface::AudioHw:
             list << "alsa" << "oss";
             break;
@@ -126,8 +123,6 @@ public:
             return Solid::DeviceInterface::Battery;
         else if (capability == "button")
             return Solid::DeviceInterface::Button;
-        else if (capability == "display_device")
-            return Solid::DeviceInterface::Display;
         else if (capability == "alsa" || capability == "oss")
             return Solid::DeviceInterface::AudioHw;
         else if (capability == "dvb")
