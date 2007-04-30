@@ -20,15 +20,15 @@
 #ifndef SOLID_CDROM_P_H
 #define SOLID_CDROM_P_H
 
-#include "storage_p.h"
+#include "storagedrive_p.h"
 
 namespace Solid
 {
-    class CdromPrivate : public StoragePrivate
+    class CdromPrivate : public StorageDrivePrivate
     {
     public:
         CdromPrivate()
-            : StoragePrivate() { }
+            : StorageDrivePrivate() { }
     };
 }
 

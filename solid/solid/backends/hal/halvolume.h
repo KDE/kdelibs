@@ -20,13 +20,13 @@
 #ifndef VOLUME_H
 #define VOLUME_H
 
-#include "solid/ifaces/volume.h"
+#include "solid/ifaces/storagevolume.h"
 #include "solid/backends/hal/halblock.h"
 
-class Volume : public Block, virtual public Solid::Ifaces::Volume
+class Volume : public Block, virtual public Solid::Ifaces::StorageVolume
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Volume)
+    Q_INTERFACES(Solid::Ifaces::StorageVolume)
 
 public:
     Volume(HalDevice *device);
@@ -35,7 +35,7 @@ public:
     virtual bool isIgnored() const;
     virtual bool isMounted() const;
     virtual QString mountPoint() const;
-    virtual Solid::Volume::UsageType usage() const;
+    virtual Solid::StorageVolume::UsageType usage() const;
     virtual QString fsType() const;
     virtual QString label() const;
     virtual QString uuid() const;

@@ -24,7 +24,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/storage.h>
+#include <solid/storagedrive.h>
 
 namespace Solid
 {
@@ -35,7 +35,7 @@ namespace Solid
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class SOLID_EXPORT Cdrom : public Storage
+    class SOLID_EXPORT Cdrom : public StorageDrive
     {
         Q_OBJECT
         Q_ENUMS(MediumType)

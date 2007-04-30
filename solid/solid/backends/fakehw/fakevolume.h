@@ -21,12 +21,12 @@
 #define FAKEVOLUME_H
 
 #include "fakeblock.h"
-#include <solid/ifaces/volume.h>
+#include <solid/ifaces/storagevolume.h>
 
-class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::Volume
+class FakeVolume : public FakeBlock, virtual public Solid::Ifaces::StorageVolume
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Volume)
+    Q_INTERFACES(Solid::Ifaces::StorageVolume)
 
 public:
     explicit FakeVolume(FakeDevice *device);
@@ -36,7 +36,7 @@ public Q_SLOTS:
     virtual bool isIgnored() const;
     virtual bool isMounted() const;
     virtual QString mountPoint() const;
-    virtual Solid::Volume::UsageType usage() const;
+    virtual Solid::StorageVolume::UsageType usage() const;
     virtual QString fsType() const;
     virtual QString label() const;
     virtual QString uuid() const;

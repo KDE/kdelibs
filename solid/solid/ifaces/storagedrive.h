@@ -21,7 +21,7 @@
 #define SOLID_IFACES_STORAGE_H
 
 #include <solid/ifaces/block.h>
-#include <solid/storage.h>
+#include <solid/storagedrive.h>
 
 namespace Solid
 {
@@ -33,13 +33,13 @@ namespace Ifaces
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class Storage : virtual public Block
+    class StorageDrive : virtual public Block
     {
     public:
         /**
-         * Destroys a Storage object.
+         * Destroys a StorageDrive object.
          */
-        virtual ~Storage();
+        virtual ~StorageDrive();
 
 
         /**
@@ -47,17 +47,17 @@ namespace Ifaces
          * connected to.
          *
          * @return the bus type
-         * @see Solid::Storage::Bus
+         * @see Solid::StorageDrive::Bus
          */
-        virtual Solid::Storage::Bus bus() const = 0;
+        virtual Solid::StorageDrive::Bus bus() const = 0;
 
         /**
          * Retrieves the type of this storage drive.
          *
          * @return the drive type
-         * @see Solid::Storage::DriveType
+         * @see Solid::StorageDrive::DriveType
          */
-        virtual Solid::Storage::DriveType driveType() const = 0;
+        virtual Solid::StorageDrive::DriveType driveType() const = 0;
 
 
         /**
@@ -114,6 +114,6 @@ namespace Ifaces
 }
 }
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::Storage, "org.kde.Solid.Ifaces.Storage/0.1")
+Q_DECLARE_INTERFACE(Solid::Ifaces::StorageDrive, "org.kde.Solid.Ifaces.StorageDrive/0.1")
 
 #endif

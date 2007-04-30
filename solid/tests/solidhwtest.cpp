@@ -28,7 +28,7 @@
 #include <solid/device.h>
 #include <solid/genericinterface.h>
 #include <solid/processor.h>
-#include <solid/volume.h>
+#include <solid/storagevolume.h>
 #include <solid/predicate.h>
 #include "solid/managerbase_p.h"
 
@@ -106,12 +106,12 @@ void SolidHwTest::testDeviceBasicFeatures()
 
 
     // Query device interfaces
-    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Storage), true);
+    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageDrive), true);
     QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Cdrom), true);
-    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Volume), false);
+    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageVolume), false);
 
     QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::Unknown), false);
-    QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::Storage), false);
+    QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageDrive), false);
 
 
     // Query parent
@@ -249,15 +249,15 @@ void SolidHwTest::testDeviceInterfaces()
     QVERIFY(p==0);
     fakeManager->plug("/org/kde/solid/fakehw/acpi_CPU0");
 
-    QPointer<Solid::Volume> v;
-    QPointer<Solid::Volume> v2;
+    QPointer<Solid::StorageVolume> v;
+    QPointer<Solid::StorageVolume> v2;
     {
         Solid::Device partition("/org/kde/solid/fakehw/volume_uuid_f00ba7");
-        v = partition.as<Solid::Volume>();
+        v = partition.as<Solid::StorageVolume>();
         QVERIFY(v!=0);
         {
             Solid::Device partition2("/org/kde/solid/fakehw/volume_uuid_f00ba7");
-            v2 = partition2.as<Solid::Volume>();
+            v2 = partition2.as<Solid::StorageVolume>();
             QVERIFY(v2!=0);
             QVERIFY(v==v2);
         }
@@ -280,9 +280,9 @@ void SolidHwTest::testDeviceInterfaceIntrospection_data()
     QTest::newRow("DeviceInterface: Unknown") << "Unknown" << (int)Solid::DeviceInterface::Unknown;
     QTest::newRow("DeviceInterface: Processor") << "Processor" << (int)Solid::DeviceInterface::Processor;
     QTest::newRow("DeviceInterface: Block") << "Block" << (int)Solid::DeviceInterface::Block;
-    QTest::newRow("DeviceInterface: Storage") << "Storage" << (int)Solid::DeviceInterface::Storage;
+    QTest::newRow("DeviceInterface: StorageDrive") << "StorageDrive" << (int)Solid::DeviceInterface::StorageDrive;
     QTest::newRow("DeviceInterface: Cdrom") << "Cdrom" << (int)Solid::DeviceInterface::Cdrom;
-    QTest::newRow("DeviceInterface: Volume") << "Volume" << (int)Solid::DeviceInterface::Volume;
+    QTest::newRow("DeviceInterface: StorageVolume") << "StorageVolume" << (int)Solid::DeviceInterface::StorageVolume;
     QTest::newRow("DeviceInterface: OpticalDisc") << "OpticalDisc" << (int)Solid::DeviceInterface::OpticalDisc;
     QTest::newRow("DeviceInterface: Camera") << "Camera" << (int)Solid::DeviceInterface::Camera;
     QTest::newRow("DeviceInterface: PortableMediaPlayer") << "PortableMediaPlayer" << (int)Solid::DeviceInterface::PortableMediaPlayer;
@@ -332,15 +332,15 @@ void SolidHwTest::testPredicate()
                         | Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", true);
     Solid::Predicate p4 = Solid::Predicate(Solid::DeviceInterface::Processor, "maxSpeed", 3201)
                         | Solid::Predicate(Solid::DeviceInterface::Processor, "canThrottle", false);
-    Solid::Predicate p5 = Solid::Predicate::fromString("[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR Volume.mountPoint == '/media/blup']");
+    Solid::Predicate p5 = Solid::Predicate::fromString("[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR StorageVolume.mountPoint == '/media/blup']");
 
     QVERIFY(p1.matches(dev));
     QVERIFY(!p2.matches(dev));
     QVERIFY(p3.matches(dev));
     QVERIFY(!p4.matches(dev));
 
-    Solid::Predicate p6 = Solid::Predicate::fromString("Volume.usage == 'Other'");
-    Solid::Predicate p7 = Solid::Predicate::fromString(QString("Volume.usage == %1").arg((int)Solid::Volume::Other));
+    Solid::Predicate p6 = Solid::Predicate::fromString("StorageVolume.usage == 'Other'");
+    Solid::Predicate p7 = Solid::Predicate::fromString(QString("StorageVolume.usage == %1").arg((int)Solid::StorageVolume::Other));
     QVERIFY(!p6.matches(dev));
     QVERIFY(!p7.matches(dev));
     dev = Solid::Device("/org/kde/solid/fakehw/volume_part2_size_1024");
@@ -358,7 +358,7 @@ void SolidHwTest::testPredicate()
     QVERIFY(!p9.matches(dev));
     QVERIFY(p10.matches(dev));
 
-    QString str_pred = "[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR Volume.mountPoint == '/media/blup']";
+    QString str_pred = "[[Processor.maxSpeed == 3201 AND Processor.canThrottle == false] OR StorageVolume.mountPoint == '/media/blup']";
     // Since str_pred is canonicalized, fromString().toString() should be invariant
     QCOMPARE(Solid::Predicate::fromString(str_pred).toString(), str_pred);
 
@@ -405,7 +405,7 @@ void SolidHwTest::testPredicate()
     QCOMPARE(list.size(), 1);
     QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
 
-    list = Solid::Device::listFromQuery("[Processor.number==1 OR IS Volume]",
+    list = Solid::Device::listFromQuery("[Processor.number==1 OR IS StorageVolume]",
                                                        parentUdi);
 
     QSet<QString> set;
@@ -423,7 +423,7 @@ void SolidHwTest::testPredicate()
         << "/org/kde/solid/fakehw/volume_uuid_feedface";
     QCOMPARE(set, to_string_set(list));
 
-    list = Solid::Device::listFromQuery("[IS Processor OR IS Volume]",
+    list = Solid::Device::listFromQuery("[IS Processor OR IS StorageVolume]",
                                          parentUdi);
     QCOMPARE(list.size(), 11);
     set << "/org/kde/solid/fakehw/acpi_CPU0";

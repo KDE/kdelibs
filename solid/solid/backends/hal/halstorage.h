@@ -20,20 +20,20 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
-#include "solid/ifaces/storage.h"
+#include "solid/ifaces/storagedrive.h"
 #include "solid/backends/hal/halblock.h"
 
-class Storage : public Block, virtual public Solid::Ifaces::Storage
+class Storage : public Block, virtual public Solid::Ifaces::StorageDrive
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Storage)
+    Q_INTERFACES(Solid::Ifaces::StorageDrive)
 
 public:
     Storage(HalDevice *device);
     virtual ~Storage();
 
-    virtual Solid::Storage::Bus bus() const;
-    virtual Solid::Storage::DriveType driveType() const;
+    virtual Solid::StorageDrive::Bus bus() const;
+    virtual Solid::StorageDrive::DriveType driveType() const;
 
     virtual bool isRemovable() const;
     virtual bool isEjectRequired() const;

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,74 +17,29 @@
 
 */
 
-#ifndef SOLID_VOLUME_H
-#define SOLID_VOLUME_H
+#ifndef SOLID_IFACES_VOLUME_H
+#define SOLID_IFACES_VOLUME_H
 
-#include <solid/solid_export.h>
-
-#include <solid/deviceinterface.h>
+#include <solid/ifaces/block.h>
+#include <solid/storagevolume.h>
 
 namespace Solid
 {
-    class VolumePrivate;
-
+namespace Ifaces
+{
     /**
      * This device interface is available on volume devices.
      *
      * A volume is anything that can contain data (partition, optical disc,
      * memory card). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Volume : public DeviceInterface
+    class StorageVolume : virtual public Block
     {
-        Q_OBJECT
-        Q_ENUMS(UsageType)
-        Q_PROPERTY(bool ignored READ isIgnored)
-        Q_PROPERTY(bool mounted READ isMounted)
-        Q_PROPERTY(QString mountPoint READ mountPoint)
-        Q_PROPERTY(UsageType usage READ usage)
-        Q_PROPERTY(QString fsType READ fsType)
-        Q_PROPERTY(QString label READ label)
-        Q_PROPERTY(QString uuid READ uuid)
-        Q_PROPERTY(qulonglong size READ size)
-        Q_DECLARE_PRIVATE(Volume)
-
     public:
         /**
-         * This enum type defines the how a volume is used.
-         *
-         * - FileSystem : A mountable filesystem volume
-         * - PartitionTable : A volume containing a partition table
-         * - Raid : A volume member of a raid set (not mountable)
-         * - Other : A not mountable volume (like a swap partition)
-         * - Unused : An unused or free volume
+         * Destroys a StorageVolume object.
          */
-        enum UsageType { FileSystem, PartitionTable, Raid, Other, Unused };
-
-
-
-        /**
-         * Creates a new Volume object.
-         * You generally won't need this. It's created when necessary using
-         * Device::as().
-         *
-         * @param backendObject the device interface object provided by the backend
-         * @see Solid::Device::as()
-         */
-        explicit Volume(QObject *backendObject);
-
-        /**
-         * Destroys a Volume object.
-         */
-        virtual ~Volume();
-
-
-        /**
-         * Get the Solid::DeviceInterface::Type of the Volume device interface.
-         *
-         * @return the Volume device interface type
-         * @see Solid::Ifaces::Enums::DeviceInterface::Type
-         */
-        static Type deviceInterfaceType() { return DeviceInterface::Volume; }
+        virtual ~StorageVolume();
 
 
         /**
@@ -96,14 +51,14 @@ namespace Solid
          *
          * @return true if the volume should be ignored
          */
-        bool isIgnored() const;
+        virtual bool isIgnored() const = 0;
 
         /**
          * Indicates if this volume is mounted.
          *
          * @return true if the volume is mounted
          */
-        bool isMounted() const;
+        virtual bool isMounted() const = 0;
 
         /**
          * Retrieves the absolute path of this volume mountpoint.
@@ -111,32 +66,29 @@ namespace Solid
          * @return the absolute path to the mount point if the volume is
          * mounted, QString() otherwise
          */
-        QString mountPoint() const;
+        virtual QString mountPoint() const = 0;
 
         /**
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
-         * @see Solid::Ifaces::Enums::Volume::UsageType
+         * @see Solid::StorageVolume::UsageType
          */
-        UsageType usage() const;
+        virtual Solid::StorageVolume::UsageType usage() const = 0;
 
         /**
          * Retrieves the filesystem type of this volume.
          *
-         * FIXME: It's a platform dependent string, maybe we should switch to
-         * an enum?
-         *
          * @return the filesystem type if applicable, QString() otherwise
          */
-        QString fsType() const;
+        virtual QString fsType() const = 0;
 
         /**
          * Retrieves this volume label.
          *
-         * @return the volume label if available, QString() otherwise
+         * @return the volume lavel if available, QString() otherwise
          */
-        QString label() const;
+        virtual QString label() const = 0;
 
         /**
          * Retrieves this volume Universal Unique IDentifier (UUID).
@@ -148,14 +100,14 @@ namespace Solid
          *
          * @return the Universal Unique IDentifier if available, QString() otherwise
          */
-        QString uuid() const;
+        virtual QString uuid() const = 0;
 
         /**
          * Retrieves this volume size in bytes.
          *
          * @return the size of this volume
          */
-        qulonglong size() const;
+        virtual qulonglong size() const = 0;
 
 
         /**
@@ -163,37 +115,35 @@ namespace Solid
          *
          * @return the job handling the operation
          */
-        void mount(QObject *receiver, const char *member);
+        virtual void mount(QObject *receiver, const char *member) = 0;
 
         /**
          * Unmounts the volume.
          *
          * @return the job handling the operation
          */
-        void unmount(QObject *receiver, const char *member);
+        virtual void unmount(QObject *receiver, const char *member) = 0;
 
         /**
          * Ejects the volume.
          *
          * @return the job handling the operation
          */
-        void eject(QObject *receiver, const char *member);
+        virtual void eject(QObject *receiver, const char *member) = 0;
 
-    Q_SIGNALS:
+    protected:
+    //Q_SIGNALS:
         /**
          * This signal is emitted when the mount state of this device
          * has changed.
          *
          * @param newState true if the volume is mounted, false otherwise
          */
-        void mountStateChanged(bool newState);
-
-    protected:
-        /**
-         * @internal
-         */
-        Volume(VolumePrivate &dd, QObject *backendObject);
+        virtual void mountStateChanged(bool newState) = 0;
     };
 }
+}
+
+Q_DECLARE_INTERFACE(Solid::Ifaces::StorageVolume, "org.kde.Solid.Ifaces.StorageVolume/0.1")
 
 #endif

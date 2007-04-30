@@ -26,7 +26,7 @@
 
 namespace Solid
 {
-    class StoragePrivate;
+    class StorageDrivePrivate;
 
     /**
      * This device interface is available on storage devices.
@@ -34,7 +34,7 @@ namespace Solid
      * A storage is anything that can contain a set of volumes (card reader,
      * hard disk, cdrom drive...). It's a particular kind of block device.
      */
-    class SOLID_EXPORT Storage : public DeviceInterface
+    class SOLID_EXPORT StorageDrive : public DeviceInterface
     {
         Q_OBJECT
         Q_ENUMS(Bus DriveType)
@@ -46,7 +46,7 @@ namespace Solid
         Q_PROPERTY(bool mediaCheckEnabled READ isMediaCheckEnabled)
         Q_PROPERTY(QString vendor READ vendor)
         Q_PROPERTY(QString product READ product)
-        Q_DECLARE_PRIVATE(Storage)
+        Q_DECLARE_PRIVATE(StorageDrive)
 
     public:
         /**
@@ -78,28 +78,28 @@ namespace Solid
 
 
         /**
-         * Creates a new Storage object.
+         * Creates a new StorageDrive object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Storage(QObject *backendObject);
+        explicit StorageDrive(QObject *backendObject);
 
         /**
-         * Destroys a Storage object.
+         * Destroys a StorageDrive object.
          */
-        virtual ~Storage();
+        virtual ~StorageDrive();
 
 
         /**
-         * Get the Solid::DeviceInterface::Type of the Storage device interface.
+         * Get the Solid::DeviceInterface::Type of the StorageDrive device interface.
          *
-         * @return the Storage device interface type
+         * @return the StorageDrive device interface type
          * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type deviceInterfaceType() { return DeviceInterface::Storage; }
+        static Type deviceInterfaceType() { return DeviceInterface::StorageDrive; }
 
 
         /**
@@ -107,7 +107,7 @@ namespace Solid
          * connected to.
          *
          * @return the bus type
-         * @see Solid::Ifaces::Enums::Storage::Bus
+         * @see Solid::Ifaces::Enums::StorageDrive::Bus
          */
         Bus bus() const;
 
@@ -115,7 +115,7 @@ namespace Solid
          * Retrieves the type of this storage drive.
          *
          * @return the drive type
-         * @see Solid::Ifaces::Enums::Storage::DriveType
+         * @see Solid::Ifaces::Enums::StorageDrive::DriveType
          */
         DriveType driveType() const;
 
@@ -174,7 +174,7 @@ namespace Solid
         /**
          * @internal
          */
-        Storage(StoragePrivate &dd, QObject *backendObject);
+        StorageDrive(StorageDrivePrivate &dd, QObject *backendObject);
     };
 }
 

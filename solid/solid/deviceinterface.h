@@ -51,9 +51,9 @@ namespace Solid
          * - Unknown : An undetermined device interface
          * - Processor : A processor
          * - Block : A block device
-         * - Storage : A storage drive
+         * - StorageDrive : A storage drive
          * - Cdrom : A CD-ROM drive
-         * - Volume : A volume
+         * - StorageVolume : A volume
          * - OpticalDisc : An optical disc
          * - Camera : A digital camera
          * - PortableMediaPlayer: A portable media player
@@ -61,8 +61,8 @@ namespace Solid
          * - Display : A video display
          */
         enum Type { Unknown = 0, GenericInterface = 1, Processor = 2,
-                    Block = 3, Storage = 4, Cdrom = 5,
-                    Volume = 6, OpticalDisc = 7,
+                    Block = 3, StorageDrive = 4, Cdrom = 5,
+                    StorageVolume = 6, OpticalDisc = 7,
                     Camera = 8, PortableMediaPlayer = 9,
                     NetworkHw = 10, AcAdapter = 11, Battery = 12,
                     Button = 13, Display = 14, AudioHw = 15,

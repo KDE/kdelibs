@@ -100,7 +100,7 @@
             <!-- The actual floppy device -->
             <device udi="/org/kde/solid/fakehw/platform_floppy_0_storage">
                 <property key="name">PC Floppy Drive</property>
-                <property key="interfaces">Storage,Block</property>
+                <property key="interfaces">StorageDrive,Block</property>
                 <property key="parent">/org/kde/solid/fakehw/platform_floppy_0</property>
 
                 <property key="minor">0</property>
@@ -117,7 +117,7 @@
                 <!-- A (generally) virtual volume tracking the floppy drive state -->
                 <device udi="/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume">
                     <property key="name">Floppy Disk</property>
-                    <property key="interfaces">Block,Volume</property>
+                    <property key="interfaces">Block,StorageVolume</property>
                     <property key="parent">/org/kde/solid/fakehw/platform_floppy_0_storage</property>
 
                     <property key="minor">0</property>
@@ -148,7 +148,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_serial_HD56890I">
                     <property key="name">HD250GB</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="interfaces">Storage,Block</property>
+                    <property key="interfaces">StorageDrive,Block</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_001_ide_0_0</property>
 
                     <property key="minor">0</property>
@@ -172,7 +172,7 @@
                     -->
                     <device udi="/org/kde/solid/fakehw/volume_uuid_feedface">
                         <property key="name">/</property>
-                        <property key="interfaces">Block,Volume</property>
+                        <property key="interfaces">Block,StorageVolume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">1</property>
@@ -190,7 +190,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_uuid_c0ffee">
                         <property key="name">/home</property>
-                        <property key="interfaces">Block,Volume</property>
+                        <property key="interfaces">Block,StorageVolume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">6</property>
@@ -208,7 +208,7 @@
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_uuid_f00ba7">
                         <property key="name">/foreign</property>
-                        <property key="interfaces">Block,Volume</property>
+                        <property key="interfaces">Block,StorageVolume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">7</property>
@@ -225,8 +225,8 @@
                         <property key="size">21474836480</property>
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_part2_size_1024">
-                        <property key="name">Volume</property>
-                        <property key="interfaces">Block,Volume</property>
+                        <property key="name">StorageVolume</property>
+                        <property key="interfaces">Block,StorageVolume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">2</property>
@@ -239,8 +239,8 @@
                         <property key="size">1024</property>
                     </device>
                     <device udi="/org/kde/solid/fakehw/volume_part5_size_1048576">
-                        <property key="name">Volume (swap)</property>
-                        <property key="interfaces">Block,Volume</property>
+                        <property key="name">StorageVolume (swap)</property>
+                        <property key="interfaces">Block,StorageVolume</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_serial_HD56890I</property>
 
                         <property key="minor">5</property>
@@ -271,7 +271,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_model_solid_writer">
                     <property key="name">Solid IDE DVD Writer</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="interfaces">Block,Storage,Cdrom</property>
+                    <property key="interfaces">Block,StorageDrive,Cdrom</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_002_ide_1_0</property>
 
                     <property key="minor">0</property>
@@ -294,7 +294,7 @@
                     <!-- ... with a cd-r in it -->
                     <device udi="/org/kde/solid/fakehw/volume_uuid_5011">
                         <property key="name">FooDistro i386</property>
-                        <property key="interfaces">Block,Volume,OpticalDisc</property>
+                        <property key="interfaces">Block,StorageVolume,OpticalDisc</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_writer</property>
 
                         <property key="discType">cd_rw</property>
@@ -317,7 +317,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_model_solid_reader">
                     <property key="name">Solid IDE DVD Reader</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="interfaces">Block,Storage,Cdrom</property>
+                    <property key="interfaces">Block,StorageDrive,Cdrom</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_002_ide_1_1</property>
 
                     <property key="minor">0</property>
@@ -338,7 +338,7 @@
                     <!-- ... with a DVD Video in it -->
                     <device udi="/org/kde/solid/fakehw/volume_label_SOLIDMAN_BEGINS">
                         <property key="name">SolidMan Begins</property>
-                        <property key="interfaces">Block,Volume,OpticalDisc</property>
+                        <property key="interfaces">Block,StorageVolume,OpticalDisc</property>
                         <property key="parent">/org/kde/solid/fakehw/storage_model_solid_reader</property>
 
                         <property key="discType">dvd_rom</property>
@@ -390,7 +390,7 @@
                                 <device udi="/org/kde/solid/fakehw/storage_serial_XOY4_5206">
                                     <property key="name">XO-Y4</property>
                                     <property key="vendor">Acme Electronics</property>
-                                    <property key="interfaces">Storage,Block,PortableMediaPlayer</property>
+                                    <property key="interfaces">StorageDrive,Block,PortableMediaPlayer</property>
                                     <property key="parent">/org/kde/solid/fakehw/usb_device_4e8_5041_if0_scsi_host_scsi_device_lun0</property>
 
                                     <property key="minor">0</property>
@@ -412,8 +412,8 @@
                                 </device>
                                     <!-- ... with a partition since it's a USB Mass Storage device -->
                                     <device udi="/org/kde/solid/fakehw/volume_part1_size_993284096">
-                                        <property key="name">Volume (vfat)</property>
-                                        <property key="interfaces">Block,Volume</property>
+                                        <property key="name">StorageVolume (vfat)</property>
+                                        <property key="interfaces">Block,StorageVolume</property>
                                         <property key="parent">/org/kde/solid/fakehw/storage_serial_XOY4_5206</property>
 
                                         <property key="minor">1</property>

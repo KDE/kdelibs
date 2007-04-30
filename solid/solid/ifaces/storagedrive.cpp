@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,19 +17,9 @@
 
 */
 
-#ifndef SOLID_VOLUME_P_H
-#define SOLID_VOLUME_P_H
+#include "storagedrive.h"
 
-#include "deviceinterface_p.h"
-
-namespace Solid
+Solid::Ifaces::StorageDrive::~StorageDrive()
 {
-    class VolumePrivate : public DeviceInterfacePrivate
-    {
-    public:
-        VolumePrivate()
-            : DeviceInterfacePrivate() { }
-    };
 }
 
-#endif

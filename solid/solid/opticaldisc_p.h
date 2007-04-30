@@ -20,15 +20,15 @@
 #ifndef SOLID_OPTICALDISC_P_H
 #define SOLID_OPTICALDISC_P_H
 
-#include "volume_p.h"
+#include "storagevolume_p.h"
 
 namespace Solid
 {
-    class OpticalDiscPrivate : public VolumePrivate
+    class OpticalDiscPrivate : public StorageVolumePrivate
     {
     public:
         OpticalDiscPrivate()
-            : VolumePrivate() { }
+            : StorageVolumePrivate() { }
     };
 }
 

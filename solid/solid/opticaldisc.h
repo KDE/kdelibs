@@ -22,7 +22,7 @@
 
 #include <solid/solid_export.h>
 
-#include <solid/volume.h>
+#include <solid/storagevolume.h>
 
 namespace Solid
 {
@@ -33,7 +33,7 @@ namespace Solid
      *
      * An optical disc is a volume that can be inserted in a cdrom drive.
      */
-    class SOLID_EXPORT OpticalDisc : public Volume
+    class SOLID_EXPORT OpticalDisc : public StorageVolume
     {
         Q_OBJECT
         Q_ENUMS(ContentType DiscType)

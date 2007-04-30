@@ -54,13 +54,13 @@ public:
         case Solid::DeviceInterface::Block:
             list << "block";
             break;
-        case Solid::DeviceInterface::Storage:
+        case Solid::DeviceInterface::StorageDrive:
             list << "storage";
             break;
         case Solid::DeviceInterface::Cdrom:
             list << "storage.cdrom";
             break;
-        case Solid::DeviceInterface::Volume:
+        case Solid::DeviceInterface::StorageVolume:
             list << "volume";
             break;
         case Solid::DeviceInterface::OpticalDisc:
@@ -107,11 +107,11 @@ public:
         else if (capability == "block")
             return Solid::DeviceInterface::Block;
         else if (capability == "storage")
-            return Solid::DeviceInterface::Storage;
+            return Solid::DeviceInterface::StorageDrive;
         else if (capability == "storage.cdrom")
             return Solid::DeviceInterface::Cdrom;
         else if (capability == "volume")
-            return Solid::DeviceInterface::Volume;
+            return Solid::DeviceInterface::StorageVolume;
         else if (capability == "volume.disc")
             return Solid::DeviceInterface::OpticalDisc;
         else if (capability == "camera")
