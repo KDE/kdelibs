@@ -31,7 +31,7 @@ class QDataStream;
  * @internal
  * Hash table implementation for the sycoca database file
  */
-class KDECORE_EXPORT KSycocaDict
+class KDECORE_EXPORT KSycocaDict //krazy:exclude=dpointer (not const because it gets deleted by clear())
 {
 public:
    /**

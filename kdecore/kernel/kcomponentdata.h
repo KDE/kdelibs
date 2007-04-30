@@ -43,7 +43,7 @@ class KComponentDataPrivate;
  * \author Torben Weis
  * \author Matthias Kretz <kretz@kde.org>
  */
-class KDECORE_EXPORT KComponentData
+class KDECORE_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
 {
     friend class KStandardDirs;
     friend class KGlobal;
@@ -165,7 +165,7 @@ protected:
 
 private:
     // Ref-counted data
-    KComponentDataPrivate* d; // krazy:exclude=dpointer
+    KComponentDataPrivate* d;
 };
 
 #endif // KCOMPONENTDATA_H

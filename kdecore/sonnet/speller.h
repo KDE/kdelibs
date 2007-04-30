@@ -95,7 +95,7 @@ namespace KSpell2
         Speller(const QString &lang);
     private:
         class Private;
-        Private* d;
+        Private* const d;
     };
 }
 

@@ -201,7 +201,7 @@ static int hndays(int m,int y)
 
 
 KCalendarSystemJalali::KCalendarSystemJalali(const KLocale * locale)
-  : KCalendarSystem(locale)
+  : KCalendarSystem(locale), d(0)
 {
 }
 

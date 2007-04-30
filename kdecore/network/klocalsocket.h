@@ -122,8 +122,8 @@ public:
     QString peerPath() const;
 
 private:
-    using QAbstractSocket::connectToHost;
-    using QAbstractSocket::disconnectFromHost;
+    using QAbstractSocket::connectToHost; //krazy:exclude=dpointer
+    using QAbstractSocket::disconnectFromHost; //krazy:exclude=dpointer
 
 protected Q_SLOTS:
     /// @internal

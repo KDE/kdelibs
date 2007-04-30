@@ -410,7 +410,7 @@ private:
  * @author David Jarvie <software@astrojar.org.uk>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDECORE_EXPORT KTimeZone
+class KDECORE_EXPORT KTimeZone //krazy:exclude=dpointer (krazy can't deal with embedded classes)
 {
 public:
 

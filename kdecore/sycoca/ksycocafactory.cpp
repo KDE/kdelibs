@@ -32,11 +32,16 @@ class KSycocaFactory::Private
 {
 public:
     Private() {}
+    ~Private()
+    {
+        delete m_sycocaDict;
+    }
 
     int mOffset;
     int m_sycocaDictOffset;
     int m_beginEntryOffset;
     int m_endEntryOffset;
+    KSycocaDict *m_sycocaDict;
 };
 
 KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
@@ -55,7 +60,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 
         int saveOffset = m_str->device()->pos();
         // Init index tables
-        m_sycocaDict = new KSycocaDict(m_str, d->m_sycocaDictOffset);
+        d->m_sycocaDict = new KSycocaDict(m_str, d->m_sycocaDictOffset);
         saveOffset = m_str->device()->seek(saveOffset);
     }
     else
@@ -63,7 +68,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
         // Build new database!
         m_str = 0;
         m_entryDict = new KSycocaEntryDict;
-        m_sycocaDict = new KSycocaDict;
+        d->m_sycocaDict = new KSycocaDict;
         d->m_beginEntryOffset = 0;
         d->m_endEntryOffset = 0;
 
@@ -75,7 +80,6 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
 KSycocaFactory::~KSycocaFactory()
 {
     delete m_entryDict;
-    delete m_sycocaDict;
     delete d;
 }
 
@@ -94,7 +98,7 @@ KSycocaFactory::save(QDataStream &str)
 {
     if (!m_entryDict) return; // Error! Function should only be called when
     // building database
-    if (!m_sycocaDict) return; // Error!
+    if (!d->m_sycocaDict) return; // Error!
 
     d->mOffset = str.device()->pos(); // store position in member variable
     d->m_sycocaDictOffset = 0;
@@ -127,7 +131,7 @@ KSycocaFactory::save(QDataStream &str)
 
     // Dictionary index
     d->m_sycocaDictOffset = str.device()->pos();
-    m_sycocaDict->save(str);
+    d->m_sycocaDict->save(str);
 
     int endOfFactoryData = str.device()->pos();
 
@@ -144,7 +148,7 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
     if (!m_entryDict) return; // Error! Function should only be called when
     // building database
 
-    if (!m_sycocaDict) return; // Error!
+    if (!d->m_sycocaDict) return; // Error!
 
     // Note that we use a QMultiHash since there can be several entries
     // with the same name (e.g. kfmclient.desktop and konqbrowser.desktop both
@@ -152,7 +156,7 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
 
     const QString name = newEntry->name();
     m_entryDict->insertMulti( name, newEntry );
-    m_sycocaDict->add( name, newEntry );
+    d->m_sycocaDict->add( name, newEntry );
 }
 
 void
@@ -161,10 +165,10 @@ KSycocaFactory::removeEntry(const QString& entryName)
     if (!m_entryDict) return; // Error! Function should only be called when
     // building database
 
-    if (!m_sycocaDict) return; // Error!
+    if (!d->m_sycocaDict) return; // Error!
 
     m_entryDict->remove( entryName );
-    m_sycocaDict->remove( entryName ); // O(N)
+    d->m_sycocaDict->remove( entryName ); // O(N)
 }
 
 KSycocaEntry::List KSycocaFactory::allEntries() const
@@ -206,6 +210,16 @@ KSycocaEntry::List KSycocaFactory::allEntries() const
 int KSycocaFactory::offset() const
 {
     return d->mOffset;
+}
+
+const KSycocaResourceList * KSycocaFactory::resourceList() const
+{
+    return m_resourceList;
+}
+
+const KSycocaDict * KSycocaFactory::sycocaDict() const
+{
+    return d->m_sycocaDict;
 }
 
 bool KSycocaFactory::isEmpty() const

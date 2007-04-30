@@ -687,179 +687,38 @@ void KCodecs::uudecode( const QByteArray& in, QByteArray& out )
 }
 
 /******************************** KMD5 ********************************/
-KMD5::KMD5()
+
+class KMD5Private
 {
-    init();
-}
+public:
+    void reset();
+    void encode( unsigned char* output, quint32 *in, quint32 len );
+    void decode( quint32 *output, const unsigned char* in, quint32 len );
+    void md5Transform( const unsigned char buffer[64] );
 
-KMD5::KMD5(const char *in, int len)
-{
-    init();
-    update(in, len);
-}
+    quint32 rotate_left( quint32 x, quint32 n );
+    quint32 F( quint32 x, quint32 y, quint32 z );
+    quint32 G( quint32 x, quint32 y, quint32 z );
+    quint32 H( quint32 x, quint32 y, quint32 z );
+    quint32 I( quint32 x, quint32 y, quint32 z );
+    void FF( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+             quint32  s, quint32 ac );
+    void GG( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+             quint32 s, quint32 ac );
+    void HH( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+             quint32 s, quint32 ac );
+    void II( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+             quint32 s, quint32 ac );
 
-KMD5::KMD5(const QByteArray& in)
-{
-    init();
-    update( in );
-}
+public:
+    quint32 m_state[4];
+    quint32 m_count[2];
+    quint8 m_buffer[64];
+    KMD5::Digest m_digest;
+    bool m_finalized;
+};
 
-void KMD5::update(const QByteArray& in)
-{
-    update(in.data(), int(in.size()));
-}
-
-void KMD5::update(const unsigned char* in, int len)
-{
-    if (len < 0)
-        len = qstrlen(reinterpret_cast<const char*>(in));
-
-    if (!len)
-        return;
-
-    if (m_finalized) {
-        kWarning() << "KMD5::update called after state was finalized!" << endl;
-        return;
-    }
-
-    quint32 in_index;
-    quint32 buffer_index;
-    quint32 buffer_space;
-    quint32 in_length = static_cast<quint32>( len );
-
-    buffer_index = static_cast<quint32>((m_count[0] >> 3) & 0x3F);
-
-    if (  (m_count[0] += (in_length << 3))<(in_length << 3) )
-        m_count[1]++;
-
-    m_count[1] += (in_length >> 29);
-    buffer_space = 64 - buffer_index;
-
-    if (in_length >= buffer_space)
-    {
-        memcpy (m_buffer + buffer_index, in, buffer_space);
-        transform (m_buffer);
-
-        for (in_index = buffer_space; in_index + 63 < in_length;
-             in_index += 64)
-            transform (reinterpret_cast<const unsigned char*>(in+in_index));
-
-        buffer_index = 0;
-    }
-    else
-        in_index=0;
-
-    memcpy(m_buffer+buffer_index, in+in_index, in_length-in_index);
-}
-
-bool KMD5::update(QIODevice& file)
-{
-    char buffer[1024];
-    int len;
-
-    while ((len=file.read(buffer, sizeof(buffer))) > 0)
-        update(buffer, len);
-
-    return file.atEnd();
-}
-
-void KMD5::finalize ()
-{
-    if (m_finalized) return;
-
-    quint8 bits[8];
-    quint32 index, padLen;
-    static const unsigned char PADDING[64]=
-    {
-        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    encode (bits, m_count, 8);
-    //memcpy( bits, m_count, 8 );
-
-    // Pad out to 56 mod 64.
-    index = static_cast<quint32>((m_count[0] >> 3) & 0x3f);
-    padLen = (index < 56) ? (56 - index) : (120 - index);
-    update (reinterpret_cast<const char*>(PADDING), padLen);
-
-    // Append length (before padding)
-    update (reinterpret_cast<const char*>(bits), 8);
-
-    // Store state in digest
-    encode (m_digest, m_state, 16);
-    //memcpy( m_digest, m_state, 16 );
-
-    // Fill sensitive information with zero's
-    memset ( (void *)m_buffer, 0, sizeof(*m_buffer));
-
-    m_finalized = true;
-}
-
-
-bool KMD5::verify( const KMD5::Digest& digest)
-{
-    finalize();
-    return (0 == memcmp(rawDigest(), digest, sizeof(KMD5::Digest)));
-}
-
-bool KMD5::verify( const QByteArray& hexdigest)
-{
-    finalize();
-    return (0 == strcmp(hexDigest().data(), hexdigest));
-}
-
-const KMD5::Digest& KMD5::rawDigest()
-{
-    finalize();
-    return m_digest;
-}
-
-void KMD5::rawDigest( KMD5::Digest& bin )
-{
-    finalize();
-    memcpy( bin, m_digest, 16 );
-}
-
-
-QByteArray KMD5::hexDigest()
-{
-    QByteArray s(32, 0);
-
-    finalize();
-    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
-            m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
-            m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
-
-    return s;
-}
-
-void KMD5::hexDigest(QByteArray& s)
-{
-    finalize();
-    s.resize(32);
-    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
-            m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
-            m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
-}
-
-QByteArray KMD5::base64Digest()
-{
-    finalize();
-    return QByteArray::fromRawData(reinterpret_cast<const char*>(m_digest),16).toBase64();
-}
-
-void KMD5::init()
-{
-    d = 0;
-    reset();
-}
-
-void KMD5::reset()
+void KMD5Private::reset()
 {
     m_finalized = false;
 
@@ -875,7 +734,7 @@ void KMD5::reset()
     memset ( m_digest, 0, sizeof(*m_digest));
 }
 
-void KMD5::transform( const unsigned char block[64] )
+void KMD5Private::md5Transform( const unsigned char block[64] )
 {
 
     quint32 a = m_state[0], b = m_state[1], c = m_state[2], d = m_state[3], x[16];
@@ -965,53 +824,53 @@ void KMD5::transform( const unsigned char block[64] )
     memset ( static_cast<void *>(x), 0, sizeof(x) );
 }
 
-inline quint32 KMD5::rotate_left (quint32 x, quint32 n)
+inline quint32 KMD5Private::rotate_left (quint32 x, quint32 n)
 {
     return (x << n) | (x >> (32-n))  ;
 }
 
-inline quint32 KMD5::F (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD5Private::F (quint32 x, quint32 y, quint32 z)
 {
     return (x & y) | (~x & z);
 }
 
-inline quint32 KMD5::G (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD5Private::G (quint32 x, quint32 y, quint32 z)
 {
     return (x & z) | (y & ~z);
 }
 
-inline quint32 KMD5::H (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD5Private::H (quint32 x, quint32 y, quint32 z)
 {
     return x ^ y ^ z;
 }
 
-inline quint32 KMD5::I (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD5Private::I (quint32 x, quint32 y, quint32 z)
 {
     return y ^ (x | ~z);
 }
 
-void KMD5::FF ( quint32& a, quint32 b, quint32 c, quint32 d,
+void KMD5Private::FF ( quint32& a, quint32 b, quint32 c, quint32 d,
                        quint32 x, quint32  s, quint32 ac )
 {
     a += F(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-void KMD5::GG ( quint32& a, quint32 b, quint32 c, quint32 d,
+void KMD5Private::GG ( quint32& a, quint32 b, quint32 c, quint32 d,
                  quint32 x, quint32 s, quint32 ac)
 {
     a += G(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-void KMD5::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
+void KMD5Private::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
                  quint32 x, quint32 s, quint32 ac )
 {
     a += H(b, c, d) + x + ac;
     a = rotate_left (a, s) +b;
 }
 
-void KMD5::II ( quint32& a, quint32 b, quint32 c, quint32 d,
+void KMD5Private::II ( quint32& a, quint32 b, quint32 c, quint32 d,
                  quint32 x, quint32 s, quint32 ac )
 {
     a += I(b, c, d) + x + ac;
@@ -1019,7 +878,7 @@ void KMD5::II ( quint32& a, quint32 b, quint32 c, quint32 d,
 }
 
 
-void KMD5::encode ( unsigned char* output, quint32 *in, quint32 len )
+void KMD5Private::encode ( unsigned char* output, quint32 *in, quint32 len )
 {
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     memcpy(output, in, len);
@@ -1037,7 +896,7 @@ void KMD5::encode ( unsigned char* output, quint32 *in, quint32 len )
 
 // Decodes in (quint8) into output (quint32). Assumes len is a
 // multiple of 4.
-void KMD5::decode (quint32 *output, const unsigned char* in, quint32 len)
+void KMD5Private::decode (quint32 *output, const unsigned char* in, quint32 len)
 {
 #if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
     memcpy(output, in, len);
@@ -1053,98 +912,72 @@ void KMD5::decode (quint32 *output, const unsigned char* in, quint32 len)
 }
 
 
-
-/**************************************************************/
-
-
-
-/***********************************************************/
-
-KMD4::KMD4()
+KMD5::KMD5() : d(new KMD5Private())
 {
-    init();
+    d->reset();
 }
 
-KMD4::KMD4(const char *in, int len)
+KMD5::KMD5(const char *in, int len) : d(new KMD5Private())
 {
-    init();
+    d->reset();
     update(in, len);
 }
 
-KMD4::KMD4(const QByteArray& in)
+KMD5::KMD5(const QByteArray& in) : d(new KMD5Private())
 {
-    init();
+    d->reset();
     update( in );
 }
 
-void KMD4::update(const QByteArray& in)
+void KMD5::update(const QByteArray& in)
 {
-    update(in.data(), int(in.length()));
+    update(in.data(), int(in.size()));
 }
 
-/*
- * Update context to reflect the concatenation of another buffer full
- * of bytes.
- */
-void KMD4::update(const unsigned char *in, int len)
+void KMD5::update(const unsigned char* in, int len)
 {
-  if (len < 0)
-      len = qstrlen(reinterpret_cast<const char*>(in));
+    if (len < 0)
+        len = qstrlen(reinterpret_cast<const char*>(in));
 
-  if (!len)
-      return;
+    if (!len)
+        return;
 
-  if (m_finalized) {
-      kWarning() << "KMD4::update called after state was finalized!" << endl;
-      return;
-  }
-
-  quint32 t;
-
-  /* Update bitcount */
-
-  t = m_count[0];
-  if ((m_count[0] = t + ((quint32) len << 3)) < t)
-    m_count[1]++;		/* Carry from low to high */
-  m_count[1] += len >> 29;
-
-  t = (t >> 3) & 0x3f;		/* Bytes already in shsInfo->data */
-
-  /* Handle any leading odd-sized chunks */
-
-  if (t)
-    {
-      quint8 *p = &m_buffer[ t ];
-
-      t = 64 - t;
-      if ((quint32)len < t)
-	{
-	  memcpy (p, in, len);
-	  return;
-	}
-      memcpy (p, in, t);
-      byteReverse (m_buffer, 16);
-      transform (m_state, (quint32*) m_buffer);
-      in += t;
-      len -= t;
-    }
-  /* Process data in 64-byte chunks */
-
-  while (len >= 64)
-    {
-      memcpy (m_buffer, in, 64);
-      byteReverse (m_buffer, 16);
-      transform (m_state, (quint32 *) m_buffer);
-      in += 64;
-      len -= 64;
+    if (d->m_finalized) {
+        kWarning() << "KMD5::update called after state was finalized!" << endl;
+        return;
     }
 
-  /* Handle any remaining bytes of data. */
+    quint32 in_index;
+    quint32 buffer_index;
+    quint32 buffer_space;
+    quint32 in_length = static_cast<quint32>( len );
 
-  memcpy (m_buffer, in, len);
+    buffer_index = static_cast<quint32>((d->m_count[0] >> 3) & 0x3F);
+
+    if (  (d->m_count[0] += (in_length << 3))<(in_length << 3) )
+        d->m_count[1]++;
+
+    d->m_count[1] += (in_length >> 29);
+    buffer_space = 64 - buffer_index;
+
+    if (in_length >= buffer_space)
+    {
+        memcpy (d->m_buffer + buffer_index, in, buffer_space);
+        transform (d->m_buffer);
+
+        for (in_index = buffer_space; in_index + 63 < in_length;
+             in_index += 64)
+            transform (reinterpret_cast<const unsigned char*>(in+in_index));
+
+        buffer_index = 0;
+    }
+    else
+        in_index=0;
+
+    memcpy(d->m_buffer+buffer_index, in+in_index, in_length-in_index);
 }
 
-bool KMD4::update(QIODevice& file)
+bool KMD5::update(QIODevice& file)
 {
     char buffer[1024];
     int len;
@@ -1155,122 +988,142 @@ bool KMD4::update(QIODevice& file)
     return file.atEnd();
 }
 
-/*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
- * 1 0* (64-bit count of bits processed, MSB-first)
- */
-void KMD4::finalize()
+void KMD5::finalize ()
 {
-  unsigned int count;
-  unsigned char *p;
+    if (d->m_finalized) return;
 
-  /* Compute number of bytes mod 64 */
-  count = (m_count[0] >> 3) & 0x3F;
-
-  /* Set the first char of padding to 0x80.  This is safe since there is
-     always at least one byte free */
-  p = m_buffer + count;
-  *p++ = 0x80;
-
-  /* Bytes of padding needed to make 64 bytes */
-  count = 64 - 1 - count;
-
-  /* Pad out to 56 mod 64 */
-  if (count < 8)
+    quint8 bits[8];
+    quint32 index, padLen;
+    static const unsigned char PADDING[64]=
     {
-      /* Two lots of padding:  Pad the first block to 64 bytes */
-      memset (p, 0, count);
-      byteReverse (m_buffer, 16);
-      transform (m_state, (quint32*) m_buffer);
+        0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    };
 
-      /* Now fill the next block with 56 bytes */
-      memset (m_buffer, 0, 56);
-    }
-  else
-    {
-      /* Pad block to 56 bytes */
-      memset (p, 0, count - 8);
-    }
-  byteReverse (m_buffer, 14);
+    d->encode (bits, d->m_count, 8);
+    //memcpy( bits, d->m_count, 8 );
 
-  /* Append length in bits and transform */
-  ((quint32 *) m_buffer)[14] = m_count[0];
-  ((quint32 *) m_buffer)[15] = m_count[1];
+    // Pad out to 56 mod 64.
+    index = static_cast<quint32>((d->m_count[0] >> 3) & 0x3f);
+    padLen = (index < 56) ? (56 - index) : (120 - index);
+    update (reinterpret_cast<const char*>(PADDING), padLen);
 
-  transform (m_state, (quint32 *) m_buffer);
-  byteReverse ((unsigned char *) m_state, 4);
+    // Append length (before padding)
+    update (reinterpret_cast<const char*>(bits), 8);
 
-  memcpy (m_digest, m_state, 16);
-  memset ( (void *)m_buffer, 0, sizeof(*m_buffer));
+    // Store state in digest
+    d->encode (d->m_digest, d->m_state, 16);
+    //memcpy( m_digest, m_state, 16 );
 
-  m_finalized = true;
+    // Fill sensitive information with zero's
+    memset ( (void *)d->m_buffer, 0, sizeof(*d->m_buffer));
+
+    d->m_finalized = true;
 }
 
-bool KMD4::verify( const KMD4::Digest& digest)
+
+bool KMD5::verify( const KMD5::Digest& digest)
 {
     finalize();
-    return (0 == memcmp(rawDigest(), digest, sizeof(KMD4::Digest)));
+    return (0 == memcmp(rawDigest(), digest, sizeof(KMD5::Digest)));
 }
 
-bool KMD4::verify( const QByteArray& hexdigest)
+bool KMD5::verify( const QByteArray& hexdigest)
 {
     finalize();
     return (0 == strcmp(hexDigest().data(), hexdigest));
 }
 
-const KMD4::Digest& KMD4::rawDigest()
+const KMD5::Digest& KMD5::rawDigest()
 {
     finalize();
-    return m_digest;
+    return d->m_digest;
 }
 
-void KMD4::rawDigest( KMD4::Digest& bin )
+void KMD5::rawDigest( KMD5::Digest& bin )
 {
     finalize();
-    memcpy( bin, m_digest, 16 );
+    memcpy( bin, d->m_digest, 16 );
 }
 
-QByteArray KMD4::hexDigest()
+
+QByteArray KMD5::hexDigest()
 {
     QByteArray s(32, 0);
 
     finalize();
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
-            m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
-            m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
-//    kDebug() << "KMD4::hexDigest() " << s << endl;
+            d->m_digest[0], d->m_digest[1], d->m_digest[2], d->m_digest[3], d->m_digest[4], d->m_digest[5],
+            d->m_digest[6], d->m_digest[7], d->m_digest[8], d->m_digest[9], d->m_digest[10], d->m_digest[11],
+            d->m_digest[12], d->m_digest[13], d->m_digest[14], d->m_digest[15]);
+
     return s;
 }
 
-void KMD4::hexDigest(QByteArray& s)
+void KMD5::hexDigest(QByteArray& s)
 {
     finalize();
     s.resize(32);
     sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-            m_digest[0], m_digest[1], m_digest[2], m_digest[3], m_digest[4], m_digest[5],
-            m_digest[6], m_digest[7], m_digest[8], m_digest[9], m_digest[10], m_digest[11],
-            m_digest[12], m_digest[13], m_digest[14], m_digest[15]);
+            d->m_digest[0], d->m_digest[1], d->m_digest[2], d->m_digest[3], d->m_digest[4], d->m_digest[5],
+            d->m_digest[6], d->m_digest[7], d->m_digest[8], d->m_digest[9], d->m_digest[10], d->m_digest[11],
+            d->m_digest[12], d->m_digest[13], d->m_digest[14], d->m_digest[15]);
 }
 
-QByteArray KMD4::base64Digest()
+QByteArray KMD5::base64Digest()
 {
     finalize();
-    return QByteArray::fromRawData(reinterpret_cast<const char*>(m_digest), 16).toBase64();
+    return QByteArray::fromRawData(reinterpret_cast<const char*>(d->m_digest),16).toBase64();
 }
 
-
-void KMD4::init()
+void KMD5::reset()
 {
-    d = 0;
-    reset();
+    d->reset();
 }
 
-/*
- * Start MD4 accumulation.  Set bit count to 0 and buffer to mysterious
- * initialization constants.
- */
-void KMD4::reset()
+void KMD5::transform( const unsigned char block[64] )
+{
+    d->md5Transform(block);
+}
+
+
+
+/**************************************************************/
+
+
+
+/***********************************************************/
+
+class KMD4Private
+{
+public:
+  void reset();
+  void md4Transform( quint32 buf[4], quint32 const in[16] );
+
+  void byteReverse( unsigned char *buf, quint32 len );
+
+  quint32 rotate_left( quint32 x, quint32 n );
+  quint32 F( quint32 x, quint32 y, quint32 z );
+  quint32 G( quint32 x, quint32 y, quint32 z );
+  quint32 H( quint32 x, quint32 y, quint32 z );
+  void FF( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+               quint32  s );
+  void GG( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+                quint32 s );
+  void HH( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+                quint32 s );
+
+public:
+  quint32 m_state[4];
+  quint32 m_count[2];
+  quint8 m_buffer[64];
+  KMD4::Digest m_digest;
+  bool m_finalized;
+};
+
+void KMD4Private::reset()
 {
   m_finalized = false;
 
@@ -1288,48 +1141,48 @@ void KMD4::reset()
 
 //#define rotl32(x,n)   (((x) << ((quint32)(n))) | ((x) >> (32 - (quint32)(n))))
 
-inline quint32 KMD4::rotate_left (quint32 x, quint32 n)
+inline quint32 KMD4Private::rotate_left (quint32 x, quint32 n)
 {
     return (x << n) | (x >> (32-n))  ;
 }
 
-inline quint32 KMD4::F (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD4Private::F (quint32 x, quint32 y, quint32 z)
 {
     return (x & y) | (~x & z);
 }
 
-inline quint32 KMD4::G (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD4Private::G (quint32 x, quint32 y, quint32 z)
 {
     return ((x) & (y)) | ((x) & (z)) | ((y) & (z));
 }
 
-inline quint32 KMD4::H (quint32 x, quint32 y, quint32 z)
+inline quint32 KMD4Private::H (quint32 x, quint32 y, quint32 z)
 {
     return x ^ y ^ z;
 }
 
-inline void KMD4::FF ( quint32& a, quint32 b, quint32 c, quint32 d,
+inline void KMD4Private::FF ( quint32& a, quint32 b, quint32 c, quint32 d,
                        quint32 x, quint32  s )
 {
     a += F(b, c, d) + x;
     a = rotate_left (a, s);
 }
 
-inline void KMD4::GG ( quint32& a, quint32 b, quint32 c, quint32 d,
+inline void KMD4Private::GG ( quint32& a, quint32 b, quint32 c, quint32 d,
                  quint32 x, quint32 s)
 {
     a += G(b, c, d) + x + (quint32)0x5a827999;
     a = rotate_left (a, s);
 }
 
-inline void KMD4::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
+inline void KMD4Private::HH ( quint32& a, quint32 b, quint32 c, quint32 d,
                  quint32 x, quint32 s )
 {
     a += H(b, c, d) + x + (quint32)0x6ed9eba1;
     a = rotate_left (a, s);
 }
 
-void KMD4::byteReverse( unsigned char *buf, quint32 len )
+void KMD4Private::byteReverse( unsigned char *buf, quint32 len )
 {
 #if Q_BYTE_ORDER == Q_BIG_ENDIAN
   quint32 *b = (quint32*) buf;
@@ -1348,7 +1201,7 @@ void KMD4::byteReverse( unsigned char *buf, quint32 len )
 /*
  * The core of the MD4 algorithm
  */
-void KMD4::transform( quint32 buf[4], quint32 const in[16] )
+void KMD4Private::md4Transform( quint32 buf[4], quint32 const in[16] )
 {
   quint32 a, b, c, d;
 
@@ -1413,4 +1266,218 @@ void KMD4::transform( quint32 buf[4], quint32 const in[16] )
   buf[1] += b;
   buf[2] += c;
   buf[3] += d;
+}
+
+KMD4::KMD4() : d(new KMD4Private())
+{
+    d->reset();
+}
+
+KMD4::KMD4(const char *in, int len) : d(new KMD4Private())
+{
+    d->reset();
+    update(in, len);
+}
+
+KMD4::KMD4(const QByteArray& in) : d(new KMD4Private())
+{
+    d->reset();
+    update( in );
+}
+
+void KMD4::update(const QByteArray& in)
+{
+    update(in.data(), int(in.length()));
+}
+
+/*
+ * Update context to reflect the concatenation of another buffer full
+ * of bytes.
+ */
+void KMD4::update(const unsigned char *in, int len)
+{
+  if (len < 0)
+      len = qstrlen(reinterpret_cast<const char*>(in));
+
+  if (!len)
+      return;
+
+  if (d->m_finalized) {
+      kWarning() << "KMD4::update called after state was finalized!" << endl;
+      return;
+  }
+
+  quint32 t;
+
+  /* Update bitcount */
+
+  t = d->m_count[0];
+  if ((d->m_count[0] = t + ((quint32) len << 3)) < t)
+    d->m_count[1]++;		/* Carry from low to high */
+  d->m_count[1] += len >> 29;
+
+  t = (t >> 3) & 0x3f;		/* Bytes already in shsInfo->data */
+
+  /* Handle any leading odd-sized chunks */
+
+  if (t)
+    {
+      quint8 *p = &d->m_buffer[ t ];
+
+      t = 64 - t;
+      if ((quint32)len < t)
+	{
+	  memcpy (p, in, len);
+	  return;
+	}
+      memcpy (p, in, t);
+      d->byteReverse (d->m_buffer, 16);
+      transform (d->m_state, (quint32*) d->m_buffer);
+      in += t;
+      len -= t;
+    }
+  /* Process data in 64-byte chunks */
+
+  while (len >= 64)
+    {
+      memcpy (d->m_buffer, in, 64);
+      d->byteReverse (d->m_buffer, 16);
+      transform (d->m_state, (quint32 *) d->m_buffer);
+      in += 64;
+      len -= 64;
+    }
+
+  /* Handle any remaining bytes of data. */
+
+  memcpy (d->m_buffer, in, len);
+}
+
+bool KMD4::update(QIODevice& file)
+{
+    char buffer[1024];
+    int len;
+
+    while ((len=file.read(buffer, sizeof(buffer))) > 0)
+        update(buffer, len);
+
+    return file.atEnd();
+}
+
+/*
+ * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * 1 0* (64-bit count of bits processed, MSB-first)
+ */
+void KMD4::finalize()
+{
+  unsigned int count;
+  unsigned char *p;
+
+  /* Compute number of bytes mod 64 */
+  count = (d->m_count[0] >> 3) & 0x3F;
+
+  /* Set the first char of padding to 0x80.  This is safe since there is
+     always at least one byte free */
+  p = d->m_buffer + count;
+  *p++ = 0x80;
+
+  /* Bytes of padding needed to make 64 bytes */
+  count = 64 - 1 - count;
+
+  /* Pad out to 56 mod 64 */
+  if (count < 8)
+    {
+      /* Two lots of padding:  Pad the first block to 64 bytes */
+      memset (p, 0, count);
+      d->byteReverse (d->m_buffer, 16);
+      transform (d->m_state, (quint32*) d->m_buffer);
+
+      /* Now fill the next block with 56 bytes */
+      memset (d->m_buffer, 0, 56);
+    }
+  else
+    {
+      /* Pad block to 56 bytes */
+      memset (p, 0, count - 8);
+    }
+  d->byteReverse (d->m_buffer, 14);
+
+  /* Append length in bits and transform */
+  ((quint32 *) d->m_buffer)[14] = d->m_count[0];
+  ((quint32 *) d->m_buffer)[15] = d->m_count[1];
+
+  transform (d->m_state, (quint32 *) d->m_buffer);
+  d->byteReverse ((unsigned char *) d->m_state, 4);
+
+  memcpy (d->m_digest, d->m_state, 16);
+  memset ( (void *)d->m_buffer, 0, sizeof(*d->m_buffer));
+
+  d->m_finalized = true;
+}
+
+bool KMD4::verify( const KMD4::Digest& digest)
+{
+    finalize();
+    return (0 == memcmp(rawDigest(), digest, sizeof(KMD4::Digest)));
+}
+
+bool KMD4::verify( const QByteArray& hexdigest)
+{
+    finalize();
+    return (0 == strcmp(hexDigest().data(), hexdigest));
+}
+
+const KMD4::Digest& KMD4::rawDigest()
+{
+    finalize();
+    return d->m_digest;
+}
+
+void KMD4::rawDigest( KMD4::Digest& bin )
+{
+    finalize();
+    memcpy( bin, d->m_digest, 16 );
+}
+
+QByteArray KMD4::hexDigest()
+{
+    QByteArray s(32, 0);
+
+    finalize();
+    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            d->m_digest[0], d->m_digest[1], d->m_digest[2], d->m_digest[3], d->m_digest[4], d->m_digest[5],
+            d->m_digest[6], d->m_digest[7], d->m_digest[8], d->m_digest[9], d->m_digest[10], d->m_digest[11],
+            d->m_digest[12], d->m_digest[13], d->m_digest[14], d->m_digest[15]);
+//    kDebug() << "KMD4::hexDigest() " << s << endl;
+    return s;
+}
+
+void KMD4::hexDigest(QByteArray& s)
+{
+    finalize();
+    s.resize(32);
+    sprintf(s.data(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            d->m_digest[0], d->m_digest[1], d->m_digest[2], d->m_digest[3], d->m_digest[4], d->m_digest[5],
+            d->m_digest[6], d->m_digest[7], d->m_digest[8], d->m_digest[9], d->m_digest[10], d->m_digest[11],
+            d->m_digest[12], d->m_digest[13], d->m_digest[14], d->m_digest[15]);
+}
+
+QByteArray KMD4::base64Digest()
+{
+    finalize();
+    return QByteArray::fromRawData(reinterpret_cast<const char*>(d->m_digest), 16).toBase64();
+}
+
+
+/*
+ * Start MD4 accumulation.  Set bit count to 0 and buffer to mysterious
+ * initialization constants.
+ */
+void KMD4::reset()
+{
+    d->reset();
+}
+
+void KMD4::transform( quint32 buf[4], quint32 const in[16] )
+{
+    d->md4Transform(buf,in);
 }

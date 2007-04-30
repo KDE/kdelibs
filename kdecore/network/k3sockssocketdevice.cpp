@@ -48,14 +48,14 @@ using namespace KNetwork;
 // constructor
 // nothing to do
 KSocksSocketDevice::KSocksSocketDevice(const KSocketBase* obj)
-  : KSocketDevice(obj)
+  : KSocketDevice(obj), d(0)
 {
 }
 
 // constructor with argument
 // nothing to do
 KSocksSocketDevice::KSocksSocketDevice(int fd)
-  : KSocketDevice(fd)
+  : KSocketDevice(fd), d(0)
 {
 }
 

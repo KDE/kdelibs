@@ -106,7 +106,7 @@ class KUrlPrivate;
  * context.
  *
  */
-class KDECORE_EXPORT KUrl : public QUrl
+class KDECORE_EXPORT KUrl : public QUrl // krazy:exclude=dpointer (krazy can't deal with embedded classes)
 {
 public:
   typedef QMap<QString, QString> MetaDataMap;

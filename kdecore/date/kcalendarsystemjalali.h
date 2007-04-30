@@ -74,6 +74,8 @@ public:
   virtual bool isLunisolar() const;
   virtual bool isSolar() const;
 
+private:
+  KCalendarSystemJalaliPrivate * const d;
 };
 
 #endif

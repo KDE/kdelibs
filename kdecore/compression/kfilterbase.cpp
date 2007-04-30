@@ -27,7 +27,7 @@
 #endif
 
 KFilterBase::KFilterBase()
-    : m_dev( 0L ), m_bAutoDel( false )
+    : m_dev( 0L ), m_bAutoDel( false ), d(0)
 {
 }
 

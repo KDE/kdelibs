@@ -38,7 +38,7 @@ Speller::Speller(const QString &lang)
 
 Speller::~Speller()
 {
-    delete d; d = 0;
+    delete d;
 }
 
 QString Speller::language() const

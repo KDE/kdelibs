@@ -408,7 +408,7 @@ class KSocketAddressData;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KSocketAddress
+class KDECORE_EXPORT KSocketAddress //krazy:exclude=dpointer (we got one, just not called Private)
 {
 public:
   /**

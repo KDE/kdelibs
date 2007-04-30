@@ -198,13 +198,8 @@ private:
 
    static KSocks *_me;
    static bool _disabled;
-   QStringList _libNames;
-   QStringList _libPaths;
-   bool _useSocks, _hasSocks;
-   KLibrary* _socksLib;
 
 
-   KSocksTable *_st;
    class KSocksPrivate;
    KSocksPrivate * const d;
 };

@@ -640,14 +640,13 @@ static const unsigned char highest5Bits = 0xF8;
 }
 
 
-KEncodingDetector::KEncodingDetector()
+KEncodingDetector::KEncodingDetector() : d(new KEncodingDetectorPrivate)
 {
-    d=new KEncodingDetectorPrivate;
 }
 
-KEncodingDetector::KEncodingDetector(QTextCodec* codec, EncodingChoiceSource source, AutoDetectScript script)
+KEncodingDetector::KEncodingDetector(QTextCodec* codec, EncodingChoiceSource source, AutoDetectScript script) :
+    d(new KEncodingDetectorPrivate(codec,source,script))
 {
-    d=new KEncodingDetectorPrivate(codec,source,script);
 }
 
 KEncodingDetector::~KEncodingDetector()

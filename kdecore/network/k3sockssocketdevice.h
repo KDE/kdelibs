@@ -24,6 +24,7 @@
 
 namespace KNetwork {
 
+class KSocksSocketDevicePrivate;
 /** 
  * @class KSocksSocketDevice ksockssocketdevice.h ksockssocketdevice.h
  * @brief The low-level class for SOCKS proxying.
@@ -137,6 +138,7 @@ public:
 private:
   static void initSocks();
   friend class KSocketDevice;
+  KSocksSocketDevicePrivate * const d;
 };
 
 }				// namespace KNetwork

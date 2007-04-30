@@ -29,32 +29,39 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 
-KMacroExpanderBase::KMacroExpanderBase( QChar c )
+class KMacroExpanderBasePrivate
 {
-    escapechar = c;
+public:
+    KMacroExpanderBasePrivate( QChar c ) : escapechar(c) {}
+    QChar escapechar;
+};
+
+KMacroExpanderBase::KMacroExpanderBase( QChar c ) : d(new KMacroExpanderBasePrivate(c))
+{
 }
 
 KMacroExpanderBase::~KMacroExpanderBase()
 {
+    delete d;
 }
 
 void
 KMacroExpanderBase::setEscapeChar( QChar c )
 {
-    escapechar = c;
+    d->escapechar = c;
 }
 
 QChar
 KMacroExpanderBase::escapeChar() const
 {
-    return escapechar;
+    return d->escapechar;
 }
 
 void KMacroExpanderBase::expandMacros( QString &str )
 {
     int pos;
     int len;
-    QChar ec( escapechar );
+    QChar ec( d->escapechar );
     QStringList rst;
     QString rsts;
 
@@ -104,7 +111,7 @@ bool KMacroExpanderBase::expandMacrosShellQuote( QString &str, int &pos )
 {
     int len;
     int pos2;
-    QChar ec( escapechar );
+    QChar ec( d->escapechar );
     State state = { noquote, false };
     QStack<State> sstack;
     QStack<Save> ostack;

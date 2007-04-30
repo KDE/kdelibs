@@ -74,9 +74,9 @@
 // private data //
 //////////////////
 
-class KProcessPrivate {
+class K3ProcessPrivate {
 public:
-   KProcessPrivate() :
+   K3ProcessPrivate() :
      usePty(K3Process::NoCommunication),
      addUtmp(false), useShell(false),
 #ifdef Q_OS_UNIX
@@ -120,7 +120,7 @@ K3Process::K3Process( QObject* parent )
     input_data(0),
     input_sent(0),
     input_total(0),
-	 d(new KProcessPrivate)
+	 d(new K3ProcessPrivate)
 {
   K3ProcessController::ref();
   K3ProcessController::instance()->addKProcess(this);
@@ -1061,7 +1061,7 @@ void K3Process::commClose()
 ///////////////////////////
 
 K3ShellProcess::K3ShellProcess(const char *shellname):
-  K3Process()
+  K3Process(), d(0)
 {
   setUseShell( true, shellname ? shellname : getenv("SHELL") );
 }

@@ -28,6 +28,7 @@
 class QString;
 class QStringList;
 template <typename KT, typename VT> class QHash;
+class KMacroExpanderBasePrivate;
 
 /**
  * Abstract base class for the worker classes behind the KMacroExpander namespace
@@ -137,7 +138,7 @@ protected:
     virtual int expandEscapedMacro( const QString &str, int pos, QStringList &ret );
 
 private:
-    QChar escapechar;
+    KMacroExpanderBasePrivate * const d;
 };
 
 /**

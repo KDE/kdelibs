@@ -692,13 +692,6 @@ private:
 
   static void printQ(const QString &msg);
 
-  const KCmdLineOptions *options;
-  const char *name;
-  const char *id;
-  KCmdLineParsedOptions *parsedOptionList;
-  KCmdLineParsedArgs *parsedArgList;
-  bool isQt;
-
   static KCmdLineArgsList *argsList; // All options.
   static const KAboutData *about;
 

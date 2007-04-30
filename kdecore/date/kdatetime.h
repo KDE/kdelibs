@@ -156,7 +156,7 @@ class KDateTimeSpecPrivate;
  * @see <a href="http://www.w3.org/TR/timezone/">W3C: Working with Time Zones</a>
  * @author David Jarvie \<software@astrojar.org.uk\>.
  */
-class KDECORE_EXPORT KDateTime
+class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
 {
   public:
     /**

@@ -267,7 +267,7 @@ private:
  * @see KLibrary
  * @author Torben Weis <weis@kde.org>
  */
-class KDECORE_EXPORT KLibLoader : public QObject
+class KDECORE_EXPORT KLibLoader : public QObject //krazy:exclude=dpointer (private class is kept as a global static)
 {
     friend class KLibrary;
     friend class KLibraryPrivate;

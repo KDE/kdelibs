@@ -113,12 +113,12 @@ public:
      * @return the resources for which this factory is responsible.
      * @internal to kbuildsycoca
      */
-    const KSycocaResourceList * resourceList() const { return m_resourceList; }
+    const KSycocaResourceList * resourceList() const;
 
     /**
      * @return the sycoca dict, for factories to find entries by name.
      */
-    const KSycocaDict *sycocaDict() const { return m_sycocaDict; }
+    const KSycocaDict *sycocaDict() const;
 
     /**
      * @return true if the factory is completely empty - no entries defined
@@ -132,7 +132,6 @@ protected:
     KSycocaEntryDict *m_entryDict;
 
 private:
-    KSycocaDict *m_sycocaDict;
     class Private;
     Private* const d;
 
@@ -146,7 +145,7 @@ protected:
 /** This, instead of a typedef, allows to declare "class ..." in header files
  * @internal
  */
-class KDECORE_EXPORT KSycocaFactoryList : public QList<KSycocaFactory*>
+class KDECORE_EXPORT KSycocaFactoryList : public QList<KSycocaFactory*> //krazy:exclude=dpointer (acts as a typedef)
 {
 public:
    KSycocaFactoryList() { }

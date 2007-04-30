@@ -186,7 +186,7 @@ protected:
     QTextDecoder* decoder();
 
 private:
-    KEncodingDetectorPrivate* d;
+    KEncodingDetectorPrivate* const d;
 };
 
 #endif

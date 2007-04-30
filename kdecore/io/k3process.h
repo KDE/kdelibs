@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 class QSocketNotifier;
-class KProcessPrivate;
+class K3ProcessPrivate;
 class KPty;
 
 /**
@@ -838,12 +838,12 @@ protected:
   friend class K3ProcessController;
 
 private:
-  KProcessPrivate* const d;
+  K3ProcessPrivate* const d;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(K3Process::Communication)
 
-class KShellProcessPrivate;
+class K3ShellProcessPrivate;
 
 /**
 * @obsolete
@@ -878,10 +878,7 @@ public:
   static QString quote(const QString &arg);
 
 private:
-  QByteArray shell;
-
-private:
-  KShellProcessPrivate* d;
+  K3ShellProcessPrivate* const d;
 };
 
 

@@ -340,7 +340,7 @@ KDECORE_EXPORT kdbgstream &perror( kdbgstream &s);
  * All functions do nothing.
  * @see kdbgstream
  */
-class KDECORE_EXPORT kndbgstream {
+class KDECORE_EXPORT kndbgstream { //krazy:exclude=dpointer (dummy class - the rules don't apply)
  public:
     // Do not add dummy API docs to all methods, just ensure the whole class is skipped by doxygen
 
