@@ -23,7 +23,7 @@
 
 #include <kdecore_export.h>
 
-#include <qstringlist.h>
+#include <QtCore/QStringList>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
