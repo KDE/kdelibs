@@ -42,11 +42,11 @@ public:
      * @brief determine if this plugin can write a value into a particular
      * resource.
      **/
-    virtual bool canWrite(QIODevice& file, const QString& key) = 0;
+    virtual bool canWrite(const KUrl& file, const QString& key) = 0;
     /**
      * @brief Write a set of values into a resource pointed to by @p file.
      **/
-    virtual bool write(QIODevice& file, const QVariantMap& data) = 0;
+    virtual bool write(const KUrl& file, const QVariantMap& data) = 0;
 };
 
 #endif

@@ -166,7 +166,7 @@ public:
 
     //Private() :QSharedData() {qDebug() <<"ok: " << this;}
     void init(QIODevice& stream, const KUrl& url, time_t mtime);
-    void initWriters(QIODevice& /*file*/);
+    void initWriters(const KUrl& /*file*/);
     void operator=(const KFileMetaInfoPrivate& k) {
         items = k.items;
         kurl = k.kurl;
@@ -191,7 +191,7 @@ KFileMetaInfoPrivate::init(QIODevice& stream, const KUrl& url, time_t mtime) {
     // TODO: get data from Nepomuk
 }
 void
-KFileMetaInfoPrivate::initWriters(QIODevice& file) {
+KFileMetaInfoPrivate::initWriters(const KUrl& file) {
     QStringList mimetypes;
     QHash<QString, KFileMetaInfoItem>::iterator i;
     for (i = items.begin(); i != items.end(); ++i) {
@@ -212,7 +212,7 @@ KFileMetaInfo::KFileMetaInfo(const QString& path, const QString& /*mimetype*/,
     u.setPath(path);
     p->init(file, u, fileinfo.lastModified().toTime_t());
     if (fileinfo.isWritable()) {
-        p->initWriters(file);
+        p->initWriters(u);
     }
 }
 KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new KFileMetaInfoPrivate()) {
@@ -221,7 +221,7 @@ KFileMetaInfo::KFileMetaInfo(const KUrl& url) :p(new KFileMetaInfoPrivate()) {
     file.open(QIODevice::ReadOnly);
     p->init(file, url, fileinfo.lastModified().toTime_t());
     if (fileinfo.isWritable()) {
-        p->initWriters(file);
+        p->initWriters(url);
     }
 }
 KFileMetaInfo::KFileMetaInfo() :p(new KFileMetaInfoPrivate()) {
@@ -252,7 +252,7 @@ KFileMetaInfo::applyChanges() {
     QFile file(p->kurl.path());
     file.open(QIODevice::ReadOnly);
     for (j = data.begin(); j != data.end(); ++j) {
-        ok &= j.key()->write(file, j.value());
+        ok &= j.key()->write(p->kurl, j.value());
     }
     return ok;
 }
