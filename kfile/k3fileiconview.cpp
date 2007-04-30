@@ -425,7 +425,7 @@ void K3FileIconView::removeItem( const KFileItem *i )
 	return;
 
     if ( d->job )
-        d->job->removeItem( i );
+        d->job->removeItem( i->url() );
 
     K3FileIconViewItem *item = viewItem( i );
     m_resolver->m_lstPendingMimeIconItems.removeAll( item );
@@ -549,7 +549,11 @@ void K3FileIconView::showPreviews()
         updateIcons();
     }
 
-    d->job = KIO::filePreview(*items(), d->previewIconSize,d->previewIconSize);
+    // Must turn QList<KFileItem *> to QList<KFileItem>...
+    QList<KFileItem> itemsToPreview;
+    foreach( KFileItem* it, *items() )
+        itemsToPreview.append( *it );
+    d->job = KIO::filePreview(itemsToPreview, d->previewIconSize,d->previewIconSize);
     d->job->setIgnoreMaximumSize(d->ignoreMaximumSize);
 
     connect( d->job, SIGNAL( result( KJob * )),
