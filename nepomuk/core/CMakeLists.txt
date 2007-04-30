@@ -1,28 +1,5 @@
 project(libkmetadata)
 
-include(KMetaDataMacros)
-
-KMETADATA_GENERATE_FROM_ONTOLOGY(
-  ${kmetadata_SOURCE_DIR}/ontologies/nao.nrl
-  ${libkmetadata_BINARY_DIR}
-  NAO_HEADERS
-  NAO_SOURCES
-  NAO_INCLUDES
-  ${libkmetadata_SOURCE_DIR}/resource.h.in
-  ${libkmetadata_SOURCE_DIR}/resource.cpp.in
-)
-
-KMETADATA_GENERATE_FROM_ONTOLOGY(
-  ${kmetadata_SOURCE_DIR}/ontologies/nie.nrl
-  ${libkmetadata_BINARY_DIR}
-  NIE_HEADERS
-  NIE_SOURCES
-  NIE_INCLUDES
-)
-
-# uses NAO_INCLUDES to generate a file that allows including all generated resources
-configure_file(allresources.h.cmake ${libkmetadata_BINARY_DIR}/allresources.h)
-
 include_directories(
   ${kmetadata_BINARY_DIR}
   ${kmetadata_SOURCE_DIR}
@@ -46,8 +23,8 @@ set(kmetadata_LIB_SRCS
   ui/kmetadatatagwidget.cpp
   ui/kautoscrollarea.cpp
   ui/ktagdisplaywidget.cpp
-  ${NAO_SOURCES}
-  ${NIE_SOURCES}
+  generated/resource.cpp
+  generated/tag.cpp
 )
 
 kde4_automoc(${kmetadata_LIB_SRCS})
@@ -75,9 +52,8 @@ install(FILES
   kmetadata.h
   tools.h
   kmetadata_export.h
-  ${libkmetadata_BINARY_DIR}/allresources.h
-  ${NAO_HEADERS}
-  ${NIE_HEADERS}
+  generated/resource.h
+  generated/tag.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata
 )
 
