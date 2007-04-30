@@ -29,7 +29,6 @@
 #include "kstandarddirs.h"
 
 #include <solid/device.h>
-#include <solid/volume.h>
 #include <solid/block.h>
 
 #ifdef HAVE_VOLMGT
