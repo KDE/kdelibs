@@ -65,7 +65,7 @@ class QUrl;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KSocketFactory
+class KDECORE_EXPORT KSocketFactory // krazy:exclude=dpointer (static methods only)
 {
 public:
     /**
