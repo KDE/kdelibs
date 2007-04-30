@@ -1,0 +1,33 @@
+- VideoWidget::setFullScreen will make the real VideoWidget inaccessible for the application as the
+  backend widget is reparented to an internal widget. This internal widget is shown in fullscreen
+  mode. But this way all events that happen on the (fullscreen) video widget don't arrive at the
+  application. Forwarding events still doesn't solve the problem of mapping mouse coordinates or
+  adding custom widgets (like a toolbar). Though perhaps adding those widgets as overlay is even
+  better. :)
+
+- let the Phonon KCM check whether the hw: ALSA device already does mixing, only if it does not
+   prefer the dmix: device
+
+- add Player dbus interface in MediaProducer
+
+- add global setting to pause video when it's not visible
+
+- add a way to request a specific version (>=) from the Backend, so that known to be buggy Backends aren't used
+
+- menu support? DVD media and Matroska files can come with a menu/control track.
+  Is any special API needed for that or does clicking on the video suffice?
+
+- Subtitles
+
+- Video Overlays (OSD) like: show a rectangle as a play symbol, show the position in
+  the file as something like [IIIIIIIII------], and so on
+
+- don't crash:
+  - when no backend is available
+  - when an iface object isn't available
+
+- consider whether to add a signal to notify when the information for
+  availableAudioStreams/availableVideoStreams/availableSubtitleStreams
+  is available
+
+look at pavucontrol, gsmartmix
