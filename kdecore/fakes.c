@@ -307,18 +307,6 @@ KDECORE_EXPORT char* mkdtemp (char* _template)
 }
 #endif /* !HAVE_MKDTEMP */
 
-#ifndef HAVE_REVOKE
-#include <errno.h>
-#ifndef ENOTSUP
-#define ENOTSUP 134 /* Not supported */
-#endif
-KDECORE_EXPORT int revoke(const char *tty)
-{
-        errno = ENOTSUP;
-        return -1;
-}
-#endif
-
 #ifndef HAVE_STRLCPY
 KDECORE_EXPORT unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
 {
