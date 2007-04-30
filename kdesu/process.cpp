@@ -19,6 +19,7 @@
 #include "kcookie.h"
 
 #include <config.h>
+#include <config-pty.h>
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -52,30 +52,24 @@
 #cmakedefine HAVE_SYS_PARAM_H 1
 #cmakedefine HAVE_SYS_TIME_H 1
 #cmakedefine HAVE_SYS_SELECT_H 1
-#cmakedefine HAVE_SYS_STROPTS_H 1
 #cmakedefine HAVE_SYS_BITYPES_H 1
 #cmakedefine HAVE_SYSENT_H 1
 #cmakedefine HAVE_SYS_MNTTAB_H 1
 #cmakedefine HAVE_SYS_MNTENT_H 1
 #cmakedefine HAVE_SYS_MOUNT_H 1
-#cmakedefine HAVE_TERMIOS_H 1
-#cmakedefine HAVE_TERMIO_H 1
 
 #cmakedefine HAVE_ALLOCA_H 1
 #cmakedefine HAVE_CRT_EXTERNS_H 1
 #cmakedefine HAVE_CARBON_CARBON_H 1
 #cmakedefine HAVE_FSTAB_H 1
-#cmakedefine HAVE_LIBUTIL_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1
 #cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_PTY_H 1
 #cmakedefine HAVE_SYS_BITYPES_H 1
 #cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_SYS_UCRED_H 1
 #cmakedefine HAVE_UNISTD_H 1
-#cmakedefine HAVE_UTIL_H 1
 #cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
 
 #cmakedefine HAVE_XTEST 1
@@ -85,19 +79,14 @@
 #cmakedefine   HAVE_FADVISE 1
 #cmakedefine   HAVE_GETMNTINFO 1
 #cmakedefine   HAVE_GETPAGESIZE 1
-#cmakedefine   HAVE_GETPT 1
-#cmakedefine   HAVE_GRANTPT 1
 #cmakedefine   HAVE_INITGROUPS 1
 #cmakedefine   HAVE_MADVISE 1
 #cmakedefine   HAVE_MMAP 1
 #cmakedefine   HAVE_MKSTEMPS 1
 #cmakedefine   HAVE_MKSTEMP 1
 #cmakedefine   HAVE_MKDTEMP 1
-#cmakedefine   HAVE_OPENPTY 1
-#cmakedefine   HAVE_PTSNAME 1
 #cmakedefine   HAVE_RANDOM 1
 #cmakedefine   HAVE_READDIR_R 1
-#cmakedefine   HAVE_REVOKE 1
 #cmakedefine   HAVE_SENDFILE 1
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1
@@ -109,12 +98,9 @@
 #cmakedefine   HAVE_STRLCAT 1
 #cmakedefine   HAVE_STRRCHR 1
 #cmakedefine   HAVE_STRTOLL 1
-#cmakedefine   HAVE_UNLOCKPT 1
 #cmakedefine   HAVE_UNSETENV 1
 #cmakedefine   HAVE_USLEEP 1
-#cmakedefine   HAVE_UTEMPTER 1
 #cmakedefine   HAVE_VSNPRINTF 1
-#cmakedefine   HAVE__GETPTY 1
 #cmakedefine   HAVE_NSGETENVIRON 1
 #cmakedefine   HAVE_GETTIMEOFDAY 1
 
@@ -134,18 +120,6 @@
 #define HAVE_S_ISSOCK
 #define S_ISSOCK(mode) (1==0)
 #endif
-
-/*
- * Steven Schultz <sms at to.gd-es.com> tells us :
- * BSD/OS 4.2 doesn't have a prototype for openpty in its system header files
- */
-#ifdef __bsdi__
-__BEGIN_DECLS
-int openpty(int *, int *, char *, struct termios *, struct winsize *);
-__END_DECLS
-#endif
-
-
 
 /*
  * On HP-UX, the declaration of vsnprintf() is needed every time !

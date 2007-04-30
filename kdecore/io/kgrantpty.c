@@ -39,6 +39,7 @@
  */
 
 #include <config.h>
+#include <config-pty.h>
 
 #include <sys/types.h>
 #include <errno.h>

@@ -57,10 +57,7 @@ check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, 
 check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
 check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
 check_include_files(limits.h      HAVE_LIMITS_H)                       # various
-check_include_files("sys/types.h;libutil.h" HAVE_LIBUTIL_H)            # kdesu, kdecore
-check_include_files(util.h        HAVE_UTIL_H)                         # kdesu, kdecore
 check_include_files(mntent.h      HAVE_MNTENT_H)                       # kio, kdecore
-check_include_files(pty.h         HAVE_PTY_H)                          # kdecore
 check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
 check_include_files(sys/bitypes.h HAVE_SYS_BITYPES_H)                  # kwallet
 check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)          # kdecore
@@ -68,13 +65,10 @@ check_include_files(sys/stat.h    HAVE_SYS_STAT_H)                     # various
 check_include_files(sys/ucred.h   HAVE_SYS_UCRED_H)                    # kio
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
 check_include_files(sys/select.h  HAVE_SYS_SELECT_H)                   # various
-check_include_files(sys/stropts.h HAVE_SYS_STROPTS_H)                  # kdecore
 check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
 check_include_files(sys/mnttab.h  HAVE_SYS_MNTTAB_H)                   # kio, kdecore
 check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)                   # kio, kdecore
 check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
-check_include_files(termios.h     HAVE_TERMIOS_H)                      # kdecore
-check_include_files(termio.h      HAVE_TERMIO_H)                       # kdecore
 check_include_files(unistd.h      HAVE_UNISTD_H)                       # various
 check_include_files(stdint.h      HAVE_STDINT_H)                       # various
 check_include_files("sys/types.h;netinet/in.h"  HAVE_NETINET_IN_H)     # kio
@@ -107,19 +101,15 @@ check_function_exists(posix_fadvise    HAVE_FADVISE)                  # kioslave
 check_function_exists(backtrace        HAVE_BACKTRACE)                # kdecore, kio
 check_function_exists(getpagesize      HAVE_GETPAGESIZE)              # khtml
 check_function_exists(getpeereid       HAVE_GETPEEREID)               # kdesu
-check_function_exists(getpt           HAVE_GETPT)                     # kdesu
-check_function_exists(grantpt         HAVE_GRANTPT)                   # kdecore, kdesu
 check_function_exists(madvise         HAVE_MADVISE)                   # kdecore
 check_function_exists(mmap            HAVE_MMAP)                      # kdecore, khtml
 check_function_exists(readdir_r       HAVE_READDIR_R)                 # kio
 check_function_exists(sendfile        HAVE_SENDFILE)                  # kioslave
 check_function_exists(setlocale       HAVE_SETPRIORITY)               # kdesu
 check_function_exists(srandom         HAVE_SRANDOM)                   # config.h
-check_function_exists(unlockpt        HAVE_UNLOCKPT)                  # kdecore, kdesu
 check_function_exists(_NSGetEnviron   HAVE_NSGETENVIRON)              # kinit, config.h
 check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)              # testkjs
 
-check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)             # kdecore (kpty)
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)            # various
 
 # Check for libresolv
@@ -131,11 +121,31 @@ if (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
    set(HAVE_RESOLV_LIBRARY TRUE)
 endif (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
 
-check_library_exists(util  openpty "" HAVE_OPENPTY)
-if (HAVE_OPENPTY)
-  set(UTIL_LIBRARY util)
-endif (HAVE_OPENPTY)
+if (UNIX)
 
+  # for kdecore (kpty) & kdesu
+
+  check_include_files("sys/types.h;libutil.h" HAVE_LIBUTIL_H)
+  check_include_files(util.h       HAVE_UTIL_H)
+  check_include_files(termios.h    HAVE_TERMIOS_H)
+  check_include_files(termio.h     HAVE_TERMIO_H)
+  check_include_files(pty.h        HAVE_PTY_H)
+  check_include_files(sys/stropts.h HAVE_SYS_STROPTS_H)
+
+  check_function_exists(ptsname    HAVE_PTSNAME)
+  check_function_exists(revoke     HAVE_REVOKE)
+  check_function_exists(_getpty    HAVE__GETPTY)
+  check_function_exists(getpt      HAVE_GETPT)
+  check_function_exists(grantpt    HAVE_GRANTPT)
+  check_function_exists(unlockpt   HAVE_UNLOCKPT)
+
+  check_library_exists(utempter addToUtmp "" HAVE_UTEMPTER)
+  check_library_exists(util  openpty "" HAVE_OPENPTY)
+  if (HAVE_OPENPTY)
+    set(UTIL_LIBRARY util)
+  endif (HAVE_OPENPTY)
+
+endif (UNIX)
 
 # it seems this isn't used anywhere
 #find_library(ICE_LIB NAMES ICE PATHS /usr/X11/lib)
@@ -143,8 +153,6 @@ endif (HAVE_OPENPTY)
 
 #set(CMAKE_REQUIRED_LIBRARIES crypt)
 #check_function_exists(crypt "" HAVE_CRYPT)
-#set(CMAKE_REQUIRED_LIBRARIES util)
-#check_function_exists(openpty "" HAVE_OPENPTY)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
@@ -152,9 +160,7 @@ check_function_exists(initgroups HAVE_INITGROUPS)        # kdecore, kdesu
 check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
 check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore/fakes.c
 check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore/fakes.c
-check_function_exists(ptsname    HAVE_PTSNAME)           # kdecore, kdesu
 check_function_exists(random     HAVE_RANDOM)            # kdecore/fakes.c
-check_function_exists(revoke     HAVE_REVOKE)            # kdecore/fakes.c
 check_function_exists(strlcpy    HAVE_STRLCPY)           # kdecore/fakes.c
 check_function_exists(strlcat    HAVE_STRLCAT)           # kdecore/fakes.c
 check_function_exists(setenv     HAVE_SETENV)            # kdecore/fakes.c
@@ -162,7 +168,6 @@ check_function_exists(seteuid    HAVE_SETEUID)           # kdecore/fakes.c
 check_function_exists(setmntent  HAVE_SETMNTENT)         # kio, kdecore
 check_function_exists(unsetenv   HAVE_UNSETENV)          # kdecore/fakes.c
 check_function_exists(usleep     HAVE_USLEEP)            # kdecore/fakes.c, kdeui/qxembed
-check_function_exists(_getpty    HAVE__GETPTY)           # kdesu
 
 # check for prototypes [for functions provided by kdefakes when not available]
 
