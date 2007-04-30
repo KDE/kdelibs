@@ -121,7 +121,7 @@ using namespace DOM;
 #include "kpassivepopup.h"
 #include "kmenu.h"
 #include "rendering/render_form.h"
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <kconfiggroup.h>
 
 namespace khtml {
@@ -2973,7 +2973,7 @@ void KHTMLPart::findText()
   if ( d->m_findDialog )
   {
 #ifdef Q_WS_X11
-    KWM::activateWindow( d->m_findDialog->winId() );
+    KWindowSystem::activateWindow( d->m_findDialog->winId() );
 #else
     d->m_findDialog->activateWindow();
 #endif

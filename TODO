@@ -203,8 +203,6 @@ informations
    * install /share/apps/ksgmltools2/customization/entities/kde-standard-accels.entities
    * win32: fix path delimiter problem generated *.bat wrapper (using ' ' instead of ';')
 
-- Merge classes KWin and KWinModule into KWinModule, turn NET class into namespace (Lubos)
-
 - It looks like most of the functions KStringHandler can be removed.  At least, insword, setword, 
   remrange, and remword could be removed [DONE] .  Those four don't seem to be used anywhere inside of KDE.  Other
   functions like capitalize and reverse seem to be sparsely used. 

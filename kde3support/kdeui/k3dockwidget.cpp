@@ -41,7 +41,7 @@
 #include <klocale.h>
 #include <ktoolbar.h>
 #include <k3popupmenu.h>
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 
@@ -845,10 +845,10 @@ void K3DockWidget::applyToWidget( QWidget* s, const QPoint& p )
       XSetTransientForHint( QX11Info::display(), winId(), d->_parent->winId() );
 
 #ifdef BORDERLESS_WINDOWS
-    KWM::setType( winId(), NET::Override); //d->windowType );
+    KWindowSystem::setType( winId(), NET::Override); //d->windowType );
 //      setWFlags(WStyle_Customize | WStyle_NoBorder | WStyle_Tool);
 #else
-    KWM::setType( winId(), d->windowType );
+    KWindowSystem::setType( winId(), d->windowType );
 #endif // BORDERLESS_WINDOW
 #endif // Q_WS_X11
 #endif

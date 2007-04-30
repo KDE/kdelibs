@@ -45,7 +45,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtGui/QRadioButton>
 #include <QtGui/QShortcut>
 
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <klineedit.h>
@@ -78,7 +78,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     else
     {
         // No window associated... make sure the user notices our dialog.
-        KWM::setState( winId(), NET::KeepAbove );
+        KWindowSystem::setState( winId(), NET::KeepAbove );
         kapp->updateUserTimestamp();
     }
 # endif

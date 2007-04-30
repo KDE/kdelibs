@@ -45,7 +45,7 @@
 #include <kcursor.h>
 #include <kmenubar.h>
 #include <kdebug.h>
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <kio/netaccess.h>
 #include <QtCore/QTimer>
 #include <QtGui/QLayout>
@@ -156,7 +156,7 @@ void KMJobViewer::updateCaption()
 		setCaption(i18n("No Printer"));
 	}
 #ifdef Q_WS_X11
-	KWM::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
+	KWindowSystem::setIcons(winId(), DesktopIcon(pixname), SmallIcon(pixname));
 #endif
 }
 

@@ -66,7 +66,7 @@
 #include <kconfiggroup.h>
 
 #ifdef Q_WS_X11
-#include <kwm.h>
+#include <kwindowsystem.h>
 #endif
 
 class KRun::KRunPrivate
@@ -509,7 +509,7 @@ static pid_t runCommandInternal( K3Process* proc, const KService* service, const
           data.setWMClass( wmclass );
       if( silent )
           data.setSilent( KStartupInfoData::Yes );
-      data.setDesktop( KWM::currentDesktop());
+      data.setDesktop( KWindowSystem::currentDesktop());
       KStartupInfo::sendStartup( id, data );
   }
   pid_t pid = KProcessRunner::run( proc, binName, id );
