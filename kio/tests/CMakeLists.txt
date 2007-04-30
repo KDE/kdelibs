@@ -40,6 +40,7 @@ set(kio_unittests
   kacltest
   kdirmodeltest
   kdirlistertest
+  kmountpointtest
 )
  
 KIO_BUILD_TESTS(

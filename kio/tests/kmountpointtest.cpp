@@ -85,3 +85,36 @@ void KMountPointTest::testCurrentMountPoints()
 #endif
 }
 
+void KMountPointTest::testPossibleMountPoints()
+{
+    const KMountPoint::List mountPoints = KMountPoint::possibleMountPoints(KMountPoint::NeedRealDeviceName|KMountPoint::NeedMountOptions);
+    QVERIFY(!mountPoints.isEmpty());
+    KMountPoint::Ptr mountWithDevice;
+    foreach(KMountPoint::Ptr mountPoint, mountPoints) {
+        kDebug() << "Possible mount: " << mountPoint->mountedFrom()
+          << " (" << mountPoint->realDeviceName() << ") "
+          << mountPoint->mountPoint() << " " << mountPoint->mountType()
+                 << " options:" << mountPoint->mountOptions() << endl;
+        QVERIFY(!mountPoint->mountedFrom().isEmpty());
+        QVERIFY(!mountPoint->mountPoint().isEmpty());
+        QVERIFY(!mountPoint->mountType().isEmpty());
+        QVERIFY(!mountPoint->mountOptions().isEmpty());
+        // old bug, happened because KMountPoint called KStandardDirs::realPath instead of realFilePath
+        QVERIFY(!mountPoint->realDeviceName().endsWith('/'));
+
+        // keep one (any) mountpoint with a device name for the test below
+        if (!mountPoint->realDeviceName().isEmpty())
+            mountWithDevice = mountPoint;
+    }
+
+    QVERIFY(mountWithDevice);
+
+#ifdef Q_OS_UNIX
+    const KMountPoint::Ptr rootMountPoint = mountPoints.findByPath("/");
+    QVERIFY(rootMountPoint);
+    QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
+    QVERIFY(rootMountPoint->realDeviceName().startsWith("/dev")); // portable?
+    QVERIFY(!rootMountPoint->mountOptions().contains("noauto")); // how would this work?
+#endif
+}
+

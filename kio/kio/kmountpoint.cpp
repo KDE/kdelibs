@@ -28,6 +28,10 @@
 
 #include "kstandarddirs.h"
 
+#include <solid/devicemanager.h>
+#include <solid/device.h>
+#include <solid/volume.h>
+
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
 #endif
@@ -94,11 +98,14 @@ extern "C" void endvfsent( );
 
 class KMountPoint::Private {
 public:
-   QString mountedFrom;
-   QString device;
-   QString mountPoint;
-   QString mountType;
-   QStringList mountOptions;
+    void finalizePossibleMountPoint(DetailsNeededFlags infoNeeded);
+    void finalizeCurrentMountPoint(DetailsNeededFlags infoNeeded);
+
+    QString mountedFrom;
+    QString device;
+    QString mountPoint;
+    QString mountType;
+    QStringList mountOptions;
 };
 
 KMountPoint::KMountPoint()
@@ -139,18 +146,48 @@ KMountPoint::~KMountPoint()
  */
 static QString devNameFromOptions(const QStringList &options)
 {
-   // Search options to find the device name
-   for ( QStringList::ConstIterator it = options.begin(); it != options.end(); ++it)
-   {
-      if( (*it).startsWith("dev="))
-         return (*it).mid(4);
-   }
-   return QString("none");
+    // Search options to find the device name
+    for ( QStringList::ConstIterator it = options.begin(); it != options.end(); ++it)
+    {
+        if( (*it).startsWith("dev="))
+            return (*it).mid(4);
+    }
+    return QString("none");
+}
+
+void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNeeded)
+{
+    if (mountType == "supermount") {
+        mountedFrom = devNameFromOptions(mountOptions);
+    }
+
+    if (mountedFrom.startsWith("UUID=")) {
+        const QString uuid = mountedFrom.mid(5);
+        const QString query = "Volume.uuid == '" + uuid + "'";
+        const Solid::DeviceList lst = Solid::DeviceManager::self().findDevicesFromQuery(query);
+        if (!lst.isEmpty()) {
+            mountedFrom = lst.first().as<Solid::Block>()->device();
+        }
+    }
+
+    if (infoNeeded & NeedRealDeviceName) {
+        if (mountedFrom.startsWith('/'))
+            device = KStandardDirs::realFilePath(mountedFrom);
+    }
+    // TODO: Strip trailing '/' ?
+}
+
+void KMountPoint::Private::finalizeCurrentMountPoint(DetailsNeededFlags infoNeeded)
+{
+    if (infoNeeded & NeedRealDeviceName) {
+        if (mountedFrom.startsWith('/'))
+            device = KStandardDirs::realFilePath(mountedFrom);
+    }
 }
 
 KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded)
 {
-  KMountPoint::List result;
+    KMountPoint::List result;
 
 #ifdef HAVE_SETMNTENT
    STRUCT_SETMNTENT fstab;
@@ -174,15 +211,8 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
          mp->d->mountOptions = options.split( ',' );
       }
 
-      if(mp->d->mountType == "supermount")
-         mp->d->mountedFrom = devNameFromOptions(mp->d->mountOptions);
+      mp->d->finalizePossibleMountPoint(infoNeeded);
 
-      if (infoNeeded & NeedRealDeviceName)
-      {
-         if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
-      }
-      // TODO: Strip trailing '/' ?
       result.append(mp);
    }
    ENDMNTENT(fstab);
@@ -228,12 +258,8 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
          mp->d->mountOptions = options.split( ',');
       }
 
-      if (infoNeeded & NeedRealDeviceName)
-      {
-         if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
-      }
-      // TODO: Strip trailing '/' ?
+      mp->d->finalizePossibleMountPoint(infoNeeded);
+
       result.append(mp);
    } //while
 
@@ -244,7 +270,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
 
 KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 {
-  KMountPoint::List result;
+    KMountPoint::List result;
 
 #ifdef HAVE_GETMNTINFO
 
@@ -275,11 +301,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
          mp->d->mountOptions = options.split( ',' );
       }
 
-      if (infoNeeded & NeedRealDeviceName)
-      {
-         if (mp->d->mountedFrom.startsWith("/"))
-            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
-      }
+      mp->d->finalizeCurrentMountPoint(infoNeeded);
       // TODO: Strip trailing '/' ?
       result.append(mp);
    }
@@ -339,12 +361,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
               // TODO
             }
 
-            if (infoNeeded & NeedRealDeviceName)
-            {
-               if (mp->d->mountedFrom.startsWith("/"))
-                  mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
-            }
-
+            mp->d->finalizeCurrentMountPoint(infoNeeded);
             result.append(mp);
 
             /* goto the next vmount structure: */
@@ -378,16 +395,8 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
          QString options = QFile::decodeName(MOUNTOPTIONS(fe));
          mp->d->mountOptions = options.split( ',' );
       }
+      mp->d->finalizeCurrentMountPoint(infoNeeded);
 
-      if (mp->d->mountType == "supermount")
-         mp->d->mountedFrom = devNameFromOptions(mp->d->mountOptions);
-
-      if (infoNeeded & NeedRealDeviceName)
-      {
-         if (mp->d->mountedFrom.startsWith('/'))
-            mp->d->device = KStandardDirs::realFilePath(mp->d->mountedFrom);
-      }
-      // TODO: Strip trailing '/' ?
       result.append(mp);
    }
    ENDMNTENT(mnttab);

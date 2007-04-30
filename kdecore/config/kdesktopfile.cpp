@@ -35,7 +35,6 @@
 #include "kconfigbackend.h"
 #include "kauthorized.h"
 #include "kstandarddirs.h"
-#include "kmountpoint.h"
 
 
 class KDesktopFile::Private

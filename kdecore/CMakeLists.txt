@@ -114,7 +114,6 @@ set(kdecore_LIB_SRCS
    io/kdebugdbusiface.cpp
    io/klockfile.cpp
    io/kmessage.cpp
-   io/kmountpoint.cpp
    io/k3process.cpp
    io/k3processcontroller.cpp
    io/k3procio.cpp
@@ -314,7 +313,6 @@ install( FILES
    io/k3processcontroller.h
    io/k3procio.h
    io/klockfile.h
-   io/kmountpoint.h
    io/kpty.h
    io/ksavefile.h
    io/ktempdir.h

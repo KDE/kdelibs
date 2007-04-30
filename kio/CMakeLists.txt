@@ -41,75 +41,76 @@ add_subdirectory( kfile/tests )
 add_subdirectory( kio/dummyanalyzers )
 
 set(kiocore_STAT_SRCS
-  kio/kdirwatch.cpp
-  kio/kfileshare.cpp
-  kio/ksambashare.cpp
-  kio/knfsshare.cpp
-  kio/kdesktopfileactions.cpp
-  kio/kservicegroup.cpp
-  kio/kservicegroupfactory.cpp
-  kio/kurifilter.cpp
-  kio/kshellcompletion.cpp
-  kio/kurlcompletion.cpp
-  kio/krun.cpp
-  kio/kfileitem.cpp
-  kio/kfileitemdelegate.cpp
-  kio/kdirlister.cpp
-  kio/kimageio.cpp
-  kio/chmodjob.cpp
-  kio/kscan.cpp
-  kio/kar.cpp
-  kio/ktar.cpp
-  kio/kzip.cpp
-  kio/previewjob.cpp
-  kio/metainfojob.cpp
-  kio/davjob.cpp
-  kio/kdatatool.cpp
-  kio/karchive.cpp
-  kio/kfilefilter.cpp
-  kio/kfilemetainfo.cpp
-  kio/kfilemetainfoitem.cpp
-  kio/predicateproperties.cpp
-  kio/kfilewriteplugin.cpp
-  kio/kdbusservicestarter.cpp
-  kio/dataslave.cpp
-  kio/dataprotocol.cpp
-  kio/kacl.cpp
   kio/authinfo.cpp
-  kio/kprotocolmanager.cpp
-  kio/slave.cpp
-  kio/slaveinterface.cpp
-  kio/sessiondata.cpp
-  kio/scheduler.cpp
+  kio/chmodjob.cpp
   kio/connection.cpp
+  kio/copyjob.cpp
+  kio/dataprotocol.cpp
+  kio/dataslave.cpp
+  kio/davjob.cpp
+  kio/deletejob.cpp
+  kio/directorysizejob.cpp
+  kio/filejob.cpp
+  kio/forwardingslavebase.cpp
+  kio/global.cpp
   kio/job.cpp
   kio/jobuidelegate.cpp
-  kio/filejob.cpp
-  kio/copyjob.cpp
-  kio/deletejob.cpp
-  kio/global.cpp
-  kio/slaveconfig.cpp
+  kio/kacl.cpp
+  kio/kar.cpp
+  kio/karchive.cpp
+  kio/kbuildsycocaprogressdialog.cpp
+  kio/kdatatool.cpp
+  kio/kdbusservicestarter.cpp
+  kio/kdesktopfileactions.cpp
+  kio/kdirlister.cpp
+  kio/kdirmodel.cpp
+  kio/kdirnotify.cpp
+  kio/kdirwatch.cpp
+  kio/kemailsettings.cpp
+  kio/kfilefilter.cpp
+  kio/kfileitem.cpp
+  kio/kfileitemdelegate.cpp
+  kio/kfilemetainfo.cpp
+  kio/kfilemetainfoitem.cpp
+  kio/kfileshare.cpp
+  kio/kfilewriteplugin.cpp
+  kio/kimageio.cpp
+  kio/klimitediodevice.cpp
+  kio/kmimetypechooser.cpp
+  kio/kmimetyperesolver.cpp
+  kio/kmountpoint.cpp
+  kio/knfsshare.cpp
+  kio/kprotocolmanager.cpp
+  kio/kremoteencoding.cpp
+  kio/krun.cpp
+  kio/ksambashare.cpp
+  kio/kscan.cpp
+  kio/kservicegroup.cpp
+  kio/kservicegroupfactory.cpp
+  kio/kshellcompletion.cpp
+  kio/ktar.cpp
+  kio/kurifilter.cpp
+  kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
+  kio/kzip.cpp
+  kio/metainfojob.cpp
   kio/netaccess.cpp
+  kio/passworddialog.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
-  kio/tcpslavebase.cpp
-  kio/slavebase.cpp
-  kio/passworddialog.cpp
-  kio/forwardingslavebase.cpp
-  kio/kdirnotify.cpp
-  kio/kemailsettings.cpp
+  kio/predicateproperties.cpp
+  kio/previewjob.cpp
   kio/renamedialog.cpp
   kio/renamedialogplugin.cpp
-  kio/skipdialog.cpp
-  kio/kremoteencoding.cpp
-  kio/kmimetypechooser.cpp
-  kio/kbuildsycocaprogressdialog.cpp
   kio/safesite.cpp
-  kio/kdirmodel.cpp
-  kio/kmimetyperesolver.cpp
-  kio/directorysizejob.cpp
-  kio/klimitediodevice.cpp
+  kio/scheduler.cpp
+  kio/sessiondata.cpp
+  kio/skipdialog.cpp
+  kio/slave.cpp
+  kio/slavebase.cpp
+  kio/slaveconfig.cpp
+  kio/slaveinterface.cpp
+  kio/tcpslavebase.cpp
 )
 
 if(UNIX)
@@ -293,61 +294,62 @@ install(  FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
 install( FILES
-  kio/kimageio.h
-  kio/krun.h
-  kio/kdirwatch.h
-  kio/kautomount.h
+  kio/kacl.h
   kio/kar.h
-  kio/ktar.h
-  kio/kzip.h
-  kio/kurifilter.h
-  kio/kurlcompletion.h
-  kio/kshellcompletion.h
+  kio/karchive.h
+  kio/kautomount.h
+  kio/kbuildsycocaprogressdialog.h
+  kio/kdatatool.h
+  kio/kdbusservicestarter.h
+  kio/kdesktopfileactions.h
+  kio/kdirlister.h
+  kio/kdirmodel.h
+  kio/kdirnotify.h
+  kio/kdirwatch.h
+  kio/kemailsettings.h
+  kio/kfilefilter.h
   kio/kfileitem.h
   kio/kfileitemdelegate.h
-  kio/kfileshare.h
-  kio/ksambashare.h
-  kio/knfsshare.h
-  kio/kdirlister.h
-  kio/kservicegroup.h
-  kio/kdirnotify.h
-  kio/kurlpixmapprovider.h
-  kio/kprotocolmanager.h
-  kio/kemailsettings.h
-  kio/kscan.h
-  kio/kdatatool.h
-  kio/karchive.h
-  kio/kfilefilter.h
   kio/kfilemetainfo.h
   kio/kfilemetainfoitem.h
-  kio/predicateproperties.h
+  kio/kfileshare.h
   kio/kfilewriteplugin.h
-  kio/kmimetyperesolver.h
-  kio/kdbusservicestarter.h
-  kio/kremoteencoding.h
+  kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/kacl.h
-  kio/kdesktopfileactions.h
-  kio/kbuildsycocaprogressdialog.h
-  kio/kdirmodel.h
+  kio/kmimetyperesolver.h
+  kio/kmountpoint.h
+  kio/knfsshare.h
+  kio/kprotocolmanager.h
+  kio/kremoteencoding.h
+  kio/krun.h
+  kio/ksambashare.h
+  kio/kscan.h
+  kio/kservicegroup.h
+  kio/kshellcompletion.h
+  kio/ktar.h
+  kio/kurifilter.h
+  kio/kurlcompletion.h
+  kio/kurlpixmapprovider.h
+  kio/kzip.h
+  kio/predicateproperties.h
+  kfile/kabstractfilemodule.h
+  kfile/kabstractfilewidget.h
   kfile/kdevicelistmodel.h
   kfile/kdiskfreesp.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
-  kfile/kabstractfilewidget.h
-  kfile/kabstractfilemodule.h
   kfile/kfiledialog.h
   kfile/kfilesharedialog.h
   kfile/kicondialog.h
+  kfile/kimagefilepreview.h
   kfile/kopenwithdialog.h
+  kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
   kfile/krecentdocument.h
   kfile/kurlcombobox.h
   kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
-  kfile/kimagefilepreview.h
-  kfile/kpreviewwidgetbase.h
   bookmarks/kbookmark.h
   bookmarks/kbookmarkbar.h
   bookmarks/kbookmarkexporter.h

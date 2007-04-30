@@ -53,7 +53,6 @@ set(kdecore_unittests
  kjobtest
  kservicetest
  kglobalstatictest
- kmountpointtest
 )
 
 if(UNIX)
