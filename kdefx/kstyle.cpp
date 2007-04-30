@@ -208,6 +208,9 @@ KStyle::~KStyle()
     // hope the optimizer won't throw it away
     const DoubleButtonOption* bOpt = extractOption<const DoubleButtonOption*>(NULL);
     Q_UNUSED(bOpt)
+#ifdef __GNUC__
+#warning "mem leak: need to delete bOpt"
+#endif
 }
 
 
