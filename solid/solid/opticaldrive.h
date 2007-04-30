@@ -28,14 +28,14 @@
 
 namespace Solid
 {
-    class CdromPrivate;
+    class OpticalDrivePrivate;
 
     /**
      * This device interface is available on CD-ROM drives.
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class SOLID_EXPORT Cdrom : public StorageDrive
+    class SOLID_EXPORT OpticalDrive : public StorageDrive
     {
         Q_OBJECT
         Q_ENUMS(MediumType)
@@ -44,7 +44,7 @@ namespace Solid
         Q_PROPERTY(int readSpeed READ readSpeed)
         Q_PROPERTY(int writeSpeed READ writeSpeed)
         Q_PROPERTY(QList<int> writeSpeeds READ writeSpeeds)
-        Q_DECLARE_PRIVATE(Cdrom)
+        Q_DECLARE_PRIVATE(OpticalDrive)
 
     public:
         /**
@@ -79,12 +79,12 @@ namespace Solid
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Cdrom(QObject *backendObject);
+        explicit OpticalDrive(QObject *backendObject);
 
         /**
          * Destroys a Cdrom object.
          */
-        virtual ~Cdrom();
+        virtual ~OpticalDrive();
 
 
         /**
@@ -93,7 +93,7 @@ namespace Solid
          * @return the Cdrom device interface type
          * @see Solid::Ifaces::Enums::DeviceInterface::Type
          */
-        static Type deviceInterfaceType() { return DeviceInterface::Cdrom; }
+        static Type deviceInterfaceType() { return DeviceInterface::OpticalDrive; }
 
 
         /**
@@ -136,6 +136,6 @@ namespace Solid
     };
 }
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::Cdrom::MediumTypes)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::OpticalDrive::MediumTypes)
 
 #endif

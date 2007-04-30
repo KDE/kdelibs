@@ -24,10 +24,10 @@
 
 namespace Solid
 {
-    class CdromPrivate : public StorageDrivePrivate
+    class OpticalDrivePrivate : public StorageDrivePrivate
     {
     public:
-        CdromPrivate()
+        OpticalDrivePrivate()
             : StorageDrivePrivate() { }
     };
 }

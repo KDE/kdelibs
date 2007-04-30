@@ -34,22 +34,22 @@ Cdrom::~Cdrom()
 }
 
 
-Solid::Cdrom::MediumTypes Cdrom::supportedMedia() const
+Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
 {
-    Solid::Cdrom::MediumTypes supported;
+    Solid::OpticalDrive::MediumTypes supported;
 
-    QMap<Solid::Cdrom::MediumType, QString> map;
-    map[Solid::Cdrom::Cdr] = "storage.cdrom.cdr";
-    map[Solid::Cdrom::Cdrw] = "storage.cdrom.cdrw";
-    map[Solid::Cdrom::Dvd] = "storage.cdrom.dvd";
-    map[Solid::Cdrom::Dvdr] = "storage.cdrom.dvdr";
-    map[Solid::Cdrom::Dvdrw] ="storage.cdrom.dvdrw";
-    map[Solid::Cdrom::Dvdram] ="storage.cdrom.dvdram";
-    map[Solid::Cdrom::Dvdplusr] ="storage.cdrom.dvdplusr";
-    map[Solid::Cdrom::Dvdplusrw] ="storage.cdrom.dvdplusrw";
-    map[Solid::Cdrom::Dvdplusdl] ="storage.cdrom.dvdplusrdl";
+    QMap<Solid::OpticalDrive::MediumType, QString> map;
+    map[Solid::OpticalDrive::Cdr] = "storage.cdrom.cdr";
+    map[Solid::OpticalDrive::Cdrw] = "storage.cdrom.cdrw";
+    map[Solid::OpticalDrive::Dvd] = "storage.cdrom.dvd";
+    map[Solid::OpticalDrive::Dvdr] = "storage.cdrom.dvdr";
+    map[Solid::OpticalDrive::Dvdrw] ="storage.cdrom.dvdrw";
+    map[Solid::OpticalDrive::Dvdram] ="storage.cdrom.dvdram";
+    map[Solid::OpticalDrive::Dvdplusr] ="storage.cdrom.dvdplusr";
+    map[Solid::OpticalDrive::Dvdplusrw] ="storage.cdrom.dvdplusrw";
+    map[Solid::OpticalDrive::Dvdplusdl] ="storage.cdrom.dvdplusrdl";
 
-    foreach (const Solid::Cdrom::MediumType type, map.keys())
+    foreach (const Solid::OpticalDrive::MediumType type, map.keys())
     {
         if (m_device->property(map[type]).toBool())
         {

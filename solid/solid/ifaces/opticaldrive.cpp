@@ -17,9 +17,9 @@
 
 */
 
-#include "cdrom.h"
+#include "opticaldrive.h"
 
-Solid::Ifaces::Cdrom::~Cdrom()
+Solid::Ifaces::OpticalDrive::~OpticalDrive()
 {
 }
 

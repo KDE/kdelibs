@@ -222,7 +222,7 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::StorageDrive:
         iface = new FakeStorage(this);
         break;
-    case Solid::DeviceInterface::Cdrom:
+    case Solid::DeviceInterface::OpticalDrive:
         iface = new FakeCdrom(this);
         break;
     case Solid::DeviceInterface::StorageVolume:

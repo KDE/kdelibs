@@ -13,7 +13,7 @@ set(solid_LIB_SRCS
    processor.cpp 
    block.cpp 
    storagedrive.cpp 
-   cdrom.cpp 
+   opticaldrive.cpp 
    storagevolume.cpp 
    opticaldisc.cpp 
    camera.cpp 
@@ -38,7 +38,7 @@ set(solid_LIB_SRCS
    ifaces/block.cpp
    ifaces/button.cpp
    ifaces/camera.cpp
-   ifaces/cdrom.cpp
+   ifaces/opticaldrive.cpp
    ifaces/device.cpp
    ifaces/deviceinterface.cpp
    ifaces/devicemanager.cpp
@@ -119,7 +119,7 @@ target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
 ########### install files ###############
 
-install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h cdrom.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkhw.h acadapter.h battery.h button.h display.h audiohw.h dvbhw.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

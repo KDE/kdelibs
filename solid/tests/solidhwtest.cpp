@@ -107,7 +107,7 @@ void SolidHwTest::testDeviceBasicFeatures()
 
     // Query device interfaces
     QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageDrive), true);
-    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::Cdrom), true);
+    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive), true);
     QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageVolume), false);
 
     QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::Unknown), false);
@@ -281,7 +281,7 @@ void SolidHwTest::testDeviceInterfaceIntrospection_data()
     QTest::newRow("DeviceInterface: Processor") << "Processor" << (int)Solid::DeviceInterface::Processor;
     QTest::newRow("DeviceInterface: Block") << "Block" << (int)Solid::DeviceInterface::Block;
     QTest::newRow("DeviceInterface: StorageDrive") << "StorageDrive" << (int)Solid::DeviceInterface::StorageDrive;
-    QTest::newRow("DeviceInterface: Cdrom") << "Cdrom" << (int)Solid::DeviceInterface::Cdrom;
+    QTest::newRow("DeviceInterface: OpticalDrive") << "OpticalDrive" << (int)Solid::DeviceInterface::OpticalDrive;
     QTest::newRow("DeviceInterface: StorageVolume") << "StorageVolume" << (int)Solid::DeviceInterface::StorageVolume;
     QTest::newRow("DeviceInterface: OpticalDisc") << "OpticalDisc" << (int)Solid::DeviceInterface::OpticalDisc;
     QTest::newRow("DeviceInterface: Camera") << "Camera" << (int)Solid::DeviceInterface::Camera;

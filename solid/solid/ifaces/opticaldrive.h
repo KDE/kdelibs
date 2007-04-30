@@ -23,7 +23,7 @@
 #include <QList>
 
 #include <solid/ifaces/storagedrive.h>
-#include <solid/cdrom.h>
+#include <solid/opticaldrive.h>
 
 namespace Solid
 {
@@ -34,20 +34,20 @@ namespace Ifaces
      *
      * A Cdrom is a storage that can handle optical discs.
      */
-    class Cdrom : virtual public StorageDrive
+    class OpticalDrive : virtual public StorageDrive
     {
     public:
         /**
          * Destroys a Cdrom object.
          */
-        virtual ~Cdrom();
+        virtual ~OpticalDrive();
 
         /**
          * Retrieves the medium types this drive supports.
          *
          * @return the flag set indicating the supported medium types
          */
-        virtual Solid::Cdrom::MediumTypes supportedMedia() const = 0;
+        virtual Solid::OpticalDrive::MediumTypes supportedMedia() const = 0;
 
         /**
          * Retrieves the maximum read speed of this drive in kilobytes.
@@ -84,6 +84,6 @@ namespace Ifaces
 }
 }
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::Cdrom, "org.kde.Solid.Ifaces.Cdrom/0.1")
+Q_DECLARE_INTERFACE(Solid::Ifaces::OpticalDrive, "org.kde.Solid.Ifaces.OpticalDrive/0.1")
 
 #endif

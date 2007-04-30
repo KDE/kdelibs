@@ -20,19 +20,19 @@
 #ifndef CDROM_H
 #define CDROM_H
 
-#include "solid/ifaces/cdrom.h"
+#include "solid/ifaces/opticaldrive.h"
 #include "solid/backends/hal/halstorage.h"
 
-class Cdrom : public Storage, virtual public Solid::Ifaces::Cdrom
+class Cdrom : public Storage, virtual public Solid::Ifaces::OpticalDrive
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Cdrom)
+    Q_INTERFACES(Solid::Ifaces::OpticalDrive)
 
 public:
     Cdrom(HalDevice *device);
     virtual ~Cdrom();
 
-    virtual Solid::Cdrom::MediumTypes supportedMedia() const;
+    virtual Solid::OpticalDrive::MediumTypes supportedMedia() const;
     virtual int readSpeed() const;
     virtual int writeSpeed() const;
     virtual QList<int> writeSpeeds() const;

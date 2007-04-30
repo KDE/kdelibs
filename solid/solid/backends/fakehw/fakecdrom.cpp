@@ -32,24 +32,24 @@ FakeCdrom::~FakeCdrom()
 
 }
 
-Solid::Cdrom::MediumTypes FakeCdrom::supportedMedia() const
+Solid::OpticalDrive::MediumTypes FakeCdrom::supportedMedia() const
 {
-    Solid::Cdrom::MediumTypes supported;
+    Solid::OpticalDrive::MediumTypes supported;
 
-    QMap<Solid::Cdrom::MediumType, QString> map;
-    map[Solid::Cdrom::Cdr] = "cdr";
-    map[Solid::Cdrom::Cdrw] = "cdrw";
-    map[Solid::Cdrom::Dvd] = "dvd";
-    map[Solid::Cdrom::Dvdr] = "dvdr";
-    map[Solid::Cdrom::Dvdrw] ="dvdrw";
-    map[Solid::Cdrom::Dvdram] ="dvdram";
-    map[Solid::Cdrom::Dvdplusr] ="dvdplusr";
-    map[Solid::Cdrom::Dvdplusrw] ="dvdplusrw";
-    map[Solid::Cdrom::Dvdplusdl] ="dvdplusrdl";
+    QMap<Solid::OpticalDrive::MediumType, QString> map;
+    map[Solid::OpticalDrive::Cdr] = "cdr";
+    map[Solid::OpticalDrive::Cdrw] = "cdrw";
+    map[Solid::OpticalDrive::Dvd] = "dvd";
+    map[Solid::OpticalDrive::Dvdr] = "dvdr";
+    map[Solid::OpticalDrive::Dvdrw] ="dvdrw";
+    map[Solid::OpticalDrive::Dvdram] ="dvdram";
+    map[Solid::OpticalDrive::Dvdplusr] ="dvdplusr";
+    map[Solid::OpticalDrive::Dvdplusrw] ="dvdplusrw";
+    map[Solid::OpticalDrive::Dvdplusdl] ="dvdplusrdl";
 
     QStringList supported_medialist = fakeDevice()->property("supportedMedia").toString().simplified().split(',');
 
-    foreach (const Solid::Cdrom::MediumType type, map.keys())
+    foreach (const Solid::OpticalDrive::MediumType type, map.keys())
     {
         if (supported_medialist.indexOf(map[type]) != -1)
         {

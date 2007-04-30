@@ -293,7 +293,7 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::StorageDrive:
         iface = new Storage(this);
         break;
-    case Solid::DeviceInterface::Cdrom:
+    case Solid::DeviceInterface::OpticalDrive:
         iface = new Cdrom(this);
         break;
     case Solid::DeviceInterface::StorageVolume:

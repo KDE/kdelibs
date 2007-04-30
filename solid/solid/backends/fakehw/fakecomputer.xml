@@ -271,7 +271,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_model_solid_writer">
                     <property key="name">Solid IDE DVD Writer</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="interfaces">Block,StorageDrive,Cdrom</property>
+                    <property key="interfaces">Block,StorageDrive,OpticalDrive</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_002_ide_1_0</property>
 
                     <property key="minor">0</property>
@@ -317,7 +317,7 @@
                 <device udi="/org/kde/solid/fakehw/storage_model_solid_reader">
                     <property key="name">Solid IDE DVD Reader</property>
                     <property key="vendor">Acme Corporation</property>
-                    <property key="interfaces">Block,StorageDrive,Cdrom</property>
+                    <property key="interfaces">Block,StorageDrive,OpticalDrive</property>
                     <property key="parent">/org/kde/solid/fakehw/pci_002_ide_1_1</property>
 
                     <property key="minor">0</property>

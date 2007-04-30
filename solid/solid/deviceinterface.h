@@ -61,7 +61,7 @@ namespace Solid
          * - Display : A video display
          */
         enum Type { Unknown = 0, GenericInterface = 1, Processor = 2,
-                    Block = 3, StorageDrive = 4, Cdrom = 5,
+                    Block = 3, StorageDrive = 4, OpticalDrive = 5,
                     StorageVolume = 6, OpticalDisc = 7,
                     Camera = 8, PortableMediaPlayer = 9,
                     NetworkHw = 10, AcAdapter = 11, Battery = 12,

@@ -57,7 +57,7 @@ public:
         case Solid::DeviceInterface::StorageDrive:
             list << "storage";
             break;
-        case Solid::DeviceInterface::Cdrom:
+        case Solid::DeviceInterface::OpticalDrive:
             list << "storage.cdrom";
             break;
         case Solid::DeviceInterface::StorageVolume:
@@ -109,7 +109,7 @@ public:
         else if (capability == "storage")
             return Solid::DeviceInterface::StorageDrive;
         else if (capability == "storage.cdrom")
-            return Solid::DeviceInterface::Cdrom;
+            return Solid::DeviceInterface::OpticalDrive;
         else if (capability == "volume")
             return Solid::DeviceInterface::StorageVolume;
         else if (capability == "volume.disc")

@@ -35,8 +35,8 @@
 #include <solid/ifaces/block.h>
 #include <solid/storagedrive.h>
 #include <solid/ifaces/storagedrive.h>
-#include <solid/cdrom.h>
-#include <solid/ifaces/cdrom.h>
+#include <solid/opticaldrive.h>
+#include <solid/ifaces/opticaldrive.h>
 #include <solid/storagevolume.h>
 #include <solid/ifaces/storagevolume.h>
 #include <solid/opticaldisc.h>
@@ -178,8 +178,8 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
             case DeviceInterface::StorageDrive:
                 iface = deviceinterface_cast<Ifaces::StorageDrive, StorageDrive>(dev_iface);
                 break;
-            case DeviceInterface::Cdrom:
-                iface = deviceinterface_cast<Ifaces::Cdrom, Cdrom>(dev_iface);
+            case DeviceInterface::OpticalDrive:
+                iface = deviceinterface_cast<Ifaces::OpticalDrive, OpticalDrive>(dev_iface);
                 break;
             case DeviceInterface::StorageVolume:
                 iface = deviceinterface_cast<Ifaces::StorageVolume, StorageVolume>(dev_iface);

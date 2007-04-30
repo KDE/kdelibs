@@ -20,20 +20,20 @@
 #ifndef FAKECDROM_H
 #define FAKECDROM_H
 
-#include <solid/ifaces/cdrom.h>
+#include <solid/ifaces/opticaldrive.h>
 #include "fakestorage.h"
 
-class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::Cdrom
+class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::OpticalDrive
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Cdrom)
+    Q_INTERFACES(Solid::Ifaces::OpticalDrive)
 
 public:
     explicit FakeCdrom(FakeDevice *device);
     virtual ~FakeCdrom();
 
 public Q_SLOTS:
-    virtual Solid::Cdrom::MediumTypes supportedMedia() const;
+    virtual Solid::OpticalDrive::MediumTypes supportedMedia() const;
     virtual int readSpeed() const;
     virtual int writeSpeed() const;
     virtual QList<int> writeSpeeds() const;
