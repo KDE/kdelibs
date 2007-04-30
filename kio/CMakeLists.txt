@@ -139,7 +139,7 @@ set(kfile_STAT_SRCS
   kfile/kacleditwidget.cpp
   kfile/kdevicelistitem.cpp
   kfile/kdevicelistmodel.cpp
-  kfile/kdiskfreesp.cpp
+  kfile/kdiskfreespace.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
   kfile/kfiledialog.cpp
@@ -335,7 +335,7 @@ install( FILES
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
   kfile/kdevicelistmodel.h
-  kfile/kdiskfreesp.h
+  kfile/kdiskfreespace.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h

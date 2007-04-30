@@ -1,5 +1,5 @@
 /*
- * kdiskfreesp.cpp
+ * kdiskfreespace.cpp
  *
  * Copyright (c) 1999 Michael Kropfberger <michael.kropfberger@gmx.net>
  *
@@ -22,16 +22,17 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "kdiskfreesp.h"
+#include "kdiskfreespace.h"
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
 
 #include <kdebug.h>
 #include <k3process.h>
+#include <kmountpoint.h>
 #include <kio/global.h>
 #include <config-kfile.h>
 
-#include "kdiskfreesp.moc"
+#include "kdiskfreespace.moc"
 
 #define DF_COMMAND    "df"
 #define DF_ARGS       "-k"
@@ -43,7 +44,7 @@
 /***************************************************************************
   * constructor
 **/
-KDiskFreeSp::KDiskFreeSp(QObject *parent)
+KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
     : QObject(parent)
 {
     dfProc = new K3Process(); Q_CHECK_PTR(dfProc);
@@ -60,7 +61,7 @@ KDiskFreeSp::KDiskFreeSp(QObject *parent)
 /***************************************************************************
   * destructor
 **/
-KDiskFreeSp::~KDiskFreeSp()
+KDiskFreeSpace::~KDiskFreeSpace()
 {
     delete dfProc;
 }
@@ -68,7 +69,7 @@ KDiskFreeSp::~KDiskFreeSp()
 /***************************************************************************
   * is called, when the df-command writes on StdOut
 **/
-void KDiskFreeSp::receivedDFStdErrOut(K3Process *, char *data, int len)
+void KDiskFreeSpace::receivedDFStdErrOut(K3Process *, char *data, int len)
 {
   QByteArray tmp(data,len+1);  // adds a zero-byte
   dfStringErrOut.append(tmp);
@@ -77,7 +78,7 @@ void KDiskFreeSp::receivedDFStdErrOut(K3Process *, char *data, int len)
 /***************************************************************************
   * reads the df-commands results
 **/
-int KDiskFreeSp::readDF( const QString & mountPoint )
+int KDiskFreeSpace::readDF( const QString & mountPoint )
 {
   if (readingDFStdErrOut || dfProc->isRunning())
     return -1;
@@ -94,7 +95,7 @@ int KDiskFreeSp::readDF( const QString & mountPoint )
 /***************************************************************************
   * is called, when the df-command has finished
 **/
-void KDiskFreeSp::dfDone()
+void KDiskFreeSpace::dfDone()
 {
   readingDFStdErrOut=true;
 
@@ -160,10 +161,10 @@ void KDiskFreeSp::dfDone()
   delete this;
 }
 
-KDiskFreeSp * KDiskFreeSp::findUsageInfo( const QString & path )
+KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )
 {
-    KDiskFreeSp * job = new KDiskFreeSp;
-    QString mountPoint = KIO::findPathMountPoint( path );
-    job->readDF( mountPoint );
+    KDiskFreeSpace * job = new KDiskFreeSpace;
+    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( path );
+    job->readDF( mp ? mp->mountPoint() : QString() );
     return job;
 }

@@ -27,7 +27,7 @@
 #define KDISKFREESP_H
 
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include <kio/kio_export.h>
 
@@ -37,15 +37,15 @@ class K3Process;
  * This class parses the output of "df" to find the disk usage
  * information for a given partition (mount point).
  */
-class KIO_EXPORT KDiskFreeSp : public QObject
-{  
+class KIO_EXPORT KDiskFreeSpace : public QObject
+{
 Q_OBJECT
 public:
-   KDiskFreeSp( QObject *parent=0);
+   KDiskFreeSpace( QObject *parent=0);
    /**
     * Destructor - this object autodeletes itself when it's done
     */
-   ~KDiskFreeSp();
+   ~KDiskFreeSpace();
    /**
     * Call this to fire a search on the disk usage information
     * for @p mountPoint. foundMountPoint will be emitted
@@ -61,7 +61,7 @@ public:
     * if this mount point is found, with the info requested.
     * done is emitted in any case.
     */
-   static KDiskFreeSp * findUsageInfo( const QString & path );
+   static KDiskFreeSpace * findUsageInfo( const QString & path );
 
 Q_SIGNALS:
    void foundMountPoint( const QString & mountPoint, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail );
@@ -81,8 +81,8 @@ private:
   QByteArray          dfStringErrOut;
   QString           m_mountPoint;
   bool              readingDFStdErrOut;
-  class KDiskFreeSpPrivate;
-  KDiskFreeSpPrivate * d;
+  class KDiskFreeSpacePrivate;
+  KDiskFreeSpacePrivate * d;
 };
 /***************************************************************************/
 

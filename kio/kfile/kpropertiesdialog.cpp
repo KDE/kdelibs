@@ -82,7 +82,7 @@ extern "C" {
 #include <kdialog.h>
 #include <kdirwatch.h>
 #include <kdirnotify.h>
-#include <kdiskfreesp.h>
+#include <kdiskfreespace.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kicondialog.h>
@@ -1106,7 +1106,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       d->m_freeSpaceLabel = new QLabel( d->m_frame );
       grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
 
-      KDiskFreeSp * job = new KDiskFreeSp;
+      KDiskFreeSpace * job = new KDiskFreeSpace;
       connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
                const unsigned long&, const QString& ) ),
                this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
@@ -1284,7 +1284,7 @@ void KFilePropsPlugin::slotSizeDetermine()
     KUrl url = item->mostLocalUrl( isLocal );
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
     if (mp) {
-      KDiskFreeSp * job = new KDiskFreeSp;
+      KDiskFreeSpace * job = new KDiskFreeSpace;
       connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
                const unsigned long&, const QString& ) ),
                this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
@@ -3017,7 +3017,7 @@ void KDevicePropsPlugin::updateInfo()
 
   if ( !mountpoint->text().isEmpty() )
   {
-    KDiskFreeSp * job = new KDiskFreeSp;
+    KDiskFreeSpace * job = new KDiskFreeSpace;
     connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
                                            const unsigned long&, const QString& ) ),
              this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
