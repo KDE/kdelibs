@@ -72,8 +72,9 @@ namespace Solid
          * - MemoryStick : A Memory Stick card reader
          * - SmartMedia : A Smart Media card reader
          * - SdMmc : A SecureDigital/MultiMediaCard card reader
+         * - Xd : A xD card reader
          */
-        enum DriveType { HardDisk, CdromDrive, Floppy, Tape, CompactFlash, MemoryStick, SmartMedia, SdMmc };
+        enum DriveType { HardDisk, CdromDrive, Floppy, Tape, CompactFlash, MemoryStick, SmartMedia, SdMmc, Xd };
 
 
 

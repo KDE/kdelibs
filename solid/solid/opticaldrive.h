@@ -31,7 +31,7 @@ namespace Solid
     class OpticalDrivePrivate;
 
     /**
-     * This device interface is available on CD-ROM drives.
+     * This device interface is available on CD-R*,DVD*,Blu-Ray,HD-DVD drives.
      *
      * A Cdrom is a storage that can handle optical discs.
      */
@@ -104,14 +104,14 @@ namespace Solid
         MediumTypes supportedMedia() const;
 
         /**
-         * Retrieves the maximum read speed of this drive in kilobytes.
+         * Retrieves the maximum read speed of this drive in kilobytes per second.
          *
          * @return the maximum read speed
          */
         int readSpeed() const;
 
         /**
-         * Retrieves the maximum write speed of this drive in kilobytes.
+         * Retrieves the maximum write speed of this drive in kilobytes per second.
          *
          * @return the maximum write speed
          */
@@ -119,7 +119,7 @@ namespace Solid
 
         /**
          * Retrieves the list of supported write speeds of this drive in
-         * kilobytes.
+         * kilobytes per second.
          *
          * @return the list of supported write speeds
          */

@@ -31,7 +31,7 @@ namespace Solid
     /**
      * This device interface is available on optical discs.
      *
-     * An optical disc is a volume that can be inserted in a cdrom drive.
+     * An optical disc is a volume that can be inserted in CD-R*,DVD*,Blu-Ray,HD-DVD drives.
      */
     class SOLID_EXPORT OpticalDisc : public StorageVolume
     {

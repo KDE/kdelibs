@@ -73,7 +73,7 @@ namespace Solid
         /**
          * This signal is emitted when the A/C adapter is plugged or unplugged.
          *
-         * @param newState true if the A/C adapter is plugged is mounted, false otherwise
+         * @param newState true if the A/C adapter is plugged, false otherwise
          */
         void plugStateChanged(bool newState);
     };

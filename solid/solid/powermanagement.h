@@ -33,7 +33,7 @@ namespace Solid
      * This namespace allows to query the underlying system to obtain information
      * about the hardware available.
      *
-     * It's the unique entry point for power management. Applications should use
+     * It is the single entry point for power management. Applications should use
      * it to control or query the power management features of the system.
      *
      * Note that it's implemented as a singleton and encapsulates the backend logic.
@@ -45,18 +45,18 @@ namespace Solid
         /**
          * This enum type defines the different suspend methods.
          *
-         * - UnknownSuspendMethod: The name says it all
-         * - Standby: Processes are stopped, some hardware is deactivated (ACPI S1)
-         * - ToRam: Most devices are deactivated, only RAM is powered (ACPI S3)
-         * - ToDisk: State of the machine is saved to disk, and it's powered down (ACPI S4)
+         * - StandbyState: Processes are stopped, some hardware is deactivated (ACPI S1)
+         * - SuspendState: Most devices are deactivated, only RAM is powered (ACPI S3)
+         * - HibernateState: State of the machine is saved to disk, and the machine is powered down (ACPI S4)
          */
         enum SleepState { StandbyState = 1, SuspendState = 2, HibernateState = 4 };
 
         /**
-         * Retrieves the current state of the system AC adapter.
+         * Retrieves a high level indication of how applications should behave according to the 
+         * power management subsystem.  For example, when on battery power, this method will return
+         * true.
          *
-         * @return the current AC adapter state
-         * @see Solid::PowerManager::AcAdapterState
+         * @return whether apps should conserve power
          */
         SOLID_EXPORT bool appShouldConserveResources();
 
@@ -73,20 +73,52 @@ namespace Solid
         SOLID_EXPORT QString stringForSleepState(SleepState state);
 
         /**
-         * Requests a suspend of the system.
+         * Requests that the system goes to sleep
          *
-         * @param method the suspend method to use
-         * @return the job handling the operation
+         * @param method the sleep state use
+         * @receiver the object to call a slot on once the operation completes
+         * @member the slot to call
          */
         SOLID_EXPORT void requestSleep(SleepState state, QObject *receiver, const char *member);
 
-        enum SuppressException { NoSuppressException = 0, ExceptUserTriggered = 1, ExceptOnLowBattery = 2,
+        /**
+         * This enum describes scenarios when system sleep should not be suppressed.
+         * The motivation for these is for a user application to be able to suppress system sleep,
+         * for example so that the system does not sleep during a DVD-R write even if the laptop lid
+         * is closed, but that it should sleep if the battery is almost empty.
+         * This enum is not related to programming exceptions.
+         *
+         * - SuppressWithoutException: Always suppress system sleep
+         * - ExceptUserTriggered: Suppress unless the sleep was caused by the user
+         * - ExceptOnLowBattery: Suppress sleep unless due to low battery levels
+         * - DefaultSuppressExceptions: Convenience value encompassing both user triggered and low
+         *   battery exceptions
+         */
+        enum SuppressException { SuppressWithoutException = 0, ExceptUserTriggered = 1, ExceptOnLowBattery = 2,
                                  DefaultSuppressExceptions = ExceptUserTriggered|ExceptOnLowBattery };
 
         Q_DECLARE_FLAGS(SuppressExceptions, SuppressException)
 
+        /**
+         * Tell the power management subsystem to suppress automatic system sleep until further
+         * notice.
+         *
+         * @param reason Give a reason for not allowing sleep, to be used in giving user feedback
+         * about why a sleep event was prevented
+         * @param exceptions Set of SuppressException flags stating which suppress reasons should be
+         * * allowed despite the suppress. @see Solid::PowerManager::SuppressException
+         * @return a 'cookie' value representing the suppression request.  Used by the power manager to
+         * track the application's outstanding suppression requests.  Returns -1 if the request was
+         * denied.
+         */
         SOLID_EXPORT int beginSuppressingSleep(const QString &reason = QString(),
                                                SuppressExceptions exceptions = DefaultSuppressExceptions);
+        /**
+         * Tell the power management that a particular sleep suppression is no longer needed.  When
+         * no more suppressions are active, the system will be free to sleep automatically
+         * @param cookie The cookie acquired when requesting sleep suppression
+         * @return true if the suppression was stopped, false if an invalid cookie was given
+         */
         SOLID_EXPORT bool stopSuppressingSleep(int cookie);
 
         class Notifier : public QObject
