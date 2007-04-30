@@ -342,7 +342,7 @@ public:
      * @see factory
      * @deprecated use library() with QLibrary::ExportExternalSymbolsHint hint
      */
-    KLibrary* globalLibrary( const char *name );
+    KDE_DEPRECATED KLibrary* globalLibrary( const char *name );
 
     /**
      * Returns an error message that can be useful to debug the problem.
