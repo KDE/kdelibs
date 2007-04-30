@@ -43,7 +43,7 @@ public:
      * Do not create a DirectorySizeJob directly. Use KIO::directorySize() instead.
      * instead.
      */
-    DirectorySizeJob( const KFileItemList & lstItems );
+    DirectorySizeJob( const QList<KFileItem> & lstItems );
 
     ~DirectorySizeJob();
 
@@ -78,7 +78,7 @@ private:
     KIO::filesize_t m_totalSize;
     KIO::filesize_t m_totalFiles;
     KIO::filesize_t m_totalSubdirs;
-    KFileItemList m_lstItems;
+    QList<KFileItem> m_lstItems;
     int m_currentItem;
 private:
     class DirectorySizeJobPrivate* d;
@@ -101,7 +101,7 @@ KIO_EXPORT DirectorySizeJob * directorySize( const KUrl & directory );
  * we directly know if the item is a file or a directory,
  * and in case of a file, we already have its size.
  */
-KIO_EXPORT DirectorySizeJob * directorySize( const KFileItemList & lstItems );
+KIO_EXPORT DirectorySizeJob * directorySize( const QList<KFileItem> & lstItems );
 
 }
 

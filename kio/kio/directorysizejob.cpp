@@ -31,7 +31,7 @@ DirectorySizeJob::DirectorySizeJob( const KUrl & directory )
     startNextJob( directory );
 }
 
-DirectorySizeJob::DirectorySizeJob( const KFileItemList & lstItems )
+DirectorySizeJob::DirectorySizeJob( const QList<KFileItem> & lstItems )
     : KIO::Job(), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_lstItems(lstItems), m_currentItem(0)
 {
     QTimer::singleShot( 0, this, SLOT(processNextItem()) );
@@ -46,19 +46,19 @@ void DirectorySizeJob::processNextItem()
 {
     while (m_currentItem < m_lstItems.count())
     {
-        KFileItem * item = m_lstItems[m_currentItem++];
-	if ( !item->isLink() )
+        const KFileItem item = m_lstItems[m_currentItem++];
+	if ( !item.isLink() )
 	{
-            if ( item->isDir() )
+            if ( item.isDir() )
             {
                 kDebug(7007) << "DirectorySizeJob::processNextItem dir -> listing" << endl;
-                KUrl url = item->url();
+                KUrl url = item.url();
                 startNextJob( url );
                 return; // we'll come back later, when this one's finished
             }
             else
             {
-                m_totalSize += item->size();
+                m_totalSize += item.size();
                 kDebug(7007) << "DirectorySizeJob::processNextItem file -> " << m_totalSize << endl;
             }
 	}
@@ -129,7 +129,7 @@ DirectorySizeJob * KIO::directorySize( const KUrl & directory )
 }
 
 //static
-DirectorySizeJob * KIO::directorySize( const KFileItemList & lstItems )
+DirectorySizeJob * KIO::directorySize( const QList<KFileItem> & lstItems )
 {
     DirectorySizeJob *job = new DirectorySizeJob(lstItems);
     job->setUiDelegate(new JobUiDelegate());

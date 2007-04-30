@@ -1266,7 +1266,13 @@ void KFilePropsPlugin::slotSizeDetermine()
   m_sizeLabel->setText( i18n("Calculating...") );
   kDebug(250) << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item() << endl;
   kDebug(250) << " URL=" << properties->item()->url().url() << endl;
-  d->dirSizeJob = KIO::directorySize( properties->items() );
+
+  // Must turn QList<KFileItem *> to QList<KFileItem>... # TODO port KPropertiesDialog to QList<KFileItem>
+  QList<KFileItem> itemList;
+  foreach( KFileItem* it, properties->items() )
+      itemList.append( *it );
+
+  d->dirSizeJob = KIO::directorySize( itemList );
   d->dirSizeUpdateTimer = new QTimer(this);
   connect( d->dirSizeUpdateTimer, SIGNAL( timeout() ),
            SLOT( slotDirSizeUpdate() ) );
