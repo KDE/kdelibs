@@ -23,7 +23,7 @@
 #include "audiodeviceenumerator.h"
 #include "phononnamespace_p.h"
 #include <solid/device.h>
-#include <solid/audiohw.h>
+#include <solid/audiointerface.h>
 #include <kconfiggroup.h>
 
 namespace Phonon
@@ -36,25 +36,25 @@ AudioDevice::AudioDevice()
 AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
-    Solid::AudioHw *audioHw = audioDevice.as<Solid::AudioHw>();
+    Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
     pDebug() << Q_FUNC_INFO << audioHw->driverHandles();
     d->udi = audioDevice.udi();
     d->cardName = audioHw->name();
     d->deviceIds = audioHw->driverHandles();
     switch (audioHw->soundcardType()) {
-    case Solid::AudioHw::InternalSoundcard:
+    case Solid::AudioInterface::InternalSoundcard:
         d->icon = QLatin1String("pci-card");
         break;
-    case Solid::AudioHw::UsbSoundcard:
+    case Solid::AudioInterface::UsbSoundcard:
         d->icon = QLatin1String("usb-device");
         break;
-    case Solid::AudioHw::FirewireSoundcard:
+    case Solid::AudioInterface::FirewireSoundcard:
         d->icon = QLatin1String("firewire-device");
         break;
-    case Solid::AudioHw::Headset:
+    case Solid::AudioInterface::Headset:
         d->icon = QLatin1String("headset");
         break;
-    case Solid::AudioHw::Modem:
+    case Solid::AudioInterface::Modem:
         d->icon = QLatin1String("modem");
         // should a modem be a valid device so that it's shown to the user?
         d->valid = false;
@@ -65,16 +65,16 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     d->valid = true;
 
     QString groupName;
-    Solid::AudioHw::AudioHwTypes deviceType = audioHw->deviceType();
-    if (deviceType == Solid::AudioHw::AudioInput) {
+    Solid::AudioInterface::AudioInterfaceTypes deviceType = audioHw->deviceType();
+    if (deviceType == Solid::AudioInterface::AudioInput) {
         d->captureDevice = true;
         groupName = QLatin1String("AudioCaptureDevice_");
     } else {
-        if (deviceType == Solid::AudioHw::AudioOutput) {
+        if (deviceType == Solid::AudioInterface::AudioOutput) {
             d->playbackDevice = true;
             groupName = QLatin1String("AudioOutputDevice_");
         } else {
-            Q_ASSERT(deviceType == (Solid::AudioHw::AudioOutput | Solid::AudioHw::AudioInput));
+            Q_ASSERT(deviceType == (Solid::AudioInterface::AudioOutput | Solid::AudioInterface::AudioInput));
             d->captureDevice = true;
             d->playbackDevice = true;
             groupName = QLatin1String("AudioIODevice_");
@@ -114,7 +114,7 @@ AudioDevice::AudioDevice(KConfigGroup &deviceGroup)
     d->index = deviceGroup.readEntry("index", d->index);
     d->cardName = deviceGroup.readEntry("cardName", d->cardName);
     d->icon = deviceGroup.readEntry("icon", d->icon);
-    d->driver = static_cast<Solid::AudioHw::AudioDriver>(deviceGroup.readEntry("driver", static_cast<int>(d->driver)));
+    d->driver = static_cast<Solid::AudioInterface::AudioDriver>(deviceGroup.readEntry("driver", static_cast<int>(d->driver)));
     d->captureDevice = deviceGroup.readEntry("captureDevice", d->captureDevice);
     d->playbackDevice = deviceGroup.readEntry("playbackDevice", d->playbackDevice);
     d->udi = deviceGroup.readEntry("udi", d->udi);
@@ -294,7 +294,7 @@ QString AudioDevice::iconName() const
     return d->icon;
 }
 
-Solid::AudioHw::AudioDriver AudioDevice::driver() const
+Solid::AudioInterface::AudioDriver AudioDevice::driver() const
 {
     return d->driver;
 }

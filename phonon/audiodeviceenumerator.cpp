@@ -24,7 +24,7 @@
 #include <QDir>
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
-#include <solid/audiohw.h>
+#include <solid/audiointerface.h>
 #include <kconfiggroup.h>
 
 namespace Phonon
@@ -78,7 +78,7 @@ void AudioDeviceEnumeratorPrivate::findDevices()
     // ask Solid for the available audio hardware
     QSet<QString> alreadyFoundCards;
 
-    QList<Solid::Device> devices = Solid::Device::listFromQuery("AudioHw.deviceType  & 'AudioInput|AudioOutput'");
+    QList<Solid::Device> devices = Solid::Device::listFromQuery("AudioInterface.deviceType  & 'AudioInput|AudioOutput'");
     foreach (Solid::Device device, devices) {
         AudioDevice dev(device, config);
         if (dev.isValid()) {
@@ -124,8 +124,9 @@ void AudioDeviceEnumeratorPrivate::_k_deviceAdded(const QString &udi)
 {
     pDebug() << Q_FUNC_INFO << udi;
     Solid::Device _device(udi);
-    Solid::AudioHw *audiohw = _device.as<Solid::AudioHw>();
-    if (audiohw && (audiohw->deviceType()  & (Solid::AudioHw::AudioInput | Solid::AudioHw::AudioOutput))) {
+    Solid::AudioInterface *audiohw = _device.as<Solid::AudioInterface>();
+    if (audiohw && (audiohw->deviceType()  & (Solid::AudioInterface::AudioInput |
+Solid::AudioInterface::AudioOutput))) {
         // an audio i/o device was plugged in
         AudioDevice dev(_device, config);
         if (dev.isValid()) {

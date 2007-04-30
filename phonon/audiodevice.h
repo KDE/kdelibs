@@ -21,7 +21,7 @@
 #define PHONON_AUDIODEVICE_H
 
 #include "phonon_export.h"
-#include <solid/audiohw.h>
+#include <solid/audiointerface.h>
 #include <ksharedconfig.h>
 class QString;
 class QStringList;
@@ -29,7 +29,7 @@ class KConfigGroup;
 
 namespace Solid
 {
-    class AudioHw;
+    class AudioInterface;
 } // namespace Solid
 
 namespace Phonon
@@ -106,9 +106,9 @@ namespace Phonon
              * Retrieves the audio driver that should be used to access the device.
              *
              * @return the driver needed to access the device
-             * @see Solid::AudioHw::AudioDriver
+             * @see Solid::AudioInterface::AudioDriver
              */
-            Solid::AudioHw::AudioDriver driver() const;
+            Solid::AudioInterface::AudioDriver driver() const;
 
             /**
              * Unique index to identify the device.

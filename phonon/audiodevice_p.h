@@ -31,7 +31,7 @@ class AudioDevicePrivate
     public:
         AudioDevicePrivate()
             : refCount(1),
-            driver(Solid::AudioHw::UnknownAudioDriver),
+            driver(Solid::AudioInterface::UnknownAudioDriver),
             index(-1),
             available(false),
             valid(false),
@@ -45,7 +45,7 @@ class AudioDevicePrivate
         QStringList deviceIds;
         QString icon;
         QString udi;
-        Solid::AudioHw::AudioDriver driver;
+        Solid::AudioInterface::AudioDriver driver;
         int index;
         bool available : 1;
         bool valid : 1;
