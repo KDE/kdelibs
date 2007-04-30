@@ -1830,9 +1830,6 @@ KDirLister::~KDirLister()
 
 bool KDirLister::openUrl( const KUrl& _url, bool _keep, bool _reload )
 {
-  kDebug(7003) << k_funcinfo << _url.prettyUrl()
-                << " keep=" << _keep << " reload=" << _reload << endl;
-
   // emit the current changes made to avoid an inconsistent treeview
   if ( d->changes != NONE && _keep )
     emitChanges();
