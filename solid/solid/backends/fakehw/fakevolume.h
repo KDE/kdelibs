@@ -43,9 +43,9 @@ public Q_SLOTS:
     virtual qulonglong size() const;
 
 public:
-    virtual KJob *mount();
-    virtual KJob *unmount();
-    virtual KJob *eject();
+    virtual void mount(QObject *receiver, const char *member);
+    virtual void unmount(QObject *receiver, const char *member);
+    virtual void eject(QObject *receiver, const char *member);
 
 public Q_SLOTS:
     QString createMountJob();

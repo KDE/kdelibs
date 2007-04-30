@@ -41,9 +41,9 @@ public:
     virtual QString uuid() const;
     virtual qulonglong size() const;
 
-    virtual KJob *mount();
-    virtual KJob *unmount();
-    virtual KJob *eject();
+    virtual void mount(QObject *receiver, const char *member);
+    virtual void unmount(QObject *receiver, const char *member);
+    virtual void eject(QObject *receiver, const char *member);
 
 Q_SIGNALS:
     void mountStateChanged(bool newState);

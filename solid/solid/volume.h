@@ -24,8 +24,6 @@
 
 #include <solid/deviceinterface.h>
 
-class KJob;
-
 namespace Solid
 {
     class VolumePrivate;
@@ -165,21 +163,21 @@ namespace Solid
          *
          * @return the job handling the operation
          */
-        KJob *mount();
+        void mount(QObject *receiver, const char *member);
 
         /**
          * Unmounts the volume.
          *
          * @return the job handling the operation
          */
-        KJob *unmount();
+        void unmount(QObject *receiver, const char *member);
 
         /**
          * Ejects the volume.
          *
          * @return the job handling the operation
          */
-        KJob *eject();
+        void eject(QObject *receiver, const char *member);
 
     Q_SIGNALS:
         /**

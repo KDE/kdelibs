@@ -23,8 +23,6 @@
 #include <solid/ifaces/block.h>
 #include <solid/volume.h>
 
-class KJob;
-
 namespace Solid
 {
 namespace Ifaces
@@ -117,21 +115,21 @@ namespace Ifaces
          *
          * @return the job handling the operation
          */
-        virtual KJob *mount() = 0;
+        virtual void mount(QObject *receiver, const char *member) = 0;
 
         /**
          * Unmounts the volume.
          *
          * @return the job handling the operation
          */
-        virtual KJob *unmount() = 0;
+        virtual void unmount(QObject *receiver, const char *member) = 0;
 
         /**
          * Ejects the volume.
          *
          * @return the job handling the operation
          */
-        virtual KJob *eject() = 0;
+        virtual void eject(QObject *receiver, const char *member) = 0;
 
     protected:
     //Q_SIGNALS:

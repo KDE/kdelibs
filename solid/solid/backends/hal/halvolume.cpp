@@ -95,7 +95,7 @@ qulonglong Volume::size() const
     return m_device->property("volume.size").toULongLong();
 }
 
-KJob * Volume::mount()
+void Volume::mount(QObject *receiver, const char *member)
 {
     QDBusConnection c = QDBusConnection::systemBus();
     QString udi = m_device->udi();
@@ -103,11 +103,12 @@ KJob * Volume::mount()
 
     params << "" << "" << QStringList();
 
-    return new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
-                           "Mount", params);
+    KJob *job = new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
+                               "Mount", params);
+    job->start();
 }
 
-KJob * Volume::unmount()
+void Volume::unmount(QObject *receiver, const char *member)
 {
     QDBusConnection c = QDBusConnection::systemBus();
     QString udi = m_device->udi();
@@ -115,11 +116,12 @@ KJob * Volume::unmount()
 
     params << QStringList();
 
-    return new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
-                           "Unmount", params);
+    KJob *job = new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
+                               "Unmount", params);
+    job->start();
 }
 
-KJob * Volume::eject()
+void Volume::eject(QObject *receiver, const char *member)
 {
     QDBusConnection c = QDBusConnection::systemBus();
     QString udi = m_device->udi();
@@ -127,8 +129,9 @@ KJob * Volume::eject()
 
     params << QStringList();
 
-    return new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
-                           "Eject", params);
+    KJob *job = new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
+                               "Eject", params);
+    job->start();
 }
 
 void Volume::slotPropertyChanged(const QMap<QString,int> &changes)

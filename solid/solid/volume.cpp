@@ -90,22 +90,22 @@ qulonglong Solid::Volume::size() const
     return_SOLID_CALL(Ifaces::Volume *, d->backendObject(), 0, size());
 }
 
-KJob *Solid::Volume::mount()
+void Solid::Volume::mount(QObject *receiver, const char *member)
 {
     Q_D(Volume);
-    return_SOLID_CALL(Ifaces::Volume *, d->backendObject(), 0, mount());
+    SOLID_CALL(Ifaces::Volume *, d->backendObject(), mount(receiver, member));
 }
 
-KJob *Solid::Volume::unmount()
+void Solid::Volume::unmount(QObject *receiver, const char *member)
 {
     Q_D(Volume);
-    return_SOLID_CALL(Ifaces::Volume *, d->backendObject(), 0, unmount());
+    SOLID_CALL(Ifaces::Volume *, d->backendObject(), unmount(receiver, member));
 }
 
-KJob *Solid::Volume::eject()
+void Solid::Volume::eject(QObject *receiver, const char *member)
 {
     Q_D(Volume);
-    return_SOLID_CALL(Ifaces::Volume *, d->backendObject(), 0, eject());
+    SOLID_CALL(Ifaces::Volume *, d->backendObject(), eject(receiver, member));
 }
 
 #include "volume.moc"

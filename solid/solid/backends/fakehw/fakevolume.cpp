@@ -95,25 +95,25 @@ qulonglong FakeVolume::size() const
     return fakeDevice()->property("size").toULongLong();
 }
 
-KJob *FakeVolume::mount()
+void FakeVolume::mount(QObject *receiver, const char *member)
 {
     FakeJob *job = new FakeJob(this);
     job->setBroken(fakeDevice()->isBroken());
-    return job;
+    job->start();
 }
 
-KJob *FakeVolume::unmount()
+void FakeVolume::unmount(QObject *receiver, const char *member)
 {
     FakeJob *job = new FakeJob(this);
     job->setBroken(fakeDevice()->isBroken());
-    return job;
+    job->start();
 }
 
-KJob *FakeVolume::eject()
+void FakeVolume::eject(QObject *receiver, const char *member)
 {
     FakeJob *job = new FakeJob(this);
     job->setBroken(fakeDevice()->isBroken());
-    return job;
+    job->start();
 }
 
 QString FakeVolume::createMountJob()
@@ -122,7 +122,8 @@ QString FakeVolume::createMountJob()
 
     count++;
 
-    KJob *job = mount();
+    FakeJob *job = new FakeJob(this);
+    job->setBroken(fakeDevice()->isBroken());
 
     QString path = fakeDevice()->udi()+QString("/volume/mount_%1").arg(count);
     QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
@@ -136,7 +137,8 @@ QString FakeVolume::createUnmountJob()
 
     count++;
 
-    KJob *job = unmount();
+    FakeJob *job = new FakeJob(this);
+    job->setBroken(fakeDevice()->isBroken());
 
     QString path = fakeDevice()->udi()+QString("/volume/unmount_%1").arg(count);
     QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
@@ -150,7 +152,8 @@ QString FakeVolume::createEjectJob()
 
     count++;
 
-    KJob *job = eject();
+    FakeJob *job = new FakeJob(this);
+    job->setBroken(fakeDevice()->isBroken());
 
     QString path = fakeDevice()->udi()+QString("/volume/eject_%1").arg(count);
     QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
