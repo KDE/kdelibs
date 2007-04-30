@@ -94,9 +94,15 @@ uint TestNetworkingService::requestConnection()
     if ( mStatus == Solid::Networking::Unconnected )
     {
         setStatus( Solid::Networking::Connecting );
-        return Solid::Networking::Accepted;
+#ifdef __GNUC__
+#warning "Fix return value"
+#endif
+        return 1;//Solid::Networking::Accepted;
     }
-    return Solid::Networking::AlreadyConnected;
+#ifdef __GNUC__
+#warning "Fix return value"
+#endif
+    return 2;//Solid::Networking::AlreadyConnected;
 }
 
 void TestNetworkingService::releaseConnection()
