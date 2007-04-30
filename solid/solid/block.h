@@ -27,6 +27,7 @@
 namespace Solid
 {
     class BlockPrivate;
+    class Device;
 
     /**
      * This device interface is available on block devices.
@@ -42,8 +43,9 @@ namespace Solid
         Q_PROPERTY(int minor READ deviceMinor)
         Q_PROPERTY(QString device READ device)
         Q_DECLARE_PRIVATE(Block)
+        friend class Device;
 
-    public:
+    private:
         /**
          * Creates a new Block object.
          * You generally won't need this. It's created when necessary using
@@ -54,6 +56,7 @@ namespace Solid
          */
         explicit Block(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Block object.
          */

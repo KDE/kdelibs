@@ -27,6 +27,7 @@
 namespace Solid
 {
     class BatteryPrivate;
+    class Device;
 
     /**
      * This device interface is available on batteries.
@@ -45,6 +46,7 @@ namespace Solid
         Q_PROPERTY(bool rechargeable READ isRechargeable)
         Q_PROPERTY(ChargeState chargeState READ chargeState)
         Q_DECLARE_PRIVATE(Battery)
+        friend class Device;
 
     public:
         /**
@@ -86,7 +88,7 @@ namespace Solid
         enum ChargeState { NoCharge, Charging, Discharging };
 
 
-
+    private:
         /**
          * Creates a new Battery object.
          * You generally won't need this. It's created when necessary using
@@ -97,6 +99,7 @@ namespace Solid
          */
         explicit Battery(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Battery object.
          */

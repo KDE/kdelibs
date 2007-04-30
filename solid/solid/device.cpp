@@ -125,20 +125,8 @@ bool Solid::Device::queryDeviceInterface(const DeviceInterface::Type &type) cons
     return_SOLID_CALL(Ifaces::Device *, d->backendObject(), false, queryDeviceInterface(type));
 }
 
-template<typename IfaceType, typename DevType>
-inline DevType *deviceinterface_cast(QObject *backendObject)
-{
-    IfaceType *iface = qobject_cast<IfaceType *>(backendObject);
-
-    if (iface)
-    {
-        return new DevType(backendObject);
-    }
-    else
-    {
-        return 0;
-    }
-}
+#define deviceinterface_cast(IfaceType, DevType, backendObject) \
+    (qobject_cast<IfaceType *>(backendObject) ? new DevType(backendObject) : 0)
 
 Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInterface::Type &type)
 {
@@ -165,49 +153,49 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
             switch (type)
             {
             case DeviceInterface::GenericInterface:
-                iface = deviceinterface_cast<Ifaces::GenericInterface, GenericInterface>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::GenericInterface, GenericInterface, dev_iface);
                 break;
             case DeviceInterface::Processor:
-                iface = deviceinterface_cast<Ifaces::Processor, Processor>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::Processor, Processor, dev_iface);
                 break;
             case DeviceInterface::Block:
-                iface = deviceinterface_cast<Ifaces::Block, Block>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::Block, Block, dev_iface);
                 break;
             case DeviceInterface::StorageDrive:
-                iface = deviceinterface_cast<Ifaces::StorageDrive, StorageDrive>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::StorageDrive, StorageDrive, dev_iface);
                 break;
             case DeviceInterface::OpticalDrive:
-                iface = deviceinterface_cast<Ifaces::OpticalDrive, OpticalDrive>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::OpticalDrive, OpticalDrive, dev_iface);
                 break;
             case DeviceInterface::StorageVolume:
-                iface = deviceinterface_cast<Ifaces::StorageVolume, StorageVolume>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::StorageVolume, StorageVolume, dev_iface);
                 break;
             case DeviceInterface::OpticalDisc:
-                iface = deviceinterface_cast<Ifaces::OpticalDisc, OpticalDisc>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::OpticalDisc, OpticalDisc, dev_iface);
                 break;
             case DeviceInterface::Camera:
-                iface = deviceinterface_cast<Ifaces::Camera, Camera>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::Camera, Camera, dev_iface);
                 break;
             case DeviceInterface::PortableMediaPlayer:
-                iface = deviceinterface_cast<Ifaces::PortableMediaPlayer, PortableMediaPlayer>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::PortableMediaPlayer, PortableMediaPlayer, dev_iface);
                 break;
             case DeviceInterface::NetworkHw:
-                iface = deviceinterface_cast<Ifaces::NetworkHw, NetworkHw>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::NetworkHw, NetworkHw, dev_iface);
                 break;
             case DeviceInterface::AcAdapter:
-                iface = deviceinterface_cast<Ifaces::AcAdapter, AcAdapter>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::AcAdapter, AcAdapter, dev_iface);
                 break;
             case DeviceInterface::Battery:
-                iface = deviceinterface_cast<Ifaces::Battery, Battery>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::Battery, Battery, dev_iface);
                 break;
             case DeviceInterface::Button:
-                iface = deviceinterface_cast<Ifaces::Button, Button>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::Button, Button, dev_iface);
                 break;
             case DeviceInterface::AudioHw:
-                iface = deviceinterface_cast<Ifaces::AudioHw, AudioHw>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::AudioHw, AudioHw, dev_iface);
                 break;
             case DeviceInterface::DvbHw:
-                iface = deviceinterface_cast<Ifaces::DvbHw, DvbHw>(dev_iface);
+                iface = deviceinterface_cast(Ifaces::DvbHw, DvbHw, dev_iface);
                 break;
             case DeviceInterface::Unknown:
                 break;

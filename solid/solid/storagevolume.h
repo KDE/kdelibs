@@ -27,6 +27,7 @@
 namespace Solid
 {
     class StorageVolumePrivate;
+    class Device;
 
     /**
      * This device interface is available on volume devices.
@@ -47,6 +48,7 @@ namespace Solid
         Q_PROPERTY(QString uuid READ uuid)
         Q_PROPERTY(qulonglong size READ size)
         Q_DECLARE_PRIVATE(StorageVolume)
+        friend class Device;
 
     public:
         /**
@@ -61,7 +63,7 @@ namespace Solid
         enum UsageType { FileSystem, PartitionTable, Raid, Other, Unused };
 
 
-
+    private:
         /**
          * Creates a new StorageVolume object.
          * You generally won't need this. It's created when necessary using
@@ -72,6 +74,7 @@ namespace Solid
          */
         explicit StorageVolume(QObject *backendObject);
 
+    public:
         /**
          * Destroys a StorageVolume object.
          */

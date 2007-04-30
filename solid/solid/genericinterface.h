@@ -29,6 +29,7 @@
 namespace Solid
 {
     class GenericInterfacePrivate;
+    class Device;
 
     /**
      * Generic interface to deal with a device. It exposes a set of properties
@@ -44,6 +45,7 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS(PropertyChange)
         Q_DECLARE_PRIVATE(GenericInterface)
+        friend class Device;
 
     public:
         /**
@@ -56,6 +58,7 @@ namespace Solid
          */
         enum PropertyChange { PropertyModified, PropertyAdded, PropertyRemoved };
 
+    private:
         /**
          * Creates a new GenericInterface object.
          * You generally won't need this. It's created when necessary using
@@ -66,6 +69,7 @@ namespace Solid
          */
         explicit GenericInterface(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Processor object.
          */

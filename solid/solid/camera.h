@@ -27,6 +27,7 @@
 namespace Solid
 {
     class CameraPrivate;
+    class Device;
 
     /**
      * This device interface is available on digital camera devices.
@@ -45,6 +46,7 @@ namespace Solid
         Q_PROPERTY(AccessType accessMethod READ accessMethod)
         Q_PROPERTY(bool gphotoSupport READ isGphotoSupported)
         Q_DECLARE_PRIVATE(Camera)
+        friend class Device;
 
     public:
         /**
@@ -57,7 +59,7 @@ namespace Solid
         enum AccessType { MassStorage, Ptp, Proprietary };
 
 
-
+    private:
         /**
          * Creates a new Camera object.
          * You generally won't need this. It's created when necessary using
@@ -68,6 +70,7 @@ namespace Solid
          */
         explicit Camera(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Camera object.
          */

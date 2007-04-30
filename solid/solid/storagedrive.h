@@ -27,6 +27,7 @@
 namespace Solid
 {
     class StorageDrivePrivate;
+    class Device;
 
     /**
      * This device interface is available on storage devices.
@@ -47,6 +48,7 @@ namespace Solid
         Q_PROPERTY(QString vendor READ vendor)
         Q_PROPERTY(QString product READ product)
         Q_DECLARE_PRIVATE(StorageDrive)
+        friend class Device;
 
     public:
         /**
@@ -77,7 +79,7 @@ namespace Solid
         enum DriveType { HardDisk, CdromDrive, Floppy, Tape, CompactFlash, MemoryStick, SmartMedia, SdMmc, Xd };
 
 
-
+    private:
         /**
          * Creates a new StorageDrive object.
          * You generally won't need this. It's created when necessary using
@@ -88,6 +90,7 @@ namespace Solid
          */
         explicit StorageDrive(QObject *backendObject);
 
+    public:
         /**
          * Destroys a StorageDrive object.
          */

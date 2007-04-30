@@ -27,6 +27,7 @@
 namespace Solid
 {
     class AudioHwPrivate;
+    class Device;
 
     /**
      * This device interface is available on interfaces exposed by sound cards.
@@ -42,6 +43,7 @@ namespace Solid
         Q_PROPERTY(AudioHwTypes deviceType READ deviceType)
         Q_PROPERTY(SoundcardType soundcardType READ soundcardType)
         Q_DECLARE_PRIVATE(AudioHw)
+        friend class Device;
 
     public:
         /**
@@ -125,7 +127,7 @@ namespace Solid
         };
 
 
-
+    private:
         /**
          * Creates a new AudioHw object.
          * You generally won't need this. It's created when necessary using
@@ -136,6 +138,7 @@ namespace Solid
          */
         explicit AudioHw(QObject *backendObject);
 
+    public:
         /**
          * Destroys an AudioHw object.
          */

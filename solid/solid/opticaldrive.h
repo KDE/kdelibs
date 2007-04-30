@@ -29,6 +29,7 @@
 namespace Solid
 {
     class OpticalDrivePrivate;
+    class Device;
 
     /**
      * This device interface is available on CD-R*,DVD*,Blu-Ray,HD-DVD drives.
@@ -45,6 +46,7 @@ namespace Solid
         Q_PROPERTY(int writeSpeed READ writeSpeed)
         Q_PROPERTY(QList<int> writeSpeeds READ writeSpeeds)
         Q_DECLARE_PRIVATE(OpticalDrive)
+        friend class Device;
 
     public:
         /**
@@ -71,6 +73,7 @@ namespace Solid
 
 
 
+    private:
         /**
          * Creates a new Cdrom object.
          * You generally won't need this. It's created when necessary using
@@ -81,6 +84,7 @@ namespace Solid
          */
         explicit OpticalDrive(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Cdrom object.
          */

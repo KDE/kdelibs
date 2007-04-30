@@ -27,6 +27,7 @@
 namespace Solid
 {
     class ProcessorPrivate;
+    class Device;
 
     /**
      * This device interface is available on processors.
@@ -38,8 +39,9 @@ namespace Solid
         Q_PROPERTY(qulonglong maxSpeed READ maxSpeed)
         Q_PROPERTY(bool canChangeFrequency READ canChangeFrequency)
         Q_DECLARE_PRIVATE(Processor)
+        friend class Device;
 
-    public:
+    private:
         /**
          * Creates a new Processor object.
          * You generally won't need this. It's created when necessary using
@@ -50,6 +52,7 @@ namespace Solid
          */
         explicit Processor(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Processor object.
          */

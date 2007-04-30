@@ -27,6 +27,7 @@
 namespace Solid
 {
     class DvbHwPrivate;
+    class Device;
 
     /**
      * This device interface is available on Digital Video Broadcast (DVB) devices.
@@ -45,6 +46,7 @@ namespace Solid
         Q_PROPERTY(DeviceType deviceType READ deviceType)
         Q_PROPERTY(int deviceIndex READ deviceIndex)
         Q_DECLARE_PRIVATE(DvbHw)
+        friend class Device;
 
     public:
         /**
@@ -65,6 +67,7 @@ namespace Solid
                           DvbFrontend, DvbNet, DvbOsd, DvbSec, DvbVideo };
 
 
+    private:
         /**
          * Creates a new DvbHw object.
          * You generally won't need this. It's created when necessary using
@@ -75,6 +78,7 @@ namespace Solid
          */
         explicit DvbHw(QObject *backendObject);
 
+    public:
         /**
          * Destroys a DvbHw object.
          */

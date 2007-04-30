@@ -27,6 +27,7 @@
 namespace Solid
 {
     class AcAdapterPrivate;
+    class Device;
 
     /**
      * This device interface is available on A/C adapters.
@@ -36,8 +37,9 @@ namespace Solid
         Q_OBJECT
         Q_PROPERTY(bool plugged READ isPlugged)
         Q_DECLARE_PRIVATE(AcAdapter)
+        friend class Device;
 
-    public:
+    private:
         /**
          * Creates a new AcAdapter object.
          * You generally won't need this. It's created when necessary using
@@ -48,6 +50,7 @@ namespace Solid
          */
         explicit AcAdapter(QObject *backendObject);
 
+    public:
         /**
          * Destroys an AcAdapter object.
          */

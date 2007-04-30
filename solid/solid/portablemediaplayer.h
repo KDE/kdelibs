@@ -30,6 +30,7 @@
 namespace Solid
 {
     class PortableMediaPlayerPrivate;
+    class Device;
 
     /**
      * This class implement Portable Media Player device interface and represent
@@ -47,6 +48,7 @@ namespace Solid
         Q_PROPERTY(QStringList inputFormats READ inputFormats)
         Q_PROPERTY(QStringList playlistFormats READ playlistFormats)
         Q_DECLARE_PRIVATE(PortableMediaPlayer)
+        friend class Device;
 
     public:
         /**
@@ -58,7 +60,7 @@ namespace Solid
          enum AccessType { MassStorage, Proprietary };
 
 
-
+    private:
         /**
          * Creates a new PortableMediaPlayer object.
          * You generally won't need this. It's created when necessary using
@@ -69,6 +71,7 @@ namespace Solid
          */
         explicit PortableMediaPlayer(QObject *backendObject);
 
+    public:
         /**
          * Destroys a portable media player object.
          */

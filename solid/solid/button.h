@@ -28,6 +28,7 @@
 namespace Solid
 {
     class ButtonPrivate;
+    class Device;
 
     /**
      * This device interface is available on button devices.
@@ -45,6 +46,7 @@ namespace Solid
         Q_PROPERTY(bool hasState READ hasState)
         Q_PROPERTY(bool stateValue READ stateValue)
         Q_DECLARE_PRIVATE(Button)
+        friend class Device;
 
     public:
         /**
@@ -58,7 +60,7 @@ namespace Solid
          enum ButtonType{ LidButton, PowerButton, SleepButton, UnknownButtonType };
 
 
-
+    private:
         /**
          * Creates a new Button object.
          * You generally won't need this. It's created when necessary using
@@ -69,6 +71,7 @@ namespace Solid
          */
         explicit Button(QObject *backendObject);
 
+    public:
         /**
          * Destroys a Button object.
          */

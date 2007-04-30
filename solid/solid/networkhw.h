@@ -27,6 +27,7 @@
 namespace Solid
 {
     class NetworkHwPrivate;
+    class Device;
 
     /**
      * This device interface is available on network interfaces.
@@ -39,8 +40,9 @@ namespace Solid
         Q_PROPERTY(QString hwAddress READ hwAddress)
         Q_PROPERTY(qulonglong macAddress READ macAddress)
         Q_DECLARE_PRIVATE(NetworkHw)
+        friend class Device;
 
-    public:
+    private:
         /**
          * Creates a new NetworkHw object.
          * You generally won't need this. It's created when necessary using
@@ -51,6 +53,7 @@ namespace Solid
          */
         explicit NetworkHw(QObject *backendObject);
 
+    public:
         /**
          * Destroys a NetworkHw object.
          */

@@ -27,6 +27,7 @@
 namespace Solid
 {
     class OpticalDiscPrivate;
+    class Device;
 
     /**
      * This device interface is available on optical discs.
@@ -45,6 +46,7 @@ namespace Solid
         Q_PROPERTY(bool rewritable READ isRewritable)
         Q_PROPERTY(qulonglong capacity READ capacity)
         Q_DECLARE_PRIVATE(OpticalDisc)
+        friend class Device;
 
     public:
         /**
@@ -82,6 +84,7 @@ namespace Solid
                         DvdPlusRecordable, DvdPlusRewritable, UnknownDiscType };
 
 
+    private:
         /**
          * Creates a new OpticalDisc object.
          * You generally won't need this. It's created when necessary using
@@ -92,6 +95,7 @@ namespace Solid
          */
         explicit OpticalDisc(QObject *backendObject);
 
+    public:
         /**
          * Destroys an OpticalDisc object.
          */
