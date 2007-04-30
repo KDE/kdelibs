@@ -6,19 +6,6 @@
 #include <QtNetwork/QTcpSocket>
 #include <ksocketfactory.h>
 
-#ifdef Q_WS_WIN
-// win32 defines some global constants, which collides with some of the below mentined 
-// SMTP constants. SMTP constants should get a unique prefix 
-#define _IN IN
-#undef IN
-#define _OUT OUT
-#undef OUT
-#define _ERROR ERROR
-#undef ERROR
-#define _NOERROR NOERROR
-#undef NOERROR
-#endif
-
 /*int SMTPServerStatus[] = {
     220,  // greeting from server
     221,  // server acknolages goodbye
@@ -71,37 +58,37 @@ public:
     void setMessageHeader(const QString &header);
 
     typedef enum {
-        NONE = 0,             // null
-        GREET = 220,          // greeting from server
-        GOODBYE = 221,        // server acknolages quit
-        SUCCESSFUL = 250,     // command successful
-        READYDATA = 354,      // server ready to receive data
-        ERROR = 501,          // error
-        UNKNOWN = 550        // user unknown
+        None = 0,             // null
+        Greet = 220,          // greeting from server
+        Goodbye = 221,        // server acknolages quit
+        Successful = 250,     // command successful
+        ReadyData = 354,      // server ready to receive data
+        Error = 501,          // error
+        Unknown = 550        // user unknown
     }SMTPServerStatus;
 
     typedef enum {
-        INIT = 50,            // not logged in yet
-        IN = 100,             // logged in, got 220
-        READY = 150,          // sent HELO, got 250
-        SENTFROM = 200,       // sent MAIL FROM:, got 250
-        SENTTO = 250,         // sent RCTP TO:, got 250
-        DATA = 300,           // DATA sent, got 354
-        FINISHED = 350,       // finished sending data, got 250
-        QUIT = 400,           // sent QUIT, got 221
-        OUT = 450,            // finished, logged out
-        CERROR = 500           // didn't finish, had error or connection drop
+        Init = 50,            // not logged in yet
+        In = 100,             // logged in, got 220
+        Ready = 150,          // sent HELO, got 250
+        SentFrom = 200,       // sent MAIL FROM:, got 250
+        SentTo = 250,         // sent RCTP TO:, got 250
+        Data = 300,           // Data sent, got 354
+        Finished = 350,       // finished sending data, got 250
+        Quit = 400,           // sent Quit, got 221
+        Out = 450,            // finished, logged out
+        CError = 500           // didn't finish, had error or connection drop
     }SMTPClientStatus;
 
     typedef enum {
-        NOERROR = 0,
-        CONNECTERROR = 10,
-        NOTCONNECTED = 11,
-        CONNECTTIMEOUT = 15,
-        INTERACTTIMEOUT = 16,
-        UNKNOWNRESPONSE = 20,
-        UNKNOWNUSER = 30,
-        COMMAND = 40
+        NoError = 0,
+        ConnectError = 10,
+        NotConnected = 11,
+        ConnectTimeout = 15,
+        InteractTimeout = 16,
+        UnknownResponse = 20,
+        UnknownUser = 30,
+        Command = 40
     }SMTPError;
 
 protected:

@@ -27,16 +27,16 @@ void BugMailer::slotError(int errornum) {
     QString str, lstr;
 
     switch(errornum) {
-        case SMTP::CONNECTERROR:
+        case SMTP::ConnectError:
             lstr = i18n("Error connecting to server.");
             break;
-        case SMTP::NOTCONNECTED:
+        case SMTP::NotConnected:
             lstr = i18n("Not connected.");
             break;
-        case SMTP::CONNECTTIMEOUT:
+        case SMTP::ConnectTimeout:
             lstr = i18n("Connection timed out.");
             break;
-        case SMTP::INTERACTTIMEOUT:
+        case SMTP::InteractTimeout:
             lstr = i18n("Time out waiting for server interaction.");
             break;
         default:
