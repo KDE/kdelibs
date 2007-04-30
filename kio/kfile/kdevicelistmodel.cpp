@@ -113,10 +113,6 @@ QVariant KDeviceListModel::data(const QModelIndex &index, int role) const
             {
                 iconName = "cdrom-unmount";
             }
-            else if (device.queryDeviceInterface(Solid::DeviceInterface::Display))
-            {
-                iconName = "view-remove";
-            }
             else if (device.queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer))
             {
                 iconName = "ipod-unmount";
