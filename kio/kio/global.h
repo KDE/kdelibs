@@ -136,7 +136,10 @@ namespace KIO
   KIO_EXPORT QString decodeFileName( const QString & str );
 
   /**
+   * @internal
    * Commands that can be invoked by a job.
+   *
+   * (Move this to a non-public header)
    */
   enum Command {
     CMD_HOST = '0', // 48
@@ -174,7 +177,10 @@ namespace KIO
   };
 
   /**
+   * @internal
    * Commands that can be invoked on a slave-file.
+   *
+   * (Move this to a non-public header)
    */
   enum FileCommand {
     CMD_READ  = 90,
