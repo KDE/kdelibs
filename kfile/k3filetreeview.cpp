@@ -643,7 +643,9 @@ K3FileTreeViewItem *K3FileTreeView::findItem( KFileTreeBranch* brnch, const QStr
          KFileItem *fi = brnch->findByUrl( url );
          if( fi )
          {
-            ret = static_cast<K3FileTreeViewItem*>( fi->extraData( brnch ));
+            ret =
+                const_cast<K3FileTreeViewItem *>(
+                static_cast<const K3FileTreeViewItem*>(fi->extraData(brnch)));
             kDebug(250) << "Found item !" <<ret << endl;
          }
       }

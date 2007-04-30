@@ -203,6 +203,7 @@ private Q_SLOTS:
 private:
    K3FileTreeViewItem    *parentKFTVItem( KFileItem *item );
    static void           deleteChildrenOf( Q3ListViewItem *parent );
+   K3FileTreeViewItem* treeItemForFileItem(KFileItem *it);
 
    K3FileTreeViewItem 	*m_root;
    KUrl 		m_startURL;

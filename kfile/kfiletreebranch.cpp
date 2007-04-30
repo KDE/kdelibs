@@ -30,7 +30,6 @@
 
 #include "kfiletreebranch.h"
 
-
 /* --- K3FileTreeViewToplevelItem --- */
 KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,
                                   const QString& name,
@@ -110,6 +109,13 @@ void KFileTreeBranch::slotListerStarted( const KUrl &url )
 }
 
 
+K3FileTreeViewItem* KFileTreeBranch::treeItemForFileItem(KFileItem *it)
+{
+    return
+        const_cast<K3FileTreeViewItem *>(
+        static_cast<const K3FileTreeViewItem*>(it->extraData(this)));
+}
+
 K3FileTreeViewItem *KFileTreeBranch::parentKFTVItem( KFileItem *item )
 {
     K3FileTreeViewItem *parent = 0;
@@ -161,8 +167,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
         parentItem = parentKFTVItem( currItem );
 
         /* Only create a new K3FileTreeViewItem if it does not yet exist */
-        K3FileTreeViewItem *newKFTVI =
-            static_cast<K3FileTreeViewItem *>(currItem->extraData( this ));
+        K3FileTreeViewItem *newKFTVI = treeItemForFileItem(currItem);
 
         if( ! newKFTVI )
         {
@@ -275,7 +280,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
     if( !it ) return;
     kDebug(250) << "Slot Delete Item hitted for " << it->url().prettyUrl() << endl;
 
-    K3FileTreeViewItem *kfti = static_cast<K3FileTreeViewItem*>(it->extraData(this));
+    K3FileTreeViewItem *kfti = treeItemForFileItem(it);
 
     if( kfti )
     {
@@ -334,8 +339,7 @@ void KFileTreeBranch::slotDirlisterClearUrl( const KUrl& url )
     KFileItem *item = findByUrl( url );
     if( item )
     {
-        K3FileTreeViewItem *ftvi =
-            static_cast<K3FileTreeViewItem *>(item->extraData( this ));
+        K3FileTreeViewItem *ftvi = treeItemForFileItem(item);
         deleteChildrenOf( ftvi );
     }
 }
@@ -381,7 +385,7 @@ K3FileTreeViewItem* KFileTreeBranch::findTVIByUrl( const KUrl& url )
 
         if( it )
         {
-            resultItem = static_cast<K3FileTreeViewItem*>(it->extraData(this));
+            resultItem = treeItemForFileItem(it);
             m_lastFoundItem = resultItem;
             m_lastFoundURL = url;
         }
@@ -474,7 +478,7 @@ void KFileTreeBranch::slCompleted( const KUrl& url )
                         openUrl( recurseUrl, true );
                     }
                 }
-                nextChild = static_cast<K3FileTreeViewItem*>(static_cast<Q3ListViewItem*>(nextChild->nextSibling()));
+                nextChild = static_cast<K3FileTreeViewItem*>(nextChild->nextSibling());
                 // kDebug(250) << "Next child " << m_nextChild << endl;
             }
         }
