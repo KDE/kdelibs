@@ -32,7 +32,7 @@
 #include <klocale.h>
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
-#include <krun.h>
+#include <ktoolinvocation.h>
 
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
@@ -247,7 +247,7 @@ void KCMultiDialog::slotHelpClicked()
   if ( docUrl.protocol() == "help" || docUrl.protocol() == "man" || docUrl.protocol() == "info" ) {
     QProcess::startDetached("khelpcenter", QStringList() << docUrl.url());
   } else {
-    new KRun( docUrl, this );
+    KToolInvocation::invokeBrowser( docUrl.url() );
   }
 }
 
