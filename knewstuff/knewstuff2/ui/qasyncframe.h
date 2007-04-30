@@ -25,6 +25,16 @@
 
 class QPixmap;
 
+/**
+ * Convenience class for image frames with remote sources.
+ *
+ * This class represents a fire-and-forget approach of loading images
+ * in applications. The frame will load the image all by itself.
+ *
+ * This class is used internally by the DownloadDialog class.
+ *
+ * @internal
+ */
 class QAsyncFrame : public QFrame
 {
     Q_OBJECT

@@ -23,6 +23,7 @@
 
 #include <kmainwindow.h>
 
+/* -- FIXME: not used at all by the library? -- */
 class KDXS : public KMainWindow
 {
 Q_OBJECT

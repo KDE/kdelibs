@@ -31,6 +31,17 @@ namespace KIO { class Job; }
 
 namespace KNS {
 
+/**
+ * @short Parser and dumper for KNewStuff providers.
+ *
+ * This class can be used to construct provider entry objects
+ * from their XML representation. It can also be used
+ * for the inverse.
+ *
+ * @author Josef Spillner (spillner@kde.org)
+ *
+ * @internal
+ */
 class KNEWSTUFF_EXPORT ProviderHandler
 {
   public:

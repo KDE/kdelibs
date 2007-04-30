@@ -36,6 +36,18 @@ class Provider;
 class DxsEngine;
 class Category;
 
+/**
+ * KNewStuff DXS interaction button.
+ *
+ * This button and its associated popup menu appear beside each item
+ * in the download dialog. The user may use it to perform all the actions
+ * on the item including installation, deinstallation and collaborative
+ * actions.
+ *
+ * This class is used internally by the DownloadDialog class.
+ *
+ * @internal
+ */
 class KDXSButton : public QToolButton
 {
 Q_OBJECT

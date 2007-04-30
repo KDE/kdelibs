@@ -41,6 +41,8 @@ Handles security related issues, like signing, verifying.
 It is a private class, not meant to be used by third party applications.
 
 @author Andras Mantia <amantia@kde.org>
+
+* @internal
 */
 
 namespace KNS {

@@ -38,6 +38,8 @@ namespace KNS {
  * Entries might appear in different feeds at the same time.
  *
  * @author Josef Spillner (spillner@kde.org)
+ *
+ * @internal
  */
 class KNEWSTUFF_EXPORT Feed
 {

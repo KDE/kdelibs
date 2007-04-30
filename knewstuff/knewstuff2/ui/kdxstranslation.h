@@ -27,6 +27,16 @@ class QLineEdit;
 class QTextEdit;
 class KUrlRequester;
 
+/**
+ * KNewStuff translation submission window.
+ *
+ * This dialog is shown whenever the user selects to add a translation
+ * to an item in the download dialog.
+ *
+ * This class is used internally by the KDXSButton class.
+ *
+ * @internal
+ */
 class KDXSTranslation : public KDialog
 {
 Q_OBJECT

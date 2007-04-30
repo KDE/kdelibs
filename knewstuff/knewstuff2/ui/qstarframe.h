@@ -23,6 +23,17 @@
 
 #include <QtGui/QFrame>
 
+/**
+ * Rating visualization class.
+ *
+ * Ratings between 0 and 100 can be displayed graphically with this
+ * class in a way much more appealing than with numbers or progress
+ * bars.
+ *
+ * This class is used internally by the KDXSRating class.
+ *
+ * @internal
+ */
 class QStarFrame: public QFrame
 {
 Q_OBJECT

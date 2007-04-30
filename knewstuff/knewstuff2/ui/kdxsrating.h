@@ -27,6 +27,16 @@ class QSlider;
 class QLabel;
 class QStarFrame;
 
+/**
+ * KNewStuff rating submission window.
+ *
+ * This dialog is shown whenever the user selects to add a rating
+ * to an item in the download dialog.
+ *
+ * This class is used internally by the KDXSButton class.
+ *
+ * @internal
+ */
 class KDXSRating : public KDialog
 {
 Q_OBJECT

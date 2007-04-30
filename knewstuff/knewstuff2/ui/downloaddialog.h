@@ -21,6 +21,21 @@ class KJob;
 namespace KNS
 {
 
+/**
+ * KNewStuff download dialog.
+ *
+ * The download dialog will present several categories of items to the user
+ * for installation, deinstallation and updates.
+ * Preview images as well as other meta information can be seen.
+ * If the GHNS provider supports DXS, then the dialog will offer an extended
+ * popup menu with collaborative interactions such as ratings, removal
+ * requests, comments and translation suggestions.
+ *
+ * This class is used internally by the Engine class as part of the download
+ * workflow.
+ *
+ * @internal
+ */
 class DownloadDialog : public QDialog
 {
     Q_OBJECT

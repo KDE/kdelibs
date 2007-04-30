@@ -42,6 +42,8 @@ class Installation;
  * A core engine keeps track of data which is available locally and remote
  * and offers high-level synchronization calls as well as upload and download
  * primitives using an underlying GHNS protocol.
+ *
+ * @internal
  */
 class KNEWSTUFF_EXPORT CoreEngine : public QObject
 {

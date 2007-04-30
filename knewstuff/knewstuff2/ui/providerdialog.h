@@ -41,6 +41,8 @@ class Provider;
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
+ *
+ * @internal
  */
 class KNEWSTUFF_EXPORT ProviderDialog : public KDialog
 {

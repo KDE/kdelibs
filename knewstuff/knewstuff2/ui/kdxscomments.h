@@ -25,6 +25,16 @@
 
 class KHTMLPart;
 
+/**
+ * KNewStuff comments window.
+ *
+ * This dialog is shown whenever the user selects to view all comments
+ * of an item in the download dialog.
+ *
+ * This class is used internally by the KDXSButton class.
+ *
+ * @internal
+ */
 class KDXSComments : public KDialog
 {
 Q_OBJECT

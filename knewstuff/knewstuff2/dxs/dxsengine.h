@@ -27,6 +27,15 @@ namespace KNS {
 
 class Dxs;
 
+/**
+ * KNewStuff DXS engine.
+ * A DXS engine re-implements several of the core engine's methods to perform
+ * data operations through a web service instead of through the traditional
+ * GHNS uploads and downloads. Whenever this is not possible it will
+ * fall back to the core engine's implementation instead.
+ *
+ * @internal
+ */
 class KNEWSTUFF_EXPORT DxsEngine : public CoreEngine
 {
     Q_OBJECT

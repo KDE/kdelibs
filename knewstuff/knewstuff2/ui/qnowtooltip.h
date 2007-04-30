@@ -25,6 +25,15 @@
 #include <QtCore/QCharRef>
 #include <QtGui/QWidget>
 
+/**
+ * Convenience class for tooltips.
+ *
+ * FIXME: why was this introduced?
+ *
+ * This class is used internally by the KDXSComments class.
+ *
+ * @internal
+ */
 class QNowToolTip
 {
 	public:

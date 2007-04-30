@@ -26,6 +26,18 @@
 
 class KJob;
 
+/**
+ * Convenience class for images with remote sources.
+ *
+ * This class represents a fire-and-forget approach of loading images
+ * in applications. The image will load itself.
+ * Using this class also requires using QAsyncFrame or similar UI
+ * elements which allow for asynchronous image loading.
+ *
+ * This class is used internally by the DownloadDialog class.
+ *
+ * @internal
+ */
 class QAsyncPixmap : public QObject, public QPixmap
 {
     Q_OBJECT

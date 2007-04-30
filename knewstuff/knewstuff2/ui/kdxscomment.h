@@ -25,6 +25,16 @@
 
 class QTextEdit;
 
+/**
+ * KNewStuff comment addition window.
+ *
+ * This dialog is shown whenever the user selects to add a comment
+ * to an item in the download dialog.
+ *
+ * This class is used internally by the KDXSButton class.
+ *
+ * @internal
+ */
 class KDXSComment : public KDialog
 {
 Q_OBJECT

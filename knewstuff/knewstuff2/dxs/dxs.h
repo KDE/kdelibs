@@ -35,6 +35,17 @@ class Soap;
 class Entry;
 class Category;
 
+/**
+ * KNewStuff DXS proxy.
+ *
+ * This class serves as a direct proxy for all of the web service calls that
+ * are offered by servers implementing the DXS specification.
+ * The DXS proxy will use either SOAP or cDXS to communicate with the service.
+ *
+ * This class is used internally by the DxsEngine class.
+ *
+ * @internal
+ */
 class KNEWSTUFF_EXPORT Dxs : public QObject
 {
 Q_OBJECT

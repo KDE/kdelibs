@@ -25,6 +25,16 @@
 
 class KHTMLPart;
 
+/**
+ * KNewStuff changelog window.
+ *
+ * This dialog is shown whenever the user selects the changelog entry
+ * in the download dialog's item action button.
+ *
+ * This class is used internally by the KDXSButton class.
+ *
+ * @internal
+ */
 class KDXSChanges : public KDialog
 {
 Q_OBJECT

@@ -40,6 +40,17 @@ class QCString;
 namespace KNS
 {
 
+/**
+ * KNewStuff transport layer.
+ *
+ * Both SOAP and cDXS are implemented by this class. Since the latter one is
+ * merely a more efficient representation of the former, both are shared in
+ * the same class.
+ *
+ * This class is used internally by the Dxs class.
+ *
+ * @internal
+ */
 class Soap : public QObject
 {
 Q_OBJECT

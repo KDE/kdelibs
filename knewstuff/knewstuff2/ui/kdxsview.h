@@ -30,6 +30,7 @@ class QComboBox;
 namespace KNS
 {
 
+/* -- FIXME: not used at all by the library? -- */
 class KNEWSTUFF_EXPORT KDXSView : public KDialog
 {
 Q_OBJECT
