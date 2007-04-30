@@ -19,9 +19,9 @@
  */
 
 #include "mdnsd-responder.h"
-#include <QtCore/QCoreApplication>
-#include <QtCore/QUrl>
 #include "servicebase.h"
+#include <kurl.h>
+#include <QtCore/QCoreApplication>
 
 namespace DNSSD
 {
@@ -72,13 +72,13 @@ bool Responder::isRunning() const
 QByteArray domainToDNS(const QString &domain)
 {
 	if (domainIsLocal(domain)) return domain.toUtf8();
-		else return QUrl::toAce(domain);
+		else return KUrl::toAce(domain);
 }
 
 QString DNSToDomain(const char* domain)
 {
 	if (domainIsLocal(domain)) return QString::fromUtf8(domain);
-		else return QUrl::fromAce(domain);
+		else return KUrl::fromAce(domain);
 }
 
 }

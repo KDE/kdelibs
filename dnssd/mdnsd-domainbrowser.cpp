@@ -18,16 +18,17 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtCore/QStringList>
-#include <QtCore/QCoreApplication>
-#include <QtDBus/QtDBus>
+#include "mdnsd-domainbrowser_p.h"
 #include "domainbrowser.h"
 #include "settings.h"
 #include "remoteservice.h"
 #include "mdnsd-responder.h"
 #include "mdnsd-sdevent.h"
-#include <QHash>
-#include "mdnsd-domainbrowser_p.h"
+
+#include <QtCore/QCoreApplication>
+#include <QtCore/QHash>
+#include <QtCore/QStringList>
+#include <QtDBus/QtDBus>
 
 namespace DNSSD
 {
