@@ -136,7 +136,7 @@ public:
    * @param service		the service name to listen on
    * @param parent		the parent QObject object
    */
-  KServerSocket(const QString& service, QObject* parent = 0L);
+  explicit KServerSocket(const QString& service, QObject* parent = 0L);
 
   /**
    * Construct this object specifying the node and service names to listen on.

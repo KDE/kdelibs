@@ -67,7 +67,7 @@ public:
    * @param service	destination service to connect to
    * @param parent      the parent object for this object
    */
-  KBufferedSocket(const QString& node = QString(), const QString& service = QString(),
+  explicit KBufferedSocket(const QString& node = QString(), const QString& service = QString(),
 		  QObject* parent = 0L);
 
   /**
