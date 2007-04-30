@@ -166,7 +166,7 @@ static void initialize(StandardShortcut id)
 		if (s != "none")
 			info->cut = KShortcut(s);
 		else
-			info->cut.clear();
+			info->cut = KShortcut();
 	} else {
 		info->cut = hardcodedDefaultShortcut(id);
 	}

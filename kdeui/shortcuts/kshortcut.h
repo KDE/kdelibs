@@ -54,9 +54,15 @@ class KShortcutPrivate;
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
 */
-class KDEUI_EXPORT KShortcut : public QList<QKeySequence>
+class KDEUI_EXPORT KShortcut
 {
 public:
+    ///this enum is about the behavior of operations that treat a KShortcut like a list of QKeySequences.
+    enum EmptyHandling {
+        KeepEmpty = 0,  ///if a shortcut is or becomes empty, let it stay as a placeholder
+        RemoveEmpty     ///remove empty QKeySequences, possibly changing the positions of QKeySequences due to the ensuing reshuffling.
+    };
+
     /**
      * Creates a new empty shortcut.
      * @see isEmpty()
@@ -91,6 +97,11 @@ public:
     explicit KShortcut(int keyQtPri, int keyQtAlt = 0);
 
     /**
+     * Copy constructor.
+     */
+    KShortcut(const KShortcut &other);
+
+    /**
      * Creates a new shortcut that contains the key sequences described
      * in @p description. The format of description is the same as
      * used in QKeySequence::fromString(const QString&).
@@ -108,6 +119,11 @@ public:
      */
     explicit KShortcut(const QList<QKeySequence> &seqs);
 
+    /**
+     * Destructor.
+     */
+    ~KShortcut();
+
     /** @name Query methods */
     /** @{ */
 
@@ -115,15 +131,25 @@ public:
      * Returns the primary key sequence of this shortcut.
      * @return primary key sequence
      */
-    inline QKeySequence primary() const
-    { return value(0); }
+    QKeySequence primary() const;
 
     /**
      * Returns the alternate key sequence of this shortcut.
      * @return alternate key sequence
      */
-    inline QKeySequence alternate() const
-    { return value(1); }
+    QKeySequence alternate() const;
+
+    /**
+     * Returns whether this shortcut contains any nonempty key sequences.
+     * @return whether this shortcut is empty
+     */
+    bool isEmpty() const;
+
+    /**
+     * Returns whether at least one of the key sequences is equal to @p needle.
+     * @return whether this shortcut contains @p needle
+     */
+    bool contains(const QKeySequence &needle) const;
 
    /**
      * Returns a description of the shortcut as a semicolon-separated
@@ -133,6 +159,34 @@ public:
      * @see KShortcut(const QString &description)
      */
     QString toString() const;
+
+    bool operator==(const KShortcut &other) const;
+
+    inline bool operator!=(const KShortcut &other) const
+        {return !operator==(other);}
+
+    /**
+     * Returns shortcut as QList\<QKeySequence\>, and is equivalent to toList(RemoveEmpty).
+     * Be aware that empty shortcuts will not be included in the list;
+     * due to this, conversion operations like
+     * KShortcut b = (QList\<QKeySequence\>)KShortcut a
+     * will not always result in b == a.
+     */
+    operator QList<QKeySequence>() const;
+
+    /**
+     * The same as operator QList\<QKeySequence\>()
+     * If @p handleEmpty equals RemoveEmpty, empty key sequences will be left out of the result.
+     * Otherwise, empy key sequences will be included; you can be sure that
+     * shortcut.alternate() == shortcut.toList(KeepEmpty).at(1).
+     * @return the shortcut converted to a list of QKeySequences
+     */
+    QList<QKeySequence> toList(enum EmptyHandling handleEmpty = RemoveEmpty) const;
+
+    /**
+     * Returns shortcut as QVariant.
+     */
+    operator QVariant() const;
 
     /** @} */
     /** @name Mutator methods */
@@ -149,12 +203,22 @@ public:
      * @param keySeq set alternate key sequence to this
      */
     void setAlternate(const QKeySequence &keySeq);
-    
+
     /**
-     * Returns shortcut as QVariant 
+     * Remove @p keySeq from this shortcut.
+     * If @p handleEmpty equals RemoveEmpty, following key sequences will move up to take the place of
+     * @p keySeq. Otherwise, key sequences equal to @p keySeq will be set to empty.
+     * @param keySeq remove this key sequence from the shortcut
      */
-    operator QVariant() const;
-    
+    void remove(const QKeySequence &keySeq, enum EmptyHandling handleEmpty = RemoveEmpty);
+
+    /**
+     * Assignment operator.
+     */
+    KShortcut &operator=(const KShortcut &other);
+
+private:
+    class KShortcutPrivate *const d;
 };
 
 uint qHash(int);
