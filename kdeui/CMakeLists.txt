@@ -175,6 +175,7 @@ set(kdeui_LIB_SRCS
  widgets/kmainwindow.cpp
  widgets/kmenu.cpp
  widgets/kmenubar.cpp
+ widgets/kmultitabbar.cpp
  widgets/knuminput.cpp
  widgets/kpixmapregionselectorwidget.cpp
  widgets/kpushbutton.cpp
@@ -403,6 +404,7 @@ install( FILES
  widgets/kmainwindow.h
  widgets/kmenu.h
  widgets/kmenubar.h
+ widgets/kmultitabbar.h
  widgets/knuminput.h
  widgets/kpixmapregionselectorwidget.h
  widgets/kpushbutton.h

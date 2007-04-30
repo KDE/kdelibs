@@ -22,7 +22,6 @@ set(kutils_LIB_SRCS
 kcmoduleinfo.cpp
 kcmoduleloader.cpp
 kcmultidialog.cpp
-kmultitabbar.cpp
 kcmoduleproxy.cpp
 kpluginselector.cpp
 kcmodulecontainer.cpp
@@ -47,7 +46,6 @@ install( FILES
  kcmoduleinfo.h
  kcmoduleloader.h
  kcmultidialog.h
- kmultitabbar.h 
  kcmoduleproxy.h
  kpluginselector.h
  kcmodulecontainer.h
