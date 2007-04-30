@@ -647,17 +647,14 @@ QString K3Spell::funnyWord( const QString & word )
   // e.g. "re+fry-y+ies" -> "refries"
 {
   QString qs;
-  unsigned int i=0;
-
-  for( i=0; i<word.size(); i++ )
+  for( int i=0; i<word.size(); i++ )
   {
     if (word [i]=='+')
       continue;
     if (word [i]=='-')
     {
       QString shorty;
-      unsigned int j;
-      int k;
+      int j, k;
 
       for( j = i+1; j < word.size() && word[j] != '+' && word[j] != '-'; j++ )
         shorty += word[j];
