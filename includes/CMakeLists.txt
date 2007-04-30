@@ -30,7 +30,6 @@ install( FILES
   K3ListBox
   K3ListView
   K3ListViewItem
-  K3ListViewLineEdit
   K3ListViewSearchLine
   K3ListViewSearchLineWidget
   K3MimeSourceFactory
