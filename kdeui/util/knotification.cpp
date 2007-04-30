@@ -35,7 +35,7 @@
 #include <kpassivepopup.h>
 #include <kdialog.h>
 #include <kmacroexpander.h>
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <kdebug.h>
 #include <kvbox.h>
 #include <kapplication.h>
@@ -236,7 +236,7 @@ void KNotification::Private::raiseWidget(QWidget *w)
 #if defined(Q_WS_WIN) || defined(Q_WS_MAC)
 		w->activateWindow();
 #else
-		KWM::activateWindow( w->winId() );
+		KWindowSystem::activateWindow( w->winId() );
 #endif
 	}
 	else

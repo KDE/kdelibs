@@ -18,11 +18,11 @@
     Boston, MA 02110-1301, USA.
 */
 /*
- * kwm.h. Part of the KDE project.
+ * kwindowsystem.h. Part of the KDE project.
  */
 
-#ifndef KWM_H
-#define KWM_H
+#ifndef KWINDOWSYSTEM_H
+#define KWINDOWSYSTEM_H
 
 #include <kdeui_export.h>
 #include <QtCore/QObject>
@@ -31,7 +31,7 @@
 #include <kwindowinfo.h>
 
 #ifdef Q_WS_X11
-class KWMPrivate;
+class KWindowSystemPrivate;
 #endif
 
 
@@ -40,7 +40,7 @@ class KWMPrivate;
  * Convenience access to certain properties and features of the
  * window manager.
  *
- * The class KWM provides information about the state of the
+ * The class KWindowSystem provides information about the state of the
  * window manager and allows asking the window manager to change them
  * using a more high-level interface than the NETWinInfo/NETRootInfo
  * lowlevel classes.
@@ -48,7 +48,7 @@ class KWMPrivate;
  * @short Class for interaction with the window manager.
  * @author Matthias Ettrich (ettrich@kde.org)
  */
-class KDEUI_EXPORT KWM : public QObject, public NET
+class KDEUI_EXPORT KWindowSystem : public QObject, public NET
 {
     Q_OBJECT
 
@@ -57,7 +57,7 @@ public:
     /**
      * Access to the singleton instance. Useful mainly for connecting to signals.
      */
-    static KWM* self();
+    static KWindowSystem* self();
 #endif    
    /**
      * Returns the list of all toplevel windows currently managed by the
@@ -70,8 +70,8 @@ public:
      * Iteration over this list can be done easily with
      * \code
      *  QList<WId>::ConstIterator it;
-     *  for ( it = KWM::windows().begin();
-     *        it != KWM::windows().end(); ++it ) {
+     *  for ( it = KWindowSystem::windows().begin();
+     *        it != KWindowSystem::windows().end(); ++it ) {
      *     ... do something here,  (*it) is the current WId.
      *       }
      * \endcode
@@ -593,17 +593,17 @@ protected:
         
 private:
 #ifdef Q_WS_X11
-    friend class KWMStaticContainer;
+    friend class KWindowSystemStaticContainer;
 #endif
-    KWM() {}
+    KWindowSystem() {}
 
     enum { INFO_BASIC=1, // desktop info, not per-window
            INFO_WINDOWS=2 }; // also per-window info
 #ifdef Q_WS_X11
     static void init(int);
 
-    friend class KWMPrivate;
-    static inline KWMPrivate* const s_d_func();
+    friend class KWindowSystemPrivate;
+    static inline KWindowSystemPrivate* const s_d_func();
 #endif
 };
 

@@ -20,7 +20,7 @@
 */
 
 #include "kwindowinfo.h"
-#include "kwm.h"
+#include "kwindowsystem.h"
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -53,7 +53,7 @@ struct KWindowInfo::Private
 	void operator=( const Private& );
 };
 
-// KWM::info() should be updated too if something has to be changed here
+// KWindowSystem::info() should be updated too if something has to be changed here
 KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long properties2 ) : d(new Private)
 {
     KXErrorHandler handler;
@@ -72,13 +72,13 @@ KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long prop
         if( d->info->name() && d->info->name()[ 0 ] != '\0' )
 	    d->name_ = QString::fromUtf8( d->info->name() );
         else
-            d->name_ = KWM::readNameProperty( _win, XA_WM_NAME );
+            d->name_ = KWindowSystem::readNameProperty( _win, XA_WM_NAME );
     }
     if( properties & NET::WMIconName ) {
         if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
             d->iconic_name_ = QString::fromUtf8( d->info->iconName());
         else
-            d->iconic_name_ = KWM::readNameProperty( _win, XA_WM_ICON_NAME );
+            d->iconic_name_ = KWindowSystem::readNameProperty( _win, XA_WM_ICON_NAME );
     }
     if( properties & ( NET::WMGeometry | NET::WMKDEFrameStrut )) {
         NETRect frame, geom;
@@ -141,7 +141,7 @@ WId KWindowInfo::win() const
 unsigned long KWindowInfo::state() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState ) == 0, 176 )
-        << "Pass NET::WMState to KWM::windowInfo()" << endl;
+        << "Pass NET::WMState to KWindowInfo" << endl;
     return d->info->state();
 }
 
@@ -153,14 +153,14 @@ bool KWindowInfo::hasState( unsigned long s ) const
 NET::MappingState KWindowInfo::mappingState() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::XAWMState ) == 0, 176 )
-        << "Pass NET::XAWMState to KWM::windowInfo()" << endl;
+        << "Pass NET::XAWMState to KWindowInfo" << endl;
     return d->info->mappingState();
 }
 
 NETExtendedStrut KWindowInfo::extendedStrut() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ExtendedStrut ) == 0, 176 )
-        << "Pass NET::WM2ExtendedStrut to second argument of KWM::windowInfo()" << endl;
+        << "Pass NET::WM2ExtendedStrut to second argument of KWindowInfo" << endl;
     NETExtendedStrut ext = d->info->extendedStrut();
     NETStrut str = d->info->strut();
     if( ext.left_width == 0 && ext.right_width == 0 && ext.top_width == 0 && ext.bottom_width == 0
@@ -193,7 +193,7 @@ NETExtendedStrut KWindowInfo::extendedStrut() const
 NET::WindowType KWindowInfo::windowType( int supported_types ) const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMWindowType ) == 0, 176 )
-        << "Pass NET::WMWindowType to KWM::windowInfo()" << endl;
+        << "Pass NET::WMWindowType to KWindowInfo" << endl;
     return d->info->windowType( supported_types );
 }
 
@@ -210,7 +210,7 @@ QString KWindowInfo::visibleNameWithState() const
 QString KWindowInfo::visibleName() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleName ) == 0, 176 )
-        << "Pass NET::WMVisibleName to KWM::windowInfo()" << endl;
+        << "Pass NET::WMVisibleName to KWindowInfo" << endl;
     return d->info->visibleName() && d->info->visibleName()[ 0 ] != '\0'
         ? QString::fromUtf8(d->info->visibleName()) : name();
 }
@@ -218,7 +218,7 @@ QString KWindowInfo::visibleName() const
 QString KWindowInfo::name() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
-        << "Pass NET::WMName to KWM::windowInfo()" << endl;
+        << "Pass NET::WMName to KWindowInfo" << endl;
     return d->name_;
 }
 
@@ -235,7 +235,7 @@ QString KWindowInfo::visibleIconNameWithState() const
 QString KWindowInfo::visibleIconName() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName ) == 0, 176 )
-        << "Pass NET::WMVisibleIconName to KWM::windowInfo()" << endl;
+        << "Pass NET::WMVisibleIconName to KWindowInfo" << endl;
     if( d->info->visibleIconName() && d->info->visibleIconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->visibleIconName());
     if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
@@ -248,7 +248,7 @@ QString KWindowInfo::visibleIconName() const
 QString KWindowInfo::iconName() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName ) == 0, 176 )
-        << "Pass NET::WMIconName to KWM::windowInfo()" << endl;
+        << "Pass NET::WMIconName to KWindowInfo" << endl;
     if( d->info->iconName() && d->info->iconName()[ 0 ] != '\0' )
         return QString::fromUtf8( d->info->iconName());
     if( !d->iconic_name_.isEmpty())
@@ -258,91 +258,91 @@ QString KWindowInfo::iconName() const
 
 bool KWindowInfo::isOnCurrentDesktop() const
 {
-    return isOnDesktop( KWM::currentDesktop());
+    return isOnDesktop( KWindowSystem::currentDesktop());
 }
 
 bool KWindowInfo::isOnDesktop( int _desktop ) const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
-        << "Pass NET::WMDesktop to KWM::windowInfo()" << endl;
+        << "Pass NET::WMDesktop to KWindowInfo" << endl;
     return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
 }
 
 bool KWindowInfo::onAllDesktops() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
-        << "Pass NET::WMDesktop to KWM::windowInfo()" << endl;
+        << "Pass NET::WMDesktop to KWindowInfo" << endl;
     return d->info->desktop() == NET::OnAllDesktops;
 }
 
 int KWindowInfo::desktop() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
-        << "Pass NET::WMDesktop to KWM::windowInfo()" << endl;
+        << "Pass NET::WMDesktop to KWindowInfo" << endl;
     return d->info->desktop();
 }
 
 QRect KWindowInfo::geometry() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
-        << "Pass NET::WMGeometry to KWM::windowInfo()" << endl;
+        << "Pass NET::WMGeometry to KWindowInfo" << endl;
     return d->geometry_;
 }
 
 QRect KWindowInfo::frameGeometry() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMKDEFrameStrut ) == 0, 176 )
-        << "Pass NET::WMKDEFrameStrut to KWM::windowInfo()" << endl;
+        << "Pass NET::WMKDEFrameStrut to KWindowInfo" << endl;
     return d->frame_geometry_;
 }
 
 WId KWindowInfo::transientFor() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2TransientFor ) == 0, 176 )
-        << "Pass NET::WM2TransientFor to KWM::windowInfo()" << endl;
+        << "Pass NET::WM2TransientFor to KWindowInfo" << endl;
     return d->info->transientFor();
 }
 
 WId KWindowInfo::groupLeader() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2GroupLeader ) == 0, 176 )
-        << "Pass NET::WM2GroupLeader to KWM::windowInfo()" << endl;
+        << "Pass NET::WM2GroupLeader to KWindowInfo" << endl;
     return d->info->groupLeader();
 }
 
 QByteArray KWindowInfo::windowClassClass() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWM::windowInfo()" << endl;
+        << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
     return d->info->windowClassClass();
 }
 
 QByteArray KWindowInfo::windowClassName() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowClass ) == 0, 176 )
-        << "Pass NET::WM2WindowClass to KWM::windowInfo()" << endl;
+        << "Pass NET::WM2WindowClass to KWindowInfo" << endl;
     return d->info->windowClassName();
 }
 
 QByteArray KWindowInfo::windowRole() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2WindowRole ) == 0, 176 )
-        << "Pass NET::WM2WindowRole to KWM::windowInfo()" << endl;
+        << "Pass NET::WM2WindowRole to KWindowInfo" << endl;
     return d->info->windowRole();
 }
 
 QByteArray KWindowInfo::clientMachine() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2ClientMachine ) == 0, 176 )
-        << "Pass NET::WM2ClientMachine to KWM::windowInfo()" << endl;
+        << "Pass NET::WM2ClientMachine to KWindowInfo" << endl;
     return d->info->clientMachine();
 }
 
 bool KWindowInfo::actionSupported( NET::Action action ) const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS2 ] & NET::WM2AllowedActions ) == 0, 176 )
-        << "Pass NET::WM2AllowedActions to KWM::windowInfo()" << endl;
-    if( KWM::allowedActionsSupported())
+        << "Pass NET::WM2AllowedActions to KWindowInfo" << endl;
+    if( KWindowSystem::allowedActionsSupported())
         return d->info->allowedActions() & action;
     else
         return true; // no idea if it's supported or not -> pretend it is
@@ -359,6 +359,6 @@ bool KWindowInfo::isMinimized() const
         return true;
     // older WMs use WithdrawnState for other virtual desktops
     // and IconicState only for minimized
-    return KWM::icccmCompliantMappingState() ? false : true;
+    return KWindowSystem::icccmCompliantMappingState() ? false : true;
 }
 

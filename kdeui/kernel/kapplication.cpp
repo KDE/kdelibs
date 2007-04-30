@@ -71,7 +71,7 @@
 #include <sys/wait.h>
 
 #ifndef Q_WS_WIN
-#include "kwm.h"
+#include "kwindowsystem.h"
 #endif
 
 #include <fcntl.h>

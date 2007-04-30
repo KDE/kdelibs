@@ -48,7 +48,7 @@
 #include <kconfiggroup.h>
 
 #ifdef Q_WS_X11
-#include <kwm.h>
+#include <kwindowsystem.h>
 //#include <qxembed.h>
 #include <qx11info_x11.h>
 
@@ -199,7 +199,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       setParent(parentWidget(), Qt::Window | Qt::Tool | Qt::FramelessWindowHint);
       setGeometry(0,0,width(),height());
 #ifdef Q_WS_X11
-      KWM::setType( winId(), NET::TopMenu );
+      KWindowSystem::setType( winId(), NET::TopMenu );
       if( parentWidget())
           XSetTransientForHint( QX11Info::display(), winId(), parentWidget()->topLevelWidget()->winId());
 #endif
@@ -314,7 +314,7 @@ void KMenuBar::updateFallbackSize()
         if( d->fallback_mode )
         {
             d->fallback_mode = false;
-//            KWM::setStrut( winId(), 0, 0, 0, 0 ); KWin will set strut as it will see fit
+//            KWindowSystem::setStrut( winId(), 0, 0, 0, 0 ); KWin will set strut as it will see fit
             setMinimumSize( 0, 0 );
             setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
             updateMenuBarSize();
@@ -344,7 +344,7 @@ void KMenuBar::selectionTimeout()
         int strut_height = height() - margin;
         if( strut_height < 0 )
             strut_height = 0;
-        KWM::setStrut( winId(), 0, 0, strut_height, 0 );
+        KWindowSystem::setStrut( winId(), 0, 0, strut_height, 0 );
 #endif
     }
 }

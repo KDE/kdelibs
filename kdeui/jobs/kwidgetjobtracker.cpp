@@ -39,7 +39,7 @@
 #include <klocale.h>
 
 #ifdef Q_WS_X11
-#include <kwm.h>
+#include <kwindowsystem.h>
 #endif
 
 class KWidgetJobTracker::Private
@@ -290,9 +290,9 @@ void KWidgetJobTracker::Private::init(QWidget *parent)
 {
     widget = new QWidget(parent);
 
-#ifdef Q_WS_X11 //FIXME(E): Remove once all the KWM::foo calls have been ported to QWS
+#ifdef Q_WS_X11 //FIXME(E): Remove once all the KWindowSystem::foo calls have been ported to QWS
     // Set a useful icon for this window!
-    KWM::setIcons( widget->winId(),
+    KWindowSystem::setIcons( widget->winId(),
                     KIconLoader::global()->loadIcon( "document-save", K3Icon::NoGroup, 32 ),
                     KIconLoader::global()->loadIcon( "document-save", K3Icon::NoGroup, 16 ) );
 #endif

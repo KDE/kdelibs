@@ -216,17 +216,17 @@ if (Q_WS_WIN)
 endif (Q_WS_WIN)
 
 if (Q_WS_X11)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_x11.cpp
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
                                          windowmanagement/kwindowinfo_x11.cpp
                                          windowmanagement/netwm.cpp
        )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_mac.cpp
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_mac.cpp
        )     
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwm_win.cpp)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp)
 endif (Q_WS_WIN)
 
 kde4_automoc(${kdeui_LIB_SRCS} dialogs/kdialogqueue_p.h)
@@ -423,7 +423,7 @@ install( FILES
  widgets/kurllabel.h
  widgets/kvbox.h
  widgets/kxyselector.h
- windowmanagement/kwm.h
+ windowmanagement/kwindowsystem.h
  windowmanagement/kwindowinfo.h
  windowmanagement/netwm_def.h
  windowmanagement/netwm.h

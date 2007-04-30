@@ -53,7 +53,7 @@ DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include <signal.h>
 #ifdef Q_WS_X11
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <kxmessages.h>
 #endif
 
@@ -151,8 +151,8 @@ class KStartupInfo::Private
                 return;
 
             if( !( flags & DisableKWinModule )) {
-                QObject::connect( KWM::self(), SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
-                QObject::connect( KWM::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                QObject::connect( KWindowSystem::self(), SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                QObject::connect( KWindowSystem::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
             }
             QObject::connect( &msgs, SIGNAL( gotMessage( const QString& )), q, SLOT( got_message( const QString& )));
             cleanup = new QTimer( q );
@@ -196,11 +196,11 @@ void KStartupInfo::Private::got_message( const QString& msg_P )
 #endif
     }
 
-// if the application stops responding for a while, KWM may get
+// if the application stops responding for a while, KWindowSystem may get
 // the information about the already mapped window before KXMessages
 // actually gets the info about the started application (depends
 // on their order in X11 event filter in KApplication)
-// simply delay info from KWM a bit
+// simply delay info from KWindowSystem a bit
 // SELI???
 namespace
 {
@@ -613,12 +613,12 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_i
             }
         if( activate )
             {
-            KWM::setOnDesktop( window->winId(), KWM::currentDesktop());
+            KWindowSystem::setOnDesktop( window->winId(), KWindowSystem::currentDesktop());
         // This is not very nice, but there's no way how to get any
         // usable timestamp without ASN, so force activating the window.
         // And even with ASN, it's not possible to get the timestamp here,
         // so if the WM doesn't have support for ASN, it can't be used either.
-            KWM::forceActiveWindow( window->winId());
+            KWindowSystem::forceActiveWindow( window->winId());
             }
         }
 #endif

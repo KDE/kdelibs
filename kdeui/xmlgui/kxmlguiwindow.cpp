@@ -60,7 +60,7 @@
 #include <kstandarddirs.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
-#include <kwm.h>
+#include <kwindowsystem.h>
 #include <kconfiggroup.h>
 
 #if defined Q_WS_X11
