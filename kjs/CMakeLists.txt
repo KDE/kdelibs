@@ -50,6 +50,8 @@ endif(PCRE_FOUND)
 ########### next target ###############
 add_definitions(-DBUILDING_KDE__)
 
+add_subdirectory( wtf )
+
 set(CREATE_HASH_TABLE ${CMAKE_CURRENT_SOURCE_DIR}/create_hash_table )
 
 macro(CREATE_LUT _srcs_LIST _in_FILE _out_FILE _dep_FILE)
