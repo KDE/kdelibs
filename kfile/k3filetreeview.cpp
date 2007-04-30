@@ -657,6 +657,21 @@ K3FileTreeViewItem *K3FileTreeView::findItem( KFileTreeBranch* brnch, const QStr
    return( ret );
 }
 
+bool K3FileTreeView::showFolderOpenPixmap() const
+{
+    return m_wantOpenFolderPixmaps;
+}
+
+void K3FileTreeView::setShowFolderOpenPixmap( bool showIt )
+{
+    m_wantOpenFolderPixmaps = showIt;
+}
+
+void K3FileTreeView::slotSetNextUrlToSelect( const KUrl &url )
+{
+    m_nextUrlToSelect = url;
+}
+
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 

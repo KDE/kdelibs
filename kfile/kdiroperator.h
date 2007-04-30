@@ -687,8 +687,6 @@ public Q_SLOTS:
      * Instead, call deleteSelected().
      *
      * FIXME KAction Port: link deleteSelected() up correctly
-     *
-     * @since 3.4
      */
     virtual void trashSelected();
 
@@ -720,8 +718,7 @@ protected Q_SLOTS:
     /**
      * Enters the directory specified by the given @p item.
      */
-	// ### KDE4: make virtual
-    void selectDir(const KFileItem *item );
+    virtual void selectDir(const KFileItem *item );
 
     /**
      * Emits fileSelected( item )
@@ -731,7 +728,7 @@ protected Q_SLOTS:
     /**
      * Emits fileHighlighted( i )
      */
-    void highlightFile(const KFileItem* i) { fileHighlighted( i ); }
+    void highlightFile(const KFileItem* i);
 
     /**
      * Called upon right-click to activate the popupmenu.
@@ -741,32 +738,32 @@ protected Q_SLOTS:
     /**
      * Changes sorting to sort by name
      */
-    void sortByName() 		{ byNameAction->setChecked( true ); }
+    void sortByName();
 
     /**
      * Changes sorting to sort by size
      */
-    void sortBySize() 		{ bySizeAction->setChecked( true ); }
+    void sortBySize();
 
     /**
      * Changes sorting to sort by date
      */
-    void sortByDate() 		{ byDateAction->setChecked( true ); }
+    void sortByDate();
 
     /**
      * Changes sorting to reverse sorting
      */
-    void sortReversed() 	{ reverseAction->setChecked( !reverseAction->isChecked() ); }
+    void sortReversed();
 
     /**
      * Toggles showing directories first / having them sorted like files.
      */
-    void toggleDirsFirst() 	{ dirsFirstAction->setChecked( !dirsFirstAction->isChecked() ); }
+    void toggleDirsFirst();
 
     /**
      * Toggles case sensitive / case insensitive sorting
      */
-    void toggleIgnoreCase() 	{ caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() ); }
+    void toggleIgnoreCase();
 
     /**
      * Tries to make the given @p match as current item in the view and emits

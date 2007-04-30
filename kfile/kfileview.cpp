@@ -19,10 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <assert.h>
-#include <stdlib.h>
-
-#include <QPointer>
+#include "kfileview.h"
+#include "config-kfile.h"
 
 #include <kaction.h>
 #include <kactioncollection.h>
@@ -32,8 +30,10 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
-#include "config-kfile.h"
-#include "kfileview.h"
+#include <QPointer>
+
+#include <assert.h>
+#include <stdlib.h>
 
 #ifdef Unsorted // the "I hate X.h" modus
 #undef Unsorted
@@ -143,6 +143,11 @@ void KFileView::insertItem( KFileItem * )
 {
 }
 
+QDir::SortFlags KFileView::sorting() const
+{
+    return m_sorting;
+}
+
 void KFileView::setSorting(QDir::SortFlags new_sort)
 {
     m_sorting = new_sort;
@@ -156,11 +161,31 @@ void KFileView::clear()
     clearView();
 }
 
+bool KFileView::isReversed() const
+{
+    return (m_sorting & QDir::Reversed);
+}
+
 void KFileView::sortReversed()
 {
     int spec = sorting();
 
     setSorting( QDir::SortFlags( spec ^ QDir::Reversed ) );
+}
+
+uint KFileView::count() const
+{
+    return filesNumber + dirsNumber;
+}
+
+uint KFileView::numFiles() const
+{
+    return filesNumber;
+}
+
+uint KFileView::numDirs() const
+{
+    return dirsNumber;
 }
 
 #if 0

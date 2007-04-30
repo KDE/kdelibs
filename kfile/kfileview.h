@@ -23,11 +23,11 @@
 #define KFILEVIEW_H
 
 class QPoint;
+class QWidget;
+class QDropEvent;
 class KActionCollection;
 
 #include "kfile_export.h"
-#include <QtGui/QWidget>
-
 #include "kfileitem.h"
 #include "kfile.h"
 
@@ -175,7 +175,7 @@ public:
       * Returns the sorting order of the internal list. Newly added files
       * are added through this sorting.
       */
-    QDir::SortFlags sorting() const { return m_sorting; }
+    QDir::SortFlags sorting() const;
 
     /**
       * Sets the sorting order of the view.
@@ -197,24 +197,24 @@ public:
      * Tells whether the current items are in reversed order (shortcut to
      * sorting() & QDir::Reversed).
      */
-    bool isReversed() const { return (m_sorting & QDir::Reversed); }
+    bool isReversed() const;
 
     void sortReversed();
 
     /**
       * @returns the number of dirs and files
       **/
-    uint count() const { return filesNumber + dirsNumber; }
+    uint count() const;
 
     /**
       * @returns the number of files.
       **/
-    uint numFiles() const { return filesNumber; }
+    uint numFiles() const;
 
     /**
       * @returns the number of directories
       **/
-    uint numDirs() const { return dirsNumber; }
+    uint numDirs() const;
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
     virtual KFile::SelectionMode selectionMode() const;

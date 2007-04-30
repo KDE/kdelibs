@@ -255,6 +255,36 @@ void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
     actionMenu->menu()->exec( pos );
 }
 
+void KDirOperator::sortByName()
+{
+    byNameAction->setChecked( true );
+}
+
+void KDirOperator::sortBySize()
+{
+    bySizeAction->setChecked( true );
+}
+
+void KDirOperator::sortByDate()
+{
+    byDateAction->setChecked( true );
+}
+
+void KDirOperator::sortReversed()
+{
+    reverseAction->setChecked( !reverseAction->isChecked() );
+}
+
+void KDirOperator::toggleDirsFirst()
+{
+    dirsFirstAction->setChecked( !dirsFirstAction->isChecked() );
+}
+
+void KDirOperator::toggleIgnoreCase()
+{
+    caseInsensitiveAction->setChecked( !caseInsensitiveAction->isChecked() );
+}
+
 void KDirOperator::updateSelectionDependentActions()
 {
     bool hasSelection = m_fileView && m_fileView->selectedItems() &&
@@ -1193,6 +1223,11 @@ void KDirOperator::selectFile(const KFileItem *item)
     QApplication::restoreOverrideCursor();
 
     emit fileSelected( item );
+}
+
+void KDirOperator::highlightFile(const KFileItem* i)
+{
+    fileHighlighted( i );
 }
 
 void KDirOperator::setCurrentItem( const QString& filename )

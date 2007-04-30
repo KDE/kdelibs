@@ -137,7 +137,7 @@ public:
    /**
     * @returns a flag indicating if extended folder pixmaps are displayed or not.
     */
-   bool showFolderOpenPixmap() const { return m_wantOpenFolderPixmaps; }
+   bool showFolderOpenPixmap() const;
 
 public Q_SLOTS:
 
@@ -148,15 +148,14 @@ public Q_SLOTS:
     * If switched off, the plain mime pixmap is displayed.
     * @param showIt = false displays mime type pixmap only
     */
-   virtual void setShowFolderOpenPixmap( bool showIt = true )
-      { m_wantOpenFolderPixmaps = showIt; }
+   virtual void setShowFolderOpenPixmap( bool showIt = true );
 
 protected:
    /**
     * @returns true if we can decode the drag and support the action
     */
 
-   virtual bool acceptDrag(QDropEvent* event) const;
+    virtual bool acceptDrag(QDropEvent* event) const;
     virtual Q3DragObject * dragObject();
 
     virtual void startAnimation( K3FileTreeViewItem* item, const char * iconBaseName = "kde", uint iconCount = 6 );
@@ -170,8 +169,7 @@ protected Q_SLOTS:
     virtual void slotNewTreeViewItems( KFileTreeBranch*,
 				       const K3FileTreeViewItemList& );
 
-    virtual void slotSetNextUrlToSelect( const KUrl &url )
-      { m_nextUrlToSelect = url; }
+    virtual void slotSetNextUrlToSelect( const KUrl &url );
 
     virtual QPixmap itemIcon( K3FileTreeViewItem*, int gap = 0 ) const;
 
@@ -240,11 +238,11 @@ private:
     QPoint m_dragPos;
     bool m_bDrag;
 
-   bool m_wantOpenFolderPixmaps; // Flag weather the folder should have open-folder pixmaps
+    bool m_wantOpenFolderPixmaps; // Flag weather the folder should have open-folder pixmaps
 
     Q3ListViewItem *m_currentBeforeDropItem; // The item that was current before the drag-enter event happened
     Q3ListViewItem *m_dropItem; // The item we are moving the mouse over (during a drag)
-   QPixmap  m_openFolderPixmap;
+    QPixmap  m_openFolderPixmap;
     QTimer *m_autoOpenTimer;
 
 private:
