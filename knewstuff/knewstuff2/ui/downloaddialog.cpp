@@ -622,7 +622,7 @@ void DownloadDialog::setEngine(DxsEngine *engine)
 	d->itemsView->setEngine(m_engine);
 
 	// FIXME: adapt to DxsEngine from Dxs!
-	connect(m_engine,
+	/*connect(m_engine,
 		SIGNAL(signalCategories(QList<KNS::Category*>)),
 		SLOT(slotCategories(QList<KNS::Category*>)));
 	connect(m_engine,
@@ -633,7 +633,7 @@ void DownloadDialog::setEngine(DxsEngine *engine)
 		SLOT(slotError()));
 	connect(m_engine,
 		SIGNAL(signalFault()),
-		SLOT(slotFault()));
+		SLOT(slotFault()));*/
 }
 
 void DownloadDialog::slotLoadProviderDXS(int index)

@@ -7,6 +7,7 @@
 #include "knewstuff2/core/entryhandler.h" // tmp
 
 #include <kapplication.h> // kapp-ptr
+#include <kglobal.h>
 
 #include <kdebug.h>
 
@@ -51,8 +52,8 @@ void Engine::workflow()
 	if(m_command == command_download)
 	{
 		connect(this,
-			SIGNAL(signalEntryLoaded(KNS::Entry*, const Feed*, const Provider*)),
-			SLOT(slotEntryLoaded(KNS::Entry*, const Feed*, const Provider*)));
+			SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
+			SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
 		connect(this,
 			SIGNAL(signalEntriesFailed()),
 			SLOT(slotEntriesFailed()));
@@ -60,8 +61,8 @@ void Engine::workflow()
 			SIGNAL(signalEntriesFinished()),
 			SLOT(slotEntriesFinished()));
 		connect(this,
-			SIGNAL(signalEntriesFeedFinished(const Feed*)),
-			SLOT(slotEntriesFeedFinished(const Feed*)));
+			SIGNAL(signalEntriesFeedFinished(const KNS::Feed*)),
+			SLOT(slotEntriesFeedFinished(const KNS::Feed*)));
 
 		m_downloaddialog = new DownloadDialog(0);
 		m_downloaddialog->setEngine(this);
@@ -84,6 +85,11 @@ KNS::Entry::List Engine::download()
 	KNS::Entry::List entries;
 
 	Engine *engine = new Engine();
+
+	KComponentData component = KGlobal::mainComponent();
+	QString name = component.componentName();
+	engine->init(name + ".knsrc");
+
 	entries = engine->downloadDialogModal();
 	delete engine;
 
@@ -123,6 +129,11 @@ KNS::Entry *Engine::upload(QString file)
 	KNS::Entry *entry;
 
 	Engine *engine = new Engine();
+
+	KComponentData component = KGlobal::mainComponent();
+	QString name = component.componentName();
+	engine->init(name + ".knsrc");
+
 	entry = engine->uploadDialogModal(file);
 	delete engine;
 

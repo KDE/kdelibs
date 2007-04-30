@@ -1,9 +1,10 @@
 PROJECT_NAME           = KNewStuff2
-PROJECT_NUMBER         = 0.0
+PROJECT_NUMBER         = "KDE 4.0"
 EXTRACT_ALL            = YES
 HIDE_FRIEND_COMPOUNDS  = YES
 HIDE_SCOPE_NAMES       = NO
 QUIET                  = YES
+FILE_PATTERNS          = *.cpp *.h *.dox
 RECURSIVE              = YES
 SOURCE_BROWSER         = YES
 GENERATE_LATEX         = NO

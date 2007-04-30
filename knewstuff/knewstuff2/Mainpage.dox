@@ -1,5 +1,21 @@
 /**
  * \mainpage Collaborative Data Sharing in KDE applications
  *
+ * The \b KNewStuff2 library adds data sharing capabilities to KDE applications.
+ * Technically, it implements the <a href="http://ghns.freedesktop.org/">GHNS</a> and
+ * DXS specifications. The library consists of three parts: the data management core
+ * and GHNS protocol implementation, the DXS web service handler, and the user interface
+ * classes like dialogs and buttons.
+ *
+ * Application authors should not use all of the classes directly, which are installed
+ * only for the purpose of implementing functionality on top of \b KNewStuff2; instead,
+ * the high-level \ref KNS::Engine class provides everything an application needs.
+ * Both upload and download scenarios are handled by the engine. There are only two
+ * preparation steps necessary before this class can be used: the setup of a GHNS repository,
+ * and the creation of a \b *.knsrc file which will determine all aspects of the
+ * application's \b KNewStuff2 usage.
+ *
+ * All of the related information such as \b *.knsrc files, repositories and security
+ * can be found in the <a href="http://www.kstuff.org/docs/tutorial/">KNewStuff2 tutorial</a>.
  */
 

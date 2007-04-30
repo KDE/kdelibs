@@ -45,6 +45,8 @@ using namespace KNS;
 
 CoreEngine::CoreEngine()
 {
+	m_initialized = false;
+
 	m_uploadedentry = NULL;
 	m_uploadprovider = NULL;
 
@@ -60,6 +62,8 @@ CoreEngine::~CoreEngine()
 
 bool CoreEngine::init(const QString &configfile)
 {
+	kDebug(550) << "Initializing KNS::CoreEngine from '" << configfile << "'" << endl;
+
 	KConfig conf(configfile);
 	if(conf.getConfigState() == KConfig::NoAccess)
 	{
@@ -85,6 +89,8 @@ bool CoreEngine::init(const QString &configfile)
 	KConfigGroup group = conf.group("KNewStuff2");
 	m_providersurl = group.readEntry("ProvidersUrl", QString());
 	m_localregistrydir = group.readEntry("LocalRegistryDir", QString());
+	//m_componentname = group.readEntry("ComponentName", QString());
+	m_componentname = configfile.section(".", 0, 0);
 
 	// FIXME: add support for several categories later on
 	// FIXME: read out only when actually installing as a performance improvement?
@@ -126,11 +132,19 @@ bool CoreEngine::init(const QString &configfile)
 		}
 	}
 
+	m_initialized = true;
+
 	return true;
 }
 
 void CoreEngine::start(bool localonly)
 {
+	if(!m_initialized)
+	{
+		kError(550) << "Must call KNS::CoreEngine::init() first." << endl;
+		return;
+	}
+
 	loadProvidersCache();
 	//loadEntriesCache();
 
@@ -623,7 +637,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
 	}
 	QString cachedir = cachedirs.first();
 
-	QStringList entrycachedirs = d.findDirs("cache", "knewstuff2-entries.cache");
+	QStringList entrycachedirs = d.findDirs("cache", "knewstuff2-entries.cache/" + m_componentname);
 	if(entrycachedirs.size() == 0)
 	{
 		kDebug(550) << "Cache directory not present, skip loading." << endl;
@@ -762,7 +776,7 @@ void CoreEngine::loadEntriesCache()
 
 	kDebug(550) << "Loading entry cache." << endl;
 
-	QStringList cachedirs = d.findDirs("cache", "knewstuff2-entries.cache");
+	QStringList cachedirs = d.findDirs("cache", "knewstuff2-entries.cache/" + m_componentname);
 	if(cachedirs.size() == 0)
 	{
 		kDebug(550) << "Cache directory not present, skip loading." << endl;
@@ -1028,7 +1042,7 @@ void CoreEngine::cacheEntry(Entry *entry)
 
 	kDebug(550) << "Caching entry." << endl;
 
-	QString cachedir = d.saveLocation("cache", "knewstuff2-entries.cache");
+	QString cachedir = d.saveLocation("cache", "knewstuff2-entries.cache/" + m_componentname);
 
 	kDebug(550) << " + Save to directory '" + cachedir + "'." << endl;
 

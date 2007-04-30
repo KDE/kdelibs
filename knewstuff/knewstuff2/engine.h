@@ -29,27 +29,37 @@ class DownloadDialog;
 class Feed;
 
 /**
- * KNewStuff engine.
+ * @brief The KNewStuff2 engine is the top-level class to handle GHNS and DXS workflows.
+ *
  * An engine implements GHNS workflows, which consist of discrete steps
  * performed by the inherited engine. Depending on the provider, traditional
  * GHNS or DXS are used transparently.
  * This class is the one which applications should use.
+ * In most cases, either \ref upload() or \ref download() will be called by the
+ * application to upload or download data.
  */
 class KNEWSTUFF_EXPORT Engine : public DxsEngine
 {
     Q_OBJECT
   public:
     /**
-     * Constructor.
+     * @brief Engine constructor.
+     *
+     * As many engines as needed can be instantiated, although one should use
+     * the static methods \ref download() and \ref upload() instead.
      */
     Engine();
 
     /**
-     * Destructor.
+     * \brief Engine destructor.
+     *
+     * Deletes an engine and frees all memory occupied by it.
      */
     ~Engine();
 
     /**
+     * @brief Synchronous way of starting the download workflow.
+     *
      * Starts the download workflow. This workflow will turn up a dialog
      * where the user can select entries for installation and deinstallation.
      * This method is a modal one. It will return all affected entries as
@@ -59,9 +69,24 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      */
     KNS::Entry::List downloadDialogModal();
 
+    /**
+     * @brief Recommended download workflow entry point.
+     *
+     * This method is a static convenience wrapper around \ref downloadDialogModal()
+     * which does not require the manual construction of an engine object.
+     * The engine will be configured to load appname.knsrc.
+     * The resulting entry list must not be freed, as the engine will continue
+     * to keep track of it.
+     *
+     * @return List of installed or deinstalled entries
+     *
+     * @see downloadDialogModal()
+     */
     static KNS::Entry::List download();
 
     /**
+     * @brief Synchronous way of starting the upload workflow.
+     *
      * Starts the upload workflow. This workflow will offer provider
      * selection and afterwards upload all files associated with an entry.
      * This method is a modal one. It will return the uploaded entry.
@@ -70,35 +95,54 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
      */
     KNS::Entry *uploadDialogModal(QString file);
 
+    /**
+     * @brief Recommended upload workflow entry point.
+     *
+     * This method is a static convenience wrapper around \ref uploadDialogModal()
+     * which does not require the manual construction of an engine object.
+     * The engine will be configured to load appname.knsrc.
+     * The resulting entry must not be freed, as the engine will continue
+     * to keep track of it.
+     *
+     * @return Uploaded entry, or \b null in case of failures
+     *
+     * @see uploadDialogModal()
+     */
     static KNS::Entry *upload(QString file);
 
     /**
-     * Asynchronous way of starting the download workflow.
+     * @brief Asynchronous way of starting the download workflow.
+     *
+     * This method should be used whenever a blocking application with a
+     * non-blocking GUI during GHNS operations is not suitable.
      * Affected entries will be reported by signals.
      *
-     * @see downloadDialogModal
+     * @see downloadDialogModal()
      */
     void downloadDialog();
 
     /**
-     * Asynchronous way of starting the upload workflow.
+     * @brief Asynchronous way of starting the upload workflow.
+     *
+     * This method should be used whenever a blocking application with a
+     * non-blocking GUI during GHNS operations is not suitable.
      * The affected entry will be reported by signals.
      *
-     * @see uploadDialogModal
+     * @see uploadDialogModal()
      */
     void uploadDialog(QString file);
 
   private Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
     void slotProvidersFailed();
-    void slotEntryLoaded(KNS::Entry *entry, const Feed *feed, const Provider *provider);
+    void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
     void slotEntriesFailed();
     void slotEntryUploaded();
     void slotEntryFailed();
 
     void slotProvidersFinished();
     void slotEntriesFinished();
-    void slotEntriesFeedFinished(const Feed *feed);
+    void slotEntriesFeedFinished(const KNS::Feed *feed);
 
   private:
     void workflow();

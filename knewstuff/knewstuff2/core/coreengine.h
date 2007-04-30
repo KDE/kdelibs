@@ -241,6 +241,7 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
 
     QString m_providersurl;
     QString m_localregistrydir;
+    QString m_componentname;
 
     QMap<Entry*, QString> m_previewfiles;
     QMap<Entry*, QString> m_payloadfiles;
@@ -250,6 +251,8 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     Installation *m_installation;
 
     int m_activefeeds;
+
+    bool m_initialized;
 };
 
 }
