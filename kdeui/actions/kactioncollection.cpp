@@ -539,7 +539,6 @@ const QList< KActionCollection * >& KActionCollection::allCollections( )
 	return s_allCollections;
 }
 
-#endif
 /* vim: et sw=2 ts=2
  */
 
