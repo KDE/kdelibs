@@ -48,6 +48,13 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
     map[Solid::OpticalDrive::Dvdplusr] ="storage.cdrom.dvdplusr";
     map[Solid::OpticalDrive::Dvdplusrw] ="storage.cdrom.dvdplusrw";
     map[Solid::OpticalDrive::Dvdplusdl] ="storage.cdrom.dvdplusrdl";
+    map[Solid::OpticalDrive::Dvdplusdlrw] ="storage.cdrom.dvdplusrwdl";
+    map[Solid::OpticalDrive::Bd] ="storage.cdrom.bd";
+    map[Solid::OpticalDrive::Bdr] ="storage.cdrom.bdr";
+    map[Solid::OpticalDrive::Bdre] ="storage.cdrom.bdre";
+    map[Solid::OpticalDrive::HdDvd] ="storage.cdrom.hddvd";
+    map[Solid::OpticalDrive::HdDvdr] ="storage.cdrom.hddvdr";
+    map[Solid::OpticalDrive::HdDvdrw] ="storage.cdrom.hddvdrw";
 
     foreach (const Solid::OpticalDrive::MediumType type, map.keys())
     {

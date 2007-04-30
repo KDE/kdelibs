@@ -96,6 +96,38 @@ Solid::OpticalDisc::DiscType FakeOpticalDisc::discType() const
     {
         return Solid::OpticalDisc::DvdPlusRewritable;
     }
+    else if (type == "dvd_plus_r_dl")
+    {
+        return Solid::OpticalDisc::DvdPlusRecordableDuallayer;
+    }
+    else if (type == "dvd_plus_rw_dl")
+    {
+        return Solid::OpticalDisc::DvdPlusRewritableDuallayer;
+    }
+    else if (type == "bd_rom")
+    {
+        return Solid::OpticalDisc::BluRayRom;
+    }
+    else if (type == "bd_r")
+    {
+        return Solid::OpticalDisc::BluRayRecordable;
+    }
+    else if (type == "bd_re")
+    {
+        return Solid::OpticalDisc::BluRayRewritable;
+    }
+    else if (type == "hddvd_rom")
+    {
+        return Solid::OpticalDisc::HdDvdRom;
+    }
+    else if (type == "hddvd_r")
+    {
+        return Solid::OpticalDisc::HdDvdRecordable;
+    }
+    else if (type == "hddvd_rw")
+    {
+        return Solid::OpticalDisc::HdDvdRewritable;
+    }
     else
     {
         return Solid::OpticalDisc::UnknownDiscType;

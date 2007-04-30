@@ -46,6 +46,13 @@ Solid::OpticalDrive::MediumTypes FakeCdrom::supportedMedia() const
     map[Solid::OpticalDrive::Dvdplusr] ="dvdplusr";
     map[Solid::OpticalDrive::Dvdplusrw] ="dvdplusrw";
     map[Solid::OpticalDrive::Dvdplusdl] ="dvdplusrdl";
+    map[Solid::OpticalDrive::Dvdplusdlrw] ="dvdplusrwdl";
+    map[Solid::OpticalDrive::Bd] ="bd";
+    map[Solid::OpticalDrive::Bdr] ="bdr";
+    map[Solid::OpticalDrive::Bdre] ="bdre";
+    map[Solid::OpticalDrive::HdDvd] ="hddvd";
+    map[Solid::OpticalDrive::HdDvdr] ="hddvdr";
+    map[Solid::OpticalDrive::HdDvdrw] ="hddvdrw";
 
     QStringList supported_medialist = fakeDevice()->property("supportedMedia").toString().simplified().split(',');
 

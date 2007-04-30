@@ -61,11 +61,20 @@ namespace Solid
          * - Dvdplusr : A Recordable Digital Versatile Disc (DVD+R)
          * - Dvdplusrw : A ReWritable Digital Versatile Disc (DVD+RW)
          * - Dvdplusdl : A Dual Layer Digital Versatile Disc (DVD+R DL)
+         * - Dvdplusdlrw : A Dual Layer Digital Versatile Disc (DVD+RW DL)
+         * - Bd : A Blu-ray Disc (BD)
+         * - Bdr : A Blu-ray Disc Recordable (BD-R)
+         * - Bdre : A Blu-ray Disc (BD-RE)
+         * - HdDvd : A High Density Digital Versatile Disc (HD DVD)
+         * - HdDvdr : A High Density Digital Versatile Disc Recordable (HD DVD-R)
+         * - HdDvdrw : A High Density Digital Versatile Disc ReWritable (HD DVD-RW)
          */
-        enum MediumType { Cdr=0x001, Cdrw=0x002, Dvd=0x004, Dvdr=0x008,
-                          Dvdrw=0x010, Dvdram=0x020, Dvdplusr=0x040,
-                          Dvdplusrw=0x080, Dvdplusdl=0x100 };
-
+        enum MediumType { Cdr=0x00001, Cdrw=0x00002, Dvd=0x00004, Dvdr=0x00008, 
+                          Dvdrw=0x00010, Dvdram=0x00020, Dvdplusr=0x00040,
+                          Dvdplusrw=0x00080, Dvdplusdl=0x00100, Dvdplusdlrw=0x00200,
+                          Bd=0x00400, Bdr=0x00800, Bdre=0x01000,
+                          HdDvd=0x02000, HdDvdr=0x04000, HdDvdrw=0x08000 };
+        
         /**
          * This type stores an OR combination of MediumType values.
          */

@@ -68,6 +68,7 @@ namespace Solid
         /**
          * This enum type defines the type of optical disc it can be.
          *
+         * - UnknownDiscType : An undetermined disc type
          * - CdRom : A Compact Disc Read-Only Memory (CD-ROM)
          * - CdRecordable : A Compact Disc Recordable (CD-R)
          * - CdRewritable : A Compact Disc ReWritable (CD-RW)
@@ -77,11 +78,22 @@ namespace Solid
          * - DvdRewritable : A Digital Versatile Disc ReWritable (DVD-RW)
          * - DvdPlusRecordable : A Digital Versatile Disc Recordable (DVD+R)
          * - DvdPlusRewritable : A Digital Versatile Disc ReWritable (DVD+RW)
-         * - UnknownDiscType : An undetermined disc type
+         * - DvdPlusRecordableDuallayer : A Digital Versatile Disc Recordable Dual-Layer (DVD+R DL)
+         * - DvdPlusRewritableDuallayer : A Digital Versatile Disc ReWritable Dual-Layer (DVD+RW DL)
+         * - BluRayRom : A Blu-ray Disc (BD)
+         * - BluRayRecordable : A Blu-ray Disc Recordable (BD-R)
+         * - BluRayRewritable : A Blu-ray Disc (BD-RE)
+         * - HdDvdRom: A High Density Digital Versatile Disc (HD DVD)
+         * - HdDvdRecordable : A High Density Digital Versatile Disc Recordable (HD DVD-R)
+         * - HdDvdRewritable : A High Density Digital Versatile Disc ReWritable (HD DVD-RW)
          */
-        enum DiscType { CdRom, CdRecordable, CdRewritable, DvdRom, DvdRam,
+        enum DiscType { UnknownDiscType = -1, 
+                        CdRom, CdRecordable, CdRewritable, DvdRom, DvdRam,
                         DvdRecordable, DvdRewritable,
-                        DvdPlusRecordable, DvdPlusRewritable, UnknownDiscType };
+                        DvdPlusRecordable, DvdPlusRewritable, 
+                        DvdPlusRecordableDuallayer, DvdPlusRewritableDuallayer, 
+                        BluRayRom, BluRayRecordable, BluRayRewritable,
+                        HdDvdRom, HdDvdRecordable, HdDvdRewritable };
 
 
     private:
