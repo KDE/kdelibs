@@ -15,7 +15,7 @@ public:
         Cancelled = new QCheckBox("Cancelled", this);
         Progress = new KProgressDialog(this);
         startTimer(50);
-        Progress->setLabel("label text");
+        Progress->setLabelText("label text");
         Progress->setAllowCancel(false);
         Progress->showCancelButton(true);
         Progress->setButtonText("button text");

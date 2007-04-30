@@ -82,7 +82,7 @@ class KDEUI_EXPORT KProgressDialog : public KDialog
          *
          * @param text the text to display
          */
-        void setLabel(const QString &text);
+        void setLabelText(const QString &text);
 
         /**
          * Returns the current dialog text

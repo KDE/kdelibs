@@ -168,7 +168,7 @@ const QProgressBar* KProgressDialog::progressBar() const
     return d->mProgressBar;
 }
 
-void KProgressDialog::setLabel(const QString& text)
+void KProgressDialog::setLabelText(const QString& text)
 {
     d->mLabel->setText(text);
 }
