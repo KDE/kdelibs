@@ -130,12 +130,12 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
 
             connect(d->m_job, SIGNAL(result(KJob *)),
                      this, SLOT( slotResult( KJob * )));
-            connect(d->m_job, SIGNAL(gotPreview(const KFileItem*,
+            connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
                                                 const QPixmap& )),
-                     SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
+                     SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
 
-            connect(d->m_job, SIGNAL(failed(const KFileItem*)),
-                     this, SLOT( slotFailed( const KFileItem* ) ));
+            connect(d->m_job, SIGNAL(failed(const KFileItem&)),
+                     this, SLOT(slotFailed(const KFileItem&)));
 	}
     }
 }
@@ -167,17 +167,17 @@ KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )
     return KIO::filePreview( urls, w, h, 0, 0, true, false );
 }
 
-void KImageFilePreview::gotPreview( const KFileItem* item, const QPixmap& pm )
+void KImageFilePreview::gotPreview( const KFileItem& item, const QPixmap& pm )
 {
-    if (item->url() == d->currentURL) // should always be the case
+    if (item.url() == d->currentURL) // should always be the case
         d->imageLabel->setPixmap(pm);
 }
 
-void KImageFilePreview::slotFailed( const KFileItem* item )
+void KImageFilePreview::slotFailed( const KFileItem& item )
 {
-    if ( item->isDir() )
+    if ( item.isDir() )
         d->imageLabel->clear();
-    else if (item->url() == d->currentURL) // should always be the case
+    else if (item.url() == d->currentURL) // should always be the case
         d->imageLabel->setPixmap(SmallIcon( "file-broken", K3Icon::SizeLarge,
                                           K3Icon::DisabledState ));
 }

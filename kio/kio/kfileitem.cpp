@@ -998,11 +998,6 @@ const void * KFileItem::extraData( const void *key ) const
     return d->m_extra.value( key, 0 );
 }
 
-void * KFileItem::extraData( const void *key )
-{
-    return d->m_extra.value( key, 0 );
-}
-
 void KFileItem::removeExtraData( const void *key )
 {
     d->m_extra.remove( key );
@@ -1060,9 +1055,6 @@ KUrl KFileItem::mostLocalUrl(bool &local) const
         return d->m_url;
     }
 }
-
-void KFileItem::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
 
 QDataStream & operator<< ( QDataStream & s, const KFileItem & a )
 {

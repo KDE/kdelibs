@@ -3,6 +3,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
 
+#include <config-prefix.h>
 #include <kapplication.h>
 #include <kdebug.h>
 #include <klineedit.h>
@@ -16,7 +17,7 @@ PreviewTest::PreviewTest()
 {
     QGridLayout *layout = new QGridLayout(this);
     m_url = new KLineEdit(this);
-    m_url->setText("/home/malte/gore_bush.jpg");
+    m_url->setText(KDEDIR"/share/doc/HTML/en/common/top-kde.jpg");
     layout->addWidget(m_url, 0, 0);
     QPushButton *btn = new QPushButton("Generate", this);
     connect(btn, SIGNAL(clicked()), SLOT(slotGenerate()));
@@ -32,8 +33,8 @@ void PreviewTest::slotGenerate()
     urls.append(m_url->text());
     KIO::PreviewJob *job = KIO::filePreview(urls, m_preview->width(), m_preview->height(), true, 48);
     connect(job, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
-    connect(job, SIGNAL(gotPreview(const KFileItem *, const QPixmap &)), SLOT(slotPreview(const KFileItem *, const QPixmap &)));
-    connect(job, SIGNAL(failed(const KFileItem *)), SLOT(slotFailed()));
+    connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap &)), SLOT(slotPreview(const KFileItem&, const QPixmap &)));
+    connect(job, SIGNAL(failed(const KFileItem&)), SLOT(slotFailed()));
 }
 
 void PreviewTest::slotResult(KJob*)
@@ -41,7 +42,7 @@ void PreviewTest::slotResult(KJob*)
     kDebug() << "PreviewTest::slotResult(...)" << endl;
 }
 
-void PreviewTest::slotPreview(const KFileItem *, const QPixmap &pix)
+void PreviewTest::slotPreview(const KFileItem&, const QPixmap &pix)
 {
     kDebug() << "PreviewTest::slotPreview()" << endl;
     m_preview->setPixmap(pix);

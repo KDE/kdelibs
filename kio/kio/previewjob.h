@@ -52,20 +52,19 @@ namespace KIO {
 	 * @param save if the image should be cached for later use
 	 * @param enabledPlugins if non-zero, this points to a list containing
 	 * the names of the plugins that may be used.
-	 * @param deleteItems true to delete the items when done
 	 */
-        PreviewJob( const KFileItemList &items, int width, int height,
+        PreviewJob( const QList<KFileItem>& items, int width, int height,
             int iconSize, int iconAlpha, bool scale, bool save,
-            const QStringList *enabledPlugins, bool deleteItems = false );
+            const QStringList *enabledPlugins );
         virtual ~PreviewJob();
 
         /**
          * Removes an item from preview processing. Use this if you passed
          * an item to filePreview and want to delete it now.
          *
-         * @param item the item that should be removed from the preview queue
+         * @param url the url of the item that should be removed from the preview queue
          */
-        void removeItem( const KFileItem *item );
+        void removeItem( const KUrl& url );
 
         /**
          * If @p ignoreSize is true, then the preview is always
@@ -95,14 +94,14 @@ namespace KIO {
 	 * @param item the file of the preview
 	 * @param preview the preview image
          */
-        void gotPreview( const KFileItem *item, const QPixmap &preview );
+        void gotPreview( const KFileItem& item, const QPixmap &preview );
         /**
          * Emitted when a thumbnail for @p item could not be created,
          * either because a ThumbCreator for its MIME type does not
          * exist, or because something went wrong.
 	 * @param item the file that failed
          */
-        void failed( const KFileItem *item );
+        void failed( const KFileItem& item );
 
     protected:
         void getOrCreateThumbnail();
@@ -119,7 +118,6 @@ namespace KIO {
     private:
         void determineNextFile();
         void emitPreview(const QImage &thumb);
-        void emitFailed(const KFileItem *item = 0);
 
     private:
         struct PreviewJobPrivate* const d;
@@ -145,7 +143,7 @@ namespace KIO {
      * @return the new PreviewJob
      * @see PreviewJob::availablePlugins()
      */
-    KIO_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIO_EXPORT PreviewJob *filePreview( const QList<KFileItem> &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 
     /**
      * Creates a PreviewJob to generate or retrieve a preview image

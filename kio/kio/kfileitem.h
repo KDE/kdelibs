@@ -103,7 +103,7 @@ public:
      * Destructs the KFileItem. Extra data set via setExtraData()
      * is not deleted.
      */
-    virtual ~KFileItem();
+    ~KFileItem();
 
     /**
      * Throw away and re-read (for local files) all information about the file.
@@ -466,7 +466,7 @@ public:
      *
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
-    virtual KDE_DEPRECATED void setExtraData( const void *key, void *value );
+    KDE_DEPRECATED void setExtraData( const void *key, void *value );
 
     /**
      * Retrieves the extra data with the given @p key.
@@ -477,18 +477,7 @@ public:
      *
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
-    virtual KDE_DEPRECATED const void * extraData( const void *key ) const;
-
-    /**
-     * Retrieves the extra data with the given @p key.
-     * @param key the key of the extra data
-     * @return the extra data associated to an item with @p key via
-     * setExtraData. 0L if nothing was associated with @p key.
-     * @see extraData
-     *
-     * @deprecated use model/view (KDirModel) and you won't need this anymore
-     */
-    virtual KDE_DEPRECATED void * extraData( const void *key );
+    KDE_DEPRECATED const void * extraData( const void *key ) const;
 
     /**
      * Removes the extra data associated with an item via @p key.
@@ -496,7 +485,7 @@ public:
      *
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
-    virtual KDE_DEPRECATED void removeExtraData( const void *key );
+    KDE_DEPRECATED void removeExtraData( const void *key );
 
     /**
      * Sets the metainfo of this item to @p info.
@@ -555,9 +544,6 @@ public:
 
 private:
     QSharedDataPointer<KFileItemPrivate> d;
-
-protected:
-    virtual void virtual_hook( int id, void* data );
 
 private:
     KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );

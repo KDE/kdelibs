@@ -193,7 +193,7 @@ private Q_SLOTS:
     void slotPreviewsToggled( bool );
 
     void slotPreviewResult( KJob * );
-    void gotPreview( const KFileItem *item, const QPixmap& pix );
+    void gotPreview( const KFileItem& item, const QPixmap& pix );
     void slotAutoOpen();
 
 Q_SIGNALS:

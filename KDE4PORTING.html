@@ -1926,6 +1926,19 @@ a listDir result.</li>
 <li>KIO::PassDlg was renamed to KIO::PasswordDialog and the header moved from passdlg.h to passworddialog.h</li>
 </ul>
 
+<h4>KIO::PreviewJob</h4>
+<ul>
+  <li>KIO::PreviewJob works with KFileItems by value rather than by pointer, now that KFileItem is refcounted.</li>
+  <li>The two signals changed accordingly:
+    <ul>
+      <li>gotPreview(const KFileItem*, const QPixmap&amp;) -&gt; gotPreview(const KFileItem&amp;, const QPixmap&amp;)</li>
+      <li>failed(const KFileItem*) -&gt; failed(const KFileItem&amp;</li>
+    </ul>
+  </li>
+  <li>In the slots connected to those signals, don't compare KFileItem pointers! If you need to find the KFileItem
+      in a list, compare the url() of the items in the list with the url() of the item passed to the slot.</li>
+</ul>
+
 <h4>KIO::SkipDialog</h4>
 <ul>
 <li>KIO::SkipDlg was renamed to KIO::SkipDialog and the header moved from skipdlg.h to skipdialog.h</li>

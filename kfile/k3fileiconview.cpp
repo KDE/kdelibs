@@ -554,10 +554,10 @@ void K3FileIconView::showPreviews()
 
     connect( d->job, SIGNAL( result( KJob * )),
              this, SLOT( slotPreviewResult( KJob * )));
-    connect( d->job, SIGNAL( gotPreview( const KFileItem*, const QPixmap& )),
-             SLOT( gotPreview( const KFileItem*, const QPixmap& ) ));
-//     connect( d->job, SIGNAL( failed( const KFileItem* )),
-//              this, SLOT( slotFailed( const KFileItem* ) ));
+    connect( d->job, SIGNAL( gotPreview( const KFileItem&, const QPixmap& )),
+             SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
+//     connect( d->job, SIGNAL( failed( const KFileItem& )),
+//              this, SLOT( slotFailed( const KFileItem& ) ));
 }
 
 void K3FileIconView::slotPreviewResult( KJob *job )
@@ -566,12 +566,11 @@ void K3FileIconView::slotPreviewResult( KJob *job )
         d->job = 0L;
 }
 
-void K3FileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
+void K3FileIconView::gotPreview( const KFileItem& item, const QPixmap& pix )
 {
-    K3FileIconViewItem *it = viewItem( item );
-    if ( it )
-        if( item->overlays() & K3Icon::HiddenOverlay )
-        {
+    K3FileIconViewItem *it = viewItem( &item );
+    if ( it ) {
+        if( item.overlays() & K3Icon::HiddenOverlay ) {
             QPixmap p( pix );
 
             KIconEffect::semiTransparent( p );
@@ -579,6 +578,7 @@ void K3FileIconView::gotPreview( const KFileItem *item, const QPixmap& pix )
         }
         else
             it->setPixmap( pix );
+    }
 }
 
 bool K3FileIconView::canPreview( const KFileItem *item ) const

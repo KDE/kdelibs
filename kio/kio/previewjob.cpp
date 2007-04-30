@@ -60,7 +60,7 @@ using namespace KIO;
 
 struct KIO::PreviewItem
 {
-    KFileItem *item;
+    KFileItem item;
     KService::Ptr plugin;
 };
 
@@ -70,7 +70,7 @@ struct KIO::PreviewJobPrivate
            STATE_GETORIG, // if we create it
            STATE_CREATETHUMB // thumbnail:/ slave
     } state;
-    KFileItemList initialItems;
+    QList<KFileItem> initialItems;
     const QStringList *enabledPlugins;
     // Our todo list :)
     // We remove the first item at every step, so use QLinkedList
@@ -104,22 +104,20 @@ struct KIO::PreviewJobPrivate
     int iconSize;
     // the transparency of the blended mimetype icon
     int iconAlpha;
-	// Shared memory segment Id. The segment is allocated to a size
-	// of extent x extent x 4 (32 bit image) on first need.
-	int shmid;
-	// And the data area
-	uchar *shmaddr;
-    // Delete the KFileItems when done?
-    bool deleteItems;
+    // Shared memory segment Id. The segment is allocated to a size
+    // of extent x extent x 4 (32 bit image) on first need.
+    int shmid;
+    // And the data area
+    uchar *shmaddr;
     bool succeeded;
     // Root of thumbnail cache
     QString thumbRoot;
     bool ignoreMaximumSize;
 };
 
-PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
+PreviewJob::PreviewJob( const QList<KFileItem> &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
-    const QStringList *enabledPlugins, bool deleteItems )
+    const QStringList *enabledPlugins )
     : KIO::Job(),d(new PreviewJobPrivate)
 {
     d->tOrig = 0;
@@ -133,11 +131,9 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     d->cacheHeight = d->height;
     d->iconSize = iconSize;
     d->iconAlpha = iconAlpha;
-    d->deleteItems = deleteItems;
     d->bScale = scale;
     d->bSave = save && scale;
     d->succeeded = false;
-    d->currentItem.item = 0;
     d->thumbRoot = QDir::homePath() + "/.thumbnails/";
     d->ignoreMaximumSize = false;
 
@@ -172,13 +168,13 @@ void PreviewJob::startPreview()
 
     // Look for images and store the items in our todo list :)
     bool bNeedCache = false;
-    KFileItemList::const_iterator kit = d->initialItems.begin();
-    const KFileItemList::const_iterator kend = d->initialItems.end();
+    QList<KFileItem>::const_iterator kit = d->initialItems.begin();
+    const QList<KFileItem>::const_iterator kend = d->initialItems.end();
     for ( ; kit != kend; ++kit )
     {
         PreviewItem item;
         item.item = *kit;
-        const QString mimeType = item.item->mimetype();
+        const QString mimeType = item.item.mimetype();
         QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.find(mimeType);
         if (plugin == mimeMap.end())
         {
@@ -229,16 +225,14 @@ void PreviewJob::startPreview()
             item.plugin = *plugin;
             d->items.append(item);
             if (!bNeedCache && d->bSave &&
-                ((*kit)->url().protocol() != "file" ||
-                 !(*kit)->url().directory( KUrl::AppendTrailingSlash ).startsWith(d->thumbRoot)) &&
+                ((*kit).url().protocol() != "file" ||
+                 !(*kit).url().directory( KUrl::AppendTrailingSlash ).startsWith(d->thumbRoot)) &&
                 (*plugin)->property("CacheThumbnail").toBool())
                 bNeedCache = true;
         }
         else
         {
-            emitFailed( *kit );
-            if (d->deleteItems)
-                delete *kit;
+            emit failed( *kit );
         }
     }
 
@@ -260,16 +254,16 @@ void PreviewJob::startPreview()
     determineNextFile();
 }
 
-void PreviewJob::removeItem( const KFileItem *item )
+void PreviewJob::removeItem( const KUrl& url )
 {
     for (QLinkedList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
-        if ((*it).item == item)
+        if ((*it).item.url() == url)
         {
             d->items.erase(it);
             break;
         }
 
-    if (d->currentItem.item == item)
+    if (d->currentItem.item.url() == url)
     {
         KJob* job = subjobs().first();
         job->kill();
@@ -285,14 +279,10 @@ void PreviewJob::setIgnoreMaximumSize(bool ignoreSize)
 
 void PreviewJob::determineNextFile()
 {
-    if (d->currentItem.item)
+    if (!d->currentItem.item.isNull())
     {
         if (!d->succeeded)
-            emitFailed();
-        if (d->deleteItems) {
-            delete d->currentItem.item;
-            d->currentItem.item = 0L;
-        }
+            emit failed( d->currentItem.item );
     }
     // No more items ?
     if ( d->items.isEmpty() )
@@ -307,7 +297,7 @@ void PreviewJob::determineNextFile()
         d->currentItem = d->items.first();
         d->succeeded = false;
         d->items.removeFirst();
-        KIO::Job *job = KIO::stat( d->currentItem.item->url(), false );
+        KIO::Job *job = KIO::stat( d->currentItem.item.url(), false );
         job->addMetaData( "no-auth-prompt", "true" );
         addSubjob(job);
     }
@@ -380,7 +370,7 @@ bool PreviewJob::statResultThumbnail()
     if ( d->thumbPath.isEmpty() )
         return false;
 
-    KUrl url = d->currentItem.item->url();
+    KUrl url = d->currentItem.item.url();
     // Don't include the password if any
     url.setPass(QString());
     d->origName = url.url();
@@ -405,8 +395,8 @@ bool PreviewJob::statResultThumbnail()
 void PreviewJob::getOrCreateThumbnail()
 {
     // We still need to load the orig file ! (This is getting tedious) :)
-    const KFileItem* item = d->currentItem.item;
-    const QString localPath = item->localPath();
+    const KFileItem& item = d->currentItem.item;
+    const QString localPath = item.localPath();
     if ( !localPath.isEmpty() )
         createThumbnail( localPath );
     else
@@ -417,7 +407,7 @@ void PreviewJob::getOrCreateThumbnail()
         localFile.open();
         KUrl localURL;
         localURL.setPath( d->tempName = localFile.fileName() );
-        const KUrl currentURL = item->url();
+        const KUrl currentURL = item.url();
         KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, true,
                                          false, false /* No GUI */ );
         job->addMetaData("thumbnail","1");
@@ -435,7 +425,7 @@ void PreviewJob::createThumbnail( const QString &pixPath )
     addSubjob(job);
     connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotThumbData(KIO::Job *, const QByteArray &)));
     bool save = d->bSave && d->currentItem.plugin->property("CacheThumbnail").toBool();
-    job->addMetaData("mimeType", d->currentItem.item->mimetype());
+    job->addMetaData("mimeType", d->currentItem.item.mimetype());
     job->addMetaData("width", QString().setNum(save ? d->cacheWidth : d->width));
     job->addMetaData("height", QString().setNum(save ? d->cacheHeight : d->height));
     job->addMetaData("iconSize", QString().setNum(save ? 64 : d->iconSize));
@@ -471,8 +461,8 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
 {
     bool save = d->bSave &&
                 d->currentItem.plugin->property("CacheThumbnail").toBool() &&
-                (d->currentItem.item->url().protocol() != "file" ||
-                 !d->currentItem.item->url().directory( KUrl::AppendTrailingSlash ).startsWith(d->thumbRoot));
+                (d->currentItem.item.url().protocol() != "file" ||
+                 !d->currentItem.item.url().directory( KUrl::AppendTrailingSlash ).startsWith(d->thumbRoot));
     QImage thumb;
 #ifdef Q_OS_UNIX
     if (d->shmaddr)
@@ -493,8 +483,8 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
     {
         thumb.setText("Thumb::URI", d->origName);
         thumb.setText("Thumb::MTime", QString::number(d->tOrig));
-        thumb.setText("Thumb::Size", number(d->currentItem.item->size()));
-        thumb.setText("Thumb::Mimetype", d->currentItem.item->mimetype());
+        thumb.setText("Thumb::Size", number(d->currentItem.item.size()));
+        thumb.setText("Thumb::Mimetype", d->currentItem.item.mimetype());
         thumb.setText("Software", "KDE Thumbnail Generator");
         KTemporaryFile temp;
         temp.setPrefix(d->thumbPath + "kde-tmp-");
@@ -520,13 +510,6 @@ void PreviewJob::emitPreview(const QImage &thumb)
     emit gotPreview(d->currentItem.item, pix);
 }
 
-void PreviewJob::emitFailed(const KFileItem *item)
-{
-    if (!item)
-        item = d->currentItem.item;
-    emit failed(item);
-}
-
 QStringList PreviewJob::availablePlugins()
 {
     QStringList result;
@@ -546,7 +529,7 @@ QStringList PreviewJob::supportedMimeTypes()
     return result;
 }
 
-PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
+PreviewJob *KIO::filePreview( const QList<KFileItem> &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
 {
@@ -558,12 +541,10 @@ PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
 {
-    KFileItemList fileItems;
+    QList<KFileItem> fileItems;
     for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it)
-        fileItems.append(new KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
-    PreviewJob *job = new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
-                                     scale, save, enabledPlugins, true);
-    job->setUiDelegate(new JobUiDelegate());
-    return job;
+        fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
+    return new PreviewJob(fileItems, width, height, iconSize, iconAlpha,
+                          scale, save, enabledPlugins);
 }
 

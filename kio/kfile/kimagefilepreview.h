@@ -42,7 +42,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 		void showPreview( const KUrl& url, bool force );
 
 		void toggleAuto(bool);
-		virtual void gotPreview( const KFileItem*, const QPixmap& );
+		virtual void gotPreview( const KFileItem&, const QPixmap& );
 
 	protected:
 		virtual void resizeEvent(QResizeEvent *e);
@@ -51,7 +51,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 
 	private Q_SLOTS:
 		void slotResult( KJob * );
-		virtual void slotFailed( const KFileItem* );
+		virtual void slotFailed( const KFileItem& );
 
         private:
                 class KImageFilePreviewPrivate;
