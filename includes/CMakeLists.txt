@@ -45,6 +45,8 @@ install( FILES
   K3TextEdit
   K3URLDrag
   K3Wizard
+  K3Command
+  K3CommandHistory
   KACL
   K3AboutApplication
   KAboutApplicationDialog
@@ -124,8 +126,6 @@ install( FILES
   KColorValueSelector
   KCombiView
   KComboBox
-  KCommand
-  KCommandHistory
   KCompletion
   KCompletionBase
   KCompletionBox
