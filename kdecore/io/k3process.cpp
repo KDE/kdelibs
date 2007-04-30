@@ -940,8 +940,15 @@ int K3Process::commSetupDoneC()
   int ok = 1;
 #ifdef Q_OS_UNIX
 
+  int slaveFd = -1;
+  if (d->usePty & (Stdin|Stdout|Stderr)) {
+    if ((slaveFd = ::open(d->pty->ttyName(), O_RDWR)) < 0)
+      return 0;
+    fcntl(slaveFd, F_SETFD, FD_CLOEXEC);
+  }
+
   if (d->usePty & Stdin) {
-    if (dup2(d->pty->slaveFd(), STDIN_FILENO) < 0) ok = 0;
+    if (dup2(slaveFd, STDIN_FILENO) < 0) ok = 0;
   } else if (communication & Stdin) {
     if (dup2(in[0], STDIN_FILENO) < 0) ok = 0;
   } else {
@@ -952,7 +959,7 @@ int K3Process::commSetupDoneC()
   struct linger so;
   memset(&so, 0, sizeof(so));
   if (d->usePty & Stdout) {
-    if (dup2(d->pty->slaveFd(), STDOUT_FILENO) < 0) ok = 0;
+    if (dup2(slaveFd, STDOUT_FILENO) < 0) ok = 0;
   } else if (communication & Stdout) {
     if (dup2(out[1], STDOUT_FILENO) < 0 ||
         setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char *)&so, sizeof(so)))
@@ -963,7 +970,7 @@ int K3Process::commSetupDoneC()
     }
   }
   if (d->usePty & Stderr) {
-    if (dup2(d->pty->slaveFd(), STDERR_FILENO) < 0) ok = 0;
+    if (dup2(slaveFd, STDERR_FILENO) < 0) ok = 0;
   } else if (communication & Stderr) {
     if (dup2(err[1], STDERR_FILENO) < 0 ||
         setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char *)&so, sizeof(so)))
