@@ -79,7 +79,7 @@ PHONON_EXECUTE_TESTS(
 	)
 
 #methodtest does not link against libphonon
-kde4_automoc(methodtest.cpp)
+kde4_automoc(methodtest.cpp ../factory.cpp)
 kde4_add_executable(methodtest NOGUI methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
 target_link_libraries(methodtest ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 SET_TARGET_PROPERTIES(methodtest PROPERTIES COMPILE_FLAGS -DPHONON_METHODTEST)
