@@ -66,6 +66,7 @@ void KMountPointTest::testCurrentMountPoints()
     const KMountPoint::Ptr rootMountPoint = mountPoints.findByPath("/");
     QVERIFY(rootMountPoint);
     QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
+    QVERIFY(!rootMountPoint->probablySlow());
 
     KDE_struct_stat rootStatBuff;
     QCOMPARE( KDE_stat( "/", &rootStatBuff ), 0 );
@@ -115,6 +116,7 @@ void KMountPointTest::testPossibleMountPoints()
     QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
     QVERIFY(rootMountPoint->realDeviceName().startsWith("/dev")); // portable?
     QVERIFY(!rootMountPoint->mountOptions().contains("noauto")); // how would this work?
+    QVERIFY(!rootMountPoint->probablySlow());
 #endif
 }
 

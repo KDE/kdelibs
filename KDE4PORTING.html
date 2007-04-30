@@ -1870,6 +1870,10 @@ with ServiceType as QImageIOPlugins</li>
 <h4>KIO:: global methods</h4>
 <ul>
 <li>KIO::convertSizeFromKB is now KIO::convertSizeFromKiB since it takes a value in KiB (1 KiB = 1024 B)</li>
+<li>KIO::findDeviceMountPoint() has been replaced with KMountPoint::currentMountPoints() and findByDevice()</li>
+<li>KIO::findPathMountPoint() has been replaced with KMountPoint::currentMountPoints() and findByPath()</li>
+<li>KIO::probably_slow_mounted() has been replaced with KMountPoint::currentMountPoints(), findByPath(), and probablySlow()</li>
+<li>KIO::testFileSystemFlag() has been replaced with KMountPoint::testFileSystemFlag() (use KMountPoint::currentMountPoints().findByPath())</li>
 </ul>
 
 <h4>KIO::Job</h4>

@@ -52,14 +52,15 @@
 #include <kglobal.h>
 #include <kde_file.h>
 #include <kconfiggroup.h>
+#include "kmountpoint.h"
+
+#include <stdlib.h>
 
 // debug
 #include <sys/ioctl.h>
 
 
 #include <sys/utsname.h>
-
-#include "global.h" //  KIO::probably_slow_mounted
 
 #define NO_NOTIFY (time_t) 0
 
@@ -185,8 +186,6 @@ KDirWatchPrivate::~KDirWatchPrivate()
     ::close( m_inotify_fd );
 #endif
 }
-
-#include <stdlib.h>
 
 void KDirWatchPrivate::slotActivated()
 {
@@ -470,7 +469,9 @@ bool KDirWatchPrivate::useINotify( Entry* e )
 
 bool KDirWatchPrivate::useStat(Entry* e)
 {
-  if (KIO::probably_slow_mounted(e->path))
+  KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(e->path);
+  const bool slow = mp ? mp->probablySlow() : false;
+  if (slow)
     useFreq(e, m_nfsPollInterval);
   else
     useFreq(e, m_PollInterval);

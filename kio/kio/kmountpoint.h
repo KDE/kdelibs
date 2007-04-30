@@ -114,6 +114,34 @@ public:
     QStringList mountOptions() const;
 
     /**
+     * Checks if the filesystem that is probably slow (nfs mounts).
+     * @return true if the filesystem is probably slow
+     */
+    bool probablySlow() const;
+
+    enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime,
+                          SupportsSymlinks, CaseInsensitive };
+    /**
+     * Checks the capabilities of the filesystem.
+     * @param flag the flag to check
+     * @return true if the filesystem has that flag, false if not
+     *
+     * The availables flags are:
+     * @li SupportsChmod: returns true if the filesystem supports chmod
+     * (e.g. msdos filesystems return false)
+     * @li SupportsChown: returns true if the filesystem supports chown
+     * (e.g. msdos filesystems return false)
+     * @li SupportsUtime: returns true if the filesystems supports utime
+     * (e.g. msdos filesystems return false)
+     * @li SupportsSymlinks: returns true if the filesystems supports symlinks
+     * (e.g. msdos filesystems return false)
+     * @li CaseInsensitive: returns true if the filesystem treats
+     * "foo" and "FOO" as being the same file (true for msdos systems)
+     *
+     */
+    bool testFileSystemFlag(FileSystemFlag flag);
+
+    /**
      * Destructor
      */
     ~KMountPoint();

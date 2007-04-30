@@ -353,60 +353,6 @@ namespace KIO
   KIO_EXPORT QString getCacheControlString(KIO::CacheControl cacheControl);
 
   /**
-   * Returns the mount point where @p device is mounted
-   * right now. This means, it has to be mounted, not just
-   * defined in fstab.
-   *
-   * @deprecated use KMountPoint::currentMountPoints() and findByDevice().
-   *
-   */
-  KIO_EXPORT_DEPRECATED QString findDeviceMountPoint( const QString& device );
-
-  /**
-   * Returns the mount point on which resides @p filename.
-   * For instance if /home is a separate partition, findPathMountPoint("/home/user/blah")
-   * will return /home
-   * @param filename the file name to check
-   * @return the mount point of the given @p filename
-   *
-   * @deprecated use KMountPoint::currentMountPoints() and findByPath().
-   */
-  KIO_EXPORT_DEPRECATED QString findPathMountPoint( const QString & filename );
-
-  /**
-   * Checks if the path belongs to a filesystem that is probably
-   * slow. It checks for NFS or for paths belonging to automounted
-   * paths not yet mounted
-   * @param filename the file name to check
-   * @return true if the filesystem is probably slow
-   */
-  KIO_EXPORT bool probably_slow_mounted(const QString& filename);
-
-  enum FileSystemFlag { SupportsChmod, SupportsChown, SupportsUTime,
-                        SupportsSymlinks, CaseInsensitive };
-  /**
-   * Checks the capabilities of the filesystem to which a given file belongs.
-   * given feature (e.g. chmod).
-   * @param filename the file name to check
-   * @param flag the flag to check
-   * @return true if the filesystem has that flag, false if not (or some error occurred)
-   *
-   * The availables flags are:
-   * @li SupportsChmod: returns true if the filesystem supports chmod
-   * (e.g. msdos filesystems return false)
-   * @li SupportsChown: returns true if the filesystem supports chown
-   * (e.g. msdos filesystems return false)
-   * @li SupportsUtime: returns true if the filesystems supports utime
-   * (e.g. msdos filesystems return false)
-   * @li SupportsSymlinks: returns true if the filesystems supports symlinks
-   * (e.g. msdos filesystems return false)
-   * @li CaseInsensitive: returns true if the filesystem treats
-   * "foo" and "FOO" as being the same file (true for msdos systems)
-   *
-   */
-  KIO_EXPORT bool testFileSystemFlag(const QString& filename, FileSystemFlag flag);
-
-  /**
    * Convenience method to find the pixmap for a URL.
    *
    * Call this one when you don't know the mimetype.

@@ -733,7 +733,8 @@ void FileProtocol::put( const KUrl& url, int _mode, bool _overwrite, bool _resum
         if (::chmod(_dest_orig.data(), _mode) != 0)
         {
             // couldn't chmod. Eat the error if the filesystem apparently doesn't support it.
-            if ( KIO::testFileSystemFlag( _dest_orig, KIO::SupportsChmod ) )
+            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(_dest_orig);
+            if (mp && mp->testFileSystemFlag(KMountPoint::SupportsChmod))
                  warning( i18n( "Could not change permissions for\n%1" ,  dest_orig ) );
         }
     }
@@ -965,9 +966,10 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 #endif
         )
        {
-        // Eat the error if the filesystem apparently doesn't support chmod.
-        if ( KIO::testFileSystemFlag( _dest, KIO::SupportsChmod ) )
-            warning( i18n( "Could not change permissions for\n%1" ,  dest.toLocalFile() ) );
+           KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(_dest);
+           // Eat the error if the filesystem apparently doesn't support chmod.
+           if ( mp && mp->testFileSystemFlag( KMountPoint::SupportsChmod ) )
+               warning( i18n( "Could not change permissions for\n%1" ,  dest.toLocalFile() ) );
        }
     }
 #ifdef HAVE_POSIX_ACL

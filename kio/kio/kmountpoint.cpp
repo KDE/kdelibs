@@ -117,6 +117,13 @@ KMountPoint::~KMountPoint()
     delete d;
 }
 
+// There are (at least) four kind of APIs:
+// setmntent + getmntent + struct mntent (linux...)
+//             getmntent + struct mnttab
+// mntctl                + struct vmount (AIX)
+// getmntinfo + struct statfs&flags (BSD 4.4 and friends)
+// getfsent + char* (BSD 4.3 and friends)
+
 #ifdef HAVE_SETMNTENT
 #define SETMNTENT setmntent
 #define ENDMNTENT endmntent
@@ -455,5 +462,35 @@ KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
             return *it;
     }
     return Ptr();
+}
+
+bool KMountPoint::probablySlow() const
+{
+    bool nfs = d->mountType == "nfs";
+    bool autofs = d->mountType == "autofs" || d->mountType == "subfs";
+    //bool pid = d->mountPoint.contains(":(pid");
+    // The "pid" thing was in kde3's KIO::probably_slow_mounted, with obscure logic
+    // (looks like it used state from the previous line or something...)
+    // This needs to be revised once we have a testcase or explanation about it.
+    // But autofs works already, it shows nfs as mountType in mtab.
+    if (nfs || autofs) {
+        return true;
+    }
+    return false;
+}
+
+bool KMountPoint::testFileSystemFlag(FileSystemFlag flag)
+{
+    const bool isMsDos = ( d->mountType == "msdos" || d->mountType == "fat" || d->mountType == "vfat" );
+    switch (flag)  {
+    case SupportsChmod:
+    case SupportsChown:
+    case SupportsUTime:
+    case SupportsSymlinks:
+        return !isMsDos; // it's amazing the number of things FAT doesn't support :)
+    case CaseInsensitive:
+        return isMsDos;
+    }
+    return false;
 }
 
