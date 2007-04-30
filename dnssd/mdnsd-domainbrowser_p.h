@@ -21,6 +21,10 @@
 #ifndef DNSSDDOMAINBROWSER_P_H
 #define DNSSDDOMAINBROWSER_P_H
 
+#include "mdnsd-responder.h"
+#include "domainbrowser.h"
+#include <QtCore/QStringList>
+
 namespace DNSSD
 {
 
