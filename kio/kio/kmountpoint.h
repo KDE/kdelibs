@@ -21,7 +21,7 @@
 #ifndef KMOUNTPOINT_H
 #define KMOUNTPOINT_H
 
-#include <kdecore_export.h>
+#include <kio/kio_export.h>
 #include <ksharedptr.h>
 
 #include <QtCore/QStringList>
@@ -39,7 +39,7 @@ public:
     /**
      * List of mount points.
      */
-    class KDECORE_EXPORT List : public QList<Ptr>
+    class KIO_EXPORT List : public QList<Ptr>
     {
     public:
         List() : QList<Ptr>() {}
