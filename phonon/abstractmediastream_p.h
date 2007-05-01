@@ -43,7 +43,8 @@ class PHONON_EXPORT AbstractMediaStreamPrivate : private BaseDestructionHandler
         AbstractMediaStreamPrivate()
             : streamSize(-1),
             streamSeekable(false),
-            streamInterface(0)
+            streamInterface(0),
+            mediaObjectPrivate(0)
         {
         }
         ~AbstractMediaStreamPrivate();

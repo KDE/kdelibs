@@ -31,6 +31,7 @@ class MediaSourceTest : public QObject
         void testUrl();
         void testDiscType();
         void testStream();
+        void testIODevice();
         void cleanupTestCase();
 };
 #endif // MEDIASOURCETEST_H

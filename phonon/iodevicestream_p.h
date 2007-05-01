@@ -35,6 +35,9 @@ class IODeviceStreamPrivate : public AbstractMediaStreamPrivate
             : ioDevice(_ioDevice),
             offset(0)
         {
+            if (!ioDevice->isOpen()) {
+                ioDevice->open(QIODevice::ReadOnly);
+            }
             Q_ASSERT(ioDevice->isOpen());
             Q_ASSERT(ioDevice->isReadable());
             streamSize = ioDevice->size();

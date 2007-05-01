@@ -200,6 +200,66 @@ void MediaSourceTest::testStream()
     QCOMPARE(c.deviceName(), QString());
     //QCOMPARE(c.audioCaptureDevice(), AudioCaptureDevice());
     //QCOMPARE(c.videoCaptureDevice(), VideoCaptureDevice());
+
+    delete stream;
+    QCOMPARE(a.type(), MediaSource::Invalid);
+    QCOMPARE(b.type(), MediaSource::Invalid);
+    QCOMPARE(c.type(), MediaSource::Invalid);
+    const AbstractMediaStream *null = 0;
+    QCOMPARE(a.stream(), null);
+    QCOMPARE(b.stream(), null);
+    QCOMPARE(c.stream(), null);
+}
+
+void MediaSourceTest::testIODevice()
+{
+    const QByteArray data("0192380");
+    QBuffer *buffer = new QBuffer;
+    buffer->setData(data);
+    buffer->open(QIODevice::ReadOnly);
+
+    MediaSource a(buffer);
+    QCOMPARE(a.type(), MediaSource::Stream);
+    QCOMPARE(a.filename(), QString());
+    QCOMPARE(a.url(), QUrl());
+    QCOMPARE(a.discType(), Phonon::NoDisc);
+    QVERIFY(a.stream() != 0);
+    QCOMPARE(a.deviceName(), QString());
+    //QCOMPARE(a.audioCaptureDevice(), AudioCaptureDevice());
+    //QCOMPARE(a.videoCaptureDevice(), VideoCaptureDevice());
+    MediaSource b(a);
+    MediaSource c;
+    c = a;
+    QCOMPARE(a, b);
+    QCOMPARE(a, c);
+    QCOMPARE(b, c);
+
+    QCOMPARE(b.type(), MediaSource::Stream);
+    QCOMPARE(b.filename(), QString());
+    QCOMPARE(b.url(), QUrl());
+    QCOMPARE(b.discType(), Phonon::NoDisc);
+    QVERIFY(b.stream() != 0);
+    QCOMPARE(b.deviceName(), QString());
+    //QCOMPARE(b.audioCaptureDevice(), AudioCaptureDevice());
+    //QCOMPARE(b.videoCaptureDevice(), VideoCaptureDevice());
+
+    QCOMPARE(c.type(), MediaSource::Stream);
+    QCOMPARE(c.filename(), QString());
+    QCOMPARE(c.url(), QUrl());
+    QCOMPARE(c.discType(), Phonon::NoDisc);
+    QVERIFY(c.stream() != 0);
+    QCOMPARE(c.deviceName(), QString());
+    //QCOMPARE(c.audioCaptureDevice(), AudioCaptureDevice());
+    //QCOMPARE(c.videoCaptureDevice(), VideoCaptureDevice());
+
+    delete buffer;
+    QCOMPARE(a.type(), MediaSource::Invalid);
+    QCOMPARE(b.type(), MediaSource::Invalid);
+    QCOMPARE(c.type(), MediaSource::Invalid);
+    const AbstractMediaStream *null = 0;
+    QCOMPARE(a.stream(), null);
+    QCOMPARE(b.stream(), null);
+    QCOMPARE(c.stream(), null);
 }
 
 void MediaSourceTest::cleanupTestCase()

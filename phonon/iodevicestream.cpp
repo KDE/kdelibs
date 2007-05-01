@@ -36,8 +36,8 @@ void IODeviceStream::needData()
 {
     Q_D(IODeviceStream);
     const QByteArray data = d->ioDevice->read(4096);
-    if (data.isEmpty()) {
-        // error handling
+    if (data.isEmpty() && !d->ioDevice->atEnd()) {
+        error(Phonon::NormalError, d->ioDevice->errorString());
     }
     writeData(data);
     if (d->ioDevice->atEnd()) {

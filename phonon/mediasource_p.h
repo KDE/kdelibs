@@ -26,6 +26,7 @@
 #include <QUrl>
 #include <QString>
 #include <QSharedData>
+#include <QPointer>
 
 namespace Phonon
 {
@@ -34,8 +35,7 @@ class MediaSourcePrivate : public QSharedData
 {
     public:
         MediaSourcePrivate(MediaSource::Type t)
-            : type(t), discType(NoDisc), stream(0),
-            deleteStream(false)
+            : type(t), discType(NoDisc), stream(0)
         {
         }
 
@@ -43,10 +43,9 @@ class MediaSourcePrivate : public QSharedData
         QUrl url;
         Phonon::DiscType discType;
         QString deviceName;
-        AbstractMediaStream *stream;
+        QPointer<AbstractMediaStream> stream;
         AudioCaptureDevice audioCaptureDevice;
         VideoCaptureDevice videoCaptureDevice;
-        bool deleteStream;
 };
 
 } // namespace Phonon

@@ -58,15 +58,11 @@ MediaSource::MediaSource(AbstractMediaStream *stream)
 MediaSource::MediaSource(QIODevice *ioDevice)
     : d(new MediaSourcePrivate(Stream))
 {
-    d->stream = new IODeviceStream(ioDevice);
-    d->deleteStream = true;
+    d->stream = new IODeviceStream(ioDevice, ioDevice);
 }
 
 MediaSource::~MediaSource()
 {
-    if (d->deleteStream) {
-        delete d->stream;
-    }
 }
 
 MediaSource::MediaSource(const MediaSource &rhs)
@@ -87,6 +83,9 @@ bool MediaSource::operator==(const MediaSource &rhs) const
 
 MediaSource::Type MediaSource::type() const
 {
+    if (d->type == Stream && d->stream == 0) {
+        return Invalid;
+    }
     return d->type;
 }
 
