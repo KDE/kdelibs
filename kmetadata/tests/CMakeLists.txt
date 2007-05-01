@@ -4,10 +4,10 @@ include_directories(
   ${kmetadata_SOURCE_DIR}
   ${libkmetadata_SOURCE_DIR}
   ${kmetadata_ui_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
-  ${SOPRANO_INCLUDE_DIR}
 )
+
+include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 # The basis of all the tests handling statements
 qt4_automoc(testbase.cpp)

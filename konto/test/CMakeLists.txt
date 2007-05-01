@@ -5,7 +5,7 @@ include_directories(
   ${KNEPOMUK_INCLUDE_DIR}
 )
 
-include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${KDE4_KIO_INCLUDES} )
 include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 # tests
