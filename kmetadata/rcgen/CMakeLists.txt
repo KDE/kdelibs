@@ -2,10 +2,10 @@ project(kmetadata_rcgen)
 
 include_directories(
   ${kmetadata_rcgen_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
-  ${SOPRANO_INCLUDE_DIR}
 )
+
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 set(kmetadata_rcgen_SRCS
   rcgen.cpp

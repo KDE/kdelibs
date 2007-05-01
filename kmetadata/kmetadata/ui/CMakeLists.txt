@@ -5,10 +5,11 @@ include_directories(
   ${kmetadata_SOURCE_DIR}
   ${libkmetadata_SOURCE_DIR}
   ${nepomuk_backbone_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
   ${KNEP_INCLUDE_DIR}
 )
+
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 install(FILES
   kratingwidget.h

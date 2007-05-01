@@ -5,10 +5,10 @@ include_directories(
   ${libkmetadata_SOURCE_DIR}
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
-  ${SOPRANO_INCLUDE_DIR}
 )
+
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 set(kmetadata_LIB_SRCS
   variant.cpp

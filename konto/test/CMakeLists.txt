@@ -2,11 +2,11 @@ project(konto_test)
 
 include_directories(
   ${konto_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
   ${KNEPOMUK_INCLUDE_DIR}
-  ${SOPRANO_INCLUDE_DIR}
 )
+
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 # tests
 kde4_automoc(kontotest.cpp)
