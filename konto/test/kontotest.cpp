@@ -22,7 +22,7 @@
 #include "ontologymanager.h"
 #include "ontology.h"
 #include "class.h"
-#include "global.h"
+#include "../global.h"
 #include "property.h"
 
 #include <soprano/statement.h>
