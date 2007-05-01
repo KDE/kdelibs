@@ -214,7 +214,7 @@ private:
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the children.
-  void deleteUnmarkedItems( Q3PtrList<KDirLister> *, KFileItemList & );
+  void deleteUnmarkedItems( QList<KDirLister *> *, KFileItemList & );
   void processPendingUpdates();
   // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
@@ -341,10 +341,10 @@ private:
 
   // saves all urls that are currently being listed and maps them
   // to their KDirListers
-  Q3Dict< Q3PtrList<KDirLister> > urlsCurrentlyListed;
+  Q3Dict< QList<KDirLister *> > urlsCurrentlyListed;
 
   // saves all KDirListers that are just holding url
-  Q3Dict< Q3PtrList<KDirLister> > urlsCurrentlyHeld;
+  Q3Dict< QList<KDirLister *> > urlsCurrentlyHeld;
 
   // running timers for the delayed update
   Q3Dict<QTimer> pendingUpdates;
