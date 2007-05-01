@@ -19,6 +19,7 @@
 
 #include "mediasource.h"
 #include "mediasource_p.h"
+#include "iodevicestream.h"
 
 namespace Phonon
 {
@@ -54,8 +55,18 @@ MediaSource::MediaSource(AbstractMediaStream *stream)
     d->stream = stream;
 }
 
+MediaSource::MediaSource(QIODevice *ioDevice)
+    : d(new MediaSourcePrivate(Stream))
+{
+    d->stream = new IODeviceStream(ioDevice);
+    d->deleteStream = true;
+}
+
 MediaSource::~MediaSource()
 {
+    if (d->deleteStream) {
+        delete d->stream;
+    }
 }
 
 MediaSource::MediaSource(const MediaSource &rhs)

@@ -17,39 +17,35 @@
 
 */
 
-#ifndef MEDIASOURCE_P_H
-#define MEDIASOURCE_P_H
+#ifndef IODEVICESTREAM_P_H
+#define IODEVICESTREAM_P_H
 
-#include "mediasource.h"
-#include "objectdescription.h"
+#include "iodevicestream.h"
+#include "abstractmediastream_p.h"
 
-#include <QUrl>
-#include <QString>
-#include <QSharedData>
+#include <QtCore/QIODevice>
 
 namespace Phonon
 {
-
-class MediaSourcePrivate : public QSharedData
+class IODeviceStreamPrivate : public AbstractMediaStreamPrivate
 {
-    public:
-        MediaSourcePrivate(MediaSource::Type t)
-            : type(t), discType(NoDisc), stream(0),
-            deleteStream(false)
+    Q_DECLARE_PUBLIC(IODeviceStream)
+    protected:
+        IODeviceStreamPrivate(QIODevice *_ioDevice)
+            : ioDevice(_ioDevice),
+            offset(0)
         {
+            Q_ASSERT(ioDevice->isOpen());
+            Q_ASSERT(ioDevice->isReadable());
+            streamSize = ioDevice->size();
+            streamSeekable = !ioDevice->isSequential();
         }
 
-        MediaSource::Type type;
-        QUrl url;
-        Phonon::DiscType discType;
-        QString deviceName;
-        AbstractMediaStream *stream;
-        AudioCaptureDevice audioCaptureDevice;
-        VideoCaptureDevice videoCaptureDevice;
-        bool deleteStream;
+    private:
+        QIODevice *ioDevice;
+        qint64 offset;
 };
 
 } // namespace Phonon
-
-#endif // MEDIASOURCE_P_H
+#endif // IODEVICESTREAM_P_H
 // vim: sw=4 sts=4 et tw=100

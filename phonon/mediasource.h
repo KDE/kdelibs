@@ -27,6 +27,7 @@
 
 class QString;
 class QUrl;
+class QIODevice;
 
 namespace Phonon
 {
@@ -54,7 +55,7 @@ class PHONON_EXPORT MediaSource
         MediaSource(const QUrl &url);
         MediaSource(Phonon::DiscType, const QString &deviceName = QString());
         MediaSource(AbstractMediaStream *);
-        //MediaSource(QIODevice *);
+        MediaSource(QIODevice *);
         //MediaSource(const AudioCaptureDevice &, const VideoCaptureDevice &);
         ~MediaSource();
         MediaSource(const MediaSource &);

@@ -53,6 +53,7 @@ set(phonon_LIB_SRCS
 	seekslider.cpp
 	volumeslider.cpp
 	effectwidget.cpp
+	iodevicestream.cpp
 	)
 
 kde4_automoc(${phonon_LIB_SRCS})
