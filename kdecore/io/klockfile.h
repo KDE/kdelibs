@@ -31,7 +31,7 @@ class QString;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KLockFile : public KShared
+class KDECORE_EXPORT KLockFile : public KShared //krazy:exclude=dpointer (long enums confuse krazy)
 {
 public:
    typedef KSharedPtr<KLockFile> Ptr;

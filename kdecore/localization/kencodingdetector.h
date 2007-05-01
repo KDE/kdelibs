@@ -53,7 +53,7 @@ class KEncodingDetectorPrivate;
  * @short Guess encoding of char array
  *
  */
-class KDECORE_EXPORT KEncodingDetector
+class KDECORE_EXPORT KEncodingDetector //krazy:exclude=dpointer (long enums confuse krazy)
 {
 public:
     enum EncodingChoiceSource
