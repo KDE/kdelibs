@@ -99,8 +99,7 @@ void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, c
     }
 }
 
-int Solid::PowerManagement::beginSuppressingSleep(const QString &reason,
-                                                  SuppressExceptions exceptions)
+int Solid::PowerManagement::beginSuppressingSleep(const QString &reason)
 {
     KComponentData componentData = KGlobal::mainComponent();
 

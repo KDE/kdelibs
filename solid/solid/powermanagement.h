@@ -25,8 +25,6 @@
 
 #include <solid/solid_export.h>
 
-class KJob;
-
 namespace Solid
 {
     /**
@@ -82,37 +80,17 @@ namespace Solid
         SOLID_EXPORT void requestSleep(SleepState state, QObject *receiver, const char *member);
 
         /**
-         * This enum describes scenarios when system sleep should not be suppressed.
-         * The motivation for these is for a user application to be able to suppress system sleep,
-         * for example so that the system does not sleep during a DVD-R write even if the laptop lid
-         * is closed, but that it should sleep if the battery is almost empty.
-         * This enum is not related to programming exceptions.
-         *
-         * - SuppressWithoutException: Always suppress system sleep
-         * - ExceptUserTriggered: Suppress unless the sleep was caused by the user
-         * - ExceptOnLowBattery: Suppress sleep unless due to low battery levels
-         * - DefaultSuppressExceptions: Convenience value encompassing both user triggered and low
-         *   battery exceptions
-         */
-        enum SuppressException { SuppressWithoutException = 0, ExceptUserTriggered = 1, ExceptOnLowBattery = 2,
-                                 DefaultSuppressExceptions = ExceptUserTriggered|ExceptOnLowBattery };
-
-        Q_DECLARE_FLAGS(SuppressExceptions, SuppressException)
-
-        /**
          * Tell the power management subsystem to suppress automatic system sleep until further
          * notice.
          *
          * @param reason Give a reason for not allowing sleep, to be used in giving user feedback
          * about why a sleep event was prevented
-         * @param exceptions Set of SuppressException flags stating which suppress reasons should be
-         * * allowed despite the suppress. @see Solid::PowerManager::SuppressException
          * @return a 'cookie' value representing the suppression request.  Used by the power manager to
          * track the application's outstanding suppression requests.  Returns -1 if the request was
          * denied.
          */
-        SOLID_EXPORT int beginSuppressingSleep(const QString &reason = QString(),
-                                               SuppressExceptions exceptions = DefaultSuppressExceptions);
+        SOLID_EXPORT int beginSuppressingSleep(const QString &reason = QString());
+
         /**
          * Tell the power management that a particular sleep suppression is no longer needed.  When
          * no more suppressions are active, the system will be free to sleep automatically
@@ -137,7 +115,5 @@ namespace Solid
         SOLID_EXPORT Notifier *notifier();
     }
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(Solid::PowerManagement::SuppressExceptions)
 
 #endif
