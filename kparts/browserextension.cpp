@@ -384,7 +384,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
   //kDebug() << "BrowserExtension::BrowserExtension() " << this << endl;
   d->m_urlDropHandlingEnabled = false;
 
-  if ( !s_actionSlotMap )
+  if (s_actionSlotMap->isEmpty())
       // Create the action-slot map
       BrowserExtensionPrivate::createActionSlotMap();
 
@@ -601,7 +601,7 @@ BrowserExtension::ActionSlotMap BrowserExtension::actionSlotMap()
 
 BrowserExtension::ActionSlotMap * BrowserExtension::actionSlotMapPtr()
 {
-    if (!s_actionSlotMap)
+    if (s_actionSlotMap->isEmpty())
         BrowserExtensionPrivate::createActionSlotMap();
     return s_actionSlotMap;
 }
