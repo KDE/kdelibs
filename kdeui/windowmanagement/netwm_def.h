@@ -361,6 +361,14 @@ public:
     /**
        Window state.
 
+       To set the state of a window, you'll typically do something like:
+       \code
+         KWin::setState( winId(), NET::SkipTaskbar || NET::SkipPager );
+       \endcode
+
+       for example to not show the window on the taskbar and pager (alt-tab dialog).
+       winId() is a function of QWidget()
+
        Note that KeepAbove (StaysOnTop) and KeepBelow are meant as user preference and
        applications should avoid setting these states themselves.
     **/
