@@ -1,11 +1,7 @@
 project(konto)
 
-include_directories(
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
-  ${CMAKE_SOURCE_DIR}
-  ${SOPRANO_INCLUDE_DIR}
-)
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 set(konto_LIB_SRCS
   entity.cpp

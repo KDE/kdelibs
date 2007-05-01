@@ -1,13 +1,10 @@
 project(knepomuk)
 
+include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
+
 add_subdirectory(services)
 add_subdirectory(rdf)
-
-include_directories(
-  ${CMAKE_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
-  ${SOPRANO_INCLUDE_DIR})
 
 set(knepomuk_LIB_SRCS
   registry.cpp
