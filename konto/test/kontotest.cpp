@@ -172,6 +172,6 @@ void KontoTest::testProperty()
 }
 
 
-QTEST_MAIN( KontoTest );
+QTEST_MAIN( KontoTest )
 
 #include "kontotest.moc"

@@ -35,8 +35,8 @@ using namespace Soprano;
 
 typedef QMap<QString, Nepomuk::KMetaData::ResourceData*> ResourceDataHash;
 
-Q_GLOBAL_STATIC( ResourceDataHash, initializedData );
-Q_GLOBAL_STATIC( ResourceDataHash, kickoffData );
+Q_GLOBAL_STATIC( ResourceDataHash, initializedData )
+Q_GLOBAL_STATIC( ResourceDataHash, kickoffData )
 
 // FIXME: we need a way to sync this URI with the ontology
 static const char* s_identifierUri = "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier";
