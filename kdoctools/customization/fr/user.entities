@@ -197,6 +197,9 @@
 <!ENTITY traducteurMathiasViallon  '<othercredit role="translator"><firstname>Mathias</firstname><surname>Viallon</surname><affiliation><address><email>mathias.viallon@wanadoo.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurtraducteurMathiasViallon   '<othercredit role="relecteur"><firstname>Mathias</firstname><surname>Viallon</surname><affiliation><address><email>mathias.viallon@wanadoo.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
+<!ENTITY traducteurThomasVergnaud  '<othercredit role="translator"><firstname>Thomas</firstname><surname>Vergnaud</surname><affiliation><address><email>thomas.vergnaud@laposte.net</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
+<!ENTITY relecteurThomasVergnaud   '<othercredit role="relecteur"><firstname>Thomas</firstname><surname>Vergnaud</surname><affiliation><address><email>thomas.vergnaud@laposte.net</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
+
 <!ENTITY traducteurYannVerley  '<othercredit role="translator"><firstname>Yann</firstname><surname>Verley</surname><affiliation><address><email>yann.verley@free.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurYannVerley   '<othercredit role="relecteur"><firstname>Yann</firstname><surname>Verley</surname><affiliation><address><email>yann.verley@free.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -265,7 +268,7 @@
 <!ENTITY NicolasTernissien   'Nicolas Ternissien <email>nicolast@libertysurf.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
 <!ENTITY MathiasViallon   'Mathias Viallon <email>mathias.viallon@wanadoo.fr</email>'>
-
+<!ENTITY ThomasVergnaud   'Thomas Vergnaud <email>thomas.vergnaud@laposte.net</email>'>
 <!ENTITY YannVerley   ' Yann Verley<email>yann.verley@free.fr</email>'>
 
 <!-- OTHER USER ENTITIES -->
