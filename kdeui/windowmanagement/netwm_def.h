@@ -363,7 +363,7 @@ public:
 
        To set the state of a window, you'll typically do something like:
        \code
-         KWin::setState( winId(), NET::SkipTaskbar || NET::SkipPager );
+         KWindowSystem::setState( winId(), NET::SkipTaskbar || NET::SkipPager );
        \endcode
 
        for example to not show the window on the taskbar and pager (alt-tab dialog).
