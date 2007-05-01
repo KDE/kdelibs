@@ -47,7 +47,7 @@ class KSocketDevicePrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase
+class KDECORE_EXPORT KSocketDevice: public KActiveSocketBase, public KPassiveSocketBase //krazy:exclude=dpointer (long enums confuse krazy)
 {
 public:
   /**

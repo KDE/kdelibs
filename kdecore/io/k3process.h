@@ -121,7 +121,7 @@ class KPty;
  * @author Christian Czezatke e9025461@student.tuwien.ac.at
  *
  **/
-class KDECORE_EXPORT K3Process : public QObject
+class KDECORE_EXPORT K3Process : public QObject //krazy:exclude=dpointer (long enums confuse krazy)
 {
   Q_OBJECT
 
