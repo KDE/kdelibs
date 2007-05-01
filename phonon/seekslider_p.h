@@ -30,6 +30,7 @@
 #include <QIcon>
 #include <QStyle>
 #include "factory.h"
+#include <QPointer>
 
 namespace Phonon
 {
@@ -42,7 +43,6 @@ class SeekSliderPrivate
             : layout(QBoxLayout::LeftToRight, parent),
             slider(Qt::Horizontal, parent),
             iconLabel(parent),
-            media(0),
             ticking(false),
             icon(Factory::icon("player-time"))
         {
@@ -65,7 +65,6 @@ class SeekSliderPrivate
     private:
         void setEnabled(bool);
         void _k_stateChanged(Phonon::State);
-        void _k_mediaDestroyed();
         void _k_seek(int);
         void _k_tick(qint64);
         void _k_length(qint64);
@@ -74,7 +73,7 @@ class SeekSliderPrivate
         QBoxLayout layout;
         QSlider slider;
         QLabel iconLabel;
-        MediaObject *media;
+        QPointer<MediaObject> media;
         bool ticking;
         QIcon icon;
         QSize iconSize;

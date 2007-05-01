@@ -99,9 +99,7 @@ class PHONON_EXPORT VolumeSlider : public QWidget
          * Constructs a new volume slider with a \p parent.
          */
         VolumeSlider(QWidget *parent = 0);
-        //TODO: VolumeSlider(AudioOutput *, QWidget *parent = 0);
-        //TODO: VolumeSlider(AudioPlayer *, QWidget *parent = 0);
-        //TODO: VolumeSlider(VideoPlayer *, QWidget *parent = 0);
+        VolumeSlider(AudioOutput *, QWidget *parent = 0);
         ~VolumeSlider();
 
         bool hasTracking() const;
@@ -114,9 +112,7 @@ class PHONON_EXPORT VolumeSlider : public QWidget
         QSize iconSize() const;
         qreal maximumVolume() const;
         Qt::Orientation orientation() const;
-        //TODO: AudioOutput *audioOutput() const;
-        //TODO: AudioPlayer *audioPlayer() const;
-        //TODO: VideoPlayer *videoPlayer() const;
+        AudioOutput *audioOutput() const;
 
     public Q_SLOTS:
         void setMaximumVolume(qreal);
@@ -128,11 +124,8 @@ class PHONON_EXPORT VolumeSlider : public QWidget
          * Sets the audio output object to be controlled by this slider.
          */
         void setAudioOutput(AudioOutput *);
-        //TODO: void setAudioPlayer(AudioPlayer *);
-        //TODO: void setVideoPlayer(VideoPlayer *);
 
     private:
-        Q_PRIVATE_SLOT(k_ptr, void _k_outputDestroyed())
         Q_PRIVATE_SLOT(k_ptr, void _k_sliderChanged(int))
         Q_PRIVATE_SLOT(k_ptr, void _k_volumeChanged(qreal))
         Q_PRIVATE_SLOT(k_ptr, void _k_mutedChanged(bool))

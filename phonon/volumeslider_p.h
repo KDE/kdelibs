@@ -28,6 +28,7 @@
 #include <QToolButton>
 #include "factory.h"
 #include <QIcon>
+#include <QPointer>
 
 namespace Phonon
 {
@@ -56,11 +57,13 @@ class VolumeSliderPrivate
             layout.setSpacing(2);
             layout.addWidget(&muteButton, 0, Qt::AlignVCenter);
             layout.addWidget(&slider, 0, Qt::AlignVCenter);
+
+            slider.setEnabled(false);
+            muteButton.setEnabled(false);
         }
 
         VolumeSlider *q_ptr;
 
-        void _k_outputDestroyed();
         void _k_sliderChanged(int);
         void _k_volumeChanged(qreal);
         void _k_mutedChanged(bool);
@@ -73,7 +76,7 @@ class VolumeSliderPrivate
         QIcon volumeIcon;
         QIcon mutedIcon;
 
-        AudioOutput *output;
+        QPointer<AudioOutput> output;
         bool ignoreVolumeChange;
 };
 } // namespace Phonon

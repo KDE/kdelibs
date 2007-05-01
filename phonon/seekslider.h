@@ -95,10 +95,8 @@ class PHONON_EXPORT SeekSlider : public QWidget
         /**
          * Constructs a seek slider widget with the given \p parent.
          */
-        SeekSlider(QWidget *parent = 0);
-        //TODO: SeekSlider(MediaObject *, QWidget *parent = 0);
-        //TODO: SeekSlider(AudioPlayer *, QWidget *parent = 0);
-        //TODO: SeekSlider(VideoPlayer *, QWidget *parent = 0);
+        explicit SeekSlider(QWidget *parent = 0);
+        explicit SeekSlider(MediaObject *media, QWidget *parent = 0);
 
         /**
          * Destroys the seek slider.
@@ -115,8 +113,6 @@ class PHONON_EXPORT SeekSlider : public QWidget
         bool isIconVisible() const;
         QSize iconSize() const;
         MediaObject *mediaObject() const;
-        //TODO: AudioPlayer *audioPlayer() const;
-        //TODO: VideoPlayer *videoPlayer() const;
 
     public Q_SLOTS:
         void setOrientation(Qt::Orientation);
@@ -127,12 +123,9 @@ class PHONON_EXPORT SeekSlider : public QWidget
          * Sets the media object to be controlled by this slider.
          */
         void setMediaObject(MediaObject *);
-        //TODO: void setAudioPlayer(AudioPlayer *);
-        //TODO: void setVideoPlayer(VideoPlayer *);
 
     private:
         Q_PRIVATE_SLOT(k_func(), void _k_stateChanged(Phonon::State))
-        Q_PRIVATE_SLOT(k_func(), void _k_mediaDestroyed())
         Q_PRIVATE_SLOT(k_func(), void _k_seek(int))
         Q_PRIVATE_SLOT(k_func(), void _k_tick(qint64))
         Q_PRIVATE_SLOT(k_func(), void _k_length(qint64))

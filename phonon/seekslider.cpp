@@ -30,6 +30,15 @@ SeekSlider::SeekSlider(QWidget *parent)
     : QWidget(parent)
     , k_ptr(new SeekSliderPrivate(this))
 {
+    K_D(SeekSlider);
+    connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_seek(int)));
+}
+
+SeekSlider::SeekSlider(MediaObject *mo, QWidget *parent)
+    : QWidget(parent)
+    , k_ptr(new SeekSliderPrivate(this))
+{
+    setMediaObject(mo);
 }
 
 /*SeekSlider::SeekSlider(SeekSliderPrivate &_d, QWidget *parent)
@@ -45,18 +54,22 @@ SeekSlider::~SeekSlider()
 
 void SeekSlider::setMediaObject(MediaObject *media)
 {
-    if (!media)
-        return;
-
     K_D(SeekSlider);
+    if (d->media) {
+        disconnect(d->media, 0, this, 0);
+    }
     d->media = media;
-    connect(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
-            SLOT(_k_stateChanged(Phonon::State)));
-    connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_seek(int)));
-    connect(media, SIGNAL(totalTimeChanged(qint64)), SLOT(_k_length(qint64)));
-    connect(media, SIGNAL(tick(qint64)), SLOT(_k_tick(qint64)));
-    connect(media, SIGNAL(seekableChanged(bool)), SLOT(_k_seekableChanged(bool)));
-    d->_k_stateChanged(media->state());
+
+    if (media) {
+        connect(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
+                SLOT(_k_stateChanged(Phonon::State)));
+        connect(media, SIGNAL(totalTimeChanged(qint64)), SLOT(_k_length(qint64)));
+        connect(media, SIGNAL(tick(qint64)), SLOT(_k_tick(qint64)));
+        connect(media, SIGNAL(seekableChanged(bool)), SLOT(_k_seekableChanged(bool)));
+        d->_k_stateChanged(media->state());
+    } else {
+        d->_k_stateChanged(Phonon::StoppedState);
+    }
 }
 
 MediaObject *SeekSlider::mediaObject() const
@@ -88,7 +101,7 @@ void SeekSliderPrivate::_k_length(qint64 msec)
 
 void SeekSliderPrivate::_k_seekableChanged(bool isSeekable)
 {
-    if (!isSeekable) {
+    if (!isSeekable || !media) {
         setEnabled(false);
     } else {
         switch (media->state()) {
@@ -122,7 +135,7 @@ void SeekSliderPrivate::setEnabled(bool x)
 
 void SeekSliderPrivate::_k_stateChanged(State newstate)
 {
-    if (!media->isSeekable()) {
+    if (!media || !media->isSeekable()) {
         setEnabled(false);
         return;
     }
@@ -146,12 +159,6 @@ void SeekSliderPrivate::_k_stateChanged(State newstate)
         ticking = false;
         break;
     }
-}
-
-void SeekSliderPrivate::_k_mediaDestroyed()
-{
-    media = 0;
-    setEnabled(false);
 }
 
 bool SeekSlider::hasTracking() const
