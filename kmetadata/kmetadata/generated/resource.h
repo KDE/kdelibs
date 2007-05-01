@@ -303,17 +303,26 @@ namespace Nepomuk {
 
             // do not remove. Will be replaced with method declarations by the KMetaData class generator.
             /**
-             * Get property 'symbol'. true 
+             * Get property 'symbol'. Each resource can have a symbol assigned. 
+             * For now this is a simple string which can either be the patch to 
+             * an actual pixmap file or just the name of an icon as defined by 
+             * the freedesktop.org standard. 
              */
             QStringList getSymbols() const;
 
             /**
-             * Set property 'symbol'. true 
+             * Set property 'symbol'. Each resource can have a symbol assigned. 
+             * For now this is a simple string which can either be the patch to 
+             * an actual pixmap file or just the name of an icon as defined by 
+             * the freedesktop.org standard. 
              */
             void setSymbols( const QStringList& value );
 
             /**
-             * Add a value to property 'symbol'. true 
+             * Add a value to property 'symbol'. Each resource can have a symbol 
+             * assigned. For now this is a simple string which can either be 
+             * the patch to an actual pixmap file or just the name of an icon as 
+             * defined by the freedesktop.org standard. 
              */
             void addSymbol( const QString& value );
 
@@ -458,12 +467,14 @@ namespace Nepomuk {
             static QString annotationUri();
 
             /**
-             * Get property 'Comment'. true 
+             * Get property 'Comment'. Everything can be annotated with a 
+             * simple string comment. 
              */
             QString getComment() const;
 
             /**
-             * Set property 'Comment'. true 
+             * Set property 'Comment'. Everything can be annotated with a 
+             * simple string comment. 
              */
             void setComment( const QString& value );
 
@@ -473,17 +484,21 @@ namespace Nepomuk {
             static QString CommentUri();
 
             /**
-             * Get property 'Tag'. true 
+             * Get property 'Tag'. Each Resource can be tagged with an arbitrary 
+             * number of Tags. This allows a simple grouping of resources. 
              */
             QList<Tag> getTags() const;
 
             /**
-             * Set property 'Tag'. true 
+             * Set property 'Tag'. Each Resource can be tagged with an arbitrary 
+             * number of Tags. This allows a simple grouping of resources. 
              */
             void setTags( const QList<Tag>& value );
 
             /**
-             * Add a value to property 'Tag'. true 
+             * Add a value to property 'Tag'. Each Resource can be tagged with 
+             * an arbitrary number of Tags. This allows a simple grouping of 
+             * resources. 
              */
             void addTag( const Tag& value );
 

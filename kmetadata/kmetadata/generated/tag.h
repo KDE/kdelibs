@@ -34,7 +34,9 @@ namespace Nepomuk {
     namespace KMetaData {
 
 /**
- * true 
+ * A Tag can be assigned to any Thing. This allows simple grouping 
+ * of resources. Each Tag is identifed by its name which should 
+ * be unique. 
  */
         class KMETADATA_EXPORT Tag : public Resource
         {
@@ -59,7 +61,8 @@ namespace Nepomuk {
 
             /**
              * Get all resources that have this resource set as property 'Tag'. 
-             * true \sa ResourceManager::allResourcesWithProperty 
+             * Each Resource can be tagged with an arbitrary number of Tags. 
+             * This allows a simple grouping of resources. \sa ResourceManager::allResourcesWithProperty 
              */
             QList<Resource> TagOf() const;
 
