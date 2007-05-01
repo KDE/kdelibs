@@ -414,8 +414,16 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
     s.replace( "KMETADATA_RESOURCECOMMENT", writeComment( comment, 0 ) );
     s.replace( "KMETADATA_RESOURCENAMEUPPER", name().toUpper() );
     s.replace( "KMETADATA_RESOURCENAME", name() );
-    s.replace( "KMETADATA_PARENTRESOURCELOWER", parent->name().toLower() );
     s.replace( "KMETADATA_PARENTRESOURCE", parent->name() );
+
+    // A resource that is not part of the currently generated stuff is supposed
+    // to be installed in include/kmetadata
+    if ( parent->generateClass() ) {
+        s.replace( "KMETADATA_PARENT_INCLUDE", QString("\"%1.h\"").arg( parent->name().toLower() ) );
+    }
+    else {
+        s.replace( "KMETADATA_PARENT_INCLUDE", QString("<kmetadata/%1.h>").arg( parent->name().toLower() ) );
+    }
 
     QString methods;
     QTextStream ms( &methods );
@@ -567,6 +575,8 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
         }
 
         ms << p->reversePropertyGetterDefinition( this ) << endl;
+
+        includes.append( QString( "#include \"%1\"\n" ).arg( p->domain->headerName() ) );
     }
 
     //
@@ -578,6 +588,14 @@ bool ResourceClass::writeSource( QTextStream& stream ) const
             // ignore the one we derived from
             if( rc != parent ) {
                 ms << pseudoInheritanceDefinition( rc ) << endl;
+                // A resource that is not part of the currently generated stuff is supposed
+                // to be installed in include/kmetadata
+                if ( parent->generateClass() ) {
+                    includes.append( QString("#include \"%1.h\"").arg( rc->name().toLower() ) );
+                }
+                else {
+                    includes.append( QString("#include <kmetadata/%1.h>").arg( rc->name().toLower() ) );
+                }
             }
         }
     }

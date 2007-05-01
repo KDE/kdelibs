@@ -44,7 +44,7 @@ static const QString headerTemplate = gplTemplate +
 "}\n"
 "}\n"
 "\n"
-"#include <kmetadata/KMETADATA_PARENTRESOURCELOWER.h>\n"
+"#include KMETADATA_PARENT_INCLUDE\n"
 "#include <kmetadata/kmetadata_export.h>\n"
 "\n"
 "namespace Nepomuk {\n"
@@ -91,7 +91,6 @@ static const QString headerTemplate = gplTemplate +
 static const QString sourceTemplate = gplTemplate +
 "\n"
 "#include <kmetadata/kmetadata.h>\n"
-"#include \"tools.h\"\n"
 "#include \"KMETADATA_RESOURCENAMELOWER.h\"\n"
 "\n"
 "KMETADATA_INCLUDES"

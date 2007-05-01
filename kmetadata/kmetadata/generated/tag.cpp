@@ -19,7 +19,6 @@
  */
 
 #include <kmetadata/kmetadata.h>
-#include "tools.h"
 #include "tag.h"
 
 
