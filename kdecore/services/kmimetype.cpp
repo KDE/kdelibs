@@ -269,8 +269,10 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
 
     // Try the low-priority magic matches (if we can read the data)
     if ( device ) {
-        return KMimeTypeFactory::self()->findFromContent(
+        KMimeType::Ptr mime = KMimeTypeFactory::self()->findFromContent(
             device, KMimeTypeFactory::LowPriorityRules, accuracy, beginning );
+        if ( mime )
+            return mime;
     } else { // Not a local file, or no magic allowed, find a fallback from the protocol
         if (accuracy)
             *accuracy = 10;
