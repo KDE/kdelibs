@@ -106,12 +106,14 @@ set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION 
 install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
 
 
+if(NOT WIN32)
 ########### static lib for tests  ###############
 
 kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
 
 target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
+endif(NOT WIN32)
 
 ########### install files ###############
 
