@@ -31,9 +31,7 @@ void VideoPathTest::initTestCase()
 {
     qRegisterMetaType<Phonon::State>("Phonon::State");
 
-    m_url.setUrl(getenv("PHONON_TESTURL"));
-    if (!m_url.isValid())
-        QFAIL("You need to set PHONON_TESTURL to a valid URL");
+    m_url = testUrl();
 
     m_media = new MediaObject(this);
     m_path = new VideoPath(this);

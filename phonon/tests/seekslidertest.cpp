@@ -19,7 +19,7 @@
 
 #include <qtest_kde.h>
 
-#include "seekslider.h"
+#include "seekslidertest.h"
 #include "../seekslider.h"
 #include "../mediaobject.h"
 #include <QSlider>
@@ -52,10 +52,12 @@ void SeekSliderTest::testEnabled()
 void SeekSliderTest::setMedia()
 {
     QVERIFY(media->state() == Phonon::LoadingState);
-    KUrl url(getenv("PHONON_TESTURL"));
-    if (!url.isValid())
-        QFAIL("You need to set PHONON_TESTURL to a valid URL");
+    KUrl url(testUrl());
     media->setCurrentSource(url);
+    ss->setMediaObject(media);
+    QVERIFY(!qslider->isEnabled());
+    ss->setMediaObject(0);
+    QVERIFY(!qslider->isEnabled());
     ss->setMediaObject(media);
     QVERIFY(!qslider->isEnabled());
 }
@@ -71,6 +73,10 @@ void SeekSliderTest::playMedia()
         case Phonon::PlayingState:
         case Phonon::PausedState:
         case Phonon::BufferingState:
+            QVERIFY(qslider->isEnabled());
+            ss->setMediaObject(0);
+            QVERIFY(!qslider->isEnabled());
+            ss->setMediaObject(media);
             QVERIFY(qslider->isEnabled());
             break;
         case Phonon::ErrorState:
@@ -95,5 +101,5 @@ void SeekSliderTest::cleanupTestCase()
 }
 
 QTEST_KDEMAIN(SeekSliderTest, GUI)
-#include "seekslider.moc"
+#include "seekslidertest.moc"
 // vim: ts=4

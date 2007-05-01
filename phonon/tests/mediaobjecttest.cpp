@@ -150,14 +150,9 @@ void MediaObjectTest::pausePlayback()
 
 void MediaObjectTest::initTestCase()
 {
-#ifdef USE_FAKE_BACKEND
     Phonon::loadFakeBackend();
-    m_url.setUrl("file:///foo.ogg");
-#else
-    m_url = KUrl(getenv("PHONON_TESTURL"));
-    if (!m_url.isValid())
-        QFAIL("You need to set PHONON_TESTURL to a valid URL");
-#endif
+    m_url = testUrl();
+
     m_media = new MediaObject(this);
     m_stateChangedSignalSpy = new QSignalSpy(m_media, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
     QVERIFY(m_stateChangedSignalSpy->isValid());

@@ -150,9 +150,7 @@ void ByteStreamTest::initTestCase()
     m_reading = false;
     m_seeking = false;
 
-    m_url.setUrl(getenv("PHONON_TESTURL"));
-    if (!m_url.isValid())
-        QFAIL("You need to set PHONON_TESTURL to a valid URL");
+    m_url = testUrl();
 
     initByteStream();
 }

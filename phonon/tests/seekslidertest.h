@@ -17,8 +17,8 @@
 
 */
 
-#ifndef SEEKSLIDER_H
-#define SEEKSLIDER_H
+#ifndef SEEKSLIDERTEST_H
+#define SEEKSLIDERTEST_H
 
 #include <QObject>
 
@@ -46,5 +46,4 @@ class SeekSliderTest : public QObject
         Phonon::MediaObject *media;
 };
 
-#endif // SEEKSLIDER_H
-// vim: ts=4
+#endif // SEEKSLIDERTEST_H

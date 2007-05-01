@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,33 +17,33 @@
 
 */
 
-#ifndef TESTS_LOADFAKEBACKEND_H
-#define TESTS_LOADFAKEBACKEND_H
+#ifndef VOLUMESLIDERTEST_H
+#define VOLUMESLIDERTEST_H
 
-#include "../factory.h"
-#include <QtTest>
-#include <kurl.h>
+#include <QObject>
 
-namespace Phonon
-{
-void loadFakeBackend()
-{
-#ifdef USE_FAKE_BACKEND
-    Factory::createBackend("phonon_fake", "0.1");
-#endif
+namespace Phonon {
+    class MediaObject;
+    class VolumeSlider;
+    class AudioOutput;
 }
-KUrl testUrl()
-{
-#ifdef USE_FAKE_BACKEND
-    return KUrl("file::////foo.ogg");
-#else
-    KUrl url(getenv("PHONON_TESTURL"));
-    if (!url.isValid()) {
-        QWARN("You need to set PHONON_TESTURL to a valid URL. Expect to see failures.");
-    }
-    return url;
-#endif
-}
-} // namespace Phonon
+class QSlider;
+class QToolButton;
 
-#endif // TESTS_LOADFAKEBACKEND_H
+class VolumeSliderTest : public QObject
+{
+    Q_OBJECT
+    private Q_SLOTS:
+        void initTestCase();
+        void testEnabled();
+        void seekWithSlider();
+        void cleanupTestCase();
+    private:
+        Phonon::VolumeSlider *vs;
+        QSlider *qslider;
+        QToolButton *qbutton;
+        Phonon::MediaObject *media;
+        Phonon::AudioOutput *output;
+};
+
+#endif // VOLUMESLIDERTEST_H

@@ -42,7 +42,8 @@ PHONON_BUILD_TESTS(
 	#bytestreamtest
 	#bytestreamtest2
 	audiodevicelisttest
-	seekslider
+	seekslidertest
+	volumeslidertest
 	guitest
 	mediaplayer
 	)
@@ -60,7 +61,8 @@ PHONON_BUILD_TESTS_FAKE(
 	videocapturedevicetest
 	#bytestreamtest
 	#bytestreamtest2
-	seekslider
+	seekslidertest
+	volumeslidertest
 	)
 PHONON_EXECUTE_TESTS(
 	mediasourcetest
@@ -71,10 +73,11 @@ PHONON_EXECUTE_TESTS(
 	audiocapturedevicetest_fake
 	videocapturedevicetest_fake
 	audiodevicelisttest
+	seekslidertest_fake
+	volumeslidertest_fake
 	mediaobjecttest_fake
 	#bytestreamtest_fake
 	#bytestreamtest2_fake
-	seekslider_fake
 	)
 
 #methodtest does not link against libphonon
