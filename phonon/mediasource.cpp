@@ -20,6 +20,7 @@
 #include "mediasource.h"
 #include "mediasource_p.h"
 #include "iodevicestream.h"
+#include <QFile>
 
 namespace Phonon
 {
@@ -32,8 +33,14 @@ MediaSource::MediaSource()
 MediaSource::MediaSource(const QString &filename)
     : d(new MediaSourcePrivate(LocalFile))
 {
-    // TODO check whether it's a Qt resource and use QIODevice
-    d->url = QUrl::fromLocalFile(filename);
+    if (filename.size() > 0 && filename.startsWith(QLatin1Char(':'))) {
+        // it's a Qt resource -> use QFile
+        d->type = Stream;
+        d->resourceFile = new QFile(filename);
+        d->stream = new IODeviceStream(d->resourceFile, d->resourceFile);
+    } else {
+        d->url = QUrl::fromLocalFile(filename);
+    }
 }
 
 MediaSource::MediaSource(const QUrl &url)
@@ -63,6 +70,8 @@ MediaSource::MediaSource(QIODevice *ioDevice)
 
 MediaSource::~MediaSource()
 {
+    delete d->resourceFile;
+    d->resourceFile = 0;
 }
 
 MediaSource::MediaSource(const MediaSource &rhs)

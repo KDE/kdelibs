@@ -32,6 +32,7 @@ class MediaSourceTest : public QObject
         void testDiscType();
         void testStream();
         void testIODevice();
+        void testQtResource();
         void cleanupTestCase();
 };
 #endif // MEDIASOURCETEST_H

@@ -32,7 +32,6 @@ MACRO(PHONON_EXECUTE_TESTS)
 ENDMACRO(PHONON_EXECUTE_TESTS)
 
 PHONON_BUILD_TESTS(
-	mediasourcetest
 	mediaobjecttest
 	audiopathtest
 	backendcapabilitiestest
@@ -74,7 +73,7 @@ PHONON_EXECUTE_TESTS(
 	audiodevicelisttest
 	mediaobjecttest_fake
 	#bytestreamtest_fake
-	bytestreamtest2_fake
+	#bytestreamtest2_fake
 	seekslider_fake
 	)
 
@@ -87,6 +86,12 @@ kde4_add_executable(methodtest_fake NOGUI methodtest.cpp ../factory.cpp ../phono
 target_link_libraries(methodtest_fake ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
 SET_TARGET_PROPERTIES(methodtest_fake PROPERTIES COMPILE_FLAGS "-DUSE_FAKE_BACKEND -DPHONON_METHODTEST")
 add_test(methodtest_fake ${EXECUTABLE_OUTPUT_PATH}/methodtest_fake)
+
+SET(mediasourcetest_SRCS mediasourcetest.cpp)
+QT4_ADD_RESOURCES(mediasourcetest_SRCS testresources.qrc)
+kde4_automoc(${mediasourcetest_SRCS})
+kde4_add_executable(mediasourcetest NOGUI ${mediasourcetest_SRCS})
+target_link_libraries(mediasourcetest ${KDE4_PHONON_LIBS} ${QT_QTTEST_LIBRARY})
 
 ENDIF(KDE4_BUILD_TESTS)
 
