@@ -27,7 +27,7 @@ namespace Nepomuk {
 	/**
 	 * A QueryResultTable represents a query result.
 	 */
-	class KNEP_EXPORT QueryResultTable //krazy:exclude=dpointer
+	class KNEPOMUK_EXPORT QueryResultTable //krazy:exclude=dpointer
 	    {
 	    public:
 		QueryResultTable();

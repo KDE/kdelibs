@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KNEP_EXPORT_H
-#define KNEP_EXPORT_H
+#ifndef KNEPOMUK_EXPORT_H
+#define KNEPOMUK_EXPORT_H
 
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
@@ -26,19 +26,19 @@
 /* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
 #if defined _WIN32 || defined _WIN64
 
-#ifndef KNEP_EXPORT
-# if defined(MAKE_KNEP_LIB)
+#ifndef KNEPOMUK_EXPORT
+# if defined(MAKE_KNEPOMUK_LIB)
    /* We are building this library */ 
-#  define KNEP_EXPORT KDE_EXPORT
+#  define KNEPOMUK_EXPORT KDE_EXPORT
 # else
    /* We are using this library */ 
-#  define KNEP_EXPORT KDE_IMPORT
+#  define KNEPOMUK_EXPORT KDE_IMPORT
 # endif
 #endif
 
 #else /* UNIX */
 
-#define KNEP_EXPORT KDE_EXPORT
+#define KNEPOMUK_EXPORT KDE_EXPORT
 
 #endif
 

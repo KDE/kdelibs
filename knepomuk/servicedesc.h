@@ -33,7 +33,7 @@ namespace Nepomuk {
 	 * \internal The ServiceDesc class is not intended to be used in the public
 	 * API. Please refer to Service::url, Service::name, and Service::type.
 	 */
-	class KNEP_EXPORT ServiceDesc
+	class KNEPOMUK_EXPORT ServiceDesc
 	{
 	public:
 	    QString name;

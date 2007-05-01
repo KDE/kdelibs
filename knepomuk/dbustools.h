@@ -22,8 +22,8 @@
 #include <knepomuk/knepomuk_export.h>
 
 
-KNEP_EXPORT QDBusArgument& operator<<( QDBusArgument&, const Nepomuk::Backbone::ServiceDesc& desc );
-KNEP_EXPORT const QDBusArgument& operator>>( const QDBusArgument&, Nepomuk::Backbone::ServiceDesc& desc );
+KNEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument&, const Nepomuk::Backbone::ServiceDesc& desc );
+KNEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument&, Nepomuk::Backbone::ServiceDesc& desc );
 
 namespace Nepomuk {
     namespace Backbone {
@@ -31,10 +31,10 @@ namespace Nepomuk {
 	    /**
 	     * Converts a Nepomuk service URI into a DBus service name.
 	     */
-	    KNEP_EXPORT QString dbusServiceFromUrl( const QString& url );
+	    KNEPOMUK_EXPORT QString dbusServiceFromUrl( const QString& url );
 
-	    KNEP_EXPORT QString dbusObjectFromType( const QString& url );
-	    KNEP_EXPORT QString dbusInterfaceFromType( const QString& url );
+	    KNEPOMUK_EXPORT QString dbusObjectFromType( const QString& url );
+	    KNEPOMUK_EXPORT QString dbusInterfaceFromType( const QString& url );
 	}
     }
 }

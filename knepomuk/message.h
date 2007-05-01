@@ -35,7 +35,7 @@ namespace Nepomuk {
      *
      * \see Result
      */
-    class KNEP_EXPORT Message
+    class KNEPOMUK_EXPORT Message
       {
       public:
 	/**

@@ -105,7 +105,7 @@ namespace Nepomuk {
 	 * serialization is already taking much space using SOAP, so keeping RDF values
 	 * in strings is a fallback.
 	 */
-	class KNEP_EXPORT RDFRepositoryPublisher : public Backbone::ServicePublisher
+	class KNEPOMUK_EXPORT RDFRepositoryPublisher : public Backbone::ServicePublisher
 	    {
 		Q_OBJECT
 

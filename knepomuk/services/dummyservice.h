@@ -23,7 +23,7 @@
 namespace Nepomuk {
     namespace Backbone {
 	namespace Services {
-	    class KNEP_EXPORT DummyServicePublisher : public ServicePublisher
+	    class KNEPOMUK_EXPORT DummyServicePublisher : public ServicePublisher
 		{
 		    Q_OBJECT
 
@@ -37,7 +37,7 @@ namespace Nepomuk {
 	}
 
 	namespace DBus {
-	    class KNEP_EXPORT DummyServicePublisherInterface : public ServicePublisherInterface
+	    class KNEPOMUK_EXPORT DummyServicePublisherInterface : public ServicePublisherInterface
 		{
 		    Q_OBJECT
 		    Q_CLASSINFO("D-Bus Interface", "org.semanticdesktop.nepomuk.services.DummyService")

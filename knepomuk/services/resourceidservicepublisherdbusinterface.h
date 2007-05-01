@@ -24,7 +24,7 @@ namespace Nepomuk {
 	    class ResourceIdServicePublisher;
 
 	    namespace DBus {
-		class KNEP_EXPORT ResourceIdServicePublisherInterface : public Backbone::DBus::ServicePublisherInterface
+		class KNEPOMUK_EXPORT ResourceIdServicePublisherInterface : public Backbone::DBus::ServicePublisherInterface
 		    {
 			Q_OBJECT
 			Q_CLASSINFO("D-Bus Interface", "org.semanticdesktop.nepomuk.services.resource.Identification")

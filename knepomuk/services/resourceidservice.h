@@ -37,7 +37,7 @@ namespace Nepomuk {
 	 * QString myUrl = ids.toUniqueUrl( "file://foo/bar" );
 	 * \endcode
 	 */
-	class KNEP_EXPORT ResourceIdService : public Backbone::ServiceWrapper
+	class KNEPOMUK_EXPORT ResourceIdService : public Backbone::ServiceWrapper
 	    {
 	    public:
 		ResourceIdService( Backbone::Service* );

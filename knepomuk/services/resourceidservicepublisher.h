@@ -26,7 +26,7 @@ namespace Nepomuk {
 	     * \brief The Resource Identification Service converts local URLs to unique Nepomuk
 	     * URLs and vice versa.
 	     */
-	    class KNEP_EXPORT ResourceIdServicePublisher : public ServicePublisher
+	    class KNEPOMUK_EXPORT ResourceIdServicePublisher : public ServicePublisher
 		{
 		    Q_OBJECT
 

@@ -47,7 +47,7 @@ namespace Nepomuk {
 	 * qs.addStatement( ... );
 	 * \endcode
 	 */
-	class KNEP_EXPORT RDFRepository : public Backbone::ServiceWrapper
+	class KNEPOMUK_EXPORT RDFRepository : public Backbone::ServiceWrapper
 	    {
 	    public:
 		RDFRepository( Backbone::Service* );

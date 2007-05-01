@@ -43,7 +43,7 @@ namespace Nepomuk {
 	 * qs.executeQuery( ... );
 	 * \endcode
 	 */
-	class KNEP_EXPORT ServiceWrapper
+	class KNEPOMUK_EXPORT ServiceWrapper
 	    {
 	    public:
 		ServiceWrapper( Service* );

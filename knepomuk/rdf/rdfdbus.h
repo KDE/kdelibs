@@ -25,14 +25,14 @@
 #include <QtCore/QList>
 
 
-KNEP_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::RDF::QueryResultTable& );
-KNEP_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::RDF::QueryResultTable& );
+KNEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::RDF::QueryResultTable& );
+KNEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::RDF::QueryResultTable& );
 
-KNEP_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& );
-KNEP_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& );
+KNEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& );
+KNEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& );
 
-KNEP_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Statement& );
-KNEP_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Statement& );
+KNEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Statement& );
+KNEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Statement& );
 
 
 Q_DECLARE_METATYPE(Soprano::Node)

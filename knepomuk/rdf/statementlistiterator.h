@@ -42,7 +42,7 @@ namespace Nepomuk {
 	 *   doSomething( it.next() );
 	 * \endcode
 	 */
-	class KNEP_EXPORT StatementListIterator
+	class KNEPOMUK_EXPORT StatementListIterator
 	    {
 	    public:
 		/**
