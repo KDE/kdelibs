@@ -183,7 +183,9 @@ const KTimeZone *KSystemTimeZones::zone(const QString& name)
 
 void KSystemTimeZones::configChanged()
 {
+#ifdef __GNUC__
 #warning Remove 1221 from kDebug() statements
+#endif
     kDebug(1221)<<"KSystemTimeZones::zoneConfigChanged()" << endl;
     KSystemTimeZonesPrivate::readConfig(false);
 }
