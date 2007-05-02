@@ -53,6 +53,7 @@ set(kdecore_unittests
  kjobtest
  kservicetest
  kglobalstatictest
+ globalcleanuptest
 )
 
 if(UNIX)
