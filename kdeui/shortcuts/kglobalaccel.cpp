@@ -270,6 +270,7 @@ void KGlobalAccel::updateGlobalShortcut(KAction *action, const KShortcut &oldSho
         d->systemWideGlobalShortcuts.insert(newCut, actionId);
     }
 
+    enableImpl( isEnabled() && !d->systemWideGlobalShortcuts.isEmpty());
     changeGrab(action, action->globalShortcut());
 
     //update kdeglobals...
@@ -342,8 +343,6 @@ void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action)
 //ungrab oldGrab, grab newGrab, and leave unchanged what's in both
 void KGlobalAccel::changeGrab(KAction *action, const KShortcut &newGrab)
 {
-    //FIXME: very bad workaround to avoid a bug that kills keyboard input.
-    return;
     QList<int> needToGrab;
     foreach (const QKeySequence &seq, newGrab.toList())
         needToGrab.append(seq);
