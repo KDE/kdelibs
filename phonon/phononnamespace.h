@@ -36,13 +36,35 @@
  */
 namespace Phonon
 {
+    /**
+     * Enum to identify the media discs supported by MediaObject.
+     *
+     * \see MediaSource(Phonon::DiscType, const QString &deviceName)
+     */
     enum DiscType {
+        /**
+         * No disc was selected. This is only useful as a return value from
+         * MediaSource::distType();
+         */
         NoDisc,
+        /**
+         * Identifies Audio CDs.
+         */
         Cd,
+        /**
+         * Identifies DVDs (not arbitrary data DVDs, only movie DVDs).
+         */
         Dvd,
+        /**
+         * Identifies Video CDs.
+         */
         Vcd
     };
 
+    /**
+     * Provided as keys for \ref metaData for convenience, in addition to the strings defined in
+     * the Ogg Vorbis specification.
+     */
     enum MetaData {
         ArtistMetaData,
         AlbumMetaData,

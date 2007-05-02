@@ -65,6 +65,7 @@ protected: \
      * \return \c false if the object is not implemented by the backend
      */ \
     bool isValid() const; \
+protected: \
     classname##Private *const k_ptr; \
 private:
 
@@ -94,9 +95,7 @@ private:
 #define PHONON_OBJECT(classname) \
 public: \
     /**
-     * Standard QObject constructor.
-     *
-     * \param parent QObject parent
+     * Constructs an object with the given \p parent.
      */ \
     classname(QObject *parent = 0); \
     /**
@@ -107,6 +106,7 @@ public: \
      * \return \c false if the object is not implemented by the backend
      */ \
     bool isValid() const; \
+protected: \
     classname##Private *const k_ptr; \
 private:
 
@@ -136,9 +136,7 @@ private:
 #define PHONON_HEIR(classname) \
 public: \
     /**
-     * Standard QObject constructor.
-     *
-     * \param parent QObject parent
+     * Constructs an object with the given \p parent.
      */ \
     classname(QObject *parent = 0); \
 

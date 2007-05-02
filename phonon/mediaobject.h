@@ -38,32 +38,45 @@ namespace Phonon
     class MediaSource;
 
     /**
-     * @short Common interface for all media sources.
+     * \short Interface for media playback of a given URL.
      *
-     * This class holds common functionality of all objects that produce a media
-     * stream, like MediaObject or SoundcardCapture.
+     * This class is the most important class in %Phonon. Use it to open a media
+     * file at an arbitrary location, a CD or DVD or to stream media data from
+     * the application to the backend.
      *
-     * Some functions of this class (and its subclasses) are asynchronous.
+     * This class controls the state (play, pause, stop, seek)
+     * and you can use it to get a lot of information about the media data.
+     *
+     * Notice that most functions of this class are asynchronous.
      * That means if you call play() the object only starts playing when the
      * stateChanged() signal tells you that the object changed into \ref PlayingState.
      * The states you can expect are documented for those methods.
-     *
-     * @author Matthias Kretz <kretz@kde.org>
-     * @see MediaObject
-     */
-    /**
-     * \short Interface for media playback of a given URL.
-     *
-     * This class is the most important class for most mediaplayback tasks. With
-     * this class you open a URL, play, pause, stop, seek and get a lot of
-     * information about the media data.
      *
      * A common usage example is the following:
      * \code
      * media = new MediaObject(this);
      * connect(media, SIGNAL(finished()), SLOT(slotFinished());
-     * media->setUrl(KUrl("/home/username/music/filename.ogg"));
+     * media->setCurrentSource("/home/username/music/filename.ogg");
      * media->play();
+     * \endcode
+     *
+     * If you want to play more that one media file (one after another) you can
+     * either tell MediaObject about all those files
+     * \code
+     * media->setCurrentSource(":/sounds/startsound.ogg");
+     * media->enqueue("/home/username/music/song.mp3");
+     * media->enqueue(":/sounds/endsound.ogg");
+     * \endcode
+     * or provide the next file just in time:
+     * \code
+     *   media->setCurrentSource(":/sounds/startsound.ogg");
+     *   connect(media, SIGNAL(aboutToFinish()), SLOT(enqueueNextSource()));
+     * }
+     *
+     * void enqueueNextSource()
+     * {
+     *   media->enqueue("/home/username/music/song.mp3");
+     * }
      * \endcode
      *
      * \ingroup Playback
@@ -77,29 +90,69 @@ namespace Phonon
         Q_OBJECT
         K_DECLARE_PRIVATE(MediaObject)
         PHONON_OBJECT(MediaObject)
+        /**
+         * \brief Defines the time between media sources.
+         *
+         * A positive transition time defines a gap of silence between queued
+         * media sources.
+         *
+         * A transition time of 0 ms requests gapless playback (sample precise
+         * queueing of the next source).
+         *
+         * A negative transition time defines a crossfade between the queued
+         * media sources.
+         *
+         * Defaults to 0 (gapless playback).
+         *
+         * \warning This feature might not work reliably on every platform.
+         */
+        Q_PROPERTY(qint32 transitionTime READ transitionTime WRITE setTransitionTime)
+
+        /**
+         * \brief Get a signal before playback finishes.
+         *
+         * This property specifies the time in milliseconds the
+         * prefinishMarkReached signal is
+         * emitted before the playback finishes. A value of \c 0 disables the
+         * signal.
+         *
+         * Defaults to \c 0 (disabled).
+         *
+         * \warning For some media data the total time cannot be determined
+         * accurately, therefore the accuracy of the prefinishMarkReached signal
+         * can be bad sometimes. Still, it is better to use this method than to
+         * look at \ref totalTime and \ref currentTime to emulate the behaviour
+         * because the backend might have more information available than your
+         * application does through totalTime and currentTime.
+         *
+         * \see prefinishMarkReached
+         */
         Q_PROPERTY(qint32 prefinishMark READ prefinishMark WRITE setPrefinishMark)
+
         /**
          * \brief The time interval in milliseconds between two ticks.
          *
          * The %tick interval is the time that elapses between the emission of two tick signals.
-         * If you set the interval to @c 0 the tick signal gets disabled. The %tick
-         * interval defaults to @c 0 (disabled).
+         * If you set the interval to \c 0 the tick signal gets disabled.
          *
-         * @warning The back-end is free to choose a different tick interval close
-         * to what you asked for. This means that the following code @em may @em fail:
+         * Defaults to \c 0 (disabled).
+         *
+         * \warning The back-end is free to choose a different tick interval close
+         * to what you asked for. This means that the following code \em may \em fail:
          * \code
          * int x = 200;
-         * producer->setTickInterval(x);
+         * media->setTickInterval(x);
          * Q_ASSERT(x == producer->tickInterval());
          * \endcode
+         *
          * On the other hand the following is guaranteed:
          * \code
          * int x = 200;
-         * producer->setTickInterval(x);
+         * media->setTickInterval(x);
          * Q_ASSERT(x >= producer->tickInterval() && x <= 2 *producer->tickInterval());
          * \endcode
          *
-         * @see tick
+         * \see tick
          */
         Q_PROPERTY(qint32 tickInterval READ tickInterval WRITE setTickInterval)
         public:
@@ -129,6 +182,7 @@ namespace Phonon
              * MediaObject.
              *
              * @see videoPaths
+             * \see removeVideoPath
              */
             bool addVideoPath(VideoPath *videoPath);
 
@@ -153,10 +207,36 @@ namespace Phonon
              * MediaObject.
              *
              * @see audioPaths
+             * \see removeAudioPath
              */
             bool addAudioPath(AudioPath *audioPath);
 
+            /**
+             * Removes a VideoPath.
+             *
+             * All VideoOutputs connected to this path will stop showing the
+             * video output of this media.
+             *
+             * \return \c true if the path was successfully removed.
+             * \return \c false if the path could not be removed. This can
+             * happen if the path was not connected.
+             *
+             * \see addVideoPath
+             */
             bool removeVideoPath(VideoPath *videoPath);
+
+            /**
+             * Removes an AudioPath.
+             *
+             * All AudioOutputs connected to this path will stop playing the
+             * audio data of this media.
+             *
+             * \return \c true if the path was successfully removed.
+             * \return \c false if the path could not be removed. This can
+             * happen if the path was not connected.
+             *
+             * \see addAudioPath
+             */
             bool removeAudioPath(AudioPath *audioPath);
 
             /**
@@ -165,22 +245,59 @@ namespace Phonon
              * @return The state of the object.
              *
              * @see State
+             * \see stateChanged
              */
             State state() const;
 
             /**
              * Check whether the media data includes a video stream.
              *
-             * @return Returns @c true if the media contains video data.
+             * \warning This information cannot be known immediately. It is best
+             * to also listen to the hasVideoChanged signal.
+             *
+             * \code
+             *   connect(media, SIGNAL(hasVideoChanged(bool)), hasVideoChanged(bool));
+             *   media->setCurrentSource("somevideo.avi");
+             *   media->hasVideo(); // returns false;
+             * }
+             *
+             * void hasVideoChanged(bool b)
+             * {
+             *   // b == true
+             *   media->hasVideo(); // returns true;
+             * }
+             * \endcode
+             *
+             * \return \c true if the media contains video data. \c false
+             * otherwise.
+             *
+             * \see hasVideoChanged
              */
             bool hasVideo() const;
 
             /**
-             * If the current media may be seeked returns true.
+             * Check whether the current media may be seeked.
              *
-             * @return Whether the current media may be seeked.
+             * \warning This information cannot be known immediately. It is best
+             * to also listen to the hasVideoChanged signal.
              *
-             * @see seekableChanged()
+             * \code
+             *   connect(media, SIGNAL(hasVideoChanged(bool)), hasVideoChanged(bool));
+             *   media->setCurrentSource("somevideo.avi");
+             *   media->hasVideo(); // returns false;
+             * }
+             *
+             * void hasVideoChanged(bool b)
+             * {
+             *   // b == true
+             *   media->hasVideo(); // returns true;
+             * }
+             * \endcode
+             *
+             * \return \c true when the current media may be seeked. \c false
+             * otherwise.
+             *
+             * \see seekableChanged()
              */
             bool isSeekable() const;
 
@@ -189,18 +306,20 @@ namespace Phonon
             /**
              * Returns the list of all connected VideoPath objects.
              *
-             * @return A list of all connected VideoPath objects.
+             * \return A list of all connected VideoPath objects.
              *
-             * @see addVideoPath
+             * \see addVideoPath
+             * \see removeVideoPath
              */
             QList<VideoPath *> videoPaths() const;
 
             /**
              * Returns the list of all connected AudioPath objects.
              *
-             * @return A list of all connected AudioPath objects.
+             * \return A list of all connected AudioPath objects.
              *
-             * @see addAudioPath
+             * \see addAudioPath
+             * \see removeAudioPath
              */
             QList<AudioPath *> audioPaths() const;
 
@@ -211,7 +330,7 @@ namespace Phonon
              * the audio stream for the given AudioPath object is returned.
              *
              * \see availableAudioStreams
-             * \see selectAudioStream
+             * \see setCurrentAudioStream
              */
             QString currentAudioStream(AudioPath *audioPath = 0) const;
 
@@ -222,7 +341,7 @@ namespace Phonon
              * the video stream for the given VideoPath object is returned.
              *
              * \see availableVideoStreams
-             * \see selectVideoStream
+             * \see setCurrentVideoStream
              */
             QString currentVideoStream(VideoPath *videoPath = 0) const;
 
@@ -233,7 +352,7 @@ namespace Phonon
              * the subtitle stream for the given VideoPath object is returned.
              *
              * \see availableSubtitleStreams
-             * \see selectSubtitleStream
+             * \see setCurrentSubtitleStream
              */
             QString currentSubtitleStream(VideoPath *videoPath = 0) const;
 
@@ -242,7 +361,7 @@ namespace Phonon
              * strings can directly be used in the user interface.
              *
              * \see selectedAudioStream
-             * \see selectAudioStream
+             * \see setCurrentAudioStream
              */
             QStringList availableAudioStreams() const;
 
@@ -251,7 +370,7 @@ namespace Phonon
              * strings can directly be used in the user interface.
              *
              * \see selectedVideoStream
-             * \see selectVideoStream
+             * \see setCurrentVideoStream
              */
             QStringList availableVideoStreams() const;
 
@@ -260,7 +379,7 @@ namespace Phonon
              * strings can directly be used in the user interface.
              *
              * \see selectedSubtitleStream
-             * \see selectSubtitleStream
+             * \see setCurrentSubtitleStream
              */
             QStringList availableSubtitleStreams() const;
 
@@ -285,7 +404,13 @@ namespace Phonon
              */
             QStringList metaData(const QString &key) const;
 
-            QStringList metaData(Phonon::MetaData) const;
+            /**
+             * Returns the strings associated with the given \p key.
+             *
+             * Same as above except that the keys are defined in the \ref
+             * Phonon::MetaData enum.
+             */
+            QStringList metaData(Phonon::MetaData key) const;
 
             /**
              * Returns all meta data.
@@ -293,7 +418,7 @@ namespace Phonon
             QMultiMap<QString, QString> metaData() const;
 
             /**
-             * A translated string describing the error.
+             * Returns a human-readable description of the last error that occurred.
              */
             QString errorString() const;
 
@@ -319,7 +444,7 @@ namespace Phonon
              *
              * \code
              * QUrl url("http://www.example.com/music.ogg");
-             * mediaObject->setCurrentSource(url);
+             * media->setCurrentSource(url);
              * \endcode
              *
              * \see currentSource
@@ -332,50 +457,87 @@ namespace Phonon
              */
             QList<MediaSource> queue() const;
 
+            /**
+             * Set the MediaSources to play when the current media has finished.
+             *
+             * This function will overwrite the current queue.
+             *
+             * \see clearQueue
+             * \see enqueue
+             */
             void setQueue(const QList<MediaSource> &sources);
-            void setQueue(const QList<QUrl> &urls);
-            void enqueue(const MediaSource &source);
-            void enqueue(const QList<MediaSource> &sources);
-            void enqueue(const QList<QUrl> &urls);
-            void clearQueue();
 
+            /**
+             * Set the MediaSources to play when the current media has finished.
+             *
+             * This function overwrites the current queue.
+             *
+             * \see clearQueue
+             * \see enqueue
+             */
+            void setQueue(const QList<QUrl> &urls);
+
+            /**
+             * Appends one source to the queue. Use this function to provide
+             * the next source just in time after the aboutToFinish signal was
+             * emitted.
+             *
+             * \see aboutToFinish
+             * \see setQueue
+             * \see clearQueue
+             */
+            void enqueue(const MediaSource &source);
+
+            /**
+             * Appends multiple sources to the queue.
+             *
+             * \see setQueue
+             * \see clearQueue
+             */
+            void enqueue(const QList<MediaSource> &sources);
+
+            /**
+             * Appends multiple sources to the queue.
+             *
+             * \see setQueue
+             * \see clearQueue
+             */
+            void enqueue(const QList<QUrl> &urls);
+
+            /**
+             * Clears the queue of sources.
+             */
+            void clearQueue();
 
             /**
              * Get the current time (in milliseconds) of the file currently being played.
              *
-             * @return The current time (in milliseconds)
+             * \return The current time in milliseconds.
+             *
+             * \see tick
              */
             qint64 currentTime() const;
+
             /**
              * Get the total time (in milliseconds) of the file currently being played.
+             *
+             * \return The total time in milliseconds.
              *
              * \see totalTimeChanged
              */
             qint64 totalTime() const;
+
             /**
              * Get the remaining time (in milliseconds) of the file currently being played.
+             *
+             * \return The remaining time in milliseconds.
              */
             qint64 remainingTime() const;
 
-            /**
-             * Returns the time in milliseconds the aboutToFinish signal is
-             * emitted before the playback finishes. Defaults to 0.
-             *
-             * \return The aboutToFinish time in milliseconds.
-             *
-             * \see setPrefinishMark
-             * \see prefinishMarkReached
-             */
             qint32 prefinishMark() const;
+            void setPrefinishMark(qint32 msecToEnd);
 
             qint32 transitionTime() const;
-            /**
-             * positive: gap
-             * 0: gapless
-             * negative: crossfade
-             *
-             * in msec
-             */
             void setTransitionTime(qint32 msec);
 
         public Q_SLOTS:
@@ -490,18 +652,6 @@ namespace Phonon
              */
             void seek(qint64 time);
 
-            /**
-             * Sets the time in milliseconds the aboutToFinish signal is emitted
-             * before the playback finishes. Defaults to 0.
-             *
-             * \param newAboutToFinishTime The new aboutToFinishTime in
-             * milliseconds
-             *
-             * \see aboutToFinishTime
-             * \see aboutToFinish
-             */
-            void setPrefinishMark(qint32 msecToEnd);
-
         Q_SIGNALS:
             /**
              * Emitted when the state of the MediaObject has changed.
@@ -568,7 +718,7 @@ namespace Phonon
              *
              * \code
              * progressBar->setRange(0, 100); // this is the default
-             * connect(mediaObject, SIGNAL(bufferStatus(int)), progressBar, SLOT(setValue(int)));
+             * connect(media, SIGNAL(bufferStatus(int)), progressBar, SLOT(setValue(int)));
              * \endcode
              *
              * \param percentFilled A number between 0 and 100 telling you how
@@ -579,7 +729,11 @@ namespace Phonon
             /**
              * Emitted when the object has finished playback.
              * It is not emitted if you call stop(), pause() or
-             * load(), but only on end-of-file or a critical error.
+             * load(), but only on end-of-queue or a critical error.
+             *
+             * \warning This signal is not emitted when the current source has
+             * finished and there's another source in the queue. It is only
+             * emitted when the queue is empty.
              *
              * \see currentSourceChanged
              * \see aboutToFinish
@@ -602,18 +756,23 @@ namespace Phonon
             /**
              * Emitted before the playback of the whole queue stops. When this
              * signal is emitted you still have time to provide the next
-             * MediaSource so that playback continues.
+             * MediaSource (using \ref enqueue) so that playback continues.
              *
              * This signal can be used to provide the next MediaSource just in
              * time for the transition still to work.
+             *
+             * \see enqueue
              */
-            void aboutToFinish(); // aboutToStopConcurrentPlaybackButYouStillHaveTimeToProvideANewSource();
+            void aboutToFinish();
 
             /**
              * Emitted when there are only \p msecToEnd milliseconds left
              * for playback.
              *
              * \param msecToEnd The remaining time until the playback queue finishes.
+             *
+             * \warning This signal is not emitted when there is another source in the queue.
+             * It is only emitted when the queue is empty.
              *
              * \see setPrefinishMark
              * \see prefinishMark
