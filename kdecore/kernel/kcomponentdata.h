@@ -47,6 +47,7 @@ class KDECORE_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared
 {
     friend class KStandardDirs;
     friend class KGlobal;
+    friend class KGlobalPrivate;
     KSharedConfig::Ptr &privateConfig() const;
 
 public:

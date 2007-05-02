@@ -41,6 +41,9 @@ KComponentData::KComponentData(const KComponentData &rhs)
 {
     if (d) {
         d->ref();
+        if (d->name != "kdeinit4") {
+            KGlobal::newComponentData(this);
+        }
     }
 }
 

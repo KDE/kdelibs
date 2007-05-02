@@ -55,12 +55,12 @@ class KGlobalPrivate
 {
     public:
         inline KGlobalPrivate()
-            : mainComponentPtr(0),
-            stringDict(0),
+            : stringDict(0),
             locale(0),
             charsets(0),
             staticDeleters(new KStaticDeleterList)
         {
+            qAddPostRoutine(KGlobalPrivate::syncConfigs);
         }
 
         inline ~KGlobalPrivate()
@@ -71,16 +71,15 @@ class KGlobalPrivate
             charsets = 0;
             delete stringDict;
             stringDict = 0;
-            mainComponentPtr = 0;
 
             deleteStaticDeleters();
         }
 
+        static void syncConfigs();
         void deleteStaticDeleters();
 
         KComponentData activeComponent;
         KComponentData mainComponent; // holds a refcount
-        KComponentData* mainComponentPtr; // remembers the address of the first created componentdata (usually in main()).
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
@@ -197,7 +196,6 @@ void KGlobal::newComponentData(KComponentData *c)
         return;
     }
     d->mainComponent = *c;
-    d->mainComponentPtr = c;
     KGlobal::setActiveComponent(*c);
 }
 
@@ -207,18 +205,20 @@ void KGlobal::deletedComponentData(KComponentData *c)
         return;
     }
     PRIVATE_DATA;
-    if (d->mainComponentPtr == c) {
-        // The main component data (usually the one created on the stack in main())
-        // just got deleted. We better sync the global kconfig before the qt globals
-        // go away and prevent us from using things that require qt globals, like QTemporaryFile.
-        d->mainComponentPtr = 0;
-        foreach (KComponentData *cd, d->componentDataList) {
-            if (cd->privateConfig()) {
-                cd->privateConfig()->sync();
-            }
+    d->componentDataList.removeAll(c);
+}
+
+void KGlobalPrivate::syncConfigs()
+{
+    PRIVATE_DATA;
+    // The QCoreApplication object is being deleted.
+    // We better sync the global kconfigs before the qt globals
+    // go away and prevent us from using things that require qt globals, like QTemporaryFile.
+    foreach (KComponentData *cd, d->componentDataList) {
+        if (cd->privateConfig()) {
+            cd->privateConfig()->sync();
         }
     }
-    d->componentDataList.removeAll(c);
 }
 
 void KGlobal::setLocale(KLocale *locale)
