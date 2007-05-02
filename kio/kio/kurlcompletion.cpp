@@ -842,7 +842,7 @@ bool KUrlCompletion::exeCompletion(const MyURL &url, QString *pMatch)
 	}
 
 	// No hidden files unless the user types "."
-	bool no_hidden_files = url.file().at(0) != QLatin1Char('.');
+	bool no_hidden_files = url.file().isEmpty() || url.file().at(0) != QLatin1Char('.');
 
 	// List files if needed
 	//
