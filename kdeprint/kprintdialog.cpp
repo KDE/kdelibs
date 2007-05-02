@@ -18,8 +18,8 @@
  **/
 
 /*
- *  "WhatsThis" help items added by Kurt Pfeifle, August 2003,
- *  same copyright as above.
+ *  "WhatsThis" help items copyright August 2003 Kurt Pfeifle <kpfeifle@danka.de>
+ *  same license as above.
  **/
 
 #include "kprintdialog.h"
