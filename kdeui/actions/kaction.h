@@ -199,8 +199,7 @@ class KDEUI_EXPORT KAction : public QWidgetAction
 
 public:
     /**
-     * A simple enumeration to define the type of shortcut, default (revert to this if
-     * the user presses "default") or active, i.e. comes in effect immediately.
+     * An enumeration about the two types of shortcuts in a KAction
      */
     enum ShortcutType {
       /// The shortcut will immediately become active but may be reset to "default".

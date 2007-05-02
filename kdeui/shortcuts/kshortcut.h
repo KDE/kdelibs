@@ -57,10 +57,14 @@ class KShortcutPrivate;
 class KDEUI_EXPORT KShortcut
 {
 public:
-    ///this enum is about the behavior of operations that treat a KShortcut like a list of QKeySequences.
+    /**
+     * An enum about the behavior of operations that treat a KShortcut like a list of QKeySequences.
+     */
     enum EmptyHandling {
-        KeepEmpty = 0,  ///if a shortcut is or becomes empty, let it stay as a placeholder
-        RemoveEmpty     ///remove empty QKeySequences, possibly changing the positions of QKeySequences due to the ensuing reshuffling.
+        ///if a shortcut is or becomes empty, let it stay as a placeholder
+        KeepEmpty = 0,
+        ///remove empty QKeySequences, possibly changing the positions of QKeySequences due to the ensuing reshuffling.
+        RemoveEmpty
     };
 
     /**
@@ -171,6 +175,7 @@ public:
      * due to this, conversion operations like
      * KShortcut b = (QList\<QKeySequence\>)KShortcut a
      * will not always result in b == a.
+     * @return the shortcut converted to a QList\<QKeySequence\>
      */
     operator QList<QKeySequence>() const;
 
@@ -179,7 +184,7 @@ public:
      * If @p handleEmpty equals RemoveEmpty, empty key sequences will be left out of the result.
      * Otherwise, empy key sequences will be included; you can be sure that
      * shortcut.alternate() == shortcut.toList(KeepEmpty).at(1).
-     * @return the shortcut converted to a list of QKeySequences
+     * @return the shortcut converted to a QList\<QKeySequence\>
      */
     QList<QKeySequence> toList(enum EmptyHandling handleEmpty = RemoveEmpty) const;
 
