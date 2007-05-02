@@ -78,6 +78,7 @@ static void calculateGrabMasks()
 KGlobalAccelImpl::KGlobalAccelImpl(KGlobalAccel* owner)
 	: m_owner(owner)
 {
+	calculateGrabMasks();
 }
 
 bool KGlobalAccelImpl::grabKey( int keyQt, bool grab )
@@ -242,7 +243,6 @@ bool KGlobalAccelImpl::x11KeyPress( const XEvent *pEvent )
 void KGlobalAccelImpl::setEnabled( bool enable )
 {
 	if (enable) {
-		calculateGrabMasks();
 		kapp->installX11EventFilter( this );
 	} else
 		kapp->removeX11EventFilter( this );
