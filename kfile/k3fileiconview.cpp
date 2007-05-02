@@ -44,7 +44,7 @@
 #include <kactionmenu.h>
 #include <kconfiggroup.h>
 
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #define DEFAULT_PREVIEW_SIZE 60
 #define DEFAULT_SHOW_PREVIEWS false

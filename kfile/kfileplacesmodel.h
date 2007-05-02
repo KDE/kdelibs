@@ -22,7 +22,7 @@
 
 #include <kfile_export.h>
 
-#include <QAbstractItemModel>
+#include <QtCore/QAbstractItemModel>
 #include <kurl.h>
 #include <kbookmark.h>
 #include <kicon.h>

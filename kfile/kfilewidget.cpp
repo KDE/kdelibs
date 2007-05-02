@@ -29,7 +29,7 @@
 #include "kfileplacesmodel.h"
 #include "kfilebookmarkhandler.h"
 #include "kurlcombobox.h"
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #include <kactioncollection.h>
 #include <kdiroperator.h>

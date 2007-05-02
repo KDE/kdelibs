@@ -18,12 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kcombiview.h"
+
 #include <assert.h>
 
 #include "kfileitem.h"
-#include "kcombiview.h"
 #include "k3fileiconview.h"
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #include <QtGui/QActionEvent>
 

@@ -21,7 +21,7 @@
 
 #include <kfile_export.h>
 
-#include <QListView>
+#include <QtGui/QListView>
 
 #include <kurl.h>
 

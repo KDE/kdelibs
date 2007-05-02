@@ -24,7 +24,7 @@
 #include <kfile_export.h>
 
 #include <kurl.h>
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class KFilePlacesModel;
 class QMouseEvent;

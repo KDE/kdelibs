@@ -27,7 +27,7 @@
 #include "kfileitem.h"
 #include "kfilemetapreview.h"
 
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #include <unistd.h>
 

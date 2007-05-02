@@ -17,13 +17,13 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA          *
  ***************************************************************************/
 
+#include "kprotocolcombo_p.h"
+
 #include <QMenu>
 
 #include <kdebug.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
-
-#include "kprotocolcombo_p.h"
 
 const static int customProtocolIndex = 0;
 

@@ -29,7 +29,7 @@
 
 #include <QtGui/QLabel>
 
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 KFilePreview::KFilePreview(KFileView *view, QWidget *parent)
     : QSplitter(parent), KFileView()

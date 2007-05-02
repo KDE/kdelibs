@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kfiletreebranch.h"
+
 #include <QtCore/QFile>
 
 #include <kfileitem.h>
@@ -27,8 +29,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
-#include "kfiletreebranch.h"
 
 /* --- K3FileTreeViewToplevelItem --- */
 KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,

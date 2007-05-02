@@ -35,7 +35,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #define COL_NAME 0
 #define COL_SIZE 1

@@ -20,7 +20,7 @@
 */
 
 #include "kfileview.h"
-#include "config-kfile.h"
+#include <config-kfile.h>
 
 #include <kaction.h>
 #include <kactioncollection.h>

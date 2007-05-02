@@ -17,11 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3filetreeviewitem.h"
+
 #include <kdebug.h>
 #include <kfileitem.h>
 #include <kicontheme.h>
-
-#include "k3filetreeviewitem.h"
 
 /* --- K3FileTreeViewItem --- */
 /*

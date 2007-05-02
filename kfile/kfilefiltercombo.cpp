@@ -17,13 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kfilefiltercombo.h"
+
 #include <klocale.h>
 #include <kdebug.h>
 #include <config-kfile.h>
 #include <QEvent>
 #include <QLineEdit>
-
-#include "kfilefiltercombo.h"
 
 class KFileFilterCombo::KFileFilterComboPrivate
 {
