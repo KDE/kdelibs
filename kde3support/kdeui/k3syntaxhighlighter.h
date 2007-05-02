@@ -29,7 +29,7 @@
 #include <Qt3Support/Q3TextEdit>
 #include <Qt3Support/Q3SyntaxHighlighter>
 #include <QtGui/QColor>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 class Q3Accel;
 class QTimer;

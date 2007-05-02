@@ -26,8 +26,8 @@
 
 #include <QtGui/QColor>
 #include <QtCore/QList>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 class KPalettePrivate;
 

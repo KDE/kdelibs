@@ -24,7 +24,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QLinkedList>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 #include <kurl.h>
 #include <kio/global.h>

@@ -22,7 +22,7 @@
 #ifndef CONVERSION_CHECK_H
 #define CONVERSION_CHECK_H
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtGui/QColor>
 #include <QtGui/QFont>
 #include <QtCore/QDate>

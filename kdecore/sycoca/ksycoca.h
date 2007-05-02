@@ -23,7 +23,7 @@
 #include <ksycocatype.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 class QDataStream;
 class KSycocaFactory;

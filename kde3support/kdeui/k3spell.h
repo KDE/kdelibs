@@ -22,8 +22,8 @@
 #include <kde3support_export.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
-#include <QtCore/QCharRef>
+#include <QtCore/QStringList>
+#include <QtCore/QString>
 
 class QTextCodec;
 class K3ProcIO;

@@ -20,7 +20,7 @@
 #define __auto_mount_h__
 
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include <kio/kio_export.h>
 

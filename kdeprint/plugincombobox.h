@@ -21,7 +21,7 @@
 #define PLUGINCOMBOBOX_H
 
 #include <QtGui/QWidget>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 #include "kpreloadobject.h"
 

@@ -21,7 +21,7 @@
 #define DROPTIONVIEW_H
 
 #include <QtGui/QWidget>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 class QLineEdit;
 class QSlider;

@@ -21,7 +21,7 @@
 #ifndef __kbookmarkimporter_opera_h
 #define __kbookmarkimporter_opera_h
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <kconfig.h>
 
 #include <kbookmarkimporter.h>

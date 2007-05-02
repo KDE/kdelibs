@@ -26,7 +26,7 @@
 #include "html_elementimpl.h"
 #include "xml/dom_stringimpl.h"
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 class KHTMLView;
 

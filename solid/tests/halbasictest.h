@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QMap>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include "solid/backends/hal/haldevice.h"
 

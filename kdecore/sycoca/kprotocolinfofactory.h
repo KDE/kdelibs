@@ -23,8 +23,8 @@
 #include "kprotocolinfo.h"
 
 #include <QtCore/QMap>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <kurl.h>
 #include <ksycocafactory.h>
 

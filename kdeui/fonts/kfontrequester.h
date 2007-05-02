@@ -22,7 +22,7 @@
 
 #include <QtGui/QWidget>
 #include <QtGui/QFont>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include <kdeui_export.h>
 

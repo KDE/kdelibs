@@ -21,7 +21,7 @@
 
 #include <kio/kio_export.h>
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <kstaticdeleter.h>
 
 class KDBusServiceStarter;

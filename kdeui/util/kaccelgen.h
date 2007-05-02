@@ -23,8 +23,8 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QMap>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 /**
  * Provides functions that, given a collection of QStrings, will

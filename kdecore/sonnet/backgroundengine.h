@@ -24,7 +24,7 @@
 #include "loader.h"
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 namespace KSpell2
 {

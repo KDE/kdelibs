@@ -22,7 +22,7 @@
 #define KNEWSTUFF2_UI_QNOWTOOLTIP_H
 
 #include <QtCore/QRect>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtGui/QWidget>
 
 /**

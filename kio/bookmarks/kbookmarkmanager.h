@@ -20,8 +20,8 @@
 #ifndef __kbookmarkmanager_h
 #define __kbookmarkmanager_h
 
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QObject>
 #include <QtCore/QPair>
 #include <QtXml/QDomDocument>

@@ -24,7 +24,7 @@
 
 #include <Qt/qdom.h>
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 class KJob;
 

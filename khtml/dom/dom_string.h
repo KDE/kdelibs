@@ -24,7 +24,7 @@
 
 #include <khtml_export.h>
 #include <kdebug.h>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 namespace DOM {
 

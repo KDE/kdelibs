@@ -22,7 +22,7 @@
 #define KACCELMANAGER_PRIVATE_H
 
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include <QtCore/QObject>
 

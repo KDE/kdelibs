@@ -21,7 +21,7 @@
 #include <kglobal.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <QtCore/QHash>
 #include <QtCore/QLibrary>
 #include <QtCore/qplugin.h>

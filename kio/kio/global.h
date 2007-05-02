@@ -21,7 +21,7 @@
 
 #include <kio/kio_export.h>
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QMap>
 #include <QtCore/QList>

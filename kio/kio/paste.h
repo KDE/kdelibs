@@ -20,7 +20,7 @@
 #define __kio_paste_h__
 
 #include <kio/kio_export.h>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <kurl.h>
 class QWidget;
 class QMimeSource;

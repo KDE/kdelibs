@@ -29,8 +29,8 @@
 #include <kio/renamedialog.h>
 #include <QtGui/QDialog>
 #include <sys/types.h>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 
 namespace KIO {

@@ -24,7 +24,7 @@
 
 #include <kurl.h>
 #include <QtGui/QDialog>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <sys/types.h>
 
 #include <kio/global.h>

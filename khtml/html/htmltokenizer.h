@@ -28,7 +28,7 @@
 #ifndef HTMLTOKENIZER_H
 #define HTMLTOKENIZER_H
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QObject>
 #include <Qt3Support/Q3PtrQueue>
 

@@ -19,7 +19,7 @@
 #ifndef __kservicegroupfactory_h__
 #define __kservicegroupfactory_h__
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 #include "kservicegroup.h"
 #include "ksycocafactory.h"

@@ -23,7 +23,7 @@
 #ifndef BIDI_H
 #define BIDI_H
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 namespace khtml {
     class RenderArena;

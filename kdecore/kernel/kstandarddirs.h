@@ -23,7 +23,7 @@
 #ifndef SSK_KSTDDIRS_H
 #define SSK_KSTDDIRS_H
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <kglobal.h>
 #include <QtCore/QMap>
 

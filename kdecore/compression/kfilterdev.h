@@ -20,7 +20,7 @@
 
 #include <kdecore_export.h>
 #include <QtCore/QIODevice>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 class QFile;
 class KFilterBase;

@@ -28,7 +28,7 @@
 #include <Qt/qdom.h>
 #include <QtCore/QObject>
 #include <QtCore/QList>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 namespace KIO { class Job; }
 

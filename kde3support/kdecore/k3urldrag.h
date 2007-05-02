@@ -23,7 +23,7 @@
 #include <kde3support_export.h>
 #include <kurl.h>
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <Qt3Support/Q3ColorDrag>
 
 class QMimeSource;

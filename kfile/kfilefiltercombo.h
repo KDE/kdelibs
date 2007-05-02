@@ -22,7 +22,7 @@
 
 #include <kfile_export.h>
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 #include <kcombobox.h>
 #include <kmimetype.h>

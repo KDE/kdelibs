@@ -21,7 +21,7 @@
 #ifndef __kbookmarkimporter_ns_h
 #define __kbookmarkimporter_ns_h
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <kconfig.h>
 #include <kdemacros.h>
 

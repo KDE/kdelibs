@@ -23,8 +23,8 @@
 #define KSPELL_CLIENT_H
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
-#include <QtCore/QCharRef>
+#include <QtCore/QStringList>
+#include <QtCore/QString>
 
 #include <kdecore_export.h>
 /**

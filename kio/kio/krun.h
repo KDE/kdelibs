@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <kurl.h>
 #include <kstartupinfo.h>
 

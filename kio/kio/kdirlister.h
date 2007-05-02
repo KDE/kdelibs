@@ -24,8 +24,8 @@
 #include "kfileitem.h"
 #include "kdirnotify.h"
 
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include <kurl.h>
 

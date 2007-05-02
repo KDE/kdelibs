@@ -22,7 +22,7 @@
 
 #include <kio/kio_export.h>
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtXml/QDomElement>
 #include <kurl.h>

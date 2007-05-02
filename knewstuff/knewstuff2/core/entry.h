@@ -27,7 +27,7 @@
 #include <kurl.h>
 
 #include <QtCore/QDate>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 namespace KNS {
 

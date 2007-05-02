@@ -22,9 +22,9 @@
 
 #include <knewstuff2/knewstuff_export.h>
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QMap>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 namespace KNS {
 

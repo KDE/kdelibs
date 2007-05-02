@@ -25,7 +25,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QList>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <kurl.h>
 
 namespace KIO {

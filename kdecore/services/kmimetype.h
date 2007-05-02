@@ -23,7 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <QtCore/QList>
 
 #include <kurl.h>

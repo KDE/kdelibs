@@ -25,7 +25,7 @@
 
 #include <kcompletion.h>
 #include <kio/jobclasses.h>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 class QStringList;
 class KUrl;

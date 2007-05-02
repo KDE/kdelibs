@@ -22,7 +22,7 @@
 #include <kdecore_export.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 class QIODevice;
 

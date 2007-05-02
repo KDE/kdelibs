@@ -21,8 +21,8 @@
 #ifndef kcharselect_h
 #define kcharselect_h
 
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtGui/QWidget>
 #include <kglobal.h>
 #include <kdeui_export.h>

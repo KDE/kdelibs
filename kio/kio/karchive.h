@@ -25,8 +25,8 @@
 #include <sys/types.h>
 
 #include <QtCore/QDate>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QHash>
 
 #include <kio/kio_export.h>

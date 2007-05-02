@@ -12,7 +12,7 @@
 #ifndef KICONLOADER_H
 #define KICONLOADER_H
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QObject>
 
 #include <kglobal.h>

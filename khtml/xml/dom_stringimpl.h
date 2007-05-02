@@ -23,7 +23,7 @@
 #ifndef _DOM_DOMStringImpl_h_
 #define _DOM_DOMStringImpl_h_
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include "dom/dom_misc.h"
 #include "misc/khtmllayout.h"

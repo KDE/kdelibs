@@ -27,7 +27,7 @@
 
 #include <QtGui/QSplitter>
 #include <QtGui/QWidget>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 #include <kurl.h>
 

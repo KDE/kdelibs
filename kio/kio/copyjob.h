@@ -23,7 +23,7 @@
 #define KIO_COPYJOB_H
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 #include <sys/types.h> // time_t
 

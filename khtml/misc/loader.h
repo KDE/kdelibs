@@ -40,7 +40,7 @@
 #include <Qt3Support/Q3Dict>
 #include <QtGui/QPixmap>
 #include <QtCore/QBuffer>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
 

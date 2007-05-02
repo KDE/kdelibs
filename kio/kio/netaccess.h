@@ -24,7 +24,7 @@
 #define __kio_netaccess_h
 
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <kio/global.h>
 #include <kurl.h>
 

@@ -22,8 +22,8 @@
 #ifndef KSPELL_SETTINGS_H
 #define KSPELL_SETTINGS_H
 
-#include <QtCore/QMutableStringListIterator>
-#include <QtCore/QCharRef>
+#include <QtCore/QStringList>
+#include <QtCore/QString>
 #include <kdecore_export.h>
 #include <ksharedconfig.h>
 

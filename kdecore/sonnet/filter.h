@@ -23,7 +23,7 @@
 #ifndef KSPELL_FILTER_H
 #define KSPELL_FILTER_H
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <kdecore_export.h>
 
 namespace KSpell2

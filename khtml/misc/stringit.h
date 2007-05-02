@@ -28,7 +28,7 @@
 
 #include "dom/dom_string.h"
 
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <Qt3Support/Q3ValueList>
 
 #include <assert.h>

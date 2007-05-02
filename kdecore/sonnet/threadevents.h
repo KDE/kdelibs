@@ -22,7 +22,7 @@
 #define KSPELL_THREADEVENTS_H
 
 #include <QtGui/QActionEvent>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 namespace KSpell2
 {

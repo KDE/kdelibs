@@ -22,7 +22,7 @@
 #define __kservicetypeprofile_h__
 
 #include <QtCore/QMap>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QList>
 
 #include <kservicetypetrader.h>

@@ -21,7 +21,7 @@
 #ifndef __kservicefactory_h__
 #define __kservicefactory_h__
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 
 #include "kserviceoffer.h"
 #include "ksycocafactory.h"

@@ -24,7 +24,7 @@
 #include <knewstuff2/core/entry.h>
 
 #include <Qt/qdom.h>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 namespace KNS
 {

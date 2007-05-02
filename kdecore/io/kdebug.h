@@ -25,7 +25,7 @@
 #include <kdecore_export.h>
 
 #include <QtCore/QDebug>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 class QObject;
 class QWidget;

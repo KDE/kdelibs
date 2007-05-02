@@ -34,7 +34,7 @@
 #include "misc/loader.h"
 #include "misc/seed.h"
 
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <Qt3Support/Q3PtrList>
 #include <QtCore/QObject>
 #include <Qt3Support/Q3IntDict>

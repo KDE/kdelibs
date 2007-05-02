@@ -34,7 +34,7 @@
 #include <QtGui/QFont>
 #include <QtCore/QHash>
 #include <QtCore/QRect>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <QtCore/QVariant>
 
   /**

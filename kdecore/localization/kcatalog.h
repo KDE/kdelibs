@@ -21,7 +21,7 @@
 #define KCATALOG_H
 
 #include <kdecore_export.h>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 
 class KCatalogPrivate;
 

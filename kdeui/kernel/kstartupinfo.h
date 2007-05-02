@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 #include <kdeui_export.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
+#include <QtCore/QString>
 #include <QtCore/QChildEvent>
 #include <QtGui/QWidgetList>
 

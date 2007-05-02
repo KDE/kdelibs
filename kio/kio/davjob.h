@@ -24,8 +24,8 @@
 #include <kurl.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QPointer>
 #include <QtXml/QDomDocument>
 

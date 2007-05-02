@@ -26,8 +26,8 @@
 #include <ksharedptr.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableStringListIterator>
-#include <QtCore/QCharRef>
+#include <QtCore/QStringList>
+#include <QtCore/QString>
 #include <ksharedconfig.h>
 
 class KService;
