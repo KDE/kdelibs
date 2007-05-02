@@ -392,6 +392,7 @@ Require=exec:/ps2pdf
 Name=Send to Fax
 Name[af]=Stuur na Faks
 Name[ar]=أرسل الى الفاكس
+Name[be]=Адправіць па факсу
 Name[bg]=Изпращане към факс
 Name[br]=Kas d'ar faks
 Name[ca]=Envia al Fax
