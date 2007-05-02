@@ -36,30 +36,29 @@ namespace Experimental
      *
      * \author Matthias Kretz <kretz@kde.org>
      */
-    class PHONONEXPERIMENTAL_EXPORT VideoFrame
+    struct PHONONEXPERIMENTAL_EXPORT VideoFrame
     {
-        public:
-            QByteArray data;
-            /**
-             * The width of the video frame in pixels.
-             */
-            int width;
-            /**
-             * The height of the video frame in pixels.
-             */
-            int height;
-            /**
-             * The FOURCC (four character code) identifying the data format.
-             */
-            quint32 fourcc;
-            /**
-             * The color depth in bits.
-             */
-            int depth;
-            /**
-             * The number of bits per pixel.
-             */
-            int bpp;
+        QByteArray data;
+        /**
+         * The width of the video frame in pixels.
+         */
+        int width;
+        /**
+         * The height of the video frame in pixels.
+         */
+        int height;
+        /**
+         * The FOURCC (four character code) identifying the data format.
+         */
+        quint32 fourcc;
+        /**
+         * The color depth in bits.
+         */
+        int depth;
+        /**
+         * The number of bits per pixel.
+         */
+        int bpp;
     };
 } // namespace Experimental
 } // namespace Phonon

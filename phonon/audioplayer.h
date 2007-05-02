@@ -28,6 +28,7 @@ class QUrl;
 
 namespace Phonon
 {
+class AudioPlayerPrivate;
 
 /**
  * \short Playback class for simple tasks.
@@ -156,8 +157,7 @@ class PHONON_EXPORT AudioPlayer : public QObject
         void finished();
 
     private:
-        class Private;
-        Private * d;
+        AudioPlayerPrivate *const d;
 
         Q_PRIVATE_SLOT(d, void _k_stateChanged(Phonon::State, Phonon::State))
 };

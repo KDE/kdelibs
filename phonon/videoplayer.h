@@ -28,6 +28,7 @@ class KUrl;
 
 namespace Phonon
 {
+class VideoPlayerPrivate;
 
 /**
  * \short Playback class for simple tasks.
@@ -156,8 +157,7 @@ class PHONON_EXPORT VideoPlayer : public QWidget
         void finished();
 
     private:
-        class Private;
-        Private * d;
+        VideoPlayerPrivate * d;
 
         Q_PRIVATE_SLOT(d, void _k_stateChanged(Phonon::State, Phonon::State))
 };

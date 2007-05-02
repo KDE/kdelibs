@@ -8,7 +8,7 @@ media frameworks). MediaObject is the most prominent of them, \ref
 phonon_ByteStream "ByteStream" and \ref phonon_AvCapture "AvCapture" the other
 two. For the backend implementation it might make sense to create a common
 parentclass for those three that implements the common methods documented in
-\ref phonon_AbstractMediaProducer "AbstractMediaProducer".
+\ref phonon_MediaObject "MediaObject".
 
 \section phonon_MediaObject_requiredfunctions Required Functions
 \li KUrl \ref phonon_MediaObject_url "url()"
@@ -67,7 +67,7 @@ Get the total time (in milliseconds) of the file currently being played.
 Get the remaining time (in milliseconds) of the file currently being played. If
 the method is not implemented in the backend the frontend will use the
 difference between \ref phonon_MediaObject_totalTime and \ref
-phonon_AbstractMediaProducer_currentTime.
+phonon_AbstractMediaObject_currentTime.
 
 \section phonon_MediaObject_signaldocs Signals Documentation
 \subsection phonon_MediaObject_aboutToFinish void aboutToFinish( qint32 msec )

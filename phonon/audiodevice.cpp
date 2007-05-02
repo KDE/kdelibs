@@ -242,28 +242,15 @@ bool AudioDevice::isPlaybackDevice() const
 AudioDevice::AudioDevice(const AudioDevice &rhs)
     : d(rhs.d)
 {
-    ++d->refCount;
 }
 
 AudioDevice::~AudioDevice()
 {
-    --d->refCount;
-    if (d->refCount == 0) {
-        delete d;
-        d = 0;
-    }
 }
 
 AudioDevice &AudioDevice::operator=(const AudioDevice &rhs)
 {
-    --d->refCount;
-    if (d->refCount == 0) {
-        delete d;
-        d = 0;
-    }
-
     d = rhs.d;
-    ++d->refCount;
     return *this;
 }
 

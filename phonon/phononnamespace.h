@@ -78,7 +78,7 @@ namespace Phonon
     /**
      * The state the media producing object is in at the moment.
      *
-     * \see MediaProducer
+     * \see MediaObject
      */
     enum State
     {
@@ -165,12 +165,12 @@ namespace Phonon
     /**
      * Tells your program how to recover from an error.
      *
-     * \see MediaProducer::errorType()
+     * \see MediaObject::errorType()
      */
     enum ErrorType {
         /**
-         * No error. MediaProducer::errorType() returns this if
-         * MediaProducer::state() != Phonon::ErrorState.
+         * No error. MediaObject::errorType() returns this if
+         * MediaObject::state() != Phonon::ErrorState.
          */
         NoError = 0,
         /**

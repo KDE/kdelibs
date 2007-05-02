@@ -10,9 +10,10 @@ The range of applications goes from full featured media players and capture
 applications to voice/video chats.
 
 \section phonon_overview A Basic Overview
-In %Phonon there are two main concepts: MediaProducers and Outputs. They can be
-connected using Path objects which also allow the insertion of Effect objects
-between producer and output.
+In %Phonon there are three main concepts: MediaObjects, Paths and Outputs. The
+MediaObjects control the playback/capture and provide the media data.
+MediaObjects can be connected to Outputs using Path objects which also allow the insertion of Effect objects
+between MediaObject and Output.
 
 \section phonon_tutorial Tutorial
 \li \ref phonon_tut1 "a simple audio player"
@@ -113,9 +114,7 @@ throughout this documentation simply called Backend:
 
 \subsection phonon_mediaproducingclasses The classes producing media data (sources)
 
-\li \ref Phonon::MediaProducerInterface "common methods/signals for media producing classes"
-\li \ref phonon_AvCapture "AvCapture"
-\li \ref phonon_ByteStream "ByteStream"
+\li \ref Phonon::MediaObjectInterface "common methods/signals for media producing classes"
 \li \ref phonon_MediaObject "MediaObject"
 
 \subsection phonon_pathclasses The path classes

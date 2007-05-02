@@ -27,10 +27,10 @@
 namespace Phonon
 {
 
-class AudioPlayer::Private
+class AudioPlayerPrivate
 {
     public:
-        Private()
+        AudioPlayerPrivate()
             : player(0)
         {
         }
@@ -45,7 +45,7 @@ class AudioPlayer::Private
 
 AudioPlayer::AudioPlayer(Phonon::Category category, QObject *parent)
     : QObject(parent)
-    , d(new Private)
+    , d(new AudioPlayerPrivate)
 {
     d->output = new AudioOutput(category, this);
     d->path = new AudioPath(this);
@@ -142,7 +142,7 @@ bool AudioPlayer::isPaused() const
     return (d->player->state() == PausedState);
 }
 
-void AudioPlayer::Private::_k_stateChanged(State ns, State os)
+void AudioPlayerPrivate::_k_stateChanged(State ns, State os)
 {
     if (os == LoadingState && ns == StoppedState)
         player->play();

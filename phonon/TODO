@@ -8,7 +8,7 @@
 - let the Phonon KCM check whether the hw: ALSA device already does mixing, only if it does not
    prefer the dmix: device
 
-- add Player dbus interface in MediaProducer
+- add Player dbus interface in MediaObject
 
 - add global setting to pause video when it's not visible
 

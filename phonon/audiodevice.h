@@ -23,6 +23,8 @@
 #include "phonon_export.h"
 #include <solid/audiointerface.h>
 #include <ksharedconfig.h>
+#include <QExplicitlySharedDataPointer>
+
 class QString;
 class QStringList;
 class KConfigGroup;
@@ -152,7 +154,7 @@ namespace Phonon
             const QString &udi() const;
 
         private:
-            AudioDevicePrivate *d;
+            QExplicitlySharedDataPointer<AudioDevicePrivate> d;
     };
 } // namespace Phonon
 #endif // PHONON_AUDIODEVICE_H

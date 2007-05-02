@@ -34,7 +34,7 @@ class StreamInterface;
  * The backend implementation has to provide two signals, that are not defined
  * in this interface:
  * <ul>
- * <li>\anchor phonon_MediaProducerInterface_stateChanged
+ * <li>\anchor phonon_MediaObjectInterface_stateChanged
  * <b>void stateChanged(\ref Phonon::State newstate, \ref Phonon::State oldstate)</b>
  *
  * Emitted when the state of the MediaObject has changed.
@@ -44,7 +44,7 @@ class StreamInterface;
  * \param newstate The state the Player is in now.
  * \param oldstate The state the Player was in before.
  * </li>
- * <li>\anchor phonon_MediaProducerInterface_tick
+ * <li>\anchor phonon_MediaObjectInterface_tick
  * <b>void tick(qint64 time)</b>
  *
  * This signal gets emitted every tickInterval milliseconds.
@@ -58,7 +58,7 @@ class StreamInterface;
  *
  * \ingroup Backend
  * \author Matthias Kretz <kretz@kde.org>
- * \see MediaProducer
+ * \see MediaObject
  */
 class MediaObjectInterface
 {
@@ -99,7 +99,7 @@ class MediaObjectInterface
          * encoded into the media file.
          *
          * Be prepared to change the audio stream when \ref
-         * phonon_MediaProducer_selectAudioStream is called with one of the
+         * phonon_MediaObject_selectAudioStream is called with one of the
          * strings of this list. If the media has multiple audio streams but the
          * backend cannot switch then the list of available audio streams should be
          * empty.
@@ -113,7 +113,7 @@ class MediaObjectInterface
          * encoded into the media file.
          *
          * Be prepared to change the video stream when \ref
-         * phonon_MediaProducer_selectVideoStream is called with one of the
+         * phonon_MediaObject_selectVideoStream is called with one of the
          * strings of this list. If the media has multiple video streams but the
          * backend cannot switch then the list of available video streams should be
          * empty.
@@ -127,7 +127,7 @@ class MediaObjectInterface
          * encoded into the media file.
          *
          * Be prepared to change the subtitle stream when \ref
-         * phonon_MediaProducer_selectSubtitleStream is called with one of the
+         * phonon_MediaObject_selectSubtitleStream is called with one of the
          * strings of this list. If the media has multiple subtitle streams but the
          * backend cannot switch then the list of available subtitle streams should be
          * empty.

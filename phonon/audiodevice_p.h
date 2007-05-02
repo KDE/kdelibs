@@ -22,11 +22,12 @@
 
 #include "audiodevice.h"
 #include <QStringList>
+#include <QSharedData>
 
 
 namespace Phonon
 {
-class AudioDevicePrivate
+class AudioDevicePrivate : public QSharedData
 {
     public:
         AudioDevicePrivate()

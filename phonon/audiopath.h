@@ -41,16 +41,16 @@ namespace Experimental
      * This class is used to define where the audio data is sent to, what
      * effects are applied and what audio channels is to be used.
      *
-     * For simple usage an instance of this class is added to an MediaProducer
+     * For simple usage an instance of this class is added to a MediaObject
      * and an AbstractAudioOutput subclass (such as AudioOutput) added with
      * addOutput.
      * \code
      * AudioPath *path = new AudioPath(this);
-     * mediaProducer->addAudioPath(path);
+     * media->addAudioPath(path);
      * path->addOutput(audioOutput);
      * \endcode
      *
-     * It is best to add the path to an MediaProducer after
+     * It is best to add the path to a MediaObject after
      * construction, before calling any other methods.
      *
      * \author Matthias Kretz <kretz@kde.org>
@@ -58,8 +58,8 @@ namespace Experimental
      */
     class PHONON_EXPORT AudioPath : public QObject
     {
-        friend class MediaProducer;
-        friend class MediaProducerPrivate;
+        friend class MediaObject;
+        friend class MediaObjectPrivate;
         friend class Experimental::Visualization;
         friend class Experimental::VisualizationPrivate;
         K_DECLARE_PRIVATE(AudioPath)

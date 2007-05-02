@@ -35,15 +35,15 @@ namespace Phonon
      * This class is used to define where the video data is sent to, what
      * effects are applied and what video channel (angle) is to be used.
      *
-     * For simple usage an instance of this class is added to an MediaProducer
-     * and an AbstractAudioOutput subclass (such as AudioOutput) added with addOutput.
+     * For simple usage an instance of this class is added to a MediaObject
+     * and an AbstractVideoOutput subclass (such as VideoWidget) added with addOutput.
      * @code
      * VideoPath *path = new VideoPath(this);
-     * mediaProducer->addVideoPath(path);
+     * media->addVideoPath(path);
      * path->addOutput(videoOutput);
      * @endcode
      *
-     * It is best to add the path to an MediaProducer after
+     * It is best to add the path to a MediaObject after
      * construction, before calling any other methods.
      *
      * \author Matthias Kretz <kretz@kde.org>
@@ -51,8 +51,8 @@ namespace Phonon
      */
     class PHONON_EXPORT VideoPath : public QObject
     {
-        friend class MediaProducer;
-        friend class MediaProducerPrivate;
+        friend class MediaObject;
+        friend class MediaObjectPrivate;
         K_DECLARE_PRIVATE(VideoPath)
         Q_OBJECT
         PHONON_OBJECT(VideoPath)

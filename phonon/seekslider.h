@@ -32,7 +32,7 @@ class MediaObject;
 class SeekSliderPrivate;
 
 /**
- * \short Widget providing a slider for seeking in MediaProducer objects.
+ * \short Widget providing a slider for seeking in MediaObject objects.
  *
  * \author Matthias Kretz <kretz@kde.org>
  */

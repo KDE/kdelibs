@@ -29,10 +29,10 @@
 namespace Phonon
 {
 
-class VideoPlayer::Private
+class VideoPlayerPrivate
 {
     public:
-        Private()
+        VideoPlayerPrivate()
             : player(0)
         {
         }
@@ -50,7 +50,7 @@ class VideoPlayer::Private
 
 VideoPlayer::VideoPlayer(Phonon::Category category, QWidget *parent)
     : QWidget(parent)
-    , d(new Private)
+    , d(new VideoPlayerPrivate)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
 
@@ -153,7 +153,7 @@ bool VideoPlayer::isPaused() const
     return (d->player->state() == PausedState);
 }
 
-void VideoPlayer::Private::_k_stateChanged(State ns, State os)
+void VideoPlayerPrivate::_k_stateChanged(State ns, State os)
 {
     if (os == LoadingState && ns == StoppedState)
         player->play();

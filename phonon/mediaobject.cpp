@@ -528,8 +528,6 @@ void MediaObjectPrivate::setupBackendObject()
     Q_ASSERT(m_backendObject);
     //pDebug() << Q_FUNC_INFO;
 
-    // disconnect what MediaProducer::setupIface connected to filter out
-    // the LoadingState -> ErrorState change on setUrl
     if (mediaSource.type() == MediaSource::Url) {
         QObject::connect(m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), q, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
     } else {
