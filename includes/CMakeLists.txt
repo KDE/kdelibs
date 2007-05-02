@@ -952,40 +952,45 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KWallet )
 
 install( FILES
   Phonon/AbstractAudioOutput
-  Phonon/AbstractMediaProducer
+  Phonon/AbstractMediaStream
   Phonon/AbstractVideoOutput
-  Phonon/AudioDataOutput
-  Phonon/AudioEffect
+  Phonon/AddonInterface
+  Phonon/AudioDevice
+  Phonon/AudioDeviceEnumerator
   Phonon/AudioOutput
+  Phonon/AudioOutputInterface
   Phonon/AudioPath
   Phonon/AudioPlayer
-  Phonon/AvCapture
   Phonon/BackendCapabilities
-  Phonon/Base
+  Phonon/BackendInterface
   Phonon/BrightnessControl
-  Phonon/ByteStream
-  Phonon/ByteStreamInterface
+  Phonon/DeinterlaceFilter
   Phonon/Effect
   Phonon/EffectParameter
   Phonon/EffectWidget
-  Phonon/MediaControls
+  Phonon/Global
+  Phonon/MediaController
   Phonon/MediaObject
   Phonon/MediaObjectInterface
-  Phonon/MediaProducerInterface
-  Phonon/MediaQueue
+  Phonon/MediaSource
   Phonon/ObjectDescription
   Phonon/ObjectDescriptionModel
   Phonon/SeekSlider
-  Phonon/VideoDataOutput
-  Phonon/VideoEffect
-  Phonon/VideoFrame
+  Phonon/StreamInterface
   Phonon/VideoPath
   Phonon/VideoPlayer
   Phonon/VideoWidget
-  Phonon/Visualization
   Phonon/VolumeFaderEffect
   Phonon/VolumeSlider
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon )
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon)
+
+install(FILES
+  Phonon/Experimental/AudioDataOutput
+  Phonon/Experimental/OverlayApi
+  Phonon/Experimental/VideoDataOutput
+  Phonon/Experimental/VideoFrame
+  Phonon/Experimental/Visualization
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Phonon/Experimental)
 
 
 install( FILES
