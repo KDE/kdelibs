@@ -81,7 +81,7 @@ class KSocketBasePrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KSocketBase
+class KDECORE_EXPORT KSocketBase //krazy:exclude=dpointer (long enums confuse krazy)
 {
 public:
   /**
