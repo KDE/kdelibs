@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -36,7 +36,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
 #include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusReply>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -45,6 +46,9 @@
 #include <ktemporaryfile.h>
 #include <kdebug.h>
 #include "ktzfiletimezone.h"
+
+
+#define KTIMEZONED_DBUS_IFACE "org.kde.kded.KTimeZoned"
 
 
 /* Return the offset to UTC in the current time zone at the specified UTC time.
@@ -135,9 +139,8 @@ KSystemTimeZones::KSystemTimeZones()
   : d(0)
 {
     QDBusConnection dbus = QDBusConnection::sessionBus();
-    const QString dbusInterface = "org.kde.KTimeZoned";
-    dbus.connect(QString(), QString(), dbusInterface, "configChanged", this, SLOT(configChanged()));
-    dbus.connect(QString(), QString(), dbusInterface, "definitionChanged", this, SLOT(zoneDefinitionChanged(QString)));
+    dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "configChanged", this, SLOT(configChanged()));
+    dbus.connect(QString(), QString(), KTIMEZONED_DBUS_IFACE, "definitionChanged", this, SLOT(zoneDefinitionChanged(QString)));
 }
 
 KSystemTimeZones::~KSystemTimeZones()
@@ -183,10 +186,7 @@ const KTimeZone *KSystemTimeZones::zone(const QString& name)
 
 void KSystemTimeZones::configChanged()
 {
-#ifdef __GNUC__
-#warning Remove 1221 from kDebug() statements
-#endif
-    kDebug(1221)<<"KSystemTimeZones::zoneConfigChanged()" << endl;
+    kDebug() << "KSystemTimeZones::zoneConfigChanged()" << endl;
     KSystemTimeZonesPrivate::readConfig(false);
 }
 
@@ -197,7 +197,7 @@ void KSystemTimeZones::zoneDefinitionChanged(const QString &zone)
 #endif
 }
 
-// Perform initialisation, create the unique KSystemTimeZones instance,
+// Perform initialization, create the unique KSystemTimeZones instance,
 // whose only function is to receive D-Bus signals from KTimeZoned,
 // and create the unique KSystemTimeZonesPrivate instance.
 KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
@@ -209,9 +209,11 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
 	// A KSystemTimeZones instance is required only to catch D-Bus signals.
         m_parent = new KSystemTimeZones;
 
-#ifdef __GNUC__
-#warning Ask ktimezoned to initialise if not already done?
-#endif
+        // Ensure that the KDED time zones module has initialized
+	QDBusInterface ktimezoned("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
+	QDBusReply<void> reply = ktimezoned.call("initialize", false);
+        if (!reply.isValid())
+            kError() << "KSystemTimeZones: initialization D-Bus call failed: " << reply.error().message() << endl;
         readConfig(true);
 
         // Go read the database.
@@ -220,7 +222,8 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
 #else
         // For Unix, read zone.tab.
-        m_instance->readZoneTab();
+        if (m_zonetab.isEmpty())
+            m_instance->readZoneTab();
 #endif
         m_localZone = m_instance->zone(m_localZoneName);
 
@@ -235,8 +238,8 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     if (!init)
         config.reparseConfiguration();
     KConfigGroup group(&config, "TimeZones");
-    m_zoneinfoDir   = group.readPathEntry("ZoneinfoDir");
-    m_zonetab       = group.readPathEntry("Zonetab");
+    m_zoneinfoDir   = group.readEntry("ZoneinfoDir");
+    m_zonetab       = group.readEntry("Zonetab");
     m_localZoneName = group.readEntry("LocalZone");
     if (!init)
         m_localZone = m_instance->zone(m_localZoneName);
@@ -257,6 +260,7 @@ void KSystemTimeZonesPrivate::cleanup()
  */
 void KSystemTimeZonesPrivate::readZoneTab()
 {
+    kDebug() << "readZoneTab(" << m_zonetab<< ")" <<endl;
     QFile f;
     f.setFileName(m_zonetab);
     if (!f.open(QIODevice::ReadOnly))
