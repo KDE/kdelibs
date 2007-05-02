@@ -95,7 +95,7 @@ public:
       : m_doc("xbel"),
         m_docIsLoaded(bDocIsloaded),
         m_dbusObjectName(dbusObjectName)
-    {};
+    {}
 
     QString m_bookmarksFile;
     mutable QDomDocument m_doc;
