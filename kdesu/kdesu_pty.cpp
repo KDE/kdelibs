@@ -13,6 +13,7 @@
  * pty.cpp: Access to PTY's on different systems a la UNIX98.
  */
 
+#include "kdesu_pty.h"
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE   /* Needed for getpt, ptsname in glibc 2.1.x systems */
@@ -32,8 +33,16 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
-#if defined(__osf__) || defined(__CYGWIN__)
-#include <pty.h>
+#include <termios.h>
+
+#ifdef HAVE__PTY_H
+	#include <pty.h>
+#endif
+
+#ifdef HAVE_LIBUTIL_H
+	#include <libutil.h>
+#elif defined(HAVE_UTIL_H)
+	#include <util.h>
 #endif
 
 #include <QtCore/QBool>
@@ -41,7 +50,7 @@
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include "kdesu_pty.h"
+
 
 // stdlib.h is meant to declare the prototypes but doesn't :(
 #ifndef __THROW
@@ -62,18 +71,6 @@ extern "C" int unlockpt(int fd) __THROW;
 
 #ifdef HAVE__GETPTY
 extern "C" char *_getpty(int *, int, mode_t, int);
-#endif
-
-#ifdef HAVE__PTY_H
-	#include <pty.h>
-#endif
-
-#include <termios.h>
-
-#ifdef HAVE_LIBUTIL_H
-	#include <libutil.h>
-#elif defined(HAVE_UTIL_H)
-	#include <util.h>
 #endif
 
 PTY::PTY()
