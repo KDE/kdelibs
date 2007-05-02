@@ -61,6 +61,54 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     ~CoreEngine();
 
     /**
+     * Policy on how to cache the data received from the network. While
+     * CacheNever completely switches off all caching, the other two settings
+     * CacheReplaceable and CacheResident will optimize the network traffic
+     * needed for all workflows.
+     * CacheOnly will never download from the network at all and can be used
+     * to inspect the local cache.
+     *
+     * Provider files, feeds, entries and preview images are subject to this
+     * policy.
+     *
+     * The default cache policy is CacheNever.
+     */
+    enum CachePolicy
+    {
+        /**< Do not use any cache. (default) */
+        CacheNever,
+	/**< Use the cache first, but then update from the network. */
+	CacheReplaceable,
+	/**< Like CacheReplaceable, but only update if necessary. */
+	CacheResident,
+	/**< Operate on cache files but never update them. */
+	CacheOnly
+    };
+
+    /**
+     * Engine automation can be activated to let the engine take care by
+     * itself of all the method calls needed in a workflow. For example,
+     * the download workflow will require entries to be loaded after the
+     * providers, and preview images for all entries afterwards.
+     *
+     * Calling the methods for those load operations is necessary when
+     * automation is off, but it is redundant (and in fact considered an
+     * error) when automation is switched on.
+     *
+     * The default automation policy is AutomationOff.
+     */
+    enum AutomationPolicy
+    {
+        /**< Turn on automation, and take care of method calls. */
+        AutomationOn,
+        /**< Turn off automation, and let the application call the methods. (default) */
+	AutomationOff
+    };
+
+    void setAutomationPolicy(AutomationPolicy policy);
+    void setCachePolicy(CachePolicy policy);
+
+    /**
      * Initializes the engine. This step is application-specific and relies
      * on an external configuration file, which determines all the details
      * about the initialization.
@@ -72,14 +120,15 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
 
     /**
      * Starts the engine. This method reports all cached and registered
-     * providers and entries to the application. If localonly is set to
-     * \b false, the engine will then try to synchronize the cache by updating
-     * all information about the providers and entries.
+     * providers to the application. Depending on the cache policy,
+     * the engine will then try to synchronize the cache by updating
+     * all information about the providers.
+     *
+     * If engine automation is activated, this method will proceed to
+     * synchronize all feeds, entries and preview images.
      * For each provider, all feeds are considered. The synchronization is
      * complete if \ref signalEntriesFinished is emitted, but applications
      * should continue watching \ref signalEntryChanged.
-     *
-     * @param localonly Whether or not to restrict the engine to cache loading
      *
      * @see signalProviderLoaded
      * @see signalProviderChanged
@@ -90,19 +139,34 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
      * @see signalEntriesFailed
      * @see signalEntriesFinished
      * @see signalEntriesFeedFinished
-     *
-     * @note FIXME: Currently, all the entry stuff only happens after
-     * loadEntries. It seems smart to let start take care of that and
-     * make loadEntries private.
+     * @see signalPreviewLoaded
+     * @see signalPreviewFailed
      */
-    void start(bool localonly);
+    void start();
 
-    // see start(bool) above!
+    /**
+     * Loads all entries of all the feeds from a provider. This means that
+     * meta information about those entries is retrieved from the cache and/or
+     * from the network, depending on the cache policy.
+     *
+     * This method should not be called if automation is activated.
+     *
+     * @param provider Provider from where to load the entries
+     *
+     * @see signalEntryLoaded
+     * @see signalEntryChanged
+     * @see signalEntriesFailed
+     * @see signalEntriesFinished
+     * @see signalEntriesFeedFinished
+     */
     void loadEntries(Provider *provider);
+    //void loadProvider(); // FIXME: for consistency?
 
     /**
      * Downloads a preview file. The preview file matching most closely
      * the current user language preferences will be downloaded.
+     *
+     * This method should not be called if automation is activated.
      *
      * @param entry Entry to download preview image for
      *
@@ -214,7 +278,9 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     void loadRegistry(const QString &registrydir);
     void loadProvidersCache();
     KNS::Entry *loadEntryCache(const QString& filepath);
+#if 0
     void loadEntriesCache();
+#endif
     void loadFeedCache(Provider *provider);
     void cacheProvider(Provider *provider);
     void cacheEntry(Entry *entry);
@@ -255,6 +321,8 @@ class KNEWSTUFF_EXPORT CoreEngine : public QObject
     int m_activefeeds;
 
     bool m_initialized;
+    CachePolicy m_cachepolicy;
+    AutomationPolicy m_automationpolicy;
 };
 
 }

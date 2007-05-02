@@ -25,7 +25,6 @@ void KNewStuff2Standard::run(bool upload, bool modal, QString file)
 	if(!success)
 		return;
 
-	//m_engine->start();
 	if(upload)
 	{
 		if(modal)

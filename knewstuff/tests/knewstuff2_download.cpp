@@ -20,55 +20,6 @@
 #include <unistd.h> // for exit()
 #include <stdio.h> // for stdout
 
-class KNSButton : public QAbstractButton
-{
-public:
-    KNSButton(QWidget *parent = 0);
-    void setText(const QString &text) { t = text; }
-    const QString text() { return t; }
-protected:
-    void paintEvent(QPaintEvent *event);
-private:
-    QString t;
-};
-
-KNSButton::KNSButton(QWidget *parent /*= 0*/)
-    : QAbstractButton(parent)
-{
-    t = "";
-    setCheckable(true);
-    connect(this, SIGNAL(toggled()), this, SLOT(update()));
-}
-
-void KNSButton::paintEvent(QPaintEvent *event)
-{
-    Q_UNUSED(event);
-
-    QPalette palette;
-    QPainter p(this);
-    int h = height();
-    int w = width();
-
-    //Draw the background
-    p.setPen(Qt::NoPen);
-    if (isChecked()) {
-    p.setBrush(palette.brush(QPalette::Highlight));
-    } else {
-    p.setBrush(palette.brush(QPalette::Base));
-    }
-    p.drawRect(QRect((rect().x() + 1), (rect().y() + 2), (w - 1), (h - 4)));
-
-    //Draw the text and the icon
-    p.setPen(Qt::black);
-    QIcon ic = icon();
-    if (!ic.isNull()) {
-        p.drawPixmap(QRect(10, ((h/2) - 16), 32, 32),
-                     ic.pixmap(QSize(32, 32)), QRect(0, 0, 32, 32));
-    }
-
-    p.drawText(QRect((w - (w - 40)), (h/2 - 20), (w - 40), h), Qt::AlignCenter, text());
-}
-
 class FeedWidget : public QTableWidget
 {
 public:
@@ -149,6 +100,7 @@ KNewStuff2Download::KNewStuff2Download()
 
     m_feeds = new QTabWidget();
 
+#if 0
     frame = new QFrame(this);
     frame->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
     QPalette palette = this->palette();
@@ -175,6 +127,7 @@ KNewStuff2Download::KNewStuff2Download()
 
     frame->setMinimumHeight(40);
     recentButton->setChecked(true);
+#endif
 
     QHBoxLayout *hbox = new QHBoxLayout();
     hbox->addWidget(m_providerlist);
@@ -182,7 +135,6 @@ KNewStuff2Download::KNewStuff2Download()
 
     QVBoxLayout *vbox = new QVBoxLayout();
     setLayout(vbox);
-    vbox->addWidget(frame);
     vbox->addLayout(hbox);
     vbox->addWidget(installbutton);
     vbox->addWidget(closebutton);
@@ -190,26 +142,7 @@ KNewStuff2Download::KNewStuff2Download()
     show();
 }
 
-void KNewStuff2Download::resizeEvent(QResizeEvent *event)
-{
-    Q_UNUSED(event);
-
-    int frameWidth = frame->size().width();
-    int frameHeight = frame->size().height();
-
-    recentButton->setGeometry(0, 0, frameWidth/3, frameHeight);
-    estimatedButton->setGeometry(frameWidth/3, 0, frameWidth/3, frameHeight);
-
-    //NOTE int have just integer prcision, so, they can be approximated when scaling the object.
-    //That's why those cases are possible.
-    if (((frameWidth/3)*3) > (frameWidth)) {
-        wantedButton->setGeometry((frameWidth/3)*2, 0, (frameWidth/3 - 2), frameHeight);
-    } else if (((frameWidth/3)*3) == (frameWidth)) {
-        wantedButton->setGeometry((frameWidth/3)*2, 0, frameWidth/3 - 1, frameHeight);
-    } else {
-        wantedButton->setGeometry((frameWidth/3)*2, 0, (frameWidth/3), frameHeight);
-    }
-}
+#if 0
 void KNewStuff2Download::buttonToggled(bool checked)
 {
     if (checked) {
@@ -245,6 +178,7 @@ void KNewStuff2Download::switchCategory(KNewStuff2Download::Category category)
     Q_UNUSED(category);
 //TODO
 }
+#endif
 
 void KNewStuff2Download::run()
 {
@@ -281,7 +215,7 @@ void KNewStuff2Download::run()
             SIGNAL(signalPreviewFailed()),
             SLOT(slotPreviewFailed()));
 
-        m_engine->start(false);
+        m_engine->start();
     } else {
         kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first." << endl;
         kWarning() << "Although this is not required anymore, so something went really wrong." << endl;
@@ -339,7 +273,11 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
     FeedWidget *fw = dynamic_cast<FeedWidget*>(m_activefeed);
     fw->addEntry(entry);
 
-    m_engine->downloadPreview(entry);
+    KUrl source = KUrl(entry->preview().representation());
+    if(source.isValid())
+    {
+        m_engine->downloadPreview(entry);
+    }
 
     m_activeentry = entry;
 }

@@ -23,6 +23,7 @@ void KNewStuff2Cache::run()
 	kDebug() << "-- start the engine" << endl;
 
 	m_engine = new KNS::CoreEngine();
+	m_engine->setCachePolicy(KNS::CoreEngine::CacheOnly);
 	bool ret = m_engine->init("knewstuff2_test.knsrc");
 
 	kDebug() << "-- engine initialisation result: " << ret << endl;
@@ -39,7 +40,7 @@ void KNewStuff2Cache::run()
 			SIGNAL(signalEntriesFinished()),
 			SLOT(slotEntriesFinished()));
 
-		m_engine->start(true);
+		m_engine->start();
 	}
 	else
 	{

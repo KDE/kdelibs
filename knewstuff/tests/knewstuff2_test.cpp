@@ -146,7 +146,7 @@ void KNewStuff2Test::engineTest()
 			SIGNAL(signalInstallationFailed()),
 			SLOT(slotInstallationFailed()));
 
-		m_engine->start(false);
+		m_engine->start();
 	}
 	else
 	{

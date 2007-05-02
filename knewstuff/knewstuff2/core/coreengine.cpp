@@ -46,6 +46,8 @@ using namespace KNS;
 CoreEngine::CoreEngine()
 {
 	m_initialized = false;
+	m_cachepolicy = CacheNever;
+	m_automationpolicy = AutomationOff;
 
 	m_uploadedentry = NULL;
 	m_uploadprovider = NULL;
@@ -137,7 +139,7 @@ bool CoreEngine::init(const QString &configfile)
 	return true;
 }
 
-void CoreEngine::start(bool localonly)
+void CoreEngine::start()
 {
 	if(!m_initialized)
 	{
@@ -145,18 +147,24 @@ void CoreEngine::start(bool localonly)
 		return;
 	}
 
-	loadProvidersCache();
-	//loadEntriesCache();
+	if(m_cachepolicy != CacheNever)
+	{
+		loadProvidersCache();
+#if 0
+		loadEntriesCache();
+#endif
+	}
 
 	// FIXME: LocalRegistryDir must be created in $KDEHOME if missing?
-	// FIXME: rename registry to cache?
+	// FIXME: if registry dir is per application, make cache dir per app too?
 
 	if(!m_localregistrydir.isEmpty())
 	{
 		loadRegistry(m_localregistrydir);
 	}
 
-	if(localonly)
+	// FIXME: also return if CacheResident and its conditions fulfilled
+	if(m_cachepolicy == CacheOnly)
 	{
 		emit signalEntriesFinished();
 		return;
@@ -175,6 +183,11 @@ void CoreEngine::start(bool localonly)
 
 void CoreEngine::loadEntries(Provider *provider)
 {
+	if(m_cachepolicy == CacheOnly)
+	{
+		return;
+	}
+
 	QStringList feeds = provider->feeds();
 	for(int i = 0; i < feeds.count(); i++)
 	{
@@ -615,9 +628,14 @@ void CoreEngine::loadProvidersCache()
 		m_provider_cache.append(p);
 		m_provider_index[pid(p)] = p;
 
+		emit signalProviderLoaded(p);
+
 		loadFeedCache(p);
 
-		emit signalProviderLoaded(p);
+		if(m_automationpolicy == AutomationOn)
+		{
+			loadEntries(p);
+		}
 
 		provider = provider.nextSiblingElement("provider");
 	}
@@ -698,6 +716,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
 
 			kDebug(550) << "   + Load entry from file '" + filepath + "'." << endl;
 
+			// FIXME: pass feed and make loadEntryCache return void for consistency?
 			Entry *entry = loadEntryCache(filepath);
 			if(entry)
 			{
@@ -770,6 +789,7 @@ KNS::Entry *CoreEngine::loadEntryCache(const QString& filepath)
 }
 
 // FIXME: not needed anymore?
+#if 0
 void CoreEngine::loadEntriesCache()
 {
 	KStandardDirs d;
@@ -802,6 +822,7 @@ void CoreEngine::loadEntriesCache()
 		}
 	}
 }
+#endif
 
 void CoreEngine::shutdown()
 {
@@ -819,6 +840,8 @@ void CoreEngine::shutdown()
 
 bool CoreEngine::providerCached(Provider *provider)
 {
+	if(m_cachepolicy == CacheNever) return false;
+
 	if(m_provider_index.contains(pid(provider)))
 		return true;
 	return false;
@@ -862,9 +885,17 @@ void CoreEngine::mergeProviders(Provider::List providers)
 		}
 		else
 		{
-			kDebug(550) << "CACHE: miss provider " << p->name().representation() << endl;
-			cacheProvider(p);
+			if(m_cachepolicy != CacheNever)
+			{
+				kDebug(550) << "CACHE: miss provider " << p->name().representation() << endl;
+				cacheProvider(p);
+			}
 			emit signalProviderLoaded(p);
+
+			if(m_automationpolicy == AutomationOn)
+			{
+				loadEntries(p);
+			}
 		}
 
 		m_provider_cache.append(p);
@@ -876,6 +907,8 @@ void CoreEngine::mergeProviders(Provider::List providers)
 
 bool CoreEngine::entryCached(Entry *entry)
 {
+	if(m_cachepolicy == CacheNever) return false;
+
 	// Direct cache lookup first
 	// FIXME: probably better use URL (changes less frequently) and do iteration
 	if(m_entry_index.contains(id(entry))) return true;
@@ -934,8 +967,11 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
 		}
 		else
 		{
-			kDebug(550) << "CACHE: miss entry " << e->name().representation() << endl;
-			cacheEntry(e);
+			if(m_cachepolicy != CacheNever)
+			{
+				kDebug(550) << "CACHE: miss entry " << e->name().representation() << endl;
+				cacheEntry(e);
+			}
 			emit signalEntryLoaded(e, feed, provider);
 		}
 
@@ -943,7 +979,11 @@ void CoreEngine::mergeEntries(Entry::List entries, const Feed *feed, const Provi
 		m_entry_index[id(e)] = e;
 	}
 
-	cacheFeed(provider, "???", feed, entries);
+	if(m_cachepolicy != CacheNever)
+	{
+		// FIXME: feed name?
+		cacheFeed(provider, "???", feed, entries);
+	}
 
 	emit signalEntriesFeedFinished(feed);
 	if(m_activefeeds == 0)
@@ -1361,6 +1401,16 @@ void CoreEngine::slotInstallationVerification(int result)
 		emit signalInstallationFinished();
 	else
 		emit signalInstallationFailed();
+}
+
+void CoreEngine::setAutomationPolicy(AutomationPolicy policy)
+{
+	m_automationpolicy = policy;
+}
+
+void CoreEngine::setCachePolicy(CachePolicy policy)
+{
+	m_cachepolicy = policy;
 }
 
 #include "coreengine.moc"

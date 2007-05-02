@@ -69,7 +69,7 @@ void Engine::workflow()
 		m_downloaddialog->show();
 	}
 
-	start(false);
+	start();
 
 	if(m_modal)
 	{
