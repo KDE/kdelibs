@@ -20,11 +20,11 @@
  */
 // --------------------------------------------------------------------------
 
-#include "xml/dom_docimpl.h"
-#include "dom/html_base.h"
-#include "dom/dom_doc.h"
-#include "html/html_baseimpl.h"
-#include "misc/htmlhashes.h"
+#include "html_base.h"
+#include "dom_doc.h"
+#include <xml/dom_docimpl.h>
+#include <html/html_baseimpl.h>
+#include <misc/htmlhashes.h>
 
 using namespace DOM;
 

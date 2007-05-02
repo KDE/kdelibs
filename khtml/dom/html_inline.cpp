@@ -22,12 +22,13 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom/dom_doc.h"
-#include "dom/html_inline.h"
-#include "html/html_inlineimpl.h"
-#include "html/html_baseimpl.h"
-#include "xml/dom_docimpl.h"
-#include "misc/htmlhashes.h"
+#include "html_inline.h"
+#include "dom_doc.h"
+
+#include <html/html_inlineimpl.h>
+#include <html/html_baseimpl.h>
+#include <xml/dom_docimpl.h>
+#include <misc/htmlhashes.h>
 
 using namespace DOM;
 

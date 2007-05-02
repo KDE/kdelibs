@@ -22,11 +22,11 @@
 
 #include <QAbstractItemModel>
 #include <QHash>
+#include <kjs/JSType.h>
 
 namespace KJS
 {
     class JSValue;
-    enum JSType;
     class ExecState;
 }
 

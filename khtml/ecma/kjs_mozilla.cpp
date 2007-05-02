@@ -18,14 +18,16 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "kjs_mozilla.h"
+#include "kjs_mozilla.lut.h"
+
+#include "kjs_binding.h"
+
 #include <klocale.h>
 #include <kdebug.h>
 
-#include "kjs_mozilla.h"
-#include "kjs/lookup.h"
-#include "kjs_binding.h"
-#include "khtml_part.h"
-#include "kjs_mozilla.lut.h"
+#include <kjs/lookup.h>
+#include <khtml_part.h>
 
 using namespace KJS;
 

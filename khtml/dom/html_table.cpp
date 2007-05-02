@@ -21,13 +21,13 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom/html_misc.h"
-#include "dom/html_table.h"
-#include "dom/dom_exception.h"
+#include "html_table.h"
+#include "html_misc.h"
+#include "dom_exception.h"
 
-#include "html/html_miscimpl.h"
-#include "html/html_tableimpl.h"
-#include "misc/htmlhashes.h"
+#include <html/html_miscimpl.h>
+#include <html/html_tableimpl.h>
+#include <misc/htmlhashes.h>
 
 using namespace DOM;
 

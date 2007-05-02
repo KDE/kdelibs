@@ -17,13 +17,13 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "consoledock.h"
+#include "consoledock.moc"
+
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QPushButton>
-
-#include "consoledock.h"
-#include "consoledock.moc"
 
 ConsoleDock::ConsoleDock(QWidget *parent)
     : QDockWidget("Console", parent)

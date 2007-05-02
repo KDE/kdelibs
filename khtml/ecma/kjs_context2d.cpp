@@ -19,44 +19,45 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "config.h"
 #include "kjs_context2d.h"
+
 #include "kjs_html.h"
 
-#include "misc/loader.h"
-#include "dom/dom_exception.h"
-#include "xml/dom2_eventsimpl.h"
+#include <config.h>
 
-#include "xml/dom_textimpl.h"
-#include "html/html_baseimpl.h"
-#include "html/html_blockimpl.h"
-#include "html/html_canvasimpl.h"
-#include "html/html_documentimpl.h"
-#include "html/html_formimpl.h"
-#include "html/html_headimpl.h"
-#include "html/html_imageimpl.h"
-#include "html/html_inlineimpl.h"
-#include "html/html_listimpl.h"
-#include "html/html_objectimpl.h"
-#include "html/html_tableimpl.h"
+#include <misc/loader.h>
+#include <dom/dom_exception.h>
+#include <xml/dom2_eventsimpl.h>
+#include <xml/dom_textimpl.h>
+#include <html/html_baseimpl.h>
+#include <html/html_blockimpl.h>
+#include <html/html_canvasimpl.h>
+#include <html/html_documentimpl.h>
+#include <html/html_formimpl.h>
+#include <html/html_headimpl.h>
+#include <html/html_imageimpl.h>
+#include <html/html_inlineimpl.h>
+#include <html/html_listimpl.h>
+#include <html/html_objectimpl.h>
+#include <html/html_tableimpl.h>
 
-#include "khtml_part.h"
-#include "khtmlview.h"
+#include <khtml_part.h>
+#include <khtmlview.h>
 
 #include "kjs_css.h"
 #include "kjs_window.h"
 #include "kjs_events.h"
 #include "kjs_proxy.h"
 
-#include "rendering/render_canvasimage.h"
-#include "rendering/render_object.h"
-#include "rendering/render_layer.h"
+#include <rendering/render_canvasimage.h>
+#include <rendering/render_object.h>
+#include <rendering/render_layer.h>
 
 #include <kdebug.h>
 
-#include "css/cssparser.h"
-#include "css/css_stylesheetimpl.h"
-#include "css/css_ruleimpl.h"
+#include <css/cssparser.h>
+#include <css/css_stylesheetimpl.h>
+#include <css/css_ruleimpl.h>
 
 #include <QtAlgorithms>
 #include <QtGui/QPainter>

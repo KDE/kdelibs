@@ -1,11 +1,11 @@
+#include "debugdocument.h"
+
 #include <QHash>
 #include <QVector>
 #include <QStringList>
 
 #include "kjs_binding.h"
 #include "khtml_part.h"
-
-#include "debugdocument.h"
 
 using namespace KJS;
 class DebugDocument::Private : public QSharedData

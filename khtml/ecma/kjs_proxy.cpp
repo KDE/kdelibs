@@ -20,17 +20,16 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <config.h>
-
-
 #include "kjs_proxy.h"
+
+#include <config.h>
 
 #include "kjs_window.h"
 #include "kjs_events.h"
 //#include "kjs_debugwin.h"
 #include "debugger/debugwindow.h"
-#include "xml/dom_nodeimpl.h"
-#include "khtmlpart_p.h"
+#include <xml/dom_nodeimpl.h>
+#include <khtmlpart_p.h>
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>

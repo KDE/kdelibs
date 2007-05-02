@@ -17,11 +17,11 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <QVBoxLayout>
-#include <QListWidget>
-
 #include "breakpointsdock.h"
 #include "breakpointsdock.moc"
+
+#include <QVBoxLayout>
+#include <QListWidget>
 
 BreakpointsDock::BreakpointsDock(QWidget *parent)
     : QDockWidget("Breakpoints", parent)

@@ -42,11 +42,12 @@
  * David R. Hanson, Software -- Practice and Experience, Vol. 20(1).
  */
  
+#include "arena.h"
+
 #include <config.h>
 #include <stdlib.h>
 #include <string.h>
 #include <kglobal.h>
-#include "arena.h"
 
 #ifdef HAVE_GETPAGESIZE
 #include <unistd.h>

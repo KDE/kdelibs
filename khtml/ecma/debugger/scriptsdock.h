@@ -21,6 +21,7 @@
 #define SCRIPTSDOCK_H
 
 #include <QDockWidget>
+#include <QHash>
 
 class QTreeWidget;
 class QTreeWidgetItem;

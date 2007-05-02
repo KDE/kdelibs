@@ -17,11 +17,11 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <QVBoxLayout>
-#include <QListWidget>
-
 #include "watchesdock.h"
 #include "watchesdock.moc"
+
+#include <QVBoxLayout>
+#include <QListWidget>
 
 WatchesDock::WatchesDock(QWidget *parent)
     : QDockWidget("Watches", parent)

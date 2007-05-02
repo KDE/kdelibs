@@ -21,46 +21,47 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "misc/loader.h"
-#include "html/html_blockimpl.h"
-#include "html/html_headimpl.h"
-#include "html/html_imageimpl.h"
-#include "html/html_inlineimpl.h"
-#include "html/html_listimpl.h"
-#include "html/html_tableimpl.h"
-#include "html/html_objectimpl.h"
-#include "html/html_canvasimpl.h"
-#include "dom/dom_exception.h"
+#include "kjs_html.h"
+#include "kjs_html.lut.h"
+
+#include <misc/loader.h>
+#include <html/html_blockimpl.h>
+#include <html/html_headimpl.h>
+#include <html/html_imageimpl.h>
+#include <html/html_inlineimpl.h>
+#include <html/html_listimpl.h>
+#include <html/html_tableimpl.h>
+#include <html/html_objectimpl.h>
+#include <html/html_canvasimpl.h>
+#include <dom/dom_exception.h>
 
 
 // ### HACK
-#include "html/html_baseimpl.h"
-#include "html/html_documentimpl.h"
-#include "html/html_formimpl.h"
-#include "html/html_miscimpl.h"
-#include "xml/dom2_eventsimpl.h"
+#include <html/html_baseimpl.h>
+#include <html/html_documentimpl.h>
+#include <html/html_formimpl.h>
+#include <html/html_miscimpl.h>
+#include <xml/dom2_eventsimpl.h>
 
 #include <kparts/browserextension.h>
 
-#include "khtml_part.h"
-#include "khtmlview.h"
+#include <khtml_part.h>
+#include <khtmlview.h>
 
-#include "ecma/kjs_css.h"
-#include "ecma/kjs_events.h"
-#include "ecma/kjs_html.h"
-#include "ecma/kjs_window.h"
-#include "ecma/kjs_context2d.h"
-#include "kjs_html.lut.h"
+#include "kjs_css.h"
+#include "kjs_events.h"
+#include "kjs_window.h"
+#include "kjs_context2d.h"
 #include <kjs/PropertyNameArray.h>
 
-#include "misc/htmltags.h"
-#include "misc/htmlattrs.h"
-#include "rendering/render_object.h"
-#include "rendering/render_canvas.h"
-#include "rendering/render_frames.h"
-#include "rendering/render_layer.h"
+#include <misc/htmltags.h>
+#include <misc/htmlattrs.h>
+#include <rendering/render_object.h>
+#include <rendering/render_canvas.h>
+#include <rendering/render_frames.h>
+#include <rendering/render_layer.h>
 
-#include "kmessagebox.h"
+#include <kmessagebox.h>
 #include <kstringhandler.h>
 #include <klocale.h>
 

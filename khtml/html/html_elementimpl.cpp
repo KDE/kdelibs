@@ -30,28 +30,27 @@
 //#define EVENT_DEBUG
 //#define UNSUPPORTED_ATTR
 
-#include "html/dtd.h"
-#include "html/html_elementimpl.h"
-#include "html/html_documentimpl.h"
-#include "html/htmltokenizer.h"
+#include "html_elementimpl.h"
+#include "dtd.h"
+#include "html_documentimpl.h"
+#include "htmltokenizer.h"
 
-#include "misc/htmlhashes.h"
+#include <misc/htmlhashes.h>
 
-#include "khtmlview.h"
-#include "khtml_part.h"
+#include <khtmlview.h>
+#include <khtml_part.h>
 
-#include "rendering/render_object.h"
-#include "rendering/render_replaced.h"
-#include "css/css_valueimpl.h"
-#include "css/css_stylesheetimpl.h"
-#include "css/cssproperties.h"
-#include "css/cssvalues.h"
-#include "xml/dom_textimpl.h"
-#include "xml/dom2_eventsimpl.h"
+#include <rendering/render_object.h>
+#include <rendering/render_replaced.h>
+#include <css/css_valueimpl.h>
+#include <css/css_stylesheetimpl.h>
+#include <css/cssproperties.h>
+#include <css/cssvalues.h>
+#include <xml/dom_textimpl.h>
+#include <xml/dom2_eventsimpl.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
-#include "html_elementimpl.h"
 
 using namespace DOM;
 using namespace khtml;

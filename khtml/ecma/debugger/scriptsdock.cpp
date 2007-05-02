@@ -17,6 +17,9 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "scriptsdock.h"
+#include "scriptsdock.moc"
+
 #include <QVBoxLayout>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -27,8 +30,6 @@
 
 #include "debugwindow.h"
 #include "debugdocument.h"
-#include "scriptsdock.h"
-#include "scriptsdock.moc"
 
 using namespace KJS;
 

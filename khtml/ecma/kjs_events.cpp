@@ -19,17 +19,18 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "kjs_window.h"
 #include "kjs_events.h"
 #include "kjs_events.lut.h"
+
+#include "kjs_window.h"
 #include "kjs_views.h"
 #include "kjs_proxy.h"
-#include "xml/dom_nodeimpl.h"
-#include "xml/dom_docimpl.h"
-#include "xml/dom2_eventsimpl.h"
-#include "rendering/render_object.h"
-#include "rendering/render_canvas.h"
-#include "khtml_part.h"
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
+#include <xml/dom2_eventsimpl.h>
+#include <rendering/render_object.h>
+#include <rendering/render_canvas.h>
+#include <khtml_part.h>
 #include <kjs/scriptfunction.h> // private API
 
 #include <kdebug.h>

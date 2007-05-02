@@ -22,13 +22,13 @@
  *
  */
 // -------------------------------------------------------------------------
-#include "html/html_tableimpl.h"
-#include "html/html_miscimpl.h"
-#include "html/html_formimpl.h"
-#include "html/html_documentimpl.h"
+#include "html_miscimpl.h"
+#include "html_tableimpl.h"
+#include "html_formimpl.h"
+#include "html_documentimpl.h"
 
-#include "misc/htmlhashes.h"
-#include "dom/dom_node.h"
+#include <misc/htmlhashes.h>
+#include <dom/dom_node.h>
 
 using namespace DOM;
 

@@ -17,6 +17,9 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "callstackdock.h"
+#include "callstackdock.moc"
+
 #include <QVBoxLayout>
 #include <QTableWidget>
 #include <QHeaderView>
@@ -24,8 +27,6 @@
 #include <kdebug.h>
 
 #include "debugdocument.h"
-#include "callstackdock.h"
-#include "callstackdock.moc"
 
 CallStackDock::CallStackDock(QWidget *parent)
     : QDockWidget("Call Stack", parent)

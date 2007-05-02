@@ -19,22 +19,24 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "kjs_dom.h"
+#include "kjs_dom.lut.h"
+
 #include <khtmlview.h>
-#include "xml/dom2_eventsimpl.h"
-#include "rendering/render_canvas.h"
-#include "rendering/render_layer.h"
-#include "xml/dom_nodeimpl.h"
-#include "xml/dom_docimpl.h"
-#include "misc/htmltags.h" // ID_*
-#include "misc/htmlattrs.h" // ATTR_*
-#include "html/html_baseimpl.h"
-#include "html/html_documentimpl.h"
-#include "html/html_miscimpl.h"
+#include <xml/dom2_eventsimpl.h>
+#include <rendering/render_canvas.h>
+#include <rendering/render_layer.h>
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
+#include <misc/htmltags.h> // ID_*
+#include <misc/htmlattrs.h> // ATTR_*
+#include <html/html_baseimpl.h>
+#include <html/html_documentimpl.h>
+#include <html/html_miscimpl.h>
 #include <kdebug.h>
 #include <khtml_part.h>
 #include <QtCore/QList>
 
-#include "kjs_dom.h"
 #include "kjs_html.h"
 #include "kjs_css.h"
 #include "kjs_range.h"
@@ -43,9 +45,8 @@
 #include "kjs_views.h"
 #include "kjs_window.h"
 #include <kjs/PropertyNameArray.h>
-#include "dom/dom_exception.h"
-#include "kjs_dom.lut.h"
-#include "khtmlpart_p.h"
+#include <dom/dom_exception.h>
+#include <khtmlpart_p.h>
 
 using namespace KJS;
 

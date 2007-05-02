@@ -20,6 +20,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "kjs_binding.h"
+
 #include <config-khtml.h>
 #if defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
 
@@ -29,14 +31,13 @@
 #endif
 
 
-#include "kjs_binding.h"
 #include "kjs_dom.h"
 
-#include "dom/css_stylesheet.h"
-#include "dom/dom_exception.h"
-#include "dom/dom2_range.h"
-#include "xml/dom2_eventsimpl.h"
-#include "khtmlpart_p.h"
+#include <dom/css_stylesheet.h>
+#include <dom/dom_exception.h>
+#include <dom/dom2_range.h>
+#include <xml/dom2_eventsimpl.h>
+#include <khtmlpart_p.h>
 
 #include <kdebug.h>
 #include <kparts/browserextension.h>

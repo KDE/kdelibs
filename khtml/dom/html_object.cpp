@@ -20,10 +20,11 @@
  *
  */
 
-#include "dom/dom_doc.h"
-#include "dom/html_object.h"
-#include "html/html_objectimpl.h"
-#include "misc/htmlhashes.h"
+#include "html_object.h"
+#include "dom_doc.h"
+
+#include <html/html_objectimpl.h>
+#include <misc/htmlhashes.h>
 
 HTMLAppletElement::HTMLAppletElement() : HTMLElement()
 {

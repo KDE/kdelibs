@@ -17,6 +17,9 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "debugwindow.h"
+#include "debugwindow.moc"
+
 #include <QSharedData>
 #include <QDebug>
 
@@ -76,8 +79,6 @@
 #include "scriptsdock.h"
 
 #include "debugdocument.h"
-#include "debugwindow.h"
-#include "debugwindow.moc"
 
 using namespace KJS;
 

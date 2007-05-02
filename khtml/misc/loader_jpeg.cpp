@@ -22,6 +22,8 @@
 
 */
 
+#include "loader_jpeg.h"
+
 #include <config.h>
 
 #ifdef HAVE_LIBJPEG
@@ -30,7 +32,6 @@
 #ifdef HAVE_STDLIB_H
 #undef HAVE_STDLIB_H
 #endif
-#include "loader_jpeg.h"
 
 #include <stdio.h>
 #include <setjmp.h>

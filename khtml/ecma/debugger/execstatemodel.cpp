@@ -17,6 +17,9 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "execstatemodel.h"
+#include "execstatemodel.moc"
+
 #include <kdebug.h>
 
 #include <kjs/context.h>
@@ -24,9 +27,6 @@
 #include <kjs/object.h>
 #include <kjs/ExecState.h>
 #include <kjs/PropertyNameArray.h>
-
-#include "execstatemodel.h"
-#include "execstatemodel.moc"
 
 // NODE
 Node::Node(const QString &name, KJS::JSValue *value, KJS::ExecState *exec, int row, Node *parent)

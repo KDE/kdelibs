@@ -25,22 +25,22 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "html/html_documentimpl.h"
-#include "html/html_tableimpl.h"
+#include "html_documentimpl.h"
+#include "html_tableimpl.h"
 
-#include "dom/dom_exception.h"
-#include "dom/dom_node.h"
+#include <dom/dom_exception.h>
+#include <dom/dom_node.h>
 
-#include "misc/htmlhashes.h"
-#include "khtmlview.h"
-#include "khtml_part.h"
+#include <misc/htmlhashes.h>
+#include <khtmlview.h>
+#include <khtml_part.h>
 
-#include "css/cssstyleselector.h"
-#include "css/cssproperties.h"
-#include "css/cssvalues.h"
-#include "css/csshelper.h"
+#include <css/cssstyleselector.h>
+#include <css/cssproperties.h>
+#include <css/cssvalues.h>
+#include <css/csshelper.h>
 
-#include "rendering/render_table.h"
+#include <rendering/render_table.h>
 
 #include <kdebug.h>
 #include <kglobal.h>

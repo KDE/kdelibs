@@ -40,12 +40,12 @@
 #undef LOADER_DEBUG
 //#define LOADER_DEBUG
 
-#include <assert.h>
+#include "loader.h"
+#include "seed.h"
+#include <imload/image.h>
+#include <imload/imagepainter.h>
 
-#include "misc/loader.h"
-#include "misc/seed.h"
-#include "imload/image.h"
-#include "imload/imagepainter.h"
+#include <assert.h>
 
 // default cache size
 #define DEFCACHESIZE 2096*1024

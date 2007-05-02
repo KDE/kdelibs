@@ -17,6 +17,9 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "localvariabledock.h"
+#include "localvariabledock.moc"
+
 #include <QVBoxLayout>
 #include <QTreeView>
 #include <QStandardItemModel>
@@ -32,8 +35,6 @@
 
 #include "objectmodel.h"
 #include "execstatemodel.h"
-#include "localvariabledock.h"
-#include "localvariabledock.moc"
 
 LocalVariablesDock::LocalVariablesDock(QWidget *parent)
     : QDockWidget("Local Variables", parent), m_execModel(0)

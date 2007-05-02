@@ -17,15 +17,15 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "objectmodel.h"
+#include "objectmodel.moc"
+
 #include <kjs/context.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
 #include <kjs/PropertyNameArray.h>
 
 #include <kdebug.h>
-
-#include "objectmodel.h"
-#include "objectmodel.moc"
 
 //////////// Item
 ObjectNode::ObjectNode(ObjectNode *parent)

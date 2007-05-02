@@ -27,35 +27,36 @@
 // KDE HTML Widget -- HTML Parser
 // #define PARSER_DEBUG
 
-#include "dom/dom_exception.h"
+#include "htmlparser.h"
 
-#include "html/html_baseimpl.h"
-#include "html/html_blockimpl.h"
-#include "html/html_canvasimpl.h"
-#include "html/html_documentimpl.h"
-#include "html/html_elementimpl.h"
-#include "html/html_formimpl.h"
-#include "html/html_headimpl.h"
-#include "html/html_imageimpl.h"
-#include "html/html_inlineimpl.h"
-#include "html/html_listimpl.h"
-#include "html/html_miscimpl.h"
-#include "html/html_tableimpl.h"
-#include "html/html_objectimpl.h"
-#include "xml/dom_textimpl.h"
-#include "xml/dom_nodeimpl.h"
-#include "misc/htmlhashes.h"
-#include "html/htmltokenizer.h"
-#include "khtmlview.h"
-#include "khtml_part.h"
-#include "khtml_factory.h"
-#include "css/cssproperties.h"
-#include "css/cssvalues.h"
-#include "css/csshelper.h"
+#include <dom/dom_exception.h>
 
-#include "rendering/render_object.h"
+#include <html/html_baseimpl.h>
+#include <html/html_blockimpl.h>
+#include <html/html_canvasimpl.h>
+#include <html/html_documentimpl.h>
+#include <html/html_elementimpl.h>
+#include <html/html_formimpl.h>
+#include <html/html_headimpl.h>
+#include <html/html_imageimpl.h>
+#include <html/html_inlineimpl.h>
+#include <html/html_listimpl.h>
+#include <html/html_miscimpl.h>
+#include <html/html_tableimpl.h>
+#include <html/html_objectimpl.h>
+#include <xml/dom_textimpl.h>
+#include <xml/dom_nodeimpl.h>
+#include <misc/htmlhashes.h>
+#include <html/htmltokenizer.h>
+#include <khtmlview.h>
+#include <khtml_part.h>
+#include <khtml_factory.h>
+#include <css/cssproperties.h>
+#include <css/cssvalues.h>
+#include <css/csshelper.h>
 
-#include "html/htmlparser.h"
+#include <rendering/render_object.h>
+
 #include <kdebug.h>
 #include <klocale.h>
 

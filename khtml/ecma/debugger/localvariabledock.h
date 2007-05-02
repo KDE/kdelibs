@@ -26,6 +26,10 @@ class QTreeView;
 class QStandardItemModel;
 class ObjectModel;
 class ExecStateModel;
+namespace KJS
+{
+    class ExecState;
+}
 
 class LocalVariablesDock : public QDockWidget
 {

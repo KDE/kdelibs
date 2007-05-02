@@ -32,21 +32,19 @@
 //#define TOKEN_DEBUG 1
 //#define TOKEN_DEBUG 2
 
-#include "config.h"
+#include "htmltokenizer.h"
+#include "html_documentimpl.h"
+#include "htmlparser.h"
+#include "dtd.h"
 
-#include "html/htmltokenizer.h"
-#include "html/html_documentimpl.h"
-#include "html/htmlparser.h"
-#include "html/dtd.h"
+#include <misc/loader.h>
+#include <misc/htmlhashes.h>
 
-#include "misc/loader.h"
-#include "misc/htmlhashes.h"
-
-#include "khtmlview.h"
-#include "khtml_part.h"
-#include "xml/dom_docimpl.h"
-#include "css/csshelper.h"
-#include "ecma/kjs_proxy.h"
+#include <khtmlview.h>
+#include <khtml_part.h>
+#include <xml/dom_docimpl.h>
+#include <css/csshelper.h>
+#include <ecma/kjs_proxy.h>
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <ctype.h>
@@ -54,6 +52,8 @@
 #include <QtCore/QVariant>
 #include <kdebug.h>
 #include <stdlib.h>
+
+#include <config.h>
 
 #include "kentities.c"
 

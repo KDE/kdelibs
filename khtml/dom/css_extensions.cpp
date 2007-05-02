@@ -19,11 +19,11 @@
  * Boston, MA 02110-1301, USA.
  *
  */
-#include "dom_exception.h"
-#include "dom_string.h"
-
 #include "css_extensions.h"
 #include "css_extensionsimpl.h"
+
+#include "dom_exception.h"
+#include "dom_string.h"
 using namespace DOM;
 
 

@@ -21,6 +21,9 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "kjs_navigator.h"
+#include "kjs_navigator.lut.h"
+
 #include <klocale.h>
 
 #include <kstandarddirs.h>
@@ -31,12 +34,10 @@
 #include <kmimetype.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
-#include "kjs_navigator.h"
-#include "kjs/lookup.h"
-#include "kjs_binding.h"
-#include "khtml_part.h"
+#include <kjs/lookup.h>
+#include <kjs_binding.h>
+#include <khtml_part.h>
 #include <sys/utsname.h>
-#include "kjs_navigator.lut.h"
 
 #include <Qt3Support/Q3PtrList>
 

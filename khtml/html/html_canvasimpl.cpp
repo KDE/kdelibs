@@ -23,23 +23,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-#include "html/html_canvasimpl.h"
-#include "html/html_documentimpl.h"
+#include "html_canvasimpl.h"
+#include "html_documentimpl.h"
 
-#include "khtmlview.h"
-#include "khtml_part.h"
+#include <khtmlview.h>
+#include <khtml_part.h>
+
+#include <config.h>
 
 #include <kdebug.h>
 
-#include "rendering/render_canvasimage.h"
-#include "rendering/render_flow.h"
-#include "css/cssstyleselector.h"
-#include "css/cssproperties.h"
-#include "css/cssvalues.h"
-#include "css/csshelper.h"
-#include "xml/dom2_eventsimpl.h"
-#include "misc/htmltags.h"
+#include <rendering/render_canvasimage.h>
+#include <rendering/render_flow.h>
+#include <css/cssstyleselector.h>
+#include <css/cssproperties.h>
+#include <css/cssvalues.h>
+#include <css/csshelper.h>
+#include <xml/dom2_eventsimpl.h>
+#include <misc/htmltags.h>
 
 #include <QtCore/QCharRef>
 #include <QtCore/QPoint>

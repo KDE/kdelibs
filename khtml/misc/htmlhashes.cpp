@@ -19,11 +19,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kglobal.h>
-
 #include "htmlhashes.h"
 #include "htmltags.c"
 #include "htmlattrs.c"
+
+#include <kglobal.h>
 
 int khtml::getTagID(const char *tagStr, int len)
 {

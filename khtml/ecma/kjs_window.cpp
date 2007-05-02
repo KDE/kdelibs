@@ -19,17 +19,20 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "config.h"
 
-#include "khtmlview.h"
-#include "khtml_part.h"
-#include "khtmlpart_p.h"
-#include "khtml_settings.h"
-#include "xml/dom2_eventsimpl.h"
-#include "xml/dom_docimpl.h"
-#include "misc/htmltags.h"
-#include "html/html_documentimpl.h"
-#include "rendering/render_frames.h"
+#include "kjs_window.h"
+
+#include <khtmlview.h>
+#include <khtml_part.h>
+#include <khtmlpart_p.h>
+#include <khtml_settings.h>
+#include <xml/dom2_eventsimpl.h>
+#include <xml/dom_docimpl.h>
+#include <misc/htmltags.h>
+#include <html/html_documentimpl.h>
+#include <rendering/render_frames.h>
+
+#include <config.h>
 
 #include <QtCore/QTimer>
 #include <Qt3Support/Q3PaintDeviceMetrics>
@@ -53,7 +56,6 @@
 #include <kstringhandler.h>
 
 #include "kjs_proxy.h"
-#include "kjs_window.h"
 #include "kjs_navigator.h"
 #include "kjs_mozilla.h"
 #include "kjs_html.h"
@@ -67,7 +69,7 @@
 #include "xmlserializer.h"
 #include "domparser.h"
 
-#include "rendering/render_replaced.h"
+#include <rendering/render_replaced.h>
 
 
 using namespace KJS;

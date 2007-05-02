@@ -21,14 +21,14 @@
  */
 // --------------------------------------------------------------------------
 
-#include "dom/dom_doc.h"
-#include "dom/html_image.h"
-#include "dom/html_misc.h"
+#include "html_image.h"
+#include "dom_doc.h"
+#include "html_misc.h"
 
-#include "html/html_imageimpl.h"
-#include "html/html_miscimpl.h"
-#include "misc/htmlhashes.h"
-#include "xml/dom_docimpl.h"
+#include <html/html_imageimpl.h>
+#include <html/html_miscimpl.h>
+#include <misc/htmlhashes.h>
+#include <xml/dom_docimpl.h>
 
 using namespace DOM;
 

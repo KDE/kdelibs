@@ -17,10 +17,14 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <QtGui>
-
 #include "jshighlighter.h"
 #include "jshighlighter.moc"
+
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
+#include <QtGui/QFont>
+#include <QtGui/QSyntaxHighlighter>
+#include <QtGui/QTextDocument>
 
 JSHighlighter::JSHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
