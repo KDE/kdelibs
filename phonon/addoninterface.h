@@ -20,8 +20,8 @@
 #ifndef PHONON_ADDONINTERFACE_H
 #define PHONON_ADDONINTERFACE_H
 
-#include <QList>
-#include <QVariant>
+#include <QtCore/QList>
+#include <QtCore/QVariant>
 
 namespace Phonon
 {

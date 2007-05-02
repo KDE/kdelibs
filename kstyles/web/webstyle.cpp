@@ -21,8 +21,8 @@
 #define INCLUDE_MENUITEM_DEF
 #endif
 
-#include <QtGui/qmenudata.h>
-#include <QtGui/QColorGroup>
+#include <QtGui/QMenuItem>
+#include <QtGui/QPalette>
 #include <QtGui/QBitmap>
 #include <QtGui/QTabBar>
 #include <Qt3Support/Q3PointArray>

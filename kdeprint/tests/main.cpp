@@ -11,7 +11,7 @@
 #include <kapplication.h>
 #include <QtGui/QWindowsStyle>
 #include <stdlib.h>
-#include <QDesktopWidget>
+#include <QtGui/QDesktopWidget>
 #include <kcmdlineargs.h>
 int main( int argc, char ** argv )
 {

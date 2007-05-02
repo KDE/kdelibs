@@ -17,7 +17,7 @@
 
 #include <knepomuk/knepomuk_export.h>
 
-#include <QtCore/QSharedDataPointer>
+#include <QtCore/QSharedData>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 #include <QtCore/QList>

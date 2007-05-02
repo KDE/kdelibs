@@ -21,7 +21,7 @@
 #include "kxmlcommandselector.h"
 
 #include <QtGui/QLabel>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 
 #include <klocale.h>

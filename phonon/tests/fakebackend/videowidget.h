@@ -19,11 +19,11 @@
 #ifndef Phonon_UI_FAKE_VIDEOWIDGET_H
 #define Phonon_UI_FAKE_VIDEOWIDGET_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <phonon/experimental/videoframe.h>
 #include <phonon/videowidget.h>
 #include "abstractvideooutput.h"
-#include <QPixmap>
+#include <QtGui/QPixmap>
 
 class QString;
 

@@ -2,7 +2,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>

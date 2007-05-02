@@ -33,7 +33,7 @@
 #ifndef	_ICO_H_
 #define _ICO_H_
 
-#include <QImageIOHandler>
+#include <QtGui/QImageIOPlugin>
 
 class ICOHandler : public QImageIOHandler
 {

@@ -1,7 +1,7 @@
 #include "richpage.h"
 
 #include <QtGui/QLabel>
-#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSpinBox>
 #include <QtGui/QComboBox>
 #include <QtGui/QFontDatabase>
 #include <QtGui/QLayout>

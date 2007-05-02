@@ -22,10 +22,10 @@
 #include <kurl.h>
 #include <phonon/mediaobjectinterface.h>
 #include <phonon/addoninterface.h>
-#include <QVariant>
-#include <QObject>
+#include <QtCore/QVariant>
+#include <QtCore/QObject>
 #include <phonon/experimental/videoframe.h>
-#include <QTime>
+#include <QtCore/QDate>
 
 class KUrl;
 class QTimer;

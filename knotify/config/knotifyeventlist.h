@@ -24,7 +24,7 @@
 #include <kconfig.h>
 
 
-#include <QTreeWidget>
+#include <QtGui/QTreeWidget>
 
 class KNotifyConfigElement;
 class KNotifyEventListItem;

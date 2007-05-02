@@ -24,7 +24,7 @@
 #include <knotification.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 #include <kaboutdata.h>
 
 namespace Phonon

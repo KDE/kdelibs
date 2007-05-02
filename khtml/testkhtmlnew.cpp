@@ -1,15 +1,14 @@
 // program to test the new khtml implementation
 
-#include <QCursor>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QFrame>
-#include <QToolButton>
-#include <QComboBox>
-#include <QLineEdit>
-#include <QMovie>
-#include <QLabel>
-#include <QImage>
+#include <QtGui/QCursor>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QFrame>
+#include <QtGui/QToolButton>
+#include <QtGui/QComboBox>
+#include <QtGui/QLineEdit>
+#include <QtGui/QMovie>
+#include <QtGui/QLabel>
+#include <QtGui/QImage>
 
 #include <kapplication.h>
 #include <kxmlguifactory.h>

@@ -22,11 +22,11 @@
 
 #include "phonon_export.h"
 
-#include <QtGlobal>
-#include <QExplicitlySharedDataPointer>
-#include <QVariant>
-#include <QByteArray>
-#include <QList>
+#include <QtCore/QBool>
+#include <QtCore/QSharedData>
+#include <QtCore/QVariant>
+#include <QtCore/QByteRef>
+#include <QtCore/QList>
 class QString;
 
 namespace Phonon

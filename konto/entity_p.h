@@ -22,10 +22,10 @@
 
 #include "entity.h"
 
-#include <QHash>
-#include <QString>
-#include <QUrl>
-#include <QSharedData>
+#include <QtCore/QHash>
+#include <QtCore/QString>
+#include <QtCore/QUrl>
+#include <QtCore/QSharedData>
 
 
 class Konto::Entity::Private : public QSharedData

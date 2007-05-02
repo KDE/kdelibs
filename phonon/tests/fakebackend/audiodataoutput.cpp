@@ -18,8 +18,8 @@
 */
 
 #include "audiodataoutput.h"
-#include <QVector>
-#include <QMap>
+#include <QtCore/QVector>
+#include <QtCore/QMap>
 
 namespace Phonon
 {

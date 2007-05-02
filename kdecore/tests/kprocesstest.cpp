@@ -13,7 +13,7 @@
 #include <string.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 
 #include <signal.h>
 

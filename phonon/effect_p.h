@@ -22,8 +22,8 @@
 
 #include "effect.h"
 #include "base_p.h"
-#include <QHash>
-#include <QVariant>
+#include <QtCore/QHash>
+#include <QtCore/QVariant>
 
 namespace Phonon
 {

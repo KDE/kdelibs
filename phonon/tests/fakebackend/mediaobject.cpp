@@ -18,18 +18,17 @@
 */
 
 #include "mediaobject.h"
-#include <QTimer>
+#include <QtCore/QTimer>
 #include <kdebug.h>
 #include "videopath.h"
 #include "audiopath.h"
 #include "stream.h"
 #include "../../abstractmediastream_p.h"
-#include <kdebug.h>
-#include <QVector>
+#include <QtCore/QVector>
 #include <cmath>
-#include <QFile>
-#include <QByteArray>
-#include <QStringList>
+#include <QtCore/QFile>
+#include <QtCore/QByteRef>
+#include <QtCore/QStringList>
 
 namespace Phonon
 {

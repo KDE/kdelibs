@@ -23,7 +23,7 @@
 
 #include <config.h>
 
-#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSpinBox>
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
 #include <QtGui/QLayout>

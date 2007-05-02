@@ -17,9 +17,9 @@
 #ifndef SMIVItem_H
 #define SMIVItem_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
-#include <QImage>
+#include <QtGui/QImage>
 
 #include <ThreadWeaver.h>
 #include <JobSequence.h>

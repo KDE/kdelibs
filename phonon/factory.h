@@ -23,8 +23,8 @@
 #include "phonon_export.h"
 #include <kglobal.h>
 
-#include <QObject>
-#include <QStringList>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 class QUrl;
 class QIcon;

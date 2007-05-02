@@ -22,7 +22,7 @@
 #include <QtCore/QString>
 #include <QtCore/QMap>
 #include <QtCore/QList>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 class KMLpdManager;
 class DrMain;

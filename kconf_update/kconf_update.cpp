@@ -25,7 +25,7 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QTextCodec>
 
 #include <kconfig.h>

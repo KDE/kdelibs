@@ -36,7 +36,7 @@
 #include "cupsdsecuritypage.h"
 
 #include <QtCore/QDir>
-#include <QWhatsThis>
+#include <QtGui/QWhatsThis>
 #include <kvbox.h>
 #include <kmessagebox.h>
 #include <klocale.h>

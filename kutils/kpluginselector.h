@@ -21,9 +21,9 @@
 #ifndef KPLUGINSELECTOR_H
 #define KPLUGINSELECTOR_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
-#include <QList>
+#include <QtCore/QList>
 
 #include <kutils_export.h>
 #include <ksharedconfig.h>

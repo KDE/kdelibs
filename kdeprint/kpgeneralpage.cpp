@@ -22,8 +22,8 @@
 #include "kmprinter.h"
 #include "kprinter.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <kbuttongroup.h>
 #include <QtGui/QComboBox>
 #include <QtGui/QLabel>

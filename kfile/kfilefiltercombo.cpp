@@ -22,8 +22,8 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <config-kfile.h>
-#include <QEvent>
-#include <QLineEdit>
+#include <QtCore/QEvent>
+#include <QtGui/QLineEdit>
 
 class KFileFilterCombo::KFileFilterComboPrivate
 {

@@ -19,8 +19,8 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <QDebug>
-#include <QTextStream>
+#include <QtCore/QDebug>
+#include <QtCore/QTextStream>
 
 #include <kstandarddirs.h>
 #include <kdebug.h>

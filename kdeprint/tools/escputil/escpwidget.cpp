@@ -24,7 +24,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QCheckBox>
 #include <Qt3Support/Q3Accel>
-#include <QtCore/QByteArray>
+#include <QtCore/QByteRef>
 #include <kdemacros.h>
 #include <klocale.h>
 #include <kmessagebox.h>

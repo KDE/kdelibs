@@ -24,7 +24,7 @@
 
 #include <klocale.h>
 #include <kiconloader.h>
-#include <QAction>
+#include <QtGui/QAction>
 #include <kdebug.h>
 
 namespace Phonon

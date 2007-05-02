@@ -23,8 +23,8 @@
 #include "phonon_export.h"
 
 
-#include <QVariant>
-#include <QExplicitlySharedDataPointer>
+#include <QtCore/QVariant>
+#include <QtCore/QSharedData>
 
 namespace Phonon
 {

@@ -30,7 +30,7 @@
 #include "misc/arena.h"
 #include "misc/paintbuffer.h"
 
-#include <QLinkedList>
+#include <QtCore/QLinkedList>
 
 #include <kcomponentdata.h>
 #include <kiconloader.h>

@@ -20,7 +20,7 @@
 
 #ifndef STATIC_BINDING_H
 #define STATIC_BINDING_H
-#include <QHash>
+#include <QtCore/QHash>
 
 #include <kdemacros.h>
 #include <kjs/function.h>

@@ -26,9 +26,9 @@
 
 // Qt
 
-#include <QFile>
-#include <QMetaObject>
-#include <QMetaMethod>
+#include <QtCore/QFile>
+#include <QtCore/QArgument>
+#include <QtCore/QMetaEnum>
 
 // KDE
 #include <kdebug.h>

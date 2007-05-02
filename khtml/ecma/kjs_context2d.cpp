@@ -59,15 +59,14 @@
 #include "css/css_ruleimpl.h"
 
 #include <QtAlgorithms>
-#include <QPainter>
-#include <QPainterPath>
-#include <QImage>
-#include <QPixmap>
-#include <QBrush>
-#include <QGradient>
-#include <QColor>
-#include <QtDebug>
-#include <QLocale>
+#include <QtGui/QPainter>
+#include <QtGui/QPainterPath>
+#include <QtGui/QImage>
+#include <QtGui/QPixmap>
+#include <QtGui/QBrush>
+#include <QtGui/QColor>
+#include <QtCore/QDebug>
+#include <QtCore/QLocale>
 
 #include <math.h>
 

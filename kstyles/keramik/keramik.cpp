@@ -22,13 +22,12 @@
 #include "kstyle.h"
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QPainter>
-#include <QtGui/QStyleHintReturn>
+#include <QtGui/QStyleOption>
 #include "colorutil.h"
 #include "pixmaploader.h"
 #include "gradients.h"
 #include "keramikimage.h"
 #include <QtGui/QPolygon>
-#include <QStyleOptionTab>
 
 #define loader Keramik::PixmapLoader::the()
 

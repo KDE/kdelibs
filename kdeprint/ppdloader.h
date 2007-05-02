@@ -22,7 +22,7 @@
 
 #include <kdeprint_export.h>
 
-#include <QStack>
+#include <QtCore/QStack>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>

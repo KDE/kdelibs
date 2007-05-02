@@ -11,7 +11,7 @@
 #ifndef __Stub_h_Included__
 #define __Stub_h_Included__
 
-#include <QtCore/QByteArray>
+#include <QtCore/QByteRef>
 #include <QtCore/QList>
 
 #include "process.h"

@@ -21,7 +21,7 @@
 #ifndef DRIVERITEM_H
 #define DRIVERITEM_H
 
-#include <QTreeWidget>
+#include <QtGui/QTreeWidget>
 
 class DrBase;
 

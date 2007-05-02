@@ -21,7 +21,7 @@
 #include "servicebase.h"
 #include "servicebase_p.h"
 #include <QtCore/QRegExp>
-#include <QDataStream>
+#include <QtCore/QDataStream>
 #include <QtCore/QUrl>
 
 namespace DNSSD

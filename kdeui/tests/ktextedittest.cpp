@@ -21,7 +21,7 @@
 #include <kcmdlineargs.h>
 #include <ktextedit.h>
 
-#include <QFile>
+#include <QtCore/QFile>
 
 int main( int argc, char **argv )
 {

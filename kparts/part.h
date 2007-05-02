@@ -23,7 +23,7 @@
 #include <Qt/qdom.h>
 #include <QtCore/QPointer>
 #include <kurl.h>
-#include <QtCore/QChildEvent>
+#include <QtCore/QEvent>
 #include <kxmlguiclient.h>
 
 #include <kparts/kparts_export.h>

@@ -35,7 +35,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <kicon.h>
-#include <QFrame>
+#include <QtGui/QFrame>
 
 KMConfigDialog::KMConfigDialog(QWidget *parent, const char *name)
 : KPageDialog( parent )

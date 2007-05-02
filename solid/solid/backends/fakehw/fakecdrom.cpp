@@ -19,7 +19,7 @@
 
 #include "backends/fakehw/fakecdrom.h"
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 FakeCdrom::FakeCdrom(FakeDevice *device)
     : FakeStorage(device)

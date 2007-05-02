@@ -25,7 +25,7 @@
 #include <kdebug.h>
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QFileInfo>
 #include <kstandarddirs.h>
 #include <kapplication.h>

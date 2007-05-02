@@ -20,7 +20,7 @@
 #define Phonon_FAKE_AUDIOOUTPUT_H
 
 #include "abstractaudiooutput.h"
-#include <QFile>
+#include <QtCore/QFile>
 #include <phonon/audiooutputinterface.h>
 
 namespace Phonon

@@ -21,12 +21,12 @@
 #define KROSS_ACTION_H
 
 
-#include <QVariant>
-#include <QObject>
-#include <QDir>
-#include <QtXml/QDomElement>
-#include <QAction>
-#include <QUrl>
+#include <QtCore/QVariant>
+#include <QtCore/QObject>
+#include <QtCore/QDir>
+#include <QtXml/QDomAttr>
+#include <QtGui/QAction>
+#include <QtCore/QUrl>
 
 #include "errorinterface.h"
 #include "childreninterface.h"

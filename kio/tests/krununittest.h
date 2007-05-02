@@ -19,7 +19,7 @@
 #ifndef KRUNUNITTEST_H
 #define KRUNUNITTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KRunUnitTest : public QObject
 {

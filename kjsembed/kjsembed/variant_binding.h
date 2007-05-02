@@ -22,7 +22,7 @@
 #ifndef VARIANT_BINDING_H
 #define VARIANT_BINDING_H
 
-#include <QVariant>
+#include <QtCore/QVariant>
 
 #include <kdemacros.h>
 #include <kjs/object.h>

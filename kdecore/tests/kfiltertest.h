@@ -20,7 +20,6 @@
 
 #include <QtCore/QObject>
 
-#include <QObject>
 
 class KFilterTest : public QObject
 {

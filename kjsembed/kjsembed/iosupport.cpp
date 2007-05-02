@@ -24,8 +24,8 @@
 #include <kjs/object.h>
 #include <QtCore/QDebug>
 
-#include <QStringList>
-#include <QProcess>
+#include <QtCore/QStringList>
+#include <QtCore/QProcess>
 
 using namespace KJSEmbed;
 

@@ -21,9 +21,9 @@
 #define KROSS_MANAGER_H
 
 
-#include <QStringList>
-#include <QMap>
-#include <QObject>
+#include <QtCore/QStringList>
+#include <QtCore/QMap>
+#include <QtCore/QObject>
 
 #include "krossconfig.h"
 #include "childreninterface.h"

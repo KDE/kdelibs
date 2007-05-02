@@ -29,7 +29,7 @@
 #include <QtCore/QStringList>
 
 #include <QtCore/QMap>
-#include <QVector>
+#include <QtCore/QVector>
 
 class KConfig;
 class KSSLCNode;

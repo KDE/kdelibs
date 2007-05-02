@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <kdebug.h>
 #include "kfiltertest.h"
 #include <QtCore/QDir>

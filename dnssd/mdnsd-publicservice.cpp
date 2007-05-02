@@ -19,7 +19,7 @@
  */
 
 #include <QtCore/QCoreApplication>
-#include <QStringList>
+#include <QtCore/QStringList>
 #include <netinet/in.h>
 #include "publicservice.h"
 #include "servicebase_p.h"

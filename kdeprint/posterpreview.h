@@ -20,8 +20,8 @@
 #ifndef POSTERPREVIEW_H
 #define POSTERPREVIEW_H
 
-#include <QFrame>
-#include <QList>
+#include <QtGui/QFrame>
+#include <QtCore/QList>
 
 class K3Process;
 

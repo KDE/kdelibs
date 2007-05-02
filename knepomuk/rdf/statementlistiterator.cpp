@@ -18,7 +18,7 @@
 
 #include <soprano/statement.h>
 
-#include <QList>
+#include <QtCore/QList>
 
 #include <kdebug.h>
 

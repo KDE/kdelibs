@@ -20,8 +20,8 @@
 #ifndef KURLBUTTON_P_H
 #define KURLBUTTON_P_H
 
-#include <QColor>
-#include <QPushButton>
+#include <QtGui/QColor>
+#include <QtGui/QPushButton>
 
 class KUrl;
 class QEvent;

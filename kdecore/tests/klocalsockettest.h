@@ -20,7 +20,7 @@
 #ifndef KLOCALSOCKETTEST_H
 #define KLOCALSOCKETTEST_H
 
-#include <QtCore/qglobal.h>
+#include <QtCore/QBool>
 #include <QtTest>
 
 class KLocalSocketServer;

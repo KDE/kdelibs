@@ -19,7 +19,7 @@
 
 #include "kprotocolcombo_p.h"
 
-#include <QMenu>
+#include <QtGui/QMenu>
 
 #include <kdebug.h>
 #include <kprotocolinfo.h>

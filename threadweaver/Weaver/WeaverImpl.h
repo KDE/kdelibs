@@ -28,8 +28,8 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 #ifndef WeaverImpl_H
 #define WeaverImpl_H
 
-#include <QObject>
-#include <QWaitCondition>
+#include <QtCore/QObject>
+#include <QtCore/QWaitCondition>
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API

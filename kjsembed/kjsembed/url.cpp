@@ -19,8 +19,8 @@
 */
 #include "url.h"
 
-#include <QDebug>
-#include <QUrl>
+#include <QtCore/QDebug>
+#include <QtCore/QUrl>
 
 using namespace KJSEmbed;
 

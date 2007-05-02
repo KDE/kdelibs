@@ -25,7 +25,7 @@
 
 #include <kpushbutton.h>
 #include <QtGui/QLabel>
-#include <QStackedWidget>
+#include <QtGui/QStackedWidget>
 #include <kmessagebox.h>
 #include <QtGui/QLayout>
 #include <klocale.h>

@@ -32,7 +32,7 @@
 #include <klocale.h>
 
 #include "klauncher_cmds.h"
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 
 #ifndef Q_WS_WIN
 static void sig_handler(int sig_num)

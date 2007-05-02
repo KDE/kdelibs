@@ -1,6 +1,6 @@
 #include <ksystemtrayicon.h>
 #include <kapplication.h>
-#include <QLabel>
+#include <QtGui/QLabel>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 

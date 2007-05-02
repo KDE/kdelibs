@@ -21,7 +21,7 @@
 #define PHONON_AUDIODEVICEENUMERATOR_P_H
 
 #include "audiodeviceenumerator.h"
-#include <QList>
+#include <QtCore/QList>
 #include "audiodevice.h"
 #include <ksharedconfig.h>
 

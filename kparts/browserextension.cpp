@@ -24,9 +24,9 @@
 #include <QtCore/QTimer>
 #include <QtCore/QObject>
 #include <QtCore/QMap>
-#include <QtCore/QMetaClassInfo>
+#include <QtCore/QMetaEnum>
 #include <QtCore/QRegExp>
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 
 #include <kdebug.h>
 #include <klocale.h>

@@ -6,9 +6,9 @@
 
 #include <stdio.h>
 
-#include <QDesktopWidget>
-#include <QPainter>
-#include <QTime>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QPainter>
+#include <QtCore/QDate>
 
 bool fullscreen = false, oldway = false, intvsfade = false;
 int max = 3; // how many steps

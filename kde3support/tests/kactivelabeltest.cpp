@@ -6,7 +6,7 @@
 * Licensed under the GNU General Public License version 2
 */
 
-#include <QLayout>
+#include <QtGui/QLayout>
 
 #include <kaboutdata.h>
 #include <kapplication.h>

@@ -23,7 +23,7 @@
 #include <QtCore/QCOORD>
 #include <QtGui/QPainter>
 #include <QtGui/QBitmap>
-#include <QtGui/QColorGroup>
+#include <QtGui/QPalette>
 
 /*
  * Various drawing routines. Also see Qt's qdrawutil.h for some more routines

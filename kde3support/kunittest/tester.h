@@ -323,7 +323,7 @@ using namespace std;
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include "kunittest_export.h"
 

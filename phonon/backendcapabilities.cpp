@@ -20,9 +20,9 @@
 #include "backendcapabilities.h"
 #include "factory.h"
 #include "objectdescription.h"
-#include <QList>
-#include <QSet>
-#include <QStringList>
+#include <QtCore/QList>
+#include <QtCore/QSet>
+#include <QtCore/QStringList>
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
 #include "phonondefs_p.h"

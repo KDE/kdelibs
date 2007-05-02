@@ -21,9 +21,9 @@
 #define KROSS_SCRIPT_H
 
 
-#include <QStringList>
-#include <QVariant>
-#include <QObject>
+#include <QtCore/QStringList>
+#include <QtCore/QVariant>
+#include <QtCore/QObject>
 
 #include "errorinterface.h"
 

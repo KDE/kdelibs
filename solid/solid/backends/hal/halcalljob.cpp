@@ -19,7 +19,7 @@
 
 #include "backends/hal/halcalljob.h"
 
-#include <QTimer>
+#include <QtCore/QTimer>
 
 HalCallJob::HalCallJob(const QDBusConnection &connection, const QString &udi,
                         const QString &interface, const QString &methodName,

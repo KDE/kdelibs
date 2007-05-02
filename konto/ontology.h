@@ -23,7 +23,7 @@
 #include <QtCore/QList>
 #include <QtCore/QUrl>
 #include <QtCore/QString>
-#include <QtCore/QSharedDataPointer>
+#include <QtCore/QSharedData>
 
 #include "konto_export.h"
 

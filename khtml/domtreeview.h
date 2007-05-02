@@ -20,7 +20,7 @@
 
 #include <k3listview.h>
 #include <kdebug.h>
-#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3ListView>
 #include <Qt3Support/Q3PtrDict>
 #include "dom/dom_core.h"
 

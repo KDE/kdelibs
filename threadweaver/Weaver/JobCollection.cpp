@@ -32,9 +32,9 @@ $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 #include "WeaverInterface.h"
 #include "DebuggingAids.h"
 
-#include <QList>
-#include <QObject>
-#include <QPointer>
+#include <QtCore/QList>
+#include <QtCore/QObject>
+#include <QtCore/QPointer>
 
 #include "DependencyPolicy.h"
 

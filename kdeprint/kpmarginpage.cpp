@@ -25,7 +25,7 @@
 
 #include <config.h>
 
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QPrinter>
 

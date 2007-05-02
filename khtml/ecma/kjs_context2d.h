@@ -28,7 +28,7 @@
 
 #include "misc/loader_client.h"
 
-#include <QPainterPath>
+#include <QtGui/QPainterPath>
 
 namespace DOM {
     class HTMLCollectionImpl;

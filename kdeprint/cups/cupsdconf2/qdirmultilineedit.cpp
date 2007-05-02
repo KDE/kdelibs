@@ -20,7 +20,7 @@
 #include "qdirmultilineedit.h"
 
 #include <QtGui/QLayout>
-#include <QListWidget>
+#include <QtGui/QListWidget>
 #include <QtGui/QPushButton>
 #include <klocale.h>
 #include <kfiledialog.h>

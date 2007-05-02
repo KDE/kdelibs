@@ -19,7 +19,7 @@
 #ifndef KDESKTOPFILETEST_H
 #define KDESKTOPFILETEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KDesktopFileTest : public QObject
 {

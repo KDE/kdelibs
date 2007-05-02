@@ -19,8 +19,8 @@ extern "C" {
 #include <unistd.h>
 }
 
-#include <QtDebug>
-#include <QCoreApplication>
+#include <QtCore/QDebug>
+#include <QtCore/QCoreApplication>
 
 #include <Job.h>
 #include <Thread.h>

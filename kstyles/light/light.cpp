@@ -20,7 +20,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui/QStyleFactoryInterface>
+#include <QtGui/QStylePlugin>
 #include "lightstyle-v2.h"
 #include "lightstyle-v3.h"
 

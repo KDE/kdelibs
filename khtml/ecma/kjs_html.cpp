@@ -65,8 +65,8 @@
 #include <klocale.h>
 
 #include <kdebug.h>
-#include <QList>
-#include <QHash>
+#include <QtCore/QList>
+#include <QtCore/QHash>
 
 namespace KJS {
 

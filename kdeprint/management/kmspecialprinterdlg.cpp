@@ -32,8 +32,8 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kicondialog.h>

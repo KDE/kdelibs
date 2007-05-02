@@ -38,8 +38,8 @@
 #include <kdefx_export.h>
 
 #include <QtGui/QCommonStyle>
-#include <QtGui/QColorGroup>
-#include <QtGui/QStyleFactoryInterface>
+#include <QtGui/QPalette>
+#include <QtGui/QStylePlugin>
 
 class QStyleOptionProgressBar;
 class QStyleOptionTab;

@@ -28,8 +28,8 @@ $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
 
 #include "DependencyPolicy.h"
 
-#include <QMutex>
-#include <QtDebug>
+#include <QtCore/QMutex>
+#include <QtCore/QDebug>
 
 #include "Job.h"
 #include "DebuggingAids.h"

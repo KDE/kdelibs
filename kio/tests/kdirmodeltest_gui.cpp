@@ -23,10 +23,10 @@
 #include <kdirmodel.h>
 #include <kurl.h>
 
-#include <QTreeView>
-#include <QListView>
-#include <QDir>
-#include <QFile>
+#include <QtGui/QTreeView>
+#include <QtGui/QListView>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <kmimetyperesolver.h>
 #include <kfileitemdelegate.h>
 

@@ -25,7 +25,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QMap>
-#include <QList>
+#include <QtCore/QList>
 #include <QtCore/QDate>
 
 #include "khtmlpart_p.h"

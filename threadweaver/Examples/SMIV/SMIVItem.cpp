@@ -16,10 +16,10 @@
 
 #include "SMIVItem.h"
 
-#include <QStringList>
-#include <QImage>
-#include <QTimer>
-#include <QFileInfo>
+#include <QtCore/QStringList>
+#include <QtGui/QImage>
+#include <QtCore/QTimer>
+#include <QtCore/QFileInfo>
 
 #include <DebuggingAids.h>
 #include <ResourceRestrictionPolicy.h>

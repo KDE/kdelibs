@@ -23,7 +23,7 @@
 #include "servicebrowser.h"
 #include "avahi_servicebrowser_interface.h"
 #include "avahi_server_interface.h"
-#include <QHash>
+#include <QtCore/QHash>
 
 Q_DECLARE_METATYPE(QList<QByteArray>)
 

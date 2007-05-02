@@ -41,7 +41,7 @@ Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
 #include <QtCore/QBool>
 
 #include "kthemebase.h"
-#include <QtGui/QWidgetList>
+#include <QtGui/QWidgetSet>
 #include <QtCore/QObject>
 #include <QtGui/QPushButton>
 #include <QtGui/QScrollBar>

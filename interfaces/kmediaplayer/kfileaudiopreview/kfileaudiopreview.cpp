@@ -19,9 +19,9 @@
 
 #include "kfileaudiopreview.h"
 
-#include <QCheckBox>
-#include <QLayout>
-#include <QGroupBox>
+#include <QtGui/QCheckBox>
+#include <QtGui/QLayout>
+#include <QtGui/QGroupBox>
 
 #include <khbox.h>
 #include <kglobal.h>

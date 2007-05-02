@@ -1,8 +1,7 @@
-#include <QLayout>
-#include <QDragMoveEvent>
-#include <QDropEvent>
-#include <QMenu>
-#include <QMimeData>
+#include <QtGui/QLayout>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QMenu>
+#include <QtCore/QMimeData>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

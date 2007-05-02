@@ -22,10 +22,10 @@
  */
 
 
-#include <QImageIOHandler>
-#include <QImage>
-#include <QIODevice>
-#include <QVector>
+#include <QtGui/QImageIOPlugin>
+#include <QtGui/QImage>
+#include <QtCore/QIODevice>
+#include <QtCore/QVector>
 
 #include "gimp.h"
 

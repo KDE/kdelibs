@@ -6,7 +6,7 @@
 #include <QtGui/QSplitter>
 #include <QtGui/QCheckBox>
 #include <QtCore/QDir>
-#include <QMenu>
+#include <QtGui/QMenu>
 
 #include <kiconloader.h>
 #include <kstandarddirs.h>

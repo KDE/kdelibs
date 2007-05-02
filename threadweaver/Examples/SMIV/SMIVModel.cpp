@@ -17,7 +17,7 @@
 #include "SMIVModel.h"
 #include "SMIVItem.h"
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 #include <DebuggingAids.h>
 

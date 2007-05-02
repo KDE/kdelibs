@@ -1,10 +1,10 @@
 #include "DeleteTest.h"
 
-#include <QChar>
+#include <QtCore/QChar>
 
-#include <QObject>
-#include <QThread>
-#include <QtDebug>
+#include <QtCore/QObject>
+#include <QtCore/QThread>
+#include <QtCore/QDebug>
 #include <QtTest/QtTest>
 
 #include <Job.h>

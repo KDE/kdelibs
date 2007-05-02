@@ -52,7 +52,7 @@
 #include <X11/Xlib.h>
 #endif
 
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
 #define SLAVE_MAX_IDLE	30

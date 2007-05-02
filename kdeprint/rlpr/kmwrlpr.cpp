@@ -23,7 +23,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>

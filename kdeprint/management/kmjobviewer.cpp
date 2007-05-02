@@ -54,8 +54,8 @@
 #include <kdialog.h>
 #include <QtGui/QCheckBox>
 #include <kconfig.h>
-#include <QDropEvent>
-#include <QMenuItem>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QMenuItem>
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
 

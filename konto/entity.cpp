@@ -20,7 +20,7 @@
 #include "entity.h"
 #include "entity_p.h"
 
-#include <QHash>
+#include <QtCore/QHash>
 
 
 Konto::Entity::Entity()

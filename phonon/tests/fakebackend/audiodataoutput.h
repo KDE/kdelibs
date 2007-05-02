@@ -21,7 +21,7 @@
 
 #include "abstractaudiooutput.h"
 #include <phonon/experimental/audiodataoutput.h>
-#include <QVector>
+#include <QtCore/QVector>
 
 namespace Phonon
 {

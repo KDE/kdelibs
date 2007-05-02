@@ -12,9 +12,9 @@
 
 
 #include <kdemacros.h>
-#include <QImageIOHandler>
-#include <QDataStream>
-#include <QColor>
+#include <QtGui/QImageIOPlugin>
+#include <QtCore/QDataStream>
+#include <QtGui/QColor>
 
 class PCXHandler : public QImageIOHandler
 {

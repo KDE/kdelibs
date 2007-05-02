@@ -23,7 +23,7 @@
 #include "factory.h"
 #include "objectdescription.h"
 
-#include <QPointer>
+#include <QtCore/QPointer>
 #include <kservice.h>
 
 namespace Phonon

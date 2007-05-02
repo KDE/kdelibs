@@ -20,7 +20,7 @@
 #include "mediasource.h"
 #include "mediasource_p.h"
 #include "iodevicestream.h"
-#include <QFile>
+#include <QtCore/QFile>
 
 namespace Phonon
 {

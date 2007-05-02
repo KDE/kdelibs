@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
-#include <QPointer>
+#include <QtCore/QPointer>
 
 #include <assert.h>
 #include <stdlib.h>

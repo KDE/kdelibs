@@ -20,7 +20,7 @@
 #ifndef SOLID_SOLIDDEFS_P_H
 #define SOLID_SOLIDDEFS_P_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 
 

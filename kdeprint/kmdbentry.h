@@ -22,8 +22,8 @@
 
 #include <kdeprint_export.h>
 
-#include <QList>
-#include <QString>
+#include <QtCore/QList>
+#include <QtCore/QString>
 
 class KDEPRINT_EXPORT KMDBEntry
 {

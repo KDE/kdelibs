@@ -20,8 +20,8 @@
 #ifndef SOLIDHWTEST_H
 #define SOLIDHWTEST_H
 
-#include <QObject>
-#include <QMap>
+#include <QtCore/QObject>
+#include <QtCore/QMap>
 
 class FakeManager;
 

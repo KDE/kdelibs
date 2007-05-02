@@ -22,7 +22,7 @@
 #define FAKEJOB_H
 
 #include <kjob.h>
-#include <QTimer>
+#include <QtCore/QTimer>
 
 class FakeJob : public KJob
 {

@@ -20,7 +20,7 @@
 #ifndef PORTABLEMEDIAPLAYER_H
 #define PORTABLEMEDIAPLAYER_H
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 #include "solid/ifaces/portablemediaplayer.h"
 #include "solid/backends/hal/haldeviceinterface.h"

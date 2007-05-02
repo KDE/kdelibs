@@ -21,7 +21,7 @@
 #define KMWINFOBASE_H
 
 #include "kmwizardpage.h"
-#include <QList>
+#include <QtCore/QList>
 
 class QLabel;
 class QLineEdit;

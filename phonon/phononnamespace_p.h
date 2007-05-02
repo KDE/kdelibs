@@ -20,7 +20,7 @@
 #ifndef PHONONNAMESPACE_P_H
 #define PHONONNAMESPACE_P_H
 
-#include <QtCore/qdebug.h>
+#include <QtCore/QDebug>
 #include "phonon_export.h"
 
 namespace Phonon

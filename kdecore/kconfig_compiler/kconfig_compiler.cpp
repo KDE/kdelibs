@@ -23,14 +23,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QCoreApplication>
-#include <QFile>
-#include <QFileInfo>
-#include <QSettings>
-#include <QTextStream>
-#include <QDomDocument>
-#include <QRegExp>
-#include <QStringList>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtCore/QTextStream>
+#include <QtXml/QDomAttr>
+#include <QtCore/QRegExp>
+#include <QtCore/QStringList>
 
 #include <ostream>
 #include <iostream>

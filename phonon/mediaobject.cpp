@@ -31,8 +31,8 @@
 #include "abstractmediastream.h"
 #include "abstractmediastream_p.h"
 
-#include <QStringList>
-#include <QCoreApplication>
+#include <QtCore/QStringList>
+#include <QtCore/QCoreApplication>
 
 #include "phononnamespace_p.h"
 

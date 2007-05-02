@@ -19,9 +19,9 @@
 */
 
 
-#include <QApplication>
-#include <QDebug>
-#include <QStringList>
+#include <QtGui/QApplication>
+#include <QtCore/QDebug>
+#include <QtCore/QStringList>
 
 #ifndef QT_ONLY
 #include <kapplication.h>
@@ -35,7 +35,7 @@
 #include <kjsembed/kjseglobal.h>
 #include <kjsembed/kjsembed.h>
 
-#include <QTime>
+#include <QtCore/QDate>
 
 using namespace KJSEmbed;
 

@@ -26,8 +26,8 @@
 #include <errno.h>
 
 #include <QtCore/QString>
-#include <QLibrary>
-#include <QFile>
+#include <QtCore/QLibrary>
+#include <QtCore/QFile>
 #ifdef Q_WS_WIN
 #include <QStringList>
 #endif

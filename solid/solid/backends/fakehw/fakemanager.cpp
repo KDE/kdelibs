@@ -20,10 +20,10 @@
 
 // Qt includes
 #include <QtXml>
-#include <QFile>
-#include <QLatin1String>
-#include <QTimer>
-#include <QDBusConnection>
+#include <QtCore/QFile>
+#include <QtCore/QString>
+#include <QtCore/QTimer>
+#include <QtDBus/QDBusConnection>
 
 // KDE includes
 #include <kstandarddirs.h>

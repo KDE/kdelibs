@@ -20,7 +20,7 @@
 #define PHONON_EFFECT_H
 
 #include "phonondefs.h"
-#include <QObject>
+#include <QtCore/QObject>
 #include "objectdescription.h"
 
 class QString;

@@ -43,9 +43,9 @@
 #include "rendering/render_style.h"
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
-#include <QProcess>
-#include <QWindowsStyle>
-#include <QStyleOptionSlider>
+#include <QtCore/QProcess>
+#include <QtGui/QWindowsStyle>
+#include <QtGui/QStyleOption>
 
 #include <dom/dom_node.h>
 #include <dom/dom_element.h>
@@ -227,8 +227,7 @@ public:
 #include <QtCore/QObject>
 #include <QtGui/QPushButton>
 #include <QtCore/QString>
-#include <QtCore/QTextIStream>
-#include <QtGui/QImage>
+#include <QtCore/QTextStream>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTimer>
 #include <kstatusbar.h>

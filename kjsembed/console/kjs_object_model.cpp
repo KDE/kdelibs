@@ -17,8 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QPixmap>
-#include <QDebug>
+#include <QtGui/QPixmap>
+#include <QtCore/QDebug>
 
 #include <kjs/object.h>
 #include <kjs/interpreter.h>

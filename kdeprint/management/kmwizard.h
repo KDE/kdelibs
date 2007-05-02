@@ -22,8 +22,8 @@
 
 #include <kdeprint_export.h>
 #include <QtGui/QDialog>
-#include <QMultiHash>
-#include <QStack>
+#include <QtCore/QHash>
+#include <QtCore/QStack>
 
 class QStackedWidget;
 class QLabel;

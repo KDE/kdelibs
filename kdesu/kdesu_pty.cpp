@@ -46,7 +46,7 @@
 #endif
 
 #include <QtCore/QBool>
-#include <QFile>
+#include <QtCore/QFile>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

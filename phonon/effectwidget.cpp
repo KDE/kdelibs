@@ -21,17 +21,15 @@
 #include "effectwidget_p.h"
 
 #include <QtAlgorithms>
-#include <QList>
+#include <QtCore/QList>
 
 #include "effect.h"
 #include "effectparameter.h"
 #include "phonondefs_p.h"
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QDoubleSpinBox>
-#include <QSpinBox>
-#include <QCheckBox>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QSpinBox>
+#include <QtGui/QCheckBox>
 
 namespace Phonon
 {

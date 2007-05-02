@@ -22,9 +22,9 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QPair>
-#include <QList>
+#include <QtCore/QList>
 
 #include "cupsdcomment.h"
 

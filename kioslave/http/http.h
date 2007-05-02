@@ -30,9 +30,9 @@
 #include <stdio.h>
 #include <time.h>
 
-#include <QByteArray>
-#include <QList>
-#include <QStringList>
+#include <QtCore/QByteRef>
+#include <QtCore/QList>
+#include <QtCore/QStringList>
 
 #include <kurl.h>
 #include "kio/tcpslavebase.h"

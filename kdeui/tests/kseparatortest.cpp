@@ -21,7 +21,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QLayout>
 #include <QtGui/QWidget>
-#include <QBoxLayout>
+#include <QtGui/QBoxLayout>
 
 #include "kseparator.h"
 

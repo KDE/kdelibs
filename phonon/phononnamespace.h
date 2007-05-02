@@ -223,7 +223,7 @@ inline PHONON_EXPORT kdbgstream &operator<<(kdbgstream  & stream, const Phonon::
     return stream;
 }
 
-#include <QMetaType>
+#include <QtCore/QMetaType>
 
 Q_DECLARE_METATYPE(Phonon::State)
 Q_DECLARE_METATYPE(Phonon::ErrorType)

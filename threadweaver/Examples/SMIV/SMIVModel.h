@@ -17,8 +17,8 @@
 #ifndef SMIVModel_H
 #define SMIVModel_H
 
-#include <QAbstractListModel>
-#include <QList>
+#include <QtCore/QModelIndex>
+#include <QtCore/QList>
 
 class SMIVItem;
 

@@ -23,7 +23,7 @@
 
 #include <kurllabel.h>
 
-#include <QtGui/QHBoxLayout>
+#include <QtGui/QBoxLayout>
 
 
 class KTagDisplayWidget::Private

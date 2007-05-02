@@ -22,8 +22,8 @@
 
 #include <cstdlib>
 #include <qtest_kde.h>
-#include <QTime>
-#include <QtDebug>
+#include <QtCore/QDate>
+#include <QtCore/QDebug>
 
 using namespace Phonon;
 

@@ -20,7 +20,7 @@
 #include "audiooutputtest.h"
 #include "../audiooutput.h"
 #include <kglobal.h>
-#include <QLatin1String>
+#include <QtCore/QString>
 #include "../phononnamespace.h"
 #include <qtest_kde.h>
 #include "loadfakebackend.h"

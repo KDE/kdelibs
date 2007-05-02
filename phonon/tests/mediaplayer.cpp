@@ -22,14 +22,14 @@
 #include <kapplication.h>
 #include <kaboutdata.h>
 #include <cstdlib>
-#include <QVBoxLayout>
-#include <QPushButton>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QPushButton>
 #include "../backendcapabilities.h"
-#include <QSlider>
-#include <QCheckBox>
-#include <QComboBox>
+#include <QtGui/QSlider>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 #include <kicon.h>
-#include <QAction>
+#include <QtGui/QAction>
 
 using namespace Phonon;
 

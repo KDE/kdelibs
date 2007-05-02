@@ -18,8 +18,8 @@
 */
 
 #include "globalconfig.h"
-#include <QSet>
-#include <QList>
+#include <QtCore/QSet>
+#include <QtCore/QList>
 #include "factory.h"
 #include "objectdescription.h"
 #include "phonondefs_p.h"

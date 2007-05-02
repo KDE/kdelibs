@@ -21,10 +21,10 @@
 #include "variant_binding.h"
 #include "object_binding.h"
 
-#include <QDebug>
-#include <QImage>
-#include <QPoint>
-#include <QSize>
+#include <QtCore/QDebug>
+#include <QtGui/QImage>
+#include <QtCore/QPoint>
+#include <QtCore/QSize>
 
 using namespace KJSEmbed;
 

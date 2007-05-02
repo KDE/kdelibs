@@ -20,10 +20,10 @@
 #ifndef MEDIAOBJECTTEST_H
 #define MEDIAOBJECTTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <phonon/mediaobject.h>
 #include <QtTest/QSignalSpy>
-#include <QUrl>
+#include <QtCore/QUrl>
 
 class MediaObjectTest : public QObject
 {

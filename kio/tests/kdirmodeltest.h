@@ -19,11 +19,11 @@
 #ifndef KDIRMODELTEST_H
 #define KDIRMODELTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <ktempdir.h>
-#include <QDateTime>
+#include <QtCore/QDate>
 #include <kdirmodel.h>
-#include <QEventLoop>
+#include <QtCore/QEventLoop>
 
 class KDirModelTest : public QObject
 {

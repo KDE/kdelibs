@@ -21,10 +21,10 @@
 #include "kmfactory.h"
 #include "kxmlcommand.h"
 
-#include <QToolButton>
-#include <QLayout>
-#include <QTreeWidget>
-#include <QLabel>
+#include <QtGui/QToolButton>
+#include <QtGui/QLayout>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QLabel>
 
 #include <klocale.h>
 #include <kiconloader.h>

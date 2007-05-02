@@ -23,8 +23,8 @@
 #include "property.h"
 #include "literal.h"
 
-#include <QVariant>
-#include <QSharedData>
+#include <QtCore/QVariant>
+#include <QtCore/QSharedData>
 
 namespace Konto {
 

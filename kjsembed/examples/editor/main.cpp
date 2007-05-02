@@ -21,7 +21,7 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#include <QtGui/QApplication>
 #include <QtDesigner/QDesignerComponents>
 #include <QtDesigner/abstractformeditor.h>
 

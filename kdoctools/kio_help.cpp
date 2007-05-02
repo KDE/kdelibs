@@ -20,7 +20,7 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextCodec>
 

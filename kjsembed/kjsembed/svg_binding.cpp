@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 #include <QtSvg/QSvgWidget>
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include <kjs/object.h>
 

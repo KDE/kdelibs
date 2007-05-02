@@ -24,8 +24,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QDialog>
 #include <QtGui/QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <QtGui/QBoxLayout>
 
 int main(int argc, char **argv) {
    KAboutData about("kdialogbuttonboxtest", "kbuttonboxtest", "version");

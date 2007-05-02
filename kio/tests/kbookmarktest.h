@@ -19,7 +19,7 @@
 #ifndef KBOOKMARKTEST_H
 #define KBOOKMARKTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KBookmarkTest : public QObject
 {

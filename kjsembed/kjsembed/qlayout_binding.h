@@ -21,7 +21,7 @@
 #ifndef QLAYOUT_BINDING_H
 #define QLAYOUT_BINDING_H
 
-#include <QLayout>
+#include <QtGui/QLayout>
 
 #include "qobject_binding.h"
 

@@ -19,8 +19,8 @@
 */
 #include "size.h"
 
-#include <QDebug>
-#include <QSize>
+#include <QtCore/QDebug>
+#include <QtCore/QSize>
 
 using namespace KJSEmbed;
 

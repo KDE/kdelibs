@@ -33,7 +33,7 @@
 #include <psapi.h>
 
 
-#include <QProcess>
+#include <QtCore/QProcess>
 #include <QtDBus/QtDBus>
 
 #include <kcomponentdata.h>

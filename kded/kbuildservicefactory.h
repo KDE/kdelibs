@@ -25,7 +25,7 @@
 
 #include <kservicefactory.h>
 // We export the services to the service group factory!
-#include <QSet>
+#include <QtCore/QSet>
 #include <kserviceoffer.h>
 class KBuildServiceGroupFactory;
 class KBuildMimeTypeFactory;

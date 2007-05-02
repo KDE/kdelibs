@@ -17,10 +17,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QStringList>
-#include <QProcess>
-#include <QFileDialog>
-#include <QDebug>
+#include <QtCore/QStringList>
+#include <QtCore/QProcess>
+#include <QtGui/QFileDialog>
+#include <QtCore/QDebug>
 
 #include <kjs/object.h>
 

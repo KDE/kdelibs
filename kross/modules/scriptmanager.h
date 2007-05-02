@@ -21,11 +21,11 @@
 #ifndef KROSS_SCRIPTMANAGER_H
 #define KROSS_SCRIPTMANAGER_H
 
-#include <QObject>
-#include <QWidget>
-#include <QAbstractItemModel>
-#include <QItemSelectionModel>
-#include <QTreeView>
+#include <QtCore/QObject>
+#include <QtGui/QWidget>
+#include <QtCore/QModelIndex>
+#include <QtGui/QItemSelection>
+#include <QtGui/QTreeView>
 
 #include <kdialog.h>
 

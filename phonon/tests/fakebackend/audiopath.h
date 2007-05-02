@@ -19,8 +19,8 @@
 #ifndef Phonon_FAKE_AUDIOPATH_H
 #define Phonon_FAKE_AUDIOPATH_H
 
-#include <QObject>
-#include <QList>
+#include <QtCore/QObject>
+#include <QtCore/QList>
 
 namespace Phonon
 {

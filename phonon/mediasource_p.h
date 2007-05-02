@@ -23,10 +23,10 @@
 #include "mediasource.h"
 #include "objectdescription.h"
 
-#include <QUrl>
-#include <QString>
-#include <QSharedData>
-#include <QPointer>
+#include <QtCore/QUrl>
+#include <QtCore/QString>
+#include <QtCore/QSharedData>
+#include <QtCore/QPointer>
 class QFile;
 
 namespace Phonon

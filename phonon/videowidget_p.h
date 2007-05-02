@@ -22,12 +22,12 @@
 
 #include "videowidget.h"
 #include "abstractvideooutput_p.h"
-#include <QHBoxLayout>
-#include <QChildEvent>
-#include <QCoreApplication>
-#include <QPalette>
-#include <QCloseEvent>
-#include <QTimer>
+#include <QtGui/QBoxLayout>
+#include <QtCore/QEvent>
+#include <QtCore/QCoreApplication>
+#include <QtGui/QPalette>
+#include <QtGui/QKeyEvent>
+#include <QtCore/QTimer>
 
 namespace Phonon
 {

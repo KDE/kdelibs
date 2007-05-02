@@ -23,7 +23,7 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
-#include <QTimer>
+#include <QtCore/QTimer>
 
 static KCmdLineOptions options[] =
 {

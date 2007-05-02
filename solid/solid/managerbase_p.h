@@ -20,8 +20,8 @@
 #ifndef SOLID_MANAGERBASE_P_H
 #define SOLID_MANAGERBASE_P_H
 
-#include <QObject>
-#include <QString>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 #include "solid/solid_export.h"
 

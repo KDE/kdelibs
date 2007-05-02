@@ -25,7 +25,7 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
 #include <kglobalsettings.h>
 #include <kdebug.h>
 #include <k3process.h>
-#include <QEventLoop>
+#include <QtCore/QEventLoop>
 #include <QtDBus/QtDBus>
 
 /**

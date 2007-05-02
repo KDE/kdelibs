@@ -23,7 +23,7 @@
 #include "phonon_export.h"
 #include "phononnamespace.h"
 #include "objectdescription.h"
-#include <QExplicitlySharedDataPointer>
+#include <QtCore/QSharedData>
 
 class QString;
 class QUrl;

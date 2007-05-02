@@ -23,7 +23,7 @@
 
 #include "videoplayback.h"
 
-#include <QVBoxLayout>
+#include <QtGui/QBoxLayout>
 
 #include <phonon/videopath.h>
 #include <phonon/audiooutput.h>

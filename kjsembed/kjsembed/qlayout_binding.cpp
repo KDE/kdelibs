@@ -24,11 +24,10 @@
 #include <kjs/object.h>
 #include <QtCore/QDebug>
 
-#include <QWidget>
-#include <QAction>
-#include <QLayout>
+#include <QtGui/QWidget>
+#include <QtGui/QAction>
+#include <QtGui/QLayout>
 #include <QtUiTools/QUiLoader>
-#include <QtDebug>
 
 namespace KJSEmbed
 {

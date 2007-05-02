@@ -42,7 +42,7 @@
 #include <kparts/browserextension.h>
 #include <kmessagebox.h>
 
-#include <QList>
+#include <QtCore/QList>
 
 #include <assert.h>
 #include <stdlib.h>

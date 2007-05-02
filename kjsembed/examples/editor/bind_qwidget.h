@@ -20,7 +20,7 @@
 #ifndef BIND_QWIDGET_H
 #define BIND_QWIDGET_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <kjsembed/qobject_binding.h>
 
 KJS_BINDING( Widget )

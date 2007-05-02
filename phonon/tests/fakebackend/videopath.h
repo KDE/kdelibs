@@ -19,9 +19,9 @@
 #ifndef Phonon_FAKE_VIDEOPATH_H
 #define Phonon_FAKE_VIDEOPATH_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <phonon/experimental/videoframe.h>
-#include <QList>
+#include <QtCore/QList>
 
 namespace Phonon
 {

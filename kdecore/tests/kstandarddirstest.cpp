@@ -26,7 +26,7 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kstandarddirs.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <QDebug>
+#include <QtCore/QDebug>
 #include <config.h>
 
 void KStandarddirsTest::testLocateLocal()

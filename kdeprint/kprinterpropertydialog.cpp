@@ -28,7 +28,7 @@
 #include <kmessagebox.h>
 #include <klocale.h>
 
-#include <QTabWidget>
+#include <QtGui/QTabWidget>
 
 KPrinterPropertyDialog::KPrinterPropertyDialog(KMPrinter *p, QWidget *parent)
 : KDialog(parent, Qt::Dialog ),

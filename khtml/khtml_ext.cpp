@@ -39,7 +39,7 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QMenu>
 #include <QtCore/QUrl>
-#include <QtCore/QMetaClassInfo>
+#include <QtCore/QMetaEnum>
 
 #include <kdebug.h>
 #include <klocale.h>

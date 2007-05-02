@@ -20,7 +20,7 @@
 */
 
 #include "k3filedetailview.h"
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <QtCore/QCOORD>
 #include <Qt3Support/Q3Header>
 #include <QtGui/QPainter>

@@ -24,9 +24,9 @@
 //#include "object.h"
 
 
-#include <QStringList>
-#include <QVariant>
-#include <QMetaType>
+#include <QtCore/QStringList>
+#include <QtCore/QVariant>
+#include <QtCore/QMetaType>
 
 #include <typeinfo>
 

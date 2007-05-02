@@ -18,14 +18,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QTextDocument>
-#include <QTextBlock>
-#include <QTextEdit>
-#include <QHBoxLayout>
-#include <QScrollBar>
-#include <QPainter>
-#include <QAbstractTextDocumentLayout>
-#include <QToolTip>
+#include <QtGui/QTextDocument>
+#include <QtGui/QTextBlock>
+#include <QtGui/QTextEdit>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QScrollBar>
+#include <QtGui/QPainter>
+#include <QtGui/QTextObjectInterface>
+#include <QtGui/QToolTip>
 #include <QtCore/QDebug>
 
 #include "numberedtextview.h"

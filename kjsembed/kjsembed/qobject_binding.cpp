@@ -17,15 +17,13 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QObject>
-#include <QMetaObject>
-#include <QMetaProperty>
-#include <QMetaMethod>
-#include <QMetaType>
-#include <QVariant>
-#include <QVector>
-#include <QDebug>
+#include <QtCore/QObject>
 #include <QtCore/QArgument>
+#include <QtCore/QMetaEnum>
+#include <QtCore/QMetaType>
+#include <QtCore/QVariant>
+#include <QtCore/QVector>
+#include <QtCore/QDebug>
 
 #include "slotproxy.h"
 #include "eventproxy.h"

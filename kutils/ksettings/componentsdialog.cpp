@@ -27,8 +27,8 @@
 #include <kconfig.h>
 #include <kseparator.h>
 
-#include <QList>
-#include <QTreeWidget>
+#include <QtCore/QList>
+#include <QtGui/QTreeWidget>
 
 namespace KSettings
 {

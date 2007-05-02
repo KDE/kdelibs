@@ -22,8 +22,8 @@
 #include <QtCore/QDir>
 #include <QtGui/QLayout>
 #include <QtGui/QMenu>
-#include <QtCore/QMutableStringListIterator>
-#include <QStack>
+#include <QtCore/QStringList>
+#include <QtCore/QStack>
 
 #include <kapplication.h>
 #include <kauthorized.h>

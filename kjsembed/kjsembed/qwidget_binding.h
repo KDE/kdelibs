@@ -21,7 +21,7 @@
 #ifndef QWIDGET_BINDING_H
 #define QWIDGET_BINDING_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 #include "qobject_binding.h"
 

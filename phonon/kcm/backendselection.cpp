@@ -22,11 +22,11 @@
 #include <kservicetypeprofile.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>
-#include <QStringList>
-#include <QListWidgetItem>
+#include <QtCore/QStringList>
+#include <QtGui/QListWidget>
 #include <kapplication.h>
 #include <kicon.h>
-#include <QList>
+#include <QtCore/QList>
 #include <QtDBus/QtDBus>
 #include <kcmoduleproxy.h>
 

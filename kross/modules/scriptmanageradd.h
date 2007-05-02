@@ -20,8 +20,8 @@
 #ifndef KROSS_SCRIPTMANAGERADD_H
 #define KROSS_SCRIPTMANAGERADD_H
 
-#include <QObject>
-#include <QWidget>
+#include <QtCore/QObject>
+#include <QtGui/QWidget>
 
 #include <kassistantdialog.h>
 

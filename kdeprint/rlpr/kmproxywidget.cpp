@@ -23,7 +23,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
-#include <QtGui/QDoubleValidator>
+#include <QtGui/QValidator>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kcursor.h>

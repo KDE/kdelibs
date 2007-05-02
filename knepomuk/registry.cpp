@@ -17,8 +17,8 @@
 #include "servicepublisher.h"
 #include "registrydbusbackend.h"
 
-#include <qlist.h>
-#include <qmap.h>
+#include <QtCore/QList>
+#include <QtCore/QMap>
 
 #include <kdebug.h>
 

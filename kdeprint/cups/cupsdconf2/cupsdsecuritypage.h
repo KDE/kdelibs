@@ -21,7 +21,7 @@
 #define CUPSDSECURITYPAGE_H
 
 #include "cupsdpage.h"
-#include <QList>
+#include <QtCore/QList>
 
 class QLineEdit;
 class EditList;

@@ -20,7 +20,7 @@
 #ifndef JOBITEM_H
 #define JOBITEM_H
 
-#include <QTreeWidgetItem>
+#include <QtGui/QTreeWidget>
 #include "kmobject.h"
 
 class KMJob;

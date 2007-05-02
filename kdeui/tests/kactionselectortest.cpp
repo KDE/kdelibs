@@ -22,8 +22,8 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 
-#include <QApplication>
-#include <QListWidget>
+#include <QtGui/QApplication>
+#include <QtGui/QListWidget>
 
 int main( int argc, char *argv[] )
 {

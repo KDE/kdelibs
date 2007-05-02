@@ -20,7 +20,7 @@
 #ifndef VIDEOPATHTEST_H
 #define VIDEOPATHTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kurl.h>
 #include <phonon/mediaobject.h>
 #include <QtTest/QSignalSpy>

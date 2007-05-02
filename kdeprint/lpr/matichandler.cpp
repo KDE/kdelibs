@@ -36,7 +36,7 @@
 #include <k3process.h>
 #include <QtCore/Q_PID>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 
 #include <stdlib.h>

@@ -21,7 +21,7 @@
 
 #include "backends/fakehw/fakejob.h"
 
-#include <QDBusConnection>
+#include <QtDBus/QDBusConnection>
 
 FakeVolume::FakeVolume(FakeDevice *device)
     : FakeBlock(device)

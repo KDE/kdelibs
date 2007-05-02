@@ -19,7 +19,7 @@
 
 #include "backends/fakehw/fakeopticaldisc.h"
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 FakeOpticalDisc::FakeOpticalDisc(FakeDevice *device)
     : FakeVolume(device)

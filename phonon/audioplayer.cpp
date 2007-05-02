@@ -22,7 +22,7 @@
 #include "audiopath.h"
 #include "audiooutput.h"
 #include "mediasource.h"
-#include <QtCore/qurl.h>
+#include <QtCore/QUrl>
 
 namespace Phonon
 {

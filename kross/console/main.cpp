@@ -22,7 +22,7 @@
 
 // Qt
 
-#include <QFile>
+#include <QtCore/QFile>
 
 // KDE
 #include <kapplication.h>

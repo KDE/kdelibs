@@ -4,8 +4,8 @@
 #include <kdialog.h>
 #include <kguiitem.h>
 
-#include <QTextBrowser>
-#include <QLabel>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QLabel>
 
 int main(int argc, char** argv)
 {

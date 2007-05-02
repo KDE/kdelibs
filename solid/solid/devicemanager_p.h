@@ -24,8 +24,8 @@
 
 #include "devicenotifier.h"
 
-#include <QMap>
-#include <QExplicitlySharedDataPointer>
+#include <QtCore/QMap>
+#include <QtCore/QSharedData>
 
 namespace Solid
 {

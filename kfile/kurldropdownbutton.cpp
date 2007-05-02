@@ -22,7 +22,7 @@
 #include <kglobalsettings.h>
 
 #include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
+#include <QtGui/QKeyEvent>
 
 KUrlDropDownButton::KUrlDropDownButton(KUrlNavigator* parent) :
     KUrlButton(parent)

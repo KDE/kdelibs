@@ -20,7 +20,7 @@
 #ifndef MEDIAPLAYER_H
 #define MEDIAPLAYER_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 #include <phonon/mediaobject.h>
 #include <phonon/videopath.h>
 #include <phonon/audiooutput.h>

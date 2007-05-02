@@ -23,7 +23,7 @@
 #undef Always
 #endif
 #include <QtCore/QDir>
-#include <Qt3Support/Q3CheckTableItem>
+#include <Qt3Support/Q3Table>
 #include <QtCore/QPair>
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>

@@ -22,7 +22,7 @@
 
 #include "export.h"
 #include "../phonondefs.h"
-#include <QObject>
+#include <QtCore/QObject>
 #include "../objectdescription.h"
 
 namespace Phonon

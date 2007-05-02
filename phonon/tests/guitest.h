@@ -20,12 +20,12 @@
 #ifndef TESTWIDGET_H
 #define TESTWIDGET_H
 
-#include <QWidget>
-#include <QList>
-#include <QFrame>
-#include <QPoint>
-#include <QLine>
-#include <QPointer>
+#include <QtGui/QWidget>
+#include <QtCore/QList>
+#include <QtGui/QFrame>
+#include <QtCore/QPoint>
+#include <QtCore/QLine>
+#include <QtCore/QPointer>
 
 #include <phonon/phononnamespace.h>
 #include <phonon/mediacontroller.h>

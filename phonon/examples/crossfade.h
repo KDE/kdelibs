@@ -20,7 +20,7 @@
 #ifndef CROSSFADE_H
 #define CROSSFADE_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon {
     class MediaQueue;

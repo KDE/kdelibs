@@ -22,8 +22,8 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtCore/QTextIStream>
-#include <QList>
+#include <QtCore/QTextStream>
+#include <QtCore/QList>
 #include <QtCore/QMap>
 
 #include <cups/ipp.h>

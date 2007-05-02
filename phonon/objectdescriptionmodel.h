@@ -23,7 +23,7 @@
 #include "phonon_export.h"
 #include "phonondefs.h"
 #include "objectdescription.h"
-#include <QAbstractListModel>
+#include <QtCore/QModelIndex>
 
 template<class t> class QList;
 

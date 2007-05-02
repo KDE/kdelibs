@@ -8,8 +8,8 @@
  */
 
 #include "kmediaplayeradaptor_p.h"
-#include <QtCore/QMetaObject>
-#include <QtCore/QByteArray>
+#include <QtCore/QArgument>
+#include <QtCore/QByteRef>
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QString>

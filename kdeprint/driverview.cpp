@@ -22,10 +22,10 @@
 #include "driveritem.h"
 #include "driver.h"
 
-#include <QHeaderView>
-#include <QLayout>
-#include <QSplitter>
-#include <QTreeWidget>
+#include <QtGui/QHeaderView>
+#include <QtGui/QLayout>
+#include <QtGui/QSplitter>
+#include <QtGui/QTreeWidget>
 
 #include <kdialog.h>
 #include <klocale.h>

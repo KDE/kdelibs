@@ -4,11 +4,11 @@
 
 #include "kruler.h"
 
-#include <QLayout>
-#include <QLabel>
-#include <QResizeEvent>
-#include <QGroupBox>
-#include <QButtonGroup>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QGroupBox>
+#include <QtGui/QButtonGroup>
 
 /*
 void

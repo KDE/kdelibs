@@ -23,7 +23,7 @@
 #include "videodataoutput.h"
 #include "../abstractvideooutput_p.h"
 #include "videoframe.h"
-#include <QSize>
+#include <QtCore/QSize>
 
 namespace Phonon
 {

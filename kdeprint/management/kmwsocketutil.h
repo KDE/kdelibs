@@ -20,7 +20,7 @@
 #ifndef	KMWSOCKETUTIL_H
 #define	KMWSOCKETUTIL_H
 
-#include <QList>
+#include <QtCore/QList>
 
 
 #include <kdialog.h>

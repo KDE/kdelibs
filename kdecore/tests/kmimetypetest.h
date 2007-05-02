@@ -19,7 +19,7 @@
 #ifndef KMIMETYPETEST_H
 #define KMIMETYPETEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kmimemagicrule_p.h>
 
 class KMimeTypeTest : public QObject

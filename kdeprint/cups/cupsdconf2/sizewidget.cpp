@@ -20,7 +20,7 @@
 #include "sizewidget.h"
 
 #include <QtGui/QComboBox>
-#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSpinBox>
 #include <QtGui/QLayout>
 #include <QtCore/QRegExp>
 #include <klocale.h>

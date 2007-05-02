@@ -19,9 +19,9 @@
 */
 #include "font.h"
 
-#include <QDebug>
-#include <QFont>
-#include <QStringList>
+#include <QtCore/QDebug>
+#include <QtGui/QFont>
+#include <QtCore/QStringList>
 using namespace KJSEmbed;
 
 const KJS::ClassInfo FontBinding::info = { "QFont", &VariantBinding::info, 0, 0 };

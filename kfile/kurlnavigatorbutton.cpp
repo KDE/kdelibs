@@ -28,9 +28,9 @@
 #include <kglobalsettings.h>
 #include <kmenu.h>
 
-#include <QPainter>
-#include <QPaintEvent>
-#include <QTimer>
+#include <QtGui/QPainter>
+#include <QtGui/QKeyEvent>
+#include <QtCore/QTimer>
 
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),

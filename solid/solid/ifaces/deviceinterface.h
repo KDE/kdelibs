@@ -20,8 +20,8 @@
 #ifndef SOLID_IFACES_DEVICEINTERFACE_H
 #define SOLID_IFACES_DEVICEINTERFACE_H
 
-#include <QObject>
-#include <QFlags>
+#include <QtCore/QObject>
+#include <QtCore/QBool>
 
 namespace Solid
 {

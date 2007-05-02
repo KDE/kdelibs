@@ -1,10 +1,10 @@
 #include <kcmdlineargs.h>
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 #include <kurl.h>
 
 #include <stdio.h>
 #include <assert.h>
-#include <QDir>
+#include <QtCore/QDir>
 #include <kdebug.h>
 
 // we use our own macro to not bother translators

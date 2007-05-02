@@ -20,7 +20,7 @@
 #ifndef PHONON_OBJECTDESCRIPTION_P_H
 #define PHONON_OBJECTDESCRIPTION_P_H
 
-#include <QtCore/QByteArray>
+#include <QtCore/QByteRef>
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QSharedData>

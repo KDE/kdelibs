@@ -20,8 +20,8 @@
 #ifndef PHONON_PLUGINFACTORY_H
 #define PHONON_PLUGINFACTORY_H
 
-#include <QObject>
-#include <QStringList>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 class QUrl;
 class QObject;

@@ -1,4 +1,4 @@
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QTimer>
 #include <QtCore/QMap>
 #include <QtGui/QApplication>

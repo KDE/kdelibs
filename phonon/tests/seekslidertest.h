@@ -20,7 +20,7 @@
 #ifndef SEEKSLIDERTEST_H
 #define SEEKSLIDERTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon {
     class MediaObject;

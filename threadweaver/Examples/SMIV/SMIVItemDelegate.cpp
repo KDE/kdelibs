@@ -18,8 +18,8 @@
 #include "SMIVModel.h"
 #include "SMIVItem.h"
 
-#include <QModelIndex>
-#include <QPainter>
+#include <QtCore/QModelIndex>
+#include <QtGui/QPainter>
 
 #include <DebuggingAids.h>
 

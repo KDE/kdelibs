@@ -20,7 +20,7 @@
 #ifndef KMPAGES_H
 #define KMPAGES_H
 
-#include <QTabWidget>
+#include <QtGui/QTabWidget>
 
 class KMPrinter;
 class KMPrinterPage;

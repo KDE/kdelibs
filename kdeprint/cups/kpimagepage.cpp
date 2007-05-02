@@ -23,9 +23,9 @@
 #include "driver.h"
 
 #include <QtGui/QComboBox>
-#include <QButtonGroup>
+#include <QtGui/QButtonGroup>
 #include <QtGui/QRadioButton>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QPushButton>
 #include <QtGui/QApplication>
 #include <QtGui/QImage>

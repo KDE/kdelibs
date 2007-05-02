@@ -20,7 +20,7 @@
 #ifndef PHONON_BASE_P_H
 #define PHONON_BASE_P_H
 
-#include <QList>
+#include <QtCore/QList>
 #include "basedestructionhandler.h"
 #include "factory.h"
 #include "phonondefs_p.h"

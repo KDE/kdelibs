@@ -22,7 +22,7 @@
 
 #include <kdeprint_export.h>
 
-#include <QHash>
+#include <QtCore/QHash>
 #include <QtGui/QWidget>
 
 class QLabel;

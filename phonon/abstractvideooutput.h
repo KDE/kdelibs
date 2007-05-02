@@ -21,7 +21,7 @@
 
 #include "phonondefs.h"
 #include "phonon_export.h"
-#include <QObject>
+#include <QtCore/QObject>
 
 class QString;
 

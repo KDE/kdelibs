@@ -19,8 +19,8 @@
 
 #include "kmconfigjobs.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QLayout>
 
 #include <knuminput.h>

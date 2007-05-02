@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <QByteArray>
+#include <QtCore/QByteRef>
 
 /* _PATH_KMEM should be defined in <paths.h> */
 #ifndef _PATH_KMEM

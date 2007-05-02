@@ -21,13 +21,13 @@
 
 #include <QtGui/QLineEdit>
 #include <QtGui/QCheckBox>
-#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSpinBox>
 #include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <Qt3Support/Q3Header>
 #include <k3listview.h>
 #include <QtGui/QLayout>
-#include <QStackedWidget>
+#include <QtGui/QStackedWidget>
 #include <klocale.h>
 #include <kiconloader.h>
 

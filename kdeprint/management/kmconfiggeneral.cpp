@@ -20,8 +20,8 @@
 #include "kmconfiggeneral.h"
 
 #include <QtGui/QLayout>
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
 

@@ -21,10 +21,10 @@
 #include <kgenericfactory.h>
 #include <kaboutdata.h>
 #include <kdeversion.h>
-#include <QHBoxLayout>
+#include <QtGui/QBoxLayout>
 #include <kdialog.h>
 #include "outputdevicechoice.h"
-#include <QTabWidget>
+#include <QtGui/QTabWidget>
 #include "backendselection.h"
 
 typedef KGenericFactory<PhononKcm, QWidget> PhononKcmFactory;

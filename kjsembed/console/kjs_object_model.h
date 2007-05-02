@@ -20,9 +20,8 @@
 #ifndef KJS_OBJECT_MODEL
 #define KJS_OBJECT_MODEL
 
-#include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
+#include <QtCore/QModelIndex>
+#include <QtCore/QVariant>
 
 namespace KJS
 {

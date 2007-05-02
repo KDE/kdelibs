@@ -20,8 +20,8 @@
 #include "kfileplacesmodel.h"
 #include "kfileplacesitem_p.h"
 
-#include <QMimeData>
-#include <QColor>
+#include <QtCore/QMimeData>
+#include <QtGui/QColor>
 
 #include <kglobal.h>
 #include <klocale.h>

@@ -24,8 +24,8 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <QHBoxLayout>
-#include <QToolButton>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QToolButton>
 #include "../seekslider.h"
 #include "../volumeslider.h"
 #include <kicon.h>

@@ -26,8 +26,8 @@
 #include <kurl.h>
 #include <kio/job.h>
 
-#include <QQueue>
-#include <QProcess>
+#include <QtCore/QQueue>
+#include <QtCore/QProcess>
 
 #include "khtml_part.h"
 #include "ui_test_regression_gui.h"

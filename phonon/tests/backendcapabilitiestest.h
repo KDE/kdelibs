@@ -19,7 +19,7 @@
 
 #ifndef BACKENDCAPABILITIESTEST_H
 #define BACKENDCAPABILITIESTEST_H
-#include <QObject>
+#include <QtCore/QObject>
 
 class BackendCapabilitiesTest : public QObject
 {

@@ -19,8 +19,8 @@
 */
 #ifndef CONSOLE_H
 #define CONSOLE_H
-#include <QMainWindow>
-#include <QStandardItemModel>
+#include <QtGui/QMainWindow>
+#include <QtGui/QStandardItem>
 
 #include "kjsembed.h"
 

@@ -28,7 +28,7 @@
 #include <QtCore/QDir>
 #include <QtGui/QInputDialog>
 #include <QtCore/QMap>
-#include <QTextStream>
+#include <QtCore/QTextStream>
 
 
 

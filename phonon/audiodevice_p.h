@@ -21,8 +21,8 @@
 #define PHONON_AUDIODEVICE_P_H
 
 #include "audiodevice.h"
-#include <QStringList>
-#include <QSharedData>
+#include <QtCore/QStringList>
+#include <QtCore/QSharedData>
 
 
 namespace Phonon

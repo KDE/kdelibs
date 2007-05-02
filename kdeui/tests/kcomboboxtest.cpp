@@ -18,7 +18,7 @@
 #include <QtGui/QLabel>
 #include <khbox.h>
 #include <QtCore/QTimer>
-#include <QVBoxLayout>
+#include <QtGui/QBoxLayout>
 
 #include <kcombobox.h>
 #include <khistorycombobox.h>

@@ -25,13 +25,13 @@
 #include <klocale.h>
 #include <kglobalsettings.h>
 
-#include <QAbstractTextDocumentLayout>
-#include <QCursor>
-#include <QPainter>
-#include <QTextDocument>
-#include <QTextEdit>
-#include <QTimer>
-#include <QMouseEvent>
+#include <QtGui/QTextObjectInterface>
+#include <QtGui/QCursor>
+#include <QtGui/QPainter>
+#include <QtGui/QTextDocument>
+#include <QtGui/QTextEdit>
+#include <QtCore/QTimer>
+#include <QtGui/QKeyEvent>
 
 #include <stdio.h>
 

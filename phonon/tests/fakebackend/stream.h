@@ -21,7 +21,7 @@
 #define PHONON_FAKE_STREAM_H
 
 #include <phonon/streaminterface.h>
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

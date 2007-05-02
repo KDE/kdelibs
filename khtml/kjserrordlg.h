@@ -1,7 +1,7 @@
 #ifndef KJSERRORDLG_H
 #define KJSERRORDLG_H
 
-#include <QDialog>
+#include <QtGui/QDialog>
 
 #include "ui_kjserrordlgbase.h"
 

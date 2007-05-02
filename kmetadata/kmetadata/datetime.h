@@ -15,8 +15,8 @@
 #ifndef _KMETADATA_DATE_TIME_H_
 #define _KMETADATA_DATE_TIME_H_
 
-#include <QString>
-#include <QDateTime>
+#include <QtCore/QString>
+#include <QtCore/QDate>
 
 #include <kmetadata/kmetadata_export.h>
 

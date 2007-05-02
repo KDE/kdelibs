@@ -26,7 +26,7 @@
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QPainter>
 #include <Qt3Support/Q3PointArray>
-#include <QtGui/QStyleFactoryInterface>
+#include <QtGui/QStylePlugin>
 
 #include <QtGui/QComboBox>
 #include <Qt3Support/Q3Header>

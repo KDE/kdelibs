@@ -20,13 +20,13 @@
 #ifndef BYTESTREAMTEST2_H
 #define BYTESTREAMTEST2_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kurl.h>
 #include <phonon/bytestream.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
 #include <QtTest/QSignalSpy>
-#include <QTimer>
+#include <QtCore/QTimer>
 
 class ByteStreamTest2 : public QObject
 {

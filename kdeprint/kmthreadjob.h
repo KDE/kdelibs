@@ -20,7 +20,7 @@
 #ifndef KMTHREADJOB_H
 #define KMTHREADJOB_H
 
-#include <QMultiHash>
+#include <QtCore/QHash>
 #include <QtCore/QObject>
 
 class KMJob;

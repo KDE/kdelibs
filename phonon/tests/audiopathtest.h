@@ -20,7 +20,7 @@
 #ifndef AUDIOPATHTEST_H
 #define AUDIOPATHTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kurl.h>
 #include <phonon/mediaobject.h>
 #include <QtTest/QSignalSpy>

@@ -22,15 +22,13 @@
 
 #include "krossconfig.h"
 
-#include <QObject>
-#include <QColor>
-#include <QBrush>
-#include <QFont>
-#include <QDate>
-#include <QTime>
-#include <QDateTime>
-#include <QMetaObject>
-#include <QMetaEnum>
+#include <QtCore/QObject>
+#include <QtGui/QColor>
+#include <QtGui/QBrush>
+#include <QtGui/QFont>
+#include <QtCore/QDate>
+#include <QtCore/QArgument>
+#include <QtCore/QMetaEnum>
 
 namespace Kross {
 

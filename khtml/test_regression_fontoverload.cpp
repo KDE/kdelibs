@@ -33,8 +33,8 @@
 #include "khtml_settings.h"
 #include <QtGui/QImage>
 #include <assert.h>
-#include <QX11Info>
-#include <QPainter>
+#include <QtGui/QX11Info>
+#include <QtGui/QPainter>
 #include <fixx11h.h>
 
 struct MetricsInfo {
@@ -564,7 +564,7 @@ void DCOPClient::processSocketData( int )
 }*/
 
 #include <QtGui/QApplication>
-#include <QtGui/QColorGroup>
+#include <QtGui/QPalette>
 
 #if 0
 KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,

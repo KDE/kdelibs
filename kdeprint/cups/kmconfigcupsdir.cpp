@@ -24,7 +24,7 @@
 #include <klocale.h>
 #include <kdialog.h>
 #include <kconfig.h>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <kcursor.h>
 

@@ -17,9 +17,9 @@
 #include "SMIV.h"
 #include "SMIVItem.h"
 
-#include <QtDebug>
-#include <QFileDialog>
-#include <QApplication>
+#include <QtCore/QDebug>
+#include <QtGui/QFileDialog>
+#include <QtGui/QApplication>
 
 #include <State.h>
 #include <ThreadWeaver.h>

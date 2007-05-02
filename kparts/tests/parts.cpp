@@ -6,8 +6,8 @@
 #include <QtGui/QCheckBox>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
-#include <QtCore/QTextIStream>
-#include <QTextEdit>
+#include <QtCore/QTextStream>
+#include <QtGui/QTextEdit>
 #include <QtGui/QLineEdit>
 
 #include <kiconloader.h>

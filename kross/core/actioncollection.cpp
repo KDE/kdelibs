@@ -21,13 +21,13 @@
 #include "action.h"
 #include "manager.h"
 
-#include <QHash>
-#include <QStringList>
-#include <QPointer>
-#include <QIODevice>
-#include <QFile>
-#include <QFileInfo>
-#include <QDomElement>
+#include <QtCore/QHash>
+#include <QtCore/QStringList>
+#include <QtCore/QPointer>
+#include <QtCore/QIODevice>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtXml/QDomAttr>
 
 #include <kstandarddirs.h>
 

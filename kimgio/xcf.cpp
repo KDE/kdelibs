@@ -20,10 +20,10 @@
  */
 
 #include <stdlib.h>
-#include <QImage>
-#include <QIODevice>
-#include <QStack>
-#include <QVector>
+#include <QtGui/QImage>
+#include <QtCore/QIODevice>
+#include <QtCore/QStack>
+#include <QtCore/QVector>
 
 #include <kdebug.h>
 #include "xcf.h"

@@ -23,7 +23,7 @@
 #include <phonon/audiooutput.h>
 #include <phonon/ui/seekslider.h>
 #include <kurl.h>
-#include <QTimer>
+#include <QtCore/QTimer>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>

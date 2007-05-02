@@ -111,10 +111,10 @@ using namespace DOM;
 
 #include <QtGui/QClipboard>
 #include <QtCore/QFile>
-#include <QtCore/QMetaClassInfo>
-#include <QTextDocument>
-#include <Q3CString>
-#include <QTime>
+#include <QtCore/QMetaEnum>
+#include <QtGui/QTextDocument>
+#include <Qt3Support/Q3CString>
+#include <QtCore/QDate>
 
 #include "khtmlpart_p.h"
 #include "khtmlpartadaptor.h"

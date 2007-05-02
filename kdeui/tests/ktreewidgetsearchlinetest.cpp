@@ -1,9 +1,9 @@
 #include "ktreewidgetsearchlinetest.h"
 
-#include <QTreeWidget>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QHeaderView>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QHeaderView>
 
 #include <ktreewidgetsearchline.h>
 #include <kapplication.h>

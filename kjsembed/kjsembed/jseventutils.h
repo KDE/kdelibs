@@ -21,21 +21,8 @@
 #ifndef KJSEMBED_JSEVENTUTILS_H
 #define KJSEMBED_JSEVENTUTILS_H
 
-#include <QEvent>
-#include <QInputEvent>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QKeyEvent>
-#include <QInputMethodEvent>
-#include <QResizeEvent>
-#include <QFocusEvent>
-#include <QCloseEvent>
-#include <QMoveEvent>
-#include <QWheelEvent>
-#include <QDropEvent>
-#include <QDragMoveEvent>
-#include <QTimerEvent>
-#include <QContextMenuEvent>
+#include <QtCore/QEvent>
+#include <QtGui/QKeyEvent>
 
 #include <kjs/object.h>
 

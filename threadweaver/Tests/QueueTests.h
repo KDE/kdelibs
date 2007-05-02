@@ -3,7 +3,7 @@
 #ifndef QUEUETESTS_H
 #define QUEUETESTS_H
 
-#include <QThread>
+#include <QtCore/QThread>
 
 #include "AppendCharacterJob.h"
 

@@ -20,8 +20,8 @@
 #ifndef SOLID_PREDICATE_H
 #define SOLID_PREDICATE_H
 
-#include <QVariant>
-#include <QSet>
+#include <QtCore/QVariant>
+#include <QtCore/QSet>
 
 #include <solid/solid_export.h>
 

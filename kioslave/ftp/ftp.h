@@ -27,9 +27,9 @@
 #include <sys/socket.h>
 
 
-#include <QByteArray>
+#include <QtCore/QByteRef>
 
-#include <QTcpSocket>
+#include <QtNetwork/QTcpSocket>
 
 #include <kurl.h>
 #include <kio/slavebase.h>

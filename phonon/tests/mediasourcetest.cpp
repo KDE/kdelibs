@@ -22,7 +22,7 @@
 #include "../abstractmediastream.h"
 #include "loadfakebackend.h"
 
-#include <QUrl>
+#include <QtCore/QUrl>
 #include <qtest_kde.h>
 
 using namespace Phonon;

@@ -24,7 +24,7 @@
 #include "client.h"
 
 #include <QtCore/QObject>
-#include <QtCore/QMutableSetIterator>
+#include <QtCore/QSet>
 #include <enchant/enchant.h>
 
 namespace KSpell2 {

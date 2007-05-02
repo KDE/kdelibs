@@ -26,7 +26,7 @@
 #include <kparts/historyprovider.h>
 #include <kurl.h>
 
-#include <QLinkedList>
+#include <QtCore/QLinkedList>
 
 class KComponentData;
 class KIconLoader;

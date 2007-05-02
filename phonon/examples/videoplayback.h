@@ -24,7 +24,7 @@
 #ifndef EXAMPLES_VIDEOPLAYBACK_H
 #define EXAMPLES_VIDEOPLAYBACK_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class KUrl;
 

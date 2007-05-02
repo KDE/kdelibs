@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <QtCore/QDebug>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>

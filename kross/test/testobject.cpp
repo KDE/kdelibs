@@ -19,19 +19,14 @@
 
 #include "testobject.h"
 
-#include <QSize>
-#include <QSizeF>
-#include <QPoint>
-#include <QPointF>
-#include <QRect>
-#include <QRectF>
+#include <QtCore/QSize>
+#include <QtCore/QPoint>
+#include <QtCore/QRect>
 
-#include <QColor>
-#include <QFont>
-#include <QBrush>
-#include <QDate>
-#include <QTime>
-#include <QDateTime>
+#include <QtGui/QColor>
+#include <QtGui/QFont>
+#include <QtGui/QBrush>
+#include <QtCore/QDate>
 
 TestObject::TestObject(QObject* parent, const QString& name)
     : QObject(parent)

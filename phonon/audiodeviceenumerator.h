@@ -21,8 +21,8 @@
 #define PHONON_AUDIODEVICEENUMERATOR_H
 
 #include "audiodevice.h"
-#include <QList>
-#include <QObject>
+#include <QtCore/QList>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

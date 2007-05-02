@@ -20,7 +20,7 @@
 #ifndef VOLUMESLIDERTEST_H
 #define VOLUMESLIDERTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon {
     class MediaObject;

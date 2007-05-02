@@ -34,7 +34,7 @@
 #include <config.h>
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QTimer>
 #include <QtCore/QDate>

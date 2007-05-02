@@ -21,16 +21,16 @@
 #define SEEKSLIDER_P_H
 
 #include "seekslider.h"
-#include <QBoxLayout>
-#include <QSlider>
-#include <QLabel>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QSlider>
+#include <QtGui/QLabel>
 #include <kicontheme.h>
 #include <kiconloader.h>
-#include <QPixmap>
-#include <QIcon>
-#include <QStyle>
+#include <QtGui/QPixmap>
+#include <QtGui/QIcon>
+#include <QtGui/QStyle>
 #include "factory.h"
-#include <QPointer>
+#include <QtCore/QPointer>
 
 namespace Phonon
 {

@@ -19,9 +19,8 @@
 
 #include "kptagspage.h"
 
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QHeaderView>
+#include <QtGui/QTableWidget>
+#include <QtGui/QHeaderView>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtCore/QRegExp>

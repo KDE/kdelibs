@@ -30,8 +30,8 @@
 #include <assert.h>
 #include <kdesktopfile.h>
 #include <QtCore/QHash>
-#include <QFile>
-#include <QDomDocument>
+#include <QtCore/QFile>
+#include <QtXml/QDomAttr>
 #include "kmimefileparser.h"
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :

@@ -21,7 +21,7 @@
 #define PRINTCAPREADER_H
 
 #include <QtCore/QString>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 class QFile;
 class PrintcapEntry;

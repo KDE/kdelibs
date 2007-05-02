@@ -19,10 +19,10 @@
 */
 #include "pixmap.h"
 
-#include <QDebug>
-#include <QPixmap>
-#include <QBitmap>
-#include <QWidget>
+#include <QtCore/QDebug>
+#include <QtGui/QPixmap>
+#include <QtGui/QBitmap>
+#include <QtGui/QWidget>
 
 #include <variant_binding.h>
 #include <object_binding.h>

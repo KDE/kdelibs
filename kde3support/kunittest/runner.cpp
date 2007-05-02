@@ -31,7 +31,7 @@ using namespace std;
 
 #include <QtCore/QRegExp>
 #include <QtCore/QDir>
-#include <QtCore/QMetaClassInfo>
+#include <QtCore/QMetaEnum>
 
 #include <kdebug.h>
 #include <klibloader.h>

@@ -18,15 +18,15 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QPainter>
-#include <QRect>
-#include <QColor>
+#include <QtGui/QPainter>
+#include <QtCore/QRect>
+#include <QtGui/QColor>
 
 #include "gradients.h"
 #include "colorutil.h"
 
-#include <QImage>
-#include <QCache>
+#include <QtGui/QImage>
+#include <QtCore/QCache>
 #include <kimageeffect.h>
 
 namespace

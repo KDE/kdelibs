@@ -30,9 +30,9 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>
-#include <QCoreApplication>
-#include <QTextStream>
-#include <QStringList>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QTextStream>
+#include <QtCore/QStringList>
 static const KCmdLineOptions cmdLineOptions[] = {
 	{ "o", 0, 0 },
 	{ "output <file>", I18N_NOOP( "Output file" ), "kde-standard-accels.entities" },

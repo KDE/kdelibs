@@ -30,9 +30,9 @@
 
 #include <kgenericfactory.h>
 #include "volumefadereffect.h"
-#include <QSet>
+#include <QtCore/QSet>
 #include "videodataoutput.h"
-#include <QVariant>
+#include <QtCore/QVariant>
 #include "videowidget.h"
 
 typedef KGenericFactory<Phonon::Fake::Backend, Phonon::Fake::Backend> FakeBackendFactory;

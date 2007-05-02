@@ -21,7 +21,7 @@
 #define EFFECTPARAMETER_P_H
 
 #include "effectparameter.h"
-#include <QSharedData>
+#include <QtCore/QSharedData>
 
 namespace Phonon
 {

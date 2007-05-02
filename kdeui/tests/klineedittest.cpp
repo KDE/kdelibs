@@ -1,6 +1,6 @@
-#include <QPushButton>
-#include <QTimer>
-#include <QVBoxLayout>
+#include <QtGui/QPushButton>
+#include <QtCore/QTimer>
+#include <QtGui/QBoxLayout>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

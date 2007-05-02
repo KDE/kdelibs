@@ -18,7 +18,7 @@
 */
 
 #include <kglobal.h>
-#include <QtDebug>
+#include <QtCore/QDebug>
 
 class A
 {

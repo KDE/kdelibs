@@ -22,7 +22,7 @@
 #include <qtest_kde.h>
 
 // Qt includes
-#include <QStringList>
+#include <QtCore/QStringList>
 
 // Solid includes
 #include <solid/ifaces/device.h>

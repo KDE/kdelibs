@@ -19,13 +19,13 @@
 
 #include "cjanuswidget.h"
 
-#include <QEvent>
-#include <QLabel>
-#include <QLayout>
-#include <QPainter>
-#include <QScrollBar>
-#include <QStackedWidget>
-#include <QItemDelegate>
+#include <QtCore/QEvent>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QPainter>
+#include <QtGui/QScrollBar>
+#include <QtGui/QStackedWidget>
+#include <QtGui/QItemDelegate>
 
 #include <klistwidget.h>
 #include <kseparator.h>

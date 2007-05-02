@@ -21,8 +21,8 @@
 #ifndef SLOTPROXY_H
 #define SLOTPROXY_H
 
-#include <QObject>
-#include <QByteArray>
+#include <QtCore/QObject>
+#include <QtCore/QByteRef>
 #include <kjs/object.h>
 
 namespace KJS

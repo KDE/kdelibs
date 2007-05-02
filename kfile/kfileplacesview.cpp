@@ -19,8 +19,8 @@
 
 #include "kfileplacesview.h"
 
-#include <QMenu>
-#include <QContextMenuEvent>
+#include <QtGui/QMenu>
+#include <QtGui/QKeyEvent>
 
 #include <kdebug.h>
 

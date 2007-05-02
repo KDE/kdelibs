@@ -22,7 +22,7 @@
 #include "kmjobmanager.h"
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QStringList>
 #include <kstandarddirs.h>
 

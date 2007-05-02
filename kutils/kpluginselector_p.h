@@ -21,9 +21,9 @@
 #ifndef KPLUGINSELECTOR_P_H
 #define KPLUGINSELECTOR_P_H
 
-#include <QWidget>
-#include <QTreeWidgetItem>
-#include <QMenu>
+#include <QtGui/QWidget>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QMenu>
 #include <kconfigbase.h>
 #include <klocale.h>
 

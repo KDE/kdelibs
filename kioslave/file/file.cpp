@@ -63,10 +63,10 @@
 #include <string.h>
 #endif
 
-#include <QByteArray>
-#include <QDateTime>
-#include <QVarLengthArray>
-#include <QCoreApplication>
+#include <QtCore/QByteRef>
+#include <QtCore/QDate>
+#include <QtCore/QVarLengthArray>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QRegExp>
 #ifdef Q_WS_WIN
 #include <QDir>

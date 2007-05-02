@@ -20,11 +20,11 @@
 #ifndef SOLID_DEVICE_H
 #define SOLID_DEVICE_H
 
-#include <QVariant>
+#include <QtCore/QVariant>
 
-#include <QMap>
-#include <QList>
-#include <QtCore/QExplicitlySharedDataPointer>
+#include <QtCore/QMap>
+#include <QtCore/QList>
+#include <QtCore/QSharedData>
 
 #include <solid/solid_export.h>
 

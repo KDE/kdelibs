@@ -19,8 +19,8 @@
 
 #include "kmconfigfonts.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <kpushbutton.h>
 #include <QtGui/QLayout>
 #include <Qt3Support/Q3Header>

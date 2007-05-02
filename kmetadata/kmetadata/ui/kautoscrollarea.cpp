@@ -23,12 +23,12 @@
 
 #include <kdebug.h>
 
-#include <QTimer>
-#include <QSizePolicy>
-#include <QSize>
-#include <QMouseEvent>
-#include <QScrollBar>
-#include <QPainter>
+#include <QtCore/QTimer>
+#include <QtGui/QSizePolicy>
+#include <QtCore/QSize>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QScrollBar>
+#include <QtGui/QPainter>
 
 #include <math.h>
 

@@ -29,13 +29,13 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include "Job.h"
 #include "Job_p.h"
 
-#include <QSet>
-#include <QList>
-#include <QMutex>
-#include <QObject>
-#include <QMultiMap>
-#include <QMetaObject>
-#include <QWaitCondition>
+#include <QtCore/QSet>
+#include <QtCore/QList>
+#include <QtCore/QMutex>
+#include <QtCore/QObject>
+#include <QtCore/QMap>
+#include <QtCore/QArgument>
+#include <QtCore/QWaitCondition>
 #include <DebuggingAids.h>
 #include <Thread.h>
 

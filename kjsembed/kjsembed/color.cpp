@@ -19,8 +19,8 @@
 */
 #include "color.h"
 
-#include <QDebug>
-#include <QColor>
+#include <QtCore/QDebug>
+#include <QtGui/QColor>
 
 using namespace KJSEmbed;
 

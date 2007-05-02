@@ -21,9 +21,9 @@
 #define KROSS_INTERPRETER_H
 
 
-#include <QStringList>
-#include <QVariant>
-#include <QMap>
+#include <QtCore/QStringList>
+#include <QtCore/QVariant>
+#include <QtCore/QMap>
 
 #include "errorinterface.h"
 

@@ -21,7 +21,7 @@
 #define PHONON_OBJECTDESCRIPTIONMODEL_P_H
 
 #include "objectdescriptionmodel.h"
-#include <QList>
+#include <QtCore/QList>
 #include "objectdescription.h"
 
 namespace Phonon

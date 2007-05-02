@@ -19,7 +19,7 @@
 */
 
 #include <QtCore/QArgument>
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include "static_binding.h"
 #include "variant_binding.h"

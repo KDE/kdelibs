@@ -23,8 +23,8 @@
 #include <kross/core/actioncollection.h>
 #include <kross/core/manager.h>
 
-#include <QEvent>
-#include <QMimeData>
+#include <QtCore/QEvent>
+#include <QtCore/QMimeData>
 
 using namespace Kross;
 

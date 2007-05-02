@@ -19,11 +19,11 @@
 
 #include "videowidget.h"
 #include <phonon/experimental/overlayapi.h>
-#include <QChildEvent>
-#include <QPalette>
-#include <QImage>
-#include <QPainter>
-#include <QVBoxLayout>
+#include <QtCore/QEvent>
+#include <QtGui/QPalette>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
+#include <QtGui/QBoxLayout>
 #include <kdebug.h>
 
 namespace Phonon

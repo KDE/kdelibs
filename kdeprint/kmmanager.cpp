@@ -26,7 +26,7 @@
 #include "printerfilter.h"
 #include "kprinter.h"
 
-#include <QActionGroup>
+#include <QtGui/QActionGroup>
 
 #include <zlib.h>
 #include <QtCore/QFile>

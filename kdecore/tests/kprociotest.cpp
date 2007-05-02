@@ -14,7 +14,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 
 #include <signal.h>
 

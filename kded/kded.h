@@ -24,7 +24,7 @@
 #include <QtCore/QString>
 #include <QtCore/QTimer>
 #include <QtCore/QHash>
-#include <QtCore/QMutableSetIterator>
+#include <QtCore/QSet>
 
 #include <QtDBus/QtDBus>
 

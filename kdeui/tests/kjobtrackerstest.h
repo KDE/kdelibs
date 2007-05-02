@@ -22,7 +22,7 @@
 
 #include <kjob.h>
 
-#include <QTimer>
+#include <QtCore/QTimer>
 
 class KTestJob : public KJob
 {

@@ -21,8 +21,8 @@
 #include "kmmanager.h"
 #include "kmfactory.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QLineEdit>
 #include <QtGui/QToolButton>
 #include <QtGui/QLayout>

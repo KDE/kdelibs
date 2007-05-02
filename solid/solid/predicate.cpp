@@ -21,9 +21,8 @@
 
 #include <solid/device.h>
 #include <solid/deviceinterface.h>
-#include <QStringList>
-#include <QMetaProperty>
-#include <QMetaEnum>
+#include <QtCore/QStringList>
+#include <QtCore/QMetaEnum>
 
 namespace Solid
 {

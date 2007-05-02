@@ -32,7 +32,7 @@
 #include "html/html_miscimpl.h"
 #include <kdebug.h>
 #include <khtml_part.h>
-#include <QList>
+#include <QtCore/QList>
 
 #include "kjs_dom.h"
 #include "kjs_html.h"

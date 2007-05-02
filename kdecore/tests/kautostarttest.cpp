@@ -24,7 +24,7 @@
 #include "kautostarttest.h"
 #include "kautostarttest.moc"
 
-#include <QFile>
+#include <QtCore/QFile>
 
 QTEST_KDEMAIN_CORE( KAutostartTest )
 

@@ -10,7 +10,7 @@
 #ifndef KIMG_TGA_H
 #define KIMG_TGA_H
 
-#include <QImageIOHandler>
+#include <QtGui/QImageIOPlugin>
 
 class TGAHandler : public QImageIOHandler
 {

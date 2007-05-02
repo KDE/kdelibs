@@ -20,7 +20,7 @@
 #ifndef MEDIASOURCETEST_H
 #define MEDIASOURCETEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class MediaSourceTest : public QObject
 {

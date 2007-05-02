@@ -24,7 +24,7 @@
 #include "../videowidget.h"
 #include "../abstractvideooutput_p.h"
 
-#include <QVariant>
+#include <QtCore/QVariant>
 
 namespace Phonon
 {

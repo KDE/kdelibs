@@ -20,7 +20,7 @@
 #define KFILEPLACESITEM_P_H
 
 
-#include <QPersistentModelIndex>
+#include <QtCore/QModelIndex>
 
 class KFilePlacesItem
 {

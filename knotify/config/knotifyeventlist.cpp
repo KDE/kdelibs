@@ -20,8 +20,8 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kiconloader.h>
-#include <QItemDelegate>
-#include <QPainter>
+#include <QtGui/QItemDelegate>
+#include <QtGui/QPainter>
 
 //BEGIN KNotifyEventListDelegate
 

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include <kapplication.h>
 #include <kemailsettings.h>

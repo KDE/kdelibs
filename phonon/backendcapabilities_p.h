@@ -21,7 +21,7 @@
 #define PHONON_BACKENDCAPABILITIES_P_H
 
 #include "backendcapabilities.h"
-#include <QObject>
+#include <QtCore/QObject>
 #include "factory.h"
 
 namespace Phonon

@@ -18,8 +18,7 @@
 */
 #include "kinformationlabeltest.h"
 
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QSpinBox>
 #include <QtGui/QPushButton>

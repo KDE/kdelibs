@@ -22,8 +22,8 @@
 
 */
 
-#include <QStringList>
-#include <QProcess>
+#include <QtCore/QStringList>
+#include <QtCore/QProcess>
 
 #include <kauthorized.h>
 #include <kguiitem.h>

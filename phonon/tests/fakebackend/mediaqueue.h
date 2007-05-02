@@ -20,7 +20,7 @@
 #ifndef PHONON_FAKE_MEDIAQUEUE_H
 #define PHONON_FAKE_MEDIAQUEUE_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kurl.h>
 
 namespace Phonon

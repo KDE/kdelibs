@@ -22,7 +22,7 @@
 #include "phonon_export.h"
 #include "phonondefs.h"
 #include "abstractvideooutput.h"
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class QString;
 

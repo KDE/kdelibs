@@ -25,8 +25,8 @@
 #include "ecma/kjs_dom.h"
 #include <kencodingdetector.h>
 #include "kio/jobclasses.h"
-#include <QPointer>
-#include <QHash>
+#include <QtCore/QPointer>
+#include <QtCore/QHash>
 
 namespace KJS {
 

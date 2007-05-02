@@ -20,12 +20,12 @@
 #include "objectdescriptionmodel.h"
 #include "objectdescriptionmodel_p.h"
 #include "phonondefs_p.h"
-#include <QList>
+#include <QtCore/QList>
 #include "objectdescription.h"
 #include "phononnamespace_p.h"
-#include <QMimeData>
-#include <QStringList>
-#include <QIcon>
+#include <QtCore/QMimeData>
+#include <QtCore/QStringList>
+#include <QtGui/QIcon>
 #include "factory.h"
 
 #if Q_MOC_OUTPUT_REVISION != 59

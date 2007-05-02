@@ -23,7 +23,7 @@
 #include "phonon_export.h"
 #include <solid/audiointerface.h>
 #include <ksharedconfig.h>
-#include <QExplicitlySharedDataPointer>
+#include <QtCore/QSharedData>
 
 class QString;
 class QStringList;

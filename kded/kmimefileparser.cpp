@@ -22,8 +22,8 @@
 #include <kmimetype.h>
 #include <kstandarddirs.h>
 #include <kmimetypefactory.h>
-#include <QTextStream>
-#include <QFile>
+#include <QtCore/QTextStream>
+#include <QtCore/QFile>
 
 KMimeFileParser::KMimeFileParser(KMimeTypeFactory* mimeTypeFactory)
     : m_mimeTypeFactory(mimeTypeFactory)

@@ -20,8 +20,8 @@
 #include "mediacontroller.h"
 #include "mediaobject.h"
 #include "addoninterface.h"
-#include <QList>
-#include <QVariant>
+#include <QtCore/QList>
+#include <QtCore/QVariant>
 #include "frontendinterface_p.h"
 
 namespace Phonon

@@ -20,7 +20,7 @@
 #ifndef SOLID_IFACES_CDROM_H
 #define SOLID_IFACES_CDROM_H
 
-#include <QList>
+#include <QtCore/QList>
 
 #include <solid/ifaces/storagedrive.h>
 #include <solid/opticaldrive.h>

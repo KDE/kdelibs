@@ -3,7 +3,7 @@
 #define _EPS_H
 
 
-#include <QImageIOHandler>
+#include <QtGui/QImageIOPlugin>
 
 class EPSHandler : public QImageIOHandler
 {

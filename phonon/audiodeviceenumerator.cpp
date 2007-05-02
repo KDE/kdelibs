@@ -21,7 +21,7 @@
 #include "audiodeviceenumerator_p.h"
 #include "audiodevice_p.h"
 #include "phononnamespace_p.h"
-#include <QDir>
+#include <QtCore/QDir>
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
 #include <solid/audiointerface.h>

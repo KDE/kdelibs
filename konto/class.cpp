@@ -24,7 +24,7 @@
 #include "property.h"
 #include "qurlhash.h"
 
-#include <QHash>
+#include <QtCore/QHash>
 
 
 Konto::Class::Class()

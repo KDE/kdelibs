@@ -14,7 +14,7 @@
 
 #include "result.h"
 
-#include <QSharedData>
+#include <QtCore/QSharedData>
 
 class Nepomuk::Backbone::Result::Private : public QSharedData
 {

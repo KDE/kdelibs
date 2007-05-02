@@ -22,7 +22,7 @@
 
 #include "effectwidget.h"
 #include "effectparameter.h"
-#include <QHash>
+#include <QtCore/QHash>
 
 namespace Phonon
 {

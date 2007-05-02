@@ -47,7 +47,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
 #include <QtCore/QRegExp>
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 
 #include <assert.h>
 

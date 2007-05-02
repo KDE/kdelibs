@@ -24,7 +24,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 #include <klocale.h>
-#include <QtGui/QDoubleValidator>
+#include <QtGui/QValidator>
 
 #include <cups/http.h>
 

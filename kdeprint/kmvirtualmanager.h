@@ -22,9 +22,9 @@
 
 #include <kdeprint_export.h>
 
-#include <QDateTime>
-#include <QList>
-#include <QObject>
+#include <QtCore/QDate>
+#include <QtCore/QList>
+#include <QtCore/QObject>
 
 #include "kpreloadobject.h"
 

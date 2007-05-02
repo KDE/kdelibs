@@ -1,5 +1,5 @@
 #include "kmessagebox.h"
-#include <QLabel>
+#include <QtGui/QLabel>
 
 #include <stdlib.h>
 #include <stdio.h>

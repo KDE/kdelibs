@@ -19,7 +19,7 @@
 #include "videodataoutput.h"
 #include "videodataoutput_p.h"
 #include "factory.h"
-#include <QSize>
+#include <QtCore/QSize>
 
 #define PHONON_CLASSNAME VideoDataOutput
 

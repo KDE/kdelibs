@@ -17,11 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QDomDocument>
-#include <QDomText>
-#include <QDomNamedNodeMap>
-#include <QDomNode>
-#include <QDebug>
+#include <QtXml/QDomAttr>
+#include <QtCore/QDebug>
 
 #include "dom.h"
 

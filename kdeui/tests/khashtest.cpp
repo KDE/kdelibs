@@ -8,8 +8,8 @@
 #include <kpixmapeffect.h>
 #include <kimageeffect.h>
 
-#include <QPainter>
-#include <QDateTime>
+#include <QtGui/QPainter>
+#include <QtCore/QDate>
 
 int cols = 3, rows = 3; // how many
 

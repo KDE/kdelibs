@@ -20,7 +20,7 @@
 #ifndef KLOCALSOCKETSERVERTEST_H
 #define KLOCALSOCKETSERVERTEST_H
 
-#include <QtCore/qobject.h>
+#include <QtCore/QObject>
 
 class tst_KLocalSocketServer : public QObject
 {

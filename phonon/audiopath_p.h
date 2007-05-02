@@ -23,7 +23,7 @@
 #include "phonondefs.h"
 #include "audiopath.h"
 #include "base_p.h"
-#include <QList>
+#include <QtCore/QList>
 
 namespace Phonon
 {

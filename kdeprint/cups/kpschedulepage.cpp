@@ -23,7 +23,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QComboBox>
 #include <QtCore/QRegExp>
-#include <QDateTimeEdit>
+#include <QtGui/QDateEdit>
 #include <QtCore/QDate>
 #include <QtGui/QLineEdit>
 #include <klocale.h>

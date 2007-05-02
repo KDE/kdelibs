@@ -27,8 +27,8 @@
 #include <kio/global.h>
 #include <kio/slavebase.h>
 
-#include <QObject>
-#include <QHash>
+#include <QtCore/QObject>
+#include <QtCore/QHash>
 
 
 #include <sys/types.h>

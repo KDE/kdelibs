@@ -20,8 +20,8 @@
 #ifndef KMPRINTERVIEW_H
 #define KMPRINTERVIEW_H
 
-#include <QStackedWidget>
-#include <QList>
+#include <QtGui/QStackedWidget>
+#include <QtCore/QList>
 
 class KMIconView;
 class KMListView;

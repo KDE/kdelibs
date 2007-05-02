@@ -23,7 +23,7 @@
 #include <kross/core/krossconfig.h>
 #include <kross/core/action.h>
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include <kurl.h>
 #include <kxmlguiclient.h>

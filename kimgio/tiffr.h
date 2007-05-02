@@ -8,7 +8,7 @@
 #ifndef KIMG_TIFFR_H
 #define KIMG_TIFFR_H
 
-#include <QImageIOHandler>
+#include <QtGui/QImageIOPlugin>
 
 class TIFFRHandler : public QImageIOHandler
 {

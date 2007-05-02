@@ -22,8 +22,8 @@
 
 #include "class.h"
 
-#include <QHash>
-#include <QSharedData>
+#include <QtCore/QHash>
+#include <QtCore/QSharedData>
 
 
 namespace Konto {

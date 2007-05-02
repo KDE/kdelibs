@@ -38,7 +38,7 @@ Port version 0.9.7
 
 #include "kthemestyle.h"
 #include "kthemebase.h"
-#include <QtGui/QStyleFactoryInterface>
+#include <QtGui/QStylePlugin>
 #include <QtGui/QStyleFactory>
 #include <kimageeffect.h>
 
@@ -46,9 +46,9 @@ Port version 0.9.7
 #include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
 #define INCLUDE_MENUITEM_DEF
-#include <QtGui/qmenudata.h>
+#include <QtGui/QMenuItem>
 #include <qpopupmenu.h>
-#include <QtGui/QColorGroup>
+#include <QtGui/QPalette>
 #include <QtGui/QTabBar>
 #include <QtGui/QToolButton>
 #include <kglobalsettings.h>
@@ -58,7 +58,7 @@ Port version 0.9.7
 #include <QtCore/QDir>
 #include <QtGui/QApplication>
 #include <QtGui/QMenuBar>
-#include <Qt3Support/Q3RangeControl>
+#include <Qt3Support/Q3SpinWidget>
 #include <QtGui/QSlider>
 
 #include <QtCore/QObject>

@@ -38,20 +38,20 @@
    Boston, MA 02110-1301, USA.
  */
 
-#include <QPainter>
-#include <QTimer>
-#include <QEvent>
-#include <QSettings>
-#include <QStyleOption>
+#include <QtGui/QPainter>
+#include <QtCore/QTimer>
+#include <QtCore/QEvent>
+#include <QtCore/QSettings>
+#include <QtGui/QStyleOption>
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QMenuBar>
-#include <QProgressBar>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QSplitter>
-#include <QToolBar>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
+#include <QtGui/QMenuBar>
+#include <QtGui/QProgressBar>
+#include <QtGui/QPushButton>
+#include <QtGui/QRadioButton>
+#include <QtGui/QSplitter>
+#include <QtGui/QToolBar>
 
 #include "plastik.h"
 #include "plastik.moc"

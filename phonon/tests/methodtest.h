@@ -20,7 +20,7 @@
 #ifndef PHONON_METHODTEST_H
 #define PHONON_METHODTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include "loadfakebackend.h"
 
 class MethodTest : public QObject

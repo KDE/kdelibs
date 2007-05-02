@@ -21,14 +21,14 @@
 #define VOLUMESLIDER_P_H
 
 #include "volumeslider.h"
-#include <QHBoxLayout>
-#include <QSlider>
-#include <QLabel>
-#include <QPixmap>
-#include <QToolButton>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QSlider>
+#include <QtGui/QLabel>
+#include <QtGui/QPixmap>
+#include <QtGui/QToolButton>
 #include "factory.h"
-#include <QIcon>
-#include <QPointer>
+#include <QtGui/QIcon>
+#include <QtCore/QPointer>
 
 namespace Phonon
 {

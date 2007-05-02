@@ -24,7 +24,7 @@
 #include <kstandarddirs.h>
 
 #include <Qt3Support/Q3IntDict>
-#include <Q3PtrList>
+#include <Qt3Support/Q3PtrList>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <errno.h>

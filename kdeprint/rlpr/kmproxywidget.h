@@ -20,7 +20,7 @@
 #ifndef KMPROXYWIDGET_H
 #define KMPROXYWIDGET_H
 
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 
 class KConfig;
 class QLineEdit;

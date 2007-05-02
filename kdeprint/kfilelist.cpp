@@ -22,8 +22,8 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QDragEnterEvent>
-#include <QTreeWidget>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QTreeWidget>
 
 #include <kio/netaccess.h>
 #include <kfiledialog.h>

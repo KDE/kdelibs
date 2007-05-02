@@ -21,7 +21,7 @@
 #include "kpipeprocess.h"
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 GsChecker::GsChecker(QObject *parent, const char *name)
 : QObject(parent,name)

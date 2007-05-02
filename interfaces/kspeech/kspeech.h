@@ -30,7 +30,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtCore/QByteArray>
+#include <QtCore/QByteRef>
 
 #include <kspeech_export.h>
 

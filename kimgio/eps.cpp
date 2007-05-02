@@ -5,7 +5,7 @@
 #include <QtCore/QFile>
 #include <QtGui/QPainter>
 #include <QtGui/QPrinter>
-#include <QTextStream>
+#include <QtCore/QTextStream>
 #include <kapplication.h>
 #include <ktemporaryfile.h>
 #include <kdebug.h>

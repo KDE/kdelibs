@@ -6,12 +6,12 @@
 * Licensed under the GNU General Public License version 2
 */
 
-#include <QLayout>
-#include <QRadioButton>
-#include <QCheckBox>
-#include <QLabel>
-#include <QGroupBox>
-#include <QButtonGroup>
+#include <QtGui/QLayout>
+#include <QtGui/QRadioButton>
+#include <QtGui/QCheckBox>
+#include <QtGui/QLabel>
+#include <QtGui/QGroupBox>
+#include <QtGui/QButtonGroup>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

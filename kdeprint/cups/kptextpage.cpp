@@ -22,7 +22,7 @@
 #include "driver.h"
 #include "kprinter.h"
 
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QRadioButton>

@@ -26,11 +26,11 @@
 #include "audiooutput_p.h"
 #include "pluginfactory.h"
 
-#include <QFile>
-#include <QList>
-#include <QCoreApplication>
+#include <QtCore/QFile>
+#include <QtCore/QList>
+#include <QtCore/QCoreApplication>
 #include <QtDBus/QtDBus>
-#include <QPluginLoader>
+#include <QtCore/QPluginLoader>
 
 #include <klocale.h>
 #include <kmimetype.h>
@@ -39,9 +39,9 @@
 #include <kservicetypetrader.h>
 #include <klibloader.h>
 #include <kmessage.h>
-#include <QDir>
-#include <QLibrary>
-#include <QIcon>
+#include <QtCore/QDir>
+#include <QtCore/QLibrary>
+#include <QtGui/QIcon>
 
 #define PHONON_LOAD_BACKEND_GLOBAL 0
 

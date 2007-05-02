@@ -23,8 +23,8 @@
 
 #include <kdeprint_export.h>
 
-#include <QMap>
-#include <QWidget>
+#include <QtCore/QMap>
+#include <QtGui/QWidget>
 
 class QTreeWidget;
 class QTreeWidgetItem;

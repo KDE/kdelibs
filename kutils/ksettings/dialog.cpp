@@ -35,7 +35,7 @@
 #include <kiconloader.h>
 #include <kvbox.h>
 #include <QtGui/QLabel>
-#include <QList>
+#include <QtCore/QList>
 #include "kcmoduleinfo.h"
 
 namespace KSettings

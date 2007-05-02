@@ -30,7 +30,7 @@
 
 #include <soprano/statement.h>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 
 using namespace Soprano;

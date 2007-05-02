@@ -19,7 +19,7 @@
 
 #include "backends/hal/halcdrom.h"
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 Cdrom::Cdrom(HalDevice *device)
     : Storage(device)

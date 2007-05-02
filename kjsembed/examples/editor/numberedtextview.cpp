@@ -17,15 +17,15 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QTextDocument>
-#include <QTextBlock>
-#include <QTextEdit>
-#include <QHBoxLayout>
-#include <QScrollBar>
-#include <QPainter>
-#include <QAbstractTextDocumentLayout>
-#include <QToolTip>
-#include <QDebug>
+#include <QtGui/QTextDocument>
+#include <QtGui/QTextBlock>
+#include <QtGui/QTextEdit>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QScrollBar>
+#include <QtGui/QPainter>
+#include <QtGui/QTextObjectInterface>
+#include <QtGui/QToolTip>
+#include <QtCore/QDebug>
 
 #include "numberedtextview.h"
 

@@ -25,7 +25,7 @@
 
 #include <QtGui/QLabel>
 #include <QtGui/QComboBox>
-#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSpinBox>
 #include <QtGui/QRadioButton>
 #include <QtGui/QLineEdit>
 #include <QtGui/QCheckBox>

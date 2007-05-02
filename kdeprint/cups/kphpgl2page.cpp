@@ -20,7 +20,7 @@
 #include "kphpgl2page.h"
 
 #include <QtGui/QCheckBox>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <klocale.h>
 #include <knuminput.h>

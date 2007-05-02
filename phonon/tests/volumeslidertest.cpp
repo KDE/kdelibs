@@ -24,10 +24,10 @@
 #include "../mediaobject.h"
 #include "../audiooutput.h"
 #include "loadfakebackend.h"
-#include <QSlider>
+#include <QtGui/QSlider>
 #include <kurl.h>
 #include <cstdlib>
-#include <QToolButton>
+#include <QtGui/QToolButton>
 
 using namespace Phonon;
 

@@ -16,7 +16,7 @@
 
 #include <QtGui/QPushButton>
 //Added by qt3to4:
-#include <QPixmap>
+#include <QtGui/QPixmap>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kapplication.h>

@@ -23,15 +23,15 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-#include <QCoreApplication>
-#include <QColor>
-#include <QDataStream>
-#include <QFile>
-#include <QFileInfo>
-#include <QImage>
-#include <QMap>
-#include <QTextStream>
-#include <QVector>
+#include <QtCore/QCoreApplication>
+#include <QtGui/QColor>
+#include <QtCore/QDataStream>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtGui/QImage>
+#include <QtCore/QMap>
+#include <QtCore/QTextStream>
+#include <QtCore/QVector>
 
 #include <kimageeffect.h>
 

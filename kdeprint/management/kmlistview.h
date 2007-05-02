@@ -20,8 +20,8 @@
 #ifndef KMLISTVIEW_H
 #define KMLISTVIEW_H
 
-#include <Qt3Support/Q3CheckListItem>
-#include <QList>
+#include <Qt3Support/Q3ListView>
+#include <QtCore/QList>
 
 class KMListViewItem;
 class KMPrinter;

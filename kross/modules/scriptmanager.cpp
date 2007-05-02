@@ -28,13 +28,12 @@
 #include <kross/ui/guiclient.h>
 #include <kross/ui/view.h>
 
-#include <QFileInfo>
-#include <QDir>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QHeaderView>
-#include <QTreeView>
-#include <QSignalMapper>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QHeaderView>
+#include <QtGui/QTreeView>
+#include <QtCore/QSignalMapper>
 
 #include <kapplication.h>
 #include <kconfig.h>

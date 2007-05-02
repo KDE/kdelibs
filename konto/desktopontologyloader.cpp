@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 
-#include <QDir>
+#include <QtCore/QDir>
 
 #include <soprano/statement.h>
 

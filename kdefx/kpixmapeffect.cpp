@@ -21,11 +21,11 @@
 #include "kpixmapeffect.h"
 #include "kimageeffect.h"
 
-#include <QApplication>
-#include <QImage>
-#include <QPainter>
-#include <QPaintEngine>
-#include <QDesktopWidget>
+#include <QtGui/QApplication>
+#include <QtGui/QImage>
+#include <QtGui/QPainter>
+#include <QtGui/QTextItem>
+#include <QtGui/QDesktopWidget>
 
 //======================================================================
 //

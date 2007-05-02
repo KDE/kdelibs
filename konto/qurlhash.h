@@ -20,7 +20,7 @@
 #ifndef _KONTO_QURL_HASH_
 #define _KONTO_QURL_HASH_
 
-#include <QUrl>
+#include <QtCore/QUrl>
 
 uint qHash( const QUrl& url );
 

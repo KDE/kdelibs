@@ -21,7 +21,7 @@
 #include "kfiletreebranch.h"
 
 #include <Qt3Support/Q3Header>
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <QtCore/QTimer>
 #include <kdebug.h>
 #include <kglobalsettings.h>

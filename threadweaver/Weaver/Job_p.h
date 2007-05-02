@@ -29,7 +29,7 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #ifndef THREADWEAVER_JOB_P_H
 #define THREADWEAVER_JOB_P_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 #include "Job.h"
 

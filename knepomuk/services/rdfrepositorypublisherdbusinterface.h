@@ -19,7 +19,7 @@
 #include <knepomuk/rdf/queryresulttable.h>
 #include <knepomuk/knepomuk_export.h>
 
-#include <QList>
+#include <QtCore/QList>
 
 #include <soprano/statement.h>
 

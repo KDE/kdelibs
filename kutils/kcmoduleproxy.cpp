@@ -20,13 +20,13 @@
 #include <QtGui/QApplication>
 #include <QtGui/QCursor>
 #include <QtCore/QDataStream>
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <QtCore/QFileInfo>
 #include <QtGui/QFrame>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtCore/QPoint>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include <QtGui/QImage>
 

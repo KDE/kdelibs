@@ -18,10 +18,9 @@
 
 #include "kratingwidget.h"
 
-#include <QPainter>
-#include <QPixmap>
-#include <QPaintEvent>
-#include <QMouseEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
+#include <QtGui/QKeyEvent>
 
 #include <kpixmapeffect.h>
 #include <kiconloader.h>

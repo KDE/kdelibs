@@ -18,11 +18,11 @@
 #include <algorithm>
 #include <vector>
 
-#include <QImage>
-#include <QBitmap>
-#include <QApplication>
-#include <QVector>
-#include <QDesktopWidget>
+#include <QtGui/QImage>
+#include <QtGui/QBitmap>
+#include <QtGui/QApplication>
+#include <QtCore/QVector>
+#include <QtGui/QDesktopWidget>
 
 #include "ico.h"
 

@@ -21,7 +21,7 @@
 #define KMLPDMANAGER_H
 
 #include "kmmanager.h"
-#include <QHash>
+#include <QtCore/QHash>
 
 class PrintcapEntry;
 class PrinttoolEntry;

@@ -37,11 +37,11 @@
 #include "treecombobox.h"
 #include "messagewindow.h"
 
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QCheckBox>
-#include <QLabel>
-#include <QLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QCheckBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 #include <kiconloader.h>

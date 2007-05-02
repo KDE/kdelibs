@@ -19,7 +19,7 @@
 
 #include "qurlhash.h"
 
-#include <qhash.h>
+#include <QtCore/QHash>
 
 uint qHash( const QUrl& url )
 {

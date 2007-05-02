@@ -18,10 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 #include "fileio.h"
-#include <QFile>
+#include <QtCore/QFile>
 #include "kjseglobal.h"
-#include <QTemporaryFile>
-#include <QDebug>
+#include <QtCore/QTemporaryFile>
+#include <QtCore/QDebug>
 
 using namespace KJSEmbed;
 

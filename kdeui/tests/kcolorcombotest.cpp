@@ -30,11 +30,11 @@
 #include <kdialog.h>
 #include <kconfig.h>
 
-#include <qpushbutton.h>
+#include <QtGui/QPushButton>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
 #include <khbox.h>
-#include <QVBoxLayout>
+#include <QtGui/QBoxLayout>
 
 #include <kcolorcombo.h>
 

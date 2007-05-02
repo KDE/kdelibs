@@ -25,7 +25,7 @@
 #include <klocale.h>
 
 #include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
+#include <QtGui/QKeyEvent>
 
 KUrlToggleButton::KUrlToggleButton(KUrlNavigator* parent) :
     KUrlButton(parent)

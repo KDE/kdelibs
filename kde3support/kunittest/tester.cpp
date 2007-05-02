@@ -26,9 +26,9 @@
 #include <iostream>
 using namespace std;
 
-#include <QtCore/QMetaClassInfo>
-#include <QRect>
-#include <QtCore/QMutableVectorIterator>
+#include <QtCore/QMetaEnum>
+#include <QtCore/QRect>
+#include <QtCore/QVector>
 #include "tester.h"
 
 namespace KUnitTest

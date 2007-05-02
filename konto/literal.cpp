@@ -20,8 +20,8 @@
 #include "literal.h"
 #include "literal_p.h"
 
-#include <QHash>
-#include <QVariant>
+#include <QtCore/QHash>
+#include <QtCore/QVariant>
 
 
 Konto::Literal::Literal()

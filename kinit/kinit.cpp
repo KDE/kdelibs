@@ -42,12 +42,12 @@
 #include <unistd.h>
 #include <locale.h>
 
-#include <QLibrary>
+#include <QtCore/QLibrary>
 #include <QtCore/QString>
 #include <QtCore/QFile>
 #include <QtCore/QDate>
 #include <QtCore/QFileInfo>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtGui/QFont>
 #include <kcomponentdata.h>

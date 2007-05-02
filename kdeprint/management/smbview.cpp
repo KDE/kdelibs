@@ -23,7 +23,7 @@
 #include <ktemporaryfile.h>
 #include <Qt3Support/Q3Header>
 #include <QtGui/QApplication>
-#include <QTextStream>
+#include <QtCore/QTextStream>
 
 #include <kiconloader.h>
 #include <klocale.h>
@@ -32,7 +32,6 @@
 #include <kcursor.h>
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
 #include <cstdlib>
 
 

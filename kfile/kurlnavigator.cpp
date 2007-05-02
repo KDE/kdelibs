@@ -38,8 +38,8 @@
 #include <QtCore/QLinkedList>
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QHBoxLayout>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 

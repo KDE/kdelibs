@@ -20,7 +20,7 @@
 #ifndef TEST_OBJECT_H
 #define TEST_OBJECT_H
 
-#include <QVariant>
+#include <QtCore/QVariant>
 
 #include <kjsembed/static_binding.h>
 

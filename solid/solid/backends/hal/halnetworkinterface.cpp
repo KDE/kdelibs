@@ -21,7 +21,7 @@
 
 #include "backends/hal/haldevice.h"
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 NetworkInterface::NetworkInterface(HalDevice *device)
     : DeviceInterface(device)

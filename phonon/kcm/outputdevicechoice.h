@@ -23,10 +23,9 @@
 #include "ui_outputdevicechoice.h"
 #include <phonon/objectdescriptionmodel.h>
 #include <phonon/objectdescription.h>
-#include <QStandardItemModel>
-#include <QMap>
-#include <QList>
-#include <QStandardItem>
+#include <QtGui/QStandardItem>
+#include <QtCore/QMap>
+#include <QtCore/QList>
 
 class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
 {

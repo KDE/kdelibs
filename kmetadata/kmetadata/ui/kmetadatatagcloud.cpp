@@ -23,7 +23,7 @@
 
 #include <kmetadata/tag.h>
 
-#include <QTimer>
+#include <QtCore/QTimer>
 
 
 class Nepomuk::KMetaData::TagCloud::Private

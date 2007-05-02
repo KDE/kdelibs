@@ -21,10 +21,10 @@
 
 #include "abstractvideooutput.h"
 #include <phonon/experimental/videoframe.h>
-#include <QVector>
-#include <QByteArray>
-#include <QObject>
-#include <QSize>
+#include <QtCore/QVector>
+#include <QtCore/QByteRef>
+#include <QtCore/QObject>
+#include <QtCore/QSize>
 
 namespace Phonon
 {

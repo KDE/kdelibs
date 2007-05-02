@@ -17,7 +17,7 @@
 
 */
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 #include "backends/fakehw/fakeportablemediaplayer.h"
 

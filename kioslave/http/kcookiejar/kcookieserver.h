@@ -27,7 +27,7 @@
 #include <QtCore/QStringList>
 #include <kdedmodule.h>
 #include <QtDBus/QtDBus>
-#include <QDBusContext>
+#include <QtDBus/QDBusContext>
 
 class KHttpCookieList;
 class KCookieJar;

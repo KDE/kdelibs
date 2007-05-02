@@ -23,7 +23,7 @@
 
 #include "kconfig.h"
 
-#include <QMap>
+#include <QtCore/QMap>
 
 #include <kconfiggroup.h>
 

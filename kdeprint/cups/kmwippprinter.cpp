@@ -24,11 +24,11 @@
 #include "kmcupsmanager.h"
 #include "networkscanner.h"
 
-#include <Q3Header>
-#include <QLineEdit>
-#include <QLabel>
-#include <QTextBrowser>
-#include <QLayout>
+#include <Qt3Support/Q3Header>
+#include <QtGui/QLineEdit>
+#include <QtGui/QLabel>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QLayout>
 
 #include <k3listview.h>
 #include <kpushbutton.h>

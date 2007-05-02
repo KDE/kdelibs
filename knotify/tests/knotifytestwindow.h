@@ -7,7 +7,7 @@
 
 #include <kxmlguiwindow.h>
 #include "ui_knotifytestview.h"
-#include <QPointer>
+#include <QtCore/QPointer>
 
 class KNotification;
 

@@ -18,12 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QCoreApplication>
-#include <QFile>
-#include <QMessageBox>
-#include <QTextStream>
-#include <QDebug>
-#include <QMetaType>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QFile>
+#include <QtGui/QMessageBox>
+#include <QtCore/QTextStream>
+#include <QtCore/QDebug>
+#include <QtCore/QMetaType>
 
 #ifndef QT_ONLY
 #include <kstandarddirs.h>

@@ -19,10 +19,10 @@
 */
 #include "pen.h"
 
-#include <QDebug>
-#include <QPen>
-#include <QBrush>
-#include <QColor>
+#include <QtCore/QDebug>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
+#include <QtGui/QColor>
 
 using namespace KJSEmbed;
 

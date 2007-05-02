@@ -19,11 +19,11 @@
 #ifndef KDIRLISTERTEST_H
 #define KDIRLISTERTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <ktempdir.h>
-#include <QDateTime>
+#include <QtCore/QDate>
 #include <kdirlister.h>
-#include <QEventLoop>
+#include <QtCore/QEventLoop>
 
 class KDirListerTest : public QObject
 {

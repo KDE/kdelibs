@@ -16,7 +16,7 @@
 
 #include "FileLoaderJob.h"
 
-#include <QtDebug>
+#include <QtCore/QDebug>
 
 namespace ThreadWeaver {
 

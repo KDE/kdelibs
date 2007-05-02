@@ -23,7 +23,7 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>

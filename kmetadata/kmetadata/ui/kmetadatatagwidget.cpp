@@ -29,12 +29,12 @@
 #include <karrowbutton.h>
 #include <klocale.h>
 
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QMenu>
-#include <QAction>
-#include <QInputDialog>
-#include <QMessageBox>
+#include <QtGui/QPushButton>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QMenu>
+#include <QtGui/QAction>
+#include <QtGui/QInputDialog>
+#include <QtGui/QMessageBox>
 
 
 class Nepomuk::KMetaData::TagWidget::Private

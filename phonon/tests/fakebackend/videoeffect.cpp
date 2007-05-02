@@ -18,7 +18,7 @@
 */
 
 #include "videoeffect.h"
-#include <QVariant>
+#include <QtCore/QVariant>
 
 namespace Phonon
 {

@@ -28,9 +28,8 @@
 
 #include "ResourceRestrictionPolicy.h"
 
-#include <QList>
-#include <QMutex>
-#include <QMutexLocker>
+#include <QtCore/QList>
+#include <QtCore/QMutex>
 
 #include "DebuggingAids.h"
 

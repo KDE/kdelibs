@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QMap>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include "kmprinter.h"
 
 class KMJob;

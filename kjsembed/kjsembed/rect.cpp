@@ -19,10 +19,10 @@
 */
 #include "rect.h"
 
-#include <QDebug>
-#include <QRect>
-#include <QPoint>
-#include <QSize>
+#include <QtCore/QDebug>
+#include <QtCore/QRect>
+#include <QtCore/QPoint>
+#include <QtCore/QSize>
 
 using namespace KJSEmbed;
 

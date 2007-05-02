@@ -17,8 +17,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QDebug>
-#include <QApplication>
+#include <QtCore/QDebug>
+#include <QtGui/QApplication>
 
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>

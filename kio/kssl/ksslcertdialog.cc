@@ -29,7 +29,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QRadioButton>
 #include <QtGui/QCheckBox>
-#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3ListView>
 #include <QtGui/QFrame>
 #include <QtGui/QLabel>
 

@@ -3,9 +3,9 @@
 #ifndef krulertest_h
 #define krulertest_h
 
-#include <QCheckBox>
-#include <QRadioButton>
-#include <QFrame>
+#include <QtGui/QCheckBox>
+#include <QtGui/QRadioButton>
+#include <QtGui/QFrame>
 
 #include <kapplication.h>
 #include <kmainwindow.h>

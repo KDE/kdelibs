@@ -1,7 +1,7 @@
 #ifndef JOBTESTS_H
 #define JOBTESTS_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace ThreadWeaver{
     class Job;

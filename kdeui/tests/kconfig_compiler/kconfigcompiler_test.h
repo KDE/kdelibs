@@ -16,7 +16,7 @@
 #ifndef KCONFIGCOMPILER_TEST_H
 #define KCONFIGCOMPILER_TEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class QString;
 

@@ -27,9 +27,9 @@
 #include <signal.h>
 
 #include <QtCore/QBool>
-#include <QFile>
-#include <QProcess>
-#include <QCoreApplication>
+#include <QtCore/QFile>
+#include <QtCore/QProcess>
+#include <QtCore/QCoreApplication>
 
 #include <kconfig.h>
 #include <kdebug.h>

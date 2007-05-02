@@ -20,7 +20,7 @@
 #include "audiopath.h"
 #include "audioeffect.h"
 #include "abstractaudiooutput.h"
-#include <QVector>
+#include <QtCore/QVector>
 
 namespace Phonon
 {

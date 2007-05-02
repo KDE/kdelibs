@@ -24,7 +24,7 @@
 #include "objectdescription.h"
 #include <kglobal.h>
 
-#include <QObject>
+#include <QtCore/QObject>
 
 template<class T> class QList;
 class QStringList;

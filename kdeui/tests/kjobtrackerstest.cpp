@@ -19,7 +19,7 @@
 
 #include "kjobtrackerstest.h"
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

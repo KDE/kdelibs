@@ -21,7 +21,7 @@
 #define PHONON_STREAMINTERFACE_H
 
 #include "phonon_export.h"
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

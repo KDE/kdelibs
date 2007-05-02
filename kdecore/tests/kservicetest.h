@@ -18,7 +18,7 @@
 #ifndef KSERVICETEST_H
 #define KSERVICETEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KServiceTest : public QObject
 {

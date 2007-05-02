@@ -28,8 +28,8 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
-#include <QtCore/QTextIStream>
-#include <QStack>
+#include <QtCore/QTextStream>
+#include <QtCore/QStack>
 #include <kstandarddirs.h>
 #include <klocale.h>
 #include <kdebug.h>

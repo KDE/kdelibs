@@ -21,7 +21,7 @@
 
 #include "phonon_export.h"
 #include "phonondefs.h"
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

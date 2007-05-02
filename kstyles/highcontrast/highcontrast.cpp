@@ -27,7 +27,7 @@
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QPainter>
 #include <Qt3Support/Q3PointArray>
-#include <QtGui/QStyleFactoryInterface>
+#include <QtGui/QStylePlugin>
 
 #include <QtGui/QFont>
 #include <QtGui/QComboBox>
@@ -41,7 +41,7 @@
 #include <Qt3Support/Q3ToolBar>
 #include <QtGui/QMenu>
 #include <QtGui/QProgressBar>
-#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3ListView>
 #include <QtCore/QSettings>
 
 #include <kdrawutil.h>

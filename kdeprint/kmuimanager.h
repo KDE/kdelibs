@@ -20,8 +20,8 @@
 #ifndef KMUIMANAGER_H
 #define KMUIMANAGER_H
 
-#include <QList>
-#include <QObject>
+#include <QtCore/QList>
+#include <QtCore/QObject>
 
 #include "kprinter.h"
 

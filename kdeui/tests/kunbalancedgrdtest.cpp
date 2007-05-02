@@ -7,8 +7,8 @@
 #include <kcmdlineargs.h>
 #include <kpixmapeffect.h>
 
-#include <QPainter>
-#include <QGridLayout>
+#include <QtGui/QPainter>
+#include <QtGui/QGridLayout>
 
 int cols = 3, rows = 3; // how many
 

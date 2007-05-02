@@ -38,8 +38,8 @@
 #include <QtCore/Q_PID>
 #include <QtGui/QTabWidget>
 #include <kseparator.h>
-#include <Qt3Support/Q3CheckListItem>
-#include <QTextEdit>
+#include <Qt3Support/Q3ListView>
+#include <QtGui/QTextEdit>
 #include <QtCore/QRegExp>
 #include <kcombobox.h>
 #include <kparts/browserextension.h>

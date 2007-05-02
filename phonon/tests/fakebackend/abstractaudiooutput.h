@@ -19,7 +19,7 @@
 #ifndef Phonon_FAKE_ABSTRACTAUDIOOUTPUTBASE_H
 #define Phonon_FAKE_ABSTRACTAUDIOOUTPUTBASE_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

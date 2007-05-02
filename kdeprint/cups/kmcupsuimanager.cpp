@@ -53,7 +53,7 @@
 #include "ipprequest.h"
 #include "cupsinfos.h"
 
-#include <QTreeWidget>
+#include <QtGui/QTreeWidget>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kaction.h>

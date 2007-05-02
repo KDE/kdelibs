@@ -22,7 +22,7 @@
 #ifndef _KAUTOSCROLL_AREA_H_
 #define _KAUTOSCROLL_AREA_H_
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class QEvent;
 

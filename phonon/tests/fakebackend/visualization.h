@@ -20,7 +20,7 @@
 #ifndef PHONON_FAKE_VISUALIZATION_H
 #define PHONON_FAKE_VISUALIZATION_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

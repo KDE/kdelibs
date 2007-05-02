@@ -29,7 +29,7 @@
 #include <QtGui/QImage>
 #include <QtCore/QHash>
 #include "kwalletbackend.h"
-#include <Q3PtrList>
+#include <Qt3Support/Q3PtrList>
 #include <QtCore/QPointer>
 #include <time.h>
 #include <stdlib.h>

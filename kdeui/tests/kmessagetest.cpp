@@ -18,10 +18,10 @@
 */
 #include "kmessagetest.h"
 
-#include <QtCore/QLatin1String>
+#include <QtCore/QString>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPushButton>
-#include <QtGui/QVBoxLayout>
+#include <QtGui/QBoxLayout>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

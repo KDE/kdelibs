@@ -20,7 +20,7 @@
 #ifndef SIMPLETEST_H
 #define SIMPLETEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class SimpleTest : public QObject
 {

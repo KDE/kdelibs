@@ -21,8 +21,8 @@
 #define KROSS_FORM_H
 
 
-#include <QWidget>
-#include <QUrl>
+#include <QtGui/QWidget>
+#include <QtCore/QUrl>
 
 #include <kpagedialog.h>
 //#include <kfilewidget.h>

@@ -23,9 +23,9 @@
 #include <kjs/PropertyNameArray.h>
 #include <kjs/array_instance.h>
 
-#include <QBitArray>
-#include <QByteArray>
-#include <QDebug>
+#include <QtCore/QBitRef>
+#include <QtCore/QByteRef>
+#include <QtCore/QDebug>
 
 #include "kjseglobal.h"
 #include "static_binding.h"

@@ -21,9 +21,9 @@
 #ifndef SOLID_IFACES_DEVICEMANAGER_H
 #define SOLID_IFACES_DEVICEMANAGER_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 #include <solid/deviceinterface.h>
 

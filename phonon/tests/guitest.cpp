@@ -31,11 +31,10 @@
 #include <phonon/volumeslider.h>
 #include <phonon/objectdescriptionmodel.h>
 
-#include <QApplication>
-#include <QPushButton>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QtGui/QApplication>
+#include <QtGui/QPushButton>
+#include <QtGui/QLabel>
+#include <QtGui/QBoxLayout>
 
 #include <klineedit.h>
 #include <kurlcompletion.h>
@@ -44,22 +43,21 @@
 #include <kurl.h>
 
 #include <cstdlib>
-#include <QTime>
+#include <QtCore/QDate>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QPainter>
-#include <QComboBox>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QComboBox>
 #include <kicon.h>
-#include <QToolButton>
-#include <QProgressBar>
+#include <QtGui/QToolButton>
+#include <QtGui/QProgressBar>
 #include <kmessagebox.h>
-#include <QGroupBox>
-#include <QSpinBox>
-#include <QMultiMap>
+#include <QtGui/QGroupBox>
+#include <QtGui/QSpinBox>
+#include <QtCore/QMap>
 
 using namespace Phonon;
 

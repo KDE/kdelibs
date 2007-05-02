@@ -30,9 +30,9 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 
 #include "WeaverImpl.h"
 
-#include <QObject>
-#include <QMutex>
-#include <QtDebug>
+#include <QtCore/QObject>
+#include <QtCore/QMutex>
+#include <QtCore/QDebug>
 
 #include "Job.h"
 #include "State.h"

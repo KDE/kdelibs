@@ -22,8 +22,8 @@
 #include "script.h"
 #include "manager.h"
 
-#include <QFile>
-#include <QFileInfo>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 
 #include <kmimetype.h>
 #include <kstandarddirs.h>

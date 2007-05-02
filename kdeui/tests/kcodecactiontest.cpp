@@ -1,5 +1,5 @@
-#include <QToolBar>
-#include <QTextCodec>
+#include <QtGui/QToolBar>
+#include <QtCore/QTextCodec>
 
 #include <kcmdlineargs.h>
 #include <kapplication.h>

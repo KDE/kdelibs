@@ -20,7 +20,7 @@
 #ifndef MEDIAOBJECTTEST_H
 #define MEDIAOBJECTTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <kurl.h>
 #include <phonon/bytestream.h>
 #include <phonon/audiopath.h>

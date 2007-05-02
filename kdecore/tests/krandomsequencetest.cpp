@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QList>
+#include <QtCore/QList>
 #include <QtCore/QString>
 
 #include "krandomsequence.h"

@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QFile>
-#include <QTextStream>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
 
 #include <ktemporaryfile.h>
 #include <kautosavefile.h>

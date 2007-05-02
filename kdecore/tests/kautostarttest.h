@@ -19,7 +19,7 @@
 #ifndef KNOTIFICATIONRESTRECTIONSTEST_H
 #define KNOTIFICATIONRESTRECTIONSTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KAutostartTest : public QObject
 {

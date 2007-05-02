@@ -19,7 +19,7 @@
 #ifndef Phonon_FAKE_AUDIOEFFECT_H
 #define Phonon_FAKE_AUDIOEFFECT_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <phonon/effectparameter.h>
 
 namespace Phonon

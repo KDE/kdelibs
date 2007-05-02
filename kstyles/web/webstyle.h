@@ -21,7 +21,7 @@
 #define WEB_STYLE_H
 
 #include <kstyle.h>
-#include <QtGui/QColorGroup>
+#include <QtGui/QPalette>
 
 class QPainter;
 class QScrollBar;

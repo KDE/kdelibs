@@ -22,7 +22,7 @@
 #ifndef _KTIMEOUT_H_
 #define _KTIMEOUT_H_
 
-#include <QHash>
+#include <QtCore/QHash>
 #include <QtCore/QObject>
 
 // @internal

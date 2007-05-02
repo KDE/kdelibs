@@ -28,7 +28,7 @@
 
 #include "DebuggingAids.h"
 
-#include <QMutex>
+#include <QtCore/QMutex>
 
 #include <threadweaver/threadweaver_export.h>
 

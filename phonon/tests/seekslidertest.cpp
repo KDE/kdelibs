@@ -22,10 +22,10 @@
 #include "seekslidertest.h"
 #include "../seekslider.h"
 #include "../mediaobject.h"
-#include <QSlider>
+#include <QtGui/QSlider>
 #include <kurl.h>
 #include <cstdlib>
-#include <QLabel>
+#include <QtGui/QLabel>
 #include "loadfakebackend.h"
 
 using namespace Phonon;

@@ -21,7 +21,7 @@
 #include "cupsdconf.h"
 
 #include <QtGui/QLineEdit>
-#include <QtGui/QDoubleSpinBox>
+#include <QtGui/QSpinBox>
 #include <QtGui/QCheckBox>
 #include <QtGui/QPushButton>
 #include <QtGui/QLabel>

@@ -1,6 +1,6 @@
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 #include <QtDBus>
-#include <QTimer>
+#include <QtCore/QTimer>
 
 #include <solid/networking.h>
 #include "solidnettestdbusservice.h"

@@ -22,8 +22,8 @@
 
 #include <kross/core/krossconfig.h>
 
-#include <QAbstractItemModel>
-#include <QSortFilterProxyModel>
+#include <QtCore/QModelIndex>
+#include <QtGui/QSortFilterProxyModel>
 
 namespace Kross {
 

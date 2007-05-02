@@ -19,7 +19,7 @@
 #ifndef Phonon_FAKE_BRIGHTNESSCONTROL_H
 #define Phonon_FAKE_BRIGHTNESSCONTROL_H
 
-#include <QTime>
+#include <QtCore/QDate>
 #include "videoeffect.h"
 
 namespace Phonon

@@ -23,7 +23,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
 #include <QtCore/QBuffer>
-#include <QStringList>
+#include <QtCore/QStringList>
 #include <kdebug.h>
 #include <klocale.h>
 

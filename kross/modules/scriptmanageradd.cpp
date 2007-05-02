@@ -26,11 +26,10 @@
 #include <kross/core/actioncollection.h>
 #include <kross/ui/view.h>
 
-#include <QFileInfo>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QRadioButton>
+#include <QtCore/QFileInfo>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QRadioButton>
 
 #include <klocale.h>
 #include <kurl.h>

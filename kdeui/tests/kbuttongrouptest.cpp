@@ -21,12 +21,12 @@
 
 #include "qtest_kde.h"
 
-#include <QtTest/QTestMouseEvent>
+#include <QtTest/QTestEvent>
 
-#include <QList>
-#include <QRadioButton>
-#include <QSignalSpy>
-#include <QVBoxLayout>
+#include <QtCore/QList>
+#include <QtGui/QRadioButton>
+#include <QtTest/QSignalSpy>
+#include <QtGui/QBoxLayout>
 
 #include "kbuttongrouptest.h"
 #include "kbuttongroup.h"

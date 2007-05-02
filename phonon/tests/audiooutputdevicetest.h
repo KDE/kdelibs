@@ -19,7 +19,7 @@
 
 #ifndef AUDIOOUTPUTDEVICETEST_H
 #define AUDIOOUTPUTDEVICETEST_H
-#include <QObject>
+#include <QtCore/QObject>
 
 class AudioOutputDeviceTest : public QObject
 {

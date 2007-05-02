@@ -21,7 +21,7 @@
 #define	CUPSDDIALOG_H
 
 #include <kpagedialog.h>
-#include <QList>
+#include <QtCore/QList>
 
 class CupsdPage;
 struct CupsdConf;

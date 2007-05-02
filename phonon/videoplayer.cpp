@@ -24,7 +24,7 @@
 #include "videopath.h"
 #include "videowidget.h"
 #include <kurl.h>
-#include <QVBoxLayout>
+#include <QtGui/QBoxLayout>
 
 namespace Phonon
 {

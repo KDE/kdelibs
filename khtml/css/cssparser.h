@@ -24,7 +24,7 @@
 
 #include <QtCore/QString>
 #include <QtGui/QColor>
-#include <QVector>
+#include <QtCore/QVector>
 #include <dom/dom_string.h>
 
 namespace DOM {

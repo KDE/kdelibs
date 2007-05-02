@@ -21,7 +21,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 //Added by qt3to4:
-#include <QHBoxLayout>
+#include <QtGui/QBoxLayout>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kassistantdialog.h>

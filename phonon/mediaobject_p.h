@@ -22,14 +22,14 @@
 
 #include "mediaobject.h"
 #include "base_p.h"
-#include <QUrl>
-#include <QTimer>
-#include <QHash>
-#include <QString>
-#include <QMultiMap>
+#include <QtCore/QUrl>
+#include <QtCore/QTimer>
+#include <QtCore/QHash>
+#include <QtCore/QString>
+#include <QtCore/QMap>
 #include "basedestructionhandler.h"
 #include "mediasource.h"
-#include <QQueue>
+#include <QtCore/QQueue>
 
 namespace Phonon
 {

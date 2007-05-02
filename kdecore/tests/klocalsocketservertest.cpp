@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 #include <QtTest>
-#include <QThread>
+#include <QtCore/QThread>
 #include "klocalsocketservertest.h"
 #include "klocalsocket.h"
 

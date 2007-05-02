@@ -19,7 +19,7 @@
 #ifndef FAKEDEVICEINTERFACE_H
 #define FAKEDEVICEINTERFACE_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <solid/ifaces/deviceinterface.h>
 
 #include "fakedevice.h"

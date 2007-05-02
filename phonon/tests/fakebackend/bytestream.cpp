@@ -18,7 +18,7 @@
 */
 
 #include "bytestream.h"
-#include <QTimer>
+#include <QtCore/QTimer>
 
 /* Fake bytestream:
  * Tries to reach a ratio of 4MB = 4min

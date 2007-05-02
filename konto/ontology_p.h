@@ -22,9 +22,9 @@
 
 #include "ontology.h"
 
-#include <QHash>
-#include <QUrl>
-#include <QSharedData>
+#include <QtCore/QHash>
+#include <QtCore/QUrl>
+#include <QtCore/QSharedData>
 
 namespace Konto {
 

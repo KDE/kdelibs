@@ -18,7 +18,7 @@
 #ifndef KMOUNTPOINTTEST_H
 #define KMOUNTPOINTTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KMountPointTest : public QObject
 {

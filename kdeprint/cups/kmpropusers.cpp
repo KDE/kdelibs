@@ -21,8 +21,8 @@
 #include "kmprinter.h"
 #include "kmwizard.h"
 
-#include <QTextBrowser>
-#include <QLayout>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 

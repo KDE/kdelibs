@@ -19,7 +19,7 @@
 
 #ifndef AUDIOCAPTUREDEVICETEST_H
 #define AUDIOCAPTUREDEVICETEST_H
-#include <QObject>
+#include <QtCore/QObject>
 
 class AudioCaptureDeviceTest : public QObject
 {

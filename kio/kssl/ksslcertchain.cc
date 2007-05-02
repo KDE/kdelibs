@@ -43,7 +43,7 @@
 #include <kopenssl.h>
 #include <kdebug.h>
 #include <QtCore/QStringList>
-#include <Q3CString>
+#include <Qt3Support/Q3CString>
 
 #ifdef KSSL_HAVE_SSL
 #define sk_new d->kossl->sk_new

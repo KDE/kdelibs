@@ -21,7 +21,7 @@
 
 #include <solid/ifaces/device.h>
 
-#include <QMap>
+#include <QtCore/QMap>
 
 
 class FakeDevice : public Solid::Ifaces::Device

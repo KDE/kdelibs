@@ -23,7 +23,7 @@
 #include "ecma/kjs_dom.h"
 #include "ecma/kjs_binding.h"
 #include <kjs/object.h>
-#include <QPointer>
+#include <QtCore/QPointer>
 #include <phonon/phononnamespace.h>
 #include <phonon/abstractmediastream.h>
 

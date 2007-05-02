@@ -21,8 +21,8 @@
 #ifndef BINDING_SUPPORT_H
 #define BINDING_SUPPORT_H
 
-#include <QDateTime>
-#include <QStringList>
+#include <QtCore/QDate>
+#include <QtCore/QStringList>
 
 #include <kjsembed/kjseglobal.h>
 #include <kjsembed/pointer.h>

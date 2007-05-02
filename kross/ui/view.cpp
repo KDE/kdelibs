@@ -27,15 +27,14 @@
 #include <kross/core/actioncollection.h>
 #include <kross/core/interpreter.h>
 
-#include <QFileInfo>
-#include <QDir>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QHeaderView>
-#include <QTreeView>
-#include <QLabel>
-#include <QLineEdit>
-#include <QComboBox>
+#include <QtCore/QFileInfo>
+#include <QtCore/QDir>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QHeaderView>
+#include <QtGui/QTreeView>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
 
 #include <kapplication.h>
 //#include <kdeversion.h>

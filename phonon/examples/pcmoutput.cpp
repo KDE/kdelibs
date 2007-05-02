@@ -23,16 +23,16 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <QByteArray>
-#include <QDataStream>
-#include <QSlider>
-#include <QHBoxLayout>
+#include <QtCore/QByteRef>
+#include <QtCore/QDataStream>
+#include <QtGui/QSlider>
+#include <QtGui/QBoxLayout>
 #include <phonon/audiooutput.h>
 #include <phonon/audiopath.h>
 #include <phonon/bytestream.h>
-#include <QTimer>
-#include <QFile>
-#include <QLabel>
+#include <QtCore/QTimer>
+#include <QtCore/QFile>
+#include <QtGui/QLabel>
 
 static const int SAMPLE_RATE = 48000;
 

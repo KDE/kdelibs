@@ -17,13 +17,13 @@
 #include <QtGui/QToolButton>
 #include <QtGui/QIcon>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <Qt3Support/Q3StyleSheet>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
 #include <QtGui/QApplication>
 #include <QtGui/QComboBox>
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <QtGui/QLineEdit>
 #include <QtCore/QObject>
 #include <QtCore/QFileInfo>

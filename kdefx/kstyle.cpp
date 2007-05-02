@@ -53,10 +53,10 @@
 #include <QtGui/QDialogButtonBox>
 #include <QtGui/QIcon>
 #include <QtGui/QLabel>
-#include <QtGui/QMouseEvent>
+#include <QtGui/QKeyEvent>
 #include <QtGui/QPainter>
 #include <QtGui/QScrollBar>
-#include <QtGui/QStyleOptionButton>
+#include <QtGui/QStyleOption>
 
 
 //### FIXME: Who to credit these to?

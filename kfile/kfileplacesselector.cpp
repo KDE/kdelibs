@@ -28,8 +28,8 @@
 #include <kmenu.h>
 #include <kdebug.h>
 
-#include <QPainter>
-#include <QPixmap>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
 #include <kicon.h>
 
 KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel* placesModel) :

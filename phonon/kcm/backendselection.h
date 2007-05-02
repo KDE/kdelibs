@@ -21,8 +21,8 @@
 #define BACKENDSELECTION_H
 
 #include "ui_backendselection.h"
-#include <QWidget>
-#include <QHash>
+#include <QtGui/QWidget>
+#include <QtCore/QHash>
 
 
 #include <kservice.h>

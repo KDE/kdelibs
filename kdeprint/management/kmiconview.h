@@ -21,7 +21,7 @@
 #define KMICONVIEW_H
 
 #include <k3iconview.h>
-#include <QList>
+#include <QtCore/QList>
 
 #include "kmobject.h"
 

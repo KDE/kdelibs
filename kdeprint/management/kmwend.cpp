@@ -22,8 +22,8 @@
 #include "kmwizard.h"
 #include "util.h"
 
-#include <QTextBrowser>
-#include <QLayout>
+#include <QtGui/QTextBrowser>
+#include <QtGui/QLayout>
 
 #include <klocale.h>
 

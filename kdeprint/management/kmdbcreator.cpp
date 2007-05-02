@@ -21,7 +21,7 @@
 #include "kmfactory.h"
 #include "kmmanager.h"
 
-#include <QByteArray>
+#include <QtCore/QByteRef>
 #include <QtGui/QProgressDialog>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>

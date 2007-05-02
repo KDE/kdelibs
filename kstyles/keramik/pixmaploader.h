@@ -24,7 +24,7 @@
 
 #include <QtCore/QCache>
 #include <QtGui/QImage>
-#include <QStyleOptionTab>
+#include <QtGui/QStyleOption>
 
 class QPixmap;
 class QImage;

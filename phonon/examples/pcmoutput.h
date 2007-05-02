@@ -20,7 +20,7 @@
 #ifndef PCMOUTPUT_H
 #define PCMOUTPUT_H
 
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class QByteArray;
 class QLabel;

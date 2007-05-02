@@ -2,7 +2,7 @@
 #include <QtGui/QWidget>
 #include <kcomponentdata.h>
 #include <iostream>
-#include <QApplication>
+#include <QtGui/QApplication>
 #include <QtGui/QPen>
 #include <QtCore/QVariant>
 

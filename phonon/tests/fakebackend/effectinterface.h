@@ -20,8 +20,8 @@
 #ifndef PHONON_FAKE_EFFECTINTERFACE_H
 #define PHONON_FAKE_EFFECTINTERFACE_H
 
-#include <QQueue>
-#include <QVariant>
+#include <QtCore/QQueue>
+#include <QtCore/QVariant>
 
 namespace Phonon
 {

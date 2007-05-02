@@ -23,7 +23,7 @@
 #include <kutils_export.h>
 #include <kdialog.h>
 
-#include <QList>
+#include <QtCore/QList>
 
 class QString;
 class KPluginInfo;

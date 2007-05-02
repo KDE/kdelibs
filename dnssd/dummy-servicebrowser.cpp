@@ -21,7 +21,7 @@
 #include <QtCore/QStringList>
 #include "domainbrowser.h"
 #include "servicebrowser.h"
-#include <QHash>
+#include <QtCore/QHash>
 
 namespace DNSSD
 {

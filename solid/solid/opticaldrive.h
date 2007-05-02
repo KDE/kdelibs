@@ -20,7 +20,7 @@
 #ifndef SOLID_CDROM_H
 #define SOLID_CDROM_H
 
-#include <QList>
+#include <QtCore/QList>
 
 #include <solid/solid_export.h>
 

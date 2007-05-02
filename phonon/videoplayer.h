@@ -22,7 +22,7 @@
 
 #include "phonon_export.h"
 #include "phononnamespace.h"
-#include <QWidget>
+#include <QtGui/QWidget>
 
 class KUrl;
 

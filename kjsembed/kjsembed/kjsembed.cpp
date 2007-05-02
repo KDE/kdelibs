@@ -57,9 +57,9 @@
 #include <kjs/interpreter.h>
 #include <kjs/completion.h>
 
-#include <QFile>
-#include <QTextStream>
-#include <QObject>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtCore/QObject>
 
 #include <QtCore/QDebug>
 

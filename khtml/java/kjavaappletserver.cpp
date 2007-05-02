@@ -50,11 +50,11 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QLayout>
 #include <QtCore/QRegExp>
-#include <Q3CString>
+#include <Qt3Support/Q3CString>
 
 #include <stdlib.h>
 #include <assert.h>
-#include <QAbstractEventDispatcher>
+#include <QtCore/QAbstractEventDispatcher>
 
 #define KJAS_CREATE_CONTEXT    (char)1
 #define KJAS_DESTROY_CONTEXT   (char)2

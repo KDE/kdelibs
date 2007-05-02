@@ -21,8 +21,8 @@
 #include "qtesthelper.h"
 #include <cstdlib>
 #include <qtest_kde.h>
-#include <QTime>
-#include <QtDebug>
+#include <QtCore/QDate>
+#include <QtCore/QDebug>
 #include <phonon/videopath.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>

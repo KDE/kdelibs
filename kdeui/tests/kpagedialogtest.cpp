@@ -23,8 +23,8 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 
-#include <QHBoxLayout>
-#include <QLabel>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QLabel>
 
 #include "kpagedialogtest.h"
 

@@ -22,7 +22,7 @@
 
 #include "phonon_export.h"
 #include "phononnamespace.h"
-#include <QObject>
+#include <QtCore/QObject>
 class QByteArray;
 
 namespace Phonon

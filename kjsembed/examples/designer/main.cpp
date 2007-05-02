@@ -17,11 +17,11 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QApplication>
-#include <QWidget>
-#include <QPluginLoader>
-#include <QHBoxLayout>
-#include <QMetaObject>
+#include <QtGui/QApplication>
+#include <QtGui/QWidget>
+#include <QtCore/QPluginLoader>
+#include <QtGui/QBoxLayout>
+#include <QtCore/QArgument>
 
 #include <QtDesigner/QDesignerComponents>
 #include <QtDesigner/QDesignerWidgetBoxInterface>

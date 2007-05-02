@@ -23,9 +23,9 @@
 #include <phonon/objectdescription.h>
 #include <phonon/backendinterface.h>
 
-#include <QList>
-#include <QPointer>
-#include <QStringList>
+#include <QtCore/QList>
+#include <QtCore/QPointer>
+#include <QtCore/QStringList>
 
 class KUrl;
 

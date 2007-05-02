@@ -23,7 +23,7 @@
 #include <kdebug.h>
 #include <QtGui/QPainter>
 #include <QtGui/QCursor>
-#include <QMouseEvent>
+#include <QtGui/QKeyEvent>
 
 #define	A4_WIDTH	595
 #define	A4_HEIGHT	842

@@ -89,12 +89,12 @@
 #include <Qt3Support/Q3PtrDict>
 #include <QtGui/QToolTip>
 #include <QtCore/QString>
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 #include <QtCore/QTimer>
-#include <QAbstractEventDispatcher>
-#include <QtCore/QMutableVectorIterator>
-#include <Q3ListBox>
-#include <QAbstractScrollArea>
+#include <QtCore/QAbstractEventDispatcher>
+#include <QtCore/QVector>
+#include <Qt3Support/Q3ListBox>
+#include <QtGui/QAbstractScrollArea>
 
 //#define DEBUG_FLICKER
 

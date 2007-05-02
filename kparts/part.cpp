@@ -30,7 +30,7 @@
 #include <QtCore/QFileInfo>
 #include <QtGui/QPainter>
 #include <QtCore/QPoint>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include <kdirnotify.h>
 #include <kfiledialog.h>

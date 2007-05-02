@@ -28,7 +28,7 @@
 #include "kjavaprocess.h"
 #include <QtCore/QObject>
 #include <QtCore/QMap>
-#include <QSize>
+#include <QtCore/QSize>
 
 /**
  * @short Communicates with a KJAS server to display and control Java applets.

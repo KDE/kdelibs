@@ -19,7 +19,7 @@
 #ifndef KAPPLICATION_UNITTEST_H
 #define KAPPLICATION_UNITTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KApplication_UnitTest : public QObject
 {

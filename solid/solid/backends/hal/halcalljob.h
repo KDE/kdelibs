@@ -24,8 +24,8 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
-#include <QList>
-#include <QVariant>
+#include <QtCore/QList>
+#include <QtCore/QVariant>
 
 class HalCallJob : public KJob
 {

@@ -21,7 +21,7 @@
 #ifndef DNSSDSDEVENT_H
 #define DNSSDSDEVENT_H
 
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <QtCore/QString>
 #include <QtCore/QMap>
 

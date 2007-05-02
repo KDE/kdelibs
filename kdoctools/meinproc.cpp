@@ -31,7 +31,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include <QtCore/QTextCodec>
 #include <QtCore/QFileInfo>
 #include <k3process.h>
-#include <QList>
+#include <QtCore/QList>
 
 class MyPair {
 public:

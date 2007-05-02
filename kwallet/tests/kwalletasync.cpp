@@ -1,4 +1,4 @@
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtGui/QApplication>
 #include <QtCore/QTimer>
 

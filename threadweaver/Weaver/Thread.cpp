@@ -31,8 +31,8 @@
 #include "Thread.h"
 #include "Thread_p.h"
 
-#include <QMutex>
-#include <QtDebug>
+#include <QtCore/QMutex>
+#include <QtCore/QDebug>
 
 #include "ThreadWeaver.h"
 #include "WeaverImpl.h"

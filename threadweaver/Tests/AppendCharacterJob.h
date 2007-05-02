@@ -1,8 +1,8 @@
 #ifndef APPENDCHARACTER_JOB
 #define APPENDCHARACTER_JOB
 
-#include <QObject>
-#include <QMutex>
+#include <QtCore/QObject>
+#include <QtCore/QMutex>
 
 #include <Job.h>
 #include <DebuggingAids.h>

@@ -18,7 +18,7 @@
 */
 
 #include "audiooutput.h"
-#include <QVector>
+#include <QtCore/QVector>
 #include <kdebug.h>
 
 #include <config.h>

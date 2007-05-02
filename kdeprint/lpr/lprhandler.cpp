@@ -25,8 +25,8 @@
 #include "driver.h"
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
-#include <QStack>
+#include <QtCore/QTextStream>
+#include <QtCore/QStack>
 #include <klocale.h>
 
 #include <unistd.h>

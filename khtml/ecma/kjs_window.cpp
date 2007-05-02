@@ -49,7 +49,7 @@
 #include <assert.h>
 #include <QtGui/QStyle>
 #include <QtCore/QObject>
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 #include <kstringhandler.h>
 
 #include "kjs_proxy.h"

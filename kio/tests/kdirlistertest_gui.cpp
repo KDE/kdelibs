@@ -20,7 +20,7 @@
 
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
-#include <QDir>
+#include <QtCore/QDir>
 
 #include <kapplication.h>
 #include <kdirlister.h>

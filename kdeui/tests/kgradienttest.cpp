@@ -7,8 +7,8 @@
 #include <kapplication.h>
 #include <kpixmapeffect.h>
 
-#include <QDateTime>
-#include <QPainter>
+#include <QtCore/QDate>
+#include <QtGui/QPainter>
 
 int cols = 3, rows = 3; // how many
 

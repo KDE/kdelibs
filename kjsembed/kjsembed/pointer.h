@@ -24,7 +24,7 @@
 
 #include <algorithm>
 #include <typeinfo>
-#include <QVariant>
+#include <QtCore/QVariant>
 
 struct PointerBase
 {

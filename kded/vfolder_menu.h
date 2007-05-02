@@ -23,8 +23,8 @@
 #include <QtCore/QObject>
 #include <Qt/qdom.h>
 #include <QtCore/QStringList>
-#include <QHash>
-#include <QStack>
+#include <QtCore/QHash>
+#include <QtCore/QStack>
 
 #include <kservice.h>
 

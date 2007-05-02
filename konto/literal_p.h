@@ -22,9 +22,9 @@
 
 #include "literal.h"
 
-#include <QUrl>
-#include <QVariant>
-#include <QSharedData>
+#include <QtCore/QUrl>
+#include <QtCore/QVariant>
+#include <QtCore/QSharedData>
 
 class Konto::Literal::Private : public QSharedData
 {

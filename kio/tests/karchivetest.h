@@ -20,7 +20,7 @@
 #ifndef KARCHIVETEST_H
 #define KARCHIVETEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class KArchiveTest : public QObject
 {

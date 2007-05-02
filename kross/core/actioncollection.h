@@ -24,8 +24,8 @@
 #include "action.h"
 
 
-#include <QObject>
-#include <QDir>
+#include <QtCore/QObject>
+#include <QtCore/QDir>
 
 class QDomElement;
 class QIODevice;

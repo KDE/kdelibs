@@ -46,7 +46,7 @@ char *itoa(int num, char *str, int radix = 10);
 #endif
 #endif
 
-#include <QTextStream>
+#include <QtCore/QTextStream>
 namespace KJSEmbed {
 KJSEMBED_EXPORT QTextStream *conin();
 KJSEMBED_EXPORT QTextStream *conout();

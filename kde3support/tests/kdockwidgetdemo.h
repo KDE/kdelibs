@@ -4,7 +4,7 @@
 #include <k3dockwidget.h>
 
 #include <QtGui/QDialog>
-#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3ListView>
 #include <QtCore/QString>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>

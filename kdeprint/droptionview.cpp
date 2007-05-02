@@ -28,7 +28,7 @@
 #include <klistwidget.h>
 #include <kbuttongroup.h>
 #include <QtGui/QRadioButton>
-#include <QStackedWidget>
+#include <QtGui/QStackedWidget>
 #include <QtGui/QLayout>
 #include <QtGui/QApplication>
 

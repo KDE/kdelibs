@@ -20,7 +20,7 @@
 #ifndef PHONON_OVERLAYAPI_H
 #define PHONON_OVERLAYAPI_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include "export.h"
 #include "../phonondefs.h"
 

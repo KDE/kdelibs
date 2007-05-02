@@ -5,8 +5,8 @@
 
 #include <QtGui/QSplitter>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
-#include <QTextEdit>
+#include <QtCore/QTextStream>
+#include <QtGui/QTextEdit>
 
 #include <kaboutdata.h>
 #include <kapplication.h>

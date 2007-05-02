@@ -17,11 +17,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#include <QDebug>
-#include <QBrush>
-#include <QPixmap>
-#include <QColor>
-#include <QGradient>
+#include <QtCore/QDebug>
+#include <QtGui/QBrush>
+#include <QtGui/QPixmap>
+#include <QtGui/QColor>
 
 #include "brush.h"
 #include "pixmap.h"

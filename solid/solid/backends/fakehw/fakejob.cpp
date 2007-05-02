@@ -20,7 +20,7 @@
 
 #include "backends/fakehw/fakejob.h"
 
-#include <QTimer>
+#include <QtCore/QTimer>
 
 FakeJob::FakeJob(QObject *parent)
     : KJob(parent)

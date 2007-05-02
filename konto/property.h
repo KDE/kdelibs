@@ -24,7 +24,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include <QtCore/QSharedDataPointer>
+#include <QtCore/QSharedData>
 
 #include "entity.h"
 #include "konto_export.h"

@@ -21,7 +21,7 @@
 #define	CUPSDCOMMENT_H
 
 #include <QtCore/QStringList>
-#include <QHash>
+#include <QtCore/QHash>
 
 class QFile;
 

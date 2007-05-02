@@ -20,7 +20,7 @@
 #ifndef KMIMEFILEPARSERTEST_H
 #define KMIMEFILEPARSERTEST_H
 
-#include <QObject>
+#include <QtCore/QObject>
 class KMimeTypeFactory;
 
 class KMimeFileParserTest : public QObject

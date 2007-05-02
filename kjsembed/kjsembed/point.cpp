@@ -19,8 +19,8 @@
 */
 #include "point.h"
 
-#include <QDebug>
-#include <QPoint>
+#include <QtCore/QDebug>
+#include <QtCore/QPoint>
 
 using namespace KJSEmbed;
 

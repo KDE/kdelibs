@@ -2,8 +2,7 @@
 
 #include <cstdlib>
 
-#include <QMutex>
-#include <QMutexLocker>
+#include <QtCore/QMutex>
 #include <QtTest/QtTest>
 
 #include <JobSequence.h>

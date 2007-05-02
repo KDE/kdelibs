@@ -23,7 +23,7 @@
 #include "phonon_export.h"
 #include "phonondefs.h"
 #include "phononnamespace.h"
-#include <QWidget>
+#include <QtGui/QWidget>
 
 namespace Phonon
 {

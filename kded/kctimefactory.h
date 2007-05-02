@@ -20,7 +20,7 @@
 #define __k_ctime_factory_h__
 
 #include <ksycocafactory.h>
-#include <QHash>
+#include <QtCore/QHash>
 
 /**
  * Service group factory for building ksycoca

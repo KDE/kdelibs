@@ -19,7 +19,7 @@
 
 #ifndef VIDEOCAPTUREDEVICETEST_H
 #define VIDEOCAPTUREDEVICETEST_H
-#include <QObject>
+#include <QtCore/QObject>
 
 class VideoCaptureDeviceTest : public QObject
 {

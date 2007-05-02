@@ -35,8 +35,8 @@
 #include "backends/fakehw/fakeaudiointerface.h"
 #include "backends/fakehw/fakedvbinterface.h"
 
-#include <QStringList>
-#include <QDBusConnection>
+#include <QtCore/QStringList>
+#include <QtDBus/QDBusConnection>
 
 #include <solid/genericinterface.h>
 

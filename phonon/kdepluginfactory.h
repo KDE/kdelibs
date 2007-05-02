@@ -21,7 +21,7 @@
 #define PHONON_KDEPLUGINFACTORY_H
 
 #include "pluginfactory.h"
-#include <QObject>
+#include <QtCore/QObject>
 
 namespace Phonon
 {

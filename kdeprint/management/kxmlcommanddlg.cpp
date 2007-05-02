@@ -20,15 +20,15 @@
 #include "kxmlcommanddlg.h"
 #include "driver.h"
 #include "kxmlcommand.h"
-#include <QStackedWidget>
+#include <QtGui/QStackedWidget>
 
 #include <QtGui/QLayout>
 #include <Qt3Support/Q3Header>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
 #include <QtGui/QComboBox>
-#include <QGroupBox>
-#include <QVBoxLayout>
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
 #include <QtGui/QToolButton>
 #include <kpushbutton.h>
 #include <QtGui/QCheckBox>

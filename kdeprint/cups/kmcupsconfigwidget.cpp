@@ -21,12 +21,12 @@
 #include "cupsinfos.h"
 
 #include <QtGui/QLabel>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLineEdit>
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
-#include <QtGui/QDoubleValidator>
+#include <QtGui/QValidator>
 
 #include <klocale.h>
 #include <kcursor.h>

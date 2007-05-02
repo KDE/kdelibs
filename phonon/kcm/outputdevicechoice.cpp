@@ -22,11 +22,11 @@
 #include <phonon/objectdescription.h>
 #include <phonon/phononnamespace.h>
 #include <klocale.h>
-#include <QHeaderView>
+#include <QtGui/QHeaderView>
 #include <kconfig.h>
 #include <phonon/audiodeviceenumerator.h>
 #include <phonon/audiodevice.h>
-#include <QList>
+#include <QtCore/QList>
 #include <kconfiggroup.h>
 
 class CategoryItem : public QStandardItem {

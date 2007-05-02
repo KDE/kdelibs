@@ -1,6 +1,6 @@
-#include <QWidget>
-#include <QTimerEvent>
-#include <QCheckBox>
+#include <QtGui/QWidget>
+#include <QtCore/QEvent>
+#include <QtGui/QCheckBox>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

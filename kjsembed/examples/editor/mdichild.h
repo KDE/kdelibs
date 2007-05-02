@@ -24,7 +24,7 @@
 #ifndef MDICHILD_H
 #define MDICHILD_H
 
-#include <QTextEdit>
+#include <QtGui/QTextEdit>
 
 class MainWindow;
 

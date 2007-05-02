@@ -27,7 +27,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QLineEdit>
 #include <Qt3Support/Q3Header>
-#include <QHash>
+#include <QtCore/QHash>
 
 #include <klocale.h>
 #include <k3listview.h>

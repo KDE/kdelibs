@@ -20,7 +20,7 @@
 #ifndef PHONON_FAKE_DELAYAUDIOEFFECT_H
 #define PHONON_FAKE_DELAYAUDIOEFFECT_H
 
-#include <QQueue>
+#include <QtCore/QQueue>
 #include "effectinterface.h"
 
 namespace Phonon

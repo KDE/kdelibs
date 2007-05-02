@@ -1,8 +1,8 @@
 #include "kdebug.h"
 #include <QtGui/QWidget>
-#include <QApplication>
-#include <QVariant>
-#include <QPen>
+#include <QtGui/QApplication>
+#include <QtCore/QVariant>
+#include <QtGui/QPen>
 
 
 int main(int argc, char** argv)

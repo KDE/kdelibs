@@ -21,16 +21,15 @@
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
-#include <QFrame>
-#include <QStackedWidget>
-#include <QTreeWidget>
-#include <QSplitter>
-#include <QHeaderView>
-#include <QVBoxLayout>
-#include <QTreeWidgetItem>
-#include <QList>
-#include <QLabel>
-#include <QBrush>
+#include <QtGui/QFrame>
+#include <QtGui/QStackedWidget>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QSplitter>
+#include <QtGui/QHeaderView>
+#include <QtGui/QBoxLayout>
+#include <QtCore/QList>
+#include <QtGui/QLabel>
+#include <QtGui/QBrush>
 #include <klocale.h>
 #include <ktabwidget.h>
 #include <kcomponentdata.h>

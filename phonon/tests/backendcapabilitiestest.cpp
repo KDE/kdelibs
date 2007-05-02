@@ -22,8 +22,8 @@
 #include "../backendcapabilities.h"
 #include "../factory.h"
 #include "../objectdescription.h"
-#include <QStringList>
-#include <QSet>
+#include <QtCore/QStringList>
+#include <QtCore/QSet>
 #include "../backendinterface.h"
 #include "loadfakebackend.h"
 #include <kservice.h>

@@ -20,10 +20,10 @@
 #include "objectdescription.h"
 #include "objectdescription_p.h"
 
-#include <QObject>
-#include <QSet>
+#include <QtCore/QObject>
+#include <QtCore/QSet>
 #include "factory.h"
-#include <QStringList>
+#include <QtCore/QStringList>
 #include "backendinterface.h"
 
 namespace Phonon

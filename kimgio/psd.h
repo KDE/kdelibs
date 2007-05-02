@@ -10,7 +10,7 @@
 #ifndef KIMG_PSD_H
 #define KIMG_PSD_H
 
-#include <QImageIOHandler>
+#include <QtGui/QImageIOPlugin>
 
 class PSDHandler : public QImageIOHandler
 {

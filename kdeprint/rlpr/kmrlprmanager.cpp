@@ -22,7 +22,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QMap>
 
 #include <kstandarddirs.h>

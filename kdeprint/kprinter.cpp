@@ -31,7 +31,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
-#include <QtGui/QPaintEngine>
+#include <QtGui/QTextItem>
 #include <QtCore/QPointer>
 #include <QtGui/QPrintEngine>
 #include <ktoolinvocation.h>

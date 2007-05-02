@@ -23,11 +23,11 @@
 #include "actioncollection.h"
 //#include "variant.h"
 
-#include <QObject>
-#include <QMetaObject>
-#include <QFile>
-#include <QRegExp>
-#include <QFileInfo>
+#include <QtCore/QObject>
+#include <QtCore/QArgument>
+#include <QtCore/QFile>
+#include <QtCore/QRegExp>
+#include <QtCore/QFileInfo>
 
 #include <klibloader.h>
 

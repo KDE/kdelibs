@@ -20,7 +20,7 @@
 #ifndef BIND_QLCDNUMBER_H
 #define BIND_QLCDNUMBER_H
 
-#include <QLCDNumber>
+#include <QtGui/QLCDNumber>
 #include "qobject_binding.h"
 #include "qwidget_binding.h"
 

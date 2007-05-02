@@ -51,11 +51,11 @@
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
 
-#include <QCheckBox>
-#include <QLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QFSFileEngine>
+#include <QtGui/QCheckBox>
+#include <QtGui/QLayout>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtCore/QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>
 #include <kauthorized.h>

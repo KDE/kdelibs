@@ -19,7 +19,7 @@
 #ifndef Phonon_FAKE_VOLUMEFADEREFFECT_H
 #define Phonon_FAKE_VOLUMEFADEREFFECT_H
 
-#include <QTime>
+#include <QtCore/QDate>
 #include "audioeffect.h"
 #include <phonon/volumefadereffect.h>
 

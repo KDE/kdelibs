@@ -20,8 +20,8 @@
 #ifndef SOLID_DEVICEINTERFACE_H
 #define SOLID_DEVICEINTERFACE_H
 
-#include <QObject>
-#include <QFlags>
+#include <QtCore/QObject>
+#include <QtCore/QBool>
 
 #include <solid/solid_export.h>
 

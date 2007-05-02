@@ -22,7 +22,7 @@
 #include "k3fileiconview.h"
 
 #include <QtGui/QApplication>
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <QtGui/QFontMetrics>
 #include <QtCore/QCOORD>
 #include <QtGui/QLabel>

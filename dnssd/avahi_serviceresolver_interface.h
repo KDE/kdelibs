@@ -12,7 +12,7 @@
 #define AVAHI_SERVICERESOLVER_INTERFACE_H_1175536773
 
 #include <QtCore/QObject>
-#include <QtCore/QByteArray>
+#include <QtCore/QByteRef>
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QString>

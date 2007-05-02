@@ -27,7 +27,7 @@ http://www.hackerbuero.org $
 #ifndef QPROCESSJOB_H
 #define QPROCESSJOB_H
 
-#include <QProcess>
+#include <QtCore/QProcess>
 
 #include "Job.h"
 

@@ -21,8 +21,8 @@
 #define HALMANAGER_H
 
 #include "solid/ifaces/devicemanager.h"
-#include <QVariant>
-#include <QStringList>
+#include <QtCore/QVariant>
+#include <QtCore/QStringList>
 
 #include "solid/deviceinterface.h"
 

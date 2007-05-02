@@ -19,20 +19,19 @@
 
 #include "form.h"
 
-#include <QByteArray>
-#include <QBuffer>
-#include <QRegExp>
-#include <QFile>
-#include <QMetaObject>
-#include <QMetaEnum>
-#include <QKeyEvent>
-#include <QDialog>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QStackedLayout>
-#include <QSizePolicy>
-#include <QApplication>
-#include <QProgressDialog>
+#include <QtCore/QByteRef>
+#include <QtCore/QBuffer>
+#include <QtCore/QRegExp>
+#include <QtCore/QFile>
+#include <QtCore/QArgument>
+#include <QtCore/QMetaEnum>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QDialog>
+#include <QtGui/QBoxLayout>
+#include <QtGui/QStackedLayout>
+#include <QtGui/QSizePolicy>
+#include <QtGui/QApplication>
+#include <QtGui/QProgressDialog>
 #include <QUiLoader>
 #include <QtDesigner/QFormBuilder>
 

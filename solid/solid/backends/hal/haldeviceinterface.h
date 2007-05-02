@@ -20,8 +20,8 @@
 #ifndef DEVICEINTERFACE_H
 #define DEVICEINTERFACE_H
 
-#include <QObject>
-#include <QStringList>
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
 #include <solid/ifaces/deviceinterface.h>
 

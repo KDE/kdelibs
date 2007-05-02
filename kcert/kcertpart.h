@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include <kparts/part.h>
-#include <Qt3Support/Q3CheckListItem>
+#include <Qt3Support/Q3ListView>
 
 class KSSLCertBox;
 class QFrame;

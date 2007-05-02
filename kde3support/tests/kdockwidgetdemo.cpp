@@ -6,20 +6,19 @@
 #include <Qt3Support/Q3TextView>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtGui/QLabel>
 #include <Qt3Support/Q3MultiLineEdit>
-#include <QtGui/QActionEvent>
+#include <QtGui/QKeyEvent>
 #include <Qt3Support/Q3PopupMenu>
 #include <QtGui/QPushButton>
 #include <QtCore/QPoint>
 #include <QtGui/QMessageBox>
 #include <QtGui/QMacMime>
-#include <Qt3Support/Q3StrIList>
+#include <Qt3Support/Q3StrList>
 #include <QtGui/QPainter>
 //Added by qt3to4:
-#include <QPixmap>
-#include <QShowEvent>
+#include <QtGui/QPixmap>
 
 #include <kconfig.h>
 #include <kaboutdata.h>

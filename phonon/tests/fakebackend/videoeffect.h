@@ -19,7 +19,7 @@
 #ifndef Phonon_FAKE_VIDEOEFFECT_H
 #define Phonon_FAKE_VIDEOEFFECT_H
 
-#include <QObject>
+#include <QtCore/QObject>
 #include <phonon/experimental/videoframe.h>
 #include <phonon/effectparameter.h>
 

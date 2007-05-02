@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <qtest_kde.h>
-#include <QDateTime>
+#include <QtCore/QDate>
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
 #include "ktimezonestest.moc"

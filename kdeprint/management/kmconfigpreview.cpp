@@ -21,7 +21,7 @@
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
-#include <QGroupBox>
+#include <QtGui/QGroupBox>
 #include <QtGui/QLabel>
 
 #include <klocale.h>

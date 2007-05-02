@@ -40,7 +40,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <QtGui/QColor>
 #include <QtGui/QPixmap>
-#include <QtCore/QMutableVectorIterator>
+#include <QtCore/QVector>
 
 #include <config.h>
 #include <config-processor.h>

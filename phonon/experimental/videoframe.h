@@ -22,7 +22,7 @@
 
 #include "export.h"
 #include "videodataoutput.h"
-#include <QByteArray>
+#include <QtCore/QByteRef>
 
 namespace Phonon
 {

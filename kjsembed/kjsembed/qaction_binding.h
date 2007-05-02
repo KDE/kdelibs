@@ -21,8 +21,8 @@
 #ifndef QACTION_BINDING_H
 #define QACTION_BINDING_H
 
-#include <QObject>
-#include <QAction>
+#include <QtCore/QObject>
+#include <QtGui/QAction>
 //#include <QActionGroup>
 
 #include "qobject_binding.h"
