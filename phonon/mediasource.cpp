@@ -52,6 +52,10 @@ MediaSource::MediaSource(const QUrl &url)
 MediaSource::MediaSource(Phonon::DiscType dt, const QString &deviceName)
     : d(new MediaSourcePrivate(Disc))
 {
+    if (dt == NoDisc) {
+        d->type = Invalid;
+        return;
+    }
     d->discType = dt;
     d->deviceName = deviceName;
 }
