@@ -23,8 +23,8 @@
  ***************************************************************************/
 
 #include "kmultitabbar.h"
-#include "kmultitabbar.moc"
 #include "kmultitabbar_p.h"
+#include "kmultitabbar.moc"
 #include "kmultitabbar_p.moc"
 
 #include <QtGui/QActionEvent>

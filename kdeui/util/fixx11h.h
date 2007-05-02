@@ -1,7 +1,7 @@
 //#ifdef    don't do this, this file is supposed to be included
 //#define   multiple times
 
-#include <QtCore/qglobal.h>
+#include <QtCore/QGlobal>
 
 #ifdef Q_WS_X11
 
