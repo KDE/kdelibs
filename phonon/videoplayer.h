@@ -157,7 +157,7 @@ class PHONON_EXPORT VideoPlayer : public QWidget
         void finished();
 
     private:
-        VideoPlayerPrivate * d;
+        VideoPlayerPrivate *const d;
 
         Q_PRIVATE_SLOT(d, void _k_stateChanged(Phonon::State, Phonon::State))
 };
