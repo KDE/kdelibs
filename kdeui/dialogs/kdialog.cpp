@@ -193,7 +193,7 @@ void KDialog::Private::appendButton( ButtonCode key, const KGuiItem &item )
 }
 
 KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
-  : QDialog( parent, flags | Qt::MSWindowsFixedSizeDialogHint ),
+  : QDialog( parent, flags ),
     d( new Private( this ) )
 {
   setModal( true );
