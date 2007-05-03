@@ -23,26 +23,51 @@
 
 #include "tutorial1.h"
 
-#include <Phonon/AudioPlayer>
+#include <Phonon/MediaObject>
+#include <Phonon/AudioPath>
+#include <Phonon/AudioOutput>
+#include <Phonon/Global>
+
 #include <QtGui/QApplication>
+
 #include <kcomponentdata.h>
 
+PlayerWidget::PlayerWidget()
+    : m_media(0), m_audioPath(0), m_audioOutput(0)
+{
+}
+
+void PlayerWidget::delayedInit()
+{
+    if (!m_media) {
+        m_media = new Phonon::MediaObject(this);
+        m_audioPath = new Phonon::AudioPath(this);
+        m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+        m_media->addAudioPath(m_audioPath);
+        m_audioPath->addOutput(m_audioOutput);
+    }
+}
+
+void PlayerWidget::play(const QString &filename)
+{
+    delayedInit();
+    m_media->setCurrentSource(filename);
+    m_media->play();
+}
+
 MainWindow::MainWindow()
-    : m_fileView(this),
-    m_audioPlayer(0)
+    : m_fileView(this)
 {
     setCentralWidget(&m_fileView);
     m_fileView.setModel(&m_model);
+    m_fileView.setPreviewWidget(&m_player);
 
-    connect(&m_fileView, SIGNAL(updatePreviewWidget(const QModelIndex &)), SLOT(play(const QModelIndex &)));
+    connect(&m_fileView, SIGNAL(updatePreviewWidget(const QModelIndex &)), SLOT(providePlayer(const QModelIndex &)));
 }
 
-void MainWindow::play(const QModelIndex &index)
+void MainWindow::providePlayer(const QModelIndex &index)
 {
-    if (!m_audioPlayer) {
-        m_audioPlayer = new Phonon::AudioPlayer(Phonon::MusicCategory, this);
-    }
-    m_audioPlayer->play(m_model.filePath(index));
+    m_player.play(m_model.filePath(index));
 }
 
 int main(int argc, char **argv)

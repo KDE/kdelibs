@@ -21,37 +21,52 @@
 
 */
 
-#include "tutorial1.h"
+#ifndef EXAMPLES_TUT1_H
+#define EXAMPLES_TUT1_H
 
-#include <Phonon/AudioPlayer>
-#include <QtGui/QApplication>
-#include <kcomponentdata.h>
+#include <QtGui/QMainWindow>
+#include <QtGui/QWidget>
+#include <QtGui/QDirModel>
+#include <QtGui/QColumnView>
 
-MainWindow::MainWindow()
-    : m_fileView(this),
-    m_audioPlayer(0)
+namespace Phonon
 {
-    setCentralWidget(&m_fileView);
-    m_fileView.setModel(&m_model);
+    class MediaObject;
+    class AudioPath;
+    class AudioOutput;
+} // namespace Phonon
 
-    connect(&m_fileView, SIGNAL(updatePreviewWidget(const QModelIndex &)), SLOT(play(const QModelIndex &)));
-}
+class QModelIndex;
 
-void MainWindow::play(const QModelIndex &index)
+class PlayerWidget : public QWidget
 {
-    if (!m_audioPlayer) {
-        m_audioPlayer = new Phonon::AudioPlayer(Phonon::MusicCategory, this);
-    }
-    m_audioPlayer->play(m_model.filePath(index));
-}
+    Q_OBJECT
+    public:
+        PlayerWidget();
 
-int main(int argc, char **argv)
+        void play(const QString &);
+
+    private:
+        void delayedInit();
+
+        Phonon::MediaObject *m_media;
+        Phonon::AudioPath *m_audioPath;
+        Phonon::AudioOutput *m_audioOutput;
+};
+
+class MainWindow : public QMainWindow
 {
-    QApplication app(argc, argv);
-    KComponentData("phonon-tutorial1");
-    MainWindow mw;
-    mw.show();
-    return app.exec();
-}
+    Q_OBJECT
+    public:
+        MainWindow();
 
-#include "tutorial1.moc"
+    private slots:
+        void providePlayer(const QModelIndex &index);
+
+    private:
+        QColumnView m_fileView;
+        QDirModel m_model;
+        PlayerWidget m_player;
+};
+
+#endif // EXAMPLES_TUT1_H
