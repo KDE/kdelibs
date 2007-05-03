@@ -13,6 +13,8 @@ ENDMACRO(PHONON_DECLARE_EXAMPLES)
 
 PHONON_DECLARE_EXAMPLES(
     tutorial1
+    tutorial2
+    tutorial3
     #crossfade
     #videoplayandforget
     #pcmoutput

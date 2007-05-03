@@ -21,7 +21,7 @@
 
 */
 
-#include "tutorial2.h"
+#include "tutorial3.h"
 
 #include <Phonon/MediaObject>
 #include <Phonon/AudioPath>
@@ -32,24 +32,12 @@
 
 #include <kcomponentdata.h>
 
-MainWindow::MainWindow()
-    : m_fileView(this),
-    m_media(0), m_audioPath(0), m_audioOutput(0)
+PlayerWidget::PlayerWidget()
+    : m_media(0), m_audioPath(0), m_audioOutput(0)
 {
-    setCentralWidget(&m_fileView);
-    m_fileView.setModel(&m_model);
-
-    connect(&m_fileView, SIGNAL(updatePreviewWidget(const QModelIndex &)), SLOT(play(const QModelIndex &)));
 }
 
-void MainWindow::play(const QModelIndex &index)
-{
-    delayedInit();
-    m_media->setCurrentSource(m_model.filePath(index));
-    m_media->play();
-}
-
-void MainWindow::delayedInit()
+void PlayerWidget::delayedInit()
 {
     if (!m_media) {
         m_media = new Phonon::MediaObject(this);
@@ -58,6 +46,28 @@ void MainWindow::delayedInit()
         m_media->addAudioPath(m_audioPath);
         m_audioPath->addOutput(m_audioOutput);
     }
+}
+
+void PlayerWidget::play(const QString &filename)
+{
+    delayedInit();
+    m_media->setCurrentSource(filename);
+    m_media->play();
+}
+
+MainWindow::MainWindow()
+    : m_fileView(this)
+{
+    setCentralWidget(&m_fileView);
+    m_fileView.setModel(&m_model);
+    m_fileView.setPreviewWidget(&m_player);
+
+    connect(&m_fileView, SIGNAL(updatePreviewWidget(const QModelIndex &)), SLOT(providePlayer(const QModelIndex &)));
+}
+
+void MainWindow::providePlayer(const QModelIndex &index)
+{
+    m_player.play(m_model.filePath(index));
 }
 
 int main(int argc, char **argv)
@@ -69,4 +79,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "tutorial2.moc"
+#include "tutorial3.moc"

@@ -25,6 +25,7 @@
 #define EXAMPLES_TUT1_H
 
 #include <QtGui/QMainWindow>
+#include <QtGui/QWidget>
 #include <QtGui/QDirModel>
 #include <QtGui/QColumnView>
 
@@ -37,6 +38,22 @@ namespace Phonon
 
 class QModelIndex;
 
+class PlayerWidget : public QWidget
+{
+    Q_OBJECT
+    public:
+        PlayerWidget();
+
+        void play(const QString &);
+
+    private:
+        void delayedInit();
+
+        Phonon::MediaObject *m_media;
+        Phonon::AudioPath *m_audioPath;
+        Phonon::AudioOutput *m_audioOutput;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -44,17 +61,12 @@ class MainWindow : public QMainWindow
         MainWindow();
 
     private slots:
-        void play(const QModelIndex &index);
+        void providePlayer(const QModelIndex &index);
 
     private:
-        void delayedInit();
-
         QColumnView m_fileView;
         QDirModel m_model;
-
-        Phonon::MediaObject *m_media;
-        Phonon::AudioPath *m_audioPath;
-        Phonon::AudioOutput *m_audioOutput;
+        PlayerWidget m_player;
 };
 
 #endif // EXAMPLES_TUT1_H
