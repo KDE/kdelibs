@@ -19,6 +19,7 @@
 
 // This file can only be included once in a given binary
 
+#include <QtCore/qglobal.h>
 #include <kde_file.h>
 #ifdef Q_OS_UNIX
 #include <utime.h>
