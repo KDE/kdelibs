@@ -345,7 +345,6 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
             Q_ASSERT(d->mediaSource.stream());
             d->mediaSource.stream()->d_func()->setMediaObjectPrivate(d);
         }
-        INTERFACE_CALL(setSource(d->mediaSource));
         if (d->mediaSource.type() == MediaSource::Url && oldSourceType != MediaSource::Url) {
             disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
             connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
@@ -353,6 +352,7 @@ void MediaObject::setCurrentSource(const MediaSource &newSource)
             disconnect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
             connect(d->m_backendObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this, SIGNAL(stateChanged(Phonon::State, Phonon::State)));
         }
+        INTERFACE_CALL(setSource(d->mediaSource));
     }
 
 //X         MediaObjectInterface *iface = qobject_cast<MediaObjectInterface *>(d->m_backendObject);
