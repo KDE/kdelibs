@@ -56,7 +56,7 @@ class KLocalePrivate;
   * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
   * @short class for supporting locale settings and national language
   */
-class KDECORE_EXPORT KLocale //krazy:exclude=dpointer (long enums confuse krazy)
+class KDECORE_EXPORT KLocale
 {
   friend class KGlobal; // for initInstance()
 public:
