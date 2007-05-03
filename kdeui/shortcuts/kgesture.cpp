@@ -208,11 +208,25 @@ float KShapeGesture::distance(const KShapeGesture &other, float abortThreshold) 
     Q_UNUSED(abortThreshold); //for optimizations, later
     const QPolygon &o_shape = other.m_shape;
     const QVector<float> &o_lengthTo = other.m_lengthTo;
-    float x, y, mx, my, position;
-    float ox, oy, omx, omy, oposition;
-    float oxB, oyB, omxB, omyB, opositionB;
-    float dist, distB;
-    float desiredPosition, strokeLength;
+    float x = 0;
+    float y = 0;
+    float mx = 0;
+    float my = 0;
+    float position = 0;
+    float ox = 0;
+    float oy = 0;
+    float oposition = 0;
+    float omx = 0;
+    float omy = 0;
+    float oxB = 0;
+    float oyB = 0;
+    float opositionB = 0;
+    float omxB = 0;
+    float omyB = 0;
+    float dist = 0;
+    float distB = 0;
+    float desiredPosition = 0;
+    float strokeLength = 0;
     float retval = 0.0;
     int pointIndex = 0, opointIndex = 0, opointIndexB = 0;
 
