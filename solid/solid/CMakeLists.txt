@@ -112,6 +112,8 @@ kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
 
 target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
 
+set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+
 ########### install files ###############
 
 install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
