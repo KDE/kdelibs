@@ -21,7 +21,7 @@
 #define PHONON_AUDIOOUTPUTINTERFACE_H
 
 #include "phononnamespace.h"
-#include <Qt/qglobal.h>
+#include <QtCore/QtGlobal>
 
 namespace Phonon
 {

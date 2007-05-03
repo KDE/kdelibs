@@ -18,17 +18,20 @@
 */
 
 #include "backendcapabilities.h"
+#include "backendcapabilities_p.h"
+
+#include "phonondefs_p.h"
+#include "backendinterface.h"
 #include "factory.h"
 #include "objectdescription.h"
+
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QStringList>
+
 #include <kservicetypetrader.h>
 #include <kmimetype.h>
-#include "phonondefs_p.h"
-#include "backendinterface.h"
 #include <kglobal.h>
-#include "backendcapabilities_p.h"
 
 K_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 

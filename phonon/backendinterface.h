@@ -23,7 +23,7 @@
 #include "phonon_export.h"
 #include "objectdescription.h"
 
-#include <Qt/qglobal.h>
+#include <QtCore/QtGlobal>
 
 class QVariant;
 
