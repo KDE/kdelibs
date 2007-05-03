@@ -41,6 +41,7 @@ namespace Phonon
      * m_audioPath->addOutput(m_audioOutput);
      * \endcode
      *
+     * \ingroup Frontend
      * \author Matthias Kretz <kretz@kde.org>
      * \see Phonon::Ui::VolumeSlider
      */

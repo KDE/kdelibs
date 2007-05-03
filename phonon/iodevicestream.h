@@ -37,7 +37,6 @@ class IODeviceStream : public AbstractMediaStream
         ~IODeviceStream();
 
         void needData();
-        void enoughData();
         void seekStream(qint64);
 };
 } // namespace Phonon

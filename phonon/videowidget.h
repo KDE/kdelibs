@@ -47,6 +47,8 @@ namespace Experimental
      * videoPath->addOutput(vwidget);
      * \endcode
      *
+     * \ingroup PhononVideo
+     * \ingroup PhononWidgets
      * \author Matthias Kretz <kretz@kde.org>
      */
     class PHONON_EXPORT VideoWidget : public QWidget, public Phonon::AbstractVideoOutput

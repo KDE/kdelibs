@@ -97,6 +97,10 @@ void AbstractMediaStream::error(Phonon::ErrorType type, const QString &text)
     }
 }
 
+void AbstractMediaStream::enoughData()
+{
+}
+
 void AbstractMediaStream::seekStream(qint64)
 {
     Q_ASSERT(!d_ptr->streamSeekable);

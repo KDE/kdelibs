@@ -47,6 +47,12 @@ namespace Phonon
         VisualizationType
     };
 
+/**
+ * \brief Base class for objects describing devices or features of the backend.
+ *
+ * \author Matthias Kretz <kretz@kde.org>
+ * \see BackendCapabilities
+ */
 class PHONON_EXPORT ObjectDescriptionBase
 {
     public:
@@ -126,6 +132,7 @@ class PHONON_EXPORT ObjectDescriptionBase
  * and identified with the id method. Subclasses then define additional
  * information like which audio and video choices belong together.
  *
+ * \ingroup Frontend
  * \author Matthias Kretz <kretz@kde.org>
  * \see AudioCaptureDevice
  * \see VideoCaptureDevice
@@ -137,7 +144,6 @@ class PHONON_EXPORT ObjectDescription : public ObjectDescriptionBase
         ObjectDescription<T> &operator=(const ObjectDescription<T> &rhs);
 
         /**
-         * \internal
          * Returns a new description object that describes the
          * device/effect/codec/...  with the given \p index.
          */

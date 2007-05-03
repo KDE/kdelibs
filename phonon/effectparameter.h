@@ -36,6 +36,7 @@ class AudioEffect;
 /**
  * \brief This class describes one parameter of an effect.
  *
+ * \ingroup PhononEffects
  * \author Matthias Kretz <kretz@kde.org>
  * \see AudioEffect
  * \see VideoEffect

@@ -151,6 +151,7 @@ namespace Phonon
      * AudioOutputDevice selectedDevice = model->modelData(cbIndex);
      * \endcode
      *
+     * \ingroup Frontend
      * \author Matthias Kretz <kretz@kde.org>
      */
     template<ObjectDescriptionType type>

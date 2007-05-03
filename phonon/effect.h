@@ -48,8 +48,7 @@ namespace Phonon
      * The effect will immediately begin applying it's transformations on
      * the path. To stop it, remove the Effect from the path.
      *
-     * \warning This class is not finished.
-     *
+     * \ingroup PhononEffects
      * \author Matthias Kretz <kretz@kde.org>
      */
     class PHONON_EXPORT Effect : public QObject

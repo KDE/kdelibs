@@ -80,6 +80,7 @@ namespace Phonon
      * \endcode
      *
      * \ingroup Playback
+     * \ingroup Recording
      * \author Matthias Kretz <kretz@kde.org>
      */
     class PHONON_EXPORT MediaObject : public QObject

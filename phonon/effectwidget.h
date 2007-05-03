@@ -30,6 +30,13 @@ class Effect;
 
     class EffectWidgetPrivate;
 
+    /**
+     * \brief Widget to control the parameters of an \ref Effect.
+     *
+     * \ingroup PhononWidgets
+     * \ingroup PhononEffects
+     * \author Matthias Kretz <kretz@kde.org>
+     */
     class PHONON_EXPORT EffectWidget : public QWidget
     {
         Q_OBJECT

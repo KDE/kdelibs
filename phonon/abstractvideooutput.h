@@ -35,6 +35,11 @@ namespace Experimental
 
     class AbstractVideoOutputPrivate;
 
+    /**
+     * Common base class for all video outputs.
+     *
+     * \see VideoWidget
+     */
     class PHONON_EXPORT AbstractVideoOutput
     {
         friend class VideoPath;

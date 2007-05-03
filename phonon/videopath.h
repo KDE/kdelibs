@@ -46,6 +46,7 @@ namespace Phonon
      * It is best to add the path to a MediaObject after
      * construction, before calling any other methods.
      *
+     * \ingroup PhononVideo
      * \author Matthias Kretz <kretz@kde.org>
      * \see AudioPath
      */

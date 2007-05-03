@@ -45,10 +45,6 @@ void IODeviceStream::needData()
     }
 }
 
-void IODeviceStream::enoughData()
-{
-}
-
 void IODeviceStream::seekStream(qint64 offset)
 {
     Q_D(IODeviceStream);

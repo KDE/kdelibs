@@ -30,6 +30,8 @@ namespace Phonon
     /**
      * Video effect to control the brightness of the image.
      *
+     * \ingroup PhononEffects
+     * \ingroup PhononVideo
      * \author Matthias Kretz <kretz@kde.org>
      */
     class PHONON_EXPORT BrightnessControl : public Effect

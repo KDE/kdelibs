@@ -47,6 +47,8 @@ class VideoPlayerPrivate;
  * player->play(url);
  * \endcode
  *
+ * \ingroup Playback
+ * \ingroup PhononVideo
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONON_EXPORT VideoPlayer : public QWidget

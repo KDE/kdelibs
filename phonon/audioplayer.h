@@ -47,6 +47,7 @@ class AudioPlayerPrivate;
  * player->play(url);
  * \endcode
  *
+ * \ingroup Playback
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONON_EXPORT AudioPlayer : public QObject

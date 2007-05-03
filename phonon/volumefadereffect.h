@@ -35,6 +35,7 @@ namespace Phonon
      * steps while every other volume control will make more or less
      * noticeable steps.
      *
+     * \ingroup PhononEffects
      * \author Matthias Kretz <kretz@kde.org>
      * \see AudioOutput::volume
      */

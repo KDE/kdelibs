@@ -27,6 +27,10 @@ namespace Phonon
 {
 class StreamInterfacePrivate;
 class MediaSource;
+/**
+ * \ingroup Backend
+ * \author Matthias Kretz <kretz@kde.org>
+ */
 class PHONON_EXPORT StreamInterface
 {
     friend class StreamInterfacePrivate;

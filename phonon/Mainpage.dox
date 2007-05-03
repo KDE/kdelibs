@@ -45,37 +45,8 @@ If you want to write a new backend for %Phonon this is for you:
 
 
 \page phonon_tut1 Phonon Tutorial Part 1: a simple audio player
-\code
-class Player : public QObject
-{
-  Q_OBJECT
-  public:
-    Player( QObject* parent );
-    void play( const KUrl& url );
-
-  private:
-    Phonon::MediaObject* m_media;
-    Phonon::AudioPath*   m_audioPath;
-    Phonon::AudioOutput* m_audioOutput;
-};
-
-Player::Player( QObject* parent )
-  : QObject( parent )
-  , m_media( new Phonon::MediaObject( this ) )
-  , m_audioPath( new Phonon::AudioPath( this ) )
-  , m_audioOutput( new Phonon::AudioOutput( this ) )
-{
-  m_audioOutput->setCategory( Phonon::MusicCategory );
-  m_media->addAudioPath( m_audioPath );
-  m_audioPath->addOutput( m_audioOutput );
-}
-
-void Player::play( const KUrl& url )
-{
-  m_media->setUrl( url );
-  m_media->play();
-}
-\endcode
+\includelineno tutorial1.h
+\includelineno tutorial1.cpp
 
 
 
@@ -141,12 +112,28 @@ Here you find all classes that are available to application developers using
 %Phonon.
 
 \defgroup Playback Playback
+The most important classes to control playback.
 \ingroup Frontend
 
 \defgroup Recording Recording
+The most important classes to control recording.
 \ingroup Frontend
 
 \defgroup BackendInformation Information about the backend
+Get information about available devices, effects and changes in backend
+capabilities.
+\ingroup Frontend
+
+\defgroup PhononWidgets Widgets
+Convenience widgets and the \ref VideoWidget
+\ingroup Frontend
+
+\defgroup PhononEffects Effects
+The classes for audio and video effects.
+\ingroup Frontend
+
+\defgroup PhononVideo Video
+The most important classes for video.
 \ingroup Frontend
 
 \defgroup Backend Backend classes and interfaces
@@ -159,5 +146,6 @@ development. As an application developer you can safely ignore these classes.
 // DOXYGEN_SET_HIDE_SCOPE_NAMES = YES
 // DOXYGEN_SET_HIDE_FRIEND_COMPOUNDS = YES
 // DOXYGEN_SET_PROJECT_NAME = Phonon
-// DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h globalconfig.h basedestructionhandler.h audiooutputadaptor.h
+// DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h globalconfig.h basedestructionhandler.h audiooutputadaptor.h iodevicestream.h kdepluginfactory.h kiomediastream.h pluginfactory.h
+// DOXYGEN_SET_EXAMPLE_PATH += examples
 // vim: tw=80

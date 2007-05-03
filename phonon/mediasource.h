@@ -48,6 +48,8 @@ class AbstractMediaStream;
  * m.setCurrentSource(Phonon::Cd);
  * \endcode
  *
+ * \ingroup Playback
+ * \ingroup Recording
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONON_EXPORT MediaSource
