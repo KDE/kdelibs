@@ -53,11 +53,14 @@ void PlayerWidget::delayedInit()
 
         QHBoxLayout *topLayout = new QHBoxLayout(this);
         QVBoxLayout *leftLayout = new QVBoxLayout(this);
-        topLayout->addLayout(leftLayout);
         Phonon::VolumeSlider *vs = new Phonon::VolumeSlider(audioOutput, this);
         vs->setOrientation(Qt::Vertical);
+
+        topLayout->addLayout(leftLayout);
         topLayout->addWidget(vs);
+
         leftLayout->addWidget(new Phonon::SeekSlider(m_media, this));
+        leftLayout->addStretch();
     }
 }
 
