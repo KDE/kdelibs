@@ -17,7 +17,7 @@ ENDIF(ALSA_VERSION_STR AND NOT WIN32)
 
 add_subdirectory( tests )
 add_subdirectory( kcm )
-#add_subdirectory( examples )
+add_subdirectory(examples)
 add_subdirectory(experimental)
 
 ########### next target ###############
