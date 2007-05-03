@@ -34,45 +34,51 @@ namespace Nepomuk {
 	    /**
 	     * No error occurred. The process was successful.
 	     */
-	    const QString NoError = "org.semanticdesktop.nepomuk.error.NoError";
+	    const QString NoError = QLatin1String("org.semanticdesktop.nepomuk.error.NoError");
 
 	    /**
 	     * The service could not be found, i.e. an invalid service URL has been used.
 	     */
-	    const QString ServiceUnknown = "org.semanticdesktop.nepomuk.error.ServiceUnknown";
+	    const QString ServiceUnknown =
+                QLatin1String("org.semanticdesktop.nepomuk.error.ServiceUnknown");
 
 	    /**
 	     * The called method is not known, i.e. the service does not implement this method.
 	     */
-	    const QString MethodUnknown = "org.semanticdesktop.nepomuk.error.MethodUnknown";
+	    const QString MethodUnknown =
+                QLatin1String("org.semanticdesktop.nepomuk.error.MethodUnknown");
 
 	    /**
 	     * The method call failed for some unknown reason.
 	     */
-	    const QString Failed = "org.semanticdesktop.nepomuk.error.Failed";
+	    const QString Failed = QLatin1String("org.semanticdesktop.nepomuk.error.Failed");
 
 	    /**
 	     * No running middleware could be found. This means that either the middleware crashed
 	     * or was never started.
 	     */
-	    const QString NoMiddleware = "org.semanticdesktop.nepomuk.error.NoMiddleware";
+	    const QString NoMiddleware =
+                QLatin1String("org.semanticdesktop.nepomuk.error.NoMiddleware");
 
 	    /**
 	     * A certain component might not implement a complete service.
 	     */
-	    const QString MethodNotImplemented = "org.semanticdesktop.nepomuk.error.MethodNotImplemented";
+	    const QString MethodNotImplemented =
+                QLatin1String("org.semanticdesktop.nepomuk.error.MethodNotImplemented");
 
 	    /**
 	     * The value of one of the parameters of the method call is invalid. The error message can
 	     * be used to further describe the issue.
 	     */
-	    const QString InvalidParameter = "org.semanticdesktop.nepomuk.error.InvalidParameter";
+	    const QString InvalidParameter =
+                QLatin1String("org.semanticdesktop.nepomuk.error.InvalidParameter");
 
 	    /**
 	     * An unknown error may be used in case no specific error code fits. The error message can
 	     * be used to further describe the issue.
 	     */
-	    const QString UnknownError = "org.semanticdesktop.nepomuk.error.UnknownError";
+	    const QString UnknownError =
+                QLatin1String("org.semanticdesktop.nepomuk.error.UnknownError");
 	}
     }
 }
