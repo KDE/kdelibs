@@ -32,15 +32,17 @@ private Q_SLOTS:
     void initTestCase();
     void testOpenUrl();
     void testOpenUrlFromCache();
-    void testOpenAndStop();
-    // TODO test concurrent listings
+    void testNewItems();
+    void testRefreshItems();
     void testDeleteItem();
-    // TODO testRefreshItems
+    void testOpenAndStop();
     // TODO test filtering
+    // TODO test concurrent listings from two KDirListers
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void exitLoop();
     void slotNewItems(const KFileItemList&);
+    void slotRefreshItems(const KFileItemList&);
 
 private:
     void enterLoop();
@@ -50,6 +52,7 @@ private:
     KTempDir m_tempDir;
     KDirLister m_dirLister;
     KFileItemList m_items;
+    KFileItemList m_refreshedItems;
 };
 
 

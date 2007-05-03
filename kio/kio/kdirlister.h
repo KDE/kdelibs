@@ -618,6 +618,7 @@ private:
   void addRefreshItem( KFileItem *item );
   void emitItems();
   void emitDeleteItem( KFileItem *item );
+    void redirect( const KUrl& oldUrl, const KUrl& newUrl );
 
   KDirListerPrivate* const d;
 };

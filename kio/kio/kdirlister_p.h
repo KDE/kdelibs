@@ -23,9 +23,9 @@
 #include "kfileitem.h"
 
 #include <QtCore/QMap>
+#include <QtCore/QHash>
 #include <Qt3Support/Q3Dict>
 #include <Qt3Support/Q3Cache>
-#include <Qt3Support/Q3PtrList>
 #include <QtGui/QWidget>
 
 #include <kurl.h>
@@ -120,14 +120,12 @@ public:
  *
  * KDirListerCache also runs all the jobs for listing directories, whether they are for
  * normal listing or for updates.
- * For faster lookups, it also stores two dicts:
- * a URL -> dirlister holding that URL (urlsCurrentlyHeld)
- * a URL -> dirlister currently listing that URL (urlsCurrentlyListed)
+ * For faster lookups, it also stores a hash table, which gives for a directory URL:
+ * - the dirlisters holding that URL (listersCurrentlyHolding)
+ * - the dirlisters currently listing that URL (listersCurrentlyListing)
  */
 class KDirListerCache : public QObject
 {
-  friend class KDirLister;
-
   Q_OBJECT
 public:
   ~KDirListerCache();
@@ -136,6 +134,24 @@ public:
 
   KFileItem *itemForUrl( const KUrl& url ) const;
   KFileItemList *itemsForDir( const KUrl& dir ) const;
+
+  static KDirListerCache *self();
+
+    bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
+
+    // stop all running jobs for lister
+    void stop( KDirLister *lister );
+    // stop just the job listing url for lister
+    void stop( KDirLister *lister, const KUrl &_url );
+
+  void setAutoUpdate( KDirLister *lister, bool enable );
+
+  void forgetDirs( KDirLister *lister );
+  void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
+
+  KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
+  // if lister is set, it is checked that the url is held by the lister
+  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
 
 public Q_SLOTS:
   /**
@@ -164,36 +180,19 @@ public Q_SLOTS:
   void slotFilesChanged( const QStringList& fileList );
   void slotFileRenamed( const QString& srcUrl, const QString& dstUrl );
 
-public:
-  static KDirListerCache *self();
+private:
+    KDirListerCache( int maxCount = 10 );
 
-protected:
-  KDirListerCache( int maxCount = 10 );
+    bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
-  bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
-  bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
-
-  // stop all running jobs for lister
-  void stop( KDirLister *lister );
-  // stop just the job listing url for lister
-  void stop( KDirLister *lister, const KUrl &_url );
-
-  void setAutoUpdate( KDirLister *lister, bool enable );
-
-  void forgetDirs( KDirLister *lister );
-  void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
-
-
-  KFileItem *findByName( const KDirLister *lister, const QString &_name ) const;
-  // if lister is set, it is checked that the url is held by the lister
-  KFileItem *findByUrl( const KDirLister *lister, const KUrl &_url ) const;
+    // helper for both stop methods
+    class DirectoryData;
+    void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
 
 private Q_SLOTS:
   void slotFileDirty( const QString &_file );
   void slotFileCreated( const QString &_file );
   void slotFileDeleted( const QString &_file );
-
-  void slotFileDirtyDelayed();
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotResult( KJob *j );
@@ -201,6 +200,7 @@ private Q_SLOTS:
 
   void slotUpdateEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotUpdateResult( KJob *job );
+  void processPendingUpdates();
 
 private:
   KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
@@ -208,14 +208,15 @@ private:
 
   void killJob( KIO::ListJob *job );
 
-  // check if _url is held by some lister and return true,
-  // otherwise schedule a delayed update and return false
-  bool checkUpdate( const QString& _url );
+    // Called when something tells us that the directory @p url has changed.
+    // Returns true if @p url is held by some lister (meaning: do the update now)
+    // otherwise mark the cached item as not-up-to-date for later and return false
+    bool checkUpdate( const QString& url );
+
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
   // and removed from the cache including all the children.
-  void deleteUnmarkedItems( QList<KDirLister *> *, KFileItemList & );
-  void processPendingUpdates();
+  void deleteUnmarkedItems( const QList<KDirLister *>&, KFileItemList & );
   // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
   // common for deleteUnmarkedItems and slotFilesRemoved
@@ -324,36 +325,43 @@ private:
     KFileItemList lstItems;
   };
 
-  static const unsigned short MAX_JOBS_PER_LISTER;
-  QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
+    //static const unsigned short MAX_JOBS_PER_LISTER;
 
-  // an item is a complete directory
-  Q3Dict<DirItem> itemsInUse;
-  Q3Cache<DirItem> itemsCached;
+    QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
 
-  // A lister can be EITHER in urlsCurrentlyListed OR urlsCurrentlyHeld but NOT
-  // in both at the same time.
-  //     On the other hand there can be some listers in urlsCurrentlyHeld
-  // and some in urlsCurrentlyListed for the same url!
-  // Or differently said, there can be an entry for url in urlsCurrentlyListed
-  // and urlsCurrentlyHeld. This happens if more listers are requesting url at
-  // the same time and one lister was stopped during the listing of files.
+    // an item is a complete directory
+    Q3Dict<DirItem> itemsInUse;
+    Q3Cache<DirItem> itemsCached;
 
-  // saves all urls that are currently being listed and maps them
-  // to their KDirListers
-  Q3Dict< QList<KDirLister *> > urlsCurrentlyListed;
+    // Data associated with a directory url
+    // This could be in DirItem but only in the itemsInUse dict...
+    struct DirectoryData
+    {
+        // A lister can be EITHER in listersCurrentlyListing OR listersCurrentlyHolding
+        // but NOT in both at the same time.
+        // But both lists can have different listers at the same time; this
+        // happens if more listers are requesting url at the same time and
+        // one lister was stopped during the listing of files.
 
-  // saves all KDirListers that are just holding url
-  Q3Dict< QList<KDirLister *> > urlsCurrentlyHeld;
+        // Listers that are currently listing this url
+        QList<KDirLister *> listersCurrentlyListing;
+        // Listers that are currently holding this url
+        QList<KDirLister *> listersCurrentlyHolding;
+    };
 
-  // running timers for the delayed update
-  Q3Dict<QTimer> pendingUpdates;
+    typedef QHash<QString /*url*/, DirectoryData> DirectoryDataHash;
+    DirectoryDataHash directoryData;
 
-  // the KDirNotify signals
-  OrgKdeKDirNotifyInterface *kdirnotify;
+    // List of files that we have changed recently
+    QSet<QString /*url*/> pendingUpdates;
+    // The timer for doing the delayed updates
+    QTimer pendingUpdateTimer;
+
+    // the KDirNotify signals
+    OrgKdeKDirNotifyInterface *kdirnotify;
 };
 
-const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
+//const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
 
 #define s_pCache KDirListerCache::self()
 
