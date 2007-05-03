@@ -4,7 +4,8 @@
 #include <kxmlguiwindow.h>
 
 class KHTMLPart;
-class QComboBox;
+class KComboBox;
+class QToolButton;
 class QLineEdit;
 class KPushButton;
 class KUrl;

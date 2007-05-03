@@ -2,6 +2,7 @@
 #define TESTKHTML_H
 
 #include <kdebug.h>
+#include <khtml_part.h>
 
 /**
  * @internal
