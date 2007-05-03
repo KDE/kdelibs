@@ -23,8 +23,8 @@
 #include "audiooutput.h"
 #include "videopath.h"
 #include "videowidget.h"
-#include <kurl.h>
 #include <QtGui/QBoxLayout>
+#include <QtCore/QUrl>
 
 namespace Phonon
 {
@@ -43,7 +43,7 @@ class VideoPlayerPrivate
         AudioOutput *aoutput;
         VideoWidget *voutput;
 
-        KUrl url;
+        QUrl url;
 
         void _k_stateChanged(Phonon::State, Phonon::State);
 };
@@ -76,14 +76,24 @@ VideoPlayer::~VideoPlayer()
 {
 }
 
-void VideoPlayer::load(const KUrl &url)
+void VideoPlayer::load(const QString &filename)
+{
+    load(QUrl::fromLocalFile(filename));
+}
+
+void VideoPlayer::load(const QUrl &url)
 {
     // new URL
     d->player->setCurrentSource(url);
     d->url = url;
 }
 
-void VideoPlayer::play(const KUrl &url)
+void VideoPlayer::play(const QString &filename)
+{
+    play(QUrl::fromLocalFile(filename));
+}
+
+void VideoPlayer::play(const QUrl &url)
 {
     if (url == d->url)
     {

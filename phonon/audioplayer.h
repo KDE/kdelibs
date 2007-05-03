@@ -104,6 +104,7 @@ class PHONON_EXPORT AudioPlayer : public QObject
          * (the finished signal will not be emitted).
          */
         void load(const QUrl &url);
+        void load(const QString &filename);
 
         /**
          * Play the media at the given URL. Starts playback as fast as possible.
@@ -122,6 +123,8 @@ class PHONON_EXPORT AudioPlayer : public QObject
          * media and fill audio buffers.
          */
         void play(const QUrl &url);
+        void play(const QString &filename);
+
         /**
          * Continues playback of a paused media. Restarts playback of a stopped
          * media.

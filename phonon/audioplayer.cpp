@@ -65,11 +65,21 @@ AudioPlayer::~AudioPlayer()
     delete d->output;
 }
 
+void AudioPlayer::load(const QString &filename)
+{
+    load(QUrl::fromLocalFile(filename));
+}
+
 void AudioPlayer::load(const QUrl &url)
 {
     // new URL
     d->player->setCurrentSource(url);
     d->url = url;
+}
+
+void AudioPlayer::play(const QString &filename)
+{
+    play(QUrl::fromLocalFile(filename));
 }
 
 void AudioPlayer::play(const QUrl &url)
