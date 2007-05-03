@@ -130,7 +130,8 @@ QSize KExtendableItemDelegate::sizeHint(const QStyleOptionViewItem &option, cons
 
 void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-	int indicatorX, indicatorY;
+    int indicatorX = 0;
+    int indicatorY = 0;
 	
 	QStyleOptionViewItem modOption(option);
 	bool showExtensionIndicator = index.model()->data(index, ShowExtensionIndicatorRole).toBool();
