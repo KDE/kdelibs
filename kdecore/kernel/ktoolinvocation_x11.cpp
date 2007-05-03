@@ -1,6 +1,9 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
-    Copyright (C) 1998, 1999, 2000 KDE Team
+    Copyright (c) 1997,1998 Matthias Kalle Dalheimer <kalle@kde.org>
+    Copyright (c) 2006 Thiago Macieira <thiago@kde.org>
+    Copyright (c) 2003,2004 Oswald Buddenhagen <ossi@kde.org>
+    Copyright (c) 2000-2004 Frerich Raabe <raabe@kde.org>
+    Copyright (c) 1999 Espen Sand <espen@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
