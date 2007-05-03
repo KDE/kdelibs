@@ -31,8 +31,6 @@
 namespace Phonon
 {
     class MediaObject;
-    class AudioPath;
-    class AudioOutput;
 } // namespace Phonon
 
 class QModelIndex;
@@ -53,8 +51,6 @@ class MainWindow : public QMainWindow
         QDirModel m_model;
 
         Phonon::MediaObject *m_media;
-        Phonon::AudioPath *m_audioPath;
-        Phonon::AudioOutput *m_audioOutput;
 };
 
 #endif // EXAMPLES_TUT1_H

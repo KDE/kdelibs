@@ -32,8 +32,6 @@
 namespace Phonon
 {
     class MediaObject;
-    class AudioPath;
-    class AudioOutput;
 } // namespace Phonon
 
 class QModelIndex;
@@ -50,8 +48,6 @@ class PlayerWidget : public QWidget
         void delayedInit();
 
         Phonon::MediaObject *m_media;
-        Phonon::AudioPath *m_audioPath;
-        Phonon::AudioOutput *m_audioOutput;
 };
 
 class MainWindow : public QMainWindow

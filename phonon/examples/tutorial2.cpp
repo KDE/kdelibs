@@ -34,7 +34,7 @@
 
 MainWindow::MainWindow()
     : m_fileView(this),
-    m_media(0), m_audioPath(0), m_audioOutput(0)
+    m_media(0)
 {
     setCentralWidget(&m_fileView);
     m_fileView.setModel(&m_model);
@@ -53,10 +53,10 @@ void MainWindow::delayedInit()
 {
     if (!m_media) {
         m_media = new Phonon::MediaObject(this);
-        m_audioPath = new Phonon::AudioPath(this);
-        m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-        m_media->addAudioPath(m_audioPath);
-        m_audioPath->addOutput(m_audioOutput);
+        Phonon::AudioPath *audioPath = new Phonon::AudioPath(this);
+        Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+        m_media->addAudioPath(audioPath);
+        audioPath->addOutput(audioOutput);
     }
 }
 

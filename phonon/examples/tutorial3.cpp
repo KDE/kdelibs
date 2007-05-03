@@ -31,9 +31,14 @@
 #include <QtGui/QApplication>
 
 #include <kcomponentdata.h>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QFrame>
+#include <Phonon/VolumeSlider>
+#include <QtGui/QVBoxLayout>
+#include <Phonon/SeekSlider>
 
 PlayerWidget::PlayerWidget()
-    : m_media(0), m_audioPath(0), m_audioOutput(0)
+    : m_media(0)
 {
 }
 
@@ -41,10 +46,18 @@ void PlayerWidget::delayedInit()
 {
     if (!m_media) {
         m_media = new Phonon::MediaObject(this);
-        m_audioPath = new Phonon::AudioPath(this);
-        m_audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-        m_media->addAudioPath(m_audioPath);
-        m_audioPath->addOutput(m_audioOutput);
+        Phonon::AudioPath *audioPath = new Phonon::AudioPath(this);
+        Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+        m_media->addAudioPath(audioPath);
+        audioPath->addOutput(audioOutput);
+
+        QHBoxLayout *topLayout = new QHBoxLayout(this);
+        QVBoxLayout *leftLayout = new QVBoxLayout(this);
+        topLayout->addLayout(leftLayout);
+        Phonon::VolumeSlider *vs = new Phonon::VolumeSlider(audioOutput, this);
+        vs->setOrientation(Qt::Vertical);
+        topLayout->addWidget(vs);
+        leftLayout->addWidget(new Phonon::SeekSlider(m_media, this));
     }
 }
 
