@@ -609,7 +609,7 @@ bool KMainWindow::readPropertiesInternal( KConfig *config, int number )
 void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 {
     K_D(KMainWindow);
-    kDebug(200) << "KMainWindow::applyMainWindowSettings" << endl;
+    kDebug(200) << "KMainWindow::applyMainWindowSettings " << cg.group() << endl;
 
     restoreWindowSize(cg);
 
@@ -853,7 +853,7 @@ bool KMainWindow::event( QEvent* ev )
     case QEvent::Polish:
         d->polish(this);
         break;
-    case QEvent::ChildAdded:
+    case QEvent::ChildPolished:
         {
             QChildEvent *event = static_cast<QChildEvent*>(ev);
             QDockWidget *dock = qobject_cast<QDockWidget*>(event->child());
