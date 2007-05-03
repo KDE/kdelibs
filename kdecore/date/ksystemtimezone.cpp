@@ -222,7 +222,7 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         // is the place to look. The TZI binary value is the TIME_ZONE_INFORMATION structure.
 #else
         // For Unix, read zone.tab.
-        if (m_zonetab.isEmpty())
+        if (!m_zonetab.isEmpty())
             m_instance->readZoneTab();
 #endif
         m_localZone = m_instance->zone(m_localZoneName);
