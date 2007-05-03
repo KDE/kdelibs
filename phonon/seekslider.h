@@ -34,6 +34,7 @@ class SeekSliderPrivate;
 /**
  * \short Widget providing a slider for seeking in MediaObject objects.
  *
+ * \ingroup PhononWidgets
  * \author Matthias Kretz <kretz@kde.org>
  */
 class PHONON_EXPORT SeekSlider : public QWidget
@@ -43,7 +44,8 @@ class PHONON_EXPORT SeekSlider : public QWidget
     /**
      * This property holds whether the icon next to the slider is visible.
      *
-     * By default the icon is visible.
+     * By default the icon is visible if the platform provides an icon; else
+     * it's hidden.
      */
     Q_PROPERTY(bool iconVisible READ isIconVisible WRITE setIconVisible)
 

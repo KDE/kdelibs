@@ -39,6 +39,27 @@ VolumeSlider::VolumeSlider(QWidget *parent)
     connect(&d->muteButton, SIGNAL(clicked()), SLOT(_k_buttonClicked()));
 }
 
+VolumeSlider::VolumeSlider(AudioOutput *output, QWidget *parent)
+    : QWidget(parent),
+    k_ptr(new VolumeSliderPrivate(this))
+{
+    K_D(VolumeSlider);
+    setToolTip(i18n("Volume: %1%", 100));
+    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", 100));
+
+    connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
+    connect(&d->muteButton, SIGNAL(clicked()), SLOT(_k_buttonClicked()));
+
+    if (output) {
+        d->output = output;
+        d->slider.setValue(qRound(100 * output->volume()));
+        d->slider.setEnabled(true);
+        d->muteButton.setEnabled(true);
+        connect(output, SIGNAL(volumeChanged(qreal)), SLOT(_k_volumeChanged(qreal)));
+        connect(output, SIGNAL(mutedChanged(bool)), SLOT(_k_mutedChanged(bool)));
+    }
+}
+
 VolumeSlider::~VolumeSlider()
 {
     delete k_ptr;

@@ -58,6 +58,10 @@ class SeekSliderPrivate
             layout.addWidget(&slider, 0, Qt::AlignVCenter);
 
             setEnabled(false);
+
+            if (icon.isNull()) {
+                iconLabel.setVisible(false);
+            }
         }
 
         SeekSlider *q_ptr;

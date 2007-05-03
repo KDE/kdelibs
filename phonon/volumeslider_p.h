@@ -60,6 +60,10 @@ class VolumeSliderPrivate
 
             slider.setEnabled(false);
             muteButton.setEnabled(false);
+
+            if (volumeIcon.isNull()) {
+                muteButton.setVisible(false);
+            }
         }
 
         VolumeSlider *q_ptr;

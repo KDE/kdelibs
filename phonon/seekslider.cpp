@@ -38,6 +38,8 @@ SeekSlider::SeekSlider(MediaObject *mo, QWidget *parent)
     : QWidget(parent)
     , k_ptr(new SeekSliderPrivate(this))
 {
+    K_D(SeekSlider);
+    connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_seek(int)));
     setMediaObject(mo);
 }
 
