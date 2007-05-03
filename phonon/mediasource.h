@@ -99,14 +99,14 @@ class PHONON_EXPORT MediaSource
          *
          * \param filename file name of a local media file or a Qt resource that was compiled in.
          */
-        MediaSource(const QString &filename);
+        MediaSource(const QString &filename); //krazy:exclude=explicit
 
         /**
          * Creates a MediaSource object for a URL.
          *
          * \param url URL to a media file or stream.
          */
-        MediaSource(const QUrl &url);
+        MediaSource(const QUrl &url); //krazy:exclude=explicit
 
         /**
          * Creates a MediaSource object for discs.
@@ -116,7 +116,7 @@ class PHONON_EXPORT MediaSource
          * has more than one CD drive. It is recommended to use Solid to retrieve the device name in
          * a portable way.
          */
-        MediaSource(Phonon::DiscType discType, const QString &deviceName = QString());
+        MediaSource(Phonon::DiscType discType, const QString &deviceName = QString()); //krazy:exclude=explicit
 
         /**
          * Creates a MediaSource object for a data stream.
@@ -126,7 +126,7 @@ class PHONON_EXPORT MediaSource
          *
          * \param stream The AbstractMediaStream subclass to provide the media data.
          */
-        MediaSource(AbstractMediaStream *stream);
+        MediaSource(AbstractMediaStream *stream); //krazy:exclude=explicit
 
         /**
          * Creates a MediaSource object for a QIODevice.
@@ -137,7 +137,7 @@ class PHONON_EXPORT MediaSource
          * MediaSource will open it as QIODevice::ReadOnly. Sequential I/O devices are possible,
          * too. For those MediaObject::isSeekable() will have to return false obviously.
          */
-        MediaSource(QIODevice *ioDevice);
+        MediaSource(QIODevice *ioDevice); //krazy:exclude=explicit
 
         /**
          * Creates a MediaSource object for capture devices.
