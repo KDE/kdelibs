@@ -38,7 +38,6 @@ class KGlobalAccel;
 class KShortcut;
 class KShortcutsEditorItem;
 class KShortcutsEditorPrivate;
-class KAction;
 
 // KShortcutsEditor expects that the list of existing shortcuts is already
 // free of conflicts. If it is not, nothing will crash, but your users
