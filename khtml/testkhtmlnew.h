@@ -9,6 +9,7 @@ class QToolButton;
 class QLineEdit;
 class KPushButton;
 class KUrl;
+class KHTMLFactory;
 class QLabel;
 class QMovie;
 
