@@ -22,6 +22,8 @@
  *
  */
 
+#include "test_regression.h"
+
 #include <stdlib.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -35,7 +37,6 @@
 #include <kstandarddirs.h>
 #include <QtGui/QImage>
 #include <QtCore/QFile>
-#include "test_regression.h"
 #include <stdio.h>
 
 #include "css/cssstyleselector.h"

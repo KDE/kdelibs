@@ -26,20 +26,21 @@
 
 //#define DEBUG_LAYOUT
 
-#include "config.h"
 #include "render_canvasimage.h"
 #include "render_canvas.h"
+
+#include <config.h>
 
 #include <QtGui/QPainter>
 #include <QtCore/QDebug>
 
-#include "css/csshelper.h"
-#include "misc/helper.h"
-#include "misc/htmltags.h"
-#include "html/html_formimpl.h"
-#include "html/html_canvasimpl.h"
-#include "xml/dom2_eventsimpl.h"
-#include "html/html_documentimpl.h"
+#include <css/csshelper.h>
+#include <misc/helper.h>
+#include <misc/htmltags.h>
+#include <html/html_formimpl.h>
+#include <html/html_canvasimpl.h>
+#include <xml/dom2_eventsimpl.h>
+#include <html/html_documentimpl.h>
 
 #include <math.h>
 

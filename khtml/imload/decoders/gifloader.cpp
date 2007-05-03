@@ -24,9 +24,10 @@
 
 */
 
+#include "gifloader.h"
+
 #include "animprovider.h"
 
-#include "gifloader.h"
 #include "imageloader.h"
 #include "imagemanager.h"
 #include "pixmapplane.h"

@@ -19,24 +19,26 @@
  * Boston, MA 02110-1301, USA.
  *
  */
+
+#include "render_applet.h"
+
 #include <config.h>
 #include <klocale.h>
 
 #include <kdebug.h>
 
-#include "rendering/render_applet.h"
-#include "rendering/render_canvas.h"
-#include "xml/dom_docimpl.h"
-#include "khtmlview.h"
-#include "khtml_part.h"
+#include "render_canvas.h"
+#include <xml/dom_docimpl.h>
+#include <khtmlview.h>
+#include <khtml_part.h>
 
 #include <QtGui/QLabel>
 
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
 
-#include "java/kjavaappletwidget.h"
-#include "misc/htmltags.h"
-#include "html/html_objectimpl.h"
+#include <java/kjavaappletwidget.h>
+#include <misc/htmltags.h>
+#include <html/html_objectimpl.h>
 
 using namespace khtml;
 using namespace DOM;

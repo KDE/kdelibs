@@ -25,22 +25,24 @@
 // #define TOKEN_DEBUG
 #define YYDEBUG 0
 
+#include "cssparser.h"
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kurl.h>
 
-#include "cssparser.h"
 #include "css_valueimpl.h"
 #include "css_ruleimpl.h"
 #include "css_stylesheetimpl.h"
 #include "cssproperties.h"
 #include "cssvalues.h"
-#include "misc/helper.h"
 #include "csshelper.h"
-using namespace DOM;
+#include <misc/helper.h>
 
 #include <stdlib.h>
 #include <assert.h>
+
+using namespace DOM;
 
 // used to promote background: left to left center
 #define BACKGROUND_SKIP_CENTER( num ) \

@@ -24,13 +24,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dom/dom_exception.h"
-#include "dom_docimpl.h"
 #include "dom2_rangeimpl.h"
+
+#include <dom/dom_exception.h>
+#include "dom_docimpl.h"
 #include "dom_textimpl.h"
 #include "dom_xmlimpl.h"
-#include "html/html_elementimpl.h"
-#include "misc/htmltags.h"
+#include <html/html_elementimpl.h>
+#include <misc/htmltags.h>
 
 using namespace DOM;
 

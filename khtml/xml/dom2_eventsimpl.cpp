@@ -23,14 +23,15 @@
 
  */
 
-#include "dom/dom2_views.h"
+#include "dom2_eventsimpl.h"
 
-#include "xml/dom2_eventsimpl.h"
-#include "xml/dom_stringimpl.h"
-#include "xml/dom_nodeimpl.h"
-#include "xml/dom_docimpl.h"
-#include "rendering/render_layer.h"
-#include "khtmlview.h"
+#include <dom/dom2_views.h>
+
+#include "dom_stringimpl.h"
+#include "dom_nodeimpl.h"
+#include "dom_docimpl.h"
+#include <rendering/render_layer.h>
+#include <khtmlview.h>
 
 #include <QtGui/QActionEvent>
 #include <kdebug.h>

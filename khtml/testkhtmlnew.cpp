@@ -1,5 +1,8 @@
 // program to test the new khtml implementation
 
+#include "testkhtmlnew.h"
+#include "testkhtmlnew.moc"
+
 #include <QtGui/QCursor>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QFrame>
@@ -46,9 +49,6 @@
 #define protected public
 #include "khtml_factory.h"
 #undef protected
-
-#include "testkhtmlnew.h"
-#include "testkhtmlnew.moc"
 
 TestKHTML::TestKHTML()
     : KXmlGuiWindow()

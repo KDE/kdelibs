@@ -22,15 +22,15 @@
 
 */
 
-#include <QtGui/QPainter>
-#include <limits.h>
-
 #include "image.h"
 #include "imageloader.h"
 #include "imageowner.h"
 #include "pixmapplane.h"
 #include "rawimageplane.h"
 #include "scaledimageplane.h"
+
+#include <QtGui/QPainter>
+#include <limits.h>
 
 namespace khtmlImLoad {
 

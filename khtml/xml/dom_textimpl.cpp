@@ -22,15 +22,15 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dom/dom_exception.h"
-#include "css/cssstyleselector.h"
-#include "xml/dom2_eventsimpl.h"
-#include "xml/dom_textimpl.h"
-#include "xml/dom_docimpl.h"
+#include "dom_textimpl.h"
+#include "dom2_eventsimpl.h"
+#include "dom_docimpl.h"
+#include <dom/dom_exception.h>
+#include <css/cssstyleselector.h>
 
-#include "misc/htmlhashes.h"
-#include "rendering/render_text.h"
-#include "rendering/render_flow.h"
+#include <misc/htmlhashes.h>
+#include <rendering/render_text.h>
+#include <rendering/render_flow.h>
 
 #include <kdebug.h>
 

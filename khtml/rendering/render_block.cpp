@@ -32,19 +32,20 @@
 //#define FLOAT_DEBUG
 //#define PAGE_DEBUG
 
+#include "render_block.h"
+
 #include <kdebug.h>
-#include "rendering/render_text.h"
-#include "rendering/render_table.h"
-#include "rendering/render_canvas.h"
-#include "rendering/render_layer.h"
-#include "rendering/render_block.h"
+#include "render_text.h"
+#include "render_table.h"
+#include "render_canvas.h"
+#include "render_layer.h"
 
-#include "xml/dom_nodeimpl.h"
-#include "xml/dom_docimpl.h"
-#include "html/html_formimpl.h"
-#include "misc/htmltags.h"
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
+#include <html/html_formimpl.h>
+#include <misc/htmltags.h>
 
-#include "khtmlview.h"
+#include <khtmlview.h>
 
 using namespace DOM;
 

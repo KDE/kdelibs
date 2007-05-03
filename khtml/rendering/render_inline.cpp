@@ -23,12 +23,14 @@
  *
  */
 
-#include <kglobal.h>
+#include "render_inline.h"
 
-#include "rendering/render_arena.h"
-#include "rendering/render_inline.h"
-#include "rendering/render_block.h"
-#include "xml/dom_docimpl.h"
+#include "render_arena.h"
+#include "render_block.h"
+
+#include <xml/dom_docimpl.h>
+
+#include <kglobal.h>
 
 
 using namespace khtml;

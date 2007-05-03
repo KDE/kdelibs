@@ -21,24 +21,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dom/css_value.h"
-#include "dom/dom_exception.h"
-#include "dom/dom_string.h"
+#include "css_valueimpl.h"
+#include "css_ruleimpl.h"
+#include "css_stylesheetimpl.h"
+#include "cssparser.h"
+#include "cssproperties.h"
+#include "cssvalues.h"
 
-#include "css/css_valueimpl.h"
-#include "css/css_ruleimpl.h"
-#include "css/css_stylesheetimpl.h"
-#include "css/cssparser.h"
-#include "css/cssproperties.h"
-#include "css/cssvalues.h"
+#include <dom/css_value.h>
+#include <dom/dom_exception.h>
+#include <dom/dom_string.h>
 
-#include "xml/dom_stringimpl.h"
-#include "xml/dom_docimpl.h"
+#include <xml/dom_stringimpl.h>
+#include <xml/dom_docimpl.h>
 
-#include "misc/loader.h"
+#include <misc/loader.h>
 
-#include "rendering/font.h"
-#include "rendering/render_style.h"
+#include <rendering/font.h>
+#include <rendering/render_style.h>
 
 #include <kdebug.h>
 #include <QtCore/QRegExp>

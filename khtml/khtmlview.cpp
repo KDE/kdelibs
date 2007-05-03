@@ -25,9 +25,9 @@
  */
 
 
-#include "khtmlview.moc"
-
 #include "khtmlview.h"
+
+#include "khtmlview.moc"
 
 #include "khtml_part.h"
 #include "khtml_events.h"

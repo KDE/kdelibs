@@ -26,18 +26,18 @@
 
 //#define CSS_DEBUG
 
+#include "css_base.h"
+
 #include <assert.h>
 #include <kdebug.h>
-
-#include "css_base.h"
 
 #ifdef CSS_DEBUG
 #include "cssproperties.h"
 #endif
 
 #include "css_stylesheetimpl.h"
-#include "xml/dom_docimpl.h"
-#include "misc/htmlhashes.h"
+#include <xml/dom_docimpl.h>
+#include <misc/htmlhashes.h>
 #include "css_valueimpl.h"
 using namespace DOM;
 

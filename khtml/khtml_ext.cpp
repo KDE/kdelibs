@@ -25,7 +25,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <assert.h>
 #include "khtml_ext.h"
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
@@ -40,6 +39,7 @@
 #include <QtGui/QMenu>
 #include <QtCore/QUrl>
 #include <QtCore/QMetaEnum>
+#include <assert.h>
 
 #include <kdebug.h>
 #include <klocale.h>

@@ -1,5 +1,8 @@
 // program to test the new khtml implementation
 
+#include "testkhtml.h"
+#include "testkhtml.moc"
+
 #include <stdlib.h>
 #include "kapplication.h"
 #include "khtmlview.h"
@@ -10,8 +13,6 @@
 #define protected public
 #include "khtml_part.h"
 #undef protected
-#include "testkhtml.h"
-#include "testkhtml.moc"
 #include "misc/loader.h"
 #include <QtGui/QCursor>
 #include <dom_string.h>

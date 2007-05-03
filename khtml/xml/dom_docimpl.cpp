@@ -23,25 +23,27 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dom/dom_exception.h"
+#include "dom_docimpl.h"
 
-#include "xml/dom_textimpl.h"
-#include "xml/dom_xmlimpl.h"
-#include "xml/dom2_rangeimpl.h"
-#include "xml/dom2_eventsimpl.h"
-#include "xml/xml_tokenizer.h"
-#include "html/htmltokenizer.h"
-#include "xml/dom_restyler.h"
+#include <dom/dom_exception.h>
 
-#include "css/csshelper.h"
-#include "css/cssstyleselector.h"
-#include "css/css_stylesheetimpl.h"
-#include "misc/htmlhashes.h"
-#include "misc/helper.h"
-#include "misc/seed.h"
-#include "misc/loader.h"
-#include "ecma/kjs_proxy.h"
-#include "ecma/kjs_binding.h"
+#include "dom_textimpl.h"
+#include "dom_xmlimpl.h"
+#include "dom2_rangeimpl.h"
+#include "dom2_eventsimpl.h"
+#include "xml_tokenizer.h"
+#include <html/htmltokenizer.h>
+#include "dom_restyler.h"
+
+#include <css/csshelper.h>
+#include <css/cssstyleselector.h>
+#include <css/css_stylesheetimpl.h>
+#include <misc/htmlhashes.h>
+#include <misc/helper.h>
+#include <misc/seed.h>
+#include <misc/loader.h>
+#include <ecma/kjs_proxy.h>
+#include <ecma/kjs_binding.h>
 
 #include <Qt3Support/Q3PtrStack>
 #include <Qt3Support/Q3PaintDeviceMetrics>
@@ -52,40 +54,39 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include "rendering/counter_tree.h"
-#include "rendering/render_canvas.h"
-#include "rendering/render_replaced.h"
-#include "rendering/render_arena.h"
-#include "rendering/render_layer.h"
-#include "rendering/render_frames.h"
-#include "rendering/render_image.h"
+#include <rendering/counter_tree.h>
+#include <rendering/render_canvas.h>
+#include <rendering/render_replaced.h>
+#include <rendering/render_arena.h>
+#include <rendering/render_layer.h>
+#include <rendering/render_frames.h>
+#include <rendering/render_image.h>
 
-#include "khtmlview.h"
-#include "khtml_part.h"
+#include <khtmlview.h>
+#include <khtml_part.h>
 #include <kauthorized.h>
 #include <kglobalsettings.h>
 #include <kstringhandler.h>
 #include <kdatetime.h>
-#include "khtml_settings.h"
-#include "khtmlpart_p.h"
+#include <khtml_settings.h>
+#include <khtmlpart_p.h>
 
-#include "html/html_baseimpl.h"
-#include "html/html_blockimpl.h"
-#include "html/html_canvasimpl.h"
-#include "html/html_documentimpl.h"
-#include "html/html_formimpl.h"
-#include "html/html_headimpl.h"
-#include "html/html_imageimpl.h"
-#include "html/html_listimpl.h"
-#include "html/html_miscimpl.h"
-#include "html/html_tableimpl.h"
-#include "html/html_objectimpl.h"
+#include <html/html_baseimpl.h>
+#include <html/html_blockimpl.h>
+#include <html/html_canvasimpl.h>
+#include <html/html_documentimpl.h>
+#include <html/html_formimpl.h>
+#include <html/html_headimpl.h>
+#include <html/html_imageimpl.h>
+#include <html/html_listimpl.h>
+#include <html/html_miscimpl.h>
+#include <html/html_tableimpl.h>
+#include <html/html_objectimpl.h>
 
 #include <kapplication.h>
 #include <kio/job.h>
 
 #include <stdlib.h>
-#include "dom_docimpl.h"
 
 using namespace DOM;
 using namespace khtml;

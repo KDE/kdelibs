@@ -22,11 +22,11 @@
 
 */
 
-#include <QTimer>
-#include <QVector>
-
 #include "animtimer.h"
 #include "animprovider.h"
+
+#include <QTimer>
+#include <QVector>
 
 namespace khtmlImLoad {
 

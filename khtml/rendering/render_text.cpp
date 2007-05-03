@@ -28,18 +28,20 @@
 
 #include <config.h>
 
+#if 0
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif
+#endif
 
-#include "rendering/render_text.h"
-#include "rendering/render_canvas.h"
-#include "rendering/break_lines.h"
-#include "rendering/render_arena.h"
-#include "xml/dom_nodeimpl.h"
+#include "render_text.h"
+#include "render_canvas.h"
+#include "break_lines.h"
+#include "render_arena.h"
+#include <xml/dom_nodeimpl.h>
 
-#include "misc/loader.h"
-#include "misc/helper.h"
+#include <misc/loader.h>
+#include <misc/helper.h>
 
 #include <QtGui/QBitmap>
 #include <QtGui/QImage>

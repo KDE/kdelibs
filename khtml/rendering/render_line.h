@@ -22,11 +22,14 @@
 #ifndef RENDER_LINE_H
 #define RENDER_LINE_H
 
+#include "render_object.h"
+
 namespace khtml {
 
 class EllipsisBox;
 class InlineFlowBox;
 class RootInlineBox;
+class RenderArena;
 
 // InlineBox represents a rectangle that occurs on a line.  It corresponds to
 // some RenderObject (i.e., it represents a portion of that RenderObject).

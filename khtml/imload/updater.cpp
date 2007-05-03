@@ -22,11 +22,12 @@
 
 */
 
+#include "updater.h"
+
 #include <assert.h>
 
 #include <QtCore/QTimer>
 #include "image.h"
-#include "updater.h"
 
 namespace khtmlImLoad {
 

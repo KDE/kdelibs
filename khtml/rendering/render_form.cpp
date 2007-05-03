@@ -24,6 +24,8 @@
  *
  */
 
+#include "render_form.h"
+
 #include <kcompletionbox.h>
 #include <kcursor.h>
 #include <kdebug.h>
@@ -46,17 +48,16 @@
 #include <QtGui/QStyle>
 #include <QStyleOptionButton>
 
-#include "misc/helper.h"
-#include "xml/dom2_eventsimpl.h"
-#include "html/html_formimpl.h"
-#include "misc/htmlhashes.h"
+#include <misc/helper.h>
+#include <xml/dom2_eventsimpl.h>
+#include <html/html_formimpl.h>
+#include <misc/htmlhashes.h>
 
-#include "rendering/render_form.h"
 #include <assert.h>
 
-#include "khtmlview.h"
-#include "khtml_ext.h"
-#include "xml/dom_docimpl.h"
+#include <khtmlview.h>
+#include <khtml_ext.h>
+#include <xml/dom_docimpl.h>
 
 #include <QtGui/QMenu>
 #include <QtGui/QBitmap>

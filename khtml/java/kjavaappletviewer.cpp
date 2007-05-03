@@ -17,6 +17,12 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+
+#include "kjavaappletviewer.h"
+
+#include "kjavaappletwidget.h"
+#include "kjavaappletserver.h"
+
 #include <stdio.h>
 
 #ifdef KDE_USE_FINAL
@@ -40,10 +46,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kio/authinfo.h>
-
-#include "kjavaappletwidget.h"
-#include "kjavaappletviewer.h"
-#include "kjavaappletserver.h"
 
 
 K_EXPORT_COMPONENT_FACTORY (kjavaappletviewer, KJavaAppletViewerFactory)

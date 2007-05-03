@@ -24,27 +24,29 @@
  */
 
 //#define EVENT_DEBUG
-#include "dom/dom_exception.h"
-#include "dom/dom_node.h"
-#include "dom/html_image.h"
-#include "xml/dom_textimpl.h"
-#include "xml/dom_docimpl.h"
-#include "xml/dom2_eventsimpl.h"
-#include "xml/dom_elementimpl.h"
-#include "xml/dom_restyler.h"
 
-#include "html/dtd.h"
-#include "html/htmlparser.h"
-#include "html/html_imageimpl.h"
+#include "dom_elementimpl.h"
 
-#include "rendering/render_canvas.h"
-#include "misc/htmlhashes.h"
-#include "css/css_valueimpl.h"
-#include "css/css_stylesheetimpl.h"
-#include "css/cssstyleselector.h"
-#include "css/cssvalues.h"
-#include "css/cssproperties.h"
-#include "xml/dom_xmlimpl.h"
+#include <dom/dom_exception.h>
+#include <dom/dom_node.h>
+#include <dom/html_image.h>
+#include "dom_textimpl.h"
+#include "dom_docimpl.h"
+#include "dom2_eventsimpl.h"
+#include "dom_restyler.h"
+#include "dom_xmlimpl.h"
+
+#include <html/dtd.h>
+#include <html/htmlparser.h>
+#include <html/html_imageimpl.h>
+
+#include <rendering/render_canvas.h>
+#include <misc/htmlhashes.h>
+#include <css/css_valueimpl.h>
+#include <css/css_stylesheetimpl.h>
+#include <css/cssstyleselector.h>
+#include <css/cssvalues.h>
+#include <css/cssproperties.h>
 
 #include <QtCore/QTextIStream>
 #include <QTextDocument>

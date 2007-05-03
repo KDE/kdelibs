@@ -23,27 +23,27 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dom/dom_exception.h"
-#include "misc/htmlattrs.h"
-#include "misc/htmltags.h"
-#include "xml/dom_elementimpl.h"
-#include "xml/dom_textimpl.h"
-#include "xml/dom2_eventsimpl.h"
-#include "xml/dom_docimpl.h"
-#include "xml/dom_nodeimpl.h"
-#include "xml/dom_restyler.h"
+#include "dom_nodeimpl.h"
+
+#include <dom/dom_exception.h>
+#include <misc/htmlattrs.h>
+#include <misc/htmltags.h>
+#include "dom_elementimpl.h"
+#include "dom_textimpl.h"
+#include "dom2_eventsimpl.h"
+#include "dom_docimpl.h"
+#include "dom_restyler.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
 
-#include "rendering/render_text.h"
-#include "rendering/render_flow.h"
-#include "rendering/render_line.h"
+#include <rendering/render_text.h>
+#include <rendering/render_flow.h>
+#include <rendering/render_line.h>
 
-#include "ecma/kjs_proxy.h"
-#include "khtmlview.h"
-#include "khtml_part.h"
-#include "dom_nodeimpl.h"
+#include <ecma/kjs_proxy.h>
+#include <khtmlview.h>
+#include <khtml_part.h>
 //Added by qt3to4:
 #include <QMouseEvent>
 #include <QKeyEvent>

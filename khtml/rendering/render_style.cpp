@@ -24,12 +24,13 @@
  *
  */
 
-#include "xml/dom_stringimpl.h"
-#include "css/cssstyleselector.h"
-#include "css/css_valueimpl.h"
 #include "render_style.h"
 
-#include "kdebug.h"
+#include <xml/dom_stringimpl.h>
+#include <css/cssstyleselector.h>
+#include <css/css_valueimpl.h>
+
+#include <kdebug.h>
 
 using namespace khtml;
 using namespace DOM;

@@ -19,11 +19,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config.h>
 #include "kjavaappletserver.h"
+
 #include "kjavaappletcontext.h"
 #include "kjavaprocess.h"
 #include "kjavadownloader.h"
+
+#include <config.h>
 
 #include <kdebug.h>
 #include <kconfig.h>

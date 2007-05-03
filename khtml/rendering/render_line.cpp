@@ -21,23 +21,24 @@
  */
 // -------------------------------------------------------------------------
 
+#include "render_line.h"
+
 #include <kdebug.h>
 #include <assert.h>
 #include <QtGui/QPainter>
 #include <kglobal.h>
 
-#include "rendering/render_flow.h"
-#include "rendering/render_text.h"
-#include "rendering/render_table.h"
-#include "rendering/render_inline.h"
-#include "rendering/render_block.h"
-#include "rendering/render_arena.h"
-#include "rendering/render_line.h"
-#include "xml/dom_nodeimpl.h"
-#include "xml/dom_docimpl.h"
-#include "html/html_formimpl.h"
-#include "misc/htmltags.h"
-#include "khtmlview.h"
+#include "render_flow.h"
+#include "render_text.h"
+#include "render_table.h"
+#include "render_inline.h"
+#include "render_block.h"
+#include "render_arena.h"
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
+#include <html/html_formimpl.h>
+#include <misc/htmltags.h>
+#include <khtmlview.h>
 
 using namespace DOM;
 using namespace khtml;

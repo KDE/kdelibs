@@ -23,19 +23,19 @@
 
 //#define CSS_STYLESHEET_DEBUG
 
-#include "dom/dom_string.h"
-#include "dom/dom_exception.h"
-#include "dom/css_stylesheet.h"
-#include "dom/css_rule.h"
+#include "css_stylesheetimpl.h"
+#include "css_ruleimpl.h"
+#include "css_valueimpl.h"
+#include "cssparser.h"
 
-#include "css/css_ruleimpl.h"
-#include "css/css_valueimpl.h"
-#include "css/cssparser.h"
-#include "css/css_stylesheetimpl.h"
+#include <dom/dom_string.h>
+#include <dom/dom_exception.h>
+#include <dom/css_stylesheet.h>
+#include <dom/css_rule.h>
 
-#include "xml/dom_nodeimpl.h"
-#include "html/html_documentimpl.h"
-#include "misc/loader.h"
+#include <xml/dom_nodeimpl.h>
+#include <html/html_documentimpl.h>
+#include <misc/loader.h>
 
 #include <kdebug.h>
 

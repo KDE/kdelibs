@@ -19,14 +19,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "kxeventutil.h"
+
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-
-#include "kxeventutil.h"
 
 QString KXEventUtil::getXAnyEventInfo(XEvent *xevent) {
     XAnyEvent *e = &xevent->xany;
