@@ -21,6 +21,7 @@
 #define KIO_EXPORT KDE_EXPORT
 #endif
 
+#define KPROTOCOLINFO_KDECORE
 #include "kprotocolinfo.h"
 #include "kprotocolinfofactory.h"
 

@@ -96,6 +96,9 @@ public:
    * Same as above except you can supply just the protocol instead of
    * the whole URL.
    */
+#ifdef KPROTOCOLINFO_KDECORE
+  KDE_WEAK
+#endif
   static bool isKnownProtocol( const QString& protocol );
 
   /**
@@ -221,6 +224,9 @@ public:
    * Same as above except you can supply just the protocol instead of
    * the whole URL.
    */
+#ifdef KPROTOCOLINFO_KDECORE
+  KDE_WEAK
+#endif
   static bool isHelperProtocol( const QString& protocol );
 
   /**
@@ -245,6 +251,9 @@ public:
    * Same as above except you can supply just the protocol instead of
    * the whole URL.
    */
+#ifdef KPROTOCOLINFO_KDECORE
+  KDE_WEAK
+#endif
   static bool isFilterProtocol( const QString& protocol );
 
   /**
