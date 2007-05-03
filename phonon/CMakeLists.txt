@@ -111,11 +111,10 @@ install(FILES phonon.notifyrc DESTINATION ${DATA_INSTALL_DIR}/phonon)
 set(kaudiodevicelist_LIB_SRCS
 	audiodevice.cpp
 	audiodeviceenumerator.cpp
-	phononnamespace.cpp
 	)
 kde4_automoc(${kaudiodevicelist_LIB_SRCS})
 kde4_add_library(kaudiodevicelist SHARED ${kaudiodevicelist_LIB_SRCS})
-target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS})
+target_link_libraries(kaudiodevicelist ${KDE4_SOLID_LIBS} phonon)
 
 set_target_properties(kaudiodevicelist PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
