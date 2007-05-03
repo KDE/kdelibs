@@ -35,7 +35,7 @@ namespace Experimental
     class Effect;
     class AbstractAudioOutput;
 
-    /**
+    /** \class AudioPath audiopath.h Phonon/AudioPath
      * \short A class to route and process audio data.
      *
      * This class is used to define where the audio data is sent to, what

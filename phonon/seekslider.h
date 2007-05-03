@@ -31,7 +31,7 @@ class MediaObject;
 
 class SeekSliderPrivate;
 
-/**
+/** \class SeekSlider seekslider.h Phonon/SeekSlider
  * \short Widget providing a slider for seeking in MediaObject objects.
  *
  * \ingroup PhononWidgets
@@ -126,16 +126,15 @@ class PHONON_EXPORT SeekSlider : public QWidget
          */
         void setMediaObject(MediaObject *);
 
+    protected:
+        SeekSliderPrivate *const k_ptr;
+
     private:
         Q_PRIVATE_SLOT(k_func(), void _k_stateChanged(Phonon::State))
         Q_PRIVATE_SLOT(k_func(), void _k_seek(int))
         Q_PRIVATE_SLOT(k_func(), void _k_tick(qint64))
         Q_PRIVATE_SLOT(k_func(), void _k_length(qint64))
         Q_PRIVATE_SLOT(k_func(), void _k_seekableChanged(bool))
-
-    protected:
-        //SeekSlider(SeekSliderPrivate &d, QWidget *parent);
-        SeekSliderPrivate *const k_ptr;
 };
 
 } // namespace Phonon

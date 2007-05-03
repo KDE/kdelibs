@@ -36,7 +36,7 @@ namespace Experimental
 } // namespace Experimental
 
     class VideoWidgetPrivate;
-    /**
+    /** \class VideoWidget videowidget.h Phonon/VideoWidget
      * \short Widget to display video.
      *
      * This widget shows the video signal and provides an object that can be

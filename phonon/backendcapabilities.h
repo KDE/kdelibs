@@ -40,7 +40,7 @@ namespace Phonon
  */
 namespace BackendCapabilities
 {
-    /**
+    /** \class Notifier backendcapabilities.h Phonon/BackendCapabilities
      * Notifications about backend capabilities.
      *
      * \ingroup BackendInformation

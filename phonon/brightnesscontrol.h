@@ -27,7 +27,7 @@ namespace Phonon
 {
     class BrightnessControlPrivate;
 
-    /**
+    /** \class BrightnessControl brightnesscontrol.h Phonon/BrightnessControl
      * Video effect to control the brightness of the image.
      *
      * \ingroup PhononEffects

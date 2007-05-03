@@ -33,6 +33,11 @@ namespace Phonon
     class ObjectDescriptionModelPrivate;
     class ObjectDescriptionModelBasePrivate;
 
+    /** \class ObjectDescriptionModelBase objectdescriptionmodel.h Phonon/ObjectDescriptionModelBase
+     * \brief Base class for models for ObjectDescription objects.
+     *
+     * \author Matthias Kretz <kretz@kde.org>
+     */
     class PHONON_EXPORT ObjectDescriptionModelBase : public QAbstractListModel
     {
         K_DECLARE_PRIVATE(ObjectDescriptionModelBase)
@@ -119,7 +124,7 @@ namespace Phonon
             ObjectDescriptionModelBasePrivate *const k_ptr;
     };
 
-    /**
+    /** \class ObjectDescriptionModel objectdescriptionmodel.h Phonon/ObjectDescriptionModel
      * \short The ObjectDescriptionModel class provides a model from
      * a list of ObjectDescription objects.
      *

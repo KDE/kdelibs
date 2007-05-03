@@ -30,7 +30,7 @@ class QVariant;
 namespace Phonon
 {
 
-/**
+/** \class BackendInterface backendinterface.h Phonon/BackendInterface
  * \short Main Backend class interface
  *
  * \ingroup Backend

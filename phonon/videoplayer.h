@@ -30,7 +30,7 @@ namespace Phonon
 {
 class VideoPlayerPrivate;
 
-/**
+/** \class VideoPlayer videoplayer.h Phonon/VideoPlayer
  * \short Playback class for simple tasks.
  *
  * With %VideoPlayer you can get results quickly and easily. You can do the standard

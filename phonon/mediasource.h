@@ -35,7 +35,7 @@ namespace Phonon
 class MediaSourcePrivate;
 class AbstractMediaStream;
 
-/**
+/** \class MediaSource mediasource.h Phonon/MediaSource
  * Note that all constructors of this class are implicit, so that you can simply write
  * \code
  * MediaObject m;

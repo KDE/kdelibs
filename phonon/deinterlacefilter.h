@@ -27,7 +27,7 @@ namespace Phonon
 {
 class DeinterlaceFilterPrivate;
 
-/**
+/** \class DeinterlaceFilter deinterlacefilter.h Phonon/DeinterlaceFilter
  * Video effect to deinterlace the image.
  *
  * \ingroup PhononEffects

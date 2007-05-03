@@ -25,7 +25,7 @@
 
 namespace Phonon
 {
-/**
+/** \class AudioOutputInterface audiooutputinterface.h Phonon/AudioOutputInterface
  * \short Interface for AudioOutput objects
  *
  * \ingroup Backend

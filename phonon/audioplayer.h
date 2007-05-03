@@ -30,7 +30,7 @@ namespace Phonon
 {
 class AudioPlayerPrivate;
 
-/**
+/** \class AudioPlayer audioplayer.h Phonon/AudioPlayer
  * \short Playback class for simple tasks.
  *
  * With %AudioPlayer you can get results quickly and easily. You can do the standard

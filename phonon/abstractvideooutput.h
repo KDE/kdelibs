@@ -35,8 +35,8 @@ namespace Experimental
 
     class AbstractVideoOutputPrivate;
 
-    /**
-     * Common base class for all video outputs.
+    /** \class AbstractVideoOutput abstractvideooutput.h Phonon/AbstractVideoOutput
+     * \brief Common base class for all video outputs.
      *
      * \see VideoWidget
      */
@@ -62,5 +62,4 @@ namespace Experimental
     };
 } //namespace Phonon
 
-// vim: sw=4 ts=4 tw=80
 #endif // Phonon_ABSTRACTVIDEOOUTPUTBASE_H

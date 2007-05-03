@@ -47,7 +47,7 @@ namespace Phonon
         VisualizationType
     };
 
-/**
+/** \class ObjectDescriptionBase objectdescription.h Phonon/ObjectDescription
  * \brief Base class for objects describing devices or features of the backend.
  *
  * \author Matthias Kretz <kretz@kde.org>
@@ -124,7 +124,7 @@ class PHONON_EXPORT ObjectDescriptionBase
         ObjectDescriptionBase &operator=(const ObjectDescriptionBase &rhs);
 };
 
-/**
+/** \class ObjectDescription objectdescription.h Phonon/ObjectDescription
  * \short Provides a tuple of enduser visible name and description.
  *
  * Some parts give the enduser choices, e.g. what source to capture audio from.
@@ -150,15 +150,45 @@ class PHONON_EXPORT ObjectDescription : public ObjectDescriptionBase
         static ObjectDescription<T> fromIndex(int index);
 };
 
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<AudioOutputDeviceType> AudioOutputDevice;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<AudioCaptureDeviceType> AudioCaptureDevice;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<VideoOutputDeviceType> VideoOutputDevice;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<VideoCaptureDeviceType> VideoCaptureDevice;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<AudioEffectType> AudioEffectDescription;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<VideoEffectType> VideoEffectDescription;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<AudioCodecType> AudioCodecDescription;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<VideoCodecType> VideoCodecDescription;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<ContainerFormatType> ContainerFormatDescription;
+/**
+ * \ingroup BackendInformation
+ */
 typedef ObjectDescription<VisualizationType> VisualizationDescription;
 
 } //namespace Phonon

@@ -29,7 +29,7 @@ namespace Phonon
 class AudioOutput;
 class VolumeSliderPrivate;
 
-/**
+/** \class VolumeSlider volumeslider.h Phonon/VolumeSlider
  * \short Widget providing a slider to control the volume of an AudioOutput.
  *
  * \ingroup PhononWidgets
@@ -126,14 +126,14 @@ class PHONON_EXPORT VolumeSlider : public QWidget
          */
         void setAudioOutput(AudioOutput *);
 
+    protected:
+        VolumeSliderPrivate *const k_ptr;
+
     private:
         Q_PRIVATE_SLOT(k_ptr, void _k_sliderChanged(int))
         Q_PRIVATE_SLOT(k_ptr, void _k_volumeChanged(qreal))
         Q_PRIVATE_SLOT(k_ptr, void _k_mutedChanged(bool))
         Q_PRIVATE_SLOT(k_ptr, void _k_buttonClicked())
-
-    protected:
-        VolumeSliderPrivate *const k_ptr;
 };
 
 } // namespace Phonon

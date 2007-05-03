@@ -37,7 +37,7 @@ namespace Phonon
     class KioFallbackImpl;
     class MediaSource;
 
-    /**
+    /** \class MediaObject mediaobject.h Phonon/MediaObject
      * \short Interface for media playback of a given URL.
      *
      * This class is the most important class in %Phonon. Use it to open a media

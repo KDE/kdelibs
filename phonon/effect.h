@@ -31,7 +31,7 @@ namespace Phonon
     class EffectParameter;
     class EffectPrivate;
 
-    /**
+    /** \class Effect effect.h Phonon/Effect
      * \short Effects that can be inserted into an AudioPath or a VideoPath.
      * An effect is a special object which can perform
      * transformations on the specified path. Examples may include simple

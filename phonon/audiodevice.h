@@ -38,7 +38,7 @@ namespace Phonon
 {
     class AudioDevicePrivate;
 
-    /**
+    /** \class AudioDevice audiodevice.h Phonon/AudioDevice
      * \brief Information about a soundcard of the computer.
      *
      * This class encapsulates some useful information about a soundcard of the computer. Don't

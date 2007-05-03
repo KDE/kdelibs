@@ -29,7 +29,7 @@ namespace Phonon
     class Effect;
     class AbstractVideoOutput;
 
-    /**
+    /** \class VideoPath videopath.h Phonon/VideoPath
      * \short A class to route and process video data.
      *
      * This class is used to define where the video data is sent to, what

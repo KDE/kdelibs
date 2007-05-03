@@ -33,7 +33,7 @@ class Effect;
 class EffectParameterPrivate;
 class AudioEffect;
 
-/**
+/** \class EffectParameter effectparameter.h Phonon/EffectParameter
  * \brief This class describes one parameter of an effect.
  *
  * \ingroup PhononEffects

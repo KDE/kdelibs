@@ -28,7 +28,7 @@ namespace Phonon
 {
     class AudioDeviceEnumeratorPrivate;
 
-    /**
+    /** \class AudioDeviceEnumerator audiodeviceenumerator.h Phonon/AudioDeviceEnumerator
      * \brief Lists available ALSA devices.
      *
      * Simple (singleton) class to list the ALSA devices that are available on the system. A typical

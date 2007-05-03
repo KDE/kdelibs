@@ -25,7 +25,7 @@
 
 namespace Phonon
 {
-/**
+/** \class AddonInterface addoninterface.h Phonon/AddonInterface
  * \short Interface for Menu, Chapter, Angle and Title/Track control.
  *
  * \ingroup Backend
