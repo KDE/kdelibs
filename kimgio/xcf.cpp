@@ -19,6 +19,8 @@
  *
  */
 
+#include "xcf.h"
+
 #include <stdlib.h>
 #include <QtGui/QImage>
 #include <QtCore/QIODevice>
@@ -26,7 +28,6 @@
 #include <QtCore/QVector>
 
 #include <kdebug.h>
-#include "xcf.h"
 
 
 int XCFImageFormat::random_table[RANDOM_TABLE_SIZE];

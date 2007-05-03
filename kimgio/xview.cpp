@@ -5,12 +5,12 @@
 // Patch merged in HEAD by Chris Spiegel <matrix@xirtam.org>
 // This library is distributed under the conditions of the GNU LGPL.
 
+#include "xview.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <QtGui/QImage>
-
-#include "xview.h"
 
 #define BUFSIZE 1024
 

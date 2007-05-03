@@ -1,14 +1,12 @@
 // This library is distributed under the conditions of the GNU LGPL.
+
+#include "jp2.h"
+
 #include <config.h>
-#include <config-kimgio.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-
-#ifdef HAVE_JASPER
-
-#include "jp2.h"
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
@@ -473,5 +471,4 @@ QImageIOHandler *JP2Plugin::create(QIODevice *device, const QByteArray &format) 
 Q_EXPORT_STATIC_PLUGIN(JP2Plugin)
 Q_EXPORT_PLUGIN2(jp2, JP2Plugin)
 
-#endif // HAVE_JASPER
 

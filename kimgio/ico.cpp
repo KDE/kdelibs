@@ -13,6 +13,8 @@
 #warning TODO: remove QT3_SUPPORT
 #endif
 
+#include "ico.h"
+
 #include <cstring>
 #include <cstdlib>
 #include <algorithm>
@@ -23,8 +25,6 @@
 #include <QtGui/QApplication>
 #include <QtCore/QVector>
 #include <QtGui/QDesktopWidget>
-
-#include "ico.h"
 
 namespace
 {

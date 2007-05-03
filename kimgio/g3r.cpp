@@ -1,16 +1,13 @@
 // This library is distributed under the conditions of the GNU LGPL.
 
-#include <config.h>
-#include <config-kimgio.h>
+#include "g3r.h"
 
-#ifdef HAVE_LIBTIFF
+#include <config.h>
 
 #include <tiffio.h>
 
 #include <qimage.h>
 #include <qfile.h>
-
-#include "g3r.h"
 
 KDE_EXPORT void kimgio_g3_read( QImageIO *io )
 {
@@ -50,5 +47,3 @@ KDE_EXPORT void kimgio_g3_write(QImageIO *)
 	// TODO: stub
 }
 
-
-#endif

@@ -1,9 +1,8 @@
 // This library is distributed under the conditions of the GNU LGPL.
 
-#include <config.h>
-#include <config-kimgio.h>
+#include "tiffr.h"
 
-#ifdef HAVE_LIBTIFF
+#include <config.h>
 
 #include <tiffio.h>
 
@@ -11,8 +10,6 @@
 #include <qfile.h>
 
 #include <assert.h>
-
-#include "tiffr.h"
 
 static tsize_t tiff_read( thandle_t handle, tdata_t buf, tsize_t size )
 {
@@ -233,5 +230,3 @@ QImageIOHandler *TIFFRPlugin::create(QIODevice *device, const QByteArray &format
 
 Q_EXPORT_STATIC_PLUGIN(TIFFRPlugin)
 Q_EXPORT_PLUGIN2(tiff, TIFFRPlugin)
-
-#endif

@@ -8,10 +8,9 @@
 * This library is distributed under the conditions of the GNU LGPL.
 */
 
-#include <config.h>
-#include <config-kimgio.h>
+#include "exr.h"
 
-#ifdef HAVE_EXR
+#include <config.h>
 
 #include <ImfRgbaFile.h>
 #include <ImfStandardAttributes.h>
@@ -38,8 +37,6 @@
 #include <QImage>
 #include <QDataStream>
 #include <QImageIOPlugin>
-
-#include "exr.h"
 
 class K_IStream: public Imf::IStream
 {
@@ -270,4 +267,3 @@ QImageIOHandler *EXRPlugin::create(QIODevice *device, const QByteArray &format) 
 
 Q_EXPORT_STATIC_PLUGIN( EXRPlugin )
 Q_EXPORT_PLUGIN2( exr, EXRPlugin )
-#endif

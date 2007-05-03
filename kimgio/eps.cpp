@@ -1,4 +1,5 @@
 // This library is distributed under the conditions of the GNU LGPL.
+#include "eps.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <QtGui/QImage>
@@ -9,7 +10,6 @@
 #include <kapplication.h>
 #include <ktemporaryfile.h>
 #include <kdebug.h>
-#include "eps.h"
 
 #define BUFLEN 200
 

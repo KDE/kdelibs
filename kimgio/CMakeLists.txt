@@ -2,15 +2,10 @@
 project(kimgio)
 
 macro_optional_find_package(Jasper)
-macro_bool_to_01(JASPER_FOUND HAVE_JASPER)
 
 macro_optional_find_package(TIFF)
-macro_bool_to_01(TIFF_FOUND HAVE_LIBTIFF)
 
 macro_optional_find_package(OpenEXR)
-macro_bool_to_01(OPENEXR_FOUND HAVE_EXR)
-
-configure_file(config-kimgio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kimgio.h )
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 
