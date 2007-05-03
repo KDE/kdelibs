@@ -364,4 +364,16 @@
 # define KDE_DUMMY_QHASH_FUNCTION(C)
 #endif
 
+/**
+ * The KDE_WEAK macro can be used to tell the compiler that
+ * a particular function should be a weak symbol (that e.g. may be overriden
+ * in another library, -Bdirect will not bind this symbol directly)
+ */
+
+#ifdef __GNUC__
+#define KDE_WEAK __attribute__((__weak__))
+#else
+#define KDE_WEAK
+#endif
+
 #endif /* _KDE_MACROS_H_ */
