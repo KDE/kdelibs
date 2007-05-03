@@ -1708,13 +1708,19 @@ int main(int argc, char **argv, char **envp)
        */
       init_kdeinit_socket();
    }
-
+#ifdef Q_WS_X11
    if (!d.suicide && !getenv("KDE_IS_PRELINKED"))
    {
-       QLibrary l("konq");
-       l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
-       l.load();
+       QString konq = KStandardDirs::locate("lib", "libkonq.so.5", *s_instance);
+       // can't use KLibLoader here as it would unload the library
+       // again
+       if (!konq.isEmpty()) {
+           QLibrary l(konq);
+           l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
+           l.load();
+       }
    }
+#endif
    if (launch_klauncher)
    {
       pid = launch( 1, "klauncher", 0 );
