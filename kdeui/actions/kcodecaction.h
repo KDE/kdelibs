@@ -1,10 +1,9 @@
 /*
    kcodecaction.h
 
-    Copyright (c) 2003      by Jason Keirstead        <jason@keirstead.org>
-    Copyright (c) 2003-2006 by Michel Hermier         <michel.hermier@gmail.com>
-    Kopete    (c) 2003-2006 by the Kopete developers  <kopete-devel@kde.org>
-    Copyright (C) 2007 Nick Shaforostoff              <shafff@ukr.net>
+    Copyright (c) 2003      Jason Keirstead   <jason@keirstead.org>
+    Copyright (c) 2003-2006 Michel Hermier    <michel.hermier@gmail.com>
+    Copyright (c) 2007      Nick Shaforostoff <shafff@ukr.net>
 
     *************************************************************************
     *                                                                       *
