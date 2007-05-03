@@ -206,15 +206,15 @@
     RESERVE_VIRTUAL_9
 
 /**
- * The KDE_WEAK macro can be used to tell the compiler that
+ * The KDE_WEAK_SYMBOL macro can be used to tell the compiler that
  * a particular function should be a weak symbol (that e.g. may be overriden
  * in another library, -Bdirect will not bind this symbol directly)
  */
 
 #ifdef __GNUC__
-#define KDE_WEAK __attribute__((__weak__))
+#define KDE_WEAK_SYMBOL __attribute__((__weak__))
 #else
-#define KDE_WEAK
+#define KDE_WEAK_SYMBOL
 #endif
 
 #endif /* _KDE_MACROS_H_ */

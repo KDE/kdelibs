@@ -97,7 +97,7 @@ public:
    * the whole URL.
    */
 #ifdef KPROTOCOLINFO_KDECORE
-  KDE_WEAK
+  KDE_WEAK_SYMBOL
 #endif
   static bool isKnownProtocol( const QString& protocol );
 
@@ -225,7 +225,7 @@ public:
    * the whole URL.
    */
 #ifdef KPROTOCOLINFO_KDECORE
-  KDE_WEAK
+  KDE_WEAK_SYMBOL
 #endif
   static bool isHelperProtocol( const QString& protocol );
 
@@ -252,7 +252,7 @@ public:
    * the whole URL.
    */
 #ifdef KPROTOCOLINFO_KDECORE
-  KDE_WEAK
+  KDE_WEAK_SYMBOL
 #endif
   static bool isFilterProtocol( const QString& protocol );
 
