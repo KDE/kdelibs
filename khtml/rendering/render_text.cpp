@@ -26,14 +26,6 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
-#include <config.h>
-
-#if 0
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
-#endif
-
 #include "render_text.h"
 #include "render_canvas.h"
 #include "break_lines.h"
@@ -51,6 +43,8 @@
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
+
+#include <config.h>
 
 #ifdef HAVE_ALLOCA_H
 // explicitly included for systems that don't provide it in stdlib.h

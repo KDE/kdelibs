@@ -29,11 +29,6 @@
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
-#if 0
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
-#endif
 
 #include <khtml_factory.h>
 #include <khtml_settings.h>

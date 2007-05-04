@@ -21,10 +21,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "css_ruleimpl.h"
 #include "css_stylesheetimpl.h"
 #include "css_valueimpl.h"
 #include "cssparser.h"
-#include "css_ruleimpl.h"
 
 #include <dom/css_rule.h>
 #include <dom/css_stylesheet.h>
