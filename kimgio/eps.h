@@ -1,6 +1,6 @@
 /**
 * QImageIO Routines to read/write EPS images.
-* copyright (c) 1998 Dirk Shcoenberger <dirk.schoenberger@freenet.de>
+* copyright (c) 1998 Dirk Schoenberger <dirk.schoenberger@freenet.de>
 *
 * This library is distributed under the conditions of the GNU LGPL.
 */
