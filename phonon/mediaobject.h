@@ -145,12 +145,12 @@ namespace Phonon
          * media->setTickInterval(x);
          * Q_ASSERT(x == producer->tickInterval());
          * \endcode
-         *
          * On the other hand the following is guaranteed:
          * \code
          * int x = 200;
          * media->setTickInterval(x);
-         * Q_ASSERT(x >= producer->tickInterval() && x <= 2 *producer->tickInterval());
+         * Q_ASSERT(x >= producer->tickInterval() &&
+         *          x <= 2 * producer->tickInterval());
          * \endcode
          *
          * \see tick
@@ -394,11 +394,11 @@ namespace Phonon
              *
              * A typical usage looks like this:
              * \code
-             * setMetaArtist (media->metaData("ARTIST"    ));
-             * setMetaAlbum  (media->metaData("ALBUM"     ));
-             * setMetaTitle  (media->metaData("TITLE"     ));
-             * setMetaDate   (media->metaData("DATE"      ));
-             * setMetaGenre  (media->metaData("GENRE"     ));
+             * setMetaArtist (media->metaData("ARTIST"     ));
+             * setMetaAlbum  (media->metaData("ALBUM"      ));
+             * setMetaTitle  (media->metaData("TITLE"      ));
+             * setMetaDate   (media->metaData("DATE"       ));
+             * setMetaGenre  (media->metaData("GENRE"      ));
              * setMetaTrack  (media->metaData("TRACKNUMBER"));
              * setMetaComment(media->metaData("DESCRIPTION"));
              * \endcode
