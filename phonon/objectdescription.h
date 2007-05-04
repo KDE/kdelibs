@@ -134,8 +134,6 @@ class PHONON_EXPORT ObjectDescriptionBase
  *
  * \ingroup Frontend
  * \author Matthias Kretz <kretz@kde.org>
- * \see AudioCaptureDevice
- * \see VideoCaptureDevice
  */
 template<ObjectDescriptionType T>
 class PHONON_EXPORT ObjectDescription : public ObjectDescriptionBase
