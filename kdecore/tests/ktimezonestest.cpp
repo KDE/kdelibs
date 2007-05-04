@@ -163,6 +163,11 @@ void KTimeZonesTest::zoneinfoDir()
 
 void KTimeZonesTest::currentOffset()
 {
+    QString tzfile = ":" + mDataDir + "/Europe/Paris";
+    const char *originalZone = ::getenv("TZ");   // save the original local time zone
+    ::setenv("TZ", tzfile.toLatin1().data(), 1);
+    ::tzset();
+
     // Find the current offset of a time zone
     time_t now = time(0);
     tm *tnow = localtime(&now);
@@ -174,6 +179,14 @@ void KTimeZonesTest::currentOffset()
     const KTimeZone *local = KSystemTimeZones::local();
     QVERIFY((bool)local);
     QCOMPARE(local->currentOffset(Qt::UTC), offset);
+
+
+    // Restore the original local time zone
+    if (!originalZone)
+        ::unsetenv("TZ");
+    else
+        ::setenv("TZ", originalZone, 1);
+    ::tzset();
 }
 
 void KTimeZonesTest::offsetAtUtc()
