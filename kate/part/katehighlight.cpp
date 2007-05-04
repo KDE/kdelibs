@@ -2367,9 +2367,12 @@ int KateHighlighting::getIdFromString(QStringList *ContextNameList, QString tmpL
 
   else if ( tmpLineEndContext.contains("##"))
   {
-    QString tmp=tmpLineEndContext.mid(tmpLineEndContext.find("##")+2);
+    int o = tmpLineEndContext.find("##");
+    // FIXME at least with 'foo##bar'-style contexts the rules are picked up
+    // but the default attribute is not
+    QString tmp=tmpLineEndContext.mid(o+2);
     if (!embeddedHls.contains(tmp))  embeddedHls.insert(tmp,KateEmbeddedHlInfo());
-    unres=tmpLineEndContext;
+    unres=tmp+':'+tmpLineEndContext.left(o);
     context=0;
   }
 
