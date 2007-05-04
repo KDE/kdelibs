@@ -130,7 +130,7 @@ void KGlobalAccelImpl::setEnabled(bool enable)
         if (InstallEventHandler(m_eventTarget, m_eventHandler, 1, m_eventType, this, &m_curHandler) != noErr)
             kWarning(125) << "InstallEventHandler failed!" << endl;
     } else {
-        if (RemoveEventHandler(m_curHandler) != noErr) {
+        if (RemoveEventHandler(m_curHandler) != noErr)
             kWarning(125) << "RemoveEventHandler failed!" << endl;
     }
 }
