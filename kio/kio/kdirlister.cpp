@@ -55,7 +55,6 @@ KDirListerCache::KDirListerCache( int maxCount )
 {
   kDebug(7004) << "+KDirListerCache" << endl;
 
-  itemsInUse.setAutoDelete( false );
   itemsCached.setAutoDelete( true );
 
   connect( &pendingUpdateTimer, SIGNAL(timeout()), this, SLOT(processPendingUpdates()) );
@@ -77,15 +76,16 @@ KDirListerCache::KDirListerCache( int maxCount )
 
 KDirListerCache::~KDirListerCache()
 {
-  kDebug(7004) << "-KDirListerCache" << endl;
+    kDebug(7004) << "-KDirListerCache" << endl;
 
-  itemsInUse.setAutoDelete( true );
-  itemsInUse.clear();
-  itemsCached.clear();
-  directoryData.clear();
+    qDeleteAll(itemsInUse);
+    itemsInUse.clear();
 
-  if ( KDirWatch::exists() )
-    kdirwatch->disconnect( this );
+    itemsCached.clear();
+    directoryData.clear();
+
+    if ( KDirWatch::exists() )
+        kdirwatch->disconnect( this );
 }
 
 // setting _reload to true will emit the old files and
@@ -1187,55 +1187,62 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
     //DirItem *dir = itemsInUse.take( oldUrlStr );
     //emitRedirections( oldUrl, url );
 
-  // Look at all dirs being listed/shown
-  Q3DictIterator<DirItem> itu( itemsInUse );
-  bool goNext;
-  while ( itu.current() )
-  {
-    goNext = true;
-    DirItem *dir = itu.current();
-    KUrl oldDirUrl ( itu.currentKey() );
-    //kDebug(7004) << "itemInUse: " << oldDirUrl << endl;
-    // Check if this dir is oldUrl, or a subfolder of it
-    if ( oldUrl.isParentOf( oldDirUrl ) )
-    {
-      // TODO should use KUrl::cleanpath like isParentOf does
-      QString relPath = oldDirUrl.path().mid( oldUrl.path().length() );
+    typedef QPair<QString, DirItem *> ItemToInsert;
+    QLinkedList<ItemToInsert> itemsToInsert;
 
-      KUrl newDirUrl( newUrl ); // take new base
-      if ( !relPath.isEmpty() )
-        newDirUrl.addPath( relPath ); // add unchanged relative path
-      //kDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl << endl;
+    // Look at all dirs being listed/shown
+    QHash<QString, DirItem *>::iterator itu = itemsInUse.begin();
+    const QHash<QString, DirItem *>::iterator ituend = itemsInUse.end();
+    bool goNext;
+    while ( itu != ituend ) {
+        goNext = true;
+        DirItem *dir = itu.value();
+        KUrl oldDirUrl ( itu.key() );
+        //kDebug(7004) << "itemInUse: " << oldDirUrl << endl;
+        // Check if this dir is oldUrl, or a subfolder of it
+        if ( oldUrl.isParentOf( oldDirUrl ) ) {
+            // TODO should use KUrl::cleanpath like isParentOf does
+            QString relPath = oldDirUrl.path().mid( oldUrl.path().length() );
 
-      // Update URL in dir item and in itemsInUse
-      dir->redirect( newDirUrl );
-      itemsInUse.remove( itu.currentKey() ); // implies ++itu
-      // TODO when porting to a Qt4 collection class: itu = itemsInUse.erase( itu );
-      // but double check the iteration over all...
-      itemsInUse.insert( newDirUrl.url(KUrl::RemoveTrailingSlash), dir );
-      goNext = false; // because of the implied ++itu above
-      // Rename all items under that dir
+            KUrl newDirUrl( newUrl ); // take new base
+            if ( !relPath.isEmpty() )
+                newDirUrl.addPath( relPath ); // add unchanged relative path
+            //kDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl << endl;
 
-      for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end() ; kit != kend ; ++kit )
-      {
-        KUrl oldItemUrl = (*kit)->url();
-        QString oldItemUrlStr( oldItemUrl.url(KUrl::RemoveTrailingSlash) );
-        KUrl newItemUrl( oldItemUrl );
-        newItemUrl.setPath( newDirUrl.path() );
-        newItemUrl.addPath( oldItemUrl.fileName() );
-        kDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
-        (*kit)->setUrl( newItemUrl );
-      }
-      emitRedirections( oldDirUrl, newDirUrl );
+            // Update URL in dir item and in itemsInUse
+            dir->redirect( newDirUrl );
+            itu = itemsInUse.erase( itu ); // implies ++itu
+
+            itemsToInsert.append(qMakePair(newDirUrl.url(KUrl::RemoveTrailingSlash), dir));
+            goNext = false; // because of the implied ++itu above
+            // Rename all items under that dir
+
+            for ( KFileItemList::iterator kit = dir->lstItems.begin(), kend = dir->lstItems.end();
+                  kit != kend ; ++kit )
+            {
+                const KUrl oldItemUrl = (*kit)->url();
+                const QString oldItemUrlStr( oldItemUrl.url(KUrl::RemoveTrailingSlash) );
+                KUrl newItemUrl( oldItemUrl );
+                newItemUrl.setPath( newDirUrl.path() );
+                newItemUrl.addPath( oldItemUrl.fileName() );
+                kDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
+                (*kit)->setUrl( newItemUrl );
+            }
+            emitRedirections( oldDirUrl, newDirUrl );
+        }
+        if ( goNext )
+            ++itu;
     }
-    if ( goNext )
-      ++itu;
-  }
 
-  // Is oldUrl a directory in the cache?
-  // Remove any child of oldUrl from the cache - even if the renamed dir itself isn't in it!
-  removeDirFromCache( oldUrl );
-  // TODO rename, instead.
+    // Do the inserts out of the loop to avoid messing up iterators
+    foreach(const ItemToInsert& i, itemsToInsert) {
+        itemsInUse.insert(i.first, i.second);
+    }
+
+    // Is oldUrl a directory in the cache?
+    // Remove any child of oldUrl from the cache - even if the renamed dir itself isn't in it!
+    removeDirFromCache( oldUrl );
+    // TODO rename, instead.
 }
 
 // helper for renameDir, not used for redirections from KIO::listDir().
@@ -1367,7 +1374,8 @@ void KDirListerCache::slotUpdateResult( KJob * j )
         return;
     }
 
-    DirItem *dir = itemsInUse[jobUrlStr];
+    DirItem *dir = itemsInUse.value(jobUrlStr, 0);
+    Q_ASSERT(dir);
     dir->complete = true;
 
 
@@ -1531,63 +1539,62 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
     // Idea: tell all the KDirListers that they should forget the dir
     //       and then remove it from the cache.
 
-    Q3DictIterator<DirItem> itu( itemsInUse );
-    while ( itu.current() )
-    {
-        const KUrl deletedUrl( itu.currentKey() );
+    // Separate itemsInUse iteration and calls to forgetDirs (which modify itemsInUse)
+    KUrl::List affectedItems;
+
+    QHash<QString, DirItem *>::iterator itu = itemsInUse.begin();
+    const QHash<QString, DirItem *>::iterator ituend = itemsInUse.end();
+    for ( ; itu != ituend; ++itu ) {
+        const KUrl deletedUrl( itu.key() );
+        if ( dirUrl.isParentOf( deletedUrl ) ) {
+            affectedItems.append(deletedUrl);
+        }
+    }
+
+    foreach(const KUrl& deletedUrl, affectedItems) {
         const QString deletedUrlStr = deletedUrl.url();
-        if ( dirUrl.isParentOf( deletedUrl ) )
-        {
-            // stop all jobs for deletedUrl
+        // stop all jobs for deletedUrlStr
+        DirectoryDataHash::iterator dit = directoryData.find(deletedUrlStr);
+        if (dit != directoryData.end()) {
+            // we need a copy because stop modifies the list
+            QList<KDirLister *> listers = (*dit).listersCurrentlyListing;
+            foreach ( KDirLister *kdl, listers )
+                stop( kdl, deletedUrl );
+            // tell listers holding deletedUrl to forget about it
+            // this will stop running updates for deletedUrl as well
 
-
-            DirectoryDataHash::iterator dit = directoryData.find(deletedUrlStr);
-            if (dit != directoryData.end()) {
-                // we need a copy because stop modifies the list
-                QList<KDirLister *> listers = (*dit).listersCurrentlyListing;
-                foreach ( KDirLister *kdl, listers )
-                    stop( kdl, deletedUrl );
-                // tell listers holding deletedUrl to forget about it
-                // this will stop running updates for deletedUrl as well
-
-                // we need a copy because forgetDirs modifies the list
-                QList<KDirLister *> holders = (*dit).listersCurrentlyHolding;
-                foreach ( KDirLister *kdl, holders ) {
-                    // lister's root is the deleted item
-                    if ( kdl->d->url == deletedUrl )
+            // we need a copy because forgetDirs modifies the list
+            QList<KDirLister *> holders = (*dit).listersCurrentlyHolding;
+            foreach ( KDirLister *kdl, holders ) {
+                // lister's root is the deleted item
+                if ( kdl->d->url == deletedUrl )
+                {
+                    // tell the view first. It might need the subdirs' items (which forgetDirs will delete)
+                    if ( kdl->d->rootFileItem )
+                        emit kdl->deleteItem( kdl->d->rootFileItem );
+                    forgetDirs( kdl );
+                    kdl->d->rootFileItem = 0;
+                }
+                else
+                {
+                    const bool treeview = kdl->d->lstDirs.count() > 1;
+                    if ( !treeview )
                     {
-                        // tell the view first. It might need the subdirs' items (which forgetDirs will delete)
-                        if ( kdl->d->rootFileItem )
-                            emit kdl->deleteItem( kdl->d->rootFileItem );
-                        forgetDirs( kdl );
-                        kdl->d->rootFileItem = 0;
+                        emit kdl->clear();
+                        kdl->d->lstDirs.clear();
                     }
                     else
-                    {
-                        bool treeview = kdl->d->lstDirs.count() > 1;
-                        if ( !treeview )
-                        {
-                            emit kdl->clear();
-                            kdl->d->lstDirs.clear();
-                        }
-                        else
-                            kdl->d->lstDirs.removeAll( deletedUrl );
+                        kdl->d->lstDirs.removeAll( deletedUrl );
 
-                        forgetDirs( kdl, deletedUrl, treeview );
-                    }
+                    forgetDirs( kdl, deletedUrl, treeview );
                 }
             }
-
-            // delete the entry for deletedUrl - should not be needed, it's in
-            // items cached now
-
-            DirItem *dir = itemsInUse.take( deletedUrlStr );
-            Q_ASSERT( !dir );
-            if ( !dir ) // take didn't find it - move on
-                ++itu;
         }
-        else
-            ++itu;
+
+        // delete the entry for deletedUrl - should not be needed, it's in
+        // items cached now
+        int count = itemsInUse.remove( deletedUrlStr );
+        Q_ASSERT( count == 0 );
     }
 
     // remove the children from the cache
@@ -1615,13 +1622,14 @@ void KDirListerCache::processPendingUpdates()
 void KDirListerCache::printDebug()
 {
     kDebug(7004) << "Items in use: " << endl;
-    Q3DictIterator<DirItem> itu( itemsInUse );
-    for ( ; itu.current() ; ++itu ) {
-        kDebug(7004) << "   " << itu.currentKey() << "  URL: " << itu.current()->url
-                     << " rootItem: " << ( itu.current()->rootItem ? itu.current()->rootItem->url() : KUrl() )
-                     << " autoUpdates refcount: " << itu.current()->autoUpdates
-                     << " complete: " << itu.current()->complete
-                     << QString(" with %1 items.").arg(itu.current()->lstItems.count()) << endl;
+    QHash<QString, DirItem *>::const_iterator itu = itemsInUse.begin();
+    const QHash<QString, DirItem *>::const_iterator ituend = itemsInUse.end();
+    for ( ; itu != ituend ; ++itu ) {
+        kDebug(7004) << "   " << itu.key() << "  URL: " << itu.value()->url
+                     << " rootItem: " << ( itu.value()->rootItem ? itu.value()->rootItem->url() : KUrl() )
+                     << " autoUpdates refcount: " << itu.value()->autoUpdates
+                     << " complete: " << itu.value()->complete
+                     << QString(" with %1 items.").arg(itu.value()->lstItems.count()) << endl;
     }
 
     kDebug(7004) << "Directory data: " << endl;

@@ -330,7 +330,7 @@ private:
     QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
 
     // an item is a complete directory
-    Q3Dict<DirItem> itemsInUse;
+    QHash<QString, DirItem*> itemsInUse;
     Q3Cache<DirItem> itemsCached;
 
     // Data associated with a directory url
