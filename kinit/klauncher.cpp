@@ -17,6 +17,10 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "klauncher.h"
+#include "klauncher_cmds.h"
+#include "klauncher_adaptor.h"
+
 #include <config.h>
 
 #include <stdio.h>
@@ -39,13 +43,9 @@
 #include <ktemporaryfile.h>
 #include <kurl.h>
 
-#include "kio/global.h"
-#include "kio/connection.h"
-#include "kio/slaveinterface.h"
-
-#include "klauncher.h"
-#include "klauncher_cmds.h"
-#include "klauncher_adaptor.h"
+#include <kio/global.h>
+#include <kio/connection.h>
+#include <kio/slaveinterface.h>
 
 #ifdef Q_WS_X11
 #include <kstartupinfo.h>
