@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <qtest_kde.h>
+#include <QtCore/QDir>
 #include <QtCore/QDate>
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
@@ -25,6 +26,61 @@
 
 
 QTEST_KDEMAIN_CORE(KTimeZonesTest)
+
+void KTimeZonesTest::initTestCase()
+{
+    cleanupTestCase();
+
+    mDataDir = QDir::homePath() + "/.kde-unit-test/ktimezonestest";
+    QVERIFY(QDir().mkpath(mDataDir));
+    QFile f;
+    f.setFileName(mDataDir + QLatin1String("/zone.tab"));
+    f.open(QIODevice::WriteOnly);
+    QTextStream fStream(&f);
+    fStream << "EG	+3003+03115	Africa/Cairo\n"
+               "FR	+4852+00220	Europe/Paris\n"
+               "GB	+512830-0001845	Europe/London	Great Britain\n"
+               "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
+    f.close();
+    QDir dir(mDataDir);
+    QVERIFY(dir.mkdir("Africa"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo"));
+    QVERIFY(dir.mkdir("America"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Los_Angeles"), mDataDir + QLatin1String("/America/Los_Angeles"));
+    QVERIFY(dir.mkdir("Europe"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/London"), mDataDir + QLatin1String("/Europe/London"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Paris"), mDataDir + QLatin1String("/Europe/Paris"));
+
+    KConfig config("ktimezonedrc");
+    KConfigGroup group(&config, "TimeZones");
+    group.writeEntry("ZoneinfoDir", mDataDir);
+    group.writeEntry("Zonetab", mDataDir + QString::fromLatin1("/zone.tab"));
+    group.writeEntry("LocalZone", QString::fromLatin1("Europe/Paris"));
+    config.sync();
+}
+
+void KTimeZonesTest::cleanupTestCase()
+{
+    removeDir(QLatin1String("ktimezonestest/Africa"));
+    removeDir(QLatin1String("ktimezonestest/America"));
+    removeDir(QLatin1String("ktimezonestest/Europe"));
+    removeDir(QLatin1String("ktimezonestest"));
+    removeDir(QLatin1String("share/config"));
+    QDir().rmpath(QDir::homePath() + "/.kde-unit-test/share");
+}
+
+void KTimeZonesTest::removeDir(const QString &subdir)
+{
+    QDir local = QDir::homePath() + QLatin1String("/.kde-unit-test/") + subdir;
+    foreach(const QString &file, local.entryList(QDir::Files))
+        if(!local.remove(file))
+            qWarning("%s: removing failed", qPrintable( file ));
+    QCOMPARE((int)local.entryList(QDir::Files).count(), 0);
+    local.cdUp();
+    QString subd = subdir;
+    subd.remove(QRegExp("^.*/"));
+    local.rmpath(subd);
+}
 
 
 ///////////////////
@@ -79,20 +135,9 @@ void KTimeZonesTest::utc()
 
 void KTimeZonesTest::local()
 {
-    const char *originalZone = ::getenv("TZ");   // save the original local time zone
-    ::setenv("TZ", ":Europe/Paris", 1);
-    ::tzset();
-
     const KTimeZone *local = KSystemTimeZones::local();
     QVERIFY((bool)local);
     QCOMPARE(local->name(), QString::fromLatin1("Europe/Paris"));
-
-    // Restore the original local time zone
-    if (!originalZone)
-        ::unsetenv("TZ");
-    else
-        ::setenv("TZ", originalZone, 1);
-    ::tzset();
 }
 
 void KTimeZonesTest::zone()
@@ -108,9 +153,7 @@ void KTimeZonesTest::zone()
 void KTimeZonesTest::zoneinfoDir()
 {
     QString zoneinfo = KSystemTimeZones::zoneinfoDir();
-    QVERIFY(!zoneinfo.isEmpty());
-    QString msg = QString("Please manually verify that the zoneinfo directory is \"%1\"").arg(zoneinfo);
-    QWARN(msg.toLatin1().data());
+    QCOMPARE(zoneinfo, mDataDir);
 }
 
 

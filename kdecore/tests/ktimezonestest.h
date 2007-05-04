@@ -17,7 +17,7 @@
 */
 
 #ifndef KTIMEZONESTEST_H
-#define KTIMEZONESSTEST_H
+#define KTIMEZONESTEST_H
 
 #include <QtCore/QObject>
 
@@ -25,6 +25,8 @@ class KTimeZonesTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
     void ktimezones();
     void utc();
     void local();
@@ -43,6 +45,9 @@ private Q_SLOTS:
     void tzfileOffsetAtZoneTime();
     void tzfileUtcOffsets();
     void tzfileAbbreviation();
+private:
+    void removeDir(const QString &subdir);
+    QString mDataDir;
 };
 
 #endif
