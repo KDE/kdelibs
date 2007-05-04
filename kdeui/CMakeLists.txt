@@ -243,15 +243,14 @@ set( kdeui_UI
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
+
 set(kwallet_adaptor ${CMAKE_SOURCE_DIR}/kio/misc/kwalletd/kwalletdadaptor.h)
 set(kwallet_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml)
-ADD_CUSTOM_COMMAND(OUTPUT ${kwallet_xml}
-       COMMAND ${QT_DBUSCPP2XML_EXECUTABLE} ${kwallet_adaptor} > ${kwallet_xml}
-       DEPENDS ${kwallet_adaptor})
-QT4_ADD_DBUS_INTERFACE( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 
-# I tried this, with the custom command in kwalletd, didn't work
-#QT4_ADD_DBUS_INTERFACE( kdeui_LIB_SRCS ${CMAKE_CURRENT_BINARY_DIR}/../kio/misc/kwalletd/org.kde.KWallet.xml kwallet_interface )
+qt4_generate_dbus_interface( ${kwallet_adaptor} org.kde.KWallet.xml )
+install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_DIR})
+
+qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServer.xml )
 qt4_add_dbus_adaptor(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.UiServerCallbacks.xml kuiserverjobtracker_p.h KSharedUiServerProxy uiservercallbacks )
@@ -448,5 +447,3 @@ install( FILES colors/40.colors colors/Web.colors colors/Royal.colors colors/Rai
 
 install(FILES jobs/org.kde.UiServer.xml DESTINATION ${DBUS_INTERFACES_DIR})
 install(FILES jobs/org.kde.UiServerCallbacks.xml DESTINATION ${DBUS_INTERFACES_DIR})
-
-

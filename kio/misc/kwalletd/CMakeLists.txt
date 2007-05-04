@@ -29,14 +29,8 @@ target_link_libraries(kded_kwalletd  ${KDE4_KIO_LIBS} kwalletbackend )
 
 install(TARGETS kded_kwalletd  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
-# This one misses a way to specify the name of the xml file:
-# QT4_GENERATE_DBUS_INTERFACE( kwalletdadaptor.h )
-
-#ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml
-#       COMMAND ${QT_DBUSCPP2XML_EXECUTABLE} kwalletdadaptor.h > ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KWallet.xml
-#       DEPENDS kwalletdadaptor.h)
+# Note that org.kde.KWallet.xml is generated from kwalletdadaptor.h in kdeui/CMakeLists.txt
 
 ########### install files ###############
 
 install( FILES kwalletd.desktop  DESTINATION  ${SERVICES_INSTALL_DIR}/kded )
-
