@@ -36,6 +36,7 @@
 #include <Phonon/VolumeSlider>
 #include <QtGui/QVBoxLayout>
 #include <Phonon/SeekSlider>
+#include <QtGui/QPushButton>
 
 PlayerWidget::PlayerWidget()
     : m_media(0)
@@ -53,14 +54,26 @@ void PlayerWidget::delayedInit()
 
         QHBoxLayout *topLayout = new QHBoxLayout(this);
         QVBoxLayout *leftLayout = new QVBoxLayout(this);
+        QHBoxLayout *buttonLayout = new QHBoxLayout(this);
+
         Phonon::VolumeSlider *vs = new Phonon::VolumeSlider(audioOutput, this);
         vs->setOrientation(Qt::Vertical);
+
+        QPushButton *playButton = new QPushButton(QLatin1String("play"), this);
+        connect(playButton, SIGNAL(clicked()), m_media, SLOT(play()));
+
+        QPushButton *stopButton = new QPushButton(QLatin1String("stop"), this);
+        connect(stopButton, SIGNAL(clicked()), m_media, SLOT(stop()));
 
         topLayout->addLayout(leftLayout);
         topLayout->addWidget(vs);
 
+        leftLayout->addLayout(buttonLayout);
         leftLayout->addWidget(new Phonon::SeekSlider(m_media, this));
         leftLayout->addStretch();
+
+        buttonLayout->addWidget(playButton);
+        buttonLayout->addWidget(stopButton);
     }
 }
 
