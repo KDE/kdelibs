@@ -1,6 +1,8 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2003,2004,2005, 2006 KJSEmbed Authors
-    See included AUTHORS file.
+    Copyright (C) 2003,2004,2005, 2006 Ian Reinhart Geiser <geiseri@kde.org>
+    Copyright (C) 2003,2004,2005, 2006 Matt Broadstone <mbroadst@gmail.com>
+    Copyright (C) 2003,2004,2005, 2006 Richard J. Moore <rich@kde.org>
+    Copyright (C) 2003,2004,2005, 2006 Erik L. Bunce <kde@bunce.us>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
