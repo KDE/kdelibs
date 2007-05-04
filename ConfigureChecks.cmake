@@ -155,6 +155,9 @@ if (UNIX)
       done"
     OUTPUT_VARIABLE PTM_DEVICE
     OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if (HAVE_OPENPTY)
+    message(STATUS "PTY uses openpty(3)")
+  endif (HAVE_OPENPTY)
   message(STATUS "PTY multiplexer: ${PTM_DEVICE}")
 
 endif (UNIX)
