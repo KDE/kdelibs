@@ -73,7 +73,7 @@ namespace Nepomuk {
 		 */
 		void setAutoUpdate( bool enable );
 
-	    signals:
+	    Q_SIGNALS:
 		/**
 		 * This signal is emitted whenever a tag is clicked.
 		 *

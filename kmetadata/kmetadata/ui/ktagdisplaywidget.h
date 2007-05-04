@@ -60,7 +60,7 @@ class KMETADATA_EXPORT KTagDisplayWidget : public QWidget
      */
     void clear();
 
- signals:
+ Q_SIGNALS:
     void tagClicked( const QString& tag );
 
  private:

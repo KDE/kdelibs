@@ -27,14 +27,14 @@
 #include <kmetadata/tag.h>
 
 #include <karrowbutton.h>
+#include <kinputdialog.h>
+#include <kmessagebox.h>
 #include <klocale.h>
 
 #include <QtGui/QPushButton>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QMenu>
 #include <QtGui/QAction>
-#include <QtGui/QInputDialog>
-#include <QtGui/QMessageBox>
 
 
 class Nepomuk::KMetaData::TagWidget::Private
@@ -134,7 +134,7 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
 
     if ( QAction* a = popup->exec( mapToGlobal( d->button->geometry().topRight() ) ) ) {
         if ( a == newTagAction ) {
-            QString s = QInputDialog::getText( this, i18n("New Tag"), i18n("Please insert the name of the new tag") );
+            QString s = KInputDialog::getText( i18n("New Tag"), i18n("Please insert the name of the new tag"), QString(), 0, this );
             if( !s.isEmpty() ) {
                 // see if the tag exists
                 QList<Tag> l = Tag::allTags();
@@ -143,7 +143,7 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
                     const Nepomuk::KMetaData::Tag& tag = tagIt.next();
                     if( tag.getLabels().contains( s ) ||
                         tag.getIdentifiers().contains( s ) ) {
-                        QMessageBox::critical( this, i18n("Tag exists"), i18n("The tag %1 already exists", s) );
+                        KMessageBox::sorry( this, i18n("Tag exists"), i18n("The tag %1 already exists", s) );
                         return;
                     }
                 }

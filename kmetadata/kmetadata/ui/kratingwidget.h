@@ -53,7 +53,7 @@ class KMETADATA_EXPORT KRatingWidget : public QFrame
 
     // FIXME: implement heightForWidth and sizeHInt and resizeEvent and allow a smaller widget
 
- signals:
+ Q_SIGNALS:
     /**
      * Emitted if the rating is changed by user interaction (ie. mouse click).
      * A call to setRating does not trigger this signal.

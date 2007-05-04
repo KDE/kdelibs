@@ -66,7 +66,7 @@ class KMETADATA_EXPORT KTagCloudWidget : public QWidget
      */
     void setMinFontSize( int pointSize );
   
- signals:
+ Q_SIGNALS:
     void tagClicked( const QString& tag );
 
  protected:

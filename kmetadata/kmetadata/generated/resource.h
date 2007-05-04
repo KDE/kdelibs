@@ -159,7 +159,7 @@ namespace Nepomuk {
 
             /**
              * Resync the data with the local storage. Unless autosync is disabled there
-             * is normally no need to call this explicitely.
+             * is normally no need to call this explicitly.
              *
              * \return Some error code which still has to be defined.
              *

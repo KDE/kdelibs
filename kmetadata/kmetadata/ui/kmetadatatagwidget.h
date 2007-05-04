@@ -64,7 +64,7 @@ namespace Nepomuk {
 		 */
 		QList<Tag> assignedTags() const;
 
-	    signals:
+	    Q_SIGNALS:
 		/**
 		 * This signal is emitted whenever a tag is clicked.
 		 */
