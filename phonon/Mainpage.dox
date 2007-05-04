@@ -1,9 +1,5 @@
-/** \file Mainpage.dox
-    \brief Mainpage of the %Phonon API Documentation.
-*/
 /** \mainpage The Phonon API.
 
-\section phonon_intro Introduction
 %Phonon is the Multimedia API for %KDE. You should evaluate whether %Phonon
 supplies all you need before looking at frameworks like GStreamer, NMM or Helix.
 The range of applications goes from full featured media players and capture
@@ -17,23 +13,15 @@ between MediaObject and Output.
 
 \section phonon_tutorial Tutorial
 \li \ref phonon_tut1 "a simple audio player"
-\li \ref phonon_tut2 "add a playlist"
-\li \ref phonon_tut3 "crossfades"
-\li \ref phonon_tut4 "show videos"
 
 \section phonon_frontend The Frontend API
-\li for simple playback use \ref Phonon::AudioPlayer
-\li add ref to overview of frontend objects
-\li \ref Phonon "The Phonon namespace"
-\li \ref Phonon::MediaObject "The central class for playback functionality (MediaObject)"
+\li for simple playback tasks use \ref Phonon::AudioPlayer or \ref Phonon::VideoPlayer
+\li \ref Frontend
 
 \section phonon_backend_development Backend Development
 If you want to write a new backend for %Phonon this is for you:
 \li \ref phonon_backend_development_page "Phonon Backend Development"
-
-
-
-
+\li \ref Backend
 
 
 
@@ -146,6 +134,9 @@ development. As an application developer you can safely ignore these classes.
 // DOXYGEN_SET_HIDE_SCOPE_NAMES = YES
 // DOXYGEN_SET_HIDE_FRIEND_COMPOUNDS = YES
 // DOXYGEN_SET_PROJECT_NAME = Phonon
-// DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h globalconfig.h basedestructionhandler.h audiooutputadaptor.h iodevicestream.h kdepluginfactory.h kiomediastream.h pluginfactory.h
+// DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h globalconfig.h basedestructionhandler.h audiooutputadaptor.h iodevicestream.h kdepluginfactory.h kiomediastream.h pluginfactory.h *.cpp
 // DOXYGEN_SET_EXAMPLE_PATH += examples
-// vim: tw=80
+// DOXYGEN_SET_EXTRACT_ALL = NO
+// DOXYGEN_SET_HIDE_UNDOC_MEMBERS = YES
+// DOXYGEN_SET_SOURCE_BROWSER = NO
+// vim: tw=100
