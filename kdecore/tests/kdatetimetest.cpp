@@ -23,6 +23,7 @@
 #include <kcalendarsystemgregorian.h>
 #include <ksystemtimezone.h>
 #include <kdatetime.h>
+#include <QtDBus/QtDBus>
 
 #include "kdatetimetest.moc"
 
@@ -32,6 +33,14 @@ QTEST_KDEMAIN_CORE(KDateTimeTest)
 
 KDE_IMPORT extern int KDateTime_utcCacheHit;
 KDE_IMPORT extern int KDateTime_zoneCacheHit;
+
+void KDateTimeTest::initTestCase()
+{
+    // This test relies on kded running, and on kdebase/runtime being installed
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+        QSKIP( "kded not running", SkipAll );
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////////////

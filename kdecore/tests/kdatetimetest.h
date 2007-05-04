@@ -25,6 +25,7 @@ class KDateTimeTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void specConstructors();
     void specSet();
     void constructors();
