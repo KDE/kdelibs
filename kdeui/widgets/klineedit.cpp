@@ -244,7 +244,11 @@ void KLineEdit::updateClearButton()
 
     if (newButtonSize != d->clearButton->size()) {
         d->clearButton->resize(newButtonSize);
-        setStyleSheet(QString("QLineEdit { padding-right: %1; }").arg(buttonWidth));
+
+        // we don't need to check for RTL here as Qt does that for us
+        // when it comes to style sheets
+        setStyleSheet( QString( "QLineEdit { padding-right: %1; }" )
+                       .arg( buttonWidth ) );
     }
 
     if (qApp->isLeftToRight()) {
