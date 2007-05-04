@@ -1,6 +1,6 @@
 /**
 * QImageIO Routines to read/write g3 (fax) images.
-* (c) 2000, Matthias Hölzer-Klüpfel
+* copyright (c) 2000, Matthias Hölzer-Klüpfel <hoelzer@kde.org>
 *
 * This library is distributed under the conditions of the GNU LGPL.
 */

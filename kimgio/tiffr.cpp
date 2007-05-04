@@ -1,4 +1,9 @@
-// This library is distributed under the conditions of the GNU LGPL.
+/**
+* QImageIO Routines to read/write TIFF images.
+* copyright (c) 1998 Sirtaj Singh Kang <taj@kde.org>
+*
+* This library is distributed under the conditions of the GNU LGPL.
+*/
 
 #include "tiffr.h"
 
