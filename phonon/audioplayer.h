@@ -103,8 +103,15 @@ class PHONON_EXPORT AudioPlayer : public QObject
          *
          * When there's already a media playing (or paused) it will be stopped
          * (the finished signal will not be emitted).
+         *
+         * \param url URL to a media file or stream.
          */
         void load(const QUrl &url);
+        /**
+         * \overload
+         *
+         * \param filename file name of a local media file or a Qt resource that was compiled in.
+         */
         void load(const QString &filename);
 
         /**
@@ -113,17 +120,24 @@ class PHONON_EXPORT AudioPlayer : public QObject
          * backend.
          *
          * If you need low latency between calling play() and the sound actually
-         * starting to play on your output device you need to use MediaObject
-         * and be able to set the URL before calling play(). Note that
+         * starting to play on your output device you can use load()
+         * to set the URL before calling play(). Note that
          * \code
          * audioPlayer->load(url);
          * audioPlayer->play();
          * \endcode
          * doesn't make a difference: the application should be idle between the
          * load and play calls so that the backend can start preloading the
-         * media and fill audio buffers.
+         * media.
+         *
+         * \param url URL to a media file or stream.
          */
         void play(const QUrl &url);
+        /**
+         * \overload
+         *
+         * \param filename file name of a local media file or a Qt resource that was compiled in.
+         */
         void play(const QString &filename);
 
         /**
