@@ -1,4 +1,9 @@
-// This library is distributed under the conditions of the GNU LGPL.
+/**
+* QImageIO Routines to read/write EPS images.
+* copyright (c) 1998 Dirk Shcoenberger <dirk.schoenberger@freenet.de>
+*
+* This library is distributed under the conditions of the GNU LGPL.
+*/
 #ifndef _EPS_H
 #define _EPS_H
 

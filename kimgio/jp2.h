@@ -1,4 +1,9 @@
-// This library is distributed under the conditions of the GNU LGPL.
+/**
+* QImageIO Routines to read/write JPEG2000 images.
+* copyright (c) 2002 Michael Ritzert <michael@ritzert.de>
+*
+* This library is distributed under the conditions of the GNU LGPL.
+*/
 #ifndef KIMG_JP2_H
 #define KIMG_JP2_H
 
