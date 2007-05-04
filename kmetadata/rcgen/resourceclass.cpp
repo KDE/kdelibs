@@ -142,8 +142,8 @@ QString Property::typeString( bool simple, bool withNamespace ) const
         else
             return "QList<" + t + '>';
     }
-    else
-        return t;
+
+    return t;
 }
 
 
