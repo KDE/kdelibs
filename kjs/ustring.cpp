@@ -21,8 +21,8 @@
  *
  */
 
-#include "config.h"
 #include "ustring.h"
+#include <config.h>
 
 #include <assert.h>
 #include <stdlib.h>

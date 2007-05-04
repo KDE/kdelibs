@@ -19,10 +19,11 @@
  *
  */
 
-#include "config.h"
 #include "scope_chain.h"
 #include "PropertyNameArray.h"
 #include "object.h"
+
+#include <config.h>
 
 #include <stdio.h>
 

@@ -21,8 +21,8 @@
  *
  */
 
-#include "config.h"
 #include "internal.h"
+#include <config.h>
 
 #include "array_object.h"
 #include "bool_object.h"
@@ -233,7 +233,6 @@ double roundValue(ExecState *exec, JSValue *v)
 }
 
 #ifndef NDEBUG
-#include <stdio.h>
 void printInfo(ExecState *exec, const char *s, JSValue *o, int lineno)
 {
   if (!o)

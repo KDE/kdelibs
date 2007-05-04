@@ -20,8 +20,8 @@
  *
  */
 
-#include "config.h"
 #include "debugger.h"
+#include <config.h>
 #include "ustring.h"
 
 #include "internal.h"

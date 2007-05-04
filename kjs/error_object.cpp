@@ -20,13 +20,14 @@
  *
  */
 
-#include "config.h"
+#include "error_object.h"
+#include <config.h>
+
 #include "value.h"
 #include "object.h"
 #include "types.h"
 #include "interpreter.h"
 #include "operations.h"
-#include "error_object.h"
 //#include "debugger.h"
 
 using namespace KJS;

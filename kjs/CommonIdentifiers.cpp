@@ -18,8 +18,9 @@
  *
  */
 
-#include "config.h"
 #include "CommonIdentifiers.h"
+
+#include <config.h>
 #include "JSLock.h"
 
 namespace KJS {

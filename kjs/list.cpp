@@ -19,8 +19,8 @@
  *
  */
 
-#include "config.h"
 #include "list.h"
+#include <config.h>
 
 #include "internal.h"
 #include <algorithm>

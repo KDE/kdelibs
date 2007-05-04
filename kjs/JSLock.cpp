@@ -20,8 +20,8 @@
  *
  */
 
-#include "config.h"
 #include "JSLock.h"
+#include <config.h>
 
 #include "collector.h"
 

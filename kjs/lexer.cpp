@@ -21,8 +21,8 @@
  *
  */
 
-#include "config.h"
 #include "lexer.h"
+#include <config.h>
 
 #include <ctype.h>
 #include <string.h>

@@ -22,8 +22,8 @@
  *
  */
 
-#include "config.h"
 #include "array_object.h"
+#include <config.h>
 #include "array_object.lut.h"
 
 #include "error_object.h"

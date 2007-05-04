@@ -22,8 +22,8 @@
  *
  */
 
-#include "config.h"
 #include "Parser.h"
+#include <config.h>
 
 #include "lexer.h"
 #include "nodes.h"

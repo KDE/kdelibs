@@ -19,8 +19,8 @@
  *
  */
 
-#include "config.h"
 #include "collector.h"
+#include <config.h>
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashCountedSet.h>
@@ -44,7 +44,7 @@
 
 #elif PLATFORM(UNIX)
 
-#include <pthread.h>
+#include <pthread.h> //krazy:exclude=includes (yes, it's duplicate, but in a different #if branch)
 
 #if HAVE(PTHREAD_NP_H)
 #include <pthread_np.h>

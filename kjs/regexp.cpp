@@ -21,9 +21,9 @@
  *
  */
 
-#include "config.h"
-#include "lexer.h"
 #include "regexp.h"
+#include <config.h>
+#include "lexer.h"
 
 #include <assert.h>
 #include <stdio.h>

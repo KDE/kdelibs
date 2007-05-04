@@ -20,11 +20,12 @@
  *
  */
 
-#include "config.h"
+#include "lookup.h"
+
+#include <config.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "lookup.h"
 #include <wtf/Assertions.h>
 
 using namespace KJS;

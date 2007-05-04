@@ -20,8 +20,8 @@
  *
  */
 
-#include "config.h"
 #include "bool_object.h"
+#include <config.h>
 
 #include "operations.h"
 #include "error_object.h"

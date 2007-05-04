@@ -21,8 +21,8 @@
  *
  */
 
-#include "config.h"
 #include "value.h"
+#include <config.h>
 
 #include "error_object.h"
 #include "nodes.h"

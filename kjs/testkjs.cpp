@@ -22,7 +22,7 @@
  *
  */
 
-#include "config.h"
+#include <config.h>
 #include "collector.h"
 
 #include <wtf/HashTraits.h>

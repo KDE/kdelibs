@@ -22,8 +22,8 @@
  *
  */
 
-#include "config.h"
 #include "interpreter.h"
+#include <config.h>
 
 #include "SavedBuiltins.h"
 #include "array_object.h"

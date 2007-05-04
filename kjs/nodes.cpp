@@ -22,16 +22,15 @@
  *
  */
 
-#include "config.h"
 #include "nodes.h"
+#include <config.h>
 #include "scriptfunction.h"
 
 #include <math.h>
-#ifdef KJS_DEBUG_MEM
 #include <stdio.h>
+#ifdef KJS_DEBUG_MEM
 #include <typeinfo>
 #endif
-#include <stdio.h>
 
 #include <iostream>
 

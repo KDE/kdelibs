@@ -20,8 +20,8 @@
  *
  */
 
-#include "config.h"
 #include "operations.h"
+#include <config.h>
 
 #include "object.h"
 #include <math.h>

@@ -22,7 +22,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include "config.h"
+#include <config.h>
 #include "nodes.h"
 #include "function.h"
 #include "scriptfunction.h"

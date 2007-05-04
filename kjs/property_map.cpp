@@ -19,8 +19,8 @@
  *
  */
 
-#include "config.h"
 #include "property_map.h"
+#include <config.h>
 
 #include "object.h"
 #include "protect.h"

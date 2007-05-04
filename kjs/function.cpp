@@ -23,8 +23,8 @@
  *
  */
 
-#include "config.h"
 #include "function.h"
+#include <config.h>
 #include "scriptfunction.h"
 #include "internal.h"
 #include "function_object.h"

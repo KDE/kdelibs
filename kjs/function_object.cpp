@@ -1,4 +1,5 @@
 // -*- c-basic-offset: 2 -*-
+// krazy:excludeall=doublequote_chars (UStrings aren't QStrings)
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
@@ -20,8 +21,8 @@
  *
  */
 
-#include "config.h"
 #include "function_object.h"
+#include <config.h>
 #include "internal.h"
 #include "function.h"
 #include "scriptfunction.h"

@@ -22,8 +22,8 @@
  *
  */
 
-#include "context.h"
 #include "ExecState.h"
+#include "context.h"
 #include "internal.h"
 
 namespace KJS {

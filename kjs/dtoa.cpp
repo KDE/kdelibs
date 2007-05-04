@@ -169,9 +169,10 @@
  *	the result overflows to +-Infinity or underflows to 0.
  */
 
-#include "config.h"
-#include "global.h"
 #include "dtoa.h"
+#include <config.h>
+
+#include "global.h"
 
 #if PLATFORM(BIG_ENDIAN)
 #define IEEE_MC68k
