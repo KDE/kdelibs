@@ -212,14 +212,6 @@ bool KPty::open()
   // We try, as we know them, one by one.
 
 #if defined(HAVE_OPENPTY) && defined(__FreeBSD__)
-  if (::openpty( &d->masterFd, &d->slaveFd, 0, &ttmode, 0))
-  {
-    d->masterFd = -1;
-    d->slaveFd = -1;
-    kWarning(175) << "Can't open a pseudo teletype" << endl;
-    return false;
-  }
-  goto gotptyandmode;
   // FreeBSD won't detect a PTM_DEVICE on FreeBSD 6, so there's
   // no #define for it yet; give a symbol instead so that the code
   // below (which is skipped anyway, but must still compile) won't
@@ -228,7 +220,15 @@ bool KPty::open()
   // which will point out the inconsistency of the #if checks here
   // and the results of the configure checks.
   //
-  const char *PTM_DEVICE="";
+  const char* PTM_DEVICE = "";
+  if (::openpty( &d->masterFd, &d->slaveFd, 0, &ttmode, 0))
+  {
+    d->masterFd = -1;
+    d->slaveFd = -1;
+    kWarning(175) << "Can't open a pseudo teletype" << endl;
+    return false;
+  }
+  goto gotptyandmode;
 #endif
 
 #if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT)
