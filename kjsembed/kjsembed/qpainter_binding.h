@@ -24,7 +24,7 @@
 #ifndef QPAINTER_BINDING_H
 #define QPAINTER_BINDING_H
 
-#include "qobject_binding.h"
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 
 namespace KJSEmbed
 {

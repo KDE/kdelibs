@@ -28,7 +28,7 @@
 
 #include <kjs/interpreter.h>
 #include <kjsembed/kjsembed.h>
-#include <kjsembed/global.h>
+#include <kjsembed/kjseglobal.h>
 
 class QAction;
 class QMenu;

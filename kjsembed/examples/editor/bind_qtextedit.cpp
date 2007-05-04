@@ -19,6 +19,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "bind_qtextedit.h"
+
 #include <QtCore/QDebug>
 #include <QtCore/QUrl>
 
@@ -26,8 +28,6 @@
 #include <kjsembed/variant_binding.h>
 
 #include <kjs/object.h>
-
-#include "bind_qtextedit.h"
 
 using namespace KJSEmbed;
 

@@ -19,6 +19,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "qobject_binding.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QArgument>
 #include <QtCore/QMetaEnum>
@@ -31,7 +33,6 @@
 #include "eventproxy.h"
 #include "jseventmapper.h"
 #include "pointer.h"
-#include "qobject_binding.h"
 #include "variant_binding.h"
 
 #include <kjs/array_instance.h>

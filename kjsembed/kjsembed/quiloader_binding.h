@@ -23,7 +23,7 @@
 #ifndef QUILOADER_BINDING_H
 #define QUILOADER_BINDING_H
 
-#include "qobject_binding.h"
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 #include <QtUiTools/QUiLoader>
 
 namespace KJSEmbed

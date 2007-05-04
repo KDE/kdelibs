@@ -19,6 +19,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "filedialog_binding.h"
+
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
 #include <QtGui/QFileDialog>
@@ -27,7 +29,6 @@
 #include <kjs/object.h>
 
 #include "static_binding.h"
-#include "filedialog_binding.h"
 
 using namespace KJSEmbed;
 

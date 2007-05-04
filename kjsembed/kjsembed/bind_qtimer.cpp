@@ -19,13 +19,13 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "bind_qtimer.h"
+
 #include <QtCore/QDebug>
 
 #include "object_binding.h"
 #include "variant_binding.h"
 #include <kjs/object.h>
-
-#include "bind_qtimer.h"
 
 using namespace KJSEmbed;
 

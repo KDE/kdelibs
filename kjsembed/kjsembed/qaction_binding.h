@@ -25,9 +25,9 @@
 
 #include <QtCore/QObject>
 #include <QtGui/QAction>
-//#include <QActionGroup>
+//#include <QtGui/QActionGroup>
 
-#include "qobject_binding.h"
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 
 
 namespace KJSEmbed

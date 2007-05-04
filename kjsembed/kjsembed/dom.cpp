@@ -19,10 +19,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "dom.h"
+
 #include <QtXml/QDomAttr>
 #include <QtCore/QDebug>
-
-#include "dom.h"
 
 using namespace KJSEmbed;
 

@@ -19,14 +19,14 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "kjs_object_model.h"
+
 #include <QtGui/QPixmap>
 #include <QtCore/QDebug>
 
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
 #include <kjs/PropertyNameArray.h>
-
-#include "kjs_object_model.h"
 
 struct Node
 {

@@ -20,6 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "numberedtextview.h"
+
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
 #include <QtGui/QTextEdit>
@@ -29,8 +31,6 @@
 #include <QtGui/QTextObjectInterface>
 #include <QtGui/QToolTip>
 #include <QtCore/QDebug>
-
-#include "numberedtextview.h"
 
 NumberBar::NumberBar( QWidget *parent )
     : QWidget( parent ), edit(0), m_stopLine(-1), m_currentLine(-1), m_bugLine(-1)

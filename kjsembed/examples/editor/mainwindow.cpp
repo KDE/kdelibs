@@ -21,10 +21,14 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
+#include "mainwindow.h"
+
+#include <QtCore/QSignalMapper>
+#include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
+#include <QtGui/QWorkspace>
 #include <QtDesigner/QFormBuilder>
 
-#include "mainwindow.h"
 #include "mdichild.h"
 #include "bind_qtextedit.h"
 #include "bind_qaction.h"

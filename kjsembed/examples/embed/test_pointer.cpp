@@ -19,14 +19,14 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "test_pointer.h"
+
 #include <QtCore/QDebug>
 
 #include <kjs/object.h>
 
 #include <kjsembed/object_binding.h>
 #include <kjsembed/variant_binding.h>
-
-#include "test_pointer.h"
 
 using namespace KJSEmbed;
 

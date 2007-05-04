@@ -20,12 +20,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "object_binding.h"
+
 #include <QtCore/QArgument>
 #include <QtCore/QDebug>
 
 #include "static_binding.h"
 #include "variant_binding.h"
-#include "object_binding.h"
 
 using namespace KJSEmbed;
 

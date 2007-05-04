@@ -19,10 +19,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-
+#include "jseventmapper.h"
 
 #include "kjseglobal.h"
-#include "jseventmapper.h"
+
 namespace KJSEmbed {
 
 JSEventMapper *JSEventMapper::m_inst = 0;

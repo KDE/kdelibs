@@ -24,7 +24,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "qobject_binding.h"
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 #include "static_binding.h"
 
 class QSettings;

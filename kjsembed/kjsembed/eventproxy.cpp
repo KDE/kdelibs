@@ -19,9 +19,10 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "eventproxy.h"
+
 #include  <QtCore/QCoreApplication>
 
-#include "eventproxy.h"
 #include "qobject_binding.h"
 #include <kjs/interpreter.h>
 

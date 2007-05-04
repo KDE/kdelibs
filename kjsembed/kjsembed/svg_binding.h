@@ -25,8 +25,8 @@
 
 #include <QtSvg/QSvgRenderer>
 #include <QtSvg/QSvgWidget>
-#include "qwidget_binding.h"
-#include "qobject_binding.h"
+#include "qwidget_binding.h" //krazy:exclude=includes (not a Qt header)
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 
 namespace KJSEmbed
 {

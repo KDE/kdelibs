@@ -19,6 +19,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "numberedtextview.h"
+
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
 #include <QtGui/QTextEdit>
@@ -28,8 +30,6 @@
 #include <QtGui/QTextObjectInterface>
 #include <QtGui/QToolTip>
 #include <QtCore/QDebug>
-
-#include "numberedtextview.h"
 
 NumberBar::NumberBar( QWidget *parent )
     : QWidget( parent ), edit(0), stopLine(-1), currentLine(-1), bugLine(-1)

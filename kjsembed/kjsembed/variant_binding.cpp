@@ -20,6 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "variant_binding.h"
+
 #include <stdlib.h>
 
 #include <kjs/PropertyNameArray.h>
@@ -31,7 +33,6 @@
 
 #include "kjseglobal.h"
 #include "static_binding.h"
-#include "variant_binding.h"
 
 using namespace KJSEmbed;
 

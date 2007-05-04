@@ -19,12 +19,13 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "svg_binding.h"
+
 #include <QtSvg/QSvgWidget>
 #include <QtCore/QDebug>
 
 #include <kjs/object.h>
 
-#include "svg_binding.h"
 #include "qwidget_binding.h"
 #include "static_binding.h"
 #include "kjseglobal.h"

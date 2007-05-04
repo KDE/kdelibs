@@ -19,13 +19,14 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "slotproxy.h"
+
 #include <QtCore/QMetaEnum>
 #include <QtCore/QMetaType>
 #include <QtCore/QDebug>
 
 #include <kjs/interpreter.h>
 
-#include "slotproxy.h"
 #include "variant_binding.h"
 #include "qobject_binding.h"
 

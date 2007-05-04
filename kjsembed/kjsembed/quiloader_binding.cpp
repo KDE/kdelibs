@@ -19,11 +19,12 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+#include "quiloader_binding.h"
+
 #include <QtGui/QWidget>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 
-#include "quiloader_binding.h"
 #include "qwidget_binding.h"
 #include "qobject_binding.h"
 #include "qaction_binding.h"

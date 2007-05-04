@@ -20,6 +20,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "builtins.h"
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtGui/QMessageBox>
@@ -36,7 +38,6 @@
 #include "object_binding.h"
 #include "static_binding.h"
 #include "kjsembed.h"
-#include "builtins.h"
 
 using namespace KJSEmbed;
 

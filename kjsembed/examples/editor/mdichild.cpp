@@ -21,9 +21,13 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
-
 #include "mdichild.h"
+
+#include <QtGui/QApplication>
+#include <QtGui/QMessageBox>
+#include <QtGui/QFileDialog>
+#include <QtGui/QCloseEvent>
+#include <QtCore/QTextStream>
 
 MdiChild::MdiChild()
 {

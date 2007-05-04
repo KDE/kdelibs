@@ -19,6 +19,9 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
+
+#include "console.h"
+
 #include <math.h>
 
 #include <QtCore/QDebug>
@@ -30,7 +33,6 @@
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 
-#include "console.h"
 #include "ui_jsconsole.h"
 #include "kjs_object_model.h"
 

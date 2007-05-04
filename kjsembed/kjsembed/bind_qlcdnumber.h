@@ -23,8 +23,8 @@
 #define BIND_QLCDNUMBER_H
 
 #include <QtGui/QLCDNumber>
-#include "qobject_binding.h"
-#include "qwidget_binding.h"
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
+#include "qwidget_binding.h" //krazy:exclude=includes (not a Qt header)
 
 namespace KJSEmbed
 {

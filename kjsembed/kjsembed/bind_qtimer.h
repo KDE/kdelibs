@@ -23,7 +23,7 @@
 #define BIND_QTIMER_H
 
 #include <QtCore/QTimer>
-#include "qobject_binding.h"
+#include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 
 namespace KJSEmbed
 {

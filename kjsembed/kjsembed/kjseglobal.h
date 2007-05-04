@@ -37,12 +37,10 @@
 
 #if !defined(Q_OS_WIN)
 #include <stdlib.h>
-KJSEMBED_EXPORT void RedirectIOToConsole();
-#endif
-
-#if !defined(Q_OS_WIN)
 #include <ctype.h>
-#include <stdlib.h>
+
+KJSEMBED_EXPORT void RedirectIOToConsole();
+
 #ifdef HAVE_ITOA
 char *itoa(int num, char *str, int radix = 10);
 #endif
