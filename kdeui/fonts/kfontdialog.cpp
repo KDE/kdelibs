@@ -79,6 +79,9 @@ KFontDialog::KFontDialog( QWidget *parent,
     d->chooser = new KFontChooser( this, flags, fontList, 8,
                                    sizeIsRelativeState );
     d->chooser->setObjectName( "fontChooser" );
+
+    connect( d->chooser , SIGNAL(fontSelected(const QFont&)) , this , SIGNAL(fontSelected(const QFont&)) );
+
     setMainWidget( d->chooser );
 }
 
