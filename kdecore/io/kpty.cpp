@@ -199,6 +199,10 @@ bool KPty::open()
     return true;
 
   QByteArray ptyName;
+  // without the '::' some version of HP-UX thinks, this declares
+  // the struct in this class, in this method, and fails to find
+  // the correct tc[gs]etattr
+  struct ::termios ttmode;
 
   // Find a master pty that we can open ////////////////////////////////
 
@@ -206,6 +210,26 @@ bool KPty::open()
   // be opened by several different methods.
 
   // We try, as we know them, one by one.
+
+#if defined(HAVE_OPENPTY) && defined(__FreeBSD__)
+  if (::openpty( &d->masterFd, &d->slaveFd, 0, &ttmode, 0))
+  {
+    d->masterFd = -1;
+    d->slaveFd = -1;
+    kWarning(175) << "Can't open a pseudo teletype" << endl;
+    return false;
+  }
+  goto gotptyandmode;
+  // FreeBSD won't detect a PTM_DEVICE on FreeBSD 6, so there's
+  // no #define for it yet; give a symbol instead so that the code
+  // below (which is skipped anyway, but must still compile) won't
+  // barf. If somehow PTM_DEVICE *is* defined from the configure
+  // checks, then this will barf on something like const char *"/dev/pty" = ""
+  // which will point out the inconsistency of the #if checks here
+  // and the results of the configure checks.
+  //
+  const char *PTM_DEVICE="";
+#endif
 
 #if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT)
   d->masterFd = ::open(PTM_DEVICE, O_RDWR);
@@ -307,14 +331,10 @@ bool KPty::open()
   ioctl(d->slaveFd, I_PUSH, "ldterm");
 #endif
 
-    // set xon/xoff & control keystrokes
-  // without the '::' some version of HP-UX thinks, this declares
-  // the struct in this class, in this method, and fails to find
-  // the correct tc[gs]etattr
-  struct ::termios ttmode;
-
+  // set xon/xoff & control keystrokes
   _tcgetattr(d->masterFd, &ttmode);
 
+gotptyandmode:
   if (!d->xonXoff)
     ttmode.c_iflag &= ~(IXOFF | IXON);
   else
