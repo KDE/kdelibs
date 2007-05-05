@@ -16,6 +16,9 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+
+#include "k3popupmenu.h"
+
 #include <QtGui/QCursor>
 #include <QtGui/QPainter>
 #include <QtCore/QTimer>
@@ -23,8 +26,6 @@
 #include <QKeyEvent>
 #include <QPointer>
 #include <QMenuItem>
-
-#include "k3popupmenu.h"
 
 #include <kdebug.h>
 

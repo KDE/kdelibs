@@ -24,9 +24,12 @@
 #ifndef KDOCKWIDGET_PRIVATE_H
 #define KDOCKWIDGET_PRIVATE_H
 
+#include <kde3support_export.h>
+
 #include <QtCore/QPointer>
 #include <QtGui/QPushButton>
 #include <QtGui/QWidget>
+#include <Qt3Support/Q3PtrList>
 
 #ifndef NO_KDE2
 #include <netwm_def.h>
@@ -34,6 +37,7 @@
 
 class QFrame;
 class K3DockContainer;
+class K3DockWidget;
 
 
 /**

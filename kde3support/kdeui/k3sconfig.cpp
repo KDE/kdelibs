@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3sconfig.h"
 
 #include <QtGui/QCheckBox>
 #include <QtGui/QComboBox>
@@ -37,7 +38,6 @@
 #include <kstandardguiitem.h>
 
 #include <config.h>
-#include "k3sconfig.h"
 #include <kconfiggroup.h>
 
 class K3SpellConfigPrivate

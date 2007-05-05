@@ -17,12 +17,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "k3activelabel.h"
+
 #include <Q3SimpleRichText>
 #include <QFocusEvent>
 
 #include <ktoolinvocation.h>
-
-#include "k3activelabel.h"
 
 class K3ActiveLabelPrivate
 {

@@ -17,9 +17,9 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+#include "k3dockwidget_private.h"
 #include "k3dockwidget.h"
 #include "k3dockwidget_p.h"
-#include "k3dockwidget_private.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QCursor>

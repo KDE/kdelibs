@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3spelldlg.h"
+
 #include <QProgressBar>
 
 #include <kconfig.h>
@@ -26,7 +28,6 @@
 #include <klocale.h>
 
 #include "k3sconfig.h"
-#include "k3spelldlg.h"
 #include "ui_k3spellui.h"
 #include <kconfiggroup.h>
 

@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3iconview.h"
+
 //#include <config.h>
 
 #include <QtCore/QTimer>
@@ -23,7 +25,6 @@
 #include <QtGui/QPixmapCache>
 #include <QtGui/QActionEvent>
 
-#include "k3iconview.h"
 #include "kwordwrap.h"
 #include <kconfig.h>
 #include <kdebug.h>

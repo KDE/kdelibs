@@ -52,7 +52,7 @@
 #include <QtCore/QPoint>
 #include <Qt3Support/Q3PtrList>
 #include <QtGui/QFrame>
-#include <Qt/qdom.h>
+#include <QtXml/QDomElement>
 #include <QtGui/QTabWidget>
 
 #ifndef NO_KDE2
@@ -60,7 +60,7 @@
 #include <netwm_def.h>
 #else
 
-#include <q3mainwindow.h>
+#include <Qt3Support/Q3MainWindow>
 #include "exportdockclass.h"
 #include "dummykmainwindow.h"
 #endif

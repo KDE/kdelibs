@@ -25,6 +25,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "runner.h"
+
 #include <stdio.h>
 #include <iostream>
 using namespace std;
@@ -38,7 +40,6 @@ using namespace std;
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-#include "runner.h"
 #include "tester.h"
 
 namespace KUnitTest

@@ -23,13 +23,14 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "tester.h"
+
 #include <iostream>
 using namespace std;
 
 #include <QtCore/QMetaEnum>
 #include <QtCore/QRect>
 #include <QtCore/QVector>
-#include "tester.h"
 
 namespace KUnitTest
 {

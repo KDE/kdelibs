@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3spell.h"
+
 #include <config.h>
 
 #include <stdio.h>
@@ -30,8 +32,6 @@
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-
-#include "k3spell.h"
 
 
 #include <QtGui/QApplication>

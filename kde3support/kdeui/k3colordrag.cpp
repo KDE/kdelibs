@@ -17,8 +17,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QPainter>
 #include "k3colordrag.h"
+
+#include <QtGui/QPainter>
 
 static const char * const color_mime_string = "application/x-color";
 static const char * const text_mime_string = "text/plain";

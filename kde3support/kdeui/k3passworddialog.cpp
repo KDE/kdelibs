@@ -19,6 +19,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "k3passworddialog.h"
+
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -42,7 +44,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 
-#include "k3passworddialog.h"
 #include <kconfiggroup.h>
 
 /*

@@ -18,10 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "k3mimesourcefactory.h"
+
 #include <kdebug.h>
 #include <kiconloader.h>
-
-#include "k3mimesourcefactory.h"
 
 class K3MimeSourceFactoryPrivate
 {

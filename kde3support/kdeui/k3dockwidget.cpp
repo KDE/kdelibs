@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 #include "k3dockwidget.h"
-#include "k3dockwidget_private.h"
 #include "k3dockwidget_p.h"
+#include "k3dockwidget_private.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QLayout>
@@ -45,7 +45,7 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 
-#include "config.h"
+#include <config.h>
 #ifdef Q_WS_X11
 #include <X11/X.h>
 #include <X11/Xlib.h>

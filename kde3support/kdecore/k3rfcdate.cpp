@@ -18,9 +18,9 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config.h>
-
 #include "k3rfcdate.h"
+
+#include <config.h>
 
 #include <sys/param.h>
 #include <ctype.h>

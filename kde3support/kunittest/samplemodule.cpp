@@ -23,10 +23,10 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "samplemodule.h"
+
 #include <kunittest/runner.h>
 #include <kunittest/module.h>
-
-#include "samplemodule.h"
 
 using namespace KUnitTest;
 

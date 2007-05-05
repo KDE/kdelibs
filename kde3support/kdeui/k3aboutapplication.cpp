@@ -20,11 +20,12 @@
  *
  */
 
+#include "k3aboutapplication.h"
+
 #include <QList>
 #include <QPixmap>
 
-#include <k3aboutapplication.h>
-#include <k3aboutdialog_p.h>
+#include "k3aboutdialog_p.h"
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <QtGui/QLabel>

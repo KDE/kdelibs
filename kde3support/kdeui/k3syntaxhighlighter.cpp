@@ -19,6 +19,8 @@
  Boston, MA 02110-1301, USA.
 */
 
+#include "k3syntaxhighlighter.h"
+
 #include <QtGui/QColor>
 #include <QtCore/QRegExp>
 #include <Qt3Support/Q3SyntaxHighlighter>
@@ -33,7 +35,6 @@
 #include <Qt3Support/Q3Dict>
 #include <QKeyEvent>
 
-#include "k3syntaxhighlighter.h"
 #include <kconfiggroup.h>
 #include <fixx11h.h>
 

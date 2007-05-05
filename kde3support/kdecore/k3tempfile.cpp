@@ -17,6 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+#include "k3tempfile.h"
+
 #include <config.h>
 
 #include <sys/types.h>
@@ -50,7 +52,6 @@
 #include "kglobal.h"
 #include "krandom.h"
 #include "kcomponentdata.h"
-#include "k3tempfile.h"
 #include "kstandarddirs.h"
 #include "kde_file.h"
 #include "kdebug.h"

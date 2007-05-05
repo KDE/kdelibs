@@ -17,13 +17,13 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#include "config.h"
 
 #include "k3listview.h"
 #include "k3listviewlineedit.h"
 
+#include <config.h>
+
 #include <Qt3Support/Q3ColorDrag>
-#include <QtGui/QCursor>
 #include <QtGui/QActionEvent>
 #include <QtCore/QTimer>
 #include <Qt3Support/Q3Header>

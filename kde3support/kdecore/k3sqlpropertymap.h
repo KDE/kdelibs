@@ -18,7 +18,7 @@
 */
 
 #ifndef QT_NO_SQL
-#include <Qt3Support/q3sqlpropertymap.h>
+#include <Qt3Support/Q3SqlPropertyMap>
 #endif
 
 #include <kde3support_export.h>
