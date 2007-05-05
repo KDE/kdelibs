@@ -143,7 +143,7 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
                     const Nepomuk::KMetaData::Tag& tag = tagIt.next();
                     if( tag.getLabels().contains( s ) ||
                         tag.getIdentifiers().contains( s ) ) {
-                        KMessageBox::sorry( this, i18n("Tag exists"), i18n("The tag %1 already exists", s) );
+                        KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag exists") );
                         return;
                     }
                 }
