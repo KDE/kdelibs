@@ -18,6 +18,7 @@
 
 #include <cstdlib>
 #include <qtest_kde.h>
+#include <QtCore/QDir>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcalendarsystemgregorian.h>
@@ -34,12 +35,62 @@ QTEST_KDEMAIN_CORE(KDateTimeTest)
 KDE_IMPORT extern int KDateTime_utcCacheHit;
 KDE_IMPORT extern int KDateTime_zoneCacheHit;
 
+
 void KDateTimeTest::initTestCase()
 {
-    // This test relies on kded running, and on kdebase/runtime being installed
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-        QSKIP( "kded not running", SkipAll );
-    }
+    cleanupTestCase();
+
+    mDataDir = QDir::homePath() + "/.kde-unit-test/kdatetimetest";
+    QVERIFY(QDir().mkpath(mDataDir));
+    QFile f;
+    f.setFileName(mDataDir + QLatin1String("/zone.tab"));
+    f.open(QIODevice::WriteOnly);
+    QTextStream fStream(&f);
+    fStream << "DE      +5230+01322     Europe/Berlin\n"
+               "EG	+3003+03115	Africa/Cairo\n"
+               "FR	+4852+00220	Europe/Paris\n"
+               "GB	+512830-0001845	Europe/London	Great Britain\n"
+               "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
+    f.close();
+    QDir dir(mDataDir);
+    QVERIFY(dir.mkdir("Africa"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo"));
+    QVERIFY(dir.mkdir("America"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Los_Angeles"), mDataDir + QLatin1String("/America/Los_Angeles"));
+    QVERIFY(dir.mkdir("Europe"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Berlin"), mDataDir + QLatin1String("/Europe/Berlin"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/London"), mDataDir + QLatin1String("/Europe/London"));
+    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Paris"), mDataDir + QLatin1String("/Europe/Paris"));
+
+    KConfig config("ktimezonedrc");
+    KConfigGroup group(&config, "TimeZones");
+    group.writeEntry("ZoneinfoDir", mDataDir);
+    group.writeEntry("Zonetab", mDataDir + QString::fromLatin1("/zone.tab"));
+    group.writeEntry("LocalZone", QString::fromLatin1("America/Los_Angeles"));
+    config.sync();
+}
+
+void KDateTimeTest::cleanupTestCase()
+{
+    removeDir(QLatin1String("kdatetimetest/Africa"));
+    removeDir(QLatin1String("kdatetimetest/America"));
+    removeDir(QLatin1String("kdatetimetest/Europe"));
+    removeDir(QLatin1String("kdatetimetest"));
+    removeDir(QLatin1String("share/config"));
+    QDir().rmpath(QDir::homePath() + "/.kde-unit-test/share");
+}
+
+void KDateTimeTest::removeDir(const QString &subdir)
+{
+    QDir local = QDir::homePath() + QLatin1String("/.kde-unit-test/") + subdir;
+    foreach(const QString &file, local.entryList(QDir::Files))
+        if(!local.remove(file))
+            qWarning("%s: removing failed", qPrintable( file ));
+    QCOMPARE((int)local.entryList(QDir::Files).count(), 0);
+    local.cdUp();
+    QString subd = subdir;
+    subd.remove(QRegExp("^.*/"));
+    local.rmpath(subd);
 }
 
 
@@ -1285,10 +1336,17 @@ void KDateTimeTest::toZone()
     const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
     const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
 
+    // This test relies on kded running, and on kdebase/runtime being installed
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+        QSKIP( "kded not running", SkipSingle );
+    }
     // Ensure that local time is different from UTC and different from 'london'
-    const char *originalZone = ::getenv("TZ");   // save the original local time zone
-    ::setenv("TZ", ":Europe/London", 1);
-    ::tzset();
+    KConfig config("ktimezonedrc");
+    KConfigGroup group(&config, "TimeZones");
+    group.writeEntry("LocalZone", QString::fromLatin1("Europe/London"));
+    config.sync();
+    QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "configChanged");
+    QDBusConnection::sessionBus().send(message);
 
     // Zone -> Zone
     KDateTime londonWinter(QDate(2005,1,1), QTime(0,0,0), london);
@@ -1363,11 +1421,9 @@ void KDateTimeTest::toZone()
     QVERIFY(!(utc == locUtc));
 
     // Restore the original local time zone
-    if (!originalZone)
-        ::unsetenv("TZ");
-    else
-        ::setenv("TZ", originalZone, 1);
-    ::tzset();
+    group.writeEntry("LocalZone", QString::fromLatin1("America/Los_Angeles"));
+    config.sync();
+    QDBusConnection::sessionBus().send(message);
 }
 
 void KDateTimeTest::toTimeSpec()

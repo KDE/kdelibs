@@ -26,6 +26,7 @@ class KDateTimeTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
     void specConstructors();
     void specSet();
     void constructors();
@@ -47,6 +48,9 @@ private Q_SLOTS:
     void strings_format();
     void cache();
     void misc();
+private:
+    void removeDir(const QString &subdir);
+    QString mDataDir;
 };
 
 #endif
