@@ -1,8 +1,11 @@
 /***************************************************************************
  * metafunction.h
  * This file is part of the KDE project
- * copyright (C)2005-2006 KJSEmbed Authors.
- * copyright (C)2005-2007 by Sebastian Sauer (mail@dipe.org)
+ * copyright (C)2005-2006 Ian Reinhart Geiser <geiseri@kde.org>
+ * copyright (C)2005-2006 Matt Broadstone     <mbroadst@gmail.com>
+ * copyright (C)2005-2006 Richard J. Moore    <rich@kde.org>
+ * copyright (C)2005-2006 Erik L. Bunce       <kde@bunce.us>
+ * copyright (C)2005-2007 by Sebastian Sauer  <mail@dipe.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
