@@ -131,6 +131,7 @@ void KMimeType::checkEssentialMimeTypes()
     return; // no point in going any further
   }
 
+#ifndef Q_OS_WIN
   if ( !KMimeType::mimeType( "inode/directory" ) )
     errorMissingMimeType( "inode/directory" );
   //if ( !KMimeType::mimeType( "inode/directory-locked" ) )
@@ -143,6 +144,7 @@ void KMimeType::checkEssentialMimeTypes()
     errorMissingMimeType( "inode/socket" );
   if ( !KMimeType::mimeType( "inode/fifo" ) )
     errorMissingMimeType( "inode/fifo" );
+#endif    
   if ( !KMimeType::mimeType( "application/x-shellscript" ) )
     errorMissingMimeType( "application/x-shellscript" );
   if ( !KMimeType::mimeType( "application/x-executable" ) )
