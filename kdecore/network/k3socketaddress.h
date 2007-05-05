@@ -1,3 +1,4 @@
+//krazy:excludeall=dpointer (lightweight classes; kde3 support)
 /*  -*- C++ -*-
  *  Copyright (C) 2003,2005 Thiago Macieira <thiago@kde.org>
  *
