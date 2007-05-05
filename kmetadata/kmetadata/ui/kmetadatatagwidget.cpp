@@ -24,7 +24,7 @@
 #include "ktagdisplaywidget.h"
 
 #include <kmetadata/tools.h>
-#include <kmetadata/tag.h>
+#include <kmetadata/generated/tag.h>
 
 #include <karrowbutton.h>
 #include <kinputdialog.h>

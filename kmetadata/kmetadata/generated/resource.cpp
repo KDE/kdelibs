@@ -21,7 +21,7 @@
 #include <kdebug.h>
 
 // FIXME: let the code generator do this
-#include <kmetadata/tag.h>
+#include <kmetadata/generated/tag.h>
 
 
 Nepomuk::KMetaData::Resource::Resource()
