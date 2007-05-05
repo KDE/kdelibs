@@ -308,7 +308,7 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
 
 /*----------------------------------------------------------------------------*/
 
-K_GLOBAL_STATIC(KDateTime::Spec, s_fromStringDefault)
+K_GLOBAL_STATIC_WITH_ARGS(KDateTime::Spec, s_fromStringDefault, (KDateTime::ClockTime))
 
 class KDateTimePrivate : public QSharedData
 {
