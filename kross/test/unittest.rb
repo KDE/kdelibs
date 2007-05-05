@@ -2,11 +2,12 @@
 
 require 'test/unit'
 
+require "TestObject1"
+require "TestObject2"
+
 class TestKross < Test::Unit::TestCase
 
 	def setup
-		require "TestObject1"
-		require "TestObject2"
 	end
 
 	def testBool
