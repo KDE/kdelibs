@@ -216,6 +216,15 @@ class KDECORE_EXPORT KAboutData
       License_QPL_V1_0 = 5
     };
 
+  /**
+   * Format of the license name.
+   */
+    enum NameFormat
+    {
+        ShortName,
+        FullName
+    };
+
   public:
     /**
      * Constructor.
@@ -628,6 +637,13 @@ class KDECORE_EXPORT KAboutData
      * @return The license text.
      */
     QString license() const;
+
+    /**
+     * Returns the license name.
+     *
+     * @return The license name as a string.
+     */
+    QString licenseName(NameFormat formatName) const;
 
     /**
      * Returns the copyright statement.

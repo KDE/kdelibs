@@ -105,34 +105,29 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         aboutPageText += "<br />" + QString("<a href=\"%1\">%1</a>").arg(aboutData->homepage()) + "<br />";
 
     QLabel *aboutLabel = new QLabel;
-    aboutLabel->setMargin(10);
     aboutLabel->setWordWrap(true);
     aboutLabel->setOpenExternalLinks(true);
     aboutLabel->setText(aboutPageText.replace('\n', "<br />"));
 
-    QVBoxLayout *vLayout = new QVBoxLayout;
-    vLayout->addStretch(1);
-    vLayout->addWidget(aboutLabel);
+    QVBoxLayout *aboutLayout = new QVBoxLayout;
+    aboutLayout->addStretch();
+    aboutLayout->addWidget(aboutLabel);
 
     if (!aboutData->license().isEmpty()) {
-        QPushButton *showLicenseButton = new QPushButton(i18n("Show &License Agreement"));
-        connect(showLicenseButton, SIGNAL(clicked()), this, SLOT(_k_showLicense()));
+        QLabel *showLicenseLabel = new QLabel;
+        showLicenseLabel->setText(QString("<a href=\"%1\">%1</a>").arg(i18n("License: %1",
+                                                                            aboutData->licenseName(KAboutData::FullName))));
+        connect(showLicenseLabel, SIGNAL(linkActivated(QString)), this, SLOT(_k_showLicense()));
 
-        vLayout->addStretch(0);
-        vLayout->addWidget(showLicenseButton);
+        aboutLayout->addWidget(showLicenseLabel);
     }
 
-    vLayout->addStretch(1);
+    aboutLayout->addStretch();
 
-    QHBoxLayout *hLayout = new QHBoxLayout;
-    hLayout->addStretch();
-    hLayout->addLayout(vLayout);
-    hLayout->addStretch();
+    QWidget *aboutWidget = new QWidget(this);
+    aboutWidget->setLayout(aboutLayout);
 
-    QWidget *aboutLayout = new QWidget(this);
-    aboutLayout->setLayout(hLayout);
-
-    tabWidget->addTab(aboutLayout, i18n("&About"));
+    tabWidget->addTab(aboutWidget, i18n("&About"));
 
     int authorCount = aboutData->authors().count();
     if (authorCount) {

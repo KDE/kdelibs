@@ -588,6 +588,52 @@ KAboutData::license() const
   return result;
 }
 
+QString KAboutData::licenseName(NameFormat formatName) const
+{
+    QString licenseShort;
+    QString licenseFull;
+
+    switch (d->_licenseKey) {
+    case License_GPL_V2:
+        licenseShort = "GPL v2";
+        licenseFull = i18n("GNU General Public License Version 2");
+        break;
+    case License_LGPL_V2:
+        licenseShort = "LGPL v2";
+        licenseFull = i18n("GNU Library General Public License Version 2");
+        break;
+    case License_BSD:
+        licenseShort = "BSD License";
+        licenseFull = i18n("BSD License");
+        break;
+    case License_Artistic:
+        licenseShort = "Artistic License";
+        licenseFull = i18n("Artistic License");
+        break;
+    case License_QPL_V1_0:
+        licenseShort = "QPL v1.0";
+        licenseFull = i18n("Q Public License");
+        break;
+    case License_Custom:
+    case License_File:
+        licenseShort = licenseFull = i18n("Custom");
+        break;
+    default:
+        licenseShort = licenseFull = i18n("Not specified");
+    }
+
+    switch (formatName) {
+    case ShortName:
+        return licenseShort;
+        break;
+    case FullName:
+        return licenseFull;
+        break;
+    default:
+        return QString();
+    }
+}
+
 QString
 KAboutData::copyrightStatement() const
 {
