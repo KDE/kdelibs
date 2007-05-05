@@ -16,8 +16,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <QtGui/QColor>
 #include "misc.h"
+
+#include <QtGui/QColor>
 
 QColor alphaBlendColors(const QColor &bgColor, const QColor &fgColor, const int a)
 {

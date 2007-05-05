@@ -21,6 +21,7 @@
 #ifndef KERAMIK_COLORUTIL_H
 #define KERAMIK_COLORUTIL_H
 
+#include <QtGui/QColor>
 class QPainter;
 
 

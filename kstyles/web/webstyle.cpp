@@ -17,6 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "webstyle.h"
+
 #ifndef INCLUDE_MENUITEM_DEF
 #define INCLUDE_MENUITEM_DEF
 #endif
@@ -37,8 +39,6 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kdebug.h>
-
-#include "webstyle.h"
 
 static const int  _indicatorSize = 13;
 static Q3Button *  _highlightedButton = 0;

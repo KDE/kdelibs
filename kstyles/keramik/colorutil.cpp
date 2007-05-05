@@ -18,9 +18,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QColor>
-
 #include "colorutil.h"
+
+#include <QtGui/QColor>
 
 namespace Keramik
 {

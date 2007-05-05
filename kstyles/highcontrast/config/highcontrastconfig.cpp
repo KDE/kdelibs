@@ -24,14 +24,14 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
+#include "highcontrastconfig.h"
+
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 #include <QtCore/QSettings>
 #include <kdialog.h>
 #include <kglobal.h>
 #include <klocale.h>
-
-#include "highcontrastconfig.h"
 
 extern "C" KDE_EXPORT QWidget* 
 allocate_kstyle_config(QWidget* parent)

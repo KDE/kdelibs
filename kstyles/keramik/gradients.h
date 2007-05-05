@@ -21,7 +21,9 @@
 #ifndef KERAMIK_GRADIENTS_H
 #define KERAMIK_GRADIENTS_H
 
+#include <QtGui/QColor>
 class QPainter;
+class QRect;
 
 
 namespace Keramik

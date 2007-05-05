@@ -23,6 +23,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "highcolor.h"
+#include "highcolor.moc"
+
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QPainter>
 #include <Qt3Support/Q3PointArray>
@@ -43,8 +46,6 @@
 #include <kdrawutil.h>
 #include <kpixmapeffect.h>
 
-#include "highcolor.h"
-#include "highcolor.moc"
 #include "bitmaps.h"
 
 

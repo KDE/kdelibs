@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "pixmaploader.h"
+
 #include <QtGui/QApplication>
 #include <QtGui/QBitmap>
 #include <QtCore/QBool>
@@ -25,8 +27,6 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 #include <QtGui/QPixmapCache>
-
-#include "pixmaploader.h"
 
 
 #include "pixmaps.keramik"

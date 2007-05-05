@@ -27,7 +27,14 @@ DEALINGS IN THE SOFTWARE.
 #ifndef PLASTIK_CONF_H
 #define PLASTIK_CONF_H
 
+#ifndef QT3_SUPPORT
+#define QT3_SUPPORT
+#endif
+#include <QtGui/QWidget>
+#include <QtGui/QColor>
+
 class QCheckBox;
+class KColorButton;
 
 class PlastikStyleConfig: public QWidget
 {

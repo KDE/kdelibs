@@ -41,6 +41,7 @@
 
 #include <kstyle.h>
 #include <QtGui/QBitmap>
+#include <QtGui/QStyleOption>
 #include <QtCore/QCache>
 
 #define u_arrow -4,1, 2,1, -3,0, 1,0, -2,-1, 0,-1, -1,-2

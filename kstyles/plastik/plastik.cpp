@@ -38,6 +38,9 @@
    Boston, MA 02110-1301, USA.
  */
 
+#include "plastik.h"
+#include "plastik.moc"
+
 #include <QtGui/QPainter>
 #include <QtCore/QTimer>
 #include <QtCore/QEvent>
@@ -53,8 +56,6 @@
 #include <QtGui/QSplitter>
 #include <QtGui/QToolBar>
 
-#include "plastik.h"
-#include "plastik.moc"
 #include "misc.h"
 
 K_EXPORT_STYLE("Plastik", PlastikStyle)

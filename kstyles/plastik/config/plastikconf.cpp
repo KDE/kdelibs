@@ -24,7 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
+#include "plastikconf.h"
+
+#ifndef QT3_SUPPORT
 #define QT3_SUPPORT
+#endif
 #include <QtGui/QCheckBox>
 #include <QtGui/QLayout>
 #include <khbox.h>
@@ -34,8 +38,6 @@ DEALINGS IN THE SOFTWARE.
 #include <klocale.h>
 #include <kcolorbutton.h>
 #include <kdemacros.h>
-
-#include "plastikconf.h"
 
 extern "C"
 {

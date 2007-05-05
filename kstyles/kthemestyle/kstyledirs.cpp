@@ -19,9 +19,10 @@
  This file is part of the KDE libraries
 */
 
+#include "kstyledirs.h"
+
 #include <QtCore/QFile>
 #include <kstandarddirs.h>
-#include "kstyledirs.h"
 
 KStyleDirs* KStyleDirs::instance = 0;
 

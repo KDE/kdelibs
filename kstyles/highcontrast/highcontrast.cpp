@@ -24,6 +24,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "highcontrast.h"
+#include "highcontrast.moc"
+
 #include <QtGui/qdrawutil.h>
 #include <QtGui/QPainter>
 #include <Qt3Support/Q3PointArray>
@@ -46,9 +49,6 @@
 
 #include <kdrawutil.h>
 #include <kpixmapeffect.h>
-
-#include "highcontrast.h"
-#include "highcontrast.moc"
 
 // -- Style Plugin Interface -------------------------
 class HighContrastStylePlugin : public QStylePlugin
