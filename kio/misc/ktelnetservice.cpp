@@ -1,3 +1,4 @@
+//krazy:excludeall=license (it's a program, not a library)
 /*
    Copyright (c) 2001 Malte Starostik <malte@kde.org>
    based on kmailservice.cpp,

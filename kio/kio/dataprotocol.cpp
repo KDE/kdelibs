@@ -5,7 +5,7 @@
 //
 // Author: Leo Savernik
 // Email: l.savernik@aon.at
-// (C) 2002, 2003 by Leo Savernik
+// Copyright (C) 2002, 2003 by Leo Savernik <l.savernik@aon.at>
 // Created: Sam Dez 28 14:11:18 CET 2002
 
 /***************************************************************************

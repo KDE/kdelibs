@@ -169,7 +169,7 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
 
     if (mountedFrom.startsWith("UUID=")) {
         const QString uuid = mountedFrom.mid(5);
-        const QString query = "Volume.uuid == '" + uuid + "'";
+        const QString query = "Volume.uuid == '" + uuid + "'"; //krazy:exclude=doublequote_chars (not worth the loss of readability)
         const QList<Solid::Device> lst = Solid::Device::listFromQuery(query);
         if (!lst.isEmpty()) {
             mountedFrom = lst.first().as<Solid::Block>()->device();

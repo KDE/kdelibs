@@ -1,6 +1,6 @@
 /*
 * kimageio.h -- Declaration of interface to the KDE Image IO library.
-* Sirtaj Singh Kang <taj@kde.org>, 23 Sep 1998.
+* Copyright (c) 1998 Sirtaj Singh Kang <taj@kde.org>
 *
 * This library is distributed under the conditions of the GNU LGPL.
 */
