@@ -38,21 +38,21 @@
 class KAboutApplicationDialog::Private
 {
 public:
-    Private( KAboutApplicationDialog *parent )
-        : q( parent ),
+    Private(KAboutApplicationDialog *parent)
+        : q(parent),
           aboutData(0)
     {}
 
     void _k_showLicense();
 
-    KAboutApplicationDialog* q;
+    KAboutApplicationDialog *q;
 
-    const KAboutData* aboutData;
+    const KAboutData *aboutData;
 };
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
   : KDialog(parent),
-    d( new Private(this) )
+    d(new Private(this))
 {
     setPlainCaption(i18n("About %1", aboutData->programName()));
     setButtons(KDialog::Close);
@@ -64,15 +64,14 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     d->aboutData = aboutData;
 
-    if (!aboutData)
-    {
+    if (!aboutData) {
         QLabel *errorLabel = new QLabel(i18n("No information available.<br />"
                                              "The supplied KAboutData object does not exist."), this);
         setMainWidget(errorLabel);
         return;
     }
 
-    QFrame* titleLabel = new QFrame();
+    QFrame *titleLabel = new QFrame();
     titleLabel->setAutoFillBackground(true);
     titleLabel->setFrameShape(QFrame::StyledPanel);
     titleLabel->setFrameShadow(QFrame::Plain);
@@ -110,31 +109,48 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     aboutLabel->setWordWrap(true);
     aboutLabel->setOpenExternalLinks(true);
     aboutLabel->setText(aboutPageText.replace('\n', "<br />"));
-    tabWidget->addTab(aboutLabel, i18n("&About"));
+
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->addStretch(1);
+    vLayout->addWidget(aboutLabel);
+
+    if (!aboutData->license().isEmpty()) {
+        QPushButton *showLicenseButton = new QPushButton(i18n("Show &License Agreement"));
+        connect(showLicenseButton, SIGNAL(clicked()), this, SLOT(_k_showLicense()));
+
+        vLayout->addStretch(0);
+        vLayout->addWidget(showLicenseButton);
+    }
+
+    vLayout->addStretch(1);
+
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addStretch();
+    hLayout->addLayout(vLayout);
+    hLayout->addStretch();
+
+    QWidget *aboutLayout = new QWidget(this);
+    aboutLayout->setLayout(hLayout);
+
+    tabWidget->addTab(aboutLayout, i18n("&About"));
 
     int authorCount = aboutData->authors().count();
-    if (authorCount)
-    {
+    if (authorCount) {
         QString authorPageText;
 
         QString authorPageTitle = authorCount == 1 ? i18n("A&uthor") : i18n("A&uthors");
 
-        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty())
-        {
-            if (!aboutData->customAuthorTextEnabled())
-            {
+        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty()) {
+            if (!aboutData->customAuthorTextEnabled()) {
                 if (aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
                     authorPageText = i18n("Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs.\n");
-                else
-                {
-                    if(aboutData->authors().count() == 1 && (aboutData->authors().first().emailAddress() == aboutData->bugAddress()))
-                    {
+                else {
+                    if(aboutData->authors().count() == 1 && (aboutData->authors().first().emailAddress() == aboutData->bugAddress())) {
                         authorPageText = i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
                                               aboutData->authors().first().emailAddress(),
                                               aboutData->authors().first().emailAddress());
                     }
-                    else
-                    {
+                    else {
                         authorPageText = i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
                                               aboutData->bugAddress(), aboutData->bugAddress());
                     }
@@ -147,8 +163,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         authorPageText += "<br />";
 
         QList<KAboutPerson> lst = aboutData->authors();
-        for (int i = 0; i < lst.size(); ++i)
-        {
+        for (int i = 0; i < lst.size(); ++i) {
             authorPageText += QString("<br />%1<br />").arg(lst.at(i).name());
             if (!lst.at(i).emailAddress().isEmpty())
                 authorPageText += QString("&nbsp;&nbsp;<a href=\"mailto:%1\">%1</a><br />").arg(lst.at(i).emailAddress());
@@ -165,13 +180,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     }
 
     int creditsCount = aboutData->credits().count();
-    if (creditsCount)
-    {
+    if (creditsCount) {
         QString creditsPageText;
 
         QList<KAboutPerson> lst = aboutData->credits();
-        for (int i = 0; i < lst.size(); ++i)
-        {
+        for (int i = 0; i < lst.size(); ++i) {
             creditsPageText += QString("<br />%1<br />").arg(lst.at(i).name());
             if (!lst.at(i).emailAddress().isEmpty())
                 creditsPageText += QString("&nbsp;&nbsp;<a href=\"mailto:%1\">%1</a><br />").arg(lst.at(i).emailAddress());
@@ -189,13 +202,11 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     const QList<KAboutTranslator> translatorList = aboutData->translators();
 
-    if(translatorList.count() > 0)
-    {
+    if(translatorList.count() > 0) {
         QString translatorPageText = QString();
 
         QList<KAboutTranslator>::ConstIterator it;
-        for(it = translatorList.begin(); it != translatorList.end(); ++it)
-        {
+        for(it = translatorList.begin(); it != translatorList.end(); ++it) {
             translatorPageText += QString("<br />%1<br />").arg((*it).name());
             if (!(*it).emailAddress().isEmpty())
                 translatorPageText += QString("&nbsp;&nbsp;<a href=\"mailto:%1\">%1</a><br />").arg((*it).emailAddress());
@@ -207,29 +218,6 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         translatorTextBrowser->setFrameStyle(QFrame::NoFrame);
         translatorTextBrowser->setHtml(translatorPageText);
         tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
-    }
-
-    if (!aboutData->license().isEmpty())
-    {
-        QWidget* licensePage = new QWidget(this);
-       
-        QPushButton* showLicenseButton = new QPushButton(i18n("Show License"));
-        showLicenseButton->setMaximumSize( showLicenseButton->sizeHint() * 2 );
-        connect( showLicenseButton , SIGNAL(clicked()) , this , SLOT(_k_showLicense()) );
-
-        QHBoxLayout *buttonLayout = new QHBoxLayout;
-        buttonLayout->addStretch(1);
-        buttonLayout->addWidget(showLicenseButton,2);
-        buttonLayout->addStretch(1);
-
-        QVBoxLayout *layout = new QVBoxLayout;
-        layout->addStretch(1);
-        layout->addLayout(buttonLayout,2);
-        layout->addStretch(1);
-
-        licensePage->setLayout(layout);
-
-        tabWidget->addTab(licensePage, i18n("&License Agreement"));
     }
 
     QHBoxLayout *titleLayout = new QHBoxLayout;
@@ -259,8 +247,8 @@ KAboutApplicationDialog::~KAboutApplicationDialog()
 
 void KAboutApplicationDialog::Private::_k_showLicense()
 {
-    KDialog* dialog = new KDialog(q);
-    
+    KDialog *dialog = new KDialog(q);
+
     dialog->setCaption(i18n("License Agreement"));
     dialog->setButtons(KDialog::Close);
     dialog->setDefaultButton(KDialog::Close);
@@ -269,22 +257,21 @@ void KAboutApplicationDialog::Private::_k_showLicense()
     QFontMetrics metrics(font);
 
     KTextBrowser *licenseBrowser = new KTextBrowser;
-    licenseBrowser->setFrameStyle( QFrame::NoFrame );
     licenseBrowser->setFont(font);
     licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
     licenseBrowser->setText(aboutData->license());
 
     dialog->setMainWidget(licenseBrowser);
-   
-    // try to set up the dialog such that the full width of the 
+
+    // try to set up the dialog such that the full width of the
     // document is visible without horizontal scroll-bars being required
-    qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * dialog->marginHint()) 
+    qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * dialog->marginHint())
         + licenseBrowser->verticalScrollBar()->width() * 2;
 
     // try to allow enough height for a reasonable number of lines to be shown
     int idealHeight = metrics.height() * 30;
 
-    dialog->setInitialSize( dialog->sizeHint().expandedTo(QSize((int)idealWidth,idealHeight)) ); 
+    dialog->setInitialSize(dialog->sizeHint().expandedTo(QSize((int)idealWidth,idealHeight)));
     dialog->show();
 }
 
