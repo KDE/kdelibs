@@ -213,7 +213,7 @@ public:
    * This tag will get expanded to a list of actions.  In the example
    * above ( a file manager with a dynamic file menu ), you would call
    * \code
-   * QPtrList<KAction> file_actions;
+   * QList<QAction*> file_actions;
    * for( ... )
    *   if( ... )
    *     file_actions.append( cool_action );
