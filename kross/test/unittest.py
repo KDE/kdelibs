@@ -10,7 +10,8 @@ class TestKross(unittest.TestCase):
 	""" Testcases to test the Kross python functionality for regressions. """
 
 	def setUp(self):
-		import TestObject1, TestObject2
+		import TestObject1
+		from TestObject2 import *
 		self.object1 = TestObject1
 		self.object2 = TestObject2
 
