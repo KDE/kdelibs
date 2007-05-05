@@ -48,4 +48,6 @@ install(FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/konto
 )
 
-add_subdirectory(test)
+if(KDE4_BUILD_TESTS)
+  add_subdirectory(test)
+endif(KDE4_BUILD_TESTS)
