@@ -3,7 +3,7 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,25 +14,25 @@
 
 
 /**
- * \mainpage The NEPOMUK-KDE Backbone library (KNep)
+ * \mainpage The NEPOMUK-KDE Backbone library (KNepomuk)
  *
  *
  *
- * The KNep library provides low-level access to NEPOMUK-KDE services represented by the 
+ * The KNepomuk library provides low-level access to NEPOMUK-KDE services represented by the 
  * Nepomuk::Backbone::Service class as well as service publication with the Nepomuk-KDE
  * service registry (and thus the whole \a %Nepomuk system on the current desktop) through
  * the Nepomuk::Backbone::ServicePublisher class.
  *
- * The following sections give a quick introduction on how to use the KNep library.
+ * The following sections give a quick introduction on how to use the KNepomuk library.
  *
  *
  *
- * \section knepclient Writing a KNep client
+ * \section knepclient Writing a KNepomuk client
  *
- * A KNep client is an application, plugin, or piece of code that uses NEPOMUK services to
+ * A KNepomuk client is an application, plugin, or piece of code that uses NEPOMUK services to
  * perform certain tasks (but does not publish services itself).
  *
- * Writing a KNep client is quite easy. Once first has to create an instance of 
+ * Writing a KNepomuk client is quite easy. Once first has to create an instance of 
  * Nepomuk::Backbone::Registry (the \a Registry class is intended to be used as a singleton
  * and might later be changed to enforce that.) which will then automatically connect to the
  * local Service Registry to retrieve the list of available NEPOMUK services.
@@ -55,7 +55,7 @@
  * Nepomuk::Backbone::Service provides a generic interface via the Nepomuk::Backbone::Service::methodCall
  * method. In theory one could do all communication with the service through this simple interface.
  * But since that would be way to complicated (one had to know the exact syntax of the service's API)
- * KNep provides Nepomuk::Backbone::ServiceWrapper classes for the most common service types.
+ * KNepomuk provides Nepomuk::Backbone::ServiceWrapper classes for the most common service types.
  *
  * In the case of the RDFRepository service we can simply create an instance of 
  * Nepomuk::Backbone::Services::RDFRepository as a wrapper around the \a Service object:
@@ -68,12 +68,12 @@
  *
  *
  *
- * \section knepservice Writing a KNep service
+ * \section knepservice Writing a KNepomuk service
  *
  * Writing a Nepomuk-KDE service that provides a certain service type is also very easy (if 
- * one needs to create a new service type that is not already part of the KNep library
+ * one needs to create a new service type that is not already part of the KNepomuk library
  * a little more work has to be done. In the future creating service types should be 
- * handled by a toolchain within the KNep framework. For now, however, this has to be done
+ * handled by a toolchain within the KNepomuk framework. For now, however, this has to be done
  * manually. The steps to perform are not documented here and the reader is encuraged to
  * contact the Nepomuk-KDE development team for help).
  *
