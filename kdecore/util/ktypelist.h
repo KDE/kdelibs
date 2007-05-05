@@ -1,3 +1,4 @@
+//krazy:excludeall=license (minor variation on MIT license)
 /*
  This work is derived from:
  ----

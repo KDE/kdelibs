@@ -1,5 +1,8 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2000 The KDE Project
+   Copyright (c) 2000 Stephan Kulow <coolo@kde.org>
+   Copyright (c) 2002 Dirk Mueller <mueller@kde.org>
+   Copyright (c) 2002 Oswald Buddenhagen <ossi@kde.org>
+   Copyright (c) 2003 Joseph Wenninger <kde@jowenn.at>
    Copyright (c) 2005 Jaroslaw Staniek <js@iidea.pl>
 
    unsetenv() taken from the GNU C Library.
