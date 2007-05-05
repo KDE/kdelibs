@@ -254,7 +254,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
             QComboBox *cb = qobject_cast<QComboBox *>(childWidget);
             if (cb && cb->isEditable())
-              connect(cb, SIGNAL(textChanged(const QString &)),
+              connect(cb, SIGNAL(editTextChanged(const QString &)),
                     this, SIGNAL(widgetModified()));
 	  }
         }
@@ -424,10 +424,10 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
           cb->setCurrentIndex(i);
       else
           cb->setEditText(v.toString());
-      return;
     } else {
       cb->setCurrentIndex( v.toInt() );
     }
+    return;
   }
 
   QByteArray userproperty = getUserProperty( w );
