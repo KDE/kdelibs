@@ -23,6 +23,8 @@
 
 #include <QLabel>
 #include <QLayout>
+#include <QPushButton>
+#include <QScrollBar>
 #include <QTabWidget>
 
 #include <kaboutdata.h>
@@ -33,9 +35,24 @@
 #include <klocale.h>
 #include <ktextbrowser.h>
 
+class KAboutApplicationDialog::Private
+{
+public:
+    Private( KAboutApplicationDialog *parent )
+        : q( parent ),
+          aboutData(0)
+    {}
+
+    void _k_showLicense();
+
+    KAboutApplicationDialog* q;
+
+    const KAboutData* aboutData;
+};
+
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
   : KDialog(parent),
-    d( 0 )
+    d( new Private(this) )
 {
     setPlainCaption(i18n("About %1", aboutData->programName()));
     setButtons(KDialog::Close);
@@ -44,6 +61,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     if (aboutData == 0)
         aboutData = KGlobal::mainComponent().aboutData();
+
+    d->aboutData = aboutData;
 
     if (!aboutData)
     {
@@ -192,12 +211,25 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
 
     if (!aboutData->license().isEmpty())
     {
-        KTextBrowser *licenseBrowser = new KTextBrowser;
-        licenseBrowser->setFrameStyle( QFrame::NoFrame );
-        licenseBrowser->setFont(KGlobalSettings::fixedFont());
-        licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
-        licenseBrowser->setText(aboutData->license());
-        tabWidget->addTab(licenseBrowser, i18n("&License Agreement"));
+        QWidget* licensePage = new QWidget(this);
+       
+        QPushButton* showLicenseButton = new QPushButton(i18n("Show License"));
+        showLicenseButton->setMaximumSize( showLicenseButton->sizeHint() * 2 );
+        connect( showLicenseButton , SIGNAL(clicked()) , this , SLOT(_k_showLicense()) );
+
+        QHBoxLayout *buttonLayout = new QHBoxLayout;
+        buttonLayout->addStretch(1);
+        buttonLayout->addWidget(showLicenseButton,2);
+        buttonLayout->addStretch(1);
+
+        QVBoxLayout *layout = new QVBoxLayout;
+        layout->addStretch(1);
+        layout->addLayout(buttonLayout,2);
+        layout->addStretch(1);
+
+        licensePage->setLayout(layout);
+
+        tabWidget->addTab(licensePage, i18n("&License Agreement"));
     }
 
     QHBoxLayout *titleLayout = new QHBoxLayout;
@@ -218,6 +250,42 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
     mainWidget->setLayout(mainLayout);
 
     setMainWidget(mainWidget);
+}
+
+KAboutApplicationDialog::~KAboutApplicationDialog()
+{
+    delete d;
+}
+
+void KAboutApplicationDialog::Private::_k_showLicense()
+{
+    KDialog* dialog = new KDialog(q);
+    
+    dialog->setCaption(i18n("License Agreement"));
+    dialog->setButtons(KDialog::Close);
+    dialog->setDefaultButton(KDialog::Close);
+
+    QFont font = KGlobalSettings::fixedFont();
+    QFontMetrics metrics(font);
+
+    KTextBrowser *licenseBrowser = new KTextBrowser;
+    licenseBrowser->setFrameStyle( QFrame::NoFrame );
+    licenseBrowser->setFont(font);
+    licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
+    licenseBrowser->setText(aboutData->license());
+
+    dialog->setMainWidget(licenseBrowser);
+   
+    // try to set up the dialog such that the full width of the 
+    // document is visible without horizontal scroll-bars being required
+    qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * dialog->marginHint()) 
+        + licenseBrowser->verticalScrollBar()->width() * 2;
+
+    // try to allow enough height for a reasonable number of lines to be shown
+    int idealHeight = metrics.height() * 30;
+
+    dialog->setInitialSize( dialog->sizeHint().expandedTo(QSize((int)idealWidth,idealHeight)) ); 
+    dialog->show();
 }
 
 #include "kaboutapplicationdialog.moc"

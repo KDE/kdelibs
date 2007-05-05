@@ -56,9 +56,14 @@ class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
          */
         explicit KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent = 0);
 
+        virtual ~KAboutApplicationDialog();
+
     private:
         class Private;
         Private* const d;
+
+        Q_PRIVATE_SLOT( d, void _k_showLicense() );
+
         Q_DISABLE_COPY( KAboutApplicationDialog )
 };
 
