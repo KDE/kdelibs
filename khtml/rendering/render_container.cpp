@@ -388,11 +388,13 @@ RenderContainer* RenderContainer::pseudoContainer(RenderStyle::PseudoId type) co
         assert(child->isRenderBlock() || child->isRenderInline());
         return static_cast<RenderContainer*>(child);
     }
-    else
-    {   // check continuations
+    if (type == RenderStyle::AFTER) {
+        // check continuations
         if (continuation())
             return continuation()->pseudoContainer(type);
     }
+    if (child && child->isAnonymousBlock())
+        return static_cast<RenderBlock*>(child)->pseudoContainer(type);
     return 0;
 }
 
@@ -401,22 +403,22 @@ void RenderContainer::addPseudoContainer(RenderObject* child)
     RenderStyle::PseudoId type = child->style()->styleType();
     switch (type) {
         case RenderStyle::AFTER: {
-            RenderObject *l = 0;
-            if (isRenderInline()) {
-                RenderObject *c = continuation();
-                while (c) {
-                    l = c;
-                    c = c->continuation();
-                }
-            }
-            if (l)
-                l->addChild(child, 0);
-            else
-                addChild(child, 0);
+            RenderObject *o = this;
+            while (o->continuation()) o = o->continuation();
+
+            // Coalesce inlines
+            if (child->style()->display() == INLINE && o->lastChild() && o->lastChild()->isAnonymousBlock()) {
+                o->lastChild()->addChild(child, 0);
+            } else
+                o->addChild(child, 0);
             break;
         }
         case RenderStyle::BEFORE:
-            addChild(child, firstChild());
+            // Coalesce inlines
+            if (child->style()->display() == INLINE && firstChild() && firstChild()->isAnonymousBlock()) {
+                firstChild()->addChild(child, firstChild()->firstChild());
+            } else
+                addChild(child, firstChild());
             break;
         case RenderStyle::REPLACED:
             addChild(child, pseudoContainer(RenderStyle::AFTER));
