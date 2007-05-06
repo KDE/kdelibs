@@ -140,6 +140,7 @@ install( FILES
   KConfigSkeleton
   KConfigSkeletonGenericItem
   KConfigSkeletonItem
+  KSharedConfigPtr
   KCookie
   KCrash
   KCrashBookmarkImporter
