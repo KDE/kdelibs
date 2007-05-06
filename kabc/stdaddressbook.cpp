@@ -56,8 +56,6 @@ void StdAddressBook::handleCrash()
 
 StdAddressBook *StdAddressBook::self()
 {
-  kdDebug(5700) << "StdAddressBook::self()" << endl;
-
   if ( !mSelf )
     addressBookDeleter.setObject( mSelf, new StdAddressBook );
 
@@ -66,8 +64,6 @@ StdAddressBook *StdAddressBook::self()
 
 StdAddressBook *StdAddressBook::self( bool asynchronous )
 {
-  kdDebug(5700) << "StdAddressBook::self()" << endl;
-
   if ( !mSelf )
     addressBookDeleter.setObject( mSelf, new StdAddressBook( asynchronous ) );
 
