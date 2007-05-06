@@ -1223,4 +1223,3 @@ QString KEncodingDetector::nameForScript(KEncodingDetector::AutoDetectScript scr
 
 #undef DECODE_DEBUG
 
-//#include "kencodingdetector.moc"
