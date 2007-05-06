@@ -2324,7 +2324,8 @@ bool KListViewItem::isAlternate()
 
        while(item)
        {
-          item->m_odd = previous = !previous;
+          previous = !previous;
+          item->m_odd = previous;
           item->m_known = true;
           item = dynamic_cast<KListViewItem *>(item->nextSibling());
        }
