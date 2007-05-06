@@ -27,7 +27,13 @@
 #include <config.h>
 
 #ifdef HAVE_ALLOCA_H
-#include <alloca.h>
+#  include <alloca.h>
+#  else
+#  ifdef HAVE_MALLOC_H
+#    include <malloc.h>
+#  else
+#    include <stdlib.h>
+#  endif
 #endif
 
 #include <khtml_factory.h>
