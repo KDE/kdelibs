@@ -48,7 +48,7 @@ class KResolverEntry;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KDatagramPacket //krazy:exlude=dpointer (lightweight; kde3)
+class KDECORE_EXPORT KDatagramPacket //krazy:exclude=dpointer,inline (lightweight; kde3)
 {
   QByteArray m_data;
   KSocketAddress m_address;
