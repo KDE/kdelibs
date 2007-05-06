@@ -84,9 +84,9 @@ class KDEUI_EXPORT KToggleAction : public KAction
     /**
      * Defines the text (and icon, tooltip, whatsthis) that should be displayed
      * instead of the normal text, when the action is checked.
-     * This feature replaces the checkmark that usually appears in front of the text, in menus.
-     * It is useful when the text is mainly a verb: e.g. "Show <foo>"
-     * should turn into "Hide <foo>" when activated.
+     * Note that this does <em>not</em> replace the check box in front of the
+     * menu.  So you should not use it to replace the text "Show <foo>" with
+     * "Hide <foo>", for example.
      *
      * If hasIcon(), the icon is kept for the 'checked state', unless
      * @p checkedItem defines an icon explicitly. Same thing for tooltip and whatsthis.

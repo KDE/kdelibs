@@ -340,7 +340,6 @@ KMenu *KToolBar::Private::contextMenu()
     contextLockAction = new KToggleAction( KIcon( "system-lock-screen" ), i18n( "Lock Toolbars" ), parent );
     context->addAction( contextLockAction );
     contextLockAction->setChecked( parent->toolBarsLocked() );
-    contextLockAction->setCheckedState( KGuiItem( i18n( "Unlock Toolbars" ), KIcon( "unlock" ) ) );
     connect( contextLockAction, SIGNAL( toggled( bool ) ), parent, SLOT( slotLockToolBars( bool ) ) );
 
     connect( context, SIGNAL( aboutToShow() ), parent, SLOT( slotContextAboutToShow() ) );

@@ -285,16 +285,13 @@ void KMMainView::initActions()
 
 	KToggleAction *tact = new KToggleAction(i18n("Show &Toolbar"), this);
 	m_actions->addAction( "view_toolbar", tact );
-	tact->setCheckedState(KGuiItem(i18n("Hide &Toolbar")));
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
 	tact = new KToggleAction( i18n( "Show Me&nu Toolbar" ), this);
 	m_actions->addAction( "view_menubar", tact );
-	tact->setCheckedState(KGuiItem(i18n("Hide Me&nu Toolbar")));
 	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
 	tact = new KToggleAction(i18n("Show Pr&inter Details"), this);
 	m_actions->addAction( "view_printerinfos", tact );
 	tact->setIcon( KIcon( "kdeprint-printer-infos" ) );
-	tact->setCheckedState(KGuiItem(i18n("Hide Pr&inter Details"),"kdeprint-printer-infos"));
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 

@@ -295,7 +295,6 @@ void KMJobViewer::initActions()
 	KToggleAction *uact = new KToggleAction(i18n("Show Only User Jobs"), this);
 	actionCollection()->addAction( "view_user_jobs", uact );
 	uact->setIcon( KIcon( "personal" ) );
-	uact->setCheckedState(KGuiItem(i18n("Hide Only User Jobs"),"personal"));
 	connect(uact, SIGNAL(toggled(bool)), SLOT(slotUserOnly(bool)));
 
 	m_userfield = new QLineEdit(0);

@@ -312,14 +312,12 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
         new KToggleAction(i18n("Show Quick Access Navigation Panel"), this);
     coll->addAction("toggleSpeedbar", showSidebarAction);
     showSidebarAction->setShortcut( QKeySequence(Qt::Key_F9) );
-    showSidebarAction->setCheckedState(KGuiItem(i18n("Hide Quick Access Navigation Panel")));
     connect( showSidebarAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleSpeedbar( bool )) );
 
     KToggleAction *showBookmarksAction =
         new KToggleAction(i18n("Show Bookmarks"), this);
     coll->addAction("toggleBookmarks", showBookmarksAction);
-    showBookmarksAction->setCheckedState(KGuiItem(i18n("Hide Bookmarks")));
     connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
              SLOT( toggleBookmarks( bool )) );
 
