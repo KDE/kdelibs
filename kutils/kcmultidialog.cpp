@@ -22,6 +22,8 @@
 
 */
 
+#include "kcmultidialog.h"
+
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
 
@@ -36,8 +38,6 @@
 
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
-
-#include "kcmultidialog.h"
 
 class KCMultiDialog::Private
 {

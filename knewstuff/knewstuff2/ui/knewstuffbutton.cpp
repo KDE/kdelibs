@@ -18,13 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "knewstuffbutton.h"
+
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kicon.h>
 
 #include "knewstuff2/engine.h"
-
-#include "knewstuffbutton.h"
 
 namespace KNS
 {

@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "providerdialog.h"
+
 #include <QLabel>
 #include <QLayout>
 #include <QTreeWidget>
@@ -28,8 +30,6 @@
 
 //#include "engine.h"
 #include "knewstuff2/core/provider.h"
-
-#include "providerdialog.h"
 
 using namespace KNS;
 

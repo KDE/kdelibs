@@ -222,8 +222,8 @@ void KDXSButton::setEngine(DxsEngine *engine)
 void KDXSButton::slotInfo(QString provider, QString server, QString version)
 {
 	QString infostring = i18n("Server: %1", server);
-	infostring += "\n" + i18n("Provider: %1", provider);
-	infostring += "\n" + i18n("Version: %1", version);
+	infostring += '\n' + i18n("Provider: %1", provider);
+	infostring += '\n' + i18n("Version: %1", version);
 
 	KMessageBox::information(this,
 		infostring,
@@ -523,7 +523,7 @@ bool KDXSButton::authenticate()
 	return true; // FIXME: hack during development only
 
 	KIO::PasswordDialog dlg(i18n("This operation needs authentication"),
-		QString::null);
+		QString());
 	int ret = dlg.exec();
 	if(ret == QDialog::Accepted)
 	{

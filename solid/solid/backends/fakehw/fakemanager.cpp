@@ -19,7 +19,9 @@
 #include "backends/fakehw/fakemanager.h"
 
 // Qt includes
-#include <QtXml>
+#include <QtXml/QDomDocument>
+#include <QtXml/QDomElement>
+#include <QtXml/QDomNode>
 #include <QtCore/QFile>
 #include <QtCore/QString>
 #include <QtCore/QTimer>

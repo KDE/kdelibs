@@ -514,7 +514,7 @@ void CoreEngine::loadRegistry(const QString &registrydir)
 		QStringList files = dir.entryList(QDir::Files | QDir::Readable);
 		for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
 		{
-			QString filepath = (*it) + "/" + (*fit);
+			QString filepath = (*it) + '/' + (*fit);
 			kDebug(550) << "  + Load from file '" + filepath + "'." << endl;
 
 			bool ret;
@@ -673,8 +673,8 @@ void CoreEngine::loadFeedCache(Provider *provider)
 
 		// FIXME: hack because we saved with wrong name!
 		feedname = "???";
-		QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + "-" + feedname);
-		QString cachefile = cachedir + "/" + idbase64 + ".xml";
+		QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + '-' + feedname);
+		QString cachefile = cachedir + '/' + idbase64 + ".xml";
 
 		kDebug(550) << "  + Load from file '" + cachefile + "'." << endl;
 
@@ -712,7 +712,7 @@ void CoreEngine::loadFeedCache(Provider *provider)
 		while(!entryel.isNull())
 		{
 			QString idbase64 = entryel.text();
-			QString filepath = entrycachedir + "/" + idbase64 + ".meta";
+			QString filepath = entrycachedir + '/' + idbase64 + ".meta";
 
 			kDebug(550) << "   + Load entry from file '" + filepath + "'." << endl;
 
@@ -810,7 +810,7 @@ void CoreEngine::loadEntriesCache()
 	QStringList files = dir.entryList(QDir::Files | QDir::Readable);
 	for(QStringList::iterator fit = files.begin(); fit != files.end(); fit++)
 	{
-		QString filepath = cachedir + "/" + (*fit);
+		QString filepath = cachedir + '/' + (*fit);
 		kDebug(550) << "  + Load from file '" + filepath + "'." << endl;
 
 		Entry *e = loadEntryCache(filepath);
@@ -1048,7 +1048,7 @@ void CoreEngine::cacheFeed(const Provider *provider, QString feedname, const Fee
 
 	kDebug(550) << " + Save to directory '" + cachedir + "'." << endl;
 
-	QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + "-" + feedname);
+	QString idbase64 = QString(KCodecs::base64Encode(pid(provider).toUtf8()) + '-' + feedname);
 	QString cachefile = idbase64 + ".xml";
 
 	kDebug(550) << " + Save to file '" + cachefile + "'." << endl;
@@ -1170,7 +1170,7 @@ QString CoreEngine::id(Entry *e)
 	// This is the primary key of an entry:
 	// A lookup on the name, which must exist but might be translated
 	// This requires some care for comparison since translations might be added
-	return e->name().language() + ":" + e->name().representation();
+	return e->name().language() + ':' + e->name().representation();
 }
 
 QString CoreEngine::pid(const Provider *p)
@@ -1257,8 +1257,8 @@ bool CoreEngine::install(QString payloadfile)
 
 	QString ext = payloadfile.section('.', 1);
 	QString installfile = entry->name().representation();
-	installfile += "-" + entry->version();
-	if(!ext.isEmpty()) installfile += "." + ext;
+	installfile += '-' + entry->version();
+	if(!ext.isEmpty()) installfile += '.' + ext;
 
 	QString installpath, installdir;
 	int pathcounter = 0;
@@ -1269,15 +1269,15 @@ bool CoreEngine::install(QString payloadfile)
 	}
 	if(!m_installation->targetDir().isEmpty())
 	{
-		installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + "/");
+		installdir = KStandardDirs::locateLocal("data", m_installation->targetDir() + '/');
 		pathcounter++;
 	}
 	if(!m_installation->installPath().isEmpty())
 	{
-		installdir = QDir::home().path() + "/" + m_installation->installPath() + "/";
+		installdir = QDir::home().path() + '/' + m_installation->installPath() + '/';
 		pathcounter++;
 	}
-	installpath = installdir + "/" + installfile;
+	installpath = installdir + '/' + installfile;
 
 	if(pathcounter != 1)
 	{

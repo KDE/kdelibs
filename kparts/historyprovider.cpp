@@ -17,11 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "historyprovider.h"
+
 #include <QtCore/QSet>
 
 #include <kapplication.h>
-
-#include "historyprovider.h"
 
 using namespace KParts;
 

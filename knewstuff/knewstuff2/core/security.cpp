@@ -19,6 +19,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+ //app includes
+#include "security.h"
+
  //qt includes
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -34,9 +37,6 @@
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <k3procio.h>
-
- //app includes
-#include "security.h"
 
 using namespace KNS;
 

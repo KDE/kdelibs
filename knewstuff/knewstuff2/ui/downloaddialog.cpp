@@ -8,6 +8,9 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
+// own include
+#include "downloaddialog.h"
+
 // qt/kde includes
 #include <QtCore/QFile>
 #include <QtGui/QWidget>
@@ -47,8 +50,6 @@
 #include "knewstuff2/dxs/dxs.h"
 
 // local includes
-#include "downloaddialog.h"
-
 #include "kdxsbutton.h"
 #include "qasyncpixmap.h"
 #include "qasyncframe.h"

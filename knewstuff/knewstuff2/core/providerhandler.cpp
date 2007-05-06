@@ -19,14 +19,14 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "providerhandler.h"
+
 //#include <kconfig.h>
 #include <kdebug.h>
 //#include <kio/job.h>
 #include <kglobal.h>
 //#include <kmessagebox.h>
 #include <klocale.h>
-
-#include "providerhandler.h"
 
 #include "feed.h"
 

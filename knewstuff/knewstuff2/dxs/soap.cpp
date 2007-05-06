@@ -73,16 +73,16 @@ void Soap::call_tree(QDomElement element, QString endpoint)
 	QString s = QString();
 
 	s += localname(element);
-	s += "(";
+	s += '(';
 	QDomNodeList l = element.childNodes();
 	for(int i = 0; i < l.count(); i++)
 	{
 		QDomNode tmp = l.item(i);
 		s += localname(tmp);
-		s += "(";
+		s += '(';
 		s += xpath(tmp, "/");
-		s += ")";
-		s += "\n";
+		s += ')';
+		s += '\n';
 	}
 	s += ")\n";
 

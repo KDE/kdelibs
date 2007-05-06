@@ -38,7 +38,7 @@ namespace Solid
      *
      * @author Kevin Ottens <ervin@kde.org>
      */
-    class SOLID_EXPORT DeviceNotifier : public QObject
+    class SOLID_EXPORT DeviceNotifier : public QObject //krazy:exclude=dpointer (interface class)
     {
         Q_OBJECT
     public:

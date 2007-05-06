@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kcmoduleproxy.h"
+
 #include <QtGui/QApplication>
 #include <QtGui/QCursor>
 #include <QtCore/QDataStream>
@@ -48,7 +50,6 @@
 
 #include <kcmoduleloader.h>
 
-#include "kcmoduleproxy.h"
 #include "ksettingswidgetadaptor.h"
 
 /***************************************************************/

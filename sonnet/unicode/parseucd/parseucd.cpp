@@ -19,7 +19,13 @@
  * 02110-1301  USA
  */
 
-#include <QtCore>
+#include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QHash>
+#include <QtCore/QRegExp>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QTextStream>
 
 int main()
 {

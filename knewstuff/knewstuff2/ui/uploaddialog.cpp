@@ -18,6 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "uploaddialog.h"
+
 #include <QtGui/QComboBox>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -38,7 +40,6 @@
 #include "knewstuff2/core/entry.h"
 #include "knewstuff2/core/author.h"
 
-#include "uploaddialog.h"
 #include <kconfiggroup.h>
 
 using namespace KNS;

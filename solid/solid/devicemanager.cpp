@@ -18,7 +18,7 @@
 */
 
 #include "devicenotifier.h"
-#include "devicemanager_p.h"
+#include "devicemanager_p.h" //krazy:exclude=includes (devicenotifier.h is the header file for this class)
 
 #include "device.h"
 #include "device_p.h"

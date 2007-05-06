@@ -19,10 +19,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "provider.h"
+
 #include <kdebug.h>
 #include <kio/job.h>
-
-#include "provider.h"
 
 using namespace KNS;
 

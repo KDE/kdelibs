@@ -21,6 +21,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kcmoduleinfo.h"
+
 #include <QtCore/QVariant>
 
 #include <kdesktopfile.h>
@@ -28,8 +30,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
-
-#include "kcmoduleinfo.h"
 
 class KCModuleInfo::Private
 {

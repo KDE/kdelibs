@@ -253,7 +253,7 @@ QString Solid::Predicate::toString() const
         QString op = " AND ";
         if (d->type==Private::OrType) op = " OR ";
 
-        return "["+d->operand1->toString()+op+d->operand2->toString()+"]";
+        return '['+d->operand1->toString()+op+d->operand2->toString()+']';
     }
     else
     {

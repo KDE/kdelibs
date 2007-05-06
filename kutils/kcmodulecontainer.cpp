@@ -17,6 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "kcmodulecontainer.h"
+#include "kcmodulecontainer.moc"
+
 #include <QtGui/QLayout>
 #include <QtGui/QPixmap>
 #include <QtCore/QStringList>
@@ -37,9 +40,7 @@
 #include <kservice.h>
 #include <kstandardguiitem.h>
 
-#include "kcmodulecontainer.h"
 #include <kicon.h>
-#include "kcmodulecontainer.moc"
 
 /***********************************************************************/
 class KCModuleContainer::KCModuleContainerPrivate

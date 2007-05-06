@@ -21,6 +21,8 @@
   Boston, MA 02110-1301, USA.
 */
 
+#include "kcmoduleloader.h"
+
 #include <QtCore/QFile>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -30,8 +32,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <klibloader.h>
-
-#include "kcmoduleloader.h"
 
 
 /***************************************************************/
