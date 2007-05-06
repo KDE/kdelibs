@@ -89,7 +89,7 @@ void RemoteServicePrivate::gotError()
 	emit m_parent->resolved(false);
 }
 
-void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString &type, const QString &domain, const QString &host, int, const QString &, ushort port, const QList<QByteArray> &txt, uint)
+void RemoteServicePrivate::gotFound(int, int, const QString &name, const QString &, const QString &domain, const QString &host, int, const QString &, ushort port, const QList<QByteArray> &txt, uint)
 {
 	m_serviceName = name;
 	m_hostName = host;

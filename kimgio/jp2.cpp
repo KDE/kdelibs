@@ -142,7 +142,7 @@ static long qiodevice_seek(jas_stream_obj_t *obj, long offset, int origin)
             return -1;
 }
 
-static int qiodevice_close(jas_stream_obj_t *obj)
+static int qiodevice_close(jas_stream_obj_t *)
 {
         return 0;
 }
