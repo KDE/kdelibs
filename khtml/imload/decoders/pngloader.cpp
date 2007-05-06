@@ -238,8 +238,6 @@ public:
             return Error;
         }
 
-        qDebug("pushing:%d bytes",length);
-        
         //OK, now we can actually do work.... Push data to libPNG,
         //it will use callbacks
         //### time limiting?
