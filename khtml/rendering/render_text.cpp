@@ -26,6 +26,7 @@
 //#define DEBUG_LAYOUT
 //#define BIDI_DEBUG
 
+
 #include "render_text.h"
 #include "render_canvas.h"
 #include "break_lines.h"
@@ -47,10 +48,14 @@
 #include <config.h>
 
 #ifdef HAVE_ALLOCA_H
-// explicitly included for systems that don't provide it in stdlib.h
-#include <alloca.h>
+// explicitly included for systems that don't provide it in stdlib.h or malloc.h
+#  include <alloca.h>
 #else
-#include <stdlib.h>
+#  ifdef HAVE_MALLOC_H
+#    include <malloc.h>
+#  else
+#    include <stdlib.h>
+#  endif
 #endif
 
 using namespace khtml;
