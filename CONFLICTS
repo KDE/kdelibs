@@ -1,0 +1,26 @@
+List of remaining conflicts between kdelibs3 and kdelibs4
+
+bin/cupsdconf -> kdebase?
+bin/cupsdoprint -> kdebase?
+bin/imagetops
+bin/kaddprinterwizard -> kdebase
+bin/kconf_update      -> libexec
+bin/kconfig_compiler  -> libexec
+bin/kcookiejar
+bin/kde-menu
+bin/kded
+bin/kdesu_stub
+bin/kdontchangethehostname -> libexec
+bin/kdostartupconfig
+bin/kio_http_cache_cleaner -> libexec
+bin/klauncher              -> libexec
+bin/kpac_dhcp_helper
+bin/ksendbugmail
+bin/kstartupconfig
+bin/ksvgtopng
+bin/ktradertest
+bin/kunittestmodrunner
+bin/make_driver_db_cups
+bin/make_driver_db_lpr
+bin/makekdewidgets
+bin/preparetips
