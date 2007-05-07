@@ -33,17 +33,68 @@ namespace Phonon
 {
     class ObjectDescriptionPrivate;
 
+    /**
+     * Defines the type of information that is contained in a ObjectDescription
+     * object.
+     *
+     * \ingroup Backend
+     */
     enum ObjectDescriptionType
     {
+        /**
+         * Audio output devices. This can be soundcards (with different drivers), soundservers or
+         * other virtual outputs like playback on a different computer on the
+         * network.
+         *
+         * For Hardware devices the backend should use libkaudiodevicelist (\ref
+         * AudioDevice and \ref AudioDeviceEnumerator) which will list removable
+         * devices even when they are unplugged and provide a unique identifier
+         * that can make backends use the same identifiers.
+         */
         AudioOutputDeviceType,
+
+        /**
+         * Audio capture devices. This can be soundcards (with different drivers), soundservers or
+         * other virtual inputs like capture on a different computer on the
+         * network.
+         *
+         * For Hardware devices the backend should use libkaudiodevicelist (\ref
+         * AudioDevice and \ref AudioDeviceEnumerator) which will list removable
+         * devices even when they are unplugged and provide a unique identifier
+         * that can make backends use the same identifiers.
+         */
         AudioCaptureDeviceType,
+        /**
+         * Not used yet.
+         */
         VideoOutputDeviceType,
+        /**
+         * Not used yet.
+         */
         VideoCaptureDeviceType,
+        /**
+         * Lists all audio processing effects the backend supports.
+         */
         AudioEffectType,
+        /**
+         * Lists all video processing effects the backend supports.
+         */
         VideoEffectType,
+        /**
+         * Not used yet.
+         */
         AudioCodecType,
+        /**
+         * Not used yet.
+         */
         VideoCodecType,
+        /**
+         * Not used yet.
+         */
         ContainerFormatType,
+        /**
+         * Not used yet.
+         */
         VisualizationType
     };
 
@@ -192,4 +243,3 @@ typedef ObjectDescription<VisualizationType> VisualizationDescription;
 } //namespace Phonon
 
 #endif // PHONON_OBJECTDESCRIPTION_H
-// vim: sw=4 ts=4 tw=80
