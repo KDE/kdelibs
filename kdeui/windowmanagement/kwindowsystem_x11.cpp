@@ -257,7 +257,7 @@ int KWindowSystemPrivate::currentViewport(int desktop) const
 static bool atoms_created = false;
 
 static Atom kde_wm_change_state;
-static Atom wm_protocols;
+static Atom _wm_protocols;
 static Atom kwm_utf8_string;
 static Atom net_wm_cm;
 
@@ -272,7 +272,7 @@ static void create_atoms() {
 	atoms[n] = &kde_wm_change_state;
 	names[n++] = "_KDE_WM_CHANGE_STATE";
 
-        atoms[n] = &wm_protocols;
+        atoms[n] = &_wm_protocols;
         names[n++] = "WM_PROTOCOLS";
         
         atoms[n] = &kwm_utf8_string;
