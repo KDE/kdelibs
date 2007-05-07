@@ -270,6 +270,13 @@ add_custom_command(
    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
 )
 
+if(KDE4_ENABLE_FINAL)
+	macro_add_file_dependencies(                                                                                                    ${CMAKE_CURRENT_BINARY_DIR}/ktranscript_final_cpp.cpp                                                                        ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+else(KDE4_ENABLE_FINAL)
+	macro_add_file_dependencies(                                                                                                    ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp                                                                     ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+endif(KDE4_ENABLE_FINAL)
+
+
 macro_add_file_dependencies(
    ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
    ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
@@ -278,6 +285,8 @@ macro_add_file_dependencies(
 set( ktranscript_LIB_SRCS
    localization/ktranscript.cpp
 )
+
+
 
 kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
 
