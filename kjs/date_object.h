@@ -24,6 +24,8 @@
 #include "function.h"
 #include "JSWrapperObject.h"
 
+struct tm;
+
 namespace KJS {
 
     class FunctionPrototype;
