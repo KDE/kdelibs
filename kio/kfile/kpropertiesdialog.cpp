@@ -1154,7 +1154,7 @@ void KFilePropsPlugin::slotEditFileType()
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
                     + ' ' + K3Process::quote(mime),
-                    keditfiletype, keditfiletype /*unused*/);
+                    keditfiletype, keditfiletype /*unused*/, properties->topLevelWidget());
 #endif
 }
 

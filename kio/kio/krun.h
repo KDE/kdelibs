@@ -87,9 +87,11 @@ public:
    *        Before you set this to false to avoid a dialog box, think about
    *        a very slow FTP server...
    *        It is always better to provide progress info in such cases.
+   * @param asn
+   *        Application startup notification id, if available (otherwise "").
    */
   KRun( const KUrl& url, QWidget* window, mode_t mode = 0,
-	bool isLocalFile = false, bool showProgressInfo = true );
+	bool isLocalFile = false, bool showProgressInfo = true, const QByteArray& asn = "" );
 
   /**
    * Destructor. Don't call it yourself, since a KRun object auto-deletes
@@ -189,9 +191,11 @@ public:
    * @param tempFiles if true and urls are local files, they will be deleted
    *        when the application exits.
    * @param suggestedFileName see setSuggestedFileName
+   * @param asn Application startup notification id, if any (otherwise "").
    * @return the process id, or 0 on error
    */
-  static pid_t run( const KService& service, const KUrl::List& urls, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString() );
+  static pid_t run( const KService& service, const KUrl::List& urls, QWidget* window,
+      bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
 
   /**
    * Open a list of URLs with.
@@ -199,16 +203,17 @@ public:
    * @param exec the name of the executable, for example
    *        "/usr/bin/netscape".
    * @param urls  the list of URLs to open, can be empty (app launched without argument)
+   * @param window The top-level widget of the app that invoked this object.
    * @param name the logical name of the application, for example
    *        "Netscape 4.06".
    * @param icon the icon which should be used by the application.
-   * @param window The top-level widget of the app that invoked this object.
+   * @param asn Application startup notification id, if any (otherwise "").
    * @return the process id, or 0 on error
    */
-  static pid_t run( const QString& exec, const KUrl::List& urls,
+  static pid_t run( const QString& exec, const KUrl::List& urls, QWidget* window,
                     const QString& name = QString(),
                     const QString& icon = QString(),
-                    QWidget* window = 0 );
+                    const QByteArray& asn = "" );
 
   /**
    * Open the given URL.
@@ -225,9 +230,11 @@ public:
    *        executables and shell scripts will not be run.
    *        See also isExecutable().
    * @param suggestedFileName see setSuggestedFileName
+   * @param asn Application startup notification id, if any (otherwise "").
    * @return the process id, or 0 on error
    */
-  static pid_t runUrl( const KUrl& url, const QString& mimetype, QWidget* window, bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString() );
+  static pid_t runUrl( const KUrl& url, const QString& mimetype, QWidget* window,
+      bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
 
   /**
    * Run the given shell command and notifies kicker of the starting
@@ -253,10 +260,12 @@ public:
    * to it, since the function will do that for you.
    * @param execName the name of the executable
    * @param icon icon for app starting notification
+   * @param window The top-level widget of the app that invoked this object.
+   * @param asn Application startup notification id, if any (otherwise "").
    * @return PID of running command, 0 if it could not be started, 0 - (PID
    * of running command) if command was unsafe for map notification.
    */
-  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon );
+  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon, QWidget* window, const QByteArray& asn = "" );
 
   /**
    * Display the Open-With dialog for those URLs, and run the chosen application.
@@ -265,9 +274,11 @@ public:
    * @param tempFiles if true and lst are local files, they will be deleted
    *        when the application exits.
    * @param suggestedFileName see setSuggestedFileName
+   * @param asn Application startup notification id, if any (otherwise "").
    * @return false if the dialog was canceled
    */
-  static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles = false, const QString& suggestedFileName = QString() );
+  static bool displayOpenWithDialog( const KUrl::List& lst, QWidget* window,
+      bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
 
   /**
    * Quotes a string for the shell.
@@ -379,7 +390,7 @@ protected:
 
 private:
   void init (const KUrl& url, QWidget* window, mode_t mode,
-             bool isLocalFile, bool showProgressInfo);
+             bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
 private:
   class KRunPrivate;
   KRunPrivate* const d;

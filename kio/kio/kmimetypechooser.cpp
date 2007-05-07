@@ -200,7 +200,7 @@ void KMimeTypeChooser::editMimeType()
                       + " --parent " + QString::number( (ulong)topLevelWidget()->winId())
 #endif
                       + ' ' + K3Process::quote(mt),
-                      keditfiletype, keditfiletype /*unused*/);
+                      keditfiletype, keditfiletype /*unused*/, topLevelWidget());
 }
 
 void KMimeTypeChooser::slotCurrentChanged(QTreeWidgetItem* i)
