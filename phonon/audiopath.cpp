@@ -78,7 +78,7 @@ bool AudioPath::removeOutput(AbstractAudioOutput *audioOutput)
     return false;
 }
 
-const QList<AbstractAudioOutput *> &AudioPath::outputs() const
+QList<AbstractAudioOutput *> AudioPath::outputs() const
 {
     K_D(const AudioPath);
     return d->outputs;
@@ -131,7 +131,7 @@ bool AudioPath::removeEffect(Effect *effect)
     return false;
 }
 
-const QList<Effect *> &AudioPath::effects() const
+QList<Effect *> AudioPath::effects() const
 {
     K_D(const AudioPath);
     return d->effects;

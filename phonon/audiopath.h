@@ -119,7 +119,7 @@ namespace Experimental
              * \see addOutput
              * \see removeOutput
              */
-            const QList<AbstractAudioOutput *> &outputs() const;
+            QList<AbstractAudioOutput *> outputs() const;
 
             /**
              * Inserts an effect into the audio path.
@@ -171,7 +171,7 @@ namespace Experimental
              * \see insertEffect
              * \see removeEffect
              */
-            const QList<Effect *> &effects() const;
+            QList<Effect *> effects() const;
     };
 } //namespace Phonon
 
