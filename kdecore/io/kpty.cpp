@@ -231,7 +231,7 @@ bool KPty::open()
   goto gotptyandmode;
 #endif
 
-#if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT)
+#if defined(HAVE_PTSNAME) && defined(HAVE_GRANTPT) && defined(PTM_DEVICE)
   d->masterFd = ::open(PTM_DEVICE, O_RDWR);
   if (d->masterFd >= 0)
   {
