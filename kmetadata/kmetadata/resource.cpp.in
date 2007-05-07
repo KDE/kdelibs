@@ -168,12 +168,6 @@ void Nepomuk::KMetaData::Resource::revive()
 }
 
 
-bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
-{
-    return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
-}
-
-
 bool Nepomuk::KMetaData::Resource::isModified() const
 {
     return m_data->isModified();

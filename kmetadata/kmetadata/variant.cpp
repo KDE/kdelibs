@@ -768,9 +768,8 @@ QString Nepomuk::KMetaData::Variant::toString() const
         return QString::number( toUnsignedInt64() );
     else if( isBool() )
         return ( toBool() ? QString("true") : QString("false" ) );
-    else if( isDouble() ) // FIXME: decide on a proper double encoding or check if there is one in xml schema
+    else if( isDouble() )
         return QString::number( toDouble(), 'e', 10 );
-    // FIXME: use the correct data and time encoding of XML Schema
     else if( isDate() )
         return Soprano::LiteralValue( toDate() ).toString();
     else if( isTime() )
