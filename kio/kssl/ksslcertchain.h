@@ -21,8 +21,7 @@
 #ifndef _KSSLCERTCHAIN_H
 #define _KSSLCERTCHAIN_H
 
-#include <QtCore/QBool>
-#include <Qt3Support/Q3PtrList>
+#include <QtCore/QList>
 #include <kdemacros.h>
 
 class QString;
@@ -85,16 +84,7 @@ public:
 	 *  @param chain the certificate chain
 	 *  @see KSSLCertificate
 	 */
-	void setChain(Q3PtrList<KSSLCertificate>& chain);
-
-	/**
-	 *  Set the certificate chain as a list of base64 encoded X.509
-	 *  certificates.
-	 *
-	 *  @param chain the certificate chain
-	 *  @deprecated
-	 */
-	KDE_DEPRECATED void setChain(QStringList chain);
+	void setChain(const QList<KSSLCertificate *>& chain);
 
 	/**
 	 *  Set the certificate chain as a list of base64 encoded X.509
@@ -106,11 +96,12 @@ public:
 
 	/**
 	 *  Obtain a copy of the certificate chain.
+	 *  The caller is responsible for deleting all certificates in the chain.
 	 *
 	 *  @return a deep copy of the certificate chain.
 	 *  @see KSSLCertificate
 	 */
-	Q3PtrList<KSSLCertificate> getChain();
+	QList<KSSLCertificate *> getChain() const;
 
 	/**
 	 *  Determine the number of entries (depth) of the chain.

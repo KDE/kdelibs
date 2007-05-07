@@ -36,9 +36,6 @@
 #include <QtCore/QLinkedList>
 #include <Q3ScrollView>
 #include <QTextDocument>
-#include <Qt3Support/Q3PtrList>
-
-#undef Bool
 
 class MetaPropsScrollView : public Q3ScrollView
 {
@@ -77,7 +74,7 @@ public:
     QGridLayout*                  m_framelayout;
     KFileMetaInfo                 m_info;
 //    QPushButton*                m_add;
-    Q3PtrList<KFileMetaInfoWidget> m_editWidgets;
+    QList<KFileMetaInfoWidget *> m_editWidgets;
 };
 
 KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
@@ -90,7 +87,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
     d->m_info  = fileitem->metaInfo();
     if (!d->m_info.isValid())
     {
-      d->m_info = KFileMetaInfo(properties->kurl().path(KUrl::RemoveTrailingSlash));
+        d->m_info = KFileMetaInfo(properties->kurl().path(KUrl::RemoveTrailingSlash));
         fileitem->setMetaInfo(d->m_info);
     }
 
@@ -114,12 +111,14 @@ void KFileMetaPropsPlugin::createLayout()
     kDebug(250) << "KFileMetaPropsPlugin::createLayout" << endl;
 
     // is there any valid and non-empty info at all?
-    if ( !d->m_info.isValid() || (d->m_info.preferredKeys()).isEmpty() )
+    if ( !d->m_info.isValid() )
         return;
 
     // now get a list of groups
     //KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
     KFileMetaInfoGroupList groupList = d->m_info.preferredGroups();
+    if (groupList.isEmpty())
+        return;
 
 /*    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
     if (!mtinfo)
@@ -248,16 +247,20 @@ KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
 
 bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 {
+    kDebug() << k_funcinfo << endl;
 #ifdef _GNUC
 #warning TODO: Add support for more than one item
 #endif
-  // TODO check that KDesktopPropsPlugin is correct, i.e. that we never want metainfo for
-  // a .desktop file? Used to be that only Application desktop files were filtered out
-  if (KDesktopPropsPlugin::supports(_items) || KUrlPropsPlugin::supports(_items))
-     return false; // Having both is redundant.
+    // TODO check that KDesktopPropsPlugin is correct, i.e. that we never want metainfo for
+    // a .desktop file? Used to be that only Application desktop files were filtered out
+    if (KDesktopPropsPlugin::supports(_items) || KUrlPropsPlugin::supports(_items))
+        return false; // Having both is redundant.
+    if (_items.count() != 1)
+        return false;
 
-  bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
-  return _items.count() == 1 && metaDataEnabled;
+    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first()->url());
+    kDebug() << k_funcinfo << "metaDataEnabled=" << metaDataEnabled << endl;
+    return metaDataEnabled;
 }
 
 void KFileMetaPropsPlugin::applyChanges()
@@ -265,9 +268,8 @@ void KFileMetaPropsPlugin::applyChanges()
   kDebug(250) << "applying changes" << endl;
   // insert the fields that changed into the info object
 
-  Q3PtrListIterator<KFileMetaInfoWidget> it( d->m_editWidgets );
-  KFileMetaInfoWidget* w;
-  for (; (w = it.current()); ++it) w->apply();
+  foreach(KFileMetaInfoWidget* w, d->m_editWidgets)
+      w->apply();
   d->m_info.applyChanges();
 }
 

@@ -184,17 +184,15 @@ void KSSLD::cacheSaveToDisk() {
 
 			// Also write the chain
 			QStringList qsl;
-			Q3PtrList<KSSLCertificate> cl =
+			QList<KSSLCertificate *> cl =
 						node->cert->chain().getChain();
-			for (KSSLCertificate *c = cl.first();
-							c != 0;
-							c = cl.next()) {
+			foreach (KSSLCertificate *c, cl) {
 				//kDebug() << "Certificate in chain: "
 				//		<<	c->toString() << endl;
 				qsl << c->toString();
 			}
 
-			cl.setAutoDelete(true);
+			qDeleteAll(cl);
 			cg.writeEntry("Chain", qsl);
 		}
 	}

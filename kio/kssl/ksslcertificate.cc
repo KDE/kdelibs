@@ -1111,18 +1111,17 @@ QStringList KSSLCertificate::subjAltNames() const {
 
 
 QDataStream& operator<<(QDataStream& s, const KSSLCertificate& r) {
-QStringList qsl;
-Q3PtrList<KSSLCertificate> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
+    QStringList qsl;
+    QList<KSSLCertificate *> cl = const_cast<KSSLCertificate&>(r).chain().getChain();
 
-	for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
-		qsl << c->toString();
-	}
+    foreach(KSSLCertificate *c, cl) {
+        qsl << c->toString();
+    }
 
-	cl.setAutoDelete(true);
+    qDeleteAll(cl);
+    s << const_cast<KSSLCertificate&>(r).toString() << qsl;
 
-	s << const_cast<KSSLCertificate&>(r).toString() << qsl;
-
-return s;
+    return s;
 }
 
 

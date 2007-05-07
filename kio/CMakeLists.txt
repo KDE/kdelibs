@@ -34,7 +34,7 @@ configure_file(kio/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/conf
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
-add_subdirectory( kssl )
+add_subdirectory( kssl/kssl )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( kfile/tests )
@@ -364,6 +364,30 @@ install( FILES
   bookmarks/kbookmarkimporter_kde1.h
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
+  kssl/kssl.h
+  kssl/ksslcertificatehome.h
+  kssl/ksslsettings.h
+  kssl/ksslcertificate.h
+  kssl/ksslconnectioninfo.h
+  kssl/ksslcertificatefactory.h
+  kssl/ksslcertificatecache.h
+  kssl/ksslpeerinfo.h
+  kssl/ksslinfodialog.h
+  kssl/ksslcertdialog.h
+  kssl/ksslutils.h
+  kssl/kopenssl.h
+  kssl/ksslall.h
+  kssl/ksslpkcs12.h
+  kssl/ksslcertchain.h
+  kssl/ksslkeygen.h
+  kssl/ksslx509v3.h
+  kssl/ksslsigners.h
+  kssl/ksslpkcs7.h
+  kssl/ksslpemcallback.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h
+  kssl/ksslsession.h
+  kssl/ksslx509map.h
+  kssl/ksmimecrypto.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})

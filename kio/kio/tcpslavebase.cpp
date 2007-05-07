@@ -63,7 +63,7 @@ class TCPSlaveBase::TcpSlaveBasePrivate
 {
 public:
 
-    TcpSlaveBasePrivate() 
+    TcpSlaveBasePrivate()
         : socket(0),
         rblockSz(256),
         militantSSL(false),
@@ -106,7 +106,7 @@ QIODevice *TCPSlaveBase::socket() const
 TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const QByteArray &protocol,
                            const QByteArray &poolSocket,
-                           const QByteArray &appSocket, 
+                           const QByteArray &appSocket,
                            bool useSSL)
              :SlaveBase (protocol, poolSocket, appSocket),
               d(new TcpSlaveBasePrivate)
@@ -436,7 +436,7 @@ void TCPSlaveBase::cleanSSL()
 
 bool TCPSlaveBase::usingSSL() const
 {
-    return d->isSSL; 
+    return d->isSSL;
 }
 
 void TCPSlaveBase::setDefaultPort(quint16 port)
@@ -803,11 +803,12 @@ int TCPSlaveBase::verifyCertificate()
 
     if (pc.chain().isValid() && pc.chain().depth() > 1) {
        QString theChain;
-       Q3PtrList<KSSLCertificate> chain = pc.chain().getChain();
-       for (KSSLCertificate *c = chain.first(); c; c = chain.next()) {
+       QList<KSSLCertificate *> chain = pc.chain().getChain();
+       foreach (KSSLCertificate *c, chain) {
           theChain += c->toString();
           theChain += '\n';
        }
+       qDeleteAll(chain);
        setMetaData("ssl_peer_chain", theChain);
     } else setMetaData("ssl_peer_chain", "");
 

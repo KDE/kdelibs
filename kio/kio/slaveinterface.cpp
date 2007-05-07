@@ -484,16 +484,16 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
             if (x) {
                // Set the chain back onto the certificate
                const QStringList cl = meta["ssl_peer_chain"].split('\n', QString::SkipEmptyParts);
-               Q3PtrList<KSSLCertificate> ncl;
-
-               ncl.setAutoDelete(true);
+               QList<KSSLCertificate *> ncl;
                for (QStringList::const_iterator it = cl.begin(); it != cl.end(); ++it) {
                   KSSLCertificate *y = KSSLCertificate::fromString((*it).toLocal8Bit());
                   if (y) ncl.append(y);
                }
 
-               if (ncl.count() > 0)
+               if (!ncl.isEmpty()) {
                   x->chain().setChain(ncl);
+                  qDeleteAll(ncl);
+               }
 
                kid->setup(x,
                            meta["ssl_peer_ip"],

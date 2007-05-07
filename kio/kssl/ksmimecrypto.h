@@ -23,7 +23,7 @@
 
 class QColorGroup;
 
-#include <Qt3Support/Q3PtrList>
+#include <QtCore/QList>
 #include "ksslpkcs12.h"
 #include "ksslcertificate.h"
 
@@ -63,7 +63,7 @@ class KIO_EXPORT KSMIMECrypto {
     rc signMessage(const QByteArray &clearText,
 		   QByteArray &cipherText,
 		   const KSSLPKCS12 &privKey,
-		   const Q3PtrList<KSSLCertificate> &certs,
+		   const QList<KSSLCertificate *> &certs,
 		   bool detached);
 
     /**
@@ -77,7 +77,7 @@ class KIO_EXPORT KSMIMECrypto {
      */
     rc checkDetachedSignature(const QByteArray &clearText,
 			      const QByteArray &signature,
-			      Q3PtrList<KSSLCertificate> &foundCerts);
+			      QList<KSSLCertificate *> &foundCerts);
 
     /**
      * Check an opaque signed message
@@ -90,8 +90,8 @@ class KIO_EXPORT KSMIMECrypto {
      */
     rc checkOpaqueSignature(const QByteArray &signedText,
 			    QByteArray &clearText,
-			    Q3PtrList<KSSLCertificate> &foundCerts);
-    
+			    QList<KSSLCertificate *> &foundCerts);
+
     /**
      * Encrypt a message
      * encrypts a message for the given list of recipients and the
@@ -107,7 +107,7 @@ class KIO_EXPORT KSMIMECrypto {
     rc encryptMessage(const QByteArray &clearText,
 		      QByteArray &cipherText,
 		      algo algorithm,
-		      const Q3PtrList<KSSLCertificate> &recip);
+		      const QList<KSSLCertificate *> &recip);
 
     /**
      * Decrypt a message

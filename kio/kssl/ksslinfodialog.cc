@@ -202,8 +202,8 @@ void KSSLInfoDialog::setup(KSSLCertificate *cert,
         d->_chain->setEnabled(true);
         d->_chain->addItem(i18n("0 - Site Certificate"));
         int cnt = 0;
-        Q3PtrList<KSSLCertificate> cl = cert->chain().getChain();
-        for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+        QList<KSSLCertificate *> cl = cert->chain().getChain();
+        foreach (KSSLCertificate *c, cl) {
             KSSLX509Map map(c->getSubject());
             QString id;
             id = map.getValue("CN");
@@ -213,6 +213,7 @@ void KSSLInfoDialog::setup(KSSLCertificate *cert,
                 id = map.getValue("OU");
             d->_chain->addItem(QString::number(++cnt)+" - "+id);
         }
+        qDeleteAll(cl);
         d->_chain->setCurrentIndex(0);
     } else d->_chain->setEnabled(false);
 
@@ -354,14 +355,17 @@ void KSSLInfoDialog::slotChain(int x) {
     if (x == 0) {
         displayCert(d->_cert);
     } else {
-        Q3PtrList<KSSLCertificate> cl = d->_cert->chain().getChain();
-        cl.setAutoDelete(true);
-        for (int i = 0; i < x-1; i++)
-            cl.remove((unsigned int)0);
-        KSSLCertificate thisCert = *(cl.at(0));
-        cl.remove((unsigned int)0);
-        thisCert.chain().setChain(cl);
-        displayCert(&thisCert);
+        QList<KSSLCertificate *> cl = d->_cert->chain().getChain();
+        for (int i = 0; i < x-1; ++i) {
+            delete cl.first();
+            cl.removeFirst();
+        }
+        KSSLCertificate* thisCert = cl.first();
+        cl.removeFirst();
+        thisCert->chain().setChain(cl);
+        qDeleteAll(cl);
+        displayCert(thisCert);
+        delete thisCert;
     }
 }
 
