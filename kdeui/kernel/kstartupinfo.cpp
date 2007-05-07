@@ -1192,7 +1192,7 @@ QString KStartupInfoData::to_text() const
     if( d->xinerama != -1 )
         ret += QString::fromLatin1( " XINERAMA=%1" ).arg( d->xinerama );
     if( d->launched_by != 0 )
-        ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( d->launched_by );
+        ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (long)d->launched_by );
     return ret;
     }
 
@@ -1247,7 +1247,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P ) : d(new Private)
         else if( ( *it ).startsWith( xinerama_str ))
             d->xinerama = get_num( *it );
         else if( ( *it ).startsWith( launched_by_str ))
-            d->launched_by = get_num( *it );
+            d->launched_by = ( WId ) get_num( *it );
         }
     }
 
