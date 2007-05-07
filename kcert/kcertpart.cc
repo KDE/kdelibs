@@ -621,15 +621,16 @@ void KCertPart::displayPKCS12() {
 
 	// Set the chain if it's there
 	if (xc->chain().depth() > 1) {
-		Q3PtrList<KSSLCertificate> cl = xc->chain().getChain();
+		const QList<KSSLCertificate *> cl = xc->chain().getChain();
 		int cnt = 0;
 		_p12_chain->setEnabled(true);
 		_p12_chain->clear();
 		_p12_chain->addItem(i18n("0 - Site Certificate"));
-		for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
+		foreach (KSSLCertificate *c, cl) {
 			KSSLX509Map map(c->getSubject());
 			_p12_chain->addItem(QString::number(++cnt)+" - "+map.getValue("CN"));
 		}
+                qDeleteAll(cl);
 		_p12_chain->setCurrentIndex(0);
 	} else {
 		_p12_chain->clear();
