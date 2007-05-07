@@ -178,7 +178,7 @@ add_subdirectory( dnssd )
 add_subdirectory( kross )
 add_subdirectory( includes )
 
-macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "" "Provide metadata support (for semantic dsktop).")
+macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "" "Provide metadata support (for semantic desktop).")
 if(Soprano_FOUND)
   macro_optional_add_subdirectory(konto)
   macro_optional_add_subdirectory(knepomuk)
