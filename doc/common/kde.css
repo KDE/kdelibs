@@ -205,7 +205,7 @@ background-color: #0057ae;
 }
 
 #header_bottom {
-        margin: 0 auto;
+    margin: 0 auto;
     padding: 0.1em 0em 0.3em 0;
     width: 60em;
     min-width: 770px;
@@ -285,8 +285,72 @@ background-color: #0057ae;
 
 #main {
     /* padding in px not ex because IE messes up 100% width tables otherwise */
-    padding: 10px;
+    padding-left: 10px;
     text-align: left;
+}
+
+div.nav {
+    display: none;
+    font-size: 80%;
+    text-align: right;
+    float: right;
+}
+
+#main h1 {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+#main h1 small {
+    font-size: 60%;
+}
+
+#main h2 {
+    margin-left: 0;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#main code {
+    font-size: 120%;
+    background: #F1F1F1;
+    border: 1px solid #E7E7E7;
+    padding: 2px;
+    display: block;
+}
+
+#main td code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+}
+
+#main li code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+}
+
+#main dd code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+    font-style: italic;
+}
+
+#main p code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+    font-style: italic;
 }
 
 #body_wrapper {

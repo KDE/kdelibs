@@ -165,14 +165,14 @@ th {
 ** Header
 */
 #header {
-        color: #535353;
+    color: #535353;
     background: #eeeeee;
 }
 
 #header_top {
     margin: 0 auto;
     padding: 0;
-                vertical-align: middle;
+    vertical-align: middle;
     color: #ffffff;
     background: url(top.jpg) repeat-x bottom;
 background-color: #0057ae;
@@ -203,7 +203,7 @@ background-color: #0057ae;
     display: none;
     margin: 0 auto;
     padding: 0.1em 0em 0.3em 0;
-                vertical-align: middle;
+    vertical-align: middle;
     text-align: right;
     background: #eeeeee;
 }
@@ -273,17 +273,81 @@ background-color: #0057ae;
 */
 
 #content {
-    }
+}
 
 #main {
     /* padding in px not ex because IE messes up 100% width tables otherwise */
-    padding: 10px;
+    padding: 0 10px 0 10px;
     text-align: left;
+}
+
+div.nav {
+    display: none;
+    font-size: 80%;
+    text-align: right;
+    float: right;
+}
+
+#main h1 {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+#main h1 small {
+    font-size: 60%;
+}
+
+#main h2 {
+    margin-left: 0;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#main code {
+    font-size: 120%;
+    background: #F1F1F1;
+    border: 1px solid #E7E7E7;
+    padding: 2px;
+    display: block;
+}
+
+#main td code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+}
+
+#main li code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+}
+
+#main dd code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+    font-style: italic;
+}
+
+#main p code {
+    font-size: 100%;
+    background: white;
+    border: 0;
+    padding: 0;
+    display: inline;
+    font-style: italic;
 }
 
 #body_wrapper {
     margin: 0 auto;
-                border: #dddddd solid;
+    border: #dddddd solid;
     border-width: 0 0 0 1px;
 }
 
@@ -291,17 +355,17 @@ background-color: #0057ae;
     float: left;
     margin: 0;
     padding: 0;
-                }
+}
 
 #right {
     float: right;
     margin: 0;
     padding: 0;
-    }
+}
 
 /* These are date cells on the front page. */
 td.cell_date {
-        }
+}
 
 #hotspot, .sideimage {
     float: right;
