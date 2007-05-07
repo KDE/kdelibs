@@ -104,4 +104,6 @@ public:
 
 };
 
+Q_DECLARE_INTERFACE(TerminalInterface, "org.kde.TerminalInterface")
+
 #endif
