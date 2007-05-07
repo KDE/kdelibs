@@ -59,7 +59,6 @@
 #endif
 
 #include <kopenssl.h>
-#include <Qt3Support/Q3CString>
 #include <kdebug.h>
 #include "ksslx509v3.h"
 
@@ -140,24 +139,24 @@ return n;
 }
 
 
-KSSLCertificate *KSSLCertificate::fromString(const Q3CString &cert) {
-KSSLCertificate *n = NULL;
+KSSLCertificate *KSSLCertificate::fromString(const QByteArray &cert) {
+    KSSLCertificate *n = NULL;
 #ifdef KSSL_HAVE_SSL
-	if (cert.length() == 0)
-		return NULL;
+    if (cert.isEmpty())
+        return NULL;
 
-	QByteArray qba, qbb = cert.copy();
-	KCodecs::base64Decode(qbb, qba);
-	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
-	X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
-	if (!x5c) {
-		return NULL;
-	}
+    QByteArray qba;
+    KCodecs::base64Decode(cert, qba);
+    unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());
+    X509 *x5c = KOSSL::self()->d2i_X509(NULL, &qbap, qba.size());
+    if (!x5c) {
+        return NULL;
+    }
 
-	n = new KSSLCertificate;
-	n->setCert(x5c);
+    n = new KSSLCertificate;
+    n->setCert(x5c);
 #endif
-return n;
+    return n;
 }
 
 

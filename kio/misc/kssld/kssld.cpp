@@ -25,7 +25,6 @@
 #include <config.h>
 
 #include <QtCore/QTimer>
-#include <Qt3Support/Q3CString>
 
 #include <ksharedconfig.h>
 #include <kconfig.h>

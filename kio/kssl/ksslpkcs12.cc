@@ -26,7 +26,6 @@
 
 #include <QtCore/QString>
 #include <QtCore/QFile>
-#include <Qt3Support/Q3CString>
 
 #include <ksslall.h>
 #include <kdebug.h>
@@ -79,8 +78,8 @@ KSSLPKCS12* KSSLPKCS12::fromString(const QString &base64, const QString &passwor
     ktf.open();
 
     if (base64.isEmpty()) return NULL;
-    QByteArray qba, qbb = Q3CString(base64.toLatin1()).copy();
-    KCodecs::base64Decode(qbb, qba);
+    QByteArray qba;
+    KCodecs::base64Decode(base64.toLatin1(), qba);
     ktf.write(qba);
     ktf.flush();
     KSSLPKCS12* rc = loadCertFile(ktf.fileName(), password);

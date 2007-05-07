@@ -35,9 +35,9 @@
 //  There should be no reason to touch the X509 stuff directly.
 //
 
+class QByteArray;
 class QString;
 class QStringList;
-class Q3CString;
 class KSSL;
 class KSSLCertificatePrivate;
 class QDateTime;
@@ -89,7 +89,7 @@ public:
 	 *  @param cert the certificate in base64 form
 	 *  @return the X.509 certificate, or NULL
 	 */
-	static KSSLCertificate *fromString(const Q3CString &cert);
+	static KSSLCertificate *fromString(const QByteArray &cert);
 
 	/**
 	 *  Create an X.509 certificate from the internal representation.

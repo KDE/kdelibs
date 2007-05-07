@@ -43,7 +43,6 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
-#include <Qt3Support/Q3PtrList>
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>
 #include <QtGui/QApplication>
@@ -657,8 +656,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             } else if (args.size() > 2) {
                 const int certsnr = args[1].toInt();
                 QString text;
-                Q3PtrList<KSSLCertificate> certs;
-                certs.setAutoDelete( true );
+                QList<KSSLCertificate *> certs;
                 for (int i = certsnr; i >= 0; --i) {
                     KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].toAscii().constData());
                     if (cert) {
@@ -716,6 +714,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                     if ( chain.isValid() )
                         answer = PermissionDialog( qApp->activeWindow() ).exec( text, args[0] );
                 }
+                qDeleteAll(certs);
             }
             sl.push_front( answer );
             sl.push_front( QString::number(ID_num) );

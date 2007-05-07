@@ -4149,9 +4149,8 @@ void KHTMLPart::slotSecurity()
     if (x) {
        // Set the chain back onto the certificate
        const QStringList cl = d->m_ssl_peer_chain.split(QString("\n"));
-       Q3PtrList<KSSLCertificate> ncl;
+       QList<KSSLCertificate *> ncl;
 
-       ncl.setAutoDelete(true);
        QStringList::ConstIterator it = cl.begin();
        const QStringList::ConstIterator itEnd = cl.end();
        for (; it != itEnd; ++it) {
@@ -4161,6 +4160,7 @@ void KHTMLPart::slotSecurity()
 
        if (ncl.count() > 0)
           x->chain().setChain(ncl);
+       qDeleteAll(ncl);
 
        kid->setup(x,
                   d->m_ssl_peer_ip,

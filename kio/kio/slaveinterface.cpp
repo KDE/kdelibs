@@ -28,7 +28,6 @@
 #include <signal.h>
 #include <klocale.h>
 #include <kapplication.h>
-#include <Q3CString>
 #include <ksslinfodialog.h>
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
