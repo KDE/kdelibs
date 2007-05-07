@@ -120,15 +120,16 @@ Interpreter* InterpreterInfo::interpreter()
     if(hadError()) // the interpreter can't be loaded
         return 0;
 
-#ifdef KROSS_INTERPRETER_DEBUG
-    krossdebug( QString("Loading the interpreter library for %1").arg(d->interpretername) );
-#endif
-    // Load the krosspython library.
-    KLibLoader *libloader = KLibLoader::self();
+    #ifdef KROSS_INTERPRETER_DEBUG
+        krossdebug( QString("Loading the interpreter library for %1").arg(d->interpretername) );
+    #endif
 
-    KLibrary* library = libloader->globalLibrary( d->library.toLatin1().data() );
+    // Load the krosspython library.
+    KLibLoader *loader = KLibLoader::self();
+
+    KLibrary* library = loader->globalLibrary( d->library.toLatin1().data() );
     if(! library) {
-        setError(i18n("Could not load interpreter library \"%1\"",d->library));
+        setError(i18n("Could not load interpreter library \"%1\"",d->library), loader->lastErrorMessage());
         return 0;
     }
 
@@ -145,9 +146,9 @@ Interpreter* InterpreterInfo::interpreter()
     else {
         // Job done. The library is loaded and our Interpreter* points
         // to the external Kross::Python::Interpreter* instance.
-#ifdef KROSS_INTERPRETER_DEBUG
-        krossdebug("Successfully loaded Interpreter instance from library.");
-#endif
+        #ifdef KROSS_INTERPRETER_DEBUG
+            krossdebug("Successfully loaded Interpreter instance from library.");
+        #endif
     }
 
     // finally unload the library.
