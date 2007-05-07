@@ -1054,7 +1054,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->pid = 0;
 
    request->envs = envs;
-   if( app != "kbuildsycoca" ) // avoid stupid loop
+   if( app != "kbuildsycoca4" ) // avoid stupid loop
    {
        // Find service, if any - strip path if needed
        KService::Ptr service = KService::serviceByDesktopName( app.mid( app.lastIndexOf( '/' ) + 1 ));
