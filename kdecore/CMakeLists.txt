@@ -277,10 +277,6 @@ else(KDE4_ENABLE_FINAL)
 endif(KDE4_ENABLE_FINAL)
 
 
-macro_add_file_dependencies(
-   ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
-   ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
-
 # the transcript plugin
 set( ktranscript_LIB_SRCS
    localization/ktranscript.cpp
