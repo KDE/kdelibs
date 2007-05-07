@@ -13,13 +13,11 @@
 
 <rdf:RDF xmlns:rdf="&rdf;" xmlns:rdfs="&rdfs;" xmlns:nrl="&nrl;" xmlns:nao="&nao;" xmlns:nie="&nie;" xmlns:xsd="&xsd;">
 
-<!-- trueg: An extra nao:comment property. Makes handling the Ontology easier and we also have prefLabel and altLabel. Why
-     not the same thing for comments? I don't really get the need for pref and altLabel anyway. -->
-<rdf:Property rdf:about="&nao;hasComment">
-	<rdfs:label>comment</rdfs:label>
+<rdf:Property rdf:about="&nao;description">
+	<rdfs:label>description</rdfs:label>
 	<rdfs:comment>Everything can be annotated with a simple string comment.</rdfs:comment>
 	<rdfs:subPropertyOf rdf:resource="rdfs:comment" />
-        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
         <nrl:maxCardinality>1</nrl:maxCardinality>
         <rdfs:domain rdf:resource="&rdfs;Resource" />
 </rdf:Property>
@@ -31,8 +29,8 @@
 	<rdf:type rdf:resource="&rdfs;Class"/>
 </rdf:Description>
 
-<rdf:Property rdf:about="&nao;altIdentifier">
-	<rdfs:label>alternative Identifier</rdfs:label>
+<rdf:Property rdf:about="&nao;hasIdentifier">
+	<rdfs:label>Identifier</rdfs:label>
 	<rdfs:domain rdf:resource="&rdfs;Resource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
 </rdf:Property>
@@ -82,7 +80,7 @@
 	<rdfs:range rdf:resource="&rdfs;Resource"/>
 </rdf:Property>
 
-<rdf:Property rdf:about="&nao;preflabel">
+<rdf:Property rdf:about="&nao;label">
 	<rdfs:label>preferred labels</rdfs:label>
 	<rdfs:subPropertyOf rdf:resource="&rdfs;label"/>
 	<rdfs:domain rdf:resource="&rdfs;Resource"/>
@@ -90,14 +88,14 @@
 	<!-- Should we add a maxCardinality of 1 here? -->
 </rdf:Property>
 
-<rdf:Property rdf:about="&nao;rating">
+<rdf:Property rdf:about="&nao;hasRating">
 	<rdfs:label>rating</rdfs:label>
 	<rdfs:domain rdf:resource="&rdfs;Resource"/>
 	<rdfs:range rdf:resource="&xsd;unsignedInt"/>
         <nrl:maxCardinality>1</nrl:maxCardinality>
 </rdf:Property>
 
-<rdf:Property rdf:about="&nao;symbol">
+<rdf:Property rdf:about="&nao;hasSymbol">
 	<rdfs:label>symbol</rdfs:label>
 	<rdfs:domain rdf:resource="&rdfs;Resource"/>
 <!-- trueg: I don't think we can have a reference to NIE in NAO. And I also don't see a downside to a symbol just being

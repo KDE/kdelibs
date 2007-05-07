@@ -21,7 +21,7 @@
 #include <kdebug.h>
 
 // FIXME: let the code generator do this
-#include <kmetadata/tag.h>
+#include "tag.h"
 
 
 Nepomuk::KMetaData::Resource::Resource()
@@ -103,7 +103,7 @@ QString Nepomuk::KMetaData::Resource::className() const
 }
 
 
-int Nepomuk::KMetaData::Resource::sync()
+Nepomuk::KMetaData::ErrorCode Nepomuk::KMetaData::Resource::sync()
 {
     m_data->init();
 
@@ -116,7 +116,7 @@ int Nepomuk::KMetaData::Resource::sync()
 
     m_data->endSync( success );
 
-    return ( success ? 0 : -1 );
+    return ( success ? NoError : UnknownError );
 }
 
 
@@ -134,10 +134,10 @@ bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::property( const QString& uri ) const
 {
     m_data->init();
-    return m_data->getProperty( uri );
+    return m_data->property( uri );
 }
 
 
@@ -174,13 +174,13 @@ bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
 }
 
 
-bool Nepomuk::KMetaData::Resource::modified() const
+bool Nepomuk::KMetaData::Resource::isModified() const
 {
-    return m_data->modified();
+    return m_data->isModified();
 }
 
 
-bool Nepomuk::KMetaData::Resource::inSync() const
+bool Nepomuk::KMetaData::Resource::inSyncWithStore() const
 {
     return m_data->inSync();
 }
@@ -214,14 +214,14 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
 }
 
 
-QString Nepomuk::KMetaData::errorString( int code )
+QString Nepomuk::KMetaData::errorString( ErrorCode code )
 {
     switch( code ) {
-    case ERROR_SUCCESS:
+    case NoError:
         return i18n("Success");
-    case ERROR_COMMUNICATION:
+    case CommunicationError:
         return i18n("Communication error");
-    case ERROR_INVALID_TYPE:
+    case InvalidType:
         return i18n("Invalid type in Database");
     default:
         return i18n("Unknown error");

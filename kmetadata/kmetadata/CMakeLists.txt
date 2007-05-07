@@ -3,6 +3,7 @@ project(libkmetadata)
 include_directories(
   ${kmetadata_SOURCE_DIR}
   ${libkmetadata_SOURCE_DIR}
+  ${libkmetadata_SOURCE_DIR}/generated
   ${kdecore_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
 )

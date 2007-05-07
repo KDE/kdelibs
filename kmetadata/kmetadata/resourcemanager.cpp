@@ -16,7 +16,7 @@
 #include "resourcedata.h"
 #include "tools.h"
 
-#include <kmetadata/resource.h>
+#include "resource.h"
 
 #include <knepomuk/knepomuk.h>
 #include <knepomuk/services/rdfrepository.h>
@@ -231,7 +231,7 @@ void Nepomuk::KMetaData::ResourceManager::syncAll()
          it != syncedResources.end(); ++it ) {
         ResourceData* data = *it;
 //    data->endSync( success );
-        if( !data->modified() && !data->cnt() )
+        if( !data->isModified() && !data->cnt() )
             data->deleteData();
     }
 

@@ -21,7 +21,7 @@
 
 #include "kmetadatatagcloud.h"
 
-#include <kmetadata/generated/tag.h>
+#include "../generated/tag.h"
 
 #include <QtCore/QTimer>
 
@@ -68,8 +68,8 @@ void Nepomuk::KMetaData::TagCloud::updateTags()
     for( QList<Tag>::const_iterator it = tags.constBegin();
          it != tags.constEnd(); ++it ) {
         const Tag& tag = *it;
-        addTag( tag.getLabels().isEmpty() ? tag.getIdentifiers().first() : tag.getLabels().first(),
-                tag.TagOf().count() );
+        addTag( tag.labels().isEmpty() ? tag.identifiers().first() : tag.labels().first(),
+                tag.tagOf().count() );
     }
 }
 

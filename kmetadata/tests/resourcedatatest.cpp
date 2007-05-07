@@ -14,7 +14,7 @@
 
 #include "resourcedatatest.h"
 
-#include <kmetadata/kmetadata.h>
+#include "../kmetadata/kmetadata.h"
 
 #include <knepomuk/knepomuk.h>
 #include <knepomuk/services/rdfrepository.h>
@@ -57,7 +57,7 @@ void ResourceDataTest::testResourceData()
 
         QCOMPARE( sl.count(), 2 );
         QVERIFY( rd1->hasProperty( s_hasIdentifierUri ) );
-        QCOMPARE( rd1->getProperty( s_hasIdentifierUri ).toString(), rd1->kickoffUriOrId() );
+        QCOMPARE( rd1->property( s_hasIdentifierUri ).toString(), rd1->kickoffUriOrId() );
         QVERIFY( !rd1->exists() );
         QVERIFY( !rd1->inSync() );
         QVERIFY( rd1->save() );
@@ -109,7 +109,7 @@ void ResourceDataTest::testLoad()
         QCOMPARE( rd->uri(), resUri );
         QVERIFY( rd->load() );
         QCOMPARE( rd->type(), typeUri );
-        QCOMPARE( rd->getProperty( s_hasIdentifierUri ).toString(), identifier );
+        QCOMPARE( rd->property( s_hasIdentifierUri ).toString(), identifier );
         rd->deleteData();
     }
 }
@@ -156,14 +156,14 @@ void ResourceDataTest::testPropertyTypes()
         QVERIFY( r1->hasProperty( "hasTime" ) );
         QVERIFY( r1->hasProperty( "hasDateTime" ) );
 
-        QCOMPARE( r1->getProperty( "hasInt" ).toInt(), vInt.toInt() );
-        QCOMPARE( r1->getProperty( "hasUInt" ).toUnsignedInt(), vUInt.toUnsignedInt() );
-        QCOMPARE( r1->getProperty( "hasLong" ).toInt64(), vLong.toInt64() );
-        QCOMPARE( r1->getProperty( "hasULong" ).toUnsignedInt64(), vULong.toUnsignedInt64() );
-        QCOMPARE( r1->getProperty( "hasDouble" ).toDouble(), vDouble.toDouble() );
-        QCOMPARE( r1->getProperty( "hasDate" ).toDate(), vDate.toDate() );
-        QCOMPARE( r1->getProperty( "hasTime" ).toTime(), vTime.toTime() );
-        QCOMPARE( r1->getProperty( "hasDateTime" ).toDateTime(), vDateTime.toDateTime().toUTC() );
+        QCOMPARE( r1->property( "hasInt" ).toInt(), vInt.toInt() );
+        QCOMPARE( r1->property( "hasUInt" ).toUnsignedInt(), vUInt.toUnsignedInt() );
+        QCOMPARE( r1->property( "hasLong" ).toInt64(), vLong.toInt64() );
+        QCOMPARE( r1->property( "hasULong" ).toUnsignedInt64(), vULong.toUnsignedInt64() );
+        QCOMPARE( r1->property( "hasDouble" ).toDouble(), vDouble.toDouble() );
+        QCOMPARE( r1->property( "hasDate" ).toDate(), vDate.toDate() );
+        QCOMPARE( r1->property( "hasTime" ).toTime(), vTime.toTime() );
+        QCOMPARE( r1->property( "hasDateTime" ).toDateTime(), vDateTime.toDateTime().toUTC() );
 
         r1->deleteData();
     }

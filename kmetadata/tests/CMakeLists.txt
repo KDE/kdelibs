@@ -3,6 +3,7 @@ project(kmetadata_tests)
 include_directories(
   ${kmetadata_SOURCE_DIR}
   ${libkmetadata_SOURCE_DIR}
+  ${libkmetadata_SOURCE_DIR}/generated
   ${kmetadata_ui_SOURCE_DIR}
 )
 
@@ -43,11 +44,6 @@ target_link_libraries(speedtest
   ${QT_QTGUI_LIBRARY}
   ${KDE4_KDECORE_LIBRARY})
 add_test(speedtest ${EXECUTABLE_OUTPUT_PATH}/speedtest)
-
-kde4_automoc(kmetadatadtest.cpp)
-kde4_add_executable(kmetadatadtest kmetadatadtest.cpp)
-target_link_libraries(kmetadatadtest kmetadata ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
-add_test(kmetadatadtest ${EXECUTABLE_OUTPUT_PATH}/kmetadatadtest)
 
 set(datatest_SRC 
   resourcedatatest.cpp

@@ -64,7 +64,7 @@ static const QString headerTemplate = gplTemplate +
 "            KMETADATA_RESOURCENAME( const KMETADATA_RESOURCENAME& );\n"
 "            KMETADATA_RESOURCENAME( const Resource& );\n"
 "            /**\n"
-"             * Create a new RESOURCENAME instance representing the resource\n"
+"             * Create a new KMETADATA_RESOURCENAME instance representing the resource\n"
 "             * referenced by \\a uri.\n"
 "             */\n"
 "            KMETADATA_RESOURCENAME( const QString& uri );\n"

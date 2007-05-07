@@ -17,7 +17,7 @@
 
 #include <QtCore>
 
-#include <kmetadata/kmetadata_export.h>
+#include "kmetadata_export.h"
 
 
 namespace Nepomuk {
@@ -30,16 +30,17 @@ namespace Nepomuk {
 KMETADATA_OTHERCLASSES
 
 	enum ErrorCode {
-	    ERROR_SUCCESS = 0,
-	    ERROR_COMMUNICATION, /**< A commication error, i.e. libKNepCLient connection failure */
-	    ERROR_INVALID_TYPE
+	    NoError = 0,
+	    CommunicationError, /**< A commication error, i.e. libKNepCLient connection failure */
+	    InvalidType,
+            UnknownError
 	};
 
 	/**
 	 * \return A human-readble string.
 	 */
 	// FIXME: add the uri of the resource as parameter
-	KMETADATA_EXPORT QString errorString( int code );
+	KMETADATA_EXPORT QString errorString( ErrorCode code );
 
 	/**
 	 * \brief Resource is the central object type in libKMetaData. It represents a piece of
@@ -163,7 +164,7 @@ KMETADATA_OTHERCLASSES
              *
              * \sa ResourceManager::setAutoSync
              */
-            int sync();
+            ErrorCode sync();
 
             /**
              * \return A list of all defined properties
@@ -197,7 +198,7 @@ KMETADATA_OTHERCLASSES
              *
              * \sa Ontology::defaultNamespace
              */
-            Variant getProperty( const QString& uri ) const;
+            Variant property( const QString& uri ) const;
 
             /**
              * Set a property of the resource.
@@ -234,9 +235,11 @@ KMETADATA_OTHERCLASSES
              * Remove this resource completely.
              *
              * The resource will only be marked as deleted locally and not be removed from
-             * the local Nepomuk RDF store until a call to sync.
+             * the local Nepomuk RDF store until a call to sync (in most cases this is done
+             * automatically through auto-syncing).
              *
-             * One call to setProperty will revert the deletion of a resource.
+             * One call to setProperty before a syncing operation will revert the deletion
+             * of a resource.
              *
              * \sa revive
              */
@@ -265,7 +268,7 @@ KMETADATA_OTHERCLASSES
              * \return true if the data in this object has been modified and not yet
              * synced with the local NEPOMUK RDF store.
              */
-            bool modified() const;
+            bool isModified() const;
 
             /**
              * \return true if this object represents the exact data from the local NEPOMUK RDF
@@ -274,7 +277,7 @@ KMETADATA_OTHERCLASSES
              *
              * \sa exists()
              */
-            bool inSync() const;
+            bool inSyncWithStore() const;
 
             /**
              * \return true if this resource (i.e. the uri of this resource) exists in the local

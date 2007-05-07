@@ -37,19 +37,19 @@ void ResourceTest::testResourceStates()
     QCOMPARE( r1, r2 );
 
     QVERIFY( r1.isValid() );
-    QVERIFY( !r1.modified() );
-    QEXPECT_FAIL("", "Resource::inSync() does not work properly due to the kickoffUri and the generated hasIdentifier property.", Continue);
-    QVERIFY( r1.inSync() );
-    QEXPECT_FAIL("", "Resource::modified() does not work properly after a Resource::inSync() call. Same reason.", Continue);
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
+    QEXPECT_FAIL("", "Resource::inSyncWithStore() does not work properly due to the kickoffUri and the generated hasIdentifier property.", Continue);
+    QVERIFY( r1.inSyncWithStore() );
+    QEXPECT_FAIL("", "Resource::isModified() does not work properly after a Resource::inSyncWithStore() call. Same reason.", Continue);
+    QVERIFY( !r1.isModified() );
 
     r1.setProperty( "someinvaliduri", 12 );
 
     QCOMPARE( r1, r2 );
-    QVERIFY( r1.modified() );
-    QVERIFY( r2.modified() );
+    QVERIFY( r1.isModified() );
+    QVERIFY( r2.isModified() );
 
-    QVERIFY( !r2.inSync() );
+    QVERIFY( !r2.inSyncWithStore() );
 }
 
 
@@ -58,42 +58,42 @@ void ResourceTest::testResourceRemoval()
     QString someUri = ResourceManager::instance()->generateUniqueUri();
 
     Resource r1( someUri );
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
     QVERIFY( !r1.exists() );
 
     QVERIFY( r1.sync() == 0 );
 
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
     QVERIFY( r1.exists() );
 
     r1.remove();
 
-    QVERIFY( r1.modified() );
+    QVERIFY( r1.isModified() );
     QVERIFY( r1.exists() );
 
     QVERIFY( r1.sync() == 0 );
 
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
     QVERIFY( !r1.exists() );
 
     r1.revive();
 
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
     QVERIFY( !r1.exists() );
 
     QVERIFY( r1.sync() == 0 );
 
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
     QVERIFY( r1.exists() );
 
     r1.remove();
     r1.setProperty( "testProp", "hello" );
 
-    QVERIFY( r1.modified() );
+    QVERIFY( r1.isModified() );
 
     QVERIFY( r1.sync() == 0 );
 
-    QVERIFY( !r1.modified() );
+    QVERIFY( !r1.isModified() );
     QVERIFY( r1.exists() );
 
     r1.remove();
@@ -223,10 +223,10 @@ void ResourceTest::testResourceManager()
         QVERIFY( r5.hasProperty( "prop2" ) );
         QVERIFY( r6.hasProperty( "prop2" ) );
 
-        QCOMPARE( r3.getProperty( "prop2" ).toResource(), r6 );
-        QCOMPARE( r4.getProperty( "prop2" ).toResource(), r6 );
-        QCOMPARE( r5.getProperty( "prop2" ).toResource(), r6 );
-        QCOMPARE( r6.getProperty( "prop2" ).toResource(), r1 );
+        QCOMPARE( r3.property( "prop2" ).toResource(), r6 );
+        QCOMPARE( r4.property( "prop2" ).toResource(), r6 );
+        QCOMPARE( r5.property( "prop2" ).toResource(), r6 );
+        QCOMPARE( r6.property( "prop2" ).toResource(), r1 );
     }
 }
 

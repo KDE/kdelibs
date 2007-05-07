@@ -12,7 +12,7 @@
  * See the file "COPYING.LIB" for the exact licensing terms.
  */
 
-#include <kmetadata/resource.h>
-#include <kmetadata/variant.h>
-#include <kmetadata/resourcemanager.h>
-#include <kmetadata/tools.h>
+#include "resource.h"
+#include "variant.h"
+#include "resourcemanager.h"
+#include "tools.h"

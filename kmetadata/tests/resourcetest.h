@@ -17,8 +17,6 @@
 
 #include "testbase.h"
 
-#include <kmetadata/resource.h>
-
 class ResourceTest : public TestBase
 {
     Q_OBJECT

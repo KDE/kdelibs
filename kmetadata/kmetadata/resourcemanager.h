@@ -15,7 +15,7 @@
 #ifndef _NEPOMUK_RESOURCE_MANAGER_H_
 #define _NEPOMUK_RESOURCE_MANAGER_H_
 
-#include <kmetadata/kmetadata_export.h>
+#include "kmetadata_export.h"
 
 #include <QtCore/QObject>
 

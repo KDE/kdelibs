@@ -13,7 +13,7 @@
  */
 
 #include "varianttest.h"
-#include <kmetadata/kmetadata.h>
+#include "../kmetadata/kmetadata.h"
 
 using namespace Nepomuk::KMetaData;
 

@@ -9,7 +9,7 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * See the file "COPYING.LIB" for the exact licensing terms.
+ * See the file "COPYING" for the exact licensing terms.
  */
 
 /*
@@ -27,7 +27,7 @@ namespace KMetaData {
 }
 }
 
-#include <kmetadata/resource.h>
+#include "resource.h"
 #include <kmetadata/kmetadata_export.h>
 
 namespace Nepomuk {
@@ -51,7 +51,7 @@ namespace Nepomuk {
             Tag( const Tag& );
             Tag( const Resource& );
             /**
-             * Create a new RESOURCENAME instance representing the resource
+             * Create a new Tag instance representing the resource
              * referenced by \a uri.
              */
             Tag( const QString& uri );
@@ -64,7 +64,7 @@ namespace Nepomuk {
              * Each Resource can be tagged with an arbitrary number of Tags. 
              * This allows a simple grouping of resources. \sa ResourceManager::allResourcesWithProperty 
              */
-            QList<Resource> TagOf() const;
+            QList<Resource> tagOf() const;
 
             /**
              * Retrieve a list of all available Tag resources. This list consists 

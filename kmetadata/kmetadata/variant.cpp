@@ -13,22 +13,25 @@
  */
 
 #include "variant.h"
-
-#include <kmetadata/resource.h>
+#include "generated/resource.h"
 
 #include <soprano/literalvalue.h>
 
 #include <kdebug.h>
 
+#include <QtCore/QVariant>
+
+
 
 class Nepomuk::KMetaData::Variant::Private
 {
+public:
+    QVariant value;
 };
 
 
 Nepomuk::KMetaData::Variant::Variant()
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
 }
 
@@ -40,15 +43,14 @@ Nepomuk::KMetaData::Variant::~Variant()
 
 
 Nepomuk::KMetaData::Variant::Variant( const Variant& other )
-    : QVariant( other ),
-      d( new Private )
+    : d( new Private )
 {
+    operator=( other );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QVariant& other )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
     if ( other.userType() == QVariant::Int ||
          other.userType() == QVariant::LongLong ||
@@ -74,370 +76,358 @@ Nepomuk::KMetaData::Variant::Variant( const QVariant& other )
          other.userType() == qMetaTypeId<QList<QDateTime> >() ||
          other.userType() == qMetaTypeId<QList<QUrl> >() ||
          other.userType() == qMetaTypeId<QList<Resource> >() ) {
-        QVariant::operator=( other );
+        d->value = other;
     }
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( int i )
-    : QVariant( i ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( qlonglong i )
-    : QVariant( i ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( uint i )
-    : QVariant( i ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( qulonglong i )
-    : QVariant( i ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( bool b )
-    : QVariant( b ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( b );
 }
 
 
-Nepomuk::KMetaData::Variant::Variant( double d )
-    : QVariant( d ),
-      d( new Private )
+Nepomuk::KMetaData::Variant::Variant( double v )
+    : d( new Private )
 {
+    d->value.setValue( v );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const char* string )
-    : QVariant( string ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( QString::fromLatin1(string) );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QString& string )
-    : QVariant( string ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( string );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QDate& date )
-    : QVariant( date ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( date );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QTime& time )
-    : QVariant( time ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( time );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QDateTime& datetime )
-    : QVariant( datetime ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( datetime );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QUrl& url )
-    : QVariant( url ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( url );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const Nepomuk::KMetaData::Resource& r )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( r );
+    d->value.setValue( r );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<int>& i )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( i );
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<qlonglong>& i )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( i );
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<uint>& i )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( i );
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<qulonglong>& i )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( i );
+    d->value.setValue( i );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<bool>& b )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( b );
+    d->value.setValue( b );
 }
 
 
-Nepomuk::KMetaData::Variant::Variant( const QList<double>& d )
-    : QVariant(),
-      d( new Private )
+Nepomuk::KMetaData::Variant::Variant( const QList<double>& v )
+    : d( new Private )
 {
-    setValue( d );
+    d->value.setValue( v );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QStringList& stringlist )
-    : QVariant( stringlist ),
-      d( new Private )
+    : d( new Private )
 {
+    d->value.setValue( stringlist );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QDate>& date )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( date );
+    d->value.setValue( date );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QTime>& time )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( time );
+    d->value.setValue( time );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QDateTime>& datetime )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( datetime );
+    d->value.setValue( datetime );
 }
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<QUrl>& url )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( url );
+    d->value.setValue( url );
 }
 
 
 
 Nepomuk::KMetaData::Variant::Variant( const QList<Resource>& r )
-    : QVariant(),
-      d( new Private )
+    : d( new Private )
 {
-    setValue( r );
+    d->value.setValue( r );
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const Variant& v )
 {
-    QVariant::operator=( v );
+    d->value = v.d->value;
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( int i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( qlonglong i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( uint i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( qulonglong i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( bool b )
 {
-    setValue( b );
+    d->value.setValue( b );
     return *this;
 }
 
 
-Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( double d )
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( double v )
 {
-    setValue( d );
+    d->value.setValue( v );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QString& string )
 {
-    setValue( string );
+    d->value.setValue( string );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QDate& date )
 {
-    setValue( date );
+    d->value.setValue( date );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QTime& time )
 {
-    setValue( time );
+    d->value.setValue( time );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QDateTime& datetime )
 {
-    setValue( datetime );
+    d->value.setValue( datetime );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QUrl& url )
 {
-    setValue( url );
+    d->value.setValue( url );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const Resource& r )
 {
-    setValue( r );
+    d->value.setValue( r );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<int>& i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<qlonglong>& i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<uint>& i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<qulonglong>& i )
 {
-    setValue( i );
+    d->value.setValue( i );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<bool>& b )
 {
-    setValue( b );
+    d->value.setValue( b );
     return *this;
 }
 
 
-Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<double>& d )
+Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<double>& v )
 {
-    setValue( d );
+    d->value.setValue( v );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QStringList& stringlist )
 {
-    setValue( stringlist );
+    d->value.setValue( stringlist );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<QDate>& date )
 {
-    setValue( date );
+    d->value.setValue( date );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<QTime>& time )
 {
-    setValue( time );
+    d->value.setValue( time );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<QDateTime>& datetime )
 {
-    setValue( datetime );
+    d->value.setValue( datetime );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<QUrl>& url )
 {
-    setValue( url );
+    d->value.setValue( url );
     return *this;
 }
 
 
 Nepomuk::KMetaData::Variant& Nepomuk::KMetaData::Variant::operator=( const QList<Resource>& r )
 {
-    setValue( r );
+    d->value.setValue( r );
     return *this;
 }
 
@@ -728,37 +718,37 @@ bool Nepomuk::KMetaData::Variant::isResourceList() const
 
 int Nepomuk::KMetaData::Variant::toInt() const
 {
-    return value<int>();
+    return d->value.value<int>();
 }
 
 
 qlonglong Nepomuk::KMetaData::Variant::toInt64() const
 {
-    return value<qlonglong>();
+    return d->value.value<qlonglong>();
 }
 
 
 uint Nepomuk::KMetaData::Variant::toUnsignedInt() const
 {
-    return value<uint>();
+    return d->value.value<uint>();
 }
 
 
 qulonglong Nepomuk::KMetaData::Variant::toUnsignedInt64() const
 {
-    return value<qulonglong>();
+    return d->value.value<qulonglong>();
 }
 
 
 bool Nepomuk::KMetaData::Variant::toBool() const
 {
-    return value<bool>();
+    return d->value.value<bool>();
 }
 
 
 double Nepomuk::KMetaData::Variant::toDouble() const
 {
-    return value<double>();
+    return d->value.value<double>();
 }
 
 
@@ -794,77 +784,113 @@ QString Nepomuk::KMetaData::Variant::toString() const
         if( !r.uri().isEmpty() )
             return r.uri();
         else
-            return r.getIdentifiers().first();
+            return r.identifiers().first();
     }
     else
-        return value<QString>();
+        return d->value.value<QString>();
 }
 
 
 QDate Nepomuk::KMetaData::Variant::toDate() const
 {
-    return value<QDate>();
+    return d->value.value<QDate>();
 }
 
 
 QTime Nepomuk::KMetaData::Variant::toTime() const
 {
-    return value<QTime>();
+    return d->value.value<QTime>();
 }
 
 
 QDateTime Nepomuk::KMetaData::Variant::toDateTime() const
 {
-    return value<QDateTime>();
+    return d->value.value<QDateTime>();
 }
 
 
 QUrl Nepomuk::KMetaData::Variant::toUrl() const
 {
-    return value<QUrl>();
+    return d->value.value<QUrl>();
 }
 
 
 Nepomuk::KMetaData::Resource Nepomuk::KMetaData::Variant::toResource() const
 {
-    return value<Resource>();
+    return d->value.value<Resource>();
 }
 
 
 
 QList<int> Nepomuk::KMetaData::Variant::toIntList() const
 {
-    return listValue<int>();
+    if( isInt() ) {
+        QList<int> l;
+        l.append( toInt() );
+        return l;
+    }
+    else
+        return d->value.value<QList<int> >();
 }
 
 
 QList<qlonglong> Nepomuk::KMetaData::Variant::toInt64List() const
 {
-    return listValue<qlonglong>();
+    if( isInt64() ) {
+        QList<qlonglong> l;
+        l.append( toInt64() );
+        return l;
+    }
+    else
+        return d->value.value<QList<qlonglong> >();
 }
 
 
 QList<uint> Nepomuk::KMetaData::Variant::toUnsignedIntList() const
 {
-    return listValue<uint>();
+    if( isUnsignedInt() ) {
+        QList<uint> l;
+        l.append( toUnsignedInt() );
+        return l;
+    }
+    else
+        return d->value.value<QList<uint> >();
 }
 
 
 QList<qulonglong> Nepomuk::KMetaData::Variant::toUnsignedInt64List() const
 {
-    return listValue<qulonglong>();
+    if( isUnsignedInt64() ) {
+        QList<qulonglong> l;
+        l.append( toUnsignedInt64() );
+        return l;
+    }
+    else
+        return d->value.value<QList<qulonglong> >();
 }
 
 
 QList<bool> Nepomuk::KMetaData::Variant::toBoolList() const
 {
-    return listValue<bool>();
+    if( isBool() ) {
+        QList<bool> l;
+        l.append( toBool() );
+        return l;
+    }
+    else
+        return d->value.value<QList<bool> >();
 }
 
 
 QList<double> Nepomuk::KMetaData::Variant::toDoubleList() const
 {
-    return listValue<double>();
+    if( isDouble() ) {
+        QList<double> l;
+        l.append( toDouble() );
+        return l;
+    }
+    else
+        return d->value.value<QList<double> >();
 }
 
 
@@ -882,7 +908,7 @@ template<typename T> QStringList convertToStringList( const QList<T>& l )
 QStringList Nepomuk::KMetaData::Variant::toStringList() const
 {
     //  kDebug(300004) << "(Variant::toStringList() converting... " << QMetaType::typeName(simpleType()) << endl;
-    if( !isValid() )
+    if( !d->value.isValid() )
         return QStringList();
 
     if( !isList() )
@@ -911,37 +937,67 @@ QStringList Nepomuk::KMetaData::Variant::toStringList() const
     else if( isResourceList() )
         return convertToStringList<Resource>( toResourceList() );
     else
-        return value<QStringList>();
+        return d->value.value<QStringList>();
 }
 
 
 QList<QDate> Nepomuk::KMetaData::Variant::toDateList() const
 {
-    return listValue<QDate>();
+    if( isDate() ) {
+        QList<QDate> l;
+        l.append( toDate() );
+        return l;
+    }
+    else
+        return d->value.value<QList<QDate> >();
 }
 
 
 QList<QTime> Nepomuk::KMetaData::Variant::toTimeList() const
 {
-    return listValue<QTime>();
+    if( isTime() ) {
+        QList<QTime> l;
+        l.append( toTime() );
+        return l;
+    }
+    else
+        return d->value.value<QList<QTime> >();
 }
 
 
 QList<QDateTime> Nepomuk::KMetaData::Variant::toDateTimeList() const
 {
-    return listValue<QDateTime>();
+    if( isDateTime() ) {
+        QList<QDateTime> l;
+        l.append( toDateTime() );
+        return l;
+    }
+    else
+        return d->value.value<QList<QDateTime> >();
 }
 
 
 QList<QUrl> Nepomuk::KMetaData::Variant::toUrlList() const
 {
-    return listValue<QUrl>();
+    if( isUrl() ) {
+        QList<QUrl> l;
+        l.append( toUrl() );
+        return l;
+    }
+    else
+        return d->value.value<QList<QUrl> >();
 }
 
 
 QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Variant::toResourceList() const
 {
-    return listValue<Resource>();
+    if( isResource() ) {
+        QList<Resource> l;
+        l.append( toResource() );
+        return l;
+    }
+    else
+        return d->value.value<QList<Resource> >();
 }
 
 
@@ -964,7 +1020,7 @@ bool Nepomuk::KMetaData::Variant::isList() const
 
 int Nepomuk::KMetaData::Variant::type() const
 {
-    return QVariant::userType();
+    return d->value.userType();
 }
 
 
@@ -995,7 +1051,7 @@ int Nepomuk::KMetaData::Variant::simpleType() const
     else if( isResourceList() )
         return qMetaTypeId<Resource>();
     else
-        return QVariant::userType();
+        return d->value.userType();
 }
 
 
@@ -1034,7 +1090,7 @@ bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
     else if( isDouble() || isDoubleList() )
         return other.toDoubleList() == toDoubleList();
     else if( isString() || isStringList() )
-        return other.value<QStringList>() == value<QStringList>();
+        return other.d->value.value<QStringList>() == d->value.value<QStringList>();
     else if( isDate() || isDateList() )
         return other.toDateList() == toDateList();
     else if( isTime() || isTimeList() )
@@ -1046,7 +1102,7 @@ bool Nepomuk::KMetaData::Variant::operator==( const Variant& other ) const
     else if( isResource() || isResourceList() )
         return other.toResourceList() == toResourceList();
     else
-        return QVariant::operator==( other );
+        return ( d->value == other.d->value );
 }
 
 
@@ -1058,7 +1114,7 @@ bool Nepomuk::KMetaData::Variant::operator!=( const Variant& other ) const
 
 QVariant Nepomuk::KMetaData::Variant::variant() const
 {
-    return *this;
+    return d->value;
 }
 
 

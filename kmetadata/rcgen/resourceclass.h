@@ -44,7 +44,10 @@ class Property
 
     ResourceClass* domain;
 
+    Property* inverse;
+
     QString name() const;
+    QString typeConversionMethod() const;
     QString typeString( bool simple = false, bool withNamespace = false ) const;
     QString setterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
     QString getterDeclaration( const ResourceClass* rc, bool withNamespace = false ) const;
@@ -70,6 +73,8 @@ class ResourceClass
     ResourceClass* parent;
 
     QList<ResourceClass*> allParents;
+
+    bool generate;
 
     /**
      * \return true if this class should be generated.
@@ -101,8 +106,6 @@ class ResourceClass
 
     QString headerTemplateFilePath;
     QString sourceTemplateFilePath;
-
-    static ResourceClass* s_defaultResource;
 };
 
 #endif

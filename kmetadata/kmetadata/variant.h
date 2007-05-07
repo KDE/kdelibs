@@ -15,10 +15,8 @@
 #ifndef _NEPOMUK_KMETADATA_VARIANT_H_
 #define _NEPOMUK_KMETADATA_VARIANT_H_
 
-#include <kmetadata/kmetadata_export.h>
-#include <kmetadata/resource.h>
-
-#include <QtCore/QVariant>
+#include "kmetadata_export.h"
+#include "resource.h"
 
 
 namespace Nepomuk {
@@ -42,7 +40,7 @@ namespace Nepomuk {
 	 *     needs to display the value in a Variant toString and toStringList 
 	 *     do the job.
 	 */
-	class KMETADATA_EXPORT Variant : private QVariant
+	class KMETADATA_EXPORT Variant
 	    {
 	    public:
 		Variant();
@@ -52,7 +50,7 @@ namespace Nepomuk {
 		/**
 		 * Will create an invalid Variant if other has an unsupported type.
 		 */
-		Variant( const QVariant& other );
+		explicit Variant( const QVariant& other );
 		Variant( int i );
 		Variant( qlonglong i );
 		Variant( uint i );
@@ -236,28 +234,6 @@ namespace Nepomuk {
 		QList<QDateTime> toDateTimeList() const;
 		QList<QUrl> toUrlList() const;
 		QList<Resource> toResourceList() const;
-
-		template<typename T> bool hasType() const {
-		    return( QVariant::userType() == qMetaTypeId<T>() );
-		}
-
-		template<typename T> bool hasListType() const {
-		    return( QVariant::userType() == qMetaTypeId<QList<T> >() );
-		}
-
-		template<typename T> T value() const {
-		    return QVariant::value<T>();
-		}
-
-		template<typename T> QList<T> listValue() const {
-		    if( hasType<T>() ) {
-			QList<T> l;
-			l.append( value<T>() );
-			return l;
-		    }
-		    else
-			return value<QList<T> >();
-		}
 
 		/**
 		 * Create a Variant object by parsing string \a value based on \a type.

@@ -9,7 +9,7 @@
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * See the file "COPYING.LIB" for the exact licensing terms.
+ * See the file "COPYING" for the exact licensing terms.
  */
 
 /*
@@ -21,6 +21,7 @@
 #include <kmetadata/kmetadata.h>
 #include "tag.h"
 
+#include "resource.h"
 
 Nepomuk::KMetaData::Tag::Tag()
   : Resource()
@@ -67,7 +68,7 @@ QString Nepomuk::KMetaData::Tag::resourceTypeUri()
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#Tag";
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Tag::TagOf() const
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Tag::tagOf() const
 {
     return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag", *this ) );
 }

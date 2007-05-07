@@ -13,7 +13,7 @@
  */
 
 #include "speedtest.h"
-#include <kmetadata/kmetadata.h>
+#include "../kmetadata/kmetadata.h"
 
 #include <knepomuk/knepomuk.h>
 #include <knepomuk/services/rdfrepository.h>

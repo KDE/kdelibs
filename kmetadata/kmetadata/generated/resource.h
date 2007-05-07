@@ -5,11 +5,11 @@
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * See the file "COPYING.LIB" for the exact licensing terms.
+ * See the file "COPYING" for the exact licensing terms.
  */
 
 #ifndef _NEPOMUK_KMETADATA_RESOURCE_H_
@@ -17,7 +17,7 @@
 
 #include <QtCore>
 
-#include <kmetadata/kmetadata_export.h>
+#include "kmetadata_export.h"
 
 
 namespace Nepomuk {
@@ -32,16 +32,17 @@ namespace Nepomuk {
 
 
 	enum ErrorCode {
-	    ERROR_SUCCESS = 0,
-	    ERROR_COMMUNICATION, /**< A commication error, i.e. libKNepCLient connection failure */
-	    ERROR_INVALID_TYPE
+	    NoError = 0,
+	    CommunicationError, /**< A commication error, i.e. libKNepCLient connection failure */
+	    InvalidType,
+            UnknownError
 	};
 
 	/**
 	 * \return A human-readble string.
 	 */
 	// FIXME: add the uri of the resource as parameter
-	KMETADATA_EXPORT QString errorString( int code );
+	KMETADATA_EXPORT QString errorString( ErrorCode code );
 
 	/**
 	 * \brief Resource is the central object type in libKMetaData. It represents a piece of
@@ -165,7 +166,7 @@ namespace Nepomuk {
              *
              * \sa ResourceManager::setAutoSync
              */
-            int sync();
+            ErrorCode sync();
 
             /**
              * \return A list of all defined properties
@@ -199,7 +200,7 @@ namespace Nepomuk {
              *
              * \sa Ontology::defaultNamespace
              */
-            Variant getProperty( const QString& uri ) const;
+            Variant property( const QString& uri ) const;
 
             /**
              * Set a property of the resource.
@@ -236,9 +237,11 @@ namespace Nepomuk {
              * Remove this resource completely.
              *
              * The resource will only be marked as deleted locally and not be removed from
-             * the local Nepomuk RDF store until a call to sync.
+             * the local Nepomuk RDF store until a call to sync (in most cases this is done
+             * automatically through auto-syncing).
              *
-             * One call to setProperty will revert the deletion of a resource.
+             * One call to setProperty before a syncing operation will revert the deletion
+             * of a resource.
              *
              * \sa revive
              */
@@ -267,7 +270,7 @@ namespace Nepomuk {
              * \return true if the data in this object has been modified and not yet
              * synced with the local NEPOMUK RDF store.
              */
-            bool modified() const;
+            bool isModified() const;
 
             /**
              * \return true if this object represents the exact data from the local NEPOMUK RDF
@@ -276,7 +279,7 @@ namespace Nepomuk {
              *
              * \sa exists()
              */
-            bool inSync() const;
+            bool inSyncWithStore() const;
 
             /**
              * \return true if this resource (i.e. the uri of this resource) exists in the local
@@ -303,15 +306,35 @@ namespace Nepomuk {
 
             // do not remove. Will be replaced with method declarations by the KMetaData class generator.
             /**
-             * Get property 'symbol'. Each resource can have a symbol assigned. 
+             * Get property 'label'. 
+             */
+            QStringList labels() const;
+
+            /**
+             * Set property 'label'. 
+             */
+            void setLabels( const QStringList& value );
+
+            /**
+             * Add a value to property 'label'. 
+             */
+            void addLabel( const QString& value );
+
+            /**
+             * \return The URI of the property 'label'. 
+             */
+            static QString labelUri();
+
+            /**
+             * Get property 'Symbol'. Each resource can have a symbol assigned. 
              * For now this is a simple string which can either be the patch to 
              * an actual pixmap file or just the name of an icon as defined by 
              * the freedesktop.org standard. 
              */
-            QStringList getSymbols() const;
+            QStringList symbols() const;
 
             /**
-             * Set property 'symbol'. Each resource can have a symbol assigned. 
+             * Set property 'Symbol'. Each resource can have a symbol assigned. 
              * For now this is a simple string which can either be the patch to 
              * an actual pixmap file or just the name of an icon as defined by 
              * the freedesktop.org standard. 
@@ -319,7 +342,7 @@ namespace Nepomuk {
             void setSymbols( const QStringList& value );
 
             /**
-             * Add a value to property 'symbol'. Each resource can have a symbol 
+             * Add a value to property 'Symbol'. Each resource can have a symbol 
              * assigned. For now this is a simple string which can either be 
              * the patch to an actual pixmap file or just the name of an icon as 
              * defined by the freedesktop.org standard. 
@@ -327,29 +350,14 @@ namespace Nepomuk {
             void addSymbol( const QString& value );
 
             /**
-             * \return The URI of the property 'symbol'. 
+             * \return The URI of the property 'Symbol'. 
              */
             static QString symbolUri();
 
             /**
-             * Get property 'rating'. 
-             */
-            quint32 getRating() const;
-
-            /**
-             * Set property 'rating'. 
-             */
-            void setRating( const quint32& value );
-
-            /**
-             * \return The URI of the property 'rating'. 
-             */
-            static QString ratingUri();
-
-            /**
              * Get property 'Identifier'. 
              */
-            QStringList getIdentifiers() const;
+            QStringList identifiers() const;
 
             /**
              * Set property 'Identifier'. 
@@ -364,32 +372,12 @@ namespace Nepomuk {
             /**
              * \return The URI of the property 'Identifier'. 
              */
-            static QString IdentifierUri();
-
-            /**
-             * Get property 'preflabel'. 
-             */
-            QStringList getPreflabels() const;
-
-            /**
-             * Set property 'preflabel'. 
-             */
-            void setPreflabels( const QStringList& value );
-
-            /**
-             * Add a value to property 'preflabel'. 
-             */
-            void addPreflabel( const QString& value );
-
-            /**
-             * \return The URI of the property 'preflabel'. 
-             */
-            static QString preflabelUri();
+            static QString identifierUri();
 
             /**
              * Get property 'isRelated'. 
              */
-            QList<Resource> getIsRelateds() const;
+            QList<Resource> isRelateds() const;
 
             /**
              * Set property 'isRelated'. 
@@ -407,29 +395,61 @@ namespace Nepomuk {
             static QString isRelatedUri();
 
             /**
-             * Get property 'Label'. 
+             * Get property 'altLabel'. 
              */
-            QStringList getLabels() const;
+            QStringList altLabels() const;
 
             /**
-             * Set property 'Label'. 
+             * Set property 'altLabel'. 
              */
-            void setLabels( const QStringList& value );
+            void setAltLabels( const QStringList& value );
 
             /**
-             * Add a value to property 'Label'. 
+             * Add a value to property 'altLabel'. 
              */
-            void addLabel( const QString& value );
+            void addAltLabel( const QString& value );
 
             /**
-             * \return The URI of the property 'Label'. 
+             * \return The URI of the property 'altLabel'. 
              */
-            static QString LabelUri();
+            static QString altLabelUri();
+
+            /**
+             * Get property 'Rating'. 
+             */
+            quint32 rating() const;
+
+            /**
+             * Set property 'Rating'. 
+             */
+            void setRating( const quint32& value );
+
+            /**
+             * \return The URI of the property 'Rating'. 
+             */
+            static QString ratingUri();
+
+            /**
+             * Get property 'description'. Everything can be annotated with 
+             * a simple string comment. 
+             */
+            QString description() const;
+
+            /**
+             * Set property 'description'. Everything can be annotated with 
+             * a simple string comment. 
+             */
+            void setDescription( const QString& value );
+
+            /**
+             * \return The URI of the property 'description'. 
+             */
+            static QString descriptionUri();
 
             /**
              * Get property 'isTopicOf'. 
              */
-            QList<Resource> getIsTopicOfs() const;
+            QList<Resource> isTopicOfs() const;
 
             /**
              * Set property 'isTopicOf'. 
@@ -449,7 +469,7 @@ namespace Nepomuk {
             /**
              * Get property 'annotation'. 
              */
-            QList<Resource> getAnnotations() const;
+            QList<Resource> annotations() const;
 
             /**
              * Set property 'annotation'. 
@@ -467,27 +487,10 @@ namespace Nepomuk {
             static QString annotationUri();
 
             /**
-             * Get property 'Comment'. Everything can be annotated with a 
-             * simple string comment. 
-             */
-            QString getComment() const;
-
-            /**
-             * Set property 'Comment'. Everything can be annotated with a 
-             * simple string comment. 
-             */
-            void setComment( const QString& value );
-
-            /**
-             * \return The URI of the property 'Comment'. 
-             */
-            static QString CommentUri();
-
-            /**
              * Get property 'Tag'. Each Resource can be tagged with an arbitrary 
              * number of Tags. This allows a simple grouping of resources. 
              */
-            QList<Tag> getTags() const;
+            QList<Tag> tags() const;
 
             /**
              * Set property 'Tag'. Each Resource can be tagged with an arbitrary 
@@ -505,12 +508,12 @@ namespace Nepomuk {
             /**
              * \return The URI of the property 'Tag'. 
              */
-            static QString TagUri();
+            static QString tagUri();
 
             /**
              * Get property 'Topic'. 
              */
-            QList<Resource> getTopics() const;
+            QList<Resource> topics() const;
 
             /**
              * Set property 'Topic'. 
@@ -525,7 +528,7 @@ namespace Nepomuk {
             /**
              * \return The URI of the property 'Topic'. 
              */
-            static QString TopicUri();
+            static QString topicUri();
 
             /**
              * Get all resources that have this resource set as property 'annotation'. 
@@ -534,22 +537,10 @@ namespace Nepomuk {
             QList<Resource> annotationOf() const;
 
             /**
-             * Get all resources that have this resource set as property 'Topic'. 
-             * \sa ResourceManager::allResourcesWithProperty 
-             */
-            QList<Resource> TopicOf() const;
-
-            /**
              * Get all resources that have this resource set as property 'isRelated'. 
              * \sa ResourceManager::allResourcesWithProperty 
              */
             QList<Resource> isRelatedOf() const;
-
-            /**
-             * Get all resources that have this resource set as property 'isTopicOf'. 
-             * \sa ResourceManager::allResourcesWithProperty 
-             */
-            QList<Resource> isTopicOfOf() const;
 
             /**
              * Retrieve a list of all available Resource resources. This list 

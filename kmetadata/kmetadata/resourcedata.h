@@ -20,7 +20,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutex>
 
-#include <kmetadata/variant.h>
+#include "variant.h"
 
 #include <soprano/statement.h>
 
@@ -84,7 +84,7 @@ namespace Nepomuk {
 
 		bool hasProperty( const QString& uri ) const;
 
-		Variant getProperty( const QString& uri ) const;
+		Variant property( const QString& uri ) const;
 
 		void setProperty( const QString& uri, const Variant& value );
 
@@ -98,7 +98,7 @@ namespace Nepomuk {
 
 		void revive();
 
-		bool modified() const;
+		bool isModified() const;
 
 		bool removed() const;
 

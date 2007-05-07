@@ -137,10 +137,10 @@ bool Nepomuk::KMetaData::ResourceData::hasProperty( const QString& uri ) const
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::getProperty( const QString& uri ) const
+Nepomuk::KMetaData::Variant Nepomuk::KMetaData::ResourceData::property( const QString& uri ) const
 {
     if( m_proxyData )
-        return m_proxyData->getProperty( uri );
+        return m_proxyData->property( uri );
 
     PropertiesMap::const_iterator it = m_properties.constFind( uri );
     if( it != m_properties.end() )
@@ -209,10 +209,10 @@ void Nepomuk::KMetaData::ResourceData::revive()
 }
 
 
-bool Nepomuk::KMetaData::ResourceData::modified() const
+bool Nepomuk::KMetaData::ResourceData::isModified() const
 {
     if( m_proxyData )
-        return m_proxyData->modified();
+        return m_proxyData->isModified();
 
     // If the resource is Removed it has not been synced yet and thus is modified
     // If it is only marked as Deleted it has been synced and thus is not modified
@@ -393,7 +393,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
             //
             // FIXME: do not use the URI of hasIdentifier here but use some method like Resource::addIdentifier
             // FIXME: just calling determineUri should not mark the resource modified!
-            QStringList ids = getProperty( s_identifierUri ).toStringList();
+            QStringList ids = property( s_identifierUri ).toStringList();
             ids += kickoffUriOrId();
             m_properties[s_identifierUri] = qMakePair<Variant, Flags>( ids, ResourceData::Modified );
 
@@ -524,7 +524,7 @@ bool Nepomuk::KMetaData::ResourceData::loadProperty( const QString& name, const 
         m_properties.insert( name, qMakePair<Variant, Flags>( val, Loaded ) );
     }
     else if( val.type() != oldProp.value().first.simpleType() ) {
-        ResourceManager::instance()->notifyError( m_uri, ERROR_INVALID_TYPE );
+        ResourceManager::instance()->notifyError( m_uri, InvalidType );
         return false;
     }
     else {
@@ -601,7 +601,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
     if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
         rr.createRepository( KMetaData::defaultGraph() );
         if( !rr.success() ) {
-            ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+            ResourceManager::instance()->notifyError( m_uri, CommunicationError );
             m_modificationMutex.unlock();
             return false;
         }
@@ -613,7 +613,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
     rr.removeAllStatements( KMetaData::defaultGraph(), Statement( QUrl( m_uri ), Node(), Node() ) );
     if( !rr.success() ) {
         kDebug(300004) << "(ResourceData) removing all statements of resource " << m_uri << " failed." << endl;
-        ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+        ResourceManager::instance()->notifyError( m_uri, CommunicationError );
         m_modificationMutex.unlock();
         return false;
     }
@@ -636,7 +636,7 @@ bool Nepomuk::KMetaData::ResourceData::save()
             rr.addStatements( KMetaData::defaultGraph(), sl );
             if( !rr.success() ) {
                 kDebug(300004) << "(ResourceData) adding statements for resource " << m_uri << " failed." << endl;
-                ResourceManager::instance()->notifyError( m_uri, ERROR_COMMUNICATION );
+                ResourceManager::instance()->notifyError( m_uri, CommunicationError );
                 m_modificationMutex.unlock();
                 return false;
             }
@@ -994,7 +994,7 @@ QList<Nepomuk::KMetaData::ResourceData*> Nepomuk::KMetaData::ResourceData::allRe
          rdIt != kickoffData()->end(); ++rdIt ) {
 
         if( rdIt.value()->hasProperty( _uri ) &&
-            rdIt.value()->getProperty( _uri ) == v ) {
+            rdIt.value()->property( _uri ) == v ) {
             l.append( rdIt.value() );
         }
     }

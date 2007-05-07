@@ -23,8 +23,8 @@
 #include "kautoscrollarea.h"
 #include "ktagdisplaywidget.h"
 
-#include <kmetadata/tools.h>
-#include <kmetadata/generated/tag.h>
+#include "../tools.h"
+#include "../generated/tag.h"
 
 #include <karrowbutton.h>
 #include <kinputdialog.h>
@@ -91,7 +91,7 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::TagWidget::taggedResource() con
 
 QList<Nepomuk::KMetaData::Tag> Nepomuk::KMetaData::TagWidget::assignedTags() const
 {
-    return d->res.getTags();
+    return d->res.tags();
 }
 
 
@@ -99,10 +99,10 @@ void Nepomuk::KMetaData::TagWidget::setTaggedResource( const Resource& resource 
 {
     d->res = resource;
     QStringList tagStrings;
-    QList<Tag> tags = d->res.getTags();
+    QList<Tag> tags = d->res.tags();
     for( QList<Tag>::const_iterator it = tags.constBegin();
          it != tags.constEnd(); ++it )
-        tagStrings += ( *it ).getIdentifiers().first();
+        tagStrings += ( *it ).identifiers().first();
     d->label->setTags( tagStrings );
 }
 
@@ -122,11 +122,11 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
     QMenu* popup = new QMenu( i18n( "Tag resource..." ), this );
     QMap<QAction*, Tag> tagMap;
     foreach( Tag tag,  allTags ) {
-        QAction* a = new QAction( tag.getIdentifiers().first(), popup );
+        QAction* a = new QAction( tag.identifiers().first(), popup );
         a->setCheckable( true );
         popup->addAction( a );
         tagMap.insert( a,  tag );
-        a->setChecked( d->res.getTags().contains( tag ) );
+        a->setChecked( d->res.tags().contains( tag ) );
     }
 
     QAction* newTagAction = new QAction( i18n( "Create new tag..." ), popup );
@@ -141,8 +141,8 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
                 QListIterator<Tag> tagIt( l );
                 while( tagIt.hasNext() ) {
                     const Nepomuk::KMetaData::Tag& tag = tagIt.next();
-                    if( tag.getLabels().contains( s ) ||
-                        tag.getIdentifiers().contains( s ) ) {
+                    if( tag.labels().contains( s ) ||
+                        tag.identifiers().contains( s ) ) {
                         KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag exists") );
                         return;
                     }
