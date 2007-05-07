@@ -62,8 +62,9 @@
 #include "k3socketaddress.h"
 #include "k3socketbase.h"
 #include "k3socketdevice.h"
+#ifndef KDE_USE_FINAL
 #include "k3socks.h"
-
+#endif
 using namespace KNetwork;
 
 class KNetwork::KSocketDevicePrivate
