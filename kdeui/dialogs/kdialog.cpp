@@ -196,7 +196,6 @@ KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
   : QDialog( parent, flags ),
     d( new Private( this ) )
 {
-  setModal( true );
   KWhatsThisManager::init();
 
   setButtons( Ok | Cancel );
