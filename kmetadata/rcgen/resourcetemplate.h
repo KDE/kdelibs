@@ -12,6 +12,10 @@
  * See the file "COPYING.LIB" for the exact licensing terms.
  */
 
+#ifndef _RESOURCE_TEMPLATE_H_
+#define _RESOURCE_TEMPLATE_H_
+
+
 static const QString gplTemplate = 
 "/*\n"
 " *\n"
@@ -141,3 +145,5 @@ static const QString sourceTemplate = gplTemplate +
 "}\n"
 "\n"
 "KMETADATA_METHODS\n";
+
+#endif
