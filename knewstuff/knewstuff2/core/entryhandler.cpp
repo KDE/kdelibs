@@ -94,7 +94,7 @@ QDomElement EntryHandler::serializeElement(const Entry& entry)
     author.setAttribute("im", entry.author().jabber());
   // FIXME: 'jabber' or 'im'? consult with kopete guys...
 
-  (void)addElement(doc, el, "licence", entry.license());
+  (void)addElement(doc, el, "licence", entry.license()); // krazy:exclude=spelling
   (void)addElement(doc, el, "version", entry.version());
   if(mCompat)
     (void)addElement(doc, el, "release", QString::number(entry.release()));
@@ -189,7 +189,7 @@ Entry EntryHandler::deserializeElement(const QDomElement& entryxml)
       author.setHomepage(homepage);
       entry.setAuthor(author);
     }
-    else if(e.tagName() == "licence")
+    else if(e.tagName() == "licence") // krazy:exclude=spelling
     {
       entry.setLicense(e.text().trimmed());
     }
