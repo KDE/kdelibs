@@ -48,9 +48,9 @@ set(meinproc_SRCS meinproc.cpp xslt.cpp )
 
 kde4_automoc(${meinproc_SRCS})
 
-kde4_add_executable(meinproc NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
+kde4_add_executable(meinproc4 NOGUI RUN_UNINSTALLED ${meinproc_SRCS})
 
-target_link_libraries(meinproc kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
+target_link_libraries(meinproc4 kio ${KDE4_KDECORE_LIBS} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES})
 
 if(KDE4_ENABLE_FINAL)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
@@ -58,7 +58,7 @@ else(KDE4_ENABLE_FINAL)
    set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 endif(KDE4_ENABLE_FINAL)
 
-install(TARGETS meinproc DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS meinproc4 DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### next target ###############
