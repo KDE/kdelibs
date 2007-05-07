@@ -110,18 +110,6 @@ public:
    **/
   bool writeStdin(const QByteArray &data);
 
-  //I like fputs better -- it's the same as writeStdin
-  //inline
-  /**
-   * This function just calls writeStdin().
-   *
-   * @param line Text to write.
-   * @param AppendNewLine if true, a newline '\\n' is appended.
-   * @return true if successful, false otherwise
-   * @deprecated
-   **/
-  KDE_DEPRECATED bool fputs (const QString &line, bool AppendNewLine=true);
-
   /**
    * Closes stdin after all data has been send.
    */
@@ -149,16 +137,6 @@ public:
    * @return the number of characters read, or -1 if no data is available.
    **/
   int readln (QString &line, bool autoAck=true, bool *partial=0);
-
-  /**
-   * This function calls readln().
-   * @param line is used to store the line that was read.
-   * @param autoAck when true, ackRead() is called for you.
-   * @return the number of characters read, or -1 if no data is available.
-   * @deprecated use readln. Note that it has an inverted autoAck default,
-   *  though.
-   **/
-  KDE_DEPRECATED int fgets (QString &line, bool autoAck=false);
 
   /**
    * Reset the class.  Doesn't kill the process.
