@@ -357,10 +357,10 @@ void Node::processDecls(ExecState *exec) {
   fVisit.visit(this);
 }
 
-void Node::processVarDecl (ExecState* state)
+void Node::processVarDecl (ExecState*)
 {}
 
-void Node::processFuncDecl(ExecState* state)
+void Node::processFuncDecl(ExecState*)
 {}
 
 
@@ -1072,7 +1072,7 @@ void FunctionCallDotNode::recurseVisit(NodeVisitor *visitor)
 // ------------------------------ ResolvePostfix --------------------------------------
 
 
-void ResolvePostfix::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
+void ResolvePostfix::handleResolveSuccess(ResolveResult& res, Node*, ExecState* exec, JSObject* base, 
     PropertySlot& slot, const Identifier& ident)
 {
   JSValue *v = slot.getValue(exec, base, ident);
@@ -1084,7 +1084,7 @@ void ResolvePostfix::handleResolveSuccess(ResolveResult& res, Node* node, ExecSt
   res.evalValue  = jsNumber(n);
 }
 
-void ResolvePostfix::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident) {
+void ResolvePostfix::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject*, const Identifier& ident) {
   res.evalValue = node->throwUndefinedVariableError(exec, ident);
 }
 
@@ -1165,13 +1165,13 @@ void PostfixDotNode::recurseVisit(NodeVisitor *visitor)
 // ECMA 11.4.1
 
 // ------------------------------ ResolveDelete ---------------------------------------
-void ResolveDelete::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
-    PropertySlot& slot, const Identifier& ident)
+void ResolveDelete::handleResolveSuccess(ResolveResult& res, Node*, ExecState* exec, JSObject* base, 
+    PropertySlot&, const Identifier& ident)
 {
   res.evalValue = jsBoolean(base->deleteProperty(exec, ident));
 }
 
-void ResolveDelete::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident)
+void ResolveDelete::handleResolveFailure(ResolveResult& res, Node*, ExecState*, JSObject*, const Identifier&)
 {
   res.evalValue = jsBoolean(true);
 }
@@ -1280,14 +1280,14 @@ static JSValue *typeStringForValue(JSValue *v)
     }
 }
 
-void ResolveTypeOf::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, 
+void ResolveTypeOf::handleResolveSuccess(ResolveResult& res, Node*, ExecState* exec, JSObject* base, 
     PropertySlot& slot, const Identifier& ident)
 {
   JSValue *v = slot.getValue(exec, base, ident);
   res.evalValue = typeStringForValue(v);
 }
 
-void ResolveTypeOf::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident)
+void ResolveTypeOf::handleResolveFailure(ResolveResult& res, Node*, ExecState*, JSObject*, const Identifier&)
 {
   res.evalValue = jsString("undefined");
 }
@@ -1315,7 +1315,7 @@ void TypeOfValueNode::recurseVisit(NodeVisitor *visitor)
 
 // ------------------------------ ResolvePrefix --------------------------------------
 
-void ResolvePrefix::handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* base,
+void ResolvePrefix::handleResolveSuccess(ResolveResult& res, Node*, ExecState* exec, JSObject* base,
     PropertySlot& slot, const Identifier& ident)
 {
   JSValue *v = slot.getValue(exec, base, ident);
@@ -1328,7 +1328,7 @@ void ResolvePrefix::handleResolveSuccess(ResolveResult& res, Node* node, ExecSta
   res.evalValue = res.writeValue = n2;
 }
 
-void ResolvePrefix::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* base, const Identifier& ident)
+void ResolvePrefix::handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject*, const Identifier& ident)
 {
   res.evalValue = node->throwUndefinedVariableError(exec, ident);
 }
@@ -2844,7 +2844,7 @@ int FunctionBodyNode::lookupSymbolID(const Identifier& ident) const
   JSValue* val = m_symbolTable.get(ident);
   if (!val)
     return -1;
-  return val->getNumber();
+  return int(val->getNumber());
 }
 
 
