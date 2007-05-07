@@ -62,7 +62,7 @@ namespace Phonon
     };
 
     /**
-     * Provided as keys for \ref metaData for convenience, in addition to the strings defined in
+     * Provided as keys for \ref MediaObject::metaData for convenience, in addition to the strings defined in
      * the Ogg Vorbis specification.
      */
     enum MetaData {

@@ -113,7 +113,7 @@ capabilities.
 \ingroup Frontend
 
 \defgroup PhononWidgets Widgets
-Convenience widgets and the \ref VideoWidget
+Convenience widgets and the \ref Phonon::VideoWidget
 \ingroup Frontend
 
 \defgroup PhononEffects Effects

@@ -99,7 +99,7 @@ class MediaObjectInterface
          * encoded into the media file.
          *
          * Be prepared to change the audio stream when \ref
-         * phonon_MediaObject_selectAudioStream is called with one of the
+         * setCurrentAudioStream is called with one of the
          * strings of this list. If the media has multiple audio streams but the
          * backend cannot switch then the list of available audio streams should be
          * empty.
@@ -113,7 +113,7 @@ class MediaObjectInterface
          * encoded into the media file.
          *
          * Be prepared to change the video stream when \ref
-         * phonon_MediaObject_selectVideoStream is called with one of the
+         * setCurrentVideoStream is called with one of the
          * strings of this list. If the media has multiple video streams but the
          * backend cannot switch then the list of available video streams should be
          * empty.
@@ -127,7 +127,7 @@ class MediaObjectInterface
          * encoded into the media file.
          *
          * Be prepared to change the subtitle stream when \ref
-         * phonon_MediaObject_selectSubtitleStream is called with one of the
+         * setCurrentSubtitleStream is called with one of the
          * strings of this list. If the media has multiple subtitle streams but the
          * backend cannot switch then the list of available subtitle streams should be
          * empty.
@@ -152,6 +152,9 @@ class MediaObjectInterface
         /**
          * Selects one audio stream for the selected AudioPath object.
          *
+         * \param streamName name of the stream as returned by
+         * availableAudioStreams.
+         *
          * \param audioPath If \p 0 the audio stream should be used for all
          * connected AudioPath objects. Else the audio stream selection should only
          * be made for the one specified AudioPath. This way the user can request
@@ -160,6 +163,9 @@ class MediaObjectInterface
         virtual void setCurrentAudioStream(const QString &streamName,const QObject *audioPath) = 0;
         /**
          * Selects one video stream for the selected VideoPath object.
+         *
+         * \param streamName name of the stream as returned by
+         * availableVideoStreams.
          *
          * \param videoPath If \p 0 the video stream should be used for all
          * connected VideoPath objects. Else the video stream selection should only
@@ -171,6 +177,9 @@ class MediaObjectInterface
          * Selects one subtitle stream for the selected VideoPath object. By
          * default normally no subtitle is selected, but depending on the media
          * this may be different.
+         *
+         * \param streamName name of the stream as returned by
+         * availableSubtitleStreams.
          *
          * \param videoPath If \p 0 the video stream should be used for all
          * connected VideoPath objects. Else the video stream selection should only
@@ -281,9 +290,41 @@ class MediaObjectInterface
          */
         virtual Phonon::ErrorType errorType() const = 0;
 
+        /**
+         * Returns the total time of the media in milliseconds.
+         *
+         * If the total time is not know return -1. Do not block until it is
+         * known, instead emit the totalTimeChanged signal as soon as the total
+         * time is known or changes.
+         */
         virtual qint64 totalTime() const = 0;
+
+        /**
+         * Returns the current source.
+         */
         virtual MediaSource source() const = 0;
+
+        /**
+         * Sets the current source. When this function is called the MediaObject is
+         * expected to stop all current activity and start loading the new
+         * source (i.e. go into LoadingState).
+         *
+         * It is expected that the
+         * backend now starts preloading the media data, filling the audio
+         * and video buffers and making all media meta data available. It
+         * will also trigger the totalTimeChanged signal.
+         *
+         * If the backend does not know how to handle the source it needs to
+         * change state to Phonon::ErrorState. Don't bother about handling KIO
+         * URLs. It is enough to handle AbstractMediaStream sources correctly.
+         */
         virtual void setSource(const MediaSource &) = 0;
+
+        /**
+         * Sets the next source to be used for transitions. When a next source
+         * is set playback should continue with the new source. In that case
+         * finished and prefinishMarkReached are not emitted.
+         */
         virtual void setNextSource(const MediaSource &) = 0;
 };
 }
