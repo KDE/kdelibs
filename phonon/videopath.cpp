@@ -78,7 +78,7 @@ bool VideoPath::removeOutput(AbstractVideoOutput *videoOutput)
     return false;
 }
 
-const QList<AbstractVideoOutput *> &VideoPath::outputs() const
+QList<AbstractVideoOutput *> VideoPath::outputs() const
 {
     K_D(const VideoPath);
     return d->outputs;
@@ -131,7 +131,7 @@ bool VideoPath::removeEffect(Effect *effect)
     return false;
 }
 
-const QList<Effect *> &VideoPath::effects() const
+QList<Effect *> VideoPath::effects() const
 {
     K_D(const VideoPath);
     return d->effects;

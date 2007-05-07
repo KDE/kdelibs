@@ -97,7 +97,7 @@ public:
     * item pixmap defaults to the icon for directories.
     * @see openPixmap()
     */
-   const QPixmap& pixmap(){ return(m_rootIcon); }
+   QPixmap pixmap() const { return m_rootIcon; }
 
    /*
     * returns the current root item pixmap set by setOpenPixmap()
@@ -107,7 +107,7 @@ public:
     * Note that it depends on K3FileTreeView::showFolderOpenPximap weather
     * open pixmap are displayed or not.
     */
-   const QPixmap& openPixmap() { return(m_openRootIcon); }
+   QPixmap openPixmap() const { return m_openRootIcon; }
 
    /**
     * @returns whether the items in the branch show their file extensions in the

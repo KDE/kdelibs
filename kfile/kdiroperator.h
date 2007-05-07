@@ -148,7 +148,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @returns the current namefilter.
      * @see setNameFilter
      */
-    const QString& nameFilter() const { return dir->nameFilter(); }
+    QString nameFilter() const { return dir->nameFilter(); }
 
     /**
      * Sets a list of mimetypes as filter. Only files of those mimetypes

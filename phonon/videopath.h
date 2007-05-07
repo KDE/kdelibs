@@ -105,7 +105,7 @@ namespace Phonon
              * \see addOutput
              * \see removeOutput
              */
-            const QList<AbstractVideoOutput *> &outputs() const;
+            QList<AbstractVideoOutput *> outputs() const;
 
             /**
              * Inserts an effect into the video path.
@@ -156,7 +156,7 @@ namespace Phonon
              * \see insertEffect
              * \see removeEffect
              */
-            const QList<Effect *> &effects() const;
+            QList<Effect *> effects() const;
     };
 } //namespace Phonon
 
