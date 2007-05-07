@@ -147,6 +147,9 @@ static Atom net_wm_state_stays_on_top = 0;
 // used to determine whether application window is managed or not
 static Atom xa_wm_state = 0;
 
+// ability flags
+static Atom net_wm_full_placement = 0;
+
 static Bool netwm_atoms_created      = False;
 const unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
 					     SubstructureNotifyMask);
@@ -238,7 +241,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 85;
+static const int netAtomCount = 86;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -333,7 +336,9 @@ static void create_atoms(Display *d) {
             "_KDE_NET_WM_TEMPORARY_RULES",
 
 	    "WM_STATE",
-	    "WM_PROTOCOLS"
+	    "WM_PROTOCOLS",
+            
+            "_NET_WM_FULL_PLACEMENT"
 	    };
 
     Atom atoms[netAtomCount], *atomsp[netAtomCount] =
@@ -429,7 +434,9 @@ static void create_atoms(Display *d) {
             &kde_net_wm_temporary_rules,
 
 	    &xa_wm_state,
-	    &wm_protocols
+	    &wm_protocols,
+            
+            &net_wm_full_placement
 	    };
 
     assert( !netwm_atoms_created );
@@ -1275,6 +1282,8 @@ void NETRootInfo::setSupported() {
 
     if (p->properties[ PROTOCOLS2 ] & WM2KDETemporaryRules)
 	atoms[pnum++] = kde_net_wm_temporary_rules;
+    if (p->properties[ PROTOCOLS2 ] & WM2FullPlacement)
+	atoms[pnum++] = net_wm_full_placement;
 
     XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
 		    PropModeReplace, (unsigned char *) atoms, pnum);
@@ -1510,6 +1519,8 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 
     else if( atom == kde_net_wm_temporary_rules )
         p->properties[ PROTOCOLS2 ] |= WM2KDETemporaryRules;
+    else if( atom == net_wm_full_placement )
+        p->properties[ PROTOCOLS2 ] |= WM2FullPlacement;
 }
 
 void NETRootInfo::setActiveWindow(Window window) {

@@ -623,6 +623,7 @@ public:
         @li WM2ShowingDesktop
         @li WM2Opacity _NET_WM_WINDOW_OPACITY
         @li WM2DesktopLayout _NET_DESKTOP_LAYOUT
+        @li WM2FullPlacement _NET_WM_FULL_PLACEMENT
     **/
     enum Property2 {
         WM2UserTime            = 1<<0,
@@ -640,7 +641,8 @@ public:
         WM2ClientMachine       = 1<<12,
         WM2ShowingDesktop      = 1<<13,
         WM2Opacity             = 1<<14,
-        WM2DesktopLayout       = 1<<15        
+        WM2DesktopLayout       = 1<<15,        
+        WM2FullPlacement       = 1<<16
     };
 
     /**
