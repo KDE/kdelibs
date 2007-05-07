@@ -815,6 +815,7 @@ int TCPSlaveBase::verifyCertificate()
     if (pc.chain().isValid() && pc.chain().depth() > 1) {
        QString theChain;
        QPtrList<KSSLCertificate> chain = pc.chain().getChain();
+       chain.setAutoDelete(true);
        for (KSSLCertificate *c = chain.first(); c; c = chain.next()) {
           theChain += c->toString();
           theChain += "\n";

@@ -193,6 +193,7 @@ void KSSLInfoDlg::setup(KSSLCertificate *cert,
         d->_chain->insertItem(i18n("0 - Site Certificate"));
         int cnt = 0;
         QPtrList<KSSLCertificate> cl = cert->chain().getChain();
+        cl.setAutoDelete(true);
         for (KSSLCertificate *c = cl.first(); c != 0; c = cl.next()) {
             KSSLX509Map map(c->getSubject());
             QString id;
