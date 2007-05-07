@@ -40,8 +40,9 @@ public:
       Reserve = 0xff
     };
 
-    KFileMetaInfoWidget(KFileMetaInfoItem item, QValidator* val = 0,
-                        QWidget* parent = 0);
+    explicit KFileMetaInfoWidget(KFileMetaInfoItem item,
+                                 QValidator* val = 0,
+                                 QWidget* parent = 0);
 
     KFileMetaInfoWidget(KFileMetaInfoItem item, Mode mode, QValidator* val = 0,
                         QWidget* parent = 0 );

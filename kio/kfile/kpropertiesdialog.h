@@ -92,8 +92,8 @@ public:
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    */
-  KPropertiesDialog( KFileItem * item,
-                     QWidget* parent = 0 );
+  explicit KPropertiesDialog( KFileItem * item,
+                              QWidget* parent = 0 );
 
   /**
    * \overload
@@ -107,8 +107,8 @@ public:
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    */
-  KPropertiesDialog( const KFileItemList& _items,
-                     QWidget *parent = 0 );
+  explicit KPropertiesDialog( const KFileItemList& _items,
+                              QWidget *parent = 0 );
 
   /**
    * Brings up a Properties dialog. Convenience constructor for
@@ -126,8 +126,8 @@ public:
    * For local files with a known mimetype, simply create a KFileItem and pass
    * it to the other constructor.
    */
-  KPropertiesDialog( const KUrl& _url,
-                     QWidget* parent = 0 );
+  explicit KPropertiesDialog( const KUrl& _url,
+                              QWidget* parent = 0 );
 
   /**
    * Creates a properties dialog for a new .desktop file (whose name
@@ -154,8 +154,8 @@ public:
    * @param name is the internal name.
    * @param modal tells the dialog whether it should be modal.
    */
-  KPropertiesDialog(const QString& title,
-                    QWidget* parent = 0);
+  explicit KPropertiesDialog(const QString& title,
+                             QWidget* parent = 0);
 
   /**
    * Cleans up the properties dialog and frees any associated resources,

@@ -102,8 +102,9 @@ protected:
      * @param parent The QWidget's parent, or 0
      * @see KPageDialog
      */
-    KScanDialog( int dialogFace = Tabbed, int buttonMask = Close|Help,
-		 QWidget *parent = 0 );
+    explicit KScanDialog( int dialogFace = Tabbed,
+                          int buttonMask = Close|Help,
+                          QWidget *parent = 0 );
 
     /**
      * Returns the current id for an image. You can use that in your subclass

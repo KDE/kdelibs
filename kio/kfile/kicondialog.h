@@ -87,7 +87,7 @@ public:
     /**
      * Constructs an icon selection dialog using a specific iconloader.
      */
-    KIconDialog(KIconLoader *loader, QWidget *parent=0);
+    explicit KIconDialog(KIconLoader *loader, QWidget *parent=0);
     /**
      * Destructs the dialog.
      */

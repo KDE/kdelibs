@@ -67,7 +67,7 @@ public:
     /**
      * Constructs a KUrlRequester widget with the initial URL @p url.
      */
-    KUrlRequester( const KUrl& url, QWidget *parent=0);
+    explicit KUrlRequester( const KUrl& url, QWidget *parent=0);
 
     /**
      * Special constructor, which creates a KUrlRequester widget with a custom

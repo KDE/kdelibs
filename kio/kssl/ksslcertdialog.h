@@ -52,7 +52,8 @@ public:
 	 *  @param name the internal name of this instance
 	 *  @param modal create a modal dialog if set to true
 	 */
-	KSSLCertDialog(QWidget *parent=0L, const char *name=0L, bool modal=false);
+	explicit KSSLCertDialog(QWidget *parent=0L, const char *name=0L,
+                                bool modal=false);
 
 	/**
 	 *  Destroy this object and close the dialog

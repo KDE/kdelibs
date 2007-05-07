@@ -58,7 +58,8 @@ public:
 	 *  @param name the internal name of this instance
 	 *  @param modal true if the dialog should be modal
 	 */
-	KSSLInfoDialog(bool secureConnection, QWidget *parent=0L, const char *name=0L, bool modal=false);
+	explicit KSSLInfoDialog(bool secureConnection, QWidget *parent=0L,
+                                const char *name=0L, bool modal=false);
 
 	/**
 	 *  Destroy this dialog
@@ -155,7 +156,8 @@ public:
 	 *  @param name the internal name of this instance
 	 *  @param f widget flags for the object
 	 */
-	KSSLCertBox(QWidget *parent=0L, const char *name=0L, Qt::WFlags f=0);
+	explicit KSSLCertBox(QWidget *parent=0L, const char *name=0L,
+                             Qt::WFlags f=0);
 
 	/**
 	 *  Change the contents of the widget

@@ -40,9 +40,10 @@ class KIO_EXPORT KDeviceListModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    KDeviceListModel(QObject *parent=0);
-    KDeviceListModel(const QString &predicate, QObject *parent=0);
-    KDeviceListModel(const Solid::Predicate &predicate, QObject *parent=0);
+    explicit KDeviceListModel(QObject *parent=0);
+    explicit KDeviceListModel(const QString &predicate, QObject *parent=0);
+    explicit KDeviceListModel(const Solid::Predicate &predicate,
+                              QObject *parent=0);
     ~KDeviceListModel();
 
     /**

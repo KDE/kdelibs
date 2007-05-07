@@ -58,7 +58,8 @@ class SMTP:public QObject
 {
     Q_OBJECT
 public:
-    SMTP(char *serverhost = 0, unsigned short int port = 0, int timeout = DEFAULT_SMTP_TIMEOUT);
+    explicit SMTP(char *serverhost = 0, unsigned short int port = 0,
+                  int timeout = DEFAULT_SMTP_TIMEOUT);
     ~SMTP();
 
     void setServerHost(const QString& serverhost);

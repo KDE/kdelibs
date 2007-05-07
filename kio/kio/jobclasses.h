@@ -1163,7 +1163,7 @@ public:
 	* @param prefix the prefix of the files, or QString() for no prefix
 	* @param includeHidden true to include hidden files (those starting with '.')
 	*/
-        ListJob(const KUrl& url,
+        explicit ListJob(const KUrl& url,
                 bool recursive = false, const QString &prefix = QString(),
                 bool includeHidden = true);
 

@@ -60,6 +60,7 @@ class KIO_EXPORT KMimeTypeChooser : public KVBox
      *        groups are shown.
      * @param parent The parent widget to use
      */
+    explicit
     KMimeTypeChooser( const QString& text=QString(),
                       const QStringList &selectedMimeTypes=QStringList(),
                       const QString &defaultGroup=QString(),
@@ -149,6 +150,7 @@ class KIO_EXPORT KMimeTypeChooserDialog : public KDialog
      *        groups are shown.
      * @param parent The parent widget to use
      */
+    explicit
     KMimeTypeChooserDialog( const QString &caption=QString(),
                          const QString& text=QString(),
                          const QStringList &selectedMimeTypes=QStringList(),

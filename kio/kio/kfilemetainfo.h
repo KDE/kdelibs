@@ -92,7 +92,7 @@ public:
      * @brief Construct a KFileMetaInfo that contains metainformation about
      * the resource pointed to by @p path.
      **/
-    KFileMetaInfo(const QString& path, const QString& mimetype = QString(),
+    explicit KFileMetaInfo(const QString& path, const QString& mimetype = QString(),
         WhatFlags w = Everything);
     /**
      * @brief Construct a KFileMetaInfo that contains metainformation about

@@ -42,7 +42,8 @@ public:
      * specify the compression layer !  If the mimetype is omitted, it
      * will be determined from the filename.
      */
-    KTar( const QString& filename, const QString & mimetype = QString() );
+    explicit KTar( const QString& filename,
+                   const QString& mimetype = QString() );
 
     /**
      * Creates an instance that operates on the given device.
@@ -52,7 +53,7 @@ public:
      * @param dev the device to read from. If the source is compressed, the
      * QIODevice must take care of decompression
      */
-    KTar( QIODevice * dev );
+    explicit KTar( QIODevice * dev );
 
     /**
      * If the tar ball is still opened, then it will be
