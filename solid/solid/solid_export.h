@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 David Faure <faure@kde.org>
+    Copyright (C) 2007 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,23 +24,17 @@
 #include <kdemacros.h>
 
 #ifndef SOLID_EXPORT
-
-/* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
-#  if defined _WIN32 || defined _WIN64
-
-#   if defined(MAKE_SOLID_LIB)
-     /* We are building this library */ 
-#    define SOLID_EXPORT KDE_EXPORT
-#   else
-     /* We are using this library */ 
-#    define SOLID_EXPORT KDE_IMPORT
-#   endif
-
-#  else /* UNIX */
-
-#    define SOLID_EXPORT KDE_EXPORT
-
-#  endif
+# if defined(MAKE_SOLID_LIB)
+   /* We are building this library */ 
+#  define SOLID_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */ 
+#  define SOLID_EXPORT KDE_IMPORT
+# endif
 #endif
+
+# ifndef SOLID_EXPORT_DEPRECATED
+#  define SOLID_EXPORT_DEPRECATED KDE_DEPRECATED SOLID_EXPORT
+# endif
 
 #endif

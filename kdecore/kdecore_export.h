@@ -23,9 +23,6 @@
 /* needed for KDE_EXPORT and KDE_IMPORT macros */
 #include <kdemacros.h>
 
-/* We use _WIN32/_WIN64 instead of Q_OS_WIN so that this header can be used from C files too */
-#if defined _WIN32 || defined _WIN64
-
 #ifndef KDECORE_EXPORT
 # if defined(MAKE_KDECORE_LIB)
    /* We are building this library */ 
@@ -34,12 +31,6 @@
    /* We are using this library */ 
 #  define KDECORE_EXPORT KDE_IMPORT
 # endif
-#endif
-
-#else /* UNIX */
-
-#define KDECORE_EXPORT KDE_EXPORT
-
 #endif
 
 # ifndef KDECORE_EXPORT_DEPRECATED
