@@ -109,14 +109,14 @@ public:
      *
      * @param url is the URL to be filtered.
      */
-    KUriFilterData( const KUrl& url );
+    explicit KUriFilterData( const KUrl& url );
 
     /**
      * Creates a UriFilterData object from the given string.
      *
      * @param url is the string to be filtered.
      */
-    KUriFilterData( const QString& url );
+    explicit KUriFilterData( const QString& url );
 
     /**
      * Copy constructor.
@@ -168,17 +168,6 @@ public:
     UriTypes uriType() const;
 
     /**
-     * Sets the URL to be filtered.
-     *
-     * Use this function to set the string to be
-     * filtered when you construct an empty filter
-     * object.
-     *
-     * @param url the string to be filtered.
-     */
-    void setData( const QString& url );
-
-    /**
      * Same as above except the argument is a URL.
      *
      * Use this function to set the string to be
@@ -188,6 +177,17 @@ public:
      * @param url the URL to be filtered.
      */
     void setData( const KUrl& url );
+
+    /**
+     * Sets the URL to be filtered.
+     *
+     * Use this function to set the string to be
+     * filtered when you construct an empty filter
+     * object.
+     *
+     * @param url the string to be filtered.
+     */
+    void setData( const QString& url );
 
     /**
      * Sets the absolute path to be used whenever the supplied
@@ -288,30 +288,8 @@ public:
      */
     KUriFilterData& operator=( const QString& url );
 
-protected:
-
-    /**
-     * Initializes the KUriFilterData on construction.
-     * @param url the URL to initialize the object with
-     */
-    void init( const KUrl& url);
-
-    /**
-     * Initializes the KUriFilterData on construction.
-     * @param url the URL to initialize the object with
-     */
-    void init( const QString& url = QString() );
-
 private:
-    bool m_bCheckForExecutables;
-    bool m_bChanged;
-
-    QString m_strErrMsg;
-    QString m_strIconName;
-
-    KUrl m_pURI;
-    UriTypes m_iType;
-    KUriFilterDataPrivate *d;
+    KUriFilterDataPrivate * const d;
 };
 
 
@@ -339,7 +317,7 @@ public:
      * @param parent the parent object, or 0 for no parent
      * @param name the name of the plugin, mandatory
      */
-    KUriFilterPlugin( const QString &name, QObject *parent = 0 );
+    explicit KUriFilterPlugin( const QString &name, QObject *parent = 0 );
 
     /**
      * Filters a URI.
@@ -357,14 +335,14 @@ public:
      *
      * @return A configuration module, 0 if the filter isn't configurable.
      */
-    virtual KCModule *configModule( QWidget*, const char* ) const { return 0; }
+    virtual KCModule *configModule( QWidget*, const char* ) const;
 
     /**
      * Returns the name of the configuration module for the filter.
      *
      * @return the name of a configuration module or QString() if none.
      */
-    virtual QString configName() const { return objectName(); }
+    virtual QString configName() const;
 
 protected:
 
@@ -376,17 +354,12 @@ protected:
     /**
      * Sets the error message in @p data to @p errormsg.
      */
-    void setErrorMsg ( KUriFilterData& data, const QString& errmsg ) const {
-        data.m_strErrMsg = errmsg;
-    }
+    void setErrorMsg ( KUriFilterData& data, const QString& errmsg ) const;
 
     /**
      * Sets the URI type in @p data to @p type.
      */
-    void setUriType ( KUriFilterData& data, KUriFilterData::UriTypes type) const {
-        data.m_iType = type;
-        data.m_bChanged = true;
-    }
+    void setUriType ( KUriFilterData& data, KUriFilterData::UriTypes type) const;
 
     /**
      * Sets the arguments and options string in @p data
@@ -395,10 +368,11 @@ protected:
     void setArguments( KUriFilterData& data, const QString& args ) const;
 
 private:
-    class KUriFilterPluginPrivate *d;
+    class KUriFilterPluginPrivate * const d;
 };
 
 
+class KUriFilterPrivate;
 /**
  * Manages the filtering of URIs.
  *
@@ -575,8 +549,7 @@ protected:
     void loadPlugins();
 
 private:
-    class Private;
-    Private * const d;
+    KUriFilterPrivate * const d;
 };
 
 #endif

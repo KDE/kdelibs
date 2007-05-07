@@ -31,155 +31,110 @@
 
 typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
 
-KUriFilterPlugin::KUriFilterPlugin( const QString & name, QObject *parent )
-    : QObject( parent )
-{
-    setObjectName( name );
-}
-
-void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) const
-{
-    if ( data.uri() != uri )
-    {
-        data.m_pURI = uri;
-        data.m_bChanged = true;
-    }
-}
-
 class KUriFilterDataPrivate
 {
 public:
-    KUriFilterDataPrivate() {}
+    explicit KUriFilterDataPrivate( const KUrl& url, const QString& typedUrl ) :
+        bCheckForExecutables(true),
+        bChanged(true),
+        pURI(url),
+        iType(KUriFilterData::UNKNOWN),
+        typedString(typedUrl)
+    {
+    }
+    void setData( const KUrl& url, const QString& typedUrl )
+    {
+        bCheckForExecutables = true;
+        bChanged = true;
+        strErrMsg.clear();
+        strIconName.clear();
+        pURI = url;
+        iType = KUriFilterData::UNKNOWN;
+        typedString = typedUrl;
+    }
+    KUriFilterDataPrivate( KUriFilterDataPrivate * data )
+    {
+        iType = data->iType;
+        pURI = data->pURI;
+        strErrMsg = data->strErrMsg;
+        strIconName = data->strIconName;
+        bChanged = data->bChanged;
+        bCheckForExecutables = data->bCheckForExecutables;
+        abs_path = data->abs_path;
+        typedString = data->typedString;
+        args = data->args;
+    }
+    bool bCheckForExecutables;
+    bool bChanged;
+
+    QString strErrMsg;
+    QString strIconName;
+
+    KUrl pURI;
+    KUriFilterData::UriTypes iType;
+
     QString abs_path;
     QString args;
     QString typedString;
 };
 
 KUriFilterData::KUriFilterData()
-    : d( 0 )
+    : d( new KUriFilterDataPrivate( KUrl(), QString() ) )
 {
-    init();
 }
 
 KUriFilterData::KUriFilterData( const KUrl& url )
-    : d( 0 )
+    : d( new KUriFilterDataPrivate( url, url.url() ) )
 {
-    init( url );
 }
 
 KUriFilterData::KUriFilterData( const QString& url )
-    : d( 0 )
+    : d( new KUriFilterDataPrivate( KUrl(url), url ) )
 {
-    init( url );
+    d->typedString = url;
 }
 
 
 KUriFilterData::KUriFilterData( const KUriFilterData& data )
+    : d( new KUriFilterDataPrivate( data.d ) )
 {
-    m_iType = data.m_iType;
-    m_pURI = data.m_pURI;
-    m_strErrMsg = data.m_strErrMsg;
-    m_strIconName = data.m_strIconName;
-    m_bChanged = data.m_bChanged;
-    m_bCheckForExecutables = data.m_bCheckForExecutables;
-    d = new KUriFilterDataPrivate;
-    d->abs_path = data.absolutePath();
-    d->typedString = data.typedString();
-    d->args = data.argsAndOptions();
 }
 
 KUriFilterData::~KUriFilterData()
 {
     delete d;
-    d = 0;
-}
-
-void KUriFilterData::init( const KUrl& url )
-{
-    m_iType = KUriFilterData::UNKNOWN;
-    m_pURI = url;
-    m_strErrMsg.clear();
-    m_strIconName.clear();
-    m_bCheckForExecutables = true;
-    m_bChanged = true;
-    delete d;
-    d = new KUriFilterDataPrivate;
-    d->typedString = url.url();
-}
-
-void KUriFilterData::init( const QString& url )
-{
-    init( KUrl( url ) );
-    d->typedString = url;
 }
 
 KUrl KUriFilterData::uri() const
 {
-    return m_pURI;
-}
-
-bool KUriFilterData::checkForExecutables() const
-{
-    return m_bCheckForExecutables;
+    return d->pURI;
 }
 
 QString KUriFilterData::errorMsg() const
 {
-    return m_strErrMsg;
+    return d->strErrMsg;
 }
 
 KUriFilterData::UriTypes KUriFilterData::uriType() const
 {
-    return m_iType;
-}
-
-QString KUriFilterData::typedString() const
-{
-    return d->typedString;
-}
-
-KUriFilterData& KUriFilterData::operator=( const KUrl& url )
-{
-    init( url );
-    return *this;
-}
-
-KUriFilterData& KUriFilterData::operator=( const QString& url )
-{
-    init( url );
-    return *this;
-}
-
-void KUriFilterData::setCheckForExecutables( bool check )
-{
-    m_bCheckForExecutables = check;
-}
-
-bool KUriFilterData::hasArgsAndOptions() const
-{
-    return !d->args.isEmpty();
-}
-
-bool KUriFilterData::hasAbsolutePath() const
-{
-    return !d->abs_path.isEmpty();
-}
-
-void KUriFilterData::setData( const QString& url )
-{
-    init( url );
+    return d->iType;
 }
 
 void KUriFilterData::setData( const KUrl& url )
 {
-    init( url );
+    d->setData(url, url.url());
+}
+
+void KUriFilterData::setData( const QString& url )
+{
+    d->setData(KUrl(url), url);
 }
 
 bool KUriFilterData::setAbsolutePath( const QString& absPath )
 {
     // Since a malformed URL could possibly be a relative
     // URL we tag it as a possible local resource...
-    if( (m_pURI.protocol().isEmpty() || m_pURI.isLocalFile()) )
+    if( (d->pURI.protocol().isEmpty() || d->pURI.isLocalFile()) )
     {
         d->abs_path = absPath;
         return true;
@@ -192,75 +147,157 @@ QString KUriFilterData::absolutePath() const
     return d->abs_path;
 }
 
+bool KUriFilterData::hasAbsolutePath() const
+{
+    return !d->abs_path.isEmpty();
+}
+
 QString KUriFilterData::argsAndOptions() const
 {
     return d->args;
 }
 
+bool KUriFilterData::hasArgsAndOptions() const
+{
+    return !d->args.isEmpty();
+}
+
 QString KUriFilterData::iconName()
 {
-    if( m_bChanged )
+    if( d->bChanged )
     {
-        switch ( m_iType )
+        switch ( d->iType )
         {
             case KUriFilterData::LOCAL_FILE:
             case KUriFilterData::LOCAL_DIR:
             case KUriFilterData::NET_PROTOCOL:
             {
-                m_strIconName = KMimeType::iconNameForUrl( m_pURI );
+                d->strIconName = KMimeType::iconNameForUrl( d->pURI );
                 break;
             }
             case KUriFilterData::EXECUTABLE:
             {
-                QString exeName = m_pURI.url();
+                QString exeName = d->pURI.url();
                 exeName = exeName.mid( exeName.lastIndexOf( '/' ) + 1 ); // strip path if given
                 KService::Ptr service = KService::serviceByDesktopName( exeName );
                 if (service && service->icon() != QLatin1String( "unknown" ))
-                    m_strIconName = service->icon();
+                    d->strIconName = service->icon();
                 // Try to find an icon with the same name as the binary (useful for non-kde apps)
                 else if ( !KIconLoader::global()->loadIcon( exeName, K3Icon::NoGroup, 16, K3Icon::DefaultState, 0, true ).isNull() )
-                    m_strIconName = exeName;
+                    d->strIconName = exeName;
                 else
                     // not found, use default
-                    m_strIconName = QLatin1String("exec");
+                    d->strIconName = QLatin1String("exec");
                 break;
             }
             case KUriFilterData::HELP:
             {
-                m_strIconName = QLatin1String("khelpcenter");
+                d->strIconName = QLatin1String("khelpcenter");
                 break;
             }
             case KUriFilterData::SHELL:
             {
-                m_strIconName = QLatin1String("konsole");
+                d->strIconName = QLatin1String("konsole");
                 break;
             }
             case KUriFilterData::ERROR:
             case KUriFilterData::BLOCKED:
             {
-                m_strIconName = QLatin1String("error");
+                d->strIconName = QLatin1String("error");
                 break;
             }
             default:
-                m_strIconName.clear();
+                d->strIconName.clear();
                 break;
         }
-        m_bChanged = false;
+        d->bChanged = false;
     }
-    return m_strIconName;
+    return d->strIconName;
 }
 
-//********************************************  KUriFilterPlugin **********************************************
-void KUriFilterPlugin::setArguments( KUriFilterData& data, const QString& args ) const
+void KUriFilterData::setCheckForExecutables( bool check )
+{
+    d->bCheckForExecutables = check;
+}
+
+bool KUriFilterData::checkForExecutables() const
+{
+    return d->bCheckForExecutables;
+}
+
+QString KUriFilterData::typedString() const
+{
+    return d->typedString;
+}
+
+KUriFilterData& KUriFilterData::operator=( const KUrl& url )
+{
+    d->setData(url, url.url());
+    return *this;
+}
+
+KUriFilterData& KUriFilterData::operator=( const QString& url )
+{
+    d->setData(KUrl(url), url);
+    return *this;
+}
+
+/*************************  KUriFilterPlugin ******************************/
+
+KUriFilterPlugin::KUriFilterPlugin( const QString & name, QObject *parent )
+    : QObject( parent ), d( 0 )
+{
+    setObjectName( name );
+}
+
+KCModule *KUriFilterPlugin::configModule( QWidget*, const char* ) const
+{
+    return 0;
+}
+
+QString KUriFilterPlugin::configName() const
+{
+    return objectName();
+}
+
+void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) const
+{
+    if ( data.uri() != uri )
+    {
+        data.d->pURI = uri;
+        data.d->bChanged = true;
+    }
+}
+
+void KUriFilterPlugin::setErrorMsg ( KUriFilterData& data,
+                                     const QString& errmsg ) const
+{
+    data.d->strErrMsg = errmsg;
+}
+
+void KUriFilterPlugin::setUriType ( KUriFilterData& data,
+                                    KUriFilterData::UriTypes type) const
+{
+    data.d->iType = type;
+    data.d->bChanged = true;
+}
+
+void KUriFilterPlugin::setArguments( KUriFilterData& data,
+                                     const QString& args ) const
 {
     data.d->args = args;
 }
 
-//********************************************  KUriFilter **********************************************
-class KUriFilter::Private
+/*******************************  KUriFilter ******************************/
+
+class KUriFilterPrivate
 {
 public:
-    Private() {}
+    KUriFilterPrivate() {}
+    ~KUriFilterPrivate()
+    {
+        qDeleteAll(lstPlugins);
+    }
     QList<KUriFilterPlugin *> lstPlugins;
 };
 
@@ -271,14 +308,13 @@ KUriFilter *KUriFilter::self()
 }
 
 KUriFilter::KUriFilter()
-    : d(new Private())
+    : d(new KUriFilterPrivate())
 {
     loadPlugins();
 }
 
 KUriFilter::~KUriFilter()
 {
-    qDeleteAll(d->lstPlugins);
     delete d;
 }
 
@@ -325,7 +361,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
 
 bool KUriFilter::filterUri( KUrl& uri, const QStringList& filters )
 {
-    KUriFilterData data = uri;
+    KUriFilterData data(uri);
     bool filtered = filterUri( data, filters );
     if( filtered ) uri = data.uri();
     return filtered;
@@ -333,7 +369,7 @@ bool KUriFilter::filterUri( KUrl& uri, const QStringList& filters )
 
 bool KUriFilter::filterUri( QString& uri, const QStringList& filters )
 {
-    KUriFilterData data = uri;
+    KUriFilterData data(uri);
     bool filtered = filterUri( data, filters );
     if( filtered )  uri = data.uri().url();
     return filtered;
@@ -341,14 +377,14 @@ bool KUriFilter::filterUri( QString& uri, const QStringList& filters )
 
 KUrl KUriFilter::filteredUri( const KUrl &uri, const QStringList& filters )
 {
-    KUriFilterData data = uri;
+    KUriFilterData data(uri);
     filterUri( data, filters );
     return data.uri();
 }
 
 QString KUriFilter::filteredUri( const QString &uri, const QStringList& filters )
 {
-    KUriFilterData data = uri;
+    KUriFilterData data(uri);
     filterUri( data, filters );
     return data.uri().url();
 }

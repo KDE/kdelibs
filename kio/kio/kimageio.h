@@ -43,7 +43,7 @@
  * @li XV      \<read\> \<write\>
  *
  */
-class KIO_EXPORT KImageIO
+class KIO_EXPORT KImageIO //krazy:exclude=dpointer (all static methods)
 {
 public:
   /**
