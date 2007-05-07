@@ -356,6 +356,7 @@
 <!ENTITY Mac	'<trademark class="registered">Mac</trademark>'>
 <!ENTITY MacOS	'<trademark class="registered">Mac</trademark> <acronym>OS</acronym>'>
 <!ENTITY Mandrake	"<trademark>Mandrake</trademark>">
+<!ENTITY marble "<application>Marble</application>">
 <!ENTITY megami	"<application>Megami</application>">
 <!ENTITY Microsoft	'<trademark class="registered">Microsoft</trademark>'>
 <!ENTITY MIDI	"<acronym>MIDI</acronym>">

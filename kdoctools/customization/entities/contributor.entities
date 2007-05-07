@@ -320,7 +320,7 @@
 <!ENTITY Frerich.Raabe '<personname><firstname>Frerich</firstname><surname>Raabe</surname></personname>'>
 <!ENTITY Frerich.Raabe.mail '<email>raabe@kde.org</email>'>
 <!ENTITY Torsten.Rahn '<personname><firstname>Torsten</firstname><surname>Rahn</surname></personname>'>
-<!ENTITY Torsten.Rahn.mail '<email>tackat@kde.org</email>'>
+<!ENTITY Torsten.Rahn.mail '<email>rahn@kde.org</email>'>
 <!ENTITY Ravikiran.Rajagopal '<personname><firstname>Ravikiran</firstname><surname>Rajagopal</surname></personname>'>
 <!ENTITY Ravikiran.Rajagopal.mail '<email>ravi@kde.org</email>'>
 <!ENTITY Artur.Rataj '<personname><firstname>Artur</firstname><surname>Rataj</surname></personname>'>
