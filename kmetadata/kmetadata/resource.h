@@ -139,13 +139,13 @@ namespace Nepomuk {
              *
              * \sa getIdentifiers
              */
-            const QString& uri() const;
+            QString uri() const;
 
             /**
              * The type URI.
              * \sa name()
              */
-            const QString& type() const;
+            QString type() const;
 
             /**
              * The name of the class this Resource represents an object of.

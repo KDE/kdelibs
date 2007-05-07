@@ -70,15 +70,15 @@ namespace Nepomuk {
 		 * determined if it is an actual existing URI or an existing identifier or if a new URI
 		 * has to be created.
 		 */
-		const QString& kickoffUriOrId() const;
+		QString kickoffUriOrId() const;
 
 		/**
 		 * The URI of the resource. This might be empty if the resource was not synced yet.
 		 * \sa kickoffUriOrId
 		 */
-		const QString& uri() const;
+		QString uri() const;
 
-		const QString& type() const;
+		QString type() const;
 
 		QHash<QString, Variant> allProperties() const;
 

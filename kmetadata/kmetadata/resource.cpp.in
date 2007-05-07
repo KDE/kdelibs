@@ -74,13 +74,13 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
 }
 
 
-const QString& Nepomuk::KMetaData::Resource::uri() const
+QString Nepomuk::KMetaData::Resource::uri() const
 {
     return m_data->uri();
 }
 
 
-const QString& Nepomuk::KMetaData::Resource::type() const
+QString Nepomuk::KMetaData::Resource::type() const
 {
     m_data->init();
     return m_data->type();

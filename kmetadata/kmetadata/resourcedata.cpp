@@ -63,7 +63,7 @@ Nepomuk::KMetaData::ResourceData::~ResourceData()
 }
 
 
-const QString& Nepomuk::KMetaData::ResourceData::kickoffUriOrId() const
+QString Nepomuk::KMetaData::ResourceData::kickoffUriOrId() const
 {
     if( m_proxyData )
         return m_proxyData->kickoffUriOrId();
@@ -71,7 +71,7 @@ const QString& Nepomuk::KMetaData::ResourceData::kickoffUriOrId() const
 }
 
 
-const QString& Nepomuk::KMetaData::ResourceData::uri() const
+QString Nepomuk::KMetaData::ResourceData::uri() const
 {
     if( m_proxyData )
         return m_proxyData->uri();
@@ -79,7 +79,7 @@ const QString& Nepomuk::KMetaData::ResourceData::uri() const
 }
 
 
-const QString& Nepomuk::KMetaData::ResourceData::type() const
+QString Nepomuk::KMetaData::ResourceData::type() const
 {
     if( m_proxyData )
         return m_proxyData->type();
