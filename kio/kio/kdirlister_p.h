@@ -24,8 +24,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QHash>
-#include <Qt3Support/Q3Dict>
-#include <Qt3Support/Q3Cache>
+#include <QtCore/QCache>
 #include <QtGui/QWidget>
 
 #include <kurl.h>
@@ -126,16 +125,17 @@ public:
  */
 class KDirListerCache : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  ~KDirListerCache();
+    static KDirListerCache *self();
 
-  void updateDirectory( const KUrl& dir );
+    KDirListerCache(); // only called by K_GLOBAL_STATIC
+    ~KDirListerCache();
 
-  KFileItem *itemForUrl( const KUrl& url ) const;
-  KFileItemList *itemsForDir( const KUrl& dir ) const;
+    void updateDirectory( const KUrl& dir );
 
-  static KDirListerCache *self();
+    KFileItem *itemForUrl( const KUrl& url ) const;
+    KFileItemList *itemsForDir( const KUrl& dir ) const;
 
     bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
 
@@ -181,7 +181,6 @@ public Q_SLOTS:
   void slotFileRenamed( const QString& srcUrl, const QString& dstUrl );
 
 private:
-    KDirListerCache( int maxCount = 10 );
 
     bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
@@ -256,15 +255,12 @@ private:
 
     void sendSignal( bool entering, const KUrl& url )
     {
-      // DF: this doesn't make sense. This is a cache, we delete items when deleting the cache,
-      // and maybe in other cases, but not when "leaving a directory". This needs to be rethought.
-      // It's not even much used, only kdnssd seems to use it, says lxr.
-#if 0
-      if (entering)
-        org::kde::KDirNotify::emitEnteredDirectory( url.url() );
-      else
-        org::kde::KDirNotify::emitLeftDirectory( url.url() );
-#endif
+        // Note that "entering" means "start watching", and "leaving" means "stop watching"
+        // (i.e. it's not when the user leaves the directory, it's when the directory is removed from the cache)
+        if (entering)
+            org::kde::KDirNotify::emitEnteredDirectory( url.url() );
+        else
+            org::kde::KDirNotify::emitLeftDirectory( url.url() );
     }
 
     void redirect( const KUrl& newUrl )
@@ -330,8 +326,8 @@ private:
     QMap<KIO::ListJob *, KIO::UDSEntryList> jobs;
 
     // an item is a complete directory
-    QHash<QString, DirItem*> itemsInUse;
-    Q3Cache<DirItem> itemsCached;
+    QHash<QString /*url*/, DirItem*> itemsInUse;
+    QCache<QString /*url*/, DirItem> itemsCached;
 
     // Data associated with a directory url
     // This could be in DirItem but only in the itemsInUse dict...
@@ -362,7 +358,5 @@ private:
 };
 
 //const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
-
-#define s_pCache KDirListerCache::self()
 
 #endif

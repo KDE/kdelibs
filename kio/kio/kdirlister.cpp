@@ -50,12 +50,12 @@
 #undef DEBUG_CACHE
 #endif
 
-KDirListerCache::KDirListerCache( int maxCount )
-  : itemsCached( maxCount )
+K_GLOBAL_STATIC(KDirListerCache, s_pCache)
+
+KDirListerCache::KDirListerCache()
+    : itemsCached( 10 ) // keep the last 10 directories around
 {
   kDebug(7004) << "+KDirListerCache" << endl;
-
-  itemsCached.setAutoDelete( true );
 
   connect( &pendingUpdateTimer, SIGNAL(timeout()), this, SLOT(processPendingUpdates()) );
   pendingUpdateTimer.setSingleShot( true );
@@ -72,6 +72,10 @@ KDirListerCache::KDirListerCache( int maxCount )
   connect(kdirnotify, SIGNAL(FilesAdded(QString)), SLOT(slotFilesAdded(QString)));
   connect(kdirnotify, SIGNAL(FilesChanged(QStringList)), SLOT(slotFilesChanged(QStringList)));
   connect(kdirnotify, SIGNAL(FilesRemoved(QStringList)), SLOT(slotFilesRemoved(QStringList)));
+
+  // The use of QUrl::url() in ~DirItem (sendSignal) crashes if the static for QRegExpEngine got deleted already,
+  // so we need to destroy the KDirListerCache before that.
+  qAddPostRoutine(s_pCache.destroy);
 }
 
 KDirListerCache::~KDirListerCache()
@@ -140,7 +144,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   if ( lister->d->url.isEmpty() || !_keep ) // set toplevel URL only if not set yet
     lister->d->url = _url;
 
-  DirItem *itemU = itemsInUse[urlStr];
+  DirItem *itemU = itemsInUse.value(urlStr);
   DirItem *itemC;
 
   DirectoryData& dirData = directoryData[urlStr]; // find or insert
@@ -178,7 +182,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
       if ( _reload || !itemU->complete )
         updateDirectory( _url );
     }
-    else if ( !_reload && (itemC = itemsCached.take( urlStr )) )
+    else if ( !_reload && (itemC = itemsCached.take(urlStr)) )
     {
       kDebug(7004) << "listDir: Entry in cache: " << _url << endl;
 
@@ -215,7 +219,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
       dirData.listersCurrentlyListing.append( lister );
 
-      itemsCached.remove( urlStr );
+      if (_reload)
+          itemsCached.remove( urlStr );
       itemU = new DirItem( _url );
       itemsInUse.insert( urlStr, itemU );
 
@@ -389,7 +394,7 @@ void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
 
     for ( KUrl::List::const_iterator it = lister->d->lstDirs.constBegin();
           it != lister->d->lstDirs.constEnd(); ++it ) {
-        DirItem* dirItem = itemsInUse[(*it).url()];
+        DirItem* dirItem = itemsInUse.value((*it).url());
         Q_ASSERT(dirItem);
         if ( enable )
             dirItem->incAutoUpdate();
@@ -443,7 +448,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
     DirectoryData& dirData = *dit;
     dirData.listersCurrentlyHolding.removeAll(lister);
 
-    DirItem *item = itemsInUse[urlStr];
+    DirItem *item = itemsInUse.value(urlStr);
     Q_ASSERT(item);
 
     if ( dirData.listersCurrentlyHolding.isEmpty() && dirData.listersCurrentlyListing.isEmpty() ) {
@@ -472,7 +477,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
 
         if ( item->complete ) {
             kDebug(7004) << k_funcinfo << lister << " item moved into cache: " << url << endl;
-            itemsCached.insert( urlStr, item ); // TODO: may return false!!
+            itemsCached.insert( urlStr, item );
 
             const KMountPoint::List possibleMountPoints = KMountPoint::possibleMountPoints(KMountPoint::NeedMountOptions);
 
@@ -594,7 +599,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
 
 bool KDirListerCache::checkUpdate( const QString& _dir )
 {
-  if ( !itemsInUse[_dir] )
+  if ( !itemsInUse.contains(_dir) )
   {
     DirItem *item = itemsCached[_dir];
     if ( item && item->complete )
@@ -621,9 +626,9 @@ KFileItem *KDirListerCache::itemForUrl( const KUrl& url ) const
 KFileItemList *KDirListerCache::itemsForDir( const KUrl& _dir ) const
 {
   QString urlStr = _dir.url(KUrl::RemoveTrailingSlash);
-  DirItem *item = itemsInUse[ urlStr ];
+  DirItem *item = itemsInUse.value(urlStr);
   if ( !item )
-    item = itemsCached[ urlStr ];
+    item = itemsCached[urlStr];
   return item ? &item->lstItems : 0;
 }
 
@@ -822,8 +827,7 @@ void KDirListerCache::emitRefreshItem( KFileItem *fileitem )
 
 KDirListerCache* KDirListerCache::self()
 {
-  K_GLOBAL_STATIC(KDirListerCache, s_pSelf)
-  return s_pSelf;
+  return s_pCache;
 }
 
 // private slots
@@ -883,7 +887,7 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
 
     kDebug(7004) << k_funcinfo << "new entries for " << url << endl;
 
-    DirItem *dir = itemsInUse[urlStr];
+    DirItem *dir = itemsInUse.value(urlStr);
     Q_ASSERT( dir );
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
@@ -976,7 +980,7 @@ void KDirListerCache::slotResult( KJob *j )
   }
   else
   {
-    DirItem *dir = itemsInUse[jobUrlStr];
+    DirItem *dir = itemsInUse.value(jobUrlStr);
     Q_ASSERT( dir );
     dir->complete = true;
 
@@ -1059,7 +1063,7 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
         kdl->redirect(oldUrl, newUrl);
     }
 
-    DirItem *newDir = itemsInUse[newUrlStr];
+    DirItem *newDir = itemsInUse.value(newUrlStr);
     if ( newDir ) {
         kDebug(7004) << "slotRedirection: " << newUrl << " already in use" << endl;
 
@@ -1305,19 +1309,17 @@ void KDirListerCache::emitRedirections( const KUrl &oldUrl, const KUrl &newUrl )
 
 void KDirListerCache::removeDirFromCache( const KUrl& dir )
 {
-  kDebug(7004) << "KDirListerCache::removeDirFromCache " << dir << endl;
-  Q3CacheIterator<DirItem> itc( itemsCached );
-  while ( itc.current() ) {
-    if ( dir.isParentOf( KUrl( itc.currentKey() ) ) )
-      itemsCached.remove( itc.currentKey() );
-    else
-      ++itc;
-  }
+    kDebug(7004) << "KDirListerCache::removeDirFromCache " << dir << endl;
+    const QList<QString> cachedDirs = itemsCached.keys(); // seems slow, but there's no qcache iterator...
+    foreach(const QString& cachedDir, cachedDirs) {
+        if ( dir.isParentOf( KUrl( cachedDir ) ) )
+            itemsCached.remove( cachedDir );
+    }
 }
 
 void KDirListerCache::slotUpdateEntries( KIO::Job* job, const KIO::UDSEntryList& list )
 {
-  jobs[static_cast<KIO::ListJob*>(job)] += list;
+    jobs[static_cast<KIO::ListJob*>(job)] += list;
 }
 
 void KDirListerCache::slotUpdateResult( KJob * j )
@@ -1653,11 +1655,13 @@ void KDirListerCache::printDebug()
         kDebug(7004) << "   " << jit.key() << " listing " << joburl( jit.key() ) << ": " << (*jit).count() << " entries." << endl;
 
     kDebug(7004) << "Items in cache: " << endl;
-    Q3CacheIterator<DirItem> itc( itemsCached );
-    for ( ; itc.current() ; ++itc )
-        kDebug(7004) << "   " << itc.currentKey() << "  rootItem: "
-                     << ( itc.current()->rootItem ? itc.current()->rootItem->url().prettyUrl() : QString("NULL") )
-                     << QString(" with %1 items.").arg(itc.current()->lstItems.count()) << endl;
+    const QList<QString> cachedDirs = itemsCached.keys();
+    foreach(const QString& cachedDir, cachedDirs) {
+        DirItem* dirItem = itemsCached.object(cachedDir);
+        kDebug(7004) << "   " << cachedDir << "  rootItem: "
+                     << ( dirItem->rootItem ? dirItem->rootItem->url().prettyUrl() : QString("NULL") )
+                     << QString(" with %1 items.").arg(dirItem->lstItems.count()) << endl;
+    }
 }
 #endif
 
@@ -1667,63 +1671,63 @@ void KDirListerCache::printDebug()
 KDirLister::KDirLister( QObject* parent )
     : QObject(parent), d(new KDirListerPrivate)
 {
-  kDebug(7003) << "+KDirLister" << endl;
+    kDebug(7003) << "+KDirLister" << endl;
 
-  d->complete = true;
+    d->complete = true;
 
-  setAutoUpdate( true );
-  setDirOnlyMode( false );
-  setShowingDotFiles( false );
+    setAutoUpdate( true );
+    setDirOnlyMode( false );
+    setShowingDotFiles( false );
 
-  setAutoErrorHandlingEnabled( true, 0 );
+    setAutoErrorHandlingEnabled( true, 0 );
 }
 
 KDirLister::~KDirLister()
 {
-  kDebug(7003) << "-KDirLister" << endl;
+    kDebug(7003) << "-KDirLister" << endl;
 
-  // Stop all running jobs
-  stop();
-  s_pCache->forgetDirs( this );
+    // Stop all running jobs
+    stop();
+    KDirListerCache::self()->forgetDirs( this );
 
-  delete d;
+    delete d;
 }
 
 bool KDirLister::openUrl( const KUrl& _url, bool _keep, bool _reload )
 {
-  // emit the current changes made to avoid an inconsistent treeview
-  if ( d->changes != NONE && _keep )
-    emitChanges();
+    // emit the current changes made to avoid an inconsistent treeview
+    if ( d->changes != NONE && _keep )
+        emitChanges();
 
-  d->changes = NONE;
+    d->changes = NONE;
 
-  return s_pCache->listDir( this, _url, _keep, _reload );
+    return KDirListerCache::self()->listDir( this, _url, _keep, _reload );
 }
 
 void KDirLister::stop()
 {
-  kDebug(7003) << k_funcinfo << endl;
-  s_pCache->stop( this );
+    kDebug(7003) << k_funcinfo << endl;
+    KDirListerCache::self()->stop( this );
 }
 
 void KDirLister::stop( const KUrl& _url )
 {
-  kDebug(7003) << k_funcinfo << _url << endl;
-  s_pCache->stop( this, _url );
+    kDebug(7003) << k_funcinfo << _url << endl;
+    KDirListerCache::self()->stop( this, _url );
 }
 
 bool KDirLister::autoUpdate() const
 {
-  return d->autoUpdate;
+    return d->autoUpdate;
 }
 
 void KDirLister::setAutoUpdate( bool _enable )
 {
-  if ( d->autoUpdate == _enable )
-    return;
+    if ( d->autoUpdate == _enable )
+        return;
 
-  d->autoUpdate = _enable;
-  s_pCache->setAutoUpdate( this, _enable );
+    d->autoUpdate = _enable;
+    KDirListerCache::self()->setAutoUpdate( this, _enable );
 }
 
 bool KDirLister::showingDotFiles() const
@@ -1783,7 +1787,7 @@ void KDirLister::emitChanges()
   for ( KUrl::List::Iterator it = d->lstDirs.begin();
         it != d->lstDirs.end(); ++it )
   {
-    const KFileItemList* itemList = s_pCache->itemsForDir( *it );
+    const KFileItemList* itemList = KDirListerCache::self()->itemsForDir( *it );
     KFileItemList::const_iterator kit = itemList->begin();
     const KFileItemList::const_iterator kend = itemList->end();
     for ( ; kit != kend; ++kit )
@@ -1866,7 +1870,7 @@ void KDirLister::emitChanges()
 
 void KDirLister::updateDirectory( const KUrl& _u )
 {
-  s_pCache->updateDirectory( _u );
+  KDirListerCache::self()->updateDirectory( _u );
 }
 
 bool KDirLister::isFinished() const
@@ -1881,12 +1885,12 @@ KFileItem *KDirLister::rootItem() const
 
 KFileItem *KDirLister::findByUrl( const KUrl& _url ) const
 {
-  return s_pCache->findByUrl( this, _url );
+  return KDirListerCache::self()->findByUrl( this, _url );
 }
 
 KFileItem *KDirLister::findByName( const QString& _name ) const
 {
-  return s_pCache->findByName( this, _name );
+  return KDirListerCache::self()->findByName( this, _name );
 }
 
 
@@ -2296,7 +2300,7 @@ KFileItemList KDirLister::items( WhichItems which ) const
 
 KFileItemList KDirLister::itemsForDir( const KUrl& dir, WhichItems which ) const
 {
-    KFileItemList *allItems = s_pCache->itemsForDir( dir );
+    KFileItemList *allItems = KDirListerCache::self()->itemsForDir( dir );
     if ( !allItems )
         return KFileItemList();
 
