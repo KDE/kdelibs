@@ -120,8 +120,7 @@ public:
    * @return true if successful, false otherwise
    * @deprecated
    **/
-  KDE_DEPRECATED bool fputs (const QString &line, bool AppendNewLine=true)
-    { return writeStdin(line, AppendNewLine); }
+  KDE_DEPRECATED bool fputs (const QString &line, bool AppendNewLine=true);
 
   /**
    * Closes stdin after all data has been send.
@@ -159,8 +158,7 @@ public:
    * @deprecated use readln. Note that it has an inverted autoAck default,
    *  though.
    **/
-  KDE_DEPRECATED int fgets (QString &line, bool autoAck=false)
-    { return readln (line, autoAck); }
+  KDE_DEPRECATED int fgets (QString &line, bool autoAck=false);
 
   /**
    * Reset the class.  Doesn't kill the process.

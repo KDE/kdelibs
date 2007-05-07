@@ -63,6 +63,11 @@ K3ProcIO::~K3ProcIO()
     delete d;
 }
 
+int K3ProcIO::fgets (QString &line, bool autoAck)
+{
+    return readln (line, autoAck);
+}
+
 void
 K3ProcIO::resetAll ()
 {
@@ -158,6 +163,11 @@ bool K3ProcIO::writeStdin(const QByteArray &data)
     }
 
     return true;
+}
+
+bool K3ProcIO::fputs (const QString &line, bool AppendNewLine)
+{
+    return writeStdin(line, AppendNewLine);
 }
 
 void K3ProcIO::closeWhenDone()

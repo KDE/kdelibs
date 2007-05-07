@@ -212,8 +212,7 @@ public:
    * @overload
    * Binds this socket to the given address.
    */
-  virtual bool bind(const KResolverEntry& entry)
-  { return KClientSocketBase::bind(entry); }
+  virtual bool bind(const KResolverEntry& entry);
 
   /**
    * "Connects" this socket to the given address. Note that connecting
@@ -235,8 +234,7 @@ public:
    * @overload
    * "Connects" this socket to the given address.
    */
-  virtual bool connect(const KResolverEntry& entry, OpenMode mode = ReadWrite)
-  { return KClientSocketBase::connect(entry, mode); }
+  virtual bool connect(const KResolverEntry& entry, OpenMode mode = ReadWrite);
 
   /**
    * Receives one datagram from the stream. The reading process is guaranteed

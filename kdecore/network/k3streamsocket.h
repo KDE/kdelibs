@@ -172,8 +172,7 @@ public:
    * really does bind the socket. No lookup is performed. The @ref bound
    * signal will be emitted.
    */
-  virtual bool bind(const KResolverEntry& entry)
-  { return KClientSocketBase::bind(entry); }
+  virtual bool bind(const KResolverEntry& entry);
 
   /**
    * Reimplemented from KClientSocketBase.

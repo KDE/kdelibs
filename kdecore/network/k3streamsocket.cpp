@@ -107,6 +107,11 @@ bool KStreamSocket::bind(const QString& node, const QString& service)
   return true;
 }
 
+bool KStreamSocket::bind(const KResolverEntry& entry)
+{
+    return KClientSocketBase::bind(entry);
+}
+
 bool KStreamSocket::connect(const QString& node, const QString& service,
 			    OpenMode mode)
 {

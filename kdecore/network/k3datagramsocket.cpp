@@ -92,6 +92,11 @@ bool KDatagramSocket::bind(const QString& node, const QString& service)
   return true;
 }
 
+bool KDatagramSocket::bind(const KResolverEntry& entry)
+{
+  return KClientSocketBase::bind(entry);
+}
+
 bool KDatagramSocket::connect(const QString& node, const QString& service,
 			      OpenMode mode)
 {
@@ -134,6 +139,11 @@ bool KDatagramSocket::connect(const QString& node, const QString& service,
 
   KActiveSocketBase::open(mode | Unbuffered);
   return state() == Connected;
+}
+
+bool KDatagramSocket::connect(const KResolverEntry& entry, OpenMode mode)
+{
+    return KClientSocketBase::connect(entry, mode);
 }
 
 KDatagramPacket KDatagramSocket::receive()
