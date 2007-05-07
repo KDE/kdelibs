@@ -570,6 +570,11 @@ void KDialog::centerOnScreen( QWidget *widget, int screen )
   if ( !widget )
     return;
 
+  if( !( widget->windowsFlags() & Qt::X11BypassWindowManagerHint )
+      && NETRootInfo i( qt_xdisplay(), NET::Supported ).isSupported( NET::WM2FullPlacement ) {
+      return; // the WM can handle placement much better
+  }
+
   QRect rect = screenRect( widget, screen );
 
   widget->move( rect.center().x() - widget->width() / 2,
