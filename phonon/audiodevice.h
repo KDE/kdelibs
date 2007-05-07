@@ -151,7 +151,7 @@ namespace Phonon
         protected:
             AudioDevice(Solid::Device audioHw, KSharedConfig::Ptr config);
             AudioDevice(KConfigGroup &deviceGroup);
-            const QString &udi() const;
+            QString udi() const;
 
         private:
             QExplicitlySharedDataPointer<AudioDevicePrivate> d;

@@ -186,7 +186,7 @@ void AudioDevicePrivate::deviceInfoFromPcmDevice(const QString &deviceName)
 }
 #endif
 
-const QString &AudioDevice::udi() const
+QString AudioDevice::udi() const
 {
     return d->udi;
 }
