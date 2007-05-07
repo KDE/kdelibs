@@ -607,6 +607,30 @@ class KDEUI_EXPORT KStartupInfoData
          * This is usually not necessary to set, as it's set by default to QX11Info::screen().
          */
         void setScreen( int screen );
+        
+        /**
+         * The Xinerama screen for the startup notification, -1 if unknown.
+         */
+        int xinerama() const;
+
+        /**        
+	 * Sets the Xinerama screen for the startup notification ( i.e. the screeen on which
+	 * the starting application should appear ).
+	 * @param xinerama the Xinerama screen for the startup notification
+         */
+        void setXinerama( int xinerama );
+
+        /**
+         * The toplevel window of the application that caused this startup notification,
+         * 0 if unknown.
+         */
+        WId launchedBy() const;
+        
+        /**
+	 * Sets the toplevel window of the application that caused this startup notification.
+	 * @param window window ID of the toplevel window that is responsible for this startup
+         */
+        void setLaunchedBy( WId window );
 
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop
