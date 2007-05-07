@@ -44,21 +44,28 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-class KArchive::KArchivePrivate
+class KArchivePrivate
 {
 public:
     KArchivePrivate()
         : rootDir( 0 ),
           saveFile( 0 ),
+          dev ( 0 ),
           fileName(),
           mode( QIODevice::NotOpen ),
           deviceOwned( false )
     {}
+    ~KArchivePrivate()
+    {
+        delete saveFile;
+        delete rootDir;
+    }
     KArchiveDirectory* rootDir;
     KSaveFile* saveFile;
+    QIODevice * dev;
     QString fileName;
     QIODevice::OpenMode mode;
-    bool deviceOwned; // if true, we (KArchive) own m_dev and must delete it
+    bool deviceOwned; // if true, we (KArchive) own dev and must delete it
 };
 
 
@@ -73,13 +80,12 @@ KArchive::KArchive( const QString& fileName )
     d->fileName = fileName;
     // This constructor leaves the device set to 0.
     // This is for the use of KSaveFile, see open().
-    m_dev = 0;
 }
 
 KArchive::KArchive( QIODevice * dev )
 	: d(new KArchivePrivate)
 {
-    m_dev = dev;
+    d->dev = dev;
 }
 
 KArchive::~KArchive()
@@ -87,8 +93,6 @@ KArchive::~KArchive()
     if ( isOpen() )
         close(); // WARNING: won't call the virtual method close in the derived class!!!
 
-    delete d->saveFile;
-    delete d->rootDir;
     delete d;
 }
 
@@ -101,14 +105,14 @@ bool KArchive::open( QIODevice::OpenMode mode )
 
     if ( !d->fileName.isEmpty() )
     {
-        Q_ASSERT( !m_dev );
+        Q_ASSERT( !d->dev );
         if ( !createDevice( mode ) )
             return false;
     }
 
-    Q_ASSERT( m_dev );
+    Q_ASSERT( d->dev );
 
-    if ( !m_dev->isOpen() && !m_dev->open( mode ) )
+    if ( !d->dev->isOpen() && !d->dev->open( mode ) )
         return false;
 
     d->mode = mode;
@@ -133,15 +137,15 @@ bool KArchive::createDevice( QIODevice::OpenMode mode )
                 d->saveFile = 0;
                 return false;
             }
-            m_dev = d->saveFile;
-            Q_ASSERT( m_dev );
+            d->dev = d->saveFile;
+            Q_ASSERT( d->dev );
         }
         break;
     case QIODevice::ReadOnly:
     case QIODevice::ReadWrite:
         // ReadWrite mode still uses QFile for now; we'd need to copy to the tempfile, in fact.
         if ( !d->fileName.isEmpty() ) {
-            m_dev = new QFile( d->fileName );
+            d->dev = new QFile( d->fileName );
             d->deviceOwned = true;
         }
         break; // continued below
@@ -159,19 +163,19 @@ bool KArchive::close()
 
     // moved by holger to allow kzip to write the zip central dir
     // to the file in closeArchive()
-    // DF: added m_dev so that we skip closeArchive if saving aborted.
+    // DF: added d->dev so that we skip closeArchive if saving aborted.
     bool closeSucceeded = true;
-    if ( m_dev ) {
+    if ( d->dev ) {
         closeSucceeded = closeArchive();
         if ( d->mode == QIODevice::WriteOnly && !closeSucceeded )
             abortWriting();
     }
 
-    if ( m_dev )
-        m_dev->close();
+    if ( d->dev )
+        d->dev->close();
 
     if ( d->deviceOwned ) {
-        delete m_dev; // we created it ourselves in open()
+        delete d->dev; // we created it ourselves in open()
     }
     if ( d->saveFile ) {
         closeSucceeded = d->saveFile->finalize();
@@ -182,7 +186,7 @@ bool KArchive::close()
     delete d->rootDir;
     d->rootDir = 0;
     d->mode = QIODevice::NotOpen;
-    m_dev = 0;
+    d->dev = 0;
     return closeSucceeded;
 }
 
@@ -423,8 +427,8 @@ KArchiveDirectory * KArchive::findOrCreate( const QString & path )
 void KArchive::setDevice( QIODevice * dev )
 {
     if ( d->deviceOwned )
-        delete m_dev;
-    m_dev = dev;
+        delete d->dev;
+    d->dev = dev;
     d->deviceOwned = false;
 }
 
@@ -437,6 +441,11 @@ void KArchive::setRootDir( KArchiveDirectory *rootDir )
 QIODevice::OpenMode KArchive::mode() const
 {
     return d->mode;
+}
+
+QIODevice * KArchive::device() const
+{
+    return d->dev;
 }
 
 bool KArchive::isOpen() const
@@ -455,80 +464,168 @@ void KArchive::abortWriting()
         d->saveFile->abort();
         delete d->saveFile;
         d->saveFile = 0;
-        m_dev = 0;
+        d->dev = 0;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// KArchiveEntry //////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+
+class KArchiveEntryPrivate
+{
+public:
+    KArchiveEntryPrivate( KArchive* _archive, const QString& _name, int _access,
+                          int _date, const QString& _user, const QString& _group,
+                          const QString& _symlink) :
+        name(_name),
+        date(_date),
+        access(_access),
+        user(_user),
+        group(_group),
+        symlink(_symlink),
+        archive(_archive)
+    {}
+    QString name;
+    int date;
+    mode_t access;
+    QString user;
+    QString group;
+    QString symlink;
+    KArchive* archive;
+};
+
 KArchiveEntry::KArchiveEntry( KArchive* t, const QString& name, int access, int date,
                       const QString& user, const QString& group, const
-                      QString& symlink)
+                      QString& symlink) :
+    d(new KArchiveEntryPrivate(t,name,access,date,user,group,symlink))
 {
-  m_name = name;
-  m_access = access;
-  m_date = date;
-  m_user = user;
-  m_group = group;
-  m_symlink = symlink;
-  m_archive = t;
+}
 
+KArchiveEntry::~KArchiveEntry()
+{
+    delete d;
 }
 
 QDateTime KArchiveEntry::datetime() const
 {
-  QDateTime d;
-  d.setTime_t( m_date );
-  return d;
+  QDateTime datetimeobj;
+  datetimeobj.setTime_t( d->date );
+  return datetimeobj;
+}
+
+int KArchiveEntry::date() const
+{
+    return d->date;
+}
+
+QString KArchiveEntry::name() const
+{
+    return d->name;
+}
+
+mode_t KArchiveEntry::permissions() const
+{
+    return d->access;
+}
+
+QString KArchiveEntry::user() const
+{
+    return d->user;
+}
+
+QString KArchiveEntry::group() const
+{
+    return d->group;
+}
+
+QString KArchiveEntry::symlink() const
+{
+    return d->symlink;
+}
+
+bool KArchiveEntry::isFile() const
+{
+    return false;
+}
+
+bool KArchiveEntry::isDirectory() const
+{
+    return false;
+}
+
+KArchive* KArchiveEntry::archive() const
+{
+    return d->archive;
 }
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// KArchiveFile ///////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+class KArchiveFilePrivate
+{
+public:
+    KArchiveFilePrivate( qint64 _pos, qint64 _size ) :
+        pos(_pos),
+        size(_size)
+    {}
+    qint64 pos;
+    qint64 size;
+};
+
 KArchiveFile::KArchiveFile( KArchive* t, const QString& name, int access, int date,
                             const QString& user, const QString& group,
                             const QString & symlink,
                             qint64 pos, qint64 size )
-  : KArchiveEntry( t, name, access, date, user, group, symlink )
+  : KArchiveEntry( t, name, access, date, user, group, symlink ),
+    d( new KArchiveFilePrivate(pos, size) )
 {
-  m_pos = pos;
-  m_size = size;
 }
 
 KArchiveFile::~KArchiveFile()
 {
+    delete d;
 }
 
 qint64 KArchiveFile::position() const
 {
-  return m_pos;
+  return d->pos;
 }
 
 qint64 KArchiveFile::size() const
 {
-  return m_size;
+  return d->size;
+}
+
+void KArchiveFile::setSize( qint64 s )
+{
+    d->size = s;
 }
 
 QByteArray KArchiveFile::data() const
 {
-  archive()->device()->seek( m_pos );
+  archive()->device()->seek( d->pos );
 
   // Read content
   QByteArray arr;
-  if ( m_size )
+  if ( d->size )
   {
     assert( arr.data() );
-    arr = archive()->device()->read( m_size );
-    Q_ASSERT( arr.size() == m_size );
+    arr = archive()->device()->read( d->size );
+    Q_ASSERT( arr.size() == d->size );
   }
   return arr;
 }
 
 QIODevice * KArchiveFile::createDevice() const
 {
-  return new KLimitedIODevice( archive()->device(), m_pos, m_size );
+  return new KLimitedIODevice( archive()->device(), d->pos, d->size );
+}
+
+bool KArchiveFile::isFile() const
+{
+    return true;
 }
 
 void KArchiveFile::copyTo(const QString& dest) const
@@ -545,23 +642,33 @@ void KArchiveFile::copyTo(const QString& dest) const
 //////////////////////// KArchiveDirectory /////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+class KArchiveDirectoryPrivate
+{
+public:
+    ~KArchiveDirectoryPrivate()
+    {
+        qDeleteAll(entries);
+    }
+    QHash<QString, KArchiveEntry *> entries;
+};
 
 KArchiveDirectory::KArchiveDirectory( KArchive* t, const QString& name, int access,
                               int date,
                               const QString& user, const QString& group,
                               const QString &symlink)
-  : KArchiveEntry( t, name, access, date, user, group, symlink )
+  : KArchiveEntry( t, name, access, date, user, group, symlink ),
+    d( new KArchiveDirectoryPrivate )
 {
 }
 
 KArchiveDirectory::~KArchiveDirectory()
 {
-  qDeleteAll(m_entries);
+  delete d;
 }
 
 QStringList KArchiveDirectory::entries() const
 {
-  return m_entries.keys();
+  return d->entries.keys();
 }
 
 const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
@@ -591,23 +698,28 @@ const KArchiveEntry* KArchiveDirectory::entry( const QString& _name ) const
 
     //kDebug() << "KArchiveDirectory::entry left=" << left << " right=" << right << endl;
 
-    const KArchiveEntry* e = m_entries.value( left );
+    const KArchiveEntry* e = d->entries.value( left );
     if ( !e || !e->isDirectory() )
       return 0;
     return static_cast<const KArchiveDirectory*>(e)->entry( right );
   }
 
-  return m_entries.value( name );
+  return d->entries.value( name );
 }
 
 void KArchiveDirectory::addEntry( KArchiveEntry* entry )
 {
   Q_ASSERT( !entry->name().isEmpty() );
-  if( m_entries.value( entry->name() ) ) {
+  if( d->entries.value( entry->name() ) ) {
       kWarning() << "KArchiveDirectory::addEntry: directory " << name()
                   << " has entry " << entry->name() << " already" << endl;
   }
-  m_entries.insert( entry->name(), entry );
+  d->entries.insert( entry->name(), entry );
+}
+
+bool KArchiveDirectory::isDirectory() const
+{
+    return true;
 }
 
 static int sortByPosition( const KArchiveFile* file1, const KArchiveFile* file2 ) {
@@ -657,7 +769,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     }
   } while (!dirStack.isEmpty());
 
-  qSort( fileList.begin(), fileList.end(), sortByPosition );  // sort on m_pos, so we have a linear access
+  qSort( fileList.begin(), fileList.end(), sortByPosition );  // sort on d->pos, so we have a linear access
 
   for ( QList<const KArchiveFile*>::const_iterator it = fileList.begin(), end = fileList.end() ;
         it != end ; ++it ) {

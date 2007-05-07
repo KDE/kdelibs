@@ -36,6 +36,7 @@ namespace KIO {
     class SlaveConfig;
     class SessionData;
 
+    class SchedulerPrivate;
     /**
      * The KIO::Scheduler manages io-slaves for the application.
      * It also queues jobs and assigns the job to a slave when one
@@ -126,8 +127,7 @@ namespace KIO {
          * is available. This can be changed by calling scheduleJob.
 	 * @param job the job to register
          */
-        static void doJob(SimpleJob *job)
-        { self()->_doJob(job); }
+        static void doJob(SimpleJob *job);
 
         /**
          * Calling ths function makes that @p job gets scheduled for later
@@ -135,23 +135,20 @@ namespace KIO {
          * other jobs to finish.
 	 * @param job the job to schedule
          */
-        static void scheduleJob(SimpleJob *job)
-        { self()->_scheduleJob(job); }
+        static void scheduleJob(SimpleJob *job);
 
         /**
          * Stop the execution of a job.
 	 * @param job the job to cancel
          */
-        static void cancelJob(SimpleJob *job)
-        { self()->_cancelJob(job); }
+        static void cancelJob(SimpleJob *job);
 
         /**
          * Called when a job is done.
 	 * @param job the finished job
 	 * @param slave the slave that executed the @p job
          */
-        static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
-        { self()->_jobFinished(job, slave); }
+        static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
 
         /**
          * Puts a slave on notice. A next job may reuse this slave if it
@@ -164,23 +161,20 @@ namespace KIO {
 	 * @param job the job that should be stopped
 	 * @param url the URL that is handled by the @p url
          */
-        static void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
-        { self()->_putSlaveOnHold(job, url); }
+        static void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
 
         /**
          * Removes any slave that might have been put on hold. If a slave
          * was put on hold it will be killed.
          */
-        static void removeSlaveOnHold()
-        { self()->_removeSlaveOnHold(); }
+        static void removeSlaveOnHold();
 
         /**
          * Send the slave that was put on hold back to KLauncher. This
          * allows another process to take over the slave and resume the job
          * that was started.
          */
-        static void publishSlaveOnHold()
-        { self()->_publishSlaveOnHold(); }
+        static void publishSlaveOnHold();
 
         /**
          * Requests a slave for use in connection-oriented mode.
@@ -193,8 +187,8 @@ namespace KIO {
          * @see assignJobToSlave()
          * @see disconnectSlave()
          */
-        static KIO::Slave *getConnectedSlave(const KUrl &url, const KIO::MetaData &config = MetaData() )
-        { return self()->_getConnectedSlave(url, config); }
+        static KIO::Slave *getConnectedSlave(const KUrl &url,
+                const KIO::MetaData &config = MetaData() );
 
         /*
          * Uses @p slave to do @p job.
@@ -212,8 +206,7 @@ namespace KIO {
          * @see slaveConnected()
          * @see slaveError()
          */
-        static bool assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job)
-        { return self()->_assignJobToSlave(slave, job); }
+        static bool assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
 
         /*
          * Disconnects @p slave.
@@ -227,8 +220,7 @@ namespace KIO {
          * @see getConnectedSlave
          * @see assignJobToSlave
          */
-        static bool disconnectSlave(KIO::Slave *slave)
-        { return self()->_disconnectSlave(slave); }
+        static bool disconnectSlave(KIO::Slave *slave);
 
         /**
          * Send the slave that was put on hold back to KLauncher. This
@@ -239,15 +231,13 @@ namespace KIO {
          * void KIO::Job::setWindow(QWidget*).
 	 * @param wid the window to register
          */
-        static void registerWindow(QWidget *wid)
-        { self()->_registerWindow(wid); }
+        static void registerWindow(QWidget *wid);
 
         /**
          * @internal
          * Unregisters the window registered by registerWindow().
          */
-        static void unregisterWindow(QObject *wid)
-        { self()->slotUnregisterWindow(wid); }
+        static void unregisterWindow(QObject *wid);
 
         /**
          * Function to connect signals emitted by the scheduler.
@@ -256,31 +246,25 @@ namespace KIO {
          * @see slaveError()
          */
         static bool connect( const char *signal, const QObject *receiver,
-                             const char *member)
-        { return QObject::connect(self(), signal, receiver, member); }
+                             const char *member);
 
         static bool connect( const QObject* sender, const char* signal,
-                             const QObject* receiver, const char* member )
-        { return QObject::connect(sender, signal, receiver, member); }
+                             const QObject* receiver, const char* member );
 
         static bool disconnect( const QObject* sender, const char* signal,
-                                const QObject* receiver, const char* member )
-        { return QObject::disconnect(sender, signal, receiver, member); }
+                                const QObject* receiver, const char* member );
 
         bool connect( const QObject *sender, const char *signal,
-                      const char *member )
-        { return QObject::connect(sender, signal, member); }
+                      const char *member );
 
         /**
          * When true, the next job will check whether KLauncher has a slave
          * on hold that is suitable for the job.
 	 * @param b true when KLauncher has a job on hold
          */
-        static void checkSlaveOnHold(bool b) { self()->_checkSlaveOnHold(b); }
+        static void checkSlaveOnHold(bool b);
 
-        static void emitReparseSlaveConfiguration() {
-            self()->reparseSlaveConfiguration( QString() );
-        }
+        static void emitReparseSlaveConfiguration();
 
         void debug_info();
 
@@ -314,9 +298,6 @@ namespace KIO {
         void slotUnregisterWindow(QObject *);
 
     private:
-        class ProtocolInfoDict;
-        class ExtraJobData;
-
         Scheduler(const Scheduler&);
         static Scheduler *self();
         void _doJob(SimpleJob *job);
@@ -336,30 +317,8 @@ namespace KIO {
         Slave *findIdleSlave(ProtocolInfo *protInfo, SimpleJob *job, bool &exact);
         Slave *createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KUrl &url);
 
-
-        QTimer slaveTimer;
-        QTimer coSlaveTimer;
-        QTimer cleanupTimer;
-        bool busy;
-
-        SlaveList *slaveList;
-        SlaveList *idleSlaves;
-        SlaveList *coIdleSlaves;
-
-        ProtocolInfoDict *protInfoDict;
-        Slave *slaveOnHold;
-        KUrl urlOnHold;
-        JobList newJobs;
-
-        typedef QMap<Slave*, JobList *> CoSlaveMap;
-        CoSlaveMap coSlaves;
-        ExtraJobData *extraJobData;
-        SlaveConfig *slaveConfig;
-        SessionData *sessionData;
-        bool checkOnHold;
-        QMap<QObject *,WId> m_windowList;
     private:
-        class SchedulerPrivate * const d;
+        SchedulerPrivate * const d;
 };
 
 }

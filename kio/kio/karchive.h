@@ -34,6 +34,7 @@
 class KArchiveDirectory;
 class KArchiveFile;
 
+class KArchivePrivate;
 /**
  * KArchive is a base class for reading and writing archives.
  * @short generic class for reading/writing archives
@@ -96,7 +97,7 @@ public:
      * The underlying device.
      * @return the underlying device.
      */
-    QIODevice * device() const { return m_dev; }
+    QIODevice * device() const;
 
     /**
      * The name of the archive file, as passed to the constructor that takes a
@@ -356,11 +357,10 @@ private:
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    QIODevice * m_dev;
-    class KArchivePrivate;
     KArchivePrivate* const d;
 };
 
+class KArchiveEntryPrivate;
 /**
  * A base class for entries in an KArchive.
  * @short Base class for the archive-file's directory structure.
@@ -385,7 +385,7 @@ public:
                    const QString& user, const QString& group,
                    const QString& symlink );
 
-    virtual ~KArchiveEntry() { }
+    virtual ~KArchiveEntry();
 
     /**
      * Creation date of the file.
@@ -397,65 +397,58 @@ public:
      * Creation date of the file.
      * @return the creation date in seconds since 1970
      */
-    int date() const { return m_date; }
+    int date() const;
 
     /**
      * Name of the file without path.
      * @return the file name without path
      */
-    QString name() const { return m_name; }
+    QString name() const;
     /**
      * The permissions and mode flags as returned by the stat() function
      * in st_mode.
      * @return the permissions
      */
-    mode_t permissions() const { return m_access; }
+    mode_t permissions() const;
     /**
      * User who created the file.
      * @return the owner of the file
      */
-    QString user() const { return m_user; }
+    QString user() const;
     /**
      * Group of the user who created the file.
      * @return the group of the file
      */
-    QString group() const { return m_group; }
+    QString group() const;
 
     /**
      * Symlink if there is one.
      * @return the symlink, or QString()
      */
-    QString symlink() const { return m_symlink; }
+    QString symlink() const;
 
     /**
      * Checks whether the entry is a file.
      * @return true if this entry is a file
      */
-    virtual bool isFile() const { return false; }
+    virtual bool isFile() const;
 
     /**
      * Checks whether the entry is a directory.
      * @return true if this entry is a directory
      */
-    virtual bool isDirectory() const { return false; }
+    virtual bool isDirectory() const;
 
 protected:
-    KArchive* archive() const { return m_archive; }
+    KArchive* archive() const;
 
-private:
-    QString m_name;
-    int m_date;
-    mode_t m_access;
-    QString m_user;
-    QString m_group;
-    QString m_symlink;
-    KArchive* m_archive;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KArchiveEntryPrivate* d;
+    KArchiveEntryPrivate* const d;
 };
 
+class KArchiveFilePrivate;
 /**
  * Represents a file entry in a KArchive.
  * @short A file in an archive.
@@ -501,7 +494,7 @@ public:
      * Set size of data, usually after writing the file.
      * @param s the new size of the file
      */
-    void setSize( qint64 s ) { m_size = s; }
+    void setSize( qint64 s );
 
     /**
      * Returns the data of the file.
@@ -526,7 +519,7 @@ public:
      * Checks whether this entry is a file.
      * @return true, since this entry is a file
      */
-    virtual bool isFile() const { return true; }
+    virtual bool isFile() const;
 
     /**
      * Extracts the file to the directory @p dest
@@ -534,15 +527,13 @@ public:
      */
     void copyTo(const QString& dest) const;
 
-private:
-    qint64 m_pos;
-    qint64 m_size;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KArchiveFilePrivate* d;
+    KArchiveFilePrivate* const d;
 };
 
+class KArchiveDirectoryPrivate;
 /**
  * Represents a directory entry in a KArchive.
  * @short A directory in an archive.
@@ -594,7 +585,7 @@ public:
      * Checks whether this entry is a directory.
      * @return true, since this entry is a directory
      */
-    virtual bool isDirectory() const { return true; }
+    virtual bool isDirectory() const;
 
     /**
      * Extracts all entries in this archive directory to the directory
@@ -604,12 +595,10 @@ public:
      */
      void copyTo(const QString& dest, bool recursive = true) const;
 
-private:
-    QHash<QString, KArchiveEntry *> m_entries;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KArchiveDirectoryPrivate* d;
+    KArchiveDirectoryPrivate* const d;
 };
 
 #endif
