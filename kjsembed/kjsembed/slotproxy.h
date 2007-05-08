@@ -26,6 +26,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QByteRef>
 #include <kjs/object.h>
+#include "kjsembed.h"
 
 namespace KJS
 {
@@ -37,7 +38,7 @@ namespace KJS
 
 namespace KJSEmbed
 {
-    class SlotProxy : public QObject
+    class KJSEMBED_EXPORT SlotProxy : public QObject
     {
         public:
             SlotProxy(KJS::JSObject *obj, KJS::Interpreter *interpreter, QObject *parent, const QByteArray &signature);
