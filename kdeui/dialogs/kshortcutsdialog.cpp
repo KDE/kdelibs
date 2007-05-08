@@ -363,7 +363,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 	hier[Group] = d->findOrMakeItem(hier[Program], "if you see this, something went wrong");
 
 	foreach (QAction *action, collection->actions()) {
-		QString name = action->text();
+		QString name = action->text().remove('&');
 		kDebug(125) << "Key: " << name << endl;
 
 		if (name.startsWith(QLatin1String("Program:")))
