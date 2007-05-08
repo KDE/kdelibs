@@ -1141,7 +1141,7 @@ unsigned long KStartupInfoId::timestamp() const
 struct KStartupInfoData::Private
     {
     Private() : desktop( 0 ), wmclass( "" ), hostname( "" ),
-        silent( KStartupInfoData::Unknown ), timestamp( ~0U ), screen( -1 ), xinerama( -1 ), launched_by( 0 ) {};
+        silent( KStartupInfoData::Unknown ), timestamp( ~0U ), screen( -1 ), xinerama( -1 ), launched_by( 0 ) {}
     QString bin;
     QString name;
     QString description;
