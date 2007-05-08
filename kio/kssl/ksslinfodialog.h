@@ -27,7 +27,7 @@
 #include "ksslx509map.h"
 #include "ksslcertificate.h"
 #include "kssl.h"
-#include <Qt3Support/Q3ScrollView>
+#include <QtGui/QScrollArea>
 
 class QWidget;
 class KSSLCertBox;
@@ -122,7 +122,7 @@ public:
 	static KSSLCertBox *certInfoWidget(QWidget *parent, const QString &certName, QWidget *mailCatcher=0);
 
 private:
-	Q3ScrollView *buildCertInfo(const QString &certName);
+	QScrollArea *buildCertInfo(const QString &certName);
 	void displayCert(KSSLCertificate *x);
 
 	class KSSLInfoDialogPrivate;
@@ -147,28 +147,28 @@ private Q_SLOTS:
  * @see KSSLInfoDialog
  * @short KDE SSL Certificate Box
  */
-class KIO_EXPORT KSSLCertBox : public Q3ScrollView {
+
+class KIO_EXPORT KSSLCertBox : public QScrollArea {
 public:
-	/**
-	 *  Construct a certificate box
-	 *
-	 *  @param parent the parent widget
-	 *  @param name the internal name of this instance
-	 *  @param f widget flags for the object
-	 */
-	explicit KSSLCertBox(QWidget *parent=0L, const char *name=0L,
-                             Qt::WFlags f=0);
+    /**
+     *  Construct a certificate box
+     *
+     *  @param parent the parent widget
+     *  @param name the internal name of this instance
+     *  @param f widget flags for the object
+     */
+    explicit KSSLCertBox(QWidget *parent=0L);
 
-	/**
-	 *  Change the contents of the widget
-	 *
-	 *  @param certName the name ("subject") of the certificate
-	 *  @param mailCatcher the widget which catches the url open events
-	 */
-	void setValues(const QString &certName, QWidget *mailCatcher=0L);
-
+    /**
+     *  Change the contents of the widget
+     *
+     *  @param certName the name ("subject") of the certificate
+     *  @param mailCatcher the widget which catches the url open events
+     */
+    void setValues(const QString &certName, QWidget *mailCatcher=0L);
 private:
-	QFrame *_frame;
+    class KSSLCertBoxPrivate;
+    class KSSLCertBoxPrivate* const d;
 };
 
 #endif

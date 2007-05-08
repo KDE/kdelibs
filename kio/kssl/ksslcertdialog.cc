@@ -32,6 +32,7 @@
 #include <Qt3Support/Q3ListView>
 #include <QtGui/QFrame>
 #include <QtGui/QLabel>
+#include <QtGui/QListWidget>
 
 #include <kapplication.h>
 #include <kglobal.h>
@@ -64,9 +65,10 @@ KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
    grid->addWidget(d->p_message);
    setHost(_host);
 
-   _certs = new Q3ListView(this);
-   _certs->addColumn(i18n("Certificate"));
-   _certs->setResizeMode(Q3ListView::LastColumn);
+   QLabel* lblCertificate = new QLabel(i18n("Certificate"));
+   grid->addWidget(lblCertificate);
+
+   _certs = new QListWidget(this);
    QFontMetrics fm( KGlobalSettings::generalFont() );
    _certs->setMinimumHeight(4*fm.height());
    grid->addWidget(_certs);
@@ -116,10 +118,10 @@ void KSSLCertDialog::setupDialog(const QStringList& certs, bool saveChecked, boo
     if ((*i).isEmpty())
       continue;
 
-    new Q3ListViewItem(_certs, *i);
+    new QListWidgetItem(*i, _certs);
   }
 
-  _certs->setSelected(_certs->firstChild(), true);
+  _certs->setCurrentItem(_certs->item(0));
 }
 
 
@@ -134,9 +136,9 @@ bool KSSLCertDialog::wantsToSend() {
 
 
 QString KSSLCertDialog::getChoice() {
-   Q3ListViewItem *selected = _certs->selectedItem();
+   QListWidgetItem *selected = _certs->currentItem();
    if (selected && d->p_send_flag)
-	return selected->text(0);
+	return selected->text();
    else
 	return QString();
 }

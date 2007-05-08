@@ -379,27 +379,17 @@ KSSLCertBox *KSSLInfoDialog::certInfoWidget(QWidget *parent, const QString &cert
 }
 
 
-KSSLCertBox::KSSLCertBox(QWidget *parent, const char *name, Qt::WFlags f)
-: Q3ScrollView(parent, name, f)
+KSSLCertBox::KSSLCertBox(QWidget *parent)
+    : QScrollArea(parent), d(0)
 {
-    _frame = 0L;
     setBackgroundRole(QPalette::Button);
     setValues(QString(), 0L);
 }
 
 
 void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
-    if (_frame) {
-        removeChild(_frame);
-        delete _frame;
-    }
-
     if (certName.isEmpty()) {
-        _frame = new QFrame(this);
-        addChild(_frame);
-        viewport()->setBackgroundRole(_frame->backgroundRole());
-        _frame->show();
-        updateScrollBars();
+        setWidget(new QFrame(this));
         show();
         return;
     }
@@ -407,7 +397,7 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     KSSLX509Map cert(certName);
     QString tmp;
     viewport()->setBackgroundRole(QPalette::Button);
-    _frame = new QFrame(this);
+    QFrame* _frame = new QFrame(this);
     QGridLayout *grid = new QGridLayout(_frame);
     grid->setMargin(KDialog::marginHint());
     grid->setSpacing(KDialog::spacingHint());
@@ -464,14 +454,12 @@ void KSSLCertBox::setValues(const QString &certName, QWidget *mailCatcher) {
     if (label && viewport()) {
         viewport()->setBackgroundRole(label->backgroundRole());
     }
-    addChild(_frame);
-    updateScrollBars();
-    _frame->show();
+    setWidget(_frame);
     show();
 }
 
 
-Q3ScrollView *KSSLInfoDialog::buildCertInfo(const QString &certName) {
+QScrollArea *KSSLInfoDialog::buildCertInfo(const QString &certName) {
     return KSSLInfoDialog::certInfoWidget(this, certName, this);
 }
 
