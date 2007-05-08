@@ -52,65 +52,80 @@ bool Nepomuk::Backbone::DBus::ServiceBackend::isAvailable() const
 
 Nepomuk::Backbone::Result Nepomuk::Backbone::DBus::ServiceBackend::methodCall( const Nepomuk::Backbone::Message& message )
 {
+//     QDBusMessage msg = QDBusMessage::createMethodCall( service(), path(), interface(), message.method() );
+//     msg.setArguments( message.arguments() );
+//     QDBusMessage dbusReply = QDBusConnection::sessionBus().call( msg, QDBus::Block, 10*60*1000 ); // timeout of 10 minutes for testing
+
     QDBusMessage dbusReply = callWithArgumentList( QDBus::Block,
                                                    message.method(),
                                                    message.arguments() );
 
     if( dbusReply.type() == QDBusMessage::ErrorMessage ) {
-        kDebug(300001) << "(DBus::ServiceBackend) got error reply: " << dbusReply.errorName() << " - " << dbusReply.arguments().first().toString() << endl;
-        return Result::createErrorResult( -1, dbusReply.errorName(), dbusReply.arguments().first().toString() );
+        if ( dbusReply.arguments().count() > 0 ) {
+            kDebug(300001) << "(DBus::ServiceBackend) got error reply: "
+                           << dbusReply.errorName() << " - " << dbusReply.arguments().first().toString() << endl;
+            return Result::createErrorResult( -1, dbusReply.errorName(), dbusReply.arguments().first().toString() );
+        }
+        else {
+            kDebug(300001) << "(DBus::ServiceBackend) got error reply: " << dbusReply.errorName() << endl;
+            return Result( -1, dbusReply.errorName() );
+        }
     }
     else if( dbusReply.type() != QDBusMessage::ReplyMessage ) {
         kDebug(300001) << "(DBus::ServiceBackend) got invalid reply while calling method "
                        << path() + '/' + interface() + '.' + message.method() << message.arguments()
                        << "in service" << service() << ": " << dbusReply.errorName() << endl;
-        // FIXME: set an error message or flag
-        return Result( -1 );
+        return Result( -1, dbusReply.errorName() );
     }
 
     // FIXME: we silently assume that the method has only a single return value
 
-    //
-    // Let QtDBus handle the simple types
-    //
-    if( dbusReply.arguments()[0].userType() < (int)QVariant::UserType ) {
-        return Result( 0, dbusReply.arguments()[0] );
-    }
-
-    //
-    // Check for the non-simple types
-    //
-    else {
-        QDBusArgument arg = dbusReply.arguments()[0].value<QDBusArgument>();
-
-        // FIXME: analyze the signature: [1. let QtDBus extract the simple types]
-        //                               2. check for the RDF cursor types
-
+    if ( dbusReply.arguments().count() ) {
         //
-        // Check for our RDF cursor types
+        // Let QtDBus handle the simple types
         //
-
-        // FIXME: store the cursor type signatures somewhere else
-        if( dbusReply.signature() == "a((isss)(isss)(isss)(isss))" ) {
-            QList<Soprano::Statement> sl;
-            arg >> sl;
-            return Result( 0, qVariantFromValue<QList<Soprano::Statement> >( sl ) );
-        }
-        else if( dbusReply.signature() == "(a(s)a(a((isss))))" ) {
-            RDF::QueryResultTable qr;
-            arg >> qr;
-            return Result( 0, qVariantFromValue<RDF::QueryResultTable>( qr ) );
+        if( dbusReply.arguments()[0].userType() < (int)QVariant::UserType ) {
+            return Result( 0, dbusReply.arguments()[0] );
         }
 
         //
-        // Check for lists of lists of maps of ...
+        // Check for the non-simple types
         //
         else {
-            kDebug(300001) << "(DBus::ServiceBackend) signature: " << dbusReply.signature() << endl;
-            //                               3. check for lists of lists of maps and so on
-            //                               4. fail all other types
-            return Result( -1 );
+            QDBusArgument arg = dbusReply.arguments()[0].value<QDBusArgument>();
+
+            // FIXME: analyze the signature: [1. let QtDBus extract the simple types]
+            //                               2. check for the RDF cursor types
+
+            //
+            // Check for our RDF cursor types
+            //
+
+            // FIXME: store the cursor type signatures somewhere else
+            if( dbusReply.signature() == "a((isss)(isss)(isss)(isss))" ) {
+                QList<Soprano::Statement> sl;
+                arg >> sl;
+                return Result( 0, qVariantFromValue<QList<Soprano::Statement> >( sl ) );
+            }
+            else if( dbusReply.signature() == "(asaa(isss))" ) {
+                RDF::QueryResultTable qr;
+                arg >> qr;
+                return Result( 0, qVariantFromValue<RDF::QueryResultTable>( qr ) );
+            }
+
+            //
+            // Check for lists of lists of maps of ...
+            //
+            else {
+                kDebug(300001) << "(DBus::ServiceBackend) signature: " << dbusReply.signature() << endl;
+                //                               3. check for lists of lists of maps and so on
+                //                               4. fail all other types
+                return Result( -1 );
+            }
         }
+    }
+    else {
+        return Result();
     }
 }
 
