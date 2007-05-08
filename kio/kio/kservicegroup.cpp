@@ -87,7 +87,7 @@ KServiceGroup::KServiceGroup( const QString &configFile, const QString & _relpat
 
   m_strBaseGroupName = config.readEntry( "X-KDE-BaseGroup" );
   d->suppressGenericNames = config.readListEntry( "X-KDE-SuppressGenericNames" );
-//  d->sortOrder = config.readListEntry("SortOrder");
+  d->sortOrder = config.readListEntry("SortOrder");
 
   // Fill in defaults.
   if (m_strCaption.isEmpty())
