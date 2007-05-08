@@ -19,7 +19,8 @@
 #ifndef KDELIBS_TERMINAL_INTERFACE_H
 #define KDELIBS_TERMINAL_INTERFACE_H
 
-class QString;
+#include <QtCore/QObject>
+
 class QStringList;
 
 /**
