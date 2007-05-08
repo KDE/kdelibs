@@ -124,7 +124,7 @@ Manager::Manager()
         d->interpreterinfos.insert("java",
             new InterpreterInfo("java",
                 javalib, // library
-                "*.java", // file filter-wildcard
+                "*.java *.class *.jar", // file filter-wildcard
                 QStringList() << "application/java", // mimetypes
                 javaoptions // options
             )
@@ -202,9 +202,11 @@ const QString Manager::interpreternameForFile(const QString& file)
     for(QHash<QString, InterpreterInfo*>::Iterator it = d->interpreterinfos.begin(); it != d->interpreterinfos.end(); ++it) {
         if( ! it.value() )
             continue;
-        rx.setPattern( it.value()->wildcard() );
-        if( file.contains(rx) )
-            return it.value()->interpreterName();
+        foreach(QString wildcard, it.value()->wildcard().split(" ", QString::SkipEmptyParts)) {
+            rx.setPattern( wildcard );
+            if( rx.exactMatch(file) )
+                return it.value()->interpreterName();
+        }
     }
     return QString();
 }
