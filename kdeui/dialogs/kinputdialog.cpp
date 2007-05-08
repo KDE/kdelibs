@@ -224,10 +224,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     d->m_listBox->addItems( list );
     d->m_listBox->setCurrentRow(current);
     layout->addWidget( d->m_listBox, 10 );
-    connect( d->m_listBox, SIGNAL( doubleClicked( QListWidgetItem * ) ),
+    connect( d->m_listBox, SIGNAL( executed( QListWidgetItem * ) ),
       SLOT( accept() ) );
-    connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
-      SLOT( accept() ) );
+    /*connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
+      SLOT( accept() ) );*/
 
     d->m_listBox->setFocus();
   }
@@ -272,10 +272,10 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   }
   else
   {
-    connect( d->m_listBox, SIGNAL( doubleClicked( QListWidgetItem * ) ),
+    connect( d->m_listBox, SIGNAL( executed( QListWidgetItem * ) ),
       SLOT( accept() ) );
-    connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
-      SLOT( accept() ) );
+    /*connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
+      SLOT( accept() ) );*/
 
     QString text = select.first();
     
@@ -410,7 +410,7 @@ QString KInputDialog::getItem( const QString &caption, const QString &label,
     editable, parent );
   if ( !editable)
   {
-      connect( dlg.listBox(),  SIGNAL(doubleClicked ( QListWidgetItem *)), &dlg, SLOT( accept()));
+      connect( dlg.listBox(),  SIGNAL(executed( QListWidgetItem *)), &dlg, SLOT( accept()));
   }
   bool _ok = ( dlg.exec() == Accepted );
 
