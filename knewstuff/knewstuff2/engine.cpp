@@ -107,7 +107,9 @@ KNS::Entry::List Engine::download()
 
 	KComponentData component = KGlobal::mainComponent();
 	QString name = component.componentName();
-	engine->init(name + ".knsrc");
+
+	bool ret = engine->init(name + ".knsrc");
+	if(!ret) return entries;
 
 	entries = engine->downloadDialogModal();
 	delete engine;
@@ -145,13 +147,15 @@ void Engine::downloadDialog()
 
 KNS::Entry *Engine::upload(QString file)
 {
-	KNS::Entry *entry;
+	KNS::Entry *entry = NULL;
 
 	Engine *engine = new Engine();
 
 	KComponentData component = KGlobal::mainComponent();
 	QString name = component.componentName();
-	engine->init(name + ".knsrc");
+
+	bool ret = engine->init(name + ".knsrc");
+	if(!ret) return entry;
 
 	entry = engine->uploadDialogModal(file);
 	delete engine;
