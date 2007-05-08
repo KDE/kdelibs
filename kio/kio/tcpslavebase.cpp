@@ -449,6 +449,11 @@ quint16 TCPSlaveBase::defaultPort() const
     return d->defaultPort;
 }
 
+quint16 TCPSlaveBase::port() const
+{
+    return d->port;
+}
+
 bool TCPSlaveBase::atEnd() const
 {
     // this doesn't work!!

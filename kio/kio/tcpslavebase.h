@@ -126,6 +126,12 @@ protected:
     quint16 defaultPort() const;
 
     /**
+     * the current port for this service
+     *
+     */
+    quint16 port() const;
+
+    /**
      * Are we using SSL?
      *
      * @return if so, true is returned.
