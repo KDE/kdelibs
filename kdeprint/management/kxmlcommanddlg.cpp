@@ -973,8 +973,8 @@ KXmlCommandDlg::KXmlCommandDlg(QWidget *parent, const char *name)
 	connect(m_removemime, SIGNAL(clicked()), SLOT(slotRemoveMime()));
 	connect(m_edit, SIGNAL(clicked()), SLOT(slotEditCommand()));
 	connect(m_requirements, SIGNAL(selectionChanged(Q3ListViewItem*)), SLOT(slotReqSelected(Q3ListViewItem*)));
-	connect(m_availablemime, SIGNAL(selectionChanged(Q3ListBoxItem*)), SLOT(slotAvailableSelected(Q3ListBoxItem*)));
-	connect(m_selectedmime, SIGNAL(selectionChanged(Q3ListBoxItem*)), SLOT(slotSelectedSelected(Q3ListBoxItem*)));
+	connect(m_availablemime, SIGNAL(itemSelectionChanged ()), SLOT(slotAvailableSelected()));
+	connect(m_selectedmime, SIGNAL(itemSelectionChanged ()), SLOT(slotSelectedSelected()));
 	connect(m_addreq, SIGNAL(clicked()), SLOT(slotAddReq()));
 	connect(m_removereq, SIGNAL(clicked()), SLOT(slotRemoveReq()));
 
@@ -1111,14 +1111,14 @@ void KXmlCommandDlg::slotReqSelected(Q3ListViewItem *item)
 	m_removereq->setEnabled(item);
 }
 
-void KXmlCommandDlg::slotAvailableSelected(Q3ListBoxItem *item)
+void KXmlCommandDlg::slotAvailableSelected()
 {
-	m_addmime->setEnabled(item);
+	m_addmime->setEnabled(m_availablemime->currentItem());
 }
 
-void KXmlCommandDlg::slotSelectedSelected(Q3ListBoxItem *item)
+void KXmlCommandDlg::slotSelectedSelected()
 {
-	m_removemime->setEnabled(item);
+	m_removemime->setEnabled(m_selectedmime->currentItem());
 }
 
 #include "kxmlcommanddlg.moc"

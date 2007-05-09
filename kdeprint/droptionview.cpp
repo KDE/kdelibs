@@ -208,7 +208,7 @@ OptionListView::OptionListView(QWidget *parent)
 	main_->setSpacing(10);
 	main_->addWidget(m_list);
 
-	connect(m_list,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
+	connect(m_list,SIGNAL(itemSelectionChanged()),SLOT(slotSelectionChanged()));
 }
 
 void OptionListView::setOption(DrBase *opt)

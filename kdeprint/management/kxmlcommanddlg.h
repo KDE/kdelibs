@@ -108,8 +108,8 @@ protected Q_SLOTS:
 	void slotAddReq();
 	void slotRemoveReq();
 	void slotReqSelected(Q3ListViewItem*);
-	void slotAvailableSelected(Q3ListBoxItem*);
-	void slotSelectedSelected(Q3ListBoxItem*);
+	void slotAvailableSelected();
+	void slotSelectedSelected();
 	void slotOk();
 
 private:
