@@ -67,6 +67,7 @@ KIO_BUILD_TESTS(
   kdirwatchtest_gui
   kdirmodeltest_gui
   kmimetypechoosertest_gui
+  ksslkeygentest
 )
 
 KIO_EXECUTE_TESTS(
