@@ -152,7 +152,10 @@ class KStartupInfo::Private
 
             if( !( flags & DisableKWinModule )) {
                 QObject::connect( KWindowSystem::self(), SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
-                QObject::connect( KWindowSystem::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
+#ifdef __GNUC__
+#warning "systemTrayWindowAdded signal was remove from KWindowSystem class"
+#endif		
+                //QObject::connect( KWindowSystem::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
             }
             QObject::connect( &msgs, SIGNAL( gotMessage( const QString& )), q, SLOT( got_message( const QString& )));
             cleanup = new QTimer( q );
