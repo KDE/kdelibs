@@ -281,66 +281,39 @@ background-color: #0057ae;
 
 div.nav {
     display: none;
-    font-size: 80%;
-    text-align: right;
-    float: right;
 }
 
-#main h1 {
+/* The project name (redundant as it is shown in the menu, too) */
+div.clearer+h2 {
+    display: none;
+}
+
+/* The header on top of a page e.g. "MediaObject Class Reference" */
+#main>h1 {
     text-align: center;
+    margin-top: 1em;
     margin-bottom: 2em;
 }
 
-#main h1 small {
+/* The group links below the page header */
+#main>h1>small {
     font-size: 60%;
 }
 
-#main h2 {
+/* Section headers like "Detailed Description" */
+#main>h2 {
     margin-left: 0;
     margin-top: 1em;
     margin-bottom: 1em;
 }
 
-#main code {
+/* The #include line */
+#main>h1+code {
     font-size: 120%;
     background: #F1F1F1;
     border: 1px solid #E7E7E7;
     padding: 2px;
     display: block;
-}
-
-#main td code {
-    font-size: 100%;
-    background: white;
-    border: 0;
-    padding: 0;
-    display: inline;
-}
-
-#main li code {
-    font-size: 100%;
-    background: white;
-    border: 0;
-    padding: 0;
-    display: inline;
-}
-
-#main dd code {
-    font-size: 100%;
-    background: white;
-    border: 0;
-    padding: 0;
-    display: inline;
-    font-style: italic;
-}
-
-#main p code {
-    font-size: 100%;
-    background: white;
-    border: 0;
-    padding: 0;
-    display: inline;
-    font-style: italic;
 }
 
 #body_wrapper {
