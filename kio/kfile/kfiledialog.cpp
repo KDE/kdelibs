@@ -91,7 +91,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     connect(d->w->cancelButton(), SIGNAL( clicked() ), SLOT( slotCancel() ));
 
     connect(fileQWidget, SIGNAL(accepted()), SLOT(accept()));
-    connect(fileQWidget, SIGNAL(canceled()), SLOT(slotCancel()));
+    //connect(fileQWidget, SIGNAL(canceled()), SLOT(slotCancel()));
 
     if (customWidget)
      d->w->setCustomWidget(customWidget);
