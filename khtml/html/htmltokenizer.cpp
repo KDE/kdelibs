@@ -1644,7 +1644,7 @@ void HTMLTokenizer::processToken()
     {
 #if 0
         if(currToken.tid) {
-            qDebug( "unexpected token id: %d, str: *%s*", currToken.tid,QConstString( buffer,dest-buffer ).string().toLatin1().constData() );
+            qDebug( "unexpected token id: %d, str: *%s*", currToken.tid,QString::fromRawData( buffer, dest-buffer ).toLatin1().constData() );
             assert(0);
         }
 

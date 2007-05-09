@@ -456,7 +456,7 @@ DOMString HTMLElementImpl::innerHTML() const
     QString result; //Use QString to accumulate since DOMString is poor for appends
     for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
         DOMString kid = child->toString();
-        result += QConstString(kid.unicode(), kid.length());
+        result += QString::fromRawData(kid.unicode(), kid.length());
     }
     return result;
 }
@@ -485,7 +485,7 @@ DOMString HTMLElementImpl::innerText() const
         }
         if(n->isTextNode() ) {
             DOMStringImpl* data = static_cast<const TextImpl *>(n)->string();
-            text += QConstString(data->s, data->l);
+            text += QString::fromRawData(data->s, data->l);
         }
     }
  end:

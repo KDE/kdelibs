@@ -1007,7 +1007,7 @@ DOMString ElementImpl::toString() const
 
 	for (NodeImpl *child = firstChild(); child != NULL; child = child->nextSibling()) {
 	    DOMString kid = child->toString();
-	    result += QConstString(kid.unicode(), kid.length()).string();
+	    result += QString::fromRawData(kid.unicode(), kid.length());
 	}
 
 	result += "</";

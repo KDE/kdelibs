@@ -244,7 +244,8 @@ void KHTMLParser::parseToken(Token *t)
            current->id() != ID_SCRIPT &&
            !t->text->containsOnlyWhitespace()) haveContent = true;
 #ifdef PARSER_DEBUG
-        kDebug(6035) << "length="<< t->text->l << " text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
+
+        kDebug(6035) << "length="<< t->text->l << " text='" << QString::fromRawData(t->text->s, t->text->l) << "'" << endl;
 #endif
     }
 

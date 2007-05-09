@@ -531,7 +531,7 @@ int InlineTextBox::widthFromStart(int pos) const
   if (justified && m_toAdd > 0) do {
     //kDebug(6000) << "justify" << endl;
 
-//    QConstString cstr = QString::fromRawData(t->str->s + m_start, m_len);
+//    const QString cstr = QString::fromRawData(t->str->s + m_start, m_len);
     for( int i = 0; i < m_len; i++ )
       if ( t->str->s[m_start+i].category() == QChar::Separator_Space )
 	numSpaces++;
@@ -683,7 +683,7 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
     m_hasReturn = true;
 
 #ifdef DEBUG_LAYOUT
-    QString cstr = QString::fromRawData(str->s, str->l);
+    const QString cstr = QString::fromRawData(str->s, str->l);
     kDebug( 6040 ) << "RenderText ctr( "<< cstr.length() << " )  '" << cstr << "'" << endl;
 #endif
 }

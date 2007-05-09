@@ -193,7 +193,7 @@ CSSRuleImpl *CSSParser::parseRule( DOM::CSSStyleSheetImpl *sheet, const DOM::DOM
     for ( unsigned int i = 0; i < strlen(khtml_rule); i++ )
         data[i] = khtml_rule[i];
     memcpy( data + strlen( khtml_rule ), string.unicode(), string.length()*sizeof( unsigned short) );
-    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().toLatin1().constData() );
+    // qDebug("parse string = '%s'", QString::fromRawData( (const QChar *)data, length ).toLatin1().constData() );
     data[length-4] = '}';
 
     runParser(length);
@@ -222,7 +222,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
         data[i] = khtml_value[i];
     memcpy( data + strlen( khtml_value ), string.unicode(), string.length()*sizeof( unsigned short) );
     data[length-4] = '}';
-    // qDebug("parse string = '%s'", QConstString( (const QChar *)data, length ).string().toLatin1().constData() );
+    // qDebug("parse string = '%s'", QString::fromRawData( (const QChar *)data, length ).toLatin1().constData() );
 
     id = _id;
     important = _important;
