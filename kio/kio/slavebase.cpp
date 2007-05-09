@@ -964,8 +964,9 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         s_seqNr = 0;
         QString passwd;
         QString host, user;
-        stream >> host >> i >> user >> passwd;
-        setHost( host, i, user, passwd );
+        quint16 port;
+        stream >> host >> port >> user >> passwd;
+        setHost( host, port, user, passwd );
     }
     break;
     case CMD_CONNECT:
