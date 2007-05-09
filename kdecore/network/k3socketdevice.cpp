@@ -22,6 +22,11 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+// syssocket.h needs to come before any header that includes k3socketbase.h
+#include "syssocket.h"
+
+#include "k3socketdevice.h" //krazy:exclude=include (KDE3 compat: not worth fixing)
+
 #include <config.h>
 #include <config-network.h>
 
@@ -52,16 +57,12 @@
 #include <windows.h>
 #endif
 
-// Include syssocket before our local includes
-#include "syssocket.h"
-
 #include <QMutex>
 #include <QSocketNotifier>
 
 #include "k3resolver.h"
 #include "k3socketaddress.h"
 #include "k3socketbase.h"
-#include "k3socketdevice.h"
 #ifndef KDE_USE_FINAL
 #include "k3socks.h"
 #endif
