@@ -39,6 +39,9 @@
      </item>
      <item>
       <widget class="QToolButton" name="Sound_play" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
        <property name="text" >
         <string/>
        </property>
