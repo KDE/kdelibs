@@ -593,6 +593,9 @@ int KDateTimePrivate::timeZoneOffset() const
         return utc().secsTo(dt);
     }
     int secondOffset;
+    if (!z.tz) {
+        return KTimeZone::InvalidOffset;
+    }
     int offset = z.tz->offsetAtZoneTime(mDt, &secondOffset);
     if (m2ndOccurrence)
     {

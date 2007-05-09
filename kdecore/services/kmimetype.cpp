@@ -283,7 +283,9 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
             def = prot->defaultMimeType();
         if ( !def.isEmpty() && def != defaultMimeType() ) {
             // The protocol says it always returns a given mimetype (e.g. text/html for "man:")
-            return mimeType( def );
+            KMimeType::Ptr mime = mimeType( def );
+            if (mime)
+                return mime;
         }
         if ( path.endsWith( slash ) || path.isEmpty() ) {
             // We have no filename at all. Maybe the protocol has a setting for
