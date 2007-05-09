@@ -41,7 +41,7 @@ class QIODevice;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KIOBufferBase
+class KDECORE_EXPORT KIOBufferBase //krazy:exclude=inline (mainly virtual; simple implementations; KDE3 compat)
 {
 public:
   /**

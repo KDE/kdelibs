@@ -326,6 +326,11 @@ KActiveSocketBase::~KActiveSocketBase()
 {
 }
 
+QString KActiveSocketBase::errorString() const
+{
+    return QIODevice::errorString();
+}
+
 bool KActiveSocketBase::open(OpenMode mode)
 {
   QIODevice::open(mode);
@@ -338,6 +343,41 @@ void KActiveSocketBase::setSocketDevice(KSocketDevice* dev)
 {
   KSocketBase::setSocketDevice(dev);
   KActiveSocketBase::open(dev->openMode());
+}
+
+bool KActiveSocketBase::isSequential() const
+{
+    return true;
+}
+
+qint64 KActiveSocketBase::size() const
+{
+    return 0;
+}
+
+qint64 KActiveSocketBase::pos() const
+{
+    return 0;
+}
+
+bool KActiveSocketBase::seek(qint64)
+{
+    return false;
+}
+
+bool KActiveSocketBase::atEnd() const
+{
+    return true;
+}
+
+qint64 KActiveSocketBase::read(char *data, qint64 maxlen)
+{
+    return QIODevice::read(data, maxlen);
+}
+
+QByteArray KActiveSocketBase::read(qint64 len)
+{
+    return QIODevice::read(len);
 }
 
 qint64 KActiveSocketBase::read(char *data, qint64 len, KSocketAddress& from)
@@ -356,10 +396,25 @@ qint64 KActiveSocketBase::peek(char *data, qint64 len, KSocketAddress& from)
   return peekData(data, len, &from);
 }
 
+qint64 KActiveSocketBase::write(const char *data, qint64 len)
+{
+    return QIODevice::write(data, len);
+}
+
+qint64 KActiveSocketBase::write(const QByteArray& data)
+{
+    return QIODevice::write(data);
+}
+
 qint64 KActiveSocketBase::write(const char *data, qint64 len,
 				const KSocketAddress& to)
 {
   return writeData(data, len, &to);
+}
+
+void KActiveSocketBase::ungetChar(char)
+{
+    return;
 }
 
 qint64 KActiveSocketBase::readData(char *data, qint64 len)

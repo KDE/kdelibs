@@ -474,8 +474,7 @@ public:
   /**
    * Unshadow errorString from QIODevice
    */
-  inline QString errorString() const
-  { return QIODevice::errorString(); }
+  QString errorString() const;
 
   /**
    * @reimp
@@ -540,36 +539,31 @@ public:
   /**
    * Sockets are sequential
    */
-  virtual bool isSequential() const
-  { return true; }
+  virtual bool isSequential() const;
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual qint64 size() const
-  { return 0; }
+  virtual qint64 size() const;
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return 0.
    */
-  virtual qint64 pos() const
-  { return 0; }
+  virtual qint64 pos() const;
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return false.
    */
-  virtual bool seek(qint64)
-  { return false; }
+  virtual bool seek(qint64);
 
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    * This will always return true.
    */
-  virtual bool atEnd() const
-  { return true; }
+  virtual bool atEnd() const;
 
   /**
    * Reads data from the socket.
@@ -577,8 +571,7 @@ public:
    * Reimplemented from QIODevice. See QIODevice::read for
    * more information.
    */
-  inline qint64 read(char *data, qint64 maxlen)
-  { return QIODevice::read(data, maxlen); }
+  qint64 read(char *data, qint64 maxlen);
 
   /**
    * Reads data from the socket.
@@ -586,8 +579,7 @@ public:
    * Reimplemented from QIODevice. See QIODevice::read for
    * more information.
    */
-  inline QByteArray read(qint64 len)
-  { return QIODevice::read(len); }
+  QByteArray read(qint64 len);
 
   /** @overload
    * Receives data and the source address.
@@ -636,8 +628,7 @@ public:
    * Reimplemented from QIODevice. See QIODevice::write for
    * more information.
    */
-  inline qint64 write(const char *data, qint64 len)
-  { return QIODevice::write(data, len); }
+  qint64 write(const char *data, qint64 len);
 
   /**
    * Writes the given data to the socket.
@@ -645,8 +636,7 @@ public:
    * Reimplemented from QIODevice. See QIODevice::write for
    * more information.
    */
-  inline qint64 write(const QByteArray& data)
-  { return QIODevice::write(data); }
+  qint64 write(const QByteArray& data);
 
   /** @overload
    * Writes the given data to the destination address.
@@ -677,8 +667,7 @@ public:
   /**
    * This call is not supported on sockets. Reimplemented from QIODevice.
    */
-  void ungetChar(char)
-  { return; }
+  void ungetChar(char);
 
   /**
    * Returns this socket's local address.

@@ -335,7 +335,7 @@ public:
      * @param str the string to create
      * @return the static string
      */
-    static const QString&        staticQString(const char *str);
+    static const QString&        staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Creates a static QString.
@@ -354,7 +354,7 @@ public:
      * @param str the string to create
      * @return the static string
      */
-    static const QString&        staticQString(const QString &str);
+    static const QString&        staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Registers a static deleter.
