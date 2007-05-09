@@ -13,6 +13,7 @@
 131        kdecore (KAcceleratorManager)
 150        kdecore (KLibLoader)
 160        kdecore (KNotifyClient)
+161        kdecore (K*TimeZone*)
 170        kdecore (KNetwork socket)
 171        kdecore (KSocks)
 172        kdecore (KStartupInfo)
@@ -101,6 +102,7 @@
 1218        ksmserver
 1219        media kioslave
 1220        remote kioslave
+1221        ktimezoned
 
 1400        khelpcenter (kdebase)
 1401        kcmhelpcenter
