@@ -246,7 +246,7 @@ void KMJobViewer::init()
 		KMFactory::self()->uiManager()->setupJobViewer(m_view);
 		m_view->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 		m_view->setLineWidth(1);
-		connect(m_view,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
+		connect(m_view,SIGNAL(itemSelectionChanged ()),SLOT(slotSelectionChanged()));
 		connect(m_view,SIGNAL(rightButtonPressed(QTreeWidgetItem*,const QPoint&,int)),SLOT(slotRightClicked(QTreeWidgetItem*,const QPoint&,int)));
 		setCentralWidget(m_view);
 	}
