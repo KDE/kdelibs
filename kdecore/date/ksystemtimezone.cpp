@@ -209,12 +209,8 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
 	// A KSystemTimeZones instance is required only to catch D-Bus signals.
         m_parent = new KSystemTimeZones;
         // Ensure that the KDED time zones module has initialized
-	QDBusInterface kded("org.kde.kded", "/kded", "org.kde.kded");		
-	QDBusReply<QStringList> reply = kded.call("loadedModules");
-	if (!reply.isValid())
-		kError() << "KSystemTimeZones: initialization D-Bus call failed: " << reply.error().message() << endl;
-	QStringList lstkded = reply;
-	if(!lstkded.contains("ktimezoned"))
+        QDBusInterface ktimezoned("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
+        if (!ktimezoned.isValid())
 		kError() << "KSystemTimeZones: ktimezoned kded module was not loaded\n";
 		
         readConfig(true);
