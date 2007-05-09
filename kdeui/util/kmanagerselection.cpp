@@ -218,10 +218,11 @@ bool KSelectionOwner::filterEvent( XEvent* ev_P )
 	        return false;
 	    d->timestamp = CurrentTime;
 //	    kDebug() << "Lost selection" << endl;
+            Window window = d->window;
 	    emit lostOwnership();
-	    XSelectInput( QX11Info::display(), d->window, 0 );
-	    XDestroyWindow( QX11Info::display(), d->window );
-	  return false;
+	    XSelectInput( QX11Info::display(), window, 0 );
+	    XDestroyWindow( QX11Info::display(), window );
+	  return true;
 	    }
 	case DestroyNotify:
 	    {
@@ -230,7 +231,7 @@ bool KSelectionOwner::filterEvent( XEvent* ev_P )
 	    d->timestamp = CurrentTime;
 //	    kDebug() << "Lost selection (destroyed)" << endl;
 	    emit lostOwnership();
-	  return false;
+	  return true;
 	    }
 	case SelectionNotify:
 	    {
