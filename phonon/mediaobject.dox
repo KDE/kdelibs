@@ -20,7 +20,7 @@ media frameworks).
 
 \section phonon_MediaObject_memberdocs Member Function Documentation
 
-\see phonon_MediaObject_totalTimeChanged
+\see \ref phonon_MediaObject_totalTimeChanged
 
 \subsection phonon_MediaObject_prefinishMark qint32 prefinishMark()
 Returns the time in milliseconds the \ref phonon_MediaObject_prefinishMarkReached
@@ -38,8 +38,8 @@ the \ref phonon_MediaObject_prefinishMarkReached "prefinishMarkReached" signal i
 \subsection phonon_MediaObject_remainingTime qint64 remainingTime()
 Get the remaining time (in milliseconds) of the file currently being played. If
 the method is not implemented in the backend the frontend will use the
-difference between \ref MediaObjectInterface::totalTime() and \ref
-MediaObjectInterface::currentTime().
+difference between \link Phonon::MediaObjectInterface::totalTime() MediaObjectInterface::totalTime() \endlink and
+\link Phonon::MediaObjectInterface::currentTime() MediaObjectInterface::currentTime() \endlink.
 
 \section phonon_MediaObject_signaldocs Signals Documentation
 \subsection phonon_MediaObject_prefinishMarkReached void prefinishMarkReached(qint32 msec)
@@ -59,7 +59,7 @@ to wait for this signal to know the real length.
 
 \param totalTimeChanged The total time of the media file in milliseconds.
 
-\see MediaObjectInterface::totalTime
+\see \link Phonon::MediaObjectInterface::totalTime() MediaObjectInterface::totalTime() \endlink
 
 \subsection phonon_MediaObject_finished void finished()
 This signal is emitted when the playback of the media finished (on its own).
@@ -67,5 +67,5 @@ It is not emitted if stop() or pause() are called - only on end-of-file or a
 critical error (for example the media data stream is corrupted and playback of
 the media has to be finished).
 
-\see phonon_MediaObject_prefinishMarkReached
+\see \ref phonon_MediaObject_prefinishMarkReached
 */

@@ -1,5 +1,6 @@
 /**
 \page phonon_Backend The Backend Class
+\ingroup Backend
 
 \section phonon_Backend_requiredfunctions Required Functions
 \li bool \ref phonon_Backend_supportsOSD "supportsOSD()"
@@ -87,5 +88,38 @@ Lists the MIME types the backend can read and decode.
 	capture device, and in order give the user a hint that the video and audio
 	capture devices belong together this index is used.
 	\returns If there is no associated audio capture device return -1.
+
+\page phonon_AudioPath The AudioPath Class
+\ingroup Backend
+
+\page phonon_VideoPath The VideoPath Class
+\ingroup Backend
+
+\page phonon_AudioDataOutput The AudioDataOutput Class
+\ingroup Backend
+
+\page phonon_AudioOutput The AudioOutput Class
+\ingroup Backend
+
+\page phonon_VideoDataOutput The VideoDataOutput Class
+\ingroup Backend
+
+\page phonon_VideoWidget The VideoWidget Class
+\ingroup Backend
+
+\page phonon_AudioEffect The AudioEffect Class
+\ingroup Backend
+
+\page phonon_BrightnessControl The BrightnessControl Class
+\ingroup Backend
+
+\page phonon_VideoEffect The VideoEffect Class
+\ingroup Backend
+
+\page phonon_Visualization The Visualization Class
+\ingroup Backend
+
+\page phonon_VolumeFaderEffect The VolumeFaderEffect Class
+\ingroup Backend
 
 */
