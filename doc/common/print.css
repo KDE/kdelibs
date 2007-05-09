@@ -319,6 +319,11 @@ div.nav {
     display: block;
 }
 
+/* The version number (e.g. '4.0') on Mainpages - reduntant as it's already shown in the main title */
+#main>h1+p+h3 {
+    display: none;
+}
+
 #body_wrapper {
     margin: 0 auto;
     border: #dddddd solid;
