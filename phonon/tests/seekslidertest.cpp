@@ -27,6 +27,8 @@
 #include <cstdlib>
 #include <QtGui/QLabel>
 #include "loadfakebackend.h"
+#include "../audiopath.h"
+#include "../audiooutput.h"
 
 using namespace Phonon;
 
@@ -40,6 +42,10 @@ void SeekSliderTest::initTestCase()
     QVERIFY(qslider != 0);
     QVERIFY(qlabel != 0);
     media = new MediaObject(this);
+    AudioPath *ap = new AudioPath(media);
+    AudioOutput *ao = new AudioOutput(Phonon::MusicCategory, media);
+    media->addAudioPath(ap);
+    ap->addOutput(ao);
 }
 
 void SeekSliderTest::testEnabled()
