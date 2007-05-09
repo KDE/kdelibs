@@ -68,14 +68,14 @@ Nepomuk::Backbone::Result Nepomuk::Backbone::DBus::ServiceBackend::methodCall( c
         }
         else {
             kDebug(300001) << "(DBus::ServiceBackend) got error reply: " << dbusReply.errorName() << endl;
-            return Result( -1, dbusReply.errorName() );
+            return Result::createErrorResult( -1, dbusReply.errorName() );
         }
     }
     else if( dbusReply.type() != QDBusMessage::ReplyMessage ) {
         kDebug(300001) << "(DBus::ServiceBackend) got invalid reply while calling method "
                        << path() + '/' + interface() + '.' + message.method() << message.arguments()
                        << "in service" << service() << ": " << dbusReply.errorName() << endl;
-        return Result( -1, dbusReply.errorName() );
+        return Result::createErrorResult( -1, dbusReply.errorName() );
     }
 
     // FIXME: we silently assume that the method has only a single return value
@@ -85,7 +85,7 @@ Nepomuk::Backbone::Result Nepomuk::Backbone::DBus::ServiceBackend::methodCall( c
         // Let QtDBus handle the simple types
         //
         if( dbusReply.arguments()[0].userType() < (int)QVariant::UserType ) {
-            return Result( 0, dbusReply.arguments()[0] );
+            return Result::createSimpleResult( dbusReply.arguments()[0] );
         }
 
         //
@@ -105,12 +105,12 @@ Nepomuk::Backbone::Result Nepomuk::Backbone::DBus::ServiceBackend::methodCall( c
             if( dbusReply.signature() == "a((isss)(isss)(isss)(isss))" ) {
                 QList<Soprano::Statement> sl;
                 arg >> sl;
-                return Result( 0, qVariantFromValue<QList<Soprano::Statement> >( sl ) );
+                return Result::createSimpleResult( qVariantFromValue<QList<Soprano::Statement> >( sl ) );
             }
             else if( dbusReply.signature() == "(asaa(isss))" ) {
                 RDF::QueryResultTable qr;
                 arg >> qr;
-                return Result( 0, qVariantFromValue<RDF::QueryResultTable>( qr ) );
+                return Result::createSimpleResult( qVariantFromValue<RDF::QueryResultTable>( qr ) );
             }
 
             //
@@ -120,7 +120,8 @@ Nepomuk::Backbone::Result Nepomuk::Backbone::DBus::ServiceBackend::methodCall( c
                 kDebug(300001) << "(DBus::ServiceBackend) signature: " << dbusReply.signature() << endl;
                 //                               3. check for lists of lists of maps and so on
                 //                               4. fail all other types
-                return Result( -1 );
+                return Result::createErrorResult( -1, "org.semanticdesktop.nepomuk.error.UnknownType",
+                                                  QString("The D-Bus signature %1 is not supported.").arg(dbusReply.signature()) );
             }
         }
     }

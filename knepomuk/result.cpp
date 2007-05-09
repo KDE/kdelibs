@@ -100,13 +100,16 @@ Nepomuk::Backbone::Result& Nepomuk::Backbone::Result::operator=( const Nepomuk::
 
 Nepomuk::Backbone::Result Nepomuk::Backbone::Result::createSimpleResult( const QVariant& value )
 {
-    return Result( 0, value );
+    Result r;
+    r.d->value = value;
+    return r;
 }
 
 
 Nepomuk::Backbone::Result Nepomuk::Backbone::Result::createErrorResult( int status, const QString& name, const QString& message )
 {
-    Result r( status );
+    Result r;
+    r.d->status = status;
     r.d->errorName = name;
     r.d->errorMsg = message;
     return r;
