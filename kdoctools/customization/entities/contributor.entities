@@ -312,6 +312,8 @@
 <!ENTITY Dan.Pilone.mail '<email>pilone@slac.com</email>'>
 <!ENTITY Clay.Pradarits '<personname><firstname>Clay</firstname><surname>Pradarits</surname></personname>'>
 <!ENTITY Clay.Pradarits.mail '<email>gasky@winfire.com</email>'>
+<!ENTITY Aleix.Pol '<personname><firstname>Aleix</firstname><surname>Pol</surname></personname>'>
+<!ENTITY Aleix.Pol.mail '<email>aleixpol@gmail.com</email>'>
 <!ENTITY Harri.Porten '<personname><firstname>Harri</firstname><surname>Porten</surname></personname>'>
 <!ENTITY Harri.Porten.mail '<email>porten@kde.org</email>'>
 <!ENTITY Milos.Prudek '<personname><firstname>Milos</firstname><surname>Prudek</surname></personname>'>

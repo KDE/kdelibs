@@ -157,6 +157,7 @@
 <!ENTITY kaddressbook	"<application>KAddressBook</application>">
 <!ENTITY kalarm	"<application>KAlarm</application>">
 <!ENTITY kalarmd	"<application>KAlarmd</application>">
+<!ENTITY kalgebra	"<application>KAlgebra</application>">
 <!ENTITY kalzium	"<application>Kalzium</application>">
 <!ENTITY kamera	"<application>Kamera</application>">
 <!ENTITY kanagram	"<application>Kanagram</application>">
