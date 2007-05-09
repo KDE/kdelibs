@@ -121,7 +121,7 @@ unsigned int KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     }
 
     QDBusReply<int> reply =
-        d->knotify->call(QDBus::Block, "event", n->eventId(),
+        d->knotify->call("event", n->eventId(),
                          (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname),
                          contextList, n->text(), pixmapData, actions, qlonglong(winId));
     if (!reply.isValid())
