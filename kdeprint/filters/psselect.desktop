@@ -2,6 +2,7 @@
 Name=psselect
 Name[af]=ps-kies
 Name[ar]=psseleect
+Name[csb]=Wëbiérk starnów wëdrëkù
 Name[eo]=PS-elektilo
 Name[pl]=Wybór stron wydruku
 Name[sv]=Psselect
@@ -15,6 +16,7 @@ Comment[ar]=مرشح اختيار/ترتيب الصفحات
 Comment[be]=Выбар старонак і іх парадку
 Comment[ca]=Filtre d'ordenament/selecció de pàgina
 Comment[cs]=Filtr pro výběr a uspořádání stran
+Comment[csb]=Filter do wëbòru ë pòrządkòwaniô stranów wëdrëkù
 Comment[cy]=Hidl i Ddewis/Drefnu Tudalennau
 Comment[da]=Sideudvalg/rækkefølge-filter
 Comment[de]=Seitenauswahl/Sortierung

@@ -2,7 +2,9 @@
 Encoding=UTF-8
 Version=1.0
 Name=Nepomuk Annotation Ontology
+Name[csb]=Ontologijo dopòwiescë Napomuk
 Comment=The Nepomuk Annotation Ontology defines the basic annotation properties like tagging or rating.
+Comment[csb]=Òntologija dopòwiescë Nepomuk definëjë pòdspòdla swòjiznów jak tagòwanié czë taksowanié.
 Comment[zh_TW]=Nepomuk Annotation Ontology 定義基本的 annotation 屬性，如標籤等。
 URL=http://semanticdesktop.org/ontologies/2007/03/31/nao
 Path=nao.nrl

@@ -1,6 +1,7 @@
 [Misc]
 Name=Platinum
 Name[be]=Платына
+Name[csb]=Platina
 Name[cy]=Platinwm
 Name[eo]=Plateno
 Name[fa]=پلاتین
@@ -27,6 +28,7 @@ Comment[bg]=Вграден в библиотеката Qt стил без тем
 Comment[br]=Giz Platinum enframmet anwisket
 Comment[ca]=Estil encastat del Platinium sense temes
 Comment[cs]=Zabudovaný styl Platinum (bez motivu)
+Comment[csb]=Wbùdowóny sztél Platina, bez témów
 Comment[cy]=Arddull Platinwm mewnadeiladedig heb thema
 Comment[da]=Indbygget platin-stil uden tema
 Comment[de]=Eingebauter, reduzierter Platin-Stil
