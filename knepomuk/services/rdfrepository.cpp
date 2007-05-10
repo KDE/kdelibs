@@ -124,7 +124,7 @@ void Nepomuk::Services::RDFRepository::addStatements( const QString& graphId,
 void Nepomuk::Services::RDFRepository::removeContext( const QString& graphId,
 						      const Soprano::Node& context )
 {
-    Backbone::Message m( service()->url(), "removeStatement" );
+    Backbone::Message m( service()->url(), "removeContext" );
     m.addArgument( graphId );
     QVariant v;
     v.setValue( context );
