@@ -26,12 +26,12 @@
 
 #include <kdeprint_export.h>
 
-#include <qstring.h>
-#include <qmap.h>
-#include <qrect.h>
-#include <qsize.h>
-#include <QHash>
-#include <QList>
+#include <QtCore/QHash>
+#include <QtCore/QList>
+#include <QtCore/QMap>
+#include <QtCore/QRect>
+#include <QtCore/QSize>
+#include <QtCore/QString>
 
 class DriverItem;
 class QTreeWidget;

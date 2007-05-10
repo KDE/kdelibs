@@ -17,8 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "config.h"
-
 #include "kmfactory.h"
 #include "kmmanager.h"
 #include "kmjobmanager.h"
@@ -28,6 +26,8 @@
 #include "kpreloadobject.h"
 #include "kdeprintcheck.h"
 #include "kxmlcommand.h"
+
+#include <config.h>
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>

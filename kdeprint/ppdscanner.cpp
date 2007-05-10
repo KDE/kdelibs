@@ -606,7 +606,7 @@ char *kdeprint_ppdtext;
 #include <io.h>
 #ifndef YY_NO_UNISTD_H
 // include wingdi.h before definition of 'value'
-#include <unistd.h>
+#include <unistd.h> //krazy:exclude=include (duplicated x-platform stuff)
 #endif
 #endif 
 #define YYSTYPE QStringList
