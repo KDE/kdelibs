@@ -112,7 +112,7 @@ public:
         else
             sender = edit;
 
-        connect( sender, SIGNAL( textChanged( const QString& )),
+        connect( sender, SIGNAL( editTextChanged( const QString& )),
                  receiver, SIGNAL( textChanged( const QString& )));
         connect( sender, SIGNAL( returnPressed() ),
                  receiver, SIGNAL( returnPressed() ));
