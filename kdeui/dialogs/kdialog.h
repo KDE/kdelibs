@@ -47,7 +47,7 @@ class QMenu;
  * The class takes care of the geometry management. You only need to define
  * a minimum size for the widget you want to use as the main widget.
  *
- * By default, the dialog is modal
+ * By default, the dialog is non-modal
  *
  * <b>Standard buttons (action buttons):</b>\n
  *
