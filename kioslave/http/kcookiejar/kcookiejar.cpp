@@ -34,6 +34,8 @@
 // According to RFC2109 this is allowed though.
 //
 
+#include "kcookiejar.h"
+
 #include <config.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -65,8 +67,6 @@
 #include <kconfig.h>
 #include <ksavefile.h>
 #include <kdebug.h>
-
-#include "kcookiejar.h"
 
 
 // BR87227

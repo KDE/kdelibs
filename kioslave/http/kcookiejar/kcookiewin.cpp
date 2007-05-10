@@ -34,8 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // The same applies to the QT_NO_ACCEL ifdef below. I hope it doesn't make
 // too much trouble... (Simon)
 
-#include "kcookiejar.h"
 #include "kcookiewin.h"
+#include "kcookiejar.h"
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>

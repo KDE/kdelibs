@@ -16,6 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "metainfo.h"
+
 #include <kurl.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
@@ -25,8 +27,6 @@
 #include <kfilemetainfo.h>
 #include <klocale.h>
 #include <stdlib.h>
-
-#include "metainfo.h"
 
 // Recognized metadata entries:
 // mimeType     - the mime type of the file, so we need not extra determine it

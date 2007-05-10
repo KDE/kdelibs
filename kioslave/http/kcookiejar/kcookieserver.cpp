@@ -24,6 +24,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // KDE Cookie Server
 
+#include "kcookieserver.h"
+
 #define SAVE_DELAY 3 // Save after 3 minutes
 
 #include <unistd.h>
@@ -42,7 +44,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "kcookiejar.h"
 #include "kcookiewin.h"
-#include "kcookieserver.h"
 #include "kcookieserveradaptor.h"
 
 extern "C" {

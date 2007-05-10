@@ -21,6 +21,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "file.h"
+
 #include <config.h>
 #include <config-acl.h>
 
@@ -80,7 +82,6 @@
 #include <ktemporaryfile.h>
 #include <klocale.h>
 #include <QtCore/QFile>
-#include "file.h"
 #include <limits.h>
 #include <k3process.h>
 #include <kmountpoint.h>

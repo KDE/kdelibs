@@ -21,6 +21,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "http.h"
+
 #include <config.h>
 #include <config-gssapi.h>
 
@@ -56,11 +58,10 @@
 #include <kstandarddirs.h>
 #include <kremoteencoding.h>
 
-#include "kio/ioslave_defaults.h"
-#include "kio/http_slave_defaults.h"
+#include <kio/ioslave_defaults.h>
+#include <kio/http_slave_defaults.h>
 
-#include "httpfilter.h"
-#include "http.h"
+#include <httpfilter.h>
 
 #ifdef HAVE_LIBGSSAPI
 #ifdef GSSAPI_MIT
