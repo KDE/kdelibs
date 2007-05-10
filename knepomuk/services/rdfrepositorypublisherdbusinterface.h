@@ -101,7 +101,7 @@ namespace Nepomuk {
 
 		    QList<Soprano::Statement> fetchDescribeResults( int queryId, int max, const QDBusMessage& );
 
-		    RDF::QueryResultTable fetchSelectResults( int queryId, int size, const QDBusMessage& );
+		    Nepomuk::RDF::QueryResultTable fetchSelectResults( int queryId, int size, const QDBusMessage& );
 
 		    void closeQuery( int queryId, const QDBusMessage& );
 
