@@ -281,7 +281,7 @@ public:
      * cases the application itself).
      * @return the global component data
      */
-    static const KComponentData &mainComponent();
+    static const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
 
     /**
      * \internal

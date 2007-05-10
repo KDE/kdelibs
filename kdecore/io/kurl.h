@@ -118,7 +118,7 @@ public:
    * @see KUrl
    * @see QValueList
    */
-  class KDECORE_EXPORT List : public QList<KUrl>
+  class KDECORE_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
   {
   public:
     /**

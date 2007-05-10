@@ -32,7 +32,7 @@ class KSharedConfigPtr;
  * KSharedConfig provides a reference counted, shared memory variant
  * of KConfig.
  */
-class KDECORE_EXPORT KSharedConfig : public KConfig, public QSharedData
+class KDECORE_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
 {
 public:
   typedef KSharedConfigPtr Ptr;
@@ -76,7 +76,7 @@ private:
                  const KComponentData &componentData);
 };
 
-class KDECORE_EXPORT KSharedConfigPtr : public KSharedPtr<KSharedConfig>
+class KDECORE_EXPORT KSharedConfigPtr : public KSharedPtr<KSharedConfig> //krazy:exclude=dpointer (only for refcounting)
 {
 public:
     /**
