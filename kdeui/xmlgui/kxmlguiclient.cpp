@@ -289,7 +289,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
     if ( tag == tagAction )
     {
       QByteArray name =  e.attribute( attrName ).toUtf8(); // WABA
-      if ( !actionCollection->action( name.data() ) ||
+      if ( !actionCollection->action( name.constData() ) ||
            (!KAuthorized::authorizeKAction(name)))
       {
         // remove this child as we aren't using it
@@ -450,7 +450,7 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
       // if base contains an implemented action, then we must not get
       // deleted (note that the actionCollection contains both,
       // "global" and "local" actions
-      if ( actionCollection->action( e.attribute( attrName ).toUtf8().data() ) )
+      if ( actionCollection->action( e.attribute( attrName ).toUtf8().constData() ) )
       {
         deleteMe = false;
         break;
@@ -681,7 +681,7 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString 
           if ( f.open( QIODevice::WriteOnly ) )
           {
             QByteArray utf8data = (*local).data.toUtf8();
-            f.write( utf8data.data(), utf8data.length() );
+            f.write( utf8data.constData(), utf8data.length() );
             f.close();
           }
       }
