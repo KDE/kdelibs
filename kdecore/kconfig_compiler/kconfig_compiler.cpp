@@ -1678,6 +1678,8 @@ int main( int argc, char **argv )
   // private class implementation
   if ( dpointer )
   {
+    if ( !nameSpace.isEmpty() )
+      cpp << "namespace " << nameSpace << " {" << endl;
     cpp << "class " << className << "Private" << endl;
     cpp << "{" << endl;
     cpp << "  public:" << endl;
@@ -1705,6 +1707,8 @@ int main( int argc, char **argv )
     }
 
     cpp << "};" << endl << endl;
+    if ( !nameSpace.isEmpty() )
+      cpp << "}" << endl << endl;
   }
 
   // Singleton implementation
