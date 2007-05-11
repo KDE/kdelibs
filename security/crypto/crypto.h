@@ -79,7 +79,7 @@ public:
 
     QString configName() const;
     const QString& getSub() { return _sub; }
-    int getPolicy() { return _policy; }
+    int getPolicy() const { return _policy; }
     const QString& getMD5() { return _md5; }
     bool isPermanent() { return _perm; }
     QDateTime getExpires() { return _exp; }
@@ -113,7 +113,7 @@ public:
     QString& getPass() { return _pass; }
     void setPass(QString pass) { _pass = pass; }
     QString& getName() { return _name; }
-    void setName(QString name) { _name = name; }
+    void setName(const QString &name) { _name = name; }
     QString& getPassCache() { return _cpass; }
     void setPassCache(QString pass) { _cpass = pass; }
 
@@ -196,9 +196,9 @@ public:
     KSSLCertificateHome::KSSLAuthAction getAction() const { return _aa; }
     QString configName() const { return _host; }
     QString getCertName() const { return _name; }
-    void setCertName(QString name) { _name = name; setText(1, name); }
-    void setHost(QString name) { _host = name; setText(0, name); }
-    void setOriginalName(QString oname) { _oname = oname; }
+    void setCertName(const QString &name) { _name = name; setText(1, name); }
+    void setHost(const QString &name) { _host = name; setText(0, name); }
+    void setOriginalName(const QString &oname) { _oname = oname; }
     QString originalName() const { return _oname; }
 
 protected:
