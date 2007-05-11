@@ -321,7 +321,7 @@ private:
   QLabel *yValidFrom, *yValidUntil;
   KUrlLabel *untilDate;
 
-  Q3GroupBox  *oInfo;
+  QGroupBox  *oInfo;
   KUrlRequester *oPath;
   QPushButton *oTest;
   Q3PtrList<OtherCertItem> otherCertDelList;

@@ -287,9 +287,9 @@ QString whatstr;
   //
   //  CipherWizards
   //
-  Q3GroupBox *cwbg = new Q3GroupBox(i18n("Cipher Wizard"), tabSSL);
-  cwbg->setOrientation(Qt::Horizontal);
-  QVBoxLayout *laygroup2 = new QVBoxLayout(cwbg);
+  QGroupBox *cwbg = new QGroupBox(i18n("Cipher Wizard"), tabSSL);
+  QVBoxLayout *laygroup2 = new QVBoxLayout;
+  cwbg->setLayout(laygroup2);
   laygroup2->setSpacing(KDialog::spacingHint());
   QComboBox *cwcb = new QComboBox(cwbg);
     laygroup2->addWidget( cwcb );
@@ -350,15 +350,15 @@ QString whatstr;
   vbox->setSpacing(KDialog::spacingHint());
   vbox->setMargin(KDialog::marginHint());
 
-  oInfo = new Q3GroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
-  oInfo->setOrientation(Qt::Vertical);
-  QVBoxLayout *laygroup1 = new QVBoxLayout(oInfo);
+  oInfo = new QGroupBox(i18n("Path to OpenSSL Shared Libraries"), tabOSSL);
+  QVBoxLayout *laygroup1 = new QVBoxLayout;
+  oInfo->setLayout(laygroup1);
   laygroup1->setSpacing(KDialog::spacingHint());
   vbox->addWidget(oInfo);
   oPath = new KUrlRequester(oInfo);
   laygroup1->addWidget( oPath );
   oPath->setMode(KFile::Directory);
-  oTest = new QPushButton(i18n("&Test"), oInfo);
+  oTest = new QPushButton(i18n("&Test"));
   laygroup1->addWidget( oTest );
   connect(oTest, SIGNAL(clicked()), SLOT(slotTestOSSL()));
 
