@@ -58,7 +58,7 @@ public:
 
   QChar accelerator() const;
 
-  int maxWeight(int &index, const QString &used);
+  int maxWeight(int &index, const QString &used) const;
 
   bool operator == (const KAccelString &c) const { return m_pureText == c.m_pureText && m_accel == c.m_accel && m_orig_accel == c.m_orig_accel; }
 

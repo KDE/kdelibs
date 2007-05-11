@@ -636,7 +636,7 @@ int KAccelString::stripAccelerator(QString &text)
 }
 
 
-int KAccelString::maxWeight(int &index, const QString &used)
+int KAccelString::maxWeight(int &index, const QString &used) const
 {
   int max = 0;
   index = -1;
