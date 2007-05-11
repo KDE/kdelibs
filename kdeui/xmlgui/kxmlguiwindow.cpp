@@ -161,7 +161,7 @@ void KXmlGuiWindow::configureToolbars()
     if (!d->toolBarEditor) {
       d->toolBarEditor = new KEditToolBar(actionCollection(), this);
       d->toolBarEditor->setResourceFile( xmlFile() );
-      connect(d->toolBarEditor, SIGNAL(newToolbarConfig()), SLOT(saveNewToolbarConfig()));
+      connect(d->toolBarEditor, SIGNAL(newToolBarConfig()), SLOT(saveNewToolbarConfig()));
     }
     d->toolBarEditor->show();
 }
