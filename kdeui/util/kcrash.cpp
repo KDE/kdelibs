@@ -94,13 +94,13 @@ KCrash::setFlags(KCrash::CrashFlags flags)
 void
 KCrash::setApplicationPath(const QString& path)
 {
-	s_appPath = qstrdup(path.toLatin1().data());
+	s_appPath = qstrdup(path.toLatin1().constData());
 }
 
 void
 KCrash::setApplicationName(const QString& name)
 {
-	s_appName = qstrdup(name.toLatin1().data());
+	s_appName = qstrdup(name.toLatin1().constData());
 }
 
 // This function sets the function which should be responsible for
@@ -261,7 +261,7 @@ KCrash::defaultCrashHandler (int sig)
 
           if ( kapp && !kapp->startupId().isNull()) {
             argv[i++] = "--startupid";
-            strncpy(sidtxt, kapp->startupId().data(), sizeof(sidtxt));
+            strncpy(sidtxt, kapp->startupId().constData(), sizeof(sidtxt));
             argv[i++] = sidtxt;
           }
 
