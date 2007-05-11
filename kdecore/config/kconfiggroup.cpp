@@ -152,7 +152,7 @@ void KConfigGroup::changeGroup( const QString &group )
 
 void KConfigGroup::changeGroup( const QByteArray &group)
 {
-    changeGroup(group.data());
+    changeGroup(group.constData());
 }
 
 QString KConfigGroup::group() const
@@ -207,7 +207,7 @@ bool KConfigGroup::entryIsImmutable(const QString &key) const
     return true;
 
   QByteArray utf8_key = key.toUtf8();
-  entryKey.c_key = utf8_key.data();
+  entryKey.c_key = utf8_key.constData();
   aEntryData = lookupData(entryKey); // Normal entry
   if (aEntryData.bImmutable)
     return true;
@@ -266,13 +266,13 @@ QString KConfigGroup::readEntry( const char *pKey,
   aEntryData = lookupData(entryKey);
   if (!aEntryData.mValue.isNull()) {
     // for GNOME .desktop
-    aValue = KStringHandler::from8Bit( aEntryData.mValue.data() );
+    aValue = KStringHandler::from8Bit( aEntryData.mValue.constData() );
     expand = aEntryData.bExpand;
   } else {
     entryKey.bLocal = false;
     aEntryData = lookupData(entryKey);
     if (!aEntryData.mValue.isNull()) {
-      aValue = QString::fromUtf8(aEntryData.mValue.data());
+      aValue = QString::fromUtf8(aEntryData.mValue.constData());
       if (aValue.isNull())
       {
         static const QString &emptyString = KGlobal::staticQString("");
@@ -307,7 +307,7 @@ QString KConfigGroup::readEntry( const char *pKey,
                   newpath += KPATH_SEPARATOR;
           newpath += oldpath;
           setenv( "PATH", newpath, 1/*overwrite*/ );
-          FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
+          FILE *fs = popen(QFile::encodeName(cmd).constData(), "r");
           if (fs)
           {
              {
