@@ -23,12 +23,15 @@
 #include "konto_export.h"
 
 #include <QtCore/QString>
+#include <QtCore/QUrl>
 
 namespace Konto {
     KONTO_EXPORT QString rdfNamespace();
     KONTO_EXPORT QString rdfsNamespace();
     KONTO_EXPORT QString nrlNamespace();
     KONTO_EXPORT QString xsdNamespace();
+
+    QUrl extractNamespace( const QUrl& url );
 }
 
 #endif

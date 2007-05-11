@@ -63,9 +63,9 @@ public:
 
                 OntoBuffer onto;
                 onto.fileName = path;
-                onto.serialization = Soprano::mimeTypeToSerialization( ontoDesktopFile.desktopGroup().readEntry( "MimeType", "application/rdf+xml" ) );;
+                onto.serialization = Soprano::mimeTypeToSerialization( ontoDesktopFile.desktopGroup().readEntry( "MimeType", "application/rdf+xml" ) );
 
-                kDebug() << "(Konto::DesktopOntologyLoader) found ontology " << uri << endl;
+                kDebug() << "(Konto::DesktopOntologyLoader) found ontology " << QUrl(uri) << endl;
                 ontoCache.insert( QUrl( uri ), onto );
             }
         }

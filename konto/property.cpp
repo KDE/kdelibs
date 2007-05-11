@@ -23,6 +23,7 @@
 #include "ontologymanager.h"
 #include "ontology.h"
 #include "literal.h"
+#include "global.h"
 
 
 Konto::Property::Property()
@@ -107,9 +108,7 @@ int Konto::Property::maxCardinality() const
 
 const Konto::Property* Konto::Property::load( const QUrl& uri )
 {
-    // extract the namespace of the class, i.e. the ontology uri
-    QUrl ns( uri );
-    ns.setFragment( QString() );
+    QUrl ns = extractNamespace( uri );
 
     // load the ontology in the cache
     const Ontology* ont = OntologyManager::instance()->getOntology( ns );

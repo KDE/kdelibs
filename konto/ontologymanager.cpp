@@ -68,8 +68,7 @@ public:
         else {
             if ( recurse ) {
                 // try loading the ontology containing the class
-                QUrl parentNs( uri );
-                parentNs.setFragment( QString() );
+                QUrl parentNs = extractNamespace( uri );
                 if ( m_manager->getOntology( parentNs ) ) {
                     return findClass( uri );
                 }
@@ -92,8 +91,7 @@ public:
         else {
             if ( recurse ) {
                 // try loading the ontology containing the property
-                QUrl parentNs( uri );
-                parentNs.setFragment( QString() );
+                QUrl parentNs = extractNamespace( uri );
                 if ( m_manager->getOntology( parentNs ) ) {
                     return findProperty( uri );
                 }
@@ -175,6 +173,7 @@ const Konto::Ontology* Konto::OntologyManager::getOntology( const QUrl& uri )
         }
 
         if ( !sl.isEmpty() ) {
+            qDebug() << "(Konto::OntologyManager) Found ontology " << uri << endl;
             return constructOntology( uri, sl );
         }
         else {

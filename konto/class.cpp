@@ -23,8 +23,11 @@
 #include "ontologymanager.h"
 #include "property.h"
 #include "qurlhash.h"
+#include "global.h"
 
 #include <QtCore/QHash>
+
+#include <kdebug.h>
 
 
 Konto::Class::Class()
@@ -147,9 +150,13 @@ bool Konto::Class::isSubClassOf( const Class* other ) const
 
 const Konto::Class* Konto::Class::load( const QUrl& uri )
 {
-    // extract the namespace of the class, i.e. the ontology uri
-    QUrl ns( uri );
-    ns.setFragment( QString() );
+    Q_ASSERT( !uri.isEmpty() );
+
+    kDebug() << "(Konto::Class::load) " << uri << endl;
+
+    QUrl ns = extractNamespace( uri );
+
+    kDebug() << "(Konto::Class::load) ns: " << ns << endl;
 
     // load the ontology in the cache
     const Ontology* ont = OntologyManager::instance()->getOntology( ns );

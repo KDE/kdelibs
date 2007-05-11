@@ -19,6 +19,9 @@
 
 #include "global.h"
 
+#include <kdebug.h>
+
+
 static const char* RDF_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 static const char* RDFS_NAMESPACE = "http://www.w3.org/2000/01/rdf-schema#";
 static const char* XSD_NAMESPACE = "http://www.w3.org/2001/XMLSchema#";
@@ -45,4 +48,19 @@ QString Konto::nrlNamespace()
 QString Konto::xsdNamespace()
 {
     return XSD_NAMESPACE;
+}
+
+
+QUrl Konto::extractNamespace( const QUrl& url )
+{
+    QByteArray s = url.toEncoded();
+    int pos = s.lastIndexOf( '#' );
+    if ( pos == -1 ) {
+        pos = s.lastIndexOf( '/' );
+    }
+    if ( pos == -1 ) {
+        kError() << k_funcinfo << " Failed to extract namespace from " << url << endl;
+        return QUrl();
+    }
+    return QUrl::fromEncoded( s.left( pos+1 ) );
 }
