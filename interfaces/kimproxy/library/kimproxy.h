@@ -31,7 +31,7 @@
 
 #include <kimproxy_export.h>
 
-#define IM_SERVICE_TYPE "DCOP/InstantMessenger"
+#define IM_SERVICE_TYPE "DBUS/InstantMessenger"
 #define IM_CLIENT_PREFERENCES_FILE "default_components"
 #define IM_CLIENT_PREFERENCES_SECTION "InstantMessenger"
 #define IM_CLIENT_PREFERENCES_ENTRY "imClient"
@@ -50,7 +50,7 @@ typedef QMap<QString, ContactPresenceListCurrent> PresenceStringMap;
  * This class provides an easy-to-use interface to any instant messengers or chat programs
  * that you have installed that implement KIMIface
  *
- * It works simultaneously with any running programs that implement the ServiceType DCOP/InstantMessenger
+ * It works simultaneously with any running programs that implement the ServiceType DBUS/InstantMessenger
  * If a UID is reachable with more than one program, KIMProxy aggregates the available information and presents
  * the 'best' presence.  For example, for a contact who can be seen to be Away in IRC on program A but Online using
  * ICQ on program B, the information from program B will be used.  KIMProxy is designed for simple information in
@@ -223,7 +223,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		bool startPreferredApp();
 
 		/**
-		 * Just exists to let the idl compiler make the DCOP signal for this
+		 * Just exists to let the idl compiler make the D-Bus signal for this
 		 */
 		void contactPresenceChanged( const QString& uid, const QString& appId, int presence );
 
@@ -274,7 +274,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 
 	private:
 		// client stubs used to get presence
-		// appId (from DCOP) -> KIMIface_stub
+		// appId (from D-Bus) -> KIMIface_stub
 		QHash<QString, OrgKdeKIMInterface*> m_im_client_stubs;
 		// map containing numeric presence and the originating application ID for each KABC uid we know of
 		// KABC Uid -> (appId, numeric presence )(AppPresence)
