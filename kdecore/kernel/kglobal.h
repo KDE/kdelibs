@@ -253,6 +253,10 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
     {                                                                          \
         return *operator->();                                                  \
     }                                                                          \
+    inline bool operator!()                                                    \
+    {                                                                          \
+        return !_k_static_##NAME;                                              \
+    }                                                                          \
     static void destroy()                                                      \
     {                                                                          \
         _k_static_##NAME##_destroyed = true;                                   \
