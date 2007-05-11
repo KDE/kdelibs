@@ -25,7 +25,7 @@
 // syssocket.h needs to come before any header that includes k3socketbase.h
 #include "syssocket.h"
 
-#include "k3socketdevice.h" //krazy:exclude=include (KDE3 compat: not worth fixing)
+#include "k3socketdevice.h" //krazy:exclude=includes (KDE3 compat: not worth fixing)
 
 #include <config.h>
 #include <config-network.h>
