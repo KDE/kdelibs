@@ -475,7 +475,7 @@ bool KBuildSycoca::recreate()
   }
   if (!openedOK)
   {
-    fprintf(stderr, "kbuildsycoca: ERROR creating database '%s'! %s\n",
+    fprintf(stderr, "kbuildsycoca4: ERROR creating database '%s'! %s\n",
       path.toLocal8Bit().data(), database.errorString().toLocal8Bit().data());
 #ifdef KBUILDSYCOCA_GUI // KBUILDSYCOCA_GUI is used on win32 to build
                         // GUI version of kbuildsycoca, so-called "kbuildsycocaw".
@@ -507,8 +507,8 @@ bool KBuildSycoca::recreate()
     m_str = 0L;
     if (!database.finalize())
     {
-      fprintf(stderr, "kbuildsycoca: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
-      fprintf(stderr, "kbuildsycoca: Disk full?\n");
+      fprintf(stderr, "kbuildsycoca4: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
+      fprintf(stderr, "kbuildsycoca4: Disk full?\n");
 #ifdef KBUILDSYCOCA_GUI
       if (!silent)
         KMessageBox::error(0, i18n("Error writing database '%1'.\nCheck that the permissions are correct on the directory and the disk is not full.\n", path.toLocal8Bit().data()), i18n("KBuildSycoca"));
@@ -712,7 +712,7 @@ static KCmdLineOptions options[] = {
 };
 
 static const char appFullName[] = "org.kde.kbuildsycoca";
-static const char appName[] = "kbuildsycoca";
+static const char appName[] = "kbuildsycoca4";
 static const char appVersion[] = "1.1";
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
@@ -771,7 +771,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
     if (!QDBusConnection::sessionBus().isConnected())
     {
-        kError() << "kbuildsycoca: Cannot find the D-Bus session server" << endl;
+        kError() << "kbuildsycoca4: Cannot find the D-Bus session server" << endl;
         return 255;
     }
 
