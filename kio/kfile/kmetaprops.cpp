@@ -34,35 +34,8 @@
 #include <QtGui/QGroupBox>
 #include <QResizeEvent>
 #include <QtCore/QLinkedList>
-#include <Q3ScrollView>
+#include <QScrollArea>
 #include <QTextDocument>
-
-class MetaPropsScrollView : public Q3ScrollView
-{
-public:
-    MetaPropsScrollView(QWidget* parent = 0, const char* name = 0)
-        : Q3ScrollView(parent, name)
-    {
-      setFrameStyle(QFrame::NoFrame);
-      m_frame = new QFrame(viewport());
-	  m_frame->setObjectName("MetaPropsScrollView::m_frame");
-      m_frame->setFrameStyle(QFrame::NoFrame);
-      addChild(m_frame, 0, 0);
-    }
-
-    QFrame* frame() {return m_frame;}
-
-protected:
-    virtual void viewportResizeEvent(QResizeEvent* ev)
-    {
-      Q3ScrollView::viewportResizeEvent(ev);
-      m_frame->resize( qMax(m_frame->sizeHint().width(), ev->size().width()),
-                       qMax(m_frame->sizeHint().height(), ev->size().height()));
-    }
-
-private:
-      QFrame* m_frame;
-};
 
 class KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate
 {
@@ -70,7 +43,7 @@ public:
     KFileMetaPropsPluginPrivate()  {}
     ~KFileMetaPropsPluginPrivate() {}
 
-    QFrame*                       m_frame;
+    QWidget*                      m_frame;
     QGridLayout*                  m_framelayout;
     KFileMetaInfo                 m_info;
 //    QPushButton*                m_add;
@@ -120,26 +93,13 @@ void KFileMetaPropsPlugin::createLayout()
     if (groupList.isEmpty())
         return;
 
-/*    const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
-    if (!mtinfo)
-    {
-        kDebug(7034) << "no mimetype info there\n";
-        return;
-    }*/
+    QScrollArea* scrollArea = new QScrollArea;
+    scrollArea->setFrameStyle(QFrame::NoFrame);
+    properties->addPage(scrollArea, i18n("&Meta Info"));
 
-    // let the dialog create the page frame
-    QFrame* topframe = new QFrame();
-    properties->addPage(topframe, i18n("&Meta Info"));
-    topframe->setFrameStyle(QFrame::NoFrame);
-    QVBoxLayout* tmp = new QVBoxLayout(topframe);
-    tmp->setMargin(0);
-
-    // create a scroll view in the page
-    MetaPropsScrollView* view = new MetaPropsScrollView(topframe);
-
-    tmp->addWidget(view);
-
-    d->m_frame = view->frame();
+    d->m_frame = new QWidget(scrollArea);
+    scrollArea->setWidget(d->m_frame);
+    scrollArea->setWidgetResizable(true);
 
     QVBoxLayout *toplayout = new QVBoxLayout(d->m_frame);
     toplayout->setSpacing(KDialog::spacingHint());
@@ -242,15 +202,15 @@ void KFileMetaPropsPlugin::createLayout()
 
 KFileMetaPropsPlugin::~KFileMetaPropsPlugin()
 {
-  delete d;
+    delete d;
 }
 
 bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 {
     kDebug() << k_funcinfo << endl;
-#ifdef _GNUC
-#warning TODO: Add support for more than one item
-#endif
+
+    // TODO: Add support for more than one item
+
     // TODO check that KDesktopPropsPlugin is correct, i.e. that we never want metainfo for
     // a .desktop file? Used to be that only Application desktop files were filtered out
     if (KDesktopPropsPlugin::supports(_items) || KUrlPropsPlugin::supports(_items))
@@ -265,12 +225,12 @@ bool KFileMetaPropsPlugin::supports( const KFileItemList& _items )
 
 void KFileMetaPropsPlugin::applyChanges()
 {
-  kDebug(250) << "applying changes" << endl;
-  // insert the fields that changed into the info object
+    kDebug(250) << "applying changes" << endl;
+    // insert the fields that changed into the info object
 
-  foreach(KFileMetaInfoWidget* w, d->m_editWidgets)
-      w->apply();
-  d->m_info.applyChanges();
+    foreach(KFileMetaInfoWidget* w, d->m_editWidgets)
+        w->apply();
+    d->m_info.applyChanges();
 }
 
 #include "kmetaprops.moc"
