@@ -891,32 +891,20 @@ QString KFileItem::getStatusBarInfo() const
 
     if ( d->m_bLink )
     {
-        QString comment = mimeComment();
-        QString tmp;
+        text += " ";
+        const QString comment = mimeComment();
         if ( comment.isEmpty() )
-            tmp = i18n ( "Symbolic Link" );
+            text += i18n ( "(Symbolic Link to %2)", linkDest() );
         else
-            tmp = i18n("%1 (Link)", comment);
-        text += "->";
-        text += linkDest();
-        text += "  ";
-        text += tmp;
+            text += i18n("(%1, Link to %2)", comment, linkDest());
     }
     else if ( S_ISREG( d->m_fileMode ) )
     {
-        text += QString(" (%1)").arg( KIO::convertSize( size() ) );
-        text += "  ";
-        text += mimeComment();
-    }
-    else if ( S_ISDIR ( d->m_fileMode ) )
-    {
-        text += "/  ";
-        text += mimeComment();
+        text += QString(" (%1, %2)").arg( mimeComment(), KIO::convertSize( size() ) );
     }
     else
     {
-        text += "  ";
-        text += mimeComment();
+        text += QString(" (%1)").arg( mimeComment() );
     }
     return text;
 }
