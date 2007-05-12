@@ -45,7 +45,7 @@
 #define NEED_IN6_TESTS
 #endif
 #undef CLOBBER_IN6
-#include "netsupp.h" //krazy:exclude=include (netsupp.h not installed; KDE3 compat code)
+#include "netsupp.h" //krazy:exclude=includes (netsupp.h not installed; KDE3 compat code)
 
 #if defined(__hpux) || defined(_HPUX_SOURCE)
 extern int h_errno;
