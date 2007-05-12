@@ -888,11 +888,11 @@ bool KFileItem::acceptsDrops() const
 QString KFileItem::getStatusBarInfo() const
 {
     QString text = d->m_strText;
+    const QString comment = mimeComment();
 
     if ( d->m_bLink )
     {
         text += " ";
-        const QString comment = mimeComment();
         if ( comment.isEmpty() )
             text += i18n ( "(Symbolic Link to %2)", linkDest() );
         else
@@ -900,11 +900,11 @@ QString KFileItem::getStatusBarInfo() const
     }
     else if ( S_ISREG( d->m_fileMode ) )
     {
-        text += QString(" (%1, %2)").arg( mimeComment(), KIO::convertSize( size() ) );
+        text += QString(" (%1, %2)").arg( comment, KIO::convertSize( size() ) );
     }
     else
     {
-        text += QString(" (%1)").arg( mimeComment() );
+        text += QString(" (%1)").arg( comment );
     }
     return text;
 }
