@@ -33,7 +33,6 @@
 #include <ksslcertificatehome.h>
 #include <ksslpkcs12.h>
 #include <ksslx509map.h>
-#include <Qt3Support/Q3PtrList>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdlib.h>

@@ -18,10 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// remove when Q3ListView is ported
-#define QT3_SUPPORT
-#define QT3_SUPPORT_WARNINGS
-
 #include "ksslcertdialog.h"
 
 #include <kssl.h>
@@ -29,7 +25,6 @@
 #include <QtGui/QLayout>
 #include <QtGui/QRadioButton>
 #include <QtGui/QCheckBox>
-#include <Qt3Support/Q3ListView>
 #include <QtGui/QFrame>
 #include <QtGui/QLabel>
 #include <QtGui/QListWidget>

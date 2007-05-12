@@ -24,7 +24,6 @@
 #include <kssl.h>
 
 #include <QtGui/QFrame>
-#include <Qt3Support/Q3ScrollView>
 #include <QtCore/QDate>
 #include <QtCore/QFile>
 #include <QtGui/QLabel>
