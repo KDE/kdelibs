@@ -30,7 +30,6 @@
 #include <QtGui/QLayout>
 #include <QtCore/Q_PID>
 
-#include <kapplication.h>
 #include <kcombobox.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
