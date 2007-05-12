@@ -69,28 +69,17 @@ public:
     void setEnabled(bool enabled);
 
     /**
-     * Read all shortcuts from @p config, or (if @p config
-     * is zero) from the application's configuration file
-     * KGlobal::config().
+     * Assign saved shortcuts from kdeglobals to actions where
+     * globalShortcutsAllowed() == true.
      *
-     * @param config the configuration file to read from, or null for the application
-     *                 configuration file
      */
     void readSettings();
 
     /**
-     * Write the current global shortcuts to @p config,
-     * or (if @p config is zero) to the application's
-     * configuration file.  Alternatively, if global is true, write
-     * to kdeglobals.
+     * Write the current global shortcuts to kdeglobals.
      *
-     * @param config the configuration file to read from, or null for the application
-     *                 configuration file
-    * \param writeDefaults set to true to write settings which are already at defaults.
      * @param oneAction pass an action here if you only want its settings to be saved
      *                  (eg. if you know this action is the only one which has changed).
-     *
-     * @return true if successful, otherwise false
      */
     void writeSettings(KAction *oneAction = 0) const;
 
