@@ -261,7 +261,9 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
                         returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
                     } break;
                     default: {
+#ifdef DEBUG_SLOTPROXY
                         qDebug("\t\tInvalid type !");
+#endif
                     } break;
                 }
                 if( returnValue ) {
