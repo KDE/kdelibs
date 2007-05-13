@@ -207,6 +207,17 @@ class KJSEMBED_EXPORT SlotBinding : public KJS::InternalFunctionImp
 * up the meta objects in order to find the most specific binding it can.
 * There should always be some kind of binding possible even if it is just
 * the QObject binding.
+*
+* \param exec Represents the current state of script execution.
+* \param value The QObject or from it inherited instance we should return
+* a binding object for.
+* \param owner The ownership of the returned object binding. If CPPOwned
+* is defined you needed to delete the returned object manual, QObjOwned means
+* that the object got deleted if the QObject is destroyed while JSOwned means,
+* that the binding object will be deleted by Kjs once not needed any longer.
+* \return the binding object instance that wraps the QObject instance or
+* a JSObject with a prototype of jsNull (that is, the ECMAScript "null" value,
+* not a null object pointer) if we failed to provide any binding for it.
 */
 KJS::JSObject *createQObject(KJS::ExecState *exec, QObject *value, KJSEmbed::ObjectBinding::Ownership owner = KJSEmbed::ObjectBinding::JSOwned);
 

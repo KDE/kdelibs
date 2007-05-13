@@ -254,11 +254,11 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
                 {
                     case QMetaType::QObjectStar: {
                         QObject* obj = (*reinterpret_cast< QObject*(*)>( _a[idx] ));
-                        returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
+                        returnValue = KJSEmbed::createQObject(exec, obj);
                     } break;
                     case QMetaType::QWidgetStar: {
                         QWidget* obj = (*reinterpret_cast< QWidget*(*)>( _a[idx] ));
-                        returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
+                        returnValue = KJSEmbed::createQObject(exec, obj);
                     } break;
                     default: {
 #ifdef DEBUG_SLOTPROXY
