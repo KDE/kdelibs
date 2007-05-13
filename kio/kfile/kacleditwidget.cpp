@@ -35,7 +35,7 @@
 #include <qlayout.h>
 #include <QStackedWidget>
 #include <QMouseEvent>
-#include <QColorGroup>
+#include <QHeaderView>
 
 #include <klocale.h>
 #include <kfileitem.h>
@@ -92,8 +92,10 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
     hbox->setSpacing(  KDialog::spacingHint() );
     d->m_listView = new KACLListView(this);
     hbox->addWidget(d->m_listView);
-    connect(d->m_listView, SIGNAL(selectionChanged()),
-            this, SLOT(_k_slotUpdateButtons()));
+    connect(d->m_listView->selectionModel(),
+            SIGNAL(currentChanged(const QModelIndex&, const QModelIndex& )),
+            this,
+            SLOT(_k_slotUpdateButtons()));
     QVBoxLayout *vbox = new QVBoxLayout();
     hbox->addLayout( vbox );
     vbox->setSpacing(  KDialog::spacingHint() );
@@ -175,7 +177,7 @@ KACLListViewItem::~ KACLListViewItem()
 
 }
 
-QString KACLListViewItem::key( int, bool ) const
+QString KACLListViewItem::key() const
 {
     QString key;
     if ( !isDefault )
@@ -207,6 +209,11 @@ QString KACLListViewItem::key( int, bool ) const
             break;
     }
     return key;
+}
+
+bool KACLListViewItem::operator< ( const QTreeWidgetItem& other ) const
+{
+    return key() < static_cast<const KACLListViewItem&>(other).key();
 }
 
 void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
@@ -433,7 +440,6 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     mainLayout->setSpacing( spacingHint() );
     QGroupBox *gb = new QGroupBox( i18n("Entry Type"), page );
     QVBoxLayout *gbLayout = new QVBoxLayout( gb );
-    gbLayout->setMargin( 0 );
     gbLayout->setSpacing( spacingHint() );
 
     m_buttonGroup = new QButtonGroup( page );
@@ -628,6 +634,8 @@ KACLListView::KACLListView( QWidget* parent )
     setHeaderLabels( headers );
 
     setSortingEnabled( false );
+    setSelectionMode( QAbstractItemView::ExtendedSelection );
+    header()->setResizeMode( QHeaderView::ResizeToContents );
 
     // Load the avatars
     for ( int i=0; i < LAST_IDX; ++i ) {
@@ -636,7 +644,6 @@ KACLListView::KACLListView( QWidget* parent )
     m_yesPixmap = new QPixmap( qembed_findImage( "yes" ) );
     m_yesPartialPixmap = new QPixmap( qembed_findImage( "yespartial" ) );
 
-    setSelectionMode( QAbstractItemView::ExtendedSelection );
 
     // fill the lists of all legal users and groups
     struct passwd *user = 0;

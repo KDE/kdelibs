@@ -174,7 +174,8 @@ public:
                       bool defaultEntry,
                       const QString& qualifier = QString() );
     virtual ~KACLListViewItem();
-    virtual QString key( int column, bool ascending ) const;
+    QString key() const;
+    bool operator< ( const QTreeWidgetItem & other ) const;
 
     void calcEffectiveRights();
 
