@@ -46,6 +46,9 @@
     <Separator/>
     <Action name="game_pause"/>
     <Action name="game_highscores"/>
+    <Action name="game_clear_highscores"/>
+    <Action name="game_statistics"/>
+    <Action name="game_clear_statistics"/>
     <Action name="game_print"/>
     <Action name="game_print_preview"/>
     <MergeLocal name="misc_merge"/>
