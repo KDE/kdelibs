@@ -22,6 +22,7 @@
 
 #include <string.h>
 #include <sys/utsname.h>
+#include <QtCore/QCoreApplication>
 #include <QtDBus/QtDBus>
 
 #include <kdeversion.h>
@@ -33,7 +34,6 @@
 #include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kstringhandler.h>
-#include <kstaticdeleter.h>
 #include <kurl.h>
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
@@ -60,18 +60,24 @@ public:
 };
 
 static KProtocolManagerPrivate* d = 0;
-static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
+static void cleanupKProtocolManagerPrivate()
+{
+    delete d;
+    d = 0;
+}
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
                         :config(0), http_config(0), init_busy(false)
 {
-   kpmpksd.setObject(d, this);
+   d = this;
+   qAddPostRoutine(cleanupKProtocolManagerPrivate);
 }
 
 KProtocolManagerPrivate::~KProtocolManagerPrivate()
 {
    delete config;
    delete http_config;
+   d = 0;   // just to be sure
 }
 
 
@@ -82,7 +88,8 @@ QString("Mozilla/5.0 (compatible; Konqueror/%1.%2%3) KHTML/%4.%5.%6 (like Gecko)
 
 void KProtocolManager::reparseConfiguration()
 {
-  kpmpksd.destructObject();
+  delete d;
+  d = 0;
 
   // Force the slave config to re-read its config...
   KIO::SlaveConfig::self()->reset ();
