@@ -853,7 +853,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->drawRect(textArea);
 
     painter->setPen(Qt::red);
-    painter->drawRect(selectionRect);
+    painter->drawRect(textBoundingRect);
 #endif
 
 
