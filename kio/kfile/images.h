@@ -256,11 +256,12 @@ static const QPixmap& qembed_findImage( const QString& name )
 			    embed_image_vec[i].width,
 			    embed_image_vec[i].height,
 			    embed_image_vec[i].depth,
-			    (QRgb*)embed_image_vec[i].colorTable,
-			    embed_image_vec[i].numColors,
-			    QImage::BigEndian );
-		if ( embed_image_vec[i].alpha )
-		    img->setAlphaBuffer( true );
+                            // FIXME port properly
+			    //(QRgb*)embed_image_vec[i].colorTable,
+			    //embed_image_vec[i].numColors,
+			    QImage::Format_RGB32 );
+		//if ( embed_image_vec[i].alpha )
+		//    img->setAlphaBuffer( true );
                 pixmap = new QPixmap( QPixmap::fromImage(*img) );
                 delete img;
 		dict.insert( name, pixmap );

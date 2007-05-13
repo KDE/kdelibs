@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005 by Sean Harmer <sh@rama.homelinux.org>             *
- *                         Till Adam <adam@kde.org>                        *
+ *                 2005 - 2007 Till Adam <adam@kde.org>                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Library General Public License as       *
@@ -18,10 +18,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.             *
  ***************************************************************************/
 
-// remove when KACLListViewItem is ported
-#define QT3_SUPPORT
-#define QT3_SUPPORT_WARNINGS
-
 #include "kacleditwidget.h"
 #include "kacleditwidget_p.h"
 
@@ -38,8 +34,8 @@
 #include <qcheckbox.h>
 #include <qlayout.h>
 #include <QStackedWidget>
-#include <q3header.h>
 #include <QMouseEvent>
+#include <QColorGroup>
 
 #include <klocale.h>
 #include <kfileitem.h>
@@ -122,9 +118,11 @@ void KACLEditWidget::KACLEditWidgetPrivate::_k_slotUpdateButtons()
     bool atLeastOneIsNotDeletable = false;
     bool atLeastOneIsNotAllowedToChangeType = false;
     int selectedCount = 0;
-    Q3ListViewItemIterator it( m_listView, Q3ListViewItemIterator::Selected );
-    while ( KACLListViewItem *item = dynamic_cast<KACLListViewItem*>( it.current() ) ) {
-        ++it; ++selectedCount;
+    QList<QTreeWidgetItem*> selected = m_listView->selectedItems();
+    QListIterator<QTreeWidgetItem*> it( selected );
+    while ( it.hasNext() ) {
+        KACLListViewItem *item = dynamic_cast<KACLListViewItem*>( it.next() );
+        ++selectedCount;
         if ( !item->isDeletable() )
             atLeastOneIsNotDeletable = true;
         if ( !item->isAllowedToChangeType() )
@@ -159,11 +157,11 @@ void KACLEditWidget::setAllowDefaults( bool value )
     d->m_listView->setAllowDefaults(value);
 }
 
-KACLListViewItem::KACLListViewItem( Q3ListView* parent,
+KACLListViewItem::KACLListViewItem( QTreeWidget* parent,
                                     KACLListView::EntryType _type,
                                     unsigned short _value, bool defaults,
                                     const QString& _qualifier )
- : Q3ListViewItem( parent, parent->lastItem() ), // we want to append
+ : QTreeWidgetItem( parent),
    type( _type ), value( _value ), isDefault( defaults ),
    qualifier( _qualifier ), isPartial( false )
 {
@@ -214,17 +212,17 @@ QString KACLListViewItem::key( int, bool ) const
 void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
                                   int column, int width, int alignment )
 {
-    QColorGroup mycg = cg;
+    /*
     if ( isDefault ) {
-        mycg.setColor( QPalette::Text, QColor( 0, 0, 255 ) );
+        setForeground( QColor( 0, 0, 255 ) );
     }
     if ( isPartial ) {
         QFont font = p->font();
         font.setItalic( true );
-        mycg.setColor( QPalette::Text, QColor( 100, 100, 100 ) );
+        setForeground( QColor( 100, 100, 100 ) );
         p->setFont( font );
     }
-    Q3ListViewItem::paintCell( p, mycg, column, width, alignment );
+    QTreeWidgetItem::paintCell( p, mycg, column, width, alignment );
 
     KACLListViewItem *below =0;
     if ( itemBelow() )
@@ -238,6 +236,7 @@ void KACLListViewItem::paintCell( QPainter* p, const QColorGroup &cg,
             p->drawLine( 0, 0, width - 1, 0 );
         p->drawLine( 0, height() - 1, width - 1, height() - 1 );
     }
+     */
 }
 
 
@@ -246,25 +245,25 @@ void KACLListViewItem::updatePermPixmaps()
     unsigned int partialPerms = value;
 
     if ( value & ACL_READ )
-        setPixmap( 2, m_pACLListView->getYesPixmap() );
+        setIcon( 2, m_pACLListView->getYesPixmap() );
     else if ( partialPerms & ACL_READ )
-        setPixmap( 2, m_pACLListView->getYesPartialPixmap() );
+        setIcon( 2, m_pACLListView->getYesPartialPixmap() );
     else
-        setPixmap( 2, QPixmap() );
+        setIcon( 2, QIcon() );
 
     if ( value & ACL_WRITE )
-        setPixmap( 3, m_pACLListView->getYesPixmap() );
+        setIcon( 3, m_pACLListView->getYesPixmap() );
     else if ( partialPerms & ACL_WRITE )
-        setPixmap( 3, m_pACLListView->getYesPartialPixmap() );
+        setIcon( 3, m_pACLListView->getYesPartialPixmap() );
     else
-        setPixmap( 3, QPixmap() );
+        setIcon( 3, QIcon() );
 
     if ( value & ACL_EXECUTE )
-        setPixmap( 4, m_pACLListView->getYesPixmap() );
+        setIcon( 4, m_pACLListView->getYesPixmap() );
     else if ( partialPerms & ACL_EXECUTE )
-        setPixmap( 4, m_pACLListView->getYesPartialPixmap() );
+        setIcon( 4, m_pACLListView->getYesPartialPixmap() );
     else
-        setPixmap( 4, QPixmap() );
+        setIcon( 4, QIcon() );
 }
 
 void KACLListViewItem::repaint()
@@ -296,7 +295,7 @@ void KACLListViewItem::repaint()
             break;
     }
     setText( 0, i18n(s_itemAttributes[idx].label) );
-    setPixmap( 0, *s_itemAttributes[idx].pixmap );
+    setIcon( 0, *s_itemAttributes[idx].pixmap );
     if ( isDefault )
         setText( 0, text( 0 ) + i18n( " (Default)" ) );
     setText( 1, qualifier );
@@ -614,18 +613,21 @@ void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )
 
 
 KACLListView::KACLListView( QWidget* parent )
- : Q3ListView( parent ),
+ : QTreeWidget( parent ),
    m_hasMask( false ), m_allowDefaults( false )
 {
     // Add the columns
-    addColumn( i18n( "Type" ) );
-    addColumn( i18n( "Name" ) );
-    addColumn( i18nc( "read permission", "r" ) );
-    addColumn( i18nc( "write permission", "w" ) );
-    addColumn( i18nc( "execute permission", "x" ) );
-    addColumn( i18n( "Effective" ) );
+    setColumnCount( 6 );
+    QStringList headers;
+    headers <<  i18n( "Type" );
+    headers <<  i18n( "Name" );
+    headers <<  i18nc( "read permission", "r" );
+    headers <<  i18nc( "write permission", "w" );
+    headers <<  i18nc( "execute permission", "x" );
+    headers <<  i18n( "Effective" );
+    setHeaderLabels( headers );
 
-    header()->setClickEnabled( false );
+    setSortingEnabled( false );
 
     // Load the avatars
     for ( int i=0; i < LAST_IDX; ++i ) {
@@ -634,7 +636,7 @@ KACLListView::KACLListView( QWidget* parent )
     m_yesPixmap = new QPixmap( qembed_findImage( "yes" ) );
     m_yesPartialPixmap = new QPixmap( qembed_findImage( "yespartial" ) );
 
-    setSelectionMode( Q3ListView::Extended );
+    setSelectionMode( QAbstractItemView::ExtendedSelection );
 
     // fill the lists of all legal users and groups
     struct passwd *user = 0;
@@ -667,8 +669,8 @@ KACLListView::~KACLListView()
 QStringList KACLListView::allowedUsers( bool defaults, KACLListViewItem *allowedItem )
 {
     QStringList allowedUsers = m_allUsers;
-    Q3ListViewItemIterator it( this );
-    while ( it.current() ) {
+    QTreeWidgetItemIterator it( this );
+    while ( *it ) {
         const KACLListViewItem *item = static_cast<const KACLListViewItem*>( *it );
         ++it;
         if ( !item->type == NamedUser || item->isDefault != defaults ) continue;
@@ -681,8 +683,8 @@ QStringList KACLListView::allowedUsers( bool defaults, KACLListViewItem *allowed
 QStringList KACLListView::allowedGroups( bool defaults, KACLListViewItem *allowedItem )
 {
     QStringList allowedGroups = m_allGroups;
-    Q3ListViewItemIterator it( this );
-    while ( it.current() ) {
+    QTreeWidgetItemIterator it( this );
+    while ( *it ) {
         const KACLListViewItem *item = static_cast<const KACLListViewItem*>( *it );
         ++it;
         if ( !item->type == NamedGroup || item->isDefault != defaults ) continue;
@@ -695,8 +697,8 @@ QStringList KACLListView::allowedGroups( bool defaults, KACLListViewItem *allowe
 void KACLListView::fillItemsFromACL( const KACL &pACL, bool defaults )
 {
     // clear out old entries of that ilk
-    Q3ListViewItemIterator it( this );
-    while ( KACLListViewItem *item = static_cast<KACLListViewItem*>( it.current() ) ) {
+    QTreeWidgetItemIterator it( this );
+    while ( KACLListViewItem *item = static_cast<KACLListViewItem*>( *it ) ) {
         ++it;
         if ( item->isDefault == defaults )
             delete item;
@@ -756,8 +758,8 @@ KACL KACLListView::itemsToACL( bool defaults ) const
     bool atLeastOneEntry = false;
     ACLUserPermissionsList users;
     ACLGroupPermissionsList groups;
-    Q3ListViewItemIterator it( const_cast<KACLListView*>( this ) );
-    while ( Q3ListViewItem* qlvi = it.current() ) {
+    QTreeWidgetItemIterator it( const_cast<KACLListView*>( this ) );
+    while ( QTreeWidgetItem* qlvi = *it ) {
         ++it;
         const KACLListViewItem* item = static_cast<KACLListViewItem*>( qlvi );
         if ( item->isDefault != defaults ) continue;
@@ -807,11 +809,12 @@ KACL KACLListView::getDefaultACL()
 
 void KACLListView::contentsMousePressEvent( QMouseEvent * e )
 {
-    Q3ListViewItem *clickedItem = itemAt( contentsToViewport(  e->pos() ) );
+    /*
+    QTreeWidgetItem *clickedItem = itemAt( e->pos() );
     if ( !clickedItem ) return;
     // if the click is on an as yet unselected item, select it first
     if ( !clickedItem->isSelected() )
-        Q3ListView::contentsMousePressEvent( e );
+        QAbstractItemView::contentsMousePressEvent( e );
 
     if ( !currentItem() ) return;
     int column = header()->sectionAt( e->x() );
@@ -828,26 +831,27 @@ void KACLListView::contentsMousePressEvent( QMouseEvent * e )
             perm = ACL_EXECUTE;
             break;
         default:
-            return Q3ListView::contentsMousePressEvent( e );
+            return QTreeWidget::contentsMousePressEvent( e );
     }
     KACLListViewItem* referenceItem = static_cast<KACLListViewItem*>( clickedItem );
     unsigned short referenceHadItSet = referenceItem->value & perm;
-    Q3ListViewItemIterator it( this );
-    while ( KACLListViewItem* item = static_cast<KACLListViewItem*>( it.current() ) ) {
+    QTreeWidgetItemIterator it( this );
+    while ( KACLListViewItem* item = static_cast<KACLListViewItem*>( *it ) ) {
         ++it;
         if ( !item->isSelected() ) continue;
         // toggle those with the same value as the clicked item, leave the others
         if ( referenceHadItSet == ( item->value & perm ) )
             item->togglePerm( perm );
     }
+     */
 }
 
-void KACLListView::entryClicked( Q3ListViewItem* pItem, const QPoint& /*pt*/, int col )
+void KACLListView::entryClicked( QTreeWidgetItem* pItem, const QPoint& /*pt*/, int col )
 {
     if ( !pItem ) return;
 
-    Q3ListViewItemIterator it( this );
-    while ( KACLListViewItem* item = static_cast<KACLListViewItem*>( it.current() ) ) {
+    QTreeWidgetItemIterator it( this );
+    while ( KACLListViewItem* item = static_cast<KACLListViewItem*>( *it ) ) {
         ++it;
         if ( !item->isSelected() ) continue;
         switch ( col )
@@ -893,9 +897,9 @@ void KACLListView::entryClicked( Q3ListViewItem* pItem, const QPoint& /*pt*/, in
 
 void KACLListView::calculateEffectiveRights()
 {
-    Q3ListViewItemIterator it( this );
+    QTreeWidgetItemIterator it( this );
     KACLListViewItem* pItem;
-    while ( ( pItem = dynamic_cast<KACLListViewItem*>( it.current() ) ) != 0 )
+    while ( ( pItem = dynamic_cast<KACLListViewItem*>( *it ) ) != 0 )
     {
         ++it;
         pItem->calcEffectiveRights();
@@ -931,9 +935,9 @@ void KACLListView::setMaskPartialPermissions( acl_perm_t /*maskPartialPerms*/ )
 
 bool KACLListView::hasDefaultEntries() const
 {
-    Q3ListViewItemIterator it( const_cast<KACLListView*>( this ) );
-    while ( it.current() ) {
-        const KACLListViewItem *item = static_cast<const KACLListViewItem*>( it.current() );
+    QTreeWidgetItemIterator it( const_cast<KACLListView*>( this ) );
+    while ( *it ) {
+        const KACLListViewItem *item = static_cast<const KACLListViewItem*>( *it );
         ++it;
         if ( item->isDefault ) return true;
     }
@@ -947,9 +951,9 @@ const KACLListViewItem* KACLListView::findDefaultItemByType( EntryType type ) co
 
 const KACLListViewItem* KACLListView::findItemByType( EntryType type, bool defaults ) const
 {
-    Q3ListViewItemIterator it( const_cast<KACLListView*>( this ) );
-    while ( it.current() ) {
-        const KACLListViewItem *item = static_cast<const KACLListViewItem*>( it.current() );
+    QTreeWidgetItemIterator it( const_cast<KACLListView*>( this ) );
+    while ( *it ) {
+        const KACLListViewItem *item = static_cast<const KACLListViewItem*>( *it );
         ++it;
         if ( item->isDefault == defaults && item->type == type ) {
             return item;
@@ -1018,17 +1022,17 @@ void KACLListView::slotAddEntry()
         m_mask = v;
     }
     calculateEffectiveRights();
-    sort();
+    sortItems( sortColumn(), Qt::AscendingOrder );
     setCurrentItem( item );
-    // Q3ListView doesn't seem to emit, in this case, and we need to update
+    // QTreeWidget doesn't seem to emit, in this case, and we need to update
     // the buttons...
-    if ( childCount() == 1 )
-        emit currentChanged( item );
+    if ( topLevelItemCount() == 1 )
+        emit currentItemChanged( item, item );
 }
 
 void KACLListView::slotEditEntry()
 {
-    Q3ListViewItem * current = currentItem();
+    QTreeWidgetItem * current = currentItem();
     if ( !current ) return;
     KACLListViewItem *item = static_cast<KACLListViewItem*>( current );
     int allowedTypes = item->type | NamedUser | NamedGroup;
@@ -1055,14 +1059,14 @@ void KACLListView::slotEditEntry()
         m_hasMask = true;
     }
     calculateEffectiveRights();
-    sort();
+    sortItems( sortColumn(), Qt::AscendingOrder );
 }
 
 void KACLListView::slotRemoveEntry()
 {
-    Q3ListViewItemIterator it( this, Q3ListViewItemIterator::Selected );
-    while ( it.current() ) {
-        KACLListViewItem *item = static_cast<KACLListViewItem*>( it.current() );
+    QTreeWidgetItemIterator it( this, QTreeWidgetItemIterator::Selected );
+    while ( *it ) {
+        KACLListViewItem *item = static_cast<KACLListViewItem*>( *it );
         ++it;
         /* First check if it's a mask entry and if so, make sure that there is
          * either no name user or group entry, which means the mask can be

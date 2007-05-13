@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005 by Sean Harmer <sh@rama.homelinux.org>             *
- *                         Till Adam <adam@kde.org>                        *
+ *                 2005 - 2007 Till Adam <adam@kde.org>                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Library General Public License as       *
@@ -33,11 +33,11 @@ class KACLEditWidget : public QWidget
   Q_OBJECT
 public:
     explicit KACLEditWidget(QWidget *parent = 0);
-  KACL getACL() const;
-  KACL getDefaultACL() const;
-  void setACL( const KACL & );
-  void setDefaultACL( const KACL & );
-  void setAllowDefaults( bool value );
+    KACL getACL() const;
+    KACL getDefaultACL() const;
+    void setACL( const KACL & );
+    void setDefaultACL( const KACL & );
+    void setAllowDefaults( bool value );
 
 private:
     class KACLEditWidgetPrivate;

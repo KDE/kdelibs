@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005 by Sean Harmer <sh@rama.homelinux.org>             *
- *                         Till Adam <adam@kde.org>                        *
+ *                 2005 - 2007 Till Adam <adam@kde.org>                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU Library General Public License as       *
@@ -23,14 +23,16 @@
 #include <config-acl.h>
 
 #if defined(HAVE_POSIX_ACL) || defined(Q_MOC_RUN)
-#include <q3listview.h>
 #include <sys/acl.h>
 #include <kacl.h>
+
+#include <QPixmap>
+#include <QComboBox>
+#include <QTreeWidget>
+#include <QtCore/QHash>
+
 #include <kfileitem.h>
 #include <kdialog.h>
-#include <qpixmap.h>
-#include <qcombobox.h>
-#include <QtCore/QHash>
 
 class KACLListViewItem;
 class QPushButton;
@@ -39,11 +41,12 @@ class KACLListView;
 class QStackedWidget;
 class QCheckBox;
 class QAbstractButton;
+class QColorGroup;
 
 /**
 @author Sean Harmer
 */
-class KACLListView : public Q3ListView
+class KACLListView : public QTreeWidget
 {
 Q_OBJECT
     friend class KACLListViewItem;
@@ -107,7 +110,7 @@ public Q_SLOTS:
     void setDefaultACL( const KACL &anACL );
 
 protected Q_SLOTS:
-    void entryClicked( Q3ListViewItem* pItem, const QPoint& pt, int col );
+    void entryClicked( QTreeWidgetItem* pItem, const QPoint& pt, int col );
 protected:
     void contentsMousePressEvent( QMouseEvent * e );
 
@@ -163,10 +166,10 @@ private:
 };
 
 
-class KACLListViewItem : public Q3ListViewItem
+class KACLListViewItem : public QTreeWidgetItem
 {
 public:
-    KACLListViewItem( Q3ListView* parent, KACLListView::EntryType type,
+    KACLListViewItem( QTreeWidget* parent, KACLListView::EntryType type,
                       unsigned short value,
                       bool defaultEntry,
                       const QString& qualifier = QString() );
