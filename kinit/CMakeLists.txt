@@ -5,12 +5,24 @@ add_subdirectory( tests )
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libltdl )
 
+########### Configuring (mainly for proctitle) ###########
+
+INCLUDE (CheckFunctionExists)
+INCLUDE (CheckIncludeFiles)
+INCLUDE (CheckVariableExists)
+CHECK_VARIABLE_EXISTS(__progname, HAVE___PROGNAME)
+CHECK_INCLUDE_FILES(sys/pstat.h, HAVE_SYS_PSTAT_H)
+CHECK_FUNCTION_EXISTS(pstat, HAVE_PSTAT)
+CHECK_FUNCTION_EXISTS(setproctitle, HAVE_SETPROCTITLE)
+configure_file(config-kdeinit.h.cmake
+	       ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h )
+
 ########### kdeinit4 ###############
 if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp  )
   set(kdeinit_LIBS kparts psapi)
 else (WIN32)
-  set(kdeinit_SRCS kinit.cpp setproctitle.cpp )
+  set(kdeinit_SRCS kinit.cpp proctitle.cpp )
   set(kdeinit_LIBS kparts)
 endif (WIN32)
 kde4_automoc(${kdeinit_SRCS})

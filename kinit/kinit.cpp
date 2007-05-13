@@ -33,7 +33,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include "setproctitle.h"
+#include "proctitle.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -513,11 +513,11 @@ static pid_t launch(int argc, const char *_name, const char *args,
        /* set the process name, so that killall works like intended */
        r = prctl(PR_SET_NAME, (unsigned long) name.data(), 0, 0, 0);
        if ( r == 0 )
-           kdeinit_setproctitle( "%s [kdeinit]%s", name.data(), procTitle.data() ? procTitle.data() : "" );
+           proctitle_set( "%s [kdeinit]%s", name.data(), procTitle.data() ? procTitle.data() : "" );
        else
-           kdeinit_setproctitle( "kdeinit4: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
+           proctitle_set( "kdeinit4: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
 #else
-       kdeinit_setproctitle( "kdeinit4: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
+       proctitle_set( "kdeinit4: %s%s", name.data(), procTitle.data() ? procTitle.data() : "" );
 #endif
      }
 
@@ -1676,14 +1676,14 @@ int main(int argc, char **argv, char **envp)
    s_instance = new KComponentData("kdeinit4"); // "kdeinit4" is special cased in KComponentData to not register with KGlobal
 
    /** Prepare to change process name **/
-   kdeinit_initsetproctitle(argc, argv, envp);
-   kdeinit_setproctitle("kdeinit4 Starting up...");
+   proctitle_init(argc, argv, envp);
+   proctitle_set("kdeinit4 Starting up...");
    kdeinit_library_path();
    // Don't make our instance the global instance
    // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
    // which seems to be buggy and always use KGlobal instead of the matching KComponentData)
    Q_ASSERT(!KGlobal::hasMainComponent());
-   // don't change envvars before kdeinit_initsetproctitle()
+   // don't change envvars before proctitle_init()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");
    KApplication::loadedByKdeinit = true;
@@ -1786,7 +1786,7 @@ int main(int argc, char **argv, char **envp)
    }
    free (safe_argv);
 
-   kdeinit_setproctitle("kdeinit4 Running...");
+   proctitle_set("kdeinit4 Running...");
 
    if (!keep_running)
       return 0;
