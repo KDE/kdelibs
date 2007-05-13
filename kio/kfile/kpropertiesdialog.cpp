@@ -115,7 +115,6 @@ extern "C" {
 #include <kpreviewprops.h>
 #include <k3process.h>
 #include <krun.h>
-#include <k3listview.h>
 #include <kvbox.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
