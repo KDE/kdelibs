@@ -15,9 +15,6 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KDE_USE_FINAL
-#undef QT3_SUPPORT
-#endif
 #include "passworddialog.h"
 
 #include <QCheckBox>

@@ -16,12 +16,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDE_USE_FINAL
-#undef QT3_SUPPORT
-#endif
-#undef QT_MOC_COMPAT //win32/msvc uses '-include' option, so this is a temporary fix
-#define QT_MOC_COMPAT
-
 #include "paste.h"
 #include "pastedialog.h"
 

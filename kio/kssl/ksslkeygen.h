@@ -26,7 +26,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include "k3wizard.h"
+#include <Qt3Support/Q3Wizard>
 
 
 class KOpenSSLProxy;
