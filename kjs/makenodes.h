@@ -1,0 +1,193 @@
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2006 Apple Computer, Inc.
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
+#ifndef MAKENODES_H
+#define MAKENODES_H
+
+#include "nodes.h"
+#include "identifier.h"
+
+namespace KJS {
+
+template<typename ResolverType>
+Node* makeDynamicResolver(Node* n) {
+  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
+  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType());
+}
+
+template<typename ResolverType, typename T1>
+Node* makeDynamicResolver(Node* n, T1 arg1) {
+  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
+  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1));
+}
+
+template<typename ResolverType, typename T1, typename T2>
+Node* makeDynamicResolver(Node* n, T1 arg1, T2 arg2) {
+  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
+  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1, arg2));
+}
+
+static bool makeAssignNode(Node*& result, Node *loc, Operator op, Node *expr)
+{ 
+    Node *n = loc->nodeInsideAllParens();
+
+    if (!n->isLocation())
+        return false;
+
+    if (n->isResolveNode()) {
+        result = makeDynamicResolver<ResolveAssign>(n, op, expr);
+    } else if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        result = new AssignBracketNode(bracket->base(), bracket->subscript(), op, expr);
+    } else {
+        assert(n->isDotAccessorNode());
+        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+        result = new AssignDotNode(dot->base(), dot->identifier(), op, expr);
+    }
+
+    return true;
+}
+
+static bool makePrefixNode(Node*& result, Node *expr, Operator op)
+{ 
+    Node *n = expr->nodeInsideAllParens();
+
+    if (!n->isLocation())
+        return false;
+    
+    if (n->isResolveNode()) {
+        result = makeDynamicResolver<ResolvePrefix>(n, op);
+    } else if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        result = new PrefixBracketNode(bracket->base(), bracket->subscript(), op);
+    } else {
+        assert(n->isDotAccessorNode());
+        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+        result = new PrefixDotNode(dot->base(), dot->identifier(), op);
+    }
+
+    return true;
+}
+
+static bool makePostfixNode(Node*& result, Node *expr, Operator op)
+{ 
+    Node *n = expr->nodeInsideAllParens();
+
+    if (!n->isLocation())
+        return false;
+    
+    if (n->isResolveNode()) {
+        result = makeDynamicResolver<ResolvePostfix>(n, op);
+    } else if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        result = new PostfixBracketNode(bracket->base(), bracket->subscript(), op);
+    } else {
+        assert(n->isDotAccessorNode());
+        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+        result = new PostfixDotNode(dot->base(), dot->identifier(), op);
+    }
+
+    return true;
+}
+
+static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)
+{
+    Node *n = func->nodeInsideAllParens();
+    
+    if (!n->isLocation())
+        return new FunctionCallValueNode(func, args);
+    else if (n->isResolveNode()) {
+        return makeDynamicResolver<ResolveFunctionCall>(n, args);
+    } else if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        if (n != func)
+            return new FunctionCallParenBracketNode(bracket->base(), bracket->subscript(), args);
+        else
+            return new FunctionCallBracketNode(bracket->base(), bracket->subscript(), args);
+    } else {
+        assert(n->isDotAccessorNode());
+        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+        if (n != func)
+            return new FunctionCallParenDotNode(dot->base(), dot->identifier(), args);
+        else
+            return new FunctionCallDotNode(dot->base(), dot->identifier(), args);
+    }
+}
+
+static Node *makeTypeOfNode(Node *expr)
+{
+    Node *n = expr->nodeInsideAllParens();
+
+    if (n->isResolveNode())
+        return makeDynamicResolver<ResolveTypeOf>(n);
+    else
+        return new TypeOfValueNode(n);
+}
+
+static Node *makeDeleteNode(Node *expr)
+{
+    Node *n = expr->nodeInsideAllParens();
+    
+    if (!n->isLocation())
+        return new DeleteValueNode(expr);
+    else if (n->isResolveNode()) {
+        return makeDynamicResolver<ResolveDelete>(n);
+    } else if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        return new DeleteBracketNode(bracket->base(), bracket->subscript());
+    } else {
+        assert(n->isDotAccessorNode());
+        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+        return new DeleteDotNode(dot->base(), dot->identifier());
+    }
+}
+
+static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& getOrSet, Identifier& name, ParameterNode *params, FunctionBodyNode *body)
+{
+    PropertyNode::Type type;
+    
+    if (getOrSet == "get")
+        type = PropertyNode::Getter;
+    else if (getOrSet == "set")
+        type = PropertyNode::Setter;
+    else
+        return false;
+    
+    result = new PropertyNode(new PropertyNameNode(name), 
+                              new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, body, params), type);
+
+    return true;
+}
+
+static StatementNode *makeImportNode(PackageNameNode *n,
+				     bool wildcard, const Identifier &a)
+{
+    ImportStatement *stat = new ImportStatement(n);
+    if (wildcard)
+	stat->enableWildcard();
+    stat->setAlias(a);
+
+    return stat;
+}
+
+} // namespace KJS
+
+#endif
