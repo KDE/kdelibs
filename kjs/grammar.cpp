@@ -2374,7 +2374,7 @@ yyreduce:
     {
                                             Lexer *l = Lexer::curr();
                                             if (!l->scanRegExp()) YYABORT;
-                                            (yyval.node) = new RegExpNode(UString('=') + l->pattern, l->flags);
+                                            (yyval.node) = new RegExpNode("=" + l->pattern, l->flags);
                                         ;}
     break;
 
