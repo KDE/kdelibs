@@ -81,7 +81,6 @@ KWalletD::KWalletD()
 : KDEDModule(), _failed(0) {
 	srand(time(0));
 	_showingFailureNotify = false;
-	_transactions.setAutoDelete(true);
 	_timeouts = new KTimeout();
 	_closeIdle = false;
 	_idleTime = 0;
@@ -113,7 +112,7 @@ KWalletD::~KWalletD() {
 	screensaver = 0;
 #endif
 	closeAllWallets();
-	_transactions.clear();
+	qDeleteAll(_transactions);
 }
 
 
@@ -123,9 +122,21 @@ int KWalletD::generateHandle() {
 	// ASSUMPTION: RAND_MAX is fairly large.
 	do {
 		rc = rand();
-	} while (_wallets.find(rc) || rc == 0);
+	} while (_wallets.contains(rc) || rc == 0);
 
 	return rc;
+}
+
+QPair<int, KWallet::Backend*> KWalletD::findWallet(const QString& walletName) const
+{
+	Wallets::const_iterator it = _wallets.begin();
+	const Wallets::const_iterator end = _wallets.end();
+	for (; it != end; ++it) {
+		if (it.value()->walletName() == walletName) {
+			return qMakePair(it.key(), it.value());
+		}
+	}
+    return qMakePair(-1, static_cast<KWallet::Backend*>(0));
 }
 
 void KWalletD::processTransactions() {
@@ -153,19 +164,15 @@ void KWalletD::processTransactions() {
 				// should not produce multiple password
 				// dialogs on a failure
 				if (res < 0) {
-					Q3PtrListIterator<KWalletTransaction> it(_transactions);
-					KWalletTransaction *x;
-					while ((x = it.current()) && x != xact) {
-						++it;
-					}
-					if (x) {
-						++it;
-					}
-					while ((x = it.current())) {
-						if (xact->appid == x->appid && x->tType == KWalletTransaction::Open && x->wallet == xact->wallet && x->wId == xact->wId) {
+					QList<KWalletTransaction *>::iterator it = _transactions.begin();
+					Q_ASSERT(*it == xact);
+					++it;
+					for (; it != _transactions.end(); ++it) {
+						KWalletTransaction *x = *it;
+						if (xact->appid == x->appid && x->tType == KWalletTransaction::Open
+							&& x->wallet == xact->wallet && x->wId == xact->wId) {
 							x->tType = KWalletTransaction::OpenFail;
 						}
-						++it;
 					}
 				}
 				break;
@@ -176,14 +183,14 @@ void KWalletD::processTransactions() {
 				doTransactionChangePassword(xact->appid, xact->wallet, xact->wId);
 				// fall through - no return
 			default:
-				_transactions.removeRef(xact);
+				_transactions.removeAll(xact);
 				continue;
 		}
 
 		if (xact->tType != KWalletTransaction::ChangePassword) {
                     QDBusConnection::sessionBus().send(xact->msg.createReply(res));
 		}
-		_transactions.removeRef(xact);
+		_transactions.removeAll(xact);
 	}
 
 	processing = false;
@@ -345,7 +352,6 @@ int KWalletD::doTransactionOpen(const QString& appid, const QString& wallet, qlo
 
 
 int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isPath, WId w, bool modal) {
-	int rc = -1;
 	bool brandNew = false;
 
 	QString thisApp;
@@ -359,13 +365,8 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 		return -1;
 	}
 
-	for (Q3IntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
-		if (i.current()->walletName() == wallet) {
-			rc = i.currentKey();
-			break;
-		}
-	}
-
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	int rc = walletInfo.first;
 	if (rc == -1) {
 		if (_wallets.count() > 20) {
 			kDebug() << "Too many wallets open." << endl;
@@ -485,7 +486,7 @@ int KWalletD::internalOpen(const QString& appid, const QString& wallet, bool isP
 			return -1;
 		}
 		_handles[appid].append(rc);
-		_wallets.find(rc)->ref();
+		_wallets.value(rc)->ref();
 	}
 
 	return rc;
@@ -582,35 +583,26 @@ void KWalletD::changePassword(const QString& wallet, qlonglong wId, const QStrin
 
 
 void KWalletD::doTransactionChangePassword(const QString& appid, const QString& wallet, qlonglong wId) {
-	Q3IntDictIterator<KWallet::Backend> it(_wallets);
-	KWallet::Backend *w = 0L;
-	int handle = -1;
+
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	int handle = walletInfo.first;
+	KWallet::Backend* w = walletInfo.second;
+
 	bool reclose = false;
-
-	for (; it.current(); ++it) {
-		if (it.current()->walletName() == wallet) {
-			break;
-		}
-	}
-
-	if (!it.current()) {
+	if (!w) {
 		handle = doTransactionOpen(appid, wallet, wId, false);
 		if (-1 == handle) {
 			KMessageBox::sorryWId(wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
 		}
 
-		w = _wallets.find(handle);
+		w = _wallets.value(handle);
 		reclose = true;
-	} else {
-		handle = it.currentKey();
-		w = it.current();
 	}
 
 	assert(w);
 
-	KNewPasswordDialog *kpd;
-	kpd = new KNewPasswordDialog();
+	KNewPasswordDialog *kpd = new KNewPasswordDialog();
 	kpd->setPrompt(i18n("<qt>Please choose a new password for the wallet '<b>%1</b>'.", Qt::escape(wallet)));
 	kpd->setCaption(i18n("KDE Wallet Service"));
 	kpd->setAllowEmptyPasswords(true);
@@ -642,18 +634,9 @@ void KWalletD::doTransactionChangePassword(const QString& appid, const QString& 
 
 
 int KWalletD::close(const QString& wallet, bool force) {
-	int handle = -1;
-	KWallet::Backend *w = 0L;
-
-	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
-		if (it.current()->walletName() == wallet) {
-			handle = it.currentKey();
-			w = it.current();
-			break;
-		}
-	}
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	int handle = walletInfo.first;
+	KWallet::Backend* w = walletInfo.second;
 
 	return closeWallet(w, handle, force);
 }
@@ -686,7 +669,7 @@ int KWalletD::closeWallet(KWallet::Backend *w, int handle, bool force) {
 
 
 int KWalletD::close(int handle, bool force, const QString& appid) {
-	KWallet::Backend *w = _wallets.find(handle);
+	KWallet::Backend *w = _wallets.value(handle);
 	bool contains = false;
 
 	if (w) { // the handle is valid
@@ -727,14 +710,8 @@ int KWalletD::close(int handle, bool force, const QString& appid) {
 
 
 bool KWalletD::isOpen(const QString& wallet) {
-	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
-		if (it.current()->walletName() == wallet) {
-			return true;
-		}
-	}
-	return false;
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	return walletInfo.second != 0;
 }
 
 
@@ -743,7 +720,7 @@ bool KWalletD::isOpen(int handle) {
 		return false;
 	}
 
-	KWallet::Backend *rc = _wallets.find(handle);
+	KWallet::Backend *rc = _wallets.value(handle);
 
 	if (rc == 0 && ++_failed > 5) {
 		_failed = 0;
@@ -1070,7 +1047,7 @@ void KWalletD::slotServiceUnregistered(const QString& app) {
 		QList<int> l = _handles[app];
 		for (QList<int>::Iterator i = l.begin(); i != l.end(); ++i) {
 			_handles[app].removeAll(*i);
-			KWallet::Backend *w = _wallets.find(*i);
+			KWallet::Backend *w = _wallets.value(*i);
 			if (w && !_leaveOpen && 0 == w->deref()) {
 				close(w->walletName(), true);
 			}
@@ -1094,7 +1071,7 @@ KWallet::Backend *KWalletD::getWallet(const QString& appid, int handle) {
 		return 0L;
 	}
 
-	KWallet::Backend *w = _wallets.find(handle);
+	KWallet::Backend *w = _wallets.value(handle);
 
 	if (w) { // the handle is valid
 		if (_handles.contains(appid)) { // we know this app
@@ -1153,16 +1130,15 @@ int KWalletD::renameEntry(int handle, const QString& folder, const QString& oldN
 QStringList KWalletD::users(const QString& wallet) const {
 	QStringList rc;
 
-	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
-		if (it.current()->walletName() == wallet) {
-			for (QHash<QString,QList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
-				if (hit.value().contains(it.currentKey())) {
-					rc += hit.key();
-				}
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	int handle = walletInfo.first;
+	KWallet::Backend* w = walletInfo.second;
+
+	if (w) {
+		for (QHash<QString,QList<int> >::ConstIterator hit = _handles.begin(); hit != _handles.end(); ++hit) {
+			if (hit.value().contains(handle)) {
+				rc.append(hit.key());
 			}
-			break;
 		}
 	}
 
@@ -1171,25 +1147,23 @@ QStringList KWalletD::users(const QString& wallet) const {
 
 
 bool KWalletD::disconnectApplication(const QString& wallet, const QString& application) {
-	for (Q3IntDictIterator<KWallet::Backend> it(_wallets);
-						it.current();
-							++it) {
-		if (it.current()->walletName() == wallet) {
-			if (_handles[application].contains(it.currentKey())) {
-				_handles[application].removeAll(it.currentKey());
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	int handle = walletInfo.first;
+	KWallet::Backend* backend = walletInfo.second;
 
-				if (_handles[application].isEmpty()) {
-					_handles.remove(application);
-				}
+	if (handle != -1 && _handles[application].contains(handle)) {
+		_handles[application].removeAll(handle);
 
-				if (it.current()->deref() == 0) {
-					close(it.current()->walletName(), true);
-				}
-
-				emit applicationDisconnected(wallet, application);
-				return true;
-			}
+		if (_handles[application].isEmpty()) {
+			_handles.remove(application);
 		}
+
+		if (backend->deref() == 0) {
+			close(backend->walletName(), true);
+		}
+
+		emit applicationDisconnected(wallet, application);
+		return true;
 	}
 
 	return false;
@@ -1231,16 +1205,18 @@ void KWalletD::reconfigure() {
 	// Handle idle changes
 	if (_closeIdle) {
 		if (_idleTime != timeSave) { // Timer length changed
-			Q3IntDictIterator<KWallet::Backend> it(_wallets);
-			for (; it.current(); ++it) {
-				_timeouts->resetTimer(it.currentKey(), _idleTime);
+			Wallets::const_iterator it = _wallets.begin();
+			const Wallets::const_iterator end = _wallets.end();
+			for (; it != end; ++it) {
+				_timeouts->resetTimer(it.key(), _idleTime);
 			}
 		}
 
 		if (!idleSave) { // add timers for all the wallets
-			Q3IntDictIterator<KWallet::Backend> it(_wallets);
-			for (; it.current(); ++it) {
-				_timeouts->addTimer(it.currentKey(), _idleTime);
+			Wallets::const_iterator it = _wallets.begin();
+			const Wallets::const_iterator end = _wallets.end();
+			for (; it != end; ++it) {
+				_timeouts->addTimer(it.key(), _idleTime);
 			}
 		}
 	} else {
@@ -1266,11 +1242,8 @@ void KWalletD::reconfigure() {
 	// Update if wallet was enabled/disabled
 	if (!_enabled) { // close all wallets
 		while (!_wallets.isEmpty()) {
-			Q3IntDictIterator<KWallet::Backend> it(_wallets);
-			if (!it.current()) { // necessary?
-				break;
-			}
-			closeWallet(it.current(), it.currentKey(), true);
+			Wallets::const_iterator it = _wallets.begin();
+			closeWallet(it.value(), it.key(), true);
 		}
 	}
 }
@@ -1286,10 +1259,9 @@ bool KWalletD::folderDoesNotExist(const QString& wallet, const QString& folder) 
 		return true;
 	}
 
-	for (Q3IntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
-		if (it.current()->walletName() == wallet) {
-			return it.current()->folderDoesNotExist(folder);
-		}
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	if (walletInfo.second) {
+		return walletInfo.second->folderDoesNotExist(folder);
 	}
 
 	KWallet::Backend *b = new KWallet::Backend(wallet);
@@ -1305,10 +1277,9 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 		return true;
 	}
 
-	for (Q3IntDictIterator<KWallet::Backend> it(_wallets); it.current(); ++it) {
-		if (it.current()->walletName() == wallet) {
-			return it.current()->entryDoesNotExist(folder, key);
-		}
+	const QPair<int, KWallet::Backend*> walletInfo = findWallet(wallet);
+	if (walletInfo.second) {
+		return walletInfo.second->entryDoesNotExist(folder, key);
 	}
 
 	KWallet::Backend *b = new KWallet::Backend(wallet);
@@ -1330,7 +1301,7 @@ bool KWalletD::implicitDeny(const QString& wallet, const QString& app) {
 
 
 void KWalletD::timedOut(int id) {
-	KWallet::Backend *w = _wallets.find(id);
+	KWallet::Backend *w = _wallets.value(id);
 	if (w) {
 		closeWallet(w, id, true);
 	}
@@ -1338,13 +1309,15 @@ void KWalletD::timedOut(int id) {
 
 
 void KWalletD::closeAllWallets() {
-	Q3IntDict<KWallet::Backend> tw = _wallets;
+	Wallets walletsCopy = _wallets;
 
-	for (Q3IntDictIterator<KWallet::Backend> it(tw); it.current(); ++it) {
-		closeWallet(it.current(), it.currentKey(), true);
+	Wallets::const_iterator it = walletsCopy.begin();
+	const Wallets::const_iterator end = walletsCopy.end();
+	for (; it != end; ++it) {
+		closeWallet(it.value(), it.key(), true);
 	}
 
-	tw.clear();
+	walletsCopy.clear();
 
 	// All of this should be basically noop.  Let's just be safe.
 	_wallets.clear();

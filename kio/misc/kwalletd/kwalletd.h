@@ -24,12 +24,10 @@
 #define _KWALLETD_H_
 
 #include <kdedmodule.h>
-#include <Qt3Support/Q3IntDict>
 #include <QtCore/QString>
 #include <QtGui/QImage>
 #include <QtCore/QHash>
 #include "kwalletbackend.h"
-#include <Qt3Support/Q3PtrList>
 #include <QtCore/QPointer>
 #include <time.h>
 #include <stdlib.h>
@@ -191,23 +189,26 @@ class KWalletD : public KDEDModule {
 		void setupDialog( QWidget* dialog, WId wId, const QString& appid, bool modal );
 		void checkActiveDialog();
 
-		Q3IntDict<KWallet::Backend> _wallets;
+		QPair<int, KWallet::Backend*> findWallet(const QString& walletName) const;
+
+		typedef QHash<int, KWallet::Backend *> Wallets;
+		Wallets _wallets;
 		QHash<QString,QList<int> > _handles;
 		QMap<QString,QByteArray> _passwords;
 		KDirWatch *_dw;
 		int _failed;
 
 		bool _leaveOpen, _closeIdle, _launchManager, _enabled;
-			bool _openPrompt, _firstUse, _showingFailureNotify;
+		bool _openPrompt, _firstUse, _showingFailureNotify;
 		int _idleTime;
 		QMap<QString,QStringList> _implicitAllowMap, _implicitDenyMap;
 		KTimeout *_timeouts;
 
-		Q3PtrList<KWalletTransaction> _transactions;
+		QList<KWalletTransaction*> _transactions;
 		QPointer< QWidget > activeDialog;
-#ifdef Q_WS_X11		
+#ifdef Q_WS_X11
 		QDBusInterface *screensaver;
-#endif		
+#endif
 };
 
 
