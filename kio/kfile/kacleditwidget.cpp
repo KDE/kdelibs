@@ -93,7 +93,7 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
     d->m_listView = new KACLListView(this);
     hbox->addWidget(d->m_listView);
     connect(d->m_listView->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex&, const QModelIndex& )),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection& )),
             this,
             SLOT(_k_slotUpdateButtons()));
     QVBoxLayout *vbox = new QVBoxLayout();
