@@ -29,8 +29,8 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kconfig.h>
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 #include <kstandarddirs.h>
 #include <klibloader.h>
 #include <kstringhandler.h>
@@ -49,9 +49,8 @@ public:
 
    ~KProtocolManagerPrivate();
 
-   KConfig *config;
-   KConfig *http_config;
-   bool init_busy;
+   KSharedConfig::Ptr config;
+   KSharedConfig::Ptr http_config;
    KUrl url;
    QString protocol;
    QString proxy;
@@ -59,25 +58,17 @@ public:
    QString useragent;
 };
 
-static KProtocolManagerPrivate* d = 0;
-static void cleanupKProtocolManagerPrivate()
-{
-    delete d;
-    d = 0;
-}
+K_GLOBAL_STATIC(KProtocolManagerPrivate, kProtocolManagerPrivate)
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
-                        :config(0), http_config(0), init_busy(false)
 {
-   d = this;
-   qAddPostRoutine(cleanupKProtocolManagerPrivate);
+    // post routine since KConfig::sync() breaks if called too late
+    qAddPostRoutine(kProtocolManagerPrivate.destroy);
 }
 
 KProtocolManagerPrivate::~KProtocolManagerPrivate()
 {
-   delete config;
-   delete http_config;
-   d = 0;   // just to be sure
+    qRemovePostRoutine(kProtocolManagerPrivate.destroy);
 }
 
 
@@ -86,35 +77,42 @@ KProtocolManagerPrivate::~KProtocolManagerPrivate()
 QString("Mozilla/5.0 (compatible; Konqueror/%1.%2%3) KHTML/%4.%5.%6 (like Gecko)") \
         .arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(X).arg(KDE_VERSION_MAJOR).arg(KDE_VERSION_MINOR).arg(KDE_VERSION_RELEASE)
 
+#define PRIVATE_DATA \
+KProtocolManagerPrivate *d = kProtocolManagerPrivate
+
 void KProtocolManager::reparseConfiguration()
 {
-  delete d;
-  d = 0;
+    PRIVATE_DATA;
+    if (d->http_config) {
+        d->http_config->reparseConfiguration();
+    }
+    if (d->config) {
+        d->config->reparseConfiguration();
+    }
+    d->protocol = QString();
+    d->proxy = QString();
+    d->modifiers = QString();
+    d->useragent = QString();
 
   // Force the slave config to re-read its config...
   KIO::SlaveConfig::self()->reset ();
 }
 
-KConfig *KProtocolManager::config()
+KSharedConfig::Ptr KProtocolManager::config()
 {
-  if (!d)
-     d = new KProtocolManagerPrivate;
-
+    PRIVATE_DATA;
   if (!d->config)
   {
-     d->config = new KConfig("kioslaverc", KConfig::NoGlobals);
+     d->config = KSharedConfig::openConfig("kioslaverc", KConfig::NoGlobals);
   }
   return d->config;
 }
 
 static KConfigGroup http_config()
 {
-  if (!d)
-     d = new KProtocolManagerPrivate;
-
-  if (!d->http_config)
-  {
-     d->http_config = new KConfig("kio_httprc", KConfig::NoGlobals);
+    PRIVATE_DATA;
+  if (!d->http_config) {
+     d->http_config = KSharedConfig::openConfig("kio_httprc", KConfig::NoGlobals);
   }
   return KConfigGroup(d->http_config, QString());
 }
@@ -333,9 +331,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
      return slaveProtocol(l, proxy);
   }
 
-  if (!d)
-    d = new KProtocolManagerPrivate;
-
+    PRIVATE_DATA;
   if (d->url == url)
   {
      proxy = d->proxy;
@@ -437,9 +433,7 @@ QString KProtocolManager::defaultUserAgent( )
 
 QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 {
-  if (!d)
-     d = new KProtocolManagerPrivate;
-
+    PRIVATE_DATA;
   QString modifiers = _modifiers.toLower();
   if (modifiers.isEmpty())
      modifiers = DEFAULT_USER_AGENT_KEYS;
@@ -710,3 +704,4 @@ QString KProtocolManager::defaultMimetype( const KUrl &url )
   return prot->m_defaultMimetype;
 }
 
+#undef PRIVATE_DATA

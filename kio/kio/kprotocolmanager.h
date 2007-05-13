@@ -25,7 +25,11 @@
 #include <kio/global.h>
 #include "kprotocolinfo.h"
 
-class KConfig;
+class KSharedConfigPtr;
+namespace KIO
+{
+    class SlaveConfigPrivate;
+} // namespace KIO
 
 /**
  * Provides information about I/O (Internet, etc.) settings chosen/set
@@ -587,10 +591,13 @@ public:
    */
   static QString slaveProtocol(const KUrl &url, QString &proxy);
 
+private:
+  friend class KIO::SlaveConfigPrivate;
+
   /**
    * @internal
    * (Shared with SlaveConfig)
    */
-  static KConfig *config();
+  KDE_NO_EXPORT static KSharedConfigPtr config();
 };
 #endif
