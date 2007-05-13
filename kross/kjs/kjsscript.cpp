@@ -27,10 +27,17 @@
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 //#include <kjs/PropertyNameArray.h>
+//#include <kjs/array_instance.h>
+#include <kjs/function_object.h>
 
 // for KjsEmbed
 #include <kjsembed/kjsembed.h>
-//#include <kjsembed/qobject_binding.h>
+#include <kjsembed/qobject_binding.h>
+#include <kjsembed/variant_binding.h>
+#include <kjsembed/slotproxy.h>
+
+#include <QMetaObject>
+#include <QMetaMethod>
 
 using namespace Kross;
 
@@ -67,96 +74,131 @@ namespace Kross {
         return err;
     }
 
-    /// Publish a QObject to a KJSEmbed::Engine.
-    static void publishObject(KJSEmbed::Engine* engine, KJS::ExecState* exec, const QString &name, QObject* object, bool restricted)
-    {
-        KJS::JSObject* obj = engine->addObject(object, name.isEmpty() ? object->objectName() : name);
-        if( ! obj ) {
-            krosswarning( QString("Failed to publish the QObject name=\"%1\" objectName=\"%2\" restricted=\"%3\"").arg(name).arg(object ? object->objectName() : "NULL").arg(restricted) );
-            return;
-        }
-
-        if( restricted ) {
-/*FIXME needs fix for #include <kjs/object.h> which does #include "internal.h"
-            KJSEmbed::QObjectBinding* objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, obj);
-            objImp->setAccess(
-                KJSEmbed::QObjectBinding::ScriptableSlots |
-                KJSEmbed::QObjectBinding::NonScriptableSlots |
-                KJSEmbed::QObjectBinding::PublicSlots |
-                KJSEmbed::QObjectBinding::ScriptableSignals |
-                KJSEmbed::QObjectBinding::NonScriptableSignals |
-                KJSEmbed::QObjectBinding::PublicSignals |
-                KJSEmbed::QObjectBinding::ScriptableProperties |
-                KJSEmbed::QObjectBinding::NonScriptableProperties |
-                KJSEmbed::QObjectBinding::GetParentObject |
-                KJSEmbed::QObjectBinding::ChildObjects
-            );
-*/
-        }
-    }
-
     /// \internal d-pointer class.
     class KjsScriptPrivate
     {
         public:
             /// One engine per script to have them clean separated.
-            KJSEmbed::Engine* engine;
+            KJSEmbed::Engine* m_engine;
+
+            /**
+            * List of QObject instances that should be
+            * auto connected on execution.
+            * \see ChildrenInterface::AutoConnectSignals
+            */
+            QList< QObject* > m_autoconnect;
+
+            /**
+            * This method does walk through the list of children the \a ChildrenInterface
+            * has - \a Action and \a Manager are implementing this interface - and
+            * fills the m_functions hash which got used to connect signals with
+            * Kjs scripting functions.
+            */
+            void addFunctions(ChildrenInterface* children)
+            {
+                QHashIterator< QString, ChildrenInterface::Options > it( children->objectOptions() );
+                while(it.hasNext()) {
+                    it.next();
+                    if( it.value() & ChildrenInterface::AutoConnectSignals ) {
+                        QObject* sender = children->object( it.key() );
+                        if( sender ) {
+                            krossdebug( QString("KjsScript::addFunctions sender name=%1 className=%2").arg(sender->objectName()).arg(sender->metaObject()->className()) );
+                            m_autoconnect.append( sender );
+                        }
+                    }
+                }
+            }
+
+            /// Publish a QObject to a KJSEmbed::Engine.
+            void publishObject(KJS::ExecState* exec, const QString &name, QObject* object)
+            {
+                Q_UNUSED(exec);
+
+                KJS::JSObject* obj = m_engine->addObject(object, name.isEmpty() ? object->objectName() : name);
+                if( ! obj ) {
+                    krosswarning( QString("Failed to publish the QObject name=\"%1\" objectName=\"%2\"").arg(name).arg(object ? object->objectName() : "NULL") );
+                    return;
+                }
+
+                /*
+                bool restricted = interpreter()->interpreterInfo()->optionValue("restricted", true).toBool();
+                if( restricted ) {
+                    KJSEmbed::QObjectBinding* objImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, obj);
+                    objImp->setAccess(
+                        KJSEmbed::QObjectBinding::ScriptableSlots |
+                        KJSEmbed::QObjectBinding::NonScriptableSlots |
+                        KJSEmbed::QObjectBinding::PublicSlots |
+                        KJSEmbed::QObjectBinding::ScriptableSignals |
+                        KJSEmbed::QObjectBinding::NonScriptableSignals |
+                        KJSEmbed::QObjectBinding::PublicSignals |
+                        KJSEmbed::QObjectBinding::ScriptableProperties |
+                        KJSEmbed::QObjectBinding::NonScriptableProperties |
+                        KJSEmbed::QObjectBinding::GetParentObject |
+                        KJSEmbed::QObjectBinding::ChildObjects
+                    );
+                }
+                */
+            }
+
     };
 
 }
 
-KjsScript::KjsScript(Kross::Interpreter* interpreter, Kross::Action* action)
-    : Kross::Script(interpreter, action)
+KjsScript::KjsScript(Interpreter* interpreter, Action* action)
+    : Script(interpreter, action)
     , d(new KjsScriptPrivate())
 {
-    Kross::krossdebug( QString("KjsScript::KjsScript") );
-    d->engine = 0;
+    krossdebug( QString("KjsScript::KjsScript") );
+    d->m_engine = 0;
+
+    d->addFunctions( &Manager::self() );
+    d->addFunctions( action );
 }
 
 KjsScript::~KjsScript()
 {
-    Kross::krossdebug( QString("KjsScript::~KjsScript") );
+    krossdebug( QString("KjsScript::~KjsScript") );
     finalize();
     delete d;
 }
 
 bool KjsScript::initialize()
 {
-    finalize(); // finalize before initialize
+    if( d->m_engine )
+        finalize(); // finalize before initialize
     clearError(); // clear previous errors.
 
-    bool restricted = interpreter()->interpreterInfo()->optionValue("restricted", true).toBool();
+    krossdebug( QString("KjsScript::initialize") );
 
-    Kross::krossdebug( QString("KjsScript::initialize restricted=%1").arg(restricted) );
+    d->m_engine = new KJSEmbed::Engine();
 
-    d->engine = new KJSEmbed::Engine();
-
-    KJS::Interpreter* kjsinterpreter = d->engine->interpreter();
+    KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
+    kjsinterpreter->setShouldPrintExceptions(true);
     KJS::ExecState* exec = kjsinterpreter->globalExec();
 
     { // publish the global objects.
-        QHash< QString, QObject* > objects = Kross::Manager::self().objects();
+        QHash< QString, QObject* > objects = Manager::self().objects();
         QHash< QString, QObject* >::Iterator it(objects.begin()), end(objects.end());
         for(; it != end; ++it)
-            publishObject(d->engine, exec, it.key(), it.value(), restricted);
+            d->publishObject(exec, it.key(), it.value());
     }
 
     { // publish the local objects.
         QHash< QString, QObject* > objects = action()->objects();
         QHash< QString, QObject* >::Iterator it(objects.begin()), end(objects.end());
         for(; it != end; ++it)
-            publishObject(d->engine, exec, it.key(), it.value(), restricted);
+            d->publishObject(exec, it.key(), it.value());
     }
 
     /*
     { // some debugging
-        Kross::krossdebug( QString("Global object") );
+        krossdebug( QString("Global object") );
         KJS::JSObject* obj = kjsinterpreter->globalObject();
         KJS::ExecState* exec = kjsinterpreter->globalExec();
         KJS::PropertyNameArray props;
         obj->getPropertyNames(exec, props);
         for(KJS::PropertyNameArrayIterator it = props.begin(); it != props.end(); it++)
-            Kross::krossdebug( QString("  property name=%1").arg( it->ascii() ) );
+            krossdebug( QString("  property name=%1").arg( it->ascii() ) );
     }
     */
 
@@ -165,8 +207,9 @@ bool KjsScript::initialize()
 
 void KjsScript::finalize()
 {
-    delete d->engine;
-    d->engine = 0;
+    d->m_autoconnect.clear();
+    delete d->m_engine;
+    d->m_engine = 0;
 }
 
 void KjsScript::execute()
@@ -181,14 +224,56 @@ void KjsScript::execute()
         code.remove(0, code.indexOf('\n'));
 
     //krossdebug( QString("KjsScript::execute code=\n%1").arg(code.qstring()) );
-    KJSEmbed::Engine::ExitStatus exitstatus = d->engine->execute( KJS::UString(code) );
-    KJS::Completion completion = d->engine->completion();
+    KJSEmbed::Engine::ExitStatus exitstatus = d->m_engine->execute( KJS::UString(code) );
+
+    KJS::Completion completion = d->m_engine->completion();
+    KJS::Interpreter* kjsinterpreter = d->m_engine->interpreter();
+    KJS::ExecState* exec = kjsinterpreter->globalExec();
 
     if(exitstatus != KJSEmbed::Engine::Success) {
-        KJS::Interpreter* kjsinterpreter = d->engine->interpreter();
-        KJS::ExecState* exec = kjsinterpreter->globalExec();
         ErrorInterface error = extractError(completion, exec);
         setError(&error);
+        return;
+    }
+
+    KJS::JSObject* kjsglobal = kjsinterpreter->globalObject();
+    Q_ASSERT( ! exec->hadException() );
+
+    foreach(QObject* object, d->m_autoconnect) {
+        const QMetaObject* metaobject = object->metaObject();
+        const int count = metaobject->methodCount();
+        for(int i = 0; i < count; ++i) {
+            QMetaMethod metamethod = metaobject->method(i);
+            if( metamethod.methodType() == QMetaMethod::Signal ) {
+                const QString signature = metamethod.signature();
+                const QByteArray name = signature.left(signature.indexOf('(')).toLatin1();
+                krossdebug( QString("KjsScript::execute function=%1").arg(name.data()) );
+
+                KJS::Identifier id = KJS::Identifier( KJS::UString(name.data()) );
+                KJS::JSValue *functionvalue = kjsglobal->get(exec, id);
+                if( ! functionvalue->isObject() )
+                    continue;
+                KJS::JSObject *function = functionvalue->toObject(exec);
+                Q_ASSERT( ! exec->hadException() );
+                //if( exec->hadException() ) continue;
+                if ( function && function->implementsCall() ) {
+                    krossdebug( QString("KjsScript::execute connect function=%1 with signal=%2").arg(name.data()).arg(signature) );
+
+                    QByteArray sendersignal = QString("2%1").arg(signature).toLatin1();
+                    QByteArray receiverslot = QString("1%1").arg(signature).toLatin1();
+                    KJSEmbed::SlotProxy* receiver = new KJSEmbed::SlotProxy(kjsglobal, exec->dynamicInterpreter(), object, signature.toLatin1());
+
+                    if( connect(object, sendersignal, receiver, receiverslot) ) {
+                        krossdebug( QString("KjsScript::execute connected function=%1 with object=%2 signal=%3").arg(name.data()).arg(object->objectName()).arg(signature) );
+                    }
+                    else {
+                        krosswarning( QString("KjsScript::execute failed to connect object=%1 signal=%2").arg(object->objectName()).arg(signature) );
+                    }
+
+                }
+            }
+        }
+
     }
 }
 

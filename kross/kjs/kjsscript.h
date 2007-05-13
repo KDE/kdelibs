@@ -45,7 +45,7 @@ namespace Kross {
              *       \a Kross::Action instance that spends us
              *       e.g. the python scripting code.
              */
-            explicit KjsScript(Kross::Interpreter* interpreter, Kross::Action* action);
+            KjsScript(Kross::Interpreter* interpreter, Kross::Action* action);
 
             /**
              * Destructor.
