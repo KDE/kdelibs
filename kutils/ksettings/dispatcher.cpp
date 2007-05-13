@@ -19,8 +19,6 @@
 
 #include "ksettings/dispatcher.h"
 
-#include <Qt3Support/Q3Signal>
-
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kcomponentdata.h>
@@ -30,10 +28,12 @@
 namespace KSettings
 {
 
-struct ComponentInfo
+class ComponentInfo
 {
+public:
     KComponentData componentData;
-    Q3Signal *signal;
+    typedef QPair<QObject*, const char*> Slot;
+    QList<Slot> slotList;
     int count;
 };
 
@@ -72,15 +72,10 @@ void Dispatcher::registerComponent(const KComponentData &componentData, QObject 
     QByteArray componentName = componentData.componentName();
     kDebug(701) << k_funcinfo << componentName << endl;
     d->m_componentName[recv] = componentName;
-    Q3Signal *sig;
-    if (d->m_componentInfo.contains(componentName)) {
-        sig = d->m_componentInfo[componentName].signal;
-    } else {
-        sig = new Q3Signal(this, "signal dispatcher");
-        d->m_componentInfo[componentName].signal = sig;
+    if (!d->m_componentInfo.contains(componentName)) {
         d->m_componentInfo[componentName].componentData = componentData;
     }
-    sig->connect(recv, slot);
+    d->m_componentInfo[componentName].slotList.append(ComponentInfo::Slot(recv, slot));
 
     ++(d->m_componentInfo[componentName].count);
     connect(recv, SIGNAL(destroyed(QObject *)), this, SLOT(unregisterComponent(QObject *)));
@@ -124,10 +119,8 @@ void Dispatcher::reparseConfiguration(const QByteArray & componentName)
     // will be up to date
     KSharedConfig::Ptr config = d->m_componentInfo[componentName].componentData.config();
     config->reparseConfiguration();
-    Q3Signal *sig = d->m_componentInfo[componentName].signal;
-    if (sig) {
-        kDebug(701) << "emit signal to componentData" << endl;
-        sig->activate();
+    foreach(const ComponentInfo::Slot& slot, d->m_componentInfo[componentName].slotList ) {
+        QMetaObject::invokeMethod(slot.first, slot.second);
     }
 }
 
@@ -146,7 +139,6 @@ void Dispatcher::unregisterComponent(QObject *obj)
     d->m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
     --(d->m_componentInfo[name].count);
     if (d->m_componentInfo[name].count == 0) {
-        delete d->m_componentInfo[name].signal;
         d->m_componentInfo.remove(name);
     }
 }

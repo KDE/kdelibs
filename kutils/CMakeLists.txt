@@ -4,17 +4,18 @@ include_directories( ${KDE4_KIO_INCLUDES} )
 
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor )
 
-add_subdirectory( ksettings )
-
-
-# kutils/ksettings/Makefile.am: ksettings
-
 set(ksettings_STAT_SRCS
-  ${CMAKE_SOURCE_DIR}/kutils/ksettings/dispatcher.cpp
-  ${CMAKE_SOURCE_DIR}/kutils/ksettings/dialog.cpp
-  ${CMAKE_SOURCE_DIR}/kutils/ksettings/pluginpage.cpp
-  ${CMAKE_SOURCE_DIR}/kutils/ksettings/componentsdialog.cpp
+  ksettings/dispatcher.cpp
+  ksettings/dialog.cpp
+  ksettings/pluginpage.cpp
+  ksettings/componentsdialog.cpp
 )
+install( FILES
+ ksettings/dispatcher.h
+ ksettings/dialog.h
+ ksettings/pluginpage.h
+ ksettings/componentsdialog.h
+DESTINATION  ${INCLUDE_INSTALL_DIR}/ksettings )
 
 ########### next target ###############
 
