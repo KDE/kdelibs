@@ -20,8 +20,8 @@
 
 
 #include "ksslkeygen.h"
+#include "ksslkeygen_p.h"
 #include "ui_keygenwizard.h"
-#include "ui_keygenwizard2.h"
 
 #include <kapplication.h>
 #include <kdebug.h>
@@ -38,94 +38,128 @@
 
 #include <assert.h>
 
+KSSLKeyGenWizardPage2::KSSLKeyGenWizardPage2(QWidget* parent)
+    : QWizardPage(parent)
+{
+    ui2 = new Ui_KGWizardPage2;
+    ui2->setupUi(this);
+    connect(ui2->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+    connect(ui2->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+}
 
-KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal) 
-:Q3Wizard(parent,name,modal) {
-	_idx = -1;
-#ifdef __GNUC__
-#warning "KDE4 PORTING TO NEW KWIZARD"
-#endif
+bool KSSLKeyGenWizardPage2::isComplete() const
+{
+    return ui2->_password1->text() == ui2->_password2->text() && ui2->_password1->text().length() >= 4;
+}
+
+void KSSLKeyGenWizardPage2::slotPassChanged()
+{
+    emit completeChanged(); // well maybe it hasn't changed, but it might have; QWizard calls isComplete() to find out
+}
+
+QString KSSLKeyGenWizardPage2::password() const
+{
+    Q_ASSERT(isComplete());
+    return ui2->_password1->text();
+}
+
+////
+
+class KSSLKeyGenPrivate
+{
+public:
+    KSSLKeyGenPrivate()
+        : idx(-1)
+    {
+    }
+    int idx;
+    Ui_KGWizardPage1 *ui1;
+    KSSLKeyGenWizardPage2* page2;
+};
+
+KSSLKeyGen::KSSLKeyGen(QWidget *parent, const char *name, bool modal)
+    : QWizard(parent), d(new KSSLKeyGenPrivate)
+{
+    // TODO remove name argument
+    // TODO remove modal argument
 #ifdef KSSL_HAVE_SSL
-	Ui_KGWizardPage1 ui1;
-	QWidget *page1 = new QWidget(this);
-	ui1.setupUi(page1);
-	addPage(page1, i18n("KDE Certificate Request"));
-	setHelpEnabled(page1, false);
 
-	page2 = new QWidget(this);
-	ui = new Ui_KGWizardPage2;
-	ui->setupUi(page2);
-	addPage(page2, i18n("KDE Certificate Request - Password"));
-	setHelpEnabled(page2, false);
-	setFinishEnabled(page2, false);
-	connect(ui->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
-	connect(ui->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
-	connect(finishButton(), SIGNAL(clicked()), SLOT(slotGenerate()));
+    QWizardPage* page1 = new QWizardPage(this);
+    page1->setTitle(i18n("KDE Certificate Request"));
+    d->ui1 = new Ui_KGWizardPage1;
+    d->ui1->setupUi(page1);
+    addPage(page1);
+    //setHelpEnabled(page1, false);
+
+    d->page2 = new KSSLKeyGenWizardPage2(this);
+    d->page2->setTitle(i18n("KDE Certificate Request - Password"));
+    addPage(d->page2);
 #else
-	// tell him he doesn't have SSL
+    // tell him he doesn't have SSL
 #endif
 }
 
 
 KSSLKeyGen::~KSSLKeyGen() {
-	
+    delete d->ui1;
+    delete d;
 }
 
+bool KSSLKeyGen::validateCurrentPage() {
+    if (currentPage() != d->page2)
+        return true;
 
-void KSSLKeyGen::slotPassChanged() {
-	setFinishEnabled(page2, ui->_password1->text() == ui->_password2->text() && ui->_password1->text().length() >= 4);
-}
+    assert(d->idx >= 0 && d->idx <= 3);   // for now
 
+    // Generate the CSR
+    int bits;
+    switch (d->idx) {
+    case 0:
+        bits = 2048;
+        break;
+    case 1:
+        bits = 1024;
+        break;
+    case 2:
+        bits = 768;
+        break;
+    case 3:
+        bits = 512;
+        break;
+    default:
+        KMessageBox::sorry(this, i18n("Unsupported key size."), i18n("KDE SSL Information"));
+        return false;
+    }
 
-void KSSLKeyGen::slotGenerate() {
-	assert(_idx >= 0 && _idx <= 3);   // for now
+    QProgressDialog *kpd = new QProgressDialog(this);
+    kpd->setObjectName("progress dialog");
+    kpd->setWindowTitle(i18n("KDE"));
+    kpd->setLabelText(i18n("Please wait while the encryption keys are generated..."));
+    kpd->setValue(0);
+    kpd->show();
+    // FIXME - progress dialog won't show this way
 
+    int rc = generateCSR("This CSR" /*FIXME */, d->page2->password(), bits, 0x10001 /* This is the traditional exponent used */);
+    if (rc != 0) // error
+        return false;
 
-	// Generate the CSR
-	int bits;
-	switch (_idx) {
-	case 0:
-		bits = 2048;
-		break;
-	case 1:
-		bits = 1024;
-		break;
-	case 2:
-		bits = 768;
-		break;
-	case 3:
-		bits = 512;
-		break;
-	default:
-		KMessageBox::sorry(NULL, i18n("Unsupported key size."), i18n("KDE SSL Information"));
-		return;
-	}
+    kpd->setValue(100);
 
-	QProgressDialog *kpd = new QProgressDialog(this);
-	kpd->setObjectName("progress dialog");
-	kpd->setWindowTitle(i18n("KDE"));
-	kpd->setLabelText(i18n("Please wait while the encryption keys are generated..."));
-	kpd->setValue(0);
-	kpd->show();
-	// FIXME - progress dialog won't show this way
-
-	int rc = generateCSR("This CSR" /*FIXME */, ui->_password1->text(), bits, 0x10001 /* This is the traditional exponent used */);
-	kpd->setValue(100);
-
-#ifndef Q_OS_WIN //TODO: reenable for WIN32
-	if (rc == 0 && KWallet::Wallet::isEnabled()) {
-		rc = KMessageBox::questionYesNo(this, i18n("Do you wish to store the passphrase in your wallet file?"), QString(), KGuiItem(i18n("Store")), KGuiItem(i18n("Do Not Store")));
-		if (rc == KMessageBox::Yes) {
-			KWallet::Wallet *w = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), winId());
-			if (w) {
-				// FIXME: store passphrase in wallet
-				delete w;
-			}
-		}
-	}
+#if 0 // TODO: implement
+    if (rc == 0 && KWallet::Wallet::isEnabled()) {
+        rc = KMessageBox::questionYesNo(this, i18n("Do you wish to store the passphrase in your wallet file?"), QString(), KGuiItem(i18n("Store")), KGuiItem(i18n("Do Not Store")));
+        if (rc == KMessageBox::Yes) {
+            KWallet::Wallet *w = KWallet::Wallet::openWallet(KWallet::Wallet::LocalWallet(), winId());
+            if (w) {
+                // FIXME: store passphrase in wallet
+                delete w;
+            }
+        }
+    }
 #endif
 
-	kpd->deleteLater();
+    kpd->deleteLater();
+    return true;
 }
 
 
@@ -166,7 +200,7 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_stateOrProvinceName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
 	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_commonName, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
 	kossl->X509_NAME_add_entry_by_txt(n, (char*)LN_pkcs9_emailAddress, MBSTRING_UTF8, (unsigned char*)name.toLocal8Bit().data(), -1, -1, 0);
-	
+
 	rc = kossl->X509_REQ_set_subject_name(req, n);
 
 
@@ -175,7 +209,7 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	// We write it to the database and then the caller can obtain it
 	// back from there.  Yes it's inefficient, but it doesn't happen
 	// often and this way things are uniform.
-  
+
 	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
 
 	QString path = KGlobal::dirs()->saveLocation("kssl");
@@ -191,18 +225,18 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	}
 
 	KTemporaryFile p8File;
-	csrFile.setAutoRemove(false);
-	csrFile.setPrefix(path + "pkey_");
-	csrFile.setSuffix(".p8");
+	p8File.setAutoRemove(false);
+	p8File.setPrefix(path + "pkey_");
+	p8File.setSuffix(".p8");
 
 	if (!p8File.open()) {
 		kossl->X509_REQ_free(req);
 		kossl->EVP_PKEY_free(pkey);
 		return -5;
 	}
-	
-	FILE *csr_fs = fopen(csrFile.fileName().toAscii(), "r+");
-	FILE *p8_fs = fopen(p8File.fileName().toAscii(), "r+");
+
+	FILE *csr_fs = fopen(QFile::encodeName(csrFile.fileName()), "r+");
+	FILE *p8_fs = fopen(QFile::encodeName(p8File.fileName()), "r+");
 
 	kossl->i2d_X509_REQ_fp(csr_fs, req);
 
@@ -226,20 +260,25 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 
 
 QStringList KSSLKeyGen::supportedKeySizes() {
-	QStringList x;
+    QStringList x;
 
 #ifdef KSSL_HAVE_SSL
-	x	<< i18n("2048 (High Grade)")
-		<< i18n("1024 (Medium Grade)")
-		<< i18n("768  (Low Grade)")
-		<< i18n("512  (Low Grade)");
+    x	<< i18n("2048 (High Grade)")
+        << i18n("1024 (Medium Grade)")
+        << i18n("768  (Low Grade)")
+        << i18n("512  (Low Grade)");
 #else
-	x	<< i18n("No SSL support.");
+    x	<< i18n("No SSL support.");
 #endif
 
-	return x;
+    return x;
 }
 
+void KSSLKeyGen::setKeySize(int idx)
+{
+     d->idx = idx;
+}
 
 #include "ksslkeygen.moc"
 
+#include "ksslkeygen_p.moc"
