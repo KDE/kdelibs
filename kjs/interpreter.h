@@ -367,7 +367,8 @@ protected:
 private:
     bool handleTimeout();
     void init();
-    
+    void printException(const Completion& c, const UString& sourceURL);
+
     /**
      * This constructor is not implemented, in order to prevent
      * copy-construction of Interpreter objects. You should always pass around

@@ -464,8 +464,12 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
     }
     
     // no program node means a syntax error occurred
-    if (!progNode)
-        return Completion(Throw, Error::create(&m_globalExec, SyntaxError, errMsg, errLine, sid, sourceURL));
+    if (!progNode) {
+        Completion res(Throw, Error::create(&m_globalExec, SyntaxError, errMsg, errLine, sid, sourceURL));
+	if (shouldPrintExceptions())
+	  printException(res, sourceURL);
+	return res;
+    }
     
     m_globalExec.clearException();
     
@@ -492,18 +496,8 @@ Completion Interpreter::evaluate(const UString& sourceURL, int startingLineNumbe
     
     m_recursion--;
     
-    if (shouldPrintExceptions() && res.complType() == Throw) {
-        JSLock lock;
-        ExecState* exec = globalExec();
-        CString f = sourceURL.UTF8String();
-        CString message = res.value()->toObject(exec)->toString(exec).UTF8String();
-        int line = res.value()->toObject(exec)->get(exec, "line")->toUInt32(exec);
-#if PLATFORM(WIN_OS)
-        printf("%s line %d: %s\n", f.c_str(), line, message.c_str());
-#else
-        printf("[%d] %s line %d: %s\n", getpid(), f.c_str(), line, message.c_str());
-#endif
-    }
+    if (shouldPrintExceptions() && res.complType() == Throw)
+        printException(res, sourceURL);
 
     return res;
 }
@@ -701,6 +695,20 @@ bool Interpreter::shouldPrintExceptions()
 void Interpreter::setShouldPrintExceptions(bool print)
 {
   printExceptions = print;
+}
+
+void Interpreter::printException(const Completion& c, const UString& sourceURL)
+{
+    JSLock lock;
+    ExecState* exec = globalExec();
+    CString f = sourceURL.UTF8String();
+    CString message = c.value()->toObject(exec)->toString(exec).UTF8String();
+    int line = c.value()->toObject(exec)->get(exec, "line")->toUInt32(exec);
+#if PLATFORM(WIN_OS)
+    printf("%s line %d: %s\n", f.c_str(), line, message.c_str());
+#else
+    printf("[%d] %s line %d: %s\n", getpid(), f.c_str(), line, message.c_str());
+#endif
 }
 
 // bindings are OS X WebKit-only for now
