@@ -24,6 +24,7 @@
 #include <QtCore/QMetaEnum>
 #include <QtCore/QMetaType>
 #include <QtCore/QDebug>
+#include <QtGui/QWidget>
 
 #include <kjs/interpreter.h>
 
@@ -99,6 +100,8 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 	qDebug() << "SlotProxy::callMethod(" << methodName << ",_a) obj=" << this;
 #endif
     KJS::ExecState *exec = m_interpreter->globalExec();
+    exec->clearException();
+
     // Crash
     // KJS::Interpreter::globalExec()->context().thisValue()
     KJS::List args = convertArguments(exec, _a);
@@ -228,7 +231,6 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 #ifdef DEBUG_SLOTPROXY
                                 qDebug() << "\t\t\tFound QObjectBinding";
 #endif
-                                
                                 objImp->setOwnership( KJSEmbed::ObjectBinding::JSOwned );
                                 objImp->setObject(qObj);
                                 if (qObj->parent() != 0)
@@ -247,6 +249,25 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 #ifdef DEBUG_SLOTPROXY
                 qDebug("\t\tNo binding registered");
 #endif
+                KJS::JSObject* returnValue = 0;
+                switch( QMetaType::type( param.constData() ) )
+                {
+                    case QMetaType::QObjectStar: {
+                        QObject* obj = (*reinterpret_cast< QObject*(*)>( _a[idx] ));
+                        returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
+                    } break;
+                    case QMetaType::QWidgetStar: {
+                        QWidget* obj = (*reinterpret_cast< QWidget*(*)>( _a[idx] ));
+                        returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
+                    } break;
+                    default: {
+                        qDebug("\t\tInvalid type !");
+                    } break;
+                }
+                if( returnValue ) {
+                    args.append(returnValue);
+                    break;
+                }
             }
         }
         case QVariant::StringList:
