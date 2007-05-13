@@ -45,7 +45,7 @@ class QStringList;
  * @author Daniel Molkentin <molkentin@kde.org>
  *
  */
-class KUTILS_EXPORT KCModuleInfo
+class KUTILS_EXPORT KCModuleInfo // krazy:exclude=dpointer (implicitly shared)
 {
 
 public:
@@ -159,7 +159,7 @@ public:
 
 private:
   class Private;
-  Private * d; // krazy:exclude=dpointer
+  Private * d;
 };
 
 #endif // KCMODULEINFO_H

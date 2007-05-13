@@ -348,7 +348,7 @@ bool KCModuleProxy::changed() const
 	return d->changed;
 }
 
-const KCModuleInfo& KCModuleProxy::moduleInfo() const
+KCModuleInfo KCModuleProxy::moduleInfo() const
 {
 	return d->modInfo;
 }

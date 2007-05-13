@@ -172,7 +172,7 @@ KCharsets *KGlobal::charsets()
     return d->charsets;
 }
 
-const KComponentData &KGlobal::activeComponent()
+KComponentData KGlobal::activeComponent()
 {
     PRIVATE_DATA;
     MYASSERT(d->activeComponent.isValid());

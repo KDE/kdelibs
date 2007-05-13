@@ -344,7 +344,7 @@ public:
 	 * Returns the SimpleJob's URL
 	 * @return the url
 	 */
-        const KUrl& url() const { return m_url; }
+        const KUrl& url() const;
 
         /**
          * Abort job.
@@ -380,12 +380,12 @@ public:
          * @internal
          * Slave in use by this job.
          */
-        Slave *slave() const { return m_slave; }
+        Slave *slave() const;
 
         /**
          * @internal
          */
-        int command() const { return m_command; }
+        int command() const;
 
     public Q_SLOTS:
         /**
@@ -465,7 +465,8 @@ public:
 	 */
 	void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
     private:
-	class SimpleJobPrivate* d;
+	class SimpleJobPrivate;
+        SimpleJobPrivate * const d;
     };
 
     /**
@@ -485,6 +486,8 @@ public:
 	 */
         StatJob(const KUrl& url, int command, const QByteArray &packedArgs);
 
+        ~StatJob();
+
         /**
 	 * A stat() can have two meanings. Either we want to read from this URL,
          * or to check if we can write to it. First case is "source", second is "dest".
@@ -492,7 +495,7 @@ public:
          * (e.g. with FTP).
 	 * @param source true for "source" mode, false for "dest" mode
          */
-        void setSide( bool source ) { m_bSource = source; }
+        void setSide( bool source );
 
         /**
          * Selects the level of @p details we want.
@@ -503,14 +506,14 @@ public:
          * "it's a file or a directory, or it doesn't exist". This is used by KRun.
 	 * @param details 2 for all details, 1 for simple, 0 for very simple
          */
-        void setDetails( short int details ) { m_details = details; }
+        void setDetails( short int details );
 
         /**
          * Call this in the slot connected to result,
          * and only after making sure no error happened.
 	 * @return the result of the stat
          */
-        const UDSEntry & statResult() const { return m_statResult; }
+        const UDSEntry & statResult() const;
 
         /**
 	 * @internal
@@ -552,7 +555,7 @@ public:
         short int m_details;
     private:
         class StatJobPrivate;
-        StatJobPrivate *d;
+        StatJobPrivate * const d;
     };
 
     /**
@@ -571,6 +574,8 @@ public:
 	 * @param packedArgs the arguments
 	 */
         MkdirJob(const KUrl& url, int command, const QByteArray &packedArgs);
+
+        ~MkdirJob();
 
         /**
 	 * @internal
@@ -608,7 +613,7 @@ public:
 
     private:
         class MkdirJobPrivate;
-        MkdirJobPrivate *d;
+        MkdirJobPrivate * const d;
     };
 
     /**
@@ -623,6 +628,8 @@ public:
          * Do not create a DirectCopyJob. Use KIO::copy() or KIO::file_copy() instead.
          */
         DirectCopyJob(const KUrl& url, int command, const QByteArray &packedArgs);
+
+        ~DirectCopyJob();
 
         /**
 	 * @internal
@@ -642,6 +649,9 @@ public:
 
     private Q_SLOTS:
         void slotCanResume( KIO::filesize_t offset );
+    private:
+        class DirectCopyJobPrivate;
+        DirectCopyJobPrivate * const d;
     };
 
 
@@ -666,6 +676,8 @@ public:
         TransferJob(const KUrl& url, int command,
                     const QByteArray &packedArgs,
                     const QByteArray &_staticData);
+
+        ~TransferJob();
 
         /**
          * Sets the modification time of the file to be created (by KIO::put)
@@ -709,7 +721,7 @@ public:
          * @return true if we got an (HTML) error page from the server
          * instead of what we asked for.
          */
-        bool isErrorPage() const { return m_errorPage; }
+        bool isErrorPage() const;
 
         /**
          * Enable the async data mode.
@@ -746,7 +758,7 @@ public:
          * and only after making sure no error happened.
 	 * @return the mimetype of the URL
          */
-         QString mimetype() const { return m_mimetype; }
+         QString mimetype() const;
 
     Q_SIGNALS:
         /**
@@ -832,7 +844,8 @@ public:
         QString m_mimetype;
         TransferJob *m_subJob;
     private:
-	class TransferJobPrivate *d;
+	class TransferJobPrivate;
+	TransferJobPrivate * const d;
     };
 
     /**
@@ -869,6 +882,8 @@ public:
                           const QByteArray &packedArgs,
                           const QByteArray &_staticData);
 
+        ~StoredTransferJob();
+
         /**
          * Set data to be uploaded. This is for put jobs.
          * Automatically called by KIO::storedPut(const QByteArray &, ...),
@@ -880,14 +895,14 @@ public:
          * Get hold of the downloaded data. This is for get jobs.
          * You're supposed to call this only from the slot connected to the result() signal.
          */
-        QByteArray data() const { return m_data; }
+        QByteArray data() const;
 
     private Q_SLOTS:
         void slotStoredData( KIO::Job *job, const QByteArray &data );
         void slotStoredDataReq( KIO::Job *job, QByteArray &data );
     private:
-        QByteArray m_data;
-        int m_uploadOffset;
+        class StoredTransferJobPrivate;
+        StoredTransferJobPrivate * const d;
     };
 
     /**
@@ -965,7 +980,7 @@ public:
            long id;
            KUrl url;
            MetaData metaData;
-           bool operator==( const GetRequest& req ) const { return req.id == id; }
+           bool operator==( const GetRequest& req ) const;
         };
         bool findCurrentEntry();
         void flushQueue(QLinkedList<GetRequest> &queue);
@@ -976,7 +991,8 @@ public:
         bool b_multiGetActive;
         GetRequest m_currentEntry;
     private:
-	class MultiGetJobPrivate* d;
+	class MultiGetJobPrivate;
+	MultiGetJobPrivate * const d;
     };
 
     /**
@@ -998,6 +1014,8 @@ public:
 	*/
         MimetypeJob(const KUrl& url, int command, const QByteArray &packedArgs);
 
+        ~MimetypeJob();
+
         /**
 	 * @internal
          * Called by the scheduler when a slave gets to
@@ -1009,7 +1027,8 @@ public:
     protected Q_SLOTS:
         virtual void slotFinished( );
     private:
-	class MimetypeJobPrivate* d;
+	class MimetypeJobPrivate;
+	MimetypeJobPrivate * const d;
     };
 
     /**
@@ -1055,13 +1074,13 @@ public:
 	 * Returns the source URL.
 	 * @return the source URL
 	 */
-        KUrl srcUrl() const { return m_src; }
+        KUrl srcUrl() const;
 
 	/**
 	 * Returns the destination URL.
 	 * @return the destination URL
 	 */
-        KUrl destUrl() const { return m_dest; }
+        KUrl destUrl() const;
 
     Q_SIGNALS:
         /**
@@ -1167,6 +1186,8 @@ public:
                 bool recursive = false, const QString &prefix = QString(),
                 bool includeHidden = true);
 
+        ~ListJob();
+
         /**
 	 * @internal
          * Called by the scheduler when a @p slave gets to
@@ -1180,7 +1201,7 @@ public:
          * was no redirection.
          * @return the redirection url
          */
-        const KUrl& redirectionUrl() const { return m_redirectionURL; }
+        const KUrl& redirectionUrl() const;
 
         /**
          * Do not apply any KIOSK restrictions to this job.
@@ -1226,13 +1247,8 @@ public:
         void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     private:
-        bool recursive;
-        bool includeHidden;
-        QString prefix;
-        unsigned long m_processedEntries;
-        KUrl m_redirectionURL;
-    private:
-	class ListJobPrivate* d;
+	class ListJobPrivate;
+	ListJobPrivate * const d;
     };
 }
 

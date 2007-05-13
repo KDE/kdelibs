@@ -318,6 +318,16 @@ void SlaveBase::dispatchLoop()
     }
 }
 
+void SlaveBase::setConnection( Connection* connection )
+{
+    m_pConnection = connection;
+}
+
+Connection *SlaveBase::connection() const
+{
+    return m_pConnection;
+}
+
 void SlaveBase::connectSlave(const QString& path)
 {
 #ifdef Q_WS_WIN
@@ -357,6 +367,11 @@ QString SlaveBase::metaData(const QString &key) const
    if (d->configData.contains(key))
       return d->configData[key];
    return QString();
+}
+
+MetaData SlaveBase::allMetaData() const
+{
+    return mIncomingMetaData;
 }
 
 bool SlaveBase::hasMetaData(const QString &key) const

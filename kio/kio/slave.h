@@ -39,6 +39,7 @@ class KStreamSocket;
 
 namespace KIO {
 
+    class SlavePrivate;
     // Attention developers: If you change the implementation of KIO::Slave,
     // do *not* use connection() or slaveconn but the respective KIO::Slave
     // accessor methods. Otherwise classes derived from Slave might break. (LS)
@@ -53,7 +54,7 @@ namespace KIO {
 
 	void setPID(pid_t);
 
-        int slave_pid() { return m_pid; }
+        int slave_pid();
 
 	/**
 	 * Force termination
@@ -63,7 +64,7 @@ namespace KIO {
         /**
          * @return true if the slave survived the last mission.
          */
-        bool isAlive() { return !dead; }
+        bool isAlive();
 
         /**
          * Set host for url
@@ -90,7 +91,7 @@ namespace KIO {
 	 *
          * @return name of protocol handled by this slave, as seen by the user
          */
-        QString protocol() { return m_protocol; }
+        QString protocol();
 
         void setProtocol(const QString & protocol);
         /**
@@ -105,27 +106,27 @@ namespace KIO {
 	 *
          * @return the actual protocol (io-slave) that handled the request
          */
-        QString slaveProtocol() { return m_slaveProtocol; }
+        QString slaveProtocol();
 
         /**
          * @return Host this slave is (was?) connected to
          */
-        QString host() { return m_host; }
+        QString host();
 
         /**
          * @return port this slave is (was?) connected to
          */
-        quint16 port() { return m_port; }
+        quint16 port();
 
         /**
          * @return User this slave is (was?) logged in as
          */
-        QString user() { return m_user; }
+        QString user();
 
         /**
          * @return Passwd used to log in
          */
-        QString passwd() { return m_passwd; }
+        QString passwd();
 
 	/**
 	 * Creates a new slave.
@@ -184,11 +185,11 @@ namespace KIO {
          * @returns Whether the slave is connected
          * (Connection oriented slaves only)
          */
-        bool isConnected() { return contacted; }
-        void setConnected(bool c) { contacted = c; }
+        bool isConnected();
+        void setConnected(bool c);
 
-        void ref() { m_refCount++; }
-        void deref() { m_refCount--; if (!m_refCount) delete this; }
+        void ref();
+        void deref();
 
     public Q_SLOTS:
         void accept();
@@ -201,25 +202,9 @@ namespace KIO {
         void unlinkSocket();
 
     private:
-        QString m_protocol;
-        QString m_slaveProtocol;
-        QString m_host;
-        QString m_user;
-        QString m_passwd;
-	QString m_socket;
-	KNetwork::KServerSocket *serv;
-	pid_t m_pid;
-        quint16 m_port;
-	bool contacted;
-	bool dead;
-	time_t contact_started;
-	time_t idle_since;
-	KIO::Connection slaveconn;
-	int m_refCount;
-    private:
-	class SlavePrivate* d;
+        KIO::Connection slaveconn;
+	SlavePrivate * const d;
     };
-
 }
 
 #endif

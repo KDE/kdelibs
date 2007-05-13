@@ -103,12 +103,15 @@ namespace ThreadWeaver {
 
     protected:
 
-      class Private;
-      Private* d;
         /** The factory method to create the actual Weaver implementation.
             Overload this method to use a different or adapted implementation.
             */
       virtual WeaverInterface* makeWeaverImpl ();
+
+    private:
+
+      class Private;
+      Private* const d;
     };
 }
 

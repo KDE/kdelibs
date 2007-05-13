@@ -113,6 +113,36 @@ KServiceGroup::~KServiceGroup()
   delete d;
 }
 
+bool KServiceGroup::isValid() const
+{
+    return true;
+}
+
+QString KServiceGroup::name() const
+{
+    return entryPath();
+}
+
+QString KServiceGroup::relPath() const
+{
+    return entryPath();
+}
+
+QString KServiceGroup::caption() const
+{
+    return m_strCaption;
+}
+
+QString KServiceGroup::icon() const
+{
+    return m_strIcon;
+}
+
+QString KServiceGroup::comment() const
+{
+    return m_strComment;
+}
+
 int KServiceGroup::childCount() const
 {
   if (m_childCount == -1)
@@ -658,6 +688,11 @@ KServiceGroup::Ptr
 KServiceGroup::childGroup(const QString &parent)
 {
    return KServiceGroupFactory::self()->findGroupByDesktopPath("#parent#"+parent, true);
+}
+
+QString KServiceGroup::baseGroupName() const
+{
+    return m_strBaseGroupName;
 }
 
 QString

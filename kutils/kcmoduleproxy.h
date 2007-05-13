@@ -184,7 +184,7 @@ public:
 	 * @return a KCModuleInfo for the encapsulated
 	 * module
 	 */
-	const KCModuleInfo& moduleInfo() const;
+	KCModuleInfo moduleInfo() const;
 
 	/**
 	 * Returns the DBUS Service name

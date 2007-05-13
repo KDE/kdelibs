@@ -41,10 +41,8 @@ class KLibLoader;
  * @author Frans Englich <frans.englich@telia.com>
  * @internal
 **/
-class KUTILS_EXPORT KCModuleLoader
+namespace KCModuleLoader
 {
-  public:
-
     /**
      * Determines the way errors are reported
      */
@@ -75,7 +73,7 @@ class KUTILS_EXPORT KCModuleLoader
      *
      * @return a pointer to the loaded @ref KCModule
      */
-    static KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
+    KUTILS_EXPORT KCModule *loadModule(const KCModuleInfo &module, ErrorReporting
         report, QWidget * parent = 0, const QStringList& args = QStringList() );
 
     /**
@@ -86,14 +84,14 @@ class KUTILS_EXPORT KCModuleLoader
      *
      * @return a pointer to the loaded @ref KCModule
      */
-    static KCModule *loadModule( const QString &module, ErrorReporting report,
+    KUTILS_EXPORT KCModule *loadModule( const QString &module, ErrorReporting report,
         QWidget *parent = 0, const QStringList& args = QStringList() );
 
     /**
      * Unloads the module's library
      * @param mod What module to unload for
      */
-    static void unloadModule(const KCModuleInfo &mod);
+    KUTILS_EXPORT void unloadModule(const KCModuleInfo &mod);
 
     /**
      * Display a message box explaining an error occurred and possible
@@ -102,7 +100,7 @@ class KUTILS_EXPORT KCModuleLoader
      * @deprecated Use a constructor with ErrorReporting set to Dialog to show a
      * message box like this function did.
      */
-    static KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
+    KUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
 
     /**
      * Returns a KCModule containing the messages @p report and @p text.
@@ -113,17 +111,8 @@ class KUTILS_EXPORT KCModuleLoader
      *
      * @internal
      */
-    static KCModule* reportError( ErrorReporting report, const QString & text,
+    KUTILS_EXPORT KCModule* reportError( ErrorReporting report, const QString & text,
         const QString &details, QWidget * parent );
-
-  private:
-
-    /**
-     * Internal loader called by the public loaders.
-     * @internal
-     */
-    static KCModule* load( const KCModuleInfo& mod, const QByteArray &libprefix,
-        ErrorReporting report, QWidget* parent, const QStringList& );
 
 };
 

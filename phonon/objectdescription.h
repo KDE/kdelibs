@@ -104,7 +104,7 @@ namespace Phonon
  * \author Matthias Kretz <kretz@kde.org>
  * \see BackendCapabilities
  */
-class PHONON_EXPORT ObjectDescriptionBase
+class PHONON_EXPORT ObjectDescriptionBase //krazy:exclude=dpointer (it's protected, which should be fine for this type of class)
 {
     public:
         /**

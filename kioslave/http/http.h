@@ -215,7 +215,7 @@ public:
   void davFinished();
 
   // Handle error conditions
-  QString davError( int code = -1, QString url = QString() );
+  QString davError( int code = -1, const QString &url = QString() );
 //---------------------------- End WebDAV -----------------------
 
   /**
@@ -280,7 +280,7 @@ protected:
     * is nececesary because transfer encodings and
     * content encodings must be handled separately.
     */
-  void addEncoding(QString, QStringList &);
+  void addEncoding(const QString &, QStringList &);
 
   void configAuth( char *, bool );
 

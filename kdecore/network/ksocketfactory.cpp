@@ -47,6 +47,8 @@ static inline void setError(QAbstractSocket *socket, QAbstractSocket::SocketErro
     hackSocket->setErrorString(errorString);
 }
 
+using namespace KSocketFactory;
+
 QTcpSocket *KSocketFactory::connectToHost(const QString &protocol, const QString &host, quint16 port,
                                           QObject *parent)
 {

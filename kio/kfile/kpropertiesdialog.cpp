@@ -384,7 +384,7 @@ void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)
     d->m_pageList.append(plugin);
 }
 
-const KUrl& KPropertiesDialog::kurl() const
+KUrl KPropertiesDialog::kurl() const
 {
     return d->m_singleUrl;
 }
@@ -399,12 +399,12 @@ KFileItemList KPropertiesDialog::items() const
     return d->m_items;
 }
 
-const KUrl& KPropertiesDialog::currentDir() const
+KUrl KPropertiesDialog::currentDir() const
 {
     return d->m_currentDir;
 }
 
-const QString& KPropertiesDialog::defaultName() const
+QString KPropertiesDialog::defaultName() const
 {
     return d->m_defaultName;
 }

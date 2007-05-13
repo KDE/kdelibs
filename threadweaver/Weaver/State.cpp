@@ -66,7 +66,7 @@ State::~State()
     delete d;
 }
 
-const QString& State::stateName () const
+QString State::stateName () const
 {
     return StateNames[ stateId() ];
 }

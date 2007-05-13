@@ -54,6 +54,16 @@ QString * NetAccess::lastErrorMsg;
 int NetAccess::lastErrorCode = 0;
 QStringList* NetAccess::tmpfiles;
 
+NetAccess::NetAccess() :
+    m_metaData(0),
+    d(0)
+{
+}
+
+NetAccess::~NetAccess()
+{
+}
+
 bool NetAccess::download(const KUrl& u, QString & target, QWidget* window)
 {
   if (u.isLocalFile()) {
@@ -109,6 +119,11 @@ bool NetAccess::upload(const QString& src, const KUrl& target, QWidget* window)
 bool NetAccess::file_copy( const KUrl & src, const KUrl & target, QWidget* window )
 {
   return NetAccess::file_copy( src, target, -1, false /*not overwrite*/, false, window );
+}
+
+bool NetAccess::copy( const KUrl& src, const KUrl& target, QWidget* window )
+{
+    return file_copy( src, target, window );
 }
 
 bool NetAccess::file_copy( const KUrl& src, const KUrl& target, int permissions,
@@ -224,6 +239,16 @@ QString NetAccess::mimetype( const KUrl& url, QWidget* window )
 {
   NetAccess kioNet;
   return kioNet.mimetypeInternal( url, window );
+}
+
+QString NetAccess::lastErrorString()
+{
+    return lastErrorMsg ? *lastErrorMsg : QString();
+}
+
+int NetAccess::lastError()
+{
+    return lastErrorCode;
 }
 
 void NetAccess::removeTempFile(const QString& name)

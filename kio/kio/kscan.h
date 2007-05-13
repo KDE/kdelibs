@@ -250,8 +250,8 @@ protected:
      * @param parent the QWidget's parent, or 0
      * @param modal if true the dialog is model
      */
-    KOCRDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
-		 QWidget *parent=0L, bool modal=false );
+    explicit KOCRDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
+                         QWidget *parent=0L, bool modal=false );
 
     /**
      * Returns the current id for an image. You can use that in your subclass

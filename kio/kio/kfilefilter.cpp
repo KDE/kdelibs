@@ -25,25 +25,49 @@
 #include <kfileitem.h>
 #include <kglobal.h>
 
+class KSimpleFileFilterPrivate
+{
+public:
+    KSimpleFileFilterPrivate()
+        : m_filterDotFiles( true ),
+          m_filterSpecials( true ),
+          m_modeFilter( 0 )
+    {
+    }
+    QStringList         m_mimeFilters;
+    bool                m_filterDotFiles :1;
+    bool                m_filterSpecials :1;
+    mode_t              m_modeFilter;
+};
+
 KSimpleFileFilter::KSimpleFileFilter()
-    : m_filterDotFiles( true ),
-      m_filterSpecials( true ),
-      m_modeFilter( 0 )
+    : d( new KSimpleFileFilterPrivate )
 {
 }
 
 KSimpleFileFilter::~KSimpleFileFilter()
 {
+    delete d;
 }
 
 void KSimpleFileFilter::setFilterDotFiles( bool filter )
 {
-    m_filterDotFiles = filter;
+    d->m_filterDotFiles = filter;
+}
+
+bool KSimpleFileFilter::filterDotFiles() const
+{
+    return d->m_filterDotFiles;
 }
 
 void KSimpleFileFilter::setFilterSpecials( bool filter )
 {
-    m_filterSpecials = filter;
+    d->m_filterSpecials = filter;
+}
+
+bool KSimpleFileFilter::filterSpecials() const
+{
+    return d->m_filterSpecials;
 }
 
 void KSimpleFileFilter::setNameFilters( const QStringList& nameFilters,
@@ -57,34 +81,44 @@ void KSimpleFileFilter::setNameFilters( const QStringList& nameFilters,
 
 void KSimpleFileFilter::setMimeFilters( const QStringList& mimeFilters )
 {
-    m_mimeFilters = mimeFilters;
+    d->m_mimeFilters = mimeFilters;
+}
+
+QStringList KSimpleFileFilter::mimeFilters() const
+{
+    return d->m_mimeFilters;
 }
 
 void KSimpleFileFilter::setModeFilter( mode_t mode )
 {
-    m_modeFilter = mode;
+    d->m_modeFilter = mode;
+}
+
+mode_t KSimpleFileFilter::modeFilter() const
+{
+    return d->m_modeFilter;
 }
 
 bool KSimpleFileFilter::passesFilter( const KFileItem *item ) const
 {
     const QString& name = item->name();
 
-    if ( m_filterDotFiles && item->isHidden() )
+    if ( d->m_filterDotFiles && item->isHidden() )
         return false;
 
-    if ( m_filterSpecials && (name == "." || name == "..") )
+    if ( d->m_filterSpecials && (name == "." || name == "..") )
         return false;
 
-    if ( m_modeFilter && !(m_modeFilter & item->mode()) )
+    if ( d->m_modeFilter && !(d->m_modeFilter & item->mode()) )
         return false;
 
-    if ( !m_mimeFilters.isEmpty() ) {
+    if ( !d->m_mimeFilters.isEmpty() ) {
         // correct or guessed mimetype -- we don't mind
         KMimeType::Ptr mime = item->mimeTypePtr();
         bool ok = false;
 
-        QStringList::ConstIterator it = m_mimeFilters.begin();
-        for ( ; it != m_mimeFilters.end(); ++it ) {
+        QStringList::ConstIterator it = d->m_mimeFilters.begin();
+        for ( ; it != d->m_mimeFilters.end(); ++it ) {
             if ( mime->is(*it) ) { // match!
                 ok = true;
                 break;

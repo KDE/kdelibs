@@ -1217,6 +1217,26 @@ void KRun::abort()
   m_timer.start( 0 );
 }
 
+bool KRun::hasError() const
+{
+    return m_bFault;
+}
+
+bool KRun::hasFinished() const
+{
+    return m_bFinished;
+}
+
+bool KRun::autoDelete() const
+{
+    return m_bAutoDelete;
+}
+
+void KRun::setAutoDelete(bool b)
+{
+    m_bAutoDelete = b;
+}
+
 void KRun::setEnableExternalBrowser(bool b)
 {
    if (b)

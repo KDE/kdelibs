@@ -34,17 +34,26 @@ namespace KIO
 
 class ForwardingSlaveBasePrivate
 {
+public:
+    ForwardingSlaveBasePrivate(QObject * eventLoopParent) :
+        eventLoop(eventLoopParent)
+    {}
+    KUrl m_processedURL;
+    KUrl m_requestedURL;
+    QEventLoop eventLoop;
 };
 
 ForwardingSlaveBase::ForwardingSlaveBase(const QByteArray &protocol,
                                          const QByteArray &poolSocket,
                                          const QByteArray &appSocket)
-    : QObject(), SlaveBase(protocol, poolSocket, appSocket), eventLoop(this)
+    : QObject(), SlaveBase(protocol, poolSocket, appSocket),
+      d( new ForwardingSlaveBasePrivate(this) )
 {
 }
 
 ForwardingSlaveBase::~ForwardingSlaveBase()
 {
+    delete d;
 }
 
 bool ForwardingSlaveBase::internalRewriteUrl(const KUrl &url, KUrl &newURL)
@@ -60,8 +69,8 @@ bool ForwardingSlaveBase::internalRewriteUrl(const KUrl &url, KUrl &newURL)
         newURL = url;
     }
 
-    m_processedURL = newURL;
-    m_requestedURL = url;
+    d->m_processedURL = newURL;
+    d->m_requestedURL = url;
     return result;
 }
 
@@ -79,7 +88,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
     if ( url_found )
     {
         url = urlStr;
-        KUrl new_url = m_requestedURL;
+        KUrl new_url = d->m_requestedURL;
         if (listing)
             new_url.addPath(url.fileName());
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
@@ -90,7 +99,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
     if (mimetype.isEmpty())
     {
-        KUrl new_url = m_processedURL;
+        KUrl new_url = d->m_processedURL;
         if (url_found && listing)
         {
             new_url.addPath( url.fileName() );
@@ -107,9 +116,9 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
         kDebug() << "New Mimetype = " << mimetype << endl;
     }
 
-    if ( m_processedURL.isLocalFile() )
+    if ( d->m_processedURL.isLocalFile() )
     {
-        KUrl new_url = m_processedURL;
+        KUrl new_url = d->m_processedURL;
         if (listing)
         {
             new_url.addPath( name );
@@ -117,6 +126,16 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
         entry.insert( KIO::UDS_LOCAL_PATH, new_url.path() );
     }
+}
+
+KUrl ForwardingSlaveBase::processedUrl() const
+{
+    return d->m_processedURL;
+}
+
+KUrl ForwardingSlaveBase::requestedUrl() const
+{
+    return d->m_requestedURL;
 }
 
 void ForwardingSlaveBase::get(const KUrl &url)
@@ -129,7 +148,7 @@ void ForwardingSlaveBase::get(const KUrl &url)
         KIO::TransferJob *job = KIO::get(new_url, false, false);
         connectTransferJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -145,7 +164,7 @@ void ForwardingSlaveBase::put(const KUrl &url, int permissions,
                                          resume, false);
         connectTransferJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -159,7 +178,7 @@ void ForwardingSlaveBase::stat(const KUrl &url)
         KIO::SimpleJob *job = KIO::stat(new_url, false);
         connectSimpleJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -173,7 +192,7 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
         KIO::TransferJob *job = KIO::mimetype(new_url, false);
         connectTransferJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -187,7 +206,7 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
         KIO::ListJob *job = KIO::listDir(new_url, false);
         connectListJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -201,7 +220,7 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
         KIO::SimpleJob *job = KIO::mkdir(new_url, permissions);
         connectSimpleJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -216,7 +235,7 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
         KIO::Job *job = KIO::rename(new_src, new_dest, overwrite);
         connectJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -231,7 +250,7 @@ void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
         KIO::SimpleJob *job = KIO::symlink(target, new_dest, overwrite, false);
         connectSimpleJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -245,7 +264,7 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
         KIO::SimpleJob *job = KIO::chmod(new_url, permissions);
         connectSimpleJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -261,7 +280,7 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
                                        overwrite, false);
         connectJob(job);
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -283,7 +302,7 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
             connectSimpleJob(job);
         }
 
-        eventLoop.exec();
+        d->eventLoop.exec();
     }
 }
 
@@ -366,7 +385,7 @@ void ForwardingSlaveBase::slotResult(KJob *job)
         finished();
     }
 
-    eventLoop.exit();
+    d->eventLoop.exit();
 }
 
 void ForwardingSlaveBase::slotWarning(KJob* /*job*/, const QString &msg)
@@ -402,7 +421,7 @@ void ForwardingSlaveBase::slotRedirection(KIO::Job *job, const KUrl &url)
     job->kill( KJob::Quietly );
     finished();
 
-    eventLoop.exit();
+    d->eventLoop.exit();
 }
 
 void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
@@ -421,9 +440,9 @@ void ForwardingSlaveBase::slotEntries(KIO::Job* /*job*/,
     listEntries( final_entries );
 }
 
-void ForwardingSlaveBase::slotData(KIO::Job* /*job*/, const QByteArray &d)
+void ForwardingSlaveBase::slotData(KIO::Job* /*job*/, const QByteArray &_data)
 {
-    data(d);
+    data(_data);
 }
 
 void ForwardingSlaveBase::slotDataReq(KIO::Job* /*job*/, QByteArray &data)

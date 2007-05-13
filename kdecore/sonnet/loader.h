@@ -129,7 +129,6 @@ namespace KSpell2
         Loader(KSharedConfig::Ptr config);
         void loadPlugins();
         void loadPlugin(const KSharedPtr<KService>&);
-        mutable QStringList languagesNameCache;
     private:
         class Private;
         Private* const d;

@@ -84,49 +84,85 @@ namespace KIO {
    * @internal
    */
   class SlavePrivate {
+    public:
+        SlavePrivate(KServerSocket *socket, const QString &protocol,
+                const QString &socketname) :
+            m_protocol(protocol),
+            m_slaveProtocol(protocol),
+            m_socket(socketname),
+            serv(socket),
+            m_pid(0),
+            m_port(0),
+            contacted(false),
+            dead(false),
+            contact_started(time(0)),
+            m_refCount(1)
+        {
+        }
+        ~SlavePrivate()
+        {
+            if (serv != 0) {
+                delete serv;
+                serv = 0;
+            }
+        }
+        QString m_protocol;
+        QString m_slaveProtocol;
+        QString m_host;
+        QString m_user;
+        QString m_passwd;
+        QString m_socket;
+        KNetwork::KServerSocket *serv;
+        pid_t m_pid;
+        quint16 m_port;
+        bool contacted;
+        bool dead;
+        time_t contact_started;
+        time_t idle_since;
+        int m_refCount;
   };
 }
 
 void Slave::accept()
 {
-    KStreamSocket *socket = serv->accept();
+    KStreamSocket *socket = d->serv->accept();
     slaveconn.init(socket);
-    serv->deleteLater();
-    serv = 0;
+    d->serv->deleteLater();
+    d->serv = 0;
     slaveconn.connect(this, SLOT(gotInput()));
     unlinkSocket();
 }
 
 void Slave::unlinkSocket()
 {
-    if (m_socket.isEmpty()) return;
-    QFile::remove( m_socket );
-    m_socket.clear();
+    if (d->m_socket.isEmpty()) return;
+    QFile::remove( d->m_socket );
+    d->m_socket.clear();
 }
 
 void Slave::timeout()
 {
-   if (!serv) return;
-   kDebug(7002) << "slave failed to connect to application pid=" << m_pid << " protocol=" << m_protocol << endl;
-   if (m_pid && (::kill(m_pid, 0) == 0))
+   if (!d->serv) return;
+   kDebug(7002) << "slave failed to connect to application pid=" << d->m_pid << " protocol=" << d->m_protocol << endl;
+   if (d->m_pid && (::kill(d->m_pid, 0) == 0))
    {
-      int delta_t = (int) difftime(time(0), contact_started);
-      kDebug(7002) << "slave is slow... pid=" << m_pid << " t=" << delta_t << endl;
+      int delta_t = (int) difftime(time(0), d->contact_started);
+      kDebug(7002) << "slave is slow... pid=" << d->m_pid << " t=" << delta_t << endl;
       if (delta_t < SLAVE_CONNECTION_TIMEOUT_MAX)
       {
          QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, this, SLOT(timeout()));
          return;
       }
    }
-   kDebug(7002) << "Houston, we lost our slave, pid=" << m_pid << endl;
-   delete serv;
-   serv = 0;
+   kDebug(7002) << "Houston, we lost our slave, pid=" << d->m_pid << endl;
+   delete d->serv;
+   d->serv = 0;
    unlinkSocket();
-   dead = true;
-   QString arg = m_protocol;
-   if (!m_host.isEmpty())
-      arg += "://"+m_host;
-   kDebug(7002) << "slave died pid = " << m_pid << endl;
+   d->dead = true;
+   QString arg = d->m_protocol;
+   if (!d->m_host.isEmpty())
+      arg += "://"+d->m_host;
+   kDebug(7002) << "slave died pid = " << d->m_pid << endl;
    ref();
    // Tell the job about the problem.
    emit error(ERR_SLAVE_DIED, arg);
@@ -137,53 +173,103 @@ void Slave::timeout()
 }
 
 Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
-  : SlaveInterface(&slaveconn), serv(socket), contacted(false)
+  : SlaveInterface(&slaveconn),
+    d(new SlavePrivate(socket, protocol, socketname))
 {
-    m_refCount = 1;
-    m_protocol = protocol;
-    m_slaveProtocol = protocol;
-    m_socket = socketname;
-    dead = false;
-    contact_started = time(0);
-    idle_since = contact_started;
-    m_pid = 0;
-    m_port = 0;
-    if (serv != 0) {
-        serv->setAcceptBuffered(false);
-        connect(serv, SIGNAL(readyAccept()),
+    if (d->serv != 0) {
+        d->serv->setAcceptBuffered(false);
+        connect(d->serv, SIGNAL(readyAccept()),
 	        SLOT(accept() ) );
     }
 }
 
 Slave::~Slave()
 {
-    // kDebug(7002) << "destructing slave object pid = " << m_pid << endl;
-    if (serv != 0) {
-        delete serv;
-        serv = 0;
-    }
+    // kDebug(7002) << "destructing slave object pid = " << d->m_pid << endl;
     unlinkSocket();
-    m_pid = 99999;
+    delete d;
+}
+
+QString Slave::protocol()
+{
+    return d->m_protocol;
 }
 
 void Slave::setProtocol(const QString & protocol)
 {
-    m_protocol = protocol;
+    d->m_protocol = protocol;
+}
+
+QString Slave::slaveProtocol()
+{
+    return d->m_slaveProtocol;
+}
+
+QString Slave::host()
+{
+    return d->m_host;
+}
+
+quint16 Slave::port()
+{
+    return d->m_port;
+}
+
+QString Slave::user()
+{
+    return d->m_user;
+}
+
+QString Slave::passwd()
+{
+    return d->m_passwd;
 }
 
 void Slave::setIdle()
 {
-    idle_since = time(0);
+    d->idle_since = time(0);
+}
+
+bool Slave::isConnected()
+{
+    return d->contacted;
+}
+
+void Slave::setConnected(bool c)
+{
+    d->contacted = c;
+}
+
+void Slave::ref()
+{
+    d->m_refCount++;
+}
+
+void Slave::deref()
+{
+    d->m_refCount--;
+    if (!d->m_refCount)
+        delete this;
 }
 
 time_t Slave::idleTime()
 {
-    return (time_t) difftime(time(0), idle_since);
+    return (time_t) difftime(time(0), d->idle_since);
 }
 
 void Slave::setPID(pid_t pid)
 {
-    m_pid = pid;
+    d->m_pid = pid;
+}
+
+int Slave::slave_pid()
+{
+    return d->m_pid;
+}
+
+bool Slave::isAlive()
+{
+    return !d->dead;
 }
 
 void Slave::hold(const KUrl &url)
@@ -195,13 +281,13 @@ void Slave::hold(const KUrl &url)
       stream << url;
       slaveconn.send( CMD_SLAVE_HOLD, data );
       slaveconn.close();
-      dead = true;
+      d->dead = true;
       emit slaveDied(this);
    }
    deref();
    // Call KLauncher::waitForSlave(pid);
    {
-      KToolInvocation::klauncher()->waitForSlave(m_pid);
+      KToolInvocation::klauncher()->waitForSlave(d->m_pid);
    }
 }
 
@@ -230,11 +316,11 @@ void Slave::gotInput()
     if (!dispatch())
     {
         slaveconn.close();
-        dead = true;
-        QString arg = m_protocol;
-        if (!m_host.isEmpty())
-            arg += "://"+m_host;
-        kDebug(7002) << "slave died pid = " << m_pid << endl;
+        d->dead = true;
+        QString arg = d->m_protocol;
+        if (!d->m_host.isEmpty())
+            arg += "://"+d->m_host;
+        kDebug(7002) << "slave died pid = " << d->m_pid << endl;
         // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
         // Tell the scheduler about the problem.
@@ -246,32 +332,32 @@ void Slave::gotInput()
 
 void Slave::kill()
 {
-    dead = true; // OO can be such simple.
-    kDebug(7002) << "killing slave pid=" << m_pid << " (" << m_protocol << "://"
-		  << m_host << ")" << endl;
-    if (m_pid)
+    d->dead = true; // OO can be such simple.
+    kDebug(7002) << "killing slave pid=" << d->m_pid << " (" << d->m_protocol << "://"
+		  << d->m_host << ")" << endl;
+    if (d->m_pid)
     {
-       ::kill(m_pid, SIGTERM);
+       ::kill(d->m_pid, SIGTERM);
     }
 }
 
 void Slave::setHost( const QString &host, quint16 port,
                      const QString &user, const QString &passwd)
 {
-    m_host = host;
-    m_port = port;
-    m_user = user;
-    m_passwd = passwd;
+    d->m_host = host;
+    d->m_port = port;
+    d->m_user = user;
+    d->m_passwd = passwd;
 
     QByteArray data;
     QDataStream stream( &data, QIODevice::WriteOnly );
-    stream << m_host << m_port << m_user << m_passwd;
+    stream << d->m_host << d->m_port << d->m_user << d->m_passwd;
     slaveconn.send( CMD_HOST, data );
 }
 
 void Slave::resetHost()
 {
-    m_host = "<reset>";
+    d->m_host = "<reset>";
 }
 
 void Slave::setConfig(const MetaData &config)

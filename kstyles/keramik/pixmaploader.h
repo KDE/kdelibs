@@ -203,7 +203,7 @@ namespace Keramik
 	{
 	public:
 		enum Direction { Horizontal = 1, Vertical = 2, Both = Horizontal | Vertical };
-		ScaledPainter( int name, Direction direction = Both )
+		explicit ScaledPainter( int name, Direction direction = Both )
 			: TilePainter( name ), m_direction( direction )
 		{
 			colMde[0] =  ( m_direction & Horizontal ) ? Scaled : Tiled;
@@ -231,7 +231,7 @@ namespace Keramik
 	class RectTilePainter : public TilePainter
 	{
 	public:
-		RectTilePainter( int name,
+		explicit RectTilePainter( int name,
 		                 bool scaleH = true, bool scaleV = true,
 		                 unsigned int columns = 3, unsigned int rows = 3 );
 

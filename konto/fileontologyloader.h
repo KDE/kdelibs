@@ -40,7 +40,8 @@ namespace Konto {
 	 * Creates a FileOntologyLoader that will load the 
 	 * ontology from the specified filename.
 	 */
-	FileOntologyLoader( const QString& filename, Soprano::RdfSerialization serialization = Soprano::UNKNOWN );
+	explicit FileOntologyLoader( const QString& filename,
+                Soprano::RdfSerialization serialization = Soprano::UNKNOWN );
 
 	/**
 	 * Destructor

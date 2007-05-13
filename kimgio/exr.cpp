@@ -41,7 +41,7 @@
 class K_IStream: public Imf::IStream
 {
 public:
-	K_IStream( QIODevice *dev, QByteArray fileName ):
+	K_IStream( QIODevice *dev, const QByteArray& fileName ):
 		IStream( fileName.data() ), m_dev ( dev )
 	{}
 

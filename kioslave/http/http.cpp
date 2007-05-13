@@ -1461,7 +1461,7 @@ void HTTPProtocol::davUnlock( const KUrl& url )
     davError();
 }
 
-QString HTTPProtocol::davError( int code /* = -1 */, QString url )
+QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 {
   bool callError = false;
   if ( code == -1 ) {
@@ -1472,6 +1472,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     callError = true;
   }
 
+  QString url = _url;
   if ( !url.isNull() )
     url = m_request.url.url();
 
@@ -3756,9 +3757,9 @@ try_again:
 }
 
 
-void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
+void HTTPProtocol::addEncoding(const QString &_encoding, QStringList &encs)
 {
-  encoding = encoding.trimmed().toLower();
+  QString encoding = _encoding.trimmed().toLower();
   // Identity is the same as no encoding
   if (encoding == "identity") {
     return;

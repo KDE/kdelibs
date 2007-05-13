@@ -63,11 +63,11 @@ public:
     /**
      * @internal
      */
-    void setConnection( Connection* connection ) { m_pConnection = connection; }
+    void setConnection( Connection* connection );
     /**
      * @internal
      */
-    Connection *connection() const { return m_pConnection; }
+    Connection *connection() const;
 
 
     ///////////
@@ -303,7 +303,7 @@ public:
      * @internal for ForwardingSlaveBase
      * Contains all metadata (but no config) sent by the application to the slave.
      */
-    MetaData allMetaData() const { return mIncomingMetaData; }
+    MetaData allMetaData() const;
 
     /**
      * Returns a configuration object to query config/meta-data information

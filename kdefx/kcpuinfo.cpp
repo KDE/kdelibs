@@ -175,6 +175,9 @@ static int getCpuFeatures()
     return features;
 }
 
-unsigned int KCPUInfo::s_features = getCpuFeatures();
-
+bool KCPUInfo::haveExtension( unsigned int extension )
+{
+    static unsigned int s_features = getCpuFeatures();
+    return (s_features & extension) != 0;
+}
 

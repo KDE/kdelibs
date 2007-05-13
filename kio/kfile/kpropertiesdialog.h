@@ -220,7 +220,7 @@ public:
    *
    * @return a parsed URL.
    */
-  const KUrl& kurl() const;
+  KUrl kurl() const;
 
   /**
    * @return the file item for which the dialog is shown
@@ -243,7 +243,7 @@ public:
    *
    * @return the current directory or QString()
    */
-  const KUrl& currentDir() const;
+  KUrl currentDir() const;
 
   /**
    * If the dialog is being built from a template, this method
@@ -251,7 +251,7 @@ public:
    * See the template form of the constructor.
    * @return the default name or QString()
    */
-  const QString& defaultName() const;
+  QString defaultName() const;
 
   /**
    * Updates the item URL (either called by rename or because

@@ -112,14 +112,14 @@ public:
    * @return true when an error occurred
    * @see error()
    */
-  bool hasError() const { return m_bFault; }
+  bool hasError() const;
 
   /**
    * Returns true if the KRun instance has finished.
    * @return true if the KRun instance has finished
    * @see finished()
    */
-  bool hasFinished() const { return m_bFinished; }
+  bool hasFinished() const;
 
   /**
    * Checks whether auto delete is activated.
@@ -128,7 +128,7 @@ public:
    * By default auto deletion is on.
    * @return true if auto deletion is on, false otherwise
    */
-  bool autoDelete() const { return m_bAutoDelete; }
+  bool autoDelete() const;
 
   /**
    * Enables or disabled auto deletion.
@@ -138,7 +138,7 @@ public:
    * By default auto deletion is on.
    * @param b true to enable auto deletion, false to disable
    */
-  void setAutoDelete(bool b) { m_bAutoDelete = b; }
+  void setAutoDelete(bool b);
 
   /**
    * Set the preferred service for opening this URL, after

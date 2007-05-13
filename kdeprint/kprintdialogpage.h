@@ -29,6 +29,7 @@
 class KMPrinter;
 class DrMain;
 
+class KPrintDialogPagePrivate;
 /**
  * This class is intended to be used as base class for customized print dialog page. One of
  * the feature of the KDE print framework is to allow to customize the print dialog to
@@ -132,26 +133,26 @@ public:
 	 * @returns the page ID
 	 * @see setId()
 	 */
-	int id() const 				{ return m_ID; }
+	int id() const;
 	/**
 	 * Set the ID of the page. Not used yet.
 	 * @param ID the ID number
 	 * @see id()
 	 */
-	void setId(int ID)			{ m_ID = ID; }
+	void setId(int ID);
 	/**
 	 * Get the page title.
 	 * @returns the page title
 	 * @see setTitle()
 	 */
-	QString	title() const 			{ return m_title; }
+	QString	title() const;
 	/**
 	 * Set the page title. This title will be used as tab name for this page in the print
 	 * dialog.
 	 * @param txt the page title
 	 * @see title()
 	 */
-	void setTitle(const QString& txt)	{ m_title = txt; }
+	void setTitle(const QString& txt);
 	/**
 	 * Tell wether or not the page should be disable if a non real printer (special
 	 * printer) is selected in the print dialog. Returns false by default. Application
@@ -161,7 +162,7 @@ public:
 	 * @returns true if the page should be disabled for non real printers
 	 * @see setOnlyRealPrinters()
 	 */
-	bool onlyRealPrinters() const	{ return m_onlyreal; }
+	bool onlyRealPrinters() const;
 	/**
 	 * Change the page state when a non real printer is selected in the print dialog.
 	 * Usually, the default value (false) is OK in most cases and you don't need to
@@ -169,15 +170,15 @@ public:
 	 * @param on if true, then the page will be disabled if a non real printer is selected
 	 * @see onlyRealPrinters()
 	 */
-	void setOnlyRealPrinters(bool on = true) { m_onlyreal = on; }
+	void setOnlyRealPrinters(bool on = true);
 	/**
 	 * For internal use only.
 	 */
-	DrMain* driver() 			{ return m_driver; }
+	DrMain* driver();
 	/**
 	 * For internal use only
 	 */
-	KMPrinter* printer()			{ return m_printer; }
+	KMPrinter* printer();
 
 protected:
 	KMPrinter	*m_printer;
@@ -185,6 +186,8 @@ protected:
 	int 		m_ID;
 	QString		m_title;
 	bool		m_onlyreal;
+private:
+        KPrintDialogPagePrivate * const d;
 };
 
 #endif

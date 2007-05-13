@@ -864,6 +864,11 @@ bool KFileItem::isDir() const
   } else return true;*/
 }
 
+bool KFileItem::isFile() const
+{
+    return !isDir();
+}
+
 bool KFileItem::acceptsDrops() const
 {
     // A directory ?
@@ -892,7 +897,7 @@ QString KFileItem::getStatusBarInfo() const
 
     if ( d->m_bLink )
     {
-        text += " ";
+        text += ' ';
         if ( comment.isEmpty() )
             text += i18n ( "(Symbolic Link to %2)", linkDest() );
         else
@@ -996,6 +1001,17 @@ bool KFileItem::cmp( const KFileItem & item ) const
     return d->cmp(*item.d);
 }
 
+bool KFileItem::operator==(const KFileItem& other) const
+{
+    // is this enough?
+    return d == other.d;
+}
+
+bool KFileItem::operator!=(const KFileItem& other) const
+{
+    return d != other.d;
+}
+
 void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
                              bool _delayedMimeTypes, bool _urlIsDirectory )
 {
@@ -1064,7 +1080,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info )
     d->m_metaInfo = info;
 }
 
-const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
+KFileMetaInfo KFileItem::metaInfo(bool autoget, int) const
 {
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
@@ -1076,6 +1092,11 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
     }
 
     return d->m_metaInfo;
+}
+
+void KFileItem::assign( const KFileItem & item )
+{
+    *this = item;
 }
 
 KUrl KFileItem::mostLocalUrl(bool &local) const
@@ -1117,7 +1138,7 @@ QDataStream & operator>> ( QDataStream & s, KFileItem & a )
     return s;
 }
 
-const KUrl & KFileItem::url() const
+KUrl KFileItem::url() const
 {
     return d->m_url;
 }
@@ -1142,12 +1163,12 @@ bool KFileItem::isLocalFile() const
     return d->m_bIsLocalUrl;
 }
 
-const QString& KFileItem::text() const
+QString KFileItem::text() const
 {
     return d->m_strText;
 }
 
-const QString& KFileItem::name( bool lowerCase ) const
+QString KFileItem::name( bool lowerCase ) const
 {
     if ( !lowerCase )
         return d->m_strName;
@@ -1191,7 +1212,7 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
     return d->m_pMimeType;
 }
 
-const KIO::UDSEntry & KFileItem::entry() const
+KIO::UDSEntry KFileItem::entry() const
 {
     return d->m_entry;
 }
@@ -1221,3 +1242,38 @@ bool KFileItem::isNull() const
 {
     return d == 0;
 }
+
+
+KFileItem* KFileItemList::findByName( const QString& fileName ) const
+{
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it ) {
+        if ( (*it)->name() == fileName ) {
+            return *it;
+        }
+    }
+    return 0;
+}
+
+KFileItem* KFileItemList::findByUrl( const KUrl& url ) const {
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it ) {
+        if ( (*it)->url() == url ) {
+            return *it;
+        }
+    }
+    return 0;
+}
+
+KUrl::List KFileItemList::urlList() const {
+    KUrl::List lst;
+    const_iterator it = begin();
+    const const_iterator itend = end();
+    for ( ; it != itend ; ++it ) {
+        lst.append( (*it)->url() );
+    }
+    return lst;
+}
+

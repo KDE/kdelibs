@@ -320,7 +320,7 @@ MetaData Job::outgoingMetaData() const
 
 SimpleJob::SimpleJob(const KUrl& url, int command, const QByteArray &packedArgs)
   : Job(), m_slave(0), m_packedArgs(packedArgs),
-    m_url(url), m_command(command)
+    m_url(url), m_command(command), d(0)
 {
     if (!m_url.isValid())
     {
@@ -368,6 +368,11 @@ bool SimpleJob::doResume()
     if ( m_slave )
         m_slave->resume();
     return Job::doResume();
+}
+
+const KUrl& SimpleJob::url() const
+{
+    return m_url;
 }
 
 void SimpleJob::putOnHold()
@@ -479,6 +484,16 @@ void SimpleJob::slaveDone()
    m_slave = 0;
 }
 
+Slave *SimpleJob::slave() const
+{
+    return m_slave;
+}
+
+int SimpleJob::command() const
+{
+    return m_command;
+}
+
 void SimpleJob::slotFinished( )
 {
     // Return slave to the scheduler
@@ -572,7 +587,11 @@ void SimpleJob::storeSSLSessionFromJob(const KUrl &m_redirectionURL) {
 //////////
 MkdirJob::MkdirJob(const KUrl& url, int command,
                    const QByteArray &packedArgs)
-    : SimpleJob(url, command, packedArgs)
+    : SimpleJob(url, command, packedArgs), d(0)
+{
+}
+
+MkdirJob::~MkdirJob()
 {
 }
 
@@ -720,8 +739,27 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
 StatJob::StatJob(const KUrl& url, int command,
                  const QByteArray &packedArgs)
     : SimpleJob(url, command, packedArgs),
-    m_bSource(true), m_details(2)
+    m_bSource(true), m_details(2), d(0)
 {
+}
+
+StatJob::~StatJob()
+{
+}
+
+void StatJob::setSide( bool source )
+{
+    m_bSource = source;
+}
+
+void StatJob::setDetails( short int details )
+{
+    m_details = details;
+}
+
+const UDSEntry & StatJob::statResult() const
+{
+    return m_statResult;
 }
 
 void StatJob::start(Slave *slave)
@@ -825,12 +863,17 @@ SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expire
 TransferJob::TransferJob(const KUrl& url, int command,
                          const QByteArray &packedArgs,
                          const QByteArray &_staticData)
-    : SimpleJob(url, command, packedArgs), staticData( _staticData)
+    : SimpleJob(url, command, packedArgs), staticData( _staticData),
+      d(0)
 {
     m_internalSuspended = false;
     m_errorPage = false;
     m_subJob = 0L;
     emitTransferring( url );
+}
+
+TransferJob::~TransferJob()
+{
 }
 
 // Slave sends data
@@ -971,6 +1014,11 @@ bool TransferJob::reportDataSent()
     return (extraFlags() & EF_TransferJobDataSent);
 }
 
+QString TransferJob::mimetype() const
+{
+    return m_mimetype;
+}
+
 
 // Slave requests data
 void TransferJob::slotDataReq()
@@ -1036,6 +1084,11 @@ void TransferJob::resume()
     SimpleJob::resume();
     if ( m_internalSuspended )
         internalSuspend();
+}
+
+bool TransferJob::isErrorPage() const
+{
+    return m_errorPage;
 }
 
 void TransferJob::start(Slave *slave)
@@ -1322,11 +1375,19 @@ TransferJob *KIO::put( const KUrl& url, int permissions,
 
 //////////
 
+class StoredTransferJob::StoredTransferJobPrivate
+{
+public:
+    StoredTransferJobPrivate() : m_uploadOffset( 0 ) {}
+    QByteArray m_data;
+    int m_uploadOffset;
+};
+
 StoredTransferJob::StoredTransferJob(const KUrl& url, int command,
                                      const QByteArray &packedArgs,
                                      const QByteArray &_staticData)
     : TransferJob(url, command, packedArgs, _staticData),
-      m_uploadOffset( 0 )
+      d( new StoredTransferJobPrivate )
 {
     connect( this, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
              SLOT( slotStoredData( KIO::Job *, const QByteArray & ) ) );
@@ -1334,11 +1395,21 @@ StoredTransferJob::StoredTransferJob(const KUrl& url, int command,
              SLOT( slotStoredDataReq( KIO::Job *, QByteArray & ) ) );
 }
 
+StoredTransferJob::~StoredTransferJob()
+{
+    delete d;
+}
+
 void StoredTransferJob::setData( const QByteArray& arr )
 {
-    Q_ASSERT( m_data.isNull() ); // check that we're only called once
-    Q_ASSERT( m_uploadOffset == 0 ); // no upload started yet
-    m_data = arr;
+    Q_ASSERT( d->m_data.isNull() ); // check that we're only called once
+    Q_ASSERT( d->m_uploadOffset == 0 ); // no upload started yet
+    d->m_data = arr;
+}
+
+QByteArray StoredTransferJob::data() const
+{
+    return d->m_data;
 }
 
 void StoredTransferJob::slotStoredData( KIO::Job *, const QByteArray &data )
@@ -1346,9 +1417,9 @@ void StoredTransferJob::slotStoredData( KIO::Job *, const QByteArray &data )
   // check for end-of-data marker:
   if ( data.size() == 0 )
     return;
-  unsigned int oldSize = m_data.size();
-  m_data.resize( oldSize + data.size() );
-  memcpy( m_data.data() + oldSize, data.data(), data.size() );
+  unsigned int oldSize = d->m_data.size();
+  d->m_data.resize( oldSize + data.size() );
+  memcpy( d->m_data.data() + oldSize, data.data(), data.size() );
 }
 
 void StoredTransferJob::slotStoredDataReq( KIO::Job *, QByteArray &data )
@@ -1356,18 +1427,18 @@ void StoredTransferJob::slotStoredDataReq( KIO::Job *, QByteArray &data )
   // Inspired from kmail's KMKernel::byteArrayToRemoteFile
   // send the data in 64 KB chunks
   const int MAX_CHUNK_SIZE = 64*1024;
-  int remainingBytes = m_data.size() - m_uploadOffset;
+  int remainingBytes = d->m_data.size() - d->m_uploadOffset;
   if( remainingBytes > MAX_CHUNK_SIZE ) {
     // send MAX_CHUNK_SIZE bytes to the receiver (deep copy)
-    data = QByteArray( m_data.data() + m_uploadOffset, MAX_CHUNK_SIZE );
-    m_uploadOffset += MAX_CHUNK_SIZE;
+    data = QByteArray( d->m_data.data() + d->m_uploadOffset, MAX_CHUNK_SIZE );
+    d->m_uploadOffset += MAX_CHUNK_SIZE;
     //kDebug() << "Sending " << MAX_CHUNK_SIZE << " bytes ("
     //                << remainingBytes - MAX_CHUNK_SIZE << " bytes remain)\n";
   } else {
     // send the remaining bytes to the receiver (deep copy)
-    data = QByteArray( m_data.data() + m_uploadOffset, remainingBytes );
-    m_data = QByteArray();
-    m_uploadOffset = 0;
+    data = QByteArray( d->m_data.data() + d->m_uploadOffset, remainingBytes );
+    d->m_data = QByteArray();
+    d->m_uploadOffset = 0;
     //kDebug() << "Sending " << remainingBytes << " bytes\n";
   }
 }
@@ -1403,7 +1474,12 @@ StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KUrl& url, int p
 
 MimetypeJob::MimetypeJob(const KUrl& url, int command,
                   const QByteArray &packedArgs)
-    : TransferJob(url, command, packedArgs, QByteArray())
+    : TransferJob(url, command, packedArgs, QByteArray()),
+      d(0)
+{
+}
+
+MimetypeJob::~MimetypeJob()
 {
 }
 
@@ -1464,7 +1540,11 @@ MimetypeJob *KIO::mimetype(const KUrl& url, bool showProgressInfo )
 
 DirectCopyJob::DirectCopyJob(const KUrl& url, int command,
                              const QByteArray &packedArgs)
-    : SimpleJob(url, command, packedArgs)
+    : SimpleJob(url, command, packedArgs), d(0)
+{
+}
+
+DirectCopyJob::~DirectCopyJob()
 {
 }
 
@@ -1590,6 +1670,16 @@ void FileCopyJob::setSourceSize( KIO::filesize_t size )
 void FileCopyJob::setModificationTime( const QDateTime& mtime )
 {
     d->m_modificationTime = mtime;
+}
+
+KUrl FileCopyJob::srcUrl() const
+{
+    return m_src;
+}
+
+KUrl FileCopyJob::destUrl() const
+{
+    return m_dest;
 }
 
 void FileCopyJob::startCopyJob()
@@ -1931,9 +2021,25 @@ SimpleJob *KIO::file_delete( const KUrl& src, bool showProgressInfo)
 
 //////////
 
+class ListJob::ListJobPrivate
+{
+public:
+    ListJobPrivate(bool _recursive, const QString &_prefix, bool _includeHidden) :
+        recursive(_recursive),
+        includeHidden(_includeHidden),
+        prefix(_prefix),
+        m_processedEntries(0)
+    {}
+    bool recursive;
+    bool includeHidden;
+    QString prefix;
+    unsigned long m_processedEntries;
+    KUrl m_redirectionURL;
+};
+
 ListJob::ListJob(const KUrl& u, bool _recursive, const QString &_prefix, bool _includeHidden) :
     SimpleJob(u, CMD_LISTDIR, QByteArray()),
-    recursive(_recursive), includeHidden(_includeHidden), prefix(_prefix), m_processedEntries(0)
+    d( new ListJobPrivate(_recursive, _prefix, _includeHidden) )
 {
     // We couldn't set the args when calling the parent constructor,
     // so do it now.
@@ -1941,13 +2047,18 @@ ListJob::ListJob(const KUrl& u, bool _recursive, const QString &_prefix, bool _i
     stream << u;
 }
 
+ListJob::~ListJob()
+{
+    delete d;
+}
+
 void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 {
     // Emit progress info (takes care of emit processedSize and percent)
-    m_processedEntries += list.count();
-    slotProcessedSize( m_processedEntries );
+    d->m_processedEntries += list.count();
+    slotProcessedSize( d->m_processedEntries );
 
-    if (recursive) {
+    if (d->recursive) {
         UDSEntryList::ConstIterator it = list.begin();
         const UDSEntryList::ConstIterator end = list.end();
 
@@ -1968,11 +2079,11 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
             if (entry.isDir() && !entry.isLink()) {
                 const QString filename = itemURL.fileName();
                 // skip hidden dirs when listing if requested
-                if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
+                if (filename != ".." && filename != "." && (d->includeHidden || filename[0] != '.')) {
                     ListJob *job = new ListJob(itemURL,
                                                true /*recursive*/,
-                                               prefix + filename + '/',
-                                               includeHidden);
+                                               d->prefix + filename + '/',
+                                               d->includeHidden);
                     job->setUiDelegate(new JobUiDelegate());
                     Scheduler::scheduleJob(job);
                     connect(job, SIGNAL(entries( KIO::Job *,
@@ -1988,7 +2099,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     // Not recursive, or top-level of recursive listing : return now (send . and .. as well)
     // exclusion of hidden files also requires the full sweep, but the case for full-listing
     // a single dir is probably common enough to justify the shortcut
-    if (prefix.isNull() && includeHidden) {
+    if (d->prefix.isNull() && d->includeHidden) {
         emit entries(this, list);
     } else {
         // cull the unwanted hidden dirs and/or parent dir references from the listing, then emit that
@@ -2003,11 +2114,11 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
             const QString filename = newone.stringValue( KIO::UDS_NAME );
             // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
             // the toplevel dir, and skip hidden files/dirs if that was requested
-            if (  (prefix.isNull() || (filename != ".." && filename != ".") )
-                  && (includeHidden || (filename[0] != '.') )  )
+            if (  (d->prefix.isNull() || (filename != ".." && filename != ".") )
+                  && (d->includeHidden || (filename[0] != '.') )  )
             {
                 // ## Didn't find a way to use the iterator instead of re-doing a key lookup
-                newone.insert( KIO::UDS_NAME, prefix + filename );
+                newone.insert( KIO::UDS_NAME, d->prefix + filename );
                 newlist.append(newone);
             }
         }
@@ -2038,10 +2149,10 @@ void ListJob::slotRedirection( const KUrl & url )
        kWarning(7007) << "ListJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
        return;
      }
-    m_redirectionURL = url; // We'll remember that when the job finishes
+    d->m_redirectionURL = url; // We'll remember that when the job finishes
     if (m_url.hasUser() && !url.hasUser() && (m_url.host().toLower() == url.host().toLower()))
-        m_redirectionURL.setUser(m_url.user()); // Preserve user
-    emit redirection( this, m_redirectionURL );
+        d->m_redirectionURL.setUser(m_url.user()); // Preserve user
+    emit redirection( this, d->m_redirectionURL );
 }
 
 void ListJob::slotFinished()
@@ -2052,23 +2163,23 @@ void ListJob::slotFinished()
         if ( ptr ) {
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
             if ( !proto.isEmpty() && KProtocolInfo::isKnownProtocol( proto) ) {
-                m_redirectionURL = m_url;
-                m_redirectionURL.setProtocol( proto );
+                d->m_redirectionURL = m_url;
+                d->m_redirectionURL.setProtocol( proto );
                 setError( 0 );
-                emit redirection(this,m_redirectionURL);
+                emit redirection(this,d->m_redirectionURL);
             }
         }
     }
-    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error() ) {
+    if ( d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error() ) {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
     } else {
 
-        //kDebug(7007) << "ListJob: Redirection to " << m_redirectionURL << endl;
+        //kDebug(7007) << "ListJob: Redirection to " << d->m_redirectionURL << endl;
         if (queryMetaData("permanent-redirect")=="true")
-            emit permanentRedirection(this, m_url, m_redirectionURL);
-        m_url = m_redirectionURL;
-        m_redirectionURL = KUrl();
+            emit permanentRedirection(this, m_url, d->m_redirectionURL);
+        m_url = d->m_redirectionURL;
+        d->m_redirectionURL = KUrl();
         m_packedArgs.truncate(0);
         QDataStream stream( &m_packedArgs, QIODevice::WriteOnly );
         stream << m_url;
@@ -2081,7 +2192,7 @@ void ListJob::slotFinished()
 
 void ListJob::slotMetaData( const KIO::MetaData &_metaData) {
     SimpleJob::slotMetaData(_metaData);
-    storeSSLSessionFromJob(m_redirectionURL);
+    storeSSLSessionFromJob(d->m_redirectionURL);
 }
 
 ListJob *KIO::listDir( const KUrl& url, bool showProgressInfo, bool includeHidden )
@@ -2131,11 +2242,17 @@ void ListJob::start(Slave *slave)
     SimpleJob::start(slave);
 }
 
+const KUrl& ListJob::redirectionUrl() const
+{
+    return d->m_redirectionURL;
+}
+
 ////
 
 MultiGetJob::MultiGetJob(const KUrl& url)
  : TransferJob(url, 0, QByteArray(), QByteArray()),
-   m_currentEntry( 0, KUrl(), MetaData() )
+   m_currentEntry( 0, KUrl(), MetaData() ),
+   d(0)
 {
 }
 
@@ -2304,6 +2421,11 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
   }
   if (!findCurrentEntry()) return; // Error, unknown request!
   emit mimetype(m_currentEntry.id, _mimetype);
+}
+
+bool MultiGetJob::GetRequest::operator==( const GetRequest& req ) const
+{
+    return req.id == id;
 }
 
 MultiGetJob *KIO::multi_get(long id, const KUrl &url, const MetaData &metaData)

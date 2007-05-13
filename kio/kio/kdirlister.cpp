@@ -1769,12 +1769,12 @@ void KDirLister::setAutoErrorHandlingEnabled( bool enable, QWidget* parent )
   d->errorParent = parent;
 }
 
-const KUrl& KDirLister::url() const
+KUrl KDirLister::url() const
 {
   return d->url;
 }
 
-const KUrl::List& KDirLister::directories() const
+KUrl::List KDirLister::directories() const
 {
   return d->lstDirs;
 }
@@ -1915,7 +1915,7 @@ void KDirLister::setNameFilter( const QString& nameFilter )
   d->changes |= NAME_FILTER;
 }
 
-const QString& KDirLister::nameFilter() const
+QString KDirLister::nameFilter() const
 {
   return d->nameFilter;
 }
@@ -1955,7 +1955,7 @@ void KDirLister::clearMimeFilter()
   d->changes |= MIME_FILTER;
 }
 
-const QStringList& KDirLister::mimeFilters() const
+QStringList KDirLister::mimeFilters() const
 {
   return d->mimeFilter;
 }

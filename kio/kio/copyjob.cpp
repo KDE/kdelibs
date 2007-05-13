@@ -114,6 +114,16 @@ CopyJob::~CopyJob()
     delete d;
 }
 
+KUrl::List CopyJob::srcUrls() const
+{
+    return m_srcList;
+}
+
+KUrl CopyJob::destUrl() const
+{
+    return m_dest;
+}
+
 void CopyJob::slotStart()
 {
     /**

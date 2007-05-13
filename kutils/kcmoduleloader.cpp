@@ -33,6 +33,7 @@
 #include <kmessagebox.h>
 #include <klibloader.h>
 
+using namespace KCModuleLoader;
 
 /***************************************************************/
 /**
@@ -58,8 +59,7 @@ class KCMError : public KCModule
 
 
 
-
-KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QByteArray &libprefix,
+static KCModule* load(const KCModuleInfo &mod, const QByteArray &libprefix,
     ErrorReporting report, QWidget * parent, const QStringList& args )
 {
   // get the library loader instance

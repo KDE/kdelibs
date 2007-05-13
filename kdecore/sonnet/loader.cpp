@@ -49,6 +49,8 @@ public:
     QMap<QString, QList<Client*> > languageClients;
     QStringList clients;
     DefaultDictionary *defaultDictionary;
+
+    QStringList languagesNameCache;
 };
 
 typedef QHash<KSharedConfig*, Loader*> LoaderConfigHash;
@@ -154,8 +156,8 @@ QStringList Loader::languagesName() const
     /* For whatever reason languages() might change. So,
      * to be in sync with it let's do the following check.
      */
-    if (languagesNameCache.count() == languages().count() )
-        return languagesNameCache;
+    if (d->languagesNameCache.count() == languages().count() )
+        return d->languagesNameCache;
 
     QStringList allLocalizedDictionaries;
     QStringList allDictionaries = languages();
@@ -267,7 +269,7 @@ QStringList Loader::languagesName() const
 	variantCount = 0;
     }
     // cache the list
-    languagesNameCache = allLocalizedDictionaries;
+    d->languagesNameCache = allLocalizedDictionaries;
     return allLocalizedDictionaries;
 }
 

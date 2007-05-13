@@ -170,9 +170,8 @@ public:
      */
     static bool file_copy( const KUrl& src, const KUrl& target, QWidget* window = 0 );
     /// @deprecated, use file_copy instead
-    static KDE_DEPRECATED bool copy( const KUrl& src, const KUrl& target, QWidget* window = 0 ) {
-        return file_copy( src, target, window );
-    }
+    static KDE_DEPRECATED bool copy( const KUrl& src, const KUrl& target,
+                                     QWidget* window = 0 );
 
     // KDE4: I want to just get rid of the "Full-fledged equivalents" methods now that we have synchronousRun().
 
@@ -400,13 +399,13 @@ public:
      * Note that this is already translated.
      * @return the last error string, or QString()
      */
-    static QString lastErrorString() { return lastErrorMsg ? *lastErrorMsg : QString(); }
+    static QString lastErrorString();
 
     /**
      * Returns the error code for the last job, in case it failed.
      * @return the last error code
      */
-    static int lastError() { return lastErrorCode; }
+    static int lastError();
 
 Q_SIGNALS:
     void leaveModality();
@@ -414,12 +413,12 @@ private:
     /**
      * Private constructor
      */
-    NetAccess() : m_metaData(0), d(0) {}
+    NetAccess();
 
     /**
      * Private destructor
      */
-    ~NetAccess() {}
+    ~NetAccess();
 
     /**
      * Internal methods
@@ -468,7 +467,7 @@ private:
     bool bJobOK;
 
 private:
-    class NetAccessPrivate* const d;//notreallyneeded,thectorisprivatealready.
+    class NetAccessPrivate* const d;
 };
 
 }

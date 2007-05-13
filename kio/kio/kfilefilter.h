@@ -37,10 +37,10 @@ class KFileItem;
  * reimplement passesFilter().
  * @short Base class for file filters.
  */
-class KIO_EXPORT KFileFilter
+class KIO_EXPORT KFileFilter //krazy:exclude=dpointer (just provides an interface)
 {
 public:
-	virtual ~KFileFilter() {}
+    virtual ~KFileFilter() {} //krazy:exclude=inlines (just provides an interface)
     /**
      * Checks the given @p item.
      * @param item the item to filter
@@ -51,6 +51,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 };
 
+class KSimpleFileFilterPrivate;
 /**
  * A simple file filter that can filter hidden dot files, by name,
  * by mime type and by mode.
@@ -80,7 +81,7 @@ public:
      * @return true if filtering is enabled, false otherwise
      * @see setFilterDotFiles
      */
-    bool filterDotFiles() const { return m_filterDotFiles; }
+    bool filterDotFiles() const;
 
     /**
      * Filters "." and "..", default is true.
@@ -91,7 +92,7 @@ public:
      * Checks whether it filters "." and "..", default is true.
      * @return true if enabled, false otherwise
      */
-    bool filterSpecials() const { return m_filterSpecials; }
+    bool filterSpecials() const;
 
     /**
      * Sets a list of regular expressions to filter by name.
@@ -114,7 +115,7 @@ public:
      * @return the list of mime types
      * @see mimeFilter
      */
-    QStringList mimeFilters() const { return m_mimeFilters; }
+    QStringList mimeFilters() const;
 
     /**
      * Sets the mode filter. If the @p mode is 0, the filter is
@@ -130,7 +131,7 @@ public:
      * @return the mode filter, 0 if disabled
      * @see setModeFilter
      */
-    mode_t modeFilter() const { return m_modeFilter; }
+    mode_t modeFilter() const;
 
     /**
      * Checks the given @p item.
@@ -142,15 +143,10 @@ public:
 protected:
     QList<QRegExp>   m_nameFilters;
 
-private:
-    QStringList         m_mimeFilters;
-    bool                m_filterDotFiles :1;
-    bool                m_filterSpecials :1;
-    mode_t              m_modeFilter;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
-    class KSimpleFileFilterPrivate* d;
+    KSimpleFileFilterPrivate * const d;
 };
 
 #endif // KFILEFILTER_H

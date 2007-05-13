@@ -14,8 +14,8 @@
 #include <kio/kio_export.h>
 
 /**
- * A small convenience class to get information about image format names and
- * the corresponding mime type. Also it can give information about supported
+ * Methods to get information about image format names and
+ * the corresponding mime type. Also, you can get information about supported
  * image types without loading all the imageformat plugins.
  *
  * The image processing backends are written as image handlers compatible
@@ -43,9 +43,8 @@
  * @li XV      \<read\> \<write\>
  *
  */
-class KIO_EXPORT KImageIO //krazy:exclude=dpointer (all static methods)
+namespace KImageIO
 {
-public:
   /**
    * Possible image file access modes.
    *
@@ -63,7 +62,7 @@ public:
    * @return a space-separated list of file globs that describe the
    * supported formats
    */
-  static QString pattern(Mode mode = Reading);
+  KIO_EXPORT QString pattern(Mode mode = Reading);
 
   /**
    * Returns the type of a MIME type.
@@ -71,14 +70,14 @@ public:
    * @return type id(s) of the MIME type or QStringList() if the MIME type
    *         is not supported
    */
-  static QStringList typeForMime(const QString& mimeType);
+  KIO_EXPORT QStringList typeForMime(const QString& mimeType);
   /**
    * Returns a list of all KImageIO supported formats.
    *
    * @param mode Tells whether to retrieve modes that can be read or written.
    * @return a list of the type ids
    */
-  static QStringList types(Mode mode = Writing);
+  KIO_EXPORT QStringList types(Mode mode = Writing);
                    
   /**
    *  Returns a list of MIME types for all KImageIO supported formats.
@@ -86,7 +85,7 @@ public:
    * @param mode Tells whether to retrieve modes that can be read or written.
    * @return a list if MIME types of the supported formats
    */
-  static QStringList mimeTypes( Mode mode = Writing );
+  KIO_EXPORT QStringList mimeTypes( Mode mode = Writing );
 
   /**
    * Test to see whether a MIME type is supported to reading/writing.
@@ -94,7 +93,7 @@ public:
    * @param _mode Tells whether to check for reading or writing capabilities
    * @return true if the type is supported
    **/
-  static bool isSupported( const QString& mimeType, Mode mode = Writing );
+  KIO_EXPORT bool isSupported( const QString& mimeType, Mode mode = Writing );
 };
 
 

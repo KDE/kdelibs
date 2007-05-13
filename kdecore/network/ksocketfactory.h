@@ -32,13 +32,13 @@ class QUdpSocket;
 class QUrl;
 
 /**
- * @class KSocketFactory
- * @brief KSocketFactory allows one to open sockets to remote hosts
+ * @namespace KSocketFactory
+ * @brief KSocketFactory provides functions for opening sockets to remote hosts
  *
- * KSocketFactory is a socket-opener class that must be used whenever
- * a KDE application wants to communicate with a remote host. It will
- * determine the necessary proxy and local KDE settings, then open the
- * connection. The typical use-case is:
+ * KSocketFactory is a socket-opener group of functions that must be
+ * used whenever a KDE application wants to communicate with a remote
+ * host. It will determine the necessary proxy and local KDE settings,
+ * then open the connection. The typical use-case is:
  *
  * <code>
  *   d->socket = KSocketFactory::connectToHost("www.kde.org", "http");
@@ -59,15 +59,14 @@ class QUrl;
  *   d->socket->setParent(this);
  * </code>
  *
- * All objects returned from this class belong to the caller and must be
- * disposed of properly. Calling QObject::setParent() or passing a
- * parent object is the recommended way.
+ * All objects returned from these functions belong to the caller and
+ * must be disposed of properly. Calling QObject::setParent() or
+ * passing a parent object is the recommended way.
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KSocketFactory // krazy:exclude=dpointer (static methods only)
+namespace KSocketFactory
 {
-public:
     /**
      * Initiates a TCP/IP socket connection to remote node (host) @p
      * host, using the @p protocol. Returns a QTcpSocket
@@ -97,13 +96,13 @@ public:
      *                  QTcpSocket constructor
      * @threadsafe
      */
-    static QTcpSocket *connectToHost(const QString &protocol, const QString &host,
+    KDECORE_EXPORT QTcpSocket *connectToHost(const QString &protocol, const QString &host,
                                      quint16 port, QObject *parent = 0);
 
     /**
      * @overload
      */
-    static QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
+    KDECORE_EXPORT QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
 
     /**
      * This function behaves exactly like connectToHost() above, except
@@ -132,14 +131,14 @@ public:
      *                  QTcpSocket constructor
      * @threadsafe
      */
-    static QTcpSocket *synchronousConnectToHost(const QString &protocol, const QString &host,
+    KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QString &protocol, const QString &host,
                                                 quint16 port, int msecs = 30000,
                                                 QObject *parent = 0);
 
     /**
      * @overload
      */
-    static QTcpSocket *synchronousConnectToHost(const QUrl &url, int msecs = 30000,
+    KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QUrl &url, int msecs = 30000,
                                                 QObject *parent = 0);
 
     /**
@@ -162,17 +161,17 @@ public:
      * @param parent    the parent object to be passed to the
      *                  QTcpServer constructor
      */
-    static QTcpServer *listen(const QString &protocol, const QHostAddress &address = QHostAddress::Any,
+    KDECORE_EXPORT QTcpServer *listen(const QString &protocol, const QHostAddress &address = QHostAddress::Any,
                               quint16 port = 0, QObject *parent = 0);
 
     // These functions below aren't done yet
     // Undocumented -> don't use!
 
-    static QUdpSocket *datagramSocket(const QString &protocol, const QString &host, QObject *parent = 0);
+    KDECORE_EXPORT QUdpSocket *datagramSocket(const QString &protocol, const QString &host, QObject *parent = 0);
 
-    static QNetworkProxy proxyForConnection(const QString &protocol, const QString &host);
-    static QNetworkProxy proxyForListening(const QString &protocol);
-    static QNetworkProxy proxyForDatagram(const QString &protocol, const QString &host);
+    KDECORE_EXPORT QNetworkProxy proxyForConnection(const QString &protocol, const QString &host);
+    KDECORE_EXPORT QNetworkProxy proxyForListening(const QString &protocol);
+    KDECORE_EXPORT QNetworkProxy proxyForDatagram(const QString &protocol, const QString &host);
 };
 
 #endif

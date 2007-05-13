@@ -134,7 +134,8 @@ public:
      * @param parent The parent object.
      * @param name The name of the object.
      */
-    KThemeCache( int maxSize, QObject *parent = 0, const char *name = 0 );
+    explicit KThemeCache( int maxSize, QObject *parent = 0,
+                          const char *name = 0 );
     /**
      * Inserts a new pixmap into the cache.
      *

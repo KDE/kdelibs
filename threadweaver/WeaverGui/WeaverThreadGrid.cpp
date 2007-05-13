@@ -44,7 +44,8 @@ namespace ThreadWeaver {
           m_colorBusyFrame ( Qt::darkGreen ),
           m_colorBusy ( Qt::green ),
           m_colorIdleFrame ( Qt::darkGray ),
-          m_colorIdle ( Qt::darkGreen )
+          m_colorIdle ( Qt::darkGreen ),
+          d ( 0 )
     {
     }
 

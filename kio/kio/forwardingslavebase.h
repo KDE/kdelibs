@@ -151,27 +151,21 @@ protected:
      * Return the URL being processed by the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KUrl processedUrl() const { return m_processedURL; }
+    KUrl processedUrl() const;
 
     /**
      * Return the URL asked to the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KUrl requestedUrl() const { return m_requestedURL; }
+    KUrl requestedUrl() const;
 
 private:
-    KUrl m_processedURL;
-    KUrl m_requestedURL;
-    ForwardingSlaveBasePrivate *d;
-
     bool internalRewriteUrl(const KUrl &url, KUrl &newURL);
 
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);
     void connectListJob(ListJob *job);
     void connectTransferJob(TransferJob *job);
-
-    QEventLoop eventLoop;
 
 private Q_SLOTS:
     // KIO::Job
@@ -193,6 +187,9 @@ private Q_SLOTS:
     void slotDataReq(KIO::Job *job, QByteArray &data);
     void slotMimetype (KIO::Job *job, const QString &type);
     void slotCanResume (KIO::Job *job, KIO::filesize_t offset);
+
+private:
+    ForwardingSlaveBasePrivate *d;
 };
 
 }

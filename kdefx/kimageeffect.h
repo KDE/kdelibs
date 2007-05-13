@@ -38,16 +38,10 @@ class QPoint;
 class QRect;
 
 /**
- * This class includes various QImage based graphical effects.
- *
- * Everything is
- * static, so there is no need to create an instance of this class. You can
- * just call the static methods. They are encapsulated here merely to provide
- * a common namespace.
+ * Functions to perform various QImage based graphical effects.
  */
-class KDEFX_EXPORT KImageEffect
+namespace KImageEffect
 {
-public:
     /**
      * This enum provides a gradient type specification
      * @see KImageEffect::blend(), KImageEffect::gradient(),
@@ -141,7 +135,7 @@ public:
      * truecolor display. The gradient will be dithered to this number of
      * colors. Pass 0 to prevent dithering.
      */
-    static QImage gradient(const QSize &size, const QColor &ca,
+    KDEFX_EXPORT QImage gradient(const QSize &size, const QColor &ca,
                            const QColor &cb, GradientType type, int ncols=3);
 
     /**
@@ -158,7 +152,7 @@ public:
      * @param yfactor The y decay length.
      * @param ncols The number of colors. See KImageEffect:gradient.
      */
-    static QImage unbalancedGradient(const QSize &size, const QColor &ca,
+    KDEFX_EXPORT QImage unbalancedGradient(const QSize &size, const QColor &ca,
 	    const QColor &cb, GradientType type, int xfactor = 100,
 	    int yfactor = 100, int ncols = 3);
 
@@ -178,7 +172,7 @@ public:
      * @author Karol Szwed (gallium@kde.org)
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
      */
-    static QImage& blend(const QColor& clr, QImage& dst, float opacity);
+    KDEFX_EXPORT QImage& blend(const QColor& clr, QImage& dst, float opacity);
 
     /**
      * Blend the src image into the destination image, using an opacity
@@ -196,7 +190,7 @@ public:
      * @author Karol Szwed (gallium@kde.org)
      * @author Fredrik H&ouml;glund (fredrik@kde.org)
      */
-    static QImage& blend(QImage& src, QImage& dst, float opacity);
+    KDEFX_EXPORT QImage& blend(QImage& src, QImage& dst, float opacity);
 
     /**
      * Blend the provided image into a background of the indicated color.
@@ -212,7 +206,7 @@ public:
      *                  with concentric blending effects)
      * @param image must be 32bpp
      */
-    static QImage& blend(QImage &image, float initial_intensity,
+    KDEFX_EXPORT QImage& blend(QImage &image, float initial_intensity,
                       const QColor &bgnd, GradientType eff,
                       bool anti_dir=false);
 
@@ -226,7 +220,7 @@ public:
      * @param xf x decay length for unbalanced gradient tpye
      * @param yf y decay length for unbalanced gradient tpye
      */
-    static QImage& blend(QImage &image1,QImage &image2,
+    KDEFX_EXPORT QImage& blend(QImage &image1,QImage &image2,
 			 GradientType gt, int xf=100, int yf=100);
 
     /**
@@ -241,7 +235,7 @@ public:
      *               in between, a corresponding blending is used.
      * @param channel The RBG channel to use for the blending decision.
      */
-    static QImage& blend(QImage &image1, QImage &image2,
+    KDEFX_EXPORT QImage& blend(QImage &image1, QImage &image2,
 			 QImage &blendImage, RGBComponent channel);
 
     /**
@@ -251,8 +245,8 @@ public:
      * @param output the target image
      * @author Rik Hemsley (rikkus) <rik@kde.org>
      */
-    static bool blend(const QImage & upper, const QImage & lower, QImage & output);
-// Not yet...    static bool blend(const QImage & image1, const QImage & image2, QImage & output, const QRect & destRect);
+    KDEFX_EXPORT bool blend(const QImage & upper, const QImage & lower, QImage & output);
+// Not yet...    KDEFX_EXPORT bool blend(const QImage & image1, const QImage & image2, QImage & output, const QRect & destRect);
 
     /**
      * Blend an image into another one, using alpha in the expected way and
@@ -270,7 +264,7 @@ public:
      * @param lower the "lower" image
      * @param output the target image
      */
-    static bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
+    KDEFX_EXPORT bool blend(int &x, int &y, const QImage & upper, const QImage & lower, QImage & output);
 
     /**
      * Blend an image into another one, using alpha in the expected way and
@@ -282,7 +276,7 @@ public:
      * @param upper the "upper" image
      * @param lower the "lower" image, which becomes the output image
      */
-    static bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
+    KDEFX_EXPORT bool blendOnLower(int x, int y, const QImage & upper, const QImage & lower);
 
     /**
      * Blend part of an image into part of another, using the alpha channel in
@@ -295,7 +289,7 @@ public:
      * @param lowerRect Rectangle for the part of the lower image where the
      *                  blending will occur.
      */
-    static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
+    KDEFX_EXPORT void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect);
 
     /**
@@ -311,7 +305,7 @@ public:
      * @param opacity Opacity (between 0.0 and 1.0) which determines how much
      *             the source image will be blended into the destination image.
      */
-    static void blendOnLower(const QImage &upper, const QPoint &upperOffset,
+    KDEFX_EXPORT void blendOnLower(const QImage &upper, const QPoint &upperOffset,
                              QImage &lower, const QRect &lowerRect, float opacity);
 
     /**
@@ -341,7 +335,7 @@ public:
      *
      * @return the computed rectangle. Its size may exceed @e lowerSize.
      */
-    static QRect computeDestinationRect(const QSize &lowerSize,
+    KDEFX_EXPORT QRect computeDestinationRect(const QSize &lowerSize,
                                       Disposition disposition, QImage &upper);
 
     /**
@@ -349,7 +343,7 @@ public:
      * opacity. The alpha channel of the upper image is used in the expected
      * way. Beware the upper image may be modified.
      */
-    static void blendOnLower(QImage &upper, QImage &lower,
+    KDEFX_EXPORT void blendOnLower(QImage &upper, QImage &lower,
                              Disposition disposition, float opacity);
 
     /**
@@ -361,7 +355,7 @@ public:
      * @return The @p image, provided for convenience.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage& channelIntensity(QImage &image, float percent,
+    KDEFX_EXPORT QImage& channelIntensity(QImage &image, float percent,
                                     RGBComponent channel);
 
     /**
@@ -374,7 +368,7 @@ public:
      * @param color The background color.
      * @return Returns the image(), provided for convenience.
      */
-    static QImage& fade(QImage &image, float val, const QColor &color);
+    KDEFX_EXPORT QImage& fade(QImage &image, float val, const QColor &color);
 
 
     /**
@@ -387,7 +381,7 @@ public:
      * @param ncols The number of colors to dither the image to.
      * Pass 0 to prevent dithering.
      */
-    static QImage& flatten(QImage &image, const QColor &ca,
+    KDEFX_EXPORT QImage& flatten(QImage &image, const QColor &ca,
            const QColor &cb, int ncols=0);
 
     /**
@@ -398,7 +392,7 @@ public:
      * @param spacing How many unmodified pixels in between hashes.
      * @return Returns the image(), provided for convenience.
      */
-    static QImage& hash(QImage &image, Lighting lite=NorthLite,
+    KDEFX_EXPORT QImage& hash(QImage &image, Lighting lite=NorthLite,
                         unsigned int spacing=0);
 
     /**
@@ -414,7 +408,7 @@ public:
      * @author Daniel M. Duley (mosfet)
      * @author Benjamin Roe (ben@benroe.com)
      */
-    static QImage& intensity(QImage &image, float percent);
+    KDEFX_EXPORT QImage& intensity(QImage &image, float percent);
 
     /**
      * Modulate the image with a color channel of another image.
@@ -427,7 +421,7 @@ public:
      * @param channel The RBG channel of image2 to use for modulation.
      * @return Returns the image(), provided for convenience.
      */
-    static QImage& modulate(QImage &image, QImage &modImage, bool reverse,
+    KDEFX_EXPORT QImage& modulate(QImage &image, QImage &modImage, bool reverse,
 		ModulationType type, int factor, RGBComponent channel);
 
     /**
@@ -439,7 +433,7 @@ public:
      * @return Returns the image(), provided for convenience.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage& toGray(QImage &image, bool fast = false);
+    KDEFX_EXPORT QImage& toGray(QImage &image, bool fast = false);
 
     /**
      * Desaturate an image evenly.
@@ -448,7 +442,7 @@ public:
      * @param desat A value between 0 and 1 setting the degree of desaturation
      * @return Returns the image(), provided for convenience.
      */
-    static QImage& desaturate(QImage &image, float desat = 0.3);
+    KDEFX_EXPORT QImage& desaturate(QImage &image, float desat = 0.3);
 
     /**
      * Fast, but low quality contrast of an image. Also see contrastHSV.
@@ -459,7 +453,7 @@ public:
      * @author Daniel M. Duley (mosfet)
      * ### KDE 4: remove
      */
-    static QImage& contrast(QImage &image, int c);
+    KDEFX_EXPORT QImage& contrast(QImage &image, int c);
 
     /**
      * Dither an image using Floyd-Steinberg dithering for low-color
@@ -470,7 +464,7 @@ public:
      * @param size The size of the palette
      * @return Returns the image(), provided for convenience.
      */
-    static QImage& dither(QImage &image, const QColor *palette, int size);
+    KDEFX_EXPORT QImage& dither(QImage &image, const QColor *palette, int size);
 
     /**
      * Calculate the image for a selected image, for instance a selected icon
@@ -478,7 +472,7 @@ public:
      * @param img the QImage to select
      * @param col the selected color, usually from QPalette::highlight().
      */
-    static QImage& selectedImage( QImage &img, const QColor &col );
+    KDEFX_EXPORT QImage& selectedImage( QImage &img, const QColor &col );
 
     /**
      * High quality, expensive HSV contrast. You can do a faster one by just
@@ -491,7 +485,7 @@ public:
      * it is decreased, (dulled).
      * @author Daniel M. Duley (mosfet)
      */
-    static void contrastHSV(QImage &img, bool sharpen=true);
+    KDEFX_EXPORT void contrastHSV(QImage &img, bool sharpen=true);
 
     /**
      * Normalises the pixel values to span the full range of color values.
@@ -499,7 +493,7 @@ public:
      * @param img the image that is normalised
      * @author Daniel M. Duley (mosfet)
      */
-    static void normalize(QImage &img);
+    KDEFX_EXPORT void normalize(QImage &img);
 
     /**
      * Performs histogram equalisation on the reference
@@ -507,7 +501,7 @@ public:
      * @param img the image that is equalised
      * @author Daniel M. Duley (mosfet)
      */
-    static void equalize(QImage &img);
+    KDEFX_EXPORT void equalize(QImage &img);
 
     /**
      * Thresholds the reference image. You can also threshold images by using
@@ -518,7 +512,7 @@ public:
      * @param value The threshold value.
      * @author Daniel M. Duley (mosfet)
      */
-    static void threshold(QImage &img, unsigned int value=128);
+    KDEFX_EXPORT void threshold(QImage &img, unsigned int value=128);
 
     /**
      * Produces a 'solarization' effect seen when exposing a photographic
@@ -528,7 +522,7 @@ public:
      * @param factor The extent of the solarization (0-99.9)
      * @author Daniel M. Duley (mosfet)
      */
-    static void solarize(QImage &img, double factor=50.0);
+    KDEFX_EXPORT void solarize(QImage &img, double factor=50.0);
 
     /**
      * Embosses the source image. This involves highlighting the edges
@@ -543,12 +537,12 @@ public:
      * @return The embossed image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage emboss(QImage &src, double radius, double sigma);
+    KDEFX_EXPORT QImage emboss(QImage &src, double radius, double sigma);
 
     /**
      * Convenience method.
      */
-    static QImage emboss(QImage &src);
+    KDEFX_EXPORT QImage emboss(QImage &src);
 
     /**
      * Minimizes speckle noise in the source image using the 8 hull
@@ -558,7 +552,7 @@ public:
      * @return The despeckled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage despeckle(QImage &src);
+    KDEFX_EXPORT QImage despeckle(QImage &src);
 
     /**
      * Produces a neat little "charcoal" effect.
@@ -571,13 +565,13 @@ public:
      * @return The charcoal image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage charcoal(QImage &src, double radius, double sigma);
+    KDEFX_EXPORT QImage charcoal(QImage &src, double radius, double sigma);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * with a radius and sigma instead!
      */
-     static QImage charcoal(QImage &src, double factor=50.0);
+     KDEFX_EXPORT QImage charcoal(QImage &src, double factor=50.0);
 
     /**
      * Rotates the image by the specified amount
@@ -587,7 +581,7 @@ public:
      * @return The rotated image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage rotate(QImage &src, RotateDirection r);
+    KDEFX_EXPORT QImage rotate(QImage &src, RotateDirection r);
 
     /**
      * Scales an image using simple pixel sampling. This does not produce
@@ -600,7 +594,7 @@ public:
      * @return The scaled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage sample(QImage &src, int w, int h);
+    KDEFX_EXPORT QImage sample(QImage &src, int w, int h);
 
     /**
      * Adds noise to an image.
@@ -610,7 +604,7 @@ public:
      * @return The image with noise added. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage addNoise(QImage &src, NoiseType type = GaussianNoise);
+    KDEFX_EXPORT QImage addNoise(QImage &src, NoiseType type = GaussianNoise);
 
     /**
      * Blurs an image by convolving pixel neighborhoods.
@@ -623,13 +617,13 @@ public:
      * @return The blurred image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage blur(QImage &src, double radius, double sigma);
+    KDEFX_EXPORT QImage blur(QImage &src, double radius, double sigma);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * with a radius and sigma instead!
      */
-    static QImage blur(QImage &src, double factor=50.0);
+    KDEFX_EXPORT QImage blur(QImage &src, double factor=50.0);
 
     /**
      * Detects edges in an image using pixel neighborhoods and an edge
@@ -641,7 +635,7 @@ public:
      * @return The image with edges detected. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage edge(QImage &src, double radius);
+    KDEFX_EXPORT QImage edge(QImage &src, double radius);
 
     /**
      * Implodes an image by a specified percent.
@@ -653,7 +647,7 @@ public:
      * @return The imploded image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage implode(QImage &src, double factor=30.0,
+    KDEFX_EXPORT QImage implode(QImage &src, double factor=30.0,
                    unsigned int background = 0xFFFFFFFF);
 
     /**
@@ -665,13 +659,13 @@ public:
      * @return The new image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage oilPaintConvolve(QImage &src, double radius);
+    KDEFX_EXPORT QImage oilPaintConvolve(QImage &src, double radius);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * instead!
      */
-    static QImage oilPaint(QImage &src, int radius=3);
+    KDEFX_EXPORT QImage oilPaint(QImage &src, int radius=3);
 
     /**
      * Sharpens the pixels in the image using pixel neighborhoods.
@@ -684,13 +678,13 @@ public:
      * @return The sharpened image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage sharpen(QImage &src, double radius, double sigma);
+    KDEFX_EXPORT QImage sharpen(QImage &src, double radius, double sigma);
 
     /**
      * This is provided for binary compatability only! Use the above method
      * instead!
      */
-    static QImage sharpen(QImage &src, double factor=30.0);
+    KDEFX_EXPORT QImage sharpen(QImage &src, double factor=30.0);
 
     /**
      * Randomly displaces pixels.
@@ -700,7 +694,7 @@ public:
      * @return The image with pixels displaced. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage spread(QImage &src, unsigned int amount=3);
+    KDEFX_EXPORT QImage spread(QImage &src, unsigned int amount=3);
 
     /**
      * Shades the image using a distance light source.
@@ -712,7 +706,7 @@ public:
      * @return The shaded image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage shade(QImage &src, bool color_shading=true, double azimuth=30.0,
+    KDEFX_EXPORT QImage shade(QImage &src, bool color_shading=true, double azimuth=30.0,
                         double elevation=30.0);
     /**
      * Swirls the image by a specified amount
@@ -724,7 +718,7 @@ public:
      * @return The swirled image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
+    KDEFX_EXPORT QImage swirl(QImage &src, double degrees=50.0, unsigned int background =
                          0xFFFFFFFF);
 
     /**
@@ -738,7 +732,7 @@ public:
      * @return The new image. The original is not changed.
      * @author Daniel M. Duley (mosfet)
      */
-    static QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
+    KDEFX_EXPORT QImage wave(QImage &src, double amplitude=25.0, double frequency=150.0,
                         unsigned int background = 0xFFFFFFFF);
 
     /**
@@ -761,40 +755,10 @@ public:
      * @return The destination image (dst) containing the result.
      * @author Zack Rusin <zack@kde.org>
      */
-    static QImage bumpmap(QImage &img, QImage &map, double azimuth, double elevation,
+    KDEFX_EXPORT QImage bumpmap(QImage &img, QImage &map, double azimuth, double elevation,
                           int depth, int xofs, int yofs, int waterlevel,
                           int ambient, bool compensate, bool invert,
                           BumpmapType type, bool tiled);
-
-private:
-
-    /**
-     * Helper function to fast calc some altered (lighten, shaded) colors
-     *
-     */
-    static unsigned int lHash(unsigned int c);
-    static unsigned int uHash(unsigned int c);
-
-    /**
-     * Helper function to find the nearest color to the RBG triplet
-     */
-    static int nearestColor( int r, int g, int b, const QColor *pal, int size );
-
-    static void hull(const int x_offset, const int y_offset, const int polarity,
-                     const int width, const int height,
-                     unsigned int *f, unsigned int *g);
-    static unsigned int generateNoise(unsigned int pixel, NoiseType type);
-    static unsigned int interpolateColor(QImage *image, double x, double y,
-                                         unsigned int background);
-    /* Various convolve routines */
-    static int getOptimalKernelWidth(double radius, double sigma);
-    static bool convolveImage(QImage *image, QImage *dest,
-                              const unsigned int order,
-                              const double *kernel);
-    static void blurScanLine(double *kernel, int width,
-                             unsigned int *src, unsigned int *dest,
-                             int columns);
-    static int getBlurKernel(int width, double sigma, double **kernel);
 };
 
 #endif

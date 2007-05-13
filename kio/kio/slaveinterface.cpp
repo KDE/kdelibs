@@ -16,9 +16,9 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kio/slaveinterface.h"
-#include "kio/slavebase.h"
-#include "kio/connection.h"
+#include "slaveinterface.h"
+#include "slavebase.h"
+#include "connection.h"
 #include <errno.h>
 #include <assert.h>
 #include <kdebug.h>

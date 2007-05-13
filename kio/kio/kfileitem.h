@@ -121,7 +121,7 @@ public:
      * Returns the url of the file.
      * @return the url of the file
      */
-    const KUrl & url() const;
+    KUrl url() const;
 
     /**
      * Sets the item's URL. Do not call unless you know what you are doing!
@@ -203,7 +203,7 @@ public:
      * Returns true if this item represents a file (and not a a directory)
      * @return true if the item is a file
      */
-    bool isFile() const { return !isDir(); }
+    bool isFile() const;
 
     /**
      * Checks whether the file or directory is readable. In some cases
@@ -274,7 +274,7 @@ public:
      * It's not exactly the filename since some decoding happens ('%2F'->'/').
      * @return the text of the file item
      */
-    const QString& text() const;
+    QString text() const;
 
     /**
      * Return the name of the file item (without a path).
@@ -283,7 +283,7 @@ public:
      * which is useful to speed up sorting by name, case insensitively.
      * @return the file's name
      */
-    const QString& name( bool lowerCase = false ) const;
+    QString name( bool lowerCase = false ) const;
 
     /**
      * Returns the mimetype of the file item.
@@ -388,7 +388,7 @@ public:
      * by position.
      * @return the UDS entry
      */
-    const KIO::UDSEntry & entry() const;
+    KIO::UDSEntry entry() const;
 
     /**
      * Used when updating a directory. marked == seen when refreshing.
@@ -416,13 +416,9 @@ public:
      */
     bool cmp( const KFileItem & item ) const;
 
-    bool operator==(const KFileItem& other) const {
-        // is this enough?
-        return d == other.d;
-    }
-    bool operator!=(const KFileItem& other) const {
-        return d != other.d;
-    }
+    bool operator==(const KFileItem& other) const;
+
+    bool operator!=(const KFileItem& other) const;
 
 
     /**
@@ -498,15 +494,13 @@ public:
      * @param autoget if true, the metainfo will automatically be created
      * @param what ignored
      */
-    const KFileMetaInfo & metaInfo(bool autoget = true,
+    KFileMetaInfo metaInfo(bool autoget = true,
                                    int what = KFileMetaInfo::Fastest) const;
 
     /**
      * @deprecated simply use '='
      */
-    KDE_DEPRECATED void assign( const KFileItem & item ) {
-        *this = item;
-    }
+    KDE_DEPRECATED void assign( const KFileItem & item );
 
     /**
      * Reinitialize KFileItem with a new UDSEntry.
@@ -561,37 +555,14 @@ class KIO_EXPORT KFileItemList : public QList<KFileItem *> // TODO QList<KFileIt
 public:
   /// Find a KFileItem by name and return it.
   /// @return the item with the given name, or 0 if none was found
-  KFileItem* findByName( const QString& fileName ) const {
-    const_iterator it = begin();
-    const const_iterator itend = end();
-    for ( ; it != itend ; ++it ) {
-      if ( (*it)->name() == fileName )
-        return *it;
-    }
-    return 0;
-  }
+  KFileItem* findByName( const QString& fileName ) const;
 
   /// Find a KFileItem by URL and return it.
   /// @return the item with the given URL, or 0 if none was found
-  KFileItem* findByUrl( const KUrl& url ) const {
-    const_iterator it = begin();
-    const const_iterator itend = end();
-    for ( ; it != itend ; ++it ) {
-      if ( (*it)->url() == url )
-        return *it;
-    }
-    return 0;
-  }
+  KFileItem* findByUrl( const KUrl& url ) const;
 
   /// @return the list of URLs that those items represent
-  KUrl::List urlList() const {
-    KUrl::List lst;
-    const_iterator it = begin();
-    const const_iterator itend = end();
-    for ( ; it != itend ; ++it )
-      lst.append( (*it)->url() );
-    return lst;
-  }
+  KUrl::List urlList() const;
 };
 
 KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );

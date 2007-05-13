@@ -59,7 +59,7 @@ const XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
 
 
 //! Change a QRgb value's alpha only.
-inline QRgb qRgba ( QRgb rgb, int a )
+inline QRgb qRgba ( const QRgb& rgb, int a )
 {
 	return ((a & 0xff) << 24 | (rgb & RGB_MASK));
 }

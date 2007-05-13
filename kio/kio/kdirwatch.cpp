@@ -1330,6 +1330,11 @@ void KDirWatch::stopScan()
   _isStopped = true;
 }
 
+bool KDirWatch::isStopped()
+{
+  return _isStopped;
+}
+
 void KDirWatch::startScan( bool notify, bool skippedToo )
 {
   _isStopped = false;

@@ -187,7 +187,7 @@ class KIO_EXPORT KDirWatch : public QObject
     * After creation of a KDirWatch instance, this is false.
     * @return true when scanning stopped
     */
-   bool isStopped() { return _isStopped; }
+   bool isStopped();
 
    /**
     * Check if a directory is being watched by this KDirWatch instance

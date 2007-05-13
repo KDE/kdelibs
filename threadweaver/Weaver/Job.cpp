@@ -138,6 +138,11 @@ int Job::priority () const
     return 0;
 }
 
+bool Job::success () const
+{
+    return true;
+}
+
 void Job::freeQueuePolicyResources()
 {
     for ( int index = 0; index < d->queuePolicies->size(); ++index )

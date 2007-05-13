@@ -44,6 +44,7 @@
 class QStyleOptionProgressBar;
 class QStyleOptionTab;
 
+class KStylePrivate;
 /**
  * Makes style coding more convenient.
  *
@@ -101,18 +102,12 @@ protected:
     /**
      Returns a w x h QRect center inside the 'in' rectangle
     */
-    QRect centerRect(QRect in, int w, int h) const
-    {
-        return QRect(in.x() + (in.width() - w)/2, in.y() + (in.height() - h)/2, w, h);
-    }
+    QRect centerRect(QRect in, int w, int h) const;
 
     /**
      Return a size-dimension QRect centered inside the 'in' rectangle
     */
-    QRect centerRect(QRect in, QSize size) const
-    {
-        return centerRect(in, size.width(), size.height());
-    }
+    QRect centerRect(QRect in, QSize size) const;
 //@}
 
 /**
@@ -147,40 +142,20 @@ protected:
 
 	/// Constructor, using a the given palette role @p _role
 	/// and a default mode.
-        ColorMode(QPalette::ColorRole _role): mode(PaletteEntryMode), role(_role)
-        {}
+        ColorMode(QPalette::ColorRole _role);
 
 	/// Constructor with explicit color mode and palette roles.
-        ColorMode(Mode _mode, QPalette::ColorRole _role): mode(_mode), role(_role)
-        {}
+        ColorMode(Mode _mode, QPalette::ColorRole _role);
 
         /// Represent as an int to store as a property
-        operator int() const
-        {
-            return int(role) | int(mode);
-        }
+        operator int() const;
 
         /// Decode from an int.
-        ColorMode(int encoded)
-        {
-            mode = (encoded & BWAutoContrastMode) ? BWAutoContrastMode : PaletteEntryMode;
-            role = QPalette::ColorRole(encoded & (~BWAutoContrastMode));
-        }
+        ColorMode(int encoded);
 
 	/// Return the color corresponding to our role from the palette,
 	/// automatically compensating for the contrast mode.
-        QColor color(const QPalette& palette)
-        {
-            QColor palColor = palette.color(role);
-
-            if (mode == BWAutoContrastMode)
-                if (qGray(palColor.rgb()) > 128) //### CHECKME
-                    return Qt::black;
-                else
-                    return Qt::white;
-            else
-                return palColor;
-        }
+        QColor color(const QPalette& palette);
     };
 
     
@@ -232,16 +207,7 @@ protected:
      the parameter.
     */
     template<typename T>
-    static T extractOption(Option* option)
-    {
-        if (option && dynamic_cast<T>(option))
-            return static_cast<T>(option);
-        
-        //### warn if cast failed?
-        
-        //since T is a pointer type, need this to get to the static.
-        return static_cast<T>(0)->defaultOption();
-    }
+    static T extractOption(Option* option);
 
     /**
      Option representing the color of the thing to draw. Used for arrows, and for text
@@ -336,24 +302,19 @@ protected:
         Qt::Alignment        hAlign; ///< The horizontal alignment, default is Qt::AlignLeft
         QString              text;   ///< The text to draw
         
-        TextOption()
-        { init(); }
+        TextOption();
 
         /**
          * Convenience constructor.
          *
          * @param _text initializes the text string property
          */
-        TextOption(const QString& _text): text(_text)
-        { init(); }
+        TextOption(const QString& _text);
 
         /**
          * Called by the constructor to set the default value of @c hAlign
          */
-        void init()
-        {
-            hAlign = Qt::AlignLeft; //NOTE: Check BIDI?
-        }
+        void init();
     };
 //@}
 
@@ -1569,6 +1530,8 @@ public:
                                    const QStyleOption *opt) const;
     bool eventFilter(QObject *, QEvent *);
 //@}
+private:
+    KStylePrivate * const d;
 };
 
 template<typename T>
@@ -1604,6 +1567,20 @@ class KStyleFactory: public QStylePlugin
         return 0;
     }
 };
+
+
+template<typename T>
+T KStyle::extractOption(Option* option)
+{
+    if (option && dynamic_cast<T>(option)) {
+        return static_cast<T>(option);
+    }
+
+    //### warn if cast failed?
+
+    //since T is a pointer type, need this to get to the static.
+    return static_cast<T>(0)->defaultOption();
+}
 
 #define K_EXPORT_STYLE(name,type) template<> const char* kstyleName<type>() { return name; } \
     Q_EXPORT_PLUGIN(KStyleFactory<type>)

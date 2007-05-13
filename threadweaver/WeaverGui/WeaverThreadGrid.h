@@ -65,6 +65,9 @@ namespace ThreadWeaver {
         void threadStarted ( Thread* );
         void threadBusy ( Thread*, Job* );
         void threadSuspended ( Thread* );
+    private:
+        class Private;
+        Private * const d;
     };
 }
 

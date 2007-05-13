@@ -112,7 +112,7 @@ namespace ThreadWeaver {
 
             A JobSequence may be helpful for that purpose.
         */
-        virtual bool success () const { return true; }
+        virtual bool success () const;
 
         /** Abort the execution of the job.
             Call this method to ask the Job to abort if it is currently executed.

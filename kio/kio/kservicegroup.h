@@ -90,39 +90,39 @@ public:
    * Checks whether the entry is valid, returns always true.
    * @return true
    */
-  bool isValid() const { return true; }
+  bool isValid() const;
 
   /**
    * Name used for indexing.
    * @return the service group's name
    */
-  virtual QString name() const { return entryPath(); }
+  virtual QString name() const;
 
   /**
    * Returns the relative path of the service group.
    * @return the service group's relative path
    */
-  virtual QString relPath() const { return entryPath(); }
+  virtual QString relPath() const;
 
   /**
    * Returns the caption of this group.
    * @return the caption of this group
    */
-  QString caption() const { return m_strCaption; }
+  QString caption() const;
 
   /**
    * Returns the name of the icon associated with the group.
    * @return the name of the icon associated with the group,
    *         or QString() if not set
    */
-  QString icon() const { return m_strIcon; }
+  QString icon() const;
 
   /**
    * Returns the comment about this service group.
    * @return the descriptive comment for the group, if there is one,
    *         or QString() if not set
    */
-  QString comment() const { return m_strComment; }
+  QString comment() const;
 
   /**
    * Returns the total number of displayable services in this group and
@@ -230,7 +230,7 @@ public:
    * in the .directory file.
    * @return the base group name, or null if no base group
    */
-  QString baseGroupName() const { return m_strBaseGroupName; }
+  QString baseGroupName() const;
 
   /**
    * Returns a path to the .directory file describing this service group.

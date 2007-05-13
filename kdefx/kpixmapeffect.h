@@ -28,16 +28,10 @@
 class QColor;
 
 /**
- * This class includes various pixmap-based graphical effects.
- *
- * Everything is
- * static, so there is no need to create an instance of this class. You can
- * just call the static methods. They are encapsulated here merely to provide
- * a common namespace.
+ * Provides various pixmap-based graphical effects.
  */
-class KDEFX_EXPORT KPixmapEffect
+namespace KPixmapEffect
 {
-public:
     /** 
      * Gradient types. This enum is used when either drawing
      * a gradient explicitly or when blending a pixmap into 
@@ -88,7 +82,7 @@ public:
      * colors. Pass 0 to prevent dithering.
      * @return Returns the generated pixmap, for convenience.
      */
-    static QPixmap& gradient(QPixmap& pixmap, const QColor &ca, const QColor &cb,
+    KDEFX_EXPORT QPixmap& gradient(QPixmap& pixmap, const QColor &ca, const QColor &cb,
                             GradientType type, int ncols=3);
 
     /**
@@ -106,7 +100,7 @@ public:
      * @param ncols The number of colors. See #gradient.
      * @return The generated pixmap, for convencience.
      */
-    static QPixmap& unbalancedGradient(QPixmap& pixmap, const QColor &ca,
+    KDEFX_EXPORT QPixmap& unbalancedGradient(QPixmap& pixmap, const QColor &ca,
                    const QColor &cb, GradientType type, int xfactor = 100,
                    int yfactor = 100, int ncols=3);
 
@@ -121,7 +115,7 @@ public:
      * @param size   The size the new pixmap should have.
      * @return The generated, tiled pixmap.
      */
-    static QPixmap createTiled(const QPixmap& pixmap, QSize size);
+    KDEFX_EXPORT QPixmap createTiled(const QPixmap& pixmap, QSize size);
 
     /**
      * Either brightens or dims a pixmap by a specified ratio.
@@ -130,7 +124,7 @@ public:
      * @param ratio The ratio to use. Use negative value to dim.
      * @return Returns The pixmap(), provided for convenience.
      */
-    static QPixmap& intensity(QPixmap& pixmap, float ratio);
+    KDEFX_EXPORT QPixmap& intensity(QPixmap& pixmap, float ratio);
 
     /**
      * Modifies the intensity of a pixmap's RGB channel component.
@@ -140,7 +134,7 @@ public:
      * @param channel Which channel(s) should be modified
      * @return Returns the pixmap(), provided for convenience.
      */
-    static QPixmap& channelIntensity(QPixmap& pixmap, float ratio,
+    KDEFX_EXPORT QPixmap& channelIntensity(QPixmap& pixmap, float ratio,
                                     RGBComponent channel);
 
     /**
@@ -160,7 +154,7 @@ public:
      *                  used for 8 bpp pixmaps.
      * @return Returns the pixmap(), provided for convenience.
      */
-    static QPixmap& blend(QPixmap& pixmap, float initial_intensity,
+    KDEFX_EXPORT QPixmap& blend(QPixmap& pixmap, float initial_intensity,
                          const QColor &bgnd, GradientType eff,
                          bool anti_dir=false, int ncols=3);
 
@@ -174,7 +168,7 @@ public:
      * Only used for 8 bpp pixmaps.
      * @return Returns The pixmap(), provided for convenience.
      */
-    static QPixmap& hash(QPixmap& pixmap, Lighting lite=NorthLite,
+    KDEFX_EXPORT QPixmap& hash(QPixmap& pixmap, Lighting lite=NorthLite,
                         unsigned int spacing=0, int ncols=3);
 
     /**
@@ -193,7 +187,7 @@ public:
      * dithered to this depth. Pass zero to prevent dithering.
      * @return The resulting pixmap.
      */
-    static QPixmap pattern(const QPixmap& pixmap, QSize size,
+    KDEFX_EXPORT QPixmap pattern(const QPixmap& pixmap, QSize size,
                    const QColor &ca, const QColor &cb, int ncols=8);
 
     /**
@@ -204,7 +198,7 @@ public:
      * @param color The color to blend to.
      * @return Returns the pixmap(), provided for convenience.
      */
-    static QPixmap& fade(QPixmap& pixmap, double val, const QColor &color);
+    KDEFX_EXPORT QPixmap& fade(QPixmap& pixmap, double val, const QColor &color);
 
     /**
      * Converts a pixmap to grayscale.
@@ -214,7 +208,7 @@ public:
      * quality algorithm. Appropriate for things such as toolbar icons.
      * @return Returns the pixmap(), provided for convenience.
      */
-    static QPixmap& toGray(QPixmap& pixmap, bool fast=false);
+    KDEFX_EXPORT QPixmap& toGray(QPixmap& pixmap, bool fast=false);
 
     /**
      * Desaturates a pixmap.
@@ -223,7 +217,7 @@ public:
      * @param desat A value between 0 and 1 setting the degree of desaturation
      * @return Returns The pixmap(), provided for convenience.
      */
-    static QPixmap& desaturate(QPixmap& pixmap, float desat = 0.3);
+    KDEFX_EXPORT QPixmap& desaturate(QPixmap& pixmap, float desat = 0.3);
 
     /**
      * Modifies the contrast of a pixmap.
@@ -232,7 +226,7 @@ public:
      * @param c A contrast value between -255 and 255.
      * @return Returns the pixmap(), provided for convenience.
      */
-    static QPixmap& contrast(QPixmap& pixmap, int c);
+    KDEFX_EXPORT QPixmap& contrast(QPixmap& pixmap, int c);
 
     /**
      * Dithers a pixmap using Floyd-Steinberg dithering for low-color
@@ -243,7 +237,7 @@ public:
      * @param size The size of the palette.
      * @return Returns the pixmap(), provided for convenience.
      */
-    static QPixmap& dither(QPixmap &pixmap, const QColor *palette, int size);
+    KDEFX_EXPORT QPixmap& dither(QPixmap &pixmap, const QColor *palette, int size);
 
     /**
      * Calculate a 'selected' pixmap, for instance a selected icon
@@ -251,7 +245,7 @@ public:
      * @param pixmap the pixmap to select
      * @param col the selected color, usually from QPalette::highlight().
      */
-    static QPixmap selectedPixmap( const QPixmap &pixmap, const QColor &col );
+    KDEFX_EXPORT QPixmap selectedPixmap( const QPixmap &pixmap, const QColor &col );
 };
 
 

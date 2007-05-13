@@ -45,6 +45,36 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <config.h>
 #include <config-processor.h>
 
+using namespace KImageEffect;
+
+/**
+ * Helper function to fast calc some altered (lighten, shaded) colors
+ *
+ */
+static unsigned int lHash(unsigned int c);
+static unsigned int uHash(unsigned int c);
+
+/**
+ * Helper function to find the nearest color to the RBG triplet
+ */
+static int nearestColor( int r, int g, int b, const QColor *pal, int size );
+
+static void hull(const int x_offset, const int y_offset, const int polarity,
+                 const int width, const int height,
+                 unsigned int *f, unsigned int *g);
+static unsigned int generateNoise(unsigned int pixel, NoiseType type);
+static unsigned int interpolateColor(QImage *image, double x, double y,
+                                         unsigned int background);
+/* Various convolve routines */
+static int getOptimalKernelWidth(double radius, double sigma);
+static bool convolveImage(QImage *image, QImage *dest,
+                          const unsigned int order,
+                          const double *kernel);
+static void blurScanLine(double *kernel, int width,
+                         unsigned int *src, unsigned int *dest,
+                         int columns);
+static int getBlurKernel(int width, double sigma, double **kernel);
+
 #if 0
 //disabled until #74478 fixed.
 
@@ -1837,7 +1867,11 @@ QImage& KImageEffect::blend(QImage &image1, QImage &image2,
 //
 //======================================================================
 
-unsigned int KImageEffect::lHash(unsigned int c)
+/**
+ * Helper function to fast calc some altered (lighten, shaded) colors
+ *
+ */
+static unsigned int lHash(unsigned int c)
 {
     unsigned char r = qRed(c), g = qGreen(c), b = qBlue(c), a = qAlpha(c);
     unsigned char nr, ng, nb;
@@ -1851,7 +1885,7 @@ unsigned int KImageEffect::lHash(unsigned int c)
 
 // -----------------------------------------------------------------------------
 
-unsigned int KImageEffect::uHash(unsigned int c)
+static unsigned int uHash(unsigned int c)
 {
     unsigned char r = qRed(c), g = qGreen(c), b = qBlue(c), a = qAlpha(c);
     unsigned char nr, ng, nb;
@@ -2348,7 +2382,10 @@ QImage& KImageEffect::dither(QImage &img, const QColor *palette, int size)
     return img;
 }
 
-int KImageEffect::nearestColor( int r, int g, int b, const QColor *palette, int size )
+/**
+ * Helper function to find the nearest color to the RBG triplet
+ */
+static int nearestColor( int r, int g, int b, const QColor *palette, int size )
 {
     if (palette == 0)
       return 0;
@@ -2829,10 +2866,10 @@ void KImageEffect::threshold(QImage &img, unsigned int threshold)
         data[i] = intensityValue(data[i]) < threshold ? QColor(Qt::black).rgb() : QColor(Qt::white).rgb();
 }
 
-void KImageEffect::hull(const int x_offset, const int y_offset,
-                        const int polarity, const int columns,
-                        const int rows,
-                        unsigned int *f, unsigned int *g)
+static void hull(const int x_offset, const int y_offset,
+                 const int polarity, const int columns,
+                 const int rows,
+                 unsigned int *f, unsigned int *g)
 {
     int x, y;
 
@@ -3020,8 +3057,8 @@ QImage KImageEffect::despeckle(QImage &src)
     return(dest);
 }
 
-unsigned int KImageEffect::generateNoise(unsigned int pixel,
-                                         NoiseType noise_type)
+static unsigned int generateNoise(unsigned int pixel,
+                                  NoiseType noise_type)
 {
 #define NoiseEpsilon  1.0e-5
 #define NoiseMask  0x7fff
@@ -3154,9 +3191,9 @@ QImage KImageEffect::addNoise(QImage &src, NoiseType noise_type)
     return(dest);
 }
 
-unsigned int KImageEffect::interpolateColor(QImage *image, double x_offset,
-                                            double y_offset,
-                                            unsigned int background)
+static unsigned int interpolateColor(QImage *image, double x_offset,
+                                     double y_offset,
+                                     unsigned int background)
 {
     double alpha, beta;
     unsigned int p, q, r, s;
@@ -4089,9 +4126,9 @@ QImage KImageEffect::emboss(QImage &image, double radius, double sigma)
     return(dest);
 }
 
-void KImageEffect::blurScanLine(double *kernel, int width,
-                                unsigned int *src, unsigned int *dest,
-                                int columns)
+static void blurScanLine(double *kernel, int width,
+                         unsigned int *src, unsigned int *dest,
+                         int columns)
 {
     register double *p;
     unsigned int *q;
@@ -4229,7 +4266,7 @@ void KImageEffect::blurScanLine(double *kernel, int width,
     }
 }
 
-int KImageEffect::getBlurKernel(int width, double sigma, double **kernel)
+static int getBlurKernel(int width, double sigma, double **kernel)
 {
 #define KernelRank 3
     double alpha, normalize;
@@ -4335,9 +4372,9 @@ QImage KImageEffect::blur(QImage &src, double radius, double sigma)
     return(dest);
 }
 
-bool KImageEffect::convolveImage(QImage *image, QImage *dest,
-                                 const unsigned int order,
-                                 const double *kernel)
+static bool convolveImage(QImage *image, QImage *dest,
+                          const unsigned int order,
+                          const double *kernel)
 {
     long width;
     double red, green, blue, alpha;
@@ -4410,7 +4447,7 @@ bool KImageEffect::convolveImage(QImage *image, QImage *dest,
 
 }
 
-int KImageEffect::getOptimalKernelWidth(double radius, double sigma)
+static int getOptimalKernelWidth(double radius, double sigma)
 {
     double normalize, value;
     long width;

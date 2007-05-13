@@ -217,7 +217,7 @@ public:
    *
    * @return the url used by this instance to list the files.
    */
-  const KUrl& url() const;
+  KUrl url() const;
 
   /**
    * Returns all URLs that are listed by this KDirLister. This is only
@@ -227,7 +227,7 @@ public:
    *
    * @return the list of all listed URLs
    */
-  const KUrl::List& directories() const;
+  KUrl::List directories() const;
 
   /**
    * Actually emit the changes made with setShowingDotFiles, setDirOnlyMode,
@@ -291,7 +291,7 @@ public:
    * @return the current name filter, can be QString() if filtering
    *         is turned off
    */
-  const QString& nameFilter() const;
+  QString nameFilter() const;
 
   /**
    * Set mime-based filter to only list items matching the given mimetypes.
@@ -334,7 +334,7 @@ public:
    * Returns the list of mime based filters, as set via setMimeFilter().
    * @return the list of mime based filters. Empty, when no mime filter is set.
    */
-  const QStringList& mimeFilters() const;
+  QStringList mimeFilters() const;
 
   /**
    * Checks whether @p name matches a filter in the list of name filters.

@@ -74,7 +74,7 @@ static const qint32 r_arrow[]={-2,-4, -2,3, -1,-4, -1,3, 0,-3, 0,2, 1,-2, 1,1, 2
     ProgressBar::Precision handling
 */
 
-KStyle::KStyle() : clickedLabel(0)
+KStyle::KStyle() : clickedLabel(0), d(0)
 {
     //Set up some default metrics...
     setWidgetLayoutProp(WT_Generic, Generic::DefaultFrameWidth, 2);
@@ -282,6 +282,16 @@ QPixmap KStyle::generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
 void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
 {
     p->drawRect(r.x(), r.y(), r.width() - 1, r.height() - 1);
+}
+
+QRect KStyle::centerRect(QRect in, int w, int h) const
+{
+    return QRect(in.x() + (in.width() - w)/2, in.y() + (in.height() - h)/2, w, h);
+}
+
+QRect KStyle::centerRect(QRect in, QSize size) const
+{
+    return centerRect(in, size.width(), size.height());
 }
 
 
@@ -3613,5 +3623,54 @@ bool KStyle::eventFilter(QObject *obj, QEvent *ev)
     return false;
 }
 
+KStyle::ColorMode::ColorMode(QPalette::ColorRole _role):
+    mode(PaletteEntryMode),
+    role(_role)
+{}
+
+KStyle::ColorMode::ColorMode(Mode _mode, QPalette::ColorRole _role):
+    mode(_mode),
+    role(_role)
+{}
+
+KStyle::ColorMode::operator int() const
+{
+    return int(role) | int(mode);
+}
+
+KStyle::ColorMode::ColorMode(int encoded)
+{
+    mode = (encoded & BWAutoContrastMode) ? BWAutoContrastMode : PaletteEntryMode;
+    role = QPalette::ColorRole(encoded & (~BWAutoContrastMode));
+}
+
+QColor KStyle::ColorMode::color(const QPalette& palette)
+{
+    QColor palColor = palette.color(role);
+
+    if (mode == BWAutoContrastMode) {
+        if (qGray(palColor.rgb()) > 128) { //### CHECKME
+            palColor = Qt::black;
+        } else {
+            palColor = Qt::white;
+        }
+    }
+    return palColor;
+}
+
+KStyle::TextOption::TextOption()
+{
+    init();
+}
+KStyle::TextOption::TextOption(const QString& _text):
+    text(_text)
+{
+    init();
+}
+
+void KStyle::TextOption::init()
+{
+    hAlign = Qt::AlignLeft; //NOTE: Check BIDI?
+}
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

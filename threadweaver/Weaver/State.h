@@ -82,7 +82,7 @@ namespace ThreadWeaver {
         /** The ID of the current state.
             @see StateNames, StateID
         */
-        const QString& stateName() const;
+        QString stateName() const;
         /** The state Id. */
         virtual StateId stateId() const = 0;
         /** Suspend job processing. */

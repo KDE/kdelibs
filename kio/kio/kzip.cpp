@@ -991,6 +991,11 @@ bool KZip::closeArchive()
     return true;
 }
 
+bool KZip::doWriteDir( const QString&, const QString&, const QString&,
+                       mode_t, time_t, time_t, time_t ) {
+        return true;
+}
+
 bool KZip::doPrepareWriting(const QString &name, const QString &user,
                                const QString &group, qint64 /*size*/, mode_t perm,
                                time_t atime, time_t mtime, time_t ctime) {

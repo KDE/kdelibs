@@ -407,7 +407,7 @@ public:
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      * @internal
      */
-    static const KComponentData &activeComponent();
+    static KComponentData activeComponent();
 
     /**
      * Set the active component for use by KAboutDialog and KBugReport.
