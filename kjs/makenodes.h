@@ -45,67 +45,61 @@ Node* makeDynamicResolver(Node* n, T1 arg1, T2 arg2) {
   return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1, arg2));
 }
 
-static bool makeAssignNode(Node*& result, Node *loc, Operator op, Node *expr)
+static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
 { 
     Node *n = loc->nodeInsideAllParens();
 
     if (!n->isLocation())
-        return false;
+        return new AssignErrorNode(loc, op, expr); ;
 
     if (n->isResolveNode()) {
-        result = makeDynamicResolver<ResolveAssign>(n, op, expr);
-    } else if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        result = new AssignBracketNode(bracket->base(), bracket->subscript(), op, expr);
-    } else {
-        assert(n->isDotAccessorNode());
-        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-        result = new AssignDotNode(dot->base(), dot->identifier(), op, expr);
+        return makeDynamicResolver<ResolveAssign>(n, op, expr);
     }
-
-    return true;
+    if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        return new AssignBracketNode(bracket->base(), bracket->subscript(), op, expr);
+    }
+    assert(n->isDotAccessorNode());
+    DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+    return new AssignDotNode(dot->base(), dot->identifier(), op, expr);
 }
 
-static bool makePrefixNode(Node*& result, Node *expr, Operator op)
+static Node* makePrefixNode(Node* expr, Operator op)
 { 
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
-        return false;
+        return new PrefixErrorNode(n, op);
     
     if (n->isResolveNode()) {
-        result = makeDynamicResolver<ResolvePrefix>(n, op);
-    } else if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        result = new PrefixBracketNode(bracket->base(), bracket->subscript(), op);
-    } else {
-        assert(n->isDotAccessorNode());
-        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-        result = new PrefixDotNode(dot->base(), dot->identifier(), op);
+        return makeDynamicResolver<ResolvePrefix>(n, op);
     }
-
-    return true;
+    if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        return new PrefixBracketNode(bracket->base(), bracket->subscript(), op);
+    }
+    assert(n->isDotAccessorNode());
+    DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+    return new PrefixDotNode(dot->base(), dot->identifier(), op);
 }
 
-static bool makePostfixNode(Node*& result, Node *expr, Operator op)
+static Node* makePostfixNode(Node* expr, Operator op)
 { 
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
-        return false;
+        return new PostfixErrorNode(n, op);
     
     if (n->isResolveNode()) {
-        result = makeDynamicResolver<ResolvePostfix>(n, op);
-    } else if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        result = new PostfixBracketNode(bracket->base(), bracket->subscript(), op);
-    } else {
-        assert(n->isDotAccessorNode());
-        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-        result = new PostfixDotNode(dot->base(), dot->identifier(), op);
+        return makeDynamicResolver<ResolvePostfix>(n, op);
     }
-
-    return true;
+    if (n->isBracketAccessorNode()) {
+        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
+        return new PostfixBracketNode(bracket->base(), bracket->subscript(), op);
+    }
+    assert(n->isDotAccessorNode());
+    DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+    return new PostfixDotNode(dot->base(), dot->identifier(), op);
 }
 
 static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)

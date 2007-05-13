@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2002 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
  *  Copyright (C) 2003 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
@@ -411,6 +412,15 @@ void PostfixDotNode::streamTo(SourceStream &s) const
   s << m_base << '.' << m_ident << m_oper;
 }
 
+void PostfixErrorNode::streamTo(SourceStream& s) const
+{
+  s << m_expr;
+  if (m_oper == OpPlusPlus)
+    s << "++";
+  else
+    s << "--";
+}
+
 void ResolveDelete::streamTo(SourceStream &s, const Identifier& ident) const
 {
   s << "delete " << ident;
@@ -459,6 +469,15 @@ void PrefixBracketNode::streamTo(SourceStream &s) const
 void PrefixDotNode::streamTo(SourceStream &s) const
 {
   s << m_oper << m_base << '.' << m_ident;
+}
+
+void PrefixErrorNode::streamTo(SourceStream& s) const 
+{ 
+  if (m_oper == OpPlusPlus) 
+    s << "++"; 
+  else 
+    s << "--"; 
+  s << m_expr; 
 }
 
 void UnaryPlusNode::streamTo(SourceStream &s) const
@@ -643,6 +662,13 @@ void AssignDotNode::streamTo(SourceStream &s) const
   s << m_base << '.' << m_ident;
   streamAssignmentOperatorTo(s, m_oper);
   s << m_right;
+}
+
+void AssignErrorNode::streamTo(SourceStream& s) const 
+{ 
+    s << m_left; 
+    streamAssignmentOperatorTo(s, m_oper); 
+    s << m_right; 
 }
 
 void CommaNode::streamTo(SourceStream &s) const

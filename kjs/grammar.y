@@ -3,7 +3,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
- *  Copyright (C) 2006 Apple Computer, Inc.
+ *  Copyright (C) 2006, 2007 Apple Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -316,24 +316,24 @@ LeftHandSideExprNoBF:
 
 PostfixExpr:
     LeftHandSideExpr
-  | LeftHandSideExpr PLUSPLUS           { if (!makePostfixNode($$, $1, OpPlusPlus)) YYABORT; }
-  | LeftHandSideExpr MINUSMINUS         { if (!makePostfixNode($$, $1, OpMinusMinus)) YYABORT; }
+  | LeftHandSideExpr PLUSPLUS           { $$ = makePostfixNode($1, OpPlusPlus); }
+  | LeftHandSideExpr MINUSMINUS         { $$ = makePostfixNode($1, OpMinusMinus); }
 ;
 
 PostfixExprNoBF:
     LeftHandSideExprNoBF
-  | LeftHandSideExprNoBF PLUSPLUS       { if (!makePostfixNode($$, $1, OpPlusPlus)) YYABORT; }
-  | LeftHandSideExprNoBF MINUSMINUS     { if (!makePostfixNode($$, $1, OpMinusMinus)) YYABORT; }
+  | LeftHandSideExprNoBF PLUSPLUS       { $$ = makePostfixNode($1, OpPlusPlus); }
+  | LeftHandSideExprNoBF MINUSMINUS     { $$ = makePostfixNode($1, OpMinusMinus); }
 ;
 
 UnaryExprCommon:
     DELETE UnaryExpr                    { $$ = makeDeleteNode($2); }
   | VOID UnaryExpr                      { $$ = new VoidNode($2); }
   | TYPEOF UnaryExpr                    { $$ = makeTypeOfNode($2); }
-  | PLUSPLUS UnaryExpr                  { if (!makePrefixNode($$, $2, OpPlusPlus)) YYABORT; }
-  | AUTOPLUSPLUS UnaryExpr              { if (!makePrefixNode($$, $2, OpPlusPlus)) YYABORT; }
-  | MINUSMINUS UnaryExpr                { if (!makePrefixNode($$, $2, OpMinusMinus)) YYABORT; }
-  | AUTOMINUSMINUS UnaryExpr            { if (!makePrefixNode($$, $2, OpMinusMinus)) YYABORT; }
+  | PLUSPLUS UnaryExpr                  { $$ = makePrefixNode($2, OpPlusPlus); }
+  | AUTOPLUSPLUS UnaryExpr              { $$ = makePrefixNode($2, OpPlusPlus); }
+  | MINUSMINUS UnaryExpr                { $$ = makePrefixNode($2, OpMinusMinus); }
+  | AUTOMINUSMINUS UnaryExpr            { $$ = makePrefixNode($2, OpMinusMinus); }
   | '+' UnaryExpr                       { $$ = new UnaryPlusNode($2); }
   | '-' UnaryExpr                       { $$ = new NegateNode($2); }
   | '~' UnaryExpr                       { $$ = new BitwiseNotNode($2); }
@@ -560,19 +560,19 @@ ConditionalExprNoBF:
 AssignmentExpr:
     ConditionalExpr
   | LeftHandSideExpr AssignmentOperator AssignmentExpr
-                                        { if (!makeAssignNode($$, $1, $2, $3)) YYABORT; }
+                                        { $$ = makeAssignNode($1, $2, $3); }
 ;
 
 AssignmentExprNoIn:
     ConditionalExprNoIn
   | LeftHandSideExpr AssignmentOperator AssignmentExprNoIn
-                                        { if (!makeAssignNode($$, $1, $2, $3)) YYABORT; }
+                                        { $$ = makeAssignNode($1, $2, $3); }
 ;
 
 AssignmentExprNoBF:
     ConditionalExprNoBF
   | LeftHandSideExprNoBF AssignmentOperator AssignmentExpr
-                                        { if (!makeAssignNode($$, $1, $2, $3)) YYABORT; }
+                                        { $$ = makeAssignNode($1, $2, $3); }
 ;
 
 AssignmentOperator:
@@ -698,7 +698,8 @@ IfStatement:
 ;
 
 IterationStatement:
-    DO Statement WHILE '(' Expr ')'     { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3);}
+    DO Statement WHILE '(' Expr ')' ';' { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3);}
+  | DO Statement WHILE '(' Expr ')' error { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3); AUTO_SEMICOLON; }
   | WHILE '(' Expr ')' Statement        { $$ = new WhileNode($3, $5); DBG($$, @1, @4); }
   | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
                                         { $$ = new ForNode($3, $5, $7, $9); DBG($$, @1, @8); }
@@ -800,8 +801,8 @@ TryStatement:
 ;
 
 DebuggerStatement:
-    DEBUGGER ';'                           { $$ = new EmptyStatementNode(); DBG($$, @1, @2); }
-  | DEBUGGER error                         { $$ = new EmptyStatementNode(); DBG($$, @1, @1); AUTO_SEMICOLON; }
+    DEBUGGER ';'                        { $$ = new EmptyStatementNode(); DBG($$, @1, @2); }
+  | DEBUGGER error                      { $$ = new EmptyStatementNode(); DBG($$, @1, @1); AUTO_SEMICOLON; }
 ;
 
 PackageName:

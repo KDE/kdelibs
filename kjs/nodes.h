@@ -3,7 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
- *  Copyright (C) 2003, 2004, 2005, 2006 Apple Computer, Inc.
+ *  Copyright (C) 2003, 2004, 2005, 2006, 2007 Apple Inc. All rights reserved.
  *  Copyright (C) 2007 Maksim Orlovich (maksim@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
@@ -166,6 +166,7 @@ namespace KJS {
     Completion createErrorCompletion(ExecState *, ErrorType, const char *msg, const Identifier &);
 
     JSValue *throwError(ExecState *, ErrorType, const char *msg);
+    JSValue *throwError(ExecState *, ErrorType, const char *msg, const char* string);
     JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, Node *);
     JSValue *throwError(ExecState *, ErrorType, const char *msg, const Identifier &);
     JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, const Identifier &);
@@ -174,8 +175,8 @@ namespace KJS {
 
     JSValue *throwUndefinedVariableError(ExecState *, const Identifier &);
 
-    void setExceptionDetailsIfNeeded(ExecState*);
-    void debugExceptionIfNeeded(ExecState*, JSValue*);
+    void handleException(ExecState*);
+    void handleException(ExecState*, JSValue*);
 
   protected:
     int m_line;
@@ -637,6 +638,16 @@ namespace KJS {
     Operator m_oper;
   };
 
+  class PostfixErrorNode : public Node { 
+  public: 
+    PostfixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {} 
+    JSValue* evaluate(ExecState*); 
+    virtual void streamTo(SourceStream&) const; 
+  private: 
+    RefPtr<Node> m_expr; 
+    Operator m_oper; 
+  }; 
+
   class ResolveDelete : public ResolveHandlerBase {
   public:
     void streamTo(SourceStream&, const Identifier& ident) const;
@@ -712,6 +723,16 @@ namespace KJS {
   private:
     Operator m_oper;
   };
+
+  class PrefixErrorNode : public Node { 
+  public: 
+    PrefixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {} 
+    JSValue* evaluate(ExecState*); 
+    virtual void streamTo(SourceStream&) const; 
+  private: 
+    RefPtr<Node> m_expr; 
+    Operator m_oper; 
+  }; 
 
   class PrefixBracketNode : public Node {
   public:
@@ -883,6 +904,18 @@ namespace KJS {
     RefPtr<Node> logical;
     RefPtr<Node> expr1;
     RefPtr<Node> expr2;
+  };
+
+  class AssignErrorNode : public Node { 
+  public: 
+    AssignErrorNode(Node* left, Operator oper, Node* right) 
+      : m_left(left), m_oper(oper), m_right(right) {} 
+    JSValue* evaluate(ExecState*); 
+    virtual void streamTo(SourceStream&) const; 
+  protected: 
+    RefPtr<Node> m_left; 
+    Operator m_oper; 
+    RefPtr<Node> m_right;
   };
 
   class ResolveAssign : public ResolveHandlerBase {
