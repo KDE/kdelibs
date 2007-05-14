@@ -137,7 +137,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     Q_PRIVATE_SLOT( d, void spellCheckerMisspelling( const QString&, int ) )
     Q_PRIVATE_SLOT( d, void spellCheckerCorrected(const QString&, int,const QString&) )
     Q_PRIVATE_SLOT( d, void spellCheckerCanceled())
-
+    Q_PRIVATE_SLOT( d, void spellCheckerAutoCorrect(const QString&,const QString&) )
     Q_PRIVATE_SLOT( d, void spellCheckerFinished() )
     Q_PRIVATE_SLOT( d, void toggleAutoSpellCheck() )
     Q_PRIVATE_SLOT( d, void slotAllowTab() )

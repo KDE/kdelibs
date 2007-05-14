@@ -58,6 +58,7 @@ class KTextEdit::Private
 
     void spellCheckerMisspelling( const QString &text, int pos );
     void spellCheckerCorrected( const QString &, int,const QString &);
+    void spellCheckerAutoCorrect(const QString&,const QString&);
     void spellCheckerCanceled();
     
     void spellCheckerFinished();
@@ -81,6 +82,11 @@ void KTextEdit::Private::spellCheckerCanceled()
     parent->selectAll();
     parent->setPlainText(originalBuffer);
     spellCheckerFinished();
+}
+
+void KTextEdit::Private::spellCheckerAutoCorrect(const QString&,const QString&)
+{
+    //TODO
 }
 
 void KTextEdit::Private::slotSpellCheckDone( const QString &s )
@@ -384,6 +390,7 @@ void KTextEdit::checkSpelling()
   KSpell2::Dialog *spellDialog = new KSpell2::Dialog(new KSpell2::BackgroundChecker( KSpell2::Loader::openLoader(), this ), 0 );
   connect(spellDialog,SIGNAL(replace( const QString&, int,const QString&)),this,SLOT(spellCheckerCorrected( const QString&, int,const QString&) ) );
   connect(spellDialog,SIGNAL(misspelling( const QString&, int)),this,SLOT(spellCheckerMisspelling(const QString &,int)));
+  connect(spellDialog,SIGNAL(autoCorrect( const QString &, const QString &)),this,SLOT(spellCheckerAutoCorrect(const QString &, const QString &)));
   connect(spellDialog,SIGNAL(done( const QString& )),this,SLOT(spellCheckerFinished()));
   connect(spellDialog,SIGNAL(cancel()),this,SLOT(spellCheckerCanceled()));
   connect(spellDialog,SIGNAL(stop()),this,SLOT(spellCheckerFinished()));
