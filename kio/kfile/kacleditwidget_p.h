@@ -110,7 +110,7 @@ public Q_SLOTS:
     void setDefaultACL( const KACL &anACL );
 
 protected Q_SLOTS:
-    void entryClicked( QTreeWidgetItem* pItem, const QPoint& pt, int col );
+    void slotItemClicked( QTreeWidgetItem* pItem, int col );
 protected:
     void contentsMousePressEvent( QMouseEvent * e );
 

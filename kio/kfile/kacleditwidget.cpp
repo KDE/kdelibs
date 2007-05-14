@@ -274,7 +274,6 @@ void KACLListViewItem::updatePermPixmaps()
 void KACLListViewItem::repaint()
 {
     int idx = 0;
-    kWarning() << "painting tyupe: " << type << endl;
     switch ( type )
     {
       case KACLListView::User:
@@ -659,6 +658,9 @@ KACLListView::KACLListView( QWidget* parent )
     endgrent();
     m_allUsers.sort();
     m_allGroups.sort();
+
+    connect( this, SIGNAL( itemClicked( QTreeWidgetItem*, int ) ),
+             this, SLOT( slotItemClicked( QTreeWidgetItem*, int ) ) );
 }
 
 
@@ -851,7 +853,7 @@ void KACLListView::contentsMousePressEvent( QMouseEvent * e )
      */
 }
 
-void KACLListView::entryClicked( QTreeWidgetItem* pItem, const QPoint& /*pt*/, int col )
+void KACLListView::slotItemClicked( QTreeWidgetItem* pItem,  int col )
 {
     if ( !pItem ) return;
 
