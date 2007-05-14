@@ -868,7 +868,7 @@ void KGlobalSettings::applyGUIStyle()
     KConfigGroup pConfig (KGlobal::config(), "General");
 #ifdef Q_WS_WIN
     QString defaultStyle = "windows";
-#elif Q_WS_MACX
+#elif defined Q_WS_MACX
     QString defaultStyle = "macintosh";
 #else
     QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
