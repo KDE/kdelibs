@@ -69,7 +69,7 @@ namespace khtml {
 	if (( !th_brk ) && thaiCodec  ) {
 	    printf("Try to load libthai dynamically...\n");
             KLibLoader *loader = KLibLoader::self();
-            lib = loader->library("libthai");
+            lib = loader->library(QLatin1String("libthai"));
             if ( lib )
                 th_brk = (th_brk_def) lib->resolveFunction("th_brk");
             if ( !th_brk ) {

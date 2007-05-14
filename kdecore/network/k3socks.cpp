@@ -309,7 +309,7 @@ KSocks::KSocks(const KConfigGroup *config)
           */
 
    if (_meth == 4) {         // try to load^H^H^H^Hguess at a custom library
-      d->_socksLib = ll->library(config->readPathEntry("SOCKS_lib").toLatin1());
+      d->_socksLib = ll->library(config->readPathEntry("SOCKS_lib"));
       if (d->_socksLib && d->_socksLib->resolveFunction("Rconnect")) {  // Dante compatible?
          d->_st = new KDanteSocksTable;
          d->_useSocks = true;
@@ -329,7 +329,7 @@ KSocks::KSocks(const KConfigGroup *config)
    for (QStringList::Iterator it  = d->_libNames.begin();
                               it != d->_libNames.end();
                               ++it) {
-      d->_socksLib = ll->library((*pit + *it).toLatin1());
+      d->_socksLib = ll->library(*pit + *it);
       if (d->_socksLib) {
          if ((_meth == 1 || _meth == 2) &&
             d-> _socksLib->resolveFunction("S5LogShowThreadIDS") != 0L) {  // NEC SOCKS

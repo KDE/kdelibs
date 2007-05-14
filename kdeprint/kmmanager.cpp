@@ -505,7 +505,7 @@ QStringList KMManager::detectLocalPrinters()
 
 int KMManager::addPrinterWizard(QWidget *parent)
 {
-	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management_module");
+	KLibrary	*lib = KLibLoader::self()->library(QLatin1String("libkdeprint_management_module"));
 	if (!lib)
 		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
 	else
@@ -521,7 +521,7 @@ int KMManager::addPrinterWizard(QWidget *parent)
 
 bool KMManager::invokeOptionsDialog(QWidget *parent)
 {
-	KLibrary	*lib = KLibLoader::self()->library("libkdeprint_management_module");
+	KLibrary	*lib = KLibLoader::self()->library(QLatin1String("libkdeprint_management_module"));
 	if (!lib)
 		setErrorMsg(i18n("Unable to load KDE print management library: %1", KLibLoader::self()->lastErrorMessage()));
 	else

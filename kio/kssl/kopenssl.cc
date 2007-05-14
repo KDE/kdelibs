@@ -300,7 +300,7 @@ KOpenSSLProxy::KOpenSSLProxy()
    {
    QString libname = findMostRecentLib("/usr/lib" KDELIBSUFF, "crypto");
    if (!libname.isNull())
-         d->cryptoLib = ll->library(QFile::encodeName(libname), QLibrary::ExportExternalSymbolsHint);
+         d->cryptoLib = ll->library(libname, QLibrary::ExportExternalSymbolsHint);
    }
 #elif defined(__CYGWIN__)
    libpaths << "/usr/bin/"
@@ -382,7 +382,7 @@ KOpenSSLProxy::KOpenSSLProxy()
 	 QString tmpStr(alib.toLatin1().constData());
 	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
 	 if (!access(tmpStr.toLatin1(), R_OK))
-            d->cryptoLib = ll->library(QFile::encodeName(alib), QLibrary::ExportExternalSymbolsHint);
+            d->cryptoLib = ll->library(alib, QLibrary::ExportExternalSymbolsHint);
          if (d->cryptoLib) break;
       }
       if (d->cryptoLib) break;
@@ -518,7 +518,7 @@ KOpenSSLProxy::KOpenSSLProxy()
    {
    QString libname = findMostRecentLib("/usr/lib", "ssl");
    if (!libname.isNull())
-         d->sslLib = ll->library(QFile::encodeName(libname), QLibrary::ExportExternalSymbolsHint);
+         d->sslLib = ll->library(libname, QLibrary::ExportExternalSymbolsHint);
    }
 #else
    for (QStringList::Iterator it = libpaths.begin();
@@ -534,7 +534,7 @@ KOpenSSLProxy::KOpenSSLProxy()
 	 QString tmpStr(alib.toLatin1());
 	 tmpStr.replace(QRegExp("\\(.*\\)"), "");
 	 if (!access(tmpStr.toLatin1(), R_OK))
-         	d->sslLib = ll->library(QFile::encodeName(alib), QLibrary::ExportExternalSymbolsHint);
+         	d->sslLib = ll->library(alib, QLibrary::ExportExternalSymbolsHint);
          if (d->sslLib) break;
       }
       if (d->sslLib) break;

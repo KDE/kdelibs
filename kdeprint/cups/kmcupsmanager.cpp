@@ -722,7 +722,7 @@ KLibrary::void_function_ptr KMCupsManager::loadCupsdConfFunction(const char *nam
 {
 	if (!m_cupsdconf)
 	{
-		m_cupsdconf = KLibLoader::self()->library("cupsdconf");
+		m_cupsdconf = KLibLoader::self()->library(QLatin1String("cupsdconf"));
 		if (!m_cupsdconf)
 		{
 			setErrorMsg(i18n("Library cupsdconf not found. Check your installation."));
@@ -739,7 +739,7 @@ void KMCupsManager::unloadCupsdConf()
 {
 	if (m_cupsdconf)
 	{
-		KLibLoader::self()->unloadLibrary("libcupsdconf");
+		KLibLoader::self()->unloadLibrary(QLatin1String("libcupsdconf"));
 		m_cupsdconf = 0;
 	}
 }

@@ -74,7 +74,7 @@ Manager::Manager()
     d->collection = new ActionCollection("main");
 
 #ifdef KROSS_PYTHON_LIBRARY
-    QString pythonlib = QFile::encodeName( KLibLoader::self()->findLibrary(KROSS_PYTHON_LIBRARY) );
+    QString pythonlib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_PYTHON_LIBRARY)) );
     if(! pythonlib.isEmpty()) { // If the Kross Python plugin exists we offer is as supported scripting language.
         InterpreterInfo::Option::Map pythonoptions;
         d->interpreterinfos.insert("python",
@@ -93,7 +93,7 @@ Manager::Manager()
 #endif
 
 #ifdef KROSS_RUBY_LIBRARY
-    QString rubylib = QFile::encodeName( KLibLoader::self()->findLibrary(KROSS_RUBY_LIBRARY) );
+    QString rubylib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_RUBY_LIBRARY)) );
     if(! rubylib.isEmpty()) { // If the Kross Ruby plugin exists we offer is as supported scripting language.
         InterpreterInfo::Option::Map rubyoptions;
         rubyoptions.insert("safelevel",
@@ -118,7 +118,7 @@ Manager::Manager()
 #endif
 
 #ifdef KROSS_JAVA_LIBRARY
-    QString javalib = QFile::encodeName( KLibLoader::self()->findLibrary(KROSS_JAVA_LIBRARY) );
+    QString javalib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_JAVA_LIBRARY)) );
     if(! javalib.isEmpty()) {
         InterpreterInfo::Option::Map javaoptions;
         d->interpreterinfos.insert("java",
@@ -137,7 +137,7 @@ Manager::Manager()
 #endif
 
 #ifdef KROSS_KJS_LIBRARY
-    QString kjslib = QFile::encodeName( KLibLoader::self()->findLibrary(KROSS_KJS_LIBRARY) );
+    QString kjslib = QFile::encodeName( KLibLoader::self()->findLibrary(QLatin1String(KROSS_KJS_LIBRARY)) );
     if(! kjslib.isEmpty()) { // If the Kjs plugin exists we offer is as supported scripting language.
         InterpreterInfo::Option::Map kjsoptions;
         kjsoptions.insert("restricted",
@@ -260,11 +260,11 @@ QObject* Manager::module(const QString& modulename)
         return 0;
     }
 
-    QByteArray libraryname = QString("krossmodule%1").arg(modulename).toLower().toLatin1();
+    QString libraryname = QString("krossmodule%1").arg(modulename).toLower();
     KLibLoader* loader = KLibLoader::self();
-    KLibrary* lib = loader->globalLibrary( libraryname );
+    KLibrary* lib = loader->library( libraryname, QLibrary::ExportExternalSymbolsHint );
     if( ! lib ) { //FIXME this fallback-code should be in KLibLoader imho.
-        lib = loader->globalLibrary( QString("lib%1").arg(libraryname.constData()).toLatin1() );
+        lib = loader->library( QString("lib%1").arg(libraryname), QLibrary::ExportExternalSymbolsHint );
         if( ! lib ) {
             krosswarning( QString("Failed to load module '%1': %2").arg(modulename).arg(loader->lastErrorMessage()) );
             return 0;

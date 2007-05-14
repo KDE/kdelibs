@@ -694,7 +694,7 @@ void KLocalizedStringPrivate::loadTranscript ()
     s->loadTranscriptCalled = true;
     s->ktrs = NULL; // null indicates that Transcript is not available
 
-    KLibrary *lib = KLibLoader::self()->library("ktranscript");
+    KLibrary *lib = KLibLoader::self()->library(QLatin1String("ktranscript"));
     if (!lib) {
         #ifndef NDEBUG
         kDebug(173) << QString("Cannot load transcript plugin: %1")

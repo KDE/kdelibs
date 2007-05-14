@@ -289,13 +289,13 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
         factory = "create_" + factory;
         QString libname = "kded_"+s->library();
 
-        KLibrary *lib = loader->library(QFile::encodeName(libname));
+        KLibrary *lib = loader->library(libname);
         if (!lib)
         {
             kWarning() << k_funcinfo << "Could not load library. [ "
                        << loader->lastErrorMessage() << " ]" << endl;
             libname.prepend("lib");
-            lib = loader->library(QFile::encodeName(libname));
+            lib = loader->library(libname);
         }
         if (lib)
         {
@@ -317,7 +317,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
                     return module;
                 }
             }
-            loader->unloadLibrary(QFile::encodeName(libname));
+            loader->unloadLibrary(libname);
         }
         else
         {

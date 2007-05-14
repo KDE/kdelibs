@@ -655,7 +655,7 @@ QStringList KXmlCommandManager::commandListWithDescription()
 
 QString KXmlCommandManager::selectCommand(QWidget *parent)
 {
-	KLibrary *lib = KLibLoader::self()->library( "libkdeprint_management_module" );
+	KLibrary *lib = KLibLoader::self()->library( QLatin1String( "libkdeprint_management_module" ) );
 	if ( !lib )
 	{
 		KMessageBox::error( parent, i18n( "Unable to load KDE print management library: %1" ,  KLibLoader::self()->lastErrorMessage() ) );

@@ -52,7 +52,7 @@ KComponentData Factory::partComponentData()
     return KComponentData();
 }
 
-KComponentData Factory::partComponentDataFromLibrary( const QByteArray &libraryName )
+KComponentData Factory::partComponentDataFromLibrary( const QString &libraryName )
 {
     KLibrary *library = KLibLoader::self()->library( libraryName );
     if ( !library )

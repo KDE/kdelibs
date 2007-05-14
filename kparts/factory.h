@@ -91,7 +91,7 @@ public:
       *
       * @param libraryName name of the library to query the instance from
       */
-     static KComponentData partComponentDataFromLibrary(const QByteArray &libraryName);
+     static KComponentData partComponentDataFromLibrary(const QString &libraryName);
 
 protected:
 

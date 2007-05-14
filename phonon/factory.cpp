@@ -81,7 +81,7 @@ bool FactoryPrivate::createBackend(KService::Ptr newService)
     // This code is in here temporarily until NMM gets fixed.
     // Currently the NMM backend will fail with undefined symbols if
     // the backend is not loaded with global symbol resolution
-    KLibrary *library = KLibLoader::self()->library(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
+    KLibrary *library = KLibLoader::self()->library(newService->library(), QLibrary::ExportExternalSymbolsHint);
     if (library) {
         factory = library->factory();
     }

@@ -127,7 +127,7 @@ Interpreter* InterpreterInfo::interpreter()
     // Load the krosspython library.
     KLibLoader *loader = KLibLoader::self();
 
-    KLibrary* library = loader->globalLibrary( d->library.toLatin1().data() );
+    KLibrary* library = loader->library( d->library, QLibrary::ExportExternalSymbolsHint );
     if(! library) {
         setError(i18n("Could not load interpreter library \"%1\"",d->library), loader->lastErrorMessage());
         return 0;

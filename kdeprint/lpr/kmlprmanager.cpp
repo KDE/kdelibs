@@ -151,7 +151,7 @@ void KMLprManager::initHandlers()
 	QStringList	l = KGlobal::dirs()->findAllResources("data", "kdeprint/lpr/*.la");
 	for (QStringList::ConstIterator it=l.begin(); it!=l.end(); ++it)
 	{
-		KLibrary	*library = KLibLoader::self()->library(QFile::encodeName(*it));
+		KLibrary	*library = KLibLoader::self()->library(*it);
 		if (library)
 		{
 			kDebug() << "loading external handler from " << *it << endl;

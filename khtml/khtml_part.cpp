@@ -966,7 +966,7 @@ extern "C" { KJSProxy *kjs_html_init(khtml::ChildFrame * childframe); }
 static bool createJScript(khtml::ChildFrame *frame)
 {
 #ifndef DIRECT_LINKAGE_TO_ECMA
-  KLibrary *lib = KLibLoader::self()->library("kjs_html");
+  KLibrary *lib = KLibLoader::self()->library(QLatin1String("kjs_html"));
   if ( !lib ) {
     setJScriptEnabled( false );
     return false;
