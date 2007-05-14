@@ -53,8 +53,6 @@ extern "C" {
 }
 #include <assert.h>
 
-#include "images.h"
-
 static struct {
     const char* label;
     const char* pixmapName;
@@ -639,10 +637,10 @@ KACLListView::KACLListView( QWidget* parent )
 
     // Load the avatars
     for ( int i=0; i < LAST_IDX; ++i ) {
-        s_itemAttributes[i].pixmap = new QPixmap( qembed_findImage( s_itemAttributes[i].pixmapName ) );
+        s_itemAttributes[i].pixmap = new QPixmap( QString::fromLatin1(":/images/%1").arg(s_itemAttributes[i].pixmapName) );
     }
-    m_yesPixmap = new QPixmap( qembed_findImage( "yes" ) );
-    m_yesPartialPixmap = new QPixmap( qembed_findImage( "yespartial" ) );
+    m_yesPixmap = new QPixmap( ":/images/yes.png" );
+    m_yesPartialPixmap = new QPixmap( ":/images/yespartial.png" );
 
 
     // fill the lists of all legal users and groups
