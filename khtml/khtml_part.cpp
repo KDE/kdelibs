@@ -113,7 +113,6 @@ using namespace DOM;
 #include <QtCore/QFile>
 #include <QtCore/QMetaEnum>
 #include <QtGui/QTextDocument>
-#include <Qt3Support/Q3CString>
 #include <QtCore/QDate>
 
 #include "khtmlpart_p.h"
@@ -2592,8 +2591,8 @@ void KHTMLPartPrivate::setFlagRecursively(
 
   // descend into child frames recursively
   {
-    Q3ValueList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
-    const Q3ValueList<khtml::ChildFrame*>::Iterator itEnd = m_frames.end();
+    QList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
+    const QList<khtml::ChildFrame*>::Iterator itEnd = m_frames.end();
     for (; it != itEnd; ++it) {
       KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
       if (part->inherits("KHTMLPart"))
@@ -2602,8 +2601,8 @@ void KHTMLPartPrivate::setFlagRecursively(
   }
   // do the same again for objects
   {
-    Q3ValueList<khtml::ChildFrame*>::Iterator it = m_objects.begin();
-    const Q3ValueList<khtml::ChildFrame*>::Iterator itEnd = m_objects.end();
+    QList<khtml::ChildFrame*>::Iterator it = m_objects.begin();
+    const QList<khtml::ChildFrame*>::Iterator itEnd = m_objects.end();
     for (; it != itEnd; ++it) {
       KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
       if (part->inherits("KHTMLPart"))
@@ -4220,8 +4219,8 @@ void KHTMLPart::updateActions()
 {
   bool frames = false;
 
-  Q3ValueList<khtml::ChildFrame*>::ConstIterator it = d->m_frames.begin();
-  const Q3ValueList<khtml::ChildFrame*>::ConstIterator end = d->m_frames.end();
+  QList<khtml::ChildFrame*>::ConstIterator it = d->m_frames.begin();
+  const QList<khtml::ChildFrame*>::ConstIterator end = d->m_frames.end();
   for (; it != end; ++it )
       if ( (*it)->m_type == khtml::ChildFrame::Frame )
       {
@@ -4291,7 +4290,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
     khtml::ChildFrame * child = new khtml::ChildFrame;
     //kDebug( 6050 ) << "inserting new frame into frame map " << frameName << endl;
     child->m_name = frameName;
-    it = d->m_frames.append( child );
+    it = d->m_frames.insert( d->m_frames.end(), child );
   }
 
   (*it)->m_type = isIFrame ? khtml::ChildFrame::IFrame : khtml::ChildFrame::Frame;
@@ -4330,7 +4329,7 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 {
   //kDebug( 6005 ) << "KHTMLPart::requestObject " << this << " frame=" << frame << endl;
   khtml::ChildFrame *child = new khtml::ChildFrame;
-  FrameIt it = d->m_objects.append( child );
+  FrameIt it = d->m_objects.insert( d->m_objects.end(), child );
   (*it)->m_frame = frame;
   (*it)->m_type = khtml::ChildFrame::Object;
   (*it)->m_params = params;
@@ -5393,7 +5392,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
   KUrl::List frameURLLst;
-  Q3ValueList<QByteArray> frameStateBufferLst;
+  QList<QByteArray> frameStateBufferLst;
 
   ConstFrameIt it = d->m_frames.begin();
   const ConstFrameIt end = d->m_frames.end();
@@ -5431,7 +5430,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   quint32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   KUrl::List frameURLs;
-  Q3ValueList<QByteArray> frameStateBuffers;
+  QList<QByteArray> frameStateBuffers;
   QList<int> fSizes;
   QString encoding, sheetUsed;
   long old_cacheId = d->m_cacheId;
@@ -5504,7 +5503,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KUrl::List::ConstIterator fURLIt = frameURLs.begin();
-    Q3ValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    QList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
 
     for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
@@ -5560,7 +5559,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
     KUrl::List::ConstIterator fURLIt = frameURLs.begin();
-    Q3ValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    QList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
 
     for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
@@ -5571,7 +5570,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
 //      kDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt << endl;
 
-      const FrameIt childFrame = d->m_frames.append( newChild );
+      const FrameIt childFrame = d->m_frames.insert( d->m_frames.end(), newChild );
 
       processObjectRequest( *childFrame, *fURLIt, *fServiceTypeIt );
 

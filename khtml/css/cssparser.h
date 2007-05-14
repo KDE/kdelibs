@@ -82,14 +82,14 @@ namespace DOM {
     class ValueList {
     public:
         ValueList() : m_current(0) { }
-	~ValueList();
+        ~ValueList();
         void addValue(const Value& v) { m_values.append(v); }
         unsigned int size() const { return m_values.size(); }
         Value* current() { return m_current < m_values.size() ? &m_values[m_current] : 0; }
         Value* next() { ++m_current; return current(); }
     private:
         QVector<Value> m_values;
-	unsigned int m_current;
+        int m_current;
     };
 
     class CSSParser

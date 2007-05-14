@@ -42,8 +42,8 @@
 
 #include <QtCore/QCharRef>
 #include <QtCore/QPoint>
+#include <QtCore/QStack>
 #include <QtGui/QRegion>
-#include <Qt3Support/Q3PtrStack>
 #include <QtGui/QImage>
 
 using namespace DOM;
@@ -387,7 +387,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 {
     //cout << "map:mapMouseEvent " << endl;
     //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
-    Q3PtrStack<NodeImpl> nodeStack;
+    QStack<NodeImpl*> nodeStack;
 
     NodeImpl *current = firstChild();
     while(1)

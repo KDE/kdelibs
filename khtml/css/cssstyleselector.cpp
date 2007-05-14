@@ -60,7 +60,6 @@ using namespace DOM;
 #include <kglobal.h>
 #include <kconfig.h>
 #include <QtCore/QFile>
-#include <Qt3Support/Q3ValueList>
 #include <QtCore/QString>
 
 #include <kdebug.h>

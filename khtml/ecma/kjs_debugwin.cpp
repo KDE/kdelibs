@@ -28,7 +28,7 @@
 #include <qlayout.h>
 #include <qpushbutton.h>
 #include <q3textedit.h>
-#include <q3listbox.h>
+#include <qlistwidget.h>
 #include <q3multilineedit.h>
 #include <qapplication.h>
 #include <ktoolbar.h>
@@ -400,9 +400,9 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   QLabel *contextLabel = new QLabel(i18n("Call stack"),contextContainer);
   QWidget *contextListContainer = new QWidget(contextContainer);
-  m_contextList = new Q3ListBox(contextListContainer);
+  m_contextList = new QListWidget(contextListContainer);
   m_contextList->setMinimumSize(100,200);
-  connect(m_contextList,SIGNAL(highlighted(int)),this,SLOT(slotShowFrame(int)));
+  connect(m_contextList,SIGNAL(currentRowChanged(int)),this,SLOT(slotShowFrame(int)));
 
   QHBoxLayout *clistLayout = new QHBoxLayout(contextListContainer);
   clistLayout->addWidget(m_contextList);
@@ -614,8 +614,8 @@ void KJSDebugWin::slotSourceSelected(int sourceSelIndex)
 
   // If the currently selected context is in the current source file, then hilight
   // the line it's on.
-  if (m_contextList->currentItem() >= 0) {
-    Context ctx = m_execs[m_contextList->currentItem()]->context();
+  if (m_contextList->currentRow() >= 0) {
+    Context ctx = m_execs[m_contextList->currentRow()]->context();
     abort();
     //if (m_sourceFragments[ctx.sourceId()]->sourceFile == m_sourceSelFiles.at(sourceSelIndex))
     //  setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
@@ -1078,20 +1078,20 @@ void KJSDebugWin::leaveSession()
 
 void KJSDebugWin::updateContextList()
 {
-  disconnect(m_contextList,SIGNAL(highlighted(int)),this,SLOT(slotShowFrame(int)));
+  disconnect(m_contextList,SIGNAL(currentRowChanged(int)),this,SLOT(slotShowFrame(int)));
 
   m_contextList->clear();
   for (int i = 0; i < m_execsCount; i++)
-    m_contextList->insertItem(contextStr(m_execs[i]->context()));
+    m_contextList->addItem(contextStr(m_execs[i]->context()));
 
   if (m_execsCount > 0) {
-    m_contextList->setSelected(m_execsCount-1, true);
+    m_contextList->setCurrentRow(m_execsCount-1);
     Context ctx = m_execs[m_execsCount-1]->context();
     abort();
     //setSourceLine(ctx.sourceId(),ctx.curStmtFirstLine());
   }
 
-  connect(m_contextList,SIGNAL(highlighted(int)),this,SLOT(slotShowFrame(int)));
+  connect(m_contextList,SIGNAL(currentRowChanged(int)),this,SLOT(slotShowFrame(int)));
 }
 
 QString KJSDebugWin::contextStr(const Context &ctx)

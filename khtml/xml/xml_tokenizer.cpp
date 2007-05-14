@@ -115,7 +115,10 @@ NodeImpl *XMLHandler::popNode()
 
 NodeImpl *XMLHandler::currentNode() const
 {
-    return m_nodes.current();
+    if ( m_nodes.isEmpty() )
+        return 0;
+    else
+        return m_nodes.top();
 }
 
 QString XMLHandler::errorProtocol()

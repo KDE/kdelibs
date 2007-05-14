@@ -88,9 +88,9 @@ public:
     void dumpStats() const;
 private:
      // Map of dependencies.
-     KMultiMap<ElementImpl> dependency_map[LastStructuralDependency];
+     KMultiMap<ElementImpl, ElementImpl> dependency_map[LastStructuralDependency];
      // Map of reverse dependencies. For fast reset
-     KMultiMap<ElementImpl> reverse_map;
+     KMultiMap<ElementImpl, ElementImpl> reverse_map;
 
      // Map of the various attribute dependencies
      std::bitset<512> attribute_map[LastAttributeDependency];

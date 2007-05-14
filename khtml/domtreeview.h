@@ -21,7 +21,7 @@
 #include <k3listview.h>
 #include <kdebug.h>
 #include <Qt3Support/Q3ListView>
-#include <Qt3Support/Q3PtrDict>
+#include <QtCore/QHash>
 #include "dom/dom_core.h"
 
 class DOMTreeView : public K3ListView
@@ -43,8 +43,8 @@ class DOMTreeView : public K3ListView
 	void slotItemClicked(Q3ListViewItem *);
 
     private:
-	Q3PtrDict<Q3ListViewItem> m_itemdict;
-	Q3PtrDict<DOM::Node> m_nodedict;
+        QHash<void*, Q3ListViewItem*> m_itemdict;
+        QHash<void*, DOM::Node*> m_nodedict;
 	DOM::Node document;
 
 	KHTMLPart *part;

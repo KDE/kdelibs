@@ -38,7 +38,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QMap>
 #include <QtCore/QTimer>
-#include <Qt3Support/Q3ValueList>
+#include <QtCore/QList>
 
 #include "html/html_formimpl.h"
 #include "khtml_run.h"
@@ -118,7 +118,7 @@ namespace khtml
 
 }
 
-struct KHTMLFrameList : public Q3ValueList<khtml::ChildFrame*>
+struct KHTMLFrameList : public QList<khtml::ChildFrame*>
 {
     Iterator find( const QString &name ) KDE_NO_EXPORT;
 };

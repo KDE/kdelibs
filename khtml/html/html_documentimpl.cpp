@@ -56,7 +56,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include <stdlib.h>
-#include <Qt3Support/Q3PtrStack>
+#include <QtCore/QStack>
 
 // Turn off inlining to avoid warning with newer gcc.
 #undef __inline
@@ -64,7 +64,7 @@
 #include "doctypes.cpp"
 #undef __inline
 
-template class Q3PtrStack<DOM::NodeImpl>;
+template class QStack<DOM::NodeImpl*>;
 
 using namespace DOM;
 using namespace khtml;

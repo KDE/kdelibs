@@ -33,8 +33,8 @@ void DynamicDomRestyler::addDependency(ElementImpl* subject, ElementImpl* depend
 {
     assert(type < LastStructuralDependency);
 
-    dependency_map[type].append(dependency, subject);
-    reverse_map.append(subject,dependency);
+    dependency_map[type].insert(dependency, subject);
+    reverse_map.insert(subject,dependency);
 }
 
 void DynamicDomRestyler::removeDependency(ElementImpl* subject, ElementImpl* dependency, StructuralDependencyType type)
@@ -45,14 +45,17 @@ void DynamicDomRestyler::removeDependency(ElementImpl* subject, ElementImpl* dep
 
 void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDependencyType type)
 {
-    KMultiMap<ElementImpl>::List* my_dependencies = reverse_map.find(subject);
+    QSet<ElementImpl*>* my_dependencies = reverse_map.find(subject);
 
     if (!my_dependencies) return;
 
-    for (my_dependencies->first(); my_dependencies->current() ; my_dependencies->next())
+    QSet<ElementImpl*>::iterator it = my_dependencies->begin();
+    while ( it != my_dependencies->end() )
     {
-        ElementImpl* e = my_dependencies->current();
+        ElementImpl* e = *it;
         dependency_map[type].remove(e,subject);
+
+        ++it;
     }
 
     // don't remove from reverse_map as there might be other dependencies to the same elements
@@ -60,16 +63,18 @@ void DynamicDomRestyler::removeDependencies(ElementImpl* subject, StructuralDepe
 
 void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
 {
-    KMultiMap<ElementImpl>::List* my_dependencies = reverse_map.find(subject);
+    QSet<ElementImpl*>* my_dependencies = reverse_map.find(subject);
 
     if (!my_dependencies) return;
 
-    for (my_dependencies->first(); my_dependencies->current() ; my_dependencies->next())
+    QSet<ElementImpl*>::iterator it = my_dependencies->begin();
+    while ( it != my_dependencies->end() )
     {
-        ElementImpl* e = my_dependencies->current();
+        ElementImpl* e = *it;
         for (int type = 0; type < LastStructuralDependency; type++) {
             dependency_map[type].remove(e,subject);
         }
+        ++it;
     }
 
     reverse_map.remove(subject);
@@ -78,17 +83,19 @@ void DynamicDomRestyler::resetDependencies(ElementImpl* subject)
 void DynamicDomRestyler::restyleDepedent(ElementImpl* dependency, StructuralDependencyType type)
 {
     assert(type < LastStructuralDependency);
-    KMultiMap<ElementImpl>::List* dep = dependency_map[type].find(dependency);
+    QSet<ElementImpl*>* dep = dependency_map[type].find(dependency);
 
     if (!dep) return;
 
     // take copy as the restyle will change the list
-    KMultiMap<ElementImpl>::List dependent(*dep);
+    QSet<ElementImpl*> dependent(*dep);
 
-    for (dependent.first(); dependent.current() ; dependent.next())
+    QSet<ElementImpl*>::iterator it = dependent.begin();
+    while ( it != dependent.end() )
     {
 //         kDebug() << "Restyling dependent" << endl;
-        dependent.current()->setChanged(true);
+        (*it)->setChanged(true);
+        ++it;
     }
 }
 

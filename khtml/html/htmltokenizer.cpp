@@ -400,7 +400,7 @@ void HTMLTokenizer::scriptHandler()
 
         if (cs) {
             pendingQueue.push(src);
-            uint scriptCount = cachedScript.count();
+            int scriptCount = cachedScript.count();
             setSrc(TokenizerString());
             scriptCodeSize = scriptCodeResync = 0;
             cs->ref(this);

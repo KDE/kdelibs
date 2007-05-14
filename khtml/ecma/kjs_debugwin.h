@@ -31,7 +31,7 @@
 #include <q3multilineedit.h>
 #include <qpixmap.h>
 #include <q3ptrlist.h>
-#include <q3ptrstack.h>
+#include <QtCore/QStack>
 #include <qcheckbox.h>
 #include <kdialog.h>
 #include <kcomponentdata.h>
@@ -46,7 +46,7 @@
 
 #include "dom/dom_misc.h"
 
-class Q3ListBox;
+class QListWidget;
 class QComboBox;
 class KActionCollection;
 class KAction;
@@ -253,7 +253,7 @@ namespace KJS {
     Mode m_mode;
     QString m_nextSourceUrl;
     int m_nextSourceBaseLine;
-    Q3PtrStack<ExecState> m_execStates;
+    QStack<ExecState*> m_execStates;
     ExecState **m_execs;
     int m_execsCount;
     int m_execsAlloc;
@@ -266,7 +266,7 @@ namespace KJS {
     QPixmap m_stopIcon;
     QPixmap m_emptyIcon;
     SourceDisplay *m_sourceDisplay;
-    Q3ListBox *m_contextList;
+    QListWidget *m_contextList;
 
     KAction *m_stepAction;
     KAction *m_nextAction;

@@ -30,7 +30,6 @@ DOMTreeView::DOMTreeView(QWidget *parent, KHTMLPart *currentpart, const char * n
     part = currentpart;
     connect(part, SIGNAL(nodeActivated(const DOM::Node &)), this, SLOT(showTree(const DOM::Node &)));
     connect(this, SIGNAL(clicked(Q3ListViewItem *)), this, SLOT(slotItemClicked(Q3ListViewItem *)));
-    m_nodedict.setAutoDelete(true);
 }
 
 DOMTreeView::~DOMTreeView()
@@ -44,6 +43,7 @@ void DOMTreeView::showTree(const DOM::Node &pNode)
     {
 	clear();
 	m_itemdict.clear();
+  qDeleteAll(m_nodedict);
 	m_nodedict.clear();
 	if(pNode.isNull())
 	    return;

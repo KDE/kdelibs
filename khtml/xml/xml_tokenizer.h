@@ -25,8 +25,7 @@
 
 #include <Qt/qxml.h>
 #include <Qt3Support/Q3PtrList>
-#include <Qt3Support/Q3PtrStack>
-#include <QStack>
+#include <QtCore/QStack>
 #include <QMap>
 #include <QtCore/QObject>
 #include "misc/loader_client.h"
@@ -103,7 +102,7 @@ private:
     QString errorProt;
     DOM::DocumentImpl *m_doc;
     KHTMLView *m_view;
-    Q3PtrStack<DOM::NodeImpl> m_nodes;
+    QStack<DOM::NodeImpl*> m_nodes;
     DOM::NodeImpl *m_rootNode;
 
     enum State {

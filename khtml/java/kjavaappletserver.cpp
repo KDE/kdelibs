@@ -51,7 +51,6 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QLayout>
 #include <QtCore/QRegExp>
-#include <Qt3Support/Q3CString>
 
 #include <stdlib.h>
 #include <assert.h>

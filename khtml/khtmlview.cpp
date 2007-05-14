@@ -86,7 +86,7 @@
 #include <QtCore/QObject>
 #include <Qt3Support/Q3PaintDeviceMetrics>
 #include <QtGui/QPainter>
-#include <Qt3Support/Q3PtrDict>
+#include <QtCore/QHash>
 #include <QtGui/QToolTip>
 #include <QtCore/QString>
 #include <QtGui/QTextDocument>
@@ -137,7 +137,7 @@ public:
     };
 
     KHTMLViewPrivate()
-        : underMouse( 0 ), underMouseNonShared( 0 ), oldUnderMouse( 0 ), visibleWidgets( 107 )
+        : underMouse( 0 ), underMouseNonShared( 0 ), oldUnderMouse( 0 )
     {
 #ifndef KHTML_NO_CARET
 	m_caretViewContext = 0;
@@ -361,7 +361,7 @@ public:
     bool dirtyLayout                           :1;
     bool m_dialogsAllowed			:1;
     QRegion updateRegion;
-    Q3PtrDict<QWidget> visibleWidgets;
+    QHash<void*, QWidget*> visibleWidgets;
 #ifndef KHTML_NO_CARET
     CaretViewContext *m_caretViewContext;
     EditorContext *m_editorContext;
@@ -2853,7 +2853,7 @@ bool KHTMLView::pagedMode() const
 void KHTMLView::setWidgetVisible(RenderWidget* w, bool vis)
 {
     if (vis) {
-        d->visibleWidgets.replace(w, w->widget());
+        d->visibleWidgets.insert(w, w->widget());
     }
     else
         d->visibleWidgets.remove(w);
@@ -3673,12 +3673,15 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
         QRect visibleRect(contentsX(), contentsY(), visibleWidth(), visibleHeight());
         QList<RenderWidget*> toRemove;
-        for (Q3PtrDictIterator<QWidget> it(d->visibleWidgets); it.current(); ++it) {
+        QHashIterator<void*, QWidget*> it(d->visibleWidgets);
+        while (it.hasNext()) {
             int xp = 0, yp = 0;
-            w = it.current();
-            RenderWidget* rw = static_cast<RenderWidget*>( it.currentKey() );
+
+            it.next();
+
+            RenderWidget* rw = static_cast<RenderWidget*>( it.key() );
             if (!rw->absolutePosition(xp, yp) ||
-                !visibleRect.intersects(QRect(xp, yp, w->width(), w->height())))
+                !visibleRect.intersects(QRect(xp, yp, it.value()->width(), it.value()->height())))
                 toRemove.append(rw);
         }
 

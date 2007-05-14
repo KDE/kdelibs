@@ -1427,9 +1427,12 @@ void Window::clear( ExecState *exec )
   clearProperties();
 
   // Break the dependency between the listeners and their object
-  Q3PtrDictIterator<JSEventListener> it(jsEventListeners);
-  for (; it.current(); ++it)
-    it.current()->clear();
+  QHashIterator<void*, JSEventListener*> it(jsEventListeners);
+  while ( it.hasNext() ) {
+    it.next();
+    it.value()->clear();
+  }
+
   // Forget about the listeners (the DOM::NodeImpls will delete them)
   jsEventListeners.clear();
 

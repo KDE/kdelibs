@@ -28,8 +28,8 @@
 
 #include "dom/dom_string.h"
 
+#include <QtCore/QList>
 #include <QtCore/QString>
-#include <Qt3Support/Q3ValueList>
 
 #include <assert.h>
 
@@ -179,7 +179,7 @@ private:
 };
 
 
-class TokenizerQueue : public Q3ValueList<TokenizerString>
+class TokenizerQueue : public QList<TokenizerString>
 {
 
 public:
@@ -190,7 +190,7 @@ public:
         if (isEmpty()) 
             return TokenizerString();
         TokenizerString t(first());
-        remove( begin() );
+        erase( begin() );
         return t;
     }
     TokenizerString& top() { return first(); }

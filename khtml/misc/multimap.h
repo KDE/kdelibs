@@ -27,15 +27,18 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#if 0 // Use QHash and QSet once Trolltech has fixed them so they don't crash
-#include <QHash>
-#include <QSet>
-#include <QList>
+#include <QtCore/QHash>
+#include <QtCore/QList>
+#include <QtCore/QSet>
+
+template<class T> class MultiMapPtrList;
+
 template<class K, class T>
 class KMultiMap {
 public:
     typedef QSet<T*> Set;
     typedef QHash<K*, Set*> Map;
+    typedef MultiMapPtrList<T*> List;
 
     KMultiMap() {};
     ~KMultiMap() {
@@ -74,48 +77,6 @@ public:
     }
 private:
     Map map;
-};
-#endif
-
-#include <Qt3Support/Q3PtrDict>
-
-template<class T> class MultiMapPtrList;
-
-// KMultiMap is an implementaition of a Map with multiple entries per key.
-// It is originally designed to work like a shell for QPtrDict<QPtrList>, but
-// QPtrList have been replaced with a much faster hash set.
-template<class T>
-class KMultiMap {
-public:
-    KMultiMap() : dict(257) { dict.setAutoDelete(true); }
-    ~KMultiMap() {}
-
-    typedef MultiMapPtrList<T> List;
-
-    void append(void* key, T* element) {
-        List *list = dict.find(key);
-        if (!list){
-             list = new List(8);
-             dict.insert(key, list);
-        }
-        list->append(element);
-    }
-    void remove(void* key, T* element) {
-        List *list = dict.find(key);
-        if (list) {
-            list->remove(element);
-            if (list->isEmpty()) dict.remove(key);
-        }
-    }
-    void remove(void* key) {
-        dict.remove(key);
-    }
-    List* find(void* key) {
-        return dict.find(key);
-    }
-private:
-    Q3PtrDict<List> dict;
-
 };
 
 static inline unsigned int stupidHash(void* ptr)

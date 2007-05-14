@@ -45,7 +45,7 @@
 #include <ecma/kjs_proxy.h>
 #include <ecma/kjs_binding.h>
 
-#include <Qt3Support/Q3PtrStack>
+#include <QtCore/QStack>
 #include <Qt3Support/Q3PaintDeviceMetrics>
 //Added by qt3to4:
 #include <QTimerEvent>
@@ -701,7 +701,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
         return info->nd;
 
     //Now we actually have to walk.
-    Q3PtrStack<NodeImpl> nodeStack;
+    QStack<NodeImpl*> nodeStack;
     NodeImpl *current = _first;
 
     while(1)
