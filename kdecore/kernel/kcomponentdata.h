@@ -70,8 +70,9 @@ public:
      *
      * It does not copy the data. The data is shared between the old and new objects.
      *
-     * If the data of the left hand side object was only referenced from this object it is deleted
-     * if no referenced KSharedConfig object doesn't need it anymore.
+     * If the data of the left hand side object was only referenced
+     * from this object and no referenced KSharedConfig object needs
+     * it anymore, it is deleted
      */
     KComponentData &operator=(const KComponentData&);
 
@@ -136,8 +137,9 @@ public:
     /**
      * Returns the about data of this component.
      *
-     * \return The about data of the component. If none has been set in the constructor but a
-     * component name was set a default constructed KAboutData object is returned.
+     * \return The about data of the component. If none has been set in the
+     *         constructor but a component name was set, a default constructed
+     *         KAboutData object is returned.
      */
     const KAboutData *aboutData() const;
 

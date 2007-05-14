@@ -306,6 +306,7 @@ public:
    *    { "o", 0, 0 },
    *    { "option2", I18N_NOOP("Description 2"), 0 },
    *    { "nooption3", I18N_NOOP("Description 3"), 0 },
+   *    { "+file", I18N_NOOP("A required argument 'file'"), 0 },
    *    KCmdLineLastOption
    * }
    * \endcode
@@ -351,7 +352,8 @@ public:
    * @li "myapp /tmp/file"
    *
    * @param options A list of options that your code supplies.
-   * @param name the name of the option, can be 0.
+   * @param name the name of the option list, as displayed by
+   *             the help output. Can be 0.
    * @param id A name with which these options can be identified, can be 0.
    * @param afterId The options are inserted after this set of options, can be 0.
    */
@@ -431,7 +433,7 @@ public:
    *
    *  @return The value of the option. If the option was not
    *          present on the command line the default is returned.
-   *          If the option was present more than the value of the
+   *          If the option was present more than once, the value of the
    *          last occurrence is used.
    */
   QByteArray getOption(const char *option) const;
@@ -482,7 +484,7 @@ public:
    *  Read out an argument.
    *
    *  @param n The argument to read. 0 is the first argument.
-   * count()-1 is the last argument.
+   *           count()-1 is the last argument.
    *
    *  @return A @p const @p char @p * pointer to the n'th argument.
    */

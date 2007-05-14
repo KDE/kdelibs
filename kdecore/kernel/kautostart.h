@@ -29,7 +29,7 @@ class QStringList;
 /**
  * KAutostart provides a programmatic means to control the state of
  * autostart services on a per-user basis. This is useful for applications
- * which wish to offer a configurable means to allow the application to be
+ * that wish to offer a configurable means to allow the application to be
  * autostarted.
  *
  * By using this class you future-proof your applications against potential
@@ -116,7 +116,7 @@ class KDECORE_EXPORT KAutostart : public QObject
          * autostart system is set to autostart at login or not
          * @param environment if provided the check will be performed as if
          *        being loaded in that environment
-         * @param check will include checks for these autostart conditions
+         * @param check autostart conditions to check for
          *        @see commandToCheck()
          */
         bool autostarts(const QString& environment = QString(),
@@ -156,8 +156,8 @@ class KDECORE_EXPORT KAutostart : public QObject
          */
         QString commandToCheck() const;
         /**
-         * Sets the executable to check for existence when autostarting this
-         * service
+         * Sets the executable to check for the existence of when
+         * autostarting this service
          */
         void setCommandToCheck(const QString& exec);
 
@@ -182,7 +182,9 @@ class KDECORE_EXPORT KAutostart : public QObject
 
         /**
          * Returns the list of environments (e.g. "KDE") this service is allowed
-         * to start in. This does not take other autostart conditions
+         * to start in.
+         *
+         * This does not take other autostart conditions
          * into account. If any environment is added to the allowed environments
          * list, then only those environments will be allowed to
          * autoload the service. If an environment is marked as both allowed
@@ -206,7 +208,9 @@ class KDECORE_EXPORT KAutostart : public QObject
 
         /**
          * Returns the list of environments this service is explicitly not
-         * allowed to start in. This does not take other autostart conditions
+         * allowed to start in.
+         *
+         * This does not take other autostart conditions
          * such as into account. If the same environment is also marked as
          * allowed, it will still be excluded.
          */

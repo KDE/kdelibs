@@ -34,7 +34,7 @@ namespace KAuthorized
 {
   /**
    * Returns whether a certain action is authorized
-   * @param genericAction The name of a generic  action
+   * @param genericAction The name of a generic action
    * @return true if the action is authorized
    * @todo what are the generic actions?
    */
@@ -82,9 +82,9 @@ namespace KAuthorized
   KDE_EXPORT bool authorizeControlModule(const QString& menuId);
 
   /**
-   * Returns whether access to a certain control modules is authorized.
+   * Returns which control modules from a given list are authorized for access.
    *
-   * @param menuIds list of menu-ids of control module,
+   * @param menuIds list of menu-ids of control modules;
    * an example of a menu-id is kde-mouse.desktop.
    * @return Those control modules for which access has been authorized.
    */

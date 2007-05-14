@@ -286,9 +286,11 @@ class KDECORE_EXPORT KAboutData
      ~KAboutData();
 
     /**
-     * Defines an author. You can call this function as many times you
-     * need. Each entry is appended to a list. The person in the first entry
-     * is assumed to be the leader of the project.
+     * Defines an author.
+     *
+     * You can call this function as many times as you need. Each entry is
+     * appended to a list. The person in the first entry is assumed to be
+     * the leader of the project.
      *
      * @param name The developer's name in UTF-8 encoding.
      *
@@ -310,8 +312,10 @@ class KDECORE_EXPORT KAboutData
 		    const char *webAddress=0 );
 
     /**
-     * Defines a person that deserves credit. You can call this function
-     * as many times you need. Each entry is appended to a list.
+     * Defines a person that deserves credit.
+     *
+     * You can call this function as many times as you need. Each entry
+     * is appended to a list.
      *
      * @param name The person's name in UTF-8 encoding.
      *
@@ -334,7 +338,7 @@ class KDECORE_EXPORT KAboutData
 		    const char *webAddress=0 );
 
     /**
-     * @brief Sets the name of the translator(s) of the GUI. 
+     * @brief Sets the name(s) of the translator(s) of the GUI. 
      *
      * Since this depends on the language, just use a dummy text marked for translation.
      *
@@ -354,12 +358,12 @@ class KDECORE_EXPORT KAboutData
      * @see KAboutTranslator
      * @deprecated
      * @todo: remove this member function before the release of KDE4,
-     * has its parameters are incompatible with the behaviour of KDE3. 
+     * as its parameters are incompatible with the behaviour of KDE3. 
      */
     KDE_DEPRECATED void setTranslator(const char *name, const char* emailAddress);
 
     /**
-     * @brief Sets the name of the translator(s) of the GUI. 
+     * @brief Sets the name(s) of the translator(s) of the GUI. 
      *
      * Since this depends on the language, just use a dummy text marked for translation.
      *
@@ -422,10 +426,12 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Defines the program logo.
-     * Use this if you need to have application logo
-     * in AboutData other than application icon.
-	 * 
-	 * Because KAboutData is in kdecore, it cannot use QImage dirrectly,  so this is a QVariant which should contains a QImage
+     *
+     * Use this if you need to have an application logo
+     * in AboutData other than the application icon.
+     *
+     * Because KAboutData is in kdecore it cannot use QImage directly,
+     * so this is a QVariant that should contain a QImage.
      *
      * @param image logo image.
      * @see programLogo()
@@ -442,9 +448,9 @@ class KDECORE_EXPORT KAboutData
     /**
      * Defines a short description of what the program does.
      *
-     * @param shortDescription The program description This string should be marked
-     *        for translation. Example: I18N_NOOP("An advanced text editor
-     *        with syntax highlithing support.").
+     * @param shortDescription The program description. This string should
+     *        be marked for translation. Example: I18N_NOOP("An advanced
+     *        text editor with syntax highlighting support.").
      */
     void setShortDescription( const char *shortDescription );
 
@@ -478,8 +484,8 @@ class KDECORE_EXPORT KAboutData
      * Defines the program homepage.
      *
      * @param homepage The program homepage string.
-     *        Start the address with "http://". "http://kate.kde.org" is
-     *        is correct, "kde.kde.org" is not.
+     *        Start the address with "http://". "http://kate.kde.org"
+     *        is correct but "kate.kde.org" is not.
      */
     void setHomepage( const char *homepage );
 
@@ -505,8 +511,8 @@ class KDECORE_EXPORT KAboutData
     /**
      * Defines the product name which will be used in the KBugReport dialog.
      * By default it's the appName, but you can overwrite it here to provide
-     * support for special components e.g. 'product/component' like
-     * 'kontact/summary'.
+     * support for special components e.g. in the form 'product/component',
+     * such as 'kontact/summary'.
      *
      * @param name The name of product
      */
@@ -535,6 +541,7 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Returns the domain name of the organization that wrote this application.
+     *
      * Used by KUniqueApplication's registration to DBus.
      */
     QString organizationDomain() const;
@@ -553,11 +560,12 @@ class KDECORE_EXPORT KAboutData
 
     /**
      * Returns the program logo image.
-	 * 
-	 * Because KAboutData is in kdecore, it cannot use QImage dirrectly,  so this is a QVariant which should contains a QImage
-	 * 
-     * @return the program logo data or null image if there is
-     * no custom application logo defined.
+     *
+     * Because KAboutData is in kdecore it cannot use QImage directly,
+     * so this is a QVariant containing a QImage.
+     *
+     * @return the program logo data, or a null image if there is
+     *         no custom application logo defined.
      */
     QVariant programLogo() const;
 
@@ -685,8 +693,9 @@ class KDECORE_EXPORT KAboutData
      * @param plainText The plain text.
      * @param richText The rich text.
      *
-     * Both parameters can be QString() to not display any message at
-     * all.  Call unsetCustomAuthorText() to revert to the default mesage.
+     * Setting both to parameters to QString() will cause no message to be
+     * displayed at all.  Call unsetCustomAuthorText() to revert to the default
+     * message.
      */
     void setCustomAuthorText(const QString &plainText, const QString &richText);
 
