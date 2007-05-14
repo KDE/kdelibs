@@ -30,7 +30,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 #define PF_ARGV_NONE      0
 #define PF_ARGV_NEW       1
