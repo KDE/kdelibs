@@ -172,6 +172,6 @@ namespace KSocketFactory
     KDECORE_EXPORT QNetworkProxy proxyForConnection(const QString &protocol, const QString &host);
     KDECORE_EXPORT QNetworkProxy proxyForListening(const QString &protocol);
     KDECORE_EXPORT QNetworkProxy proxyForDatagram(const QString &protocol, const QString &host);
-};
+}
 
 #endif

@@ -57,7 +57,7 @@ namespace KCPUInfo
      * @see     Extensions
      */
     KDEFX_EXPORT bool haveExtension( unsigned int extension );
-};
+}
 
 #endif
 

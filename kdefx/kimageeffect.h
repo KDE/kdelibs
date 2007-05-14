@@ -759,6 +759,6 @@ namespace KImageEffect
                           int depth, int xofs, int yofs, int waterlevel,
                           int ambient, bool compensate, bool invert,
                           BumpmapType type, bool tiled);
-};
+}
 
 #endif

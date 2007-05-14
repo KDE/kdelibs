@@ -246,7 +246,7 @@ namespace KPixmapEffect
      * @param col the selected color, usually from QPalette::highlight().
      */
     KDEFX_EXPORT QPixmap selectedPixmap( const QPixmap &pixmap, const QColor &col );
-};
+}
 
 
 #endif
