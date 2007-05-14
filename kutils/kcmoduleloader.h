@@ -114,7 +114,7 @@ namespace KCModuleLoader
     KUTILS_EXPORT KCModule* reportError( ErrorReporting report, const QString & text,
         const QString &details, QWidget * parent );
 
-};
+}
 
 // vim: ts=2 sw=2 et
 #endif // MODLOADER_H
