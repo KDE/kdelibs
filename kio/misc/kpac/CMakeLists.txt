@@ -34,7 +34,7 @@ kde4_add_executable(kpac_dhcp_helper NOGUI ${kpac_dhcp_helper_SRCS})
 
 target_link_libraries(kpac_dhcp_helper  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kpac_dhcp_helper DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kpac_dhcp_helper DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### install files ###############

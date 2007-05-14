@@ -44,6 +44,7 @@
 #include <klocale.h>
 #include <k3procio.h>
 #include <kurl.h>
+#include <kstandarddirs.h>
 
 #include "discovery.moc"
 
@@ -55,7 +56,7 @@ namespace KPAC
     {
         connect( m_helper, SIGNAL( readReady( K3ProcIO* ) ), SLOT( helperOutput() ) );
         connect( m_helper, SIGNAL( processExited( K3Process* ) ), SLOT( failed() ) );
-        *m_helper << "kpac_dhcp_helper";
+        *m_helper << KStandardDirs::findExe("kpac_dhcp_helper");
 
         if ( !m_helper->start() )
             QTimer::singleShot( 0, this, SLOT( failed() ) );
