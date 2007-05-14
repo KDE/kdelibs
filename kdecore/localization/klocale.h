@@ -35,10 +35,16 @@ class QTime;
 class QDateTime;
 
 class KDateTime;
-class KGlobal;
 class KCatalog;
 class KCalendarSystem;
+
+class KLocale;
 class KLocalePrivate;
+
+namespace KGlobal
+{
+    KLocale *locale();
+}
 
 /**
  * \file klocale.h
@@ -58,7 +64,7 @@ class KLocalePrivate;
   */
 class KDECORE_EXPORT KLocale
 {
-  friend class KGlobal; // for initInstance()
+  friend KLocale *KGlobal::locale(); // for initInstance()
 public:
   /**
    * Constructs a KLocale with the given catalog name.

@@ -17,7 +17,7 @@
 */
 
 /*
- * kglobal.cpp -- Implementation of class KGlobal.
+ * kglobal.cpp -- Implementation of namespace KGlobal.
  * Author:	Sirtaj Singh Kang
  * Generated:	Sat May  1 02:08:43 EST 1999
  */
@@ -47,6 +47,8 @@
 #else
 #define MYASSERT(x) /* nope */
 #endif
+
+using namespace KGlobal;
 
 typedef QSet<QString> KStringDict;
 typedef QList<KStaticDeleterBase *> KStaticDeleterList;

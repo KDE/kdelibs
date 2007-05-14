@@ -23,13 +23,18 @@
 #include <kdecore_export.h>
 #include <QtCore/QList>
 
-class KGlobal;
+class KCharsets;
 class KCharsetsPrivate;
 
 class QChar;
 class QString;
 class QStringList;
 class QTextCodec;
+
+namespace KGlobal
+{
+    KCharsets *charsets();
+}
 
 /**
  * Charset font and encoder/decoder handling.
@@ -40,7 +45,7 @@ class QTextCodec;
  */
 class KDECORE_EXPORT KCharsets
 {
-    friend class KGlobal;
+    friend KCharsets *KGlobal::charsets();
 
 protected:
     /** Protected constructor. If you need the kcharsets object, use

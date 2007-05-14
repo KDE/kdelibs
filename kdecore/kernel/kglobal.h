@@ -293,9 +293,8 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
  * @see KStaticDeleterBase
  * @author Sirtaj Singh Kang (taj@kde.org)
  */
-class KDECORE_EXPORT KGlobal // krazy:exclude=dpointer (all static methods)
+namespace KGlobal
 {
-public:
 
     /**
      * Returns the global component data.  There is always at least
@@ -303,42 +302,42 @@ public:
      * cases the application itself).
      * @return the global component data
      */
-    static const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
+    KDECORE_EXPORT const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
 
     /**
      * \internal
      * Returns whether a main KComponentData is available.
      */
-    static bool hasMainComponent();
+    KDECORE_EXPORT bool hasMainComponent();
 
     /**
      *  Returns the application standard dirs object.
      * @return the global standard dir object
      */
-    static KStandardDirs *dirs();
+    KDECORE_EXPORT KStandardDirs *dirs();
 
     /**
      *  Returns the general config object.
      * @return the global configuration object.
      */
-    static KSharedConfigPtr config();
+    KDECORE_EXPORT KSharedConfigPtr config();
 
     /**
      * Returns the global locale object.
      * @return the global locale object
      */
-    static KLocale              *locale();
+    KDECORE_EXPORT KLocale              *locale();
     /**
      * \internal
      * Returns whether KGlobal has a valid KLocale object
      */
-    static bool hasLocale();
+    KDECORE_EXPORT bool hasLocale();
 
     /**
      * The global charset manager.
      * @return the global charset manager
      */
-    static KCharsets	        *charsets();
+    KDECORE_EXPORT KCharsets	        *charsets();
 
     /**
      * Creates a static QString.
@@ -357,7 +356,7 @@ public:
      * @param str the string to create
      * @return the static string
      */
-    static const QString&        staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDECORE_EXPORT const QString&        staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Creates a static QString.
@@ -376,7 +375,7 @@ public:
      * @param str the string to create
      * @return the static string
      */
-    static const QString&        staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDECORE_EXPORT const QString&        staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Registers a static deleter.
@@ -384,7 +383,7 @@ public:
      * @see KStaticDeleterBase
      * @see KStaticDeleter
      */
-    static void registerStaticDeleter(KStaticDeleterBase *d);
+    KDECORE_EXPORT void registerStaticDeleter(KStaticDeleterBase *d);
 
     /**
      * Unregisters a static deleter.
@@ -392,7 +391,7 @@ public:
      * @see KStaticDeleterBase
      * @see KStaticDeleter
      */
-    static void unregisterStaticDeleter(KStaticDeleterBase *d);
+    KDECORE_EXPORT void unregisterStaticDeleter(KStaticDeleterBase *d);
 
     /**
      * Calls KStaticDeleterBase::destructObject() on all
@@ -400,10 +399,10 @@ public:
      * @see KStaticDeleterBase
      * @see KStaticDeleter
      */
-    static void deleteStaticDeleters();
+    KDECORE_EXPORT void deleteStaticDeleters();
 
     /**
-     * Tells KGlobal about one more operation that should be finished
+     * Tells KGlobal about one more operations that should be finished
      * before the application exits. The standard behavior is to exit on the
      * "last window closed" event, but some events should outlive the last window closed
      * (e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client).
@@ -411,13 +410,13 @@ public:
      * Note that for this to happen you must call qApp->setQuitOnLastWindowClosed(false),
      * in main() for instance.
      */
-    static void ref();
+    KDECORE_EXPORT void ref();
 
     /**
      * Tells KGlobal that one operation such as those described in ref() just finished.
      * This call makes the QApplication quit if the counter is back to 0.
      */
-    static void deref();
+    KDECORE_EXPORT void deref();
 
     /**
      * The component currently active (useful in a multi-component
@@ -425,7 +424,7 @@ public:
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      * @internal
      */
-    static KComponentData activeComponent();
+    KDECORE_EXPORT KComponentData activeComponent();
 
     /**
      * Set the active component for use by KAboutDialog and KBugReport.
@@ -433,7 +432,7 @@ public:
      *
      * @see activeComponent()
      */
-    static void setActiveComponent(const KComponentData &d);
+    KDECORE_EXPORT void setActiveComponent(const KComponentData &d);
 
     /**
      * Returns a text for the window caption.
@@ -443,15 +442,14 @@ public:
      * executable.
      * @return the text for the window caption
      */
-    static QString caption();
+    KDECORE_EXPORT QString caption();
 
     ///@internal
-    static void setLocale(KLocale *);
-private:
-    friend class KComponentData;
+    KDECORE_EXPORT void setLocale(KLocale *);
     ///@internal
-    static void newComponentData(KComponentData *c);
-    static void deletedComponentData(KComponentData *c);
+    KDECORE_EXPORT void newComponentData(KComponentData *c);
+    ///@internal
+    KDECORE_EXPORT void deletedComponentData(KComponentData *c);
 };
 
 #ifdef KDE_SUPPORT
