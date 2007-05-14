@@ -116,7 +116,6 @@ void Highlighter::slotRehighlight()
 {
     kDebug(0) << "Highlighter::slotRehighlight()" << endl;
     if (d->completeRehighlightRequired) {
-    // Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
     rehighlight();
 
     } else {
