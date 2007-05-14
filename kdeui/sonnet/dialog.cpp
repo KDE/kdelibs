@@ -97,7 +97,7 @@ void Dialog::initConnections()
              SLOT(slotSuggest()) );
     connect( d->ui.m_language, SIGNAL(activated(const QString&)),
              SLOT(slotChangeLanguage(const QString&)) );
-    connect( d->ui.m_suggestions, SIGNAL(itemChanged(QListWidgetItem*)),
+    connect( d->ui.m_suggestions, SIGNAL(itemClicked(QListWidgetItem*)),
 	     SLOT(slotSelectionChanged(QListWidgetItem*)) );
     connect( d->checker, SIGNAL(misspelling(const QString&, int)),
              SIGNAL(misspelling(const QString&, int)) );

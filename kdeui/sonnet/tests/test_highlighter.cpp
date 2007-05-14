@@ -40,10 +40,9 @@ void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 {
 	kDebug()<<"TestSpell::contextMenuEvent\n";
 	QMenu *popup = createStandardContextMenu();
-  QMenu *subMenu = new QMenu( popup );
-  subMenu->setTitle( "Text highlighting" );
-	connect( subMenu, SIGNAL( triggered ( QAction* ) ),
-    	this, SLOT( slotActivate( ) ) );
+        QMenu *subMenu = new QMenu( popup );
+        subMenu->setTitle( "Text highlighting" );
+	connect( subMenu, SIGNAL( triggered ( QAction* ) ),this, SLOT( slotActivate( ) ) );
 	QAction *action = new QAction( "active or not", popup );
 	popup->addSeparator();
 	popup->addMenu( subMenu );
@@ -70,3 +69,4 @@ int main( int argc, char** argv )
 
     return app.exec();
 }
+
