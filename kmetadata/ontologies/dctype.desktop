@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=The DCMI Types
+Comment=The Dublin Core Types namespace provides URIs for the entries of the DCMI Type Vocabulary.
+URL=http://purl.org/dc/dcmitype/
+Path=dctype.rdf
+MimeType=application/rdf+xml
+Type=Link

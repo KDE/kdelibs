@@ -100,9 +100,14 @@ void Nepomuk::KMetaData::TagWidget::setTaggedResource( const Resource& resource 
     d->res = resource;
     QStringList tagStrings;
     QList<Tag> tags = d->res.tags();
-    for( QList<Tag>::const_iterator it = tags.constBegin();
-         it != tags.constEnd(); ++it )
-        tagStrings += ( *it ).identifiers().first();
+    for( QList<Tag>::iterator it = tags.begin();
+         it != tags.end(); ++it ) {
+        Tag& tag = *it;
+        if ( tag.label().isEmpty() ) {
+            tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
+        }
+        tagStrings += ( *it ).label();
+    }
     d->label->setTags( tagStrings );
 }
 
@@ -122,7 +127,10 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
     QMenu* popup = new QMenu( i18n( "Tag resource..." ), this );
     QMap<QAction*, Tag> tagMap;
     foreach( Tag tag,  allTags ) {
-        QAction* a = new QAction( tag.identifiers().first(), popup );
+        if ( tag.label().isEmpty() ) {
+            tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
+        }
+        QAction* a = new QAction( tag.label(), popup );
         a->setCheckable( true );
         popup->addAction( a );
         tagMap.insert( a,  tag );
@@ -141,14 +149,14 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
                 QListIterator<Tag> tagIt( l );
                 while( tagIt.hasNext() ) {
                     const Nepomuk::KMetaData::Tag& tag = tagIt.next();
-                    if( tag.labels().contains( s ) ||
+                    if( tag.label() == s ||
                         tag.identifiers().contains( s ) ) {
                         KMessageBox::sorry( this, i18n("The tag %1 already exists", s), i18n("Tag exists") );
                         return;
                     }
                 }
 
-                Nepomuk::KMetaData::Tag( s ).addLabel( s );
+                Nepomuk::KMetaData::Tag( s ).setLabel( s );
             }
         }
         else {

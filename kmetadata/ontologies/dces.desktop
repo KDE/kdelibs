@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.1
+Name=The Dublin Core Element Set
+Comment=The Dublin Core Element Set v1.1 namespace providing access to its content by means of an RDF Schema
+URL=http://purl.org/dc/elements/1.1/
+Path=dces.rdf
+MimeType=application/rdf+xml
+Type=Link

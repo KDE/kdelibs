@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=The Dublin Core Terms
+Comment=The Dublin Core Terms
+URL=http://purl.org/dc/terms/
+Path=dcq.rdf
+MimeType=application/rdf+xml
+Type=Link

@@ -39,7 +39,7 @@ Q_GLOBAL_STATIC( ResourceDataHash, initializedData )
 Q_GLOBAL_STATIC( ResourceDataHash, kickoffData )
 
 // FIXME: we need a way to sync this URI with the ontology
-static const char* s_identifierUri = "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier";
+static const char* s_identifierUri = "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasIdentifier";
 static const char* s_defaultType = "http://www.w3.org/2000/01/rdf-schema#Resource";
 
 
@@ -343,6 +343,7 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                 //
                 // TODO: basically it is perfectly valid to store both types in the first case
                 //
+                Q_ASSERT( !m_type.isEmpty() );
                 const Konto::Class* wantedType = Konto::Class::load( m_type );
                 if ( wantedType && m_type != s_defaultType ) {
                     for ( QList<Statement>::const_iterator it = sl.constBegin(); it != sl.constEnd(); ++it ) {
@@ -354,7 +355,11 @@ bool Nepomuk::KMetaData::ResourceData::determineUri()
                         if ( !resourceSl.isEmpty() ) {
                             const Konto::Class* storedType = Konto::Class::load( resourceSl.first().object().uri() );
                             if ( storedType ) {
-                                if ( wantedType->isSubClassOf( storedType ) ) {
+                                if ( storedType == wantedType ) {
+                                    // great. :)
+                                    m_uri = it->subject().toString();
+                                }
+                                else if ( wantedType->isSubClassOf( storedType ) ) {
                                     // Keep the type that is further down the hierarchy
                                     m_type = wantedType->uri().toString();
                                     m_uri = it->subject().toString();
@@ -924,7 +929,7 @@ Nepomuk::KMetaData::ResourceData* Nepomuk::KMetaData::ResourceData::data( const 
         it = kickoffData()->find( uriOrId );
 
         // check if the type matches (see determineUri for details)
-        if ( type != s_defaultType ) {
+        if ( !type.isEmpty() && type != s_defaultType ) {
             const Konto::Class* wantedType = Konto::Class::load( type );
             if ( wantedType ) {
                 while ( it != kickoffData()->end() &&

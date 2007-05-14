@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=RDF-Schema
+Comment=RDF Vocabulary Description Language 1.0: RDF Schema
+URL=http://www.w3.org/2000/01/rdf-schema#
+Path=rdfs.rdfs
+MimeType=application/rdf+xml
+Type=Link

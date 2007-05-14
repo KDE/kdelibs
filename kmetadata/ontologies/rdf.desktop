@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=RDF
+Comment=RDF Vocabulary Description Language 1.0
+URL=http://www.w3.org/1999/02/22-rdf-syntax-ns#
+Path=rdf.rdfs
+MimeType=application/rdf+xml
+Type=Link

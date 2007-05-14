@@ -35,7 +35,7 @@ namespace Nepomuk {
 
 /**
  * A Tag can be assigned to any Thing. This allows simple grouping 
- * of resources. Each Tag is identifed by its name which should 
+ * of resources. Each Tag is identifed by its label which should 
  * be unique. 
  */
         class KMETADATA_EXPORT Tag : public Resource

@@ -1,6 +1,16 @@
 install(FILES
   nao.nrl
   nao.desktop
+  rdf.rdfs
+  rdf.desktop
+  rdfs.rdfs
+  rdfs.desktop
+  dces.desktop
+  dces.rdf
+  dcq.desktop
+  dcq.rdf
+  dctype.desktop
+  dctype.rdf
   DESTINATION
   ${DATA_INSTALL_DIR}/knepomuk/ontologies
 )

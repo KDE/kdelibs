@@ -15,11 +15,13 @@
 #include "varianttest.h"
 #include "../kmetadata/kmetadata.h"
 
+#include <qtest_kde.h>
+
 using namespace Nepomuk::KMetaData;
 
 Q_DECLARE_METATYPE(Nepomuk::KMetaData::Variant)
 
-    void VariantTest::initTestCase()
+void VariantTest::initTestCase()
 {
     ResourceManager::instance()->setAutoSync( false );
     QVERIFY( ResourceManager::instance()->init() == 0 );
@@ -67,6 +69,6 @@ void VariantTest::testToString()
 }
 
 
-QTEST_MAIN(VariantTest)
+QTEST_KDEMAIN(VariantTest, NoGUI)
 
 #include "varianttest.moc"

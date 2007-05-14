@@ -257,16 +257,6 @@ namespace Nepomuk {
             void revive();
 
             /**
-             * Check if this resource is a property of type \a uri, i.e. if there is some
-             * other resource that has this resource as a property of type \a uri.
-             *
-             * \return true if there exists a resource with property \a uri set to this resource.
-             *
-             * \sa ResourceManager::allResourcesWithProperty
-             */
-            bool isProperty( const QString& uri ) const;
-
-            /**
              * \return true if the data in this object has been modified and not yet
              * synced with the local NEPOMUK RDF store.
              */
@@ -308,17 +298,12 @@ namespace Nepomuk {
             /**
              * Get property 'label'. 
              */
-            QStringList labels() const;
+            QString label() const;
 
             /**
              * Set property 'label'. 
              */
-            void setLabels( const QStringList& value );
-
-            /**
-             * Add a value to property 'label'. 
-             */
-            void addLabel( const QString& value );
+            void setLabel( const QString& value );
 
             /**
              * \return The URI of the property 'label'. 

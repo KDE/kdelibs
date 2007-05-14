@@ -65,11 +65,13 @@ void Nepomuk::KMetaData::TagCloud::updateTags()
     QList<Tag> tags = Tag::allTags();
 
     // count the number of usages of the tags and add them to the cloud
-    for( QList<Tag>::const_iterator it = tags.constBegin();
-         it != tags.constEnd(); ++it ) {
-        const Tag& tag = *it;
-        addTag( tag.labels().isEmpty() ? tag.identifiers().first() : tag.labels().first(),
-                tag.tagOf().count() );
+    for( QList<Tag>::iterator it = tags.begin();
+         it != tags.end(); ++it ) {
+        Tag& tag = *it;
+        if ( tag.label().isEmpty() ) {
+            tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
+        }
+        addTag( tag.label(), tag.tagOf().count() );
     }
 }
 

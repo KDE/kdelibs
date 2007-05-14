@@ -168,12 +168,6 @@ void Nepomuk::KMetaData::Resource::revive()
 }
 
 
-bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
-{
-    return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
-}
-
-
 bool Nepomuk::KMetaData::Resource::isModified() const
 {
     return m_data->isModified();
@@ -229,21 +223,14 @@ QString Nepomuk::KMetaData::errorString( ErrorCode code )
 }
 
 // do not remove, will be replaced with method definitions by the KMetaData class generator
-QStringList Nepomuk::KMetaData::Resource::labels() const
+QString Nepomuk::KMetaData::Resource::label() const
 {
-    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label" ).toStringList();
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label" ).toString();
 }
 
-void Nepomuk::KMetaData::Resource::setLabels( const QStringList& value )
+void Nepomuk::KMetaData::Resource::setLabel( const QString& value )
 {
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label", Variant( value ) );
-}
-
-void Nepomuk::KMetaData::Resource::addLabel( const QString& value )
-{
-    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label" );
-    v.append( value );
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label", v );
 }
 
 QString Nepomuk::KMetaData::Resource::labelUri()

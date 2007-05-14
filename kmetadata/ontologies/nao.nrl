@@ -16,7 +16,7 @@
 <rdf:Property rdf:about="&nao;description">
 	<rdfs:label>description</rdfs:label>
 	<rdfs:comment>Everything can be annotated with a simple string comment.</rdfs:comment>
-	<rdfs:subPropertyOf rdf:resource="rdfs:comment" />
+	<rdfs:subPropertyOf rdf:resource="&rdfs;comment" />
         <rdfs:range rdf:resource="&rdfs;Literal"/>
         <nrl:maxCardinality>1</nrl:maxCardinality>
         <rdfs:domain rdf:resource="&rdfs;Resource" />
@@ -24,7 +24,7 @@
 
 <rdf:Description rdf:about="&nao;Tag">
 	<rdfs:label>tag</rdfs:label>
-	<rdfs:comment>A Tag can be assigned to any Thing. This allows simple grouping of resources. Each Tag is identifed by its name which should be unique.</rdfs:comment>
+	<rdfs:comment>A Tag can be assigned to any Thing. This allows simple grouping of resources. Each Tag is identifed by its label which should be unique.</rdfs:comment>
 	<rdfs:label xml_lang="en-US">tag</rdfs:label>
 	<rdf:type rdf:resource="&rdfs;Class"/>
 </rdf:Description>
@@ -85,7 +85,7 @@
 	<rdfs:subPropertyOf rdf:resource="&rdfs;label"/>
 	<rdfs:domain rdf:resource="&rdfs;Resource"/>
 	<rdfs:range rdf:resource="&rdfs;Literal"/>
-	<!-- Should we add a maxCardinality of 1 here? -->
+        <nrl:maxCardinality>1</nrl:maxCardinality>
 </rdf:Property>
 
 <rdf:Property rdf:about="&nao;hasRating">
