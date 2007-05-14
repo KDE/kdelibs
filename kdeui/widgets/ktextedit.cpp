@@ -318,6 +318,11 @@ void KTextEdit::wheelEvent( QWheelEvent *event )
     QAbstractScrollArea::wheelEvent( event );
 }
 
+void KTextEdit::createHighlighter()
+{
+    d->highlighter = new KSpell2::Highlighter( this );
+}
+
 void KTextEdit::setCheckSpellingEnabled( bool check )
 {
   if ( check == d->checkSpellingEnabled )
@@ -330,8 +335,9 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
   d->checkSpellingEnabled = check;
     if ( check )
     {
-        if ( hasFocus() )
-            d->highlighter = new KSpell2::Highlighter( this );
+        if ( hasFocus() ) {
+            createHighlighter();
+        }
     }
     else
     {
@@ -343,7 +349,7 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
 void KTextEdit::focusInEvent( QFocusEvent *event )
 {
     if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter )
-        d->highlighter = new KSpell2::Highlighter( this );
+        createHighlighter();
 
   QTextEdit::focusInEvent( event );
 }
@@ -356,7 +362,7 @@ bool KTextEdit::checkSpellingEnabled() const
 void KTextEdit::setReadOnly( bool readOnly )
 {
   if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->highlighter )
-    d->highlighter = new KSpell2::Highlighter( this );
+    createHighlighter();
 
   if ( readOnly == isReadOnly() )
     return;

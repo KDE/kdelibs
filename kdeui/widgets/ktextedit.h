@@ -85,6 +85,11 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
 
     void highlightWord( int length, int pos );
 
+    /**
+     * Allow to create specific Highlighter
+     */
+    virtual void createHighlighter();
+
   public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return
