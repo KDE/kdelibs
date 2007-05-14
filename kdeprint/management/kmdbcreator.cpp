@@ -86,19 +86,22 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	// start the child process
 	m_proc.clearArguments();
 	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
-	m_proc << exestr << dirname << filename;
-	kDebug() << "executing : " << exestr << " " << dirname << " " << filename << endl;
 	QString	msg;
 	if (exestr.isEmpty())
 		msg = i18n("No executable defined for the creation of the "
 		           "driver database. This operation is not implemented.");
-	else if (KStandardDirs::findExe(exestr).isEmpty())
-		msg = i18n("The executable %1 could not be found in your "
-		           "PATH. Check that this program exists and is "
-			   "accessible in your PATH variable.", exestr);
-	else if (!m_proc.start(K3Process::NotifyOnExit, K3Process::AllOutput))
-		msg = i18n("Unable to start the creation of the driver "
-		           "database. The execution of %1 failed.", exestr);
+	else {
+		exestr = KStandardDirs::findExe(exestr);
+		m_proc << exestr << dirname << filename;
+		kDebug() << "executing : " << exestr << " " << dirname << " " << filename << endl;
+		if (exestr.isEmpty())
+			msg = i18n("The executable %1 could not be found in your "
+			           "PATH. Check that this program exists and is "
+				   "accessible in your PATH variable.", exestr);
+		else if (!m_proc.start(K3Process::NotifyOnExit, K3Process::AllOutput))
+			msg = i18n("Unable to start the creation of the driver "
+			           "database. The execution of %1 failed.", exestr);
+	}
 	if (!msg.isEmpty())
 	{
 		KMManager::self()->setErrorMsg(msg);

@@ -59,7 +59,7 @@ kde4_add_executable(make_driver_db_cups NOGUI make_driver_db_cups.c ${CMAKE_CURR
 
 target_link_libraries(make_driver_db_cups ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
-install(TARGETS make_driver_db_cups DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS make_driver_db_cups DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### next target ###############

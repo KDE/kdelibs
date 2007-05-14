@@ -16,7 +16,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(helpviewer ${helpviewer_SRCS})
 
-   target_link_libraries(helpviewer  ${KDE4_KDECORE_LIBS} kdeprint )
+   target_link_libraries(helpviewer  ${KDE4_KDECORE_LIBS} kdeprint ${QT_QT3SUPPORT_LIBRARY})
 
 
    ########### next target ###############

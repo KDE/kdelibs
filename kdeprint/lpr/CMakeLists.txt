@@ -42,7 +42,7 @@ if (UNIX)
 
    target_link_libraries(make_driver_db_lpr  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} )
 
-   install(TARGETS make_driver_db_lpr DESTINATION ${BIN_INSTALL_DIR} )
+   install(TARGETS make_driver_db_lpr DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 endif (UNIX)
 

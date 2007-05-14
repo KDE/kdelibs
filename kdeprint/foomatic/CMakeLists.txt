@@ -23,7 +23,7 @@ kde4_add_executable(make_driver_db_foomatic NOGUI make_driver_db_foomatic.c)
 
 target_link_libraries(make_driver_db_foomatic  ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS make_driver_db_foomatic DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS make_driver_db_foomatic DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### install files ###############
