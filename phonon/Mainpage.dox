@@ -135,7 +135,7 @@ development. As an application developer you can safely ignore these classes.
 // DOXYGEN_SET_HIDE_FRIEND_COMPOUNDS = YES
 // DOXYGEN_SET_PROJECT_NAME = Phonon
 // DOXYGEN_EXCLUDE += examples kcm DESIGN experimental factory.h globalconfig.h basedestructionhandler.h audiooutputadaptor.h iodevicestream.h kdepluginfactory.h kiomediastream.h pluginfactory.h *.cpp
-// DOXYGEN_SET_EXAMPLE_PATH += examples
+// DOXYGEN_SET_EXAMPLE_PATH += @topdir@/phonon/examples
 // DOXYGEN_SET_EXTRACT_ALL = NO
 // DOXYGEN_SET_HIDE_UNDOC_MEMBERS = YES
 // DOXYGEN_SET_SOURCE_BROWSER = NO
