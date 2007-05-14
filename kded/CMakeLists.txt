@@ -10,7 +10,10 @@ set(kded_KDEINIT_SRCS kded.cpp )
 
 kde4_automoc(${kded_KDEINIT_SRCS})
 
-kde4_add_kdeinit_executable( kded ${kded_KDEINIT_SRCS})
+if (WIN32)
+   set (mode NOGUI)
+endif (WIN32
+kde4_add_kdeinit_executable( kded  ${mode} ${kded_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kded  ${KDE4_KIO_LIBS} )
 
