@@ -85,6 +85,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
 
     void highlightWord( int length, int pos );
 
+    void setSpellCheckingConfigFileName(const QString &);
     /**
      * Allow to create specific Highlighter
      */

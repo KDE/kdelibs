@@ -74,6 +74,7 @@ class KTextEdit::Private
 
     bool checkSpellingEnabled;
     QString originalBuffer;
+    QString spellChechingConfigFileName;
     KSpell2::Highlighter *highlighter;
 };
 
@@ -155,6 +156,11 @@ KTextEdit::KTextEdit( QWidget *parent )
 KTextEdit::~KTextEdit()
 {
   delete d;
+}
+
+void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
+{
+    d->spellChechingConfigFileName = _fileName;
 }
 
 void KTextEdit::keyPressEvent( QKeyEvent *event )
