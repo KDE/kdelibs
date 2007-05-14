@@ -48,11 +48,6 @@ namespace Nepomuk {
 		 */
 		Result( const Result& );
 
-                /**
-                 * \deprecated use Result::createSimpleResult
-                 */
-		KDE_DEPRECATED explicit Result( int status, const QVariant& value = QVariant() );
-
 		~Result();
 
 		void setValue( const QVariant& );

@@ -42,14 +42,6 @@ Nepomuk::Backbone::Result::Result( const Nepomuk::Backbone::Result& r )
 }
 
 
-Nepomuk::Backbone::Result::Result( int status, const QVariant& value )
-{
-    d = new Private;
-    d->value = value;
-    d->status = status;
-}
-
-
 Nepomuk::Backbone::Result::~Result()
 {
 }
