@@ -861,18 +861,13 @@ void KGlobalSettings::slotNotifyChange(int changeType, int arg)
 
 // Set by KApplication - which is now in kdeui so this needs to be exported
 // In the long run, KGlobalSettings probably belongs to kdeui as well...
-KDEUI_EXPORT QString kde_overrideStyle;
+QString kde_overrideStyle;
 
 void KGlobalSettings::applyGUIStyle()
 {
+#ifdef Q_WS_X11
     KConfigGroup pConfig (KGlobal::config(), "General");
-#ifdef Q_WS_WIN
-    QString defaultStyle = "windows";
-#elif defined Q_WS_MACX
-    QString defaultStyle = "macintosh";
-#else
     QString defaultStyle = QLatin1String("plastique");// = KStyle::defaultStyle(); ### wait for KStyle4
-#endif
     QString styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
     if (kde_overrideStyle.isEmpty()) {
@@ -892,6 +887,7 @@ void KGlobalSettings::applyGUIStyle()
         qApp->setStyle(kde_overrideStyle);
     // Reread palette from config file.
     kdisplaySetPalette();
+#endif
 }
 
 QPalette KGlobalSettings::createApplicationPalette()

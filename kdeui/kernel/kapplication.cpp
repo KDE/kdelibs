@@ -812,9 +812,10 @@ void KApplication::parseCommandLine( )
         d->componentData.setConfigName(config);
     }
 
+#ifdef Q_WS_X11
     if (args->isSet("style"))
     {
-        extern KDEUI_EXPORT QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
+        extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
         QStringList styles = QStyleFactory::keys();
         QString reqStyle(QLatin1String(args->getOption("style").toLower()));
 
@@ -827,6 +828,7 @@ void KApplication::parseCommandLine( )
         if (kde_overrideStyle.isEmpty())
             fprintf(stderr, "%s", i18n("The style %1 was not found\n", reqStyle).toLocal8Bit().data());
     }
+#endif
 
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
     if (!nocrashhandler && args->isSet("crashhandler"))
