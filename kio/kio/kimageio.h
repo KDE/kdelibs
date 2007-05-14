@@ -94,7 +94,7 @@ namespace KImageIO
    * @return true if the type is supported
    **/
   KIO_EXPORT bool isSupported( const QString& mimeType, Mode mode = Writing );
-};
+}
 
 
 #endif
