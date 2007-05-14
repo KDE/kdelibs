@@ -30,6 +30,8 @@ class KStaticDeleterBase;
 class QString;
 class KSharedConfigPtr;
 
+/// \cond InternalDocs
+
 /**
  * \internal
  */
@@ -66,6 +68,8 @@ class KCleanUpGlobalStatic
 # define K_GLOBAL_STATIC_STRUCT_NAME(NAME)
 #endif
 
+/// \endcond
+
 /**
  * This macro makes it easy to use non-POD types as global statics.
  * The object is created on first use and creation is threadsafe.
@@ -80,12 +84,19 @@ class KCleanUpGlobalStatic
  * If you have code that might be called after the global object has been destroyed you can check
  * for that using the isDestroyed() function.
  *
- * If needed you can also install a post routine (\ref qAddPostRoutine) to clean up the object
- * using the destroy() method.
+ * If needed (If the destructor of the global object calls other functions that depend on other
+ * global statics (e.g. KConfig::sync) your destructor has to be called before those global statics
+ * are destroyed. A Qt post routine does that.) you can also install a post routine (\ref qAddPostRoutine) to clean up the object
+ * using the destroy() method. If you registered a post routine and the object is destroyed because
+ * of a lib unload you have to call qRemovePostRoutine!
  *
  * Example:
  * \code
- * class A { ... };
+ * class A {
+ * public:
+ *     ~A();
+ *     ...
+ * };
  *
  * K_GLOBAL_STATIC(A, globalA)
  * // The above creates a new globally static variable named 'globalA' which you
@@ -112,6 +123,13 @@ class KCleanUpGlobalStatic
  *     // A post routine can be used to delete the object when QCoreApplication destructs,
  *     // not adding such a post routine will delete the object normally at program unload
  *     qAddPostRoutine(globalA.destroy);
+ * }
+ *
+ * A::~A()
+ * {
+ *     // When you install a post routine you have to remove the post routine from the destructor of
+ *     // the class used as global static!
+ *     qRemovePostRoutine(globalA.destroy);
  * }
  * \endcode
  *
@@ -186,6 +204,8 @@ class KCleanUpGlobalStatic
  * \code
  * MySingleton::someFunction();
  * \endcode
+ *
+ * \ingroup KDEMacros
  */
 #define K_GLOBAL_STATIC(TYPE, NAME) K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 
@@ -218,6 +238,8 @@ class KCleanUpGlobalStatic
  *     ...
  * }
  * \endcode
+ *
+ * \ingroup KDEMacros
  */
 #define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
 static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
