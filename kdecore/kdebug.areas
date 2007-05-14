@@ -484,8 +484,8 @@
 # 30001-40000 are for KOffice
 30001        koffice (lib koml)
 30002        koffice (lib store)
-30003        koffice (lib kofficecore)
-30004        koffice (lib kofficeui)
+30003        koffice (lib komain)
+30004        koffice (lib koguiutils)
 30005        koffice (lib kopainter)
 30006        koffice (lib flake)
 30007        koffice (lib koproperty)
