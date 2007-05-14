@@ -31,10 +31,6 @@
 
 #ifdef Q_OS_UNIX
 
-#ifdef __APPLE__
-#include <sys/socket.h>
-#endif
-
 class KConfigGroup;
 class KSocksTable;
 class KLibrary;
