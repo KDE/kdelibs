@@ -95,12 +95,18 @@ void KTextEdit::Private::slotSpellCheckDone( const QString &s )
 void KTextEdit::Private::spellCheckerMisspelling( const QString &text, int pos )
 {
     kDebug()<<"TextEdit::Private::spellCheckerMisspelling :"<<text<<" pos :"<<pos<<endl;
-//  highlightWord( text.length(), pos );
+    parent->highlightWord( text.length(), pos );
 }
 
 void KTextEdit::Private::spellCheckerCorrected( const QString& oldWord, int pos,const QString& newWord)
 {
   kDebug()<<" oldWord :"<<oldWord<<" newWord :"<<newWord<<" pos : "<<pos<<endl;
+  if (oldWord != newWord ) {
+    QTextCursor cursor(parent->document());
+    cursor.setPosition(pos);
+    cursor.setPosition(pos+oldWord.length(),QTextCursor::KeepAnchor);
+    cursor.insertText(newWord);
+  }
 // TODO
 /*
   unsigned int l = 0;
@@ -416,8 +422,12 @@ void KTextEdit::checkSpelling()
   d->spellDialog->show();
 }
 
-void KTextEdit::highlightWord( unsigned int length, unsigned int pos )
+void KTextEdit::highlightWord( int length, int pos )
 {
+  QTextCursor cursor(document());
+  cursor.setPosition(pos);
+  cursor.setPosition(pos+length,QTextCursor::KeepAnchor);
+  setTextCursor (cursor);
 /* TODO
   unsigned int l = 0;
   unsigned int cnt = 0;

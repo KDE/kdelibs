@@ -83,7 +83,7 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     bool checkSpellingEnabled() const;
 
-    void highlightWord( unsigned int length, unsigned int pos );
+    void highlightWord( int length, int pos );
 
   public Q_SLOTS:
     /**
