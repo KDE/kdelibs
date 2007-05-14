@@ -381,8 +381,6 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  //return; //TODO remove code will fix
-
   KSpell2::Dialog *spellDialog = new KSpell2::Dialog(new KSpell2::BackgroundChecker( KSpell2::Loader::openLoader(), this ), 0 );
   connect(spellDialog,SIGNAL(replace( const QString&, int,const QString&)),this,SLOT(spellCheckerCorrected( const QString&, int,const QString&) ) );
   connect(spellDialog,SIGNAL(misspelling( const QString&, int)),this,SLOT(spellCheckerMisspelling(const QString &,int)));
