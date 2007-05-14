@@ -143,11 +143,11 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
                                                     "org.kde.KCookieServer");
     if (!kcookiejar->isValid())
     {
-         // Maybe it wasn't running (e.g. we're opening local html files)
-         KToolInvocation::startServiceByDesktopName( "kcookiejar");
-         delete kcookiejar;
-         kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
-                                         "org.kde.KCookieServer");
+        // Maybe it wasn't running (e.g. we're opening local html files)
+        QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").call("loadModule", QByteArray("kcookiejar"));
+        delete kcookiejar;
+        kcookiejar = new QDBusInterface("org.kde.kded", "/modules/kcookiejar",
+                                        "org.kde.KCookieServer");
     }
 
     kcookiejar->call(QDBus::NoBlock, "addCookies",

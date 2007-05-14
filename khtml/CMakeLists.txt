@@ -225,7 +225,7 @@ add_subdirectory( ecma )
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
-include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui)
+include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kdeprint ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui)
 
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/misc
@@ -322,7 +322,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml SHARED ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml  ${KDE4_KDECORE_LIBS} ktexteditor kparts kdeprint kutils kde3support kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ktexteditor kdeprint kde3support kjs ${KDE4_PHONON_LIBS} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} )
 
 set_target_properties(khtml PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS khtml  DESTINATION ${LIB_INSTALL_DIR} )
