@@ -105,7 +105,7 @@ void Dialog::initConnections()
              SLOT(slotMisspelling(const QString&, int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
-    connect( d->ui.m_suggestions, SIGNAL(doubleClicked(Q3ListViewItem*, const QPoint&, int)),
+    connect( d->ui.m_suggestions, SIGNAL(itemDoubleClicked (QListWidgetItem *)),
              SLOT( slotReplaceWord() ) );
     connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
     connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
