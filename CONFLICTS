@@ -1,26 +1,27 @@
 List of remaining conflicts between kdelibs3 and kdelibs4
 
-bin/cupsdconf -> kdebase?
-bin/cupsdoprint -> kdebase?
+bin/cupsdconf    (where is it launched? looks like it's dlopened)
+bin/cupsdoprint -> libexec
 bin/imagetops
-bin/kaddprinterwizard -> kdebase
-bin/kconf_update      -> libexec
-bin/kconfig_compiler  -> libexec
-bin/kcookiejar        -> libexec
+bin/kaddprinterwizard (where is it launched!?) -> libexec
+bin/kconf_update      (started by kded) -> libexec
+bin/kconfig_compiler  -> libexec - DONE
+bin/kcookiejar        (not used by khtml anymore, only a command-line tool) -> kcookiejar4 - DONE
 bin/kde-menu
 bin/kded
 bin/kdesu_stub
 bin/kdontchangethehostname -> libexec
 bin/kdostartupconfig
 bin/kio_http_cache_cleaner -> libexec
-bin/klauncher              -> libexec
-bin/kpac_dhcp_helper
+bin/klauncher              -> libexec - DONE
+bin/kpac_dhcp_helper       -> libexec - DONE
 bin/ksendbugmail
 bin/kstartupconfig
 bin/ksvgtopng              -> devel only, doesn't matter
-bin/ktradertest            -> only needed for xdg utils, kdebase/runtime ?
+bin/ktradertest            -> only needed for xdg utils and debugging... -> ktradertest4?
+                              kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either...
 bin/kunittestmodrunner
-bin/make_driver_db_cups    -> probably kdebase
-bin/make_driver_db_lpr     -> probably kdebase
+bin/make_driver_db_cups    -> libexec
+bin/make_driver_db_lpr     -> libexec
 bin/makekdewidgets         -> devel only, doesn't matter
 bin/preparetips            -> devel only perhaps?

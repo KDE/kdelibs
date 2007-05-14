@@ -179,7 +179,7 @@ KLauncher::KLauncher(int _kdeinitSocket)
    domainname->setAutoRemove(false);
    if (!domainname->open())
    {
-      // Sever error!
+      // Severe error!
       qDebug("KLauncher: Fatal error, can't create tempfile!");
       ::_exit(1);
    }

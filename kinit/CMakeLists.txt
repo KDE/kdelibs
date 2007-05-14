@@ -106,11 +106,10 @@ kde4_automoc(${kstartupconfig_SRCS})
 
 kde4_add_executable(kstartupconfig NOGUI ${kstartupconfig_SRCS})
 
-if(WIN32)
-   target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS})
-else(WIN32)
-   target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS} kdefakes)
-endif(WIN32)
+target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS})
+if(NOT WIN32)
+   target_link_libraries(kstartupconfig  kdefakes)
+endif(NOT WIN32)
 
 install(TARGETS kstartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
@@ -152,12 +151,12 @@ kde4_automoc(${klauncher_KDEINIT_SRCS})
 
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_klauncher  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} )
 
 install(TARGETS kdeinit_klauncher  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( klauncher kdeinit_klauncher )
-install(TARGETS klauncher DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### install files ###############
 
