@@ -799,12 +799,7 @@ private:
 
 // Utility functions
 
-KDEPRINT_EXPORT KPrinter::PageSize pageNameToPageSize(const QString& name);
+KDEPRINT_EXPORT KPrinter::PageSize pageNameToPageSize(const QString& name, bool *ok = 0);
 KDEPRINT_EXPORT const char* pageSizeToPageName(KPrinter::PageSize s);
-/**
- * DO NOT USE, WILL BE REMOVED.
- * @obsolete
- */
-KDE_DEPRECATED QSize rangeToSize( const QString& );
 
 #endif

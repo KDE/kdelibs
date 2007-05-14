@@ -808,9 +808,10 @@ void reportError(KPrinter *p)
 		kDebug(500) << "could not send notify event" << endl;
 }
 
-KPrinter::PageSize pageNameToPageSize(const QString& _name)
+KPrinter::PageSize pageNameToPageSize(const QString& _name, bool *ok)
 {
 	QString name = _name.toUpper();
+	if (ok) *ok = true;
 	if (name == "LETTER") return KPrinter::Letter;
 	else if (name == "LEGAL") return KPrinter::Legal;
 	else if (name == "A4") return KPrinter::A4;
@@ -841,7 +842,11 @@ KPrinter::PageSize pageNameToPageSize(const QString& _name)
 	else if (name == "C5" || name == "C5E" || name == "ENVC5") return KPrinter::C5E;
 	else if (name == "DL" || name == "DLE" || name == "ENVDL") return KPrinter::DLE;
 	else if (name == "COMM10" || name == "COM10" || name == "ENV10") return KPrinter::Comm10E;
-	else return KPrinter::A4;
+	else
+	{
+		if (ok) *ok = false;
+		return KPrinter::A4;
+	}
 }
 
 const char* pageSizeToPageName(KPrinter::PageSize s)
@@ -880,13 +885,6 @@ const char* pageSizeToPageName(KPrinter::PageSize s)
 		case KPrinter::Comm10E: return "Comm10";
 		default: return "A4";
 	}
-}
-
-// FIXME: remove for 4.0
-QSize rangeToSize( const QString& )
-{
-	kWarning( 500 ) << "rangeToSize(QString) is obsolete, do not use (no effect)" << endl;
-	return QSize();
 }
 
 static void dumpOptions(const QMap<QString,QString>& opts)
