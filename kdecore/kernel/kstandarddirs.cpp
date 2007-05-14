@@ -1092,14 +1092,14 @@ QString KStandardDirs::findExe( const QString& appname,
 
     // Look in the default bin and libexec dirs. Maybe we should use the "exe" resource instead?
 
-    QString p = kfsstnd_defaultbindir() + '/' + real_appname;
+    QString p = kfsstnd_defaultlibexecdir() + '/' + real_appname;
     QString result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result << endl;
         return result;
     }
 
-    p = kfsstnd_defaultlibexecdir() + '/' + real_appname;
+    p = kfsstnd_defaultbindir() + '/' + real_appname;
     result = checkExecutable(p, options & IgnoreExecBit);
     if (!result.isEmpty()) {
         //kDebug(180) << "findExe(): returning " << result << endl;
