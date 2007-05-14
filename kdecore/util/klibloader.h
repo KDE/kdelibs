@@ -295,7 +295,7 @@ public:
      *         not have a factory
      * @see library
      */
-    KLibFactory* factory( const char* libname, QLibrary::LoadHints loadHint = 0);
+    KLibFactory* factory( const QString &libname, QLibrary::LoadHints loadHint = 0);
 
     /**
      * Loads and initializes a library. Loading a library multiple times is
@@ -317,32 +317,7 @@ public:
      *
      * @see factory
      */
-    virtual KLibrary* library( const char* libname, QLibrary::LoadHints loadHint = 0 );
-
-    /**
-     * Loads and initializes a library. Loading a library multiple times is
-     * handled gracefully.   The library is loaded such that the symbols are
-     * globally accessible so libraries with dependencies can be loaded
-     * sequentially.
-     *
-     * @param name     This is the library name without extension. Usually that is something like
-     *                 "libkspread". The function will then search for a file named
-     *                 "libkspread.la" in the KDE library paths.
-     *                 The *.la files are created by libtool and contain
-     *                 important information especially about the libraries dependencies
-     *                 on other shared libs. Loading a "libfoo.so" could not solve the
-     *                 dependencies problem.
-     *
-     *                 You can, however, give a library name ending in ".so"
-     *                 (or whatever is used on your platform), and the library
-     *                 will be loaded without resolving dependencies. Use with caution.
-     * @return KLibrariy is invalid (0) when the library couldn't be dlopened. in such
-     * a case you can retrieve the error message by calling KLibLoader::lastErrorMessage()
-     *
-     * @see factory
-     * @deprecated use library() with QLibrary::ExportExternalSymbolsHint hint
-     */
-    KDE_DEPRECATED KLibrary* globalLibrary( const char *name );
+    KLibrary* library( const QString &libname, QLibrary::LoadHints loadHint = 0 );
 
     /**
      * Returns an error message that can be useful to debug the problem.
@@ -367,7 +342,7 @@ public:
      *                 (or whatever is used on your platform), and the library
      *                 will be loaded without resolving dependencies. Use with caution.
      */
-    virtual void unloadLibrary( const char *libname );
+    void unloadLibrary( const QString &libname );
 
     /**
      * Returns a pointer to the factory. Use this function to get an instance
@@ -382,12 +357,12 @@ public:
      * ("module" and "lib" resources).
      * Made public for code that doesn't use KLibLoader itself, but still
      * wants to open modules.
-     * @param name of the library. If it is not a path, the function searches in
-     *             the "module" and "lib" resources. If there is no extension,
-     *             ".la" will be appended.
+     * @param libname of the library. If it is not a path, the function searches in
+     *                the "module" and "lib" resources. If there is no extension,
+     *                ".la" will be appended.
      * @param cData a KComponentData used to get the standard paths
      */
-    static QString findLibrary(const char *name, const KComponentData &cData = KGlobal::mainComponent());
+    static QString findLibrary(const QString &libname, const KComponentData &cData = KGlobal::mainComponent());
 
     /**
      * This enum type defines the possible error cases that can happen
@@ -434,11 +409,11 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <typename T>
-    static T *createInstance( const char *libraryName, QObject *parent = 0,
+    static T *createInstance( const QString &libname, QObject *parent = 0,
                               const QStringList &args = QStringList(),
                               int *error = 0 )
     {
-        KLibrary *library = KLibLoader::self()->library( libraryName );
+        KLibrary *library = KLibLoader::self()->library( libname );
         if ( !library )
         {
             if ( error )

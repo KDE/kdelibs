@@ -394,9 +394,8 @@ KLibLoader::~KLibLoader()
 {
 }
 
-static inline QByteArray makeLibName( const char* name )
+static inline QString makeLibName( QString libname )
 {
-    QByteArray libname(name);
     int pos = libname.lastIndexOf('/');
     if (pos < 0)
       pos = 0;
@@ -410,18 +409,14 @@ static inline QByteArray makeLibName( const char* name )
     return libname;
 }
 
-static inline QString findLibraryInternal(const char *name, const KComponentData &cData)
+static inline QString findLibraryInternal(const QString &name, const KComponentData &cData)
 {
-    QByteArray libname = makeLibName( name );
+    QString libname = makeLibName( name );
 
     // only look up the file if it is not an absolute filename
     // (mhk, 20000228)
     QString libfile;
-    if (!QDir::isRelativePath(libname)) {
-      libfile = QFile::decodeName( libname );
-    }
-    else
-    {
+    if (QDir::isRelativePath(libname)) {
       libfile = cData.dirs()->findResource("module", libname);
       if ( libfile.isEmpty() )
       {
@@ -436,54 +431,41 @@ static inline QString findLibraryInternal(const char *name, const KComponentData
 }
 
 //static
-QString KLibLoader::findLibrary(const char *_name, const KComponentData &cData)
+QString KLibLoader::findLibrary(const QString &_name, const KComponentData &cData)
 {
-#ifndef Q_OS_WIN
-    return findLibraryInternal(_name, cData);
-#else
-    QByteArray name( _name );
-    name = name.replace( '\\', '/' );
-
-    QString libname = findLibraryInternal(name, cData);
-
+    QString libname = findLibraryInternal(QDir::fromNativeSeparators(_name), cData);
+#ifdef Q_OS_WIN
     // we don't have 'lib' prefix on windows -> remove it and try again
     if( libname.isEmpty() )
     {
-      QByteArray ba( name );
-      QByteArray file, path;
+      libname = _name;
+      QString file, path;
 
-      int pos = ba.lastIndexOf( '/' );
+      int pos = libname.lastIndexOf( '/' );
       if ( pos >= 0 )
       {
-        file = ba.mid( pos + 1 );
-        path = ba.left( pos );
-        name = path + '/' + file.mid( 3 );
+        file = libname.mid( pos + 1 );
+        path = libname.left( pos );
+        libname = path + '/' + file.mid( 3 );
       }
       else
       {
-        file = ba;
-        name = file.mid( 3 );
+        file = libname;
+        libname = file.mid( 3 );
       }
       if( !file.startsWith( "lib" ) )
           return libname;
 
-      libname = findLibraryInternal(name, cData);
+      libname = findLibraryInternal(libname, cData);
     }
-
-    return libname;
 #endif
+    return libname;
 }
 
 
-KLibrary* KLibLoader::globalLibrary( const char *_name )
+KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
 {
-    return library(_name, QLibrary::ExportExternalSymbolsHint);
-}
-
-
-KLibrary* KLibLoader::library( const char *_name, QLibrary::LoadHints hint )
-{
-    if (!_name)
+    if (_name.isEmpty())
         return 0;
 
     KLIBLOADER_PRIVATE;
@@ -498,7 +480,7 @@ KLibrary* KLibLoader::library( const char *_name, QLibrary::LoadHints hint )
        unloaded meanwhile, whithout being dlclose()'ed.  */
     QStack<KLibWrapPrivate*>::Iterator it = d->loaded_stack.begin();
     for (; it != d->loaded_stack.end(); ++it) {
-      if ((*it)->name == QLatin1String(_name))
+      if ((*it)->name == _name)
         wrap = *it;
     }
 
@@ -506,18 +488,17 @@ KLibrary* KLibLoader::library( const char *_name, QLibrary::LoadHints hint )
       d->pending_close.removeAll(wrap);
       if (!wrap->lib) {
         /* This lib only was in loaded_stack, but not in d->m_libs.  */
-        wrap->lib = new KLibrary( QLatin1String(_name), wrap->filename, wrap->handle );
+        wrap->lib = new KLibrary( _name, wrap->filename, wrap->handle );
       }
       wrap->ref_count++;
     } else {
       QString libfile = findLibrary( _name );
       if ( libfile.isEmpty() )
       {
-        const QByteArray libname ( _name );
 #ifndef NDEBUG
-        kDebug(150) << "library=" << _name << ": No file named " << libname << " found in paths." << endl;
+        kDebug(150) << "library=" << _name << ": No file named " << _name << " found in paths." << endl;
 #endif
-        d->errorMessage = i18n("Library files for \"%1\" not found in paths.",  QString(libname) );
+        d->errorMessage = i18n("Library files for \"%1\" not found in paths.", _name );
         return 0;
       }
 
@@ -531,7 +512,7 @@ KLibrary* KLibLoader::library( const char *_name, QLibrary::LoadHints hint )
       else
         d->errorMessage.clear();
 
-      KLibrary *lib = new KLibrary( QLatin1String(_name), libfile, handle);
+      KLibrary *lib = new KLibrary( _name, libfile, handle);
       wrap = new KLibWrapPrivate(lib, handle);
       d->loaded_stack.push(wrap);
     }
@@ -549,9 +530,9 @@ QString KLibLoader::lastErrorMessage() const
     return d->errorMessage;
 }
 
-void KLibLoader::unloadLibrary( const char *libname )
+void KLibLoader::unloadLibrary( const QString &libname )
 {
-    KLIBLOADER_PRIVATE;
+  KLIBLOADER_PRIVATE;
   if (!d->m_libs.contains(libname))
     return;
 
@@ -568,7 +549,7 @@ void KLibLoader::unloadLibrary( const char *libname )
   d->close_pending( wrap );
 }
 
-KLibFactory* KLibLoader::factory( const char* _name, QLibrary::LoadHints hint )
+KLibFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints hint )
 {
     KLibrary* lib = library( _name, hint );
     if ( !lib )
@@ -579,7 +560,7 @@ KLibFactory* KLibLoader::factory( const char* _name, QLibrary::LoadHints hint )
 
 void KLibLoader::slotLibraryDestroyed()
 {
-    KLIBLOADER_PRIVATE;
+  KLIBLOADER_PRIVATE;
   const KLibrary *lib = static_cast<const KLibrary *>( sender() );
 
   for (QHash<QString, KLibWrapPrivate*>::Iterator it = d->m_libs.begin(); it != d->m_libs.end(); ++it)
