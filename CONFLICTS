@@ -11,17 +11,15 @@ bin/kde-menu
 bin/kded
 bin/kdesu_stub
 bin/kdontchangethehostname -> libexec
-bin/kdostartupconfig
 bin/kio_http_cache_cleaner -> libexec
 bin/klauncher              -> libexec - DONE
 bin/kpac_dhcp_helper       -> libexec - DONE
-bin/ksendbugmail
-bin/kstartupconfig
+bin/ksendbugmail           -> libexec - DONE
+bin/kdostartupconfig       -> libexec
+bin/kstartupconfig         -> libexec
 bin/ksvgtopng              -> devel only, doesn't matter
 bin/ktradertest            -> only needed for xdg utils and debugging... -> ktradertest4?
                               kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either...
 bin/kunittestmodrunner
-bin/make_driver_db_cups    -> libexec
-bin/make_driver_db_lpr     -> libexec
 bin/makekdewidgets         -> devel only, doesn't matter
 bin/preparetips            -> devel only perhaps?

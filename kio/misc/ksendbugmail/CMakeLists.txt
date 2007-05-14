@@ -1,23 +1,14 @@
-
-########### next target ###############
-
 set(ksendbugmail_SRCS
-main.cpp
-smtp.cpp
+  main.cpp
+  smtp.cpp
+  ${CMAKE_SOURCE_DIR}/kio/kio/kemailsettings.cpp # not worth linking kio for just one file
 )
 
 kde4_automoc(${ksendbugmail_SRCS})
 
 kde4_add_executable(ksendbugmail NOGUI ${ksendbugmail_SRCS})
 
-target_link_libraries(ksendbugmail  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(ksendbugmail  ${KDE4_KDEUI_LIBS} )
 
-install(TARGETS ksendbugmail DESTINATION ${BIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
-
-
-
+install(TARGETS ksendbugmail DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
