@@ -1,5 +1,5 @@
 
-add_subdirectory( tests ) 
+add_subdirectory( tests )
 
 # all done by parent dir
 # include_directories( ${KDE4_KIO_INCLUDES} )
@@ -15,17 +15,17 @@ kde4_automoc(${kcookiejar_SRCS})
 
 qt4_add_dbus_interfaces(kcookiejar_SRCS org.kde.KCookieServer.xml)
 
-kde4_add_executable( kcookiejar NOGUI ${kcookiejar_SRCS})
+kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 
 if(MSVC)
-    set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "/FI${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
+    set_target_properties(kcookiejar4 PROPERTIES COMPILE_FLAGS "/FI${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
 else(MSVC)
-    set_target_properties(kcookiejar PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
+    set_target_properties(kcookiejar4 PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
 endif(MSVC)
 
-target_link_libraries( kcookiejar  ${KDE4_KDECORE_LIBS} )
+target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} )
 
-install(TARGETS kcookiejar DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kcookiejar4 DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 
@@ -44,7 +44,7 @@ qt4_add_dbus_adaptor( kcookiejar_SRCS org.kde.KCookieServer.xml kcookieserver.h 
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_PART_SRCS})
 
-target_link_libraries(kded_kcookiejar  ${KDE4_KDECORE_LIBS} kio )
+target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${QT_QT3SUPPORT_LIBRARY} )
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
