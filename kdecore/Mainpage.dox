@@ -12,4 +12,11 @@
  * KDE environment.
  */
 
+/**
+
+\defgroup KDEMacros KDE Macros
+
+*/
+
 // DOXYGEN_EXCLUDE = malloc kde_file.h
+// DOXYGEN_SET_INPUT += @topdir@/kdemacros.h.cmake

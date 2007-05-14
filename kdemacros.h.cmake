@@ -32,6 +32,7 @@
 
 /**
  * @def KDE_NO_EXPORT
+ * @ingroup KDEMacros
  *
  * The KDE_NO_EXPORT macro marks the symbol of the given variable
  * to be hidden. A hidden symbol is stripped during the linking step,
@@ -50,6 +51,7 @@
 
 /**
  * @def KDE_EXPORT
+ * @ingroup KDEMacros
  *
  * The KDE_EXPORT macro marks the symbol of the given variable
  * to be visible, so it can be used from outside the resulting library.
@@ -60,6 +62,11 @@
  * \endcode
  *
  * @sa KDE_NO_EXPORT
+ */
+
+/**
+ * @def KDE_IMPORT
+ * @ingroup KDEMacros
  */
 
 #ifdef __KDE_HAVE_GCC_VISIBILITY
@@ -78,6 +85,7 @@
 
 /**
  * @def KDE_PACKED
+ * @ingroup KDEMacros
  *
  * The KDE_PACKED macro can be used to hint the compiler that a particular
  * structure or class should not contain unnecessary paddings.
@@ -91,6 +99,7 @@
 
 /**
  * @def KDE_DEPRECATED
+ * @ingroup KDEMacros
  *
  * The KDE_DEPRECATED macro can be used to trigger compile-time warnings
  * with newer compilers when deprecated functions are used.
@@ -162,6 +171,7 @@
 
 /**
  * @def KDE_CONSTRUCTOR_DEPRECATED
+ * @ingroup KDEMacros
  *
  * The KDE_CONSTRUCTOR_DEPRECATED macro can be used to trigger compile-time
  * warnings with newer compilers when deprecated constructors are used.
@@ -200,6 +210,7 @@
 
 /**
  * @def KDE_ISLIKELY
+ * @ingroup KDEMacros
  *
  * The KDE_ISLIKELY macro tags a boolean expression as likely to evaluate to
  * @c true. When used in an <tt>if ( )</tt> statement, it gives a hint to the compiler
@@ -229,6 +240,7 @@
 
 /**
  * @def KDE_ISUNLIKELY
+ * @ingroup KDEMacros
  *
  * The KDE_ISUNLIKELY macro tags a boolean expression as likely to evaluate to
  * @c false. When used in an <tt>if ( )</tt> statement, it gives a hint to the compiler
@@ -264,10 +276,9 @@
 # define KDE_ISUNLIKELY( x )  ( x )
 #endif
 
-/** @name RESERVE_VIRTUAL_N macros */
-/** @{ */
 
 /**
+ * @ingroup KDEMacros
  * This macro, and it's friends going up to 10 reserve a fixed number of virtual
  * functions in a class.  Because adding virtual functions to a class changes the
  * size of the vtable, adding virtual functions to a class breaks binary
@@ -278,40 +289,63 @@
  * as the macro; changing the order of virtual functions in a header is also
  * binary incompatible as it breaks the layout of the vtable.
  */
-
 #define RESERVE_VIRTUAL_1 \
     virtual void reservedVirtual1() {}
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_2 \
     virtual void reservedVirtual2() {} \
     RESERVE_VIRTUAL_1
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_3 \
     virtual void reservedVirtual3() {} \
     RESERVE_VIRTUAL_2
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_4 \
     virtual void reservedVirtual4() {} \
     RESERVE_VIRTUAL_3
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_5 \
     virtual void reservedVirtual5() {} \
     RESERVE_VIRTUAL_4
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_6 \
     virtual void reservedVirtual6() {} \
     RESERVE_VIRTUAL_5
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_7 \
     virtual void reservedVirtual7() {} \
     RESERVE_VIRTUAL_6
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_8 \
     virtual void reservedVirtual8() {} \
     RESERVE_VIRTUAL_7
+/**
+ * @ingroup KDEMacros
+ */
 #define RESERVE_VIRTUAL_9 \
     virtual void reservedVirtual9() {} \
     RESERVE_VIRTUAL_8
 #define RESERVE_VIRTUAL_10 \
     virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
-/** @} */
 
 /**
  * @def KDE_FULL_TEMPLATE_EXPORT_INSTANTIATION
+ * @ingroup KDEMacros
  *
  * From Qt's global.h:
  * Compilers which follow outdated template instantiation rules
@@ -330,6 +364,7 @@
 
 /**
  * @def KDE_DUMMY_COMPARISON_OPERATOR
+ * @ingroup KDEMacros
  *
  * The KDE_DUMMY_COMPARISON_OPERATOR defines a simple
  * compare operator for classes.
@@ -340,6 +375,7 @@
 
 /**
  * @def KDE_DUMMY_QHASH_FUNCTION
+ * @ingroup KDEMacros
  *
  * The KDE_DUMMY_QHASH_FUNCTION defines a simple
  * hash-function for classes. 
@@ -365,6 +401,9 @@
 #endif
 
 /**
+ * @def KDE_WEAK_SYMBOL
+ * @ingroup KDEMacros
+ *
  * The KDE_WEAK_SYMBOL macro can be used to tell the compiler that
  * a particular function should be a weak symbol (that e.g. may be overriden
  * in another library, -Bdirect will not bind this symbol directly)
