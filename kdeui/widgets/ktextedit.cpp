@@ -25,9 +25,9 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QTextCursor>
-
-//#include <ksyntaxhighlighter.h>
-//#include <kspell.h>
+#include "highlighter.h"
+#include <dialog.h>
+#include "backgroundchecker.h"
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstandardshortcut.h>
@@ -37,11 +37,6 @@
 #include <kdialog.h>
 #include <QMenu>
 
-class KSpell;
-
-//TODO: Use kspell2 in the future.
-//Use ksyntaxhighlighter from kspell2
-
 
 class KTextEdit::Private
 {
@@ -49,22 +44,24 @@ class KTextEdit::Private
     Private( KTextEdit *_parent )
       : parent( _parent ),
         customPalette( false ),
-        checkSpellingEnabled( false )
-//      highlighter( 0 ),
-//      spell( 0 )
+        checkSpellingEnabled( false ),
+        highlighter( 0 ),
+        spellDialog( 0 )
     {
     }
 
     ~Private()
     {
-//      delete highlighter;
-//      delete spell;
+      delete highlighter;
+      delete spellDialog;
     }
 
-    void slotSpellCheckReady( KSpell *s );
     void slotSpellCheckDone( const QString &s );
-    void spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos );
-    void spellCheckerCorrected( const QString &, const QString &, unsigned int );
+
+    void spellCheckerMisspelling( const QString &text, int pos );
+    void spellCheckerCorrected( const QString &, int,const QString &);
+    void spellCheckerCanceled();
+    
     void spellCheckerFinished();
     void toggleAutoSpellCheck();
     void slotAllowTab();
@@ -79,18 +76,14 @@ class KTextEdit::Private
     QAction *spellCheckAction;
 
     bool checkSpellingEnabled;
-#if 0
-    KDictSpellingHighlighter *highlighter;
-    KSpell *spell;
-#endif
+    KSpell2::Highlighter *highlighter;
+    KSpell2::Dialog *spellDialog;
 };
 
-void KTextEdit::Private::slotSpellCheckReady( KSpell *s )
+void KTextEdit::Private::spellCheckerCanceled()
 {
-// this is for Zack...
-//
-//    s->check( text() ); // TODO: toPlainText()?? (MiB)
-//    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
+    //TODO revert changes into text
+    spellCheckerFinished();
 }
 
 void KTextEdit::Private::slotSpellCheckDone( const QString &s )
@@ -99,13 +92,15 @@ void KTextEdit::Private::slotSpellCheckDone( const QString &s )
 //        setText( s ); // setPlainText() ?! we'd loose rich text info
 }
 
-void KTextEdit::Private::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos )
+void KTextEdit::Private::spellCheckerMisspelling( const QString &text, int pos )
 {
+    kDebug()<<"TextEdit::Private::spellCheckerMisspelling :"<<text<<" pos :"<<pos<<endl;
 //  highlightWord( text.length(), pos );
 }
 
-void KTextEdit::Private::spellCheckerCorrected( const QString &oldWord, const QString &newWord, unsigned int pos )
+void KTextEdit::Private::spellCheckerCorrected( const QString& oldWord, int pos,const QString& newWord)
 {
+  kDebug()<<" oldWord :"<<oldWord<<" newWord :"<<newWord<<" pos : "<<pos<<endl;
 // TODO
 /*
   unsigned int l = 0;
@@ -122,8 +117,8 @@ void KTextEdit::Private::spellCheckerCorrected( const QString &oldWord, const QS
 
 void KTextEdit::Private::spellCheckerFinished()
 {
-//    delete d->spell;
-//    d->spell = 0L;
+    delete spellDialog;
+    spellDialog = 0L;
 }
 
 void KTextEdit::Private::toggleAutoSpellCheck()
@@ -348,26 +343,22 @@ void KTextEdit::setCheckSpellingEnabled( bool check )
   // off we should remove the old one.
 
   d->checkSpellingEnabled = check;
-#if 0
     if ( check )
     {
         if ( hasFocus() )
-            d->highlighter = new KDictSpellingHighlighter( this );
+            d->highlighter = new KSpell2::Highlighter( this );
     }
     else
     {
         delete d->highlighter;
         d->highlighter = 0;
     }
-#endif
 }
 
 void KTextEdit::focusInEvent( QFocusEvent *event )
 {
-#if 0
     if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter )
-        d->highlighter = new KDictSpellingHighlighter( this );
-#endif
+        d->highlighter = new KSpell2::Highlighter( this );
 
   QTextEdit::focusInEvent( event );
 }
@@ -379,19 +370,15 @@ bool KTextEdit::checkSpellingEnabled() const
 
 void KTextEdit::setReadOnly( bool readOnly )
 {
-#if 0
   if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->highlighter )
-    d->highlighter = new KDictSpellingHighlighter( this );
-#endif
+    d->highlighter = new KSpell2::Highlighter( this );
 
   if ( readOnly == isReadOnly() )
     return;
 
   if ( readOnly ) {
-#if 0
     delete d->highlighter;
     d->highlighter = 0;
-#endif
 
     d->customPalette = testAttribute( Qt::WA_SetPalette );
     QPalette p = palette();
@@ -415,20 +402,18 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-#if 0
-  delete d->spell;
-  d->spell = new KSpell( this, i18n( "Spell Checking" ),
-                         this, SLOT( slotSpellCheckReady( KSpell *) ), 0, true, true);
+  return; //TODO remove code will fix
 
-  connect( d->spell, SIGNAL( death() ),
-           this, SLOT( spellCheckerFinished() ) );
-
-  connect( d->spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),
-           this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
-
-  connect( d->spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),
-           this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
-#endif
+  kDebug()<<" KTextEdit::checkSpelling()\n";
+  delete d->spellDialog;
+  d->spellDialog = new KSpell2::Dialog(new KSpell2::BackgroundChecker( KSpell2::Loader::openLoader(), this ), 0 );
+  connect(d->spellDialog,SIGNAL(replace( const QString&, int,const QString&)),this,SLOT(spellCheckerCorrected( const QString&, int,const QString&) ) );
+  connect(d->spellDialog,SIGNAL(misspelling( const QString&, int)),this,SLOT(spellCheckerMisspelling(const QString &,int)));
+  connect(d->spellDialog,SIGNAL(done( const QString& )),this,SLOT(spellCheckerFinished()));
+  connect(d->spellDialog,SIGNAL(cancel()),this,SLOT(spellCheckerCanceled()));
+  connect(d->spellDialog,SIGNAL(stop()),this,SLOT(spellCheckerFinished()));
+  d->spellDialog->setBuffer(toPlainText());
+  d->spellDialog->show();
 }
 
 void KTextEdit::highlightWord( unsigned int length, unsigned int pos )

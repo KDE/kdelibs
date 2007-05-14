@@ -132,10 +132,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
     class Private;
     Private *const d;
 
-    Q_PRIVATE_SLOT( d, void slotSpellCheckReady( KSpell* ) )
     Q_PRIVATE_SLOT( d, void slotSpellCheckDone( const QString& ) )
-    Q_PRIVATE_SLOT( d, void spellCheckerMisspelling( const QString&, const QStringList&, unsigned int ) )
-    Q_PRIVATE_SLOT( d, void spellCheckerCorrected( const QString&, const QString&, unsigned int ) )
+
+    Q_PRIVATE_SLOT( d, void spellCheckerMisspelling( const QString&, int ) )
+    Q_PRIVATE_SLOT( d, void spellCheckerCorrected(const QString&, int,const QString&) )
+    Q_PRIVATE_SLOT( d, void spellCheckerCanceled())
+
     Q_PRIVATE_SLOT( d, void spellCheckerFinished() )
     Q_PRIVATE_SLOT( d, void toggleAutoSpellCheck() )
     Q_PRIVATE_SLOT( d, void slotAllowTab() )
