@@ -450,7 +450,7 @@ namespace KGlobal
     KDECORE_EXPORT void newComponentData(KComponentData *c);
     ///@internal
     KDECORE_EXPORT void deletedComponentData(KComponentData *c);
-};
+}
 
 #ifdef KDE_SUPPORT
 /**
