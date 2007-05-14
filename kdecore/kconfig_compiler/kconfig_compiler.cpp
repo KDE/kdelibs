@@ -1139,6 +1139,7 @@ int main( int argc, char **argv )
   QString inherits = codegenConfig.value("Inherits").toString();
   QString visibility = codegenConfig.value("Visibility").toString();
   if (!visibility.isEmpty()) visibility+=' ';
+  bool forceStringFilename = codegenConfig.value("ForceStringFilename", false).toBool();
   bool singleton = codegenConfig.value("Singleton", false).toBool();
   bool staticAccessors = singleton;
   //bool useDPointer = codegenConfig.readEntry("DPointer", false);
@@ -1404,13 +1405,18 @@ int main( int argc, char **argv )
    h << " };" << dec << endl;
   }
   h << endl;
-
   // Constructor or singleton accessor
   if ( !singleton ) {
     h << "    " << className << "(";
     if (cfgFileNameArg)
-       h << " KSharedConfig::Ptr config"
-         << (parameters.isEmpty() ? " = KGlobal::config()" : ", ");
+    {
+        if(forceStringFilename)
+            h << " const QString &cfgfilename"
+                << (parameters.isEmpty() ? " = QString()" : ", ");
+        else
+            h << " KSharedConfig::Ptr config"
+                << (parameters.isEmpty() ? " = KGlobal::config()" : ", ");
+    }
     for (QList<Param>::ConstIterator it = parameters.begin();
          it != parameters.end(); ++it)
     {
@@ -1749,7 +1755,7 @@ int main( int argc, char **argv )
   // Constructor
   cpp << className << "::" << className << "( ";
   if ( cfgFileNameArg ) {
-    if ( !singleton )
+    if ( !singleton && ! forceStringFilename)
       cpp << " KSharedConfig::Ptr config";
     else
       cpp << " const QString& config";

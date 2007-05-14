@@ -175,8 +175,13 @@ The following options are read from the kcfgc file:
   the return value of accessor functions and for the parameter of mutator
   functions. This eliminates the need to cast accessor return values to the enum
   type if you want to use the enum type in your own code. If set to false,
-  accessor return values and mutator parameters will be of type int.
+  accessor return values and mutator parameters will be of type int.</td>
 </tr>
+<tr>
+  <td><b>ForceStringFilename</b></td>
+  <td>bool</td>
+  <td>false</td>
+  <td>If set to true, forces the first parameter of the generated class to be a QString when using an argument for the filename. This is useful to specify at runtime the filename of the configuration class.</td>
 </table>
 
 
