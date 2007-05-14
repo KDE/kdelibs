@@ -204,7 +204,6 @@ void Highlighter::setActive( bool active )
     if ( active == d->active )
         return;
     d->active = active;
-    // Qt 4.2 function, see patch: http://websvn.kde.org/trunk/qt-copy/patches/0112-ksyntaxhighlighter-rehighlight-document.diff
     rehighlight();
 
 
