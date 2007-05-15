@@ -76,8 +76,7 @@ KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
 extern char ** environ;
 #endif
 
-KDECORE_EXPORT void unsetenv (name)
-     const char *name;
+KDECORE_EXPORT int unsetenv (const char *name)
 {
   size_t len;
   char **ep;
@@ -85,7 +84,7 @@ KDECORE_EXPORT void unsetenv (name)
   if (name == NULL || *name == '\0' || strchr (name, '=') != NULL)
     {
       errno = EINVAL;
-      return;
+      return -1;
     }
 
   len = strlen (name);
@@ -105,6 +104,7 @@ KDECORE_EXPORT void unsetenv (name)
     else
       ++ep;
 
+  return 0;
 }
 
 #endif /* !HAVE_UNSETENV */
