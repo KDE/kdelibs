@@ -626,7 +626,7 @@ QList<QByteArray> KResolver::protocolName(int protonum)
   do
     {
       buf = new char[buflen];
-#  ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobynumber_r which returns struct *protoent or NULL
+#  ifdef Q_OS_SOLARIS // Solaris uses a 4 argument getprotobynumber_r which returns struct *protoent or NULL
       if ((pe = getprotobynumber_r(protonum, &protobuf, buf, buflen)) && (errno == ERANGE))
 #  else
       if (getprotobynumber_r(protonum, &protobuf, buf, buflen, &pe) == ERANGE)
@@ -685,7 +685,7 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
   do
     {
       buf = new char[buflen];
-#  ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
+#  ifdef Q_OS_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
       if ((pe = getprotobyname_r(protoname, &protobuf, buf, buflen)) && (errno == ERANGE))
 #  else
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
@@ -746,7 +746,7 @@ int KResolver::protocolNumber(const char *protoname)
   do
     {
       buf = new char[buflen];
-#  ifdef USE_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
+#  ifdef Q_OS_SOLARIS // Solaris uses a 4 argument getprotobyname_r which returns struct *protoent or NULL
       if ((pe = getprotobyname_r(protoname, &protobuf, buf, buflen)) && (errno == ERANGE))
 #  else
       if (getprotobyname_r(protoname, &protobuf, buf, buflen, &pe) == ERANGE)
@@ -802,7 +802,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
   do
     {
       buf = new char[buflen];
-#  ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
+#  ifdef Q_OS_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
       if ((se = getservbyname_r(servname, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
 #  else
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
@@ -858,7 +858,7 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
   do
     {
       buf = new char[buflen];
-#  ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
+#  ifdef Q_OS_SOLARIS // Solaris uses a 5 argument getservbyname_r which returns struct *servent or NULL
       if ((se = getservbyname_r(servname, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
 #  else
       if (getservbyname_r(servname, protoname, &servbuf, buf, buflen, &se) == ERANGE)
@@ -918,7 +918,7 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
   do
     {
       buf = new char[buflen];
-#  ifdef USE_SOLARIS // Solaris uses a 5 argument getservbyport_r which returns struct *servent or NULL
+#  ifdef Q_OS_SOLARIS // Solaris uses a 5 argument getservbyport_r which returns struct *servent or NULL
       if ((se = getservbyport_r(port, protoname, &servbuf, buf, buflen)) && (errno == ERANGE))
 #  else
       if (getservbyport_r(port, protoname, &servbuf, buf, buflen, &se) == ERANGE)
