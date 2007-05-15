@@ -426,6 +426,8 @@ static inline QString findLibraryInternal(const QString &name, const KComponentD
           kDebug(150) << "library " << libname << " not found under 'module' but under 'lib'" << endl;
 #endif
       }
+    } else {
+      libfile = libname;
     }
     return libfile;
 }
