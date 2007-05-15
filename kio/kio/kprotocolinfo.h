@@ -96,10 +96,11 @@ public:
    * Same as above except you can supply just the protocol instead of
    * the whole URL.
    */
+ static bool isKnownProtocol( const QString& protocol )
 #ifdef KPROTOCOLINFO_KDECORE
   KDE_WEAK_SYMBOL
 #endif
-  static bool isKnownProtocol( const QString& protocol );
+  ;
 
   /**
    * Returns the library / executable to open for the protocol @p protocol
@@ -224,10 +225,11 @@ public:
    * Same as above except you can supply just the protocol instead of
    * the whole URL.
    */
+ static bool isHelperProtocol( const QString& protocol )
 #ifdef KPROTOCOLINFO_KDECORE
   KDE_WEAK_SYMBOL
 #endif
-  static bool isHelperProtocol( const QString& protocol );
+  ;
 
   /**
    * Returns whether the protocol can act as a filter protocol.
@@ -251,10 +253,11 @@ public:
    * Same as above except you can supply just the protocol instead of
    * the whole URL.
    */
+  static bool isFilterProtocol( const QString& protocol )
 #ifdef KPROTOCOLINFO_KDECORE
   KDE_WEAK_SYMBOL
 #endif
-  static bool isFilterProtocol( const QString& protocol );
+  ;
 
   /**
    * Returns whether the protocol can list files/objects.
