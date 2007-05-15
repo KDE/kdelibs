@@ -327,7 +327,7 @@ QMap<QString, QVariant>& Action::options() const
     return d->options;
 }
 
-QVariant Action::option(const QString& name, QVariant defaultvalue)
+QVariant Action::option(const QString& name, const QVariant& defaultvalue)
 {
     if(d->options.contains(name))
         return d->options[name];

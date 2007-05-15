@@ -96,12 +96,12 @@ bool InterpreterInfo::hasOption(const QString& key) const
     return d->options.contains(key);
 }
 
-InterpreterInfo::Option* InterpreterInfo::option(const QString name) const
+InterpreterInfo::Option* InterpreterInfo::option(const QString& name) const
 {
     return d->options[name];
 }
 
-const QVariant InterpreterInfo::optionValue(const QString name, QVariant defaultvalue) const
+const QVariant InterpreterInfo::optionValue(const QString& name, const QVariant& defaultvalue) const
 {
     Option* o = option(name);
     return o ? o->value : defaultvalue;

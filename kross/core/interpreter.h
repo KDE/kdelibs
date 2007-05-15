@@ -112,14 +112,14 @@ namespace Kross {
             /**
              * \return the option defined with \p name .
              */
-            Option* option(const QString name) const;
+            Option* option(const QString& name) const;
 
             /**
              * \return the value of the option defined with \p name . If there
              * doesn't exists an option with such a name, the \p defaultvalue
              * is returned.
              */
-            const QVariant optionValue(const QString name, QVariant defaultvalue = QVariant()) const;
+            const QVariant optionValue(const QString& name, const QVariant& defaultvalue = QVariant()) const;
 
             /**
              * \return a map of options.

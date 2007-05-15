@@ -148,7 +148,7 @@ namespace Kross {
              * If there doesn't exists an option with such a name,
              * the \p defaultvalue is returned.
              */
-            QVariant option(const QString& name, QVariant defaultvalue = QVariant());
+            QVariant option(const QString& name, const QVariant& defaultvalue = QVariant());
 
             /**
              * Set the \a Interpreter::Option value.
