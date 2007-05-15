@@ -296,7 +296,12 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
   case 3: // syslog
   {
+#ifdef Q_WS_WIN
+      // save events in event logging system
+      // http://msdn2.microsoft.com/en-us/library/aa363680.aspx
+#else
       syslog( nPriority, "%s", buf);
+#endif
       break;
   }
   }
