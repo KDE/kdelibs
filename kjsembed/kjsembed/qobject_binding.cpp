@@ -674,7 +674,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
                     QVariant v(tp, param[0]);
                     QObject* obj = v.value< QObject* >();
                     if( obj )
-                        return KJSEmbed::createQObject(exec, obj);
+                        return KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
                 } break;
                 default: break;
             }
