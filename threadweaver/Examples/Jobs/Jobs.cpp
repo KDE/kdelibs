@@ -55,7 +55,8 @@ Jobs::Jobs ( QWidget *parent )
     ui.setupUi( this );
 
     connect ( Weaver::instance(), SIGNAL ( finished() ), SLOT (slotStopped () ) );
-    connect ( Weaver::instance(), SIGNAL ( jobDone(Job*) ), SLOT (slotJobDone (Job*) ) );
+    connect ( Weaver::instance(), SIGNAL ( jobDone(ThreadWeaver::Job*) ),
+              SLOT (slotJobDone (ThreadWeaver::Job*) ) );
     connect ( Weaver::instance(), SIGNAL ( suspended() ), SLOT (slotStopped () ) );
 
     connect ( ui.pbStart,  SIGNAL ( clicked() ),  SLOT ( slotStart() ) );

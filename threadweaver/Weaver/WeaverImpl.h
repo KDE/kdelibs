@@ -116,20 +116,20 @@ namespace ThreadWeaver {
 
     Q_SIGNALS:
         /** A Thread has been created. */
-        void threadStarted ( Thread* );
+        void threadStarted ( ThreadWeaver::Thread* );
         /** A thread has exited. */
-        void threadExited ( Thread* );
+        void threadExited ( ThreadWeaver::Thread* );
         /** A thread has been suspended. */
-        void threadSuspended ( Thread* );
+        void threadSuspended ( ThreadWeaver::Thread* );
         /** The thread is busy executing job j. */
-        void threadBusy ( Thread*,  Job* j);
+        void threadBusy ( ThreadWeaver::Thread*,  ThreadWeaver::Job* j);
 
         // FIXME (0.7) this seems to be unnecessary
         // some more private Q_SIGNALS: There are situations where other threads
         // call functions of (this). In this case, there may be confusion
         // about whether to handle th signals synchroneously or not. The
         // following signals are asynchroneoulsy connected to their siblings.
-        void asyncThreadSuspended( Thread* );
+        void asyncThreadSuspended( ThreadWeaver::Thread* );
 
     protected:
         /** Adjust active thread count.

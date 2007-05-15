@@ -133,12 +133,12 @@ void Thread::run()
     ThreadRunHelper helper;
     d->runhelper = &helper;
 
-    connect ( &helper, SIGNAL ( started ( Thread* ) ),
-              SIGNAL ( started ( Thread* ) ) );
-    connect ( &helper, SIGNAL ( jobStarted ( Thread*, Job* ) ),
-              SIGNAL ( jobStarted ( Thread*, Job* ) ) );
-    connect ( &helper, SIGNAL ( jobDone ( Job* ) ),
-              SIGNAL ( jobDone ( Job* ) ) );
+    connect ( &helper, SIGNAL ( started ( ThreadWeaver::Thread* ) ),
+              SIGNAL ( started ( ThreadWeaver::Thread* ) ) );
+    connect ( &helper, SIGNAL ( jobStarted ( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ),
+              SIGNAL ( jobStarted ( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ) );
+    connect ( &helper, SIGNAL ( jobDone ( ThreadWeaver::Job* ) ),
+              SIGNAL ( jobDone ( ThreadWeaver::Job* ) ) );
     helper.run( d->parent,  this );
 
     d->runhelper = 0;

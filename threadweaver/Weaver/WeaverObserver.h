@@ -62,11 +62,11 @@ namespace ThreadWeaver {
         explicit WeaverObserver ( QObject *parent = 0 );
         virtual ~WeaverObserver();
     Q_SIGNALS:
-        void threadStarted ( Thread* );
-        void threadBusy( Thread*,  Job* );
-        void threadSuspended ( Thread* );
-        void threadExited ( Thread* );
-        void weaverStateChanged ( State* );
+        void threadStarted ( ThreadWeaver::Thread* );
+        void threadBusy( ThreadWeaver::Thread*, ThreadWeaver::Job* );
+        void threadSuspended ( ThreadWeaver::Thread* );
+        void threadExited ( ThreadWeaver::Thread* );
+        void weaverStateChanged ( ThreadWeaver::State* );
 
     private:
         class Private;

@@ -25,16 +25,16 @@ namespace ThreadWeaver {
     WeaverObserverTest::WeaverObserverTest ( QObject *parent )
         : WeaverObserver ( parent )
     {
-        connect ( this,  SIGNAL ( weaverStateChanged ( State* ) ),
-                  SLOT ( slotWeaverStateChanged ( State* ) ) );
-        connect ( this,  SIGNAL ( threadStarted( Thread* ) ),
-                  SLOT ( slotThreadStarted ( Thread* ) ) );
-        connect ( this,  SIGNAL ( threadBusy ( Thread *,  Job* ) ),
-                  SLOT ( slotThreadBusy ( Thread *,  Job* ) ) );
-        connect ( this,  SIGNAL ( threadSuspended ( Thread* ) ),
-                  SLOT ( slotThreadSuspended ( Thread* ) ) );
-        connect ( this,  SIGNAL ( threadExited ( Thread* ) ),
-                  SLOT ( slotThreadExited ( Thread* ) ) );
+        connect ( this,  SIGNAL ( weaverStateChanged ( ThreadWeaver::State* ) ),
+                  SLOT ( slotWeaverStateChanged ( ThreadWeaver::State* ) ) );
+        connect ( this,  SIGNAL ( threadStarted( ThreadWeaver::Thread* ) ),
+                  SLOT ( slotThreadStarted ( ThreadWeaver::Thread* ) ) );
+        connect ( this,  SIGNAL ( threadBusy ( ThreadWeaver::Thread *,  ThreadWeaver::Job* ) ),
+                  SLOT ( slotThreadBusy ( ThreadWeaver::Thread *,  ThreadWeaver::Job* ) ) );
+        connect ( this,  SIGNAL ( threadSuspended ( ThreadWeaver::Thread* ) ),
+                  SLOT ( slotThreadSuspended ( ThreadWeaver::Thread* ) ) );
+        connect ( this,  SIGNAL ( threadExited ( ThreadWeaver::Thread* ) ),
+                  SLOT ( slotThreadExited ( ThreadWeaver::Thread* ) ) );
     }
 
     void WeaverObserverTest::slotWeaverStateChanged ( State *state )

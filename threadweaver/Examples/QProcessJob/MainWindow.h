@@ -43,7 +43,7 @@ private Q_SLOTS:
     void on_pushButtonStart_clicked();
     void on_pushButtonQuit_clicked();
 
-    void update ( Job* );
+    void update ( ThreadWeaver::Job* );
 private:
     Ui::MainWindow ui;
 

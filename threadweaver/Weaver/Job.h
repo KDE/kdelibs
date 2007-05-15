@@ -128,6 +128,7 @@ namespace ThreadWeaver {
             Also, this method is supposed to return immidiately, not after the
             abort has completed. It requests the abort, the Job has to act on
             the request. */
+        // FIXME (Mirko) this should be private, I guess?
         virtual void requestAbort () {}
 
         /** The job is about to be added to the weaver's job queue.
@@ -189,15 +190,15 @@ namespace ThreadWeaver {
     Q_SIGNALS:
 	/** This signal is emitted when this job is being processed by a
 	    thread. */
-	void started ( Job* );
+	void started ( ThreadWeaver::Job* );
 	/** This signal is emitted when the job has been finished. */
-	void done ( Job* );
+	void done ( ThreadWeaver::Job* );
 
         /** This job has failed.
             This signal is emitted when success() returns false after the job
             is executed.
         */
-        void failed( Job* );
+        void failed( ThreadWeaver::Job* );
 
     protected:
         class Private;

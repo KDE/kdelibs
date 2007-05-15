@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 DeleteTest::DeleteTest(int argc, char **argv)
   : QCoreApplication(argc, argv)
 {
-  ThreadWeaver::setDebugLevel ( true,  3 );
+  ThreadWeaver::setDebugLevel ( true,  1 );
 
   ThreadWeaver::Weaver::instance()->setMaximumNumberOfThreads(4);
 
@@ -39,7 +39,8 @@ DeleteTest::DeleteTest(int argc, char **argv)
 
   for (int i = 0; i < 100; ++i) {
     ThreadWeaver::JobSequence* jobSeq = new ThreadWeaver::JobSequence( this );
-    connect ( jobSeq, SIGNAL( done( Job* ) ), SLOT( deleteSequence( Job* ) ) );
+    connect ( jobSeq, SIGNAL( done( ThreadWeaver::Job* ) ),
+              SLOT( deleteSequence( ThreadWeaver::Job* ) ) );
 
     jobSeq->addJob( new BusyJob );
     jobSeq->addJob( new BusyJob );
@@ -50,7 +51,7 @@ DeleteTest::DeleteTest(int argc, char **argv)
   ThreadWeaver::Weaver::instance()->resume();
 }
 
-void DeleteTest::deleteSequence(Job* job)
+void DeleteTest::deleteSequence(ThreadWeaver::Job* job)
 {
   Q_ASSERT(job);
   delete job;

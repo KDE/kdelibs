@@ -35,8 +35,8 @@ MainWindow::MainWindow ( QWidget * parent )
     : QMainWindow ( parent )
 {
     ui.setupUi ( this );
-    connect ( Weaver::instance(),  SIGNAL ( jobDone ( Job* ) ),
-              SLOT ( update ( Job* ) ) );
+    connect ( Weaver::instance(),  SIGNAL ( jobDone ( ThreadWeaver::Job* ) ),
+              SLOT ( update ( ThreadWeaver::Job* ) ) );
 }
 
 void MainWindow::on_pushButtonStart_clicked ()
@@ -53,7 +53,7 @@ void MainWindow::on_pushButtonQuit_clicked ()
     QApplication::instance()->quit();
 }
 
-void MainWindow::update( Job *j )
+void MainWindow::update( ThreadWeaver::Job *j )
 {
     qDebug ( "MainWindow::update: job finished." );
     QProcessJob* job = dynamic_cast<QProcessJob*> ( j );

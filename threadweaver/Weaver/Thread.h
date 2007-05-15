@@ -95,11 +95,11 @@ namespace ThreadWeaver {
 
     Q_SIGNALS:
         /** The thread has been started. */
-        void started ( Thread* );
+        void started ( ThreadWeaver::Thread* );
         /** The thread started to process a job. */
-        void jobStarted ( Thread*,  Job* );
+        void jobStarted ( ThreadWeaver::Thread*,  ThreadWeaver::Job* );
         /** The thread finished to execute a job. */
-        void jobDone ( Job* );
+        void jobDone ( ThreadWeaver::Job* );
 
     private:
         class Private;

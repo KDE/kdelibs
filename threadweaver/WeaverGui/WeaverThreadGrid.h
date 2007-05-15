@@ -62,9 +62,9 @@ namespace ThreadWeaver {
         QColor m_colorIdleFrame;
         QColor m_colorIdle;
     protected Q_SLOTS:
-        void threadStarted ( Thread* );
-        void threadBusy ( Thread*, Job* );
-        void threadSuspended ( Thread* );
+        void threadStarted ( ThreadWeaver::Thread* );
+        void threadBusy ( ThreadWeaver::Thread*, ThreadWeaver::Job* );
+        void threadSuspended ( ThreadWeaver::Thread* );
     private:
         class Private;
         Private * const d;

@@ -35,7 +35,8 @@ SMIV::SMIV ( Weaver* w )
 {
     ui.setupUi ( this );
     connect ( m_weaver,  SIGNAL ( finished() ),  SLOT ( slotJobsDone() ) );
-    connect ( m_weaver,  SIGNAL ( jobDone ( Job* ) ), SLOT( slotJobDone( Job* ) ) );
+    connect ( m_weaver,  SIGNAL ( jobDone ( ThreadWeaver::Job* ) ),
+              SLOT( slotJobDone( ThreadWeaver::Job* ) ) );
     connect ( m_weaver,  SIGNAL ( suspended () ),  SLOT ( weaverSuspended() ) );
     ui.listView->setModel ( &model );
     ui.listView->setItemDelegate( &del );
@@ -123,7 +124,7 @@ void SMIV::on_pbQuit_clicked()
     }
 }
 
-void SMIV::slotJobDone ( Job* )
+void SMIV::slotJobDone ( ThreadWeaver::Job* )
 {
     ui.progressBar->setValue ( ui.progressBar->value() + 1 );
 }

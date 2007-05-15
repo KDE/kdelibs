@@ -43,9 +43,9 @@ public:
 Q_SIGNALS:
     void thumbReady( SMIVItem* );
 private Q_SLOTS:
-    void fileLoaderReady ( Job* );
-    void imageLoaderReady ( Job* );
-    void computeThumbReady ( Job* );
+    void fileLoaderReady ( ThreadWeaver::Job* );
+    void imageLoaderReady ( ThreadWeaver::Job* );
+    void computeThumbReady ( ThreadWeaver::Job* );
 protected:
     QString m_path;
     QString m_name;

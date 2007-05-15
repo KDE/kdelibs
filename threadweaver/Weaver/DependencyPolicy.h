@@ -87,6 +87,7 @@ namespace ThreadWeaver {
         /** Retrieve a list of dependencies of this job. */
         QList<Job*> getDependencies( Job* ) const;
 
+        // FIXME add factory method for singleton creation
         static DependencyPolicy& instance();
 
         bool canRun( Job* );

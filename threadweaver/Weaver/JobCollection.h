@@ -66,7 +66,7 @@ namespace ThreadWeaver {
         /** Stop processing, dequeue all remaining Jobs.
             job is supposed to be an element of the collection.
             */
-        void stop ( Job *job );
+        void stop ( ThreadWeaver::Job *job );
 
     protected:
         /** Overload to queue the collection. */

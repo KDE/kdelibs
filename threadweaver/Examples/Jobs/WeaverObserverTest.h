@@ -29,11 +29,11 @@ namespace ThreadWeaver {
     public:
         WeaverObserverTest ( QObject *parent=0 );
     protected Q_SLOTS:
-        void slotWeaverStateChanged ( State* );
-        void slotThreadStarted ( Thread* );
-        void slotThreadBusy ( Thread*,  Job* );
-        void slotThreadSuspended ( Thread* );
-        void slotThreadExited ( Thread* );
+        void slotWeaverStateChanged ( ThreadWeaver::State* );
+        void slotThreadStarted ( ThreadWeaver::Thread* );
+        void slotThreadBusy ( ThreadWeaver::Thread*, ThreadWeaver::Job* );
+        void slotThreadSuspended ( ThreadWeaver::Thread* );
+        void slotThreadExited ( ThreadWeaver::Thread* );
     };
 
 }

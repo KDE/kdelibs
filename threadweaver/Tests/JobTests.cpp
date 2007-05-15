@@ -378,13 +378,13 @@ void JobTests::ResourceRestrictionPolicyBasicsTest () {
     QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
 }
 
-void JobTests::jobStarted( Job* )
+void JobTests::jobStarted( ThreadWeaver::Job* )
 {
     // qDebug() << "jobStarted";
     QVERIFY( thread() == QThread::currentThread() );
 }
 
-void JobTests::jobDone( Job* )
+void JobTests::jobDone( ThreadWeaver::Job* )
 {
     // qDebug() << "jobDone";
     QVERIFY( thread() == QThread::currentThread() );
@@ -397,14 +397,18 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     QString sequence;
     QList<Job*> jobs;
     ThreadWeaver::JobCollection collection;
-    connect( &collection, SIGNAL( started( Job* ) ), SLOT( jobStarted( Job* ) ) );
-    connect( &collection, SIGNAL( done( Job* ) ), SLOT( jobDone( Job* ) ) );
+    connect( &collection, SIGNAL( started( ThreadWeaver::Job* ) ),
+             SLOT( jobStarted( ThreadWeaver::Job* ) ) );
+    connect( &collection, SIGNAL( done( ThreadWeaver::Job* ) ),
+             SLOT( jobDone( ThreadWeaver::Job* ) ) );
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
         Job* job = new AppendCharacterJob( bits[counter], &sequence, this );
 
-        connect ( job, SIGNAL( started( Job* ) ), SLOT( jobStarted(Job* ) ) );
-        connect ( job, SIGNAL( done( Job* ) ), SLOT( jobDone( Job* ) ) );
+        connect ( job, SIGNAL( started( ThreadWeaver::Job* ) ),
+                  SLOT( jobStarted( ThreadWeaver::Job* ) ) );
+        connect ( job, SIGNAL( done( ThreadWeaver::Job* ) ),
+                  SLOT( jobDone( ThreadWeaver::Job* ) ) );
 
         jobs.append( job );
         collection.addJob( job );

@@ -52,7 +52,8 @@ Weaver::Weaver ( QObject* parent )
     d->weaverinterface = makeWeaverImpl();
     connect ( d->weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
     connect ( d->weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
-    connect ( d->weaverinterface, SIGNAL ( jobDone( Job* ) ), SIGNAL ( jobDone ( Job* ) ) );
+    connect ( d->weaverinterface, SIGNAL ( jobDone( ThreadWeaver::Job* ) ),
+              SIGNAL ( jobDone ( ThreadWeaver::Job* ) ) );
 }
 
 Weaver::~Weaver()

@@ -184,13 +184,13 @@ namespace ThreadWeaver {
 	    It is up to the
 	    programmer to decide if this signal or the done signal of the job
 	    is more handy. */
-        void jobDone (Job*);
+        void jobDone ( ThreadWeaver::Job* );
         // FIXME (0.7) test if signal is emitted properly
         // FIXME (0.7) provide jobStarted and jobFailed signals
         // FIXME (0.7) or remove all these, and add them to WeaverObserver
 
         /** The Weaver's state has changed. */
-        void stateChanged ( State* );
+        void stateChanged ( ThreadWeaver::State* );
     };
 
 }

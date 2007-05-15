@@ -16,7 +16,7 @@ public:
   DeleteTest(int argc, char **argv);
 
 public Q_SLOTS:
-  void deleteSequence(Job* job);
+  void deleteSequence(ThreadWeaver::Job* job);
 
 private:
   int m_finishCount;

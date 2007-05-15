@@ -65,7 +65,7 @@ namespace ThreadWeaver {
         Ui::JobsBase ui;
         WeaverObserverTest *m_log;
     protected Q_SLOTS:
-        void slotJobDone (Job*);
+        void slotJobDone (ThreadWeaver::Job*);
         void slotStopped ();
     };
 

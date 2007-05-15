@@ -49,7 +49,7 @@ private Q_SLOTS:
     void on_pbCancel_clicked();
     void on_pbSuspend_clicked();
     void on_pbQuit_clicked();
-    void slotJobDone ( Job* );
+    void slotJobDone ( ThreadWeaver::Job* );
     void slotJobsDone ();
     void weaverSuspended ();
     void slotThumbReady (SMIVItem*);

@@ -42,9 +42,9 @@ public:
     JobRunHelper();
 
 Q_SIGNALS:
-    void started ( Job* );
-    void done ( Job* );
-    void failed( Job* );
+    void started ( ThreadWeaver::Job* );
+    void done ( ThreadWeaver::Job* );
+    void failed( ThreadWeaver::Job* );
 
 public:
 
