@@ -28,6 +28,7 @@
 /* header files */
 #cmakedefine HAVE_NET_IF_H 1
 #cmakedefine HAVE_IDNA_H 1
+#cmakedefine HAVE_SYS_FILIO_H 1
 
 /* structs */
 #cmakedefine HAVE_STRUCT_ADDRINFO 1

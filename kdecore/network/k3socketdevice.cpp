@@ -32,7 +32,7 @@
 
 #include <QMap>
 
-#ifdef USE_SOLARIS
+#ifdef HAVE_SYS_FILIO_H
 # include <sys/filio.h>
 #endif
 #include <sys/types.h>

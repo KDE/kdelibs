@@ -21,6 +21,7 @@ int main()
 macro_pop_required_vars()
 
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
+check_include_files("sys/filio.h" HAVE_SYS_FILIO_H)
 
 if (WIN32)
 # make sure win32 uses related functions from kdecore/netsupp.cpp, they support ipv6
