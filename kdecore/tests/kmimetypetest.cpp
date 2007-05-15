@@ -16,6 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include <config.h>
+#include <kdefakes.h>
 #include "kmimetypetest.h"
 #include "kmimetypetest.moc"
 #include <kmimetype.h>
