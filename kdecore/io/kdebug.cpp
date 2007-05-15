@@ -27,6 +27,13 @@
 
 #include "kdebug.h"
 
+#ifdef Q_WS_WIN
+#include <fcntl.h>
+#define WINVER 0x0501
+#include <windows.h>
+#include <wincon.h>
+#endif
+
 #ifdef NDEBUG
 #undef kDebug
 #undef kBacktrace
@@ -95,6 +102,10 @@ struct kDebugPrivate
         if (kde_kdebug_enable_dbus_interface) {
             kDebugDBusIface = new KDebugDBusIface;
         }
+#ifdef Q_WS_WIN
+        // check if console is open and create if not 
+        initConsole();
+#endif
     }
 
     ~kDebugPrivate()
@@ -157,6 +168,56 @@ struct kDebugPrivate
 
         return cache.value(num);
     }
+
+#ifdef Q_WS_WIN
+    /* http://msdn2.microsoft.com/en-us/library/ms681952.aspx */ 
+    int isConsoleApp()
+    {
+        if (AttachConsole((DWORD)-1) == 0 &&  GetLastError() == ERROR_ACCESS_DENIED)
+            return 1;
+        FreeConsole();
+        return 0;
+    }   
+
+    /* http://support.microsoft.com/kb/105305/en-us */ 
+    void createConsole()
+    {
+        int hCrt;
+        FILE *hf;
+        int i;
+        
+        // connect to parent console 
+        AttachConsole((DWORD)-1);
+        // create separate console -> disabled for now
+        // AllocConsole();
+
+        hCrt = _open_osfhandle((long) GetStdHandle(STD_INPUT_HANDLE),_O_TEXT);
+        hf = _fdopen( hCrt, "r" );
+        *stdin = *hf;
+        i = setvbuf( stdin, NULL, _IONBF, 0 );
+
+        hCrt = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE),_O_TEXT);
+        hf = _fdopen( hCrt, "w" );
+        *stdout = *hf;
+        i = setvbuf( stdout, NULL, _IONBF, 0 );
+        
+        hCrt = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE),_O_TEXT);
+        hf = _fdopen( hCrt, "w" );
+        *stderr = *hf;
+        i = setvbuf( stderr, NULL, _IONBF, 0 );
+    }
+
+    void initConsole()
+    {
+        static bool consoleChecked = false;
+        if (consoleChecked)
+            return;
+        if (!isConsoleApp()) {
+            createConsole();
+        }
+        consoleChecked = true;
+    }
+#endif 
 
     QByteArray aAreaName;
     unsigned int oldarea;
@@ -291,7 +352,11 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
   case 2: // Shell
   {
+#ifdef Q_WS_WIN
+      fprintf(stderr,buf);
+#else 
       write( 2, buf, strlen( buf ) );  //fputs( buf, stderr );
+#endif      
       break;
   }
   case 3: // syslog
