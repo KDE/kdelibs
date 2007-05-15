@@ -20,7 +20,7 @@
 #define KCOMPONENTDATA_H
 
 #include <kdecore_export.h>
-#include "ksharedconfig.h"
+#include <ksharedconfig.h>
 
 class QByteArray;
 class QString;
@@ -29,7 +29,7 @@ class KStandardDirs;
 class KComponentDataPrivate;
 
 /**
- * \short Per component data.
+ * @short Per component data.
  *
  * This class holds a KAboutData object or only a component name, a KStandardDirs object and a
  * KSharedConfig object. Those objects normally are different per component but the same per
@@ -40,8 +40,8 @@ class KComponentDataPrivate;
  * component data of the currently active component (mainly used for KParts) can be accessed using
  * KGlobal::activeComponent().
  *
- * \author Torben Weis
- * \author Matthias Kretz <kretz@kde.org>
+ * @author Torben Weis
+ * @author Matthias Kretz <kretz@kde.org>
  */
 class KDECORE_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
 {
@@ -53,7 +53,7 @@ public:
     /**
      * Creates an invalid KComponentData object.
      *
-     * \see isValid()
+     * @see isValid()
      */
     KComponentData();
 
@@ -88,23 +88,23 @@ public:
     /**
      * Constructor.
      *
-     * \param componentName the name of the component.
+     * @param componentName the name of the component.
      */
     explicit KComponentData(const QByteArray &componentName);
 
     /**
-     *  Constructor.
+     * Constructor.
      *
-     *  When instanciating a KComponentData that is not your KApplication,
-     *  make sure that the KAboutData and the KComponentData have the same life time.
-     *  You have to destroy both, since KComponentData does not own the about data.
-     *  Do not create a KAboutData on the stack in this case!
-     *  Building a KAboutData on the stack is only ok for usage with
-     *  KCmdLineArgs and KApplication (not destroyed until the app exits).
+     * When instanciating a KComponentData that is not your KApplication,
+     * make sure that the KAboutData and the KComponentData have the same life time.
+     * You have to destroy both, since KComponentData does not own the about data.
+     * Do not create a KAboutData on the stack in this case!
+     * Building a KAboutData on the stack is only ok for usage with
+     * KCmdLineArgs and KApplication (not destroyed until the app exits).
      *
-     *  \param aboutData data about this component
+     * @param aboutData data about this component
      *
-     *  \see KAboutData
+     * @see KAboutData
      */
     explicit KComponentData(const KAboutData *aboutData);
 
@@ -136,7 +136,7 @@ public:
     /**
      * Returns the about data of this component.
      *
-     * \return The about data of the component. If none has been set in the
+     * @return The about data of the component. If none has been set in the
      *         constructor but a component name was set, a default constructed
      *         KAboutData object is returned.
      */
@@ -145,7 +145,7 @@ public:
     /**
      * Returns the name of the component.
      *
-     * \return The component name.
+     * @return The component name.
      */
     QByteArray componentName() const;
 

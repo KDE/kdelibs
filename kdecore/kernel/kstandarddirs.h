@@ -134,18 +134,18 @@ class KConfig;
  *    default is supplied but the user can override this
  *    default in his local .kde directory:
  *
- *    \code
+ *    @code
  *    // Code example
  *    myFile = KStandardDirs::locate("appdata", "groups.lst");
  *    myData =  myReadGroups(myFile); // myFile may be null
- *    \endcode
+ *    @endcode
  *
  * 2) A resource file is read and written. If the user has no
  *    local version of the file the system default is used.
  *    The resource file is always written to the users local
  *    .kde directory.
  *
- *    \code
+ *    @code
  *    // Code example
  *    myFile = KStandardDirs::locate("appdata", "groups.lst")
  *    myData =  myReadGroups(myFile);
@@ -154,14 +154,14 @@ class KConfig;
  *    ...
  *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
- *    \endcode
+ *    @endcode
  *
  * 3) A resource file is read and written. No system default
  *    is used if the user has no local version of the file.
  *    The resource file is always written to the users local
  *    .kde directory.
  *
- *    \code
+ *    @code
  *    // Code example
  *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
  *    myData =  myReadGroups(myFile);
@@ -170,7 +170,7 @@ class KConfig;
  *    ...
  *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
- *    \endcode
+ *    @endcode
  **/
 class KDECORE_EXPORT KStandardDirs
 {

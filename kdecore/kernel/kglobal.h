@@ -30,15 +30,15 @@ class KStaticDeleterBase;
 class QString;
 class KSharedConfigPtr;
 
-/// \cond InternalDocs
+/// @cond InternalDocs
 
 /**
- * \internal
+ * @internal
  */
 typedef void (*KdeCleanUpFunction)();
 
 /**
- * \internal
+ * @internal
  *
  * Helper class for K_GLOBAL_STATIC to clean up the object on library unload or application
  * shutdown.
@@ -53,7 +53,7 @@ class KCleanUpGlobalStatic
 
 #ifdef Q_CC_MSVC
 /**
- * \internal
+ * @internal
  *
  * MSVC seems to give anonymous structs the same name which fails at link time. So instead we name
  * the struct and hope that by adding the line number to the name it's unique enough to never clash.
@@ -61,14 +61,14 @@ class KCleanUpGlobalStatic
 # define K_GLOBAL_STATIC_STRUCT_NAME(NAME) _k_##NAME##__LINE__
 #else
 /**
- * \internal
+ * @internal
  *
  * Make the struct of the K_GLOBAL_STATIC anonymous.
  */
 # define K_GLOBAL_STATIC_STRUCT_NAME(NAME)
 #endif
 
-/// \endcond
+/// @endcond
 
 /**
  * This macro makes it easy to use non-POD types as global statics.
@@ -78,20 +78,20 @@ class KCleanUpGlobalStatic
  * Be careful with calling other objects in the destructor of the class
  * as you have to be sure that they (or objects they depend on) are not already destructed.
  *
- * \param TYPE The type of the global static object. Do not add a *.
- * \param NAME The name of the function to get a pointer to the global static object.
+ * @param TYPE The type of the global static object. Do not add a *.
+ * @param NAME The name of the function to get a pointer to the global static object.
  *
  * If you have code that might be called after the global object has been destroyed you can check
  * for that using the isDestroyed() function.
  *
  * If needed (If the destructor of the global object calls other functions that depend on other
  * global statics (e.g. KConfig::sync) your destructor has to be called before those global statics
- * are destroyed. A Qt post routine does that.) you can also install a post routine (\ref qAddPostRoutine) to clean up the object
+ * are destroyed. A Qt post routine does that.) you can also install a post routine (@ref qAddPostRoutine) to clean up the object
  * using the destroy() method. If you registered a post routine and the object is destroyed because
  * of a lib unload you have to call qRemovePostRoutine!
  *
  * Example:
- * \code
+ * @code
  * class A {
  * public:
  *     ~A();
@@ -131,11 +131,11 @@ class KCleanUpGlobalStatic
  *     // the class used as global static!
  *     qRemovePostRoutine(globalA.destroy);
  * }
- * \endcode
+ * @endcode
  *
  * A common case for the need of deletion on lib unload/app shutdown are Singleton classes. Here's
  * an example how to do it:
- * \code
+ * @code
  * class MySingletonPrivate;
  * class EXPORT_MACRO MySingleton
  * {
@@ -148,9 +148,9 @@ class KCleanUpGlobalStatic
  *     MySingleton();
  *     ~MySingleton();
  * };
- * \endcode
+ * @endcode
  * in the .cpp file:
- * \code
+ * @code
  * // This class will be instantiated and referenced as a singleton in this example
  * class MySingletonPrivate
  * {
@@ -171,17 +171,17 @@ class KCleanUpGlobalStatic
  *     // Refencing the singleton directly is possible for your convenience
  *     return mySingletonPrivate->foo;
  * }
- * \endcode
+ * @endcode
  *
  * Instead of the above you can use also the following pattern (ignore the name of the namespace):
- * \code
+ * @code
  * namespace MySingleton
  * {
  *     EXPORT_MACRO QString someFunction();
  * }
- * \endcode
+ * @endcode
  * in the .cpp file:
- * \code
+ * @code
  * class MySingletonPrivate
  * {
  * public:
@@ -194,18 +194,18 @@ class KCleanUpGlobalStatic
  * {
  *     return mySingletonPrivate->foo;
  * }
- * \endcode
+ * @endcode
  *
  * Now code that wants to call someFunction() doesn't have to do
- * \code
+ * @code
  * MySingleton::self()->someFunction();
- * \endcode
+ * @endcode
  * anymore but instead:
- * \code
+ * @code
  * MySingleton::someFunction();
- * \endcode
+ * @endcode
  *
- * \ingroup KDEMacros
+ * @ingroup KDEMacros
  */
 #define K_GLOBAL_STATIC(TYPE, NAME) K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
 
@@ -214,12 +214,12 @@ class KCleanUpGlobalStatic
  * This is the same as K_GLOBAL_STATIC,  but can take arguments that are passed 
  * to the object's constructor
  *
- * \param TYPE The type of the global static object. Do not add a *.
- * \param NAME The name of the function to get a pointer to the global static object.
- * \param ARGS the list of arguments, between brackets
+ * @param TYPE The type of the global static object. Do not add a *.
+ * @param NAME The name of the function to get a pointer to the global static object.
+ * @param ARGS the list of arguments, between brackets
  *
  * Example:
- * \code
+ * @code
  * class A
  * {
  * public:
@@ -237,9 +237,9 @@ class KCleanUpGlobalStatic
  *     A *a = globalA;
  *     ...
  * }
- * \endcode
+ * @endcode
  *
- * \ingroup KDEMacros
+ * @ingroup KDEMacros
  */
 #define K_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                            \
 static QBasicAtomicPointer<TYPE > _k_static_##NAME = Q_ATOMIC_INIT(0);         \
@@ -305,19 +305,19 @@ namespace KGlobal
     KDECORE_EXPORT const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
 
     /**
-     * \internal
+     * @internal
      * Returns whether a main KComponentData is available.
      */
     KDECORE_EXPORT bool hasMainComponent();
 
     /**
-     *  Returns the application standard dirs object.
+     * Returns the application standard dirs object.
      * @return the global standard dir object
      */
     KDECORE_EXPORT KStandardDirs *dirs();
 
     /**
-     *  Returns the general config object.
+     * Returns the general config object.
      * @return the global configuration object.
      */
     KDECORE_EXPORT KSharedConfigPtr config();
@@ -326,9 +326,9 @@ namespace KGlobal
      * Returns the global locale object.
      * @return the global locale object
      */
-    KDECORE_EXPORT KLocale              *locale();
+    KDECORE_EXPORT KLocale *locale();
     /**
-     * \internal
+     * @internal
      * Returns whether KGlobal has a valid KLocale object
      */
     KDECORE_EXPORT bool hasLocale();
@@ -337,7 +337,7 @@ namespace KGlobal
      * The global charset manager.
      * @return the global charset manager
      */
-    KDECORE_EXPORT KCharsets	        *charsets();
+    KDECORE_EXPORT KCharsets *charsets();
 
     /**
      * Creates a static QString.
@@ -356,7 +356,7 @@ namespace KGlobal
      * @param str the string to create
      * @return the static string
      */
-    KDECORE_EXPORT const QString&        staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDECORE_EXPORT const QString& staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Creates a static QString.
@@ -375,7 +375,7 @@ namespace KGlobal
      * @param str the string to create
      * @return the static string
      */
-    KDECORE_EXPORT const QString&        staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDECORE_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Registers a static deleter.
@@ -454,13 +454,13 @@ namespace KGlobal
 
 #ifdef KDE_SUPPORT
 /**
- * \relates KGlobal
+ * @relates KGlobal
  * A typesafe function to find the smaller of the two arguments.
  * @deprecated, used qMin instead
  */
 #define KMIN(a,b)	qMin(a,b)
 /**
- * \relates KGlobal
+ * @relates KGlobal
  * A typesafe function to find the larger of the two arguments.
  * @deprecated, used qMax instead
  */
@@ -472,7 +472,7 @@ namespace KGlobal
  */
 #define KABS(a)	qAbs(a)
 /**
- * \relates KGlobal
+ * @relates KGlobal
  * A typesafe function that returns x if it's between low and high values.
  * low if x is smaller than low and high if x is bigger than high.
  * @deprecated, used qBound instead. Warning, the argument order differs.
@@ -484,7 +484,7 @@ namespace KGlobal
 #define kAbs qAbs
 
 /**
- * \relates KGlobal
+ * @relates KGlobal
  * A typesafe function that returns x if it's between low and high values.
  * low if x is smaller than low and high if x is bigger than high.
  * @deprecated, used qBound instead. Warning, the argument order differs.

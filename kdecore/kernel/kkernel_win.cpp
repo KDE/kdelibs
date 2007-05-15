@@ -16,6 +16,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kkernel_win.h"
+
 #include <config.h>
 #include <QtCore/QBool>
 

@@ -48,9 +48,9 @@ struct KCmdLineOptions
     * specified. i.e. if "nofoo" is the name of the option and
     * <i>myapp --nofoo</i> is called:
     *
-    * \code
+    * @code
     * KCmdLineArgs::parsedArgs()->isSet("foo"); // false
-    * \endcode
+    * @endcode
     */
    const char *name;
    /**
@@ -86,7 +86,7 @@ class KAboutData;
  *
  *  A typical %KDE application using %KCmdLineArgs should look like this:
  *
- *  \code
+ *  @code
  *  int main(int argc, char *argv[])
  *  {
  *     // Initialize command line args
@@ -132,12 +132,12 @@ class KAboutData;
  *     args->clear(); // Free up some memory.
  *     ....
  *  }
- *  \endcode
+ *  @endcode
  *
  *  The options that an application supports are configured using the
  *  KCmdLineOptions class. An example is shown below:
  *
- *  \code
+ *  @code
  *  static const KCmdLineOptions options[] =
  *  {
  *     { "a", I18N_NOOP("A short binary option"), 0 },
@@ -161,7 +161,7 @@ class KAboutData;
  *     { "", I18N_NOOP("Additional help text not associated with any particular option"), 0 },
  *     KCmdLineLastOption // End of options.
  *  };
- *  \endcode
+ *  @endcode
  *
  *  The I18N_NOOP macro is used to indicate that these strings should be
  *  marked for translation. The actual translation is done by KCmdLineArgs.
@@ -174,37 +174,37 @@ class KAboutData;
  *  only test for the long option.
  *
  *  With the above options a command line could look like:
- *  \code
+ *  @code
  *     myapp -a -c 4800 --display localhost:0.0 --nooption5 -d /tmp/file
- *  \endcode
+ *  @endcode
  *
  *  Long binary options can be in the form 'option' and 'nooption'.
  *  A command line may contain the same binary option multiple times,
  *  the last option determines the outcome:
- *  \code
+ *  @code
  *     myapp --nooption4 --option4 --nooption4
- *  \endcode
+ *  @endcode
  *  is the same as:
- *  \code
+ *  @code
  *     myapp --nooption4
- *  \endcode
+ *  @endcode
  *
  *  If an option value is provided multiple times, normally only the last
  *  value is used:
- *  \code
+ *  @code
  *     myapp -c 1200 -c 2400 -c 4800
- *  \endcode
+ *  @endcode
  *  is usually the same as:
- *  \code
+ *  @code
  *     myapp -c 4800
- *  \endcode
+ *  @endcode
  *
  *  However, an application can choose to use all values specified as well.
  *  As an example of this, consider that you may wish to specify a
  *  number of directories to use:
- *  \code
+ *  @code
  *     myapp -I /usr/include -I /opt/kde/include -I /usr/X11/include
- *  \endcode
+ *  @endcode
  *  When an application does this it should mention this in the description
  *  of the option. To access these options, use getOptionList()
  *
@@ -231,7 +231,7 @@ public:
     CmdLineArgKDE = 0x02,
     CmdLineArgsMask=0x03,
     CmdLineArgNone = 0x00,
-    Reserved =0xff
+    Reserved = 0xff
   };
   Q_DECLARE_FLAGS(StdCmdLineArgs, StdCmdLineArg)
   /**
@@ -282,7 +282,7 @@ public:
    * init(0,0, const KAboutData *about, CmdLineArgNone).
    *
    * @param about the about data.
-   * \see KAboutData
+   * @see KAboutData
    */
   static void init(const KAboutData *about);
 
@@ -299,7 +299,7 @@ public:
    *
    * The list of options should look like this:
    *
-   * \code
+   * @code
    * static KCmdLineOptions options[] =
    * {
    *    { "option1 \<argument>", I18N_NOOP("Description 1"), "my_extra_arg" },
@@ -309,7 +309,7 @@ public:
    *    { "+file", I18N_NOOP("A required argument 'file'"), 0 },
    *    KCmdLineLastOption
    * }
-   * \endcode
+   * @endcode
    *
    * @li "option1" is an option that requires an additional argument,
    *     but if one is not provided, it uses "my_extra_arg".
@@ -322,19 +322,19 @@ public:
    *     when an argument is passed to it. Note that the reverse is not
    *     true. If required, you must check yourself the number of arguments
    *     specified by the user:
-   *     \code
+   *     @code
    *       KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    *       if (args->count() == 0) KCmdLineArgs::usage(i18n("No file specified"));
-   *     \endcode
+   *     @endcode
    *
    * In BNF:
-   * \code
+   * @code
    * cmd = myapp [options] file
    * options = (option)*
    * option = --option1 \<argument> |
    *          (-o | --option2 | --nooption2) |
    *          ( --option3 | --nooption3 )
-   * \endcode
+   * @endcode
    *
    * Instead of "--option3" one may also use "-option3"
    *
@@ -420,9 +420,9 @@ public:
    *
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
-   *  \code
+   *  @code
    *    { "option \<argument>", I18N_NOOP("Description"), "default" }
-   *  \endcode
+   *  @endcode
    *  You cannot test for the presence of an alias - you must always
    *  test for the full option.
    *
@@ -443,9 +443,9 @@ public:
    *
    *  The option must have a corresponding KCmdLineOptions entry
    *  of the form:
-   *  \code
+   *  @code
    *    { "option \<argument>", I18N_NOOP("Description"), "default" }
-   *  \endcode
+   *  @endcode
    *  You cannot test for the presence of an alias - you must always
    *  test for the full option.
    *
@@ -574,7 +574,7 @@ public:
   /**
    * @deprecated remove one '*' and use qtArgv()
    */
-  static char ***qt_argv();
+  KDE_DEPRECATED static char ***qt_argv();
 
   /**
    * Returns command line options for consumption by Qt after parsing them in a way that

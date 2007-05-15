@@ -37,7 +37,7 @@ class KToolInvocationPrivate;
 /**
  * KToolInvocation: for starting other programs
  *
- * \section desktopfiles Desktop files for startServiceBy
+ * @section desktopfiles Desktop files for startServiceBy
  *
  * The way a service gets started depends on the 'X-DBUS-StartupType'
  * entry in the desktop file of the service:
@@ -55,7 +55,7 @@ class KToolInvocationPrivate;
  * The .desktop file can specify the name that the application will use when registering
  * using X-DBUS-ServiceName=org.domain.mykapp. Otherwise org.kde.binaryname is assumed.
  *
- * \section thread Multi-threading
+ * @section thread Multi-threading
  *
  * The static members (apart from self()), have to be called from the QApplication main thread.
  * Calls to members are only allowed if there is a Q(Core)Application object created

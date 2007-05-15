@@ -19,7 +19,7 @@
 #ifndef KKERNEL_WIN_H
 #define KKERNEL_WIN_H
 
-#include <QtCore/QBool>
+#include <QtCore/QBool> // grab the Q_OS_WIN macro, if it exists
 
 #ifdef Q_OS_WIN
 
@@ -28,12 +28,12 @@
  * @short Windows-specific functions needed in kdecore
  * @author Christian Ehrlicher <ch.ehrlicher@gmx.de>
  *
- * This file prvies some windows specific functions which
+ * This file provides some Windows-specific functions which
  * Qt do not provide access to.
 */
 
 /**
- * Returns the prefix because is can't be hardcoded on windows
+ * Returns the prefix because it can't be hardcoded on Windows
  *
  * @return base path for all global kde directories
  */
