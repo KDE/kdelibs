@@ -29,6 +29,11 @@
 #error syssocket.h must be included before ksocketbase.h!
 #endif
 
+// needed for Solaris, but shouldn't hurt on other operating systems
+// and to avoid ifdef mess, rather include them for all
+#include <unistd.h>
+#include <stdopts.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
