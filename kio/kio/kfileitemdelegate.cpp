@@ -461,8 +461,8 @@ QPixmap KFileItemDelegate::Private::toPixmap(const QStyleOptionViewItem &option,
 {
     QIcon::Mode mode   = option.state & QStyle::State_Enabled ? QIcon::Normal : QIcon::Disabled;
     QIcon::State state = option.state & QStyle::State_Open ? QIcon::On : QIcon::Off;
-
-    return icon.pixmap(option.decorationSize, mode, state);
+    const QSize size = icon.actualSize(option.decorationSize, mode, state);
+    return icon.pixmap(size, mode, state);
 }
 
 
