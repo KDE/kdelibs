@@ -32,7 +32,7 @@
 // needed for Solaris, but shouldn't hurt on other operating systems
 // and to avoid ifdef mess, rather include them for all
 #include <unistd.h>
-#ifndef _WIN32
+#ifdef HAVE_STROPTS_H
 #include <stropts.h>
 #endif
 
