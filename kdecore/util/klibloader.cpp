@@ -394,7 +394,7 @@ KLibLoader::~KLibLoader()
 {
 }
 
-static inline QString makeLibName( QString libname )
+static inline QString makeLibName( const QString &libname )
 {
     int pos = libname.lastIndexOf('/');
     if (pos < 0)
