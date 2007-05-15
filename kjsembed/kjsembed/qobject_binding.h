@@ -213,7 +213,8 @@ class KJSEMBED_EXPORT SlotBinding : public KJS::InternalFunctionImp
 * a binding object for.
 * \param owner The ownership of the returned object binding. If CPPOwned
 * is defined you needed to delete the returned object manual, QObjOwned means
-* that the object got deleted if the QObject is destroyed while JSOwned means,
+* that the object got deleted if the parent QObject of the QObject is destroyed
+* (if the QObject has no parent QObject, it behaves like JSOwned) while JSOwned means,
 * that the binding object will be deleted by Kjs once not needed any longer.
 * \return the binding object instance that wraps the QObject instance or
 * a JSObject with a prototype of jsNull (that is, the ECMAScript "null" value,
