@@ -32,7 +32,9 @@
 // needed for Solaris, but shouldn't hurt on other operating systems
 // and to avoid ifdef mess, rather include them for all
 #include <unistd.h>
+#ifndef _WIN32
 #include <stropts.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -99,9 +101,9 @@ namespace {
   {
 #if defined _WIN32 || defined _WIN64
     unsigned long l_argp = *argp;
-    bool bRet = ::ioctlsocket(fd, cmd, &l_argp);
+    int iRet = ::ioctlsocket(fd, cmd, &l_argp);
     *argp = (int) l_argp;
-    return bRet;
+    return iRet;
 #else
     return ::ioctl(fd, cmd, argp);
 #endif

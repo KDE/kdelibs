@@ -185,7 +185,7 @@ private:
     bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
 
     // helper for both stop methods
-    class DirectoryData;
+    struct DirectoryData;
     void stopLister(KDirLister* lister, const QString& url, DirectoryData& dirData);
 
 private Q_SLOTS:

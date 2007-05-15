@@ -43,7 +43,7 @@ class KLocalePrivate;
 
 namespace KGlobal
 {
-    KLocale *locale();
+    KDECORE_EXPORT KLocale *locale();
 }
 
 /**

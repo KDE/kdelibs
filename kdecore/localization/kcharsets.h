@@ -33,7 +33,7 @@ class QTextCodec;
 
 namespace KGlobal
 {
-    KCharsets *charsets();
+    KDECORE_EXPORT KCharsets *charsets();
 }
 
 /**
