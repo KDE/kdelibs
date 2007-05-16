@@ -1170,7 +1170,7 @@ void KUrlCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 
 		// kDebug() << "KUrlCompletion::slotEntries name: " << name << endl;
 
-		if ( entry_name.at(0) == QLatin1Char('.') &&
+		if ( (!entry_name.isEmpty() && entry_name.at(0) == QLatin1Char('.')) &&
 		     ( d->list_urls_no_hidden ||
 		        entry_name.length() == 1 ||
 		          ( entry_name.length() == 2 && entry_name.at(1) == QLatin1Char('.') ) ) )
