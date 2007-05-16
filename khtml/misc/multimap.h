@@ -61,8 +61,10 @@ public:
         Set *set = map.value(key);
         if (set) {
             set->remove(element);
-            if (set->isEmpty()) map.remove(key);
-            delete set;
+            if (set->isEmpty()) {
+                map.remove(key);
+                delete set;
+            }
         }
     }
     void remove(K* key) {
