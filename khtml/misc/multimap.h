@@ -40,7 +40,7 @@ public:
     typedef QHash<K*, Set*> Map;
     typedef MultiMapPtrList<T*> List;
 
-    KMultiMap() {};
+    KMultiMap() {}
     ~KMultiMap() {
         qDeleteAll(map.values());
         map.clear();
