@@ -186,7 +186,7 @@ const KTimeZone *KSystemTimeZones::zone(const QString& name)
 
 void KSystemTimeZones::configChanged()
 {
-    kDebug() << "KSystemTimeZones::zoneConfigChanged()" << endl;
+    kDebug(161) << "KSystemTimeZones::configChanged()" << endl;
     KSystemTimeZonesPrivate::readConfig(false);
 }
 
@@ -259,7 +259,7 @@ void KSystemTimeZonesPrivate::cleanup()
  */
 void KSystemTimeZonesPrivate::readZoneTab()
 {
-    kDebug() << "readZoneTab(" << m_zonetab<< ")" <<endl;
+    kDebug(161) << "readZoneTab(" << m_zonetab<< ")" <<endl;
     QFile f;
     f.setFileName(m_zonetab);
     if (!f.open(QIODevice::ReadOnly))
@@ -278,7 +278,7 @@ void KSystemTimeZonesPrivate::readZoneTab()
         int n = tokens.count();
         if (n < 3)
         {
-            kError() << "invalid record: " << line << endl;
+            kError(161) << "readZoneTab(): invalid record: " << line << endl;
             continue;
         }
 
@@ -286,7 +286,7 @@ void KSystemTimeZonesPrivate::readZoneTab()
         QStringList ordinates = KStringHandler::perlSplit(ordinateSeparator, tokens[1], 2);
         if (ordinates.count() < 2)
         {
-            kError() << "invalid coordinates: " << tokens[1] << endl;
+            kError(161) << "readZoneTab() " << tokens[2] << ": invalid coordinates: " << tokens[1] << endl;
             continue;
         }
 
