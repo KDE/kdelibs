@@ -1,5 +1,6 @@
 
 project(kdeui)
+KDE4_NO_ENABLE_FINAL(kdeui)
 
 include_directories(
  ${CMAKE_SOURCE_DIR}/kdefx

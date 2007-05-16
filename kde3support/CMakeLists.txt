@@ -1,5 +1,6 @@
 
 project(kde3support)
+KDE4_NO_ENABLE_FINAL(kde3support)
 
 # inter-subdir dependencies
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui )
