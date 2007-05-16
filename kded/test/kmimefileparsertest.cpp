@@ -17,6 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <config.h>
+#include <kdefakes.h>
 #include "kmimefileparsertest.h"
 #include "kmimefileparsertest.moc"
 #include <qtest_kde.h>
