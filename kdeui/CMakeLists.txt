@@ -1,6 +1,5 @@
 
 project(kdeui)
-KDE4_NO_ENABLE_FINAL(kdeui)
 
 include_directories(
  ${CMAKE_SOURCE_DIR}/kdefx
@@ -34,8 +33,10 @@ add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
 
 ########### next target ###############
-
+# Workaround to make kdeui compiles with enable-final: don't move kxmlguibuilder.cpp to an other place
+# until we remove qt3 support into this file
 set(kdeui_LIB_SRCS
+ xmlgui/kxmlguibuilder.cpp
  actions/kactioncollection.cpp
  actions/kaction.cpp
  actions/kactionmenu.cpp
@@ -204,7 +205,6 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguiclient.cpp
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
- xmlgui/kxmlguibuilder.cpp
 )
 
 if (Q_WS_X11)
