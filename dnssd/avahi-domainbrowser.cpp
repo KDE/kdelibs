@@ -30,8 +30,11 @@
 #include "domainbrowser.h"
 #include "avahi_domainbrowser_interface.h"
 
-Q_DECLARE_METATYPE(QList<QByteArray>)
 
+
+#ifndef KDE_USE_FINAL
+Q_DECLARE_METATYPE(QList<QByteArray>)
+#endif
 namespace DNSSD
 {
 

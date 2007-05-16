@@ -1,5 +1,5 @@
 project(dnssd)
-KDE4_NO_ENABLE_FINAL(dnssd)
+#KDE4_NO_ENABLE_FINAL(dnssd)
 macro_optional_find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 

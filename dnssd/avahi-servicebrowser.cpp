@@ -24,9 +24,9 @@
 #include "avahi_servicebrowser_interface.h"
 #include "avahi_server_interface.h"
 #include <QtCore/QHash>
-
+#ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE(QList<QByteArray>)
-
+#endif
 namespace DNSSD
 {
 
