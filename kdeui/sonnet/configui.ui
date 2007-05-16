@@ -77,13 +77,6 @@
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <customwidgets>
   <customwidget>
-   <class>Q3ListBox</class>
-   <extends></extends>
-   <header>q3listbox.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
-  </customwidget>
-  <customwidget>
    <class>KComboBox</class>
    <extends>QComboBox</extends>
    <header>kcombobox.h</header>
@@ -92,7 +85,7 @@
   </customwidget>
   <customwidget>
    <class>KEditListBox</class>
-   <extends>Q3ListBox</extends>
+   <extends>QGroupBox</extends>
    <header>keditlistbox.h</header>
    <container>0</container>
    <pixmap></pixmap>
