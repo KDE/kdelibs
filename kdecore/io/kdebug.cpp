@@ -29,8 +29,6 @@
 
 #ifdef Q_WS_WIN
 #include <fcntl.h>
-#define WINVER 0x0501
-#define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <wincon.h>
 #endif
@@ -104,8 +102,10 @@ struct kDebugPrivate
             kDebugDBusIface = new KDebugDBusIface;
         }
 #ifdef Q_WS_WIN
+#if _WIN32_WINNT >= 0x0501
         // check if console is open and create if not 
         initConsole();
+#endif
 #endif
     }
 
@@ -171,6 +171,8 @@ struct kDebugPrivate
     }
 
 #ifdef Q_WS_WIN
+#ifdef _WIN32_WINNT > 0x0501
+
     /* http://msdn2.microsoft.com/en-us/library/ms681952.aspx */ 
     int isConsoleApp()
     {
@@ -218,6 +220,7 @@ struct kDebugPrivate
         }
         consoleChecked = true;
     }
+#endif
 #endif 
 
     QByteArray aAreaName;
