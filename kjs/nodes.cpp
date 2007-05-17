@@ -1516,15 +1516,27 @@ JSValue* BinaryOperatorNode::evaluate(ExecState* exec)
       return jsNumber(v1->toUInt32(exec) >> (v2->toUInt32(exec) & 0x1f));
   case OpLess:
       // operator <
+      // -1: NaN, undefined => false
+      //  0: v1 >= v2       => false
+      //  1: v1 <  v2       => true;
       return jsBoolean(relation(exec, v1, v2) == 1);
   case OpGreaterEq:
       // operator >=
+      // -1: NaN, undefined => false
+      //  0: v1 >= v2       => true
+      //  1: v1 <  v2       => false;
       return jsBoolean(relation(exec, v1, v2) == 0);
   case OpGreater:
       // operator >
+      // -1: NaN, undefined => false
+      //  0: v2 >= v1       => false
+      //  1: v2 <  v1       => true
       return jsBoolean(relation(exec, v2, v1) == 1);
   case OpLessEq:
       // operator <=
+      // -1: NaN, undefined => false
+      //  0: v2 >= v1       => true
+      //  1: v2 <  v1       => false
       return jsBoolean(relation(exec, v2, v1) == 0);
   case OpIn:
       // operator in
