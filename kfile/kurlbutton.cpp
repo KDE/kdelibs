@@ -22,6 +22,13 @@
 #include "kurlnavigator.h"
 
 #include <kglobalsettings.h>
+#include <kicon.h>
+#include <klocale.h>
+#include <kmenu.h>
+
+#include <QApplication>
+#include <QClipboard>
+#include <QMimeData>
 
 KUrlButton::KUrlButton(KUrlNavigator* parent) :
     QPushButton(parent),
@@ -67,6 +74,52 @@ void KUrlButton::leaveEvent(QEvent* event)
     QPushButton::leaveEvent(event);
     setDisplayHintEnabled(EnteredHint, false);
     update();
+}
+
+void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
+{
+    KMenu popup(this);
+
+    // provide 'Copy' action, which copies the current URL of
+    // the URL navigator into the clipboard
+    QAction* copyAction = popup.addAction(KIcon("edit-copy"), i18n("Copy"));
+
+    // provide 'Paste' action, which copies the current clipboard text
+    // into the URL navigator
+    QAction* pasteAction = popup.addAction(KIcon("edit-paste"), i18n("Paste"));
+    QClipboard* clipboard = QApplication::clipboard();
+    pasteAction->setEnabled(!clipboard->text().isEmpty());
+
+    popup.addSeparator();
+
+    // provide radiobuttons for toggling between the edit and the navigation mode
+    QAction* editAction = popup.addAction(i18n("Edit"));
+    editAction->setCheckable(true);
+
+    QAction* navigateAction = popup.addAction(i18n("Navigate"));
+    navigateAction->setCheckable(true);
+
+    QActionGroup* modeGroup = new QActionGroup(&popup);
+    modeGroup->addAction(editAction);
+    modeGroup->addAction(navigateAction);
+    if (m_urlNavigator->isUrlEditable()) {
+        editAction->setChecked(true);
+    } else {
+        navigateAction->setChecked(true);
+    }
+
+    QAction* activatedAction = popup.exec(QCursor::pos());
+    if (activatedAction == copyAction) {
+        QMimeData* mimeData = new QMimeData();
+        mimeData->setText(m_urlNavigator->url().prettyUrl());
+        clipboard->setMimeData(mimeData);
+    } else if (activatedAction == pasteAction) {
+        m_urlNavigator->setUrl(KUrl(clipboard->text()));
+    } else if (activatedAction == editAction) {
+        m_urlNavigator->setUrlEditable(true);
+    } else if (activatedAction == navigateAction) {
+        m_urlNavigator->setUrlEditable(false);
+    }
 }
 
 QColor KUrlButton::foregroundColor() const

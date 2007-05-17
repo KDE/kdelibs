@@ -59,6 +59,7 @@ protected:
 
     virtual void enterEvent(QEvent* event);
     virtual void leaveEvent(QEvent* event);
+    virtual void contextMenuEvent(QContextMenuEvent* event);
 
     /** Returns the foreground color by respecting the current display hint. */
     QColor foregroundColor() const;
