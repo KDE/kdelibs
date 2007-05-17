@@ -171,7 +171,7 @@ struct kDebugPrivate
     }
 
 #ifdef Q_WS_WIN
-#ifdef _WIN32_WINNT > 0x0501
+#if _WIN32_WINNT >= 0x0501
 
     /* http://msdn2.microsoft.com/en-us/library/ms681952.aspx */ 
     int isConsoleApp()
