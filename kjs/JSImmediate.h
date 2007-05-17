@@ -25,7 +25,10 @@
 #include <kjs/global.h>
 #include "JSType.h"
 #include <wtf/Assertions.h>
+#include <config.h> // for HAVE_STDINT_H
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 #include <stdlib.h>
 
 namespace KJS {
