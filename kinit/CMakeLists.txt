@@ -152,11 +152,14 @@ kde4_automoc(${klauncher_KDEINIT_SRCS})
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} )
-
 install(TARGETS kdeinit_klauncher  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( klauncher kdeinit_klauncher )
+if(WIN32)
+install(TARGETS klauncher DESTINATION ${BIN_INSTALL_DIR} )
+else(WIN32)
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
+endif(WIN32)
 
 ########### install files ###############
 
