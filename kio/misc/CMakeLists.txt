@@ -22,11 +22,8 @@ kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
 target_link_libraries(kmailservice  ${KDE4_KDEUI_LIBS} )
 
-if(WIN32)
-install(TARGETS kmailservice DESTINATION ${BIN_INSTALL_DIR} )
-else(WIN32)
 install(TARGETS kmailservice DESTINATION ${LIBEXEC_INSTALL_DIR} )
-endif(WIN32)
+
 
 ########### next target ###############
 
@@ -38,11 +35,8 @@ kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 
 target_link_libraries(ktelnetservice  ${KDE4_KDEUI_LIBS} )
 
-if(WIN32)
-install(TARGETS ktelnetservice DESTINATION ${BIN_INSTALL_DIR} )
-else(WIN32)
 install(TARGETS ktelnetservice DESTINATION ${LIBEXEC_INSTALL_DIR} )
-endif(WIN32)
+
 
 ########### install files ###############
 

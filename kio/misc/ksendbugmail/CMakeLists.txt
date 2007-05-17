@@ -12,8 +12,5 @@ target_link_libraries(ksendbugmail  ${KDE4_KDEUI_LIBS} )
 
 set_target_properties(ksendbugmail PROPERTIES COMPILE_FLAGS -DKIO_EXPORT=)
 
-if(WIN32)
-install(TARGETS ksendbugmail DESTINATION ${BIN_INSTALL_DIR} )
-else(WIN32)
 install(TARGETS ksendbugmail DESTINATION ${LIBEXEC_INSTALL_DIR} )
-endif(WIN32)
+
