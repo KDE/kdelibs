@@ -30,7 +30,6 @@
 #include <wtf/RefPtr.h>
 #include <wtf/PassRefPtr.h>
 
-#include <config.h> // HAVE_STDINT_H
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif

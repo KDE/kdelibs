@@ -82,4 +82,8 @@
 // Debugging features, turned off by default
 #define DEBUG_COLLECTOR 0
 
+#ifndef HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H 1
+#endif
+
 #endif
