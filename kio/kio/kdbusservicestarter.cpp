@@ -20,27 +20,39 @@
 #include "kservicetypetrader.h"
 #include <kapplication.h>
 #include "kservice.h"
-#include <kstaticdeleter.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <ktoolinvocation.h>
 #include "QtDBus/QtDBus"
 
-static KStaticDeleter<KDBusServiceStarter> dss_sd;
-KDBusServiceStarter* KDBusServiceStarter::s_self;
+class KDBusServiceStarterPrivate
+{
+    public:
+        KDBusServiceStarterPrivate() : q(0) {}
+        ~KDBusServiceStarterPrivate()
+        {
+            delete q;
+        }
+        KDBusServiceStarter *q;
+};
+
+K_GLOBAL_STATIC(KDBusServiceStarterPrivate, privateObject)
 
 KDBusServiceStarter* KDBusServiceStarter::self()
 {
-    if ( !s_self )
-        dss_sd.setObject( s_self, new KDBusServiceStarter );
-    return s_self;
+    if (!privateObject->q) {
+        new KDBusServiceStarter;
+        Q_ASSERT(privateObject->q);
+    }
+    return privateObject->q;
 }
 
 KDBusServiceStarter::KDBusServiceStarter()
 {
     // Set the singleton instance - useful when a derived KDBusServiceStarter
     // was created (before self() was called)
-    s_self = this;
+    Q_ASSERT(!privateObject->q);
+    privateObject->q = this;
 }
 
 KDBusServiceStarter::~KDBusServiceStarter()

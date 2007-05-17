@@ -22,9 +22,8 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QString>
-#include <kstaticdeleter.h>
 
-class KDBusServiceStarter;
+class KDBusServiceStarterPrivate;
 
 /**
  * A generic DBUS service starter, using KServiceTypeTrader.
@@ -36,7 +35,6 @@ class KDBusServiceStarter;
  * @author David Faure <faure@kde.org>
  */
 class KIO_EXPORT KDBusServiceStarter {
-    friend class KStaticDeleter<KDBusServiceStarter>;
 public:
 
     static KDBusServiceStarter* self();
@@ -92,11 +90,9 @@ public:
                                  QString *error=0, QString* dbusService=0,
                                  int flags=0 );
 protected:
+    friend class KDBusServiceStarterPrivate;
     KDBusServiceStarter();
     virtual ~KDBusServiceStarter();
-
-private:
-    static KDBusServiceStarter* s_self;
 };
 
 #endif
