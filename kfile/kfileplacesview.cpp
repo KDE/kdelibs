@@ -46,6 +46,7 @@ public:
     void updateHiddenRows();
 
     void _k_placeClicked(const QModelIndex &index);
+    void _k_placeActivated(const QModelIndex &index);
 };
 
 KFilePlacesView::KFilePlacesView(QWidget *parent)
@@ -64,6 +65,8 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
+    connect(this, SIGNAL(activated(const QModelIndex&)),
+            this, SLOT(_k_placeActivated(const QModelIndex&)));
 }
 
 KFilePlacesView::~KFilePlacesView()
@@ -284,6 +287,30 @@ void KFilePlacesView::Private::updateHiddenRows()
 }
 
 void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
+
+    if (placesModel==0) return;
+
+    if (placesModel->isDevice(index)) {
+        Solid::Device device = placesModel->deviceForIndex(index);
+        if (device.is<Solid::StorageVolume>() && !device.as<Solid::StorageVolume>()->isMounted()) {
+            device.as<Solid::StorageVolume>()->mount(0, 0); // FIXME: add the missing slot
+        }
+    }
+
+    KUrl url = placesModel->url(index);
+
+    if (url.isValid()) {
+        currentUrl = url;
+        updateHiddenRows();
+        emit q->urlChanged(url);
+    } else {
+        q->setUrl(currentUrl);
+    }
+}
+
+void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
 
