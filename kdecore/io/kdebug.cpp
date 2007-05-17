@@ -102,7 +102,7 @@ struct kDebugPrivate
             kDebugDBusIface = new KDebugDBusIface;
         }
 #ifdef Q_WS_WIN
-#if _WIN32_WINNT >= 0x0501
+#if _WIN32_WINNT >= 0x0500
         // check if console is open and create if not 
         initConsole();
 #endif
@@ -171,9 +171,8 @@ struct kDebugPrivate
     }
 
 #ifdef Q_WS_WIN
-#if _WIN32_WINNT >= 0x0501
+#if _WIN32_WINNT >= 0x0500
 
-    /* http://msdn2.microsoft.com/en-us/library/ms681952.aspx */ 
     int isConsoleApp()
     {
         if (AttachConsole((DWORD)-1) == 0 &&  GetLastError() == ERROR_ACCESS_DENIED)
@@ -182,7 +181,6 @@ struct kDebugPrivate
         return 0;
     }   
 
-    /* http://support.microsoft.com/kb/105305/en-us */ 
     void createConsole()
     {
         int hCrt;
