@@ -28,6 +28,7 @@
 
 #include "Parser.h"
 #include "internal.h"
+#include "operations.h"
 #include <wtf/ListRefPtr.h>
 #include <wtf/Vector.h>
 
@@ -46,37 +47,6 @@ namespace KJS {
 
   class VarDeclVisitor;
   class FuncDeclVisitor;
-
-  enum Operator { OpEqual,
-		  OpEqEq,
-		  OpNotEq,
-		  OpStrEq,
-		  OpStrNEq,
-		  OpPlusEq,
-		  OpMinusEq,
-		  OpMultEq,
-		  OpDivEq,
-                  OpPlusPlus,
-		  OpMinusMinus,
-		  OpLess,
-		  OpLessEq,
-		  OpGreater,
-		  OpGreaterEq,
-		  OpAndEq,
-		  OpXOrEq,
-		  OpOrEq,
-		  OpModEq,
-                  OpAnd,
-                  OpOr,
-		  OpBitAnd,
-		  OpBitXOr,
-		  OpBitOr,
-		  OpLShift,
-		  OpRShift,
-		  OpURShift,
-		  OpIn,
-		  OpInstanceOf
-  };
 
   class NodeVisitor {
   public:
@@ -800,26 +770,26 @@ namespace KJS {
 
   class MultNode : public Node {
   public:
-    MultNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
+    MultNode(Node* t1, Node* t2, Operator op) : term1(t1), term2(t2), oper(op) {}
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
     RefPtr<Node> term1;
     RefPtr<Node> term2;
-    char oper;
+    Operator oper;
   };
 
   class AddNode : public Node {
   public:
-    AddNode(Node *t1, Node *t2, char op) : term1(t1), term2(t2), oper(op) {}
+    AddNode(Node* t1, Node* t2, Operator op) : term1(t1), term2(t2), oper(op) {}
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
     RefPtr<Node> term1;
     RefPtr<Node> term2;
-    char oper;
+    Operator oper;
   };
 
   class ShiftNode : public Node {

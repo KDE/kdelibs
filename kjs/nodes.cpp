@@ -1732,16 +1732,16 @@ static ALWAYS_INLINE JSValue *valueForReadModifyAssignment(ExecState * exec, JSV
   unsigned int ui;
   switch (oper) {
   case OpMultEq:
-    v = mult(exec, v1, v2, '*');
+    v = mult(exec, v1, v2, OpMult);
     break;
   case OpDivEq:
-    v = mult(exec, v1, v2, '/');
+    v = mult(exec, v1, v2, OpDiv);
     break;
   case OpPlusEq:
-    v = add(exec, v1, v2, '+');
+    v = add(exec, v1, v2, OpPlus);
     break;
   case OpMinusEq:
-    v = add(exec, v1, v2, '-');
+    v = add(exec, v1, v2, OpMinus);
     break;
   case OpLShift:
     i1 = v1->toInt32(exec);

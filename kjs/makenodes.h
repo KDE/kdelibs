@@ -171,6 +171,16 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& ge
     return true;
 }
 
+static AddNode* makeAddNode(Node* n1, Node* n2, Operator op)
+{
+    return new AddNode(n1, n2, op);
+}
+
+static MultNode* makeMultNode(Node* n1, Node* n2, Operator op)
+{
+    return new MultNode(n1, n2, op);
+}
+
 static StatementNode *makeImportNode(PackageNameNode *n,
 				     bool wildcard, const Identifier &a)
 {

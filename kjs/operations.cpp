@@ -217,33 +217,33 @@ int minInt(int d1, int d2)
 }
 
 // ECMA 11.6
-JSValue *add(ExecState *exec, JSValue *v1, JSValue *v2, char oper)
+JSValue* add(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper)
 {
     // exception for the Date exception in defaultValue()
-    JSType preferred = oper == '+' ? UnspecifiedType : NumberType;
+    JSType preferred = oper == OpPlus ? UnspecifiedType : NumberType;
     JSValue *p1 = v1->toPrimitive(exec, preferred);
     JSValue *p2 = v2->toPrimitive(exec, preferred);
     
-    if ((p1->isString() || p2->isString()) && oper == '+')
+    if ((p1->isString() || p2->isString()) && oper == OpPlus)
         return jsString(p1->toString(exec) + p2->toString(exec));
     
-    if (oper == '+')
+    if (oper == OpPlus)
         return jsNumber(p1->toNumber(exec) + p2->toNumber(exec));
     else
         return jsNumber(p1->toNumber(exec) - p2->toNumber(exec));
 }
 
 // ECMA 11.5
-JSValue *mult(ExecState *exec, JSValue *v1, JSValue *v2, char oper)
+JSValue* mult(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper)
 {
     double n1 = v1->toNumber(exec);
     double n2 = v2->toNumber(exec);
     
     double result;
     
-    if (oper == '*')
+    if (oper == OpMult)
         result = n1 * n2;
-    else if (oper == '/')
+    else if (oper == OpDiv)
         result = n1 / n2;
     else
         result = fmod(n1, n2);

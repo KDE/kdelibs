@@ -31,6 +31,42 @@ namespace KJS {
   class ExecState;
   class JSValue;
 
+  enum Operator { OpEqual,
+                  OpEqEq,
+                  OpPlus,
+                  OpMinus,
+                  OpMult,
+                  OpDiv,
+                  OpMod,
+                  OpNotEq,
+                  OpStrEq,
+                  OpStrNEq,
+                  OpPlusEq,
+                  OpMinusEq,
+                  OpMultEq,
+                  OpDivEq,
+                  OpPlusPlus,
+                  OpMinusMinus,
+                  OpLess,
+                  OpLessEq,
+                  OpGreater,
+                  OpGreaterEq,
+                  OpAndEq,
+                  OpXOrEq,
+                  OpOrEq,
+                  OpModEq,
+                  OpAnd,
+                  OpOr,
+                  OpBitAnd,
+                  OpBitXOr,
+                  OpBitOr,
+                  OpLShift,
+                  OpRShift,
+                  OpURShift,
+                  OpIn,
+                  OpInstanceOf
+  };
+
 #if PLATFORM(DARWIN)
   inline bool isNaN(double d) { return isnan(d); }
   inline bool isInf(double d) { return isinf(d); }
@@ -62,7 +98,7 @@ namespace KJS {
    * @param oper '+' or '-' for an addition or substraction, respectively.
    * @return The result of the operation.
    */
-  JSValue *add(ExecState *exec, JSValue *v1, JSValue *v2, char oper);
+  JSValue* add(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper);
   /**
    * Multiplicative operator. Either multiplies/divides v1 and v2 or
    * calculates the remainder from an division.
@@ -70,7 +106,7 @@ namespace KJS {
    * modulo operation.
    * @return The result of the operation.
    */
-  JSValue *mult(ExecState *exec, JSValue *v1, JSValue *v2, char oper);
+  JSValue* mult(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper);
 
 }
 

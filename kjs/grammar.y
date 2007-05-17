@@ -351,33 +351,33 @@ UnaryExprNoBF:
 
 MultiplicativeExpr:
     UnaryExpr
-  | MultiplicativeExpr '*' UnaryExpr    { $$ = new MultNode($1, $3, '*'); }
-  | MultiplicativeExpr '/' UnaryExpr    { $$ = new MultNode($1, $3, '/'); }
-  | MultiplicativeExpr '%' UnaryExpr    { $$ = new MultNode($1, $3,'%'); }
+  | MultiplicativeExpr '*' UnaryExpr    { $$ = makeMultNode($1, $3, OpMult); }
+  | MultiplicativeExpr '/' UnaryExpr    { $$ = makeMultNode($1, $3, OpDiv); }
+  | MultiplicativeExpr '%' UnaryExpr    { $$ = makeMultNode($1, $3, OpMod); }
 ;
 
 MultiplicativeExprNoBF:
     UnaryExprNoBF
   | MultiplicativeExprNoBF '*' UnaryExpr
-                                        { $$ = new MultNode($1, $3, '*'); }
+                                        { $$ = makeMultNode($1, $3, OpMult); }
   | MultiplicativeExprNoBF '/' UnaryExpr
-                                        { $$ = new MultNode($1, $3, '/'); }
+                                        { $$ = makeMultNode($1, $3, OpDiv); }
   | MultiplicativeExprNoBF '%' UnaryExpr
-                                        { $$ = new MultNode($1, $3,'%'); }
+                                        { $$ = makeMultNode($1, $3, OpMod); }
 ;
 
 AdditiveExpr:
     MultiplicativeExpr
-  | AdditiveExpr '+' MultiplicativeExpr { $$ = new AddNode($1, $3, '+'); }
-  | AdditiveExpr '-' MultiplicativeExpr { $$ = new AddNode($1, $3, '-'); }
+  | AdditiveExpr '+' MultiplicativeExpr { $$ = makeAddNode($1, $3, OpPlus); }
+  | AdditiveExpr '-' MultiplicativeExpr { $$ = makeAddNode($1, $3, OpMinus); }
 ;
 
 AdditiveExprNoBF:
     MultiplicativeExprNoBF
   | AdditiveExprNoBF '+' MultiplicativeExpr
-                                        { $$ = new AddNode($1, $3, '+'); }
+                                        { $$ = makeAddNode($1, $3, OpPlus); }
   | AdditiveExprNoBF '-' MultiplicativeExpr
-                                        { $$ = new AddNode($1, $3, '-'); }
+                                        { $$ = makeAddNode($1, $3, OpMinus); }
 ;
 
 ShiftExpr:
