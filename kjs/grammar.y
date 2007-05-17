@@ -382,128 +382,128 @@ AdditiveExprNoBF:
 
 ShiftExpr:
     AdditiveExpr
-  | ShiftExpr LSHIFT AdditiveExpr       { $$ = new ShiftNode($1, OpLShift, $3); }
-  | ShiftExpr RSHIFT AdditiveExpr       { $$ = new ShiftNode($1, OpRShift, $3); }
-  | ShiftExpr URSHIFT AdditiveExpr      { $$ = new ShiftNode($1, OpURShift, $3); }
+  | ShiftExpr LSHIFT AdditiveExpr       { $$ = makeShiftNode($1, $3, OpLShift); }
+  | ShiftExpr RSHIFT AdditiveExpr       { $$ = makeShiftNode($1, $3, OpRShift); }
+  | ShiftExpr URSHIFT AdditiveExpr      { $$ = makeShiftNode($1, $3, OpURShift); }
 ;
 
 ShiftExprNoBF:
     AdditiveExprNoBF
-  | ShiftExprNoBF LSHIFT AdditiveExpr   { $$ = new ShiftNode($1, OpLShift, $3); }
-  | ShiftExprNoBF RSHIFT AdditiveExpr   { $$ = new ShiftNode($1, OpRShift, $3); }
-  | ShiftExprNoBF URSHIFT AdditiveExpr  { $$ = new ShiftNode($1, OpURShift, $3); }
+  | ShiftExprNoBF LSHIFT AdditiveExpr   { $$ = makeShiftNode($1, $3, OpLShift); }
+  | ShiftExprNoBF RSHIFT AdditiveExpr   { $$ = makeShiftNode($1, $3, OpRShift); }
+  | ShiftExprNoBF URSHIFT AdditiveExpr  { $$ = makeShiftNode($1, $3, OpURShift); }
 ;
 
 RelationalExpr:
     ShiftExpr
-  | RelationalExpr '<' ShiftExpr        { $$ = new RelationalNode($1, OpLess, $3); }
-  | RelationalExpr '>' ShiftExpr        { $$ = new RelationalNode($1, OpGreater, $3); }
-  | RelationalExpr LE ShiftExpr         { $$ = new RelationalNode($1, OpLessEq, $3); }
-  | RelationalExpr GE ShiftExpr         { $$ = new RelationalNode($1, OpGreaterEq, $3); }
-  | RelationalExpr INSTANCEOF ShiftExpr { $$ = new RelationalNode($1, OpInstanceOf, $3); }
-  | RelationalExpr IN ShiftExpr         { $$ = new RelationalNode($1, OpIn, $3); }
+  | RelationalExpr '<' ShiftExpr        { $$ = makeRelationalNode($1, OpLess, $3); }
+  | RelationalExpr '>' ShiftExpr        { $$ = makeRelationalNode($1, OpGreater, $3); }
+  | RelationalExpr LE ShiftExpr         { $$ = makeRelationalNode($1, OpLessEq, $3); }
+  | RelationalExpr GE ShiftExpr         { $$ = makeRelationalNode($1, OpGreaterEq, $3); }
+  | RelationalExpr INSTANCEOF ShiftExpr { $$ = makeRelationalNode($1, OpInstanceOf, $3); }
+  | RelationalExpr IN ShiftExpr         { $$ = makeRelationalNode($1, OpIn, $3); }
 ;
 
 RelationalExprNoIn:
     ShiftExpr
-  | RelationalExprNoIn '<' ShiftExpr    { $$ = new RelationalNode($1, OpLess, $3); }
-  | RelationalExprNoIn '>' ShiftExpr    { $$ = new RelationalNode($1, OpGreater, $3); }
-  | RelationalExprNoIn LE ShiftExpr     { $$ = new RelationalNode($1, OpLessEq, $3); }
-  | RelationalExprNoIn GE ShiftExpr     { $$ = new RelationalNode($1, OpGreaterEq, $3); }
+  | RelationalExprNoIn '<' ShiftExpr    { $$ = makeRelationalNode($1, OpLess, $3); }
+  | RelationalExprNoIn '>' ShiftExpr    { $$ = makeRelationalNode($1, OpGreater, $3); }
+  | RelationalExprNoIn LE ShiftExpr     { $$ = makeRelationalNode($1, OpLessEq, $3); }
+  | RelationalExprNoIn GE ShiftExpr     { $$ = makeRelationalNode($1, OpGreaterEq, $3); }
   | RelationalExprNoIn INSTANCEOF ShiftExpr
-                                        { $$ = new RelationalNode($1, OpInstanceOf, $3); }
+                                        { $$ = makeRelationalNode($1, OpInstanceOf, $3); }
 ;
 
 RelationalExprNoBF:
     ShiftExprNoBF
-  | RelationalExprNoBF '<' ShiftExpr    { $$ = new RelationalNode($1, OpLess, $3); }
-  | RelationalExprNoBF '>' ShiftExpr    { $$ = new RelationalNode($1, OpGreater, $3); }
-  | RelationalExprNoBF LE ShiftExpr     { $$ = new RelationalNode($1, OpLessEq, $3); }
-  | RelationalExprNoBF GE ShiftExpr     { $$ = new RelationalNode($1, OpGreaterEq, $3); }
+  | RelationalExprNoBF '<' ShiftExpr    { $$ = makeRelationalNode($1, OpLess, $3); }
+  | RelationalExprNoBF '>' ShiftExpr    { $$ = makeRelationalNode($1, OpGreater, $3); }
+  | RelationalExprNoBF LE ShiftExpr     { $$ = makeRelationalNode($1, OpLessEq, $3); }
+  | RelationalExprNoBF GE ShiftExpr     { $$ = makeRelationalNode($1, OpGreaterEq, $3); }
   | RelationalExprNoBF INSTANCEOF ShiftExpr
-                                        { $$ = new RelationalNode($1, OpInstanceOf, $3); }
-  | RelationalExprNoBF IN ShiftExpr     { $$ = new RelationalNode($1, OpIn, $3); }
+                                        { $$ = makeRelationalNode($1, OpInstanceOf, $3); }
+  | RelationalExprNoBF IN ShiftExpr     { $$ = makeRelationalNode($1, OpIn, $3); }
 ;
 
 EqualityExpr:
     RelationalExpr
-  | EqualityExpr EQEQ RelationalExpr    { $$ = new EqualNode($1, OpEqEq, $3); }
-  | EqualityExpr NE RelationalExpr      { $$ = new EqualNode($1, OpNotEq, $3); }
-  | EqualityExpr STREQ RelationalExpr   { $$ = new EqualNode($1, OpStrEq, $3); }
-  | EqualityExpr STRNEQ RelationalExpr  { $$ = new EqualNode($1, OpStrNEq, $3);}
+  | EqualityExpr EQEQ RelationalExpr    { $$ = makeEqualNode($1, OpEqEq, $3); }
+  | EqualityExpr NE RelationalExpr      { $$ = makeEqualNode($1, OpNotEq, $3); }
+  | EqualityExpr STREQ RelationalExpr   { $$ = makeEqualNode($1, OpStrEq, $3); }
+  | EqualityExpr STRNEQ RelationalExpr  { $$ = makeEqualNode($1, OpStrNEq, $3);}
 ;
 
 EqualityExprNoIn:
     RelationalExprNoIn
   | EqualityExprNoIn EQEQ RelationalExprNoIn
-                                        { $$ = new EqualNode($1, OpEqEq, $3); }
+                                        { $$ = makeEqualNode($1, OpEqEq, $3); }
   | EqualityExprNoIn NE RelationalExprNoIn
-                                        { $$ = new EqualNode($1, OpNotEq, $3); }
+                                        { $$ = makeEqualNode($1, OpNotEq, $3); }
   | EqualityExprNoIn STREQ RelationalExprNoIn
-                                        { $$ = new EqualNode($1, OpStrEq, $3); }
+                                        { $$ = makeEqualNode($1, OpStrEq, $3); }
   | EqualityExprNoIn STRNEQ RelationalExprNoIn
-                                        { $$ = new EqualNode($1, OpStrNEq, $3);}
+                                        { $$ = makeEqualNode($1, OpStrNEq, $3);}
 ;
 
 EqualityExprNoBF:
     RelationalExprNoBF
   | EqualityExprNoBF EQEQ RelationalExpr
-                                        { $$ = new EqualNode($1, OpEqEq, $3); }
-  | EqualityExprNoBF NE RelationalExpr  { $$ = new EqualNode($1, OpNotEq, $3); }
+                                        { $$ = makeEqualNode($1, OpEqEq, $3); }
+  | EqualityExprNoBF NE RelationalExpr  { $$ = makeEqualNode($1, OpNotEq, $3); }
   | EqualityExprNoBF STREQ RelationalExpr
-                                        { $$ = new EqualNode($1, OpStrEq, $3); }
+                                        { $$ = makeEqualNode($1, OpStrEq, $3); }
   | EqualityExprNoBF STRNEQ RelationalExpr
-                                        { $$ = new EqualNode($1, OpStrNEq, $3);}
+                                        { $$ = makeEqualNode($1, OpStrNEq, $3);}
 ;
 
 BitwiseANDExpr:
     EqualityExpr
-  | BitwiseANDExpr '&' EqualityExpr     { $$ = new BitOperNode($1, OpBitAnd, $3); }
+  | BitwiseANDExpr '&' EqualityExpr     { $$ = makeBitOperNode($1, OpBitAnd, $3); }
 ;
 
 BitwiseANDExprNoIn:
     EqualityExprNoIn
   | BitwiseANDExprNoIn '&' EqualityExprNoIn
-                                        { $$ = new BitOperNode($1, OpBitAnd, $3); }
+                                        { $$ = makeBitOperNode($1, OpBitAnd, $3); }
 ;
 
 BitwiseANDExprNoBF:
     EqualityExprNoBF
-  | BitwiseANDExprNoBF '&' EqualityExpr { $$ = new BitOperNode($1, OpBitAnd, $3); }
+  | BitwiseANDExprNoBF '&' EqualityExpr { $$ = makeBitOperNode($1, OpBitAnd, $3); }
 ;
 
 BitwiseXORExpr:
     BitwiseANDExpr
-  | BitwiseXORExpr '^' BitwiseANDExpr   { $$ = new BitOperNode($1, OpBitXOr, $3); }
+  | BitwiseXORExpr '^' BitwiseANDExpr   { $$ = makeBitOperNode($1, OpBitXOr, $3); }
 ;
 
 BitwiseXORExprNoIn:
     BitwiseANDExprNoIn
   | BitwiseXORExprNoIn '^' BitwiseANDExprNoIn
-                                        { $$ = new BitOperNode($1, OpBitXOr, $3); }
+                                        { $$ = makeBitOperNode($1, OpBitXOr, $3); }
 ;
 
 BitwiseXORExprNoBF:
     BitwiseANDExprNoBF
   | BitwiseXORExprNoBF '^' BitwiseANDExpr
-                                        { $$ = new BitOperNode($1, OpBitXOr, $3); }
+                                        { $$ = makeBitOperNode($1, OpBitXOr, $3); }
 ;
 
 BitwiseORExpr:
     BitwiseXORExpr
-  | BitwiseORExpr '|' BitwiseXORExpr    { $$ = new BitOperNode($1, OpBitOr, $3); }
+  | BitwiseORExpr '|' BitwiseXORExpr    { $$ = makeBitOperNode($1, OpBitOr, $3); }
 ;
 
 BitwiseORExprNoIn:
     BitwiseXORExprNoIn
   | BitwiseORExprNoIn '|' BitwiseXORExprNoIn
-                                        { $$ = new BitOperNode($1, OpBitOr, $3); }
+                                        { $$ = makeBitOperNode($1, OpBitOr, $3); }
 ;
 
 BitwiseORExprNoBF:
     BitwiseXORExprNoBF
   | BitwiseORExprNoBF '|' BitwiseXORExpr
-                                        { $$ = new BitOperNode($1, OpBitOr, $3); }
+                                        { $$ = makeBitOperNode($1, OpBitOr, $3); }
 ;
 
 LogicalANDExpr:

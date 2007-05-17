@@ -1485,115 +1485,102 @@ void LogicalNotNode::recurseVisit(NodeVisitor *visitor)
   recurseVisitLink(visitor, expr);
 }
 
-// ------------------------------ MultNode -------------------------------------
+// ------------------------ BinaryOperatorNode -------------------------------
 
-// ECMA 11.5
-JSValue *MultNode::evaluate(ExecState *exec)
+JSValue* BinaryOperatorNode::evaluate(ExecState* exec)
 {
-  JSValue *v1 = term1->evaluate(exec);
+  JSValue* v1 = expr1->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
 
-  JSValue *v2 = term2->evaluate(exec);
+  JSValue* v2 = expr2->evaluate(exec);
   KJS_CHECKEXCEPTIONVALUE
-
-  return mult(exec, v1, v2, oper);
-}
-
-void MultNode::recurseVisit(NodeVisitor *visitor)
-{
-  recurseVisitLink(visitor, term1);
-  recurseVisitLink(visitor, term2);
-}
-
-// ------------------------------ AddNode --------------------------------------
-
-// ECMA 11.6
-JSValue *AddNode::evaluate(ExecState *exec)
-{
-  JSValue *v1 = term1->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-
-  JSValue *v2 = term2->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-
-  return add(exec, v1, v2, oper);
-}
-
-void AddNode::recurseVisit(NodeVisitor *visitor)
-{
-  recurseVisitLink(visitor, term1);
-  recurseVisitLink(visitor, term2);
-}
-
-
-// ------------------------------ ShiftNode ------------------------------------
-
-// ECMA 11.7
-JSValue *ShiftNode::evaluate(ExecState *exec)
-{
-  JSValue *v1 = term1->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  JSValue *v2 = term2->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  unsigned int i2 = v2->toUInt32(exec);
-  i2 &= 0x1f;
 
   switch (oper) {
+  case OpMult:
+  case OpDiv:
+  case OpMod:
+      // operators *, / and %
+      return mult(exec, v1, v2, oper);
+  case OpPlus:
+  case OpMinus:
+      // operators + and -
+      return add(exec, v1, v2, oper);
   case OpLShift:
-    return jsNumber(v1->toInt32(exec) << i2);
+      // operator <<
+      return jsNumber(v1->toInt32(exec) << (v2->toUInt32(exec) & 0x1f));
   case OpRShift:
-    return jsNumber(v1->toInt32(exec) >> i2);
+      // operator >>
+      return jsNumber(v1->toInt32(exec) >> (v2->toUInt32(exec) & 0x1f));
   case OpURShift:
-    return jsNumber(v1->toUInt32(exec) >> i2);
+      // operator >>>
+      return jsNumber(v1->toUInt32(exec) >> (v2->toUInt32(exec) & 0x1f));
+  case OpLess:
+      // operator <
+      return jsBoolean(relation(exec, v1, v2) == 1);
+  case OpGreaterEq:
+      // operator >=
+      return jsBoolean(relation(exec, v1, v2) == 0);
+  case OpGreater:
+      // operator >
+      return jsBoolean(relation(exec, v2, v1) == 1);
+  case OpLessEq:
+      // operator <=
+      return jsBoolean(relation(exec, v2, v1) == 0);
+  case OpIn:
+      // operator in
+      return operatorIn(exec, v1, v2);
+  case OpInstanceOf:
+      // operator instanceof
+      return operatorInstanceOf(exec, v1, v2);
+  case OpEqEq:
+      // operator ==
+      return jsBoolean(equal(exec,v1, v2));
+  case OpNotEq:
+      // operator !=
+      return jsBoolean(!equal(exec,v1, v2));
+  case OpStrEq:
+      // operator ===
+      return jsBoolean(strictEqual(exec,v1, v2));
+  case OpStrNEq:
+      // operator !==
+      return jsBoolean(!strictEqual(exec,v1, v2));
+  case OpBitAnd:
+      // operator &
+      return jsNumber(v1->toInt32(exec) & v2->toInt32(exec));
+  case OpBitXOr:
+      // operator ^
+      return jsNumber(v1->toInt32(exec) ^ v2->toInt32(exec));
+  case OpBitOr:
+      // operator |
+      return jsNumber(v1->toInt32(exec) | v2->toInt32(exec));
   default:
-    assert(!"ShiftNode: unhandled switch case");
-    return jsUndefined();
+      assert(!"BinaryOperatorNode: unhandled switch case");
+      return jsUndefined();
   }
 }
 
-void ShiftNode::recurseVisit(NodeVisitor *visitor)
+JSValue* BinaryOperatorNode::operatorIn(ExecState* exec,
+                                        JSValue* v1, JSValue* v2)
 {
-  recurseVisitLink(visitor, term1);
-  recurseVisitLink(visitor, term2);
-}
-
-
-// ------------------------------ RelationalNode -------------------------------
-
-// ECMA 11.8
-JSValue *RelationalNode::evaluate(ExecState *exec)
-{
-  JSValue *v1 = expr1->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  JSValue *v2 = expr2->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-
-  bool b;
-  if (oper == OpLess || oper == OpGreaterEq) {
-    int r = relation(exec, v1, v2);
-    if (r < 0)
-      b = false;
-    else
-      b = (oper == OpLess) ? (r == 1) : (r == 0);
-  } else if (oper == OpGreater || oper == OpLessEq) {
-    int r = relation(exec, v2, v1);
-    if (r < 0)
-      b = false;
-    else
-      b = (oper == OpGreater) ? (r == 1) : (r == 0);
-  } else if (oper == OpIn) {
-      // Is all of this OK for host objects?
-      if (!v2->isObject())
-          return throwError(exec,  TypeError,
-                             "Value %s (result of expression %s) is not an object. Cannot be used with IN expression.", v2, expr2.get());
-      JSObject *o2(static_cast<JSObject*>(v2));
-      b = o2->hasProperty(exec, Identifier(v1->toString(exec)));
-  } else {
     if (!v2->isObject())
         return throwError(exec,  TypeError,
-                           "Value %s (result of expression %s) is not an object. Cannot be used with instanceof operator.", v2, expr2.get());
+                          "Value %s (result of expression %s) is not an "
+                          "object. Cannot be used with IN expression.",
+                          v2, expr2.get());
+    JSObject* o2 = static_cast<JSObject*>(v2);
+    return jsBoolean(o2->hasProperty(exec, Identifier(v1->toString(exec))));
+}
 
-    JSObject *o2(static_cast<JSObject*>(v2));
+JSValue* BinaryOperatorNode::operatorInstanceOf(ExecState* exec,
+                                                JSValue* v1, JSValue* v2)
+{
+    if (!v2->isObject())
+        return throwError(exec,  TypeError,
+                          "Value %s (result of expression %s) is not an "
+                          "object. Cannot be used with instanceof operator.",
+                          v2, expr2.get());
+
+    JSObject* o2 = static_cast<JSObject*>(v2);
     if (!o2->implementsHasInstance())
       // According to the spec, only some types of objects "implement" the [[HasInstance]] property.
       // But we are supposed to throw an exception where the object does not "have" the [[HasInstance]]
@@ -1601,76 +1588,13 @@ JSValue *RelationalNode::evaluate(ExecState *exec)
       // case we return false (consistent with mozilla)
       return jsBoolean(false);
     return jsBoolean(o2->hasInstance(exec, v1));
-  }
-
-  return jsBoolean(b);
 }
 
-void RelationalNode::recurseVisit(NodeVisitor *visitor)
+void BinaryOperatorNode::recurseVisit(NodeVisitor *visitor)
 {
   recurseVisitLink(visitor, expr1);
   recurseVisitLink(visitor, expr2);
 }
-
-
-// ------------------------------ EqualNode ------------------------------------
-
-// ECMA 11.9
-JSValue *EqualNode::evaluate(ExecState *exec)
-{
-  JSValue *v1 = expr1->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  JSValue *v2 = expr2->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-
-  bool result;
-  if (oper == OpEqEq || oper == OpNotEq) {
-    // == and !=
-    bool eq = equal(exec,v1, v2);
-    result = oper == OpEqEq ? eq : !eq;
-  } else {
-    // === and !==
-    bool eq = strictEqual(exec,v1, v2);
-    result = oper == OpStrEq ? eq : !eq;
-  }
-  return jsBoolean(result);
-}
-
-void EqualNode::recurseVisit(NodeVisitor *visitor)
-{
-  recurseVisitLink(visitor, expr1);
-  recurseVisitLink(visitor, expr2);
-}
-
-
-// ------------------------------ BitOperNode ----------------------------------
-
-// ECMA 11.10
-JSValue *BitOperNode::evaluate(ExecState *exec)
-{
-  JSValue *v1 = expr1->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  JSValue *v2 = expr2->evaluate(exec);
-  KJS_CHECKEXCEPTIONVALUE
-  int i1 = v1->toInt32(exec);
-  int i2 = v2->toInt32(exec);
-  int result;
-  if (oper == OpBitAnd)
-    result = i1 & i2;
-  else if (oper == OpBitXOr)
-    result = i1 ^ i2;
-  else
-    result = i1 | i2;
-
-  return jsNumber(result);
-}
-
-void BitOperNode::recurseVisit(NodeVisitor *visitor)
-{
-  recurseVisitLink(visitor, expr1);
-  recurseVisitLink(visitor, expr2);
-}
-
 
 // ------------------------------ BinaryLogicalNode ----------------------------
 

@@ -500,89 +500,79 @@ void LogicalNotNode::streamTo(SourceStream &s) const
   s << '!' << expr;
 }
 
-void MultNode::streamTo(SourceStream &s) const
+void BinaryOperatorNode::streamTo(SourceStream& s) const
 {
-  s << term1 << oper << term2;
-//  s.append(term1, (oper == '*' ? " * " : (oper == '/' ? " / " : " - ")), term2);
-}
-
-void AddNode::streamTo(SourceStream &s) const
-{
-  s.append(term1, (oper == '+' ? " + " : " - "), term2);
-}
-
-void ShiftNode::streamTo(SourceStream &s) const
-{
-  const char* opStr;
-  if (oper == OpLShift)
-    opStr = " << ";
-  else if (oper == OpRShift)
-    opStr = " >> ";
-  else
-    opStr = " >>> ";
-  s.append(term1, opStr, term2);
-}
-
-void RelationalNode::streamTo(SourceStream &s) const
-{
-  const char* opStr;
-  switch (oper) {
-  case OpLess:
-    opStr = " < ";
-    break;
-  case OpGreater:
-    opStr = " > ";
-    break;
-  case OpLessEq:
-    opStr = " <= ";
-    break;
-  case OpGreaterEq:
-    opStr = " >= ";
-    break;
-  case OpInstanceOf:
-    opStr = " instanceof ";
-    break;
-  case OpIn:
-    opStr = " in ";
-    break;
-  default:
-    opStr = " ?? ";
-  }
-  s.append(expr1, opStr, expr2);
-}
-
-void EqualNode::streamTo(SourceStream &s) const
-{
-  const char* opStr;
- switch (oper) {
- case OpEqEq:
-   opStr = " == ";
-   break;
- case OpNotEq:
-   opStr = " != ";
-   break;
- case OpStrEq:
-   opStr = " === ";
-   break;
- case OpStrNEq:
-   opStr = " !== ";
-   break;
- default:
-    opStr = " ?? ";
- }
-  s.append(expr1, opStr, expr2);
-}
-
-void BitOperNode::streamTo(SourceStream &s) const
-{
-  const char* opStr;
-  if (oper == OpBitAnd)
-    opStr = " & ";
-  else if (oper == OpBitXOr)
-    opStr = " ^ ";
-  else
-    opStr = " | ";
-  s.append(expr1, opStr, expr2);
+    const char* opStr;
+    switch (oper) {
+    case OpMult:
+	opStr = " * ";
+	break;
+    case OpDiv:
+	opStr = " / ";
+	break;
+    case OpMod:
+	opStr = " % ";
+	break;
+    case OpPlus:
+	opStr = " + ";
+	break;
+    case OpMinus:
+	opStr = " - ";
+	break;
+    case OpLShift:
+	opStr = " << ";
+	break;
+    case OpRShift:
+	opStr = " >> ";
+	break;
+    case OpURShift:
+	opStr = " >>> ";
+	break;
+    case OpLess:
+	opStr = " < ";
+	break;
+    case OpGreaterEq:
+	opStr = " >= ";
+	break;
+    case OpGreater:
+	opStr = " > ";
+	break;
+    case OpLessEq:
+	opStr = " <= ";
+	break;
+    case OpIn:
+	opStr = " in ";
+	break;
+    case OpInstanceOf:
+	opStr = " instanceof ";
+	break;
+    case OpEqEq:
+	opStr = " == ";
+	break;
+    case OpNotEq:
+	opStr = " != ";
+	break;
+    case OpStrEq:
+	opStr = " === ";
+	break;
+    case OpStrNEq:
+	opStr = " !== ";
+	break;
+    case OpBitAnd:
+	opStr = " & ";
+	break;
+    case OpBitXOr:
+	opStr = " ^ ";
+	break;
+    case OpBitOr:
+	opStr = " | ";
+	break;
+    default:
+	assert(!"Unhandled case in BinaryOperatorNode::streamTo()");
+	opStr = " ??? ";
+	break;
+    }
+    s.append(expr1, opStr, expr2);
 }
 
 void BinaryLogicalNode::streamTo(SourceStream &s) const

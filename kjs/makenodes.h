@@ -171,14 +171,34 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& ge
     return true;
 }
 
-static AddNode* makeAddNode(Node* n1, Node* n2, Operator op)
+static Node* makeAddNode(Node* n1, Node* n2, Operator op)
 {
-    return new AddNode(n1, n2, op);
+    return new BinaryOperatorNode(n1, n2, op);
 }
 
-static MultNode* makeMultNode(Node* n1, Node* n2, Operator op)
+static Node* makeMultNode(Node* n1, Node* n2, Operator op)
 {
-    return new MultNode(n1, n2, op);
+    return new BinaryOperatorNode(n1, n2, op);
+}
+
+static Node* makeShiftNode(Node* n1, Node* n2, Operator op)
+{
+    return new BinaryOperatorNode(n1, n2, op);
+}
+
+static Node* makeRelationalNode(Node* n1, Operator op, Node* n2)
+{
+    return new BinaryOperatorNode(n1, n2, op);
+}
+
+static Node* makeEqualNode(Node* n1, Operator op, Node* n2)
+{
+    return new BinaryOperatorNode(n1, n2, op);
+}
+
+static Node* makeBitOperNode(Node* n1, Operator op, Node* n2)
+{
+    return new BinaryOperatorNode(n1, n2, op);
 }
 
 static StatementNode *makeImportNode(PackageNameNode *n,

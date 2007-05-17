@@ -768,77 +768,16 @@ namespace KJS {
     RefPtr<Node> expr;
   };
 
-  class MultNode : public Node {
+  class BinaryOperatorNode : public Node {
   public:
-    MultNode(Node* t1, Node* t2, Operator op) : term1(t1), term2(t2), oper(op) {}
+    BinaryOperatorNode(Node* e1, Node* e2, Operator op)
+      : expr1(e1), expr2(e2), oper(op) {}
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
+    virtual void recurseVisit(NodeVisitor* visitor);
   private:
-    RefPtr<Node> term1;
-    RefPtr<Node> term2;
-    Operator oper;
-  };
-
-  class AddNode : public Node {
-  public:
-    AddNode(Node* t1, Node* t2, Operator op) : term1(t1), term2(t2), oper(op) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> term1;
-    RefPtr<Node> term2;
-    Operator oper;
-  };
-
-  class ShiftNode : public Node {
-  public:
-    ShiftNode(Node *t1, Operator o, Node *t2)
-      : term1(t1), term2(t2), oper(o) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> term1;
-    RefPtr<Node> term2;
-    Operator oper;
-  };
-
-  class RelationalNode : public Node {
-  public:
-    RelationalNode(Node *e1, Operator o, Node *e2) :
-      expr1(e1), expr2(e2), oper(o) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> expr1;
-    RefPtr<Node> expr2;
-    Operator oper;
-  };
-
-  class EqualNode : public Node {
-  public:
-    EqualNode(Node *e1, Operator o, Node *e2)
-      : expr1(e1), expr2(e2), oper(o) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> expr1;
-    RefPtr<Node> expr2;
-    Operator oper;
-  };
-
-  class BitOperNode : public Node {
-  public:
-    BitOperNode(Node *e1, Operator o, Node *e2) :
-      expr1(e1), expr2(e2), oper(o) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
+    JSValue* operatorIn(ExecState* exec, JSValue* v1, JSValue* v2);
+    JSValue* operatorInstanceOf(ExecState* exec, JSValue* v1, JSValue* v2);
     RefPtr<Node> expr1;
     RefPtr<Node> expr2;
     Operator oper;
