@@ -42,7 +42,7 @@
  * or for a protocol (e.g. http) be careful that it is appropriate.
  * (Fictional) example: "4.0.90 (>=20070101)"
  */
-#define KDE_VERSION_STRING "3.90.1 (KDE 4.0-alpha1)"
+#define KDE_VERSION_STRING "3.90.1 (KDE 4.0 >= 20070518)"
 
 /// @brief Major version of KDE, at compile time
 #define KDE_VERSION_MAJOR 3
