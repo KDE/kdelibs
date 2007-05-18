@@ -225,7 +225,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         strans = rawtrans.mid(cdpos + s->theFence.length());
 
         // Try to initialize Transcript if not initialized.
-        if (!s->loadTranscriptCalled && locale->useTranscript())
+        if (!s->loadTranscriptCalled && locale && locale->useTranscript())
         {
             if (KGlobal::hasMainComponent())
                 loadTranscript();
