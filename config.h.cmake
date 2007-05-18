@@ -96,6 +96,7 @@
 #cmakedefine   HAVE_STRCMP 1
 #cmakedefine   HAVE_STRLCPY 1
 #cmakedefine   HAVE_STRLCAT 1
+#cmakedefine   HAVE_STRCASESTR 1
 #cmakedefine   HAVE_STRRCHR 1
 #cmakedefine   HAVE_STRTOLL 1
 #cmakedefine   HAVE_UNSETENV 1
