@@ -629,7 +629,12 @@ QString KFileItemDelegate::display(const QModelIndex &index) const
     switch (value.type())
     {
         case QVariant::String:
-            return d->replaceNewlines(value.toString());
+        {
+            if (index.column() == KDirModel::Size)
+                return d->itemSize(index, d->fileItem(index));
+            else
+                return d->replaceNewlines(value.toString());
+        }
 
         case QVariant::Double:
             return KGlobal::locale()->formatNumber(value.toDouble());
