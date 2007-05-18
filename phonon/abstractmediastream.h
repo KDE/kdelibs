@@ -110,14 +110,18 @@ class PHONON_EXPORT AbstractMediaStream : public QObject
         /**
          * Returns the stream size that was set with \ref setStreamSize.
          *
-         * Defaults to \c -1.
+         * A negative value means that the length of the stream cannot be known.
+         *
+         * Defaults to \c 0.
          */
         qint64 streamSize() const;
 
         /**
          * Sets the size of the stream in number of bytes.
          *
-         * Defaults to -1.
+         * A negative value means that the length of the stream cannot be known.
+         *
+         * Defaults to 0.
          *
          * This function has to be called. A backend will not call \ref needData() until the
          * stream size is set.
