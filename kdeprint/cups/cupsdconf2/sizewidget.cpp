@@ -49,17 +49,20 @@ SizeWidget::SizeWidget( QWidget *parent )
 
 void SizeWidget::setSizeString( const QString& sz )
 {
-	int p = sz.indexOf( QRegExp( "\\D" ) );
-	m_size->setValue( sz.left( p ).toInt() );
-	switch( sz[ p ].toLatin1() )
-	{
-		case 'k': p = 0; break;
-		default:
-		case 'm': p = 1; break;
-		case 'g': p = 2; break;
-		case 't': p = 3; break;
+	const int pos = sz.indexOf( QRegExp("\\D") ); // first non-digit char, or -1.
+	m_size->setValue( sz.left(pos).toInt() );
+	int idx = 1;
+	if (pos != -1) {
+		switch( sz[pos].toLatin1() )
+		{
+			case 'k': idx = 0; break;
+			default:
+			case 'm': idx = 1; break;
+			case 'g': idx = 2; break;
+			case 't': idx = 3; break;
+		}
 	}
-	m_unit->setCurrentIndex( p );
+	m_unit->setCurrentIndex( idx );
 }
 
 QString SizeWidget::sizeString() const

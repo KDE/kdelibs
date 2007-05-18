@@ -50,7 +50,8 @@ bool Comment::load(QFile *f)
         example_ = "";
 	key_ = "";
         QByteArray line;
-		QString *current = &comment_;
+	line.resize(1024);
+	QString *current = &comment_;
         while (!f->atEnd())
         {
                 f->readLine(line.data(), 1024);
@@ -75,7 +76,7 @@ bool Comment::load(QFile *f)
                         if (line[0] != '#') break;
                         else
                         {
-                                current->append(line);
+                                current->append(QString::fromLatin1(line)); // encoding ok?
                         }
                 }
         }

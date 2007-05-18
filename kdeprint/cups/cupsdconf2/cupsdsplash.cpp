@@ -50,6 +50,7 @@ CupsdSplash::CupsdSplash(QWidget *parent)
 	kupslogo_->setAlignment(Qt::AlignCenter);
 
 	QLabel	*helptxt_ = new QLabel(this);
+	helptxt_->setWordWrap(true);
 	helptxt_->setText(i18n( "<p>This tool will help you to configure graphically the server of the CUPS printing system. "
 				"The available options are grouped into sets of related topics and can be accessed "
 				"quickly through the icon view located on the left. Each option has a default value that is "
