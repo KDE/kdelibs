@@ -78,9 +78,6 @@ int main( int argc, char** argv )
                 listSource = true;
             }
             else if ( arg == "--templates" ) {
-                if ( paramArgs.isEmpty() ) {
-                    return usage();
-                }
                 templates = paramArgs;
             }
             else if ( arg == "--ontologies" ) {
