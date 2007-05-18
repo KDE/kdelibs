@@ -36,7 +36,7 @@ Stream::Stream(const MediaSource &mediaSource, MediaObject *parent)
     : QObject(parent),
     m_eof(false),
     m_streamSeekable(false),
-    m_streamSize(-1),
+    m_streamSize(0),
     m_bufferSize(0),
     m_streamPosition(0),
     m_mediaObject(parent)
@@ -72,7 +72,9 @@ void Stream::endOfData()
 void Stream::setStreamSize(qint64 newSize)
 {
     m_streamSize = newSize;
-    emit m_mediaObject->totalTimeChanged(m_mediaObject->totalTime());
+    if (m_streamSize > 0) {
+        emit m_mediaObject->totalTimeChanged(m_mediaObject->totalTime());
+    }
 }
 
 void Stream::setStreamSeekable(bool s)

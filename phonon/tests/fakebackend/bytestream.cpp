@@ -54,7 +54,7 @@ qint64 ByteStream::currentTime() const
 
 qint64 ByteStream::totalTime() const
 {
-    if (m_streamSize >= 0)
+    if (m_streamSize > 0)
         return m_streamSize / 17;
     return -1;
     //return 1000 *60 *3; // 3 minutes
@@ -97,7 +97,9 @@ void ByteStream::writeData(const QByteArray &data)
 void ByteStream::setStreamSize(qint64 s)
 {
     m_streamSize = s;
-    emit length(totalTime());
+    if (m_streamSize > 0) {
+        emit length(totalTime());
+    }
 }
 
 void ByteStream::endOfData()
@@ -209,7 +211,7 @@ void ByteStream::consumeStream()
     }
     else
     {
-        if (m_streamSize >= 0 && !m_aboutToFinishEmitted
+        if (m_streamSize > 0 && !m_aboutToFinishEmitted
                  && m_streamSize - m_streamPosition <= m_aboutToFinishBytes)
         {
             m_aboutToFinishEmitted = true;
