@@ -121,7 +121,7 @@ void KACLEditWidget::KACLEditWidgetPrivate::_k_slotUpdateButtons()
     QList<QTreeWidgetItem*> selected = m_listView->selectedItems();
     QListIterator<QTreeWidgetItem*> it( selected );
     while ( it.hasNext() ) {
-        KACLListViewItem *item = dynamic_cast<KACLListViewItem*>( it.next() );
+        KACLListViewItem *item = static_cast<KACLListViewItem*>( it.next() );
         ++selectedCount;
         if ( !item->isDeletable() )
             atLeastOneIsNotDeletable = true;
