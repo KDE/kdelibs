@@ -917,6 +917,11 @@ KMD5::KMD5() : d(new KMD5Private())
     d->reset();
 }
 
+KMD5::~KMD5()
+{
+    delete d;
+}
+
 KMD5::KMD5(const char *in, int len) : d(new KMD5Private())
 {
     d->reset();
