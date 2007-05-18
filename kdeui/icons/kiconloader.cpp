@@ -227,6 +227,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
                          << " \"" << KIconTheme::defaultThemeName() << "\" "
                          << " not found!" << endl;
             d->mpGroups=0L;
+            delete def;
             return;
         }
     }
