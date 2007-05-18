@@ -334,10 +334,10 @@ UnaryExprCommon:
   | AUTOPLUSPLUS UnaryExpr              { $$ = makePrefixNode($2, OpPlusPlus); }
   | MINUSMINUS UnaryExpr                { $$ = makePrefixNode($2, OpMinusMinus); }
   | AUTOMINUSMINUS UnaryExpr            { $$ = makePrefixNode($2, OpMinusMinus); }
-  | '+' UnaryExpr                       { $$ = new UnaryPlusNode($2); }
-  | '-' UnaryExpr                       { $$ = new NegateNode($2); }
-  | '~' UnaryExpr                       { $$ = new BitwiseNotNode($2); }
-  | '!' UnaryExpr                       { $$ = new LogicalNotNode($2); }
+  | '+' UnaryExpr                       { $$ = makeUnaryPlusNode($2); }
+  | '-' UnaryExpr                       { $$ = makeNegateNode($2); }
+  | '~' UnaryExpr                       { $$ = makeBitwiseNotNode($2); }
+  | '!' UnaryExpr                       { $$ = makeLogicalNotNode($2); }
 
 UnaryExpr:
     PostfixExpr
@@ -692,9 +692,9 @@ ExprStatement:
 
 IfStatement:
     IF '(' Expr ')' Statement %prec IF_WITHOUT_ELSE
-                                        { $$ = new IfNode($3, $5, 0); DBG($$, @1, @4); }
+                                        { $$ = makeIfNode($3, $5, 0); DBG($$, @1, @4); }
   | IF '(' Expr ')' Statement ELSE Statement
-                                        { $$ = new IfNode($3, $5, $7); DBG($$, @1, @4); }
+                                        { $$ = makeIfNode($3, $5, $7); DBG($$, @1, @4); }
 ;
 
 IterationStatement:

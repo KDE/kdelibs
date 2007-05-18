@@ -201,7 +201,7 @@ typedef union YYSTYPE
   PropertyNameNode   *pname;
   PackageNameNode     *pkgn;
 }
-/* Line 1529 of yacc.c.  */
+/* Line 1489 of yacc.c.  */
 #line 206 "grammar.tab.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

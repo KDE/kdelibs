@@ -313,7 +313,7 @@ typedef union YYSTYPE
   PropertyNameNode   *pname;
   PackageNameNode     *pkgn;
 }
-/* Line 193 of yacc.c.  */
+/* Line 187 of yacc.c.  */
 #line 318 "grammar.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -2616,22 +2616,22 @@ yyreduce:
 
   case 77:
 #line 337 "grammar.y"
-    { (yyval.node) = new UnaryPlusNode((yyvsp[(2) - (2)].node)); ;}
+    { (yyval.node) = makeUnaryPlusNode((yyvsp[(2) - (2)].node)); ;}
     break;
 
   case 78:
 #line 338 "grammar.y"
-    { (yyval.node) = new NegateNode((yyvsp[(2) - (2)].node)); ;}
+    { (yyval.node) = makeNegateNode((yyvsp[(2) - (2)].node)); ;}
     break;
 
   case 79:
 #line 339 "grammar.y"
-    { (yyval.node) = new BitwiseNotNode((yyvsp[(2) - (2)].node)); ;}
+    { (yyval.node) = makeBitwiseNotNode((yyvsp[(2) - (2)].node)); ;}
     break;
 
   case 80:
 #line 340 "grammar.y"
-    { (yyval.node) = new LogicalNotNode((yyvsp[(2) - (2)].node)); ;}
+    { (yyval.node) = makeLogicalNotNode((yyvsp[(2) - (2)].node)); ;}
     break;
 
   case 86:
@@ -3156,12 +3156,12 @@ yyreduce:
 
   case 242:
 #line 695 "grammar.y"
-    { (yyval.stat) = new IfNode((yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].stat), 0); DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(4) - (5)])); ;}
+    { (yyval.stat) = makeIfNode((yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].stat), 0); DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(4) - (5)])); ;}
     break;
 
   case 243:
 #line 697 "grammar.y"
-    { (yyval.stat) = new IfNode((yyvsp[(3) - (7)].node), (yyvsp[(5) - (7)].stat), (yyvsp[(7) - (7)].stat)); DBG((yyval.stat), (yylsp[(1) - (7)]), (yylsp[(4) - (7)])); ;}
+    { (yyval.stat) = makeIfNode((yyvsp[(3) - (7)].node), (yyvsp[(5) - (7)].stat), (yyvsp[(7) - (7)].stat)); DBG((yyval.stat), (yylsp[(1) - (7)]), (yylsp[(4) - (7)])); ;}
     break;
 
   case 244:

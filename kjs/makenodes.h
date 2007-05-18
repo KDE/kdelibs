@@ -201,6 +201,31 @@ static Node* makeBitOperNode(Node* n1, Operator op, Node* n2)
     return new BinaryOperatorNode(n1, n2, op);
 }
 
+static Node* makeUnaryPlusNode(Node *n)
+{
+    return new UnaryPlusNode(n);
+}
+
+static Node* makeNegateNode(Node *n)
+{
+    return new NegateNode(n);
+}
+
+static Node* makeBitwiseNotNode(Node *n)
+{
+    return new BitwiseNotNode(n);
+}
+
+static Node* makeLogicalNotNode(Node *n)
+{
+    return new LogicalNotNode(n);
+}
+
+static StatementNode* makeIfNode(Node *e, StatementNode *s1, StatementNode *s2)
+{
+    return new IfNode(e, s1, s2);
+}
+
 static StatementNode *makeImportNode(PackageNameNode *n,
 				     bool wildcard, const Identifier &a)
 {
