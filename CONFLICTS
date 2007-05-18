@@ -3,21 +3,21 @@ List of remaining conflicts between kdelibs3 and kdelibs4
 bin/cupsdconf    (where is it launched? looks like it's dlopened)
 bin/cupsdoprint -> libexec
 bin/kaddprinterwizard (where is it launched!?) -> libexec
-bin/kconf_update      (started by kded) -> libexec
-bin/kcookiejar        (not used by khtml anymore, only a command-line tool) -> kcookiejar4 - DONE
 bin/kde-menu
 bin/kded
 bin/kdesu_stub
 bin/ktradertest            -> only needed for xdg utils and debugging... -> ktradertest4?
                               kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either...
-bin/kio_http_cache_cleaner -> libexec
 bin/kdostartupconfig       -> libexec
 bin/kstartupconfig         -> libexec
 
+bin/kcookiejar        (not used by khtml anymore, only a command-line tool) -> kcookiejar4 - DONE
+bin/kio_http_cache_cleaner -> libexec - DONE
 bin/kdontchangethehostname -> libexec - DONE
 bin/klauncher              -> libexec - DONE
 bin/kpac_dhcp_helper       -> libexec - DONE
 bin/ksendbugmail           -> libexec - DONE
+bin/kconf_update (started by kded) -> libexec - DONE
 
 bin/ksvgtopng              -> devel only, doesn't matter
 bin/kunittestmodrunner     -> devel only, and for compat so it can't be renamed/moved
