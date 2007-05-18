@@ -34,6 +34,7 @@ class KDeviceListModel::Private
 {
 public:
     Private(KDeviceListModel *self) : q(self), rootItem(new KDeviceListItem()) {}
+    ~Private() { delete rootItem; }
 
 
     KDeviceListModel *q;
