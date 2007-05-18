@@ -22,7 +22,7 @@
 #include <knepomuk/services/rdfrepository.h>
 #include <knepomuk/rdf/statementlistiterator.h>
 
-#include <kstaticdeleter.h>
+#include <kglobal.h>
 #include <kdebug.h>
 #include <krandom.h>
 
@@ -86,18 +86,19 @@ Nepomuk::KMetaData::ResourceManager::~ResourceManager()
     delete d;
 }
 
-
-KStaticDeleter<Nepomuk::KMetaData::ResourceManager> s_resourceManagerDeleter;
+class Nepomuk::KMetaData::ResourceManagerHelper
+{
+    public:
+        Nepomuk::KMetaData::ResourceManager q;
+};
+K_GLOBAL_STATIC(Nepomuk::KMetaData::ResourceManagerHelper, instanceHelper)
 
 // FIXME: make the singleton deletion thread-safe so autosyncing will be forced when shutting
 //        down the application
 //        Maybe connect to QCoreApplication::aboutToQuit?
 Nepomuk::KMetaData::ResourceManager* Nepomuk::KMetaData::ResourceManager::instance()
 {
-    static ResourceManager* s_instance = 0;
-    if( !s_instance )
-        s_resourceManagerDeleter.setObject( s_instance, new ResourceManager() );
-    return s_instance;
+    return &instanceHelper->q;
 }
 
 

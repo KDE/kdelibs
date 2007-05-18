@@ -30,6 +30,7 @@ namespace Nepomuk {
 	class Resource;
 	class Ontology;
 	class Variant;
+	class ResourceManagerHelper;
 
 	// FIXME: introduce a simple overwrite mode which is way faster and doe not merge with the store
 
@@ -48,8 +49,6 @@ namespace Nepomuk {
 		Q_OBJECT
 
 	    public:
-		~ResourceManager();
-
 		static ResourceManager* instance();
 
 		/**
@@ -190,7 +189,9 @@ namespace Nepomuk {
 		void slotStartAutoSync();
 
 	    private:
+		friend class Nepomuk::KMetaData::ResourceManagerHelper;
 		ResourceManager();
+		~ResourceManager();
 
 		class Private;
 		Private* const d;
