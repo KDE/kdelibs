@@ -5,7 +5,6 @@ bin/cupsdoprint -> libexec
 bin/imagetops
 bin/kaddprinterwizard (where is it launched!?) -> libexec
 bin/kconf_update      (started by kded) -> libexec
-bin/kconfig_compiler  -> libexec - DONE
 bin/kcookiejar        (not used by khtml anymore, only a command-line tool) -> kcookiejar4 - DONE
 bin/kde-menu
 bin/kded
@@ -20,6 +19,8 @@ bin/kstartupconfig         -> libexec
 bin/ksvgtopng              -> devel only, doesn't matter
 bin/ktradertest            -> only needed for xdg utils and debugging... -> ktradertest4?
                               kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either...
-bin/kunittestmodrunner
+
+bin/kunittestmodrunner     -> devel only, and for compat so it can't be renamed/moved
 bin/makekdewidgets         -> devel only, doesn't matter
+bin/kconfig_compiler       -> devel only, doesn't matter
 bin/preparetips            -> devel only perhaps?
