@@ -13,14 +13,14 @@ kde4_automoc(${kded_KDEINIT_SRCS})
 if (WIN32)
    set (mode NOGUI)
 endif (WIN32)
-kde4_add_kdeinit_executable( kded  ${mode} ${kded_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kded4  ${mode} ${kded_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kded  ${KDE4_KIO_LIBS} )
+target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} )
 
-install(TARGETS kdeinit_kded  DESTINATION ${LIB_INSTALL_DIR} )
+install(TARGETS kdeinit_kded4  DESTINATION ${LIB_INSTALL_DIR} )
 
-target_link_libraries( kded kdeinit_kded )
-install(TARGETS kded DESTINATION ${BIN_INSTALL_DIR} )
+target_link_libraries( kded4 kdeinit_kded4 )
+install(TARGETS kded4 DESTINATION ${BIN_INSTALL_DIR} )
 
 ########### next target ###############
 

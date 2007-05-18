@@ -1749,7 +1749,7 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_kded)
    {
-      pid = launch( 1, "kded", 0 );
+      pid = launch( 1, KDED_EXENAME, 0 );
 #ifndef NDEBUG
       fprintf(stderr, "kdeinit4: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
 #endif

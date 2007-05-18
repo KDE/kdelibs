@@ -20,6 +20,8 @@
 #ifndef _KLAUNCHER_CMDS_H_
 #define _KLAUNCHER_CMDS_H_
 
+#define KDED_EXENAME "kded4"
+
 typedef struct
 {
    long cmd;

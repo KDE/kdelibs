@@ -83,7 +83,7 @@ target_link_libraries(kdeprint_management_module  ${KDE4_KDECORE_LIBS} kdeprint_
 install(TARGETS kdeprint_management_module  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
-########### next target ###############
+########### kaddprinterwizard ###############
 
 set(kaddprinterwizard_KDEINIT_SRCS kaddprinterwizard.cpp )
 
@@ -96,7 +96,7 @@ target_link_libraries(kdeinit_kaddprinterwizard  ${KDE4_KDECORE_LIBS} kdeprint_m
 install(TARGETS kdeinit_kaddprinterwizard  DESTINATION ${LIB_INSTALL_DIR} )
 
 target_link_libraries( kaddprinterwizard kdeinit_kaddprinterwizard )
-install(TARGETS kaddprinterwizard DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kaddprinterwizard DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### install files ###############
 

@@ -40,6 +40,9 @@
 #include <kapplication.h>
 #include <kdeversion.h>
 
+
+#define KDED_EXENAME "kded4"
+
 static KComponentData *s_instance = 0;
 
 // print verbose messages
@@ -271,7 +274,7 @@ int main(int argc, char **argv, char **envp)
             exit(0);
         }
         if (strcmp(safe_argv[i], "--terminate") == 0) {
-            processList.terminateProcess("kded");
+            processList.terminateProcess(KDED_EXENAME);
             processList.terminateProcess("klauncher");
             processList.terminateProcess("dbus-daemon");
             exit(0);
@@ -294,15 +297,15 @@ int main(int argc, char **argv, char **envp)
     {
           pid = launch("klauncher");
           if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher",10))
-			        exit(1);
+              exit(1);
     }
 
 
-    if (launch_kded && !processList.hasProcessInList("kded"))
+    if (launch_kded && !processList.hasProcessInList(KDED_EXENAME))
     {
-          pid = launch("kded");
-		      if (!pid || !checkIfRegisteredInDBus("org.kde.kded",10))
-			        exit(1);
+        pid = launch(KDED_EXENAME);
+        if (!pid || !checkIfRegisteredInDBus("org.kde.kded",10))
+            exit(1);
     }
 
     for(int i = 1; i < argc; i++)

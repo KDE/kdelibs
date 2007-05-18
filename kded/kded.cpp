@@ -55,6 +55,8 @@
 #include <fixx11h.h>
 #endif
 
+#define KDED_EXENAME "kded4"
+
 #define MODULES_PATH "/modules/"
 
 Kded *Kded::_self = 0;
@@ -427,7 +429,7 @@ void Kded::updateResourceList()
 void Kded::crashHandler(int)
 {
    if (_self) // Don't restart if we were closing down
-      system("kded");
+      system(KDED_EXENAME);
 }
 
 void Kded::installCrashHandler()
@@ -809,7 +811,8 @@ public:
 
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
-     KAboutData aboutData( "kded", I18N_NOOP("KDE Daemon"),
+     KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/,
+        I18N_NOOP("KDE Daemon"),
         "$Id$",
         I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed"));
 
