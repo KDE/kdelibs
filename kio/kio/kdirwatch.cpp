@@ -65,6 +65,11 @@
 #define NO_NOTIFY (time_t) 0
 
 static KDirWatchPrivate* dwp_self = 0;
+static KDirWatchPrivate* createPrivate() {
+  if (!dwp_self)
+    dwp_self = new KDirWatchPrivate;
+  return dwp_self;
+}
 
 //
 // Class KDirWatchPrivate (singleton)
@@ -1240,16 +1245,13 @@ bool KDirWatch::exists()
 }
 
 KDirWatch::KDirWatch (QObject* parent)
-  : QObject(parent)
+  : QObject(parent), d(createPrivate())
 {
   static int nameCounter = 0;
 
   nameCounter++;
   setObjectName(QString("KDirWatch-%1").arg(nameCounter) );
 
-  if (!dwp_self)
-    dwp_self = new KDirWatchPrivate;
-  d = dwp_self;
   d->ref();
 
   _isStopped = false;
@@ -1262,7 +1264,7 @@ KDirWatch::~KDirWatch()
   {
     // delete it if it's the last one
     delete d;
-    dwp_self = 0L;
+    dwp_self = 0;
   }
 }
 

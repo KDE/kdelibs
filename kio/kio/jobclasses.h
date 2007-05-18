@@ -301,7 +301,7 @@ public:
 
     private:
         class JobPrivate;
-        JobPrivate *d;
+        JobPrivate *const d;
     };
 
 
@@ -1159,7 +1159,7 @@ public:
         TransferJob *m_putJob;
     private:
 	class FileCopyJobPrivate;
-	FileCopyJobPrivate* d;
+	FileCopyJobPrivate* const d;
     };
 
     /**

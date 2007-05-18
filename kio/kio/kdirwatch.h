@@ -279,7 +279,7 @@ class KIO_EXPORT KDirWatch : public QObject
  private:
    bool _isStopped;
 
-   KDirWatchPrivate *d;
+   KDirWatchPrivate *const d;
 };
 
 #endif

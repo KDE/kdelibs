@@ -166,7 +166,7 @@ private:
 
 private:
     class KScanDialogPrivate;
-    KScanDialogPrivate *d;
+    KScanDialogPrivate *const d;
 };
 
 
@@ -290,7 +290,7 @@ private:
 
 private:
     class KOCRDialogPrivate;
-    KOCRDialogPrivate *d;
+    KOCRDialogPrivate * const d;
 };
 
 

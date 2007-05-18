@@ -317,7 +317,7 @@ private:
 
   static NetRC* instance;
   class NetRCPrivate;
-  NetRCPrivate* d;
+  NetRCPrivate* const d;
 };
 }
 Q_DECLARE_OPERATORS_FOR_FLAGS(KIO::NetRC::LookUpMode)

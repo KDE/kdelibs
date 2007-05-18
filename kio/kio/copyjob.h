@@ -295,7 +295,7 @@ namespace KIO {
         KUrl m_currentDestURL;
     private:
 	class CopyJobPrivate;
-        CopyJobPrivate* d;
+        CopyJobPrivate* const d;
         friend class CopyJobPrivate; // for DestinationState
     };
 

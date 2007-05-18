@@ -189,7 +189,7 @@ private Q_SLOTS:
     void slotCanResume (KIO::Job *job, KIO::filesize_t offset);
 
 private:
-    ForwardingSlaveBasePrivate *d;
+    ForwardingSlaveBasePrivate *const d;
 };
 
 }

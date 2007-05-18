@@ -35,7 +35,8 @@ KScanDialog * KScanDialog::getScanDialog( QWidget *parent )
 KScanDialog::KScanDialog( int dialogFace, int buttonMask,
 			  QWidget *parent )
     : KPageDialog( parent ),
-      m_currentId( 1 )
+      m_currentId( 1 ),
+      d(0)
 {
   setFaceType( (KPageDialog::FaceType)dialogFace );
   setCaption( i18n("Acquire Image") );
@@ -65,7 +66,8 @@ KOCRDialog * KOCRDialog::getOCRDialog( QWidget *parent )
 KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
 			  QWidget *parent, bool modal )
     : KPageDialog( parent ),
-      m_currentId( 1 )
+      m_currentId( 1 ),
+      d(0)
 {
   setFaceType( (KPageDialog::FaceType)dialogFace );
   setCaption( i18n("OCR Image") );

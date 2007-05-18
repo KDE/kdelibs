@@ -92,6 +92,7 @@ QDataStream& KIO::operator>> (QDataStream& s, AuthInfo& a)
 NetRC* NetRC::instance = 0L;
 
 NetRC::NetRC()
+    : d(0)
 {
     isDirty = false;
 }

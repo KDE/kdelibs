@@ -26,11 +26,13 @@
 #include <QtCore/QRegExp>
 #include <kcompletion.h>
 
-class KShellCompletionPrivate
-{
-};
+//class KShellCompletionPrivate
+//{
+//};
 
-KShellCompletion::KShellCompletion() : KUrlCompletion()
+KShellCompletion::KShellCompletion()
+    : KUrlCompletion(),
+      d(0)
 {
 	m_word_break_char = ' ';
 	m_quote_char1 = '\"';
