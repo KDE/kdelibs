@@ -151,7 +151,7 @@ void KShortcut::remove(const QKeySequence &keySeq, enum EmptyHandling handleEmpt
         return;
 
     if (d->primary == keySeq) {
-        if (handleEmpty == RemoveEmpty)
+        if (handleEmpty == KeepEmpty)
             d->primary = QKeySequence();
         else {
             d->primary = d->alternate;
