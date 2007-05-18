@@ -270,7 +270,7 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
     kDebug() << "SLOT: slotEntryLoaded" << endl;
     kDebug() << "-- entry: " << entry->name().representation() << endl;
 
-    FeedWidget *fw = dynamic_cast<FeedWidget*>(m_activefeed);
+    FeedWidget *fw = static_cast<FeedWidget*>(m_activefeed);
     fw->addEntry(entry);
 
     KUrl source = KUrl(entry->preview().representation());
@@ -287,7 +287,7 @@ void KNewStuff2Download::slotPreviewLoaded(KUrl preview)
     kDebug() << "-- preview downloaded successfully" << endl;
     kDebug() << "-- downloaded to " << preview.prettyUrl() << endl;
 
-    FeedWidget *fw = dynamic_cast<FeedWidget*>(m_activefeed);
+    FeedWidget *fw = static_cast<FeedWidget*>(m_activefeed);
     fw->addPreview(preview);
 }
 
