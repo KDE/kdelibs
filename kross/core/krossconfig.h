@@ -81,7 +81,7 @@ namespace Kross {
     #define KROSS_PYTHON_LIBRARY "krosspython"
     #define KROSS_RUBY_LIBRARY "krossruby"
     #define KROSS_KJS_LIBRARY "krosskjs"
-    #define KROSS_JAVA_LIBRARY "krossjava"
+    #define KROSS_JAVA_LIBRARY "libkrossjava"
 
 }
 
