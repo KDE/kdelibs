@@ -30,6 +30,7 @@
 #include <QtCore/QFile>
 #ifdef Q_WS_WIN
 #include <QStringList>
+#include <QProcess>
 #include <windows.h>
 #endif
 
@@ -107,9 +108,14 @@ int main(int argc, char **argv)
      if (mSlaveDebug == argv[2]) 
 #ifdef Q_CC_GNU
      {
-        // gdb does not have jit debug support yet
-        qDebug("to debug kioslaves run\ngdb %s %d\n",argv[0],GetCurrentProcessId());
-        Sleep(20000);
+        // gdb does not support win32 jit debug support, so implement it by ourself
+        QByteArray buf(1024,0);
+        GetModuleFileName(NULL,buf.data(),buf.size());
+        QStringList params;
+        params << buf;
+        params << QString::number(GetCurrentProcessId());
+        QProcess::startDetached("gdb",params);
+        Sleep(1000);
      }
 #else
         // msvc: windbg supports jit debugging, require install windbg jit with windbg -i
