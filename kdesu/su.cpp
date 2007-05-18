@@ -17,7 +17,7 @@
 #include "kcookie.h"
 
 #include <config.h>
-#include <config-prefix.h> // for __KDE_BINDIR
+#include <config-prefix.h> // for LIBEXEC_INSTALL_DIR
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -125,7 +125,7 @@ int SuProcess::exec(const char *password, int check)
     if (m_superUserCommand == "su") {
         args += "-c";
     }
-    args += QByteArray(__KDE_BINDIR) + "/kdesu_stub";
+    args += QByteArray(LIBEXEC_INSTALL_DIR) + "/kdesu_stub";
     args += "-"; // krazy:exclude=doublequote_chars (QList, not QString)
 
     QByteArray command;
