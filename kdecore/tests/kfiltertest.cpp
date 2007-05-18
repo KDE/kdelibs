@@ -179,4 +179,18 @@ void KFilterTest::test_readall()
     test_readall(pathbz2, QString::fromLatin1("application/x-bzip"));
 }
 
+void KFilterTest::test_uncompressed()
+{
+    // Can KFilterDev handle uncompressed data even when using gzip decompression?
+    kDebug() << " -- test_uncompressed -- " << endl;
+    QBuffer buffer(&testData);
+    buffer.open(QIODevice::ReadOnly);
+    QIODevice *flt = KFilterDev::device(&buffer, QString::fromLatin1("application/x-gzip"), false);
+    bool ok = flt->open( QIODevice::ReadOnly );
+    QVERIFY(ok);
+    QByteArray read = flt->readAll();
+    QCOMPARE( read.size(), testData.size() );
+    QCOMPARE( read, testData );
+}
+
 #include "kfiltertest.moc"

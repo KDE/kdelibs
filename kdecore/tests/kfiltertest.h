@@ -32,6 +32,7 @@ private Q_SLOTS:
     void test_getch();
     void test_textstream();
     void test_readall();
+    void test_uncompressed();
 
 private:
     void test_block_write( const QString & fileName );
