@@ -109,6 +109,7 @@ KZoneAllocator::~KZoneAllocator()
   if (count > 1)
     qDebug("zone still contained %d blocks", count);
 #endif
+  delete d;
 }
 
 void KZoneAllocator::insertHash(MemBlock *b)
