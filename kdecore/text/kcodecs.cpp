@@ -704,6 +704,10 @@ KMD5::KMD5(const QByteArray& in)
     update( in );
 }
 
+KMD5::~KMD5()
+{
+}
+
 void KMD5::update(const QByteArray& in)
 {
     update(in.data(), int(in.size()));

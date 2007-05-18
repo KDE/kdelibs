@@ -335,6 +335,7 @@ public:
   typedef unsigned char Digest[16];
 
   KMD5();
+  ~KMD5();
 
   /**
    * Constructor that updates the digest for the given string.
