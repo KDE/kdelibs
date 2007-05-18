@@ -30,6 +30,7 @@
 #include <QtCore/QFile>
 #ifdef Q_WS_WIN
 #include <QStringList>
+#include <windows.h>
 #endif
 
 #ifndef Q_WS_WIN
@@ -98,6 +99,23 @@ int main(int argc, char **argv)
            exit(1);
         }
      }
+
+#ifdef Q_WS_WIN
+     // enter debugger in case debugging is actived 
+     QString mSlaveDebug = getenv("KDE_SLAVE_DEBUG_WAIT");
+
+     if (mSlaveDebug == argv[2]) 
+#ifdef Q_CC_GNU
+     {
+        // gdb does not have jit debug support yet
+        qDebug("to debug kioslaves run\ngdb %s %d\n",argv[0],GetCurrentProcessId());
+        Sleep(20000);
+     }
+#else
+        // msvc: windbg supports jit debugging, require install windbg jit with windbg -i
+        DebugBreak();
+#endif
+#endif
 
      int (*func)(int, char *[]) = (int (*)(int, char *[])) sym;
 
