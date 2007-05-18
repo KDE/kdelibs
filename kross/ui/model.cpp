@@ -44,6 +44,7 @@ namespace Kross {
                 Action* action;
                 ActionCollection* collection;
             };
+            QVector<ActionCollectionModelItem*> children;
             const QModelIndex parent;
 
             explicit ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex(), ActionCollectionModelItem* parentitem = 0)
@@ -64,6 +65,13 @@ namespace Kross {
             ActionCollection* collection;
             ActionCollectionModelItem* item;
             Mode mode;
+
+            template <class T>
+            ActionCollectionModelItem* childItem(ActionCollectionModelItem* item,
+                                                 const QModelIndex& parent,
+                                                 int row,
+                                                 int column,
+                                                 T value);
     };
 
 }
@@ -118,6 +126,27 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
     return 0;
 }
 
+template <class T>
+ActionCollectionModelItem* ActionCollectionModel::Private::childItem( ActionCollectionModelItem* item , 
+                                       const QModelIndex& parent,
+                                       int row,
+                                       int /*column*/, 
+                                       T value )
+{
+     ActionCollectionModelItem* childItem = 0;
+     if ( row < item->children.count() && 
+          item->children.at(row) != 0 ) {
+         childItem = item->children.at(row);
+     }
+     else {
+         childItem = new ActionCollectionModelItem(value,parent,item);
+
+         item->children.resize(row+1);
+         item->children[row] = childItem;
+     }
+     return childItem;
+}
+
 QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex& parent) const
 {
     ActionCollectionModelItem* item = parent.isValid() ? static_cast<ActionCollectionModelItem*>(parent.internalPointer()) : d->item;
@@ -126,13 +155,17 @@ QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex&
     if( row < count ) {
         Action* action = dynamic_cast< Action* >( item->collection->actions().value(row) );
         if( action )
-            return createIndex(row, column, new ActionCollectionModelItem(action, parent, item));
+        {
+            return createIndex(row, column,d->childItem(item,parent,row,column,action));
+        }
     }
     else {
         QString name = item->collection->collections().value(row - count);
         ActionCollection* collection = item->collection->collection(name);
         if( collection )
-            return createIndex(row, column, new ActionCollectionModelItem(collection, parent, item));
+        {
+            return createIndex(row, column,d->childItem(item,parent,row,column,collection));
+        }
     }
     return QModelIndex();
 }

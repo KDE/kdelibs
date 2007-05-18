@@ -299,14 +299,14 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
 
     d->collection = new KActionCollection(this);
 
-    KAction* runaction = new KAction(KIcon("media-playback-start"), i18n("Run"), this);
+    KAction* runaction = new KAction(KIcon("launch"), i18n("Run"), this);
     runaction->setObjectName("run");
     runaction->setToolTip( i18n("Execute the selected script.") );
     runaction->setEnabled(false);
     d->collection->addAction("run", runaction);
     connect(runaction, SIGNAL(triggered()), this, SLOT(slotRun()));
 
-    KAction* stopaction = new KAction(KIcon("media-playback-stop"), i18n("Stop"), this);
+    KAction* stopaction = new KAction(KIcon("process-stop"), i18n("Stop"), this);
     stopaction->setObjectName("stop");
     stopaction->setToolTip( i18n("Stop execution of the selected script.") );
     stopaction->setEnabled(false);
@@ -343,7 +343,7 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
 
     //i18n("About"), i18n("Configure")
 
-    KAction* manageraction = new KAction(KIcon("media-eject"), i18n("Script Manager"), this);
+    KAction* manageraction = new KAction(KIcon("configure"), i18n("Script Manager"), this);
     manageraction->setObjectName("manager");
     manageraction->setToolTip( i18n("Script Manager to configure scripts.") );
     d->collection->addAction("manager", manageraction);
