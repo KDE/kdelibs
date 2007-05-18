@@ -71,7 +71,7 @@ class QIODevice;
  * @author Dawit Alemayehu <adawit@kde.org>
  * @author Rik Hemsley <rik@kde.org>
  */
-class KDECORE_EXPORT KCodecs //krazy:exclude=dpointer (static methods only)
+class KDECORE_EXPORT KCodecs
 {
 public:
 
@@ -335,7 +335,6 @@ public:
   typedef unsigned char Digest[16];
 
   KMD5();
-  ~KMD5();
 
   /**
    * Constructor that updates the digest for the given string.
@@ -456,12 +455,34 @@ private:
   KMD5(const KMD5& u);
   KMD5& operator=(const KMD5& md);
 
+  void init();
+  void encode( unsigned char* output, quint32 *in, quint32 len );
+  void decode( quint32 *output, const unsigned char* in, quint32 len );
+
+  quint32 rotate_left( quint32 x, quint32 n );
+  quint32 F( quint32 x, quint32 y, quint32 z );
+  quint32 G( quint32 x, quint32 y, quint32 z );
+  quint32 H( quint32 x, quint32 y, quint32 z );
+  quint32 I( quint32 x, quint32 y, quint32 z );
+  void FF( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+               quint32  s, quint32 ac );
+  void GG( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+                quint32 s, quint32 ac );
+  void HH( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+                quint32 s, quint32 ac );
+  void II( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+             quint32 s, quint32 ac );
+
 private:
-  KMD5Private* const d;
+  quint32 m_state[4];
+  quint32 m_count[2];
+  quint8 m_buffer[64];
+  Digest m_digest;
+  bool m_finalized;
+
+  KMD5Private* d;
 };
 
-
-class KMD4Private;
 /**
  * @short An adapted C++ implementation of the MD4 Message-Digest algorithm.
  *
@@ -594,8 +615,30 @@ private:
   KMD4(const KMD4& u);
   KMD4& operator=(const KMD4& md);
 
+  void init();
+
+  void byteReverse( unsigned char *buf, quint32 len );
+
+  quint32 rotate_left( quint32 x, quint32 n );
+  quint32 F( quint32 x, quint32 y, quint32 z );
+  quint32 G( quint32 x, quint32 y, quint32 z );
+  quint32 H( quint32 x, quint32 y, quint32 z );
+  void FF( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+               quint32  s );
+  void GG( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+                quint32 s );
+  void HH( quint32& a, quint32 b, quint32 c, quint32 d, quint32 x,
+                quint32 s );
+
 private:
-  KMD4Private* const d;
+  quint32 m_state[4];
+  quint32 m_count[2];
+  quint8 m_buffer[64];
+  Digest m_digest;
+  bool m_finalized;
+
+  class KMD4Private;
+  KMD4Private* d;
 };
 
 
