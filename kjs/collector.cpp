@@ -428,7 +428,7 @@ void Collector::protect(JSValue *k)
     if (JSImmediate::isImmediate(k))
       return;
 
-    protectedValues().add(k->downcast());
+    protectedValues().add(k->asCell());
 }
 
 void Collector::unprotect(JSValue *k)
@@ -439,7 +439,7 @@ void Collector::unprotect(JSValue *k)
     if (JSImmediate::isImmediate(k))
       return;
 
-    protectedValues().remove(k->downcast());
+    protectedValues().remove(k->asCell());
 }
 
 void Collector::markProtectedObjects()
