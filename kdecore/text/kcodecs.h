@@ -71,10 +71,8 @@ class QIODevice;
  * @author Dawit Alemayehu <adawit@kde.org>
  * @author Rik Hemsley <rik@kde.org>
  */
-class KDECORE_EXPORT KCodecs
+namespace KCodecs
 {
-public:
-
   /**
    * Encodes the given data using the quoted-printable algorithm.
    *
@@ -84,7 +82,7 @@ public:
    *                breaks, too.
    * @return        quoted-printable encoded string.
    */
-  static QByteArray quotedPrintableEncode(const QByteArray & in,
+  KDECORE_EXPORT QByteArray quotedPrintableEncode(const QByteArray & in,
                                         bool useCRLF = true);
 
   /**
@@ -105,7 +103,7 @@ public:
    *                CRLF line breaks and the output will have CRLF line
    *                breaks, too.
    */
-  static void quotedPrintableEncode(const QByteArray & in, QByteArray& out,
+  KDECORE_EXPORT void quotedPrintableEncode(const QByteArray & in, QByteArray& out,
                                     bool useCRLF);
 
   /**
@@ -116,7 +114,7 @@ public:
    * @param in  data to be decoded.
    * @return    decoded string.
    */
-  static QByteArray quotedPrintableDecode(const QByteArray & in);
+  KDECORE_EXPORT QByteArray quotedPrintableDecode(const QByteArray & in);
 
   /**
    * Decodes a quoted-printable encoded data.
@@ -135,7 +133,7 @@ public:
    * @param in   data to be decoded.
    * @param out  decoded data.
    */
-  static void quotedPrintableDecode(const QByteArray & in, QByteArray& out);
+  KDECORE_EXPORT void quotedPrintableDecode(const QByteArray & in, QByteArray& out);
 
 
   /**
@@ -149,7 +147,7 @@ public:
    * @param in   data to be uuencoded
    * @return     uuencoded string.
    */
-  static QByteArray uuencode( const QByteArray& in );
+  KDECORE_EXPORT QByteArray uuencode( const QByteArray& in );
 
   /**
    * Encodes the given data using the uuencode algorithm.
@@ -166,7 +164,7 @@ public:
    * @param in   data to be uuencoded.
    * @param out  uudecoded data.
    */
-  static void uuencode( const QByteArray& in, QByteArray& out );
+  KDECORE_EXPORT void uuencode( const QByteArray& in, QByteArray& out );
 
   /**
    * Decodes the given data using the uudecode algorithm.
@@ -178,7 +176,7 @@ public:
    * @param in   data to be decoded.
    * @return     decoded string.
    */
-  static QByteArray uudecode( const QByteArray& in );
+  KDECORE_EXPORT QByteArray uudecode( const QByteArray& in );
 
   /**
    * Decodes the given data using the uudecode algorithm.
@@ -199,7 +197,7 @@ public:
    * @param in   data to be decoded.
    * @param out  uudecoded data.
    */
-  static void uudecode( const QByteArray& in, QByteArray& out );
+  KDECORE_EXPORT void uudecode( const QByteArray& in, QByteArray& out );
 
 
   /**
@@ -215,7 +213,7 @@ public:
    *
    * @return           base64 encoded string.
    */
-  static QByteArray base64Encode( const QByteArray& in, bool insertLFs = false);
+  KDECORE_EXPORT QByteArray base64Encode( const QByteArray& in, bool insertLFs = false);
 
   /**
    * Encodes the given data using the base64 algorithm.
@@ -238,7 +236,7 @@ public:
    * @param out       encoded data.
    * @param insertLFs limit the number of characters per line.
    */
-  static void base64Encode( const QByteArray& in, QByteArray& out,
+  KDECORE_EXPORT void base64Encode( const QByteArray& in, QByteArray& out,
                             bool insertLFs = false );
 
   /**
@@ -248,7 +246,7 @@ public:
    * @param in   data to be decoded.
    * @return     decoded string.
    */
-  static QByteArray base64Decode( const QByteArray& in );
+  KDECORE_EXPORT QByteArray base64Decode( const QByteArray& in );
 
   /**
    * Decodes the given data that was encoded with the base64
@@ -267,20 +265,9 @@ public:
    * @param in   data to be decoded.
    * @param out  decoded data.
    */
-  static void base64Decode( const QByteArray& in, QByteArray& out );
+  KDECORE_EXPORT void base64Decode( const QByteArray& in, QByteArray& out );
 
-
-private:
-  KCodecs();
-
-private:
-  static const char UUEncMap[64];
-  static const char UUDecMap[128];
-  static const char Base64EncMap[64];
-  static const char Base64DecMap[128];
-  static const char hexChars[16];
-  static const unsigned int maxQPLineLength;
-};
+}
 
 class KMD5Private;
 /**
