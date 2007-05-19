@@ -75,7 +75,6 @@ KDeviceListModel::KDeviceListModel(const Solid::Predicate &predicate, QObject *p
 
 KDeviceListModel::~KDeviceListModel()
 {
-    delete d->rootItem;
     delete d;
 }
 
