@@ -421,6 +421,9 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
         return false;
     }
 
+    // reset the blocking mode
+    d->socket->setBlocking(d->block);
+
     // store the IP for later
     KNetwork::KSocketAddress sa = d->socket->peerAddress();
     d->ip = sa.nodeName();
@@ -1235,6 +1238,10 @@ int TCPSlaveBase::connectResult()
 void TCPSlaveBase::setBlockConnection( bool b )
 {
     d->block = b;
+#ifndef USE_SOCKETFACTORY
+    if (d->socket)
+        d->socket->setBlocking(b);
+#endif
 }
 
 void TCPSlaveBase::setConnectTimeout( int t )
