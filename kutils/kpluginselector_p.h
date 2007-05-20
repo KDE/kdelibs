@@ -204,7 +204,7 @@ public:
         Version,
         Website,
         License,
-        Checked,
+        Checked
     };
 
     PluginDelegate(KPluginSelector::Private *parent);
