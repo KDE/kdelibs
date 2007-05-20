@@ -253,14 +253,17 @@ void NullNode::streamTo(SourceStream &s) const { s << "null"; }
 
 void BooleanNode::streamTo(SourceStream &s) const
 {
-  s << (value ? "true" : "false");
+    s << (value() ? "true" : "false");
 }
 
-void NumberNode::streamTo(SourceStream &s) const { s << UString::from(value); }
+void NumberNode::streamTo(SourceStream &s) const
+{
+    s << UString::from(value());
+}
 
 void StringNode::streamTo(SourceStream &s) const
 {
-  s.append(value, kQuote);
+    s.append(value(), kQuote);
 }
 
 void RegExpNode::streamTo(SourceStream &s) const

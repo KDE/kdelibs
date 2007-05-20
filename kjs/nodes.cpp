@@ -401,21 +401,21 @@ JSValue *NullNode::evaluate(ExecState *)
 
 JSValue *BooleanNode::evaluate(ExecState *)
 {
-  return jsBoolean(value);
+    return jsBoolean(value());
 }
 
 // ------------------------------ NumberNode -----------------------------------
 
 JSValue *NumberNode::evaluate(ExecState *)
 {
-  return jsNumber(value);
+    return jsNumber(value());
 }
 
 // ------------------------------ StringNode -----------------------------------
 
 JSValue *StringNode::evaluate(ExecState *)
 {
-  return jsString(value);
+    return jsString(value());
 }
 
 // ------------------------------ RegExpNode -----------------------------------

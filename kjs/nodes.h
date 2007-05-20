@@ -201,32 +201,38 @@ namespace KJS {
 
   class BooleanNode : public Node {
   public:
-    BooleanNode(bool v) : value(v) {}
+    BooleanNode(bool v) : val(v) {}
+    bool value() const { return val; }
+
     virtual NodeType type() const { return BooleanNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
-    bool value;
+    bool val;
   };
 
   class NumberNode : public Node {
   public:
-    NumberNode(double v) : value(v) {}
+    NumberNode(double v) : val(v) {}
+    double value() const { return val; }
+
     virtual NodeType type() const { return NumberNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
-    double value;
+    double val;
   };
 
   class StringNode : public Node {
   public:
-    StringNode(const UString *v) { value = *v; }
+    StringNode(const UString *v) : val(*v) { }
+    UString value() const { return val; }
+
     virtual NodeType type() const { return StringNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
-    UString value;
+    UString val;
   };
 
   class RegExpNode : public Node {
