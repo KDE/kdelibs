@@ -39,6 +39,8 @@ namespace KIO {
     };
 
     /**
+     * @private
+     *
      * This class provides a simple means for IPC between two applications
      * via a pipe.
      * It handles a queue of commands to be sent which makes it possible to
