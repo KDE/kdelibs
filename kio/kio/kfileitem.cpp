@@ -906,7 +906,7 @@ QString KFileItem::getStatusBarInfo() const
     {
         text += ' ';
         if ( comment.isEmpty() )
-            text += i18n ( "(Symbolic Link to %2)", linkDest() );
+            text += i18n ( "(Symbolic Link to %1)", linkDest() );
         else
             text += i18n("(%1, Link to %2)", comment, linkDest());
     }
