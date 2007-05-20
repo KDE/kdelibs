@@ -754,12 +754,19 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
     if ( !d->m_pMimeType )
     {
-        static const QString & defaultFolderIcon =
-            KGlobal::staticQString(KMimeType::mimeType( "inode/directory" )->iconName());
-
-        if ( S_ISDIR( d->m_fileMode ) )
-            return DesktopIcon( defaultFolderIcon, _size, _state );
-
+        if ( S_ISDIR( d->m_fileMode ) ) {
+            static const QString * defaultFolderIcon = 0;
+            if ( !defaultFolderIcon ) {
+                const KMimeType::Ptr mimeType = KMimeType::mimeType( "inode/directory" );
+                if ( mimeType )
+                    defaultFolderIcon = &KGlobal::staticQString( mimeType->iconName() );
+               else
+                    kWarning(7000) << "No mimetype for inode/directory could be found. Check your installation." << endl;
+            }
+            if ( defaultFolderIcon )
+                return DesktopIcon( *defaultFolderIcon, _size, _state );
+ 
+        }
         return DesktopIcon( "unknown", _size, _state );
     }
 
