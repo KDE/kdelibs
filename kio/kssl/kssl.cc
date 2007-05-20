@@ -48,6 +48,8 @@
 #include <klocale.h>
 
 #include <QtNetwork/QAbstractSocket>
+#include <k3clientsocketbase.h>
+#include <k3socketdevice.h>
 
 #ifdef __GNUC__
 #warning "kssl.cc contains temporary functions! Clean up"
@@ -252,10 +254,14 @@ return initialize();
 // I have no idea if this even works!
 int KSSL::accept(QIODevice* dev) {
 	QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(dev);
-	if (socket == 0L)
-		return -1;
+	if (socket)
+            return accept(socket->socketDescriptor()); // doubtful if this works...
 
-	return accept(socket->socketDescriptor());
+        KNetwork::KClientSocketBase *othersocket = qobject_cast<KNetwork::KClientSocketBase*>(dev);
+        if (othersocket)
+            return accept(othersocket->socketDevice()->socket());
+
+        return -1;
 }
 
 int KSSL::accept(int sock) {
@@ -334,10 +340,14 @@ return -1;
 // KDE4 FIXME: temporary code
 int KSSL::connect(QIODevice* dev) {
 	QAbstractSocket* socket = qobject_cast<QAbstractSocket*>(dev);
-	if (socket == 0L)
-		return -1;
+	if (socket)
+            return connect(socket->socketDescriptor()); // doubtful if this works...
 
-	return connect(socket->socketDescriptor());
+        KNetwork::KClientSocketBase *othersocket = qobject_cast<KNetwork::KClientSocketBase*>(dev);
+        if (othersocket)
+            return connect(othersocket->socketDevice()->socket());
+
+        return -1;
 }
 
 
