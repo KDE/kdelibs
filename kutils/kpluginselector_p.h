@@ -21,30 +21,24 @@
 #ifndef KPLUGINSELECTOR_P_H
 #define KPLUGINSELECTOR_P_H
 
+#include <QListView>
 #include <QtGui/QWidget>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QMenu>
+#include <QtGui/QItemDelegate>
+#include <QAbstractListModel>
+
 #include <kconfigbase.h>
 #include <klocale.h>
-
 #include <kutils_export.h>
 #include <kconfiggroup.h>
+#include <kplugininfo.h>
 
-class QTreeWidget;
-class KPluginInfo;
 class KCModuleProxy;
-class QSplitter;
-class QStackedWidget;
 class KPluginSelectionWidget;
-class KPluginInfoLVI;
-
-enum CheckWhatDependencies
-{
-    /// If an item was checked, check all dependencies of that item
-    DependenciesINeed = 0,
-    /// If an item was unchecked, uncheck all items that depends on that item
-    DependenciesNeedMe
-};
+class KIconLoader;
+class KDialog;
+class QLabel;
 
 
 class KPluginSelector::Private
@@ -53,112 +47,230 @@ class KPluginSelector::Private
     Q_OBJECT
 
 public:
-    Private(KPluginSelector *parent)
-        : QObject(parent)
-        , parent(parent)
-        , splitter(0)
-        , treeView(0)
-        , stackedWidget(0)
-        , contextualMenu(new QMenu(parent))
+    enum CheckWhatDependencies
     {
-        contextualMenu->addAction(i18n("Expand all"));
-        contextualMenu->addAction(i18n("Collapse all"));
+        /// If an item was checked, check all dependencies of that item
+        DependenciesINeed = 0,
+        /// If an item was unchecked, uncheck all items that depends on that item
+        DependenciesNeedMe
+    };
 
-        connect(contextualMenu, SIGNAL(triggered(QAction*)), this, SLOT(contextualAction(QAction*)));
-        /*connect(treeView, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this,
-                SLOT(treeWidgetClicked(QTreeWidgetItem*)));*/
-    }
-
-    ~Private()
-    {
-        KConfigGroup *curConfigGroup;
-        for (QList<KConfigGroup*>::Iterator it = configGroupList.begin();
-             it != configGroupList.end(); ++it)
-        {
-            curConfigGroup = (*it);
-
-            delete curConfigGroup;
-        }
-    }
-
-    /**
-      * Returns the widget that holds the @p moduleinfo configuration. It could be
-      * a KTabWidget if more than one service is provided by @p moduleinfo
-      */
-    QWidget* insertKCM(QWidget *parent,
-                       const KCModuleInfo &moduleinfo,
-                       KPluginInfoLVI *listViewItem);
-
-    void checkDependencies(const KPluginInfo *info,
-                           CheckWhatDependencies whatDependencies);
-
-    void addPluginsInternal(const QList<KPluginInfo*> &pluginInfoList,
-                            const QString &categoryName,
-                            KConfigGroup *cfgGroup,
-                            const QString &category);
-
-public Q_SLOTS:
-    void treeWidgetClicked(QTreeWidgetItem *item);
-
-    void showContextMenu(const QPoint &point);
-
-    void contextualAction(QAction *action);
+    Private(KPluginSelector *parent);
+    ~Private();
 
 Q_SIGNALS:
-    /**
-      * Tells you whether the tree is changed or not.
-      */
     void changed(bool hasChanged);
 
+private Q_SLOTS:
+    void emitChanged();
+
 public:
+    class PluginModel;
+    class PluginDelegate;
+    class QListViewSpecialized;
+    class DependenciesWidget;
     KPluginSelector *parent;
-    QSplitter *splitter;
-    QTreeWidget *treeView;
-    QStackedWidget *stackedWidget;
-    QMenu *contextualMenu;
-    QList<KPluginInfoLVI*> treeItemList;
-    QList<KCModuleProxy*> moduleProxyList;
-    QList<KConfigGroup*> configGroupList;
-    QMap<QString, KPluginInfoLVI*> categories;
-    QMap<QString, QTreeWidgetItem*> titles;
+    PluginModel *pluginModel;
+    PluginDelegate *pluginDelegate;
+    QListViewSpecialized *listView;
+    DependenciesWidget *dependenciesWidget;
     QMap<KCModuleProxy*, QStringList> moduleParentComponents;
-    QHash<QString, KPluginInfoLVI*> treeItemPluginNames;
 };
 
-class KPluginInfoLVI
-    : public QTreeWidgetItem
+
+// =============================================================
+
+
+/**
+ * This widget will inform the user about changes that happened automatically
+ * due to plugin dependencies.
+ */
+class KPluginSelector::Private::DependenciesWidget
+    : public QWidget
 {
+    Q_OBJECT
+
 public:
-    KPluginInfoLVI(const QString &itemTitle, QTreeWidget *parent);
-    KPluginInfoLVI(KPluginInfo *pluginInfo, QTreeWidgetItem *parent);
-    KPluginInfoLVI(const QString &itemTitle, QTreeWidgetItem *parent,
-                   KPluginInfo *pluginInfo = 0);
-    ~KPluginInfoLVI();
+    DependenciesWidget(QWidget *parent = 0);
+    ~DependenciesWidget();
 
-    /**
-      * Setter methods
-      */
-    void setPluginInfo(KPluginInfo *pluginInfo);
-    void setCfgGroup(KConfigGroup *cfgGroup);
-    void setModuleProxy(KCModuleProxy *moduleProxy);
-    void setCfgWidget(QWidget *cfgWidget);
-    void setItemChecked(bool itemChecked);
+    void addDependency(const QString &dependency, const QString &pluginCausant, bool added);
+    void userOverrideDependency(const QString &dependency);
 
-    /**
-      * Getter methods
-      */
-    KPluginInfo* pluginInfo() const;
-    KConfigGroup* cfgGroup() const;
-    KCModuleProxy* moduleProxy() const;
-    QWidget* cfgWidget() const;
-    bool itemChecked() const;
+    void clearDependencies();
+
+private Q_SLOTS:
+    void showDependencyDetails();
 
 private:
-    KPluginInfo *m_pluginInfo;
-    KConfigGroup *m_cfgGroup;
-    KCModuleProxy *m_moduleProxy;
-    QWidget *m_cfgWidget;
-    bool m_itemChecked;
+    struct FurtherInfo
+    {
+        bool added;
+        QString pluginCausant;
+    };
+
+    void updateDetails();
+
+    QLabel *details;
+    QMap<QString, struct FurtherInfo> dependencyMap;
+    int addedByDependencies;
+    int removedByDependencies;
+};
+
+
+// =============================================================
+
+
+/**
+ * Ah, we need viewOptions() as public...
+ */
+class KPluginSelector::Private::QListViewSpecialized
+    : public QListView
+{
+public:
+    QListViewSpecialized(QWidget *parent = 0);
+    ~QListViewSpecialized();
+
+    QStyleOptionViewItem viewOptions() const;
+};
+
+
+// =============================================================
+
+
+class KPluginSelector::Private::PluginModel
+    : public QAbstractListModel
+{
+public:
+    struct AdditionalInfo
+    {
+        int itemChecked;
+        KConfigGroup *configGroup;
+    };
+
+    PluginModel(KPluginSelector::Private *parent);
+    ~PluginModel();
+
+    void appendPluginList(const KPluginInfo::List &pluginInfoList,
+                          const QString &categoryName,
+                          const QString &categoryKey,
+                          KConfigGroup *configGroup);
+
+    // Reimplemented from QAbstractItemModel
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::CheckStateRole);
+
+    QVariant data(const QModelIndex &index, int role) const;
+
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+
+    QList<KService::Ptr> services(const QModelIndex &index) const;
+
+    KConfigGroup *configGroup(const QModelIndex &index) const;
+
+    void updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed);
+
+private:
+    QMap<QString, KPluginInfo::List> pluginInfoByCategory;
+    QHash<KPluginInfo *, KCModuleProxy *> moduleProxies;
+    QMap<QString, int> pluginCount;
+    QHash<KPluginInfo *, struct AdditionalInfo> additionalInfo;
+    KPluginSelector::Private *parent;
+};
+
+
+// =============================================================
+
+
+class KPluginSelector::Private::PluginDelegate
+    : public QItemDelegate
+{
+    Q_OBJECT
+
+public:
+    enum Roles
+    {
+        Name = 33,
+        Comment,
+        Icon,
+        Author,
+        Email,
+        Category,
+        InternalName,
+        Version,
+        Website,
+        License,
+        Checked,
+    };
+
+    PluginDelegate(KPluginSelector::Private *parent);
+    ~PluginDelegate();
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+    void setIconSize(int width, int height);
+
+    void setMinimumItemWidth(int minimumItemWidth);
+
+    void setLeftMargin(int leftMargin);
+
+    void setRightMargin(int rightMargin);
+
+    void setSeparatorPixels(int separatorPixels);
+
+protected:
+    virtual bool eventFilter(QObject *watched, QEvent *event);
+
+private Q_SLOTS:
+    void slotDefaultClicked();
+
+private:
+    enum EventReceived
+    {
+        MouseEvent = 0,
+        KeyboardEvent
+    };
+
+    QRect checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const;
+    QRect clickableLabelRect(const QStyleOptionViewItem &option, const QString &caption) const;
+
+    void updateCheckState(const QModelIndex &index, const QStyleOptionViewItem &option,
+                          const QPoint &cursorPos, QListView *listView, EventReceived eventReceived,
+                          const QString &caption);
+
+    void checkDependencies(PluginModel *model,
+                           const KPluginInfo *info,
+                           CheckWhatDependencies whatDependencies);
+
+    QString name(const QModelIndex &index) const;
+    QString comment(const QModelIndex &index) const;
+    QPixmap icon(const QModelIndex &index, int width, int height) const;
+    QString author(const QModelIndex &index) const;
+    QString email(const QModelIndex &index) const;
+    QString category(const QModelIndex &index) const;
+    QString internalName(const QModelIndex &index) const;
+    QString version(const QModelIndex &index) const;
+    QString website(const QModelIndex &index) const;
+    QString license(const QModelIndex &index) const;
+    int calculateVerticalCenter(const QRect &rect, int pixmapHeight) const;
+
+    int iconWidth;
+    int iconHeight;
+    int minimumItemWidth;
+    int leftMargin;
+    int rightMargin;
+    int separatorPixels;
+    KIconLoader *iconLoader;
+    QPoint relativeMousePosition;
+    QList<KCModuleProxy*> currentModuleProxyList; // For showing defaults
+    KDialog *configDialog; // For enabling/disabling default button
+    KPluginSelector::Private *parent;
 };
 
 #endif // KPLUGINSELECTOR_P_H

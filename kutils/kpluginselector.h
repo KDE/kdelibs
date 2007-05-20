@@ -33,6 +33,7 @@ class KPluginInfo;
 class KCModuleInfo;
 class QTreeWidgetItem;
 
+
 /**
   * @short A widget to select what plugins to load and configure the plugins.
   *
@@ -81,11 +82,11 @@ public:
       * @param componentName The name of the KComponentData of the plugin's parent.
       * @param categoryName The translated name of the category. This is the
       *                     name that is shown in the title
-      * @param category     When you have different categories of KParts
+      * @param categoryKey  When you have different categories of KParts
       *                     plugins you distinguish between the plugins using
       *                     the Category key in the .desktop file. Use this
       *                     parameter to select only those KParts plugins
-      *                     with the Category key == @p category. If @p
+      *                     with the Category key == @p categoryKey. If @p
       *                     category is not set the Category key is ignored
       *                     and all plugins are shown
       * @param config       The KConfig object that holds the state of the
@@ -99,7 +100,7 @@ public:
       */
     void addPlugins(const QString &componentName,
                     const QString &categoryName = QString(),
-                    const QString &category = QString(),
+                    const QString &categoryKey = QString(),
                     KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
     /**
@@ -108,7 +109,7 @@ public:
       */
     void addPlugins(const KComponentData &instance,
                     const QString &categoryName = QString(),
-                    const QString &category = QString(),
+                    const QString &categoryKey = QString(),
                     const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
 
     /**
@@ -119,11 +120,11 @@ public:
       *                       add to the list
       * @param categoryName   The translated name of the category. This is the
       *                       name that is shown in the title
-      * @param category       When you have different categories of KParts
+      * @param categoryKey    When you have different categories of KParts
       *                       plugins you distinguish between the plugins using
       *                       the Category key in the .desktop file. Use this
       *                       parameter to select only those KParts plugins
-      *                       with the Category key == @p category. If @p
+      *                       with the Category key == @p categoryKey. If @p
       *                       category is not set the Category key is ignored
       *                       and all plugins are shown
       * @param config         The KConfig object that holds the state of the
@@ -137,7 +138,7 @@ public:
       */
     void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
                     const QString &categoryName = QString(),
-                    const QString &category = QString(),
+                    const QString &categoryKey = QString(),
                     const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
 
     /**

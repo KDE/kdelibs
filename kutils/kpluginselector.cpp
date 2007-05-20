@@ -21,6 +21,8 @@
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
+#include <QtGui/QApplication>
+#include <QtGui/QPainter>
 #include <QtGui/QFrame>
 #include <QtGui/QStackedWidget>
 #include <QtGui/QTreeWidget>
@@ -28,8 +30,15 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QBoxLayout>
 #include <QtCore/QList>
+#include <QtCore/QEvent>
+#include <QtGui/QMouseEvent>
 #include <QtGui/QLabel>
 #include <QtGui/QBrush>
+#include <QtGui/QMessageBox>
+
+#include "kcmoduleinfo.h"
+#include "kcmoduleloader.h"
+#include "kcmoduleproxy.h"
 #include <klocale.h>
 #include <ktabwidget.h>
 #include <kcomponentdata.h>
@@ -38,133 +47,474 @@
 #include <kconfigbase.h>
 #include <kiconloader.h>
 #include <kcmodule.h>
-#include "kcmoduleinfo.h"
-#include "kcmoduleloader.h"
-#include "kcmoduleproxy.h"
 #include <kconfiggroup.h>
+#include <kiconloader.h>
+#include <kicon.h>
+#include <kstyle.h>
+#include <kdialog.h>
+#include <kurllabel.h>
 
-KPluginInfoLVI::KPluginInfoLVI(const QString &itemTitle, QTreeWidget *parent)
-    : QTreeWidgetItem(parent, QStringList(itemTitle))
-    , m_pluginInfo(0)
-    , m_cfgGroup(0)
-    , m_moduleProxy(0)
-    , m_cfgWidget(0)
+
+KPluginSelector::Private::Private(KPluginSelector *parent)
+    : QObject(parent)
+    , parent(parent)
+    , listView(0)
+{
+    pluginModel = new PluginModel(this);
+    pluginDelegate = new PluginDelegate(this);
+
+    pluginDelegate->setIconSize(48, 48);
+    pluginDelegate->setMinimumItemWidth(200);
+    pluginDelegate->setLeftMargin(20);
+    pluginDelegate->setRightMargin(20);
+    pluginDelegate->setSeparatorPixels(10);
+
+    connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
+}
+
+KPluginSelector::Private::~Private()
+{
+    delete pluginModel;
+    delete pluginDelegate;
+}
+
+void KPluginSelector::Private::emitChanged()
+{
+    emit changed(true);
+}
+
+
+// =============================================================
+
+
+KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent)
+    : QWidget(parent)
+    , addedByDependencies(0)
+    , removedByDependencies(0)
+{
+    setVisible(false);
+
+    details = new QLabel();
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    QVBoxLayout *dataLayout = new QVBoxLayout;
+    dataLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    layout->setAlignment(Qt::AlignLeft);
+    QLabel *label = new QLabel();
+    label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    label->setPixmap(KIconLoader::global()->loadIcon("dialog-information", K3Icon::FirstGroup));
+    label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    layout->addWidget(label);
+    KUrlLabel *link = new KUrlLabel();
+    link->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    link->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    link->setGlowEnabled(false);
+    link->setUnderline(false);
+    link->setFloatEnabled(true);
+    link->setUseCursor(false);
+    link->setHighlightedColor(palette().color(QPalette::Link));
+    link->setSelectedColor(palette().color(QPalette::Link));
+    link->setText("Automatic changes have been performed due to plugin dependencies");
+    dataLayout->addWidget(link);
+    dataLayout->addWidget(details);
+    layout->addLayout(dataLayout);
+    setLayout(layout);
+
+    connect(link, SIGNAL(leftClickedUrl()), this, SLOT(showDependencyDetails()));
+}
+
+KPluginSelector::Private::DependenciesWidget::~DependenciesWidget()
 {
 }
 
-KPluginInfoLVI::KPluginInfoLVI(KPluginInfo *pluginInfo, QTreeWidgetItem *parent)
-    : QTreeWidgetItem(parent, QStringList(pluginInfo->name()))
-    , m_pluginInfo(pluginInfo)
-    , m_cfgGroup(0)
-    , m_moduleProxy(0)
-    , m_cfgWidget(0)
+void KPluginSelector::Private::DependenciesWidget::addDependency(const QString &dependency, const QString &pluginCausant, bool added)
 {
-    QString toolTip = i18n("<qt><table>"
-                           "<tr><td><b>Description:</b></td><td>%1</td></tr>"
-                           "<tr><td><b>Author:</b></td><td>%2</td></tr>"
-                           "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-                           "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>",
-                           m_pluginInfo->comment(),
-                           m_pluginInfo->author(),
-                           m_pluginInfo->version(),
-                           m_pluginInfo->license());
+    if (!isVisible())
+        setVisible(true);
 
-    setToolTip(0, toolTip);
-}
+    struct FurtherInfo furtherInfo;
+    furtherInfo.added = added;
+    furtherInfo.pluginCausant = pluginCausant;
 
-KPluginInfoLVI::KPluginInfoLVI(const QString &itemTitle, QTreeWidgetItem *parent,
-                               KPluginInfo *pluginInfo)
-    : QTreeWidgetItem(parent, QStringList(itemTitle))
-    , m_pluginInfo(pluginInfo)
-    , m_cfgGroup(0)
-    , m_moduleProxy(0)
-    , m_cfgWidget(0)
-{
-    if (pluginInfo)
+    if (dependencyMap.contains(dependency)) // The dependency moved from added to removed or vice-versa
     {
-        QString toolTip = i18n("<qt><table>"
-                            "<tr><td><b>Description:</b></td><td>%1</td></tr>"
-                            "<tr><td><b>Author:</b></td><td>%2</td></tr>"
-                            "<tr><td><b>Version:</b></td><td>%3</td></tr>"
-                            "<tr><td><b>License:</b></td><td>%4</td></tr></table></qt>",
-                            m_pluginInfo->comment(),
-                            m_pluginInfo->author(),
-                            m_pluginInfo->version(),
-                            m_pluginInfo->license());
+        if (added && removedByDependencies)
+            removedByDependencies--;
+        else if (addedByDependencies)
+            addedByDependencies--;
 
-        setToolTip(0, toolTip);
+        dependencyMap[dependency] = furtherInfo;
+    }
+    else
+        dependencyMap.insert(dependency, furtherInfo);
+
+    if (added)
+        addedByDependencies++;
+    else
+        removedByDependencies++;
+
+    updateDetails();
+}
+
+void KPluginSelector::Private::DependenciesWidget::userOverrideDependency(const QString &dependency)
+{
+    if (dependencyMap.contains(dependency))
+    {
+        if (addedByDependencies && dependencyMap[dependency].added)
+            addedByDependencies--;
+        else if (removedByDependencies)
+            removedByDependencies--;
+
+        dependencyMap.remove(dependency);
+    }
+
+    updateDetails();
+}
+
+void KPluginSelector::Private::DependenciesWidget::clearDependencies()
+{
+    addedByDependencies = 0;
+    removedByDependencies = 0;
+    dependencyMap.clear();
+    updateDetails();
+}
+
+void KPluginSelector::Private::DependenciesWidget::showDependencyDetails()
+{
+    QString message = i18n("Automatically changes have been performed in order to satisfy plugin dependencies:\n");
+    foreach(const QString &dependency, dependencyMap.keys())
+    {
+        if (dependencyMap[dependency].added)
+            message += i18n("\n    %1 plugin has been automatically checked because the dependency of %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
+        else
+            message += i18n("\n    %1 plugin has been automatically unchecked becase its dependency on %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
+    }
+    QMessageBox::information(0, i18n("Dependency Check"), message);
+
+    addedByDependencies = 0;
+    removedByDependencies = 0;
+    updateDetails();
+}
+
+void KPluginSelector::Private::DependenciesWidget::updateDetails()
+{
+    if (!dependencyMap.count())
+    {
+        setVisible(false);
+        return;
+    }
+
+    QString message;
+
+    if (addedByDependencies == 1)
+        message += i18n("%1 plugin added", addedByDependencies);
+    else if (addedByDependencies > 1)
+        message += i18n("%1 plugins added", addedByDependencies);
+
+    if (removedByDependencies && !message.isEmpty())
+        message += i18n(", ");
+
+    if (removedByDependencies == 1)
+        message += i18n("%1 plugin removed", removedByDependencies);
+    else if (removedByDependencies > 1)
+        message += i18n("%1 plugins removed", removedByDependencies);
+
+    if (!message.isEmpty())
+        message += i18n(" since the last time you asked for details");
+
+    if (message.isEmpty())
+        details->setVisible(false);
+    else
+    {
+        details->setVisible(true);
+        details->setText(message);
     }
 }
 
-KPluginInfoLVI::~KPluginInfoLVI()
-{
-    if (m_cfgWidget)
 
-        delete m_cfgWidget;
+// =============================================================
+
+
+KPluginSelector::Private::QListViewSpecialized::QListViewSpecialized(QWidget *parent)
+    : QListView(parent)
+{
+    setMouseTracking(true);
 }
 
-void KPluginInfoLVI::setPluginInfo(KPluginInfo *pluginInfo)
+KPluginSelector::Private::QListViewSpecialized::~QListViewSpecialized()
 {
-    Q_ASSERT(pluginInfo);
-
-    m_pluginInfo = pluginInfo;
 }
 
-void KPluginInfoLVI::setCfgGroup(KConfigGroup *cfgGroup)
+QStyleOptionViewItem KPluginSelector::Private::QListViewSpecialized::viewOptions() const
 {
-    Q_ASSERT(cfgGroup);
-
-    m_cfgGroup = cfgGroup;
+    return QListView::viewOptions();
 }
 
-void KPluginInfoLVI::setModuleProxy(KCModuleProxy *moduleProxy)
-{
-    Q_ASSERT(moduleProxy);
 
-    m_moduleProxy = moduleProxy;
+// =============================================================
+
+
+KPluginSelector::Private::PluginModel::PluginModel(KPluginSelector::Private *parent)
+    : QAbstractListModel()
+    , parent(parent)
+{
 }
 
-void KPluginInfoLVI::setCfgWidget(QWidget *cfgWidget)
+KPluginSelector::Private::PluginModel::~PluginModel()
 {
-    Q_ASSERT(cfgWidget);
-
-    m_cfgWidget = cfgWidget;
 }
 
-void KPluginInfoLVI::setItemChecked(bool itemChecked)
+void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::List &pluginInfoList,
+                                                             const QString &categoryName,
+                                                             const QString &categoryKey,
+                                                             KConfigGroup *configGroup)
 {
-    m_itemChecked = itemChecked;
+    QString myCategoryKey = categoryKey.toLower();
 
-    if (itemChecked)
-        setCheckState(0, Qt::Checked);
+    if (!pluginInfoByCategory.contains(categoryName))
+    {
+        pluginInfoByCategory.insert(categoryName, KPluginInfo::List());
+    }
+
+    int addedPlugins = 0;
+    foreach (KPluginInfo *pluginInfo, pluginInfoList)
+    {
+        if (!pluginInfo->isHidden() &&
+             pluginInfo->category().toLower() == myCategoryKey)
+        {
+            pluginInfo->load(configGroup);
+            pluginInfoByCategory[categoryName].append(pluginInfo);
+
+            struct AdditionalInfo pluginAdditionalInfo;
+
+            if (pluginInfo->isPluginEnabled())
+                pluginAdditionalInfo.itemChecked = Qt::Checked;
+            else
+                pluginAdditionalInfo.itemChecked = Qt::Unchecked;
+
+            pluginAdditionalInfo.configGroup = configGroup;
+
+            additionalInfo.insert(pluginInfo, pluginAdditionalInfo);
+
+            addedPlugins++;
+        }
+    }
+
+    if (pluginCount.contains(categoryName))
+    {
+        pluginCount[categoryName] += addedPlugins;
+    }
     else
-        setCheckState(0, Qt::Unchecked);
+    {
+        pluginCount.insert(categoryName, addedPlugins);
+    }
 }
 
-KPluginInfo* KPluginInfoLVI::pluginInfo() const
+bool KPluginSelector::Private::PluginModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    return m_pluginInfo;
+    if (!index.isValid() || !value.isValid() || index.row() >= rowCount())
+        return false;
+
+    switch (role)
+    {
+        case PluginDelegate::Checked:
+            if (value.toBool())
+                additionalInfo[static_cast<KPluginInfo*>(index.internalPointer())].itemChecked = Qt::Checked;
+            else
+                additionalInfo[static_cast<KPluginInfo*>(index.internalPointer())].itemChecked = Qt::Unchecked;
+            break;
+        default:
+            return false;
+    }
+
+    emit dataChanged(index, index);
+
+    return true;
 }
 
-KConfigGroup* KPluginInfoLVI::cfgGroup() const
+QVariant KPluginSelector::Private::PluginModel::data(const QModelIndex &index, int role) const
 {
-    return m_cfgGroup;
+    if (!index.isValid() || index.row() >= rowCount())
+        return QVariant();
+
+    if (index.internalPointer()) // Is a plugin item
+    {
+        KPluginInfo *pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
+
+        switch (role)
+        {
+            case PluginDelegate::Name:
+                return pluginInfo->name();
+            case PluginDelegate::Comment:
+                return pluginInfo->comment();
+            case PluginDelegate::Icon:
+                return pluginInfo->icon();
+            case PluginDelegate::Author:
+                return pluginInfo->author();
+            case PluginDelegate::Email:
+                return pluginInfo->email();
+            case PluginDelegate::Category:
+                return pluginInfo->category();
+            case PluginDelegate::InternalName:
+                return pluginInfo->pluginName();
+            case PluginDelegate::Version:
+                return pluginInfo->version();
+            case PluginDelegate::Website:
+                return pluginInfo->website();
+            case PluginDelegate::License:
+                return pluginInfo->license();
+            case PluginDelegate::Checked:
+                return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).itemChecked;
+        }
+    }
+    else // Is a category
+    {
+        switch (role)
+        {
+            case PluginDelegate::Checked:
+                return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).itemChecked;
+
+            case Qt::DisplayRole:
+                int currentPosition = 0;
+                foreach (QString category, pluginInfoByCategory.keys())
+                {
+                    if (currentPosition == index.row())
+                        return category;
+
+                    currentPosition += pluginInfoByCategory[category].count() + 1;
+                }
+        }
+    }
+
+    return QVariant();
 }
 
-KCModuleProxy* KPluginInfoLVI::moduleProxy() const
+Qt::ItemFlags KPluginSelector::Private::PluginModel::flags(const QModelIndex &index) const
 {
-    return m_moduleProxy;
+    QModelIndex modelIndex = this->index(index.row(), index.column());
+
+    if (modelIndex.internalPointer()) // Is a plugin item
+        return Qt::ItemIsUserCheckable | Qt::ItemIsEnabled; // We don't want items to be selectable
+    else // Is a category
+        return Qt::ItemIsEnabled;
 }
 
-QWidget* KPluginInfoLVI::cfgWidget() const
+QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, const QModelIndex &parent) const
 {
-    return m_cfgWidget;
+    int currentPosition = 0;
+
+    if ((row < 0) || (row >= rowCount()))
+        return QModelIndex();
+
+    foreach (QString category, pluginInfoByCategory.keys())
+    {
+        if (currentPosition == row)
+            return createIndex(row, column, 0); // Is a category
+
+        foreach (KPluginInfo *pluginInfo, pluginInfoByCategory[category])
+        {
+            currentPosition++;
+
+            if (currentPosition == row)
+                return createIndex(row, column, pluginInfo); // Is a plugin item
+        }
+
+        currentPosition++;
+    }
+
+    return QModelIndex();
 }
 
-bool KPluginInfoLVI::itemChecked() const
+int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) const
 {
-    return m_itemChecked;
+    int retValue = pluginInfoByCategory.count(); // We have pluginInfoCategory.count() categories
+
+    foreach (QString category, pluginInfoByCategory.keys())
+    {
+        if (pluginCount.contains(category))
+            retValue += pluginCount[category];
+    }
+
+    return retValue;
 }
+
+QList<KService::Ptr> KPluginSelector::Private::PluginModel::services(const QModelIndex &index) const
+{
+    if (index.internalPointer()) // Is a plugin item
+    {
+        KPluginInfo *pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
+
+        return pluginInfo->kcmServices();
+    }
+
+    return QList<KService::Ptr>(); // We were asked for a category
+}
+
+KConfigGroup *KPluginSelector::Private::PluginModel::configGroup(const QModelIndex &index) const
+{
+    return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).configGroup;
+}
+
+void KPluginSelector::Private::PluginModel::updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed)
+{
+    const KPluginInfo *pluginInfo;
+
+    QModelIndex theIndex;
+    if (whatDependencies == DependenciesINeed)
+    {
+        for (int i = 0; i < rowCount(); i++)
+        {
+            theIndex = index(i, 0);
+
+            if (data(theIndex, PluginDelegate::InternalName).toString() == dependency)
+            {
+                pluginInfo = static_cast<const KPluginInfo*>(theIndex.internalPointer());
+
+                if (!data(theIndex, PluginDelegate::Checked).toBool())
+                {
+                    parent->dependenciesWidget->addDependency(pluginInfo->name(), pluginCausant, true);
+
+                    setData(theIndex, true, PluginDelegate::Checked);
+                    dependenciesPushed.append(pluginInfo->name());
+                }
+
+                foreach(const QString &indirectDependency, pluginInfo->dependencies())
+                {
+                    updateDependencies(indirectDependency, pluginInfo->name(), whatDependencies, dependenciesPushed);
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < rowCount(); i++)
+        {
+            theIndex = index(i, 0);
+
+            if (theIndex.internalPointer())
+            {
+                pluginInfo = static_cast<const KPluginInfo*>(theIndex.internalPointer());
+
+                if (pluginInfo->dependencies().contains(dependency))
+                {
+                    if (data(theIndex, PluginDelegate::Checked).toBool())
+                    {
+                        parent->dependenciesWidget->addDependency(pluginInfo->name(), pluginCausant, false);
+
+                        setData(theIndex, false, PluginDelegate::Checked);
+                        dependenciesPushed.append(pluginInfo->name());
+                    }
+
+                    updateDependencies(pluginInfo->pluginName(), pluginCausant, whatDependencies, dependenciesPushed);
+                }
+            }
+        }
+    }
+}
+
+
+// =============================================================
+
 
 KPluginSelector::KPluginSelector(QWidget *parent)
     : QWidget(parent)
@@ -175,47 +525,18 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    d->splitter = new QSplitter(Qt::Horizontal);
-    d->treeView = new QTreeWidget(d->splitter);
-    d->stackedWidget = new QStackedWidget(d->splitter);
+    d->listView = new Private::QListViewSpecialized();
+    d->listView->setVerticalScrollMode(QListView::ScrollPerPixel);
 
-    d->treeView->header()->setVisible(false);
-    d->treeView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    d->treeView->setMinimumSize(200, 200);
-    d->treeView->setFocusPolicy(Qt::NoFocus);
-    d->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    d->listView->setModel(d->pluginModel);
+    d->listView->setItemDelegate(d->pluginDelegate);
 
-    /**
-      * This QWidget will show the information text when no selection is done.
-      * By default, it will be the 0 index in the QStackedWidget.
-      */
-    QVBoxLayout *noSelectionWidgetLayout = new QVBoxLayout;
-    QWidget *noSelectionWidget = new QWidget(d->stackedWidget);
-    noSelectionWidget->setLayout(noSelectionWidgetLayout);
-    QLabel *noSelectionLabel = new QLabel(i18n("No item selected"), noSelectionWidget);
-    noSelectionLabel->setAlignment(Qt::AlignCenter);
-    noSelectionWidgetLayout->addWidget(noSelectionLabel);
-    d->stackedWidget->insertWidget(0, noSelectionWidget);
+    d->listView->viewport()->installEventFilter(d->pluginDelegate);
 
-    /**
-      * This QWidget will show the information text when no configuration is available.
-      * By default, it will be the 1 index in the QStackedWidget.
-      */
-    QVBoxLayout *noConfigWidgetLayout = new QVBoxLayout;
-    QWidget *noConfigWidget = new QWidget(d->stackedWidget);
-    noConfigWidget->setLayout(noConfigWidgetLayout);
-    QLabel *noConfigLabel = new QLabel(i18n("This plugin is not configurable"), noConfigWidget);
-    noConfigLabel->setAlignment(Qt::AlignCenter);
-    noConfigWidgetLayout->addWidget(noConfigLabel);
-    d->stackedWidget->insertWidget(1, noConfigWidget);
+    d->dependenciesWidget = new Private::DependenciesWidget;
 
-    layout->addWidget(d->splitter);
-
-    connect(d->treeView, SIGNAL(itemClicked(QTreeWidgetItem*, int)), d,
-            SLOT(treeWidgetClicked(QTreeWidgetItem*)));
-
-    connect(d->treeView, SIGNAL(customContextMenuRequested(const QPoint&)), d,
-            SLOT(showContextMenu(const QPoint&)));
+    layout->addWidget(d->listView);
+    layout->addWidget(d->dependenciesWidget);
 }
 
 KPluginSelector::~KPluginSelector()
@@ -225,7 +546,7 @@ KPluginSelector::~KPluginSelector()
 
 void KPluginSelector::addPlugins(const QString &componentName,
                                  const QString &categoryName,
-                                 const QString &category,
+                                 const QString &categoryKey,
                                  KSharedConfig::Ptr config)
 {
     QStringList desktopFileNames = KGlobal::dirs()->findAllResources("data",
@@ -243,440 +564,609 @@ void KPluginSelector::addPlugins(const QString &componentName,
     KConfigGroup *cfgGroup = new KConfigGroup(config, "KParts Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 
-    d->configGroupList.append(cfgGroup);
-
-    d->addPluginsInternal(pluginInfoList, categoryName, cfgGroup, category);
+    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, cfgGroup);
 }
 
 void KPluginSelector::addPlugins(const KComponentData &instance,
                                  const QString &categoryName,
-                                 const QString &category,
+                                 const QString &categoryKey,
                                  const KSharedConfig::Ptr &config)
 {
-    addPlugins(instance.componentName(), categoryName, category, config);
+    addPlugins(instance.componentName(), categoryName, categoryKey, config);
 }
 
 void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
                                  const QString &categoryName,
-                                 const QString &category,
+                                 const QString &categoryKey,
                                  const KSharedConfig::Ptr &config)
 {
+    if (pluginInfoList.isEmpty())
+        return;
+
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 
-    d->configGroupList.append(cfgGroup);
-
-    d->addPluginsInternal(pluginInfoList, categoryName, cfgGroup, category);
+    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, cfgGroup);
 }
 
 void KPluginSelector::load()
 {
-    KPluginInfoLVI *curItem;
-    for (QList<KPluginInfoLVI*>::Iterator it = d->treeItemList.begin();
-         it != d->treeItemList.end(); ++it)
+    QModelIndex currentIndex;
+    KPluginInfo *currentPlugin;
+    for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
-        curItem = (*it);
-
-        curItem->pluginInfo()->load(curItem->cfgGroup());
-        curItem->setItemChecked(curItem->pluginInfo()->isPluginEnabled());
+        currentIndex = d->pluginModel->index(i, 0);
+        if (currentIndex.internalPointer())
+        {
+            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
+            currentPlugin->load(d->pluginModel->configGroup(currentIndex));
+            d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
+        }
     }
 
-    KCModuleProxy *curModuleProxy;
-    for(QList<KCModuleProxy*>::Iterator it = d->moduleProxyList.begin();
-        it != d->moduleProxyList.end(); ++it )
-    {
-        curModuleProxy = (*it);
-
-        if(curModuleProxy->changed())
-            curModuleProxy->load();
-    }
-
-    QList<QTreeWidgetItem*> selectedItems = d->treeView->selectedItems();
-
-    if (selectedItems.size() == 0)
-        return;
-
-    KPluginInfoLVI *selectedPluginInfoLVI = static_cast<KPluginInfoLVI*>(selectedItems[0]);
-
-    if (selectedPluginInfoLVI->moduleProxy())
-
-        d->stackedWidget->setEnabled(selectedPluginInfoLVI->pluginInfo()->isPluginEnabled());
+    emit changed(false);
 }
 
 void KPluginSelector::save()
 {
-    KPluginInfoLVI *curItem;
-    for (QList<KPluginInfoLVI*>::Iterator it = d->treeItemList.begin();
-         it != d->treeItemList.end(); ++it)
+    QModelIndex currentIndex;
+    KPluginInfo *currentPlugin;
+    for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
-        curItem = (*it);
-
-        curItem->pluginInfo()->setPluginEnabled(curItem->itemChecked());
-        curItem->pluginInfo()->save(curItem->cfgGroup());
-    }
-
-    /**
-      * We actually have to save changes by writing into the config files
-      */
-    KConfigGroup *curConfigGroup;
-    for (QList<KConfigGroup*>::Iterator it = d->configGroupList.begin();
-         it != d->configGroupList.end(); ++it)
-    {
-        curConfigGroup = (*it);
-
-        curConfigGroup->sync();
-    }
-
-    KCModuleProxy *curModuleProxy;
-    for (QList<KCModuleProxy*>::Iterator it = d->moduleProxyList.begin();
-         it != d->moduleProxyList.end(); ++it)
-    {
-        curModuleProxy = (*it);
-
-        if (curModuleProxy->changed())
+        currentIndex = d->pluginModel->index(i, 0);
+        if (currentIndex.internalPointer())
         {
-            curModuleProxy->save();
-
-            QStringList names = d->moduleParentComponents[curModuleProxy];
-
-            if (names.isEmpty())
-               names.append(QString());
-
-            QString curName;
-            QStringList updatedModules;
-            for (QStringList::ConstIterator it = names.begin();
-                 it != names.end(); ++it )
-            {
-                curName = (*it);
-
-                if (!updatedModules.contains(curName))
-                    updatedModules.append(curName);
-            }
-
-            for (QStringList::ConstIterator it = updatedModules.begin();
-                 it != updatedModules.end(); ++it)
-            {
-                curName = (*it);
-
-                emit configCommitted(curName.toLatin1());
-            }
+            KConfigGroup *configGroup = d->pluginModel->configGroup(currentIndex);
+            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
+            currentPlugin->setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
+            currentPlugin->save(configGroup);
+            configGroup->sync();
         }
     }
-}
 
+    d->dependenciesWidget->clearDependencies();
+}
 
 void KPluginSelector::defaults()
 {
-    /**
-      * This method may use defaults() from KCModuleProxy, but since by now this does not do
-      * anything, we can set this to a more useful behaviour: loading the last saved config (ereslibre)
-      */
-
-    load();
-}
-
-QWidget* KPluginSelector::Private::insertKCM(QWidget *parent,
-                                    const KCModuleInfo &moduleinfo,
-                                    KPluginInfoLVI *listViewItem)
-{
-    Q_ASSERT(listViewItem);
-
-    KCModuleProxy *module = new KCModuleProxy(moduleinfo, parent);
-
-    if (!module->realModule())
+    QModelIndex currentIndex;
+    KPluginInfo *currentPlugin;
+    for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
-        QString errorTitle = i18n("<b>Error while retrieving plugin configuration dialog</b>");
-        QString errorMessage = i18n("A error ocurred while trying to load the configuration dialog of the current plugin (<b>%1</b>) in the library <b>%2</b>", module->moduleInfo().moduleName(), module->moduleInfo().library());
-
-        QVBoxLayout *errorTitleLayout = new QVBoxLayout;
-        QWidget *errorWidget = new QWidget;
-        errorWidget->setLayout(errorTitleLayout);
-        QLabel *errorLabel = new QLabel(errorTitle, errorWidget);
-        errorLabel->setWordWrap(true);
-        QLabel *errorLabel2 = new QLabel(errorMessage, errorWidget);
-        errorLabel2->setWordWrap(true);
-        errorLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-        errorLabel2->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-        errorTitleLayout->addWidget(errorLabel);
-        errorTitleLayout->addWidget(errorLabel2);
-
-        return errorWidget;
-    }
-
-    QStringList parentComponents = moduleinfo.service()->property("X-KDE-ParentComponents").toStringList();
-    moduleParentComponents.insert(module, parentComponents);
-
-    connect(module, SIGNAL(changed(bool)), this->parent, SIGNAL(changed(bool)));
-
-    moduleProxyList.append(module);
-
-    listViewItem->setModuleProxy(module);
-
-    return module;
-}
-
-void KPluginSelector::Private::treeWidgetClicked(QTreeWidgetItem *item)
-{
-    KPluginInfoLVI *treeWidgetItem = static_cast<KPluginInfoLVI*>(item);
-    bool isCategory = false;
-    int widgetIndex = -1;
-
-    if (!treeItemList.contains(treeWidgetItem)) // Is a category title
-    {
-        isCategory = true;
-
-        if (item->isExpanded()) 
-
-            item->setExpanded(false);
-
-        else
-
-            item->setExpanded(true);
-    }
-
-    if (treeWidgetItem->cfgWidget())
-
-        widgetIndex = stackedWidget->indexOf(treeWidgetItem->cfgWidget());
-
-    else if (!isCategory)
-    {
-        QVBoxLayout *newWidgetLayout = new QVBoxLayout;
-
-        int numServices = treeWidgetItem->pluginInfo()->kcmServices().size();
-
-        if (numServices == 0)
-
-            stackedWidget->setCurrentIndex(1);
-
-        else if (numServices == 1)
+        currentIndex = d->pluginModel->index(i, 0);
+        if (currentIndex.internalPointer())
         {
-            KCModuleInfo moduleinfo(treeWidgetItem->pluginInfo()->kcmServices().front());
-            QWidget *module = insertKCM(stackedWidget, moduleinfo, treeWidgetItem);
-            module->setLayout(newWidgetLayout);
+            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
+            currentPlugin->defaults();
+            d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
+        }
+    }
+}
 
-            widgetIndex = stackedWidget->addWidget(module);
-            treeWidgetItem->setCfgWidget(module);
+
+// =============================================================
+
+
+KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *parent)
+    : QItemDelegate(0)
+    , configDialog(0)
+    , parent(parent)
+{
+    iconLoader = new KIconLoader();
+}
+
+KPluginSelector::Private::PluginDelegate::~PluginDelegate()
+{
+    foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+    {
+        delete moduleProxy;
+    }
+    currentModuleProxyList.clear();
+
+    delete iconLoader;
+    delete configDialog;
+}
+
+void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyleOptionViewItem optionCopy(option);
+    const PluginModel *model = static_cast<const PluginModel*>(index.model());
+
+    QRect theCheckRect = checkRect(index, optionCopy);
+    QFontMetrics fontMetrics = painter->fontMetrics();
+
+    QColor unselectedTextColor = optionCopy.palette.text().color();
+    QColor selectedTextColor = optionCopy.palette.highlightedText().color();
+    QPen currentPen = painter->pen();
+    QPen unselectedPen = QPen(currentPen);
+    QPen selectedPen = QPen(currentPen);
+    QPen linkPen = QPen(currentPen);
+
+    QString details = i18n("More Options");
+    QString about = i18n("About");
+
+    unselectedPen.setColor(unselectedTextColor);
+    selectedPen.setColor(selectedTextColor);
+    linkPen.setColor(option.palette.color(QPalette::Link));
+
+    QPixmap iconPixmap = icon(index, iconWidth, iconHeight);
+
+    QFont title(painter->font());
+    QFont previousFont(painter->font());
+    QFont configureFont(painter->font());
+
+    title.setPointSize(title.pointSize() + 2);
+    title.setWeight(QFont::Bold);
+
+    painter->save();
+
+    painter->setRenderHint(QPainter::Antialiasing, true);
+
+    if (index.internalPointer())
+    {
+        if (optionCopy.state & QStyle::State_Selected)
+        {
+            painter->fillRect(optionCopy.rect, optionCopy.palette.highlight());
+            painter->setPen(selectedPen);
         }
         else
         {
-            KTabWidget *newTabWidget = new KTabWidget(stackedWidget);
-            newTabWidget->setLayout(newWidgetLayout);
+            if (((index.row() - 1) >= 0) && !(index.model()->index(index.row() - 1, 0).internalPointer()))
+                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
+            else if ((index.row() - 1) % 2)
+                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
+        }
 
-            KService::Ptr servicePtr;
-            for(QList<KService::Ptr>::ConstIterator it =
-                treeWidgetItem->pluginInfo()->kcmServices().begin();
-                it != treeWidgetItem->pluginInfo()->kcmServices().end(); ++it)
+        QString display;
+        QString secondaryDisplay = fontMetrics.elidedText(comment(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width());
+
+        QPen prevPen(painter->pen());
+        painter->setPen(linkPen);
+
+        painter->setFont(title);
+        if (model->services(index).size()) // has configuration dialog
+        {
+            display = painter->fontMetrics().elidedText(name(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width() - clickableLabelRect(optionCopy, details).width());
+
+            if (clickableLabelRect(optionCopy, details).contains(relativeMousePosition))
             {
-                servicePtr = (*it);
-
-                if(!servicePtr->noDisplay())
-                {
-                    KCModuleInfo moduleinfo(servicePtr);
-                    QWidget *module = insertKCM(newTabWidget, moduleinfo, treeWidgetItem);
-                    newTabWidget->addTab(module, moduleinfo.moduleName());
-                }
+                configureFont.setUnderline(true);
+                painter->setFont(configureFont);
+            }
+            else
+            {
+                painter->setFont(previousFont);
             }
 
-            widgetIndex = stackedWidget->addWidget(newTabWidget);
-            treeWidgetItem->setCfgWidget(newTabWidget);
+            painter->drawText(clickableLabelRect(optionCopy, details), Qt::AlignLeft, details);
         }
-    }
-    else
-    {
-        QString title = i18n("Category: <b>%1</b>", treeWidgetItem->text(0));
-
-        QVBoxLayout *categoryWidgetLayout = new QVBoxLayout;
-        QWidget *categoryWidget = new QWidget(stackedWidget);
-        categoryWidget->setLayout(categoryWidgetLayout);
-        QLabel *categoryLabel = new QLabel(title, categoryWidget);
-        categoryLabel->setWordWrap(true);
-        QLabel *categoryLabel2 = new QLabel(i18n("You can navigate through category items by selecting them on the tree"), categoryWidget);
-        categoryLabel2->setWordWrap(true);
-        categoryLabel->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-        categoryLabel2->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-        categoryWidgetLayout->addWidget(categoryLabel);
-        categoryWidgetLayout->addWidget(categoryLabel2);
-        stackedWidget->addWidget(categoryWidget);
-
-        widgetIndex = stackedWidget->addWidget(categoryWidget);
-        treeWidgetItem->setCfgWidget(categoryWidget);
-    }
-
-    if (!isCategory)
-    {
-        if (treeWidgetItem->itemChecked() != (item->checkState(0) == Qt::Checked))
-        {
-            treeWidgetItem->setItemChecked(item->checkState(0) == Qt::Checked);
-
-            emit changed(true);
-        }
-
-        // Check for dependencies
-        if (treeWidgetItem->itemChecked())
-            checkDependencies(treeWidgetItem->pluginInfo(),
-                              DependenciesINeed);
         else
-            checkDependencies(treeWidgetItem->pluginInfo(),
-                              DependenciesNeedMe);
+        {
+            display = painter->fontMetrics().elidedText(name(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width() - clickableLabelRect(optionCopy, about).width());
+
+            if (clickableLabelRect(optionCopy, about).contains(relativeMousePosition))
+            {
+                configureFont.setUnderline(true);
+                painter->setFont(configureFont);
+            }
+            else
+            {
+                painter->setFont(previousFont);
+            }
+
+            painter->drawText(clickableLabelRect(optionCopy, about), Qt::AlignLeft, about);
+        }
+
+        painter->setPen(prevPen);
+        painter->setFont(title);
+
+        painter->drawText(leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width(), separatorPixels + optionCopy.rect.top(), painter->fontMetrics().width(display), painter->fontMetrics().height(), Qt::AlignLeft, display);
+
+        painter->setFont(previousFont);
+
+        painter->drawText(leftMargin + separatorPixels * 2 + iconPixmap.width() + theCheckRect.width(), optionCopy.rect.height() - separatorPixels - fontMetrics.height() + optionCopy.rect.top(), fontMetrics.width(secondaryDisplay), fontMetrics.height(), Qt::AlignLeft, secondaryDisplay);
+
+        painter->drawPixmap(leftMargin + separatorPixels + theCheckRect.width(), calculateVerticalCenter(optionCopy.rect, iconPixmap.height()) + optionCopy.rect.top(), iconPixmap);
+
+        QStyleOptionViewItem optionCheck(optionCopy);
+
+        if (checkRect(index, optionCopy).contains(relativeMousePosition))
+        {
+            optionCheck.state |= QStyle::State_MouseOver;
+        }
+
+        drawCheck(painter, optionCheck, checkRect(index, optionCheck), (Qt::CheckState) index.model()->data(index, Checked).toInt());
+    }
+    else
+    {
+        QString display = painter->fontMetrics().elidedText(index.model()->data(index, Qt::DisplayRole).toString(), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin);
+
+        QStyleOptionButton opt;
+
+        opt.rect = QRect(leftMargin, separatorPixels + optionCopy.rect.top(), optionCopy.rect.width() - leftMargin - rightMargin, painter->fontMetrics().height());
+        opt.palette = optionCopy.palette;
+        opt.direction = optionCopy.direction;
+        opt.text = display;
+
+        QFont painterFont = painter->font();
+        painterFont.setWeight(QFont::Bold);
+        painterFont.setPointSize(painterFont.pointSize() + 2);
+        QFontMetrics metrics(painterFont);
+        painter->setFont(painterFont);
+
+        opt.fontMetrics = painter->fontMetrics();
+
+        /*if (const KStyle *style = dynamic_cast<const KStyle*>(QApplication::style()))
+        {
+            opt.rect.setHeight(sizeHint(optionCopy, index).height() - separatorPixels);
+
+            style->drawControl(KStyle::CE_Category, &opt, painter, 0);
+        }
+        else
+        {*/
+            QRect auxRect(optionCopy.rect.left() + leftMargin,
+                          optionCopy.rect.bottom() - 2,
+                          optionCopy.rect.width() - leftMargin - rightMargin,
+                          2);
+
+            QPainterPath path;
+            path.addRect(auxRect);
+
+            QLinearGradient gradient(optionCopy.rect.topLeft(),
+                                                        optionCopy.rect.bottomRight());
+            gradient.setColorAt(0, Qt::black);
+            gradient.setColorAt(1, Qt::white);
+
+            painter->setBrush(gradient);
+            painter->fillPath(path, gradient);
+
+            QRect auxRect2(optionCopy.rect.left() + leftMargin,
+                           option.rect.top(),
+                           optionCopy.rect.width() - leftMargin - rightMargin,
+                           option.rect.height());
+
+            painter->drawText(auxRect2, Qt::AlignVCenter | Qt::AlignLeft,
+                              display);
+        //}
     }
 
-    if ((treeWidgetItem->moduleProxy() == 0) || isCategory)
-
-        stackedWidget->setEnabled(true);
-
-    else
-
-        stackedWidget->setEnabled(treeWidgetItem->itemChecked());
-
-    stackedWidget->setCurrentIndex(widgetIndex);
+    painter->restore();
 }
 
-void KPluginSelector::Private::showContextMenu(const QPoint &point)
+QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    contextualMenu->exec(treeView->mapToGlobal(point));
-}
+    if (index.internalPointer())
+        return QSize(68, 68);
 
-void KPluginSelector::Private::contextualAction(QAction *action)
-{
-    if (action->text() == i18n("Expand all"))
-
-        treeView->expandAll();
-
-    else
-
-        treeView->collapseAll();
-}
-
-void KPluginSelector::Private::checkDependencies(const KPluginInfo *info,
-                                                 CheckWhatDependencies whatDependencies)
-{
-    if (whatDependencies == DependenciesINeed) // If I was checked, check my dependencies
+    /*if (const KStyle *style = dynamic_cast<const KStyle*>(QApplication::style()))
     {
-        QString curDependency;
-        for (QStringList::ConstIterator it = info->dependencies().begin();
-            it != info->dependencies().end(); ++it)
+        QSize retSize = style->sizeFromContents(KStyle::CT_Category, &option, QSize(1, option.fontMetrics.height()), 0);
+
+        retSize.setHeight(retSize.height() + separatorPixels);
+
+        return retSize;
+    }*/
+
+    return QSize(34, 34);
+}
+
+void KPluginSelector::Private::PluginDelegate::setIconSize(int width, int height)
+{
+    this->iconWidth = width;
+    this->iconHeight = height;
+}
+
+void KPluginSelector::Private::PluginDelegate::setMinimumItemWidth(int minimumItemWidth)
+{
+    this->minimumItemWidth = minimumItemWidth;
+}
+
+void KPluginSelector::Private::PluginDelegate::setLeftMargin(int leftMargin)
+{
+    this->leftMargin = leftMargin;
+}
+
+void KPluginSelector::Private::PluginDelegate::setRightMargin(int rightMargin)
+{
+    this->rightMargin = rightMargin;
+}
+
+void KPluginSelector::Private::PluginDelegate::setSeparatorPixels(int separatorPixels)
+{
+    this->separatorPixels = separatorPixels;
+}
+
+bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEvent *event)
+{
+    if ((event->type() == QEvent::MouseButtonPress) ||
+        (event->type() == QEvent::KeyRelease))
+    {
+        const QKeyEvent *keyEvent = dynamic_cast<const QKeyEvent*>(event);
+        if (keyEvent && (keyEvent->key() != Qt::Key_Space))
         {
-            curDependency = (*it);
+            return false;
+        }
 
-            if (treeItemPluginNames.contains(curDependency))
+        EventReceived eventReceived;
+        if (event->type() == QEvent::MouseButtonPress)
+        {
+            eventReceived = MouseEvent;
+        }
+        else
+        {
+            eventReceived = KeyboardEvent;
+        }
+
+        const QWidget *viewport = qobject_cast<const QWidget*>(watched);
+        if (viewport)
+        {
+            QModelIndex currentIndex;
+
+            QListViewSpecialized *listView = dynamic_cast<QListViewSpecialized*>(viewport->parent());
+            if ((eventReceived == MouseEvent) && listView)
             {
-                if (!treeItemPluginNames[curDependency]->itemChecked())
-                {
-                    treeItemPluginNames[curDependency]->setItemChecked(true);
+                currentIndex = listView->indexAt(viewport->mapFromGlobal(QCursor::pos()));
+            }
+            else if ((eventReceived == KeyboardEvent) && listView)
+            {
+                currentIndex = listView->currentIndex();
+            }
 
-                    checkDependencies(treeItemPluginNames[curDependency]->pluginInfo(),
-                                      DependenciesINeed);
+            if (listView && currentIndex.isValid())
+            {
+                QStyleOptionViewItem optionViewItem(listView->viewOptions());
+                optionViewItem.rect = listView->visualRect(currentIndex);
+
+                if (const KPluginInfo *pluginInfo = static_cast<const KPluginInfo*>(currentIndex.internalPointer()))
+                {
+                    if (pluginInfo->kcmServices().size())
+                        updateCheckState(currentIndex, optionViewItem,
+                                         viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, i18n("More Options"));
+                    else
+                        updateCheckState(currentIndex, optionViewItem,
+                                         viewport->mapFromGlobal(QCursor::pos()), listView, eventReceived, i18n("About"));
                 }
             }
         }
+
+        return QItemDelegate::eventFilter(watched, event);
     }
-    else // If I was unchecked, uncheck all items that depends on me
+    else if (event->type() == QEvent::MouseMove)
     {
-        KPluginInfoLVI *pluginInfo;
-        bool dependencyFound;
-        for (QList<KPluginInfoLVI*>::ConstIterator it = treeItemList.begin();
-             it != treeItemList.end(); ++it)
+        if (QWidget *viewport = qobject_cast<QWidget*>(watched))
         {
-            pluginInfo = (*it);
-            dependencyFound = false;
-
-            QString curDependency;
-            for (QStringList::ConstIterator it = pluginInfo->pluginInfo()->dependencies().begin();
-                 it != pluginInfo->pluginInfo()->dependencies().end() && !dependencyFound; ++it)
-            {
-                curDependency = (*it);
-
-                if (curDependency == info->pluginName())
-                {
-                    if (pluginInfo->itemChecked())
-                    {
-                        pluginInfo->setItemChecked(false);
-
-                        checkDependencies(pluginInfo->pluginInfo(),
-                                          DependenciesNeedMe);
-                    }
-
-                    dependencyFound = true;
-                }
-            }
+            relativeMousePosition = viewport->mapFromGlobal(QCursor::pos());
+            viewport->update();
         }
+    }
+    else if (event->type() == QEvent::Leave)
+    {
+        QWidget *viewport = qobject_cast<QWidget*>(watched);
+        if (viewport)
+        {
+            relativeMousePosition = QPoint(0, 0);
+            viewport->update();
+        }
+    }
+
+    return false;
+}
+
+void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
+{
+    foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+    {
+        moduleProxy->defaults();
     }
 }
 
-void KPluginSelector::Private::addPluginsInternal(const QList<KPluginInfo*> &pluginInfoList,
-                                                  const QString &categoryName,
-                                                  KConfigGroup *cfgGroup,
-                                                  const QString &category)
+QRect KPluginSelector::Private::PluginDelegate::checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const
 {
-    QTreeWidgetItem *currentTitle;
-    QString pluginCategory = categoryName.toLower();
+    QSize canvasSize = sizeHint(option, index);
+    QRect checkDimensions = QApplication::style()->subElementRect(QStyle::SE_ViewItemCheckIndicator, &option);
 
-    int validPlugins = 0;
+    QRect retRect;
+    retRect.setTopLeft(QPoint(option.rect.left() + leftMargin,
+                       ((canvasSize.height() / 2) - (checkDimensions.height() / 2)) + option.rect.top()));
+    retRect.setBottomRight(QPoint(option.rect.left() + leftMargin + checkDimensions.width(),
+                           ((canvasSize.height() / 2) - (checkDimensions.height() / 2)) + option.rect.top() + checkDimensions.height()));
 
-    /**
-      * First check for valid plugins. If a plugin is hidden or the category doesn't
-      * match the category in which we currently are, is not valid. If no valid plugins
-      * on the list, continuing has no sense
-      */
+    return retRect;
+}
 
-    KPluginInfo *pluginInfo;
-    for (QList<KPluginInfo*>::ConstIterator it = pluginInfoList.begin();
-         it != pluginInfoList.end() && validPlugins == 0; ++it)
-    {
-        pluginInfo = (*it);
+QRect KPluginSelector::Private::PluginDelegate::clickableLabelRect(const QStyleOptionViewItem &option, const QString &caption) const
+{
+    QRect delegateRect = option.rect;
+    QFontMetrics fontMetrics(option.font);
 
-        if (!pluginInfo->isHidden() &&
-            (category.isNull() || pluginInfo->category() == category))
+    return QRect(delegateRect.right() - rightMargin - fontMetrics.width(caption), separatorPixels + delegateRect.top(), fontMetrics.width(caption), fontMetrics.height());
+}
 
-            validPlugins++;
-    }
-
-    if (validPlugins == 0)
+void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelIndex &index, const QStyleOptionViewItem &option,
+                                                                const QPoint &cursorPos, QListView *listView, EventReceived eventReceived,
+                                                                const QString &caption)
+{
+    if (!index.isValid())
         return;
 
-    /**
-      * Check whether the category was created before or not. If we match
-      * a previous added category, plugins will be added to that title
-      */
-    if (!categories.contains(pluginCategory))
+    PluginModel *model = static_cast<PluginModel*>(listView->model());
+    KPluginInfo *pluginInfo = 0;
+
+    switch (eventReceived)
     {
-        KPluginInfoLVI *title = new KPluginInfoLVI(categoryName, treeView);
-
-        currentTitle = title;
-
-        treeView->expandItem(title);
-
-        titles.insert(pluginCategory, title);
-    }
-    else
-
-        currentTitle = titles[pluginCategory];
-
-    KPluginInfoLVI *newItem;
-    for (QList<KPluginInfo*>::ConstIterator it = pluginInfoList.begin();
-         it != pluginInfoList.end(); ++it)
-    {
-        pluginInfo = (*it);
-
-        if (!pluginInfo->isHidden() && (category.isNull() ||
-                                        pluginInfo->category() == category))
+        case MouseEvent:
+            if (!index.internalPointer())
+            {
+                return;
+            }
+            // We don't want to break
+        case KeyboardEvent:
         {
-            newItem = new KPluginInfoLVI(pluginInfo, currentTitle);
+            pluginInfo = static_cast<KPluginInfo*>(index.internalPointer());
 
-            categories.insert(pluginCategory, newItem);
+            if (checkRect(index, option).contains(cursorPos))
+            {
+                listView->model()->setData(index, !listView->model()->data(index, Checked).toBool(), Checked);
 
-            if(!pluginInfo->icon().isEmpty())
-                newItem->setIcon(0, SmallIcon(pluginInfo->icon(), IconSize(K3Icon::Small)));
+                parent->dependenciesWidget->userOverrideDependency(pluginInfo->name());
 
-            newItem->setCfgGroup(cfgGroup);
-            newItem->pluginInfo()->load(newItem->cfgGroup());
-            newItem->setItemChecked(newItem->pluginInfo()->isPluginEnabled());
+                if (listView->model()->data(index, Checked).toBool()) // Item was checked
+                    checkDependencies(model, pluginInfo, DependenciesINeed);
+                else
+                    checkDependencies(model, pluginInfo, DependenciesNeedMe);
+            }
 
-            treeItemList.append(newItem);
-            treeItemPluginNames.insert(pluginInfo->pluginName(), newItem);
+            QList<KService::Ptr> services = model->services(index);
+
+            if (clickableLabelRect(option, caption).contains(cursorPos))
+            {
+                foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+                {
+                    delete moduleProxy;
+                }
+                currentModuleProxyList.clear();
+
+                configDialog = new KDialog;
+                configDialog->setWindowTitle(i18n("%1", pluginInfo->name()));
+                KTabWidget *newTabWidget = new KTabWidget(0);
+                bool configurable = false;
+
+                QObject::connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
+
+                KService::Ptr servicePtr;
+                for(QList<KService::Ptr>::ConstIterator it =
+                    services.begin(); it != services.end(); ++it)
+                {
+                    servicePtr = (*it);
+
+                    if(!servicePtr->noDisplay())
+                    {
+                        KCModuleInfo moduleinfo(servicePtr);
+                        KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
+                        if (currentModuleProxy->realModule())
+                        {
+                            currentModuleProxyList.append(currentModuleProxy);
+                            newTabWidget->addTab(currentModuleProxy, servicePtr->name());
+                            configurable = true;
+                        }
+                    }
+                }
+
+                if (!configurable)
+                    configDialog->setButtons(KDialog::Close);
+                else
+                    configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
+
+                QWidget *aboutWidget = new QWidget(newTabWidget);
+                QVBoxLayout *layout = new QVBoxLayout;
+                aboutWidget->setLayout(layout);
+
+                QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()));
+                QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()));
+                QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()));
+                QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()));
+                QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()));
+                QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()));
+
+                layout->addWidget(description);
+                layout->addWidget(author);
+                layout->addWidget(authorEmail);
+                layout->addWidget(website);
+                layout->addWidget(version);
+                layout->addWidget(license);
+                layout->insertStretch(-1);
+
+                newTabWidget->addTab(aboutWidget, i18n("About"));
+                configDialog->setMainWidget(newTabWidget);
+
+                KDialog::centerOnScreen(configDialog);
+
+                if (configDialog->exec() == QDialog::Accepted)
+                {
+                    foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+                    {
+                        moduleProxy->save();
+                    }
+                }
+            }
         }
     }
 }
+
+void KPluginSelector::Private::PluginDelegate::checkDependencies(PluginModel *model,
+                                                                 const KPluginInfo *info,
+                                                                 CheckWhatDependencies whatDependencies)
+{
+    QStringList dependenciesPushed;
+
+    if (whatDependencies == DependenciesINeed)
+    {
+        foreach(const QString &dependency, info->dependencies())
+        {
+            model->updateDependencies(dependency, info->name(), whatDependencies, dependenciesPushed);
+        }
+    }
+    else
+    {
+        model->updateDependencies(info->pluginName(), info->name(), whatDependencies, dependenciesPushed);
+    }
+}
+
+QString KPluginSelector::Private::PluginDelegate::name(const QModelIndex &index) const
+{
+    return index.model()->data(index, Name).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::comment(const QModelIndex &index) const
+{
+    return index.model()->data(index, Comment).toString();
+}
+
+QPixmap KPluginSelector::Private::PluginDelegate::icon(const QModelIndex &index, int width, int height) const
+{
+    return KIcon(index.model()->data(index, Icon).toString(), iconLoader).pixmap(width, height);
+}
+
+QString KPluginSelector::Private::PluginDelegate::author(const QModelIndex &index) const
+{
+    return index.model()->data(index, Author).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::email(const QModelIndex &index) const
+{
+    return index.model()->data(index, Email).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::category(const QModelIndex &index) const
+{
+    return index.model()->data(index, Category).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::internalName(const QModelIndex &index) const
+{
+    return index.model()->data(index, InternalName).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::version(const QModelIndex &index) const
+{
+    return index.model()->data(index, Version).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::website(const QModelIndex &index) const
+{
+    return index.model()->data(index, Website).toString();
+}
+
+QString KPluginSelector::Private::PluginDelegate::license(const QModelIndex &index) const
+{
+    return index.model()->data(index, License).toString();
+}
+
+int KPluginSelector::Private::PluginDelegate::calculateVerticalCenter(const QRect &rect, int pixmapHeight) const
+{
+    return (rect.height() / 2) - (pixmapHeight / 2);
+}
+
 
 #include "kpluginselector_p.moc"
 #include "kpluginselector.moc"
