@@ -234,35 +234,6 @@ static Node* makeMultNode(Node* n1, Node* n2, Operator op)
 
 static Node* makeShiftNode(Node* n1, Node* n2, Operator op)
 {
-#ifdef TRACE_OPTIMIZER
-    printf("making Shift Node\n");
-#endif
-#ifdef OPTIMIZE_NODES
-    if (n1->isNumber()) {
-	if (n2->isNumber()) {
-#ifdef TRACE_OPTIMIZER
-	    printf("Optimizing as NUMBER\n");
-#endif
-	    NumberNode* number1 = static_cast< NumberNode * >(n1);
-	    NumberNode* number2 = static_cast< NumberNode * >(n2);
-	    if (op == OpLShift) 
-		number1->setValue((int)number1->value() << ((unsigned int)number2->value() & 0x1f));
-	    else if (op == OpRShift)
-		number1->setValue((int)number1->value() >> ((unsigned int)number2->value() & 0x1f));
-	    else // if (op == OpURShift) 
-		number1->setValue((unsigned int)number1->value() >> ((unsigned int)number2->value() & 0x1f));
-	    return number1;
-	}
-#ifdef TRACE_OPTIMIZER
-	printf("could optimize as MULT NODE NUMBER\n");
-#endif
-    }
-    if (n2->isNumber()) {
-#ifdef TRACE_OPTIMIZER
-	printf("could optimize as MULT NODE NUMBER\n");
-#endif
-    }
-#endif
     return new BinaryOperatorNode(n1, n2, op);
 }
 
