@@ -52,8 +52,10 @@
 #include <ktoolinvocation.h>
 #include <ksocketfactory.h>
 #include <kprotocolmanager.h>
+#include <k3streamsocket.h>
 
 using namespace KIO;
+using namespace KNetwork;
 
 typedef QMap<QString, QString> StringStringMap;
 Q_DECLARE_METATYPE(StringStringMap)
@@ -77,7 +79,11 @@ public:
     QString host;
     QString realHost;
     QString ip;
+#ifdef USE_SOCKETFACTORY
     QTcpSocket *socket;
+#else
+    KStreamSocket *socket;
+#endif
     KSSLPKCS12 *pkcs;
 
     int status;
@@ -114,8 +120,10 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
     d->defaultPort = defaultPort;
     d->serviceName = protocol;
     init();
-    if (useSSL)
+    if (useSSL) {
+        d->isSSL = true;
         d->isSSL = initializeSSL();
+    }
 }
 
 // The constructor procedures go here
@@ -155,6 +163,8 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 
     ssize_t written = d->socket->write(data, len);
     d->socket->flush();
+
+#ifdef USE_SOCKETFACTORY
     if (d->block)
     {
         // mimic blocking mode
@@ -165,6 +175,7 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
             // connection closed due to error
             return -1;
     }
+#endif
     return written;
 }
 
@@ -181,9 +192,11 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
     if (!d->socket)
         return -1;              // not connected
 
+#ifdef USE_SOCKETFACTORY
     d->socket->waitForReadyRead(0); // read from the kernel
     if (d->block && d->socket->bytesAvailable() == 0)
         d->socket->waitForReadyRead(-1);
+#endif
     return d->socket->read(data, len);
 }
 
@@ -208,16 +221,17 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
   if (!data || !len)
     return -1;
 
+#ifdef USE_SOCKETFACTORY
   return d->socket->readLine(data, len);
 
-#if 0
+#else
   char tmpbuf[1024];   // 1kb temporary buffer for peeking
   *data = 0;
   ssize_t clen = 0;
   char *buf = data;
   int rc = 0;
 
-if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
+if ((d->isSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
   if ( d->needSSLHandShake )
     (void) doSSLHandShake( true );
 
@@ -291,7 +305,7 @@ if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
     if ((ssize_t)bytes > len)
       bytes = len;
 
-    rc = d->socket.peek(data, bytes);
+    rc = d->socket->peek(data, bytes);
     if (rc == -1)
       return -1;		// error
     if (rc == 0)
@@ -364,6 +378,7 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
     d->host = host;
     d->needSSLHandShake = d->isSSL;
 
+#ifdef USE_SOCKETFACTORY
     d->socket = KSocketFactory::synchronousConnectToHost(protocol, host, port,
                                                          d->timeout > -1 ? d->timeout * 1000 : -1);
     if (d->socket->state() != QAbstractSocket::ConnectedState)
@@ -383,6 +398,34 @@ bool TCPSlaveBase::connectToHost( const QString &protocol,
     // store the IP for later
     d->ip = d->socket->peerAddress().toString();
     d->port = d->socket->peerPort();
+#else
+    Q_UNUSED(protocol);
+
+    // set to blocking mode so that we can connect now
+    d->socket = new KStreamSocket;
+    d->socket->setBlocking(true);
+
+    if ( d->timeout > -1 )
+        d->socket->setTimeout( d->timeout * 1000 );
+    if (!d->socket->connect(host, QString::number(port)))
+    {
+        d->status = d->socket->error();
+        if ( sendError )
+        {
+            if (d->status == KNetwork::KSocketBase::LookupFailure)
+                error( ERR_UNKNOWN_HOST, host);
+            else if ( d->status != KNetwork::KSocketBase::NoError)
+                error( ERR_COULD_NOT_CONNECT, host + QLatin1String(": ") +
+		       d->socket->errorString());
+        }
+        return false;
+    }
+
+    // store the IP for later
+    KNetwork::KSocketAddress sa = d->socket->peerAddress();
+    d->ip = sa.nodeName();
+    d->port = sa.asInet().port();
+#endif
 
     if (d->isSSL && !d->useSSLTunneling) {
         if ( !doSSLHandShake( sendError ) )
@@ -400,9 +443,11 @@ void TCPSlaveBase::closeDescriptor()
     if (d->isSSL)
       d->kssl->close();
     if (d->socket) {
+#ifdef USE_SOCKETFACTORY
         d->socket->disconnectFromHost();
         if (d->socket->state() != QAbstractSocket::UnconnectedState)
             d->socket->waitForDisconnected(); // wait for unsent data to be sent
+#endif
 
         d->socket->close();
         delete d->socket;
@@ -491,9 +536,6 @@ int TCPSlaveBase::startTLS()
     }
     certificatePrompt();
 
-#ifdef __GNUC__
-#warning "FIXME SOON: SSL is *broken*!"
-#endif
     int rc = d->kssl->connect(d->socket);
     if (rc < 0) {
         delete d->kssl;
@@ -1128,8 +1170,13 @@ int TCPSlaveBase::verifyCertificate()
 
 bool TCPSlaveBase::isConnectionValid()
 {
+#ifdef USE_SOCKETFACTORY
     if ( !d->socket || d->socket->state() != QAbstractSocket::ConnectedState)
       return false;
+#else
+    if ( !d->socket || d->socket->state() != KNetwork::KStreamSocket::Connected)
+      return false;
+#endif
 
     qint64 retval = -1;
     retval = d->socket->bytesAvailable();
@@ -1173,7 +1220,11 @@ bool TCPSlaveBase::waitForResponse( int t )
   else if (d->socket->bytesAvailable() > 0)
     return true;
 
+#ifdef USE_SOCKETFACTORY
   return d->socket->waitForReadyRead(t * 1000);
+#else
+  return d->socket->waitForMore(t * 1000) > 0;
+#endif
 }
 
 int TCPSlaveBase::connectResult()
