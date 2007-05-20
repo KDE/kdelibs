@@ -25,6 +25,84 @@
 #include "kdebug.h"
 #include "kstringhandler.h"
 
+
+KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
+                                         const QString & _key)
+    : mGroup(_group)
+    , mKey(_key)
+    , mIsImmutable(true)
+{
+}
+
+KConfigSkeletonItem::~KConfigSkeletonItem()
+{
+}
+
+void KConfigSkeletonItem::setGroup( const QString &_group )
+{
+    mGroup = _group;
+}
+
+QString KConfigSkeletonItem::group() const
+{
+    return mGroup;
+}
+
+void KConfigSkeletonItem::setKey( const QString &_key )
+{
+    mKey = _key;
+}
+
+QString KConfigSkeletonItem::key() const
+{
+    return mKey;
+}
+
+void KConfigSkeletonItem::setName(const QString &_name)
+{
+    mName = _name;
+}
+
+QString KConfigSkeletonItem::name() const
+{
+    return mName;
+}
+
+void KConfigSkeletonItem::setLabel( const QString &l )
+{
+    mLabel = l;
+}
+
+QString KConfigSkeletonItem::label() const
+{
+    return mLabel;
+}
+
+void KConfigSkeletonItem::setWhatsThis( const QString &w )
+{
+    mWhatsThis = w;
+}
+
+QString KConfigSkeletonItem::whatsThis() const
+{
+    return mWhatsThis;
+}
+
+QVariant KConfigSkeletonItem::minValue() const
+{
+    return QVariant();
+}
+
+QVariant KConfigSkeletonItem::maxValue() const
+{
+    return QVariant();
+}
+
+bool KConfigSkeletonItem::isImmutable() const
+{
+    return mIsImmutable;
+}
+
 void KConfigSkeletonItem::readImmutability( const KConfigGroup &group )
 {
   mIsImmutable = group.entryIsImmutable( mKey );
@@ -871,6 +949,11 @@ void KConfigSkeleton::setCurrentGroup( const QString &group )
   mCurrentGroup = group;
 }
 
+QString KConfigSkeleton::currentGroup() const
+{
+    return mCurrentGroup;
+}
+
 KConfig *KConfigSkeleton::config()
 {
   return mConfig.data();
@@ -884,6 +967,11 @@ const KConfig *KConfigSkeleton::config() const
 void KConfigSkeleton::setSharedConfig(KSharedConfig::Ptr pConfig)
 {
     mConfig = pConfig;
+}
+
+KConfigSkeletonItem::List KConfigSkeleton::items() const
+{
+    return mItems;
 }
 
 bool KConfigSkeleton::useDefaults(bool b)
@@ -1045,6 +1133,15 @@ KConfigSkeleton::ItemLongLong *KConfigSkeleton::addItemLongLong( const QString &
   return item;
 }
 
+KConfigSkeleton::ItemLongLong *KConfigSkeleton::addItemInt64(
+        const QString& name,
+        qint64 &reference,
+        qint64 defaultValue,
+        const QString & key)
+{
+    return addItemLongLong(name, reference, defaultValue, key);
+}
+
 KConfigSkeleton::ItemULongLong *KConfigSkeleton::addItemULongLong( const QString &name, quint64 &reference,
                                      quint64 defaultValue, const QString &key )
 {
@@ -1053,6 +1150,15 @@ KConfigSkeleton::ItemULongLong *KConfigSkeleton::addItemULongLong( const QString
                                           reference, defaultValue );
   addItem( item, name );
   return item;
+}
+
+KConfigSkeleton::ItemULongLong *KConfigSkeleton::addItemUInt64(
+        const QString & name,
+        quint64 &reference,
+        quint64 defaultValue,
+        const QString & key)
+{
+    return addItemULongLong(name, reference, defaultValue, key);
 }
 
 KConfigSkeleton::ItemDouble *KConfigSkeleton::addItemDouble( const QString &name, double &reference,

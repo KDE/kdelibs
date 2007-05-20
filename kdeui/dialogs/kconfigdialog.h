@@ -199,13 +199,13 @@ protected:
    * different from the current configutation.
    * Virtual function for custom additions.
    */
-  virtual bool hasChanged() { return false; }
+  virtual bool hasChanged();
 
   /**
    * Returns whether the current state of the dialog is
    * the same as the default configuration.
    */
-  virtual bool isDefault() { return true; }
+  virtual bool isDefault();
 
   /**
    * @internal

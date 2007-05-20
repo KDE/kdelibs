@@ -61,97 +61,62 @@
      * @param _group Config file group.
      * @param _key Config file key.
      */
-    KConfigSkeletonItem(const QString & _group, const QString & _key)
-      :mGroup(_group),mKey(_key), mIsImmutable(true)
-    {
-    }
+    KConfigSkeletonItem(const QString & _group, const QString & _key);
 
     /**
      * Destructor.
      */
-    virtual ~KConfigSkeletonItem()
-    {
-    }
+    virtual ~KConfigSkeletonItem();
 
     /**
      * Set config file group.
      */
-    void setGroup( const QString &_group )
-    {
-      mGroup = _group;
-    }
+    void setGroup( const QString &_group );
 
     /**
      * Return config file group.
      */
-    QString group() const
-    {
-      return mGroup;
-    }
+    QString group() const;
 
     /**
      * Set config file key.
      */
-    void setKey( const QString &_key )
-    {
-      mKey = _key;
-    }
+    void setKey( const QString &_key );
 
     /**
      * Return config file key.
      */
-    QString key() const
-    {
-      return mKey;
-    }
+    QString key() const;
 
     /**
      * Set internal name of entry.
      */
-    void setName(const QString &_name)
-    {
-      mName = _name;
-    }
+    void setName(const QString &_name);
 
     /**
      * Return internal name of entry.
      */
-    QString name() const
-    {
-      return mName;
-    }
+    QString name() const;
 
     /**
       Set label providing a translated one-line description of the item.
     */
-    void setLabel( const QString &l )
-    {
-      mLabel = l;
-    }
+    void setLabel( const QString &l );
 
     /**
       Return label of item. See setLabel().
     */
-    QString label() const
-    {
-      return mLabel;
-    }
+    QString label() const;
 
     /**
       Set WhatsThis description of item.
     */
-    void setWhatsThis( const QString &w )
-    {
-      mWhatsThis = w;
-    }
+    void setWhatsThis( const QString &w );
 
     /**
       Return WhatsThis description of item. See setWhatsThis().
     */
-    QString whatsThis() const
-    {
-      return mWhatsThis;
-    }
+    QString whatsThis() const;
 
     /**
      * This function is called by @ref KConfigSkeleton to read the value for this setting
@@ -183,12 +148,12 @@
     /**
      * Return minimum value of item or invalid if not specified
      */
-    virtual QVariant minValue() const { return QVariant(); }
+    virtual QVariant minValue() const;
 
     /**
      * Return maximum value of item or invalid if not specified
      */
-    virtual QVariant maxValue() const { return QVariant(); }
+    virtual QVariant maxValue() const;
 
     /**
       Sets the current value to the default value.
@@ -204,10 +169,7 @@
     /**
      * Return if the entry can be modified.
      */
-    bool isImmutable() const
-    {
-      return mIsImmutable;
-    }
+    bool isImmutable() const;
 
   protected:
     /**
@@ -1006,10 +968,7 @@ public:
   /**
    * Returns the current group used for addItem() calls.
    */
-  QString currentGroup() const
-  {
-    return mCurrentGroup;
-  }
+  QString currentGroup() const;
 
   /**
    * Register a custom @ref KConfigSkeletonItem with a given name. If the name
@@ -1145,8 +1104,7 @@ public:
 
   KDE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
                           qint64 defaultValue = 0,
-                          const QString & key = QString())
-    { return addItemLongLong(name, reference, defaultValue, key); }
+                          const QString & key = QString());
 
   /**
    * Register an item of type quint64
@@ -1165,8 +1123,7 @@ public:
 
   KDE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
-                            const QString & key = QString())
-    { return addItemULongLong(name, reference, defaultValue, key); }
+                            const QString & key = QString());
 
   /**
    * Register an item of type double.
@@ -1322,10 +1279,7 @@ public:
   /**
    * Return list of items managed by this KConfigSkeleton object.
    */
-  KConfigSkeletonItem::List items() const
-  {
-    return mItems;
-  }
+  KConfigSkeletonItem::List items() const;
 
   /**
    * Return whether a certain item is immutable

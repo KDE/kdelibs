@@ -60,9 +60,19 @@ void KCompletion::setOrder( CompOrder order )
     d->matches.setSorting( order == Weighted );
 }
 
+KCompletion::CompOrder KCompletion::order() const
+{
+    return myOrder;
+}
+
 void KCompletion::setIgnoreCase( bool ignoreCase )
 {
     myIgnoreCase = ignoreCase;
+}
+
+bool KCompletion::ignoreCase() const
+{
+    return myIgnoreCase;
 }
 
 void KCompletion::setItems( const QStringList& items )
@@ -245,6 +255,7 @@ QString KCompletion::makeCompletion( const QString& string )
 }
 
 
+
 QStringList KCompletion::substringCompletion( const QString& string ) const
 {
     // get all items in the tree, eventually in sorted order
@@ -287,6 +298,10 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
 void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
 {
     myCompletionMode = mode;
+}
+
+KGlobalSettings::Completion KCompletion::completionMode() const {
+    return myCompletionMode;
 }
 
 QStringList KCompletion::allMatches()
@@ -335,6 +350,21 @@ KCompletionMatches KCompletion::allWeightedMatches( const QString &string )
     return ret;
 }
 
+void KCompletion::setSoundsEnabled( bool enable )
+{
+    myBeep = enable;
+}
+
+bool KCompletion::soundsEnabled() const
+{
+    return myBeep;
+}
+
+bool KCompletion::hasMultipleMatches() const
+{
+    return myHasMultipleMatches;
+}
+
 /////////////////////////////////////////////////////
 ///////////////// tree operations ///////////////////
 
@@ -370,6 +400,10 @@ QString KCompletion::nextMatch()
     return completion;
 }
 
+const QString& KCompletion::lastMatch() const
+{
+    return myLastMatch;
+}
 
 
 QString KCompletion::previousMatch()

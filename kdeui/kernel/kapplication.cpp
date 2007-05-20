@@ -605,6 +605,11 @@ void KApplication::init(bool GUIenabled)
 #endif
 }
 
+KApplication* KApplication::kApplication()
+{
+    return KApp;
+}
+
 KConfig* KApplication::sessionConfig()
 {
     if (!pSessionConfig) // create an instance specific config object

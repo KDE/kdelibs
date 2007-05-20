@@ -219,7 +219,7 @@ public:
      * @return the last match. QString() is returned when there is no
      *         last match.
      */
-    virtual const QString& lastMatch() const { return myLastMatch; }
+    virtual const QString& lastMatch() const;
 
     /**
      * Returns a list of all items inserted into KCompletion. This is useful
@@ -264,9 +264,7 @@ public:
      * @return the current completion mode
      * @see setCompletionMode
      */
-    KGlobalSettings::Completion completionMode() const {
-        return myCompletionMode;
-    }
+    KGlobalSettings::Completion completionMode() const;
 
     /**
      * KCompletion offers three different ways in which it offers its items:
@@ -295,7 +293,7 @@ public:
      * @return the current completion order.
      * @see setOrder
      */
-    CompOrder order() const { return myOrder; }
+    CompOrder order() const;
 
     /**
      * Setting this to true makes KCompletion behave case insensitively.
@@ -312,7 +310,7 @@ public:
      * @return true if the case will be ignored
      * @see setIgnoreCase
      */
-    bool ignoreCase() const { return myIgnoreCase; }
+    bool ignoreCase() const;
 
     /**
      * Returns a list of all items matching the last completed string.
@@ -363,7 +361,7 @@ public:
      * @param enable true to enable sounds
      * @see soundsEnabled
      */
-    virtual void setSoundsEnabled( bool enable ) { myBeep = enable; }
+    virtual void setSoundsEnabled( bool enable );
 
     /**
      * Tells you whether KCompletion will play sounds on certain occasions.
@@ -371,14 +369,14 @@ public:
      * @return true if sounds are enabled
      * @see setSoundsEnabled
      */
-    bool soundsEnabled() const { return myBeep; }
+    bool soundsEnabled() const;
 
     /**
      * Returns true when more than one match is found.
      * @return true if there are more than one match
      * @see multipleMatches
      */
-    bool hasMultipleMatches() const { return myHasMultipleMatches; }
+    bool hasMultipleMatches() const;
 
 public Q_SLOTS:
     /**

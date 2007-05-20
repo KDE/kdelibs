@@ -141,6 +141,11 @@ int KActionCollection::count() const
   return d->nameByAction.count();
 }
 
+bool KActionCollection::isEmpty() const
+{
+  return count() == 0;
+}
+
 void KActionCollection::setComponentData(const KComponentData &cData)
 {
   if (cData.isValid()) {

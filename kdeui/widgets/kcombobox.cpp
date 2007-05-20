@@ -125,6 +125,11 @@ void KComboBox::setAutoCompletion( bool autocomplete )
     }
 }
 
+bool KComboBox::autoCompletion() const
+{
+    return completionMode() == KGlobalSettings::CompletionAuto;
+}
+
 void KComboBox::setContextMenuEnabled( bool showMenu )
 {
     if( d->klineEdit )

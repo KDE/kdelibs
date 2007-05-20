@@ -87,29 +87,25 @@ public:
     * Get the description of the palette.
     * @return the description of the palette.
     **/
-   QString description() const
-   	{ return mDesc; }
+   QString description() const;
 
    /**   	
     * Set the description of the palette.
     * @param desc the new description
     **/
-   void setDescription(const QString &desc)
-   	{ mDesc = desc; }
-   
+   void setDescription(const QString &desc);
+
    /**
     * Get the name of the palette. 
     * @return the name of the palette
     **/
-   QString name() const
-   	{ return mName; }
+   QString name() const;
 
    /**
     * Set the name of the palette.
     * @param name the name of the palette
     **/
-   void setName(const QString &name)
-   	{ mName = name; }
+   void setName(const QString &name);
 
    /**
     * Used to specify whether a palette may be edited.
@@ -125,22 +121,19 @@ public:
     * Returns whether the palette may be edited.
     * @return the state of the palette
     **/
-   Editable editable() const
-   	{ return mEditable; }
+   Editable editable() const;
 
    /**
     * Change whether the palette may be edited.
     * @param editable the state of the palette
     **/
-   void setEditable(Editable editable)
-   	{ mEditable = editable; }
-   
+   void setEditable(Editable editable);
+
    /**
     * Return the number of colors in the palette.
     * @return the number of colors
     **/
-   int nrColors() const
-   	{ return (int) mColorList.count(); }
+   int nrColors() const;
 
    /**
     * Find color by index.
@@ -173,9 +166,8 @@ public:
     * Note also that each palette can give the same color
     * a different name.
     **/
-   QString colorName(const QColor &color) const
-   	{ return colorName( findColor(color)); }
-   
+   QString colorName(const QColor &color) const;
+
    /**
     * Add a color.
     * @param newColor The color to add.
@@ -210,8 +202,7 @@ public:
     **/
    int changeColor(const QColor &oldColor, 
                    const QColor &newColor, 
-                   const QString &newColorName = QString())
-   	{ return changeColor( findColor(oldColor), newColor, newColorName); }
+                   const QString &newColorName = QString());
 
 private:
    struct ColorNode 

@@ -184,7 +184,7 @@ public:
   /**
    * Returns whether the action collection is empty or not.
    */
-  inline bool isEmpty() const { return count() == 0; }
+  bool isEmpty() const;
 
   /**
    * Return the QAction* at position "index" in the action collection.

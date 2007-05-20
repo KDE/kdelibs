@@ -84,6 +84,11 @@ KReplace::~KReplace()
     // KFind::~KFind will delete m_dialog
 }
 
+int KReplace::numReplacements() const
+{
+    return m_replacements;
+}
+
 KDialog* KReplace::replaceNextDialog( bool create )
 {
     if ( m_dialog || create )

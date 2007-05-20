@@ -145,7 +145,7 @@ public:
    * to every function that may require it.
    * @return the current application object
    */
-  static KApplication* kApplication() { return KApp; }
+  static KApplication* kApplication();
 
   /**
    * Returns the application session config object.

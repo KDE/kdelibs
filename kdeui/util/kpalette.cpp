@@ -129,6 +129,40 @@ KPalette::save()
    return sf.finalize();
 }
 
+QString KPalette::description() const
+{
+    return mDesc;
+}
+
+void KPalette::setDescription(const QString &desc)
+{
+    mDesc = desc;
+}
+
+QString KPalette::name() const
+{
+    return mName;
+}
+
+void KPalette::setName(const QString &name)
+{
+    mName = name;
+}
+
+KPalette::Editable KPalette::editable() const
+{
+    return mEditable;
+}
+
+void KPalette::setEditable(Editable editable)
+{
+    mEditable = editable;
+}
+
+int KPalette::nrColors() const
+{
+    return (int) mColorList.count();
+}
 
 KPalette&
 KPalette::operator=( const KPalette &p)
@@ -170,6 +204,11 @@ KPalette::colorName(int index) const
   return mColorList[index].name;
 }
 
+QString KPalette::colorName(const QColor &color) const
+{
+    return colorName( findColor(color));
+}
+
 int
 KPalette::addColor(const QColor &newColor, const QString &newColorName)
 {
@@ -191,3 +230,11 @@ KPalette::changeColor(int index,
 
   return index;
 }
+
+int KPalette::changeColor(const QColor &oldColor,
+                          const QColor &newColor,
+                          const QString &newColorName)
+{
+    return changeColor( findColor(oldColor), newColor, newColorName);
+}
+

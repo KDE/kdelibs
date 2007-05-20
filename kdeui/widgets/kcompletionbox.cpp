@@ -561,6 +561,11 @@ void KCompletionBox::setItems( const QStringList& items )
     d->down_workaround = true;
 }
 
+void KCompletionBox::slotSetCurrentItem( QListWidgetItem *i )
+{
+    setCurrentItem( i ); // grrr
+}
+
 void KCompletionBox::slotCurrentChanged()
 {
     if (currentItem())

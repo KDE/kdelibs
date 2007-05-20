@@ -251,5 +251,15 @@ void KConfigDialog::updateWidgetsDefault()
 {
 }
 
+bool KConfigDialog::hasChanged()
+{
+    return false;
+}
+
+bool KConfigDialog::isDefault()
+{
+    return true;
+}
+
 
 #include "kconfigdialog.moc"

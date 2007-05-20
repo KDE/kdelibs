@@ -120,7 +120,7 @@ public:
      * Can be used in a dialog box to tell the user how many replacements were made.
      * The final dialog does so already, unless you used setDisplayFinalDialog(false).
      */
-    int numReplacements() const { return m_replacements; }
+    int numReplacements() const;
 
     /**
      * Call this to reset the numMatches & numReplacements counts.

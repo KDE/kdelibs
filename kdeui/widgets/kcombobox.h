@@ -264,9 +264,7 @@ public:
     *
     * @return @p true when completion mode is automatic.
     */
-    bool autoCompletion() const {
-        return completionMode() == KGlobalSettings::CompletionAuto;
-    }
+    bool autoCompletion() const;
 
     /**
     * Enables or disable the popup (context) menu.
