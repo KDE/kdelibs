@@ -39,7 +39,7 @@
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktabwidget.h>
 #include <kcomponentdata.h>
 #include <kplugininfo.h>
@@ -206,18 +206,14 @@ void KPluginSelector::Private::DependenciesWidget::updateDetails()
 
     QString message;
 
-    if (addedByDependencies == 1)
-        message += i18n("%1 plugin added", addedByDependencies);
-    else if (addedByDependencies > 1)
-        message += i18n("%1 plugins added", addedByDependencies);
+    if (addedByDependencies)
+        message += i18np("%1 plugin added", "%1 plugins added", addedByDependencies);
 
     if (removedByDependencies && !message.isEmpty())
         message += i18n(", ");
 
-    if (removedByDependencies == 1)
-        message += i18n("%1 plugin removed", removedByDependencies);
-    else if (removedByDependencies > 1)
-        message += i18n("%1 plugins removed", removedByDependencies);
+    if (removedByDependencies)
+        message += i18np("%1 plugin removed", "%1 plugins removed", removedByDependencies);
 
     if (!message.isEmpty())
         message += i18n(" since the last time you asked for details");
@@ -1027,7 +1023,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                 currentModuleProxyList.clear();
 
                 configDialog = new KDialog;
-                configDialog->setWindowTitle(i18n("%1", pluginInfo->name()));
+                configDialog->setWindowTitle(pluginInfo->name());
                 KTabWidget *newTabWidget = new KTabWidget(0);
                 bool configurable = false;
 
