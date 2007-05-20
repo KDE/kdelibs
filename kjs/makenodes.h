@@ -25,6 +25,9 @@
 #include "nodes.h"
 #include "identifier.h"
 
+#define OPTIMIZE_NODES 
+//#define TRACE_OPTIMIZER
+
 namespace KJS {
 
 template<typename ResolverType>
@@ -173,16 +176,93 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& ge
 
 static Node* makeAddNode(Node* n1, Node* n2, Operator op)
 {
+#ifdef TRACE_OPTIMIZER
+    printf("making Add Node\n");
+#endif
+#ifdef OPTIMIZE_NODES
+    if (n1->isNumber()) {
+	if (n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	    printf("Optimizing as NUMBER\n");
+#endif
+	    NumberNode* number1 = static_cast< NumberNode * >(n1);
+	    NumberNode* number2 = static_cast< NumberNode * >(n2);
+	    number1->setValue(add(number1->value(), number2->value(), op));
+	    return number1;
+	}
+#ifdef TRACE_OPTIMIZER
+	printf("could optimize as ADD NODE NUMBER\n");
+#endif
+    }
+    if (n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	printf("could optimize as ADD NODE NUMBER\n");
+#endif
+    }
+#endif
     return new BinaryOperatorNode(n1, n2, op);
 }
 
 static Node* makeMultNode(Node* n1, Node* n2, Operator op)
 {
+#ifdef TRACE_OPTIMIZER
+    printf("making Mult Node\n");
+#endif
+#ifdef OPTIMIZE_NODES
+    if (n1->isNumber()) {
+	if (n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	    printf("Optimizing as NUMBER\n");
+#endif
+	    NumberNode* number1 = static_cast< NumberNode * >(n1);
+	    NumberNode* number2 = static_cast< NumberNode * >(n2);
+	    number1->setValue(mult(number1->value(), number2->value(), op));
+	    return number1;
+	}
+#ifdef TRACE_OPTIMIZER
+	printf("could optimize as MULT NODE NUMBER\n");
+#endif
+    }
+    if (n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	printf("could optimize as MULT NODE NUMBER\n");
+#endif
+    }
+#endif
     return new BinaryOperatorNode(n1, n2, op);
 }
 
 static Node* makeShiftNode(Node* n1, Node* n2, Operator op)
 {
+#ifdef TRACE_OPTIMIZER
+    printf("making Shift Node\n");
+#endif
+#ifdef OPTIMIZE_NODES
+    if (n1->isNumber()) {
+	if (n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	    printf("Optimizing as NUMBER\n");
+#endif
+	    NumberNode* number1 = static_cast< NumberNode * >(n1);
+	    NumberNode* number2 = static_cast< NumberNode * >(n2);
+	    if (op == OpLShift) 
+		number1->setValue((int)number1->value() << ((unsigned int)number2->value() & 0x1f));
+	    else if (op == OpRShift)
+		number1->setValue((int)number1->value() >> ((unsigned int)number2->value() & 0x1f));
+	    else // if (op == OpURShift) 
+		number1->setValue((unsigned int)number1->value() >> ((unsigned int)number2->value() & 0x1f));
+	    return number1;
+	}
+#ifdef TRACE_OPTIMIZER
+	printf("could optimize as MULT NODE NUMBER\n");
+#endif
+    }
+    if (n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	printf("could optimize as MULT NODE NUMBER\n");
+#endif
+    }
+#endif
     return new BinaryOperatorNode(n1, n2, op);
 }
 
@@ -203,11 +283,35 @@ static Node* makeBitOperNode(Node* n1, Operator op, Node* n2)
 
 static Node* makeUnaryPlusNode(Node *n)
 {
+#ifdef TRACE_OPTIMIZER
+    printf("making UnaryPlus Node\n");
+#endif
+#ifdef OPTIMIZE_NODES
+    if (n->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+    	printf("Optimizing UNARYPLUS NUMBER\n");
+#endif
+	return n;
+    }
+#endif
     return new UnaryPlusNode(n);
 }
 
 static Node* makeNegateNode(Node *n)
 {
+#ifdef TRACE_OPTIMIZER
+    printf("making Negate Node\n");
+#endif
+#ifdef OPTIMIZE_NODES
+    if (n->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+    	printf("Optimizing NEGATE NUMBER\n");
+#endif
+	NumberNode *number = static_cast <NumberNode *>(n);
+	number->setValue(-number->value());
+	return number;
+    }
+#endif
     return new NegateNode(n);
 }
 
@@ -219,6 +323,11 @@ static Node* makeBitwiseNotNode(Node *n)
 static Node* makeLogicalNotNode(Node *n)
 {
     return new LogicalNotNode(n);
+}
+
+static Node* makeGroupNode(Node *n)
+{
+    return new GroupNode(n);
 }
 
 static StatementNode* makeIfNode(Node *e, StatementNode *s1, StatementNode *s2)
@@ -240,3 +349,4 @@ static StatementNode *makeImportNode(PackageNameNode *n,
 } // namespace KJS
 
 #endif
+// vi: set sw=4 :

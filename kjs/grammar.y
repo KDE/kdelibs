@@ -230,7 +230,7 @@ PrimaryExprNoBrace:
   | ArrayLiteral
   | IDENT                               { $$ = new DynamicResolver<ResolveIdentifier>(*$1, ResolveIdentifier()); }
   | '(' Expr ')'                        { $$ = ($2->isResolveNode() || $2->isGroupNode()) ?
-                                            $2 : new GroupNode($2); }
+                                            $2 : makeGroupNode($2); }
 ;
 
 ArrayLiteral:

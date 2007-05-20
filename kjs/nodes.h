@@ -215,6 +215,7 @@ namespace KJS {
   public:
     NumberNode(double v) : val(v) {}
     double value() const { return val; }
+    void setValue(double v) { val = v; }
 
     virtual NodeType type() const { return NumberNodeType; }
     JSValue* evaluate(ExecState*);
