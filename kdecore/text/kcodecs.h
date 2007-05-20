@@ -349,7 +349,7 @@ public:
    * @param in     message to be added to digest
    * @param len    the length of the given message.
    */
-  void update(const char* in, int len = -1) { update(reinterpret_cast<const unsigned char*>(in), len); }
+  void update(const char* in, int len = -1);
 
   /**
    * @overload

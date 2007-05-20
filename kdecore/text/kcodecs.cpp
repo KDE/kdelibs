@@ -718,6 +718,11 @@ void KMD5::update(const QByteArray& in)
     update(in.data(), int(in.size()));
 }
 
+void KMD5::update(const char* in, int len)
+{
+    update(reinterpret_cast<const unsigned char*>(in), len);
+}
+
 void KMD5::update(const unsigned char* in, int len)
 {
     if (len < 0)
