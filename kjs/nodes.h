@@ -64,8 +64,21 @@ namespace KJS {
 
   class Node {
   public:
+      enum NodeType {
+          UnknownNodeType,
+          NullNodeType,
+          BooleanNodeType,
+          NumberNodeType,
+          StringNodeType,
+          RegExpNodeType,
+          TryNodeType,
+          GroupNodeType
+      };
+
     Node();
     virtual ~Node();
+
+    virtual NodeType type() const { return UnknownNodeType; }
 
     virtual JSValue *evaluate(ExecState *exec) = 0;
     UString toString() const;
@@ -83,8 +96,9 @@ namespace KJS {
     virtual bool isResolveNode() const { return false; }
     virtual bool isBracketAccessorNode() const { return false; }
     virtual bool isDotAccessorNode() const { return false; }
-    virtual bool isGroupNode() const { return false; }
-    virtual bool isTryNode()          const { return false; }
+    bool isNumber() const { return type() == NumberNodeType; }
+    bool isGroupNode() const { return type() == GroupNodeType; }
+    bool isTryNode() const { return type() == TryNodeType; }
     virtual bool introducesNewStaticScope () const { return false; }
     virtual bool introducesNewDynamicScope() const { return false; }
     bool introducesNewScope() const { return introducesNewStaticScope() || introducesNewDynamicScope(); }
@@ -180,6 +194,7 @@ namespace KJS {
   class NullNode : public Node {
   public:
     NullNode() {}
+    virtual NodeType type() const { return NullNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   };
@@ -187,6 +202,7 @@ namespace KJS {
   class BooleanNode : public Node {
   public:
     BooleanNode(bool v) : value(v) {}
+    virtual NodeType type() const { return BooleanNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
@@ -196,6 +212,7 @@ namespace KJS {
   class NumberNode : public Node {
   public:
     NumberNode(double v) : value(v) {}
+    virtual NodeType type() const { return NumberNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
@@ -205,6 +222,7 @@ namespace KJS {
   class StringNode : public Node {
   public:
     StringNode(const UString *v) { value = *v; }
+    virtual NodeType type() const { return StringNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
@@ -215,6 +233,7 @@ namespace KJS {
   public:
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
+    virtual NodeType type() const { return RegExpNodeType; }
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
   private:
@@ -339,10 +358,10 @@ namespace KJS {
   class GroupNode : public Node {
   public:
     GroupNode(Node *g) : group(g) { }
+    virtual NodeType type() const { return GroupNodeType; }
     virtual JSValue* evaluate(ExecState*);
     virtual Node *nodeInsideAllParens();
     virtual void streamTo(SourceStream&) const;
-    virtual bool isGroupNode() const { return true; }
     virtual void recurseVisit(NodeVisitor *visitor);
   private:
     RefPtr<Node> group;
@@ -1093,12 +1112,12 @@ namespace KJS {
   public:
     TryNode(StatementNode *b, const Identifier &e, StatementNode *c, StatementNode *f)
       : tryBlock(b), exceptionIdent(e), catchBlock(c), finallyBlock(f) { }
+    virtual NodeType type() const { return TryNodeType; }
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
 
     void recurseVisitNonCatch(NodeVisitor *visitor);
-    virtual bool isTryNode()  const { return true; }
   private:
     RefPtr<StatementNode> tryBlock;
     Identifier exceptionIdent;
