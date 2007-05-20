@@ -169,7 +169,7 @@ static QString kfsstnd_defaultlibexecdir()
  * 4) update the kde_default documentation
  * 5) update the list in kde-config.cpp.in
 
-
+html
 icon
 apps
 sound
@@ -196,7 +196,8 @@ xdgdata-pixmap
 xdgdata-mime
  */
 static const char types[] =
-   "icon\0"
+    "html\0"
+    "icon\0"
     "apps\0"
     "sound\0"
     "data\0"
@@ -223,10 +224,10 @@ static const char types[] =
     "\0";
 
 static const int types_indices[] = {
-       0,    5,   10,   16,   21,   28,   37,   42,
-      55,   62,   66,   76,   80,   87,   97,  104,
-     114,  119,  129,  142,  155,  168,  181,  196,
-      -1
+       0,    5,   10,   15,   21,   26,   33,   42,
+      47,   60,   67,   71,   81,   85,   92,  102,
+     109,  119,  124,  134,  147,  160,  173,  186,
+     201,   -1
 };
 
 static int tokenize( QStringList& token, const QString& str,
