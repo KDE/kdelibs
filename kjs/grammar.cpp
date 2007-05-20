@@ -2410,8 +2410,7 @@ yyreduce:
 
   case 25:
 #line 232 "grammar.y"
-    { (yyval.node) = ((yyvsp[(2) - (3)].node)->isResolveNode() || (yyvsp[(2) - (3)].node)->isGroupNode()) ?
-                                            (yyvsp[(2) - (3)].node) : new GroupNode((yyvsp[(2) - (3)].node)); ;}
+    { (yyval.node) = makeGroupNode((yyvsp[(2) - (3)].node)); ;}
     break;
 
   case 26:

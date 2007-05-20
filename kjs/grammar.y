@@ -229,8 +229,8 @@ PrimaryExprNoBrace:
   | Literal
   | ArrayLiteral
   | IDENT                               { $$ = new DynamicResolver<ResolveIdentifier>(*$1, ResolveIdentifier()); }
-  | '(' Expr ')'                        { $$ = ($2->isResolveNode() || $2->isGroupNode()) ?
-                                            $2 : makeGroupNode($2); }
+  | '(' Expr ')'                        { $$ = makeGroupNode($2); }
+
 ;
 
 ArrayLiteral:

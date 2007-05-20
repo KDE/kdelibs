@@ -199,6 +199,15 @@ static Node* makeAddNode(Node* n1, Node* n2, Operator op)
 	printf("could optimize as ADD NODE NUMBER\n");
 #endif
     }
+    if (op == OpPlus && n1->isString() && n2->isString()) {
+#ifdef TRACE_OPTIMIZER
+	printf("Optimizing as STRING\n");
+#endif
+	StringNode* str1 = static_cast<StringNode*>(n1);
+	StringNode* str2 = static_cast<StringNode*>(n2);
+	str1->setValue(str1->value() + str2->value());
+	return str1;
+    }
 #endif
     return new BinaryOperatorNode(n1, n2, op);
 }
@@ -298,6 +307,8 @@ static Node* makeLogicalNotNode(Node *n)
 
 static Node* makeGroupNode(Node *n)
 {
+    if (n->isResolveNode() || n->isGroupNode())
+	return n;
     return new GroupNode(n);
 }
 

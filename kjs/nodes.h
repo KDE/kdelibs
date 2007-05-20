@@ -97,6 +97,7 @@ namespace KJS {
     virtual bool isBracketAccessorNode() const { return false; }
     virtual bool isDotAccessorNode() const { return false; }
     bool isNumber() const { return type() == NumberNodeType; }
+    bool isString() const { return type() == StringNodeType; }
     bool isGroupNode() const { return type() == GroupNodeType; }
     bool isTryNode() const { return type() == TryNodeType; }
     virtual bool introducesNewStaticScope () const { return false; }
@@ -228,6 +229,7 @@ namespace KJS {
   public:
     StringNode(const UString *v) : val(*v) { }
     UString value() const { return val; }
+    void setValue(const UString& v) { val = v; }
 
     virtual NodeType type() const { return StringNodeType; }
     JSValue* evaluate(ExecState*);
