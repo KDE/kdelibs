@@ -216,6 +216,11 @@ int minInt(int d1, int d2)
     return (d1 < d2) ? d1 : d2;
 }
 
+double add(double n1, double n2, Operator oper)
+{
+    return oper == OpPlus ? n1 + n2 : n1 - n2;
+}
+
 // ECMA 11.6
 JSValue* add(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper)
 {
@@ -227,10 +232,21 @@ JSValue* add(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper)
     if ((p1->isString() || p2->isString()) && oper == OpPlus)
         return jsString(p1->toString(exec) + p2->toString(exec));
     
-    if (oper == OpPlus)
-        return jsNumber(p1->toNumber(exec) + p2->toNumber(exec));
+    return jsNumber(add(p1->toNumber(exec), p2->toNumber(exec), oper));
+}
+
+double mult(double n1, double n2, Operator oper)
+{
+    double result;
+
+    if (oper == OpMult)
+        result = n1 * n2;
+    else if (oper == OpDiv)
+        result = n1 / n2;
     else
-        return jsNumber(p1->toNumber(exec) - p2->toNumber(exec));
+        result = fmod(n1, n2);
+
+    return result;
 }
 
 // ECMA 11.5
@@ -239,14 +255,7 @@ JSValue* mult(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper)
     double n1 = v1->toNumber(exec);
     double n2 = v2->toNumber(exec);
     
-    double result;
-    
-    if (oper == OpMult)
-        result = n1 * n2;
-    else if (oper == OpDiv)
-        result = n1 / n2;
-    else
-        result = fmod(n1, n2);
+    double result = mult(n1, n2, oper);
     
     return jsNumber(result);
 }

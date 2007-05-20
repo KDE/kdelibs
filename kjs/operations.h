@@ -101,6 +101,14 @@ namespace KJS {
    */
   JSValue* add(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper);
   /**
+   * Additive operator. Either performs an addition or substraction of n1
+   * and n2.
+   * @param oper OpPlus or OpMinus for an addition or substraction,
+   * respectively.
+   * @return The result of the operation.
+   */
+  double add(double n1, double n2, Operator oper);
+  /**
    * Multiplicative operator. Either multiplies/divides v1 and v2 or
    * calculates the remainder from an division.
    * @param oper OpMult, OpDiv or OpMod for a multiplication, division or
@@ -108,6 +116,14 @@ namespace KJS {
    * @return The result of the operation.
    */
   JSValue* mult(ExecState* exec, JSValue* v1, JSValue* v2, Operator oper);
+  /**
+   * Multiplicative operator. Either multiplies/divides n1 and n2 or
+   * calculates the remainder from an division.
+   * @param oper OpMult, OpDiv or OpMod for a multiplication, division or
+   * modulo operation.
+   * @return The result of the operation.
+   */
+  double mult(double n1, double n2, Operator oper);
 
 }
 
