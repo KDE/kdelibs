@@ -26,7 +26,7 @@
 #include "identifier.h"
 
 #define OPTIMIZE_NODES 
-//#define TRACE_OPTIMIZER
+#define TRACE_OPTIMIZER
 
 namespace KJS {
 
@@ -65,6 +65,11 @@ static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
     assert(n->isDotAccessorNode());
     DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
     return new AssignDotNode(dot->base(), dot->identifier(), op, expr);
+}
+
+static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
+{
+    return new ConditionalNode(l, e1, e2);
 }
 
 static Node* makePrefixNode(Node* expr, Operator op)
@@ -261,6 +266,11 @@ static Node* makeBitOperNode(Node* n1, Operator op, Node* n2)
     return new BinaryOperatorNode(n1, n2, op);
 }
 
+static Node* makeBinaryLogicalNode(Node* n1, Operator op, Node* n2)
+{
+    return new BinaryLogicalNode(n1, op, n2);
+}
+
 static Node* makeUnaryPlusNode(Node *n)
 {
 #ifdef TRACE_OPTIMIZER
@@ -326,6 +336,13 @@ static StatementNode *makeImportNode(PackageNameNode *n,
     stat->setAlias(a);
 
     return stat;
+}
+
+static StatementNode *makeLabelNode(const Identifier& l, StatementNode* s)
+{
+    s->pushLabel(l);
+    return new LabelNode(l, s);
+
 }
 
 } // namespace KJS

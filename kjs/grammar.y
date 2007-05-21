@@ -508,53 +508,53 @@ BitwiseORExprNoBF:
 
 LogicalANDExpr:
     BitwiseORExpr
-  | LogicalANDExpr AND BitwiseORExpr    { $$ = new BinaryLogicalNode($1, OpAnd, $3); }
+  | LogicalANDExpr AND BitwiseORExpr    { $$ = makeBinaryLogicalNode($1, OpAnd, $3); }
 ;
 
 LogicalANDExprNoIn:
     BitwiseORExprNoIn
   | LogicalANDExprNoIn AND BitwiseORExprNoIn
-                                        { $$ = new BinaryLogicalNode($1, OpAnd, $3); }
+                                        { $$ = makeBinaryLogicalNode($1, OpAnd, $3); }
 ;
 
 LogicalANDExprNoBF:
     BitwiseORExprNoBF
   | LogicalANDExprNoBF AND BitwiseORExpr
-                                        { $$ = new BinaryLogicalNode($1, OpAnd, $3); }
+                                        { $$ = makeBinaryLogicalNode($1, OpAnd, $3); }
 ;
 
 LogicalORExpr:
     LogicalANDExpr
-  | LogicalORExpr OR LogicalANDExpr     { $$ = new BinaryLogicalNode($1, OpOr, $3); }
+  | LogicalORExpr OR LogicalANDExpr     { $$ = makeBinaryLogicalNode($1, OpOr, $3); }
 ;
 
 LogicalORExprNoIn:
     LogicalANDExprNoIn
   | LogicalORExprNoIn OR LogicalANDExprNoIn
-                                        { $$ = new BinaryLogicalNode($1, OpOr, $3); }
+                                        { $$ = makeBinaryLogicalNode($1, OpOr, $3); }
 ;
 
 LogicalORExprNoBF:
     LogicalANDExprNoBF
-  | LogicalORExprNoBF OR LogicalANDExpr { $$ = new BinaryLogicalNode($1, OpOr, $3); }
+  | LogicalORExprNoBF OR LogicalANDExpr { $$ = makeBinaryLogicalNode($1, OpOr, $3); }
 ;
 
 ConditionalExpr:
     LogicalORExpr
   | LogicalORExpr '?' AssignmentExpr ':' AssignmentExpr
-                                        { $$ = new ConditionalNode($1, $3, $5); }
+                                        { $$ = makeConditionalNode($1, $3, $5); }
 ;
 
 ConditionalExprNoIn:
     LogicalORExprNoIn
   | LogicalORExprNoIn '?' AssignmentExprNoIn ':' AssignmentExprNoIn
-                                        { $$ = new ConditionalNode($1, $3, $5); }
+                                        { $$ = makeConditionalNode($1, $3, $5); }
 ;
 
 ConditionalExprNoBF:
     LogicalORExprNoBF
   | LogicalORExprNoBF '?' AssignmentExpr ':' AssignmentExpr
-                                        { $$ = new ConditionalNode($1, $3, $5); }
+                                        { $$ = makeConditionalNode($1, $3, $5); }
 ;
 
 AssignmentExpr:
@@ -785,7 +785,7 @@ DefaultClause:
 ;
 
 LabelledStatement:
-    IDENT ':' Statement                 { $3->pushLabel(*$1); $$ = new LabelNode(*$1, $3); }
+    IDENT ':' Statement                 { $$ = makeLabelNode(*$1, $3); }
 ;
 
 ThrowStatement:
