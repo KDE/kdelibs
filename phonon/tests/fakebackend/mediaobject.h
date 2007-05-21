@@ -22,6 +22,8 @@
 #include <kurl.h>
 #include <phonon/mediaobjectinterface.h>
 #include <phonon/addoninterface.h>
+#include <QtCore/QHash>
+#include <QtCore/QString>
 #include <QtCore/QVariant>
 #include <QtCore/QObject>
 #include <phonon/experimental/videoframe.h>
