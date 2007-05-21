@@ -608,23 +608,18 @@ void KUrlTest::testDirectory()
   QCOMPARE( u2.url(), QString("ftp://ftp.kde.org/") );
 }
 
-// In KDE4, prettyUrl does pretty much the same as url(), except for removing passwords from URLs.
-// We don't have a way to decode %20 into ' ' and still avoid decoding everything (e.g. %23 must remain %23)
-// but we don't really need it anymore; it was primarily for paths in konq's locationbar, but it uses pathOrUrl() now.
 void KUrlTest::testPrettyURL()
 {
   kDebug() << k_funcinfo << endl;
   KUrl notPretty("http://ferret.lmh.ox.ac.uk/%7Ekdecvs/");
   QCOMPARE( notPretty.prettyUrl(), QString("http://ferret.lmh.ox.ac.uk/~kdecvs/") );
   KUrl notPretty2("file:/home/test/directory%20with%20spaces");
-  // KDE3: QCOMPARE( notPretty2.prettyUrl(), QString("file:///home/test/directory with spaces") );
-  QCOMPARE( notPretty2.prettyUrl(), QString("file:///home/test/directory%20with%20spaces") );
+  QCOMPARE( notPretty2.prettyUrl(), QString("file:///home/test/directory with spaces") );
 
   KUrl notPretty3("fish://foo/%23README%23");
   QCOMPARE( notPretty3.prettyUrl(), QString("fish://foo/%23README%23") );
   KUrl url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
-  // KDE3: QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html") );
-  QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
+  QCOMPARE( url15581.prettyUrl(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html") );
   QCOMPARE( url15581.url(), QString("http://alain.knaff.linux.lu/bug-reports/kde/spaces%20in%20url.html") );
 
   // KDE3 test was for parsing "percentage%in%url.html", but this is not supported; too broken.
@@ -1372,7 +1367,7 @@ void KUrlTest::testUtf8()
   uloc.setPath( QString::fromUtf8( "/home/dfaure/Matériel" ) );
   QCOMPARE( uloc.url(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 would say %E9 here; but from now on URLs are always utf8 encoded.
   QCOMPARE( uloc.path(), QString::fromUtf8( "/home/dfaure/Matériel") );
-  QCOMPARE( uloc.prettyUrl(), QString( "file:///home/dfaure/Mat%C3%A9riel") ); // KDE3 wouldn't escape the letters here...
+  QCOMPARE( uloc.prettyUrl(), QString::fromUtf8( "file:///home/dfaure/Matériel") );
   QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8( "/home/dfaure/Matériel") );             // ... but that's why pathOrUrl is nicer.
   QCOMPARE( uloc.url(), QString( "file:///home/dfaure/Mat%C3%A9riel") );
   uloc = KUrl("file:///home/dfaure/Mat%C3%A9riel");
@@ -1440,11 +1435,9 @@ void KUrlTest::testPathOrURL()
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.url(), QString("http://www.kde.org") );
   uloc = "file:///home/dfaure/konq%20tests/Mat%C3%A9riel#ref";
-  // KDE3 difference: we don't decode accents and spaces in URLs anymore;
-  // only in paths.
-  QCOMPARE( uloc.pathOrUrl(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel#ref" ) );
+  QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8("file:///home/dfaure/konq tests/Matériel#ref" ) );
   uloc = "file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query";
-  QCOMPARE( uloc.pathOrUrl(), QString("file:///home/dfaure/konq%20tests/Mat%C3%A9riel?query" ) );
+  QCOMPARE( uloc.pathOrUrl(), QString::fromUtf8("file:///home/dfaure/konq tests/Matériel?query" ) );
   uloc = KUrl( "/home/dfaure/file#with#hash" );
   QCOMPARE( uloc.pathOrUrl(), QString("/home/dfaure/file#with#hash" ) );
 }
