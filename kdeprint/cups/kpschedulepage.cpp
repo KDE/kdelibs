@@ -135,12 +135,12 @@ KPSchedulePage::KPSchedulePage(QWidget *parent)
 	m_time = new QComboBox(this);
 	m_time->addItem(i18n("Immediately"));
 	m_time->addItem(i18n("Never (hold indefinitely)"));
-	m_time->addItem(i18n("Daytime (6 am - 6 pm)"));
-	m_time->addItem(i18n("Evening (6 pm - 6 am)"));
-	m_time->addItem(i18n("Night (6 pm - 6 am)"));
+	m_time->addItem(i18n("Daytime "));
+	m_time->addItem(i18n("Evening"));
+	m_time->addItem(i18n("Night"));
 	m_time->addItem(i18n("Weekend"));
-	m_time->addItem(i18n("Second Shift (4 pm - 12 am)"));
-	m_time->addItem(i18n("Third Shift (12 am - 8 am)"));
+	m_time->addItem(i18n("Second Shift (after close of business)"));
+	m_time->addItem(i18n("Third Shift (after midnight)"));
 	m_time->addItem(i18n("Specified Time"));
         m_time->setWhatsThis(whatsThisScheduledPrinting);
 	m_tedit = new QDateTimeEdit(this);
