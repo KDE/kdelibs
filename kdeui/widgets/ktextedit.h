@@ -21,7 +21,7 @@
 #define KTEXTEDIT_H
 
 #include <kdeui_export.h>
-#include "highlighter.h"
+#include <sonnet/highlighter.h>
 #include <QtGui/QTextEdit>
 
 /**
