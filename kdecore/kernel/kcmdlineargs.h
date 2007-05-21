@@ -574,7 +574,7 @@ public:
   /**
    * @deprecated remove one '*' and use qtArgv()
    */
-  KDE_DEPRECATED static char ***qt_argv();
+  static KDE_DEPRECATED char ***qt_argv();
 
   /**
    * Returns command line options for consumption by Qt after parsing them in a way that
