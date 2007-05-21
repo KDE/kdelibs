@@ -29,18 +29,14 @@
 #include <QtCore/QSet>
 #include <QtCore/QStringList>
 
-#include <kservicetypetrader.h>
-#include <kmimetype.h>
-#include <kglobal.h>
-
-K_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
+Q_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 
 namespace Phonon
 {
 
 BackendCapabilities::Notifier *BackendCapabilities::notifier()
 {
-    return globalBCPrivate;
+    return globalBCPrivate();
 }
 
 #define SUPPORTS(foo) \
@@ -61,42 +57,33 @@ SUPPORTS(Subtitles)
 QStringList BackendCapabilities::availableMimeTypes()
 {
     QObject *m_backendObject = Factory::backend(true);
-    if (m_backendObject)
-    {
-        QStringList ret;
-        pBACKEND_GET(QStringList, ret, "availableMimeTypes");
-        return ret;
-    }
-    else
-    {
-        const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
-                "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
-        if (!offers.isEmpty()) {
-            QStringList mimeTypes = offers.first()->serviceTypes();
-            mimeTypes.removeAll("PhononBackend");
-            return mimeTypes;
-        }
+    if (!m_backendObject) {
+        // no backend == no MIME type supported at all
         return QStringList();
     }
+    QStringList ret;
+    pBACKEND_GET(QStringList, ret, "availableMimeTypes");
+    return ret;
 }
 
 bool BackendCapabilities::isMimeTypeAvailable(const QString &mimeType)
 {
     QObject *m_backendObject = Factory::backend(false);
-    if (m_backendObject)
-    {
-        QStringList ret;
-        pBACKEND_GET(QStringList, ret, "availableMimeTypes");
-        return ret.contains(mimeType);
+    if (!m_backendObject) {
+        if (!Factory::isMimeTypeAvailable(mimeType)) {
+            return false;
+        }
+        // without loading the backend we found out that the MIME type might be supported, now we
+        // want to know for certain. For that we need to load the backend.
+        m_backendObject = Factory::backend(true);
     }
-    else
-    {
-        const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
-                "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
-        if (!offers.isEmpty())
-            return offers.first()->hasMimeType(KMimeType::mimeType(mimeType).data());
+    if (!m_backendObject) {
+        // no backend == no MIME type supported at all
         return false;
     }
+    QStringList ret;
+    pBACKEND_GET(QStringList, ret, "availableMimeTypes");
+    return ret.contains(mimeType);
 }
 
 #define availableDevicesImpl(T) \

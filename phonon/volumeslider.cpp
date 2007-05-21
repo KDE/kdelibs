@@ -21,7 +21,8 @@
 #include "volumeslider_p.h"
 #include "audiooutput.h"
 #include "phonondefs_p.h"
-#include <klocale.h>
+#include "phononnamespace_p.h"
+#include "factory.h"
 
 namespace Phonon
 {
@@ -32,8 +33,8 @@ VolumeSlider::VolumeSlider(QWidget *parent)
     k_ptr(new VolumeSliderPrivate(this))
 {
     K_D(VolumeSlider);
-    setToolTip(i18n("Volume: %1%", 100));
-    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", 100));
+    setToolTip(i18n("Volume: %1%", QString::number(100)));
+    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", QString::number(100)));
 
     connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
     connect(&d->muteButton, SIGNAL(clicked()), SLOT(_k_buttonClicked()));
@@ -44,8 +45,8 @@ VolumeSlider::VolumeSlider(AudioOutput *output, QWidget *parent)
     k_ptr(new VolumeSliderPrivate(this))
 {
     K_D(VolumeSlider);
-    setToolTip(i18n("Volume: %1%", 100));
-    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", 100));
+    setToolTip(i18n("Volume: %1%", QString::number(100)));
+    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%", QString::number(100)));
 
     connect(&d->slider, SIGNAL(valueChanged(int)), SLOT(_k_sliderChanged(int)));
     connect(&d->muteButton, SIGNAL(clicked()), SLOT(_k_buttonClicked()));
@@ -82,7 +83,7 @@ QSize VolumeSlider::iconSize() const
 
 void VolumeSlider::setIconSize(const QSize &iconSize)
 {
-    kDebug(602) << k_funcinfo << iconSize << endl;
+    pDebug() << Q_FUNC_INFO << iconSize;
     k_ptr->muteButton.setIconSize(iconSize);
 }
 
@@ -95,7 +96,8 @@ void VolumeSlider::setMaximumVolume(qreal volume)
 {
     int max = static_cast<int>(volume * 100);
     k_ptr->slider.setMaximum(max);
-    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%" ,  max));
+    setWhatsThis(i18n("Use this slider to adjust the volume. The leftmost position is 0%, the rightmost is %1%",
+                QString::number(max)));
 }
 
 Qt::Orientation VolumeSlider::orientation() const
@@ -156,7 +158,7 @@ void VolumeSliderPrivate::_k_mutedChanged(bool muted)
         q->setToolTip(i18n("Muted"));
         muteButton.setIcon(mutedIcon);
     } else {
-        q->setToolTip(i18n("Volume: %1%", static_cast<int>(output->volume() * 100.0)));
+        q->setToolTip(i18n("Volume: %1%", QString::number(static_cast<int>(output->volume() * 100.0))));
         muteButton.setIcon(volumeIcon);
     }
 }
@@ -167,7 +169,7 @@ void VolumeSliderPrivate::_k_sliderChanged(int value)
 
     if (output) {
         if (!output->isMuted()) {
-           q->setToolTip(i18n("Volume: %1%", value));
+           q->setToolTip(i18n("Volume: %1%", QString::number(value)));
         }
 
         ignoreVolumeChange = true;

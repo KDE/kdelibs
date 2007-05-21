@@ -21,7 +21,6 @@
 #define PHONON_FACTORY_H
 
 #include "phonon_export.h"
-#include <kglobal.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
@@ -34,6 +33,9 @@ namespace Phonon
     class BasePrivate;
     class AbstractMediaStream;
 
+    inline QString i18n(const QString &text) { return text; }
+    inline QString i18n(const QString &text, const QString &arg1) { return text.arg(arg1); }
+    inline QString i18n(const QString &text, const QString &arg1, const QString &arg2) { return text.arg(arg1).arg(arg2); }
 /**
  * \internal
  * \brief Factory to access the preferred Backend.
@@ -59,18 +61,12 @@ namespace Factory
              * Emitted after the backend has successfully been changed.
              */
             void backendChanged();
-
-            /**
-             * Emitted immediately when the dtor is called.
-             */
-            void aboutToBeDestroyed();
     };
 
     /**
      * Returns a pointer to the object emitting the signals.
      *
      * \see Sender::backendChanged()
-     * \see Sender::aboutToBeDestroyed()
      */
     PHONON_EXPORT Sender *sender();
 
@@ -199,6 +195,9 @@ namespace Factory
      * registers the backend object
      */
     QObject *registerQObject(QObject *o);
+
+    bool isMimeTypeAvailable(const QString &mimeType);
+
     PHONON_EXPORT void registerFrontendObject(BasePrivate *);
     PHONON_EXPORT void deregisterFrontendObject(BasePrivate *);
 

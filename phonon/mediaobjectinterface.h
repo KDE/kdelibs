@@ -21,7 +21,6 @@
 #define PHONON_MEDIAOBJECTINTERFACE_H
 
 #include "mediaobject.h"
-#include <kurl.h>
 #include <QtCore/QObject>
 
 namespace Phonon

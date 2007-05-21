@@ -42,6 +42,7 @@ namespace Phonon
 #define pDebug if (!Phonon::GlobalData::instance()->showDebugOutput) {} else qDebug
 #define pError() if (!Phonon::GlobalData::instance()->showDebugOutput) {} else qDebug() << "ERROR:"
 #endif
+#define pFatal() qDebug() << "FATAL ERROR:"
 
 // vim: sw=4 ts=4 tw=80
 #endif // PHONONNAMESPACE_P_H

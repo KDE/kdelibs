@@ -21,8 +21,8 @@
 #define TESTS_LOADFAKEBACKEND_H
 
 #include "../factory.h"
+#include <QtCore/QUrl>
 #include <QtTest>
-#include <kurl.h>
 
 namespace Phonon
 {
@@ -32,14 +32,17 @@ void loadFakeBackend()
     Factory::createBackend("phonon_fake", "0.1");
 #endif
 }
-KUrl testUrl()
+QUrl testUrl()
 {
 #ifdef USE_FAKE_BACKEND
-    return KUrl("file::////foo.ogg");
+    return QUrl("file::////foo.ogg");
 #else
-    KUrl url(getenv("PHONON_TESTURL"));
+    QUrl url(getenv("PHONON_TESTURL"));
     if (!url.isValid()) {
-        QWARN("You need to set PHONON_TESTURL to a valid URL. Expect to see failures.");
+        url = QUrl::fromLocalFile(getenv("PHONON_TESTURL"));
+        if (!url.isValid()) {
+            QWARN("You need to set PHONON_TESTURL to a valid URL. Expect to see failures.");
+        }
     }
     return url;
 #endif

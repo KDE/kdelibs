@@ -25,7 +25,6 @@
 
 #include <Phonon/AudioPlayer>
 #include <QtGui/QApplication>
-#include <kcomponentdata.h>
 
 MainWindow::MainWindow()
     : m_fileView(this),
@@ -48,7 +47,6 @@ void MainWindow::play(const QModelIndex &index)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    KComponentData("phonon-tutorial1");
     MainWindow mw;
     mw.show();
     return app.exec();

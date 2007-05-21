@@ -21,7 +21,6 @@
 #define BYTESTREAMTEST2_H
 
 #include <QtCore/QObject>
-#include <kurl.h>
 #include <phonon/bytestream.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>

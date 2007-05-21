@@ -26,6 +26,7 @@ using namespace Phonon;
 
 void VideoCaptureDeviceTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("videocapturedevicetest");
     Phonon::loadFakeBackend();
 }
 
@@ -64,6 +65,6 @@ void VideoCaptureDeviceTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN_CORE(VideoCaptureDeviceTest)
+QTEST_MAIN(VideoCaptureDeviceTest)
 #include "videocapturedevicetest.moc"
 // vim: sw=4 ts=4

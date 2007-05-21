@@ -304,7 +304,7 @@ void MediaSourceTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN_CORE(MediaSourceTest)
+QTEST_APPLESS_MAIN(MediaSourceTest)
 
 #include "mediasourcetest.moc"
 // vim: sw=4 sts=4 et tw=100

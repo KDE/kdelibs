@@ -29,6 +29,7 @@ using namespace Phonon;
 
 void AudioPathTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("audiopathtest");
     Phonon::loadFakeBackend();
 
     //m_url.setUrl(getenv("PHONON_TESTURL"));
@@ -95,6 +96,6 @@ void AudioPathTest::cleanupTestCase()
     //delete m_media;
 }
 
-QTEST_KDEMAIN_CORE(AudioPathTest)
+QTEST_MAIN(AudioPathTest)
 #include "audiopathtest.moc"
 // vim: sw=4 ts=4

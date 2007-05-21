@@ -39,35 +39,16 @@ void BackendCapabilitiesTest::initTestCase()
 void BackendCapabilitiesTest::checkMimeTypes()
 {
     QVERIFY(Factory::backend(false) == 0);
-#ifdef USE_FAKE_BACKEND
-    QStringList mimeTypes;
-    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
-            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1 "
-            "and Library == 'phonon_fake' and [X-KDE-PhononBackendInfo-Version] == '0.1'");
-    if (!offers.isEmpty()) {
-        mimeTypes = offers.first()->serviceTypes();
-        mimeTypes.removeAll("PhononBackend");
-    }
-#else
+    QString mimeType("foobar/x-nonexistent");
+    QVERIFY(Factory::backend(false) == 0); // the backend should not have been created at this point
+    QVERIFY(!BackendCapabilities::isMimeTypeAvailable(mimeType));
     QVERIFY(Factory::backend(false) == 0); // the backend should not have been created at this point
     QStringList mimeTypes = BackendCapabilities::availableMimeTypes();
     QVERIFY(Factory::backend(false) != 0); // the backend should have been created at this point
-#endif
     QVERIFY(mimeTypes.size() > 0); // a backend that doesn't know any mimetypes is useless
     foreach (QString mimeType, mimeTypes) {
         qDebug("%s", qPrintable(mimeType));
         QVERIFY(BackendCapabilities::isMimeTypeAvailable(mimeType));
-    }
-#ifdef USE_FAKE_BACKEND
-    QVERIFY(Factory::backend(false) == 0); // the backend should not have been created at this point
-    Phonon::loadFakeBackend();
-    QVERIFY(Factory::backend(true) != 0);  // create the backend
-#endif
-    QStringList realMimeTypes = BackendCapabilities::availableMimeTypes(); // this list has to be a subset of the one before
-    foreach (QString mimeType, realMimeTypes) {
-        qDebug("%s", qPrintable(mimeType));
-        QVERIFY(BackendCapabilities::isMimeTypeAvailable(mimeType));
-        QVERIFY(mimeTypes.contains(mimeType));
     }
 }
 

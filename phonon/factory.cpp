@@ -25,25 +25,18 @@
 #include "audiooutput.h"
 #include "audiooutput_p.h"
 #include "pluginfactory.h"
-
-#include <QtCore/QFile>
-#include <QtCore/QList>
-#include <QtCore/QCoreApplication>
-#include <QtDBus/QtDBus>
-#include <QtCore/QPluginLoader>
-
-#include <klocale.h>
-#include <kmimetype.h>
 #include "phononnamespace_p.h"
-#include <kglobal.h>
-#include <kservicetypetrader.h>
-#include <klibloader.h>
-#include <kmessage.h>
+
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QtCore/QLibrary>
+#include <QtCore/QList>
+#include <QtCore/QPluginLoader>
+#include <QtDBus/QtDBus>
 #include <QtGui/QIcon>
 
-#define PHONON_LOAD_BACKEND_GLOBAL 0
+#include <kglobal.h>
 
 namespace Phonon
 {
@@ -52,74 +45,46 @@ K_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
 
 void Factory::createBackend(const QString &library, const QString &version)
 {
-    Q_ASSERT(!globalFactory->m_backendObject);
-
-    QString additionalConstraints = QLatin1String(" and Library == '") + library + QLatin1Char('\'');
-    if (!version.isEmpty()) {
-        additionalConstraints += QLatin1String(" and [X-KDE-PhononBackendInfo-Version] == '")
-            + version + QLatin1Char('\'');
-    }
-    const KService::List offers = KServiceTypeTrader::self()->query(QLatin1String("PhononBackend"),
-            QString("Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1%1")
-            .arg(additionalConstraints));
-    if (offers.isEmpty()) {
-        KMessage::message(KMessage::Error, i18n("Unable to find the requested Multimedia Backend"));
-        return;
-    }
-
-    KService::List::const_iterator it = offers.begin();
-    const KService::List::const_iterator end = offers.end();
-    while (it != end && !globalFactory->createBackend(*it)) {
-        ++it;
+    Q_ASSERT(globalFactory->m_backendObject == 0);
+    PluginFactory *f = globalFactory->pluginFactory();
+    if (f) {
+        globalFactory->m_backendObject = f->createBackend(library, version);
     }
 }
 
-bool FactoryPrivate::createBackend(KService::Ptr newService)
+bool FactoryPrivate::createBackend()
 {
-    KLibFactory *factory = 0;
-#ifdef PHONON_LOAD_BACKEND_GLOBAL
-    // This code is in here temporarily until NMM gets fixed.
-    // Currently the NMM backend will fail with undefined symbols if
-    // the backend is not loaded with global symbol resolution
-    KLibrary *library = KLibLoader::self()->library(newService->library(), QLibrary::ExportExternalSymbolsHint);
-    if (library) {
-        factory = library->factory();
+    Q_ASSERT(m_backendObject == 0);
+    PluginFactory *f = globalFactory->pluginFactory();
+    if (f) {
+        m_backendObject = f->createBackend();
     }
-    //factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
-#else
-    factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()));
-#endif
-    if (!factory) {
-        QString errorReason = KLibLoader::self()->lastErrorMessage();
-        pError() << "Can not create factory for " << newService->name() <<
-            ":\n" << errorReason << endl;
-
-        KMessage::message(KMessage::Error,
-                QLatin1String("<qt>")
-                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
-                + QLatin1Char('\n')
-                + errorReason
-                + QLatin1String("<qt>"));
-        return false;
+    if (!m_backendObject) {
+        // could not load a backend through the platform plugin. Falling back to the default.
+        const QString suffix("/phonon_backend");
+        foreach (QString libPath, QCoreApplication::libraryPaths()) {
+            libPath += suffix;
+            const QDir dir(libPath);
+            if (!dir.exists()) {
+                pDebug() << Q_FUNC_INFO << dir.canonicalPath() << "does not exist";
+                continue;
+            }
+            QLibrary pluginLib(libPath + QLatin1String("/xine"));
+            pluginLib.load();
+            pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
+            QPluginLoader pluginLoader(pluginLib.fileName());
+            Q_ASSERT(pluginLoader.load());
+            pDebug() << pluginLoader.instance();
+            m_backendObject = pluginLoader.instance();
+            if (m_backendObject) {
+                break;
+            }
+        }
+        if (!m_backendObject) {
+            pDebug() << Q_FUNC_INFO << "phonon_backend/xine plugin could not be loaded";
+            return false;
+        }
     }
-
-    m_backendObject = factory->create();
-    if (0 == m_backendObject) {
-        QString errorReason = i18n("create method returned 0");
-        pError() << "Can not create backend object from factory for " <<
-            newService->name() << ", " << newService->library() << ":\n" << errorReason << endl;
-
-        KMessage::message(KMessage::Error,
-                QLatin1String("<qt>")
-                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
-                + QLatin1Char('\n')
-                + errorReason
-                + QLatin1String("<qt>"));
-        return false;
-    }
-
-    service = newService;
-    pDebug() << "using backend: " << newService->name();
 
     connect(m_backendObject, SIGNAL(objectDescriptionChanged(ObjectDescriptionType)),
             SLOT(objectDescriptionChanged(ObjectDescriptionType)));
@@ -127,25 +92,10 @@ bool FactoryPrivate::createBackend(KService::Ptr newService)
     return true;
 }
 
-void FactoryPrivate::createBackend()
-{
-    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
-            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
-    if (offers.isEmpty()) {
-        KMessage::message(KMessage::Error, i18n("Unable to find a Multimedia Backend"));
-        return;
-    }
-
-    KService::List::const_iterator it = offers.begin();
-    const KService::List::const_iterator end = offers.end();
-    while (it != end && !createBackend(*it)) {
-        ++it;
-    }
-}
-
 FactoryPrivate::FactoryPrivate()
     : m_backendObject(0),
-    m_pluginFactory(0)
+    m_pluginFactory(0),
+    m_noPluginFactory(false)
 {
     // Add the post routine to make sure that all other global statics (especially the ones from Qt)
     // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
@@ -157,8 +107,6 @@ FactoryPrivate::FactoryPrivate()
 
 FactoryPrivate::~FactoryPrivate()
 {
-    emit aboutToBeDestroyed();
-
     foreach (BasePrivate *bp, basePrivateList) {
         bp->deleteBackendObject();
     }
@@ -167,6 +115,7 @@ FactoryPrivate::~FactoryPrivate()
         qDeleteAll(objects);
     }
     delete m_backendObject;
+    delete m_pluginFactory;
 }
 
 void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
@@ -195,6 +144,15 @@ void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
 Factory::Sender *Factory::sender()
 {
     return globalFactory;
+}
+
+bool Factory::isMimeTypeAvailable(const QString &mimeType)
+{
+    PluginFactory *f = globalFactory->pluginFactory();
+    if (f) {
+        return f->isMimeTypeAvailable(mimeType);
+    }
+    return true; // the MIME type might be supported, let BackendCapabilities find out
 }
 
 void Factory::registerFrontendObject(BasePrivate *bp)
@@ -288,7 +246,15 @@ FACTORY_IMPL(VideoWidget)
 PluginFactory *FactoryPrivate::pluginFactory()
 {
     if (!m_pluginFactory) {
+        if (m_noPluginFactory) {
+            return 0;
+        }
+        if (!QCoreApplication::instance() || QCoreApplication::applicationName().isEmpty()) {
+            pFatal() << "Phonon needs QCoreApplication::applicationName to be set";
+            ::abort();
+        }
         const QString suffix("/phonon_platform");
+        Q_ASSERT(QCoreApplication::instance());
         foreach (QString libPath, QCoreApplication::libraryPaths()) {
             libPath += suffix;
             const QDir dir(libPath);
@@ -310,6 +276,7 @@ PluginFactory *FactoryPrivate::pluginFactory()
         }
         if (!m_pluginFactory) {
             pDebug() << Q_FUNC_INFO << "phonon_platform/kde plugin could not be loaded";
+            m_noPluginFactory = true;
         }
     }
     return m_pluginFactory;
@@ -364,53 +331,21 @@ QObject *Factory::backend(bool createWhenNull)
     return globalFactory->m_backendObject;
 }
 
-QString Factory::identifier()
-{
-    if (globalFactory->service) {
-        return globalFactory->service->library();
-    }
-    return QString();
-}
+#define GET_STRING_PROPERTY(name) \
+QString Factory::name() \
+{ \
+    if (globalFactory->m_backendObject) { \
+        return globalFactory->m_backendObject->property(#name).toString(); \
+    } \
+    return QString(); \
+} \
 
-QString Factory::backendName()
-{
-    if (globalFactory->service)
-        return globalFactory->service->name();
-    else
-        return QString();
-}
-
-QString Factory::backendComment()
-{
-    if (globalFactory->service)
-        return globalFactory->service->comment();
-    else
-        return QString();
-}
-
-QString Factory::backendVersion()
-{
-    if (globalFactory->service)
-        return globalFactory->service->property("X-KDE-PhononBackendInfo-Version").toString();
-    else
-        return QString();
-}
-
-QString Factory::backendIcon()
-{
-    if (globalFactory->service)
-        return globalFactory->service->icon();
-    else
-        return QString();
-}
-
-QString Factory::backendWebsite()
-{
-    if (globalFactory->service)
-        return globalFactory->service->property("X-KDE-PhononBackendInfo-Website").toString();
-    else
-        return QString();
-}
+GET_STRING_PROPERTY(identifier)
+GET_STRING_PROPERTY(backendName)
+GET_STRING_PROPERTY(backendComment)
+GET_STRING_PROPERTY(backendVersion)
+GET_STRING_PROPERTY(backendIcon)
+GET_STRING_PROPERTY(backendWebsite)
 
 QObject *Factory::registerQObject(QObject *o)
 {

@@ -29,7 +29,7 @@ K_DECLARE_METATYPE(Phonon::State)
 
 void VideoPathTest::initTestCase()
 {
-    qRegisterMetaType<Phonon::State>("Phonon::State");
+    QCoreApplication::setApplicationName("audiopathtest");
 
     m_url = testUrl();
 
@@ -93,6 +93,6 @@ void VideoPathTest::cleanupTestCase()
     delete m_media;
 }
 
-QTEST_KDEMAIN(VideoPathTest, NoGUI)
+QTEST_MAIN(VideoPathTest)
 #include "videopathtest.moc"
 // vim: sw=4 ts=4

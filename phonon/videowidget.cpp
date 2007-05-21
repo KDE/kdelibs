@@ -21,11 +21,9 @@
 #include "videowidget_p.h"
 #include "factory.h"
 #include "phonondefs_p.h"
+#include "phononnamespace_p.h"
 
-#include <klocale.h>
-#include <kiconloader.h>
 #include <QtGui/QAction>
-#include <kdebug.h>
 
 namespace Phonon
 {
@@ -99,7 +97,7 @@ PHONON_SETTER(setScaleMode, scaleMode, Phonon::VideoWidget::ScaleMode)
 
 void VideoWidget::setFullScreen(bool newFullScreen)
 {
-    kDebug(602) << k_funcinfo << newFullScreen << endl;
+    pDebug() << Q_FUNC_INFO << newFullScreen;
     K_D(VideoWidget);
     // TODO: disable screensaver? or should we leave that responsibility to the
     // application?
@@ -144,7 +142,7 @@ void VideoWidgetPrivate::setupBackendObject()
     Q_Q(VideoWidget);
     Q_ASSERT(m_backendObject);
     //AbstractVideoOutputPrivate::setupBackendObject();
-    kDebug(602) << "calling setAspectRatio on the backend " << aspectRatio << endl;
+    pDebug() << "calling setAspectRatio on the backend " << aspectRatio;
     pBACKEND_CALL1("setAspectRatio", Phonon::VideoWidget::AspectRatio, aspectRatio);
     pBACKEND_CALL1("setScaleMode", Phonon::VideoWidget::ScaleMode, scaleMode);
 

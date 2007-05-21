@@ -19,13 +19,22 @@
 
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
-#include <QtPlugin>
-#include <kicon.h>
-#include <knotification.h>
+#include "phononnamespace_p.h"
+
+#include <QtCore/QtPlugin>
+#include <QtCore/QCoreApplication>
+
+#include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
-#include <QtCore/QCoreApplication>
-#include <kaboutdata.h>
+#include <kicon.h>
+#include <klibloader.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kmimetype.h>
+#include <knotification.h>
+#include <kservice.h>
+#include <kservicetypetrader.h>
 
 namespace Phonon
 {
@@ -33,15 +42,20 @@ namespace Phonon
 K_GLOBAL_STATIC_WITH_ARGS(KComponentData, mainComponentData, (QCoreApplication::applicationName().toUtf8()))
 K_GLOBAL_STATIC_WITH_ARGS(KComponentData, phononComponentData, ("phonon"))
 
-static const KComponentData &componentData()
+static void ensureMainComponentData()
 {
     if (!KGlobal::hasMainComponent()) {
         // a pure Qt application does not have a KComponentData object,
         // we'll give it one.
         *mainComponentData;
         qAddPostRoutine(mainComponentData.destroy);
+        Q_ASSERT(KGlobal::hasMainComponent());
     }
-    Q_ASSERT(KGlobal::hasMainComponent());
+}
+
+static const KComponentData &componentData()
+{
+    ensureMainComponentData();
     return *phononComponentData;
 }
 
@@ -75,9 +89,124 @@ QString KdePluginFactory::applicationName() const
 {
     const KAboutData *ad = KGlobal::mainComponent().aboutData();
     if (ad) {
-        return ad->programName();
+        const QString programName = ad->programName();
+        if (programName.isEmpty()) {
+            return KGlobal::mainComponent().componentName();
+        }
+        return programName;
     }
     return KGlobal::mainComponent().componentName();
+}
+
+#define PHONON_LOAD_BACKEND_GLOBAL 0
+
+QObject *KdePluginFactory::createBackend(KService::Ptr newService)
+{
+    KLibFactory *factory = 0;
+#ifdef PHONON_LOAD_BACKEND_GLOBAL
+    // This code is in here temporarily until NMM gets fixed.
+    // Currently the NMM backend will fail with undefined symbols if
+    // the backend is not loaded with global symbol resolution
+    KLibrary *library = KLibLoader::self()->library(newService->library(), QLibrary::ExportExternalSymbolsHint);
+    if (library) {
+        factory = library->factory();
+    }
+    //factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()), QLibrary::ExportExternalSymbolsHint);
+#else
+    factory = KLibLoader::self()->factory(QFile::encodeName(newService->library()));
+#endif
+    if (!factory) {
+        QString errorReason = KLibLoader::self()->lastErrorMessage();
+        pError() << "Can not create factory for " << newService->name() <<
+            ":\n" << errorReason << endl;
+
+        KMessageBox::error(0,
+                QLatin1String("<html>")
+                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
+                + QLatin1Char('\n')
+                + errorReason
+                + QLatin1String("</html>"));
+        return false;
+    }
+
+    QObject *backend = factory->create();
+    if (0 == backend) {
+        QString errorReason = i18n("create method returned 0");
+        pError() << "Can not create backend object from factory for " <<
+            newService->name() << ", " << newService->library() << ":\n" << errorReason << endl;
+
+        KMessageBox::error(0,
+                QLatin1String("<qt>")
+                + i18n("Unable to use the <b>%1</b> Multimedia Backend:", newService->name())
+                + QLatin1Char('\n')
+                + errorReason
+                + QLatin1String("<qt>"));
+        return false;
+    }
+
+    pDebug() << "using backend: " << newService->name();
+    return backend;
+}
+
+QObject *KdePluginFactory::createBackend()
+{
+    ensureMainComponentData();
+    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+    if (offers.isEmpty()) {
+        KMessageBox::error(0, i18n("Unable to find a Multimedia Backend"));
+        return 0;
+    }
+
+    KService::List::const_iterator it = offers.begin();
+    const KService::List::const_iterator end = offers.end();
+    while (it != end) {
+        QObject *backend = createBackend(*it);
+        if (backend) {
+            return backend;
+        }
+        ++it;
+    }
+    return 0;
+}
+
+QObject *KdePluginFactory::createBackend(const QString &library, const QString &version)
+{
+    ensureMainComponentData();
+    QString additionalConstraints = QLatin1String(" and Library == '") + library + QLatin1Char('\'');
+    if (!version.isEmpty()) {
+        additionalConstraints += QLatin1String(" and [X-KDE-PhononBackendInfo-Version] == '")
+            + version + QLatin1Char('\'');
+    }
+    const KService::List offers = KServiceTypeTrader::self()->query(QLatin1String("PhononBackend"),
+            QString("Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1%1")
+            .arg(additionalConstraints));
+    if (offers.isEmpty()) {
+        KMessageBox::error(0, i18n("Unable to find the requested Multimedia Backend"));
+        return 0;
+    }
+
+    KService::List::const_iterator it = offers.begin();
+    const KService::List::const_iterator end = offers.end();
+    while (it != end) {
+        QObject *backend = createBackend(*it);
+        if (backend) {
+            return backend;
+        }
+        ++it;
+    }
+    return 0;
+}
+
+bool KdePluginFactory::isMimeTypeAvailable(const QString &mimeType)
+{
+    ensureMainComponentData();
+    const KService::List offers = KServiceTypeTrader::self()->query("PhononBackend",
+            "Type == 'Service' and [X-KDE-PhononBackendInfo-InterfaceVersion] == 1");
+    if (!offers.isEmpty()) {
+        return offers.first()->hasMimeType(KMimeType::mimeType(mimeType).data());
+    }
+    return false;
 }
 
 } // namespace Phonon

@@ -26,6 +26,7 @@ using namespace Phonon;
 
 void AudioOutputDeviceTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("audiooutputdevicetest");
     Phonon::loadFakeBackend();
 }
 
@@ -65,6 +66,6 @@ void AudioOutputDeviceTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN_CORE(AudioOutputDeviceTest)
+QTEST_MAIN(AudioOutputDeviceTest)
 #include "audiooutputdevicetest.moc"
 // vim: sw=4 ts=4

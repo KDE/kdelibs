@@ -29,13 +29,14 @@ using namespace Phonon;
 
 void AudioOutputTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("audiopathtest");
     Phonon::loadFakeBackend();
 }
 
 void AudioOutputTest::checkName()
 {
     AudioOutput ao(Phonon::NotificationCategory, this);
-    QCOMPARE(ao.name(), QLatin1String("qttest"));
+    QCOMPARE(ao.name(), QLatin1String("audiopathtest"));
     QString n("lsdf");
     ao.setName(n);
     QCOMPARE(ao.name(), n);
@@ -134,6 +135,6 @@ void AudioOutputTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN_CORE(AudioOutputTest)
+QTEST_MAIN(AudioOutputTest)
 #include "audiooutputtest.moc"
 // vim: sw=4 ts=4

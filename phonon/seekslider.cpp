@@ -21,7 +21,6 @@
 #include "seekslider_p.h"
 #include "mediaobject.h"
 #include "phonondefs_p.h"
-#include <kdebug.h>
 
 namespace Phonon
 {

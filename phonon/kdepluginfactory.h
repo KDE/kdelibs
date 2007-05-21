@@ -22,6 +22,7 @@
 
 #include "pluginfactory.h"
 #include <QtCore/QObject>
+#include <kservice.h>
 
 namespace Phonon
 {
@@ -38,6 +39,12 @@ class KdePluginFactory : public QObject, public PluginFactory
                 const QStringList &actions, QObject *receiver,
                 const char *actionSlot);
         QString applicationName() const;
+        QObject *createBackend();
+        QObject *createBackend(const QString &library, const QString &version);
+        bool isMimeTypeAvailable(const QString &mimeType);
+
+    private:
+        QObject *createBackend(KService::Ptr newService);
 };
 
 } // namespace Phonon

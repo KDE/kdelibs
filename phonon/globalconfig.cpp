@@ -18,20 +18,48 @@
 */
 
 #include "globalconfig.h"
-#include <QtCore/QSet>
-#include <QtCore/QList>
+
 #include "factory.h"
 #include "objectdescription.h"
 #include "phonondefs_p.h"
 #include "backendinterface.h"
-#include "ksharedconfig.h"
-#include <kconfiggroup.h>
+
+#include <QtCore/QList>
+#include <QtCore/QSet>
+#include <QtCore/QVariant>
+
+Q_DECLARE_METATYPE(QList<int>)
 
 namespace Phonon
 {
+class QSettingsGroup
+{
+    public:
+        QSettingsGroup(const QSettings *settings, const QString &name)
+            : m_s(settings),
+            m_group(name + QLatin1Char('/'))
+        {
+        }
+
+        template<typename T>
+        inline T value(const QString &key, const T &def) const
+        {
+            return qvariant_cast<T>(value(key, QVariant::fromValue(def)));
+        }
+
+        QVariant value(const QString &key, const QVariant &def) const
+        {
+            return m_s->value(m_group + key, def);
+        }
+
+    private:
+        const QSettings *const m_s;
+        QString m_group;
+};
+
 GlobalConfig::GlobalConfig(QObject *parent)
     : QObject(parent)
-    , m_config(KSharedConfig::openConfig("phononrc", KConfig::NoGlobals))
+    , m_config(QLatin1String("kde.org"), QLatin1String("libphonon"))
 {
 }
 
@@ -42,24 +70,25 @@ GlobalConfig::~GlobalConfig()
 QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) const
 {
     //The devices need to be stored independently for every backend
-    const KConfigGroup backendConfig(const_cast<KSharedConfig *>(m_config.data()),
-            QLatin1String("AudioOutputDevice_") + Factory::identifier());
+    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioOutputDevice_") + Factory::identifier());
 
     //First we lookup the available devices directly from the backend
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
+    if (!backendIface) {
+        return QList<int>();
+    }
     QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioOutputDeviceType);
 
     QList<int> defaultList = deviceIndexes.toList();
     qSort(defaultList);
 
     //Now the list from the phononrc file
-    QList<int> deviceList = backendConfig.readEntry<QList<int> >(QLatin1String("Category") +
+    QList<int> deviceList = backendConfig.value(QLatin1String("Category") +
             QString::number(static_cast<int>(category)), QList<int>());
     if (deviceList.isEmpty()) {
         //try to read from global group for defaults
-        const KConfigGroup globalConfig(const_cast<KSharedConfig *>(m_config.data()),
-                QLatin1String("AudioOutputDevice"));
-        deviceList = globalConfig.readEntry<QList<int> >(QLatin1String("Category") +
+        const QSettingsGroup globalConfig(&m_config, QLatin1String("AudioOutputDevice"));
+        deviceList = globalConfig.value(QLatin1String("Category") +
                 QString::number(static_cast<int>(category)), defaultList);
     }
 
@@ -86,6 +115,9 @@ QList<int> GlobalConfig::audioCaptureDeviceList() const
 {
     //First we lookup the available devices directly from the backend
     BackendInterface *backendIface = qobject_cast<BackendInterface *>(Factory::backend());
+    if (!backendIface) {
+        return QList<int>();
+    }
     QSet<int> deviceIndexes = backendIface->objectDescriptionIndexes(Phonon::AudioCaptureDeviceType);
 
     QList<int> defaultList = deviceIndexes.toList();
@@ -93,14 +125,13 @@ QList<int> GlobalConfig::audioCaptureDeviceList() const
 
     //Now the list from the phononrc file
     //The devices need to be stored independently for every backend
-    const KConfigGroup backendConfig(const_cast<KSharedConfig *>(m_config.data()),
-            QLatin1String("AudioCaptureDevice_") + Factory::identifier());
-    QList<int> deviceList = backendConfig.readEntry<QList<int> >(QLatin1String("DeviceOrder"), QList<int>());
+    const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioCaptureDevice_") +
+            Factory::identifier());
+    QList<int> deviceList = backendConfig.value(QLatin1String("DeviceOrder"), QList<int>());
     if (deviceList.isEmpty()) {
         //try to read from global group for defaults
-        const KConfigGroup globalConfig(const_cast<KSharedConfig *>(m_config.data()),
-                QLatin1String("AudioCaptureDevice"));
-        deviceList = globalConfig.readEntry<QList<int> >(QLatin1String("DeviceOrder"), defaultList);
+        const QSettingsGroup globalConfig(&m_config, QLatin1String("AudioCaptureDevice"));
+        deviceList = globalConfig.value(QLatin1String("DeviceOrder"), defaultList);
     }
 
     QMutableListIterator<int> i(deviceList);

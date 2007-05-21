@@ -46,19 +46,19 @@ namespace Phonon
          * No disc was selected. This is only useful as a return value from
          * MediaSource::distType();
          */
-        NoDisc,
+        NoDisc = -1,
         /**
          * Identifies Audio CDs.
          */
-        Cd,
+        Cd = 0,
         /**
          * Identifies DVDs (not arbitrary data DVDs, only movie DVDs).
          */
-        Dvd,
+        Dvd = 1,
         /**
          * Identifies Video CDs.
          */
-        Vcd
+        Vcd = 2
     };
 
     /**
@@ -192,36 +192,36 @@ namespace Phonon
     PHONON_EXPORT QString categoryToString(Category c);
 } //namespace Phonon
 
-class kdbgstream;
-#include <kdebug.h>
-/**
- * Implements needed operator to use Phonon::State with kDebug
- */
-inline PHONON_EXPORT kdbgstream &operator<<(kdbgstream  & stream, const Phonon::State state)
-{
-    switch(state)
-    {
-    case Phonon::ErrorState:
-        stream << "ErrorState";
-        break;
-    case Phonon::LoadingState:
-        stream << "LoadingState";
-        break;
-    case Phonon::StoppedState:
-        stream << "StoppedState";
-        break;
-    case Phonon::PlayingState:
-        stream << "PlayingState";
-        break;
-    case Phonon::BufferingState:
-        stream << "BufferingState";
-        break;
-    case Phonon::PausedState:
-        stream << "PausedState";
-        break;
-    }
-    return stream;
-}
+//X class kdbgstream;
+//X #include <kdebug.h>
+//X /**
+//X  * Implements needed operator to use Phonon::State with kDebug
+//X  */
+//X inline PHONON_EXPORT kdbgstream &operator<<(kdbgstream  & stream, const Phonon::State state)
+//X {
+//X     switch(state)
+//X     {
+//X     case Phonon::ErrorState:
+//X         stream << "ErrorState";
+//X         break;
+//X     case Phonon::LoadingState:
+//X         stream << "LoadingState";
+//X         break;
+//X     case Phonon::StoppedState:
+//X         stream << "StoppedState";
+//X         break;
+//X     case Phonon::PlayingState:
+//X         stream << "PlayingState";
+//X         break;
+//X     case Phonon::BufferingState:
+//X         stream << "BufferingState";
+//X         break;
+//X     case Phonon::PausedState:
+//X         stream << "PausedState";
+//X         break;
+//X     }
+//X     return stream;
+//X }
 
 #include <QtCore/QMetaType>
 

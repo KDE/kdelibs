@@ -30,8 +30,6 @@
 
 #include <QtGui/QApplication>
 
-#include <kcomponentdata.h>
-
 MainWindow::MainWindow()
     : m_fileView(this),
     m_media(0)
@@ -63,7 +61,6 @@ void MainWindow::delayedInit()
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    KComponentData("phonon-tutorial1");
     MainWindow mw;
     mw.show();
     return app.exec();

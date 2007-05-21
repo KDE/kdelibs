@@ -708,6 +708,6 @@ QByteArray ByteStreamTest2::pcmBlock() const
     return data;
 }
 
-QTEST_KDEMAIN(ByteStreamTest2, GUI)
+QTEST_MAIN(ByteStreamTest2)
 #include "bytestreamtest2.moc"
 // vim: sw=4 ts=4

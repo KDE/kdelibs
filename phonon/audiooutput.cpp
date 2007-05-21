@@ -26,7 +26,6 @@
 #include "phononnamespace_p.h"
 
 #include <cmath>
-#include <klocale.h>
 
 #define PHONON_CLASSNAME AudioOutput
 #define PHONON_INTERFACENAME AudioOutputInterface
@@ -125,9 +124,13 @@ void AudioOutput::setMuted(bool mute)
     if (d->muted != mute) {
         if (mute) {
             d->muted = mute;
-            INTERFACE_CALL(setVolume(0.0));
+            if (k_ptr->backendObject()) {
+                INTERFACE_CALL(setVolume(0.0));
+            }
         } else {
-            INTERFACE_CALL(setVolume(pow(d->volume, 1.4925373)));
+            if (k_ptr->backendObject()) {
+                INTERFACE_CALL(setVolume(pow(d->volume, 1.4925373)));
+            }
             d->muted = mute;
         }
         emit mutedChanged(mute);

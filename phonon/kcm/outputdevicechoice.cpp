@@ -18,16 +18,51 @@
 */
 
 #include "outputdevicechoice.h"
+
+#include <QtCore/QList>
+#include <QtCore/QSettings>
+#include <QtGui/QHeaderView>
+
 #include <phonon/backendcapabilities.h>
 #include <phonon/objectdescription.h>
 #include <phonon/phononnamespace.h>
-#include <klocale.h>
-#include <QtGui/QHeaderView>
-#include <kconfig.h>
 #include <phonon/audiodeviceenumerator.h>
 #include <phonon/audiodevice.h>
-#include <QtCore/QList>
-#include <kconfiggroup.h>
+
+#include <klocale.h>
+
+Q_DECLARE_METATYPE(QList<int>)
+
+class QSettingsGroup
+{
+    public:
+        QSettingsGroup(QSettings *settings, const QString &name)
+            : m_s(settings),
+            m_group(name + QLatin1Char('/'))
+        {
+        }
+
+        template<typename T>
+        inline T value(const QString &key, const T &def) const
+        {
+            return qvariant_cast<T>(value(key, QVariant::fromValue(def)));
+        }
+
+        QVariant value(const QString &key, const QVariant &def) const
+        {
+            return m_s->value(m_group + key, def);
+        }
+
+        template<typename T>
+        inline void setValue(const QString &key, const T &value)
+        {
+            m_s->setValue(m_group + key, QVariant::fromValue(value));
+        }
+
+    private:
+        QSettings *const m_s;
+        QString m_group;
+};
 
 class CategoryItem : public QStandardItem {
     public:
@@ -43,6 +78,7 @@ class CategoryItem : public QStandardItem {
     private:
         Phonon::Category m_cat;
 };
+
 OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     : QWidget(parent)
 {
@@ -128,9 +164,9 @@ void OutputDeviceChoice::updateDeviceList()
 
 void OutputDeviceChoice::load()
 {
-    KConfig phononrc("phononrc", KConfig::OnlyLocal);
-    KConfigGroup outputDeviceGroup(&phononrc, QLatin1String("AudioOutputDevice"));
-    KConfigGroup captureDeviceGroup(&phononrc, QLatin1String("AudioCaptureDevice"));
+    QSettings phononConfig(QLatin1String("kde.org"), QLatin1String("libphonon"));
+    QSettingsGroup outputDeviceGroup(&phononConfig, QLatin1String("AudioOutputDevice"));
+    QSettingsGroup captureDeviceGroup(&phononConfig, QLatin1String("AudioCaptureDevice"));
 
     QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
     QHash<int, Phonon::AudioOutputDevice> hash;
@@ -139,7 +175,7 @@ void OutputDeviceChoice::load()
     }
     for (int i = 0; i <= Phonon::LastCategory; ++i) {
         QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
-        QList<int> order = outputDeviceGroup.readEntry<QList<int> >(QLatin1String("Category") + QString::number(i), QList<int>());
+        QList<int> order = outputDeviceGroup.value(QLatin1String("Category") + QString::number(i), QList<int>());
         QList<Phonon::AudioOutputDevice> orderedList;
         foreach (int idx, order) {
             if (hashCopy.contains(idx)) {
@@ -156,7 +192,7 @@ void OutputDeviceChoice::load()
     }
 
     QList<Phonon::AudioCaptureDevice> list2 = Phonon::BackendCapabilities::availableAudioCaptureDevices();
-    QList<int> order = captureDeviceGroup.readEntry<QList<int> >(QLatin1String("DeviceOrder"), QList<int>());
+    QList<int> order = captureDeviceGroup.value(QLatin1String("DeviceOrder"), QList<int>());
     QList<Phonon::AudioCaptureDevice> orderedList;
     foreach (int idx, order) {
         for (int i = 0; i < list2.size(); ++i) {
@@ -175,18 +211,18 @@ void OutputDeviceChoice::load()
 void OutputDeviceChoice::save()
 {
     kDebug() << k_funcinfo << endl;
-    KConfig config("phononrc", KConfig::OnlyLocal);
+    QSettings config(QLatin1String("kde.org"), QLatin1String("libphonon"));
     {
-        KConfigGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
+        QSettingsGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));
         for (int i = 0; i <= Phonon::LastCategory; ++i) {
             if (m_outputModel.value(i)) {
-                globalGroup.writeEntry(QLatin1String("Category") + QString::number(i), m_outputModel.value(i)->tupleIndexOrder());
+                globalGroup.setValue(QLatin1String("Category") + QString::number(i), m_outputModel.value(i)->tupleIndexOrder());
             }
         }
     }
     {
-        KConfigGroup globalGroup(&config, QLatin1String("AudioCaptureDevice"));
-        globalGroup.writeEntry(QLatin1String("DeviceOrder"), m_captureModel.tupleIndexOrder());
+        QSettingsGroup globalGroup(&config, QLatin1String("AudioCaptureDevice"));
+        globalGroup.setValue(QLatin1String("DeviceOrder"), m_captureModel.tupleIndexOrder());
     }
 }
 

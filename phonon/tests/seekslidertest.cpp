@@ -17,18 +17,19 @@
 
 */
 
-#include <qtest_kde.h>
-
 #include "seekslidertest.h"
+#include "loadfakebackend.h"
 #include "../seekslider.h"
 #include "../mediaobject.h"
-#include <QtGui/QSlider>
-#include <kurl.h>
-#include <cstdlib>
-#include <QtGui/QLabel>
-#include "loadfakebackend.h"
 #include "../audiopath.h"
 #include "../audiooutput.h"
+
+#include <QtGui/QLabel>
+#include <QtGui/QSlider>
+
+#include <qtest_kde.h>
+
+#include <cstdlib>
 
 using namespace Phonon;
 
@@ -58,7 +59,7 @@ void SeekSliderTest::testEnabled()
 void SeekSliderTest::setMedia()
 {
     QVERIFY(media->state() == Phonon::LoadingState);
-    KUrl url(testUrl());
+    QUrl url(testUrl());
     media->setCurrentSource(url);
     ss->setMediaObject(media);
     QVERIFY(!qslider->isEnabled());
@@ -106,6 +107,13 @@ void SeekSliderTest::cleanupTestCase()
     delete ss;
 }
 
-QTEST_KDEMAIN(SeekSliderTest, GUI)
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+    QCoreApplication::setApplicationName("seekslidertest");
+    SeekSliderTest tc;
+    return QTest::qExec(&tc, argc, argv);
+}
+
 #include "seekslidertest.moc"
 // vim: ts=4

@@ -23,20 +23,18 @@
 
 #include "tutorial3.h"
 
-#include <Phonon/MediaObject>
 #include <Phonon/AudioPath>
 #include <Phonon/AudioOutput>
 #include <Phonon/Global>
+#include <Phonon/MediaObject>
+#include <Phonon/SeekSlider>
+#include <Phonon/VolumeSlider>
 
 #include <QtGui/QApplication>
-
-#include <kcomponentdata.h>
-#include <QtGui/QHBoxLayout>
 #include <QtGui/QFrame>
-#include <Phonon/VolumeSlider>
-#include <QtGui/QVBoxLayout>
-#include <Phonon/SeekSlider>
+#include <QtGui/QHBoxLayout>
 #include <QtGui/QPushButton>
+#include <QtGui/QVBoxLayout>
 
 PlayerWidget::PlayerWidget()
     : m_media(0)
@@ -102,7 +100,6 @@ void MainWindow::providePlayer(const QModelIndex &index)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    KComponentData("phonon-tutorial1");
     MainWindow mw;
     mw.show();
     return app.exec();

@@ -789,6 +789,6 @@ void ByteStreamTest::cleanupTestCase()
     delete m_media;
 }
 
-QTEST_KDEMAIN(ByteStreamTest, GUI)
+QTEST_MAIN(ByteStreamTest)
 #include "bytestreamtest.moc"
 // vim: sw=4 ts=4

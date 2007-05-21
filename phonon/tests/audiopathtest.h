@@ -21,9 +21,10 @@
 #define AUDIOPATHTEST_H
 
 #include <QtCore/QObject>
-#include <kurl.h>
-#include <phonon/mediaobject.h>
+#include <QtCore/QUrl>
 #include <QtTest/QSignalSpy>
+
+#include <phonon/mediaobject.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
 
@@ -41,7 +42,7 @@ class AudioPathTest : public QObject
         void cleanupTestCase();
 
     private:
-        KUrl m_url;
+        QUrl m_url;
         Phonon::MediaObject *m_media;
         Phonon::AudioPath *m_path;
         Phonon::AudioOutput *m_output;

@@ -42,6 +42,9 @@ class PluginFactory
                 const QStringList &actions, QObject *receiver,
                 const char *actionSlot) = 0;
         virtual QString applicationName() const = 0;
+        virtual QObject *createBackend() = 0;
+        virtual QObject *createBackend(const QString &library, const QString &version) = 0;
+        virtual bool isMimeTypeAvailable(const QString &mimeType) = 0;
 };
 
 } // namespace Phonon

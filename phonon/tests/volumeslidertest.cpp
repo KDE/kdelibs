@@ -17,17 +17,18 @@
 
 */
 
-#include <qtest_kde.h>
-
 #include "volumeslidertest.h"
+#include "loadfakebackend.h"
 #include "../volumeslider.h"
 #include "../mediaobject.h"
 #include "../audiooutput.h"
-#include "loadfakebackend.h"
+
 #include <QtGui/QSlider>
-#include <kurl.h>
-#include <cstdlib>
 #include <QtGui/QToolButton>
+
+#include <qtest_kde.h>
+
+#include <cstdlib>
 
 using namespace Phonon;
 
@@ -71,6 +72,13 @@ void VolumeSliderTest::cleanupTestCase()
     delete vs;
 }
 
-QTEST_KDEMAIN(VolumeSliderTest, GUI)
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+    QCoreApplication::setApplicationName("volumeslidertest");
+    VolumeSliderTest tc;
+    return QTest::qExec(&tc, argc, argv);
+}
+
 #include "volumeslidertest.moc"
 // vim: ts=4

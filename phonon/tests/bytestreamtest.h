@@ -21,11 +21,13 @@
 #define MEDIAOBJECTTEST_H
 
 #include <QtCore/QObject>
-#include <kurl.h>
+#include <QtCore/QUrl>
+#include <QtTest/QSignalSpy>
+
 #include <phonon/bytestream.h>
 #include <phonon/audiopath.h>
 #include <phonon/audiooutput.h>
-#include <QtTest/QSignalSpy>
+
 #include <kio/jobclasses.h>
 
 class ByteStreamTest : public QObject
@@ -90,7 +92,7 @@ class ByteStreamTest : public QObject
         void waitForSignal(QObject *obj, const char *signalName, int timeout = 0);
         void testOneSeek(qint64 seekTo);
 
-        KUrl m_url;
+        QUrl m_url;
         KIO::Job *m_job;
         Phonon::ByteStream *m_media;
         QSignalSpy *m_stateChangedSignalSpy;

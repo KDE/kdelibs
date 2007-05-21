@@ -22,7 +22,6 @@
 
 #include "phonon_export.h"
 #include "objectdescription.h"
-#include <kglobal.h>
 
 #include <QtCore/QObject>
 

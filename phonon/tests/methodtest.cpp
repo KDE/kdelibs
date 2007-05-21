@@ -161,6 +161,12 @@ void MethodTest::checkMethods(QObject *m_backendObject)
     }
 }
 
-QTEST_KDEMAIN(MethodTest, GUI)
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+    QCoreApplication::setApplicationName("methodtest");
+    MethodTest tc;
+    return QTest::qExec(&tc, argc, argv);
+}
 #include "methodtest.moc"
 // vim: sw=4 ts=4

@@ -24,7 +24,6 @@
 #include "objectdescription.h"
 
 #include <QtCore/QPointer>
-#include <kservice.h>
 
 namespace Phonon
 {
@@ -36,13 +35,12 @@ class FactoryPrivate : public Phonon::Factory::Sender
     public:
         FactoryPrivate();
         ~FactoryPrivate();
-        bool createBackend(KService::Ptr newService);
-        void createBackend();
+        bool createBackend();
         PluginFactory *pluginFactory();
 
         QPointer<QObject> m_backendObject;
         PluginFactory *m_pluginFactory;
-        KService::Ptr service;
+        bool m_noPluginFactory;
 
         QList<QObject *> objects;
         QList<BasePrivate *> basePrivateList;

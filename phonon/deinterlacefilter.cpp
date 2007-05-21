@@ -21,7 +21,6 @@
 #include "deinterlacefilter_p.h"
 #include "factory.h"
 #include "effectparameter.h"
-#include <klocale.h>
 
 #define PHONON_CLASSNAME DeinterlaceFilter
 

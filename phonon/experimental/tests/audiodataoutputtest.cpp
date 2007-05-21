@@ -22,16 +22,18 @@
 #include "../../mediaobject.h"
 #include "../../audiopath.h"
 #include "../../audiooutput.h"
+#include "../../tests/loadfakebackend.h"
+
 #include <qtest_kde.h>
 #include <cstdlib>
-#include <kurl.h>
-#include "../../tests/loadfakebackend.h"
+#include <QtCore/QUrl>
 
 using namespace Phonon;
 using namespace Phonon::Experimental;
 
 void AudioDataOutputTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("audiodataoutputtest");
     Phonon::loadFakeBackend();
     AudioDataOutput test(this);
 }
@@ -64,7 +66,7 @@ void AudioDataOutputTest::testFormat()
     QCOMPARE(test.format(), Phonon::Experimental::AudioDataOutput::IntegerFormat);
 
     MediaObject media(this);
-    KUrl url(getenv("PHONON_TESTURL"));
+    QUrl url(testUrl());
     media.setCurrentSource(url);
     AudioPath path(this);
     media.addAudioPath(&path);
@@ -116,6 +118,6 @@ void AudioDataOutputTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN(AudioDataOutputTest, NoGUI)
+QTEST_MAIN(AudioDataOutputTest)
 #include "audiodataoutputtest.moc"
 // vim: sw=4 ts=4

@@ -21,7 +21,6 @@
 #define VIDEOPATHTEST_H
 
 #include <QtCore/QObject>
-#include <kurl.h>
 #include <phonon/mediaobject.h>
 #include <QtTest/QSignalSpy>
 #include <phonon/videopath.h>
@@ -41,7 +40,7 @@ class VideoPathTest : public QObject
         void cleanupTestCase();
 
     private:
-        KUrl m_url;
+        QUrl m_url;
         Phonon::MediaObject *m_media;
         Phonon::VideoPath *m_path;
         Phonon::VideoOutput *m_output; //FIXME VideoWidget is in Phonon::Ui

@@ -17,12 +17,13 @@
 
 */
 
-#include <QObject>
-#include <ksharedconfig.h>
-#include "phononnamespace.h"
-
 #ifndef PHONON_GLOBALCONFIG_H
 #define PHONON_GLOBALCONFIG_H
+
+#include <QtCore/QObject>
+#include <QtCore/QSettings>
+
+#include "phononnamespace.h"
 
 namespace Phonon
 {
@@ -43,7 +44,7 @@ namespace Phonon
             void audioOutputDeviceConfigChanged();
 
         private:
-            KSharedConfig::Ptr m_config;
+            QSettings m_config;
     };
 } // namespace Phonon
 #endif // PHONON_GLOBALCONFIG_H

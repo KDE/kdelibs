@@ -29,7 +29,6 @@
 
 #include <unistd.h>
 #include "loadfakebackend.h"
-#include <kurl.h>
 
 const qint64 ALLOWED_TIME_FOR_SEEKING = 1000; // 1s
 const qint64 ALLOWED_SEEK_INACCURACY = 300; // 0.3s
@@ -150,6 +149,8 @@ void MediaObjectTest::pausePlayback()
 
 void MediaObjectTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("mediaobjecttest");
+
     Phonon::loadFakeBackend();
     m_url = testUrl();
 
@@ -784,6 +785,6 @@ void MediaObjectTest::cleanupTestCase()
     delete m_media;
 }
 
-QTEST_KDEMAIN_CORE(MediaObjectTest)
+QTEST_MAIN(MediaObjectTest)
 #include "mediaobjecttest.moc"
 // vim: sw=4 ts=4

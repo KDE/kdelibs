@@ -22,9 +22,6 @@
 
 #include "audiooutput.h"
 #include "abstractaudiooutput_p.h"
-#include <kaboutdata.h>
-#include <kglobal.h>
-#include <kcomponentdata.h>
 
 namespace Phonon
 {

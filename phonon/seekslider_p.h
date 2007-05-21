@@ -24,8 +24,6 @@
 #include <QtGui/QBoxLayout>
 #include <QtGui/QSlider>
 #include <QtGui/QLabel>
-#include <kicontheme.h>
-#include <kiconloader.h>
 #include <QtGui/QPixmap>
 #include <QtGui/QIcon>
 #include <QtGui/QStyle>

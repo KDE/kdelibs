@@ -26,6 +26,7 @@ using namespace Phonon;
 
 void AudioCaptureDeviceTest::initTestCase()
 {
+    QCoreApplication::setApplicationName("audiocapturedevicetest");
     Phonon::loadFakeBackend();
 }
 
@@ -65,6 +66,6 @@ void AudioCaptureDeviceTest::cleanupTestCase()
 {
 }
 
-QTEST_KDEMAIN_CORE(AudioCaptureDeviceTest)
+QTEST_MAIN(AudioCaptureDeviceTest)
 #include "audiocapturedevicetest.moc"
 // vim: sw=4 ts=4

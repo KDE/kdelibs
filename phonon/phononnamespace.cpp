@@ -19,7 +19,10 @@
 
 #include "phononnamespace.h"
 #include "phononnamespace_p.h"
-#include <klocale.h>
+
+#include "factory.h"
+
+#include <QtCore/QList>
 
 namespace Phonon
 {
@@ -44,11 +47,17 @@ namespace Phonon
     }
 }
 
+Q_DECLARE_METATYPE(QList<int>)
 static int registerPhononMetaTypes()
 {
     qRegisterMetaType<Phonon::State>();
     qRegisterMetaType<Phonon::ErrorType>();
     qRegisterMetaType<Phonon::Category>();
+
+    // need those for QSettings
+    qRegisterMetaType<QList<int> >();
+    qRegisterMetaTypeStreamOperators<QList<int> >("QList<int>");
+
     return 0; // something
 }
 
