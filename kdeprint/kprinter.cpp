@@ -1097,7 +1097,7 @@ void KPrinter::setRealPageSize(DrPageSize *p)
 }
 
 // FIXME: remove for 4.0
-void KPrinter::setRealPageSize( QSize )
+void KPrinter::setRealPageSize( const QSize& )
 {
 	kWarning( 500 ) << "KPrinter::setRealPageSize(QSize) is obsolete, do not use (no effect)" << endl;
 }

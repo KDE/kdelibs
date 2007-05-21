@@ -35,7 +35,7 @@
 #define	SCALE(d,z)	((int)(float(d)*z+0.5))
 #define	UNSCALE(d,z)	((int)(float(d)/z+0.5))
 
-static void draw3DPage(QPainter *p, QRect r)
+static void draw3DPage(QPainter *p, const QRect &r)
 {
 	// draw white page
 	p->fillRect(r,Qt::white);

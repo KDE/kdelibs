@@ -464,7 +464,7 @@ public:
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete
 	 */
-	KDE_DEPRECATED void setRealPageSize( QSize p );
+	KDE_DEPRECATED void setRealPageSize( const QSize &p );
 	/**
 	 * DO NOT USE, WILL BE REMOVED.
 	 * @obsolete

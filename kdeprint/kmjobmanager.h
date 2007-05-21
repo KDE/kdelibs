@@ -49,7 +49,7 @@ public:
 	enum JobType { ActiveJobs = 0, CompletedJobs = 1 };
 	struct JobFilter
 	{
-		JobFilter() { m_type[0] = m_type[1] = 0; m_isspecial = false; }
+		JobFilter() { m_type[0] = m_type[1] = 0; m_isspecial = false; } //krazy:exclude=inline
 		int	m_type[2];
 		bool m_isspecial;
 	};

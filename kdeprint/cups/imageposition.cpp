@@ -22,7 +22,7 @@
 #include <QtGui/QPainter>
 #include <kstandarddirs.h>
 
-static void draw3DPage(QPainter *p, QRect r)
+static void draw3DPage(QPainter *p, const QRect &r)
 {
 	// draw white page
 	p->fillRect(r,Qt::white);

@@ -18,6 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
+//krazy:excludeall=dpointer,inline (no guarantee about binary compatibility)
+
 #ifndef DRIVER_H
 #define DRIVER_H
 
@@ -71,7 +73,7 @@ public:
 	QString get(const QString& key) const 		{ return m_map[key]; }
 	void set(const QString& key, const QString& val)	{ m_map[key] = val; }
 	bool has(const QString& key) const 			{ return m_map.contains(key); }
-	const QString& name() const				{ return m_name; }
+	QString name() const				{ return m_name; }
 	void setName(const QString& s)				{ m_name = s; }
 	bool conflict() const 					{ return m_conflict; }
 	void setConflict(bool on)				{ m_conflict = on; }
@@ -123,7 +125,7 @@ public:
 	void getOptions(QMap<QString,QString>& opts, bool incldef = false);
 	DrBase* clone();
 
-	const QList<DrGroup*>& groups()	{ return m_subgroups; }
+	QList<DrGroup*> groups()	{ return m_subgroups; }
 	const QList<DrBase*>& options()	{ return m_listoptions; }
 
 	static QString groupForOption( const QString& optname );
@@ -282,7 +284,7 @@ public:
 	~DrListOption();
 
 	void addChoice(DrBase *ch)	{ m_choices.append(ch); }
-	const QList<DrBase*>& choices()	{ return m_choices; }
+	QList<DrBase*> choices()	{ return m_choices; }
 	DrBase* currentChoice() const 	{ return m_current; }
 	DrBase* findChoice(const QString& txt);
 	void setChoice(int choicenum);

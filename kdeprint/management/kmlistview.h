@@ -30,7 +30,7 @@ class KMListView : public Q3ListView
 {
 	Q_OBJECT
 public:
-	KMListView(QWidget *parent = 0, const char *name = 0);
+	explicit KMListView(QWidget *parent = 0, const char *name = 0);
 	~KMListView();
 
 	void setPrinterList(QList<KMPrinter*> *list);
