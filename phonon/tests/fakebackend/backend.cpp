@@ -18,22 +18,25 @@
 */
 
 #include "backend.h"
-#include "mediaobject.h"
-#include "audiopath.h"
+
+#include "audiodataoutput.h"
 #include "audioeffect.h"
 #include "audiooutput.h"
-#include "audiodataoutput.h"
-#include "visualization.h"
-#include "videopath.h"
-#include "videoeffect.h"
+#include "audiopath.h"
 #include "brightnesscontrol.h"
+#include "mediaobject.h"
+#include "videodataoutput.h"
+#include "videoeffect.h"
+#include "videopath.h"
+#include "videowidget.h"
+#include "visualization.h"
+#include "volumefadereffect.h"
+
+#include <QtCore/QSet>
+#include <QtCore/QVariant>
 
 #include <kgenericfactory.h>
-#include "volumefadereffect.h"
-#include <QtCore/QSet>
-#include "videodataoutput.h"
-#include <QtCore/QVariant>
-#include "videowidget.h"
+#include <klocale.h>
 
 typedef KGenericFactory<Phonon::Fake::Backend, Phonon::Fake::Backend> FakeBackendFactory;
 K_EXPORT_COMPONENT_FACTORY(phonon_fake, FakeBackendFactory("fakebackend"))
@@ -46,6 +49,12 @@ namespace Fake
 Backend::Backend(QObject *parent, const QStringList &)
     : QObject(parent)
 {
+    setProperty("identifier",     QLatin1String("phonon_fake"));
+    setProperty("backendName",    i18n("Fake"));
+    setProperty("backendComment", i18n("Testing Backend"));
+    setProperty("backendVersion", QLatin1String("0.1"));
+    setProperty("backendIcon",    QLatin1String(""));
+    setProperty("backendWebsite", QLatin1String("http://multimedia.kde.org/"));
 }
 
 Backend::~Backend()
