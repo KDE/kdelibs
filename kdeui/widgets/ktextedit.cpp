@@ -325,7 +325,7 @@ void KTextEdit::wheelEvent( QWheelEvent *event )
 
 void KTextEdit::createHighlighter()
 {
-    setHightighter(new KSpell2::Highlighter( this ));
+    setHightighter(new KSpell2::Highlighter( this, d->spellChechingConfigFileName ));
 }
 
 KSpell2::Highlighter* KTextEdit::hightighter() const
@@ -409,7 +409,7 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  KSpell2::Dialog *spellDialog = new KSpell2::Dialog(new KSpell2::BackgroundChecker( KSpell2::Loader::openLoader(), this ), 0 );
+  KSpell2::Dialog *spellDialog = new KSpell2::Dialog(new KSpell2::BackgroundChecker( KSpell2::Loader::openLoader(KSharedConfig::openConfig(d->spellChechingConfigFileName)), this ), 0 );
   connect(spellDialog,SIGNAL(replace( const QString&, int,const QString&)),this,SLOT(spellCheckerCorrected( const QString&, int,const QString&) ) );
   connect(spellDialog,SIGNAL(misspelling( const QString&, int)),this,SLOT(spellCheckerMisspelling(const QString &,int)));
   connect(spellDialog,SIGNAL(autoCorrect( const QString &, const QString &)),this,SLOT(spellCheckerAutoCorrect(const QString &, const QString &)));
