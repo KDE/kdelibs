@@ -733,7 +733,6 @@ void KPrinter::setPageSize(PageSize s)
 {
 	KMFactory::self()->settings()->pageSize = s;
 	setOption("kde-pagesize",QString::number((int)s),true);
-	d->m_impl->broadcastOption( "kde-pagesize-fixed", "1" );
 }
 
 void KPrinter::setOptions(const QMap<QString,QString>& opts)

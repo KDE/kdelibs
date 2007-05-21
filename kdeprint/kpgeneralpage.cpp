@@ -623,8 +623,6 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 
 	if ( m_orientbox->isEnabled() )
 		m_orientbox->setDisabled( opts[ "kde-orientation-fixed" ] == "1" );
-	if ( m_pagesize->isEnabled() )
-		m_pagesize->setDisabled( opts[ "kde-pagesize-fixed" ] == "1" );
 }
 
 void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
