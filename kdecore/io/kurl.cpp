@@ -891,23 +891,73 @@ QString KUrl::url( AdjustPathOption trailing ) const
   return QString::fromLatin1( toEncoded( trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) ); // ## check encoding
 }
 
+static QString toPrettyPercentEncoding(const QString &input)
+{
+  QString result;
+  for (int i = 0; i < input.length(); ++i) {
+    QChar c = input.at(i);
+    register short u = c.unicode();
+    if (u < 0x20 || u == '?' || u == '#' || u == '%') {
+      static const char hexdigits[] = "0123456789ABCDEF";
+      result += QLatin1Char('%');
+      result += QLatin1Char(hexdigits[(u & 0xf0) >> 4]);
+      result += QLatin1Char(hexdigits[u & 0xf]);
+    } else {
+      result += c;
+    }
+  }
+
+  return result;
+}
+
 QString KUrl::prettyUrl( AdjustPathOption trailing ) const
 {
-  // Can't use toString(), it breaks urls with %23 in them (becomes '#', which is parsed back as a fragment)
-  // So prettyUrl is just url, with the password removed.
-  // TODO: we could consider a "toLocalFile or URL" behavior, now that the KUrl constructor can take local paths.
-  // We could replace some chars, like "%20" -> ' ', though?
-  if ( password().isEmpty() )
-    return url( trailing );
+  // reconstruct the URL in a "pretty" form
+  // a "pretty" URL is NOT suitable for data transfer. It's only for showing data to the user.
+  // however, it must be parseable back to its original state, since
+  // notably Konqueror displays it in the Location address.
 
-  QUrl newUrl( *this );
-  newUrl.setPassword( QString() );
-  if ( trailing == AddTrailingSlash && !path().endsWith( QLatin1Char('/') ) ) {
-      // -1 and 0 are provided by QUrl, but not +1.
-      newUrl.setPath( path() + QLatin1Char('/') );
-      return QString::fromLatin1( newUrl.toEncoded() );
+  // A pretty URL is the same as a normal URL, except that:
+  // - the password is removed
+  // - the hostname is shown in Unicode (as opposed to ACE/Punycode)
+  // - the pathname and fragment parts are shown in Unicode (as opposed to %-encoding)
+  QString result = scheme();
+  if (!result.isEmpty())
+    result += QLatin1String("://");
+
+  QString tmp = userName();
+  if (!tmp.isEmpty()) {
+    result += tmp;
+    result += QLatin1Char('@');
   }
-  return QString::fromLatin1( newUrl.toEncoded(  trailing == RemoveTrailingSlash ? StripTrailingSlash : None ) );
+
+  result += host();
+
+  if (port() != -1) {
+    result += QLatin1Char(':');
+    result += QString::number(port());
+  }
+
+  tmp = path();
+  result += toPrettyPercentEncoding(tmp);
+
+  // adjust the trailing slash, if necessary
+  if (trailing == AddTrailingSlash && !tmp.endsWith(QLatin1Char('/')))
+    result += QLatin1Char('/');
+  else if (trailing == RemoveTrailingSlash && tmp.length() > 1 && tmp.endsWith(QLatin1Char('/')))
+    result.chop(1);
+
+  if (hasQuery()) {
+    result += QLatin1Char('?');
+    result += QLatin1String(encodedQuery());
+  }
+
+  if (hasFragment()) {
+    result += QLatin1Char('#');
+    result += toPrettyPercentEncoding(fragment());
+  }
+
+  return result;
 }
 
 #if 0
