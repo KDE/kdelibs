@@ -245,7 +245,7 @@ PlastikStyle::~PlastikStyle()
 
 void PlastikStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                        const QStyleOption* opt,
-                                       cosnt QRect &r, const QPalette &pal,
+                                       const QRect &r, const QPalette &pal,
                                        State flags, QPainter* p,
                                        const QWidget* widget,
                                        KStyle::Option* kOpt) const
