@@ -158,6 +158,11 @@ ToolTip=Improved QTextEdit (KDE)
 WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support
 Group=Input (KDE)
 
+[KTitleWidget]
+ToolTip=Title box with label and icon
+WhatsThis=A styled frame to be used in title positions in dialogs and other widgets
+Group=Display (KDE)
+
 [KUrlLabel]
 ToolTip=URL Label (KDE)
 ConstructorArgs=("KUrlLabel", QString(), parent)
