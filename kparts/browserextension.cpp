@@ -328,8 +328,8 @@ class BrowserExtension::BrowserExtensionPrivate
 {
 public:
   BrowserExtensionPrivate()
-    : m_browserInterface(0),
-      m_urlDropHandlingEnabled(false)
+    : m_urlDropHandlingEnabled(false),
+      m_browserInterface(0)
   {}
 
   struct DelayedRequest {
