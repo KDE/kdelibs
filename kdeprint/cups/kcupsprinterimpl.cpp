@@ -94,7 +94,8 @@ void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
 		printer->setOption("orientation-requested",(o == "5" || o == "6" ? "6" : "3"));
 
 	// translate copies number
-	if (!printer->option("kde-copies").isEmpty()) printer->setOption("copies",printer->option("kde-copies"));
+	if (!printer->option("kde-copies").isEmpty())
+            printer->setOption("copies",printer->option("kde-copies"));
 
 	// page ranges are handled by CUPS, so application should print all pages
 	if (printer->pageSelection() == KPrinter::SystemSide)
@@ -107,7 +108,6 @@ void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
 		o = printer->option("kde-pageset");
 		if (!o.isEmpty() && o != "0")
 			printer->setOption("page-set",(o == "1" ? "odd" : "even"));
-		printer->setOption("multiple-document-handling",(printer->option("kde-collate") == "Collate" ? "separate-documents-collated-copies" : "separate-documents-uncollated-copies"));
 	}
 	else
 	{ // No translation needed (but range => (from,to))
@@ -119,6 +119,7 @@ void KCupsPrinterImpl::preparePrinting(KPrinter *printer)
 			printer->setOption("kde-to",QString::number(s.height()));
 		}
 	}
+	printer->setOption("multiple-document-handling",(printer->option("kde-collate") == "Collate" ? "separate-documents-collated-copies" : "separate-documents-uncollated-copies"));
 
 	// needed for page size and margins
 	KPrinterImpl::preparePrinting(printer);
