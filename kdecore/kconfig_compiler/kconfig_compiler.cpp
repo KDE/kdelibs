@@ -1583,7 +1583,7 @@ int main( int argc, char **argv )
     if ( cfgFileNameArg )
       h << "const QString& arg";
     h << ");" << endl;
-    h << "    static " << className << " *mSelf;" << endl << endl;
+    h << "    friend class " << className << "Helper;" << endl << endl;
   }
 
   if ( hasSignals ) {
@@ -1719,32 +1719,38 @@ int main( int argc, char **argv )
 
   // Singleton implementation
   if ( singleton ) {
-    cpp << className << " *" << className << "::mSelf = 0;" << endl;
-    cpp << "static KStaticDeleter<" << className << "> static" << className << "Deleter;" << endl << endl;
+    cpp << "class " << className << "Helper" << endl;
+    cpp << '{' << endl;
+    cpp << "  public:" << endl;
+    cpp << "    " << className << "Helper() : q(0) {}" << endl;
+    cpp << "    ~" << className << "Helper() { delete q; }" << endl;
+    cpp << "    " << className << " *q;" << endl;
+    cpp << "};" << endl;
+    cpp << "K_GLOBAL_STATIC(" << className << "Helper, s_global" << className << ")" << endl;
 
     cpp << className << " *" << className << "::self()" << endl;
     cpp << "{" << endl;
     if ( cfgFileNameArg ) {
-      cpp << "  if (!mSelf)" << endl;
+      cpp << "  if (!s_global" << className << "->q)" << endl;
       cpp << "     kFatal() << \"you need to call " << className << "::instance before using\" << endl;" << endl;
     } else {
-    cpp << "  if ( !mSelf ) {" << endl;
-    cpp << "    static" << className << "Deleter.setObject( mSelf, new " << className << "() );" << endl;
-    cpp << "    mSelf->readConfig();" << endl;
-    cpp << "  }" << endl << endl;
+      cpp << "  if (!s_global" << className << "->q) {" << endl;
+      cpp << "    new " << className << ';' << endl;
+      cpp << "    s_global" << className << "->q->readConfig();" << endl;
+      cpp << "  }" << endl << endl;
     }
-    cpp << "  return mSelf;" << endl;
+    cpp << "  return s_global" << className << "->q;" << endl;
     cpp << "}" << endl << endl;
 
     if ( cfgFileNameArg ) {
       cpp << "void " << className << "::instance(const QString& cfgfilename)" << endl;
       cpp << "{" << endl;
-      cpp << "  if (mSelf) {" << endl;
+      cpp << "  if (s_global" << className << "->q) {" << endl;
       cpp << "     kDebug() << \"" << className << "::instance called after the first use - ignoring\" << endl;" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
-      cpp << "  static" << className << "Deleter.setObject( mSelf, new " << className << "(cfgfilename) );" << endl;
-      cpp << "  mSelf->readConfig();" << endl;
+      cpp << "  new " << className << "(cfgfilename);" << endl;
+      cpp << "  s_global" << className << "->q->readConfig();" << endl;
       cpp << "}" << endl << endl;
     }
   }
@@ -1790,8 +1796,10 @@ int main( int argc, char **argv )
     cpp << "  d = new " + className + "Private;" << endl;
   // Needed in case the singleton class is used as baseclass for
   // another singleton.
-  if ( singleton )
-    cpp << "  mSelf = this;" << endl;
+  if (singleton) {
+    cpp << "  Q_ASSERT(!s_global" << className << "->q);" << endl;
+    cpp << "  s_global" << className << "->q = this;" << endl;
+  }
 
   group.clear();
 
@@ -1953,8 +1961,6 @@ int main( int argc, char **argv )
   if ( singleton ) {
     if ( dpointer )
       cpp << "  delete d;" << endl;
-    cpp << "  if ( mSelf == this )" << endl;
-    cpp << "    static" << className << "Deleter.setObject( mSelf, 0, false );" << endl;
   }
   cpp << "}" << endl << endl;
 
