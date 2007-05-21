@@ -48,8 +48,6 @@ namespace Phonon
          */
         Q_PROPERTY(int brightness READ brightness WRITE setBrightness)
         public:
-            virtual QList<EffectParameter> parameterList() const;
-
             int brightness() const;
             /**
              * The smallest value that is possible to set when calling
@@ -68,10 +66,6 @@ namespace Phonon
 
         public Q_SLOTS:
             void setBrightness(int brightness);
-
-        protected:
-            virtual QVariant value(int parameterId) const;
-            virtual void setValue(int parameterId, QVariant newValue);
     };
 } //namespace Phonon
 
