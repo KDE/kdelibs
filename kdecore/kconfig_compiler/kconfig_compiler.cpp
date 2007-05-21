@@ -1672,7 +1672,7 @@ int main( int argc, char **argv )
 
   // Header required by singleton implementation
   if ( singleton )
-    cpp << "#include <kstaticdeleter.h>" << endl << "#include <QtCore/QFile>" << endl << endl;
+    cpp << "#include <kglobal.h>" << endl << "#include <QtCore/QFile>" << endl << endl;
   if ( singleton && cfgFileNameArg )
     cpp << "#include <kdebug.h>" << endl << endl;
 
@@ -1719,7 +1719,10 @@ int main( int argc, char **argv )
 
   // Singleton implementation
   if ( singleton ) {
-    cpp << "class " << className << "Helper" << endl;
+    if( nameSpace.isEmpty() )
+      cpp << "class " << className << "Helper" << endl;
+    else
+      cpp << "class " << nameSpace << "::" << className << "Helper" << endl;
     cpp << '{' << endl;
     cpp << "  public:" << endl;
     cpp << "    " << className << "Helper() : q(0) {}" << endl;
