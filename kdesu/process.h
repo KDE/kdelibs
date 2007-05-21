@@ -93,13 +93,13 @@ public:
     /**
      * Enables/disables terminal output. Relevant only to some subclasses.
      */
-    void setTerminal(bool terminal) { m_bTerminal = terminal; }
+    void setTerminal(bool terminal);
 
     /**
      * Overwrites the password as soon as it is used. Relevant only to
      * some subclasses.
      */
-    void setErase(bool erase) { m_bErase = erase; }
+    void setErase(bool erase);
 
     /**
      * Set additinal environment variables.
@@ -109,12 +109,12 @@ public:
     /**
      * Returns the filedescriptor of the process.
      */
-    inline int fd() const {return m_Fd;}
+    int fd() const;
 
     /**
      * Returns the pid of the process.
      */
-    inline int pid() const {return m_Pid;}
+    int pid() const;
 
 public /* static */:
     /*
@@ -176,9 +176,6 @@ protected:
 private:
     int init();
     int SetupTTY(int fd);
-
-    PTY *m_pPTY;
-    QByteArray m_Inbuf, m_TTY;
 
 protected:
     /** Standard hack to add virtual methods in a BC way. Unused. */

@@ -24,6 +24,7 @@
 
 
 StubProcess::StubProcess()
+    : d(0)
 {
     m_User = "root";
     m_Scheduler = SchedNormal;

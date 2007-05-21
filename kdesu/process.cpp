@@ -121,7 +121,15 @@ int PtyProcess::checkPidExited(pid_t pid)
 class PtyProcess::PtyProcessPrivate
 {
 public:
+    PtyProcessPrivate() : m_pPTY(0L) {}
+    ~PtyProcessPrivate()
+    {
+        delete m_pPTY;
+    }
     QList<QByteArray> env;
+    PTY *m_pPTY;
+    QByteArray m_Inbuf;
+    QByteArray m_TTY;
 };
 
 
@@ -130,32 +138,30 @@ PtyProcess::PtyProcess()
 {
     m_bTerminal = false;
     m_bErase = false;
-    m_pPTY = 0L;
 }
 
 
 int PtyProcess::init()
 {
-    delete m_pPTY;
-    m_pPTY = new PTY();
-    m_Fd = m_pPTY->getpt();
+    delete d->m_pPTY;
+    d->m_pPTY = new PTY();
+    m_Fd = d->m_pPTY->getpt();
     if (m_Fd < 0)
         return -1;
-    if ((m_pPTY->grantpt() < 0) || (m_pPTY->unlockpt() < 0))
+    if ((d->m_pPTY->grantpt() < 0) || (d->m_pPTY->unlockpt() < 0))
     {
         kError(900) << k_lineinfo << "Master setup failed.\n";
         m_Fd = -1;
         return -1;
     }
-    m_TTY = m_pPTY->ptsname();
-    m_Inbuf.resize(0);
+    d->m_TTY = d->m_pPTY->ptsname();
+    d->m_Inbuf.resize(0);
     return 0;
 }
 
 
 PtyProcess::~PtyProcess()
 {
-    delete m_pPTY;
     delete d;
 }
 
@@ -163,6 +169,16 @@ PtyProcess::~PtyProcess()
 void PtyProcess::setEnvironment( const QList<QByteArray> &env )
 {
     d->env = env;
+}
+
+int PtyProcess::fd() const
+{
+    return m_Fd;
+}
+
+int PtyProcess::pid() const
+{
+    return m_Pid;
 }
 
 /** Returns the additional environment variables set by setEnvironment() */
@@ -182,17 +198,17 @@ QByteArray PtyProcess::readLine(bool block)
     int pos;
     QByteArray ret;
 
-    if (!m_Inbuf.isEmpty())
+    if (!d->m_Inbuf.isEmpty())
     {
-        pos = m_Inbuf.indexOf('\n');
+        pos = d->m_Inbuf.indexOf('\n');
         if (pos == -1)
         {
-            ret = m_Inbuf;
-            m_Inbuf.resize(0);
+            ret = d->m_Inbuf;
+            d->m_Inbuf.resize(0);
         } else
         {
-            ret = m_Inbuf.left(pos);
-            m_Inbuf = m_Inbuf.mid(pos+1);
+            ret = d->m_Inbuf.left(pos);
+            d->m_Inbuf = d->m_Inbuf.mid(pos+1);
         }
         return ret;
     }
@@ -231,17 +247,17 @@ QByteArray PtyProcess::readLine(bool block)
             break;        // eof
 
         buf[nbytes] = '\000';
-        m_Inbuf += buf;
+        d->m_Inbuf += buf;
 
-        pos = m_Inbuf.indexOf('\n');
+        pos = d->m_Inbuf.indexOf('\n');
         if (pos == -1)
         {
-            ret = m_Inbuf;
-            m_Inbuf.resize(0);
+            ret = d->m_Inbuf;
+            d->m_Inbuf.resize(0);
         } else
         {
-            ret = m_Inbuf.left(pos);
-            m_Inbuf = m_Inbuf.mid(pos+1);
+            ret = d->m_Inbuf.left(pos);
+            d->m_Inbuf = d->m_Inbuf.mid(pos+1);
         }
         break;
     }
@@ -265,7 +281,7 @@ void PtyProcess::unreadLine(const QByteArray &line, bool addnl)
     if (addnl)
         tmp += '\n';
     if (!tmp.isEmpty())
-        m_Inbuf.prepend(tmp);
+        d->m_Inbuf.prepend(tmp);
 }
 
 /*
@@ -281,7 +297,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         return -1;
 
     // Open the pty slave before forking. See SetupTTY()
-    int slave = open(m_TTY, O_RDWR);
+    int slave = open(d->m_TTY, O_RDWR);
     if (slave < 0)
     {
         kError(900) << k_lineinfo << "Could not open slave pty.\n";
@@ -363,7 +379,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
 int PtyProcess::WaitSlave()
 {
-    int slave = open(m_TTY, O_RDWR);
+    int slave = open(d->m_TTY, O_RDWR);
     if (slave < 0)
     {
         kError(900) << k_lineinfo << "Could not open slave tty.\n";
@@ -401,7 +417,7 @@ int PtyProcess::WaitSlave()
 
 int PtyProcess::enableLocalEcho(bool enable)
 {
-    int slave = open(m_TTY, O_RDWR);
+    int slave = open(d->m_TTY, O_RDWR);
     if (slave < 0)
     {
         kError(900) << k_lineinfo << "Could not open slave tty.\n";
@@ -426,6 +442,16 @@ int PtyProcess::enableLocalEcho(bool enable)
     return 0;
 }
 
+
+void PtyProcess::setTerminal(bool terminal)
+{
+    m_bTerminal = terminal;
+}
+
+void PtyProcess::setErase(bool erase)
+{
+    m_bErase = erase;
+}
 
 /*
  * Copy output to stdout until the child process exists, or a line of output
@@ -521,7 +547,7 @@ int PtyProcess::SetupTTY(int fd)
     setsid();
 
     // Open slave. This will make it our controlling terminal
-    int slave = open(m_TTY, O_RDWR);
+    int slave = open(d->m_TTY, O_RDWR);
     if (slave < 0)
     {
         kError(900) << k_lineinfo << "Could not open slave side: " << perror << "\n";

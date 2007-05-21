@@ -60,11 +60,8 @@ public:
 
 private:
 
-    int ptyfd;
-    QString ptyname, ttyname;
-
     class PTYPrivate;
-    PTYPrivate *d;
+    PTYPrivate * const d;
 };
 
 #endif  // __PTY_h_Included__

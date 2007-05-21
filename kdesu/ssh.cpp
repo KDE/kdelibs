@@ -34,25 +34,43 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
+class SshProcess::SshProcessPrivate
+{
+public:
+    SshProcessPrivate(const QByteArray &host)
+        : m_Host( host )
+        , m_Stub( "kdesu_stub" )
+    {}
+    QByteArray m_Prompt;
+    QByteArray m_Host;
+    QByteArray m_Error;
+    QByteArray m_Stub;
+};
+
 
 SshProcess::SshProcess(const QByteArray &host, const QByteArray &user, const QByteArray &command)
+    : d( new SshProcessPrivate(host) )
 {
-    m_Host = host;
     m_User = user;
     m_Command = command;
-    m_Stub = "kdesu_stub";
     srand(time(0L));
 }
 
 
 SshProcess::~SshProcess()
 {
+    delete d;
+}
+
+void SshProcess::setHost(const QByteArray &host)
+{
+    d->m_Host = host;
 }
 
 
 void SshProcess::setStub(const QByteArray &stub)
 {
-    m_Stub = stub;
+    d->m_Stub = stub;
 }
 
 
@@ -76,7 +94,7 @@ int SshProcess::exec(const char *password, int check)
     QList<QByteArray> args;
     args += "-l"; args += m_User;
     args += "-o"; args += "StrictHostKeyChecking=no";
-    args += m_Host; args += m_Stub;
+    args += d->m_Host; args += d->m_Stub;
 
     if (StubProcess::exec("ssh", args) < 0)
     {
@@ -126,6 +144,16 @@ int SshProcess::exec(const char *password, int check)
     setExitString("Waiting for forwarded connections to terminate");
     ret = waitForChild();
     return ret;
+}
+
+QByteArray SshProcess::prompt() const
+{
+    return d->m_Prompt;
+}
+
+QByteArray SshProcess::error() const
+{
+    return d->m_Error;
 }
 
 
@@ -180,7 +208,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
             {
                 if (check == 2)
                 {
-                    m_Prompt = line;
+                    d->m_Prompt = line;
                     return SshNeedsPassword;
                 }
                 WaitSlave();
@@ -191,7 +219,7 @@ int SshProcess::ConverseSsh(const char *password, int check)
             }
 
             // Warning/error message.
-            m_Error += line; m_Error += '\n';
+            d->m_Error += line; d->m_Error += '\n';
             if (m_bTerminal)
                 fprintf(stderr, "ssh: %s\n", line.constData());
             break;

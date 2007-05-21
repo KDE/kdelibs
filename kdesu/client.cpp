@@ -37,7 +37,10 @@
 
 class KDEsuClient::KDEsuClientPrivate {
 public:
+    KDEsuClientPrivate() : sockfd(-1) {}
     QString daemon;
+    int sockfd;
+    QByteArray sock;
 };
 
 #ifndef SUN_LEN
@@ -48,7 +51,6 @@ public:
 KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
-    sockfd = -1;
 #ifdef Q_WS_X11
     QByteArray display(getenv("DISPLAY"));
     if (display.isEmpty())
@@ -68,42 +70,43 @@ KDEsuClient::KDEsuClient()
     QByteArray display("NODISPLAY");
 #endif
 
-    sock = QFile::encodeName(KStandardDirs::locateLocal("socket", QString("kdesud_").append(display)));
+    d->sock = QFile::encodeName( KStandardDirs::locateLocal("socket",
+                                    QString("kdesud_").append(display)));
     connect();
 }
 
 
 KDEsuClient::~KDEsuClient()
 {
+    if (d->sockfd >= 0)
+	close(d->sockfd);
     delete d;
-    if (sockfd >= 0)
-	close(sockfd);
 }
 
 int KDEsuClient::connect()
 {
-    if (sockfd >= 0)
-	close(sockfd);
-    if (access(sock, R_OK|W_OK))
+    if (d->sockfd >= 0)
+	close(d->sockfd);
+    if (access(d->sock, R_OK|W_OK))
     {
-	sockfd = -1;
+	d->sockfd = -1;
 	return -1;
     }
 
-    sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
-    if (sockfd < 0)
+    d->sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
+    if (d->sockfd < 0)
     {
 	kWarning(900) << k_lineinfo << "socket(): " << perror << "\n";
 	return -1;
     }
     struct sockaddr_un addr;
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, sock);
+    strcpy(addr.sun_path, d->sock);
 
-    if (::connect(sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
+    if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
         kWarning(900) << k_lineinfo << "connect():" << perror << endl;
-	close(sockfd); sockfd = -1;
+	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
 
@@ -112,12 +115,12 @@ int KDEsuClient::connect()
     uid_t euid;
     gid_t egid;
     // Security: if socket exists, we must own it
-    if (getpeereid(sockfd, &euid, &egid) == 0)
+    if (getpeereid(d->sockfd, &euid, &egid) == 0)
     {
        if (euid != getuid())
        {
             kWarning(900) << "socket not owned by me! socket uid = " << euid << endl;
-            close(sockfd); sockfd = -1;
+            close(d->sockfd); d->sockfd = -1;
             return -1;
        }
     }
@@ -130,22 +133,22 @@ int KDEsuClient::connect()
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
     KDE_struct_stat s;
-    if (KDE_lstat(sock, &s)!=0)
+    if (KDE_lstat(d->sock, &s)!=0)
     {
-        kWarning(900) << "stat failed (" << sock << ")" << endl;
-	close(sockfd); sockfd = -1;
+        kWarning(900) << "stat failed (" << d->sock << ")" << endl;
+	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
     if (s.st_uid != getuid())
     {
         kWarning(900) << "socket not owned by me! socket uid = " << s.st_uid << endl;
-	close(sockfd); sockfd = -1;
+	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
     if (!S_ISSOCK(s.st_mode))
     {
-        kWarning(900) << "socket is not a socket (" << sock << ")" << endl;
-	close(sockfd); sockfd = -1;
+        kWarning(900) << "socket is not a socket (" << d->sock << ")" << endl;
+	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
 # endif
@@ -154,12 +157,12 @@ int KDEsuClient::connect()
     socklen_t siz = sizeof(cred);
 
     // Security: if socket exists, we must own it
-    if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)
+    if (getsockopt(d->sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)
     {
         if (cred.uid != getuid())
         {
             kWarning(900) << "socket not owned by me! socket uid = " << cred.uid << endl;
-            close(sockfd); sockfd = -1;
+            close(d->sockfd); d->sockfd = -1;
             return -1;
         }
     }
@@ -180,14 +183,14 @@ QByteArray KDEsuClient::escape(const QByteArray &str)
 
 int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
 {
-    if (sockfd < 0)
+    if (d->sockfd < 0)
 	return -1;
 
-    if (send(sockfd, cmd, cmd.length(), 0) != (int) cmd.length())
+    if (send(d->sockfd, cmd, cmd.length(), 0) != (int) cmd.length())
 	return -1;
 
     char buf[1024];
-    int nbytes = recv(sockfd, buf, 1023, 0);
+    int nbytes = recv(d->sockfd, buf, 1023, 0);
     if (nbytes <= 0)
     {
 	kWarning(900) << k_lineinfo << "no reply from daemon\n";

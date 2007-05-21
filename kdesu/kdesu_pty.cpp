@@ -73,15 +73,25 @@ extern "C" int unlockpt(int fd) __THROW;
 extern "C" char *_getpty(int *, int, mode_t, int);
 #endif
 
-PTY::PTY()
+class PTY::PTYPrivate
 {
-    ptyfd = -1;
+public:
+    PTYPrivate() : ptyfd(-1) {}
+    int ptyfd;
+    QString ptyname;
+    QString ttyname;
+};
+
+PTY::PTY()
+    : d( new PTYPrivate )
+{
 }
 
 PTY::~PTY()
 {
-    if (ptyfd >= 0)
-	close(ptyfd);
+    if (d->ptyfd >= 0)
+        close(d->ptyfd);
+    delete d;
 }
 
 
@@ -93,9 +103,9 @@ int PTY::getpt()
 #if defined(HAVE_GETPT) && defined(HAVE_PTSNAME)
 
     // 1: UNIX98: preferred way
-    ptyfd = ::getpt();
-    ttyname = ::ptsname(ptyfd);
-    return ptyfd;
+    d->ptyfd = ::getpt();
+    d->ttyname = ::ptsname(d->ptyfd);
+    return d->ptyfd;
 
 #elif defined(HAVE_OPENPTY)
     // 2: BSD interface
@@ -103,48 +113,48 @@ int PTY::getpt()
     char name[30];
     int master_fd, slave_fd;
     if (openpty(&master_fd, &slave_fd, name, 0L, 0L) != -1)  {
-	ttyname = name;
+	d->ttyname = name;
 	name[5]='p';
-	ptyname = name;
+	d->ptyname = name;
         close(slave_fd); // We don't need this yet // Yes, we do.
-	ptyfd = master_fd;
-	return ptyfd;
+	d->ptyfd = master_fd;
+	return d->ptyfd;
     }
-    ptyfd = -1;
+    d->ptyfd = -1;
     kDebug(900) << k_lineinfo << "Opening pty failed.\n";
     return -1;
 
 #elif defined(HAVE__GETPTY)
     // 3: Irix interface
     int master_fd;
-    ttyname = _getpty(&master_fd,O_RDWR,0600,0);
-    if (ttyname)
-	ptyfd = master_fd;
+    d->ttyname = _getpty(&master_fd,O_RDWR,0600,0);
+    if (d->ttyname)
+	d->ptyfd = master_fd;
     else{
-	ptyfd = -1;
+	d->ptyfd = -1;
 	kDebug(900) << k_lineinfo << "Opening pty failed.error" << errno << '\n';
     }
-    return ptyfd;
+    return d->ptyfd;
 
 #else
 
     // 4: Open terminal device directly
     // 4.1: Try /dev/ptmx first. (Linux w/ Unix98 PTYs, Solaris)
 
-    ptyfd = open("/dev/ptmx", O_RDWR);
-    if (ptyfd >= 0) {
-	ptyname = "/dev/ptmx";
+    d->ptyfd = open("/dev/ptmx", O_RDWR);
+    if (d->ptyfd >= 0) {
+	d->ptyname = "/dev/ptmx";
 #ifdef HAVE_PTSNAME
-	ttyname = ::ptsname(ptyfd);
-	return ptyfd;
+	d->ttyname = ::ptsname(d->ptyfd);
+	return d->ptyfd;
 #elif defined (TIOCGPTN)
 	int ptyno;
-	if (ioctl(ptyfd, TIOCGPTN, &ptyno) == 0) {
-	    ttyname.sprintf("/dev/pts/%d", ptyno);
-	    return ptyfd;
+	if (ioctl(d->ptyfd, TIOCGPTN, &ptyno) == 0) {
+	    d->ttyname.sprintf("/dev/pts/%d", ptyno);
+	    return d->ptyfd;
 	}
 #endif
-	close(ptyfd);
+	close(d->ptyfd);
     }
 
     // 4.2: Try /dev/pty[p-e][0-f] (Linux w/o UNIX98 PTY's)
@@ -153,13 +163,13 @@ int PTY::getpt()
     {
 	for (const char *c2 = "0123456789abcdef"; *c2 != '\0'; c2++)
 	{
-	    ptyname.sprintf("/dev/pty%c%c", *c1, *c2);
-	    ttyname.sprintf("/dev/tty%c%c", *c1, *c2);
-	    if (access(QFile::encodeName(ptyname), F_OK) < 0)
+	    d->ptyname.sprintf("/dev/pty%c%c", *c1, *c2);
+	    d->ttyname.sprintf("/dev/tty%c%c", *c1, *c2);
+	    if (access(QFile::encodeName(d->ptyname), F_OK) < 0)
 		goto linux_out;
-	    ptyfd = open(QFile::encodeName(ptyname), O_RDWR);
-	    if (ptyfd >= 0)
-		return ptyfd;
+	    d->ptyfd = open(QFile::encodeName(d->ptyname), O_RDWR);
+	    if (d->ptyfd >= 0)
+		return d->ptyfd;
 	}
     }
 linux_out:
@@ -168,18 +178,18 @@ linux_out:
 
     for (int i=0; i<256; i++)
     {
-	ptyname.sprintf("/dev/ptyp%d", i);
-	ttyname.sprintf("/dev/ttyp%d", i);
-	if (access(QFile::encodeName(ptyname), F_OK) < 0)
+	d->ptyname.sprintf("/dev/ptyp%d", i);
+	d->ttyname.sprintf("/dev/ttyp%d", i);
+	if (access(QFile::encodeName(d->ptyname), F_OK) < 0)
 	    break;
-	ptyfd = open(QFile::encodeName(ptyname), O_RDWR);
-	if (ptyfd >= 0)
-	    return ptyfd;
+	d->ptyfd = open(QFile::encodeName(d->ptyname), O_RDWR);
+	if (d->ptyfd >= 0)
+	    return d->ptyfd;
     }
 
 
     // Other systems ??
-    ptyfd = -1;
+    d->ptyfd = -1;
     kDebug(900) << k_lineinfo << "Unknown system or all methods failed.\n";
     return -1;
 
@@ -190,12 +200,12 @@ linux_out:
 
 int PTY::grantpt()
 {
-    if (ptyfd < 0)
+    if (d->ptyfd < 0)
 	return -1;
 
 #ifdef HAVE_GRANTPT
 
-    return ::grantpt(ptyfd);
+    return ::grantpt(d->ptyfd);
 
 #elif defined(HAVE_OPENPTY)
 
@@ -206,7 +216,7 @@ int PTY::grantpt()
 #else
 
     // konsole_grantpty only does /dev/pty??
-    if (!ptyname.startsWith(QLatin1String("/dev/pty")))
+    if (!d->ptyname.startsWith(QLatin1String("/dev/pty")))
 	return 0;
 
     // Use konsole_grantpty:
@@ -239,7 +249,7 @@ int PTY::grantpt()
     } else
     {
 	// Child: exec konsole_grantpty
-	if (ptyfd != pty_fileno && dup2(ptyfd, pty_fileno) < 0)
+	if (d->ptyfd != pty_fileno && dup2(d->ptyfd, pty_fileno) < 0)
 	    _exit(1);
 	execlp("konsole_grantpty", "konsole_grantpty", "--grant", (void *)0);
 	kError(900) << k_lineinfo << "exec(): " << perror << "\n";
@@ -259,20 +269,20 @@ int PTY::grantpt()
 
 int PTY::unlockpt()
 {
-    if (ptyfd < 0)
+    if (d->ptyfd < 0)
 	return -1;
 
 #ifdef HAVE_UNLOCKPT
 
     // (Linux w/ glibc 2.1, Solaris, ...)
 
-    return ::unlockpt(ptyfd);
+    return ::unlockpt(d->ptyfd);
 
 #elif defined(TIOCSPTLCK)
 
     // Unlock pty (Linux w/ UNIX98 PTY's & glibc 2.0)
     int flag = 0;
-    return ioctl(ptyfd, TIOCSPTLCK, &flag);
+    return ioctl(d->ptyfd, TIOCSPTLCK, &flag);
 
 #else
 
@@ -290,9 +300,9 @@ int PTY::unlockpt()
 
 QByteArray PTY::ptsname()
 {
-    if (ptyfd < 0)
+    if (d->ptyfd < 0)
 	return 0;
 
-    return QFile::encodeName(ttyname);
+    return QFile::encodeName(d->ttyname);
 }
 

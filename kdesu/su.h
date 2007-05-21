@@ -65,8 +65,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class SuProcessPrivate;
-    SuProcessPrivate *d;
-    QString m_superUserCommand;
+    SuProcessPrivate * const d;
 };
 
 #endif

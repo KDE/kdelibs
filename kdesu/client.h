@@ -189,9 +189,6 @@ public:
 private:
     int connect();
 
-    int sockfd;
-    QByteArray sock;
-
     int command(const QByteArray &cmd, QByteArray *result=0L);
     QByteArray escape(const QByteArray &str);
 

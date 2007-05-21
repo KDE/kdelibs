@@ -52,29 +52,37 @@
 //change to sudo or su according to your preferences
 #define DEFAULT_SUPER_USER_COMMAND "sudo"
 
+class SuProcess::SuProcessPrivate
+{
+public:
+    QString m_superUserCommand;
+};
+
 SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
+    : d( new SuProcessPrivate )
 {
     m_User = user;
     m_Command = command;
 
     KSharedConfig::Ptr config = KGlobal::config();
     KConfigGroup group(config, "super-user-command");
-    m_superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
+    d->m_superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 
-    if ( m_superUserCommand != "sudo" && m_superUserCommand != "su" ) {
+    if ( d->m_superUserCommand != "sudo" && d->m_superUserCommand != "su" ) {
       kWarning() << "unknown super user command" << endl;
-      m_superUserCommand = "su";
+      d->m_superUserCommand = "su";
     }
 }
 
 
 SuProcess::~SuProcess()
 {
+    delete d;
 }
 
 QString SuProcess::superUserCommand()
 {
-    return m_superUserCommand;
+    return d->m_superUserCommand;
 }
 
 bool SuProcess::useUsersOwnPassword()
@@ -109,11 +117,11 @@ int SuProcess::exec(const char *password, int check)
     // since user may change after constructor (due to setUser())
     // we need to override sudo with su for non-root here
     if (m_User != "root") {
-        m_superUserCommand = "su";
+        d->m_superUserCommand = "su";
     }
 
     QList<QByteArray> args;
-    if (m_superUserCommand == "sudo") {
+    if (d->m_superUserCommand == "sudo") {
         args += "-u";
     }
 
@@ -122,14 +130,14 @@ int SuProcess::exec(const char *password, int check)
     else
         args += m_User;
 
-    if (m_superUserCommand == "su") {
+    if (d->m_superUserCommand == "su") {
         args += "-c";
     }
     args += QByteArray(LIBEXEC_INSTALL_DIR) + "/kdesu_stub";
     args += "-"; // krazy:exclude=doublequote_chars (QList, not QString)
 
     QByteArray command;
-    if (m_superUserCommand == "sudo") {
+    if (d->m_superUserCommand == "sudo") {
         command = __PATH_SUDO;
     } else {
         command = __PATH_SU;
@@ -137,7 +145,7 @@ int SuProcess::exec(const char *password, int check)
  
     if (::access(command, X_OK) != 0)
     {
-        command = QFile::encodeName( KGlobal::dirs()->findExe(m_superUserCommand.toLatin1()) );
+        command = QFile::encodeName( KGlobal::dirs()->findExe(d->m_superUserCommand.toLatin1()) );
         if (command.isEmpty())
             return check ? SuNotFound : -1;
     }
@@ -162,7 +170,7 @@ int SuProcess::exec(const char *password, int check)
     {
         if (ret == killme)
         {
-            if ( m_superUserCommand == "sudo" ) {
+            if ( d->m_superUserCommand == "sudo" ) {
  	        // sudo can not be killed, just return
  	        return ret;
  	    }
@@ -188,7 +196,7 @@ int SuProcess::exec(const char *password, int check)
     if (ret == notauthorized)
     {
         kill(m_Pid, SIGKILL);
-        if (m_superUserCommand != "sudo") {
+        if (d->m_superUserCommand != "sudo") {
             waitForChild();
         }
         return SuIncorrectPassword;
@@ -323,7 +331,7 @@ int SuProcess::ConverseSU(const char *password)
                 {
                     unreadLine(line);
                     return ok;
- 	        } else if (m_superUserCommand == "sudo") {
+ 	        } else if (d->m_superUserCommand == "sudo") {
  	            // sudo gives a "sorry" line so reaches here
  	            // with the wrong password
  	            return notauthorized;

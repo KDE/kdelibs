@@ -24,33 +24,25 @@ class KDESU_EXPORT KCookie
 {
 public:
     KCookie();
+    ~KCookie();
 
     /**
      * Returns the X11 display.
      */
-    QByteArray display() const { return m_Display; }
+    QByteArray display() const;
 
 #ifdef Q_WS_X11
     /**
      * Returns the X11 magic cookie, if available.
      */
-    QByteArray displayAuth() const { return m_DisplayAuth; }
+    QByteArray displayAuth() const;
 #endif
 
 private:
     void getXCookie();
-    void getICECookie();
-
-    bool m_bHaveICECookies;
-
-    QByteArray m_Display;
-#ifdef Q_WS_X11
-    QByteArray m_DisplayAuth;
-#endif
-    QByteArray m_ICEAuth;
 
     class KCookiePrivate;
-    KCookiePrivate *d;
+    KCookiePrivate * const d;
 };
 
 

@@ -32,7 +32,7 @@ public:
     /**
      * Sets the target host.
      */
-    void setHost(const QByteArray &host) { m_Host = host; }
+    void setHost(const QByteArray &host);
 
     /**
      * Sets the localtion of the remote stub.
@@ -59,8 +59,8 @@ public:
      */
     int exec(const char *password, int check=0);
 
-    QByteArray prompt() const  { return m_Prompt; }
-    QByteArray error() const { return m_Error; }
+    QByteArray prompt() const;
+    QByteArray error() const;
 
 protected:
     virtual QByteArray display();
@@ -69,16 +69,11 @@ protected:
 private:
     int ConverseSsh(const char *password, int check);
 
-    QByteArray m_Prompt;
-    QByteArray m_Host;
-    QByteArray m_Error;
-    QByteArray m_Stub;
-
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class SshProcessPrivate;
-    SshProcessPrivate *d;
+    SshProcessPrivate * const d;
 };
 
 #endif
