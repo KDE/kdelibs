@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Sirtaj Singh Kanq <taj@kde.org>
+   Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,6 +26,7 @@
 #undef KDE3_SUPPORT
 
 #include "kglobal.h"
+#include "kglobal_p.h"
 
 #include <QtCore/QList>
 #include <QtCore/QSet>
@@ -36,7 +38,6 @@
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <QtCore/QCoreApplication>
-#include "kstaticdeleter.h"
 #include "kcmdlineargs.h"
 
 #ifndef NDEBUG
@@ -48,10 +49,7 @@
 #define MYASSERT(x) /* nope */
 #endif
 
-using namespace KGlobal;
-
 typedef QSet<QString> KStringDict;
-typedef QList<KStaticDeleterBase *> KStaticDeleterList;
 
 class KGlobalPrivate
 {
@@ -59,49 +57,34 @@ class KGlobalPrivate
         inline KGlobalPrivate()
             : stringDict(0),
             locale(0),
-            charsets(0),
-            staticDeleters(new KStaticDeleterList)
+            charsets(0)
         {
-            qAddPostRoutine(KGlobalPrivate::syncConfigs);
+            // make sure all Qt global statics are created here, that way we may use them in the
+            // dtor as well
+            qrand();
+            //qAddPostRoutine(KGlobalPrivate::syncConfigs);
         }
 
         inline ~KGlobalPrivate()
         {
+            //qRemovePostRoutine(KGlobalPrivate::syncConfigs);
             delete locale;
             locale = 0;
             delete charsets;
             charsets = 0;
             delete stringDict;
             stringDict = 0;
-
-            deleteStaticDeleters();
         }
 
         static void syncConfigs();
-        void deleteStaticDeleters();
 
         KComponentData activeComponent;
         KComponentData mainComponent; // holds a refcount
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
-        KStaticDeleterList *staticDeleters;
         QList<KComponentData *> componentDataList;
 };
-
-void KGlobalPrivate::deleteStaticDeleters()
-{
-    if (!staticDeleters) {
-        return;
-    }
-
-    while (!staticDeleters->isEmpty()) {
-        staticDeleters->takeLast()->destructObject();
-    }
-
-    delete staticDeleters;
-    staticDeleters = 0;
-}
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
 
@@ -254,32 +237,6 @@ const QString &KGlobal::staticQString(const QString &str)
     }
 
    return *d->stringDict->insert(str);
-}
-
-void KGlobal::registerStaticDeleter(KStaticDeleterBase *obj)
-{
-    PRIVATE_DATA;
-    Q_ASSERT(d->staticDeleters);
-    if (d->staticDeleters->indexOf(obj) == -1) {
-        d->staticDeleters->append(obj);
-    }
-}
-
-void KGlobal::unregisterStaticDeleter(KStaticDeleterBase *obj)
-{
-    if (globalData.isDestroyed()) {
-        return;
-    }
-    PRIVATE_DATA;
-    if (d->staticDeleters) {
-        d->staticDeleters->removeAll(obj);
-    }
-}
-
-void KGlobal::deleteStaticDeleters()
-{
-    PRIVATE_DATA;
-    d->deleteStaticDeleters();
 }
 
 QString KGlobal::caption()

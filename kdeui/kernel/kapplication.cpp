@@ -878,11 +878,6 @@ extern void kDebugCleanup();
 
 KApplication::~KApplication()
 {
-  // First call the static deleters and then call KLibLoader::cleanup()
-  // The static deleters may delete libraries for which they need KLibLoader.
-  // KLibLoader will take care of the remaining ones.
-  KGlobal::deleteStaticDeleters();
-
 #ifdef Q_WS_X11
   if ( d->oldXErrorHandler != NULL )
       XSetErrorHandler( d->oldXErrorHandler );

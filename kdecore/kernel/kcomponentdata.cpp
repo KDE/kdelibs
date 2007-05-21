@@ -26,6 +26,7 @@
 #include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kglobal.h"
+#include "kglobal_p.h"
 #include "klocale.h"
 #include "kconfiggroup.h"
 #include "kstandarddirs.h"

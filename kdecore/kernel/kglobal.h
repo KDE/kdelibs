@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Sirtaj Singh Kanq <taj@kde.org>
+   Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -378,30 +379,6 @@ namespace KGlobal
     KDECORE_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
-     * Registers a static deleter.
-     * @param d the static deleter to register
-     * @see KStaticDeleterBase
-     * @see KStaticDeleter
-     */
-    KDECORE_EXPORT void registerStaticDeleter(KStaticDeleterBase *d);
-
-    /**
-     * Unregisters a static deleter.
-     * @param d the static deleter to unregister
-     * @see KStaticDeleterBase
-     * @see KStaticDeleter
-     */
-    KDECORE_EXPORT void unregisterStaticDeleter(KStaticDeleterBase *d);
-
-    /**
-     * Calls KStaticDeleterBase::destructObject() on all
-     * registered static deleters and unregisters them all.
-     * @see KStaticDeleterBase
-     * @see KStaticDeleter
-     */
-    KDECORE_EXPORT void deleteStaticDeleters();
-
-    /**
      * Tells KGlobal about one more operations that should be finished
      * before the application exits. The standard behavior is to exit on the
      * "last window closed" event, but some events should outlive the last window closed
@@ -446,10 +423,6 @@ namespace KGlobal
 
     ///@internal
     KDECORE_EXPORT void setLocale(KLocale *);
-    ///@internal
-    KDECORE_EXPORT void newComponentData(KComponentData *c);
-    ///@internal
-    KDECORE_EXPORT void deletedComponentData(KComponentData *c);
 }
 
 #ifdef KDE_SUPPORT

@@ -23,7 +23,36 @@
 #ifndef _KSTATIC_DELETER_H_
 #define _KSTATIC_DELETER_H_
 
-#include <kglobal.h>
+#include <kdecore_export.h>
+
+class KStaticDeleterBase;
+
+namespace KStaticDeleterHelpers
+{
+    /**
+     * Registers a static deleter.
+     * @param d the static deleter to register
+     * @see KStaticDeleterBase
+     * @see KStaticDeleter
+     */
+    KDECORE_EXPORT void registerStaticDeleter(KStaticDeleterBase *d);
+
+    /**
+     * Unregisters a static deleter.
+     * @param d the static deleter to unregister
+     * @see KStaticDeleterBase
+     * @see KStaticDeleter
+     */
+    KDECORE_EXPORT void unregisterStaticDeleter(KStaticDeleterBase *d);
+
+    /**
+     * Calls KStaticDeleterBase::destructObject() on all
+     * registered static deleters and unregisters them all.
+     * @see KStaticDeleterBase
+     * @see KStaticDeleter
+     */
+    KDECORE_EXPORT void deleteStaticDeleters();
+} // namespace KStaticDeleterHelpers
 
 /**
  * @short Base class for KStaticDeleter
@@ -32,9 +61,9 @@
  * the KStaticDeleter template to allow polymorphism.
  *
  * @see KStaticDeleter
- * @see KGlobal::registerStaticDeleter()
- * @see KGlobal::unregisterStaticDeleter()
- * @see KGlobal::deleteStaticDeleters()
+ * @see KStaticDeleterHelpers::registerStaticDeleter()
+ * @see KStaticDeleterHelpers::unregisterStaticDeleter()
+ * @see KStaticDeleterHelpers::deleteStaticDeleters()
  */
 class KDECORE_EXPORT_DEPRECATED KStaticDeleterBase {
 public:
@@ -42,7 +71,7 @@ public:
     /**
      * Should destruct the resources managed by this KStaticDeleterBase.
      * Usually you also want to call it in your destructor.
-     * @see KGlobal::deleteStaticDeleters()
+     * @see KStaticDeleterHelpers::deleteStaticDeleters()
      */
     virtual void destructObject();
 };
@@ -53,8 +82,8 @@ public:
  * Little helper class to clean up static objects that are held as a pointer.
  *
  * Static deleters are used to manage static resources. They can register
- * themselves with KGlobal. KGlobal will call destructObject() when
- * KGlobal::deleteStaticDeleters() is called or when the process
+ * themselves with KStaticDeleterHelpers. KStaticDeleterHelpers will call destructObject() when
+ * KStaticDeleterHelpers::deleteStaticDeleters() is called or when the process
  * finishes.
  *
  * When the library is unloaded, or the app is terminated, all static deleters
@@ -93,7 +122,7 @@ public:
 
     /**
      * Sets the object to delete and registers that object to
-     * KGlobal. If the given object is 0, the formerly registered
+     * KStaticDeleterHelpers. If the given object is 0, the formerly registered
      * object is unregistered.
      * @param obj the object to delete
      * @param isArray tells the destructor to delete an array instead of an object
@@ -104,15 +133,15 @@ public:
         globalReference = 0;
         array = isArray;
         if (obj)
-            KGlobal::registerStaticDeleter(this);
+            KStaticDeleterHelpers::registerStaticDeleter(this);
         else
-            KGlobal::unregisterStaticDeleter(this);
+            KStaticDeleterHelpers::unregisterStaticDeleter(this);
         return obj;
     }
 
     /**
      * Sets the object to delete and registers the object to be
-     * deleted to KGlobal. If the given object is 0, the previously
+     * deleted to KStaticDeleterHelpers. If the given object is 0, the previously
      * registered object is unregistered.
      * @param globalRef the static pointer where this object is stored.
      * This pointer will be reset to 0 after deletion of the object.
@@ -125,9 +154,9 @@ public:
         deleteit = obj;
         array = isArray;
         if (obj)
-            KGlobal::registerStaticDeleter(this);
+            KStaticDeleterHelpers::registerStaticDeleter(this);
         else
-            KGlobal::unregisterStaticDeleter(this);
+            KStaticDeleterHelpers::unregisterStaticDeleter(this);
         globalRef = obj;
         return obj;
     }
@@ -151,7 +180,7 @@ public:
      * object by calling destructObject().
      */
     virtual ~KStaticDeleter() {
-        KGlobal::unregisterStaticDeleter(this);
+        KStaticDeleterHelpers::unregisterStaticDeleter(this);
         destructObject();
     }
 private:

@@ -20,7 +20,63 @@
  *
  */
 
-#include <kstaticdeleter.h>
+#include "kstaticdeleter.h"
+#include "kglobal.h"
+
+#include <QtCore/QList>
+#include <QtCore/QCoreApplication>
+
+typedef QList<KStaticDeleterBase *> KStaticDeleterList;
+
+struct KStaticDeleterPrivate
+{
+    KStaticDeleterPrivate()
+    {
+        qAddPostRoutine(deleteStaticDeleters);
+    }
+    ~KStaticDeleterPrivate()
+    {
+        qRemovePostRoutine(deleteStaticDeleters);
+        deleteStaticDeleters();
+    }
+    static void deleteStaticDeleters();
+
+    KStaticDeleterList staticDeleters;
+};
+
+K_GLOBAL_STATIC(KStaticDeleterPrivate, globalData)
+
+void KStaticDeleterPrivate::deleteStaticDeleters()
+{
+    if (globalData.isDestroyed()) {
+        return;
+    }
+    KStaticDeleterPrivate *d = globalData;
+    while (!d->staticDeleters.isEmpty()) {
+        d->staticDeleters.takeLast()->destructObject();
+    }
+}
+
+void KStaticDeleterHelpers::registerStaticDeleter(KStaticDeleterBase *obj)
+{
+    KStaticDeleterPrivate *d = globalData;
+    if (d->staticDeleters.indexOf(obj) == -1) {
+        d->staticDeleters.append(obj);
+    }
+}
+
+void KStaticDeleterHelpers::unregisterStaticDeleter(KStaticDeleterBase *obj)
+{
+    if (globalData.isDestroyed()) {
+        return;
+    }
+    globalData->staticDeleters.removeAll(obj);
+}
+
+void KStaticDeleterHelpers::deleteStaticDeleters()
+{
+    globalData->deleteStaticDeleters();
+}
 
 // this helps gcc to emit the vtbl for KStaticDeleterBase
 // only once, here in this file, not every time it's
