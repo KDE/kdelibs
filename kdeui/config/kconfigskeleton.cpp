@@ -987,13 +987,31 @@ void KConfigSkeleton::setDefaults()
 void KConfigSkeleton::readConfig()
 {
   kDebug(177) << "KConfigSkeleton::readConfig()" << endl;
+  mConfig->reparseConfiguration();
+  KConfigSkeletonItem::List::ConstIterator it;
+  for( it = mItems.begin(); it != mItems.end(); ++it )
+  {
+    (*it)->readConfig( mConfig.data() );
+  }
   usrReadConfig();
 }
 
 void KConfigSkeleton::writeConfig()
 {
   kDebug(177) << "KConfigSkeleton::writeConfig()" << endl;
+  KConfigSkeletonItem::List::ConstIterator it;
+  for( it = mItems.begin(); it != mItems.end(); ++it )
+  {
+    (*it)->writeConfig( mConfig.data() );
+  }
   usrWriteConfig();
+
+  mConfig->sync();
+
+  readConfig();
+
+  emit configChanged();
+
 }
 
 bool KConfigSkeleton::usrUseDefaults(bool b)
@@ -1020,27 +1038,10 @@ void KConfigSkeleton::usrSetDefaults()
 
 void KConfigSkeleton::usrReadConfig()
 {
-  mConfig->reparseConfiguration();
-  KConfigSkeletonItem::List::ConstIterator it;
-  for( it = mItems.begin(); it != mItems.end(); ++it )
-  {
-    (*it)->readConfig( mConfig.data() );
-  }
 }
 
 void KConfigSkeleton::usrWriteConfig()
 {
-  KConfigSkeletonItem::List::ConstIterator it;
-  for( it = mItems.begin(); it != mItems.end(); ++it )
-  {
-    (*it)->writeConfig( mConfig.data() );
-  }
-
-  mConfig->sync();
-
-  readConfig();
-
-  emit configChanged();
 }
 
 void KConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
