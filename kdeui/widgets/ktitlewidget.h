@@ -97,6 +97,15 @@ public:
      */
     const QPixmap *pixmap() const;
 
+    /**
+     * Sets this label's buddy to buddy.
+     * When the user presses the shortcut key indicated by the label in this
+     * title widget, the keyboard focus is transferred to the label's buddy
+     * widget.
+     * @param buddy the widget to activate when the shortcut key is activated
+     */
+    void setBuddy(QWidget* buddy);
+
 public Q_SLOTS:
     /**
      * @param text Text displayed on the label. It can either be plain text or rich text. If it
