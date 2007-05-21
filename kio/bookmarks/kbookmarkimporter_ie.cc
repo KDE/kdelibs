@@ -170,7 +170,7 @@ void IEExporter::visitLeave( const KBookmarkGroup & ) {
     m_currentDir.cdUp();
 }
 
-void KIEBookmarkExporterImpl::write(KBookmarkGroup parent) {
+void KIEBookmarkExporterImpl::write(const KBookmarkGroup& parent) {
     IEExporter exporter( m_fileName );
     exporter.write( parent );
 }

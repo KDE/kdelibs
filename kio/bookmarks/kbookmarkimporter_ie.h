@@ -76,7 +76,7 @@ public:
       : KBookmarkExporterBase(mgr, path)
     { ; }
     virtual ~KIEBookmarkExporterImpl() {}
-    virtual void write(KBookmarkGroup);
+    virtual void write(const KBookmarkGroup&);
 private:
     class KIEBookmarkExporterImplPrivate *d;
 };
