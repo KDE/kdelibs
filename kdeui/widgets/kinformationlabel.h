@@ -21,7 +21,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QFrame>
+#include <QtGui/QWidget>
 #include <QtGui/QIcon>
 
 class QMouseEvent;
@@ -65,7 +65,7 @@ label->setText("Custom message using go-home icon");
  *
  * @author Michaël Larouche <larouche@kde.org>
  */
-class KDEUI_EXPORT KInformationLabel : public QFrame
+class KDEUI_EXPORT KInformationLabel : public QWidget
 {
     Q_OBJECT
     /**

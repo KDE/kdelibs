@@ -28,18 +28,18 @@
 // KDE includes
 #include <kdebug.h>
 #include <kicon.h>
+#include <ktitlewidget.h>
 
 class KInformationLabel::Private
 {
 public:
     Private(KInformationLabel *parent)
-     : q(parent), iconLabel(0), messageLabel(0), iconType(KInformationLabel::Information),
+     : q(parent), titleWidget(0), iconType(KInformationLabel::Information),
        autoHideTimeout(0)
     {}
 
     KInformationLabel *q;
-    QLabel *iconLabel;
-    QLabel *messageLabel;
+    KTitleWidget *titleWidget;
 
     KInformationLabel::Icon iconType;
     QIcon icon;
@@ -62,32 +62,13 @@ public:
 };
 
 KInformationLabel::KInformationLabel(QWidget *parent)
- : QFrame(parent), d(new Private(this))
+ : QWidget(parent), d(new Private(this))
 {
-    // Set QFrame parameters
-    setAutoFillBackground(true);
-    setFrameShape(QFrame::StyledPanel);
-    setFrameShadow(QFrame::Plain);
-    setBackgroundRole(QPalette::Base);
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    d->titleWidget = new KTitleWidget(this);
+    d->titleWidget->installEventFilter(this);
 
-    // Create icon label
-    d->iconLabel = new QLabel(this);
-    d->iconLabel->installEventFilter(this);
-    d->iconLabel->setFixedSize(24, 24);
-
-    // Create message label
-    d->messageLabel = new QLabel(this);
-    d->messageLabel->installEventFilter(this);
-    d->messageLabel->setAlignment(Qt::AlignLeft);
-    d->messageLabel->setStyleSheet( QLatin1String("QLabel { font-weight: bold }") );
-
-    QHBoxLayout *mainLayout = new QHBoxLayout;
-    mainLayout->setMargin(3);
-    mainLayout->addWidget(d->iconLabel,0,Qt::AlignVCenter);
-    mainLayout->addWidget(d->messageLabel,0,Qt::AlignVCenter);
-    mainLayout->addStretch(1);
-
-    setLayout(mainLayout);
+    mainLayout->addWidget( d->titleWidget );
 
     // By default, the label is hidden for view and will only be
     // visible when a message
@@ -115,12 +96,12 @@ bool KInformationLabel::eventFilter(QObject *object, QEvent *event)
         }
     }
 
-    return QFrame::eventFilter(object, event);
+    return QWidget::eventFilter(object, event);
 }
 
 QString KInformationLabel::text() const
 {
-    return d->messageLabel->text();
+    return d->titleWidget->text();
 }
 
 KInformationLabel::Icon KInformationLabel::iconType() const
@@ -141,7 +122,7 @@ int KInformationLabel::autoHideTimeout() const
 void KInformationLabel::setText(const QString &text)
 {
     if ( !text.isEmpty() ) {
-        d->messageLabel->setText( text );
+        d->titleWidget->setText( text );
         d->showWidget();
     }
     else {
@@ -170,7 +151,7 @@ void KInformationLabel::setAutoHideTimeout(int msecs)
 
 void KInformationLabel::Private::updateIcon(const KIcon &icon)
 {
-    iconLabel->setPixmap( icon.pixmap(24, 24) );
+    titleWidget->setPixmap( icon.pixmap(24, 24), KTitleWidget::ImageLeft );
 }
 
 QString KInformationLabel::Private::iconTypeToIconName(KInformationLabel::Icon iconType)
