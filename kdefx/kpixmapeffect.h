@@ -115,7 +115,7 @@ namespace KPixmapEffect
      * @param size   The size the new pixmap should have.
      * @return The generated, tiled pixmap.
      */
-    KDEFX_EXPORT QPixmap createTiled(const QPixmap& pixmap, QSize size);
+    KDEFX_EXPORT QPixmap createTiled(const QPixmap& pixmap, const QSize &size);
 
     /**
      * Either brightens or dims a pixmap by a specified ratio.
@@ -187,7 +187,7 @@ namespace KPixmapEffect
      * dithered to this depth. Pass zero to prevent dithering.
      * @return The resulting pixmap.
      */
-    KDEFX_EXPORT QPixmap pattern(const QPixmap& pixmap, QSize size,
+    KDEFX_EXPORT QPixmap pattern(const QPixmap& pixmap, const QSize &size,
                    const QColor &ca, const QColor &cb, int ncols=8);
 
     /**

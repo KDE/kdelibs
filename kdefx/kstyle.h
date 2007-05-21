@@ -102,12 +102,12 @@ protected:
     /**
      Returns a w x h QRect center inside the 'in' rectangle
     */
-    QRect centerRect(QRect in, int w, int h) const;
+    QRect centerRect(const QRect &in, int w, int h) const;
 
     /**
      Return a size-dimension QRect centered inside the 'in' rectangle
     */
-    QRect centerRect(QRect in, QSize size) const;
+    QRect centerRect(const QRect &in, const QSize &size) const;
 //@}
 
 /**
@@ -120,7 +120,7 @@ protected:
      *
      * This marshals to and from integers.
     */
-    class KDEFX_EXPORT ColorMode
+    class KDEFX_EXPORT ColorMode //krazy:exclude=dpointer (lightweight helper)
     {
     public:
         /**
@@ -1435,8 +1435,8 @@ protected:
      */
     virtual void drawKStylePrimitive(WidgetType widgetType, int primitive, 
                                      const QStyleOption* opt,
-                                     QRect r, QPalette pal, State flags,
-                                     QPainter* p, 
+                                     const QRect &r, const QPalette &pal,
+                                     State flags, QPainter* p,
                                      const QWidget* widget = 0,
                                      Option* kOpt    = 0) const;
 private:
@@ -1475,7 +1475,7 @@ private:
     
     ///Calculates the contents rectangle by subtracting out the appropriate margins
     ///from the outside
-    QRect insideMargin(QRect orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
+    QRect insideMargin(const QRect &orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
 
     ///Internal subrect calculations, for e.g. scrollbar arrows,
     ///where we fake our output to get Qt to do what we want

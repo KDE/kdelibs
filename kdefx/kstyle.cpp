@@ -284,12 +284,12 @@ void KStyle::drawInsideRect(QPainter* p, const QRect& r) const
     p->drawRect(r.x(), r.y(), r.width() - 1, r.height() - 1);
 }
 
-QRect KStyle::centerRect(QRect in, int w, int h) const
+QRect KStyle::centerRect(const QRect &in, int w, int h) const
 {
     return QRect(in.x() + (in.width() - w)/2, in.y() + (in.height() - h)/2, w, h);
 }
 
-QRect KStyle::centerRect(QRect in, QSize size) const
+QRect KStyle::centerRect(const QRect &in, const QSize &size) const
 {
     return centerRect(in, size.width(), size.height());
 }
@@ -298,8 +298,8 @@ QRect KStyle::centerRect(QRect in, QSize size) const
 
 void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
                                  const QStyleOption* opt,
-                                 QRect r, QPalette pal, State flags,
-                                 QPainter* p,
+                                 const QRect &r, const QPalette &pal,
+                                 State flags, QPainter* p,
                                  const QWidget* widget,
                                  KStyle::Option* kOpt) const
 {
@@ -590,7 +590,8 @@ QSize KStyle::expandDim(QSize orig, WidgetType wt, int baseMarginMetric,
     return QSize(width, height);
 }
 
-QRect KStyle::insideMargin(QRect orig, WidgetType wt, int baseMarginMetric,
+QRect KStyle::insideMargin(const QRect &orig, WidgetType wt,
+                           int baseMarginMetric,
                            const QStyleOption* opt, const QWidget* w) const
 {
     int x1 = orig.topLeft().x();
@@ -3253,7 +3254,8 @@ QRect KStyle::subControlRect(ComplexControl control, const QStyleOptionComplex* 
  Checks whether the point is before the bound rect for
  bound of given orientation
 */
-static bool preceeds(QPoint pt, QRect bound, const QStyleOption* opt)
+static bool preceeds(const QPoint &pt, const QRect &bound,
+                     const QStyleOption* opt)
 {
     if (opt->state & QStyle::State_Horizontal)
     {
@@ -3269,7 +3271,9 @@ static bool preceeds(QPoint pt, QRect bound, const QStyleOption* opt)
     }
 }
 
-static QStyle::SubControl buttonPortion(QRect totalRect, QPoint pt, const QStyleOption* opt)
+static QStyle::SubControl buttonPortion(const QRect &totalRect,
+                                        const QPoint &pt,
+                                        const QStyleOption* opt)
 {
    if (opt->state & QStyle::State_Horizontal)
    {

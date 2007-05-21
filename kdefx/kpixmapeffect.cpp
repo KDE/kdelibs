@@ -233,7 +233,7 @@ void KPixmapEffect::pattern(QPixmap &pixmap, const QColor &ca,
 
 // -----------------------------------------------------------------------------
 
-QPixmap KPixmapEffect::pattern(const QPixmap& pmtile, QSize size,
+QPixmap KPixmapEffect::pattern(const QPixmap& pmtile, const QSize &size,
                        const QColor &ca, const QColor &cb, int ncols)
 {
     if (pmtile.depth() > 8)
@@ -250,7 +250,7 @@ QPixmap KPixmapEffect::pattern(const QPixmap& pmtile, QSize size,
 
 // -----------------------------------------------------------------------------
 
-QPixmap KPixmapEffect::createTiled(const QPixmap& pixmap, QSize size)
+QPixmap KPixmapEffect::createTiled(const QPixmap& pixmap, const QSize &size)
 {
     QPixmap pix(size);
 
