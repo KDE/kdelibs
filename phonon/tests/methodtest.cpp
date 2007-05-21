@@ -18,6 +18,7 @@
 */
 
 #include "methodtest.h"
+#include "qtesthelper.h"
 #include "../factory.h"
 #include <qtest_kde.h>
 #include <phonon/streaminterface.h>
@@ -159,6 +160,18 @@ void MethodTest::checkMethods(QObject *m_backendObject)
             QCOMPARE(method.typeName(), returnType.constData());
         }
     }
+}
+
+void MethodTest::checkBackendInfos()
+{
+    QObject *backend = Factory::backend();
+    QVERIFY(backend != 0);
+    QCOMPARE(backend->property("identifier").type(), QVariant::String);
+    QCOMPARE(backend->property("backendName").type(), QVariant::String);
+    QCOMPARE(backend->property("backendComment").type(), QVariant::String);
+    QCOMPARE(backend->property("backendVersion").type(), QVariant::String);
+    QCOMPARE(backend->property("backendIcon").type(), QVariant::String);
+    QCOMPARE(backend->property("backendWebsite").type(), QVariant::String);
 }
 
 int main(int argc, char *argv[])

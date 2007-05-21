@@ -59,6 +59,8 @@ class MethodTest : public QObject
         void checkMediaObjectInterfaces();
         void checkAudioOutputInterface();
 
+        void checkBackendInfos();
+
     private:
         void addColumns();
         void addMethod(const char *returnType, const char *signature, bool optional = false);
