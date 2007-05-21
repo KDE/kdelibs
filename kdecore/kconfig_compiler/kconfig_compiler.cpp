@@ -1719,16 +1719,17 @@ int main( int argc, char **argv )
 
   // Singleton implementation
   if ( singleton ) {
-    if( nameSpace.isEmpty() )
-      cpp << "class " << className << "Helper" << endl;
-    else
-      cpp << "class " << nameSpace << "::" << className << "Helper" << endl;
+    if( !nameSpace.isEmpty() )
+      cpp << "namespace " << nameSpace << " {" << endl;
+    cpp << "class " << className << "Helper" << endl;
     cpp << '{' << endl;
     cpp << "  public:" << endl;
     cpp << "    " << className << "Helper() : q(0) {}" << endl;
     cpp << "    ~" << className << "Helper() { delete q; }" << endl;
     cpp << "    " << className << " *q;" << endl;
     cpp << "};" << endl;
+    if( !nameSpace.isEmpty() )
+      cpp << "}" << endl;
     cpp << "K_GLOBAL_STATIC(" << className << "Helper, s_global" << className << ")" << endl;
 
     cpp << className << " *" << className << "::self()" << endl;
