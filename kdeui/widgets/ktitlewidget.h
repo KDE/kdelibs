@@ -104,7 +104,7 @@ public:
      * widget.
      * @param buddy the widget to activate when the shortcut key is activated
      */
-    void setBuddy(QWidget* buddy);
+    void setBuddy(QWidget *buddy);
 
 public Q_SLOTS:
     /**

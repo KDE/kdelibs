@@ -87,7 +87,7 @@ const QPixmap *KTitleWidget::pixmap() const
     return d->imageLabel->pixmap();
 }
 
-void KTitleWidget::setBuddy(QWidget* buddy)
+void KTitleWidget::setBuddy(QWidget *buddy)
 {
     d->textLabel->setBuddy(buddy);
 }
