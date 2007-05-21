@@ -25,6 +25,7 @@
 #ifndef KLANGUAGEBUTTON_H
 #define KLANGUAGEBUTTON_H
 
+#include <kdeui_export.h>
 #include <QtGui/QWidget>
 
 class QAction;
@@ -37,7 +38,7 @@ class KLanguageButtonPrivate;
  *
  * Languages are identified by their ISO 639-1 codes, e.g. en, pt_BR.
  */
-class KLanguageButton : public QWidget
+class KDEUI_EXPORT KLanguageButton : public QWidget
 {
   Q_OBJECT
 
@@ -96,11 +97,15 @@ public:
 
   /**
    * Inserts a language into the combo box.
+   * Normally the display name of the language is obtained automatically, but
+   * if either the language code does not exist, or there are special display
+   * requirements, the name of the language can be specified in @p name.
    *
    * @param languageCode the code for the language
+   * @param name language name. If empty, the name is obtained automatically.
    * @param index the insertion position, or -1 to insert in alphabetical order
    */
-  void insertLanguage( const QString &languageCode, int index = -1 );
+  void insertLanguage( const QString &languageCode, const QString &name = QString(), int index = -1 );
 
   /**
    * Inserts a separator item into the combo box. A negative index will append the item.

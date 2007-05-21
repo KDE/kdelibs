@@ -129,15 +129,24 @@ void KLanguageButton::showLanguageCodes( bool show )
   d->showCodes = show;
 }
 
-void KLanguageButton::insertLanguage( const QString &languageCode, int index )
+void KLanguageButton::insertLanguage( const QString &languageCode, const QString &name, int index )
 {
-  QString text = languageCode;
-  const KLocale *locale = d->locale ? d->locale : KGlobal::locale();
-  if (locale) {
-    text = locale->twoAlphaToLanguageName(languageCode);
-    if (d->showCodes)
-      text += QLatin1String( " (" ) + languageCode + QLatin1String( ")" );
+  QString text;
+  bool showCodes = d->showCodes;
+  if (name.isEmpty())
+  {
+    text = languageCode;
+    const KLocale *locale = d->locale ? d->locale : KGlobal::locale();
+    if (locale)
+      text = locale->twoAlphaToLanguageName(languageCode);
+    else
+      showCodes = false;
   }
+  else
+    text = name;
+  if (showCodes)
+    text += QLatin1String( " (" ) + languageCode + QLatin1String( ")" );
+
   checkInsertPos( d->popup, text, index );
   QAction *a = new QAction(QIcon(), text, this);
   a->setData(languageCode);
@@ -163,10 +172,12 @@ void KLanguageButton::loadAllLanguages()
   langlist.sort();
   for (int i = 0, count = langlist.count(); i < count; ++i)
   {
-
     QString fpath = langlist[i].left(langlist[i].length() - 14);
-    QString code = fpath.mid(fpath.lastIndexOf('/'));
-    insertLanguage(code);
+    QString code = fpath.mid(fpath.lastIndexOf('/') + 1);
+    KConfig entry(langlist[i], KConfig::OnlyLocal);
+    KConfigGroup group(&entry, "KCM Locale");
+    QString name = group.readEntry("Name", i18n("without name"));
+    insertLanguage(code, name);
   }
 
   const KLocale *locale = d->locale ? d->locale : KGlobal::locale();
