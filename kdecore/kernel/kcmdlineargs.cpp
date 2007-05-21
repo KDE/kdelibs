@@ -225,7 +225,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLine
    addStdCmdLineOptions(stdargs);
 }
 
-const QString &KCmdLineArgs::cwd()
+QString KCmdLineArgs::cwd()
 {
    return mCwd;
 }
@@ -801,6 +801,12 @@ KCmdLineArgs::qtArgv()
    s_qt_argv[i+1] = 0;
 
    return s_qt_argv;
+}
+
+const KAboutData *
+KCmdLineArgs::aboutData()
+{
+    return about;
 }
 
 void

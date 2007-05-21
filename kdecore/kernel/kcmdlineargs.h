@@ -381,7 +381,7 @@ public:
    * where the user started a second instance.
    * @return the current working directory
    **/
-  static const QString &cwd();
+  static QString cwd();
 
   /**
    * Get the appname according to argv[0].
@@ -579,7 +579,7 @@ public:
   /**
    * Returns the KAboutData for consumption by KComponentData
    */
-  static const KAboutData *aboutData() { return about; }
+  static const KAboutData *aboutData();
 
 protected:
   /**
