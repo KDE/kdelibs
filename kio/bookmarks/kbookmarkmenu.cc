@@ -50,7 +50,7 @@
 #include <QtCore/QStack>
 #include <QtGui/QHeaderView>
 
-static QString makeTextNodeMod(KBookmark bk, const QString &m_nodename, const QString &m_newText) {
+static QString makeTextNodeMod(const KBookmark &bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
   if (subnode.isNull()) {
     subnode = bk.internalElement().ownerDocument().createElement(m_nodename);
@@ -184,7 +184,7 @@ void KBookmarkMenu::contextMenu( const QPoint & pos )
 /********************************************************************/
 /********************************************************************/
 
-KBookmarkActionInterface::KBookmarkActionInterface(KBookmark bk)
+KBookmarkActionInterface::KBookmarkActionInterface(const KBookmark &bk)
 : bm(bk)
 {}
 
@@ -192,7 +192,7 @@ KBookmarkActionInterface::~KBookmarkActionInterface()
 {
 }
 
-void KBookmarkActionInterface::contextMenu(QPoint, KBookmarkManager*, KBookmarkOwner*)
+void KBookmarkActionInterface::contextMenu(const QPoint &, KBookmarkManager*, KBookmarkOwner*)
 {
 }
 
@@ -211,7 +211,8 @@ KBookmarkActionContextMenu & KBookmarkActionContextMenu::self()
   return s;
 }
 
-void KBookmarkActionContextMenu::contextMenu(QPoint pos, QString highlightedAddress,
+void KBookmarkActionContextMenu::contextMenu(
+  const QPoint &pos, const QString &highlightedAddress,
 	KBookmarkManager *pManager, KBookmarkOwner *pOwner)
 {
   m_parentAddress = KBookmark::parentAddress(highlightedAddress) ;
@@ -510,7 +511,7 @@ void KBookmarkMenu::fillBookmarks()
   }
 }
 
-QAction* KBookmarkMenu::actionForBookmark(KBookmark bm)
+QAction* KBookmarkMenu::actionForBookmark(const KBookmark &bm)
 {
   if ( bm.isGroup() )
   {
@@ -684,7 +685,7 @@ KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidget * tree)
     tree->setItemSelected( this, true );
 }
 
-KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, KBookmarkGroup bk)
+KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, const KBookmarkGroup &bk)
     : QTreeWidgetItem(parent)
 {
     setIcon(0, SmallIcon(bk.icon()));
@@ -817,7 +818,7 @@ void KBookmarkEditDialog::slotUser1()
    }
 }
 
-void KBookmarkEditDialog::fillGroup( QTreeWidget* view, QTreeWidgetItem * parentItem, KBookmarkGroup group, const QString& address)
+void KBookmarkEditDialog::fillGroup( QTreeWidget* view, QTreeWidgetItem * parentItem, const KBookmarkGroup &group, const QString& address)
 {
   for ( KBookmark bk = group.first() ; !bk.isNull() ; bk = group.next(bk) )
   {
@@ -908,7 +909,7 @@ void KBookmarkMenuNSImporter::endFolder()
 /********************************************************************/
 
 
-KBookmarkAction::KBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent )
+KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent )
   : KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent),
     KBookmarkActionInterface(bk),
     m_pOwner(owner)
@@ -923,7 +924,7 @@ KBookmarkAction::~KBookmarkAction()
 {
 }
 
-void KBookmarkAction::contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+void KBookmarkAction::contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
 {
   KBookmarkActionContextMenu::self().contextMenu(pos, bookmark().address(), m_pManager, m_pOwner);
 }
@@ -936,13 +937,13 @@ void KBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km
     m_pOwner->openBookmark( bookmark(), mb, km );
 }
 
-KBookmarkActionMenu::KBookmarkActionMenu(KBookmark bm, QObject *parent)
+KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, QObject *parent)
   : KActionMenu(KIcon(bm.icon()), KStringHandler::csqueeze(bm.text()).replace('&', "&&"), parent),
     KBookmarkActionInterface(bm)
 {
 }
 
-KBookmarkActionMenu::KBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent)
+KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent)
   : KActionMenu(text, parent),
     KBookmarkActionInterface(bm)
 {
@@ -952,12 +953,12 @@ KBookmarkActionMenu::~KBookmarkActionMenu()
 {
 }
 
-void KBookmarkActionMenu::contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+void KBookmarkActionMenu::contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
 {
   KBookmarkActionContextMenu::self().contextMenu(pos, bookmark().address(), m_pManager, m_pOwner );
 }
 
-KImportedBookmarkAction::KImportedBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent )
+KImportedBookmarkAction::KImportedBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent )
 : KAction( KStringHandler::csqueeze(bk.text()).replace('&', "&&"), parent),
   KBookmarkActionInterface(bk),
   m_pOwner(owner)
@@ -972,7 +973,7 @@ KImportedBookmarkAction::~KImportedBookmarkAction()
 {
 }
 
-void KImportedBookmarkAction::contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+void KImportedBookmarkAction::contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
 {
 }
 

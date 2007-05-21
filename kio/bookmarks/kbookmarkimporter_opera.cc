@@ -155,7 +155,7 @@ void OperaExporter::visitLeave( const KBookmarkGroup & ) {
     m_out << endl;
 }
 
-void KOperaBookmarkExporterImpl::write(KBookmarkGroup parent) {
+void KOperaBookmarkExporterImpl::write(const KBookmarkGroup &parent) {
     OperaExporter exporter;
     QString content = exporter.generate( parent );
     QFile file(m_fileName);

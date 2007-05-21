@@ -98,7 +98,7 @@ public:
     KDE_DEPRECATED void write( bool utf8 = false );
 
 protected:
-    void writeFolder(QTextStream &stream, KBookmarkGroup parent);
+    void writeFolder(QTextStream &stream, const KBookmarkGroup &parent);
     QString m_fileName;
     KBookmarkManager* m_pManager;
 };
@@ -110,10 +110,10 @@ public:
       : KBookmarkExporterBase(mgr, fileName)
     { ; }
     virtual ~KNSBookmarkExporterImpl() {}
-    virtual void write(KBookmarkGroup);
+    virtual void write(const KBookmarkGroup &parent);
     void setUtf8(bool);
 protected:
-    QString folderAsString(KBookmarkGroup) const;
+    QString folderAsString(const KBookmarkGroup &parent) const;
 private:
     bool m_utf8;
     class KNSBookmarkExporterImplPrivate *d;

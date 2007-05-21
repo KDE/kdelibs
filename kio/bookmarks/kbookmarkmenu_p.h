@@ -86,7 +86,7 @@ protected Q_SLOTS:
   void slotDoubleClicked(QTreeWidgetItem* item);
 
 private:
-  void fillGroup( QTreeWidget* listview, QTreeWidgetItem * parentItem, KBookmarkGroup group, const QString& address);
+  void fillGroup( QTreeWidget* listview, QTreeWidgetItem * parentItem, const KBookmarkGroup &group, const QString& address);
   QWidget * m_main;
   KBookmarkEditFields * m_fields;
   QTreeWidget * m_folderTree;
@@ -99,7 +99,7 @@ class KBookmarkTreeItem : public QTreeWidgetItem
 {
 public:
     KBookmarkTreeItem(QTreeWidget * tree);
-    KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, KBookmarkGroup bk);
+    KBookmarkTreeItem(QTreeWidgetItem * parent, QTreeWidget * tree, const KBookmarkGroup &bk);
     ~KBookmarkTreeItem();
     QString address();
 private:
@@ -154,7 +154,7 @@ public:
   }
   ~KImportedBookmarkActionMenu()
   {}
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
   {
     Q_UNUSED(pos)
     Q_UNUSED(m_pManager)
@@ -166,9 +166,9 @@ class KImportedBookmarkAction : public KAction, public KBookmarkActionInterface
 {
   Q_OBJECT
 public:
-  KImportedBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent );
+  KImportedBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent );
   ~KImportedBookmarkAction();
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 
 public Q_SLOTS:
   void slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km);

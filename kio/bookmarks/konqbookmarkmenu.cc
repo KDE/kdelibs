@@ -49,7 +49,7 @@ KonqBookmarkContextMenu & KonqBookmarkContextMenu::self()
   return s;
 }
 
-void KonqBookmarkContextMenu::contextMenu(QPoint pos, QString highlightedAddress,
+void KonqBookmarkContextMenu::contextMenu(const QPoint &pos, const QString &highlightedAddress,
                                           KBookmarkManager *pManager, KBookmarkOwner *pOwner)
 {
   m_parentAddress = KBookmark::parentAddress(highlightedAddress) ;
@@ -148,7 +148,7 @@ void KonqBookmarkMenu::refill()
     addActions();
 }
 
-QAction* KonqBookmarkMenu::actionForBookmark(KBookmark bm)
+QAction* KonqBookmarkMenu::actionForBookmark(const KBookmark &bm)
 {
   if ( bm.isGroup() )
   {
@@ -259,7 +259,7 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
   config.sync();
 }
 
-KonqBookmarkAction::KonqBookmarkAction(KBookmark bm, KonqBookmarkOwner * owner, QObject *parent)
+KonqBookmarkAction::KonqBookmarkAction(const KBookmark &bm, KonqBookmarkOwner * owner, QObject *parent)
   : KBookmarkAction(bm, owner, parent)
 {
 }
@@ -268,17 +268,17 @@ KonqBookmarkAction::~KonqBookmarkAction()
 {
 }
 
-void KonqBookmarkAction::contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+void KonqBookmarkAction::contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
 {
   KonqBookmarkContextMenu::self().contextMenu( pos, bookmark().address(), m_pManager, m_pOwner );
 }
 
-KonqBookmarkActionMenu::KonqBookmarkActionMenu(KBookmark bm, QObject* parent)
+KonqBookmarkActionMenu::KonqBookmarkActionMenu(const KBookmark &bm, QObject* parent)
   : KBookmarkActionMenu(bm, parent)
 {
 }
 
-KonqBookmarkActionMenu::KonqBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent)
+KonqBookmarkActionMenu::KonqBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent)
 : KBookmarkActionMenu(bm, text, parent)
 {
 }
@@ -287,18 +287,18 @@ KonqBookmarkActionMenu::~KonqBookmarkActionMenu()
 {
 }
 
-void KonqBookmarkActionMenu::contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
+void KonqBookmarkActionMenu::contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
 {
   KonqBookmarkContextMenu::self().contextMenu( pos, bookmark().address(), m_pManager, m_pOwner );
 }
 
-void KonqBookmarkOwner::openInNewTab(KBookmark bm)
+void KonqBookmarkOwner::openInNewTab(const KBookmark &bm)
 {}
 
-void KonqBookmarkOwner::openInNewWindow(KBookmark bm)
+void KonqBookmarkOwner::openInNewWindow(const KBookmark &bm)
 {}
 
-void KonqBookmarkOwner::openFolderinTabs(KBookmark bm)
+void KonqBookmarkOwner::openFolderinTabs(const KBookmark &bm)
 {}
 
 KonqBookmarkOwner::~KonqBookmarkOwner()

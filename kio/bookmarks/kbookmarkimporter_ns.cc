@@ -161,7 +161,7 @@ void KNSBookmarkExporter::write(bool utf8) {
    exporter.write(m_pManager->root());
 }
 
-void KNSBookmarkExporter::writeFolder(QTextStream &/*stream*/, KBookmarkGroup /*gp*/) {
+void KNSBookmarkExporter::writeFolder(QTextStream &/*stream*/, const KBookmarkGroup &/*gp*/) {
    // TODO - requires a d pointer workaround hack?
 }
 
@@ -171,7 +171,7 @@ void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
    m_utf8 = utf8;
 }
 
-void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
+void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent) {
    if (QFile::exists(m_fileName)) {
       ::rename(
          QFile::encodeName(m_fileName),
@@ -202,7 +202,7 @@ void KNSBookmarkExporterImpl::write(KBookmarkGroup parent) {
            << "</DL><P>" << endl;
 }
 
-QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) const {
+QString KNSBookmarkExporterImpl::folderAsString(const KBookmarkGroup &parent) const {
    QString str;
    QTextStream fstream(&str, QIODevice::WriteOnly);
 

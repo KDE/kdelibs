@@ -111,12 +111,13 @@ NetRC* NetRC::self()
 }
 
 bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
-                    QString type, LookUpMode mode )
+                    const QString &_type, LookUpMode mode )
 {
   // kDebug() << "AutoLogin lookup for: " << url.host() << endl;
   if ( !url.isValid() )
     return false;
 
+  QString type = _type;
   if ( type.isEmpty() )
     type = url.protocol();
 

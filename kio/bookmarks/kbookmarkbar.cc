@@ -218,7 +218,7 @@ void KBookmarkBar::removeTempSep()
  * @param actions the list of actions plugged into the bar
  *        returned action was dropped on
  */
-bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KAction *>& actions, QString text)
+bool KBookmarkBar::handleToolbarDragMoveEvent(const QPoint& p, const QList<KAction *>& actions, const QString &text)
 {
     int pos = m_toolBar->orientation() == Qt::Horizontal ? p.x() : p.y();
     Q_ASSERT( actions.isEmpty() || (m_toolBar == qobject_cast<KToolBar*>(actions.first()->associatedWidgets().value(0))) );

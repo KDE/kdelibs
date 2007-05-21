@@ -26,27 +26,27 @@ class KIO_EXPORT KonqBookmarkOwner : public KBookmarkOwner
 {
 public:
   virtual ~KonqBookmarkOwner();
-  virtual void openInNewTab(KBookmark bm) = 0;
-  virtual void openInNewWindow(KBookmark bm) = 0;
-  virtual void openFolderinTabs(KBookmark bm) = 0;
+  virtual void openInNewTab(const KBookmark &bm) = 0;
+  virtual void openInNewWindow(const KBookmark &bm) = 0;
+  virtual void openFolderinTabs(const KBookmark &bm) = 0;
 };
 
 class KIO_EXPORT KonqBookmarkActionMenu : public KBookmarkActionMenu
 {
   Q_OBJECT
 public:
-  KonqBookmarkActionMenu(KBookmark bm, QObject *parent);
-  KonqBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent);
+  KonqBookmarkActionMenu(const KBookmark &bm, QObject *parent);
+  KonqBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent);
   virtual ~KonqBookmarkActionMenu();
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 };
 
 class KonqBookmarkAction : public KBookmarkAction
 {
   Q_OBJECT
 public:
-  KonqBookmarkAction(KBookmark bm, KonqBookmarkOwner * owner, QObject *parent);
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  KonqBookmarkAction(const KBookmark &bm, KonqBookmarkOwner * owner, QObject *parent);
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KonqBookmarkAction();
 };
 
@@ -112,7 +112,7 @@ protected:
   {
   }
   virtual void refill();
-  virtual QAction* actionForBookmark(KBookmark bm);
+  virtual QAction* actionForBookmark(const KBookmark &bm);
   void fillDynamicBookmarks();
 private:
   KonqBookmarkOwner * owner()
@@ -125,7 +125,7 @@ class KonqBookmarkContextMenu : private KBookmarkActionContextMenu
 public:
   ~KonqBookmarkContextMenu();
   static KonqBookmarkContextMenu & self();
-  void contextMenu(QPoint pos, QString highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
+  void contextMenu(const QPoint &pos, const QString &highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
 public Q_SLOTS:
   void openInNewTab();
   void openInNewWindow();

@@ -472,7 +472,7 @@ KBookmark KBookmarkManager::findByAddress( const QString & address, bool toleran
     return result;
  }
 
-static QString pickUnusedTitle( KBookmarkGroup parentBookmark,
+static QString pickUnusedTitle( const KBookmarkGroup &parentBookmark,
                                 const QString &title, const QString &url
 ) {
     // If this title is already used, we'll try to find something unused.
@@ -563,7 +563,7 @@ void KBookmarkManager::emitConfigChanged()
     emit bookmarkConfigChanged();
 }
 
-void KBookmarkManager::notifyCompleteChange( QString caller ) // DBUS call
+void KBookmarkManager::notifyCompleteChange( const QString &caller ) // DBUS call
 {
     if (!d->m_update)
         return;
@@ -584,7 +584,7 @@ void KBookmarkManager::notifyConfigChanged() // DBUS call
     parse(); // reload, and thusly recreate the menus
 }
 
-void KBookmarkManager::notifyChanged( QString groupAddress, const QDBusMessage &msg ) // DBUS call
+void KBookmarkManager::notifyChanged( const QString &groupAddress, const QDBusMessage &msg ) // DBUS call
 {
     kDebug() << "KBookmarkManager::notifyChanged ( "<<groupAddress<<")"<<endl;
     if (!d->m_update)

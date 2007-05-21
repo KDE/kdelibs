@@ -124,7 +124,7 @@ protected:
                  KMenu * parentMenu, const QString & parentAddress);
   virtual void clear();
   virtual void refill();
-  virtual QAction* actionForBookmark(KBookmark bm);
+  virtual QAction* actionForBookmark(const KBookmark &bm);
   void addActions();
   void fillBookmarks();
   void addAddBookmark();
@@ -163,7 +163,7 @@ class KIO_EXPORT KBookmarkActionContextMenu : public QObject
 {
   Q_OBJECT
 public:
-  void contextMenu(QPoint pos, QString highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
+  void contextMenu(const QPoint &pos, const QString &highlightedAddress, KBookmarkManager *pManager, KBookmarkOwner *pOwner);
   ~KBookmarkActionContextMenu();
   KBookmark atAddress(const QString & address);
   static KBookmarkActionContextMenu & self();
@@ -192,9 +192,9 @@ protected:
 class KIO_EXPORT KBookmarkActionInterface
 {
 public:
-  KBookmarkActionInterface(KBookmark bk);
+  KBookmarkActionInterface(const KBookmark &bk);
   virtual ~KBookmarkActionInterface();
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner) = 0;
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner) = 0;
 protected:
   const KBookmark bookmark() const;
 private:
@@ -204,9 +204,9 @@ private:
 class KIO_EXPORT KBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
 {
 public:
-  KBookmarkActionMenu(KBookmark bm, QObject *parent);
-  KBookmarkActionMenu(KBookmark bm, const QString & text, QObject *parent);
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  KBookmarkActionMenu(const KBookmark &bm, QObject *parent);
+  KBookmarkActionMenu(const KBookmark &bm, const QString & text, QObject *parent);
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KBookmarkActionMenu();
 };
 
@@ -214,8 +214,8 @@ class KIO_EXPORT KBookmarkAction : public KAction, public KBookmarkActionInterfa
 {
   Q_OBJECT
 public:
-  KBookmarkAction(KBookmark bk, KBookmarkOwner* owner, QObject *parent);
-  virtual void contextMenu(QPoint pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
+  KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent);
+  virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
   virtual ~KBookmarkAction();
 
 public Q_SLOTS:

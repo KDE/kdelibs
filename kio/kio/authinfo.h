@@ -292,7 +292,7 @@ public:
    */
   bool lookup( const KUrl& url, AutoLogin& login,
                bool userealnetrc = false,
-               QString type = QString(),
+               const QString &type = QString(),
                LookUpMode mode = LookUpMode(exactOnly) | defaultOnly );
   /**
    * Reloads the auto login information.

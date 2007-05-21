@@ -33,7 +33,7 @@ public:
         : m_fileName(fileName), m_pManager(mgr)
     {}
     virtual ~KBookmarkExporterBase() {}
-    virtual void write(KBookmarkGroup) = 0;
+    virtual void write(const KBookmarkGroup&) = 0;
 protected:
     QString m_fileName;
     KBookmarkManager* m_pManager;

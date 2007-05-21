@@ -48,7 +48,7 @@ public:
     class KIO_EXPORT List : public QList<KBookmark>
     {
     public:
-        List() : QList<KBookmark>() {}
+        List();
 
         /**
          * Adds this list of bookmark into the given QMimeData.
@@ -78,8 +78,8 @@ public:
         static KBookmark::List fromMimeData( const QMimeData *mimeData );
     };
 
-    KBookmark( ) {}
-    KBookmark( QDomElement elem ) : element(elem) {}
+    KBookmark( );
+    KBookmark( const QDomElement &elem );
 
     static KBookmark standaloneBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
 
@@ -98,7 +98,7 @@ public:
      * be the case for a real bookmark (in a menu), but it's used
      * for instance as the end condition for KBookmarkGroup::next()
      */
-    bool isNull() const {return element.isNull();}
+    bool isNull() const;
 
     /**
      * @return true if bookmark is contained by a QDomDocument,
@@ -174,7 +174,7 @@ public:
     /**
      * @internal for KEditBookmarks
      */
-    QDomElement internalElement() const { return element; }
+    QDomElement internalElement() const;
 
     /**
      * Updates the bookmarks access metadata
@@ -187,37 +187,30 @@ public:
     /**
      * @return address of parent
      */
-    static QString parentAddress( const QString & address )
-    { return address.left( address.lastIndexOf(QLatin1Char('/')) ); }
+    static QString parentAddress( const QString & address );
 
     /**
      * @return position in parent (e.g. /4/5/2 -> 2)
      */
-    static uint positionInParent( const QString & address )
-    { return address.mid( address.lastIndexOf(QLatin1Char('/')) + 1 ).toInt(); }
+    static uint positionInParent( const QString & address );
 
     /**
      * @return address of previous sibling (e.g. /4/5/2 -> /4/5/1)
      * Returns QString() for a first child
      */
-    static QString previousAddress( const QString & address )
-    {
-        uint pp = positionInParent(address);
-        return pp>0 ? parentAddress(address) + QLatin1Char('/') + QString::number(pp-1) : QString();
-    }
+    static QString previousAddress( const QString & address );
 
     /**
      * @return address of next sibling (e.g. /4/5/2 -> /4/5/3)
      * This doesn't check whether it actually exists
      */
-    static QString nextAddress( const QString & address )
-    { return parentAddress(address) + QLatin1Char('/') + QString::number(positionInParent(address)+1); }
+    static QString nextAddress( const QString & address );
 
     /**
      * @return the common parent of both addresses which
      * has the greatest depth
      */
-     static QString commonParent(QString A, QString B);
+     static QString commonParent( const QString &A, const QString &B );
 
     /**
      * Get the value of a specific metadata item.
@@ -279,7 +272,7 @@ public:
     /**
      * Create a bookmark group as specified by the given element
      */
-    KBookmarkGroup( QDomElement elem );
+    KBookmarkGroup( const QDomElement &elem );
 
     /**
      * Much like KBookmark::address, but caches the
@@ -352,7 +345,7 @@ public:
      * Delete a bookmark - it has to be one of our children !
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
      */
-    void deleteBookmark( KBookmark bk );
+    void deleteBookmark( const KBookmark &bk );
 
     /**
      * @return true if this is the toolbar group
@@ -385,7 +378,7 @@ public:
     KBookmark closestBookmark( const KUrl& url ) const;
 
 protected:
-    QDomElement nextKnownTag( QDomElement start, bool goNext ) const;
+    QDomElement nextKnownTag( const QDomElement &start, bool goNext ) const;
 
 private:
     mutable QString m_address;
@@ -397,11 +390,11 @@ private:
 
 class KIO_EXPORT KBookmarkGroupTraverser {
 protected:
-    virtual ~KBookmarkGroupTraverser() {}
+    virtual ~KBookmarkGroupTraverser();
     void traverse(const KBookmarkGroup &);
-    virtual void visit(const KBookmark &) {}
-    virtual void visitEnter(const KBookmarkGroup &) {}
-    virtual void visitLeave(const KBookmarkGroup &) {}
+    virtual void visit(const KBookmark &);
+    virtual void visitEnter(const KBookmarkGroup &);
+    virtual void visitLeave(const KBookmarkGroup &);
 };
 
 #endif

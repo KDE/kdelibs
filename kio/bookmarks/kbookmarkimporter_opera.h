@@ -72,7 +72,7 @@ public:
       : KBookmarkExporterBase(mgr, filename)
     { ; }
     virtual ~KOperaBookmarkExporterImpl() {}
-    virtual void write(KBookmarkGroup);
+    virtual void write(const KBookmarkGroup &parent);
 private:
     class KOperaBookmarkExporterImplPrivate *d;
 };

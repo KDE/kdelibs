@@ -39,7 +39,7 @@ KBookmarkGroup::KBookmarkGroup()
 {
 }
 
-KBookmarkGroup::KBookmarkGroup( QDomElement elem )
+KBookmarkGroup::KBookmarkGroup( const QDomElement &elem )
  : KBookmark(elem)
 {
 }
@@ -89,7 +89,7 @@ KBookmark KBookmarkGroup::next( const KBookmark & current ) const
 
 // KDE4: Change QDomElement to QDomNode so that we can get rid of
 // firstElement() and lastElement()
-QDomElement KBookmarkGroup::nextKnownTag( QDomElement start, bool goNext ) const
+QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext ) const
 {
     static const QString & bookmark = KGlobal::staticQString("bookmark");
     static const QString & folder = KGlobal::staticQString("folder");
@@ -212,7 +212,7 @@ KBookmark KBookmarkGroup::addBookmark( KBookmarkManager* mgr, const QString & te
     return addBookmark( mgr, KBookmark( elem ), emitSignal );
 }
 
-void KBookmarkGroup::deleteBookmark( KBookmark bk )
+void KBookmarkGroup::deleteBookmark( const KBookmark &bk )
 {
     element.removeChild( bk.element );
 }
@@ -283,6 +283,14 @@ KBookmark KBookmarkGroup::closestBookmark( const KUrl& url ) const
 
 //////
 
+KBookmark::KBookmark( )
+{
+}
+
+KBookmark::KBookmark( const QDomElement &elem ) : element(elem)
+{
+}
+
 bool KBookmark::isGroup() const
 {
     QString tag = element.tagName();
@@ -293,6 +301,11 @@ bool KBookmark::isGroup() const
 bool KBookmark::isSeparator() const
 {
     return (element.tagName() == "separator");
+}
+
+bool KBookmark::isNull() const
+{
+    return element.isNull();
 }
 
 bool KBookmark::hasParent() const
@@ -400,6 +413,11 @@ QString KBookmark::address() const
     }
 }
 
+QDomElement KBookmark::internalElement() const
+{
+    return element;
+}
+
 KBookmark KBookmark::standaloneBookmark( const QString & text, const KUrl & url, const QString & icon )
 {
     QDomDocument doc("xbel");
@@ -421,8 +439,10 @@ QString KBookmark::left(const QString & str, uint len)
         return str.left(len);
 }
 
-QString KBookmark::commonParent(QString A, QString B)
+QString KBookmark::commonParent(const QString &first, const QString &second)
 {
+    QString A = first;
+    QString B = second;
     QString error("ERROR");
     if(A == error || B == error)
         return error;
@@ -442,7 +462,7 @@ QString KBookmark::commonParent(QString A, QString B)
     return left(A, lastCommonSlash);
 }
 
-static QDomNode cd_or_create(QDomNode node, QString name)
+static QDomNode cd_or_create(QDomNode node, const QString &name)
 {
     QDomNode subnode = node.namedItem(name);
     if (subnode.isNull())
@@ -515,6 +535,30 @@ void KBookmark::updateAccessMetadata()
     // TODO - for 4.0 - time_modified
 }
 
+QString KBookmark::parentAddress( const QString & address )
+{
+    return address.left( address.lastIndexOf(QLatin1Char('/')) );
+}
+
+uint KBookmark::positionInParent( const QString & address )
+{
+    return address.mid( address.lastIndexOf(QLatin1Char('/')) + 1 ).toInt();
+}
+
+QString KBookmark::previousAddress( const QString & address )
+{
+    uint pp = positionInParent(address);
+    return pp>0
+        ? parentAddress(address) + QLatin1Char('/') + QString::number(pp-1)
+        : QString();
+}
+
+QString KBookmark::nextAddress( const QString & address )
+{
+    return parentAddress(address) + QLatin1Char('/') +
+        QString::number(positionInParent(address)+1);
+}
+
 QString KBookmark::metaDataItem( const QString &key ) const
 {
     QDomNode infoNode = cd_or_create( internalElement(), "info" );
@@ -543,6 +587,10 @@ void KBookmark::setMetaDataItem( const QString &key, const QString &value, MetaD
     }
 
     text.setData( value );
+}
+
+KBookmarkGroupTraverser::~KBookmarkGroupTraverser()
+{
 }
 
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
@@ -590,11 +638,27 @@ void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
     // never reached
 }
 
+void KBookmarkGroupTraverser::visit(const KBookmark &)
+{
+}
+
+void KBookmarkGroupTraverser::visitEnter(const KBookmarkGroup &)
+{
+}
+
+void KBookmarkGroupTraverser::visitLeave(const KBookmarkGroup &)
+{
+}
+
 void KBookmark::populateMimeData( QMimeData* mimeData ) const
 {
     KBookmark::List bookmarkList;
     bookmarkList.append( *this );
     bookmarkList.populateMimeData( mimeData );
+}
+
+KBookmark::List::List() : QList<KBookmark>()
+{
 }
 
 void KBookmark::List::populateMimeData( QMimeData* mimeData ) const

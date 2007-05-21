@@ -222,7 +222,7 @@ bool NetAccess::mkdir( const KUrl & url, QWidget* window, int permissions )
   return kioNet.mkdirInternal( url, permissions, window );
 }
 
-QString NetAccess::fish_execute( const KUrl & url, const QString command, QWidget* window )
+QString NetAccess::fish_execute( const KUrl & url, const QString &command, QWidget* window )
 {
   NetAccess kioNet;
   return kioNet.fish_executeInternal( url, command, window );
@@ -351,7 +351,7 @@ void NetAccess::slotMimetype( KIO::Job *, const QString & type  )
   m_mimetype = type;
 }
 
-QString NetAccess::fish_executeInternal(const KUrl & url, const QString command, QWidget* window)
+QString NetAccess::fish_executeInternal(const KUrl & url, const QString &command, QWidget* window)
 {
   QString target, remoteTempFileName, resultData;
   KUrl tempPathUrl;

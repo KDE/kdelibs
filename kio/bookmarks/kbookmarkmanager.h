@@ -236,7 +236,7 @@ public Q_SLOTS:
     /**
      * Reparse the whole bookmarks file and notify about the change
      */
-    void notifyCompleteChange( QString caller );
+    void notifyCompleteChange( const QString &caller );
 
     /**
      * Emit the changed signal for the group whose address is given
@@ -244,7 +244,7 @@ public Q_SLOTS:
      * Called by the process that saved the file after
      * a small change (new bookmark or new folder).
      */
-    void notifyChanged( QString groupAddress, const QDBusMessage &msg );
+    void notifyChanged( const QString &groupAddress, const QDBusMessage &msg );
 
     void notifyConfigChanged();
 
