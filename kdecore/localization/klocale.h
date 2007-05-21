@@ -1080,6 +1080,13 @@ public:
    */
   bool useTranscript() const;
 
+  /**
+   * Checks whether or not the active catalog is found for the given language.
+   *
+   * @param language language to check
+   */
+  bool isApplicationTranslatedInto( const QString & language);
+
 
   /**
    * @internal Called from KConfigBackend to initialize language.

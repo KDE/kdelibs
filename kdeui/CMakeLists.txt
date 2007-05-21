@@ -78,6 +78,7 @@ set(kdeui_LIB_SRCS
  dialogs/kprogressdialog.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/ksplashscreen.cpp
+ dialogs/kswitchlanguagedialog.cpp
  dialogs/ktip.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
@@ -172,6 +173,7 @@ set(kdeui_LIB_SRCS
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
  widgets/kinformationlabel.cpp
+ widgets/klanguagebutton.cpp
  widgets/kled.cpp
  widgets/klineedit.cpp
  widgets/kmainwindow.cpp
@@ -318,6 +320,7 @@ install( FILES
  dialogs/ksplashscreen.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
+ dialogs/kswitchlanguagedialog.h
  dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h
@@ -400,6 +403,7 @@ install( FILES
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
  widgets/kinformationlabel.h
+ widgets/klanguagebutton.h
  widgets/kled.h
  widgets/klineedit.h
  widgets/kmainwindow.h

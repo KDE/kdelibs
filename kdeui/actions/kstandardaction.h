@@ -157,7 +157,8 @@ namespace KStandardAction
     ConfigureNotifications,
     FullScreen,
     Clear,
-    PasteText
+    PasteText,
+    SwitchApplicationLanguage
   };
 
   /**

@@ -494,6 +494,11 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
   return true; // we found something. Maybe it's only English, but we found something
 }
 
+bool KLocale::isApplicationTranslatedInto( const QString & lang)
+{
+  return d->isApplicationTranslatedInto( lang );
+}
+
 bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
 {
   if ( lang.isEmpty() ) {

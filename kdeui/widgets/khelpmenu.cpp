@@ -45,6 +45,7 @@
 #include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
+#include <kswitchlanguagedialog.h>
 #include <ktoolinvocation.h>
 
 #include <config.h>
@@ -56,6 +57,8 @@ class KHelpMenuPrivate
 {
 public:
     KHelpMenuPrivate()
+      : mSwitchApplicationLanguage(0),
+        mSwitchApplicationLanguageAction(0)
     {
         mMenu = 0;
         mAboutApp = 0;
@@ -73,12 +76,14 @@ public:
         delete mAboutApp;
         delete mAboutKDE;
         delete mBugReport;
+        delete mSwitchApplicationLanguage;
     }
 
     KMenu *mMenu;
     KDialog *mAboutApp;
     KAboutKdeDialog *mAboutKDE;
     KBugReport *mBugReport;
+    KSwitchLanguageDialog *mSwitchApplicationLanguage;
 
 // TODO evaluate if we use static_cast<QWidget*>(parent()) instead of mParent to win that bit of memory
     QWidget *mParent;
@@ -86,7 +91,7 @@ public:
 
     bool mShowWhatsThis;
 
-    QAction *mHandBookAction, *mWhatsThisAction, *mReportBugAction, *mAboutAppAction, *mAboutKDEAction;
+    QAction *mHandBookAction, *mWhatsThisAction, *mReportBugAction, *mSwitchApplicationLanguageAction, *mAboutAppAction, *mAboutKDEAction;
 
     const KAboutData *mAboutData;
 };
@@ -115,6 +120,7 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
     if (showWhatsThis)
       actions->addAction(KStandardAction::WhatsThis, this, SLOT(contextHelpActivated()));
     actions->addAction(KStandardAction::ReportBug, this, SLOT(reportBug()));
+    actions->addAction(KStandardAction::SwitchApplicationLanguage, this, SLOT(switchApplicationLanguage()));
     actions->addAction(KStandardAction::AboutApp, this, SLOT(aboutApplication()));
     actions->addAction(KStandardAction::AboutKDE, this, SLOT(aboutKDE()));
   }
@@ -160,6 +166,14 @@ KMenu* KHelpMenu::menu()
       need_separator = true;
     }
 
+    if (KAuthorized::authorizeKAction("switch_application_language"))
+    {
+      if (need_separator)
+        d->mMenu->addSeparator();
+      d->mSwitchApplicationLanguageAction = d->mMenu->addAction( i18n( "Switch application &language..." ), this, SLOT(switchApplicationLanguage()) );
+      need_separator = true;
+    }
+
     if (need_separator)
       d->mMenu->addSeparator();
 
@@ -192,6 +206,10 @@ QAction *KHelpMenu::action( MenuId id ) const
 
     case menuReportBug:
       return d->mReportBugAction;
+    break;
+
+    case menuSwitchLanguage:
+      return d->mSwitchApplicationLanguageAction;
     break;
 
     case menuAboutApp:
@@ -280,6 +298,17 @@ void KHelpMenu::reportBug()
 }
 
 
+void KHelpMenu::switchApplicationLanguage()
+{
+  if ( !d->mSwitchApplicationLanguage )
+  {
+    d->mSwitchApplicationLanguage = new KSwitchLanguageDialog( d->mParent );
+    connect( d->mSwitchApplicationLanguage, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+  }
+  d->mSwitchApplicationLanguage->show();
+}
+
+
 void KHelpMenu::dialogFinished()
 {
   QTimer::singleShot( 0, this, SLOT(timerExpired()) );
@@ -296,6 +325,11 @@ void KHelpMenu::timerExpired()
   if( d->mBugReport && !d->mBugReport->isVisible() )
   {
     delete d->mBugReport; d->mBugReport = 0;
+  }
+
+  if ( d->mSwitchApplicationLanguage && !d->mSwitchApplicationLanguage->isVisible() )
+  {
+    delete d->mSwitchApplicationLanguage; d->mSwitchApplicationLanguage = 0;
   }
 
   if( d->mAboutApp && !d->mAboutApp->isVisible() )

@@ -540,6 +540,11 @@ KAction *reportBug( const QObject *recvr, const char *slot, QObject *parent )
   return KStandardAction::create( ReportBug, recvr, slot, parent );
 }
 
+KAction *switchApplicationLanguage( const QObject *recvr, const char *slot, QObject *parent )
+{
+  return KStandardAction::create( SwitchApplicationLanguage, recvr, slot, parent );
+}
+
 KAction *aboutApp( const QObject *recvr, const char *slot, QObject *parent )
 {
   return KStandardAction::create( AboutApp, recvr, slot, parent );
