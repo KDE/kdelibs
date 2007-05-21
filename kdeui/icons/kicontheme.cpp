@@ -45,8 +45,8 @@ public:
     bool hidden;
     KSharedConfig::Ptr sharedConfig;
 
-    int mDefSize[8];
-    QList<int> mSizes[8];
+    int mDefSize[6];
+    QList<int> mSizes[6];
 
     int mDepth;
     QString mDir, mName, mDesc;
@@ -212,7 +212,8 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "MainToolbar";
     groups += "Small";
     groups += "Panel";
-    const int defDefSizes[] = { 32, 22, 22, 16, 32 };
+    groups += "Dialog";
+    const int defDefSizes[] = { 32, 22, 22, 16, 32, 32 };
     KConfigGroup cg(d->sharedConfig, mainSection);
     for (it=groups.begin(), i=0; it!=groups.end(); ++it, i++)
     {

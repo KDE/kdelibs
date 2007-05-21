@@ -94,10 +94,12 @@ public:
 	Toolbar,
 	/// Main toolbar icons
         MainToolbar,
-	/// Small icons
+	/// Small icons, e.g. for buttons
 	Small,
 	/// Panel (Kicker) icons
 	Panel,
+	/// Icons for use in dialog titles, page lists, etc
+	Dialog,
 	/// Last group
 	LastGroup,
 	/// User icons
