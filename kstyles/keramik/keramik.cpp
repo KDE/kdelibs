@@ -318,11 +318,11 @@ public:
 				{
 					case MenuItem::Separator:
 					{
-						r = centerRect(r, r.width(), 2); //Center...
+						QRect lr = centerRect(r, r.width(), 2); //Center...
 						p->setPen( pal.mid().color() );
-						p->drawLine(r.x()+5, r.y(), r.right()-4, r.y());
+						p->drawLine(lr.x()+5, lr.y(), lr.right()-4, lr.y());
 						p->setPen( pal.color(QPalette::Light) );
-						p->drawLine(r.x()+5, r.y() + 1, r.right()-4, r.y() + 1);
+						p->drawLine(lr.x()+5, lr.y() + 1, lr.right()-4, lr.y() + 1);
 						return;
 					}
 
@@ -437,7 +437,7 @@ public:
 					case ScrollBar::GrooveAreaVert:
 					{
 						Keramik::ScrollBarPainter(KeramikGroove1, 2, false).draw(
-								p, r, pal.color(QPalette::Button), pal.background().color(), disabled);	
+								p, r, pal.color(QPalette::Button), pal.background().color(), disabled);
 						return;
 					}
 
@@ -649,10 +649,11 @@ public:
 					case Slider::HandleVert:
 					case Slider::HandleHor:
 					{
+                                                QRect lr = r;
 						if (primitive == Slider::HandleHor)
-							r.setY(r.y() + 2);
+							lr.setY(lr.y() + 2);
 						else
-							r.setX(r.x() + 2);
+							lr.setX(lr.x() + 2);
 
 						QColor hl = pal.color(QPalette::Highlight);
 						if (!disabled && flags & State_Active)
@@ -662,7 +663,7 @@ public:
 											keramik_vslider : keramik_slider;
 
 						Keramik::ScaledPainter(primCode).draw(
-							p, r, disabled ? pal.color(QPalette::Button) : hl, Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend);
+							p, lr, disabled ? pal.color(QPalette::Button) : hl, Qt::black,  disabled, Keramik::TilePainter::PaintFullBlend);
 						return;
 					}
 				}
