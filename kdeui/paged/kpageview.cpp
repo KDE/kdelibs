@@ -26,6 +26,7 @@
 
 #include <kdialog.h>
 #include <kiconloader.h>
+#include <ktitlewidget.h>
 
 #include <QAbstractItemView>
 #include <QGridLayout>
@@ -73,9 +74,7 @@ class KPageView::Private
 
     // gui
     KPageStackedWidget *stack;
-    QFrame *headerFrame;
-    QLabel *headerLabel;
-    QLabel *headerIcon;
+    KTitleWidget *titleWidget;
     QGridLayout *layout;
 
     QAbstractItemView *view;
@@ -119,7 +118,7 @@ void KPageView::Private::rebuildGui()
       view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
   }
 
-  headerFrame->setVisible( parent->showPageHeader() );
+  titleWidget->setVisible(parent->showPageHeader());
 
   Qt::Alignment alignment = parent->viewPosition();
   if ( alignment & Qt::AlignTop )
@@ -271,10 +270,10 @@ void KPageView::Private::pageSelected( const QModelIndex &index, const QModelInd
   if ( header.isEmpty() ) {
     header = model->data( index, Qt::DisplayRole ).toString();
   }
-  headerLabel->setText( header );
+  titleWidget->setText(header);
 
   const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
-  headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
+  titleWidget->setPixmap(icon.pixmap(22, 22));
 
   emit parent->currentPageChanged( index, previous );
 }
@@ -296,10 +295,10 @@ void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
   if ( header.isEmpty() ) {
     header = model->data( index, Qt::DisplayRole ).toString();
   }
-  headerLabel->setText( header );
+  titleWidget->setText(header);
 
   const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
-  headerIcon->setPixmap( icon.pixmap( 22, 22 ) );
+  titleWidget->setPixmap(icon.pixmap(22, 22));
 }
 
 /**
@@ -310,27 +309,10 @@ KPageView::KPageView( QWidget *parent )
 {
   d->layout = new QGridLayout( this );
   d->stack = new KPageStackedWidget( this );
-  d->headerLabel = new QLabel( this );
-  d->headerIcon = new QLabel( this );
 
-  d->headerLabel->setStyleSheet( "QLabel { font-weight: bold; }" );
+  d->titleWidget = new KTitleWidget(this);
 
-  d->headerFrame = new QFrame( this );
-  d->headerFrame->setFrameShape( QFrame::StyledPanel );
-  d->headerFrame->setFrameShadow( QFrame::Plain );
-
-  d->headerFrame->setAutoFillBackground( true );
-  d->headerFrame->setBackgroundRole( QPalette::Base );
-
-  QHBoxLayout *headerLayout = new QHBoxLayout();
-  // use spacingHint (6 pixel), looks much better than marginHint
-  headerLayout->setMargin( KDialog::spacingHint() );
-  headerLayout->addWidget( d->headerLabel );
-  headerLayout->addWidget( d->headerIcon );
-  headerLayout->setStretchFactor( d->headerLabel, 1 );
-  d->headerFrame->setLayout( headerLayout );
-
-  d->layout->addWidget( d->headerFrame, 1, 1 );
+  d->layout->addWidget(d->titleWidget, 1, 1);
   d->layout->addWidget( d->stack, 2, 1 );
 
   // stack should use most space

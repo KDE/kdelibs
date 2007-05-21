@@ -34,6 +34,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <ktextbrowser.h>
+#include <ktitlewidget.h>
 
 class KAboutApplicationDialog::Private
 {
@@ -71,23 +72,15 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         return;
     }
 
-    QFrame *titleLabel = new QFrame();
-    titleLabel->setAutoFillBackground(true);
-    titleLabel->setFrameShape(QFrame::StyledPanel);
-    titleLabel->setFrameShadow(QFrame::Plain);
-    titleLabel->setBackgroundRole(QPalette::Base);
+    KTitleWidget *titleWidget = new KTitleWidget(this);
 
-    QLabel *iconLabel = new QLabel(titleLabel);
-    iconLabel->setFixedSize(64, 64);
-    iconLabel->setPixmap(qApp->windowIcon().pixmap(64, 64));
+    titleWidget->setPixmap(qApp->windowIcon().pixmap(64, 64), KTitleWidget::ImageLeft);
     if (aboutData->programLogo().canConvert<QPixmap>())
-        iconLabel->setPixmap(aboutData->programLogo().value<QPixmap>());
+        titleWidget->setPixmap(aboutData->programLogo().value<QPixmap>(), KTitleWidget::ImageLeft);
     else if (aboutData->programLogo().canConvert<QImage>())
-        iconLabel->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()));
+        titleWidget->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()), KTitleWidget::ImageLeft);
 
-    QLabel *headerLabel = new QLabel(titleLabel);
-    headerLabel->setAlignment(Qt::AlignLeft);
-    headerLabel->setText(i18n("<font size=\"5\">%1</font><br><b>Version %2</b><br>Using KDE %3</html>", aboutData->programName(),
+    titleWidget->setText(i18n("<font size=\"5\">%1</font><br><b>Version %2</b><br>Using KDE %3</html>", aboutData->programName(),
                          aboutData->version(), QString(KDE_VERSION_STRING)));
 
     QTabWidget *tabWidget = new QTabWidget;
@@ -215,17 +208,8 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QW
         tabWidget->addTab(translatorTextBrowser, i18n("T&ranslation"));
     }
 
-    QHBoxLayout *titleLayout = new QHBoxLayout;
-    titleLayout->setMargin(3);
-    titleLayout->setSpacing(KDialog::spacingHint());
-    titleLayout->addWidget(iconLabel,0,Qt::AlignVCenter);
-    titleLayout->addWidget(headerLabel,0,Qt::AlignVCenter);
-    titleLayout->addStretch(1);
-
-    titleLabel->setLayout(titleLayout);
-
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(titleLabel);
+    mainLayout->addWidget(titleWidget);
     mainLayout->addWidget(tabWidget);
     mainLayout->setMargin(0);
 

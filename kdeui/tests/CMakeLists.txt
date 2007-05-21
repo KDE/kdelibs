@@ -106,6 +106,7 @@ KDEUI_BUILD_TESTS(
   kpassworddialogtest
   kjobtrackerstest
   kdebugtest_gui
+  ktitlewidgettest
 )
 
 if (Q_WS_X11)

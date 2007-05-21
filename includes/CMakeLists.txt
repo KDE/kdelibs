@@ -470,6 +470,7 @@ install( FILES
   KTimeZones
   KTipDatabase
   KTipDialog
+  KTitleWidget
   KToggleAction
   KToggleFullScreenAction
   KToggleToolBarAction

@@ -30,6 +30,7 @@
 #include <kglobalsettings.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
+#include <ktitlewidget.h>
 
 KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
   : KDialog(parent),
@@ -41,13 +42,8 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     setHelp("khelpcenter/main.html");
     setModal(false);
 
-    QLabel *headerLabel = new QLabel;
-    headerLabel->setMargin(5);
-    headerLabel->setText(i18n("<font size=\"4\">K Desktop Environment</font><br><b>Version %1</b>", QString(KDE_VERSION_STRING)));
-    headerLabel->setFrameShape(QFrame::StyledPanel);
-    headerLabel->setFrameShadow(QFrame::Plain);
-    headerLabel->setAutoFillBackground(true);
-    headerLabel->setBackgroundRole(QPalette::Base);
+    KTitleWidget *titleWidget = new KTitleWidget(this);
+    titleWidget->setText(i18n("<font size=\"4\">K Desktop Environment</font><br><b>Version %1</b>", QString(KDE_VERSION_STRING)));
 
     QLabel *about = new QLabel;
     about->setMargin(10);
@@ -140,7 +136,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     midLayout->addWidget(tabWidget);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(headerLabel);
+    mainLayout->addWidget(titleWidget);
     mainLayout->addLayout(midLayout);
     mainLayout->setMargin(0);
 

@@ -194,6 +194,7 @@ set(kdeui_LIB_SRCS
  widgets/ktextbrowser.cpp
  widgets/ktextedit.cpp
  widgets/ktimezonewidget.cpp
+ widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
  widgets/kurllabel.cpp
  widgets/kvbox.cpp
@@ -415,6 +416,7 @@ install( FILES
  widgets/ktextbrowser.h
  widgets/ktextedit.h
  widgets/ktimezonewidget.h
+ widgets/ktitlewidget.h
  widgets/ktabbar.h
  widgets/ktabwidget.h
  widgets/kruler.h
