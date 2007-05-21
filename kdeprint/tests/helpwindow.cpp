@@ -18,7 +18,6 @@
 #include <QtGui/QIcon>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
-#include <Qt3Support/Q3StyleSheet>
 #include <QtGui/QMessageBox>
 #include <QtGui/QFileDialog>
 #include <QtGui/QApplication>

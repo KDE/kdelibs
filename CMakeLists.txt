@@ -74,6 +74,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/sycoca
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
+			  ${CMAKE_SOURCE_DIR}/kdecore/sonnet
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore

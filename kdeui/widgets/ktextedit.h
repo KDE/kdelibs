@@ -21,7 +21,7 @@
 #define KTEXTEDIT_H
 
 #include <kdeui_export.h>
-
+#include "highlighter.h"
 #include <QtGui/QTextEdit>
 
 /**
@@ -91,6 +91,9 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit
      */
     virtual void createHighlighter();
 
+    KSpell2::Highlighter* hightighter() const;
+
+    void setHightighter(KSpell2::Highlighter *_highLighter);
   public Q_SLOTS:
     /**
      * Create a modal dialog to check the spelling.  This slot will not return

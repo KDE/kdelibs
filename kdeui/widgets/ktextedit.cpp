@@ -25,7 +25,6 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QTextCursor>
-#include "highlighter.h"
 #include <dialog.h>
 #include "backgroundchecker.h"
 #include <kcursor.h>
@@ -326,7 +325,18 @@ void KTextEdit::wheelEvent( QWheelEvent *event )
 
 void KTextEdit::createHighlighter()
 {
-    d->highlighter = new KSpell2::Highlighter( this );
+    setHightighter(new KSpell2::Highlighter( this ));
+}
+
+KSpell2::Highlighter* KTextEdit::hightighter() const
+{
+    return d->highlighter;
+}
+
+void KTextEdit::setHightighter(KSpell2::Highlighter *_highLighter)
+{
+    delete d->highlighter;	
+    d->highlighter = _highLighter;
 }
 
 void KTextEdit::setCheckSpellingEnabled( bool check )
