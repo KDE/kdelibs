@@ -560,21 +560,11 @@ public:
   static bool isTempFileSet();
 
   /**
-   * @deprecated use qtArgc() instead of *qt_argc()
-   */
-  static int *qt_argc();
-
-  /**
    * Returns the number of arguments returned by qtArgv()
    *
    * @see qtArgv
    */
   static int &qtArgc();
-
-  /**
-   * @deprecated remove one '*' and use qtArgv()
-   */
-  static KDE_DEPRECATED char ***qt_argv();
 
   /**
    * Returns command line options for consumption by Qt after parsing them in a way that

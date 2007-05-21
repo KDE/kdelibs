@@ -729,11 +729,6 @@ KCmdLineArgs::parseAllArgs()
    parsed = true;
 }
 
-int * KCmdLineArgs::qt_argc()
-{
-    return &qtArgc();
-}
-
 int & KCmdLineArgs::qtArgc()
 {
    if (!argsList)
@@ -766,13 +761,6 @@ int & KCmdLineArgs::qtArgc()
 }
 
 static char** s_qt_argv;
-
-char ***
-KCmdLineArgs::qt_argv()
-{
-    qtArgv();
-    return &s_qt_argv;
-}
 
 char **
 KCmdLineArgs::qtArgv()
