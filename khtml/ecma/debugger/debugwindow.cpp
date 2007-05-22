@@ -45,7 +45,6 @@
 #include <kstandardaction.h>
 #include <kxmlguifactory.h>
 
-#include <ktexteditor/highlightinginterface.h>
 #include <ktexteditor/configinterface.h>
 #include <ktexteditor/sessionconfiginterface.h>
 #include <ktexteditor/modificationinterface.h>
@@ -492,11 +491,10 @@ bool DebugWindow::returnEvent(ExecState *exec, int sourceId, int lineno, JSObjec
 
 void DebugWindow::enableKateHighlighting(KTextEditor::Document *document)
 {
-    KTextEditor::HighlightingInterface *highlightingInterface = qobject_cast<KTextEditor::HighlightingInterface*>(document);
-    if (!highlightingInterface)
+    if (!document)
         return;
 
-    highlightingInterface->setHighlighting("JavaScript");
+    document->setMode("JavaScript");
 }
 
 void DebugWindow::displayScript(KJS::DebugDocument *document)
