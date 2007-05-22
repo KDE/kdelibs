@@ -2,7 +2,9 @@
 Encoding=UTF-8
 Version=1.0
 Name=The Dublin Core Terms
+Name[zh_TW]=Dublin 核心術語
 Comment=The Dublin Core Terms
+Comment[zh_TW]=Dublin 核心術語
 URL=http://purl.org/dc/terms/
 Path=dcq.rdf
 MimeType=application/rdf+xml

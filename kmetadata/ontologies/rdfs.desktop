@@ -2,7 +2,9 @@
 Encoding=UTF-8
 Version=1.0
 Name=RDF-Schema
+Name[zh_TW]=RDF 概要
 Comment=RDF Vocabulary Description Language 1.0: RDF Schema
+Comment[zh_TW]=RDF 字彙描述語言 1.0：RDF 概要
 URL=http://www.w3.org/2000/01/rdf-schema#
 Path=rdfs.rdfs
 MimeType=application/rdf+xml

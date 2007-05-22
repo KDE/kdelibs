@@ -2,7 +2,9 @@
 Encoding=UTF-8
 Version=1.1
 Name=The Dublin Core Element Set
+Name[zh_TW]=Dublin 核心元素集
 Comment=The Dublin Core Element Set v1.1 namespace providing access to its content by means of an RDF Schema
+Comment[zh_TW]=Dublin 核心元素集 1.1 版命名空間以 RDF 摘要方式提供其內容的存取
 URL=http://purl.org/dc/elements/1.1/
 Path=dces.rdf
 MimeType=application/rdf+xml
