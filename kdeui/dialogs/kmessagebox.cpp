@@ -159,7 +159,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     QLabel *label1 = new QLabel( contents);
 
     if (!icon.isNull()) {
-       int size = IconSize(K3Icon::Desktop);
+       int size = IconSize(K3Icon::Dialog);
        label1->setPixmap(icon.pixmap(size, size));
     }
 

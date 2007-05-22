@@ -102,7 +102,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     layout->setAlignment(Qt::AlignLeft);
     QLabel *label = new QLabel();
     label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    label->setPixmap(KIconLoader::global()->loadIcon("dialog-information", K3Icon::FirstGroup));
+    label->setPixmap(KIconLoader::global()->loadIcon("dialog-information", K3Icon::Dialog));
     label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     layout->addWidget(label);
     KUrlLabel *link = new KUrlLabel();
