@@ -29,7 +29,7 @@ class QWidget;
 class KIcon;
 
 /**
- * KPageWidgetItem is used by @see KPageWidget and represents
+ * KPageWidgetItem is used by @ref KPageWidget and represents
  * a page.
  *
  * <b>Example:</b>\n

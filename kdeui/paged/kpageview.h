@@ -40,7 +40,7 @@ class QModelIndex;
  * different ways.
  *
  * Currently, @p Auto, @p Plain, @p List, @p Tree and @p Tabbed face
- * types are available (@see KPageView).
+ * types are available. @see KPageWidget
  *
  * <b>Example:</b>\n
  *

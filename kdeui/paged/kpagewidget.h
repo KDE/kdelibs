@@ -27,7 +27,8 @@
 #include "kpageview.h"
 
 /**
- * @short A @see KPageView with hierarchical page model.
+ * @short Page widget with many layouts (faces).
+ * @see KPageView with hierarchical page model.
  *
  * @author Tobias Koenig (tokoe@kde.org)
  */
