@@ -58,12 +58,10 @@ static void checkInsertPos( QMenu *popup, const QString &str, int &index )
 class KLanguageButtonPrivate
 {
 public:
-  KLanguageButtonPrivate()
-      : locale(0),
-        staticText(false),
-        showCodes(false) {}
+  KLanguageButtonPrivate( KLanguageButton *parent);
+  ~KLanguageButtonPrivate()  { delete button; delete popup; }
   void setCurrentItem( QAction* );
-  void init( KLanguageButton* );
+  void clear();
   QAction *findAction(const QString &data) const;
 
   QPushButton *button;
@@ -77,39 +75,37 @@ public:
 
 KLanguageButton::KLanguageButton( QWidget * parent )
   : QWidget( parent ),
-    d( new KLanguageButtonPrivate )
+    d( new KLanguageButtonPrivate(this) )
 {
-  d->init(this);
 }
 
 KLanguageButton::KLanguageButton( const QString & text, QWidget * parent )
   : QWidget( parent ),
-    d( new KLanguageButtonPrivate )
+    d( new KLanguageButtonPrivate(this) )
 {
-  d->init(this);
-
   setText(text);
 }
 
-void KLanguageButtonPrivate::init( KLanguageButton *parent )
+KLanguageButtonPrivate::KLanguageButtonPrivate( KLanguageButton *parent )
+  : button(new QPushButton(parent)),
+    popup(new QMenu(parent)),
+    locale(0),
+    staticText(false),
+    showCodes(false)
 {
-  popup = new QMenu( parent );
-
   QHBoxLayout *layout = new QHBoxLayout( parent );
   layout->setMargin(0);
   layout->setSpacing(0);
-  button = new QPushButton( parent ); // HPB don't touch this!!
   layout->addWidget( button );
+
+  button->setMenu( popup );
 
   QObject::connect( popup, SIGNAL(triggered(QAction*)), parent, SLOT(slotTriggered(QAction*)) );
   QObject::connect( popup, SIGNAL(hovered(QAction*)), parent, SLOT(slotHovered(QAction*)) );
-
-  parent->clear();
 }
 
 KLanguageButton::~KLanguageButton()
 {
-  delete d->button;
   delete d;
 }
 
@@ -145,7 +141,7 @@ void KLanguageButton::insertLanguage( const QString &languageCode, const QString
   else
     text = name;
   if (showCodes)
-    text += QLatin1String( " (" ) + languageCode + QLatin1String( ")" );
+    text += QLatin1String( " (" ) + languageCode + QLatin1Char(')');
 
   checkInsertPos( d->popup, text, index );
   QAction *a = new QAction(QIcon(), text, this);
@@ -210,12 +206,16 @@ int KLanguageButton::count() const
 
 void KLanguageButton::clear()
 {
-  d->ids.clear();
-  d->popup->clear();
-  d->button->setMenu( d->popup );
+  d->clear();
+}
 
-  if ( !d->staticText ) {
-    d->button->setText( QString() );
+void KLanguageButtonPrivate::clear()
+{
+  ids.clear();
+  popup->clear();
+
+  if ( !staticText ) {
+    button->setText( QString() );
   }
 }
 
