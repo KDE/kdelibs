@@ -95,7 +95,8 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     QString name() const;
 
     /**
-     * Sets the header of the @param header of the page widget item.
+     * Sets the header of the page widget item.
+     * @param header Header of the page widget item.
      */
     void setHeader( const QString &header );
 
@@ -105,7 +106,8 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     QString header() const;
 
     /**
-     * Sets the @param icon of the page widget item.
+     * Sets the icon of the page widget item.
+     * @param icon Icon of the page widget item.
      */
     void setIcon( const KIcon &icon );
 
@@ -115,8 +117,9 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     KIcon icon() const;
 
     /**
-     * Sets whether the page widget item is @param checkable
-     * in the view.
+     * Sets whether the page widget item is checkable in the view.
+     * @param checkable True if the page widget is checkable,
+     *                  otherwise false.
      */
     void setCheckable( bool checkable );
 
@@ -126,7 +129,7 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
     bool isCheckable() const;
 
     /**
-     * Sets the page widget item checked.
+     * Sets whether the page widget item is checked.
      */
     void setChecked( bool checked );
 
