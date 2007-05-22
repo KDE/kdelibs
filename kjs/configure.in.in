@@ -16,7 +16,8 @@ AC_DEFUN([AC_CHECK_ISNAN],
     LIBS="-lm"
     AC_MSG_CHECKING([for isnan with <math.h>])
     AC_TRY_LINK(
-	[#include <math.h>], [float f = 0.0; isnan(f)],
+	[#include <math.h>
+         float f;], [return isnan(f)],
 	[AC_MSG_RESULT(yes)
 	    AC_DEFINE([HAVE_FUNC_ISNAN], [1], [Define if you have isnan])],
 	AC_MSG_RESULT(no)
@@ -29,7 +30,8 @@ AC_DEFUN([AC_CHECK_ISINF],
     LIBS="-lm"
     AC_MSG_CHECKING([for isinf with <math.h>])
     AC_TRY_LINK(
-	[#include <math.h>], [float f = 0.0; isinf(f)],
+	[#include <math.h>
+         float f;], [return isinf(f)],
 	[AC_MSG_RESULT(yes)
 	    AC_DEFINE([HAVE_FUNC_ISINF], [1], [Define if you have isinf])],
 	AC_MSG_RESULT(no)
