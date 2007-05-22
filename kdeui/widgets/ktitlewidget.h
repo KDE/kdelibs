@@ -24,9 +24,10 @@
 #include <QtGui/QWidget>
 
 /**
- * @short Standard title widget with a white background and round border
+ * @short Standard title widget with a white background and round border.
  *
  * This class provides a widget often used for dialog titles.
+ * \image html ktitlewidget.png "KTitleWidget with title and icon"
  *
  * @section Usage
  * KTitleWidget is very simple to use. You can either use its default text
@@ -53,7 +54,8 @@ titleLayout->addWidget(checkBox);
 checkboxTitleWidget->setWidget(checkBoxTitleMainWidget);
  * @endcode
  *
- * @author Urs Wolfer uwolfer @ kde.org
+ * @see KPageView
+ * @author Urs Wolfer \<uwolfer @ kde.org\>
  */
 
 class KDEUI_EXPORT KTitleWidget : public QWidget
