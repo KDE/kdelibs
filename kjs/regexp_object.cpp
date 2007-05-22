@@ -254,7 +254,7 @@ JSObject *RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result
   // The returned array contains 'result' as first item, followed by the list of matches
   list.append(jsString(result));
   if ( lastOvector )
-    for ( unsigned i = 1 ; i < lastNumSubPatterns + 1 ; ++i )
+    for ( int i = 1 ; i < lastNumSubPatterns + 1 ; ++i )
     {
       int start = lastOvector[2*i];
       if (start == -1)
@@ -270,7 +270,7 @@ JSObject *RegExpObjectImp::arrayOfMatches(ExecState *exec, const UString &result
   return arr;
 }
 
-JSValue *RegExpObjectImp::getBackref(unsigned i) const
+JSValue *RegExpObjectImp::getBackref(int i) const
 {
   if (lastOvector && i < lastNumSubPatterns + 1) {
     UString substring = lastInput.substr(lastOvector[2*i], lastOvector[2*i+1] - lastOvector[2*i] );

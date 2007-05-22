@@ -632,6 +632,8 @@ QString KAboutData::licenseName(NameFormat formatName) const
     default:
         return QString();
     }
+
+    return QString();
 }
 
 QString

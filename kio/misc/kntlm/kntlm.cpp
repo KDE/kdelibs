@@ -41,8 +41,8 @@ QString KNTLM::getString( const QByteArray &buf, const SecBuf &secbuf, bool unic
   quint16 len;
   offset = qFromLittleEndian((quint32)secbuf.offset);
   len = qFromLittleEndian(secbuf.len);
-  if ( offset > buf.size() ||
-       offset + len > buf.size() ) return QString();
+  if ( offset > (quint32)buf.size() ||
+       offset + len > (quint32)buf.size() ) return QString();
 
   QString str;
   const char *c = buf.data() + offset;
@@ -62,8 +62,8 @@ QByteArray KNTLM::getBuf( const QByteArray &buf, const SecBuf &secbuf )
   offset = qFromLittleEndian((quint32)secbuf.offset);
   len = qFromLittleEndian(secbuf.len);
   //watch for buffer overflows
-  if ( offset > buf.size() ||
-       offset + len > buf.size() ) return QByteArray();
+  if ( offset > (quint32)buf.size() ||
+       offset + len > (quint32)buf.size() ) return QByteArray();
   return QByteArray( buf.data() + offset, buf.size() );
 }
 

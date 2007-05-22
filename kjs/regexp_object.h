@@ -91,7 +91,7 @@ namespace KJS {
     */
     static RegExp* makeEngine(ExecState *exec, const UString &p, JSValue *flagsInput);    
   private:
-    JSValue *getBackref(unsigned) const;
+    JSValue *getBackref(int) const;
     JSValue *getLastMatch() const;
     JSValue *getLastParen() const;
     JSValue *getLeftContext() const;

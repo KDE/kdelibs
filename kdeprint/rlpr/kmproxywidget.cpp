@@ -28,8 +28,8 @@
 #include <kconfig.h>
 #include <kcursor.h>
 
-KMProxyWidget::KMProxyWidget(QWidget *parent, const char *name)
-	: QGroupBox(i18n("Proxy Settings"), parent, name)
+KMProxyWidget::KMProxyWidget(QWidget *parent)
+	: QGroupBox(i18n("Proxy Settings"), parent)
 {
 	setLayout( new QVBoxLayout );
 

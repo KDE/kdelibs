@@ -49,7 +49,6 @@
 
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
-//#include <qxembed.h>
 #include <qx11info_x11.h>
 
 #include <X11/Xlib.h>
@@ -138,12 +137,6 @@ Atom KMenuBar::KMenuBarPrivate::makeSelectionAtom()
 KMenuBar::KMenuBar(QWidget *parent)
     : QMenuBar(parent), d(new KMenuBarPrivate)
 {
-#ifdef Q_WS_X11
-#ifdef __GNUC__
-#warning this does initialize QXEmbed, no good idea atm
-#endif
-   // QXEmbed::initialize();
-#endif
     connect( &d->selection_timer, SIGNAL( timeout()),
         this, SLOT( selectionTimeout()));
 
