@@ -161,10 +161,10 @@ void KMInstancePage::slotNew()
 
 void KMInstancePage::slotRemove()
 {
+	if(!m_view->currentItem()) return;
 	KMTimer::self()->hold();
 	bool	reload(false);
 
-    Q_ASSERT(m_view->currentItem());
 
 	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
@@ -185,9 +185,9 @@ void KMInstancePage::slotRemove()
 
 void KMInstancePage::slotCopy()
 {
+    if(!m_view->currentItem()) return;
 	KMTimer::self()->hold();
 
-    Q_ASSERT( m_view->currentItem() );
 
 	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
@@ -216,9 +216,9 @@ void KMInstancePage::slotCopy()
 
 void KMInstancePage::slotSettings()
 {
+    if(!m_view->currentItem())
+       return;
 	KMTimer::self()->hold();
-
-    Q_ASSERT( m_view->currentItem() );
 
 	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
@@ -252,9 +252,9 @@ void KMInstancePage::slotSettings()
 
 void KMInstancePage::slotDefault()
 {
+    if(!m_view->currentItem())
+       return;
 	KMTimer::self()->hold();
-
-    Q_ASSERT( m_view->currentItem() );
 
 	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
@@ -270,9 +270,9 @@ void KMInstancePage::slotDefault()
 
 void KMInstancePage::slotTest()
 {
+    if(!m_view->currentItem())
+      return;
 	KMTimer::self()->hold();
-
-    Q_ASSERT( m_view->currentItem() );
 
 	QString	src = m_view->currentItem()->text();
 	if (!src.isEmpty())
