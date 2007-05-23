@@ -425,7 +425,7 @@ void KFindDialog::showPatterns()
 
     if ( d->regexpDialog )
     {
-        KRegExpEditorInterface *iface = dynamic_cast<KRegExpEditorInterface*>( d->regexpDialog );
+        KRegExpEditorInterface *iface = qobject_cast<KRegExpEditorInterface*>( d->regexpDialog );
         assert( iface );
 
         iface->setRegExp( pattern() );
