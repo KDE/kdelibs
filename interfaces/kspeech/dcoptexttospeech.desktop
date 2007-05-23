@@ -6,6 +6,7 @@ Comment=Text-to-Speech Service with a D-Bus interface
 Comment[be]=Сервіс агалошвання тэксту з інтэрфейсам D-Bus
 Comment[csb]=Ùsłëżnota czëtaniô tekstu z interfejsã DCOP
 Comment[de]=Sprachausgabe mit D-Bus-Schnittstelle
+Comment[ja]=D-Bus インターフェースを持つテキスト読み上げサービス
 Comment[nl]=Tekst-tot-spraak-dienst met een DCOP interface
 Comment[pa]=ਇੱਕ D-Bus ਇੰਟਰਫੇਸ ਨਾਲ ਪਾਠ-ਤੋਂ-ਬੋਲੀ ਸੇਵਾ
 Comment[sv]=Text till tal-tjänst med ett D-bus gränssnitt
