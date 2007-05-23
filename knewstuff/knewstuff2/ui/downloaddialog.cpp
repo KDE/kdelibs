@@ -336,6 +336,11 @@ class ItemsView : public QScrollArea
             buildContents();
         }
 
+        void setProviders( QMap<Entry*, const Provider*> providers )
+        {
+            m_providers = providers;
+        }
+
         void setSorting( int sortType )
         {
             m_sorting = sortType;
@@ -386,7 +391,8 @@ class ItemsView : public QScrollArea
                 QVBoxLayout *l2 = new QVBoxLayout(nav);
                 KDXSButton *dxsbutton = new KDXSButton();
                 dxsbutton->setEntry(entry);
-                dxsbutton->setProvider(0);
+		if(m_providers.contains(entry))
+                    dxsbutton->setProvider(m_providers[entry]);
 		dxsbutton->setEngine(m_engine);
 
                 QString imageurl = entry->preview().representation();
@@ -412,12 +418,14 @@ class ItemsView : public QScrollArea
         void clear()
         {
             m_entries.clear();
+            //m_providers.clear();
             m_pixmaps.clear();
         }
 
     private:
         DownloadDialog * m_newStuffDialog;
         QMap<const Feed*, Entry::List> m_entries;
+	QMap<Entry*, const Provider*> m_providers;
         QWidget *m_root;
         int m_sorting;
         QMap<QPixmap*, QWidget*> m_pixmaps;
@@ -701,12 +709,17 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 	entries.append(entry);
 	m_entries[feed] = entries;
 
+	// FIXME: what if entry belongs to more than one provider at once?
+	m_providers[entry] = provider;
+
 	kDebug() << "downloaddialog: addEntry to list of size " << entries.size() << endl;
 }
 
 void DownloadDialog::refresh()
 {
+	d->itemsView->setProviders(m_providers);
 	d->itemsView->setItems(m_entries);
+	// FIXME: this method has side effects (rebuilding HTML!!!)
 
 	for(int i = 0; i < m_entries.keys().count(); i++)
 	{

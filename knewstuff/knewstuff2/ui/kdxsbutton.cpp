@@ -164,9 +164,40 @@ void KDXSButton::setEntry(Entry *e)
 	}
 }
 
-void KDXSButton::setProvider(KNS::Provider *provider)
+void KDXSButton::setProvider(const KNS::Provider *provider)
 {
 	m_provider = provider;
+
+	if(!provider) return;
+
+	// FIXME: make it possible to query DxsEngine's DxsPolicy and react here?
+	// FIXME: handle switch-version and collab menus as well
+	if(provider->webService().isValid())
+	{
+		action_collabrating->setEnabled(true);
+		action_collabcomment->setEnabled(true);
+		action_collabtranslation->setEnabled(true);
+		action_collabsubscribe->setEnabled(true);
+		action_collabremoval->setEnabled(true);
+
+		action_comments->setEnabled(true);
+		action_changes->setEnabled(true);
+
+		m_history->setEnabled(true);
+	}
+	else
+	{
+		action_collabrating->setEnabled(false);
+		action_collabcomment->setEnabled(false);
+		action_collabtranslation->setEnabled(false);
+		action_collabsubscribe->setEnabled(false);
+		action_collabremoval->setEnabled(false);
+
+		action_comments->setEnabled(false);
+		action_changes->setEnabled(false);
+
+		m_history->setEnabled(false);
+	}
 }
 
 void KDXSButton::setEngine(DxsEngine *engine)
@@ -395,7 +426,17 @@ void KDXSButton::slotTriggered(QAction *action)
 
 	if(action == action_info)
 	{
-		m_dxs->call_info();
+		// FIXME: consider engine's DxsPolicy
+		if(m_provider->webService().isValid())
+		{
+			m_dxs->call_info();
+		}
+		else
+		{
+			slotInfo(m_provider->name().representation(),
+				QString(),
+				QString());
+		}
 	}
 	if(action == action_comments)
 	{
@@ -540,7 +581,7 @@ void KDXSButton::slotPayloadLoaded(KUrl url)
 {
 	kDebug() << "PAYLOAD: success; try to install" << endl;
 
-	m_engine->install(url.url());
+	m_engine->install(url.path());
 }
 
 void KDXSButton::slotPayloadFailed()

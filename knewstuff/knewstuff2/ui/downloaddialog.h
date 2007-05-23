@@ -76,7 +76,8 @@ class DownloadDialog : public QDialog
 	QMap<QString, QString> m_categorymap;
 
 	//QList<Entry*> m_entries;
-	QMap<const Feed*, KNS::Entry::List> m_entries;
+	QMap<const Feed*, Entry::List> m_entries;
+	QMap<Entry*, const Provider*> m_providers;
 
     private Q_SLOTS:
         void slotResetMessageColors();
@@ -85,8 +86,8 @@ class DownloadDialog : public QDialog
 	// DXS
         void slotLoadProvidersListDXS();
         void slotLoadProviderDXS(int index);
-	void slotCategories(QList<KNS::Category*> categories);
-	void slotEntries(QList<KNS::Entry*> entries);
+	void slotCategories(QList<Category*> categories);
+	void slotEntries(QList<Entry*> entries);
 	void slotFault();
 	void slotError();
         // file downloading

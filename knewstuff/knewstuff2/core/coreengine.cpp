@@ -1373,6 +1373,8 @@ bool CoreEngine::install(QString payloadfile)
 		}
 	}
 
+	// ==== FIXME: security code below must go above, when async handling is complete ====
+
 	// FIXME: security object lifecycle - it is a singleton!
 	Security *sec = Security::ref();
 
