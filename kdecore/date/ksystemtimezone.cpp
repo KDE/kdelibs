@@ -204,15 +204,20 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
 {
     if (!m_instance)
     {
-	m_instance = new KSystemTimeZonesPrivate;
+        m_instance = new KSystemTimeZonesPrivate;
 
-	// A KSystemTimeZones instance is required only to catch D-Bus signals.
+        // A KSystemTimeZones instance is required only to catch D-Bus signals.
         m_parent = new KSystemTimeZones;
         // Ensure that the KDED time zones module has initialized
         QDBusInterface ktimezoned("org.kde.kded", "/modules/ktimezoned", KTIMEZONED_DBUS_IFACE);
         if (!ktimezoned.isValid())
-		kError() << "KSystemTimeZones: ktimezoned kded module was not loaded\n";
-		
+	{
+#ifdef __GNUC__
+#warning Load ktimezoned module and call initalize()
+#endif
+            kError() << "KSystemTimeZones: could not load ktimezoned kded module\n";
+	}
+
         readConfig(true);
 
         // Go read the database.
@@ -225,8 +230,10 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
             m_instance->readZoneTab();
 #endif
         m_localZone = m_instance->zone(m_localZoneName);
+        if (!m_localZone)
+            m_localZone = KTimeZones::utc();   // ensure a time zone is always returned
 
-	qAddPostRoutine(KSystemTimeZonesPrivate::cleanup);
+        qAddPostRoutine(KSystemTimeZonesPrivate::cleanup);
     }
     return m_instance;
 }
