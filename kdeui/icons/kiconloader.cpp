@@ -237,7 +237,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     addBaseThemes(d->mpThemeRoot, appname);
 
     // These have to match the order in kicontheme.h
-    static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", 0L };
+    static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", "Dialog", 0L };
     KSharedConfig::Ptr config = KGlobal::config();
 
     // loading config and default sizes
