@@ -1,6 +1,6 @@
 /*
  * ProFTPD - FTP server daemon
- * Copyright (c) 2007 The ProFTPD Project team           //krazy:exclude=license
+ * Copyright (c) 2007 The ProFTPD Project team           //krazy:exclude=copyright
  * Copyright (c) 2007 Alex Merry <alex.merry@kdemail.net>
  *
  * This program is free software; you can redistribute it and/or modify
