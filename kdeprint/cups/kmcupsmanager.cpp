@@ -937,7 +937,7 @@ void KMCupsManager::slotAsyncConnect()
 
 	connect( m_socket, SIGNAL( connected() ),
                 SLOT( slotConnectionSuccess() ) );
-	connect( m_socket, SIGNAL( error( QAbstractSocket::SocketError ) ), SLOT( slotConnectionFailed( int ) ) );
+	connect( m_socket, SIGNAL( error( QAbstractSocket::SocketError ) ), SLOT( slotConnectionFailed(QAbstractSocket::SocketError ) ) );
 }
 
 void KMCupsManager::slotConnectionFailed( QAbstractSocket::SocketError errcode )
