@@ -265,6 +265,7 @@ install( FILES
   KKeyButton
   KKeyChooser
   KKeyDialog
+  KLanguageButton
   KLed
   KLibFactory
   KLibLoader
@@ -450,6 +451,7 @@ install( FILES
   KStyle
   KStyleFactory
   KSvgRenderer
+  KSwitchLanguageDialog
   KSycoca
   KSycocaEntry
   KSystemTimeZone
