@@ -358,10 +358,11 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     // TODO this should check if cmd has a .desktop file, and use data from it, together
     // with sending more ASN data
     if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
-    {}
-    KMessage::message(KMessage::Error,
+    {
+      KMessage::message(KMessage::Error,
                       i18n("Could not launch the mail client:\n\n%1", error),
                       i18n("Could not Launch Mail Client"));
+    }
 }
 
 void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& startup_id )
