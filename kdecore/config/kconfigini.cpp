@@ -70,7 +70,7 @@ static QByteArray printableToString(const char *str, int l)
         l--;
     }
 
-    QByteArray result(l + 1, 0);
+    QByteArray result(l, 0);
     char *r = result.data();
 
     for(int i = 0; i < l;i++, str++)
@@ -110,16 +110,16 @@ static QByteArray printableToString(const char *str, int l)
             *r++ = *str;
         }
     }
-    result.truncate(r-result.data());
+    result.truncate(r - result.constData());
     return result;
 }
 
 static QByteArray stringToPrintable(const QByteArray& str){
     QByteArray result(str.length()*2, 0); // Maximum 2x as long as source string
     register char *r = result.data();
-    register const char *s = str.data();
+    register const char *s = str.constData();
 
-    if (!s) return QByteArray("");
+    if (!s) return QByteArray();
 
     // Escape leading space
     if (*s == ' ')
@@ -161,7 +161,7 @@ static QByteArray stringToPrintable(const QByteArray& str){
         }
     }
 
-    result.truncate(r - result.data());
+    result.truncate(r - result.constData());
     return result;
 }
 
@@ -192,7 +192,7 @@ static QByteArray decodeGroup(const char*s, int l)
         *r++ = *s++;
         l--;
     }
-    result.truncate(r - result.data());
+    result.truncate(r - result.constData());
     return result;
 }
 
@@ -201,7 +201,7 @@ static QByteArray encodeGroup(const QByteArray &str)
     int l = str.length();
     QByteArray result(l*2+1, 0);
     register char *r = result.data();
-    register const char *s = str.data();
+    register const char *s = str.constData();
     while(l)
     {
         if ((*s == '[') || (*s == ']'))
@@ -209,7 +209,7 @@ static QByteArray encodeGroup(const QByteArray &str)
         *r++ = *s++;
         l--;
     }
-    result.truncate(r - result.data());
+    result.truncate(r - result.constData());
     return result;
 }
 
@@ -423,7 +423,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
         if (sigsetjmp (mmap_jmpbuf, 1))
         {
-            qWarning("SIGBUS while reading %s", rFile.fileName().toLatin1().data());
+            qWarning("SIGBUS while reading %s", rFile.fileName().toLatin1().constData());
             munmap(( char* )map, rFile.size());
             sigaction (SIGBUS, &mmap_old_sigact, 0);
             return;
@@ -435,7 +435,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
     {
         rFile.seek(0);
         data = rFile.readAll();
-        s = data.data();
+        s = data.constData();
         eof = s + data.size();
     }
 
@@ -480,7 +480,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
             if ((e >= eof) || (*e != ']'))
             {
-                fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().toLatin1().data(), line);
+                fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
                 continue;
             }
             // group found; get the group name by taking everything in
@@ -550,7 +550,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 for (;; s++)
                 {
                     if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-                        fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().toLatin1().data(), line);
+                        fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
                         goto sktoeol;
                     }
                     if (*s == ']')
@@ -561,7 +561,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 {
                     // Locale
                     if (locale) {
-                        fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().toLatin1().data(), line);
+                        fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
                         goto sktoeol;
                     }
                     locale = option;
@@ -588,7 +588,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 }
             }
         }
-        fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().toLatin1().data(), line);
+        fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
         continue;
 
     haveeq:
@@ -596,7 +596,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         {
             if (endOfKey < startLine)
             {
-                fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().toLatin1().data(), line);
+                fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
                 goto sktoeol;
             }
             if (!isspace(*endOfKey))
@@ -608,10 +608,10 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
         if (locale) {
             unsigned int cl = static_cast<unsigned int>(elocale - locale);
-            if ((ll != cl) || memcmp(locale, localeString.data(), ll))
+            if ((ll != cl) || memcmp(locale, localeString.constData(), ll))
             {
                 // backward compatibility. C == en_US
-                if ( cl != 1 || ll != 5 || *locale != 'C' || memcmp(localeString.data(), "en_US", 5)) {
+                if ( cl != 1 || ll != 5 || *locale != 'C' || memcmp(localeString.constData(), "en_US", 5)) {
                     //cout<<"mismatched locale '"<<QByteArray(locale, elocale-locale +1)<<"'"<<endl;
                     // We can ignore this one
                     if (!pWriteBackMap)
@@ -626,7 +626,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         // insert the key/value line
         QByteArray key(startLine, endOfKey - startLine + 1);
         QByteArray val = printableToString(st, s - st);
-        //qDebug("found key '%s' with value '%s'", key.data(), val.data());
+        //qDebug("found key '%s' with value '%s'", key.constData(), val.constData());
 
         KEntryKey aEntryKey(aCurrentGroup, key);
         aEntryKey.bLocal = (locale != 0);
