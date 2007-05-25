@@ -261,7 +261,7 @@ static Atom _wm_protocols;
 static Atom kwm_utf8_string;
 static Atom net_wm_cm;
 
-static void create_atoms() {
+static void create_atoms( Display* dpy = QX11Info::display()) {
     if (!atoms_created){
 	const int max = 20;
 	Atom* atoms[max];
@@ -279,12 +279,12 @@ static void create_atoms() {
         names[n++] = "UTF8_STRING";
 
         char net_wm_cm_name[ 100 ];
-        sprintf( net_wm_cm_name, "_NET_WM_CM_S%d", DefaultScreen( QX11Info::display()));
+        sprintf( net_wm_cm_name, "_NET_WM_CM_S%d", DefaultScreen( dpy ));
         atoms[n] = &net_wm_cm;
         names[n++] = net_wm_cm_name;
 
 	// we need a const_cast for the shitty X API
-	XInternAtoms( QX11Info::display(), const_cast<char**>(names), n, false, atoms_return );
+	XInternAtoms( dpy, const_cast<char**>(names), n, false, atoms_return );
 	for (int i = 0; i < n; i++ )
 	    *atoms[i] = atoms_return[i];
 
@@ -733,8 +733,16 @@ void KWindowSystem::lowerWindow( WId win )
 
 bool KWindowSystem::compositingActive()
 {
-    create_atoms();
-    return XGetSelectionOwner( QX11Info::display(), net_wm_cm ) != None;
+    if( QX11Info::display()) {
+        create_atoms();
+        return XGetSelectionOwner( QX11Info::display(), net_wm_cm ) != None;
+    } else { // work even without QApplication instance
+        Display* dpy = XOpenDisplay( NULL );
+        create_atoms( dpy );
+        bool ret = XGetSelectionOwner( dpy, net_wm_cm ) != None;
+        XCloseDisplay( dpy );
+        return ret;
+    }
 }
 
 QRect KWindowSystem::workArea( int desktop )
