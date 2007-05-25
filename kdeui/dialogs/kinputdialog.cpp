@@ -277,11 +277,14 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
     /*connect( d->m_listBox, SIGNAL( returnPressed( QListWidgetItem * ) ),
       SLOT( accept() ) );*/
 
-    QString text = select.first();
+    if(!select.isEmpty())
+    {
+    	QString text = select.first();
     
-    QList<QListWidgetItem*> matches = d->m_listBox->findItems(text,Qt::MatchCaseSensitive|Qt::MatchExactly);
-    if ( !matches.isEmpty() )
-      d->m_listBox->setCurrentItem( matches.first() );
+    	QList<QListWidgetItem*> matches = d->m_listBox->findItems(text,Qt::MatchCaseSensitive|Qt::MatchExactly);
+    	if ( !matches.isEmpty() )
+      		d->m_listBox->setCurrentItem( matches.first() );
+    }
   }
 
   d->m_listBox->setFocus();
