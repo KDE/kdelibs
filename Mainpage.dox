@@ -32,6 +32,12 @@
 	* - <a href="kdeprint/html/index.html"><b>kdeprint</b></a>
         *   (<a href="kdeprint/html/classes.html">classes</a>)\n
 	*   <i>High level printer control functionality.</i>
+	* - <a href="kjsembed/html/index.html"><b>kjsembed</b></a>
+        *   (<a href="kjsembed/html/classes.html">classes</a>)\n
+	*   <i>The KDE kjsembed Library.</i>
+	* - <a href="kross/html/index.html"><b>kross</b></a>
+        *   (<a href="kross/html/classes.html">classes</a>)\n
+	*   <i>Scripting Library.</i>
 	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>
         *   (<a href="interfaces/html/classes.html">classes</a>)\n
 	*   <i>Defines interfaces for common components so that new implementations
