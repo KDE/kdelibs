@@ -100,6 +100,30 @@ void Connection::close()
     m_tasks.clear();
 }
 
+int Connection::fd_from() const
+{
+    return fd_in;
+}
+
+int Connection::fd_to() const
+{
+#ifdef Q_WS_WIN
+    return f_out;
+#else
+    return fileno( f_out );
+#endif
+}
+
+bool Connection::inited() const
+{
+    return (fd_in != -1) && (f_out != 0);
+}
+
+bool Connection::suspended() const
+{
+    return m_suspended;
+}
+
 bool Connection::send(int cmd, const QByteArray& data)
 {
     if (!inited() || !m_tasks.isEmpty()) {

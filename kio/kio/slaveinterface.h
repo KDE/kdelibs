@@ -100,8 +100,8 @@ public:
     SlaveInterface( Connection *connection );
     virtual ~SlaveInterface();
 
-    void setConnection( Connection* connection ) { m_pConnection = connection; }
-    Connection *connection() const { return m_pConnection; }
+    void setConnection( Connection* connection );
+    Connection *connection() const;
 
     // Send our answer to the MSG_RESUME (canResume) request
     // (to tell the "put" job whether to resume or not)

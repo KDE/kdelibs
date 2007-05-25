@@ -385,6 +385,11 @@ KPushButton * KUrlRequester::button() const
     return d->myButton;
 }
 
+KUrlCompletion *KUrlRequester::completionObject() const
+{
+    return myCompletion;
+}
+
 const KEditListBox::CustomEditor &KUrlRequester::customEditor()
 {
     setSizePolicy(QSizePolicy( QSizePolicy::Preferred,

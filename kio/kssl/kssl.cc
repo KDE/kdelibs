@@ -539,6 +539,11 @@ bool KSSL::setSettings(KSSLSettings *settings) {
 	return reconfig();
 }
 
+KSSLSettings * KSSL::settings()
+{
+    return m_cfg;
+}
+
 
 #ifdef KSSL_HAVE_SSL
 bool KSSL::m_bSSLWorks = true;

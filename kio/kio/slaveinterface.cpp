@@ -131,6 +131,16 @@ SlaveInterface::~SlaveInterface()
     delete d;
 }
 
+void SlaveInterface::setConnection( Connection* connection )
+{
+    m_pConnection = connection;
+}
+
+Connection *SlaveInterface::connection() const
+{
+    return m_pConnection;
+}
+
 static KIO::filesize_t readFilesize_t(QDataStream &stream)
 {
     KIO::filesize_t result;

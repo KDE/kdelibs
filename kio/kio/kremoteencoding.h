@@ -93,14 +93,12 @@ public:
   /**
    * Returns the encoding being used.
    */
-  inline const char *encoding() const
-  { return codec->name(); }
+  const char *encoding() const;
 
   /**
    * Returns the MIB for the codec being used.
    */
-  inline int encodingMib() const
-  { return codec->mibEnum(); }
+  int encodingMib() const;
 
   /**
    * Sets the encoding being used.

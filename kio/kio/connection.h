@@ -79,22 +79,18 @@ namespace KIO {
 	 * Returns the input file descriptor.
 	 * @return the input file descriptor
 	 */
-	int fd_from() const { return fd_in; }
+	int fd_from() const;
         /**
 	 * Returns the output file descriptor.
 	 * @return the output file descriptor
 	 */
-#ifdef Q_WS_WIN
-        int fd_to() const { return f_out;  }
-#else
-        int fd_to() const { return fileno( f_out ); }
-#endif
+        int fd_to() const;
         /**
 	 * Checks whether the connection has been initialized.
 	 * @return true if the initialized
 	 * @see init()
 	 */
-	bool inited() const { return (fd_in != -1) && (f_out != 0); }
+	bool inited() const;
 
         /**
 	 * Sends/queues the given command to be sent.
@@ -136,7 +132,7 @@ namespace KIO {
          * Returns status of connection.
 	 * @return true if suspended, false otherwise
          */
-        bool suspended() const { return m_suspended; }
+        bool suspended() const;
 
     protected Q_SLOTS:
         void dequeue();

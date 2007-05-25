@@ -148,7 +148,7 @@ public:
     /**
      * @returns the KUrlCompletion object used in the lineedit/combobox.
      */
-    KUrlCompletion *completionObject() const { return myCompletion; }
+    KUrlCompletion *completionObject() const;
 
     /**
      * @returns an object, suitable for use with KEditListBox. It allows you

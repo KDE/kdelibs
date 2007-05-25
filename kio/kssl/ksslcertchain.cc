@@ -111,6 +111,11 @@ int KSSLCertChain::depth() {
 return 0;
 }
 
+void *KSSLCertChain::rawChain()
+{
+    return _chain;
+}
+
 
 QList<KSSLCertificate *> KSSLCertChain::getChain() const {
     QList<KSSLCertificate *> cl;

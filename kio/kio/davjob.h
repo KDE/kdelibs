@@ -66,7 +66,7 @@ namespace KIO {
 	 * Returns the response as a QDomDocument.
 	 * @return the response document
 	 */
-	QDomDocument& response() { return m_response; }
+	QDomDocument& response();
 
     protected Q_SLOTS:
         virtual void slotFinished();

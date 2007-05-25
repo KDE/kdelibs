@@ -117,7 +117,7 @@ protected:
      * @see preview
      * @see textRecognized
      */
-    int id() const { return m_currentId; }
+    int id() const;
 
     /**
      * Returns the id for the next image. You can use that in your subclass
@@ -130,7 +130,7 @@ protected:
      * @see textRecognized
      *
      */
-    int nextId() { return ++m_currentId; }
+    int nextId();
 
 Q_SIGNALS:
     /**
@@ -203,16 +203,13 @@ protected:
      * Creates a new instance with the given name.
      * @param componentName the name of the instance
      */
-    void setName(const QByteArray &componentName)
-    {
-        m_componentData = KComponentData(componentName);
-    }
+    void setName(const QByteArray &componentName);
 
     /**
      * Returns the instance.
      * @return the KComponentData
      */
-    const KComponentData &componentData() const { return m_componentData; }
+    const KComponentData &componentData() const;
 
 private:
     KComponentData m_componentData;
@@ -262,7 +259,7 @@ protected:
      * @see nextId
      * @see textRecognized
      */
-    int id() const { return m_currentId; }
+    int id() const;
 
     /**
      * Returns the id for the next image. You can use that in your subclass
@@ -272,7 +269,7 @@ protected:
      * @see id
      * @see textRecognized
      */
-    int nextId() { return ++m_currentId; }
+    int nextId();
 
 Q_SIGNALS:
     /**
@@ -329,16 +326,13 @@ protected:
      * Creates a new instance with the given name.
      * @param componentName the name of the instance
      */
-    void setName(const QByteArray &componentName)
-    {
-        m_componentData = KComponentData(componentName);
-    }
+    void setName(const QByteArray &componentName);
 
     /**
      * Returns the instance.
      * @return the KComponentData
      */
-    const KComponentData &componentData() const { return m_componentData; }
+    const KComponentData &componentData() const;
 
 private:
     KComponentData m_componentData;

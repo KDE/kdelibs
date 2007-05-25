@@ -69,6 +69,11 @@ DavJob::DavJob(const KUrl& url, int method, const QString& request)
   }
 }
 
+QDomDocument& DavJob::response()
+{
+    return m_response;
+}
+
 void DavJob::slotData( const QByteArray& data )
 {
   if(m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || error()) {

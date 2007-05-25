@@ -75,6 +75,16 @@ QByteArray KRemoteEncoding::fileName(const KUrl& url) const
   return encode(url.fileName());
 }
 
+const char *KRemoteEncoding::encoding() const
+{
+    return codec->name();
+}
+
+int KRemoteEncoding::encodingMib() const
+{
+    return codec->mibEnum();
+}
+
 void KRemoteEncoding::setEncoding(const char *name)
 {
   // don't delete codecs

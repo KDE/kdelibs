@@ -48,6 +48,16 @@ KScanDialog::~KScanDialog()
 {
 }
 
+int KScanDialog::id() const
+{
+    return m_currentId;
+}
+
+int KScanDialog::nextId()
+{
+    return ++m_currentId;
+}
+
 bool KScanDialog::setup()
 {
     return true;
@@ -81,6 +91,16 @@ KOCRDialog::~KOCRDialog()
 {
 }
 
+int KOCRDialog::id() const
+{
+    return m_currentId;
+}
+
+int KOCRDialog::nextId()
+{
+    return ++m_currentId;
+}
+
 
 ///////////////////////////////////////////////////////////////////
 
@@ -109,6 +129,16 @@ QObject *KScanDialogFactory::createObject( QObject *parent,
     return createDialog( static_cast<QWidget *>( parent ) );
 }
 
+void KScanDialogFactory::setName(const QByteArray &componentName)
+{
+    m_componentData = KComponentData(componentName);
+}
+
+const KComponentData &KScanDialogFactory::componentData() const
+{
+    return m_componentData;
+}
+
 
 ///////////////////////////////////////////////////////////////////
 
@@ -135,6 +165,16 @@ QObject *KOCRDialogFactory::createObject( QObject *parent,
     Q_UNUSED( args );
 
     return createDialog( static_cast<QWidget *>( parent ) );
+}
+
+void KOCRDialogFactory::setName(const QByteArray &componentName)
+{
+    m_componentData = KComponentData(componentName);
+}
+
+const KComponentData &KOCRDialogFactory::componentData() const
+{
+    return m_componentData;
 }
 
 

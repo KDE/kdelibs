@@ -114,7 +114,7 @@ public:
 	 *  Read the raw chain in OpenSSL format
 	 *  @internal
 	 */
-	void *rawChain() { return _chain; }
+	void *rawChain();
 
 private:
 	KSSLCertChainPrivate* const d;

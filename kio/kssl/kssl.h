@@ -157,7 +157,7 @@ public:
 	 *
 	 *  @return the current settings instance
 	 */
-	KSSLSettings * settings() { return m_cfg; }
+	KSSLSettings * settings();
 
 	/**
 	 *  Use this to set the certificate to send to the server.
