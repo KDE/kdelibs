@@ -2,8 +2,10 @@
 Encoding=UTF-8
 Version=1.0
 Name=The DCMI Types
+Name[es]=Los tipos DCMI
 Name[zh_TW]=DCMI 型態
 Comment=The Dublin Core Types namespace provides URIs for the entries of the DCMI Type Vocabulary.
+Comment[es]=El espacio de nombres Dublin Core proporciona URI para las entradas del vocabulario de tipos DCMI.
 Comment[zh_TW]=Dublin 核心型態命名空間提供了 DCMI 型態字彙的項目的 URI
 URL=http://purl.org/dc/dcmitype/
 Path=dctype.rdf

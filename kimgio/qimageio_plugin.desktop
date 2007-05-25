@@ -5,6 +5,7 @@ X-KDE-ServiceType=QImageIOPlugins
 Comment=QImageIOHandler plugin
 Comment[csb]=Plugins QImageIOHandler
 Comment[de]=QImageIOHandler-Modul
+Comment[es]=Complemento QImageIOHandler
 Comment[nl]=QImageIOHandler-plugin
 Comment[pa]=QImageIOHandler ਪਲੱਗਇਨ
 Comment[sv]=Insticksprogram för QImage I/O-hantering
