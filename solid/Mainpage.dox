@@ -16,4 +16,4 @@
  * The code is still hot, hot, hot, hot, hot, hot, hot, hot
  */
 
-// DOXYGEN_EXCLUDE = backends kcm tests
+// DOXYGEN_EXCLUDE = solid/backends solid/ifaces tests
