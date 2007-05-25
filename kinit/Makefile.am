@@ -20,7 +20,7 @@ INCLUDES = -I$(srcdir)/../libltdl/ $(all_includes) $(KDEINIT_XFT_INCLUDES)
 SUBDIRS = . tests
 
 bin_PROGRAMS = kdeinit kdeinit_wrapper kshell kdeinit_shutdown lnusertemp kwrapper kioslave \
-               kstartupconfig kdostartupconfig start_kdeinit
+               kstartupconfig kdostartupconfig start_kdeinit start_kdeinit_wrapper
 
 lib_LTLIBRARIES = 
 kdeinit_LTLIBRARIES = klauncher.la
@@ -70,6 +70,8 @@ start_kdeinit_SOURCES = start_kdeinit.c
 kdeinitpath = $(bindir)/kdeinit
 start_kdeinit_CFLAGS = $(KDE_USE_FPIE) -DEXECUTE=\"$(kdeinitpath)\"
 start_kdeinit_LDFLAGS = $(KDE_USE_PIE)
+
+start_kdeinit_wrapper_SOURCES = start_kdeinit_wrapper.c
 
 METASOURCES = AUTO
 

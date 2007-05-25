@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #ifdef KDEINIT_OOM_PROTECT
@@ -67,6 +68,8 @@ int main(int argc, char **argv)
    const char** new_argv;
    char helper_num[ 1024 ];
    int i;
+   char** orig_environ = NULL;
+   char header[ 7 ];
    if( pipe( pipes ) < 0 ) {
       perror( "pipe()" );
       return 1;
@@ -89,6 +92,31 @@ int main(int argc, char **argv)
             return 1;
          }
          close( pipes[ 0 ] );
+         /* read original environment passed by start_kdeinit_wrapper */
+         if( read( 0, header, 7 ) == 7 && strncmp( header, "environ", 7 ) == 0 ) {
+             int count;
+             if( read( 0, &count, sizeof( int )) == sizeof( int )) {
+                 char** env = malloc(( count + 1 ) * sizeof( char* ));
+                 int ok = 1;
+                 for( i = 0;
+                      i < count && ok;
+                      ++i ) {
+                     int len;
+                     if( read( 0, &len, sizeof( int )) == sizeof( int )) {
+                         env[ i ] = malloc( len + 1 );
+                         if( read( 0, env[ i ], len ) == len ) {
+                             env[ i ][ len ] = '\0';
+                         } else {
+                             ok = 0;
+                         }
+                     }
+                 }
+                 if( ok ) {
+                   env[ i ] = NULL;
+                   orig_environ = env;
+                 }
+             }
+         }
          if(argc == 0)
             return 1;
          new_argc = argc + 2;
@@ -103,7 +131,10 @@ int main(int argc, char **argv)
               i <= argc;
               ++i )
              new_argv[ i + 2 ] = argv[ i ];
-         execv(EXECUTE, (char**)new_argv);
+         if( orig_environ )
+             execve(EXECUTE, (char**)new_argv, orig_environ);
+         else
+             execv(EXECUTE, (char**)new_argv);
          perror(EXECUTE);
          return 1;
       case 0: /* child, keep privileges and do the privileged work */
