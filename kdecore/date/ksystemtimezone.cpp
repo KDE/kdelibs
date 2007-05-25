@@ -213,7 +213,7 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         if (!ktimezoned.isValid())
 	{
 #ifdef __GNUC__
-#warning Load ktimezoned module and call initalize()
+#warning Load ktimezoned module and call initialize()
 #endif
             kError() << "KSystemTimeZones: could not load ktimezoned kded module\n";
 	}
