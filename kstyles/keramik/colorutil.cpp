@@ -24,7 +24,7 @@
 
 namespace Keramik
 {
-	QColor ColorUtil::lighten(QColor in, int factor)
+	QColor ColorUtil::lighten(const QColor& in, int factor)
 	{
 		if (factor > 100)
 		{

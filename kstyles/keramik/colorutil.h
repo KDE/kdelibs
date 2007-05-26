@@ -30,7 +30,7 @@ namespace Keramik
 	class ColorUtil
 	{
 	public:
-		static QColor lighten(QColor in, int factor);
+		static QColor lighten(const QColor &in, int factor);
 	};
 }
 

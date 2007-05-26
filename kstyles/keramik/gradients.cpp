@@ -75,7 +75,7 @@ void GradientPainter::releaseCache()
 	cache.clear();
 }
 
-void GradientPainter::renderGradient( QPainter* p, const QRect& r, QColor c,
+void GradientPainter::renderGradient( QPainter* p, const QRect& r, const QColor& c,
 										bool horizontal, bool menu, int px, int py,
 										int pwidth, int pheight)
 {
