@@ -23,8 +23,7 @@
 #include "soliddefs_p.h"
 
 #include <kglobal.h>
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
+#include <QCoreApplication>
 #include <klocale.h>
 
 K_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
@@ -101,10 +100,8 @@ void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, c
 
 int Solid::PowerManagement::beginSuppressingSleep(const QString &reason)
 {
-    KComponentData componentData = KGlobal::mainComponent();
-
     QDBusReply<uint> reply = globalPowerManager->inhibitIface.Inhibit(
-        componentData.aboutData()->appName(), reason);
+        QCoreApplication::applicationName(), reason);
 
     if (reply.isValid())
         return reply;
