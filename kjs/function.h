@@ -110,16 +110,21 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
 
-    enum RoCheck {
-      CheckReadOnly, DontCheckReadOnly
-    };
-
-    void putLocal(int propertyID, JSValue *value, RoCheck roCheck) {
+    void putLocal(int propertyID, JSValue* value)
+    {
       assert(validLocal(propertyID));
-      if ((roCheck == CheckReadOnly) && (_locals[propertyID].attr & ReadOnly))
-        return;
+      Local& local = _locals[propertyID];
+      if ((local.attr & (Const | ReadOnly)) != ReadOnly) {
+        local.attr &= ~Const;    // Const => ReadOnly
+        local.value = value;
+       }
+    }
+
+    void initLocal(int propertyID, JSValue* value)
+    {
+      assert(validLocal(propertyID));
       _locals[propertyID].value = value;
-        //We do not have to touch the flags here -- they're pre-computed..
+        // We do not have to touch the flags here -- they're pre-computed..
     }
 
     JSValue** getLocalDirect(int propertyID) {

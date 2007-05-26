@@ -32,7 +32,7 @@
 #include <typeinfo>
 #endif
 
-#include <iostream>
+//#include <iostream>
 
 #include "context.h"
 #include "debugger.h"
@@ -455,7 +455,7 @@ JSValue* StaticResolver<Handler>::evaluate(ExecState* exec) {
   handler.handleResolveSuccess(res, this, exec, scope, slot, ident);
 
   if (res.writeValue)
-    scope->putLocal(index, res.writeValue, ActivationImp::CheckReadOnly);
+    scope->putLocal(index, res.writeValue);
 
   return res.evalValue;
 }
@@ -1946,7 +1946,7 @@ void VarDeclNode::processVarDecl(ExecState *exec)
   // First, determine which flags we want to use..
   int flags = DontDelete; 
   if (varType == VarDeclNode::Constant)
-    flags |= ReadOnly;
+    flags |= Const | ReadOnly;
 
   // Are we inside a function? If so, we fill in the symbol table
   switch (exec->context()->codeType()) {
@@ -1954,7 +1954,7 @@ void VarDeclNode::processVarDecl(ExecState *exec)
       // Inside a function, we're just computing static information.
       // so, just fill in the symbol table.
       exec->context()->currentBody()->addVarDecl(ident, flags, exec);
-      return;
+      break;
     case EvalCode:
       // eval-injected variables can be deleted..
       flags &= ~DontDelete;
@@ -1973,7 +1973,8 @@ void VarDeclNode::processVarDecl(ExecState *exec)
       // ### I am not sue this is needed for GlobalCode
       if (!variable->hasProperty(exec, ident))
         variable->put(exec, ident, jsUndefined(), flags);
-  };
+      break;
+  }
 }
 
 void VarDeclNode::recurseVisit(NodeVisitor *visitor)

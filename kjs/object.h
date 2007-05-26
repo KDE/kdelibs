@@ -44,6 +44,7 @@ namespace KJS {
   // ECMA 262-3 8.6.1
   // Property attributes
   enum Attribute { None         = 0,
+                   Const        = 1 << 0, // unitialized const 'variable'
                    ReadOnly     = 1 << 1, // property can be only read, not written
                    DontEnum     = 1 << 2, // property doesn't appear in (for .. in ..)
                    DontDelete   = 1 << 3, // property can't be deleted

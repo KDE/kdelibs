@@ -227,7 +227,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
     fprintf(stderr, "setting parameter %s", body->paramName(paramPos));
     printInfo(exec,"to", v);
 #endif
-    variable->putLocal(writeTo, v, ActivationImp::DontCheckReadOnly);
+    variable->initLocal(writeTo, v);
   }
 }
 
@@ -607,7 +607,7 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
   // See if we're setting a local..
   int id = _function->body->lookupSymbolID(propertyName);
   if (validLocal(id)) {
-    putLocal(id, value, CheckReadOnly);
+    putLocal(id, value);
     return;
   }
 
