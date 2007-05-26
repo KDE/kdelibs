@@ -43,6 +43,7 @@ class KTranscript
      *
      * @param argv vector of interpolation tokens
      * @param lang language of the translation
+     * @param lscr script of the translation
      * @param msgctxt message context
      * @param msgid original message
      * @param subs substitutions for message placeholders
@@ -57,6 +58,7 @@ class KTranscript
      */
     virtual const QString eval (const QStringList &argv,
                                 const QString &lang,
+                                const QString &lscr,
                                 const QString &msgctxt,
                                 const QString &msgid,
                                 const QStringList &subs,

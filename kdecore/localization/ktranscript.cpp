@@ -55,6 +55,7 @@ class KTranscriptImp : public KTranscript
 
     const QString eval (const QStringList &argv,
                         const QString &lang,
+                        const QString &lscr,
                         const QString &msgctxt,
                         const QString &msgid,
                         const QStringList &subs,
@@ -93,6 +94,7 @@ class Scriptface : public JSObject
     JSValue *msgkeyf (ExecState *exec);
     JSValue *msgstrff (ExecState *exec);
     JSValue *dbgputsf (ExecState *exec, JSValue *str);
+    JSValue *lscrf (ExecState *exec);
 
     enum {
         Load,
@@ -104,7 +106,8 @@ class Scriptface : public JSObject
         Msgid,
         Msgkey,
         Msgstrf,
-        Dbgputs
+        Dbgputs,
+        Lscr
     };
 
     // Virtual implementations.
@@ -121,6 +124,7 @@ class Scriptface : public JSObject
     const QString *msgid;
     const QStringList *subs;
     const QString *final;
+    const QString *lscr;
 
     // Fallback request handle.
     bool *fallback;
@@ -226,6 +230,7 @@ KTranscriptImp::~KTranscriptImp ()
 
 const QString KTranscriptImp::eval (const QStringList &argv,
                                     const QString &lang,
+                                    const QString &lscr,
                                     const QString &msgctxt,
                                     const QString &msgid,
                                     const QStringList &subs,
@@ -281,6 +286,7 @@ const QString KTranscriptImp::eval (const QStringList &argv,
     sface->subs = &subs;
     sface->final = &final;
     sface->fallback = &fallback;
+    sface->lscr = &lscr;
 
     // Find corresponding JS function.
     int argc = argv.size();
@@ -433,6 +439,7 @@ void KTranscriptImp::setupInterpreter (const QString &lang)
     msgkey      Scriptface::Msgkey      DontDelete|ReadOnly|Function 0
     msgstrf     Scriptface::Msgstrf     DontDelete|ReadOnly|Function 0
     dbgputs     Scriptface::Dbgputs     DontDelete|ReadOnly|Function 1
+    lscr        Scriptface::Lscr        DontDelete|ReadOnly|Function 0
 @end
 */
 /* Source for ScriptfaceTable.
@@ -508,6 +515,8 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
             return obj->msgstrff(exec);
         case Scriptface::Dbgputs:
             return obj->dbgputsf(exec, CALLARG(0));
+        case Scriptface::Lscr:
+            return obj->lscrf(exec);
         default:
             return Undefined();
     }
@@ -664,4 +673,10 @@ JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)
     dbgout("(JS) " + qstr);
 
     return Undefined();
+}
+
+JSValue *Scriptface::lscrf (ExecState *exec)
+{
+    Q_UNUSED(exec);
+    return String(*lscr);
 }

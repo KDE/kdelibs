@@ -26,12 +26,13 @@
 #include <kstandarddirs.h>
 #include <ktranscript.h>
 #include <kdebug.h>
+#include <ktranslit.h>
 
 
 #include <QStringList>
 #include <QByteArray>
 #include <QChar>
-#include <QMap>
+#include <QHash>
 #include <QList>
 #include <QVector>
 
@@ -63,12 +64,17 @@ class KLocalizedStringPrivate
 
     QString toString (const KLocale *locale) const;
     QString substituteSimple (const QString &trans,
+                              const QString &lang,
+                              const QString &lscr,
                               const QChar &plchar = '%',
                               bool partial = false) const;
     QString substituteTranscript (const QString &trans,
                                   const QString &lang,
+                                  const QString &lscr,
                                   const QString &final) const;
     int parseInterpolation (const QString &trans, int pos,
+                            const QString &lang,
+                            const QString &lscr,
                             QStringList &args) const;
 
     static void notifyCatalogsUpdated (const QStringList &languages,
@@ -87,11 +93,13 @@ class KLocalizedStringPrivateStatics
     const QChar scriptPlchar;
 
     const QString scriptDir;
-    QMap<QString, QStringList> scriptModules;
+    QHash<QString, QStringList> scriptModules;
     QList<QStringList> scriptModulesToLoad;
 
     bool loadTranscriptCalled;
     KTranscript *ktrs;
+
+    QHash<QString, KTranslit*> translits;
 
     KLocalizedStringPrivateStatics () :
         theFence("|/|"),
@@ -104,7 +112,9 @@ class KLocalizedStringPrivateStatics
         scriptModulesToLoad(),
 
         loadTranscriptCalled(false),
-        ktrs(NULL)
+        ktrs(NULL),
+
+        translits()
     {}
 };
 K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
@@ -212,6 +222,9 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
             rawtrans = QString::fromUtf8(msg);
     }
 
+    // Find possible higher priority writing script for the current language.
+    QString lscr = KTranslit::higherPriorityScript(lang, locale);
+
     // Set ordinary translation and possibly scripted translation.
     QString trans, strans;
     int cdpos = rawtrans.indexOf(s->theFence);
@@ -240,7 +253,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
         trans = rawtrans;
 
     // Substitute placeholders in ordinary translations.
-    QString final = substituteSimple(trans);
+    QString final = substituteSimple(trans, lang, lscr);
 
     if (strans.isEmpty())
         // No script, ordinary translation is final.
@@ -248,7 +261,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
     else
     {
         // Evaluate scripted translation.
-        QString sfinal = substituteTranscript(strans, lang, final);
+        QString sfinal = substituteTranscript(strans, lang, lscr, final);
 
         if (!sfinal.isEmpty()) // scripted translation evaluated successfully
             return sfinal;
@@ -258,12 +271,16 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale) const
 }
 
 QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
+                                                   const QString &lang,
+                                                   const QString &lscr,
                                                    const QChar &plchar,
                                                    bool partial) const
 {
     #ifdef NDEBUG
     Q_UNUSED(partial);
     #endif
+
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
 
     QStringList tsegs; // text segments per placeholder occurrence
     QList<int> plords; // ordinal numbers per placeholder occurrence
@@ -352,6 +369,10 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
     }
     final.append(tsegs.last());
 
+    // Possibly do transliteration.
+    if (s->translits[lang] != NULL)
+        final = s->translits[lang]->transliterate(final, lscr);
+
     #ifndef NDEBUG
     if (!partial)
     {
@@ -385,6 +406,7 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
 
 QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &lang,
+                                                       const QString &lscr,
                                                        const QString &final) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
@@ -401,13 +423,13 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
     {
         // Resolve substitutions in preceding text.
         QString ptext = substituteSimple(strans.mid(ppos, tpos - ppos),
-                                         s->scriptPlchar, true);
+                                         lang, lscr, s->scriptPlchar, true);
         sfinal.append(ptext);
 
         // Parse interpolation.
         QStringList argv;
         int mpos = tpos;
-        tpos = parseInterpolation(strans, tpos, argv);
+        tpos = parseInterpolation(strans, tpos, lang, lscr, argv);
         if (tpos < 0)
             // Problem while parsing the interpolation
             // (debug info already reported while parsing).
@@ -418,8 +440,8 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         QString msgid = QString::fromUtf8(msg);
         QString scriptError;
         bool fallback;
-        QString interp = s->ktrs->eval(argv, lang, msgctxt, msgid, args, final,
-                                       s->scriptModulesToLoad,
+        QString interp = s->ktrs->eval(argv, lang, lscr, msgctxt, msgid, args,
+                                       final, s->scriptModulesToLoad,
                                        scriptError, fallback);
         // Transcript has loaded new modules, clear list for next invocation.
         s->scriptModulesToLoad.clear();
@@ -430,7 +452,13 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
             if (fallback) // script requested fallback to ordinary translation
                 return QString();
             else
+            {
+                // Possibly do language script conversion.
+                if (s->translits[lang] != NULL)
+                    interp = s->translits[lang]->transliterate(interp, lscr);
+
                 sfinal.append(interp);
+            }
         }
         else
         {
@@ -446,13 +474,15 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         tpos = strans.indexOf(s->startInterp, tpos);
     }
     // Last text segment.
-    sfinal.append(substituteSimple(strans.mid(ppos), s->scriptPlchar,
-                                   true));
+    sfinal.append(substituteSimple(strans.mid(ppos), lang, lscr,
+                                   s->scriptPlchar, true));
 
     return sfinal;
 }
 
 int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
+                                                 const QString &lang,
+                                                 const QString &lscr,
                                                  QStringList &argv) const
 {
     // pos is the position of opening character sequence.
@@ -487,6 +517,7 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
         // May contain placeholders, substitute them.
         // Mind backslash escapes.
         QString token;
+        QString clang;
         bool quoted = (strans[tpos] == '\'' ? true : false);
         if (quoted)
         // Quoted token.
@@ -538,7 +569,14 @@ int KLocalizedStringPrivate::parseInterpolation (const QString &strans, int pos,
 
         // Add token to arguments, possibly substituting placeholders.
         if (!token.isEmpty() || quoted) // don't add empty unquoted tokens
-            argv.append(substituteSimple(token, s->scriptPlchar, true));
+        {
+            argv.append(substituteSimple(token, clang, lscr, s->scriptPlchar,
+                                         true));
+            // Set to real language after first token: first token
+            // (interpolation call name) should not be considered for
+            // transliteration in subsituteSimple.
+            clang = lang;
+        }
     }
     tpos += elen; // skip to first character after closing sequence
 
@@ -752,5 +790,12 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
                 mod.append(lang);
                 s->scriptModulesToLoad.append(mod);
             }
+        }
+
+    // Create writing script transliterator objects for each new language.
+    foreach (const QString &lang, languages)
+        if (!s->translits.contains(lang))
+        {
+            s->translits[lang] = KTranslit::create(lang);
         }
 }

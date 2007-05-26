@@ -182,6 +182,7 @@ set(kdecore_LIB_SRCS
    localization/guess_ja.cpp
    localization/klocale.cpp
    localization/klocalizedstring.cpp
+   localization/ktranslit.cpp
    sycoca/ksycoca.cpp
    sycoca/ksycocadict.cpp
    sycoca/ksycocaentry.cpp

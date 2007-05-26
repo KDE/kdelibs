@@ -42,6 +42,7 @@
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "klocalizedstring.h"
+#include "ktranslit.h"
 #include "kconfiggroup.h"
 
 #ifdef Q_WS_WIN
@@ -294,6 +295,7 @@ void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
       // HPB: Only run splitLocale on the environment variables..
       QStringList langs;
 
+      langs << QFile::decodeName( ::getenv("LANGUAGE") );
       langs << QFile::decodeName( ::getenv("LC_ALL") );
       langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
       langs << QFile::decodeName( ::getenv("LANG") );
@@ -305,16 +307,22 @@ void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
 
 	  if (!aCountry.isEmpty()) {
 	    list += ln + '_' + aCountry;
-	    if (!chrset.isEmpty())
-	      list += ln + '_' + aCountry + '.' + chrset;
+	    // Forget about charset part, it's all UTF-8 now.
 	  }
 	  list += ln;
 	  list += lang;
 	}
     }
 
+  // Add possible transliteration fallbacks.
+  QStringList nlist;
+  foreach (const QString &ln, list) {
+    nlist += ln;
+    nlist += KTranslit::fallbackList(ln);
+  }
+
   // now we have a language list -- let's use the first OK language
-  setLanguage( list );
+  setLanguage( nlist );
 }
 
 void KLocalePrivate::doFormatInit(const KLocale *parent)
@@ -513,7 +521,17 @@ bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
   if (maincatalog) {
     appName = QString::fromLatin1(maincatalog);
   }
-  return ! KCatalog::catalogLocaleDir( appName, lang ).isEmpty();
+
+  // Check for this language and possible transliteration fallbacks.
+  QStringList possibles;
+  possibles += lang;
+  possibles += KTranslit::fallbackList(lang);
+  foreach (const QString &lang, possibles) {
+    if ( ! KCatalog::catalogLocaleDir( appName, lang ).isEmpty() ) {
+        return true;
+    }
+  }
+  return false;
 }
 
 void KLocale::splitLocale(const QString & aStr,
