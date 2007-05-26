@@ -30,8 +30,6 @@ void PredicateParse_mainParse(const char *_code);
 
 #include <QtCore/QStringList>
 
-#include <kdebug.h>
-
 static Solid::Predicate *s_result = 0;
 
 Solid::Predicate Solid::Predicate::fromString(const QString &predicate)

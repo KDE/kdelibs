@@ -23,7 +23,6 @@
 #include "soliddefs_p.h"
 #include <solid/ifaces/audiointerface.h>
 #include <QtCore/QStringList>
-#include <kdebug.h>
 
 Solid::AudioInterface::AudioInterface(QObject *backendObject)
     : DeviceInterface(*new AudioInterfacePrivate(), backendObject)
