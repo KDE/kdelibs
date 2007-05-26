@@ -6,6 +6,8 @@
     email                : kde-kafka@master.kde.org
  ***************************************************************************/
 
+//krazy:excludeall=license (only used in test executable)
+
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
