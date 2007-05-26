@@ -2231,11 +2231,11 @@ void KateViewInternal::updateBracketMarks()
       // @@ Do this only when cursor near start/end.
       if( bmStart > bmEnd )
       {
-        tagLines(bmEnd, bmStart, true);
+        tagLines(bmEnd, bmStart);
       }
       else
       {
-        tagLines(bmStart, bmEnd, true);
+        tagLines(bmStart, bmEnd);
       }
     }
     else
@@ -2258,11 +2258,11 @@ void KateViewInternal::updateBracketMarks()
       // @@ Do this only when cursor near start/end.
       if( bmStart > bmEnd )
       {
-        tagLines(bmEnd, bmStart, true);
+        tagLines(bmEnd, bmStart);
       }
       else
       {
-        tagLines(bmStart, bmEnd, true);
+        tagLines(bmStart, bmEnd);
       }
     }
     else

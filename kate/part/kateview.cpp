@@ -1521,32 +1521,32 @@ void KateView::tagSelection(const KateTextCursor &oldSelectStart, const KateText
       // We have to tag the whole lot if
       // 1) we have a selection, and:
       //  a) it's new; or
-      tagLines(selectStart, selectEnd);
+      tagLines(selectStart, selectEnd, true);
 
     } else if (blockSelectionMode() && (oldSelectStart.col() != selectStart.col() || oldSelectEnd.col() != selectEnd.col())) {
       //  b) we're in block selection mode and the columns have changed
-      tagLines(selectStart, selectEnd);
-      tagLines(oldSelectStart, oldSelectEnd);
+      tagLines(selectStart, selectEnd, true);
+      tagLines(oldSelectStart, oldSelectEnd, true);
 
     } else {
       if (oldSelectStart != selectStart) {
         if (oldSelectStart < selectStart)
-          tagLines(oldSelectStart, selectStart);
+          tagLines(oldSelectStart, selectStart, true);
         else
-          tagLines(selectStart, oldSelectStart);
+          tagLines(selectStart, oldSelectStart, true);
       }
 
       if (oldSelectEnd != selectEnd) {
         if (oldSelectEnd < selectEnd)
-          tagLines(oldSelectEnd, selectEnd);
+          tagLines(oldSelectEnd, selectEnd, true);
         else
-          tagLines(selectEnd, oldSelectEnd);
+          tagLines(selectEnd, oldSelectEnd, true);
       }
     }
 
   } else {
     // No more selection, clean up
-    tagLines(oldSelectStart, oldSelectEnd);
+    tagLines(oldSelectStart, oldSelectEnd, true);
   }
 }
 
