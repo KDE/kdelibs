@@ -60,6 +60,26 @@ OpenURLEvent::~OpenURLEvent()
 //  delete d;
 }
 
+ReadOnlyPart *OpenURLEvent::part() const
+{
+    return m_part;
+}
+
+KUrl OpenURLEvent::url() const
+{
+    return m_url;
+}
+
+URLArgs OpenURLEvent::args() const
+{
+    return m_args;
+}
+
+bool OpenURLEvent::test( const QEvent *event )
+{
+    return Event::test( event, s_strOpenURLEvent );
+}
+
 namespace KParts
 {
 

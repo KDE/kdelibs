@@ -229,11 +229,11 @@ public:
   OpenURLEvent( ReadOnlyPart *part, const KUrl &url, const URLArgs &args = URLArgs() );
   virtual ~OpenURLEvent();
 
-  ReadOnlyPart *part() const { return m_part; }
-  KUrl url() const { return m_url; }
-  URLArgs args() const { return m_args; }
+  ReadOnlyPart *part() const;
+  KUrl url() const;
+  URLArgs args() const;
 
-  static bool test( const QEvent *event ) { return Event::test( event, s_strOpenURLEvent ); }
+  static bool test( const QEvent *event );
 
 private:
   static const char *s_strOpenURLEvent;
