@@ -46,8 +46,7 @@
 /**
  * @brief Represents the history element of an URL.
  *
- * A history element contains the URL, the name of the current file
- * (the 'current file' is the file where the cursor is located) and
+ * A history element contains the URL and
  * the x- and y-position of the content.
  */
 class HistoryElem
@@ -57,50 +56,22 @@ public:
     HistoryElem(const KUrl& url);
     ~HistoryElem(); // non virtual
 
-    const KUrl& url() const
-    {
-        return m_url;
-    }
+    const KUrl& url() const;
 
-    void setCurrentFileName(const QString& name)
-    {
-        m_currentFileName = name;
-    }
+    void setContentsX(int x);
+    int contentsX() const;
 
-    const QString& currentFileName() const
-    {
-        return m_currentFileName;
-    }
-
-    void setContentsX(int x)
-    {
-        m_contentsX = x;
-    }
-
-    int contentsX() const
-    {
-        return m_contentsX;
-    }
-
-    void setContentsY(int y)
-    {
-        m_contentsY = y;
-    }
-    int contentsY() const
-    {
-        return m_contentsY;
-    }
+    void setContentsY(int y);
+    int contentsY() const;
 
 private:
     KUrl m_url;
-    QString m_currentFileName;
     int m_contentsX;
     int m_contentsY;
 };
 
 HistoryElem::HistoryElem() :
     m_url(),
-    m_currentFileName(),
     m_contentsX(0),
     m_contentsY(0)
 {
@@ -108,7 +79,6 @@ HistoryElem::HistoryElem() :
 
 HistoryElem::HistoryElem(const KUrl& url) :
     m_url(url),
-    m_currentFileName(),
     m_contentsX(0),
     m_contentsY(0)
 {
@@ -116,6 +86,31 @@ HistoryElem::HistoryElem(const KUrl& url) :
 
 HistoryElem::~HistoryElem()
 {
+}
+
+inline const KUrl& HistoryElem::url() const
+{
+    return m_url;
+}
+
+inline void HistoryElem::setContentsX(int x)
+{
+    m_contentsX = x;
+}
+
+inline int HistoryElem::contentsX() const
+{
+    return m_contentsX;
+}
+
+inline void HistoryElem::setContentsY(int y)
+{
+    m_contentsY = y;
+}
+
+inline int HistoryElem::contentsY() const
+{
+    return m_contentsY;
 }
 
 class KUrlNavigator::Private
@@ -145,11 +140,6 @@ public:
     /** Emits the signal urlsDropped(). */
     void dropUrls(const KUrl::List& urls, const KUrl& destination);
 
-    /**
-     * Updates the history element with the current file item
-     * and the contents position.
-     */
-    void updateHistoryElem();
     void updateContent();
 
     /**
@@ -174,6 +164,15 @@ public:
      * empty after this operation.
      */
     void deleteButtons();
+
+    /**
+     * Retrieves the place path for the path \a path.
+     * E. g. for the path "fish://root@192.168.0.2/var/lib" the string
+     * "fish://root@192.168.0.2/" will be returned, which leads to the
+     * navigation indication 'Custom Path > var > lib". For e. g.
+     * "settings:///System/" the path "settings:///" will be returned.
+     */
+    QString retrievePlacePath(const QString& path) const;
 
     bool m_editable;
     bool m_active;
@@ -413,21 +412,10 @@ void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
     emit q->urlsDropped(urls, destination);
 }
 
-void KUrlNavigator::Private::updateHistoryElem()
-{
-    Q_ASSERT(m_historyIndex >= 0);
-    const KFileItem* item = 0; // TODO: m_dolphinView->currentFileItem();
-    if (item != 0) {
-        HistoryElem& hist = m_history[m_historyIndex];
-        hist.setCurrentFileName(item->name());
-    }
-}
-
 void KUrlNavigator::Private::updateContent()
 {
     m_placesSelector->updateSelection(q->url());
 
-    QString path(q->url().pathOrUrl());
     if (m_editable) {
         delete m_protocols; m_protocols = 0;
         delete m_protocolSeparator; m_protocolSeparator = 0;
@@ -440,26 +428,16 @@ void KUrlNavigator::Private::updateContent()
         m_pathBox->show();
         m_pathBox->setUrl(q->url());
     } else {
+        const QString path = q->url().pathOrUrl();
+
         q->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         m_pathBox->hide();
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         // get the data from the currently selected place
-        KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
+        const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
 
-        QString placePath;
-        if (!placeUrl.isValid()) {
-            // No place is a part of the current URL.
-            // The following code tries to guess the place
-            // path. E. g. "fish://root@192.168.0.2/var/lib" writes
-            // "fish://root@192.168.0.2" to 'placePath', which leads to the
-            // navigation indication 'Custom Path > var > lib".
-            int idx = path.indexOf(QString("//"));
-            idx = path.indexOf("/", (idx < 0) ? 0 : idx + 2);
-            placePath = (idx < 0) ? path : path.left(idx);
-        } else {
-            placePath = placeUrl.pathOrUrl();
-        }
+        const QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath(path);
         const uint len = placePath.length();
 
         // calculate the start point for the URL navigator buttons by counting
@@ -550,6 +528,7 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
                 // the first URL navigator button should get the name of the
                 // place instead of the directory name
                 const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
+
                 text = m_placesSelector->selectedPlaceText();
                 if (text.isEmpty()) {
                     if (currentUrl.isLocalFile()) {
@@ -603,6 +582,11 @@ void KUrlNavigator::Private::updateButtonVisibility()
         return;
     }
 
+    const int buttonsCount = m_navButtons.count();
+    if (buttonsCount == 0) {
+        return;
+    }
+
     int hiddenButtonsCount = 0;
 
     int availableWidth = q->width() - m_placesSelector->width() - 20;
@@ -630,7 +614,6 @@ void KUrlNavigator::Private::updateButtonVisibility()
         }
     }
 
-    const int buttonsCount = m_navButtons.count();
     Q_ASSERT(hiddenButtonsCount <= buttonsCount);
     if (hiddenButtonsCount == buttonsCount) {
         // assure that at least one button is visible
@@ -660,6 +643,18 @@ void KUrlNavigator::Private::deleteButtons()
         ++it;
     }
     m_navButtons.erase(itBegin, itEnd);
+}
+
+QString KUrlNavigator::Private::retrievePlacePath(const QString& path) const
+{
+    int idx = path.indexOf(QString("///"));
+    if (idx >= 0) {
+        idx += 3;
+    } else {
+        idx = path.indexOf(QString("//"));
+        idx = path.indexOf("/", (idx < 0) ? 0 : idx + 2);
+    }
+    return (idx < 0) ? path : path.left(idx);
 }
 
 ////
@@ -720,8 +715,6 @@ KUrl KUrlNavigator::url(int index) const
 
 bool KUrlNavigator::goBack()
 {
-    d->updateHistoryElem();
-
     const int count = d->m_history.count();
     if (d->m_historyIndex < count - 1) {
         ++d->m_historyIndex;
@@ -835,7 +828,6 @@ void KUrlNavigator::setUrl(const KUrl& url)
         return;
     }
 
-    d->updateHistoryElem();
     d->m_history.insert(d->m_historyIndex, HistoryElem(transformedUrl));
 
     d->updateContent();
