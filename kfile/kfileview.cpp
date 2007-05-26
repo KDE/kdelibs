@@ -314,6 +314,14 @@ const KFileItemList * KFileView::items() const
     return &m_itemList;
 }
 
+void KFileView::setOnlyDoubleClickSelectsFiles( bool enable ) {
+    myOnlyDoubleClickSelectsFiles = enable;
+}
+
+bool KFileView::onlyDoubleClickSelectsFiles() const {
+    return myOnlyDoubleClickSelectsFiles;
+}
+
 
 const KFileItemList * KFileView::selectedItems() const
 {
@@ -360,9 +368,24 @@ KFile::SelectionMode KFileView::selectionMode() const
     return selection_mode;
 }
 
-void KFileView::setViewMode( ViewMode vm )
+void KFileView::setViewMode( KFileView::ViewMode vm )
 {
     view_mode = vm;
+}
+
+KFileView::ViewMode KFileView::viewMode() const
+{
+    return view_mode;
+}
+
+QString KFileView::viewName() const
+{
+    return m_viewName;
+}
+
+void KFileView::setViewName( const QString& name )
+{
+    m_viewName = name;
 }
 
 void KFileView::removeItem( const KFileItem *item )
@@ -391,6 +414,11 @@ KActionCollection * KFileView::actionCollection() const
         d->actions->setObjectName( "KFileView::d->actions" );
     }
     return d->actions;
+}
+
+KFileViewSignaler * KFileView::signaler() const
+{
+    return sig;
 }
 
 void KFileView::readConfig( KConfigGroup *)

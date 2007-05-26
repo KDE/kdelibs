@@ -67,7 +67,7 @@ public:
    /**
     * @returns the root url of the branch.
     */
-   KUrl 	rootUrl() const { return( m_startURL ); }
+   KUrl rootUrl() const;
 
    /**
     * sets a K3FileTreeViewItem as root widget for the branch.
@@ -75,29 +75,29 @@ public:
     * the branch is allocating will become children of that object.
     * @param r the K3FileTreeViewItem to become the root item.
     */
-   virtual void 	setRoot( K3FileTreeViewItem *r ){ m_root = r; }
+   virtual void setRoot( K3FileTreeViewItem *r );
 
    /**
     * @returns the root item.
     */
-   K3FileTreeViewItem *root( ) { return( m_root );}
+   K3FileTreeViewItem *root( );
 
    /**
     * @returns the name of the branch.
     */
-   QString      name() const { return( m_name ); }
+   QString name() const;
 
    /**
     * sets the name of the branch.
     */
-   virtual void         setName( const QString n ) { m_name = n; }
+   virtual void setName( const QString n );
 
    /*
     * returns the current root item pixmap set in the constructor. The root
     * item pixmap defaults to the icon for directories.
     * @see openPixmap()
     */
-   QPixmap pixmap() const { return m_rootIcon; }
+   QPixmap pixmap() const;
 
    /*
     * returns the current root item pixmap set by setOpenPixmap()
@@ -107,7 +107,7 @@ public:
     * Note that it depends on K3FileTreeView::showFolderOpenPximap weather
     * open pixmap are displayed or not.
     */
-   QPixmap openPixmap() const { return m_openRootIcon; }
+   QPixmap openPixmap() const;
 
    /**
     * @returns whether the items in the branch show their file extensions in the
@@ -118,8 +118,7 @@ public:
    /**
     * sets the root of the branch open or closed.
     */
-   void setOpen( bool setopen = true )
-      { if( root() ) root()->setOpen( setopen ); }
+   void setOpen( bool setopen = true );
 
    /**
     * sets if children recursion is wanted or not. If this is switched off, the
@@ -135,8 +134,7 @@ public:
     * @returns if child recursion is on or off.
     * @see setChildRecurse
     */
-   bool childRecurse()
-      { return m_recurseChildren; }
+   bool childRecurse();
 
 public Q_SLOTS:
    /**

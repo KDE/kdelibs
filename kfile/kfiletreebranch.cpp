@@ -92,6 +92,48 @@ KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,
     m_openChildrenURLs.append( url );
 }
 
+KUrl KFileTreeBranch::rootUrl() const
+{
+    return( m_startURL );
+}
+
+void KFileTreeBranch::setRoot( K3FileTreeViewItem *r )
+{
+    m_root = r;
+}
+
+K3FileTreeViewItem *KFileTreeBranch::root( )
+{
+    return( m_root );
+}
+
+QString KFileTreeBranch::name() const
+{
+    return( m_name );
+}
+
+void KFileTreeBranch::setName( const QString n )
+{
+    m_name = n;
+}
+
+QPixmap KFileTreeBranch::pixmap() const
+{
+    return m_rootIcon;
+}
+
+QPixmap KFileTreeBranch::openPixmap() const
+{
+    return m_openRootIcon;
+}
+
+void KFileTreeBranch::setOpen( bool setopen )
+{
+    if ( root() ) {
+        root()->setOpen( setopen );
+    }
+}
+
 void KFileTreeBranch::setOpenPixmap( const QPixmap& pix )
 {
     m_openRootIcon = pix;
@@ -257,6 +299,11 @@ void KFileTreeBranch::setChildRecurse( bool t )
     m_recurseChildren = t;
     if( t == false )
         m_openChildrenURLs.clear();
+}
+
+bool KFileTreeBranch::childRecurse()
+{
+    return m_recurseChildren;
 }
 
 

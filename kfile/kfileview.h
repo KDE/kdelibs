@@ -225,20 +225,20 @@ public:
 	All = Files | Directories
     };
     virtual void setViewMode( ViewMode vm );
-    virtual ViewMode viewMode() const { return view_mode; }
+    virtual ViewMode viewMode() const;
 
     /**
      * @returns the localized name of the view, which could be displayed
      * somewhere, e.g. in a menu, where the user can choose between views.
      * @see setViewName
      */
-    QString viewName() const { return m_viewName; }
+    QString viewName() const;
 
     /**
      * Sets the name of the view, which could be displayed somewhere.
      * E.g. "Image Preview".
      */
-    void setViewName( const QString& name ) { m_viewName = name; }
+    void setViewName( const QString& name );
 
     virtual void setParentView(KFileView *parent);
 
@@ -319,18 +319,14 @@ public:
      * Every view has to decide when to call select( item ) when a file was
      * single-clicked, based on onlyDoubleClickSelectsFiles().
      */
-    void setOnlyDoubleClickSelectsFiles( bool enable ) {
-	myOnlyDoubleClickSelectsFiles = enable;
-    }
+    void setOnlyDoubleClickSelectsFiles( bool enable );
 
     /**
      * @returns whether files (not directories) should only be select()ed by
      * double-clicks.
      * @see setOnlyDoubleClickSelectsFiles
      */
-    bool onlyDoubleClickSelectsFiles() const {
-	return myOnlyDoubleClickSelectsFiles;
-    }
+    bool onlyDoubleClickSelectsFiles() const;
 
     /**
      * increases the number of dirs and files.
@@ -345,7 +341,7 @@ public:
      */
     virtual KActionCollection * actionCollection() const;
 
-    KFileViewSignaler * signaler() const { return sig; }
+    KFileViewSignaler * signaler() const;
 
     virtual void readConfig( KConfigGroup *);
     virtual void writeConfig( KConfigGroup *);

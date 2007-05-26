@@ -179,6 +179,21 @@ void KDirOperator::setSorting( QDir::SortFlags spec )
     updateSortActions();
 }
 
+QDir::SortFlags KDirOperator::sorting() const
+{
+    return mySorting;
+}
+
+bool KDirOperator::isRoot() const
+{
+    return url().path() == QString(QLatin1Char('/'));
+}
+
+KDirLister *KDirOperator::dirLister() const
+{
+    return dir;
+}
+
 void KDirOperator::resetCursor()
 {
    QApplication::restoreOverrideCursor();
@@ -310,6 +325,16 @@ void KDirOperator::setPreviewWidget(const QWidget *w)
     setView( static_cast<KFile::FileView>(m_viewKind) );
 }
 
+const KFileItemList * KDirOperator::selectedItems() const
+{
+    return ( m_fileView ? m_fileView->selectedItems() : 0L );
+}
+
+bool KDirOperator::isSelected( const KFileItem *item ) const
+{
+    return ( m_fileView ? m_fileView->isSelected( item ) : false );
+}
+
 int KDirOperator::numDirs() const
 {
     return m_fileView ? m_fileView->numDirs() : 0;
@@ -318,6 +343,21 @@ int KDirOperator::numDirs() const
 int KDirOperator::numFiles() const
 {
     return m_fileView ? m_fileView->numFiles() : 0;
+}
+
+KCompletion * KDirOperator::completionObject() const
+{
+    return const_cast<KCompletion *>( &myCompletion );
+}
+
+KCompletion *KDirOperator::dirCompletionObject() const
+{
+    return const_cast<KCompletion *>( &myDirCompletion );
+}
+
+KActionCollection * KDirOperator::actionCollection() const
+{
+    return myActionCollection;
 }
 
 void KDirOperator::slotDetailedView()
@@ -837,10 +877,20 @@ void KDirOperator::setNameFilter(const QString& filter)
     checkPreviewSupport();
 }
 
+QString KDirOperator::nameFilter() const
+{
+    return dir->nameFilter();
+}
+
 void KDirOperator::setMimeFilter( const QStringList& mimetypes )
 {
     dir->setMimeFilter( mimetypes );
     checkPreviewSupport();
+}
+
+QStringList KDirOperator::mimeFilter() const
+{
+    return dir->mimeFilters();
 }
 
 bool KDirOperator::checkPreviewSupport()
@@ -1023,6 +1073,16 @@ void KDirOperator::setView( KFile::FileView view )
     }
 
     setView( new_view );
+}
+
+KFileView * KDirOperator::view() const
+{
+    return m_fileView;
+}
+
+QWidget * KDirOperator::viewWidget() const
+{
+    return m_fileView ? m_fileView->widget() : 0L;
 }
 
 
@@ -1708,6 +1768,17 @@ void KDirOperator::setEnableDirHighlighting( bool enable )
 bool KDirOperator::dirHighlighting() const
 {
     return d->dirHighlighting;
+}
+
+bool KDirOperator::dirOnlyMode() const
+{
+    return dirOnlyMode( myMode );
+}
+
+bool KDirOperator::dirOnlyMode( uint mode )
+{
+    return ( (mode & KFile::Directory) &&
+        (mode & (KFile::File | KFile::Files)) == 0 );
 }
 
 void KDirOperator::slotProperties()

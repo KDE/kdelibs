@@ -148,7 +148,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @returns the current namefilter.
      * @see setNameFilter
      */
-    QString nameFilter() const { return dir->nameFilter(); }
+    QString nameFilter() const;
 
     /**
      * Sets a list of mimetypes as filter. Only files of those mimetypes
@@ -172,7 +172,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
     /**
      * @returns the current mime filter.
      */
-    QStringList mimeFilter() const { return dir->mimeFilters(); }
+    QStringList mimeFilter() const;
 
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
@@ -217,13 +217,13 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @returns the currently used view.
      * @see setView
      */
-    KFileView * view() const { return m_fileView; }
+    KFileView * view() const;
 
     /**
      * Returns the widget of the current view. 0L if there is no view/widget.
      * (KFileView itself is not a widget.)
      */
-    QWidget * viewWidget() const { return m_fileView ? m_fileView->widget() : 0L; }
+    QWidget * viewWidget() const;
 
     /**
      * Sets one of the predefined fileviews
@@ -240,17 +240,17 @@ class KFILE_EXPORT KDirOperator : public QWidget
     /**
      * @returns the current way of sorting files and directories
      */
-    QDir::SortFlags sorting() const { return mySorting; }
+    QDir::SortFlags sorting() const;
 
     /**
      * @returns true if we are displaying the root directory of the current url
      */
-    bool isRoot() const { return url().path() == QString(QLatin1Char('/')); }
+    bool isRoot() const;
 
     /**
      * @returns the object listing the directory
      */
-    KDirLister *dirLister() const { return dir; }
+    KDirLister *dirLister() const;
 
     /**
      * @returns the progress widget, that is shown during directory listing.
@@ -287,16 +287,12 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @returns a list of all currently selected items. If there is no view,
      * then 0L is returned.
      */
-    const KFileItemList * selectedItems() const {
-	return ( m_fileView ? m_fileView->selectedItems() : 0L );
-    }
+    const KFileItemList * selectedItems() const;
 
     /**
      * @returns true if @p item is currently selected, or false otherwise.
      */
-    inline bool isSelected( const KFileItem *item ) const {
-	return ( m_fileView ? m_fileView->isSelected( item ) : false );
-    }
+    bool isSelected( const KFileItem *item ) const;
 
     /**
      * @returns the number of directories in the currently listed url.
@@ -318,9 +314,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * has been called. It will be implicitly called from makeCompletion()
      * or makeDirCompletion()
      */
-    KCompletion * completionObject() const {
-	return const_cast<KCompletion *>( &myCompletion );
-    }
+    KCompletion * completionObject() const;
 
     /**
      * @returns a KCompletion object, containing only all directories of the
@@ -330,9 +324,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * prepareCompletionObjects() has been called. It will be implicitly
      * called from makeCompletion() or makeDirCompletion()
      */
-    KCompletion *dirCompletionObject() const {
-	return const_cast<KCompletion *>( &myDirCompletion );
-    }
+    KCompletion *dirCompletionObject() const;
 
     /**
      * an accessor to a collection of all available Actions. The actions
@@ -379,7 +371,7 @@ class KFILE_EXPORT KDirOperator : public QWidget
      *
      * @returns all available Actions
      */
-    KActionCollection * actionCollection() const { return myActionCollection; }
+    KActionCollection * actionCollection() const;
 
     /**
      * Sets the config object and the to be used group in KDirOperator. This
@@ -513,12 +505,9 @@ class KFILE_EXPORT KDirOperator : public QWidget
      * @returns true if we are in directory-only mode, that is, no files are
      * shown.
      */
-    bool dirOnlyMode() const { return dirOnlyMode( myMode ); }
+    bool dirOnlyMode() const;
 
-    static bool dirOnlyMode( uint mode ) {
-        return ( (mode & KFile::Directory) &&
-                 (mode & (KFile::File | KFile::Files)) == 0 );
-    }
+    static bool dirOnlyMode( uint mode );
 
     /**
      * Sets up the action menu.
