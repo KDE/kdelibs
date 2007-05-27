@@ -113,88 +113,78 @@ class KTranslitSerbianPrivate
 {
     public:
     QHash<QString, bool> latinNames;
-    QHash<QString, QString> dictAll;
-    QHash<QString, QString> dictSpec;
-    QHash<QString, bool> dictIsCap;
+    QHash<QChar, QString> dictC2L;
 };
 
 KTranslitSerbian::KTranslitSerbian ()
 : d(new KTranslitSerbianPrivate())
 {
-    d->latinNames[QString::fromAscii("Latn")] = true;
     d->latinNames[QString::fromAscii("latin")] = true;
+    d->latinNames[QString::fromAscii("Latn")] = true;
 
-    #define SR_DICTALL_ENTRY(a, b, iscap) do { \
-        d->dictAll[QString::fromUtf8(a)] = QString::fromUtf8(b); \
-        d->dictIsCap[QString::fromUtf8(a)] = iscap; \
+    #define SR_DICTC2L_ENTRY(a, b) do { \
+        d->dictC2L[QString::fromUtf8(a)[0]] = QString::fromUtf8(b); \
     } while (0)
-    SR_DICTALL_ENTRY("а", "a", false);
-    SR_DICTALL_ENTRY("б", "b", false);
-    SR_DICTALL_ENTRY("в", "v", false);
-    SR_DICTALL_ENTRY("г", "g", false);
-    SR_DICTALL_ENTRY("д", "d", false);
-    SR_DICTALL_ENTRY("ђ", "đ", false);
-    SR_DICTALL_ENTRY("е", "e", false);
-    SR_DICTALL_ENTRY("ж", "ž", false);
-    SR_DICTALL_ENTRY("з", "z", false);
-    SR_DICTALL_ENTRY("и", "i", false);
-    SR_DICTALL_ENTRY("ј", "j", false);
-    SR_DICTALL_ENTRY("к", "k", false);
-    SR_DICTALL_ENTRY("л", "l", false);
-    SR_DICTALL_ENTRY("љ", "lj", false);
-    SR_DICTALL_ENTRY("м", "m", false);
-    SR_DICTALL_ENTRY("н", "n", false);
-    SR_DICTALL_ENTRY("њ", "nj", false);
-    SR_DICTALL_ENTRY("о", "o", false);
-    SR_DICTALL_ENTRY("п", "p", false);
-    SR_DICTALL_ENTRY("р", "r", false);
-    SR_DICTALL_ENTRY("с", "s", false);
-    SR_DICTALL_ENTRY("т", "t", false);
-    SR_DICTALL_ENTRY("ћ", "ć", false);
-    SR_DICTALL_ENTRY("у", "u", false);
-    SR_DICTALL_ENTRY("ф", "f", false);
-    SR_DICTALL_ENTRY("х", "h", false);
-    SR_DICTALL_ENTRY("ц", "c", false);
-    SR_DICTALL_ENTRY("ч", "č", false);
-    SR_DICTALL_ENTRY("џ", "dž", false);
-    SR_DICTALL_ENTRY("ш", "š", false);
-    SR_DICTALL_ENTRY("А", "A", true);
-    SR_DICTALL_ENTRY("Б", "B", true);
-    SR_DICTALL_ENTRY("В", "V", true);
-    SR_DICTALL_ENTRY("Г", "G", true);
-    SR_DICTALL_ENTRY("Д", "D", true);
-    SR_DICTALL_ENTRY("Ђ", "Đ", true);
-    SR_DICTALL_ENTRY("Е", "E", true);
-    SR_DICTALL_ENTRY("Ж", "Ž", true);
-    SR_DICTALL_ENTRY("З", "Z", true);
-    SR_DICTALL_ENTRY("И", "I", true);
-    SR_DICTALL_ENTRY("Ј", "J", true);
-    SR_DICTALL_ENTRY("К", "K", true);
-    SR_DICTALL_ENTRY("Л", "L", true);
-    SR_DICTALL_ENTRY("Љ", "Lj", true);
-    SR_DICTALL_ENTRY("М", "M", true);
-    SR_DICTALL_ENTRY("Н", "N", true);
-    SR_DICTALL_ENTRY("Њ", "Nj", true);
-    SR_DICTALL_ENTRY("О", "O", true);
-    SR_DICTALL_ENTRY("П", "P", true);
-    SR_DICTALL_ENTRY("Р", "R", true);
-    SR_DICTALL_ENTRY("С", "S", true);
-    SR_DICTALL_ENTRY("Т", "T", true);
-    SR_DICTALL_ENTRY("Ћ", "Ć", true);
-    SR_DICTALL_ENTRY("У", "U", true);
-    SR_DICTALL_ENTRY("Ф", "F", true);
-    SR_DICTALL_ENTRY("Х", "H", true);
-    SR_DICTALL_ENTRY("Ц", "C", true);
-    SR_DICTALL_ENTRY("Ч", "Č", true);
-    SR_DICTALL_ENTRY("Џ", "Dž", true);
-    SR_DICTALL_ENTRY("Ш", "Š", true);
-
-    #define SR_DICTSPEC_ENTRY(a, b) do { \
-        d->dictSpec[QString::fromUtf8(a)] = QString::fromUtf8(b); \
-    } while (0)
-    SR_DICTSPEC_ENTRY("Љ", "LJ");
-    SR_DICTSPEC_ENTRY("Њ", "NJ");
-    SR_DICTSPEC_ENTRY("Џ", "DŽ");
+    SR_DICTC2L_ENTRY("а", "a");
+    SR_DICTC2L_ENTRY("б", "b");
+    SR_DICTC2L_ENTRY("в", "v");
+    SR_DICTC2L_ENTRY("г", "g");
+    SR_DICTC2L_ENTRY("д", "d");
+    SR_DICTC2L_ENTRY("ђ", "đ");
+    SR_DICTC2L_ENTRY("е", "e");
+    SR_DICTC2L_ENTRY("ж", "ž");
+    SR_DICTC2L_ENTRY("з", "z");
+    SR_DICTC2L_ENTRY("и", "i");
+    SR_DICTC2L_ENTRY("ј", "j");
+    SR_DICTC2L_ENTRY("к", "k");
+    SR_DICTC2L_ENTRY("л", "l");
+    SR_DICTC2L_ENTRY("љ", "lj");
+    SR_DICTC2L_ENTRY("м", "m");
+    SR_DICTC2L_ENTRY("н", "n");
+    SR_DICTC2L_ENTRY("њ", "nj");
+    SR_DICTC2L_ENTRY("о", "o");
+    SR_DICTC2L_ENTRY("п", "p");
+    SR_DICTC2L_ENTRY("р", "r");
+    SR_DICTC2L_ENTRY("с", "s");
+    SR_DICTC2L_ENTRY("т", "t");
+    SR_DICTC2L_ENTRY("ћ", "ć");
+    SR_DICTC2L_ENTRY("у", "u");
+    SR_DICTC2L_ENTRY("ф", "f");
+    SR_DICTC2L_ENTRY("х", "h");
+    SR_DICTC2L_ENTRY("ц", "c");
+    SR_DICTC2L_ENTRY("ч", "č");
+    SR_DICTC2L_ENTRY("џ", "dž");
+    SR_DICTC2L_ENTRY("ш", "š");
+    SR_DICTC2L_ENTRY("А", "A");
+    SR_DICTC2L_ENTRY("Б", "B");
+    SR_DICTC2L_ENTRY("В", "V");
+    SR_DICTC2L_ENTRY("Г", "G");
+    SR_DICTC2L_ENTRY("Д", "D");
+    SR_DICTC2L_ENTRY("Ђ", "Đ");
+    SR_DICTC2L_ENTRY("Е", "E");
+    SR_DICTC2L_ENTRY("Ж", "Ž");
+    SR_DICTC2L_ENTRY("З", "Z");
+    SR_DICTC2L_ENTRY("И", "I");
+    SR_DICTC2L_ENTRY("Ј", "J");
+    SR_DICTC2L_ENTRY("К", "K");
+    SR_DICTC2L_ENTRY("Л", "L");
+    SR_DICTC2L_ENTRY("Љ", "Lj");
+    SR_DICTC2L_ENTRY("М", "M");
+    SR_DICTC2L_ENTRY("Н", "N");
+    SR_DICTC2L_ENTRY("Њ", "Nj");
+    SR_DICTC2L_ENTRY("О", "O");
+    SR_DICTC2L_ENTRY("П", "P");
+    SR_DICTC2L_ENTRY("Р", "R");
+    SR_DICTC2L_ENTRY("С", "S");
+    SR_DICTC2L_ENTRY("Т", "T");
+    SR_DICTC2L_ENTRY("Ћ", "Ć");
+    SR_DICTC2L_ENTRY("У", "U");
+    SR_DICTC2L_ENTRY("Ф", "F");
+    SR_DICTC2L_ENTRY("Х", "H");
+    SR_DICTC2L_ENTRY("Ц", "C");
+    SR_DICTC2L_ENTRY("Ч", "Č");
+    SR_DICTC2L_ENTRY("Џ", "Dž");
+    SR_DICTC2L_ENTRY("Ш", "Š");
 }
 
 KTranslitSerbian::~KTranslitSerbian ()
@@ -206,35 +196,27 @@ QString KTranslitSerbian::transliterate (const QString &str,
                                          const QString &script) const
 {
     if (d->latinNames.contains(script)) {
-        QString nstr;
+        // NOTE: This loop has been somewhat optimized for speed.
         int slen = str.length();
-        // NOTE: Conversion is a bit more convoluted then necessary
-        // because it handles cases in the most-to-least probable order,
-        // in order to speed up the execution.
+        QString nstr;
+        nstr.reserve(slen + 5);
         for (int i = 0; i < slen; ++i) {
             QChar c = str[i];
-            QString r = d->dictAll[c];
+            QString r = d->dictC2L[c];
             if (!r.isEmpty()) {
-                if (d->dictIsCap[c]) {
-                    QString rc = d->dictSpec[c];
-                    if (   !rc.isEmpty()
-                        && (   (i + 1 < slen && d->dictIsCap[str[i + 1]])
-                            || (i > 0 && d->dictIsCap[str[i - 1]]))) {
-                        nstr += rc;
-                    }
-                    else {
-                        nstr += r;
-                    }
+                if (   r.length() > 1
+                    && (   (i + 1 < slen && str[i + 1].isUpper())
+                        || (i > 0 && str[i - 1].isUpper()))) {
+                    nstr.append(r.toUpper());
                 }
                 else {
-                    nstr += r;
+                    nstr.append(r);
                 }
             }
             else {
-                nstr += c;
+                nstr.append(c);
             }
         }
-
         return nstr;
     }
     else {
