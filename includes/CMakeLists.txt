@@ -111,7 +111,6 @@ install( FILES
   KCharSelect
   KCharSelectTable
   KCharsets
-  KClipboardSynchronizer
   KCmdLineArgs
   KCmdLineOptions
   KCodecs
@@ -146,11 +145,9 @@ install( FILES
   KCrashBookmarkImporter
   KCrashBookmarkImporterImpl
   KCursor
-  KCustomMenuEditor
   KDBusServiceStarter
   KDebug
   KDEDModule
-  KDEDesktopMimeType
   KDEsuClient
   KDataTool
   KDataToolAction
@@ -174,9 +171,8 @@ install( FILES
   KDirModel
   KDirOperator
   KDirSelectDialog
-  KDirSize
   KDirWatch
-  KDiskFreeSp
+  KDiskFreeSpace
   KDoubleNumInput
   KDoubleSpinBox
   KDoubleValidator
@@ -189,7 +185,7 @@ install( FILES
   KEntryKey
   KExecPropsPlugin
   KFile
-  KFileDetailView
+  K3FileDetailView
   KFileDialog
   KFileFilter
   KFileFilterCombo
@@ -198,7 +194,7 @@ install( FILES
   KFileItem
   KFileItemList
   KFileItemDelegate
-  KFileListViewItem
+  K3FileListViewItem
   KFileMetaInfo
   KFileMetaInfoGroup
   KFileMetaInfoItem
@@ -262,9 +258,6 @@ install( FILES
   KIntValidator
   KJob
   KJobUiDelegate
-  KKeyButton
-  KKeyChooser
-  KKeyDialog
   KLanguageButton
   KLed
   KLibFactory
@@ -284,7 +277,7 @@ install( FILES
   KMManager
   KMPrinter
   KMTimer
-  KMacroCommand
+  K3MacroCommand
   KMacroExpanderBase
   KMainWindow
   KMakeTypeList
@@ -294,8 +287,6 @@ install( FILES
   KMessageBox
   KMessageBoxMessageHandler
   KMessageHandler
-  KMimeMagic
-  KMimeMagicResult
   KMimeType
   KMimeTypeChooser
   KMimeTypeChooserDialog
@@ -314,10 +305,7 @@ install( FILES
   KNSBookmarkImporter
   KNSBookmarkImporterImpl
   KNTLM
-  KNamedCommand
-  KNewStuff
-  KNewStuffGeneric
-  KNewStuffSecure
+  K3NamedCommand
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
@@ -413,7 +401,6 @@ install( FILES
   KSelectionWatcher
   KSelector
   KSeparator
-  KSeparatorAction
   KService
   KServiceGroup
   KServiceOffer
@@ -493,10 +480,6 @@ install( FILES
   KUriFilterData
   KUriFilterPlugin
   KUrl
-  KUrlBar
-  KUrlBarItem
-  KUrlBarItemDialog
-  KUrlBarListBox
   KUrlComboBox
   KUrlComboRequester
   KUrlCompletion
@@ -509,7 +492,6 @@ install( FILES
   KUserGroup
   KVBox
   KWindowSystem
-  KWindowListMenu
   KWordMacroExpander
   KWordWrap
   KXBELBookmarkImporterImpl
@@ -531,7 +513,6 @@ install( FILES
   NETRootInfo3
   NETRootInfo4
   NETWinInfo
-  Observer
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
   PTY
