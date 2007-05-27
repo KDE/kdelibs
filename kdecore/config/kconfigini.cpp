@@ -53,162 +53,174 @@
 #include "kconfig.h"
 
 extern bool checkAccess(const QString& pathname, int mode);
-/* translate escaped escape sequences to their actual values. */
+
+inline static char charFromHex(const char *str)
+{
+    unsigned char ret = 0;
+    unsigned char c;
+    for (int i = 0; i < 2; i++) {
+        ret <<= 4;
+        c = (unsigned char)str[i];
+
+        if (c >= '0' && c <= '9') {
+            ret |= c - '0';
+        } else if (c >= 'a' && c <= 'f') {
+            ret |= c - 'a' + 0x0a;
+        } else if (c >= 'A' && c <= 'F') {
+            ret |= c - 'A' + 0x0a;
+        } else {
+            QByteArray e(str, 2);
+            e.prepend("\\x");
+            fprintf(stderr, "KConfigIni: Invalid hex character \'%c\' in \\x<nn>-type escape sequence %s\n",
+                    c, e.constData());
+            return 'x';
+        }
+    }
+    return (char)ret;
+}
+
+/* translate escape sequences to their actual values. */
 static QByteArray printableToString(const char *str, int l)
 {
     // Strip leading white-space.
-    while((l>0) &&
-          ((*str == ' ') || (*str == '\t') || (*str == '\r')))
-    {
+    while((l > 0) &&
+          ((*str == ' ') || (*str == '\t') || (*str == '\r'))) {
         str++; l--;
     }
 
     // Strip trailing white-space.
-    while((l>0) &&
-          ((str[l-1] == ' ') || (str[l-1] == '\t') || (str[l-1] == '\r')))
-    {
+    while((l > 0) &&
+          ((str[l-1] == ' ') || (str[l-1] == '\t') || (str[l-1] == '\r'))) {
         l--;
     }
 
     QByteArray result(l, 0);
     char *r = result.data();
 
-    for(int i = 0; i < l;i++, str++)
-    {
-        if (*str == '\\')
-        {
-            i++, str++;
-            if (i >= l) // End of line. (Line ends with single slash)
-            {
-                *r++ = '\\';
+    for(int i = 0; i < l; i++, r++) {
+        if (str[i] != '\\') {
+
+            *r = str[i];
+
+        } else {
+            // Probable escape sequence
+            i++;
+            if (i >= l) { // Line ends after backslash - stop.
+                *r = '\\';
                 break;
             }
-            switch(*str)
-            {
+
+            switch(str[i]) {
             case 's':
-                *r++ = ' ';
+                *r = ' ';
                 break;
             case 't':
-                *r++ = '\t';
+                *r = '\t';
                 break;
             case 'n':
-                *r++ = '\n';
+                *r = '\n';
                 break;
             case 'r':
-                *r++ = '\r';
+                *r = '\r';
                 break;
             case '\\':
-                *r++ = '\\';
+                *r = '\\';
+                break;
+            case 'x':
+                if (i + 2 < l) {
+                    *r = charFromHex(str + i + 1);
+                    i += 2;
+                } else {
+                    *r = 'x';
+                    i = l - 1;
+                }
                 break;
             default:
-                *r++ = '\\';
-                *r++ = *str;
+                *r = '\\';
+                fprintf(stderr, "KConfigIni: Invalid escape sequence \'\\%c\'", str[i]);
             }
-        }
-        else
-        {
-            *r++ = *str;
         }
     }
     result.truncate(r - result.constData());
     return result;
 }
 
-static QByteArray stringToPrintable(const QByteArray& str){
-    QByteArray result(str.length()*2, 0); // Maximum 2x as long as source string
+enum StringType {
+    OtherString = 0,
+    ValueString = 1
+};
+
+static QByteArray stringToPrintable(const QByteArray& str, StringType strType = OtherString)
+{
+    static const char nibbleLookup[] = {
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
+
+    const int l = str.length();
+    QByteArray result; // Guesstimated that it's good to avoid data() initialization for a length of l*4
+    result.resize(l * 4); // Maximum 4x as long as source string due to \x<ab> escape sequences
     register char *r = result.data();
     register const char *s = str.constData();
+    int i = 0;
 
-    if (!s) return QByteArray();
+    if (l == 0)
+        return QByteArray();
 
-    // Escape leading space
-    if (*s == ' ')
-    {
-        *r++ = '\\'; *r++ = 's';
-        s++;
+    // Protect leading space
+    if (s[0] == ' ') {
+        *r++ = '\\';
+        *r++ = 's';
+        i++;
     }
 
-    if (*s)
-    {
-        while(*s)
-        {
-            if (*s == '\n')
-            {
-                *r++ = '\\'; *r++ = 'n';
+    for (; i < l; i++, r++) {
+        switch (s[i]) {
+        default:
+            // The \n, \t, \r cases (all < 32) are handled below; we can ignore them here
+            if (((unsigned char)s[i]) < 32)
+                goto escape;
+            *r = s[i];
+            break;
+        case '\n':
+            *r++ = '\\';
+            *r = 'n';
+            break;
+        case '\t':
+            *r++ = '\\';
+            *r = 't';
+            break;
+        case '\r':
+            *r++ = '\\';
+            *r = 'r';
+            break;
+        case '\\':
+            *r++ = '\\';
+            *r = '\\';
+            break;
+        case '[':
+        case ']':
+        case '=':
+            // Above chars are OK to put in *value* strings as plaintext
+            if (strType == ValueString) {
+                *r = s[i];
+                break;
             }
-            else if (*s == '\t')
-            {
-                *r++ = '\\'; *r++ = 't';
-            }
-            else if (*s == '\r')
-            {
-                *r++ = '\\'; *r++ = 'r';
-            }
-            else if (*s == '\\')
-            {
-                *r++ = '\\'; *r++ = '\\';
-            }
-            else
-            {
-                *r++ = *s;
-            }
-            s++;
-        }
-        // Escape trailing space
-        if (*(r-1) == ' ')
-        {
-            *(r-1) = '\\'; *r++ = 's';
+        escape:
+            *r++ = '\\';
+            *r++ = 'x';
+            *r++ = nibbleLookup[((unsigned char)s[i]) >> 4];
+            *r = nibbleLookup[((unsigned char)s[i]) & 0x0f];
+            break;
         }
     }
 
-    result.truncate(r - result.constData());
-    return result;
-}
-
-static QByteArray decodeGroup(const char*s, int l)
-{
-    QByteArray result(l,0);
-    register char *r = result.data();
-
-    l--; // Correct for trailing \0
-    while(l)
-    {
-        if ((*s == '[') && (l > 1))
-        {
-            if ((*(s+1) == '['))
-            {
-                l--;
-                s++;
-            }
-        }
-        if ((*s == ']') && (l > 1))
-        {
-            if ((*(s+1) == ']'))
-            {
-                l--;
-                s++;
-            }
-        }
-        *r++ = *s++;
-        l--;
+    // Protect trailing space
+    if (i - 1 >= 0 && s[i-1] == ' ') {
+        *(r-1) = '\\';
+        *r++ = 's';
     }
-    result.truncate(r - result.constData());
-    return result;
-}
 
-static QByteArray encodeGroup(const QByteArray &str)
-{
-    int l = str.length();
-    QByteArray result(l*2+1, 0);
-    register char *r = result.data();
-    register const char *s = str.constData();
-    while(l)
-    {
-        if ((*s == '[') || (*s == ']'))
-            *r++ = *s;
-        *r++ = *s++;
-        l--;
-    }
     result.truncate(r - result.constData());
     return result;
 }
@@ -494,7 +506,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 continue;
             }
 
-            aCurrentGroup = decodeGroup(startLine + 1, e - startLine);
+            aCurrentGroup = printableToString(startLine + 1, e - startLine - 1);
             //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
             groupOptionImmutable = fileOptionImmutable;
@@ -624,7 +636,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         }
 
         // insert the key/value line
-        QByteArray key(startLine, endOfKey - startLine + 1);
+        QByteArray key = printableToString(startLine, endOfKey - startLine + 1);
         QByteArray val = printableToString(st, s - st);
         //qDebug("found key '%s' with value '%s'", key.constData(), val.constData());
 
@@ -819,13 +831,13 @@ static void writeEntries(QFile &file, const KEntryMap& entryMap, bool defaultGro
                 file.putChar('\n');
             currentGroup = key.mGroup;
             file.putChar('[');
-            file.write(encodeGroup(currentGroup));
+            file.write(stringToPrintable(currentGroup));
             file.write("]\n", 2);
         }
 
         firstEntry = false;
         // it is data for a group
-        file.write(key.mKey);   // Key
+        file.write(stringToPrintable(key.mKey));   // Key
 
         if ( currentEntry.bNLS )
         {
@@ -849,7 +861,7 @@ static void writeEntries(QFile &file, const KEntryMap& entryMap, bool defaultGro
                 file.putChar(']');
             }
             file.putChar('=');
-            file.write(stringToPrintable(currentEntry.mValue));
+            file.write(stringToPrintable(currentEntry.mValue, ValueString));
             file.putChar('\n');
         }
     } // for loop

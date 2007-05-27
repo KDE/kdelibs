@@ -39,6 +39,8 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
 #define UTF8BITENTRY "Hello äöü"
+#define ESCAPEKEY " []\0017[]==]"
+#define ESCAPEENTRY "[]\170[]]=3=]\\] "
 #define DOUBLEENTRY 123456.78912345
 #define POINTENTRY QPoint( 4351, 1235 )
 #define SIZEENTRY QSize( 10, 20 )
@@ -70,6 +72,7 @@ void KConfigTest::initTestCase()
   QCOMPARE( data.size(), 12 ); // the source file is in utf8
   QCOMPARE( QString::fromUtf8(data).length(), 9 );
   cg.writeEntry( "Test", QVariant( data ) ); // passing "data" converts it to char* and KConfigBase calls fromLatin1!
+  cg.writeEntry( ESCAPEKEY, ESCAPEENTRY );
   cg.writeEntry( "Test2", "");
   cg.writeEntry( "stringEntry1", STRINGENTRY1 );
   cg.writeEntry( "stringEntry2", STRINGENTRY2 );
@@ -204,6 +207,7 @@ void KConfigTest::testSimple()
 
   sc3 = KConfigGroup(&sc2, "Hello");
   QCOMPARE( sc3.readEntry( "Test", QByteArray() ), QByteArray( UTF8BITENTRY ) );
+  QCOMPARE( sc3.readEntry( ESCAPEKEY ), QString( ESCAPEENTRY ) );
   QCOMPARE( sc3.readEntry( "Test", QString() ), QString::fromUtf8( UTF8BITENTRY ) );
   QCOMPARE( sc3.readEntry("Test2", QString("Fietsbel")).isEmpty(), true );
   QCOMPARE( sc3.readEntry( "stringEntry1" ), QString( STRINGENTRY1 ) );
