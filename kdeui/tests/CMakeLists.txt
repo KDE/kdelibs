@@ -107,6 +107,7 @@ KDEUI_BUILD_TESTS(
   kjobtrackerstest
   kdebugtest_gui
   ktitlewidgettest
+  TestBlendColors
 )
 
 if (Q_WS_X11)

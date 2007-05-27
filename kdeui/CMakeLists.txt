@@ -59,6 +59,7 @@ set(kdeui_LIB_SRCS
  colors/kcolormimedata.cpp
  colors/kcolorvalueselector.cpp
  colors/khuesaturationselect.cpp
+ colors/kgraphicsutils.cpp
  config/kconfigskeleton.cpp
  config/kconfiggroupgui.cpp
  dialogs/kaboutkdedialog.cpp
@@ -301,6 +302,7 @@ install( FILES
  colors/kcolormimedata.h
  colors/kcolorvalueselector.h
  colors/khuesaturationselect.h
+ colors/kgraphicsutils.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kaboutkdedialog.h
