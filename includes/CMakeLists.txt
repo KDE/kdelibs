@@ -820,8 +820,6 @@ install( FILES
   KNetwork/KHttpProxySocketDevice
   KNetwork/KInetSocketAddress
   KNetwork/KIpAddress
-  KNetwork/KMulticastSocket
-  KNetwork/KMulticastSocketDevice
   KNetwork/KPassiveSocketBase
   KNetwork/KResolver
   KNetwork/KResolverEntry
