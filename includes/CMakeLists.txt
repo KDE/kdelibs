@@ -981,7 +981,7 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/SafeSite )
 
 install( FILES
   Solid/AcAdapter
-  Solid/AudioHw
+  Solid/AudioInterface
   Solid/Battery
   Solid/Block
   Solid/Button
@@ -989,11 +989,10 @@ install( FILES
   Solid/Device
   Solid/DeviceInterface
   Solid/DeviceNotifier
-  Solid/Display
-  Solid/DvbHw
+  Solid/DvbInterface
   Solid/GenericInterface
-  Solid/NetworkHw
   Solid/Networking
+  Solid/NetworkInterface
   Solid/OpticalDisc
   Solid/OpticalDrive
   Solid/PortableMediaPlayer
