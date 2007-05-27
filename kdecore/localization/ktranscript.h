@@ -56,16 +56,16 @@ class KTranscript
      * @return resolved interpolation if evaluation succeeded,
      *         empty string otherwise
      */
-    virtual const QString eval (const QStringList &argv,
-                                const QString &lang,
-                                const QString &lscr,
-                                const QString &msgctxt,
-                                const QString &msgid,
-                                const QStringList &subs,
-                                const QString &final,
-                                const QList<QStringList> &mods,
-                                QString &error,
-                                bool &fallback) = 0;
+    virtual QString eval (const QStringList &argv,
+                          const QString &lang,
+                          const QString &lscr,
+                          const QString &msgctxt,
+                          const QString &msgid,
+                          const QStringList &subs,
+                          const QString &final,
+                          const QList<QStringList> &mods,
+                          QString &error,
+                          bool &fallback) = 0;
 
     /**
      * Destructor.

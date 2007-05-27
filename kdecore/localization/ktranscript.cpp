@@ -53,16 +53,16 @@ class KTranscriptImp : public KTranscript
     KTranscriptImp ();
     ~KTranscriptImp ();
 
-    const QString eval (const QStringList &argv,
-                        const QString &lang,
-                        const QString &lscr,
-                        const QString &msgctxt,
-                        const QString &msgid,
-                        const QStringList &subs,
-                        const QString &final,
-                        const QList<QStringList> &mods,
-                        QString &error,
-                        bool &fallback);
+    QString eval (const QStringList &argv,
+                  const QString &lang,
+                  const QString &lscr,
+                  const QString &msgctxt,
+                  const QString &msgid,
+                  const QStringList &subs,
+                  const QString &final,
+                  const QList<QStringList> &mods,
+                  QString &error,
+                  bool &fallback);
 
     QString currentModulePath;
 
@@ -228,16 +228,16 @@ KTranscriptImp::~KTranscriptImp ()
     //    jsi->deref();
 }
 
-const QString KTranscriptImp::eval (const QStringList &argv,
-                                    const QString &lang,
-                                    const QString &lscr,
-                                    const QString &msgctxt,
-                                    const QString &msgid,
-                                    const QStringList &subs,
-                                    const QString &final,
-                                    const QList<QStringList> &mods,
-                                    QString &error,
-                                    bool &fallback)
+QString KTranscriptImp::eval (const QStringList &argv,
+                              const QString &lang,
+                              const QString &lscr,
+                              const QString &msgctxt,
+                              const QString &msgid,
+                              const QStringList &subs,
+                              const QString &final,
+                              const QList<QStringList> &mods,
+                              QString &error,
+                              bool &fallback)
 {
     //error = "debug"; return QString();
 
