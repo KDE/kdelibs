@@ -1653,7 +1653,22 @@ int KateViewInternal::lineMaxCursorX(const KateLineRange& range)
 
   if (maxX && range.wrap) {
     QChar lastCharInLine = textLine(range.line)->getChar(range.endCol - 1);
-    maxX -= m_view->renderer()->config()->fontMetrics()->width(lastCharInLine);
+
+    if (lastCharInLine == QChar('\t')) {
+      int lineSize = 0;
+      int lastTabSize = 0;
+      for(int i = range.startCol; i < range.endCol; i++) {
+        if (textLine(range.line)->getChar(i) == QChar('\t')) {
+          lastTabSize = m_view->tabWidth() - (lineSize % m_view->tabWidth());
+          lineSize += lastTabSize;
+        } else {
+          lineSize++;
+        }
+      }
+      maxX -= lastTabSize * m_view->renderer()->spaceWidth();
+    } else {
+      maxX -= m_view->renderer()->config()->fontMetrics()->width(lastCharInLine);
+    }
   }
 
   return maxX;

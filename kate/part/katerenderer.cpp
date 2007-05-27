@@ -798,6 +798,11 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
     Q_ASSERT(width);
     x += width;
 
+    // How should tabs be treated when they word-wrap on a print-out?
+    // if startcol != 0, this messes up (then again, word wrapping messes up anyway)
+    if (unicode[z] == QChar('\t'))
+      x -= x % width;
+
     if (unicode[z].isSpace())
     {
       lastWhiteSpace = z+1;
@@ -815,11 +820,6 @@ uint KateRenderer::textWidth(const KateTextLine::Ptr &textLine, uint startcol, u
         lastWhiteSpaceX = x;
       }
     }
-
-    // How should tabs be treated when they word-wrap on a print-out?
-    // if startcol != 0, this messes up (then again, word wrapping messes up anyway)
-    if (unicode[z] == QChar('\t'))
-      x -= x % width;
 
     if (x <= maxwidth)
     {
