@@ -540,7 +540,6 @@ install( FILES
   DNSSD/Configuration
   DNSSD/DomainBrowser
   DNSSD/PublicService
-  DNSSD/Query
   DNSSD/RemoteService
   DNSSD/ServiceBase
   DNSSD/ServiceBrowser
@@ -699,7 +698,6 @@ install( FILES
   KIO/CopyInfo
   KIO/CopyJob
   KIO/DavJob
-  KIO/DefaultProgress
   KIO/DeleteJob
   KIO/DirectCopyJob
   KIO/FileCopyJob
@@ -717,19 +715,17 @@ install( FILES
   KIO/NetRC
   KIO/PasswordDialog
   KIO/PreviewJob
-  KIO/ProgressBase
-  KIO/RenameDlg
-  KIO/RenameDlgPlugin
+  KIO/RenameDialog
+  KIO/RenameDialogPlugin
   KIO/Scheduler
   KIO/SessionData
   KIO/SimpleJob
-  KIO/SkipDlg
+  KIO/SkipDialog
   KIO/Slave
   KIO/SlaveBase
   KIO/SlaveConfig
   KIO/SlaveInterface
   KIO/StatJob
-  KIO/StatusbarProgress
   KIO/StoredTransferJob
   KIO/TCPSlaveBase
   KIO/Task
