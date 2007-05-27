@@ -976,11 +976,25 @@ KConfigSkeletonItem::List KConfigSkeleton::items() const
 
 bool KConfigSkeleton::useDefaults(bool b)
 {
-  return usrUseDefaults(b);
+  if (b == mUseDefaults)
+    return mUseDefaults;
+
+  mUseDefaults = b;
+  KConfigSkeletonItem::List::ConstIterator it;
+  for( it = mItems.begin(); it != mItems.end(); ++it )
+  {
+    (*it)->swapDefault();
+  }
+  usrUseDefaults(b);
+  return !mUseDefaults;
 }
 
 void KConfigSkeleton::setDefaults()
 {
+  KConfigSkeletonItem::List::ConstIterator it;
+  for( it = mItems.begin(); it != mItems.end(); ++it ) {
+    (*it)->setDefault();
+  }
   usrSetDefaults();
 }
 
@@ -1011,29 +1025,14 @@ void KConfigSkeleton::writeConfig()
   readConfig();
 
   emit configChanged();
-
 }
 
 bool KConfigSkeleton::usrUseDefaults(bool b)
 {
-  if (b == mUseDefaults)
-     return mUseDefaults;
-
-  mUseDefaults = b;
-  KConfigSkeletonItem::List::ConstIterator it;
-  for( it = mItems.begin(); it != mItems.end(); ++it )
-  {
-    (*it)->swapDefault();
-  }
-  return !mUseDefaults;
 }
 
 void KConfigSkeleton::usrSetDefaults()
 {
-  KConfigSkeletonItem::List::ConstIterator it;
-  for( it = mItems.begin(); it != mItems.end(); ++it ) {
-    (*it)->setDefault();
-  }
 }
 
 void KConfigSkeleton::usrReadConfig()

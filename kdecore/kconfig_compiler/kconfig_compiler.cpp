@@ -1532,14 +1532,6 @@ int main( int argc, char **argv )
     h << endl;
   }
 
-  // Static writeConfig method for singleton
-  if ( singleton ) {
-    h << "    static" << endl;
-    h << "    void writeConfig()" << endl;
-    h << "    {" << endl;
-    h << "      static_cast<KConfigSkeleton*>(self())->writeConfig();" << endl;
-    h << "    }" << endl;
-  }
 
   // Signal definition.
   if( hasSignals ) {

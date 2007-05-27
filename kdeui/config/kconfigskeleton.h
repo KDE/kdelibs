@@ -937,26 +937,35 @@ public:
 
   /**
    * Set all registered items to their default values.
-   * This method is implemented by usrSetDefaults(), which can be overridden
-   * in derived classes if you have special requirements.
+   * This method calls usrSetDefaults() after setting the defaults for the
+   * registered items. You can overridde usrSetDefaults() in derived classes
+   * if you have special requirements.
+   * If you need more fine-grained control of setting the default values of
+   * the registered items you can override setDefaults() in a derived class.
    */
-  void setDefaults();
+  virtual void setDefaults();
 
   /**
    * Read preferences from config file. All registered items are set to the
    * values read from disk.
-   * This method is implemented by usrReadConfig(), which can be overridden
+   * This method calls usrReadConfig() after reading the settings of the
+   * registered items from the KConfig. You can overridde usrReadConfig()
    * in derived classes if you have special requirements.
+   * If you need more fine-grained control of storing the settings from
+   * the registered items you can override readConfig() in a derived class.
    */
-  void readConfig();
+  virtual void readConfig();
 
   /**
    * Write preferences to config file. The values of all registered items are
    * written to disk.
-   * This method is implemented by usrWriteConfig(), which can be overridden
+   * This method calls usrWriteConfig() after writing the settings from the
+   * registered items to the KConfig. You can overridde usrWriteConfig()
    * in derived classes if you have special requirements.
+   * If you need more fine-grained control of storing the settings from
+   * the registered items you can override writeConfig() in a derived class.
    */
-  void writeConfig();
+  virtual void writeConfig();
 
   /**
    * Set the config file group for subsequent addItem() calls. It is valid
@@ -1295,7 +1304,10 @@ public:
    * Specify whether this object should reflect the actual values or the
    * default values.
    * This method is implemented by usrUseDefaults(), which can be overridden
-   * in derived classes if you have special requirements.
+   * in derived classes if you have special requirements and can call
+   * usrUseDefaults() directly.
+   * If you don't have control wether useDefaults() or usrUseDefaults() is
+   * called override useDefaults() directly.
    * @param b true to make this object reflect the default values,
    *          false to make it reflect the actual values.
    * @return The state prior to this call
