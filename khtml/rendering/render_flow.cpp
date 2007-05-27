@@ -86,7 +86,7 @@ RenderFlow* RenderFlow::continuationBefore(RenderObject* beforeChild)
 void RenderFlow::addChildWithContinuation(RenderObject* newChild, RenderObject* beforeChild)
 {
     RenderFlow* flow = continuationBefore(beforeChild);
-    while(beforeChild && beforeChild->parent() != this && !beforeChild->parent()->isAnonymousBlock()) {
+    while(beforeChild && beforeChild->parent() != flow && !beforeChild->parent()->isAnonymousBlock()) {
         // skip implicit containers around beforeChild
         beforeChild = beforeChild->parent();
     }
