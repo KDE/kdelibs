@@ -503,7 +503,6 @@ DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &htm
         case ID_COLGROUP:
         case ID_FRAMESET:
         case ID_HEAD:
-        case ID_STYLE:
         case ID_TABLE:
         case ID_TBODY:
         case ID_TFOOT:
