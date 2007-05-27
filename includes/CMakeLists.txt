@@ -873,12 +873,12 @@ install( FILES
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KSettings )
 
 
-install( FILES
-  Sonnet/GuessLanguage
-  Sonnet/UnicodeData
-  Sonnet/TextBreaks
-  Sonnet/Spell
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Sonnet )
+#install( FILES
+#  Sonnet/GuessLanguage
+#  Sonnet/UnicodeData
+#  Sonnet/TextBreaks
+#  Sonnet/Spell
+#DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Sonnet )
 
 
 install( FILES
