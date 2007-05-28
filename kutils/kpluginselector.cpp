@@ -98,6 +98,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     details = new QLabel();
 
     QHBoxLayout *layout = new QHBoxLayout;
+
     QVBoxLayout *dataLayout = new QVBoxLayout;
     dataLayout->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     layout->setAlignment(Qt::AlignLeft);
@@ -532,6 +533,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     connect(d, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
 
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin(0);
     setLayout(layout);
 
     d->listView = new Private::QListViewSpecialized();
