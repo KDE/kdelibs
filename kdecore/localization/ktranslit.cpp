@@ -52,7 +52,7 @@ QStringList KTranslit::fallbackList (const QString &lang)
     QStringList fallbacks;
 
     if (   lang == QString::fromAscii("sr@latin")
-        or lang == QString::fromAscii("sr@Latn")) {
+        || lang == QString::fromAscii("sr@Latn")) {
         fallbacks += QString::fromAscii("sr");
     }
 
