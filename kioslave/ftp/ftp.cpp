@@ -1724,6 +1724,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
   {
     const char* psz = strrchr( ftpResponse(4), '(' );
     if(psz) m_size = charToLongLong(psz+1);
+    if (!m_size) m_size = UnknownSize;
   }
 
   KIO::filesize_t bytesLeft = 0;
@@ -2101,6 +2102,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
   if(!psz)
     return false;
   m_size = charToLongLong(psz);
+  if (!m_size) m_size = UnknownSize;
   return true;
 }
 
