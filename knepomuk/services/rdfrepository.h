@@ -69,7 +69,7 @@ namespace Nepomuk {
 		/**
 		 * \sa RDFRepositoryPublisher::listRepositoriyIds
 		 */
-		QStringList listRepositoriyIds();
+		QStringList listRepositoryIds();
 
 		/**
 		 * \sa RDFRepositoryPublisher::removeRepository

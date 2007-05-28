@@ -39,10 +39,10 @@ void Nepomuk::Services::DBus::RDFRepositoryPublisherInterface::createRepository(
         QDBusConnection::sessionBus().send( m.createErrorReply( servicePublisher()->errorName(), servicePublisher()->errorMessage() ) );
 }
 
-QStringList Nepomuk::Services::DBus::RDFRepositoryPublisherInterface::listRepositoriyIds( const QDBusMessage& m )
+QStringList Nepomuk::Services::DBus::RDFRepositoryPublisherInterface::listRepositoryIds( const QDBusMessage& m )
 {
     servicePublisher()->setError( Backbone::Error::NoError );
-    QStringList l = static_cast<RDFRepositoryPublisher*>( servicePublisher() )->listRepositoriyIds();
+    QStringList l = static_cast<RDFRepositoryPublisher*>( servicePublisher() )->listRepositoryIds();
     if( !servicePublisher()->success() )
         QDBusConnection::sessionBus().send( m.createErrorReply( servicePublisher()->errorName(), servicePublisher()->errorMessage() ) );
     return l;

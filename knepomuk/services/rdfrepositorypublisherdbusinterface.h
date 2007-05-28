@@ -48,7 +48,7 @@ namespace Nepomuk {
 		public Q_SLOTS:
 		    void createRepository( const QString& repositoryId, const QDBusMessage& );
 
-		    QStringList listRepositoriyIds( const QDBusMessage& );
+		    QStringList listRepositoryIds( const QDBusMessage& );
 
 		    void removeRepository( const QString& repositoryId, const QDBusMessage& );
 

@@ -44,9 +44,9 @@ void Nepomuk::Services::RDFRepository::createRepository( const QString& repid )
 }
 
 
-QStringList Nepomuk::Services::RDFRepository::listRepositoriyIds( )
+QStringList Nepomuk::Services::RDFRepository::listRepositoryIds( )
 {
-    Backbone::Message m( service()->url(), "listRepositoriyIds" );
+    Backbone::Message m( service()->url(), "listRepositoryIds" );
 
     Backbone::Result reply = service()->methodCall( m );
     setLastResult( reply );

@@ -147,7 +147,7 @@ namespace Nepomuk {
 		 *
 		 * \return A list of all repositoryIds in the storage.
 		 */
-		virtual QStringList listRepositoriyIds() = 0;
+		virtual QStringList listRepositoryIds() = 0;
 
 		/**
 		 * Remove the repository identified by the \a repositoryId.
