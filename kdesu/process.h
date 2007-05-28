@@ -112,12 +112,12 @@ public:
     /**
      * Returns the filedescriptor of the process.
      */
-    int fd() {return m_Fd;};
+    int fd() {return m_Fd;}
 
     /**
      * Returns the pid of the process.
      */
-    int pid() {return m_Pid;};
+    int pid() {return m_Pid;}
 
 public: /* static */
     /*
