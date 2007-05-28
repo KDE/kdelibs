@@ -1029,6 +1029,7 @@ void KConfigSkeleton::writeConfig()
 
 bool KConfigSkeleton::usrUseDefaults(bool b)
 {
+  return false;
 }
 
 void KConfigSkeleton::usrSetDefaults()
