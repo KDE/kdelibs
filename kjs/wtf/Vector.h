@@ -28,6 +28,7 @@
 #include "VectorTraits.h"
 #include <limits>
 #include <stdlib.h>
+#include <cstring>
 #include <utility>
 
 // Temporary workaround for Win32.
