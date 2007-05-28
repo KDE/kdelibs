@@ -665,7 +665,7 @@ class KDateInternalMonthPicker::KDateInternalMonthPrivate {
 public:
         KDateInternalMonthPrivate (int y, int m, int d)
         : year(y), month(m), day(d)
-        {};
+        {}
         int year;
         int month;
         int day;

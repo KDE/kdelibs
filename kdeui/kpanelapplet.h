@@ -324,7 +324,7 @@ protected:
      * Reimplement this change handler in order to adjust the look of your
      * applet.
      **/
-    virtual void alignmentChange( Alignment /*a*/ ) {};
+    virtual void alignmentChange( Alignment /*a*/ ) {}
 
     /**
      * Use this method to set the custom menu for this applet so that it can be shown

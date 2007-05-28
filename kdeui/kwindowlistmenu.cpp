@@ -61,8 +61,8 @@ namespace
 class NameSortedInfoList : public QPtrList<KWin::WindowInfo>
 {
 public:
-    NameSortedInfoList() { setAutoDelete(true); };
-    ~NameSortedInfoList() {};
+    NameSortedInfoList() { setAutoDelete(true); }
+    ~NameSortedInfoList() {}
 
 private:
     int compareItems( QPtrCollection::Item s1, QPtrCollection::Item s2 );

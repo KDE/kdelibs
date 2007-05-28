@@ -121,7 +121,7 @@ public:
    * widget.
    * @since 3.2
    */
-  KDateTable *dateTable() const { return table; };
+  KDateTable *dateTable() const { return table; }
 
   /**
    * Sets the font size of the widgets elements.

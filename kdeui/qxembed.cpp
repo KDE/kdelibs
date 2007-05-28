@@ -136,7 +136,7 @@ public:
         mapAfterRelease = false;
         lastPos = QPoint(0,0);
     }
-    ~QXEmbedData(){};
+    ~QXEmbedData(){}
 
     bool autoDelete;      // L0101: See L2600
     bool xplain;          // L0102: See L1100
@@ -154,7 +154,7 @@ namespace
     {
     public:
         QXEmbedAppFilter()  { qApp->installEventFilter( this ); } 
-        ~QXEmbedAppFilter() { };
+        ~QXEmbedAppFilter() { }
         bool eventFilter( QObject *, QEvent * );
     };
 }

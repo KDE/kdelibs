@@ -66,7 +66,7 @@ public:
     * @return the original whole pixmap that we're using in this widget as the
     * pixmap the user is selecting a region from.
     */
-   QPixmap pixmap() const { return m_unzoomedPixmap; };
+   QPixmap pixmap() const { return m_unzoomedPixmap; }
 
    /**
     * Sets the selected region to be @p rect (in zoomed pixmap coordinates)

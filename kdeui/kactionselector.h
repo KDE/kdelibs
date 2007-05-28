@@ -370,7 +370,7 @@ private slots:
   /**
     connected to both list boxes to set the buttons enabled
   */
-  void slotCurrentChanged( QListBoxItem * ) { setButtonsEnabled(); };
+  void slotCurrentChanged( QListBoxItem * ) { setButtonsEnabled(); }
 
 private:
 

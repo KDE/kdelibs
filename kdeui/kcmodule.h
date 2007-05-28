@@ -163,7 +163,7 @@ public:
    *
    * @note The default behavior is to call defaults().
    */
-  virtual void sysdefaults() { defaults(); };
+  virtual void sysdefaults() { defaults(); }
   // KDE 4 deprecate
 
   /**
@@ -200,7 +200,7 @@ public:
    *
    * @see KCModule::setButtons
    */
-  int buttons() const { return _btn; };
+  int buttons() const { return _btn; }
 
   /**
    * Get the RootOnly message for this module.
@@ -306,7 +306,7 @@ protected:
    *
    * @see KCModule::buttons
    */
-  void setButtons(int btn) { _btn = btn; };
+  void setButtons(int btn) { _btn = btn; }
 
   /**
    * Sets the RootOnly message.

@@ -457,7 +457,7 @@ protected slots:
     /**
     * @deprecated
     */
-    virtual void itemSelected( QListBoxItem* ) {};
+    virtual void itemSelected( QListBoxItem* ) {}
 
     /**
     * Completes text according to the completion mode.

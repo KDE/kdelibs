@@ -40,7 +40,7 @@ struct KFontComboPrivate
           size(0),
           lineSpacing(0)
     {
-    };
+    }
 
     bool bold : 1;
     bool italic : 1;

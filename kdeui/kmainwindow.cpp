@@ -86,7 +86,7 @@ class KMWSessionManaged : public KSessionManaged
 public:
     KMWSessionManaged()
     {
-    };
+    }
     ~KMWSessionManaged()
     {
     }
