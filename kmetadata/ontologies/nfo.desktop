@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.4
+Name=Nepomuk File Ontology
+Comment=The Nepomuk File Ontology defines basic file types
+URL=http://ont.semanticdesktop.org/2007/03/22/nfo#
+Path=nfo.rdfs
+MimeType=application/rdf+xml
+Type=Link
