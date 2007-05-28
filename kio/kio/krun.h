@@ -247,8 +247,7 @@ public:
    * @p cmd must be a shell command. You must not append "&"
    * to it, since the function will do that for you.
    *
-   * @return PID of running command, 0 if it could not be started, 0 - (PID
-   * of running command) if command was unsafe for map notification.
+   * @return PID of running command, 0 if it could not be started.
    */
   static pid_t runCommand( const QString &cmd );
 
@@ -262,8 +261,7 @@ public:
    * @param icon icon for app starting notification
    * @param window The top-level widget of the app that invoked this object.
    * @param asn Application startup notification id, if any (otherwise "").
-   * @return PID of running command, 0 if it could not be started, 0 - (PID
-   * of running command) if command was unsafe for map notification.
+   * @return PID of running command, 0 if it could not be started.
    */
   static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon, QWidget* window, const QByteArray& asn = "" );
 
