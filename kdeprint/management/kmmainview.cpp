@@ -153,7 +153,9 @@ void KMMainView::loadParameters()
 
 void KMMainView::restoreSettings()
 {
-	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup conf = cf->group("General");
+	
 	setViewType((KMPrinterView::ViewType)conf.readEntry("ViewType", int(KMPrinterView::Icons)));
 	setOrientation(conf.readEntry("Orientation", 1));
 	bool 	view = conf.readEntry("ViewToolBar", false);
@@ -169,7 +171,8 @@ void KMMainView::restoreSettings()
 
 void KMMainView::saveSettings()
 {
-	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup conf = cf->group("General");
 	conf.writeEntry("ViewType",(int)m_printerview->viewType());
 	conf.writeEntry("Orientation",orientation() == Qt::Horizontal ? 1 : 0);
 	conf.writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());

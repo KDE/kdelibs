@@ -108,7 +108,9 @@ const char* CupsInfos::getPasswordCB()
 
 void CupsInfos::load()
 {
-	KConfigGroup conf_ = KMFactory::self()->printConfig("CUPS");
+	KConfig *cf = KMFactory::self()->printConfig();
+
+	KConfigGroup conf_ = cf->group("CUPS");
 	host_ = conf_.readEntry("Host",cupsServer());
 	port_ = conf_.readEntry("Port",ippPort());
 	login_ = conf_.readEntry("Login",cupsUser());
@@ -131,7 +133,8 @@ void CupsInfos::load()
 
 void CupsInfos::save()
 {
-	KConfigGroup conf_ = KMFactory::self()->printConfig("CUPS");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup conf_ = cf->group("CUPS");
 	conf_.writeEntry("Host",host_);
 	conf_.writeEntry("Port",port_);
 	conf_.writeEntry("Login",login_);

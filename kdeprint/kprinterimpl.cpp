@@ -201,7 +201,9 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 void KPrinterImpl::statusMessage(const QString& msg, KPrinter *printer)
 {
 	kDebug(500) << "kdeprint: status message: " << msg << endl;
-	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	KConfig *cf = KMFactory::self()->printConfig();
+	
+	KConfigGroup conf = cf->group("General");
 	if (!conf.readEntry("ShowStatusMsg", true))
 		return;
 

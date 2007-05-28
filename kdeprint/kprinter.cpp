@@ -296,8 +296,9 @@ void KPrinter::loadSettings()
 	d->m_options.remove("kde-searchname");
 
     KConfigGroup conf = KConfigGroup( KGlobal::config(), "KPrinter Settings");
-    KConfigGroup pconf = KMFactory::self()->printConfig("General");
 
+    KConfig *cf = KMFactory::self()->printConfig();
+    KConfigGroup pconf = cf->group("General");
 	// load latest used printer from config file, if required in the options
 	if (searchName().isEmpty() && pconf.readEntry("UseLast", true))
 		setSearchName(conf.readEntry("Printer"));

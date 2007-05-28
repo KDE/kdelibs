@@ -99,7 +99,8 @@ KMJobViewer::KMJobViewer(QWidget *parent)
 	if (m_standalone)
 	{
 		setCaption(i18n("No Printer"));
-		KConfigGroup conf = KMFactory::self()->printConfig("Jobs");
+		KConfig *cf = KMFactory::self()->printConfig();
+		KConfigGroup conf = cf->group("Jobs");
 		QSize defSize( 550, 250 );
 		resize( conf.readEntry( "Size", defSize ) );
 	}
@@ -110,7 +111,8 @@ KMJobViewer::~KMJobViewer()
 	if (m_standalone)
 	{
 		kDebug( 500 ) << "Destroying stand-alone job viewer window" << endl;
-		KConfigGroup conf = KMFactory::self()->printConfig("Jobs" );
+		KConfig *cf = KMFactory::self()->printConfig();
+		KConfigGroup conf = cf->group("Jobs" );
 		conf.writeEntry( "Size", size() );
 		emit viewerDestroyed(this);
 	}
@@ -749,7 +751,7 @@ void KMJobViewer::slotConfigure()
 	KMConfigJobs	*w = new KMConfigJobs(&dlg);
 	dlg.setMainWidget(w);
 	dlg.resize(300, 10);
-	KConfigGroup conf = KMFactory::self()->printConfig("Jobs");
+	KConfig *conf = KMFactory::self()->printConfig();
 	w->loadConfig(conf);
 	if (dlg.exec())
 	{

@@ -38,7 +38,8 @@ PrinterFilter::~PrinterFilter()
 
 void PrinterFilter::update()
 {
-	KConfigGroup conf = KMFactory::self()->printConfig("Filter");
+	KConfig *cf=KMFactory::self()->printConfig();
+	KConfigGroup conf = cf->group("Filter");
 	m_locationRe.setPattern(conf.readEntry("LocationRe"));
 	m_printers = conf.readEntry("Printers", QStringList());
 	// filter enable state is saved on a per application basis,

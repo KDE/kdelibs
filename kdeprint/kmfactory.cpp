@@ -234,19 +234,20 @@ void KMFactory::loadFactory(const QString& syst)
 	}
 }
 
-KConfigGroup KMFactory::printConfig(const QString& group)
+KConfig *KMFactory::printConfig()
 {
-	if (!m_printconfig)
-	{
-		m_printconfig = new KConfig("kdeprintrc");
-		Q_CHECK_PTR(m_printconfig);
+        if (!m_printconfig)
+        {
+                m_printconfig = new KConfig("kdeprintrc");
+                Q_CHECK_PTR(m_printconfig);
 	}
-	return KConfigGroup( m_printconfig, group);
+	return m_printconfig;
 }
 
 QString KMFactory::printSystem()
 {
-	KConfigGroup conf = printConfig("General");
+	KConfig *cf = printConfig();
+	KConfigGroup conf = cf->group("General");
 	QString	sys = conf.readEntry("PrintSystem");
 	if (sys.isEmpty())
 	{
@@ -283,7 +284,8 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 	unload();
 	if (saveSyst)
 	{
-		KConfigGroup conf = printConfig("General");
+		KConfig *cf = printConfig();
+		KConfigGroup conf = cf->group("General");
 		conf.writeEntry("PrintSystem", syst);
 		conf.sync();
 
@@ -410,7 +412,7 @@ void KMFactory::slot_configChanged()
 
 void KMFactory::saveConfig()
 {
-	KConfigGroup conf = printConfig();
+	KConfigGroup conf(printConfig(),"");
 	conf.sync();
 	kDebug(500) << "KMFactory (" << getpid() << ") emitting DCOP signal configChanged()" << endl;
 	emit configChanged();

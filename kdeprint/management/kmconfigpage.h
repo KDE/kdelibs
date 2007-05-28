@@ -32,8 +32,8 @@ class KDEPRINT_MANAGEMENT_EXPORT KMConfigPage : public QWidget
 public:
 	KMConfigPage(QWidget *parent = 0);
 
-	virtual void loadConfig(const KConfigGroup &conf);
-	virtual void saveConfig(KConfigGroup &conf);
+	virtual void loadConfig(KConfig *conf);
+	virtual void saveConfig(KConfig *conf);
 
 	QString pageName() const 	{ return m_name; }
 	QString pageHeader() const 	{ return m_header; }

@@ -246,13 +246,16 @@ bool KMJobManager::doPluginAction(int, const QList<KMJob*>&)
 
 void KMJobManager::setLimit(int val)
 {
-	KConfigGroup conf = KMFactory::self()->printConfig("Jobs");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup conf = cf->group("Jobs");
 	conf.writeEntry("Limit", val);
 }
 
 int KMJobManager::limit()
 {
-	return KMFactory::self()->printConfig("Jobs").readEntry("Limit", 0);
+	KConfig *cf = KMFactory::self()->printConfig(); 
+	KConfigGroup conf = cf->group("Jobs");
+	return conf.readEntry("Limit", 0);
 }
 
 #include "kmjobmanager.moc"

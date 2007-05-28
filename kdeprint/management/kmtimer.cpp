@@ -88,7 +88,8 @@ void KMTimer::startTimer(int t)
 {
 	if (t == -1)
 	{
-		KConfigGroup cg = KMFactory::self()->printConfig("General");
+		KConfig *conf = KMFactory::self()->printConfig();
+		KConfigGroup cg = conf->group("General");
 		t = cg.readEntry("TimerDelay", 5) * 1000;
 	}
   setSingleShot( true );

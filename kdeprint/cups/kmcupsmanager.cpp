@@ -111,8 +111,9 @@ QString KMCupsManager::driverDirectory()
 
 QString KMCupsManager::cupsInstallDir()
 {
-	return KMFactory::self()->printConfig("CUPS").
-		readPathEntry("InstallDir");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup group = cf->group("CUPS");
+	return group.readPathEntry("InstallDir");
 }
 
 void KMCupsManager::reportIppError(IppRequest *req)

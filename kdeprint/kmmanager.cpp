@@ -435,7 +435,8 @@ QString KMManager::testPage()
 
 QString KMManager::getTestPage()
 {
-	KConfigGroup conf = KMFactory::self()->printConfig( "General");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup conf = cf->group( "General");
 	QString	tpage = conf.readPathEntry("TestPage");
 
 	if (tpage.isEmpty())

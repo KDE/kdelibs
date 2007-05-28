@@ -31,8 +31,8 @@ class KMConfigJobs : public KMConfigPage
 public:
 	KMConfigJobs(QWidget *parent = 0);
 
-	void loadConfig(const KConfigGroup &);
-	void saveConfig(KConfigGroup &);
+	void loadConfig(KConfig* );
+	void saveConfig(KConfig*);
 
 private:
 	KIntNumInput	*m_limit;

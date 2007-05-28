@@ -260,7 +260,8 @@ bool KPrintPreview::preview(const QString& file, bool previewOnly, WId parentId)
 	if ( !isPS )
 		kDebug( 500 ) << "Previewing a non PostScript file, built-in preview disabled" << endl;
 
-	KConfigGroup conf = KMFactory::self()->printConfig("General");
+	KConfig *cf = KMFactory::self()->printConfig();
+	KConfigGroup conf = cf->group("General");
 	KLibFactory	*factory(0);
 	bool	externalPreview = conf.readEntry("ExternalPreview", false);
 	QWidget	*parentW = QWidget::find(parentId);
