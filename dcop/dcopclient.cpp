@@ -41,6 +41,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/socket.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include <ctype.h>
 #include <unistd.h>
@@ -818,6 +820,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
         emit attachFailed(QString::fromLatin1( errBuf ));
         return false;
     }
+    fcntl(socket(), F_SETFL, FD_CLOEXEC);
 
     IceSetShutdownNegotiation(d->iceConn, False);
 
