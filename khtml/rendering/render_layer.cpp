@@ -60,11 +60,13 @@
 #include "xml/dom_restyler.h"
 
 #include <QtGui/QStyle>
+#include <QtCore/QStack>
 
 using namespace DOM;
 using namespace khtml;
 
 ScrollBarWidget* RenderLayer::gScrollBar = 0;
+QStack<QRegion>* RenderLayer::s_clipHolder = 0;
 
 #ifndef NDEBUG
 static bool inRenderLayerDetach;
@@ -815,30 +817,37 @@ void RenderLayer::paint(QPainter *p, const QRect& damageRect, bool selectionOnly
     paintLayer(this, p, damageRect, selectionOnly);
 }
 
-static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect)
+static void setClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool setup = false)
 {
     if (paintDirtyRect == clipRect)
         return;
-    p->save();
+    if (!RenderLayer::s_clipHolder)
+        RenderLayer::s_clipHolder = new QStack<QRegion>;
 
-#ifdef APPLE_CHANGES
-    p->addClip(clipRect);
-#else
-    p->setClipRect(clipRect, Qt::IntersectClip);
-#endif
-
+    QRegion r = clipRect;
+    if (!RenderLayer::s_clipHolder->isEmpty())
+        r &= RenderLayer::s_clipHolder->top();
+    
+    p->setClipRegion( r );
+    RenderLayer::s_clipHolder->push( r );
 }
 
-static void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect)
+static void restoreClip(QPainter* p, const QRect& paintDirtyRect, const QRect& clipRect, bool cleanup = false)
 {
     if (paintDirtyRect == clipRect)
         return;
-    p->restore();
+    RenderLayer::s_clipHolder->pop();
+    if (!RenderLayer::s_clipHolder->isEmpty())
+        p->setClipRegion( RenderLayer::s_clipHolder->top() );
+    else
+        p->setClipRegion( QRegion(), Qt::NoClip );
 }
 
 void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
                         const QRect& paintDirtyRect, bool selectionOnly)
 {
+    assert( rootLayer != this || !s_clipHolder );
+
     // Calculate the clip rects we should use.
     QRect layerBounds, damageRect, clipRectToApply;
     calculateRects(rootLayer, paintDirtyRect, layerBounds, damageRect, clipRectToApply);
@@ -951,6 +960,12 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
     // End our transparency layer
     if (isTransparent())
         p->setOpacity(previousOpacity);
+
+    if (s_clipHolder && rootLayer == this) {
+        assert(s_clipHolder->isEmpty());
+        delete s_clipHolder;
+        s_clipHolder = 0;
+    }
 }
 
 bool RenderLayer::nodeAtPoint(RenderObject::NodeInfo& info, int x, int y)

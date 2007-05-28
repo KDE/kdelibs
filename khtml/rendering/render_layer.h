@@ -51,6 +51,7 @@
 #include "render_object.h"
 
 //template <class T*> class QVector;
+template <class T> class QStack;
 
 namespace khtml {
     class RenderStyle;
@@ -128,6 +129,7 @@ class RenderLayer
 {
 public:
     static ScrollBarWidget* gScrollBar;
+    static QStack<QRegion>* s_clipHolder;
 
     RenderLayer(RenderObject* object);
     ~RenderLayer();

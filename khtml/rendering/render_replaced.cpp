@@ -569,11 +569,17 @@ static void copyWidget(const QRect& r, QPainter *p, QWidget *widget, int tx, int
         pp.setCompositionMode(QPainter::CompositionMode_Clear);
         pp.eraseRect(r);
         d = pm;
-    }
+    } else
+        p->end();
+
     QPainter::setRedirected(widget, d, buffered ? QPoint(0,0) : -thePoint);
+
     QPaintEvent e( r );
     QApplication::sendEvent(widget, &e);
     QPainter::restoreRedirected(widget);
+
+    if (!p->isActive())
+        p->begin(p->device());
     p->setWorldMatrix( m );
 
     if (buffered) {
