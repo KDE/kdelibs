@@ -35,6 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/param.h>
 #endif
 #include <sys/resource.h>
+#include <sys/socket.h>
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -171,19 +172,7 @@ static unsigned long writeIceData(IceConn iceConn, unsigned long nbytes, char *p
 
 	if (iceConn->io_ok)
 	{
-		
-//		nwritten = _kde_IceTransWrite (iceConn->trans_conn, ptr, (int) nleft);
-
-		/*
-		Use special write handling on windows platform. The write function from
-		the runtime library (on MSVC) does not allow to write on sockets.
-		*/
-#ifdef Q_OS_WIN
 		nwritten = send(fd, ptr, (int) nleft, 0);
-#else
-		nwritten = write(fd, ptr, (int) nleft);
-#endif
-
 	}
 	else
 	    return 0;
@@ -355,11 +344,7 @@ void DCOPConnection::slotOutputReady()
 	the runtime library (on MSVC) does not allow to write on sockets.
    */
    int nwritten;
-#ifdef Q_OS_WIN
    nwritten = ::send(fd,data.data()+outputBufferStart,data.size()-outputBufferStart,0);
-#else
-   nwritten = write(fd, data.data()+outputBufferStart, data.size()-outputBufferStart);
-#endif
    
    int e = errno;
    fcntl(fd, F_SETFL, fd_fl);
