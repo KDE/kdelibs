@@ -195,7 +195,7 @@ bool Nepomuk::KMetaData::ResourceData::store()
         if ( !exists() ) {
             RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
-            if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) )
+            if( !rr.listRepositoryIds().contains( KMetaData::defaultGraph() ) )
                 rr.createRepository( KMetaData::defaultGraph() );
 
             QList<Statement> statements;
@@ -231,7 +231,7 @@ void Nepomuk::KMetaData::ResourceData::setProperty( const QString& uri, const Ne
     if ( store() ) {
         RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
-        if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) )
+        if( !rr.listRepositoryIds().contains( KMetaData::defaultGraph() ) )
             rr.createRepository( KMetaData::defaultGraph() );
 
         // step 1: remove all the existing stuff

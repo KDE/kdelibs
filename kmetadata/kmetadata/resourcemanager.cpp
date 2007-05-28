@@ -225,7 +225,7 @@ QString Nepomuk::KMetaData::ResourceManager::generateUniqueUri() const
     while( 1 ) {
         // Should we use the Nepomuk localhost whatever namespace here?
         s = KMETADATA_NAMESPACE + KRandom::randomString( 20 );
-        if( !rdfr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ||
+        if( !rdfr.listRepositoryIds().contains( KMetaData::defaultGraph() ) ||
             ( !rdfr.contains( KMetaData::defaultGraph(), Statement( s, Node(), Node() ) ) &&
               !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), s, Node() ) ) &&
               !rdfr.contains( KMetaData::defaultGraph(), Statement( Node(), Node(), s ) ) ) )
