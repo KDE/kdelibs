@@ -223,6 +223,8 @@ KCryptoConfig::KCryptoConfig(QWidget *parent, const QStringList &)
 {
 QGridLayout *grid;
 QBoxLayout *top = new QVBoxLayout(this);
+top->setMargin(0);
+
 QString whatstr;
 
   setQuickHelp( i18n("<h1>Crypto</h1> This module allows you to configure SSL for"
