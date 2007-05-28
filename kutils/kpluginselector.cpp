@@ -70,6 +70,7 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     pluginDelegate->setSeparatorPixels(10);
 
     connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
+    connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
 }
 
 KPluginSelector::Private::~Private()
@@ -276,7 +277,8 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
     foreach (KPluginInfo *pluginInfo, pluginInfoList)
     {
         if (!pluginInfo->isHidden() &&
-             pluginInfo->category().toLower() == myCategoryKey)
+             ((myCategoryKey.isEmpty()) ||
+              (pluginInfo->category().toLower() == myCategoryKey)))
         {
             pluginInfo->load(configGroup);
             pluginInfoByCategory[categoryName].append(pluginInfo);
@@ -451,6 +453,16 @@ KConfigGroup *KPluginSelector::Private::PluginModel::configGroup(const QModelInd
     return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).configGroup;
 }
 
+void KPluginSelector::Private::PluginModel::setParentComponents(const QModelIndex &index, const QStringList &parentComponents)
+{
+    additionalInfo[static_cast<KPluginInfo*>(index.internalPointer())].parentComponents = parentComponents;
+}
+
+QStringList KPluginSelector::Private::PluginModel::parentComponents(const QModelIndex &index) const
+{
+    return additionalInfo.value(static_cast<KPluginInfo*>(index.internalPointer())).parentComponents;
+}
+
 void KPluginSelector::Private::PluginModel::updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed)
 {
     const KPluginInfo *pluginInfo;
@@ -517,6 +529,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     , d(new Private(this))
 {
     connect(d, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
+    connect(d, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
 
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
@@ -1024,7 +1037,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                 configDialog = new KDialog;
                 configDialog->setWindowTitle(pluginInfo->name());
-                KTabWidget *newTabWidget = new KTabWidget(0);
+                KTabWidget *newTabWidget = new KTabWidget(configDialog);
                 bool configurable = false;
 
                 QObject::connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
@@ -1038,6 +1051,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     if(!servicePtr->noDisplay())
                     {
                         KCModuleInfo moduleinfo(servicePtr);
+                        model->setParentComponents(index, moduleinfo.service()->property("X-KDE-ParentComponents").toStringList());
                         KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
                         if (currentModuleProxy->realModule())
                         {
@@ -1079,11 +1093,17 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                 if (configDialog->exec() == QDialog::Accepted)
                 {
-                    foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+                    foreach (KCModuleProxy *moduleProxy, currentModuleProxyList)
                     {
                         moduleProxy->save();
+                        foreach (const QString &parentComponent, model->parentComponents(index))
+                        {
+                            emit configCommitted(parentComponent.toLatin1());
+                        }
                     }
                 }
+
+                delete configDialog;
             }
         }
     }

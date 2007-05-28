@@ -51,8 +51,8 @@ class QTreeWidgetItem;
   * You can add plugins from different KConfig[group], by just calling all times
   * you want addPlugins method with the correct parameters
   *
-  * Additionally, calls to constructor with same @p catName, will add new items
-  * to the same category, even if plugins are from different categories
+  * Additionally, calls to constructor with same @p categoryName, will add new
+  * items to the same category, even if plugins are from different categories
   *
   * @author Matthias Kretz <kretz@kde.org>
   * @author Rafael Fernández López <ereslibre@gmail.com>
@@ -69,7 +69,7 @@ public:
     KPluginSelector(QWidget *parent = 0);
 
     /**
-      * d-tor.
+      * Destructor
       */
     ~KPluginSelector();
 
@@ -80,23 +80,28 @@ public:
       * share/apps/&lt;instancename&gt;/kpartplugins directory
       *
       * @param componentName The name of the KComponentData of the plugin's parent.
-      * @param categoryName The translated name of the category. This is the
-      *                     name that is shown in the title
-      * @param categoryKey  When you have different categories of KParts
-      *                     plugins you distinguish between the plugins using
-      *                     the Category key in the .desktop file. Use this
-      *                     parameter to select only those KParts plugins
-      *                     with the Category key == @p categoryKey. If @p
-      *                     category is not set the Category key is ignored
-      *                     and all plugins are shown
-      * @param config       The KConfig object that holds the state of the
-      *                     plugins being enabled or not. By default it should
-      *                     be componentData.config(). It is recommended to
-      *                     always pass a KConfig object if you use
-      *                     KSettings::PluginPage since you never know from where the
-      *                     page will be called (think global config app).
-      *                     For example KViewCanvas passes KConfig(
-      *                     "kviewcanvas" )
+      * @param categoryName  The translated name of the category. This is the
+      *                      name that is shown in the title. If the category
+      *                      did exist before because of another call to
+      *                      addPlugins, then they will be shown in that
+      *                      category. If @p categoryName is a new one, then
+      *                      a new category will be shown on the plugin window,
+      *                      and the list of plugins added to it
+      * @param categoryKey   When you have different categories of KParts
+      *                      plugins you distinguish between the plugins using
+      *                      the Category key in the .desktop file. Use this
+      *                      parameter to select only those KParts plugins
+      *                      with the Category key == @p categoryKey. If
+      *                      @p categoryKey is not set the Category key is
+      *                      ignored and all plugins are shown. Not match case
+      * @param config        The KConfig object that holds the state of the
+      *                      plugins being enabled or not. By default it should
+      *                      be componentData.config(). It is recommended to
+      *                      always pass a KConfig object if you use
+      *                      KSettings::PluginPage since you never know from where the
+      *                      page will be called (think global config app).
+      *                      For example KViewCanvas passes KConfig(
+      *                      "kviewcanvas" )
       */
     void addPlugins(const QString &componentName,
                     const QString &categoryName = QString(),
@@ -118,15 +123,20 @@ public:
       * @param pluginInfoList A list of KPluginInfo objects containing the
       *                       necessary information for the plugins you want to
       *                       add to the list
-      * @param categoryName   The translated name of the category. This is the
-      *                       name that is shown in the title
+      * @param categoryName  The translated name of the category. This is the
+      *                      name that is shown in the title. If the category
+      *                      did exist before because of another call to
+      *                      addPlugins, then they will be shown in that
+      *                      category. If @p categoryName is a new one, then
+      *                      a new category will be shown on the plugin window,
+      *                      and the list of plugins added to it
       * @param categoryKey    When you have different categories of KParts
       *                       plugins you distinguish between the plugins using
       *                       the Category key in the .desktop file. Use this
       *                       parameter to select only those KParts plugins
-      *                       with the Category key == @p categoryKey. If @p
-      *                       category is not set the Category key is ignored
-      *                       and all plugins are shown
+      *                       with the Category key == @p categoryKey. If
+      *                       @p categoryKey is not set the Category key is
+      *                       ignored and all plugins are shown. Not match case
       * @param config         The KConfig object that holds the state of the
       *                       plugins being enabled or not. By default it will
       *                       use KGlobal::config(). It is recommended to

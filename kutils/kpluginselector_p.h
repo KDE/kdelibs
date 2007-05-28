@@ -60,6 +60,7 @@ public:
 
 Q_SIGNALS:
     void changed(bool hasChanged);
+    void configCommitted(const QByteArray &componentName);
 
 private Q_SLOTS:
     void emitChanged();
@@ -146,6 +147,7 @@ public:
     {
         int itemChecked;
         KConfigGroup *configGroup;
+        QStringList parentComponents;
     };
 
     PluginModel(KPluginSelector::Private *parent);
@@ -171,6 +173,10 @@ public:
     QList<KService::Ptr> services(const QModelIndex &index) const;
 
     KConfigGroup *configGroup(const QModelIndex &index) const;
+
+    void setParentComponents(const QModelIndex &index, const QStringList &parentComponents);
+
+    QStringList parentComponents(const QModelIndex &index) const;
 
     void updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed);
 
@@ -223,6 +229,9 @@ public:
     void setRightMargin(int rightMargin);
 
     void setSeparatorPixels(int separatorPixels);
+
+Q_SIGNALS:
+    void configCommitted(const QByteArray &componentName);
 
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
