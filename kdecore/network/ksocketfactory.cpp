@@ -30,6 +30,8 @@
 
 #include <config-network.h>
 
+using namespace KSocketFactory;
+
 class _k_internal_QTcpSocketSetError: public QAbstractSocket
 {
 public:
@@ -47,22 +49,50 @@ static inline void setError(QAbstractSocket *socket, QAbstractSocket::SocketErro
     hackSocket->setErrorString(errorString);
 }
 
-using namespace KSocketFactory;
+void KSocketFactory::connectToHost(QTcpSocket *socket, const QString &protocol, const QString &host,
+                                   quint16 port)
+{
+    if (!socket)
+        return;
+
+    socket->setProxy(proxyForConnection(protocol, host));
+    socket->connectToHost(host, port);
+}
+
+void KSocketFactory::connectToHost(QTcpSocket *socket, const QUrl &url)
+{
+    connectToHost(socket, url.scheme(), url.host(), url.port());
+}
 
 QTcpSocket *KSocketFactory::connectToHost(const QString &protocol, const QString &host, quint16 port,
                                           QObject *parent)
 {
     // ### TO-DO: find a way to determine if we should use QSslSocket or plain QTcpSocket
     QTcpSocket *socket = new QSslSocket(parent);
-
-    socket->setProxy(proxyForConnection(protocol, host));
-    socket->connectToHost(host, port);
+    connectToHost(socket, protocol, host, port);
     return socket;
 }
 
 QTcpSocket *KSocketFactory::connectToHost(const QUrl &url, QObject *parent)
 {
     return connectToHost(url.scheme(), url.host(), url.port(), parent);
+}
+
+void KSocketFactory::synchronousConnectToHost(QTcpSocket *socket, const QString &protocol,
+                                              const QString &host, quint16 port, int msecs)
+{
+    if (!socket)
+        return;
+
+    connectToHost(socket, protocol, host, port);
+    if (!socket->waitForConnected(msecs))
+        setError(socket, QAbstractSocket::SocketTimeoutError,
+                 i18n("Timed out trying to connect to remote host"));
+}
+
+void KSocketFactory::synchronousConnectToHost(QTcpSocket *socket, const QUrl &url, int msecs)
+{
+    synchronousConnectToHost(socket, url.scheme(), url.host(), url.port(), msecs);
 }
 
 QTcpSocket *KSocketFactory::synchronousConnectToHost(const QString &protocol, const QString &host,

@@ -97,12 +97,23 @@ namespace KSocketFactory
      * @threadsafe
      */
     KDECORE_EXPORT QTcpSocket *connectToHost(const QString &protocol, const QString &host,
-                                     quint16 port, QObject *parent = 0);
+                                             quint16 port, QObject *parent = 0);
 
     /**
      * @overload
      */
     KDECORE_EXPORT QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
+
+    /**
+     * @overload
+     */
+    KDECORE_EXPORT void connectToHost(QTcpSocket *socket, const QString &protocol,
+                                      const QString &host, quint16 port);
+
+    /**
+     * @overload
+     */
+    KDECORE_EXPORT void connectToHost(QTcpSocket *socket, const QUrl &url);
 
     /**
      * This function behaves exactly like connectToHost() above, except
@@ -131,15 +142,29 @@ namespace KSocketFactory
      *                  QTcpSocket constructor
      * @threadsafe
      */
-    KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QString &protocol, const QString &host,
-                                                quint16 port, int msecs = 30000,
-                                                QObject *parent = 0);
+    KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QString &protocol,
+                                                        const QString &host,
+                                                        quint16 port, int msecs = 30000,
+                                                        QObject *parent = 0);
 
     /**
      * @overload
      */
     KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QUrl &url, int msecs = 30000,
-                                                QObject *parent = 0);
+                                                        QObject *parent = 0);
+
+    /**
+     * @overload
+     */
+    KDECORE_EXPORT void synchronousConnectToHost(QTcpSocket *socket, const QString &protocol,
+                                                 const QString &host, quint16 port,
+                                                 int msecs = 30000);
+
+    /**
+     * @overload
+     */
+    KDECORE_EXPORT void synchronousConnectToHost(QTcpSocket *socket, const QUrl &url,
+                                                 int msecs = 30000);
 
     /**
      * Opens a TCP/IP socket for listening protocol @p protocol, binding
@@ -162,7 +187,7 @@ namespace KSocketFactory
      *                  QTcpServer constructor
      */
     KDECORE_EXPORT QTcpServer *listen(const QString &protocol, const QHostAddress &address = QHostAddress::Any,
-                              quint16 port = 0, QObject *parent = 0);
+                                      quint16 port = 0, QObject *parent = 0);
 
     // These functions below aren't done yet
     // Undocumented -> don't use!
