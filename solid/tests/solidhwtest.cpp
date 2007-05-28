@@ -53,7 +53,7 @@ void SolidHwTest::initTestCase()
 
 void SolidHwTest::testAllDevices()
 {
-    Solid::DeviceList devices = Solid::Device::allDevices();
+    QList<Solid::Device> devices = Solid::Device::allDevices();
 
     // Verify that the framework reported correctly the devices available
     // in the backend.
@@ -308,7 +308,7 @@ void SolidHwTest::testDeviceInterfaceIntrospectionCornerCases()
     QCOMPARE((int)Solid::DeviceInterface::stringToType("blup"), -1);
 }
 
-static QSet<QString> to_string_set(const Solid::DeviceList &list)
+static QSet<QString> to_string_set(const QList<Solid::Device> &list)
 {
     QSet<QString> res;
 
@@ -381,7 +381,7 @@ void SolidHwTest::testPredicate()
 
     parentUdi = QString();
     ifaceType = Solid::DeviceInterface::Unknown;
-    Solid::DeviceList list;
+    QList<Solid::Device> list;
 
     list = Solid::Device::listFromQuery(p1, parentUdi);
     QCOMPARE(list.size(), 2);

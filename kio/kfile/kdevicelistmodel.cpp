@@ -228,9 +228,9 @@ void KDeviceListModel::Private::_k_initDeviceList()
 
     // Use allDevices() from the manager if the predicate is not valid
     // otherwise the returned list is empty
-    const Solid::DeviceList &deviceList = predicate.isValid()?
-                                          Solid::Device::listFromQuery(predicate)
-                                        : Solid::Device::allDevices();
+    const QList<Solid::Device> &deviceList = predicate.isValid()?
+                                             Solid::Device::listFromQuery(predicate)
+                                           : Solid::Device::allDevices();
 
     foreach(Solid::Device device, deviceList)
     {

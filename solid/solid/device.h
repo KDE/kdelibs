@@ -239,8 +239,6 @@ namespace Solid
         QExplicitlySharedDataPointer<DevicePrivate> d;
         friend class DeviceManagerPrivate;
     };
-
-    typedef QList<Device> DeviceList;
 }
 
 #endif
