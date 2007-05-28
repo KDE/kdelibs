@@ -123,7 +123,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     if (isDisplayHintEnabled(ActivatedHint) && isActive || isHighlighted) {
         painter.setPen(fgColor);
     } else {
-        // dimm the foreground color by mixing it with the background
+        // dim the foreground color by mixing it with the background
         QColor mixColor(bgColor);
         mixColor.setAlpha(128);
         fgColor = KGraphicsUtils::blendColor(fgColor, mixColor);

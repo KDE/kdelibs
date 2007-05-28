@@ -137,7 +137,7 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
     const bool isActive = urlNavigator()->isActive();
 
     if (!(isDisplayHintEnabled(ActivatedHint) && isActive) && !isHighlighted) {
-        // dimm the foreground color by mixing it with the background
+        // dim the foreground color by mixing it with the background
         QColor mixColor(bgColor);
         mixColor.setAlpha(128);
         fgColor = KGraphicsUtils::blendColor(fgColor, mixColor);
