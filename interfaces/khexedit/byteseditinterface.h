@@ -18,10 +18,11 @@
 #ifndef KHE_BYTESEDITINTERFACE_H
 #define KHE_BYTESEDITINTERFACE_H
 
-#include <QtGui/QWidget>
-// kde specific
+// KDE
 #include <khexedit/khexedit_export.h>
 #include <kservicetypetrader.h>
+// Qt
+#include <QtGui/QWidget>
 
 /**
  * @short KHE (short for KHexEdit) is KDE's namespace for all things related
@@ -156,53 +157,6 @@ inline BytesEditInterface *bytesEditInterface( T *t )
 }
 
 /** tries to create an instance of a hexedit widget for arrays of chars (char[])
-  *
-  * Usage:
-  *
-  * \code
-  * #include <khexedit/byteseditinterface.h>
-  * #include <khexedit/valuecolumninterface.h>
-  * #include <khexedit/charcolumninterface.h>
-  * #include <khexedit/clipboardinterface.h>
-  * ...
-  *
-  * QWidget *BytesEditWidget = KHE::createBytesEditWidget( this, "BytesEditWidget" );
-  * // is e.g. kdeutils (incl. khexedit2) installed, so a widget could be found and created?
-  * if( BytesEditWidget )
-  * {
-  *   // fetch the editor interface
-  *   KHE::BytesEditInterface *BytesEdit = KHE::bytesEditInterface( BytesEditWidget );
-  *   Q_ASSERT( BytesEdit ); // This should not fail!
-  *
-  *   // now use the editor.
-  *   BytesEdit->setData( Buffer, BufferSize, -1 );
-  *   BytesEdit->setMaxDataSize( BufferSize );
-  *   BytesEdit->setReadOnly( false );
-  *   BytesEdit->setAutoDelete( true );
-  *
-  *   KHE::ValueColumnInterface *ValueColumn = KHE::valueColumnInterface( BytesEditWidget );
-  *   if( ValueColumn )
-  *   {
-  *     ValueColumn->setCoding( KHE::ValueColumnInterface::BinaryCoding );
-  *     ValueColumn->setByteSpacingWidth( 2 );
-  *     ValueColumn->setNoOfGroupedBytes( 4 );
-  *     ValueColumn->setGroupSpacingWidth( 12 );
-  *   }
-  *
-  *   KHE::CharColumnInterface *CharColumn = KHE::charColumnInterface( BytesEditWidget );
-  *   if( CharColumn )
-  *   {
-  *     CharColumn->setShowUnprintable( false );
-  *     CharColumn->setSubstituteChar( '*' );
-  *   }
-  *   KHE::ClipboardInterface *Clipboard = KHE::clipboardInterface( BytesEditWidget );
-  *   if( Clipboard )
-  *   {
-  *     // Yes, use BytesEditWidget, not Clipboard, because that's the QObject, indeed hacky...
-  *     connect( BytesEditWidget, SIGNAL(copyAvailable(bool)), this, SLOT(offerCopy(bool)) );
-  *   }
-  * }
-  * \endcode
   *
   * @param Parent  parent widget
   * @return a pointer to the widget, otherwise 0

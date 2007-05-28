@@ -1,18 +1,28 @@
 /** @mainpage Interfaces
 *
 * This section collects interfaces that can be implemented
-* by applications. The interfaces provide well-defined functionality
-* and make it possible to substitute one application (that implements
+* by components. The interfaces provide well-defined functionality
+* and make it possible to substitute one component (that implements
 * a given interface) for another.
 *
 * Documented interfaces are:
 *
-* - <a href="../kspeech/html/index.html"><b>KSpeech</b></a> - <i>The KDE Text-to-Speech D-Bus API.</i>
-* - Terminal
-* - <a href="../ktexteditor/html/index.html"><b>KTextEditor</b></a> (<a href="../ktexteditor/html/classes.html">classes</a>)\n
+* - <a href="../khexedit/html/index.html"><b>KHexEdit</b></a>
+*   (<a href="../khexedit/html/classes.html">classes</a>) -
+*   <i>The KDE byte level editor API.</i>
+* - <a href="classKIMProxy.html"><b>KIMProxy</b></a> -
+*   <i>The KDE instant messaging API.</i>
+* - <a href="classKRegExpEditorInterface.html"><b>KRegExpEditor</b></a>
+*   <i>The KDE regular expression editor API.</i>
+* - <a href="../kspeech/html/index.html"><b>KSpeech</b></a> -
+*   <i>The KDE Text-to-Speech D-Bus API.</i>
+* - <a href="classTerminalInterface.html"><b>Terminal</b></a> -
+*   <i>The KDE console part API.</i>
+* - <a href="../ktexteditor/html/index.html"><b>KTextEditor</b></a>
+*   (<a href="../ktexteditor/html/classes.html">classes</a>) -
 *   <i>Interface to plain text editing services in KDE.</i>
 *
 */
 // DOXYGEN_REFERENCES = kdecore kdefx kdeui kio kparts
-// DOXYGEN_EXCLUDE = kspeech ktexteditor
+// DOXYGEN_EXCLUDE = khexedit kspeech ktexteditor
 // DOXYGEN_SET_RECURSIVE = YES
