@@ -480,7 +480,7 @@ void KPassivePopup::updateMask()
     QBitmap mask( width(), height() );
     mask.clear();
     QPainter p( &mask );
-    QBrush brush( Qt::white, Qt::SolidPattern );
+    QBrush brush( Qt::color1, Qt::SolidPattern );
     p.setBrush( brush );
 
     int i = 0, z = 0;
