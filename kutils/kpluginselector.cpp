@@ -1102,8 +1102,6 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         }
                     }
                 }
-
-                delete configDialog;
             }
         }
     }
