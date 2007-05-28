@@ -9,9 +9,8 @@
 
 namespace KParts
 {
-    class KPARTS_EXPORT ComponentFactory
+    namespace ComponentFactory
     {
-    public:
         /**
          * This template function allows to ask the given kparts factory to create an
          * instance of the given template type.
@@ -30,10 +29,11 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        static T *createPartInstanceFromFactory( KParts::Factory *factory,
-                                                 QWidget *parentWidget = 0,
-                                                 QObject *parent = 0,
-                                                 const QStringList &args = QStringList() )
+        KPARTS_EXPORT
+        T *createPartInstanceFromFactory( KParts::Factory *factory,
+                                          QWidget *parentWidget = 0,
+                                          QObject *parent = 0,
+                                          const QStringList &args = QStringList() )
         {
             KParts::Part *object = factory->createPart( parentWidget,
                                                         parent,
@@ -47,11 +47,12 @@ namespace KParts
         }
 
         template <class T>
-        static T *createPartInstanceFromLibrary( const char *libraryName,
-                                                 QWidget *parentWidget = 0,
-                                                 QObject *parent = 0,
-                                                 const QStringList &args = QStringList(),
-                                                 int *error = 0 )
+        KPARTS_EXPORT
+        T *createPartInstanceFromLibrary( const char *libraryName,
+                                          QWidget *parentWidget = 0,
+                                          QObject *parent = 0,
+                                          const QStringList &args = QStringList(),
+                                          int *error = 0 )
         {
             KLibrary *library = KLibLoader::self()->library( libraryName );
             if ( !library )
@@ -88,11 +89,12 @@ namespace KParts
         }
 
         template <class T>
-        static T *createPartInstanceFromService( const KService::Ptr &service,
-                                                 QWidget *parentWidget = 0,
-                                                 QObject *parent = 0,
-                                                 const QStringList &args = QStringList(),
-                                                 int *error = 0 )
+        KPARTS_EXPORT
+        T *createPartInstanceFromService( const KService::Ptr &service,
+                                          QWidget *parentWidget = 0,
+                                          QObject *parent = 0,
+                                          const QStringList &args = QStringList(),
+                                          int *error = 0 )
         {
             QString library = service->library();
             if ( library.isEmpty() )
@@ -107,12 +109,13 @@ namespace KParts
         }
 
         template <class T, class ServiceIterator>
-        static T *createPartInstanceFromServices( ServiceIterator begin,
-                                                  ServiceIterator end,
-                                                  QWidget *parentWidget = 0,
-                                                  QObject *parent = 0,
-                                                  const QStringList &args = QStringList(),
-                                                  int *error = 0 )
+        KPARTS_EXPORT
+        T *createPartInstanceFromServices( ServiceIterator begin,
+                                           ServiceIterator end,
+                                           QWidget *parentWidget = 0,
+                                           QObject *parent = 0,
+                                           const QStringList &args = QStringList(),
+                                           int *error = 0 )
          {
             for (; begin != end; ++begin )
             {
@@ -161,12 +164,13 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        static T *createPartInstanceFromQuery( const QString &mimeType,
-                                               const QString &constraint,
-                                               QWidget *parentWidget = 0,
-                                               QObject *parent = 0,
-                                               const QStringList &args = QStringList(),
-                                               int *error = 0 )
+        KPARTS_EXPORT
+        T *createPartInstanceFromQuery( const QString &mimeType,
+                                        const QString &constraint,
+                                        QWidget *parentWidget = 0,
+                                        QObject *parent = 0,
+                                        const QStringList &args = QStringList(),
+                                        int *error = 0 )
         {
             const KService::List offers = KMimeTypeTrader::self()->query( mimeType, QLatin1String("KParts/ReadOnlyPart"), constraint );
             if ( offers.isEmpty() )
