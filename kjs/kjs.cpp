@@ -25,6 +25,7 @@
 #include "object.h"
 #include "package.h"
 
+#include <cstring>
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
