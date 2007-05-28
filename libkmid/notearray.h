@@ -123,12 +123,12 @@ class KMID_EXPORT NoteArray
    * @see get()
    * @see next()
    */ 
-  void iteratorBegin(void) { it=data; };
+  void iteratorBegin(void) { it=data; }
 
   /**
    * Get the command currently pointed to by the iterator.
    */
-  noteCmd *get(void)       { return it; };
+  noteCmd *get(void)       { return it; }
 
   /**
    * Advances the iterator to the next position.

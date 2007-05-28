@@ -314,13 +314,13 @@ class KMID_EXPORT MidiPlayer
    * Returns true if there's a song already loaded (with a previous call to 
    * loadSong() ) and false if not.
    */
-  int isSongLoaded(void) { return songLoaded; };
+  int isSongLoaded(void) { return songLoaded; }
 
   /**
    * Returns the linked list of SpecialEvents objects . For this to work,
    * the parse should be enabled (the default), by using setParseSong().
    */
-  SpecialEvent *specialEvents() { return spev; };
+  SpecialEvent *specialEvents() { return spev; }
 
   /**
    * Returns and array with the notes playen through the song . MidiPlayer must
@@ -330,7 +330,7 @@ class KMID_EXPORT MidiPlayer
    * Returns an array of notes, (just note on and note off events), in the form
    * of a NoteArray object
    */
-  NoteArray *noteArray(void) { return na; };
+  NoteArray *noteArray(void) { return na; }
 
 
   /**
@@ -372,7 +372,7 @@ class KMID_EXPORT MidiPlayer
    *
    * @see loadSong
    */
-  MidiFileInfo *information(void) { return info; };
+  MidiFileInfo *information(void) { return info; }
 
   /**
    * Sets the position in a song. 

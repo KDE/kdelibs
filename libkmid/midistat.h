@@ -83,7 +83,7 @@ class MidiStatus
     /**
      * Returns the patch currently used in channel @p chn.
      */
-    uchar chnPatch	( uchar chn ) { return chn_patch[chn]; };
+    uchar chnPatch	( uchar chn ) { return chn_patch[chn]; }
 
     /**
      * Stores a new channel pressure value in channel @p chn.
@@ -94,7 +94,7 @@ class MidiStatus
     /**
      * Returns the pressure value currently used in channel @p chn.
      */
-    uchar chnPressure	( uchar chn ) { return chn_pressure[chn]; };
+    uchar chnPressure	( uchar chn ) { return chn_pressure[chn]; }
 
     /**
      * Stores a new pitch bender value in channel chn
@@ -104,7 +104,7 @@ class MidiStatus
     /**
      * Returns the pitch bender value used in channel @p chn
      */
-    int chnPitchBender	( uchar chn) { return chn_bender[chn]; };
+    int chnPitchBender	( uchar chn) { return chn_bender[chn]; }
 
     /**
      * Stores a new value for controller @p ctl in channel @p chn.
@@ -115,7 +115,7 @@ class MidiStatus
      * Returns the value used for controller @p ctl in channel @p chn
      */
     uchar chnController	( uchar chn, uchar ctl ) 
-	{ return chn_controller[chn][ctl]; };
+	{ return chn_controller[chn][ctl]; }
 
     /**
      * Stores a sysex message that will be send in the next call to sendData

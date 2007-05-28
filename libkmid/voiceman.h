@@ -151,17 +151,17 @@ class VoiceManager
     /**
      * Returns the channel that voice @p v is using.
      */
-    int channel(int v) {return VoiceList[v]->channel;};
+    int channel(int v) {return VoiceList[v]->channel;}
 
     /**
      * Returns the note that voice @p v is playing.
      */
-    int note(int v) {return VoiceList[v]->note;};
+    int note(int v) {return VoiceList[v]->note;}
 
     /**
      * Returns true or false if the voice @p v is being used or not respectively.
      */
-    int used(int v) {return VoiceList[v]->used;};
+    int used(int v) {return VoiceList[v]->used;}
 
     /**
      * Clears the lists of used voices.

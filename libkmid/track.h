@@ -202,14 +202,14 @@ class MidiTrack
     /**
      * Returns the number of ticks left for the next event.
      */
-    ulong	waitTicks   (void) { return wait_ticks; };
+    ulong	waitTicks   (void) { return wait_ticks; }
 
     //	ulong   waitMs (void) {return time_to_next_event;};
 
     /**
      * Returns the absolute number of milliseconds of the next event.
      */ 
-    double   absMsOfNextEvent (void) { return time_at_next_event; };
+    double   absMsOfNextEvent (void) { return time_at_next_event; }
 
     /**
      * Change the tempo of the song.

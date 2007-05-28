@@ -126,7 +126,7 @@ class AlsaOut : public MidiOut
    *
    * @see deviceName
    */
-  int          deviceType () const { return devicetype; };
+  int          deviceType () const { return devicetype; }
 
   /**
    * Returns the name and type of this MIDI device.
@@ -137,7 +137,7 @@ class AlsaOut : public MidiOut
   /**
    * @internal
    */
-  int  rate    (void) { return m_rate; };
+  int  rate    (void) { return m_rate; }
 
   /**
    * See DeviceManager::noteOn()
@@ -201,7 +201,7 @@ class AlsaOut : public MidiOut
    * an unmodified value, 200 play music twice louder than it should, etc.
    */
   virtual void setVolumePercentage ( int volper )
-  { volumepercentage = volper; };
+  { volumepercentage = volper; }
 
   /**
    * Returns true if everything's ok and false if there has been any problem
@@ -209,7 +209,7 @@ class AlsaOut : public MidiOut
   int ok (void)
   { if (seqfd<0) return 0;
     return (_ok>0);
-  };
+  }
 
   virtual void wait        (double ticks);
   virtual void tmrSetTempo (int v);

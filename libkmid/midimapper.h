@@ -169,12 +169,12 @@ class KMID_EXPORT MidiMapper
     /**
      * Returns the status of the object.
      */
-    int  ok(void) { return _ok; };
+    int  ok(void) { return _ok; }
 
     /** 
      * Returns the channel which chn should be mapped to.
      */ 
-    uchar channel(uchar chn) { return channelmap[chn];};
+    uchar channel(uchar chn) { return channelmap[chn];}
 
     /** 
      * Returns the patch which pgm used on channel chn should be mapped to.

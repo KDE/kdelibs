@@ -204,7 +204,7 @@ class KMID_EXPORT DeviceManager
      *
      */
     MidiOut *chntodev(int chn)
-		{ return deviceForChannel(chn); };
+		{ return deviceForChannel(chn); }
 
     /**
      * It's possible to send different MIDI channels to different MIDI devices,
@@ -215,12 +215,12 @@ class KMID_EXPORT DeviceManager
      * be sent.
      */
     MidiOut *deviceForChannel(int chn)
-		{ return (device!=0L) ? device[chn2dev[chn]] : 0L ; };
+		{ return (device!=0L) ? device[chn2dev[chn]] : 0L ; }
 
     /**
      * Returns the device number associated with a given channel.
      */
-    int deviceNumberForChannel(int chn) { return chn2dev[chn]; };
+    int deviceNumberForChannel(int chn) { return chn2dev[chn]; }
 
     /**
      * Sets the device number associated with a given channel.
@@ -236,7 +236,7 @@ class KMID_EXPORT DeviceManager
     /**
      * Returns true if it's running ALSA and false if OSS is being run
      */
-    int usingAlsa(void) { return alsa; };
+    int usingAlsa(void) { return alsa; }
 
     // The following function are here to emulate a midi, so that the
     // DeviceManager sends the events to the appropriate devices.
@@ -490,7 +490,7 @@ class KMID_EXPORT DeviceManager
     /**
      * Returns the SNDCTL_SEQ_CTRLRATE ioctl value
      */
-    int rate(void) { return m_rate; };
+    int rate(void) { return m_rate; }
 
     /**
      * Returns the number of MIDI ports available on the system. It's common that
@@ -501,7 +501,7 @@ class KMID_EXPORT DeviceManager
      * @see synthDevices()
      * @see setDefaultDevice()
      */
-    int midiPorts(void) { return n_midi; };
+    int midiPorts(void) { return n_midi; }
 
     /**
      * Returns the number of internal synthesizers available on the system. Some
@@ -512,7 +512,7 @@ class KMID_EXPORT DeviceManager
      * @see setDefaultDevice()
      * @see setPatchesToUse()
      */
-    int synthDevices(void) { return n_synths; };
+    int synthDevices(void) { return n_synths; }
 
     /**
      * Returns the name of the @p i-th device . In case the DeviceManager wasn't

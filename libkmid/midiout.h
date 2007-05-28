@@ -136,7 +136,7 @@ class MidiOut
    *
    * @see deviceName
    */
-  int          deviceType () const { return devicetype; };
+  int          deviceType () const { return devicetype; }
 
   /**
    * Returns the name and type of this MIDI device.
@@ -223,7 +223,7 @@ class MidiOut
    * an unmodified value, 200 play music twice louder than it should, etc.
    */
   virtual void setVolumePercentage ( int volper )
-  { volumepercentage = volper; };
+  { volumepercentage = volper; }
 
   /**
    * Returns true if everything's ok and false if there has been any problem
@@ -231,7 +231,7 @@ class MidiOut
   int ok (void)
   { if (seqfd<0) return 0;
     return (_ok>0);
-  };
+  }
 
   /**
    * Returns the path to the file where the current used MidiMapper object
