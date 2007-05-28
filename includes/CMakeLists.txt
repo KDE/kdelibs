@@ -65,7 +65,6 @@ install( FILES
   K3ActiveLabel
   KAnimatedButton
   KApplication
-  KApplicationPropsPlugin
   KAr
   KArchive
   KArchiveDirectory
@@ -109,7 +108,6 @@ install( FILES
   KCatalog
   KCharMacroExpander
   KCharSelect
-  KCharSelectTable
   KCharsets
   KCmdLineArgs
   KCmdLineOptions
@@ -152,9 +150,6 @@ install( FILES
   KDataTool
   KDataToolAction
   KDataToolInfo
-  KDateInternalMonthPicker
-  KDateInternalWeekSelector
-  KDateInternalYearSelector
   KDatePicker
   KDateTable
   KDateTime
@@ -166,7 +161,6 @@ install( FILES
   KDevicePropsPlugin
   KDialog
   KDialogButtonBox
-  KDialogQueue
   KDirLister
   KDirModel
   KDirOperator
@@ -183,7 +177,6 @@ install( FILES
   KEncodingFileDialog
   KEntry
   KEntryKey
-  KExecPropsPlugin
   KFile
   K3FileDetailView
   KFileDialog
@@ -198,10 +191,7 @@ install( FILES
   KFileMetaInfo
   KFileMetaInfoGroup
   KFileMetaInfoItem
-  KFileMetaInfoProvider
-  KFileMimeTypeInfo
   KFilePermissionsPropsPlugin
-  KFilePlugin
   KFilePreview
   KFilePropsPlugin
   KFileShare
@@ -291,8 +281,6 @@ install( FILES
   KMimeTypeChooser
   KMimeTypeChooserDialog
   KMimeTypeResolver
-  KMimeTypeResolverBase
-  KMimeTypeResolverHelper
   KMimeTypeTrader
   KMimeTypeValidator
   KMozillaBookmarkImporterImpl
@@ -329,7 +317,6 @@ install( FILES
   KPassivePopup
   KPassivePopupMessageHandler
   KPasswordDialog
-  KPasswordEdit
   KPasteTextAction
   KPixmapEffect
   KPixmapProvider
@@ -354,7 +341,6 @@ install( FILES
   KProcessRunner
   KProgressDialog
   KPropertiesDialog
-  KPropsDlgPlugin
   KProtocolInfo
   KProtocolManager
   KPty
@@ -375,14 +361,14 @@ install( FILES
   KSSL
   KSSLCertBox
   KSSLCertChain
-  KSSLCertDlg
-  KSSLCertDlgRet
+  KSSLCertDialog
+  KSSLCertDialogRet
   KSSLCertificate
   KSSLCertificateCache
   KSSLCertificateFactory
   KSSLCertificateHome
   KSSLConnectionInfo
-  KSSLInfoDlg
+  KSSLInfoDialog
   KSSLKeyGen
   KSSLPKCS12
   KSSLPKCS7
@@ -432,7 +418,6 @@ install( FILES
   KStaticDeleter
   KStaticDeleterBase
   KStatusBar
-  KStatusBarLabel
   KStringHandler
   KStringListValidator
   KStyle
@@ -509,16 +494,12 @@ install( FILES
   KonqBookmarkOwner
   NET
   NETRootInfo
-  NETRootInfo2
-  NETRootInfo3
-  NETRootInfo4
   NETWinInfo
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
   PTY
   Pointer
   PtyProcess
-  QMetaTypeId
   SshProcess
   StubProcess
   SuProcess
