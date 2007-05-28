@@ -35,7 +35,7 @@ class KPARTS_EXPORT BrowserInterface : public QObject
 {
     Q_OBJECT
 public:
-    BrowserInterface( QObject *parent );
+    explicit BrowserInterface( QObject *parent );
     virtual ~BrowserInterface();
 
     /**

@@ -36,48 +36,60 @@
 
 using namespace KParts;
 
-const char *OpenURLEvent::s_strOpenURLEvent = "KParts/BrowserExtension/OpenURLevent";
 
 class OpenURLEvent::OpenURLEventPrivate
 {
 public:
-  OpenURLEventPrivate()
+  OpenURLEventPrivate( ReadOnlyPart *part,
+                       const KUrl &url,
+                       const URLArgs &args )
+    : m_part( part )
+    , m_url( url )
+    , m_args( args )
   {
   }
   ~OpenURLEventPrivate()
   {
   }
+  static const char *s_strOpenURLEvent;
+  ReadOnlyPart *m_part;
+  KUrl m_url;
+  URLArgs m_args;
 };
 
-OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KUrl &url, const URLArgs &args )
-: Event( s_strOpenURLEvent ), m_part( part ), m_url( url ), m_args( args )
+const char *OpenURLEvent::OpenURLEventPrivate::s_strOpenURLEvent =
+                        "KParts/BrowserExtension/OpenURLevent";
+
+OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KUrl &url,
+                            const URLArgs &args )
+    : Event( OpenURLEventPrivate::s_strOpenURLEvent )
+    , d( new OpenURLEventPrivate(part, url, args) )
 {
-//  d = new OpenURLEventPrivate();
 }
 
 OpenURLEvent::~OpenURLEvent()
 {
-//  delete d;
+    delete d;
 }
 
 ReadOnlyPart *OpenURLEvent::part() const
 {
-    return m_part;
+    return d->m_part;
 }
 
 KUrl OpenURLEvent::url() const
 {
-    return m_url;
+    return d->m_url;
 }
 
 URLArgs OpenURLEvent::args() const
 {
-    return m_args;
+    return d->m_args;
 }
 
 bool OpenURLEvent::test( const QEvent *event )
 {
-    return Event::test( event, s_strOpenURLEvent );
+    return Event::test( event, OpenURLEventPrivate::s_strOpenURLEvent );
 }
 
 namespace KParts
@@ -347,9 +359,10 @@ public:
 class BrowserExtension::BrowserExtensionPrivate
 {
 public:
-  BrowserExtensionPrivate()
+  BrowserExtensionPrivate( KParts::ReadOnlyPart *parent )
     : m_urlDropHandlingEnabled(false),
-      m_browserInterface(0)
+      m_browserInterface(0),
+      m_part( parent )
   {}
 
   struct DelayedRequest {
@@ -364,6 +377,9 @@ public:
   BrowserInterface *m_browserInterface;
 
   static void createActionSlotMap();
+
+  KParts::ReadOnlyPart *m_part;
+  URLArgs m_args;
 };
 
 K_GLOBAL_STATIC(BrowserExtension::ActionSlotMap, s_actionSlotMap)
@@ -399,7 +415,7 @@ void BrowserExtension::BrowserExtensionPrivate::createActionSlotMap()
 }
 
 BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
-: QObject( parent), m_part( parent ), d(new BrowserExtensionPrivate)
+: QObject( parent ), d( new BrowserExtensionPrivate(parent) )
 {
   //kDebug() << "BrowserExtension::BrowserExtension() " << this << endl;
   d->m_urlDropHandlingEnabled = false;
@@ -430,7 +446,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
       d->m_actionStatus.setBit( i, slotNames.contains( it.key()+"()" ) );
   }
 
-  connect( m_part, SIGNAL( completed() ),
+  connect( d->m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
   connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::URLArgs & ) ),
            this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::URLArgs & ) ) );
@@ -448,12 +464,12 @@ BrowserExtension::~BrowserExtension()
 
 void BrowserExtension::setUrlArgs( const URLArgs &args )
 {
-  m_args = args;
+  d->m_args = args;
 }
 
 URLArgs BrowserExtension::urlArgs() const
 {
-  return m_args;
+  return d->m_args;
 }
 
 int BrowserExtension::xOffset()
@@ -468,7 +484,7 @@ int BrowserExtension::yOffset()
 
 void BrowserExtension::saveState( QDataStream &stream )
 {
-  stream << m_part->url() << (qint32)xOffset() << (qint32)yOffset();
+  stream << d->m_part->url() << (qint32)xOffset() << (qint32)yOffset();
 }
 
 void BrowserExtension::restoreState( QDataStream &stream )
@@ -483,7 +499,7 @@ void BrowserExtension::restoreState( QDataStream &stream )
 
   setUrlArgs( args );
 
-  m_part->openUrl( u );
+  d->m_part->openUrl( u );
 }
 
 bool BrowserExtension::isURLDropHandlingEnabled() const
@@ -526,7 +542,7 @@ void BrowserExtension::pasteRequest()
 	        slotOpenUrlRequest( filterData.uri(), KParts::URLArgs() );
 		break;
 	    case KUriFilterData::ERROR:
-		KMessageBox::sorry( m_part->widget(), filterData.errorMsg() );
+		KMessageBox::sorry( d->m_part->widget(), filterData.errorMsg() );
 		break;
 	    default:
 		break;
@@ -536,7 +552,7 @@ void BrowserExtension::pasteRequest()
                     QStringList( QLatin1String( "kuriikwsfilter" ) ) ) &&
               url.length() < 250 )
     {
-        if ( KMessageBox::questionYesNo( m_part->widget(),
+        if ( KMessageBox::questionYesNo( d->m_part->widget(),
 		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?" ,  Qt::escape(url) ),
 		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "edit-find"),
 		    KStandardGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
@@ -650,9 +666,8 @@ public:
 }
 
 BrowserHostExtension::BrowserHostExtension( KParts::ReadOnlyPart *parent )
- : QObject( parent )
+ : QObject( parent ), d( new BrowserHostExtensionPrivate )
 {
-  d = new BrowserHostExtensionPrivate;
   d->m_part = parent;
 }
 

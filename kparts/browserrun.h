@@ -56,9 +56,9 @@ namespace KParts {
 
         virtual ~BrowserRun();
 
-        //KParts::URLArgs urlArgs() const { return m_args; }
-        //KParts::ReadOnlyPart* part() const { return m_part; }
-        KUrl url() const { return m_strURL; }
+        //KParts::URLArgs urlArgs() const;
+        //KParts::ReadOnlyPart* part() const;
+        KUrl url() const;
 
         bool hideErrorDialog() const;
 

@@ -176,6 +176,7 @@ struct KPARTS_EXPORT URLArgs
    */
   bool forcesNewWindow() const;
 
+private:
   URLArgsPrivate *d;
 };
 
@@ -213,6 +214,7 @@ struct KPARTS_EXPORT WindowArgs
     bool lowerWindow; //defaults to false
     bool scrollBarsVisible; //defaults to true
 
+private:
     WindowArgsPrivate *d; // don't use before KDE4, many KDE-3.x didn't have an explicit destructor
 };
 
@@ -236,13 +238,8 @@ public:
   static bool test( const QEvent *event );
 
 private:
-  static const char *s_strOpenURLEvent;
-  ReadOnlyPart *m_part;
-  KUrl m_url;
-  URLArgs m_args;
-
   class OpenURLEventPrivate;
-  OpenURLEventPrivate *d;
+  OpenURLEventPrivate * const d;
 };
 
  /**
@@ -318,7 +315,7 @@ public:
    *
    * @param parent The KParts::ReadOnlyPart that this extension ... "extends" :)
    */
-  BrowserExtension( KParts::ReadOnlyPart *parent );
+  explicit BrowserExtension( KParts::ReadOnlyPart *parent );
 
 
   virtual ~BrowserExtension();
@@ -688,9 +685,6 @@ private Q_SLOTS:
   void slotEnableAction( const char *, bool );
   void slotSetActionText( const char*, const QString& );
 
-private:
-  KParts::ReadOnlyPart *m_part;
-  URLArgs m_args;
 public:
   typedef QMap<QByteArray,int> ActionNumberMap;
 
@@ -746,7 +740,7 @@ public:
 
 private:
   class BrowserHostExtensionPrivate;
-  BrowserHostExtensionPrivate *d;
+  BrowserHostExtensionPrivate * const d;
 };
 
 /**
@@ -796,7 +790,7 @@ public:  // yes, those signals are public; don't tell moc :)
 
 private:
   class LiveConnectExtensionPrivate;
-  LiveConnectExtensionPrivate *d;
+  LiveConnectExtensionPrivate * const d;
 };
 
 }

@@ -24,32 +24,193 @@ using namespace KParts;
 //the answer!
 #define KPARTS_EVENT_MAGIC 42
 
-Event::Event( const char *eventName )
- : QEvent( (QEvent::Type)(QEvent::User + KPARTS_EVENT_MAGIC) ), m_eventName(eventName)
+class KParts::EventPrivate
 {
+public:
+    EventPrivate( const char *eventName ) :
+        m_eventName(eventName)
+    {
+    }
+    const char* m_eventName;
+};
+
+Event::Event( const char *eventName )
+ : QEvent( (QEvent::Type)(QEvent::User + KPARTS_EVENT_MAGIC) )
+ , d( new EventPrivate(eventName) )
+{
+}
+
+Event::~Event()
+{
+    delete d;
 }
 
 const char *Event::eventName() const
 {
-  return m_eventName;
-} 
+  return d->m_eventName;
+}
 
 bool Event::test( const QEvent *event )
 {
   if ( !event )
     return false;
-  
+
   return ( event->type() == (QEvent::Type)(QEvent::User + KPARTS_EVENT_MAGIC ) );
-} 
+}
 
 bool Event::test( const QEvent *event, const char *name )
 {
   if ( !test( event ) )
     return false;
-  
-  return ( strcmp( name, ((Event*)event)->eventName() ) == 0 );
-} 
 
-const char *GUIActivateEvent::s_strGUIActivateEvent = "KParts/GUIActivate";
-const char *PartActivateEvent::s_strPartActivateEvent = "KParts/PartActivateEvent";
-const char *PartSelectEvent::s_strPartSelectEvent = "KParts/PartSelectEvent";
+  return ( strcmp( name, ((Event*)event)->eventName() ) == 0 );
+}
+
+
+/////// GUIActivateEvent ////////
+
+class KParts::GUIActivateEventPrivate
+{
+public:
+    GUIActivateEventPrivate( bool activated )
+        : m_bActivated( activated )
+    {
+    }
+    static const char *s_strGUIActivateEvent;
+    bool m_bActivated;
+};
+
+const char *GUIActivateEventPrivate::s_strGUIActivateEvent = "KParts/GUIActivate";
+
+GUIActivateEvent::GUIActivateEvent( bool activated ) :
+    Event( GUIActivateEventPrivate::s_strGUIActivateEvent ),
+    d( new GUIActivateEventPrivate(activated) )
+{
+}
+
+GUIActivateEvent::~GUIActivateEvent()
+{
+    delete d;
+}
+
+bool GUIActivateEvent::activated() const
+{
+    return d->m_bActivated;
+}
+
+bool GUIActivateEvent::test( const QEvent *event )
+{
+    return Event::test( event, GUIActivateEventPrivate::s_strGUIActivateEvent );
+}
+
+
+/////// PartActivateEvent ////////
+
+class KParts::PartActivateEventPrivate
+{
+public:
+    PartActivateEventPrivate( bool activated,
+                              Part *part,
+                              QWidget *widget ) :
+        m_bActivated( activated ),
+        m_part( part ),
+        m_widget( widget )
+    {
+    }
+    static const char *s_strPartActivateEvent;
+    bool m_bActivated;
+    Part *m_part;
+    QWidget *m_widget;
+};
+
+const char *PartActivateEventPrivate::s_strPartActivateEvent = "KParts/PartActivateEvent";
+
+PartActivateEvent::PartActivateEvent( bool activated,
+                                      Part *part,
+                                      QWidget *widget ) :
+    Event( PartActivateEventPrivate::s_strPartActivateEvent ),
+    d( new PartActivateEventPrivate(activated,part,widget) )
+{
+}
+
+PartActivateEvent::~PartActivateEvent()
+{
+    delete d;
+}
+
+bool PartActivateEvent::activated() const
+{
+    return d->m_bActivated;
+}
+
+Part *PartActivateEvent::part() const
+{
+    return d->m_part;
+}
+
+QWidget *PartActivateEvent::widget() const
+{
+    return d->m_widget;
+}
+
+bool PartActivateEvent::test( const QEvent *event )
+{
+    return Event::test( event, PartActivateEventPrivate::s_strPartActivateEvent );
+}
+
+
+/////// PartSelectEvent ////////
+
+class KParts::PartSelectEventPrivate
+{
+public:
+    PartSelectEventPrivate( bool selected,
+                            Part *part,
+                            QWidget *widget ) :
+        m_bSelected( selected ),
+        m_part( part ),
+        m_widget( widget )
+    {
+    }
+    static const char *s_strPartSelectEvent;
+    bool m_bSelected;
+    Part *m_part;
+    QWidget *m_widget;
+};
+
+const char *PartSelectEventPrivate::s_strPartSelectEvent =
+                            "KParts/PartSelectEvent";
+
+PartSelectEvent::PartSelectEvent( bool selected,
+                                  Part *part,
+                                  QWidget *widget ) :
+    Event( PartSelectEventPrivate::s_strPartSelectEvent ),
+    d( new PartSelectEventPrivate(selected,part,widget) )
+{
+}
+
+PartSelectEvent::~PartSelectEvent()
+{
+    delete d;
+}
+
+bool PartSelectEvent::selected() const
+{
+    return d->m_bSelected;
+}
+
+Part *PartSelectEvent::part() const
+{
+    return d->m_part;
+}
+
+QWidget *PartSelectEvent::widget() const
+{
+    return d->m_widget;
+}
+
+bool PartSelectEvent::test( const QEvent *event )
+{
+    return Event::test( event, PartSelectEventPrivate::s_strPartSelectEvent );
+}
+

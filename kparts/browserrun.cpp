@@ -55,6 +55,13 @@ BrowserRun::~BrowserRun()
   delete d;
 }
 
+//KParts::URLArgs BrowserRun::urlArgs() const { return m_args; }
+//KParts::ReadOnlyPart* BrowserRun::part() const { return m_part; }
+KUrl BrowserRun::url() const
+{
+    return m_strURL;
+}
+
 void BrowserRun::init()
 {
   if ( d->m_bHideErrorDialog )
