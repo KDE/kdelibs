@@ -59,7 +59,7 @@ namespace KABC {
      * Returns the dn part of the LDAP Url (same as path(), but slash removed
      * from the beginning).
      */
-    const QString& dn() const { return m_dn; };
+    const QString& dn() const { return m_dn; }
     /** Sets the the dn part of the LDAP Url. */ 
     void setDn( const QString &dn );
 
@@ -70,7 +70,7 @@ namespace KABC {
       { m_attributes=attributes; updateQuery(); }
 
     /** Returns the scope part of the LDAP Url */
-    Scope scope() const { return m_scope; };
+    Scope scope() const { return m_scope; }
     /** Sets the scope part of the LDAP Url */
     void setScope(Scope scope) { m_scope = scope; updateQuery(); }
 

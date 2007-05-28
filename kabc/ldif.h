@@ -41,9 +41,9 @@ namespace KABC {
   {
   public:
 
-    typedef enum ParseVal{ None, NewEntry, EndEntry, Item, Control, Err, MoreData };
-    typedef enum EntryType{ Entry_None, Entry_Add, Entry_Del, Entry_Mod, Entry_Modrdn };
-    typedef enum ModType{ Mod_None, Mod_Add, Mod_Replace, Mod_Del };
+    enum ParseVal{ None, NewEntry, EndEntry, Item, Control, Err, MoreData };
+    enum EntryType{ Entry_None, Entry_Add, Entry_Del, Entry_Mod, Entry_Modrdn };
+    enum ModType{ Mod_None, Mod_Add, Mod_Replace, Mod_Del };
     LDIF();
     virtual ~LDIF();
     
@@ -108,7 +108,7 @@ namespace KABC {
      * Sets a chunk of LDIF. Call before startParsing(), or if nextItem() returned
      * MoreData.
      */
-    void setLDIF( const QByteArray &ldif ) { mLdif = ldif; mPos = 0; };
+    void setLDIF( const QByteArray &ldif ) { mLdif = ldif; mPos = 0; }
     /**
       * Indicates the end of the LDIF file/stream. Call if nextItem() returned
       * MoreData, but actually you don't have more data.
