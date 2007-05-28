@@ -110,12 +110,12 @@ public:
   /**
    * @return the filename of the .desktop file that describes the KCM
    */
-  QString fileName() const { return _fileName; };
+  QString fileName() const { return _fileName; }
 
   /**
    * @return the keywords associated with this KCM.
    */
-  const QStringList &keywords() const { return _keywords; };
+  const QStringList &keywords() const { return _keywords; }
 
   /**
    * Returns the module's factory name, if it's set. If not, the library
@@ -128,23 +128,23 @@ public:
   /**
    * @return the module\'s (translated) name
    */
-  QString moduleName() const { return _name; };
+  QString moduleName() const { return _name; }
   // changed from name() to avoid ambiguity with QObject::name() on multiple inheritance
 
   /**
    * @return a KSharedPtr to KService created from the modules .desktop file
    */
-  KService::Ptr service() const { return _service; };
+  KService::Ptr service() const { return _service; }
 
   /**
    * @return the module's (translated) comment field
    */
-  QString comment() const { return _comment; };
+  QString comment() const { return _comment; }
 
   /**
    * @return the module's icon name
    */
-  QString icon() const { return _icon; };
+  QString icon() const { return _icon; }
 
   /**
    * @return the path of the module's documentation
@@ -154,7 +154,7 @@ public:
   /**
    * @return the library name
    */
-  QString library() const { return _lib; };
+  QString library() const { return _lib; }
 
   /**
    * @return a handle (usually the contents of the FactoryName field)
@@ -193,37 +193,37 @@ protected:
    * Sets the object's keywords.
    * @param keyword the new keywords
    */
-  void setKeywords(const QStringList &keyword) { _keywords = keyword; };
+  void setKeywords(const QStringList &keyword) { _keywords = keyword; }
 
   /**
    * Sets the object's name.
    * @param name the new name
    */
-  void setName(const QString &name) { _name = name; };
+  void setName(const QString &name) { _name = name; }
 
   /**
    * Sets the object's name.
    * @param comment the new comment
    */
-  void setComment(const QString &comment) { _comment = comment; };
+  void setComment(const QString &comment) { _comment = comment; }
 
   /**
    * Sets the object's icon.
    * @param icon the name of the new icon
    */
-  void setIcon(const QString &icon) { _icon = icon; };
+  void setIcon(const QString &icon) { _icon = icon; }
 
   /**
    * Set the object's library
    * @param lib the name of the new library without any extensions or prefixs.
    */
-  void setLibrary(const QString &lib) { _lib = lib; };
+  void setLibrary(const QString &lib) { _lib = lib; }
 
   /**
    * Sets the factory name
    * @param handle The new factory name
    */
-  void setHandle(const QString &handle) { _handle = handle; };
+  void setHandle(const QString &handle) { _handle = handle; }
 
   /**
    * Sets the object's weight property which determines in what
@@ -231,7 +231,7 @@ protected:
    *
    * @param weight the new weight
    */
-  void setWeight(int weight) { _weight = weight; };
+  void setWeight(int weight) { _weight = weight; }
 
 
   /**
@@ -247,19 +247,19 @@ protected:
    * @param needsRootPrivileges if module needs root privilges
    */
   void setNeedsRootPrivileges(bool needsRootPrivileges)
-  { _needsRootPrivileges = needsRootPrivileges; };
+  { _needsRootPrivileges = needsRootPrivileges; }
 
   /**
    * @deprecated
    */
   void setIsHiddenByDefault(bool isHiddenByDefault)
-  { _isHiddenByDefault = isHiddenByDefault; };
+  { _isHiddenByDefault = isHiddenByDefault; }
 
   /**
    * Sets the object's documentation path
    * @param p the new documentation path
    */
-  void setDocPath(const QString &p) { _doc = p; };
+  void setDocPath(const QString &p) { _doc = p; }
 
   /**
    * Reads the service entries specific for KCModule from the desktop file.

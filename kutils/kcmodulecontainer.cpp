@@ -51,7 +51,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 			, btnRootMode( 0 )
 			, btnLayout( 0 )
 			, topLayout( 0 )
-			{};
+			{}
 
 		QStringList modules;
 		QTabWidget *tabWidget;
