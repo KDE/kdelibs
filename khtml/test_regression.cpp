@@ -886,6 +886,7 @@ RegressionTest::RegressionTest(KHTMLPart *part, const QString &baseDir, const QS
     m_paintBuffer = 0;
 
     curr = this;
+    m_part->view()->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
 }
 
 
