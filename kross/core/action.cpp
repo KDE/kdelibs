@@ -64,7 +64,7 @@ namespace Kross {
             /**
             * The scripting code.
             */
-            QString code;
+            QByteArray code;
 
             /**
             * The name of the interpreter. This could be something
@@ -169,7 +169,7 @@ void Action::fromDomElement(const QDomElement& element)
 
     const QString code = element.attribute("code");
     if( ! code.isNull() )
-        setCode(code);
+        setCode(code.toLatin1());
 
     for(QDomNode node = element.firstChild(); ! node.isNull(); node = node.nextSibling()) {
         QDomElement e = node.toElement();
@@ -262,12 +262,12 @@ void Action::setEnabled(bool enabled)
     emit updated();
 }
 
-QString Action::code() const
+QByteArray Action::code() const
 {
     return d->code;
 }
 
-void Action::setCode(const QString& code)
+void Action::setCode(const QByteArray& code)
 {
     if( d->code != code ) {
         finalize();
@@ -383,7 +383,7 @@ bool Action::initialize()
             setError(i18n("Failed to open scriptfile \"%1\"", d->scriptfile));
             return false;
         }
-        d->code = QString( f.readAll() );
+        d->code = f.readAll();
         f.close();
     }
 

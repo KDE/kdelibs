@@ -65,7 +65,7 @@ QString getInterpreterName(const QString& scriptfile)
     return interpreterinfo ? interpreterinfo->interpreterName() : QString();
 }
 
-int readFile(const QString& scriptfile, QString& content)
+int readFile(const QString& scriptfile, QByteArray& content)
 {
     QFile f(QFile::encodeName(scriptfile));
     if(! f.exists()) {
@@ -84,7 +84,7 @@ int readFile(const QString& scriptfile, QString& content)
 int runScriptFile(const QString& scriptfile)
 {
     // Read the scriptfile
-    QString scriptcode;
+    QByteArray scriptcode;
     int result = readFile(scriptfile, scriptcode);
     if(result != ERROR_OK)
         return result;

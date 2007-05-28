@@ -56,7 +56,7 @@ int runScriptFile(const QString& scriptfile)
         std::cerr << "Failed to open scriptfile: " << scriptfile.toLatin1().data() << std::endl;
         return ERROR_OPENFAILED;
     }
-    QString scriptcode = f.readAll();
+    QByteArray scriptcode = f.readAll();
     f.close();
 
     // Determinate the matching interpreter

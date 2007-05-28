@@ -249,12 +249,12 @@ namespace Kross {
             /**
              * \return the scriptcode this Action holds.
              */
-            QString code() const;
+            QByteArray code() const;
 
             /**
              * Set the scriptcode \p code this Action should execute.
              */
-            void setCode(const QString& code);
+            void setCode(const QByteArray& code);
 
             /**
              * \return the name of the interpreter. Could be for
