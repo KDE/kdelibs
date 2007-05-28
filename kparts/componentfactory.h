@@ -185,7 +185,7 @@ namespace KParts
                                                       parent, args, error );
         }
 
-    };
+    }
 }
 
 /*
