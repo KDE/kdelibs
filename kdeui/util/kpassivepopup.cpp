@@ -486,25 +486,26 @@ void KPassivePopup::updateMask()
     int i = 0, z = 0;
     for (; i < 4; ++i) {
         QPainterPath path;
-        path.arcTo(corners[i].x(),corners[i].y(),40,40, i * 16 * 90 , 16 * 90);
+        path.moveTo(corners[i].x(),corners[i].y());
+        path.arcTo(corners[i].x(),corners[i].y(),40,40, i * 90 , 90);
         QPolygon corner = path.toFillPolygon().toPolygon();
 
-        d->surround.resize( z + corner.count() );
-        for (int s = 0; s < corner.count() - 1; s++) {
-            d->surround.setPoint( z++, corner[s] );
+        d->surround.resize( z + corner.count() - 1 );
+        for (int s = 1; s < corner.count() - 1; s++, z++) {
+            d->surround.setPoint( z, corner[s] );
         }
 
         if (bottom && i == 2) {
             if (right) {
                 d->surround.resize( z + 3 );
-                d->surround.setPoint( z++, QPoint( width() - xh, height() - 11 ) );
+                d->surround.setPoint( z++, QPoint( width() - xh, height() - 10 ) );
                 d->surround.setPoint( z++, QPoint( width() - 20, height() ) );
-                d->surround.setPoint( z++, QPoint( width() - xl, height() - 11 ) );
+                d->surround.setPoint( z++, QPoint( width() - xl, height() - 10 ) );
             } else {
                 d->surround.resize( z + 3 );
-                d->surround.setPoint( z++, QPoint( xl, height() - 11 ) );
+                d->surround.setPoint( z++, QPoint( xl, height() - 10 ) );
                 d->surround.setPoint( z++, QPoint( 20, height() ) );
-                d->surround.setPoint( z++, QPoint( xh, height() - 11 ) );
+                d->surround.setPoint( z++, QPoint( xh, height() - 10 ) );
             }
         } else if (!bottom && i == 0) {
             if (right) {
