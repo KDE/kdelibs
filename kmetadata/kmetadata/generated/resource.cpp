@@ -63,8 +63,7 @@ Nepomuk::KMetaData::Resource::Resource( Nepomuk::KMetaData::ResourceData* data )
 
 Nepomuk::KMetaData::Resource::~Resource()
 {
-    if( m_data->deref() == 0 &&
-        !ResourceManager::instance()->autoSync() ) {
+    if( m_data->deref() == 0 ) {
         m_data->deleteData();
     }
 }
@@ -73,7 +72,9 @@ Nepomuk::KMetaData::Resource::~Resource()
 Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        m_data->deref();
+        if ( m_data->deref() == 0 ) {
+            m_data->deleteData();
+        }
         m_data = res.m_data;
         m_data->ref();
     }
@@ -84,25 +85,16 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
 
 QString Nepomuk::KMetaData::Resource::uri() const
 {
+    m_data->determineUri();
     return m_data->uri();
 }
 
 
 QString Nepomuk::KMetaData::Resource::type() const
 {
-    m_data->init();
+    m_data->determineUri();
     return m_data->type();
 }
-
-
-// QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
-// {
-//   // TODO: do not hardcode the hasIdentifier URI here!
-//   QStringList il = m_data->getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
-//   if( !m_data->kickoffUriOrId().isEmpty() && !il.contains( m_data->kickoffUriOrId() ) )
-//     il.append( m_data->kickoffUriOrId() );
-//   return il;
-// }
 
 
 QString Nepomuk::KMetaData::Resource::className() const
@@ -111,80 +103,39 @@ QString Nepomuk::KMetaData::Resource::className() const
 }
 
 
-Nepomuk::KMetaData::ErrorCode Nepomuk::KMetaData::Resource::sync()
-{
-    m_data->init();
-
-    m_data->startSync();
-
-    bool success = ( m_data->determineUri() &&
-                     m_data->determinePropertyUris() &&
-                     m_data->merge() &&
-                     m_data->save() );
-
-    m_data->endSync( success );
-
-    return ( success ? NoError : UnknownError );
-}
-
-
 QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allProperties() const
 {
-    m_data->init();
     return m_data->allProperties();
 }
 
 
 bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
 {
-    m_data->init();
     return m_data->hasProperty( uri );
 }
 
 
 Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::property( const QString& uri ) const
 {
-    m_data->init();
     return m_data->property( uri );
 }
 
 
 void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
 {
-    //  m_data->init();
     m_data->setProperty( uri, value );
 }
 
 
 void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
 {
-    m_data->init();
     m_data->removeProperty( uri );
 }
 
 
 void Nepomuk::KMetaData::Resource::remove()
 {
-    //  m_data->init();
     m_data->remove();
-}
-
-
-void Nepomuk::KMetaData::Resource::revive()
-{
-    m_data->revive();
-}
-
-
-bool Nepomuk::KMetaData::Resource::isModified() const
-{
-    return m_data->isModified();
-}
-
-
-bool Nepomuk::KMetaData::Resource::inSyncWithStore() const
-{
-    return m_data->inSync();
 }
 
 
@@ -211,8 +162,6 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
     m_data->determineUri();
     other.m_data->determineUri();
     return uri() == other.uri();
-
-    //    return( *m_data == *other.m_data );
 }
 
 

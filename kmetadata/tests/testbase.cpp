@@ -26,12 +26,19 @@ void TestBase::initTestCase()
     qDebug() << "Initializing KMetaData TestBase..." << endl;
 
     setDefaultRepository( "testRep" );
-    ResourceManager::instance()->setAutoSync( false );
     QVERIFY( ResourceManager::instance()->init() == 0 );
+}
 
-    // clean the rep out for a fresh start
+void TestBase::init()
+{
+    // clean out all statements
     Nepomuk::Services::RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
     rr.removeAllStatements( "testRep", Statement() );
+}
+
+
+void TestBase::cleanup()
+{
 }
 
 #include "testbase.moc"

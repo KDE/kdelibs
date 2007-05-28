@@ -152,11 +152,7 @@ const Konto::Class* Konto::Class::load( const QUrl& uri )
 {
     Q_ASSERT( !uri.isEmpty() );
 
-    kDebug() << "(Konto::Class::load) " << uri << endl;
-
     QUrl ns = extractNamespace( uri );
-
-    kDebug() << "(Konto::Class::load) ns: " << ns << endl;
 
     // load the ontology in the cache
     const Ontology* ont = OntologyManager::instance()->getOntology( ns );

@@ -1125,6 +1125,12 @@ QVariant Nepomuk::KMetaData::Variant::variant() const
 }
 
 
+bool Nepomuk::KMetaData::Variant::isValid() const
+{
+    return d->value.isValid();
+}
+
+
 QDebug operator<<( QDebug dbg, const Nepomuk::KMetaData::Variant& v )
 {
     if( v.isList() )

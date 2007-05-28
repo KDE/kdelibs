@@ -119,7 +119,7 @@
  * such as Nepomuk::KMetaData::File::setAnnotation.
  *
  * Each resource class also provides a static method which returns all existing instances
- * of this type. This includes instances in the store as well as locally non-synced objects.
+ * of this type.
  * See Nepomuk::KMetaData::File::allFiles for an example.
  *
  * See also \ref kmetadata_rcgen
@@ -163,18 +163,14 @@
  * \section hacking_general KMetaData Details
  *
  * KMetaData is designed so the user (the developer of a client application) does not have to care about loading or
- * saving the data. Unless auto syncing is disabled via Nepomuk::KMetaData::ResourceManager::setAutoSync meta data
- * is automatically synced with the local Nepomuk meta data store.
- * (Currently the autosync feature is only partially implemented. Data will be
- * synced once the last instance of a resource is deleted.)
+ * saving the data. All data is stored directly into the RDF storage and also read from it directly.
  *
  * Although in normal operation it is sufficient to only work with Nepomuk::KMetaData::Resource and
  * its subclasses errors might occur. This is where the Nepomuk::KMetaData::ResourceManager comes
  * in: it provides the Nepomuk::KMetaData::ResourceManager::init method which can be called manually
  * (the resource manager will be initialized automatically anyway) to check if the initialization was
  * successful and KMetaData can be used. In addition it provides the Nepomuk::KMetaData::ResourceManager::error
- * signal which is emitted whenever an error occurs. Errors include failed syncing or loading of meta
- * data.
+ * signal which is emitted whenever an error occurs.
  *
  *
  * See \ref examples for further examples.

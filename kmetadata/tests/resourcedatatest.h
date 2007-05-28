@@ -25,7 +25,6 @@ class ResourceDataTest : public TestBase
 
  private Q_SLOTS:
     void testResourceData();
-    void testLoad();
     void testPropertyTypes();
     void testTypeHandling();
 };

@@ -148,6 +148,8 @@ namespace Nepomuk {
 		 */
 		bool operator!=( const Variant& other ) const;
 
+                bool isValid() const;
+                
 		/**
 		 * \return the QT Meta type id of the type
 		 */

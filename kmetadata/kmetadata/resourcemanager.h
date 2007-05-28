@@ -40,17 +40,8 @@ namespace Nepomuk {
 	class Variant;
 	class ResourceManagerHelper;
 
-	// FIXME: introduce a simple overwrite mode which is way faster and doe not merge with the store
-
 	/**
 	 * \brief The ResourceManager is the central \a %KMetaData configuration point.
-	 *
-	 * For now it only provides the possibility to disbable auto syncing and get informed 
-	 * of Resource changes via the resourceModified signal.
-	 *
-	 * At the moment auto syncing is not complete and will only write back changes once 
-	 * all instances of a Resource have been deleted. In the future auto syncing will try
-	 * to keep in sync with external changes also.
 	 */
 	class KMETADATA_EXPORT ResourceManager : public QObject
 	    {
@@ -88,11 +79,6 @@ namespace Nepomuk {
 		Backbone::Registry* serviceRegistry() const;
 
 		/**
-		 * \return true if autosync is enabled
-		 */
-		bool autoSync() const;
-
-		/**
 		 * Creates a Resource object representing the data referenced by \a uri.
 		 * The result is the same as from using the Resource::Resource( const QString&, const QString& )
 		 * constructor with an empty type.
@@ -128,8 +114,6 @@ namespace Nepomuk {
 		 *            not include a namespace the default namespace is
 		 *            prepended.
 		 * \param v The value all returned resources should have set as properts \a uri.
-		 *
-		 * \sa Ontology::defaultNamespace
 		 */
 		QList<Resource> allResourcesWithProperty( const QString& uri, const Variant& v ) const;
 
@@ -166,35 +150,6 @@ namespace Nepomuk {
 		void error( const QString& uri, int errorCode );
 
 		// FIXME: add a loggin mechanism that reports successfully and failed sync operations and so on
-
-	    public Q_SLOTS:
-		/**
-		 * Enable or disable autosync. If autosync is enabled (which is the default)
-		 * all Resource objects will be synced with the local storage automatically.
-		 *
-		 * FIXME: Hint that the resources will not be actually deleted from memory before
-		 * they have been synced. Thus, if auto sync is disabled the memory might get crowded
-		 * if sync is never called. Exception: unmodified resources.
-		 */
-		void setAutoSync( bool enabled );
-
-		/**
-		 * Sync all Resource objects. There is no need to call this
-		 * unless autosync has been disabled.
-		 *
-		 * This is a blocking call which syncs all modifed data to the store.
-		 */
-		void syncAll();
-
-		/**
-		 * This method can be used in combination with auto syncing and forces an immediate
-		 * sync in the background. If an asyncroneous sync is currently in progress this method
-		 * does nothing.
-		 */
-		void triggerSync();
-
-	    private Q_SLOTS:
-		void slotStartAutoSync();
 
 	    private:
 		friend class Nepomuk::KMetaData::ResourceManagerHelper;

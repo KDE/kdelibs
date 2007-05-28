@@ -43,8 +43,6 @@ void SpeedTest::testKMetaData()
         rl.append( r );
     }
 
-    ResourceManager::instance()->syncAll();
-
     qDebug( "Added %d resources in %d ms", TESTCNT, t.elapsed() );
 
     // check that everything has been saved properly
@@ -57,8 +55,6 @@ void SpeedTest::testKMetaData()
     for( int i = 0; i < TESTCNT; ++i ) {
         Resource( ns + QString("test") + QString::number(i) ).remove();
     }
-
-    ResourceManager::instance()->syncAll();
 
     qDebug( "Removed %d resources in %d ms", TESTCNT, t.elapsed() );
 

@@ -61,16 +61,6 @@ namespace Nepomuk {
 		    return m_ref;
 		}
 
-		enum Flag {
-		    NoFlag = 0x0,
-		    Loaded = 0x1,   /*< The property has been loaded from the store and not been modified yet */
-		    Modified = 0x2, /*< The resource or property has locally been modified */
-		    Deleted = 0x4,  /*< The resource has actually been deleted in a sync operation */
-		    Removed = 0x8,  /*< The resource or property has been scheduled for removal */
-		    Syncing = 0x10  /*< The resource is currently being synced */
-		};
-		Q_DECLARE_FLAGS(Flags, Flag)
-
 		/**
 		 * Until the resource has not been synced or even loaded the actual URI is not known.
 		 * It might even be possible that none exists yet. Thus, the identifier used to create
@@ -88,44 +78,45 @@ namespace Nepomuk {
 
 		QString type() const;
 
-		QHash<QString, Variant> allProperties() const;
+		QHash<QString, Variant> allProperties();
 
-		bool hasProperty( const QString& uri ) const;
+		bool hasProperty( const QString& uri );
 
-		Variant property( const QString& uri ) const;
+		Variant property( const QString& uri );
 
+                /**
+                 * Set a property. The property will directly be saved to the RDF store.
+                 * Calls store to make sure this resource and property resources are properly
+                 * stored.
+                 */
 		void setProperty( const QString& uri, const Variant& value );
 
 		void removeProperty( const QString& uri );
 
+                /**
+                 * Makes sure the resource is present in the RDF store. This means that if it does
+                 * not exist the type and the identifier (if one has been used to create the instance)
+                 * are stored.
+                 *
+                 * \sa exists, setProperty
+                 */
+                bool store();
+
 		/**
-		 * Remove this resource data. The data is not deleted locally or remotly
-		 * until save() is called.
+		 * Remove this resource data from the store completely.
+                 * \param recursive If true all statements that contain this
+                 * resource as an object will be removed, too.
 		 */
-		void remove();
-
-		void revive();
-
-		bool isModified() const;
-
-		bool removed() const;
+		void remove( bool recursive = true );
 
 		/**
 		 * This method only works with a proper URI, i.e. it does
 		 * not work on non-initialized resources that only know
 		 * their kickoffUriOrId
 		 */
-		bool exists() const;
+		bool exists();
 
 		bool isValid() const;
-
-		bool inSync();
-
-		/**
-		 * Initializes the data object, i.e. loads it for the first time.
-		 * Does nothing on subsequent calls.
-		 */
-		bool init();
 
 		/**
 		 * Makes sure the resource has a proper URI. This includes creating a new one
@@ -133,102 +124,13 @@ namespace Nepomuk {
 		 */
 		bool determineUri();
 
-		/**
-		 * Make sure all resources that are referenced in the properties of this resource
-		 * have a proper URI. This method call determineUri on all the resources in the
-		 * properties.
-		 */
-		bool determinePropertyUris();
-
-		/**
-		 * Load all properties stored in the local Nepomuk DB that have subject \a uri
-		 * into this object.
-		 *
-		 * \return false if the resource does not exist in the local NEPOMUK DB.
-		 */
-		bool load();
-
-		/**
-		 * Save all properties and the type back into the local NEPOMUK DB overwriting
-		 * any existing entries.
-		 * Entries in the DB that do not exist in this object will be removed.
-		 *
-		 * Use merge() to preserve non-existing propreties.
-		 *
-		 * This method will save directly and uncached to the store. It is recommended to
-		 * rely on the cached syncing that the ResourceManger provides.
-		 *
-		 * Be aware that calling save will not interfere with any syncing operation started
-		 * via startSync.
-		 *
-		 * \sa allStatements
-		 */
-		bool save();
-
-		/**
-		 * Merge in changes from the local store
-		 */
-		bool merge();
-
-		/**
-		 * Merge in the differences between this and \a other.
-		 */
-		void mergeIn( const ResourceData* other );
-
-		/**
-		 * Start a thread-safe sync operation.
-		 * Use this method to mark the state of the resource data to be the one being
-		 * synced back.
-		 *
-		 * Subsequent calls will block until the first call has been released via endSync
-		 *
-		 * \sa endSync
-		 */
-		void startSync();
-
-		/**
-		 * Finish a thread-safe sync operation started with startSync
-		 *
-		 * \param updateFlags If true the resource flags will be updated, i.e. synced properties
-		 *                    will be marked as not-modified. In general this should be set true
-		 *                    if the sync was successful.
-		 */
-		void endSync( bool updateFlags = true );
-
-		/**
-		 * Generates a list of all RDF statements this Resource data object currently represents.
-		 * \param flags A filter to be used. Only those properties that match flags are returned.
-		 *
-		 * Be aware that some of these statements might be invalid if the URI of this resource or
-		 * once related resource is still unknown.
-		 *
-		 * \sa determinePropertyUris
-		 */
-		QList<Soprano::Statement> allStatements( Flags flagsSet, Flags flagsNotSet = 0 ) const;
-
-		/**
-		 * \return A list of all statements that have to be added to the store in a sync. This does not
-		 * include those statements that already exist in the store.
-		 *
-		 * Be aware that some of these statements might be invalid if the URI of this resource or
-		 * once related resource is still unknown.
-		 *
-		 * \sa determinePropertyUris
-		 */
-		QList<Soprano::Statement> allStatementsToAdd() const;
-
-		/**
-		 * \return a list of all statements that need to be removed from the store in a sync, i.e. those
-		 * properties that have been removed. In case that the whole resource has been removed it is 
-		 * recommended to not use this method but do a plain removal of all statements related to this 
-		 * resource.
-		 *
-		 * Be aware that some of these statements might be invalid if the URI of this resource or
-		 * once related resource is still unknown.
-		 *
-		 * \sa determinePropertyUris
-		 */
-		QList<Soprano::Statement> allStatementsToRemove() const;
+                /**
+                 * Sync the local type with the type stored in the RDF store.
+                 * If both are compatible, i.e. both lie on one branch in the type
+                 * hierarchy, then the more detailed one is used. Otherwise the type is
+                 * not changed.
+                 */
+                void updateType();
 
 		/**
 		 * Compares the properties of two ResourceData objects taking into account the Deleted flag
@@ -250,29 +152,23 @@ namespace Nepomuk {
 		static QList<ResourceData*> allResourceDataWithProperty( const QString& _uri, const Variant& v );
 
 	    private:
-		bool loadProperty( const QString& name, const Variant& val );
-
-		typedef QHash<QString, QPair<Variant, Flags> > PropertiesMap;
-  
-		/**
-		 * map of all properties including a flag field
-		 */
-		PropertiesMap m_properties;
-
 		/**
 		 * The kickoff URI or ID is used as long as the resource has not been synced yet
 		 * to identify it.
 		 */
 		QString m_kickoffUriOrId;
 		QString m_uri;
+
+                /**
+                 * The kickoffIdentifier is the identifier used to construct the resource object.
+                 * If the object has been constructed via a URI or determineUri has not been called
+                 * yet this value is empty. Otherwise it equals m_kickoffUriOrId
+                 */
+                QString m_kickoffIdentifier;
 		QString m_type;
 
-		Flags m_flags;
-
 		int m_ref;
-		bool m_initialized;
 
-		QMutex m_syncingMutex;
 		QMutex m_modificationMutex;
 
 		/**
@@ -287,7 +183,5 @@ namespace Nepomuk {
 	    };
     }
 }
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(Nepomuk::KMetaData::ResourceData::Flags)
 
 #endif

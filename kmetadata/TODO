@@ -1,6 +1,2 @@
-* Make sure unmodified resources are not loaded during syncing (otherwise a sync of one
-  simple change might trigger a big reload). This can probably be solved by making the 
-  resource identifier a special field like the type so setting it does not mark the
-  resource as modified.
 * Add support for multiple types (Merge multiple types in one hierarchy branch?)
 * rcgen: Add the possibility to specify multiple ontology files in one run.

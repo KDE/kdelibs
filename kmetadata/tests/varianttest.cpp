@@ -23,7 +23,6 @@ Q_DECLARE_METATYPE(Nepomuk::KMetaData::Variant)
 
 void VariantTest::initTestCase()
 {
-    ResourceManager::instance()->setAutoSync( false );
     QVERIFY( ResourceManager::instance()->init() == 0 );
 }
 

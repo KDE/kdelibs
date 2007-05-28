@@ -51,10 +51,10 @@ namespace Nepomuk {
 		~TagWidget();
 
 		/**
-		 * \return The resource that is supposed to be tagged or an invalid
-		 * Resource if none has been set.
+		 * \return The resources that are supposed to be tagged or an empty
+		 * list if none have been set.
 		 */
-		Resource taggedResource() const;
+		QList<Resource> taggedResources() const;
 
                 /**
 		 * \return The list of all tags that are assigned to the currently set 
@@ -77,6 +77,8 @@ namespace Nepomuk {
 		 */
 		void setTaggedResource( const Resource& resource );
 
+		void setTaggedResources( const QList<Resource>& resources );
+
 		/**
 		 * Set the list of tags to be assigned to the configured resource.
 		 * If no resource has been set this method does nothing.
@@ -94,5 +96,7 @@ namespace Nepomuk {
 	    };
     }
 }
+
+uint qHash( const Nepomuk::KMetaData::Tag& res );
 
 #endif

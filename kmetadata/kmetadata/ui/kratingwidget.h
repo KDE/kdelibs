@@ -42,7 +42,7 @@ class KMETADATA_EXPORT KRatingWidget : public QFrame
      */
     ~KRatingWidget();
 
-    int rating() const;
+    unsigned int rating() const;
 
     /**
      * \sa setSpacing
@@ -58,21 +58,21 @@ class KMETADATA_EXPORT KRatingWidget : public QFrame
      * Emitted if the rating is changed by user interaction (ie. mouse click).
      * A call to setRating does not trigger this signal.
      */
-    void ratingChanged( int rating );
+    void ratingChanged( unsigned int rating );
 
  public Q_SLOTS:
     /**
      * Set the current rating. Calling this method will NOT trigger the
      * ratingChanged signal.
      */
-    void setRating( int rating );
+    void setRating( unsigned int rating );
 
     /**
      * Set the maximum allowed rating value. The default is 10 which means
      * that a rating from 1 to 10 is selectable. If \a max is uneven steps
      * are automatically only allowed full.
      */ 
-    void setMaxRating( int max );
+    void setMaxRating( unsigned int max );
 
     /**
      * Painting only full steps means that each step of the rating is displayed  
@@ -110,7 +110,7 @@ class KMETADATA_EXPORT KRatingWidget : public QFrame
 
  private:
     void drawRatingPixmaps( QPainter* p, int pix, int grayPix, bool half );
-    int posToRating( int pos ) const;
+    unsigned int posToRating( int pos ) const;
 
     class Private;
     Private* const d;

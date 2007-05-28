@@ -37,6 +37,13 @@
 #include <QtGui/QAction>
 
 
+uint qHash( const Nepomuk::KMetaData::Tag& res )
+{
+    return qHash( res.uri() );
+}
+
+
+
 class Nepomuk::KMetaData::TagWidget::Private
 {
 public:
@@ -55,7 +62,35 @@ public:
         connect( button, SIGNAL( pressed() ), parent, SLOT( slotShowTagMenu() ) );
     }
 
-    Resource res;
+    QStringList extractTagNames( QList<Tag> tags ) {
+        QStringList tagStrings;
+        // convert the tag list to keywords
+        for( QList<Tag>::iterator it = tags.begin();
+             it != tags.end(); ++it ) {
+            Tag& tag = *it;
+            if ( tag.label().isEmpty() ) {
+                tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
+            }
+            tagStrings += ( *it ).label();
+        }
+        return tagStrings;
+    }
+
+    QList<Tag> intersectTags() {
+        if ( !res.isEmpty() ) {
+            // determine the tags used for all resources
+            QSet<Tag> tags = QSet<Tag>::fromList( res.first().tags() );
+            for ( QList<Resource>::const_iterator it = res.begin(); it != res.end(); ++it ) {
+                tags.intersect( QSet<Tag>::fromList( (*it).tags() ) );
+            }
+            return tags.values();
+        }
+        else {
+            return QList<Tag>();
+        }
+    }
+
+    QList<Resource> res;
     KTagDisplayWidget* label;
     KArrowButton* button;
     TagWidget* parent;
@@ -83,7 +118,7 @@ Nepomuk::KMetaData::TagWidget::~TagWidget()
 }
 
 
-Nepomuk::KMetaData::Resource Nepomuk::KMetaData::TagWidget::taggedResource() const
+QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::TagWidget::taggedResources() const
 {
     return d->res;
 }
@@ -91,38 +126,45 @@ Nepomuk::KMetaData::Resource Nepomuk::KMetaData::TagWidget::taggedResource() con
 
 QList<Nepomuk::KMetaData::Tag> Nepomuk::KMetaData::TagWidget::assignedTags() const
 {
-    return d->res.tags();
+    return d->intersectTags();
 }
 
 
 void Nepomuk::KMetaData::TagWidget::setTaggedResource( const Resource& resource )
 {
-    d->res = resource;
-    QStringList tagStrings;
-    QList<Tag> tags = d->res.tags();
-    for( QList<Tag>::iterator it = tags.begin();
-         it != tags.end(); ++it ) {
-        Tag& tag = *it;
-        if ( tag.label().isEmpty() ) {
-            tag.setLabel( tag.identifiers().isEmpty() ? tag.uri() : tag.identifiers().first() );
-        }
-        tagStrings += ( *it ).label();
+    QList<Resource> l;
+    l.append( resource );
+    setTaggedResources( l );
+}
+
+
+void Nepomuk::KMetaData::TagWidget::setTaggedResources( const QList<Resource>& resources )
+{
+    d->res = resources;
+    if ( !resources.isEmpty() ) {
+        d->label->setTags( d->extractTagNames( d->intersectTags() ) );
     }
-    d->label->setTags( tagStrings );
+    else {
+        d->label->setTags( QStringList() );
+    }
 }
 
 
 void Nepomuk::KMetaData::TagWidget::setAssignedTags( const QList<Tag>& tags )
 {
-    if ( d->res.isValid() )
-        d->res.setTags( tags );
-    setTaggedResource( d->res );
+    if ( !d->res.isEmpty() ) {
+        for ( QList<Resource>::iterator it = d->res.begin(); it != d->res.end(); ++it ) {
+            (*it).setTags( tags );
+        }
+        d->label->setTags( d->extractTagNames( tags ) );
+    }
 }
 
 
 void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
 {
     QList<Tag> allTags = Tag::allTags();
+    QList<Tag> assignedTags = d->intersectTags();
 
     QMenu* popup = new QMenu( i18n( "Tag resource..." ), this );
     QMap<QAction*, Tag> tagMap;
@@ -134,7 +176,7 @@ void Nepomuk::KMetaData::TagWidget::slotShowTagMenu()
         a->setCheckable( true );
         popup->addAction( a );
         tagMap.insert( a,  tag );
-        a->setChecked( d->res.tags().contains( tag ) );
+        a->setChecked( assignedTags.contains( tag ) );
     }
 
     QAction* newTagAction = new QAction( i18n( "Create new tag..." ), popup );

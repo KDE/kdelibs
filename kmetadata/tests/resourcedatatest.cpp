@@ -31,8 +31,6 @@ using namespace Nepomuk::RDF;
 using namespace Nepomuk::Services;
 using namespace Soprano;
 
-static const QString s_hasIdentifierUri( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier" );
-
 
 void ResourceDataTest::testResourceData()
 {
@@ -43,26 +41,13 @@ void ResourceDataTest::testResourceData()
         ResourceData* rd1 = new ResourceData( id );
         QVERIFY( rd1->uri().isEmpty() );
         QCOMPARE( rd1->kickoffUriOrId(), id );
-        QVERIFY( rd1->allProperties().isEmpty() );
         QVERIFY( rd1->determineUri() );
         uri = rd1->uri();
         QVERIFY( !rd1->uri().isEmpty() );
-        QCOMPARE( rd1->allProperties().count(), 1 );
-        QList<Statement> sl = rd1->allStatementsToAdd();
 
-        kDebug() << "(ResourceDataTest) statements to add for ResourceData( " << id << "):" << endl;
-        foreach( const Statement& s, sl ) {
-            kDebug() << "(ResourceDataTest)     " << s << endl;
-        }
-
-        QCOMPARE( sl.count(), 2 );
-        QVERIFY( rd1->hasProperty( s_hasIdentifierUri ) );
-        QCOMPARE( rd1->property( s_hasIdentifierUri ).toString(), rd1->kickoffUriOrId() );
         QVERIFY( !rd1->exists() );
-        QVERIFY( !rd1->inSync() );
-        QVERIFY( rd1->save() );
+        QVERIFY( rd1->store() );
         QVERIFY( rd1->exists() );
-        QVERIFY( rd1->inSync() );
         rd1->deleteData();
     }
 
@@ -70,7 +55,7 @@ void ResourceDataTest::testResourceData()
         ResourceData* rd = new ResourceData( id );
         QVERIFY( rd->determineUri() );
         QCOMPARE( rd->uri(), uri );
-        QVERIFY( rd->inSync() );
+        QVERIFY( rd->exists() );
         rd->deleteData();
     }
 
@@ -78,38 +63,7 @@ void ResourceDataTest::testResourceData()
         ResourceData* rd = new ResourceData( uri );
         QVERIFY( rd->determineUri() );
         QCOMPARE( rd->uri(), uri );
-        QVERIFY( rd->inSync() );
         QVERIFY( rd->exists() );
-        rd->deleteData();
-    }
-}
-
-
-void ResourceDataTest::testLoad()
-{
-    RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
-    if( !rr.listRepositoriyIds().contains( defaultGraph() ) )
-        rr.createRepository( defaultGraph() );
-
-    QString resUri = ResourceManager::instance()->generateUniqueUri();
-    QString typeUri = "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#TestType";
-    QString identifier = "test365";
-
-    // create some data
-    QList<Statement> sl;
-    sl.append( Statement( QUrl( resUri ), QUrl( typePredicate() ), QUrl( typeUri ) ) );
-    sl.append( Statement( QUrl( resUri ), QUrl( s_hasIdentifierUri ), LiteralValue( identifier ) ) );
-    rr.addStatements( defaultGraph(), sl );
-    QVERIFY( rr.success() );
-
-    // now load it via ResourceData
-    {
-        ResourceData* rd = new ResourceData( resUri );
-        QVERIFY( rd->determineUri() );
-        QCOMPARE( rd->uri(), resUri );
-        QVERIFY( rd->load() );
-        QCOMPARE( rd->type(), typeUri );
-        QCOMPARE( rd->property( s_hasIdentifierUri ).toString(), identifier );
         rd->deleteData();
     }
 }
@@ -128,7 +82,6 @@ void ResourceDataTest::testPropertyTypes()
 
     {
         ResourceData* r1 = new ResourceData( "something12" );
-        r1->init();
 
         r1->setProperty( "hasInt", vInt );
         r1->setProperty( "hasUInt", vUInt );
@@ -139,13 +92,11 @@ void ResourceDataTest::testPropertyTypes()
         r1->setProperty( "hasTime", vTime );
         r1->setProperty( "hasDateTime", vDateTime );
 
-        r1->save();
         r1->deleteData();
     }
 
     {
         ResourceData* r1 = new ResourceData( "something12" );
-        r1->init();
 
         QVERIFY( r1->hasProperty( "hasInt" ) );
         QVERIFY( r1->hasProperty( "hasUInt" ) );
@@ -231,7 +182,7 @@ void ResourceDataTest::testTypeHandling()
                           QUrl( typePredicate() ),
                           QUrl( "test#SomeOtherDummyClass" ) ) );
     sl.append( Statement( QUrl( uri ),
-                          QUrl( s_hasIdentifierUri ),
+                          QUrl( Resource::identifierUri() ),
                           LiteralValue( "test2" ) ) );
     rr.addStatements( defaultGraph(), sl );
 
@@ -251,7 +202,7 @@ void ResourceDataTest::testTypeHandling()
     QVERIFY( r4->determineUri() );
     QVERIFY( r5->determineUri() );
     QVERIFY( r6->determineUri() );
-    QVERIFY( r6->init() ); // here we need to actually load since determineUri does not read the type for existing resources (hmm... maybe inconsistent)
+    QVERIFY( r6->determineUri() );
 
     // the first three resourcedatas should have the same URI since their type and identifier match
     // the fourth has a completely different type, thus the URI should differ

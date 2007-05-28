@@ -24,6 +24,8 @@ class TestBase : public QObject
 
  private Q_SLOTS:
     void initTestCase();
+    virtual void init();
+    virtual void cleanup();
 };
 
 #endif

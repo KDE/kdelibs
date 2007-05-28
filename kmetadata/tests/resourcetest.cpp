@@ -25,7 +25,6 @@ using namespace Nepomuk::KMetaData;
 using namespace Soprano;
 using namespace Nepomuk::Services;
 
-static const QString s_hasIdentifierUri( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier" );
 
 void ResourceTest::testResourceStates()
 {
@@ -37,69 +36,104 @@ void ResourceTest::testResourceStates()
     QCOMPARE( r1, r2 );
 
     QVERIFY( r1.isValid() );
-    QVERIFY( !r1.isModified() );
-    QEXPECT_FAIL("", "Resource::inSyncWithStore() does not work properly due to the kickoffUri and the generated hasIdentifier property.", Continue);
-    QVERIFY( r1.inSyncWithStore() );
-    QEXPECT_FAIL("", "Resource::isModified() does not work properly after a Resource::inSyncWithStore() call. Same reason.", Continue);
-    QVERIFY( !r1.isModified() );
+    QVERIFY( !r1.exists() );
 
     r1.setProperty( "someinvaliduri", 12 );
 
     QCOMPARE( r1, r2 );
-    QVERIFY( r1.isModified() );
-    QVERIFY( r2.isModified() );
-
-    QVERIFY( !r2.inSyncWithStore() );
+    QVERIFY( r1.exists() );
 }
 
 
 void ResourceTest::testResourceRemoval()
 {
-    QString someUri = ResourceManager::instance()->generateUniqueUri();
+    Resource res( "testi" );
+    res.setProperty( "http://nepomuk.test.org/foo/bar",  "foobar" );
 
-    Resource r1( someUri );
-    QVERIFY( !r1.isModified() );
-    QVERIFY( !r1.exists() );
+    QVERIFY( !res.uri().isEmpty() );
 
-    QVERIFY( r1.sync() == 0 );
+    Nepomuk::Services::RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
 
-    QVERIFY( !r1.isModified() );
-    QVERIFY( r1.exists() );
+    QVERIFY( rr.contains( defaultGraph(), Statement( QUrl(res.uri()), Node(), Node() ) ) );
 
-    r1.remove();
+    res.remove();
 
-    QVERIFY( r1.isModified() );
-    QVERIFY( r1.exists() );
+    QVERIFY( !res.exists() );
 
-    QVERIFY( r1.sync() == 0 );
+    QVERIFY( !rr.contains( defaultGraph(), Statement( QUrl(res.uri()), Node(), Node() ) ) );
 
-    QVERIFY( !r1.isModified() );
-    QVERIFY( !r1.exists() );
+    //
+    // test recursive removal
+    //
+    Resource res2( "testi2" );
 
-    r1.revive();
+    res.setProperty( "http://nepomuk.test.org/foo/bar2", res2 );
 
-    QVERIFY( !r1.isModified() );
-    QVERIFY( !r1.exists() );
+    QVERIFY( res.exists() );
+    QVERIFY( res2.exists() );
 
-    QVERIFY( r1.sync() == 0 );
+    QVERIFY( rr.contains( defaultGraph(), Statement( QUrl(res.uri()), QUrl("http://nepomuk.test.org/foo/bar2"), Node(QUrl(res2.uri())) ) ) );
 
-    QVERIFY( !r1.isModified() );
-    QVERIFY( r1.exists() );
+    res2.remove();
 
-    r1.remove();
-    r1.setProperty( "testProp", "hello" );
+    QVERIFY( res.exists() );
+    QVERIFY( !res2.exists() );
 
-    QVERIFY( r1.isModified() );
+    QVERIFY( !rr.contains( defaultGraph(), Statement( QUrl(res.uri()), QUrl("http://nepomuk.test.org/foo/bar2"), Node(QUrl(res2.uri())) ) ) );
+}
 
-    QVERIFY( r1.sync() == 0 );
 
-    QVERIFY( !r1.isModified() );
-    QVERIFY( r1.exists() );
+void ResourceTest::testProperties()
+{
+    RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
+    QString r1Uri, r2Uri;
 
-    r1.remove();
-    QVERIFY( r1.sync() == 0 );
+    {
+        Resource r1( "testi" );
+        Resource r2( "testi2" );
 
-    QVERIFY( !r1.exists() );
+        r1.setProperty( "http://nepomuk.test.org/int", 17 );
+        r1.setProperty( "http://nepomuk.test.org/bool1", true );
+        r1.setProperty( "http://nepomuk.test.org/bool2", false );
+        r1.setProperty( "http://nepomuk.test.org/double", 2.2 );
+        r1.setProperty( "http://nepomuk.test.org/string", "test" );
+        r1.setProperty( "http://nepomuk.test.org/date", QDate::currentDate() );
+        r1.setProperty( "http://nepomuk.test.org/Resource", r2 );
+
+        r1Uri = r1.uri();
+        r2Uri = r2.uri();
+    }
+
+    {
+        Resource r1( r1Uri );
+        Resource r2( r2Uri );
+
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/int" ) );
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/bool1" ) );
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/bool2" ) );
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/double" ) );
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/string" ) );
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/date" ) );
+        QVERIFY( r1.hasProperty( "http://nepomuk.test.org/Resource" ) );
+
+        QCOMPARE( r1.property( "http://nepomuk.test.org/int" ).toInt(), 17 );
+        QCOMPARE( r1.property( "http://nepomuk.test.org/bool1" ).toBool(), true );
+        QCOMPARE( r1.property( "http://nepomuk.test.org/bool2" ).toBool(), false );
+        QCOMPARE( r1.property( "http://nepomuk.test.org/double" ).toDouble(), 2.2 );
+        QCOMPARE( r1.property( "http://nepomuk.test.org/string" ).toString(), QString("test") );
+        QCOMPARE( r1.property( "http://nepomuk.test.org/date" ).toDate(), QDate::currentDate() );
+        QCOMPARE( r1.property( "http://nepomuk.test.org/Resource" ).toResource(), r2 );
+
+        QHash<QString, Variant> allProps = r1.allProperties();
+        QCOMPARE( allProps.count(), 9 ); // properties + type + identifier
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/int" ) );
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/bool1" ) );
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/bool2" ) );
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/double" ) );
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/string" ) );
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/date" ) );
+        QVERIFY( allProps.keys().contains( "http://nepomuk.test.org/Resource" ) );
+    }
 }
 
 
@@ -112,29 +146,28 @@ void ResourceTest::testResourceIdentifiers()
 
         QVERIFY( r1 == r2 );
 
-        r1.sync();
-
-        QVERIFY( r1.hasProperty( s_hasIdentifierUri ) );
-
         theUri = r1.uri();
 
         Resource r3( r1.uri() );
 
         QVERIFY( r1 == r3 );
 
+        QVERIFY( r1.uri() != "wurst" );
+
+        r1.setProperty( "http://nepomuk.test.org/foo/bar", "foobar" );
+
         RDFRepository rr( ResourceManager::instance()->serviceRegistry()->discoverRDFRepository() );
+
         QList<Statement> sl = rr.listStatements( defaultGraph(), Statement( QUrl( r1.uri() ), Node(), Node() ) );
 
         foreach( const Statement& s, sl )
             qDebug() << s << endl;
 
-        QCOMPARE( sl.count(), 2 );
-
-        QVERIFY( r1.uri() != "wurst" );
+        QCOMPARE( sl.count(), 3 );
 
         QVERIFY( rr.contains( defaultGraph(),
                               Statement( QUrl( r1.uri() ),
-                                         QUrl( s_hasIdentifierUri ),
+                                         QUrl( Resource::identifierUri() ),
                                          LiteralValue( "wurst" ) ) ) );
     }
 
@@ -143,11 +176,6 @@ void ResourceTest::testResourceIdentifiers()
         Resource r2( "wurst" );
 
         QCOMPARE( r1, r2 );
-
-        r1.remove();
-        r1.sync();
-
-        QVERIFY( !r2.exists() );
     }
 }
 
@@ -186,8 +214,6 @@ void ResourceTest::testResourceManager()
         rl = ResourceManager::instance()->allResourcesWithProperty( "prop2", r6 );
         QCOMPARE( rl.count(), 3 );
         QVERIFY( rl.contains( r3 ) && rl.contains( r4 ) && rl.contains( r5 ) );
-
-        ResourceManager::instance()->syncAll();
     }
 
     {

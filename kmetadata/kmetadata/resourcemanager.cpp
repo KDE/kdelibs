@@ -34,8 +34,6 @@
 #include <kdebug.h>
 #include <krandom.h>
 
-#include <QtCore/QThread>
-#include <QtCore/QMutex>
 
 
 using namespace Nepomuk::Services;
@@ -46,28 +44,18 @@ using namespace Soprano;
 static const char* KMETADATA_NAMESPACE = "http://kmetadata.kde.org/resources#";
 
 
-class Nepomuk::KMetaData::ResourceManager::Private : public QThread
+class Nepomuk::KMetaData::ResourceManager::Private
 {
 public:
     Private( ResourceManager* manager )
         : initialized(false),
-          autoSync(true),
           registry(0),
           m_parent(manager) {
     }
 
-    void run() {
-        m_parent->syncAll();
-    }
-
     bool initialized;
 
-    bool autoSync;
     Nepomuk::Backbone::Registry* registry;
-
-    QTimer syncTimer;
-
-    QMutex syncMutex;
 
 private:
     ResourceManager* m_parent;
@@ -78,19 +66,11 @@ Nepomuk::KMetaData::ResourceManager::ResourceManager()
     : QObject(),
       d( new Private( this ) )
 {
-    setAutoSync( true );
-    // FIXME: Does D-Bus still not work from different threads or is there a bug in my D-Bus stuff that
-    // results in all the QTimer warnings if I run syncAll from the Private thread?
-    //     connect( &d->syncTimer, SIGNAL(timeout()),
-//              this, SLOT(slotStartAutoSync()) );
-    connect( &d->syncTimer, SIGNAL(timeout()),
-             this, SLOT(syncAll()) );
 }
 
 
 Nepomuk::KMetaData::ResourceManager::~ResourceManager()
 {
-    d->syncTimer.stop();
     delete d;
 }
 
@@ -132,7 +112,6 @@ int Nepomuk::KMetaData::ResourceManager::init()
         //   }
 
         d->initialized = true;
-        d->syncTimer.start(10*1000);
     }
 
     return 0;
@@ -151,109 +130,10 @@ Nepomuk::Backbone::Registry* Nepomuk::KMetaData::ResourceManager::serviceRegistr
 }
 
 
-bool Nepomuk::KMetaData::ResourceManager::autoSync() const
-{
-    return d->autoSync;
-}
-
-
 Nepomuk::KMetaData::Resource Nepomuk::KMetaData::ResourceManager::createResourceFromUri( const QString& uri )
 {
     return Resource( uri, QString() );
 }
-
-
-void Nepomuk::KMetaData::ResourceManager::slotStartAutoSync()
-{
-    if( d->autoSync )
-        triggerSync();
-}
-
-
-void Nepomuk::KMetaData::ResourceManager::setAutoSync( bool enabled )
-{
-    d->autoSync = enabled;
-}
-
-
-void Nepomuk::KMetaData::ResourceManager::syncAll()
-{
-    kDebug(300004) << k_funcinfo << endl;
-
-    d->syncMutex.lock();
-
-    //
-    // Gather all information to be synced and add it in one go
-    //
-    // FIXME: use some upper bound, i.e. never add more than N statements at once
-
-    RDFRepository rr( serviceRegistry()->discoverRDFRepository() );
-
-    // make sure our graph exists
-    // ==========================
-    if( !rr.listRepositoriyIds().contains( KMetaData::defaultGraph() ) ) {
-        rr.createRepository( KMetaData::defaultGraph() );
-    }
-
-    // sync the stupid way by calling each resource's merge method.
-    // FIXME: do a more performant sync by gathering statements to add and remove
-    QList<ResourceData*> allResources = ResourceData::allResourceData();
-    QList<Statement> statementsToAdd;
-    QList<ResourceData*> syncedResources;
-    for( QList<ResourceData*>::iterator it = allResources.begin();
-         it != allResources.end(); ++it ) {
-        ResourceData* rd = *it;
-        syncedResources.append( rd );
-        rd->startSync();
-        bool success = ( rd->determineUri() &&
-                         rd->determinePropertyUris() &&
-                         rd->merge() &&
-                         rd->save() );
-//    statementsToAdd += rd->allStatementsToAdd();
-        rd->endSync( success );
-    }
-
-
-    // remove everything about everyone from the store
-    // this is the stupid way but ATM the only working one
-    // ===================================================
-//   for( QHash<QString, ResourceData*>::iterator it = ResourceData::s_data.begin();
-//        it != ResourceData::s_data.end(); ++it ) {
-//     rr.removeAllStatements( KMetaData::defaultGraph(), Statement( it.value()->uri(), Node(), Node() ) );
-//     if( !rr.success() )
-//       kDebug(300004) << "(ResourceManager) failed to remove all statements for resource " << it.value()->uri()
-// 		     << " (" << rr.lastErrorName() << ")" << endl;
-//   }
-
-//   rr.addStatements( KMetaData::defaultGraph(), statementsToAdd );
-
-//   if( !rr.success() )
-//     kDebug(300004) << "(ResourceManager) failed to add statements"
-// 		   << " (" << rr.lastErrorName() << ")" << endl;
-
-//   bool success = rr.success();
-
-    //
-    // Release all the resource data instances.
-    //
-    for( QList<ResourceData*>::iterator it = syncedResources.begin();
-         it != syncedResources.end(); ++it ) {
-        ResourceData* data = *it;
-//    data->endSync( success );
-        if( !data->isModified() && !data->cnt() )
-            data->deleteData();
-    }
-
-    d->syncMutex.unlock();
-}
-
-
-void Nepomuk::KMetaData::ResourceManager::triggerSync()
-{
-    if( !d->isRunning() )
-        d->start();
-}
-
 
 void Nepomuk::KMetaData::ResourceManager::notifyError( const QString& uri, int errorCode )
 {

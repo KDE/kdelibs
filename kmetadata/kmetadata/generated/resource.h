@@ -61,8 +61,6 @@ namespace Nepomuk {
 	 *
 	 * Resource objects with the same URI share their data.
 	 *
-	 * Normally they are also synced with the local storage automatically.
-	 *
 	 * All methods in Resource are thread-safe.
 	 *
 	 * See \ref hacking for details on how to use Resource.
@@ -126,7 +124,6 @@ namespace Nepomuk {
              */
             Resource( const QString& uriOrIdentifier, const QString& type = QString() );
 
-
             /**
              * Constructor used internally.
              */
@@ -143,8 +140,6 @@ namespace Nepomuk {
              *
              * the most important thing to remember is that the URI of for example
              * a file has no relation to its local path.
-             *
-             * In case the resource has not been synced yet the URI may be empty.
              *
              * \sa getIdentifiers
              */
@@ -167,16 +162,6 @@ namespace Nepomuk {
             QString className() const;
 
             /**
-             * Resync the data with the local storage. Unless autosync is disabled there
-             * is normally no need to call this explicitly.
-             *
-             * \return Some error code which still has to be defined.
-             *
-             * \sa ResourceManager::setAutoSync
-             */
-            ErrorCode sync();
-
-            /**
              * \return A list of all defined properties
              */
             QHash<QString, Variant> allProperties() const;
@@ -185,16 +170,9 @@ namespace Nepomuk {
              * Check if property identified by \a uri is defined
              * for this resource.
              *
-             * Be aware that this method does not check if the property
-             * is defined for this resource's type!
-             *
-             * \param uri The URI identifying the property. If this URI does
-             *            not include a namespace the default namespace is
-             *            prepended.
+             * \param uri The URI identifying the property.
              *
              * \return true if property \a uri has a value set.
-             *
-             * \sa Ontology::defaultNamespace
              */
             bool hasProperty( const QString& uri ) const;
 
@@ -202,91 +180,35 @@ namespace Nepomuk {
              * Retrieve the value of property \a uri. If the property is not defined for
              * this resource an invalid, empty Variant object is returned.
              *
-             * \param uri The URI identifying the property. If this URI does
-             *            not include a namespace the default namespace is
-             *            prepended.
-             *
-             * \sa Ontology::defaultNamespace
+             * \param uri The URI identifying the property.
              */
             Variant property( const QString& uri ) const;
 
             /**
              * Set a property of the resource.
              *
-             * \param uri The URI identifying the property. If this URI does
-             *            not include a namespace the default namespace is
-             *            prepended.
-             * \param value The value of the property (i.e. the object of the RDF triple)
-             *
-             * This method only changes the resource locally. The new data is not written
-             * back to the Nepomuk store before a call to sync().
-             *
-             * Calling setProperty will revert any previous calls to remove.
-             *
-             * \sa Ontology::defaultNamespace
+             * \param uri The URI identifying the property.
+             * \param value The value of the property (i.e. the object of the RDF triple(s))
              */
             void setProperty( const QString& uri, const Variant& value );
 
             /**
              * Remove property \a uri from this resource object.
              *
-             * This method only changes the resource locally. The new data is not written
-             * back to the Nepomuk store before a call to sync().
-             *
-             * \param uri The URI identifying the property. If this URI does
-             *            not include a namespace the default namespace is
-             *            prepended.
-             *
-             * \sa Ontology::defaultNamespace
+             * \param uri The URI identifying the property.
              */
             void removeProperty( const QString& uri );
 
             /**
              * Remove this resource completely.
-             *
-             * The resource will only be marked as deleted locally and not be removed from
-             * the local Nepomuk RDF store until a call to sync (in most cases this is done
-             * automatically through auto-syncing).
-             *
-             * One call to setProperty before a syncing operation will revert the deletion
-             * of a resource.
-             *
-             * \sa revive
+             * CAUTION: After calling this method the resource will have been removed from the store
+             * without any trace.
              */
             void remove();
 
             /**
-             * Revive a previously removed resource. If the resource was not yet synced all
-             * properties (except those that have actually been removed via removeProperty)
-             * are restored to their previous values.
-             *
-             * \sa remove
-             */
-            void revive();
-
-            /**
-             * \return true if the data in this object has been modified and not yet
-             * synced with the local NEPOMUK RDF store.
-             */
-            bool isModified() const;
-
-            /**
-             * \return true if this object represents the exact data from the local NEPOMUK RDF
-             * store. Differs from modified() in that it also handles changes in the store that
-             * have not been loaded yet.
-             *
-             * \sa exists()
-             */
-            bool inSyncWithStore() const;
-
-            /**
              * \return true if this resource (i.e. the uri of this resource) exists in the local
-             * NEPOMUK RDF store, either as subject or as object.
-             *
-             * This method ignores any previous unsynced remove operations and only checks for
-             * the presence of the resource in the local RDF store.
-             *
-             * \sa inSync()
+             * NEPOMUK RDF store.
              */
             bool exists() const;
 
