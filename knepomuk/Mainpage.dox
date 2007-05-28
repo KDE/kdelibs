@@ -1,0 +1,86 @@
+/**
+ * \mainpage The NEPOMUK-KDE Backbone library (KNepomuk)
+ *
+ *
+ *
+ * The KNepomuk library provides low-level access to NEPOMUK-KDE services represented by the 
+ * Nepomuk::Backbone::Service class as well as service publication with the Nepomuk-KDE
+ * service registry (and thus the whole \a %Nepomuk system on the current desktop) through
+ * the Nepomuk::Backbone::ServicePublisher class.
+ *
+ * The following sections give a quick introduction on how to use the KNepomuk library.
+ *
+ *
+ *
+ * \section knepclient Writing a KNepomuk client
+ *
+ * A KNepomuk client is an application, plugin, or piece of code that uses NEPOMUK services to
+ * perform certain tasks (but does not publish services itself).
+ *
+ * Writing a KNepomuk client is quite easy. Once first has to create an instance of 
+ * Nepomuk::Backbone::Registry (the \a Registry class is intended to be used as a singleton
+ * and might later be changed to enforce that.) which will then automatically connect to the
+ * local Service Registry to retrieve the list of available NEPOMUK services.
+ *
+ * \code
+ * Nepomuk::Backbone::Registry* reg = new Nepomuk::Backbone::Registry( someQOject );
+ * \endcode
+ *
+ * To actually use a service one has to know the service type URL (in future releases this will
+ * be simplyfied by some kind of type URL mapping). Say, for example, we want to use an RDF storage
+ * service. The RDFRepository service as defined by Nepomuk has the type URL 
+ * %http://nepomuk.semanticdesktop.org/services/RDFRepository. Thus, to get an RDFRepository service
+ * we simply ask the \a Registry and retrieve a generic Nepomuk::Backbone::Service object:
+ *
+ * \code
+ * QString typeUrl = "http://nepomuk.semanticdesktop.org/services/RDFRepository";
+ * Service* rdfService = reg->discoverServiceByType( typeUrl );
+ * \endcode
+ *
+ * Nepomuk::Backbone::Service provides a generic interface via the Nepomuk::Backbone::Service::methodCall
+ * method. In theory one could do all communication with the service through this simple interface.
+ * But since that would be way to complicated (one had to know the exact syntax of the service's API)
+ * KNepomuk provides Nepomuk::Backbone::ServiceWrapper classes for the most common service types.
+ *
+ * In the case of the RDFRepository service we can simply create an instance of 
+ * Nepomuk::Backbone::Services::RDFRepository as a wrapper around the \a Service object:
+ *
+ * \code
+ * Nepomuk::Backbone::Services::RDFRepository rdfServiceWrapper( rdfService );
+ * \endcode
+ *
+ * Now we can use the RDFRepository service easily as if it were a local object.
+ *
+ *
+ *
+ * \section knepservice Writing a KNepomuk service
+ *
+ * Writing a Nepomuk-KDE service that provides a certain service type is also very easy (if 
+ * one needs to create a new service type that is not already part of the KNepomuk library
+ * a little more work has to be done. In the future creating service types should be 
+ * handled by a toolchain within the KNepomuk framework. For now, however, this has to be done
+ * manually. The steps to perform are not documented here and the reader is encuraged to
+ * contact the Nepomuk-KDE development team for help).
+ *
+ * In order to create and publish a service in the local \a %Nepomuk system once has to 
+ * create an implementation of a Nepomuk::Backbone::ServicePublisher subclass relating
+ * to the service type the new service should have.
+ *
+ * Say, for example, we want to implement an RDFRepository service. To do that we only need to
+ * subclass Nepomuk::Backbone::Services::RDFRepositoryPublisher and implement its abstract
+ * methods (see Nepomuk::Backbone::ServicePublisher for a code example).
+ *
+ * Once the new ServicePublisher has been implemented we again create an instance of
+ * Nepomuk::Backbone::Registry and then register the new service with a single call to
+ * Nepomuk::Backbone::Registry::registerService:
+ *
+ * \code
+ * Nepomuk::Backbone::Registry* reg = new Nepomuk::Backbone::Registry( someQOject );
+ * reg.registerService( new MyRdfServicePublisher() );
+ * \endcode
+ *
+ * From that point on \a %Nepomuk clients can see and use the new service.
+ *
+ * \a Hint: The NEPOMUK_KDE_SERVICE_MAIN(ServiceType) macro can be used to create a very simple
+ * wrapping application around a \a ServicePublisher implementation.
+ */
