@@ -235,6 +235,7 @@ void Highlighter::highlightBlock ( const QString & text )
             if (d->dict->isMisspelled(w.word)) {
                 ++d->errorCount;
                 setMisspelled(w.start, w.word.length());
+		emit newSuggestions(w.word, d->dict->suggest(w.word));
             } else
                 unsetMisspelled(w.start, w.word.length());
             w = d->filter->nextWord();

@@ -89,6 +89,15 @@ namespace KSpell2
 	 */
 	void activeChanged(const QString &description);
 
+	/**
+	 *
+	 * @param originalWord missspelled word
+	 *
+	 * @param suggestions list of word which can replace missspelled word 
+	 */
+
+	void newSuggestions(const QString& originalWord, const QStringList& suggestions);
+
     protected:
         virtual void setMisspelled(int start, int count);
         virtual void unsetMisspelled(int start,  int count);
