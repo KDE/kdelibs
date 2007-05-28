@@ -1203,7 +1203,7 @@ bool Ftp::ftpCloseCommand()
   kdDebug(7102) << "ftpCloseCommand: reading command result" << endl;
   m_bBusy = false;
 
-  if(ftpResponse(-1) <= 0 || (m_iRespType != 2) )
+  if(!ftpResponse(-1) || (m_iRespType != 2) )
   {
     kdDebug(7102) << "ftpCloseCommand: no transfer complete message" << endl;
     return false;
@@ -2004,6 +2004,7 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KURL& url, KIO::fi
   {
     const char* psz = strrchr( ftpResponse(4), '(' );
     if(psz) m_size = charToLongLong(psz+1);
+    if (!m_size) m_size = UnknownSize;
   }
 
   KIO::filesize_t bytesLeft = 0;
@@ -2390,6 +2391,7 @@ bool Ftp::ftpSize( const QString & path, char mode )
   if(!psz)
     return false;
   m_size = charToLongLong(psz);
+  if (!m_size) m_size = UnknownSize;
   return true;
 }
 
