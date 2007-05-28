@@ -17,7 +17,7 @@ class ScriptInfo
 		QString scriptFile;
 		QString scriptMethod;
 		ScriptInfo();
-		~ScriptInfo(){};
+		~ScriptInfo(){}
 };
 ScriptInfo::ScriptInfo()
 {

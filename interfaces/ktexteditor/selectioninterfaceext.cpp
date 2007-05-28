@@ -30,8 +30,8 @@ using namespace KTextEditor;
 //BEGIN KTextEditor::SelectionInterfaceExt
 class KTextEditor::PrivateSelectionInterfaceExt {
   public:
-    PrivateSelectionInterfaceExt() : interface( 0 ) {};
-    ~PrivateSelectionInterfaceExt() {};
+    PrivateSelectionInterfaceExt() : interface( 0 ) {}
+    ~PrivateSelectionInterfaceExt() {}
     
     SelectionExtDCOPInterface *interface;
 };
