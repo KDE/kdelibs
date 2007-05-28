@@ -179,7 +179,7 @@ namespace Solid
          * @param type the device interface type to query
          * @return true if the device interface is available, false otherwise
          */
-        bool queryDeviceInterface(const DeviceInterface::Type &type) const;
+        bool isDeviceInterface(const DeviceInterface::Type &type) const;
 
         /**
          * Retrieves a specialized interface to interact with the device corresponding to
@@ -232,7 +232,7 @@ namespace Solid
          */
         template <class DevIface> bool is() const
         {
-            return queryDeviceInterface(DevIface::deviceInterfaceType());
+            return isDeviceInterface(DevIface::deviceInterfaceType());
         }
 
     private:

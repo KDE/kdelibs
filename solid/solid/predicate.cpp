@@ -213,7 +213,7 @@ bool Solid::Predicate::matches(const Device &device) const
         break;
     }
     case Private::IsType:
-        return device.queryDeviceInterface(d->ifaceType);
+        return device.isDeviceInterface(d->ifaceType);
     }
 
     return false;

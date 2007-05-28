@@ -120,7 +120,7 @@ QString Solid::Device::product() const
     return_SOLID_CALL(Ifaces::Device *, d->backendObject(), QString(), product());
 }
 
-bool Solid::Device::queryDeviceInterface(const DeviceInterface::Type &type) const
+bool Solid::Device::isDeviceInterface(const DeviceInterface::Type &type) const
 {
     return_SOLID_CALL(Ifaces::Device *, d->backendObject(), false, queryDeviceInterface(type));
 }

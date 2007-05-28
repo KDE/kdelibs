@@ -109,27 +109,27 @@ QVariant KDeviceListModel::data(const QModelIndex &index, int role) const
         }
         else
         {
-            if (device.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive))
+            if (device.isDeviceInterface(Solid::DeviceInterface::OpticalDrive))
             {
                 iconName = "cdrom-unmount";
             }
-            else if (device.queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer))
+            else if (device.isDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer))
             {
                 iconName = "ipod-unmount";
             }
-            else if (device.queryDeviceInterface(Solid::DeviceInterface::Camera))
+            else if (device.isDeviceInterface(Solid::DeviceInterface::Camera))
             {
                 iconName = "camera-unmount";
             }
-            else if(device.queryDeviceInterface(Solid::DeviceInterface::Processor))
+            else if(device.isDeviceInterface(Solid::DeviceInterface::Processor))
             {
                 iconName = "ksim-cpu";
             }
-            else if (device.queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
+            else if (device.isDeviceInterface(Solid::DeviceInterface::StorageDrive))
             {
                 iconName = "hdd-unmount";
             }
-            else if (device.queryDeviceInterface(Solid::DeviceInterface::Block))
+            else if (device.isDeviceInterface(Solid::DeviceInterface::Block))
             {
                 iconName = "blockdevice";
             }

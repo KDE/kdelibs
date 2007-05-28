@@ -106,12 +106,12 @@ void SolidHwTest::testDeviceBasicFeatures()
 
 
     // Query device interfaces
-    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageDrive), true);
-    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::OpticalDrive), true);
-    QCOMPARE(valid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageVolume), false);
+    QCOMPARE(valid_dev.isDeviceInterface(Solid::DeviceInterface::StorageDrive), true);
+    QCOMPARE(valid_dev.isDeviceInterface(Solid::DeviceInterface::OpticalDrive), true);
+    QCOMPARE(valid_dev.isDeviceInterface(Solid::DeviceInterface::StorageVolume), false);
 
-    QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::Unknown), false);
-    QCOMPARE(invalid_dev.queryDeviceInterface(Solid::DeviceInterface::StorageDrive), false);
+    QCOMPARE(invalid_dev.isDeviceInterface(Solid::DeviceInterface::Unknown), false);
+    QCOMPARE(invalid_dev.isDeviceInterface(Solid::DeviceInterface::StorageDrive), false);
 
 
     // Query parent
@@ -235,7 +235,7 @@ void SolidHwTest::testDeviceInterfaces()
     Solid::DeviceInterface *iface = cpu.asDeviceInterface(Solid::DeviceInterface::Processor);
     Solid::Processor *processor = cpu.as<Solid::Processor>();
 
-    QVERIFY(cpu.queryDeviceInterface(Solid::DeviceInterface::Processor));
+    QVERIFY(cpu.isDeviceInterface(Solid::DeviceInterface::Processor));
     QVERIFY(iface!=0);
     QCOMPARE(iface, processor);
 
