@@ -382,13 +382,8 @@ void ISearchPluginView::quitToView( const QString &text )
 {
 	if( !text.isNull() && !text.isEmpty() ) {
 		m_combo->addToHistory( text );
-		m_combo->insertItem( text );
 		m_lastString = text;
 	}
-
-	m_combo->blockSignals( true );
-	m_combo->clear();
-	m_combo->blockSignals( false );
 
 	if( m_view ) {
 		m_view->setFocus(); // Will call endSearch()
