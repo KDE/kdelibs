@@ -24,6 +24,7 @@
 
 #include <kiconloader.h>
 #include <kglobalsettings.h>
+#include <kgraphicsutils.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
 #include <kdebug.h>
@@ -129,7 +130,7 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
     const int buttonWidth  = width();
     const int buttonHeight = height();
 
-    QColor bgColor = backgroundColor();
+    const QColor bgColor = backgroundColor();
     QColor fgColor = foregroundColor();
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
                                isDisplayHintEnabled(DraggedHint);
@@ -137,7 +138,9 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
 
     if (!(isDisplayHintEnabled(ActivatedHint) && isActive) && !isHighlighted) {
         // dimm the foreground color by mixing it with the background
-        fgColor = mixColors(fgColor, bgColor);
+        QColor mixColor(bgColor);
+        mixColor.setAlpha(128);
+        fgColor = KGraphicsUtils::blendColor(fgColor, mixColor);
         painter.setPen(fgColor);
     }
 

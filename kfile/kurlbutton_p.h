@@ -67,9 +67,6 @@ protected:
     /** Returns the background color by respecting the current display hint. */
     QColor backgroundColor() const;
 
-    /** Mixes the colors \a c1 and \a c2 to 50 %. */
-    QColor mixColors(const QColor& c1, const QColor& c2) const;
-
 private:
     int m_displayHint;
     KUrlNavigator* m_urlNavigator;

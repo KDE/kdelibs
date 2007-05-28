@@ -21,6 +21,7 @@
 #include "kurlnavigator.h"
 
 #include <kglobalsettings.h>
+#include <kgraphicsutils.h>
 #include <kicon.h>
 #include <klocale.h>
 
@@ -62,8 +63,9 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
     } else if (isDisplayHintEnabled(EnteredHint)) {
         QColor foregroundColor = KGlobalSettings::buttonTextColor();
         if (!urlNavigator()->isActive()) {
-            QColor dimmColor(palette().brush(QPalette::Background).color());
-            foregroundColor = mixColors(foregroundColor, dimmColor);
+            QColor dimColor(palette().brush(QPalette::Background).color());
+            dimColor.setAlpha(128);
+            foregroundColor = KGraphicsUtils::blendColor(foregroundColor, dimColor);
         }
 
         painter.setPen(Qt::NoPen);

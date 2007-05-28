@@ -22,6 +22,7 @@
 #include "kurlnavigator.h"
 
 #include <kglobalsettings.h>
+#include <kgraphicsutils.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
@@ -132,8 +133,9 @@ QColor KUrlButton::foregroundColor() const
                                              KGlobalSettings::buttonTextColor();
 
     if (!urlNavigator()->isActive()) {
-        QColor dimmColor(palette().brush(QPalette::Background).color());
-        foregroundColor = mixColors(foregroundColor, dimmColor);
+        QColor dimColor(palette().brush(QPalette::Background).color());
+        dimColor.setAlpha(128);
+        foregroundColor = KGraphicsUtils::blendColor(foregroundColor, dimColor);
     }
 
     return foregroundColor;
@@ -148,20 +150,12 @@ QColor KUrlButton::backgroundColor() const
     QColor backgroundColor = isHighlighted ? KGlobalSettings::highlightColor() :
                                              palette().brush(QPalette::Background).color();
     if (!urlNavigator()->isActive() && isHighlighted) {
-        QColor dimmColor(palette().brush(QPalette::Background).color());
-        backgroundColor = mixColors(backgroundColor, dimmColor);
+        QColor dimColor(palette().brush(QPalette::Background).color());
+        dimColor.setAlpha(128);
+        backgroundColor = KGraphicsUtils::blendColor(backgroundColor, dimColor);
     }
 
     return backgroundColor;
-}
-
-QColor KUrlButton::mixColors(const QColor& c1,
-                             const QColor& c2) const
-{
-    const int red   = (c1.red()   + c2.red())   / 2;
-    const int green = (c1.green() + c2.green()) / 2;
-    const int blue  = (c1.blue()  + c2.blue())  / 2;
-    return QColor(red, green, blue);
 }
 
 #include "kurlbutton_p.moc"

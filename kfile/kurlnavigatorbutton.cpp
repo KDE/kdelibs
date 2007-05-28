@@ -26,6 +26,7 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobalsettings.h>
+#include <kgraphicsutils.h>
 #include <kmenu.h>
 
 #include <QtGui/QPainter>
@@ -105,7 +106,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     const int buttonWidth  = width();
     const int buttonHeight = height();
 
-    QColor bgColor = backgroundColor();
+    const QColor bgColor = backgroundColor();
     QColor fgColor = foregroundColor();
 
     const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
@@ -123,7 +124,9 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         painter.setPen(fgColor);
     } else {
         // dimm the foreground color by mixing it with the background
-        fgColor = mixColors(fgColor, bgColor);
+        QColor mixColor(bgColor);
+        mixColor.setAlpha(128);
+        fgColor = KGraphicsUtils::blendColor(fgColor, mixColor);
         painter.setPen(fgColor);
     }
 
