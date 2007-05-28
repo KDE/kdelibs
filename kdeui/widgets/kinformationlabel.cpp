@@ -65,6 +65,8 @@ KInformationLabel::KInformationLabel(QWidget *parent)
  : QWidget(parent), d(new Private(this))
 {
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    mainLayout->setMargin(0);
+
     d->titleWidget = new KTitleWidget(this);
     d->titleWidget->installEventFilter(this);
 
