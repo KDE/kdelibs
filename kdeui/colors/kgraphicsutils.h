@@ -28,7 +28,7 @@ class QColor;
  */
 namespace KGraphicsUtils {
     /**
-     * Blend 2 colors into a new color with the strenght of the blend based on the alpha channel of the second color.
+     * Blend 2 colors into a new color with the strength of the blend based on the alpha channel of the second color.
      * @code
         QColor white(Qt::White);
         white.setAlpha(130);
