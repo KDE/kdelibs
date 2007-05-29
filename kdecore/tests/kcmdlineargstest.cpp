@@ -83,6 +83,14 @@ main(int argc, char *argv[])
    kDebug() << u << endl;
    assert(u.url() == "http://www.kde.org");
 
+   QFile file("a:b");
+   bool ok = file.open(QIODevice::WriteOnly);
+   assert(ok);
+   u = KCmdLineArgs::makeURL("a:b");
+   qDebug() << u.path();
+   assert(u.isLocalFile());
+   assert(u.path().endsWith("a:b"));
+
    args->clear(); // Free up memory.
 
 
