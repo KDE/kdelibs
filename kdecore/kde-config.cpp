@@ -37,76 +37,6 @@ static KCmdLineOptions options[] =
     { 0,0,0 }
 };
 
-#ifdef Q_OS_WIN
-#include <windows.h>
-
-static QString getKde4Prefix()
-{
-    static QString modFilePath;
-    if(modFilePath.isEmpty()) {
-        wchar_t module_name[256];
-        GetModuleFileNameW(0, module_name, sizeof(module_name) / sizeof(wchar_t));
-        modFilePath = QString::fromUtf16((ushort *)module_name);
-        int idx = modFilePath.lastIndexOf('\\');
-        if(idx != -1)
-            modFilePath = modFilePath.left(idx);
-        modFilePath = QDir(modFilePath + "/../").canonicalPath();
-    }
-    return modFilePath;
-}
-
-static const QString prefix        = getKde4Prefix();
-static const QString exec_prefix   = getKde4Prefix();
-static const QString libdir        = getKde4Prefix() + "/lib";
-static const QString includedir    = getKde4Prefix() + "/include";
-static const QString sysconfdir    = getKde4Prefix() + "/etc";
-static const QString share         = getKde4Prefix() + "/share";
-static const QString datadir       = share + QLatin1String("/apps");
-static const QString kde_appsdir   = share + QLatin1String("/applnk");
-static const QString kde_confdir   = share + QLatin1String("/config");
-static const QString kde_kcfgdir   = share + QLatin1String("/config.kcfg");
-static const QString kde_datadir   = share + QLatin1String("/apps");
-static const QString kde_bindir    = getKde4Prefix();
-static const QString kde_htmldir   = share + QLatin1String("/doc/HTML");
-static const QString kde_icondir   = share + QLatin1String("/icons");
-static const QString kde_moduledir = libdir + QLatin1String("/kde4");
-static const QString kde_locale    = share + QLatin1String("/locale");
-static const QString kde_mimedir   = share + QLatin1String("/mimelnk");
-static const QString kde_servicesdir     = share + QLatin1String("/services");
-static const QString kde_servicetypesdir = share + QLatin1String("/servicetypes");
-static const QString kde_sounddir        = share + QLatin1String("/sounds");
-static const QString kde_templatesdir    = share + QLatin1String("/templates");
-static const QString kde_wallpaperdir    = share + QLatin1String("/wallpapers");
-static const QString xdg_menudir         = share + QLatin1String("/currently/undefined");
-static const QString xdg_appsdir         = share + QLatin1String("/applications/kde4");
-static const QString xdg_directorydir    = share + QLatin1String("/desktop-directories");
-#else
-static const QString prefix        = QString(QLatin1String(KDEDIR));
-static const QString exec_prefix   = QString(QLatin1String(EXEC_INSTALL_PREFIX));
-static const QString libdir        = QString(QLatin1String(LIB_INSTALL_DIR));
-static const QString includedir    = QString(QLatin1String(INCLUDE_INSTALL_DIR));
-static const QString sysconfdir    = QString(QLatin1String(SYSCONF_INSTALL_DIR));
-static const QString datadir       = QString(QLatin1String(DATA_INSTALL_DIR));
-static const QString kde_appsdir   = QString(QLatin1String(APPLNK_INSTALL_DIR));
-static const QString kde_confdir   = QString(QLatin1String(CONFIG_INSTALL_DIR));
-static const QString kde_kcfgdir   = QString(QLatin1String(KCFG_INSTALL_DIR));
-static const QString kde_datadir   = QString(QLatin1String(DATA_INSTALL_DIR));
-static const QString kde_bindir    = QString(QLatin1String(BIN_INSTALL_DIR));
-static const QString kde_htmldir   = QString(QLatin1String(HTML_INSTALL_DIR));
-static const QString kde_icondir   = QString(QLatin1String(ICON_INSTALL_DIR));
-static const QString kde_moduledir = QString(QLatin1String(PLUGIN_INSTALL_DIR));
-static const QString kde_locale    = QString(QLatin1String(LOCALE_INSTALL_DIR));
-static const QString kde_mimedir   = QString(QLatin1String(MIME_INSTALL_DIR));
-static const QString kde_servicesdir     = QString(QLatin1String(SERVICES_INSTALL_DIR));
-static const QString kde_servicetypesdir = QString(QLatin1String(SERVICETYPES_INSTALL_DIR));
-static const QString kde_sounddir        = QString(QLatin1String(SOUND_INSTALL_DIR));
-static const QString kde_templatesdir    = QString(QLatin1String(TEMPLATES_INSTALL_DIR));
-static const QString kde_wallpaperdir    = QString(QLatin1String(WALLPAPER_INSTALL_DIR));
-static const QString xdg_menudir         = QString(QLatin1String(SYSCONF_INSTALL_DIR "/xdg/menus"));
-static const QString xdg_appsdir         = QString(QLatin1String(XDG_APPS_DIR));
-static const QString xdg_directorydir    = QString(QLatin1String(XDG_DIRECTORY_DIR));
-#endif
-
 static void printResult(const QString &s)
 {
     if (s.isEmpty())
@@ -134,13 +64,13 @@ int main(int argc, char **argv)
 
     if (args->isSet("prefix"))
     {
-        printResult(prefix.toLocal8Bit());
+        printResult(KDEDIR);
         return 0;
     }
 
     if (args->isSet("exec-prefix"))
     {
-        printResult(exec_prefix.toLocal8Bit());
+        printResult(EXEC_INSTALL_PREFIX);
         return 0;
     }
 
@@ -278,39 +208,7 @@ int main(int argc, char **argv)
     type = args->getOption("install");
     if (!type.isEmpty())
     {
-        static QString installprefixes[] = {
-            "apps",   kde_appsdir,
-            "config", kde_confdir,
-            "kcfg",   kde_kcfgdir,
-            "data",   kde_datadir,
-            "exe",    kde_bindir,
-            "html",   kde_htmldir,
-            "icon",   kde_icondir,
-            "lib",    libdir,
-            "module", kde_moduledir,
-            "qtplugins", kde_moduledir + QLatin1String("/plugins"),
-            "locale", kde_locale,
-            "mime",   kde_mimedir,
-            "services", kde_servicesdir,
-            "servicetypes", kde_servicetypesdir,
-            "sound", kde_sounddir,
-            "templates", kde_templatesdir,
-            "wallpaper", kde_wallpaperdir,
-            "xdgconf-menu", xdg_menudir,
-            "xdgdata-apps", xdg_appsdir,
-            "xdgdata-dirs", xdg_directorydir,
-            "include", includedir,
-            QString(), QString()
-        };
-        int index = 0;
-        while (!installprefixes[index].isEmpty() && type != installprefixes[index]) {
-            index += 2;
-        }
-        if (!installprefixes[index].isEmpty()) {
-            printResult(installprefixes[index+1].toLocal8Bit());
-        } else {
-            printResult("NONE"); // no i18n here as for scripts
-        }
+        printResult( KGlobal::dirs()->installPath(type.toLocal8Bit()) );
     }
     return 0;
 }

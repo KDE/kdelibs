@@ -186,568 +186,574 @@ public:
                         IgnoreExecBit = 4 };
     Q_DECLARE_FLAGS( SearchOptions, SearchOption )
 
-	/**
-	 * KStandardDirs' destructor.
-	 */
+    /**
+     * KStandardDirs' destructor.
+     */
 	virtual ~KStandardDirs();
 
-	/**
-	 * Adds another search dir to front of the @p fsstnd list.
-	 *
-	 * @li When compiling kdelibs, the prefix is added to this.
-	 * @li @c KDEDIRS is taken into account
-	 * @li Additional dirs may be loaded from kdeglobals.
-	 *
-	 * @param dir The directory to append relative paths to.
-	 */
-	void addPrefix( const QString& dir );
+    /**
+     * Adds another search dir to front of the @p fsstnd list.
+     *
+     * @li When compiling kdelibs, the prefix is added to this.
+     * @li @c KDEDIRS is taken into account
+     * @li Additional dirs may be loaded from kdeglobals.
+     *
+     * @param dir The directory to append relative paths to.
+     */
+    void addPrefix( const QString& dir );
 
-	/**
-	 * Adds another search dir to front of the @c XDG_CONFIG_XXX list
-	 * of prefixes.
-	 * This prefix is only used for resources that start with @c "xdgconf-"
-	 *
-	 * @param dir The directory to append relative paths to.
-	 */
-	void addXdgConfigPrefix( const QString& dir );
+    /**
+     * Adds another search dir to front of the @c XDG_CONFIG_XXX list
+     * of prefixes.
+     * This prefix is only used for resources that start with @c "xdgconf-"
+     *
+     * @param dir The directory to append relative paths to.
+     */
+    void addXdgConfigPrefix( const QString& dir );
 
-	/**
-	 * Adds another search dir to front of the @c XDG_DATA_XXX list
-	 * of prefixes.
-	 * This prefix is only used for resources that start with @c "xdgdata-"
-	 *
-	 * @param dir The directory to append relative paths to.
-	 */
-	void addXdgDataPrefix( const QString& dir );
+    /**
+     * Adds another search dir to front of the @c XDG_DATA_XXX list
+     * of prefixes.
+     * This prefix is only used for resources that start with @c "xdgdata-"
+     *
+     * @param dir The directory to append relative paths to.
+     */
+    void addXdgDataPrefix( const QString& dir );
 
-	/**
-	 * Adds suffixes for types.
-	 *
-	 * You may add as many as you need, but it is advised that there
-	 * is exactly one to make writing definite.
-	 * All basic types (kde_default()) are added by addKDEDefaults(),
-	 * but for those you can add more relative paths as well.
-	 *
-	 * The later a suffix is added, the higher its priority. Note, that the
-	 * suffix should end with / but doesn't have to start with one (as prefixes
-	 * should end with one). So adding a suffix for app_pics would look
-	 * like KGlobal::dirs()->addResourceType("app_pics", "share/app/pics");
-	 *
-	 * @param type Specifies a short descriptive string to access
-	 * files of this type.
-	 * @param relativename Specifies a directory relative to the root
-	 * of the KFSSTND.
-	 * @return true if successful, false otherwise.
-	 */
-	bool addResourceType( const char *type,
-			      const QString& relativename );
+    /**
+     * Adds suffixes for types.
+     *
+     * You may add as many as you need, but it is advised that there
+     * is exactly one to make writing definite.
+     * All basic types (kde_default()) are added by addKDEDefaults(),
+     * but for those you can add more relative paths as well.
+     *
+     * The later a suffix is added, the higher its priority. Note, that the
+     * suffix should end with / but doesn't have to start with one (as prefixes
+     * should end with one). So adding a suffix for app_pics would look
+     * like KGlobal::dirs()->addResourceType("app_pics", "share/app/pics");
+     *
+     * @param type Specifies a short descriptive string to access
+     * files of this type.
+     * @param relativename Specifies a directory relative to the root
+     * of the KFSSTND.
+     * @return true if successful, false otherwise.
+     */
+    bool addResourceType( const char *type,
+                          const QString& relativename );
 
-	/**
-	 * Adds absolute path at the beginning of the search path for
-	 * particular types (for example in case of icons where
-	 * the user specifies extra paths).
-	 *
-	 * You shouldn't need this
-	 * function in 99% of all cases besides adding user-given
-	 * paths.
-	 *
-	 * @param type Specifies a short descriptive string to access files
-	 * of this type.
-	 * @param absdir Points to directory where to look for this specific
-	 * type. Non-existant directories may be saved but pruned.
-	 * @return true if successful, false otherwise.
-	 */
-	bool addResourceDir( const char *type,
-			     const QString& absdir);
+    /**
+     * Adds absolute path at the beginning of the search path for
+     * particular types (for example in case of icons where
+     * the user specifies extra paths).
+     *
+     * You shouldn't need this
+     * function in 99% of all cases besides adding user-given
+     * paths.
+     *
+     * @param type Specifies a short descriptive string to access files
+     * of this type.
+     * @param absdir Points to directory where to look for this specific
+     * type. Non-existant directories may be saved but pruned.
+     * @return true if successful, false otherwise.
+     */
+    bool addResourceDir( const char *type,
+                         const QString& absdir);
 
-	/**
-	 * Tries to find a resource in the following order:
-	 * @li All PREFIX/\<relativename> paths (most recent first).
-	 * @li All absolute paths (most recent first).
-	 *
-	 * The filename should be a filename relative to the base dir
-	 * for resources. So is a way to get the path to libkdecore.la
-	 * to findResource("lib", "libkdecore.la"). KStandardDirs will
-	 * then look into the subdir lib of all elements of all prefixes
-	 * ($KDEDIRS) for a file libkdecore.la and return the path to
-	 * the first one it finds (e.g. /opt/kde/lib/libkdecore.la)
-	 *
-	 * @param type The type of the wanted resource
-	 * @param filename A relative filename of the resource.
-	 *
-	 * @return A full path to the filename specified in the second
-	 *         argument, or QString() if not found.
-	 */
-	QString findResource( const char *type,
-			      const QString& filename ) const;
+    /**
+     * Tries to find a resource in the following order:
+     * @li All PREFIX/\<relativename> paths (most recent first).
+     * @li All absolute paths (most recent first).
+     *
+     * The filename should be a filename relative to the base dir
+     * for resources. So is a way to get the path to libkdecore.la
+     * to findResource("lib", "libkdecore.la"). KStandardDirs will
+     * then look into the subdir lib of all elements of all prefixes
+     * ($KDEDIRS) for a file libkdecore.la and return the path to
+     * the first one it finds (e.g. /opt/kde/lib/libkdecore.la)
+     *
+     * @param type The type of the wanted resource
+     * @param filename A relative filename of the resource.
+     *
+     * @return A full path to the filename specified in the second
+     *         argument, or QString() if not found.
+     */
+    QString findResource( const char *type,
+                          const QString& filename ) const;
 
-	/**
-	 * Checks whether a resource is restricted as part of the KIOSK
-	 * framework. When a resource is restricted it means that user-
-	 * specific files in the resource are ignored.
-	 *
-	 * E.g. by restricting the @c "wallpaper" resource, only system-wide
-	 * installed wallpapers will be found by this class. Wallpapers
-	 * installed under the @c $KDEHOME directory will be ignored.
-	 *
-	 * @param type The type of the resource to check
-	 * @param relPath A relative path in the resource.
-	 *
-	 * @return True if the resource is restricted.
-	 */
-	bool isRestrictedResource( const char *type,
-			      const QString& relPath=QString() ) const;
+    /**
+     * Checks whether a resource is restricted as part of the KIOSK
+     * framework. When a resource is restricted it means that user-
+     * specific files in the resource are ignored.
+     *
+     * E.g. by restricting the @c "wallpaper" resource, only system-wide
+     * installed wallpapers will be found by this class. Wallpapers
+     * installed under the @c $KDEHOME directory will be ignored.
+     *
+     * @param type The type of the resource to check
+     * @param relPath A relative path in the resource.
+     *
+     * @return True if the resource is restricted.
+     */
+    bool isRestrictedResource( const char *type,
+                               const QString& relPath=QString() ) const;
 
-        /**
-         * Returns a number that identifies this version of the resource.
-         * When a change is made to the resource this number will change.
-         *
-         * @param type The type of the wanted resource
-         * @param filename A relative filename of the resource.
-         * @param options If the flags includes Recursive,
-         *                all resources are taken into account
-         *                otherwise only the one returned by findResource().
-         *
-         * @return A number identifying the current version of the
-         *          resource.
-         */
-        quint32 calcResourceHash( const char *type,
-                                  const QString& filename,
-                                  SearchOptions options = NoSearchOptions) const;
+    /**
+     * Returns a number that identifies this version of the resource.
+     * When a change is made to the resource this number will change.
+     *
+     * @param type The type of the wanted resource
+     * @param filename A relative filename of the resource.
+     * @param options If the flags includes Recursive,
+     *                all resources are taken into account
+     *                otherwise only the one returned by findResource().
+     *
+     * @return A number identifying the current version of the
+     *          resource.
+     */
+    quint32 calcResourceHash( const char *type,
+                              const QString& filename,
+                              SearchOptions options = NoSearchOptions) const;
 
-	/**
-	 * Tries to find all directories whose names consist of the
-	 * specified type and a relative path. So would
-	 * findDirs("apps", "Settings") return
-	 * @li /opt/kde/share/applnk/Settings/
-	 * @li /home/joe/.kde/share/applnk/Settings/
-	 *
-	 * Note that it appends @c / to the end of the directories,
-	 * so you can use this right away as directory names.
-	 *
-	 * @param type The type of the base directory.
-	 * @param reldir Relative directory.
-	 *
-	 * @return A list of matching directories, or an empty
-	 *         list if the resource specified is not found.
-	 */
-	QStringList findDirs( const char *type,
-                              const QString& reldir ) const;
+    /**
+     * Tries to find all directories whose names consist of the
+     * specified type and a relative path. So would
+     * findDirs("apps", "Settings") return
+     * @li /opt/kde/share/applnk/Settings/
+     * @li /home/joe/.kde/share/applnk/Settings/
+     *
+     * Note that it appends @c / to the end of the directories,
+     * so you can use this right away as directory names.
+     *
+     * @param type The type of the base directory.
+     * @param reldir Relative directory.
+     *
+     * @return A list of matching directories, or an empty
+     *         list if the resource specified is not found.
+     */
+    QStringList findDirs( const char *type,
+                          const QString& reldir ) const;
 
-	/**
-	 * Tries to find the directory the file is in.
-	 * It works the same as findResource(), but it doesn't
-	 * return the filename but the name of the directory.
-	 *
-	 * This way the application can access a couple of files
-	 * that have been installed into the same directory without
-	 * having to look for each file.
-	 *
-	 * findResourceDir("lib", "libkdecore.la") would return the
-	 * path of the subdir libkdecore.la is found first in
-	 * (e.g. /opt/kde/lib/)
-	 *
-	 * @param type The type of the wanted resource
-	 * @param filename A relative filename of the resource.
-	 * @return The directory where the file specified in the second
-	 *         argument is located, or QString() if the type
-	 *         of resource specified is unknown or the resource
-	 *         cannot be found.
-	 */
-	QString findResourceDir( const char *type,
-				 const QString& filename) const;
+    /**
+     * Tries to find the directory the file is in.
+     * It works the same as findResource(), but it doesn't
+     * return the filename but the name of the directory.
+     *
+     * This way the application can access a couple of files
+     * that have been installed into the same directory without
+     * having to look for each file.
+     *
+     * findResourceDir("lib", "libkdecore.la") would return the
+     * path of the subdir libkdecore.la is found first in
+     * (e.g. /opt/kde/lib/)
+     *
+     * @param type The type of the wanted resource
+     * @param filename A relative filename of the resource.
+     * @return The directory where the file specified in the second
+     *         argument is located, or QString() if the type
+     *         of resource specified is unknown or the resource
+     *         cannot be found.
+     */
+    QString findResourceDir( const char *type,
+                             const QString& filename) const;
 
 
-        /**
-         * Tries to find all resources with the specified type.
-         *
-         * The function will look into all specified directories
-         * and return all filenames in these directories.
-         *
-         * @param type The type of resource to locate directories for.
-         * @param filter Only accept filenames that fit to filter. The filter
-         *        may consist of an optional directory and a QRegExp
-         *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
-         *        Use QString() if you do not want a filter.
-         * @param options if the flags passed include Recursive, subdirectories
-         *        will also be search; if NoDuplicates is passed then only entries with
-         *        unique filenames will be returned eliminating duplicates.
-         *
-         * @return List of all the files whose filename matches the
-         *         specified filter.
-         */
-        QStringList findAllResources( const char *type,
-                                      const QString& filter = QString(),
-                                      SearchOptions options = NoSearchOptions ) const;
+    /**
+     * Tries to find all resources with the specified type.
+     *
+     * The function will look into all specified directories
+     * and return all filenames in these directories.
+     *
+     * @param type The type of resource to locate directories for.
+     * @param filter Only accept filenames that fit to filter. The filter
+     *        may consist of an optional directory and a QRegExp
+     *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
+     *        Use QString() if you do not want a filter.
+     * @param options if the flags passed include Recursive, subdirectories
+     *        will also be search; if NoDuplicates is passed then only entries with
+     *        unique filenames will be returned eliminating duplicates.
+     *
+     * @return List of all the files whose filename matches the
+     *         specified filter.
+     */
+    QStringList findAllResources( const char *type,
+                                  const QString& filter = QString(),
+                                  SearchOptions options = NoSearchOptions ) const;
 
-        /**
-         * Tries to find all resources with the specified type.
-         *
-         * The function will look into all specified directories
-         * and return all filenames (full and relative paths) in
-         * these directories.
-         *
-         * @param type The type of resource to locate directories for.
-         * @param filter Only accept filenames that fit to filter. The filter
-         *        may consist of an optional directory and a QRegExp
-         *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
-         *        Use QString() if you do not want a filter.
-         * @param options if the flags passed include Recursive, subdirectories
-         *        will also be search; if NoDuplicates is passed then only entries with
-         *        unique filenames will be returned eliminating duplicates.
-         *
-         * @param relPaths The list to store the relative paths into
-         *        These can be used later to ::locate() the file
-         *
-         * @return List of all the files whose filename matches the
-         *         specified filter.
-         */
-        QStringList findAllResources( const char *type,
-                                      const QString& filter,
-                                      SearchOptions options,
-                                      QStringList &relPaths) const;
+    /**
+     * Tries to find all resources with the specified type.
+     *
+     * The function will look into all specified directories
+     * and return all filenames (full and relative paths) in
+     * these directories.
+     *
+     * @param type The type of resource to locate directories for.
+     * @param filter Only accept filenames that fit to filter. The filter
+     *        may consist of an optional directory and a QRegExp
+     *        wildcard expression. E.g. <tt>"images\*.jpg"</tt>.
+     *        Use QString() if you do not want a filter.
+     * @param options if the flags passed include Recursive, subdirectories
+     *        will also be search; if NoDuplicates is passed then only entries with
+     *        unique filenames will be returned eliminating duplicates.
+     *
+     * @param relPaths The list to store the relative paths into
+     *        These can be used later to ::locate() the file
+     *
+     * @return List of all the files whose filename matches the
+     *         specified filter.
+     */
+    QStringList findAllResources( const char *type,
+                                  const QString& filter,
+                                  SearchOptions options,
+                                  QStringList &relPaths) const;
 
-	/**
-	 * Returns a QStringList list of pathnames in the system path.
-	 *
-	 * @param pstr  The path which will be searched. If this is
-	 * 		null (default), the @c $PATH environment variable will
-	 *		be searched.
-	 *
-	 * @return a QStringList list of pathnames in the system path.
-	 */
-	static QStringList systemPaths( const QString& pstr=QString() );
+    /**
+     * Returns a QStringList list of pathnames in the system path.
+     *
+     * @param pstr  The path which will be searched. If this is
+     * 		null (default), the @c $PATH environment variable will
+     *		be searched.
+     *
+     * @return a QStringList list of pathnames in the system path.
+     */
+    static QStringList systemPaths( const QString& pstr=QString() );
 
-        /**
-         * Finds the executable in the system path.
-         *
-         * A valid executable must
-         * be a file and have its executable bit set.
-         *
-         * @param appname The name of the executable file for which to search.
-         * @param pathstr The path which will be searched. If this is
-         *                null (default), the @c $PATH environment variable will
-         *                be searched.
-         * @param options if the flags passed include IgnoreExecBit the path returned
-         *                may not have the executable bit set.
-         *
-         * @return The path of the executable. If it was not found,
-         *         it will return QString().
-         * @see findAllExe()
-         */
-        static QString findExe( const QString& appname,
-                                const QString& pathstr = QString(),
-                                SearchOptions options = NoSearchOptions );
+    /**
+     * Finds the executable in the system path.
+     *
+     * A valid executable must
+     * be a file and have its executable bit set.
+     *
+     * @param appname The name of the executable file for which to search.
+     * @param pathstr The path which will be searched. If this is
+     *                null (default), the @c $PATH environment variable will
+     *                be searched.
+     * @param options if the flags passed include IgnoreExecBit the path returned
+     *                may not have the executable bit set.
+     *
+     * @return The path of the executable. If it was not found,
+     *         it will return QString().
+     * @see findAllExe()
+     */
+    static QString findExe( const QString& appname,
+                            const QString& pathstr = QString(),
+                            SearchOptions options = NoSearchOptions );
 
-        /**
-         * Finds all occurrences of an executable in the system path.
-         *
-         * @param list will be filled with the pathnames of all the
-         *             executables found. Will be empty if the executable
-         *             was not found.
-         * @param appname the name of the executable for which to
-         *                search.
-         * @param pathstr the path list which will be searched. If this
-         *                is 0 (default), the @c $PATH environment variable will
-         *                be searched.
-         * @param options if the flags passed include IgnoreExecBit the path returned
-         *                may not have the executable bit set.
-         *
-         * @return The number of executables found, 0 if none were found.
-         *
-         * @see findExe()
-         */
-        static int findAllExe( QStringList& list, const QString& appname,
-                               const QString& pathstr=QString(),
-                               SearchOptions options = NoSearchOptions );
+    /**
+     * Finds all occurrences of an executable in the system path.
+     *
+     * @param list will be filled with the pathnames of all the
+     *             executables found. Will be empty if the executable
+     *             was not found.
+     * @param appname the name of the executable for which to
+     *                search.
+     * @param pathstr the path list which will be searched. If this
+     *                is 0 (default), the @c $PATH environment variable will
+     *                be searched.
+     * @param options if the flags passed include IgnoreExecBit the path returned
+     *                may not have the executable bit set.
+     *
+     * @return The number of executables found, 0 if none were found.
+     *
+     * @see findExe()
+     */
+    static int findAllExe( QStringList& list, const QString& appname,
+                           const QString& pathstr=QString(),
+                           SearchOptions options = NoSearchOptions );
 
-	/**
-	 * This function adds the defaults that are used by the current
-	 * KDE version.
-	 *
-	 * It's a series of addResourceTypes()
-	 * and addPrefix() calls.
-	 * You normally wouldn't call this function because it's called
-	 * for you from KGlobal.
-	 */
-	void addKDEDefaults();
+    /**
+     * This function adds the defaults that are used by the current
+     * KDE version.
+     *
+     * It's a series of addResourceTypes()
+     * and addPrefix() calls.
+     * You normally wouldn't call this function because it's called
+     * for you from KGlobal.
+     */
+    void addKDEDefaults();
 
-	/**
-	 * Reads customized entries out of the given config object and add
-	 * them via addResourceDirs().
-	 *
-	 * @param config The object the entries are read from. This should
-	 *        contain global config files
-	 * @return @c true if new config paths have been added
-	 * from @p config.
-	 **/
-	bool addCustomized(KConfig *config);
+    /**
+     * Reads customized entries out of the given config object and add
+     * them via addResourceDirs().
+     *
+     * @param config The object the entries are read from. This should
+     *        contain global config files
+     * @return @c true if new config paths have been added
+     * from @p config.
+     **/
+    bool addCustomized(KConfig *config);
 
-	/**
-	 * This function is used internally by almost all other function as
-	 * it serves and fills the directories cache.
-         *
-	 * @param type The type of resource
-	 * @return The list of possible directories for the specified @p type.
-	 * The function updates the cache if possible.  If the resource
-	 * type specified is unknown, it will return an empty list.
-         * Note, that the directories are assured to exist beside the save
-         * location, which may not exist, but is returned anyway.
-	 */
-	QStringList resourceDirs(const char *type) const;
+    /**
+     * This function is used internally by almost all other function as
+     * it serves and fills the directories cache.
+     *
+     * @param type The type of resource
+     * @return The list of possible directories for the specified @p type.
+     * The function updates the cache if possible.  If the resource
+     * type specified is unknown, it will return an empty list.
+     * Note, that the directories are assured to exist beside the save
+     * location, which may not exist, but is returned anyway.
+     */
+    QStringList resourceDirs(const char *type) const;
 
-	/**
-	 * This function will return a list of all the types that KStandardDirs
-	 * supports.
-	 *
-	 * @return All types that KDE supports
-	 */
-	QStringList allTypes() const;
+    /**
+     * This function will return a list of all the types that KStandardDirs
+     * supports.
+     *
+     * @return All types that KDE supports
+     */
+    QStringList allTypes() const;
 
-	/**
-	 * Finds a location to save files into for the given type
-	 * in the user's home directory.
-	 *
-	 * @param type The type of location to return.
-	 * @param suffix A subdirectory name.
-	 *             Makes it easier for you to create subdirectories.
-	 *   You can't pass filenames here, you _have_ to pass
-	 *       directory names only and add possible filename in
-	 *       that directory yourself. A directory name always has a
- 	 *       trailing slash ('/').
-	 * @param create If set, saveLocation() will create the directories
-	 *        needed (including those given by @p suffix).
-	 *
-	 * @return A path where resources of the specified type should be
-	 *         saved, or QString() if the resource type is unknown.
-	 */
-	 QString saveLocation(const char *type,
-			      const QString& suffix = QString(),
-			      bool create = true) const;
+    /**
+     * Finds a location to save files into for the given type
+     * in the user's home directory.
+     *
+     * @param type The type of location to return.
+     * @param suffix A subdirectory name.
+     *             Makes it easier for you to create subdirectories.
+     *   You can't pass filenames here, you _have_ to pass
+     *       directory names only and add possible filename in
+     *       that directory yourself. A directory name always has a
+     *       trailing slash ('/').
+     * @param create If set, saveLocation() will create the directories
+     *        needed (including those given by @p suffix).
+     *
+     * @return A path where resources of the specified type should be
+     *         saved, or QString() if the resource type is unknown.
+     */
+    QString saveLocation(const char *type,
+                         const QString& suffix = QString(),
+                         bool create = true) const;
 
-        /**
-         * Converts an absolute path to a path relative to a certain
-         * resource.
-         *
-         * If "abs = ::locate(resource, rel)"
-         * then "rel = relativeLocation(resource, abs)" and vice versa.
-         *
-         * @param type The type of resource.
-         *
-         * @param absPath An absolute path to make relative.
-         *
-         * @return A relative path relative to resource @p type that
-         * will find @p absPath. If no such relative path exists, @p absPath
-         * will be returned unchanged.
-         */
-         QString relativeLocation(const char *type, const QString &absPath);
+    /**
+     * Converts an absolute path to a path relative to a certain
+     * resource.
+     *
+     * If "abs = ::locate(resource, rel)"
+     * then "rel = relativeLocation(resource, abs)" and vice versa.
+     *
+     * @param type The type of resource.
+     *
+     * @param absPath An absolute path to make relative.
+     *
+     * @return A relative path relative to resource @p type that
+     * will find @p absPath. If no such relative path exists, @p absPath
+     * will be returned unchanged.
+     */
+    QString relativeLocation(const char *type, const QString &absPath);
 
-	/**
-	 * Recursively creates still-missing directories in the given path.
-	 *
-	 * The resulting permissions will depend on the current umask setting.
-	 * <tt>permission = mode & ~umask</tt>.
-	 *
-	 * @param dir Absolute path of the directory to be made.
-	 * @param mode Directory permissions.
-	 * @return true if successful, false otherwise
-	 */
-	static bool makeDir(const QString& dir, int mode = 0755);
+    /**
+     * Recursively creates still-missing directories in the given path.
+     *
+     * The resulting permissions will depend on the current umask setting.
+     * <tt>permission = mode & ~umask</tt>.
+     *
+     * @param dir Absolute path of the directory to be made.
+     * @param mode Directory permissions.
+     * @return true if successful, false otherwise
+     */
+    static bool makeDir(const QString& dir, int mode = 0755);
 
-	/**
-	 * This returns a default relative path for the standard KDE
-	 * resource types. Below is a list of them so you get an idea
-	 * of what this is all about.
-	 *
-	 * @li @c data - @c share/apps
-	 * @li @c html - @c share/doc/HTML
-	 * @li @c icon - @c share/icon
-	 * @li @c config - @c share/config
-	 * @li @c pixmap - @c share/pixmaps
-	 * @li @c apps - @c share/applnk
-	 * @li @c sound - @c share/sounds
-	 * @li @c locale - @c share/locale
-	 * @li @c services - @c share/services
-	 * @li @c servicetypes - @c share/servicetypes
-	 * @li @c mime - @c share/mimelnk
-	 * @li @c cgi - @c cgi-bin
-	 * @li @c wallpaper - @c share/wallpapers
-	 * @li @c templates - @c share/templates
-	 * @li @c exe - @c bin
-	 * @li @c lib - @c lib[suffix]
-	 * @li @c module - @c lib[suffix]/kde4
-	 * @li @c qtplugins - @c lib[suffix]/kde4/plugins
-	 * @li @c kcfg - @c share/config.kcfg
-	 * @li @c emoticons - @c share/emoticons
-	 * @li @c xdgdata-apps - @c applications
-	 * @li @c xdgdata-icon - @c icons
-	 * @li @c xdgdata-pixmap - @c pixmaps
-	 * @li @c xdgdata-dirs - @c desktop-directories
-	 * @li @c xdgdata-mime - @c mime
-	 * @li @c xdgconf-menu - @c menus
-	 *
-	 * @returns Static default for the specified resource.  You
-	 *          should probably be using locate() or locateLocal()
-	 *          instead.
-	 * @see locate()
-	 * @see locateLocal()
-	 */
-	static QString kde_default(const char *type);
+    /**
+     * This returns a default relative path for the standard KDE
+     * resource types. Below is a list of them so you get an idea
+     * of what this is all about.
+     *
+     * @li @c data - @c share/apps
+     * @li @c html - @c share/doc/HTML
+     * @li @c icon - @c share/icon
+     * @li @c config - @c share/config
+     * @li @c pixmap - @c share/pixmaps
+     * @li @c apps - @c share/applnk
+     * @li @c sound - @c share/sounds
+     * @li @c locale - @c share/locale
+     * @li @c services - @c share/services
+     * @li @c servicetypes - @c share/servicetypes
+     * @li @c mime - @c share/mimelnk
+     * @li @c cgi - @c cgi-bin
+     * @li @c wallpaper - @c share/wallpapers
+     * @li @c templates - @c share/templates
+     * @li @c exe - @c bin
+     * @li @c lib - @c lib[suffix]
+     * @li @c module - @c lib[suffix]/kde4
+     * @li @c qtplugins - @c lib[suffix]/kde4/plugins
+     * @li @c kcfg - @c share/config.kcfg
+     * @li @c emoticons - @c share/emoticons
+     * @li @c xdgdata-apps - @c applications
+     * @li @c xdgdata-icon - @c icons
+     * @li @c xdgdata-pixmap - @c pixmaps
+     * @li @c xdgdata-dirs - @c desktop-directories
+     * @li @c xdgdata-mime - @c mime
+     * @li @c xdgconf-menu - @c menus
+     *
+     * @returns Static default for the specified resource.  You
+     *          should probably be using locate() or locateLocal()
+     *          instead.
+     * @see locate()
+     * @see locateLocal()
+     */
+    static QString kde_default(const char *type);
 
-	/**
-	 * @internal (for use by sycoca only)
-	 */
-	QString kfsstnd_prefixes();
+    /**
+     * @internal (for use by sycoca only)
+     */
+    QString kfsstnd_prefixes();
 
-	/**
-	 * @internal (for use by sycoca only)
-	 */
-	QString kfsstnd_xdg_conf_prefixes();
+    /**
+     * @internal (for use by sycoca only)
+     */
+    QString kfsstnd_xdg_conf_prefixes();
 
-	/**
-	 * @internal (for use by sycoca only)
-	 */
-	QString kfsstnd_xdg_data_prefixes();
+    /**
+     * @internal (for use by sycoca only)
+     */
+    QString kfsstnd_xdg_data_prefixes();
 
-	/**
-	 * Returns the toplevel directory in which KStandardDirs
-	 * will store things. Most likely <tt>$HOME/.kde</tt>.
-	 * Don't use this function if you can use locateLocal()
-	 * @return the toplevel directory
-	 */
-	QString localkdedir() const;
+    /**
+     * Returns the toplevel directory in which KStandardDirs
+     * will store things. Most likely <tt>$HOME/.kde</tt>.
+     * Don't use this function if you can use locateLocal()
+     * @return the toplevel directory
+     */
+    QString localkdedir() const;
 
-	/**
-	 * @return @c $XDG_DATA_HOME
-	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
-	 */
-	QString localxdgdatadir() const;
+    /**
+     * @return @c $XDG_DATA_HOME
+     * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
+     */
+    QString localxdgdatadir() const;
 
-	/**
-	 * @return @c $XDG_CONFIG_HOME
-	 * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
-	 */
-	QString localxdgconfdir() const;
+    /**
+     * @return @c $XDG_CONFIG_HOME
+     * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
+     */
+    QString localxdgconfdir() const;
 
-	/**
-	 * Checks for existence and accessability of a file or directory.
-	 * Faster than creating a QFileInfo first.
-	 * @param fullPath the path to check. IMPORTANT: must end with a slash if expected to be a directory
-	 *                 (and no slash for a file, obviously).
-	 * @return @c true if the directory exists, @c false otherwise
-	 */
-	static bool exists(const QString &fullPath);
+    /**
+     * @return the path where type was installed to by kdelibs. This is an absolute path and only
+     * one out of many search paths
+     */
+    static QString installPath(const char *type);
 
-	/**
-	 * Expands all symbolic links and resolves references to
-	 * '/./', '/../' and extra  '/' characters in @p dirname
-	 * and returns the canonicalized absolute pathname.
-	 * The resulting path will have no symbolic link, '/./'
-	 * or '/../' components.
-	 */
-	static QString realPath(const QString &dirname);
+    /**
+     * Checks for existence and accessability of a file or directory.
+     * Faster than creating a QFileInfo first.
+     * @param fullPath the path to check. IMPORTANT: must end with a slash if expected to be a directory
+     *                 (and no slash for a file, obviously).
+     * @return @c true if the directory exists, @c false otherwise
+     */
+    static bool exists(const QString &fullPath);
 
-	/**
-	 * Expands all symbolic links and resolves references to
-	 * '/./', '/../' and extra  '/' characters in @p filename
-	 * and returns the canonicalized absolute pathname.
-	 * The resulting path will have no symbolic link, '/./'
-	 * or '/../' components.
-	 */
-	static QString realFilePath(const QString &filename);
+    /**
+     * Expands all symbolic links and resolves references to
+     * '/./', '/../' and extra  '/' characters in @p dirname
+     * and returns the canonicalized absolute pathname.
+     * The resulting path will have no symbolic link, '/./'
+     * or '/../' components.
+     */
+    static QString realPath(const QString &dirname);
 
-	/*
-	 * This function is just for convenience. It simply calls
-	 * instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
-	 *
-	 * @param type   The type of the wanted resource, see KStandardDirs
-	 * @param filename   A relative filename of the resource
-	 * @param cData   The KComponentData object
-	 *
-	 * @return A full path to the filename specified in the second
-	 *         argument, or QString() if not found
-	 **/
-	static QString locate( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
+    /**
+     * Expands all symbolic links and resolves references to
+     * '/./', '/../' and extra  '/' characters in @p filename
+     * and returns the canonicalized absolute pathname.
+     * The resulting path will have no symbolic link, '/./'
+     * or '/../' components.
+     */
+    static QString realFilePath(const QString &filename);
 
-	/**
-	 * This function is much like locate. However it returns a
-	 * filename suitable for writing to. No check is made if the
-	 * specified @p filename actually exists. Missing directories
-	 * are created. If @p filename is only a directory, without a
-	 * specific file, @p filename must have a trailing slash.
-	 *
-	 * @param type   The type of the wanted resource, see KStandardDirs
-	 * @param filename   A relative filename of the resource
-	 * @param cData   The KComponentData object
-	 *
-	 * @return A full path to the filename specified in the second
-	 *         argument, or QString() if not found
-	 **/
-	static QString locateLocal( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
+    /*
+     * This function is just for convenience. It simply calls
+     * instance->dirs()->\link KStandardDirs::findResource() findResource\endlink(type, filename).
+     *
+     * @param type   The type of the wanted resource, see KStandardDirs
+     * @param filename   A relative filename of the resource
+     * @param cData   The KComponentData object
+     *
+     * @return A full path to the filename specified in the second
+     *         argument, or QString() if not found
+     **/
+    static QString locate( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
 
-	/**
-	 * This function is much like locate. No check is made if the
-	 * specified filename actually exists. Missing directories
-	 * are created if @p createDir is true. If @p filename is only
-	 * a directory, without a specific file, @p filename must have
-	 * a trailing slash.
-	 *
-	 * @param type   The type of the wanted resource, see KStandardDirs
-	 * @param filename   A relative filename of the resource
-	 * @param createDir  If @c true, missing directories are created,
-	 *        if @c false, no directory is created
-	 * @param cData   The KComponentData object
-	 *
-	 * @return A full path to the filename specified in the second
-	 *         argument, or QString() if not found
-	 **/
-	static QString locateLocal( const char *type, const QString& filename, bool createDir, const KComponentData &cData = KGlobal::mainComponent() );
+    /**
+     * This function is much like locate. However it returns a
+     * filename suitable for writing to. No check is made if the
+     * specified @p filename actually exists. Missing directories
+     * are created. If @p filename is only a directory, without a
+     * specific file, @p filename must have a trailing slash.
+     *
+     * @param type   The type of the wanted resource, see KStandardDirs
+     * @param filename   A relative filename of the resource
+     * @param cData   The KComponentData object
+     *
+     * @return A full path to the filename specified in the second
+     *         argument, or QString() if not found
+     **/
+    static QString locateLocal( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
 
-	/**
-	 * Check, if a file may be accessed in a given mode.
-	 * This is a wrapper around the access() system call.
-	 * checkAccess() calls access() with the given parameters.
-	 * If this is OK, checkAccess() returns true. If not, and W_OK
-	 * is part of mode, it is checked if there is write access to
-	 * the directory. If yes, checkAccess() returns true.
-	 * In all other cases checkAccess() returns false.
-	 *
-	 * Other than access() this function EXPLICITLY ignores non-existant
-	 * files if checking for write access.
-	 *
-	 * @param pathname The full path of the file you want to test
-	 * @param mode     The access mode, as in the access() system call.
-	 * @return Whether the access is allowed, true = Access allowed
-	 */
-	static bool checkAccess(const QString& pathname, int mode);
+    /**
+     * This function is much like locate. No check is made if the
+     * specified filename actually exists. Missing directories
+     * are created if @p createDir is true. If @p filename is only
+     * a directory, without a specific file, @p filename must have
+     * a trailing slash.
+     *
+     * @param type   The type of the wanted resource, see KStandardDirs
+     * @param filename   A relative filename of the resource
+     * @param createDir  If @c true, missing directories are created,
+     *        if @c false, no directory is created
+     * @param cData   The KComponentData object
+     *
+     * @return A full path to the filename specified in the second
+     *         argument, or QString() if not found
+     **/
+    static QString locateLocal( const char *type, const QString& filename, bool createDir, const KComponentData &cData = KGlobal::mainComponent() );
 
- private:
-	// Disallow assignment and copy-construction
-	KStandardDirs( const KStandardDirs& );
-	KStandardDirs& operator= ( const KStandardDirs& );
+    /**
+     * Check, if a file may be accessed in a given mode.
+     * This is a wrapper around the access() system call.
+     * checkAccess() calls access() with the given parameters.
+     * If this is OK, checkAccess() returns true. If not, and W_OK
+     * is part of mode, it is checked if there is write access to
+     * the directory. If yes, checkAccess() returns true.
+     * In all other cases checkAccess() returns false.
+     *
+     * Other than access() this function EXPLICITLY ignores non-existant
+     * files if checking for write access.
+     *
+     * @param pathname The full path of the file you want to test
+     * @param mode     The access mode, as in the access() system call.
+     * @return Whether the access is allowed, true = Access allowed
+     */
+    static bool checkAccess(const QString& pathname, int mode);
 
-	class KStandardDirsPrivate;
-	KStandardDirsPrivate* const d;
+private:
+    // Disallow assignment and copy-construction
+    KStandardDirs( const KStandardDirs& );
+    KStandardDirs& operator= ( const KStandardDirs& );
 
-	void checkConfig() const;
-	void applyDataRestrictions(const QString &) const;
-	void createSpecialResource(const char*);
+    class KStandardDirsPrivate;
+    KStandardDirsPrivate* const d;
 
-        // Like their public counter parts but with an extra priority argument
-        // If priority is true, the directory is added directly after
-        // $KDEHOME/$XDG_DATA_HOME/$XDG_CONFIG_HOME
-	void addPrefix( const QString& dir, bool priority );
-	void addXdgConfigPrefix( const QString& dir, bool priority );
-	void addXdgDataPrefix( const QString& dir, bool priority );
+    void checkConfig() const;
+    void applyDataRestrictions(const QString &) const;
+    void createSpecialResource(const char*);
 
-	void addResourcesFrom_krcdirs();
+    // Like their public counter parts but with an extra priority argument
+    // If priority is true, the directory is added directly after
+    // $KDEHOME/$XDG_DATA_HOME/$XDG_CONFIG_HOME
+    void addPrefix( const QString& dir, bool priority );
+    void addXdgConfigPrefix( const QString& dir, bool priority );
+    void addXdgDataPrefix( const QString& dir, bool priority );
 
-	// If priority is true, the directory is added before any other,
-	// otherwise after
-	bool addResourceType( const char *type,
-			      const QString& relativename, bool priority );
-	bool addResourceDir( const char *type,
-			     const QString& absdir, bool priority);
+    void addResourcesFrom_krcdirs();
+
+    // If priority is true, the directory is added before any other,
+    // otherwise after
+    bool addResourceType( const char *type,
+                          const QString& relativename, bool priority );
+    bool addResourceDir( const char *type,
+                         const QString& absdir, bool priority);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KStandardDirs::SearchOptions)
