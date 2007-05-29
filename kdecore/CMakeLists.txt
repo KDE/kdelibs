@@ -222,36 +222,9 @@ install(TARGETS kdecore DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### next target ###############
 
-# set the variables used in kde-config.cpp.in
-
-set(prefix              ${CMAKE_INSTALL_PREFIX})
-set(datadir             ${DATA_INSTALL_DIR})
-set(exec_prefix         ${EXEC_INSTALL_PREFIX})
-set(libdir              ${LIB_INSTALL_DIR})
-set(includedir          ${INCLUDE_INSTALL_DIR})
-set(kde_appsdir         ${APPLNK_INSTALL_DIR} )
-set(kde_bindir          ${BIN_INSTALL_DIR} )
-set(kde_confdir         ${CONFIG_INSTALL_DIR})
-set(kde_datadir         ${DATA_INSTALL_DIR})
-set(kde_htmldir         ${HTML_INSTALL_DIR})
-set(kde_icondir         ${ICON_INSTALL_DIR})
-set(kde_kcfgdir         ${KCFG_INSTALL_DIR})
-set(kde_locale          ${LOCALE_INSTALL_DIR})
-set(kde_moduledir       ${PLUGIN_INSTALL_DIR})
-set(kde_mimedir         ${MIME_INSTALL_DIR})
-set(kde_servicesdir     ${SERVICES_INSTALL_DIR})
-set(kde_servicetypesdir ${SERVICETYPES_INSTALL_DIR})
-set(kde_sounddir        ${SOUND_INSTALL_DIR})
-set(kde_templatesdir    ${TEMPLATES_INSTALL_DIR})
-set(kde_wallpaperdir    ${WALLPAPER_INSTALL_DIR})
-set(xdg_appsdir         ${XDG_APPS_DIR})
-set(xdg_directorydir    ${XDG_DIRECTORY_DIR})
-
-
-configure_file(kde-config.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp @ONLY)
 configure_file(all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)  
 
-kde4_add_executable(kde4-config NOGUI ${CMAKE_CURRENT_BINARY_DIR}/kde-config.cpp )
+kde4_add_executable(kde4-config NOGUI kde-config.cpp )
 
 target_link_libraries(kde4-config ${KDE4_KDECORE_LIBS} )
 

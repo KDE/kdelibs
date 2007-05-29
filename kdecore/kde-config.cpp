@@ -12,6 +12,7 @@
 #include <kdeversion.h>
 #include <QDir>
 #include <config.h>
+#include <config-prefix.h>
 #include <kconfiggroup.h>
 
 #ifdef Q_WS_WIN
@@ -80,30 +81,30 @@ static const QString xdg_menudir         = share + QLatin1String("/currently/und
 static const QString xdg_appsdir         = share + QLatin1String("/applications/kde4");
 static const QString xdg_directorydir    = share + QLatin1String("/desktop-directories");
 #else
-static const QString prefix        = QString(QLatin1String("@prefix@"));
-static const QString exec_prefix   = QString(QLatin1String("@exec_prefix@"));
-static const QString libdir        = QString(QLatin1String("@libdir@"));
-static const QString includedir    = QString(QLatin1String("@includedir@"));
-static const QString sysconfdir    = QString(QLatin1String("@sysconfdir@"));
-static const QString datadir       = QString(QLatin1String("@datadir@"));
-static const QString kde_appsdir   = QString(QLatin1String("@kde_appsdir@"));
-static const QString kde_confdir   = QString(QLatin1String("@kde_confdir@"));
-static const QString kde_kcfgdir   = QString(QLatin1String("@kde_kcfgdir@"));
-static const QString kde_datadir   = QString(QLatin1String("@kde_datadir@"));
-static const QString kde_bindir    = QString(QLatin1String("@kde_bindir@"));
-static const QString kde_htmldir   = QString(QLatin1String("@kde_htmldir@"));
-static const QString kde_icondir   = QString(QLatin1String("@kde_icondir@"));
-static const QString kde_moduledir = QString(QLatin1String("@kde_moduledir@"));
-static const QString kde_locale    = QString(QLatin1String("@kde_locale@"));
-static const QString kde_mimedir   = QString(QLatin1String("@kde_mimedir@"));
-static const QString kde_servicesdir     = QString(QLatin1String("@kde_servicesdir@"));
-static const QString kde_servicetypesdir = QString(QLatin1String("@kde_servicetypesdir@"));
-static const QString kde_sounddir        = QString(QLatin1String("@kde_sounddir@"));
-static const QString kde_templatesdir    = QString(QLatin1String("@kde_templatesdir@"));
-static const QString kde_wallpaperdir    = QString(QLatin1String("@kde_wallpaperdir@"));
-static const QString xdg_menudir         = QString(QLatin1String("@xdg_menudir@"));
-static const QString xdg_appsdir         = QString(QLatin1String("@xdg_appsdir@"));
-static const QString xdg_directorydir    = QString(QLatin1String("@xdg_directorydir@"));
+static const QString prefix        = QString(QLatin1String(KDEDIR));
+static const QString exec_prefix   = QString(QLatin1String(EXEC_INSTALL_PREFIX));
+static const QString libdir        = QString(QLatin1String(LIB_INSTALL_DIR));
+static const QString includedir    = QString(QLatin1String(INCLUDE_INSTALL_DIR));
+static const QString sysconfdir    = QString(QLatin1String(SYSCONF_INSTALL_DIR));
+static const QString datadir       = QString(QLatin1String(DATA_INSTALL_DIR));
+static const QString kde_appsdir   = QString(QLatin1String(APPLNK_INSTALL_DIR));
+static const QString kde_confdir   = QString(QLatin1String(CONFIG_INSTALL_DIR));
+static const QString kde_kcfgdir   = QString(QLatin1String(KCFG_INSTALL_DIR));
+static const QString kde_datadir   = QString(QLatin1String(DATA_INSTALL_DIR));
+static const QString kde_bindir    = QString(QLatin1String(BIN_INSTALL_DIR));
+static const QString kde_htmldir   = QString(QLatin1String(HTML_INSTALL_DIR));
+static const QString kde_icondir   = QString(QLatin1String(ICON_INSTALL_DIR));
+static const QString kde_moduledir = QString(QLatin1String(PLUGIN_INSTALL_DIR));
+static const QString kde_locale    = QString(QLatin1String(LOCALE_INSTALL_DIR));
+static const QString kde_mimedir   = QString(QLatin1String(MIME_INSTALL_DIR));
+static const QString kde_servicesdir     = QString(QLatin1String(SERVICES_INSTALL_DIR));
+static const QString kde_servicetypesdir = QString(QLatin1String(SERVICETYPES_INSTALL_DIR));
+static const QString kde_sounddir        = QString(QLatin1String(SOUND_INSTALL_DIR));
+static const QString kde_templatesdir    = QString(QLatin1String(TEMPLATES_INSTALL_DIR));
+static const QString kde_wallpaperdir    = QString(QLatin1String(WALLPAPER_INSTALL_DIR));
+static const QString xdg_menudir         = QString(QLatin1String(SYSCONF_INSTALL_DIR "/xdg/menus"));
+static const QString xdg_appsdir         = QString(QLatin1String(XDG_APPS_DIR));
+static const QString xdg_directorydir    = QString(QLatin1String(XDG_DIRECTORY_DIR));
 #endif
 
 bool _expandvars = false;
