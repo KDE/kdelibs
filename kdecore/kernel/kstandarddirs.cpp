@@ -169,65 +169,118 @@ static QString kfsstnd_defaultlibexecdir()
  * 4) update the kde_default documentation
  * 5) update the list in kde-config.cpp.in
 
-html
-icon
-apps
-sound
 data
-locale
-services
-mime
-servicetypes
+share/apps
+html
+share/doc/HTML
+icon
+share/icons
 config
-exe
-wallpaper
-lib
+share/config
 pixmap
+share/pixmaps
+apps
+share/applnk
+sound
+share/sounds
+locale
+share/locale
+services
+share/kde4/services
+servicetypes
+share/kde4/servicetypes
+mime
+share/mimelnk
+cgi
+cgi-bin
+wallpaper
+share/wallpapers
 templates
+share/templates
+exe
+bin
 module
+%lib/kde4
 qtplugins
+%lib/kde4/plugins
 kcfg
+share/config.kcfg
 emoticons
+share/emoticons
 xdgdata-apps
-xdgdata-dirs
-xdgconf-menu
+applications
 xdgdata-icon
+icons
 xdgdata-pixmap
+pixmaps
+xdgdata-dirs
+desktop-directories
 xdgdata-mime
+mime
+xdgconf-menu
+menus
  */
-static const char types[] =
-    "html\0"
-    "icon\0"
-    "apps\0"
-    "sound\0"
+
+static const char types_string[] =
     "data\0"
-    "locale\0"
-    "services\0"
-    "mime\0"
-    "servicetypes\0"
+    "share/apps\0"
+    "html\0"
+    "share/doc/HTML\0"
+    "icon\0"
+    "share/icons\0"
     "config\0"
-    "exe\0"
-    "wallpaper\0"
-    "lib\0"
+    "share/config\0"
     "pixmap\0"
+    "share/pixmaps\0"
+    "apps\0"
+    "share/applnk\0"
+    "sound\0"
+    "share/sounds\0"
+    "locale\0"
+    "share/locale\0"
+    "services\0"
+    "share/kde4/services\0"
+    "servicetypes\0"
+    "share/kde4/servicetypes\0"
+    "mime\0"
+    "share/mimelnk\0"
+    "cgi\0"
+    "cgi-bin\0"
+    "wallpaper\0"
+    "share/wallpapers\0"
     "templates\0"
+    "share/templates\0"
+    "exe\0"
+    "bin\0"
     "module\0"
+    "%lib/kde4\0"
     "qtplugins\0"
+    "%lib/kde4/plugins\0"
     "kcfg\0"
+    "share/config.kcfg\0"
     "emoticons\0"
+    "share/emoticons\0"
     "xdgdata-apps\0"
-    "xdgdata-dirs\0"
-    "xdgconf-menu\0"
+    "applications\0"
     "xdgdata-icon\0"
+    "icons\0"
     "xdgdata-pixmap\0"
+    "pixmaps\0"
+    "xdgdata-dirs\0"
+    "desktop-directories\0"
     "xdgdata-mime\0"
+    "xdgconf-menu\0"
+    "menus\0"
     "\0";
 
 static const int types_indices[] = {
-       0,    5,   10,   15,   21,   26,   33,   42,
-      47,   60,   67,   71,   81,   85,   92,  102,
-     109,  119,  124,  134,  147,  160,  173,  186,
-     201,   -1
+       0,    5,   16,   21,   36,   41,   53,   60,
+      73,   80,   94,   99,  112,  118,  131,  138,
+     151,  160,  180,  193,  217,  222,  236,  240,
+     248,  258,  275,  285,  301,  305,  309,  316,
+     326,  336,  354,  359,  377,  387,  403,  416,
+     429,  442,  448,  463,  471,  484,  504,  217,
+     517,  530,   -1
 };
 
 static int tokenize( QStringList& token, const QString& str,
@@ -281,8 +334,8 @@ void KStandardDirs::applyDataRestrictions(const QString &relPath) const
 QStringList KStandardDirs::allTypes() const
 {
     QStringList list;
-    for (int i = 0; types_indices[i] != -1; ++i)
-        list.append(QLatin1String(types + types_indices[i]));
+    for (int i = 0; types_indices[i] != -1; i += 2)
+        list.append(QLatin1String(types_string + types_indices[i]));
     return list;
 }
 
@@ -377,22 +430,29 @@ QString KStandardDirs::kfsstnd_xdg_data_prefixes()
 }
 
 bool KStandardDirs::addResourceType( const char *type,
-                                     const QString& relativename )
+                                     const QString& relativename,
+                                     bool priority )
 {
-    return addResourceType(type, relativename, true);
+    return addResourceType( type, 0, relativename, priority);
 }
 
 bool KStandardDirs::addResourceType( const char *type,
+                                     const char *basetype,
                                      const QString& relativename,
                                      bool priority )
 {
     if (relativename.isEmpty())
        return false;
 
-    QStringList& rels = d->relatives[type]; // find or insert
     QString copy = relativename;
+    if (basetype)
+        copy = QString("%%1/").arg(basetype) + relativename;
+
     if (copy.at(copy.length() - 1) != '/')
         copy += '/';
+
+    QStringList& rels = d->relatives[type]; // find or insert
+
     if (!rels.contains(copy)) {
         if (priority)
             rels.prepend(copy);
@@ -402,12 +462,6 @@ bool KStandardDirs::addResourceType( const char *type,
         return true;
     }
     return false;
-}
-
-bool KStandardDirs::addResourceDir( const char *type,
-                                    const QString& absdir)
-{
-    return addResourceDir(type, absdir, true);
 }
 
 bool KStandardDirs::addResourceDir( const char *type,
@@ -951,9 +1005,32 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         QStringList dirs;
         dirs = d->relatives.value(type);
+
         if (!dirs.isEmpty())
         {
             bool local = true;
+
+            for (QStringList::ConstIterator it = dirs.begin();
+                 it != dirs.end(); ++it)
+            {
+                if ( (*it).startsWith('%'))
+                {
+                    // grab the "data" from "%data/apps"
+                    QString rel = (*it).mid(1, (*it).indexOf('/') - 1);
+                    QString rest = (*it).mid((*it).indexOf('/') + 1);
+                    QStringList basedirs = resourceDirs(rel.toUtf8().constData());
+                    for (QStringList::ConstIterator it2 = basedirs.begin();
+                         it2 != basedirs.end(); ++it2)
+                    {
+                        QString path = realPath( *it2 + rest );
+                        testdir.setPath(path);
+                        if ((local || testdir.exists()) && !candidates.contains(path))
+                            candidates.append(path);
+                        local = false;
+                    }
+                }
+            }
+
             const QStringList *prefixList = 0;
             if (strncmp(type, "xdgdata-", 8) == 0)
                 prefixList = &(d->xdgdata_prefixes);
@@ -962,13 +1039,15 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
             else
                 prefixList = &d->prefixes;
 
-            QDir dir;
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
                  ++pit)
             {
                 for (QStringList::ConstIterator it = dirs.begin();
-                     it != dirs.end(); ++it) {
+                     it != dirs.end(); ++it)
+                {
+                    if ( (*it).startsWith('%'))
+                        continue;
                     QString path = realPath( *pit + *it );
                     testdir.setPath(path);
                     if (local && restrictionActive)
@@ -982,7 +1061,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
 
         // make sure we find the path where it's installed
         QString installdir = installPath( type );
-        if (!candidates.contains(installdir))
+        if (!installdir.isEmpty() && !candidates.contains(installdir))
             candidates.append(installdir);
 
         dirs = d->absolutes.value(type);
@@ -1573,10 +1652,12 @@ void KStandardDirs::addKDEDefaults()
     // end XDG_DATA_XXX
 
 
+    addResourceType("lib", "lib" KDELIBSUFF "/");
+
     uint index = 0;
     while (types_indices[index] != -1) {
-        addResourceType(types + types_indices[index], kde_default(types + types_indices[index]));
-        index++;
+        addResourceType(types_string + types_indices[index], 0, types_string + types_indices[index+1], true);
+        index+=2;
     }
     addResourceDir("exe", LIBEXEC_INSTALL_DIR, false );
 
@@ -1946,7 +2027,6 @@ QString KStandardDirs::installPath(const char *type)
         return tmp;
     }
     return QString();
-
 }
 
 bool KStandardDirs::checkAccess(const QString& pathname, int mode)

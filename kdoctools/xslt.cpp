@@ -184,7 +184,7 @@ void fillInstance(KComponentData &ins, const QString &srcdir) {
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/customization/catalog");
         catalogs += ' ';
         catalogs += ins.dirs()->findResource("data", "ksgmltools2/docbook/xml-dtd-4.2/docbook.cat");
-        ins.dirs()->addResourceType("dtd", KStandardDirs::kde_default("data") + "ksgmltools2");
+        ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
         catalogs += srcdir +"/customization/catalog";
         catalogs += ' ';

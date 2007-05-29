@@ -237,10 +237,56 @@ public:
      * files of this type.
      * @param relativename Specifies a directory relative to the root
      * of the KFSSTND.
+     * @param priority if true, the directory is added before any other,
+     * otherwise after
      * @return true if successful, false otherwise.
      */
-    bool addResourceType( const char *type,
-                          const QString& relativename );
+    KDE_DEPRECATED bool addResourceType( const char *type,
+                          const QString& relativename, bool priority );
+
+
+    /**
+     * Adds suffixes for types.
+     *
+     * You may add as many as you need, but it is advised that there
+     * is exactly one to make writing definite.
+     * All basic types (kde_default()) are added by addKDEDefaults(),
+     * but for those you can add more relative paths as well.
+     *
+     * The later a suffix is added, the higher its priority. Note, that the
+     * suffix should end with / but doesn't have to start with one (as prefixes
+     * should end with one). So adding a suffix for app_pics would look
+     * like KGlobal::dirs()->addResourceType("app_pics", "share/app/pics");
+     *
+     * @param type Specifies a short descriptive string to access
+     * files of this type.
+     * @param type Specifies an already known type
+     * @param relativename Specifies a directory relative to the basetype
+     * @param priority if true, the directory is added before any other,
+     * otherwise after
+     * @return true if successful, false otherwise.
+     */
+    bool addResourceType( const char *type, const char *basetype,
+                                         const QString& relativename, bool priority );
+
+    /// internal - just to avoid unwanted overload
+    bool addResourceType( const char *type, const char *basetype,
+                                         const char* relativename, bool priority )
+    {
+        return addResourceType(type, basetype, QLatin1String(relativename), priority);
+    }
+
+    // TODO: merge into above functions
+    KDE_DEPRECATED bool addResourceType( const char *type, const QString& relativename )
+    {
+        return addResourceType(type, 0, relativename, true);
+    }
+
+    bool addResourceDir( const char *type, const QString& absdir)
+    {
+        return addResourceDir(type, absdir, true);
+    }
+
 
     /**
      * Adds absolute path at the beginning of the search path for
@@ -255,10 +301,12 @@ public:
      * of this type.
      * @param absdir Points to directory where to look for this specific
      * type. Non-existant directories may be saved but pruned.
+     * @param priority if true, the directory is added before any other,
+     * otherwise after
      * @return true if successful, false otherwise.
      */
     bool addResourceDir( const char *type,
-                         const QString& absdir);
+                         const QString& absdir, bool priority = true);
 
     /**
      * Tries to find a resource in the following order:
@@ -592,7 +640,7 @@ public:
      * @see locate()
      * @see locateLocal()
      */
-    static QString kde_default(const char *type);
+    KDE_DEPRECATED static QString kde_default(const char *type);
 
     /**
      * @internal (for use by sycoca only)
@@ -747,13 +795,6 @@ private:
     void addXdgDataPrefix( const QString& dir, bool priority );
 
     void addResourcesFrom_krcdirs();
-
-    // If priority is true, the directory is added before any other,
-    // otherwise after
-    bool addResourceType( const char *type,
-                          const QString& relativename, bool priority );
-    bool addResourceDir( const char *type,
-                         const QString& absdir, bool priority);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KStandardDirs::SearchOptions)
