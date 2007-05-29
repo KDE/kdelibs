@@ -1939,8 +1939,12 @@ QString KStandardDirs::installPath(const char *type)
     while (!installprefixes[index].isEmpty() && type != installprefixes[index]) {
         index += 2;
     }
-    if (!installprefixes[index].isEmpty())
-        return installprefixes[index+1];
+    if (!installprefixes[index].isEmpty()) {
+        QString tmp = installprefixes[index+1];
+        if (!tmp.endsWith('/'))
+          tmp += '/';
+        return tmp;
+    }
     return QString();
 
 }
