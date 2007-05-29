@@ -93,6 +93,7 @@ void KProtocolManager::reparseConfiguration()
     d->proxy = QString();
     d->modifiers = QString();
     d->useragent = QString();
+    d->url.clear();
 
   // Force the slave config to re-read its config...
   KIO::SlaveConfig::self()->reset ();
