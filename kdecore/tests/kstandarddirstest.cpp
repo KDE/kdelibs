@@ -188,3 +188,16 @@ void KStandarddirsTest::testRelativeLocation()
     QCOMPARE( KGlobal::dirs()->relativeLocation( "config", located ), file );
 }
 
+void KStandarddirsTest::testAddResourceType()
+{
+    if ( !isKdelibsInstalled() )
+        QSKIP( "kdelibs not installed", SkipAll );
+
+    QString ret = KStandardDirs::locate( "dtd", "customization/catalog" );
+    QCOMPARE(ret, QString()); // normal, there's no "dtd" resource in kstandarddirs by default
+
+    KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
+    ret = KStandardDirs::locate( "dtd", "customization/catalog" );
+    QVERIFY(!ret.isEmpty());
+}
+
