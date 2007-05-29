@@ -23,7 +23,7 @@ static const char *description = I18N_NOOP("A little program to output installat
 
 static KCmdLineOptions options[] =
 {
-    { "expandvars", I18N_NOOP("expand ${prefix} and ${exec_prefix} in output"), 0 },
+    { "expandvars", I18N_NOOP("Left for legacy support"), 0 },
     { "prefix",	   I18N_NOOP("Compiled in prefix for KDE libraries"), 0 },
     { "exec-prefix", I18N_NOOP("Compiled in exec_prefix for KDE libraries"), 0 },
     { "libsuffix", I18N_NOOP("Compiled in library path suffix"), 0 },
@@ -107,81 +107,6 @@ static const QString xdg_appsdir         = QString(QLatin1String(XDG_APPS_DIR));
 static const QString xdg_directorydir    = QString(QLatin1String(XDG_DIRECTORY_DIR));
 #endif
 
-bool _expandvars = false;
-
-static QString expandvars(const char *_input)
-{
-    QString result = QLatin1String(_input);
-    if (!_expandvars)
-        return result;
-
-    bool changed = false;
-    int index = result.indexOf("${prefix}");
-    if (index >= 0) {
-        result = result.replace(index, 9, prefix);
-        changed = true;
-    }
-    index = result.indexOf("$(prefix)");
-    if (index >= 0) {
-        result = result.replace(index, 9, prefix);
-        changed = true;
-    }
-    index = result.indexOf("${datadir}");
-    if (index >= 0) {
-        result = result.replace(index, 10, datadir);
-        changed = true;
-    }
-    index = result.indexOf("$(datadir)");
-    if (index >= 0) {
-        result = result.replace(index, 10, datadir);
-        changed = true;
-    }
-    index = result.indexOf("${exec_prefix}");
-    if (index >= 0) {
-        result = result.replace(index, 14, exec_prefix);
-        changed = true;
-    }
-    index = result.indexOf("$(exec_prefix)");
-    if (index >= 0) {
-        result = result.replace(index, 14, exec_prefix);
-        changed = true;
-    }
-    index = result.indexOf("${libdir}");
-    if (index >= 0) {
-        result = result.replace(index, 9, libdir);
-        changed = true;
-    }
-    index = result.indexOf("$(libdir)");
-    if (index >= 0) {
-        result = result.replace(index, 9, libdir);
-        changed = true;
-    }
-    index = result.indexOf("${includedir}");
-    if (index >= 0) {
-        result = result.replace(index, 20, includedir);
-        changed = true;
-    }
-    index = result.indexOf("$(includedir)");
-    if (index >= 0) {
-        result = result.replace(index, 20, includedir);
-        changed = true;
-    }
-    index = result.indexOf("${sysconfdir}");
-    if (index >= 0) {
-        result = result.replace(index, 13, sysconfdir);
-        changed = true;
-    }
-    index = result.indexOf("$(sysconfdir)");
-    if (index >= 0) {
-        result = result.replace(index, 13, sysconfdir);
-        changed = true;
-    }
-    if (changed)
-        return expandvars(result.toLatin1());
-    else
-        return result;
-}
-
 static void printResult(const QString &s)
 {
     if (s.isEmpty())
@@ -207,17 +132,15 @@ int main(int argc, char **argv)
     // Get application specific arguments
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    _expandvars = args->isSet("expandvars");
-
     if (args->isSet("prefix"))
     {
-        printResult(expandvars(prefix.toLocal8Bit()));
+        printResult(prefix.toLocal8Bit());
         return 0;
     }
 
     if (args->isSet("exec-prefix"))
     {
-        printResult(expandvars(exec_prefix.toLocal8Bit()));
+        printResult(exec_prefix.toLocal8Bit());
         return 0;
     }
 
@@ -225,7 +148,7 @@ int main(int argc, char **argv)
     {
         QString tmp(KDELIBSUFF);
         tmp.remove('"');
-        printResult(expandvars(tmp.toLocal8Bit()));
+        printResult(tmp.toLocal8Bit());
         return 0;
     }
 
@@ -384,7 +307,7 @@ int main(int argc, char **argv)
             index += 2;
         }
         if (!installprefixes[index].isEmpty()) {
-            printResult(expandvars(installprefixes[index+1].toLocal8Bit()));
+            printResult(installprefixes[index+1].toLocal8Bit());
         } else {
             printResult("NONE"); // no i18n here as for scripts
         }
