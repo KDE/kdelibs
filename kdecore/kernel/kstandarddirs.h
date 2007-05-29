@@ -287,7 +287,6 @@ public:
         return addResourceDir(type, absdir, true);
     }
 
-
     /**
      * Adds absolute path at the beginning of the search path for
      * particular types (for example in case of icons where
@@ -306,7 +305,7 @@ public:
      * @return true if successful, false otherwise.
      */
     bool addResourceDir( const char *type,
-                         const QString& absdir, bool priority = true);
+                         const QString& absdir, bool priority);
 
     /**
      * Tries to find a resource in the following order:
