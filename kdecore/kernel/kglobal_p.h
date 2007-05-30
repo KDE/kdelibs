@@ -35,9 +35,7 @@ class KSharedConfigPtr;
 namespace KGlobal
 {
     ///@internal
-    void newComponentData(KComponentData *c);
-    ///@internal
-    void deletedComponentData(KComponentData *c);
+    void newComponentData(const KComponentData &c);
 }
 
 #endif // KGLOBAL_P_H

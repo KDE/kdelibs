@@ -59,15 +59,13 @@ class KGlobalPrivate
             locale(0),
             charsets(0)
         {
-            // make sure all Qt global statics are created here, that way we may use them in the
-            // dtor as well
+            // make sure all Qt/KDE global/local statics that we need are created here, that way
+            // we may use them in the dtor as well
             qrand();
-            //qAddPostRoutine(KGlobalPrivate::syncConfigs);
         }
 
         inline ~KGlobalPrivate()
         {
-            //qRemovePostRoutine(KGlobalPrivate::syncConfigs);
             delete locale;
             locale = 0;
             delete charsets;
@@ -76,14 +74,11 @@ class KGlobalPrivate
             stringDict = 0;
         }
 
-        static void syncConfigs();
-
         KComponentData activeComponent;
         KComponentData mainComponent; // holds a refcount
         KStringDict *stringDict;
         KLocale *locale;
         KCharsets *charsets;
-        QList<KComponentData *> componentDataList;
 };
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
@@ -173,37 +168,14 @@ void KGlobal::setActiveComponent(const KComponentData &c)
     }
 }
 
-void KGlobal::newComponentData(KComponentData *c)
+void KGlobal::newComponentData(const KComponentData &c)
 {
     PRIVATE_DATA;
-    d->componentDataList.append(c);
     if (d->mainComponent.isValid()) {
         return;
     }
-    d->mainComponent = *c;
-    KGlobal::setActiveComponent(*c);
-}
-
-void KGlobal::deletedComponentData(KComponentData *c)
-{
-    if (globalData.isDestroyed()) {
-        return;
-    }
-    PRIVATE_DATA;
-    d->componentDataList.removeAll(c);
-}
-
-void KGlobalPrivate::syncConfigs()
-{
-    PRIVATE_DATA;
-    // The QCoreApplication object is being deleted.
-    // We better sync the global kconfigs before the qt globals
-    // go away and prevent us from using things that require qt globals, like QTemporaryFile.
-    foreach (KComponentData *cd, d->componentDataList) {
-        if (cd->privateConfig()) {
-            cd->privateConfig()->sync();
-        }
-    }
+    d->mainComponent = c;
+    KGlobal::setActiveComponent(c);
 }
 
 void KGlobal::setLocale(KLocale *locale)
