@@ -52,6 +52,7 @@ install(FILES
   message.h
   result.h
   servicepublisher.h
+  servicepublisherdbusinterface.h
   knepomuk.h
   knepomuk_export.h
   error.h
