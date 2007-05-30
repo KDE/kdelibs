@@ -36,7 +36,7 @@ namespace Phonon
 namespace Experimental
 {
     class VideoDataOutputPrivate;
-    class VideoFrame;
+    struct VideoFrame;
 
     /**
      * \short This class gives you the video data.
