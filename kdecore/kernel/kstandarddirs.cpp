@@ -1272,65 +1272,7 @@ static int tokenize( QStringList& tokens, const QString& str,
 
 QString KStandardDirs::kde_default(const char *type) {
 
-    // The documentation for this method has all the information below.
-    // Make sure to update it if you update the code.
-
-    if (!strcmp(type, "data"))
-        return "share/apps/";
-    if (!strcmp(type, "html"))
-        return "share/doc/HTML/";
-    if (!strcmp(type, "icon"))
-        return "share/icons/";
-    if (!strcmp(type, "config"))
-        return "share/config/";
-    if (!strcmp(type, "pixmap"))
-        return "share/pixmaps/";
-    if (!strcmp(type, "apps"))
-        return "share/applnk/";
-    if (!strcmp(type, "sound"))
-        return "share/sounds/";
-    if (!strcmp(type, "locale"))
-        return "share/locale/";
-    if (!strcmp(type, "services"))
-        return "share/kde4/services/";
-    if (!strcmp(type, "servicetypes"))
-        return "share/kde4/servicetypes/";
-    if (!strcmp(type, "mime"))
-        return "share/mimelnk/";
-    if (!strcmp(type, "cgi"))
-        return "cgi-bin/";
-    if (!strcmp(type, "wallpaper"))
-        return "share/wallpapers/";
-    if (!strcmp(type, "templates"))
-        return "share/templates/";
-    if (!strcmp(type, "exe"))
-        return "bin/";
-    if (!strcmp(type, "lib"))
-        return "lib" KDELIBSUFF "/";
-    if (!strcmp(type, "module"))
-        return "lib" KDELIBSUFF "/kde4/";
-    if (!strcmp(type, "qtplugins"))
-        return "lib" KDELIBSUFF "/kde4/plugins";
-    if (!strcmp(type, "kcfg"))
-        return "share/config.kcfg";
-    if (!strcmp(type, "emoticons"))
-        return "share/emoticons";
-    if (!strcmp(type, "xdgdata-apps"))
-        return "applications/";
-    if (!strcmp(type, "xdgdata-icon"))
-        return "icons/";
-    if (!strcmp(type, "xdgdata-pixmap"))
-        return "pixmaps/";
-    if (!strcmp(type, "xdgdata-dirs"))
-        return "desktop-directories/";
-    if (!strcmp(type, "xdgdata-mime"))
-        return "mime/";
-    if (!strcmp(type, "xdgconf-menu"))
-        return "menus/";
-
-
-    qFatal("unknown resource type %s", type);
-    return QString();
+    return QString("%%1/").arg(type);
 }
 
 QString KStandardDirs::saveLocation(const char *type,

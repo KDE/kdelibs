@@ -225,7 +225,7 @@ public:
      *
      * You may add as many as you need, but it is advised that there
      * is exactly one to make writing definite.
-     * All basic types (kde_default()) are added by addKDEDefaults(),
+     * All basic types are added by addKDEDefaults(),
      * but for those you can add more relative paths as well.
      *
      * The later a suffix is added, the higher its priority. Note, that the
@@ -250,7 +250,7 @@ public:
      *
      * You may add as many as you need, but it is advised that there
      * is exactly one to make writing definite.
-     * All basic types (kde_default()) are added by addKDEDefaults(),
+     * All basic types are added by addKDEDefaults(),
      * but for those you can add more relative paths as well.
      *
      * The later a suffix is added, the higher its priority. Note, that the
