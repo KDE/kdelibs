@@ -197,14 +197,9 @@ public:
     }
 #endif
 
-    static KStandardDirsSingleton* self();
 };
 
-KStandardDirsSingleton* KStandardDirsSingleton::self()
-{
-    K_GLOBAL_STATIC(KStandardDirsSingleton, s_self)
-        return s_self;
-}
+K_GLOBAL_STATIC(KStandardDirsSingleton, kStandardDirsGlobals)
 
 /**
  * @internal
@@ -212,7 +207,7 @@ KStandardDirsSingleton* KStandardDirsSingleton::self()
  */
 static QString kfsstnd_defaultprefix()
 {
-    KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+    KStandardDirsSingleton* s = kStandardDirsGlobals;
     if (!s->defaultprefix.isEmpty())
         return s->defaultprefix;
 #ifdef Q_WS_WIN
@@ -232,7 +227,7 @@ static QString kfsstnd_defaultprefix()
  */
 static QString kfsstnd_defaultbindir()
 {
-    KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+    KStandardDirsSingleton* s = kStandardDirsGlobals;
     if (!s->defaultbindir.isEmpty())
         return s->defaultbindir;
 #ifdef Q_WS_WIN
@@ -253,7 +248,7 @@ static QString kfsstnd_defaultbindir()
  */
 static QString kfsstnd_defaultlibexecdir()
 {
-    KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+    KStandardDirsSingleton* s = kStandardDirsGlobals;
     if (!s->defaultlibexecdir.isEmpty())
         return s->defaultlibexecdir;
     s->defaultlibexecdir = kfsstnd_defaultprefix() + QLatin1String("/lib" KDELIBSUFF "/kde4/libexec");
@@ -1975,7 +1970,7 @@ QString KStandardDirs::locateLocal( const char *type,
 
 QString KStandardDirs::installPath(const char *type)
 {
-    QString tmp = KStandardDirsSingleton::self()->install[type];
+    QString tmp = kStandardDirsGlobals->install[type];
     if (tmp.isEmpty())
         return QString();
 
