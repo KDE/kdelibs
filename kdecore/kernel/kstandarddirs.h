@@ -231,7 +231,7 @@ public:
      * The later a suffix is added, the higher its priority. Note, that the
      * suffix should end with / but doesn't have to start with one (as prefixes
      * should end with one). So adding a suffix for app_pics would look
-     * like KGlobal::dirs()->addResourceType("app_pics", "share/app/pics");
+     * like KGlobal::dirs()->addResourceType("app_pics", "data" ,"app/pics");
      *
      * @param type Specifies a short descriptive string to access
      * files of this type.
@@ -256,7 +256,7 @@ public:
      * The later a suffix is added, the higher its priority. Note, that the
      * suffix should end with / but doesn't have to start with one (as prefixes
      * should end with one). So adding a suffix for app_pics would look
-     * like KGlobal::dirs()->addResourceType("app_pics", "share/app/pics");
+     * like KGlobal::dirs()->addResourceType("app_pics", "data", "app/pics");
      *
      * @param type Specifies a short descriptive string to access
      * files of this type.
@@ -277,15 +277,8 @@ public:
     }
 
     // TODO: merge into above functions
-    KDE_DEPRECATED bool addResourceType( const char *type, const QString& relativename )
-    {
-        return addResourceType(type, 0, relativename, true);
-    }
-
-    bool addResourceDir( const char *type, const QString& absdir)
-    {
-        return addResourceDir(type, absdir, true);
-    }
+    KDE_DEPRECATED bool addResourceType( const char *type, const QString& relativename );
+    bool addResourceDir( const char *type, const QString& absdir);
 
     /**
      * Adds absolute path at the beginning of the search path for

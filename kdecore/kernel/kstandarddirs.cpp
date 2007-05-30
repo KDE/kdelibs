@@ -2004,3 +2004,15 @@ bool KStandardDirs::checkAccess(const QString& pathname, int mode)
   else
     return false; // No
 }
+
+bool KStandardDirs::addResourceType( const char *type, const QString& relativename )
+    {
+        return addResourceType(type, 0, relativename, true);
+    }
+
+    bool KStandardDirs::addResourceDir( const char *type, const QString& absdir)
+    {
+        return addResourceDir(type, absdir, true);
+    }
+
+
