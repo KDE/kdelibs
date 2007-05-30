@@ -62,6 +62,7 @@ class KGlobalPrivate
             // make sure all Qt/KDE global/local statics that we need are created here, that way
             // we may use them in the dtor as well
             qrand();
+            KStandardDirs::installPath(0);
         }
 
         inline ~KGlobalPrivate()
