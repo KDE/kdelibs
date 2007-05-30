@@ -2,7 +2,10 @@
 Encoding=UTF-8
 Version=0.4
 Name=Nepomuk File Ontology
+Name[es]=Ontología de ficheros Nepomuk
 Comment=The Nepomuk File Ontology defines basic file types
+Comment[es]=La ontología de ficheros Nepomuk define tipos básicos de ficheros
+Comment[zh_TW]=Nepomuk File Ontology 定義基本的檔案型態
 URL=http://ont.semanticdesktop.org/2007/03/22/nfo#
 Path=nfo.rdfs
 MimeType=application/rdf+xml
