@@ -13,7 +13,7 @@ set( Jobs_SRCS_UI
 
 qt4_wrap_ui(Jobs_SRCS ${Jobs_SRCS_UI} )
 
-QT4_AUTOMOC(${Jobs_SRCS})
+KDE4_AUTOMOC(${Jobs_SRCS})
 
 add_executable(Jobs ${Jobs_SRCS})
 

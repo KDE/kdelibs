@@ -13,7 +13,7 @@ set( QProcessJob_SRCS_UI
 
 qt4_wrap_ui(QProcessJob_SRCS ${QProcessJob_SRCS_UI} )
 
-QT4_AUTOMOC(${QProcessJob_SRCS})
+KDE4_AUTOMOC(${QProcessJob_SRCS})
 
 add_executable(QProcessJob ${QProcessJob_SRCS})
 

@@ -6,7 +6,7 @@ set(ThreadWeaverGui_LIB_SRCS
   WeaverThreadGrid.cpp
 )
 
-QT4_AUTOMOC(${ThreadWeaverGui_LIB_SRCS})
+KDE4_AUTOMOC(${ThreadWeaverGui_LIB_SRCS})
 
 include_directories( ../Weaver/ )
 

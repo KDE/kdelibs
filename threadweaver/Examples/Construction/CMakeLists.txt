@@ -6,7 +6,7 @@ set(Construction_SRCS
     Construction.cpp
 )
 
-QT4_AUTOMOC(${Construction_SRCS})
+KDE4_AUTOMOC(${Construction_SRCS})
 
 add_executable(Construction ${Construction_SRCS})
 

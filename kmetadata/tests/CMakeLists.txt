@@ -11,8 +11,8 @@ include_directories( ${KDE4_KDEUI_INCLUDES} )
 include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
 
 # The basis of all the tests handling statements
-qt4_automoc(testbase.cpp)
-add_library(kmetadata_testbase STATIC testbase.cpp)
+kde4_automoc(testbase.cpp)
+kde4_add_library(kmetadata_testbase STATIC testbase.cpp)
 target_link_libraries(kmetadata_testbase knepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
 
 # tests
