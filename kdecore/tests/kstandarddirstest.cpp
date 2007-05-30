@@ -203,12 +203,12 @@ void KStandarddirsTest::testAddResourceType()
 
 void KStandarddirsTest::testAddResourceDir()
 {
-    const QString dir = QString::fromLatin1(KDESRCDIR);
+    const QString dir = KStandardDirs::realPath(QString::fromLatin1(KDESRCDIR));
     const QString file = "Cairo";
     QString ret = KStandardDirs::locate( "here", file );
     QCOMPARE(ret, QString()); // not set up yet
 
     KGlobal::dirs()->addResourceDir("here", dir);
     ret = KStandardDirs::locate( "here", file );
-    QCOMPARE(ret, dir + "/Cairo");
+    QCOMPARE(ret, dir + "Cairo");
 }
