@@ -36,7 +36,7 @@
 #include <unistd.h>
 
 #include <sys/param.h>
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__DragonFly__)
 #  define BSD_PTY_HACK
 #  include <paths.h>
 #  include <dirent.h>
