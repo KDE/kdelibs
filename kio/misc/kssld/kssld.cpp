@@ -123,7 +123,7 @@ KSSLD::KSSLD() : KDEDModule()
     if (2 != cg.readEntry("policies version", 0)) {
         ::updatePoliciesConfig(cfg);
     }
-    KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
+    KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
     caVerifyUpdate();
     cacheLoadDefaultPolicies();
     kossl = KOSSL::self();

@@ -270,11 +270,9 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     }
 
     // Insert application specific themes at the top.
-    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
-		appname + "/pics/");
+    d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
     // ################## KDE4: consider removing the toolbar directory
-    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
-		appname + "/toolbar/");
+    d->mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
 
     // Add legacy icon dirs.
     QStringList dirs;
@@ -320,11 +318,9 @@ KIconLoader::~KIconLoader()
 
 void KIconLoader::addAppDir(const QString& appname)
 {
-    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
-		appname + "/pics/");
+    d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
     // ################## KDE4: consider removing the toolbar directory
-    d->mpDirs->addResourceType("appicon", KStandardDirs::kde_default("data") +
-		appname + "/toolbar/");
+    d->mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
     addAppThemes(appname);
 }
 

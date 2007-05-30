@@ -210,7 +210,7 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	// back from there.  Yes it's inefficient, but it doesn't happen
 	// often and this way things are uniform.
 
-	KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl");
+	KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
 
 	QString path = KGlobal::dirs()->saveLocation("kssl");
 	KTemporaryFile csrFile;

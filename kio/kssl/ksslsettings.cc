@@ -100,7 +100,7 @@ KSSLSettings::KSSLSettings(bool readConfig)
 {
         m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
 
-	if (!KGlobal::dirs()->addResourceType("kssl", KStandardDirs::kde_default("data") + "kssl")) {
+	if (!KGlobal::dirs()->addResourceType("kssl", "data", "kssl")) {
 		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)" << endl;
 	}
 

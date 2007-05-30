@@ -143,8 +143,7 @@ void PartBase::setComponentData(const KComponentData &componentData, bool bLoadP
     KGlobal::locale()->insertCatalog(componentData.componentName());
     // install 'instancename'data resource type
     KGlobal::dirs()->addResourceType(componentData.componentName() + "data",
-                                     KStandardDirs::kde_default("data")
-                                     + QLatin1String(componentData.componentName()) + '/');
+                                     "data", QLatin1String(componentData.componentName()));
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, componentData);
     }
