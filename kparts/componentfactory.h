@@ -29,7 +29,6 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        KPARTS_EXPORT
         T *createPartInstanceFromFactory( KParts::Factory *factory,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
@@ -47,7 +46,6 @@ namespace KParts
         }
 
         template <class T>
-        KPARTS_EXPORT
         T *createPartInstanceFromLibrary( const char *libraryName,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
@@ -89,7 +87,6 @@ namespace KParts
         }
 
         template <class T>
-        KPARTS_EXPORT
         T *createPartInstanceFromService( const KService::Ptr &service,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
@@ -109,7 +106,6 @@ namespace KParts
         }
 
         template <class T, class ServiceIterator>
-        KPARTS_EXPORT
         T *createPartInstanceFromServices( ServiceIterator begin,
                                            ServiceIterator end,
                                            QWidget *parentWidget = 0,
@@ -164,7 +160,6 @@ namespace KParts
          *         factory was unable to create an object of the given type.
          */
         template <class T>
-        KPARTS_EXPORT
         T *createPartInstanceFromQuery( const QString &mimeType,
                                         const QString &constraint,
                                         QWidget *parentWidget = 0,
