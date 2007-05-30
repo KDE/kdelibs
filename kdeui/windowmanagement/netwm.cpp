@@ -641,7 +641,7 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->properties[ PROTOCOLS ] |= ( Supported | SupportingWMCheck );
     p->client_properties[ PROTOCOLS ] = DesktopNames // the only thing that can be changed by clients
 			                | WMPing; // or they can reply to this
-    p->client_properties[ PROTOCOLS2 ] = WM2TakeActivity;
+    p->client_properties[ PROTOCOLS2 ] = WM2TakeActivity | WM2DesktopLayout;
 
     role = WindowManager;
 
@@ -810,6 +810,7 @@ void NETRootInfo::activate() {
 #endif
 
 	setSupported();
+	update(p->client_properties);
     } else {
 
 #ifdef    NETWMDEBUG
