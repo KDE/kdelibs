@@ -1270,8 +1270,8 @@ static int tokenize( QStringList& tokens, const QString& str,
     return tokens.count();
 }
 
-QString KStandardDirs::kde_default(const char *type) {
-
+QString KStandardDirs::kde_default(const char *type)
+{
     return QString("%%1/").arg(type);
 }
 
@@ -1284,37 +1284,48 @@ QString KStandardDirs::saveLocation(const char *type,
     QString path = d->savelocations.value(type);
     if (path.isEmpty())
     {
-       QStringList dirs = d->relatives.value(type);
-       if (dirs.isEmpty() && (
-                     (strcmp(type, "socket") == 0) ||
-                     (strcmp(type, "tmp") == 0) ||
-                     (strcmp(type, "cache") == 0) ))
-       {
-          (void) resourceDirs(type); // Generate socket|tmp|cache resource.
-          dirs = d->relatives.value(type); // Search again.
-       }
-       if (!dirs.isEmpty())
-       {
-          // Check for existence of typed directory + suffix
-          if (strncmp(type, "xdgdata-", 8) == 0) {
-             path = realPath( localxdgdatadir() + dirs.last() ) ;
-          } else if (strncmp(type, "xdgconf-", 8) == 0) {
-             path = realPath( localxdgconfdir() + dirs.last() );
-          } else {
-             path = realPath( localkdedir() + dirs.last() );
-          }
-       }
-       else {
-          dirs = d->absolutes.value(type);
-          if (dirs.isEmpty()) {
-             qFatal("KStandardDirs: The resource type %s is not registered", type);
-          }
-          path = realPath(dirs.last());
-       }
+        QStringList dirs = d->relatives.value(type);
+        if (dirs.isEmpty() && (
+                (strcmp(type, "socket") == 0) ||
+                (strcmp(type, "tmp") == 0) ||
+                (strcmp(type, "cache") == 0) ))
+        {
+            (void) resourceDirs(type); // Generate socket|tmp|cache resource.
+            dirs = d->relatives.value(type); // Search again.
+        }
+        if (!dirs.isEmpty())
+        {
+            path = dirs.last();
 
-       d->savelocations.insert(type, path);
+            if ( path.startsWith('%'))
+            {
+                // grab the "data" from "%data/apps"
+                QString rel = path.mid(1, path.indexOf('/') - 1);
+                QString rest = path.mid(path.indexOf('/') + 1);
+                QString basepath = saveLocation(rel.toUtf8().constData());
+                path = basepath + rest;
+            } else
+
+            // Check for existence of typed directory + suffix
+            if (strncmp(type, "xdgdata-", 8) == 0) {
+                path = realPath( localxdgdatadir() + path ) ;
+            } else if (strncmp(type, "xdgconf-", 8) == 0) {
+                path = realPath( localxdgconfdir() + path );
+            } else {
+                path = realPath( localkdedir() + path );
+            }
+        }
+        else {
+            dirs = d->absolutes.value(type);
+            if (dirs.isEmpty()) {
+                qFatal("KStandardDirs: The resource type %s is not registered", type);
+            }
+            path = realPath(dirs.last());
+        }
+
+        d->savelocations.insert(type, path.endsWith('/') ? path : path + '/');
     }
-    QString fullPath = path + (path.endsWith("/") ? "" : "/") + suffix;
+    QString fullPath = path + suffix;
 
     KDE_struct_stat st;
     if (KDE_stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
@@ -1330,7 +1341,7 @@ QString KStandardDirs::saveLocation(const char *type,
         d->dircache.remove(type);
     }
     if (!fullPath.endsWith("/"))
-            fullPath += '/';
+        fullPath += '/';
     return fullPath;
 }
 
