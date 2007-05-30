@@ -236,7 +236,7 @@ QString DefaultProgress::makePercentString( unsigned long percent,
                                             unsigned long totalFiles )
 {
   if ( totalSize )
-      return i18n( "%1 % of %2 " ).arg( percent ).arg( KIO::convertSize( totalSize ) );
+      return i18n( "%1 % of %2 " ).arg( QString::number(percent) , KIO::convertSize( totalSize ) );
   else if ( totalFiles )
       return i18n( "%1 % of 1 file", "%1 % of %n files", totalFiles ).arg( percent );
   else
