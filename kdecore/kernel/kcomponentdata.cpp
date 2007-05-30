@@ -145,7 +145,7 @@ KStandardDirs *KComponentData::dirs() const
     if (d->dirs == 0) {
         d->dirs = new KStandardDirs(*this);
         // install appdata resource type
-        d->dirs->addResourceType("appdata", KStandardDirs::kde_default("data") + d->name + '/');
+        d->dirs->addResourceType("appdata", "data", d->name + QLatin1Char('/'), true);
 
         if (d->sharedConfig) {
             if (d->dirs->addCustomized(d->sharedConfig.data())) {
