@@ -632,7 +632,7 @@ public:
      * @see locate()
      * @see locateLocal()
      */
-    KDE_DEPRECATED static QString kde_default(const char *type);
+    static KDE_DEPRECATED QString kde_default(const char *type);
 
     /**
      * @internal (for use by sycoca only)
