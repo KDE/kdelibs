@@ -58,6 +58,10 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 
+#ifdef Q_OS_WIN
+# include <windows.h>
+#endif
+
 class KStandardDirs::KStandardDirsPrivate
 {
 public:
@@ -101,8 +105,6 @@ public:
     QMap<const char*, QString> install;
 
 #ifdef Q_OS_WIN
-#include <windows.h>
-
     void initInstallDirs()
     {
         QString prefix = getKde4Prefix();
