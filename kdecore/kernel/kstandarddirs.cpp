@@ -103,22 +103,6 @@ public:
 #ifdef Q_OS_WIN
 #include <windows.h>
 
-    static QString getKde4Prefix()
-    {
-        static QString modFilePath;
-        if(modFilePath.isEmpty()) {
-            wchar_t module_name[256];
-            GetModuleFileNameW(0, module_name, sizeof(module_name) / sizeof(wchar_t));
-            modFilePath = QString::fromUtf16((ushort *)module_name);
-            int idx = modFilePath.lastIndexOf('\\');
-            if(idx != -1)
-                modFilePath = modFilePath.left(idx);
-            modFilePath = QDir(modFilePath + "/../").canonicalPath();
-        }
-        return modFilePath;
-    }
-
-
     void initInstallDirs()
     {
         QString prefix = getKde4Prefix();
