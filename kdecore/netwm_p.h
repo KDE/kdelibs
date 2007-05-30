@@ -103,6 +103,9 @@ struct NETRootInfoPrivate {
     unsigned long clients_count, stacking_count, virtual_roots_count,
 	kde_system_tray_windows_count;
     bool showing_desktop;
+    NET::Orientation desktop_layout_orientation;
+    NET::DesktopLayoutCorner desktop_layout_corner;
+    int desktop_layout_columns, desktop_layout_rows;
 
     unsigned long properties[ 5 ];
     unsigned long client_properties[ 5 ]; // properties the client is interested in

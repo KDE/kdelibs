@@ -590,6 +590,7 @@ public:
         @li WM2WindowClass  WM_CLASS
         @li WM2WindowRole   WM_WINDOW_ROLE
         @li WM2ClientMachine WM_CLIENT_MACHINE
+        @li WM2DesktopLayout _NET_DESKTOP_LAYOUT
         
         @since 3.2
 
@@ -608,7 +609,8 @@ public:
         WM2WindowClass         = 1<<10, ///< @since 3.3
         WM2WindowRole          = 1<<11, ///< @since 3.3
         WM2ClientMachine       = 1<<12, ///< @since 3.3
-        WM2ShowingDesktop      = 1<<13  ///< @since 3.5
+        WM2ShowingDesktop      = 1<<13, ///< @since 3.5
+        WM2DesktopLayout       = 1<<15  ///< @since 3.5.8
     };
 
     /**
@@ -629,6 +631,24 @@ public:
         FromUnknown, // internal
         FromApplication,
         FromTool
+    };
+    
+    /**
+      Orientation.
+    **/
+    enum Orientation {
+        OrientationHorizontal = 0,
+        OrientationVertical = 1
+    };
+    
+    /**
+     Starting corner for desktop layout.
+    **/
+    enum DesktopLayoutCorner {
+        DesktopLayoutCornerTopLeft = 0,
+        DesktopLayoutCornerTopRight = 1,
+        DesktopLayoutCornerBottomLeft = 2,
+        DesktopLayoutCornerBottomRight = 3
     };
     
     /**
