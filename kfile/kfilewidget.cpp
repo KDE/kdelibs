@@ -353,7 +353,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     d->toolbar->addAction( menu );
 
     //Insert a separator.
-    d->m_pathComboIndex = d->toolbar->addSeparator();
+    //d->m_pathComboIndex = d->toolbar->addSeparator();
 
     d->toolbar->addWidget(d->pathCombo);
 
@@ -375,8 +375,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
 
     // the Location label/edit
     d->locationLabel = new QLabel(i18n("&Location:"), this);
-    d->locationEdit = new KUrlComboBox(KUrlComboBox::Files, true,
-                                    this);
+    d->locationEdit = new KUrlComboBox(KUrlComboBox::Files, true, this);
     connect( d->locationEdit, SIGNAL( textChanged( const QString& ) ),
              SLOT( slotLocationChanged( const QString& )) );
 
@@ -415,6 +414,7 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     // the Automatically Select Extension checkbox
     // (the text, visibility etc. is set in updateAutoSelectExtension(), which is called by readConfig())
     d->autoSelectExtCheckBox = new QCheckBox (this);
+    d->autoSelectExtCheckBox->setStyleSheet(QString("QCheckBox { spacing-top: %1px; }").arg(KDialog::spacingHint()));
     connect(d->autoSelectExtCheckBox, SIGNAL(clicked()), SLOT(slotAutoSelectExtClicked()));
 
     d->initGUI(); // activate GM
@@ -1024,14 +1024,14 @@ void KFileWidgetPrivate::initGUI()
     delete boxLayout; // deletes all sub layouts
 
     boxLayout = new QVBoxLayout( q);
-    boxLayout->setSpacing(KDialog::spacingHint());
-    boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
     boxLayout->setMargin(0); // no additional margin to the already existing
+    boxLayout->setSpacing(0);
+    boxLayout->addWidget(toolbar, 0, Qt::AlignTop);
 
     placesViewLayout = new QHBoxLayout();
+    placesViewLayout->addSpacing(KDialog::spacingHint());
     boxLayout->addItem(placesViewLayout); // needed for the placesView that may appear
     vbox = new QVBoxLayout();
-    vbox->setMargin(KDialog::marginHint());
     placesViewLayout->addItem(vbox);
 
     vbox->addWidget(ops, 4);
@@ -1051,11 +1051,9 @@ void KFileWidgetPrivate::initGUI()
     lafBox->setColumnStretch(1, 4);
 
     vbox->addLayout(lafBox);
-    vbox->addSpacing(KDialog::spacingHint());
 
     // add the Automatically Select Extension checkbox
-    vbox->addWidget (autoSelectExtCheckBox);
-    vbox->addSpacing (3);
+    vbox->addWidget(autoSelectExtCheckBox);
 
     q->setTabOrder(ops, autoSelectExtCheckBox);
     q->setTabOrder(autoSelectExtCheckBox, locationEdit);
