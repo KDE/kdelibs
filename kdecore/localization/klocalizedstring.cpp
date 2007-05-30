@@ -327,8 +327,6 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
             // Position of next text segment.
             spos = tpos;
         }
-        else
-            tpos++; // might be escape for %
 
         tpos = trans.indexOf(plchar, tpos);
     }
