@@ -123,13 +123,13 @@ public:
       * @param pluginInfoList A list of KPluginInfo objects containing the
       *                       necessary information for the plugins you want to
       *                       add to the list
-      * @param categoryName  The translated name of the category. This is the
-      *                      name that is shown in the title. If the category
-      *                      did exist before because of another call to
-      *                      addPlugins, then they will be shown in that
-      *                      category. If @p categoryName is a new one, then
-      *                      a new category will be shown on the plugin window,
-      *                      and the list of plugins added to it
+      * @param categoryName   The translated name of the category. This is the
+      *                       name that is shown in the title. If the category
+      *                       did exist before because of another call to
+      *                       addPlugins, then they will be shown in that
+      *                       category. If @p categoryName is a new one, then
+      *                       a new category will be shown on the plugin window,
+      *                       and the list of plugins added to it
       * @param categoryKey    When you have different categories of KParts
       *                       plugins you distinguish between the plugins using
       *                       the Category key in the .desktop file. Use this
@@ -145,6 +145,10 @@ public:
       *                       page will be called (think global config app).
       *                       For example KViewCanvas passes KConfig(
       *                       "kviewcanvas" )
+      *
+      * @note   All plugins that were set a config group using setConfig() method
+      *         will load and save their information from there. For those that
+      *         weren't any config object, @p config will be used
       */
     void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
                     const QString &categoryName = QString(),

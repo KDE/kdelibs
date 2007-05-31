@@ -281,7 +281,11 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
              ((myCategoryKey.isEmpty()) ||
               (pluginInfo->category().toLower() == myCategoryKey)))
         {
-            pluginInfo->load(configGroup);
+            if (!pluginInfo->config())
+                pluginInfo->load(configGroup);
+            else
+                pluginInfo->load();
+
             pluginInfoByCategory[categoryName].append(pluginInfo);
 
             struct AdditionalInfo pluginAdditionalInfo;
@@ -610,7 +614,12 @@ void KPluginSelector::load()
         if (currentIndex.internalPointer())
         {
             currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
-            currentPlugin->load(d->pluginModel->configGroup(currentIndex));
+
+            if (!currentPlugin->config())
+                currentPlugin->load(d->pluginModel->configGroup(currentIndex));
+            else
+                currentPlugin->load();
+
             d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
         }
     }
@@ -622,15 +631,26 @@ void KPluginSelector::save()
 {
     QModelIndex currentIndex;
     KPluginInfo *currentPlugin;
+    KConfigGroup *configGroup;
     for (int i = 0; i < d->pluginModel->rowCount(); i++)
     {
         currentIndex = d->pluginModel->index(i, 0);
         if (currentIndex.internalPointer())
         {
-            KConfigGroup *configGroup = d->pluginModel->configGroup(currentIndex);
             currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
             currentPlugin->setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
-            currentPlugin->save(configGroup);
+
+            if (!currentPlugin->config())
+            {
+                configGroup = d->pluginModel->configGroup(currentIndex);
+                currentPlugin->save(configGroup);
+            }
+            else
+            {
+                configGroup = &KConfigGroup(currentPlugin->config(), currentPlugin->configgroup());
+                currentPlugin->save();
+            }
+
             configGroup->sync();
         }
     }
