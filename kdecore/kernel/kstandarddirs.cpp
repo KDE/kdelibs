@@ -113,8 +113,8 @@ public:
 
 #ifdef Q_OS_WIN
         QString prefix = getKde4Prefix();
-        QString share         = prefix + "/share";
-        QString kde_moduledir = libdir + QLatin1String("/kde4");
+        QString share         = prefix + QLatin1String("/share");
+        QString kde_moduledir = QLatin1String("lib/kde4");
 
         install["apps"] = share + QLatin1String("/applnk");
         install["config"] = share + QLatin1String("/config");
@@ -159,8 +159,8 @@ public:
         install["xdgdata-apps"] = XDG_APPS_DIR;
         install["xdgdata-dirs"] = XDG_DIRECTORY_DIR;
         install["include"] = INCLUDE_INSTALL_DIR;
-    }
 #endif
+    }
 
 };
 
