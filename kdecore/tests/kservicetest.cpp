@@ -188,7 +188,6 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     QVERIFY( offerListHasService( offers, "khtml.desktop" ) );
     QVERIFY( offerListHasService( offers, "khtmlimage.desktop" ) );
     QVERIFY( offerListHasService( offers, "kjavaappletviewer.desktop" ) );
-    QVERIFY( offerListHasService( offers, "kcertpart.desktop" ) );
 
     // Check ordering according to InitialPreference
     int lastPreference = -1;
@@ -258,7 +257,6 @@ void KServiceTest::testWriteServiceTypeProfile()
     KService::List services, disabledServices;
     services.append(KService::serviceByDesktopPath("khtmlimage.desktop"));
     services.append(KService::serviceByDesktopPath("katepart.desktop"));
-    services.append(KService::serviceByDesktopPath("kcertpart.desktop"));
     disabledServices.append(KService::serviceByDesktopPath("khtml.desktop"));
 
     KServiceTypeProfile::writeServiceTypeProfile( serviceType, services, disabledServices );
@@ -277,7 +275,6 @@ void KServiceTest::testWriteServiceTypeProfile()
     QVERIFY( offers.count() >= 3 ); // at least 3, even
     QCOMPARE( offers[0]->desktopEntryPath(), QString("khtmlimage.desktop") );
     QCOMPARE( offers[1]->desktopEntryPath(), QString("katepart.desktop") );
-    QCOMPARE( offers[2]->desktopEntryPath(), QString("kcertpart.desktop") );
     QVERIFY( offerListHasService( offers, "kmultipart.desktop" ) ); // should still be somewhere in there
     QVERIFY( !offerListHasService( offers, "khtml.desktop" ) ); // it got disabled above
 }
