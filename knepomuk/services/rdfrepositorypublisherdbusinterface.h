@@ -1,4 +1,4 @@
-/* 
+/*
  *
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
@@ -28,6 +28,8 @@
 #include <knepomuk/knepomuk_export.h>
 
 #include <QtCore/QList>
+#include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusConnection>
 
 #include <soprano/statement.h>
 
@@ -68,18 +70,18 @@ namespace Nepomuk {
 
 		    int removeAllStatements( const QString& repositoryId, const Soprano::Statement& statement, const QDBusMessage& );
 
-		    QList<Soprano::Statement> listStatements( const QString& repositoryId, const Soprano::Statement& statement, 
+		    QList<Soprano::Statement> listStatements( const QString& repositoryId, const Soprano::Statement& statement,
 								   const QDBusMessage& );
 
 		    QList<Soprano::Statement> constructSparql( const QString& repositoryId, const QString& query, const QDBusMessage& );
 
 		    Nepomuk::RDF::QueryResultTable selectSparql( const QString& repositoryId, const QString& query, const QDBusMessage& );
-	  
+
 		    QList<Soprano::Statement> describeSparql( const QString& repositoryId, const QString& query, const QDBusMessage& );
 
 		    QList<Soprano::Statement> construct( const QString& repositoryId, const QString& query,
 							      const QString& querylanguage, const QDBusMessage& );
-	  
+
 		    Nepomuk::RDF::QueryResultTable select( const QString& repositoryId, const QString& query,
 							   const QString& querylangauge, const QDBusMessage& );
 
@@ -123,7 +125,7 @@ namespace Nepomuk {
 
 		    void addGraph( const QString& repositoryId, const QString& graph,
 				   const QString& formatMimetype, const Soprano::Node& context, const QDBusMessage& );
-	  
+
 
 		    void removeGraph( const QString& repositoryId, const QString& graph,
 				      const QString& formatMimetype, const Soprano::Node& context, const QDBusMessage& );

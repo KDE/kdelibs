@@ -23,7 +23,7 @@
 #ifndef _SERVICE_PUBLISHER_DBUS_INTERFACE_H_
 #define _SERVICE_PUBLISHER_DBUS_INTERFACE_H_
 
-#include <QtDBus>
+#include <QtDBus/QDBusAbstractAdaptor>
 
 namespace Nepomuk {
     namespace Backbone {
