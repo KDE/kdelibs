@@ -87,6 +87,7 @@ void KdePluginFactory::notification(const char *notificationName, const QString 
 
 QString KdePluginFactory::applicationName() const
 {
+    ensureMainComponentData();
     const KAboutData *ad = KGlobal::mainComponent().aboutData();
     if (ad) {
         const QString programName = ad->programName();
