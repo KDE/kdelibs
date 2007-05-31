@@ -1,0 +1,20 @@
+/*!
+ * @mainpage kfile.
+ *
+ * @section purpose Purpose
+ *
+ * <insert purpose here>
+ *
+ * @section desc Description
+ *
+ * <insert description here>
+ *
+ * @authors 
+ *
+ * @maintainers
+ *
+ * @licenses
+ * @lgpl
+ */
+
+// DOXYGEN_REFERENCES = kdecore kde3support solid
