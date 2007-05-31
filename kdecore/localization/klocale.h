@@ -999,7 +999,7 @@ public:
    **/
   QString translateQt(const char *context,
 		      const char *sourceText,
-		      const char *message) const;
+		      const char *comment) const;
 
   /**
    * Returns list of all known ISO 639-1 codes.

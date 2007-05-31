@@ -734,37 +734,66 @@ void KLocale::translateRaw(const char *ctxt, const char *singular, const char *p
   d->translate_priv(ctxt, singular, plural, n, lang, trans);
 }
 
-QString KLocale::translateQt( const char *context, const char *source,
-			      const char *message) const
+QString KLocale::translateQt(const char *context, const char *sourceText,
+                             const char *comment) const
 {
-  if (!source || !source[0]) {
+  // Qt's context is normally the name of the class of the method which makes
+  // the tr(sourceText) call. However, it can also be manually supplied via
+  // translate(context, sourceText) call.
+  //
+  // Qt's sourceText is the actual message displayed to the user.
+  //
+  // Qt's comment is an optional argument of tr() and translate(), like
+  // tr(sourceText, comment) and translate(context, sourceText, comment).
+  //
+  // We handle this in the following way:
+  //
+  // If the comment is given, then it is considered gettext's msgctxt, so a
+  // context call is made.
+  //
+  // If the comment is not given, but context is given, then we treat it as
+  // msgctxt only if it was manually supplied (the one in translate()) -- but
+  // we don't know this, so we first try a context call, and if translation
+  // is not found, we fallback to ordinary call.
+  //
+  // If neither comment nor context are given, it's just an ordinary call
+  // on sourceText.
+
+  if (!sourceText || !sourceText[0]) {
     kWarning() << "KLocale: trying to look up \"\" in catalog. "
-		<< "Fix the program" << endl;
+               << "Fix the program" << endl;
     return QString();
   }
 
-  if ( d->useDefaultLanguage() ) {
+  if (d->useDefaultLanguage()) {
     return QString();
   }
 
+  QString translation;
   QString language;
 
-  if ( message && message[0]) {
-    d->translate_priv(source, message, 0, 0, &language, 0);
+  // NOTE: Condition (language != defaultLanguage()) means that translation
+  // was found, otherwise we got the original string back as translation.
+
+  if (comment && comment[0]) {
+    // Comment given, go for context call.
+    d->translate_priv(comment, sourceText, 0, 0, &language, &translation);
     if (language != defaultLanguage())
-      return i18nc(source, message);
+      return translation;
+  }
+  else {
+    // Comment not given, go for try-fallback with context.
+    if (context && context[0]) {
+      d->translate_priv(context, sourceText, 0, 0, &language, &translation);
+      if (language != defaultLanguage())
+        return translation;
+    }
+    d->translate_priv(0, sourceText, 0, 0, &language, &translation);
+    if (language != defaultLanguage())
+      return translation;
   }
 
-  if ( context && context[0] && message && message[0]) {
-    d->translate_priv(context, message, 0, 0, &language, 0);
-    if (language != defaultLanguage())
-      return i18nc(context, message);
-  }
-
-  d->translate_priv(0, source, 0, 0, &language, 0);
-  if (language != defaultLanguage())
-    return i18n(source);
-
+  // No proper translation found, return empty according to Qt's expectation.
   return QString();
 }
 
