@@ -28,6 +28,7 @@
 #include <cups/cups.h>
 #include <stdlib.h>
 #include <k3process.h>
+#include <kstandarddirs.h>
 
 static void mapToCupsOptions(const QMap<QString,QString>& opts, QString& cmd);
 
