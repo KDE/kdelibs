@@ -22,6 +22,7 @@
 
 #include "factory.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QList>
 
 namespace Phonon
@@ -31,17 +32,17 @@ namespace Phonon
         switch(c)
         {
         case Phonon::NotificationCategory:
-            return i18n("Notifications");
+            return QCoreApplication::translate("Phonon::", "Notifications");
         case Phonon::MusicCategory:
-            return i18n("Music");
+            return QCoreApplication::translate("Phonon::", "Music");
         case Phonon::VideoCategory:
-            return i18n("Video");
+            return QCoreApplication::translate("Phonon::", "Video");
         case Phonon::CommunicationCategory:
-            return i18n("Communication");
+            return QCoreApplication::translate("Phonon::", "Communication");
         case Phonon::GameCategory:
-            return i18n("Games");
+            return QCoreApplication::translate("Phonon::", "Games");
         case Phonon::AccessibilityCategory:
-            return i18n("Accessibility");
+            return QCoreApplication::translate("Phonon::", "Accessibility");
         }
         return QString();
     }

@@ -272,16 +272,16 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeT
     AudioOutputDevice device2 = AudioOutputDevice::fromIndex(outputDeviceIndex);
     switch (type) {
     case FallbackChange:
-        text = i18n("The audio playback device '<i>%1</i>' does not work. "
-            "Falling back to '<i>%2</i>'.", device1.name(), device2.name());
+        text = AudioOutput::tr("The audio playback device '<i>%1</i>' does not work. "
+            "Falling back to '<i>%2</i>'.").arg(device1.name()).arg(device2.name());
         break;
     case HigherPreferenceChange:
-        text = i18n("Switching to the audio playback device '<i>%1</i>' "
-                "which just became available and has higher preference.", device2.name());
+        text = AudioOutput::tr("Switching to the audio playback device '<i>%1</i>' "
+                "which just became available and has higher preference.").arg(device2.name());
         break;
     }
     Factory::notification("AudioDeviceFallback", text,
-            QStringList(i18n("Revert back to device '%1'", device1.name())),
+            QStringList(AudioOutput::tr("Revert back to device '%1'").arg(device1.name())),
             q, SLOT(_k_revertFallback()));
 }
 

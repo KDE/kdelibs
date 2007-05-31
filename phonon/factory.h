@@ -33,9 +33,6 @@ namespace Phonon
     class BasePrivate;
     class AbstractMediaStream;
 
-    inline QString i18n(const QString &text) { return text; }
-    inline QString i18n(const QString &text, const QString &arg1) { return text.arg(arg1); }
-    inline QString i18n(const QString &text, const QString &arg1, const QString &arg2) { return text.arg(arg1).arg(arg2); }
 /**
  * \internal
  * \brief Factory to access the preferred Backend.
