@@ -2,14 +2,18 @@ List of remaining conflicts between kdelibs3 and kdelibs4
 
 bin/cupsdconf    (where is it launched? looks like it's dlopened by kmcupsmanager.cpp but the binary is now useless)
 bin/kde-menu               -> user tool (debugging, scripts, GUI feedback after install) -> kde-menu4? kde4-menu?
-bin/ktradertest            -> only needed for xdg utils and debugging... -> ktradertest4?
-                              kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either...
 bin/cupsdoprint            -> libexec. Warning, add a KStandardDirs::findExe in KCupsPrinterImpl::setupCommand.
 bin/kstartupconfig         -> kstartupconfig4 and move to kdebase - it's called by startkde
 bin/kdostartupconfig       -> libexec ideally, but the problem is the system("kdostartupconfig") calls in kstartupconfig.cpp (C code)
                               so it would be simpler to just make it kdostartupconfig4.
 
+Other things that should move:
+ kcert -> kdebase/runtime (it's a part)
+
 List of solved conflicts:
+
+bin/ktradertest            -> kdebase/runtime/ktraderclient
+                              Note that kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either.
 
 bin/kded                   -> kded4 - DONE
 bin/kcookiejar             -> kcookiejar4 - DONE (not used by khtml anymore, only a command-line tool)

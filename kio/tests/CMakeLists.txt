@@ -4,16 +4,6 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 # for <kio/global.h>
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
-########## ktradertest - which is installed
-
-kde4_add_executable(ktradertest NOGUI ktradertest.cpp)
-
-target_link_libraries(ktradertest ${KDE4_KIO_LIBS})
-
-install(TARGETS ktradertest DESTINATION ${BIN_INSTALL_DIR} )
-
-########### TESTS ###############
-
 MACRO(KIO_BUILD_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
@@ -74,4 +64,3 @@ KIO_EXECUTE_TESTS(
   ${kio_unittests}
 )
 
-###########  ###############
