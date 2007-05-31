@@ -1,13 +1,14 @@
 List of remaining conflicts between kdelibs3 and kdelibs4
 
-bin/kde-menu               -> user tool (debugging, scripts, GUI feedback after install) -> kde-menu4? kde4-menu?
+NONE!
 
-why isn't bin/kioslave in the list?
+Hmm, isn't bin/kioslave a problem?
 
 List of solved conflicts:
 
 bin/ktradertest            -> kdebase/runtime/ktraderclient
                               Note that kdebase/runtime will be installed as well, so it can't conflict with kdelibs3 either.
+bin/kde-menu               -> user tool (debugging, scripts, GUI feedback after install) -> kdebase/runtime/kde-menu, as kde4-menu.
 bin/kstartupconfig         -> kdebase/workspace
 bin/kdostartupconfig         -> kdebase/workspace
 

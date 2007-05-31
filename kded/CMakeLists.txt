@@ -61,26 +61,9 @@ target_link_libraries(kdontchangethehostname  ${KDE4_KDECORE_LIBS} )
 
 install(TARGETS kdontchangethehostname DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
-
-########### next target ###############
-
-set(kde-menu_SRCS kde-menu.cpp )
-
-kde4_automoc(${kde-menu_SRCS})
-
-kde4_add_executable(kde-menu NOGUI ${kde-menu_SRCS})
-
-target_link_libraries(kde-menu  ${KDE4_KIO_LIBS})
-
-install(TARGETS kde-menu DESTINATION ${BIN_INSTALL_DIR} )
-
-
 ########### install files ###############
 
 install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
 install( FILES kdedmodule.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES kded.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
-
-
-
 
