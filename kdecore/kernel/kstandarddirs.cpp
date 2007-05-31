@@ -102,62 +102,42 @@ public:
     QString defaultbindir;
     QString defaultlibexecdir;
 
-    QMap<const char*, QString> install;
+    QMap<QByteArray, QString> install;
+
+    void initInstallDirs()
+    {
+        static bool _init = false;
+        if (_init)
+            return;
+        _init = true;
 
 #ifdef Q_OS_WIN
-    void initInstallDirs()
-    {
         QString prefix = getKde4Prefix();
-        // TODO: no need for interim variables
-        QString libdir        = prefix + "/lib";
-        QString includedir    = prefix + "/include";
-        QString sysconfdir    = prefix + "/etc";
         QString share         = prefix + "/share";
-        QString datadir       = share + QLatin1String("/apps");
-        QString kde_confdir   = share + QLatin1String("/config");
-        QString kde_kcfgdir   = share + QLatin1String("/config.kcfg");
-        QString kde_datadir   = share + QLatin1String("/apps");
-        QString kde_bindir    = prefix;
-        QString kde_htmldir   = share + QLatin1String("/doc/HTML");
-        QString kde_icondir   = share + QLatin1String("/icons");
         QString kde_moduledir = libdir + QLatin1String("/kde4");
-        QString kde_locale    = share + QLatin1String("/locale");
-        QString kde_mimedir   = share + QLatin1String("/mimelnk");
-        QString kde_servicesdir     = share + QLatin1String("/services");
-        QString kde_servicetypesdir = share + QLatin1String("/servicetypes");
-        QString kde_sounddir        = share + QLatin1String("/sounds");
-        QString kde_templatesdir    = share + QLatin1String("/templates");
-        QString kde_wallpaperdir    = share + QLatin1String("/wallpapers");
-        QString xdg_menudir         = share + QLatin1String("/currently/undefined");
-        QString xdg_appsdir         = share + QLatin1String("/applications/kde4");
-        QString xdg_directorydir    = share + QLatin1String("/desktop-directories");
 
         install["apps"] = share + QLatin1String("/applnk");
-        install["config"] = kde_confdir;
-        install["kcfg"] = kde_kcfgdir;
-        install["data"] = kde_datadir;
-        install["exe"] = kde_bindir;
-        install["html"] = kde_htmldir;
-        install["icon"] = kde_icondir;
-        install["lib"] = libdir;
+        install["config"] = share + QLatin1String("/config");
+        install["kcfg"] = share + QLatin1String("/config.kcfg");
+        install["data"] = share + QLatin1String("/apps");
+        install["exe"] = prefix;
+        install["html"] = share + QLatin1String("/doc/HTML");
+        install["icon"] = share + QLatin1String("/icons");
+        install["lib"] = prefix + "/lib";
         install["module"] = kde_moduledir;
         install["qtplugins"] = kde_moduledir + QLatin1String("/plugins");
-        install["locale"] = kde_locale;
-        install["mime"] = kde_mimedir;
-        install["services"] = kde_servicesdir;
-        install["servicetypes"] = kde_servicetypesdir;
-        install["sound"] = kde_sounddir;
-        install["templates"] = kde_templatesdir;
-        install["wallpaper"] = kde_wallpaperdir;
-        install["xdgconf-menu"] = xdg_menudir;
-        install["xdgdata-apps"] = xdg_appsdir;
-        install["xdgdata-dirs"] = xdg_directorydir;
-        install["include"] = includedir;
-    }
-
+        install["locale"] = share + QLatin1String("/locale");
+        install["mime"] = share + QLatin1String("/mimelnk");
+        install["services"] = share + QLatin1String("/services");
+        install["servicetypes"] = share + QLatin1String("/servicetypes");
+        install["sound"] = share + QLatin1String("/sounds");
+        install["templates"] = share + QLatin1String("/templates");
+        install["wallpaper"] = share + QLatin1String("/wallpapers");
+        install["xdgconf-menu"] = share + QLatin1String("/currently/undefined");
+        install["xdgdata-apps"] = share + QLatin1String("/applications/kde4");
+        install["xdgdata-dirs"] = share + QLatin1String("/desktop-directories");
+        install["include"] = prefix + "/include";
 #else
-    void initInstallDirs()
-    {
         install["apps"] = QString::fromLatin1(APPLNK_INSTALL_DIR);
         install["config"] = CONFIG_INSTALL_DIR;
         install["kcfg"] = KCFG_INSTALL_DIR;
@@ -179,7 +159,6 @@ public:
         install["xdgdata-apps"] = XDG_APPS_DIR;
         install["xdgdata-dirs"] = XDG_DIRECTORY_DIR;
         install["include"] = INCLUDE_INSTALL_DIR;
-
     }
 #endif
 
@@ -1956,6 +1935,7 @@ QString KStandardDirs::locateLocal( const char *type,
 
 QString KStandardDirs::installPath(const char *type)
 {
+    kStandardDirsGlobals->initInstallDirs();
     QString tmp = kStandardDirsGlobals->install[type];
     if (tmp.isEmpty())
         return QString();
