@@ -647,7 +647,7 @@ void KPluginSelector::save()
             }
             else
             {
-                configGroup = &KConfigGroup(currentPlugin->config(), currentPlugin->configgroup());
+                configGroup = new KConfigGroup(currentPlugin->config(), currentPlugin->configgroup());
                 currentPlugin->save();
             }
 
