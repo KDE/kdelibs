@@ -74,9 +74,6 @@ public:
 
     virtual bool atEnd() const;
 
-    virtual qint64 readData( char *data, qint64 maxlen );
-    virtual qint64 writeData( const char *data, qint64 len );
-
     /// Reimplemented to return true. KFilterDev is a sequential QIODevice.
     /// Well, not really, since it supports seeking and KZip uses that.
     //virtual bool isSequential() const { return true; }
@@ -135,6 +132,10 @@ public:
      *         using
      */
     static QIODevice * device( QIODevice* inDevice, const QString & mimetype, bool autoDeleteInDevice = true );
+
+protected:
+    virtual qint64 readData( char *data, qint64 maxlen );
+    virtual qint64 writeData( const char *data, qint64 len );
 
 private:
     /**
