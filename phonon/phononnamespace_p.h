@@ -25,7 +25,7 @@
 
 namespace Phonon
 {
-    struct PHONON_EXPORT GlobalData
+    struct GlobalData
     {
         GlobalData();
 
