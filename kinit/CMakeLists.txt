@@ -95,7 +95,7 @@ kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
 target_link_libraries(kioslave  ${KDE4_KIO_LIBS} )
 
-install(TARGETS kioslave DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS kioslave DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### klauncher ###############
