@@ -2,8 +2,6 @@ List of remaining conflicts between kdelibs3 and kdelibs4
 
 NONE!
 
-Hmm, isn't bin/kioslave a problem?
-
 List of solved conflicts:
 
 bin/ktradertest            -> kdebase/runtime/ktraderclient
