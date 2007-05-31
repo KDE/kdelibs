@@ -100,6 +100,7 @@ void MainWindow::providePlayer(const QModelIndex &index)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    QApplication::setApplicationName("Phonon Tutorial 3");
     MainWindow mw;
     mw.show();
     return app.exec();

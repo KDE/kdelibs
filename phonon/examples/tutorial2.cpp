@@ -61,6 +61,7 @@ void MainWindow::delayedInit()
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    QApplication::setApplicationName("Phonon Tutorial 2");
     MainWindow mw;
     mw.show();
     return app.exec();
