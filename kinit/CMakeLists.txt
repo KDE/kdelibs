@@ -85,7 +85,7 @@ install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
 endif (WIN32)
 
 
-########### next target ###############
+########### kioslave ###############
 
 set(kioslave_SRCS kioslave.cpp)
 
@@ -96,35 +96,6 @@ kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 target_link_libraries(kioslave  ${KDE4_KIO_LIBS} )
 
 install(TARGETS kioslave DESTINATION ${BIN_INSTALL_DIR} )
-
-
-########### kstartupconfig ###############
-
-set(kstartupconfig_SRCS kstartupconfig.cpp )
-
-kde4_automoc(${kstartupconfig_SRCS})
-
-kde4_add_executable(kstartupconfig NOGUI ${kstartupconfig_SRCS})
-
-target_link_libraries(kstartupconfig  ${KDE4_KDECORE_LIBS})
-if(NOT WIN32)
-   target_link_libraries(kstartupconfig  kdefakes)
-endif(NOT WIN32)
-
-install(TARGETS kstartupconfig DESTINATION ${BIN_INSTALL_DIR} )
-
-
-########### kdostartupconfig ###############
-
-set(kdostartupconfig_SRCS kdostartupconfig.cpp )
-
-kde4_automoc(${kdostartupconfig_SRCS})
-
-kde4_add_executable(kdostartupconfig NOGUI ${kdostartupconfig_SRCS})
-
-target_link_libraries(kdostartupconfig  ${KDE4_KDECORE_LIBS} )
-
-install(TARGETS kdostartupconfig DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### klauncher ###############

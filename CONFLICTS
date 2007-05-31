@@ -6,6 +6,8 @@ bin/kstartupconfig         -> kstartupconfig4 and move to kdebase - it's called 
 bin/kdostartupconfig       -> libexec ideally, but the problem is the system("kdostartupconfig") calls in kstartupconfig.cpp (C code)
                               so it would be simpler to just make it kdostartupconfig4.
 
+why isn't bin/kioslave in the list?
+
 List of solved conflicts:
 
 bin/ktradertest            -> kdebase/runtime/ktraderclient

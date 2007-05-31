@@ -217,7 +217,8 @@ static int openSocket()
   socklen = sizeof(server);
   if(connect(s, (struct sockaddr *)&server, socklen) == -1) 
   {
-     perror("Warning: connect() failed: ");
+     fprintf(stderr, "kdeinit4_wrapper: Warning: connect(%s) failed:", sock_file);
+     perror(" ");
      close(s);
      return -1;
   }
