@@ -2,7 +2,6 @@ List of remaining conflicts between kdelibs3 and kdelibs4
 
 bin/cupsdconf    (where is it launched? looks like it's dlopened by kmcupsmanager.cpp but the binary is now useless)
 bin/kde-menu               -> user tool (debugging, scripts, GUI feedback after install) -> kde-menu4? kde4-menu?
-bin/cupsdoprint            -> libexec. Warning, add a KStandardDirs::findExe in KCupsPrinterImpl::setupCommand.
 bin/kstartupconfig         -> kstartupconfig4 and move to kdebase - it's called by startkde
 bin/kdostartupconfig       -> libexec ideally, but the problem is the system("kdostartupconfig") calls in kstartupconfig.cpp (C code)
                               so it would be simpler to just make it kdostartupconfig4.
@@ -24,6 +23,7 @@ bin/kpac_dhcp_helper       -> libexec - DONE
 bin/ksendbugmail           -> libexec - DONE
 bin/kconf_update           -> libexec - DONE (started by kded)
 
+bin/cupsdoprint            -> libexec - DONE
 bin/ksvgtopng              -> devel only, doesn't matter
 bin/kunittestmodrunner     -> devel only, and for compat so it can't be renamed/moved
 bin/makekdewidgets         -> devel only, doesn't matter

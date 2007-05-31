@@ -68,7 +68,7 @@ kde4_add_executable(cupsdoprint cupsdoprint.c)
 
 target_link_libraries(cupsdoprint  ${KDE4_KDECORE_LIBS} ${KDEFAKES_LIB} ${CUPS_LIBRARIES})
 
-install(TARGETS cupsdoprint DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS cupsdoprint DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### install files ###############

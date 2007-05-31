@@ -67,9 +67,11 @@ bool KCupsPrinterImpl::setupCommand(QString& cmd, KPrinter *printer)
 	// check printer object
 	if (!printer) return false;
 
-	QString	hoststr = QString::fromLatin1("%1")
-		.arg(CupsInfos::self()->hostaddr());
-	cmd = QString::fromLatin1("cupsdoprint -P %1 -J %3 -H %2")
+	QString	hoststr = CupsInfos::self()->hostaddr();
+	cmd = KStandardDirs::findExe("cupsdoprint");
+	Q_ASSERT(!cmd.isEmpty());
+	if (cmd.isEmpty()) return false;
+	cmd += QString::fromLatin1(" -P %1 -J %3 -H %2")
 		.arg(quote(printer->printerName()))
 		.arg(quote(hoststr))
 		.arg(quote(printer->docName()));
