@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=TIFF
+Name[te]=టిఐ ఎఫ్ఎఫ్
 Name[x-test]=xxTIFFxx
 Type=Service
 ServiceTypes=QImageIOPlugins

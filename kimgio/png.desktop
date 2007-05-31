@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PNG
+Name[te]=పిఎన్ జి
 Name[x-test]=xxPNGxx
 Type=Service
 ServiceTypes=QImageIOPlugins

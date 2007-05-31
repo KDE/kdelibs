@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PBM
+Name[te]=పిబిఎం
 Name[x-test]=xxPBMxx
 Type=Service
 ServiceTypes=QImageIOPlugins
