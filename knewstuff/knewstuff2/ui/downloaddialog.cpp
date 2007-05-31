@@ -37,7 +37,9 @@
 #include <QtGui/QPainter>
 #include <QtGui/QScrollArea>
 #include <QtGui/QApplication>
+#include <kaboutdata.h>
 #include <kapplication.h>
+#include <kcomponentdata.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -49,6 +51,7 @@
 #include <khtmlview.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
+#include <ktitlewidget.h>
 #include <ktoolinvocation.h>
 
 #include "knewstuff2/core/provider.h"
@@ -440,24 +443,23 @@ public:
     QList< Provider * > providers;
 
     // gui related vars
-    QWidget * parentWidget;
     QLineEdit * searchLine;
     QComboBox * typeCombo;
     QComboBox * sortCombo;
     ItemsView * itemsView;
-    QLabel * messageLabel;
 
     // other classes
     QTimer * messageTimer;
     QTimer * networkTimer;
+    KTitleWidget* titleWidget;
 };
 
+
+//TODO: make it a KDialog and use the button facilities provided there
 DownloadDialog::DownloadDialog( QWidget * parentWidget )
     : QDialog( parentWidget ), d( new DownloadDialogPrivate )
 {
     // initialize the private classes
-    d->parentWidget = parentWidget;
-
     d->messageTimer = new QTimer( this );
     connect( d->messageTimer, SIGNAL( timeout() ),
              this, SLOT( slotResetMessageColors() ) );
@@ -467,7 +469,8 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
              this, SLOT( slotNetworkTimeout() ) );
 
     // popuplate dialog with stuff
-    QBoxLayout * horLay = new QHBoxLayout( this/*, 11*/ ); // FIXME KDE4PORT
+    QBoxLayout * horLay = new QHBoxLayout( this ); // FIXME KDE4PORT
+    horLay->setMargin(0);
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "kpdf/pics/ghns.png" ) );
@@ -480,13 +483,12 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
     QVBoxLayout * rightLayouter = new QVBoxLayout();
     rightLayouterWidget->setLayout( rightLayouter );
     rightLayouter->setSpacing( 6 );
+    rightLayouter->setMargin( 6 );
     horLay->addWidget( rightLayouterWidget );
 
-      // create upper label
-      QLabel * mainLabel = new QLabel( i18n("All you ever wanted, in one click!") );
-      QFont mainFont = mainLabel->font();
-      mainFont.setBold( true );
-      mainLabel->setFont( mainFont );
+    // create title widget
+    // TODO: add a subtext option to KTitleWidget
+    d->titleWidget = new KTitleWidget(this);
 
       // create the control panel
       QFrame * panelFrame = new QFrame();
@@ -528,7 +530,7 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
       // create the ItemsView used to display available items
       d->itemsView = new ItemsView( this, this ); // FIXME KDE4PORT
 
-    rightLayouter->addWidget(mainLabel);
+    rightLayouter->addWidget(d->titleWidget);
     rightLayouter->addWidget(panelFrame);
     rightLayouter->addWidget(d->itemsView);
 
@@ -538,15 +540,11 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
       //QWidget * bottomLineWidget = new QWidget();
       //bottomLineWidget->setLayout( bottomLine );
       rightLayouter->addLayout(bottomLine);
-        // create info label
-        d->messageLabel = new QLabel();
-        d->messageLabel->setFrameStyle( QFrame::StyledPanel | QFrame::Raised );
-        d->messageLabel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
+      //TODO: get rid of this and use KDialog
         // close button
         QPushButton * closeButton = new QPushButton( i18n("Close") );
         //closeButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum )
         connect( closeButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
-      bottomLine->addWidget(d->messageLabel);
       bottomLine->addWidget(closeButton);
 
     // start with a nice size
@@ -555,6 +553,10 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
 
     m_engine = NULL;
 
+    displayMessage(i18n("%1 Add On Installer", KGlobal::mainComponent().aboutData()->programName()));
+    //TODO: add some convenience methods to KTitleWidget for setting the pixmap:
+    //      one that takes a const char* name and one that takes a QIcon
+    d->titleWidget->setPixmap(KIcon(KGlobal::mainComponent().aboutData()->appName()).pixmap(IconSize(K3Icon::Dialog)));
     setWindowTitle(i18n("Get Hot New Stuff!"));
 }
 
@@ -566,6 +568,8 @@ DownloadDialog::~DownloadDialog()
 
 void DownloadDialog::displayMessage( const QString & msg, MessageType type, int timeOutMs )
 {
+    //TODO: this should really be shown in a subtext to the title widget
+
     // stop the pending timer if present
     if ( d->messageTimer )
         d->messageTimer->stop();
@@ -589,7 +593,7 @@ void DownloadDialog::displayMessage( const QString & msg, MessageType type, int 
     }
 
     // set text to messageLabel
-    d->messageLabel->setText( msg );
+    d->titleWidget->setText( msg );
 
     // single shot the resetColors timer (and create it if null)
     d->messageTimer->start( timeOutMs );
