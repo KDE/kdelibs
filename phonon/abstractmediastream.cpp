@@ -83,8 +83,9 @@ void AbstractMediaStream::writeData(const QByteArray &data)
 void AbstractMediaStream::endOfData()
 {
     Q_D(AbstractMediaStream);
-    Q_ASSERT(d->streamInterface);
-    d->streamInterface->endOfData();
+    if (d->streamInterface) {
+        d->streamInterface->endOfData();
+    }
 }
 
 void AbstractMediaStream::error(Phonon::ErrorType type, const QString &text)
