@@ -260,6 +260,7 @@ KPluginSelector::Private::PluginModel::PluginModel(KPluginSelector::Private *par
 
 KPluginSelector::Private::PluginModel::~PluginModel()
 {
+    qDeleteAll(groupsToRemove);
 }
 
 void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::List &pluginInfoList,
@@ -274,6 +275,7 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
         pluginInfoByCategory.insert(categoryName, KPluginInfo::List());
     }
 
+    KConfigGroup *providedConfigGroup = 0;
     int addedPlugins = 0;
     foreach (KPluginInfo *pluginInfo, pluginInfoList)
     {
@@ -284,7 +286,11 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
             if (!pluginInfo->config())
                 pluginInfo->load(configGroup);
             else
-                pluginInfo->load();
+            {
+                providedConfigGroup = new KConfigGroup(pluginInfo->config(), pluginInfo->configgroup());
+                groupsToRemove.append(providedConfigGroup);
+                pluginInfo->load(providedConfigGroup);
+            }
 
             pluginInfoByCategory[categoryName].append(pluginInfo);
 
@@ -295,7 +301,7 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
             else
                 pluginAdditionalInfo.itemChecked = Qt::Unchecked;
 
-            pluginAdditionalInfo.configGroup = configGroup;
+            pluginAdditionalInfo.configGroup = pluginInfo->config() ? providedConfigGroup : configGroup;
 
             additionalInfo.insert(pluginInfo, pluginAdditionalInfo);
 
@@ -404,6 +410,8 @@ Qt::ItemFlags KPluginSelector::Private::PluginModel::flags(const QModelIndex &in
 
 QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
+
     int currentPosition = 0;
 
     if ((row < 0) || (row >= rowCount()))
@@ -430,6 +438,8 @@ QModelIndex KPluginSelector::Private::PluginModel::index(int row, int column, co
 
 int KPluginSelector::Private::PluginModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
+
     int retValue = pluginInfoByCategory.count(); // We have pluginInfoCategory.count() categories
 
     foreach (QString category, pluginInfoByCategory.keys())
@@ -615,10 +625,7 @@ void KPluginSelector::load()
         {
             currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
 
-            if (!currentPlugin->config())
-                currentPlugin->load(d->pluginModel->configGroup(currentIndex));
-            else
-                currentPlugin->load();
+            currentPlugin->load(d->pluginModel->configGroup(currentIndex));
 
             d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
         }
@@ -640,16 +647,9 @@ void KPluginSelector::save()
             currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
             currentPlugin->setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
 
-            if (!currentPlugin->config())
-            {
-                configGroup = d->pluginModel->configGroup(currentIndex);
-                currentPlugin->save(configGroup);
-            }
-            else
-            {
-                configGroup = new KConfigGroup(currentPlugin->config(), currentPlugin->configgroup());
-                currentPlugin->save();
-            }
+            configGroup = d->pluginModel->configGroup(currentIndex);
+
+            currentPlugin->save(configGroup);
 
             configGroup->sync();
         }
@@ -866,6 +866,8 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
 QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(option);
+
     if (index.internalPointer())
         return QSize(68, 68);
 

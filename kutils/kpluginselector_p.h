@@ -181,6 +181,7 @@ public:
     void updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed);
 
 private:
+    QList<KConfigGroup*> groupsToRemove;
     QMap<QString, KPluginInfo::List> pluginInfoByCategory;
     QHash<KPluginInfo *, KCModuleProxy *> moduleProxies;
     QMap<QString, int> pluginCount;
