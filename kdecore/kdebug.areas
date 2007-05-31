@@ -165,8 +165,10 @@
 5005        knewsticker
 5006        kmail
 5007        kpf
-5008        ksirc
 5009        filesharing
+5010        krdc
+5011        krdc (VNC backend)
+5012        krdc (RDP backend)
 5050        libkmime
 5051        libkmime (Codecs)
 5052        libkmime (Plugin Loader)
