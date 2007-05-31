@@ -265,10 +265,11 @@ void KLocalePrivate::initMainCatalogs(const QString & catalog)
     catalogNames.append( mainCatalog );   // application catalog
 
     // catalogs from which each application can draw translations
-    numberOfSysCatalogs = 2;
+    numberOfSysCatalogs = 4;
     catalogNames.append( "kdeqt" ); // always include kdeqt.gmo
     catalogNames.append( SYSTEM_MESSAGES ); // always include kdelibs.gmo
     catalogNames.append( "kio" );            // always include kio.gmo
+    catalogNames.append("libphonon"); // always include libphonon.gmo
 
     updateCatalogs(); // evaluate this for all languages
   }
