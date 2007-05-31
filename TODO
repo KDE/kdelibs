@@ -149,14 +149,6 @@ informations
   and "dnd onto items" (e.g. kmail). Check how to do this with QListView/QTreeView...
   (David)
 
-- Move KIO::probably_slow_mounted, and testFileSystemFlag to KMountPoint, to merge that code.
-  (David / Joseph Wenninger)
-
-- Rename the parameters to KDEDesktopMimeType::pixmap so that they use meaningful names rather than
-  just a, b, c, and d. Probably not something that has to wait for KDE 4, but seems like a good idea
-  to have here for later doing.
-  (Matt Rogers)
-
 - Add the concept of a session to KIO, in particular for KHTML so that it can
   have all of its jobs associated in some way (a unique key of sorts).  Will
   make SSL much easier to implement and allow removal of many hacks, mostly
