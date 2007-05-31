@@ -84,7 +84,6 @@ public:
      * function that you usually don't want to use.
      * @param name the name of the symbol to look up
      * @return the address of the symbol, or 0 if it does not exist
-     * @see hasSymbol
      */
     void* resolveSymbol( const char* name ) const;
 
@@ -93,7 +92,6 @@ public:
      * function that you usually don't want to use.
      * @param name the name of the symbol to look up
      * @return the address of the symbol, or 0 if it does not exist
-     * @see hasSymbol
      */
     void_function_ptr resolveFunction( const char* name ) const;
 
