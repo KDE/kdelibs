@@ -19,7 +19,7 @@
 
 #include "kiomediastream.h"
 #include "kiomediastream_p.h"
-#include "phononnamespace_p.h"
+#include <kdebug.h>
 #include <kprotocolmanager.h>
 #include <kio/filejob.h>
 #include <kio/job.h>
@@ -80,7 +80,7 @@ void KioMediaStream::needData()
 void KioMediaStream::enoughData()
 {
     Q_D(KioMediaStream);
-    pDebug() << Q_FUNC_INFO;
+    kDebug(600) << k_funcinfo << endl;
     // Don't suspend when using a FileJob. The FileJob is controlled by calls to
     // FileJob::read()
     if (d->kiojob && !qobject_cast<KIO::FileJob *>(d->kiojob) && !d->kiojob->isSuspended()) {
@@ -93,7 +93,7 @@ void KioMediaStream::enoughData()
 void KioMediaStream::seekStream(qint64 position)
 {
     Q_D(KioMediaStream);
-    pDebug() << Q_FUNC_INFO << position << " = " << qulonglong(position);
+    kDebug(600) << k_funcinfo << position << " = " << qulonglong(position) << endl;
     d->seeking = true;
     if (d->open) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(d->kiojob);
@@ -109,21 +109,21 @@ void KioMediaStreamPrivate::_k_bytestreamData(KIO::Job *, const QByteArray &data
     if (seeking) {
         // seek doesn't block, so don't send data to the backend until it signals us
         // that the seek is done
-        pDebug() << Q_FUNC_INFO << "seeking: do nothing";
+        kDebug(600) << k_funcinfo << "seeking: do nothing" << endl;
         return;
     }
 
     if (data.isEmpty()) {
         reading = false;
         if (!endOfDataSent) {
-            pDebug() << Q_FUNC_INFO << "empty data: stopping the stream";
+            kDebug(600) << k_funcinfo << "empty data: stopping the stream" << endl;
             endOfDataSent = true;
             q->endOfData();
         }
         return;
     }
 
-    //pDebug() << Q_FUNC_INFO << "calling writeData on the Backend ByteStream " << data.size();
+    //kDebug(600) << k_funcinfo << "calling writeData on the Backend ByteStream " << data.size() << endl;
     q->writeData(data);
     if (reading) {
         KIO::FileJob *filejob = qobject_cast<KIO::FileJob *>(kiojob);
@@ -137,7 +137,7 @@ void KioMediaStreamPrivate::_k_bytestreamResult(KJob *job)
     Q_Q(KioMediaStream);
     if (job->error()) {
         QString kioErrorString = job->errorString();
-        pDebug() << "KIO Job error: " << kioErrorString;
+        kDebug(600) << "KIO Job error: " << kioErrorString << endl;
         QObject::disconnect(kiojob, SIGNAL(data(KIO::Job *,const QByteArray &)),
                 q, SLOT(bytestreamData(KIO::Job *,const QByteArray &)));
         QObject::disconnect(kiojob, SIGNAL(result(KJob *)),
@@ -164,7 +164,7 @@ void KioMediaStreamPrivate::_k_bytestreamResult(KJob *job)
 void KioMediaStreamPrivate::_k_bytestreamTotalSize(KJob *, qulonglong size)
 {
     Q_Q(KioMediaStream);
-    pDebug() << Q_FUNC_INFO << size;
+    kDebug(600) << k_funcinfo << size << endl;
     q->setStreamSize(size);
 }
 
@@ -183,7 +183,7 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
     open = true;
     endOfDataSent = false;
     KIO::FileJob *filejob = static_cast<KIO::FileJob *>(kiojob);
-    pDebug() << Q_FUNC_INFO << filejob->size();
+    kDebug(600) << k_funcinfo << filejob->size() << endl;
     q->setStreamSize(filejob->size());
 
     if (seeking) {
@@ -195,7 +195,7 @@ void KioMediaStreamPrivate::_k_bytestreamFileJobOpen(KIO::Job *)
 
 void KioMediaStreamPrivate::_k_bytestreamSeekDone(KIO::Job *, KIO::filesize_t offset)
 {
-    pDebug() << Q_FUNC_INFO << offset;
+    kDebug(600) << k_funcinfo << offset << endl;
     seeking = false;
     endOfDataSent = false;
     if (reading) {

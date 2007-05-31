@@ -19,12 +19,12 @@
 
 #include "kdepluginfactory.h"
 #include "kiomediastream.h"
-#include "phononnamespace_p.h"
 
 #include <QtCore/QtPlugin>
 #include <QtCore/QCoreApplication>
 
 #include <kaboutdata.h>
+#include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
 #include <kicon.h>
@@ -117,7 +117,7 @@ QObject *KdePluginFactory::createBackend(KService::Ptr newService)
 #endif
     if (!factory) {
         QString errorReason = KLibLoader::self()->lastErrorMessage();
-        pError() << "Can not create factory for " << newService->name() <<
+        kError(600) << "Can not create factory for " << newService->name() <<
             ":\n" << errorReason << endl;
 
         KMessageBox::error(0,
@@ -132,7 +132,7 @@ QObject *KdePluginFactory::createBackend(KService::Ptr newService)
     QObject *backend = factory->create();
     if (0 == backend) {
         QString errorReason = i18n("create method returned 0");
-        pError() << "Can not create backend object from factory for " <<
+        kError(600) << "Can not create backend object from factory for " <<
             newService->name() << ", " << newService->library() << ":\n" << errorReason << endl;
 
         KMessageBox::error(0,
@@ -144,7 +144,7 @@ QObject *KdePluginFactory::createBackend(KService::Ptr newService)
         return false;
     }
 
-    pDebug() << "using backend: " << newService->name();
+    kDebug() << "using backend: " << newService->name();
     return backend;
 }
 

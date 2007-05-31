@@ -21,10 +21,10 @@
 
 #include "audiodevice_p.h"
 #include "audiodeviceenumerator.h"
-#include "phononnamespace_p.h"
 #include <solid/device.h>
 #include <solid/audiointerface.h>
 #include <kconfiggroup.h>
+#include <kdebug.h>
 
 namespace Phonon
 {
@@ -37,7 +37,7 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     : d(new AudioDevicePrivate)
 {
     Solid::AudioInterface *audioHw = audioDevice.as<Solid::AudioInterface>();
-    pDebug() << Q_FUNC_INFO << audioHw->driverHandles();
+    kDebug(600) << k_funcinfo << audioHw->driverHandles() << endl;
     d->udi = audioDevice.udi();
     d->cardName = audioHw->name();
     d->deviceIds = audioHw->driverHandles();
@@ -104,7 +104,7 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("udi", d->udi);
         config->sync();
     }
-    pDebug() << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi;
+    kDebug(600) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi << endl;
     //Q_ASSERT(deviceGroup.readEntry("udi", d->udi) == d->udi);
 }
 
@@ -134,7 +134,7 @@ void AudioDevicePrivate::deviceInfoFromControlDevice(const QString &deviceName)
         if (0 == snd_ctl_card_info(ctl, cardInfo)) {
             //Get card identifier from a CTL card info.
             internalId = snd_ctl_card_info_get_id(cardInfo);
-            pDebug() << Q_FUNC_INFO << internalId;
+            kDebug(600) << k_funcinfo << internalId << endl;
 
             if (!deviceIds.contains(deviceName)) {
                 deviceIds << deviceName;
