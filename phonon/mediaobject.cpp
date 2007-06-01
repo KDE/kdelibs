@@ -607,11 +607,10 @@ void MediaObjectPrivate::_k_resumePlay()
 
 void MediaObjectPrivate::_k_resumePause()
 {
-    qobject_cast<MediaObjectInterface *>(m_backendObject)->play();
+    pINTERFACE_CALL(pause());
     if (currentTime > 0) {
         qobject_cast<MediaObjectInterface *>(m_backendObject)->seek(currentTime);
     }
-    qobject_cast<MediaObjectInterface *>(m_backendObject)->pause();
 }
 
 void MediaObjectPrivate::_k_metaDataChanged(const QMultiMap<QString, QString> &newMetaData)
