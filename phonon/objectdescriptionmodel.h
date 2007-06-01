@@ -162,9 +162,9 @@ namespace Phonon
     template<ObjectDescriptionType type>
     class PHONON_EXPORT ObjectDescriptionModel : public ObjectDescriptionModelBase
     {
-        KDE_NO_EXPORT inline ObjectDescriptionModelPrivate<type> *k_func() {
+        PHONON_NO_EXPORT inline ObjectDescriptionModelPrivate<type> *k_func() {
             return reinterpret_cast<ObjectDescriptionModelPrivate<type> *>(k_ptr); }
-        KDE_NO_EXPORT inline const ObjectDescriptionModelPrivate<type> *k_func() const {
+        PHONON_NO_EXPORT inline const ObjectDescriptionModelPrivate<type> *k_func() const {
             return reinterpret_cast<const ObjectDescriptionModelPrivate<type> *>(k_ptr); }
         friend class ObjectDescriptionModelPrivate<type>;
         public:

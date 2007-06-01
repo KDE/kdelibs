@@ -22,6 +22,8 @@
 
 #include "phonon_export.h"
 
+class QString;
+
 /**
  * \brief The %KDE Multimedia classes
  *

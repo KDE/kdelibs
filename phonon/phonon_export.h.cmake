@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2007 David Faure <faure@kde.org>
+    Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,21 +21,35 @@
 #ifndef PHONON_EXPORT_H
 #define PHONON_EXPORT_H
 
-/* needed for KDE_EXPORT and KDE_IMPORT macros */
-#include <kdemacros.h>
-
-#ifndef PHONON_EXPORT
-# if defined(MAKE_PHONON_LIB)
-   /* We are building this library */
-#  define PHONON_EXPORT KDE_EXPORT
-# else
-   /* We are using this library */
-#  define PHONON_EXPORT KDE_IMPORT
-# endif
+#ifndef __KDE_HAVE_GCC_VISIBILITY
+#cmakedefine __KDE_HAVE_GCC_VISIBILITY
 #endif
 
-# ifndef PHONON_EXPORT_DEPRECATED
-#  define PHONON_EXPORT_DEPRECATED KDE_DEPRECATED PHONON_EXPORT
+#ifdef __KDE_HAVE_GCC_VISIBILITY
+
+# define PHONON_NO_EXPORT __attribute__ ((visibility("hidden")))
+# define PHONON_EXPORT __attribute__ ((visibility("default")))
+
+#elif defined(_WIN32) || defined(_WIN64)
+
+# define PHONON_NO_EXPORT
+# if defined(MAKE_PHONON_LIB)
+   /* We are building this library */
+#  define PHONON_EXPORT __declspec(dllexport)
+# else
+   /* We are using this library */
+#  define PHONON_EXPORT __declspec(dllimport)
 # endif
+
+#else
+
+# define PHONON_NO_EXPORT
+# define PHONON_EXPORT
+
+#endif
+
+#ifndef PHONON_EXPORT_DEPRECATED
+# define PHONON_EXPORT_DEPRECATED KDE_DEPRECATED PHONON_EXPORT
+#endif
 
 #endif

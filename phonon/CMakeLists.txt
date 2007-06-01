@@ -1,5 +1,7 @@
 # Those apply to all subdirs
-include_directories(${KDE4_KDECORE_INCLUDES})
+include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR})
+
+configure_file(phonon_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/phonon_export.h)
 
 add_subdirectory( tests )
 add_subdirectory( kcm )
@@ -57,7 +59,7 @@ install(TARGETS phonon  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
-        phonon_export.h
+        ${CMAKE_CURRENT_BINARY_DIR}/phonon_export.h
 	objectdescription.h
 	objectdescriptionmodel.h
 	phononnamespace.h
