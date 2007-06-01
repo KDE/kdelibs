@@ -1,6 +1,6 @@
 add_subdirectory(fakebackend)
 
-include_directories(${KDE4_KIO_INCLUDES})
+include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_SOURCE_DIR}/solid)
 
 IF(KDE4_BUILD_TESTS)
 
@@ -97,6 +97,12 @@ QT4_ADD_RESOURCES(mediasourcetest_SRCS testresources.qrc)
 kde4_automoc(${mediasourcetest_SRCS})
 kde4_add_executable(mediasourcetest NOGUI ${mediasourcetest_SRCS})
 target_link_libraries(mediasourcetest ${KDE4_PHONON_LIBS} ${QT_QTTEST_LIBRARY})
+
+SET(backendtester_SRCS backendtester.cpp)
+kde4_add_ui_files(backendtester_SRCS backendtester.ui)
+kde4_automoc(${backendtester_SRCS})
+kde4_add_executable(backendtester ${backendtester_SRCS})
+target_link_libraries(backendtester ${KDE4_KDEUI_LIBS})
 
 ENDIF(KDE4_BUILD_TESTS)
 
