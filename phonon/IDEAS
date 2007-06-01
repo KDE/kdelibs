@@ -1,3 +1,15 @@
+MediaInfo class
+===============
+
+It might be nice to have a class that gives information about MediaSource
+objects without having to use MediaObject for it. Something like QFileInfo for
+QFile. MediaObject could also return a list of MediaInfo objects for all the
+MediaSource objects in the queue.
+
+Rationale: The app then can get info about length and substreams so that it can
+set up everything correctly for the next "file" in the queue.
+
+
 - central config:
   1. Phonon created widgets:
     Selection of default audio/video playback/capture devices for
