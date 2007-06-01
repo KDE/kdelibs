@@ -21,8 +21,8 @@
 
 */
 
-#ifndef EXAMPLES_TUT1_H
-#define EXAMPLES_TUT1_H
+#ifndef EXAMPLES_TUT3_H
+#define EXAMPLES_TUT3_H
 
 #include <QtGui/QMainWindow>
 #include <QtGui/QWidget>
@@ -65,4 +65,4 @@ class MainWindow : public QMainWindow
         PlayerWidget m_player;
 };
 
-#endif // EXAMPLES_TUT1_H
+#endif // EXAMPLES_TUT3_H

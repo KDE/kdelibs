@@ -15,6 +15,7 @@ PHONON_DECLARE_EXAMPLES(
     tutorial1
     tutorial2
     tutorial3
+    tutorial4
     #crossfade
     #videoplayandforget
     #pcmoutput
