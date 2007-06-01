@@ -173,6 +173,7 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg( QWidget *parent )
 	m_outputpipe = new QLineEdit(gb_output);
 
 	m_comment = new KTextEdit( this );
+	m_comment->setReadOnly(true);
 	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
 
 	QVBoxLayout	*l2 = new QVBoxLayout(this);
@@ -411,7 +412,8 @@ void KXmlCommandAdvancedDlg::parseXmlCommand(KXmlCommand *xmlcmd)
 	m_inputpipe->setText(xmlcmd->io(true, true));
 	m_outputfile->setText(xmlcmd->io(false, false));
 	m_outputpipe->setText(xmlcmd->io(false, true));
-	m_comment->setPlainText( xmlcmd->comment() );
+	m_comment->setHtml( xmlcmd->comment() );
+
 
 	viewItem(0);
 }
