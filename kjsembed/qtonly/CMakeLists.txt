@@ -17,9 +17,9 @@ add_definitions(-DQT_ONLY)
 
 if (QTONLY_WEBKIT)
    add_definitions(-DQTONLY_WEBKIT)
-	 set(WEBKIT_LIB_SEARCH_PATH
-			 "${CMAKE_SOURCE_DIR}/WebKit"
-	     "${QTONLY_WEBKIT_DIR}/lib/"
+   set(WEBKIT_LIB_SEARCH_PATH
+       "${CMAKE_SOURCE_DIR}/WebKit"
+       "${QTONLY_WEBKIT_DIR}/lib/"
        "${QTONLY_WEBKIT_DIR}/WebKitBuild/Release/lib/"
        "${QTONLY_WEBKIT_DIR}/WebKitBuild/Debug/lib/"
    )
@@ -30,8 +30,8 @@ endif (QTONLY_WEBKIT)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../../cmake/modules;${CMAKE_SOURCE_DIR}")
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/../../cmake/modules")
 
-FILE(MAKE_DIRECTORY kdecore)
-FILE(WRITE kdecore/kdefakes.h "// Nothing to see here... Move along...\n")
+file(MAKE_DIRECTORY kdecore)
+file(WRITE kdecore/kdefakes.h "// Nothing to see here... Move along...\n")
 
 set(KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -106,7 +106,12 @@ set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/kjs
                       ${CMAKE_BINARY_DIR}/kjs)
 
 # kdecore depends on Qt
-set(QJS_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore ${CMAKE_BINARY_DIR}/kdecore ${CMAKE_SOURCE_DIR}/kdecore/network ${QT_INCLUDES} ${CMAKE_SOURCE_DIR}/kdecore/kservice ${_QJS_PLATFORM_INCLUDE_DIRS})
+set(QJS_KDECORE_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore 
+                         ${CMAKE_BINARY_DIR}/kdecore 
+                         ${CMAKE_SOURCE_DIR}/kdecore/network 
+                         ${QT_INCLUDES} 
+                         ${CMAKE_SOURCE_DIR}/kdecore/kservice 
+                         ${_QJS_PLATFORM_INCLUDE_DIRS})
 
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
@@ -121,25 +126,25 @@ configure_file(${CMAKE_SOURCE_DIR}/../../config-compiler.h.cmake ${CMAKE_CURRENT
 configure_file(${CMAKE_SOURCE_DIR}/../../kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 include(KDE4Macros)
-MACRO(KDE4_NO_ENABLE_FINAL _project_name)
+macro(KDE4_NO_ENABLE_FINAL _project_name)
    if(KDE4_ENABLE_FINAL)
         set(KDE4_ENABLE_FINAL OFF)
-        REMOVE_DEFINITIONS(-DKDE_USE_FINAL)
-        MESSAGE(STATUS "You used enable-final argument but \"${_project_name}\" doesn't support it. Try t
-o fix compile it and remove KDE4_NO_ENABLE_FINAL macro. Thanks")
+        remove_definitions(-DKDE_USE_FINAL)
+        message(STATUS "You used enable-final argument but \"${_project_name}\" doesn't support it. Try to fix compile it and remove KDE4_NO_ENABLE_FINAL macro. Thanks")
 
    endif(KDE4_ENABLE_FINAL)
-ENDMACRO(KDE4_NO_ENABLE_FINAL _project_name)
+endmacro(KDE4_NO_ENABLE_FINAL _project_name)
+
 if (NOT QTONLY_WEBKIT)
-include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+   include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
 else (NOT QTONLY_WEBKIT)
-include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+   include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
 endif (NOT QTONLY_WEBKIT)
 
 # list the subdirectories
 if (NOT QTONLY_WEBKIT)
-#add_subdirectory( ${CMAKE_SOURCE_DIR}/../../wtf wtf )
-add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kjs kjs )
+   #add_subdirectory( ${CMAKE_SOURCE_DIR}/../../wtf wtf )
+   add_subdirectory( ${CMAKE_SOURCE_DIR}/../../kjs kjs )
 endif (NOT QTONLY_WEBKIT)
 
 add_subdirectory( ${CMAKE_SOURCE_DIR}/../kjsembed kjsembed )
