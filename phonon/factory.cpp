@@ -133,6 +133,7 @@ void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
                 output->deviceListChanged();
             }
         }
+        emit availableAudioOutputDevicesChanged();
         break;
     default:
         break;

@@ -136,6 +136,8 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
     connect(&m_captureModel, SIGNAL(rowsRemoved(const QModelIndex &, int, int)), this, SIGNAL(changed()));
     connect(&m_captureModel, SIGNAL(layoutChanged()), this, SIGNAL(changed()));
     connect(&m_captureModel, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)), this, SIGNAL(changed()));
+
+    connect(Phonon::BackendCapabilities::notifier(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(updateAudioOutputDevices()));
 }
 
 void OutputDeviceChoice::updateDeviceList()
@@ -162,6 +164,33 @@ void OutputDeviceChoice::updateDeviceList()
     }
 }
 
+void OutputDeviceChoice::updateAudioOutputDevices()
+{
+    QList<Phonon::AudioOutputDevice> list = Phonon::BackendCapabilities::availableAudioOutputDevices();
+    QHash<int, Phonon::AudioOutputDevice> hash;
+    foreach (Phonon::AudioOutputDevice dev, list) {
+        hash.insert(dev.index(), dev);
+    }
+    for (int i = 0; i <= Phonon::LastCategory; ++i) {
+        QHash<int, Phonon::AudioOutputDevice> hashCopy(hash);
+        QList<Phonon::AudioOutputDevice> orderedList;
+        if (m_outputModel.value(i)) {
+            QList<int> order = m_outputModel.value(i)->tupleIndexOrder();
+            foreach (int idx, order) {
+                if (hashCopy.contains(idx)) {
+                    orderedList << hashCopy.take(idx);
+                }
+            }
+            foreach (Phonon::AudioOutputDevice dev, hashCopy) {
+                orderedList << dev;
+            }
+        } else {
+            orderedList = list;
+        }
+        m_outputModel[i]->setModelData(orderedList);
+    }
+}
+
 void OutputDeviceChoice::load()
 {
     QSettings phononConfig(QLatin1String("kde.org"), QLatin1String("libphonon"));
@@ -181,9 +210,6 @@ void OutputDeviceChoice::load()
             if (hashCopy.contains(idx)) {
                 orderedList << hashCopy.take(idx);
             }
-            //} else {
-                //orderedList << Phonon::AudioOutputDevice();
-            //}
         }
         foreach (Phonon::AudioOutputDevice dev, hashCopy) {
             orderedList << dev;
@@ -210,7 +236,6 @@ void OutputDeviceChoice::load()
 
 void OutputDeviceChoice::save()
 {
-    kDebug() << k_funcinfo << endl;
     QSettings config(QLatin1String("kde.org"), QLatin1String("libphonon"));
     {
         QSettingsGroup globalGroup(&config, QLatin1String("AudioOutputDevice"));

@@ -33,6 +33,7 @@ class BackendCapabilitiesPrivate : public BackendCapabilities::Notifier
         BackendCapabilitiesPrivate()
         {
             connect(Factory::sender(), SIGNAL(backendChanged()), SIGNAL(capabilitiesChanged()));
+            connect(Factory::sender(), SIGNAL(availableAudioOutputDevicesChanged()), SIGNAL(availableAudioOutputDevicesChanged()));
         }
 };
 

@@ -45,6 +45,7 @@ class OutputDeviceChoice : public QWidget, private Ui::OutputDeviceChoice
         void on_removeButton_clicked();
         void updateButtonsEnabled();
         void updateDeviceList();
+        void updateAudioOutputDevices();
 
     private:
         QMap<int, Phonon::AudioOutputDeviceModel *> m_outputModel;

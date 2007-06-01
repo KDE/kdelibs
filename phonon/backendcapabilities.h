@@ -53,6 +53,15 @@ namespace BackendCapabilities
              * happen if the user has requested a backend change.
              */
             void capabilitiesChanged();
+
+            /**
+             * This signal is emitted when audio output devices were plugged or
+             * unplugged.
+             *
+             * Check BackendCapabilities::availableAudioOutputDevices to get the
+             * current list of available devices.
+             */
+            void availableAudioOutputDevicesChanged();
     };
 
     /**

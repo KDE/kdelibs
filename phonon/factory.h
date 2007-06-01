@@ -58,6 +58,11 @@ namespace Factory
              * Emitted after the backend has successfully been changed.
              */
             void backendChanged();
+
+            /**
+             * \copydoc BackendCapabilities::Notifier::availableAudioOutputDevicesChanged
+             */
+            void availableAudioOutputDevicesChanged();
     };
 
     /**
