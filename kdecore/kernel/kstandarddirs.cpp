@@ -58,10 +58,6 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 
-#ifdef Q_OS_WIN
-# include <windows.h>
-#endif
-
 class KStandardDirs::KStandardDirsPrivate
 {
 public:
