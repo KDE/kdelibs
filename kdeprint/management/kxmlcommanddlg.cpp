@@ -171,7 +171,8 @@ KXmlCommandAdvancedDlg::KXmlCommandAdvancedDlg(QWidget *parent, const char *name
 	m_outputpipe = new QLineEdit(gb_output);
 
 	m_comment = new KTextEdit( this );
-	m_comment->setTextFormat( Qt::PlainText );
+	m_comment->setTextFormat(Qt::RichText );
+	m_comment->setReadOnly(true);
 	QLabel *m_commentlab = new QLabel( i18n( "Comment:" ), this );
 
 	QVBoxLayout	*l2 = new QVBoxLayout(this, 0, KDialog::spacingHint());
