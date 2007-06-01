@@ -1,6 +1,6 @@
 
 include_directories( ${CMAKE_SOURCE_DIR} )
-include_directories( ${KDE4_KIO_INCLUDES} )
+include_directories( ${KDE4_KIO_INCLUDES} ${CMAKE_BINARY_DIR}/phonon )
 
 
 ########### next target ###############
