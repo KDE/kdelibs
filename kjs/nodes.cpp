@@ -2120,6 +2120,7 @@ Completion DoWhileNode::execute(ExecState *exec)
 
   JSValue *bv;
   Completion c;
+  JSValue* value = 0;
 
   do {
     // bail out on error
@@ -2132,9 +2133,12 @@ Completion DoWhileNode::execute(ExecState *exec)
     if (exec->dynamicInterpreter()->checkTimeout())
         return Completion(Interrupted);
 
+    if (c.isValueCompletion())
+      value = c.value();
+
     if (!((c.complType() == Continue) && ls.contains(c.target()))) {
       if ((c.complType() == Break) && ls.contains(c.target()))
-        return Completion(Normal, 0);
+        return Completion(Normal, value);
       if (c.complType() != Normal)
         return c;
     }
@@ -2142,7 +2146,7 @@ Completion DoWhileNode::execute(ExecState *exec)
     KJS_CHECKEXCEPTION
   } while (bv->toBoolean(exec));
 
-  return Completion(Normal, 0);
+  return Completion(Normal, value);
 }
 
 void DoWhileNode::recurseVisit(NodeVisitor *visitor)
@@ -2939,10 +2943,13 @@ Completion SourceElementsNode::execute(ExecState *exec)
 
   for (SourceElementsNode *n = next.get(); n; n = n->next.get()) {
     Completion c2 = n->node->execute(exec);
-    if (c2.complType() != Normal)
-      return c2;
-    // The spec says to return c2 here, but it seems that mozilla returns c1 if
-    // c2 doesn't have a value
+    if (c2.complType() != Normal) {
+	if (c2.complType() == Throw)
+	    return c2;
+	if (c2.isValueCompletion())
+	    return c2;
+	return Completion(c2.complType(), c1.value(), c2.target());
+    }
     if (c2.value())
       c1 = c2;
   }
