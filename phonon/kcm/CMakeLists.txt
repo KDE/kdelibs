@@ -1,4 +1,4 @@
-include_directories(${KDE4_KDEUI_INCLUDES} ${CMAKE_SOURCE_DIR}/kutils)
+include_directories(${KDE4_KDEUI_INCLUDES} ${CMAKE_SOURCE_DIR}/kutils ${CMAKE_SOURCE_DIR}/solid)
 
 set(kcmphonon_SRCS main.cpp outputdevicechoice.cpp backendselection.cpp)
 kde4_add_ui_files(kcmphonon_SRCS outputdevicechoice.ui backendselection.ui)

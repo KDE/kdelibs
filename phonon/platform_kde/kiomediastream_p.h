@@ -23,7 +23,7 @@
 #include "kiomediastream.h"
 #include <kurl.h>
 #include <kio/jobclasses.h>
-#include "abstractmediastream_p.h"
+#include "../abstractmediastream_p.h"
 
 namespace Phonon
 {

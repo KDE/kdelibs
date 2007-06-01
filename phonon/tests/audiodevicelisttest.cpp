@@ -20,7 +20,7 @@
 #include "audiodevicelisttest.h"
 #include <qtest_kde.h>
 #include <QtCore/QDebug>
-#include "../audiodeviceenumerator.h"
+#include "../libkaudiodevicelist/audiodeviceenumerator.h"
 
 using namespace Phonon;
 

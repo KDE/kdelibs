@@ -72,6 +72,20 @@ MediaSource::MediaSource(QIODevice *ioDevice)
     d->stream = new IODeviceStream(ioDevice, ioDevice);
 }
 
+MediaSource::MediaSource(const QList<MediaSource> &mediaList)
+    : d(new MediaSourcePrivate(Link))
+{
+    d->linkedSources = mediaList;
+    foreach (MediaSource ms, mediaList) {
+        Q_ASSERT(ms.type() != Link);
+    }
+}
+
+QList<MediaSource> MediaSource::substreams() const
+{
+    return d->linkedSources;
+}
+
 MediaSource::~MediaSource()
 {
     delete d->resourceFile;

@@ -59,6 +59,12 @@ static const KComponentData &componentData()
     return *phononComponentData;
 }
 
+KdePluginFactory::KdePluginFactory()
+{
+    ensureMainComponentData();
+    KGlobal::locale()->insertCatalog(QLatin1String("phonon_kde"));
+}
+
 AbstractMediaStream *KdePluginFactory::createKioMediaStream(const QUrl &url, QObject *parent)
 {
     return new KioMediaStream(url, parent);
@@ -145,7 +151,7 @@ QObject *KdePluginFactory::createBackend(KService::Ptr newService)
         return false;
     }
 
-    kDebug() << "using backend: " << newService->name();
+    kDebug() << "using backend: " << newService->name() << endl;
     return backend;
 }
 

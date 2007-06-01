@@ -513,6 +513,7 @@ void MediaObjectPrivate::_k_stateChanged(Phonon::State newstate, Phonon::State o
 void MediaObjectPrivate::_k_aboutToFinish()
 {
     Q_Q(MediaObject);
+    pDebug() << Q_FUNC_INFO;
     if (sourceQueue.isEmpty()) {
         emit q->aboutToFinish();
         return;

@@ -49,6 +49,7 @@ class MediaSourcePrivate : public QSharedData
         AudioCaptureDevice audioCaptureDevice;
         VideoCaptureDevice videoCaptureDevice;
         QFile *resourceFile;
+        QList<MediaSource> linkedSources;
 };
 
 } // namespace Phonon

@@ -20,7 +20,7 @@
 #ifndef PHONON_KDEPLUGINFACTORY_H
 #define PHONON_KDEPLUGINFACTORY_H
 
-#include "pluginfactory.h"
+#include "../pluginfactory.h"
 #include <QtCore/QObject>
 #include <kservice.h>
 
@@ -32,6 +32,8 @@ class KdePluginFactory : public QObject, public PluginFactory
     Q_INTERFACES(Phonon::PluginFactory)
     Q_OBJECT
     public:
+        KdePluginFactory();
+
         AbstractMediaStream *createKioMediaStream(const QUrl &url, QObject *parent);
 
         QIcon icon(const QString &name);

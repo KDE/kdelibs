@@ -85,7 +85,11 @@ class PHONON_EXPORT MediaSource
              *
              * \see AbstractMediaStream
              */
-            Stream
+            Stream,
+            /**
+             * Links multiple MediaSource objects together.
+             */
+            Link
         };
         /**
          * Creates an invalid MediaSource object.
@@ -207,6 +211,9 @@ class PHONON_EXPORT MediaSource
 
         //AudioCaptureDevice audioCaptureDevice() const;
         //VideoCaptureDevice videoCaptureDevice() const;
+
+        MediaSource(const QList<MediaSource> &mediaList);
+        QList<MediaSource> substreams() const;
 
     private:
         QExplicitlySharedDataPointer<MediaSourcePrivate> d;

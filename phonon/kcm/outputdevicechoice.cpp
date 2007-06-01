@@ -26,8 +26,8 @@
 #include <phonon/backendcapabilities.h>
 #include <phonon/objectdescription.h>
 #include <phonon/phononnamespace.h>
-#include <phonon/audiodeviceenumerator.h>
-#include <phonon/audiodevice.h>
+#include "../libkaudiodevicelist/audiodeviceenumerator.h"
+#include "../libkaudiodevicelist/audiodevice.h"
 
 #include <klocale.h>
 

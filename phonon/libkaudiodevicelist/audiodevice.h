@@ -20,7 +20,7 @@
 #ifndef PHONON_AUDIODEVICE_H
 #define PHONON_AUDIODEVICE_H
 
-#include "phonon_export.h"
+#include "kaudiodevicelist_export.h"
 #include <solid/audiointerface.h>
 #include <ksharedconfig.h>
 #include <QtCore/QSharedData>

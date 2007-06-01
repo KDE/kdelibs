@@ -1,3 +1,6 @@
+FIND_PACKAGE(Alsa)
+ALSA_CONFIGURE_FILE(${CMAKE_CURRENT_BINARY_DIR}/config-alsa.h)
+
 ########### next target ###############
 
 set(phonon_fake_PART_SRCS

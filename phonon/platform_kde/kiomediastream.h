@@ -20,7 +20,7 @@
 #ifndef PHONON_KIOMEDIASTREAM_H
 #define PHONON_KIOMEDIASTREAM_H
 
-#include "abstractmediastream.h"
+#include "../abstractmediastream.h"
 
 class QUrl;
 
