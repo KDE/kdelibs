@@ -93,8 +93,8 @@ KMConfigFilter::KMConfigFilter(QWidget *parent)
 
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddClicked()));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveClicked()));
-	connect(m_list1, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
-	connect(m_list2, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
+	connect(m_list1, SIGNAL(itemSelectionChanged()), SLOT(slotSelectionChanged()));
+	connect(m_list2, SIGNAL(itemSelectionChanged()), SLOT(slotSelectionChanged()));
 	m_add->setEnabled(false);
 	m_remove->setEnabled(false);
 }
