@@ -2,9 +2,13 @@
 Encoding=UTF-8
 Version=1.0
 Name=The Dublin Core Terms
+Name[de]=Die Dublin Core Terme
+Name[el]=Οι όροι Dublin Core
 Name[es]=Los términos de Dublin Core
 Name[zh_TW]=Dublin 核心術語
 Comment=The Dublin Core Terms
+Comment[de]=Die Dublin Core Terme
+Comment[el]=Οι όροι Dublin Core
 Comment[es]=Los términos de Dublin Core
 Comment[zh_TW]=Dublin 核心術語
 URL=http://purl.org/dc/terms/
