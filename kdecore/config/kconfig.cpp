@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "kaboutdata.h"
 #include "kconfigbackend.h"
 #include "kconfigini.h"
 #include "kglobal.h"
@@ -74,8 +75,16 @@ KConfig::KConfig(const KComponentData &componentData,
       d( new Private )
 {
     QString fileName = _fileName;
-    if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
+
+    if (fileName.isEmpty() && 
+        !componentData.aboutData()->programName().isEmpty()) {
+        fileName = componentData.aboutData()->programName() + "rc";
+    }
+
+    if ((flags & OnlyLocal) && !fileName.isNull()
+        && QDir::isRelativePath(fileName)) {
         fileName = componentData.dirs()->saveLocation(resType)+fileName;
+    }
 
     // for right now we will hardcode that we are using the INI
     // back end driver.  In the future this should be converted over to
@@ -110,8 +119,16 @@ KConfig::KConfig( const QString& _fileName,
     d( new Private )
 {
     QString fileName = _fileName;
-    if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
+
+    if (fileName.isEmpty() &&
+        !componentData().aboutData()->programName().isEmpty()) {
+        fileName = componentData().aboutData()->programName() + "rc";
+    }
+
+    if ((flags & OnlyLocal) && !fileName.isNull()
+        && QDir::isRelativePath(fileName)) {
         fileName = componentData().dirs()->saveLocation("config")+fileName;
+    }
 
     // for right now we will hardcode that we are using the INI
     // back end driver.  In the future this should be converted over to
@@ -147,8 +164,16 @@ KConfig::KConfig( const char* resType,
     d( new Private )
 {
     QString fileName = _fileName;
-    if ((flags & OnlyLocal) && !fileName.isNull() && QDir::isRelativePath(fileName))
+
+    if (fileName.isEmpty() &&
+        !componentData().aboutData()->programName().isEmpty()) {
+        fileName = componentData().aboutData()->programName() + "rc";
+    }
+
+    if ((flags & OnlyLocal) && !fileName.isNull() &&
+        QDir::isRelativePath(fileName)) {
         fileName = componentData().dirs()->saveLocation(resType)+fileName;
+    }
 
     // for right now we will hardcode that we are using the INI
     // back end driver.  In the future this should be converted over to
