@@ -392,7 +392,7 @@ Qt::ItemFlags KFilePlacesModel::flags(const QModelIndex &index) const
     if (index.isValid())
         res|= Qt::ItemIsDragEnabled;
 
-    if (!index.isValid() || url(index).isValid())
+    if (!index.isValid())
         res|= Qt::ItemIsDropEnabled;
 
     return res;
