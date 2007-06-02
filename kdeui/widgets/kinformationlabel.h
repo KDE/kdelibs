@@ -50,7 +50,7 @@ class QMouseEvent;
  * message and a custom message with a custom icon. See the example below:
  * @code
 KInformationLabel *label = new KInformationLabel(parent);
-label->setIconType(KInformation::Error);
+label->setIconType(KInformationLabel::Error);
 label->setText("Sample Error Message");
  * @endcode
  *
@@ -58,7 +58,7 @@ label->setText("Sample Error Message");
  * using setIcon() and the iconType property to Custom using setIconType
  * @code
 KInformationLabel *label = new KInformationLabel(parent);
-label->setIconType(KInformation::Custom);
+label->setIconType(KInformationLabel::Custom);
 label->setIcon( KIcon("go-home") );
 label->setText("Custom message using go-home icon");
  * @endcode
