@@ -2,9 +2,11 @@
 Encoding=UTF-8
 Type=Service
 Comment=Embeddable Personal Certificate Manager
+Comment[de]=Einbettungsfähige Verwaltung für persönliche Zertifikate
 MimeType=application/x-pkcs12;application/x-x509-ca-cert;application/binary-certificate;
 Icon=lock
 Name=KCertPart
+Name[de]=Zertifizierungs-Komponente
 ServiceTypes=KParts/ReadWritePart
 X-KDE-Library=libkcertpart
 InitialPreference=15
