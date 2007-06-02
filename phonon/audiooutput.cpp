@@ -277,15 +277,16 @@ void AudioOutputPrivate::handleAutomaticDeviceChange(int newIndex, DeviceChangeT
     case FallbackChange:
         text = AudioOutput::tr("<html>The audio playback device <b>%1</b> does not work.<br/>"
             "Falling back to <b>%2</b>.</html>").arg(device1.name()).arg(device2.name());
+        Factory::notification("AudioDeviceFallback", text);
         break;
     case HigherPreferenceChange:
         text = AudioOutput::tr("<html>Switching to the audio playback device <b>%1</b><br/>"
                 "which just became available and has higher preference.</html>").arg(device2.name());
+        Factory::notification("AudioDeviceFallback", text,
+                QStringList(AudioOutput::tr("Revert back to device '%1'").arg(device1.name())),
+                q, SLOT(_k_revertFallback()));
         break;
     }
-    Factory::notification("AudioDeviceFallback", text,
-            QStringList(AudioOutput::tr("Revert back to device '%1'").arg(device1.name())),
-            q, SLOT(_k_revertFallback()));
 }
 
 } //namespace Phonon

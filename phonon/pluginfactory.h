@@ -39,8 +39,8 @@ class PluginFactory
         virtual AbstractMediaStream *createKioMediaStream(const QUrl &url, QObject *parent) = 0;
         virtual QIcon icon(const QString &name) = 0;
         virtual void notification(const char *notificationName, const QString &text,
-                const QStringList &actions, QObject *receiver,
-                const char *actionSlot) = 0;
+                const QStringList &actions = QStringList(), QObject *receiver = 0,
+                const char *actionSlot = 0) = 0;
         virtual QString applicationName() const = 0;
         virtual QObject *createBackend() = 0;
         virtual QObject *createBackend(const QString &library, const QString &version) = 0;
