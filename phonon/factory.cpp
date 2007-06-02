@@ -126,13 +126,6 @@ void FactoryPrivate::objectDescriptionChanged(ObjectDescriptionType type)
     pDebug() << Q_FUNC_INFO << type;
     switch (type) {
     case AudioOutputDeviceType:
-        // tell all AudioOutput objects to check their output device preference
-        foreach (BasePrivate *obj, globalFactory->basePrivateList) {
-            AudioOutputPrivate *output = AudioOutputPrivate::cast(obj);
-            if (output) {
-                output->deviceListChanged();
-            }
-        }
         emit availableAudioOutputDevicesChanged();
         break;
     default:

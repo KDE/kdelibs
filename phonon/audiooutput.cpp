@@ -44,6 +44,8 @@ AudioOutput::AudioOutput(Phonon::Category category, QObject *parent)
     d->createBackendObject();
     new AudioOutputAdaptor(this);
     for (int i = 0; !QDBusConnection::sessionBus().registerObject("/AudioOutputs/" + QString::number(i), this); ++i);
+
+    connect(Factory::sender(), SIGNAL(availableAudioOutputDevicesChanged()), SLOT(_k_deviceListChanged()));
 }
 
 void AudioOutputPrivate::createBackendObject()
@@ -245,12 +247,13 @@ void AudioOutputPrivate::_k_audioDeviceFailed()
     }
 }
 
-void AudioOutputPrivate::deviceListChanged()
+void AudioOutputPrivate::_k_deviceListChanged()
 {
     pDebug() << Q_FUNC_INFO;
     // let's see if there's a usable device higher in the preference list
     QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(category);
     foreach (int devIndex, deviceList) {
+        pDebug() << devIndex;
         if (outputDeviceIndex == devIndex) {
             break; // we've reached the currently used device, nothing to change
         }

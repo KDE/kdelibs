@@ -30,7 +30,6 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
     Q_DECLARE_PUBLIC(AudioOutput)
     PHONON_PRIVATECLASS
     public:
-        void deviceListChanged();
         inline static AudioOutputPrivate *cast(BasePrivate *x)
         {
             if (x && x->castId == BasePrivate::AudioOutputType) {
@@ -60,6 +59,7 @@ class AudioOutputPrivate : public AbstractAudioOutputPrivate
         void _k_volumeChanged(qreal);
         void _k_revertFallback();
         void _k_audioDeviceFailed();
+        void _k_deviceListChanged();
 
     private:
         qreal volume;
