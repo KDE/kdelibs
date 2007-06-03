@@ -20,6 +20,7 @@
 #include "kfileplacesview.h"
 
 #include <QtGui/QMenu>
+#include <QtGui/QItemDelegate>
 #include <QtGui/QKeyEvent>
 
 #include <kdebug.h>
@@ -31,6 +32,32 @@
 
 #include "kfileplaceeditdialog.h"
 #include "kfileplacesmodel.h"
+
+class KFilePlacesViewDelegate : public QItemDelegate
+{
+public:
+    KFilePlacesViewDelegate(QObject *parent = 0);
+    virtual ~KFilePlacesViewDelegate();
+    virtual QSize sizeHint(const QStyleOptionViewItem &option,
+                           const QModelIndex &index) const;
+};
+
+KFilePlacesViewDelegate::KFilePlacesViewDelegate(QObject *parent) :
+    QItemDelegate(parent)
+{
+}
+
+KFilePlacesViewDelegate::~KFilePlacesViewDelegate()
+{
+}
+
+QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
+                                        const QModelIndex &index) const
+{
+    QSize size = QItemDelegate::sizeHint(option, index);
+    size.setHeight(size.height() + KDialog::marginHint());
+    return size;
+}
 
 class KFilePlacesView::Private
 {
@@ -60,8 +87,11 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     setDragEnabled(true);
     setAcceptDrops(true);
     setDropIndicatorShown(true);
+    setFrameStyle(QFrame::NoFrame);
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    setItemDelegate(new KFilePlacesViewDelegate(this));
 
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
@@ -211,7 +241,7 @@ QSize KFilePlacesView::sizeHint() const
            textWidth = qMax(textWidth,fm.width(placesModel->bookmarkForIndex(index).text()));
     }
 
-    return QSize(48 + 10 + textWidth + 2*KDialog::marginHint(), height);
+    return QSize(32 + textWidth + 2*KDialog::marginHint(), height);
 }
 
 void KFilePlacesView::Private::adaptItemSize()
@@ -246,7 +276,7 @@ void KFilePlacesView::Private::adaptItemSize()
     }
 
     const int maxWidth = q->width() - textWidth - 2 * KDialog::marginHint();
-    const int maxHeight = (q->height()/rowCount)-1;
+    const int maxHeight = ((q->height() - KDialog::marginHint() * rowCount) / rowCount) - 1;
 
     int size = qMin(maxHeight, maxWidth);
 
