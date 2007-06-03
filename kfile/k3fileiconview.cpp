@@ -21,15 +21,17 @@
 
 #include "k3fileiconview.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QFontMetrics>
 #include <QtCore/QCOORD>
+#include <QtCore/QMimeData>
+#include <QtCore/QRegExp>
+#include <QtCore/QTimer>
+#include <QtGui/QApplication>
+#include <QtGui/QDrag>
+#include <QtGui/QFontMetrics>
+#include <QtGui/QKeyEvent>
 #include <QtGui/QLabel>
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
-#include <QtCore/QRegExp>
-#include <QtCore/QTimer>
 #include <QtGui/QToolTip>
 
 #include <kaction.h>
@@ -766,11 +768,11 @@ Q3DragObject *K3FileIconView::dragObject()
     hotspot.setX( pixmap.width() / 2 );
     hotspot.setY( pixmap.height() / 2 );
 
-#if 0 // TODO there is no more kurldrag, this should use urls.populateMimeData( mimeData ) instead
-    Q3DragObject* myDragObject = new KUrlDrag( urls, widget() );
-    myDragObject->setPixmap( pixmap, hotspot );
-    return myDragObject;
-#endif
+    QDrag *drag = new QDrag(widget());
+    QMimeData *mimeData = new QMimeData;
+    urls.populateMimeData(mimeData);
+    drag->setMimeData(mimeData);
+    drag->exec(Qt::MoveAction | Qt::CopyAction | Qt::LinkAction);
     return 0;
 }
 
