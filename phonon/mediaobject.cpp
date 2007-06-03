@@ -515,6 +515,7 @@ void MediaObjectPrivate::_k_aboutToFinish()
     Q_Q(MediaObject);
     pDebug() << Q_FUNC_INFO;
     if (sourceQueue.isEmpty()) {
+        pINTERFACE_CALL(setNextSource(MediaSource()));
         emit q->aboutToFinish();
         return;
     }

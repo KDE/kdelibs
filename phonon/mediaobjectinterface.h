@@ -323,8 +323,12 @@ class MediaObjectInterface
          * Sets the next source to be used for transitions. When a next source
          * is set playback should continue with the new source. In that case
          * finished and prefinishMarkReached are not emitted.
+         *
+         * \param source The source to transition to (crossfade/gapless/gap). If
+         * \p source is an invalid MediaSource object then the queue is empty
+         * and the playback should stop normally.
          */
-        virtual void setNextSource(const MediaSource &) = 0;
+        virtual void setNextSource(const MediaSource &source) = 0;
 };
 }
 
