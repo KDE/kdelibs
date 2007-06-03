@@ -63,6 +63,12 @@ class KUTILS_EXPORT KPluginSelector
     Q_OBJECT
 
 public:
+    typedef enum
+    {
+        ReadConfigFile = 0,
+        IgnoreConfigFile
+    } PluginLoadMethod;
+
     /**
       * Create a new KPluginSelector
       */
@@ -120,37 +126,46 @@ public:
     /**
       * Add a list of non-KParts plugins
       *
-      * @param pluginInfoList A list of KPluginInfo objects containing the
-      *                       necessary information for the plugins you want to
-      *                       add to the list
-      * @param categoryName   The translated name of the category. This is the
-      *                       name that is shown in the title. If the category
-      *                       did exist before because of another call to
-      *                       addPlugins, then they will be shown in that
-      *                       category. If @p categoryName is a new one, then
-      *                       a new category will be shown on the plugin window,
-      *                       and the list of plugins added to it
-      * @param categoryKey    When you have different categories of KParts
-      *                       plugins you distinguish between the plugins using
-      *                       the Category key in the .desktop file. Use this
-      *                       parameter to select only those KParts plugins
-      *                       with the Category key == @p categoryKey. If
-      *                       @p categoryKey is not set the Category key is
-      *                       ignored and all plugins are shown. Not match case
-      * @param config         The KConfig object that holds the state of the
-      *                       plugins being enabled or not. By default it will
-      *                       use KGlobal::config(). It is recommended to
-      *                       always pass a KConfig object if you use
-      *                       KSettings::PluginPage since you never know from where the
-      *                       page will be called (think global config app).
-      *                       For example KViewCanvas passes KConfig(
-      *                       "kviewcanvas" )
+      * @param pluginInfoList   A list of KPluginInfo objects containing the
+      *                         necessary information for the plugins you want to
+      *                         add to the list
+      * @param pluginLoadMethod If KPluginSelector will try to load the
+      *                         state of the plugin when loading the
+      *                         dialog from the configuration file or not.
+      *                         This is useful if for some reason you
+      *                         called the setPluginEnabled() for each plugin
+      *                         individually before loading the dialog, and
+      *                         don't want KPluginSelector to override them
+      *                         when loading
+      * @param categoryName     The translated name of the category. This is the
+      *                         name that is shown in the title. If the category
+      *                         did exist before because of another call to
+      *                         addPlugins, then they will be shown in that
+      *                         category. If @p categoryName is a new one, then
+      *                         a new category will be shown on the plugin window,
+      *                         and the list of plugins added to it
+      * @param categoryKey      When you have different categories of KParts
+      *                         plugins you distinguish between the plugins using
+      *                         the Category key in the .desktop file. Use this
+      *                         parameter to select only those KParts plugins
+      *                         with the Category key == @p categoryKey. If
+      *                         @p categoryKey is not set the Category key is
+      *                         ignored and all plugins are shown. Not match case
+      * @param config           The KConfig object that holds the state of the
+      *                         plugins being enabled or not. By default it will
+      *                         use KGlobal::config(). It is recommended to
+      *                         always pass a KConfig object if you use
+      *                         KSettings::PluginPage since you never know from
+      *                         where the page will be called (think global
+      *                         config app). For example KViewCanvas passes
+      *                         KConfig("kviewcanvas")
       *
       * @note   All plugins that were set a config group using setConfig() method
       *         will load and save their information from there. For those that
       *         weren't any config object, @p config will be used
       */
     void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+                    PluginLoadMethod pluginLoadMethod = ReadConfigFile,
                     const QString &categoryName = QString(),
                     const QString &categoryKey = QString(),
                     const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
@@ -170,6 +185,25 @@ public:
       * Change to applications defaults
       */
     void defaults();
+
+    /**
+      * Updates plugins state (enabled or not)
+      *
+      * This method won't save anything on any configuration file. It will just
+      * be useful if you added plugins with the method:
+      *
+      * \code
+      * void addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+      *                 const QString &categoryName = QString(),
+      *                 const QString &categoryKey = QString(),
+      *                 const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
+      * \endcode
+      *
+      * To sum up, this method will update your plugins state depending if plugins
+      * are ticked or not on the KPluginSelector dialog, without saving anything
+      * anywhere
+      */
+    void updatePluginsState();
 
 Q_SIGNALS:
     /**

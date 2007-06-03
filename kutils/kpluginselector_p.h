@@ -35,7 +35,7 @@
 #include <kplugininfo.h>
 
 class KCModuleProxy;
-class KPluginSelectionWidget;
+class KPluginSelecctor;
 class KIconLoader;
 class KDialog;
 class QLabel;
@@ -143,11 +143,21 @@ class KPluginSelector::Private::PluginModel
     : public QAbstractListModel
 {
 public:
+    enum AddMethod
+    {
+        AutomaticallyAdded = 0,
+        ManuallyAdded
+    };
+
     struct AdditionalInfo
     {
         int itemChecked;
         KConfigGroup *configGroup;
         QStringList parentComponents;
+        AddMethod addMethod; // If the plugin was added with the method
+                             // addPlugins(const QList<KPluginInfo*> &pluginInfoList ...
+                             // Mainly for only updating the plugins that were manually
+                             // added when calling to updatePluginsState()
     };
 
     PluginModel(KPluginSelector::Private *parent);
@@ -156,7 +166,9 @@ public:
     void appendPluginList(const KPluginInfo::List &pluginInfoList,
                           const QString &categoryName,
                           const QString &categoryKey,
-                          KConfigGroup *configGroup);
+                          KConfigGroup *configGroup,
+                          PluginLoadMethod pluginLoadMethod = ReadConfigFile,
+                          AddMethod addMethod = AutomaticallyAdded);
 
     // Reimplemented from QAbstractItemModel
 
@@ -179,6 +191,10 @@ public:
     QStringList parentComponents(const QModelIndex &index) const;
 
     void updateDependencies(const QString &dependency, const QString &pluginCausant, CheckWhatDependencies whatDependencies, QStringList &dependenciesPushed);
+
+    // Own methods
+
+    AddMethod addMethod(KPluginInfo *pluginInfo) const;
 
 private:
     QList<KConfigGroup*> groupsToRemove;

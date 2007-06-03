@@ -266,7 +266,9 @@ KPluginSelector::Private::PluginModel::~PluginModel()
 void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::List &pluginInfoList,
                                                              const QString &categoryName,
                                                              const QString &categoryKey,
-                                                             KConfigGroup *configGroup)
+                                                             KConfigGroup *configGroup,
+                                                             PluginLoadMethod pluginLoadMethod,
+                                                             AddMethod addMethod)
 {
     QString myCategoryKey = categoryKey.toLower();
 
@@ -283,9 +285,9 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
              ((myCategoryKey.isEmpty()) ||
               (pluginInfo->category().toLower() == myCategoryKey)))
         {
-            if (!pluginInfo->config())
+            if ((pluginLoadMethod == ReadConfigFile) && !pluginInfo->config())
                 pluginInfo->load(configGroup);
-            else
+            else if (pluginLoadMethod == ReadConfigFile)
             {
                 providedConfigGroup = new KConfigGroup(pluginInfo->config(), pluginInfo->configgroup());
                 groupsToRemove.append(providedConfigGroup);
@@ -302,6 +304,7 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
                 pluginAdditionalInfo.itemChecked = Qt::Unchecked;
 
             pluginAdditionalInfo.configGroup = pluginInfo->config() ? providedConfigGroup : configGroup;
+            pluginAdditionalInfo.addMethod = addMethod;
 
             additionalInfo.insert(pluginInfo, pluginAdditionalInfo);
 
@@ -535,6 +538,11 @@ void KPluginSelector::Private::PluginModel::updateDependencies(const QString &de
     }
 }
 
+KPluginSelector::Private::PluginModel::AddMethod KPluginSelector::Private::PluginModel::addMethod(KPluginInfo *pluginInfo) const
+{
+    return additionalInfo[pluginInfo].addMethod;
+}
+
 
 // =============================================================
 
@@ -601,6 +609,7 @@ void KPluginSelector::addPlugins(const KComponentData &instance,
 }
 
 void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
+                                 PluginLoadMethod pluginLoadMethod,
                                  const QString &categoryName,
                                  const QString &categoryKey,
                                  const KSharedConfig::Ptr &config)
@@ -611,7 +620,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo*> &pluginInfoList,
     KConfigGroup *cfgGroup = new KConfigGroup(config ? config : KGlobal::config(), "Plugins");
     kDebug( 702 ) << k_funcinfo << "cfgGroup = " << cfgGroup << endl;
 
-    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, cfgGroup);
+    d->pluginModel->appendPluginList(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, Private::PluginModel::ManuallyAdded);
 }
 
 void KPluginSelector::load()
@@ -670,6 +679,25 @@ void KPluginSelector::defaults()
             currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
             currentPlugin->defaults();
             d->pluginModel->setData(currentIndex, currentPlugin->isPluginEnabled(), Private::PluginDelegate::Checked);
+        }
+    }
+}
+
+void KPluginSelector::updatePluginsState()
+{
+    QModelIndex currentIndex;
+    KPluginInfo *currentPlugin;
+    for (int i = 0; i < d->pluginModel->rowCount(); i++)
+    {
+        currentIndex = d->pluginModel->index(i, 0);
+        if (currentIndex.internalPointer())
+        {
+            currentPlugin = static_cast<KPluginInfo*>(currentIndex.internalPointer());
+
+            // Only the items that were added "manually" will be updated, since the others
+            // are not visible from the outside
+            if (d->pluginModel->addMethod(currentPlugin) == Private::PluginModel::ManuallyAdded)
+                currentPlugin->setPluginEnabled(d->pluginModel->data(currentIndex, Private::PluginDelegate::Checked).toBool());
         }
     }
 }
