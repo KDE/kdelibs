@@ -1217,8 +1217,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     khtml::RenderObject* r = target ? target->renderer() : 0;
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
-    bool mailtoCursor = false;
-    bool newWindowCursor = false;
+    LinkCursor linkCursor = LINK_NORMAL;
     switch ( style ? style->cursor() : CURSOR_AUTO) {
     case CURSOR_AUTO:
         if ( r && r->isText() )
@@ -1226,9 +1225,10 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         if ( mev.url.length() && m_part->settings()->changeCursor() ) {
             c = m_part->urlCursor();
 	    if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
-                mailtoCursor = true;
+              linkCursor = LINK_MAILTO;
             else
-               newWindowCursor = targetOpensNewWindow( m_part, mev.target.string() );
+              if ( targetOpensNewWindow( m_part, mev.target.string() ) )
+	        linkCursor = LINK_NEWWINDOW;
         }
 
         if (r && r->isFrameSet() && !static_cast<RenderFrameSet*>(r)->noResize())
@@ -1241,9 +1241,10 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     case CURSOR_POINTER:
         c = m_part->urlCursor();
 	if (mev.url.string().startsWith("mailto:") && mev.url.string().indexOf('@')>0)
-            mailtoCursor = true;
+          linkCursor = LINK_MAILTO;
         else
-            newWindowCursor = targetOpensNewWindow( m_part, mev.target.string() );
+          if ( targetOpensNewWindow( m_part, mev.target.string() ) )
+	    linkCursor = LINK_NEWWINDOW;
         break;
     case CURSOR_PROGRESS:
         c = QCursor(Qt::BusyCursor); // working_cursor
@@ -1290,10 +1291,27 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         }
     }
 
-    if ( (mailtoCursor || newWindowCursor) && isVisible() && hasFocus() ) {
+    if ( linkCursor!=LINK_NORMAL && isVisible() && hasFocus() ) {
 #ifdef Q_WS_X11
+	QString cursorIcon;
+	switch (linkCursor)
+	{
+          case LINK_MAILTO:     cursorIcon = "mail";       break;
+          case LINK_NEWWINDOW:  cursorIcon = "window-new"; break;
+          default:              cursorIcon = "error";      break;
+	}
+        QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( cursorIcon, K3Icon::Small, 0, K3Icon::DefaultState, 0, true );
+	if (d->cursor_icon_widget)
+	{
+	    const QPixmap *pm = d->cursor_icon_widget->backgroundPixmap();
+	    if (!pm || pm->serialNumber()!=icon_pixmap.serialNumber())
+	    {
+		delete d->cursor_icon_widget;
+		d->cursor_icon_widget = NULL;
+	    }
+	}
+
         if( !d->cursor_icon_widget ) {
-            QPixmap icon_pixmap = KHTMLFactory::iconLoader()->loadIcon( mailtoCursor ? "mail" : "window-new", K3Icon::Small, 0, K3Icon::DefaultState, 0, true );
 #ifdef Q_WS_X11
             d->cursor_icon_widget = new QWidget( 0, Qt::WX11BypassWM );
             XSetWindowAttributes attr;

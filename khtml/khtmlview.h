@@ -715,6 +715,8 @@ private:
     // ------------------------------------- member variables ------------------------------------
  private:
 
+    enum LinkCursor { LINK_NORMAL, LINK_MAILTO, LINK_NEWWINDOW };
+
     void setWidgetVisible(::khtml::RenderWidget*, bool visible);
 
 
