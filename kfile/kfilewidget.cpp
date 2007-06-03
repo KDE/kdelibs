@@ -1005,6 +1005,7 @@ void KFileWidgetPrivate::initSpeedbar()
     placesView = new KFilePlacesView( q );
     placesView->setModel(new KFilePlacesModel(placesView));
     placesView->setFrameStyle( QFrame::Box | QFrame::Plain );
+    placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     placesView->setObjectName( QLatin1String( "url bar" ) );
     QObject::connect( placesView, SIGNAL( urlChanged( const KUrl& )),
