@@ -82,22 +82,21 @@ QList<int> GlobalConfig::audioOutputDeviceListFor(Phonon::Category category) con
     QList<int> defaultList = deviceIndexes.toList();
     qSort(defaultList);
 
-    //Now the list from the phononrc file
-    QList<int> deviceList = backendConfig.value(QLatin1String("Category") +
-            QString::number(static_cast<int>(category)), QList<int>());
+    //Now the list from m_config
+    const QString categoryKey = QLatin1String("Category") + QString::number(static_cast<int>(category));
+    QList<int> deviceList = backendConfig.value(categoryKey, QList<int>());
     if (deviceList.isEmpty()) {
         //try to read from global group for defaults
         const QSettingsGroup globalConfig(&m_config, QLatin1String("AudioOutputDevice"));
-        deviceList = globalConfig.value(QLatin1String("Category") +
-                QString::number(static_cast<int>(category)), defaultList);
+        deviceList = globalConfig.value(categoryKey, defaultList);
     }
 
     QMutableListIterator<int> i(deviceList);
     while (i.hasNext())
         if (0 == defaultList.removeAll(i.next()))
-            //if there are devices in phononrc that the backend doesn't report, remove them from the list
+            //if there are devices in m_config that the backend doesn't report, remove them from the list
             i.remove();
-    //if the backend reports more devices that are not in phononrc append them to the list
+    //if the backend reports more devices that are not in m_config append them to the list
     deviceList += defaultList;
 
     return deviceList;
@@ -123,7 +122,7 @@ QList<int> GlobalConfig::audioCaptureDeviceList() const
     QList<int> defaultList = deviceIndexes.toList();
     qSort(defaultList);
 
-    //Now the list from the phononrc file
+    //Now the list from m_config
     //The devices need to be stored independently for every backend
     const QSettingsGroup backendConfig(&m_config, QLatin1String("AudioCaptureDevice_") +
             Factory::identifier());
@@ -137,11 +136,11 @@ QList<int> GlobalConfig::audioCaptureDeviceList() const
     QMutableListIterator<int> i(deviceList);
     while (i.hasNext()) {
         if (0 == defaultList.removeAll(i.next())) {
-            //if there are devices in phononrc that the backend doesn't report, remove them from the list
+            //if there are devices in m_config that the backend doesn't report, remove them from the list
             i.remove();
         }
     }
-    //if the backend reports more devices that are not in phononrc append them to the list
+    //if the backend reports more devices that are not in m_config append them to the list
     deviceList += defaultList;
 
     return deviceList;
