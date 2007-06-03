@@ -591,6 +591,13 @@ public:
    */
   static QString slaveProtocol(const KUrl &url, QString &proxy);
 
+  /**
+   * Return Accept-Languages header built up according to user's desktop
+   * language settings.
+   * @return Accept-Languages header string
+   */
+  static QString acceptLanguagesHeader();
+
 private:
   friend class KIO::SlaveConfigPrivate;
 

@@ -186,7 +186,7 @@ void KSwitchLanguageDialog::languageOnButtonChanged(const QString & languageCode
         {
             //update all buttons which have matching id
             //might update buttons which were not changed, but well...
-            languageButton->setText(KGlobal::locale()->twoAlphaToLanguageName(languageCode));
+            languageButton->setText(KGlobal::locale()->languageCodeToName(languageCode));
         }
 #endif
     }
@@ -240,7 +240,7 @@ KSwitchLanguageDialogPrivate::KSwitchLanguageDialogPrivate(
 void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *button)
 {
     KLocale *locale = KGlobal::locale();
-    QStringList allLanguages = locale->allLanguagesTwoAlpha();
+    QStringList allLanguages = locale->allLanguagesList();
     for ( int i = 0, count = allLanguages.count(); i < count; ++i )
     {
         QString languageCode = allLanguages[i];

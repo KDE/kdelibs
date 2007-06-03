@@ -197,7 +197,6 @@ public:
   KSharedConfig::Ptr config;
   int pageSize;
   KLocale::MeasureSystem measureSystem;
-  QStringList langTwoAlpha;
   KConfigBase * languages;
 
   QString calendarType;
@@ -279,51 +278,66 @@ void KLocalePrivate::initLanguageList(KConfigBase *config, bool useEnv)
 {
   KConfigGroup cg(config, "Locale");
 
-  country = cg.readEntry( "Country" );
-  if ( country.isEmpty() )
-    country = KLocale::defaultCountry();
+  // Set the country as specified by the KDE config or use default,
+  // do not consider environment variables.
+  country = cg.readEntry("Country");
+  if (country.isEmpty())
+      country = KLocale::defaultCountry();
 
-  // Reset the list and add the new languages
+  // Collect possible languages by decreasing priority.
+  // The priority is as follows:
+  // - KDE_LANG environment variable (can be a list)
+  // - KDE configuration (can be a list)
+  // - environment variables considered by gettext(3)
+  // The environment variables are not considered if useEnv is false.
   QStringList list;
-  if ( useEnv )
-    list += QFile::decodeName( ::getenv("KDE_LANG") ).split(':');
 
+  // Collect languages set by KDE_LANG.
+  if (useEnv)
+    list += QFile::decodeName(getenv("KDE_LANG")).split(':');
+
+  // Collect languages set by KDE config.
   list += cg.readEntry("Language", QStringList(), ':');
 
-  // same order as setlocale use
-  if ( useEnv )
-    {
-      // HPB: Only run splitLocale on the environment variables..
-      QStringList langs;
+  // Collect languages read from environment variables by gettext(3).
+  if (useEnv) {
+    // Collect by same order of priority as for gettext(3).
+    QStringList rawList;
+    rawList += QFile::decodeName(getenv("LANGUAGE")).split(':');
+    rawList += QFile::decodeName(getenv("LC_ALL"));
+    rawList += QFile::decodeName(getenv("LC_MESSAGES"));
+    rawList += QFile::decodeName(getenv("LANG")).split(':');
 
-      langs << QFile::decodeName( ::getenv("LANGUAGE") );
-      langs << QFile::decodeName( ::getenv("LC_ALL") );
-      langs << QFile::decodeName( ::getenv("LC_MESSAGES") );
-      langs << QFile::decodeName( ::getenv("LANG") );
+    // Process the raw list to create possible fallback combinations.
+    foreach (const QString &ln, rawList) {
+      QString lang, ctry, modf, cset;
+      KLocale::splitLocale(ln, lang, ctry, modf, cset);
 
-      foreach (const QString &lang, langs)
-	{
-	  QString ln, aCountry, chrset;
-	  KLocale::splitLocale(lang, ln, aCountry, chrset);
-
-	  if (!aCountry.isEmpty()) {
-	    list += ln + '_' + aCountry;
-	    // Forget about charset part, it's all UTF-8 now.
-	  }
-	  list += ln;
-	  list += lang;
-	}
+      if (!ctry.isEmpty() && !modf.isEmpty()) {
+        list += lang + '_' + ctry + '@' + modf;
+      }
+      // NOTE: The priority is tricky in case both ctry and modf are present.
+      // Should really lang@modf be of higher priority than lang_ctry?
+      // For at least one case (Serbian language), it is better this way.
+      if (!modf.isEmpty()) {
+        list += lang + '@' + modf;
+      }
+      if (!ctry.isEmpty()) {
+        list += lang + '_' + ctry;
+      }
+      list += lang;
     }
-
-  // Add possible transliteration fallbacks.
-  QStringList nlist;
-  foreach (const QString &ln, list) {
-    nlist += ln;
-    nlist += KTranslit::fallbackList(ln);
   }
 
-  // now we have a language list -- let's use the first OK language
-  setLanguage( nlist );
+  // Insert possible transliteration fallbacks after each collected language.
+  QStringList nlist;
+  foreach (const QString &lang, list) {
+    nlist += lang;
+    nlist += KTranslit::fallbackList(lang);
+  }
+
+  // Send the list to filter for really present languages on the system.
+  setLanguage(nlist);
 }
 
 void KLocalePrivate::doFormatInit(const KLocale *parent)
@@ -494,7 +508,6 @@ bool KLocalePrivate::setLanguage(const QStringList & languages)
   language = list.first(); // keep this for shortcut evaluations
 
   languageList = list; // keep this new list of languages to use
-  langTwoAlpha.clear(); // Flush cache
 
   // important when called from the outside and harmless when called before populating the
   // catalog name list
@@ -535,37 +548,45 @@ bool KLocalePrivate::isApplicationTranslatedInto( const QString & lang)
   return false;
 }
 
-void KLocale::splitLocale(const QString & aStr,
-			  QString & language,
-			  QString & country,
-			  QString & chrset)
+void KLocale::splitLocale(const QString &aLocale,
+                          QString &language,
+                          QString &country,
+                          QString &modifier,
+                          QString &charset)
 {
-  QString str = aStr;
+  QString locale = aLocale;
 
-  // just in case, there is another language appended
-  int f = str.indexOf(':');
-  if (f >= 0)
-    str.truncate(f);
-
-  country.clear();
-  chrset.clear();
   language.clear();
+  country.clear();
+  modifier.clear();
+  charset.clear();
 
-  f = str.indexOf('.');
-  if (f >= 0)
-    {
-      chrset = str.mid(f + 1);
-      str.truncate(f);
-    }
+  // In case there are several concatenated locale specifications,
+  // truncate all but first.
+  int f = locale.indexOf(':');
+  if (f >= 0) {
+    locale.truncate(f);
+  }
 
-  f = str.indexOf('_');
-  if (f >= 0)
-    {
-      country = str.mid(f + 1);
-      str.truncate(f);
-    }
+  f = locale.indexOf('.');
+  if (f >= 0) {
+    charset = locale.mid(f + 1);
+    locale.truncate(f);
+  }
 
-  language = str;
+  f = locale.indexOf('@');
+  if (f >= 0) {
+    modifier = locale.mid(f + 1);
+    locale.truncate(f);
+  }
+
+  f = locale.indexOf('_');
+  if (f >= 0) {
+    country = locale.mid(f + 1);
+    locale.truncate(f);
+  }
+
+  language = locale;
 }
 
 QString KLocale::language() const
@@ -2210,47 +2231,7 @@ bool KLocalePrivate::setEncoding(int mibEnum)
   return codec != 0;
 }
 
-QStringList KLocale::languagesTwoAlpha() const
-{
-  if (d->langTwoAlpha.count())
-     return d->langTwoAlpha;
-
-  const QStringList &origList = languageList();
-
-  QStringList result;
-
-  KConfig lang_codes(QString::fromLatin1("language.codes"), KConfig::NoGlobals);
-  KConfigGroup config(&lang_codes, "TwoLetterCodes");
-
-  for ( QStringList::ConstIterator it = origList.begin();
-	it != origList.end();
-	++it )
-    {
-      QString lang = *it;
-      QStringList langLst;
-      if (config.hasKey( lang ))
-         langLst = config.readEntry( lang, QStringList() );
-      else
-      {
-         int i = lang.indexOf('_');
-         if (i >= 0)
-            lang.truncate(i);
-         langLst << lang;
-      }
-
-      for ( QStringList::ConstIterator langIt = langLst.begin();
-	    langIt != langLst.end();
-	    ++langIt )
-	{
-	  if ( !(*langIt).isEmpty() && !result.contains( *langIt ) )
-	    result += *langIt;
-	}
-    }
-  d->langTwoAlpha = result;
-  return result;
-}
-
-QStringList KLocale::allLanguagesTwoAlpha() const
+QStringList KLocale::allLanguagesList() const
 {
   if (!d->languages)
     d->languages = new KConfig("locale", "all_languages", KConfig::NoGlobals);
@@ -2258,21 +2239,16 @@ QStringList KLocale::allLanguagesTwoAlpha() const
   return d->languages->groupList();
 }
 
-QString KLocale::twoAlphaToLanguageName(const QString &code) const
+QString KLocale::languageCodeToName(const QString &language) const
 {
   if (!d->languages)
     d->languages = new KConfig("locale", "all_languages", KConfig::NoGlobals);
 
-  QString groupName = code;
-  int i = groupName.indexOf('_');
-  if (i < 0) i = groupName.size();
-  groupName.replace(0, i, groupName.left(i).toLower());
-
-  KConfigGroup cg(d->languages, groupName);
+  KConfigGroup cg(d->languages, language);
   return cg.readEntry("Name");
 }
 
-QStringList KLocale::allCountriesTwoAlpha() const
+QStringList KLocale::allCountriesList() const
 {
   QStringList countries;
   QStringList paths = KGlobal::dirs()->findAllResources("locale", "l10n/*/entry.desktop");
@@ -2286,11 +2262,16 @@ QStringList KLocale::allCountriesTwoAlpha() const
   return countries;
 }
 
-QString KLocale::twoAlphaToCountryName(const QString &code) const
+QString KLocale::countryCodeToName(const QString &country) const
 {
-  KConfig cfg(KStandardDirs::locate("locale", "l10n/"+code.toLower()+"/entry.desktop"));
-  KConfigGroup cg(&cfg, "KCM Locale");
-  return cg.readEntry("Name");
+  QString countryName;
+  QString entryFile = KStandardDirs::locate("locale", "l10n/"+country.toLower()+"/entry.desktop");
+  if (!entryFile.isEmpty()) {
+    KConfig cfg(entryFile);
+    KConfigGroup cg(&cfg, "KCM Locale");
+    countryName = cg.readEntry("Name");
+  }
+  return countryName;
 }
 
 void KLocale::setCalendar(const QString & calType)

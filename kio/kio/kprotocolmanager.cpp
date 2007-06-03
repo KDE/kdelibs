@@ -462,24 +462,54 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     }
     if( modifiers.contains('l') )
     {
-      static const QString & english = KGlobal::staticQString( "en" );
-
-      QStringList languageList = KGlobal::locale()->languageList();
-      int idx = languageList.indexOf( QLatin1String("C") );
-      if( idx != -1 )
-      {
-        if( languageList.contains( english ) )
-          languageList.removeAt( idx );
-        else
-          languageList[idx] = english;
-      }
-      if( languageList.count() )
-        supp += QString("; %1").arg(languageList.join(", "));
+      supp += QString("; %1").arg(acceptLanguagesHeader());
     }
   }
   d->modifiers = modifiers;
   d->useragent = CFG_DEFAULT_UAGENT(supp);
   return d->useragent;
+}
+
+QString KProtocolManager::acceptLanguagesHeader()
+{
+  static const QString &english = KGlobal::staticQString("en");
+
+  // User's desktop language preference.
+  QStringList languageList = KGlobal::locale()->languageList();
+
+  // Replace possible "C" in the language list with "en", unless "en" is
+  // already pressent. This is to keep user's priorities in order.
+  // If afterwards "en" is still not present, append it.
+  int idx = languageList.indexOf(QString::fromLatin1("C"));
+  if (idx != -1)
+  {
+    if (languageList.contains(english))
+      languageList.removeAt(idx);
+    else
+      languageList[idx] = english;
+  }
+  if (!languageList.contains(english))
+    languageList += english;
+
+  // Some languages may have natural fallbacks, read them from the config
+  // and insert them in proper order.
+  KConfig acclangConf(QString::fromLatin1("accept-languages.codes"), KConfig::NoGlobals);
+  KConfigGroup fallbackCodeLists(&acclangConf, "FallbackCodeLists");
+  QStringList languageListWF;
+  foreach (const QString &lang, languageList)
+  {
+    languageListWF += lang;
+    languageListWF += fallbackCodeLists.readEntry(lang, QStringList());
+  }
+
+  // The header is composed of comma separated languages.
+  QString header = languageListWF.join(", ");
+
+  // Some of the languages may have had country specifier, delimited by
+  // underscore. The header should use dashes instead.
+  header.replace('_', '-');
+
+  return header;
 }
 
 /*==================================== OTHERS ===============================*/

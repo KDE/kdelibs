@@ -266,22 +266,7 @@ void SessionData::reset()
                    group("Cookie Policy" ).
                    readEntry("Cookies", true);
 
-    static const QString & english = KGlobal::staticQString( "en" );
-
-    // Get language settings... (see KProtocolManager::defaultUserAgent)
-    QStringList languageList = KGlobal::locale()->languagesTwoAlpha();
-    int idx = languageList.indexOf( QString::fromLatin1("C") );
-    if ( idx != -1 )
-    {
-        if ( languageList.contains( english ) )
-          languageList.removeAt( idx );
-        else
-          languageList[idx] = english;
-    }
-    if ( !languageList.contains( english ) )
-       languageList.append( english );
-
-    d->language = languageList.join( ", " );
+    d->language = KProtocolManager::acceptLanguagesHeader();
 
     d->charsets = QString::fromLatin1(QTextCodec::codecForLocale()->name()).toLower();
     KProtocolManager::reparseConfiguration();

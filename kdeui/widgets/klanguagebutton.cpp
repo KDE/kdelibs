@@ -134,7 +134,7 @@ void KLanguageButton::insertLanguage( const QString &languageCode, const QString
     text = languageCode;
     const KLocale *locale = d->locale ? d->locale : KGlobal::locale();
     if (locale)
-      text = locale->twoAlphaToLanguageName(languageCode);
+      text = locale->languageCodeToName(languageCode);
     else
       showCodes = false;
   }

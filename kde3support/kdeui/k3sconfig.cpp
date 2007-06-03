@@ -296,12 +296,12 @@ K3SpellConfig::interpret( const QString &fname, QString &lname,
   // but since aspell 0.6 also 3-character ISO-codes can be used
   if ( (dname.length() == 2) || (dname.length() == 3) ) {
     lname = dname;
-    hname = KGlobal::locale()->twoAlphaToLanguageName( lname );
+    hname = KGlobal::locale()->languageCodeToName( lname );
   }
   else if ( (dname.length() == 5) && (dname[2] == '_') ) {
     lname = dname.left(2);
-    hname = KGlobal::locale()->twoAlphaToLanguageName(lname);
-    QString country = KGlobal::locale()->twoAlphaToCountryName( dname.right(2) );
+    hname = KGlobal::locale()->languageCodeToName( lname );
+    QString country = KGlobal::locale()->countryCodeToName( dname.right(2) );
     if ( extension.isEmpty() )
       extension = country;
     else

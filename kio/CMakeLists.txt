@@ -390,3 +390,5 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
+
+install(FILES kio/accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})

@@ -264,7 +264,7 @@ install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
-install( FILES kdebug.areas kdebugrc localization/language.codes DESTINATION ${CONFIG_INSTALL_DIR} )
+install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    kdecore_export.h
    compression/kfilterbase.h

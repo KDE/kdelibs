@@ -118,7 +118,7 @@ UploadDialog::UploadDialog( /*Engine *engine,*/ QWidget *parent ) :
   for(int i = 0; i < languagecodes.count(); i++)
   {
     QString languagecode = languagecodes.at(i);
-    QString language = KGlobal::locale()->twoAlphaToLanguageName(languagecode);
+    QString language = KGlobal::locale()->languageCodeToName(languagecode);
     mLanguageCombo->addItem( language );
     m_languages.insert(language, languagecode);
   }

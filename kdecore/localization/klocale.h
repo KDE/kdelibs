@@ -201,22 +201,22 @@ public:
    * unchanged if failed. It will force a reload of the country specific
    * configuration as well.
    *
-   * @param language The language code.
+   * @param language the language code
    *
-   * @return True on success.
+   * @return true on success
    */
-  bool setLanguage(const QString & language);
+  bool setLanguage(const QString &language);
 
   /**
-   * Changes the list of prefed languages for the locale. The first valid
-   * language in the list will be used, or the default (en_US) language
-   * will be used if non of the specified languages were available.
+   * Changes the list of preferred languages for the locale. The first valid
+   * language in the list will be used, or the default language (en_US)
+   * if none of the specified languages were available.
    *
-   * @param languages The list of language codes.
+   * @param languages the list of language codes
    *
-   * @return True if one of the specified languages were used.
+   * @return true if one of the specified languages were used
    */
-  bool setLanguage(const QStringList & languages);
+  bool setLanguage(const QStringList &languages);
 
   /**
    * Changes the current country. The current country will be left
@@ -669,11 +669,16 @@ public:
   QTime readTime(const QString &str, ReadTimeFlags flags, bool *ok = 0) const;
 
   /**
-   * Returns the language used by this object. The domain AND the
+   * Returns the language code used by this object. The domain AND the
    * library translation must be available in this language.
    * defaultLanguage() is returned by default, if no other available.
    *
-   * @return The currently used language.
+   * Use languageCodeToName(language) to get human readable, localized
+   * language name.
+   *
+   * @return the currently used language code
+   *
+   * @see languageCodeToName
    */
   QString language() const;
 
@@ -681,32 +686,25 @@ public:
    * Returns the country code of the country where the user lives.
    * defaultCountry() is returned by default, if no other available.
    *
-   * @return The country code for the user.
+   * Use countryCodeToName(country) to get human readable, localized
+   * country names.
+   *
+   * @return the country code for the user
+   *
+   * @see countryCodeToName
    */
   QString country() const;
 
   /**
-   * Returns the preferred languages as ISO 639-1 codes. This means
-   * that information about country is removed. If the internal language
-   * code might be represented by more than one 639-1 code, they will all be
-   * listed (but only once).
+   * Returns the language codes selected by user, ordered by decreasing
+   * priority.
    *
-   * If the selected languages are "nn, nb, pt_BR", you will get:
-   * "nn, no, nb, pt".
+   * Use languageCodeToName(language) to get human readable, localized
+   * language name.
    *
-   * @return List of language codes
+   * @return list of language codes
    *
-   * @see languageList
-   */
-  QStringList languagesTwoAlpha() const;
-
-  /**
-   * Returns the languages selected by user. The codes returned here is the
-   * internal language codes.
-   *
-   * @return List of language codes
-   *
-   * @see languagesTwoAlpha
+   * @see languageCodeToName
    */
   QStringList languageList() const;
 
@@ -1002,44 +1000,76 @@ public:
 		      const char *comment) const;
 
   /**
-   * Returns list of all known ISO 639-1 codes.
-   * @return a list of all language codes
-   */
-  QStringList allLanguagesTwoAlpha() const;
-
-  /**
-   * Convert a ISO 639-1 code to a human readable form.
-   * @param code the language ISO 639-1 code
-   * @return the human readable form
-   */
-  QString twoAlphaToLanguageName(const QString &code) const;
-
-  /**
-   * Returns list of all known country codes.
-   * @return a list of all country codes
-   */
-  QStringList allCountriesTwoAlpha() const;
-
-  /**
-   * Convert a country code to a human readable form.
-   * @param code the country code
-   * @return the human readable form of the country name
-   */
-  QString twoAlphaToCountryName(const QString &code) const;
-
-  /**
-   * Returns the parts of the parameter str understood as language setting
-   * the format is language_COUNTRY.charset
+   * Provides list of all known language codes.
    *
-   * @param str The string to split.
-   * @param language This will be set to the language part of the string.
-   * @param country This will be set to the country part of the string.
-   * @param charset This will be set to the charset part of the string.
+   * Use languageCodeToName(language) to get human readable, localized
+   * language names.
+   *
+   * @return list of all language codes
+   *
+   * @see languageCodeToName
    */
-  static void splitLocale(const QString & str,
-			  QString & language,
-			  QString & country,
-			  QString & charset);
+  QStringList allLanguagesList() const;
+
+  /**
+   * Convert a known language code to a human readable, localized form.
+   * If an unknown language code is supplied, empty string is returned;
+   * this will never happen if the code has been obtained by one of the
+   * KLocale methods.
+   *
+   * @param language the language code
+   *
+   * @return the human readable and localized form if the code is known,
+   *         empty otherwise
+   *
+   * @see language
+   * @see languageList
+   * @see allLanguagesList
+   */
+  QString languageCodeToName(const QString &language) const;
+
+  /**
+   * Provides list of all known country codes.
+   *
+   * Use countryCodeToName(country) to get human readable, localized
+   * country names.
+   *
+   * @return a list of all country codes
+   *
+   * @see countryCodeToName
+   */
+  QStringList allCountriesList() const;
+
+  /**
+   * Convert a known country code to a human readable, localized form.
+   * If an unknown country code is supplied, empty string is returned;
+   * this will never happen if the code has been obtained by one of the
+   * KLocale methods.
+   *
+   * @param code the country code
+   *
+   * @return the human readable and localized form of the country name
+   *
+   * @see country
+   * @see allCountriesList
+   */
+  QString countryCodeToName(const QString &country) const;
+
+  /**
+   * Parses locale string into distinct parts.
+   * The format of locale is language_COUNTRY@modifier.CHARSET
+   *
+   * @param locale the locale string to split
+   * @param language set to the language part of the locale
+   * @param country set to the country part of the locale
+   * @param modifier set to the modifer part of the locale
+   * @param charset set to the charset part of the locale
+   */
+  static void splitLocale(const QString &locale,
+                          QString &language,
+                          QString &country,
+                          QString &modifier,
+                          QString &charset);
 
   /**
    * Use this as main catalog for *all* KLocales, if not the appname
