@@ -10,6 +10,7 @@ Comment[es]=Complemento QImageIOHandler
 Comment[nl]=QImageIOHandler-plugin
 Comment[pa]=QImageIOHandler ਪਲੱਗਇਨ
 Comment[sv]=Insticksprogram för QImage I/O-hantering
+Comment[th]=ปลั๊กอินสำหรับจัดการ IO ของภาพ QImage
 Comment[x-test]=xxQImageIOHandler pluginxx
 
 [PropertyDef::X-KDE-ImageFormat]
