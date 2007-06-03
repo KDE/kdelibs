@@ -1,3 +1,6 @@
+- QImage VideoWidget::screenshot(): ordinary screenshot doesn't work with XV says Christoph. And VideoDataOutput
+  would be major overkill.
+
 - let the Phonon KCM check whether the hw: ALSA device already does mixing, only if it does not
    prefer the dmix: device
 
