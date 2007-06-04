@@ -1086,6 +1086,8 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     KTabWidget *newTabWidget = new KTabWidget(configDialog);
                     bool configurable = false;
 
+                    tabWidgets.insert(index.row(), newTabWidget);
+
                     foreach(KService::Ptr servicePtr, services)
                     {
                         if(!servicePtr->noDisplay())
@@ -1117,12 +1119,12 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     QVBoxLayout *layout = new QVBoxLayout;
                     aboutWidget->setLayout(layout);
 
-                    QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()));
-                    QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()));
-                    QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()));
-                    QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()));
-                    QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()));
-                    QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()));
+                    QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()), newTabWidget);
+                    QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()), newTabWidget);
+                    QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()), newTabWidget);
+                    QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()), newTabWidget);
+                    QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()), newTabWidget);
+                    QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()), newTabWidget);
 
                     layout->addWidget(description);
                     layout->addWidget(author);
@@ -1164,6 +1166,11 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         moduleProxy->load();
                     }
                 }
+
+                // Since the dialog is cached and the last tab selected will be kept selected, when closing the
+                // dialog we set the selected tab to the first one again
+                if (tabWidgets.contains(index.row()))
+                    tabWidgets[index.row()]->setCurrentIndex(0);
 
                 QObject::disconnect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
             }

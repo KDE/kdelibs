@@ -37,6 +37,7 @@
 
 class KCModuleProxy;
 class KIconLoader;
+class KTabWidget;
 class KDialog;
 class QLabel;
 
@@ -298,6 +299,7 @@ private:
     KIconLoader *iconLoader;
     QPoint relativeMousePosition;
     QList<KCModuleProxy*> *currentModuleProxyList;
+    QHash<int /* row */, KTabWidget*> tabWidgets;
     QHash<int /* row */, KDialog*> configDialogs;
     QHash<int /* row */, QList<KCModuleProxy*> > modulesDialogs;
     KDialog *configDialog; // For enabling/disabling default button
