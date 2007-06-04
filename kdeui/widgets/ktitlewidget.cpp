@@ -29,12 +29,10 @@
 class KTitleWidget::Private
 {
 public:
-//    QHBoxLayout *titleWidgetLayout;
     QGridLayout *headerLayout;
     QLabel *imageLabel;
     QLabel *textLabel;
     QLabel *commentLabel;
-//    QWidget *headerWidget;
 };
 
 KTitleWidget::KTitleWidget(QWidget *parent)
@@ -108,7 +106,6 @@ void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
     d->textLabel->setText(text);
 
     d->textLabel->setAlignment(alignment);
-//    d->headerWidget->setVisible(true);
 }
 
 void KTitleWidget::setComment(const QString &comment, CommentType type)
@@ -150,9 +147,7 @@ void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
         d->headerLayout->addWidget(d->commentLabel, 1, 1);
         d->headerLayout->setColumnStretch(0, 0);
         d->headerLayout->setColumnStretch(1, 1);
-    }
-
-    if (alignment == ImageRight) {
+    } else {
         d->headerLayout->addWidget(d->textLabel, 0, 0);
         d->headerLayout->addWidget(d->commentLabel, 1, 0);
         d->headerLayout->addWidget(d->imageLabel, 0, 1, 2, 1);
@@ -161,7 +156,6 @@ void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
     }
 
     d->imageLabel->setPixmap(pixmap);
-//    d->headerWidget->setVisible(true);
 }
 
 
