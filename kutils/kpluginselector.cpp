@@ -69,8 +69,8 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     pluginDelegate->setRightMargin(20);
     pluginDelegate->setSeparatorPixels(10);
 
-    connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
-    connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
+    QObject::connect(pluginModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(emitChanged()));
+    QObject::connect(pluginDelegate, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
 }
 
 KPluginSelector::Private::~Private()
@@ -116,13 +116,13 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     link->setUseCursor(false);
     link->setHighlightedColor(palette().color(QPalette::Link));
     link->setSelectedColor(palette().color(QPalette::Link));
-    link->setText("Automatic changes have been performed due to plugin dependencies");
+    link->setText(i18n("Automatic changes have been performed due to plugin dependencies"));
     dataLayout->addWidget(link);
     dataLayout->addWidget(details);
     layout->addLayout(dataLayout);
     setLayout(layout);
 
-    connect(link, SIGNAL(leftClickedUrl()), this, SLOT(showDependencyDetails()));
+    QObject::connect(link, SIGNAL(leftClickedUrl()), this, SLOT(showDependencyDetails()));
 }
 
 KPluginSelector::Private::DependenciesWidget::~DependenciesWidget()
@@ -560,8 +560,8 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     : QWidget(parent)
     , d(new Private(this))
 {
-    connect(d, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
-    connect(d, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
+    QObject::connect(d, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)));
+    QObject::connect(d, SIGNAL(configCommitted(QByteArray)), this, SIGNAL(configCommitted(QByteArray)));
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin(0);
@@ -718,6 +718,7 @@ void KPluginSelector::updatePluginsState()
 KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *parent)
     : QItemDelegate(0)
     , configDialog(0)
+    , currentModuleProxyList(0)
     , parent(parent)
 {
     iconLoader = new KIconLoader();
@@ -725,14 +726,9 @@ KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Privat
 
 KPluginSelector::Private::PluginDelegate::~PluginDelegate()
 {
-    foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
-    {
-        delete moduleProxy;
-    }
-    currentModuleProxyList.clear();
+    qDeleteAll(configDialogs);
 
     delete iconLoader;
-    delete configDialog;
 }
 
 void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -744,17 +740,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
     QFontMetrics fontMetrics = painter->fontMetrics();
 
     QColor unselectedTextColor = optionCopy.palette.text().color();
-    QColor selectedTextColor = optionCopy.palette.highlightedText().color();
     QPen currentPen = painter->pen();
-    QPen unselectedPen = QPen(currentPen);
-    QPen selectedPen = QPen(currentPen);
     QPen linkPen = QPen(currentPen);
 
     QString details = i18n("More Options");
     QString about = i18n("About");
 
-    unselectedPen.setColor(unselectedTextColor);
-    selectedPen.setColor(selectedTextColor);
     linkPen.setColor(option.palette.color(QPalette::Link));
 
     QPixmap iconPixmap = icon(index, iconWidth, iconHeight);
@@ -772,20 +763,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
     if (index.internalPointer())
     {
-        if (optionCopy.state & QStyle::State_Selected)
-        {
-            painter->fillRect(optionCopy.rect, optionCopy.palette.highlight());
-            painter->setPen(selectedPen);
-        }
-        else
-        {
-            KPluginInfo *info = static_cast<KPluginInfo*>(index.internalPointer());
+        KPluginInfo *info = static_cast<KPluginInfo*>(index.internalPointer());
 
-            if (model->alternateColor(info))
-                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
-            else
-                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
-        }
+        if (model->alternateColor(info))
+            painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
+        else
+            painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
 
         QString display;
         QString secondaryDisplay = fontMetrics.elidedText(comment(index), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin - iconPixmap.width() - separatorPixels * 2 - theCheckRect.width());
@@ -847,7 +830,7 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
 
         drawCheck(painter, optionCheck, checkRect(index, optionCheck), (Qt::CheckState) index.model()->data(index, Checked).toInt());
     }
-    else
+    else // we are drawing a category
     {
         QString display = painter->fontMetrics().elidedText(index.model()->data(index, Qt::DisplayRole).toString(), Qt::ElideRight, optionCopy.rect.width() - leftMargin - rightMargin);
 
@@ -1026,9 +1009,13 @@ bool KPluginSelector::Private::PluginDelegate::eventFilter(QObject *watched, QEv
 
 void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
 {
-    foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+    if (!currentModuleProxyList)
+        return;
+
+    QList<KCModuleProxy*>::iterator it;
+    for (it = currentModuleProxyList->begin(); it != currentModuleProxyList->end(); it++)
     {
-        moduleProxy->defaults();
+        (*it)->defaults();
     }
 }
 
@@ -1088,75 +1075,80 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     checkDependencies(model, pluginInfo, DependenciesNeedMe);
             }
 
-            QList<KService::Ptr> services = model->services(index);
-
             if (clickableLabelRect(option, caption).contains(cursorPos))
             {
-                foreach(KCModuleProxy *moduleProxy, currentModuleProxyList)
+                if (!configDialogs.contains(index.row()))
                 {
-                    delete moduleProxy;
-                }
-                currentModuleProxyList.clear();
+                    QList<KService::Ptr> services = model->services(index);
 
-                configDialog = new KDialog;
-                configDialog->setWindowTitle(pluginInfo->name());
-                KTabWidget *newTabWidget = new KTabWidget(configDialog);
-                bool configurable = false;
+                    configDialog = new KDialog(parent->parent);
+                    configDialog->setWindowTitle(pluginInfo->name());
+                    KTabWidget *newTabWidget = new KTabWidget(configDialog);
+                    bool configurable = false;
+
+                    foreach(KService::Ptr servicePtr, services)
+                    {
+                        if(!servicePtr->noDisplay())
+                        {
+                            KCModuleInfo moduleinfo(servicePtr);
+                            model->setParentComponents(index, moduleinfo.service()->property("X-KDE-ParentComponents").toStringList());
+                            KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
+                            if (currentModuleProxy->realModule())
+                            {
+                                newTabWidget->addTab(currentModuleProxy, servicePtr->name());
+                                configurable = true;
+                            }
+
+                            if (!modulesDialogs.contains(index.row()))
+                                modulesDialogs.insert(index.row(), QList<KCModuleProxy*>() << currentModuleProxy);
+                            else
+                            {
+                                modulesDialogs[index.row()].append(currentModuleProxy);
+                            }
+                        }
+                    }
+
+                    if (!configurable)
+                        configDialog->setButtons(KDialog::Close);
+                    else
+                        configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
+
+                    QWidget *aboutWidget = new QWidget(newTabWidget);
+                    QVBoxLayout *layout = new QVBoxLayout;
+                    aboutWidget->setLayout(layout);
+
+                    QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()));
+                    QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()));
+                    QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()));
+                    QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()));
+                    QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()));
+                    QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()));
+
+                    layout->addWidget(description);
+                    layout->addWidget(author);
+                    layout->addWidget(authorEmail);
+                    layout->addWidget(website);
+                    layout->addWidget(version);
+                    layout->addWidget(license);
+                    layout->insertStretch(-1);
+
+                    newTabWidget->addTab(aboutWidget, i18n("About"));
+                    configDialog->setMainWidget(newTabWidget);
+
+                    configDialogs.insert(index.row(), configDialog);
+                }
+                else
+                {
+                    configDialog = configDialogs[index.row()];
+                }
+
+                currentModuleProxyList = modulesDialogs.contains(index.row()) ? &modulesDialogs[index.row()] : 0;
 
                 QObject::connect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
 
-                KService::Ptr servicePtr;
-                for(QList<KService::Ptr>::ConstIterator it =
-                    services.begin(); it != services.end(); ++it)
-                {
-                    servicePtr = (*it);
-
-                    if(!servicePtr->noDisplay())
-                    {
-                        KCModuleInfo moduleinfo(servicePtr);
-                        model->setParentComponents(index, moduleinfo.service()->property("X-KDE-ParentComponents").toStringList());
-                        KCModuleProxy *currentModuleProxy = new KCModuleProxy(moduleinfo, newTabWidget);
-                        if (currentModuleProxy->realModule())
-                        {
-                            currentModuleProxyList.append(currentModuleProxy);
-                            newTabWidget->addTab(currentModuleProxy, servicePtr->name());
-                            configurable = true;
-                        }
-                    }
-                }
-
-                if (!configurable)
-                    configDialog->setButtons(KDialog::Close);
-                else
-                    configDialog->setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
-
-                QWidget *aboutWidget = new QWidget(newTabWidget);
-                QVBoxLayout *layout = new QVBoxLayout;
-                aboutWidget->setLayout(layout);
-
-                QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()));
-                QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()));
-                QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()));
-                QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()));
-                QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()));
-                QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()));
-
-                layout->addWidget(description);
-                layout->addWidget(author);
-                layout->addWidget(authorEmail);
-                layout->addWidget(website);
-                layout->addWidget(version);
-                layout->addWidget(license);
-                layout->insertStretch(-1);
-
-                newTabWidget->addTab(aboutWidget, i18n("About"));
-                configDialog->setMainWidget(newTabWidget);
-
-                KDialog::centerOnScreen(configDialog);
-
                 if (configDialog->exec() == QDialog::Accepted)
                 {
-                    foreach (KCModuleProxy *moduleProxy, currentModuleProxyList)
+                    foreach (KCModuleProxy *moduleProxy, modulesDialogs[index.row()])
                     {
                         moduleProxy->save();
                         foreach (const QString &parentComponent, model->parentComponents(index))
@@ -1165,6 +1157,15 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         }
                     }
                 }
+                else
+                {
+                    foreach (KCModuleProxy *moduleProxy, modulesDialogs[index.row()])
+                    {
+                        moduleProxy->load();
+                    }
+                }
+
+                QObject::disconnect(configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
             }
         }
     }

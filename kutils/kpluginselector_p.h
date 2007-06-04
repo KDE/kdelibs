@@ -28,6 +28,7 @@
 #include <QtGui/QItemDelegate>
 #include <QAbstractListModel>
 
+#include <kservice.h>
 #include <kconfigbase.h>
 #include <klocale.h>
 #include <kutils_export.h>
@@ -296,7 +297,9 @@ private:
     int separatorPixels;
     KIconLoader *iconLoader;
     QPoint relativeMousePosition;
-    QList<KCModuleProxy*> currentModuleProxyList; // For showing defaults
+    QList<KCModuleProxy*> *currentModuleProxyList;
+    QHash<int /* row */, KDialog*> configDialogs;
+    QHash<int /* row */, QList<KCModuleProxy*> > modulesDialogs;
     KDialog *configDialog; // For enabling/disabling default button
     KPluginSelector::Private *parent;
 };
