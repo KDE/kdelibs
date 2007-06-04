@@ -2597,6 +2597,9 @@ startServiceInternal( const QCString &function,
       {
          if (error)
             *error = i18n("Could not register with DCOP.\n");
+         if (!kapp)
+            delete dcopClient;
+
          return -1;
       }
    }
