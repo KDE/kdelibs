@@ -137,7 +137,7 @@ static QByteArray printableToString(const char *str, int l)
                 break;
             default:
                 *r = '\\';
-                fprintf(stderr, "KConfigIni: Invalid escape sequence \'\\%c\'", str[i]);
+                fprintf(stderr, "KConfigIni: Invalid escape sequence \'\\%c\'\n", str[i]);
             }
         }
     }
