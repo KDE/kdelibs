@@ -468,8 +468,9 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
 
     // initialize the private classes
     d->messageTimer = new QTimer( this );
+    d->messageTimer->setSingleShot( true );
     connect( d->messageTimer, SIGNAL( timeout() ),
-             this, SLOT( slotResetMessageColors() ) );
+             this, SLOT( slotResetMessage() ) );
 
     d->networkTimer = new QTimer( this );
     connect( d->networkTimer, SIGNAL( timeout() ),
@@ -489,7 +490,6 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
 
 
     // create title widget
-    // TODO: add a subtext option to KTitleWidget
     d->titleWidget = new KTitleWidget(mainWidget);
 
     // create the control panel
@@ -537,13 +537,15 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
     mainLayout->addWidget(d->itemsView);
 
     // start with a nice size
+    // FIXME: this should load the last size the user set it to.
     resize( 700, 400 );
-    slotResetMessageColors();
 
     d->engine = NULL;
 
     setWindowTitle(i18n("Get Hot New Stuff!"));
-    displayMessage(i18n("%1 Add On Installer", KGlobal::mainComponent().aboutData()->programName()));
+    d->titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
+                                  "%1 Add On Installer",
+                                  KGlobal::mainComponent().aboutData()->programName()));
     d->titleWidget->setPixmap(KGlobal::mainComponent().aboutData()->appName());
     connect( this, SIGNAL( closeClicked() ), this, SLOT( accept() ) );
 }
@@ -554,37 +556,20 @@ DownloadDialog::~DownloadDialog()
     delete d;
 }
 
-void DownloadDialog::displayMessage( const QString & msg, MessageType type, int timeOutMs )
+void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::CommentType type, int timeOutMs )
 {
-    //TODO: this should really be shown in a subtext to the title widget
-
     // stop the pending timer if present
     if ( d->messageTimer )
         d->messageTimer->stop();
 
-    // set background color based on message type
-    switch ( type )
-    {
-        case Info:
-	    // FIXME KDE4PORT
-            //d->messageLabel->setPaletteForegroundColor( palette().active().highlightedText() );
-            //d->messageLabel->setPaletteBackgroundColor( palette().active().highlight() );
-            break;
-        case Error:
-	    // FIXME KDE4PORT
-            //d->messageLabel->setPaletteForegroundColor( Qt::white );
-            //d->messageLabel->setPaletteBackgroundColor( Qt::red );
-            break;
-        default:
-            slotResetMessageColors();
-            break;
-    }
-
     // set text to messageLabel
-    d->titleWidget->setText( msg );
+    d->titleWidget->setComment( msg, type );
 
     // single shot the resetColors timer (and create it if null)
-    d->messageTimer->start( timeOutMs );
+    if (timeOutMs > 0) {
+    kDebug() << "starting the message timer for " << timeOutMs << endl;
+        d->messageTimer->start( timeOutMs );
+    }
 }
 
 void DownloadDialog::installItem( Entry *entry )
@@ -606,16 +591,14 @@ Q_UNUSED(entry);
 //    displayMessage( i18n("%1 is no more installed.").arg( item->name().representation() ) );
 }
 
-void DownloadDialog::slotResetMessageColors() // SLOT
+void DownloadDialog::slotResetMessage() // SLOT
 {
-    // FIXME KDE4PORT
-    //d->messageLabel->setPaletteForegroundColor( palette().active().text() );
-    //d->messageLabel->setPaletteBackgroundColor( palette().active().background() );
+    d->titleWidget->setComment(QString());
 }
 
 void DownloadDialog::slotNetworkTimeout() // SLOT
 {
-    displayMessage( i18n("Timeout. Check internet connection!"), Error );
+    displayMessage( i18n("Timeout. Check internet connection!"), KTitleWidget::ErrorMessage );
 }
 
 void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
@@ -744,7 +727,7 @@ XXX update item status
     d->itemsView->updateItem( item );
 
 XXX inform the user
-    displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ) );
+    displayMessage( i18n("Installing '%1', this could take some time ...").arg( item->name().representation() ), 3000 );
 */
 }
 

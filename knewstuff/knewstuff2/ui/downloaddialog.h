@@ -21,6 +21,7 @@
 #define KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 
 #include <kdialog.h>
+#include <ktitlewidget.h>
 
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>
@@ -58,9 +59,9 @@ class DownloadDialog : public KDialog
         void setEngine(DxsEngine *engine);
 
         // show a message in the bottom bar
-        enum MessageType { Normal, Info, Error };
         void displayMessage( const QString & msg,
-            MessageType type = Normal, int timeOutMs = 3000 );
+                             KTitleWidget::CommentType type = KTitleWidget::PlainMessage,
+                             int timeOutMs = 0 );
 
         // begin installing that item
         void installItem( Entry * entry );
@@ -73,7 +74,7 @@ class DownloadDialog : public KDialog
         class DownloadDialogPrivate * d;
 
     private Q_SLOTS:
-        void slotResetMessageColors();
+        void slotResetMessage();
         void slotNetworkTimeout();
         void slotSortingSelected( int sortType );
         // DXS
