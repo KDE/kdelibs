@@ -212,6 +212,9 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     m_layout->setMargin(0);
 
     // initialize the places selector
+    QPalette p;
+    p.setColor(QPalette::Background, Qt::transparent);
+    q->setPalette(p);
     m_placesSelector = new KFilePlacesSelector(q, placesModel);
     connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
             q, SLOT(setUrl(const KUrl&)));
