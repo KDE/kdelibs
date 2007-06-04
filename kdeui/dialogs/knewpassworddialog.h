@@ -26,8 +26,6 @@
 
 #include <kdialog.h>
 
-class QLabel;
-class QGridLayout;
 class QWidget;
 
 

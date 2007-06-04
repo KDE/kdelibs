@@ -54,12 +54,6 @@
 template <class T> class QStack;
 
 namespace khtml {
-    class RenderStyle;
-    class RenderTable;
-    class CachedObject;
-    class RenderCanvas;
-    class RenderText;
-    class RenderFrameSet;
     class RenderObject;
     class RenderScrollMediator;
     class ScrollBarWidget;

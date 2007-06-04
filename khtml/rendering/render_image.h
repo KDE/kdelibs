@@ -33,7 +33,6 @@
 
 namespace khtml {
 
-class DocLoader;
 class CachedObject;
 
 class RenderImage : public RenderReplaced

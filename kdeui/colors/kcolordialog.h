@@ -31,9 +31,6 @@
 #include <QtGui/QTableWidget>
 #include <kcolorchoosermode.h>
 
-class QComboBox;
-class QLineEdit;
-class KListWidget;
 class KPalette;
 class KColorCells;
 

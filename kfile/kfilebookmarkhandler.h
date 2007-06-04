@@ -22,7 +22,6 @@
 #include <kbookmarkmanager.h>
 #include <kbookmarkmenu.h>
 
-class QTextStream;
 class KMenu;
 class KFileWidget;
 

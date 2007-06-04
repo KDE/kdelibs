@@ -33,7 +33,6 @@
 class KUrl;
 class K3FileTreeView;
 class KFileTreeBranch;
-class KFileTreeItem;
 
 
 /**

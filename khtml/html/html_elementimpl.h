@@ -28,8 +28,6 @@
 namespace DOM {
 
 class DOMString;
-class CSSStyleDeclarationImpl;
-class HTMLFormElementImpl;
 class DocumentFragment;
 
 class HTMLElementImpl : public ElementImpl

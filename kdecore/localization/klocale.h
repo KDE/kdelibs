@@ -35,7 +35,6 @@ class QTime;
 class QDateTime;
 
 class KDateTime;
-class KCatalog;
 class KCalendarSystem;
 
 class KLocale;

@@ -22,8 +22,6 @@
 #include <QtCore/QString>
 #include <QtCore/QRegExp>
 
-class QDataStream;
-class KSycocaEntry;
 
 struct KSycocaResource
 {

@@ -51,12 +51,10 @@
 
 class KFind;
 class KFindDialog;
-class KMenu;
 class KCodecAction;
 class KUrlLabel;
 class KJavaAppletContext;
 class KJSErrorDlg;
-class KActionMenu;
 class KToggleAction;
 
 namespace KIO

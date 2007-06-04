@@ -31,7 +31,6 @@
 
 #include "jobclasses.h"
 
-class Observer;
 class QTimer;
 
 namespace KIO {

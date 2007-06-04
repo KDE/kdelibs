@@ -29,7 +29,6 @@
 #include <QTimer>
 
 class QDialog;
-class QMenuData;
 class QTextBrowser;
 
 /**

@@ -29,7 +29,6 @@
 #include "kbookmark.h"
 #include "kbookmarknotifier.h"
 
-class KBookmarkManagerList;
 class KBookmarkGroup;
 class QDBusMessage;
 

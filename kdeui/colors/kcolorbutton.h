@@ -24,7 +24,6 @@
 
 #include <QtGui/QPushButton>
 
-class QStyleOptionButton;
 class KColorButtonPrivate;
 /**
 * @short A pushbutton to display or allow user selection of a color.

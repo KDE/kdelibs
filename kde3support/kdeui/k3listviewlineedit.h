@@ -18,7 +18,6 @@
 #ifndef KLISTVIEWLINEEDIT_H
 #define KLISTVIEWLINEEDIT_H
 
-class QColorGroup;
 
 #include <klineedit.h>
 #include <k3listview.h>

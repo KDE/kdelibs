@@ -29,7 +29,6 @@
 namespace KJS {
 
     class PropertyNameArray;
-    class JSObject;
     class JSValue;
     
     class SavedProperty;

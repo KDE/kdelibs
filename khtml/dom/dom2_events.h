@@ -48,7 +48,6 @@ class EventListenerImpl;
 class EventImpl;
 class UIEventImpl;
 class MouseEventImpl;
-class KeyEventBaseImpl;
 class MutationEventImpl;
 
 

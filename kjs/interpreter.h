@@ -33,9 +33,7 @@ namespace KJS {
 
   class Context;
   class Debugger;
-  class RuntimeMethod;
   class SavedBuiltins;
-  class ScopeChain;
   class TimeoutChecker;
   class Package;
   

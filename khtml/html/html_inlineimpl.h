@@ -28,7 +28,6 @@
 
 namespace DOM {
 
-class DOMString;
 
 class HTMLAnchorElementImpl : public HTMLElementImpl
 {

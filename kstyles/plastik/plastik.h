@@ -51,8 +51,6 @@
 
 #define QCOORDARRLEN(x) sizeof(x)/(sizeof(QCOORD)*2)
 
-class QSettings;
-class QTab;
 class QTimer;
 
 class PlastikStyle : public KStyle

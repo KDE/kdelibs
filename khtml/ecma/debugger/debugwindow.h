@@ -40,7 +40,6 @@
 #include "khtml_part.h"
 #include "dom/dom_misc.h"
 
-class KActionCollection;
 class KAction;
 class WatchesDock;
 class LocalVariablesDock;
@@ -50,7 +49,6 @@ class BreakpointsDock;
 class ConsoleDock;
 class QTabWidget;
 class QFrame;
-class QEventLoop;
 
 namespace KJS
 {

@@ -32,7 +32,6 @@
 namespace DOM
 {
 
-class DOMString;
 
 class HTMLUListElementImpl : public HTMLElementImpl
 {

@@ -28,7 +28,6 @@
 #include <kurl.h>
 #include <ksycocafactory.h>
 
-class KProtocolInfoPrivate;
 
 /**
  * KProtocolInfoFactory is a factory for getting

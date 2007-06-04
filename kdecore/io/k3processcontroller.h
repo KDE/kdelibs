@@ -23,7 +23,6 @@
 #include <QtCore/QList>
 #include <k3process.h>
 
-class QSocketNotifier;
 
 /**
  * @short Used internally by K3Process

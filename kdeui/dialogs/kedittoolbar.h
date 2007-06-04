@@ -25,10 +25,7 @@
 
 class K3Process;
 class KActionCollection;
-class QComboBox;
-class QToolButton;
 class QTreeWidget;
-class QTreeWidgetItem;
 
 class KEditToolBarWidget;
 class KEditToolBarPrivate;

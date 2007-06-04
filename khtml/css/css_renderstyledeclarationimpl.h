@@ -32,7 +32,6 @@ namespace DOM {
 
 namespace khtml {
 
-class RenderObject;
 
 
 // Used by DOM::Counter::listStyle()

@@ -31,12 +31,7 @@
 #include <QtGui/QPainterPath>
 
 namespace DOM {
-    class HTMLCollectionImpl;
-    class HTMLDocumentImpl;
-    class HTMLElementImpl;
-    class HTMLSelectElementImpl;
-    class HTMLTableCaptionElementImpl;
-    class HTMLTableSectionElementImpl;
+   class HTMLElementImpl;
 }
 
 class QGradient;

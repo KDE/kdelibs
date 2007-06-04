@@ -29,7 +29,6 @@
 
 #include <QtCore/QStack>
 
-class QFile;
 class QByteArray;
 
 /**

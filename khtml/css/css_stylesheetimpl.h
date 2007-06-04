@@ -43,8 +43,6 @@ class CSSParser;
 class MediaListImpl;
 class CSSRuleImpl;
 class CSSRuleList;
-class CSSStyleRuleImpl;
-class CSSValueImpl;
 class NodeImpl;
 class DocumentImpl;
 

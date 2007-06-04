@@ -28,7 +28,6 @@
 #include "krossconfig.h"
 #include "childreninterface.h"
 
-class QAbstractItemModel;
 
 namespace Kross {
 

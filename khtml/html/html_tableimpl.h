@@ -32,7 +32,6 @@
 
 namespace DOM {
 
-class DOMString;
 class HTMLTableElementImpl;
 class HTMLTableSectionElementImpl;
 class HTMLTableSectionElement;
@@ -45,7 +44,6 @@ class HTMLTableColElement;
 class HTMLTableCaptionElementImpl;
 class HTMLTableCaptionElement;
 class HTMLElement;
-class HTMLCollection;
 
 // -------------------------------------------------------------------------
 

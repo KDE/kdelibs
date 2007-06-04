@@ -36,7 +36,6 @@
 
 namespace DOM {
 
-class DOMString;
 
 class HTMLCanvasElementImpl
     : public HTMLImageElementImpl

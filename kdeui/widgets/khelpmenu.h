@@ -33,8 +33,6 @@ class QWidget;
 class QAction;
 
 class KAboutData;
-class KBugReport;
-class KDialog;
 class KHelpMenuPrivate;
 
 

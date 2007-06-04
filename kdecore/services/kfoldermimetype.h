@@ -22,7 +22,6 @@
 
 #include "kmimetype.h"
 
-class KDesktopFile;
 class KFolderMimeTypePrivate;
 
 /**

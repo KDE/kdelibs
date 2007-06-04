@@ -26,7 +26,6 @@
 #include <ksharedptr.h>
 #include <dnssd/dnssd_export.h>
 
-class QDataStream;
 namespace DNSSD
 {
 class ServiceBasePrivate;

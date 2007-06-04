@@ -30,8 +30,6 @@
 
 namespace KJSEmbed {
 
-class JSObjectProxy;
-class JSFactory;
 
 /**
 * Utility class that contains the methods for converting event types to JS.

@@ -36,7 +36,6 @@ class QPixmap;
 struct KIconGroup;
 class KIconThemeNode;
 class KComponentData;
-class KConfig;
 struct KIconLoaderPrivate;
 class KStandardDirs;
 class KIconEffect;

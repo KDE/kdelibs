@@ -29,7 +29,6 @@
 
 
 class KSSLKeyGenPrivate;
-class Ui_KGWizardPage2;
 
 /**
  * KDE Key Generation dialog

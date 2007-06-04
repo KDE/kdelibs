@@ -31,8 +31,6 @@
 #include <QtGui/QColor>
 #include <QtCore/QStringList>
 
-class Q3Accel;
-class QTimer;
 class K3Spell;
 class K3SpellConfig;
 

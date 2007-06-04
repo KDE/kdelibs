@@ -26,8 +26,6 @@
 #include <kdeui_export.h>
 
 class KConfig;
-class KConfigBase;
-class KCharsets;
 
 #ifdef KDE3_SUPPORT
 #include <krandom.h>
@@ -54,8 +52,6 @@ typedef void Display;
 struct _IceConn;
 class QPixmap;
 class KSessionManaged;
-class KStyle;
-class KUrl;
 
 #define kapp KApplication::kApplication()
 

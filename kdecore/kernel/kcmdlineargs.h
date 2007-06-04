@@ -70,8 +70,6 @@ struct KCmdLineOptions
 class KCmdLineArgsList;
 class KApplication;
 class KUniqueApplication;
-class KCmdLineParsedOptions;
-class KCmdLineParsedArgs;
 class KAboutData;
 
 /**

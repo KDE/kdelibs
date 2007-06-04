@@ -26,8 +26,6 @@
 #include <QtGui/QFrame>
 
 class QLineEdit;
-class QToolButton;
-class KDateValidator;
 class KDateTable;
 
 /**

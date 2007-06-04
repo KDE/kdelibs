@@ -32,8 +32,6 @@
 #include "html/html_formimpl.h"
 
 class QWidget;
-class QLineEdit;
-class QListboxItem;
 
 #include <ktextedit.h>
 #include <kurlrequester.h>
@@ -45,7 +43,6 @@ class QListboxItem;
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
-class KHTMLPartBrowserExtension;
 class K3Spell;
 class KFindDialog;
 class KReplaceDialog;
@@ -55,7 +52,6 @@ class KAction;
 class KUrlRequester;
 
 namespace DOM {
-    class HTMLFormElementImpl;
     class HTMLInputElementImpl;
     class HTMLSelectElementImpl;
     class HTMLGenericFormElementImpl;
@@ -64,7 +60,6 @@ namespace DOM {
 
 namespace khtml {
 
-class DocLoader;
 
 // -------------------------------------------------------------------------
 

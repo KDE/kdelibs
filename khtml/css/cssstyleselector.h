@@ -33,7 +33,6 @@
 class KHTMLSettings;
 class KHTMLView;
 class KHTMLPart;
-class KHTMLFactory;
 class KUrl;
 
 namespace DOM {

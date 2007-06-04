@@ -28,7 +28,6 @@ class KSSL;
 #include <ksslcertificate.h>
 
 class KSSLPeerInfoPrivate;
-class KInetSocketAddress;
 
 /**
  * KDE SSL Peer Data

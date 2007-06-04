@@ -22,7 +22,6 @@
 #include <ksycocaentry.h>
 
 class KSycoca;
-class QStringList;
 class QString;
 class KSycocaDict;
 class KSycocaResourceList;

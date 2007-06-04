@@ -28,13 +28,11 @@
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 
-class KHTMLView;
 
 // -------------------------------------------------------------------------
 namespace DOM {
 
 class HTMLFormElementImpl;
-class DOMStringImpl;
 
 class HTMLObjectBaseElementImpl : public QObject, public HTMLElementImpl
 {

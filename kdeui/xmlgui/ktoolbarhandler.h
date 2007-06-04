@@ -26,7 +26,6 @@
 #include <kxmlguiclient.h>
 
 class KXmlGuiWindow;
-class KToolBar;
 
 namespace KDEPrivate
 {

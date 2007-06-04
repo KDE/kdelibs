@@ -7,7 +7,6 @@ class KHTMLPart;
 class KComboBox;
 class QToolButton;
 class QLineEdit;
-class KPushButton;
 class KUrl;
 class KHTMLFactory;
 class QLabel;

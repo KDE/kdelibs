@@ -52,7 +52,6 @@ namespace DOM
   class HTMLDocumentImpl;
   class DocumentImpl;
   class HTMLTitleElementImpl;
-  class HTMLElementImpl;
   class HTMLFrameElementImpl;
   class HTMLIFrameElementImpl;
   class HTMLObjectElementImpl;
@@ -76,8 +75,7 @@ namespace khtml
   class RenderPart;
   class RenderPartObject;
   class ChildFrame;
-  class MouseEvent;
-  class MousePressEvent;
+    class MousePressEvent;
   class MouseDoubleClickEvent;
   class MouseMoveEvent;
   class MouseReleaseEvent;

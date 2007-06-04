@@ -27,7 +27,6 @@
 
 class QMenu;
 class QVBoxLayout;
-class KConfig;
 class KFileTreeBranch;
 class K3FileTreeView;
 class K3FileTreeViewItem;

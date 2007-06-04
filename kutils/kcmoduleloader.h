@@ -26,7 +26,6 @@
 #include <kcmoduleinfo.h>
 
 class QWidget;
-class KLibLoader;
 
 /**
  * @short Loads a KControl Module.

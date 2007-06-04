@@ -25,11 +25,7 @@
 #include <phonon/phononnamespace.h>
 
 class QCheckBox;
-class QPushButton;
-class QLabel;
 
-class KFileDialog;
-class KFileItem;
 
 /**
  * Audio "preview" widget for the file dialog.

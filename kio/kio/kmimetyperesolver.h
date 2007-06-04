@@ -24,7 +24,6 @@
 #include <QtCore/QObject>
 #include <kio/kio_export.h>
 class QModelIndex;
-class KFileItemList;
 class QAbstractItemView;
 class KDirModel;
 class KMimeTypeResolverPrivate;

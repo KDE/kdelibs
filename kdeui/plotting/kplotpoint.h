@@ -29,8 +29,6 @@
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 
-class QPainter;
-class KPlotWidget;
 
 /**
  * @class KPlotPoint

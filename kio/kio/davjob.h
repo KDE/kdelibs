@@ -35,14 +35,11 @@
 #include "jobclasses.h"
 #include "global.h"
 
-class Observer;
-class QTimer;
 
 namespace KIO {
 
     class Slave;
-    class SlaveInterface;
-
+    
     /**
      * The transfer job pumps data into and/or out of a Slave.
      * Data is sent to the slave on request of the slave ( dataReq).

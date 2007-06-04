@@ -26,7 +26,6 @@
 #include <kconfigbackend.h>
 
 class QFile;
-class QTextStream;
 
 /**
  * Class for KDE INI-style configuration file loading/saving.

@@ -25,8 +25,6 @@
 
 class QTreeWidget;
 class QTreeWidgetItem;
-class QStandardItemModel;
-class QModelIndex;
 
 namespace KJS
 {

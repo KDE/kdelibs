@@ -24,7 +24,6 @@
 #include <QtGui/QWidget>
 #include <QtGui/QIcon>
 
-class QMouseEvent;
 /**
  * @brief A specialized label to display an informative message with an icon
  *

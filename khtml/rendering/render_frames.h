@@ -26,7 +26,6 @@
 #include "rendering/render_replaced.h"
 #include "xml/dom_nodeimpl.h"
 #include "html/html_baseimpl.h"
-class KHTMLView;
 
 namespace DOM
 {

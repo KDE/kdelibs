@@ -41,7 +41,6 @@ namespace DOM {
   class DOMString;
   class AtomicString;
 }
-class KJScript;
 class QString;
 class QConstString;
 

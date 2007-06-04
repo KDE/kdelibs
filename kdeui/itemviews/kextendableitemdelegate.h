@@ -35,7 +35,6 @@ extendItem() and contractItem().
 
 
 class QAbstractItemView;
-class QPersistentModelIndex;
 class KExtendableItemDelegatePrivate;
 
 class KExtendableItemDelegate : public QItemDelegate {

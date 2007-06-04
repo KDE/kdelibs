@@ -54,7 +54,6 @@ namespace khtml {
     class Tokenizer;
     class CSSStyleSelector;
     class DocLoader;
-    class CSSStyleSelectorList;
     class RenderArena;
     class RenderObject;
     class CounterNode;
@@ -78,7 +77,6 @@ namespace DOM {
     class EntityReferenceImpl;
     class EventImpl;
     class EventListener;
-    class GenericRONamedNodeMapImpl;
     class HTMLDocumentImpl;
     class HTMLElementImpl;
     class HTMLImageElementImpl;
@@ -88,7 +86,6 @@ namespace DOM {
     class NodeListImpl;
     class ProcessingInstructionImpl;
     class RangeImpl;
-    class RegisteredEventListener;
     class StyleSheetImpl;
     class StyleSheetListImpl;
     class TextImpl;

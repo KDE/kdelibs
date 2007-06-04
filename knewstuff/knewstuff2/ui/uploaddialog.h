@@ -26,7 +26,6 @@
 #include <knewstuff2/knewstuff_export.h>
 
 class QLineEdit;
-class QSpinBox;
 class KUrlRequester;
 class QTextEdit;
 class QComboBox;

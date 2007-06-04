@@ -116,8 +116,7 @@ namespace KJS {
   };
 
   class ExecState;
-  class UString;
-  /**
+    /**
    * @internal
    * Helper for getStaticFunctionSlot and getStaticPropertySlot
    */

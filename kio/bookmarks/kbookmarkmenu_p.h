@@ -42,7 +42,6 @@
 #include "kbookmarkmanager.h"
 
 class QString;
-class QMenu;
 class QPushButton;
 class KLineEdit;
 class KBookmark;
@@ -52,8 +51,6 @@ class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
-class KBookmarkBar;
-class KMenu;
 
 class KBookmarkEditFields {
 public:

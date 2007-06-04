@@ -73,11 +73,9 @@
 
 namespace DOM {
     class DOMStringImpl;
-    class ShadowValueImpl;
     class QuotesValueImpl;
     class CounterImpl;
     class CSSValueListImpl;
-    class CounterActImpl;
 }
 
 namespace khtml {

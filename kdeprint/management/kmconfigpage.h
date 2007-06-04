@@ -24,7 +24,6 @@
 #include <QtGui/QWidget>
 
 class KConfig;
-class KConfigGroup;
 
 class KDEPRINT_MANAGEMENT_EXPORT KMConfigPage : public QWidget
 {

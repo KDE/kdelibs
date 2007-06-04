@@ -31,7 +31,6 @@
 #include "html/html_elementimpl.h"
 #include "misc/khtmllayout.h"
 
-class KHTMLView;
 class KHTMLPart;
 
 namespace khtml {

@@ -26,7 +26,6 @@
 #include <QtCore/QObject>
 
 class QWidget;
-class KConfigBase;
 class KAction;
 class QKeySequence;
 class KShortcut;

@@ -29,7 +29,6 @@
 #undef crypt
 #else
 class PKCS7;
-class X509;
 #endif
 
 //#include <kopenssl.h>

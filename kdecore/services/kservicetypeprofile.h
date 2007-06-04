@@ -27,7 +27,6 @@
 
 #include <kservicetypetrader.h>
 
-class KServiceTypeProfileList;
 
 /**
  * KServiceTypeProfile represents the user's preferences for services

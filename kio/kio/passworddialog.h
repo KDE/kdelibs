@@ -23,7 +23,6 @@
 #include <kio/kio_export.h>
 #include <kpassworddialog.h>
 
-class QGridLayout;
 
 namespace KIO {
 

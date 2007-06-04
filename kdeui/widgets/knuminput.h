@@ -27,7 +27,6 @@
 #include <QtGui/QWidget>
 #include <QtGui/QSpinBox>
 
-class QLabel;
 class QSlider;
 class QSpinBox;
 class QValidator;

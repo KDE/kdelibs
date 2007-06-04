@@ -22,7 +22,6 @@
 
 #include "kmconfigpage.h"
 
-class KConfigGroup;
 class KIntNumInput;
 
 class KMConfigJobs : public KMConfigPage

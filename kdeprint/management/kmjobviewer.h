@@ -30,12 +30,10 @@
 #include "kpreloadobject.h"
 #include <QtCore/QList>
 
-class KMJobManager;
 class KMJob;
 class JobItem;
 class QMenu;
 class KMPrinter;
-class QTimer;
 class QLineEdit;
 class QCheckBox;
 class QTreeWidget;

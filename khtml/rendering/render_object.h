@@ -43,8 +43,6 @@
 
 class QPainter;
 class QTextStream;
-class CSSStyle;
-class KHTMLView;
 
 #ifndef NDEBUG
 #define KHTMLAssert( x ) if( !(x) ) { \
@@ -106,7 +104,6 @@ inline PageBreakLevel operator| (PageBreakLevel a, PageBreakLevel b) {
 
 namespace DOM {
     class HTMLAreaElementImpl;
-    class DOMString;
     class NodeImpl;
     class DocumentImpl;
     class ElementImpl;
@@ -116,7 +113,6 @@ namespace DOM {
 namespace khtml {
     class RenderFlow;
     class RenderStyle;
-    class RenderTable;
     class CachedObject;
     class RenderObject;
     class RenderCanvas;

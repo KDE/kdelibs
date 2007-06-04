@@ -39,13 +39,11 @@ namespace DOM {
     class HTMLDocumentImpl;
     class DocumentImpl;
     class ElementImpl;
-    class HTMLElementImpl;
     class HTMLTitleElementImpl;
     class HTMLGenericFormElementImpl;
     class HTMLFormElementImpl;
     class HTMLAnchorElementImpl;
     class HTMLInputElementImpl;
-    class Range;
     class NodeImpl;
     class CSSProperty;
 }
@@ -58,8 +56,7 @@ namespace KJS {
 namespace khtml {
     class RenderObject;
     class RenderCanvas;
-    class RenderStyle;
-    class RenderLineEdit;
+        class RenderLineEdit;
     class RenderPartObject;
     class RenderWidget;
     class CSSStyleSelector;

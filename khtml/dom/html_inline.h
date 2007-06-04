@@ -349,7 +349,6 @@ public:
     void setSize( const DOMString & );
 };
 
-class HTMLModElementImpl;
 class DOMString;
 
 /**
@@ -405,7 +404,6 @@ public:
 
 // --------------------------------------------------------------------------
 
-class HTMLQuoteElementImpl;
 
 /**
  * For the \c Q and \c BLOCKQUOTE elements.

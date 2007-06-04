@@ -21,11 +21,6 @@
 
 #include <kdialog.h>
 
-class QTextEdit;
-class QLabel;
-class QLineEdit;
-class QGroupBox;
-class QProcess;
 class KAboutData;
 class KBugReportPrivate;
 

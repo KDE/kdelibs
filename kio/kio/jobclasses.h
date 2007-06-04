@@ -31,15 +31,12 @@
 
 #include <kcompositejob.h>
 
-class Observer;
-class QTimer;
 
 namespace KIO {
 
     class JobUiDelegate;
     class Slave;
-    class SlaveInterface;
-
+    
     /**
      * The base class for all jobs.
      * For all jobs created in an application, the code looks like

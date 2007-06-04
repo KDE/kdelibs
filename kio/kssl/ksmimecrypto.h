@@ -21,7 +21,6 @@
 #ifndef __KSMIMECRYPTO_H
 #define __KSMIMECRYPTO_H
 
-class QColorGroup;
 
 #include <QtCore/QList>
 #include "ksslpkcs12.h"

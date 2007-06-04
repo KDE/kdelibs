@@ -33,7 +33,6 @@
 #include <QtCore/QObject>
 
 class QAction;
-class KConfigBase;
 class KXMLGUIClient;
 
 class QActionGroup;

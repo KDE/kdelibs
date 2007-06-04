@@ -6,11 +6,9 @@
 #include <QtGui/QWidget>
 class QVBoxLayout;
 class QHBoxLayout;
-class QGridLayout;
 class QGroupBox;
 class QLabel;
 class QListWidget;
-class QListWidgetItem;
 class QPushButton;
 
 class KHistoryComboBox;

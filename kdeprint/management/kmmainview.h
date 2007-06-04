@@ -26,20 +26,16 @@
 #include <kdeprint/kpreloadobject.h>
 #include <kmainwindow.h>
 
-class KMManager;
 class KMPrinterView;
 class KMPrinter;
 class KMPages;
 class KActionCollection;
 class QMenu;
-class QTimer;
-class QSplitter;
 class KToolBar;
 class QAction;
 class PluginComboBox;
 class QBoxLayout;
 class MessageWindow;
-class QMenuBar;
 
 /**
  * @internal

@@ -36,9 +36,6 @@
 
 #include "misc/khtmllayout.h"
 
-namespace DOM {
-    class DOMString;
-}
 
 namespace khtml {
 

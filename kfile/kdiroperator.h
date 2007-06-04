@@ -31,8 +31,6 @@
 #include <kfileitem.h>
 #include <kfile.h>
 
-class QMenu;
-class QTimer;
 class QProgressBar;
 
 class KAction;

@@ -24,7 +24,6 @@
 
 #include <kurl.h>
 
-class MaticBlock;
 
 class MaticHandler : public LprHandler
 {

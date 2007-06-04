@@ -27,18 +27,10 @@
 
 #include "dom/dom_string.h"
 
-class Q3PaintDeviceMetrics;
-class KHTMLSettings;
-
-namespace DOM
-{
-    class CSSPrimitiveValueImpl;
-}
 
 namespace khtml
 {
-    class RenderStyle;
-
+    
     /*
      * mostly just removes the url("...") brace
      */

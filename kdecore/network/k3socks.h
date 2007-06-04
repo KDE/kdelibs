@@ -32,9 +32,6 @@
 #ifdef Q_OS_UNIX
 
 class KConfigGroup;
-class KSocksTable;
-class KLibrary;
-class KConfigBase;
 struct sockaddr;
 
 #ifdef __CYGWIN__

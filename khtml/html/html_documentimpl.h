@@ -38,7 +38,6 @@ namespace DOM {
     class HTMLElement;
     class HTMLElementImpl;
     class DOMString;
-    class CSSStyleSheetImpl;
     class HTMLMapElementImpl;
 
 class HTMLDocumentImpl : public DOM::DocumentImpl

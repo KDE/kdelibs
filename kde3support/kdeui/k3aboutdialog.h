@@ -36,8 +36,6 @@
 #include <kdialog.h>
 
 class QLabel;
-class QVBoxLayout;
-class QTabWidget;
 class QLabel;
 class K3AboutContainer;
 class K3AboutContainerBase;

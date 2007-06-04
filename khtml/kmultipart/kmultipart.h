@@ -28,8 +28,6 @@
 #include <kaboutdata.h>
 #include <QtCore/QDate>
 
-class KHTMLPart;
-class KComponentData;
 class KTemporaryFile;
 class KLineParser;
 

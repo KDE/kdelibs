@@ -23,8 +23,6 @@
 #include <QDockWidget>
 
 class QTreeView;
-class QStandardItemModel;
-class ObjectModel;
 class ExecStateModel;
 namespace KJS
 {

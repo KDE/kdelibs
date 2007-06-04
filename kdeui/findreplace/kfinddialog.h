@@ -27,7 +27,6 @@ class KHistoryComboBox;
 class QPushButton;
 class QMenu;
 class QGridLayout;
-class QLabel;
 class QCheckBox;
 class QGroupBox;
 

@@ -24,7 +24,6 @@
 #include <QtCore/QObject>
 #include <dnssd/servicebase.h>
 
-class QDataStream;
 namespace DNSSD
 {
 class RemoteServicePrivate;

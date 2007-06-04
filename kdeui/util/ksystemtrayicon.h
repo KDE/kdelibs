@@ -24,7 +24,6 @@
 #include <QtGui/QSystemTrayIcon>
 
 class KActionCollection;
-class KMenu;
 class KSystemTrayIconPrivate;
 
 /**

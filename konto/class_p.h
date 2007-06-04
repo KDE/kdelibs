@@ -29,8 +29,7 @@
 namespace Konto {
 
     class Property;
-    class Ontology;
-
+    
     class Class::Private : public QSharedData
 	{
 	public:

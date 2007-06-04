@@ -28,7 +28,6 @@
 #include <QtGui/QWidget>
 #include <QtCore/QMap>
 
-class KHTMLView;
 
 namespace DOM {
     class HTMLElementImpl;

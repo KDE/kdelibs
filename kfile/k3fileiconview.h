@@ -23,7 +23,6 @@
 
 class KFileItem;
 class QWidget;
-class QLabel;
 
 #include <k3iconview.h>
 #include <kiconloader.h>

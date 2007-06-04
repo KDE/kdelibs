@@ -28,8 +28,6 @@
 
 class KMenu;
 
-class QLabel;
-class QRubberBand;
 
 /**
  * KPixmapRegionSelectorWidget is a widget that shows a picture and provides the

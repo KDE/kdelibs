@@ -54,19 +54,16 @@
 #include "imload/image.h"
 #include "imload/imageowner.h"
 
-class QMovie;
 class KHTMLPart;
 
 class KJob;
 namespace KIO {
   class Job;
-  class TransferJob;
 }
 
 namespace DOM
 {
-    class CSSStyleSheetImpl;
-    class DocumentImpl;
+        class DocumentImpl;
 }
 
 namespace khtml

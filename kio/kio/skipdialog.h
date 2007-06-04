@@ -22,7 +22,6 @@
 #include <kio/kio_export.h>
 #include <kdialog.h>
 
-class QPushButton;
 class QWidget;
 
 namespace KIO {

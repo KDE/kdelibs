@@ -23,11 +23,6 @@
 
 #include "kfinddialog.h"
 
-class KHistoryComboBox;
-class QCheckBox;
-class QLabel;
-class QPushButton;
-class QRect;
 
 /**
  * @short A generic "replace" dialog.

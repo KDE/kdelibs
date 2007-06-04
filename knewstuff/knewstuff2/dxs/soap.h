@@ -32,10 +32,8 @@ class KJob;
 
 class QDomDocument;
 class QDomNode;
-class QDomNodeList;
 class QDomElement;
 class QTcpSocket;
-class QCString;
 
 namespace KNS
 {

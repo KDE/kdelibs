@@ -67,7 +67,6 @@
 
 class K3DockSplitter;
 class K3DockManager;
-class K3DockMoveManager;
 class K3DockWidget;
 class K3DockButton_Private;
 class K3DockWidgetPrivate;
@@ -80,10 +79,8 @@ class QHBoxLayout;
 class QPixmap;
 
 #ifndef NO_KDE2
-class KToolBar;
 class KConfig;
 #else
-class Q3ToolBar;
 #endif
 
 class K3DockContainer;

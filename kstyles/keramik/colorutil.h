@@ -22,7 +22,6 @@
 #define KERAMIK_COLORUTIL_H
 
 #include <QtGui/QColor>
-class QPainter;
 
 
 namespace Keramik

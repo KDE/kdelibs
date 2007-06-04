@@ -33,8 +33,6 @@ class KJob;
 
 namespace KNS {
 
-class ProviderLoader;
-class EntryLoader;
 class Installation;
 
 /**

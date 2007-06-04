@@ -25,8 +25,6 @@
 #include <QtDBus/QtDBus>
 #include <QtCore/QMap>
 
-class KDCOPActionProxy;
-class KDCOPPropertyProxy;
 class KXmlGuiWindow;
 
 /**

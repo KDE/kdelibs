@@ -33,7 +33,6 @@
 namespace KNetwork {
 
 class KResolverEntry;
-class KResolverResults;
 class KServerSocket;
 class KBufferedSocket;
 

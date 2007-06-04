@@ -49,7 +49,6 @@ class HTMLStackElem;
 namespace DOM {
     class HTMLDocumentImpl;
     class DocumentImpl;
-    class HTMLElementImpl;
     class NodeImpl;
     class HTMLFormElementImpl;
     class HTMLMapElementImpl;

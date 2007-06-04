@@ -28,7 +28,6 @@
 #include "kservicetype.h"
 
 class KSycoca;
-class KSycocaDict;
 
 class KServiceType;
 

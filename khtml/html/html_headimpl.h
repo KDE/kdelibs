@@ -28,7 +28,6 @@
 #include "misc/loader_client.h"
 #include "css/css_stylesheetimpl.h"
 
-class KHTMLView;
 
 namespace khtml {
     class CachedCSSStyleSheet;
@@ -39,7 +38,6 @@ namespace khtml {
 namespace DOM {
 
 class DOMString;
-class HTMLFormElementImpl;
 class StyleSheetImpl;
 class CSSStyleSheetImpl;
 

@@ -28,7 +28,6 @@
 #include <kdecore_export.h>
 #include <QtCore/QByteArray>
 
-class QIODevice;
 
 /**
  * @class KIOBufferBase kiobuffer.h kiobuffer.h

@@ -24,7 +24,6 @@
 
 #include <kparts/kparts_export.h>
 
-class QByteArray;
 class QWidget;
 
 namespace KParts

@@ -32,7 +32,6 @@ class QLineEdit;
 class QComboBox;
 class QToolButton;
 class KListWidget;
-class Q3ListBoxItem;
 class QTextEdit;
 class QCheckBox;
 class QStackedWidget;

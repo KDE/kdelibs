@@ -26,7 +26,6 @@
 // Both defines are mutually exclusive. Defining none of them compiles
 // DataProtocol for internal usage within libkiocore.
 
-class QString;
 class QByteArray;
 
 class KUrl;

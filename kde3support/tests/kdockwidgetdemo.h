@@ -17,7 +17,6 @@
 class Q3MultiLineEdit;
 class Q3TextView;
 class QToolButton;
-class QSpinBox;
 class QShowEvent;
 class Q3PopupMenu;
 

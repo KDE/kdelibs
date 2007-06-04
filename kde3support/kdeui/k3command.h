@@ -30,7 +30,6 @@
 class KAction;
 class KActionCollection;
 class QAction;
-class QMenu;
 
 /**
  * The abstract base class for all Commands. Commands are used to

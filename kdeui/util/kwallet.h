@@ -28,7 +28,6 @@
 
 #include <kdeui_export.h>
 
-class OrgKdeKWalletInterface;
 
 namespace KWallet {
 

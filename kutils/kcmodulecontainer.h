@@ -27,9 +27,7 @@
 #include <kcmoduleloader.h>
 #include <QtCore/QList>
 
-class QTabWidget;
 class QWidget;
-class QVBoxLayout;
 
 class KCModuleProxy;
 

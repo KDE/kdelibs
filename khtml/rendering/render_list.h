@@ -28,11 +28,6 @@
 
 // ### list-style-position, list-style-image is still missing
 
-namespace DOM
-{
-    class DocumentImpl;
-}
-
 namespace khtml
 {
 

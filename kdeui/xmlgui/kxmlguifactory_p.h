@@ -29,7 +29,6 @@
 class QWidget;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
-class KXMLGUIFactory;
 
 namespace KXMLGUI
 {

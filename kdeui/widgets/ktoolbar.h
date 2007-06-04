@@ -34,7 +34,6 @@ class QDomElement;
 class KConfigGroup;
 class KConfig;
 class KMainWindow;
-class KMenu;
 class KXMLGUIClient;
 
  /**

@@ -27,7 +27,6 @@
 #include <kutils_export.h>
 #include <kservice.h>
 
-class QPixmap;
 class QString;
 class QStringList;
 

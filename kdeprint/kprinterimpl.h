@@ -28,7 +28,6 @@
 #include <QtCore/QMap>
 
 class KPrinter;
-class KMPrinter;
 
 class KDEPRINT_EXPORT KPrinterImpl : public QObject
 {

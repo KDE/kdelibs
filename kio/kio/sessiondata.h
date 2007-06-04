@@ -27,7 +27,6 @@
 
 namespace KIO  {
 
-class SlaveConfig;
 
 
 /**

@@ -39,10 +39,7 @@
 
 class QString;
 class QMenu;
-class QPushButton;
-class KLineEdit;
 class KBookmark;
-class KBookmarkGroup;
 class KAction;
 class QAction;
 class KActionMenu;

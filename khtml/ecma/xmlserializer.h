@@ -27,8 +27,7 @@
 
 namespace KJS {
 
-  class JSEventListener;
-
+  
   class XMLSerializerConstructorImp : public ObjectImp {
   public:
     XMLSerializerConstructorImp(ExecState *);

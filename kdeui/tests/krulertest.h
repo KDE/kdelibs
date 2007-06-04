@@ -16,7 +16,7 @@ class QWidget;
 class QGridLayout;
 class QCheckBox;
 class QGroupBox;
-class QButtonGroup;
+class QLabel;
 
 class MouseWidget : public QFrame
 {

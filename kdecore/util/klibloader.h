@@ -27,7 +27,6 @@
 #include <QtCore/qplugin.h>
 
 class QString;
-class QTimer;
 class KLibFactory;
 class KLibFactoryPrivate;
 class KLibraryPrivate;
@@ -118,7 +117,6 @@ private:
     void *symbol( const char* name ) const;
 };
 
-class KLibWrapPrivate;
 
 
 /**

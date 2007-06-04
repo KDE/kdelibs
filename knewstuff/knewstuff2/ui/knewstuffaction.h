@@ -23,7 +23,6 @@
 #include <knewstuff2/knewstuff_export.h>
 
 class QObject;
-class QWidget;
 class KAction;
 class KActionCollection;
 

@@ -35,7 +35,6 @@
 #include <kdialog.h>
 
 class KACLListViewItem;
-class QPushButton;
 class QButtonGroup;
 class KACLListView;
 class QStackedWidget;

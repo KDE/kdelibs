@@ -23,7 +23,6 @@
 #include <kio/kio_export.h>
 #include <QtCore/QVariant>
 
-class QIODevice;
 class KUrl;
 
 class KIO_EXPORT KFileWritePlugin : public QObject {

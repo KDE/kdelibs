@@ -26,7 +26,6 @@
 #include <QtGui/QPixmap>
 
 
-class QColorGroup;
 
 #include <k3listview.h>
 #include <kdirnotify.h>

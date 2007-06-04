@@ -26,8 +26,7 @@
 
 namespace KJS
 {
-    class Interpreter;
-    class JSObject;
+   class JSObject;
 }
 
 class ObjectNode

@@ -36,7 +36,6 @@
 class KIconLoader;
 class KComponentData;
 class QWidget;
-class KAction;
 class QEvent;
 class QPoint;
 struct QUnknownInterface;
@@ -590,7 +589,6 @@ private:
 
         Q_DISABLE_COPY(ReadOnlyPart)
         };
-
 class ReadWritePartPrivate;
 
 /**

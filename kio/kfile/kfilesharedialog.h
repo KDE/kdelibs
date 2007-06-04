@@ -21,7 +21,6 @@
 #define kfilesharedlg_h
 
 #include <kpropertiesdialog.h>
-class QVBoxLayout;
 class QRadioButton;
 class QPushButton;
 

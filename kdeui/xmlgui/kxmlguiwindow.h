@@ -38,13 +38,8 @@ class KMenu;
 class KXMLGUIFactory;
 class KConfig;
 class KConfigGroup;
-class KConfigBase;
-class KHelpMenu;
-class KStatusBar;
-class KMenuBar;
-class KMWSessionManager;
-class KXmlGuiWindowPrivate;
 class KToolBar;
+class KXmlGuiWindowPrivate;
 
 #define KDE_DEFAULT_WINDOWFLAGS 0
 

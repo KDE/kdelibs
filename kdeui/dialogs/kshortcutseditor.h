@@ -27,16 +27,9 @@
 #include <QtGui/QWidget>
 #include "kgesture.h"
 
-class QCheckBox;
-class QLabel;
-class QLineEdit;
-class QRadioButton;
-class QTreeWidgetItem;
 class KActionCollection;
-class KConfigBase;
 class KGlobalAccel;
 class KShortcut;
-class KShortcutsEditorItem;
 class KShortcutsEditorPrivate;
 
 // KShortcutsEditor expects that the list of existing shortcuts is already

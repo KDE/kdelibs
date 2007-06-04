@@ -26,7 +26,6 @@
 
 class K3ListView;
 class Q3ListViewItem;
-class QToolButton;
 
 /**
  * This class makes it easy to add a search line for filtering the items in

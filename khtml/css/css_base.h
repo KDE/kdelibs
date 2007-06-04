@@ -41,13 +41,8 @@ namespace DOM {
     class CSSSelector;
     class CSSProperty;
     class CSSValueImpl;
-    class CSSPrimitiveValueImpl;
-    class CSSStyleDeclarationImpl;
-    class CSSRuleImpl;
-    class CSSStyleRuleImpl;
-
-    class DocumentImpl;
-
+                
+    
     struct CSSNamespace {
         DOMString m_prefix;
         DOMString m_uri;

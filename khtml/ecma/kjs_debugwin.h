@@ -48,11 +48,9 @@
 
 class QListWidget;
 class QComboBox;
-class KActionCollection;
 class KAction;
 
 namespace KJS {
-  class FunctionImp;
   class List;
   class KJSDebugWin;
 

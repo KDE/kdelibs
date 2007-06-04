@@ -38,8 +38,7 @@ namespace DOM {
     class CSSPrimitiveValueImpl;
     class CSSStyleDeclarationImpl;
     class CSSProperty;
-    class CSSRuleListImpl;
-
+    
 
     struct ParseString {
 	unsigned short *string;

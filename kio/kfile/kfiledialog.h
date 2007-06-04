@@ -34,18 +34,10 @@
 
 class KAbstractFileWidget;
 class KFileWidget;
-class QCheckBox;
-class QHBoxLayout;
-class QGridLayout;
-class QLabel;
-class QMenu;
-class QVBoxLayout;
 
 class KActionCollection;
-class KDirOperator;
 class KUrlComboBox;
 class KFileFilterCombo;
-class KFileItem;
 class KPushButton;
 class KToolBar;
 class KPreviewWidgetBase;

@@ -33,7 +33,6 @@ DEALINGS IN THE SOFTWARE.
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 
-class KSelectionOwnerPrivate;
 
 /**
  This class implements claiming and owning manager selections, as described

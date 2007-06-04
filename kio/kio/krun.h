@@ -39,7 +39,6 @@ class KStartupInfo;
 class KJob;
 namespace KIO {
    class Job;
-   class StatJob;
 }
 
 /**

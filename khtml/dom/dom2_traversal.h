@@ -34,7 +34,6 @@
 namespace DOM {
 class Node;
 class NodeFilter;
-class NodeImpl;
 class NodeIteratorImpl;
 class NodeFilterImpl;
 class TreeWalkerImpl;

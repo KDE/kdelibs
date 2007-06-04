@@ -30,7 +30,6 @@
 #include "misc/loader.h"
 
 namespace Phonon {
-    class ByteStream;
     class AudioPath;
     class AudioOutput;
 }

@@ -35,7 +35,6 @@
 #include <kplugininfo.h>
 
 class KCModuleProxy;
-class KPluginSelecctor;
 class KIconLoader;
 class KDialog;
 class QLabel;

@@ -24,13 +24,6 @@
 #include <QtCore/QAtomicPointer>
 
 class KComponentData;
-class KCharsets;
-class KConfig;
-class KLocale;
-class KStandardDirs;
-class KStaticDeleterBase;
-class QString;
-class KSharedConfigPtr;
 
 namespace KGlobal
 {

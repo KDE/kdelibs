@@ -30,8 +30,6 @@
 
 class KComponentData;
 class KPluginInfo;
-class KCModuleInfo;
-class QTreeWidgetItem;
 
 
 /**

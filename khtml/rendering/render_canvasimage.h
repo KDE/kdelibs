@@ -37,7 +37,6 @@
 
 namespace khtml {
 
-class DocLoader;
 
 class RenderCanvasImage : public RenderImage
 {

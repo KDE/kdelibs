@@ -32,7 +32,6 @@ class KBookmarkMenu;
 class KonqBookmarkOwner;
 class KActionCollection;
 class KAction;
-class QMenu;
 class KBookmarkBarPrivate;
 
 /**

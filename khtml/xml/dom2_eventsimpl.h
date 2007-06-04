@@ -30,7 +30,6 @@
 
 #undef FOCUS_EVENT //for win32
 
-class KHTMLPart;
 class QMouseEvent;
 
 namespace DOM {

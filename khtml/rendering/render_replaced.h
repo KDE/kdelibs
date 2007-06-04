@@ -32,11 +32,6 @@
 class KHTMLView;
 class QWidget;
 
-namespace DOM
-{
-    class MouseEventImpl;
-}
-
 namespace khtml {
 
 class RenderReplaced : public RenderBox

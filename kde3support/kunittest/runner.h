@@ -38,7 +38,6 @@ using namespace std;
 #include "kunittest_export.h"
 #include "tester.h"
 
-class QSocketNotifier;
 
 namespace KUnitTest
 {

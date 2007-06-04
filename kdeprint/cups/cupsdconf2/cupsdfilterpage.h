@@ -24,7 +24,6 @@
 
 class SizeWidget;
 class QLineEdit;
-class QComboBox;
 class KIntNumInput;
 
 class CupsdFilterPage : public CupsdPage

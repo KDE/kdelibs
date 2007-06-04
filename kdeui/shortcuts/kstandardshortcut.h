@@ -24,7 +24,6 @@
 
 #include "kshortcut.h"
 
-class QKeyEvent;
 
 /**
  * \namespace KStandardShortcut

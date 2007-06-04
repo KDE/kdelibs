@@ -34,7 +34,6 @@
 
 namespace KNetwork {
 class KServerSocket;
-class KStreamSocket;
 }
 
 namespace KIO {

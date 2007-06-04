@@ -27,8 +27,7 @@
 
 namespace khtml {
     class RenderArena;
-    class RenderBlock;
-    class RenderObject;
+        class RenderObject;
     class InlineBox;
 
     class BidiContext {

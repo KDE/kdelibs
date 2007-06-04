@@ -30,8 +30,6 @@
 #include <QtCore/QList>
 
 class QAction;
-
-class KConfig;
 class KIconThemeDir;
 
 /**

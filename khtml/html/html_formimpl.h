@@ -31,7 +31,6 @@
 
 #include <Qt3Support/Q3PtrList>
 
-class KHTMLView;
 class QTextCodec;
 
 namespace khtml

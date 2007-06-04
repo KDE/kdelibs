@@ -27,7 +27,6 @@
 
 class KJob;
 class KUrlNavigator;
-class QPainter;
 class QPaintEvent;
 
 namespace KIO

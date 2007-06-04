@@ -31,7 +31,6 @@
 
 class QWidget;
 class KSSLCertBox;
-class KSSLCertChain;
 
 
 /**

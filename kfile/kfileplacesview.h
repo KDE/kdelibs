@@ -25,7 +25,6 @@
 
 #include <kurl.h>
 
-class QAbstractItemModel;
 class QResizeEvent;
 class QContextMenuEvent;
 
