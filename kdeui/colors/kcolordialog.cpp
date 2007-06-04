@@ -153,7 +153,7 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
     d->shade = true;
     setRowCount( rows );
     setColumnCount( cols );
-    
+
     verticalHeader()->hide();
     horizontalHeader()->hide();
 
@@ -186,14 +186,14 @@ QColor KColorCells::color(int index) const
     return d->colors[index];
 }
 
-void KColorCells::setShading(bool _shade) 
-{ 
-    d->shade = _shade; 
+void KColorCells::setShading(bool _shade)
+{
+    d->shade = _shade;
 }
 
-void KColorCells::setAcceptDrags(bool _acceptDrags) 
-{ 
-    d->acceptDrags = _acceptDrags; 
+void KColorCells::setAcceptDrags(bool _acceptDrags)
+{
+    d->acceptDrags = _acceptDrags;
 }
 
 void KColorCells::setSelected(int index)
@@ -204,8 +204,8 @@ void KColorCells::setSelected(int index)
 }
 
 int KColorCells::selectedIndex() const
-{	
-    return d->selected; 
+{
+    return d->selected;
 }
 
 void KColorCells::setColor( int column, const QColor &color )
@@ -265,8 +265,8 @@ void KColorCells::resizeEvent( QResizeEvent* )
     // of hidden headers as they should do.
     //
     // resizeColumnToContents() and resizeColumnsToContents() use completely different logic internally
-    // and the former correctly ignores the width of the header section for a column if the header is 
-    // hidden.  the latter does not.  the same applies to resizeRowToContents() and resizeRowsToContents() 
+    // and the former correctly ignores the width of the header section for a column if the header is
+    // hidden.  the latter does not.  the same applies to resizeRowToContents() and resizeRowsToContents()
     //
     // TODO - Update with Qt task tracker bug id when reported.
     //
@@ -400,7 +400,7 @@ class KColorPatch::KColorPatchPrivate
 {
 public:
     KColorPatchPrivate(KColorPatch *q): q(q) {}
-    
+
     KColorPatch *q;
     QColor color;
 };
@@ -458,13 +458,13 @@ class KPaletteTable::KPaletteTablePrivate
 {
 public:
   KPaletteTablePrivate(KPaletteTable *q): q(q) {}
-  
+
   void slotColorCellSelected( int index , const QColor& );
   void slotColorCellDoubleClicked( int index , const QColor& );
   void slotColorTextSelected( const QString &colorText );
   void slotSetPalette( const QString &_paletteName );
   void slotShowNamedColorReadError( void );
-  
+
   KPaletteTable *q;
   QString i18n_namedColors;
   QComboBox *combo;
@@ -473,7 +473,7 @@ public:
   KListWidget *mNamedColorList;
   KPalette *mPalette;
   int mMinWidth;
-  int mCols;  
+  int mCols;
   QMap<QString,QColor> m_namedColorMap;
 };
 
@@ -837,7 +837,7 @@ class KCDPickerFilter;
 class KColorDialog::KColorDialogPrivate {
 public:
     KColorDialogPrivate(KColorDialog *q): q(q) {}
-  
+
     void setRgbEdit( const QColor &col );
     void setHsvEdit( const QColor &col );
     void setHtmlEdit( const QColor &col );
@@ -874,11 +874,11 @@ public:
 	 * Returns the mode.
 	 */
 	KColorChooserMode chooserMode ();
-	
+
 	/**
 	 * Sets a mode. Updates the color picker and the color bar.
 	 */
-	void setChooserMode (KColorChooserMode c);    
+	void setChooserMode (KColorChooserMode c);
 
     KColorDialog *q;
     KPaletteTable *table;
@@ -902,12 +902,12 @@ public:
     QRadioButton *rmode;
     QRadioButton *gmode;
     QRadioButton *bmode;
-        
+
     KColorPatch *patch;
     KColorPatch *comparePatch;
-    
+
     KColorChooserMode _mode;
-    
+
     KHueSaturationSelector *hsSelector;
     KPalette *palette;
     KColorValueSelector *valuePal;
@@ -1034,7 +1034,7 @@ KColorDialog::KColorDialog( QWidget *parent, bool modal )
   connect( d->sedit, SIGNAL( valueChanged(int) ),
            SLOT( slotHSVChanged() ) );
   connect( d->smode, SIGNAL( clicked() ),
-           SLOT (setSMode()));  	
+           SLOT (setSMode()));
 
   d->vmode = new QRadioButton(i18n("Value:"), page);
   l_lbot->addWidget(d->vmode, 2, 0);
@@ -1272,8 +1272,8 @@ QColor KColorDialog::defaultColor() const
 
 void KColorDialog::KColorDialogPrivate::setChooserMode( KColorChooserMode c )
 {
-    _mode = c; 
-    hsSelector->setChooserMode(c); 
+    _mode = c;
+    hsSelector->setChooserMode(c);
     valuePal->setChooserMode(c);
 
     updateModeButtons();
@@ -1548,7 +1548,7 @@ void KColorDialog::KColorDialogPrivate::slotHSChanged( int x, int y )
       case ChooserValue:
       default:
           col.setHsv( x, y, _v );
-          break;	
+          break;
   }
   _setColor( col );
 }
@@ -1586,8 +1586,8 @@ void KColorDialog::KColorDialogPrivate::slotVChanged( int v )
 	case ChooserValue:
 	default:
                 col.setHsv( _h, _s, v );
-		break;		
-  }  
+		break;
+  }
 
   _setColor( col );
 }
@@ -1666,41 +1666,41 @@ void KColorDialog::KColorDialogPrivate::showColor( const QColor &color, const QS
 	case ChooserRed:
 	  hsSelector->setValues( color.green(), color.blue() );
           valuePal->setValue(color.red());
-          break;		
+          break;
 	case ChooserGreen:
 	  hsSelector->setValues( color.red(), color.blue() );
           valuePal->setValue(color.green());
-          break;		
+          break;
 	case ChooserBlue:
 	  hsSelector->setValues( color.green(), color.red() );
           valuePal->setValue(color.blue());
-          break;		
+          break;
 	case ChooserHue:
 	default:
 	  	  hsSelector->setValues( color.saturation(), color.value() );
           valuePal->setValue(color.hue());
           break;
-	
+
   }
-  
+
   bool blocked = valuePal->blockSignals(true);
-  
+
   valuePal->setHue( color.hue() );
   valuePal->setSaturation( color.saturation() );
   valuePal->setColorValue( color.value() );
   valuePal->updateContents();
   valuePal->blockSignals(blocked);
   valuePal->repaint();
-  
+
   blocked = hsSelector->blockSignals(true);
-  
+
   hsSelector->setHue( color.hue() );
   hsSelector->setSaturation( color.saturation() );
   hsSelector->setColorValue( color.value() );
   hsSelector->updateContents();
   hsSelector->blockSignals(blocked);
   hsSelector->repaint();
-  
+
   bRecursion = false;
 }
 
