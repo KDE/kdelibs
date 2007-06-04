@@ -1,6 +1,7 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
     Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -34,28 +35,16 @@ Solid::PortableMediaPlayer::~PortableMediaPlayer()
 
 }
 
-Solid::PortableMediaPlayer::AccessType Solid::PortableMediaPlayer::accessMethod() const
+QStringList Solid::PortableMediaPlayer::supportedProtocols() const
 {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), Proprietary, accessMethod());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), supportedProtocols());
 }
 
-QStringList Solid::PortableMediaPlayer::outputFormats() const
+QStringList Solid::PortableMediaPlayer::supportedDrivers(QString protocol) const
 {
     Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), outputFormats());
-}
-
-QStringList Solid::PortableMediaPlayer::inputFormats() const
-{
-    Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), inputFormats());
-}
-
-QStringList Solid::PortableMediaPlayer::playlistFormats() const
-{
-    Q_D(const PortableMediaPlayer);
-    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), playlistFormats());
+    return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QStringList(), supportedDrivers(protocol));
 }
 
 #include "portablemediaplayer.moc"

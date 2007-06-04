@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,10 +37,8 @@ public:
     PortableMediaPlayer(HalDevice *device);
     virtual ~PortableMediaPlayer();
 
-    virtual Solid::PortableMediaPlayer::AccessType accessMethod() const;
-    virtual QStringList outputFormats() const;
-    virtual QStringList inputFormats() const;
-    virtual QStringList playlistFormats() const;
+    virtual QStringList supportedProtocols() const;
+    virtual QStringList supportedDrivers(QString protocol = QString()) const;
 };
 
 #endif

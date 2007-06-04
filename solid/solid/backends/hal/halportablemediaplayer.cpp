@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -30,33 +31,25 @@ PortableMediaPlayer::~PortableMediaPlayer()
 
 }
 
-Solid::PortableMediaPlayer::AccessType PortableMediaPlayer::accessMethod() const
+QStringList PortableMediaPlayer::supportedProtocols() const
 {
-    QString type = m_device->property("portable_audio_player.access_method").toString();
+    return m_device->property("portable_audio_player.access_method.protocols").toStringList();
+}
 
-    if (type == "storage")
+QStringList PortableMediaPlayer::supportedDrivers(QString protocol) const
+{
+    QStringList drivers = m_device->property("portable_audio_player.access_method.drivers").toStringList();
+    if(protocol.isNull())
+        return drivers;
+    QStringList returnedDrivers;
+    QString temp;
+    for(int i = 0; i < drivers.size(); i++)
     {
-        return Solid::PortableMediaPlayer::MassStorage;
+        temp = drivers.at(i);
+        if(m_device->property("portable_audio_player." + temp + ".protocol") == protocol)
+            returnedDrivers << temp;
     }
-    else
-    {
-        return Solid::PortableMediaPlayer::Proprietary;
-    }
-}
-
-QStringList PortableMediaPlayer::outputFormats() const
-{
-    return m_device->property("portable_audio_player.output_formats").toStringList();
-}
-
-QStringList PortableMediaPlayer::inputFormats() const
-{
-    return m_device->property("portable_audio_player.input_formats").toStringList();
-}
-
-QStringList PortableMediaPlayer::playlistFormats() const
-{
-    return m_device->property("portable_audio_player.playlist_format").toStringList();
+    return returnedDrivers;
 }
 
 #include "backends/hal/halportablemediaplayer.moc"

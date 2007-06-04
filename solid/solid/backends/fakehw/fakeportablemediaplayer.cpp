@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -32,33 +33,14 @@ FakePortableMediaPlayer::~FakePortableMediaPlayer()
 
 }
 
-Solid::PortableMediaPlayer::AccessType FakePortableMediaPlayer::accessMethod() const
+QStringList FakePortableMediaPlayer::supportedProtocols() const
 {
-    QString type = fakeDevice()->property("accessMethod").toString();
-
-    if (type == "MassStorage")
-    {
-        return Solid::PortableMediaPlayer::MassStorage;
-    }
-    else
-    {
-        return Solid::PortableMediaPlayer::Proprietary;
-    }
+    return fakeDevice()->property("supportedProtocols").toString().simplified().split(',');
 }
 
-QStringList FakePortableMediaPlayer::outputFormats() const
+QStringList FakePortableMediaPlayer::supportedDrivers(QString protocol) const
 {
-    return fakeDevice()->property("outputFormats").toString().simplified().split(',');
-}
-
-QStringList FakePortableMediaPlayer::inputFormats() const
-{
-    return fakeDevice()->property("inputFormats").toString().simplified().split(',');
-}
-
-QStringList FakePortableMediaPlayer::playlistFormats() const
-{
-    return fakeDevice()->property("playlistFormats").toString().simplified().split(',');
+    return fakeDevice()->property("supportedDrivers").toString().simplified().split(',');
 }
 
 #include "backends/fakehw/fakeportablemediaplayer.moc"

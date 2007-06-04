@@ -1,5 +1,6 @@
 /*  This file is part of the KDE project
     Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -28,7 +29,7 @@ namespace Solid
 namespace Ifaces
 {
     /**
-     * This class implement Portable Media Player device interface and represent
+     * This class implements Portable Media Player device interface and represents
      * a portable media player attached to the system.
      * A portable media player is a portable device able to play multimedia files.
      * Some of them have even recording capabilities.
@@ -43,38 +44,21 @@ namespace Ifaces
         virtual ~PortableMediaPlayer();
 
         /**
-         * Retrieves the type of method that should be used to access this
-         * device.
+         * Retrieves known protocols this device can speak.  This list may be dependent
+         * on installed device driver libraries.
          *
-         * @return the access method type
-         * @see Solid::PortableMediaPlayer::AccessType
+         * @return a list of known protocols this device can speak
          */
-        virtual Solid::PortableMediaPlayer::AccessType accessMethod() const = 0;
+        virtual QStringList supportedProtocols() const = 0;
 
         /**
-         * Retrieves a list of MIME-types representing the kind of formats
-         * that the device can play back.
+         * Retrieves known installed device drivers that claim to handle this device
+         * using the requested protocol.
          *
-         * @return a MIME-type list of the supported output formats
+         * @param protocol The protocol to get drivers for.
+         * @return a list of known device drivers that can handle this device
          */
-        virtual QStringList outputFormats() const = 0;
-
-        /**
-         * Retrieves a list of MIME-types representing the kind of formats
-         * that the device can record. If empty, it means that the device
-         * is not capable of recording.
-         *
-         * @return a MIME-type list of the supported input formats
-         */
-        virtual QStringList inputFormats() const = 0;
-
-        /**
-         * Retrieves a list of MIME-types representing playlist formats
-         * that the device can read.
-         *
-         * @return a MIME-type list of the supported playlist formats
-         */
-        virtual QStringList playlistFormats() const = 0;
+        virtual QStringList supportedDrivers(QString protocol = QString()) const = 0;
     };
 }
 }
