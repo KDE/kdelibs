@@ -331,7 +331,7 @@ install( FILES
    #services/kservicetypefactory.h: do not install, internal API
    services/kservicetypeprofile.h
    services/kservicetypetrader.h
-   services/kserviceoffer.h
+   #services/kserviceoffer.h: do not install, internal API
    services/kplugininfo.h
    localization/kcatalog.h
    localization/kcharsets.h
