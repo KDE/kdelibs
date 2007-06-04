@@ -86,8 +86,18 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     Manager::self().actionCollection()->readXmlResources("data", partname + "/scripts/*.rc");
 }
 
+//FIXME cleanup only what really needs cleanup
+void finalizeCollection(Kross::ActionCollection* c)
+{
+    foreach(Kross::Action* a, c->actions())
+        a->finalize();
+    foreach(QString s, c->collections())
+        finalizeCollection( c->collection(s) );
+}
+
 GUIClient::~GUIClient()
 {
+    finalizeCollection( Kross::Manager::self().actionCollection() );
     delete d;
 }
 
