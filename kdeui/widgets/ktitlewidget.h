@@ -67,14 +67,24 @@ class KDEUI_EXPORT KTitleWidget : public QWidget
 
 public:
     /**
-     * This is the enumeration of the possible title pixmap alignments.
+     * Possible title pixmap alignments.
+     */
+    enum ImageAlignment {
+        ImageLeft /*<< Display the pixmap on the left */,
+        ImageRight /*<< Display the pixmap on the right */
+    };
+
+    /**
+     * Comment message types
      *
      * @li ImageLeft: Display the pixmap left
      * @li ImageRight: Display the pixmap right (default)
      */
-    enum ImageAlignment {
-        ImageLeft,
-        ImageRight
+    enum CommentType {
+        PlainMessage /*<< Normal comment */,
+        InfoMessage /*<< Information the user should be alerted to */,
+        WarningMessage /*<< A warning the user should be alerted to */,
+        ErrorMessage /*<< An error message */
     };
 
     /**
@@ -93,6 +103,11 @@ public:
      * @return the text displayed in the title
      */
     QString text() const;
+
+    /**
+     * @return the text displayed in the comment below the title, if any
+     */
+    QString comment() const;
 
     /**
      * @return the pixmap displayed in the title
@@ -115,6 +130,12 @@ public Q_SLOTS:
      * @param alignment Alignment of the text. Default is left and vertical centered.
      */
     void setText(const QString &text, Qt::Alignment alignment = Qt::AlignLeft | Qt::AlignVCenter);
+
+    /**
+     * @param comment Text displayed beneath the main title as a comment.
+     *                It can either be plain text or rich text.
+     */
+    void setComment(const QString &comment, CommentType type = PlainMessage);
 
     /**
      * @param pixmap Pixmap displayed in the header. The pixmap is by default right, but

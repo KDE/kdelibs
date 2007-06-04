@@ -33,6 +33,7 @@ public:
     QGridLayout *headerLayout;
     QLabel *imageLabel;
     QLabel *textLabel;
+    QLabel *commentLabel;
 //    QWidget *headerWidget;
 };
 
@@ -55,7 +56,10 @@ KTitleWidget::KTitleWidget(QWidget *parent)
     d->headerLayout->addWidget(d->textLabel, 0, 0);
 
     d->imageLabel = new QLabel(titleFrame);
-    d->headerLayout->addWidget(d->imageLabel, 0, 1);
+    d->headerLayout->addWidget(d->imageLabel, 0, 1, 1, 2);
+
+    d->commentLabel = new QLabel(titleFrame);
+    d->headerLayout->addWidget(d->commentLabel, 1, 0);
 
     // default image / text part end
 
@@ -72,12 +76,17 @@ KTitleWidget::~KTitleWidget()
 
 void KTitleWidget::setWidget(QWidget *widget)
 {
-    d->headerLayout->addWidget(widget, 2, 0, 2, 2);
+    d->headerLayout->addWidget(widget, 2, 0, 1, 2);
 }
 
 QString KTitleWidget::text() const
 {
     return d->textLabel->text();
+}
+
+QString KTitleWidget::comment() const
+{
+    return d->commentLabel->text();
 }
 
 const QPixmap *KTitleWidget::pixmap() const
@@ -102,23 +111,51 @@ void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
 //    d->headerWidget->setVisible(true);
 }
 
+void KTitleWidget::setComment(const QString &comment, CommentType type)
+{
+    QString styleSheet;
+    switch (type) {
+        //FIXME: we need the usability color styles to implement different
+        //       yet palette appropriate colours for the different use cases!
+        //       also .. should we include an icon here,
+        //       perhaps using the imageLabel?
+        case InfoMessage:
+        case WarningMessage:
+        case ErrorMessage:
+            styleSheet = QString("QLabel { font-color: %1; background: %2 }")
+                                .arg(palette().color(QPalette::Active,
+                                                     QPalette::HighlightedText).name(),
+                                     palette().color(QPalette::Active,
+                                                     QPalette::Highlight).name());
+            break;
+        case PlainMessage:
+        default:
+            break;
+    }
+
+    d->commentLabel->setStyleSheet(styleSheet);
+    d->commentLabel->setText(comment);
+}
+
 void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
 {
+    d->headerLayout->removeWidget(d->textLabel);
+    d->headerLayout->removeWidget(d->commentLabel);
+    d->headerLayout->removeWidget(d->imageLabel);
+
     if (alignment == ImageLeft) {
         // swap the text and image labels around
-        d->headerLayout->removeWidget(d->textLabel); 
-        d->headerLayout->removeWidget(d->imageLabel);
-        d->headerLayout->addWidget(d->imageLabel, 0, 0);
+        d->headerLayout->addWidget(d->imageLabel, 0, 0, 2, 1);
         d->headerLayout->addWidget(d->textLabel, 0, 1);
+        d->headerLayout->addWidget(d->commentLabel, 1, 1);
         d->headerLayout->setColumnStretch(0, 0);
         d->headerLayout->setColumnStretch(1, 1);
     }
 
     if (alignment == ImageRight) {
-        d->headerLayout->removeWidget(d->imageLabel);
-        d->headerLayout->addWidget(d->imageLabel);
         d->headerLayout->addWidget(d->textLabel, 0, 0);
-        d->headerLayout->addWidget(d->imageLabel, 0, 1);
+        d->headerLayout->addWidget(d->commentLabel, 1, 0);
+        d->headerLayout->addWidget(d->imageLabel, 0, 1, 2, 1);
         d->headerLayout->setColumnStretch(1, 0);
         d->headerLayout->setColumnStretch(0, 1);
     }
