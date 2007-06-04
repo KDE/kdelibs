@@ -229,7 +229,7 @@ if (Q_WS_X11)
 endif (Q_WS_X11)
 if (Q_WS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_mac.cpp
-       )     
+       )
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp)
@@ -242,7 +242,7 @@ set( kdeui_UI
    dialogs/knewpassworddialog.ui
    dialogs/kshortcutsdialog.ui
    widgets/kshortcutwidget.ui
-   sonnet/kspell2ui.ui 
+   sonnet/kspell2ui.ui
    sonnet/configui.ui
    )
 
@@ -282,7 +282,7 @@ install( FILES
  actions/kactioncollection.h
  actions/kaction.h
  actions/kactionmenu.h
- actions/kcodecaction.h
+ actions/kcodecaction.hh
  actions/kfontaction.h
  actions/kfontsizeaction.h
  actions/kpastetextaction.h
@@ -443,11 +443,11 @@ install( FILES
  xmlgui/kxmlguifactory.h
  DESTINATION ${INCLUDE_INSTALL_DIR})
 
-install( FILES 
-  sonnet/dialog.h 
-  sonnet/highlighter.h 
-  sonnet/configdialog.h   
-  sonnet/configwidget.h  
+install( FILES
+  sonnet/dialog.h
+  sonnet/highlighter.h
+  sonnet/configdialog.h
+  sonnet/configwidget.h
   DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
