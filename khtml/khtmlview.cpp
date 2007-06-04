@@ -1252,8 +1252,17 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     if ( ( mailtoCursor || newWindowCursor ) && isVisible() && hasFocus() ) {
 #ifdef Q_WS_X11
+        QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( mailtoCursor ? "mail_generic" : "window_new", KIcon::Small, 0, KIcon::DefaultState, 0, true );
+
+        if (d->cursor_icon_widget) {
+            const QPixmap *pm = d->cursor_icon_widget->backgroundPixmap();
+            if (!pm || pm->serialNumber()!=icon_pixmap.serialNumber()) {
+                delete d->cursor_icon_widget;
+                d->cursor_icon_widget = 0;
+            }
+        }
+
         if( !d->cursor_icon_widget ) {
-            QPixmap icon_pixmap = KGlobal::iconLoader()->loadIcon( mailtoCursor ? "mail_generic" : "window_new", KIcon::Small, 0, KIcon::DefaultState, 0, true );
             d->cursor_icon_widget = new QWidget( NULL, NULL, WX11BypassWM );
             XSetWindowAttributes attr;
             attr.save_under = True;
