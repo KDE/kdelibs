@@ -334,21 +334,6 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
     d->collection->addAction("remove", removeaction);
     connect(removeaction, SIGNAL(triggered()), this, SLOT(slotRemove()) );
 
-    /*
-    d->newstuffbtn = new KAction(KIcon("get-hot-new-stuff"), i18n("Get New Scripts"), this);
-    d->newstuffbtn->setToolTip( i18n("Get new scripts from the internet.") );
-    d->collection->addAction("newstuff", d->newstuffbtn);
-    //TODO connect(d->newstuffbtn, SIGNAL(clicked()), this, SLOT(slotNewScripts()) );
-    */
-
-    //i18n("About"), i18n("Configure")
-
-    KAction* manageraction = new KAction(KIcon("configure"), i18n("Script Manager"), this);
-    manageraction->setObjectName("manager");
-    manageraction->setToolTip( i18n("Script Manager to configure scripts.") );
-    d->collection->addAction("manager", manageraction);
-    connect(manageraction, SIGNAL(triggered()), this, SLOT(slotShowScriptManager()) );
-
     connect(this, SIGNAL(enabledChanged(const QString&)), this, SLOT(slotEnabledChanged(const QString&)));
     //expandAll();
 }
@@ -461,11 +446,6 @@ void ActionCollectionView::slotSelectionChanged()
 void ActionCollectionView::slotDataChanged(const QModelIndex&, const QModelIndex&)
 {
     d->modified = true;
-}
-
-void ActionCollectionView::slotShowScriptManager()
-{
-    GUIClient::showScriptManager();
 }
 
 void ActionCollectionView::slotRun()

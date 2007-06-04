@@ -48,8 +48,6 @@ namespace Kross {
         public:
             /// The \a KXMLGUIClient that is parent of the \a GUIClient instance.
             KXMLGUIClient* guiclient;
-            /// The collection of installed script-packages.
-            //KActionCollection* actions;
             /// The menu used to display the scripts.
             KActionMenu* scriptsmenu;
     };
@@ -64,7 +62,6 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     setComponentData( GUIClient::componentData() );
 
     d->guiclient = guiclient;
-    //d->actions = Manager::self().actionCollection();
 
     d->scriptsmenu = new KActionMenu(i18n("Scripts"), this);
     actionCollection()->addAction("scripts", d->scriptsmenu);
@@ -91,7 +88,6 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
 
 GUIClient::~GUIClient()
 {
-    //krossdebug("GUIClient::~GUIClient()");
     delete d;
 }
 
@@ -219,12 +215,6 @@ void GUIClient::slotShowExecuteScriptFile()
     showExecuteScriptFile();
 }
 
-void GUIClient::slotShowScriptManager()
-{
-    krossdebug( QString("GUIClient::slotShowScriptManager") );
-    showScriptManager();
-}
-
 void GUIClient::started(Kross::Action* action)
 {
     Q_UNUSED(action);
@@ -261,16 +251,6 @@ bool GUIClient::showExecuteScriptFile()
     filedialog->setOperationMode( KFileDialog::Opening );
     filedialog->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
     return filedialog->exec() ? Manager::self().executeScriptFile( filedialog->selectedUrl().path() ) : false;
-}
-
-bool GUIClient::showScriptManager()
-{
-    QObject* obj = Manager::self().module("scriptmanager");
-    if( obj )
-        if( QMetaObject::invokeMethod(obj, "showManagerDialog") )
-            return true; // successfully called the method.
-    KMessageBox::sorry(0, i18n("Failed to load the Script Manager."));
-    return false;
 }
 
 #include "guiclient.moc"

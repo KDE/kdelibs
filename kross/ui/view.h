@@ -281,11 +281,6 @@ namespace Kross {
             */
             virtual void slotSelectionChanged();
 
-            /**
-            * This slot got called if the "Script Manager" should be displayed.
-            */
-            virtual void slotShowScriptManager();
-
         protected:
 
             /**

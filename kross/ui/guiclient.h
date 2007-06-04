@@ -70,57 +70,34 @@ namespace Kross {
              */
             virtual void setDOMDocument(const QDomDocument &document, bool merge = false);
 
-#if 0
-            /**
-             * \return the KActionCollection which holds the list of \a Action instances.
-             */
-            KActionCollection* scriptsActionCollection() const;
-
-            /**
-             * This method tries to determinate all available packages and fills
-             * the configuration with actions defined there.
-             */
-            bool writeConfigFromPackages();
-#endif
-
             /**
             * Show a KFileDialog to select a script file that should be executed.
             */
             static bool showExecuteScriptFile();
-
-            /**
-            * Show the "Script Manager" dialog defined in the \a ScriptManagerModule
-            * to let the user manage the script files.
-            */
-            static bool showScriptManager();
 
         public Q_SLOTS:
 
             /**
             * Show a modal KFileDialog to select a script file that should be executed.
             */
-            void slotShowExecuteScriptFile();
+            virtual void slotShowExecuteScriptFile();
 
-            /**
-            * Show the modal "Script Manager" dialog.
-            */
-            void slotShowScriptManager();
+        protected Q_SLOTS:
 
-        private Q_SLOTS:
             /**
              * Called before the "Scripts" menu is shown to update the list of displayed scripts.
              */
-            void slotMenuAboutToShow();
+            virtual void slotMenuAboutToShow();
 
             /**
              * Called if execution started.
              */
-            void started(Kross::Action*);
+            virtual void started(Kross::Action*);
 
             /**
              * Called if execution finished.
              */
-            void finished(Kross::Action*);
+            virtual void finished(Kross::Action*);
 
         private:
             /// \internal d-pointer class.
