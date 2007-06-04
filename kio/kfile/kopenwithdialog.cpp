@@ -44,6 +44,7 @@
 #include <kurlrequester.h>
 #include <kmimetype.h>
 #include <kservicegroup.h>
+#include <kserviceoffer.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -854,6 +855,7 @@ void KOpenWithDialogPrivate::_k_slotOK()
   int maxPreference = 1;
   if (!qMimeType.isEmpty())
   {
+    // Find max highest preference from either initial preference or from profile
     const KServiceOfferList offerList = KMimeTypeTrader::self()->weightedOffers( qMimeType );
     if (!offerList.isEmpty())
       maxPreference = offerList.first().preference();
