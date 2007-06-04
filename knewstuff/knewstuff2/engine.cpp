@@ -92,7 +92,7 @@ void Engine::workflow()
 
 	if(m_modal)
 	{
-		while(m_command == command_upload)
+		while((m_command == command_upload) || (m_command == command_download))
 		{
 			kapp->processEvents();
 		}
