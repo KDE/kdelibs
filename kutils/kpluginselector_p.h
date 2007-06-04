@@ -158,6 +158,7 @@ public:
                              // addPlugins(const QList<KPluginInfo*> &pluginInfoList ...
                              // Mainly for only updating the plugins that were manually
                              // added when calling to updatePluginsState()
+        bool alternateColor;
     };
 
     PluginModel(KPluginSelector::Private *parent);
@@ -195,6 +196,8 @@ public:
     // Own methods
 
     AddMethod addMethod(KPluginInfo *pluginInfo) const;
+
+    bool alternateColor(KPluginInfo *pluginInfo) const;
 
 private:
     QList<KConfigGroup*> groupsToRemove;

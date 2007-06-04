@@ -279,6 +279,7 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
 
     KConfigGroup *providedConfigGroup = 0;
     int addedPlugins = 0;
+    bool alternateColor = pluginCount.contains(categoryName) ? ((pluginCount[categoryName] % 2) != 0) : false;
     foreach (KPluginInfo *pluginInfo, pluginInfoList)
     {
         if (!pluginInfo->isHidden() &&
@@ -303,12 +304,15 @@ void KPluginSelector::Private::PluginModel::appendPluginList(const KPluginInfo::
             else
                 pluginAdditionalInfo.itemChecked = Qt::Unchecked;
 
+            pluginAdditionalInfo.alternateColor = alternateColor;
+
             pluginAdditionalInfo.configGroup = pluginInfo->config() ? providedConfigGroup : configGroup;
             pluginAdditionalInfo.addMethod = addMethod;
 
             additionalInfo.insert(pluginInfo, pluginAdditionalInfo);
 
             addedPlugins++;
+            alternateColor = !alternateColor;
         }
     }
 
@@ -543,6 +547,11 @@ KPluginSelector::Private::PluginModel::AddMethod KPluginSelector::Private::Plugi
     return additionalInfo[pluginInfo].addMethod;
 }
 
+bool KPluginSelector::Private::PluginModel::alternateColor(KPluginInfo *pluginInfo) const
+{
+    return additionalInfo[pluginInfo].alternateColor;
+}
+
 
 // =============================================================
 
@@ -770,10 +779,12 @@ void KPluginSelector::Private::PluginDelegate::paint(QPainter *painter, const QS
         }
         else
         {
-            if (((index.row() - 1) >= 0) && !(index.model()->index(index.row() - 1, 0).internalPointer()))
-                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
-            else if ((index.row() - 1) % 2)
+            KPluginInfo *info = static_cast<KPluginInfo*>(index.internalPointer());
+
+            if (model->alternateColor(info))
                 painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::AlternateBase));
+            else
+                painter->fillRect(optionCopy.rect, optionCopy.palette.color(QPalette::Base));
         }
 
         QString display;
