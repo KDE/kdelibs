@@ -53,13 +53,13 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
+ colors/kcolorutils.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
  colors/kcolordialog.cpp
  colors/kcolormimedata.cpp
  colors/kcolorvalueselector.cpp
  colors/khuesaturationselect.cpp
- colors/kgraphicsutils.cpp
  config/kconfigskeleton.cpp
  config/kconfiggroupgui.cpp
  dialogs/kaboutkdedialog.cpp
@@ -282,7 +282,7 @@ install( FILES
  actions/kactioncollection.h
  actions/kaction.h
  actions/kactionmenu.h
- actions/kcodecaction.hh
+ actions/kcodecaction.h
  actions/kfontaction.h
  actions/kfontsizeaction.h
  actions/kpastetextaction.h
@@ -295,6 +295,7 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
+ colors/kcolorutils.h
  colors/kcolorbutton.h
  colors/kcolorchoosermode.h
  colors/kcolorcombo.h
@@ -302,7 +303,6 @@ install( FILES
  colors/kcolormimedata.h
  colors/kcolorvalueselector.h
  colors/khuesaturationselect.h
- colors/kgraphicsutils.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kaboutkdedialog.h
