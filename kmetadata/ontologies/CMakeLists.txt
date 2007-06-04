@@ -1,4 +1,6 @@
 install(FILES
+  nrl.rdfs
+  nrl.desktop
   nao.nrl
   nao.desktop
   nfo.rdfs
