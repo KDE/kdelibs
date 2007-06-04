@@ -168,6 +168,18 @@ class PHONON_EXPORT AbstractMediaStream : public QObject
         void error(Phonon::ErrorType errorType, const QString &errorString);
 
         /**
+         * Reimplement this function to reset the stream. Subsequent calls to writeData should start
+         * from the first position of the data unless a seek is requested.
+         *
+         * The function is necessary for the case where a non-seekable MediaStream is
+         * played more than once. For a seekable stream the implementation can simply call
+         * \code
+         * seekStream(0);
+         * \endcode.
+         */
+        virtual void reset() = 0;
+
+        /**
          * Reimplement this function to be notified when the backend needs data.
          *
          * When this function is called you should try to call writeData or endOfData before

@@ -76,6 +76,9 @@ void AbstractMediaStream::setStreamSeekable(bool s)
 void AbstractMediaStream::writeData(const QByteArray &data)
 {
     Q_D(AbstractMediaStream);
+    if (d->ignoreWrites) {
+        return;
+    }
     Q_ASSERT(d->streamInterface);
     d->streamInterface->writeData(data);
 }
@@ -119,12 +122,24 @@ AbstractMediaStreamPrivate::~AbstractMediaStreamPrivate()
 
 void AbstractMediaStreamPrivate::setStreamInterface(StreamInterface *iface)
 {
+    Q_Q(AbstractMediaStream);
     streamInterface = iface;
     if (!iface) {
+        // our subclass might be just about to call writeData, so tell it we have enoughData and
+        // ignore the next writeData calls
+        q->enoughData();
+        ignoreWrites = true;
         return;
     }
-    iface->setStreamSize(streamSize);
-    iface->setStreamSeekable(streamSeekable);
+    if (ignoreWrites) {
+        ignoreWrites = false;
+        // we had a StreamInterface before. The new StreamInterface expects us to start reading from
+        // position 0
+        q->reset();
+    } else {
+        iface->setStreamSize(streamSize);
+        iface->setStreamSeekable(streamSeekable);
+    }
 }
 
 void AbstractMediaStreamPrivate::setMediaObjectPrivate(MediaObjectPrivate *mop)

@@ -31,7 +31,22 @@ namespace Phonon
 KioMediaStream::KioMediaStream(const QUrl &url, QObject *parent)
     : AbstractMediaStream(*new KioMediaStreamPrivate(url), parent)
 {
+    reset();
+}
+
+void KioMediaStream::reset()
+{
     Q_D(KioMediaStream);
+    if (d->kiojob) {
+        d->kiojob->disconnect(this);
+        d->kiojob->kill();
+
+        d->endOfDataSent = false;
+        d->seeking = false;
+        d->reading = false;
+        d->open = false;
+        d->seekPosition = 0;
+    }
 
     if (KProtocolManager::supportsOpening(d->url)) {
         d->kiojob = KIO::open(d->url, QIODevice::ReadOnly);
@@ -47,6 +62,7 @@ KioMediaStream::KioMediaStream(const QUrl &url, QObject *parent)
         setStreamSeekable(false);
         connect(d->kiojob, SIGNAL(totalSize(KJob *, qulonglong)),
                 this, SLOT(_k_bytestreamTotalSize(KJob *,qulonglong)));
+        d->kiojob->suspend();
     }
 
     d->kiojob->addMetaData("UserAgent", QLatin1String("KDE Phonon"));

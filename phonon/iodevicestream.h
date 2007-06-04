@@ -36,6 +36,7 @@ class IODeviceStream : public AbstractMediaStream
         explicit IODeviceStream(QIODevice *ioDevice, QObject *parent = 0);
         ~IODeviceStream();
 
+        void reset();
         void needData();
         void seekStream(qint64);
 };

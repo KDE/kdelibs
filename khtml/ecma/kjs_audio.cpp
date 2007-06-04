@@ -294,6 +294,11 @@ void AudioQObject::finished()
     }
 }
 
+void AudioQObject::reset()
+{
+    m_offset = 0;
+}
+
 void AudioQObject::needData()
 {
     if (m_offset > 0) {

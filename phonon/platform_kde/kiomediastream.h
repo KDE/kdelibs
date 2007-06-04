@@ -38,6 +38,7 @@ class KioMediaStream : public AbstractMediaStream
         ~KioMediaStream();
 
     protected:
+        void reset();
         void needData();
         void enoughData();
         void seekStream(qint64);

@@ -43,6 +43,7 @@ class PHONON_EXPORT AbstractMediaStreamPrivate : private BaseDestructionHandler
         AbstractMediaStreamPrivate()
             : streamSize(0),
             streamSeekable(false),
+            ignoreWrites(false),
             streamInterface(0),
             mediaObjectPrivate(0)
         {
@@ -54,6 +55,7 @@ class PHONON_EXPORT AbstractMediaStreamPrivate : private BaseDestructionHandler
         AbstractMediaStream *q_ptr;
         qint64 streamSize;
         bool streamSeekable;
+        bool ignoreWrites;
         StreamInterface *streamInterface;
         MediaObjectPrivate *mediaObjectPrivate;
         Phonon::ErrorType errorType;

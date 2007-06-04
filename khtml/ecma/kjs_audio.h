@@ -104,6 +104,7 @@ namespace KJS {
       void loop(int n=-1);
 
   protected:
+      void reset();
       void needData();
       void enoughData();
       void seekStream(qint64 offset);

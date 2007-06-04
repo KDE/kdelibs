@@ -159,6 +159,7 @@ void MediaSourceTest::testDiscType()
 class Stream : public AbstractMediaStream
 {
     public:
+        void reset() {}
         void needData() {}
         void enoughData() {}
 };

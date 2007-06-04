@@ -32,6 +32,12 @@ IODeviceStream::~IODeviceStream()
 {
 }
 
+void IODeviceStream::reset()
+{
+    Q_D(IODeviceStream);
+    d->ioDevice->reset();
+}
+
 void IODeviceStream::needData()
 {
     Q_D(IODeviceStream);
