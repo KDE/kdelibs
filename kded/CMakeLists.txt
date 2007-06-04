@@ -42,6 +42,7 @@ kde4_automoc(${kbuildsycoca_KDEINIT_SRCS})
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde3 one.
 kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
+# needs kio for KServiceGroup
 target_link_libraries(kdeinit_kbuildsycoca4  ${KDE4_KIO_LIBS} )
 
 install(TARGETS kdeinit_kbuildsycoca4  DESTINATION ${LIB_INSTALL_DIR} )

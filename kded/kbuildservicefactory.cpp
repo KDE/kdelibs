@@ -192,7 +192,7 @@ void KBuildServiceFactory::populateServiceTypes()
                 serviceTypes.insert(parentType, initialPreference);
 
             //kDebug(7021) << "Adding service " << service->desktopEntryPath() << " to " << serviceType->name() << endl;
-            addServiceOffer( serviceTypeName, KServiceOffer( service, initialPreference, service->allowAsDefault() ) );
+            addServiceOffer( serviceTypeName, KServiceOffer( service, initialPreference, 0, service->allowAsDefault() ) );
         }
     }
 
@@ -205,14 +205,18 @@ void KBuildServiceFactory::populateServiceTypes()
         QString parent = mimeType->parentMimeType();
         if ( parent.isEmpty() )
             continue;
+        int mimeTypeInheritanceLevel = 0;
         while ( !parent.isEmpty() ) {
             const KMimeType::Ptr parentMimeType = m_mimeTypeFactory->findMimeTypeByName( parent );
             if ( parentMimeType ) {
+                ++mimeTypeInheritanceLevel;
                 const QList<KServiceOffer>& offers = m_serviceTypeData[parent].offers;
                 QList<KServiceOffer>::const_iterator itserv = offers.begin();
                 const QList<KServiceOffer>::const_iterator endserv = offers.end();
                 for ( ; itserv != endserv; ++itserv ) {
-                    addServiceOffer( mimeTypeName, (*itserv) );
+                    KServiceOffer offer(*itserv);
+                    offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
+                    addServiceOffer( mimeTypeName, offer );
                 }
                 parent = parentMimeType->parentMimeType();
             } else {
@@ -226,7 +230,7 @@ void KBuildServiceFactory::populateServiceTypes()
     // Now collect the offsets into the (future) offer list
     // The loops look very much like the ones in saveOfferList obviously.
     int offersOffset = 0;
-    const int offerEntrySize = sizeof( qint32 ) * 3; // three qint32s, see saveOfferList.
+    const int offerEntrySize = sizeof( qint32 ) * 4; // four qint32s, see saveOfferList.
 
     KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->begin();
     const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->end();
@@ -273,6 +277,8 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
             str << (qint32) (*it2).preference();
+            str << (qint32) 0; // mimeTypeInheritanceLevel
+            // update offerEntrySize in populateServiceTypes if you add/remove something here
         }
     }
 
@@ -293,6 +299,8 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
             str << (qint32) (*it2).preference();
+            str << (qint32) (*it2).mimeTypeInheritanceLevel();
+            // update offerEntrySize in populateServiceTypes if you add/remove something here
         }
     }
 

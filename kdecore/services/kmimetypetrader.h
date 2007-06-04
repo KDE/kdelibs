@@ -20,7 +20,8 @@
 #ifndef KMIMETYPETRADER_H
 #define KMIMETYPETRADER_H
 
-#include "kserviceoffer.h"
+#include <kservice.h>
+class KServiceOffer;
 
 /**
  * A trader for services associated to a given mimetype.
@@ -86,16 +87,6 @@ public:
 
 
     /**
-     * Returns the offers associated with a given servicetype, sorted by preference.
-     * This is what query() uses to get the list of offers, before applying the
-     * constraints and preferences. In general you want to simply use query().
-     *
-     * @param mimeType A mime type like 'text/plain' or 'text/html'.
-     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart' or 'Application'
-     */
-    KServiceOfferList weightedOffers( const QString& mimeType, const QString& genericServiceType = QString::fromLatin1("Application") ) const;
-
-    /**
      * Returns the preferred service for @p mimeType and @p genericServiceType
      *
      * This is almost like offers().first(), except that it also checks
@@ -123,10 +114,20 @@ private:
      */
     KMimeTypeTrader();
 
+    friend class KOpenWithDialogPrivate;
+    /**
+     * Returns the offers associated with a given servicetype, sorted by preference.
+     * This is what query() uses to get the list of offers, before applying the
+     * constraints and preferences. In general you want to simply use query().
+     *
+     * @param mimeType A mime type like 'text/plain' or 'text/html'.
+     * @param genericServiceType a basic service type, like 'KParts/ReadOnlyPart' or 'Application'
+     */
+    QList<KServiceOffer> weightedOffers( const QString& mimeType, const QString& genericServiceType = QString::fromLatin1("Application") ) const;
+
 private:
     class Private;
     Private * const d;
 };
 
 #endif /* KMIMETYPETRADER_H */
-

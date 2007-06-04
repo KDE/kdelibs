@@ -85,7 +85,7 @@ static void dumpOfferList( const KServiceOfferList& offers )
 }
 #endif
 
-KServiceOfferList KServiceTypeTrader::weightedOffers( const QString& serviceType ) const
+static KServiceOfferList weightedOffers( const QString& serviceType )
 {
     //kDebug(7014) << "KServiceTypeTrader::weightedOffers( " << serviceType << " )" << endl;
 

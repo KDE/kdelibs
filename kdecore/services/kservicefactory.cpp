@@ -218,20 +218,22 @@ QList<KServiceOffer> KServiceFactory::offers( int serviceTypeOffset, int service
     // Jump to the offer list
     m_str->device()->seek( m_offerListOffset + serviceOffersOffset );
 
-    qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
+    qint32 aServiceTypeOffset, aServiceOffset, initialPreference, mimeTypeInheritanceLevel;
     while (true)
     {
         (*m_str) >> aServiceTypeOffset;
         if ( aServiceTypeOffset ) {
             (*m_str) >> aServiceOffset;
             (*m_str) >> initialPreference;
+            (*m_str) >> mimeTypeInheritanceLevel;
             if ( aServiceTypeOffset == serviceTypeOffset ) {
                 // Save stream position !
                 const int savedPos = m_str->device()->pos();
                 // Create Service
                 KService * serv = createEntry( aServiceOffset );
                 if (serv) {
-                    list.append( KServiceOffer( KService::Ptr( serv ), initialPreference ) );
+                    KService::Ptr servPtr( serv );
+                    list.append( KServiceOffer( servPtr, initialPreference, mimeTypeInheritanceLevel, servPtr->allowAsDefault() ) );
                 }
                 // Restore position
                 m_str->device()->seek( savedPos );
@@ -251,13 +253,14 @@ KService::List KServiceFactory::serviceOffers( int serviceTypeOffset, int servic
     // Jump to the offer list
     m_str->device()->seek( m_offerListOffset + serviceOffersOffset );
 
-    qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
+    qint32 aServiceTypeOffset, aServiceOffset, initialPreference, mimeTypeInheritanceLevel;
     while (true) {
         (*m_str) >> aServiceTypeOffset;
         if ( aServiceTypeOffset )
         {
             (*m_str) >> aServiceOffset;
             (*m_str) >> initialPreference;
+            (*m_str) >> mimeTypeInheritanceLevel;
             if ( aServiceTypeOffset == serviceTypeOffset )
             {
                 // Save stream position !
@@ -285,13 +288,14 @@ bool KServiceFactory::hasOffer( int serviceTypeOffset, int serviceOffersOffset, 
     // Jump to the offer list
     m_str->device()->seek( m_offerListOffset + serviceOffersOffset );
     bool found = false;
-    qint32 aServiceTypeOffset, aServiceOffset, initialPreference;
+    qint32 aServiceTypeOffset, aServiceOffset, initialPreference, mimeTypeInheritanceLevel;
     while (!found)
     {
         (*m_str) >> aServiceTypeOffset;
         if ( aServiceTypeOffset ) {
             (*m_str) >> aServiceOffset;
             (*m_str) >> initialPreference;
+            (*m_str) >> mimeTypeInheritanceLevel;
             if ( aServiceTypeOffset == serviceTypeOffset )
             {
                 if( aServiceOffset == testedServiceOffset )

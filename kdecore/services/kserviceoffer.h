@@ -24,6 +24,8 @@
 #include <kservice.h>
 
 /**
+ * @internal
+ *
  * This class holds the user-specific preferences of a service
  * (whether it can be a default offer or not, how big is the preference
  * for this offer, ...). Basically it is a reference to a
@@ -33,7 +35,7 @@
  * @see KService
  * @short Holds the user's preference of a service.
  */
-class KDECORE_EXPORT KServiceOffer
+class KDECORE_EXPORT KServiceOffer // exported for kbuildsycoca
 {
 public:
   /**
@@ -49,21 +51,17 @@ public:
 
   /**
    * Creates a new KServiceOffer.
-   * @param _service a pointer to the KService
-   * @param _pref the user's preference value, must be positive,
+   * @param service a pointer to the KService
+   * @param pref the user's preference value, must be positive,
    *              bigger is better
-   * @param _default true if the service should be used as
+   * @param mimeTypeInheritanceLevel level of mimetype inheritance
+   *       which allows this service to handling the mimetype.
+   *       0 if no inheritance involved, 1 for parent mimetype, etc.
+   * @param allowedAsDefault true if the service should be used as
    *                 default
    */
-  KServiceOffer( const KService::Ptr& _service,
-                 int _pref, bool _default );
-
-  /**
-   * Creates a new KServiceOffer.
-   * @param _service a pointer to the KService
-   * @param _pref the user's preference value, must be positive, bigger is better
-   */
-  KServiceOffer( const KService::Ptr& _service, int _pref );
+  KServiceOffer( const KService::Ptr& service,
+                 int pref, int mimeTypeInheritanceLevel, bool allowedAsDefault );
 
   ~KServiceOffer();
 
@@ -112,6 +110,18 @@ public:
    * @return true if the service offer is valid
    */
   bool isValid() const;
+
+    /**
+     * When copying an offer from a parent mimetype, remember that it's an inherited capability
+     * (for sorting purposes; we prefer a handler for postscript over any text/plain handler)
+     */
+    void setMimeTypeInheritanceLevel(int level);
+
+    /**
+     * Mimetype inheritance level
+     * @internal
+     */
+    int mimeTypeInheritanceLevel() const;
 
 private:
     class Private;

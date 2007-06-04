@@ -23,13 +23,15 @@ class KServiceOffer::Private
 {
 public:
     Private()
-        : iPreference( -1 ),
+        : preference(-1),
+          mimeTypeInheritanceLevel(0),
           bAllowAsDefault( false ),
           pService( 0 )
     {
     }
 
-    int iPreference;
+    int preference;
+    int mimeTypeInheritanceLevel;
     bool bAllowAsDefault;
     KService::Ptr pService;
 };
@@ -42,25 +44,16 @@ KServiceOffer::KServiceOffer()
 KServiceOffer::KServiceOffer( const KServiceOffer& _o )
     : d( new Private )
 {
-    d->pService = _o.d->pService;
-    d->iPreference = _o.d->iPreference;
-    d->bAllowAsDefault = _o.d->bAllowAsDefault;
+    *d = *_o.d;
 }
 
-KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref, bool _default )
+KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref, int mimeTypeInheritanceLevel, bool _default )
     : d( new Private )
 {
     d->pService = _service;
-    d->iPreference = _pref;
+    d->preference = _pref;
+    d->mimeTypeInheritanceLevel = mimeTypeInheritanceLevel;
     d->bAllowAsDefault = _default;
-}
-
-KServiceOffer::KServiceOffer( const KService::Ptr& _service, int _pref )
-    : d( new Private )
-{
-    d->pService = _service;
-    d->iPreference = _pref;
-    d->bAllowAsDefault = _service->allowAsDefault();
 }
 
 KServiceOffer::~KServiceOffer()
@@ -74,23 +67,28 @@ KServiceOffer& KServiceOffer::operator=( const KServiceOffer& rhs )
         return *this;
     }
 
-    d->pService = rhs.d->pService;
-    d->iPreference = rhs.d->iPreference;
-    d->bAllowAsDefault = rhs.d->bAllowAsDefault;
+    *d = *rhs.d;
     return *this;
 }
 
 bool KServiceOffer::operator< ( const KServiceOffer& _o ) const
 {
-  // Put offers allowed as default FIRST.
-  if ( _o.d->bAllowAsDefault && !d->bAllowAsDefault )
-    return false; // _o is default and not 'this'.
-  if ( !_o.d->bAllowAsDefault && d->bAllowAsDefault )
-    return true; // 'this' is default but not _o.
- // Both offers are allowed or not allowed as default
- // -> use preferences to sort them
- // The bigger the better, but we want the better FIRST
-  return _o.d->iPreference < d->iPreference;
+    // First check mimetype inheritance level.
+    // Direct mimetype association is preferred above association via parent mimetype
+    // So, the smaller the better.
+    if (d->mimeTypeInheritanceLevel != _o.d->mimeTypeInheritanceLevel)
+        return d->mimeTypeInheritanceLevel < _o.d->mimeTypeInheritanceLevel;
+
+    // Put offers allowed as default FIRST.
+    if ( _o.d->bAllowAsDefault && !d->bAllowAsDefault )
+        return false; // _o is default and not 'this'.
+    if ( !_o.d->bAllowAsDefault && d->bAllowAsDefault )
+        return true; // 'this' is default but not _o.
+    // Both offers are allowed or not allowed as default
+
+    // Finally, use preference to sort them
+    // The bigger the better, but we want the better FIRST
+    return _o.d->preference < d->preference;
 }
 
 bool KServiceOffer::allowAsDefault() const
@@ -100,12 +98,12 @@ bool KServiceOffer::allowAsDefault() const
 
 int KServiceOffer::preference() const
 {
-    return d->iPreference;
+    return d->preference;
 }
 
 void KServiceOffer::setPreference( int p )
 {
-    d->iPreference = p;
+    d->preference = p;
 }
 
 KService::Ptr KServiceOffer::service() const
@@ -115,6 +113,16 @@ KService::Ptr KServiceOffer::service() const
 
 bool KServiceOffer::isValid() const
 {
-    return d->iPreference >= 0;
+    return d->preference >= 0;
+}
+
+void KServiceOffer::setMimeTypeInheritanceLevel(int level)
+{
+    d->mimeTypeInheritanceLevel = level;
+}
+
+int KServiceOffer::mimeTypeInheritanceLevel() const
+{
+    return d->mimeTypeInheritanceLevel;
 }
 

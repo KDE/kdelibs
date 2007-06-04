@@ -20,7 +20,6 @@
 #define __kservicetypetrader_h__
 
 #include "kservice.h"
-class KServiceOffer;
 
 /**
  * A Trader interface, similar to the CORBA Trader.
@@ -102,16 +101,6 @@ public:
      */
     KService::List query( const QString& servicetype,
                           const QString& constraint = QString() ) const;
-
-    /**
-     * Returns the offers associated with a given servicetype, sorted by preference.
-     * This is what query() uses to get the list of offers, before applying the
-     * constraints and preferences. In general you want to simply use query().
-     *
-     * @param serviceType A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
-     * @return A list of weightedOffers
-     */
-    QList<KServiceOffer> weightedOffers( const QString& serviceType ) const;
 
     /**
      * Returns all offers associated with a given servicetype, IGNORING the

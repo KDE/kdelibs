@@ -34,10 +34,25 @@
 #include <QtCore/Q_PID>
 #include <kmimetypefactory.h>
 #include <ktemporaryfile.h>
+#include <kdesktopfile.h>
 
 void KMimeTypeTest::initTestCase()
 {
-    if ( !KSycoca::isAvailable() ) {
+    // Create fake text/plain part with a higher initial preference than katepart.
+    const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
+    const bool mustCreate = !QFile::exists(fakePart);
+    if (mustCreate) {
+        KDesktopFile file(fakePart);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakePart");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "faketextpart");
+        group.writeEntry("ServiceTypes", "KParts/ReadOnlyPart");
+        group.writeEntry("MimeType", "text/plain");
+        group.writeEntry("InitialPreference",100);
+    }
+
+    if ( !KSycoca::isAvailable() || mustCreate ) {
         // Create ksycoca in ~/.kde-unit-test
         QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
     }
@@ -369,6 +384,7 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     // Querying mimetype trader for services associated with text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/plain", "KParts/ReadOnlyPart");
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "faketextpart.desktop" ) );
 
     offers = KMimeTypeTrader::self()->query("text/plain", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );
@@ -394,6 +410,8 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
     // Querying mimetype trader for services associated with text/x-patch, which inherits from text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/x-patch", "KParts/ReadOnlyPart");
     QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "faketextpart.desktop" ) );
+    QVERIFY( (*offers.begin())->desktopEntryPath() != "faketextpart.desktop" ); // in the list, but not preferred
 
     offers = KMimeTypeTrader::self()->query("text/x-patch", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );

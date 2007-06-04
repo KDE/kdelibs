@@ -109,7 +109,7 @@ static void initStatic()
                 const QString serviceId = config.readEntry( "Entry" + num + "_Service", QString() );
                 Q_ASSERT(!serviceId.isEmpty());
                 const int pref = config.readEntry( "Entry" + num + "_Preference", 0 );
-                kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << serviceId << " to profile for " << type << " with preference " << pref << endl;
+                //kDebug(7014) << "KServiceTypeProfile::initStatic adding service " << serviceId << " to profile for " << type << " with preference " << pref << endl;
                 p->addService( serviceId, pref );
             }
         }
@@ -203,7 +203,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
                 const int pref = it2.value();
                 //kDebug(7014) << "found in mapServices pref=" << pref << endl;
                 if ( pref > 0 ) { // 0 disables the service
-                    offers.append( KServiceOffer( servPtr, pref ) );
+                    offers.append( KServiceOffer( servPtr, pref, 0, servPtr->allowAsDefault() ) );
                 }
                 foundInProfile = true;
             }
@@ -219,6 +219,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
             // If there's a profile, we use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
             offers.append( KServiceOffer( servPtr,
                                           profile ? 0 : (*it).preference(),
+                                          0,
                                           servPtr->allowAsDefault() ) );
         }
     }
@@ -243,8 +244,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
  * @internal used by KMimeTypeTrader
  */
 namespace KServiceTypeProfile {
-    // TODO remove export once KMimeTypeTrader is in kdecore
-    KDECORE_EXPORT KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
+    KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
 }
 
 KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString& genericServiceType )
@@ -283,10 +283,10 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferLi
                 if( it2 != profile->m_mapServices.end() )
                 {
                     const KMimeTypeProfileEntry::ServiceFlags& userService = it2.value();
-                    //kDebug(7014) << "found in mapServices pref=" << it2.data().m_iPreference << endl;
+                    //kDebug(7014) << "found in mapServices pref=" << it2.value().m_iPreference << endl;
                     if ( userService.m_iPreference > 0 ) {
                         const bool allow = servPtr->allowAsDefault() && userService.m_bAllowAsDefault;
-                        offers.append( KServiceOffer( servPtr, userService.m_iPreference, allow ) );
+                        offers.append( KServiceOffer( servPtr, userService.m_iPreference, 0, allow ) );
                     }
                     foundInProfile = true;
                 }
@@ -301,6 +301,7 @@ KServiceOfferList KServiceTypeProfile::sortMimeTypeOffers( const KServiceOfferLi
                 // If there's a profile, we use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
                 offers.append( KServiceOffer( servPtr,
                                               profile ? 0 : (*it).preference(),
+                                              profile ? 0 : (*it).mimeTypeInheritanceLevel(),
                                               servPtr->allowAsDefault() ) );
             }
         }/* else

@@ -93,9 +93,13 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
     }
 
     //debug
-    //foreach( KService::Ptr serv, lst )
-    //    kDebug() << serv.data() << " " << serv->name() << endl;
-
+#if 0
+    kDebug() << "mimeTypeSycocaOffers for " << mimeType << ":" << endl;
+    foreach( const KServiceOffer& offer, lst )
+        kDebug() << " " << offer.service()->name()
+                 << " preference: " << offer.mimeTypeInheritanceLevel() << ";" << offer.preference()
+                 << endl;
+#endif
 
     // With xdg-shared-mime this is automatically done via the implicit inheritance from application/octet-stream
 #if 0
@@ -131,9 +135,9 @@ static KServiceOfferList mimeTypeSycocaOffers( const QString& mimeType )
     return lst;
 }
 
-// Defined in kdecore
+// see kservicetypeprofile.h
 namespace KServiceTypeProfile {
-    KDECORE_EXPORT KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
+    KServiceOfferList sortMimeTypeOffers( const KServiceOfferList& list, const QString& mimeType, const QString & genericServiceType );
 }
 
 KServiceOfferList KMimeTypeTrader::weightedOffers( const QString& mimeType,
