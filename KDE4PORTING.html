@@ -481,6 +481,11 @@ Internally it is reference counted and the data deleted when the last reference 
 <li> charset() -&gt; gone</li>
 <li> setCharset() -&gt; gone</li>
 <li>removeCatalogue was renamed to removeCatalog</li>
+<li>QStringList languagesTwoAlpha() -> QStringList languageList()</li>
+<li>QStringList allLanguagesTwoAlpha() -> QStringList allLanguagesList()</li>
+<li>QStringList allCountriesTwoAlpha() -> QStringList allCountriesList()</li>
+<li>QString twoAlphaToLanguageName(const QString &amp;language) -> QString languageCodeToName(const QString &amp;language)</li>
+<li>QString twoAlphaToCountryName(const QString &amp;country) -> QString countryCodeToName(const QString &amp;country)</li>
 </ul>
 <p>See also <a href="#i18n">the I18N section below</a>.</p>
 
