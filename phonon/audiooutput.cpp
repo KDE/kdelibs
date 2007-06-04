@@ -252,13 +252,18 @@ void AudioOutputPrivate::_k_deviceListChanged()
     pDebug() << Q_FUNC_INFO;
     // let's see if there's a usable device higher in the preference list
     QList<int> deviceList = GlobalConfig().audioOutputDeviceListFor(category);
+    DeviceChangeType changeType = HigherPreferenceChange;
     foreach (int devIndex, deviceList) {
         pDebug() << devIndex;
         if (outputDeviceIndex == devIndex) {
-            break; // we've reached the currently used device, nothing to change
+            AudioOutputDevice info = AudioOutputDevice::fromIndex(devIndex);
+            if (info.property("available").toBool()) {
+                break; // we've reached the currently used device, nothing to change
+            }
+            changeType = FallbackChange;
         }
         if (pINTERFACE_CALL(setOutputDevice(devIndex))) {
-            handleAutomaticDeviceChange(devIndex, HigherPreferenceChange);
+            handleAutomaticDeviceChange(devIndex, changeType);
             break; // found one with higher preference that works
         }
     }
