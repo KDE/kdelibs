@@ -101,7 +101,7 @@ public:
     virtual bool eventFilter(QObject *watched, QEvent *event);
 
 private:
-    KMainWindow* m_win;
+    KMainWindow *m_win;
 };
 
 DockResizeListener::DockResizeListener(KMainWindow *win) :
