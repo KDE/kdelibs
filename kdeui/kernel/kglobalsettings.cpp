@@ -21,16 +21,6 @@
 
 #include <kconfig.h>
 
-#ifdef Q_WS_WIN
-#include <windows.h>
-#include "qt_windows.h"
-#include <win32_utils.h>
-static QRgb qt_colorref2qrgb(COLORREF col)
-{
-    return qRgb(GetRValue(col),GetGValue(col),GetBValue(col));
-}
-#endif
-
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -54,6 +44,15 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <QtDBus/QtDBus>
 #include <QtGui/QStyleFactory>
 
+#ifdef Q_WS_WIN
+#include <windows.h>
+#include <kkernel_win.h>
+
+static QRgb qt_colorref2qrgb(COLORREF col)
+{
+    return qRgb(GetRValue(col),GetGValue(col),GetBValue(col));
+}
+#endif
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include "fixx11h.h"

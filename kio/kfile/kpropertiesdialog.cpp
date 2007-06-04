@@ -130,7 +130,7 @@ extern "C" {
 #include <kmimetypechooser.h>
 
 #ifdef Q_WS_WIN
-# include <win32_utils.h>
+# include <kkernel_win.h>
 #ifdef __GNUC__
 # warning TODO: port completely to win32
 #endif
