@@ -1,4 +1,5 @@
 /* This file is part of the KDE project
+ * Copyright (C) 2007 Matthew Woehlke <mw_triad@users.sourceforge.net>
  * Copyright (C) 2007 Thomas Zander <zander@kde.org>
  * Copyright (C) 2007 Zack Rusin <zack@kde.org>
  *
@@ -17,20 +18,44 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include <kgraphicsutils.h>
+#include <kcolorutils.h>
 
 #include <QColor>
 #include <QImage>
 
-QColor KGraphicsUtils::blendColor(const QColor &one, const QColor &two, QPainter::CompositionMode comp) {
-    // This may not be super fast; but timing shows this is easilly fast enough.
+#include <math.h>
+
+static inline qreal mixQreal(qreal a, qreal b, qreal bias)
+{
+    return a + (b - a) * bias;
+}
+
+QColor KColorUtils::mix(const QColor &c1, const QColor &c2, qreal bias)
+{
+    if (bias <= 0.0) return c1;
+    if (bias >= 1.0) return c2;
+    if (isnan(bias)) return c1;
+
+    qreal r = mixQreal(c1.redF(),   c2.redF(),   bias);
+    qreal g = mixQreal(c1.greenF(), c2.greenF(), bias);
+    qreal b = mixQreal(c1.blueF(),  c2.blueF(),  bias);
+    qreal a = mixQreal(c1.alphaF(), c2.alphaF(), bias);
+
+    return QColor::fromRgbF(r, g, b, a);
+}
+
+QColor KColorUtils::overlayColors(const QColor &base, const QColor &paint,
+                                  QPainter::CompositionMode comp)
+{
+    // This isn't the fastest way, but should be "fast enough".
+    // It's also the only safe way to use QPainter::CompositionMode
     QImage img(1, 1, QImage::Format_ARGB32_Premultiplied);
     QPainter p(&img);
-    QColor start = one;
+    QColor start = base;
     start.setAlpha(255); // opaque
     p.fillRect(0, 0, 1, 1, start);
     p.setCompositionMode(comp);
-    p.fillRect(0, 0, 1, 1, two);
+    p.fillRect(0, 0, 1, 1, paint);
     p.end();
     return img.pixel(0, 0);
 }
