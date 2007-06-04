@@ -22,7 +22,7 @@
 #include "kurlnavigator.h"
 
 #include <kglobalsettings.h>
-#include <kgraphicsutils.h>
+#include <kcolorutils.h>
 #include <kicon.h>
 #include <klocale.h>
 #include <kmenu.h>
@@ -135,7 +135,7 @@ QColor KUrlButton::foregroundColor() const
     if (!urlNavigator()->isActive()) {
         QColor dimColor(palette().brush(QPalette::Background).color());
         dimColor.setAlpha(128);
-        foregroundColor = KGraphicsUtils::blendColor(foregroundColor, dimColor);
+        foregroundColor = KColorUtils::overlayColors(foregroundColor, dimColor);
     }
 
     return foregroundColor;
@@ -152,7 +152,7 @@ QColor KUrlButton::backgroundColor() const
     if (!urlNavigator()->isActive() && isHighlighted) {
         QColor dimColor(palette().brush(QPalette::Background).color());
         dimColor.setAlpha(128);
-        backgroundColor = KGraphicsUtils::blendColor(backgroundColor, dimColor);
+        backgroundColor = KColorUtils::overlayColors(backgroundColor, dimColor);
     }
 
     return backgroundColor;

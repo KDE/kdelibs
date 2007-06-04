@@ -24,7 +24,7 @@
 
 #include <kiconloader.h>
 #include <kglobalsettings.h>
-#include <kgraphicsutils.h>
+#include <kcolorutils.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
 #include <kdebug.h>
@@ -140,7 +140,7 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
         // dim the foreground color by mixing it with the background
         QColor mixColor(bgColor);
         mixColor.setAlpha(128);
-        fgColor = KGraphicsUtils::blendColor(fgColor, mixColor);
+        fgColor = KColorUtils::overlayColors(fgColor, mixColor);
         painter.setPen(fgColor);
     }
 
