@@ -324,16 +324,17 @@ void CoreEngine::slotProvidersFailed()
 
 void CoreEngine::slotEntriesLoaded(KNS::Entry::List list)
 {
-	EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
-	const Provider *provider = loader->provider();
-	const Feed *feed = loader->feed();
-	delete loader;
-	m_activefeeds--;
+    EntryLoader *loader = dynamic_cast<EntryLoader*>(sender());
+    if (!loader) return;
+    const Provider *provider = loader->provider();
+    const Feed *feed = loader->feed();
+    delete loader;
+    m_activefeeds--;
 
-	kDebug(550) << "Provider source " << provider->name().representation() << endl;
-	kDebug(550) << "Feed source " << feed->name().representation() << endl;
+    kDebug(550) << "Provider source " << provider->name().representation() << endl;
+    kDebug(550) << "Feed source " << feed->name().representation() << endl;
 
-	mergeEntries(list, feed, provider);
+    mergeEntries(list, feed, provider);
 }
 
 void CoreEngine::slotEntriesFailed()
