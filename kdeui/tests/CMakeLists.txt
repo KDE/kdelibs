@@ -37,6 +37,7 @@ set(kdeui_unittests
   kstandardshortcuttest
   kuniqueapptest
   kapplication_unittest
+  kcolorutilstest
 )
 
 KDEUI_BUILD_TESTS(
@@ -90,7 +91,7 @@ KDEUI_BUILD_TESTS(
   ktoolbarlabelactiontest
   khboxtest
   kbugreporttest
-  kdialogtest 
+  kdialogtest
   kglobalacceltest
   knotificationrestrictionstest
   kmessagetest
@@ -107,7 +108,6 @@ KDEUI_BUILD_TESTS(
   kjobtrackerstest
   kdebugtest_gui
   ktitlewidgettest
-  TestBlendColors
 )
 
 if (Q_WS_X11)

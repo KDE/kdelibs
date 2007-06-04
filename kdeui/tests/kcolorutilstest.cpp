@@ -1,0 +1,80 @@
+#include "kcolorutilstest.h"
+
+#include <kcolorutils.h>
+
+void tst_KColorUtils::testOverlay()
+{
+    QColor color1(10, 10, 100);
+    QColor color2(10, 10, 160);
+    QColor blended = KColorUtils::overlayColors(color1, color2);
+    QCOMPARE(blended, color2); // no transparency.
+
+    QColor previous;
+    // check that when altering the alpha of color2 to be less and less transparent this
+    // means we are moving more and more towards color2
+    for(int i= 10; i <= 255; i+=10) {
+        color2.setAlpha(i);
+        blended = KColorUtils::overlayColors(color1, color2);
+        if(previous.isValid()) {
+            QCOMPARE(previous.red(), 10);
+            QCOMPARE(previous.green(), 10);
+            QVERIFY(previous.blue() <= blended.blue());
+        }
+        previous = blended;
+    }
+
+    // only the alpha of color 2 alters the output
+    color2.setAlpha(255); //opaque
+    color1.setAlpha(80); //opaque
+    blended = KColorUtils::overlayColors(color2, color2);
+    QCOMPARE(blended.red(), color2.red());
+    QCOMPARE(blended.green(), color2.green());
+    QCOMPARE(blended.blue(), color2.blue());
+
+    // merge from itself to itself gives; TADA; itself again ;)
+    color2.setAlpha(127);
+    blended = KColorUtils::overlayColors(color2, color2);
+    QCOMPARE(blended.red(), color2.red());
+    QCOMPARE(blended.green(), color2.green());
+    QCOMPARE(blended.blue(), color2.blue());
+}
+
+void compareColors( const QColor& c1, const QColor& c2 )
+{
+}
+#define compareColors(c1, c2) \
+    if ( c1 != c2 ) { \
+        fprintf( stderr, "%08x != expected value %08x\n", c1.rgb(), c2.rgb() ); \
+        QCOMPARE( c1, c2 ); \
+    } (void)0
+
+void tst_KColorUtils::testMix()
+{
+    int r, g, b, k;
+    for ( r = 0; r < 52 ; r++ ) {
+        for ( g = 0; g < 52 ; g++ ) {
+            for ( b = 0; b < 52 ; b++ ) {
+                QColor color( r*5, g*5, b*5 );
+                // Test blend-to-black spectrum
+                for ( k = 5; k >= 0 ; k-- ) {
+                    QColor result = KColorUtils::mix( Qt::black, color, k * 0.2 );
+                    compareColors( result, QColor( r*k, g*k, b*k ) );
+                }
+                // Test blend-to-white spectrum
+                for ( k = 5; k >= 0 ; k-- ) {
+                    int n = 51*(5-k);
+                    QColor result = KColorUtils::mix( Qt::white, color, k * 0.2 );
+                    compareColors( result, QColor( n+r*k, n+g*k, n+b*k ) );
+                }
+                // Test blend-to-self across a couple bias values
+                for ( k = 5; k >= 0 ; k-- ) {
+                    QColor result = KColorUtils::mix( color, color, k * 0.2 );
+                    compareColors( result, color );
+                }
+            }
+        }
+    }
+}
+
+QTEST_MAIN(tst_KColorUtils)
+#include "kcolorutilstest.moc"
