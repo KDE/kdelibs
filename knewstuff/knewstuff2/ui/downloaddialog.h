@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF2_UI_DOWNLOADDIALOG_H
 
-#include <QtGui/QDialog>
+#include <kdialog.h>
 
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>
@@ -45,17 +45,17 @@ namespace KNS
  *
  * @internal
  */
-class DownloadDialog : public QDialog
+class DownloadDialog : public KDialog
 {
     Q_OBJECT
     public:
         DownloadDialog( QWidget * parent );
         ~DownloadDialog();
 
-	void addEntry(Entry *entry, const Feed *feed, const Provider *provider);
-	void refresh();
+        void addEntry(Entry *entry, const Feed *feed, const Provider *provider);
+        void refresh();
 
-	void setEngine(DxsEngine *engine);
+        void setEngine(DxsEngine *engine);
 
         // show a message in the bottom bar
         enum MessageType { Normal, Info, Error };
@@ -72,24 +72,17 @@ class DownloadDialog : public QDialog
         // private storage class
         class DownloadDialogPrivate * d;
 
-	DxsEngine *m_engine;
-	QMap<QString, QString> m_categorymap;
-
-	//QList<Entry*> m_entries;
-	QMap<const Feed*, Entry::List> m_entries;
-	QMap<Entry*, const Provider*> m_providers;
-
     private Q_SLOTS:
         void slotResetMessageColors();
         void slotNetworkTimeout();
         void slotSortingSelected( int sortType );
-	// DXS
+        // DXS
         void slotLoadProvidersListDXS();
         void slotLoadProviderDXS(int index);
-	void slotCategories(QList<Category*> categories);
-	void slotEntries(QList<Entry*> entries);
-	void slotFault();
-	void slotError();
+        void slotCategories(QList<Category*> categories);
+        void slotEntries(QList<Entry*> entries);
+        void slotFault();
+        void slotError();
         // file downloading
         void slotDownloadItem( Entry * );
         //void slotItemMessage( KJob *, const QString & );

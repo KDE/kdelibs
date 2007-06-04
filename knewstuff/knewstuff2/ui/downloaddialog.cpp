@@ -29,7 +29,6 @@
 #include <QtGui/QPixmap>
 #include <QtGui/QFont>
 #include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
 #include <QtGui/QComboBox>
 #include <QtGui/QPushButton>
 #include <QtCore/QMutableVectorIterator>
@@ -42,6 +41,7 @@
 #include <kcomponentdata.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
+#include <klineedit.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kmessagebox.h>
@@ -320,6 +320,7 @@ class ItemsView : public QScrollArea
             : QScrollArea( parentWidget ),
             m_newStuffDialog( newStuffDialog ), m_root( 0 ), m_sorting( 0 )
         {
+            setFrameStyle(QFrame::Plain | QFrame::StyledPanel);
         }
 
         ~ItemsView()
@@ -440,10 +441,8 @@ class KNS::DownloadDialogPrivate
 {
 public:
     // Contents
-    QList< Provider * > providers;
-
     // gui related vars
-    QLineEdit * searchLine;
+    KLineEdit * searchLine;
     QComboBox * typeCombo;
     QComboBox * sortCombo;
     ItemsView * itemsView;
@@ -452,13 +451,21 @@ public:
     QTimer * messageTimer;
     QTimer * networkTimer;
     KTitleWidget* titleWidget;
+
+    DxsEngine *engine;
+    QMap<QString, QString> categorymap;
+
+    //QList<Entry*> m_entries;
+    QMap<const Feed*, Entry::List> entries;
+    QMap<Entry*, const Provider*> providers;
 };
 
 
-//TODO: make it a KDialog and use the button facilities provided there
 DownloadDialog::DownloadDialog( QWidget * parentWidget )
-    : QDialog( parentWidget ), d( new DownloadDialogPrivate )
+    : KDialog( parentWidget ), d( new DownloadDialogPrivate )
 {
+    setButtons(KDialog::Close);
+
     // initialize the private classes
     d->messageTimer = new QTimer( this );
     connect( d->messageTimer, SIGNAL( timeout() ),
@@ -469,8 +476,10 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
              this, SLOT( slotNetworkTimeout() ) );
 
     // popuplate dialog with stuff
-    QBoxLayout * horLay = new QHBoxLayout( this ); // FIXME KDE4PORT
-    horLay->setMargin(0);
+    QWidget* mainWidget = new QWidget(this);
+    setMainWidget(mainWidget);
+    QBoxLayout * mainLayout = new QVBoxLayout(mainWidget); // FIXME KDE4PORT
+    mainLayout->setMargin(0);
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "kpdf/pics/ghns.png" ) );
@@ -478,86 +487,65 @@ DownloadDialog::DownloadDialog( QWidget * parentWidget )
     //   horLay->addWidget( new ExtendImageWidget( p, this ) );
     // FIXME KDE4PORT: if we use a left bar image, find a better way
 
-    // create right 'main' widget
-    QWidget * rightLayouterWidget = new QWidget( this );
-    QVBoxLayout * rightLayouter = new QVBoxLayout();
-    rightLayouterWidget->setLayout( rightLayouter );
-    rightLayouter->setSpacing( 6 );
-    rightLayouter->setMargin( 6 );
-    horLay->addWidget( rightLayouterWidget );
 
     // create title widget
     // TODO: add a subtext option to KTitleWidget
-    d->titleWidget = new KTitleWidget(this);
+    d->titleWidget = new KTitleWidget(mainWidget);
 
-      // create the control panel
-      QFrame * panelFrame = new QFrame();
-      panelFrame->setFrameStyle( QFrame::StyledPanel | QFrame::Raised );
-      //QGridLayout * panelLayout = new QGridLayout( panelFrame, 2, 4, 11, 6 );
-      //2, 4, 11, 6 ); // FIXME KDE4PORT
-      QGridLayout * panelLayout = new QGridLayout( panelFrame);
-        // add widgets to the control panel
-        QLabel * label1 = new QLabel( i18n("Show:")/*, panelFrame*/ );
-        panelLayout->addWidget( label1, 0, 0 );
-        d->typeCombo = new QComboBox( false/*, panelFrame*/ );
-        panelLayout->addWidget( d->typeCombo, 0, 1 );
-        d->typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
-        d->typeCombo->setMinimumWidth( 150 );
-        d->typeCombo->setEnabled( false );
-        connect( d->typeCombo, SIGNAL( activated(int) ),
-                 this, SLOT( slotLoadProviderDXS(int) ) );
+    // create the control panel
+    QFrame * panelFrame = new QFrame(mainWidget);
+    panelFrame->setFrameStyle( QFrame::NoFrame );
+    QGridLayout * panelLayout = new QGridLayout( panelFrame);
+    panelLayout->setMargin(0);
+    // add widgets to the control panel
+    QLabel * label1 = new QLabel( i18n("Show:")/*, panelFrame*/ );
+    panelLayout->addWidget( label1, 0, 0 );
+    d->typeCombo = new QComboBox( false/*, panelFrame*/ );
+    panelLayout->addWidget( d->typeCombo, 0, 1 );
+    d->typeCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
+    d->typeCombo->setMinimumWidth( 150 );
+    d->typeCombo->setEnabled( false );
+    connect( d->typeCombo, SIGNAL( activated(int) ),
+                this, SLOT( slotLoadProviderDXS(int) ) );
 
-        QLabel * label2 = new QLabel( i18n("Order by:")/*, panelFrame*/ );
-        panelLayout->addWidget( label2, 0, 2 );
-        d->sortCombo = new QComboBox( false/*, panelFrame*/ );
-        panelLayout->addWidget( d->sortCombo, 0, 3 );
-        d->sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
-        d->sortCombo->setMinimumWidth( 100 );
-        d->sortCombo->setEnabled( false );
-        d->sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
-        d->sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
-        d->sortCombo->addItem( SmallIcon( "calendar-today" ), i18n("Most recent") );
-        d->sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
-        connect( d->sortCombo, SIGNAL( activated(int) ),
-                 this, SLOT( slotSortingSelected(int) ) );
+    QLabel * label2 = new QLabel( i18n("Order by:")/*, panelFrame*/ );
+    panelLayout->addWidget( label2, 0, 2 );
+    d->sortCombo = new QComboBox( false/*, panelFrame*/ );
+    panelLayout->addWidget( d->sortCombo, 0, 3 );
+    d->sortCombo->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Minimum );
+    d->sortCombo->setMinimumWidth( 100 );
+    d->sortCombo->setEnabled( false );
+    d->sortCombo->addItem( SmallIcon( "text" ), i18n("Name") );
+    d->sortCombo->addItem( SmallIcon( "favorites" ), i18n("Rating") );
+    d->sortCombo->addItem( SmallIcon( "calendar-today" ), i18n("Most recent") );
+    d->sortCombo->addItem( SmallIcon( "cdcopy" ), i18n("Most downloads") );
+    connect( d->sortCombo, SIGNAL( activated(int) ),
+                this, SLOT( slotSortingSelected(int) ) );
 
-        QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );
-        panelLayout->addWidget( label3, 1, 0 );
-        d->searchLine = new QLineEdit( panelFrame );
-        panelLayout->addWidget( d->searchLine, 1, 1, 1, 3 );
-        d->searchLine->setEnabled( false );
+    QLabel * label3 = new QLabel( i18n("Search:"), panelFrame );
+    panelLayout->addWidget( label3, 1, 0 );
+    d->searchLine = new KLineEdit( panelFrame );
+    panelLayout->addWidget( d->searchLine, 1, 1, 1, 3 );
+    d->searchLine->setEnabled( false );
+    d->searchLine->setClearButtonShown(true);
 
-      // create the ItemsView used to display available items
-      d->itemsView = new ItemsView( this, this ); // FIXME KDE4PORT
+    // create the ItemsView used to display available items
+    d->itemsView = new ItemsView( this, mainWidget ); // FIXME KDE4PORT
 
-    rightLayouter->addWidget(d->titleWidget);
-    rightLayouter->addWidget(panelFrame);
-    rightLayouter->addWidget(d->itemsView);
-
-      // create bottom buttons
-      QHBoxLayout * bottomLine = new QHBoxLayout();
-      // FIXME KDE4PORT
-      //QWidget * bottomLineWidget = new QWidget();
-      //bottomLineWidget->setLayout( bottomLine );
-      rightLayouter->addLayout(bottomLine);
-      //TODO: get rid of this and use KDialog
-        // close button
-        QPushButton * closeButton = new QPushButton( i18n("Close") );
-        //closeButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum )
-        connect( closeButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
-      bottomLine->addWidget(closeButton);
+    mainLayout->addWidget(d->titleWidget);
+    mainLayout->addWidget(panelFrame);
+    mainLayout->addWidget(d->itemsView);
 
     // start with a nice size
     resize( 700, 400 );
     slotResetMessageColors();
 
-    m_engine = NULL;
+    d->engine = NULL;
 
-    displayMessage(i18n("%1 Add On Installer", KGlobal::mainComponent().aboutData()->programName()));
-    //TODO: add some convenience methods to KTitleWidget for setting the pixmap:
-    //      one that takes a const char* name and one that takes a QIcon
-    d->titleWidget->setPixmap(KIcon(KGlobal::mainComponent().aboutData()->appName()).pixmap(IconSize(K3Icon::Dialog)));
     setWindowTitle(i18n("Get Hot New Stuff!"));
+    displayMessage(i18n("%1 Add On Installer", KGlobal::mainComponent().aboutData()->programName()));
+    d->titleWidget->setPixmap(KGlobal::mainComponent().aboutData()->appName());
+    connect( this, SIGNAL( closeClicked() ), this, SLOT( accept() ) );
 }
 
 DownloadDialog::~DownloadDialog()
@@ -640,21 +628,21 @@ void DownloadDialog::slotSortingSelected( int sortType ) // SLOT
 
 void DownloadDialog::setEngine(DxsEngine *engine)
 {
-	m_engine = engine;
+	d->engine = engine;
 
-	d->itemsView->setEngine(m_engine);
+	d->itemsView->setEngine(d->engine);
 
 	// FIXME: adapt to DxsEngine from Dxs!
-	/*connect(m_engine,
+	/*connect(d->engine,
 		SIGNAL(signalCategories(QList<KNS::Category*>)),
 		SLOT(slotCategories(QList<KNS::Category*>)));
-	connect(m_engine,
+	connect(d->engine,
 		SIGNAL(signalEntries(QList<KNS::Entry*>)),
 		SLOT(slotEntries(QList<KNS::Entry*>)));
-	connect(m_engine,
+	connect(d->engine,
 		SIGNAL(signalError()),
 		SLOT(slotError()));
-	connect(m_engine,
+	connect(d->engine,
 		SIGNAL(signalFault()),
 		SLOT(slotFault()));*/
 }
@@ -664,10 +652,10 @@ void DownloadDialog::slotLoadProviderDXS(int index)
 	Q_UNUSED(index);
 
 	QString category = d->typeCombo->currentText();
-	QString categoryname = m_categorymap[category];
+	QString categoryname = d->categorymap[category];
 
 	//m_dxs->call_entries(categoryname, QString());
-	// FIXME: use m_engine
+	// FIXME: use d->engine
 }
 
 void DownloadDialog::slotLoadProvidersListDXS()
@@ -676,7 +664,7 @@ void DownloadDialog::slotLoadProvidersListDXS()
 
 void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 {
-	m_categorymap.clear();
+	d->categorymap.clear();
 
 	for(QList<KNS::Category*>::Iterator it = categories.begin(); it != categories.end(); it++)
 	{
@@ -685,7 +673,7 @@ void DownloadDialog::slotCategories(QList<KNS::Category*> categories)
 		QPixmap icon = DesktopIcon(category->icon().url(), 16);
 		// FIXME: use icon from remote URLs (see non-DXS providers as well)
 		d->typeCombo->addItem(icon, category->name().representation());
-		m_categorymap[category->name().representation()] = category->id();
+		d->categorymap[category->name().representation()] = category->id();
 		// FIXME: better use global id, since names are not guaranteed
 		//        to be unique
 	}
@@ -709,25 +697,25 @@ void DownloadDialog::addEntry(Entry *entry, const Feed *feed, const Provider *pr
 {
 	Q_UNUSED(provider);
 
-	Entry::List entries = m_entries[feed];
+	Entry::List entries = d->entries[feed];
 	entries.append(entry);
-	m_entries[feed] = entries;
+	d->entries[feed] = entries;
 
 	// FIXME: what if entry belongs to more than one provider at once?
-	m_providers[entry] = provider;
+	d->providers[entry] = provider;
 
 	kDebug() << "downloaddialog: addEntry to list of size " << entries.size() << endl;
 }
 
 void DownloadDialog::refresh()
 {
-	d->itemsView->setProviders(m_providers);
-	d->itemsView->setItems(m_entries);
+	d->itemsView->setProviders(d->providers);
+	d->itemsView->setItems(d->entries);
 	// FIXME: this method has side effects (rebuilding HTML!!!)
 
-	for(int i = 0; i < m_entries.keys().count(); i++)
+	for(int i = 0; i < d->entries.keys().count(); i++)
 	{
-		const Feed *feed = m_entries.keys().at(i);
+		const Feed *feed = d->entries.keys().at(i);
 		if(!feed)
 		{
 			kDebug() << "INVALID FEED?!" << endl;
