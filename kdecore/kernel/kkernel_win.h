@@ -19,9 +19,11 @@
 #ifndef KKERNEL_WIN_H
 #define KKERNEL_WIN_H
 
-#include <QtCore/QBool> // grab the Q_OS_WIN macro, if it exists
+#include <QtCore/QString>
 
 #ifdef Q_OS_WIN
+
+#include <kdecore_export.h>
 
 
 /**
@@ -37,7 +39,26 @@
  *
  * @return base path for all global kde directories
  */
-QString getKde4Prefix();
+KDECORE_EXPORT QString getKde4Prefix();
+
+/**
+ \return a value from MS Windows native registry for shell folder \a folder.
+*/
+KDECORE_EXPORT QString getWin32ShellFoldersPath(const QString& folder);
+
+/**
+ Shows native MS Windows file property dialog for a file \a fileName.
+ Return true on success. Only works for local absolute paths.
+ Used by KPropertiesDialog, if possible.
+*/
+KDECORE_EXPORT bool showWin32FilePropertyDialog(const QString& fileName);
+
+/**
+ \return two-letter locale name (like "en" or "pl") taken from MS Windows native registry.
+ Useful when we don't want to rely on KSyCoCa.
+ Used e.g. by kbuildsycoca application.
+*/
+KDECORE_EXPORT QByteArray getWin32LocaleName();
 
 #endif  // Q_OS_WIN
 #endif  // KKERNEL_WIN_H

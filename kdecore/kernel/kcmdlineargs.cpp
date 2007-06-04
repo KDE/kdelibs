@@ -52,10 +52,6 @@
 #define DISPLAY "NODISPLAY"
 #endif
 
-#ifdef Q_WS_WIN
-#include <win32_utils.h>
-#endif
-
 static const KCmdLineOptions qt_options[] =
 {
   //FIXME: Check if other options are specific to Qt/X11

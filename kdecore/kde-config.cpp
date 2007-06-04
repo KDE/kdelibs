@@ -14,10 +14,7 @@
 #include <config.h>
 #include <config-prefix.h>
 #include <kconfiggroup.h>
-
-#ifdef Q_WS_WIN
-#include <win32_utils.h>
-#endif
+#include <kkernel_win.h>
 
 static const char *description = I18N_NOOP("A little program to output installation paths");
 
@@ -190,7 +187,7 @@ int main(int argc, char **argv)
         {
             KConfigGroup g( KGlobal::config(), "Paths" );
 #ifdef Q_WS_WIN
-            QString path=getWin32ShellFoldersPath("Personal");
+            QString path=getWin32ShellFoldersPath(QLatin1String("Personal"));
 #else
             QString path=QDir::homePath();
 #endif
