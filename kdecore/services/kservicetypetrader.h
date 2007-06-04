@@ -19,7 +19,8 @@
 #ifndef __kservicetypetrader_h__
 #define __kservicetypetrader_h__
 
-#include "kserviceoffer.h"
+#include "kservice.h"
+class KServiceOffer;
 
 /**
  * A Trader interface, similar to the CORBA Trader.
@@ -110,7 +111,7 @@ public:
      * @param serviceType A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
      * @return A list of weightedOffers
      */
-    KServiceOfferList weightedOffers( const QString& serviceType ) const;
+    QList<KServiceOffer> weightedOffers( const QString& serviceType ) const;
 
     /**
      * Returns all offers associated with a given servicetype, IGNORING the
