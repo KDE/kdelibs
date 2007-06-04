@@ -86,6 +86,42 @@ static KStatusBar *internalStatusBar(KMainWindow *mw)
     return qFindChild<KStatusBar *>(mw);
 }
 
+/**
+ * Listens to resize events from QDockWidgets. The KMainWindow
+ * settings are set as dirty, as soon as at least one resize
+ * event occured. The listener is attached to the dock widgets
+ * by dock->installEventFilter(dockResizeListener) inside
+ * KMainWindow::event().
+ */
+class DockResizeListener : public QObject
+{
+public:
+    DockResizeListener(KMainWindow *win);
+    virtual ~DockResizeListener();
+    virtual bool eventFilter(QObject *watched, QEvent *event);
+
+private:
+    KMainWindow* m_win;
+};
+
+DockResizeListener::DockResizeListener(KMainWindow *win) :
+    QObject(win),
+    m_win(win)
+{
+}
+
+DockResizeListener::~DockResizeListener()
+{
+}
+
+bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::Resize) {
+        m_win->setSettingsDirty();
+    }
+    return QObject::eventFilter(watched, event);
+}
+
 class KMWSessionManager : public KSessionManager
 {
 public:
@@ -234,6 +270,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     // Get notified when settings change
     QObject::connect( q, SIGNAL( iconSizeChanged(const QSize&) ), q, SLOT( setSettingsDirty() ) );
     QObject::connect( q, SIGNAL( toolButtonStyleChanged(Qt::ToolButtonStyle) ), q, SLOT( setSettingsDirty() ) );
+
+    dockResizeListener = new DockResizeListener(_q);
 }
 
 void KMainWindowPrivate::polish(KMainWindow *q)
@@ -864,6 +902,10 @@ bool KMainWindow::event( QEvent* ev )
                         this, SLOT(setSettingsDirty()));
                 connect(dock, SIGNAL(topLevelChanged(bool)),
                         this, SLOT(setSettingsDirty()));
+
+                // there is no signal emitted if the size of the dock changes,
+                // hence install an event filter instead
+                dock->installEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
@@ -878,6 +920,7 @@ bool KMainWindow::event( QEvent* ev )
                            this, SLOT(setSettingsDirty()));
                 disconnect(dock, SIGNAL(topLevelChanged(bool)),
                            this, SLOT(setSettingsDirty()));
+                dock->removeEventFilter(k_ptr->dockResizeListener);
             }
         }
         break;
