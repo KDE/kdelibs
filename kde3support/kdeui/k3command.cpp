@@ -52,6 +52,11 @@ K3NamedCommand::K3NamedCommand( const QString &name )
     d->name = name;
 }
 
+K3NamedCommand::~K3NamedCommand()
+{
+    delete d;
+}
+
 QString K3NamedCommand::name() const
 {
     return d->name;

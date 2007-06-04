@@ -108,6 +108,8 @@ public:
      */
     void setName( const QString &name );
 
+    virtual ~K3NamedCommand();
+
 protected:
     virtual void virtual_hook( int id, void* data );
 
