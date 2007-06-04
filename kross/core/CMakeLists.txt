@@ -2,7 +2,6 @@ include_directories(${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_IN
 
 set(krosscore_LIB_SRCS
    krossconfig.cpp
-   variant.cpp 
    interpreter.cpp 
    script.cpp
    action.cpp
@@ -23,7 +22,6 @@ install(FILES
     childreninterface.h
     metatype.h
     metafunction.h
-    variant.h
     interpreter.h
     script.h
     action.h
