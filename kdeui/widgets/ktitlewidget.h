@@ -122,6 +122,18 @@ public Q_SLOTS:
      */
     void setPixmap(const QPixmap &pixmap, ImageAlignment alignment = ImageRight);
 
+    /**
+     * @param icon name of the icon to display in the header. The pixmap is by default right, but
+     * @param alignment can be used to display it also left.
+     */
+    void setPixmap(const QString &icon, ImageAlignment alignment = ImageRight);
+
+    /**
+     * @param pixmap the icon to display in the header. The pixmap is by default right, but
+     * @param alignment can be used to display it also left.
+     */
+    void setPixmap(const QIcon& icon, ImageAlignment alignment = ImageRight);
+
 private:
     class Private;
     Private* const d;

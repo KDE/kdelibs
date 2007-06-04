@@ -23,14 +23,17 @@
 #include <QtGui/QLayout>
 #include <QtGui/QTextDocument>
 
+#include <kicon.h>
+#include <kiconloader.h>
+
 class KTitleWidget::Private
 {
 public:
-    QHBoxLayout *titleWidgetLayout;
-    QHBoxLayout *headerLayout;
+//    QHBoxLayout *titleWidgetLayout;
+    QGridLayout *headerLayout;
     QLabel *imageLabel;
     QLabel *textLabel;
-    QWidget *headerWidget;
+//    QWidget *headerWidget;
 };
 
 KTitleWidget::KTitleWidget(QWidget *parent)
@@ -43,22 +46,17 @@ KTitleWidget::KTitleWidget(QWidget *parent)
     titleFrame->setFrameShadow(QFrame::Plain);
     titleFrame->setBackgroundRole(QPalette::Base);
 
-    d->titleWidgetLayout = new QHBoxLayout(titleFrame);
-    d->titleWidgetLayout->setMargin(0);
-
     // default image / text part start
-    d->headerWidget = new QWidget(this);
-    d->headerWidget->setVisible(false);
-    d->headerLayout = new QHBoxLayout(d->headerWidget);
+    d->headerLayout = new QGridLayout(titleFrame);
+    d->headerLayout->setColumnStretch(0, 1);
     d->headerLayout->setMargin(6);
 
-    d->textLabel = new QLabel(d->headerWidget);
-    d->headerLayout->addWidget(d->textLabel, 1);
+    d->textLabel = new QLabel(titleFrame);
+    d->headerLayout->addWidget(d->textLabel, 0, 0);
 
-    d->imageLabel = new QLabel(d->headerWidget);
-    d->headerLayout->addWidget(d->imageLabel);
+    d->imageLabel = new QLabel(titleFrame);
+    d->headerLayout->addWidget(d->imageLabel, 0, 1);
 
-    d->titleWidgetLayout->addWidget(d->headerWidget);
     // default image / text part end
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -74,7 +72,7 @@ KTitleWidget::~KTitleWidget()
 
 void KTitleWidget::setWidget(QWidget *widget)
 {
-    d->titleWidgetLayout->addWidget(widget);
+    d->headerLayout->addWidget(widget, 2, 0, 2, 2);
 }
 
 QString KTitleWidget::text() const
@@ -101,23 +99,43 @@ void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
     d->textLabel->setText(text);
 
     d->textLabel->setAlignment(alignment);
-    d->headerWidget->setVisible(true);
+//    d->headerWidget->setVisible(true);
 }
 
 void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
 {
     if (alignment == ImageLeft) {
-        d->headerLayout->removeWidget(d->textLabel); // remove text from 1st position...
-        d->headerLayout->addWidget(d->textLabel, 1); // ... and move it to the end
+        // swap the text and image labels around
+        d->headerLayout->removeWidget(d->textLabel); 
+        d->headerLayout->removeWidget(d->imageLabel);
+        d->headerLayout->addWidget(d->imageLabel, 0, 0);
+        d->headerLayout->addWidget(d->textLabel, 0, 1);
+        d->headerLayout->setColumnStretch(0, 0);
+        d->headerLayout->setColumnStretch(1, 1);
     }
 
     if (alignment == ImageRight) {
         d->headerLayout->removeWidget(d->imageLabel);
         d->headerLayout->addWidget(d->imageLabel);
+        d->headerLayout->addWidget(d->textLabel, 0, 0);
+        d->headerLayout->addWidget(d->imageLabel, 0, 1);
+        d->headerLayout->setColumnStretch(1, 0);
+        d->headerLayout->setColumnStretch(0, 1);
     }
 
     d->imageLabel->setPixmap(pixmap);
-    d->headerWidget->setVisible(true);
+//    d->headerWidget->setVisible(true);
+}
+
+
+void KTitleWidget::setPixmap(const QString &icon, ImageAlignment alignment)
+{
+    setPixmap(KIcon(icon), alignment);
+}
+
+void KTitleWidget::setPixmap(const QIcon& icon, ImageAlignment alignment)
+{
+    setPixmap(icon.pixmap(IconSize(K3Icon::Dialog)), alignment);
 }
 
 #include "ktitlewidget.moc"
