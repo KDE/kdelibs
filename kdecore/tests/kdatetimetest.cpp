@@ -101,8 +101,8 @@ void KDateTimeTest::removeDir(const QString &subdir)
 
 void KDateTimeTest::specConstructors()
 {
-    const KTimeZone *london = KSystemTimeZones::zone("(GMT+01:00) Amsterdam, Berlin, Bern, Rom, Stockholm, Wien");
-    const KTimeZone *losAngeles = KSystemTimeZones::zone("(GMT-08:00) Tijuana, Los Angeles, Seattle, Vancouver");
+    const KTimeZone *london = KSystemTimeZones::zone("Europe/London");
+    const KTimeZone *losAngeles = KSystemTimeZones::zone("America/Los_Angeles");
 
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
     ::setenv("TZ", ":Europe/London", 1);
