@@ -53,6 +53,8 @@
 #include <kstyle.h>
 #include <kdialog.h>
 #include <kurllabel.h>
+#include <kurl.h>
+#include <krun.h>
 
 
 KPluginSelector::Private::Private(KPluginSelector *parent)
@@ -1019,6 +1021,12 @@ void KPluginSelector::Private::PluginDelegate::slotDefaultClicked()
     }
 }
 
+
+void KPluginSelector::Private::PluginDelegate::processUrl(const QString &url) const
+{
+    new KRun(KUrl(url), parent->parent);
+}
+
 QRect KPluginSelector::Private::PluginDelegate::checkRect(const QModelIndex &index, const QStyleOptionViewItem &option) const
 {
     QSize canvasSize = sizeHint(option, index);
@@ -1119,19 +1127,72 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     QVBoxLayout *layout = new QVBoxLayout;
                     aboutWidget->setLayout(layout);
 
-                    QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()), newTabWidget);
-                    QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()), newTabWidget);
-                    QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()), newTabWidget);
-                    QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()), newTabWidget);
-                    QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()), newTabWidget);
-                    QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()), newTabWidget);
+                    if (!pluginInfo->comment().isEmpty())
+                    {
+                        QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()), newTabWidget);
+                        layout->addWidget(description);
+                    }
 
-                    layout->addWidget(description);
-                    layout->addWidget(author);
-                    layout->addWidget(authorEmail);
-                    layout->addWidget(website);
-                    layout->addWidget(version);
-                    layout->addWidget(license);
+                    if (!pluginInfo->author().isEmpty())
+                    {
+                        QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()), newTabWidget);
+                        layout->addWidget(author);
+                    }
+
+                    if (!pluginInfo->email().isEmpty())
+                    {
+                        QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()), newTabWidget);
+                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo->email(), i18n("\tSend the author a mail"));
+
+                        sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+                        sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                        sendEmail->setGlowEnabled(false);
+                        sendEmail->setUnderline(false);
+                        sendEmail->setFloatEnabled(true);
+                        sendEmail->setUseCursor(false);
+                        sendEmail->setHighlightedColor(option.palette.color(QPalette::Link));
+                        sendEmail->setSelectedColor(option.palette.color(QPalette::Link));
+
+                        QObject::connect(sendEmail, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
+
+                        layout->addWidget(authorEmail);
+                        layout->addWidget(sendEmail);
+                    }
+
+                    if (!pluginInfo->website().isEmpty())
+                    {
+                        QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()), newTabWidget);
+                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo->website(), i18n("\tVisit website"));
+
+                        visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+                        visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                        visitWebsite->setGlowEnabled(false);
+                        visitWebsite->setUnderline(false);
+                        visitWebsite->setFloatEnabled(true);
+                        visitWebsite->setUseCursor(false);
+                        visitWebsite->setHighlightedColor(option.palette.color(QPalette::Link));
+                        visitWebsite->setSelectedColor(option.palette.color(QPalette::Link));
+
+                        QObject::connect(visitWebsite, SIGNAL(leftClickedUrl(QString)), this, SLOT(processUrl(QString)));
+
+                        layout->addWidget(website);
+                        layout->addWidget(visitWebsite);
+                    }
+
+                    if (!pluginInfo->version().isEmpty())
+                    {
+                        QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()), newTabWidget);
+
+                        layout->addWidget(version);
+                    }
+
+                    if (!pluginInfo->license().isEmpty())
+                    {
+                        QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()), newTabWidget);
+
+                        layout->addWidget(license);
+                    }
+
                     layout->insertStretch(-1);
 
                     newTabWidget->addTab(aboutWidget, i18n("About"));

@@ -259,6 +259,7 @@ protected:
 
 private Q_SLOTS:
     void slotDefaultClicked();
+    void processUrl(const QString &url) const;
 
 private:
     enum EventReceived
