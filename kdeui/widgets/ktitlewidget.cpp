@@ -93,12 +93,15 @@ KTitleWidget::KTitleWidget(QWidget *parent)
     d->headerLayout->setMargin(6);
 
     d->textLabel = new QLabel(titleFrame);
+    d->textLabel->setVisible(false);
     d->headerLayout->addWidget(d->textLabel, 0, 0);
 
     d->imageLabel = new QLabel(titleFrame);
+    d->imageLabel->setVisible(false);
     d->headerLayout->addWidget(d->imageLabel, 0, 1, 1, 2);
 
     d->commentLabel = new QLabel(titleFrame);
+    d->commentLabel->setVisible(false);
     d->headerLayout->addWidget(d->commentLabel, 1, 0);
 
     // default image / text part end
@@ -156,6 +159,8 @@ void KTitleWidget::setBuddy(QWidget *buddy)
 
 void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
 {
+    d->textLabel->setVisible(!text.isNull());
+
     if (!Qt::mightBeRichText(text)) {
         d->textLabel->setStyleSheet("QLabel { font-weight: bold; }");
     }
@@ -173,6 +178,8 @@ void KTitleWidget::setText(const QString &text, MessageType type)
 
 void KTitleWidget::setComment(const QString &comment, MessageType type)
 {
+    d->commentLabel->setVisible(!comment.isNull());
+
     QString styleSheet;
     switch (type) {
         //FIXME: we need the usability color styles to implement different
@@ -201,6 +208,8 @@ void KTitleWidget::setComment(const QString &comment, MessageType type)
 
 void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
 {
+    d->imageLabel->setVisible(!pixmap.isNull());
+
     d->headerLayout->removeWidget(d->textLabel);
     d->headerLayout->removeWidget(d->commentLabel);
     d->headerLayout->removeWidget(d->imageLabel);
