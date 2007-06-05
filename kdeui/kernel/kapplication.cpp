@@ -147,6 +147,10 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 void KApplication_init_windows();
 #endif
 
+#ifdef Q_OS_DARWIN
+void KApplication_early_init_darwin();
+#endif
+
 /*
   Private data to make keeping binary compatibility easier
  */
@@ -448,6 +452,10 @@ void KApplication::init(bool GUIenabled)
      fprintf(stderr, "The KDE libraries are not designed to run with suid privileges.\n");
      ::exit(127);
   }
+
+#ifdef Q_OS_DARWIN
+  KApplication_early_init_darwin();
+#endif
 
   if ( type() == GuiClient )
   {

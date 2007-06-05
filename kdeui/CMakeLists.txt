@@ -220,6 +220,10 @@ if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
 endif (Q_WS_WIN)
 
+if (APPLE)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_darwin.cpp )
+endif (APPLE)
+
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
                                          windowmanagement/kwindowinfo_x11.cpp
