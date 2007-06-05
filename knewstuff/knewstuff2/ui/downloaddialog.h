@@ -60,7 +60,7 @@ class DownloadDialog : public KDialog
 
         // show a message in the bottom bar
         void displayMessage( const QString & msg,
-                             KTitleWidget::CommentType type = KTitleWidget::PlainMessage,
+                             KTitleWidget::MessageType type = KTitleWidget::PlainMessage,
                              int timeOutMs = 0 );
 
         // begin installing that item

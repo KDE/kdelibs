@@ -556,7 +556,7 @@ DownloadDialog::~DownloadDialog()
     delete d;
 }
 
-void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::CommentType type, int timeOutMs )
+void DownloadDialog::displayMessage( const QString & msg, KTitleWidget::MessageType type, int timeOutMs )
 {
     // stop the pending timer if present
     if ( d->messageTimer )
