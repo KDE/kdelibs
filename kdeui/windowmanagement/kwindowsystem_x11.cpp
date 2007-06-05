@@ -486,7 +486,7 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
 }
 
@@ -682,13 +682,13 @@ void KWindowSystem::setType( WId win, NET::WindowType windowType )
 
 void KWindowSystem::setState( WId win, unsigned long state )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     info.setState( state, state );
 }
 
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
     info.setState( 0, state );
 }
 
