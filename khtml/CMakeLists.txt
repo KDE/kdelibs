@@ -397,7 +397,8 @@ endif(KDE4_BUILD_TESTS AND NOT MSVC)
 
 # Note that testregression can't be compiled by default, it needs private Qt headers.
 # See also BUILDING-TESTREGRESSION
-if (KDE4_BUILD_TESTREGRESSION)
+if (KHTML_BUILD_TESTREGRESSION)
+
     set(testregression_SRCS
         test_regression.cpp
         test_regression_fontoverload.cpp
@@ -425,7 +426,7 @@ if (KDE4_BUILD_TESTREGRESSION)
     kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
 
     target_link_libraries(testregressiongui  ${KDE4_KDECORE_LIBS} khtml)
-endif (KDE4_BUILD_TESTREGRESSION)
+endif (KHTML_BUILD_TESTREGRESSION)
 
 ########### install files ###############
 

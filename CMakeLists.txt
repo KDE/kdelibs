@@ -5,18 +5,23 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 set(KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
+# this must be before FindKDE4Internal in order to preset the result of the visibility test, so that it will be skipped
+option(KHTML_BUILD_TESTREGRESSION "Build KHTML's testregression. Note: this disables hidden visibility")
+# Disable visibility if testregression is built, because the symbols are needed then
+if (KHTML_BUILD_TESTREGRESSION)
+   set (__KDE_HAVE_GCC_VISIBILITY 0)
+endif (KHTML_BUILD_TESTREGRESSION)
+
+
 find_package(KDE4Internal REQUIRED)
 find_package(ZLIB REQUIRED)
-
 find_package(Strigi REQUIRED)
+# Soprano can be found in kdesupport and is used for Konto and KNepomuk
+find_package(Soprano)
 
 if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
-
-# Soprano can be found in kdesupport and is used
-# for Konto and KNepomuk
-find_package(Soprano)
 
 # set some default settings
 include(KDE4Defaults)
@@ -44,8 +49,7 @@ endif(${generatedFileInSourceDir})
 #########################################################################
 
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-add_definitions (-D_FILE_OFFSET_BITS=64 -D_LARGE_FILES) # for off_t
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES) # for off_t
 remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 # for including config.h and for includes like <kparts/foo.h>
@@ -74,7 +78,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/sycoca
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
-			  ${CMAKE_SOURCE_DIR}/kdecore/sonnet
+                          ${CMAKE_SOURCE_DIR}/kdecore/sonnet
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdefx+kdecore
@@ -99,12 +103,14 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdefx
                         ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
                         ${KDE4_KDECORE_INCLUDES})
+
 # kio depends on kdeui
 set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
                       ${CMAKE_SOURCE_DIR}/kio/bookmarks
                       ${CMAKE_SOURCE_DIR}/kio/kio
                       ${CMAKE_SOURCE_DIR}/kio/kfile
                       ${KDE4_KDEUI_INCLUDES})
+
 # kparts depends on kio
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts
                          ${KDE4_KIO_INCLUDES})
