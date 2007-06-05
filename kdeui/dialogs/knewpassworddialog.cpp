@@ -33,7 +33,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <klineedit.h>
-#include <kinformationlabel.h>
+#include <ktitlewidget.h>
 
 #include "ui_knewpassworddialog.h"
 
@@ -69,6 +69,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
     ui.setupUi( q->mainWidget() );
 
     ui.labelIcon->setPixmap( KIcon("password").pixmap(96, 96) );
+    ui.labelMatch->setHidden(true);
 
     const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
             "of the password you have entered.  To improve the strength of "
@@ -92,8 +93,6 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
 
     const int minPasswordLength = q->minimumPasswordLength();
 
-    ui.labelMatch->setIconType( KInformationLabel::Custom );
-
     if ( ui.linePassword->text().length() < minPasswordLength) {
         q->enableButtonOk(false);
     } else {
@@ -101,15 +100,15 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
     }
 
     if ( match && !q->allowEmptyPasswords() && ui.linePassword->text().isEmpty()) {
-        ui.labelMatch->setIcon( KIcon("no") );
+        ui.labelMatch->setPixmap( KIcon("no") );
         ui.labelMatch->setText( i18n("Password is empty") );
     }
     else {
         if ( ui.linePassword->text().length() < minPasswordLength ) {
-            ui.labelMatch->setIcon( KIcon("no") );
+            ui.labelMatch->setPixmap( KIcon("no") );
             ui.labelMatch->setText(i18np("Password must be at least 1 character long", "Password must be at least %1 characters long", minPasswordLength));
         } else {
-            ui.labelMatch->setIcon( match ? KIcon("ok") : KIcon("no") );
+            ui.labelMatch->setPixmap( match ? KIcon("ok") : KIcon("no") );
             ui.labelMatch->setText( match? i18n("Passwords match")
                 :i18n("Passwords do not match") );
         }
@@ -203,7 +202,7 @@ QPixmap KNewPasswordDialog::pixmap() const
 void KNewPasswordDialog::accept()
 {
     if ( d->ui.linePassword->text() != d->ui.lineVerifyPassword->text() ) {
-        d->ui.labelMatch->setIconType( KInformationLabel::Error );
+        d->ui.labelMatch->setPixmap( KTitleWidget::ErrorMessage );
         d->ui.labelMatch->setText( i18n("You entered two different "
                 "passwords. Please try again.") );
 

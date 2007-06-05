@@ -32,7 +32,7 @@
 #include <khbox.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <kinformationlabel.h>
+#include <ktitlewidget.h>
 
 #include "ui_kpassworddialog.h"
 
@@ -83,6 +83,7 @@ KPasswordDialog::~KPasswordDialog()
 void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& flags )
 {
     ui.setupUi( q->mainWidget() );
+    ui.errorMessage->setHidden(true);
 
     // Row 4: Username field
     if ( flags & KPasswordDialog::ShowUsernameLine ) {
@@ -181,7 +182,7 @@ void KPasswordDialog::addCommentLine( const QString& label,
 
 void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType type )
 {
-    d->ui.errorMessage->setText( message );
+    d->ui.errorMessage->setText( message, KTitleWidget::ErrorMessage );
     mainWidget()->setMinimumHeight( mainWidget()->sizeHint().height() );
 
     QFont bold = font();

@@ -58,7 +58,6 @@ KDEUI_BUILD_TESTS(
   kgradienttest
   khashtest
   kdesattest
-  kinformationlabeltest
   kledtest
   klineedittest
   kmessageboxtest

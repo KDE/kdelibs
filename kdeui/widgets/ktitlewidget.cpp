@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2007 Urs Wolfer <uwolfer @ kde.org>
+   Copyright (C) 2007 Michaël Larouche <larouche@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,6 +19,8 @@
 
 #include "ktitlewidget.h"
 
+#include <QtCore/QTimer>
+#include <QtGui/QMouseEvent>
 #include <QtGui/QFrame>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -29,15 +32,54 @@
 class KTitleWidget::Private
 {
 public:
+    Private(KTitleWidget* parent)
+        : q(parent),
+          autoHideTimeout(0)
+    {
+    }
+
+    KTitleWidget* q;
     QGridLayout *headerLayout;
     QLabel *imageLabel;
     QLabel *textLabel;
     QLabel *commentLabel;
+    int autoHideTimeout;
+
+    /**
+     * @brief Get the icon name from the icon type
+     * @param type icon type from the enum
+     * @return named icon as QString
+     */
+    QString iconTypeToIconName(KTitleWidget::MessageType type);
+
+    void _k_timeoutFinished()
+    {
+        q->setVisible(false);
+    }
 };
+
+QString KTitleWidget::Private::iconTypeToIconName(KTitleWidget::MessageType type)
+{
+    switch (type) {
+        case KTitleWidget::InfoMessage:
+            return QLatin1String("dialog-information");
+            break;
+        case KTitleWidget::ErrorMessage:
+            return QLatin1String("dialog-error");
+            break;
+        case KTitleWidget::WarningMessage:
+            return QLatin1String("dialog-warning");
+            break;
+        case KTitleWidget::PlainMessage:
+            break;
+    }
+
+    return QString();
+}
 
 KTitleWidget::KTitleWidget(QWidget *parent)
   : QWidget(parent),
-    d(new Private)
+    d(new Private(this))
 {
     QFrame *titleFrame = new QFrame(this);
     titleFrame->setAutoFillBackground(true);
@@ -72,6 +114,21 @@ KTitleWidget::~KTitleWidget()
     delete d;
 }
 
+bool KTitleWidget::eventFilter(QObject *object, QEvent *event)
+{
+    // Hide message label on click
+    if (d->autoHideTimeout > 0 &&
+        event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        if (mouseEvent && mouseEvent->button() == Qt::LeftButton) {
+            setVisible(false);
+            return true;
+        }
+    }
+
+    return QWidget::eventFilter(object, event);
+}
+
 void KTitleWidget::setWidget(QWidget *widget)
 {
     d->headerLayout->addWidget(widget, 2, 0, 1, 2);
@@ -104,11 +161,17 @@ void KTitleWidget::setText(const QString &text, Qt::Alignment alignment)
     }
 
     d->textLabel->setText(text);
-
     d->textLabel->setAlignment(alignment);
+    show();
 }
 
-void KTitleWidget::setComment(const QString &comment, CommentType type)
+void KTitleWidget::setText(const QString &text, MessageType type)
+{
+    setText(text);
+    setPixmap(type);
+}
+
+void KTitleWidget::setComment(const QString &comment, MessageType type)
 {
     QString styleSheet;
     switch (type) {
@@ -130,8 +193,10 @@ void KTitleWidget::setComment(const QString &comment, CommentType type)
             break;
     }
 
+    //TODO: should we override the current icon with the corresponding MessageType icon?
     d->commentLabel->setStyleSheet(styleSheet);
     d->commentLabel->setText(comment);
+    show();
 }
 
 void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
@@ -167,6 +232,35 @@ void KTitleWidget::setPixmap(const QString &icon, ImageAlignment alignment)
 void KTitleWidget::setPixmap(const QIcon& icon, ImageAlignment alignment)
 {
     setPixmap(icon.pixmap(IconSize(K3Icon::Dialog)), alignment);
+}
+
+void KTitleWidget::setPixmap(MessageType type, ImageAlignment alignment)
+{
+    setPixmap(KIcon(d->iconTypeToIconName(type)), alignment);
+}
+
+int KTitleWidget::autoHideTimeout() const
+{
+    return d->autoHideTimeout;
+}
+
+void KTitleWidget::setAutoHideTimeout(int msecs)
+{
+    d->autoHideTimeout = msecs;
+
+    if (msecs > 0) {
+        installEventFilter(this);
+    } else {
+        removeEventFilter(this);
+    }
+}
+
+void KTitleWidget::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event)
+    if (d->autoHideTimeout > 0) {
+        QTimer::singleShot(d->autoHideTimeout, this, SLOT(_k_timeoutFinished()));
+    }
 }
 
 #include "ktitlewidget.moc"
