@@ -57,7 +57,7 @@ class KDEUI_EXPORT KSwitchLanguageDialog : public KDialog
         
         virtual ~KSwitchLanguageDialog();
     
-    protected slots:
+    protected Q_SLOTS:
         /**
         * Activated when the Ok button has been clicked.
         */
