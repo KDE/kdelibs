@@ -1141,8 +1141,8 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                     if (!pluginInfo->email().isEmpty())
                     {
-                        QLabel *authorEmail = new QLabel(i18n("E-Mail:\n\t%1", pluginInfo->email()), newTabWidget);
-                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo->email(), i18n("\tSend the author a mail"));
+                        QLabel *authorEmail = new QLabel(i18n("E-Mail:"), newTabWidget);
+                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo->email(), "\t" + pluginInfo->email());
 
                         sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                         sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1161,8 +1161,8 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                     if (!pluginInfo->website().isEmpty())
                     {
-                        QLabel *website = new QLabel(i18n("Website:\n\t%1", pluginInfo->website()), newTabWidget);
-                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo->website(), i18n("\tVisit website"));
+                        QLabel *website = new QLabel(i18n("Website:"), newTabWidget);
+                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo->website(), "\t" + pluginInfo->website());
 
                         visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                         visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
