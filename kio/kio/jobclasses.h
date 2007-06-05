@@ -150,7 +150,7 @@ public:
 
         /**
          * Set the parent Job.
-         * One example use of this is when FileCopyJob calls open_RenameDialog,
+         * One example use of this is when FileCopyJob calls RenameDialog::open,
          * it must pass the correct progress ID of the parent CopyJob
          * (to hide the progress dialog).
 	 * You can set the parent job only once. By default a job does not

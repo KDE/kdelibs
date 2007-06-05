@@ -88,25 +88,6 @@ public:
    */
   static QString suggestName(const KUrl& baseURL, const QString& oldName);
 
-public Q_SLOTS:
-  void cancelPressed();
-  void renamePressed();
-  void skipPressed();
-  void autoSkipPressed();
-  void overwritePressed();
-  void overwriteAllPressed();
-  void resumePressed();
-  void resumeAllPressed();
-  void suggestNewNamePressed();
-
-protected Q_SLOTS:
-  void enableRenameButton(const QString &);
-private:
- class RenameDialogPrivate;
- RenameDialogPrivate* const d;
- void pluginHandling( );
-};
-
   /**
    * \relates KIO::RenameDialog
    * Construct a modal, parent-less "rename" dialog, and return
@@ -127,16 +108,36 @@ private:
    * @param mtimeDest modification time of destination file
    * @return the result
    */
-KIO_EXPORT RenameDialog_Result open_RenameDialog( const QString & caption,
-                                 const KUrl& src, const KUrl & dest,
-                                 RenameDialog_Mode mode, QString& newDestPath,
-                                 KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
-                                 KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
-                                 time_t ctimeSrc = (time_t) -1,
-                                 time_t ctimeDest = (time_t) -1,
-                                 time_t mtimeSrc = (time_t) -1,
-                                 time_t mtimeDest = (time_t) -1
-                                 );
+  static RenameDialog_Result open( const QString & caption,
+                                   const KUrl& src, const KUrl & dest,
+                                   RenameDialog_Mode mode, QString& newDestPath,
+                                   KIO::filesize_t sizeSrc = (KIO::filesize_t) -1,
+                                   KIO::filesize_t sizeDest = (KIO::filesize_t) -1,
+                                   time_t ctimeSrc = (time_t) -1,
+                                   time_t ctimeDest = (time_t) -1,
+                                   time_t mtimeSrc = (time_t) -1,
+                                   time_t mtimeDest = (time_t) -1
+                                   );
+
+public Q_SLOTS:
+  void cancelPressed();
+  void renamePressed();
+  void skipPressed();
+  void autoSkipPressed();
+  void overwritePressed();
+  void overwriteAllPressed();
+  void resumePressed();
+  void resumeAllPressed();
+  void suggestNewNamePressed();
+
+protected Q_SLOTS:
+  void enableRenameButton(const QString &);
+private:
+ class RenameDialogPrivate;
+ RenameDialogPrivate* const d;
+ void pluginHandling( );
+};
+
 
 }
 #endif

@@ -87,7 +87,7 @@ void SkipDialog::b2Pressed()
     emit result( this, 2 );
 }
 
-SkipDialog_Result KIO::open_SkipDialog( bool _multi, const QString& _error_text )
+SkipDialog_Result SkipDialog::open( bool _multi, const QString& _error_text )
 {
   SkipDialog dlg( 0L, _multi, _error_text, true );
   return (SkipDialog_Result) dlg.exec();

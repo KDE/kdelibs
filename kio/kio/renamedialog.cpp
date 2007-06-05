@@ -510,7 +510,7 @@ void RenameDialog::pluginHandling()
 }
 
 
-RenameDialog_Result KIO::open_RenameDialog( const QString & _caption,
+RenameDialog_Result RenameDialog::open( const QString & _caption,
                                       const KUrl & _src, const KUrl & _dest,
                                       RenameDialog_Mode _mode,
                                       QString& _new,

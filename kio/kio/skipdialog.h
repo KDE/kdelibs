@@ -39,6 +39,7 @@ class KIO_EXPORT SkipDialog : public KDialog
 public:
   SkipDialog( QWidget *parent, bool _multi, const QString& _error_text, bool _modal = false );
   ~SkipDialog();
+  static SkipDialog_Result open( bool _multi, const QString& _error_text = QString() );
 
 protected:
   bool modal;
