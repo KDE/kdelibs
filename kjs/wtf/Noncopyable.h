@@ -22,7 +22,7 @@
 #ifndef WTF_Noncopyable_h
 #define WTF_Noncopyable_h
 
-#include "global.h"
+#include <kjs/global.h>
 
 // We don't want argument-dependent lookup to pull in everything from the WTF
 // namespace when you use Noncopyable, so put it in its own namespace.
