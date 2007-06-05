@@ -12,6 +12,10 @@ kde4_automoc(${fakehardwaretest_SRCS})
 
 kde4_add_executable(fakehardwaretest RUN_UNINSTALLED ${fakehardwaretest_SRCS})
 
+if(WIN32)
+  set_target_properties(fakehardwaretest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+endif(WIN32)
+  
 target_link_libraries(fakehardwaretest solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
 
@@ -27,6 +31,10 @@ kde4_automoc(${halbasictest_SRCS})
 
 kde4_add_executable(halbasictest RUN_UNINSTALLED ${halbasictest_SRCS})
 
+if(WIN32)
+  set_target_properties(halbasictest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+endif(WIN32)
+  
 target_link_libraries(halbasictest solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 
 add_test(halbasictest ${EXECUTABLE_OUTPUT_PATH}/halbasictest)
@@ -44,6 +52,10 @@ add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/bac
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
 
+if(WIN32)
+  set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
+endif(WIN32)
+  
 target_link_libraries(solidhwtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} solid_static)
 
 add_test(solidhwtest ${EXECUTABLE_OUTPUT_PATH}/solidhwtest)
