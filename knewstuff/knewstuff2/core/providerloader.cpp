@@ -78,8 +78,9 @@ void ProviderLoader::slotJobResult( KJob *job )
 
   QDomElement providers = doc.documentElement();
 
-  if ( providers.isNull() ) {
-    kDebug(550) << "No document in Providers.xml." << endl;
+  if ( providers.tagName() != "ghnsproviders" ) {
+    kWarning(550) << "No document in providers.xml." << endl;
+    return;
   }
 
   QDomNode n;

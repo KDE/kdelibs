@@ -97,7 +97,7 @@ void EntryLoader::slotJobResult( KJob *job )
   QDomElement entries = doc.documentElement();
 
   if ( entries.isNull() ) {
-    kDebug(550) << "No document in stuff.xml." << endl;
+    kWarning(550) << "No document in stuff.xml." << endl;
   }
 
   QDomNode n;
