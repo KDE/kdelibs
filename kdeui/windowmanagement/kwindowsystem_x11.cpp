@@ -486,7 +486,7 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
 }
 
