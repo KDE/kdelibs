@@ -76,7 +76,6 @@ public:
     PluginDelegate *pluginDelegate;
     QListViewSpecialized *listView;
     DependenciesWidget *dependenciesWidget;
-    QMap<KCModuleProxy*, QStringList> moduleParentComponents;
 };
 
 
