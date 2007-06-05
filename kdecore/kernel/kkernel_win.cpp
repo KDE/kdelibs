@@ -28,7 +28,7 @@
 #include <shellapi.h>
 
 #if defined(__MINGW32__)
-# define WIN32_CAST_CHAR (WCHAR*)
+# define WIN32_CAST_CHAR (const WCHAR*)
 #else
 # define WIN32_CAST_CHAR (LPCWSTR)
 #endif
