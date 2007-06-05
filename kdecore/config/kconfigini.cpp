@@ -40,21 +40,17 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 
-#include "kconfigbase.h"
-#include "kconfigdata.h"
 #include "kde_file.h"
 #include "kglobal.h"
 #include "kcomponentdata.h"
-#include "kcomponentdata_p.h"
 #include "klocale.h"
 #include "ksavefile.h"
 #include "kstandarddirs.h"
 #include "kurl.h"
-#include "kconfig.h"
 
 extern bool checkAccess(const QString& pathname, int mode);
 
-inline static char charFromHex(const char *str)
+inline char KConfigINIBackEnd::charFromHex(const char *str, const QFile &file, int lineno)
 {
     unsigned char ret = 0;
     unsigned char c;
@@ -71,8 +67,8 @@ inline static char charFromHex(const char *str)
         } else {
             QByteArray e(str, 2);
             e.prepend("\\x");
-            fprintf(stderr, "KConfigIni: Invalid hex character \'%c\' in \\x<nn>-type escape sequence %s\n",
-                    c, e.constData());
+            kWarning() << warningProlog(file, lineno) << "Invalid hex character \'" << c
+                       << "\' in \\x<nn>-type escape sequence \"" << e.constData() << "\"." << endl;
             return 'x';
         }
     }
@@ -80,7 +76,7 @@ inline static char charFromHex(const char *str)
 }
 
 /* translate escape sequences to their actual values. */
-static QByteArray printableToString(const char *str, int l)
+QByteArray KConfigINIBackEnd::printableToString(const char *str, int l, const QFile &file, int lineno)
 {
     // Strip leading white-space.
     while((l > 0) &&
@@ -128,7 +124,7 @@ static QByteArray printableToString(const char *str, int l)
                 break;
             case 'x':
                 if (i + 2 < l) {
-                    *r = charFromHex(str + i + 1);
+                    *r = charFromHex(str + i + 1, file, lineno);
                     i += 2;
                 } else {
                     *r = 'x';
@@ -137,7 +133,8 @@ static QByteArray printableToString(const char *str, int l)
                 break;
             default:
                 *r = '\\';
-                fprintf(stderr, "KConfigIni: Invalid escape sequence \'\\%c\'\n", str[i]);
+                kWarning() << warningProlog(file, lineno)
+                           << "Invalid escape sequence \"\\" << str[i] << "\'." << endl;
             }
         }
     }
@@ -145,12 +142,7 @@ static QByteArray printableToString(const char *str, int l)
     return result;
 }
 
-enum StringType {
-    OtherString = 0,
-    ValueString = 1
-};
-
-static QByteArray stringToPrintable(const QByteArray& str, StringType strType = OtherString)
+QByteArray KConfigINIBackEnd::stringToPrintable(const QByteArray& str, StringType strType)
 {
     static const char nibbleLookup[] = {
         '0', '1', '2', '3', '4', '5', '6', '7',
@@ -224,6 +216,17 @@ static QByteArray stringToPrintable(const QByteArray& str, StringType strType = 
     result.truncate(r - result.constData());
     return result;
 }
+
+QString KConfigINIBackEnd::warningProlog(const QFile &file, int lineno)
+{
+    QString ret("KConfigIni: In file ");
+    ret.append(file.fileName());
+    ret.append(", line ");
+    ret.append(QString::number(lineno));
+    ret.append(": ");
+    return ret;
+}
+
 
 class KConfigINIBackEnd::KConfigINIBackEndPrivate
 {
@@ -492,7 +495,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
             if ((e >= eof) || (*e != ']'))
             {
-                fprintf(stderr, "Invalid group header at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
+                kWarning() << warningProlog(rFile.fileName(), line) << "Invalid group header." << endl;
                 continue;
             }
             // group found; get the group name by taking everything in
@@ -506,7 +509,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 continue;
             }
 
-            aCurrentGroup = printableToString(startLine + 1, e - startLine - 1);
+            aCurrentGroup = printableToString(startLine + 1, e - startLine - 1,
+                                              rFile, line);
             //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
             groupOptionImmutable = fileOptionImmutable;
@@ -562,7 +566,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 for (;; s++)
                 {
                     if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-                        fprintf(stderr, "Invalid entry (missing ']') at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
+                        kWarning() << warningProlog(rFile.fileName(), line)
+                                   << "Invalid entry (missing ']')." << endl;
                         goto sktoeol;
                     }
                     if (*s == ']')
@@ -573,7 +578,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 {
                     // Locale
                     if (locale) {
-                        fprintf(stderr, "Invalid entry (second locale!?) at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
+                        kWarning() << warningProlog(rFile.fileName(), line)
+                                   << "Invalid entry (second locale!?)." << endl;
                         goto sktoeol;
                     }
                     locale = option;
@@ -600,7 +606,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 }
             }
         }
-        fprintf(stderr, "Invalid entry (missing '=') at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
+        kWarning() << warningProlog(rFile.fileName(), line)
+                   << "Invalid entry (missing '=')." << endl;
         continue;
 
     haveeq:
@@ -608,7 +615,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         {
             if (endOfKey < startLine)
             {
-                fprintf(stderr, "Invalid entry (empty key) at %s:%d\n", rFile.fileName().toLatin1().constData(), line);
+                kWarning() << warningProlog(rFile.fileName(), line)
+                           << "Invalid entry (empty key)." << endl;
                 goto sktoeol;
             }
             if (!isspace(*endOfKey))
@@ -636,8 +644,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         }
 
         // insert the key/value line
-        QByteArray key = printableToString(startLine, endOfKey - startLine + 1);
-        QByteArray val = printableToString(st, s - st);
+        QByteArray key = printableToString(startLine, endOfKey - startLine + 1, rFile, line);
+        QByteArray val = printableToString(st, s - st, rFile, line);
         //qDebug("found key '%s' with value '%s'", key.constData(), val.constData());
 
         KEntryKey aEntryKey(aCurrentGroup, key);
@@ -781,90 +789,93 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
 }
 
-static void writeEntries(QFile &file, const KEntryMap& entryMap, bool defaultGroup, bool &firstEntry, const QByteArray &localeString)
+void KConfigINIBackEnd::writeEntries(QFile &file, const KEntryMap &aTempMap) const
 {
-    // now write out all other groups.
-    QByteArray currentGroup;
-    for (KEntryMapConstIterator aIt = entryMap.begin();
-         aIt != entryMap.end(); ++aIt)
-    {
-        const KEntryKey &key = aIt.key();
+    bool defaultGroup;
+    //once for the default group, once for others
+    for (int i = 0; i < 2; i++) {
+        QByteArray currentGroup;
+        defaultGroup = (i == 0);
 
-        // Either proces the default group or all others
-        if ((key.mGroup != "<default>") == defaultGroup)
-            continue; // Skip
-
-        // Skip default values and group headers.
-        if ((key.bDefault) || key.mKey.isEmpty()) {
-            continue; // Skip
-        }
-
-        const KEntry &currentEntry = *aIt;
-
-        KEntryMapConstIterator aTestIt = aIt;
-        ++aTestIt;
-        bool hasDefault = (aTestIt != entryMap.end());
-        if (hasDefault)
+        for (KEntryMapConstIterator aIt = aTempMap.begin(); aIt != aTempMap.end(); ++aIt)
         {
-            const KEntryKey &defaultKey = aTestIt.key();
-            if ((!defaultKey.bDefault) ||
-                (defaultKey.mKey != key.mKey) ||
-                (defaultKey.mGroup != key.mGroup) ||
-                (defaultKey.bLocal != key.bLocal))
-                hasDefault = false;
-        }
+            const KEntryKey &key = aIt.key();
 
+            // Either proces the default group or all others
+            if ((key.mGroup != "<default>") == defaultGroup)
+                continue; // Skip
 
-        if ( hasDefault ) {
-            // Entry had a default value
-            if ( (currentEntry.mValue == (*aTestIt).mValue) &&
-                 (currentEntry.bDeleted == (*aTestIt).bDeleted) ) {
-                continue; // Same as default, don't write.
+            // Skip default values and group headers.
+            if ((key.bDefault) || key.mKey.isEmpty()) {
+                continue; // Skip
             }
-        } else if ( currentEntry.bDeleted ) {
-            // Entry had no default value.
-            continue; // Don't write deleted entries if there is no default.
-        }
 
-        if (!defaultGroup && (currentGroup != key.mGroup)) {
-            if (!firstEntry)
-                file.putChar('\n');
-            currentGroup = key.mGroup;
-            file.putChar('[');
-            file.write(stringToPrintable(currentGroup));
-            file.write("]\n", 2);
-        }
+            const KEntry &currentEntry = *aIt;
 
-        firstEntry = false;
-        // it is data for a group
-        file.write(stringToPrintable(key.mKey));   // Key
+            KEntryMapConstIterator aTestIt = aIt;
+            ++aTestIt;
+            bool hasDefault = (aTestIt != aTempMap.end());
+            if (hasDefault)
+            {
+                const KEntryKey &defaultKey = aTestIt.key();
+                if ((!defaultKey.bDefault) ||
+                    (defaultKey.mKey != key.mKey) ||
+                    (defaultKey.mGroup != key.mGroup) ||
+                    (defaultKey.bLocal != key.bLocal))
+                    hasDefault = false;
+            }
 
-        if ( currentEntry.bNLS )
-        {
-            file.putChar('[');
-            file.write(localeString);
-            file.putChar(']');
-        }
 
-        if (currentEntry.bDeleted) {
-            file.write("[$d]\n"); // Deleted
-        } else {
-            if (currentEntry.bImmutable || currentEntry.bExpand)
+            if ( hasDefault ) {
+                // Entry had a default value
+                if ( (currentEntry.mValue == (*aTestIt).mValue) &&
+                    (currentEntry.bDeleted == (*aTestIt).bDeleted) ) {
+                    continue; // Same as default, don't write.
+                }
+            } else if ( currentEntry.bDeleted ) {
+                // Entry had no default value.
+                continue; // Don't write deleted entries if there is no default.
+            }
+
+            if (!defaultGroup && (currentGroup != key.mGroup)) {
+                if (i > 0)
+                    file.putChar('\n');
+                currentGroup = key.mGroup;
+                file.putChar('[');
+                file.write(stringToPrintable(currentGroup));
+                file.write("]\n", 2);
+            }
+
+            // it is data for a group
+            file.write(stringToPrintable(key.mKey));   // Key
+
+            if ( currentEntry.bNLS )
             {
                 file.putChar('[');
-                file.putChar('$');
-                if (currentEntry.bImmutable)
-                    file.putChar('i');
-                if (currentEntry.bExpand)
-                    file.putChar('e');
-
+                file.write(localeString);
                 file.putChar(']');
             }
-            file.putChar('=');
-            file.write(stringToPrintable(currentEntry.mValue, ValueString));
-            file.putChar('\n');
-        }
-    } // for loop
+
+            if (currentEntry.bDeleted) {
+                file.write("[$d]\n"); // Deleted
+            } else {
+                if (currentEntry.bImmutable || currentEntry.bExpand)
+                {
+                    file.putChar('[');
+                    file.putChar('$');
+                    if (currentEntry.bImmutable)
+                        file.putChar('i');
+                    if (currentEntry.bExpand)
+                        file.putChar('e');
+
+                    file.putChar(']');
+                }
+                file.putChar('=');
+                file.write(stringToPrintable(currentEntry.mValue, ValueString));
+                file.putChar('\n');
+            }
+        } // iterator
+    } //default / non-default
 }
 
 bool KConfigINIBackEnd::getEntryMap(KEntryMap &aTempMap, bool bGlobal,
@@ -1028,15 +1039,4 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
     }
 
     return bEntriesLeft;
-}
-
-void KConfigINIBackEnd::writeEntries(QFile &f, const KEntryMap &aTempMap)
-{
-    bool firstEntry = true;
-
-    // Write default group
-    ::writeEntries(f, aTempMap, true, firstEntry, localeString);
-
-    // Write all other groups
-    ::writeEntries(f, aTempMap, false, firstEntry, localeString);
 }
