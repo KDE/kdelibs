@@ -359,6 +359,7 @@ int main(int argc, char **argv)
       header.cmd = LAUNCHER_TERMINATE_KDE;
       header.arg_length = 0;
       write_socket(sock, (char *) &header, sizeof(header));
+      read_socket(sock, (char *) &header, 1); /* wait for the socket to close */
       return 0;
    }
 
