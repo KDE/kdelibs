@@ -86,6 +86,13 @@ void Engine::workflow()
 		m_downloaddialog = new DownloadDialog(0);
 		m_downloaddialog->setEngine(this);
 		m_downloaddialog->show();
+
+		// FIXME: catch dialog close event, and then clean up
+		// FIXME: but dialogs don't have signals
+		//connect(m_downloaddialog, SIGNAL(closed()), SLOT(slotDialogClosed()));
+		//...
+		//m_command = command_none;
+		//delete m_downloaddialog;
 	}
 
 	start();
