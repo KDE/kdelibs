@@ -1125,18 +1125,21 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                     QWidget *aboutWidget = new QWidget(newTabWidget);
                     QVBoxLayout *layout = new QVBoxLayout;
+                    layout->setSpacing(0);
                     aboutWidget->setLayout(layout);
 
                     if (!pluginInfo->comment().isEmpty())
                     {
                         QLabel *description = new QLabel(i18n("Description:\n\t%1", pluginInfo->comment()), newTabWidget);
                         layout->addWidget(description);
+                        layout->addSpacing(20);
                     }
 
                     if (!pluginInfo->author().isEmpty())
                     {
                         QLabel *author = new QLabel(i18n("Author:\n\t%1", pluginInfo->author()), newTabWidget);
                         layout->addWidget(author);
+                        layout->addSpacing(20);
                     }
 
                     if (!pluginInfo->email().isEmpty())
@@ -1157,6 +1160,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                         layout->addWidget(authorEmail);
                         layout->addWidget(sendEmail);
+                        layout->addSpacing(20);
                     }
 
                     if (!pluginInfo->website().isEmpty())
@@ -1177,6 +1181,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
 
                         layout->addWidget(website);
                         layout->addWidget(visitWebsite);
+                        layout->addSpacing(20);
                     }
 
                     if (!pluginInfo->version().isEmpty())
@@ -1184,6 +1189,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         QLabel *version = new QLabel(i18n("Version:\n\t%1", pluginInfo->version()), newTabWidget);
 
                         layout->addWidget(version);
+                        layout->addSpacing(20);
                     }
 
                     if (!pluginInfo->license().isEmpty())
@@ -1191,6 +1197,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                         QLabel *license = new QLabel(i18n("License:\n\t%1", pluginInfo->license()), newTabWidget);
 
                         layout->addWidget(license);
+                        layout->addSpacing(20);
                     }
 
                     layout->insertStretch(-1);
