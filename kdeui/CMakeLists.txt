@@ -214,15 +214,11 @@ if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_x11.cpp util/kkeyserver_x11.cpp )
 endif (Q_WS_X11)
 if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_mac.cpp util/kkeyserver_mac.cpp kernel/kapplication_mac.cpp )
 endif (Q_WS_MAC)
 if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
 endif (Q_WS_WIN)
-
-if (APPLE)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_darwin.cpp )
-endif (APPLE)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp

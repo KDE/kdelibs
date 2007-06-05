@@ -37,7 +37,7 @@
  * @internal
 */
 
-void KApplication_early_init_darwin()
+void KApplication_early_init_mac()
 {
     KConfigGroup g( KGlobal::config(), "General" );
     QStringList newPath = g.readPathListEntry("AddDirectoriesToPath");

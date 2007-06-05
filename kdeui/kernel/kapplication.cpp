@@ -147,8 +147,8 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 void KApplication_init_windows();
 #endif
 
-#ifdef Q_OS_DARWIN
-void KApplication_early_init_darwin();
+#ifdef Q_WS_MAC
+void KApplication_early_init_mac();
 #endif
 
 /*
@@ -453,8 +453,8 @@ void KApplication::init(bool GUIenabled)
      ::exit(127);
   }
 
-#ifdef Q_OS_DARWIN
-  KApplication_early_init_darwin();
+#ifdef Q_WS_MAC
+  KApplication_early_init_mac();
 #endif
 
   if ( type() == GuiClient )
