@@ -29,6 +29,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kmessagebox.h>
 
 #include <QtGui/QTextEdit>
 #include <QtCore/QTimer>
@@ -52,6 +53,7 @@ public:
     bool automatic;
     bool completeRehighlightRequired;
     bool intraWordEditing;
+    bool spellCheckerFound;
     int disablePercentage;
     int disableWordCount;
     int wordCount, errorCount;
@@ -72,7 +74,7 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     d->errorCount = 0;
     d->intraWordEditing = false;
     d->completeRehighlightRequired = false;
-
+    d->spellCheckerFound = true;
     d->spellColor = _col.isValid() ? _col : Qt::red;
 
     textEdit->installEventFilter( this );
@@ -85,7 +87,13 @@ Highlighter::Highlighter( QTextEdit *textEdit,
 
     d->filter->setSettings( d->loader->settings() );
     d->dict   = d->loader->createSpeller();
-    Q_ASSERT( d->dict );
+    if(!d->dict)
+    {
+	d->spellCheckerFound = false;
+	KMessageBox::error(textEdit, i18n("Sorry any dict was found. Please reconfigure it"));
+    }
+    else
+    {
     d->dictCache.insert( d->loader->settings()->defaultLanguage(),
                          d->dict );
 
@@ -105,11 +113,17 @@ Highlighter::Highlighter( QTextEdit *textEdit,
     d->rehighlightRequest->setInterval(0);
     d->rehighlightRequest->setSingleShot(true);
     d->rehighlightRequest->start();
+    }
 }
 
 Highlighter::~Highlighter()
 {
     delete d;
+}
+
+bool Highlighter::spellCheckerFound() const
+{
+    return d->spellCheckerFound;
 }
 
 void Highlighter::slotRehighlight()
@@ -219,7 +233,7 @@ bool Highlighter::isActive() const
 
 void Highlighter::highlightBlock ( const QString & text )
 {
-    if ( text.isEmpty() || !d->active)
+    if ( text.isEmpty() || !d->active || !d->spellCheckerFound)
         return;
     QTextCursor cursor = d->edit->textCursor();
     int index = cursor.position();
@@ -305,6 +319,8 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
         }
     }
 #endif
+    if (!d->spellCheckerFound)
+	return false;
     if (o == d->edit  && (e->type() == QEvent::KeyPress)) {
 	QKeyEvent *k = static_cast<QKeyEvent *>(e);
 	//d->autoReady = true;

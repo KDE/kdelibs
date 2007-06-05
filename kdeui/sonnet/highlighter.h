@@ -41,6 +41,8 @@ namespace KSpell2
                     const QColor &col=QColor());
         ~Highlighter();
 
+	bool spellCheckerFound() const;
+
 	virtual void highlightBlock (const QString &text);
 
         Filter *currentFilter() const;
