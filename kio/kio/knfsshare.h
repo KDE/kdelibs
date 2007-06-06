@@ -40,7 +40,7 @@ public:
   static KNFSShare* instance();
 
   /**
-   * Wether or not the given path is shared by NFS.
+   * Whether or not the given path is shared by NFS.
    * @param path the path to check if it is shared by NFS.
    * @return wether the given path is shared by NFS.
    */
