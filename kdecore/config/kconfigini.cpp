@@ -219,11 +219,8 @@ QByteArray KConfigINIBackEnd::stringToPrintable(const QByteArray& str, StringTyp
 
 QString KConfigINIBackEnd::warningProlog(const QFile &file, int lineno)
 {
-    QString ret("KConfigIni: In file ");
-    ret.append(file.fileName());
-    ret.append(", line ");
-    ret.append(QString::number(lineno));
-    ret.append(": ");
+    QString ret = QString("KConfigIni: In file %1, line %2: ")
+                  .arg(file.fileName()).arg(QString::number(lineno));
     return ret;
 }
 
