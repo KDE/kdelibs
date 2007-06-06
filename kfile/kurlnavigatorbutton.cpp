@@ -120,7 +120,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
 
     int textWidth = buttonWidth;
     if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
-        fgColor.setAlpha(128);
+        fgColor.setAlpha(fgColor.alpha() / 2);
     }
     painter.setPen(fgColor);
 

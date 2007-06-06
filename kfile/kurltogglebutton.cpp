@@ -60,13 +60,13 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
         const int y = (buttonHeight - m_pixmap.height()) / 2;
         painter.drawPixmap(QRect(x, y, m_pixmap.width(), m_pixmap.height()), m_pixmap);
     } else if (isDisplayHintEnabled(EnteredHint)) {
-        QColor foregroundColor = KGlobalSettings::buttonTextColor();
+        QColor fgColor = KGlobalSettings::buttonTextColor();
         if (!urlNavigator()->isActive()) {
-            foregroundColor.setAlpha(128);
+            fgColor.setAlpha(fgColor.alpha() / 2);
         }
 
         painter.setPen(Qt::NoPen);
-        painter.setBrush(foregroundColor);
+        painter.setBrush(fgColor);
         painter.drawRect(0, 2, 2, buttonHeight - 6);
     }
 }
