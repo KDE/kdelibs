@@ -1,9 +1,29 @@
+showstoppers
+============
+- make the metadata map a string->variant map
+
+- don't crash:
+  - when no backend is available
+  - when an iface object isn't available
+
+
+nice to have in .0 release
+==========================
 - QImage VideoWidget::screenshot(): ordinary screenshot doesn't work with XV says Christoph. And VideoDataOutput
   would be major overkill.
 
 - let the Phonon KCM check whether the hw: ALSA device already does mixing, only if it does not
    prefer the dmix: device
 
+- consider whether to add a signal to notify when the information for
+  availableAudioStreams/availableVideoStreams/availableSubtitleStreams
+  is available
+
+- look at collaboration with other projects, e.g. pavucontrol, gsmartmix
+
+
+post .0 release
+===============
 - add Player dbus interface in MediaObject
 
 - add global setting to pause video when it's not visible
@@ -15,13 +35,3 @@
 
 - Video Overlays (OSD) like: show a rectangle as a play symbol, show the position in
   the file as something like [IIIIIIIII------], and so on
-
-- don't crash:
-  - when no backend is available
-  - when an iface object isn't available
-
-- consider whether to add a signal to notify when the information for
-  availableAudioStreams/availableVideoStreams/availableSubtitleStreams
-  is available
-
-look at pavucontrol, gsmartmix
