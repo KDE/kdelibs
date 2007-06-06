@@ -24,17 +24,11 @@
 #include "phononnamespace.h"
 #include "mediasource.h"
 
-namespace Solid
-{
-    class Device;
-} // namespace Solid
-
 namespace Phonon
 {
     class VideoPath;
     class AudioPath;
     class MediaObjectPrivate;
-    class KioFallbackImpl;
     class MediaSource;
 
     /** \class MediaObject mediaobject.h Phonon/MediaObject
@@ -86,7 +80,6 @@ namespace Phonon
     class PHONON_EXPORT MediaObject : public QObject
     {
         friend class MediaQueue;
-        friend class KioFallbackImpl;
         friend class FrontendInterfacePrivate;
         Q_OBJECT
         K_DECLARE_PRIVATE(MediaObject)
