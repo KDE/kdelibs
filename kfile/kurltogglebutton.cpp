@@ -63,9 +63,7 @@ void KUrlToggleButton::paintEvent(QPaintEvent* event)
     } else if (isDisplayHintEnabled(EnteredHint)) {
         QColor foregroundColor = KGlobalSettings::buttonTextColor();
         if (!urlNavigator()->isActive()) {
-            QColor dimColor(palette().brush(QPalette::Background).color());
-            dimColor.setAlpha(128);
-            foregroundColor = KColorUtils::overlayColors(foregroundColor, dimColor);
+            foregroundColor.setAlpha(128);
         }
 
         painter.setPen(Qt::NoPen);

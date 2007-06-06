@@ -133,9 +133,7 @@ QColor KUrlButton::foregroundColor() const
                                              KGlobalSettings::buttonTextColor();
 
     if (!urlNavigator()->isActive()) {
-        QColor dimColor(palette().brush(QPalette::Background).color());
-        dimColor.setAlpha(128);
-        foregroundColor = KColorUtils::overlayColors(foregroundColor, dimColor);
+        foregroundColor.setAlpha(192);
     }
 
     return foregroundColor;
@@ -150,9 +148,7 @@ QColor KUrlButton::backgroundColor() const
     QColor backgroundColor = isHighlighted ? KGlobalSettings::highlightColor() :
                                              palette().brush(QPalette::Background).color();
     if (!urlNavigator()->isActive() && isHighlighted) {
-        QColor dimColor(palette().brush(QPalette::Background).color());
-        dimColor.setAlpha(128);
-        backgroundColor = KColorUtils::overlayColors(backgroundColor, dimColor);
+        backgroundColor.setAlpha(128);
     }
 
     return backgroundColor;

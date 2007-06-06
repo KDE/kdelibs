@@ -120,15 +120,10 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
     int textWidth = buttonWidth;
-    if (isDisplayHintEnabled(ActivatedHint) && isActive || isHighlighted) {
-        painter.setPen(fgColor);
-    } else {
-        // dim the foreground color by mixing it with the background
-        QColor mixColor(bgColor);
-        mixColor.setAlpha(128);
-        fgColor = KColorUtils::overlayColors(fgColor, mixColor);
-        painter.setPen(fgColor);
+    if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
+        fgColor.setAlpha(128);
     }
+    painter.setPen(fgColor);
 
     if (!isDisplayHintEnabled(ActivatedHint)) {
         // draw arrow
@@ -138,8 +133,15 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
         const int startTopY = middleY - (width - 1);
         const int startBottomY = middleY + (width - 1);
         for (int i = 0; i < width; ++i) {
-            painter.drawLine(startX, startTopY + i, startX + i, startTopY + i);
-            painter.drawLine(startX, startBottomY - i, startX + i, startBottomY - i);
+            const int topY = startTopY + i;
+            const int bottomY = startBottomY - i;
+            const int endX = startX + i + 1;
+            painter.drawLine(startX, topY, endX, topY);
+            if (topY != bottomY) {
+                // alpha blending is used, hence assure that a line is
+                // never drawn twice
+                painter.drawLine(startX, bottomY, endX, bottomY);
+            }
         }
 
         textWidth = startX - BorderWidth;
