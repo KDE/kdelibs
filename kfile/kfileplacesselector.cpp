@@ -24,7 +24,6 @@
 
 #include <kiconloader.h>
 #include <kglobalsettings.h>
-#include <kcolorutils.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
 #include <kdebug.h>
@@ -131,18 +130,6 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
     const int buttonHeight = height();
 
     const QColor bgColor = backgroundColor();
-    QColor fgColor = foregroundColor();
-    const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
-                               isDisplayHintEnabled(DraggedHint);
-    const bool isActive = urlNavigator()->isActive();
-
-    if (!(isDisplayHintEnabled(ActivatedHint) && isActive) && !isHighlighted) {
-        // dim the foreground color by mixing it with the background
-        QColor mixColor(bgColor);
-        mixColor.setAlpha(128);
-        fgColor = KColorUtils::overlayColors(fgColor, mixColor);
-        painter.setPen(fgColor);
-    }
 
     // draw button backround
     painter.setPen(Qt::NoPen);
