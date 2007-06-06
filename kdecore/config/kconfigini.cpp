@@ -495,7 +495,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
             if ((e >= eof) || (*e != ']'))
             {
-                kWarning() << warningProlog(rFile.fileName(), line) << "Invalid group header." << endl;
+                kWarning() << warningProlog(rFile, line) << "Invalid group header." << endl;
                 continue;
             }
             // group found; get the group name by taking everything in
@@ -566,7 +566,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 for (;; s++)
                 {
                     if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-                        kWarning() << warningProlog(rFile.fileName(), line)
+                        kWarning() << warningProlog(rFile, line)
                                    << "Invalid entry (missing ']')." << endl;
                         goto sktoeol;
                     }
@@ -578,7 +578,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 {
                     // Locale
                     if (locale) {
-                        kWarning() << warningProlog(rFile.fileName(), line)
+                        kWarning() << warningProlog(rFile, line)
                                    << "Invalid entry (second locale!?)." << endl;
                         goto sktoeol;
                     }
@@ -606,7 +606,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 }
             }
         }
-        kWarning() << warningProlog(rFile.fileName(), line)
+        kWarning() << warningProlog(rFile, line)
                    << "Invalid entry (missing '=')." << endl;
         continue;
 
@@ -615,7 +615,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         {
             if (endOfKey < startLine)
             {
-                kWarning() << warningProlog(rFile.fileName(), line)
+                kWarning() << warningProlog(rFile, line)
                            << "Invalid entry (empty key)." << endl;
                 goto sktoeol;
             }
