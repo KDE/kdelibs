@@ -34,8 +34,8 @@
 
 KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel* placesModel) :
     KUrlButton(parent),
-    m_selectedItem(-1),
-    m_placesModel(placesModel)
+    m_placesModel(placesModel),
+    m_selectedUrl()
 {
     setFocusPolicy(Qt::NoFocus);
 
@@ -68,28 +68,19 @@ void KFilePlacesSelector::updateMenu()
                                       m_placesModel->text(index),
                                       m_placesMenu);
         m_placesMenu->addAction(action);
-
         action->setData(i);
-
-        if (i == m_selectedItem) {
-            //QPixmap pixmap = SmallIcon(bookmark.icon());
-            setIcon(m_placesModel->icon(index));
-            //setIconSize(pixmap.size());
-            //setMinimumWidth(pixmap.width() + 2);
-        }
     }
+    updateSelection(m_selectedUrl);
 }
 
 void KFilePlacesSelector::updateSelection(const KUrl& url)
 {
-    QModelIndex index = m_placesModel->closestItem(url);
-
+    const QModelIndex index = m_placesModel->closestItem(url);
     if (index.isValid()) {
-        m_selectedItem = index.row();
+        m_selectedUrl = url;
         setIcon(m_placesModel->icon(index));
     }
     else {
-        m_selectedItem = -1;
         // No bookmark has been found which matches to the given Url. Show
         // a generic folder icon as pixmap for indication:
         setIcon(KIcon("folder"));
@@ -98,22 +89,13 @@ void KFilePlacesSelector::updateSelection(const KUrl& url)
 
 KUrl KFilePlacesSelector::selectedPlaceUrl() const
 {
-    QModelIndex index = m_placesModel->index(m_selectedItem, 0);
-
-    if (index.isValid())
-        return m_placesModel->url(index);
-    else
-        return KUrl();
+    return m_selectedUrl;
 }
 
 QString KFilePlacesSelector::selectedPlaceText() const
 {
-    QModelIndex index = m_placesModel->index(m_selectedItem, 0);
-
-    if (index.isValid())
-        return m_placesModel->text(index);
-    else
-        return QString();
+    const QModelIndex index = m_placesModel->closestItem(m_selectedUrl);
+    return index.isValid() ? m_placesModel->text(index) : QString();
 }
 
 QSize KFilePlacesSelector::sizeHint() const
@@ -146,10 +128,8 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
 void KFilePlacesSelector::activatePlace(QAction* action)
 {
     Q_ASSERT(action != 0);
-    m_selectedItem = action->data().toInt();
-
-    QModelIndex index = m_placesModel->index(m_selectedItem, 0);
-
+    const int selectedItem = action->data().toInt();
+    QModelIndex index = m_placesModel->index(selectedItem, 0);
     if (index.isValid()) {
         setIcon(m_placesModel->icon(index));
         emit placeActivated(m_placesModel->url(index));
