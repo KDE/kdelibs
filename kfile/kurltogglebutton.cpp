@@ -21,7 +21,6 @@
 #include "kurlnavigator.h"
 
 #include <kglobalsettings.h>
-#include <kcolorutils.h>
 #include <kicon.h>
 #include <klocale.h>
 

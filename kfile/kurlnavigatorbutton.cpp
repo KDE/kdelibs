@@ -26,7 +26,6 @@
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kglobalsettings.h>
-#include <kcolorutils.h>
 #include <kmenu.h>
 
 #include <QtGui/QPainter>
