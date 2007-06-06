@@ -86,10 +86,10 @@ PHONON_EXECUTE_TESTS(
 kde4_automoc(methodtest.cpp ../factory.cpp)
 kde4_add_executable(methodtest NOGUI methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
 target_link_libraries(methodtest ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY}  ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY})
-SET_TARGET_PROPERTIES(methodtest PROPERTIES COMPILE_FLAGS -DPHONON_METHODTEST)
+SET_TARGET_PROPERTIES(methodtest PROPERTIES COMPILE_FLAGS "-DPHONON_METHODTEST -DPHONON_EXPORT=")
 kde4_add_executable(methodtest_fake NOGUI methodtest.cpp ../factory.cpp ../phononnamespace.cpp)
 target_link_libraries(methodtest_fake ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY}  ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY})
-SET_TARGET_PROPERTIES(methodtest_fake PROPERTIES COMPILE_FLAGS "-DUSE_FAKE_BACKEND -DPHONON_METHODTEST")
+SET_TARGET_PROPERTIES(methodtest_fake PROPERTIES COMPILE_FLAGS "-DUSE_FAKE_BACKEND -DPHONON_METHODTEST -DPHONON_EXPORT=")
 add_test(methodtest_fake ${EXECUTABLE_OUTPUT_PATH}/methodtest_fake)
 
 SET(mediasourcetest_SRCS mediasourcetest.cpp)
