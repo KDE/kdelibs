@@ -17,7 +17,7 @@
 
 #include <signal.h>
 
-#include "kprocesstest.h"
+#include "k3processtest.h"
 
 #define PROCNO 10
 

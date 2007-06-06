@@ -18,7 +18,7 @@
 
 #include <signal.h>
 
-#include "kprociotest.h"
+#include "k3prociotest.h"
 
 
 

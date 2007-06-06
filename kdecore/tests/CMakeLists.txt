@@ -64,14 +64,14 @@ endif(UNIX)
 KDECORE_BUILD_TESTS(
  ${kdecore_unittests}
  krandomsequencetest
- kprocesstest
  kdebugtest
  kcmdlineargstest
  kmemtest
  dbuscalltest
  kmdcodectest
- kprociotest
  startserviceby
+ k3processtest
+ k3prociotest
 )
 
 KDECORE_EXECUTE_TESTS( ${kdecore_unittests} )
