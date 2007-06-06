@@ -24,10 +24,6 @@
 #define WTF_HashFunctions_h
 
 #include "RefPtr.h"
-#include <config.h>
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
 
 namespace WTF {
 
