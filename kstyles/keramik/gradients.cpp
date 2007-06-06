@@ -64,7 +64,7 @@ namespace
 	};
 	
 	
-	QCache<int, GradientCacheEntry> cache(65636);
+	static QCache<int, GradientCacheEntry> cache(65636);
 	
 }
 
