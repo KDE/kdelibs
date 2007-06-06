@@ -566,10 +566,12 @@ void MediaObjectTest::testPlayOnFinish()
     startPlayback();
     if (m_media->isSeekable()) {
         m_media->seek(m_media->totalTime() - 4000);
+        QVERIFY(QTest::kWaitForSignal(this, SIGNAL(continueTestPlayOnFinish()), 6000));
+    } else {
+        QVERIFY(QTest::kWaitForSignal(this, SIGNAL(continueTestPlayOnFinish()), 3000 + m_media->remainingTime()));
     }
-    QTest::kWaitForSignal(this, SIGNAL(continueTestPlayOnFinish()), 4000);
-    ::sleep(1);
-    stopPlayback(Phonon::PlayingState);
+    QTest::kWaitForSignal(m_media, SIGNAL(finished()), 1000);
+    stopPlayback(m_media->state());
 }
 
 void MediaObjectTest::testPlayBeforeFinish()
