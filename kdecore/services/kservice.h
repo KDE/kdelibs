@@ -521,8 +521,7 @@ public:
             return 0;
         }
 
-        return KLibLoader::createInstance<T>( library.toLocal8Bit().constData(), parent,
-                                              args, error );
+        return KLibLoader::createInstance<T>( library, parent, args, error );
     }
 
     /**
