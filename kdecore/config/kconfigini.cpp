@@ -50,7 +50,34 @@
 
 extern bool checkAccess(const QString& pathname, int mode);
 
-inline char KConfigINIBackEnd::charFromHex(const char *str, const QFile &file, int lineno)
+class KConfigINIBackEndPrivate
+{
+public:
+    KConfigINIBackEndPrivate()
+     : m_localLastSize(0)
+    {}
+
+    uint m_localLastSize;
+    QDateTime m_localLastModified;
+
+    enum StringType {
+        OtherString = 0,
+        ValueString = 1
+    };
+    inline static char charFromHex(const char *str, const QFile &file, int lineno);
+    static QByteArray printableToString(const char *str, int l, const QFile &file, int lineno);
+    static QByteArray stringToPrintable(const QByteArray& str, StringType strType = OtherString);
+    static QString warningProlog(const QFile &file, int lineno);
+
+    /** Write the entries in @e aTempMap to the file.*/
+    void writeEntries(QFile &ts, const KEntryMap &aTempMap) const;
+
+    void parseLocalConfig(const QString &fileName, const QString &localFileName);
+
+    KConfigINIBackEnd *q;
+};
+
+inline char KConfigINIBackEndPrivate::charFromHex(const char *str, const QFile &file, int lineno)
 {
     unsigned char ret = 0;
     unsigned char c;
@@ -76,7 +103,7 @@ inline char KConfigINIBackEnd::charFromHex(const char *str, const QFile &file, i
 }
 
 /* translate escape sequences to their actual values. */
-QByteArray KConfigINIBackEnd::printableToString(const char *str, int l, const QFile &file, int lineno)
+QByteArray KConfigINIBackEndPrivate::printableToString(const char *str, int l, const QFile &file, int lineno)
 {
     // Strip leading white-space.
     while((l > 0) &&
@@ -142,7 +169,7 @@ QByteArray KConfigINIBackEnd::printableToString(const char *str, int l, const QF
     return result;
 }
 
-QByteArray KConfigINIBackEnd::stringToPrintable(const QByteArray& str, StringType strType)
+QByteArray KConfigINIBackEndPrivate::stringToPrintable(const QByteArray& str, StringType strType)
 {
     static const char nibbleLookup[] = {
         '0', '1', '2', '3', '4', '5', '6', '7',
@@ -217,29 +244,19 @@ QByteArray KConfigINIBackEnd::stringToPrintable(const QByteArray& str, StringTyp
     return result;
 }
 
-QString KConfigINIBackEnd::warningProlog(const QFile &file, int lineno)
+QString KConfigINIBackEndPrivate::warningProlog(const QFile &file, int lineno)
 {
     return QString("KConfigIni: In file %2, line %1: ")
                   .arg(lineno).arg(file.fileName());
 }
 
 
-class KConfigINIBackEnd::KConfigINIBackEndPrivate
-{
-public:
-    KConfigINIBackEndPrivate()
-     : m_localLastSize(0)
-    {}
-
-    uint m_localLastSize;
-    QDateTime m_localLastModified;
-};
-
 KConfigINIBackEnd::KConfigINIBackEnd(KConfigBase *_config, const QString &_fileName,
                                      const char * _resType, bool _useKDEGlobals)
     : KConfigBackEnd(_config, _fileName, _resType, _useKDEGlobals),
       d(new KConfigINIBackEndPrivate)
 {
+    d->q = this;
 }
 
 KConfigINIBackEnd::~KConfigINIBackEnd()
@@ -247,14 +264,14 @@ KConfigINIBackEnd::~KConfigINIBackEnd()
     delete d;
 }
 
-void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString &localFileName)
+void KConfigINIBackEndPrivate::parseLocalConfig(const QString &fileName, const QString &localFileName)
 {
     // Check if we can write to the local file.
     if (!localFileName.isEmpty())
     {
         if (KStandardDirs::checkAccess(localFileName, W_OK))
         {
-            mConfigState = KConfigBase::ReadWrite;
+            q->mConfigState = KConfigBase::ReadWrite;
         }
         else
         {
@@ -266,30 +283,30 @@ void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString 
 
             if (KStandardDirs::checkAccess(localFileName, W_OK))
             {
-                mConfigState = KConfigBase::ReadWrite;
+                q->mConfigState = KConfigBase::ReadWrite;
             }
         }
         QFileInfo info(localFileName);
-        d->m_localLastModified = info.lastModified();
-        d->m_localLastSize = info.size();
+        m_localLastModified = info.lastModified();
+        m_localLastSize = info.size();
     }
 
     bool bReadFile = !fileName.isEmpty();
     while(bReadFile) {
         bReadFile = false;
         QString bootLanguage;
-        if (useKDEGlobals && localeString.isEmpty() && !KGlobal::hasLocale()) {
+        if (q->useKDEGlobals && q->localeString.isEmpty() && !KGlobal::hasLocale()) {
             // Boot strap language
-            bootLanguage = KLocale::_initLanguage(pConfig);
-            setLocaleString(bootLanguage.toUtf8());
+            bootLanguage = KLocale::_initLanguage(q->pConfig);
+            q->setLocaleString(bootLanguage.toUtf8());
         }
 
-        bFileImmutable = false;
+        q->bFileImmutable = false;
         QStringList list;
         if ( !QDir::isRelativePath(fileName) )
             list << fileName;
         else
-            list = pConfig->componentData().dirs()->findAllResources(resType, fileName);
+            list = q->pConfig->componentData().dirs()->findAllResources(q->resType, fileName);
 
         QListIterator<QString> it( list );
         it.toBack();
@@ -298,27 +315,27 @@ void KConfigINIBackEnd::parseLocalConfig(const QString &fileName, const QString 
             // we can already be sure that this file exists
 
             bool bIsLocal = (aConfigFile.fileName() == localFileName);
-            bool isMostSpecific = !mMergeStack.count() || fileName == mMergeStack.top();
+            bool isMostSpecific = !q->mMergeStack.count() || fileName == q->mMergeStack.top();
             bool bDefaults = (!bIsLocal || !isMostSpecific);
             if (aConfigFile.open( QIODevice::ReadOnly )) {
-                parseSingleConfigFile( aConfigFile, 0L, false, bDefaults );
+                q->parseSingleConfigFile( aConfigFile, 0L, false, bDefaults );
                 aConfigFile.close();
-                if (bFileImmutable)
+                if (q->bFileImmutable)
                     break;
             }
         }
-        if (pConfig->componentData().dirs()->isRestrictedResource(resType, fileName))
-            bFileImmutable = true;
+        if (q->pConfig->componentData().dirs()->isRestrictedResource(q->resType, fileName))
+            q->bFileImmutable = true;
         QString currentLanguage;
         if (!bootLanguage.isEmpty())
         {
-            currentLanguage = KLocale::_initLanguage(pConfig);
+            currentLanguage = KLocale::_initLanguage(q->pConfig);
             // If the file changed the language, we need to read the file again
             // with the new language setting.
             if (bootLanguage != currentLanguage)
             {
                 bReadFile = true;
-                setLocaleString(currentLanguage.toUtf8());
+                q->setLocaleString(currentLanguage.toUtf8());
             }
         }
     }
@@ -361,12 +378,12 @@ bool KConfigINIBackEnd::parseConfigFiles()
     }
 
     mConfigState = KConfigBase::ReadOnly;
-    parseLocalConfig( mfileName, mLocalFileName );
+    d->parseLocalConfig( mfileName, mLocalFileName );
 
     foreach(const QString &fileName, mMergeStack)
     {
         mConfigState = KConfigBase::ReadOnly;
-        parseLocalConfig( fileName, fileName );
+        d->parseLocalConfig( fileName, fileName );
     }
 
     if (bFileImmutable)
@@ -491,7 +508,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
             if ((e >= eof) || (*e != ']'))
             {
-                kWarning() << warningProlog(rFile, line) << "Invalid group header." << endl;
+                kWarning() << d->warningProlog(rFile, line) << "Invalid group header." << endl;
                 continue;
             }
             // group found; get the group name by taking everything in
@@ -505,8 +522,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 continue;
             }
 
-            aCurrentGroup = printableToString(startLine + 1, e - startLine - 1,
-                                              rFile, line);
+            aCurrentGroup = d->printableToString(startLine + 1, e - startLine - 1,
+                                                 rFile, line);
             //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
             groupOptionImmutable = fileOptionImmutable;
@@ -562,7 +579,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 for (;; s++)
                 {
                     if ((s >= eof) || (*s == '\n') || (*s == '=')) {
-                        kWarning() << warningProlog(rFile, line)
+                        kWarning() << d->warningProlog(rFile, line)
                                    << "Invalid entry (missing ']')." << endl;
                         goto sktoeol;
                     }
@@ -574,7 +591,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 {
                     // Locale
                     if (locale) {
-                        kWarning() << warningProlog(rFile, line)
+                        kWarning() << d->warningProlog(rFile, line)
                                    << "Invalid entry (second locale!?)." << endl;
                         goto sktoeol;
                     }
@@ -602,7 +619,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
                 }
             }
         }
-        kWarning() << warningProlog(rFile, line)
+        kWarning() << d->warningProlog(rFile, line)
                    << "Invalid entry (missing '=')." << endl;
         continue;
 
@@ -611,7 +628,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         {
             if (endOfKey < startLine)
             {
-                kWarning() << warningProlog(rFile, line)
+                kWarning() << d->warningProlog(rFile, line)
                            << "Invalid entry (empty key)." << endl;
                 goto sktoeol;
             }
@@ -640,8 +657,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
         }
 
         // insert the key/value line
-        QByteArray key = printableToString(startLine, endOfKey - startLine + 1, rFile, line);
-        QByteArray val = printableToString(st, s - st, rFile, line);
+        QByteArray key = d->printableToString(startLine, endOfKey - startLine + 1, rFile, line);
+        QByteArray val = d->printableToString(st, s - st, rFile, line);
         //qDebug("found key '%s' with value '%s'", key.constData(), val.constData());
 
         KEntryKey aEntryKey(aCurrentGroup, key);
@@ -785,7 +802,7 @@ void KConfigINIBackEnd::sync(bool bMerge)
 
 }
 
-void KConfigINIBackEnd::writeEntries(QFile &file, const KEntryMap &aTempMap) const
+void KConfigINIBackEndPrivate::writeEntries(QFile &file, const KEntryMap &aTempMap) const
 {
     bool defaultGroup;
     //once for the default group, once for others
@@ -848,7 +865,7 @@ void KConfigINIBackEnd::writeEntries(QFile &file, const KEntryMap &aTempMap) con
             if ( currentEntry.bNLS )
             {
                 file.putChar('[');
-                file.write(localeString);
+                file.write(q->localeString);
                 file.putChar(']');
             }
 
@@ -1003,7 +1020,7 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
             return bEntriesLeft;
         }
     }
-    writeEntries(*f, aTempMap);
+    d->writeEntries(*f, aTempMap);
 
     if (pConfigFile)
     {

@@ -27,6 +27,8 @@
 
 class QFile;
 
+class KConfigINIBackEndPrivate;
+
 /**
  * Class for KDE INI-style configuration file loading/saving.
  *
@@ -126,21 +128,7 @@ protected:
   bool getEntryMap(KEntryMap &map, bool bGlobal, QFile *mergeFile);
 
 private:
-  enum StringType {
-    OtherString = 0,
-    ValueString = 1
-  };
-  inline static char charFromHex(const char *str, const QFile &file, int lineno);
-  static QByteArray printableToString(const char *str, int l, const QFile &file, int lineno);
-  static QByteArray stringToPrintable(const QByteArray& str, StringType strType = OtherString);
-  static QString warningProlog(const QFile &file, int lineno);
-
-  /** Write the entries in @e aTempMap to the file.*/
-  void writeEntries(QFile &ts, const KEntryMap &aTempMap) const;
-
-  void parseLocalConfig(const QString &fileName, const QString &localFileName);
-
-  class KConfigINIBackEndPrivate;
+  friend class KConfigINIBackEndPrivate;
   KConfigINIBackEndPrivate * const d;
 };
 
