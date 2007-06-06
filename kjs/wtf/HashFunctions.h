@@ -23,7 +23,10 @@
 #ifndef WTF_HashFunctions_h
 #define WTF_HashFunctions_h
 
+#include <kjs/global.h>
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
+#endif
 #include "RefPtr.h"
 
 namespace WTF {
