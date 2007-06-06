@@ -25,27 +25,35 @@
 #cmakedefine __KDE_HAVE_GCC_VISIBILITY
 #endif
 
-#ifdef __KDE_HAVE_GCC_VISIBILITY
-
-# define PHONON_NO_EXPORT __attribute__ ((visibility("hidden")))
-# define PHONON_EXPORT __attribute__ ((visibility("default")))
-
-#elif defined(_WIN32) || defined(_WIN64)
-
+#ifdef PHONON_EXPORT
+  /* We are building a test case */
 # define PHONON_NO_EXPORT
-# if defined(MAKE_PHONON_LIB)
-   /* We are building this library */
-#  define PHONON_EXPORT __declspec(dllexport)
-# else
-   /* We are using this library */
-#  define PHONON_EXPORT __declspec(dllimport)
-# endif
 
 #else
+  /* We are not building a test case */
 
-# define PHONON_NO_EXPORT
-# define PHONON_EXPORT
+# ifdef __KDE_HAVE_GCC_VISIBILITY
 
+#  define PHONON_NO_EXPORT __attribute__ ((visibility("hidden")))
+#  define PHONON_EXPORT __attribute__ ((visibility("default")))
+
+# elif defined(_WIN32) || defined(_WIN64)
+
+#  define PHONON_NO_EXPORT
+#  if defined(MAKE_PHONON_LIB)
+    /* We are building this library */
+#   define PHONON_EXPORT __declspec(dllexport)
+#  else
+    /* We are using this library */
+#   define PHONON_EXPORT __declspec(dllimport)
+#  endif
+
+# else
+
+#  define PHONON_NO_EXPORT
+#  define PHONON_EXPORT
+
+# endif
 #endif
 
 #ifndef PHONON_EXPORT_DEPRECATED
