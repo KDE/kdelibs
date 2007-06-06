@@ -23,6 +23,7 @@
 #ifndef WTF_HashFunctions_h
 #define WTF_HashFunctions_h
 
+#include <stdint.h>
 #include "RefPtr.h"
 
 namespace WTF {
