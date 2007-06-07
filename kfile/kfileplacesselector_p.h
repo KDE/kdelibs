@@ -93,6 +93,7 @@ private:
     int m_selectedItem;
     KMenu* m_placesMenu;
     KFilePlacesModel* m_placesModel;
+    KUrl m_selectedUrl;
 };
 
 #endif

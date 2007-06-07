@@ -61,6 +61,7 @@ void KFilePlacesSelector::updateMenu()
 {
     m_placesMenu->clear();
 
+    updateSelection(m_selectedUrl);
     const int rowCount = m_placesModel->rowCount();
     for (int i = 0; i < rowCount; ++i) {
         QModelIndex index = m_placesModel->index(i, 0);
@@ -80,6 +81,7 @@ void KFilePlacesSelector::updateSelection(const KUrl& url)
     const QModelIndex index = m_placesModel->closestItem(url);
     if (index.isValid()) {
         m_selectedItem = index.row();
+        m_selectedUrl = url;
         setIcon(m_placesModel->icon(index));
     }
     else {
