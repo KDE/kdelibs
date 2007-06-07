@@ -113,6 +113,7 @@ KDE_EXPORT int main(int argc, char *argv[])
     if (args->isSet("setup"))
     {
        QDialog *dlg = kss_setup();
+       args->clear();
        dlg->exec();
        delete dlg;
        exit(0);
@@ -151,12 +152,11 @@ KDE_EXPORT int main(int argc, char *argv[])
         demoWidget->setFixedSize( 600, 420 );
         demoWidget->show();
     }
-
+    args->clear();
     app.exec();
 
     delete target;
-    if ( demoWidget )
-        delete demoWidget;
+    delete demoWidget;
 
     return 0;
 }
