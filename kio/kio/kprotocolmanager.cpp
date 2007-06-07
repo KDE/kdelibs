@@ -491,23 +491,28 @@ QString KProtocolManager::acceptLanguagesHeader()
   if (!languageList.contains(english))
     languageList += english;
 
-  // Some languages may have natural fallbacks, read them from the config
-  // and insert them in proper order.
-  KConfig acclangConf(QString::fromLatin1("accept-languages.codes"), KConfig::NoGlobals);
-  KConfigGroup fallbackCodeLists(&acclangConf, "FallbackCodeLists");
-  QStringList languageListWF;
+  // Some languages may have web codes different from locale codes,
+  // read them from the config and insert in proper order.
+  KConfig acclangConf("accept-languages.codes", KConfig::NoGlobals);
+  KConfigGroup replacementCodes(&acclangConf, "ReplacementCodes");
+  QStringList languageListFinal;
   foreach (const QString &lang, languageList)
   {
-    languageListWF += lang;
-    languageListWF += fallbackCodeLists.readEntry(lang, QStringList());
+    QStringList langs = replacementCodes.readEntry(lang, QStringList());
+    if (langs.isEmpty())
+      languageListFinal += lang;
+    else
+      languageListFinal += langs;
   }
 
   // The header is composed of comma separated languages.
-  QString header = languageListWF.join(", ");
+  QString header = languageListFinal.join(", ");
 
-  // Some of the languages may have had country specifier, delimited by
-  // underscore. The header should use dashes instead.
+  // Some of the languages may have country specifier delimited by
+  // underscore, or modifier delimited by at-sign.
+  // The header should use dashes instead.
   header.replace('_', '-');
+  header.replace('@', '-');
 
   return header;
 }
