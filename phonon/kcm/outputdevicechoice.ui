@@ -96,9 +96,6 @@ so on.</string>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
-       <property name="arrowType" >
-        <enum>Qt::DownArrow</enum>
-       </property>
       </widget>
      </item>
      <item row="1" column="0" >
@@ -127,9 +124,6 @@ so on.</string>
        </property>
        <property name="toolButtonStyle" >
         <enum>Qt::ToolButtonTextBesideIcon</enum>
-       </property>
-       <property name="arrowType" >
-        <enum>Qt::UpArrow</enum>
        </property>
       </widget>
      </item>

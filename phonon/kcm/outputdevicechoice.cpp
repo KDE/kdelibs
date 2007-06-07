@@ -84,6 +84,8 @@ OutputDeviceChoice::OutputDeviceChoice(QWidget *parent)
 {
     setupUi(this);
     removeButton->setIcon(KIcon("list-remove"));
+    deferButton->setIcon(KIcon("arrow-down"));
+    preferButton->setIcon(KIcon("arrow-up"));
     //categoryTree->setDragEnabled(true);
     //categoryTree->setAcceptDrops(true);
     //categoryTree->setDropIndicatorShown(true);
