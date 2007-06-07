@@ -34,8 +34,8 @@
 
 KFilePlacesSelector::KFilePlacesSelector(KUrlNavigator* parent, KFilePlacesModel* placesModel) :
     KUrlButton(parent),
-    m_placesModel(placesModel),
-    m_selectedUrl()
+    m_selectedItem(-1),
+    m_placesModel(placesModel)
 {
     setFocusPolicy(Qt::NoFocus);
 
@@ -69,18 +69,21 @@ void KFilePlacesSelector::updateMenu()
                                       m_placesMenu);
         m_placesMenu->addAction(action);
         action->setData(i);
+        if (i == m_selectedItem) {
+            setIcon(m_placesModel->icon(index));
+        }
     }
-    updateSelection(m_selectedUrl);
 }
 
 void KFilePlacesSelector::updateSelection(const KUrl& url)
 {
     const QModelIndex index = m_placesModel->closestItem(url);
     if (index.isValid()) {
-        m_selectedUrl = url;
+        m_selectedItem = index.row();
         setIcon(m_placesModel->icon(index));
     }
     else {
+        m_selectedItem = -1;
         // No bookmark has been found which matches to the given Url. Show
         // a generic folder icon as pixmap for indication:
         setIcon(KIcon("folder"));
@@ -89,12 +92,13 @@ void KFilePlacesSelector::updateSelection(const KUrl& url)
 
 KUrl KFilePlacesSelector::selectedPlaceUrl() const
 {
-    return m_selectedUrl;
+    const QModelIndex index = m_placesModel->index(m_selectedItem, 0);
+    return index.isValid() ? m_placesModel->url(index) : KUrl();
 }
 
 QString KFilePlacesSelector::selectedPlaceText() const
 {
-    const QModelIndex index = m_placesModel->closestItem(m_selectedUrl);
+    const QModelIndex index = m_placesModel->index(m_selectedItem, 0);
     return index.isValid() ? m_placesModel->text(index) : QString();
 }
 
@@ -128,8 +132,8 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
 void KFilePlacesSelector::activatePlace(QAction* action)
 {
     Q_ASSERT(action != 0);
-    const int selectedItem = action->data().toInt();
-    QModelIndex index = m_placesModel->index(selectedItem, 0);
+    m_selectedItem = action->data().toInt();
+    QModelIndex index = m_placesModel->index(m_selectedItem, 0);
     if (index.isValid()) {
         setIcon(m_placesModel->icon(index));
         emit placeActivated(m_placesModel->url(index));
