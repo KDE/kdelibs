@@ -94,8 +94,8 @@ inline char KConfigINIBackEndPrivate::charFromHex(const char *str, const QFile &
         } else {
             QByteArray e(str, 2);
             e.prepend("\\x");
-            kWarning() << warningProlog(file, lineno) << "Invalid hex character \'" << c
-                       << "\' in \\x<nn>-type escape sequence \"" << e.constData() << "\"." << endl;
+            kWarning() << warningProlog(file, lineno) << "Invalid hex character " << c
+                       << " in \\x<nn>-type escape sequence \"" << e.constData() << "\"." << endl;
             return 'x';
         }
     }
@@ -161,7 +161,7 @@ QByteArray KConfigINIBackEndPrivate::printableToString(const char *str, int l, c
             default:
                 *r = '\\';
                 kWarning() << warningProlog(file, lineno)
-                           << "Invalid escape sequence \"\\" << str[i] << "\'." << endl;
+                           << QString("Invalid escape sequence \"\\%1\".").arg(str[i]) << endl;
             }
         }
     }
