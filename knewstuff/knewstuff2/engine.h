@@ -144,6 +144,8 @@ class KNEWSTUFF_EXPORT Engine : public DxsEngine
     void slotEntriesFinished();
     void slotEntriesFeedFinished(const KNS::Feed *feed);
 
+    void slotDownloadDialogClosed();
+
   private:
     void workflow();
 
