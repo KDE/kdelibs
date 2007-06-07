@@ -59,7 +59,7 @@ class PartBasePrivate
 public:
     Q_DECLARE_PUBLIC(PartBase)
 
-        PartBasePrivate(PartBase *q): q_ptr(q)
+    PartBasePrivate(PartBase *q): q_ptr(q)
     {
         m_pluginLoadingMode = PartBase::LoadPlugins;
         m_pluginInterfaceVersion = 0;
@@ -81,11 +81,13 @@ class PartPrivate: public PartBasePrivate
 public:
     Q_DECLARE_PUBLIC(Part)
 
-        PartPrivate(Part *q)
-            : PartBasePrivate(q),
-              m_iconLoader(0),
-              m_bSelectable(true),
-              m_manager(0)
+    PartPrivate(Part *q)
+        : PartBasePrivate(q),
+          m_iconLoader(0),
+          m_bSelectable(true),
+          m_autoDeleteWidget(true),
+          m_autoDeletePart(true),
+          m_manager(0)
     {
     }
 
@@ -95,6 +97,8 @@ public:
 
     KIconLoader* m_iconLoader;
     bool m_bSelectable;
+    bool m_autoDeleteWidget;
+    bool m_autoDeletePart;
     PartManager * m_manager;
     QPointer<QWidget> m_widget;
 };
@@ -199,10 +203,10 @@ Part::~Part()
     if ( d->m_manager )
         d->m_manager->removePart(this);
 
-    if ( d->m_widget )
+    if ( d->m_widget && d->m_autoDeleteWidget )
     {
         kDebug(1000) << "deleting widget " << d->m_widget << " " << d->m_widget->objectName() << endl;
-        delete (QWidget*) d->m_widget;
+        delete static_cast<QWidget*>(d->m_widget);
     }
 
     delete d->m_iconLoader;
@@ -224,6 +228,20 @@ QWidget *Part::widget()
 
     return d->m_widget;
 }
+
+void Part::setAutoDeleteWidget(bool autoDeleteWidget)
+{
+    Q_D(Part);
+    d->m_autoDeleteWidget = autoDeleteWidget;
+}
+
+void Part::setAutoDeletePart(bool autoDeletePart)
+{
+    Q_D(Part);
+    d->m_autoDeletePart = autoDeletePart;
+}
+
+
 
 KIconLoader* Part::iconLoader()
 {
@@ -331,9 +349,11 @@ void Part::slotWidgetDestroyed()
 {
     Q_D(Part);
 
-    kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << objectName() << endl;
     d->m_widget = 0;
-    delete this;
+    if (d->m_autoDeletePart) {
+        kDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << objectName() << endl;
+        delete this; // ouch, this should probably be deleteLater()
+    }
 }
 
 //////////////////////////////////////////////////
@@ -346,7 +366,7 @@ class ReadOnlyPartPrivate: public PartPrivate
 public:
     Q_DECLARE_PUBLIC(ReadOnlyPart)
 
-        ReadOnlyPartPrivate(ReadOnlyPart *q): PartPrivate(q)
+    ReadOnlyPartPrivate(ReadOnlyPart *q): PartPrivate(q)
     {
         m_job = 0;
         m_uploadJob = 0;
@@ -393,7 +413,7 @@ class ReadWritePartPrivate: public ReadOnlyPartPrivate
 public:
     Q_DECLARE_PUBLIC(ReadWritePart)
 
-        ReadWritePartPrivate(ReadWritePart *q): ReadOnlyPartPrivate(q)
+    ReadWritePartPrivate(ReadWritePart *q): ReadOnlyPartPrivate(q)
     {
         m_bModified = false;
         m_bReadWrite = true;
@@ -404,9 +424,10 @@ public:
 
     void prepareSaving();
 
-    bool m_bModified: 1;
-    bool m_bReadWrite: 1;
-    bool m_bClosing: 1;
+    bool m_bModified;
+    bool m_bReadWrite;
+    bool m_bClosing;
+    QEventLoop m_eventLoop;
 };
 
 }
@@ -868,9 +889,8 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
     m_duringSaveAs = false;
     m_originalURL = KUrl();
     m_originalFilePath.clear();
-    if (m_waitForSave)
-    {
-        emit q->leaveModality();
+    if (m_waitForSave) {
+        m_eventLoop.quit();
     }
 }
 
@@ -897,10 +917,7 @@ bool ReadWritePart::waitSaveComplete()
 
     d->m_waitForSave = true;
 
-    QEventLoop eventLoop;
-    connect(this, SIGNAL(leaveModality()),
-            &eventLoop, SLOT(quit()));
-    eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
+    d->m_eventLoop.exec(QEventLoop::ExcludeUserInputEvents);
 
     d->m_waitForSave = false;
 

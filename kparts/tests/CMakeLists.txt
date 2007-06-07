@@ -20,7 +20,7 @@ kde4_automoc(${kpartstest_SRCS})
 
 kde4_add_executable(kpartstest NOGUI ${kpartstest_SRCS})
 
-target_link_libraries(kpartstest  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} )
 
 
 ########### next target ###############
@@ -35,7 +35,7 @@ kde4_automoc(${normalktmtest_SRCS})
 
 kde4_add_executable(normalktmtest NOGUI ${normalktmtest_SRCS})
 
-target_link_libraries(normalktmtest  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} )
 
 
 ########### next target ###############
@@ -48,7 +48,7 @@ kde4_automoc(${ghostviewtest_SRCS})
 
 kde4_add_executable(ghostviewtest NOGUI ${ghostviewtest_SRCS})
 
-target_link_libraries(ghostviewtest  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(ghostviewtest  ${KDE4_KPARTS_LIBS} )
 
 
 ########### next target ###############
@@ -59,7 +59,7 @@ kde4_automoc(${spellcheckplugin_PART_SRCS})
 
 kde4_add_plugin(spellcheckplugin WITH_PREFIX ${spellcheckplugin_PART_SRCS})
 
-target_link_libraries(spellcheckplugin  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(spellcheckplugin  ${KDE4_KPARTS_LIBS} )
 
 install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -72,13 +72,31 @@ kde4_automoc(${notepadpart_PART_SRCS})
 
 kde4_add_plugin(notepadpart WITH_PREFIX ${notepadpart_PART_SRCS})
 
-target_link_libraries(notepadpart  ${KDE4_KDECORE_LIBS} kparts )
+target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} )
 
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
-########### next target ###############
+########### unit tests ###############
 
+MACRO(KPARTS_BUILD_TESTS)
+       FOREACH(_testname ${ARGN})
+               kde4_automoc(${_testname}.cpp)
+               kde4_add_test(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
+       ENDFOREACH(_testname)
+ENDMACRO(KPARTS_BUILD_TESTS)
+MACRO(KPARTS_EXECUTE_TESTS)
+       FOREACH(_testname ${ARGN})
+               add_test(kparts-${_testname} ${EXECUTABLE_OUTPUT_PATH}/${_testname})
+       ENDFOREACH(_testname)
+ENDMACRO(KPARTS_EXECUTE_TESTS)
+
+set(kparts_unittests
+  parttest
+)
+KPARTS_BUILD_TESTS(${kparts_unittests})
+KPARTS_EXECUTE_TESTS(${kparts_unittests})
 
 ########### install files ###############
 

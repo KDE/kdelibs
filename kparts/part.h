@@ -216,7 +216,7 @@ public:
      *
      *  @param parent Parent object of the part.
      */
-    Part( QObject *parent = 0 );
+    explicit Part( QObject *parent = 0 );
 
     /**
      *  Destructor.
@@ -251,6 +251,26 @@ public:
      * Returns the part manager handling this part, if any (0L otherwise).
      */
     PartManager * manager() const;
+
+    /**
+     * By default, the widget is deleted by the part when the part is deleted.
+     * The hosting application can call setAutoDeleteWidget(false) to
+     * disable this behavior, given that the widget is usually deleted by
+     * its parent widget anyway.
+     * This is a method for the hosting application only, Part subclasses
+     * should never call this.
+     */
+    void setAutoDeleteWidget(bool autoDeleteWidget);
+
+    /**
+     * By default, the part deletes itself when its widget is deleted.
+     * The hosting application can call setAutoDeletePart(false) to
+     * disable this behavior, to be able to delete the widget and then the part,
+     * independently.
+     * This is a method for the hosting application only, Part subclasses
+     * should never call this.
+     */
+    void setAutoDeletePart(bool autoDeletePart);
 
     /**
      * Returns the part (this, or a child part) at the given global position.
@@ -335,9 +355,6 @@ protected:
      */
     QWidget *hostContainer( const QString &containerName );
 
-Q_SIGNALS:
-    void leaveModality();
-
 protected Q_SLOTS:
     /**
      * @internal
@@ -381,14 +398,14 @@ class KPARTS_EXPORT ReadOnlyPart : public Part
 
     Q_PROPERTY( KUrl url READ url )
 
-        KPARTS_DECLARE_PRIVATE(ReadOnlyPart)
+    KPARTS_DECLARE_PRIVATE(ReadOnlyPart)
 
-        public:
+public:
     /**
      * Constructor
      * See also Part for the setXXX methods to call.
      */
-    ReadOnlyPart( QObject *parent = 0 );
+    explicit ReadOnlyPart( QObject *parent = 0 );
 
     /**
      * Destructor
@@ -587,8 +604,8 @@ protected:
 private:
     Q_PRIVATE_SLOT(d_func(), void _k_slotJobFinished( KJob * job ))
 
-        Q_DISABLE_COPY(ReadOnlyPart)
-        };
+    Q_DISABLE_COPY(ReadOnlyPart)
+};
 class ReadWritePartPrivate;
 
 /**
@@ -612,12 +629,12 @@ class KPARTS_EXPORT ReadWritePart : public ReadOnlyPart
 
     KPARTS_DECLARE_PRIVATE(ReadWritePart)
 
-        public:
+public:
     /**
      * Constructor
      * See parent constructor for instructions.
      */
-    ReadWritePart( QObject *parent = 0 );
+    explicit ReadWritePart( QObject *parent = 0 );
     /**
      * Destructor
      * Applications using a ReadWritePart should make sure, before
