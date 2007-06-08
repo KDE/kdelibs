@@ -270,7 +270,7 @@ void KPageView::Private::pageSelected( const QModelIndex &index, const QModelInd
   if ( header.isEmpty() ) {
     header = model->data( index, Qt::DisplayRole ).toString();
   }
-  titleWidget->setText(header);
+  titleWidget->setText(header.remove('&'));
 
   const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
   titleWidget->setPixmap(icon.pixmap(22, 22));
@@ -295,7 +295,7 @@ void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
   if ( header.isEmpty() ) {
     header = model->data( index, Qt::DisplayRole ).toString();
   }
-  titleWidget->setText(header);
+  titleWidget->setText(header.remove('&'));
 
   const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
   titleWidget->setPixmap(icon.pixmap(22, 22));
