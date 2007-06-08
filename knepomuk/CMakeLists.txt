@@ -30,7 +30,7 @@ set(knepomuk_LIB_SRCS
   rdf/statementlistiterator.cpp
 )
 
-kde4_automoc(knepomuk ${knepomuk_LIB_SRCS})
+kde4_automoc(${knepomuk_LIB_SRCS})
 
 kde4_add_library(knepomuk SHARED ${knepomuk_LIB_SRCS})
 
