@@ -1004,7 +1004,7 @@ void KFileWidgetPrivate::initSpeedbar()
 {
     placesView = new KFilePlacesView( q );
     placesView->setModel(new KFilePlacesModel(placesView));
-    placesView->setFrameStyle( QFrame::Box | QFrame::Plain );
+    placesView->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
     placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 
     placesView->setObjectName( QLatin1String( "url bar" ) );
@@ -1903,7 +1903,6 @@ void KFileWidget::toggleSpeedbar( bool show )
         KUrl homeURL;
         homeURL.setPath( QDir::homePath() );
         KFilePlacesModel *model = static_cast<KFilePlacesModel*>(d->placesView->model());
-        int rowCount = model->rowCount();
         for ( int rowIndex = 0 ; rowIndex < d->placesView->model()->rowCount() ; rowIndex++ )
         {
             QModelIndex index = model->index(rowIndex, 0);
