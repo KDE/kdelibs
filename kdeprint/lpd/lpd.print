@@ -61,6 +61,7 @@ Comment[uz]=LPR (BSD'нинг андоза босиб чиқариш тизим�
 Comment[wa]=LPR (Sistinme d' imprimaedje BSD standård)
 Comment[x-test]=xxLPR (Standard BSD print system)xx
 Comment[xh]=LPR (Indlela esezantsi yoshicilelo lwe BSD)
+Comment[zh_CN]=LPR(标准 BSD 打印系统)
 Comment[zh_HK]=LPR (標準 BSD 列印系統)
 Comment[zh_TW]=LPR (標準 BSD 列印系統)
 DetectUris=service:/printer,config:/printcap

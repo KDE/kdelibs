@@ -56,6 +56,7 @@ Description[tg]=kioslave барои URIs (rfc2397)
 Description[th]=kioslave สำหรับข้อมูล URIs (rfc2397)
 Description[uk]=Підлеглий В/В для адрес (URI) даних (rfc2397)
 Description[x-test]=xxA kioslave for data URIs (rfc2397)xx
+Description[zh_CN]=用于数据 URI(rfc2397) 的 kioslave
 DocPath=kioslave/data.html
 URIMode=rawuri
 defaultMimetype=application/octet-stream

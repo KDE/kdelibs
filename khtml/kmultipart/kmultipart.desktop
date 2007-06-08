@@ -58,6 +58,7 @@ Name[tr]=Çok parçalı/karışık için Gömülebilir Bileşen
 Name[uk]=Вбудовна компонента для повідомлень multipart/mixed
 Name[uz]=Multipart/mixed учун ичига ўрнатиб бўладиган компонент
 Name[x-test]=xxEmbeddable Component for multipart/mixedxx
+Name[zh_CN]=可嵌入的 multipart/mixed 组件
 Name[zh_HK]=multipart/mixed 的可嵌入元件
 Name[zh_TW]=multipart/mixed 的可嵌入元件
 ServiceTypes=KParts/ReadOnlyPart

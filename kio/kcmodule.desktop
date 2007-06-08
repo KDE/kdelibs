@@ -15,6 +15,7 @@ Name[sv]=KDE-inställningsmodul
 Name[te]=కెడిఈ అమరిక మాడ్యూల్
 Name[th]=โมดูลปรับแต่งของ KDE
 Name[x-test]=xxKDE Configuration Modulexx
+Name[zh_CN]=KDE 配置模块
 Name[zh_TW]=KDE 控制模組
 
 # the name of the method (with or without the init_ prefix) returning the factory object

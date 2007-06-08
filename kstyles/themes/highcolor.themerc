@@ -54,6 +54,7 @@ Name[tg]=Рангболоии классика.
 Name[tr]=Klasik Yüksek Renk
 Name[uk]=Типовий (64K кольорів)
 Name[x-test]=xxHighColor Classicxx
+Name[zh_CN]=高色彩经典
 Name[zh_HK]=預設高彩佈景
 Name[zh_TW]=預設的高彩
 Comment=Highcolor version of the classic style
@@ -116,6 +117,7 @@ Comment[tr]=Klasik stilin yüksek renk versiyonu
 Comment[uk]=Версія типового стилю для 64К кольорів та більше
 Comment[uz]=Классик услубининг юқори рангли нусхаси
 Comment[x-test]=xxHighcolor version of the classic stylexx
+Comment[zh_CN]=经典风格的高色彩版本
 Comment[zh_HK]=預設佈景的高彩版本
 Comment[zh_TW]=預設風格的高彩版本
 [KDE]

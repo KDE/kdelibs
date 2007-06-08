@@ -15,4 +15,5 @@ Comment[sv]=Text till tal-tjänst med ett D-bus gränssnitt
 Comment[te]=డి-బస్ ఇంటర్ఫేస్ కల్గిన వాచకం నుంచి మాటలకు మార్చు సేవ
 Comment[th]=บริการเปลี่ยนข้อความเป็นเสียงพูด พร้อมด้วยส่วนติดต่อกับ DCOP
 Comment[x-test]=xxText-to-Speech Service with a D-Bus interfacexx
+Comment[zh_CN]=带 D-Bus 接口的文本到语音服务
 Comment[zh_TW]=DBUS 介面的文字轉語音服務

@@ -51,6 +51,7 @@ Name[tg]=БаландАкс
 Name[tr]=Yüksek Kontrast
 Name[uk]=Висока контрастність
 Name[x-test]=xxHighContrastxx
+Name[zh_CN]=高对比度
 Name[zh_HK]=高反差
 ConfigPage=kstyle_highcontrast_config
 Comment=A style that works well with high contrast color schemes
@@ -104,6 +105,7 @@ Comment[tg]=Услуб, ки бо истифодаи нақшаҳо бо ран�
 Comment[tr]=Yüksek kontrast renk şemalarına uygun bir stil
 Comment[uk]=Стиль, який підходить до схем кольорів з високою контрастністю
 Comment[x-test]=xxA style that works well with high contrast color schemesxx
+Comment[zh_CN]=在高对比度配色方案中适用的风格
 Comment[zh_HK]=適用於高反差色彩的佈景
 Comment[zh_TW]=在高彩度下可以使用的風格
 [KDE]

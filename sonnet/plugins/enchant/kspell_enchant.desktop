@@ -14,3 +14,4 @@ X-KDE-PluginInfo-License=LGPL
 X-KDE-PluginInfo-EnabledByDefault=true
 Name=Enchant
 Name[x-test]=xxEnchantxx
+Name[zh_CN]=增强

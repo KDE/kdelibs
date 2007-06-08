@@ -25,6 +25,7 @@ Comment[pa]=ਸਾਊਂਡ ਸਿਸਟਮ ਸੰਰਚਨਾ
 Comment[sv]=Ljudsysteminställning
 Comment[te]=శబ్ద వ్యవస్థ అమరిక
 Comment[x-test]=xxSound System Configurationxx
+Comment[zh_CN]=声音系统配置
 Comment[zh_TW]=聲音系統設定
 Keywords=Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine
 Keywords[el]=Ήχος,Βίντεο,Έξοδος,Συσκευή,Ειδοποίηση,Μουσική,Μέσα,Sound,Phonon,Audio,Video,Output,Device,Notification,Music,Communication,Media,NMM,GStreamer,Xine
