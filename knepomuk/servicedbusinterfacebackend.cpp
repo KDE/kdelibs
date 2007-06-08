@@ -60,13 +60,13 @@ bool Nepomuk::Backbone::DBus::ServiceBackend::isAvailable() const
 
 Nepomuk::Backbone::Result Nepomuk::Backbone::DBus::ServiceBackend::methodCall( const Nepomuk::Backbone::Message& message )
 {
-//     QDBusMessage msg = QDBusMessage::createMethodCall( service(), path(), interface(), message.method() );
-//     msg.setArguments( message.arguments() );
-//     QDBusMessage dbusReply = QDBusConnection::sessionBus().call( msg, QDBus::Block, 10*60*1000 ); // timeout of 10 minutes for testing
+     QDBusMessage msg = QDBusMessage::createMethodCall( service(), path(), interface(), message.method() );
+     msg.setArguments( message.arguments() );
+     QDBusMessage dbusReply = QDBusConnection::sessionBus().call( msg, QDBus::Block, 10*60*1000 ); // timeout of 10 minutes for testing
 
-    QDBusMessage dbusReply = callWithArgumentList( QDBus::Block,
-                                                   message.method(),
-                                                   message.arguments() );
+//    QDBusMessage dbusReply = callWithArgumentList( QDBus::Block,
+//                                                   message.method(),
+//                                                   message.arguments() );
 
     if( dbusReply.type() == QDBusMessage::ErrorMessage ) {
         if ( dbusReply.arguments().count() > 0 ) {
