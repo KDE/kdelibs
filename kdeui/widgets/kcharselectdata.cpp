@@ -532,57 +532,24 @@ QString KCharSelectData::categoryText(QChar::Category category)
     }
 }
 
-// Test code, this just searches the names
-QList<QChar> KCharSelectData::find(QString s, SearchRange range)
+QList<QChar> KCharSelectData::find(QString s)
 {
-    Q_UNUSED(range)
-    QTime t;
-    t.start();
-
     QList<QChar> res;
-
     s = s.simplified();
+    QStringList searchStrings = s.split(' ');
 
-    QStringList searchStrings = QStringList(QString());
-    for (int i = 0; i < s.size(); i++) {
-        if (s[i] == ' ') {
-            if (!searchStrings.last().isEmpty())
-                searchStrings.append(QString());
-            continue;
-        }
-        if (s[i] == '"') {
-            if (!searchStrings.last().isEmpty())
-                searchStrings.append(QString());
-            i++;
-            while (s[i] != '"' && i < s.size()) {
-                searchStrings.last().append(s[i]);
-                i++;
-            }
-            searchStrings.append(QString());
-            continue;
-        }
-        searchStrings.last().append(s[i]);
-    }
-    if (searchStrings.last().isEmpty()) {
-        searchStrings.removeLast();
-    }
-
-    if (searchStrings.count() == 0)
+    if (searchStrings.count() == 0) {
         return res;
+    }
 
-    int longestStrIndex = 0;
-    if (searchStrings.count() != 1) {
-        int maxlen = 0;
-        int count = searchStrings.count();
-        for (int i = 0; i < count; i++) {
-            if (searchStrings[i].count() > maxlen) {
-                maxlen = searchStrings[i].count();
-                longestStrIndex = i;
-            }
+    QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
+    foreach(QString s, searchStrings) {
+        if(regExp.exactMatch(s)) {
+            res.append(regExp.cap(2).toInt(0, 16));
         }
     }
-    QString longestStr = searchStrings[longestStrIndex];
-    searchStrings.removeAt(longestStrIndex);
+
+    QString firstString = searchStrings.takeFirst();
 
     const char* data = dataFile->constData();
     const quint32 offsetBegin = * (quint32*) (data+4);
@@ -593,7 +560,7 @@ QList<QChar> KCharSelectData::find(QString s, SearchRange range)
     for (int i = 0; i <= max; i++) {
         quint32 offset = * (quint32*) (data + offsetBegin + i*6 + 2);
         QString name = data + offset;
-        if (name.contains(longestStr, Qt::CaseInsensitive)) {
+        if (name.contains(firstString, Qt::CaseInsensitive)) {
             bool valid = true;
             foreach(QString s, searchStrings) {
                 if (!name.contains(s, Qt::CaseInsensitive)) {
@@ -606,7 +573,5 @@ QList<QChar> KCharSelectData::find(QString s, SearchRange range)
             }
         }
     }
-
-    qDebug() << "search duration (ms)" << t.elapsed() << "results" << res.count();
     return res;
 }

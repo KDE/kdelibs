@@ -634,7 +634,7 @@ void KCharSelect::KCharSelectPrivate::_k_search()
     if (searchLine->text().isEmpty()) {
         return;
     }
-    charTable->setContents(KCharSelectData::find(searchLine->text(), KCharSelectData::Default));
+    charTable->setContents(KCharSelectData::find(searchLine->text()));
 }
 
 void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)

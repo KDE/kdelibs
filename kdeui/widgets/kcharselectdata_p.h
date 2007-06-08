@@ -31,8 +31,6 @@
 class KCharSelectData
 {
 public:
-    enum SearchRange {Default, CJK};
-
     static QString formatCode(ushort code, int length = 4, const QString& prefix = "U+", int base = 16);
 
     static QList<QChar> blockContents(int block);
@@ -58,7 +56,7 @@ public:
 
     static QString categoryText(QChar::Category category);
 
-    static QList<QChar> find(QString s, SearchRange range = Default);
+    static QList<QChar> find(QString s);
 };
 
 #endif  /* #ifndef KCHARSELECTDATA_H */
