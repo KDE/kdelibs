@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KTRANSLIT_H
-#define KTRANSLIT_H
+#ifndef KTRANSLIT_P_H
+#define KTRANSLIT_P_H
 
 #include <QString>
 #include <QList>

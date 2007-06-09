@@ -20,13 +20,13 @@
 #include <klocalizedstring.h>
 
 #include <kglobal.h>
+#include <kdebug.h>
 #include <klocale.h>
 #include <kcomponentdata.h>
 #include <klibloader.h>
 #include <kstandarddirs.h>
-#include <ktranscript.h>
-#include <kdebug.h>
-#include <ktranslit.h>
+#include <ktranscript_p.h>
+#include <ktranslit_p.h>
 
 
 #include <QStringList>

@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <ktranscript.h>
+#include <ktranscript_p.h>
 
 #include <kdecore_export.h>
 #include <kglobal.h>

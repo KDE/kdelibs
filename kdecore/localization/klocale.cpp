@@ -42,7 +42,7 @@
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "klocalizedstring.h"
-#include "ktranslit.h"
+#include "ktranslit_p.h"
 #include "kconfiggroup.h"
 
 #ifdef Q_WS_WIN

@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <ktranslit.h>
+#include <ktranslit_p.h>
 
 #include <QHash>
 
