@@ -522,11 +522,8 @@ void KPty::setXonXoff(bool useXonXoff)
 void KPty::setUtf8Mode(bool useUtf8)
 {
   d->utf8 = useUtf8;
-#ifdef IUTF8
+#ifdef IUTF8 // XXX is this a sane place for this check?
   if (d->masterFd >= 0) {
-    // without the '::' some version of HP-UX thinks, this declares
-    // the struct in this class, in this method, and fails to find
-    // the correct tc[gs]etattr
     struct ::termios ttmode;
 
     _tcgetattr(d->masterFd, &ttmode);

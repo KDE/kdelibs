@@ -28,10 +28,9 @@
 struct KPtyPrivate;
 
 /**
- * Provides a high level representation of a pseudo tty pair, including
- * utmp support.
- * ...
- **/
+ * Provides primitives for opening & closing a pseudo TTY pair, assigning the
+ * controlling TTY, utmp registration and setting various terminal attributes.
+ */
 class KDECORE_EXPORT KPty {
 
 public:
@@ -122,7 +121,6 @@ public:
    * See the man page of "stty iutf8" for more info.
    */
   void setUtf8Mode(bool useUtf8);
-
 
   /**
    * @return the name of the slave pty device.
