@@ -848,14 +848,14 @@ public:
     virtual bool hasTransitions() const;
 
     /**
-     * Return all daylight saving transitions.
+     * Return all daylight saving transitions, in time order.
      *
      * Note that some time zone data sources (such as system time zones accessed
      * via the system libraries) may not allow a list of daylight saving time
      * changes to be compiled easily. In such cases, this method will return an
      * empty list.
      *
-     * @return list of transitions
+     * @return list of transitions, in time order
      * @see hasTransitions(), transition()
      */
     QList<KTimeZone::Transition> transitions() const;
@@ -870,7 +870,7 @@ public:
      * @p secondTransition. The latter case may optionally be detected by use of
      * @p validTime.
      *
-     * @param dt date/time
+     * @param dt date/time. @p dt.timeSpec() may be set to Qt::UTC or Qt::LocalTime.
      * @param secondTransition if non-null, and the @p dt occurs twice, receives the
      *                     transition for the second occurrence. Otherwise, it is set
      *                     the same as the return value.
@@ -884,7 +884,8 @@ public:
 
     /**
      * Find the index to the last daylight savings time transition at or before
-     * a given UTC or local time.
+     * a given UTC or local time. The return value is the index into the transition
+     * list returned by transitions().
      *
      * Because of daylight savings time shifts, a local time may occur twice or
      * may not occur at all. In the former case, the transitions at or before
@@ -892,7 +893,7 @@ public:
      * @p secondIndex. The latter case may optionally be detected by use of
      * @p validTime.
      *
-     * @param dt date/time
+     * @param dt date/time. @p dt.timeSpec() may be set to Qt::UTC or Qt::LocalTime.
      * @param secondIndex if non-null, and the @p dt occurs twice, receives the
      *                    index to the transition for the second occurrence. Otherwise,
      *                    it is set the same as the return value.
@@ -957,6 +958,8 @@ public:
      * QDateTime::toTime_t() returns an unsigned value. This method returns a time_t
      * value, which is signed.
      *
+     * @param utcDateTime date/time. An error occurs if @p utcDateTime.timeSpec() is
+     *                    not Qt::UTC.
      * @return converted time, or -1 if the date is out of range for time_t or
      *         @p utcDateTime.timeSpec() is not Qt::UTC
      * @see fromTime_t()
@@ -1148,14 +1151,14 @@ public:
     virtual bool hasTransitions() const;
 
     /**
-     * Return all daylight saving transitions.
+     * Return all daylight saving transitions, in time order.
      *
      * Note that some time zone data sources (such as system time zones accessed
      * via the system libraries) may not allow a list of daylight saving time
      * changes to be compiled easily. In such cases, this method will return an
      * empty list.
      *
-     * @return list of transitions
+     * @return list of transitions, in time order
      * @see hasTransitions(), transition()
      */
     QList<KTimeZone::Transition> transitions() const;
@@ -1170,7 +1173,7 @@ public:
      * @p secondTransition. The latter case may optionally be detected by use of
      * @p validTime.
      *
-     * @param dt date/time
+     * @param dt date/time. @p dt.timeSpec() may be set to Qt::UTC or Qt::LocalTime.
      * @param secondTransition if non-null, and the @p dt occurs twice, receives the
      *                     transition for the second occurrence. Otherwise, it is set
      *                     the same as the return value.
@@ -1192,7 +1195,7 @@ public:
      * @p secondIndex. The latter case may optionally be detected by use of
      * @p validTime.
      *
-     * @param dt date/time
+     * @param dt date/time. @p dt.timeSpec() may be set to Qt::UTC or Qt::LocalTime.
      * @param secondIndex if non-null, and the @p dt occurs twice, receives the
      *                    index to the transition for the second occurrence. Otherwise,
      *                    it is set the same as the return value.
@@ -1219,7 +1222,7 @@ public:
     /**
      * Find the leap second adjustment which is applicable at a given UTC time.
      *
-     * @param utc UTC date/time
+     * @param utc UTC date/time. An error occurs if @p utc.timeSpec() is not Qt::UTC.
      * @return leap second adjustment, or invalid if @p utc is earlier than the
      *         first leap second adjustment or @p utc is a local time
      */
