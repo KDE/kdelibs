@@ -307,20 +307,6 @@ namespace KJS {
     QPointer<khtml::ChildFrame> m_frame;
   };
 
-#ifdef Q_WS_QWS
-  class Konqueror : public ObjectImp {
-    friend class KonquerorFunc;
-  public:
-    Konqueror(KHTMLPart *p) : part(p) { }
-    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
-    virtual UString toString(ExecState *exec) const;
-    virtual const ClassInfo* classInfo() const { return &info; }
-    static const ClassInfo info;
-  private:
-    KHTMLPart *part;
-  };
-#endif
-
 } // namespace
 
 #endif

@@ -124,20 +124,6 @@ namespace KJS {
     QPointer<KHTMLPart> part;
   };
 
-
-#ifdef Q_WS_QWS
-  class KonquerorFunc : public DOMFunction {
-  public:
-    KonquerorFunc(ExecState *exec, const Konqueror* k, const char* name)
-      : DOMFunction(exec), konqueror(k), m_name(name) { }
-    virtual ValueImp *callAsFunction(ExecState *exec, ObjectImp *thisObj, const List &args);
-
-  private:
-    const Konqueror* konqueror;
-    QByteArray m_name;
-  };
-#endif
-
 } //namespace KJS
 
 #include "kjs_window.lut.h"
@@ -956,13 +942,7 @@ ValueImp* Window::getValueProperty(ExecState *exec, int token) const
       const_cast<Window *>(this)->put(exec, "clientInformation", nav, DontDelete|ReadOnly|Internal);
       return nav;
     }
-#ifdef Q_WS_QWS
-    case _Konqueror: {
-      ValueImp *k( new Konqueror(part) );
-      const_cast<Window *>(this)->put(exec, "konqueror", k, DontDelete|ReadOnly|Internal);
-      return k;
-    }
-#endif
+
     case OffscreenBuffering:
       return Boolean(true);
     case OuterHeight:
@@ -2950,74 +2930,6 @@ ValueImp *HistoryFunc::callAsFunction(ExecState *exec, ObjectImp *thisObj, const
   }
   return Undefined();
 }
-
-/////////////////////////////////////////////////////////////////////////////
-
-#ifdef Q_WS_QWS
-
-const ClassInfo Konqueror::info = { "Konqueror", 0, 0, 0 };
-
-bool Konqueror::hasProperty(ExecState *exec, const Identifier &p) const
-{
-  if ( p.qstring().startsWith( "goHistory" ) ) return false;
-
-  return true;
-}
-
-//### FIXME: I haveno clue on whatthis does, so I didn't port it -- M.O.
-ValueImp *Konqueror::get(ExecState *exec, const Identifier &p) const
-{
-  if ( p == "goHistory" || part->url().protocol() != "http" || part->url().host() != "localhost" )
-    return Undefined();
-
-  KParts::BrowserExtension *ext = part->browserExtension();
-  if ( ext ) {
-    KParts::BrowserInterface *iface = ext->browserInterface();
-    if ( iface ) {
-      QVariant prop = iface->property( p.qstring().toLatin1().constData() );
-
-      if ( prop.isValid() ) {
-        switch( prop.type() ) {
-        case QVariant::Int:
-          return Number( prop.toInt() );
-        case QVariant::String:
-          return String( prop.toString() );
-        default:
-          break;
-        }
-      }
-    }
-  }
-
-  return new KonquerorFunc(exec, this, p.qstring().toLatin1().constData() );
-}
-
-ValueImp *KonquerorFunc::callAsFunction(ExecState *exec, ObjectImp*, const List &args)
-{
-  KParts::BrowserExtension *ext = konqueror->part->browserExtension();
-
-  if (!ext)
-    return Undefined();
-
-  KParts::BrowserInterface *iface = ext->browserInterface();
-
-  if ( !iface )
-    return Undefined();
-
-  QByteArray n = m_name.data();
-  n += "()";
-  iface->callMethod( n.data(), QVariant() );
-
-  return Undefined();
-}
-
-UString Konqueror::toString(ExecState *) const
-{
-  return UString("[object Konqueror]");
-}
-
-#endif
-/////////////////////////////////////////////////////////////////////////////
 
 } // namespace KJS
 

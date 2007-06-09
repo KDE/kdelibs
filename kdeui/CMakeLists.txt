@@ -219,6 +219,9 @@ endif (Q_WS_MAC)
 if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_win.cpp kernel/kapplication_win.cpp )
 endif (Q_WS_WIN)
+if (Q_WS_QWS)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} shortcuts/kglobalaccel_qws.cpp )
+endif (Q_WS_QWS)
 
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
@@ -233,6 +236,9 @@ endif (Q_WS_MAC)
 if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp)
 endif (Q_WS_WIN)
+if (Q_WS_QWS)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
+endif (Q_WS_QWS)
 
 kde4_automoc(${kdeui_LIB_SRCS} dialogs/kdialogqueue_p.h)
 

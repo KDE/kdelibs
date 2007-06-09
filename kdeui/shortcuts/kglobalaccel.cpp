@@ -27,6 +27,8 @@
 #include "kglobalaccel_mac.h"
 #elif defined(Q_WS_WIN)
 #include "kglobalaccel_win.h"
+#elif defined(Q_WS_QWS)
+#include "kglobalaccel_qws.h"
 #else
 #include "kglobalaccel_emb.h"
 #endif
