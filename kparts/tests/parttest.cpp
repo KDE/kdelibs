@@ -30,7 +30,7 @@ public:
     TestPart(QObject* parent, QWidget* parentWidget)
         : KParts::Part(parent) {
         setWidget(new QWidget(parentWidget));
-    };
+    }
 };
 
 void PartTest::testAutoDeletePart()
