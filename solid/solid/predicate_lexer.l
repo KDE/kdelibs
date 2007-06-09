@@ -18,12 +18,12 @@ DIGIT [0-9]
 "==" { return EQ; }
 "&" { return MASK; }
 
-"AND" { return AND; }
-"OR" { return OR; }
-"IS" { return IS; }
+[aA][nN][dD] { return AND; }
+[oO][rR] { return OR; }
+[iI][sS] { return IS; }
 
-"true" { yylval.valb = 1; return VAL_BOOL; }
-"false" { yylval.valb = 0; return VAL_BOOL; }
+[tT][rR][uU][eE] { yylval.valb = 1; return VAL_BOOL; }
+[fF][aA][lL][sS][eE] { yylval.valb = 0; return VAL_BOOL; }
 
 "'"[^']*"'" { yylval.name = PredicateParse_putString( yytext ); return VAL_STRING; }
 

@@ -377,8 +377,8 @@ static yyconst flex_int16_t yy_accept[41] =
     {   0,
         0,    0,   17,   15,   14,   14,    2,   15,   13,   15,
        13,   10,   15,   12,   12,   12,   12,   12,   12,   14,
-        0,    8,    9,   11,    0,   10,    1,   12,   12,    5,
-        4,   12,   12,    3,   12,   12,   12,    6,    7,    0
+        0,    8,    9,   11,    0,   10,    1,   12,   12,   12,
+        5,    4,   12,    3,   12,   12,   12,    6,    7,    0
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -389,14 +389,14 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    2,    1,    1,    1,    1,    1,    4,    5,    1,
         1,    1,    1,    6,    7,    8,    1,    9,    9,    9,
         9,    9,    9,    9,    9,    9,    9,    1,    1,    1,
-       10,    1,    1,    1,   11,   12,   12,   13,   12,   12,
-       12,   12,   14,   12,   12,   12,   12,   15,   16,   12,
-       12,   17,   18,   12,   12,   12,   12,   12,   12,   12,
-       19,    1,   20,    1,    1,    1,   21,   12,   12,   12,
+       10,    1,    1,    1,   11,   12,   12,   13,   14,   15,
+       12,   12,   16,   12,   12,   17,   12,   18,   19,   12,
+       12,   20,   21,   22,   23,   12,   12,   12,   12,   12,
+       24,    1,   25,    1,    1,    1,   11,   12,   12,   13,
 
-       22,   23,   12,   12,   12,   12,   12,   24,   12,   12,
-       12,   12,   12,   25,   26,   27,   28,   12,   12,   12,
-       12,   12,   29,    1,   30,    1,    1,    1,    1,    1,
+       14,   15,   12,   12,   16,   12,   12,   17,   12,   18,
+       19,   12,   12,   20,   21,   22,   23,   12,   12,   12,
+       12,   12,   26,    1,   27,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -413,20 +413,20 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[31] =
+static yyconst flex_int32_t yy_meta[28] =
     {   0,
         1,    1,    1,    1,    1,    1,    2,    1,    2,    1,
-        2,    2,    2,    2,    2,    2,    2,    2,    1,    1,
-        2,    2,    2,    2,    2,    2,    2,    2,    1,    1
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    1,    1,    1,    1
     } ;
 
 static yyconst flex_int16_t yy_base[43] =
     {   0,
-        0,    0,   63,   64,   29,   31,   64,   57,   64,   52,
-       51,   27,   49,   43,    0,   39,   39,   34,   29,   35,
-       48,   64,   43,   42,   41,   31,   64,    0,   36,    0,
-        0,   24,   19,    0,   20,   23,   22,    0,    0,   64,
-       40,   41
+        0,    0,   60,   61,   26,   28,   61,   54,   61,   49,
+       48,   24,   46,   37,    0,   43,   32,   32,   31,   32,
+       45,   61,   40,   39,   38,   28,   61,    0,   33,   28,
+        0,    0,   21,    0,   22,   28,   27,    0,    0,   61,
+       37,   38
     } ;
 
 static yyconst flex_int16_t yy_def[43] =
@@ -438,34 +438,30 @@ static yyconst flex_int16_t yy_def[43] =
        40,   40
     } ;
 
-static yyconst flex_int16_t yy_nxt[95] =
+static yyconst flex_int16_t yy_nxt[89] =
     {   0,
         4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
-       14,   15,   15,   16,   15,   17,   15,   15,    9,    9,
-       15,   15,   18,   15,   15,   15,   19,   15,    9,    9,
-       20,   20,   20,   20,   25,   26,   20,   20,   25,   26,
-       21,   21,   28,   39,   38,   37,   36,   35,   34,   24,
-       24,   23,   22,   33,   32,   31,   30,   29,   27,   24,
-       23,   22,   40,    3,   40,   40,   40,   40,   40,   40,
+       14,   15,   15,   15,   16,   17,   15,   15,   18,   15,
+       15,   19,   15,    9,    9,    9,    9,   20,   20,   20,
+       20,   25,   26,   20,   20,   25,   26,   21,   21,   28,
+       39,   38,   37,   36,   35,   34,   24,   24,   23,   22,
+       33,   32,   31,   30,   29,   27,   24,   23,   22,   40,
+        3,   40,   40,   40,   40,   40,   40,   40,   40,   40,
        40,   40,   40,   40,   40,   40,   40,   40,   40,   40,
-       40,   40,   40,   40,   40,   40,   40,   40,   40,   40,
-       40,   40,   40,   40
-
+       40,   40,   40,   40,   40,   40,   40,   40
     } ;
 
-static yyconst flex_int16_t yy_chk[95] =
+static yyconst flex_int16_t yy_chk[89] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        5,    5,    6,    6,   12,   12,   20,   20,   26,   26,
-       41,   41,   42,   37,   36,   35,   33,   32,   29,   25,
-       24,   23,   21,   19,   18,   17,   16,   14,   13,   11,
-       10,    8,    3,   40,   40,   40,   40,   40,   40,   40,
+        1,    1,    1,    1,    1,    1,    1,    5,    5,    6,
+        6,   12,   12,   20,   20,   26,   26,   41,   41,   42,
+       37,   36,   35,   33,   30,   29,   25,   24,   23,   21,
+       19,   18,   17,   16,   14,   13,   11,   10,    8,    3,
        40,   40,   40,   40,   40,   40,   40,   40,   40,   40,
        40,   40,   40,   40,   40,   40,   40,   40,   40,   40,
-       40,   40,   40,   40
-
+       40,   40,   40,   40,   40,   40,   40,   40
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -494,7 +490,7 @@ void PredicateParse_initLexer( const char *_code );
 char *PredicateParse_putSymbol( char *_name );
 char *PredicateParse_putString( char *_str );
 
-#line 498 "predicate_lexer.c"
+#line 494 "predicate_lexer.c"
 
 #define INITIAL 0
 
@@ -650,7 +646,7 @@ YY_DECL
 #line 16 "predicate_lexer.l"
 
 
-#line 654 "predicate_lexer.c"
+#line 650 "predicate_lexer.c"
 
 	if ( !(yy_init) )
 		{
@@ -709,7 +705,7 @@ yy_match:
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 64 );
+		while ( yy_base[yy_current_state] != 61 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -815,7 +811,7 @@ YY_RULE_SETUP
 #line 43 "predicate_lexer.l"
 ECHO;
 	YY_BREAK
-#line 819 "predicate_lexer.c"
+#line 815 "predicate_lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1046,7 +1042,7 @@ static int yy_get_next_buffer (void)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), (size_t) num_to_read );
+			(yy_n_chars), num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
 		}
@@ -1357,9 +1353,19 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef __cplusplus
+#ifndef _UNISTD_H /* assume unistd.h has isatty() for us */
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifdef __THROW /* this is a gnuism */
+extern int isatty (int ) __THROW;
+#else
 extern int isatty (int );
-#endif /* __cplusplus */
+#endif
+#ifdef __cplusplus
+}
+#endif
+#endif
     
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
@@ -1547,7 +1553,7 @@ YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size )
 
 /** Setup the input buffer state to scan a string. The next call to yylex() will
  * scan from a @e copy of @a str.
- * @param yystr a NUL-terminated string to scan
+ * @param str a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
