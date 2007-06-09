@@ -215,13 +215,15 @@ public:
     * if you do not want this behavior.
     *
     * @param showMenu If @p true, show the context menu.
+    * @deprecated use setContextMenuPolicy 
     */
-    virtual void setContextMenuEnabled( bool showMenu );
+    virtual KDE_DEPRECATED void setContextMenuEnabled( bool showMenu );
 
     /**
      * Returns @p true when the context menu is enabled.
+     * @deprecated use contextMenuPolicy
      */
-    bool isContextMenuEnabled() const;
+    KDE_DEPRECATED bool isContextMenuEnabled() const;
 
     /**
      * Enables/Disables handling of URL drops. If enabled and the user

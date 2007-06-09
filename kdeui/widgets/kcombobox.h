@@ -133,8 +133,6 @@ class KUrl;
  * combo->setHandleSignals( false );
  * // Set your own completion key for manual completions.
  * combo->setKeyBinding( KCompletionBase::TextCompletion, Qt::End );
- * // Hide the context (popup) menu
- * combo->setContextMenuEnabled( false );
  * \endcode
  *
  * @author Dawit Alemayehu <adawit@kde.org>
@@ -280,8 +278,9 @@ public:
     * argument set to false to disable the popup menu.
     *
     * @param showMenu If @p true, show the context menu.
+    * @deprecated use setContextMenuPolicy
     */
-    virtual void setContextMenuEnabled( bool showMenu );
+    virtual KDE_DEPRECATED void setContextMenuEnabled( bool showMenu );
 
     /**
      * Enables/Disables handling of URL drops. If enabled and the user

@@ -521,7 +521,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
         QStringList completions = view()->formCompletionItems(element->name().string());
         if (completions.count()) {
             edit->completionObject()->setItems(completions);
-            edit->setContextMenuEnabled(true);
+            edit->setContextMenuPolicy(Qt::NoContextMenu);
             edit->completionBox()->setTabHandling( false );
         }
     }

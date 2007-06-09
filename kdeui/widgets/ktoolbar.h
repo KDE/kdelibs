@@ -116,14 +116,16 @@ class KDEUI_EXPORT KToolBar : public QToolBar
      * This allows you to enable or disable the context menu.
      *
      * @param enable If false, then the context menu will be disabled
+     * @deprecated use setContextMenuPolicy
      */
-    void setContextMenuEnabled( bool enable = true );
+    KDE_DEPRECATED void setContextMenuEnabled( bool enable = true );
 
     /**
      * Returns the context menu enabled flag
      * @return true if the context menu is disabled
+     * @deprecated use contextMenuPolicy
      */
-    bool contextMenuEnabled() const;
+    KDE_DEPRECATED bool contextMenuEnabled() const;
 
     /**
      * Save the toolbar settings to group @p configGroup in @p config.
