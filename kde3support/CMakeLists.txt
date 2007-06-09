@@ -107,8 +107,6 @@ install( FILES
   kio/kfile/kurlrequesterdlg.h
   kio/kfile/kfilesharedlg.h
   kio/kfile/kpropsdlg.h
-  kio/kssl/ksslinfodlg.h
-  kio/kssl/ksslcertdlg.h
   kparts/dockmainwindow3.h
   kdeui/kactivelabel.h
   kdeui/kstdaccel.h
