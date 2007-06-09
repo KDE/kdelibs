@@ -146,8 +146,6 @@ public:
   int slaveFd() const;
 
 private:
-  bool chownpty(bool grant);
-
   KPtyPrivate* const d;
 };
 

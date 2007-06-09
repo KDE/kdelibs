@@ -168,6 +168,7 @@ struct KPtyPrivate {
      winSize.ws_row = 24;
      winSize.ws_col = 80;
    }
+   bool chownpty(bool grant);
 
    bool xonXoff : 1;
    bool utf8    : 1;
@@ -177,6 +178,12 @@ struct KPtyPrivate {
 
    QByteArray ttyName;
 };
+
+bool KPtyPrivate::chownpty(bool grant)
+{
+    return !QProcess::execute(KStandardDirs::findExe("kgrantpty"),
+        QStringList() << (grant?"--grant":"--revoke") << QString::number(masterFd));
+}
 
 /////////////////////////////
 // public member functions //
@@ -301,7 +308,7 @@ bool KPty::open()
                   // there was some sort of leak?  I only had a few open.
   if (((st.st_uid != getuid()) ||
        (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH))) &&
-      !chownpty(true))
+      !d->chownpty(true))
   {
     kWarning(175)
       << "chownpty failed for device " << ptyName << "::" << d->ttyName
@@ -385,7 +392,7 @@ void KPty::close()
          }
       } else {
          fcntl(d->masterFd, F_SETFD, 0);
-         chownpty(false);
+         d->chownpty(false);
       }
    }
    ::close(d->masterFd);
@@ -548,11 +555,3 @@ int KPty::slaveFd() const
 {
     return d->slaveFd;
 }
-
-// private
-bool KPty::chownpty(bool grant)
-{
-  return !QProcess::execute( KStandardDirs::findExe("kgrantpty"),
-    QStringList() << (grant?"--grant":"--revoke") << QString::number(d->masterFd) );
-}
-
