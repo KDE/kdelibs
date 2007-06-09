@@ -189,19 +189,21 @@ bool KPtyPrivate::chownpty(bool grant)
 // public member functions //
 /////////////////////////////
 
-KPty::KPty()
-	:d(new KPtyPrivate)
+KPty::KPty() :
+    d_ptr(new KPtyPrivate)
 {
 }
 
 KPty::~KPty()
 {
-  close();
-  delete d;
+    close();
+    delete d_ptr;
 }
 
 bool KPty::open()
 {
+  Q_D(KPty);
+
   if (d->masterFd >= 0)
     return true;
 
@@ -371,6 +373,8 @@ gotptyandmode:
 
 void KPty::closeSlave()
 {
+    Q_D(KPty);
+
     if (d->slaveFd < 0)
         return;
     ::close(d->slaveFd);
@@ -379,6 +383,8 @@ void KPty::closeSlave()
 
 void KPty::close()
 {
+   Q_D(KPty);
+
    if (d->masterFd < 0)
       return;
    closeSlave();
@@ -401,6 +407,8 @@ void KPty::close()
 
 void KPty::setCTty()
 {
+    Q_D(KPty);
+
     // Setup job control //////////////////////////////////
 
     // Become session leader, process group leader,
@@ -427,6 +435,8 @@ void KPty::setCTty()
 void KPty::login(const char *user, const char *remotehost)
 {
 #ifdef HAVE_UTEMPTER
+    Q_D(KPty);
+
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
     utmp.setProcessChannelMode(QProcess::ForwardedChannels);
@@ -435,6 +445,8 @@ void KPty::login(const char *user, const char *remotehost)
     Q_UNUSED(user);
     Q_UNUSED(remotehost);
 #elif defined(USE_LOGIN)
+    Q_D(KPty);
+
     const char *str_ptr;
     struct utmp l_struct;
     memset(&l_struct, 0, sizeof(struct utmp));
@@ -471,12 +483,16 @@ void KPty::login(const char *user, const char *remotehost)
 void KPty::logout()
 {
 #ifdef HAVE_UTEMPTER
+    Q_D(KPty);
+
     KProcess_Utmp utmp;
     utmp.cmdFd = d->masterFd;
     utmp.setProcessChannelMode(QProcess::ForwardedChannels);
     utmp.start("/usr/sbin/utempter", QStringList() << "-d" << d->ttyName);
     utmp.waitForFinished();
 #elif defined(USE_LOGIN)
+    Q_D(KPty);
+
     const char *str_ptr = d->ttyName.data();
     if (!memcmp(str_ptr, "/dev/", 5))
         str_ptr += 5;
@@ -493,6 +509,8 @@ void KPty::logout()
 
 void KPty::setWinSize(int lines, int columns)
 {
+  Q_D(KPty);
+
   d->winSize.ws_row = (unsigned short)lines;
   d->winSize.ws_col = (unsigned short)columns;
   if (d->masterFd >= 0)
@@ -501,6 +519,8 @@ void KPty::setWinSize(int lines, int columns)
 
 void KPty::setXonXoff(bool useXonXoff)
 {
+  Q_D(KPty);
+
   d->xonXoff = useXonXoff;
   if (d->masterFd >= 0) {
     // without the '::' some version of HP-UX thinks, this declares
@@ -521,6 +541,8 @@ void KPty::setXonXoff(bool useXonXoff)
 
 void KPty::setUtf8Mode(bool useUtf8)
 {
+  Q_D(KPty);
+
   d->utf8 = useUtf8;
 #ifdef IUTF8 // XXX is this a sane place for this check?
   if (d->masterFd >= 0) {
@@ -540,15 +562,21 @@ void KPty::setUtf8Mode(bool useUtf8)
 
 const char *KPty::ttyName() const
 {
+    Q_D(const KPty);
+
     return d->ttyName.data();
 }
 
 int KPty::masterFd() const
 {
+    Q_D(const KPty);
+
     return d->masterFd;
 }
 
 int KPty::slaveFd() const
 {
+    Q_D(const KPty);
+
     return d->slaveFd;
 }

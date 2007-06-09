@@ -32,6 +32,7 @@ struct KPtyPrivate;
  * controlling TTY, utmp registration and setting various terminal attributes.
  */
 class KDECORE_EXPORT KPty {
+    Q_DECLARE_PRIVATE(KPty)
 
 public:
 
@@ -144,7 +145,7 @@ public:
   int slaveFd() const;
 
 private:
-  KPtyPrivate* const d;
+  KPtyPrivate * const d_ptr;
 };
 
 #endif //Q_OS_UNIX
