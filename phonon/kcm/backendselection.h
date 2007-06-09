@@ -42,8 +42,9 @@ class BackendSelection : public QWidget, private Ui::BackendSelection
         void selectionChanged();
         void up();
         void down();
+        void openWebsite(const QString &url);
 
- Q_SIGNALS:
+    Q_SIGNALS:
         void changed();
 
     private:

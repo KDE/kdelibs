@@ -19,6 +19,7 @@
 
 #include "backendselection.h"
 
+#include <kio/krun.h>
 #include <kservicetypeprofile.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>
@@ -146,16 +147,22 @@ void BackendSelection::selectionChanged()
     }
     if(service) {
         m_icon->setPixmap(KIcon(service->icon()).pixmap(128));
-        m_name->setText(service->name());
+        m_name->setText(QString());//service->name());
         m_comment->setText(service->comment());
         const QString website = service->property("X-KDE-PhononBackendInfo-Website").toString();
         m_website->setText(QString("<a href=\"%1\">%1</a>").arg(website));
+        connect(m_website, SIGNAL(linkActivated(const QString &)), SLOT(openWebsite(const QString &)));
         m_version->setText(service->property("X-KDE-PhononBackendInfo-Version").toString());
         showBackendKcm(service);
     } else {
         m_up->setEnabled(false);
         m_down->setEnabled(false);
     }
+}
+
+void BackendSelection::openWebsite(const QString &url)
+{
+    new KRun(KUrl(url), window());
 }
 
 void BackendSelection::up()
