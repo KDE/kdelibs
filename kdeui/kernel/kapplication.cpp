@@ -800,6 +800,18 @@ void KApplication::parseCommandLine( )
 {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
 
+#ifdef Q_WS_X11
+    if (args && args->isSet("style"))
+    {
+        extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
+        QString reqStyle(QLatin1String(args->getOption("style").toLower()));
+        if (QStyleFactory::keys().contains(reqStyle, Qt::CaseInsensitive))
+            kde_overrideStyle = reqStyle;
+        else
+            qWarning() << i18n("The style '%1' was not found", reqStyle);
+    }
+#endif
+
     if ( type() != Tty ) {
         if (args && args->isSet("icon"))
         {
@@ -824,24 +836,6 @@ void KApplication::parseCommandLine( )
         QString config = QString::fromLocal8Bit(args->getOption("config"));
         d->componentData.setConfigName(config);
     }
-
-#ifdef Q_WS_X11
-    if (args->isSet("style"))
-    {
-        extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
-        QStringList styles = QStyleFactory::keys();
-        QString reqStyle(QLatin1String(args->getOption("style").toLower()));
-
-        for (QStringList::ConstIterator it = styles.begin(); it != styles.end(); ++it)
-            if ((*it).toLower() == reqStyle) {
-                kde_overrideStyle = *it;
-                break;
-            }
-
-        if (kde_overrideStyle.isEmpty())
-            fprintf(stderr, "%s", i18n("The style %1 was not found\n", reqStyle).toLocal8Bit().data());
-    }
-#endif
 
     bool nocrashhandler = (getenv("KDE_DEBUG") != NULL);
     if (!nocrashhandler && args->isSet("crashhandler"))
