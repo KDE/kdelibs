@@ -208,7 +208,7 @@ static bool IsValid( const DDSHeader & header )
     if( header.size != 124 ) {
         return false;
     }
-    const uint required = (DDSD_WIDTH|DDSD_HEIGHT|DDSD_CAPS|DDSD_PIXELFORMAT);
+    const uint required = (DDSD_WIDTH|DDSD_HEIGHT|DDSD_PIXELFORMAT);
     if( (header.flags & required) != required ) {
         return false;
     }
