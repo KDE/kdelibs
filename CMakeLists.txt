@@ -182,6 +182,7 @@ add_subdirectory( knotify )
 add_subdirectory( kimgio )
 add_subdirectory( dnssd )
 add_subdirectory( kross )
+add_subdirectory( security )
 add_subdirectory( includes )
 
 macro_log_feature(Soprano_FOUND "Soprano" "Soprano Libraries" "kdesupport" FALSE "" "Provide metadata support (for semantic desktop).")

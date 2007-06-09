@@ -2,12 +2,11 @@ project(kcert)
 
 add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
-#include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_BINARY_DIR}/kio/kssl )
+include_directories( ${OPENSSL_INCLUDE_DIR} )
+include_directories( ${KDE4_KPARTS_INCLUDES} )
+include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
+include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
 include_directories( ${KDE4_KIO_INCLUDES} )
-
-if(OPENSSL_FOUND)
-  include_directories( ${OPENSSL_INCLUDE_DIR} )
-endif(OPENSSL_FOUND)
 
 set(kcertpart_PART_SRCS kcertpart.cc )
 

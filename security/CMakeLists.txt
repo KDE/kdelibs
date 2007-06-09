@@ -1,0 +1,6 @@
+macro_optional_find_package(OpenSSL)
+if(OPENSSL_FOUND)
+  add_subdirectory( crypto )
+  add_subdirectory( kcert )
+endif(OPENSSL_FOUND)
+add_subdirectory( kuiserver )

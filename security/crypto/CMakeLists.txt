@@ -2,7 +2,10 @@
 add_definitions (-DQT3_SUPPORT)
 
 ########### next target ###############
-include_directories(${OPENSSL_INCLUDE_DIR})
+include_directories( ${OPENSSL_INCLUDE_DIR} )
+include_directories( ${KDE4_KPARTS_INCLUDES} )
+include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
+include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
 
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 

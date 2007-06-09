@@ -162,29 +162,29 @@ set(kfile_STAT_SRCS
 # kio/kssl/Makefile.am: kssl
 
 set(kssl_STAT_SRCS
-  kssl/kssl.cc
-  kssl/ksslcertificatehome.cc
-  kssl/ksslsettings.cc
-  kssl/ksslcertificate.cc
-  kssl/ksslconnectioninfo.cc
-  kssl/ksslcertificatefactory.cc
-  kssl/ksslcertificatecache.cc
-  kssl/ksslpeerinfo.cc
-  kssl/ksslinfodialog.cc
-  kssl/ksslcertdialog.cc
-  kssl/ksslutils.cc
-  kssl/kopenssl.cc
-  kssl/ksslpkcs12.cc
-  kssl/ksslcertchain.cc
-  kssl/ksslkeygen.cc
-  kssl/ksslx509v3.cc
-  kssl/ksslsigners.cc
-  kssl/ksslpkcs7.cc
-  kssl/ksslpemcallback.cc
-  kssl/ksslx509map.cc
-  kssl/ksslsession.cc
-  kssl/ksmimecrypto.cc
-  kssl/ksslcsessioncache.cc
+  kssl/kssl.cpp
+  kssl/ksslcertificatehome.cpp
+  kssl/ksslsettings.cpp
+  kssl/ksslcertificate.cpp
+  kssl/ksslconnectioninfo.cpp
+  kssl/ksslcertificatefactory.cpp
+  kssl/ksslcertificatecache.cpp
+  kssl/ksslpeerinfo.cpp
+  kssl/ksslinfodialog.cpp
+  kssl/ksslcertdialog.cpp
+  kssl/ksslutils.cpp
+  kssl/kopenssl.cpp
+  kssl/ksslpkcs12.cpp
+  kssl/ksslcertchain.cpp
+  kssl/ksslkeygen.cpp
+  kssl/ksslx509v3.cpp
+  kssl/ksslsigners.cpp
+  kssl/ksslpkcs7.cpp
+  kssl/ksslpemcallback.cpp
+  kssl/ksslx509map.cpp
+  kssl/ksslsession.cpp
+  kssl/ksmimecrypto.cpp
+  kssl/ksslcsessioncache.cpp
 )
 
 
@@ -363,30 +363,6 @@ install( FILES
   bookmarks/kbookmarkimporter_kde1.h
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
-  kssl/kssl.h
-  kssl/ksslcertificatehome.h
-  kssl/ksslsettings.h
-  kssl/ksslcertificate.h
-  kssl/ksslconnectioninfo.h
-  kssl/ksslcertificatefactory.h
-  kssl/ksslcertificatecache.h
-  kssl/ksslpeerinfo.h
-  kssl/ksslinfodialog.h
-  kssl/ksslcertdialog.h
-  kssl/ksslutils.h
-  kssl/kopenssl.h
-  kssl/ksslall.h
-  kssl/ksslpkcs12.h
-  kssl/ksslcertchain.h
-  kssl/ksslkeygen.h
-  kssl/ksslx509v3.h
-  kssl/ksslsigners.h
-  kssl/ksslpkcs7.h
-  kssl/ksslpemcallback.h
-  ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h
-  kssl/ksslsession.h
-  kssl/ksslx509map.h
-  kssl/ksmimecrypto.h
   DESTINATION ${INCLUDE_INSTALL_DIR})
 
 install(FILES kio/org.kde.KDirNotify.xml DESTINATION ${DBUS_INTERFACES_DIR})
