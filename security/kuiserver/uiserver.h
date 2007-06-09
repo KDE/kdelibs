@@ -27,7 +27,6 @@
 #include <QListView>
 #include <QPersistentModelIndex>
 #include <kxmlguiwindow.h>
-#include <ksslcertdialog.h>
 #include <kio/global.h>
 #include <kio/authinfo.h>
 #include <kurl.h>
