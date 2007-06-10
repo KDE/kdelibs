@@ -237,9 +237,9 @@ void KOpenSSLProxy::destroy() {
 }
 
 #ifdef __OpenBSD__
-#include <qdir.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QtCore/QDir>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 static QString findMostRecentLib(QString dir, QString name)
 {
@@ -258,7 +258,7 @@ static QString findMostRecentLib(QString dir, QString name)
        uint s = filter.length()-1;
        for (QStringList::Iterator it = l.begin(); it != l.end(); ++it) {
                QString numberpart = (*it).mid(s);
-               uint endmaj = numberpart.find('.');
+               uint endmaj = numberpart.indexOf('.');
                if (endmaj == -1)
                        continue;
                bool ok;
