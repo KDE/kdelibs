@@ -407,6 +407,12 @@ void KMenu::mouseReleaseEvent(QMouseEvent* e)
     d->keyboardModifiers = e->modifiers();
     d->mouseButtons = e->buttons();
 
+    if ( e->button() == Qt::MidButton && activeAction() ) {
+      QMetaObject::invokeMethod(activeAction(), "triggered", Qt::DirectConnection,
+             Q_ARG(Qt::MouseButtons, e->button()),
+             Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers() ));
+    }
+
     if ( !d->ctxMenu || !d->ctxMenu->isVisible() )
         QMenu::mouseReleaseEvent(e);
 }

@@ -32,6 +32,7 @@
 #include <QtGui/QFrame>
 #include <QtGui/QLayout>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QToolButton>
 #include <QtXml/QDomElement>
 
 #include <kaction.h>
@@ -1247,6 +1248,25 @@ bool KToolBar::eventFilter( QObject * watched, QEvent * event )
       ww->removeEventFilter( this );
       foreach ( QWidget* child, ww->findChildren<QWidget*>() )
         child->removeEventFilter( this );
+    }
+  }
+
+  QToolButton* tb;
+  if ( (tb = qobject_cast<QToolButton*>(watched)) && !tb->actions().isEmpty() ) {
+    QAction* act = tb->actions().first();
+    if ( event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease ) {
+      QMouseEvent* me = static_cast<QMouseEvent*>( event );
+      if ( me->button() == Qt::MidButton /*&& 
+           act->receivers(SIGNAL(triggered(Qt::MouseButtons,Qt::KeyboardModifiers)))*/ ) {
+        if ( me->type() == QEvent::MouseButtonPress )  
+          tb->setDown(true); 
+        else {
+          tb->setDown(false);
+          QMetaObject::invokeMethod(act, "triggered", Qt::DirectConnection,
+               Q_ARG(Qt::MouseButtons, me->button()), 
+               Q_ARG(Qt::KeyboardModifiers, QApplication::keyboardModifiers() ));
+        }
+      }
     }
   }
 
