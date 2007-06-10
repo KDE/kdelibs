@@ -11,6 +11,8 @@ X-KDE-ParentApp=kcontrol
 
 Name=Crypto
 Comment=Configure SSL, manage certificates, and other cryptography settings
+Comment[csb]=Kònfigùracëjô SSL, sprôwianié certifikatama ë jinë ùstôwë kriptografiji
+Comment[en_GB]=Configure SSL, manage certificates and other cryptography settings
 
 Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security
 
