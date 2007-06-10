@@ -21,7 +21,7 @@
 #include <QList>
 
 //solid specific includes
-#include <solid/devicemanager.h>
+#include <solid/devicenotifier.h>
 #include <solid/device.h>
 #include <solid/deviceinterface.h>
 #include <solid/processor.h>
@@ -40,10 +40,10 @@ int main(int args, char **argv)
 {
     KComponentData componentData("tutorial3");
     
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
     
     //get a Processor
-    Solid::DeviceList list = manager.findDevicesFromQuery(Solid::DeviceInterface::Processor, QString());
+    QList<Solid::Device> list = Solid::Device::listFromType(Solid::DeviceInterface::Processor, QString());
 
     //take the first processor
     Solid::Device device = list[0];

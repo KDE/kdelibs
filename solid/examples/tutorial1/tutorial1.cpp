@@ -21,7 +21,7 @@
 #include <QList>
 
 //solid specific includes
-#include <solid/devicemanager.h>
+#include <solid/devicenotifier.h>
 #include <solid/device.h>
 
 //kde specific includes
@@ -38,9 +38,9 @@ int main(int args, char **argv)
 {
     KComponentData componentData("tutorial1");
     
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
+    Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
     
-    foreach (Solid::Device device, manager.allDevices())
+    foreach (Solid::Device device, Solid::Device::allDevices())
     {
         kDebug() << device.udi().toLatin1().constData() << endl;
     }
