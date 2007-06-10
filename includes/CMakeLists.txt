@@ -367,7 +367,6 @@ install( FILES
   KSeparator
   KService
   KServiceGroup
-  KServiceOffer
   KServiceSeparator
   KServiceType
   KServiceTypeProfile
