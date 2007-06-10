@@ -1721,6 +1721,42 @@ void FileCopyJob::connectSubjob( SimpleJob * job )
 
 }
 
+bool FileCopyJob::doSuspend()
+{
+    if (m_moveJob)
+        m_moveJob->suspend();
+
+    if (m_copyJob)
+        m_copyJob->suspend();
+
+    if (m_getJob)
+        m_getJob->suspend();
+
+    if (m_putJob)
+        m_putJob->suspend();
+
+    Job::doSuspend();
+    return true;
+}
+
+bool FileCopyJob::doResume()
+{
+    if (m_moveJob)
+        m_moveJob->resume();
+
+    if (m_copyJob)
+        m_copyJob->resume();
+
+    if (m_getJob)
+        m_getJob->resume();
+
+    if (m_putJob)
+        m_putJob->resume();
+
+    Job::doResume();
+    return true;
+}
+
 void FileCopyJob::slotProcessedSize( KJob *, qulonglong size )
 {
     setProcessedAmount(KJob::Bytes, size);

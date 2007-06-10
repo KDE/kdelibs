@@ -1136,6 +1136,9 @@ public:
         void startRenameJob(const KUrl &slave_url);
         void startDataPump();
         void connectSubjob( SimpleJob * job );
+        bool doSuspend();
+        bool doResume();
+
 
     private:
         void startBestCopyMethod();
