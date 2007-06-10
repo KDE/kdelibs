@@ -136,14 +136,14 @@ QString KAboutTranslator::emailAddress() const
     return d->_email;
 }
 
-#define NAME_OF_TRANSLATORS I18N_NOOP2("NAME OF TRANSLATORS", "Your names")
-#define EMAIL_OF_TRANSLATORS I18N_NOOP2("EMAIL OF TRANSLATORS", "Your emails")
+#define NAME_OF_TRANSLATORS "Your names"
+#define EMAIL_OF_TRANSLATORS "Your emails"
 class KAboutData::Private
 {
 public:
     Private()
-        : mTranslatorName( i18nc("NAME OF TRANSLATORS", "Your names") )
-        , mTranslatorEmail( i18nc("EMAIL OF TRANSLATORS", "Your emails") )
+        : mTranslatorName(ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS))
+        , mTranslatorEmail(ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS))
         , productName(0)
         , customAuthorTextEnabled(false)
         , mTranslatedProgramName( 0 )
@@ -166,8 +166,8 @@ public:
     QList<KAboutPerson> _authorList;
     QList<KAboutPerson> _creditList;
     const char *_licenseText;
-    QString mTranslatorName;
-    QString mTranslatorEmail;
+    KLocalizedString mTranslatorName;
+    KLocalizedString mTranslatorEmail;
     const char *productName;
     QVariant programLogo;
     QString customAuthorPlainText, customAuthorRichText;
@@ -257,15 +257,15 @@ KAboutData::addCredit( const char *name, const char *task,
 void
 KAboutData::setTranslator( const char *name, const char *emailAddress )
 {
-  d->mTranslatorName = i18nc( "NAME OF TRANSLATORS", name );
-  d->mTranslatorEmail = i18nc( "EMAILS OF TRANSLATORS", emailAddress );
+  d->mTranslatorName = ki18nc( "NAME OF TRANSLATORS", name );
+  d->mTranslatorEmail = ki18nc( "EMAILS OF TRANSLATORS", emailAddress );
 }
 
 void
 KAboutData::setTranslator( const KLocalizedString& name, const KLocalizedString& emailAddress )
 {
-  d->mTranslatorName = name.toString();
-  d->mTranslatorEmail = emailAddress.toString();
+  d->mTranslatorName = name;
+  d->mTranslatorEmail = emailAddress;
 }
 
 void
@@ -476,16 +476,18 @@ QList<KAboutTranslator>
 KAboutData::translators() const
 {
     QList<KAboutTranslator> personList;
+    QString translatorName = d->mTranslatorName.toString();
+    QString translatorEmail = d->mTranslatorEmail.toString();
 
-    if ( d->mTranslatorName.isEmpty() || d->mTranslatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
+    if ( translatorName.isEmpty() || translatorName == QString::fromUtf8( NAME_OF_TRANSLATORS ) )
         return personList;
 
-    const QStringList nameList ( d->mTranslatorName.split( ',' ) );
+    const QStringList nameList ( translatorName.split( ',' ) );
 
     QStringList emailList;
-    if( !d->mTranslatorEmail.isEmpty() && d->mTranslatorEmail != QString::fromUtf8( EMAIL_OF_TRANSLATORS ) )
+    if( !translatorEmail.isEmpty() && translatorEmail != QString::fromUtf8( EMAIL_OF_TRANSLATORS ) )
     {
-       emailList = d->mTranslatorName.split( ',', QString::KeepEmptyParts );
+       emailList = translatorName.split( ',', QString::KeepEmptyParts );
     }
 
     QStringList::const_iterator nit;
