@@ -300,7 +300,6 @@ install( FILES
   KNumInput
   KOCRDialog
   KOCRDialogFactory
-  KOpenSSLProxy
   KOpenWithDialog
   KOperaBookmarkExporterImpl
   KOperaBookmarkImporter
@@ -357,27 +356,6 @@ install( FILES
   KRuler
   KRun
   KShortcutsEditor
-  KSMIMECrypto
-  KSSL
-  KSSLCertBox
-  KSSLCertChain
-  KSSLCertDialog
-  KSSLCertDialogRet
-  KSSLCertificate
-  KSSLCertificateCache
-  KSSLCertificateFactory
-  KSSLCertificateHome
-  KSSLConnectionInfo
-  KSSLInfoDialog
-  KSSLKeyGen
-  KSSLPKCS12
-  KSSLPKCS7
-  KSSLPeerInfo
-  KSSLSession
-  KSSLSettings
-  KSSLSigners
-  KSSLX509Map
-  KSSLX509V3
   KSambaShare
   KSaveFile
   KScanDialog
