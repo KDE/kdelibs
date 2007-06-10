@@ -310,15 +310,8 @@ namespace Kross {
     class FormModule::Private
     {
         public:
-            Private() : m_builder(0), m_loader(0) {}
-            ~Private() { delete m_builder; delete m_loader; }
-
-            QFormBuilder* builder()
-            {
-                if( ! m_builder )
-                    m_builder = new QFormBuilder();
-                return m_builder;
-            }
+            Private() : m_loader(0) {}
+            ~Private() { delete m_loader; }
 
             UiLoader* loader()
             {
@@ -328,7 +321,6 @@ namespace Kross {
             }
 
         private:
-            QFormBuilder* m_builder;
             UiLoader* m_loader;
     };
 
@@ -439,10 +431,11 @@ QWidget* FormModule::createWidget(QWidget* parent, const QString& className, con
 
 QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
 {
+    QFormBuilder builder;
     QByteArray ba = xml.toUtf8();
     QBuffer buffer(&ba);
     buffer.open(QIODevice::ReadOnly);
-    QWidget* widget = d->builder()->load(&buffer, parent);
+    QWidget* widget = builder.load(&buffer, parent);
     if( widget && parent && parent->layout() )
         parent->layout()->addWidget(widget);
     return widget;
