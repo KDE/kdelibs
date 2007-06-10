@@ -95,7 +95,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init( const KPasswordDialogFlags& 
         ui.passEdit->setFocus();
     }
 
-    if ( flags ^ KPasswordDialog::ShowKeepPassword )
+    if ( !( flags & KPasswordDialog::ShowKeepPassword ) )
     {
         ui.keepCheckBox->hide();
     }

@@ -70,6 +70,9 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
     if ( readOnly )
         dlg->setUsernameReadOnly( readOnly );
 
+    if ( keep )
+        dlg->setKeepPassword( keep );
+
     int ret = dlg->exec();
     if ( ret == Accepted )
     {
