@@ -63,7 +63,8 @@ class KFILE_EXPORT KUrlNavigator : public QWidget
 public:
     /**
      * @param placesModel    Model for the places which are selectable inside a
-     *                       menu. A place can be a bookmark or a device.
+     *                       menu. A place can be a bookmark or a device. If it is 0,
+                             there is no places selector displayed.
      * @param url            URL which is used for the navigation or editing.
      * @param parent         Parent widget.
      */

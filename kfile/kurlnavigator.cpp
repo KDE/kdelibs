@@ -128,7 +128,7 @@ public:
      * that the filler widget remains as last widget to fill the remaining
      * width.
      */
-    void appendWidget(QWidget* widget);
+    void appendWidget(QWidget* widget, int stretch = 0);
 
     /**
      * Switches the navigation bar between the breadcrumb view and the
@@ -215,9 +215,12 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     QPalette p;
     p.setColor(QPalette::Background, Qt::transparent);
     q->setPalette(p);
-    m_placesSelector = new KFilePlacesSelector(q, placesModel);
-    connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
-            q, SLOT(setUrl(const KUrl&)));
+
+    if (placesModel) {
+        m_placesSelector = new KFilePlacesSelector(q, placesModel);
+        connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
+                q, SLOT(setUrl(const KUrl&)));
+    }
 
     m_dropDownButton = new KUrlDropDownButton(q);
     connect(m_dropDownButton, SIGNAL(clicked()),
@@ -226,7 +229,6 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     // initialize the path box of the traditional view
     m_pathBox = new KUrlComboBox(KUrlComboBox::Directories, true, q);
     m_pathBox->setMinimumWidth(50);
-    m_pathBox->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 
     KUrlCompletion* kurlCompletion = new KUrlCompletion(KUrlCompletion::DirCompletion);
     m_pathBox->setCompletionObject(kurlCompletion);
@@ -241,15 +243,16 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
 
-    m_layout->addWidget(m_placesSelector);
+    if (m_placesSelector)
+        m_layout->addWidget(m_placesSelector);
     m_layout->addWidget(m_dropDownButton);
-    m_layout->addWidget(m_pathBox);
+    m_layout->addWidget(m_pathBox, 1);
     m_layout->addWidget(m_toggleEditableMode);
 }
 
-void KUrlNavigator::Private::appendWidget(QWidget* widget)
+void KUrlNavigator::Private::appendWidget(QWidget* widget, int stretch)
 {
-    m_layout->insertWidget(m_layout->count() - 1, widget);
+    m_layout->insertWidget(m_layout->count() - 1, widget, stretch);
 }
 
 void KUrlNavigator::Private::slotReturnPressed(const QString& text)
@@ -283,6 +286,7 @@ void KUrlNavigator::Private::slotRemoteHostActivated()
 
     QString host = m_host->text();
     QString user;
+    int port = -1;
 
     int marker = host.indexOf("@");
     if (marker != -1) {
@@ -299,8 +303,16 @@ void KUrlNavigator::Private::slotRemoteHostActivated()
         u.setPath("");
     }
 
+    marker = host.indexOf(":");
+    if (marker != -1) {
+        port = host.right(host.length() - marker - 1).toInt();
+        u.setPort(port);
+        host = host.left(marker);
+    }
+
     if (m_protocols->currentProtocol() != u.protocol() ||
             host != u.host() ||
+            port != u.port() ||
             user != u.user()) {
         u.setProtocol(m_protocols->currentProtocol());
         u.setHost(m_host->text());
@@ -339,7 +351,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
             m_protocolSeparator = new QLabel("://", q);
             appendWidget(m_protocolSeparator);
             m_host = new QLineEdit(q);
-            appendWidget(m_host);
+            appendWidget(m_host, 1);
 
             connect(m_host, SIGNAL(lostFocus()),
                     q, SLOT(slotRemoteHostActivated()));
@@ -417,7 +429,8 @@ void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
 
 void KUrlNavigator::Private::updateContent()
 {
-    m_placesSelector->updateSelection(q->url());
+    if (m_placesSelector)
+        m_placesSelector->updateSelection(q->url());
 
     if (m_editable) {
         delete m_protocols; m_protocols = 0;
@@ -438,7 +451,9 @@ void KUrlNavigator::Private::updateContent()
         m_toggleEditableMode->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
         // get the data from the currently selected place
-        const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
+        KUrl placeUrl = KUrl();
+        if (m_placesSelector)
+            placeUrl = m_placesSelector->selectedPlaceUrl();
 
         const QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath(path);
         const uint len = placePath.length();
@@ -477,12 +492,16 @@ void KUrlNavigator::Private::updateContent()
                     hostText = currentUrl.user() + '@' + hostText;
                 }
 
+                if (currentUrl.port() != -1) {
+                    hostText = hostText + ':' + QString::number(currentUrl.port());
+                }
+
                 if (!m_host) {
                     // ######### TODO: this code is duplicated from slotProtocolChanged!
                     m_protocolSeparator = new QLabel("://", q);
                     appendWidget(m_protocolSeparator);
                     m_host = new QLineEdit(hostText, q);
-                    appendWidget(m_host);
+                    appendWidget(m_host, 1);
 
                     connect(m_host, SIGNAL(lostFocus()),
                             q, SLOT(slotRemoteHostActivated()));
@@ -530,9 +549,10 @@ void KUrlNavigator::Private::updateButtons(const QString& path, int startIndex)
             if (isFirstButton) {
                 // the first URL navigator button should get the name of the
                 // place instead of the directory name
-                const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
-
-                text = m_placesSelector->selectedPlaceText();
+                if (m_placesSelector) {
+                    const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
+                    text = m_placesSelector->selectedPlaceText();
+                }
                 if (text.isEmpty()) {
                     if (currentUrl.isLocalFile()) {
                         text = i18n("Custom Path");
@@ -592,7 +612,10 @@ void KUrlNavigator::Private::updateButtonVisibility()
 
     int hiddenButtonsCount = 0;
 
-    int availableWidth = q->width() - m_placesSelector->width() - 20;
+    int availableWidth = q->width() - 20;
+
+    if (m_placesSelector && m_placesSelector->isVisible())
+        availableWidth -= m_placesSelector->width();
 
     if (m_dropDownButton->isVisible()) {
         availableWidth -= m_dropDownButton->width();
