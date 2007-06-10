@@ -41,6 +41,8 @@ int build_link(const char *tmp_prefix, const char *kde_prefix);
 
 int check_tmp_dir(const char *tmp_dir)
 {
+  /* reserve some space for an error string + a path name */
+  char errorstring[PATH_MAX+1024];
   int result;
   struct stat stat_buf;
   result = lstat(tmp_dir, &stat_buf);
@@ -53,7 +55,8 @@ int check_tmp_dir(const char *tmp_dir)
 #endif
     if (result == -1)
     {
-       fprintf(stderr, "Error: Can not create directory \"%s\".\n", tmp_dir);
+       snprintf(errorstring, sizeof(errorstring), "Error: cannot create directory \"%s\"", tmp_dir);
+       perror(errorstring);
        return 1;
     }
     result = stat(tmp_dir, &stat_buf);
