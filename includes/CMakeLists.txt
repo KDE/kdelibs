@@ -469,6 +469,7 @@ install( FILES
   KUrlComboRequester
   KUrlCompletion
   KUrlLabel
+  KUrlNavigator
   KUrlPixmapProvider
   KUrlPropsPlugin
   KUrlRequester
