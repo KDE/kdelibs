@@ -249,6 +249,7 @@ private:
     Q_PRIVATE_SLOT(d, void switchView())
     Q_PRIVATE_SLOT(d, void dropUrls(const KUrl::List& list, const KUrl& destination))
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
+    Q_PRIVATE_SLOT(d, void updateButtonVisibility())
     //Q_PRIVATE_SLOT(d, void slotRedirection(const KUrl&, const KUrl&))
 
 private:

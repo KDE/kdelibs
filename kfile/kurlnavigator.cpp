@@ -36,6 +36,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QLinkedList>
+#include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
 #include <QtGui/QKeyEvent>
@@ -243,8 +244,9 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
     connect(m_toggleEditableMode, SIGNAL(clicked()),
             q, SLOT(switchView()));
 
-    if (m_placesSelector)
+    if (m_placesSelector) {
         m_layout->addWidget(m_placesSelector);
+    }
     m_layout->addWidget(m_dropDownButton);
     m_layout->addWidget(m_pathBox, 1);
     m_layout->addWidget(m_toggleEditableMode);
@@ -429,8 +431,9 @@ void KUrlNavigator::Private::dropUrls(const KUrl::List& urls,
 
 void KUrlNavigator::Private::updateContent()
 {
-    if (m_placesSelector)
+    if (m_placesSelector) {
         m_placesSelector->updateSelection(q->url());
+    }
 
     if (m_editable) {
         delete m_protocols; m_protocols = 0;
@@ -607,6 +610,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
 
     const int buttonsCount = m_navButtons.count();
     if (buttonsCount == 0) {
+        m_dropDownButton->hide();
         return;
     }
 
@@ -916,7 +920,7 @@ void KUrlNavigator::mouseReleaseEvent(QMouseEvent* event)
 
 void KUrlNavigator::resizeEvent(QResizeEvent* event)
 {
-    d->updateButtonVisibility();
+    QTimer::singleShot(0, this, SLOT(updateButtonVisibility()));
     QWidget::resizeEvent(event);
 }
 
