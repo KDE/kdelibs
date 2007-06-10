@@ -53,9 +53,10 @@ template class KSharedPtr<KMimeType>;
 
 static KMimeType::Ptr s_pDefaultMimeType;
 
-static void errorMissingMimeType( const QString& _type )
+static void errorMissingMimeTypes( const QStringList& _types )
 {
-    KMessage::message( KMessage::Error, i18n( "Could not find mime type\n%1", _type ) );
+    KMessage::message( KMessage::Error, i18np( "Could not find mime type:\n%2",
+                "Could not fine mime types:\n%2", _types.count(), _types.join("\n") ) );
 }
 
 static QString iconForMime( const QString& mime )
@@ -91,7 +92,7 @@ void KMimeType::buildDefaultType()
     else
     {
         QString defaultMimeType = KMimeType::defaultMimeType();
-        errorMissingMimeType( defaultMimeType );
+        errorMissingMimeTypes( QStringList(defaultMimeType) );
         QString sDefaultMimeType = KGlobal::dirs()->resourceDirs("xdgdata-mime").first()+defaultMimeType+".xml";
         s_pDefaultMimeType = new KMimeType( sDefaultMimeType, defaultMimeType, "mime" );
     }
@@ -131,26 +132,31 @@ void KMimeType::checkEssentialMimeTypes()
     return; // no point in going any further
   }
 
+  QStringList missingMimeTypes;
+
 #ifndef Q_OS_WIN
   if ( !KMimeType::mimeType( "inode/directory" ) )
-    errorMissingMimeType( "inode/directory" );
+    missingMimeTypes.append( "inode/directory" );
   //if ( !KMimeType::mimeType( "inode/directory-locked" ) )
-  //  errorMissingMimeType( "inode/directory-locked" );
+  //  missingMimeTypes.append( "inode/directory-locked" );
   if ( !KMimeType::mimeType( "inode/blockdevice" ) )
-    errorMissingMimeType( "inode/blockdevice" );
+    missingMimeTypes.append( "inode/blockdevice" );
   if ( !KMimeType::mimeType( "inode/chardevice" ) )
-    errorMissingMimeType( "inode/chardevice" );
+    missingMimeTypes.append( "inode/chardevice" );
   if ( !KMimeType::mimeType( "inode/socket" ) )
-    errorMissingMimeType( "inode/socket" );
+    missingMimeTypes.append( "inode/socket" );
   if ( !KMimeType::mimeType( "inode/fifo" ) )
-    errorMissingMimeType( "inode/fifo" );
+    missingMimeTypes.append( "inode/fifo" );
 #endif    
   if ( !KMimeType::mimeType( "application/x-shellscript" ) )
-    errorMissingMimeType( "application/x-shellscript" );
+    missingMimeTypes.append( "application/x-shellscript" );
   if ( !KMimeType::mimeType( "application/x-executable" ) )
-    errorMissingMimeType( "application/x-executable" );
+    missingMimeTypes.append( "application/x-executable" );
   if ( !KMimeType::mimeType( "application/x-desktop" ) )
-    errorMissingMimeType( "application/x-desktop" );
+    missingMimeTypes.append( "application/x-desktop" );
+
+  if (!missingMimeTypes.isEmpty())
+    errorMissingMimeTypes(missingMimeTypes);
 }
 
 KMimeType::Ptr KMimeType::mimeType( const QString& _name, FindByNameOption options )
