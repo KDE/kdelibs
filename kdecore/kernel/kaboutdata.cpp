@@ -253,14 +253,6 @@ KAboutData::addCredit( const char *name, const char *task,
   d->_creditList.append(KAboutPerson(name,task,emailAddress,webAddress));
 }
 
-// deprecated
-void
-KAboutData::setTranslator( const char *name, const char *emailAddress )
-{
-  d->mTranslatorName = ki18nc( "NAME OF TRANSLATORS", name );
-  d->mTranslatorEmail = ki18nc( "EMAILS OF TRANSLATORS", emailAddress );
-}
-
 void
 KAboutData::setTranslator( const KLocalizedString& name, const KLocalizedString& emailAddress )
 {
