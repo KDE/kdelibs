@@ -69,18 +69,23 @@ public:
 
     KUrl currentUrl;
     bool showAll;
+    Solid::StorageAccess *lastClickedStorage;
+    QPersistentModelIndex lastClickedIndex;
 
+    void setCurrentIndex(const QModelIndex &index);
     void adaptItemSize();
     void updateHiddenRows();
 
     void _k_placeClicked(const QModelIndex &index);
     void _k_placeActivated(const QModelIndex &index);
+    void _k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData);
 };
 
 KFilePlacesView::KFilePlacesView(QWidget *parent)
     : QListView(parent), d(new Private(this))
 {
     d->showAll = false;
+    d->lastClickedStorage = 0;
 
     setSelectionRectVisible(false);
     setSelectionMode(SingleSelection);
@@ -245,6 +250,23 @@ QSize KFilePlacesView::sizeHint() const
     return QSize(32 + textWidth + 2*KDialog::marginHint(), height);
 }
 
+void KFilePlacesView::Private::setCurrentIndex(const QModelIndex &index)
+{
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
+
+    if (placesModel==0) return;
+
+    KUrl url = placesModel->url(index);
+
+    if (url.isValid()) {
+        currentUrl = url;
+        updateHiddenRows();
+        emit q->urlChanged(url);
+    } else {
+        q->setUrl(currentUrl);
+    }
+}
+
 void KFilePlacesView::Private::adaptItemSize()
 {
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
@@ -323,22 +345,27 @@ void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 
     if (placesModel==0) return;
 
+    if (lastClickedStorage) {
+        QObject::disconnect(lastClickedStorage, 0,
+                            q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
+    }
+    lastClickedStorage = 0;
+    lastClickedIndex = QPersistentModelIndex();
+
     if (placesModel->isDevice(index)) {
         Solid::Device device = placesModel->deviceForIndex(index);
         if (device.is<Solid::StorageAccess>() && !device.as<Solid::StorageAccess>()->isAccessible()) {
-            device.as<Solid::StorageAccess>()->setup(); // FIXME: add the missing slot
+            QObject::connect(device.as<Solid::StorageAccess>(),
+                             SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
+                             q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
+            lastClickedStorage = device.as<Solid::StorageAccess>();
+            lastClickedIndex = index;
+            device.as<Solid::StorageAccess>()->setup();
+            return;
         }
     }
 
-    KUrl url = placesModel->url(index);
-
-    if (url.isValid()) {
-        currentUrl = url;
-        updateHiddenRows();
-        emit q->urlChanged(url);
-    } else {
-        q->setUrl(currentUrl);
-    }
+    setCurrentIndex(index);
 }
 
 void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
@@ -347,24 +374,40 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 
     if (placesModel==0) return;
 
+    if (lastClickedStorage) {
+        QObject::disconnect(lastClickedStorage, 0,
+                            q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
+    }
+    lastClickedStorage = 0;
+    lastClickedIndex = QPersistentModelIndex();
+
     if (placesModel->isDevice(index)) {
         Solid::Device device = placesModel->deviceForIndex(index);
         if (device.is<Solid::StorageAccess>() && !device.as<Solid::StorageAccess>()->isAccessible()) {
-            device.as<Solid::StorageAccess>()->setup(); // FIXME: add the missing slot
+            QObject::connect(device.as<Solid::StorageAccess>(),
+                             SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
+                             q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
+            lastClickedStorage = device.as<Solid::StorageAccess>();
+            lastClickedIndex = index;
+            device.as<Solid::StorageAccess>()->setup();
+            return;
         }
     }
 
-    KUrl url = placesModel->url(index);
+    setCurrentIndex(index);
+}
 
-    if (url.isValid()) {
-        currentUrl = url;
-        updateHiddenRows();
-        emit q->urlChanged(url);
+void KFilePlacesView::Private::_k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData)
+{
+    if (result==Solid::StorageAccess::SetupSucceed) {
+        setCurrentIndex(lastClickedIndex);
     } else {
         q->setUrl(currentUrl);
     }
-}
 
+    lastClickedStorage = 0;
+    lastClickedIndex = QPersistentModelIndex();
+}
 void KFilePlacesView::dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
 {
     d->updateHiddenRows();
