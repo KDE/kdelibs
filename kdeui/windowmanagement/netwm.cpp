@@ -33,6 +33,8 @@
 
 #include <QtGui/qx11info_x11.h>
 
+#include <kwindowsystem.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
@@ -594,6 +596,15 @@ Z &NETRArray<Z>::operator[](int index) {
     return d[index];
 }
 
+/*
+ The viewport<->desktop matching is a bit backwards, since NET* classes are the base
+ (and were originally even created with the intention of being the reference WM spec
+ implementation) and KWindowSystem builds on top of it. However it's simpler to add watching
+ whether the WM uses viewport is simpler to KWindowSystem and not having this mapping
+ in NET* classes could result in some code using it directly and not supporting viewport.
+ So NET* classes check if mapping is needed and if yes they forward to KWindowSystem,
+ which will forward again back to NET* classes, but to viewport calls instead of desktop calls.
+*/
 
 // Construct a new NETRootInfo object.
 
@@ -912,7 +923,7 @@ void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
 }
 
 
-void NETRootInfo::setCurrentDesktop(int desktop) {
+void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport) {
 
 #ifdef    NETWMDEBUG
     fprintf(stderr,
@@ -926,8 +937,13 @@ void NETRootInfo::setCurrentDesktop(int desktop) {
 	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *) &d, 1);
     } else {
-	XEvent e;
+    
+        if( !ignore_viewport && KWindowSystem::mapViewport()) {
+            KWindowSystem::setCurrentDesktop( desktop );
+            return;
+        }
 
+	XEvent e;
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = net_current_desktop;
 	e.xclient.display = p->display;
@@ -2700,12 +2716,16 @@ NET::DesktopLayoutCorner NETRootInfo::desktopLayoutCorner() const {
 }
 
 
-int NETRootInfo::numberOfDesktops() const {
+int NETRootInfo::numberOfDesktops( bool ignore_viewport ) const {
+    if( !ignore_viewport && KWindowSystem::mapViewport())
+        return KWindowSystem::numberOfDesktops();
     return p->number_of_desktops == 0 ? 1 : p->number_of_desktops;
 }
 
 
-int NETRootInfo::currentDesktop() const {
+int NETRootInfo::currentDesktop( bool ignore_viewport ) const {
+    if( !ignore_viewport && KWindowSystem::mapViewport())
+        return KWindowSystem::currentDesktop();
     return p->current_desktop == 0 ? 1 : p->current_desktop;
 }
 
@@ -3368,7 +3388,7 @@ void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
 }
 
 
-void NETWinInfo::setDesktop(int desktop) {
+void NETWinInfo::setDesktop(int desktop, bool ignore_viewport) {
     if (p->mapping_state_dirty)
 	updateWMState();
 
@@ -3378,8 +3398,12 @@ void NETWinInfo::setDesktop(int desktop) {
 	if ( desktop == 0 )
 	    return; // we can't do that while being managed
 
-	XEvent e;
+        if( !ignore_viewport && KWindowSystem::mapViewport()) {
+            KWindowSystem::setOnDesktop( p->window, desktop );
+            return;
+        }
 
+	XEvent e;
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = net_wm_desktop;
 	e.xclient.display = p->display;
@@ -4448,7 +4472,9 @@ const char *NETWinInfo::visibleIconName() const {
 }
 
 
-int NETWinInfo::desktop() const {
+int NETWinInfo::desktop( bool ignore_viewport ) const {
+    if( !ignore_viewport && KWindowSystem::mapViewport())
+        return KWindowSystem::windowInfo( p->window, NET::Desktop ).desktop();
     return p->desktop;
 }
 

@@ -265,6 +265,15 @@ bool KWindowInfo::isOnDesktop( int _desktop ) const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWindowInfo" << endl;
+    if( KWindowSystem::mapViewport()) {
+        if( onAllDesktops())
+            return true;
+        Window r;
+        int x, y;
+        unsigned int w, h, b, dp;
+        XGetGeometry( QX11Info::display(), d->win_, &r, &x, &y, &w, &h, &b, &dp );
+        return KWindowSystem::viewportWindowToDesktop( QRect( x, y, w, h )) == _desktop;
+    }
     return d->info->desktop() == _desktop || d->info->desktop() == NET::OnAllDesktops;
 }
 
@@ -272,6 +281,12 @@ bool KWindowInfo::onAllDesktops() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWindowInfo" << endl;
+    if( KWindowSystem::mapViewport()) {
+        if( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState )
+            return d->info->state() & NET::Sticky;
+        NETWinInfo info( QX11Info::display(), d->win_, QX11Info::appRootWindow(), NET::WMState );
+        return info.state() & NET::Sticky;
+    }
     return d->info->desktop() == NET::OnAllDesktops;
 }
 
@@ -279,6 +294,15 @@ int KWindowInfo::desktop() const
 {
     kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMDesktop ) == 0, 176 )
         << "Pass NET::WMDesktop to KWindowInfo" << endl;
+    if( KWindowSystem::mapViewport()) {
+        if( onAllDesktops())
+            return NET::OnAllDesktops;
+        Window r;
+        int x, y;
+        unsigned int w, h, b, dp;
+        XGetGeometry( QX11Info::display(), d->win_, &r, &x, &y, &w, &h, &b, &dp );
+        return KWindowSystem::viewportWindowToDesktop( QRect( x, y, w, h ));
+    }
     return d->info->desktop();
 }
 

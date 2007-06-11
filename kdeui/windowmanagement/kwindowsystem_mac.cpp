@@ -254,6 +254,5 @@ void KWindowSystem::setType( WId win, NET::WindowType windowType )
  kDebug() << "setType( WId win, NET::WindowType windowType ) isn't yet implemented!" << endl;
 }
 
-
 #include "kwindowsystem.moc"
 

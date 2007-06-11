@@ -210,26 +210,6 @@ public:
     static void setOnDesktop( WId win, int desktop);
 
     /**
-     * Returns the number of viewports on the virtual desktop
-     * @return the number of virtual desktops
-     **/
-    static int numberOfViewports(int desktop);
-
-    /**
-     * Returns the number of viewports on the virtual desktop
-     * @return the number of virtual desktops
-     **/
-    static int currentViewport(int desktop);
-
-    /**
-     * Convenience function to set the current viewport to @p viewport.
-     * See NETRootInfo.
-     * @param desktop the number of the new desktop
-     * @param desktop the number of the new viewport
-     */
-    static void setCurrentDesktopViewport( int desktop, QPoint viewport );
-
-    /**
      * Sets the parent window of @p subwindow to be @p mainwindow.
      * This overrides the parent set the usual way as the QWidget parent,
      * but only for the window manager - e.g. stacking order and window grouping
@@ -494,6 +474,29 @@ public:
      */
     static void doNotManage( const QString& title );
 
+#ifdef Q_WS_X11
+    /**
+     * @internal
+     * Returns true if viewports are mapped to virtual desktops.
+     */    
+    static bool mapViewport();
+    /**
+     * @internal
+     * Returns mapped virtual desktop for the given position in the viewport.
+     */    
+    static int viewportToDesktop( const QPoint& pos );
+    /**
+     * @internal
+     * Returns mapped virtual desktop for the given window geometry.
+     */
+    static int viewportWindowToDesktop( const QRect& r );
+    /**
+     * @internal
+     * Returns topleft corner of the viewport area for the given mapped virtual desktop.
+     */    
+    static QPoint desktopToViewport( int desktop, bool absolute );
+#endif
+
 Q_SIGNALS:
 
     /**
@@ -583,14 +586,9 @@ Q_SIGNALS:
      */
     void showingDesktopChanged( bool showing );
 
-     /**
-      * The viewport position has changed
-      */
-     void currentDesktopViewportChanged(int desktop, int viewport);
-
 protected:
     virtual void connectNotify( const char* signal );
-        
+
 private:
 #ifdef Q_WS_X11
     friend class KWindowSystemStaticContainer;

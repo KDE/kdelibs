@@ -281,6 +281,10 @@ public:
        The desktop argument is ignored. Early drafts of the NET WM
        Specification were unclear about the semantics of this property.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. You should use calls for virtual desktops,
+       viewport is mapped to them if needed.
+
        @param desktop the number of the desktop
 
        @return the size of the desktop
@@ -289,6 +293,10 @@ public:
 
     /**
        Returns the viewport of the specified desktop.
+       
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. You should use calls for virtual desktops,
+       viewport is mapped to them if needed.
 
        @param desktop the number of the desktop
 
@@ -351,16 +359,28 @@ public:
     /**
        Returns the number of desktops.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. They are however mapped to virtual desktops
+       if needed.
+       
+       @param ignore_viewport if false, viewport is mapped to virtual desktops
+
        @return the number of desktops
     **/
-    int numberOfDesktops() const;
+    int numberOfDesktops( bool ignore_viewport = false ) const;
 
     /**
        Returns the current desktop.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. They are however mapped to virtual desktops
+       if needed.
+       
+       @param ignore_viewport if false, viewport is mapped to virtual desktops
+
        @return the number of the current desktop
     **/
-    int currentDesktop() const;
+    int currentDesktop( bool ignore_viewport = false ) const;
 
     /**
        Returns the active (focused) window.
@@ -410,15 +430,24 @@ public:
     /**
        Sets the current desktop to the specified desktop.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. It is however mapped to virtual desktops
+       if needed.
+       
        @param desktop the number of the desktop
+       @param ignore_viewport if false, viewport is mapped to virtual desktops
     **/
-    void setCurrentDesktop(int desktop);
+    void setCurrentDesktop(int desktop, bool ignore_viewport = false);
 
     /**
        Sets the desktop geometry to the specified geometry.
 
        The desktop argument is ignored. Early drafts of the NET WM
        Specification were unclear about the semantics of this property.
+
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. You should use calls for virtual desktops,
+       viewport is mapped to them if needed.
 
        @param desktop the number of the desktop
 
@@ -429,6 +458,10 @@ public:
     /**
        Sets the viewport for the current desktop to the specified point.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. You should use calls for virtual desktops,
+       viewport is mapped to them if needed.
+
        @param desktop the number of the desktop
 
        @param viewport the new position of the desktop's viewport
@@ -438,12 +471,20 @@ public:
     /**
        Sets the number of desktops the the specified number.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. Viewport is mapped to virtual desktops
+       if needed, but not for this call.
+
        @param numberOfDesktops the number of desktops
     **/
     void setNumberOfDesktops(int numberOfDesktops);
 
     /**
        Sets the name of the specified desktop.
+
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. Viewport is mapped to virtual desktops
+       if needed, but not for this call.
 
        @param desktop the number of the desktop
 
@@ -957,11 +998,17 @@ public:
     /**
        Returns the desktop where the window is residing.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. It is however mapped to virtual desktops
+       if needed.
+       
+       @param ignore_viewport if false, viewport is mapped to virtual desktops
+
        @return the number of the window's desktop
 
        @see OnAllDesktops()
     **/
-    int desktop() const;
+    int desktop( bool ignore_viewport = false ) const;
 
     /**
        Returns the process id for the client window.
@@ -1077,11 +1124,16 @@ public:
     /**
        Set which window the desktop is (should be) on.
 
+       NOTE: KDE uses virtual desktops and does not directly support
+       viewport in any way. It is however mapped to virtual desktops
+       if needed.
+       
        @param desktop the number of the new desktop
+       @param ignore_viewport if false, viewport is mapped to virtual desktops
 
        @see OnAllDesktops()
     **/
-    void setDesktop(int desktop);
+    void setDesktop(int desktop, bool ignore_viewport = false);
 
     /**
        Set the application window's process id.

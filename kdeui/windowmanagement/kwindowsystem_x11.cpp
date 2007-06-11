@@ -45,6 +45,7 @@ K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
 
 static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientListStacking |
+                                     NET::Supported |
 				     NET::NumberOfDesktops |
 				     NET::DesktopGeometry |
                                      NET::DesktopViewport |
@@ -56,6 +57,7 @@ static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientLi
                                      NET::WM2ShowingDesktop };
 
 static unsigned long desktop_properties[ 2 ] = { NET::ClientList |
+                                     NET::Supported |
 				     NET::NumberOfDesktops |
 				     NET::DesktopGeometry |
                                      NET::DesktopViewport |
@@ -88,6 +90,7 @@ public:
     QList<WId> possibleStrutWindows;
     bool strutSignalConnected;
     int what;
+    bool mapViewport();
 
     void addClient(Window);
     void removeClient(Window);
@@ -96,9 +99,6 @@ public:
 
     void updateStackingOrder();
     bool removeStrutWindow( WId );
-
-    int numberOfViewports(int desktop) const;
-    int currentViewport(int desktop) const;
 };
 
 KWindowSystemPrivate::KWindowSystemPrivate(int _what)
@@ -131,8 +131,6 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
 	    emit s_q->currentDesktopChanged( currentDesktop() );
 	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
 	    emit s_q->activeWindowChanged( activeWindow() );
- 	if ( m[ PROTOCOLS ] & DesktopViewport )
- 	    emit s_q->currentDesktopViewportChanged(currentDesktop(), currentViewport(currentDesktop()));
 	if ( m[ PROTOCOLS ] & DesktopNames )
 	    emit s_q->desktopNamesChanged();
 	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
@@ -239,20 +237,17 @@ void KWindowSystemPrivate::removeClient(Window w)
         emit s_q->strutChanged();
 }
 
-int KWindowSystemPrivate::numberOfViewports(int desktop) const
+bool KWindowSystemPrivate::mapViewport()
 {
-    NETSize netdesktop = desktopGeometry(desktop);
-
-    return netdesktop.width / QApplication::desktop()->screenGeometry().width();
+// compiz claims support even though it doesn't use virtual desktops :(
+//    if( isSupported( NET::DesktopViewport ) && !isSupported( NET::NumberOfDesktops ))
+    
+    if( isSupported( NET::DesktopViewport ) && numberOfDesktops( true ) <= 1
+        && ( desktopGeometry( currentDesktop( true )).width > QApplication::desktop()->width()
+            || desktopGeometry( currentDesktop( true )).height > QApplication::desktop()->height()))
+        return true;
+    return false;
 }
-
-int KWindowSystemPrivate::currentViewport(int desktop) const
-{
-    NETPoint netviewport = desktopViewport(desktop);
-
-    return 1+(netviewport.x / QApplication::desktop()->screenGeometry().width());
-}
-
 
 static bool atoms_created = false;
 
@@ -393,6 +388,12 @@ int KWindowSystem::currentDesktop()
     if (!QX11Info::display())
       return 1;
 
+    if( mapViewport()) {
+        KWindowSystemPrivate* const s_d = s_d_func();
+        NETPoint p = s_d->desktopViewport( s_d->currentDesktop( true ));
+        return viewportToDesktop( QPoint( p.x, p.y ));
+    }
+
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
         return s_d->currentDesktop();
@@ -405,6 +406,12 @@ int KWindowSystem::numberOfDesktops()
     if (!QX11Info::display())
       return 1;
 
+    if( mapViewport()) {
+        KWindowSystemPrivate* const s_d = s_d_func();
+        NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+        return s.width / qApp->desktop()->width() * s.height / qApp->desktop()->height();
+    }
+
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
         return s_d->numberOfDesktops();
@@ -414,12 +421,26 @@ int KWindowSystem::numberOfDesktops()
 
 void KWindowSystem::setCurrentDesktop( int desktop )
 {
+    if( mapViewport()) {
+        KWindowSystemPrivate* const s_d = s_d_func();
+        NETRootInfo info( QX11Info::display(), 0 );
+        QPoint pos = desktopToViewport( desktop, true );
+        NETPoint p;
+        p.x = pos.x();
+        p.y = pos.y();
+        info.setDesktopViewport( s_d->currentDesktop( true ), p );
+        return;
+    }
     NETRootInfo info( QX11Info::display(), 0 );
     info.setCurrentDesktop( desktop );
 }
 
 void KWindowSystem::setOnAllDesktops( WId win, bool b )
 {
+    if( mapViewport()) {
+        setState( b ? NET::Sticky : 0, NET::Sticky );
+        return;
+    }
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     if ( b )
 	info.setDesktop( NETWinInfo::OnAllDesktops );
@@ -431,29 +452,34 @@ void KWindowSystem::setOnAllDesktops( WId win, bool b )
 
 void KWindowSystem::setOnDesktop( WId win, int desktop )
 {
+    if( mapViewport()) {
+        QPoint p = desktopToViewport( desktop, false );
+        Window r;
+        int x, y;
+        unsigned int w, h, b, d;
+        XGetGeometry( QX11Info::display(), win, &r, &x, &y, &w, &h, &b, &d );
+        x += w / 2; // center
+        y += h / 2;
+        // transform to coordinates on the current "desktop"
+        x = x % qApp->desktop()->width();
+        y = y % qApp->desktop()->height();
+        if( x < 0 )
+            x = x + qApp->desktop()->width();
+        if( y < 0 )
+            y = y + qApp->desktop()->height();
+        x += p.x(); // move to given "desktop"
+        y += p.y();
+        x -= w / 2; // from center back to topleft
+        y -= h / 2;
+        KWindowSystemPrivate* const s_d = s_d_func();
+        int flags = 0x20 | 0x03 | 10; // from tool(?), x/y, static gravity
+        // This actually doesn't work with Compiz, because it restricts all window movement
+        // to the currently visible area ... *shrug* .
+        s_d->moveResizeWindowRequest( win, flags, x, y, w, h );
+        return;
+    }
     NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     info.setDesktop( desktop );
-}
-
-int KWindowSystem::numberOfViewports(int desktop)
-{
-    init( INFO_BASIC );
-    return s_d_func()->numberOfViewports(desktop);
-}
-
-int KWindowSystem::currentViewport(int desktop)
-{
-    init( INFO_BASIC );
-    return s_d_func()->currentViewport(desktop);
-}
-
-void KWindowSystem::setCurrentDesktopViewport( int desktop, QPoint viewport )
-{
-    NETRootInfo info( QX11Info::display(), 0 );
-    NETPoint netview;
-    netview.x = viewport.x();
-    netview.y = viewport.y();
-    info.setDesktopViewport( desktop, netview );
 }
 
 WId KWindowSystem::activeWindow()
@@ -942,5 +968,67 @@ void KWindowSystem::doNotManage( const QString& title )
         .call("doNotManage", title);
 }
 
-#include "kwindowsystem.moc"
+bool KWindowSystem::mapViewport()
+{
+    init( INFO_BASIC );
+    return s_d_func()->mapViewport();
+}
 
+int KWindowSystem::viewportToDesktop( const QPoint& p )
+{
+    init( INFO_BASIC );
+    KWindowSystemPrivate* const s_d = s_d_func();
+    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    QSize vs = qApp->desktop()->size();
+    int xs = s.width / vs.width();
+    int x = p.x() < 0 ? 0 : p.x() >= s.width ? xs - 1 : p.x() / vs.width();
+    int ys = s.height / vs.height();
+    int y = p.y() < 0 ? 0 : p.y() >= s.height ? ys - 1 : p.y() / vs.height();
+    return y * xs + x + 1;
+}
+
+int KWindowSystem::viewportWindowToDesktop( const QRect& r )
+{
+    init( INFO_BASIC );
+    KWindowSystemPrivate* const s_d = s_d_func();
+    QPoint p = r.center();
+    // make absolute
+    p = QPoint( p.x() + s_d->desktopViewport( s_d->currentDesktop( true )).x,
+        p.y() + s_d->desktopViewport( s_d->currentDesktop( true )).y );
+    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    QSize vs = qApp->desktop()->size();
+    int xs = s.width / vs.width();
+    int x = p.x() < 0 ? 0 : p.x() >= s.width ? xs - 1 : p.x() / vs.width();
+    int ys = s.height / vs.height();
+    int y = p.y() < 0 ? 0 : p.y() >= s.height ? ys - 1 : p.y() / vs.height();
+    return y * xs + x + 1;
+}
+
+QPoint KWindowSystem::desktopToViewport( int desktop, bool absolute )
+{
+    init( INFO_BASIC );
+    KWindowSystemPrivate* const s_d = s_d_func();
+    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    QSize vs = qApp->desktop()->size();
+    int xs = s.width / vs.width();
+    int ys = s.height / vs.height();
+    if( desktop <= 0 || desktop > xs * ys )
+        return QPoint( 0, 0 );
+    --desktop;
+    QPoint ret( vs.width() * ( desktop % xs ), vs.height() * ( desktop / xs ));
+    if( !absolute ) {
+        ret = QPoint( ret.x() - s_d->desktopViewport( s_d->currentDesktop( true )).x,
+            ret.y() - s_d->desktopViewport( s_d->currentDesktop( true )).y );
+        if( ret.x() >= s.width )
+            ret.setX( ret.x() - s.width );
+        if( ret.x() < 0 )
+            ret.setX( ret.x() + s.width );
+        if( ret.y() >= s.height )
+            ret.setY( ret.y() - s.height );
+        if( ret.y() < 0 )
+            ret.setY( ret.y() + s.height );
+    }
+    return ret;
+}
+
+#include "kwindowsystem.moc"
