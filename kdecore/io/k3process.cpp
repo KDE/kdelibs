@@ -34,10 +34,8 @@
 #define _ALL_SOURCE
 #endif
 
-#ifdef Q_OS_UNIX
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-#endif
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -79,9 +77,7 @@ public:
    K3ProcessPrivate() :
      usePty(K3Process::NoCommunication),
      addUtmp(false), useShell(false),
-#ifdef Q_OS_UNIX
      pty(0),
-#endif
      priority(0)
    {
    }
@@ -90,9 +86,7 @@ public:
    bool addUtmp : 1;
    bool useShell : 1;
 
-#ifdef Q_OS_UNIX
    KPty *pty;
-#endif
 
    int priority;
 
@@ -173,7 +167,6 @@ K3Process::runPrivileged() const
 bool
 K3Process::setPriority(int prio)
 {
-#ifdef Q_OS_UNIX
     if (runs) {
         if (setpriority(PRIO_PROCESS, pid_, prio))
             return false;
@@ -181,7 +174,6 @@ K3Process::setPriority(int prio)
         if (prio > 19 || prio < (geteuid() ? getpriority(PRIO_PROCESS, 0) : -20))
             return false;
     }
-#endif
     d->priority = prio;
     return true;
 }
@@ -192,9 +184,7 @@ K3Process::~K3Process()
     kill(SIGKILL);
   detach();
 
-#ifdef Q_OS_UNIX
   delete d->pty;
-#endif
   delete d;
 
   K3ProcessController::instance()->removeKProcess(this);
@@ -258,7 +248,6 @@ bool K3Process::start(RunMode runmode, Communication comm)
     kDebug(175) << "Attempted to start a process without arguments" << endl;
     return false;
   }
-#ifdef Q_OS_UNIX
   char **arglist;
   QByteArray shellCmd;
   if (d->useShell)
@@ -433,20 +422,14 @@ bool K3Process::start(RunMode runmode, Communication comm)
     break;
   }
   return true;
-#else
-  //TODO
-  return false;
-#endif
 }
 
 
 
 bool K3Process::kill(int signo)
 {
-#ifdef Q_OS_UNIX
   if (runs && pid_ > 0 && !::kill(run_mode == OwnGroup ? -pid_ : pid_, signo))
     return true;
-#endif
   return false;
 }
 
@@ -499,7 +482,6 @@ bool K3Process::wait(int timeout)
     tvp = &tv;
   }
 
-#ifdef Q_OS_UNIX
   int fd = K3ProcessController::instance()->notifierFd();
   for(;;)
   {
@@ -536,7 +518,6 @@ bool K3Process::wait(int timeout)
       }
     }
   }
-#endif //Q_OS_UNIX
   return false;
 }
 
@@ -652,7 +633,6 @@ bool K3Process::closeStderr()
 
 bool K3Process::closePty()
 {
-#ifdef Q_OS_UNIX
   if (d->pty && d->pty->masterFd() >= 0) {
     if (d->addUtmp)
       d->pty->logout();
@@ -660,9 +640,6 @@ bool K3Process::closePty()
     return true;
   } else
     return false;
-#else
-    return false;
-#endif
 }
 
 void K3Process::closeAll()
@@ -737,7 +714,6 @@ void K3Process::setUseShell(bool useShell, const char *shell)
     d->shell = "/bin/sh";
 }
 
-#ifdef Q_OS_UNIX
 void K3Process::setUsePty(Communication usePty, bool addUtmp)
 {
   d->usePty = usePty;
@@ -755,7 +731,6 @@ KPty *K3Process::pty() const
 {
   return d->pty;
 }
-#endif //Q_OS_UNIX
 
 QString K3Process::quote(const QString &arg)
 {
@@ -824,7 +799,6 @@ int K3Process::childError(int fdno)
 
 int K3Process::setupCommunication(Communication comm)
 {
-#ifdef Q_OS_UNIX
   // PTY stuff //
   if (d->usePty)
   {
@@ -884,7 +858,6 @@ int K3Process::setupCommunication(Communication comm)
   }
  fail0:
   communication = NoCommunication;
-#endif //Q_OS_UNIX
   return 0; // Error
 }
 
@@ -938,7 +911,6 @@ int K3Process::commSetupDoneP()
 int K3Process::commSetupDoneC()
 {
   int ok = 1;
-#ifdef Q_OS_UNIX
 
   if (d->usePty & Stdin) {
     if (dup2(d->pty->slaveFd(), STDIN_FILENO) < 0) ok = 0;
@@ -978,7 +950,6 @@ int K3Process::commSetupDoneC()
     if (d->addUtmp)
       d->pty->login(KUser(KUser::UseRealUserID).loginName().toLocal8Bit().data(), getenv("DISPLAY"));
   }
-#endif //Q_OS_UNIX
 
   return ok;
 }
@@ -989,7 +960,6 @@ void K3Process::commClose()
 {
   closeStdin();
 
-#ifdef Q_OS_UNIX
   if (pid_) { // detached, failed, and killed processes have no output. basta. :)
     // If both channels are being read we need to make sure that one socket
     // buffer doesn't fill up whilst we are waiting for data on the other
@@ -1046,7 +1016,6 @@ void K3Process::commClose()
       }
     }
   }
-#endif //Q_OS_UNIX
 
   closeStdout();
   closeStderr();

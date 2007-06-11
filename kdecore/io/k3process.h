@@ -499,7 +499,6 @@ public:
    */
   void detach();
 
-#ifdef Q_OS_UNIX
   /**
    * Specify whether to create a pty (pseudo-terminal) for running the
    * command.
@@ -519,7 +518,6 @@ public:
    * @return a pointer to the pty object
    */
   KPty *pty() const;
-#endif
 
   /**
    * More or less intuitive constants for use with setPriority().

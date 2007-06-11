@@ -60,6 +60,9 @@ if (UNIX)
       network/k3socks.cpp
       network/k3sockssocketdevice.cpp
       network/klocalsocket_unix.cpp
+      io/k3process.cpp
+      io/k3processcontroller.cpp
+      io/k3procio.cpp
       io/kpty.cpp
       fakes.c )
 endif (UNIX)
@@ -114,9 +117,6 @@ set(kdecore_LIB_SRCS
    io/kdebugdbusiface.cpp
    io/klockfile.cpp
    io/kmessage.cpp
-   io/k3process.cpp
-   io/k3processcontroller.cpp
-   io/k3procio.cpp
    io/ksavefile.cpp
    io/ktempdir.cpp
    io/ktemporaryfile.cpp
@@ -286,11 +286,7 @@ install( FILES
    io/kautosavefile.h
    io/kdebug.h
    io/kmessage.h
-   io/k3process.h
-   io/k3processcontroller.h
-   io/k3procio.h
    io/klockfile.h
-   io/kpty.h
    io/ksavefile.h
    io/ktempdir.h
    io/ktemporaryfile.h
@@ -367,6 +363,16 @@ install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    DESTINATION ${INCLUDE_INSTALL_DIR}
 )
+
+if (Q_OS_UNIX)
+   install( FILES
+      io/k3process.h
+      io/k3processcontroller.h
+      io/k3procio.h
+      io/kpty.h
+      DESTINATION ${INCLUDE_INSTALL_DIR}
+   )
+endif (Q_OS_UNIX)
 
 install( FILES
         sonnet/backgroundchecker.h
