@@ -95,7 +95,7 @@ namespace Kross {
             * \return the QObject with \p name or NULL if there exist no such object.
             */
             QObject* object(const QString& name) const {
-                return m_objects.value(name);
+                return m_objects.contains(name) ? m_objects.value(name) : 0;
             }
 
             /**
