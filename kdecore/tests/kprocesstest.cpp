@@ -60,8 +60,8 @@ void KProcessTest::test_channels()
     QString e, a;
     TESTCHAN(SeparateChannels, "separate", "", EO, EE);
     TESTCHAN(ForwardedChannels, "forwarded", EO EE, "", "");
-    TESTCHAN(ForwardedStdoutChannel, "forwarded stdout", EO, "", EE);
-    TESTCHAN(ForwardedStderrChannel, "forwarded stderr", EE, EO, "");
+    TESTCHAN(OnlyStderrChannel, "forwarded stdout", EO, "", EE);
+    TESTCHAN(OnlyStdoutChannel, "forwarded stderr", EE, EO, "");
     TESTCHAN(MergedChannels, "merged", "", EO EE, "");
 #else
     QSKIP("This test needs a UNIX system", SkipSingle);
