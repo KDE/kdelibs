@@ -293,6 +293,11 @@ namespace Kross {
              */
             void finished(Kross::Action*);
 
+            /**
+             * This signal is emitted once a script finalized.
+             */
+            void finalized(Kross::Action*);
+
         private Q_SLOTS:
 
             /**
