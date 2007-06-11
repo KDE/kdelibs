@@ -83,7 +83,6 @@ set(solid_LIB_SRCS
    backends/fakehw/fakedeviceinterface.cpp
    backends/fakehw/fakedvbinterface.cpp
    backends/fakehw/fakegenericinterface.cpp
-   backends/fakehw/fakejob.cpp
    backends/fakehw/fakemanager.cpp
    backends/fakehw/fakenetworkinterface.cpp
    backends/fakehw/fakeopticaldisc.cpp

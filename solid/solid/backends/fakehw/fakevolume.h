@@ -34,24 +34,11 @@ public:
 
 public Q_SLOTS:
     virtual bool isIgnored() const;
-    virtual bool isMounted() const;
-    virtual QString mountPoint() const;
     virtual Solid::StorageVolume::UsageType usage() const;
     virtual QString fsType() const;
     virtual QString label() const;
     virtual QString uuid() const;
     virtual qulonglong size() const;
-
-public:
-    virtual void mount(QObject *receiver, const char *member);
-    virtual void unmount(QObject *receiver, const char *member);
-
-public Q_SLOTS:
-    QString createMountJob();
-    QString createUnmountJob();
-
-Q_SIGNALS:
-    void mountStateChanged(bool newState);
 };
 
 #endif

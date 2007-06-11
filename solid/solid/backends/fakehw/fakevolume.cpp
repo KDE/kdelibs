@@ -19,8 +19,6 @@
 
 #include "backends/fakehw/fakevolume.h"
 
-#include "backends/fakehw/fakejob.h"
-
 #include <QtDBus/QDBusConnection>
 
 FakeVolume::FakeVolume(FakeDevice *device)
@@ -37,16 +35,6 @@ FakeVolume::~FakeVolume()
 bool FakeVolume::isIgnored() const
 {
     return fakeDevice()->property("isIgnored").toBool();
-}
-
-bool FakeVolume::isMounted() const
-{
-    return fakeDevice()->property("isMounted").toBool();
-}
-
-QString FakeVolume::mountPoint() const
-{
-    return fakeDevice()->property("mountPoint").toString();
 }
 
 Solid::StorageVolume::UsageType FakeVolume::usage() const
@@ -93,50 +81,6 @@ QString FakeVolume::uuid() const
 qulonglong FakeVolume::size() const
 {
     return fakeDevice()->property("size").toULongLong();
-}
-
-void FakeVolume::mount(QObject *receiver, const char *member)
-{
-    FakeJob *job = new FakeJob(this);
-    job->setBroken(fakeDevice()->isBroken());
-    job->start();
-}
-
-void FakeVolume::unmount(QObject *receiver, const char *member)
-{
-    FakeJob *job = new FakeJob(this);
-    job->setBroken(fakeDevice()->isBroken());
-    job->start();
-}
-
-QString FakeVolume::createMountJob()
-{
-    static int count = 0;
-
-    count++;
-
-    FakeJob *job = new FakeJob(this);
-    job->setBroken(fakeDevice()->isBroken());
-
-    QString path = fakeDevice()->udi()+QString("/volume/mount_%1").arg(count);
-    QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
-
-    return path;
-}
-
-QString FakeVolume::createUnmountJob()
-{
-    static int count = 0;
-
-    count++;
-
-    FakeJob *job = new FakeJob(this);
-    job->setBroken(fakeDevice()->isBroken());
-
-    QString path = fakeDevice()->udi()+QString("/volume/unmount_%1").arg(count);
-    QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
-
-    return path;
 }
 
 #include "backends/fakehw/fakevolume.moc"
