@@ -368,7 +368,7 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 
-if (Q_OS_UNIX)
+if (UNIX)
    install( FILES
       io/k3process.h
       io/k3processcontroller.h
@@ -378,7 +378,7 @@ if (Q_OS_UNIX)
       io/kptyprocess.h
       DESTINATION ${INCLUDE_INSTALL_DIR}
    )
-endif (Q_OS_UNIX)
+endif (UNIX)
 
 install( FILES
         sonnet/backgroundchecker.h
