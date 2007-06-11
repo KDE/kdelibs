@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -51,10 +51,10 @@ class KDateTimeSpecPrivate;
  * can also be set to represent a date-only value with no associated time.
  *
  * The class uses QDateTime internally to represent date/time values, and
- * therefore can only be used for dates in the Gregorian calendar, with a year
- * in the range -4712 (4713 BC) upwards. (The upper limit is actually > 11,000,000,
- * which seems unlikely to cause problems for the majority of applications!) The
- * Gregorian calendar started in 1582, but adoption was slow; the last European
+ * therefore uses the Gregorian calendar for dates starting from 15 October 1582,
+ * and the Julian calendar for dates up to 4 October 1582. The minimum year
+ * number is -4712 (4713 BC), while the upper limit is more than 11,000,000. The
+ * actual adoption of the Gregorian calendar after 1582 was slow; the last European
  * country to adopt it, Greece, did so only in 1923. See QDateTime Considerations
  * section below for further discussion of the date range limitations.
  *
@@ -137,12 +137,13 @@ class KDateTimeSpecPrivate;
  * considered:
  *
  * - there are significant problems in the representation of dates before the
- *   Gregorian calendar was adopted. The numbering of dates - even to some
- *   extent year numbering - varied from place to place. So any date/time
- *   system which attempted to represent dates as actually used in history
- *   would be too specialized to belong to the core KDE libraries. Date/time
- *   systems for scientific applications can be much simpler, but may differ
- *   from historical records.
+ *   Gregorian calendar was adopted. The date of adoption of the Gregorian
+ *   calendar varied from place to place, and in the Julian calendar the
+ *   date of the new year varied so that in different places the year number
+ *   could differ by one. So any date/time system which attempted to represent
+ *   dates as actually used in history would be too specialized to belong to
+ *   the core KDE libraries. Date/time systems for scientific applications can
+ *   be much simpler, but may differ from historical records.
  *
  * - time zones were not invented until the middle of the 19th century. Before
  *   that, solar time was used.
@@ -374,13 +375,13 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
          * The UTC time specification.
          * Provided as a shorthand for KDateTime::Spec(KDateTime::UTC).
          */
-        static const Spec UTC;
+        static Spec UTC();
 
         /**
          * The ClockTime time specification.
          * Provided as a shorthand for KDateTime::Spec(KDateTime::ClockTime).
          */
-        static const Spec ClockTime;
+        static Spec ClockTime();
 
         /**
          * Returns a UTC offset time specification.
@@ -415,10 +416,10 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
                      *   [±]YYYYMMDD (without time zone specifier) are used. All
                      *   formats may contain a day of the year instead of day
                      *   and month.
-		     *   To allow for years past 9999, the year may optionally
-		     *   contain more than 4 digits. To avoid ambiguity, this is
-		     *   not allowed in the basic format containing a day
-		     *   of the year (i.e. when the date part is [±]YYYYDDD).
+                     *   To allow for years past 9999, the year may optionally
+                     *   contain more than 4 digits. To avoid ambiguity, this is
+                     *   not allowed in the basic format containing a day
+                     *   of the year (i.e. when the date part is [±]YYYYDDD).
                      */
         RFCDate,    /**< RFC 2822 format,
                      *   i.e. "[Wdy,] DD Mon YYYY hh:mm[:ss] ±hhmm". This format
@@ -463,19 +464,19 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
         Before  = 0x01, /**< This KDateTime is strictly earlier than the other,
                          *   i.e. e1 < s2.
                          */
-	AtStart = 0x02, /**< This KDateTime starts at the same time as the other,
+        AtStart = 0x02, /**< This KDateTime starts at the same time as the other,
                          *   and ends before the end of the other,
                          *   i.e. s1 = s2, e1 < e2.
                          */
-	Inside  = 0x04, /**< This KDateTime starts after the start of the other,
+        Inside  = 0x04, /**< This KDateTime starts after the start of the other,
                          *   and ends before the end of the other,
                          *   i.e. s1 > s2, e1 < e2.
                          */
-	AtEnd   = 0x08, /**< This KDateTime starts after the start of the other,
+        AtEnd   = 0x08, /**< This KDateTime starts after the start of the other,
                          *   and ends at the same time as the other,
                          *   i.e. s1 > s2, e1 = e2.
                          */
-	After   = 0x10, /**< This KDateTime is strictly later than the other,
+        After   = 0x10, /**< This KDateTime is strictly later than the other,
                          *   i.e. s1 > e2.
                          */
         Equal = AtStart | Inside | AtEnd,
@@ -486,12 +487,12 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
                          *   and ends after the end of the other,
                          *   i.e. s1 < s2, e1 > e2.
                          */
- 	StartsAt = AtStart | Inside | AtEnd | After,
+        StartsAt = AtStart | Inside | AtEnd | After,
                         /**< This KDateTime starts at the same time as the other,
                          *   and ends after the end of the other,
                          *   i.e. s1 = s2, e1 > e2.
                          */
- 	EndsAt = Before | AtStart | Inside | AtEnd
+        EndsAt = Before | AtStart | Inside | AtEnd
                         /**< This KDateTime starts before the start of the other,
                          *   and ends at the same time as the other,
                          *   i.e. s1 < s2, e1 = e2.

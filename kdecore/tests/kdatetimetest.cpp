@@ -227,7 +227,7 @@ void KDateTimeTest::specConstructors()
     QCOMPARE(utcx.utcOffset(), 0);
     QCOMPARE(utcx.timeZone(), KTimeZones::utc());
 
-    const KDateTime::Spec& utc2 = KDateTime::Spec::UTC;
+    const KDateTime::Spec& utc2 = KDateTime::Spec::UTC();
     QVERIFY(utc2.isValid());
     QCOMPARE(utc2.type(), KDateTime::UTC);
     QVERIFY(utc2.isUtc());
@@ -313,7 +313,7 @@ void KDateTimeTest::specConstructors()
     QCOMPARE(clockx.utcOffset(), 0);
     QVERIFY(!clockx.timeZone());
 
-    const KDateTime::Spec &clock2 = KDateTime::Spec::ClockTime;
+    KDateTime::Spec clock2 = KDateTime::Spec::ClockTime();
     QVERIFY(clock2.isValid());
     QCOMPARE(clock2.type(), KDateTime::ClockTime);
     QVERIFY(!clock2.isUtc());
@@ -372,7 +372,7 @@ void KDateTimeTest::specSet()
     spec.setType(KDateTime::OffsetFromUTC, 0);
     QCOMPARE(spec.type(), KDateTime::OffsetFromUTC);
     QVERIFY(spec.equivalentTo(KDateTime::Spec::OffsetFromUTC(0)));
-    QVERIFY(spec.equivalentTo(KDateTime::Spec::UTC));
+    QVERIFY(spec.equivalentTo(KDateTime::Spec::UTC()));
     QVERIFY(!spec.equivalentTo(KDateTime::Spec::OffsetFromUTC(7200)));
     QVERIFY(spec == KDateTime::Spec::OffsetFromUTC(0));
     QVERIFY(!(spec != KDateTime::Spec::OffsetFromUTC(0)));
@@ -399,20 +399,20 @@ void KDateTimeTest::specSet()
 
     spec.setType(KDateTime::UTC);
     QCOMPARE(spec.type(), KDateTime::UTC);
-    QVERIFY(spec.equivalentTo(KDateTime::Spec::UTC));
-    QVERIFY(spec == KDateTime::Spec::UTC);
-    QVERIFY(!(spec != KDateTime::Spec::UTC));
+    QVERIFY(spec.equivalentTo(KDateTime::Spec::UTC()));
+    QVERIFY(spec == KDateTime::Spec::UTC());
+    QVERIFY(!(spec != KDateTime::Spec::UTC()));
     QVERIFY(spec != KDateTime::Spec::LocalZone());
     QVERIFY(!spec.equivalentTo(KDateTime::Spec::LocalZone()));
     QVERIFY(spec.equivalentTo(KDateTime::Spec::OffsetFromUTC(0)));
 
     spec.setType(KDateTime::ClockTime);
     QCOMPARE(spec.type(), KDateTime::ClockTime);
-    QVERIFY(spec.equivalentTo(KDateTime::Spec::ClockTime));
-    QVERIFY(spec == KDateTime::Spec::ClockTime);
-    QVERIFY(!(spec != KDateTime::Spec::ClockTime));
-    QVERIFY(spec != KDateTime::Spec::UTC);
-    QVERIFY(!spec.equivalentTo(KDateTime::Spec::UTC));
+    QVERIFY(spec.equivalentTo(KDateTime::Spec::ClockTime()));
+    QVERIFY(spec == KDateTime::Spec::ClockTime());
+    QVERIFY(!(spec != KDateTime::Spec::ClockTime()));
+    QVERIFY(spec != KDateTime::Spec::UTC());
+    QVERIFY(!spec.equivalentTo(KDateTime::Spec::UTC()));
 
     // Restore the original local time zone
     if (!originalZone)
@@ -550,7 +550,7 @@ void KDateTimeTest::constructors()
     QCOMPARE(datetimeTzCopy.dateTime(), datetimeTz.dateTime());
 
     // UTC
-    KDateTime date_UTC(d, KDateTime::Spec::UTC);
+    KDateTime date_UTC(d, KDateTime::Spec::UTC());
     QVERIFY(!date_UTC.isNull());
     QVERIFY(date_UTC.isValid());
     QVERIFY(date_UTC.isDateOnly());
@@ -767,7 +767,7 @@ void KDateTimeTest::constructors()
 
 
     // Local clock time
-    KDateTime date_ClockTime(d, KDateTime::Spec::ClockTime);
+    KDateTime date_ClockTime(d, KDateTime::Spec::ClockTime());
     QVERIFY(!date_ClockTime.isNull());
     QVERIFY(date_ClockTime.isValid());
     QVERIFY(date_ClockTime.isDateOnly());

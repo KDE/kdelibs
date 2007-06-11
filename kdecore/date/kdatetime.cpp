@@ -1,6 +1,6 @@
 /*
     This file is part of the KDE libraries
-    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -198,8 +198,8 @@ bool KDateTime::Spec::isUtc() const
     return false;
 }
 
-const KDateTime::Spec KDateTime::Spec::UTC       = KDateTime::Spec(KDateTime::UTC);
-const KDateTime::Spec KDateTime::Spec::ClockTime = KDateTime::Spec(KDateTime::ClockTime);
+KDateTime::Spec       KDateTime::Spec::UTC()                         { return Spec(KDateTime::UTC); }
+KDateTime::Spec       KDateTime::Spec::ClockTime()                   { return Spec(KDateTime::ClockTime); }
 KDateTime::Spec       KDateTime::Spec::LocalZone()                   { return Spec(KDateTime::LocalZone); }
 KDateTime::Spec       KDateTime::Spec::OffsetFromUTC(int utcOffset)  { return Spec(KDateTime::OffsetFromUTC, utcOffset); }
 KDateTime::SpecType   KDateTime::Spec::type() const                  { return d->type; }
