@@ -28,6 +28,11 @@
 #include <QtGui/QIcon>
 #include "factory.h"
 
+#ifdef USE_TROLLTECH_LABS_MODELTEST
+#include <QtCore/QSet>
+#include "modeltest.h"
+#endif
+
 #if Q_MOC_OUTPUT_REVISION != 59
 #ifdef __GNUC__
 #warning "Parts of this file were written to resemble the output of the moc"
@@ -59,6 +64,9 @@ static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioCodecTy
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoCodecType[]         = { "Phonon::VideoCodecDescription\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_ContainerFormatType[]    = { "Phonon::ContainerFormatDescription\0" };
 static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VisualizationType[]      = { "Phonon::VisualizationDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioStreamType[]        = { "Phonon::AudioStreamDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoStreamType[]        = { "Phonon::VideoStreamDescription\0" };
+static const char qt_meta_stringdata_Phonon__ObjectDescriptionModel_SubtitleStreamType[]     = { "Phonon::SubtitleStreamDescription\0" };
 
 namespace Phonon
 {
@@ -103,6 +111,18 @@ template<> const QMetaObject ObjectDescriptionModel<VisualizationType>::staticMe
     { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VisualizationType,
       qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
 };
+template<> const QMetaObject ObjectDescriptionModel<AudioStreamType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_AudioStreamType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<VideoStreamType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_VideoStreamType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
+template<> const QMetaObject ObjectDescriptionModel<SubtitleStreamType>::staticMetaObject = {
+    { &QAbstractListModel::staticMetaObject, qt_meta_stringdata_Phonon__ObjectDescriptionModel_SubtitleStreamType,
+      qt_meta_data_Phonon__ObjectDescriptionModel, 0 }
+};
 
 template<ObjectDescriptionType type>
 const QMetaObject *ObjectDescriptionModel<type>::metaObject() const
@@ -130,33 +150,31 @@ int ObjectDescriptionModel<type>::qt_metacall(QMetaObject::Call _c, int _id, voi
 }
 */
 
-int ObjectDescriptionModelBase::rowCount(const QModelIndex &parent) const
+int ObjectDescriptionModelData::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
 
-    K_D(const ObjectDescriptionModelBase);
-    return d->size();
+    return d->data.size();
 }
 
-QVariant ObjectDescriptionModelBase::data(const QModelIndex &index, int role) const
+QVariant ObjectDescriptionModelData::data(const QModelIndex &index, int role) const
 {
-    K_D(const ObjectDescriptionModelBase);
-    if (!index.isValid() || index.row() >= d->size() || index.column() != 0)
+    if (!index.isValid() || index.row() >= d->data.size() || index.column() != 0)
         return QVariant();
 
     switch(role)
     {
     case Qt::EditRole:
     case Qt::DisplayRole:
-        return d->at(index.row()).name();
+        return d->data.at(index.row())->name();
         break;
     case Qt::ToolTipRole:
-        return d->at(index.row()).description();
+        return d->data.at(index.row())->description();
         break;
     case Qt::DecorationRole:
         {
-            QVariant icon = d->at(index.row()).property("icon");
+            QVariant icon = d->data.at(index.row())->property("icon");
             if (icon.isValid()) {
                 if (icon.type() == QVariant::String) {
                     return Factory::icon(icon.toString());
@@ -171,39 +189,35 @@ QVariant ObjectDescriptionModelBase::data(const QModelIndex &index, int role) co
 }
 }
 
-Qt::ItemFlags ObjectDescriptionModelBase::flags(const QModelIndex &index) const
+Qt::ItemFlags ObjectDescriptionModelData::flags(const QModelIndex &index) const
 {
-    K_D(const ObjectDescriptionModelBase);
-    if(!index.isValid() || index.row() >= d->size() || index.column() != 0) {
+    if(!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
         return Qt::ItemIsDropEnabled;
     }
 
-    QVariant available = d->at(index.row()).property("available");
+    QVariant available = d->data.at(index.row())->property("available");
     if (available.isValid() && available.type() == QVariant::Bool && !available.toBool()) {
         return Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     }
     return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
-QList<int> ObjectDescriptionModelBase::tupleIndexOrder() const
+QList<int> ObjectDescriptionModelData::tupleIndexOrder() const
 {
-    K_D(const ObjectDescriptionModelBase);
     QList<int> ret;
-    for (int i = 0; i < d->size(); ++i) {
-        ret.append(d->at(i).index());
+    for (int i = 0; i < d->data.size(); ++i) {
+        ret.append(d->data.at(i)->index());
     }
     return ret;
 }
 
-int ObjectDescriptionModelBase::tupleIndexAtPositionIndex(int positionIndex) const
+int ObjectDescriptionModelData::tupleIndexAtPositionIndex(int positionIndex) const
 {
-    return k_func()->at(positionIndex).index();
+    return d->data.at(positionIndex)->index();
 }
 
-QMimeData *ObjectDescriptionModelBase::mimeData(const QModelIndexList &indexes) const
+QMimeData *ObjectDescriptionModelData::mimeData(ObjectDescriptionType type, const QModelIndexList &indexes) const
 {
-    K_D(const ObjectDescriptionModelBase);
-
     QMimeData *mimeData = new QMimeData;
     QByteArray encodedData;
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
@@ -211,120 +225,99 @@ QMimeData *ObjectDescriptionModelBase::mimeData(const QModelIndexList &indexes) 
     QModelIndexList::const_iterator index = indexes.constBegin();
     for(; index!=end; ++index) {
         if ((*index).isValid()) {
-            stream << d->at((*index).row()).index();
+            stream << (*index).row();
+            stream << d->data.at((*index).row())->index();
         }
     }
-    //pDebug() << Q_FUNC_INFO << "setting mimeData to " << encodedData;
-    mimeData->setData(mimeTypes().first(), encodedData);
+    //pDebug() << Q_FUNC_INFO << "setting mimeData to" << mimeTypes(type).first() << "=>" << encodedData.toHex();
+    mimeData->setData(mimeTypes(type).first(), encodedData);
     return mimeData;
 }
 
-void ObjectDescriptionModelBase::moveUp(const QModelIndex &index)
+void ObjectDescriptionModelData::moveUp(const QModelIndex &index)
 {
-    K_D(ObjectDescriptionModelBase);
-    if (!index.isValid() || index.row() >= d->size() || index.row() < 1 || index.column() != 0)
+    if (!index.isValid() || index.row() >= d->data.size() || index.row() < 1 || index.column() != 0)
         return;
 
-    emit layoutAboutToBeChanged();
+    emit d->model->layoutAboutToBeChanged();
     QModelIndex above = index.sibling(index.row() - 1, index.column());
-    d->swap(index.row(), above.row());
+    d->data.swap(index.row(), above.row());
     QModelIndexList from, to;
     from << index << above;
     to << above << index;
-    changePersistentIndexList(from, to);
-    emit layoutChanged();
+    d->model->changePersistentIndexList(from, to);
+    emit d->model->layoutChanged();
 }
 
-void ObjectDescriptionModelBase::moveDown(const QModelIndex &index)
+void ObjectDescriptionModelData::moveDown(const QModelIndex &index)
 {
-    K_D(ObjectDescriptionModelBase);
-    if (!index.isValid() || index.row() >= d->size() - 1 || index.column() != 0)
+    if (!index.isValid() || index.row() >= d->data.size() - 1 || index.column() != 0)
         return;
 
-    emit layoutAboutToBeChanged();
+    emit d->model->layoutAboutToBeChanged();
     QModelIndex below = index.sibling(index.row() + 1, index.column());
-    d->swap(index.row(), below.row());
+    d->data.swap(index.row(), below.row());
     QModelIndexList from, to;
     from << index << below;
     to << below << index;
-    changePersistentIndexList(from, to);
-    emit layoutChanged();
+    d->model->changePersistentIndexList(from, to);
+    emit d->model->layoutChanged();
 }
 
-#undef K_D
-#define K_D(Class) Class##Private<type> *const d = k_func()
-
-ObjectDescriptionModelBase::ObjectDescriptionModelBase(ObjectDescriptionModelBasePrivate *dd, QObject *parent)
-    : QAbstractListModel(parent),
-    k_ptr(dd)
-{
-    k_ptr->q_ptr = this;
-}
-
-template<ObjectDescriptionType type>
-ObjectDescriptionModel<type>::ObjectDescriptionModel(QObject *parent)
-    : ObjectDescriptionModelBase(new ObjectDescriptionModelPrivate<type>, parent)
+ObjectDescriptionModelData::ObjectDescriptionModelData(QAbstractListModel *model)
+    : d(new ObjectDescriptionModelDataPrivate(model))
 {
 }
 
-template<ObjectDescriptionType type>
-ObjectDescriptionModel<type>::ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent)
-    : ObjectDescriptionModelBase(new ObjectDescriptionModelPrivate<type>, parent)
+ObjectDescriptionModelData::~ObjectDescriptionModelData()
 {
-    setModelData(data);
+    delete d;
 }
 
-ObjectDescriptionModelBase::~ObjectDescriptionModelBase()
+void ObjectDescriptionModelData::setModelData(const QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > &newData)
 {
-    delete k_ptr;
-}
-
-template<ObjectDescriptionType type>
-void ObjectDescriptionModel<type>::setModelData(const QList<ObjectDescription<type> > &newData)
-{
-    K_D(ObjectDescriptionModel);
     d->data = newData;
-    reset();
+    d->model->reset();
+#ifdef USE_TROLLTECH_LABS_MODELTEST
+    static QSet<QAbstractListModel *> modelTested;
+    if (!modelTested.contains(d->model)) {
+        new ModelTest(d->model, d->model);
+        modelTested << d->model;
+    }
+#endif
 }
 
-template<ObjectDescriptionType type>
-QList<ObjectDescription<type> > ObjectDescriptionModel<type>::modelData() const
+QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > ObjectDescriptionModelData::modelData() const
 {
-    K_D(const ObjectDescriptionModel);
     return d->data;
 }
 
-template<ObjectDescriptionType type>
-ObjectDescription<type> ObjectDescriptionModel<type>::modelData(const QModelIndex &index) const
+QExplicitlySharedDataPointer<ObjectDescriptionData> ObjectDescriptionModelData::modelData(const QModelIndex &index) const
 {
-    K_D(const ObjectDescriptionModel);
     if (!index.isValid() || index.row() >= d->data.size() || index.column() != 0) {
-        return ObjectDescription<type>();
+        return QExplicitlySharedDataPointer<ObjectDescriptionData>(new ObjectDescriptionData(0));
     }
     return d->data.at(index.row());
 }
 
-template<ObjectDescriptionType type>
-Qt::DropActions ObjectDescriptionModel<type>::supportedDropActions() const
+Qt::DropActions ObjectDescriptionModelData::supportedDropActions() const
 {
     //pDebug() << Q_FUNC_INFO;
-    return Qt::CopyAction | Qt::MoveAction;
+    return Qt::MoveAction;
 }
 
-template<ObjectDescriptionType type>
-bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropAction action,
+bool ObjectDescriptionModelData::dropMimeData(ObjectDescriptionType type, const QMimeData *data, Qt::DropAction action,
         int row, int column, const QModelIndex &parent)
 {
     Q_UNUSED(action);
     Q_UNUSED(column);
     //pDebug() << Q_FUNC_INFO << data << action << row << column << parent;
 
-    QString format = mimeTypes().first();
+    QString format = mimeTypes(type).first();
     if (!data->hasFormat(format)) {
         return false;
     }
 
-    K_D(ObjectDescriptionModel);
     if (parent.isValid()) {
         row = parent.row();
     } else {
@@ -335,37 +328,43 @@ bool ObjectDescriptionModel<type>::dropMimeData(const QMimeData *data, Qt::DropA
 
     QByteArray encodedData = data->data(format);
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
-    QList<ObjectDescription<type> > toInsert;
+    QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > toInsert;
     while (!stream.atEnd()) {
+        int previousRow;
         int otherIndex;
-        stream >> otherIndex;
-        ObjectDescription<type> obj = ObjectDescription<type>::fromIndex(otherIndex);
+        stream >> previousRow >> otherIndex;
+        ObjectDescriptionData *obj = ObjectDescriptionData::fromIndex(type, otherIndex);
 
-        if (obj.isValid()) {
-            toInsert << obj;
+        if (obj->isValid()) {
+            toInsert << QExplicitlySharedDataPointer<ObjectDescriptionData>(obj);
+            if (previousRow < row) {
+                ++row;
+            }
         }
     }
-    beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
-    foreach (const ObjectDescription<type> &obj, toInsert) {
+    if (row > d->data.size()) {
+        row = d->data.size();
+    }
+    d->model->beginInsertRows(QModelIndex(), row, row + toInsert.size() - 1);
+    foreach (const QExplicitlySharedDataPointer<ObjectDescriptionData> &obj, toInsert) {
         d->data.insert(row, obj);
     }
-    endInsertRows();
+    d->model->endInsertRows();
     return true;
 }
 
-template<ObjectDescriptionType type>
-bool ObjectDescriptionModel<type>::removeRows(int row, int count, const QModelIndex &parent)
+
+bool ObjectDescriptionModelData::removeRows(int row, int count, const QModelIndex &parent)
 {
     //pDebug() << Q_FUNC_INFO << row << count << parent;
-    K_D(ObjectDescriptionModel);
     if (parent.isValid() || row + count > d->data.size()) {
         return false;
     }
-    beginRemoveRows(parent, row, row + count - 1);
+    d->model->beginRemoveRows(parent, row, row + count - 1);
     for (;count > 0; --count) {
         d->data.removeAt(row);
     }
-    endRemoveRows();
+    d->model->endRemoveRows();
     return true;
 }
 
@@ -374,7 +373,6 @@ template<ObjectDescriptionType type>
 bool ObjectDescriptionModel<type>::insertRows(int row, int count, const QModelIndex &parent)
 {
     pDebug() << Q_FUNC_INFO << row << count << parent;
-    K_D(ObjectDescriptionModel);
     if (parent.isValid() || row < 0 || row > d->data.size()) {
         return false;
     }
@@ -387,25 +385,27 @@ bool ObjectDescriptionModel<type>::insertRows(int row, int count, const QModelIn
 }
 */
 
-template<ObjectDescriptionType type>
-QStringList ObjectDescriptionModel<type>::mimeTypes() const
+QStringList ObjectDescriptionModelData::mimeTypes(ObjectDescriptionType type) const
 {
     return QStringList(QLatin1String("application/x-phonon-objectdescription") + QString::number(static_cast<int>(type)));
 }
 
-template class PHONON_EXPORT ObjectDescriptionModel<AudioOutputDeviceType>;
-template class PHONON_EXPORT ObjectDescriptionModel<AudioCaptureDeviceType>;
-template class PHONON_EXPORT ObjectDescriptionModel<VideoOutputDeviceType>;
-template class PHONON_EXPORT ObjectDescriptionModel<VideoCaptureDeviceType>;
-template class PHONON_EXPORT ObjectDescriptionModel<AudioEffectType>;
-template class PHONON_EXPORT ObjectDescriptionModel<VideoEffectType>;
-template class PHONON_EXPORT ObjectDescriptionModel<AudioCodecType>;
-template class PHONON_EXPORT ObjectDescriptionModel<VideoCodecType>;
-template class PHONON_EXPORT ObjectDescriptionModel<ContainerFormatType>;
-template class PHONON_EXPORT ObjectDescriptionModel<VisualizationType>;
+#define INSTANTIATE_META_FUNCTIONS(type) \
+template PHONON_EXPORT const QMetaObject *ObjectDescriptionModel<type>::metaObject() const; \
+template void *ObjectDescriptionModel<type>::qt_metacast(const char *)
 
-}
+INSTANTIATE_META_FUNCTIONS(AudioOutputDeviceType);
+INSTANTIATE_META_FUNCTIONS(AudioCaptureDeviceType);
+INSTANTIATE_META_FUNCTIONS(VideoOutputDeviceType);
+INSTANTIATE_META_FUNCTIONS(VideoCaptureDeviceType);
+INSTANTIATE_META_FUNCTIONS(AudioEffectType);
+INSTANTIATE_META_FUNCTIONS(VideoEffectType);
+INSTANTIATE_META_FUNCTIONS(AudioCodecType);
+INSTANTIATE_META_FUNCTIONS(VideoCodecType);
+INSTANTIATE_META_FUNCTIONS(ContainerFormatType);
+INSTANTIATE_META_FUNCTIONS(VisualizationType);
+INSTANTIATE_META_FUNCTIONS(AudioStreamType);
+INSTANTIATE_META_FUNCTIONS(VideoStreamType);
+INSTANTIATE_META_FUNCTIONS(SubtitleStreamType);
 
-// for enable-final:
-#undef K_D
-#define K_D(Class) Class##Private *const d = k_func()
+} // namespace Phonon

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -22,12 +22,11 @@
 
 #include "phonon_export.h"
 
-#include <QtCore/QBool>
-#include <QtCore/QSharedData>
-#include <QtCore/QVariant>
-#include <QtCore/QByteRef>
+#include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QList>
-class QString;
+#include <QtCore/QSharedData>
+#include <QtCore/QString>
+#include <QtCore/QVariant>
 
 namespace Phonon
 {
@@ -95,23 +94,27 @@ namespace Phonon
         /**
          * Not used yet.
          */
-        VisualizationType
+        VisualizationType,
+        AudioStreamType,
+        VideoStreamType,
+        SubtitleStreamType
     };
 
-/** \class ObjectDescriptionBase objectdescription.h Phonon/ObjectDescription
- * \brief Base class for objects describing devices or features of the backend.
+/** \internal
+ * \class ObjectDescriptionData objectdescription.h Phonon/ObjectDescription
+ * \brief Data class for objects describing devices or features of the backend.
  *
  * \author Matthias Kretz <kretz@kde.org>
  * \see BackendCapabilities
  */
-class PHONON_EXPORT ObjectDescriptionBase //krazy:exclude=dpointer (it's protected, which should be fine for this type of class)
+class PHONON_EXPORT ObjectDescriptionData : public QSharedData //krazy:exclude=dpointer (it's protected, which should be fine for this type of class)
 {
     public:
         /**
          * Returns \c true if this ObjectDescription describes the same
          * as \p otherDescription; otherwise returns \c false.
          */
-        bool operator==(const ObjectDescriptionBase &otherDescription) const;
+        bool operator==(const ObjectDescriptionData &otherDescription) const;
 
         /**
          * Returns the name of the capture source.
@@ -160,20 +163,20 @@ class PHONON_EXPORT ObjectDescriptionBase //krazy:exclude=dpointer (it's protect
          */
         int index() const;
 
-    protected:
-        ObjectDescriptionBase(ObjectDescriptionPrivate * = 0);
-        ObjectDescriptionBase(const ObjectDescriptionBase &rhs);
-        ~ObjectDescriptionBase();
+        static ObjectDescriptionData *fromIndex(ObjectDescriptionType type, int index);
 
-        /**
-         * \internal
-         * The data is implicitly shared.
-         */
-        QExplicitlySharedDataPointer<ObjectDescriptionPrivate> d;
+        ~ObjectDescriptionData();
+
+        ObjectDescriptionData(ObjectDescriptionPrivate * = 0);
+
+    protected:
+        ObjectDescriptionPrivate *const d;
 
     private:
-        ObjectDescriptionBase &operator=(const ObjectDescriptionBase &rhs);
+        ObjectDescriptionData &operator=(const ObjectDescriptionData &rhs);
 };
+
+template<ObjectDescriptionType T> class ObjectDescriptionModel;
 
 /** \class ObjectDescription objectdescription.h Phonon/ObjectDescription
  * \short Provides a tuple of enduser visible name and description.
@@ -187,16 +190,78 @@ class PHONON_EXPORT ObjectDescriptionBase //krazy:exclude=dpointer (it's protect
  * \author Matthias Kretz <kretz@kde.org>
  */
 template<ObjectDescriptionType T>
-class PHONON_EXPORT ObjectDescription : public ObjectDescriptionBase
+class PHONON_EXPORT ObjectDescription
 {
     public:
-        ObjectDescription<T> &operator=(const ObjectDescription<T> &rhs);
-
         /**
          * Returns a new description object that describes the
          * device/effect/codec/...  with the given \p index.
          */
-        static ObjectDescription<T> fromIndex(int index);
+        static inline ObjectDescription<T> fromIndex(int index) {
+            return ObjectDescription<T>(QExplicitlySharedDataPointer<ObjectDescriptionData>(ObjectDescriptionData::fromIndex(T, index)));
+        }
+
+        /**
+         * Returns \c true if this ObjectDescription describes the same
+         * as \p otherDescription; otherwise returns \c false.
+         */
+        inline bool operator==(const ObjectDescription &otherDescription) const {
+            return *d == *otherDescription.d;
+        }
+
+        /**
+         * Returns the name of the capture source.
+         *
+         * \return A string that should be presented to the user to
+         * choose the capture source.
+         */
+        inline QString name() const { return d->name(); }
+
+        /**
+         * Returns a description of the capture source. This text should
+         * make clear what sound source this is, which is sometimes hard
+         * to describe or understand from just the name.
+         *
+         * \return A string describing the capture source.
+         */
+        inline QString description() const { return d->description(); }
+
+        /**
+         * Returns a named property.
+         *
+         * If the property is not set an invalid value is returned.
+         *
+         * \see propertyNames()
+         */
+        inline QVariant property(const char *name) const { return d->property(name); }
+
+        /**
+         * Returns all names that return valid data when property() is called.
+         *
+         * \see property()
+         */
+        inline QList<QByteArray> propertyNames() const { return d->propertyNames(); }
+
+        /**
+         * Returns \c true if the Tuple is valid (index != -1); otherwise returns
+         * \c false.
+         */
+        inline bool isValid() const { return d->isValid(); }
+
+        /**
+         * A unique identifier for this device/. Used internally
+         * to distinguish between the devices/.
+         *
+         * \return An integer that uniquely identifies every device/
+         */
+        inline int index() const { return d->index(); }
+
+        ObjectDescription() : d(new ObjectDescriptionData(0)) {}
+
+    private:
+        friend class ObjectDescriptionModel<T>;
+        ObjectDescription(const QExplicitlySharedDataPointer<ObjectDescriptionData> &dd) : d(dd) {}
+        QExplicitlySharedDataPointer<ObjectDescriptionData> d;
 };
 
 /**

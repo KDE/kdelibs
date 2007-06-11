@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,28 +29,17 @@
 namespace Phonon
 {
 
-ObjectDescriptionBase::ObjectDescriptionBase(ObjectDescriptionPrivate *dd)
+ObjectDescriptionData::ObjectDescriptionData(ObjectDescriptionPrivate *dd)
     : d(dd)
 {
 }
 
-ObjectDescriptionBase::ObjectDescriptionBase(const ObjectDescriptionBase &rhs)
-    : d(rhs.d)
+ObjectDescriptionData::~ObjectDescriptionData()
 {
+    delete d;
 }
 
-ObjectDescriptionBase::~ObjectDescriptionBase()
-{
-}
-
-template<ObjectDescriptionType T>
-ObjectDescription<T> &ObjectDescription<T>::operator=(const ObjectDescription<T> &rhs)
-{
-    d = rhs.d;
-    return *this;
-}
-
-bool ObjectDescriptionBase::operator==(const ObjectDescriptionBase &otherDescription) const
+bool ObjectDescriptionData::operator==(const ObjectDescriptionData &otherDescription) const
 {
     if (!isValid()) {
         return !otherDescription.isValid();
@@ -61,7 +50,7 @@ bool ObjectDescriptionBase::operator==(const ObjectDescriptionBase &otherDescrip
     return *d == *otherDescription.d;
 }
 
-int ObjectDescriptionBase::index() const
+int ObjectDescriptionData::index() const
 {
     if (!isValid()) {
         return -1;
@@ -69,7 +58,7 @@ int ObjectDescriptionBase::index() const
     return d->index;
 }
 
-QString ObjectDescriptionBase::name() const
+QString ObjectDescriptionData::name() const
 {
     if (!isValid()) {
         return QString();
@@ -77,7 +66,7 @@ QString ObjectDescriptionBase::name() const
     return d->name;
 }
 
-QString ObjectDescriptionBase::description() const
+QString ObjectDescriptionData::description() const
 {
     if (!isValid()) {
         return QString();
@@ -85,7 +74,7 @@ QString ObjectDescriptionBase::description() const
     return d->description;
 }
 
-QVariant ObjectDescriptionBase::property(const char *name) const
+QVariant ObjectDescriptionData::property(const char *name) const
 {
     if (!isValid()) {
         return QVariant();
@@ -93,7 +82,7 @@ QVariant ObjectDescriptionBase::property(const char *name) const
     return d->properties.value(name);
 }
 
-QList<QByteArray> ObjectDescriptionBase::propertyNames() const
+QList<QByteArray> ObjectDescriptionData::propertyNames() const
 {
     if (!isValid()) {
         return QList<QByteArray>();
@@ -101,36 +90,22 @@ QList<QByteArray> ObjectDescriptionBase::propertyNames() const
     return d->properties.keys();
 }
 
-bool ObjectDescriptionBase::isValid() const
+bool ObjectDescriptionData::isValid() const
 {
-    return d.constData() != 0;
+    return d != 0;
 }
 
-template<ObjectDescriptionType T>
-ObjectDescription<T> ObjectDescription<T>::fromIndex(int index)
+ObjectDescriptionData *ObjectDescriptionData::fromIndex(ObjectDescriptionType type, int index)
 {
-    ObjectDescription<T> ret; //isValid() == false
-
     QObject *b = Factory::backend();
     BackendInterface *iface = qobject_cast<BackendInterface *>(b);
-    QSet<int> indexes = iface->objectDescriptionIndexes(T);
+    QSet<int> indexes = iface->objectDescriptionIndexes(type);
     if (indexes.contains(index)) {
-        QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(T, index);
-        ret.d = new ObjectDescriptionPrivate(index, properties);
+        QHash<QByteArray, QVariant> properties = iface->objectDescriptionProperties(type, index);
+        return new ObjectDescriptionData(new ObjectDescriptionPrivate(index, properties));
     }
-    return ret;
+    return new ObjectDescriptionData(0); // invalid
 }
-
-template class ObjectDescription<AudioOutputDeviceType>;
-template class ObjectDescription<AudioCaptureDeviceType>;
-template class ObjectDescription<VideoOutputDeviceType>;
-template class ObjectDescription<VideoCaptureDeviceType>;
-template class ObjectDescription<AudioEffectType>;
-template class ObjectDescription<VideoEffectType>;
-template class ObjectDescription<AudioCodecType>;
-template class ObjectDescription<VideoCodecType>;
-template class ObjectDescription<ContainerFormatType>;
-template class ObjectDescription<VisualizationType>;
 
 } //namespace Phonon
 // vim: sw=4 ts=4

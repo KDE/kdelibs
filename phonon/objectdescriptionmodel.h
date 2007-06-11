@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -23,24 +23,21 @@
 #include "phonon_export.h"
 #include "phonondefs.h"
 #include "objectdescription.h"
+#include <QtCore/QList>
 #include <QtCore/QModelIndex>
-
-template<class t> class QList;
+#include <QtCore/QStringList>
 
 namespace Phonon
 {
-    template<ObjectDescriptionType type>
-    class ObjectDescriptionModelPrivate;
-    class ObjectDescriptionModelBasePrivate;
+    class ObjectDescriptionModelDataPrivate;
 
-    /** \class ObjectDescriptionModelBase objectdescriptionmodel.h Phonon/ObjectDescriptionModelBase
-     * \brief Base class for models for ObjectDescription objects.
+    /** \class ObjectDescriptionModelData objectdescriptionmodel.h Phonon/ObjectDescriptionModelData
+     * \brief Data class for models for ObjectDescription objects.
      *
      * \author Matthias Kretz <kretz@kde.org>
      */
-    class PHONON_EXPORT ObjectDescriptionModelBase : public QAbstractListModel
+    class PHONON_EXPORT ObjectDescriptionModelData
     {
-        K_DECLARE_PRIVATE(ObjectDescriptionModelBase)
         public:
             /**
              * Returns the number of rows in the model. This value corresponds
@@ -100,7 +97,7 @@ namespace Phonon
              * Returns the MIME data that dropMimeData() can use to create new
              * items.
              */
-            QMimeData *mimeData(const QModelIndexList &indexes) const;
+            QMimeData *mimeData(ObjectDescriptionType type, const QModelIndexList &indexes) const;
 
             /**
              * Moves the item at the given \p index up. In the resulting list
@@ -118,10 +115,19 @@ namespace Phonon
              */
             void moveDown(const QModelIndex &index);
 
+            void setModelData(const QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > &data);
+            QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > modelData() const;
+            QExplicitlySharedDataPointer<ObjectDescriptionData> modelData(const QModelIndex &index) const;
+            Qt::DropActions supportedDropActions() const;
+            bool dropMimeData(ObjectDescriptionType type, const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+            bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+            QStringList mimeTypes(ObjectDescriptionType type) const;
+
+            ObjectDescriptionModelData(QAbstractListModel *);
         protected:
-            ~ObjectDescriptionModelBase();
-            ObjectDescriptionModelBase(ObjectDescriptionModelBasePrivate *dd, QObject *parent);
-            ObjectDescriptionModelBasePrivate *const k_ptr;
+            ~ObjectDescriptionModelData();
+            //ObjectDescriptionModelData(ObjectDescriptionModelDataPrivate *dd);
+            ObjectDescriptionModelDataPrivate *const d;
     };
 
     /** \class ObjectDescriptionModel objectdescriptionmodel.h Phonon/ObjectDescriptionModel
@@ -160,13 +166,8 @@ namespace Phonon
      * \author Matthias Kretz <kretz@kde.org>
      */
     template<ObjectDescriptionType type>
-    class PHONON_EXPORT ObjectDescriptionModel : public ObjectDescriptionModelBase
+    class PHONON_EXPORT ObjectDescriptionModel : public QAbstractListModel
     {
-        PHONON_NO_EXPORT inline ObjectDescriptionModelPrivate<type> *k_func() {
-            return reinterpret_cast<ObjectDescriptionModelPrivate<type> *>(k_ptr); }
-        PHONON_NO_EXPORT inline const ObjectDescriptionModelPrivate<type> *k_func() const {
-            return reinterpret_cast<const ObjectDescriptionModelPrivate<type> *>(k_ptr); }
-        friend class ObjectDescriptionModelPrivate<type>;
         public:
             Q_OBJECT_CHECK
             /** \internal */
@@ -178,23 +179,106 @@ namespace Phonon
             //int qt_metacall(QMetaObject::Call _c, int _id, void **_a);
 
             /**
+             * Returns the number of rows in the model. This value corresponds
+             * to the size of the list passed through setModelData.
+             *
+             * \param parent The optional \p parent argument is used in most models to specify
+             * the parent of the rows to be counted. Because this is a list if a
+             * valid parent is specified the result will always be 0.
+             *
+             * Reimplemented from QAbstractItemModel.
+             *
+             * \see QAbstractItemModel::rowCount
+             */
+            inline int rowCount(const QModelIndex &parent = QModelIndex()) const { return d->rowCount(parent); }
+
+            /**
+             * Returns data from the item with the given \p index for the specified
+             * \p role.
+             * If the view requests an invalid index, an invalid variant is
+             * returned.
+             *
+             * Reimplemented from QAbstractItemModel.
+             *
+             * \see QAbstractItemModel::data
+             * \see Qt::ItemDataRole
+             */
+            inline QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const { return d->data(index, role); }
+
+            /**
+             * Reimplemented to show unavailable devices as disabled (but still
+             * selectable).
+             */
+            inline Qt::ItemFlags flags(const QModelIndex &index) const { return d->flags(index); }
+
+            /**
+             * Returns a list of indexes in the same order as they are in the
+             * model. The indexes come from the ObjectDescription::index
+             * method.
+             *
+             * This is useful to let the user define a list of preference.
+             */
+            inline QList<int> tupleIndexOrder() const { return d->tupleIndexOrder(); }
+
+            /**
+             * Returns the ObjectDescription::index for the tuple
+             * at the given position \p positionIndex. For example a
+             * QComboBox will give you the currentIndex as the
+             * position in the list. But to select the according
+             * AudioOutputDevice using AudioOutputDevice::fromIndex
+             * you can use this method.
+             *
+             * \param positionIndex The position in the list.
+             */
+            inline int tupleIndexAtPositionIndex(int positionIndex) const { return d->tupleIndexAtPositionIndex(positionIndex); }
+
+            /**
+             * Returns the MIME data that dropMimeData() can use to create new
+             * items.
+             */
+            inline QMimeData *mimeData(const QModelIndexList &indexes) const { return d->mimeData(type, indexes); }
+
+            /**
+             * Moves the item at the given \p index up. In the resulting list
+             * the items at index.row() and index.row() - 1 are swapped.
+             *
+             * Connected views are updated automatically.
+             */
+            inline void moveUp(const QModelIndex &index) { d->moveUp(index); }
+
+            /**
+             * Moves the item at the given \p index down. In the resulting list
+             * the items at index.row() and index.row() + 1 are swapped.
+             *
+             * Connected views are updated automatically.
+             */
+            inline void moveDown(const QModelIndex &index) { d->moveDown(index); }
+
+            /**
              * Constructs a ObjectDescription model with the
              * given \p parent.
              */
-            explicit ObjectDescriptionModel(QObject *parent = 0);
+            explicit inline ObjectDescriptionModel(QObject *parent = 0) : QAbstractListModel(parent), d(new ObjectDescriptionModelData(this)) {}
 
             /**
              * Constructs a ObjectDescription model with the
              * given \p parent and the given \p data.
              */
-            explicit ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent = 0);
+            explicit inline ObjectDescriptionModel(const QList<ObjectDescription<type> > &data, QObject *parent = 0)
+                : QAbstractListModel(parent), d(new ObjectDescriptionModelData(this)) { setModelData(data); }
 
             /**
              * Sets the model data using the list provided by \p data.
              *
              * All previous model data is cleared.
              */
-            void setModelData(const QList<ObjectDescription<type> > &data);
+            inline void setModelData(const QList<ObjectDescription<type> > &data) {
+                QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > list;
+                Q_FOREACH (const ObjectDescription<type> &desc, data) {
+                    list << desc.d;
+                }
+                d->setModelData(list);
+            }
 
             /**
              * Returns the model data.
@@ -202,18 +286,25 @@ namespace Phonon
              * As the order of the list might have changed this can be different
              * to what was set using setModelData().
              */
-            QList<ObjectDescription<type> > modelData() const;
+            inline QList<ObjectDescription<type> > modelData() const {
+                QList<ObjectDescription<type> > ret;
+                QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > list = d->modelData();
+                Q_FOREACH (const QExplicitlySharedDataPointer<ObjectDescriptionData> &data, list) {
+                    ret << ObjectDescription<type>(data);
+                }
+                return ret;
+            }
 
             /**
              * Returns one ObjectDescription of the model data for the given \p index.
              */
-            ObjectDescription<type> modelData(const QModelIndex &index) const;
+            inline ObjectDescription<type> modelData(const QModelIndex &index) const { return ObjectDescription<type>(d->modelData(index)); }
 
             /**
              * This model supports drag and drop to copy or move
              * items.
              */
-            Qt::DropActions supportedDropActions() const;
+            inline Qt::DropActions supportedDropActions() const { return d->supportedDropActions(); }
 
             /**
              * Accept drops from other models of the same ObjectDescriptionType.
@@ -221,7 +312,9 @@ namespace Phonon
              * If a valid \p parent is given the dropped items will be inserted
              * above that item.
              */
-            bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+            inline bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+                return d->dropMimeData(type, data, action, row, column, parent);
+            }
 
             /**
              * Removes count rows starting with the given row.
@@ -231,13 +324,18 @@ namespace Phonon
              *
              * Returns true if the rows were successfully removed; otherwise returns false.
              */
-            bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+            inline bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) {
+                return d->removeRows(row, count, parent);
+            }
 
             /**
              * Returns a list of supported drag and drop MIME types. Currently
              * it only supports one type used internally.
              */
-            QStringList mimeTypes() const;
+            inline QStringList mimeTypes() const { return d->mimeTypes(type); }
+
+        private:
+            ObjectDescriptionModelData *const d;
     };
 
     typedef ObjectDescriptionModel<AudioOutputDeviceType> AudioOutputDeviceModel;

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Matthias Kretz <kretz@kde.org>
+    Copyright (C) 2006-2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -27,26 +27,25 @@
 namespace Phonon
 {
 
-class ObjectDescriptionModelBasePrivate
+class ListModelHelper : public QAbstractListModel
 {
-    Q_DECLARE_PUBLIC(ObjectDescriptionModelBase)
-    protected:
-        virtual ~ObjectDescriptionModelBasePrivate() {}
-        virtual int size() const = 0;
-        virtual const ObjectDescriptionBase &at(int) const = 0;
-        virtual void swap(int, int) = 0;
-        ObjectDescriptionModelBase *q_ptr;
+    public:
+        using QAbstractItemModel::layoutAboutToBeChanged;
+        using QAbstractItemModel::changePersistentIndexList;
+        using QAbstractItemModel::layoutChanged;
+        using QAbstractItemModel::reset;
+        using QAbstractItemModel::beginInsertRows;
+        using QAbstractItemModel::endInsertRows;
+        using QAbstractItemModel::beginRemoveRows;
+        using QAbstractItemModel::endRemoveRows;
 };
 
-template<ObjectDescriptionType type>
-class ObjectDescriptionModelPrivate : public ObjectDescriptionModelBasePrivate
+class ObjectDescriptionModelDataPrivate
 {
-    Q_DECLARE_PUBLIC(ObjectDescriptionModel<type>)
-    protected:
-        int size() const { return data.size(); }
-        const ObjectDescriptionBase &at(int x) const { return data.at(x); }
-        void swap(int x, int y) { data.swap(x, y); }
-        QList<ObjectDescription<type> > data;
+    public:
+        ObjectDescriptionModelDataPrivate(QAbstractListModel *m) : model(reinterpret_cast<ListModelHelper *>(m)) {}
+        QList<QExplicitlySharedDataPointer<ObjectDescriptionData> > data;
+        ListModelHelper *model;
 };
 
 }
