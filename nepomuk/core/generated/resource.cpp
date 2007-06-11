@@ -3,13 +3,21 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * See the file "COPYING" for the exact licensing terms.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include "resource.h"
@@ -21,10 +29,10 @@
 #include <kdebug.h>
 
 // FIXME: let the code generator do this
-#include <kmetadata/tag.h>
+#include "tag.h"
 
 
-Nepomuk::KMetaData::Resource::Resource()
+Nepomuk::Resource::Resource()
 {
     // invalid data
     m_data = new ResourceData();
@@ -32,40 +40,41 @@ Nepomuk::KMetaData::Resource::Resource()
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource& res )
+Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 {
     m_data = res.m_data;
     m_data->ref();
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type )
+Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
     m_data = ResourceData::data( uri, type );
     m_data->ref();
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( Nepomuk::KMetaData::ResourceData* data )
+Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 {
     m_data = data;
     data->ref();
 }
 
 
-Nepomuk::KMetaData::Resource::~Resource()
+Nepomuk::Resource::~Resource()
 {
-    if( m_data->deref() == 0 &&
-        !ResourceManager::instance()->autoSync() ) {
+    if( m_data->deref() == 0 ) {
         m_data->deleteData();
     }
 }
 
 
-Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
+Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        m_data->deref();
+        if ( m_data->deref() == 0 ) {
+            m_data->deleteData();
+        }
         m_data = res.m_data;
         m_data->ref();
     }
@@ -74,131 +83,75 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
 }
 
 
-const QString& Nepomuk::KMetaData::Resource::uri() const
+QString Nepomuk::Resource::uri() const
 {
+    m_data->determineUri();
     return m_data->uri();
 }
 
 
-const QString& Nepomuk::KMetaData::Resource::type() const
+QString Nepomuk::Resource::type() const
 {
-    m_data->init();
+    m_data->determineUri();
     return m_data->type();
 }
 
 
-// QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
-// {
-//   // TODO: do not hardcode the hasIdentifier URI here!
-//   QStringList il = m_data->getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
-//   if( !m_data->kickoffUriOrId().isEmpty() && !il.contains( m_data->kickoffUriOrId() ) )
-//     il.append( m_data->kickoffUriOrId() );
-//   return il;
-// }
-
-
-QString Nepomuk::KMetaData::Resource::className() const
+QString Nepomuk::Resource::className() const
 {
     return type().section( QRegExp( "[#:]" ), -1 );
 }
 
 
-int Nepomuk::KMetaData::Resource::sync()
+QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
 {
-    m_data->init();
-
-    m_data->startSync();
-
-    bool success = ( m_data->determineUri() &&
-                     m_data->determinePropertyUris() &&
-                     m_data->merge() &&
-                     m_data->save() );
-
-    m_data->endSync( success );
-
-    return ( success ? 0 : -1 );
-}
-
-
-QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allProperties() const
-{
-    m_data->init();
     return m_data->allProperties();
 }
 
 
-bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
+bool Nepomuk::Resource::hasProperty( const QString& uri ) const
 {
-    m_data->init();
     return m_data->hasProperty( uri );
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
+Nepomuk::Variant Nepomuk::Resource::property( const QString& uri ) const
 {
-    m_data->init();
-    return m_data->getProperty( uri );
+    return m_data->property( uri );
 }
 
 
-void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
+void Nepomuk::Resource::setProperty( const QString& uri, const Nepomuk::Variant& value )
 {
-    //  m_data->init();
     m_data->setProperty( uri, value );
 }
 
 
-void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
+void Nepomuk::Resource::removeProperty( const QString& uri )
 {
-    m_data->init();
     m_data->removeProperty( uri );
 }
 
 
-void Nepomuk::KMetaData::Resource::remove()
+void Nepomuk::Resource::remove()
 {
-    //  m_data->init();
     m_data->remove();
 }
 
 
-void Nepomuk::KMetaData::Resource::revive()
-{
-    m_data->revive();
-}
-
-
-bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
-{
-    return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
-}
-
-
-bool Nepomuk::KMetaData::Resource::modified() const
-{
-    return m_data->modified();
-}
-
-
-bool Nepomuk::KMetaData::Resource::inSync() const
-{
-    return m_data->inSync();
-}
-
-
-bool Nepomuk::KMetaData::Resource::exists() const
+bool Nepomuk::Resource::exists() const
 {
     return m_data->exists();
 }
 
 
-bool Nepomuk::KMetaData::Resource::isValid() const
+bool Nepomuk::Resource::isValid() const
 {
     return m_data->isValid();
 }
 
 
-bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
+bool Nepomuk::Resource::operator==( const Resource& other ) const
 {
     if( this == &other )
         return true;
@@ -209,251 +162,242 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
     m_data->determineUri();
     other.m_data->determineUri();
     return uri() == other.uri();
-
-    //    return( *m_data == *other.m_data );
 }
 
 
-QString Nepomuk::KMetaData::errorString( int code )
+QString Nepomuk::errorString( ErrorCode code )
 {
     switch( code ) {
-    case ERROR_SUCCESS:
+    case NoError:
         return i18n("Success");
-    case ERROR_COMMUNICATION:
+    case CommunicationError:
         return i18n("Communication error");
-    case ERROR_INVALID_TYPE:
+    case InvalidType:
         return i18n("Invalid type in Database");
     default:
         return i18n("Unknown error");
     }
 }
 
-// do not remove, will be replaced with method definitions by the KMetaData class generator
-QStringList Nepomuk::KMetaData::Resource::getSymbols() const
+// do not remove, will be replaced with method definitions by the Nepomuk class generator
+QString Nepomuk::Resource::label() const
 {
-    return getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#symbol" ).toStringList();
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label" ).toString();
 }
 
-void Nepomuk::KMetaData::Resource::setSymbols( const QStringList& value )
+void Nepomuk::Resource::setLabel( const QString& value )
 {
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#symbol", Variant( value ) );
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#label", Variant( value ) );
 }
 
-void Nepomuk::KMetaData::Resource::addSymbol( const QString& value )
+QString Nepomuk::Resource::labelUri()
 {
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#symbol" );
+    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#label";
+}
+
+QStringList Nepomuk::Resource::symbols() const
+{
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasSymbol" ).toStringList();
+}
+
+void Nepomuk::Resource::setSymbols( const QStringList& value )
+{
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasSymbol", Variant( value ) );
+}
+
+void Nepomuk::Resource::addSymbol( const QString& value )
+{
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasSymbol" );
     v.append( value );
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#symbol", v );
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasSymbol", v );
 }
 
-QString Nepomuk::KMetaData::Resource::symbolUri()
+QString Nepomuk::Resource::symbolUri()
 {
-    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#symbol";
+    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasSymbol";
 }
 
-quint32 Nepomuk::KMetaData::Resource::getRating() const
+QStringList Nepomuk::Resource::identifiers() const
 {
-    return getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#rating" ).value<quint32>();
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasIdentifier" ).toStringList();
 }
 
-void Nepomuk::KMetaData::Resource::setRating( const quint32& value )
+void Nepomuk::Resource::setIdentifiers( const QStringList& value )
 {
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#rating", Variant( value ) );
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasIdentifier", Variant( value ) );
 }
 
-QString Nepomuk::KMetaData::Resource::ratingUri()
+void Nepomuk::Resource::addIdentifier( const QString& value )
 {
-    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#rating";
-}
-
-QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
-{
-    return getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier" ).toStringList();
-}
-
-void Nepomuk::KMetaData::Resource::setIdentifiers( const QStringList& value )
-{
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier", Variant( value ) );
-}
-
-void Nepomuk::KMetaData::Resource::addIdentifier( const QString& value )
-{
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasIdentifier" );
     v.append( value );
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier", v );
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasIdentifier", v );
 }
 
-QString Nepomuk::KMetaData::Resource::IdentifierUri()
+QString Nepomuk::Resource::identifierUri()
 {
-    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#altIdentifier";
+    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasIdentifier";
 }
 
-QStringList Nepomuk::KMetaData::Resource::getPreflabels() const
-{
-    return getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#preflabel" ).toStringList();
-}
-
-void Nepomuk::KMetaData::Resource::setPreflabels( const QStringList& value )
-{
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#preflabel", Variant( value ) );
-}
-
-void Nepomuk::KMetaData::Resource::addPreflabel( const QString& value )
-{
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#preflabel" );
-    v.append( value );
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#preflabel", v );
-}
-
-QString Nepomuk::KMetaData::Resource::preflabelUri()
-{
-    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#preflabel";
-}
-
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::getIsRelateds() const
+QList<Nepomuk::Resource> Nepomuk::Resource::isRelateds() const
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated" ).toResourceList() );
+    return convertResourceList<Resource>( property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated" ).toResourceList() );
 }
 
-void Nepomuk::KMetaData::Resource::setIsRelateds( const QList<Nepomuk::KMetaData::Resource>& value )
+void Nepomuk::Resource::setIsRelateds( const QList<Nepomuk::Resource>& value )
 {
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated", Variant( value ) );
 }
 
-void Nepomuk::KMetaData::Resource::addIsRelated( const Nepomuk::KMetaData::Resource& value )
+void Nepomuk::Resource::addIsRelated( const Nepomuk::Resource& value )
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated" );
     v.append( Resource( value ) );
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated", v );
 }
 
-QString Nepomuk::KMetaData::Resource::isRelatedUri()
+QString Nepomuk::Resource::isRelatedUri()
 {
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated";
 }
 
-QStringList Nepomuk::KMetaData::Resource::getLabels() const
+QStringList Nepomuk::Resource::altLabels() const
 {
-    return getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel" ).toStringList();
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel" ).toStringList();
 }
 
-void Nepomuk::KMetaData::Resource::setLabels( const QStringList& value )
+void Nepomuk::Resource::setAltLabels( const QStringList& value )
 {
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel", Variant( value ) );
 }
 
-void Nepomuk::KMetaData::Resource::addLabel( const QString& value )
+void Nepomuk::Resource::addAltLabel( const QString& value )
 {
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel" );
     v.append( value );
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel", v );
 }
 
-QString Nepomuk::KMetaData::Resource::LabelUri()
+QString Nepomuk::Resource::altLabelUri()
 {
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#altLabel";
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::getIsTopicOfs() const
+quint32 Nepomuk::Resource::rating() const
+{
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasRating" ).toUnsignedInt();
+}
+
+void Nepomuk::Resource::setRating( const quint32& value )
+{
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasRating", Variant( value ) );
+}
+
+QString Nepomuk::Resource::ratingUri()
+{
+    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasRating";
+}
+
+QString Nepomuk::Resource::description() const
+{
+    return property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#description" ).toString();
+}
+
+void Nepomuk::Resource::setDescription( const QString& value )
+{
+    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#description", Variant( value ) );
+}
+
+QString Nepomuk::Resource::descriptionUri()
+{
+    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#description";
+}
+
+QList<Nepomuk::Resource> Nepomuk::Resource::isTopicOfs() const
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf" ).toResourceList() );
+    return convertResourceList<Resource>( property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf" ).toResourceList() );
 }
 
-void Nepomuk::KMetaData::Resource::setIsTopicOfs( const QList<Nepomuk::KMetaData::Resource>& value )
+void Nepomuk::Resource::setIsTopicOfs( const QList<Nepomuk::Resource>& value )
 {
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf", Variant( value ) );
 }
 
-void Nepomuk::KMetaData::Resource::addIsTopicOf( const Nepomuk::KMetaData::Resource& value )
+void Nepomuk::Resource::addIsTopicOf( const Nepomuk::Resource& value )
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf" );
     v.append( Resource( value ) );
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf", v );
 }
 
-QString Nepomuk::KMetaData::Resource::isTopicOfUri()
+QString Nepomuk::Resource::isTopicOfUri()
 {
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf";
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::getAnnotations() const
+QList<Nepomuk::Resource> Nepomuk::Resource::annotations() const
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation" ).toResourceList() );
+    return convertResourceList<Resource>( property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation" ).toResourceList() );
 }
 
-void Nepomuk::KMetaData::Resource::setAnnotations( const QList<Nepomuk::KMetaData::Resource>& value )
+void Nepomuk::Resource::setAnnotations( const QList<Nepomuk::Resource>& value )
 {
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation", Variant( value ) );
 }
 
-void Nepomuk::KMetaData::Resource::addAnnotation( const Nepomuk::KMetaData::Resource& value )
+void Nepomuk::Resource::addAnnotation( const Nepomuk::Resource& value )
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation" );
     v.append( Resource( value ) );
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation", v );
 }
 
-QString Nepomuk::KMetaData::Resource::annotationUri()
+QString Nepomuk::Resource::annotationUri()
 {
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation";
 }
 
-QString Nepomuk::KMetaData::Resource::getComment() const
-{
-    return getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasComment" ).value<QString>();
-}
-
-void Nepomuk::KMetaData::Resource::setComment( const QString& value )
-{
-    setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasComment", Variant( value ) );
-}
-
-QString Nepomuk::KMetaData::Resource::CommentUri()
-{
-    return "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasComment";
-}
-
-QList<Nepomuk::KMetaData::Tag> Nepomuk::KMetaData::Resource::getTags() const
+QList<Nepomuk::Tag> Nepomuk::Resource::tags() const
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Tag>( getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag" ).toResourceList() );
+    return convertResourceList<Tag>( property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag" ).toResourceList() );
 }
 
-void Nepomuk::KMetaData::Resource::setTags( const QList<Nepomuk::KMetaData::Tag>& value )
+void Nepomuk::Resource::setTags( const QList<Nepomuk::Tag>& value )
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
@@ -468,78 +412,68 @@ void Nepomuk::KMetaData::Resource::setTags( const QList<Nepomuk::KMetaData::Tag>
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag", Variant( l ) );
 }
 
-void Nepomuk::KMetaData::Resource::addTag( const Nepomuk::KMetaData::Tag& value )
+void Nepomuk::Resource::addTag( const Nepomuk::Tag& value )
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag" );
     v.append( Resource( value ) );
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag", v );
 }
 
-QString Nepomuk::KMetaData::Resource::TagUri()
+QString Nepomuk::Resource::tagUri()
 {
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTag";
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::getTopics() const
+QList<Nepomuk::Resource> Nepomuk::Resource::topics() const
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    return convertResourceList<Resource>( getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic" ).toResourceList() );
+    return convertResourceList<Resource>( property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic" ).toResourceList() );
 }
 
-void Nepomuk::KMetaData::Resource::setTopics( const QList<Nepomuk::KMetaData::Resource>& value )
+void Nepomuk::Resource::setTopics( const QList<Nepomuk::Resource>& value )
 {
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic", Variant( value ) );
 }
 
-void Nepomuk::KMetaData::Resource::addTopic( const Nepomuk::KMetaData::Resource& value )
+void Nepomuk::Resource::addTopic( const Nepomuk::Resource& value )
 {
     // We always store all Resource types as plain Resource objects.
     // It does not introduce any overhead (due to the implicit sharing of
     // the data and has the advantage that we can mix setProperty calls
     // with the special Resource subclass methods.
     // More importantly Resource loads the data as Resource objects anyway.
-    Variant v = getProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic" );
+    Variant v = property( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic" );
     v.append( Resource( value ) );
     setProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic", v );
 }
 
-QString Nepomuk::KMetaData::Resource::TopicUri()
+QString Nepomuk::Resource::topicUri()
 {
     return "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic";
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::annotationOf() const
+QList<Nepomuk::Resource> Nepomuk::Resource::annotationOf() const
 {
     return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#annotation", *this ) );
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::TopicOf() const
-{
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#hasTopic", *this ) );
-}
-
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::isRelatedOf() const
+QList<Nepomuk::Resource> Nepomuk::Resource::isRelatedOf() const
 {
     return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isRelated", *this ) );
 }
 
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::isTopicOfOf() const
+QList<Nepomuk::Resource> Nepomuk::Resource::allResources()
 {
-    return convertResourceList<Resource>( ResourceManager::instance()->allResourcesWithProperty( "http://semanticdesktop.org/ontologies/2007/03/31/nao#isTopicOf", *this ) );
-}
-
-QList<Nepomuk::KMetaData::Resource> Nepomuk::KMetaData::Resource::allResources()
-{
-    return Nepomuk::KMetaData::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( "http://www.w3.org/2000/01/rdf-schema#Resource" ) );
+    return Nepomuk::convertResourceList<Resource>( ResourceManager::instance()->allResourcesOfType( "http://www.w3.org/2000/01/rdf-schema#Resource" ) );
 }
 
 

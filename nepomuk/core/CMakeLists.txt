@@ -1,17 +1,20 @@
-project(libkmetadata)
+project(nepomukcore)
 
 include_directories(
-  ${kmetadata_BINARY_DIR}
-  ${kmetadata_SOURCE_DIR}
-  ${libkmetadata_SOURCE_DIR}
-  ${nepomuk_backbone_SOURCE_DIR}
-  ${QT_INCLUDES}
-  ${KDE4_INCLUDES}
-  ${KNEPOMUK_INCLUDE_DIR}
-  ${nepomuk-kde_SOURCE_DIR}
+  ${nepomuk_SOURCE_DIR}
+  ${nepomukmiddleware_SOURCE_DIR}
+  ${nepomukmiddleware_SOURCE_DIR}/rdf
+  ${nepomukmiddleware_SOURCE_DIR}/services
+  ${nepomukcore_SOURCE_DIR}
+  ${nepomukcore_SOURCE_DIR}/generated
+  ${kdecore_SOURCE_DIR}/utils
+  ${CMAKE_SOURCE_DIR}
 )
 
-set(kmetadata_LIB_SRCS
+include_directories( ${KDE4_KDEUI_INCLUDES} )
+include_directories( ${QT_INCLUDES} ${SOPRANO_INCLUDE_DIR} )
+
+set(nepomuk_LIB_SRCS
   variant.cpp
   resourcedata.cpp
   resourcemanager.cpp
@@ -25,36 +28,47 @@ set(kmetadata_LIB_SRCS
   ui/ktagdisplaywidget.cpp
   generated/resource.cpp
   generated/tag.cpp
+  ontology/entity.cpp
+  ontology/ontology.cpp
+  ontology/class.cpp
+  ontology/property.cpp
+  ontology/literal.cpp
+  ontology/ontologyloader.cpp
+  ontology/qurlhash.cpp
+  ontology/ontologymanager.cpp
+  ontology/nepomukontologyloader.cpp
+  ontology/fileontologyloader.cpp
+  ontology/desktopontologyloader.cpp
+  ontology/global.cpp
 )
 
-kde4_automoc(${kmetadata_LIB_SRCS})
+kde4_automoc(${nepomuk_LIB_SRCS})
 
-kde4_add_library(kmetadata SHARED ${kmetadata_LIB_SRCS})
+kde4_add_library(nepomuk SHARED ${nepomuk_LIB_SRCS})
 
-add_dependencies(kmetadata rcgen)
+add_dependencies(nepomuk rcgen)
 
-target_link_libraries(kmetadata
-  knepomuk
-  konto
+target_link_libraries(nepomuk
+  nepomuk-middleware
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBRARY}
-  ${KDE4_KDEUI_LIBRARY}
-  ${KDE4_KDEFX_LIBRARY}
+  kdeui
+  kdefx
 )
 
-set_target_properties(kmetadata PROPERTIES VERSION 1.0.0 SOVERSION 1 )
-install(TARGETS kmetadata DESTINATION ${LIB_INSTALL_DIR} )
+set_target_properties(nepomuk PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+
+install(TARGETS nepomuk DESTINATION ${LIB_INSTALL_DIR} )
 install(FILES
   variant.h
   resourcemanager.h
-  kmetadata.h
   tools.h
-  kmetadata_export.h
   generated/resource.h
   generated/tag.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/kmetadata
+  DESTINATION ${INCLUDE_INSTALL_DIR}/nepomuk
 )
 
 add_subdirectory(ui)
+add_subdirectory(ontology)

@@ -3,13 +3,13 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * See the file "COPYING" for the exact licensing terms.
+ * See the file "COPYING.LIB" for the exact licensing terms.
  */
 
 #include <QtCore/QTextStream>
@@ -25,10 +25,10 @@ static int usage()
 {
     QTextStream( stderr, QIODevice::WriteOnly )
         << "Usage:" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] <sourcefolder> <ontologyfile>" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --listincludes <ontologyfile>" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --listheaders [--prefix <listprefix>] <ontologyfile>" << endl
-        << "   " << QCoreApplication::instance()->arguments()[0] << " --listsources [--prefix <listprefix>] <ontologyfile>" << endl;
+        << "   " << QCoreApplication::instance()->arguments()[0] << " --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile(s)>" << endl
+        << "   " << QCoreApplication::instance()->arguments()[0] << " --listincludes --ontologies <ontologyfile(s)>" << endl
+        << "   " << QCoreApplication::instance()->arguments()[0] << " --listheaders [--prefix <listprefix>] --ontologies <ontologyfile(s)>" << endl
+        << "   " << QCoreApplication::instance()->arguments()[0] << " --listsources [--prefix <listprefix>] --ontologies <ontologyfile(s)>" << endl;
     return 1;
 }
 
@@ -40,62 +40,77 @@ int main( int argc, char** argv )
     QCoreApplication app( argc, argv );
 
     bool writeAll = false, listHeader = false, listSource = false, listIncludes = false;
-    QString ontoFile, targetDir, prefix;
+    QStringList ontoFiles;
+    QString targetDir, prefix;
     QStringList templates;
 
     QStringList args = app.arguments();
     if( args.count() < 2 )
         return usage();
 
-    if( args[1] == "--writeall" ) {
-        writeAll = true;
-        if( args.count() < 4 )
-            return usage();
-        int pos = 2;
-        if( args[2] == "--templates" ) {
-            ++pos;
-            while( pos < args.count() - 2 )
-                templates += args[pos++];
-        }
-        if( args.count() != pos+2 )
-            return usage();
-        targetDir = args.at(pos);
-        ontoFile = args.at(pos+1);
-    }
-    else if( args[1] == "--listincludes" ) {
-        listIncludes = true;
-        if( args.count() != 3 )
-            return usage();
-        ontoFile = args.at(2);
-    }
-    else if( args[1] == "--listheaders" ) {
-        listHeader = true;
-        if( args.count() == 3 )
-            ontoFile = args.at(2);
-        else if( args.count() == 5 && args[2] == "--prefix" ) {
-            ontoFile = args.at(4);
-            prefix = args.at(3);
-        }
-        else
-            return usage();
-    }
-    else if( args[1] == "--listsources" ) {
-        listSource = true;
-        if( args.count() == 3 )
-            ontoFile = args.at(2);
-        else if( args.count() == 5 && args[2] == "--prefix" ) {
-            ontoFile = args.at(4);
-            prefix = args.at(3);
-        }
-        else
-            return usage();
-    }
-    else
-        return usage();
+    QStringList::const_iterator argIt = args.begin();
+    ++argIt; // skip the app name
+    while (argIt != args.end()) {
+        const QString& arg = *argIt;
 
-    if( !QFile::exists( ontoFile ) ) {
-        qDebug() << "Ontology file " << ontoFile << " does not exist." << endl;
-        return usage();
+        // new parameter
+        if ( arg.startsWith("--") ) {
+            // gather parameter arg
+            QStringList paramArgs;
+            ++argIt;
+            while ( argIt != args.end() &&
+                    !(*argIt).startsWith("--") ) {
+                paramArgs += *argIt;
+                ++argIt;
+            }
+
+            // now lets see what we have
+            if ( arg == "--writeall" ) {
+                writeAll = true;
+            }
+            else if ( arg == "--listincludes" ) {
+                listIncludes = true;
+            }
+            else if ( arg == "--listheaders" ) {
+                listHeader = true;
+            }
+            else if ( arg == "--listsources" ) {
+                listSource = true;
+            }
+            else if ( arg == "--templates" ) {
+                templates = paramArgs;
+            }
+            else if ( arg == "--ontologies" ) {
+                if ( paramArgs.isEmpty() ) {
+                    return usage();
+                }
+                ontoFiles = paramArgs;
+            }
+            else if ( arg == "--prefix" ) {
+                if ( paramArgs.count() != 1 ) {
+                    return usage();
+                }
+                prefix = paramArgs.first();
+            }
+            else if ( arg == "--target" ) {
+                if ( paramArgs.count() != 1 ) {
+                    return usage();
+                }
+                targetDir = paramArgs.first();
+            }
+            else {
+                return usage();
+            }
+        }
+        else
+            return usage();
+    }
+
+    foreach( QString ontoFile, ontoFiles ) {
+        if( !QFile::exists( ontoFile ) ) {
+            qDebug() << "Ontology file " << ontoFile << " does not exist." << endl;
+            return usage();
+        }
     }
 
     if( writeAll ) {
@@ -106,9 +121,11 @@ int main( int argc, char** argv )
     }
 
     OntologyParser prsr;
-    if( !prsr.parse( ontoFile ) ) {
-        qDebug() << "Parsing ontology file " << ontoFile << " failed." << endl;
-        return usage();
+    foreach( QString ontoFile, ontoFiles ) {
+        if( !prsr.parse( ontoFile ) ) {
+            qDebug() << "Parsing ontology file " << ontoFile << " failed." << endl;
+            return usage();
+        }
     }
 
     if( writeAll ) {

@@ -3,13 +3,21 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * See the file "COPYING" for the exact licensing terms.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include "tools.h"
@@ -36,13 +44,13 @@ static QString getLocaleLang()
 }
 
 
-void Nepomuk::KMetaData::setDefaultRepository( const QString& s )
+void Nepomuk::setDefaultRepository( const QString& s )
 {
     s_customRep = s;
 }
 
 
-QString Nepomuk::KMetaData::defaultGraph()
+QString Nepomuk::defaultGraph()
 {
     static QString s = "main";
     if( s_customRep.isEmpty() )
@@ -52,20 +60,20 @@ QString Nepomuk::KMetaData::defaultGraph()
 }
 
 
-QString Nepomuk::KMetaData::typePredicate()
+QString Nepomuk::typePredicate()
 {
     static QString s = RDF_NAMESPACE + QString( "type" );
     return s;
 }
 
 
-Soprano::Node Nepomuk::KMetaData::valueToRDFNode( const Nepomuk::KMetaData::Variant& v )
+Soprano::Node Nepomuk::valueToRDFNode( const Nepomuk::Variant& v )
 {
     return Soprano::Node( Soprano::LiteralValue( v.variant() ) );
 }
 
 
-QList<Soprano::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::KMetaData::Variant& v )
+QList<Soprano::Node> Nepomuk::valuesToRDFNodes( const Nepomuk::Variant& v )
 {
     QList<Soprano::Node> nl;
 
@@ -83,31 +91,31 @@ QList<Soprano::Node> Nepomuk::KMetaData::valuesToRDFNodes( const Nepomuk::KMetaD
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::RDFLiteralToValue( const Soprano::Node& node )
+Nepomuk::Variant Nepomuk::RDFLiteralToValue( const Soprano::Node& node )
 {
-    return node.literal().variant();
+    return Variant( node.literal().variant() );
 }
 
 
-QString Nepomuk::KMetaData::rdfNamepace()
+QString Nepomuk::rdfNamepace()
 {
     return QString( RDF_NAMESPACE );
 }
 
 
-QString Nepomuk::KMetaData::rdfsNamespace()
+QString Nepomuk::rdfsNamespace()
 {
     return QString( RDFS_NAMESPACE );
 }
 
 
-QString Nepomuk::KMetaData::nrlNamespace()
+QString Nepomuk::nrlNamespace()
 {
     return QString( NRL_NAMESPACE );
 }
 
 
-QString Nepomuk::KMetaData::naoNamespace()
+QString Nepomuk::naoNamespace()
 {
     return QString( NAO_NAMESPACE );
 }

@@ -5,11 +5,19 @@
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * See the file "COPYING" for the exact licensing terms.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #include "resource.h"
@@ -21,10 +29,10 @@
 #include <kdebug.h>
 
 // FIXME: let the code generator do this
-#include <kmetadata/tag.h>
+#include "tag.h"
 
 
-Nepomuk::KMetaData::Resource::Resource()
+Nepomuk::Resource::Resource()
 {
     // invalid data
     m_data = new ResourceData();
@@ -32,40 +40,41 @@ Nepomuk::KMetaData::Resource::Resource()
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( const Nepomuk::KMetaData::Resource& res )
+Nepomuk::Resource::Resource( const Nepomuk::Resource& res )
 {
     m_data = res.m_data;
     m_data->ref();
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( const QString& uri, const QString& type )
+Nepomuk::Resource::Resource( const QString& uri, const QString& type )
 {
     m_data = ResourceData::data( uri, type );
     m_data->ref();
 }
 
 
-Nepomuk::KMetaData::Resource::Resource( Nepomuk::KMetaData::ResourceData* data )
+Nepomuk::Resource::Resource( Nepomuk::ResourceData* data )
 {
     m_data = data;
     data->ref();
 }
 
 
-Nepomuk::KMetaData::Resource::~Resource()
+Nepomuk::Resource::~Resource()
 {
-    if( m_data->deref() == 0 &&
-        !ResourceManager::instance()->autoSync() ) {
+    if( m_data->deref() == 0 ) {
         m_data->deleteData();
     }
 }
 
 
-Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Resource& res )
+Nepomuk::Resource& Nepomuk::Resource::operator=( const Resource& res )
 {
     if( m_data != res.m_data ) {
-        m_data->deref();
+        if ( m_data->deref() == 0 ) {
+            m_data->deleteData();
+        }
         m_data = res.m_data;
         m_data->ref();
     }
@@ -74,131 +83,75 @@ Nepomuk::KMetaData::Resource& Nepomuk::KMetaData::Resource::operator=( const Res
 }
 
 
-const QString& Nepomuk::KMetaData::Resource::uri() const
+QString Nepomuk::Resource::uri() const
 {
+    m_data->determineUri();
     return m_data->uri();
 }
 
 
-const QString& Nepomuk::KMetaData::Resource::type() const
+QString Nepomuk::Resource::type() const
 {
-    m_data->init();
+    m_data->determineUri();
     return m_data->type();
 }
 
 
-// QStringList Nepomuk::KMetaData::Resource::getIdentifiers() const
-// {
-//   // TODO: do not hardcode the hasIdentifier URI here!
-//   QStringList il = m_data->getProperty( "http://nepomuk-kde.semanticdesktop.org/ontology/nkde-0.1#hasIdentifier" ).toStringList();
-//   if( !m_data->kickoffUriOrId().isEmpty() && !il.contains( m_data->kickoffUriOrId() ) )
-//     il.append( m_data->kickoffUriOrId() );
-//   return il;
-// }
-
-
-QString Nepomuk::KMetaData::Resource::className() const
+QString Nepomuk::Resource::className() const
 {
     return type().section( QRegExp( "[#:]" ), -1 );
 }
 
 
-int Nepomuk::KMetaData::Resource::sync()
+QHash<QString, Nepomuk::Variant> Nepomuk::Resource::allProperties() const
 {
-    m_data->init();
-
-    m_data->startSync();
-
-    bool success = ( m_data->determineUri() &&
-                     m_data->determinePropertyUris() &&
-                     m_data->merge() &&
-                     m_data->save() );
-
-    m_data->endSync( success );
-
-    return ( success ? 0 : -1 );
-}
-
-
-QHash<QString, Nepomuk::KMetaData::Variant> Nepomuk::KMetaData::Resource::allProperties() const
-{
-    m_data->init();
     return m_data->allProperties();
 }
 
 
-bool Nepomuk::KMetaData::Resource::hasProperty( const QString& uri ) const
+bool Nepomuk::Resource::hasProperty( const QString& uri ) const
 {
-    m_data->init();
     return m_data->hasProperty( uri );
 }
 
 
-Nepomuk::KMetaData::Variant Nepomuk::KMetaData::Resource::getProperty( const QString& uri ) const
+Nepomuk::Variant Nepomuk::Resource::property( const QString& uri ) const
 {
-    m_data->init();
-    return m_data->getProperty( uri );
+    return m_data->property( uri );
 }
 
 
-void Nepomuk::KMetaData::Resource::setProperty( const QString& uri, const Nepomuk::KMetaData::Variant& value )
+void Nepomuk::Resource::setProperty( const QString& uri, const Nepomuk::Variant& value )
 {
-    //  m_data->init();
     m_data->setProperty( uri, value );
 }
 
 
-void Nepomuk::KMetaData::Resource::removeProperty( const QString& uri )
+void Nepomuk::Resource::removeProperty( const QString& uri )
 {
-    m_data->init();
     m_data->removeProperty( uri );
 }
 
 
-void Nepomuk::KMetaData::Resource::remove()
+void Nepomuk::Resource::remove()
 {
-    //  m_data->init();
     m_data->remove();
 }
 
 
-void Nepomuk::KMetaData::Resource::revive()
-{
-    m_data->revive();
-}
-
-
-bool Nepomuk::KMetaData::Resource::isProperty( const QString& uri ) const
-{
-    return !ResourceManager::instance()->allResourcesWithProperty( uri, *this ).isEmpty();
-}
-
-
-bool Nepomuk::KMetaData::Resource::modified() const
-{
-    return m_data->modified();
-}
-
-
-bool Nepomuk::KMetaData::Resource::inSync() const
-{
-    return m_data->inSync();
-}
-
-
-bool Nepomuk::KMetaData::Resource::exists() const
+bool Nepomuk::Resource::exists() const
 {
     return m_data->exists();
 }
 
 
-bool Nepomuk::KMetaData::Resource::isValid() const
+bool Nepomuk::Resource::isValid() const
 {
     return m_data->isValid();
 }
 
 
-bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
+bool Nepomuk::Resource::operator==( const Resource& other ) const
 {
     if( this == &other )
         return true;
@@ -209,24 +162,22 @@ bool Nepomuk::KMetaData::Resource::operator==( const Resource& other ) const
     m_data->determineUri();
     other.m_data->determineUri();
     return uri() == other.uri();
-
-    //    return( *m_data == *other.m_data );
 }
 
 
-QString Nepomuk::KMetaData::errorString( int code )
+QString Nepomuk::errorString( ErrorCode code )
 {
     switch( code ) {
-    case ERROR_SUCCESS:
+    case NoError:
         return i18n("Success");
-    case ERROR_COMMUNICATION:
+    case CommunicationError:
         return i18n("Communication error");
-    case ERROR_INVALID_TYPE:
+    case InvalidType:
         return i18n("Invalid type in Database");
     default:
         return i18n("Unknown error");
     }
 }
 
-// do not remove, will be replaced with method definitions by the KMetaData class generator
-KMETADATA_METHODS
+// do not remove, will be replaced with method definitions by the Nepomuk class generator
+NEPOMUK_METHODS

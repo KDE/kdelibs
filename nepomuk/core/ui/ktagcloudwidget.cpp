@@ -19,10 +19,9 @@
 #include "ktagcloudwidget.h"
 #include "kblocklayout.h"
 
-#include <KUrlLabel>
+#include <kurllabel.h>
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
+#include <QtGui/QBoxLayout>
 
 
 class KTagCloudWidget::Private

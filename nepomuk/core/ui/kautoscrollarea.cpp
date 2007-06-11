@@ -2,7 +2,7 @@
    $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
 
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -23,12 +23,12 @@
 
 #include <kdebug.h>
 
-#include <QTimer>
-#include <QSizePolicy>
-#include <QSize>
-#include <QMouseEvent>
-#include <QScrollBar>
-#include <QPainter>
+#include <QtCore/QTimer>
+#include <QtGui/QSizePolicy>
+#include <QtCore/QSize>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QScrollBar>
+#include <QtGui/QPainter>
 
 #include <math.h>
 
@@ -266,14 +266,14 @@ bool KAutoScrollArea::eventFilter( QObject* o, QEvent* e )
         else {
             if ( d->widget->geometry().bottom() > rect().bottom() ) {
                 QRect r( w->mapFrom( this, QPoint( 0, height()-d->fadeSize ) ), QSize( width(), d->fadeSize ) );
-                QLinearGradient g( QPoint( width()/2, r.top() ), QPoint( width()/2, r.bottom() ) );
+                QLinearGradient g( QPoint( this->width()/2, r.top() ), QPoint( this->width()/2, r.bottom() ) );
                 g.setColorAt( 0.0, ac );
                 g.setColorAt( 1.0, bg );
                 p.fillRect( r, g );
             }
             if ( d->widget->geometry().top() < rect().top() ) {
                 QRect r( w->mapFrom( this, QPoint( 0, 0 ) ), QSize( width(), d->fadeSize ) );
-                QLinearGradient g( QPoint( width()/2, r.top() ), QPoint( width()/2, r.bottom() ) );
+                QLinearGradient g( QPoint( this->width()/2, r.top() ), QPoint( this->width()/2, r.bottom() ) );
                 g.setColorAt( 0.0, bg );
                 g.setColorAt( 1.0, ac );
                 p.fillRect( r, g );

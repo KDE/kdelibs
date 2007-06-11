@@ -3,13 +3,13 @@
  * $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
  *
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * See the file "COPYING" for the exact licensing terms.
+ * See the file "COPYING.LIB" for the exact licensing terms.
  */
 
 #include "ontologyparser.h"
@@ -26,9 +26,16 @@
 #include <QtCore/QDir>
 
 
+
 class OntologyParser::Private
 {
 public:
+    Private() {
+        // default parent class
+        resources.insert( "http://www.w3.org/2000/01/rdf-schema#Resource",
+                          ResourceClass( "http://www.w3.org/2000/01/rdf-schema#Resource" ) );
+    }
+
     QMap<QString, ResourceClass> resources;
     QMap<QString, Property> properties;
     QMap<QString, QString> comments;
@@ -48,6 +55,9 @@ public:
     ResourceClass& getResource( const QString& uri ) {
         ResourceClass& r = resources[ensureNS(uri)];
         r.uri = ensureNS(uri);
+        if ( !r.parent ) {
+            r.parent = &resources["http://www.w3.org/2000/01/rdf-schema#Resource"];
+        }
         return r;
     }
 
@@ -128,16 +138,18 @@ bool OntologyParser::parse( const QString& filename )
             ResourceClass& rc = d->getResource( s.subject().uri().toString() );
             rc.parent = &d->getResource( s.object().uri().toString() );
             rc.allParents.append( &d->getResource( s.object().uri().toString() ) );
+            rc.generate = true;
         }
         else if( s.predicate().uri().toString().endsWith( "#type" ) ) {
             if( s.object().uri().toString().endsWith( "#Class" ) )
-                d->getResource( s.subject().uri().toString() );
+                d->getResource( s.subject().uri().toString() ).generate = true;
         }
         else if( s.predicate().uri().toString().endsWith( "#domain" ) ) {
             ResourceClass& rc = d->getResource( s.object().uri().toString() );
             Property& p = d->getProperty( s.subject().uri().toString() );
             p.domain = &rc;
             rc.properties.append( &p );
+            rc.generate = true;
         }
         else if( s.predicate().uri().toString().endsWith( "#range" ) ) {
             d->getProperty(s.subject().uri().toString()).type = d->ensureNS(s.object().uri().toString());
@@ -148,6 +160,10 @@ bool OntologyParser::parse( const QString& filename )
         }
         else if( s.predicate().uri().toString().endsWith( "#comment" ) ) {
             d->comments[d->ensureNS(s.subject().uri().toString())] = s.object().literal().toString();
+        }
+        else if ( s.predicate().uri().toString().endsWith("inverseProperty") ) {
+            d->getProperty(s.subject().uri().toString()).inverse = &d->getProperty(s.object().uri().toString());
+            d->getProperty(s.object().uri().toString()).inverse = &d->getProperty(s.subject().uri().toString());
         }
     }
 
@@ -176,7 +192,11 @@ bool OntologyParser::parse( const QString& filename )
     // testing stuff
     for( QMap<QString, ResourceClass>::const_iterator it = d->resources.constBegin();
          it != d->resources.constEnd(); ++it ) {
-        qDebug() << "Resource: " << (*it).name() << "[" << (*it).uri << "]" << " (->" << (*it).parent->name() << ")" << endl;
+        qDebug() << "Resource: " << (*it).name()
+                 << "[" << (*it).uri << "]"
+                 << " (->" << (*it).parent->name() << ")"
+                 << ( (*it).generateClass() ? " (will be generated)" : " (will not be generated)" )
+                 << endl;
 
         QListIterator<const Property*> propIt( (*it).properties );
         while( propIt.hasNext() ) {

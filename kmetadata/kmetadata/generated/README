@@ -1,7 +1,0 @@
-Do NOT edit the files in this folder since they have been generated
-by kmetadata_rcgen and have only be added to the svn repository since
-I could not resolve the issue of generating the sources list before
-rcgen has been built.
-
-The CMakeLists.txt file can be used to regenerate the files.
-

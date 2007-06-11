@@ -2,7 +2,7 @@
    $Id: sourceheader 511311 2006-02-19 14:51:05Z trueg $
 
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2006 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,12 +24,12 @@
 
 #include <QtGui/QWidget>
 
-#include <kmetadata/kmetadata_export.h>
+#include <nepomuk/nepomuk_export.h>
 
 /**
  * The KTagDisplayWidget shows a list of tags and allows clicking each of them.
  */
-class KMETADATA_EXPORT KTagDisplayWidget : public QWidget
+class NEPOMUK_EXPORT KTagDisplayWidget : public QWidget
 {
     Q_OBJECT
 
@@ -60,7 +60,7 @@ class KMETADATA_EXPORT KTagDisplayWidget : public QWidget
      */
     void clear();
 
- signals:
+ Q_SIGNALS:
     void tagClicked( const QString& tag );
 
  private:

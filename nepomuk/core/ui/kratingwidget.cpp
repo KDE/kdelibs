@@ -18,10 +18,9 @@
 
 #include "kratingwidget.h"
 
-#include <QPainter>
-#include <QPixmap>
-#include <QPaintEvent>
-#include <QMouseEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
+#include <QtGui/QKeyEvent>
 
 #include <kpixmapeffect.h>
 #include <kiconloader.h>
@@ -75,11 +74,11 @@ public:
         return ( onlyFullSteps ? max : max/2 );
     }
 
-    int max;
+    unsigned int max;
     bool onlyFullSteps;
 
-    int rating;
-    int hoverRating;
+    unsigned int rating;
+    unsigned int hoverRating;
     bool hovering;
 
     // GUI
@@ -131,7 +130,7 @@ void KRatingWidget::setPixmapSize( int size )
         }
         else {
             // fallback icon
-            d->origPix.load( KStandardDirs::locate( "data", "kmetadata/pics/rating.png" ) );
+            d->origPix.load( KStandardDirs::locate( "data", "nepomuk/pics/rating.png" ) );
         }
     }
 
@@ -154,13 +153,13 @@ void KRatingWidget::setSpacing( int s )
 }
 
 
-int KRatingWidget::rating() const
+unsigned int KRatingWidget::rating() const
 {
     return d->rating;
 }
 
 
-void KRatingWidget::setRating( int rating )
+void KRatingWidget::setRating( unsigned int rating )
 {
     d->rating = rating;
     d->hoverRating = rating;
@@ -168,7 +167,7 @@ void KRatingWidget::setRating( int rating )
 }
 
 
-void KRatingWidget::setMaxRating( int max )
+void KRatingWidget::setMaxRating( unsigned int max )
 {
     d->max = max;
     if( max%2 )
@@ -262,7 +261,7 @@ void KRatingWidget::drawRatingPixmaps( QPainter* p, int pix, int grayPix, bool h
 }
 
 
-int KRatingWidget::posToRating( int pos ) const
+unsigned int KRatingWidget::posToRating( int pos ) const
 {
     int w = contentsRect().width();
 
@@ -271,7 +270,7 @@ int KRatingWidget::posToRating( int pos ) const
     //  int pixW = ( w - ((d->numUsedPix()-1)*spacing()) ) / d->numUsedPix();
     int pixW = d->pixmap().width();
 
-    int r = 0;
+    unsigned int r = 0;
     while( pos > 0 ) {
         if( r > 0 )
             pos -= usedSpacing/2;
