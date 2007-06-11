@@ -79,6 +79,11 @@ GUIClient::~GUIClient()
     delete d;
 }
 
+Kross::ActionCollection* GUIClient::collection() const
+{
+    return d->collection;
+}
+
 void GUIClient::initialize(Kross::ActionCollection* collection)
 {
     if( d->collection )

@@ -60,6 +60,7 @@ namespace Kross {
              */
             virtual ~GUIClient();
 
+            Kross::ActionCollection* collection() const;
             virtual void initialize(Kross::ActionCollection* collection);
             virtual void finalize();
 
