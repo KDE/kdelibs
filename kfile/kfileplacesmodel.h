@@ -43,14 +43,14 @@ public:
     enum AdditionalRoles {
         UrlRole = 0x069CD12B,
         HiddenRole = 0x0741CAAC,
-        MountNeededRole = 0x059A935D
+        SetupNeededRole = 0x059A935D
     };
 
     KFilePlacesModel(QObject *parent=0);
     ~KFilePlacesModel();
 
     KUrl url(const QModelIndex &index) const;
-    bool mountNeeded(const QModelIndex &index) const;
+    bool setupNeeded(const QModelIndex &index) const;
     KIcon icon(const QModelIndex &index) const;
     QString text(const QModelIndex &index) const;
     bool isHidden(const QModelIndex &index) const;

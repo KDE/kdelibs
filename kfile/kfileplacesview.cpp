@@ -28,6 +28,7 @@
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include <kjob.h>
+#include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
 
 #include "kfileplaceeditdialog.h"
@@ -324,8 +325,8 @@ void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 
     if (placesModel->isDevice(index)) {
         Solid::Device device = placesModel->deviceForIndex(index);
-        if (device.is<Solid::StorageVolume>() && !device.as<Solid::StorageVolume>()->isMounted()) {
-            device.as<Solid::StorageVolume>()->mount(0, 0); // FIXME: add the missing slot
+        if (device.is<Solid::StorageAccess>() && !device.as<Solid::StorageAccess>()->isAccessible()) {
+            device.as<Solid::StorageAccess>()->setup(); // FIXME: add the missing slot
         }
     }
 
@@ -348,8 +349,8 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 
     if (placesModel->isDevice(index)) {
         Solid::Device device = placesModel->deviceForIndex(index);
-        if (device.is<Solid::StorageVolume>() && !device.as<Solid::StorageVolume>()->isMounted()) {
-            device.as<Solid::StorageVolume>()->mount(0, 0); // FIXME: add the missing slot
+        if (device.is<Solid::StorageAccess>() && !device.as<Solid::StorageAccess>()->isAccessible()) {
+            device.as<Solid::StorageAccess>()->setup(); // FIXME: add the missing slot
         }
     }
 

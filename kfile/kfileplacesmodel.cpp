@@ -36,6 +36,7 @@
 #include <kbookmark.h>
 
 #include <solid/storagevolume.h>
+#include <solid/storageaccess.h>
 
 class KFilePlacesModel::Private
 {
@@ -97,9 +98,9 @@ KUrl KFilePlacesModel::url(const QModelIndex &index) const
     return KUrl(data(index, UrlRole).toUrl());
 }
 
-bool KFilePlacesModel::mountNeeded(const QModelIndex &index) const
+bool KFilePlacesModel::setupNeeded(const QModelIndex &index) const
 {
-    return data(index, MountNeededRole).toBool();
+    return data(index, SetupNeededRole).toBool();
 }
 
 KIcon KFilePlacesModel::icon(const QModelIndex &index) const
@@ -257,7 +258,7 @@ QVariant KFilePlacesModel::Private::bookmarkData(const QString &address, int rol
         }
     case UrlRole:
         return QUrl(bookmark.url());
-    case MountNeededRole:
+    case SetupNeededRole:
         return false;
     case HiddenRole:
         return bookmark.metaDataItem("IsHidden")=="true";
@@ -270,21 +271,21 @@ QVariant KFilePlacesModel::Private::deviceData(const QPersistentModelIndex &inde
 {
     if (index.isValid()) {
         Solid::Device device = deviceModel->deviceForIndex(index);
-        Solid::StorageVolume *volume = 0;
+        Solid::StorageAccess *access = 0;
 
-        if (device.isValid()) volume = device.as<Solid::StorageVolume>();
+        if (device.isValid()) access = device.as<Solid::StorageAccess>();
 
         switch (role)
         {
         case UrlRole:
-            if (volume) {
-                return QUrl(KUrl(volume->mountPoint()));
+            if (access) {
+                return QUrl(KUrl(access->filePath()));
             } else {
                 return QVariant();
             }
-        case MountNeededRole:
-            if (volume) {
-                return !volume->isMounted();
+        case SetupNeededRole:
+            if (access) {
+                return !access->isAccessible();
             } else {
                 return QVariant();
             }
