@@ -406,9 +406,17 @@ void SolidHwTest::testPredicate()
 
     list = Solid::Device::listFromQuery("[Processor.number==1 OR IS StorageVolume]",
                                                        parentUdi);
+    QCOMPARE(list.size(), 10);
+
+    //make sure predicate case-insensitiveness is sane
+    list = Solid::Device::listFromQuery("[Processor.number==1 or is StorageVolume]",
+                                                       parentUdi);
+    QCOMPARE(list.size(), 10);
+    list = Solid::Device::listFromQuery("[Processor.number==1 oR Is StorageVolume]",
+                                                       parentUdi);
+    QCOMPARE(list.size(), 10);
 
     QSet<QString> set;
-
     QCOMPARE(list.size(), 10);
     set << "/org/kde/solid/fakehw/acpi_CPU1"
         << "/org/kde/solid/fakehw/platform_floppy_0_storage_virt_volume"
