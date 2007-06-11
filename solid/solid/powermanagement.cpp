@@ -24,7 +24,6 @@
 
 #include <kglobal.h>
 #include <QCoreApplication>
-#include <klocale.h>
 
 K_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
@@ -63,20 +62,6 @@ bool Solid::PowerManagement::appShouldConserveResources()
 QSet<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepStates()
 {
     return globalPowerManager->supportedSleepStates;
-}
-
-QString Solid::PowerManagement::stringForSleepState(SleepState state)
-{
-    switch (state)
-    {
-    case StandbyState:
-        return i18n("Standby");
-    case SuspendState:
-        return i18n("Suspend");
-    case HibernateState:
-        return i18n("Hibernate");
-    }
-    return QString();
 }
 
 void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, const char *member)

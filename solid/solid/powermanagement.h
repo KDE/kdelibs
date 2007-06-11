@@ -68,8 +68,6 @@ namespace Solid
          */
         SOLID_EXPORT QSet<SleepState> supportedSleepStates();
 
-        SOLID_EXPORT QString stringForSleepState(SleepState state);
-
         /**
          * Requests that the system goes to sleep
          *
