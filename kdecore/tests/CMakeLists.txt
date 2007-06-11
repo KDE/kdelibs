@@ -55,10 +55,11 @@ set(kdecore_unittests
  kglobalstatictest
  kglobaltest
  globalcleanuptest
+ kprocesstest
 )
 
 if(UNIX)
- set(kdecore_unittests ${kdecore_unittests} klocalsockettest klocalsocketservertest )
+ set(kdecore_unittests ${kdecore_unittests} klocalsockettest klocalsocketservertest kptyprocesstest)
 endif(UNIX)
 
 KDECORE_BUILD_TESTS(

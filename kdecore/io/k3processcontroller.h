@@ -34,7 +34,7 @@
  *
  * This class takes care of the actual (UN*X) signal handling.
  */
-class KDECORE_EXPORT K3ProcessController : public QObject
+class KDECORE_EXPORT_DEPRECATED K3ProcessController : public QObject
 {
   Q_OBJECT
 

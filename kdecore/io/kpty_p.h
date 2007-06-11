@@ -1,0 +1,64 @@
+/* This file is part of the KDE libraries
+
+    Copyright (C) 2003,2007 Oswald Buddenhagen <ossi@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
+#ifndef kpty_p_h
+#define kpty_p_h
+
+#include <config.h>
+#include <config-pty.h>
+
+#include "kpty.h"
+
+#include <QtCore/QByteArray>
+
+#ifdef HAVE_TERMIOS_H
+/* for HP-UX (some versions) the extern C is needed, and for other
+   platforms it doesn't hurt */
+extern "C" {
+# include <termios.h>
+}
+#endif
+
+#if !defined(__osf__)
+# ifdef HAVE_TERMIO_H
+/* needed at least on AIX */
+#  include <termio.h>
+# endif
+#endif
+
+struct KPtyPrivate {
+    Q_DECLARE_PUBLIC(KPty)
+
+    KPtyPrivate();
+    bool chownpty(bool grant);
+
+    bool xonXoff : 1;
+    bool echo    : 1;
+    bool utf8    : 1;
+    int masterFd;
+    int slaveFd;
+    struct winsize winSize;
+
+    QByteArray ttyName;
+
+    KPty *q_ptr;
+};
+
+#endif

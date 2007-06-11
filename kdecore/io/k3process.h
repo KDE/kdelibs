@@ -34,6 +34,8 @@ class K3ProcessPrivate;
 class KPty;
 
 /**
+ * @obsolete Use KProcess and KPtyProcess instead.
+ *
  * Child process invocation, monitoring and control.
  *
  * <b>General usage and features:</b>\n
@@ -121,7 +123,7 @@ class KPty;
  * @author Christian Czezatke e9025461@student.tuwien.ac.at
  *
  **/
-class KDECORE_EXPORT K3Process : public QObject
+class KDECORE_EXPORT_DEPRECATED K3Process : public QObject
 {
   Q_OBJECT
 

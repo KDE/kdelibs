@@ -27,7 +27,7 @@ class KProcIOPrivate;
 class QTextCodec;
 
 /**
- * K3ProcIO
+ * @obsolete Use KProcess and KPtyProcess instead.
  *
  * This class provides a slightly simpler interface to the communication
  *  functions provided by K3Process.  The simplifications are:
@@ -47,7 +47,7 @@ class QTextCodec;
  **/
 
 
-class KDECORE_EXPORT K3ProcIO : public K3Process
+class KDECORE_EXPORT_DEPRECATED K3ProcIO : public K3Process
 {
   Q_OBJECT
 

@@ -20,10 +20,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kpty.h"
-
-#include <config.h>
-#include <config-pty.h>
+#include "kpty_p.h"
 
 #ifdef __sgi
 #define __svr4__
@@ -77,21 +74,6 @@
 
 #ifdef USE_LOGIN
 # include <utmp.h>
-#endif
-
-#ifdef HAVE_TERMIOS_H
-/* for HP-UX (some versions) the extern C is needed, and for other
-   platforms it doesn't hurt */
-extern "C" {
-# include <termios.h>
-}
-#endif
-
-#if !defined(__osf__)
-# ifdef HAVE_TERMIO_H
-/* needed at least on AIX */
-#  include <termio.h>
-# endif
 #endif
 
 #if defined (__FreeBSD__) || defined (__NetBSD__) || defined (__OpenBSD__) || defined (__bsdi__) || defined(__APPLE__) || defined (__DragonFly__)
@@ -158,28 +140,16 @@ public:
 // private data //
 //////////////////
 
-struct KPtyPrivate {
-   KPtyPrivate() :
-     xonXoff(false),
-     echo(true),
-     utf8(false),
-     masterFd(-1), slaveFd(-1)
-   {
-     memset(&winSize, 0, sizeof(winSize));
-     winSize.ws_row = 24;
-     winSize.ws_col = 80;
-   }
-   bool chownpty(bool grant);
-
-   bool xonXoff : 1;
-   bool echo    : 1;
-   bool utf8    : 1;
-   int masterFd;
-   int slaveFd;
-   struct winsize winSize;
-
-   QByteArray ttyName;
-};
+KPtyPrivate::KPtyPrivate() :
+    xonXoff(false),
+    echo(true),
+    utf8(false),
+    masterFd(-1), slaveFd(-1)
+{
+    memset(&winSize, 0, sizeof(winSize));
+    winSize.ws_row = 24;
+    winSize.ws_col = 80;
+}
 
 bool KPtyPrivate::chownpty(bool grant)
 {
@@ -194,6 +164,13 @@ bool KPtyPrivate::chownpty(bool grant)
 KPty::KPty() :
     d_ptr(new KPtyPrivate)
 {
+    d_ptr->q_ptr = this;
+}
+
+KPty::KPty(KPtyPrivate *d) :
+    d_ptr(d)
+{
+    d_ptr->q_ptr = this;
 }
 
 KPty::~KPty()

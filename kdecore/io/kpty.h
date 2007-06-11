@@ -154,7 +154,15 @@ public:
    */
   int slaveFd() const;
 
-private:
+protected:
+  /**
+   * @internal
+   */
+  KPty(KPtyPrivate *d);
+
+  /**
+   * @internal
+   */
   KPtyPrivate * const d_ptr;
 };
 

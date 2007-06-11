@@ -64,6 +64,8 @@ if (UNIX)
       io/k3processcontroller.cpp
       io/k3procio.cpp
       io/kpty.cpp
+      io/kptydevice.cpp
+      io/kptyprocess.cpp
       fakes.c )
 endif (UNIX)
 
@@ -117,6 +119,7 @@ set(kdecore_LIB_SRCS
    io/kdebugdbusiface.cpp
    io/klockfile.cpp
    io/kmessage.cpp
+   io/kprocess.cpp
    io/ksavefile.cpp
    io/ktempdir.cpp
    io/ktemporaryfile.cpp
@@ -286,6 +289,7 @@ install( FILES
    io/kautosavefile.h
    io/kdebug.h
    io/kmessage.h
+   io/kprocess.h
    io/klockfile.h
    io/ksavefile.h
    io/ktempdir.h
@@ -370,6 +374,8 @@ if (Q_OS_UNIX)
       io/k3processcontroller.h
       io/k3procio.h
       io/kpty.h
+      io/kptydevice.h
+      io/kptyprocess.h
       DESTINATION ${INCLUDE_INSTALL_DIR}
    )
 endif (Q_OS_UNIX)
