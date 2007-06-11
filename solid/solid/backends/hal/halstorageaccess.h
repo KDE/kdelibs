@@ -41,7 +41,7 @@ public:
     virtual bool teardown();
 
 Q_SIGNALS:
-    void accessibilityChanged(bool accessible);;
+    void accessibilityChanged(bool accessible);
     void setupDone(Solid::StorageAccess::SetupResult, QVariant resultData);
     void teardownDone(Solid::StorageAccess::TeardownResult, QVariant resultData);
 
