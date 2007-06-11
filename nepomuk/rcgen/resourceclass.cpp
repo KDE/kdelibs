@@ -446,7 +446,15 @@ bool ResourceClass::writeHeader( QTextStream& stream ) const
     s.replace( "NEPOMUK_RESOURCENAMEUPPER", name().toUpper() );
     s.replace( "NEPOMUK_RESOURCENAME", name() );
     s.replace( "NEPOMUK_PARENTRESOURCE", parent->name() );
-    s.replace( "NEPOMUK_PARENT_INCLUDE", QString("\"%1.h\"").arg( parent->name().toLower() ) );
+
+    // A resource that is not part of the currently generated stuff is supposed
+    // to be installed in include/nepomuk
+    if ( parent->generateClass() ) {
+        s.replace( "NEPOMUK_PARENT_INCLUDE", QString("\"%1.h\"").arg( parent->name().toLower() ) );
+    }
+    else {
+        s.replace( "NEPOMUK_PARENT_INCLUDE", QString("<nepomuk/%1.h>").arg( parent->name().toLower() ) );
+    }
 
     QString methods;
     QTextStream ms( &methods );

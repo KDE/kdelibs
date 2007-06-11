@@ -90,9 +90,9 @@ static const QString headerTemplate = gplTemplate +
 
 static const QString sourceTemplate = gplTemplate +
 "\n"
-"#include \"tools.h\"\n"
-"#include \"variant.h\"\n"
-"#include \"resourcemanager.h\"\n"
+"#include <nepomuk/tools.h>\n"
+"#include <nepomuk/variant.h>\n"
+"#include <nepomuk/resourcemanager.h>\n"
 "#include \"NEPOMUK_RESOURCENAMELOWER.h\"\n"
 "\n"
 "NEPOMUK_INCLUDES"
