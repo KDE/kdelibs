@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -330,6 +330,7 @@ class KTimeZoneDataPrivate
         KTimeZoneDataPrivate() : preUtcOffset(0) {}
         // Find the last transition before a specified UTC or local date/time.
         int transitionIndex(const QDateTime &dt) const;
+        bool transitionIndexes(const QDateTime &start, const QDateTime &end, int &ixstart, int &ixend) const;
         bool isSecondOccurrence(const QDateTime &utcLocalTime, int transitionIndex) const;
 };
 
@@ -512,11 +513,11 @@ bool KTimeZone::hasTransitions() const
     return false;
 }
 
-QList<KTimeZone::Transition> KTimeZone::transitions() const
+QList<KTimeZone::Transition> KTimeZone::transitions(const QDateTime &start, const QDateTime &end) const
 {
     if (!data(true))
         return QList<KTimeZone::Transition>();
-    return d->data->transitions();
+    return d->data->transitions(start, end);
 }
 
 const KTimeZone::Transition *KTimeZone::transition(const QDateTime &dt, const Transition **secondTransition,
@@ -532,6 +533,13 @@ int KTimeZone::transitionIndex(const QDateTime &dt, int *secondIndex, bool *vali
     if (!data(true))
         return -1;
     return d->data->transitionIndex(dt, secondIndex, validTime);
+}
+
+QList<QDateTime> KTimeZone::transitionTimes(const Phase &phase, const QDateTime &start, const QDateTime &end) const
+{
+    if (!data(true))
+        return QList<QDateTime>();
+    return d->data->transitionTimes(phase, start, end);
 }
 
 QList<KTimeZone::LeapSeconds> KTimeZone::leapSecondChanges() const
@@ -875,6 +883,33 @@ int KTimeZoneDataPrivate::transitionIndex(const QDateTime &dt) const
     return end ? start : -1;
 }
 
+// Find the indexes to the transitions at or after start, and before or at end.
+// start and end must be UTC.
+// Reply = false if none.
+bool KTimeZoneDataPrivate::transitionIndexes(const QDateTime &start, const QDateTime &end, int &ixstart, int &ixend) const
+{
+    ixstart = 0;
+    if (start.isValid() && start.timeSpec() == Qt::UTC)
+    {
+        ixstart = transitionIndex(start);
+        if (ixstart < 0)
+            ixstart = 0;
+        else if (transitions[ixstart].time() < start)
+        {
+            if (++ixstart >= transitions.count())
+                return false;   // there are no transitions at/after 'start'
+        }
+    }
+    ixend = -1;
+    if (end.isValid() && end.timeSpec() == Qt::UTC)
+    {
+        ixend = transitionIndex(end);
+        if (ixend < 0)
+            return false;   // there are no transitions at/before 'end'
+    }
+    return true;
+}
+
 /* Check if it's a local time which occurs both before and after the specified
  * transition (for which it has to span a daylight saving to standard time change).
  * @param utcLocalTime local time set to Qt::UTC
@@ -995,8 +1030,15 @@ bool KTimeZoneData::hasTransitions() const
     return false;
 }
 
-QList<KTimeZone::Transition> KTimeZoneData::transitions() const
+QList<KTimeZone::Transition> KTimeZoneData::transitions(const QDateTime &start, const QDateTime &end) const
 {
+    int ixstart, ixend;
+    if (!d->transitionIndexes(start, end, ixstart, ixend))
+        return QList<KTimeZone::Transition>();   // there are no transitions within the time period
+    if (ixend >= 0)
+        return d->transitions.mid(ixstart, ixend - ixstart + 1);
+    if (ixstart > 0)
+        return d->transitions.mid(ixstart);
     return d->transitions;
 }
 
@@ -1095,6 +1137,23 @@ int KTimeZoneData::transitionIndex(const QDateTime &dt, int *secondIndex, bool *
             *secondIndex = index;
         return index;
     }
+}
+
+QList<QDateTime> KTimeZoneData::transitionTimes(const KTimeZone::Phase &phase, const QDateTime &start, const QDateTime &end) const
+{
+    QList<QDateTime> times;
+    int ixstart, ixend;
+    if (d->transitionIndexes(start, end, ixstart, ixend))
+    {
+        if (ixend < 0)
+            ixend = d->transitions.count() - 1;
+        while (ixstart <= ixend)
+        {
+            if (d->transitions[ixstart].phase() == phase)
+                times += d->transitions[ixstart].time();
+        }
+    }
+    return times;
 }
 
 QList<KTimeZone::LeapSeconds> KTimeZoneData::leapSecondChanges() const

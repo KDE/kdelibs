@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,6 +45,7 @@ private Q_SLOTS:
     void tzfileOffsetAtZoneTime();
     void tzfileUtcOffsets();
     void tzfileAbbreviation();
+    void tzfileTransitions();
 private:
     void removeDir(const QString &subdir);
     QString mDataDir;

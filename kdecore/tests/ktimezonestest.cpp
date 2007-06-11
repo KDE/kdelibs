@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+    Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -486,4 +486,56 @@ void KTimeZonesTest::tzfileAbbreviation()
     QCOMPARE(sysLondon->abbreviation(summer), QByteArray("BST"));
     QCOMPARE(sysLondon->abbreviation(standard), QByteArray("BST"));
     delete sysLondon;
+}
+
+void KTimeZonesTest::tzfileTransitions()
+{
+    KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
+    KTimeZone *london = new KTzfileTimeZone(&tzsource, "Europe/London");
+    QVERIFY( london != 0 );
+    QList<KTimeZone::Transition> all = london->transitions();
+    QVERIFY(!all.isEmpty());
+    QDateTime jan2003(QDate(2003,1,1),QTime(0,0,0),Qt::UTC);
+    QDateTime jan2006(QDate(2006,1,1),QTime(0,0,0),Qt::UTC);
+    int index2006 = london->transitionIndex(jan2006);
+    if (index2006 >= 0)
+    {
+        QVERIFY(all[index2006].time() <= jan2006);
+        QList<KTimeZone::Transition> some = london->transitions(QDateTime(), jan2006);
+        QList<KTimeZone::Transition> check = all.mid(0, index2006+1);
+        QCOMPARE(some.count(), check.count());
+        for (int i = 0;  i < some.count();  ++i)
+        {
+            QCOMPARE(some[i].time(), check[i].time());
+            QCOMPARE(some[i].phase(), check[i].phase());
+        }
+        if (all[index2006].time() < jan2006  &&  ++index2006 < all.count())
+            QVERIFY(all[index2006].time() > jan2006);
+        some = london->transitions(jan2006);
+        check = all.mid(index2006);
+        for (int i = 0;  i < some.count();  ++i)
+        {
+            QCOMPARE(some[i].time(), check[i].time());
+            QCOMPARE(some[i].phase(), check[i].phase());
+        }
+    }
+    index2006 = london->transitionIndex(jan2006);
+    int index2003 = london->transitionIndex(jan2003);
+    if (index2003 >= 0)
+    {
+        QVERIFY(all[index2003].time() <= jan2003);
+        if (all[index2003].time() < jan2003  &&  ++index2003 < all.count())
+            QVERIFY(all[index2003].time() > jan2003);
+        QList<KTimeZone::Transition> some = london->transitions(jan2003, jan2006);
+        QList<KTimeZone::Transition> check = all.mid(index2003, index2006-index2003+1);
+        QCOMPARE(some.count(), check.count());
+        for (int i = 0;  i < some.count();  ++i)
+        {
+
+            QCOMPARE(some[i].time(), check[i].time());
+            QCOMPARE(some[i].phase(), check[i].phase());
+        }
+    }
+
+    delete london;
 }

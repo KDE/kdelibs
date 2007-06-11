@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005,2006 David Jarvie <software@astrojar.org.uk>
+   Copyright (c) 2005-2007 David Jarvie <software@astrojar.org.uk>
    Copyright (c) 2005 S.R.Haque <srhaque@iee.org>.
 
    This library is free software; you can redistribute it and/or
@@ -848,17 +848,23 @@ public:
     virtual bool hasTransitions() const;
 
     /**
-     * Return all daylight saving transitions, in time order.
+     * Return all daylight saving transitions, in time order. If desired, the
+     * transitions returned may be restricted to a specified time range.
      *
      * Note that some time zone data sources (such as system time zones accessed
      * via the system libraries) may not allow a list of daylight saving time
      * changes to be compiled easily. In such cases, this method will return an
      * empty list.
      *
+     * @param start start UTC date/time, or invalid date/time to return all transitions
+     *              up to @p end. @p start.timeSpec() must be Qt::UTC, else
+     *              @p start will be considered invalid.
+     * @param end end UTC date/time, or invalid date/time for no end. @p end.timeSpec()
+     *                must be Qt::UTC, else @p end will be considered invalid.
      * @return list of transitions, in time order
-     * @see hasTransitions(), transition()
+     * @see hasTransitions(), transition(), transitionTimes()
      */
-    QList<KTimeZone::Transition> transitions() const;
+    QList<KTimeZone::Transition> transitions(const QDateTime &start = QDateTime(), const QDateTime &end = QDateTime()) const;
 
     /**
      * Find the last daylight savings time transition at or before a given
@@ -905,6 +911,27 @@ public:
      * @see transition(), transitions(), hasTransitions()
      */
     int transitionIndex(const QDateTime &dt, int *secondIndex = 0, bool *validTime = 0) const;
+
+    /**
+     * Return the times of all daylight saving transitions to a given time zone
+     * phase, in time order. If desired, the times returned may be restricted to
+     * a specified time range.
+     *
+     * Note that some time zone data sources (such as system time zones accessed
+     * via the system libraries) may not allow a list of daylight saving time
+     * changes to be compiled easily. In such cases, this method will return an
+     * empty list.
+     *
+     * @param phase time zone phase
+     * @param start start UTC date/time, or invalid date/time to return all transitions
+     *              up to @p end. @p start.timeSpec() must be Qt::UTC, else
+     *              @p start will be considered invalid.
+     * @param end end UTC date/time, or invalid date/time for no end. @p end.timeSpec()
+     *                must be Qt::UTC, else @p end will be considered invalid.
+     * @return ordered list of transition times
+     * @see hasTransitions(), transition(), transitions()
+     */
+    QList<QDateTime> transitionTimes(const Phase &phase, const QDateTime &start = QDateTime(), const QDateTime &end = QDateTime()) const;
 
     /**
      * Return all leap second adjustments, in time order.
@@ -1151,17 +1178,23 @@ public:
     virtual bool hasTransitions() const;
 
     /**
-     * Return all daylight saving transitions, in time order.
+     * Return all daylight saving transitions, in time order. If desired, the
+     * transitions returned may be restricted to a specified time range.
      *
      * Note that some time zone data sources (such as system time zones accessed
      * via the system libraries) may not allow a list of daylight saving time
      * changes to be compiled easily. In such cases, this method will return an
      * empty list.
      *
+     * @param start start date/time, or invalid date/time to return all transitions up
+     *              to @p end. @p start.timeSpec() must be Qt::UTC, else
+     *              @p start will be considered invalid.
+     * @param end end date/time, or invalid date/time for no end. @p end.timeSpec()
+     *                must be Qt::UTC, else @p end will be considered invalid.
      * @return list of transitions, in time order
-     * @see hasTransitions(), transition()
+     * @see hasTransitions(), transition(), transitionTimes()
      */
-    QList<KTimeZone::Transition> transitions() const;
+    QList<KTimeZone::Transition> transitions(const QDateTime &start = QDateTime(), const QDateTime &end = QDateTime()) const;
 
     /**
      * Find the last daylight savings time transition at or before a given
@@ -1187,7 +1220,8 @@ public:
 
     /**
      * Find the index to the last daylight savings time transition at or before
-     * a given UTC or local time.
+     * a given UTC or local time. The return value is the index into the transition
+     * list returned by transitions().
      *
      * Because of daylight savings time shifts, a local time may occur twice or
      * may not occur at all. In the former case, the transitions at or before
@@ -1207,6 +1241,27 @@ public:
      * @see transition(), transitions(), hasTransitions()
      */
     int transitionIndex(const QDateTime &dt, int *secondIndex = 0, bool *validTime = 0) const;
+
+    /**
+     * Return the times of all daylight saving transitions to a given time zone
+     * phase, in time order. If desired, the times returned may be restricted to
+     * a specified time range.
+     *
+     * Note that some time zone data sources (such as system time zones accessed
+     * via the system libraries) may not allow a list of daylight saving time
+     * changes to be compiled easily. In such cases, this method will return an
+     * empty list.
+     *
+     * @param phase time zone phase
+     * @param start start UTC date/time, or invalid date/time to return all transitions
+     *              up to @p end. @p start.timeSpec() must be Qt::UTC, else
+     *              @p start will be considered invalid.
+     * @param end end UTC date/time, or invalid date/time for no end. @p end.timeSpec()
+     *                must be Qt::UTC, else @p end will be considered invalid.
+     * @return ordered list of transition times
+     * @see hasTransitions(), transition(), transitions()
+     */
+    QList<QDateTime> transitionTimes(const KTimeZone::Phase &phase, const QDateTime &start = QDateTime(), const QDateTime &end = QDateTime()) const;
 
     /**
      * Return all leap second adjustments, in time order.
