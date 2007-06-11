@@ -30,6 +30,19 @@ namespace KSpell2
 {
     class Filter;
     class BackgroundChecker;
+
+    /**
+     * @short Spellcheck dialog
+     *
+     * \code
+     * KSpell2::Dialog = dlg=new KSpell2::Dialog(new KSpell2::BackgroundChecker(KSpell2::Loader::openLoader(),this), this);
+     * //connect signals
+     * ...
+     * dlg->setBuffer( someText );
+     * dlg->show();
+     * \endcode
+     *
+     */
     class KDEUI_EXPORT Dialog : public KDialog
     {
         Q_OBJECT
@@ -49,6 +62,11 @@ namespace KSpell2
         void setFilter( Filter* filter );
 
     Q_SIGNALS:
+        /**
+         * The dialog won't be closed if you setBuffer() in slot connected to this signal
+         *
+         * Also emitted after stop() signal
+         */
         void done( const QString& newBuffer );
         void misspelling( const QString& word, int start );
         void replace( const QString& oldWord, int start,
