@@ -242,8 +242,7 @@ public:
      * @return true if successful, false otherwise.
      */
     KDE_DEPRECATED bool addResourceType( const char *type,
-                          const QString& relativename, bool priority );
-
+                                         const QString& relativename, bool priority = true );
 
     /**
      * Adds suffixes for types.
@@ -269,16 +268,12 @@ public:
     bool addResourceType( const char *type, const char *basetype,
                                          const QString& relativename, bool priority = true );
 
-    /// internal - just to avoid unwanted overload
+    /// @internal - just to avoid unwanted overload
     bool addResourceType( const char *type, const char *basetype,
-                                         const char* relativename, bool priority = true )
+                          const char* relativename, bool priority = true )
     {
         return addResourceType(type, basetype, QLatin1String(relativename), priority);
     }
-
-    // TODO: merge into above functions
-    KDE_DEPRECATED bool addResourceType( const char *type, const QString& relativename );
-    bool addResourceDir( const char *type, const QString& absdir);
 
     /**
      * Adds absolute path at the beginning of the search path for
@@ -298,7 +293,7 @@ public:
      * @return true if successful, false otherwise.
      */
     bool addResourceDir( const char *type,
-                         const QString& absdir, bool priority);
+                         const QString& absdir, bool priority = true );
 
     /**
      * Tries to find a resource in the following order:
