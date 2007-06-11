@@ -18,10 +18,8 @@
 */
 #include "fakehardwaretest.h"
 
-// KDE-QTestLib include
-#include <qtest_kde.h>
-
 // Qt includes
+#include <QtTest/QtTest>
 #include <QtCore/QStringList>
 
 // Solid includes
@@ -33,11 +31,11 @@
 #include "solid/backends/fakehw/fakemanager.h"
 #include "solid/backends/fakehw/fakedevice.h"
 
-QTEST_KDEMAIN_CORE(FakeHardwareTest)
+QTEST_MAIN(FakeHardwareTest)
 
 void FakeHardwareTest::testFakeBackend()
 {
-    FakeManager *fakeManager = new FakeManager(0, QStringList(), TEST_DATA);
+    FakeManager *fakeManager = new FakeManager(0, TEST_DATA);
 
     QVERIFY(!fakeManager->allDevices().isEmpty());
     QVERIFY(fakeManager->createDevice("/org/kde/solid/fakehw/computer")!=0);

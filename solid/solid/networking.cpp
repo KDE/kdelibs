@@ -21,12 +21,10 @@
 #include "networking.h"
 #include "networking_p.h"
 
-#include <kglobal.h>
-
 #include "soliddefs_p.h"
 #include "org_kde_solid_networking.h"
 
-K_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
+SOLID_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
 
 Solid::NetworkingPrivate::NetworkingPrivate() : iface( 
         new OrgKdeSolidNetworkingInterface( "org.kde.Solid.Networking",

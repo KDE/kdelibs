@@ -17,11 +17,10 @@
 
 */
 
+#include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
-
-#include <kdebug.h>
 
 #include "backends/hal/halmanager.h"
 #include "backends/hal/haldevice.h"
@@ -42,7 +41,7 @@ public:
 };
 
 
-HalManager::HalManager(QObject *parent, const QStringList  & /*args */)
+HalManager::HalManager(QObject *parent)
     : DeviceManager(parent),  d(new HalManagerPrivate())
 {
     d->manager.connection().connect("org.freedesktop.Hal",
@@ -74,7 +73,7 @@ QStringList HalManager::allDevices()
 
     if (!reply.isValid())
     {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
+        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
         return QStringList();
     }
 
@@ -99,7 +98,7 @@ bool HalManager::deviceExists(const QString &udi)
 
     if (!reply.isValid())
     {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
+        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
         return false;
     }
 
@@ -152,7 +151,7 @@ QStringList HalManager::findDeviceStringMatch(const QString &key, const QString 
 
     if (!reply.isValid())
     {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
+        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
         return QStringList();
     }
 
@@ -170,7 +169,7 @@ QStringList HalManager::findDeviceByDeviceInterface(const Solid::DeviceInterface
 
         if (!reply.isValid())
         {
-            kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
+            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
             return QStringList();
         }
 

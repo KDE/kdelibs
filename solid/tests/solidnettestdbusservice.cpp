@@ -1,5 +1,5 @@
 #include <QtCore/QCoreApplication>
-#include <QtDBus>
+#include <QtDBus/QtDBus>
 #include <QtCore/QTimer>
 
 #include <solid/networking.h>

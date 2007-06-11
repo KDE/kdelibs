@@ -2,6 +2,8 @@ add_subdirectory( ifaces )
 add_subdirectory( backends )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
 
+configure_file(solid_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h)
+
 ########### next target ###############
 
 set(solid_LIB_SRCS 
@@ -101,7 +103,7 @@ kde4_automoc(${solid_LIB_SRCS})
 
 kde4_add_library(solid SHARED ${solid_LIB_SRCS})
 
-target_link_libraries(solid ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
+target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY})
 
 set_target_properties(solid PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
@@ -111,14 +113,14 @@ install(TARGETS solid DESTINATION ${LIB_INSTALL_DIR} )
 
 kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
 
-target_link_libraries(solid_static ${KDE4_KDECORE_LIBS} ${QT_QTXML_LIBRARY})
+target_link_libraries(solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY})
 
 if(WIN32)
   set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_EXPORT=)
 endif(WIN32)
 ########### install files ###############
 
-install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

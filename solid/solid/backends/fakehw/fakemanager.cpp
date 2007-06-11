@@ -22,14 +22,11 @@
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
 #include <QtXml/QDomNode>
+#include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QString>
 #include <QtCore/QTimer>
 #include <QtDBus/QDBusConnection>
-
-// KDE includes
-#include <kstandarddirs.h>
-#include <kdebug.h>
 
 #include "backends/fakehw/fakedevice.h"
 
@@ -42,24 +39,10 @@ public:
     QString xmlFile;
 };
 
-FakeManager::FakeManager(QObject *parent, const QStringList &)
- : Solid::Ifaces::DeviceManager(parent), d(new Private)
-{
-    d->xmlFile = KStandardDirs::locate("data", "solidfakehwbackend/fakecomputer.xml");
-
-    QDBusConnection::sessionBus().registerObject("/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots);
-
-    parseMachineFile();
-}
-
-FakeManager::FakeManager(QObject *parent, const QStringList &, const QString &xmlFile)
+FakeManager::FakeManager(QObject *parent, const QString &xmlFile)
  : Solid::Ifaces::DeviceManager(parent), d(new Private)
 {
     QString machineXmlFile = xmlFile;
-    if (machineXmlFile.isEmpty())
-    {
-        machineXmlFile = KStandardDirs::locate("data", "solidfakehwbackend/fakecomputer.xml");
-    }
     d->xmlFile = machineXmlFile;
 
     QDBusConnection::sessionBus().registerObject("/org/kde/solid/fakehw", this, QDBusConnection::ExportNonScriptableSlots);
@@ -198,20 +181,20 @@ void FakeManager::parseMachineFile()
     QFile machineFile(d->xmlFile);
     if (!machineFile.open(QIODevice::ReadOnly))
     {
-        kDebug() << k_funcinfo << "Error while opening " << d->xmlFile << endl;
+        qWarning() << Q_FUNC_INFO << "Error while opening " << d->xmlFile << endl;
         return;
     }
 
     QDomDocument fakeDocument;
     if (!fakeDocument.setContent(&machineFile))
     {
-        kDebug() << k_funcinfo << "Error while creating the QDomDocument." << endl;
+        qWarning() << Q_FUNC_INFO << "Error while creating the QDomDocument." << endl;
         machineFile.close();
         return;
     }
     machineFile.close();
 
-    kDebug() << k_funcinfo << "Parsing fake computer XML: " << d->xmlFile << endl;
+    qDebug() << Q_FUNC_INFO << "Parsing fake computer XML: " << d->xmlFile << endl;
     QDomElement mainElement = fakeDocument.documentElement();
     QDomNode node = mainElement.firstChild();
     while (!node.isNull())
@@ -236,7 +219,6 @@ FakeDevice *FakeManager::parseDeviceElement(const QDomElement &deviceElement)
     FakeDevice *device = 0;
     QMap<QString,QVariant> propertyMap;
     QString udi = deviceElement.attribute("udi");
-    kDebug() << k_funcinfo << "Listing device: " << udi << endl;
 
     QDomNode propertyNode = deviceElement.firstChild();
     while (!propertyNode.isNull())
@@ -258,7 +240,6 @@ FakeDevice *FakeManager::parseDeviceElement(const QDomElement &deviceElement)
 
     if (!propertyMap.isEmpty())
     {
-        kDebug() << k_funcinfo << "Creating FakeDevice for " << udi << endl;
         device = new FakeDevice(udi, propertyMap);
     }
 

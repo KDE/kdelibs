@@ -36,8 +36,7 @@ class FakeManager : public Solid::Ifaces::DeviceManager
 {
     Q_OBJECT
 public:
-    FakeManager(QObject *parent, const QStringList &args);
-    FakeManager(QObject *parent, const QStringList &args, const QString &xmlFile);
+    FakeManager(QObject *parent, const QString &xmlFile);
     virtual ~FakeManager();
 
     /**

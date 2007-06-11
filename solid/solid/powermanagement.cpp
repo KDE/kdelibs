@@ -22,10 +22,9 @@
 
 #include "soliddefs_p.h"
 
-#include <kglobal.h>
-#include <QCoreApplication>
+#include <QtCore/QCoreApplication>
 
-K_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
+SOLID_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
 Solid::PowerManagementPrivate::PowerManagementPrivate()
     : managerIface("org.kde.Solid.PowerManagement",

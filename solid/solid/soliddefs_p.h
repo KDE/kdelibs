@@ -44,6 +44,74 @@
          t->Method; \
     }
 
+/*
+ * Lame copy of K_GLOBAL_STATIC below, but that's the price for
+ * being completely kdecore independent.
+ */
+
+namespace Solid
+{
+    typedef void (*CleanUpFunction)();
+
+    class CleanUpGlobalStatic
+    {
+    public:
+        Solid::CleanUpFunction func;
+
+        inline ~CleanUpGlobalStatic() { func(); }
+    };
+}
+
+#ifdef Q_CC_MSVC
+# define SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME) _solid_##NAME##__LINE__
+#else
+# define SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME)
+#endif
+
+#define SOLID_GLOBAL_STATIC(TYPE, NAME) SOLID_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ())
+
+#define SOLID_GLOBAL_STATIC_WITH_ARGS(TYPE, NAME, ARGS)                        \
+static QBasicAtomicPointer<TYPE > _solid_static_##NAME = Q_ATOMIC_INIT(0);     \
+static bool _solid_static_##NAME##_destroyed;                                  \
+static struct SOLID_GLOBAL_STATIC_STRUCT_NAME(NAME)                            \
+{                                                                              \
+    bool isDestroyed()                                                         \
+    {                                                                          \
+        return _solid_static_##NAME##_destroyed;                               \
+    }                                                                          \
+    inline operator TYPE*()                                                    \
+    {                                                                          \
+        return operator->();                                                   \
+    }                                                                          \
+    inline TYPE *operator->()                                                  \
+    {                                                                          \
+        if (!_solid_static_##NAME) {                                           \
+            if (isDestroyed()) {                                               \
+                qFatal("Fatal Error: Accessed global static '%s *%s()' after destruction. " \
+                       "Defined at %s:%d", #TYPE, #NAME, __FILE__, __LINE__);  \
+            }                                                                  \
+            TYPE *x = new TYPE ARGS;                                           \
+            if (!_solid_static_##NAME.testAndSet(0, x)                         \
+                && _solid_static_##NAME != x ) {                               \
+                delete x;                                                      \
+            } else {                                                           \
+                static Solid::CleanUpGlobalStatic cleanUpObject = { destroy }; \
+            }                                                                  \
+        }                                                                      \
+        return _solid_static_##NAME;                                           \
+    }                                                                          \
+    inline TYPE &operator*()                                                   \
+    {                                                                          \
+        return *operator->();                                                  \
+    }                                                                          \
+    static void destroy()                                                      \
+    {                                                                          \
+        _solid_static_##NAME##_destroyed = true;                               \
+        TYPE *x = _solid_static_##NAME;                                        \
+        _solid_static_##NAME.init(0);                                          \
+        delete x;                                                              \
+    }                                                                          \
+} NAME;
 
 
 #endif

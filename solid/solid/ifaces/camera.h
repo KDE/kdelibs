@@ -22,7 +22,7 @@
 
 #include <solid/ifaces/deviceinterface.h>
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
 namespace Solid
 {

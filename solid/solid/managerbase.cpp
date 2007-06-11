@@ -38,9 +38,9 @@ void Solid::ManagerBasePrivate::loadBackend()
     QString solidFakeXml(getenv("SOLID_FAKEHW"));
 
     if (!solidFakeXml.isEmpty()) {
-        m_backend = new FakeManager(0, QStringList(), solidFakeXml);
+        m_backend = new FakeManager(0, solidFakeXml);
     } else {
-        m_backend = new HalManager(0, QStringList());
+        m_backend = new HalManager(0);
     }
 }
 

@@ -20,7 +20,6 @@
 #include "backends/hal/halaudiointerface.h"
 
 #include "backends/hal/haldevice.h"
-#include <kdebug.h>
 
 AudioInterface::AudioInterface(HalDevice *device)
     : DeviceInterface(device),
@@ -174,7 +173,6 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
         HalDevice parentDevice(m_device->parentUdi());
         QString productName = parentDevice.product();
         QString deviceName = name();
-        kDebug() << k_funcinfo << productName << ", " << deviceName << endl;
         if (productName.contains("headset", Qt::CaseInsensitive) ||
                 productName.contains("headphone", Qt::CaseInsensitive) ||
                 deviceName.contains("headset", Qt::CaseInsensitive) ||
@@ -191,7 +189,6 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
         {
             QString busName = parentDevice.property("info.bus").toString();
             QString driverName = parentDevice.property("info.linux.driver").toString();
-            kDebug() << k_funcinfo << busName << ", " << driverName << endl;
             if (busName == "ieee1394")
             {
                 m_soundcardType = Solid::AudioInterface::FirewireSoundcard;

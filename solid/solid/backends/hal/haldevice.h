@@ -46,22 +46,14 @@ public:
     virtual QString vendor() const;
     virtual QString product() const;
 
-    virtual bool setProperty(const QString &key, const QVariant &value);
     virtual QVariant property(const QString &key) const;
 
     virtual QMap<QString, QVariant> allProperties() const;
 
-    virtual bool removeProperty(const QString &key);
     virtual bool propertyExists(const QString &key) const;
 
-    virtual bool addDeviceInterface(const Solid::DeviceInterface::Type &type);
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
     virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
-
-    virtual bool lock(const QString &reason);
-    virtual bool unlock();
-    virtual bool isLocked() const;
-    virtual QString lockReason() const;
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);

@@ -17,7 +17,7 @@
 
 */
 
-#include <kdebug.h>
+#include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
@@ -120,24 +120,6 @@ QString HalDevice::product() const
     return property("info.product").toString();
 }
 
-bool HalDevice::setProperty(const QString &key, const QVariant &value)
-{
-    QList<QVariant> args;
-    args << key << value;
-    QDBusReply<void> reply = d->device.callWithArgumentList(QDBus::BlockWithGui,
-                                                             "SetProperty", args);
-
-    if (!reply.isValid())
-    {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    d->cache[key] = value;
-
-    return true;
-}
-
 QVariant HalDevice::property(const QString &key) const
 {
     if (d->cache.contains(key))
@@ -154,8 +136,8 @@ QVariant HalDevice::property(const QString &key) const
     if (reply.type()!=QDBusMessage::ReplyMessage
       && reply.errorName()!="org.freedesktop.Hal.NoSuchProperty")
     {
-        kDebug() << k_funcinfo << " error: " << reply.errorName()
-                 << ", " << reply.arguments().at(0).toString() << endl;
+        qWarning() << Q_FUNC_INFO << " error: " << reply.errorName()
+                   << ", " << reply.arguments().at(0).toString() << endl;
         return QVariant();
     }
 
@@ -182,8 +164,8 @@ QMap<QString, QVariant> HalDevice::allProperties() const
 
     if (!reply.isValid())
     {
-        kDebug() << k_funcinfo << " error: " << reply.error().name()
-                 << ", " << reply.error().message() << endl;
+        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name()
+                   << ", " << reply.error().message() << endl;
         return QVariantMap();
     }
 
@@ -191,24 +173,6 @@ QMap<QString, QVariant> HalDevice::allProperties() const
     d->cacheSynced = true;
 
     return reply;
-}
-
-bool HalDevice::removeProperty(const QString &key)
-{
-    QList<QVariant> args;
-    args << key;
-    QDBusReply<void> reply = d->device.callWithArgumentList(QDBus::BlockWithGui,
-                                                             "RemoveProperty", args);
-
-    if (!reply.isValid())
-    {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    d->cache.remove(key);
-
-    return true;
 }
 
 bool HalDevice::propertyExists(const QString &key) const
@@ -226,27 +190,11 @@ bool HalDevice::propertyExists(const QString &key) const
 
     if (!reply.isValid())
     {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
+        qDebug() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
         return false;
     }
 
     return reply;
-}
-
-bool HalDevice::addDeviceInterface(const Solid::DeviceInterface::Type &type)
-{
-    QList<QVariant> args;
-    args << DeviceInterface::toStringList(type).first();
-    QDBusReply<void> reply = d->device.callWithArgumentList(QDBus::BlockWithGui,
-                                                             "AddDeviceInterface", args);
-
-    if (!reply.isValid())
-    {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    return true;
 }
 
 bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
@@ -267,7 +215,7 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
 
         if (!reply.isValid())
         {
-            kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
+            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
             return false;
         }
 
@@ -340,46 +288,6 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     }
 
     return iface;
-}
-
-bool HalDevice::lock(const QString &reason)
-{
-    QList<QVariant> args;
-    args << reason;
-    QDBusReply<void> reply = d->device.callWithArgumentList(QDBus::BlockWithGui,
-                                                             "Lock", args);
-
-    if (!reply.isValid())
-    {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool HalDevice::unlock()
-{
-    QDBusReply<void> reply = d->device.callWithArgumentList(QDBus::AutoDetect,
-                                                             "Unlock", QList<QVariant>());
-
-    if (!reply.isValid())
-    {
-        kDebug() << k_funcinfo << " error: " << reply.error().name() << endl;
-        return false;
-    }
-
-    return true;
-}
-
-bool HalDevice::isLocked() const
-{
-    return property("info.locked").toBool();
-}
-
-QString HalDevice::lockReason() const
-{
-    return property("info.locked.reason").toString();
 }
 
 void HalDevice::slotPropertyModified(int /*count */, const QList<ChangeDescription> &changes)

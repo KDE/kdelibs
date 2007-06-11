@@ -19,7 +19,7 @@
 
 #include "halbasictest.h"
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include "solid/backends/hal/halmanager.h"
 #include <solid/ifaces/device.h>
@@ -27,12 +27,12 @@
 #include <solid/ifaces/processor.h>
 #include "solid/backends/hal/halprocessor.h"
 
-QTEST_KDEMAIN_CORE(HalBasicTest)
+QTEST_MAIN(HalBasicTest)
 
 
 void HalBasicTest::testBasic()
 {
-    HalManager *manager = new HalManager(0, QStringList());
+    HalManager *manager = new HalManager(0);
 
     QVERIFY(manager->deviceExists("/org/freedesktop/Hal/devices/computer"));
     QVERIFY(!manager->allDevices().isEmpty());
@@ -74,13 +74,13 @@ void HalBasicTest::testBasic()
 
 void HalBasicTest::testSignalHandling()
 {
-    HalManager *manager = new HalManager(0, QStringList());
+    HalManager *manager = new HalManager(0);
     m_device = qobject_cast<HalDevice *>(manager->createDevice("/org/freedesktop/Hal/devices/computer"));
 
+#if 0
     connect(m_device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
              this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
 
-#if 0
     // HAL locking support being broken anyway...
     QVERIFY(!m_device->isLocked());
     m_signalProcessed = false;
@@ -95,8 +95,10 @@ void HalBasicTest::testSignalHandling()
 
 void HalBasicTest::slotPropertyChanged(const QMap<QString,int> &changes)
 {
+#if 0
     QVERIFY(m_device->isLocked());
     m_signalProcessed = true;
+#endif
 }
 
 #include "halbasictest.moc"

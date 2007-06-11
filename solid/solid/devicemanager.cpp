@@ -27,9 +27,9 @@
 #include "ifaces/devicemanager.h"
 #include "ifaces/device.h"
 
-#include <kglobal.h>
+#include "soliddefs_p.h"
 
-K_GLOBAL_STATIC(Solid::DeviceManagerPrivate, globalDeviceManager)
+SOLID_GLOBAL_STATIC(Solid::DeviceManagerPrivate, globalDeviceManager)
 
 Solid::DeviceManagerPrivate::DeviceManagerPrivate()
     : m_nullDevice(new DevicePrivate(QString()))

@@ -33,7 +33,7 @@ class HalManager : public Solid::Ifaces::DeviceManager
     Q_OBJECT
 
 public:
-    HalManager(QObject *parent, const QStringList &args);
+    HalManager(QObject *parent);
     virtual ~HalManager();
 
     virtual QStringList allDevices();

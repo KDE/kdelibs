@@ -19,10 +19,7 @@
 
 #include "solidhwtest.h"
 
-#include <qtest_kde.h>
-
-#include <kcomponentdata.h>
-#include <kdebug.h>
+#include <QtTest/QtTest>
 
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
@@ -41,7 +38,7 @@
     #error "FAKE_COMPUTER_XML not set. An XML file describing a computer is required for this test"
 #endif
 
-QTEST_KDEMAIN_CORE(SolidHwTest)
+QTEST_MAIN(SolidHwTest)
 
 void SolidHwTest::initTestCase()
 {
