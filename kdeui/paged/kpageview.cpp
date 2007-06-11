@@ -66,6 +66,8 @@ class KPageView::Private
     {
     }
 
+    void updateTitleWidget(const QModelIndex& index);
+
     KPageView* parent;
 
     // data
@@ -266,16 +268,23 @@ void KPageView::Private::pageSelected( const QModelIndex &index, const QModelInd
     //d->stack->setCurrentWidget( d->emptyWidget );
   }
 
+  updateTitleWidget(index);
+
+  emit parent->currentPageChanged( index, previous );
+}
+
+void KPageView::Private::updateTitleWidget(const QModelIndex& index)
+{
+  if (!parent->showPageHeader())
+    return;
+
   QString header = model->data( index, KPageModel::HeaderRole ).toString();
   if ( header.isEmpty() ) {
     header = model->data( index, Qt::DisplayRole ).toString();
   }
   titleWidget->setText(header.remove('&'));
-
   const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
   titleWidget->setPixmap(icon.pixmap(22, 22));
-
-  emit parent->currentPageChanged( index, previous );
 }
 
 void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
@@ -291,14 +300,7 @@ void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
   if ( !index.isValid() )
     return;
 
-  QString header = model->data( index, KPageModel::HeaderRole ).toString();
-  if ( header.isEmpty() ) {
-    header = model->data( index, Qt::DisplayRole ).toString();
-  }
-  titleWidget->setText(header.remove('&'));
-
-  const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
-  titleWidget->setPixmap(icon.pixmap(22, 22));
+  updateTitleWidget(index);
 }
 
 /**
@@ -429,7 +431,7 @@ bool KPageView::showPageHeader() const
   if ( faceType == Auto )
     faceType = d->detectAutoFace();
 
-  if ( faceType == Plain || faceType == Tabbed )
+  if ( faceType == Tabbed )
     return false;
   else
     return true;
