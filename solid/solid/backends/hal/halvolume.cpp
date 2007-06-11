@@ -19,13 +19,9 @@
 
 #include "backends/hal/halvolume.h"
 
-#include "backends/hal/halcalljob.h"
-
 Volume::Volume(HalDevice *device)
     : Block(device)
 {
-    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
 }
 
 Volume::~Volume()
@@ -37,16 +33,6 @@ Volume::~Volume()
 bool Volume::isIgnored() const
 {
     return m_device->property("volume.ignore").toBool();
-}
-
-bool Volume::isMounted() const
-{
-    return m_device->property("volume.is_mounted").toBool();
-}
-
-QString Volume::mountPoint() const
-{
-    return m_device->property("volume.mount_point").toString();
 }
 
 Solid::StorageVolume::UsageType Volume::usage() const
@@ -93,53 +79,6 @@ QString Volume::uuid() const
 qulonglong Volume::size() const
 {
     return m_device->property("volume.size").toULongLong();
-}
-
-void Volume::mount(QObject *receiver, const char *member)
-{
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QList<QVariant> params;
-
-    params << "" << "" << QStringList();
-
-    KJob *job = new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
-                               "Mount", params);
-    job->start();
-}
-
-void Volume::unmount(QObject *receiver, const char *member)
-{
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QList<QVariant> params;
-
-    params << QStringList();
-
-    KJob *job = new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
-                               "Unmount", params);
-    job->start();
-}
-
-void Volume::eject(QObject *receiver, const char *member)
-{
-    QDBusConnection c = QDBusConnection::systemBus();
-    QString udi = m_device->udi();
-    QList<QVariant> params;
-
-    params << QStringList();
-
-    KJob *job = new HalCallJob(c, udi, "org.freedesktop.Hal.Device.Volume",
-                               "Eject", params);
-    job->start();
-}
-
-void Volume::slotPropertyChanged(const QMap<QString,int> &changes)
-{
-    if (changes.contains("volume.is_mounted"))
-    {
-        emit mountStateChanged(isMounted());
-    }
 }
 
 #include "backends/hal/halvolume.moc"

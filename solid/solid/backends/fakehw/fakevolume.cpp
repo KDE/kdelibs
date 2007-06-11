@@ -109,13 +109,6 @@ void FakeVolume::unmount(QObject *receiver, const char *member)
     job->start();
 }
 
-void FakeVolume::eject(QObject *receiver, const char *member)
-{
-    FakeJob *job = new FakeJob(this);
-    job->setBroken(fakeDevice()->isBroken());
-    job->start();
-}
-
 QString FakeVolume::createMountJob()
 {
     static int count = 0;
@@ -141,21 +134,6 @@ QString FakeVolume::createUnmountJob()
     job->setBroken(fakeDevice()->isBroken());
 
     QString path = fakeDevice()->udi()+QString("/volume/unmount_%1").arg(count);
-    QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
-
-    return path;
-}
-
-QString FakeVolume::createEjectJob()
-{
-    static int count = 0;
-
-    count++;
-
-    FakeJob *job = new FakeJob(this);
-    job->setBroken(fakeDevice()->isBroken());
-
-    QString path = fakeDevice()->udi()+QString("/volume/eject_%1").arg(count);
     QDBusConnection::sessionBus().registerObject(path, job, QDBusConnection::ExportNonScriptableSlots);
 
     return path;

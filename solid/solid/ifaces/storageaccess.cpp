@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,27 +17,9 @@
 
 */
 
-#ifndef VOLUME_H
-#define VOLUME_H
+#include "storageaccess.h"
 
-#include "solid/ifaces/storagevolume.h"
-#include "solid/backends/hal/halblock.h"
-
-class Volume : public Block, virtual public Solid::Ifaces::StorageVolume
+Solid::Ifaces::StorageAccess::~StorageAccess()
 {
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::StorageVolume)
+}
 
-public:
-    Volume(HalDevice *device);
-    virtual ~Volume();
-
-    virtual bool isIgnored() const;
-    virtual Solid::StorageVolume::UsageType usage() const;
-    virtual QString fsType() const;
-    virtual QString label() const;
-    virtual QString uuid() const;
-    virtual qulonglong size() const;
-};
-
-#endif

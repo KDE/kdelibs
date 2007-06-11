@@ -54,6 +54,9 @@ public:
         case Solid::DeviceInterface::Block:
             list << "block";
             break;
+        case Solid::DeviceInterface::StorageAccess:
+            // Doesn't exist with HAL
+            break;
         case Solid::DeviceInterface::StorageDrive:
             list << "storage";
             break;

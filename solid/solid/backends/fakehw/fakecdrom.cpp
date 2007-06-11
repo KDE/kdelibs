@@ -20,6 +20,7 @@
 #include "backends/fakehw/fakecdrom.h"
 
 #include <QtCore/QStringList>
+#include "fakecdrom.h"
 
 FakeCdrom::FakeCdrom(FakeDevice *device)
     : FakeStorage(device)
@@ -88,6 +89,15 @@ QList<int> FakeCdrom::writeSpeeds() const
     }
 
     return speeds;
+}
+
+Solid::OpticalDrive::EjectStatus FakeCdrom::eject()
+{
+    if (fakeDevice()->isBroken()) {
+        return Solid::OpticalDrive::EjectForbidden;
+    }
+
+    return Solid::OpticalDrive::EjectSuccess;
 }
 
 #include "backends/fakehw/fakecdrom.moc"

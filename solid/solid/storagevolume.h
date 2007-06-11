@@ -40,8 +40,6 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS(UsageType)
         Q_PROPERTY(bool ignored READ isIgnored)
-        Q_PROPERTY(bool mounted READ isMounted)
-        Q_PROPERTY(QString mountPoint READ mountPoint)
         Q_PROPERTY(UsageType usage READ usage)
         Q_PROPERTY(QString fsType READ fsType)
         Q_PROPERTY(QString label READ label)
@@ -102,21 +100,6 @@ namespace Solid
         bool isIgnored() const;
 
         /**
-         * Indicates if this volume is mounted.
-         *
-         * @return true if the volume is mounted
-         */
-        bool isMounted() const;
-
-        /**
-         * Retrieves the absolute path of this volume mountpoint.
-         *
-         * @return the absolute path to the mount point if the volume is
-         * mounted, QString() otherwise
-         */
-        QString mountPoint() const;
-
-        /**
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
@@ -159,37 +142,6 @@ namespace Solid
          * @return the size of this volume
          */
         qulonglong size() const;
-
-
-        /**
-         * Mounts the volume.
-         *
-         * @return the job handling the operation
-         */
-        void mount(QObject *receiver, const char *member);
-
-        /**
-         * Unmounts the volume.
-         *
-         * @return the job handling the operation
-         */
-        void unmount(QObject *receiver, const char *member);
-
-        /**
-         * Ejects the volume.
-         *
-         * @return the job handling the operation
-         */
-        void eject(QObject *receiver, const char *member);
-
-    Q_SIGNALS:
-        /**
-         * This signal is emitted when the mount state of this device
-         * has changed.
-         *
-         * @param newState true if the volume is mounted, false otherwise
-         */
-        void mountStateChanged(bool newState);
 
     protected:
         /**

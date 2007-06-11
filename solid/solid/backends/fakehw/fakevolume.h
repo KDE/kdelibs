@@ -45,12 +45,10 @@ public Q_SLOTS:
 public:
     virtual void mount(QObject *receiver, const char *member);
     virtual void unmount(QObject *receiver, const char *member);
-    virtual void eject(QObject *receiver, const char *member);
 
 public Q_SLOTS:
     QString createMountJob();
     QString createUnmountJob();
-    QString createEjectJob();
 
 Q_SIGNALS:
     void mountStateChanged(bool newState);

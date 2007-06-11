@@ -39,7 +39,7 @@ namespace Solid
     class SOLID_EXPORT OpticalDrive : public StorageDrive
     {
         Q_OBJECT
-        Q_ENUMS(MediumType)
+        Q_ENUMS(MediumType EjectStatus)
         Q_FLAGS(MediumTypes)
         Q_PROPERTY(MediumTypes supportedMedia READ supportedMedia)
         Q_PROPERTY(int readSpeed READ readSpeed)
@@ -69,18 +69,30 @@ namespace Solid
          * - HdDvdr : A High Density Digital Versatile Disc Recordable (HD DVD-R)
          * - HdDvdrw : A High Density Digital Versatile Disc ReWritable (HD DVD-RW)
          */
-        enum MediumType { Cdr=0x00001, Cdrw=0x00002, Dvd=0x00004, Dvdr=0x00008, 
+        enum MediumType { Cdr=0x00001, Cdrw=0x00002, Dvd=0x00004, Dvdr=0x00008,
                           Dvdrw=0x00010, Dvdram=0x00020, Dvdplusr=0x00040,
                           Dvdplusrw=0x00080, Dvdplusdl=0x00100, Dvdplusdlrw=0x00200,
                           Bd=0x00400, Bdr=0x00800, Bdre=0x01000,
                           HdDvd=0x02000, HdDvdr=0x04000, HdDvdrw=0x08000 };
-        
+
         /**
          * This type stores an OR combination of MediumType values.
          */
         Q_DECLARE_FLAGS(MediumTypes, MediumType)
 
 
+        /**
+         * This enum type describe the errors that can be encountered during eject.
+         *
+         * - EjectSuccess : the operation went successfully
+         * - EjectUnsupported : the operation is unsupported by this device or the system
+         * - EjectForbidden : the operation has been forbidden by a policy in the system
+         */
+        enum EjectStatus {
+            EjectSuccess = 0,
+            EjectUnsupported = 1,
+            EjectForbidden = 2
+        };
 
     private:
         /**
@@ -137,6 +149,14 @@ namespace Solid
          * @return the list of supported write speeds
          */
         QList<int> writeSpeeds() const;
+
+        /**
+         * Ejects any disc that could be contained in this drive.
+         * If this drive is empty, but has a tray it'll be opened.
+         *
+         * @return the status of the eject operation
+         */
+        EjectStatus eject();
 
     Q_SIGNALS:
         /**

@@ -54,21 +54,6 @@ namespace Ifaces
         virtual bool isIgnored() const = 0;
 
         /**
-         * Indicates if this volume is mounted.
-         *
-         * @return true if the volume is mounted
-         */
-        virtual bool isMounted() const = 0;
-
-        /**
-         * Retrieves the absolute path of this volume mountpoint.
-         *
-         * @return the absolute path to the mount point if the volume is
-         * mounted, QString() otherwise
-         */
-        virtual QString mountPoint() const = 0;
-
-        /**
          * Retrieves the type of use for this volume (for example filesystem).
          *
          * @return the usage type
@@ -108,38 +93,6 @@ namespace Ifaces
          * @return the size of this volume
          */
         virtual qulonglong size() const = 0;
-
-
-        /**
-         * Mounts the volume.
-         *
-         * @return the job handling the operation
-         */
-        virtual void mount(QObject *receiver, const char *member) = 0;
-
-        /**
-         * Unmounts the volume.
-         *
-         * @return the job handling the operation
-         */
-        virtual void unmount(QObject *receiver, const char *member) = 0;
-
-        /**
-         * Ejects the volume.
-         *
-         * @return the job handling the operation
-         */
-        virtual void eject(QObject *receiver, const char *member) = 0;
-
-    protected:
-    //Q_SIGNALS:
-        /**
-         * This signal is emitted when the mount state of this device
-         * has changed.
-         *
-         * @param newState true if the volume is mounted, false otherwise
-         */
-        virtual void mountStateChanged(bool newState) = 0;
     };
 }
 }

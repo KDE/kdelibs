@@ -31,6 +31,7 @@
 #include "backends/hal/halgenericinterface.h"
 #include "backends/hal/halprocessor.h"
 #include "backends/hal/halblock.h"
+#include "backends/hal/halstorageaccess.h"
 #include "backends/hal/halstorage.h"
 #include "backends/hal/halcdrom.h"
 #include "backends/hal/halvolume.h"
@@ -250,6 +251,13 @@ bool HalDevice::addDeviceInterface(const Solid::DeviceInterface::Type &type)
 
 bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
 {
+    // Special cases not matching with HAL capabilities
+    if (type==Solid::DeviceInterface::GenericInterface) {
+        return true;
+    } else if (type==Solid::DeviceInterface::StorageAccess) {
+        return property("info.interfaces").toStringList().contains("org.freedesktop.Hal.Device.Volume");
+    }
+
     QStringList cap_list = DeviceInterface::toStringList(type);
     QStringList result;
 
@@ -271,8 +279,7 @@ bool HalDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
 
 QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
-    if (type!=Solid::DeviceInterface::GenericInterface
-     && !queryDeviceInterface(type)) {
+    if (!queryDeviceInterface(type)) {
         return 0;
     }
 
@@ -288,6 +295,9 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         break;
     case Solid::DeviceInterface::Block:
         iface = new Block(this);
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+        iface = new StorageAccess(this);
         break;
     case Solid::DeviceInterface::StorageDrive:
         iface = new Storage(this);

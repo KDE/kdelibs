@@ -71,6 +71,14 @@ namespace Ifaces
          */
         virtual QList<int> writeSpeeds() const = 0;
 
+        /**
+         * Ejects any disc that could be contained in this drive.
+         * If this drive is empty, but has a tray it'll be opened
+         *
+         * @return
+         */
+        virtual Solid::OpticalDrive::EjectStatus eject() = 0;
+
     protected:
     //Q_SIGNALS:
         /**

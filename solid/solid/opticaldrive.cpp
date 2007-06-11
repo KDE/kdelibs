@@ -59,4 +59,10 @@ QList<int> Solid::OpticalDrive::writeSpeeds() const
     return_SOLID_CALL(Ifaces::OpticalDrive *, d->backendObject(), QList<int>(), writeSpeeds());
 }
 
+Solid::OpticalDrive::EjectStatus Solid::OpticalDrive::eject()
+{
+    Q_D(OpticalDrive);
+    return_SOLID_CALL(Ifaces::OpticalDrive *, d->backendObject(), EjectUnsupported, eject());
+}
+
 #include "opticaldrive.moc"

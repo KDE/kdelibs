@@ -17,39 +17,42 @@
 
 */
 
-#ifndef HALCALLJOB_H
-#define HALCALLJOB_H
+#ifndef STORAGEACCESS_H
+#define STORAGEACCESS_H
 
-#include <kjob.h>
-#include <QtDBus/QDBusConnection>
+#include "solid/ifaces/storageaccess.h"
+#include "solid/backends/hal/haldeviceinterface.h"
+
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusError>
-#include <QtCore/QList>
-#include <QtCore/QVariant>
 
-class HalCallJob : public KJob
+class StorageAccess : public DeviceInterface, virtual public Solid::Ifaces::StorageAccess
 {
     Q_OBJECT
-public:
-    HalCallJob(const QDBusConnection &connection, const QString &udi,
-                const QString &interface,  const QString &methodName,
-                const QList<QVariant> &parameters);
-    virtual ~HalCallJob();
+    Q_INTERFACES(Solid::Ifaces::StorageAccess)
 
-    void start();
-    void kill(bool quietly);
+public:
+    StorageAccess(HalDevice *device);
+    virtual ~StorageAccess();
+
+    virtual bool isAccessible() const;
+    virtual QString filePath() const;
+    virtual bool setup();
+    virtual bool teardown();
+
+Q_SIGNALS:
+    void accessibilityChanged(bool accessible);;
+    void setupDone(Solid::StorageAccess::SetupResult, QVariant resultData);
+    void teardownDone(Solid::StorageAccess::TeardownResult, QVariant resultData);
 
 private Q_SLOTS:
-    void doStart();
-    void callReply(const QDBusMessage &reply);
-    void callError(const QDBusError &error);
+    void slotPropertyChanged(const QMap<QString,int> &changes);
+    void slotDBusReply(const QDBusMessage &reply);
+    void slotDBusError(const QDBusError &error);
 
 private:
-    QDBusConnection m_connection;
-    QString m_udi;
-    QString m_iface;
-    QString m_method;
-    QList<QVariant> m_params;
+    bool m_setupInProgress;
+    bool m_teardownInProgress;
 };
 
 #endif

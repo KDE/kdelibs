@@ -16,6 +16,7 @@ set(solid_LIB_SRCS
    opticaldrive.cpp 
    storagevolume.cpp 
    opticaldisc.cpp 
+   storageaccess.cpp 
    camera.cpp 
    portablemediaplayer.cpp 
    networkinterface.cpp 
@@ -49,6 +50,7 @@ set(solid_LIB_SRCS
    ifaces/processor.cpp
    ifaces/storagedrive.cpp
    ifaces/storagevolume.cpp
+   ifaces/storageaccess.cpp
 
    backends/hal/halacadapter.cpp
    backends/hal/halaudiointerface.cpp
@@ -60,13 +62,13 @@ set(solid_LIB_SRCS
    backends/hal/haldeviceinterface.cpp
    backends/hal/haldvbinterface.cpp
    backends/hal/halgenericinterface.cpp
-   backends/hal/halcalljob.cpp
    backends/hal/haldevice.cpp
    backends/hal/halmanager.cpp
    backends/hal/halnetworkinterface.cpp
    backends/hal/halopticaldisc.cpp
    backends/hal/halportablemediaplayer.cpp
    backends/hal/halprocessor.cpp
+   backends/hal/halstorageaccess.cpp
    backends/hal/halstorage.cpp
    backends/hal/halvolume.cpp
 
@@ -117,7 +119,7 @@ if(WIN32)
 endif(WIN32)
 ########### install files ###############
 
-install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

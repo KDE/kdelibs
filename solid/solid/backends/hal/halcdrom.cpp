@@ -20,6 +20,10 @@
 #include "backends/hal/halcdrom.h"
 
 #include <QtCore/QStringList>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusReply>
+#include <QtDBus/QDBusError>
+#include "halcdrom.h"
 
 Cdrom::Cdrom(HalDevice *device)
     : Storage(device)
@@ -95,6 +99,28 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
     if (name == "EjectPressed")
     {
         emit ejectPressed();
+    }
+}
+
+Solid::OpticalDrive::EjectStatus Cdrom::eject()
+{
+    QDBusInterface drive("org.freedesktop.Hal", m_device->udi(),
+                         "org.freedesktop.Hal.Device.Storage",
+                         QDBusConnection::systemBus());
+
+    if (!drive.isValid()) {
+        return Solid::OpticalDrive::EjectUnsupported;
+    }
+
+    QDBusReply<int> reply = drive.call("Eject", QStringList());
+    QString errorName = reply.error().name();
+
+    if (errorName.isEmpty()) {
+        return Solid::OpticalDrive::EjectSuccess;
+    } else if (errorName.startsWith("org.freedesktop.Hal.Device.Volume.")) {
+        return Solid::OpticalDrive::EjectForbidden;
+    } else {
+        return Solid::OpticalDrive::EjectUnsupported;
     }
 }
 
