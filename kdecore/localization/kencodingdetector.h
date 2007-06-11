@@ -31,8 +31,9 @@ class QTextDecoder;
 class KEncodingDetectorPrivate;
 
 /**
- * Provides encoding detection capabilities.
- * Searches for encoding declaration inside raw data -- meta and xml tags
+ * @short Provides encoding detection capabilities.
+ *
+ * Searches for encoding declaration inside raw data -- meta and xml tags. 
  * In the case it can't find it, uses heuristics for specified language.
  *
  * If it finds unicode BOM marks, it changes encoding regardless of what the user has told
@@ -47,6 +48,7 @@ class KEncodingDetectorPrivate;
  * detector.setAutoDetectLanguage(KEncodingDetector::Cyrillic);
  * QString out=detector.decode(data);
  * \endcode
+ *
  *
  * Do not mix decode() with decodeWithBuffering()
  *

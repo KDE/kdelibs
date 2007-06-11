@@ -33,8 +33,6 @@
 /**
  *  @short Action for selecting one of several QTextCodec.
  *
- *  Action for selecting one of several QTextCodec.
- *
  *  This action shows up a submenu with a list of the available codecs on the system.
  */
 class KDEUI_EXPORT KCodecAction
