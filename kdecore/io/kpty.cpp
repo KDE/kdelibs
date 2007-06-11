@@ -161,6 +161,7 @@ public:
 struct KPtyPrivate {
    KPtyPrivate() :
      xonXoff(false),
+     echo(true),
      utf8(false),
      masterFd(-1), slaveFd(-1)
    {
@@ -171,6 +172,7 @@ struct KPtyPrivate {
    bool chownpty(bool grant);
 
    bool xonXoff : 1;
+   bool echo    : 1;
    bool utf8    : 1;
    int masterFd;
    int slaveFd;
@@ -348,6 +350,11 @@ gotptyandmode:
     ttmode.c_iflag &= ~(IXOFF | IXON);
   else
     ttmode.c_iflag |= (IXOFF | IXON);
+
+  if (!d->echo)
+    ttmode.c_lflag &= ~ECHO;
+  else
+    ttmode.c_lflag |= ECHO;
 
 #ifdef IUTF8
   if (!d->utf8)
@@ -537,6 +544,25 @@ void KPty::setXonXoff(bool useXonXoff)
 
     _tcsetattr(d->masterFd, &ttmode);
   }
+}
+
+void KPty::setEcho(bool echo)
+{
+    Q_D(KPty);
+
+    d->echo = echo;
+    if (d->masterFd >= 0) {
+        struct ::termios ttmode;
+
+        _tcgetattr(d->masterFd, &ttmode);
+
+        if (!echo)
+            ttmode.c_lflag &= ~ECHO;
+        else
+            ttmode.c_lflag |= ECHO;
+
+        _tcsetattr(d->masterFd, &ttmode);
+    }
 }
 
 void KPty::setUtf8Mode(bool useUtf8)

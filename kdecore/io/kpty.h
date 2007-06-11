@@ -117,6 +117,16 @@ public:
   void setXonXoff(bool useXonXoff);
 
   /**
+   * Set whether the pty should echo input.
+   *
+   * Echo is on by default.
+   * It should disabled for automatically feeded (non-interactive) PTYs.
+   *
+   * @param echo true if input should be echoed.
+   */
+  void setEcho(bool echo);
+
+  /**
    * Set the pty in utf8 mode on systems that support it.
    * 
    * See the man page of "stty iutf8" for more info.
