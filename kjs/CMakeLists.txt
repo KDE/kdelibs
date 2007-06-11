@@ -3,6 +3,7 @@ project(kjs)
 KDE4_NO_ENABLE_FINAL(kjs)
 
 # Configuration checks
+include(FindThreads)
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
 check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
 check_include_files(float.h       HAVE_FLOAT_H)
@@ -30,7 +31,7 @@ macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
-include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${QT_INCLUDES} ${KDEWIN32_INCLUDES} )
+include_directories( ${CMAKE_SOURCE_DIR}/kjs ${CMAKE_SOURCE_DIR}/wtf ${KDEWIN32_INCLUDES} )
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND)
@@ -124,10 +125,12 @@ endif (NOT DEFINED QT_ONLY)
 
 kde4_add_library(${KJSLIBNAME} SHARED ${kjs_LIB_SRCS})
 
+if(CMAKE_THREAD_LIBS_INIT)
+   target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
+endif(CMAKE_THREAD_LIBS_INIT)
+
 if(UNIX)
-   target_link_libraries(${KJSLIBNAME}  ${QT_QTCORE_LIBRARY} m )
-else(UNIX)
-   target_link_libraries(${KJSLIBNAME}  ${QT_QTCORE_LIBRARY})
+   target_link_libraries(${KJSLIBNAME} m)
 endif(UNIX)
 
 if(PCRE_FOUND)
@@ -155,7 +158,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
 
-   target_link_libraries(testkjs_static  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+   target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
    ########### testkjs ###############
 
@@ -163,7 +166,7 @@ if(KDE4_BUILD_TESTS)
 
    kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
 
-   target_link_libraries(testkjs  ${QT_QTCORE_LIBRARY} ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+   target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
 endif(KDE4_BUILD_TESTS)
 

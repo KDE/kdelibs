@@ -41,10 +41,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <wtf/unicode/Unicode.h>
-
 using namespace WTF;
-using namespace Unicode;
 
 namespace KJS {
 

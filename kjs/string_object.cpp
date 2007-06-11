@@ -29,7 +29,7 @@
 #include "operations.h"
 #include "PropertyNameArray.h"
 #include "regexp_object.h"
-#include <wtf/unicode/Unicode.h>
+#include <wtf/unicode/libc/UnicodeLibC.h>
 
 using namespace WTF;
 

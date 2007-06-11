@@ -31,7 +31,7 @@
 #include "dtoa.h"
 #include "interpreter.h"
 #include "nodes.h"
-#include <wtf/unicode/Unicode.h>
+#include <wtf/unicode/libc/UnicodeLibC.h>
 
 using namespace WTF;
 using namespace Unicode;
