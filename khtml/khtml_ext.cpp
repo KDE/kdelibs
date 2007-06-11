@@ -880,10 +880,10 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
    } while ( query == KMessageBox::Cancel );
 
   if ( destURL.isValid() )
-    saveURL(url, destURL, metadata, cacheId);
+    saveURL(parent, url, destURL, metadata, cacheId);
 }
 
-void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
+void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl &destURL,
                                    const QMap<QString, QString> &metadata,
                                    long cacheId )
 {
@@ -949,7 +949,7 @@ void KHTMLPopupGUIClient::saveURL( const KUrl &url, const KUrl &destURL,
                     cmd += ' ' + K3Process::quote(url.url()) + ' ' +
                            K3Process::quote(cleanDest.url());
                     kDebug(1000) << "Calling command  "<<cmd<<endl;
-                    KRun::runCommand(cmd);
+                    KRun::runCommand(cmd, parent->topLevelWidget());
                 }
             }
           }

@@ -193,7 +193,7 @@ void KHTMLPartIface::saveBackground(const QString &destination)
 
     KIO::MetaData metaData;
     metaData["referrer"] = part->referrer();
-    KHTMLPopupGUIClient::saveURL( back, KUrl( destination ), metaData );
+    KHTMLPopupGUIClient::saveURL( part->widget(), back, KUrl( destination ), metaData );
 }
 
 void KHTMLPartIface::saveDocument(const QString &destination)
@@ -205,7 +205,7 @@ void KHTMLPartIface::saveDocument(const QString &destination)
 
     KIO::MetaData metaData;
     // Referrer unknown?
-    KHTMLPopupGUIClient::saveURL( srcURL, KUrl( destination ), metaData, part->cacheId() );
+    KHTMLPopupGUIClient::saveURL( part->widget(), srcURL, KUrl( destination ), metaData, part->cacheId() );
 }
 
 void KHTMLPartIface::setUserStyleSheet(const QString &styleSheet)

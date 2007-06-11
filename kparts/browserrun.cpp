@@ -397,7 +397,7 @@ void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName
                 kDebug(1000) << "Calling command  " << cmd << endl;
                 // slave is already on hold (slotBrowserMimetype())
                 KIO::Scheduler::publishSlaveOnHold();
-                KRun::runCommand(cmd);
+                KRun::runCommand(cmd, window);
                 return;
             }
         }

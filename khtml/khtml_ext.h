@@ -124,7 +124,7 @@ public:
                        const QString &filter = QString(), long cacheId = 0,
                        const QString &suggestedFilename = QString() );
 
-  static void saveURL( const KUrl &url, const KUrl &destination,
+  static void saveURL( QWidget* parent, const KUrl &url, const KUrl &destination,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        long cacheId = 0 );
 private Q_SLOTS:

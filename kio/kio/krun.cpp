@@ -478,6 +478,8 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
 static pid_t runCommandInternal( K3Process* proc, const KService* service, const QString& binName,
     const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
 {
+  if( window != NULL )
+      window = window->topLevelWidget();
   if (service && !service->desktopEntryPath().isEmpty()
       && !KDesktopFile::isAuthorizedDesktopFile( service->desktopEntryPath() ))
   {
@@ -736,9 +738,9 @@ pid_t KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window,
   return run( *service, _urls, window, false, QString(), asn );
 }
 
-pid_t KRun::runCommand( const QString &cmd )
+pid_t KRun::runCommand( const QString &cmd, QWidget* window )
 {
-  return KRun::runCommand( cmd, QString(), QString(), NULL, "" );
+  return KRun::runCommand( cmd, QString(), QString(), window, "" );
 }
 
 pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )

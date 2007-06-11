@@ -245,10 +245,11 @@ public:
    *
    * @p cmd must be a shell command. You must not append "&"
    * to it, since the function will do that for you.
+   * @param window The top-level widget of the app that invoked this object.
    *
    * @return PID of running command, 0 if it could not be started.
    */
-  static pid_t runCommand( const QString &cmd );
+  static pid_t runCommand( const QString &cmd, QWidget* window );
 
   /**
    * Same as the other runCommand(), but it also takes the name of the
