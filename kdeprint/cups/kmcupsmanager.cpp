@@ -26,7 +26,6 @@
 #include "kmdbentry.h"
 #include "cupsaddsmb2.h"
 #include "ippreportdlg.h"
-#include "kpipeprocess.h"
 #include "util.h"
 #include "foomatic2loader.h"
 #include "ppdloader.h"
@@ -40,6 +39,7 @@
 #include <QtCore/QDate>
 #include <QtNetwork/QTcpSocket>
 
+#include <kprocess.h>
 #include <kdebug.h>
 #include <krandom.h>
 #include <kicon.h>
@@ -546,25 +546,11 @@ DrMain* KMCupsManager::loadMaticDriver(const QString& drname)
 		return NULL;
 	}
 
-	KPipeProcess	in;
-	QFile		out(tmpFile);
-	QString cmd = KShell::quoteArg(exe);
-	cmd += " -t cups -d ";
-	cmd += KShell::quoteArg(comps[2]);
-	cmd += " -p ";
-	cmd += KShell::quoteArg(comps[1]);
-	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
+	KProcess	proc;
+	proc << exe << "-t" << "cups" << "-d" << comps[2] << "-p" << comps[1];
+	proc.setStandardOutputFile(tmpFile);
+	if (!proc.execute())
 	{
-		QTextStream	tin(&in), tout(&out);
-		QString	line;
-		while (!tin.atEnd())
-		{
-			line = tin.readLine();
-			tout << line << endl;
-		}
-		in.close();
-		out.close();
-
 		DrMain	*driver = loadDriverFile(tmpFile);
 		if (driver)
 		{

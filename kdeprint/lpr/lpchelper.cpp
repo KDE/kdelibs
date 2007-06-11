@@ -27,21 +27,20 @@
 #include <QtCore/QRegExp>
 #include <kdebug.h>
 #include <klocale.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <stdlib.h>
 
-static QString execute(const QString& cmd)
+static QString execute(const QStringList& cmd)
 {
-	KPipeProcess	proc;
-	QString		output;
-	if (proc.open(cmd))
+	KProcess proc;
+	proc.setProgram(cmd);
+	proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+	if (!proc.execute())
 	{
 		QTextStream	t(&proc);
-		while (!t.atEnd())
-			output.append(t.readLine()).append("\n");
-		proc.close();
+		return t.readAll();
 	}
-	return output;
+	return QString();
 }
 
 LpcHelper::LpcHelper(QObject *parent)
@@ -235,7 +234,7 @@ bool LpcHelper::changeState(const QString& printer, const QString& op, QString& 
 		msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
 		return false;
 	}
-	QString	result = execute(m_exepath + ' ' + op + ' ' + K3Process::quote(printer));
+	QString	result = execute(QStringList() << m_exepath << op << printer);
 	int	status;
 
 	switch (LprSettings::self()->mode())
@@ -273,7 +272,7 @@ bool LpcHelper::removeJob(KMJob *job, QString& msg)
 		msg = i18n("The executable %1 could not be found in your PATH.", QString("lprm"));
 		return false;
 	}
-	QString	result = execute(m_lprmpath + " -P " + K3Process::quote(job->printer()) + ' ' + QString::number(job->id()));
+	QString	result = execute(QStringList() << m_lprmpath << "-P" << job->printer() << QString::number(job->id()));
 	if (result.indexOf("dequeued") != -1)
 		return true;
 	else if (result.indexOf("Permission denied") != -1 || result.indexOf("no permissions") != -1)
@@ -291,7 +290,7 @@ bool LpcHelper::changeJobState(KMJob *job, int state, QString& msg)
 		msg = i18n("The executable %1 could not be found in your PATH.", QString("lpc"));
 		return false;
 	}
-	QString	result = execute(m_exepath + (state == KMJob::Held ? " hold " : " release ") + K3Process::quote(job->printer()) + ' ' + QString::number(job->id()));
+	QString	result = execute(QStringList() << m_exepath << (state == KMJob::Held ? "hold" : "release") << job->printer() << QString::number(job->id()));
 	QString	answer = lprngAnswer(result, job->printer());
 	if (answer == "no")
 	{

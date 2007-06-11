@@ -33,7 +33,7 @@
 #include <kstandarddirs.h>
 #include <krandom.h>
 #include <kdebug.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <QtCore/Q_PID>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
@@ -257,25 +257,11 @@ DrMain* MaticHandler::loadDbDriver(const QString& path)
 		return NULL;
 	}
 
-	KPipeProcess	in;
-	QFile		out(tmpFile);
-	QString cmd = K3Process::quote(exe);
-	cmd += " -t lpd -d ";
-	cmd += K3Process::quote(comps[2]);
-	cmd += " -p ";
-	cmd += K3Process::quote(comps[1]);
-	if (in.open(cmd) && out.open(QIODevice::WriteOnly))
+	KProcess proc;
+	proc << exe << "-t" << "lpd" << "-d" << comps[2] << "-p" << comps[1];
+	proc.setStandardOutputFile(tmpFile);
+	if (!proc.execute())
 	{
-		QTextStream	tin(&in), tout(&out);
-		QString	line;
-		while (!tin.atEnd())
-		{
-			line = tin.readLine();
-			tout << line << endl;
-		}
-		in.close();
-		out.close();
-
 		DrMain	*driver = Foomatic2Loader::loadDriver(tmpFile);
 		if (driver)
 		{
@@ -330,10 +316,10 @@ bool MaticHandler::savePrinterDriver(KMPrinter *prt, PrintcapEntry *entry, DrMai
 		inFile.close();
 		tmpFile.close();
 
-		QString	cmd = "mv " + K3Process::quote(tmpFile.fileName()) + ' ' + K3Process::quote(outFile);
-		int	status = ::system(QFile::encodeName(cmd).data());
-		QFile::remove(tmpFile.fileName());
-		result = (status != -1 && WEXITSTATUS(status) == 0);
+		QFile::remove(outFile);
+		result = QFile::rename(tmpFile.fileName(), outFile);
+		if (!result)
+			QFile::remove(tmpFile.fileName());
 	}
 
 	if (!result)

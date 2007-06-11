@@ -23,7 +23,7 @@
 #include "lprsettings.h"
 
 #include <kstandarddirs.h>
-#include <k3process.h>
+#include <kshell.h>
 #include <kdebug.h>
 #include <QtCore/QTextStream>
 
@@ -84,7 +84,7 @@ KMJob* LpqHelper::parseLineLPRng(const QString& line)
 void LpqHelper::listJobs(QList<KMJob*>& jobs, const QString& prname, int limit)
 {
 	KPipeProcess	proc;
-	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + K3Process::quote(prname)))
+	if (!m_exepath.isEmpty() && proc.open(m_exepath + " -P " + KShell::quoteArg(prname)))
 	{
 		QTextStream	t(&proc);
 		QString		line;

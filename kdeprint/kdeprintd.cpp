@@ -33,6 +33,7 @@
 #include <kstandarddirs.h>
 #include <kwindowsystem.h>
 #include <krandom.h>
+#include <kshell.h>
 #include <QtGui/QLayout>
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
@@ -130,12 +131,12 @@ QString KDEPrintd::print(const QString& cmd, const QStringList& files, bool remf
 		if ( !url.isLocalFile() )
 		{
 			QString tmpFilename = KStandardDirs::locateLocal( "tmp", "kdeprint_" + KRandom::randomString( 8 ) );
-			command.replace( re, K3Process::quote( tmpFilename ) );
+			command.replace( re, KShell::quoteArg( tmpFilename ) );
 			proc->setOutput( re.cap( 1 ) );
 			proc->setTempOutput( tmpFilename );
 		}
 		else
-			command.replace( re, K3Process::quote( re.cap( 1 ) ) );
+			command.replace( re, KShell::quoteArg( re.cap( 1 ) ) );
 	}
 
 	if ( checkFiles( command, files ) )
@@ -190,7 +191,7 @@ bool KDEPrintd::checkFiles(QString& cmd, const QStringList& files)
 				KGuiItem(i18n("Enter the root password")), KStandardGuiItem::cancel(),
 				"provideRootsPassword") == KMessageBox::Continue)
 			{
-				cmd = ("kdesu -c " + K3Process::quote(cmd));
+				cmd = ("kdesu -c " + KShell::quoteArg(cmd));
 				break;
 			}
 			else

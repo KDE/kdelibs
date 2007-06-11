@@ -19,8 +19,6 @@
 
 #include "smbview.h"
 
-#include <k3process.h>
-#include <ktemporaryfile.h>
 #include <Qt3Support/Q3Header>
 #include <QtGui/QApplication>
 #include <QtCore/QTextStream>
@@ -30,6 +28,9 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kcursor.h>
+#include <kshell.h>
+#include <k3process.h>
+#include <ktemporaryfile.h>
 
 #include <QtCore/QFile>
 #include <cstdlib>
@@ -172,15 +173,16 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 {
 	if (on && item->childCount() == 0)
 	{
+		// XXX should use KProcessGroup once it is there
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
 			*m_proc << "nmblookup"+m_wins_server+"-M ";
-                        *m_proc << K3Process::quote(item->text(0));
+                        *m_proc << KShell::quoteArg(item->text(0));
                         *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
-                        *m_proc << K3Process::quote(item->text(0));
+                        *m_proc << KShell::quoteArg(item->text(0));
 			*m_proc << " -A ";
-                        *m_proc << K3Process::quote(m_passwdFile->fileName());
+                        *m_proc << KShell::quoteArg(m_passwdFile->fileName());
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
@@ -195,15 +197,15 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 			{
 				*m_proc << "smbclient -N -L ";
 			}
-			*m_proc << K3Process::quote (item->text (0));
+			*m_proc << KShell::quoteArg(item->text (0));
 			*m_proc << " -W ";
-			*m_proc << K3Process::quote (item->parent ()->
+			*m_proc << KShell::quoteArg(item->parent ()->
 							text (0));
 			if (!krb5ccname)
 			{
 				*m_proc << " -A ";
-				*m_proc << K3Process::
-					quote (m_passwdFile->fileName ());
+				*m_proc << KShell::
+					quoteArg (m_passwdFile->fileName ());
 			}
 			startProcess(ShareListing);
 		}

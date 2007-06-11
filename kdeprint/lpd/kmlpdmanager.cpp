@@ -186,11 +186,9 @@ bool KMLpdManager::createPrinter(KMPrinter *printer)
 	}
 
 	// 4) change permissions of spool directory
-	QByteArray cmd = "chmod -R o-rwx,g+rwX ";
-	cmd += QFile::encodeName(K3Process::quote(ent->arg("sd")));
-	cmd += "&& chown -R lp.lp ";
-	cmd += QFile::encodeName(K3Process::quote(ent->arg("sd")));
-	if (system(cmd.data()) != 0)
+	// XXX do this in-process with posix calls
+	if (KProcess::execute("chmod", QStringList() << "-R" << "o-rwx,g+rwX" << ent->arg("sd")) != 0 ||
+	    KProcess::execute("chown", QStringList() << "-R" << "lp.lp" << ent->arg("sd")) != 0)
 	{
 		setErrorMsg(i18n("Unable to set correct permissions on spool directory %1 for printer <b>%2</b>.", ent->arg("sd"), ent->m_name));
 		return false;
@@ -210,9 +208,8 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 			m_entries.insert(ent->m_name,ent);
 			return false;
 		}
-		QByteArray cmd = "rm -rf ";
-		cmd += QFile::encodeName(K3Process::quote(ent->arg("sd")));
-		system(cmd.data());
+		// XXX don't we have a library call for this?
+		KProcess::execute("rm", QStringList() << "-rf" << ent->arg("sd"));
 		delete ent;
 		return true;
 	}
@@ -222,19 +219,12 @@ bool KMLpdManager::removePrinter(KMPrinter *printer)
 
 bool KMLpdManager::enablePrinter(KMPrinter *printer, bool state)
 {
-	KPipeProcess	proc;
-	QString		cmd = programName(0);
-	cmd += ' ';
-	cmd += state ? "up" : "down";
-	cmd += ' ';
-	cmd += K3Process::quote(printer->printerName());
-	if (proc.open(cmd))
+	KProcess proc;
+	proc << programName(0) << (state ? "up" : "down") << printer->printerName();
+	proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+	if (!proc.execute())
 	{
-		QTextStream	t(&proc);
-		QString		buffer;
-		while (!t.atEnd())
-			buffer.append(t.readLine());
-		if (buffer.startsWith("?Privilege"))
+		if (proc.readAll().startsWith("?Privilege"))
 		{
 			setErrorMsg(i18n("Permission denied: you must be root."));
 			return false;
@@ -554,11 +544,7 @@ bool KMLpdManager::savePrinterDriver(KMPrinter *printer, DrMain *driver)
 		if (!writePrinters())
 			return false;
 		// write various driver files using templates
-		QByteArray cmd = "cp ";
-		cmd += QFile::encodeName(K3Process::quote(driverDirectory()+"/master-filter"));
-		cmd += ' ';
-		cmd += QFile::encodeName(K3Process::quote(spooldir + "/filter"));
-		if (system(cmd.data()) == 0 &&
+		if (QFile::copy(driverDirectory()+"/master-filter", spooldir+"/filter") &&
 		    savePrinttoolCfgFile(driverDirectory()+"/general.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/postscript.cfg.in",spooldir,options) &&
 		    savePrinttoolCfgFile(driverDirectory()+"/textonly.cfg.in",spooldir,options))

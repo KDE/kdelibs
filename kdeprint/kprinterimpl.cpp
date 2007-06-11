@@ -39,12 +39,13 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kmessagebox.h>
-#include <k3process.h>
+#include <kshell.h>
 #include <QtCore/Q_PID>
 #include <kconfig.h>
 #include <kapplication.h>
 
 #include <stdlib.h>
+#include <unistd.h>
 
 void dumpOptions(const QMap<QString,QString>&);
 void initEditPrinter(KMPrinter *p)
@@ -543,7 +544,7 @@ bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringL
 }
 
 QString KPrinterImpl::quote(const QString& s)
-{ return K3Process::quote(s); }
+{ return KShell::quoteArg(s); }
 
 void KPrinterImpl::saveOptions(const QMap<QString,QString>& opts)
 {
