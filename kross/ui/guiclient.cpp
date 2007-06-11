@@ -100,8 +100,10 @@ void finalizeCollection(Kross::ActionCollection* c)
 
 void GUIClient::finalize()
 {
-    finalizeCollection( d->collection );
-    d->collection = 0;
+    if( d->collection ) {
+        finalizeCollection( d->collection );
+        d->collection = 0;
+    }
 }
 
 void GUIClient::setXMLFile(const QString& file, bool merge, bool setXMLDoc)
