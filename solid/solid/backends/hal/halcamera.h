@@ -32,8 +32,8 @@ public:
     Camera(HalDevice *device);
     virtual ~Camera();
 
-    virtual Solid::Camera::AccessType accessMethod() const;
-    virtual bool isGphotoSupported() const;
+    virtual QStringList supportedProtocols() const;
+    virtual QStringList supportedDrivers(QString protocol = QString()) const;
 };
 
 #endif

@@ -33,8 +33,8 @@ public:
     ~FakeCamera();
 
 public Q_SLOTS:
-    virtual Solid::Camera::AccessType accessMethod() const;
-    virtual bool isGphotoSupported() const;
+    virtual QStringList supportedProtocols() const;
+    virtual QStringList supportedDrivers(QString protocol) const;
 };
 
 #endif

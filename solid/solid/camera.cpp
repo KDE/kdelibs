@@ -33,11 +33,16 @@ Solid::Camera::~Camera()
 
 }
 
-
-Solid::Camera::AccessType Solid::Camera::accessMethod() const
+QStringList Solid::Camera::supportedProtocols() const
 {
     Q_D(const Camera);
-    return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), Proprietary, accessMethod());
+    return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), QStringList(), supportedProtocols());
+}
+
+QStringList Solid::Camera::supportedDrivers(QString protocol) const
+{
+    Q_D(const Camera);
+    return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), QStringList(), supportedDrivers(protocol));
 }
 
 #include "camera.moc"

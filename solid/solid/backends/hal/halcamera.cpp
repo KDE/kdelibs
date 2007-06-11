@@ -18,6 +18,7 @@
 */
 
 #include "backends/hal/halcamera.h"
+#include "halcamera.h"
 
 Camera::Camera(HalDevice *device)
     : DeviceInterface(device)
@@ -30,28 +31,26 @@ Camera::~Camera()
 
 }
 
-
-Solid::Camera::AccessType Camera::accessMethod() const
+QStringList Camera::supportedProtocols() const
 {
+    QStringList protocols;
+
     QString method = m_device->property("camera.access_method").toString();
 
-    if (method=="storage")
-    {
-        return Solid::Camera::MassStorage;
-    }
-    else if (method=="ptp")
-    {
-        return Solid::Camera::Ptp;
-    }
-    else
-    {
-        return Solid::Camera::Proprietary;
-    }
+    protocols << method;
+
+    return protocols;
 }
 
-bool Camera::isGphotoSupported() const
+QStringList Camera::supportedDrivers(QString /*protocol*/) const
 {
-    return m_device->property("camera.libgphoto2.support").toBool();
+    QStringList res;
+
+    if (m_device->property("camera.libgphoto2.support").toBool()) {
+        res << "gphoto";
+    }
+
+    return res;
 }
 
 #include "backends/hal/halcamera.moc"

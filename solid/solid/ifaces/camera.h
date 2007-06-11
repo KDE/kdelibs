@@ -21,7 +21,8 @@
 #define SOLID_IFACES_CAMERA_H
 
 #include <solid/ifaces/deviceinterface.h>
-#include <solid/camera.h>
+
+#include <QStringList>
 
 namespace Solid
 {
@@ -47,13 +48,21 @@ namespace Ifaces
 
 
         /**
-         * Retrieves the type of method that should be used to access this
-         * device.
+         * Retrieves known protocols this device can speak.  This list may be dependent
+         * on installed device driver libraries.
          *
-         * @return the access method type
-         * @see Solid::Camera::AccessType
+         * @return a list of known protocols this device can speak
          */
-        virtual Solid::Camera::AccessType accessMethod() const = 0;
+        virtual QStringList supportedProtocols() const = 0;
+
+        /**
+         * Retrieves known installed device drivers that claim to handle this device
+         * using the requested protocol.
+         *
+         * @param protocol The protocol to get drivers for.
+         * @return a list of known device drivers that can handle this device
+         */
+        virtual QStringList supportedDrivers(QString protocol = QString()) const = 0;
     };
 }
 }

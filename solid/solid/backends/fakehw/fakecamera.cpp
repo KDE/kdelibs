@@ -18,6 +18,7 @@
 */
 
 #include "backends/fakehw/fakecamera.h"
+#include "fakecamera.h"
 
 FakeCamera::FakeCamera(FakeDevice *device)
     : FakeDeviceInterface(device)
@@ -30,27 +31,25 @@ FakeCamera::~FakeCamera()
 
 }
 
-Solid::Camera::AccessType FakeCamera::accessMethod() const
+QStringList FakeCamera::supportedProtocols() const
 {
+    QStringList res;
     QString method = fakeDevice()->property("accessMethod").toString();
 
-    if (method=="storage")
-    {
-        return Solid::Camera::MassStorage;
-    }
-    else if (method=="ptp")
-    {
-        return Solid::Camera::Ptp;
-    }
-    else
-    {
-        return Solid::Camera::Proprietary;
-    }
+    res << method;
+
+    return res;
 }
 
-bool FakeCamera::isGphotoSupported() const
+QStringList FakeCamera::supportedDrivers(QString /*protocol*/) const
 {
-    return fakeDevice()->property("gphotoSupport").toBool();
+    QStringList res;
+
+    if (fakeDevice()->property("gphotoSupport").toBool()) {
+        res << "gphoto";
+    }
+
+    return res;
 }
 
 #include "backends/fakehw/fakecamera.moc"

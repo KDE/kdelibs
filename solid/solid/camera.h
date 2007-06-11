@@ -24,6 +24,8 @@
 
 #include <solid/deviceinterface.h>
 
+#include <QStringList>
+
 namespace Solid
 {
     class CameraPrivate;
@@ -42,21 +44,10 @@ namespace Solid
     class SOLID_EXPORT Camera : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS(AccessType)
-        Q_PROPERTY(AccessType accessMethod READ accessMethod)
+        Q_PROPERTY(QStringList supportedProtocols READ supportedProtocols)
+        Q_PROPERTY(QStringList supportedDrivers READ supportedDrivers)
         Q_DECLARE_PRIVATE(Camera)
         friend class Device;
-
-    public:
-        /**
-         * This enum type defines the access method that can be used for a camera.
-         *
-         * - MassStorage : A mass storage camera
-         * - Ptp : A camera supporting Picture Transfer Protocol (PTP)
-         * - Proprietary : A camera using a proprietary protocol
-         */
-        enum AccessType { MassStorage, Ptp, Proprietary };
-
 
     private:
         /**
@@ -85,14 +76,24 @@ namespace Solid
         static Type deviceInterfaceType() { return DeviceInterface::Camera; }
 
 
+
         /**
-         * Retrieves the type of method that should be used to access this
-         * device.
+         * Retrieves known protocols this device can speak.  This list may be dependent
+         * on installed device driver libraries.
          *
-         * @return the access method type
-         * @see Solid::Camera::AccessType
+         * @return a list of known protocols this device can speak
          */
-        AccessType accessMethod() const;
+        QStringList supportedProtocols() const;
+
+        /**
+         * Retrieves known installed device drivers that claim to handle this device
+         * using the requested protocol.  If protocol is blank, returns a list of
+         * all drivers supporting the device.
+         *
+         * @param protocol The protocol to get drivers for.
+         * @return a list of installed drivers meeting the criteria
+         */
+        QStringList supportedDrivers(QString protocol = QString()) const;
     };
 }
 
