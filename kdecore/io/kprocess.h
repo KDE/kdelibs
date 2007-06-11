@@ -59,9 +59,9 @@ public:
         ForwardedChannels = QProcess::ForwardedChannels,
             /**< Both standard output and standard error are forwarded
                  to the parent process' respective channel */
-        ForwardedStderrChannel,
+        OnlyStdoutChannel,
             /**< Only standard output is handled; standard error is forwarded */
-        ForwardedStdoutChannel  /**< ... and the other way round */
+        OnlyStderrChannel  /**< ... and the other way round */
     };
 
     /**

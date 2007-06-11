@@ -119,10 +119,10 @@ void KProcess::setOutputChannelMode(OutputChannelMode mode)
     disconnect(this, SIGNAL(readyReadStandardOutput()));
     disconnect(this, SIGNAL(readyReadStandardError()));
     switch (mode) {
-    case ForwardedStderrChannel:
+    case OnlyStdoutChannel:
         connect(this, SIGNAL(readyReadStandardError()), SLOT(_k_forwardStderr()));
         break;
-    case ForwardedStdoutChannel:
+    case OnlyStderrChannel:
         connect(this, SIGNAL(readyReadStandardOutput()), SLOT(_k_forwardStdout()));
         break;
     default:
