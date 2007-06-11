@@ -32,12 +32,6 @@
 #include <kfiledialog.h>
 #include <kurl.h>
 
-//#include <kconfig.h>
-//#include <kstandarddirs.h>
-//#include <kmimetype.h>
-//#include <kfiledialog.h>
-//#include <kmessagebox.h>
-
 using namespace Kross;
 
 namespace Kross {
@@ -50,6 +44,8 @@ namespace Kross {
             KXMLGUIClient* guiclient;
             /// The menu used to display the scripts.
             KActionMenu* scriptsmenu;
+            /// The collection of actions this guiclient should operate on.
+            Kross::ActionCollection* collection;
     };
 
 }
@@ -62,6 +58,7 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     setComponentData( GUIClient::componentData() );
 
     d->guiclient = guiclient;
+    d->collection = 0;
 
     d->scriptsmenu = new KActionMenu(i18n("Scripts"), this);
     actionCollection()->addAction("scripts", d->scriptsmenu);
@@ -72,33 +69,39 @@ GUIClient::GUIClient(KXMLGUIClient* guiclient, QObject* parent)
     actionCollection()->addAction("executescriptfile", execfileaction);
     connect(execfileaction, SIGNAL( triggered() ), this, SLOT( slotShowExecuteScriptFile() ));
 
-    // action to show the ScriptManagerGUI dialog.
-    KAction* manageraction =  new KAction(i18n("Script Manager..."), this);
-    actionCollection()->addAction("configurescripts", manageraction);
-    connect(manageraction, SIGNAL( triggered() ), this, SLOT( slotShowScriptManager() ));
-
     // The GUIClient provides feedback if e.g. an execution failed.
     connect(&Manager::self(), SIGNAL( started(Kross::Action*) ), this, SLOT( started(Kross::Action*) ));
     connect(&Manager::self(), SIGNAL( finished(Kross::Action*) ), this, SLOT( finished(Kross::Action*) ));
-
-    // try to read the main ActionCollection.
-    QByteArray partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
-    Manager::self().actionCollection()->readXmlResources("data", partname + "/scripts/*.rc");
 }
 
-//FIXME cleanup only what really needs cleanup
+GUIClient::~GUIClient()
+{
+    delete d;
+}
+
+void GUIClient::initialize(Kross::ActionCollection* collection)
+{
+    if( d->collection )
+        finalize();
+    d->collection = collection;
+
+    QByteArray partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
+    d->collection->readXmlResources("data", partname + "/scripts/*.rc");
+}
+
 void finalizeCollection(Kross::ActionCollection* c)
 {
     foreach(Kross::Action* a, c->actions())
         a->finalize();
     foreach(QString s, c->collections())
         finalizeCollection( c->collection(s) );
+    //Manager::self().actionCollection()->clear();
 }
 
-GUIClient::~GUIClient()
+void GUIClient::finalize()
 {
-    finalizeCollection( Kross::Manager::self().actionCollection() );
-    delete d;
+    finalizeCollection( d->collection );
+    d->collection = 0;
 }
 
 void GUIClient::setXMLFile(const QString& file, bool merge, bool setXMLDoc)
@@ -214,9 +217,8 @@ void addMenu(QMenu* menu, ActionCollection* collection)
 void GUIClient::slotMenuAboutToShow()
 {
     d->scriptsmenu->menu()->clear();
-    ActionCollection* collection = Manager::self().actionCollection();
-    Q_ASSERT(collection);
-    addMenu(d->scriptsmenu->menu(), collection);
+    if( d->collection )
+        addMenu(d->scriptsmenu->menu(), d->collection);
 }
 
 void GUIClient::slotShowExecuteScriptFile()

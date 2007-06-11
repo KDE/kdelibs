@@ -30,14 +30,14 @@
 
 namespace Kross {
 
+    class ActionCollection;
+
     /**
      * The GUIClient class implements a KXMLGUIClient to provide
      * abstract access to the Kross Scripting Framework to an
      * application.
      */
-    class KROSSUI_EXPORT GUIClient
-        : public QObject
-        , public KXMLGUIClient
+    class KROSSUI_EXPORT GUIClient : public QObject, public KXMLGUIClient
     {
             Q_OBJECT
 
@@ -59,6 +59,9 @@ namespace Kross {
              * Destructor.
              */
             virtual ~GUIClient();
+
+            virtual void initialize(Kross::ActionCollection* collection);
+            virtual void finalize();
 
             /**
              * KXMLGUIClient overloaded method to set the XML file.
