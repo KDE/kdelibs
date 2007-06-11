@@ -54,10 +54,7 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
                                         const QString& label )
 {
     PasswordDialog* dlg;
-    if( keep )
-        dlg = new PasswordDialog( prompt, user, (*keep) );
-    else
-        dlg = new PasswordDialog( prompt, user );
+    dlg = new PasswordDialog( prompt, user, keep );
 
     if ( !caption.isEmpty() )
         dlg->setCaption( caption );
@@ -71,7 +68,7 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
         dlg->setUsernameReadOnly( readOnly );
 
     if ( keep )
-        dlg->setKeepPassword( keep );
+        dlg->setKeepPassword( *keep );
 
     int ret = dlg->exec();
     if ( ret == Accepted )
