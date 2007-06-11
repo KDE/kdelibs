@@ -33,7 +33,7 @@
 #include <QtCore/QHash>
 #include <QTextDocument>
 
-//#define DEBUG_FIND
+#define DEBUG_FIND
 
 #define INDEX_NOMATCH -1
 
@@ -74,8 +74,8 @@ struct KFind::Private
     ~Private()
     {
         data.clear();
-        delete emptyMatch;
-        emptyMatch = 0;
+        if (emptyMatch)
+            delete emptyMatch;
     }
 
     struct Match
@@ -152,8 +152,10 @@ void KFind::init( const QString& pattern )
 
 KFind::~KFind()
 {
-    delete m_dialog;
+    if (m_dialog)
+        delete m_dialog;
     delete d;
+    kDebug() << k_funcinfo << endl;
 }
 
 bool KFind::needData() const
@@ -629,8 +631,15 @@ void KFind::slotFindNext()
 
 void KFind::slotDialogClosed()
 {
+#ifdef DEBUG_FIND
+    kDebug() << k_funcinfo << " Begin"<< endl;
+#endif
     emit dialogClosed();
     m_dialogClosed = true;
+#ifdef DEBUG_FIND
+    kDebug() << k_funcinfo << " End"<< endl;
+#endif
+
 }
 
 void KFind::displayFinalDialog() const
@@ -698,7 +707,8 @@ void KFind::setOptions( long options )
 
 void KFind::closeFindNextDialog()
 {
-    delete m_dialog;
+    if (m_dialog)
+        delete m_dialog;
     m_dialog = 0L;
     m_dialogClosed = true;
 }
