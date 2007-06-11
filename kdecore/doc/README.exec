@@ -7,30 +7,23 @@ you should or should not use them.
 1. fork + exec
 
 You never want to use this unless you have a very good reason why it is 
-impossible to use K3Process.
+impossible to use KProcess.
 
-2. K3Process
+2. KProcess/KPtyProcess
 
 You want to use this if you need to start a new process which needs to be a 
 child of your process, e.g. because you want to catch stdout/stderr or need 
 to send it data via stdin. You should never use this to start other KDE 
-applications unless your application is called kgdb :-) If you need to
-send/receive text like data to/from the process, you are probably better 
-off with K3ProcIO
+applications unless your application is called kgdb :-)
 
-3. K3ProcIO
-
-Like K3Process. Unlike K3Process, this class actually makes it easy to 
-send data to and receive data from the process.
-
-4. startServiceByDesktopPath
+3. startServiceByDesktopPath
 
 Preferred way to launch desktop (KDE/Gnome/X) applications or KDE services. 
 The application/service must have a .desktop file. It will make use of 
 KDEinit for increased startup performance and lower memory usage. These 
 benefits only apply to applications available as KDEinit loadable module (KLM)
 
-5. KRun
+4. KRun
 
 Generic way to open documents/applications/shell commands. Uses
 startServiceBy.... where applicable. Offers the additional 
