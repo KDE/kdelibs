@@ -259,26 +259,17 @@ void KColorCells::setColor( int column, const QColor &color )
 
 void KColorCells::resizeEvent( QResizeEvent* )
 {
-    // iterate over each column and each row and resize them to fit their contents.
-    // resizeColumnsToContents() and resizeRowsToContents() are not used because
-    // of a bug in Qt 4.2 where the aforementioned methods do not ignore the height/width
-    // of hidden headers as they should do.
-    //
-    // resizeColumnToContents() and resizeColumnsToContents() use completely different logic internally
-    // and the former correctly ignores the width of the header section for a column if the header is
-    // hidden.  the latter does not.  the same applies to resizeRowToContents() and resizeRowsToContents()
-    //
-    // TODO - Update with Qt task tracker bug id when reported.
-    //
+    // According to the Qt doc:
+    //   If you need to set the width of a given column to a fixed value, call
+    //   QHeaderView::resizeSection() on the table's {horizontal,vertical}
+    //   header.
+    // Therefore we iterate over each row and column and set the header section
+    // size, as the sizeHint does indeed appear to be ignored in favor of a
+    // minimum size that is larger than what we want.
     for ( int index = 0 ; index < columnCount() ; index++ )
-        resizeColumnToContents(index);
+        horizontalHeader()->resizeSection( index, sizeHintForColumn(index) );
     for ( int index = 0 ; index < rowCount() ; index++ )
-        resizeRowToContents(index);
-
-    // use the method below when the bug is fixed:
-
-    //resizeColumnsToContents();
-    //resizeRowsToContents();
+        verticalHeader()->resizeSection( index, sizeHintForRow(index) );
 }
 
 int KColorCells::sizeHintForColumn(int /*column*/) const
