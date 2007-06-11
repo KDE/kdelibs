@@ -20,7 +20,7 @@ kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 if(MSVC)
     set_target_properties(kcookiejar4 PROPERTIES COMPILE_FLAGS "/FI${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
 else(MSVC)
-    set_target_properties(kcookiejar4 PROPERTIES COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h" )
+    set_target_properties(kcookiejar4 PROPERTIES COMPILE_FLAGS "-include \"${CMAKE_CURRENT_SOURCE_DIR}/qdeclareqlistint_hack.h\"" )
 endif(MSVC)
 
 target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} )
