@@ -958,6 +958,7 @@ install( FILES
   Solid/PowerManagement
   Solid/Predicate
   Solid/Processor
+  Solid/StorageAccess
   Solid/StorageDrive
   Solid/StorageVolume
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Solid )
