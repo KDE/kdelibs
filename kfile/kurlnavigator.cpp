@@ -2,6 +2,7 @@
  * Copyright (C) 2006 by Peter Penz <peter.penz@gmx.at>                      *
  * Copyright (C) 2006 by Aaron J. Seigo <aseigo@kde.org>                     *
  * Copyright (C) 2007 by Kevin Ottens <ervin@kde.org>                        *
+ * Copyright (C) 2007 by Urs Wolfer <uwolfer @ kde.org>                      *
  *                                                                           *
  * This library is free software; you can redistribute it and/or             *
  * modify it under the terms of the GNU Library General Public               *
@@ -28,6 +29,7 @@
 
 #include <kfileitem.h>
 #include <kicon.h>
+#include <klineedit.h>
 #include <klocale.h>
 #include <kmenu.h>
 #include <kprotocolinfo.h>
@@ -42,7 +44,6 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
 
 /**
  * @brief Represents the history element of an URL.
@@ -186,7 +187,7 @@ public:
     KUrlComboBox* m_pathBox;
     KProtocolCombo* m_protocols;
     QLabel* m_protocolSeparator;
-    QLineEdit* m_host;
+    KLineEdit* m_host;
     KUrlDropDownButton* m_dropDownButton;
     QLinkedList<KUrlNavigatorButton*> m_navButtons;
     KUrlButton* m_toggleEditableMode;
@@ -237,6 +238,8 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     connect(m_pathBox, SIGNAL(returnPressed(QString)),
             q, SLOT(slotReturnPressed(QString)));
+    connect(m_pathBox, SIGNAL(returnPressed()),
+            q, SIGNAL(returnPressed()));
     connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
             q, SLOT(setUrl(KUrl)));
 
@@ -286,41 +289,19 @@ void KUrlNavigator::Private::slotRemoteHostActivated()
 {
     KUrl u = q->url();
 
-    QString host = m_host->text();
-    QString user;
-    int port = -1;
+    KUrl n(m_protocols->currentProtocol() + "://" + m_host->text());
 
-    int marker = host.indexOf("@");
-    if (marker != -1) {
-        user = host.left(marker);
-        u.setUser(user);
-        host = host.right(host.length() - marker - 1);
-    }
-
-    marker = host.indexOf("/");
-    if (marker != -1) {
-        u.setPath(host.right(host.length() - marker));
-        host.truncate(marker);
-    } else {
-        u.setPath("");
-    }
-
-    marker = host.indexOf(":");
-    if (marker != -1) {
-        port = host.right(host.length() - marker - 1).toInt();
-        u.setPort(port);
-        host = host.left(marker);
-    }
-
-    if (m_protocols->currentProtocol() != u.protocol() ||
-            host != u.host() ||
-            port != u.port() ||
-            user != u.user()) {
-        u.setProtocol(m_protocols->currentProtocol());
-        u.setHost(m_host->text());
+    if (n.scheme() != u.scheme() ||
+            n.host() != u.host() ||
+            n.user() != u.user() ||
+            n.port() != u.port()) {
+        u.setScheme(n.scheme());
+        u.setHost(n.host());
+        u.setUser(n.user());
+        u.setPort(n.port());
 
         //TODO: get rid of this HACK for file:///!
-        if (u.protocol() == "file") {
+        if (u.scheme() == "file") {
             u.setHost("");
             if (u.path().isEmpty()) {
                 u.setPath("/");
@@ -334,7 +315,7 @@ void KUrlNavigator::Private::slotRemoteHostActivated()
 void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 {
     KUrl url;
-    url.setProtocol(protocol);
+    url.setScheme(protocol);
     //url.setPath(KProtocolInfo::protocolClass(protocol) == ":local" ? "/" : "");
     url.setPath("/");
     QLinkedList<KUrlNavigatorButton*>::const_iterator it = m_navButtons.begin();
@@ -352,13 +333,14 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
         if (!m_host) {
             m_protocolSeparator = new QLabel("://", q);
             appendWidget(m_protocolSeparator);
-            m_host = new QLineEdit(q);
+            m_host = new KLineEdit(q);
+            m_host->setClearButtonShown(true);
             appendWidget(m_host, 1);
 
-            connect(m_host, SIGNAL(lostFocus()),
+            connect(m_host, SIGNAL(editingFinished()),
                     q, SLOT(slotRemoteHostActivated()));
             connect(m_host, SIGNAL(returnPressed()),
-                    q, SLOT(slotRemoteHostActivated()));
+                    q, SIGNAL(returnPressed()));
         } else {
             m_host->setText("");
         }
@@ -412,6 +394,7 @@ void KUrlNavigator::slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
 
 void KUrlNavigator::Private::switchView()
 {
+    m_toggleEditableMode->setFocus();
     m_editable = !m_editable;
     m_toggleEditableMode->setChecked(m_editable);
     updateContent();
@@ -476,7 +459,7 @@ void KUrlNavigator::Private::updateContent()
 
         const KUrl currentUrl = q->url();
         if (!currentUrl.isLocalFile() && !placeUrl.isValid()) {
-            QString protocol = currentUrl.protocol();
+            QString protocol = currentUrl.scheme();
             if (!m_protocols) {
                 deleteButtons();
                 m_protocols = new KProtocolCombo(protocol, q);
@@ -503,13 +486,14 @@ void KUrlNavigator::Private::updateContent()
                     // ######### TODO: this code is duplicated from slotProtocolChanged!
                     m_protocolSeparator = new QLabel("://", q);
                     appendWidget(m_protocolSeparator);
-                    m_host = new QLineEdit(hostText, q);
+                    m_host = new KLineEdit(hostText, q);
+                    m_host->setClearButtonShown(true);
                     appendWidget(m_host, 1);
 
-                    connect(m_host, SIGNAL(lostFocus()),
+                    connect(m_host, SIGNAL(editingFinished()),
                             q, SLOT(slotRemoteHostActivated()));
                     connect(m_host, SIGNAL(returnPressed()),
-                            q, SLOT(slotRemoteHostActivated()));
+                            q, SIGNAL(returnPressed()));
                 } else {
                     m_host->setText(hostText);
                 }

@@ -226,6 +226,11 @@ Q_SIGNALS:
     void urlsDropped(const KUrl::List& urls,
                      const KUrl& destination);
 
+    /**
+     * This signal is emitted when the Return or Enter key is pressed.
+     */
+    void returnPressed();
+
 protected:
     /**
      * If the Escape key is pressed, the navigation bar should switch
