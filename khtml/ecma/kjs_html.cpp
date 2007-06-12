@@ -276,9 +276,10 @@ bool KJS::HTMLDocument::getOwnPropertySlot(ExecState *exec, const Identifier &pr
   }
 
   // Look for overrides
-  ValueImp **val = getDirectLocation(propertyName);
+  bool ro;
+  ValueImp **val = getDirectLocation(propertyName, ro);
   if (val) {
-    slot.setValueSlot(this, val);
+    slot.setValueSlot(this, val, ro);
     return true;
   }
 

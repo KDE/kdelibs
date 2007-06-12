@@ -531,10 +531,11 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
   }
 
   // Look for overrides first
-  ValueImp **val = getDirectLocation(propertyName);
+  bool ro;
+  ValueImp **val = getDirectLocation(propertyName, ro);
   if (val) {
     if (isSafeScript(exec))
-      slot.setValueSlot(this, val);
+      slot.setValueSlot(this, val, ro);
     else
       slot.setUndefined(this);
     return true;
