@@ -26,6 +26,7 @@
 #include <kdebug.h>
 
 #include <kcomponentdata.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <kjob.h>
 #include <solid/storageaccess.h>
@@ -247,7 +248,8 @@ QSize KFilePlacesView::sizeHint() const
            textWidth = qMax(textWidth,fm.width(placesModel->bookmarkForIndex(index).text()));
     }
 
-    return QSize(32 + textWidth + 2*KDialog::marginHint(), height);
+    const int iconSize = KIconLoader::global()->currentSize(K3Icon::Dialog);
+    return QSize(iconSize + textWidth + 2*KDialog::marginHint(), height);
 }
 
 void KFilePlacesView::Private::setCurrentIndex(const QModelIndex &index)
