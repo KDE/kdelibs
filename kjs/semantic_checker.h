@@ -70,7 +70,7 @@ namespace KJS {
   private:
     Vector<SemanticContext> contextStack;
   };
-};
+}
 
 #endif
 
