@@ -59,6 +59,35 @@ enum KDEMainFlag { NoGUI = 0, GUI = 1 }; // bitfield, next item is 2!
 Q_DECLARE_FLAGS(KDEMainFlags, KDEMainFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
 /**
+ * \short QTEST_KDEMAIN variant with additional argument for the main component name
+ *
+ * This variant is useful for testing application classes which rely on the main
+ * component having a specific name (for instance to find xmlgui .rc files).
+ *
+ * This variant should not be needed in kdelibs's own unit tests.
+ *
+ * \param TestObject The class you use for testing.
+ * \param flags one of KDEMainFlag. This is passed to the QApplication constructor.
+ * \param componentName the name that will be given to the main component data.
+ *
+ * \see KDEMainFlag
+ * \see QTestLib
+ */
+#define QTEST_KDEMAIN_WITH_COMPONENTNAME(TestObject, flags, componentName) \
+int main(int argc, char *argv[]) \
+{ \
+    setenv("LC_ALL", "C", 1); \
+    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
+    KAboutData aboutData( componentName, "qttest", "version" );  \
+    KDEMainFlags mainFlags = flags;                         \
+    KComponentData cData(&aboutData); \
+    QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
+    app.setApplicationName( "qttest" ); \
+    TestObject tc; \
+    return QTest::qExec( &tc, argc, argv ); \
+}
+
+/**
  * \short KDE Replacement for QTEST_MAIN from QTestLib
  *
  * This macro should be used for classes that need a KComponentData.
@@ -71,19 +100,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
  * \see KDEMainFlag
  * \see QTestLib
  */
-#define QTEST_KDEMAIN(TestObject, flags) \
-int main(int argc, char *argv[]) \
-{ \
-    setenv("LC_ALL", "C", 1); \
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + "/.kde-unit-test" ), 1); \
-    KAboutData aboutData( "qttest", "qttest", "version" );  \
-    KDEMainFlags mainFlags = flags;                         \
-    KComponentData cData(&aboutData); \
-    QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
-    app.setApplicationName( "qttest" ); \
-    TestObject tc; \
-    return QTest::qExec( &tc, argc, argv ); \
-}
+#define QTEST_KDEMAIN(TestObject, flags) QTEST_KDEMAIN_WITH_COMPONENTNAME(TestObject, flags, "qttest")
 
 /**
  * \short KDE Replacement for QTEST_MAIN from QTestLib, for non-gui code.
