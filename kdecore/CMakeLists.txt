@@ -254,7 +254,7 @@ set( ktranscript_LIB_SRCS
 
 kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
 
-target_link_libraries( ktranscript kjs )
+target_link_libraries( ktranscript kjs ${QT_QTCORE_LIBRARY} )
 
 
 if(KDE4_ENABLE_FINAL)
