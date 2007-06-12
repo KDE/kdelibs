@@ -73,14 +73,14 @@ KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
           d(new KAutoSaveFilePrivate)
 {
     setManagedFile(filename);
-    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::KAutoSaveFile(QObject *parent)
         : QFile(parent),
           d(new KAutoSaveFilePrivate)
 {
-    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::~KAutoSaveFile()
@@ -155,7 +155,7 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
 QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QString &applicationName)
 {
-    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 
     QString appName(applicationName);
     if (appName.isEmpty()) {
@@ -192,7 +192,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QSt
 
 QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationName)
 {
-    KGlobal::dirs()->addResourceType("stale", QString::fromLatin1("data/stalefiles"));
+    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 
     QString appName(applicationName);
     if (appName.isEmpty()) {
