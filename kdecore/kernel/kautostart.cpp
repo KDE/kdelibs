@@ -51,7 +51,7 @@ KAutostart::KAutostart(const QString& entryName,
     : QObject(parent),
       d(new Private)
 {
-    KGlobal::dirs()->addResourceType("autostart", "share/autostart");
+    KGlobal::dirs()->addResourceType("autostart", 0, "share/autostart");
     if (entryName.isEmpty())
     {
         // XXX sure that the mainComponent is available at this point?
