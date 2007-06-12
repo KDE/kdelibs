@@ -1119,6 +1119,11 @@ void KApplication::setStartupId( const QByteArray& startup_id )
         }
 }
 
+void KApplication::clearStartupId()
+{
+    d->startup_id = "0";
+}
+
 // Qt reads and unsets the value and doesn't provide any way to reach the value,
 // so steal it from it beforehand. If Qt gets API for taking (reading and unsetting)
 // the startup id from it, this can be dumped.

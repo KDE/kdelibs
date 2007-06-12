@@ -552,7 +552,7 @@ void KStartupInfo::appStarted()
     if( kapp != NULL )  // KApplication constructor unsets the env. variable
         {
         appStarted( kapp->startupId());
-        kapp->setStartupId( QByteArray()); // reset the id, no longer valid
+        kapp->clearStartupId(); // reset the id, no longer valid (must use clearStartupId() to avoid infinite loop)
         }
     else
         {
@@ -600,7 +600,7 @@ void KStartupInfo::silenceStartup( bool silence )
 
 void KStartupInfo::handleAutoAppStartedSending()
     {
-    if( auto_app_started_sending && !kapp->startupId().isEmpty())
+    if( auto_app_started_sending )
         appStarted();
     }
 

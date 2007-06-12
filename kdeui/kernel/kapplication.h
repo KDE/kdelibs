@@ -319,6 +319,11 @@ public:
    * @see KStartupInfo::setNewStartupId
    */
   void setStartupId( const QByteArray& startup_id );
+  /**
+   * @internal
+   * Used only by KStartupId.
+   */
+  void clearStartupId();
 
   /**
    * Sets how the primary and clipboard selections are synchronized in an X11 environment
