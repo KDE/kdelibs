@@ -2025,7 +2025,7 @@ Node* VarStatementNode::optimizeLocalAccess(ExecState*, FunctionBodyNode* funcBo
     }
   }
   return staticVer;
-};
+}
 
 
 // ------------------------------ StaticVarStatementNode -----------------------
