@@ -1,4 +1,4 @@
-include_directories(${CMAKE_SOURCE_DIR}/solid)
+include_directories(${CMAKE_SOURCE_DIR}/solid ${CMAKE_BINARY_DIR}/solid)
 
 FIND_PACKAGE(Alsa)
 ALSA_VERSION_STRING(ALSA_VERSION_STR)
