@@ -119,7 +119,7 @@ public:
         /**
          * Eigth color, e.g. success messages, trusted content.
          */
-        PositiveText = 7,
+        PositiveText = 7
     };
 
     /**
