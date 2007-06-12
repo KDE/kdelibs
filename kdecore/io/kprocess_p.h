@@ -26,7 +26,7 @@
 
 class KProcessPrivate {
     Q_DECLARE_PUBLIC(KProcess)
-
+protected:
     KProcessPrivate() :
         openMode(QIODevice::ReadWrite)
     {
