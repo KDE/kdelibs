@@ -38,8 +38,6 @@ int main(int args, char **argv)
 {
     KComponentData componentData("tutorial1");
     
-    Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
-    
     foreach (Solid::Device device, Solid::Device::allDevices())
     {
         kDebug() << device.udi().toLatin1().constData() << endl;

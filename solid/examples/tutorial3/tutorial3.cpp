@@ -40,8 +40,6 @@ int main(int args, char **argv)
 {
     KComponentData componentData("tutorial3");
     
-    Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
-    
     //get a Processor
     QList<Solid::Device> list = Solid::Device::listFromType(Solid::DeviceInterface::Processor, QString());
 

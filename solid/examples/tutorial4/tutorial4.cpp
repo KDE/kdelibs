@@ -21,8 +21,8 @@
 #include <QList>
 
 //solid specific includes
-#include <solid/devicemanager.h>
-#include <solid/networkmanager.h>
+#include <solid/device.h>
+#include <solid/networking.h>
 
 //kde specific includes
 #include <kcomponentdata.h>
@@ -38,11 +38,8 @@ int main(int args, char **argv)
 {
     KComponentData data("tutorial4");
     
-    //get a reference to the network manager
-    Solid::NetworkManager &netmanager = Solid::NetworkManager::self();
-    
     //test to see if networking is enabled on the system
-    if(netmanager.isNetworkingEnabled())
+    if(Solid::Networking::status() == Solid::Networking::Connected)
     {
         kDebug() << "Networking is enabled.  Feel free to go online!" << endl;
     }

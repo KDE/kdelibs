@@ -21,8 +21,8 @@
 #include <QList>
 
 //solid specific includes
-#include <solid/devicemanager.h>
-#include <solid/networkmanager.h>
+#include <solid/deviceinterface.h>
+#include <solid/networking.h>
 #include <solid/device.h>
 #include <solid/networkinterface.h>
 
@@ -40,11 +40,8 @@ int main(int args, char **argv)
 {
     KComponentData data("tutorial5");
     
-    //get a reference to the device manager
-    Solid::DeviceManager &manager = Solid::DeviceManager::self();
-    
-    //get a network device
-    Solid::DeviceList netlist = manager.findDevicesFromQuery(Solid::DeviceInterface::NetworkInterface, QString());
+    //get a Network Device
+    QList<Solid::Device> netlist = Solid::Device::listFromType(Solid::DeviceInterface::NetworkInterface, QString());
     
     //check to see if no network devices were found
     if(netlist.empty())

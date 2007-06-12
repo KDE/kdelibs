@@ -39,8 +39,6 @@ int main(int args, char **argv)
 {
     KComponentData componentData("tutorial2");
     
-    Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
-    
     //get a list of all devices that are AudioInterface
     foreach (Solid::Device device, Solid::Device::listFromType(Solid::DeviceInterface::AudioInterface, QString()))
     {
