@@ -1,6 +1,7 @@
-/** @mainpage ./kspell2
+/** @mainpage Sonnet - The KDE Language Processing Architecture
  * 
  * Not much to say.
 */
 
 // DOXYGEN_REFERENCES = kdecore kdeui
+// DOXYGEN_SET_PROJECT_NAME = Sonnet

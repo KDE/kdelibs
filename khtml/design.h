@@ -23,8 +23,6 @@
 
 
 /**
- * \mainpage KDE HTML widget
- *
  * This library provides a full-featured HTML parser and widget. It is
  * used for rendering in all KDE applications which allow HTML viewing,
  * including the Konqueror browser/file manager, KMail, and the KDE Help

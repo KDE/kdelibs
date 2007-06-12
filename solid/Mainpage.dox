@@ -1,4 +1,4 @@
-/** @mainpage Solid
+/** @mainpage Solid - Device Integration Framework
  *
  * And for HAL's sake, each mistake, ah, you forgave
  * And soon both of us learned to trust
@@ -17,3 +17,4 @@
  */
 
 // DOXYGEN_EXCLUDE = solid/backends solid/ifaces tests
+// DOXYGEN_SET_PROJECT_NAME = Solid

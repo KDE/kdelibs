@@ -1,4 +1,4 @@
-/** \mainpage The Phonon API.
+/** \mainpage Phonon - Multimedia API for KDE
 
 %Phonon is the Multimedia API for %KDE. You should evaluate whether %Phonon
 supplies all you need before looking at frameworks like GStreamer, NMM or Helix.

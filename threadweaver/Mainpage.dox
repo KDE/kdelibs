@@ -1,4 +1,4 @@
-/*! \mainpage Introduction to ThreadWeaver
+/*! \mainpage ThreadWeaver - a Helper for Multithreaded Programming
 
 \section UseCases Use Cases
 
@@ -219,3 +219,4 @@ interaction with the weaver state and it's signals. The Simple
 Multithreaded Image Viewer (SMIV) example shows the use of job
 dependencies.</p>
 */
+// DOXYGEN_SET_PROJECT_NAME = ThreadWeaver

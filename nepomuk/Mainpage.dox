@@ -398,3 +398,4 @@
  * \endcode
  */
 // DOXYGEN_EXCLUDE = core/resourcedata.h
+// DOXYGEN_SET_PROJECT_NAME = Nepomuk

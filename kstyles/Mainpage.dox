@@ -1,6 +1,7 @@
-/** @mainpage ./kstyles
+/** @mainpage KStyles - a Set of KDE Widget Styles
  * 
  * Not much to say.
 */
 
 // DOXYGEN_REFERENCES = kdecore kdefx
+// DOXYGEN_SET_PROJECT_NAME = KStyles
