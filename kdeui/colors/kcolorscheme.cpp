@@ -19,9 +19,9 @@
 #include "kcolorscheme.h"
 
 #include <kconfig.h>
-#include <kglobal.h>
-#include <kcomponentdata.h>
 #include <kconfiggroup.h>
+#include <kglobal.h>
+#include <ksharedconfig.h>
 
 #include <QtGui/QColor>
 #include <QtGui/QBrush>
