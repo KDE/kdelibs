@@ -299,6 +299,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
         // when it is a KLineEdit!
         connect( edit, SIGNAL( destroyed() ), SLOT( lineEditDeleted() ));
 
+        connect(d->klineEdit, SIGNAL(returnPressed()), SIGNAL(returnPressed()));
+
         connect( d->klineEdit, SIGNAL( returnPressed( const QString& )),
                  SIGNAL( returnPressed( const QString& ) ));
 
