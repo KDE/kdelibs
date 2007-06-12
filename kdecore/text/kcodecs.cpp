@@ -1091,6 +1091,10 @@ KMD4::KMD4(const QByteArray& in)
     update( in );
 }
 
+KMD4::~KMD4()
+{
+}
+
 void KMD4::update(const QByteArray& in)
 {
     update(in.data(), int(in.length()));

@@ -483,6 +483,7 @@ public:
   typedef unsigned char Digest[16];
 
   KMD4();
+  ~KMD4();
 
   /**
    * Constructor that updates the digest for the given string.
