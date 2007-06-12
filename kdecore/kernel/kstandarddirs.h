@@ -259,14 +259,14 @@ public:
      *
      * @param type Specifies a short descriptive string to access
      * files of this type.
-     * @param type Specifies an already known type
+     * @param basetype Specifies an already known type, or 0 if none
      * @param relativename Specifies a directory relative to the basetype
      * @param priority if true, the directory is added before any other,
      * otherwise after
      * @return true if successful, false otherwise.
      */
     bool addResourceType( const char *type, const char *basetype,
-                                         const QString& relativename, bool priority = true );
+                          const QString& relativename, bool priority = true );
 
     /// @internal - just to avoid unwanted overload
     bool addResourceType( const char *type, const char *basetype,
