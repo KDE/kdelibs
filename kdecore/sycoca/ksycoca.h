@@ -183,10 +183,6 @@ protected:
     QDataStream *m_str;
 
 private:
-    bool checkVersion(bool abortOnError=true);
-    bool openDatabase(bool openDummyIfNotFound=true);
-    void closeDatabase();
-
     Q_DISABLE_COPY(KSycoca)
     class Private;
     Private * const d;

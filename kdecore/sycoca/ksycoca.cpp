@@ -61,17 +61,18 @@ class KSycoca::Private
 public:
     Private()
         : noDatabase( false ),
-          sycoca_size( 0 ),
-          sycoca_mmap( 0 ),
-          timeStamp( 0 ),
-          database( 0 ),
+          badVersion( false ),  // TODO merge with above using enum
           readError( false ),
-          updateSig( 0 ),
 #ifdef Q_WS_WIN
           autoRebuild( false ),
 #else
           autoRebuild( true ),
 #endif
+          sycoca_size( 0 ),
+          sycoca_mmap( 0 ),
+          timeStamp( 0 ),
+          m_database( 0 ),
+          updateSig( 0 ),
           lstFactories( 0 )
     {
     }
@@ -81,16 +82,22 @@ public:
         _self = 0;
     }
 
+    bool checkVersion();
+    bool openDatabase(bool openDummyIfNotFound=true);
+    bool checkDatabase(bool openDummyIfNotFound);
+    void closeDatabase();
+
     bool noDatabase;
+    bool badVersion;
+    bool readError;
+    bool autoRebuild;
     size_t sycoca_size;
     const char *sycoca_mmap;
     quint32 timeStamp;
-    QFile *database;
+    QFile *m_database;
     QStringList changeList;
     QString language;
-    bool readError;
     quint32 updateSig;
-    bool autoRebuild;
     QStringList allResourceDirs;
     KSycocaFactoryList *lstFactories;
     static KSycoca *_self;
@@ -110,6 +117,7 @@ KSycoca::KSycoca()
 {
    QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.KSycoca", "notifyDatabaseChanged",
                                this, SLOT(notifyDatabaseChanged(QStringList)));
+   Private::_self = this;
    // We register with D-Bus _before_ we try to open the database.
    // This way we can be relatively sure that the KDE framework is
    // up and running (kdeinit, dcopserver, klauncher, kded) and
@@ -118,15 +126,15 @@ KSycoca::KSycoca()
    //   -> huh? -thiago
    //   This is because dcopserver was autostarted (via kdeinit) when trying to register to dcop. - David
    //   But the "launching kdeinit" case below takes care of it.
-   openDatabase();
-   Private::_self = this;
+   d->openDatabase();
 }
 
-bool KSycoca::openDatabase( bool openDummyIfNotFound )
+bool KSycoca::Private::openDatabase( bool openDummyIfNotFound )
 {
    bool result = true;
 
-   d->sycoca_mmap = 0;
+   sycoca_mmap = 0;
+   QDataStream* &m_str = Private::_self->m_str;
    m_str = 0;
    QString path;
    QByteArray ksycoca_env = getenv("KDESYCOCA");
@@ -136,62 +144,62 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
       path = QFile::decodeName(ksycoca_env);
 
    kDebug(7011) << "Trying to open ksycoca from " << path << endl;
-   QFile *database = new QFile(path);
-   bool bOpen = database->open( QIODevice::ReadOnly );
+   m_database = new QFile(path);
+   bool bOpen = m_database->open( QIODevice::ReadOnly );
    if (!bOpen)
    {
      path = KStandardDirs::locate("services", KSYCOCA_FILENAME);
      if (!path.isEmpty())
      {
        kDebug(7011) << "Trying to open global ksycoca from " << path << endl;
-       delete database;
-       database = new QFile(path);
-       bOpen = database->open( QIODevice::ReadOnly );
+       delete m_database;
+       m_database = new QFile(path);
+       bOpen = m_database->open( QIODevice::ReadOnly );
      }
    }
 
    if (bOpen)
    {
-     fcntl(database->handle(), F_SETFD, FD_CLOEXEC);
-     d->sycoca_size = database->size();
+     fcntl(m_database->handle(), F_SETFD, FD_CLOEXEC);
+     sycoca_size = m_database->size();
 #ifdef HAVE_MMAP
-     d->sycoca_mmap = (const char *) mmap(0, d->sycoca_size,
-                                PROT_READ, MAP_SHARED,
-                                database->handle(), 0);
+     sycoca_mmap = (const char *) mmap(0, sycoca_size,
+                                       PROT_READ, MAP_SHARED,
+                                       m_database->handle(), 0);
      /* POSIX mandates only MAP_FAILED, but we are paranoid so check for
         null pointer too.  */
-     if (d->sycoca_mmap == (const char*) MAP_FAILED || d->sycoca_mmap == 0)
+     if (sycoca_mmap == (const char*) MAP_FAILED || sycoca_mmap == 0)
      {
-        kDebug(7011) << "mmap failed. (length = " << d->sycoca_size << ")" << endl;
+        kDebug(7011) << "mmap failed. (length = " << sycoca_size << ")" << endl;
 #endif
-        m_str = new QDataStream(database);
+        m_str = new QDataStream(m_database);
         m_str->setVersion(QDataStream::Qt_3_1);
-        d->sycoca_mmap = 0;
+        sycoca_mmap = 0;
 #ifdef HAVE_MMAP
      }
      else
      {
 #ifdef HAVE_MADVISE
-        (void) madvise((char*)d->sycoca_mmap, d->sycoca_size, MADV_WILLNEED);
+        (void) madvise((char*)sycoca_mmap, sycoca_size, MADV_WILLNEED);
 #endif
         QBuffer *buffer = new QBuffer;
-        buffer->setData(QByteArray::fromRawData(d->sycoca_mmap, d->sycoca_size));
+        buffer->setData(QByteArray::fromRawData(sycoca_mmap, sycoca_size));
         buffer->open(QIODevice::ReadOnly);
         m_str = new QDataStream( buffer);
         m_str->setVersion(QDataStream::Qt_3_1);
      }
 #endif
-     d->noDatabase = false;
+     noDatabase = false;
    }
    else
    {
      kDebug(7011) << "Could not open ksycoca" << endl;
 
      // No database file
-     delete database;
-     database = 0;
+     delete m_database;
+     m_database = 0;
 
-     d->noDatabase = true;
+     noDatabase = true;
      if (openDummyIfNotFound)
      {
         // We open a dummy database instead.
@@ -208,8 +216,7 @@ bool KSycoca::openDatabase( bool openDummyIfNotFound )
         result = false;
      }
    }
-   d->lstFactories = new KSycocaFactoryList;
-   d->database = database;
+   lstFactories = new KSycocaFactoryList;
    return result;
 }
 
@@ -234,48 +241,47 @@ KSycoca * KSycoca::self()
 
 KSycoca::~KSycoca()
 {
-   closeDatabase();
+   d->closeDatabase();
    delete d;
    Private::_self = 0L;
 }
 
 bool KSycoca::isAvailable()
 {
-   if ( self()->d->noDatabase )
-       return false;
-   return self()->checkVersion(false);
+    return self()->d->checkDatabase(false/* don't open dummy db if not found */);
 }
 
-void KSycoca::closeDatabase()
+void KSycoca::Private::closeDatabase()
 {
+    QDataStream *m_str = Private::_self->m_str;
    QIODevice *device = 0;
    if (m_str)
       device = m_str->device();
 #ifdef HAVE_MMAP
-   if (device && d->sycoca_mmap)
+   if (device && sycoca_mmap)
    {
       QBuffer *buf = static_cast<QBuffer*>(device);
       buf->buffer().clear();
       // Solaris has munmap(char*, size_t) and everything else should
       // be happy with a char* for munmap(void*, size_t)
-      munmap(const_cast<char*>(d->sycoca_mmap), d->sycoca_size);
-      d->sycoca_mmap = 0;
+      munmap(const_cast<char*>(sycoca_mmap), sycoca_size);
+      sycoca_mmap = 0;
    }
 #endif
 
    delete m_str;
    m_str = 0;
    delete device;
-   if (d->database != device)
-      delete d->database;
+   if (m_database != device)
+      delete m_database;
    device = 0;
-   d->database = 0;
+   m_database = 0;
    // It is very important to delete all factories here
    // since they cache information about the database file
-   if ( d->lstFactories )
-       qDeleteAll( *d->lstFactories );
-   delete d->lstFactories;
-   d->lstFactories = 0;
+   if ( lstFactories )
+       qDeleteAll( *lstFactories );
+   delete lstFactories;
+   lstFactories = 0;
 }
 
 void KSycoca::addFactory( KSycocaFactory *factory )
@@ -297,8 +303,9 @@ void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
     // Close the database and forget all about what we knew
     // The next call to any public method will recreate
     // everything that's needed.
-    closeDatabase();
+    d->closeDatabase();
     d->noDatabase = false;
+    d->badVersion = false;
 
     // Now notify applications
     emit databaseChanged();
@@ -307,7 +314,7 @@ void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
 QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)
 {
    if ( !m_str )
-      openDatabase();
+      d->checkDatabase(true);
    //kDebug(7011) << QString("KSycoca::_findEntry(offset=%1)").arg(offset,8,16) << endl;
    m_str->device()->seek(offset);
    qint32 aType;
@@ -322,82 +329,114 @@ KSycocaFactoryList* KSycoca::factories()
     return d->lstFactories;
 }
 
-
-bool KSycoca::checkVersion(bool abortOnError)
+// Warning, checkVersion rewinds to the beginning of m_str.
+bool KSycoca::Private::checkVersion()
 {
-   if ( !m_str )
-   {
-      if( !openDatabase(false /* don't open dummy db if not found */) )
-        return false; // No database found
+    QDataStream *m_str = Private::_self->m_str;
+    Q_ASSERT(m_str);
+    m_str->device()->seek(0);
+    qint32 aVersion;
+    *m_str >> aVersion;
+    if ( aVersion < KSYCOCA_VERSION ) {
+        kWarning(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << " or higher." << endl;
+        return false;
+    } else {
+        return true;
+    }
+}
 
-      // We should never get here... if a database was found then m_str shouldn't be 0L.
-      Q_ASSERT(m_str);
-   }
-   m_str->device()->seek(0);
-   qint32 aVersion;
-   *m_str >> aVersion;
-   if ( aVersion < KSYCOCA_VERSION )
-   {
-      kWarning(7011) << "Found version " << aVersion << ", expecting version " << KSYCOCA_VERSION << " or higher." << endl;
-      if (!abortOnError) return false;
-      kFatal(7011) << "Outdated database ! Stop kded and restart it !" << endl;
-   }
-   return true;
+bool KSycoca::Private::checkDatabase(bool openDummyIfNotFound)
+{
+    QDataStream *m_str = Private::_self->m_str;
+    if (m_str && !noDatabase) {
+        return true;
+    }
+    static bool triedLaunchingKdeinit = false;
+    if ( (noDatabase || badVersion) && triedLaunchingKdeinit ) {
+        // we tried before, and it didn't work - sorry, no database
+        return false;
+    }
+
+    closeDatabase(); // close the dummy one
+    // Check if new database already available
+    if( openDatabase(openDummyIfNotFound) ) {
+        Q_ASSERT(m_str); // if a database was found then m_str shouldn't be 0
+        if (checkVersion()) {
+            // Database exists, and version is ok.
+            return true;
+        }
+    }
+
+    if (!triedLaunchingKdeinit) { // try only once
+        triedLaunchingKdeinit = true;
+        // Well, if kdeinit is not running we need to launch it,
+        // but otherwise we simply need to run kbuildsycoca to recreate the sycoca file.
+        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.klauncher")) {
+            kDebug(7011) << "We have no database.... launching kdeinit" << endl;
+            KToolInvocation::klauncher(); // this calls startKdeinit
+        } else {
+            kDebug(7011) << "We have no database.... launching " << KBUILDSYCOCA_EXENAME << endl;
+            if (QProcess::execute(KStandardDirs::findExe(KBUILDSYCOCA_EXENAME)) != 0)
+                qWarning("ERROR: Running KSycoca failed.");
+        }
+
+        // Wait until the DBUS signal from kbuildsycoca
+        QEventLoop eventLoop;
+        QObject::connect(self(), SIGNAL(databaseChanged()), &eventLoop, SLOT(quit()));
+        eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
+
+        // Ok, the new database should be here now, open it.
+    }
+    if (!openDatabase(openDummyIfNotFound)) {
+        kDebug(7011) << "Still no database..." << endl;
+        return false; // Still no database - uh oh
+    }
+    if (!checkVersion()) {
+        kDebug(7011) << "Still outdated..." << endl;
+        badVersion = true;
+        return false; // Still outdated - uh oh
+    }
+
+    return true;
 }
 
 QDataStream * KSycoca::findFactory(KSycocaFactoryId id)
 {
-   // The constructor found no database, but we want one
-   if (d->noDatabase)
-   {
-      closeDatabase(); // close the dummy one
-      // Check if new database already available
-      if ( !openDatabase(false /* no dummy one*/) )
-      {
-         static bool triedLaunchingKdeinit = false;
-         if (!triedLaunchingKdeinit) // try only once
-         {
-           triedLaunchingKdeinit = true;
-           kDebug(7011) << "findFactory: we have no database.... launching kdeinit" << endl;
-           KToolInvocation::klauncher(); // this calls startKdeinit
-           // Ok, the new database should be here now, open it.
-         }
-         if (!openDatabase(false))
-            return 0L; // Still no database - uh oh
-      }
-   }
-   // rewind and check
-   if (!checkVersion(false))
-   {
-     kWarning(7011) << "Outdated database found" << endl;
-     return 0L;
-   }
-   qint32 aId;
-   qint32 aOffset;
-   while(true)
-   {
-      *m_str >> aId;
-      //kDebug(7011) << QString("KSycoca::findFactory : found factory %1").arg(aId) << endl;
-      if (aId == 0)
-      {
-         kError(7011) << "Error, KSycocaFactory (id = " << int(id) << ") not found!" << endl;
-         break;
-      }
-      *m_str >> aOffset;
-      if (aId == id)
-      {
-         //kDebug(7011) << QString("KSycoca::findFactory(%1) offset %2").arg((int)id).arg(aOffset) << endl;
-         m_str->device()->seek(aOffset);
-         return m_str;
-      }
-   }
-   return 0;
+    if (m_str && !d->noDatabase) {
+        // The factory list is at the beginning -> rewind (and re-read version number)
+        if (!d->checkVersion()) {
+            return 0; // can't happen, it's been checked before
+        }
+    } else {
+        // Ensure we have a database
+        if (!d->checkDatabase(false)) {
+            return 0;
+        }
+    }
+
+    qint32 aId;
+    qint32 aOffset;
+    while(true) {
+        *m_str >> aId;
+        if (aId == 0) {
+            kError(7011) << "Error, KSycocaFactory (id = " << int(id) << ") not found!" << endl;
+            break;
+        }
+        *m_str >> aOffset;
+        if (aId == id) {
+            //kDebug(7011) << "KSycoca::findFactory(" << id << ") offset " << aOffset << endl;
+            m_str->device()->seek(aOffset);
+            return m_str;
+        }
+    }
+    return 0;
 }
 
 QString KSycoca::kfsstnd_prefixes()
 {
+    // do not try to launch kbuildsycoca from here; this code is also called by kbuildsycoca.
    if (d->noDatabase) return "";
-   if (!checkVersion(false)) return "";
+   if (!d->checkDatabase(false)) return "";
    qint32 aId;
    qint32 aOffset;
    // skip factories offsets
@@ -469,7 +508,7 @@ QString KSycoca::determineRelativePath( const QString & _fullpath, const char *_
 
 void KSycoca::flagError()
 {
-   qWarning("ERROR: KSycoca database corruption!");
+    kWarning(7011) << "ERROR: KSycoca database corruption!" << endl;
    if (Private::_self)
    {
       if (Private::_self->d->readError)
@@ -478,7 +517,9 @@ void KSycoca::flagError()
       if (Private::_self->d->autoRebuild) {
           // Rebuild the damned thing.
           if (QProcess::execute(KStandardDirs::findExe(KBUILDSYCOCA_EXENAME)) != 0)
-              qWarning("ERROR: Running KSycoca failed.");
+              qWarning("ERROR: Running %s failed", KBUILDSYCOCA_EXENAME);
+          // Do not wait until the DBUS signal from kbuildsycoca here.
+          // It deletes m_str which is a problem when flagError is called during the KSycocaFactory ctor...
       }
    }
 }
