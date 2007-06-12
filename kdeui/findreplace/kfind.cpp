@@ -74,8 +74,8 @@ struct KFind::Private
     ~Private()
     {
         data.clear();
-        if (emptyMatch)
-            delete emptyMatch;
+        delete emptyMatch;
+        emptyMatch = 0;
     }
 
     struct Match
@@ -152,8 +152,7 @@ void KFind::init( const QString& pattern )
 
 KFind::~KFind()
 {
-    if (m_dialog)
-        delete m_dialog;
+    delete m_dialog;
     delete d;
     kDebug() << k_funcinfo << endl;
 }
@@ -707,8 +706,7 @@ void KFind::setOptions( long options )
 
 void KFind::closeFindNextDialog()
 {
-    if (m_dialog)
-        delete m_dialog;
+    delete m_dialog;
     m_dialog = 0L;
     m_dialogClosed = true;
 }
