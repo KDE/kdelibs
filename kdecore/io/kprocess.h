@@ -26,7 +26,7 @@
 
 #include <QtCore/QProcess>
 
-struct KProcessPrivate;
+class KProcessPrivate;
 
 /**
  * Child process invocation, monitoring and control.

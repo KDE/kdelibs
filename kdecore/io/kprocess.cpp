@@ -252,13 +252,12 @@ void KProcess::setShellCommand(const QString &cmd, const QString &shell)
                 "/bin/sh"
         );
 #else // Q_OS_UNIX
-//         !access("c:\\windows\\cmd.exe", X_OK) ?
-//             "c:\\windows\\cmd.exe" :
-//             "c:\\command.com";
-// need to determine system dir and system drive properly.
-// consider COMSPEC - for WinDOS it is always command.com-compatible. dunno
-// about WinNT vs. cmd.
-# error i am broken. fix me
+    QString cmd = QString::fromLocal8Bit(qgetenv("ComSpec"));
+/*
+    really needed?
+    if(GetFileAttributesW(cmd.utf16()) == INVALID_FILE_ATTRIBUTES)
+        return; // mhhh
+*/
 #endif // Q_OS_UNIX
     }
 #ifdef Q_OS_UNIX

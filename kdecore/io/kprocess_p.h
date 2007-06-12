@@ -24,7 +24,7 @@
 
 #include "kprocess.h"
 
-struct KProcessPrivate {
+class KProcessPrivate {
     Q_DECLARE_PUBLIC(KProcess)
 
     KProcessPrivate() :
