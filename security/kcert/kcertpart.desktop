@@ -59,6 +59,7 @@ Comment[uz]=Ичига ўрнатиб бўладиган шахсий серти
 Comment[x-test]=xxEmbeddable Personal Certificate Managerxx
 Comment[xh]=Umphathi Wesiqinisekiso Sobuntu bakho Obulungiselelweyo
 Comment[zh_HK]=可嵌入的個人證書管理工具
+Comment[zh_TW]=嵌入式個人憑證管理員
 MimeType=application/x-pkcs12;application/x-x509-ca-cert;application/binary-certificate;
 Icon=lock
 Name=KCertPart
