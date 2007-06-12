@@ -169,7 +169,7 @@ void Action::fromDomElement(const QDomElement& element)
 
     const QString code = element.attribute("code");
     if( ! code.isNull() )
-        setCode(code.toLatin1());
+        setCode(code.toUtf8());
 
     for(QDomNode node = element.firstChild(); ! node.isNull(); node = node.nextSibling()) {
         QDomElement e = node.toElement();
