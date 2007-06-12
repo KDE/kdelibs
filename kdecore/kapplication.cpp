@@ -518,7 +518,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     {
         QWidget* w = static_cast< QWidget* >( receiver );
 #if defined Q_WS_X11
-        if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
+        if( w->isTopLevel() && !startupId().isEmpty() && !static_cast<QShowEvent*>(event)->spontaneous()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
 #endif
         if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
