@@ -33,7 +33,7 @@ namespace Nepomuk {
 
 	namespace DBus {
 	    /**
-	     * @Private proxy interface for the service
+	     * @internal proxy interface for the service
 	     */
 	    class ServiceBackend : public QDBusInterface
 		{

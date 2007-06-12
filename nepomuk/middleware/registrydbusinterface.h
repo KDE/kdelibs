@@ -31,7 +31,7 @@ namespace Nepomuk {
     namespace Middleware {
 	namespace DBus {
 	    /**
-	     * @Private proxy interface for the registry
+	     * \internal proxy interface for the registry
 	     */
 	    class RegistryInterface : public QDBusInterface
 		{

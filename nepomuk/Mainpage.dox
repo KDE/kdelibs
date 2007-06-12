@@ -74,7 +74,7 @@
  * - \ref page_ontology
  * - \ref hacking
  * - \ref examples
- * - \ref kmetadata_rcgen
+ * - \ref nepomuk-rcgen
  */
 
 
@@ -122,7 +122,7 @@
  * of this type.
  * See Nepomuk::File::allFiles for an example.
  *
- * See also \ref kmetadata_rcgen
+ * See also \ref nepomuk-rcgen
  *
  *
  * \subsection hacking_thehardway Using Resource Directly
@@ -246,7 +246,7 @@
 
 
 /**
- * \page kmetadata_rcgen The Nepomuk Resource Generator
+ * \page nepomuk-rcgen The Nepomuk Resource Generator
  *
  * The power of Nepomuk lies in the generated classes which allows the application developer to set
  * and retrieve metadata according to standards without knowing any specific RDF URIs or names of properties.
@@ -257,36 +257,36 @@
  *
  * \section rcgen_syntax Syntax
  *
- * The resource generator executable is called kmetadata_rcgen and has the following snytax:
+ * The resource generator executable is called nepomuk-rcgen and has the following snytax:
  *
  * \code
- * kmetadata_rcgen --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+ * nepomuk-rcgen --writeall [--templates <tmpl1> [<tmpl2> [<tmpl3> ...]]] --target <sourcefolder> --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
  * \endcode
  *
- * This writes all header and source files that have been generated from the ontology in <ontologyfile> to
- * the destination folder <sourcefolder>.
+ * This writes all header and source files that have been generated from the ontology in &lt;ontologyfile&gt; to
+ * the destination folder &lt;sourcefolder&gt;.
  * Optionally templates can be specified (see \ref rcgen_templates for details on templates).
  *
  *
  * \code
- * kmetadata_rcgen --listsources [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+ * nepomuk-rcgen --listsources [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
  * \endcode
  *
- * This command simply lists all source files that would be generated from the ontology in <ontologyfile>
+ * This command simply lists all source files that would be generated from the ontology in &lt;ontologyfile&gt;
  * on stdout. It can be used to create build lists.
  *
  * \code
- * kmetadata_rcgen --listheaders [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+ * nepomuk-rcgen --listheaders [--prefix <listprefix>] --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
  * \endcode
  *
- * This command simply lists all header files that would be generated from the ontology in <ontologyfile>
+ * This command simply lists all header files that would be generated from the ontology in &lt;ontologyfile&gt;
  * on stdout. It can be used to create installation lists.
  *
  * \code
- * kmetadata_rcgen --listincludes --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
+ * nepomuk-rcgen --listincludes --ontologies <ontologyfile> [<ontologyfile> [<ontologyfile> ...]]
  * \endcode
  *
- * This will list all headers that would be generated from <ontologyfile> as include statement on stdout.
+ * This will list all headers that would be generated from &lt;ontologyfile&gt; as include statement on stdout.
  * This is a rarely used command that can help to create a header that automatically includes all classes
  * from this ontology.
  *
@@ -397,3 +397,4 @@
  * NEPOMUK_RESOURCECOMMENT
  * \endcode
  */
+// DOXYGEN_REFERENCES = core core/ontology

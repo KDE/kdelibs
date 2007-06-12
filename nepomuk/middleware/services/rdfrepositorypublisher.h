@@ -118,7 +118,16 @@ namespace Nepomuk {
 		Q_OBJECT
 
 	    public:
+                /**
+                 * Creates a new RDFRepositoryPublisher instance.
+                 * \param name The name of the service, for informational purposes only.
+                 * \param url The URL of the service, uniquely identifying it.
+                 */
 		RDFRepositoryPublisher( const QString& name, const QString& url );
+
+                /**
+                 * Destructor
+                 */
 		virtual ~RDFRepositoryPublisher();
 
 		/**
@@ -311,7 +320,7 @@ namespace Nepomuk {
 		 * \return a list of statements matching the query.
 		 */
 		virtual QList<Soprano::Statement> construct( const QString& repositoryId, const QString& query,
-							 const QString& querylanguage ) = 0;
+                                                             const QString& querylanguage ) = 0;
 	  
 		/**
 		 * Execute a select query on a specific repository.
