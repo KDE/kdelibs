@@ -149,12 +149,16 @@ KColorScheme::KColorScheme(ColorSet set)
     switch (set) {
         case Window:
             d = new KColorSchemePrivate( "Colors:Window", defaultWindowColors );
+            break;
         case Button:
             d = new KColorSchemePrivate( "Colors:Button", defaultButtonColors );
+            break;
         case Selection:
             d = new KColorSchemePrivate( "Colors:Selection", defaultSelectionColors );
+            break;
         case Tooltip:
             d = new KColorSchemePrivate( "Colors:Tooltip", defaultTooltipColors );
+            break;
         default:
             d = new KColorSchemePrivate( "Colors:View", defaultViewColors );
     }
