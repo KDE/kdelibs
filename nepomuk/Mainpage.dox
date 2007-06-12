@@ -397,4 +397,4 @@
  * NEPOMUK_RESOURCECOMMENT
  * \endcode
  */
-// DOXYGEN_REFERENCES = core core/ontology
+// DOXYGEN_EXCLUDE = core/resourcedata.h
