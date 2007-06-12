@@ -21,16 +21,14 @@
 #define KCOLORSCHEME_H
 
 #include <kdeui_export.h>
-#include <QPainter>
 
-class QColor;
 class QBrush;
 class KColorSchemePrivate;
 
 /**
  * A set of methods used to work with colors.
  */
-class KColorScheme {
+class KDEUI_EXPORT KColorScheme {
 public:
 
     /**
