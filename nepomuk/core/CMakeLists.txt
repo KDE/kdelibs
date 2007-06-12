@@ -2,9 +2,10 @@ project(nepomukcore)
 
 include_directories(
   ${nepomuk_SOURCE_DIR}
-  ${nepomukmiddleware_SOURCE_DIR}
-  ${nepomukmiddleware_SOURCE_DIR}/rdf
-  ${nepomukmiddleware_SOURCE_DIR}/services
+  ${CMAKE_SOURCE_DIR}/nepomuk/
+  ${CMAKE_SOURCE_DIR}/nepomuk/middleware/
+  ${CMAKE_SOURCE_DIR}/nepomuk/middleware/services/
+  ${CMAKE_SOURCE_DIR}/nepomuk/middleware/rdf/
   ${nepomukcore_SOURCE_DIR}
   ${nepomukcore_SOURCE_DIR}/generated
   ${kdecore_SOURCE_DIR}/utils
