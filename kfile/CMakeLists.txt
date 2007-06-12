@@ -4,6 +4,7 @@ add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 include_directories(
   ${KDE4_KIO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/solid
+  ${CMAKE_BINARY_DIR}/solid
   ${CMAKE_SOURCE_DIR}/kde3support
   ${CMAKE_SOURCE_DIR}/kde3support/kdeui #for k3iconview, k3listview
 )
