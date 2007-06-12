@@ -30,7 +30,7 @@
    Provides highlevel access to session management on a per-object
    base.
 
-   KSessionManaged makes it possible to provide implementations for
+   KSessionManager makes it possible to provide implementations for
  QApplication::commitData() and QApplication::saveState(), without
    subclassing KApplication. KMainWindow internally makes use of this.
 

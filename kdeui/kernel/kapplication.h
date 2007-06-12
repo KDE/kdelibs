@@ -51,7 +51,6 @@ typedef void Display;
 
 struct _IceConn;
 class QPixmap;
-class KSessionManaged;
 
 #define kapp KApplication::kApplication()
 
@@ -183,14 +182,14 @@ public:
 
     /**
      * Reimplemented for internal purposes, mainly the highlevel
-     *  handling of session management with KSessionManaged.
+     *  handling of session management with KSessionManager.
      * @internal
      */
   void commitData( QSessionManager& sm );
 
     /**
      * Reimplemented for internal purposes, mainly the highlevel
-     *  handling of session management with KSessionManaged.
+     *  handling of session management with KSessionManager.
      * @internal
      */
   void saveState( QSessionManager& sm );
@@ -458,9 +457,9 @@ Q_SIGNALS:
      management for applications with multiple toplevel windows.
 
      For purposes without KMainWindow, create an instance of
-     KSessionManaged and reimplement the functions
-     KSessionManaged::commitData() and/or
-     KSessionManaged::saveState()
+     KSessionManager and reimplement the functions
+     KSessionManager::commitData() and/or
+     KSessionManager::saveState()
 
      If you still want to use this signal, here is what you should do:
 
