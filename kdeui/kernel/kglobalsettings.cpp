@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <kprotocolinfo.h>
 #include <kcomponentdata.h>
+#include <kcolorscheme.h>
 
 #include <QtGui/QColor>
 #include <QtGui/QCursor>
@@ -72,15 +73,10 @@ QFont *KGlobalSettings::_menuFont = 0;
 QFont *KGlobalSettings::_windowTitleFont = 0;
 QFont *KGlobalSettings::_taskbarFont = 0;
 QFont *KGlobalSettings::_largeFont = 0;
-QColor *KGlobalSettings::_kde34Blue = 0;
 QColor *KGlobalSettings::_inactiveBackground = 0;
 QColor *KGlobalSettings::_inactiveForeground = 0;
 QColor *KGlobalSettings::_activeBackground = 0;
 QColor *KGlobalSettings::_buttonBackground = 0;
-QColor *KGlobalSettings::_selectBackground = 0;
-QColor *KGlobalSettings::_linkColor = 0;
-QColor *KGlobalSettings::_visitedLinkColor = 0;
-QColor *KGlobalSettings::alternateColor = 0;
 
 KGlobalSettings::KMouseSettings *KGlobalSettings::s_mouseSettings = 0;
 
@@ -202,9 +198,7 @@ int KGlobalSettings::contextMenuKey ()
 
 QColor KGlobalSettings::toolBarHighlightColor()
 {
-    initColors();
-    KConfigGroup g( KGlobal::config(), "Toolbar style" );
-    return g.readEntry("HighlightColor", *_kde34Blue);
+    return KColorScheme(KColorScheme::Button).decoration(KColorScheme::HoverColor).color();
 }
 
 QColor KGlobalSettings::inactiveTitleColor()
@@ -236,7 +230,6 @@ QColor KGlobalSettings::activeTitleColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_ACTIVECAPTION));
 #else
-    initColors();
     if (!_activeBackground)
       _activeBackground = new QColor(65,142,220);
     KConfigGroup g( KGlobal::config(), "WM" );
@@ -262,63 +255,37 @@ int KGlobalSettings::contrast()
 
 QColor KGlobalSettings::buttonBackground()
 {
-    if (!_buttonBackground)
-      _buttonBackground = new QColor(221,223,228);
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "buttonBackground", *_buttonBackground );
+    return KColorScheme(KColorScheme::Button).background().color();
 }
 
 QColor KGlobalSettings::buttonTextColor()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "buttonForeground", QColor(Qt::black) );
+    return KColorScheme(KColorScheme::Button).foreground().color();
 }
 
-// IMPORTANT:
-//  This function should be get in sync with
-//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::baseColor()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "windowBackground", QColor(Qt::white) );
+    return KColorScheme(KColorScheme::View).background().color();
 }
 
-// IMPORTANT:
-//  This function should be get in sync with
-//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::textColor()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "windowForeground", QColor(Qt::black) );
+    return KColorScheme(KColorScheme::View).foreground().color();
 }
 
-// IMPORTANT:
-//  This function should be get in sync with
-//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::highlightedTextColor()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "selectForeground", QColor(Qt::white) );
+    return KColorScheme(KColorScheme::Selection).foreground().color();
 }
 
-// IMPORTANT:
-//  This function should be get in sync with
-//   KGlobalSettings::kdisplaySetPalette()
 QColor KGlobalSettings::highlightColor()
 {
-    initColors();
-    if (!_selectBackground)
-        _selectBackground = new QColor(103,141,178);
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "selectBackground", *_selectBackground );
+    return KColorScheme(KColorScheme::Selection).background().color();
 }
 
 QColor KGlobalSettings::alternateBackgroundColor()
 {
-    initColors();
-    KConfigGroup g( KGlobal::config(), "General" );
-    *alternateColor = calculateAlternateBackgroundColor( baseColor() );
-    return g.readEntry( "alternateBackground", *alternateColor );
+    return KColorScheme(KColorScheme::View).background(KColorScheme::AlternateBackground).color();
 }
 
 QColor KGlobalSettings::calculateAlternateBackgroundColor(const QColor& base)
@@ -346,19 +313,12 @@ bool KGlobalSettings::shadeSortColumn()
 
 QColor KGlobalSettings::linkColor()
 {
-    initColors();
-    if (!_linkColor)
-        _linkColor = new QColor(0,0,238);
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "linkColor", *_linkColor );
+    return KColorScheme(KColorScheme::View).foreground(KColorScheme::LinkText).color();
 }
 
 QColor KGlobalSettings::visitedLinkColor()
 {
-    if (!_visitedLinkColor)
-        _visitedLinkColor = new QColor(82,24,139);
-    KConfigGroup g( KGlobal::config(), "General" );
-    return g.readEntry( "visitedLinkColor", *_visitedLinkColor );
+    return KColorScheme(KColorScheme::View).foreground(KColorScheme::VisitedText).color();
 }
 
 QFont KGlobalSettings::generalFont()
@@ -579,18 +539,6 @@ void KGlobalSettings::initPaths()
     if ( !s_documentPath->endsWith("/")) {
         s_documentPath->append( QLatin1Char( '/' ) );
     }
-}
-
-void KGlobalSettings::initColors()
-{
-    if (!_kde34Blue) {
-      if (QPixmap::defaultDepth() > 8)
-        _kde34Blue = new QColor(103,141,178);
-      else
-        _kde34Blue = new QColor(0, 0, 192);
-    }
-    if (!alternateColor)
-      alternateColor = new QColor(237, 244, 249);
 }
 
 void KGlobalSettings::rereadFontSettings()
@@ -895,97 +843,57 @@ QPalette KGlobalSettings::createApplicationPalette()
     return createApplicationPalette( cg, KGlobalSettings::contrast() );
 }
 
-QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup &config, int contrast_ )
+QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup & /*config*/, int contrast_ )
 {
-    QColor kde34Background( 239, 239, 239 );
-    QColor kde34Blue( 103,141,178 );
-
-    QColor kde34Button;
-    if ( QPixmap::defaultDepth() > 8 )
-      kde34Button.setRgb( 221, 223, 228 );
-    else
-      kde34Button.setRgb( 220, 220, 220 );
-
-    QColor kde34Link( 0, 0, 238 );
-    QColor kde34VisitedLink( 82, 24, 139 );
-
-    QColor background = config.readEntry( "background", kde34Background );
-    QColor foreground = config.readEntry( "foreground", QColor(Qt::black) );
-    QColor button = config.readEntry( "buttonBackground", kde34Button );
-    QColor buttonText = config.readEntry( "buttonForeground", QColor(Qt::black) );
-    QColor highlight = config.readEntry( "selectBackground", kde34Blue );
-    QColor highlightedText = config.readEntry( "selectForeground", QColor(Qt::white) );
-    QColor base = config.readEntry( "windowBackground", QColor(Qt::white) );
-    QColor baseText = config.readEntry( "windowForeground", QColor(Qt::black) );
-    QColor link = config.readEntry( "linkColor", kde34Link );
-    QColor visitedLink = config.readEntry( "visitedLinkColor", kde34VisitedLink );
+    KColorScheme schemeView(KColorScheme::View);
+    KColorScheme schemeWindow(KColorScheme::Window);
+    KColorScheme schemeButton(KColorScheme::Button);
+    KColorScheme schemeSelection(KColorScheme::Selection);
+    QColor background = schemeWindow.background().color();
 
     int highlightVal, lowlightVal;
     highlightVal = 100 + (2*contrast_+4)*16/10;
     lowlightVal = 100 + (2*contrast_+4)*10;
 
-    QColor disfg = foreground;
-
-    int h, s, v;
-    disfg.getHsv( &h, &s, &v );
-    if (v > 128)
-        // dark bg, light fg - need a darker disabled fg
-        disfg = disfg.dark(lowlightVal);
-    else if (disfg != Qt::black)
-        // light bg, dark fg - need a lighter disabled fg - but only if !black
-        disfg = disfg.light(highlightVal);
-    else
-        // black fg - use darkgray disabled fg
-        disfg = Qt::darkGray;
-
     QPalette palette;
-    palette.setColor( QPalette::Foreground, foreground );
-    palette.setColor( QPalette::Window, background );
+    palette.setBrush( QPalette::Foreground, schemeWindow.foreground() );
+    palette.setBrush( QPalette::Window, schemeWindow.background() );
     palette.setColor( QPalette::Light, background.light( highlightVal ) );
     palette.setColor( QPalette::Dark, background.dark( lowlightVal ) );
+    // FIXME - should use KColorUtils::mix, not fixed dark() value
+    // FIXME - actually, what does this do? We set it again later...??
     palette.setColor( QPalette::Midlight, background.dark( 120 ) );
-    palette.setColor( QPalette::Text, baseText );
-    palette.setColor( QPalette::Base, base );
+    palette.setBrush( QPalette::Base, schemeView.background() );
+    palette.setBrush( QPalette::Text, schemeView.foreground() );
 
-    palette.setColor( QPalette::Highlight, highlight );
-    palette.setColor( QPalette::HighlightedText, highlightedText );
-    palette.setColor( QPalette::Button, button );
-    palette.setColor( QPalette::ButtonText, buttonText );
+    palette.setBrush( QPalette::Highlight, schemeSelection.background() );
+    palette.setBrush( QPalette::HighlightedText, schemeSelection.foreground() );
+    palette.setBrush( QPalette::Button, schemeButton.background() );
+    palette.setBrush( QPalette::ButtonText, schemeButton.foreground() );
+    // FIXME - should use KColorUtils::mix, not fixed light() value
     palette.setColor( QPalette::Midlight, background.light( 110 ) );
-    palette.setColor( QPalette::Link, link );
-    palette.setColor( QPalette::LinkVisited, visitedLink );
+    palette.setBrush( QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
+    palette.setBrush( QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
 
-    palette.setColor( QPalette::Disabled, QPalette::Foreground, disfg );
-    palette.setColor( QPalette::Disabled, QPalette::Window, background );
-    palette.setColor( QPalette::Disabled, QPalette::Light, background.light( highlightVal ) );
-    palette.setColor( QPalette::Disabled, QPalette::Dark, background.dark( lowlightVal ) );
+    palette.setBrush( QPalette::Disabled, QPalette::Foreground, schemeWindow.foreground( KColorScheme::InactiveText ) );
+    palette.setBrush( QPalette::Disabled, QPalette::Window, schemeWindow.background() );
+    palette.setBrush( QPalette::Disabled, QPalette::Light, background.light( highlightVal ) );
+    palette.setBrush( QPalette::Disabled, QPalette::Dark, background.dark( lowlightVal ) );
+    // FIXME - should use KColorUtils::mix, not fixed dark() value
+    // FIXME - actually, what does this do? We set it again later...??
     palette.setColor( QPalette::Disabled, QPalette::Midlight, background.dark( 120 ) );
-    palette.setColor( QPalette::Disabled, QPalette::Text, background.dark( 120 ) );
-    palette.setColor( QPalette::Disabled, QPalette::Base, base );
-    palette.setColor( QPalette::Disabled, QPalette::Button, button );
+    palette.setBrush( QPalette::Disabled, QPalette::Base, schemeView.background() );
+    palette.setBrush( QPalette::Disabled, QPalette::Text, schemeView.foreground( KColorScheme::InactiveText ) );
 
-
-    int inlowlightVal = lowlightVal-25;
-    if (inlowlightVal < 120)
-        inlowlightVal = 120;
-
-    QColor disbtntext = buttonText;
-    disbtntext.getHsv( &h, &s, &v );
-    if (v > 128)
-        // dark button, light buttonText - need a darker disabled buttonText
-        disbtntext = disbtntext.dark(lowlightVal);
-    else if (disbtntext != Qt::black)
-        // light buttonText, dark button - need a lighter disabled buttonText - but only if !black
-        disbtntext = disbtntext.light(highlightVal);
-    else
-        // black button - use darkgray disabled buttonText
-        disbtntext = Qt::darkGray;
-
-    palette.setColor( QPalette::Disabled, QPalette::Highlight, highlight.dark( 120 ) );
-    palette.setColor( QPalette::Disabled, QPalette::ButtonText, disbtntext );
+    // use Window role for disabled selection (like gtk)
+    palette.setBrush( QPalette::Disabled, QPalette::Highlight, schemeWindow.background() );
+    palette.setBrush( QPalette::Disabled, QPalette::HighlightedText, schemeWindow.foreground() );
+    palette.setBrush( QPalette::Disabled, QPalette::Button, schemeButton.background() );
+    palette.setBrush( QPalette::Disabled, QPalette::ButtonText, schemeButton.foreground( KColorScheme::InactiveText ) );
+    // FIXME - should use KColorUtils::mix, not fixed light() value
     palette.setColor( QPalette::Disabled, QPalette::Midlight, background.light( 110 ) );
-    palette.setColor( QPalette::Disabled, QPalette::Link, link );
-    palette.setColor( QPalette::Disabled, QPalette::LinkVisited, visitedLink );
+    palette.setBrush( QPalette::Disabled, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
+    palette.setBrush( QPalette::Disabled, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
 
     return palette;
 }

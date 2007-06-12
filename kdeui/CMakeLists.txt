@@ -54,6 +54,7 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
  colors/kcolorutils.cpp
+ colors/kcolorscheme.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
  colors/kcolordialog.cpp
@@ -301,6 +302,7 @@ install( FILES
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
  colors/kcolorutils.h
+ colors/kcolorscheme.h
  colors/kcolorbutton.h
  colors/kcolorchoosermode.h
  colors/kcolorcombo.h

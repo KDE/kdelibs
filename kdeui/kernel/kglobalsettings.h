@@ -247,8 +247,9 @@ public:
     /**
      * The default color to use when highlighting toolbar buttons.
      * @return the toolbar highlight color
+     * @deprecated use KColorScheme(Button).decoration(HoverColor) instead
      */
-    static QColor toolBarHighlightColor();
+    KDE_DEPRECATED static QColor toolBarHighlightColor();
 
     /**
      * The default color to use for inactive titles.
@@ -284,64 +285,74 @@ public:
     /**
      * Returns the button background color
      * @return the button background color
+     * @deprecated use KColorScheme(Button).background() instead
      */
-    static QColor buttonBackground();
+    KDE_DEPRECATED static QColor buttonBackground();
 
     /**
      * Returns the button text color
      * @return the button text color
+     * @deprecated use KColorScheme(Button).foreground() instead
      */
-    static QColor buttonTextColor();
+    KDE_DEPRECATED static QColor buttonTextColor();
 
     /**
      * Returns the default base (background) color.
      * @return the default base (background) color
      * @see QPalette::base()
+     * @deprecated use KColorScheme(View).background() instead
      */
-    static QColor baseColor();
+    KDE_DEPRECATED static QColor baseColor();
 
     /**
      * Returns the default text color.
      * @return the default text color
      * @see QPalette::text()
+     * @deprecated use KColorScheme(View).foreground() instead
      */
-    static QColor textColor();
+    KDE_DEPRECATED static QColor textColor();
 
     /**
      * Returns the default link color.
      * @return the default link color
+     * @deprecated use KColorScheme([set]).foreground(LinkText) instead
      */
-    static QColor linkColor();
+    KDE_DEPRECATED static QColor linkColor();
 
     /**
      * Returns the default color for visited links.
      * @return the default color for visited links
+     * @deprecated use KColorScheme([set]).foreground(VisitedText) instead
      */
-    static QColor visitedLinkColor();
+    KDE_DEPRECATED static QColor visitedLinkColor();
 
     /**
      * Returns the default color for highlighted text.
      * @return the default color for highlighted text
      * @see QPalette::hightlightedText()
+     * @deprecated use KColorScheme(Selection).foreground() instead
      */
-    static QColor highlightedTextColor();
+    KDE_DEPRECATED static QColor highlightedTextColor();
 
     /**
      * Returns the default color for text highlights.
      * @return the default color for text highlights
      * @see QPalette::hightlight()
+     * @deprecated use KColorScheme(Selection).background() instead
      */
-    static QColor highlightColor();
+    KDE_DEPRECATED static QColor highlightColor();
 
     /**
      * Returns the alternate background color used by K3ListView with
      * K3ListViewItem. Any other list that uses alternating background
      * colors should use this too, to obey to the user's preferences. Returns
-     * an invalid color if the user doesn't want alternating backgrounds.
+     * the same as color(View, BackgroundNormal) if the user doesn't want
+     * alternating backgrounds.
      * @return the alternate background color
      * @see calculateAlternateBackgroundColor
+     * @deprecated use KColorScheme(View).background(AlternateBackground) instead
      */
-    static QColor alternateBackgroundColor();
+    KDE_DEPRECATED static QColor alternateBackgroundColor();
 
     /**
      * Calculates a color based on @p base to be used as alternating
@@ -349,8 +360,9 @@ public:
      * @param base the base for the calculation
      * @return the calculated color
      * @see alternateBackgroundColor
+     * @deprecated use KColorScheme([set]).background(AlternateBackground) instead
      */
-    static QColor calculateAlternateBackgroundColor(const QColor& base);
+    KDE_DEPRECATED static QColor calculateAlternateBackgroundColor(const QColor& base);
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
@@ -626,10 +638,6 @@ private:
      */
     static void initPaths();
     /**
-     * initialize colors
-     */
-    static void initColors();
-    /**
      * drop cached values for fonts (called by KApplication)
      */
     static void rereadFontSettings();
@@ -653,15 +661,10 @@ private:
     static QFont *_windowTitleFont;
     static QFont *_taskbarFont;
     static QFont *_largeFont;
-    static QColor * _kde34Blue;
     static QColor * _inactiveBackground;
     static QColor * _inactiveForeground;
     static QColor * _activeBackground;
     static QColor * _buttonBackground;
-    static QColor * _selectBackground;
-    static QColor * _linkColor;
-    static QColor * _visitedLinkColor;
-    static QColor * alternateColor;
     static KMouseSettings *s_mouseSettings;
 
     friend class KApplication;
