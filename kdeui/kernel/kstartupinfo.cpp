@@ -550,9 +550,15 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
 void KStartupInfo::appStarted()
     {
     if( kapp != NULL )  // KApplication constructor unsets the env. variable
+        {
         appStarted( kapp->startupId());
+        kapp->setStartupId( QByteArray()); // reset the id, no longer valid
+        }
     else
-        appStarted( KStartupInfo::currentStartupIdEnv().id());
+        {
+        appStarted( currentStartupIdEnv().id());
+        resetStartupEnv();
+        }
     }
 
 void KStartupInfo::appStarted( const QByteArray& startup_id )
