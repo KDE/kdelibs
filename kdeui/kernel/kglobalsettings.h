@@ -249,7 +249,7 @@ public:
      * @return the toolbar highlight color
      * @deprecated use KColorScheme(Button).decoration(HoverColor) instead
      */
-    KDE_DEPRECATED static QColor toolBarHighlightColor();
+    static KDE_DEPRECATED QColor toolBarHighlightColor();
 
     /**
      * The default color to use for inactive titles.
@@ -287,14 +287,14 @@ public:
      * @return the button background color
      * @deprecated use KColorScheme(Button).background() instead
      */
-    KDE_DEPRECATED static QColor buttonBackground();
+    static KDE_DEPRECATED QColor buttonBackground();
 
     /**
      * Returns the button text color
      * @return the button text color
      * @deprecated use KColorScheme(Button).foreground() instead
      */
-    KDE_DEPRECATED static QColor buttonTextColor();
+    static KDE_DEPRECATED QColor buttonTextColor();
 
     /**
      * Returns the default base (background) color.
@@ -302,7 +302,7 @@ public:
      * @see QPalette::base()
      * @deprecated use KColorScheme(View).background() instead
      */
-    KDE_DEPRECATED static QColor baseColor();
+    static KDE_DEPRECATED QColor baseColor();
 
     /**
      * Returns the default text color.
@@ -310,21 +310,21 @@ public:
      * @see QPalette::text()
      * @deprecated use KColorScheme(View).foreground() instead
      */
-    KDE_DEPRECATED static QColor textColor();
+    static KDE_DEPRECATED QColor textColor();
 
     /**
      * Returns the default link color.
      * @return the default link color
      * @deprecated use KColorScheme([set]).foreground(LinkText) instead
      */
-    KDE_DEPRECATED static QColor linkColor();
+    static KDE_DEPRECATED QColor linkColor();
 
     /**
      * Returns the default color for visited links.
      * @return the default color for visited links
      * @deprecated use KColorScheme([set]).foreground(VisitedText) instead
      */
-    KDE_DEPRECATED static QColor visitedLinkColor();
+    static KDE_DEPRECATED QColor visitedLinkColor();
 
     /**
      * Returns the default color for highlighted text.
@@ -332,7 +332,7 @@ public:
      * @see QPalette::hightlightedText()
      * @deprecated use KColorScheme(Selection).foreground() instead
      */
-    KDE_DEPRECATED static QColor highlightedTextColor();
+    static KDE_DEPRECATED QColor highlightedTextColor();
 
     /**
      * Returns the default color for text highlights.
@@ -340,7 +340,7 @@ public:
      * @see QPalette::hightlight()
      * @deprecated use KColorScheme(Selection).background() instead
      */
-    KDE_DEPRECATED static QColor highlightColor();
+    static KDE_DEPRECATED QColor highlightColor();
 
     /**
      * Returns the alternate background color used by K3ListView with
@@ -352,7 +352,7 @@ public:
      * @see calculateAlternateBackgroundColor
      * @deprecated use KColorScheme(View).background(AlternateBackground) instead
      */
-    KDE_DEPRECATED static QColor alternateBackgroundColor();
+    static KDE_DEPRECATED QColor alternateBackgroundColor();
 
     /**
      * Calculates a color based on @p base to be used as alternating
@@ -362,7 +362,7 @@ public:
      * @see alternateBackgroundColor
      * @deprecated use KColorScheme([set]).background(AlternateBackground) instead
      */
-    KDE_DEPRECATED static QColor calculateAlternateBackgroundColor(const QColor& base);
+    static KDE_DEPRECATED QColor calculateAlternateBackgroundColor(const QColor& base);
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
