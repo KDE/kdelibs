@@ -28,15 +28,13 @@
 namespace KJS {
 
 // ECMA 10.2
-Context::Context(JSObject* glob, Interpreter* interpreter, JSObject* thisV,
+Context::Context(JSObject* glob, Interpreter* interpreter, JSObject* thisV, 
                  FunctionBodyNode* currentBody, CodeType type, Context* callingCon,
                  FunctionImp* func, const List* args)
     : m_interpreter(interpreter)
     , m_currentBody(currentBody)
     , m_function(func)
     , m_arguments(args)
-    , m_iterationDepth(0)
-    , m_switchDepth(0)
 {
     m_codeType = type;
     m_callingContext = callingCon;

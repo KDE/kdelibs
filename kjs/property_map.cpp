@@ -245,7 +245,7 @@ JSValue *PropertyMap::get(const Identifier &name) const
     return 0;
 }
 
-JSValue **PropertyMap::getLocation(const Identifier &name)
+JSValue **PropertyMap::getLocation(const Identifier &name, bool& readOnly)
 {
     assert(!name.isNull());
     
@@ -254,8 +254,10 @@ JSValue **PropertyMap::getLocation(const Identifier &name)
     if (!_table) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = _singleEntry.key;
-        if (rep == key)
+        if (rep == key) {
+            readOnly = _singleEntry.attributes & ReadOnly;
             return &_singleEntry.value;
+        }
 #endif
         return 0;
     }
@@ -270,8 +272,10 @@ JSValue **PropertyMap::getLocation(const Identifier &name)
     numCollisions += entries[i].key && entries[i].key != rep;
 #endif
     while (UString::Rep *key = entries[i].key) {
-        if (rep == key)
+        if (rep == key) {
+            readOnly = entries[i].attributes & ReadOnly;
             return &entries[i].value;
+        }
         if (k == 0)
             k = 1 | (h % sizeMask);
         i = (i + k) & sizeMask;

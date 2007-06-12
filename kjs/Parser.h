@@ -38,8 +38,9 @@ namespace KJS {
      * @internal
      *
      * Parses ECMAScript source code and converts into ProgramNode objects, which
-     * represent the root of a parse tree. This class provides a convenient workaround
-     * for the problem of the bison parser working in a static context.
+     * represent the root of a parse tree. The tree is then semantically
+     * checked with a semantic analyzer. This class provides a convenient
+     * workaround for the problem of the bison parser working in a static context.
      */
     class Parser {
     public:

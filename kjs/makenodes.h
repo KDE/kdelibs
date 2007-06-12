@@ -30,24 +30,6 @@
 
 namespace KJS {
 
-template<typename ResolverType>
-Node* makeDynamicResolver(Node* n) {
-  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
-  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType());
-}
-
-template<typename ResolverType, typename T1>
-Node* makeDynamicResolver(Node* n, T1 arg1) {
-  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
-  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1));
-}
-
-template<typename ResolverType, typename T1, typename T2>
-Node* makeDynamicResolver(Node* n, T1 arg1, T2 arg2) {
-  DynamicResolver<ResolveIdentifier> *resolve = static_cast<DynamicResolver<ResolveIdentifier> *>(n);
-  return new DynamicResolver<ResolverType>(resolve->identifier(), ResolverType(arg1, arg2));
-}
-
 static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
 { 
     Node *n = loc->nodeInsideAllParens();
@@ -55,16 +37,16 @@ static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
     if (!n->isLocation())
         return new AssignErrorNode(loc, op, expr); ;
 
-    if (n->isResolveNode()) {
-        return makeDynamicResolver<ResolveAssign>(n, op, expr);
-    }
-    if (n->isBracketAccessorNode()) {
+    if (n->isVarAccessNode()) {
+        return new AssignNode(static_cast<LocationNode*>(n), op, expr);
+    } else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         return new AssignBracketNode(bracket->base(), bracket->subscript(), op, expr);
+    } else {
+        assert(n->isDotAccessorNode());
+        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
+        return new AssignDotNode(dot->base(), dot->identifier(), op, expr);
     }
-    assert(n->isDotAccessorNode());
-    DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-    return new AssignDotNode(dot->base(), dot->identifier(), op, expr);
 }
 
 static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
@@ -72,23 +54,15 @@ static Node* makeConditionalNode(Node* l, Node* e1, Node* e2)
     return new ConditionalNode(l, e1, e2);
 }
 
-static Node* makePrefixNode(Node* expr, Operator op)
+static Node* makePrefixNode(Node *expr, Operator op)
 { 
     Node *n = expr->nodeInsideAllParens();
 
     if (!n->isLocation())
         return new PrefixErrorNode(n, op);
-    
-    if (n->isResolveNode()) {
-        return makeDynamicResolver<ResolvePrefix>(n, op);
-    }
-    if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        return new PrefixBracketNode(bracket->base(), bracket->subscript(), op);
-    }
-    assert(n->isDotAccessorNode());
-    DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-    return new PrefixDotNode(dot->base(), dot->identifier(), op);
+
+    LocationNode *l = static_cast<LocationNode*>(n);
+    return new PrefixNode(l, op);
 }
 
 static Node* makePostfixNode(Node* expr, Operator op)
@@ -97,28 +71,20 @@ static Node* makePostfixNode(Node* expr, Operator op)
 
     if (!n->isLocation())
         return new PostfixErrorNode(n, op);
-    
-    if (n->isResolveNode()) {
-        return makeDynamicResolver<ResolvePostfix>(n, op);
-    }
-    if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        return new PostfixBracketNode(bracket->base(), bracket->subscript(), op);
-    }
-    assert(n->isDotAccessorNode());
-    DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-    return new PostfixDotNode(dot->base(), dot->identifier(), op);
+
+    LocationNode *l = static_cast<LocationNode*>(n);
+    return new PostfixNode(l, op);
 }
 
 static Node *makeFunctionCallNode(Node *func, ArgumentsNode *args)
 {
     Node *n = func->nodeInsideAllParens();
-    
+
     if (!n->isLocation())
         return new FunctionCallValueNode(func, args);
-    else if (n->isResolveNode()) {
-        return makeDynamicResolver<ResolveFunctionCall>(n, args);
-    } else if (n->isBracketAccessorNode()) {
+    else if (n->isVarAccessNode())
+        return new FunctionCallReferenceNode(static_cast<VarAccessNode*>(func), args);
+    else if (n->isBracketAccessorNode()) {
         BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
         if (n != func)
             return new FunctionCallParenBracketNode(bracket->base(), bracket->subscript(), args);
@@ -138,8 +104,11 @@ static Node *makeTypeOfNode(Node *expr)
 {
     Node *n = expr->nodeInsideAllParens();
 
-    if (n->isResolveNode())
-        return makeDynamicResolver<ResolveTypeOf>(n);
+    // We only need to use the special path for variable references,
+    // since they may throw a ResolveError on evaluate where we don't 
+    // want that...
+    if (n->isVarAccessNode())
+        return new TypeOfReferenceNode(static_cast<LocationNode*>(n));
     else
         return new TypeOfValueNode(n);
 }
@@ -150,16 +119,8 @@ static Node *makeDeleteNode(Node *expr)
     
     if (!n->isLocation())
         return new DeleteValueNode(expr);
-    else if (n->isResolveNode()) {
-        return makeDynamicResolver<ResolveDelete>(n);
-    } else if (n->isBracketAccessorNode()) {
-        BracketAccessorNode *bracket = static_cast<BracketAccessorNode *>(n);
-        return new DeleteBracketNode(bracket->base(), bracket->subscript());
-    } else {
-        assert(n->isDotAccessorNode());
-        DotAccessorNode *dot = static_cast<DotAccessorNode *>(n);
-        return new DeleteDotNode(dot->base(), dot->identifier());
-    }
+    else 
+        return new DeleteReferenceNode(static_cast<LocationNode*>(n));//### not 100% faithful listing?
 }
 
 static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& getOrSet, Identifier& name, ParameterNode *params, FunctionBodyNode *body)
@@ -317,7 +278,7 @@ static Node* makeLogicalNotNode(Node *n)
 
 static Node* makeGroupNode(Node *n)
 {
-    if (n->isResolveNode() || n->isGroupNode())
+    if (n->isVarAccessNode() || n->isGroupNode())
 	return n;
     return new GroupNode(n);
 }
@@ -340,7 +301,6 @@ static StatementNode *makeImportNode(PackageNameNode *n,
 
 static StatementNode *makeLabelNode(const Identifier& l, StatementNode* s)
 {
-    s->pushLabel(l);
     return new LabelNode(l, s);
 
 }

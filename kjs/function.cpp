@@ -66,23 +66,22 @@ public:
        static_cast<TryNode*>(node)->recurseVisitNonCatch(this);
        return 0;
     }
-    //### FIXME: deal with the ForIn mess.
 
-    if (node->isDynamicResolver()) {
-      Node* resultNode = node->optimizeResolver(m_exec, m_body);
-      //Now, we optimized this node, but it may make sense to optimize 
+    //Now try optimizing..
+    if (Node* resultNode = node->optimizeLocalAccess(m_exec, m_body)) {
+      //We optimized this node, but it may make sense to optimize 
       //inside it as well, so recurse, too. 
       NodeVisitor::visit(resultNode);
-      return resultNode != node ? resultNode : 0; //Avoid re-set of refcount'd pointer to same value
+      return resultNode;
     }
 
+    //Just recurse..
     return NodeVisitor::visit(node);
   }
 private:
   ExecState*        m_exec;
   FunctionBodyNode* m_body;
 };
-
 
 // ----------------------------- FunctionImp ----------------------------------
 
@@ -224,7 +223,7 @@ void FunctionImp::passInParameters(ExecState* exec, const List& args)
     fprintf(stderr, "setting parameter %s", body->paramName(paramPos));
     printInfo(exec,"to", v);
 #endif
-    variable->initLocal(writeTo, v);
+    variable->putLocal(writeTo, v);
   }
 }
 
@@ -564,12 +563,13 @@ bool ActivationImp::getOwnPropertySlot(ExecState *exec, const Identifier& proper
     int id = _function->body->lookupSymbolID(propertyName);
 
     if (validLocal(id)) {
-      slot.setValueSlot(this, &_locals[id].value);
+      slot.setValueSlot(this, &_locals[id].value, _locals[id].attr & ReadOnly);
       return true;
     }
 
-    if (JSValue** location = getDirectLocation(propertyName)) {
-        slot.setValueSlot(this, location);
+    bool ro;
+    if (JSValue** location = getDirectLocation(propertyName, ro)) {
+        slot.setValueSlot(this, location, ro);
         return true;
     }
 
@@ -604,7 +604,7 @@ void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* val
   // See if we're setting a local..
   int id = _function->body->lookupSymbolID(propertyName);
   if (validLocal(id)) {
-    putLocal(id, value);
+    putLocalChecked(id, value);
     return;
   }
 

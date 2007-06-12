@@ -228,7 +228,7 @@ PrimaryExprNoBrace:
     THIS                                { $$ = new ThisNode(); }
   | Literal
   | ArrayLiteral
-  | IDENT                               { $$ = new DynamicResolver<ResolveIdentifier>(*$1, ResolveIdentifier()); }
+  | IDENT                               { $$ = new VarAccessNode(*$1); }
   | '(' Expr ')'                        { $$ = makeGroupNode($2); }
 
 ;

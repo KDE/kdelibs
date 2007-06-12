@@ -29,6 +29,7 @@
 #include "value.h"
 
 namespace KJS {
+  class Node;
 
   /**
    * Completion types.
@@ -47,7 +48,7 @@ namespace KJS {
    */
   class KJS_EXPORT Completion {
   public:
-    Completion(ComplType c = Normal, JSValue *v = NULL, const Identifier &t = CommonIdentifiers::shared()->nullIdentifier)
+    Completion(ComplType c = Normal, JSValue *v = NULL, const Node* t = 0)
         : comp(c), val(v), tar(t) { }
 
     /**
@@ -64,11 +65,9 @@ namespace KJS {
     JSValue *value() const { return val; }
 
     /**
-     *
-     * @param
-     * @return
+     * Returns the node a break or a continue statement targets
      */
-    const Identifier& target() const { return tar; }
+    const Node* target() const { return tar; }
 
     /**
      *
@@ -79,7 +78,7 @@ namespace KJS {
   private:
     ComplType comp;
     JSValue *val;
-    Identifier tar;
+    const Node* tar;
   };
 
 }

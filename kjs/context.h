@@ -108,15 +108,6 @@ namespace KJS  {
 
     void pushScope(JSObject* s) { scope.push(s); }
     void popScope() { scope.pop(); }
-    LabelStack* seenLabels() { return &ls; }
-
-    void pushIteration() { m_iterationDepth++; }
-    void popIteration() { m_iterationDepth--; }
-    bool inIteration() const { return (m_iterationDepth > 0); }
-
-    void pushSwitch() { m_switchDepth++; }
-    void popSwitch() { m_switchDepth--; }
-    bool inSwitch() const { return (m_switchDepth > 0); }
 
     void mark();
 
@@ -136,9 +127,6 @@ namespace KJS  {
     JSObject* m_variable;
     JSObject* m_thisVal;
 
-    LabelStack ls;
-    int m_iterationDepth;
-    int m_switchDepth;
     CodeType m_codeType;
   };
 

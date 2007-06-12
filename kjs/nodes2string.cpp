@@ -273,7 +273,7 @@ void RegExpNode::streamTo(SourceStream &s) const
 
 void ThisNode::streamTo(SourceStream &s) const { s << "this"; }
 
-void ResolveIdentifier::streamTo(SourceStream &s, const Identifier& ident) const { s << ident; }
+void VarAccessNode::streamTo(SourceStream &s) const { s << ident; }
 
 void GroupNode::streamTo(SourceStream &s) const
 {
@@ -379,9 +379,9 @@ void FunctionCallValueNode::streamTo(SourceStream &s) const
   s << expr << args;
 }
 
-void ResolveFunctionCall::streamTo(SourceStream &s, const Identifier& ident) const
+void FunctionCallReferenceNode::streamTo(SourceStream &s) const
 {
-  s << ident << args;
+  s << expr << args;
 }
 
 void FunctionCallBracketNode::streamTo(SourceStream &s) const
@@ -401,22 +401,12 @@ void FunctionCallDotNode::streamTo(SourceStream &s) const
 
 void FunctionCallParenDotNode::streamTo(SourceStream &s) const
 {
-  s << '(' << base << '.' << ident << ')' << args;
+  s << '(' << base << '.' << ident << ")" << args;
 }
 
-void ResolvePostfix::streamTo(SourceStream &s, const Identifier& ident) const
+void PostfixNode::streamTo(SourceStream &s) const
 {
-  s << ident << m_oper;
-}
-
-void PostfixBracketNode::streamTo(SourceStream &s) const
-{
-  s << m_base << '[' << m_subscript << ']' << m_oper;
-}
-
-void PostfixDotNode::streamTo(SourceStream &s) const
-{
-  s << m_base << '.' << m_ident << m_oper;
+  s << m_loc << m_oper;
 }
 
 void PostfixErrorNode::streamTo(SourceStream& s) const
@@ -428,19 +418,9 @@ void PostfixErrorNode::streamTo(SourceStream& s) const
     s << "--";
 }
 
-void ResolveDelete::streamTo(SourceStream &s, const Identifier& ident) const
+void DeleteReferenceNode::streamTo(SourceStream &s) const
 {
-  s << "delete " << ident;
-}
-
-void DeleteBracketNode::streamTo(SourceStream &s) const
-{
-  s << "delete " << m_base << '[' << m_subscript << ']';
-}
-
-void DeleteDotNode::streamTo(SourceStream &s) const
-{
-  s << "delete " << m_base << '.' << m_ident;
+  s << "delete " << loc;
 }
 
 void DeleteValueNode::streamTo(SourceStream &s) const
@@ -458,24 +438,14 @@ void TypeOfValueNode::streamTo(SourceStream &s) const
   s << "typeof " << m_expr;
 }
 
-void ResolveTypeOf::streamTo(SourceStream &s, const Identifier& ident) const
+void TypeOfReferenceNode::streamTo(SourceStream &s) const
 {
-  s << "typeof " << ident;
+  s << "typeof " << loc;
 }
 
-void ResolvePrefix::streamTo(SourceStream &s, const Identifier& ident) const
+void PrefixNode::streamTo(SourceStream &s) const
 {
-  s << m_oper << ident;
-}
-
-void PrefixBracketNode::streamTo(SourceStream &s) const
-{
-  s << m_oper << m_base << '[' << m_subscript << ']';
-}
-
-void PrefixDotNode::streamTo(SourceStream &s) const
-{
-  s << m_oper << m_base << '.' << m_ident;
+  s << m_oper << m_loc;
 }
 
 void PrefixErrorNode::streamTo(SourceStream& s) const 
@@ -639,9 +609,9 @@ static void streamAssignmentOperatorTo(SourceStream &s, Operator oper)
   s << opStr;
 }
 
-void ResolveAssign::streamTo(SourceStream &s, const Identifier& ident) const
+void AssignNode::streamTo(SourceStream &s) const
 {
-  s << ident;
+  s << m_loc;
   streamAssignmentOperatorTo(s, m_oper);
   s << m_right;
 //  s.append(m_ident, opStr, m_right);
@@ -660,6 +630,8 @@ void AssignDotNode::streamTo(SourceStream &s) const
   streamAssignmentOperatorTo(s, m_oper);
   s << m_right;
 }
+
+
 
 void AssignErrorNode::streamTo(SourceStream& s) const 
 { 
@@ -693,6 +665,11 @@ void VarDeclListNode::streamTo(SourceStream &s) const
 void VarStatementNode::streamTo(SourceStream &s) const
 {
   s << SourceStream::Endl << "var " << next << ';';
+}
+
+void StaticVarStatementNode::streamTo(SourceStream &s) const
+{
+  s << originalStatement;
 }
 
 void BlockNode::streamTo(SourceStream &s) const
@@ -863,6 +840,11 @@ void SourceElementsNode::streamTo(SourceStream &s) const
 {
   for (const SourceElementsNode *n = this; n; n = n->next.get())
     s << n->node;
+}
+
+void ErrorNode::streamTo(SourceStream& s) const
+{
+  s << kid;
 }
 
 void PackageNameNode::streamTo(SourceStream &s) const

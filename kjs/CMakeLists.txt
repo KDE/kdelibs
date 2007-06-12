@@ -114,6 +114,7 @@ set(kjs_LIB_SRCS
    PropertyNameArray.cpp
    JSWrapperObject.cpp
    CommonIdentifiers.cpp
+   semantic_checker.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

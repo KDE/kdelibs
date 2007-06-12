@@ -44,7 +44,6 @@ namespace KJS {
   // ECMA 262-3 8.6.1
   // Property attributes
   enum Attribute { None         = 0,
-                   Const        = 1 << 0, // uninitialized const 'variable'
                    ReadOnly     = 1 << 1, // property can be only read, not written
                    DontEnum     = 1 << 2, // property doesn't appear in (for .. in ..)
                    DontDelete   = 1 << 3, // property can't be deleted
@@ -433,7 +432,10 @@ namespace KJS {
     JSValue *getDirect(const Identifier& propertyName) const
         { return _prop.get(propertyName); }
     JSValue **getDirectLocation(const Identifier& propertyName)
-        { return _prop.getLocation(propertyName); }
+        { bool dummy; return _prop.getLocation(propertyName, dummy); }
+    JSValue **getDirectLocation(const Identifier& propertyName, bool& ro)
+        { return _prop.getLocation(propertyName, ro); }
+
     void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0)
         { _prop.put(propertyName, value, attr); }
     void putDirect(const Identifier &propertyName, int value, int attr = 0);
@@ -554,6 +556,7 @@ inline bool JSValue::isObject(const ClassInfo *c) const
 inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
     JSObject *object = this;
+    slot.setPotentiallyWriteable();
     while (true) {
         if (object->getOwnPropertySlot(exec, propertyName, slot))
             return true;
@@ -561,6 +564,8 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
         JSValue *proto = object->_proto;
         if (!proto->isObject())
             return false;
+
+        slot.setReadOnly();
 
         object = static_cast<JSObject *>(proto);
     }
@@ -571,17 +576,18 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
 // base class call to this.
 ALWAYS_INLINE bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    if (JSValue **location = getDirectLocation(propertyName)) {
+    bool ro;
+    if (JSValue **location = getDirectLocation(propertyName, ro)) {
         if (_prop.hasGetterSetterProperties() && location[0]->type() == GetterSetterType)
             fillGetterPropertySlot(slot, location);
         else
-            slot.setValueSlot(this, location);
+            slot.setValueSlot(this, location, ro);
         return true;
     }
 
     // non-standard Netscape extension
     if (propertyName == exec->propertyNames().underscoreProto) {
-        slot.setValueSlot(this, &_proto);
+        slot.setValueSlot(this, &_proto, PropertySlot::PermitDirectWrite);
         return true;
     }
 

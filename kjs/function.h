@@ -109,27 +109,26 @@ namespace KJS {
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier &, PropertySlot&);
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
-
-    void putLocal(int propertyID, JSValue* value)
-    {
-      assert(validLocal(propertyID));
-      Local& local = _locals[propertyID];
-      if ((local.attr & (Const | ReadOnly)) != ReadOnly) {
-        local.attr &= ~Const;    // Const => ReadOnly
-        local.value = value;
-       }
-    }
-
-    void initLocal(int propertyID, JSValue* value)
-    {
+    
+    //This is only used by declaration code, so it never check r/o attr
+    void putLocal(int propertyID, JSValue *value) {
       assert(validLocal(propertyID));
       _locals[propertyID].value = value;
-        // We do not have to touch the flags here -- they're pre-computed..
+        //We do not have to touch the flags here -- they're pre-computed..
+    }
+
+    void putLocalChecked(int propertyID, JSValue *value) {
+      if (isLocalReadOnly(propertyID)) return;
+      _locals[propertyID].value = value;
     }
 
     JSValue** getLocalDirect(int propertyID) {
       assert(validLocal(propertyID));
       return &_locals[propertyID].value;
+    }
+
+    bool isLocalReadOnly(int propertyID) {
+      return _locals[propertyID].attr & ReadOnly;
     }
 
     virtual const ClassInfo *classInfo() const { return &info; }

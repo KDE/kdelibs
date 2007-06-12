@@ -52,9 +52,16 @@ public:
             return *m_data.valueSlot;
         return m_getValue(exec, originalObject, Identifier::from(propertyName), *this); 
     }
+
+    // Readability helper for below..
+    enum {
+        PermitDirectWrite = 0,
+        ForbidDirectWrite = 1
+    };
     
-    void setValueSlot(JSObject *slotBase, JSValue **valueSlot) 
+    void setValueSlot(JSObject *slotBase, JSValue **valueSlot, bool makeReadOnly) 
     {
+        m_readOnly |= makeReadOnly;
         m_slotBase = slotBase;
         m_data.valueSlot = valueSlot;
         m_getValue = VALUE_SLOT_MARKER;
@@ -101,6 +108,21 @@ public:
     const HashEntry *staticEntry() const { return m_data.staticEntry; }
     unsigned index() const { return m_data.index; }
 
+    // For direct/value slots we also keep track of whether they're 
+    // writeable. This is cleared when the lookup succeeds in the 
+    // prototype since the write should go elsewhere.
+    // ### it may make sense to give it a real 'read only' value, v.s. 
+    // a 'not sure' one, since right not an attempt to write a const 
+    // will take the slow path.
+    void setPotentiallyWriteable() { m_readOnly = false; }
+    void setReadOnly()             { m_readOnly = true;  }
+
+    // This returns a pointer where the value may be stored,
+    // or 0 if this is not possible.
+    JSValue** getDirectWriteLocation()
+    {
+        return ((m_getValue == VALUE_SLOT_MARKER) & !m_readOnly) ? m_data.valueSlot : 0;
+    }
 private:
     static JSValue *undefinedGetter(ExecState *, JSObject *, const Identifier&, const PropertySlot&);
     static JSValue *functionGetter(ExecState *, JSObject *, const Identifier&, const PropertySlot&);
@@ -114,6 +136,8 @@ private:
         const HashEntry *staticEntry;
         unsigned index;
     } m_data;
+
+    bool m_readOnly;
 };
 
 }

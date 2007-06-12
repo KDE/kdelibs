@@ -62,5 +62,23 @@ namespace KJS {
     };
 } // namespace KJS
 
+// ### better place in identifier.h. only here because of the shared null
+namespace WTF {
+    // Provide hashing of Identifiers --- using the rep ptr
+    struct IdentHash {
+        static unsigned hash(const KJS::Identifier& key) {
+            return PtrHash<KJS::UString::Rep*>::hash(key.ustring().rep());
+        }
+        static bool equal(const KJS::Identifier& a, const KJS::Identifier& b) { return a == b; }
+    };
+
+    template<> struct DefaultHash<KJS::Identifier> { typedef IdentHash Hash; };
+
+    template<> struct HashTraits<KJS::Identifier> : GenericHashTraits<KJS::Identifier> {
+        static const KJS::Identifier& deletedValue() { return KJS::CommonIdentifiers::shared()->nullIdentifier; }
+    };
+
+} // namespace WTF
+
 #endif // KJS_COMMON_IDENTIFIERS_H
 

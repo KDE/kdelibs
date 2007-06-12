@@ -313,7 +313,7 @@ typedef union YYSTYPE
   PropertyNameNode   *pname;
   PackageNameNode     *pkgn;
 }
-/* Line 187 of yacc.c.  */
+/* Line 193 of yacc.c.  */
 #line 318 "grammar.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -2405,7 +2405,7 @@ yyreduce:
 
   case 24:
 #line 231 "grammar.y"
-    { (yyval.node) = new DynamicResolver<ResolveIdentifier>(*(yyvsp[(1) - (1)].ident), ResolveIdentifier()); ;}
+    { (yyval.node) = new VarAccessNode(*(yyvsp[(1) - (1)].ident)); ;}
     break;
 
   case 25:

@@ -27,6 +27,7 @@
 
 #include "lexer.h"
 #include "nodes.h"
+#include "semantic_checker.h"
 #include <wtf/HashSet.h>
 #include <wtf/Vector.h>
 
@@ -100,6 +101,10 @@ PassRefPtr<ProgramNode> Parser::parse(const UString& sourceURL, int startingLine
             *errMsg = "Parse error";
         return 0;
     }
+
+    // Semantically check the parsed program, and do some of the binding..
+    SemanticChecker sc;
+    sc.checkSemantics(prog.get());
 
     return prog;
 }

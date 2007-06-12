@@ -24,6 +24,9 @@
 
 #include "ustring.h"
 
+#include <wtf/HashFunctions.h>
+#include <wtf/HashTraits.h>
+
 namespace KJS {
 
   /**

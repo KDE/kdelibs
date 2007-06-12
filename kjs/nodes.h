@@ -29,11 +29,12 @@
 #include "Parser.h"
 #include "internal.h"
 #include "operations.h"
+#include "reference.h"
 #include <wtf/ListRefPtr.h>
 #include <wtf/Vector.h>
 
 namespace KJS {
-
+  class StaticVarStatementNode;
   class ProgramNode;
   class PropertyNameNode;
   class PropertyListNode;
@@ -47,6 +48,7 @@ namespace KJS {
 
   class VarDeclVisitor;
   class FuncDeclVisitor;
+  class SemanticChecker;
 
   class NodeVisitor {
   public:
@@ -92,8 +94,8 @@ namespace KJS {
 
     virtual Node *nodeInsideAllParens();
 
-    virtual bool isLocation() const { return false; }
-    virtual bool isResolveNode() const { return false; }
+    virtual bool isLocation() const       { return false; }
+    virtual bool isVarAccessNode() const  { return false; }
     virtual bool isBracketAccessorNode() const { return false; }
     virtual bool isDotAccessorNode() const { return false; }
     bool isNumber() const { return type() == NumberNodeType; }
@@ -102,6 +104,10 @@ namespace KJS {
     bool isTryNode() const { return type() == TryNodeType; }
     virtual bool introducesNewStaticScope () const { return false; }
     virtual bool introducesNewDynamicScope() const { return false; }
+    virtual bool isIterationStatement()      const { return false; }
+    virtual bool isSwitchStatement()         const { return false; }
+    virtual bool isVarStatement()            const { return false; }
+    
     bool introducesNewScope() const { return introducesNewStaticScope() || introducesNewDynamicScope(); }
 
     virtual void breakCycle() { }
@@ -111,19 +117,18 @@ namespace KJS {
     // execution context..
     void processDecls(ExecState*);
     
-    //Marks nodes that do symbolic lookup
-    virtual bool  isDynamicResolver() const { return false; }
-    
-    //Tries to create a better resolver for this node; may only be called if isDynamicResolver is true.
-    //If this is the best possible, returns 'this'
-    virtual Node* optimizeResolver(ExecState*, FunctionBodyNode*) const { assert(false); return 0; }
-
     /*
       Implementations of this method should call visitor->visit on all the 
       children nodes, and if they return value is non-0, update the link to the child.
       The recurseVisitLink helper takes care of this
     */
     virtual void recurseVisit(NodeVisitor * /*visitor*/) {}
+
+    /*
+      Nodes that can be optimized to take advantage of numeric binding to 
+      locals should override this method.
+    */
+    virtual Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
 
     template<typename T>
     static void recurseVisitLink(NodeVisitor* visitor, RefPtr<T>& link)
@@ -150,6 +155,9 @@ namespace KJS {
     Completion createErrorCompletion(ExecState *, ErrorType, const char *msg);
     Completion createErrorCompletion(ExecState *, ErrorType, const char *msg, const Identifier &);
 
+    Node* createErrorNode(ErrorType e, const char *msg);
+    Node* createErrorNode(ErrorType e, const char *msg, const Identifier &ident);
+
     JSValue *throwError(ExecState *, ErrorType, const char *msg);
     JSValue *throwError(ExecState *, ErrorType, const char *msg, const char* string);
     JSValue *throwError(ExecState *, ErrorType, const char *msg, JSValue *, Node *);
@@ -164,6 +172,14 @@ namespace KJS {
     void handleException(ExecState*, JSValue*);
 
   protected:
+    /* Nodes that can do semantic checking should override this,
+       and return an appropriate error node if appropriate. The reimplementations
+       should call the parent class's checkSemantics method at point where
+       recursion should occur
+    */
+    friend class SemanticChecker;
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
+  
     int m_line;
   private:
     virtual void processVarDecl (ExecState* state);
@@ -176,6 +192,12 @@ namespace KJS {
     Node(const Node &other);
   };
 
+  class LocationNode : public Node {
+  public:
+    virtual bool isLocation() const { return true; }
+    virtual Reference evaluateReference(ExecState* exec) = 0;
+  };
+
   class StatementNode : public Node {
   public:
     StatementNode();
@@ -184,9 +206,13 @@ namespace KJS {
     int lastLine() const { return m_lastLine; }
     bool hitStatement(ExecState*);
     virtual Completion execute(ExecState *exec) = 0;
-    void pushLabel(const Identifier &id) { ls.push(id); }
+
   protected:
-    LabelStack ls;
+    /* This implementation of checkSemantics applies the accumulated labels to
+       this statement, manages the targets for labelless break and continue,
+       and recurses.
+    */
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     JSValue *evaluate(ExecState*) { return jsUndefined(); }
     int m_lastLine;
@@ -256,112 +282,39 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
   };
 
-
-  struct ResolveResult {
-     ResolveResult() : writeValue(0) {}
- 
-     JSValue* evalValue;
-     JSValue* writeValue;
-  };
-  
-  //Resolver template for nodes that can be looked up directly
-  //in the active scope's Activation object by index.
-  template<typename Handler> class StaticResolver: public Node {
+  class VarAccessNode : public LocationNode {
   public:
-    StaticResolver(uint32_t i, const Identifier& s, const Handler& h) : handler(h), ident(s), index(i) {}
-    JSValue* evaluate(ExecState*);
+    VarAccessNode(const Identifier& s) : ident(s) {}
+    virtual Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
+
+    virtual bool isVarAccessNode() const { return true; }
     virtual void streamTo(SourceStream&) const;
+    virtual JSValue*  evaluate(ExecState*);
+    virtual Reference evaluateReference(ExecState* exec);
 
-    virtual bool isLocation() const {
-      return handler.isLocation();
-    }
-
-    virtual bool isResolveNode() const {
-      return false;
-    }
-
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    Handler  handler;
+    // Returns the ID of the local this is bound to, 
+    // or -1 if non-local
+    int localID(FunctionBodyNode* funcBody);
+  protected:
     Identifier ident;
+  };
+
+  class LocalVarAccessNode : public VarAccessNode {
+  public:
+    LocalVarAccessNode(const Identifier& s, uint32_t i) : VarAccessNode(s), index(i) {}
+    
+    virtual JSValue*  evaluate(ExecState*);
+    virtual Reference evaluateReference(ExecState* exec);
+  private:
     uint32_t index;
   };
-  
-  //Resolver template for nodes that need symbolic lookup
-  //to get their location..
-  template<typename Handler> class DynamicResolver : public Node {
+
+  class NonLocalVarAccessNode : public VarAccessNode {
   public:
-    DynamicResolver(const Identifier &s, const Handler& h) : handler(h), ident(s) { }
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-      
-    virtual bool isLocation() const {
-      return handler.isLocation();
-    }
-    
-    virtual bool isResolveNode() const {
-      return handler.isResolveNode();
-    }
+    NonLocalVarAccessNode(const Identifier& s) : VarAccessNode(s) {}
 
-    virtual void recurseVisit(NodeVisitor *visitor);
-
-    virtual bool  isDynamicResolver() const { return true; }
-    virtual Node* optimizeResolver(ExecState *exec, FunctionBodyNode* node) const;
-    const Identifier& identifier() const { return ident; }
-  private:
-    Handler    handler;
-    Identifier ident;
-  };
-
-  template<typename Handler> class NonLocalResolver : public Node {
-  public:
-    NonLocalResolver(const Identifier &s, const Handler& h) : handler(h), ident(s) { }
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-
-    virtual bool isLocation() const {
-      return handler.isLocation();
-    }
-
-    virtual bool isResolveNode() const {
-      return false;
-    }
-
-    virtual void recurseVisit(NodeVisitor *visitor);
-
-    const Identifier& identifier() const { return ident; }
-  private:
-    Handler    handler;
-    Identifier ident;
-  };
-
-
-  class ResolveHandlerBase {
-  public:
-    bool isLocation() const { return false; }
-    bool isResolveNode() const { return false; }
-
-    //A subclass should also implement the following:
-    //void streamTo(SourceStream&, const Identifier& ident) const;
-    //void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-
-    //In this case, the scope pointer points to the bottom of the scope chain, since some 
-    //operations (e.g. assign) use that..
-    //void handleResolveFailure(ResolveResult& res, ExecState* exec, JSObject* scope, const Identifier& ident) = 0;
-
-    void recurseVisit(NodeVisitor * /*visitor*/) {}
-  };
-
-  class ResolveIdentifier : public ResolveHandlerBase {
-  public:
-    bool isLocation() const { return true; }
-    bool isResolveNode() const { return true; }
-  
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident) {
-        res.evalValue = slot.getValue(exec, scope, ident);
-    }
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
+    virtual JSValue*  evaluate(ExecState*);
+    virtual Reference evaluateReference(ExecState* exec);
   };
 
   class GroupNode : public Node {
@@ -465,36 +418,36 @@ namespace KJS {
     RefPtr<PropertyListNode> list;
   };
 
-  class BracketAccessorNode : public Node {
+  class BracketAccessorNode : public LocationNode {
   public:
     BracketAccessorNode(Node *e1, Node *e2) : expr1(e1), expr2(e2) {}
-    JSValue* evaluate(ExecState*);
+    JSValue*  evaluate(ExecState*);
+    Reference evaluateReference(ExecState*);
     virtual void streamTo(SourceStream&) const;
 
-    virtual bool isLocation() const { return true; }
-    virtual bool isBracketAccessorNode() const { return true; }
     Node *base() { return expr1.get(); }
     Node *subscript() { return expr2.get(); }
 
     virtual void recurseVisit(NodeVisitor *visitor);
-  private:
+    virtual bool isBracketAccessorNode() const { return true; }
+  protected:
     RefPtr<Node> expr1;
     RefPtr<Node> expr2;
   };
 
-  class DotAccessorNode : public Node {
+  class DotAccessorNode : public LocationNode {
   public:
     DotAccessorNode(Node *e, const Identifier &s) : expr(e), ident(s) { }
-    JSValue* evaluate(ExecState*);
+    JSValue*  evaluate(ExecState*);
+    Reference evaluateReference(ExecState*);
     virtual void streamTo(SourceStream&) const;
 
-    virtual bool isLocation() const { return true; }
-    virtual bool isDotAccessorNode() const { return true; }
     Node *base() const { return expr.get(); }
     const Identifier& identifier() const { return ident; }
 
     virtual void recurseVisit(NodeVisitor *visitor);
-  private:
+    virtual bool isDotAccessorNode() const { return true; }
+  protected:
     RefPtr<Node> expr;
     Identifier ident;
   };
@@ -555,14 +508,14 @@ namespace KJS {
     RefPtr<ArgumentsNode> args;
   };
 
-  class ResolveFunctionCall : public ResolveHandlerBase {
+  class FunctionCallReferenceNode : public Node {
   public:
-    ResolveFunctionCall(ArgumentsNode *a) : args(a) {}
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
-    void recurseVisit(NodeVisitor * visitor);
+    FunctionCallReferenceNode(LocationNode *e, ArgumentsNode *a) : expr(e), args(a) {}
+    JSValue* evaluate(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+    virtual void recurseVisit(NodeVisitor *visitor);
   private:
+    RefPtr<LocationNode> expr;
     RefPtr<ArgumentsNode> args;
   };
 
@@ -602,37 +555,15 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
   };
 
-  class ResolvePostfix : public ResolveHandlerBase {
+  class PostfixNode : public Node {
   public:
-    ResolvePostfix(Operator o) : m_oper(o) {}
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
-  private:
-    Operator m_oper;
-  };
-
-  class PostfixBracketNode : public Node {
-  public:
-    PostfixBracketNode(Node *b, Node *s, Operator o) : m_base(b), m_subscript(s), m_oper(o) {}
+    PostfixNode(LocationNode *l, Operator o) : m_loc(l), m_oper(o) {}
     JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> m_base;
-    RefPtr<Node> m_subscript;
-    Operator m_oper;
-  };
-
-  class PostfixDotNode : public Node {
-  public:
-    PostfixDotNode(Node *b, const Identifier& i, Operator o) : m_base(b), m_ident(i), m_oper(o) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> m_base;
-    Identifier m_ident;
+    void streamTo(SourceStream&) const;
+    void recurseVisit(NodeVisitor * visitor);
+    Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
+  protected:
+    RefPtr<LocationNode> m_loc;
     Operator m_oper;
   };
 
@@ -646,33 +577,14 @@ namespace KJS {
     Operator m_oper; 
   }; 
 
-  class ResolveDelete : public ResolveHandlerBase {
+  class DeleteReferenceNode : public Node {
   public:
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
-  };
-
-  class DeleteBracketNode : public Node {
-  public:
-    DeleteBracketNode(Node *base, Node *subscript) : m_base(base), m_subscript(subscript) {}
+    DeleteReferenceNode(LocationNode *l) : loc(l) {}
     JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
+    void streamTo(SourceStream&) const;
+    void recurseVisit(NodeVisitor * visitor);
   private:
-    RefPtr<Node> m_base;
-    RefPtr<Node> m_subscript;
-  };
-
-  class DeleteDotNode : public Node {
-  public:
-    DeleteDotNode(Node *base, const Identifier& i) : m_base(base), m_ident(i) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> m_base;
-    Identifier m_ident;
+    RefPtr<LocationNode> loc;
   };
 
   class DeleteValueNode : public Node {
@@ -685,6 +597,7 @@ namespace KJS {
     RefPtr<Node> m_expr;
   };
 
+
   class VoidNode : public Node {
   public:
     VoidNode(Node *e) : expr(e) {}
@@ -695,11 +608,14 @@ namespace KJS {
     RefPtr<Node> expr;
   };
 
-  class ResolveTypeOf : public ResolveHandlerBase {
+  class TypeOfReferenceNode : public Node {
   public:
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
+    TypeOfReferenceNode(LocationNode *l) : loc(l) {}
+    JSValue* evaluate(ExecState*);
+    void streamTo(SourceStream&) const;
+    void recurseVisit(NodeVisitor * visitor);
+  private:
+    RefPtr<LocationNode> loc;
   };
 
   class TypeOfValueNode : public Node {
@@ -712,16 +628,6 @@ namespace KJS {
     RefPtr<Node> m_expr;
   };
 
-  class ResolvePrefix : public ResolveHandlerBase {
-  public:
-    ResolvePrefix(Operator o) : m_oper(o) {}
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
-  private:
-    Operator m_oper;
-  };
-
   class PrefixErrorNode : public Node { 
   public: 
     PrefixErrorNode(Node* e, Operator o) : m_expr(e), m_oper(o) {} 
@@ -732,27 +638,15 @@ namespace KJS {
     Operator m_oper; 
   }; 
 
-  class PrefixBracketNode : public Node {
+  class PrefixNode : public Node {
   public:
-    PrefixBracketNode(Node *b, Node *s, Operator o) : m_base(b), m_subscript(s), m_oper(o) {}
+    PrefixNode(LocationNode *l, Operator o) : m_loc(l), m_oper(o) {}
     JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> m_base;
-    RefPtr<Node> m_subscript;
-    Operator m_oper;
-  };
-
-  class PrefixDotNode : public Node {
-  public:
-    PrefixDotNode(Node *b, const Identifier& i, Operator o) : m_base(b), m_ident(i), m_oper(o) {}
-    JSValue* evaluate(ExecState*);
-    virtual void streamTo(SourceStream&) const;
-    virtual void recurseVisit(NodeVisitor *visitor);
-  private:
-    RefPtr<Node> m_base;
-    Identifier m_ident;
+    void streamTo(SourceStream&) const;
+    void recurseVisit(NodeVisitor * visitor);
+    Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
+  protected:
+    RefPtr<LocationNode> m_loc;
     Operator m_oper;
   };
 
@@ -855,15 +749,16 @@ namespace KJS {
     RefPtr<Node> m_right;
   };
 
-  class ResolveAssign : public ResolveHandlerBase {
+  class AssignNode : public Node {
   public:
-    ResolveAssign(Operator oper, Node *right)
-      : m_oper(oper), m_right(right) {}
-    void streamTo(SourceStream&, const Identifier& ident) const;
-    void handleResolveSuccess(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, PropertySlot& slot, const Identifier& ident);
-    void handleResolveFailure(ResolveResult& res, Node* node, ExecState* exec, JSObject* scope, const Identifier& ident);
+    AssignNode(LocationNode* loc, Operator oper, Node *right)
+      : m_loc(loc), m_oper(oper), m_right(right) {}
+    void streamTo(SourceStream&) const;
+    JSValue* evaluate(ExecState*);
     void recurseVisit(NodeVisitor * visitor);
+    Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
   protected:
+    RefPtr<LocationNode> m_loc;
     Operator m_oper;
     RefPtr<Node> m_right;
   };
@@ -913,6 +808,8 @@ namespace KJS {
     JSValue* evaluate(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+
+    Node* getExpr() { return expr.get(); }
   private:
     RefPtr<Node> expr;
   };
@@ -927,6 +824,7 @@ namespace KJS {
 
     virtual void processVarDecl(ExecState*);
   private:
+    friend class VarStatementNode;
     Type varType;
     Identifier ident;
     RefPtr<AssignExprNode> init;
@@ -952,12 +850,30 @@ namespace KJS {
 
   class VarStatementNode : public StatementNode {
   public:
+    virtual Node* optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node);
     VarStatementNode(VarDeclListNode *l) : next(l->next.release()) { Parser::removeNodeCycle(next.get()); }
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool isVarStatement() const { return true; }
   private:
     RefPtr<VarDeclListNode> next;
+  };
+
+  // A version of VarStatementNode optimized for local access --- it stores the 
+  // index locations, and accesses them directly.
+  class StaticVarStatementNode : public StatementNode {
+    virtual Completion execute(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+    virtual void recurseVisit(NodeVisitor *visitor);
+  private:
+    struct Initializer {
+      int localID;
+      RefPtr<Node> initExpr;
+    };
+    WTF::Vector<Initializer> initializers;
+    RefPtr<VarStatementNode> originalStatement;
+    friend class VarStatementNode;
   };
 
   class BlockNode : public StatementNode {
@@ -1006,6 +922,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<StatementNode> statement;
     RefPtr<Node> expr;
@@ -1017,6 +934,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<Node> expr;
     RefPtr<StatementNode> statement;
@@ -1031,6 +949,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool isIterationStatement() const { return true; }
   private:
     RefPtr<Node> expr1;
     RefPtr<Node> expr2;
@@ -1045,6 +964,7 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+    virtual bool isIterationStatement() const { return true; }
   private:
     Identifier ident;
     RefPtr<AssignExprNode> init;
@@ -1056,22 +976,28 @@ namespace KJS {
 
   class ContinueNode : public StatementNode {
   public:
-    ContinueNode() { }
-    ContinueNode(const Identifier &i) : ident(i) { }
+    ContinueNode() : target(0) { }
+    ContinueNode(const Identifier &i) : ident(i), target(0) { }
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
+  protected:
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
-    Identifier ident;
+    Identifier  ident;
+    const Node* target;
   };
 
   class BreakNode : public StatementNode {
   public:
-    BreakNode() { }
-    BreakNode(const Identifier &i) : ident(i) { }
+    BreakNode() : target(0) { }
+    BreakNode(const Identifier &i) : ident(i), target(0) { }
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
+  protected:
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     Identifier ident;
+    const Node* target;
   };
 
   class ReturnNode : public StatementNode {
@@ -1102,6 +1028,8 @@ namespace KJS {
     virtual Completion execute(ExecState*);
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
+  protected:
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     Identifier label;
     RefPtr<StatementNode> statement;
@@ -1238,6 +1166,8 @@ namespace KJS {
     virtual void streamTo(SourceStream&) const;
     virtual void recurseVisit(NodeVisitor *visitor);
     virtual bool introducesNewStaticScope() const { return true; }
+  protected:
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     void addParams();
     // Used for streamTo
@@ -1260,6 +1190,8 @@ namespace KJS {
 
     virtual void processFuncDecl(ExecState*);
     FunctionImp* makeFunctionObject(ExecState*);
+  protected:
+    virtual Node* checkSemantics(SemanticChecker* semanticChecker);
   private:
     void addParams();
     Identifier ident;
@@ -1338,6 +1270,7 @@ namespace KJS {
       virtual Completion execute(ExecState*);
       virtual void streamTo(SourceStream&) const;
       virtual void recurseVisit(NodeVisitor *visitor);
+      virtual bool isSwitchStatement() const { return true; }
   private:
       RefPtr<Node> expr;
       RefPtr<CaseBlockNode> block;
@@ -1346,6 +1279,27 @@ namespace KJS {
   class ProgramNode : public FunctionBodyNode {
   public:
     ProgramNode(SourceElementsNode *s);
+  };
+
+  /**
+   This node represents statically detectable errors that must be reported
+   at runtime. The semantic checker splices it in above the original node
+   in the program, and it does the error reporting; the child node is
+   used for text serialization.
+
+   Note: we do not visit kids of this node in the visitor interface,
+   since they do not run, anyway
+  */
+  class ErrorNode : public StatementNode {
+  public:
+    ErrorNode(Node* k, ErrorType e, const UString& m) :
+        kid(k), errorType(e), message(m) {}
+    virtual Completion execute(ExecState*);
+    virtual void streamTo(SourceStream&) const;
+  private:
+    RefPtr<Node> kid;
+    ErrorType    errorType;
+    UString      message;
   };
 
   class PackageNameNode : public Node {
