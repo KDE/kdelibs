@@ -1,14 +1,14 @@
 
 ########### next target ###############
-add_definitions(-DBUILDING_KDE__)
-include_directories( ${_KDE4_PLATFORM_INCLUDE_DIRS} )
+#add_definitions(-DBUILDING_KDE__)
+#include_directories( ${_KDE4_PLATFORM_INCLUDE_DIRS} )
 
-set(wtf_LIB_SRCS HashTable.cpp )
+#set(wtf_LIB_SRCS HashTable.cpp )
 
-kde4_add_library(wtf SHARED ${wtf_LIB_SRCS})
+#kde4_add_library(wtf SHARED ${wtf_LIB_SRCS})
 
-set_target_properties(wtf PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
-install(TARGETS wtf  DESTINATION ${LIB_INSTALL_DIR} )
+#set_target_properties(wtf PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
+#install(TARGETS wtf  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### install files ###############
 # FIXME: Actually, most of these should NOT be installed. The only
