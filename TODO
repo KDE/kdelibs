@@ -197,7 +197,11 @@ informations
 
 - Prevent re-entering event loop in kded to avoid reentrancy problems like with kwallet in KDE3 (Lubos).
 
-- Customizable KToolTip/KWhatsThis widgets|Jaroslaw Staniek (kdelibs4 TODO/KToolTip|Details)
+- Customizable KToolTip/KWhatsThis widgets (Jaroslaw Staniek), 
+  now KWhatsThis is a part of KDE GSoC "Implement OpenUsability's Context Sensitive 
+  Help Redesign" project, by Joshua Keel, mentored by Ellen Reitmayr
+  * initial notes: http://wiki.kde.org/tiki-index.php?page=kdelibs4+TODO%2FKToolTip
+  * design page: http://wiki.kde.org/tiki-index.php?page=KWhatsThis
 
 - Additional (automatic) shortcuts for KMessageBox (Jaroslaw Staniek)
   See http://lists.kde.org/?l=kde-usability&m=109688936328920&w=2
