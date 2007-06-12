@@ -40,8 +40,10 @@ void KMimeTypeTest::initTestCase()
 {
     // Create fake text/plain part with a higher initial preference than katepart.
     const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
+    bool mustUpdateKSycoca = false;
     const bool mustCreate = !QFile::exists(fakePart);
     if (mustCreate) {
+        mustUpdateKSycoca = true;
         KDesktopFile file(fakePart);
         KConfigGroup group = file.desktopGroup();
         group.writeEntry("Name", "FakePart");
@@ -52,8 +54,22 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("InitialPreference",100);
     }
 
-    if ( !KSycoca::isAvailable() || mustCreate ) {
-        // Create ksycoca in ~/.kde-unit-test
+    // Create fake text/plain ktexteditor plugin.
+    const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
+    const bool mustCreatePlugin = !QFile::exists(fakePlugin);
+    if (mustCreatePlugin) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(fakePlugin);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakePlugin");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "faketextplugin");
+        group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+        group.writeEntry("MimeType", "text/plain");
+    }
+
+    if ( mustUpdateKSycoca ) {
+        // Update ksycoca in ~/.kde-unit-test after creating the above
         QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME), QStringList() << "--noincremental" );
     }
 }
@@ -389,15 +405,11 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     offers = KMimeTypeTrader::self()->query("text/plain", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );
 
-    // We should have at least a few kate plugins like
-    // ktexteditor_docwordcompletion or ktexteditor_insertfile. This is all from kdelibs.
-    QVERIFY( offerListHasService( offers, "ktexteditor_docwordcompletion.desktop" ) );
-    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+    // We should have at least the fake text plugin that we created for this.
+    // (The actual plugins from kdelibs don't mention text/plain anymore)
+    QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
-    // We shouldn't have non-plugins though
-    QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
-
-    offers = KMimeTypeTrader::self()->query("text/x-patch", "Application");
+    // We shouldn't have non-plugins
     QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
 
 }
@@ -416,10 +428,12 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
     offers = KMimeTypeTrader::self()->query("text/x-patch", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );
 
-    // We should have at least a few kate plugins like
-    // ktexteditor_docwordcompletion or ktexteditor_insertfile. This is all from kdelibs.
-    QVERIFY( offerListHasService( offers, "ktexteditor_docwordcompletion.desktop" ) );
-    QVERIFY( offerListHasService( offers, "ktexteditor_insertfile.desktop" ) );
+    // We should have at least the fake text plugin that we created for this.
+    // (The actual plugins from kdelibs don't mention text/plain anymore)
+    QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
+
+    offers = KMimeTypeTrader::self()->query("text/x-patch", "Application");
+    QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
 }
 
 
@@ -448,12 +462,11 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
     QVERIFY( !katepart.hasMimeType( KMimeType::mimeType( "image/png" ).data() ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
+    QVERIFY( !katepart.hasServiceType( "KTextEditor/Plugin" ) );
 
     QString ktexteditor_insertfilePath = KStandardDirs::locate( "services", "ktexteditor_insertfile.desktop" );
     QVERIFY( !ktexteditor_insertfilePath.isEmpty() );
     KService ktexteditor_insertfile( ktexteditor_insertfilePath );
-    QVERIFY( ktexteditor_insertfile.hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
-    //QVERIFY( ktexteditor_insertfile.hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // inherited mimetype; fails
     QVERIFY( ktexteditor_insertfile.hasServiceType( "KTextEditor/Plugin" ) );
     QVERIFY( !ktexteditor_insertfile.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
@@ -467,11 +480,10 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !katepart->hasMimeType( KMimeType::mimeType( "image/png" ).data() ) );
     QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
+    QVERIFY( !katepart->hasServiceType( "KTextEditor/Plugin" ) );
 
     KService::Ptr ktexteditor_insertfile = KService::serviceByDesktopPath( "ktexteditor_insertfile.desktop" );
     QVERIFY( !ktexteditor_insertfile.isNull() );
-    QVERIFY( ktexteditor_insertfile->hasMimeType( KMimeType::mimeType( "text/plain" ).data() ) );
-    QVERIFY( ktexteditor_insertfile->hasMimeType( KMimeType::mimeType( "text/x-patch" ).data() ) ); // due to inheritance
     QVERIFY( ktexteditor_insertfile->hasServiceType( "KTextEditor/Plugin" ) );
     QVERIFY( !ktexteditor_insertfile->hasServiceType( "KParts/ReadOnlyPart" ) );
 }

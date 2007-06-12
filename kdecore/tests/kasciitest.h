@@ -1,4 +1,4 @@
-/*  
+/*
     Copyright (c) 2006 Volker Krause <volker.krause@rwth-aachen.de>
 
     This library is free software; you can redistribute it and/or
@@ -24,9 +24,9 @@
 
 class KAsciiTest : public QObject
 {
-	Q_OBJECT
-	private Q_SLOTS:
-		void testkasciistricmp();
+    Q_OBJECT
+private Q_SLOTS:
+    void testkasciistricmp();
 };
 
 #endif
