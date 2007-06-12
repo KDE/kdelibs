@@ -600,7 +600,7 @@ void KStartupInfo::silenceStartup( bool silence )
 
 void KStartupInfo::handleAutoAppStartedSending()
     {
-    if( auto_app_started_sending )
+    if( auto_app_started_sending && !kapp->startupId().isEmpty())
         appStarted();
     }
 
