@@ -58,22 +58,6 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
      kDebug() << "KWindowSystem::setOnDesktop( WId win, int desktop ) isn't yet implemented!" << endl;
 }
 
-int KWindowSystem::numberOfViewports(int desktop)
-{ 
-    return 1;
-}
-
-int KWindowSystem::currentViewport(int desktop)
-{
-    return 1;
-}
-
-void KWindowSystem::setCurrentDesktopViewport( int desktop, QPoint viewport )
-{
-    //TODO
-    kDebug() << "KWindowSystem::setCurrentDesktopViewport( int desktop, QPoint viewport )  isn't yet implemented!" << endl;
-}
-
 WId KWindowSystem::activeWindow()
 {
     //return something
