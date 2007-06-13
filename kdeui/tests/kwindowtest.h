@@ -47,13 +47,9 @@ public Q_SLOTS:
     void slotToggled(QAction* action);
 
 protected:
-    KMenuBar *menuBar;
-    QMenu *fileMenu;
     QMenu *itemsMenu;
     QMenu *completions;
-    QMenu *toolBarMenu;
     KStatusBar *statusBar;
-    KHelpMenu *helpMenu;
     KToolBar *tb;
     KToolBar *tb1;
     class KLineEdit* testLineEdit;
@@ -67,7 +63,6 @@ protected:
     QTextEdit *widget;
     QTimer *timer;
     QProgressBar *pr;
-    KToolBarRadioGroup *rg;
 };
 #endif
 
