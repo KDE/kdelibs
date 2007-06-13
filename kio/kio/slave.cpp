@@ -481,7 +481,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
         return 0;
 #ifdef Q_WS_WIN
     // localhost could not resolved yet, this s a bug in kdecore network resolver stuff
-    // autoselect free tcp port 
+    // autoselect free tcp port
     KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
     QString sockname = kss->localAddress().serviceName();
 #else
