@@ -68,19 +68,19 @@ DefaultColors defaultTooltipColors = {
     { 232, 185, 149 }
 };
 
-// BEGIN KColorPrivate
+// BEGIN KColorSchemePrivate
 class KColorSchemePrivate
 {
-    public:
-        explicit KColorSchemePrivate(const char* group, DefaultColors);
-        KColorSchemePrivate(const KColorSchemePrivate&);
+public:
+    explicit KColorSchemePrivate(const char* group, DefaultColors);
+    KColorSchemePrivate(const KColorSchemePrivate&);
 
-        QColor background(KColorScheme::BackgroundRole);
-        QColor foreground(KColorScheme::ForegroundRole);
-        QColor decoration(KColorScheme::DecorationRole);
-    private:
-        KConfigGroup _config;
-        DefaultColors _defaults;
+    QColor background(KColorScheme::BackgroundRole);
+    QColor foreground(KColorScheme::ForegroundRole);
+    QColor decoration(KColorScheme::DecorationRole);
+private:
+    KConfigGroup _config;
+    DefaultColors _defaults;
 };
 
 KColorSchemePrivate::KColorSchemePrivate(const char *group, DefaultColors defaults)
