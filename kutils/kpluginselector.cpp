@@ -192,7 +192,7 @@ void KPluginSelector::Private::DependenciesWidget::showDependencyDetails()
         else
             message += i18n("\n    %1 plugin has been automatically unchecked becase its dependency on %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
     }
-    KMessageBox::information(0, i18n("Dependency Check"), message);
+    KMessageBox::information(0, message, i18n("Dependency Check"));
 
     addedByDependencies = 0;
     removedByDependencies = 0;
