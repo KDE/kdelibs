@@ -35,7 +35,7 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
  * and we check that the corresponding signals are emitted, i.e. that our process
  * got the dbus signal.
  *
- * As a nice side-effect we automatically test a bit of K3Process as well :)
+ * As a nice side-effect we automatically test a bit of KProcess as well :)
  */
 
 void KGlobalSettingsTest::initTestCase()
