@@ -1,4 +1,5 @@
 #!/usr/bin/env kross
+# coding: utf-8
 
 """
   This Python script is used to test the Kross scripting framework.
