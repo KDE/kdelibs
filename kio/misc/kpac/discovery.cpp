@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <netdb.h>
+#include <unistd.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -42,7 +43,7 @@
 #include <QtCore/QTimer>
 
 #include <klocale.h>
-#include <k3procio.h>
+#include <kprocess.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
 
@@ -52,13 +53,13 @@ namespace KPAC
 {
     Discovery::Discovery( QObject* parent )
         : Downloader( parent ),
-          m_helper( new K3ProcIO )
+          m_helper( new KProcess(this) )
     {
-        connect( m_helper, SIGNAL( readReady( K3ProcIO* ) ), SLOT( helperOutput() ) );
-        connect( m_helper, SIGNAL( processExited( K3Process* ) ), SLOT( failed() ) );
+        connect( m_helper, SIGNAL( readyReadStandardOutput() ), SLOT( helperOutput() ) );
+        connect( m_helper, SIGNAL( finished( int, QProcess::ExitStatus ) ), SLOT( failed() ) );
         *m_helper << KStandardDirs::findExe("kpac_dhcp_helper");
-
-        if ( !m_helper->start() )
+        m_helper->start();
+        if ( !m_helper->waitForStarted() )
             QTimer::singleShot( 0, this, SLOT( failed() ) );
     }
 
@@ -140,7 +141,7 @@ namespace KPAC
     {
         m_helper->disconnect( this );
         QString line;
-        m_helper->readln( line );
+        line = QString::fromLocal8Bit( m_helper->readLine() );
         download( KUrl( line.trimmed() ) );
     }
 }
