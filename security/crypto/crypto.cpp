@@ -64,7 +64,7 @@
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <knewpassworddialog.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <kpushbutton.h>
 #include <k3resolver.h>
 #include <kseparator.h>
@@ -1929,11 +1929,12 @@ void KCryptoConfig::slotCAImport() {
 void KCryptoConfig::offerImportToKMail( const QString& certFile )
 {
     if ( KMessageBox::questionYesNo( this, i18n( "Do you want to make this certificate available to KMail as well?" ), QString(), KGuiItem(i18n("Make Available")), KGuiItem(i18n("Do Not Make Available")) ) == KMessageBox::Yes ) {
-       K3Process proc;
+       KProcess proc;
        proc << "kleopatra";
        proc << "--import-certificate";
        proc << certFile;
-       if ( !proc.start( K3Process::DontCare ) )
+       proc.start();
+       if ( !proc.waitForStarted() )
            KMessageBox::error( this, i18n( "Could not execute Kleopatra. You might have to install or update the kdepim package." ) );
    }
 }
