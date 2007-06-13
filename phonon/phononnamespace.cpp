@@ -21,6 +21,7 @@
 #include "phononnamespace_p.h"
 
 #include "factory.h"
+#include "globalstatic_p.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QList>
@@ -73,11 +74,11 @@ Phonon::GlobalData::GlobalData()
     showDebugOutput = !qgetenv("PHONON_DEBUG").isEmpty();
 }
 
-Q_GLOBAL_STATIC(Phonon::GlobalData, globalInstance)
+PHONON_GLOBAL_STATIC(Phonon::GlobalData, globalInstance)
 
 Phonon::GlobalData *Phonon::GlobalData::instance()
 {
-    return globalInstance();
+    return globalInstance;
 }
 
 // vim: sw=4 ts=4

@@ -23,20 +23,21 @@
 #include "phonondefs_p.h"
 #include "backendinterface.h"
 #include "factory.h"
+#include "globalstatic_p.h"
 #include "objectdescription.h"
 
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QStringList>
 
-Q_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
+PHONON_GLOBAL_STATIC(Phonon::BackendCapabilitiesPrivate, globalBCPrivate)
 
 namespace Phonon
 {
 
 BackendCapabilities::Notifier *BackendCapabilities::notifier()
 {
-    return globalBCPrivate();
+    return globalBCPrivate;
 }
 
 #define SUPPORTS(foo) \

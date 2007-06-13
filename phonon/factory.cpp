@@ -24,6 +24,7 @@
 #include "base_p.h"
 #include "audiooutput.h"
 #include "audiooutput_p.h"
+#include "globalstatic_p.h"
 #include "pluginfactory.h"
 #include "phononnamespace_p.h"
 
@@ -36,12 +37,10 @@
 #include <QtDBus/QtDBus>
 #include <QtGui/QIcon>
 
-#include <kglobal.h>
-
 namespace Phonon
 {
 
-K_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
+PHONON_GLOBAL_STATIC(Phonon::FactoryPrivate, globalFactory)
 
 void Factory::createBackend(const QString &library, const QString &version)
 {
