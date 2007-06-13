@@ -23,7 +23,7 @@
 #include <kxmlguiclient.h>
 #include <kdialog.h>
 
-class K3Process;
+class KProcess;
 class KActionCollection;
 class QTreeWidget;
 
@@ -363,12 +363,12 @@ private:
 
   Q_PRIVATE_SLOT(d, void slotChangeIcon())
 
-  Q_PRIVATE_SLOT(d, void slotProcessExited( K3Process* ))
+  Q_PRIVATE_SLOT(d, void slotProcessExited())
 
 private:
   friend class KEditToolBarWidgetPrivate;
   KEditToolBarWidgetPrivate *const d;
-  
+
   Q_DISABLE_COPY(KEditToolBarWidget)
 };
 

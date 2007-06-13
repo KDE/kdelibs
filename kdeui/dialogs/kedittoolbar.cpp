@@ -44,7 +44,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kpushbutton.h>
-#include <k3procio.h>
+#include <kprocess.h>
 #include <ktoolbar.h>
 
 #include "kaction.h"
@@ -176,7 +176,7 @@ public:
      * In a KParts application we let create a KXMLGUIClient create a dummy one,
      * but it probably isn't used.
      */
-  KEditToolBarWidgetPrivate(KEditToolBarWidget* widget, 
+  KEditToolBarWidgetPrivate(KEditToolBarWidget* widget,
           const KComponentData &cData, KActionCollection* collection)
       : m_collection( collection ),
         m_widget (widget),
@@ -193,29 +193,29 @@ public:
 
   // private slots
   void slotToolBarSelected(const QString& text);
-  
+
   void slotInactiveSelectionChanged();
   void slotActiveSelectionChanged();
-  
+
   void slotInsertButton();
   void slotRemoveButton();
   void slotUpButton();
   void slotDownButton();
-  
+
   void slotChangeIcon();
-  
-  void slotProcessExited( K3Process* );
-  
+
+  void slotProcessExited();
+
 
 
 
   void setupLayout();
-  
+
   void initNonKPart( const QString& file, bool global, const QString& defaultToolbar );
   void initKPart( KXMLGUIFactory* factory, const QString& defaultToolbar );
   void loadToolBarCombo( const QString& defaultToolbar );
   void loadActionList(QDomElement& elem);
-  
+
   QString xmlFile(const QString& xml_file)
   {
     return xml_file.isNull() ? QString(m_componentData.componentName()) + "ui.rc" :
@@ -332,12 +332,12 @@ public:
 #endif
 
   QComboBox *m_toolbarCombo;
-  
+
   QToolButton *m_upAction;
   QToolButton *m_removeAction;
   QToolButton *m_insertAction;
   QToolButton *m_downAction;
-  
+
   //QValueList<KAction*> m_actionList;
   KActionCollection* m_collection;
   KEditToolBarWidget* m_widget;
@@ -362,7 +362,7 @@ public:
   KSeparator *m_comboSeparator;
   QLabel * m_helpArea;
   KPushButton* m_changeIcon;
-  K3ProcIO* m_kdialogProcess;
+  KProcess* m_kdialogProcess;
   bool m_hasKDialog;
   bool m_loadedOnce;
 };
@@ -1340,14 +1340,15 @@ void KEditToolBarWidgetPrivate::updateLocal(QDomElement& elem)
 void KEditToolBarWidgetPrivate::slotChangeIcon()
 {
   // We can't use KIconChooser here, since it's in libkio
-  // ##### KDE4: reconsider this, e.g. move KEditToolBar to libkio
+  // ##### KDE4: reconsider this, e.g. move KEditToolBar to libkio,
+  // ##### or better, dlopen libkfile from here like kio does.
 
   //if the process is already running (e.g. when somebody clicked the change button twice (see #127149)) - do nothing...
   //otherwise m_kdialogProcess will be overwritten and set to zero in slotProcessExited()...crash!
-  if ( m_kdialogProcess && m_kdialogProcess->isRunning() )
+  if ( m_kdialogProcess && m_kdialogProcess->state() == QProcess::Running )
         return;
 
-  m_kdialogProcess = new K3ProcIO;
+  m_kdialogProcess = new KProcess;
   QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
   (*m_kdialogProcess) << kdialogExe;
   (*m_kdialogProcess) << "--embed";
@@ -1355,7 +1356,10 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   (*m_kdialogProcess) << "--geticon";
   (*m_kdialogProcess) << "Toolbar";
   (*m_kdialogProcess) << "Actions";
-  if ( !m_kdialogProcess->start( K3Process::NotifyOnExit ) ) {
+  m_kdialogProcess->setOutputChannelMode(KProcess::MergedChannels);
+  m_kdialogProcess->setNextOpenMode( QIODevice::ReadOnly | QIODevice::Text );
+  m_kdialogProcess->start();
+  if ( !m_kdialogProcess->waitForStarted() ) {
     kError(240) << "Can't run " << kdialogExe << endl;
     delete m_kdialogProcess;
     m_kdialogProcess = 0;
@@ -1365,11 +1369,11 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   m_activeList->setEnabled( false ); // don't change the current item
   m_toolbarCombo->setEnabled( false ); // don't change the current toolbar
 
-  QObject::connect( m_kdialogProcess, SIGNAL( processExited( K3Process* ) ),
-                    m_widget, SLOT( slotProcessExited( K3Process* ) ) );
+  QObject::connect( m_kdialogProcess, SIGNAL( finished( int, QProcess::ExitStatus ) ),
+                    m_widget, SLOT( slotProcessExited() ) );
 }
 
-void KEditToolBarWidgetPrivate::slotProcessExited( K3Process* )
+void KEditToolBarWidgetPrivate::slotProcessExited()
 {
   m_activeList->setEnabled( true );
   m_toolbarCombo->setEnabled( true );
@@ -1381,17 +1385,20 @@ void KEditToolBarWidgetPrivate::slotProcessExited( K3Process* )
          return;
   }
 
-  if ( !m_kdialogProcess->normalExit() ||
-       m_kdialogProcess->exitStatus() ||
-       m_kdialogProcess->readln(icon, true) <= 0 ) {
+  icon = QString::fromLocal8Bit( m_kdialogProcess->readAllStandardOutput() );
+  icon = icon.left( icon.indexOf( '\n' ) );
+  kDebug(240) << "icon=" << icon << endl;
+  if ( m_kdialogProcess->exitStatus() != QProcess::NormalExit ||
+       icon.isEmpty() ) {
     delete m_kdialogProcess;
     m_kdialogProcess = 0;
     return;
   }
 
   ToolBarItem *item = m_activeList->currentItem();
+  kDebug() << item << endl;
   if(item){
-    item->setIcon(0, BarIcon(icon, 16));
+    item->setIcon(0, KIcon(icon));
 
     Q_ASSERT( m_currentXmlData->m_type != XmlData::Merged );
 

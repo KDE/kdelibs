@@ -34,6 +34,11 @@ class MainWindow : public KXmlGuiWindow
 
     MainWindow()
     {
+
+      // KXMLGUIClient looks in the "data" resource for the .rc files
+      // This line is for test programs only!
+      KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
+
       KVBox* main = new KVBox( this );
       setCentralWidget( main );
 
@@ -67,7 +72,7 @@ class MainWindow : public KXmlGuiWindow
       // set buddy for label3
       label3->setBuddy( lineEditAction );
 
-      createGUI( "ktoolbarlabelactiontestui.rc" );
+      setupGUI( Default, "ktoolbarlabelactiontestui.rc" );
     }
 };
 
