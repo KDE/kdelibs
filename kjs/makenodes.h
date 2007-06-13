@@ -25,7 +25,6 @@
 #include "nodes.h"
 #include "identifier.h"
 
-#define OPTIMIZE_NODES 
 //#define TRACE_OPTIMIZER
 
 namespace KJS {
@@ -35,7 +34,7 @@ static Node* makeAssignNode(Node* loc, Operator op, Node* expr)
     Node *n = loc->nodeInsideAllParens();
 
     if (!n->isLocation())
-        return new AssignErrorNode(loc, op, expr); ;
+        return new AssignErrorNode(loc, op, expr);
 
     if (n->isVarAccessNode()) {
         return new AssignNode(static_cast<LocationNode*>(n), op, expr);
@@ -302,7 +301,6 @@ static StatementNode *makeImportNode(PackageNameNode *n,
 static StatementNode *makeLabelNode(const Identifier& l, StatementNode* s)
 {
     return new LabelNode(l, s);
-
 }
 
 } // namespace KJS

@@ -2245,7 +2245,7 @@ Completion ForNode::execute(ExecState *exec)
       v = expr2->evaluate(exec);
       KJS_CHECKEXCEPTION
       if (!v->toBoolean(exec))
-	return Completion(Normal, cval);
+        return Completion(Normal, cval);
     }
     // bail out on error
     KJS_CHECKEXCEPTION
@@ -2551,7 +2551,7 @@ Completion CaseBlockNode::evalBlock(ExecState *exec, JSValue *input)
     if (strictEqual(exec, input, v)) {
       res = clause->evalStatements(exec);
       if (res.complType() != Normal)
-	return res;
+        return res;
       goto step18;
     }
   }
@@ -2805,7 +2805,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 
 void FuncDeclNode::addParams() 
 {
-  for(ParameterNode *p = param.get(); p != 0L; p = p->nextParam())
+  for (ParameterNode *p = param.get(); p != 0L; p = p->nextParam())
     body->addParam(p->ident());
 }
 
