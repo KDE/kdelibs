@@ -76,7 +76,9 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
         root.addBookmark(d->bookmarkManager, i18n("Trash"), KUrl("trash:/"), "user-trash");
     }
 
-    d->deviceModel = new KDeviceListModel("[ StorageVolume.ignored == false AND StorageVolume.usage == 'FileSystem' ]", this);
+    d->deviceModel = new KDeviceListModel("[[ StorageVolume.ignored == false AND StorageVolume.usage == 'FileSystem' ]"
+                                          " OR "
+                                          "[ IS StorageAccess AND StorageDrive.driveType == 'Floppy' ]]", this);
 
     connect(d->deviceModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
             this, SLOT(_k_devicesInserted(const QModelIndex&, int, int)));
