@@ -24,7 +24,7 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
 
 #include <kglobalsettings.h>
 #include <kdebug.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <QtCore/QEventLoop>
 #include <QtDBus/QtDBus>
 
@@ -55,7 +55,7 @@ void KGlobalSettingsTest::initTestCase()
     QSignalSpy appearance_spy( settings, SIGNAL(appearanceChanged()) )
 
 static void callClient( const QString& opt ) {
-    K3Process proc;
+    KProcess proc;
 #ifdef Q_OS_WIN
     proc << "kglobalsettingsclient.exe";
 #else
@@ -67,9 +67,9 @@ static void callClient( const QString& opt ) {
     }
 #endif
     proc << opt;
-    kDebug() << k_funcinfo << proc.args() << endl;
-    bool ok = proc.start( K3Process::Block );
-    QVERIFY(ok);
+//     kDebug() << k_funcinfo << proc.args() << endl;
+    int ok = proc.execute();
+    QVERIFY(ok == 0);
 
     QEventLoop().processEvents( QEventLoop::AllEvents, 20 ); // need to process DBUS signal
 }
