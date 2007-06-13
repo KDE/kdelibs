@@ -252,7 +252,7 @@ void KProcess::setShellCommand(const QString &cmd, const QString &shell)
                 "/bin/sh"
         );
 #else // Q_OS_UNIX
-    QString cmd = QString::fromLocal8Bit(qgetenv("ComSpec"));
+        d->prog = QString::fromLocal8Bit(qgetenv("ComSpec"));
 /*
     really needed?
     if(GetFileAttributesW(cmd.utf16()) == INVALID_FILE_ATTRIBUTES)
