@@ -299,17 +299,15 @@ void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 		// Display modifiers for the first key in the QKeySequence
 		if (nKey == 0) {
 			if (modifierKeys) {
+				if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
 #if defined(Q_WS_MAC)
-				if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
-				if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
+                if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
 				if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #elif defined(Q_WS_X11)
-				if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
 				if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
 				if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
-				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 #endif
+				if (modifierKeys & Qt::SHIFT) s += KKeyServer::modToStringUser(Qt::SHIFT) + '+';
 			} else
 				s = i18nc("What the user inputs now will be taken as the new shortcut", "Input");
 		}
@@ -380,10 +378,10 @@ void KKeySequenceButton::keyPressEvent(QKeyEvent *e)
 		if (d->nKey > 0 && keyQt == Qt::Key_Return)
 			d->doneRecording();
 		else if (keyQt) {
-			//if (d->nKey == 0)
+			if (d->nKey == 0)
 				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt | d->modifierKeys);
-			//else
-				//d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
+			else
+				d->keySequence = KKeySequenceWidgetPrivate::appendToSequence(d->keySequence, keyQt);
 
 			d->nKey++;
 			if (d->nKey >= 4) {
