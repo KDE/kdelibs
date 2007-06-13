@@ -76,6 +76,7 @@ private Q_SLOTS:
    void receivedDFStdErrOut(K3Process *, char *data, int len);
    void dfDone();
 
+#ifndef Q_OS_WIN
 private:
   K3Process         *dfProc;
   QByteArray          dfStringErrOut;
@@ -83,6 +84,7 @@ private:
   bool              readingDFStdErrOut;
   class KDiskFreeSpacePrivate;
   KDiskFreeSpacePrivate * d;
+#endif
 };
 /***************************************************************************/
 

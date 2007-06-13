@@ -27,13 +27,14 @@
 #include <QtCore/QTextIStream>
 
 #include <kdebug.h>
-#include <k3process.h>
 #include <kmountpoint.h>
 #include <kio/global.h>
 #include <config-kfile.h>
 
 #include "kdiskfreespace.moc"
 
+#ifndef Q_OS_WIN
+#include <k3process.h>
 #define DF_COMMAND    "df"
 #define DF_ARGS       "-k"
 #define NO_FS_TYPE    true
@@ -168,3 +169,48 @@ KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )
     job->readDF( mp ? mp->mountPoint() : QString() );
     return job;
 }
+
+#else
+// windows
+#include <QtCore/QDir>
+#include <windows.h>
+
+KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
+    : QObject(parent)
+{
+}
+
+KDiskFreeSpace::~KDiskFreeSpace()
+{
+}
+
+int KDiskFreeSpace::readDF( const QString & mountPoint )
+{
+    quint64 availUser, total, avail;
+    int iRet = -1;
+    QFileInfo fi(mountPoint);
+    QString dir = QDir::toNativeSeparators(fi.absoluteDir().canonicalPath());
+
+    if(GetDiskFreeSpaceEx((LPCWSTR)dir.utf16(),
+                          (PULARGE_INTEGER)&availUser,
+                          (PULARGE_INTEGER)&total,
+                          (PULARGE_INTEGER)&avail) != 0) {
+        availUser = availUser / 1024;
+        total = total / 1024;
+        avail = avail / 1024;
+        emit foundMountPoint( mountPoint, total, total-avail, avail );
+        emit foundMountPoint( total, total-avail, avail, mountPoint ); // sic!
+        iRet = 1;
+    }
+    emit done();
+    return iRet;
+}
+
+KDiskFreeSpace *KDiskFreeSpace::findUsageInfo( const QString & path )
+{
+    KDiskFreeSpace * job = new KDiskFreeSpace;
+    job->readDF( path );
+    return job;
+}
+
+#endif
