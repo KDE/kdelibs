@@ -1,5 +1,4 @@
 
-install( FILES
   DrBase
   DrBooleanOption
   DrFloatOption
@@ -334,16 +333,12 @@ install( FILES
   KPrintDialog
   KPrintDialogPage
   KPrinter
-  K3ProcIO
-  K3Process
-  K3ProcessController
   KProcess
   KProcessRunner
   KProgressDialog
   KPropertiesDialog
   KProtocolInfo
   KProtocolManager
-  KPty
   KPushButton
   K3RFCDate
   KRandom
@@ -376,7 +371,6 @@ install( FILES
   KSharedConfig
   KSharedPtr
   KShellCompletion
-  K3ShellProcess
   KShortcut
   KShortcutsDialog
   KSimpleFileFilter
@@ -488,6 +482,17 @@ install( FILES
   kndbgstream
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
 
+if (UNIX)
+   install( FILES
+     K3ProcIO
+     K3Process
+     K3ProcessController
+     K3ShellProcess
+     KPty
+     KPtyDevice
+     KPtyProcess
+   DESTINATION ${INCLUDE_INSTALL_DIR}/KDE )
+endif (UNIX)
 
 install( FILES
   ConversionCheck/QVconvertible
