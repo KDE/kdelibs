@@ -41,7 +41,7 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktemporaryfile.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <klibloader.h>
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
@@ -402,7 +402,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     // klauncher for a slave, because the slave might have that other uid
     // as well, which might either be a) undesired or b) make it impossible
     // for the slave to connect to the application.
-    // In such case we start the slave via K3Process.
+    // In such case we start the slave via KProcess.
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
     static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
@@ -436,17 +436,14 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           return 0;
        }
 
-       K3Process proc;
+       KProcess proc;
 
        proc << KStandardDirs::locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
 
-       proc.start(K3Process::DontCare);
+       proc.start();
 
-#ifndef Q_WS_WIN
-       slave->setPID(proc.pid());
-       QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
-#endif
+
        return slave;
     }
 #endif
