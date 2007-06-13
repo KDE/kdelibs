@@ -4,6 +4,7 @@ Version=1.0
 Name=Nepomuk Representation Language
 Name[csb]=Reprezentowóny jãzëk Napomuk
 Name[es]=Lenguaje de representación Nepomuk
+Name[nl]=Nepomuk Representatietaal
 Name[zh_CN]=Nepomuk 呈现语言
 Name[zh_TW]=Nepomuk 表示語言
 Comment=NRL is a Representational Language that addresses certain limitations on the part of RDF/S. It is itself designed on top of RDF. In particular it includes support for Named Graphs for modularization of data. Although being a widely-popular notion, named graphs have not been supported by any Representational Language so far. It is also based on a view concept for the tailoring of ontologies. This view concept turned out to be of additional value, as it also provides a mechanism to impose different semantics on the same syntactical structure.
