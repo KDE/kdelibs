@@ -230,6 +230,9 @@ static long from_oct(int, char *);
 #define L_DIFF   0x400          /* Output of diff */
 #define L_OBJC   0x800          /* Objective C */
 
+// Note: this is not a type, it's just used to mark items that should count more
+#define FLAG_STRONG 0x1000
+
 #define P_HTML   0          /* HTML */
 #define P_C      1          /* first and foremost on UNIX */
 #define P_MAKE   2          /* Makefiles */
@@ -271,10 +274,10 @@ static struct names {
 	short type;
 } const names[] = {
 	{
-		"<html", L_HTML
+		"<html", L_HTML | FLAG_STRONG
 	},
 	{
-		"<HTML", L_HTML
+		"<HTML", L_HTML | FLAG_STRONG
 	},
 	{
 		"<head", L_HTML
@@ -340,10 +343,10 @@ static struct names {
 		"<FRAMESET", L_HTML
 	},
         {
-                "<script", L_HTML
+                "<script", L_HTML | FLAG_STRONG
         },
         {
-                "<SCRIPT", L_HTML
+                "<SCRIPT", L_HTML | FLAG_STRONG
         },
 	{
 		"/*", L_C|L_CPP|L_JAVA|L_OBJC
@@ -1881,7 +1884,7 @@ static int ascmagic(struct config_rec* conf, unsigned char *buf, int nbytes)
 			}
                     }
                     for (i = 0; i < (int)NTYPES; i++) {
-                        if ((1 << i) & p->type) typecount[i]++;
+                        if ((1 << i) & p->type) typecount[i]+= p->type & FLAG_STRONG ? 2 : 1;
                     }
 		}
             }
