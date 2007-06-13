@@ -12,13 +12,13 @@ class QTextEdit;
 class KToolBarRadioGroup;
 class KHelpMenu;
 
-class testWindow  : public KXmlGuiWindow
+class TestWindow  : public KXmlGuiWindow
 {
     Q_OBJECT
 
 public:
-    testWindow (QWidget *parent=0);
-    ~testWindow ();
+    TestWindow (QWidget *parent=0);
+    ~TestWindow ();
 
 public Q_SLOTS:
     void beFixed();
@@ -32,11 +32,9 @@ public Q_SLOTS:
     void slotOpen();
     void slotCompletion();
     void slotCompletionsMenu(QAction* action);
-    void slotHide2 ();
     void slotInsertClock();
-    void slotHide1 ();
-    void slotLined ();
-    void slotImportant ();
+    void slotLined();
+    void slotImportant();
     void slotExit();
     void slotFrame();
     void slotListCompletion();
@@ -44,9 +42,10 @@ public Q_SLOTS:
     void slotToggle(bool);
     void slotClearCombo();
     void slotGoGoGoo();
-    void slotInsertListInCombo ();
-    void slotMakeItem3Current ();
+    void slotInsertListInCombo();
+    void slotMakeItem3Current();
     void slotToggled(QAction* action);
+
 protected:
     KMenuBar *menuBar;
     QMenu *fileMenu;

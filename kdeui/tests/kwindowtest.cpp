@@ -20,91 +20,18 @@
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 
-/*
- Ok this is a constructor of our top widget. It inherits KMainWindow.
- In constructor wi will create all of our interface elements:
- menubar, toolbar(s), statusbar, and main widget. Non of those
- interface is obligatory, i.e. you don't have to use menubar,
- toolbars or statusbar if you don't want to. Theoreticly, you
- don't need even main widget (but in that case, you'll get blank
- KMainWindow).
- */
-
-testWindow::testWindow (QWidget *parent)
+TestWindow::TestWindow (QWidget *parent)
     : KXmlGuiWindow (parent)
 {
     ena=false;
-    setCaption("test window");
-
-#if 0
-    /******************************/
-    /* First, we setup setup Menus */
-    /******************************/
-    menuBar = new KMenuBar (this);
-    setMenuBar(menuBar);
-
-    // First popup...
-    fileMenu = new QMenu;
-    // We insert this popup in menubar with caption "File".
-    // Prefix "&" means that "F" will be underlined
-    QAction* fileAction = menuBar->addMenu(fileMenu);
-    fileAction->setText("&File");
-    // We insert item "Quit" with accelerator ALT-Q, and connect
-    // it to application's exit-slot.
-    fileMenu->addAction("&Quit", KApplication::kApplication(),
-                          SLOT( quit() ), Qt::ALT + Qt::Key_Q );
-
-    // Another popup...
-    toolBarMenu = new QMenu;
-    QAction* toolBarsAction = menuBar->addAction("&Toolbars");
-    toolBarsAction->setMenu(toolBarMenu);
-    toolBarMenu->addAction ("(Un)Hide toolbar 1", this, SLOT(slotHide1()));
-    toolBarMenu->addAction ("(Un)Hide toolbar 2", this, SLOT(slotHide2()));
-#endif
-    itemsMenu = new QMenu;
-//    QAction* itemsAction = menuBar->addAction ("&Items");
-//    itemsAction->setMenu(itemsMenu);
-
     exitB = true;   // exit button is shown
     lineL = true;   // LineEdit is enabled
     greenF = false;  // Frame not inserted
 
-    itemsMenu->addAction ("delete/insert exit button", this, SLOT(slotExit()));
-    itemsMenu->addAction ("enable/disable lineedit", this, SLOT(slotLined()));
-    itemsMenu->addAction ("Toggle fileNew", this, SLOT(slotNew()));
-    itemsMenu->addAction ("Combo: clear", this, SLOT(slotClearCombo()));
-    itemsMenu->addAction ("Combo: insert list", this, SLOT(slotInsertListInCombo()));
-    itemsMenu->addAction ("Combo: make item 3 current", this, SLOT(slotMakeItem3Current()));
-    itemsMenu->addAction ("Important msg in statusbar", this, SLOT(slotImportant()));
+    setCaption("test window");
 
-
-
-    actionCollection()->addAction(KStandardAction::ConfigureToolbars, this, SLOT( configureToolbars() ) );
-    actionCollection()->addAction(KStandardAction::KeyBindings, this, SLOT( configureShortcuts() ) );
-
-
-    /**************************************************/
-    /*Now, we setup statusbar; order is not important. */
-    /**************************************************/
-    statusBar = new KStatusBar (this);
-    statusBar->insertItem("Hi there!                         ", 0);
-    statusBar->insertItem("Look for tooltips to see functions", 1);
-    setStatusBar(statusBar);
-
-    //DigitalClock *clk = new DigitalClock (statusBar);
-    //clk->setFrameStyle(QFrame::NoFrame);
-    //statusBar->insertWidget(clk, 70, 2);
-
-    /***********************/
-    /* And now the toolbar */
-    /***********************/
-
-    // Create main toolbar...
-
-	// and set it to full width
-    //tb->setFullSize(true);
-    //addToolBarBreak();
-
+    // The xmlgui file defines the layout of the menus and toolbars.
+    // We only need to create actions with the right name here.
 
     // First four  buttons
     fileNewAction = new KAction(KIcon("document-new"), "Create.. (toggles upper button)", this);
@@ -160,6 +87,16 @@ testWindow::testWindow (QWidget *parent)
     actionCollection()->addAction("filefloppy2", fileFloppyAction2);
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
 
+    itemsMenu = new QMenu;
+    itemsMenu->addAction ("delete/insert exit button", this, SLOT(slotExit()));
+    itemsMenu->addAction ("enable/disable lineedit", this, SLOT(slotLined()));
+    itemsMenu->addAction ("Toggle fileNew", this, SLOT(slotNew()));
+    itemsMenu->addAction ("Combo: clear", this, SLOT(slotClearCombo()));
+    itemsMenu->addAction ("Combo: insert list", this, SLOT(slotInsertListInCombo()));
+    itemsMenu->addAction ("Combo: make item 3 current", this, SLOT(slotMakeItem3Current()));
+    itemsMenu->addAction ("Important msg in statusbar", this, SLOT(slotImportant()));
+
+
     KAction* filePrintAction2 = new KAction(KIcon( "document-print" ), "Print (pops menu)", this);
     actionCollection()->addAction("fileprint2", filePrintAction2);
     filePrintAction2->setMenu(itemsMenu);
@@ -188,7 +125,21 @@ testWindow::testWindow (QWidget *parent)
     connect (radioGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotToggled(QAction*)));
 
 
-    // Set main widget. In this example it is Qt's multiline editor.
+
+    /**************************************************/
+    /*Now, we setup statusbar; order is not important. */
+    /**************************************************/
+    statusBar = new KStatusBar (this);
+    statusBar->insertItem("Hi there!                         ", 0);
+    statusBar->insertItem("Look for tooltips to see functions", 1);
+    setStatusBar(statusBar);
+
+    //DigitalClock *clk = new DigitalClock (statusBar);
+    //clk->setFrameStyle(QFrame::NoFrame);
+    //statusBar->insertWidget(clk, 70, 2);
+
+
+    // Set main widget. In this example it is Qt's multiline text editor.
     widget = new QTextEdit (this);
     setCentralWidget (widget);
 
@@ -212,12 +163,10 @@ testWindow::testWindow (QWidget *parent)
     connect (completions, SIGNAL(triggered(QAction*)), this, SLOT(slotCompletionsMenu(QAction*)));
     pr = 0;
 
-    setStandardToolBarMenuEnabled(true);
-
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // This line is for test programs only!
     KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-    createGUI( "kwindowtest.rc" );
+    setupGUI( Default, "kwindowtest.rc" );
 
     tb=toolBar();
     tb1=toolBar("AnotherToolBar");
@@ -226,24 +175,24 @@ testWindow::testWindow (QWidget *parent)
 /***********************************/
 /*  Now slots for toolbar actions  */
 /***********************************/
-void testWindow::slotToggled(QAction*)
+void TestWindow::slotToggled(QAction*)
 {
   statusBar->showMessage ("Button toggled", 1500);
 }
 
-void testWindow::slotInsertClock()
+void TestWindow::slotInsertClock()
 {
   //DigitalClock *clock = new DigitalClock(tb1);
   //clock->setFrameStyle(QFrame::NoFrame);
   //tb1->insertWidget(8, 70, clock);
 }
 
-void testWindow::slotNew()
+void TestWindow::slotNew()
 {
  tb1->actions()[0]->toggle();
  //toolBar()->removeAction( fileNewAction );
 }
-void testWindow::slotOpen()
+void TestWindow::slotOpen()
 {
   if (pr == 0)
     pr = new QProgressBar (statusBar);
@@ -254,7 +203,7 @@ void testWindow::slotOpen()
   timer->start(100);
 }
 
-void testWindow::slotGoGoGoo()
+void TestWindow::slotGoGoGoo()
 {
   pr->setValue(pr->value()+1);
   if (pr->value()==100)
@@ -266,33 +215,33 @@ void testWindow::slotGoGoGoo()
   }
 }
 
-void testWindow::slotSave()
+void TestWindow::slotSave()
 {
   kapp->beep();
   statusBar->changeItem("Saving properties...", 0);
 }
 
-void testWindow::slotPrint()
+void TestWindow::slotPrint()
 {
     statusBar->changeItem("Print file pressed", 0);
     ena=!ena;
     qobject_cast<KAction*>(sender())->setEnabled(ena);
 }
-void testWindow::slotReturn()
+void TestWindow::slotReturn()
 {
     QString s = "You entered ";
     s = s + testLineEdit->text();
     statusBar->changeItem(s, 0);
 
 }
-void testWindow::slotList(const QString &str)
+void TestWindow::slotList(const QString &str)
 {
     QString s = "You chose ";
     s = s + str;
     statusBar->changeItem(s, 0);
 }
 
-void testWindow::slotCompletion()
+void TestWindow::slotCompletion()
 {
   // Now do a completion
   // Call your completing function and set that text in lineedit
@@ -311,7 +260,7 @@ void testWindow::slotCompletion()
 
 }
 
-void testWindow::slotListCompletion()
+void TestWindow::slotListCompletion()
 {
     /*
      Combo is not behaving good and it is ugly. I will see how it behaves in Qt-1.3,
@@ -323,50 +272,35 @@ void testWindow::slotListCompletion()
 
 }
 
-void testWindow::slotCompletionsMenu(QAction* action)
+void TestWindow::slotCompletionsMenu(QAction* action)
 {
   // Now set text in lined
   QString s =action->text();
   testLineEdit->setText(s);  // Cursor is automatically at the end of string after this
 }
 
-void testWindow::slotHide2 ()
+TestWindow::~TestWindow ()
 {
-  tb1->show();
+    kDebug() << "kwindowtest finished" << endl;
 }
 
-void testWindow::slotHide1 ()
-{
-  tb->show();
-}
-
-testWindow::~testWindow ()
-{
-  //debug ("kwindowtest: deleted clock");
-
-  delete tb;
-  delete tb1;
-
-  qDebug ("kwindowtest finished");
-}
-
-void testWindow::beFixed()
+void TestWindow::beFixed()
 {
     widget->setFixedSize (400, 200);
 }
 
-void testWindow::beYFixed()
+void TestWindow::beYFixed()
 {
     widget->setMinimumSize(400, 200);
     widget->setMaximumSize(9999, 200);
 }
 
-void testWindow::slotImportant ()
+void TestWindow::slotImportant ()
 {
   statusBar->showMessage("This important message will go away in 15 seconds", 15000);
 }
 
-void testWindow::slotExit ()
+void TestWindow::slotExit ()
 {
   if (exitB == true)
    {
@@ -383,13 +317,13 @@ void testWindow::slotExit ()
    }
 }
 
-void testWindow::slotLined()
+void TestWindow::slotLined()
 {
   lineL = !lineL;
   testLineEdit->setEnabled(lineL); // enable/disable lined
 }
 
-void testWindow::slotToggle (bool on)
+void TestWindow::slotToggle (bool on)
 {
   if (on == true)
     statusBar->changeItem("Toggle is on", 0);
@@ -397,7 +331,7 @@ void testWindow::slotToggle (bool on)
     statusBar->changeItem("Toggle is off", 0);
 }
 
-void testWindow::slotFrame()
+void TestWindow::slotFrame()
 {
 #if 0
   if (greenF == false)
@@ -430,7 +364,7 @@ void testWindow::slotFrame()
 #endif
 }
 
-void testWindow::slotMessage(int, bool boo)
+void TestWindow::slotMessage(int, bool boo)
 {
   if (boo)
     statusBar->showMessage("This button does this and that", 1500);
@@ -439,12 +373,12 @@ void testWindow::slotMessage(int, bool boo)
 }
 // Now few Combo slots, for Torben
 
-void testWindow::slotClearCombo()
+void TestWindow::slotClearCombo()
 {
   testComboBox->clear();
 }
 
-void testWindow::slotInsertListInCombo()
+void TestWindow::slotInsertListInCombo()
 {
   QStringList list;
   list.append("ListOne");
@@ -462,7 +396,7 @@ void testWindow::slotInsertListInCombo()
   testComboBox->addItems (list);
 }
 
-void testWindow::slotMakeItem3Current()
+void TestWindow::slotMakeItem3Current()
 {
   testComboBox->setCurrentIndex(3);
 }
@@ -473,7 +407,7 @@ int main( int argc, char *argv[] )
     KCmdLineArgs::init(argc, argv, "kwindowtest", "KWindowTest", "description", "version");
 
     KApplication myApp;
-    testWindow *test = new testWindow;
+    TestWindow *test = new TestWindow;
 
     myApp.setQuitOnLastWindowClosed( false ); // don't quit after the messagebox!
 
