@@ -1356,7 +1356,7 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   (*m_kdialogProcess) << "--geticon";
   (*m_kdialogProcess) << "Toolbar";
   (*m_kdialogProcess) << "Actions";
-  m_kdialogProcess->setOutputChannelMode(KProcess::MergedChannels);
+  m_kdialogProcess->setOutputChannelMode(KProcess::OnlyStdoutChannel);
   m_kdialogProcess->setNextOpenMode( QIODevice::ReadOnly | QIODevice::Text );
   m_kdialogProcess->start();
   if ( !m_kdialogProcess->waitForStarted() ) {
@@ -1385,7 +1385,7 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
          return;
   }
 
-  icon = QString::fromLocal8Bit( m_kdialogProcess->readAllStandardOutput() );
+  icon = QString::fromLocal8Bit( m_kdialogProcess->readLine() );
   icon = icon.left( icon.indexOf( '\n' ) );
   kDebug(240) << "icon=" << icon << endl;
   if ( m_kdialogProcess->exitStatus() != QProcess::NormalExit ||
