@@ -25,6 +25,7 @@
 #include "nodes.h"
 #include "identifier.h"
 
+#define OPTIMIZE_NODES
 //#define TRACE_OPTIMIZER
 
 namespace KJS {
