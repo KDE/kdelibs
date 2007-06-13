@@ -760,13 +760,15 @@ void KLocalizedString::notifyCatalogsUpdated (const QStringList &languages,
 void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &languages,
                                                      const QStringList &catalogs)
 {
+    if (staticsKLSP.isDestroyed()) {
+        return;
+    }
     KLocalizedStringPrivateStatics *s = staticsKLSP;
 
     // Find script modules for all included language/catalogs that have them,
     // and remember their paths.
-    foreach (const QString &lang, languages)
-        foreach (const QString &cat, catalogs)
-        {
+    foreach (const QString &lang, languages) {
+        foreach (const QString &cat, catalogs) {
             // Assemble module's relative path.
             QString modrpath =   lang + '/' + s->scriptDir + '/'
                                + cat + '/' + cat + ".js";
@@ -789,11 +791,12 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
                 s->scriptModulesToLoad.append(mod);
             }
         }
+    }
 
     // Create writing script transliterator objects for each new language.
-    foreach (const QString &lang, languages)
-        if (!s->translits.contains(lang))
-        {
-            s->translits[lang] = KTranslit::create(lang);
+    foreach (const QString &lang, languages) {
+        if (!s->translits.contains(lang)) {
+            s->translits.insert(lang, KTranslit::create(lang));
         }
+    }
 }
