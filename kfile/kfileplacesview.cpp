@@ -30,7 +30,10 @@
 #include <klocale.h>
 #include <kjob.h>
 #include <solid/storageaccess.h>
+#include <solid/storagedrive.h>
 #include <solid/storagevolume.h>
+#include <solid/opticaldrive.h>
+#include <solid/opticaldisc.h>
 
 #include "kfileplaceeditdialog.h"
 #include "kfileplacesmodel.h"
@@ -146,6 +149,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     if (placesModel==0) return;
 
     QModelIndex index = indexAt(event->pos());
+    QString label = placesModel->text(index);
 
     QMenu menu;
 
@@ -153,12 +157,10 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QAction *hide = 0;
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
-            edit = menu.addAction(KIcon("edit"), i18n("&Edit Entry..."));
+            edit = menu.addAction(KIcon("edit"), i18n("&Edit '%1'...", label));
         }
 
-        menu.addSeparator();
-
-        hide = menu.addAction(i18n("&Hide Entry"));
+        hide = menu.addAction(i18n("&Hide '%1'", label));
         hide->setCheckable(true);
         hide->setChecked(placesModel->isHidden(index));
     }
@@ -172,31 +174,48 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     menu.addSeparator();
 
-    QAction *add = menu.addAction(KIcon("document-new"), i18n("&Add Entry..."));
-
     QAction* remove = 0L;
-    if (index.isValid() && !placesModel->isDevice(index)) {
-        remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove Entry"));
+    QAction* teardown = 0L;
+    if (index.isValid()) {
+        if (!placesModel->isDevice(index)) {
+            remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
+        } else {
+            QString text;
+
+            Solid::Device device = placesModel->deviceForIndex(index);
+
+            if (device.as<Solid::StorageAccess>()->isAccessible()) {
+
+                Solid::StorageDrive *drive = device.as<Solid::StorageDrive>();
+
+                if (drive==0) {
+                    drive = device.parent().as<Solid::StorageDrive>();
+                }
+
+                bool hotpluggable = false;
+                bool removable = false;
+
+                if (drive!=0) {
+                    hotpluggable = drive->isHotpluggable();
+                    removable = drive->isRemovable();
+                }
+
+                if (device.is<Solid::OpticalDisc>()) {
+                    text = i18n("&Eject '%1'", label);
+                } else if (removable || hotpluggable) {
+                    text = i18n("&Safely remove '%1'", label);
+                } else {
+                    text = i18n("&Unmount '%1'", label);
+                }
+
+                teardown = menu.addAction( KIcon("media-eject"), text);
+            }
+        }
     }
 
     QAction *result = menu.exec(event->globalPos());
 
-    if (add != 0 &&result == add) {
-        KUrl url;
-        QString description;
-        QString iconName;
-        bool appLocal = false;
-
-        if (KFilePlaceEditDialog::getInformation(true, url, description,
-                                                 iconName, appLocal, 64, this))
-        {
-            QString appName;
-            if (appLocal) appName = KGlobal::mainComponent().componentName();
-
-            placesModel->addPlace(description, url, iconName, appName);
-        }
-
-    } else if (edit != 0 && result == edit) {
+    if (edit != 0 && result == edit) {
         KBookmark bookmark = placesModel->bookmarkForIndex(index);
         KUrl url = bookmark.url();
         QString description = bookmark.text();
@@ -218,6 +237,16 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         placesModel->setPlaceHidden(index, hide->isChecked());
     } else if (showAll != 0 && result == showAll) {
         setShowAll(showAll->isChecked());
+    } else if (teardown != 0 && result == teardown) {
+        Solid::Device device = placesModel->deviceForIndex(index);
+
+        Solid::OpticalDrive *drive = device.parent().as<Solid::OpticalDrive>();
+
+        if (drive!=0) {
+            drive->eject();
+        } else {
+            device.as<Solid::StorageAccess>()->teardown();
+        }
     }
 
     setUrl(d->currentUrl);
