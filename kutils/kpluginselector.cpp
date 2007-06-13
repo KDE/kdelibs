@@ -34,7 +34,6 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QLabel>
 #include <QtGui/QBrush>
-#include <QtGui/QMessageBox>
 
 #include "kcmoduleinfo.h"
 #include "kcmoduleloader.h"
@@ -48,13 +47,13 @@
 #include <kiconloader.h>
 #include <kcmodule.h>
 #include <kconfiggroup.h>
-#include <kiconloader.h>
 #include <kicon.h>
 #include <kstyle.h>
 #include <kdialog.h>
 #include <kurllabel.h>
 #include <kurl.h>
 #include <krun.h>
+#include <kmessagebox.h>
 
 
 KPluginSelector::Private::Private(KPluginSelector *parent)
@@ -193,7 +192,7 @@ void KPluginSelector::Private::DependenciesWidget::showDependencyDetails()
         else
             message += i18n("\n    %1 plugin has been automatically unchecked becase its dependency on %2 plugin", dependency, dependencyMap[dependency].pluginCausant);
     }
-    QMessageBox::information(0, i18n("Dependency Check"), message);
+    KMessageBox::information(0, i18n("Dependency Check"), message);
 
     addedByDependencies = 0;
     removedByDependencies = 0;
@@ -1145,7 +1144,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     if (!pluginInfo->email().isEmpty())
                     {
                         QLabel *authorEmail = new QLabel(i18n("E-Mail:"), newTabWidget);
-                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo->email(), "\t" + pluginInfo->email());
+                        KUrlLabel *sendEmail = new KUrlLabel("mailto:" + pluginInfo->email(), '\t' + pluginInfo->email());
 
                         sendEmail->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                         sendEmail->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1166,7 +1165,7 @@ void KPluginSelector::Private::PluginDelegate::updateCheckState(const QModelInde
                     if (!pluginInfo->website().isEmpty())
                     {
                         QLabel *website = new QLabel(i18n("Website:"), newTabWidget);
-                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo->website(), "\t" + pluginInfo->website());
+                        KUrlLabel *visitWebsite = new KUrlLabel(pluginInfo->website(), '\t' + pluginInfo->website());
 
                         visitWebsite->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
                         visitWebsite->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
