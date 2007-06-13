@@ -42,7 +42,7 @@ TestService::TestService(const QString &exec)
            this, SLOT(newApp(const QByteArray&)));
    connect(KApplication::dcopClient(), SIGNAL( applicationRemoved(const QByteArray&)),
            this, SLOT(endApp(const QByteArray&)));
-   connect(&proc, SIGNAL(processExited(K3Process *)),
+   connect(&proc, SIGNAL(finished(int, QProcess::ExitStatus)),
            this, SLOT(appExit()));
 
    QTimer::singleShot(20*1000, this, SLOT(stop()));

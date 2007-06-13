@@ -19,10 +19,10 @@ public Q_SLOTS:
     void appExit();
     void stop();
 
-protected:  
+protected:
     int result;
     QString m_exec;
-    K3Process proc;
+    KProcess proc;
 };
 
 #endif
