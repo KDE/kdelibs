@@ -39,7 +39,7 @@ KUrlButton::KUrlButton(KUrlNavigator* parent) :
     setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     setMinimumHeight(parent->minimumHeight());
 
-    connect(this, SIGNAL(clicked()), parent, SLOT(requestActivation()));
+    connect(this, SIGNAL(pressed()), parent, SLOT(requestActivation()));
 }
 
 KUrlButton::~KUrlButton()
@@ -78,6 +78,7 @@ void KUrlButton::leaveEvent(QEvent* event)
 
 void KUrlButton::contextMenuEvent(QContextMenuEvent* event)
 {
+    Q_UNUSED(event);
     KMenu popup(this);
 
     // provide 'Copy' action, which copies the current URL of
