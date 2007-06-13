@@ -290,6 +290,13 @@ void KMimeTypeTest::testFindByContent()
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("text/plain") );
 
+#if 0 // https://bugs.freedesktop.org/show_bug.cgi?id=11259
+    QByteArray htmlData = "<script>foo</script>";
+    mime = KMimeType::findByContent(htmlData);
+    QVERIFY( mime );
+    QCOMPARE( mime->name(), QString::fromLatin1("text/html") );
+#endif
+
     QByteArray pdfData = "%PDF-";
     mime = KMimeType::findByContent(pdfData);
     QVERIFY( mime );
