@@ -19,16 +19,20 @@
 
 #include "kprotocolcombo_p.h"
 
+#include <QtGui/QAction>
 #include <QtGui/QMenu>
+#include <QtGui/QPainter>
+#include <QtGui/QPaintEvent>
 
 #include <kdebug.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
+#include <kurlnavigator.h>
 
-const static int customProtocolIndex = 0;
+//const static int customProtocolIndex = 0;
 
 KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
-    : KUrlNavigatorButton(-1, parent),
+    : KUrlButton(parent),
       m_protocols(KProtocolInfo::protocols())
 {
     qSort(m_protocols);
@@ -68,18 +72,26 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
          it != m_protocols.constEnd();
          ++it, ++i)
     {
-        menu->insertItem(*it, i);
+        QAction* action = menu->addAction(*it);
+        action->setData(i);
     }
-    //menu->insertItems(m_protocols);
-    connect(menu, SIGNAL(activated(int)), this, SLOT(setProtocol(int)));
+
+    connect(menu, SIGNAL(triggered(QAction*)), this, SLOT(setProtocol(QAction*)));
     setText(protocol);
     setMenu(menu);
-    setFlat(true);
 }
 
+QSize KProtocolCombo::sizeHint() const
+{
+    QSize size = KUrlButton::sizeHint();
 
-// #include <kurl.h>
-// #include "urlnavigator.h"
+    QFontMetrics fontMetrics(font());
+    int width = fontMetrics.width(text());
+    width += 2 * BorderWidth;
+
+    return QSize(width, size.height());
+}
+
 void KProtocolCombo::setProtocol(const QString& protocol)
 {
     setText(protocol);
@@ -96,23 +108,46 @@ void KProtocolCombo::setProtocol(const QString& protocol)
 //     }
 }
 
-void KProtocolCombo::setProtocol(int index)
-{
-    if (index < 0 || index > m_protocols.count())
-    {
-        return;
-    }
-
-    QString protocol = m_protocols[index];
-kDebug() << "setProtocol " << index << " " << protocol << endl;
-    setText(protocol);
-    emit activated(protocol);
-/*    */
-}
-
 QString KProtocolCombo::currentProtocol() const
 {
-    return text(); //currentText();
+    return text();
+}
+
+void KProtocolCombo::paintEvent(QPaintEvent* event)
+{
+    QPainter painter(this);
+    painter.setClipRect(event->rect());
+    const int buttonWidth  = width();
+    const int buttonHeight = height();
+
+    const QColor bgColor = backgroundColor();
+    QColor fgColor = foregroundColor();
+
+    const bool isHighlighted = isDisplayHintEnabled(EnteredHint);
+    const bool isActive = urlNavigator()->isActive();
+
+    // draw button background
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(bgColor);
+    painter.drawRect(0, 0, buttonWidth, buttonHeight);
+
+    if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
+        fgColor.setAlpha(fgColor.alpha() / 2);
+    }
+
+    // TODO: draw arrow
+
+    painter.setPen(fgColor);
+    painter.drawText(QRect(0, 0, buttonWidth, buttonHeight), Qt::AlignCenter, text());
+}
+
+void KProtocolCombo::setProtocol(QAction* action)
+{
+    const int index = action->data().toInt();
+    Q_ASSERT((index > 0) && (index < m_protocols.count()));
+    const QString protocol = m_protocols[index];
+    setText(protocol);
+    emit activated(protocol);
 }
 
 #include "kprotocolcombo_p.moc"

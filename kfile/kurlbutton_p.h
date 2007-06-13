@@ -54,6 +54,8 @@ protected:
         PopupActiveHint = 8
     };
 
+    enum { BorderWidth = 2 };
+
     void setDisplayHintEnabled(DisplayHint hint, bool enable);
     bool isDisplayHintEnabled(DisplayHint hint) const;
 

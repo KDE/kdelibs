@@ -19,14 +19,19 @@
 #ifndef KPROTOCOLCOMBO_P_H
 #define KPROTOCOLCOMBO_P_H
 
-#include "kurlnavigatorbutton_p.h"
+#include "kurlbutton_p.h"
 
 class KUrlNavigator;
 
 /**
- * A combobox listing available protocols
+ * @brief A combobox listing available protocols.
+ *
+ * The widget is used by the URL navigator for offering the available
+ * protocols for non-local URLs.
+ *
+ * @see KUrlNavigator
  */
-class KProtocolCombo : public KUrlNavigatorButton
+class KProtocolCombo : public KUrlButton
 {
     Q_OBJECT
 
@@ -35,12 +40,19 @@ public:
 
     QString currentProtocol() const;
 
+    virtual QSize sizeHint() const;
+
 public Q_SLOTS:
     void setProtocol(const QString& protocol);
-    void setProtocol(int index);
 
 Q_SIGNALS:
     void activated(const QString& protocol);
+
+protected:
+    virtual void paintEvent(QPaintEvent* event);
+
+private Q_SLOTS:
+    void setProtocol(QAction* action);
 
 private:
     QStringList m_protocols;

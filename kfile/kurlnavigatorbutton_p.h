@@ -83,8 +83,6 @@ private Q_SLOTS:
     void listJobFinished(KJob* job);
 
 private:
-    enum { BorderWidth = 2 };
-
     int arrowWidth() const;
     bool isTextClipped() const;
 
