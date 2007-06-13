@@ -118,7 +118,7 @@ extern "C" {
 #include <kacl.h>
 #include <kconfiggroup.h>
 #ifndef Q_OS_WIN
-#include <k3process.h>
+#include <kshell.h>
 #include "kfilesharedialog.h"
 #endif
 
@@ -1156,7 +1156,7 @@ void KFilePropsPlugin::slotEditFileType()
   QString keditfiletype = QString::fromLatin1("keditfiletype");
   KRun::runCommand( keditfiletype
                     + " --parent " + QString::number( (ulong)properties->topLevelWidget()->winId())
-                    + ' ' + K3Process::quote(mime),
+                    + ' ' + KShell::quoteArg(mime),
                     keditfiletype, keditfiletype /*unused*/, properties->topLevelWidget());
 #endif
 }
