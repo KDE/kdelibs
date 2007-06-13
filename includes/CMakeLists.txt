@@ -337,6 +337,7 @@ install( FILES
   K3ProcIO
   K3Process
   K3ProcessController
+  KProcess
   KProcessRunner
   KProgressDialog
   KPropertiesDialog
