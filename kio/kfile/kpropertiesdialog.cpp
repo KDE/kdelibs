@@ -113,12 +113,14 @@ extern "C" {
 #include <kmimetypetrader.h>
 #include <kmetaprops.h>
 #include <kpreviewprops.h>
-#include <k3process.h>
 #include <krun.h>
 #include <kvbox.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
+#ifndef Q_OS_WIN
+#include <k3process.h>
 #include "kfilesharedialog.h"
+#endif
 
 #include "ui_kpropertiesdesktopbase.h"
 #include "ui_kpropertiesdesktopadvbase.h"
@@ -532,12 +534,14 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
         q->insertPlugin(p);
   }
 
+#ifndef Q_OS_WIN
   if ( KAuthorized::authorizeKAction("sharefile") &&
        KFileSharePropsPlugin::supports( m_items ) )
   {
         KPropertiesDialogPlugin *p = new KFileSharePropsPlugin(q);
         q->insertPlugin(p);
   }
+#endif
 
   //plugins
 

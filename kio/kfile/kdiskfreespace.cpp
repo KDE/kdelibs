@@ -213,4 +213,13 @@ KDiskFreeSpace *KDiskFreeSpace::findUsageInfo( const QString & path )
     return job;
 }
 
+// can't convince moc to ignore them on win32 only :(
+void KDiskFreeSpace::receivedDFStdErrOut(K3Process *, char *, int)
+{
+}
+
+void KDiskFreeSpace::dfDone()
+{
+}
+
 #endif

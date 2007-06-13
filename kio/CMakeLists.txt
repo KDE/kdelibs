@@ -145,7 +145,6 @@ set(kfile_STAT_SRCS
   kfile/kfiledialog.cpp
   kfile/kfilemetainfowidget.cpp
   kfile/kfilemetapreview.cpp
-  kfile/kfilesharedialog.cpp
   kfile/kicondialog.cpp
   kfile/kimagefilepreview.cpp
   kfile/kmetaprops.cpp
@@ -159,6 +158,12 @@ set(kfile_STAT_SRCS
   kfile/kurlrequester.cpp
   kfile/kurlrequesterdialog.cpp
 )
+if(NOT WIN32)
+  set(kfile_STAT_SRCS
+    ${kfile_STAT_SRCS}
+    kfile/kfilesharedialog.cpp
+  )
+endif(NOT WIN32)
 
 # kio/kssl/Makefile.am: kssl
 

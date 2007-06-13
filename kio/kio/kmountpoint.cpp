@@ -380,6 +380,8 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
     free( mntctl_buffer );
 #elif defined(Q_WS_WIN)
     //TODO?
+    // either just return the drives to get informations about mounted
+    // filesystem from ntfs - but don't know how
 #else
    STRUCT_SETMNTENT mnttab;
    if ((mnttab = SETMNTENT(MNTTAB, "r")) == 0)
