@@ -52,10 +52,10 @@ namespace ThreadWeaver {
       /** Destructor. */
       ~DependencyPolicy();
 
-        /** Add jobA as a dependency of jobB.
-            jobB will only be executed after jobA has been successfully processed.
-            @param jobA the job jobB depends on
-            @param jobB the depending job
+        /** Add jobB as a dependency of jobA.
+            jobA will only be executed after jobB has been successfully processed.
+            @param jobA the depending job
+            @param jobB the job jobA depends on
         */
         void addDependency( Job* jobA,  Job* jobB );
 
