@@ -594,9 +594,9 @@ apidox_subdir()
 	fi
 	echo "HTML_OUTPUT            = $subdir/html"
 	if test -d "$top_srcdir/doc/api"; then
-		echo "IMAGE_PATH             = $top_srcdir/doc/api $srcdir"
+		echo "IMAGE_PATH             = $top_srcdir/doc/api $srcdir $srcdir/doc/pics"
 	else
-		echo "IMAGE_PATH             = $srcdir"
+		echo "IMAGE_PATH	     = $srcdir $srcdir/doc/pics"
 	fi
 	} >> "$subdir/Doxyfile"
 
