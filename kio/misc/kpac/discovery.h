@@ -24,8 +24,7 @@
 #include <QtCore/QObject>
 
 #include "downloader.h"
-
-class K3ProcIO;
+class KProcess;
 
 namespace KPAC
 {
@@ -45,7 +44,7 @@ namespace KPAC
         bool initHostName();
         bool checkDomain() const;
 
-        K3ProcIO* m_helper;
+        KProcess* m_helper;
         QString m_hostname;
     };
 }

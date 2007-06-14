@@ -46,7 +46,7 @@
 #include <kprocess.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
-
+#include <kprocess.h>
 #include "discovery.moc"
 
 namespace KPAC
