@@ -190,7 +190,7 @@ template<ObjectDescriptionType T> class ObjectDescriptionModel;
  * \author Matthias Kretz <kretz@kde.org>
  */
 template<ObjectDescriptionType T>
-class PHONON_EXPORT ObjectDescription
+class ObjectDescription
 {
     public:
         /**

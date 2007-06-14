@@ -390,9 +390,14 @@ QStringList ObjectDescriptionModelData::mimeTypes(ObjectDescriptionType type) co
     return QStringList(QLatin1String("application/x-phonon-objectdescription") + QString::number(static_cast<int>(type)));
 }
 
-#define INSTANTIATE_META_FUNCTIONS(type) \
-template PHONON_EXPORT const QMetaObject *ObjectDescriptionModel<type>::metaObject() const; \
-template void *ObjectDescriptionModel<type>::qt_metacast(const char *)
+#ifdef Q_OS_WIN
+  #define INSTANTIATE_META_FUNCTIONS(type) \
+  template PHONON_EXPORT class ObjectDescriptionModel<type>;
+#else
+  #define INSTANTIATE_META_FUNCTIONS(type) \
+  template PHONON_EXPORT const QMetaObject *ObjectDescriptionModel<type>::metaObject() const; \
+  template void *ObjectDescriptionModel<type>::qt_metacast(const char *)
+#endif
 
 INSTANTIATE_META_FUNCTIONS(AudioOutputDeviceType);
 INSTANTIATE_META_FUNCTIONS(AudioCaptureDeviceType);
