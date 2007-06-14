@@ -298,6 +298,12 @@ install(  FILES
   kio/safesite.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio)
 
+if( NOT WIN32 )
+  install( FILES
+    kfile/kfilesharedialog.h
+    DESTINATION ${INCLUDE_INSTALL_DIR})
+endif( NOT WIN32 )
+
 install( FILES
   kio/kacl.h
   kio/kar.h
@@ -344,7 +350,6 @@ install( FILES
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h
-  kfile/kfilesharedialog.h
   kfile/kicondialog.h
   kfile/kimagefilepreview.h
   kfile/kopenwithdialog.h
