@@ -43,16 +43,16 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
     d->deviceIds = audioHw->driverHandles();
     switch (audioHw->soundcardType()) {
     case Solid::AudioInterface::InternalSoundcard:
-        d->icon = QLatin1String("pci-card");
+        d->icon = QLatin1String("audio-card");
         break;
     case Solid::AudioInterface::UsbSoundcard:
-        d->icon = QLatin1String("usb-device");
+        d->icon = QLatin1String("audio-card-usb");
         break;
     case Solid::AudioInterface::FirewireSoundcard:
-        d->icon = QLatin1String("firewire-device");
+        d->icon = QLatin1String("audio-card-firewire");
         break;
     case Solid::AudioInterface::Headset:
-        d->icon = QLatin1String("headset");
+        d->icon = QLatin1String("audio-headset");
         break;
     case Solid::AudioInterface::Modem:
         d->icon = QLatin1String("modem");
@@ -100,9 +100,12 @@ AudioDevice::AudioDevice(Solid::Device audioDevice, KSharedConfig::Ptr config)
         deviceGroup.writeEntry("playbackDevice", d->playbackDevice);
         deviceGroup.writeEntry("udi", d->udi);
         config->sync();
-    } else if (!deviceGroup.hasKey("udi")) {
-        deviceGroup.writeEntry("udi", d->udi);
-        config->sync();
+    } else {
+        if (!deviceGroup.hasKey("udi")) {
+            deviceGroup.writeEntry("udi", d->udi);
+            config->sync();
+        }
+        deviceGroup.writeEntry("icon", d->icon);
     }
     kDebug(600) << deviceGroup.readEntry("udi", d->udi) << " == " << d->udi << endl;
     //Q_ASSERT(deviceGroup.readEntry("udi", d->udi) == d->udi);
