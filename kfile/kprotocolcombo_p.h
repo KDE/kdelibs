@@ -55,6 +55,8 @@ private Q_SLOTS:
     void setProtocol(QAction* action);
 
 private:
+    enum { ArrowHeight = 5 };
+
     QStringList m_protocols;
 };
 

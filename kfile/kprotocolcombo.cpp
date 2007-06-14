@@ -49,8 +49,8 @@ KProtocolCombo::KProtocolCombo(const QString& protocol, KUrlNavigator* parent)
 
         // DF: why not just supportsListing?
 
-        if (KProtocolInfo::protocolClass(*it) == ":" ||
-            !KProtocolManager::supportsWriting(*it))
+        if (KProtocolInfo::protocolClass(*it) == ":" /* ||
+            !KProtocolManager::supportsWriting(*it)*/)
         {
         //kDebug() << "!!! removing " << *it << endl;
             QStringList::iterator tempIt = it;
@@ -87,7 +87,7 @@ QSize KProtocolCombo::sizeHint() const
 
     QFontMetrics fontMetrics(font());
     int width = fontMetrics.width(text());
-    width += 2 * BorderWidth;
+    width += (3 * BorderWidth) + (2 * ArrowHeight);
 
     return QSize(width, size.height());
 }
@@ -134,11 +134,26 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
     if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
         fgColor.setAlpha(fgColor.alpha() / 2);
     }
-
-    // TODO: draw arrow
-
     painter.setPen(fgColor);
-    painter.drawText(QRect(0, 0, buttonWidth, buttonHeight), Qt::AlignCenter, text());
+
+    // draw arrow
+    const int startY = (buttonHeight / 2) - (ArrowHeight / 2);
+    const int startLeftX = buttonWidth - (2 * ArrowHeight) - BorderWidth;
+    const int startRightX = startLeftX + (2 * ArrowHeight) - 1;
+    for (int i = 0; i < ArrowHeight; ++i) {
+        const int leftX = startLeftX + i;
+        const int rightX = startRightX - i;
+        const int endY = startY + i + 1;
+        painter.drawLine(leftX, startY, leftX, endY);
+        if (leftX != rightX) {
+            // alpha blending is used, hence assure that a line is
+            // never drawn twice
+            painter.drawLine(rightX, startY, rightX, endY);
+        }
+    }
+
+    const int textWidth = startLeftX - (2 * BorderWidth);
+    painter.drawText(QRect(BorderWidth, 0, textWidth, buttonHeight), Qt::AlignCenter, text());
 }
 
 void KProtocolCombo::setProtocol(QAction* action)
