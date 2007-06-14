@@ -34,6 +34,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 #include <QtDBus/QtDBus>
+#include <QtCore/QProcess>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -41,7 +42,6 @@
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <ktemporaryfile.h>
-#include <kprocess.h>
 #include <klibloader.h>
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
@@ -402,7 +402,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     // klauncher for a slave, because the slave might have that other uid
     // as well, which might either be a) undesired or b) make it impossible
     // for the slave to connect to the application.
-    // In such case we start the slave via KProcess.
+    // In such case we start the slave via QProcess.
     // It's possible to force this by setting the env. variable
     // KDE_FORK_SLAVES, Clearcase seems to require this.
     static bool bForkSlaves = getenv("KDE_FORK_SLAVES");
@@ -436,12 +436,10 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           return 0;
        }
 
-       KProcess proc;
-
-       proc << KStandardDirs::locate("exe", "kioslave") << lib_path << protocol << "" << sockname;
+       QStringList args = QStringList() << lib_path << protocol << "" << sockname;
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << sockname << endl;
 
-       proc.start();
+       QProcess::startDetached( KStandardDirs::locate("exe", "kioslave"), args );
 
 
        return slave;
