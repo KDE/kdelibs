@@ -141,7 +141,11 @@ QSet<int> Backend::objectDescriptionIndexes(ObjectDescriptionType type) const
     switch(type)
     {
     case Phonon::AudioOutputDeviceType:
-        set << 10000 << 10001;
+        set << 10000 << 10001
+            << 10002 << 10003
+            << 10004 << 10005
+            << 10006 << 10007
+            << 10008 << 10009;
         break;
     case Phonon::AudioCaptureDeviceType:
         set << 20000 << 20001;
@@ -175,9 +179,43 @@ QHash<QByteArray, QVariant> Backend::objectDescriptionProperties(ObjectDescripti
         switch (index) {
         case 10000:
             ret.insert("name", QLatin1String("internal Soundcard"));
+            ret.insert("icon", QLatin1String("audio-card"));
             break;
         case 10001:
+            ret.insert("name", QLatin1String("USB Soundcard"));
+            ret.insert("icon", QLatin1String("audio-card-usb"));
+            break;
+        case 10002:
+            ret.insert("name", QLatin1String("Firewire Soundcard"));
+            ret.insert("icon", QLatin1String("audio-card-firewire"));
+            break;
+        case 10003:
+            ret.insert("name", QLatin1String("Headset"));
+            ret.insert("icon", QLatin1String("audio-headset"));
+            break;
+        case 10004:
             ret.insert("name", QLatin1String("USB Headset"));
+            ret.insert("icon", QLatin1String("audio-headset-usb"));
+            break;
+        case 10005:
+            ret.insert("name", QLatin1String("Bluetooth Headset"));
+            ret.insert("icon", QLatin1String("audio-headset-bluetooth"));
+            break;
+        case 10006:
+            ret.insert("name", QLatin1String("Jack Audio Connection Kit"));
+            ret.insert("icon", QLatin1String("jackd"));
+            break;
+        case 10007:
+            ret.insert("name", QLatin1String("aRts"));
+            ret.insert("icon", QLatin1String("arts"));
+            break;
+        case 10008:
+            ret.insert("name", QLatin1String("ESD"));
+            ret.insert("icon", QLatin1String("esd"));
+            break;
+        case 10009:
+            ret.insert("name", QLatin1String("Pulseaudio"));
+            ret.insert("icon", QLatin1String("pulseaudio"));
             break;
         }
         break;
