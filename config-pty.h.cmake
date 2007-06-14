@@ -16,6 +16,7 @@
 #cmakedefine HAVE_TERMIOS_H 1
 #cmakedefine HAVE_TERMIO_H 1
 #cmakedefine HAVE_SYS_STROPTS_H 1
+#cmakedefine HAVE_SYS_FILIO_H 1
 
 /*
  * Steven Schultz <sms at to.gd-es.com> tells us :
