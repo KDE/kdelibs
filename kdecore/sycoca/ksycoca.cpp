@@ -345,11 +345,13 @@ bool KSycoca::Private::checkVersion()
     }
 }
 
+// If it returns true, we have a valid database and the stream has rewinded to the beginning
+// and past the version number.
 bool KSycoca::Private::checkDatabase(bool openDummyIfNotFound)
 {
     QDataStream *m_str = Private::_self->m_str;
     if (m_str && !noDatabase) {
-        return true;
+        return checkVersion(); // we know the version's fine, but rewind anyhow.
     }
     static bool triedLaunchingKdeinit = false;
     if ( (noDatabase || badVersion) && triedLaunchingKdeinit ) {
