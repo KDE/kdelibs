@@ -134,7 +134,7 @@ Solid::OpticalDrive::EjectStatus Cdrom::eject()
         return Solid::OpticalDrive::EjectUnsupported;
     }
 
-    QDBusReply<int> reply = drive.call("Eject", QStringList());
+    QDBusReply<void> reply = drive.call("Eject", QStringList());
     QString errorName = reply.error().name();
 
     if (errorName.isEmpty()) {
