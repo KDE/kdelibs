@@ -353,7 +353,7 @@ RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
 class CompletionWidget: public KCompletionBox
 {
 public:
-    CompletionWidget::CompletionWidget( QWidget *parent = 0 ) : KCompletionBox( parent ) {}
+    CompletionWidget( QWidget *parent = 0 ) : KCompletionBox( parent ) {}
     virtual void popup() {
         QWidget* pw = parentWidget();
         KHTMLWidget* kwp = dynamic_cast<KHTMLWidget*>(pw);
