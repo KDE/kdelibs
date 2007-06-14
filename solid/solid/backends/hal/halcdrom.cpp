@@ -104,8 +104,30 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
 
 Solid::OpticalDrive::EjectStatus Cdrom::eject()
 {
-    QDBusInterface drive("org.freedesktop.Hal", m_device->udi(),
-                         "org.freedesktop.Hal.Device.Storage",
+    QString udi = m_device->udi();
+    QString interface = "org.freedesktop.Hal.Device.Storage";
+
+    // HACK: Eject doesn't work on cdrom drives when there's a mounted disc,
+    // let's try to workaround this by calling a child volume...
+    if (m_device->property("storage.removable.media_available").toBool()) {
+        QDBusInterface manager("org.freedesktop.Hal",
+                               "/org/freedesktop/Hal/Manager",
+                               "org.freedesktop.Hal.Manager",
+                               QDBusConnection::systemBus());
+
+        QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch", "info.parent", udi);
+
+        if (reply.isValid())
+        {
+            QStringList udis = reply;
+            if (!udis.isEmpty()) {
+                udi = udis[0];
+                interface = "org.freedesktop.Hal.Device.Volume";
+            }
+        }
+    }
+
+    QDBusInterface drive("org.freedesktop.Hal", udi, interface,
                          QDBusConnection::systemBus());
 
     if (!drive.isValid()) {
