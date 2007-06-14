@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=Service
-MimeType=multipart/mixed;multipart/x-mixed-replace
+MimeType=multipart/mixed;multipart/x-mixed-replace;
 Name=Embeddable Component for multipart/mixed
 Name[af]=Inlegbare Komponent vir multideel/gemeng
 Name[be]=Унутраны кампанент для multipart/mixed
