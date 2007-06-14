@@ -154,9 +154,7 @@ public:
      * Alternative to upload for copying over the network.
      * Overwrite is false, so this will fail if @p target exists.
      *
-     * This one takes two URLs and is a direct equivalent
-     * of KIO::file_copy (not KIO::copy!).
-     * It will be renamed file_copy in KDE4, so better use file_copy.
+     * This one takes two URLs and is a direct equivalent of KIO::file_copy.
      *
      * @param src URL Referencing the file to upload.
      * @param target URL containing the final location of the file.
@@ -173,20 +171,20 @@ public:
     static KDE_DEPRECATED bool copy( const KUrl& src, const KUrl& target,
                                      QWidget* window = 0 );
 
-    // KDE4: I want to just get rid of the "Full-fledged equivalents" methods now that we have synchronousRun().
-
     /**
      * Full-fledged equivalent of KIO::file_copy
+     * @deprecated use KIO::file_copy and then KIO::NetAccess::synchronousRun
      */
-    static bool file_copy( const KUrl& src, const KUrl& dest, int permissions /*=-1*/,
-                            bool overwrite=false, bool resume=false, QWidget* window = 0L );
+    static KDE_DEPRECATED bool file_copy( const KUrl& src, const KUrl& dest, int permissions /*=-1*/,
+                                          bool overwrite=false, bool resume=false, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::file_move.
      * Moves or renames *one file*.
+     * @deprecated use KIO::file_move and then KIO::NetAccess::synchronousRun
      */
-    static bool file_move( const KUrl& src, const KUrl& target, int permissions = -1,
-                           bool overwrite=false, bool resume=false, QWidget* window = 0 );
+    static KDE_DEPRECATED bool file_move( const KUrl& src, const KUrl& target, int permissions = -1,
+                                          bool overwrite=false, bool resume=false, QWidget* window = 0 );
 
 
     /**
@@ -209,24 +207,26 @@ public:
      *               prompted for passwords as needed.
      * @return true if successful, false for failure
      */
-    static bool dircopy( const KUrl& src, const KUrl& target, QWidget* window );
+    static bool dircopy( const KUrl& src, const KUrl& target, QWidget* window ); // TODO deprecate in favor of KIO::copy + synchronousRun
 
     /**
      * Overloaded method, which takes a list of source URLs
      */
-    static bool dircopy( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
+    static bool dircopy( const KUrl::List& src, const KUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames one file or directory.
+     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun
      */
-    static bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
+    static KDE_DEPRECATED bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames a list of files or directories.
+     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun
      */
-    static bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
+    static KDE_DEPRECATED bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
 
     /**
      * Tests whether a URL exists.
@@ -370,10 +370,6 @@ public:
                                 KUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
 
     /**
-     * @internal
-     * This function is not implemented!?
-     * (only mimetypeInternal)
-     *
      * Determines the mimetype of a given URL.
      *
      * This is a convenience function for KIO::mimetype.  You
@@ -437,14 +433,6 @@ private:
 
     QString mimetypeInternal(const KUrl & url, QWidget* window = 0);
     void enter_loop();
-
-    /**
-     * List of temporary files
-     */
-    static QStringList* tmpfiles;
-
-    static QString* lastErrorMsg;
-    static int lastErrorCode;
 
     friend class I_like_this_class;
 

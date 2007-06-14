@@ -50,9 +50,14 @@
 
 using namespace KIO;
 
-QString * NetAccess::lastErrorMsg;
-int NetAccess::lastErrorCode = 0;
-QStringList* NetAccess::tmpfiles;
+
+/**
+ * List of temporary files
+ */
+static QStringList* tmpfiles;
+
+static QString* lastErrorMsg = 0;
+static int lastErrorCode = 0;
 
 NetAccess::NetAccess() :
     m_metaData(0),
@@ -118,7 +123,9 @@ bool NetAccess::upload(const QString& src, const KUrl& target, QWidget* window)
 
 bool NetAccess::file_copy( const KUrl & src, const KUrl & target, QWidget* window )
 {
-  return NetAccess::file_copy( src, target, -1, false /*not overwrite*/, false, window );
+  NetAccess kioNet;
+  return kioNet.filecopyInternal( src, target, -1, false /*not overwrite*/, false /*resume*/,
+                                  window, false /*copy*/ );
 }
 
 bool NetAccess::copy( const KUrl& src, const KUrl& target, QWidget* window )
@@ -160,7 +167,8 @@ bool NetAccess::move( const KUrl& src, const KUrl& target, QWidget* window )
 {
   KUrl::List srcList;
   srcList.append( src );
-  return NetAccess::move( srcList, target, window );
+  NetAccess kioNet;
+  return kioNet.dircopyInternal( srcList, target, window, true /*move*/ );
 }
 
 bool NetAccess::move( const KUrl::List& srcList, const KUrl& target, QWidget* window )

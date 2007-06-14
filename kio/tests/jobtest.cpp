@@ -268,18 +268,15 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
         //kDebug() << "Expecting dest=" << dest << endl;
     }
 
+    // CopyJob::setNextDirAttribute isn't implemented for Windows currently.
+#ifndef Q_WS_WIN
     {
-        // check that the timestamp is the same (#24443)
+        // Check that the timestamp is the same (#24443)
         QFileInfo srcInfo( src );
         QFileInfo destInfo( dest );
-#ifdef Q_WS_WIN
-        // win32 time may differs in msec part
-        QCOMPARE( srcInfo.lastModified().toString("dd.MM.yyyy hh:mm"),
-                  destInfo.lastModified().toString("dd.MM.yyyy hh:mm") );
-#else
         QCOMPARE( srcInfo.lastModified(), destInfo.lastModified() );
-#endif
     }
+#endif
 }
 
 void JobTest::copyFileToSamePartition()
@@ -341,13 +338,15 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
     d.setPath( dest );
 
     // move the file with file_move
-    bool ok = KIO::NetAccess::file_move( u, d );
+    KIO::Job* job = KIO::file_move(u, d);
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( QFile::exists( dest ) );
     QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
-    ok = KIO::NetAccess::move( d, u, 0 );
+    job = KIO::move( d, u );
+    ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( !QFile::exists( dest ) );
     QVERIFY( QFile::exists( src ) ); // it's back
@@ -363,7 +362,8 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     d.setPath( dest );
 
     // move the symlink with move, NOT with file_move
-    bool ok = KIO::NetAccess::move( u, d );
+    KIO::Job* job = KIO::move( u, d );
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
     if ( !ok )
         kWarning() << KIO::NetAccess::lastError() << endl;
     QVERIFY( ok );
@@ -371,7 +371,8 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
-    ok = KIO::NetAccess::move( d, u, 0 );
+    job = KIO::move( d, u );
+    ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
     QVERIFY ( KDE_lstat( QFile::encodeName( src ), &buf ) == 0 ); // it's back
@@ -391,7 +392,8 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
     KUrl d;
     d.setPath( dest );
 
-    bool ok = KIO::NetAccess::move( u, d, 0 );
+    KIO::Job* job = KIO::move( u, d );
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( QFile::exists( dest ) );
     QVERIFY( QFileInfo( dest ).isDir() );
