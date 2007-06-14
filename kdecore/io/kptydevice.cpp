@@ -31,6 +31,9 @@
 #include <signal.h>
 #include <termios.h>
 #include <sys/ioctl.h>
+#ifdef HAVE_SYS_FILIO_H
+# include <sys/filio.h>
+#endif
 
 #define KMAXINT ((int)(~0U >> 1))
 

@@ -131,6 +131,7 @@ if (UNIX)
   check_include_files(termio.h     HAVE_TERMIO_H)
   check_include_files(pty.h        HAVE_PTY_H)
   check_include_files(sys/stropts.h HAVE_SYS_STROPTS_H)
+  check_include_files(sys/filio.h  HAVE_SYS_FILIO_H)
 
   check_function_exists(ptsname    HAVE_PTSNAME)
   check_function_exists(revoke     HAVE_REVOKE)
