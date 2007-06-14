@@ -1,5 +1,5 @@
 /**
- * \mainpage Collaborative Data Sharing in KDE applications
+ * \mainpage Collaborative Data Sharing in KDE Applications
  *
  * The \b KNewStuff2 library adds data sharing capabilities to KDE applications.
  * Technically, it implements the <a href="http://ghns.freedesktop.org/">GHNS</a> and

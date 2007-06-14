@@ -1,5 +1,5 @@
 /**
- * \mainpage The KDE Core Functionality Library
+ * \mainpage The KDE Core Library
  *
  * All KDE programs use this library to provide basic functionality such
  * as the configuration system, IPC, internationalization and locale

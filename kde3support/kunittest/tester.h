@@ -1,4 +1,4 @@
-/**
+/*
  * tester.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
@@ -29,7 +29,7 @@
 #ifndef TESTER_H
 #define TESTER_H
 
-/*! @mainpage KUnitTest - a UnitTest library for KDE
+/*! @mainpage KUnitTest - a UnitTest Library for KDE
  *
  * @section contents Contents
  * @li @ref background

@@ -1,5 +1,5 @@
 /**
- * \mainpage The KDE kjsembed Library
+ * \mainpage KJSEmbed - a Library for Embedding KJS Engine
  *
  * The kjsembed library embeds kjs into libraries, thus embedding
  * kjs embeddedly library js spiff chug wunka.

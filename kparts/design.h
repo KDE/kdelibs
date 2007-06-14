@@ -1,5 +1,5 @@
 /**
- * @mainpage Framework for KDE graphical components
+ * @mainpage Framework for KDE Graphical Components
  *
  *
  *
