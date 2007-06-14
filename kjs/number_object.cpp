@@ -367,7 +367,7 @@ JSValue *NumberProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
               e = e - 1;
               tens = intPow10(e - p + 1);
               n = floor(x / tens);
-              if (n >= pow(10.0,p)) {
+              if (n >= pow(10.0, p)) {
                   // violated constraint. try something else.
                   n = pow(10.0, p - 1);
                   e = e + 1;

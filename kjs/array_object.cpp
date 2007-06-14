@@ -71,7 +71,7 @@ ArrayInstance::~ArrayInstance()
 }
 
 JSValue* ArrayInstance::getItem(unsigned i) const
-{ 
+{
     if (i >= length)
         return jsUndefined();
     JSValue* val = (i < storageLength) ?
@@ -800,7 +800,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
     
     if (id == Filter) 
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
-    else {
+    else {
       List args;
       args.append(jsNumber(length));
       resultArray = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, args));
@@ -926,7 +926,7 @@ JSValue *ArrayProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, cons
         if (strictEqual(exec, searchElement, e))
             return jsNumber(index);
     }
- 
+
     return jsNumber(-1);
 }
   default:

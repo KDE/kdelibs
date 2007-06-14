@@ -44,9 +44,9 @@ ErrorInstance::ErrorInstance(JSObject *proto)
 // ------------------------------ ErrorPrototype ----------------------------
 
 // ECMA 15.9.4
-ErrorPrototype::ErrorPrototype(ExecState *exec,
-                                     ObjectPrototype *objectProto,
-                                     FunctionPrototype *funcProto)
+ErrorPrototype::ErrorPrototype(ExecState* exec,
+                                     ObjectPrototype* objectProto,
+                                     FunctionPrototype* funcProto)
   : JSObject(objectProto)
 {
   // The constructor will be added later in ErrorObjectImp's constructor
@@ -101,9 +101,9 @@ bool ErrorObjectImp::implementsConstruct() const
 // ECMA 15.9.3
 JSObject* ErrorObjectImp::construct(ExecState* exec, const List& args)
 {
-  JSObject *proto = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinErrorPrototype());
-  JSObject *imp = new ErrorInstance(proto);
-  JSObject *obj(imp);
+  JSObject* proto = static_cast<JSObject*>(exec->lexicalInterpreter()->builtinErrorPrototype());
+  JSObject* imp = new ErrorInstance(proto);
+  JSObject* obj(imp);
 
   if (!args[0]->isUndefined())
     imp->putDirect(exec->propertyNames().message, jsString(args[0]->toString(exec)));
@@ -112,7 +112,7 @@ JSObject* ErrorObjectImp::construct(ExecState* exec, const List& args)
 }
 
 // ECMA 15.9.2
-JSValue* ErrorObjectImp::callAsFunction(ExecState* exec, JSObject * /*thisObj*/, const List &args)
+JSValue* ErrorObjectImp::callAsFunction(ExecState* exec, JSObject* /*thisObj*/, const List &args)
 {
   // "Error()" gives the sames result as "new Error()"
   return construct(exec, args);

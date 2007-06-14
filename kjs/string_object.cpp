@@ -152,7 +152,7 @@ StringPrototype::StringPrototype(ExecState* exec, ObjectPrototype* objProto)
   : StringInstance(objProto)
 {
   // The constructor will be added later, after StringObjectImp has been built
-  putDirect(exec->propertyNames().length, jsNumber(0), DontDelete|ReadOnly|DontEnum);
+  putDirect(exec->propertyNames().length, jsNumber(0), DontDelete | ReadOnly | DontEnum);
 }
 
 bool StringPrototype::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot &slot)
