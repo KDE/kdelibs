@@ -350,6 +350,32 @@ RenderResetButton::RenderResetButton(HTMLInputElementImpl *element)
 
 // -------------------------------------------------------------------------------
 
+class CompletionWidget: public KCompletionBox
+{
+public:
+    CompletionWidget::CompletionWidget( QWidget *parent = 0 ) : KCompletionBox( parent ) {}
+    virtual void popup() {
+        QWidget* pw = parentWidget();
+        KHTMLWidget* kwp = dynamic_cast<KHTMLWidget*>(pw);
+        if (!kwp) {
+            qDebug() << "CompletionWidget has no KHTMLWidget parent" << endl;
+            KCompletionBox::popup();
+            return;
+        }
+        bool blocked = pw->signalsBlocked();
+        QPoint p = pw->pos();
+        pw->blockSignals(true);
+        pw->move( kwp->m_kwp->absolutePos() );
+        pw->blockSignals(blocked);
+
+        KCompletionBox::popup();
+        
+        pw->blockSignals(true);
+        pw->move( p );
+        pw->blockSignals(blocked);
+    }
+};
+
 LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view, QWidget* parent)
     : KLineEdit(parent), m_input(input), m_view(view), m_spell(0)
 {
@@ -357,6 +383,10 @@ LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
     m_spellAction = KStandardAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
+
+    setCompletionBox( new CompletionWidget( this ) );
+    completionBox()->setObjectName("completion box");
+    completionBox()->setFont(font());
 }
 
 LineEditWidget::~LineEditWidget()
@@ -420,7 +450,6 @@ void LineEditWidget::slotSpellCheckDone( const QString &s )
     if( s != text() )
         setText( s );
 }
-
 
 void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
 {
@@ -828,6 +857,7 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     FileButtonWidget* w = new FileButtonWidget( view()->widget() );
 
     w->setMode(KFile::File | KFile::ExistingOnly);
+    w->lineEdit()->setCompletionBox( new CompletionWidget(w) );
     w->completionObject()->setDir(KGlobalSettings::documentPath());
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
