@@ -349,7 +349,7 @@ bool KSycoca::Private::checkVersion()
 // and past the version number.
 bool KSycoca::Private::checkDatabase(bool openDummyIfNotFound)
 {
-    QDataStream *m_str = Private::_self->m_str;
+    QDataStream* &m_str = Private::_self->m_str;
     if (m_str && !noDatabase) {
         return checkVersion(); // we know the version's fine, but rewind anyhow.
     }
