@@ -69,14 +69,15 @@ bool FactoryPrivate::createBackend()
                 continue;
             }
             QLibrary pluginLib(libPath + QLatin1String("/xine"));
-            pluginLib.load();
-            pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
-            QPluginLoader pluginLoader(pluginLib.fileName());
-            Q_ASSERT(pluginLoader.load());
-            pDebug() << pluginLoader.instance();
-            m_backendObject = pluginLoader.instance();
-            if (m_backendObject) {
-                break;
+            if (pluginLib.load()) {
+                pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
+                QPluginLoader pluginLoader(pluginLib.fileName());
+                Q_ASSERT(pluginLoader.load());
+                pDebug() << pluginLoader.instance();
+                m_backendObject = pluginLoader.instance();
+                if (m_backendObject) {
+                    break;
+                }
             }
         }
         if (!m_backendObject) {
@@ -256,15 +257,16 @@ PluginFactory *FactoryPrivate::pluginFactory()
                 continue;
             }
             QLibrary pluginLib(libPath + QLatin1String("/kde"));
-            pluginLib.load();
-            pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
-            QPluginLoader pluginLoader(pluginLib.fileName());
-            Q_ASSERT(pluginLoader.load());
-            pDebug() << pluginLoader.instance();
-            m_pluginFactory = qobject_cast<PluginFactory *>(pluginLoader.instance());
-            pDebug() << m_pluginFactory;
-            if (m_pluginFactory) {
-                return m_pluginFactory;
+            if (pluginLib.load()) {
+                pDebug() << Q_FUNC_INFO << "trying to load " << pluginLib.fileName();
+                QPluginLoader pluginLoader(pluginLib.fileName());
+                Q_ASSERT(pluginLoader.load());
+                pDebug() << pluginLoader.instance();
+                m_pluginFactory = qobject_cast<PluginFactory *>(pluginLoader.instance());
+                pDebug() << m_pluginFactory;
+                if (m_pluginFactory) {
+                    return m_pluginFactory;
+                }
             }
         }
         if (!m_pluginFactory) {
