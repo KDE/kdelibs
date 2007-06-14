@@ -253,7 +253,7 @@ bool KSycoca::isAvailable()
 
 void KSycoca::Private::closeDatabase()
 {
-    QDataStream *m_str = Private::_self->m_str;
+    QDataStream* &m_str = Private::_self->m_str;
    QIODevice *device = 0;
    if (m_str)
       device = m_str->device();
