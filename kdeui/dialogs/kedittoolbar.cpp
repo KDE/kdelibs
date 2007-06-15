@@ -826,7 +826,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
   m_changeIcon = new KPushButton(i18n( "Change &Icon..." ), m_widget);
   QString kdialogExe = KStandardDirs::findExe(QLatin1String("kdialog"));
   m_hasKDialog = !kdialogExe.isEmpty();
-  m_changeIcon->setEnabled(m_hasKDialog);
+  m_changeIcon->setEnabled(m_hasKDialog && m_activeList->currentItem());
 
   QObject::connect( m_changeIcon, SIGNAL( clicked() ),
                     m_widget, SLOT( slotChangeIcon() ) );
