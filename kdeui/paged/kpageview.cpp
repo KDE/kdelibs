@@ -275,17 +275,14 @@ void KPageView::Private::pageSelected( const QModelIndex &index, const QModelInd
 
 void KPageView::Private::updateTitleWidget(const QModelIndex& index)
 {
-  if (!parent->showPageHeader())
-    return;
-
-  QString header = model->data( index, KPageModel::HeaderRole ).toString();
-  if ( header.isEmpty() ) {
-    header = model->data( index, Qt::DisplayRole ).toString();
-  }
-  titleWidget->setText(header.remove('&'));
-  titleWidget->setVisible(parent->showPageHeader());
-  const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
-  titleWidget->setPixmap(icon.pixmap(22, 22));
+    QString header = model->data( index, KPageModel::HeaderRole ).toString();
+    if ( header.isEmpty() ) {
+        header = model->data( index, Qt::DisplayRole ).toString();
+    }
+    titleWidget->setText(header.remove('&'));
+    const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
+    titleWidget->setPixmap(icon.pixmap(22, 22));
+    titleWidget->setVisible(parent->showPageHeader());
 }
 
 void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
