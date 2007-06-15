@@ -23,7 +23,7 @@
 
 #include <kdialog.h>
 #include <QtCore/QString>
-#include <k3process.h>
+#include <kprocess.h>
 
 class KLibFactory;
 
@@ -47,7 +47,7 @@ private:
 	KPrintPreviewPrivate* const d;
 };
 
-class KPreviewProc : public K3Process
+class KPreviewProc : public KProcess
 {
 	Q_OBJECT
 public:
@@ -60,7 +60,7 @@ Q_SIGNALS:
   void finished();
 
 protected Q_SLOTS:
-	void slotProcessExited(K3Process*);
+	void slotProcessExited();
 private:
 	bool m_bOk;
 };

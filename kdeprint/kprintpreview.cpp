@@ -42,10 +42,10 @@
 #include <kstandardaction.h>
 
 KPreviewProc::KPreviewProc()
-: K3Process()
+: KProcess()
 {
 	m_bOk = false;
-	connect(this, SIGNAL(processExited(K3Process*)), SLOT(slotProcessExited(K3Process*)));
+	connect(this, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(slotProcessExited()));
 }
 
 KPreviewProc::~KPreviewProc()
@@ -54,7 +54,8 @@ KPreviewProc::~KPreviewProc()
 
 bool KPreviewProc::startPreview()
 {
-	if (start())
+	start();
+	if (waitForStarted())
 	{
 		QEventLoop eventLoop;
 		connect(this, SIGNAL(finished()), &eventLoop, SLOT(quit()));
@@ -65,14 +66,14 @@ bool KPreviewProc::startPreview()
 		return false;
 }
 
-void KPreviewProc::slotProcessExited(K3Process* proc)
+void KPreviewProc::slotProcessExited()
 {
 	emit finished();
-	if ( proc->normalExit() && proc->exitStatus() == 0 )
+	if ( exitStatus() == NormalExit && exitCode() == 0 )
 		m_bOk = true;
 	else
-		kDebug(500) << "KPreviewProc::slotProcessExited: normalExit=" << proc->normalExit()
-			<< " exitStatus=" << proc->exitStatus() << endl;
+		kDebug(500) << "KPreviewProc::slotProcessExited: exitStatus=" << exitStatus()
+			<< " exitCode=" << exitCode() << endl;
 }
 
 //*******************************************************************************************
