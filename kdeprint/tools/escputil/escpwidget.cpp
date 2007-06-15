@@ -247,14 +247,16 @@ void EscpWidget::slotProcessExited()
 
 void EscpWidget::slotReceivedStdout()
 {
-	QByteArray bufstr = m_proc.readAllStandardOutput();
-	m_outbuffer.append( QString::fromLocal8Bit( bufstr ) );
+	while( m_proc.canReadLine() )
+		m_outbuffer.append( QString::fromLocal8Bit( m_proc.readLine() ) );
 }
 
 void EscpWidget::slotReceivedStderr()
 {
-	QString	bufstr = QString::fromLocal8Bit( m_proc.readAllStandardError() );
-	m_errorbuffer.append(bufstr);
+	m_proc.setReadChannel( QProcess::StandardError );
+	while( m_proc.canReadLine() )
+		m_errorbuffer.append( QString::fromLocal8Bit( m_proc.readLine() ) );
+	m_proc.setReadChannel( QProcess::StandardOutput );
 }
 
 void EscpWidget::slotButtonClicked()

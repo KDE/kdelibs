@@ -105,7 +105,7 @@ void PosterPreview::updatePoster()
 		<< "-c" + QString::number( m_cutmargin ) + '%';
 	m_process->setOutputChannelMode( KProcess::OnlyStderrChannel );
 	m_process->start();
-	if ( !m_process->waitForFinished() )
+	if ( !m_process->waitForStarted() )
 	{
 		m_rows = m_cols = 0;
 		m_dirty = false;
@@ -220,8 +220,8 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 
 void PosterPreview::slotProcessStderr()
 {
-	QByteArray buf = m_process->readAllStandardError();
-	m_buffer.append( QString::fromLocal8Bit( buf ) );
+	while( m_process->canReadLine() )
+		m_buffer.append( QString::fromLocal8Bit( m_process->readLine() ) );
 }
 
 void PosterPreview::slotProcessExited()
