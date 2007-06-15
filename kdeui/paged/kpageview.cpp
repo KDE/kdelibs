@@ -66,7 +66,7 @@ class KPageView::Private
     {
     }
 
-    void updateTitleWidget(const QModelIndex& index);
+    void updateTitleWidget( const QModelIndex& index );
 
     KPageView* parent;
 
@@ -120,7 +120,7 @@ void KPageView::Private::rebuildGui()
       view->selectionModel()->setCurrentIndex( model->index( 0, 0 ), QItemSelectionModel::Select );
   }
 
-  titleWidget->setVisible(parent->showPageHeader());
+  titleWidget->setVisible( parent->showPageHeader() );
 
   Qt::Alignment alignment = parent->viewPosition();
   if ( alignment & Qt::AlignTop )
@@ -279,10 +279,12 @@ void KPageView::Private::updateTitleWidget(const QModelIndex& index)
     if ( header.isEmpty() ) {
         header = model->data( index, Qt::DisplayRole ).toString();
     }
-    titleWidget->setText(header.remove('&'));
+
+    titleWidget->setText( header.remove( '&' ) );
+
     const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
-    titleWidget->setPixmap(icon.pixmap(22, 22));
-    titleWidget->setVisible(parent->showPageHeader());
+    titleWidget->setPixmap( icon.pixmap( 22, 22 ) );
+    titleWidget->setVisible( parent->showPageHeader() );
 }
 
 void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
@@ -298,7 +300,7 @@ void KPageView::Private::dataChanged( const QModelIndex&, const QModelIndex& )
   if ( !index.isValid() )
     return;
 
-  updateTitleWidget(index);
+  updateTitleWidget( index );
 }
 
 /**
@@ -310,7 +312,7 @@ KPageView::KPageView( QWidget *parent )
   d->layout = new QGridLayout( this );
   d->stack = new KPageStackedWidget( this );
 
-  d->titleWidget = new KTitleWidget(this);
+  d->titleWidget = new KTitleWidget( this );
 
   d->layout->addWidget(d->titleWidget, 1, 1);
   d->layout->addWidget( d->stack, 2, 1 );
@@ -431,8 +433,7 @@ bool KPageView::showPageHeader() const
 
   if ( faceType == Tabbed ) {
     return false;
-  }
-  else {
+  } else {
     return !d->titleWidget->text().isEmpty();
   }
 }

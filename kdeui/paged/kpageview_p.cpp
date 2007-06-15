@@ -52,7 +52,7 @@ QRect KPagePlainView::visualRect( const QModelIndex& ) const
   return QRect();
 }
 
-QModelIndex KPagePlainView::moveCursor(QAbstractItemView::CursorAction, Qt::KeyboardModifiers)
+QModelIndex KPagePlainView::moveCursor( QAbstractItemView::CursorAction, Qt::KeyboardModifiers )
 {
   return QModelIndex();
 }
@@ -345,24 +345,25 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   QPen pen = painter->pen();
   QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
                             ? QPalette::Normal : QPalette::Disabled;
-  if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+  if ( cg == QPalette::Normal && !(option.state & QStyle::State_Active) )
     cg = QPalette::Inactive;
-  if (option.state & QStyle::State_Selected) {
-    painter->fillRect(option.rect, option.palette.brush(cg, QPalette::Highlight));
-    painter->setPen(option.palette.color(cg, QPalette::HighlightedText));
+
+  if ( option.state & QStyle::State_Selected ) {
+    painter->fillRect( option.rect, option.palette.brush( cg, QPalette::Highlight ) );
+    painter->setPen( option.palette.color( cg, QPalette::HighlightedText ) );
   } else {
-    painter->setPen(option.palette.color(cg, QPalette::Text));
+    painter->setPen( option.palette.color( cg, QPalette::Text ) );
   }
 
   QFont font = painter->font();
-  painter->setFont(option.font);
+  painter->setFont( option.font );
 
   painter->drawPixmap( option.rect.x() + (option.rect.width()/2)-(wp/2), option.rect.y() + 5, pixmap );
   if ( !text.isEmpty() )
     painter->drawText( option.rect.x() + (option.rect.width()/2)-(wt/2), option.rect.y() + hp+7, wt, ht, Qt::AlignCenter, text );
 
-  painter->setFont(font);
-  painter->setPen(pen);
+  painter->setFont( font );
+  painter->setPen( pen );
 
   drawFocus( painter, option, option.rect );
 }
@@ -401,9 +402,9 @@ void KPageListViewDelegate::drawFocus( QPainter *painter, const QStyleOptionView
     o.state |= QStyle::State_KeyboardFocusChange;
     QPalette::ColorGroup cg = (option.state & QStyle::State_Enabled)
                               ? QPalette::Normal : QPalette::Disabled;
-    o.backgroundColor = option.palette.color(cg, (option.state & QStyle::State_Selected)
-                                             ? QPalette::Highlight : QPalette::Background);
-    QApplication::style()->drawPrimitive(QStyle::PE_FrameFocusRect, &o, painter);
+    o.backgroundColor = option.palette.color( cg, (option.state & QStyle::State_Selected)
+                                              ? QPalette::Highlight : QPalette::Background );
+    QApplication::style()->drawPrimitive( QStyle::PE_FrameFocusRect, &o, painter );
   }
 }
 

@@ -44,7 +44,7 @@ class KPageDialog::Private
                mParent, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
 
       mParent->setMainWidget( mPageWidget );
-      mPageWidget->layout()->setMargin(0);
+      mPageWidget->layout()->setMargin( 0 );
     }
 };
 

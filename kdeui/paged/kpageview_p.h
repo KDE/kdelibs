@@ -43,7 +43,7 @@ class KPagePlainView : public QAbstractItemView
     virtual QRect visualRect( const QModelIndex & index ) const;
 
   protected:
-    virtual QModelIndex moveCursor(QAbstractItemView::CursorAction, Qt::KeyboardModifiers);
+    virtual QModelIndex moveCursor( QAbstractItemView::CursorAction, Qt::KeyboardModifiers );
     virtual int horizontalOffset() const;
     virtual int verticalOffset() const;
     virtual bool isIndexHidden( const QModelIndex& ) const;
@@ -95,7 +95,7 @@ class KPageTabbedView : public QAbstractItemView
     virtual QRect visualRect( const QModelIndex & index ) const;
 
   protected:
-    virtual QModelIndex moveCursor(QAbstractItemView::CursorAction, Qt::KeyboardModifiers);
+    virtual QModelIndex moveCursor( QAbstractItemView::CursorAction, Qt::KeyboardModifiers );
     virtual int horizontalOffset() const;
     virtual int verticalOffset() const;
     virtual bool isIndexHidden( const QModelIndex& ) const;
