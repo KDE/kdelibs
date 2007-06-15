@@ -23,12 +23,11 @@
 #include <QtCore/QFile>
 
 KPrintProcess::KPrintProcess()
-: K3ShellProcess()
+: KProcess()
 {
 	// redirect everything to a single buffer
-	connect(this,SIGNAL(receivedStdout(K3Process*,char*,int)),SLOT(slotReceivedStderr(K3Process*,char*,int)));
-	connect(this,SIGNAL(receivedStderr(K3Process*,char*,int)),SLOT(slotReceivedStderr(K3Process*,char*,int)));
-	connect( this, SIGNAL( processExited( K3Process* ) ), SLOT( slotExited( K3Process* ) ) );
+	connect(this,SIGNAL(receivedStderr()),SLOT(slotReceivedStderr()));
+	connect( this, SIGNAL( processExited() ), SLOT( slotExited() ) );
 	m_state = None;
 }
 
@@ -50,36 +49,37 @@ bool KPrintProcess::print()
 {
 	m_buffer.clear();
 	m_state = Printing;
-	return start(NotifyOnExit,All);
+	setOutputChannelMode( MergedChannels );
+	start();
+	return waitForStarted();
 }
 
-void KPrintProcess::slotReceivedStderr(K3Process *proc, char *buf, int len)
+void KPrintProcess::slotReceivedStderr()
 {
-	if (proc == this)
-	{
-		QByteArray	str = QByteArray(buf,len).trimmed();
-		m_buffer.append(str.append("\n"));
-	}
+	QByteArray	str = readAll().trimmed();
+	m_buffer.append(QString::fromLocal8Bit(str.append("\n")));
 }
 
-void KPrintProcess::slotExited( K3Process* )
+void KPrintProcess::slotExited()
 {
 	switch ( m_state )
 	{
 		case Printing:
 			if ( !m_output.isEmpty() )
 			{
-				clearArguments();
-				*this << "kfmclient" << "copy" << m_tempoutput << m_output;
+				QStringList args = QStringList() << "copy" << m_tempoutput << m_output;
+				setProgram( "kfmclient", args );
 				m_state = Finishing;
 				m_buffer = i18n( "File transfer failed." );
-				if ( start( NotifyOnExit ) )
+				setOutputChannelMode( MergedChannels );
+				start();
+				if ( waitForStarted() )
 					return;
 			}
 		case Finishing:
-			if ( !normalExit() )
+			if ( exitStatus() != NormalExit )
 				emit printError( this, i18n( "Abnormal process termination (<b>%1</b>)." ,  m_command ) );
-			else if ( exitStatus() != 0 )
+			else if ( exitCode() != 0 )
 				emit printError( this, i18n( "<b>%1</b>: execution failed with message:<p>%2</p>" ,  m_command ,  m_buffer ) );
 			else
 				emit printTerminated( this );
