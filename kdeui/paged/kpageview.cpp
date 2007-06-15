@@ -283,6 +283,7 @@ void KPageView::Private::updateTitleWidget(const QModelIndex& index)
     header = model->data( index, Qt::DisplayRole ).toString();
   }
   titleWidget->setText(header.remove('&'));
+  titleWidget->setVisible(parent->showPageHeader());
   const QIcon icon = model->data( index, Qt::DecorationRole ).value<QIcon>();
   titleWidget->setPixmap(icon.pixmap(22, 22));
 }
@@ -431,10 +432,12 @@ bool KPageView::showPageHeader() const
   if ( faceType == Auto )
     faceType = d->detectAutoFace();
 
-  if ( faceType == Tabbed )
+  if ( faceType == Tabbed ) {
     return false;
-  else
-    return true;
+  }
+  else {
+    return !d->titleWidget->text().isEmpty();
+  }
 }
 
 Qt::Alignment KPageView::viewPosition() const
