@@ -39,13 +39,13 @@
  * and Help push buttons, as appropriate to the current position in the page sequence.
  * The Finish Button has the code KDialog::User1, The Next button is KDialog::User2 
  * and the Back button is KDialog::User3.
- * The help button may be hidden using KDialog::showButton( Help , false )
+ * The help button may be hidden using showButton(KDialog::Help, false)
  *
  * Create and populate dialog pages that inherit from QWidget and add them 
  * to the assistant dialog using addPage().
  *
- * The functions next() and back() are virtual you can inherit them if you want 
- * to override the defaults action of the next and back buttons.
+ * The functions next() and back() are virtual and may be reimplemented to
+ * override the default actions of the next and back buttons.
  *
  * @author Olivier Goffart <ogoffart at kde.org>
  */
