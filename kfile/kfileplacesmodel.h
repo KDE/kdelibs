@@ -30,6 +30,7 @@
 #include <solid/device.h>
 
 class QMimeData;
+class QAction;
 
 /**
  * This class is a list view model. Each entry represents a "place"
@@ -57,6 +58,10 @@ public:
     bool isDevice(const QModelIndex &index) const;
     Solid::Device deviceForIndex(const QModelIndex &index) const;
     KBookmark bookmarkForIndex(const QModelIndex &index) const;
+
+    QAction *teardownActionForIndex(const QModelIndex &index) const;
+    void requestTeardown(const QModelIndex &index);
+    void requestSetup(const QModelIndex &index);
 
     void addPlace(const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
     void editPlace(const QModelIndex &index, const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
@@ -119,10 +124,16 @@ public:
     QMimeData *mimeData(const QModelIndexList &indexes) const;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent);
+
+Q_SIGNALS:
+    void errorMessage(const QString &message);
+    void setupDone(const QModelIndex &index, bool success);
+
 private:
     Q_PRIVATE_SLOT(d, void _k_devicesInserted(const QModelIndex&, int, int))
     Q_PRIVATE_SLOT(d, void _k_devicesRemoved(const QModelIndex&, int, int))
     Q_PRIVATE_SLOT(d, void _k_reloadBookmarks())
+    Q_PRIVATE_SLOT(d, void _k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant))
 
     class Private;
     Private * const d;

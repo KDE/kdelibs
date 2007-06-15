@@ -57,7 +57,7 @@ Q_SIGNALS:
 private:
     Q_PRIVATE_SLOT(d, void _k_placeClicked(const QModelIndex &))
     Q_PRIVATE_SLOT(d, void _k_placeActivated(const QModelIndex &))
-    Q_PRIVATE_SLOT(d, void _k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant))
+    Q_PRIVATE_SLOT(d, void _k_storageSetupDone(const QModelIndex &, bool))
 
     class Private;
     Private * const d;

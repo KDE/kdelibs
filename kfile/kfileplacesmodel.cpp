@@ -22,6 +22,7 @@
 
 #include <QtCore/QMimeData>
 #include <QtGui/QColor>
+#include <QtGui/QAction>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -35,8 +36,11 @@
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
 
-#include <solid/storagevolume.h>
 #include <solid/storageaccess.h>
+#include <solid/storagedrive.h>
+#include <solid/storagevolume.h>
+#include <solid/opticaldrive.h>
+#include <solid/opticaldisc.h>
 
 class KFilePlacesModel::Private
 {
@@ -48,6 +52,7 @@ public:
 
     QList<KFilePlacesItem*> items;
     QMap<QString, QPersistentModelIndex> availableDevices;
+    QMap<QObject*, QPersistentModelIndex> setupInProgress;
 
     KDeviceListModel *deviceModel;
     KBookmarkManager *bookmarkManager;
@@ -59,6 +64,7 @@ public:
     void _k_devicesInserted(const QModelIndex &parent, int start, int end);
     void _k_devicesRemoved(const QModelIndex &parent, int start, int end);
     void _k_reloadBookmarks();
+    void _k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData);
 };
 
 KFilePlacesModel::KFilePlacesModel(QObject *parent)
@@ -597,5 +603,100 @@ int KFilePlacesModel::hiddenCount() const
 
     return hidden;
 }
+
+QAction *KFilePlacesModel::teardownActionForIndex(const QModelIndex &index) const
+{
+    Solid::Device device = deviceForIndex(index);
+
+    if (device.as<Solid::StorageAccess>()->isAccessible()
+     || device.is<Solid::OpticalDisc>()) {
+
+        Solid::StorageDrive *drive = device.as<Solid::StorageDrive>();
+
+        if (drive==0) {
+            drive = device.parent().as<Solid::StorageDrive>();
+        }
+
+        bool hotpluggable = false;
+        bool removable = false;
+
+        if (drive!=0) {
+            hotpluggable = drive->isHotpluggable();
+            removable = drive->isRemovable();
+        }
+
+        QString text;
+        QString label = data(index, Qt::DisplayRole).toString();
+
+        if (device.is<Solid::OpticalDisc>()) {
+            text = i18n("&Eject '%1'", label);
+        } else if (removable || hotpluggable) {
+            text = i18n("&Safely remove '%1'", label);
+        } else {
+            text = i18n("&Unmount '%1'", label);
+        }
+
+        return new QAction(KIcon("media-eject"), text, 0);
+    }
+
+    return 0;
+}
+
+void KFilePlacesModel::requestTeardown(const QModelIndex &index)
+{
+    Solid::Device device = deviceForIndex(index);
+
+    Solid::OpticalDrive *drive = device.parent().as<Solid::OpticalDrive>();
+
+    if (drive!=0) {
+        drive->eject();
+    } else {
+        device.as<Solid::StorageAccess>()->teardown();
+    }
+}
+
+void KFilePlacesModel::requestSetup(const QModelIndex &index)
+{
+    Solid::Device device = deviceForIndex(index);
+
+    if (device.is<Solid::StorageAccess>()
+     && !d->setupInProgress.contains(device.as<Solid::StorageAccess>())
+     && !device.as<Solid::StorageAccess>()->isAccessible()) {
+
+        Solid::StorageAccess *access = device.as<Solid::StorageAccess>();
+
+        d->setupInProgress[access] = index;
+
+        connect(access, SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
+                this, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
+
+        access->setup();
+    }
+}
+
+void KFilePlacesModel::Private::_k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData)
+{
+    QPersistentModelIndex index = setupInProgress.take(q->sender());
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    if (result==Solid::StorageAccess::SetupSucceed) {
+        emit q->setupDone(index, true);
+    } else {
+        if (resultData.isValid()) {
+            emit q->errorMessage(i18n("An error occurred while accessing '%1'",
+                                      q->text(index)));
+        } else {
+            emit q->errorMessage(i18n("An error occurred while accessing '%1', the system said: %2",
+                                      q->text(index),
+                                      resultData.toString()));
+        }
+        emit q->setupDone(index, false);
+    }
+
+}
+
 
 #include "kfileplacesmodel.moc"

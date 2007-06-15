@@ -82,7 +82,7 @@ public:
 
     void _k_placeClicked(const QModelIndex &index);
     void _k_placeActivated(const QModelIndex &index);
-    void _k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData);
+    void _k_storageSetupDone(const QModelIndex &index, bool success);
 };
 
 KFilePlacesView::KFilePlacesView(QWidget *parent)
@@ -180,35 +180,10 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
         if (!placesModel->isDevice(index)) {
             remove = menu.addAction( KIcon("edit-delete"), i18n("&Remove '%1'", label));
         } else {
-            QString text;
-
-            Solid::Device device = placesModel->deviceForIndex(index);
-
-            if (device.as<Solid::StorageAccess>()->isAccessible()) {
-
-                Solid::StorageDrive *drive = device.as<Solid::StorageDrive>();
-
-                if (drive==0) {
-                    drive = device.parent().as<Solid::StorageDrive>();
-                }
-
-                bool hotpluggable = false;
-                bool removable = false;
-
-                if (drive!=0) {
-                    hotpluggable = drive->isHotpluggable();
-                    removable = drive->isRemovable();
-                }
-
-                if (device.is<Solid::OpticalDisc>()) {
-                    text = i18n("&Eject '%1'", label);
-                } else if (removable || hotpluggable) {
-                    text = i18n("&Safely remove '%1'", label);
-                } else {
-                    text = i18n("&Unmount '%1'", label);
-                }
-
-                teardown = menu.addAction( KIcon("media-eject"), text);
+            teardown = placesModel->teardownActionForIndex(index);
+            if (teardown!=0) {
+                teardown->setParent(&menu);
+                menu.addAction(teardown);
             }
         }
     }
@@ -238,15 +213,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     } else if (showAll != 0 && result == showAll) {
         setShowAll(showAll->isChecked());
     } else if (teardown != 0 && result == teardown) {
-        Solid::Device device = placesModel->deviceForIndex(index);
-
-        Solid::OpticalDrive *drive = device.parent().as<Solid::OpticalDrive>();
-
-        if (drive!=0) {
-            drive->eject();
-        } else {
-            device.as<Solid::StorageAccess>()->teardown();
-        }
+        placesModel->requestTeardown(index);
     }
 
     setUrl(d->currentUrl);
@@ -376,24 +343,15 @@ void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
 
     if (placesModel==0) return;
 
-    if (lastClickedStorage) {
-        QObject::disconnect(lastClickedStorage, 0,
-                            q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
-    }
-    lastClickedStorage = 0;
     lastClickedIndex = QPersistentModelIndex();
 
-    if (placesModel->isDevice(index)) {
-        Solid::Device device = placesModel->deviceForIndex(index);
-        if (device.is<Solid::StorageAccess>() && !device.as<Solid::StorageAccess>()->isAccessible()) {
-            QObject::connect(device.as<Solid::StorageAccess>(),
-                             SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
-                             q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
-            lastClickedStorage = device.as<Solid::StorageAccess>();
-            lastClickedIndex = index;
-            device.as<Solid::StorageAccess>()->setup();
-            return;
-        }
+    if (placesModel->setupNeeded(index)) {
+        QObject::connect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
+                         q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
+
+        lastClickedIndex = index;
+        placesModel->requestSetup(index);
+        return;
     }
 
     setCurrentIndex(index);
@@ -405,40 +363,40 @@ void KFilePlacesView::Private::_k_placeActivated(const QModelIndex &index)
 
     if (placesModel==0) return;
 
-    if (lastClickedStorage) {
-        QObject::disconnect(lastClickedStorage, 0,
-                            q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
-    }
-    lastClickedStorage = 0;
     lastClickedIndex = QPersistentModelIndex();
 
     if (placesModel->isDevice(index)) {
-        Solid::Device device = placesModel->deviceForIndex(index);
-        if (device.is<Solid::StorageAccess>() && !device.as<Solid::StorageAccess>()->isAccessible()) {
-            QObject::connect(device.as<Solid::StorageAccess>(),
-                             SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
-                             q, SLOT(_k_storageSetupDone(Solid::StorageAccess::SetupResult, QVariant)));
-            lastClickedStorage = device.as<Solid::StorageAccess>();
-            lastClickedIndex = index;
-            device.as<Solid::StorageAccess>()->setup();
-            return;
-        }
+        QObject::connect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
+                         q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
+
+        lastClickedIndex = index;
+        placesModel->requestSetup(index);
+        return;
     }
 
     setCurrentIndex(index);
 }
 
-void KFilePlacesView::Private::_k_storageSetupDone(Solid::StorageAccess::SetupResult result, QVariant resultData)
+void KFilePlacesView::Private::_k_storageSetupDone(const QModelIndex &index, bool success)
 {
-    if (result==Solid::StorageAccess::SetupSucceed) {
+    if (index!=lastClickedIndex) {
+        return;
+    }
+
+    KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
+
+    QObject::disconnect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
+                        q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
+
+    if (success) {
         setCurrentIndex(lastClickedIndex);
     } else {
         q->setUrl(currentUrl);
     }
 
-    lastClickedStorage = 0;
     lastClickedIndex = QPersistentModelIndex();
 }
+
 void KFilePlacesView::dataChanged(const QModelIndex &/*topLeft*/, const QModelIndex &/*bottomRight*/)
 {
     d->updateHiddenRows();
