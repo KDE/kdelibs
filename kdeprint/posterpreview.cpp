@@ -20,7 +20,7 @@
 #include "posterpreview.h"
 
 #include <kdebug.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <kprinter.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
@@ -61,9 +61,9 @@ PosterPreview::~PosterPreview()
 
 void PosterPreview::init()
 {
-	m_process = new K3Process;
-	connect( m_process, SIGNAL( receivedStderr( K3Process*, char*, int ) ), SLOT( slotProcessStderr( K3Process*, char*, int ) ) );
-	connect( m_process, SIGNAL( processExited( K3Process* ) ), SLOT( slotProcessExited( K3Process* ) ) );
+	m_process = new KProcess;
+	connect( m_process, SIGNAL( readyReadStandardError() ), SLOT( slotProcessStderr() ) );
+	connect( m_process, SIGNAL( finished( int, QProcess::ExitStatus ) ), SLOT( slotProcessExited() ) );
 
 	m_cols = m_rows = m_pw = m_ph = m_mw = m_mh = 0;
 	m_dirty = false;
@@ -99,10 +99,13 @@ void PosterPreview::updatePoster()
 	// (m_mediasize is empty - it shouldn't be!)
 
 	m_buffer = "";
-	m_process->clearArguments();
+	delete m_process;
+    m_process = new KProcess;
 	*m_process << "poster" << "-F" << "-m" + m_mediasize << "-p" + m_postersize
 		<< "-c" + QString::number( m_cutmargin ) + '%';
-	if ( !m_process->start( K3Process::NotifyOnExit, K3Process::Stderr ) )
+    m_process->setOutputChannelMode( KProcess::OnlyStderrChannel );
+    m_process->start();
+	if ( !m_process->waitForFinished() )
 	{
 		m_rows = m_cols = 0;
 		m_dirty = false;
@@ -124,15 +127,15 @@ void PosterPreview::paintEvent( QPaintEvent * )
 			QString txt = i18n( "Poster preview not available. Either the <b>poster</b> "
 				          "executable is not properly installed, or you don't have "
 						  "the required version; available at http://printing.kde.org/downloads/." );
-			
+
 			QTextDocument doc;
 			doc.setHtml( m_buffer.isEmpty() ? txt : m_buffer.prepend( "<pre>" ).append( "</pre>" ) );
-			
+
 			doc.setPageSize( size() );
 			QAbstractTextDocumentLayout::PaintContext ctx = QAbstractTextDocumentLayout::PaintContext();
 			ctx.clip = rect();
 			doc.documentLayout()->draw( & painter, ctx );
-			
+
 			m_boundingrect = QRect();
 		}
 		else
@@ -215,14 +218,15 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 	}
 }
 
-void PosterPreview::slotProcessStderr( K3Process*, char *buf, int len )
+void PosterPreview::slotProcessStderr()
 {
-	m_buffer.append( QByteArray( buf, len ) );
+	m_buffer.append( QString::fromLocal8Bit( m_process->readAllStandardError() ) );
 }
 
-void PosterPreview::slotProcessExited( K3Process* )
+void PosterPreview::slotProcessExited()
 {
-	if ( m_process->normalExit() && m_process->exitStatus() == 0 )
+	if ( m_process->exitStatus() == QProcess::NormalExit
+            && m_process->exitCode() == 0 )
 		parseBuffer();
 	else
 		m_rows = m_cols = 0;
