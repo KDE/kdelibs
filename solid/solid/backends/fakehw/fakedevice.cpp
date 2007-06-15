@@ -39,6 +39,7 @@
 #include <QtDBus/QDBusConnection>
 
 #include <solid/genericinterface.h>
+#include "fakedevice.h"
 
 class FakeDevice::Private
 {
@@ -97,6 +98,27 @@ QString FakeDevice::vendor() const
 QString FakeDevice::product() const
 {
     return d->propertyMap["name"].toString();
+}
+
+QString FakeDevice::icon() const
+{
+    if(parentUdi().isEmpty()) {
+        return "system";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) {
+        return "cdrom-unmount";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
+        return "ipod-unmount";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
+        return "camera-unmount";
+    } else if(queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+        return "ksim-cpu";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive)) {
+        return "hdd-unmount";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Block)) {
+        return "blockdevice";
+    } else {
+        return "hwinfo";
+    }
 }
 
 QVariant FakeDevice::property(const QString &key) const

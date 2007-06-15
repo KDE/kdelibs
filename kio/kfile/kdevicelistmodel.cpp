@@ -95,51 +95,12 @@ QVariant KDeviceListModel::data(const QModelIndex &index, int role) const
     Solid::Device device = deviceItem->device();
 
     QVariant returnData;
-    if (role == Qt::DisplayRole)
-    {
+    if (role == Qt::DisplayRole) {
         returnData = device.product();
     }
     // Only display icons in the first column
-    else if (role == Qt::DecorationRole && index.column() == 0)
-    {
-        QString iconName;
-        if( device.parentUdi().isEmpty() )
-        {
-            iconName = "system";
-        }
-        else
-        {
-            if (device.isDeviceInterface(Solid::DeviceInterface::OpticalDrive))
-            {
-                iconName = "cdrom-unmount";
-            }
-            else if (device.isDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer))
-            {
-                iconName = "ipod-unmount";
-            }
-            else if (device.isDeviceInterface(Solid::DeviceInterface::Camera))
-            {
-                iconName = "camera-unmount";
-            }
-            else if(device.isDeviceInterface(Solid::DeviceInterface::Processor))
-            {
-                iconName = "ksim-cpu";
-            }
-            else if (device.isDeviceInterface(Solid::DeviceInterface::StorageDrive))
-            {
-                iconName = "hdd-unmount";
-            }
-            else if (device.isDeviceInterface(Solid::DeviceInterface::Block))
-            {
-                iconName = "blockdevice";
-            }
-            else
-            {
-                iconName = "hwinfo";
-            }
-        }
-
-        returnData = KIcon(iconName);
+    else if (role == Qt::DecorationRole && index.column() == 0) {
+        returnData = KIcon(device.icon());
     }
 
     return returnData;

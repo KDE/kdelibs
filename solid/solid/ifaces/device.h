@@ -87,6 +87,14 @@ namespace Ifaces
          */
         virtual QString product() const = 0;
 
+        /**
+         * Retrieves the name of the icon representing this device.
+         * The naming follows the freedesktop.org specification.
+         *
+         * @return the icon name
+         */
+        virtual QString icon() const = 0;
+
 
         /**
          * Tests if a property exist.

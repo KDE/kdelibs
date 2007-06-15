@@ -171,6 +171,13 @@ namespace Solid
          */
         QString product() const;
 
+        /**
+         * Retrieves the name of the icon representing this device.
+         * The naming follows the freedesktop.org specification.
+         *
+         * @return the icon name
+         */
+        QString icon() const;
 
 
         /**

@@ -120,6 +120,27 @@ QString HalDevice::product() const
     return property("info.product").toString();
 }
 
+QString HalDevice::icon() const
+{
+    if(parentUdi().isEmpty()) {
+        return "system";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::OpticalDrive)) {
+        return "cdrom-unmount";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
+        return "ipod-unmount";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
+        return "camera-unmount";
+    } else if(queryDeviceInterface(Solid::DeviceInterface::Processor)) {
+        return "ksim-cpu";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive)) {
+        return "hdd-unmount";
+    } else if (queryDeviceInterface(Solid::DeviceInterface::Block)) {
+        return "blockdevice";
+    } else {
+        return "hwinfo";
+    }
+}
+
 QVariant HalDevice::property(const QString &key) const
 {
     if (d->cache.contains(key))

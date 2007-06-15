@@ -36,6 +36,7 @@ public Q_SLOTS:
     virtual QString parentUdi() const;
     virtual QString vendor() const;
     virtual QString product() const;
+    virtual QString icon() const;
 
     virtual QVariant property(const QString &key) const;
     virtual QMap<QString, QVariant> allProperties() const;
