@@ -195,13 +195,13 @@ public:
      * @param cmd the command to execute through a shell.
      *   The caller must make sure that all filenames etc. are properly
      *   quoted when passed as argument. Failure to do so often results in
-     *   serious security holes. See KShell::quote().
+     *   serious security holes. See KShell::quoteArg().
      * @param shell the path to the shell that will execute the process, or
      *   empty to use the system's default shell (on *NIX a POSIX shell if
-     *   available, otherwise any bourne shell, on WinNT cmd, on Win9x command).
-     *   Use getenv("SHELL") (*NIX) or getenv("COMSPEC") (Windows) to use
-     *   the user's default shell, but note that doing so is usually a bad
-     *   idea for compatibility reasons.
+     *   available, otherwise any bourne shell, on Windows whatever %COMSPEC%
+     *   points to).
+     *   Use qgetenv("SHELL") to use the user's default shell on *NIX, but
+     *   note that doing so is usually a bad idea for compatibility reasons.
      */
     void setShellCommand(const QString &cmd, const QString &shell = QString());
 
