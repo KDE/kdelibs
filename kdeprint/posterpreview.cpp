@@ -220,7 +220,8 @@ void PosterPreview::mousePressEvent( QMouseEvent *e )
 
 void PosterPreview::slotProcessStderr()
 {
-	m_buffer.append( QString::fromLocal8Bit( m_process->readAllStandardError() ) );
+	QByteArray buf = m_process->readAllStandardError();
+	m_buffer.append( QString::fromLocal8Bit( buf ) );
 }
 
 void PosterPreview::slotProcessExited()

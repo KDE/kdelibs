@@ -195,7 +195,7 @@ void EscpWidget::startCommand(const QString& arg)
 		return;
 	}
 
-//	m_proc.clearArguments();
+	m_proc.setProgram(QString(), QStringList());
 	m_proc << exestr;
 	if (m_useraw->isChecked() || arg == "-i")
 		m_proc << "-r" << m_deviceURL.path();
@@ -247,8 +247,8 @@ void EscpWidget::slotProcessExited()
 
 void EscpWidget::slotReceivedStdout()
 {
-	QString	bufstr = QString::fromLocal8Bit( m_proc.readAllStandardOutput() );
-	m_outbuffer.append(bufstr);
+	QByteArray bufstr = m_proc.readAllStandardOutput();
+	m_outbuffer.append( QString::fromLocal8Bit( bufstr ) );
 }
 
 void EscpWidget::slotReceivedStderr()
