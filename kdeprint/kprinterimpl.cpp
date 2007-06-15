@@ -47,6 +47,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#ifdef Q_OS_FREEBSD
+# include <sys/wait.h>
+#endif
+
 void dumpOptions(const QMap<QString,QString>&);
 void initEditPrinter(KMPrinter *p)
 {
