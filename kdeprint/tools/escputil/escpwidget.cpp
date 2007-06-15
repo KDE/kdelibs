@@ -71,9 +71,9 @@ EscpWidget::EscpWidget(QWidget *parent)
 {
 	m_hasoutput = false;
 
-	connect(&m_proc, SIGNAL(processExited(K3Process*)), SLOT(slotProcessExited(K3Process*)));
-	connect(&m_proc, SIGNAL(receivedStdout(K3Process*,char*,int)), SLOT(slotReceivedStdout(K3Process*,char*,int)));
-	connect(&m_proc, SIGNAL(receivedStderr(K3Process*,char*,int)), SLOT(slotReceivedStderr(K3Process*,char*,int)));
+	connect(&m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(slotProcessExited()));
+	connect(&m_proc, SIGNAL(readyReadStandardOutput()), SLOT(slotReceivedStdout()));
+	connect(&m_proc, SIGNAL(readyReadStandardError()), SLOT(slotReceivedStderr()));
 
 	QPushButton	*cleanbtn = new QPushButton(this);
 	cleanbtn->setObjectName(QLatin1String("-c"));
@@ -179,7 +179,7 @@ void EscpWidget::startCommand(const QString& arg)
 		}
 	}
 
-	if (m_proc.isRunning())
+	if (m_proc.state() == QProcess::Running)
 	{
 		KMessageBox::error(this, i18n("An escputil process is still running. "
 		                              "You must wait until its completion before continuing."));
@@ -195,7 +195,7 @@ void EscpWidget::startCommand(const QString& arg)
 		return;
 	}
 
-	m_proc.clearArguments();
+//	m_proc.clearArguments();
 	m_proc << exestr;
 	if (m_useraw->isChecked() || arg == "-i")
 		m_proc << "-r" << m_deviceURL.path();
@@ -207,10 +207,12 @@ void EscpWidget::startCommand(const QString& arg)
 	m_proc << arg << "-q";
 	m_errorbuffer = m_outbuffer = QString();
 	m_hasoutput = ( arg == "-i" || arg == "-d" );
-	foreach ( QByteArray arg, m_proc.args() )
-		kDebug() << "ARG: " << arg << endl;
+//	foreach ( QByteArray arg, m_proc.args() )
+//		kDebug() << "ARG: " << arg << endl;
 
-	if (m_proc.start(K3Process::NotifyOnExit, K3Process::AllOutput))
+	m_proc.setOutputChannelMode(KProcess::SeparateChannels);
+	m_proc.start();
+	if (m_proc.waitForFinished())
 		setEnabled(false);
 	else
 	{
@@ -220,10 +222,10 @@ void EscpWidget::startCommand(const QString& arg)
 	}
 }
 
-void EscpWidget::slotProcessExited(K3Process*)
+void EscpWidget::slotProcessExited()
 {
 	setEnabled(true);
-	if (!m_proc.normalExit() || m_proc.exitStatus() != 0)
+	if (m_proc.exitStatus() != QProcess::NormalExit || m_proc.exitCode() != 0)
 	{
 		QString	msg1 = "<qt>"+i18n("Operation terminated with errors.")+"</qt>";
 		QString	msg2;
@@ -243,15 +245,15 @@ void EscpWidget::slotProcessExited(K3Process*)
 	m_hasoutput = false;
 }
 
-void EscpWidget::slotReceivedStdout(K3Process*, char *buf, int len)
+void EscpWidget::slotReceivedStdout()
 {
-	QString	bufstr = QByteArray(buf, len);
+	QString	bufstr = QString::fromLocal8Bit( m_proc.readAllStandardOutput() );
 	m_outbuffer.append(bufstr);
 }
 
-void EscpWidget::slotReceivedStderr(K3Process*, char *buf, int len)
+void EscpWidget::slotReceivedStderr()
 {
-	QString	bufstr = QByteArray(buf, len);
+	QString	bufstr = QString::fromLocal8Bit( m_proc.readAllStandardError() );
 	m_errorbuffer.append(bufstr);
 }
 

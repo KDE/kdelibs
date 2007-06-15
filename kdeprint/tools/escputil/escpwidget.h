@@ -21,10 +21,11 @@
 #define ESCPWIDGET_H
 
 #include <QtGui/QWidget>
-#include <k3process.h>
 #include <kurl.h>
+#include <kprocess.h>
 
 class QLabel;
+class KProcess;
 class QCheckBox;
 
 class EscpWidget : public QWidget
@@ -37,16 +38,16 @@ public:
 	void setPrinterName(const QString&);
 
 protected Q_SLOTS:
-	void slotReceivedStdout(K3Process*, char*, int);
-	void slotReceivedStderr(K3Process*, char*, int);
-	void slotProcessExited(K3Process*);
+	void slotReceivedStdout();
+	void slotReceivedStderr();
+	void slotProcessExited();
 	void slotButtonClicked();
 
 protected:
 	void startCommand(const QString& arg);
 
 private:
-	K3Process	m_proc;
+	KProcess	m_proc;
 	KUrl		m_deviceURL;
 	QString		m_errorbuffer, m_outbuffer;
 	QLabel		*m_printer, *m_device;
