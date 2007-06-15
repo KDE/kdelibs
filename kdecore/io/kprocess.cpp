@@ -305,4 +305,13 @@ int KProcess::execute(const QStringList &argv, int msecs)
     return p.execute(msecs);
 }
 
+int KProcess::pid() const
+{
+#ifdef Q_OS_UNIX
+    return (int) QProcess::pid();
+#else
+    return (int) QProcess::pid()->dwProcessId;
+#endif
+}
+
 #include "kprocess.moc"

@@ -251,6 +251,17 @@ public:
      */
     static int execute(const QStringList &argv, int msecs = -1);
 
+    /**
+     * Obtain the process' ID as known to the system.
+     *
+     * Unlike with QProcess::pid(), this is a real PID also on Windows.
+     *
+     * This function can be called only while the process is running.
+     *
+     * @return the process ID
+     */
+    int pid() const;
+
 protected:
     /**
      * @internal
