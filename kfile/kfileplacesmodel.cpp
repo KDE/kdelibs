@@ -686,12 +686,12 @@ void KFilePlacesModel::Private::_k_storageSetupDone(Solid::StorageAccess::SetupR
         emit q->setupDone(index, true);
     } else {
         if (resultData.isValid()) {
-            emit q->errorMessage(i18n("An error occurred while accessing '%1'",
-                                      q->text(index)));
-        } else {
             emit q->errorMessage(i18n("An error occurred while accessing '%1', the system said: %2",
                                       q->text(index),
                                       resultData.toString()));
+        } else {
+            emit q->errorMessage(i18n("An error occurred while accessing '%1'",
+                                      q->text(index)));
         }
         emit q->setupDone(index, false);
     }
