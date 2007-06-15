@@ -99,7 +99,7 @@ void KExtendableItemDelegate::extenderDestructionHandler(QObject *destroyed)
 	//An invalid model index here is a "can't happen" situation. We don't catch it because
 	//everything would be broken already.
 
-	if (receivers(SIGNAL(extenderDestroyed(QObject *, QModelIndex)))) {
+	if (receivers(SIGNAL(extenderDestroyed(QWidget *, QModelIndex)))) {
 		QPersistentModelIndex persistentIndex = d->extenderIndices.take(extender);
 		QModelIndex index = persistentIndex;
 		emit extenderDestroyed(extender, index);
