@@ -166,16 +166,16 @@ namespace Phonon
      * \author Matthias Kretz <kretz@kde.org>
      */
     template<ObjectDescriptionType type>
-    class PHONON_EXPORT ObjectDescriptionModel : public QAbstractListModel
+    class ObjectDescriptionModel : public QAbstractListModel
     {
         public:
             Q_OBJECT_CHECK
             /** \internal */
-            static const QMetaObject staticMetaObject;
+            static PHONON_EXPORT const QMetaObject staticMetaObject;
             /** \internal */
-            const QMetaObject *metaObject() const;
+            PHONON_EXPORT const QMetaObject *metaObject() const;
             /** \internal */
-            void *qt_metacast(const char *_clname);
+            PHONON_EXPORT void *qt_metacast(const char *_clname);
             //int qt_metacall(QMetaObject::Call _c, int _id, void **_a);
 
             /**
