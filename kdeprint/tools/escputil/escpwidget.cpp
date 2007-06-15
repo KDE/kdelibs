@@ -205,7 +205,7 @@ void EscpWidget::startCommand(const QString& arg)
 		m_proc << "-u";
 
 	m_proc << arg << "-q";
-	m_errorbuffer = m_outbuffer = QString();
+	m_errorbuffer = m_outbuffer = QByteArray();
 	m_hasoutput = ( arg == "-i" || arg == "-d" );
 //	foreach ( QByteArray arg, m_proc.args() )
 //		kDebug() << "ARG: " << arg << endl;
@@ -230,9 +230,9 @@ void EscpWidget::slotProcessExited()
 		QString	msg1 = "<qt>"+i18n("Operation terminated with errors.")+"</qt>";
 		QString	msg2;
 		if (!m_outbuffer.isEmpty())
-			msg2 += "<p><b><u>"+i18n("Output")+"</u></b></p><p>"+m_outbuffer+"</p>";
+			msg2 += "<p><b><u>"+i18n("Output")+"</u></b></p><p>"+QString::fromLocal8Bit(m_outbuffer)+"</p>";
 		if (!m_errorbuffer.isEmpty())
-			msg2 += "<p><b><u>"+i18n("Error")+"</u></b></p><p>"+m_errorbuffer+"</p>";
+			msg2 += "<p><b><u>"+i18n("Error")+"</u></b></p><p>"+QString::fromLocal8Bit(m_errorbuffer)+"</p>";
 		if (!msg2.isEmpty())
 			KMessageBox::detailedError(this, msg1, msg2);
 		else
@@ -240,23 +240,19 @@ void EscpWidget::slotProcessExited()
 	}
 	else if ( !m_outbuffer.isEmpty() && m_hasoutput )
 	{
-		KMessageBox::information( this, m_outbuffer );
+		KMessageBox::information( this, QString::fromLocal8Bit(m_outbuffer) );
 	}
 	m_hasoutput = false;
 }
 
 void EscpWidget::slotReceivedStdout()
 {
-	while( m_proc.canReadLine() )
-		m_outbuffer.append( QString::fromLocal8Bit( m_proc.readLine() ) );
+	m_outbuffer.append( m_proc.readAllStandardOutput() );
 }
 
 void EscpWidget::slotReceivedStderr()
 {
-	m_proc.setReadChannel( QProcess::StandardError );
-	while( m_proc.canReadLine() )
-		m_errorbuffer.append( QString::fromLocal8Bit( m_proc.readLine() ) );
-	m_proc.setReadChannel( QProcess::StandardOutput );
+	m_errorbuffer.append( m_proc.readAllStandardError() );
 }
 
 void EscpWidget::slotButtonClicked()

@@ -49,7 +49,7 @@ protected:
 private:
 	KProcess	m_proc;
 	KUrl		m_deviceURL;
-	QString		m_errorbuffer, m_outbuffer;
+	QByteArray	m_errorbuffer, m_outbuffer;
 	QLabel		*m_printer, *m_device;
 	QCheckBox	*m_useraw;
 	bool		m_hasoutput;
