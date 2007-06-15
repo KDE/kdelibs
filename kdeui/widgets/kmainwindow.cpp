@@ -65,7 +65,6 @@
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
-#include <kstartupinfo.h>
 #endif
 
 #include <stdlib.h>
@@ -229,12 +228,6 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     KWhatsThisManager::init ();
 
     helpMenu = 0;
-
-#if defined Q_WS_X11
-    // set the app startup notification window property
-    if ( kapp )
-        KStartupInfo::setWindowStartupId( q->winId(), kapp->startupId() );
-#endif
 
     //actionCollection()->setWidget( this );
     QObject::connect(qApp, SIGNAL(aboutToQuit()), q, SLOT(_k_shuttingDown()));
@@ -473,11 +466,6 @@ void KMainWindow::setCaption( const QString &caption, bool modified )
 void KMainWindow::setPlainCaption( const QString &caption )
 {
 	setWindowTitle(caption);
-
-#if defined Q_WS_X11
-    NETWinInfo info( QX11Info::display(), winId(), QX11Info::appRootWindow(), 0 );
-    info.setName( caption.toUtf8().data() );
-#endif
 }
 
 void KMainWindow::appHelpActivated( void )
