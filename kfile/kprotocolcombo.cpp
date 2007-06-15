@@ -23,6 +23,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintEvent>
+#include <QtGui/QStyleOption>
 
 #include <kdebug.h>
 #include <kprotocolinfo.h>
@@ -87,7 +88,7 @@ QSize KProtocolCombo::sizeHint() const
 
     QFontMetrics fontMetrics(font());
     int width = fontMetrics.width(text());
-    width += (3 * BorderWidth) + (2 * ArrowHeight);
+    width += (3 * BorderWidth) + ArrowSize;
 
     return QSize(width, size.height());
 }
@@ -121,38 +122,29 @@ void KProtocolCombo::paintEvent(QPaintEvent* event)
     const int buttonHeight = height();
 
     const QColor bgColor = backgroundColor();
-    QColor fgColor = foregroundColor();
-
-    const bool isHighlighted = isDisplayHintEnabled(EnteredHint);
-    const bool isActive = urlNavigator()->isActive();
+    const QColor fgColor = foregroundColor();
 
     // draw button background
     painter.setPen(Qt::NoPen);
     painter.setBrush(bgColor);
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
-    if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
-        fgColor.setAlpha(fgColor.alpha() / 2);
-    }
     painter.setPen(fgColor);
 
     // draw arrow
-    const int startY = (buttonHeight / 2) - (ArrowHeight / 2);
-    const int startLeftX = buttonWidth - (2 * ArrowHeight) - BorderWidth;
-    const int startRightX = startLeftX + (2 * ArrowHeight) - 1;
-    for (int i = 0; i < ArrowHeight; ++i) {
-        const int leftX = startLeftX + i;
-        const int rightX = startRightX - i;
-        const int endY = startY + i + 1;
-        painter.drawLine(leftX, startY, leftX, endY);
-        if (leftX != rightX) {
-            // alpha blending is used, hence assure that a line is
-            // never drawn twice
-            painter.drawLine(rightX, startY, rightX, endY);
-        }
-    }
+    const int arrowX = buttonWidth - ArrowSize - BorderWidth;
+    const int arrowY = (buttonHeight - ArrowSize) / 2;
 
-    const int textWidth = startLeftX - (2 * BorderWidth);
+    QStyleOption option;
+    option.rect = QRect(arrowX, arrowY, ArrowSize, ArrowSize);
+    option.palette = palette();
+    option.palette.setColor(QPalette::Text, fgColor);
+    option.palette.setColor(QPalette::WindowText, fgColor);
+    option.palette.setColor(QPalette::ButtonText, fgColor);
+    style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &option, &painter, this );
+
+    // draw text
+    const int textWidth = arrowX - (2 * BorderWidth);
     painter.drawText(QRect(BorderWidth, 0, textWidth, buttonHeight), Qt::AlignCenter, text());
 }
 

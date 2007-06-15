@@ -131,10 +131,13 @@ QColor KUrlButton::foregroundColor() const
 
     QColor foregroundColor = isHighlighted ? KGlobalSettings::highlightedTextColor() :
                                              KGlobalSettings::buttonTextColor();
+    const bool isActive = m_urlNavigator->isActive();
 
-    if (!urlNavigator()->isActive()) {
-        foregroundColor.setAlpha(192);
+    int alpha = isActive ? 255 : 128;
+    if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
+        alpha -= alpha / 4;
     }
+    foregroundColor.setAlpha(alpha);
 
     return foregroundColor;
 }

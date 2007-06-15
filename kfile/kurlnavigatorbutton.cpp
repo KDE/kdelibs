@@ -28,9 +28,10 @@
 #include <kglobalsettings.h>
 #include <kmenu.h>
 
+#include <QtCore/QTimer>
 #include <QtGui/QPainter>
 #include <QtGui/QKeyEvent>
-#include <QtCore/QTimer>
+#include <QtGui/QStyleOption>
 
 KUrlNavigatorButton::KUrlNavigatorButton(int index, KUrlNavigator* parent) :
     KUrlButton(parent),
@@ -79,7 +80,7 @@ void KUrlNavigatorButton::setIndex(int index)
     setFont(adjustedFont);
 
     QFontMetrics fontMetrics(adjustedFont);
-    int minWidth = fontMetrics.width(buttonText) + arrowWidth() + 3 * BorderWidth;
+    int minWidth = fontMetrics.width(buttonText) + arrowWidth() + 2 * BorderWidth;
     if (minWidth < 50) {
         minWidth = 50;
     }
@@ -94,7 +95,9 @@ void KUrlNavigatorButton::setIndex(int index)
 
 QSize KUrlNavigatorButton::sizeHint() const
 {
-    const int width = fontMetrics().width(text()) + (arrowWidth() * 4);
+    // the minimum size is textWidth + arrowWidth() + 2 * BorderWidth; for the
+    // preferred size we add the BorderWidth 2 times again for having an uncluttered look
+    const int width = fontMetrics().width(text()) + arrowWidth() + 4 * BorderWidth;
     return QSize(width, KUrlButton::sizeHint().height());
 }
 
@@ -106,12 +109,7 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     const int buttonHeight = height();
 
     const QColor bgColor = backgroundColor();
-    QColor fgColor = foregroundColor();
-
-    const bool isHighlighted = isDisplayHintEnabled(EnteredHint) ||
-                               isDisplayHintEnabled(DraggedHint) ||
-                               isDisplayHintEnabled(PopupActiveHint);
-    const bool isActive = urlNavigator()->isActive();
+    const QColor fgColor = foregroundColor();
 
     // draw button background
     painter.setPen(Qt::NoPen);
@@ -119,31 +117,24 @@ void KUrlNavigatorButton::paintEvent(QPaintEvent* event)
     painter.drawRect(0, 0, buttonWidth, buttonHeight);
 
     int textWidth = buttonWidth;
-    if ((!isDisplayHintEnabled(ActivatedHint) || !isActive) && !isHighlighted) {
-        fgColor.setAlpha(fgColor.alpha() / 2);
-    }
     painter.setPen(fgColor);
 
     if (!isDisplayHintEnabled(ActivatedHint)) {
         // draw arrow
-        const int middleY = height() / 2;
-        const int width = arrowWidth();
-        const int startX = (buttonWidth - width) - (2 * BorderWidth);
-        const int startTopY = middleY - (width - 1);
-        const int startBottomY = middleY + (width - 1);
-        for (int i = 0; i < width; ++i) {
-            const int topY = startTopY + i;
-            const int bottomY = startBottomY - i;
-            const int endX = startX + i + 1;
-            painter.drawLine(startX, topY, endX, topY);
-            if (topY != bottomY) {
-                // alpha blending is used, hence assure that a line is
-                // never drawn twice
-                painter.drawLine(startX, bottomY, endX, bottomY);
-            }
-        }
+        const int arrowSize = arrowWidth();
+        const int arrowX = (buttonWidth - arrowSize) - BorderWidth;
+        const int arrowY = (buttonHeight - arrowSize) / 2;
 
-        textWidth = startX - BorderWidth;
+        QStyleOption option;
+        option.rect = QRect(arrowX, arrowY, arrowSize, arrowSize);
+        option.palette = palette();
+        option.palette.setColor(QPalette::Text, fgColor);
+        option.palette.setColor(QPalette::WindowText, fgColor);
+        option.palette.setColor(QPalette::ButtonText, fgColor);
+        // TODO: respect R2L setting for the arrows
+        style()->drawPrimitive(QStyle::PE_IndicatorArrowRight, &option, &painter, this );
+
+        textWidth = arrowX - BorderWidth;
     }
 
     const bool clipped = isTextClipped();
@@ -333,7 +324,7 @@ void KUrlNavigatorButton::listJobFinished(KJob* job)
 
 int KUrlNavigatorButton::arrowWidth() const
 {
-    int width = (height() / 2) - 7;
+    int width = height() / 2;
     if (width < 4) {
         width = 4;
     }
