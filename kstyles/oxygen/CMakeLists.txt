@@ -1,5 +1,7 @@
 project(kstyle-oxygen)
 
+add_subdirectory( config )
+
 ########### next target ###############
 
 set( oxygen_SRCS
