@@ -30,7 +30,10 @@
 
 #if PLATFORM(WIN)
 
+#include "kjs/operations.h"
+#include "kjs/value.h"
 #include <xmath.h>
+#include <limits>
 
 #if HAVE(FLOAT_H)
 #include <float.h>
@@ -44,6 +47,36 @@ inline double round(double num) { return num > 0 ? floor(num + 0.5) : ceil(num -
 inline float roundf(float num) { return num > 0 ? floorf(num + 0.5f) : ceilf(num - 0.5f); }
 inline bool signbit(double num) { return _copysign(1.0, num) < 0; }
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif  //  M_PI
+
+#ifndef M_PI_4
+#define M_PI_4 0.785398163397448309616
+#endif  //  M_PI_4
+
+// Work around a bug in Win, where atan2(+-infinity, +-infinity) yields NaN instead of specific values.
+inline double wtf_atan2(double x, double y)
+{
+    static double posInf = std::numeric_limits<double>::infinity();
+    static double negInf = -std::numeric_limits<double>::infinity();
+
+    double result = KJS::NaN;
+
+    if (x == posInf && y == posInf)
+        result = M_PI_4;
+    else if (x == posInf && y == negInf)
+        result = 3 * M_PI_4;
+    else if (x == negInf && y == posInf)
+        result = -M_PI_4;
+    else if (x == negInf && y == negInf)
+        result = -3 * M_PI_4;
+    else
+        result = ::atan2(x, y);
+
+    return result;
+}
+
 #if COMPILER(MSVC)
 
 // Work around a bug in the Microsoft CRT, where fmod(x, +-infinity) yields NaN instead of x.
@@ -51,8 +84,10 @@ inline double wtf_fmod(double x, double y) { return (!isinf(x) && isinf(y)) ? x 
 
 #define fmod(x, y) wtf_fmod(x, y)
 
-#endif
+#endif // #if COMPILER(MSVC)
 
-#endif
+#define atan2(x, y) wtf_atan2(x, y)
+
+#endif // #if PLATFORM(WIN)
 
 #endif // #ifndef WTF_MathExtras_h

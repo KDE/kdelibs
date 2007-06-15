@@ -22,6 +22,7 @@
 #include "math_object.h"
 #include <config.h>
 #include "math_object.lut.h"
+#include "wtf/MathExtras.h"
 
 #include "operations.h"
 #include <math.h>
@@ -147,7 +148,7 @@ MathFuncImp::MathFuncImp(ExecState* exec, int i, int l, const Identifier& name)
   putDirect(exec->propertyNames().length, l, DontDelete|ReadOnly|DontEnum);
 }
 
-JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, const List &args)
 {
   double arg = args[0]->toNumber(exec);
   double arg2 = args[1]->toNumber(exec);
@@ -220,8 +221,10 @@ JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, co
       result = NaN;
     else if (isNaN(arg) && arg2 != 0)
       result = NaN;
-    else if (::fabs(arg) == 1 && KJS::isInf(arg2))
+    else if (::fabs(arg) == 1 && isInf(arg2))
       result = NaN;
+    else if (arg2 == 0 && arg != 0)
+      result = 1;
     else
       result = ::pow(arg, arg2);
     break;
