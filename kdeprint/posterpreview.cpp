@@ -100,11 +100,11 @@ void PosterPreview::updatePoster()
 
 	m_buffer = "";
 	delete m_process;
-    m_process = new KProcess;
+	m_process = new KProcess;
 	*m_process << "poster" << "-F" << "-m" + m_mediasize << "-p" + m_postersize
 		<< "-c" + QString::number( m_cutmargin ) + '%';
-    m_process->setOutputChannelMode( KProcess::OnlyStderrChannel );
-    m_process->start();
+	m_process->setOutputChannelMode( KProcess::OnlyStderrChannel );
+	m_process->start();
 	if ( !m_process->waitForFinished() )
 	{
 		m_rows = m_cols = 0;
