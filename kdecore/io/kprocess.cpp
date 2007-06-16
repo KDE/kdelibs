@@ -55,35 +55,24 @@ void KProcessPrivate::writeAll(const QByteArray &buf, int fd)
 #endif
 }
 
-void KProcessPrivate::forwardStd(KProcess::ProcessChannel good, KProcess::ProcessChannel bad, int fd)
+void KProcessPrivate::forwardStd(KProcess::ProcessChannel good, int fd)
 {
     Q_Q(KProcess);
 
-    if (q->readChannel() == good)
-        writeAll(q->readAll(), fd);
-    else {
-        // workaround for QProcess dropping the read buffer on channel switch
-        int ba = q->bytesAvailable();
-        QByteArray buf = q->read(ba);
-
-        q->setReadChannel(good);
-        writeAll(q->readAll(), fd);
-        q->setReadChannel(bad);
-
-        // how "efficient" ...
-        for (int i = ba; --i >= 0;)
-            q->ungetChar(buf[i]);
-    }
+    QProcess::ProcessChannel oc = q->readChannel();
+    q->setReadChannel(good);
+    writeAll(q->readAll(), fd);
+    q->setReadChannel(oc);
 }
 
 void KProcessPrivate::_k_forwardStdout()
 {
-    forwardStd(KProcess::StandardOutput, KProcess::StandardError, STD_OUTPUT_HANDLE);
+    forwardStd(KProcess::StandardOutput, STD_OUTPUT_HANDLE);
 }
 
 void KProcessPrivate::_k_forwardStderr()
 {
-    forwardStd(KProcess::StandardError, KProcess::StandardOutput, STD_ERROR_HANDLE);
+    forwardStd(KProcess::StandardError, STD_ERROR_HANDLE);
 }
 
 /////////////////////////////
@@ -137,6 +126,21 @@ KProcess::OutputChannelMode KProcess::outputChannelMode() const
     Q_D(const KProcess);
 
     return d->outputChannelMode;
+}
+
+// this exists solely for the purpose of working around qprocess breakage
+void KProcess::setReadChannel(ProcessChannel channel)
+{
+    Q_D(KProcess);
+
+    if (readChannel() != channel) {
+        QByteArray b = readAll();
+        QProcess::setReadChannel(channel);
+        // how "efficient" ...
+        for (int i = d->otherBuf.size(); --i >= 0;)
+            ungetChar(d->otherBuf[i]);
+        d->otherBuf = b;
+    }
 }
 
 void KProcess::setNextOpenMode(QIODevice::OpenMode mode)

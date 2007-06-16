@@ -32,7 +32,7 @@ protected:
     {
     }
     void writeAll(const QByteArray &buf, int fd);
-    void forwardStd(KProcess::ProcessChannel good, KProcess::ProcessChannel bad, int fd);
+    void forwardStd(KProcess::ProcessChannel good, int fd);
     void _k_forwardStdout();
     void _k_forwardStderr();
 
@@ -40,6 +40,7 @@ protected:
     QStringList args;
     KProcess::OutputChannelMode outputChannelMode;
     QIODevice::OpenMode openMode;
+    QByteArray otherBuf;
 
     KProcess *q_ptr;
 };
