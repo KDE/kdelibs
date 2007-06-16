@@ -37,13 +37,13 @@ AudioOutputAdaptor::~AudioOutputAdaptor()
 double AudioOutputAdaptor::volume() const
 {
     // get the value of property volume
-    return qvariant_cast<float>(parent()->property("volume"));
+    return qvariant_cast<qreal>(parent()->property("volume"));
 }
 
 void AudioOutputAdaptor::setVolume(double value)
 {
     // set the value of property volume
-    parent()->setProperty("volume", QVariant::fromValue(static_cast<float>(value)));
+    parent()->setProperty("volume", QVariant::fromValue(static_cast<qreal>(value)));
 }
 
 bool AudioOutputAdaptor::muted() const
@@ -74,4 +74,4 @@ QString AudioOutputAdaptor::name()
 }
 
 
-#include "audiooutputadaptor.moc"
+#include "moc_audiooutputadaptor.cpp"
