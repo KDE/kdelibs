@@ -468,14 +468,20 @@ extern KLocalizedString KDECORE_EXPORT ki18np (const char *singular, const char 
 extern KLocalizedString KDECORE_EXPORT ki18ncp (const char *ctxt, const char *singular, const char *plural);
 
 /**
- * Qt's uic generates i18n( "msg", "comment" ) calls which conflict
- * with our i18n method. We use uic -tr tr2i18n to redirect
- * to the right i18n() function
+ * Qt's uic generated translation calls go through numerous indirections
+ * unnecessary in our case. So we use uic -tr tr2i18n to redirect them
+ * to our i18n API.
 **/
-inline QString tr2i18n(const char* message, const char* =0) {
-    if (!message || !message[0])
+inline QString tr2i18n (const char *message, const char *comment) {
+    if (comment && comment[0] && message && message[0]) {
+        return ki18nc(comment, message).toString();
+    }
+    else if (message && message[0]) {
+        return ki18n(message).toString();
+    }
+    else {
         return QString();
-    return ki18n(message).toString();
+    }
 }
 
 #ifndef NDEBUG
