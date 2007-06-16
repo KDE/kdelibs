@@ -62,7 +62,7 @@ install(TARGETS phonon  DESTINATION ${LIB_INSTALL_DIR} )
 ########### install files ###############
 
 install( FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/phonon_export.h
+	phonon_export.h
 	objectdescription.h
 	objectdescriptionmodel.h
 	phononnamespace.h
