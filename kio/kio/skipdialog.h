@@ -28,8 +28,6 @@ namespace KIO {
 
   enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
 
-  KIO_EXPORT SkipDialog_Result open_SkipDialog( bool _multi, const QString& _error_text = QString() );
-
 /**
  * @internal
  */
