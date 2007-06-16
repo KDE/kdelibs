@@ -75,7 +75,7 @@ namespace Nepomuk {
 	 *
 	 * \sa \ref knepservice
 	 */
-	class NEPOMUK_EXPORT ServicePublisher : public QObject
+	class NEPOMUK_MIDDLEWARE_EXPORT ServicePublisher : public QObject
 	    {
 		Q_OBJECT
 

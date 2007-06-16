@@ -43,7 +43,7 @@ namespace Nepomuk {
      *
      * \see Result
      */
-    class NEPOMUK_EXPORT Message
+    class NEPOMUK_MIDDLEWARE_EXPORT Message
       {
       public:
 	/**

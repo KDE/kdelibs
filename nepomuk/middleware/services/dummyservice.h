@@ -31,7 +31,7 @@
 namespace Nepomuk {
     namespace Middleware {
 	namespace Services {
-	    class NEPOMUK_EXPORT DummyServicePublisher : public ServicePublisher
+	    class NEPOMUK_MIDDLEWARE_EXPORT DummyServicePublisher : public ServicePublisher
             {
                 Q_OBJECT
 
@@ -45,7 +45,7 @@ namespace Nepomuk {
 	}
 
 	namespace DBus {
-	    class NEPOMUK_EXPORT DummyServicePublisherInterface : public ServicePublisherInterface
+	    class NEPOMUK_MIDDLEWARE_EXPORT DummyServicePublisherInterface : public ServicePublisherInterface
             {
                 Q_OBJECT
                 Q_CLASSINFO("D-Bus Interface", "org.semanticdesktop.nepomuk.services.DummyService")

@@ -51,7 +51,7 @@ namespace Nepomuk {
 	 * qs.executeQuery( ... );
 	 * \endcode
 	 */
-	class NEPOMUK_EXPORT ServiceWrapper
+	class NEPOMUK_MIDDLEWARE_EXPORT ServiceWrapper
 	    {
 	    public:
 		ServiceWrapper( Service* );

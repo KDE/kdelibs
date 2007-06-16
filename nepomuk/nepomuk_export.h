@@ -25,11 +25,21 @@
 
 #ifndef NEPOMUK_EXPORT
 # if defined(MAKE_NEPOMUK_LIB)
-   /* We are building this library */ 
+   /* We are building this library */
 #  define NEPOMUK_EXPORT KDE_EXPORT
 # else
-   /* We are using this library */ 
+   /* We are using this library */
 #  define NEPOMUK_EXPORT KDE_IMPORT
+# endif
+#endif
+
+#ifndef NEPOMUK_MIDDLEWARE_EXPORT
+# if defined(MAKE_NEPOMUK_MIDDLEWARE_LIB)
+   /* We are building this library */
+#  define NEPOMUK_MIDDLEWARE_EXPORT KDE_EXPORT
+# else
+   /* We are using this library */
+#  define NEPOMUK_MIDDLEWARE_EXPORT KDE_IMPORT
 # endif
 #endif
 

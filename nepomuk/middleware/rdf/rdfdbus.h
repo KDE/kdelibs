@@ -33,14 +33,14 @@
 #include <QtCore/QList>
 
 
-NEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::RDF::QueryResultTable& );
-NEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::RDF::QueryResultTable& );
+NEPOMUK_MIDDLEWARE_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::RDF::QueryResultTable& );
+NEPOMUK_MIDDLEWARE_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::RDF::QueryResultTable& );
 
-NEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& );
-NEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& );
+NEPOMUK_MIDDLEWARE_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& );
+NEPOMUK_MIDDLEWARE_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& );
 
-NEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Statement& );
-NEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Statement& );
+NEPOMUK_MIDDLEWARE_EXPORT QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Statement& );
+NEPOMUK_MIDDLEWARE_EXPORT const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Statement& );
 
 
 Q_DECLARE_METATYPE(Soprano::Node)

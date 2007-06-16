@@ -55,7 +55,7 @@ namespace Nepomuk {
 	 * qs.addStatement( ... );
 	 * \endcode
 	 */
-	class NEPOMUK_EXPORT RDFRepository : public Middleware::ServiceWrapper
+	class NEPOMUK_MIDDLEWARE_EXPORT RDFRepository : public Middleware::ServiceWrapper
 	    {
 	    public:
 		RDFRepository( Middleware::Service* );

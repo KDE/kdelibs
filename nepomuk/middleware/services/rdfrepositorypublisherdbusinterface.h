@@ -39,7 +39,7 @@ namespace Nepomuk {
 	class RDFRepositoryPublisher;
 
 	namespace DBus {
-	    class NEPOMUK_EXPORT RDFRepositoryPublisherInterface : public Middleware::DBus::ServicePublisherInterface
+	    class NEPOMUK_MIDDLEWARE_EXPORT RDFRepositoryPublisherInterface : public Middleware::DBus::ServicePublisherInterface
             {
                 Q_OBJECT
                 Q_CLASSINFO("D-Bus Interface", "org.semanticdesktop.nepomuk.services.RDFRepository")

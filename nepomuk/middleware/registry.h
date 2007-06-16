@@ -47,7 +47,7 @@ namespace Nepomuk {
 	 *
 	 * FIXME: introduce some status methos which checks if the registry is actually available.
 	 */
-	class NEPOMUK_EXPORT Registry : public QObject
+	class NEPOMUK_MIDDLEWARE_EXPORT Registry : public QObject
 	    {
 		Q_OBJECT
 	    

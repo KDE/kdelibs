@@ -46,7 +46,7 @@ namespace Nepomuk {
 	 *
 	 * \sa ServiceWrapper, Registry, \ref knepclient
 	 */
-	class NEPOMUK_EXPORT Service : public QObject
+	class NEPOMUK_MIDDLEWARE_EXPORT Service : public QObject
 	    {
 		Q_OBJECT
 

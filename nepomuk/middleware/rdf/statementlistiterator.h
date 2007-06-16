@@ -50,7 +50,7 @@ namespace Nepomuk {
 	 *   doSomething( it.next() );
 	 * \endcode
 	 */
-	class NEPOMUK_EXPORT StatementListIterator
+	class NEPOMUK_MIDDLEWARE_EXPORT StatementListIterator
 	    {
 	    public:
 		/**

@@ -113,7 +113,7 @@ namespace Nepomuk {
 	 * serialization is already taking much space using SOAP, so keeping RDF values
 	 * in strings is a fallback.
 	 */
-	class NEPOMUK_EXPORT RDFRepositoryPublisher : public Middleware::ServicePublisher
+	class NEPOMUK_MIDDLEWARE_EXPORT RDFRepositoryPublisher : public Middleware::ServicePublisher
 	    {
 		Q_OBJECT
 

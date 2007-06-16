@@ -39,10 +39,10 @@ namespace Nepomuk {
 	    /**
 	     * Converts a Nepomuk service URI into a DBus service name.
 	     */
-	    NEPOMUK_EXPORT QString dbusServiceFromUrl( const QString& url );
+	    NEPOMUK_MIDDLEWARE_EXPORT QString dbusServiceFromUrl( const QString& url );
 
-	    NEPOMUK_EXPORT QString dbusObjectFromType( const QString& url );
-	    NEPOMUK_EXPORT QString dbusInterfaceFromType( const QString& url );
+	    NEPOMUK_MIDDLEWARE_EXPORT QString dbusObjectFromType( const QString& url );
+	    NEPOMUK_MIDDLEWARE_EXPORT QString dbusInterfaceFromType( const QString& url );
 	}
     }
 }
