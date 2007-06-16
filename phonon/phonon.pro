@@ -52,7 +52,6 @@ HEADERS += abstractaudiooutput.h \
            mediaobjectinterface.h \
            mediasource.h \
            mediasource_p.h \
-           modeltest.h \
            objectdescription.h \
            objectdescription_p.h \
            objectdescriptionmodel.h \
@@ -96,7 +95,6 @@ SOURCES += abstractaudiooutput.cpp \
            mediacontroller.cpp \
            mediaobject.cpp \
            mediasource.cpp \
-           modeltest.cpp \
            objectdescription.cpp \
            objectdescriptionmodel.cpp \
            phononnamespace.cpp \
