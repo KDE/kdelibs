@@ -21,12 +21,6 @@
 #ifndef OXYGEN_STYLE_H
 #define OXYGEN_STYLE_H
 
-class QAbstractButton;
-class QHeaderView;
-class QMenuBar;
-class QPushButton;
-class QScrollBar;
-class QTabBar;
 class DynamicBrush;
 class QPaintEvent;
 class QFrame;

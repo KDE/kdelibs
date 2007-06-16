@@ -22,7 +22,6 @@
 #define DYNAMICBRUSH_H
 
 class QTimer;
-class QImage;
 class QRect;
 class QGLWidget;
 
