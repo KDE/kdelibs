@@ -48,7 +48,7 @@ void AudioOutputDeviceTest::sensibleValues()
         b = AudioOutputDevice::fromIndex(10001);
         QCOMPARE(b.isValid(), true);
         QCOMPARE(b.index(), 10001);
-        QCOMPARE(b.name(), QString("USB Headset"));
+        QCOMPARE(b.name(), QString("USB Soundcard"));
         QCOMPARE(b.description(), QString());
         QCOMPARE(a.isValid(), false);
         a = c;
