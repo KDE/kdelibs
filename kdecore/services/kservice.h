@@ -41,6 +41,7 @@ class KDesktopFile;
  *
  * For a tutorial on how to build a plugin-loading mechanism and how to write plugins
  * in general, see http://developer.kde.org/documentation/tutorials/developing-a-plugin-structure/index.html#developing_plugins
+ * (todo: port to kde4, create techbase article)
  *
  * @see KServiceType
  * @see KServiceGroup

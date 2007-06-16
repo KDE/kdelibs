@@ -22,47 +22,49 @@
 #include "kservice.h"
 
 /**
- * A Trader interface, similar to the CORBA Trader.
+ * KDE's trader interface (similar to the CORBA Trader), which provides a way
+ * to query the KDE infrastructure for specific applications or components.
  *
- * Basically, it provides a way for an application to query
+ * Basically, KServiceTypeTrader provides a way for an application to query
  * all KDE services (that is, applications, components, plugins) that match
- * a specific set of requirements. This allows you to find such services
- * in real-time without you having to hard-code their names and/or paths.
+ * a specific set of requirements. This allows to find specific services
+ * at run-time without having to hard-code their names and/or paths.
  *
  * For anything relating to mimetypes (type of files), ignore KServiceTypeTrader
  * and use KMimeTypeTrader instead.
  *
- * \par Examples
+ * \par Example
  *
- * As an example: if you want to find all plugins for your application,
+ * If you want to find all plugins for your application,
  * you would define a KMyApp/Plugin servicetype, and then you can query
  * the trader for it:
  * \code
- * KService::List offers = KServiceTypeTrader::self()->query("KMyApp/Plugin");
+ * KService::List offers =
+ *     KServiceTypeTrader::self()->query("KMyApp/Plugin");
  * \endcode
  *
  * You can add a constraint in the "trader query language". For instance:
  * \code
- * KServiceTypeTrader::self()->query("KMyApp/Plugin", "[X-KMyApp-InterfaceVersion] > 15");
+ * KServiceTypeTrader::self()->query("KMyApp/Plugin",
+ *                                   "[X-KMyApp-InterfaceVersion] > 15");
  * \endcode
  *
  * Please note that when including property names containing arithmetic operators like - or +, then you have
  * to put brackets around the property name, in order to correctly separate arithmetic operations from
  * the name. So for example a constraint expression like
- *  X-KMyApp-InterfaceVersion > 4
+ * \code
+ * X-KMyApp-InterfaceVersion > 4 // wrong!
+ * \endcode
  * needs to be written as
+ * \code
  * [X-KMyApp-InterfaceVersion] > 4
+ * \endcode
  * otherwise it could also be interpreted as
  * Substract the numeric value of the property "KMyApp" and "InterfaceVersion" from the
- * property "X" and make sure it is greater than 4.
+ * property "X" and make sure it is greater than 4.\n
  * Instead of the other meaning, make sure that the numeric value of "X-KMyApp-InterfaceVersion" is
  * greater than 4.
  *
- * Please read http://developer.kde.org/documentation/library/kdeqt/tradersyntax.html for
- * a more complete description of the trader language syntax.
- *
- * @short Provides a way to query the KDE infrastructure for specific
- *        applications or components.
  * @see KMimeTypeTrader, KService
  */
 class KDECORE_EXPORT KServiceTypeTrader

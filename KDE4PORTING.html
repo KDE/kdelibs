@@ -2096,9 +2096,9 @@ to pass a KUrl to most methods instead.</li>
 
 <h4>KServiceTypeProfile</h4>
 <ul>
-<li>This class has been moved to kservicetypeprofile.h and is mostly internal now. Use KTrader or KMimeTypeTrader instead.</li>
-<li>KServiceTypeProfile::preferredService is now KMimeTypeTrader::self()-&gt;preferredService or KTrader::self()-&gt;preferredService</li>
-<li>KServiceTypeProfile::offers is now KMimeTypeTrader::self()-&gt;query or KTrader::self()-&gt;query</li>
+<li>This class has been moved to kservicetypeprofile.h and is mostly internal now. Use KServiceTypeTrader or KMimeTypeTrader instead.</li>
+<li>KServiceTypeProfile::preferredService is now KMimeTypeTrader::self()-&gt;preferredService or KServiceTypeTrader::self()-&gt;preferredService</li>
+<li>KServiceTypeProfile::offers is now KMimeTypeTrader::self()-&gt;query or KServiceTypeTrader::self()-&gt;query</li>
 </ul>
 
 <h4>KTrader</h4>
@@ -2107,7 +2107,7 @@ to pass a KUrl to most methods instead.</li>
 <li>So KTrader::query() should be ported to KMimeTypeTrader::query() when it's about mimetypes
 (finding the application or part for a given mimetype), and to KServiceTypeTrader::query() when
 it's about pure service types (plugins, kcmodules, etc.)</li>
-<li>In other terms, KTrader::query(1 or 2 args) -&gt; KServiceTypeTypeTrader::query and
+<li>In other terms, KTrader::query(1 or 2 args) -&gt; KServiceTypeTrader::query and
                     KTrader::query(4 args but the last one was always QString::null) -&gt; KMimeTypeTrader::query</li>
 <li>In both cases, query() now returns KService::List instead of an OfferList, adjust the type of the variable</li>
 <li>Constraints like "'RenameDlg/Plugin' in ServiceTypes" should be turned into

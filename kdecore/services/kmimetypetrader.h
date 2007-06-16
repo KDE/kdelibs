@@ -24,21 +24,22 @@
 class KServiceOffer;
 
 /**
- * A trader for services associated to a given mimetype.
- * Service means Application or Component/Plugin, see KService.
+ * KDE's trader for services associated to a given mimetype.
+ * 
+ * Note: If Service means Application or Component/Plugin, see
+ * KServiceTypeTrader and KService.
  *
  * Example: say that you want to the list of all KParts components that can handle HTML.
  * Our code would look like:
  * \code
- * KServiceOfferList lst = KMimeTypeTrader::self()->query("text/html", "KParts/ReadOnlyPart");
+ * KServiceOfferList lst = KMimeTypeTrader::self()->query("text/html",
+ *                                                        "KParts/ReadOnlyPart");
  * \endcode
  *
  * If you want to get the preferred KParts component for text/html you could use
  * preferredService("text/html", "KParts/ReadOnlyPart"), although if this is about
  * loading that component you would rather use KParts::ComponentFactory directly.
  *
- * @short Provides a way to query the KDE infrastructure for
- *        applications or components that can handle a specific mimetype.
  * @see KServiceTypeTrader, KService
  */
 class KDECORE_EXPORT KMimeTypeTrader
