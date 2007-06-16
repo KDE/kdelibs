@@ -103,6 +103,10 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     setItemDelegate(new KFilePlacesViewDelegate(this));
 
+    QPalette palette = viewport()->palette();
+    palette.setColor(viewport()->backgroundRole(), Qt::transparent);
+    viewport()->setPalette(palette);
+
     connect(this, SIGNAL(clicked(const QModelIndex&)),
             this, SLOT(_k_placeClicked(const QModelIndex&)));
     connect(this, SIGNAL(activated(const QModelIndex&)),
