@@ -1,7 +1,5 @@
 # Those apply to all subdirs
-include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR}/solid)
-
-configure_file(phonon_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/phonon_export.h)
+include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_BINARY_DIR}/solid)
 
 add_subdirectory( tests )
 add_subdirectory( kcm )

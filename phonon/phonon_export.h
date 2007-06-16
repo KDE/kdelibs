@@ -1,5 +1,4 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2007 David Faure <faure@kde.org>
     Copyright (C) 2007 Matthias Kretz <kretz@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -21,43 +20,20 @@
 #ifndef PHONON_EXPORT_H
 #define PHONON_EXPORT_H
 
-#ifndef __KDE_HAVE_GCC_VISIBILITY
-#cmakedefine __KDE_HAVE_GCC_VISIBILITY
-#endif
+#include <QtCore/QtGlobal>
 
-#ifdef PHONON_EXPORT
-  /* We are building a test case */
-# define PHONON_NO_EXPORT
-
-#else
-  /* We are not building a test case */
-
-# ifdef __KDE_HAVE_GCC_VISIBILITY
-
-#  define PHONON_NO_EXPORT __attribute__ ((visibility("hidden")))
-#  define PHONON_EXPORT __attribute__ ((visibility("default")))
-
-# elif defined(_WIN32) || defined(_WIN64)
-
-#  define PHONON_NO_EXPORT
-#  if defined(MAKE_PHONON_LIB)
-    /* We are building this library */
-#   define PHONON_EXPORT __declspec(dllexport)
-#  else
-    /* We are using this library */
-#   define PHONON_EXPORT __declspec(dllimport)
-#  endif
-
+#ifndef PHONON_EXPORT
+# ifdef phonon_EXPORTS
+                                       /* We are building this library */
+#  define PHONON_EXPORT Q_DECL_EXPORT
 # else
-
-#  define PHONON_NO_EXPORT
-#  define PHONON_EXPORT
-
+                                       /* We are using this library */
+#  define PHONON_EXPORT Q_DECL_IMPORT
 # endif
 #endif
 
 #ifndef PHONON_EXPORT_DEPRECATED
-# define PHONON_EXPORT_DEPRECATED KDE_DEPRECATED PHONON_EXPORT
+# define PHONON_EXPORT_DEPRECATED Q_DECL_DEPRECATED PHONON_EXPORT
 #endif
 
 #endif
