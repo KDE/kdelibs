@@ -472,7 +472,7 @@ extern KLocalizedString KDECORE_EXPORT ki18ncp (const char *ctxt, const char *si
  * unnecessary in our case. So we use uic -tr tr2i18n to redirect them
  * to our i18n API.
 **/
-inline QString tr2i18n (const char *message, const char *comment) {
+inline QString tr2i18n (const char *message, const char *comment = 0) {
     if (comment && comment[0] && message && message[0]) {
         return ki18nc(comment, message).toString();
     }
