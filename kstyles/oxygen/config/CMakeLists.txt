@@ -1,5 +1,4 @@
-project(kstyle-oxygen-config)
-
+include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 ########### next target ###############
 
