@@ -45,14 +45,14 @@
 #include <kmenu.h>
 #include <kiconloader.h>
 #include <kapplication.h>
-#include <k3process.h>
+#include <kprocess.h>
 
 #include <kio/passworddialog.h>
 
 using namespace KNS;
 
 KDXSButton::KDXSButton(QWidget *parent)
-: QToolButton(parent)
+: QToolButton(parent), d(0)
 {
 	m_entry = 0;
 	m_provider = 0;
@@ -455,12 +455,10 @@ void KDXSButton::slotTriggered(QAction *action)
 	if(action == action_contactbyjabber)
 	{
 		// FIXME: use real data
-		QString address = "josef@jabber.org";
-		K3Process proc;
-		proc << "kopete";
-		proc << "--autoconnect";
-		proc << address;
-		proc.start(K3Process::DontCare);
+		QString address = QLatin1String("josef@jabber.org");
+		// FIXME: search for kopete in kde paths?
+		QStringList args = QStringList() << QLatin1String("--autoconnect") << address;
+		KProcess::startDetached(QLatin1String("kopete"), args);
 	}
 	if(action == action_collabtranslation)
 	{

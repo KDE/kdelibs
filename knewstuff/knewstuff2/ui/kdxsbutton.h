@@ -63,7 +63,7 @@ public Q_SLOTS:
 	void slotTriggered(QAction *action);
 	void slotVersionsActivated(int id);
 	void slotVersionsHighlighted(int id);
-        void slotClicked();
+	void slotClicked();
 
 	void slotInfo(QString provider, QString server, QString version);
 	void slotCategories(QList<KNS::Category*> categories);
@@ -143,6 +143,9 @@ private:
 
 	QString m_username;
 	QString m_password;
+	
+	class Private;
+	Private * const d;
 };
 
 }
