@@ -67,7 +67,7 @@ VideoPlayer::VideoPlayer(Phonon::Category category, QWidget *parent)
     d->player->addAudioPath(d->apath);
     d->player->addVideoPath(d->vpath);
 
-    connect(d->player, SIGNAL(_k_stateChanged(Phonon::State, Phonon::State)),
+    connect(d->player, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
             SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
     connect(d->player, SIGNAL(finished()), SIGNAL(finished()));
 }
