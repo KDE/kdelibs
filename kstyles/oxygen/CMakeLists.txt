@@ -38,9 +38,9 @@ target_link_libraries( kstyle-oxygen
 	${X11_Xrandr_LIB}
 	${X11_XTest_LIB}
 	${X11_LIBRARIES}
+	${OPENGL_LIBRARIES}
 #	freetype
 #	fontconfig
-	GLU GL
 )
 
 install( TARGETS kstyle-oxygen DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/styles/ )

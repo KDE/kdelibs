@@ -34,7 +34,7 @@ include (MacroLibrary)
 macro_optional_find_package(BZip2)
 macro_optional_find_package(OpenSSL)
 macro_optional_find_package(Gettext)
-
+macro_optional_find_package(OpenGL)
 
 #########################################################################
 # Disallow in-source build
