@@ -36,10 +36,8 @@ struct KPtyPrivate {
     KPtyPrivate();
     bool chownpty(bool grant);
 
-    bool echo    : 1;
     int masterFd;
     int slaveFd;
-    struct winsize winSize;
 
     QByteArray ttyName;
 

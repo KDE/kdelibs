@@ -130,20 +130,27 @@ public:
    * Change the logical (screen) size of the pty.
    * The default is 24 lines by 80 columns.
    *
+   * This function can be used only while the PTY is open.
+   *
    * @param lines the number of rows
    * @param columns the number of columns
+   * @return @c true on success, false otherwise
    */
-  void setWinSize(int lines, int columns);
+  bool setWinSize(int lines, int columns);
 
   /**
    * Set whether the pty should echo input.
    *
    * Echo is on by default.
-   * It should disabled for automatically feeded (non-interactive) PTYs.
+   * If the output of automatically feeded (non-interactive) PTY clients
+   * needs to be parsed, disabling echo often makes it much simpler.
+   *
+   * This function can be used only while the PTY is open.
    *
    * @param echo true if input should be echoed.
+   * @return @c true on success, false otherwise
    */
-  void setEcho(bool echo);
+  bool setEcho(bool echo);
 
   /**
    * @return the name of the slave pty device.

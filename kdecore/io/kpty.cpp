@@ -141,12 +141,8 @@ public:
 //////////////////
 
 KPtyPrivate::KPtyPrivate() :
-    echo(true),
     masterFd(-1), slaveFd(-1)
 {
-    memset(&winSize, 0, sizeof(winSize));
-    winSize.ws_row = 24;
-    winSize.ws_col = 80;
 }
 
 bool KPtyPrivate::chownpty(bool grant)
@@ -185,10 +181,6 @@ bool KPty::open()
     return true;
 
   QByteArray ptyName;
-  // without the '::' some version of HP-UX thinks, this declares
-  // the struct in this class, in this method, and fails to find
-  // the correct tc[gs]etattr
-  struct ::termios ttmode;
 
   // Find a master pty that we can open ////////////////////////////////
 
@@ -317,23 +309,7 @@ bool KPty::open()
   ioctl(d->slaveFd, I_PUSH, "ldterm");
 #endif
 
-  // set xon/xoff & control keystrokes
-  _tcgetattr(d->masterFd, &ttmode);
-
 gotptyandmode:
-  if (!d->echo)
-    ttmode.c_lflag &= ~ECHO;
-  else
-    ttmode.c_lflag |= ECHO;
-
-  ttmode.c_cc[VINTR] = CTRL('C' - '@');
-  ttmode.c_cc[VQUIT] = CTRL('\\' - '@');
-  ttmode.c_cc[VERASE] = 0177;
-
-  _tcsetattr(d->masterFd, &ttmode);
-
-  // set screen size
-  ioctl(d->masterFd, TIOCSWINSZ, (char *)&d->winSize);
 
   fcntl(d->masterFd, F_SETFD, FD_CLOEXEC);
   fcntl(d->slaveFd, F_SETFD, FD_CLOEXEC);
@@ -494,33 +470,27 @@ bool KPty::tcSetAttr(struct ::termios *ttmode)
     return _tcsetattr(d->masterFd, ttmode) == 0;
 }
 
-void KPty::setWinSize(int lines, int columns)
-{
-  Q_D(KPty);
-
-  d->winSize.ws_row = (unsigned short)lines;
-  d->winSize.ws_col = (unsigned short)columns;
-  if (d->masterFd >= 0)
-    ioctl( d->masterFd, TIOCSWINSZ, (char *)&d->winSize );
-}
-
-void KPty::setEcho(bool echo)
+bool KPty::setWinSize(int lines, int columns)
 {
     Q_D(KPty);
 
-    d->echo = echo;
-    if (d->masterFd >= 0) {
-        struct ::termios ttmode;
+    struct winsize winSize;
+    memset(&winSize, 0, sizeof(winSize));
+    winSize.ws_row = (unsigned short)lines;
+    winSize.ws_col = (unsigned short)columns;
+    return ioctl(d->masterFd, TIOCSWINSZ, (char *)&winSize) == 0;
+}
 
-        _tcgetattr(d->masterFd, &ttmode);
-
-        if (!echo)
-            ttmode.c_lflag &= ~ECHO;
-        else
-            ttmode.c_lflag |= ECHO;
-
-        _tcsetattr(d->masterFd, &ttmode);
-    }
+bool KPty::setEcho(bool echo)
+{
+    struct ::termios ttmode;
+    if (!tcGetAttr(&ttmode))
+        return false;
+    if (!echo)
+        ttmode.c_lflag &= ~ECHO;
+    else
+        ttmode.c_lflag |= ECHO;
+    return tcSetAttr(&ttmode);
 }
 
 const char *KPty::ttyName() const
