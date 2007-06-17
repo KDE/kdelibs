@@ -25,7 +25,7 @@
 #define KJAVAPROCESS_H
 
 #include <khtml_export.h>
-#include <k3process.h>
+#include <kprocess.h>
 
 /**
  * @short A class for invoking a Java VM
@@ -39,7 +39,7 @@
  */
 
 class KJavaProcessPrivate;
-class KHTML_EXPORT KJavaProcess : public K3Process //QObject
+class KHTML_EXPORT KJavaProcess : public KProcess //QObject
 {
 Q_OBJECT
 
@@ -48,7 +48,7 @@ public:
      * Creates a process object, the process is NOT invoked at this point.
      * You should first set the process's parameters, and then call startJava.
      */
-    KJavaProcess();
+    KJavaProcess( QObject *parent = 0 );
     virtual ~KJavaProcess();
 
     /**
@@ -124,33 +124,22 @@ public:
 
 protected Q_SLOTS:
     /**
-     * This slot is called whenever something is written to stdin of the process.
-     * It's called again to make sure we keep emptying out the buffer that contains
-     * the messages we need send.
-     */
-    void slotWroteData();
-
-    /**
      * This slot is called when the Java Process writes to standard out.  We then
      * process the data from the file descriptor that is passed to us and send the
      * command to the AppletServer
      */
-    void slotReceivedData( int, int& );
+    void slotReceivedData();
     /**
      * This slot is called when the Java Process exited.
      */
-    void slotExited( K3Process *process );
+    void slotExited();
 
 protected:
     virtual bool invokeJVM();
     virtual void killJVM();
 
-    QByteArray* addArgs( char cmd_code, const QStringList& args );
-    void        popBuffer();
-    void        sendBuffer( QByteArray* buff );
+    QByteArray  addArgs( char cmd_code, const QStringList& args );
     void        storeSize( QByteArray* buff );
-
-    K3Process* javaProcess;
 
 Q_SIGNALS:
     void received( const QByteArray& );

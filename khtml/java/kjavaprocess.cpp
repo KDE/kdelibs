@@ -22,14 +22,13 @@
 #include "kjavaprocess.h"
 
 #include <kdebug.h>
+#include <kshell.h>
 #include <kio/kprotocolmanager.h>
 
 #include <QtCore/QTextStream>
 #include <QtCore/QMap>
 
 #include <config.h>
-
-#include <unistd.h>
 
 class KJavaProcessPrivate
 {
@@ -40,26 +39,18 @@ private:
     QString mainClass;
     QString extraArgs;
     QString classArgs;
-    QList<QByteArray*> BufferList;
     QMap<QString, QString> systemProps;
-    bool processKilled;
 };
 
-KJavaProcess::KJavaProcess() 
-	: K3Process(),
+KJavaProcess::KJavaProcess( QObject* parent )
+	: KProcess( parent ),
 	d(new KJavaProcessPrivate)
 
 {
-    d->processKilled = false;
-
-    javaProcess = this; //new K3Process();
-
-    connect( javaProcess, SIGNAL( wroteStdin( K3Process * ) ),
-             this, SLOT( slotWroteData() ) );
-    connect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
-             this, SLOT( slotReceivedData(int, int&) ) );
-    connect( javaProcess, SIGNAL( processExited (K3Process *) ),
-             this, SLOT( slotExited (K3Process *) ) );
+    connect( this, SIGNAL( readyReadStandardOutput() ),
+             this, SLOT( slotReceivedData() ) );
+    connect( this, SIGNAL( finished( int, QProcess::ExitStatus ) ),
+             this, SLOT( slotExited() ) );
 
     d->jvmPath = "java";
     d->mainClass = "-help";
@@ -67,20 +58,17 @@ KJavaProcess::KJavaProcess()
 
 KJavaProcess::~KJavaProcess()
 {
-    if ( isRunning() )
+    if ( state() != NotRunning )
     {
         kDebug(6100) << "stopping java process" << endl;
         stopJava();
     }
-	qDeleteAll(d->BufferList);
-	d->BufferList.clear();
-    //delete javaProcess;
     delete d;
 }
 
 bool KJavaProcess::isRunning()
 {
-   return javaProcess->isRunning();
+   return state() != NotRunning;
 }
 
 bool KJavaProcess::startJava()
@@ -125,11 +113,11 @@ void KJavaProcess::setClassArgs( const QString& args )
 }
 
 //Private Utility Functions used by the two send() methods
-QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
+QByteArray KJavaProcess::addArgs( char cmd_code, const QStringList& args )
 {
     //the buffer to store stuff, etc.
-    QByteArray* buff = new QByteArray();
-    QTextStream output( buff, QIODevice::ReadWrite );
+    QByteArray buff;
+    QTextStream output( &buff, QIODevice::ReadWrite );
     const char sep = 0;
 
     //make space for the command size: 8 characters...
@@ -172,23 +160,14 @@ void KJavaProcess::storeSize( QByteArray* buff )
         buff->data()[ i ] = size_ptr[i];
 }
 
-void KJavaProcess::sendBuffer( QByteArray* buff )
-{
-    d->BufferList.append( buff );
-    if( d->BufferList.count() == 1)
-    {
-        popBuffer();
-    }
-}
-
 void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
     if( isRunning() )
     {
-        QByteArray* const buff = addArgs( cmd_code, args );
-        storeSize( buff );
+        QByteArray buff = addArgs( cmd_code, args );
+        storeSize( &buff );
         kDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
-        sendBuffer( buff );
+        write( buff );
     }
 }
 
@@ -199,66 +178,22 @@ void KJavaProcess::send( char cmd_code, const QStringList& args,
     {
         kDebug(6100) << "KJavaProcess::send, qbytearray is size = " << data.size() << endl;
 
-        QByteArray* const buff = addArgs( cmd_code, args );
-        const int cur_size = buff->size();
-        const int data_size = data.size();
-        buff->resize( cur_size + data_size );
-        memcpy( buff->data() + cur_size, data.data(), data_size );
+        QByteArray buff = addArgs( cmd_code, args );
+        buff += data;
 
-        storeSize( buff );
-        sendBuffer( buff );
+        storeSize( &buff );
+        write( buff );
     }
 }
-
-void KJavaProcess::popBuffer()
-{
-    QByteArray* const buf = d->BufferList.first();
-    if( buf )
-    {
-//        DEBUG stuff...
-//	kDebug(6100) << "Sending buffer to java, buffer = >>";
-//        for( unsigned int i = 0; i < buf->size(); i++ )
-//        {
-//            if( buf->at(i) == (char)0 )
-//                kDebug(6100) << "<SEP>";
-//            else if( buf->at(i) > 0 && buf->at(i) < 10 )
-//                kDebug(6100) << "<CMD " << (int) buf->at(i) << ">";
-//            else
-//                kDebug(6100) << buf->at(i);
-//        }
-//        kDebug(6100) << "<<" << endl;
-
-        //write the data
-        if ( !javaProcess->writeStdin( buf->data(),
-                                       buf->size() ) )
-        {
-            kError(6100) << "Could not write command" << endl;
-        }
-    }
-}
-
-void KJavaProcess::slotWroteData( )
-{
-    //do this here- we can't free the data until we know it went through
-    d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
-    kDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
-
-    if ( !d->BufferList.isEmpty() )
-    {
-        popBuffer();
-    }
-}
-
 
 bool KJavaProcess::invokeJVM()
 {
-    
-    *javaProcess << d->jvmPath;
+    QStringList args;
 
     if( !d->classPath.isEmpty() )
     {
-        *javaProcess << "-classpath";
-        *javaProcess << d->classPath;
+        args << "-classpath";
+        args << d->classPath;
     }
 
     //set the system properties, iterate through the qmap of system properties
@@ -267,94 +202,55 @@ bool KJavaProcess::invokeJVM()
 
     for( ; it != itEnd; ++it )
     {
-        QString currarg;
-
         if( !it.key().isEmpty() )
         {
-            currarg = "-D" + it.key();
+            QString currarg = "-D" + it.key();
             if( !it.value().isEmpty() )
                 currarg += '=' + it.value();
+            args << currarg;
         }
-
-        if( !currarg.isEmpty() )
-            *javaProcess << currarg;
     }
 
     //load the extra user-defined arguments
     if( !d->extraArgs.isEmpty() )
     {
-        // BUG HERE: if an argument contains space (-Dname="My name")
-        // this parsing will fail. Need more sophisticated parsing -- use KShell?
-        const QStringList args = d->extraArgs.split( " " );
-        QStringList::ConstIterator it = args.begin();
-        const QStringList::ConstIterator itEnd = args.end();
-        for ( ; it != itEnd; ++it )
-            *javaProcess << *it;
+        int err;
+        args += KShell::splitArgs( d->extraArgs, KShell::AbortOnMeta, &err );
+        if( err != KShell::NoError )
+            kWarning(6100) << "Extra args for JVM cannot be parsed, arguments = " << d->extraArgs << endl;
+
     }
 
-    *javaProcess << d->mainClass;
+    args << d->mainClass;
 
     if ( !d->classArgs.isNull() )
-        *javaProcess << d->classArgs;
+        args << d->classArgs;
 
-    kDebug(6100) << "Invoking JVM now...with arguments = " << endl;
-    QString argStr;
-    QTextStream stream( &argStr, QIODevice::ReadWrite );
-    const QList<QByteArray> args = javaProcess->args();
-    QListIterator<QByteArray> bit(args);
-    while (bit.hasNext())
-	stream << bit.next();
-    kDebug(6100) << argStr << endl;
+    kDebug(6100) << "Invoking JVM now...with arguments = " << KShell::joinArgs(args) << endl;
 
-    K3Process::Communication flags =  (K3Process::Communication)
-                                     (K3Process::Stdin | K3Process::Stdout |
-                                      K3Process::NoRead);
-
-    const bool rval = javaProcess->start( K3Process::NotifyOnExit, flags );
-    if( rval )
-        javaProcess->resume(); //start processing stdout on the java process
-    else
-        killJVM();
-
-    return rval;
+    setProgram( d->jvmPath, args );
+    start();
+    return waitForFinished();
 }
 
 void KJavaProcess::killJVM()
 {
-   d->processKilled = true;
-   disconnect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
-               this, SLOT( slotReceivedData(int, int&) ) );
-   javaProcess->kill();
-}
-
-void KJavaProcess::flushBuffers()
-{
-    while ( !d->BufferList.isEmpty() ) {
-        if (innot)
-            slotSendData(0);
-        else
-            d->BufferList.removeFirst();  //note: AutoDelete is true
-    }
+   closeReadChannel( StandardOutput );
+   terminate();
 }
 
 /*  In this method, read one command and send it to the d->appletServer
  *  then return, so we don't block the event handling
  */
-void KJavaProcess::slotReceivedData( int fd, int& len )
+void KJavaProcess::slotReceivedData()
 {
     //read out the length of the message,
     //read the message and send it to the applet server
     char length[9] = { 0 };
-    const int num_bytes = ::read( fd, length, 8 );
-    if( !num_bytes )
-    {
-        len = 0;
-        return;
-    }
+    const int num_bytes = read( length, 8 );
     if( num_bytes == -1 )
     {
         kError(6100) << "could not read 8 characters for the message length!!!!" << endl;
-        len = 0;
         return;
     }
 
@@ -364,36 +260,31 @@ void KJavaProcess::slotReceivedData( int fd, int& len )
     if( !ok )
     {
         kError(6100) << "could not parse length out of: " << lengthstr << endl;
-        len = num_bytes;
         return;
     }
 
     //now parse out the rest of the message.
     char* const msg = new char[num_len];
-    const int num_bytes_msg = ::read( fd, msg, num_len );
+    const int num_bytes_msg = read( msg, num_len );
     if( num_bytes_msg == -1 || num_bytes_msg != num_len )
     {
         kError(6100) << "could not read the msg, num_bytes_msg = " << num_bytes_msg << endl;
         delete[] msg;
-        len = num_bytes;
         return;
     }
 
     emit received( QByteArray( msg, num_len ) );
     delete[] msg;
-    len = num_bytes + num_bytes_msg;
 }
 
-void KJavaProcess::slotExited( K3Process *process )
+void KJavaProcess::slotExited()
 {
-  if (process == javaProcess) {
     int status = -1;
-    if (!d->processKilled) {
-     status = javaProcess->exitStatus();
+    if ( exitStatus() == NormalExit ) {
+     status = exitCode();
     }
     kDebug(6100) << "jvm exited with status " << status << endl; 
     emit exited(status);
-  }
 }
 
 #include "kjavaprocess.moc"
