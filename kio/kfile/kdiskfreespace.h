@@ -64,27 +64,21 @@ public:
    static KDiskFreeSpace * findUsageInfo( const QString & path );
 
 Q_SIGNALS:
-   void foundMountPoint( const QString & mountPoint, unsigned long kBSize, unsigned long kBUsed, unsigned long kBAvail );
+   void foundMountPoint( const QString & mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail );
 
    // This one is a hack around a weird (compiler?) bug. In the former signal,
    // the slot in KPropertiessDialog would get 0L, 0L as the last two parameters.
    // When using const ulong& instead, all is ok.
-   void foundMountPoint( const unsigned long&, const unsigned long&, const unsigned long&, const QString& );
+   void foundMountPoint( const quint64&, const quint64&, const quint64&, const QString& );
    void done();
 
 private Q_SLOTS:
    void receivedDFStdErrOut(K3Process *, char *data, int len);
    void dfDone();
 
-#ifndef Q_OS_WIN
 private:
-  K3Process         *dfProc;
-  QByteArray          dfStringErrOut;
-  QString           m_mountPoint;
-  bool              readingDFStdErrOut;
-  class KDiskFreeSpacePrivate;
-  KDiskFreeSpacePrivate * d;
-#endif
+  class Private;
+  Private * const d;
 };
 /***************************************************************************/
 

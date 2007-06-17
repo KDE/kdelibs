@@ -42,20 +42,30 @@
 #define BLANK ' '
 #define FULL_PERCENT 95.0
 
+class KDiskFreeSpace::Private
+{
+    public:
+        Private(){}
+        K3Process  *dfProc;
+        QByteArray  dfStringErrOut;
+        QString     m_mountPoint;
+        bool        readingDFStdErrOut;
+};
+
 /***************************************************************************
   * constructor
 **/
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
-    : QObject(parent)
+    : QObject(parent), d(new Private())
 {
-    dfProc = new K3Process(); Q_CHECK_PTR(dfProc);
-    dfProc->setEnvironment("LANGUAGE", "C");
-    connect( dfProc, SIGNAL(receivedStdout(K3Process *, char *, int) ),
-             this, SLOT (receivedDFStdErrOut(K3Process *, char *, int)) );
-    connect(dfProc,SIGNAL(processExited(K3Process *) ),
+    d->dfProc = new K3Process(); Q_CHECK_PTR(dfProc);
+    d->dfProc->setEnvironment("LANGUAGE", "C");
+    connect(d->dfProc, SIGNAL(receivedStdout(K3Process *, char *, int)),
+            this, SLOT (receivedDFStdErrOut(K3Process *, char *, int)));
+    connect(d->dfProc,SIGNAL(processExited(K3Process *)),
             this, SLOT(dfDone() ) );
 
-    readingDFStdErrOut=false;
+    d->readingDFStdErrOut=false;
 }
 
 
@@ -64,7 +74,8 @@ KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
 **/
 KDiskFreeSpace::~KDiskFreeSpace()
 {
-    delete dfProc;
+    delete d->dfProc;
+    delete d;
 }
 
 /***************************************************************************
@@ -73,7 +84,7 @@ KDiskFreeSpace::~KDiskFreeSpace()
 void KDiskFreeSpace::receivedDFStdErrOut(K3Process *, char *data, int len)
 {
   QByteArray tmp(data,len+1);  // adds a zero-byte
-  dfStringErrOut.append(tmp);
+  d->dfStringErrOut.append(tmp);
 }
 
 /***************************************************************************
@@ -81,13 +92,13 @@ void KDiskFreeSpace::receivedDFStdErrOut(K3Process *, char *data, int len)
 **/
 int KDiskFreeSpace::readDF( const QString & mountPoint )
 {
-  if (readingDFStdErrOut || dfProc->isRunning())
+  if (d->readingDFStdErrOut || d->dfProc->isRunning())
     return -1;
-  m_mountPoint = mountPoint;
-  dfStringErrOut=""; // yet no data received
-  dfProc->clearArguments();
-  (*dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
-  if (!dfProc->start( K3Process::NotifyOnExit, K3Process::AllOutput ))
+  d->m_mountPoint = mountPoint;
+  d->dfStringErrOut=""; // yet no data received
+  d->dfProc->clearArguments();
+  (*d->dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
+  if (!d->dfProc->start( K3Process::NotifyOnExit, K3Process::AllOutput ))
      kError() << "could not execute ["<< DF_COMMAND << "]" << endl;
   return 1;
 }
@@ -98,9 +109,9 @@ int KDiskFreeSpace::readDF( const QString & mountPoint )
 **/
 void KDiskFreeSpace::dfDone()
 {
-  readingDFStdErrOut=true;
+  d->readingDFStdErrOut=true;
 
-  QTextStream t (dfStringErrOut, QIODevice::ReadOnly);
+  QTextStream t (d->dfStringErrOut, QIODevice::ReadOnly);
   QString s=t.readLine();
   if ( (s.isEmpty()) || ( !s.startsWith( QLatin1String("Filesystem") ) ) )
     kError() << "Error running df command... got [" << s << "]" << endl;
@@ -129,17 +140,17 @@ void KDiskFreeSpace::dfDone()
           s=s.remove(0,s.indexOf(BLANK)+1 ); // eat fs type
 
       u=s.left(s.indexOf(BLANK));
-      unsigned long kBSize = u.toULong();
+      quint64 kBSize = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
       //kDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
 
       u=s.left(s.indexOf(BLANK));
-      unsigned long kBUsed = u.toULong();
+      quint64 kBUsed = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
       //kDebug(kfile_area) << "    Used:       [" << kBUsed << "]" << endl;
 
       u=s.left(s.indexOf(BLANK));
-      unsigned long kBAvail = u.toULong();
+      quint64 kBAvail = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
       //kDebug(kfile_area) << "    Avail:       [" << kBAvail << "]" << endl;
 
@@ -148,7 +159,7 @@ void KDiskFreeSpace::dfDone()
       QString mountPoint = s.trimmed();
       //kDebug(kfile_area) << "    MountPoint:       [" << mountPoint << "]" << endl;
 
-      if ( mountPoint == m_mountPoint )
+      if ( mountPoint == d->m_mountPoint )
       {
         //kDebug(kfile_area) << "Found mount point. Emitting" << endl;
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
@@ -157,7 +168,7 @@ void KDiskFreeSpace::dfDone()
     }//if not header
   }//while further lines available
 
-  readingDFStdErrOut=false;
+  d->readingDFStdErrOut=false;
   emit done();
   deleteLater();
 }
@@ -175,8 +186,14 @@ KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )
 #include <QtCore/QDir>
 #include <windows.h>
 
+class KDiskFreeSpace::Private
+{
+    public:
+        Private(){}
+};
+
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
-    : QObject(parent)
+    : QObject(parent), d(0)
 {
 }
 
@@ -191,10 +208,10 @@ int KDiskFreeSpace::readDF( const QString & mountPoint )
     QFileInfo fi(mountPoint);
     QString dir = QDir::toNativeSeparators(fi.absoluteDir().canonicalPath());
 
-    if(GetDiskFreeSpaceEx((LPCWSTR)dir.utf16(),
-                          (PULARGE_INTEGER)&availUser,
-                          (PULARGE_INTEGER)&total,
-                          (PULARGE_INTEGER)&avail) != 0) {
+    if(GetDiskFreeSpaceExW((LPCWSTR)dir.utf16(),
+                           (PULARGE_INTEGER)&availUser,
+                           (PULARGE_INTEGER)&total,
+                           (PULARGE_INTEGER)&avail) != 0) {
         availUser = availUser / 1024;
         total = total / 1024;
         avail = avail / 1024;
