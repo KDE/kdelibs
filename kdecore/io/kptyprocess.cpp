@@ -36,7 +36,7 @@
 struct KPtyProcessPrivate : KProcessPrivate {
     KPtyProcessPrivate() :
         ptyChannels(KPtyProcess::NoChannels),
-        addUtmp(true)
+        addUtmp(false)
     {
     }
 

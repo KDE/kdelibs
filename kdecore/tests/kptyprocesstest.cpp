@@ -29,7 +29,6 @@ void KPtyProcessTest::test_pty_basic()
     KPtyProcess p;
     p.setShellCommand("read -s VAL; echo \"1: $VAL\"; echo \"2: $VAL\" >&2", "/bin/bash");
     p.setPtyChannels(KPtyProcess::AllChannels);
-    p.setUseUtmp(false);
     p.pty()->setEcho(false);
     p.start();
     p.pty()->write("test\n");
@@ -90,7 +89,6 @@ void KPtyProcessTest::test_pty_signals()
 {
     sp.setShellCommand("cat; sleep .1");
     sp.setPtyChannels(KPtyProcess::StdinChannel | KPtyProcess::StdoutChannel);
-    sp.setUseUtmp(false);
     sp.pty()->setEcho(false);
     connect(sp.pty(), SIGNAL(readyRead()), SLOT(slotReadyRead()));
     connect(sp.pty(), SIGNAL(readEof()), SLOT(slotReadEof()));

@@ -89,10 +89,13 @@ public:
     /**
      * Set whether to register the process as a TTY login in utmp.
      *
-     * Utmp is used by default.
-     * It should disabled for automatically feeded (non-interactive) processes.
+     * Utmp is disabled by default.
+     * It should enabled for interactively feeded processes, like terminal
+     * emulations.
      *
-     * @param value whether to register in utmp. The default is true.
+     * This function must be called before starting the process.
+     *
+     * @param value whether to register in utmp.
      */
     void setUseUtmp(bool value);
 
