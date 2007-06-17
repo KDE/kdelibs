@@ -23,8 +23,6 @@
 
 #include <kdecore_export.h>
 
-#ifdef Q_OS_UNIX
-
 struct KPtyPrivate;
 
 /* for HP-UX (some versions) the extern C is needed, and for other
@@ -196,6 +194,5 @@ protected:
   KPtyPrivate * const d_ptr;
 };
 
-#endif //Q_OS_UNIX
 #endif
 
