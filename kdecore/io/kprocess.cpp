@@ -235,6 +235,14 @@ KProcess &KProcess::operator<<(const QStringList &args)
     return *this;
 }
 
+void KProcess::clearProgram()
+{
+    Q_D(KProcess);
+
+    d->prog.clear();
+    d->args.clear();
+}
+
 void KProcess::setShellCommand(const QString &cmd, const QString &shell)
 {
     Q_D(KProcess);

@@ -190,6 +190,11 @@ public:
     KProcess &operator<<(const QStringList& args);
 
     /**
+     * Clear the program and command line argument list.
+     */
+    void clearProgram();
+
+    /**
      * Set a command to execute through a shell.
      *
      * Using this for anything but user-supplied commands is usually a bad
