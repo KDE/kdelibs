@@ -187,7 +187,9 @@ KPrintPreview::~KPrintPreview()
 void KPrintPreview::initView(KLibFactory *factory)
 {
 	// load the component
-	d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "KParts::ReadOnlyPart");
+	QStringList args;
+	args << "Print/Preview";
+	d->gvpart_ = (KParts::ReadOnlyPart*)factory->create(d->mainwidget_, "KParts::ReadOnlyPart", args);
 
 	// populate the toolbar
 	if (d->previewonly_)
