@@ -26,8 +26,7 @@
 #include <QtCore/QString>
 
 class QTextCodec;
-class K3ProcIO;
-class K3Process;
+class KProcess;
 class K3SpellConfig;
 class K3SpellDlg;
 
@@ -448,23 +447,23 @@ Q_SIGNALS:
 
 
 protected Q_SLOTS:
-  /* All of those signals from K3ProcIO get sent here. */
-  void K3Spell2 (K3ProcIO *);
-  void checkWord2 (K3ProcIO *);
+  /* All of those signals from KProcess get sent here. */
+  void K3Spell2 ();
+  void checkWord2 ();
   void checkWord3 ();
-  void check2 (K3ProcIO *);
+  void check2 ();
   void checkList2 ();
-  void checkList3a (K3ProcIO *);
+  void checkList3a ();
   void checkListReplaceCurrent ();
   void checkList4 ();
   void dialog2 (int dlgresult);
   void check3 ();
-  void suggestWord( K3ProcIO * );
+  void suggestWord();
 
   void slotStopCancel (int);
-  void ispellExit (K3Process *);
+  void ispellExit ();
   void emitDeath();
-  void ispellErrors (K3Process *, char *, int);
+  void ispellErrors ();
   void checkNext();
 
 private Q_SLOTS:
@@ -493,7 +492,7 @@ Q_SIGNALS:
 
 protected:
 
-  K3ProcIO *proc;
+  KProcess *proc;
   QWidget *parent;
   K3SpellConfig *ksconfig;
   K3SpellDlg *ksdlg;
@@ -553,8 +552,8 @@ protected:
   void setUpDialog ( bool reallyusedialogbox = true);
 
   void emitProgress ();
-  bool cleanFputs (const QString & s, bool appendCR=true);
-  bool cleanFputsWord (const QString & s, bool appendCR=true);
+  bool cleanFputs (const QString & s );
+  bool cleanFputsWord (const QString & s );
   void startIspell();
   bool writePersonalDictionary();
   void initialize( QWidget *_parent, const QString &_caption,

@@ -43,7 +43,7 @@
 #include <klocale.h>
 #include "k3sconfig.h"
 #include "k3spelldlg.h"
-#include <k3procio.h>
+#include <kprocess.h>
 #include <QTextStream>
 
 #define MAXLINELENGTH 10000
@@ -79,6 +79,23 @@ public:
   QList<BufferedWord> unchecked;
   QTimer *checkNextTimer;
   bool aspellV6;
+  QTextCodec* m_codec;
+  QString convertQByteArray( const QByteArray& b )
+  {
+      QTextCodec* originalCodec = QTextCodec::codecForCStrings();
+      QTextCodec::setCodecForCStrings( m_codec );
+      QString s( b );
+      QTextCodec::setCodecForCStrings( originalCodec );
+      return s;
+  }
+  QByteArray convertQString( const QString& s )
+  {
+      QTextCodec* originalCodec = QTextCodec::codecForCStrings();
+      QTextCodec::setCodecForCStrings( m_codec );
+      QByteArray b = s.toAscii();
+      QTextCodec::setCodecForCStrings( originalCodec );
+      return b;
+  }
 };
 
 //TODO
@@ -96,11 +113,11 @@ public:
     */
 
 
-//  Connects a slot to K3ProcIO's output signal
-#define OUTPUT(x) (connect (proc, SIGNAL (readReady(K3ProcIO *)), this, SLOT (x(K3ProcIO *))))
+//  Connects a slot to KProcess's output signal
+#define OUTPUT(x) (connect (proc, SIGNAL (readyReadStandardOutput()), this, SLOT (x())))
 
 // Disconnect a slot from...
-#define NOOUTPUT(x) (disconnect (proc, SIGNAL (readReady(K3ProcIO *)), this, SLOT (x(K3ProcIO *))))
+#define NOOUTPUT(x) (disconnect (proc, SIGNAL (readyReadStandardOutput()), this, SLOT (x())))
 
 
 
@@ -160,7 +177,7 @@ K3Spell::startIspell()
   kDebug(750) << "Try #" << trystart << endl;
 
   if ( trystart > 0 ) {
-    proc->resetAll();
+    proc->reset();
   }
 
   switch ( ksconfig->client() )
@@ -296,16 +313,20 @@ K3Spell::startIspell()
 
   if (trystart == 0) //don't connect these multiple times
   {
-    connect( proc, SIGNAL(receivedStderr(K3Process *, char *, int)),
-             this, SLOT(ispellErrors(K3Process *, char *, int)) );
+    connect( proc, SIGNAL(readyReadStandardError()),
+             this, SLOT(ispellErrors()) );
 
-    connect( proc, SIGNAL(processExited(K3Process *)),
-             this, SLOT(ispellExit (K3Process *)) );
+    connect( proc, SIGNAL(finished(int, QProcess::ExitStatus)),
+             this, SLOT(ispellExit ()) );
+
+    proc->setOutputChannelMode( KProcess::SeparateChannels );
+    proc->setNextOpenMode( QIODevice::ReadWrite | QIODevice::Text );
 
     OUTPUT(K3Spell2);
   }
 
-  if ( !proc->start() )
+  proc->start();
+  if ( !proc->waitForStarted() )
   {
     m_status = Error;
     QTimer::singleShot( 0, this, SLOT(emitDeath()));
@@ -313,13 +334,13 @@ K3Spell::startIspell()
 }
 
 void
-K3Spell::ispellErrors( K3Process *, char *buffer, int buflen )
+K3Spell::ispellErrors(  )
 {
-  buffer[buflen-1] = '\0';
+  // buffer[buflen-1] = '\0';
   //  kDebug(750) << "ispellErrors [" << buffer << "]\n" << endl;
 }
 
-void K3Spell::K3Spell2( K3ProcIO * )
+void K3Spell::K3Spell2( )
 
 {
   QString line;
@@ -329,14 +350,16 @@ void K3Spell::K3Spell2( K3ProcIO * )
   trystart = maxtrystart;  //We've officially started ispell and don't want
                            //to try again if it dies.
 
-  if ( proc->readln( line, true ) == -1 )
+  QByteArray data;
+  qint64 read = proc->readLine(data.data(),data.count());
+  if ( read == -1 )
   {
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
   }
+  line = d->convertQByteArray( data );
 
-
-  if ( line[0] != '@' ) //@ indicates that ispell is working fine
+  if ( !line.startsWith('@') ) //@ indicates that ispell is working fine
   {
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
      return;
@@ -395,12 +418,12 @@ bool K3Spell::addPersonal( const QString & word )
   qs.prepend( "*" );
   personaldict = true;
 
-  return proc->writeStdin( qs );
+  return proc->write( d->convertQString( qs ) );
 }
 
 bool K3Spell::writePersonalDictionary()
 {
-  return proc->writeStdin(QString( "#" ));
+  return proc->write( QByteArray( "#" ) );
 }
 
 bool K3Spell::ignore( const QString & word )
@@ -413,11 +436,11 @@ bool K3Spell::ignore( const QString & word )
 
   qs.prepend( "@" );
 
-  return proc->writeStdin( qs );
+  return proc->write( d->convertQString( qs ) );
 }
 
 bool
-K3Spell::cleanFputsWord( const QString & s, bool appendCR )
+K3Spell::cleanFputsWord( const QString & s )
 {
   QString qs(s);
   bool empty = true;
@@ -440,11 +463,11 @@ K3Spell::cleanFputsWord( const QString & s, bool appendCR )
   if (empty)
     return false;
 
-  return proc->writeStdin( '^'+qs, appendCR );
+  return proc->write( d->convertQString( QString('^'+qs+'\n') ) );
 }
 
 bool
-K3Spell::cleanFputs( const QString & s, bool appendCR )
+K3Spell::cleanFputs( const QString & s )
 {
   QString qs(s);
   unsigned l = qs.length();
@@ -460,10 +483,10 @@ K3Spell::cleanFputs( const QString & s, bool appendCR )
   {
     if ( qs.isEmpty() )
       qs="";
-    return proc->writeStdin( '^'+qs, appendCR );
+    return proc->write( d->convertQString('^'+qs+'\n') );
   }
   else
-    return proc->writeStdin( QString::fromAscii( "^\n" ),appendCR );
+    return proc->write( d->convertQString( "^\n" ) );
 }
 
 bool K3Spell::checkWord( const QString & buffer, bool _usedialog )
@@ -497,14 +520,14 @@ bool K3Spell::checkWord( const QString & buffer, bool _usedialog )
   else
     ksdlg->hide();
 
-  QString blank_line;
-  while (proc->readln( blank_line, true ) != -1); // eat spurious blanks
+  QByteArray data;
+  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
 
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->writeStdin( QString( "%" ) ); // turn off terse mode
-  proc->writeStdin( buffer ); // send the word to ispell
+  proc->write( d->convertQString( QString( "%" ) ) ); // turn off terse mode
+  proc->write( d->convertQString( buffer ) ); // send the word to ispell
 
   return true;
 }
@@ -543,23 +566,23 @@ bool K3Spell::checkWord( const QString & buffer, bool _usedialog, bool suggest )
       ksdlg->hide();
   }
 
-  QString blank_line;
-  while (proc->readln( blank_line, true ) != -1); // eat spurious blanks
+  QByteArray data;
+  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
 
   OUTPUT(checkWord2);
   //  connect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
-  proc->writeStdin( QString( "%" ) ); // turn off terse mode
-  proc->writeStdin( buffer ); // send the word to ispell
+  proc->write( d->convertQString( QString( "%" ) ) ); // turn off terse mode
+  proc->write( d->convertQString( buffer ) ); // send the word to ispell
 
   return true;
 }
 
-void K3Spell::checkWord2( K3ProcIO* )
+void K3Spell::checkWord2(  )
 {
   QString word;
   QString line;
-  proc->readln( line, true ); //get ispell's response
+  line = d->convertQByteArray( proc->readLine() ); //get ispell's response
 
 /* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
@@ -570,8 +593,8 @@ void K3Spell::checkWord2( K3ProcIO* )
    can get out of sync.
    </sanders>
 */
-  QString blank_line;
-  while (proc->readln( blank_line, true ) != -1); // eat the blank line
+  QByteArray data;
+  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
   NOOUTPUT(checkWord2);
 
   bool mistake = ( parseOneResponse(line, word, sugg) == MISTAKE );
@@ -612,17 +635,17 @@ void K3Spell::checkNext()
   }
 }
 
-void K3Spell::suggestWord( K3ProcIO * )
+void K3Spell::suggestWord()
 {
   QString word;
   QString line;
-  proc->readln( line, true ); //get ispell's response
+  line = d->convertQByteArray( proc->readLine() ); //get ispell's response
 
 /* ispell man page: "Each sentence of text input is terminated with an
    additional blank line,  indicating that ispell has completed processing
    the input line." */
-  QString blank_line;
-  proc->readln( blank_line, true ); // eat the blank line
+  QByteArray data;
+  while (proc->readLine( data.data(), data.count() ) != -1 ); // eat spurious blanks
 
   NOOUTPUT(checkWord2);
 
@@ -795,20 +818,20 @@ bool K3Spell::checkList (QStringList *_wordlist, bool _usedialog)
   //set the dialog signal handler
   dialog3slot = SLOT (checkList4 ());
 
-  proc->writeStdin (QString( "%") ); // turn off terse mode & check one word at a time
+  proc->write(QByteArray( '%' ) ); // turn off terse mode & check one word at a time
 
   //lastpos now counts which *word number* we are at in checkListReplaceCurrent()
   lastpos = -1;
   checkList2();
 
-  // when checked, K3ProcIO calls checkList3a
+  // when checked, KProcess calls checkList3a
   OUTPUT(checkList3a);
 
   return true;
 }
 
 void K3Spell::checkList2 ()
-  // send one word from the list to K3ProcIO
+  // send one word from the list to KProcess
   // invoked first time by checkList, later by checkListReplaceCurrent and checkList4
 {
   // send next word
@@ -838,8 +861,8 @@ void K3Spell::checkList2 ()
   }
 }
 
-void K3Spell::checkList3a (K3ProcIO *)
-  // invoked by K3ProcIO, when data from ispell are read
+void K3Spell::checkList3a ()
+  // invoked by KProcess, when data from ispell are read
 {
   //kDebug(750) << "start of checkList3a" << endl;
 
@@ -850,17 +873,19 @@ void K3Spell::checkList3a (K3ProcIO *)
     return;
   }
 
-  int e, tempe;
+  int e;
+  qint64 tempe;
 
   QString word;
   QString line;
 
   do
   {
-    tempe=proc->readln( line, true ); //get ispell's response
+    QByteArray data;
+    tempe = proc->readLine( data.data(), data.count() ); //get ispell's response
 
     //kDebug(750) << "checkList3a: read bytes [" << tempe << "]" << endl;
-
+    line = d->convertQByteArray( data );
 
     if ( tempe == 0 ) {
       d->endOfResponse = true;
@@ -962,7 +987,7 @@ void K3Spell::checkList4 ()
     //proc->disconnect();
     //proc->kill();
     //delete proc;
-    //proc = new K3ProcIO( codec );
+    //proc = new KProcess( codec );
     //startIspell();
     return;
   };
@@ -970,7 +995,7 @@ void K3Spell::checkList4 ()
   // read more if there is more, otherwise send next word
   if (!d->endOfResponse) {
     //kDebug(750) << "checkList4: read more from response" << endl;
-    checkList3a(NULL);
+    checkList3a();
   }
 }
 
@@ -1007,9 +1032,9 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
 
   newbuffer = origbuffer;
 
-  // K3ProcIO calls check2 when read from ispell
+  // KProcess calls check2 when read from ispell
   OUTPUT( check2 );
-  proc->writeStdin( QString( "!" ) );
+  proc->write( QByteArray( "!" ) );
 
   //lastpos is a position in newbuffer (it has offset in it)
   offset = lastlastline = lastpos = lastline = 0;
@@ -1019,7 +1044,7 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
   // send first buffer line
   int i = origbuffer.indexOf( '\n', 0 ) + 1;
   qs = origbuffer.mid( 0, i );
-  cleanFputs( qs, false );
+  cleanFputs( qs );
 
   lastline=i; //the character position, not a line number
 
@@ -1034,10 +1059,11 @@ bool K3Spell::check( const QString &_buffer, bool _usedialog )
 }
 
 
-void K3Spell::check2( K3ProcIO * )
-  // invoked by K3ProcIO when read from ispell
+void K3Spell::check2()
+  // invoked by KProcess when read from ispell
 {
-  int e, tempe;
+  int e;
+  qint64 tempe;
   QString word;
   QString line;
   static bool recursive = false;
@@ -1050,7 +1076,9 @@ void K3Spell::check2( K3ProcIO * )
 
   do
   {
-    tempe = proc->readln( line, false ); //get ispell's response
+    QByteArray data;
+    tempe = proc->readLine( data.data(), data.count() ); //get ispell's response
+    line = d->convertQByteArray( data );
     //kDebug(750) << "K3Spell::check2 (" << tempe << "b)" << endl;
 
     if ( tempe>0 )
@@ -1114,13 +1142,13 @@ void K3Spell::check2( K3ProcIO * )
     // Make sure we don't get called directly again and make sure we do get
     // called when new data arrives.
     NOOUTPUT( check2 );
-    proc->enableReadSignals(true);
+//     proc->enableReadSignals(true);
     OUTPUT( check2 );
     recursive = false;
     return;
   }
 
-  proc->ackRead();
+//   proc->ackRead();
 
   //If there is more to check, then send another line to ISpell.
   if ( lastline < origbuffer.length() )
@@ -1133,7 +1161,7 @@ void K3Spell::check2( K3ProcIO * )
     lastpos = (lastlastline=lastline) + offset; //do we really want this?
     i = origbuffer.indexOf('\n', lastline) + 1;
     qs = origbuffer.mid( lastline, i-lastline );
-    cleanFputs( qs, false );
+    cleanFputs( qs );
     lastline = i;
     recursive = false;
     return;
@@ -1185,7 +1213,7 @@ void K3Spell::check3 ()
     return;
   };
 
-  proc->ackRead();
+//   proc->ackRead();
 }
 
 void
@@ -1311,10 +1339,10 @@ void K3Spell::cleanUp()
       writePersonalDictionary();
     m_status = Cleaning;
   }
-  proc->closeStdin();
+  proc->closeWriteChannel();
 }
 
-void K3Spell::ispellExit( K3Process* )
+void K3Spell::ispellExit()
 {
   kDebug() << "K3Spell::ispellExit() " << m_status << endl;
 
@@ -1481,53 +1509,53 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
   else
     ksconfig = new K3SpellConfig;
 
-  codec = 0;
+  d->m_codec = 0;
   switch ( ksconfig->encoding() )
   {
   case KS_E_LATIN1:
-     codec = QTextCodec::codecForName("ISO 8859-1");
+     d->m_codec = QTextCodec::codecForName("ISO 8859-1");
      break;
   case KS_E_LATIN2:
-     codec = QTextCodec::codecForName("ISO 8859-2");
+     d->m_codec = QTextCodec::codecForName("ISO 8859-2");
      break;
   case KS_E_LATIN3:
-      codec = QTextCodec::codecForName("ISO 8859-3");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-3");
       break;
   case KS_E_LATIN4:
-      codec = QTextCodec::codecForName("ISO 8859-4");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-4");
       break;
   case KS_E_LATIN5:
-      codec = QTextCodec::codecForName("ISO 8859-5");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-5");
       break;
   case KS_E_LATIN7:
-      codec = QTextCodec::codecForName("ISO 8859-7");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-7");
       break;
   case KS_E_LATIN8:
-      codec = QTextCodec::codecForName("ISO 8859-8-i");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-8-i");
       break;
   case KS_E_LATIN9:
-      codec = QTextCodec::codecForName("ISO 8859-9");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-9");
       break;
   case KS_E_LATIN13:
-      codec = QTextCodec::codecForName("ISO 8859-13");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-13");
       break;
   case KS_E_LATIN15:
-      codec = QTextCodec::codecForName("ISO 8859-15");
+      d->m_codec = QTextCodec::codecForName("ISO 8859-15");
       break;
   case KS_E_UTF8:
-      codec = QTextCodec::codecForName("UTF-8");
+      d->m_codec = QTextCodec::codecForName("UTF-8");
       break;
   case KS_E_KOI8R:
-      codec = QTextCodec::codecForName("KOI8-R");
+      d->m_codec = QTextCodec::codecForName("KOI8-R");
       break;
   case KS_E_KOI8U:
-      codec = QTextCodec::codecForName("KOI8-U");
+      d->m_codec = QTextCodec::codecForName("KOI8-U");
       break;
   case KS_E_CP1251:
-      codec = QTextCodec::codecForName("CP1251");
+      d->m_codec = QTextCodec::codecForName("CP1251");
       break;
   case KS_E_CP1255:
-      codec = QTextCodec::codecForName("CP1255");
+      d->m_codec = QTextCodec::codecForName("CP1255");
       break;
   default:
      break;
@@ -1565,7 +1593,7 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
       // Hack for modal spell checking
       connect( this, SIGNAL(ready(K3Spell *)), this, SLOT(slotModalReady()) );
 
-  proc = new K3ProcIO( codec );
+  proc = new KProcess();
 
   startIspell();
 }
