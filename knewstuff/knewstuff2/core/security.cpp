@@ -36,7 +36,7 @@
 #include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
-#include <k3procio.h>
+#include <kprocess.h>
 
 using namespace KNS;
 
@@ -62,12 +62,23 @@ void Security::readKeys()
   }
   m_runMode = List;
   m_keys.clear();
-  K3ProcIO *readProcess=new K3ProcIO();
-  *readProcess << "gpg"<<"--no-secmem-warning"<<"--no-tty"<<"--with-colon"<<"--list-keys";
-  connect(readProcess, SIGNAL(processExited(K3Process *)), this, SLOT(slotProcessExited(K3Process *)));
-  connect(readProcess, SIGNAL(readReady(K3ProcIO *)) ,this, SLOT(slotDataArrived(K3ProcIO *)));
-  if (!readProcess->start(K3Process::NotifyOnExit, true))
+  m_process = new KProcess();
+  *m_process << "gpg"
+              << "--no-secmem-warning"
+              << "--no-tty"
+              << "--with-colon"
+              << "--list-keys";
+  connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+          this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+  connect(m_process, SIGNAL(readyReadStandardOutput()),
+          this, SLOT(slotReadyReadStandardOutput()));
+  m_process->start();
+  if (!m_process->waitForStarted())
+  {
     KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and retrieve the available keys. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible.</qt>"));
+    delete m_process;
+    m_process = 0;
+  }
   else
     m_gpgRunning = true;
 }
@@ -80,16 +91,35 @@ void Security::readSecretKeys()
     return;
   }
   m_runMode = ListSecret;
-  K3ProcIO *readProcess=new K3ProcIO();
-  *readProcess << "gpg"<<"--no-secmem-warning"<<"--no-tty"<<"--with-colon"<<"--list-secret-keys";
-  connect(readProcess, SIGNAL(processExited(K3Process *)), this, SLOT(slotProcessExited(K3Process *)));
-  connect(readProcess, SIGNAL(readReady(K3ProcIO *)) ,this, SLOT(slotDataArrived(K3ProcIO *)));
-  if (readProcess->start(K3Process::NotifyOnExit, true))
+  m_process = new KProcess();
+  *m_process << "gpg"
+              << "--no-secmem-warning"
+              << "--no-tty"
+              << "--with-colon"
+              << "--list-secret-keys";
+  connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+          this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+  connect(m_process, SIGNAL(readyReadStandardOutput()),
+          this, SLOT(slotReadyReadStandardOutput()));
+  m_process->start();
+  if (!m_process->waitForStarted())
+  {
+    delete m_process;
+    m_process = 0;
+  }
+  else
     m_gpgRunning = true;  
 }
 
-void Security::slotProcessExited(K3Process *process)
+void Security::slotFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+  if(exitStatus != QProcess::NormalExit)
+  {
+    m_gpgRunning = false;
+    delete m_process;
+    m_process = 0;
+    return;
+  }
   switch (m_runMode)
    {
      case ListSecret:
@@ -102,14 +132,16 @@ void Security::slotProcessExited(K3Process *process)
 
    }
    m_gpgRunning = false;
-   delete process;
+   delete m_process;
+   m_process = 0;
 }
 
-void Security::slotDataArrived(K3ProcIO *procIO)
+void Security::slotReadyReadStandardOutput()
 {
   QString data;
-  while (procIO->readln(data, true) != -1)
+  while(m_process->canReadLine())
   {
+     data = QString::fromLocal8Bit(m_process->readLine());
      switch (m_runMode)
      {
         case List:
@@ -184,12 +216,12 @@ void Security::slotDataArrived(K3ProcIO *procIO)
            dlg.setPrompt( i18n("<qt>Enter passphrase for key <b>0x%1</b>, belonging to<br><i>%2&lt;%3&gt;</i>:</qt>", m_secretKey, key.name, key.mail) );
            if (dlg.exec())
            {
-             procIO->writeStdin(dlg.password().toLocal8Bit(), true);
+             m_process->write(dlg.password().toLocal8Bit() + '\n');
            }
            else
            {
              m_result |= BAD_PASSPHRASE;
-             slotProcessExited(procIO);
+             m_process->kill();
              return;
            }
          } else
@@ -252,17 +284,27 @@ void Security::slotCheckValidity()
   m_signatureKey.trusted = false;
 
   //verify the signature
-  K3ProcIO *verifyProcess=new K3ProcIO();
-  *verifyProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--verify" << f.path() + "/signature"<< m_fileName;
-  connect(verifyProcess, SIGNAL(processExited(K3Process *)),this, SLOT(slotProcessExited(K3Process *)));
-  connect(verifyProcess, SIGNAL(readReady(K3ProcIO *)),this, SLOT(slotDataArrived(K3ProcIO *)));
-  if (verifyProcess->start(K3Process::NotifyOnExit,true))
+  m_process = new KProcess();
+  *m_process << "gpg"
+              << "--no-secmem-warning"
+              << "--status-fd=2"
+              << "--command-fd=0"
+              << "--verify"
+              << f.path() + "/signature"
+              << m_fileName;
+  connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+          this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+  connect(m_process, SIGNAL(readyReadStandardOutput()),
+          this, SLOT(slotReadyReadStandardOutput()));
+  m_process->start();
+  if (m_process->waitForStarted())
       m_gpgRunning = true;
   else
   {
       KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and check the validity of the file. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible.</qt>"));
       emit validityResult(0);
-      delete verifyProcess;
+      delete m_process;
+      m_process = 0;
   }
 }
 
@@ -332,18 +374,32 @@ void Security::slotSignFile()
     m_secretKey = secretKeys[0];
 
   //verify the signature
-  K3ProcIO *signProcess=new K3ProcIO();
-  *signProcess<<"gpg"<<"--no-secmem-warning"<<"--status-fd=2"<<"--command-fd=0"<<"--no-tty"<<"--detach-sign" << "-u" << m_secretKey << "-o" << f.path() + "/signature" << m_fileName;
-  connect(signProcess, SIGNAL(processExited(K3Process *)),this, SLOT(slotProcessExited(K3Process *)));
-  connect(signProcess, SIGNAL(readReady(K3ProcIO *)),this, SLOT(slotDataArrived(K3ProcIO *)));
+  m_process = new KProcess();
+  *m_process << "gpg"
+              << "--no-secmem-warning"
+              << "--status-fd=2"
+              << "--command-fd=0"
+              << "--no-tty"
+              << "--detach-sign"
+              << "-u"
+              << m_secretKey
+              << "-o"
+              << f.path() + "/signature"
+              << m_fileName;
+  connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
+          this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+  connect(m_process, SIGNAL(readyReadStandardOutput()),
+          this, SLOT(slotReadyReadStandardOutput()));
   m_runMode = Sign;
-  if (signProcess->start(K3Process::NotifyOnExit,true))
+  m_process->start();
+  if (m_process->waitForStarted())
     m_gpgRunning = true;
   else
   {
     KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and sign the file. Make sure that <i>gpg</i> is installed, otherwise signing of the resources will not be possible.</qt>"));
     emit fileSigned(0);
-    delete signProcess;
+    delete m_process;
+    m_process = 0;
   }
 }
 

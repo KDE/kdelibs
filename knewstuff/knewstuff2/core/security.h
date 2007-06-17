@@ -24,9 +24,7 @@
 //qt includes
 #include <QtCore/QMap>
 #include <QtCore/QObject>
-
-class K3ProcIO;
-class K3Process;
+#include <QtCore/QProcess>
 
 struct KeyStruct {
    QString id;
@@ -45,6 +43,7 @@ It is a private class, not meant to be used by third party applications.
 * @internal
 */
 
+class KProcess;
 namespace KNS {
 
 class Security : public QObject
@@ -124,10 +123,11 @@ private:
    QMap<QString, KeyStruct> m_keys; /// holds information about the available key
    QString m_fileName; /// the file to sign/verify
    QString m_secretKey; /// the key used for signing
+   KProcess *m_process;
 
 private Q_SLOTS:
-   void slotProcessExited(K3Process *process);
-   void slotDataArrived(K3ProcIO *process);
+   void slotFinished(int exitCode, QProcess::ExitStatus exitStatus);
+   void slotReadyReadStandardOutput();
 
 Q_SIGNALS:
    /** Sent when the validity check is done.
