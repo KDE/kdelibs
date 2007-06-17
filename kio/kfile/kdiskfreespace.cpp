@@ -58,7 +58,7 @@ class KDiskFreeSpace::Private
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
     : QObject(parent), d(new Private())
 {
-    d->dfProc = new K3Process(); Q_CHECK_PTR(dfProc);
+    d->dfProc = new K3Process(); Q_CHECK_PTR(d->dfProc);
     d->dfProc->setEnvironment("LANGUAGE", "C");
     connect(d->dfProc, SIGNAL(receivedStdout(K3Process *, char *, int)),
             this, SLOT (receivedDFStdErrOut(K3Process *, char *, int)));
