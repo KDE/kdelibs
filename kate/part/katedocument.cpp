@@ -4431,7 +4431,7 @@ void KateDocument::reloadFile()
 
     m_reloading = false;
 
-    for (uint z=0; z < tmp.size(); z++)
+    for ( QValueList<int>::size_type z=0; z < tmp.size(); z++ )
     {
       if (z < numLines())
       {
@@ -4635,7 +4635,7 @@ void KateDocument::readVariableLine( QString t, bool onlyViewAndRenderer )
     QString nameOfFile = url().fileName();
 
     bool found = false;
-    for (int i = 0; !found && i < wildcards.size(); ++i)
+    for (QStringList::size_type i = 0; !found && i < wildcards.size(); ++i)
     {
       QRegExp wildcard (wildcards[i], true/*Qt::CaseSensitive*/, true/*QRegExp::Wildcard*/);
 
