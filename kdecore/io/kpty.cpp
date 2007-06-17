@@ -491,6 +491,23 @@ void KPty::logout()
 #endif
 }
 
+// XXX Supposedly, tc[gs]etattr do not work with the master on Solaris.
+// Please verify.
+
+bool KPty::tcGetAttr(struct ::termios *ttmode) const
+{
+    Q_D(const KPty);
+
+    return _tcgetattr(d->masterFd, ttmode) == 0;
+}
+
+bool KPty::tcSetAttr(struct ::termios *ttmode)
+{
+    Q_D(KPty);
+
+    return _tcsetattr(d->masterFd, ttmode) == 0;
+}
+
 void KPty::setWinSize(int lines, int columns)
 {
   Q_D(KPty);
