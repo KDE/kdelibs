@@ -288,13 +288,20 @@ void KDialog::setEscapeButton( ButtonCode id )
   d->mEscapeButton = id;
 }
 
-void KDialog::setDefaultButton( ButtonCode defaultButton )
+void KDialog::setDefaultButton( ButtonCode newDefaultButton )
 {
-  if ( defaultButton != NoDefault ) {
-    KPushButton *button = this->button( defaultButton );
-    if ( button )
-      d->setButtonFocus( button, true, false );
-  }
+    bool makeDefault = true;
+    if (newDefaultButton == NoDefault) {
+        // if we already have a default, let's be sure to reset
+        // it to not be the default!
+        newDefaultButton = defaultButton();
+        makeDefault = false;
+    }
+
+    KPushButton *b = button(newDefaultButton);
+    if (b) {
+        d->setButtonFocus(b, makeDefault, false);
+    }
 }
 
 KDialog::ButtonCode KDialog::defaultButton() const
