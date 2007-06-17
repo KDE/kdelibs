@@ -8,9 +8,7 @@ add_subdirectory( modules )
 add_subdirectory( console )
 
 # unittests and such stuff
-if (KDE4_BUILD_TESTS)
-        add_subdirectory( test )
-endif (KDE4_BUILD_TESTS)
+add_subdirectory( test )
 
 # KDE Javascript using kjs and kjsembed
 # test kjsembed I think

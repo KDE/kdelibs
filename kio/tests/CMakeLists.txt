@@ -1,25 +1,24 @@
-# Tests don't need to go into toplevel/bin, they are fine in the current dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 # for <kio/global.h>
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
-MACRO(KIO_BUILD_TESTS)
+MACRO(KIO_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
-               kde4_add_test(${_testname} ${_testname}.cpp)
+               kde4_add_unit_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KIO_BUILD_TESTS)
-MACRO(KIO_EXECUTE_TESTS)
+ENDMACRO(KIO_UNIT_TESTS)
+MACRO(KIO_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               add_test(kio-${_testname} ${EXECUTABLE_OUTPUT_PATH}/${_testname})
+               kde4_automoc(${_testname}.cpp)
+               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KIO_EXECUTE_TESTS)
+ENDMACRO(KIO_EXECUTABLE_TESTS)
 
 # jobtest seems to trigger a ctest problem; jobtest finishes and ctest waits for ever
 
-set(kio_unittests
+KIO_UNIT_TESTS(
   karchivetest
   krununittest
   kprotocolinfotest
@@ -32,9 +31,8 @@ set(kio_unittests
   kdirlistertest
   kmountpointtest
 )
- 
-KIO_BUILD_TESTS(
-  ${kio_unittests}
+
+KIO_EXECUTABLE_TESTS(
   ksycocatest
   getalltest
   kruntest
@@ -58,9 +56,5 @@ KIO_BUILD_TESTS(
   kdirmodeltest_gui
   kmimetypechoosertest_gui
   ksslkeygentest
-)
-
-KIO_EXECUTE_TESTS(
-  ${kio_unittests}
 )
 

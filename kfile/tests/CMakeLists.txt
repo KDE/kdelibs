@@ -1,19 +1,21 @@
-MACRO(KFILE_BUILD_TESTS)
+MACRO(KFILE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
-               kde4_add_test(${_testname} ${_testname}.cpp)
+               kde4_add_unit_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KFILE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KFILE_BUILD_TESTS)
-MACRO(KFILE_EXECUTE_TESTS)
+ENDMACRO(KFILE_UNIT_TESTS)
+MACRO(KFILE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               add_test(kfile-${_testname} ${EXECUTABLE_OUTPUT_PATH}/${_testname})
+               kde4_automoc(${_testname}.cpp)
+               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KFILE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KFILE_EXECUTE_TESTS)
+ENDMACRO(KFILE_EXECUTABLE_TESTS)
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
-KFILE_BUILD_TESTS(
+KFILE_EXECUTABLE_TESTS(
   kdirselectdialogtest
   kfiletreeviewtest
 )

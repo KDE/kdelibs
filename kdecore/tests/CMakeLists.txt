@@ -1,23 +1,22 @@
-# Tests don't need to go into toplevel/bin, they are fine in the current dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 # This can be used for finding data files in the source dir, without installing them
 add_definitions( -DKDESRCDIR=\\""${CMAKE_CURRENT_SOURCE_DIR}"\\" )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 
-MACRO(KDECORE_BUILD_TESTS)
+MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
-               kde4_add_test(${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+               kde4_add_unit_test(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KDECORE_BUILD_TESTS)
-MACRO(KDECORE_EXECUTE_TESTS)
+ENDMACRO(KDECORE_UNIT_TESTS)
+MACRO(KDECORE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               add_test(kdecore-${_testname} ${EXECUTABLE_OUTPUT_PATH}/${_testname})
+               kde4_automoc(${_testname}.cpp)
+               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KDECORE_EXECUTE_TESTS)
+ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 
 
 ########### next target ###############
@@ -62,8 +61,11 @@ if(UNIX)
  set(kdecore_unittests ${kdecore_unittests} klocalsockettest klocalsocketservertest kptyprocesstest)
 endif(UNIX)
 
-KDECORE_BUILD_TESTS(
+KDECORE_UNIT_TESTS(
  ${kdecore_unittests}
+)
+
+KDECORE_EXECUTABLE_TESTS(
  krandomsequencetest
  kdebugtest
  kcmdlineargstest
@@ -75,16 +77,13 @@ KDECORE_BUILD_TESTS(
  k3prociotest
 )
 
-KDECORE_EXECUTE_TESTS( ${kdecore_unittests} )
-
 ########### kmimetypetest ###############
 
 # compile kmimemagicrule.cpp into the test since it's not exported and we call match().
 set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
 kde4_automoc(${kmimetypetest_SRCS})
-kde4_add_executable(kmimetypetest NOGUI RUN_UNINSTALLED ${kmimetypetest_SRCS})
+kde4_add_unit_test(kmimetypetest ${kmimetypetest_SRCS})
 target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
-add_test(kdecore-kmimetypetest ${EXECUTABLE_OUTPUT_PATH}/kmimetypetest)
 
 ########### module for klibloadertest ###############
 

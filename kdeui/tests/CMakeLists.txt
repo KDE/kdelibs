@@ -1,28 +1,27 @@
 add_subdirectory(kconfig_compiler)
 
-# Tests don't need to go into toplevel/bin, they are fine in the current dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 # This can be used for finding .rc files in the source dir, without installing them
 add_definitions( -DKDESRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\" )
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 
-MACRO(KDEUI_BUILD_TESTS)
+MACRO(KDEUI_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_automoc(${_testname}.cpp)
-               kde4_add_test(${_testname} ${_testname}.cpp)
+               kde4_add_unit_test(${_testname} ${_testname}.cpp)
                target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KDEUI_BUILD_TESTS)
-MACRO(KDEUI_EXECUTE_TESTS)
+ENDMACRO(KDEUI_UNIT_TESTS)
+MACRO(KDEUI_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               add_test(kdeui-${_testname} ${EXECUTABLE_OUTPUT_PATH}/${_testname})
+               kde4_automoc(${_testname}.cpp)
+               kde4_add_test_executable(${_testname} ${_testname}.cpp)
+               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
-ENDMACRO(KDEUI_EXECUTE_TESTS)
+ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
-set(kdeui_unittests
+KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kbuttongrouptest
   kcompletioncoretest
@@ -40,8 +39,7 @@ set(kdeui_unittests
   kcolorutilstest
 )
 
-KDEUI_BUILD_TESTS(
-  ${kdeui_unittests}
+KDEUI_EXECUTABLE_TESTS(
   kpassivepopuptest
   kblendtest
   kdialogbuttonboxtest
@@ -110,18 +108,14 @@ KDEUI_BUILD_TESTS(
 )
 
 if (Q_WS_X11)
-KDEUI_BUILD_TESTS(
+KDEUI_EXECUTABLE_TESTS(
  kxerrorhandlertest
 )
 endif (Q_WS_X11)
-
-KDEUI_EXECUTE_TESTS(
-  ${kdeui_unittests}
-)
 
 ## kplottest
 
 set(kplottest_SRCS testplot_widget.cpp testplot_main.cpp)
 kde4_automoc(${kplottest_SRCS})
-kde4_add_test(kplottest ${kplottest_SRCS})
+kde4_add_test_executable(kplottest ${kplottest_SRCS})
 target_link_libraries(kplottest ${KDE4_KDEUI_LIBS})

@@ -17,7 +17,7 @@ target_link_libraries(kmetadata_testbase knepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTE
 
 # tests
 kde4_automoc(resourcetest.cpp)
-kde4_add_executable(resourcetest resourcetest.cpp)
+kde4_add_unit_test(resourcetest resourcetest.cpp)
 target_link_libraries(resourcetest
   kmetadata_testbase
   kmetadata
@@ -26,15 +26,13 @@ target_link_libraries(resourcetest
   ${QT_QTTEST_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${KDE4_KDECORE_LIBRARY})
-add_test(resourcetest ${EXECUTABLE_OUTPUT_PATH}/resourcetest)
 
 kde4_automoc(varianttest.cpp)
-kde4_add_executable(varianttest varianttest.cpp)
+kde4_add_unit_test(varianttest varianttest.cpp)
 target_link_libraries(varianttest kmetadata ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY})
-add_test(varianttest ${EXECUTABLE_OUTPUT_PATH}/varianttest)
 
 kde4_automoc(speedtest.cpp)
-kde4_add_executable(speedtest speedtest.cpp)
+kde4_add_unit_test(speedtest speedtest.cpp)
 target_link_libraries(speedtest
   kmetadata_testbase
   kmetadata
@@ -43,14 +41,13 @@ target_link_libraries(speedtest
   ${QT_QTTEST_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${KDE4_KDECORE_LIBRARY})
-add_test(speedtest ${EXECUTABLE_OUTPUT_PATH}/speedtest)
 
 set(datatest_SRC 
   resourcedatatest.cpp
   ../kmetadata/resourcedata.cpp
 )
 kde4_automoc(${datatest_SRC})
-kde4_add_executable(resourcedatatest ${datatest_SRC})
+kde4_add_unit_test(resourcedatatest ${datatest_SRC})
 target_link_libraries(resourcedatatest
   kmetadata_testbase
   kmetadata
@@ -61,9 +58,8 @@ target_link_libraries(resourcedatatest
   ${QT_QTTEST_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${KDE4_KDECORE_LIBRARY})
-add_test(resourcedatatest ${EXECUTABLE_OUTPUT_PATH}/resourcedatatest)
 
 # Not a real test, just a simple app for testing a widget manually
 kde4_automoc(tagcloudtest.cpp)
-kde4_add_executable(tagcloudtest tagcloudtest.cpp)
+kde4_add_test_executable(tagcloudtest tagcloudtest.cpp)
 target_link_libraries(tagcloudtest kmetadata)

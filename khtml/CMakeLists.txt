@@ -353,7 +353,7 @@ target_link_libraries(khtmlimagepart khtml)
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 # msvc linker doesn't like "#define protected public"
-if(KDE4_BUILD_TESTS AND NOT MSVC)
+if(NOT MSVC)
 
     ########### next target ###############
 
@@ -376,7 +376,7 @@ if(KDE4_BUILD_TESTS AND NOT MSVC)
 
     qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
     kde4_automoc(${khtmltest_SRCS})
-    kde4_add_executable( khtmltest ${khtmltest_SRCS} )
+    kde4_add_test_executable(khtmltest ${khtmltest_SRCS} )
     target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############
@@ -393,7 +393,7 @@ if(KDE4_BUILD_TESTS AND NOT MSVC)
     target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############
-endif(KDE4_BUILD_TESTS AND NOT MSVC)
+endif(NOT MSVC)
 
 # Note that testregression can't be compiled by default, it needs private Qt headers.
 # See also BUILDING-TESTREGRESSION

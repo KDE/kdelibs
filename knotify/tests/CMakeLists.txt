@@ -1,8 +1,6 @@
 
 project(knotifytest)
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../config )
 
 ########### knotifytest ###############
@@ -13,7 +11,7 @@ kde4_add_ui_files(knotifytest_SRCS knotifytestview.ui)
 
 kde4_automoc(${knotifytest_SRCS})
 
-kde4_add_executable(knotifytest NOGUI ${knotifytest_SRCS})
+kde4_add_test_executable(knotifytest ${knotifytest_SRCS})
 
 target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} knotifyconfig )
 

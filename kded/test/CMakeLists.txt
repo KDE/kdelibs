@@ -1,6 +1,3 @@
-# Tests don't need to go into toplevel/bin, they are fine in the current dir.
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 include_directories( ${KDE4_KIO_INCLUDES} .. )
 
 ######### kmimefileparsertest ########
@@ -9,13 +6,9 @@ set(kmimefileparsertest_SRCS kmimefileparsertest.cpp ../kmimefileparser.cpp ../.
 
 kde4_automoc(${kmimefileparsertest_SRCS})
 
-kde4_add_executable(kmimefileparsertest NOGUI RUN_UNINSTALLED ${kmimefileparsertest_SRCS})
+kde4_add_unit_test(kmimefileparsertest ${kmimefileparsertest_SRCS})
 
 target_link_libraries(kmimefileparsertest ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY})
-
-add_test(kded-kmimefileparsertest ${EXECUTABLE_OUTPUT_PATH}/kmimefileparsertest)
-
-
 
 ########### kded_test ###############
 #

@@ -37,10 +37,7 @@ target_link_libraries(cupsdconf  ${KDE4_KDECORE_LIBS} kio ${CUPS_LIBRARIES})
 install(TARGETS cupsdconf  DESTINATION ${LIB_INSTALL_DIR} )
 
 ########### cupsdconftest ###############
-
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
-kde4_add_test( cupsdconftest main.cpp )
+kde4_add_test_executable( cupsdconftest main.cpp )
 
 target_link_libraries( cupsdconftest cupsdconf )
 

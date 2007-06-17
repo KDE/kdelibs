@@ -151,25 +151,21 @@ target_link_libraries(js ${KJSLIBNAME})
 
 install(TARGETS js DESTINATION ${BIN_INSTALL_DIR})
 
-if(KDE4_BUILD_TESTS)
+########### testkjs_static ###############
 
-   ########### testkjs_static ###############
+set(testkjs_static_SRCS testkjs.cpp )
 
-   set(testkjs_static_SRCS testkjs.cpp )
+kde4_add_test_executable(testkjs_static ${testkjs_static_SRCS})
 
-   kde4_add_executable(testkjs_static NOGUI ${testkjs_static_SRCS})
+target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
-   target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
+########### testkjs ###############
 
-   ########### testkjs ###############
+set(testkjs_SRCS testkjs.cpp )
 
-   set(testkjs_SRCS testkjs.cpp )
+kde4_add_test_executable(testkjs ${testkjs_SRCS})
 
-   kde4_add_executable(testkjs NOGUI ${testkjs_SRCS})
-
-   target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
-
-endif(KDE4_BUILD_TESTS)
+target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
 ########### install files ###############
 install( FILES
