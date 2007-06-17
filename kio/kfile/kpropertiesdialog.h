@@ -448,8 +448,8 @@ protected Q_SLOTS:
   void slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & );
   void slotDirSizeUpdate();
   void slotDirSizeFinished( KJob * );
-  void slotFoundMountPoint( const QString& mp, unsigned long kBSize,
-			    unsigned long kBUsed, unsigned long kBAvail );
+  void slotFoundMountPoint( const QString& mp, quint64 kBSize,
+			    quint64 kBUsed, quint64 kBAvail );
   void slotSizeStop();
   void slotSizeDetermine();
 
@@ -457,8 +457,8 @@ Q_SIGNALS:
   void leaveModality();
 private Q_SLOTS:
   // workaround for compiler bug
-  void slotFoundMountPoint( const unsigned long& kBSize, const unsigned long&
-			  kBUsed, const unsigned long& kBAvail, const QString& mp );
+  void slotFoundMountPoint( const quint64& kBSize, const quint64&
+			  kBUsed, const quint64& kBAvail, const QString& mp );
   void nameFileChanged(const QString &text );
   void slotIconChanged();
 
@@ -659,9 +659,9 @@ public:
 private Q_SLOTS:
   void slotActivated( int );
   void slotDeviceChanged();
-  void slotFoundMountPoint( const unsigned long& kBSize,
-                            const unsigned long& /*kBUsed*/,
-                            const unsigned long& kBAvail,
+  void slotFoundMountPoint( const quint64& kBSize,
+                            const quint64& kBUsed,
+                            const quint64& kBAvail,
                             const QString& );
 
 private:

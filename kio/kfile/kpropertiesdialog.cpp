@@ -1110,10 +1110,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
 
       KDiskFreeSpace * job = new KDiskFreeSpace;
-      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
-               const unsigned long&, const QString& ) ),
-               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
-            const unsigned long&, const QString& ) ) );
+      connect( job, SIGNAL( foundMountPoint( const quint64&, const quint64&,
+               const quint64&, const QString& ) ),
+               this, SLOT( slotFoundMountPoint( const quint64&, const quint64&,
+            const quint64&, const QString& ) ) );
       job->readDF( mp->mountPoint() );
     }
   }
@@ -1203,9 +1203,9 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
 }
 
 void KFilePropsPlugin::slotFoundMountPoint( const QString&,
-					    unsigned long kBSize,
-					    unsigned long /*kBUsed*/,
-					    unsigned long kBAvail )
+					    quint64 kBSize,
+					    quint64 /*kBUsed*/,
+					    quint64 kBAvail )
 {
     d->m_freeSpaceLabel->setText(
 	i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
@@ -1216,9 +1216,9 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&,
 
 // attention: copy&paste below, due to compiler bug
 // it doesn't like those unsigned long parameters -- unsigned long& are ok :-/
-void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
-					    const unsigned long& /*kBUsed*/,
-					    const unsigned long& kBAvail,
+void KFilePropsPlugin::slotFoundMountPoint( const quint64& kBSize,
+					    const quint64& /*kBUsed*/,
+					    const quint64& kBAvail,
 					    const QString& )
 {
     d->m_freeSpaceLabel->setText(
@@ -1294,10 +1294,10 @@ void KFilePropsPlugin::slotSizeDetermine()
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
     if (mp) {
       KDiskFreeSpace * job = new KDiskFreeSpace;
-      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
-               const unsigned long&, const QString& ) ),
-               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
-            const unsigned long&, const QString& ) ) );
+      connect( job, SIGNAL( foundMountPoint( const quint64&, const quint64&,
+               const quint64&, const QString& ) ),
+               this, SLOT( slotFoundMountPoint( const quint64&, const quint64&,
+            const quint64&, const QString& ) ) );
       job->readDF( mp->mountPoint() );
     }
   }
@@ -3027,10 +3027,10 @@ void KDevicePropsPlugin::updateInfo()
   if ( !mountpoint->text().isEmpty() )
   {
     KDiskFreeSpace * job = new KDiskFreeSpace;
-    connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
-                                           const unsigned long&, const QString& ) ),
-             this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
-                                              const unsigned long&, const QString& ) ) );
+    connect( job, SIGNAL( foundMountPoint( const quint64&, const quint64&,
+                                           const quint64&, const QString& ) ),
+             this, SLOT( slotFoundMountPoint( const quint64&, const quint64&,
+                                              const quint64&, const QString& ) ) );
 
     job->readDF( mountpoint->text() );
   }
@@ -3057,9 +3057,9 @@ void KDevicePropsPlugin::slotDeviceChanged()
   updateInfo();
 }
 
-void KDevicePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
-                                              const unsigned long& /*kBUsed*/,
-                                              const unsigned long& kBAvail,
+void KDevicePropsPlugin::slotFoundMountPoint( const quint64& kBSize,
+                                              const quint64& /*kBUsed*/,
+                                              const quint64& kBAvail,
                                               const QString& )
 {
   d->m_freeSpaceText->show();
