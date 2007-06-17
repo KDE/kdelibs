@@ -98,7 +98,9 @@ KateDocument::KateDocument ( bool bSingleViewMode, bool bBrowserView,
   m_undoDontMerge(false),
   m_undoIgnoreCancel(false),
   lastUndoGroupWhenSaved( 0 ),
+  lastRedoGroupWhenSaved( 0 ),
   docWasSavedWhenUndoWasEmpty( true ),
+  docWasSavedWhenRedoWasEmpty( true ),
   m_modOnHd (false),
   m_modOnHdReason (0),
   m_job (0),
@@ -1546,14 +1548,62 @@ void KateDocument::redo()
 
 void KateDocument::updateModified()
 {
-  if ( ( lastUndoGroupWhenSaved &&
-         !undoItems.isEmpty() &&
-         undoItems.last() == lastUndoGroupWhenSaved )
-       || ( undoItems.isEmpty() && docWasSavedWhenUndoWasEmpty ) )
+  // I noticed that there to many variables to take into consideration
+  // with a simple 'if' or two.
+  //
+  // Patterns Detected:
+  //
+  //  pattern=223  1==7:true  1==8:false  2==7:false  2==8:false
+  //  pattern=201  1==7:true  1==8:false  2==7:false  2==8:false
+  //  pattern=195  1==7:true  1==8:false  2==7:false  2==8:true
+  //  pattern=105  1==7:true  1==8:false  2==7:false  2==8:true
+  //  pattern=148  1==7:false 1==8:false  2==7:false  2==8:false
+  //  pattern=156  1==7:false 1==8:false  2==7:false  2==8:false
+  //  pattern=149  1==7:false 1==8:true   2==7:false  2==8:false
+
+  unsigned char pattern = 0;
+  const bool oneEqualToSeven = (lastUndoGroupWhenSaved == undoItems.last());
+  const bool oneEqualToEight = (lastUndoGroupWhenSaved == redoItems.last());
+  const bool twoEqualToSeven = (lastRedoGroupWhenSaved == undoItems.last());
+  const bool twoEqualToEight = (lastRedoGroupWhenSaved == redoItems.last());
+  bool doModify = false;
+
+  if (lastUndoGroupWhenSaved) pattern |= 1;
+  if (lastRedoGroupWhenSaved) pattern |= 2;
+  if (docWasSavedWhenUndoWasEmpty) pattern |= 4;
+  if (docWasSavedWhenRedoWasEmpty) pattern |= 8;
+  if (undoItems.isEmpty()) pattern |= 16;
+  if (redoItems.isEmpty()) pattern |= 32;
+  if (undoItems.last()) pattern |= 64;
+  if (redoItems.last()) pattern |= 128;
+
+  switch (pattern)
+  {
+    case 223: case 201:
+        doModify = (oneEqualToSeven);
+      break;
+
+    case 195: case 105:
+        doModify = (oneEqualToSeven && twoEqualToEight);
+      break;
+
+    case 148: case 156:
+        doModify = true;
+      break;
+
+    case 149: case 151:
+        doModify = (oneEqualToEight);
+      break;
+  }  
+
+  if (doModify)
   {
     setModified( false );
     kdDebug(13020) << k_funcinfo << "setting modified to false!" << endl;
   };
+
+  kdDebug(13020) << k_funcinfo << "pattern=" << static_cast<unsigned int>(pattern) << " 1==7:" << oneEqualToSeven 
+  << " 1==8:" << oneEqualToEight << " 2==7:" << twoEqualToSeven << " 2==8:" << twoEqualToEight << endl;
 }
 
 void KateDocument::clearUndo()
@@ -1573,6 +1623,9 @@ void KateDocument::clearRedo()
   redoItems.setAutoDelete (true);
   redoItems.clear ();
   redoItems.setAutoDelete (false);
+
+  lastRedoGroupWhenSaved = 0;
+  docWasSavedWhenRedoWasEmpty = false;
 
   emit undoChanged ();
 }
@@ -2783,9 +2836,14 @@ void KateDocument::setModified(bool m) {
   if ( m == false && ! undoItems.isEmpty() )
   {
     lastUndoGroupWhenSaved = undoItems.last();
+    lastRedoGroupWhenSaved = redoItems.last();
   }
 
-  if ( m == false ) docWasSavedWhenUndoWasEmpty = undoItems.isEmpty();
+  if ( m == false )
+  {
+    docWasSavedWhenUndoWasEmpty = undoItems.isEmpty();
+    docWasSavedWhenRedoWasEmpty = redoItems.isEmpty();
+  }
 }
 //END
 

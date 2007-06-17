@@ -373,7 +373,9 @@ class KateDocument : public Kate::Document,
     // these two variables are for resetting the document to
     // non-modified if all changes have been undone...
     KateUndoGroup* lastUndoGroupWhenSaved;
+    KateUndoGroup* lastRedoGroupWhenSaved;
     bool docWasSavedWhenUndoWasEmpty;
+    bool docWasSavedWhenRedoWasEmpty;
 
     // this sets
     void updateModified();
