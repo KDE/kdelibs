@@ -36,9 +36,7 @@ struct KPtyPrivate {
     KPtyPrivate();
     bool chownpty(bool grant);
 
-    bool xonXoff : 1;
     bool echo    : 1;
-    bool utf8    : 1;
     int masterFd;
     int slaveFd;
     struct winsize winSize;

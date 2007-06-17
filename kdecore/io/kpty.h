@@ -136,15 +136,6 @@ public:
   void setWinSize(int lines, int columns);
 
   /**
-   * Set whether the pty should honor Xon/Xoff flow control.
-   *
-   * Xon/Xoff flow control is off by default.
-   *
-   * @param useXonXoff true if Xon/Xoff flow control should be used.
-   */
-  void setXonXoff(bool useXonXoff);
-
-  /**
    * Set whether the pty should echo input.
    *
    * Echo is on by default.
@@ -153,13 +144,6 @@ public:
    * @param echo true if input should be echoed.
    */
   void setEcho(bool echo);
-
-  /**
-   * Set the pty in utf8 mode on systems that support it.
-   * 
-   * See the man page of "stty iutf8" for more info.
-   */
-  void setUtf8Mode(bool useUtf8);
 
   /**
    * @return the name of the slave pty device.

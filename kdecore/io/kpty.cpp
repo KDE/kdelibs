@@ -141,9 +141,7 @@ public:
 //////////////////
 
 KPtyPrivate::KPtyPrivate() :
-    xonXoff(false),
     echo(true),
-    utf8(false),
     masterFd(-1), slaveFd(-1)
 {
     memset(&winSize, 0, sizeof(winSize));
@@ -323,22 +321,10 @@ bool KPty::open()
   _tcgetattr(d->masterFd, &ttmode);
 
 gotptyandmode:
-  if (!d->xonXoff)
-    ttmode.c_iflag &= ~(IXOFF | IXON);
-  else
-    ttmode.c_iflag |= (IXOFF | IXON);
-
   if (!d->echo)
     ttmode.c_lflag &= ~ECHO;
   else
     ttmode.c_lflag |= ECHO;
-
-#ifdef IUTF8
-  if (!d->utf8)
-    ttmode.c_iflag &= ~IUTF8;
-  else
-    ttmode.c_iflag |= IUTF8;
-#endif
 
   ttmode.c_cc[VINTR] = CTRL('C' - '@');
   ttmode.c_cc[VQUIT] = CTRL('\\' - '@');
@@ -518,28 +504,6 @@ void KPty::setWinSize(int lines, int columns)
     ioctl( d->masterFd, TIOCSWINSZ, (char *)&d->winSize );
 }
 
-void KPty::setXonXoff(bool useXonXoff)
-{
-  Q_D(KPty);
-
-  d->xonXoff = useXonXoff;
-  if (d->masterFd >= 0) {
-    // without the '::' some version of HP-UX thinks, this declares
-    // the struct in this class, in this method, and fails to find
-    // the correct tc[gs]etattr
-    struct ::termios ttmode;
-
-    _tcgetattr(d->masterFd, &ttmode);
-
-    if (!useXonXoff)
-      ttmode.c_iflag &= ~(IXOFF | IXON);
-    else
-      ttmode.c_iflag |= (IXOFF | IXON);
-
-    _tcsetattr(d->masterFd, &ttmode);
-  }
-}
-
 void KPty::setEcho(bool echo)
 {
     Q_D(KPty);
@@ -557,27 +521,6 @@ void KPty::setEcho(bool echo)
 
         _tcsetattr(d->masterFd, &ttmode);
     }
-}
-
-void KPty::setUtf8Mode(bool useUtf8)
-{
-  Q_D(KPty);
-
-  d->utf8 = useUtf8;
-#ifdef IUTF8 // XXX is this a sane place for this check?
-  if (d->masterFd >= 0) {
-    struct ::termios ttmode;
-
-    _tcgetattr(d->masterFd, &ttmode);
-
-    if (!useUtf8)
-      ttmode.c_iflag &= ~IUTF8;
-    else
-      ttmode.c_iflag |= IUTF8;
-
-    _tcsetattr(d->masterFd, &ttmode);
-  }
-#endif
 }
 
 const char *KPty::ttyName() const
