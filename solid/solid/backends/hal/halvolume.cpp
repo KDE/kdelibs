@@ -32,7 +32,23 @@ Volume::~Volume()
 
 bool Volume::isIgnored() const
 {
-    return m_device->property("volume.ignore").toBool();
+    if (m_device->property("volume.ignore").toBool()) {
+        return true;
+    }
+
+    /* Now be a bit more aggressive on what we want to ignore,
+     * the user generally need to check only what's removable or in /media
+     * the volumes mounted to make the system (/, /boot, /var, etc.)
+     * are useless to him.
+     */
+    HalDevice drive(m_device->property("block.storage_device").toString());
+    QString mount_point = m_device->property("volume.mount_point").toString();
+    bool mounted = m_device->property("volume.is_mounted").toBool();
+    bool removable = drive.property("storage.removable").toBool();
+    bool hotpluggable = drive.property("storage.hotpluggable").toBool();
+
+    return !removable && !hotpluggable
+        && mounted && !mount_point.startsWith("/media/");
 }
 
 Solid::StorageVolume::UsageType Volume::usage() const
