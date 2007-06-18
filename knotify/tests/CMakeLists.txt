@@ -1,4 +1,4 @@
-
+if(KDE4_BUILD_TESTS)
 project(knotifytest)
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../config )
@@ -22,6 +22,4 @@ install(TARGETS knotifytest DESTINATION ${BIN_INSTALL_DIR} )
 
 install( FILES  knotifytestui.rc knotifytest.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/knotifytest )
 
-
-
-
+endif(KDE4_BUILD_TESTS)
