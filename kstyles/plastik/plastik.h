@@ -265,7 +265,7 @@ private:
                         (height == other.height) &&
                         (c1Rgb == other.c1Rgb) &&
                         (c1Rgb == other.c1Rgb) &&
-                        (horizontal = other.horizontal);
+                        (horizontal == other.horizontal);
 //             if(!match) {
 //                 qDebug("operator ==: CacheEntries don't match!");
 //                 qDebug("width: %d\t\tother width: %d", width, other.width);
