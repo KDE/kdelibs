@@ -181,10 +181,10 @@ KDiskFreeSpace::~KDiskFreeSpace()
 {
 }
 
-int KDiskFreeSpace::readDF( const QString & mountPoint )
+bool KDiskFreeSpace::readDF( const QString & mountPoint )
 {
     quint64 availUser, total, avail;
-    int iRet = -1;
+    bool bRet = false;
     QFileInfo fi(mountPoint);
     QString dir = QDir::toNativeSeparators(fi.absoluteDir().canonicalPath());
 
@@ -196,11 +196,11 @@ int KDiskFreeSpace::readDF( const QString & mountPoint )
         total = total / 1024;
         avail = avail / 1024;
         emit foundMountPoint( mountPoint, total, total-avail, avail );
-        iRet = 1;
+        bRet = true;
     }
     emit done();
     deleteLater();
-    return iRet;
+    return bRet;
 }
 
 KDiskFreeSpace *KDiskFreeSpace::findUsageInfo( const QString & path )
