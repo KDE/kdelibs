@@ -968,7 +968,7 @@ QVariant KConfigSkeleton::ItemUrlList::property() const
 }
 
 
-Q_DECLARE_METATYPE( QList<int> );
+Q_DECLARE_METATYPE( QList<int> )
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
                                       QList<int> &reference,
