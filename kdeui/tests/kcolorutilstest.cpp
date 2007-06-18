@@ -1,6 +1,8 @@
 #include "kcolorutilstest.h"
 
 #include <kcolorutils.h>
+#include "../colors/kcolorspaces.h" // private header
+#include "../colors/kcolorspaces.cpp" // private implementation
 
 void tst_KColorUtils::testOverlay()
 {
@@ -74,6 +76,30 @@ void tst_KColorUtils::testMix()
             }
         }
     }
+}
+
+void tst_KColorUtils::testHCY()
+{
+    int r, g, b;
+    for ( r = 0; r < 256 ; r+=5 ) {
+        for ( g = 0; g < 256 ; g+=5 ) {
+            for ( b = 0; b < 256 ; b+=5 ) {
+                QColor color( r, g, b );
+                KColorSpaces::KHCY hcy( color );
+                compareColors( hcy.qColor(), color );
+            }
+        }
+    }
+}
+
+void tst_KColorUtils::testContrast()
+{
+    QCOMPARE(21.0, KColorUtils::contrastRatio(Qt::black, Qt::white));
+    QCOMPARE(21.0, KColorUtils::contrastRatio(Qt::white, Qt::black));
+    QCOMPARE(1.0, KColorUtils::contrastRatio(Qt::black, Qt::black));
+    QCOMPARE(1.0, KColorUtils::contrastRatio(Qt::white, Qt::white));
+
+    // TODO better tests :-)
 }
 
 QTEST_MAIN(tst_KColorUtils)
