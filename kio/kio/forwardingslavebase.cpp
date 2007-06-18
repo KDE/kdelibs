@@ -268,6 +268,20 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
     }
 }
 
+void ForwardingSlaveBase::setModificationTime(const KUrl& url, const QDateTime& mtime)
+{
+    kDebug() << "ForwardingSlaveBase::setModificationTime: " << url << endl;
+
+    KUrl new_url;
+    if ( internalRewriteUrl(url, new_url) )
+    {
+        KIO::SimpleJob *job = KIO::setModificationTime(new_url, mtime);
+        connectSimpleJob(job);
+
+        d->eventLoop.exec();
+    }
+}
+
 void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
                                int permissions, bool overwrite)
 {

@@ -114,6 +114,8 @@ public:
 
     virtual void chmod(const KUrl &url, int permissions);
 
+    virtual void setModificationTime(const KUrl& url, const QDateTime& mtime);
+
     virtual void copy(const KUrl &src, const KUrl &dest,
                       int permissions, bool overwrite);
 
