@@ -19,6 +19,7 @@
 */
 
 #include "krun.h"
+#include "krun_p.h"
 
 #include <config.h>
 
@@ -27,6 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <typeinfo>
+#include <sys/stat.h>
 
 #include <QtGui/QWidget>
 #include <QtCore/QPointer>
@@ -51,7 +53,7 @@
 #include <klocale.h>
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
-#include <k3process.h>
+#include <kprocess.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextIStream>
@@ -475,7 +477,7 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   return QString();
 }
 
-static bool runCommandInternal( K3Process* proc, const KService* service, const QString& binName,
+static bool runCommandInternal( KProcess* proc, const KService* service, const QString& binName,
     const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
 {
   if( window != NULL )
@@ -518,7 +520,7 @@ static bool runCommandInternal( K3Process* proc, const KService* service, const 
           data.setLaunchedBy( window->winId());
       KStartupInfo::sendStartup( id, data );
   }
-  pid_t pid = KProcessRunner::run( proc, binName, id );
+  qint64 pid = KProcessRunner::run( proc, binName, id );
   if( startup_notify && pid )
   {
       KStartupInfoData data;
@@ -530,7 +532,7 @@ static bool runCommandInternal( K3Process* proc, const KService* service, const 
 #else
   Q_UNUSED( execName );
   Q_UNUSED( iconName );
-  return KProcessRunner::run( proc, bin );
+  return KProcessRunner::run( proc, bin ) != 0;
 #endif
 }
 
@@ -603,9 +605,9 @@ static bool runTempService( const KService& _service, const KUrl::List& _urls, Q
   {
       args = KRun::processDesktopExec(_service, _urls, tempFiles, suggestedFileName );
   }
-  kDebug(7010) << "runTempService: K3Process args=" << args << endl;
+  kDebug(7010) << "runTempService: KProcess args=" << args << endl;
 
-  K3Process * proc = new K3Process;
+  KProcess * proc = new KProcess;
   *proc << args;
 
   if (!_service.path().isEmpty())
@@ -746,11 +748,11 @@ bool KRun::runCommand( const QString &cmd, QWidget* window )
 bool KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
 {
   kDebug(7010) << "runCommand " << cmd << "," << execName << endl;
-  K3Process * proc = new K3Process;
-  proc->setUseShell(true);
-  *proc << cmd;
-  KService::Ptr service = KService::serviceByDesktopName( binaryName( execName, true ) );
-  return runCommandInternal( proc, service.data(), binaryName( execName, false ), execName, iconName, window, asn );
+  KProcess * proc = new KProcess;
+  proc->setShellCommand( cmd );
+  QString bin = binaryName( execName, true );
+  KService::Ptr service = KService::serviceByDesktopName( bin );
+  return runCommandInternal( proc, service.data(), bin, execName, iconName, window, asn );
 }
 
 KRun::KRun( const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
@@ -1280,47 +1282,47 @@ bool KRun::isExecutable( const QString& serviceType )
 class KProcessRunner::KProcessRunnerPrivate
 {
 public:
-    K3Process *process;
+    KProcess *process;
     QString binName;
     KStartupInfoId id;
 };
 
-pid_t KProcessRunner::run(K3Process * p, const QString & binName)
+qint64 KProcessRunner::run(KProcess * p, const QString & binName)
 {
   return (new KProcessRunner(p, binName))->pid();
 }
 
-pid_t KProcessRunner::run(K3Process * p, const QString & binName, const KStartupInfoId& id )
+qint64 KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
 {
   return (new KProcessRunner(p, binName, id))->pid();
 }
 
-KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName )
+KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
     : QObject(), d(new KProcessRunnerPrivate)
 {
     d->process = p;
     d->binName = _binName;
-    connect(d->process, SIGNAL(processExited(K3Process *)),
-            this, SLOT(slotProcessExited(K3Process *)));
+    connect(d->process, SIGNAL(finished(int, QProcess::ExitStatus)),
+            this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
 
     d->process->start();
-    if (!d->process->pid()) {
-        slotProcessExited(d->process);
+    if (!d->process->waitForStarted()) {
+        slotProcessExited(127, QProcess::CrashExit);
     }
 }
 
-KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName, const KStartupInfoId& id )
+KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
     : QObject(), d(new KProcessRunnerPrivate)
 {
     d->process = p;
     d->binName = _binName;
     d->id = id;
-    connect(d->process, SIGNAL(processExited(K3Process *)),
-            this, SLOT(slotProcessExited(K3Process *)));
+    connect(d->process, SIGNAL(finished (int, QProcess::ExitStatus)),
+            this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
 
     d->process->start();
-    if (!d->process->pid()) {
-        slotProcessExited(d->process);
+    if (!d->process->waitForStarted()) {
+        slotProcessExited(127, QProcess::CrashExit);
     }
 }
 
@@ -1330,24 +1332,20 @@ KProcessRunner::~KProcessRunner()
     delete d;
 }
 
-pid_t KProcessRunner::pid() const
+qint64 KProcessRunner::pid() const
 {
-    return d->process->pid();
+    return d->process ? d->process->pid() : 0;
 }
 
 void
-KProcessRunner::slotProcessExited(K3Process * p)
+KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    if (p != d->process) {
-        return; // Eh ?
-    }
-
-    kDebug(7010) << "slotProcessExited " << d->binName << endl;
-    kDebug(7010) << "normalExit " << d->process->normalExit() << endl;
-    kDebug(7010) << "exitStatus " << d->process->exitStatus() << endl;
-    bool showErr = d->process->normalExit()
-                   && (d->process->exitStatus() == 127 || d->process->exitStatus() == 1);
-    if (!d->binName.isEmpty() && (showErr || d->process->pid() == 0 )) {
+  kDebug(7010) << "slotProcessExited " << d->binName << endl;
+  kDebug(7010) << "normalExit " << (exitStatus == QProcess::NormalExit) << endl;
+  kDebug(7010) << "exitCode " << exitCode << endl;
+  bool showErr = exitStatus == QProcess::NormalExit
+                 && (exitCode == 127 || exitCode == 1);
+  if (!d->binName.isEmpty() && (showErr || pid() == 0 )) {
     // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
     // We can't just rely on that, but it's a good hint.
     // Before assuming its really so, we'll try to find the binName
@@ -1363,10 +1361,11 @@ KProcessRunner::slotProcessExited(K3Process * p)
       KStartupInfoData data;
       data.addPid(pid()); // announce this pid for the startup notification has finished
       data.setHostname();
-        KStartupInfo::sendFinish(d->id, data);
+      KStartupInfo::sendFinish(d->id, data);
   }
 #endif
   deleteLater();
 }
 
 #include "krun.moc"
+#include "krun_p.moc"

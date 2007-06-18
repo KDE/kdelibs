@@ -24,16 +24,12 @@
 
 #include <kio/kio_export.h>
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtCore/QString>
-#include <kurl.h>
-#include <kstartupinfo.h>
 
-class K3Process;
+#include <kurl.h>
+
 class KService;
 class KStartupInfo;
 class KJob;
@@ -392,40 +388,6 @@ private:
 private:
   class KRunPrivate;
   KRunPrivate* const d;
-};
-
-/**
- * @internal
- * This class watches a process launched by KRun.
- * It sends a notification when the process exits (for the taskbar)
- * and it will show an error message if necessary (e.g. "program not found").
- */
-class KIO_EXPORT KProcessRunner : public QObject
-{
-  Q_OBJECT
-
-  public:
-
-    static pid_t run(K3Process *, const QString & binName);
-    static pid_t run(K3Process *, const QString & binName, const KStartupInfoId& id );
-
-    virtual ~KProcessRunner();
-
-    pid_t pid() const;
-
-  protected Q_SLOTS:
-
-    void slotProcessExited(K3Process *);
-
-  private:
-    KProcessRunner(K3Process *, const QString & binName);
-    KProcessRunner(K3Process *, const QString & binName, const KStartupInfoId& id );
-    KProcessRunner();
-
-    class KProcessRunnerPrivate;
-    KProcessRunnerPrivate *const d;
-
-    Q_DISABLE_COPY(KProcessRunner)
 };
 
 #endif
