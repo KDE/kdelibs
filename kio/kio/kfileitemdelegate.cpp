@@ -880,15 +880,21 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     if (brush.style() != Qt::NoBrush)
     {
-        // If the selection rectangle should only cover the text label
+        QPainterPath path;
+        QRect r;
+
         if (!option.showDecorationSelected)
-        {
-            const QRect r = d->addMargin(textBoundingRect, Private::TextMargin);
-            const QPainterPath path = d->roundedRectangle(r, 5);
-            painter->fillPath(path, brush);
-        }
+            r = d->addMargin(textBoundingRect, Private::TextMargin);
         else
-            painter->fillRect(option.rect, brush);
+            r = option.rect;
+
+        // Always draw rounded selection rectangles in list views
+        if (d->isListView(option))
+            path = d->roundedRectangle(r, 5);
+        else
+            path.addRect(r);
+
+        painter->fillPath(path, brush);
     }
 
 
