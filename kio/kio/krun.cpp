@@ -101,7 +101,7 @@ bool KRun::isExecutableFile( const KUrl& url, const QString &mimetype )
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
-pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName, const QByteArray& asn )
+bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName, const QByteArray& asn )
 {
   bool noRun = false;
   bool noAuth = false;
@@ -109,7 +109,7 @@ pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bo
   {
     KMessageBoxWrapper::error( window,
             i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyUrl())) );
-    return 0;
+    return false;
   }
   else if ( _mimetype == "application/x-desktop" )
   {
@@ -149,13 +149,13 @@ pid_t KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, bo
     KMessageBox::sorry( window,
         i18n("<qt>The file <b>%1</b> is an executable program. "
              "For safety it will not be started.</qt>", Qt::escape(u.prettyUrl())));
-    return 0;
+    return false;
   }
   if ( noAuth )
   {
     KMessageBoxWrapper::error( window,
         i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyUrl())) );
-    return 0;
+    return false;
   }
 
   KUrl::List lst;
@@ -475,7 +475,7 @@ QString KRun::binaryName( const QString & execLine, bool removePath )
   return QString();
 }
 
-static pid_t runCommandInternal( K3Process* proc, const KService* service, const QString& binName,
+static bool runCommandInternal( K3Process* proc, const KService* service, const QString& binName,
     const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
 {
   if( window != NULL )
@@ -485,7 +485,7 @@ static pid_t runCommandInternal( K3Process* proc, const KService* service, const
   {
      kWarning() << "No authorization to execute " << service->desktopEntryPath() << endl;
      KMessageBox::sorry( window, i18n("You are not authorized to execute this file."));
-     return 0;
+     return false;
   }
   QString bin = KRun::binaryName( binName, true );
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
@@ -526,7 +526,7 @@ static pid_t runCommandInternal( K3Process* proc, const KService* service, const
       KStartupInfo::sendChange( id, data );
       KStartupInfo::resetStartupEnv();
   }
-  return pid;
+  return pid != 0;
 #else
   Q_UNUSED( execName );
   Q_UNUSED( iconName );
@@ -573,7 +573,7 @@ bool KRun::checkStartupNotify( const QString& /*binName*/, const KService* servi
   return true;
 }
 
-static pid_t runTempService( const KService& _service, const KUrl::List& _urls, QWidget* window,
+static bool runTempService( const KService& _service, const KUrl::List& _urls, QWidget* window,
     bool tempFiles, const QString& suggestedFileName, const QByteArray& asn )
 {
   if (!_urls.isEmpty()) {
@@ -660,7 +660,7 @@ static KUrl::List resolveURLs( const KUrl::List& _urls, const KService& _service
   return urls;
 }
 
-pid_t KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* window,
+bool KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* window,
     bool tempFiles, const QString& suggestedFileName, const QByteArray& asn )
 {
   if (!_service.desktopEntryPath().isEmpty() &&
@@ -668,7 +668,7 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* win
   {
      kWarning() << "No authorization to execute " << _service.desktopEntryPath() << endl;
      KMessageBox::sorry( window, i18n("You are not authorized to execute this service.") );
-     return 0;
+     return false;
   }
 
   if ( !tempFiles )
@@ -722,15 +722,15 @@ pid_t KRun::run( const KService& _service, const KUrl::List& _urls, QWidget* win
   {
      kDebug(7010) << error << endl;
      KMessageBox::sorry( window, error );
-     return 0;
+     return false;
   }
 
   kDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
-  return (pid_t) pid;
+  return true;
 }
 
 
-pid_t KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window, const QString& _name,
+bool KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window, const QString& _name,
                  const QString& _icon, const QByteArray& asn )
 {
   KService::Ptr service(new KService(_name, _exec, _icon));
@@ -738,12 +738,12 @@ pid_t KRun::run( const QString& _exec, const KUrl::List& _urls, QWidget* window,
   return run( *service, _urls, window, false, QString(), asn );
 }
 
-pid_t KRun::runCommand( const QString &cmd, QWidget* window )
+bool KRun::runCommand( const QString &cmd, QWidget* window )
 {
   return KRun::runCommand( cmd, QString(), QString(), window, "" );
 }
 
-pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
+bool KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName, QWidget* window, const QByteArray& asn )
 {
   kDebug(7010) << "runCommand " << cmd << "," << execName << endl;
   K3Process * proc = new K3Process;
@@ -1282,24 +1282,18 @@ class KProcessRunner::KProcessRunnerPrivate
 public:
     K3Process *process;
     QString binName;
-#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     KStartupInfoId id;
-#endif
 };
 
-pid_t
-KProcessRunner::run(K3Process * p, const QString & binName)
+pid_t KProcessRunner::run(K3Process * p, const QString & binName)
 {
   return (new KProcessRunner(p, binName))->pid();
 }
 
-#ifdef Q_WS_X11
-pid_t
-KProcessRunner::run(K3Process * p, const QString & binName, const KStartupInfoId& id )
+pid_t KProcessRunner::run(K3Process * p, const QString & binName, const KStartupInfoId& id )
 {
   return (new KProcessRunner(p, binName, id))->pid();
 }
-#endif
 
 KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName )
     : QObject(), d(new KProcessRunnerPrivate)
@@ -1315,7 +1309,6 @@ KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName )
     }
 }
 
-#ifdef Q_WS_X11
 KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName, const KStartupInfoId& id )
     : QObject(), d(new KProcessRunnerPrivate)
 {
@@ -1330,7 +1323,6 @@ KProcessRunner::KProcessRunner(K3Process * p, const QString & _binName, const KS
         slotProcessExited(d->process);
     }
 }
-#endif
 
 KProcessRunner::~KProcessRunner()
 {
@@ -1338,13 +1330,12 @@ KProcessRunner::~KProcessRunner()
     delete d;
 }
 
-  pid_t
-KProcessRunner::pid() const
+pid_t KProcessRunner::pid() const
 {
     return d->process->pid();
 }
 
-  void
+void
 KProcessRunner::slotProcessExited(K3Process * p)
 {
     if (p != d->process) {
@@ -1370,7 +1361,7 @@ KProcessRunner::slotProcessExited(K3Process * p)
 #ifdef Q_WS_X11
     if (!d->id.none()) {
       KStartupInfoData data;
-      data.addPid( pid()); // announce this pid for the startup notification has finished
+      data.addPid(pid()); // announce this pid for the startup notification has finished
       data.setHostname();
         KStartupInfo::sendFinish(d->id, data);
   }

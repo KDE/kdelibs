@@ -21,7 +21,6 @@
 #define KDESKTOPFILEACTIONS_H
 
 #include <kio/kio_export.h>
-#include <sys/types.h> // pid_t
 #include <kurl.h>
 class KDesktopFile;
 
@@ -91,7 +90,7 @@ namespace KDesktopFileActions
      * @return true on success and false on failure.
      * @see KRun::runUrl
      */
-    KIO_EXPORT pid_t run( const KUrl& _url, bool _is_local );
+    KIO_EXPORT bool run( const KUrl& _url, bool _is_local );
 }
 
 #endif

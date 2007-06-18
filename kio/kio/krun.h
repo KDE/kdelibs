@@ -193,7 +193,7 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return the process id, or 0 on error
    */
-  static pid_t run( const KService& service, const KUrl::List& urls, QWidget* window,
+  static bool run( const KService& service, const KUrl::List& urls, QWidget* window,
       bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
 
   /**
@@ -209,7 +209,7 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return the process id, or 0 on error
    */
-  static pid_t run( const QString& exec, const KUrl::List& urls, QWidget* window,
+  static bool run( const QString& exec, const KUrl::List& urls, QWidget* window,
                     const QString& name = QString(),
                     const QString& icon = QString(),
                     const QByteArray& asn = "" );
@@ -232,7 +232,7 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return the process id, or 0 on error
    */
-  static pid_t runUrl( const KUrl& url, const QString& mimetype, QWidget* window,
+  static bool runUrl( const KUrl& url, const QString& mimetype, QWidget* window,
       bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
 
   /**
@@ -249,7 +249,7 @@ public:
    *
    * @return PID of running command, 0 if it could not be started.
    */
-  static pid_t runCommand( const QString &cmd, QWidget* window );
+  static bool runCommand( const QString &cmd, QWidget* window );
 
   /**
    * Same as the other runCommand(), but it also takes the name of the
@@ -263,7 +263,7 @@ public:
    * @param asn Application startup notification id, if any (otherwise "").
    * @return PID of running command, 0 if it could not be started.
    */
-  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon, QWidget* window, const QByteArray& asn = "" );
+  static bool runCommand( const QString& cmd, const QString & execName, const QString & icon, QWidget* window, const QByteArray& asn = "" );
 
   /**
    * Display the Open-With dialog for those URLs, and run the chosen application.
@@ -407,9 +407,7 @@ class KIO_EXPORT KProcessRunner : public QObject
   public:
 
     static pid_t run(K3Process *, const QString & binName);
-#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     static pid_t run(K3Process *, const QString & binName, const KStartupInfoId& id );
-#endif
 
     virtual ~KProcessRunner();
 
@@ -421,9 +419,7 @@ class KIO_EXPORT KProcessRunner : public QObject
 
   private:
     KProcessRunner(K3Process *, const QString & binName);
-#ifdef Q_WS_X11 // We don't have KStartupInfo in Qt/Embedded
     KProcessRunner(K3Process *, const QString & binName, const KStartupInfoId& id );
-#endif
     KProcessRunner();
 
     class KProcessRunnerPrivate;

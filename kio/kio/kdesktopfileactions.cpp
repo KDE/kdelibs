@@ -30,16 +30,16 @@
 #include <klocale.h>
 #include "kservice.h"
 
-static pid_t runFSDevice( const KUrl& _url, const KDesktopFile &cfg );
-static pid_t runApplication( const KUrl& _url, const QString & _serviceFile );
-static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg );
+static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg );
+static bool runApplication( const KUrl& _url, const QString & _serviceFile );
+static bool runLink( const KUrl& _url, const KDesktopFile &cfg );
 
-pid_t KDesktopFileActions::run( const KUrl& u, bool _is_local )
+bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
 {
     // It might be a security problem to run external untrusted desktop
     // entry files
     if ( !_is_local )
-        return 0;
+        return false;
 
     KDesktopFile cfg( u.path() );
     QString type = cfg.desktopGroup().readEntry( "Type" );
@@ -48,7 +48,7 @@ pid_t KDesktopFileActions::run( const KUrl& u, bool _is_local )
         QString tmp = i18n("The desktop entry file %1 "
                            "has no Type=... entry.", u.path() );
         KMessageBoxWrapper::error( 0, tmp);
-        return 0;
+        return false;
     }
 
     //kDebug(7009) << "TYPE = " << type.data() << endl;
@@ -66,12 +66,12 @@ pid_t KDesktopFileActions::run( const KUrl& u, bool _is_local )
     QString tmp = i18n("The desktop entry of type\n%1\nis unknown.",  type );
     KMessageBoxWrapper::error( 0, tmp);
 
-    return 0;
+    return false;
 }
 
-static pid_t runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
+static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
 {
-    pid_t retval = 0;
+    bool retval = false;
 
     KConfigGroup cg = cfg.desktopGroup();
     QString dev = cg.readEntry( "Dev" );
@@ -98,32 +98,32 @@ static pid_t runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
 #ifndef Q_WS_WIN
         (void) new KAutoMount( ro, fstype.toLatin1(), dev, point, _url.path() );
 #endif
-        retval = -1; // we don't want to return 0, but we don't want to return a pid
+        retval = false;
     }
 
     return retval;
 }
 
-static pid_t runApplication( const KUrl& , const QString & _serviceFile )
+static bool runApplication( const KUrl& , const QString & _serviceFile )
 {
     KService s( _serviceFile );
     if ( !s.isValid() )
         // The error message was already displayed, so we can just quit here
         // ### KDE4: is this still the case?
-        return 0;
+        return false;
 
     KUrl::List lst;
     return KRun::run( s, lst, 0 /*TODO - window*/ );
 }
 
-static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg )
+static bool runLink( const KUrl& _url, const KDesktopFile &cfg )
 {
     QString u = cfg.readUrl();
     if ( u.isEmpty() )
     {
         QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.prettyUrl() );
         KMessageBoxWrapper::error( 0, tmp );
-        return 0;
+        return false;
     }
 
     KUrl url ( u );
@@ -136,7 +136,7 @@ static pid_t runLink( const KUrl& _url, const KDesktopFile &cfg )
     if ( !lastOpenedWidth.isEmpty() )
         run->setPreferredService( lastOpenedWidth );
 
-    return -1; // we don't want to return 0, but we don't want to return a pid
+    return false;
 }
 
 QList<KDesktopFileActions::Service> KDesktopFileActions::builtinServices( const KUrl& _url )
