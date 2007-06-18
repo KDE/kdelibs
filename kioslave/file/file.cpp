@@ -226,6 +226,25 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
         finished();
 }
 
+void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime )
+{
+    const QByteArray path = QFile::encodeName(url.toLocalFile());
+    KDE_struct_stat statbuf;
+    if (KDE_lstat(path, &statbuf) == 0) {
+        struct utimbuf utbuf;
+        utbuf.actime = statbuf.st_atime; // access time, unchanged
+        utbuf.modtime = mtime.toTime_t(); // modification time
+        if (utime(path, &utbuf) != 0) {
+            // TODO: errno could be EACCES, EPERM, EROFS
+            error(KIO::ERR_CANNOT_SETTIME, path);
+        } else {
+            finished();
+        }
+    } else {
+        error( KIO::ERR_DOES_NOT_EXIST, path );
+    }
+}
+
 void FileProtocol::mkdir( const KUrl& url, int permissions )
 {
     QByteArray _path( QFile::encodeName(url.toLocalFile()));
