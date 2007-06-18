@@ -27,7 +27,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtCore/QString>
-
+#include <sys/types.h>
 #include <kurl.h>
 
 class KService;
