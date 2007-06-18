@@ -141,6 +141,17 @@
     virtual void setProperty(const QVariant &p) = 0;
 
     /**
+     * Check whether the item is equal to v.
+     *
+     * Use this function to compare items that use custom types such as KUrl,
+     * because QVariant::operator== will not work for those.
+     *
+     * @param v QVariant to compare to
+     * @return true if the item is equal to v, false otherwise
+     */
+    virtual bool isEqual(const QVariant &v) const = 0;
+
+    /**
      * Return item as property
      */
     virtual QVariant property() const = 0;
@@ -378,6 +389,9 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
 
@@ -431,6 +445,9 @@ public:
         /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
         void setProperty(const QVariant & p);
 
+        /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+	bool isEqual(const QVariant &p) const;
+
         /** @copydoc KConfigSkeletonItem::property() */
         QVariant property() const;
     };
@@ -447,6 +464,10 @@ public:
 
     void readConfig(KConfig * config);
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     QVariant property() const;
   };
 
@@ -466,6 +487,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -487,6 +511,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -529,6 +556,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -601,6 +631,9 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
 
@@ -638,6 +671,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -677,6 +713,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -718,6 +757,9 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
@@ -738,6 +780,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -760,6 +805,9 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
@@ -781,6 +829,9 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
@@ -801,6 +852,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -824,6 +878,9 @@ public:
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
 
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
+
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
   };
@@ -845,6 +902,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;
@@ -888,6 +948,9 @@ public:
         /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
         void setProperty(const QVariant & p);
 
+        /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+	bool isEqual(const QVariant &p) const;
+
         /** @copydoc KConfigSkeletonItem::property() */
         QVariant property() const;
     };
@@ -908,6 +971,9 @@ public:
 
     /** @copydoc KConfigSkeletonItem::setProperty(const QVariant&) */
     void setProperty(const QVariant & p);
+
+    /** @copydoc KConfigSkeletonItem::isEqual(const QVariant &) */
+    bool isEqual(const QVariant &p) const;
 
     /** @copydoc KConfigSkeletonItem::property() */
     QVariant property() const;

@@ -163,6 +163,11 @@ void KConfigSkeleton::ItemString::setProperty(const QVariant & p)
   mReference = p.toString();
 }
 
+bool KConfigSkeleton::ItemString::isEqual(const QVariant &v) const
+{
+    return mReference == v.toString();
+}
+
 QVariant KConfigSkeleton::ItemString::property() const
 {
   return QVariant(mReference);
@@ -216,6 +221,11 @@ void KConfigSkeleton::ItemUrl::setProperty(const QVariant & p)
     mReference = qvariant_cast<KUrl>(p);
 }
 
+bool KConfigSkeleton::ItemUrl::isEqual(const QVariant &v) const
+{
+    return mReference == qvariant_cast<KUrl>(v);
+}
+
 QVariant KConfigSkeleton::ItemUrl::property() const
 {
     return qVariantFromValue<KUrl>(mReference);
@@ -243,6 +253,12 @@ void KConfigSkeleton::ItemProperty::setProperty(const QVariant & p)
   mReference = p;
 }
 
+bool KConfigSkeleton::ItemProperty::isEqual(const QVariant &v) const
+{
+    //this might cause problems if the QVariants are not of default types
+    return mReference == v;
+}
+
 QVariant KConfigSkeleton::ItemProperty::property() const
 {
   return mReference;
@@ -266,6 +282,11 @@ void KConfigSkeleton::ItemBool::readConfig( KConfig *config )
 void KConfigSkeleton::ItemBool::setProperty(const QVariant & p)
 {
   mReference = p.toBool();
+}
+
+bool KConfigSkeleton::ItemBool::isEqual(const QVariant &v) const
+{
+    return mReference == v.toBool();
 }
 
 QVariant KConfigSkeleton::ItemBool::property() const
@@ -297,6 +318,11 @@ void KConfigSkeleton::ItemInt::readConfig( KConfig *config )
 void KConfigSkeleton::ItemInt::setProperty(const QVariant & p)
 {
   mReference = p.toInt();
+}
+
+bool KConfigSkeleton::ItemInt::isEqual(const QVariant &v) const
+{
+    return mReference == v.toInt();
 }
 
 QVariant KConfigSkeleton::ItemInt::property() const
@@ -354,6 +380,11 @@ void KConfigSkeleton::ItemLongLong::readConfig( KConfig *config )
 void KConfigSkeleton::ItemLongLong::setProperty(const QVariant & p)
 {
   mReference = p.toLongLong();
+}
+
+bool KConfigSkeleton::ItemLongLong::isEqual(const QVariant &v) const
+{
+    return mReference == v.toLongLong();
 }
 
 QVariant KConfigSkeleton::ItemLongLong::property() const
@@ -470,6 +501,11 @@ void KConfigSkeleton::ItemUInt::setProperty(const QVariant & p)
   mReference = p.toUInt();
 }
 
+bool KConfigSkeleton::ItemUInt::isEqual(const QVariant &v) const
+{
+    return mReference == v.toUInt();
+}
+
 QVariant KConfigSkeleton::ItemUInt::property() const
 {
   return QVariant(mReference);
@@ -525,6 +561,11 @@ void KConfigSkeleton::ItemULongLong::readConfig( KConfig *config )
 void KConfigSkeleton::ItemULongLong::setProperty(const QVariant & p)
 {
   mReference = p.toULongLong();
+}
+
+bool KConfigSkeleton::ItemULongLong::isEqual(const QVariant &v) const
+{
+    return mReference == v.toULongLong();
 }
 
 QVariant KConfigSkeleton::ItemULongLong::property() const
@@ -583,6 +624,11 @@ void KConfigSkeleton::ItemDouble::setProperty(const QVariant & p)
   mReference = p.toDouble();
 }
 
+bool KConfigSkeleton::ItemDouble::isEqual(const QVariant &v) const
+{
+    return mReference == v.toDouble();
+}
+
 QVariant KConfigSkeleton::ItemDouble::property() const
 {
   return QVariant(mReference);
@@ -636,6 +682,11 @@ void KConfigSkeleton::ItemColor::setProperty(const QVariant & p)
   mReference = qvariant_cast<QColor>(p);
 }
 
+bool KConfigSkeleton::ItemColor::isEqual(const QVariant &v) const
+{
+    return mReference == qvariant_cast<QColor>(v);
+}
+
 QVariant KConfigSkeleton::ItemColor::property() const
 {
   return QVariant(mReference);
@@ -661,6 +712,11 @@ void KConfigSkeleton::ItemFont::readConfig( KConfig *config )
 void KConfigSkeleton::ItemFont::setProperty(const QVariant & p)
 {
   mReference = qvariant_cast<QFont>(p);
+}
+
+bool KConfigSkeleton::ItemFont::isEqual(const QVariant &v) const
+{
+    return mReference == qvariant_cast<QFont>(v);
 }
 
 QVariant KConfigSkeleton::ItemFont::property() const
@@ -690,6 +746,11 @@ void KConfigSkeleton::ItemRect::setProperty(const QVariant & p)
   mReference = p.toRect();
 }
 
+bool KConfigSkeleton::ItemRect::isEqual(const QVariant &v) const
+{
+    return mReference == v.toRect();
+}
+
 QVariant KConfigSkeleton::ItemRect::property() const
 {
   return QVariant(mReference);
@@ -715,6 +776,11 @@ void KConfigSkeleton::ItemPoint::readConfig( KConfig *config )
 void KConfigSkeleton::ItemPoint::setProperty(const QVariant & p)
 {
   mReference = p.toPoint();
+}
+
+bool KConfigSkeleton::ItemPoint::isEqual(const QVariant &v) const
+{
+    return mReference == v.toPoint();
 }
 
 QVariant KConfigSkeleton::ItemPoint::property() const
@@ -744,6 +810,11 @@ void KConfigSkeleton::ItemSize::setProperty(const QVariant & p)
   mReference = p.toSize();
 }
 
+bool KConfigSkeleton::ItemSize::isEqual(const QVariant &v) const
+{
+    return mReference == v.toSize();
+}
+
 QVariant KConfigSkeleton::ItemSize::property() const
 {
   return QVariant(mReference);
@@ -769,6 +840,11 @@ void KConfigSkeleton::ItemDateTime::readConfig( KConfig *config )
 void KConfigSkeleton::ItemDateTime::setProperty(const QVariant & p)
 {
   mReference = p.toDateTime();
+}
+
+bool KConfigSkeleton::ItemDateTime::isEqual(const QVariant &v) const
+{
+    return mReference == v.toDateTime();
 }
 
 QVariant KConfigSkeleton::ItemDateTime::property() const
@@ -799,6 +875,11 @@ void KConfigSkeleton::ItemStringList::readConfig( KConfig *config )
 void KConfigSkeleton::ItemStringList::setProperty(const QVariant & p)
 {
   mReference = p.toStringList();
+}
+
+bool KConfigSkeleton::ItemStringList::isEqual(const QVariant &v) const
+{
+    return mReference == v.toStringList();
 }
 
 QVariant KConfigSkeleton::ItemStringList::property() const
@@ -876,10 +957,18 @@ void KConfigSkeleton::ItemUrlList::setProperty(const QVariant & p)
     mReference = qvariant_cast<KUrl::List>(p);
 }
 
+bool KConfigSkeleton::ItemUrlList::isEqual(const QVariant &v) const
+{
+    return mReference == qvariant_cast<KUrl::List>(v);
+}
+
 QVariant KConfigSkeleton::ItemUrlList::property() const
 {
     return qVariantFromValue<KUrl::List>(mReference);
 }
+
+
+Q_DECLARE_METATYPE( QList<int> );
 
 KConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
                                       QList<int> &reference,
@@ -900,15 +989,19 @@ void KConfigSkeleton::ItemIntList::readConfig( KConfig *config )
   readImmutability( cg );
 }
 
-void KConfigSkeleton::ItemIntList::setProperty(const QVariant &)
+void KConfigSkeleton::ItemIntList::setProperty(const QVariant &p)
 {
-  // TODO: Not yet supported
+    mReference = qvariant_cast< QList<int> >(p);
+}
+
+bool KConfigSkeleton::ItemIntList::isEqual(const QVariant &v) const
+{
+    return mReference == qvariant_cast< QList<int> >(v);
 }
 
 QVariant KConfigSkeleton::ItemIntList::property() const
 {
-  // TODO: Not yet supported
-  return QVariant();
+    return qVariantFromValue< QList<int> >(mReference);
 }
 
 
