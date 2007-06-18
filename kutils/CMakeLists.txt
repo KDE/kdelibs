@@ -14,7 +14,6 @@ install( FILES
  ksettings/dispatcher.h
  ksettings/dialog.h
  ksettings/pluginpage.h
- ksettings/componentsdialog.h
 DESTINATION  ${INCLUDE_INSTALL_DIR}/ksettings )
 
 ########### next target ###############

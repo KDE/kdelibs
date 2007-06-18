@@ -27,6 +27,7 @@ class KPluginSelector;
 
 namespace KSettings
 {
+    class PluginPagePrivate;
 
 /**
  * @short Convenience KCModule for creating a plugins config page.
@@ -69,6 +70,7 @@ namespace KSettings
 class KUTILS_EXPORT PluginPage : public KCModule
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(PluginPage)
     public:
         /**
          * Standard KCModule constructor.
@@ -100,13 +102,13 @@ class KUTILS_EXPORT PluginPage : public KCModule
         virtual void save();
         virtual void defaults();
 
+    protected:
+        PluginPagePrivate *const d_ptr;
+
     private:
-        class PluginPagePrivate;
-        PluginPagePrivate* const d;
+        Q_PRIVATE_SLOT(d_func(), void _k_reparseConfiguration(const QByteArray &a))
 };
 
 }
-
-// vim: sw=4 sts=4 et
 
 #endif // KSETTINGS_PLUGINPAGE_H

@@ -86,5 +86,4 @@ class KUTILS_EXPORT ComponentsDialog : public KDialog
 
 }
 
-// vim: sw=4 sts=4 et
 #endif // KSETTINGS_COMPONENTSDIALOG_H

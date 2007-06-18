@@ -17,7 +17,7 @@
 
 */
 
-#include "ksettings/componentsdialog.h"
+#include "componentsdialog_p.h"
 #include <klocale.h>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
@@ -178,5 +178,4 @@ void ComponentsDialog::slotApply()
 
 } //namespace
 
-#include "componentsdialog.moc"
-// vim: sw=4 sts=4 et
+#include "componentsdialog_p.moc"

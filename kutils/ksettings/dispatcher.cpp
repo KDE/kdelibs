@@ -17,7 +17,8 @@
 
 */
 
-#include "ksettings/dispatcher.h"
+#include "dispatcher.h"
+#include "dispatcher_p.h"
 
 #include <kdebug.h>
 #include <kconfig.h>
@@ -28,43 +29,12 @@
 namespace KSettings
 {
 
-class ComponentInfo
+namespace Dispatcher
 {
-public:
-    KComponentData componentData;
-    typedef QPair<QObject*, const char*> Slot;
-    QList<Slot> slotList;
-    int count;
-};
 
-class Dispatcher::DispatcherPrivate
-{
-    public:
-        QMap<QByteArray, ComponentInfo> m_componentInfo;
-        QMap<QObject *, QByteArray> m_componentName;
-};
+K_GLOBAL_STATIC(DispatcherPrivate, d)
 
-Dispatcher *Dispatcher::self()
-{
-    K_GLOBAL_STATIC(Dispatcher, pSelf)
-    kDebug(701) << k_funcinfo << endl;
-    return pSelf;
-}
-
-Dispatcher::Dispatcher(QObject *parent)
-    : QObject(parent)
-    , d(new DispatcherPrivate)
-{
-    kDebug(701) << k_funcinfo << endl;
-}
-
-Dispatcher::~Dispatcher()
-{
-    kDebug(701) << k_funcinfo << endl;
-    delete d;
-}
-
-void Dispatcher::registerComponent(const KComponentData &componentData, QObject *recv, const char *slot)
+void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot)
 {
     Q_ASSERT(componentData.isValid());
     // keep the KComponentData around and call
@@ -78,10 +48,10 @@ void Dispatcher::registerComponent(const KComponentData &componentData, QObject 
     d->m_componentInfo[componentName].slotList.append(ComponentInfo::Slot(recv, slot));
 
     ++(d->m_componentInfo[componentName].count);
-    connect(recv, SIGNAL(destroyed(QObject *)), this, SLOT(unregisterComponent(QObject *)));
+    QObject::connect(recv, SIGNAL(destroyed(QObject *)), d, SLOT(unregisterComponent(QObject *)));
 }
 
-KSharedConfig::Ptr Dispatcher::configForComponentName(const QByteArray &componentName)
+KSharedConfig::Ptr configForComponentName(const QByteArray &componentName)
 {
     kDebug(701) << k_funcinfo << endl;
     if (d->m_componentInfo.contains(componentName)) {
@@ -96,7 +66,7 @@ KSharedConfig::Ptr Dispatcher::configForComponentName(const QByteArray &componen
     return d->m_componentInfo.constBegin()->componentData.config();
 }
 
-QList<QByteArray> Dispatcher::componentNames() const
+QList<QByteArray> componentNames()
 {
     kDebug(701) << k_funcinfo << endl;
     QList<QByteArray> names;
@@ -108,7 +78,7 @@ QList<QByteArray> Dispatcher::componentNames() const
     return names;
 }
 
-void Dispatcher::reparseConfiguration(const QByteArray & componentName)
+void reparseConfiguration(const QByteArray & componentName)
 {
     kDebug(701) << k_funcinfo << componentName << endl;
     // check if the componentName is valid:
@@ -124,7 +94,7 @@ void Dispatcher::reparseConfiguration(const QByteArray & componentName)
     }
 }
 
-void Dispatcher::syncConfiguration()
+void syncConfiguration()
 {
     for (QMap<QByteArray, ComponentInfo>::ConstIterator it = d->m_componentInfo.begin(); it != d->m_componentInfo.end(); ++it) {
         KSharedConfig::Ptr config = (*it).componentData.config();
@@ -132,19 +102,18 @@ void Dispatcher::syncConfiguration()
     }
 }
 
-void Dispatcher::unregisterComponent(QObject *obj)
+void DispatcherPrivate::unregisterComponent(QObject *obj)
 {
     kDebug(701) << k_funcinfo << endl;
-    QByteArray name = d->m_componentName[obj];
-    d->m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
-    --(d->m_componentInfo[name].count);
-    if (d->m_componentInfo[name].count == 0) {
-        d->m_componentInfo.remove(name);
+    QByteArray name = m_componentName[obj];
+    m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
+    --(m_componentInfo[name].count);
+    if (m_componentInfo[name].count == 0) {
+        m_componentInfo.remove(name);
     }
 }
 
-} //namespace
+} // namespace Dispatcher
+} // namespace KSettings
 
-#include "dispatcher.moc"
-
-// vim: sw=4 sts=4 et
+#include "dispatcher_p.moc"

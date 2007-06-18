@@ -17,396 +17,60 @@
 
 */
 
-#include "ksettings/dialog.h"
+#include "dialog.h"
+#include "dialog_p.h"
 
-#include <kcmultidialog.h>
+#include "dispatcher.h"
+#include "componentsdialog_p.h"
+
 #include <klocale.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <kservicetypetrader.h>
-#include <kpagewidgetmodel.h>
-#include <kplugininfo.h>
-#include "ksettings/dispatcher.h"
-#include "ksettings/componentsdialog.h"
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <kiconloader.h>
-#include <kvbox.h>
-#include <QtGui/QLabel>
-#include <QtCore/QList>
-#include "kcmoduleinfo.h"
 
 namespace KSettings
 {
 
-struct GroupInfo
+Dialog::Dialog(ContentInListView content, QWidget *parent, const QStringList &arguments)
+    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent, (content == Static), arguments))
 {
-	QString id;
-	QString name;
-	QString comment;
-	QString icon;
-	int weight;
-	QString parentid;
-	QWidget * page;
-};
-
-// The TreeList can get really complicated. That's why a tree data structure
-// is necessary to make it suck less
-class PageNode
-{
-	private:
-		typedef QList<PageNode*> List;
-		enum Type { KCM, Group, Root };
-		union Value
-		{
-			KCModuleInfo * kcm;
-			GroupInfo * group;
-		};
-		Type m_type;
-		Value m_value;
-
-		Dialog * m_dialog;
-		List m_children;
-		PageNode * m_parent;
-		bool m_visible;
-		bool m_dirty;
-		KPageWidgetItem * m_pageWidgetItem;
-
-	protected:
-		PageNode( KCModuleInfo * info, PageNode * parent )
-			: m_type( KCM )
-			, m_parent( parent )
-			, m_visible( true )
-			, m_dirty( true )
-		{
-			m_value.kcm = info;
-			m_dialog = parent->m_dialog;
-		}
-
-		PageNode( GroupInfo & group, PageNode * parent )
-			: m_type( Group )
-			, m_parent( parent )
-			, m_visible( true )
-			, m_dirty( true )
-		{
-			m_value.group = new GroupInfo( group );
-			m_value.group->page = 0;
-			m_dialog = parent->m_dialog;
-		}
-
-		void bubbleSort( List::Iterator begin, List::Iterator end )
-		{
-			--end;
-			bool finished;
-			List::Iterator lastswapped = begin;
-			List::Iterator i;
-			List::Iterator j;
-			while( begin != end )
-			{
-				finished = true;
-				i = j = end;
-				do {
-					--j;
-					if( **i < **j )
-					{
-						finished = false;
-						qSwap( *i, *j );
-						lastswapped = j;
-					}
-					--i;
-				} while( j != begin );
-				if( finished )
-					return;
-				++lastswapped;
-				begin = lastswapped;
-			}
-		}
-
-	public:
-		PageNode( Dialog * dialog )
-			: m_type( Root )
-			, m_dialog( dialog )
-			, m_parent( 0 )
-			, m_visible( true )
-			, m_dirty( true )
-		{}
-
-		~PageNode()
-		{
-			if( KCM == m_type )
-				delete m_value.kcm;
-			else if( Group == m_type )
-				delete m_value.group;
-			List::Iterator end = m_children.end();
-			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				delete ( *it );
-		}
-
-		int weight() const
-		{
-			int w = ( KCM == m_type ) ? m_value.kcm->weight()
-				: m_value.group->weight;
-			kDebug( 700 ) << k_funcinfo << name() << " " << w << endl;
-			return w;
-		}
-
-		bool operator<( const PageNode & rhs ) const
-		{
-			return weight() < rhs.weight();
-		}
-
-		bool isVisible()
-		{
-			if( m_dirty )
-			{
-				if( KCM == m_type )
-					m_visible = m_dialog->isPluginForKCMEnabled( m_value.kcm );
-				else
-				{
-					m_visible = false;
-					List::Iterator end = m_children.end();
-					for( List::Iterator it = m_children.begin(); it != end;
-							++it )
-						if( ( *it )->isVisible() )
-						{
-							m_visible = true;
-							break;
-						}
-				}
-				m_dirty = false;
-			}
-			kDebug( 700 ) << k_funcinfo << "returns " << m_visible << endl;
-			return m_visible;
-		}
-
-		void makeDirty()
-		{
-			m_dirty = true;
-			List::Iterator end = m_children.end();
-			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				( *it )->makeDirty();
-		}
-
-		QString name() const
-		{
-			if( Root == m_type )
-				return QString::fromAscii( "root node" );
-			return ( KCM == m_type ) ? m_value.kcm->moduleName()
-				: m_value.group->name;
-		}
-
-		void setPageWidgetItem( KPageWidgetItem *item )
-		{
-			m_pageWidgetItem = item;
-		}
-
-		KPageWidgetItem* parentPageWidgetItem() const
-		{
-			PageNode * node = m_parent;
-			if ( node->m_type == Root )
-				return 0;
-			else
-				return node->m_pageWidgetItem;
-		}
-
-		void addToDialog( KCMultiDialog * dlg, const QStringList& arguments )
-		{
-			kDebug( 700 ) << k_funcinfo << "for " << name() << endl;
-			if( ! isVisible() )
-				return;
-
-			if( KCM == m_type )
-			{
-				m_pageWidgetItem = dlg->addModule( *m_value.kcm,
-                                                   parentPageWidgetItem(),
-                                                   arguments );
-				return;
-			}
-			if( Group == m_type && 0 == m_value.group->page )
-			{
-				KVBox * page = new KVBox();
-				QLabel * comment = new QLabel( m_value.group->comment, page );
-				comment->setTextFormat( Qt::RichText );
-				m_value.group->page = page;
-
-				m_pageWidgetItem = dlg->addPage( page, m_value.group->name );
-				m_pageWidgetItem->setIcon( KIcon( m_value.group->icon ) );
-			}
-			List::Iterator end = m_children.end();
-			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				( *it )->addToDialog( dlg, arguments );
-		}
-
-		void removeFromDialog( KCMultiDialog * dlg )
-		{
-			kDebug( 700 ) << k_funcinfo << "for " << name() << endl;
-			if( KCM == m_type )
-				return;
-			if( Root == m_type )
-				dlg->clear();
-			List::Iterator end = m_children.end();
-			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				( *it )->removeFromDialog( dlg );
-			if( Group == m_type )
-			{
-				delete m_value.group->page;
-				m_value.group->page = 0;
-			}
-		}
-
-		void sort()
-		{
-			kDebug( 700 ) << k_funcinfo << name() << endl;
-			if( m_children.isEmpty() )
-				return;
-			List::Iterator begin = m_children.begin();
-			List::Iterator end = m_children.end();
-			bubbleSort( begin, end );
-			for( List::Iterator it = begin ; it != end; ++it )
-				( *it )->sort();
-		}
-
-		bool insert( GroupInfo & group )
-		{
-			if( group.parentid.isNull() )
-			{
-				if( Root == m_type )
-				{
-					m_children.append( new PageNode( group, this ) );
-					return true;
-				}
-				else
-					kFatal( 700 ) << "wrong PageNode insertion"
-						<< kBacktrace() << endl;
-			}
-			if( Group == m_type && group.parentid == m_value.group->id )
-			{
-				m_children.append( new PageNode( group, this ) );
-				return true;
-			}
-			List::Iterator end = m_children.end();
-			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				if( ( *it )->insert( group ) )
-					return true;
-			// no parent with the right parentid
-			if( Root == m_type )
-			{
-				m_children.append( new PageNode( group, this ) );
-				return true;
-			}
-			return false;
-		}
-
-		bool insert( KCModuleInfo * info, const QString & parentid )
-		{
-			if( parentid.isNull() )
-			{
-				if( Root == m_type )
-				{
-					m_children.append( new PageNode( info, this ) );
-					return true;
-				}
-				else
-					kFatal( 700 ) << "wrong PageNode insertion"
-						<< kBacktrace() << endl;
-			}
-			if( Group == m_type && parentid == m_value.group->id )
-			{
-				m_children.append( new PageNode( info, this ) );
-				return true;
-			}
-			List::Iterator end = m_children.end();
-			for( List::Iterator it = m_children.begin(); it != end; ++it )
-				if( ( *it )->insert( info, parentid ) )
-					return true;
-			// no parent with the right parentid
-			if( Root == m_type )
-			{
-				m_children.append( new PageNode( info, this ) );
-				return true;
-			}
-			return false;
-		}
-
-		bool needTree()
-		{
-			List::ConstIterator end = m_children.end();
-			for( List::ConstIterator it = m_children.begin(); it != end; ++it )
-				if( ( *it )->m_children.count() > 0 )
-					return true;
-			return false;
-		}
-
-		bool singleChild()
-		{
-			return ( m_children.count() == 1 );
-		}
-};
-
-class Dialog::DialogPrivate
-{
-	public:
-		DialogPrivate( Dialog * parent )
-			: dlg( 0 )
-			, pagetree( parent )
-		{
-		}
-
-		bool staticlistview;
-		KCMultiDialog * dlg;
-		PageNode pagetree;
-		QWidget * parentwidget;
-		QStringList registeredComponents;
-		QList<KService::Ptr> services;
-		QMap<QString, KPluginInfo*> plugininfomap;
-		QStringList arguments;
-};
-
-Dialog::Dialog( ContentInListView content,
-		QWidget * parent, const QStringList& arguments )
-	: QObject( parent )
-	, d( new DialogPrivate( this ) )
-{
-	d->parentwidget = parent;
-	d->staticlistview = ( content == Static );
-	d->services = instanceServices();
-	removeDuplicateServices();
-	d->arguments = arguments;
+    Q_D(Dialog);
+    d->q_ptr = this;
+    d->services = d->instanceServices();
+    d->removeDuplicateServices();
 }
 
-Dialog::Dialog( const QStringList & components,
-		QWidget * parent, const QStringList& arguments )
-	: QObject( parent )
-	, d( new DialogPrivate( this ) )
+Dialog::Dialog(const QStringList &components, QWidget *parent, const QStringList &arguments)
+    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent, true, arguments))
 {
-	d->parentwidget = parent;
-	d->staticlistview = true;
-    d->services = instanceServices() + parentComponentsServices( components );
-	removeDuplicateServices();
-	d->arguments = arguments;
+    Q_D(Dialog);
+    d->q_ptr = this;
+    d->services = d->instanceServices() + d->parentComponentsServices(components);
+    d->removeDuplicateServices();
 }
 
-Dialog::Dialog( const QStringList & components,
-		ContentInListView content, QWidget * parent, const QStringList& arguments )
-	: QObject( parent )
-	, d( new DialogPrivate( this ) )
+Dialog::Dialog(const QStringList &components, ContentInListView content, QWidget *parent, const QStringList &arguments)
+    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent, (content == Static), arguments))
 {
-	d->parentwidget = parent;
-	d->staticlistview = ( content == Static );
-	d->services = instanceServices() + parentComponentsServices( components );
-	removeDuplicateServices();
-	d->arguments = arguments;
+    Q_D(Dialog);
+    d->q_ptr = this;
+    d->services = d->instanceServices() + d->parentComponentsServices(components);
+    d->removeDuplicateServices();
 }
 
 Dialog::~Dialog()
 {
-	delete d;
+    delete d_ptr;
 }
 
 void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
 {
+    Q_D(Dialog);
 	for( QList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
 	{
@@ -418,24 +82,24 @@ void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
 
 void Dialog::show()
 {
-	if( 0 == d->dlg )
-		createDialogFromServices();
-	Dispatcher::self()->syncConfiguration();
+    Q_D(Dialog);
+    if (0 == d->dlg) {
+        d->createDialogFromServices(this);
+    }
+    Dispatcher::syncConfiguration();
 	return d->dlg->show();
 }
 
-KCMultiDialog * Dialog::dialog()
+DialogPrivate::DialogPrivate(Dialog *d, QWidget *p, bool s, const QStringList &a)
+    : pagetree(d), arguments(a), dlg(0), parentwidget(p), staticlistview(s)
 {
-	if( 0 == d->dlg )
-		createDialogFromServices();
-	return d->dlg;
 }
 
-QList<KService::Ptr> Dialog::instanceServices() const
+QList<KService::Ptr> DialogPrivate::instanceServices()
 {
 	kDebug( 700 ) << k_funcinfo << endl;
 	QString componentName = KGlobal::mainComponent().componentName();
-	d->registeredComponents.append( componentName );
+    registeredComponents.append(componentName);
 	kDebug( 700 ) << "calling KServiceGroup::childGroup( " << componentName
 		<< " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( componentName );
@@ -464,19 +128,17 @@ QList<KService::Ptr> Dialog::instanceServices() const
 	return ret;
 }
 
-QList<KService::Ptr> Dialog::parentComponentsServices(
-		const QStringList & kcdparents ) const
+QList<KService::Ptr> DialogPrivate::parentComponentsServices(const QStringList &kcdparents)
 {
-	d->registeredComponents += kcdparents;
-	QString constraint = kcdparents.join(
-			"' in [X-KDE-ParentComponents]) or ('" );
+    registeredComponents += kcdparents;
+    QString constraint = kcdparents.join("' in [X-KDE-ParentComponents]) or ('");
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
 
 	kDebug( 700 ) << "constraint = " << constraint << endl;
 	return KServiceTypeTrader::self()->query( "KCModule", constraint );
 }
 
-bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
+bool DialogPrivate::isPluginForKCMEnabled(KCModuleInfo *moduleinfo) const
 {
 	// if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
@@ -490,19 +152,19 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 			pcit != parentComponents.end(); ++pcit )
 	{
 		// if the parentComponent is not registered ignore it
-		if( !d->registeredComponents.contains( *pcit ) )
+        if (!registeredComponents.contains(*pcit)) {
 			continue;
+        }
 
 		// we check if the parent component is a plugin
-		if( ! d->plugininfomap.contains( *pcit ) )
-		{
+        if (!plugininfomap.contains(*pcit)) {
 			// if not the KCModule must be enabled
 			enabled = true;
 			// we're done for this KCModuleInfo
 			break;
 		}
 		// if it is a plugin we check whether the plugin is enabled
-		KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
+        KPluginInfo *pinfo = plugininfomap[*pcit];
 		pinfo->load();
 		enabled = pinfo->isPluginEnabled();
 		kDebug( 700 ) << "parent " << *pcit << " is "
@@ -514,7 +176,7 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 	return enabled;
 }
 
-void Dialog::parseGroupFile( const QString & filename )
+void DialogPrivate::parseGroupFile( const QString & filename )
 {
 	KConfig file( filename, KConfig::OnlyLocal );
 	QStringList groups = file.groupList();
@@ -530,28 +192,28 @@ void Dialog::parseGroupFile( const QString & filename )
 		group.weight = conf.readEntry( "Weight", 100 );
 		group.parentid = conf.readEntry( "Parent" );
 		group.icon = conf.readEntry( "Icon" );
-		d->pagetree.insert( group );
+        pagetree.insert(group);
 	}
 }
 
-void Dialog::createDialogFromServices()
+void DialogPrivate::createDialogFromServices(KCMultiDialog *parent)
 {
 	// read .setdlg files
 	QString setdlgpath = KStandardDirs::locate( "appdata",
                                                     KGlobal::mainComponent().componentName() + ".setdlg" );
 	QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
 			"ksettingsdialog/*.setdlg" );
-	if( ! setdlgpath.isNull() )
-		parseGroupFile( setdlgpath );
-	if( setdlgaddon.size() > 0 )
-		for( QStringList::ConstIterator it = setdlgaddon.begin();
-				it != setdlgaddon.end(); ++it )
-			parseGroupFile( *it );
+    if (!setdlgpath.isNull()) {
+        parseGroupFile(setdlgpath);
+    }
+    if (setdlgaddon.size() > 0) {
+        for (QStringList::ConstIterator it = setdlgaddon.begin(); it != setdlgaddon.end(); ++it) {
+            parseGroupFile(*it);
+        }
+    }
 
 	// now we process the KCModule services
-	for( QList<KService::Ptr>::ConstIterator it = d->services.begin();
-			it != d->services.end(); ++it )
-	{
+    for (QList<KService::Ptr>::ConstIterator it = services.begin(); it != services.end(); ++it) {
 		// we create the KCModuleInfo
 		KCModuleInfo * info = new KCModuleInfo( *it );
 		QString parentid;
@@ -559,22 +221,23 @@ void Dialog::createDialogFromServices()
 			QVariant::String );
 		if( tmp.isValid() )
 			parentid = tmp.toString();
-		d->pagetree.insert( info, parentid );
+        pagetree.insert(info, parentid);
 	}
 
-	// At this point d->pagetree holds a nice structure of the pages we want
+    // At this point pagetree holds a nice structure of the pages we want
 	// to show. It's not going to change anymore so we can sort it now.
-	d->pagetree.sort();
+    pagetree.sort();
 
 	KPageDialog::FaceType faceType = KPageDialog::List;
-	if( d->pagetree.needTree() )
+    if (pagetree.needTree()) {
 		faceType = KPageDialog::Tree;
-	else if( d->pagetree.singleChild() )
+    } else if(pagetree.singleChild()) {
 		faceType = KPageDialog::Plain;
+    }
 
 	kDebug( 700 ) << "creating KCMultiDialog" << endl;
-	d->dlg = new KCMultiDialog( d->parentwidget );
-	d->dlg->setFaceType( faceType );
+    dlg = parent;
+    dlg->setFaceType(faceType);
 
 	// TODO: Don't show the reset button until the issue with the
 	// KPluginSelector::load() method is solved.
@@ -586,70 +249,77 @@ void Dialog::createDialogFromServices()
 	// KPluginSelector to only reset the current visible plugin KCM and not
 	// touch the plugin selections.
 	// I have no idea how to check that in KPluginSelector::load()...
-	//d->dlg->showButton( KDialog::User1, true );
+    //dlg->showButton(KDialog::User1, true);
 
 /** tokoe: FIXME
-	if( ! d->staticlistview )
-		d->dlg->addButtonBelowList( i18n( "Select Components..." ), this,
-			SLOT( configureTree() ) );
+    if(!staticlistview) {
+        dlg->addButtonBelowList(i18n("Select Components..."), this, SLOT(_k_configureTree()));
+    }
 */
-	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(),
-		SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(),
-		SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( configCommitted( const QByteArray & ) ),
-		Dispatcher::self(), SLOT( reparseConfiguration( const QByteArray & ) ) );
+    Q_Q(Dialog);
+    QObject::connect(dlg, SIGNAL(okClicked()), q, SLOT(_k_syncConfiguration()));
+    QObject::connect(dlg, SIGNAL(applyClicked()), q, SLOT(_k_syncConfiguration()));
+    QObject::connect(dlg, SIGNAL(configCommitted(const QByteArray &)), q,
+            SLOT(_k_reparseConfiguration(const QByteArray &)));
 
-	d->pagetree.addToDialog( d->dlg, d->arguments );
+    pagetree.addToDialog(dlg, arguments);
 }
 
-void Dialog::configureTree()
+void DialogPrivate::_k_syncConfiguration()
+{
+    Dispatcher::syncConfiguration();
+}
+
+void DialogPrivate::_k_reparseConfiguration(const QByteArray &a)
+{
+    Dispatcher::reparseConfiguration(a);
+}
+
+void DialogPrivate::_k_configureTree()
 {
 	kDebug( 700 ) << k_funcinfo << endl;
-	ComponentsDialog * subdlg = new ComponentsDialog( d->dlg );
-	subdlg->setPluginInfos( d->plugininfomap );
+    ComponentsDialog *subdlg = new ComponentsDialog(dlg);
+    subdlg->setPluginInfos(plugininfomap);
 	subdlg->show();
-	connect( subdlg, SIGNAL( okClicked() ), this, SLOT( updateTreeList() ) );
-	connect( subdlg, SIGNAL( applyClicked() ), this, SLOT( updateTreeList() ) );
-	connect( subdlg, SIGNAL( okClicked() ), this,
-			SIGNAL( pluginSelectionChanged() ) );
-	connect( subdlg, SIGNAL( applyClicked() ), this,
-			SIGNAL( pluginSelectionChanged() ) );
-	connect( subdlg, SIGNAL( finished() ), subdlg, SLOT( delayedDestruct() ) );
+    Q_Q(Dialog);
+    QObject::connect(subdlg, SIGNAL(okClicked()), q, SLOT(_k_updateTreeList()));
+    QObject::connect(subdlg, SIGNAL(applyClicked()), q, SLOT(_k_updateTreeList()));
+    QObject::connect(subdlg, SIGNAL(okClicked()), q, SIGNAL(pluginSelectionChanged()));
+    QObject::connect(subdlg, SIGNAL(applyClicked()), q, SIGNAL(pluginSelectionChanged()));
+    QObject::connect(subdlg, SIGNAL(finished()), subdlg, SLOT(delayedDestruct()));
 }
 
-void Dialog::updateTreeList()
+void DialogPrivate::_k_updateTreeList()
 {
 	kDebug( 700 ) << k_funcinfo << endl;
 
-	d->pagetree.makeDirty();
+    pagetree.makeDirty();
 
 	// remove all pages from the dialog and then add them again. This is needed
 	// because KDialogBase/KJanusWidget can only append to the end of the list
 	// and we need to have a predefined order.
 
-	d->pagetree.removeFromDialog( d->dlg );
-	d->pagetree.addToDialog( d->dlg, d->arguments );
+    pagetree.removeFromDialog(dlg);
+    pagetree.addToDialog(dlg, arguments);
 }
 
-void Dialog::removeDuplicateServices()
+void DialogPrivate::removeDuplicateServices()
 {
 	QSet<QString> usedNames;
 	QList<KService::Ptr> newlist;
-	Q_FOREACH( KService::Ptr svc, d->services )
-	{
+    foreach (KService::Ptr svc, services) {
 		if( !usedNames.contains( svc->desktopEntryPath() ) )
 		{
 			usedNames.insert( svc->desktopEntryPath() );
 			newlist.append( svc );
 		}
 	}
-	d->services.clear();
-	d->services = newlist;
+    services.clear();
+    services = newlist;
 }
 
 } //namespace
 
 #include "dialog.moc"
 
-// vim: sw=4 ts=4 noet
+// vim: ts=4

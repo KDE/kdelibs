@@ -32,77 +32,56 @@ namespace KSettings
  * @short Dispatch change notifications from the KCMs to the program.
  *
  * Since your program does not have direct control over the KCMs that get loaded
- * into the KConfigureDialog you need a way to get notified. This is what you
- * do:
+ * into KSettings::Dialog you need a way to get notified. This is what you do:
  * \code
- * Dispatcher::self()->registerComponent( componentData(), this, SLOT( loadSettings() ) );
+ * Dispatcher::registerComponent(componentData(), this, SLOT(loadSettings()));
  * \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KUTILS_EXPORT Dispatcher : public QObject
+namespace Dispatcher
 {
-    Q_OBJECT
-    public:
-        /**
-         * Get a reference the the Dispatcher object.
-         */
-        static Dispatcher * self();
+    /**
+     * Register a slot to be called when the configuration for the componentData
+     * has changed. @p componentData is the KComponentData object
+     * that is passed to KGenericFactory (if it is used). You can query
+     * it with KGenericFactory<YourClassName>::componentData().
+     * componentData.componentName() is also the same name that is put into the
+     * .desktop file of the KCMs for the X-KDE-ParentComponents.
+     *
+     * @param componentData     The KComponentData object
+     * @param recv         The object that should receive the signal
+     * @param slot         The slot to be called: SLOT( slotName() )
+     */
+    KUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
 
-        /**
-         * Register a slot to be called when the configuration for the componentData
-         * has changed. @p componentData is the KComponentData object
-         * that is passed to KGenericFactory (if it is used). You can query
-         * it with KGenericFactory<YourClassName>::componentData().
-         * componentData.componentName() is also the same name that is put into the
-         * .desktop file of the KCMs for the X-KDE-ParentComponents.
-         *
-         * @param componentData     The KComponentData object
-         * @param recv         The object that should receive the signal
-         * @param slot         The slot to be called: SLOT( slotName() )
-         */
-        void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
+    /**
+     * @return the KConfig object that belongs to the componentName
+     */
+    KUTILS_EXPORT KSharedConfig::Ptr configForComponentName(const QByteArray &componentName);
 
-        /**
-         * @return the KConfig object that belongs to the componentName
-         */
-        KSharedConfig::Ptr configForComponentName(const QByteArray &componentName);
+    /**
+     * @return a list of all the componentData names that are currently
+     * registered
+     */
+    KUTILS_EXPORT QList<QByteArray> componentNames();
 
-        /**
-         * @return a list of all the componentData names that are currently
-         * registered
-         */
-        QList<QByteArray> componentNames() const;
+    /**
+     * Call this function when the configuration belonging to the associated
+     * componentData name has changed. The registered slot will be called.
+     *
+     * @param componentName The value of X-KDE-ParentComponents.
+     */
+    KUTILS_EXPORT void reparseConfiguration(const QByteArray &componentName);
 
-    public Q_SLOTS:
-        /**
-         * Call this slot when the configuration belonging to the associated
-         * componentData name has changed. The registered slot will be called.
-         *
-         * @param componentName The value of X-KDE-ParentComponents.
-         */
-        void reparseConfiguration(const QByteArray &componentName);
-
-        /**
-         * When this slot is called the KConfig objects of all the registered
-         * instances are sync()ed. This is useful when some other KConfig
-         * objects will read/write from/to the same config file, so that you
-         * can first write out the current state of the KConfig objects.
-         */
-        void syncConfiguration();
-
-    private Q_SLOTS:
-        void unregisterComponent(QObject *);
-
-    private:
-        Dispatcher(QObject *parent = 0);
-        ~Dispatcher();
-
-        class DispatcherPrivate;
-        DispatcherPrivate * const d;
-};
+    /**
+     * When this function is called the KConfig objects of all the registered
+     * instances are sync()ed. This is useful when some other KConfig
+     * objects will read/write from/to the same config file, so that you
+     * can first write out the current state of the KConfig objects.
+     */
+    KUTILS_EXPORT void syncConfiguration();
+} // namespace Dispatcher
 
 }
-
-// vim: sw=4 sts=4 et
 #endif // KSETTINGS_DISPATCHER_H

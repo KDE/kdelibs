@@ -29,7 +29,7 @@
 namespace KSettings
 {
 
-class PluginPage::PluginPagePrivate
+class PluginPagePrivate
 {
     public:
         PluginPagePrivate()
@@ -38,45 +38,52 @@ class PluginPage::PluginPagePrivate
         }
 
         KPluginSelector * selwid;
+        void _k_reparseConfiguration(const QByteArray &a);
 };
 
 PluginPage::PluginPage(const KComponentData &componentData, QWidget * parent, const QStringList & args )
-    : KCModule( componentData, parent, args )
-    , d( new PluginPagePrivate )
+    : KCModule(componentData, parent, args),
+    d_ptr(new PluginPagePrivate)
 {
+    Q_D(PluginPage);
+    //d->q_ptr = this;
 //    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect( d->selwid, SIGNAL( configCommitted( const QByteArray & ) ),
-            Dispatcher::self(), SLOT( reparseConfiguration( const QByteArray & ) ) );
+    connect(d->selwid, SIGNAL(configCommitted(const QByteArray &)), this,
+            SLOT(_k_reparseConfiguration(const QByteArray &)));
+}
+
+void PluginPagePrivate::_k_reparseConfiguration(const QByteArray &a)
+{
+    Dispatcher::reparseConfiguration(a);
 }
 
 PluginPage::~PluginPage()
 {
-    delete d;
+    delete d_ptr;
 }
 
 KPluginSelector * PluginPage::pluginSelector()
 {
-    return d->selwid;
+    return d_ptr->selwid;
 }
 
 void PluginPage::load()
 {
-    d->selwid->load();
+    d_ptr->selwid->load();
 }
 
 void PluginPage::save()
 {
-    d->selwid->save();
+    d_ptr->selwid->save();
 }
 
 void PluginPage::defaults()
 {
-    d->selwid->defaults();
+    d_ptr->selwid->defaults();
 }
 
 } //namespace
 
 #include "pluginpage.moc"
-// vim: sw=4 sts=4 et

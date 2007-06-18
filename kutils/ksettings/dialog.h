@@ -20,23 +20,21 @@
 #ifndef KSETTINGS_DIALOG_H
 #define KSETTINGS_DIALOG_H
 
-#include <kutils_export.h>
+#include "../kutils_export.h"
+#include "../kcmultidialog.h"
+
 #include <kservice.h>
-
-#include <QtCore/QObject>
-#include <QtCore/QList>
-
 
 template<class T> class QList;
 class KPluginInfo;
-class KCMultiDialog;
 class KCModuleInfo;
 
 namespace KSettings
 {
+    class DialogPrivate;
 
 /**
- * @short Generic configuration dialog that even works over component boundaries
+ * @short Generic configuration dialog that works over component boundaries
  *
  * For more information see \ref KSettings.
  *
@@ -71,9 +69,10 @@ namespace KSettings
  *
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KUTILS_EXPORT Dialog : public QObject
+class KUTILS_EXPORT Dialog : public KCMultiDialog
 {
     friend class PageNode;
+    Q_DECLARE_PRIVATE(Dialog)
     Q_OBJECT
     public:
         /**
@@ -154,8 +153,6 @@ class KUTILS_EXPORT Dialog : public QObject
          */
         void addPluginInfos( const QList<KPluginInfo*> & plugininfos );
 
-        KCMultiDialog * dialog();
-
     public Q_SLOTS:
         /**
          * Show the config dialog. The slot immediately returns since the dialog
@@ -173,54 +170,16 @@ class KUTILS_EXPORT Dialog : public QObject
          */
         void pluginSelectionChanged();
 
-    protected Q_SLOTS:
-        void configureTree();
-        void updateTreeList();
+    protected:
+        DialogPrivate *const d_ptr;
 
     private:
-        /**
-         * @internal
-         * Check whether the plugin associated with this KCM is enabled.
-         */
-        bool isPluginForKCMEnabled( KCModuleInfo * ) const;
-
-        QList<KService::Ptr> instanceServices() const;
-        QList<KService::Ptr> parentComponentsServices(
-                const QStringList & ) const;
-        /**
-         * @internal
-         * Read the .setdlg file and add it to the groupmap
-         */
-        void parseGroupFile( const QString & );
-
-        /**
-         * @internal
-         * If this module is put into a TreeList hierarchy this will return a
-         * list of the names of the parent modules.
-         */
-        QStringList parentModuleNames( KCModuleInfo * );
-
-        /**
-         * @internal
-         * This method is called only once. The KCMultiDialog is not created
-         * until it's really needed. So if some method needs to access d->dlg it
-         * checks for 0 and if it's not created this method will do it.
-         */
-        void createDialogFromServices();
-
-        /**
-         * @internal
-         * This method is called in the constructor right after creating the
-         * list of service pointers. It removes duplicates from that list, so
-         * each entry in the list has a unique name()
-         */
-        void removeDuplicateServices();
-
-        class DialogPrivate;
-        DialogPrivate* const d;
+        Q_PRIVATE_SLOT(d_func(), void _k_configureTree())
+        Q_PRIVATE_SLOT(d_func(), void _k_updateTreeList())
+        Q_PRIVATE_SLOT(d_func(), void _k_syncConfiguration())
+        Q_PRIVATE_SLOT(d_func(), void _k_reparseConfiguration(const QByteArray &))
 };
 
 }
 
-// vim: sw=4 sts=4 et
 #endif // KSETTINGS_DIALOG_H
