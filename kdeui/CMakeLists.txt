@@ -53,6 +53,7 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
+ colors/kcolorspaces.cpp
  colors/kcolorutils.cpp
  colors/kcolorscheme.cpp
  colors/kcolorbutton.cpp

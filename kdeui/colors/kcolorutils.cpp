@@ -19,15 +19,75 @@
  * Boston, MA 02110-1301, USA.
  */
 #include <kcolorutils.h>
+#include "kcolorspaces.h"
 
 #include <QColor>
 #include <QImage>
 
 #include <math.h>
 
+// BEGIN internal helper functions
 static inline qreal mixQreal(qreal a, qreal b, qreal bias)
 {
     return a + (b - a) * bias;
+}
+
+static inline qreal normalize(qreal a)
+{
+    // nan -> 0.0, not that that should ever happen here
+    return (a < 1.0 ? (a > 0.0 ? a : 0.0) : 1.0);
+}
+// END internal helper functions
+
+qreal KColorUtils::luma(const QColor &color)
+{
+    return KColorSpaces::KHCY::luma(color);
+}
+
+qreal KColorUtils::contrastRatio(const QColor &c1, const QColor &c2)
+{
+    qreal y1 = luma(c1), y2 = luma(c2);
+    if (y1 > y2)
+        return (y1 + 0.05) / (y2 + 0.05);
+    else
+        return (y2 + 0.05) / (y1 + 0.05);
+}
+
+QColor KColorUtils::lighten(const QColor &color, qreal ky, qreal kc)
+{
+    KColorSpaces::KHCY c(color);
+    c.y = 1.0 - normalize((1.0 - c.y) * ky);
+    c.c = 1.0 - normalize((1.0 - c.c) * kc);
+    return c.qColor();
+}
+
+QColor KColorUtils::darken(const QColor &color, qreal ky, qreal kc)
+{
+    KColorSpaces::KHCY c(color);
+    c.y = normalize(c.y * ky);
+    c.c = normalize(c.c * kc);
+    return c.qColor();
+}
+
+QColor KColorUtils::shade(const QColor &color, qreal ky, qreal kc)
+{
+    KColorSpaces::KHCY c(color);
+    c.y = normalize(c.y + ky);
+    c.c = normalize(c.c + kc);
+    return c.qColor();
+}
+
+QColor KColorUtils::tint(const QColor &base, const QColor &color, qreal amount)
+{
+    KColorSpaces::KHCY b(base), c(color);
+    // change luma more if the colors are otherwise similar
+    if ((fabs(b.h - c.h) + 0.4*fabs(b.c - c.c)) < 0.15)
+        b.y = mixQreal(b.y, c.y, amount);
+    else
+        b.y = mixQreal(b.y, c.y, pow(amount, 0.5));
+    b.h = mixQreal(b.h, c.h, pow(amount, 2.0));
+    b.c = mixQreal(b.c, c.c, pow(amount, 2.0));
+    return b.qColor();
 }
 
 QColor KColorUtils::mix(const QColor &c1, const QColor &c2, qreal bias)
@@ -59,4 +119,4 @@ QColor KColorUtils::overlayColors(const QColor &base, const QColor &paint,
     p.end();
     return img.pixel(0, 0);
 }
-
+// kate: space-indent on; indent-width 4; replace-tabs on; auto-insert-doxygen on;
