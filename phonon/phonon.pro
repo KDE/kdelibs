@@ -3,12 +3,11 @@
 ######################################################################
 
 TEMPLATE = lib
-CONFIG += dll warn_on qdbus
+CONFIG += dll warn_on
 VERSION = 5.0.0
 TARGET = 
 DEPENDPATH += .
 DEFINES += phonon_EXPORTS
-QMAKE_CXXFLAGS += $$QMAKE_CXXFLAGS_HIDESYMS
 
 # Input
 HEADERS += abstractaudiooutput.h \
@@ -20,7 +19,6 @@ HEADERS += abstractaudiooutput.h \
            addoninterface.h \
            audiooutput.h \
            audiooutput_p.h \
-           audiooutputadaptor.h \
            audiooutputinterface.h \
            audiopath.h \
            audiopath_p.h \
@@ -80,7 +78,6 @@ SOURCES += abstractaudiooutput.cpp \
            abstractvideooutput.cpp \
            abstractvideooutput_p.cpp \
            audiooutput.cpp \
-           audiooutputadaptor.cpp \
            audiopath.cpp \
            audioplayer.cpp \
            backendcapabilities.cpp \
@@ -105,3 +102,13 @@ SOURCES += abstractaudiooutput.cpp \
            videowidget.cpp \
            volumefadereffect.cpp \
            volumeslider.cpp
+
+contains(QT_CONFIG, qdbus) {
+       CONFIG += qdbus
+       HEADERS += audiooutputadaptor.h
+       SOURCES += audiooutputadaptor.cpp
+}
+
+contains(QT_CONFIG, reduce_exports) {
+       QMAKE_CXXFLAGS += $$QMAKE_CXXFLAGS_HIDESYMS
+}
