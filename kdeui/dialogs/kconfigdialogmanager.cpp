@@ -358,33 +358,31 @@ void KConfigDialogManager::updateWidgetsDefault()
 
 void KConfigDialogManager::updateSettings()
 {
-  bool changed = false;
+    bool changed = false;
 
-  QWidget *widget;
-  QHashIterator<QString, QWidget *> it( d->knownWidget );
-  while(it.hasNext()) {
-     it.next();
-     widget = it.value();
+    QWidget *widget;
+    QHashIterator<QString, QWidget *> it( d->knownWidget );
+    while(it.hasNext()) {
+        it.next();
+        widget = it.value();
 
-     KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
-     if (!item)
-     {
-        kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
-        continue;
-     }
+        KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
+        if (!item) {
+            kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
+            continue;
+        }
 
-     QVariant p = property(widget);
-     if (p != item->property())
-     {
-        item->setProperty(p);
-        changed = true;
-     }
-  }
-  if (changed)
-  {
-     d->m_conf->writeConfig();
-     emit settingsChanged();
-  }
+        QVariant fromWidget = property(widget);
+        if(!item->isEqual( fromWidget )) {
+            item->setProperty( fromWidget );
+            changed = true;
+        }
+    }
+    if (changed)
+    {
+        d->m_conf->writeConfig();
+        emit settingsChanged();
+    }
 }
 
 QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
@@ -462,28 +460,24 @@ QVariant KConfigDialogManager::property(QWidget *w) const
 
 bool KConfigDialogManager::hasChanged() const
 {
+    QWidget *widget;
+    QHashIterator<QString, QWidget *> it( d->knownWidget) ;
+    while(it.hasNext()) {
+        it.next();
+        widget = it.value();
 
-  QWidget *widget;
-  QHashIterator<QString, QWidget *> it( d->knownWidget) ;
-  while(it.hasNext()) {
-     it.next();
-     widget = it.value();
+        KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
+        if (!item) {
+            kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
+            continue;
+        }
 
-     KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
-     if (!item)
-     {
-        kWarning(178) << "The setting '" << it.key() << "' has disappeared!" << endl;
-        continue;
-     }
-
-     QVariant p = property(widget);
-     if (p != item->property())
-     {
-//        kDebug(178) << "Widget for '" << it.currentKey() << "' has changed." << endl;
-        return true;
-     }
-  }
-  return false;
+        if(!item->isEqual( property(widget) )) {
+            // kDebug(178) << "Widget for '" << it.key() << "' has changed." << endl;
+            return true;
+        }
+    }
+    return false;
 }
 
 bool KConfigDialogManager::isDefault() const
