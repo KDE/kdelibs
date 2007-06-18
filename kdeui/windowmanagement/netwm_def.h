@@ -558,7 +558,6 @@ public:
 
        @li KDESystemTrayWindows
        @li WMKDESystemTrayWinFor
-       @li WMKDEFrameStrut
     **/
 
     enum Property {
@@ -594,7 +593,6 @@ public:
 	WMKDESystemTrayWinFor = 1<<26, // NOT STANDARD
 	XAWMState             = 1<<27, // NOT STANDARD
         WMFrameExtents        = 1<<28,
-	WMKDEFrameStrut       = WMFrameExtents, // NOT STANDARD
 
 	// Need to be reordered
 	WMIconName            = 1<<29,

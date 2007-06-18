@@ -1164,14 +1164,6 @@ public:
     void setFrameExtents(NETStrut strut);
 
     /**
-       Set the frame decoration strut.  This is a KDE 2.0 extension to aid in
-       writing pager applications.
-
-       @param strut the new strut
-    **/
-    void setKDEFrameStrut(NETStrut strut);
-
-    /**
        Returns an icon.  If width and height are passed, the icon returned will be
        the closest it can find (the next biggest).  If width and height are omitted,
        then the largest icon in the list is returned.

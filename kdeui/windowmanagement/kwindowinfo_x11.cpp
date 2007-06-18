@@ -80,7 +80,7 @@ KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long prop
         else
             d->iconic_name_ = KWindowSystem::readNameProperty( _win, XA_WM_ICON_NAME );
     }
-    if( properties & ( NET::WMGeometry | NET::WMKDEFrameStrut )) {
+    if( properties & ( NET::WMGeometry | NET::WMFrameExtents )) {
         NETRect frame, geom;
         d->info->kdeGeometry( frame, geom );
         d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
@@ -315,8 +315,8 @@ QRect KWindowInfo::geometry() const
 
 QRect KWindowInfo::frameGeometry() const
 {
-    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMKDEFrameStrut ) == 0, 176 )
-        << "Pass NET::WMKDEFrameStrut to KWindowInfo" << endl;
+    kWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMFrameExtents ) == 0, 176 )
+        << "Pass NET::WMFrameExtents to KWindowInfo" << endl;
     return d->frame_geometry_;
 }
 

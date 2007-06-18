@@ -1532,7 +1532,7 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
     else if( atom == net_frame_extents )
         p->properties[ PROTOCOLS ] |= WMFrameExtents;
     else if( atom == kde_net_wm_frame_strut )
-        p->properties[ PROTOCOLS ] |= WMKDEFrameStrut;
+        p->properties[ PROTOCOLS ] |= WMFrameExtents;
 
     else if( atom == kde_net_wm_temporary_rules )
         p->properties[ PROTOCOLS2 ] |= WM2KDETemporaryRules;
@@ -3516,10 +3516,6 @@ void NETWinInfo::setKDESystemTrayWinFor(Window window) {
 }
 
 
-void NETWinInfo::setKDEFrameStrut(NETStrut strut) {
-    setFrameExtents( strut );
-}
-
 void NETWinInfo::setFrameExtents(NETStrut strut) {
     if (role != WindowManager) return;
 
@@ -3765,7 +3761,7 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 	    else if (pe.xproperty.atom == net_frame_extents)
 		dirty |= WMFrameExtents;
 	    else if (pe.xproperty.atom == kde_net_wm_frame_strut)
-		dirty |= WMKDEFrameStrut;
+		dirty |= WMFrameExtents;
 	    else if (pe.xproperty.atom == net_wm_icon_name)
 		dirty |= WMIconName;
 	    else if (pe.xproperty.atom == net_wm_visible_icon_name)
