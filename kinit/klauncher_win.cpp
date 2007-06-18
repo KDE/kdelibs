@@ -294,7 +294,10 @@ IdleSlave::gotInput()
    TRACE();
    int cmd;
    QByteArray data;
-   if (mConn.read( &cmd, data) == -1)
+   int iRet = mConn.read( &cmd, data);
+   if (iRet == -2)
+       return;
+   if (iRet == -1)
    {
       // Communication problem with slave.
       kError(7016) << "SlavePool: No communication with slave." << endl;
@@ -1192,7 +1195,8 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list << name;
     arg_list << protocol;
     arg_list << "";
-    arg_list << QString::fromLocal8Bit(QFile::encodeName(app_socket));
+    arg_list << QString::number(4545);
+//    arg_list << QString::fromLocal8Bit(QFile::encodeName(app_socket));
     name = "kioslave";
 
     kDebug(7016) << "KLauncher: launching new slave " << name << " with protocol=" << protocol
