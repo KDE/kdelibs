@@ -207,13 +207,14 @@ QAction * KSelectAction::action( const QString & text, Qt::CaseSensitivity cs ) 
     compare = text.toLower();
 
   foreach (QAction* action, selectableActionGroup()->actions()) {
+    const QString text = action->text().remove('&'); // remove accellerator auto added by kdelibs
     if (cs == Qt::CaseSensitive) {
-      if (action->text() == compare) {
+      if (text == compare) {
         return action;
       }
 
     } else if (cs == Qt::CaseInsensitive) {
-      if (action->text().toLower() == compare) {
+      if (text.toLower() == compare) {
         return action;
       }
     }
