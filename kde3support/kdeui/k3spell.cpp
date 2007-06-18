@@ -1561,7 +1561,7 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
      break;
   }
 
-  kDebug(750) << __FILE__ << ":" << __LINE__ << " Codec = " << (codec ? codec->name() : "<default>") << endl;
+  kDebug(750) << __FILE__ << ":" << __LINE__ << " Codec = " << (d->m_codec ? d->m_codec->name() : "<default>") << endl;
 
   // copy ignore list from ksconfig
   ignorelist += ksconfig->ignoreList();
