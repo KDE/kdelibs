@@ -1110,10 +1110,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
 
       KDiskFreeSpace * job = new KDiskFreeSpace;
-      connect( job, SIGNAL( foundMountPoint( const quint64&, const quint64&,
-               const quint64&, const QString& ) ),
-               this, SLOT( slotFoundMountPoint( const quint64&, const quint64&,
-            const quint64&, const QString& ) ) );
+      connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
+              this, SLOT(slotFoundMountPoint(QString, quint64, quint64, quint64)));
       job->readDF( mp->mountPoint() );
     }
   }
@@ -1214,20 +1212,6 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&,
 	  100 - (int)(100.0 * kBAvail / kBSize) ));
 }
 
-// attention: copy&paste below, due to compiler bug
-// it doesn't like those unsigned long parameters -- unsigned long& are ok :-/
-void KFilePropsPlugin::slotFoundMountPoint( const quint64& kBSize,
-					    const quint64& /*kBUsed*/,
-					    const quint64& kBAvail,
-					    const QString& )
-{
-    d->m_freeSpaceLabel->setText(
-	i18nc("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)",
-	 KIO::convertSizeFromKiB(kBAvail),
-	 KIO::convertSizeFromKiB(kBSize),
-	  100 - (int)(100.0 * kBAvail / kBSize) ));
-}
-
 void KFilePropsPlugin::slotDirSizeUpdate()
 {
     KIO::filesize_t totalSize = d->dirSizeJob->totalSize();
@@ -1294,10 +1278,8 @@ void KFilePropsPlugin::slotSizeDetermine()
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
     if (mp) {
       KDiskFreeSpace * job = new KDiskFreeSpace;
-      connect( job, SIGNAL( foundMountPoint( const quint64&, const quint64&,
-               const quint64&, const QString& ) ),
-               this, SLOT( slotFoundMountPoint( const quint64&, const quint64&,
-            const quint64&, const QString& ) ) );
+      connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
+              this, SLOT(slotFoundMountPoint(QString, quint64, quint64, quint64)));
       job->readDF( mp->mountPoint() );
     }
   }
@@ -3027,10 +3009,8 @@ void KDevicePropsPlugin::updateInfo()
   if ( !mountpoint->text().isEmpty() )
   {
     KDiskFreeSpace * job = new KDiskFreeSpace;
-    connect( job, SIGNAL( foundMountPoint( const quint64&, const quint64&,
-                                           const quint64&, const QString& ) ),
-             this, SLOT( slotFoundMountPoint( const quint64&, const quint64&,
-                                              const quint64&, const QString& ) ) );
+    connect(job, SIGNAL(foundMountPoint(QString, quint64, quint64, quint64)),
+            this, SLOT(slotFoundMountPoint(QString, quint64, quint64, quint64)));
 
     job->readDF( mountpoint->text() );
   }
@@ -3057,10 +3037,10 @@ void KDevicePropsPlugin::slotDeviceChanged()
   updateInfo();
 }
 
-void KDevicePropsPlugin::slotFoundMountPoint( const quint64& kBSize,
-                                              const quint64& /*kBUsed*/,
-                                              const quint64& kBAvail,
-                                              const QString& )
+void KDevicePropsPlugin::slotFoundMountPoint( const QString&,
+                                              quint64 kBSize,
+                                              quint64 /*kBUsed*/,
+                                              quint64 kBAvail )
 {
   d->m_freeSpaceText->show();
   d->m_freeSpaceLabel->show();

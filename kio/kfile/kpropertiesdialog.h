@@ -449,16 +449,13 @@ protected Q_SLOTS:
   void slotDirSizeUpdate();
   void slotDirSizeFinished( KJob * );
   void slotFoundMountPoint( const QString& mp, quint64 kBSize,
-			    quint64 kBUsed, quint64 kBAvail );
+                            quint64 kBUsed, quint64 kBAvail );
   void slotSizeStop();
   void slotSizeDetermine();
 
 Q_SIGNALS:
   void leaveModality();
 private Q_SLOTS:
-  // workaround for compiler bug
-  void slotFoundMountPoint( const quint64& kBSize, const quint64&
-			  kBUsed, const quint64& kBAvail, const QString& mp );
   void nameFileChanged(const QString &text );
   void slotIconChanged();
 
@@ -659,10 +656,8 @@ public:
 private Q_SLOTS:
   void slotActivated( int );
   void slotDeviceChanged();
-  void slotFoundMountPoint( const quint64& kBSize,
-                            const quint64& kBUsed,
-                            const quint64& kBAvail,
-                            const QString& );
+  void slotFoundMountPoint( const QString& mp, quint64 kBSize,
+                            quint64 kBUsed, quint64 kBAvail );
 
 private:
   void updateInfo();

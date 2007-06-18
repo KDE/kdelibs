@@ -1,11 +1,8 @@
 /*
- * kdiskfreesp.h
+ * kdiskfreespace.h
  *
  * Copyright (c) 1999 Michael Kropfberger <michael.kropfberger@gmx.net>
- *
- * Requires the Qt widget libraries, available at no cost at
- * http://www.troll.no/
- *
+ * Copyright 2007 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -31,7 +28,7 @@
 
 #include <kio/kio_export.h>
 
-class K3Process;
+class KDiskFreeSpacePrivate;
 
 /**
  * This class parses the output of "df" to find the disk usage
@@ -39,48 +36,63 @@ class K3Process;
  */
 class KIO_EXPORT KDiskFreeSpace : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
-   KDiskFreeSpace( QObject *parent=0);
-   /**
-    * Destructor - this object autodeletes itself when it's done
-    */
-   ~KDiskFreeSpace();
-   /**
-    * Call this to fire a search on the disk usage information
-    * for @p mountPoint. foundMountPoint will be emitted
-    * if this mount point is found, with the info requested.
-    * done is emitted in any case.
-    */
-   int readDF( const QString & mountPoint );
+    /**
+     * Constructor
+     */
+    explicit KDiskFreeSpace( QObject *parent = 0 );
 
-   /**
-    * Call this to fire a search on the disk usage information
-    * for the mount point containing @p path.
-    * foundMountPoint will be emitted
-    * if this mount point is found, with the info requested.
-    * done is emitted in any case.
-    */
-   static KDiskFreeSpace * findUsageInfo( const QString & path );
+    /**
+     * Destructor - this object autodeletes itself when it's done
+     */
+    ~KDiskFreeSpace();
+
+    /**
+     * Call this to fire a search on the disk usage information
+     * for @p mountPoint.
+     * The foundMountPoint() signal will be emitted
+     * if this mount point is found, with the info requested.
+     * The done() signal is emitted in any case.
+     *
+     * @return true if the request could be handled, false if another
+     * request is happening already. readDF() can only be called once
+     * on a given instance of KDiskFreeSpace, given that it handles only
+     * the request for one mount point and then auto-deletes itself.
+     * Suicidal objects are not reusable...
+     */
+    bool readDF( const QString & mountPoint );
+
+    /**
+     * Call this to fire a search on the disk usage information
+     * for the mount point containing @p path.
+     * The foundMountPoint() signal will be emitted
+     * if this mount point is found, with the info requested.
+     * The done() signal is emitted in any case.
+     */
+    static KDiskFreeSpace * findUsageInfo( const QString & path );
 
 Q_SIGNALS:
-   void foundMountPoint( const QString & mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail );
+    /**
+     * Emitted when the information about the requested mount point was found.
+     * @param mountPoint the requested mount point
+     * @param kBSize the total size of the partition in kB
+     * @param kBUsed the amount of kB being used on the partition
+     * @param kBAvail the available space on the partition in kB
+     */
+    void foundMountPoint( const QString & mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail );
 
-   // This one is a hack around a weird (compiler?) bug. In the former signal,
-   // the slot in KPropertiessDialog would get 0L, 0L as the last two parameters.
-   // When using const ulong& instead, all is ok.
-   void foundMountPoint( const quint64&, const quint64&, const quint64&, const QString& );
-   void done();
+    /**
+     * Emitted when the request made via readDF is over, whether foundMountPoint was emitted or not.
+     */
+    void done();
 
 private Q_SLOTS:
-   void receivedDFStdErrOut(K3Process *, char *data, int len);
-   void dfDone();
+    void dfDone();
 
 private:
-  class Private;
-  Private * const d;
+    class Private;
+    Private * const d;
 };
-/***************************************************************************/
-
 
 #endif

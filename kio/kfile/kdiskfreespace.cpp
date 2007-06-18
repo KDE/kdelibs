@@ -2,10 +2,7 @@
  * kdiskfreespace.cpp
  *
  * Copyright (c) 1999 Michael Kropfberger <michael.kropfberger@gmx.net>
- *
- * Requires the Qt widget libraries, available at no cost at
- * http://www.troll.no/
- *
+ * Copyright 2007 David Faure <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -27,6 +24,7 @@
 #include <QtCore/QTextIStream>
 
 #include <kdebug.h>
+#include <kprocess.h>
 #include <kmountpoint.h>
 #include <kio/global.h>
 #include <config-kfile.h>
@@ -34,7 +32,6 @@
 #include "kdiskfreespace.moc"
 
 #ifndef Q_OS_WIN
-#include <k3process.h>
 #define DF_COMMAND    "df"
 #define DF_ARGS       "-k"
 #define NO_FS_TYPE    true
@@ -44,12 +41,12 @@
 
 class KDiskFreeSpace::Private
 {
-    public:
-        Private(){}
-        K3Process  *dfProc;
-        QByteArray  dfStringErrOut;
-        QString     m_mountPoint;
-        bool        readingDFStdErrOut;
+public:
+    Private()
+    {}
+
+    KProcess         *dfProc;
+    QString           m_mountPoint;
 };
 
 /***************************************************************************
@@ -58,14 +55,12 @@ class KDiskFreeSpace::Private
 KDiskFreeSpace::KDiskFreeSpace(QObject *parent)
     : QObject(parent), d(new Private())
 {
-    d->dfProc = new K3Process(); Q_CHECK_PTR(d->dfProc);
-    d->dfProc->setEnvironment("LANGUAGE", "C");
-    connect(d->dfProc, SIGNAL(receivedStdout(K3Process *, char *, int)),
-            this, SLOT (receivedDFStdErrOut(K3Process *, char *, int)));
-    connect(d->dfProc,SIGNAL(processExited(K3Process *)),
-            this, SLOT(dfDone() ) );
-
-    d->readingDFStdErrOut=false;
+    d->dfProc = new KProcess(); Q_CHECK_PTR(d->dfProc);
+    // we want to parse stdout and to see error messages
+    d->dfProc->setOutputChannelMode(KProcess::MergedChannels);
+    d->dfProc->setEnv("LANGUAGE", "C");
+    connect(d->dfProc,SIGNAL(finished(int, QProcess::ExitStatus)),
+            this, SLOT(dfDone()));
 }
 
 
@@ -79,28 +74,16 @@ KDiskFreeSpace::~KDiskFreeSpace()
 }
 
 /***************************************************************************
-  * is called, when the df-command writes on StdOut
-**/
-void KDiskFreeSpace::receivedDFStdErrOut(K3Process *, char *data, int len)
-{
-  QByteArray tmp(data,len+1);  // adds a zero-byte
-  d->dfStringErrOut.append(tmp);
-}
-
-/***************************************************************************
   * reads the df-commands results
 **/
-int KDiskFreeSpace::readDF( const QString & mountPoint )
+bool KDiskFreeSpace::readDF( const QString & mountPoint )
 {
-  if (d->readingDFStdErrOut || d->dfProc->isRunning())
-    return -1;
-  d->m_mountPoint = mountPoint;
-  d->dfStringErrOut=""; // yet no data received
-  d->dfProc->clearArguments();
-  (*d->dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
-  if (!d->dfProc->start( K3Process::NotifyOnExit, K3Process::AllOutput ))
-     kError() << "could not execute ["<< DF_COMMAND << "]" << endl;
-  return 1;
+    if (d->dfProc->state() == QProcess::Running)
+        return false;
+    d->m_mountPoint = mountPoint;
+    (*d->dfProc) << QString::fromLocal8Bit(DF_COMMAND) << QString::fromLocal8Bit(DF_ARGS);
+    d->dfProc->start();
+    return true;
 }
 
 
@@ -109,26 +92,25 @@ int KDiskFreeSpace::readDF( const QString & mountPoint )
 **/
 void KDiskFreeSpace::dfDone()
 {
-  d->readingDFStdErrOut=true;
+    QByteArray allStdOut = d->dfProc->readAll();
+    QTextStream t(&allStdOut, QIODevice::ReadOnly);
+    QString s = t.readLine();
+    if ( (s.isEmpty()) || ( !s.startsWith( QLatin1String("Filesystem") ) ) )
+        kError() << "Error running df command... got [" << s << "]" << endl;
 
-  QTextStream t (d->dfStringErrOut, QIODevice::ReadOnly);
-  QString s=t.readLine();
-  if ( (s.isEmpty()) || ( !s.startsWith( QLatin1String("Filesystem") ) ) )
-    kError() << "Error running df command... got [" << s << "]" << endl;
   while ( !t.atEnd() ) {
-    QString u,v;
-    s=t.readLine();
-    s=s.simplified();
+    s = t.readLine();
+    s = s.simplified();
     if ( !s.isEmpty() ) {
       //kDebug(kfile_area) << "GOT: [" << s << "]" << endl;
 
-      if (s.indexOf(BLANK)<0)      // devicename was too long, rest in next line
-	if ( !t.atEnd() ) {       // just appends the next line
-            v=t.readLine();
-            s=s.append(v);
+      if (s.indexOf(BLANK)<0) {      // devicename was too long, rest in next line
+          if ( !t.atEnd() ) {       // just appends the next line
+            s=s.append(t.readLine());
             s=s.simplified();
             //kDebug(kfile_area) << "SPECIAL GOT: [" << s << "]" << endl;
-	 }//if silly linefeed
+          }//if silly linefeed
+      }
 
       //kDebug(kfile_area) << "[" << s << "]" << endl;
 
@@ -139,7 +121,7 @@ void KDiskFreeSpace::dfDone()
       if (!NO_FS_TYPE)
           s=s.remove(0,s.indexOf(BLANK)+1 ); // eat fs type
 
-      u=s.left(s.indexOf(BLANK));
+      QString u=s.left(s.indexOf(BLANK));
       quint64 kBSize = u.toULongLong();
       s=s.remove(0,s.indexOf(BLANK)+1 );
       //kDebug(kfile_area) << "    Size:       [" << kBSize << "]" << endl;
@@ -163,12 +145,10 @@ void KDiskFreeSpace::dfDone()
       {
         //kDebug(kfile_area) << "Found mount point. Emitting" << endl;
         emit foundMountPoint( mountPoint, kBSize, kBUsed, kBAvail );
-        emit foundMountPoint( kBSize, kBUsed, kBAvail, mountPoint ); // sic!
       }
     }//if not header
   }//while further lines available
 
-  d->readingDFStdErrOut=false;
   emit done();
   deleteLater();
 }
@@ -216,10 +196,10 @@ int KDiskFreeSpace::readDF( const QString & mountPoint )
         total = total / 1024;
         avail = avail / 1024;
         emit foundMountPoint( mountPoint, total, total-avail, avail );
-        emit foundMountPoint( total, total-avail, avail, mountPoint ); // sic!
         iRet = 1;
     }
     emit done();
+    deleteLater();
     return iRet;
 }
 
@@ -228,11 +208,6 @@ KDiskFreeSpace *KDiskFreeSpace::findUsageInfo( const QString & path )
     KDiskFreeSpace * job = new KDiskFreeSpace;
     job->readDF( path );
     return job;
-}
-
-// can't convince moc to ignore them on win32 only :(
-void KDiskFreeSpace::receivedDFStdErrOut(K3Process *, char *, int)
-{
 }
 
 void KDiskFreeSpace::dfDone()
