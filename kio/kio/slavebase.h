@@ -457,13 +457,19 @@ public:
     virtual void symlink( const QString& target, const KUrl& dest, bool overwrite );
 
     /**
-     * Change permissions on @p path
+     * Change permissions on @p url
      * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_CHMOD
      */
     virtual void chmod( const KUrl& url, int permissions );
 
-    // KDE4 TODO: add a setTime (utime?) to set the mtime on dirs at the end of a copy,
-    // or to set the mtime on a file at any moment (unused)
+    /**
+     * Sets the modification time for @url
+     * For instance this is what CopyJob uses to set mtime on dirs at the end of a copy.
+     * It could also be used to set the mtime on any file, in theory.
+     * The usual implementation on unix is to call utime(path, &myutimbuf).
+     * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_SETTIME
+     */
+    virtual void setModificationTime( const KUrl& url, const QDateTime& mtime );
 
     /**
      * Copy @p src into @p dest.

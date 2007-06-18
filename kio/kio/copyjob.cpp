@@ -77,6 +77,7 @@ public:
     // Used after copying all the files into the dirs, to set mtime (TODO: and permissions?)
     // after the copy is done
     QLinkedList<CopyInfo> m_directoriesCopied;
+    QLinkedList<CopyInfo>::const_iterator m_directoriesCopiedIterator;
 };
 
 CopyJob::CopyJob(const KUrl::List& src, const KUrl& dest, CopyMode mode, bool asMethod)
@@ -1295,17 +1296,33 @@ void CopyJob::deleteNextDir()
     else
     {
         // This step is done, move on
+        state = STATE_SETTING_DIR_ATTRIBUTES;
+        d->m_directoriesCopiedIterator = d->m_directoriesCopied.begin();
         setNextDirAttribute();
     }
 }
 
 void CopyJob::setNextDirAttribute()
 {
-    if ( !d->m_directoriesCopied.isEmpty() )
-    {
-        state = STATE_SETTING_DIR_ATTRIBUTES;
-#ifdef Q_OS_UNIX
-        // TODO KDE4: this should use a SlaveBase method, but we have none yet in KDE3.
+    while (d->m_directoriesCopiedIterator != d->m_directoriesCopied.end() &&
+           (*d->m_directoriesCopiedIterator).mtime == -1) {
+        ++d->m_directoriesCopiedIterator;
+    }
+    if ( d->m_directoriesCopiedIterator != d->m_directoriesCopied.end() ) {
+        const KUrl url = (*d->m_directoriesCopiedIterator).uDest;
+        const time_t mtime = (*d->m_directoriesCopiedIterator).mtime;
+        const QDateTime dt = QDateTime::fromTime_t(mtime);
+        ++d->m_directoriesCopiedIterator;
+
+        KIO::SimpleJob *job = KIO::setModificationTime( url, dt );
+        Scheduler::scheduleJob(job);
+        addSubjob( job );
+
+
+#if 0 // ifdef Q_OS_UNIX
+        // TODO: can be removed now. Or reintroduced as a fast path for local files
+        // if launching even more jobs as done above is a performance problem.
+        //
         QLinkedList<CopyInfo>::Iterator it = d->m_directoriesCopied.begin();
         for ( ; it != d->m_directoriesCopied.end() ; ++it ) {
             const KUrl& url = (*it).uDest;
@@ -1321,13 +1338,10 @@ void CopyJob::setNextDirAttribute()
 
             }
         }
-#endif
         d->m_directoriesCopied.clear();
-    }
-
-    // No "else" here, since the above is a simple sync loop
-
-    {
+        // but then we need to jump to the else part below. Maybe with a recursive call?
+#endif
+    } else {
         // Finished - tell the world
         if ( !m_bOnlyRenames )
         {
@@ -1391,11 +1405,10 @@ void CopyJob::slotResultDeletingDirs( KJob * job )
         // Let's not display "Could not remove dir ..." for each of those dir !
     }
     removeSubjob( job );
-    assert ( !hasSubjobs() );
+    assert( !hasSubjobs() );
     deleteNextDir();
 }
 
-#if 0 // TODO KDE4
 void CopyJob::slotResultSettingDirAttributes( KJob * job )
 {
     if (job->error())
@@ -1404,11 +1417,10 @@ void CopyJob::slotResultSettingDirAttributes( KJob * job )
         // with inferior file systems like VFAT.
         // Let's not display warnings for each dir like "cp -a" does.
     }
-    subjobs.remove( job );
-    assert ( subjobs.isEmpty() );
+    removeSubjob( job );
+    assert( !hasSubjobs() );
     setNextDirAttribute();
 }
-#endif
 
 // We were trying to do a direct renaming, before even stat'ing
 void CopyJob::slotResultRenaming( KJob* job )
@@ -1646,9 +1658,8 @@ void CopyJob::slotResult( KJob *job )
         case STATE_DELETING_DIRS:
             slotResultDeletingDirs( job );
             break;
-        case STATE_SETTING_DIR_ATTRIBUTES: // TODO KDE4
-            assert( 0 );
-            //slotResultSettingDirAttributes( job );
+        case STATE_SETTING_DIR_ATTRIBUTES:
+            slotResultSettingDirAttributes( job );
             break;
         default:
             assert( 0 );

@@ -65,6 +65,16 @@ namespace KIO {
     KIO_EXPORT SimpleJob * chmod( const KUrl& url, int permissions );
 
     /**
+     * Changes the modification time on a file or directory.
+     *
+     * @param url The URL of file or directory.
+     * @param permissions The permissions to set.
+     * @return the job handling the operation.
+     */
+    KIO_EXPORT SimpleJob *setModificationTime( const KUrl& url, const QDateTime& mtime );
+
+
+    /**
      * Rename a file or directory.
      * Warning: this operation fails if a direct renaming is not
      * possible (like with files or dirs on separate partitions)

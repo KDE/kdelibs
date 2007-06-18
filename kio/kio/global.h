@@ -161,7 +161,7 @@ namespace KIO
     CMD_DEL = 'K', // 75
     CMD_CHMOD = 'L', // 76
     CMD_SPECIAL = 'M', // 77
-    // 'N', // 78  - currently unused
+    CMD_SETMODIFICATIONTIME = 'N', // 78
     CMD_REPARSECONFIGURATION = 'O', // 79
     CMD_META_DATA = 'P', // 80
     CMD_SYMLINK = 'Q', // 81
@@ -267,7 +267,8 @@ namespace KIO
                                                         // the server in order to continue.
     ERR_POST_DENIED = KJob::UserDefinedError + 65, // Issued when trying to POST data to a certain Ports
                                                   // see job.cpp
-    ERR_COULD_NOT_SEEK = KJob::UserDefinedError + 66
+    ERR_COULD_NOT_SEEK = KJob::UserDefinedError + 66,
+    ERR_CANNOT_SETTIME = KJob::UserDefinedError + 67 // Emitted by setModificationTime
   };
 
   /**

@@ -123,7 +123,7 @@ void Job::addSubjob(Job *job, bool inheritMetaData)
     if (inheritMetaData)
        job->mergeMetaData(m_outgoingMetaData);
 
-    if (ui()) {
+    if (ui() && job->ui()) {
         job->ui()->setWindow( ui()->window() );
         job->ui()->updateUserTimestamp( ui()->userTimestamp() );
     }
@@ -672,6 +672,16 @@ SimpleJob *KIO::chmod( const KUrl& url, int permissions )
     KIO_ARGS << url << permissions;
     SimpleJob *job = new SimpleJob(url, CMD_CHMOD, packedArgs);
     job->setUiDelegate(new JobUiDelegate());
+    return job;
+}
+
+SimpleJob *KIO::setModificationTime( const KUrl& url, const QDateTime& mtime )
+{
+    //kDebug(7007) << "setModificationTime " << url << " " << mtime << endl;
+    KIO_ARGS << url << mtime;
+    SimpleJob *job = new SimpleJob(url, CMD_SETMODIFICATIONTIME, packedArgs);
+    // This is never a user-initiated job, so it shouldn't be visible
+    //job->setUiDelegate(new JobUiDelegate());
     return job;
 }
 

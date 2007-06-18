@@ -233,7 +233,7 @@ namespace KIO {
         void deleteNextDir();
         void skip( const KUrl & sourceURL );
         void slotResultRenaming( KJob * job );
-        //void slotResultSettingDirAttributes( KJob * job );
+        void slotResultSettingDirAttributes( KJob * job );
         void setNextDirAttribute();
     private:
         void startRenameJob(const KUrl &slave_url);
