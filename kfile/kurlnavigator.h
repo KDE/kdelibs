@@ -74,6 +74,11 @@ public:
     /** Returns the current URL. */
     const KUrl& url() const;
 
+    /** Returns the currently entered, but not accepted URL.
+     *  Attention: It is possible that the returned URL is not valid!
+     */
+    KUrl uncommittedUrl() const;
+
     /**
      * Returns the portion of the current URL up to the path part given
      * by \a index. Assuming that the current URL is /home/peter/Documents/Music,

@@ -701,6 +701,15 @@ const KUrl& KUrlNavigator::url() const
     return d->m_history[d->m_historyIndex].url();
 }
 
+KUrl KUrlNavigator::uncommittedUrl() const
+{
+    if (isUrlEditable()) {
+        return KUrl(d->m_pathBox->currentText());
+    } else {
+        return KUrl(d->m_protocols->currentProtocol() + "://" + d->m_host->text());
+    }
+}
+
 KUrl KUrlNavigator::url(int index) const
 {
     if (index < 0) {
