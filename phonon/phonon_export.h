@@ -22,14 +22,22 @@
 
 #include <QtCore/QtGlobal>
 
+#if defined _WIN32 || defined _WIN64
+
 #ifndef PHONON_EXPORT
-# ifdef phonon_EXPORTS
+# if defined( MAKE_PHONON_LIB )
                                        /* We are building this library */
 #  define PHONON_EXPORT Q_DECL_EXPORT
 # else
                                        /* We are using this library */
 #  define PHONON_EXPORT Q_DECL_IMPORT
 # endif
+#endif
+
+#else //UNIX
+
+#define PHONON_EXPORT Q_DECL_EXPORT
+
 #endif
 
 #ifndef PHONON_EXPORT_DEPRECATED

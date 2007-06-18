@@ -7,7 +7,7 @@ CONFIG += dll warn_on
 VERSION = 5.0.0
 TARGET = 
 DEPENDPATH += .
-DEFINES += phonon_EXPORTS
+DEFINES += MAKE_PHONON_LIB
 
 # Input
 HEADERS += abstractaudiooutput.h \
