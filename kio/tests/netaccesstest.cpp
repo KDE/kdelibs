@@ -20,6 +20,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/netaccess.h>
+#include <kio/job.h>
 #include <QtCore/QFile>
 #include <kcmdlineargs.h>
 
@@ -32,7 +33,8 @@ int main(int argc, char **argv)
 
   for ( uint i = 0; i < 4 ; ++i ) {
     kDebug() << "file_copy" << endl;
-    if ( !KIO::NetAccess::file_copy(srcURL, tmpURL, -1, true, false, 0) )
+    KIO::Job* job = KIO::file_copy(srcURL, tmpURL, -1, true, false, 0);
+    if ( !KIO::NetAccess::synchronousRun(job, 0) )
       kError() << "file_copy failed: " << KIO::NetAccess::lastErrorString() << endl;
     else {
       QFile f( tmpURL.path() );
