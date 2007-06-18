@@ -5,7 +5,9 @@ Name[pa]=ਆਕਸੀਜਨ
 Name[x-test]=xxOxygenxx
 ConfigPage=kstyle-oxygen-config
 Comment=A really cool style
+Comment[csb]=Prôwdzëwô dobri sztél
 Comment[de]=Ein richtig cooler Stil
+Comment[el]=Ένα πραγματικά όμορφο στυλ
 Comment[sv]=En verkligt häftig stil
 [KDE]
 WidgetStyle=Oxygen
