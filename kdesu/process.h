@@ -1,3 +1,5 @@
+///////// XXX migrate it to kprocess /////////////////
+
 /* vi: ts=8 sts=4 sw=4
  *
  * This file is part of the KDE project, module kdesu.
@@ -20,7 +22,7 @@
 
 #include <kdesu/kdesu_export.h>
 
-class PTY;
+#include <kpty.h>
 
 /**
  * Synchronous communication with tty programs.
@@ -146,7 +148,7 @@ public /* static */:
 
     /** Error return values for checkPidExited() */
     enum checkPidStatus { Error=-1,  /**< No child */
-	NotExited=-2,                /**< Child hasn't exited */
+        NotExited=-2,                /**< Child hasn't exited */
         Killed=-3                    /**< Child terminated by signal */
     } ;
 
@@ -163,19 +165,18 @@ public /* static */:
 protected:
     QList<QByteArray> environment() const;
 
-    bool m_bErase,   /**< @see setErase() */ 
+    bool m_bErase,   /**< @see setErase() */
 	m_bTerminal; /**< Indicates running in a terminal, causes additional
                           newlines to be printed after output. Set to @c false
                           in constructor. @see setTerminal()  */
-    int m_Pid, /**< PID of child process */
-        m_Fd;  /**< FD of PTY for child process */
+    int m_Pid; /**< PID of child process */
     QByteArray m_Command,  /**< Unused */
         m_Exit;            /**< String to scan for in output that indicates
                                 child has exited. */
 
 private:
     int init();
-    int SetupTTY(int fd);
+    int setupTTY();
 
 protected:
     /** Standard hack to add virtual methods in a BC way. Unused. */

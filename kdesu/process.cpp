@@ -15,7 +15,6 @@
  */
 
 #include "process.h"
-#include "kdesu_pty.h"
 #include "kcookie.h"
 
 #include <config.h>
@@ -72,6 +71,9 @@ int PtyProcess::waitMS(int fd,int ms)
 	return select(fd+1, &fds, 0L, 0L, &tv);
 }
 
+// XXX this function is nonsense:
+// - for our child, we could use waitpid().
+// - the configurability at this place it *complete* braindamage
 /*
 ** Basic check for the existence of @p pid.
 ** Returns true iff @p pid is an extant process.
@@ -85,7 +87,7 @@ bool PtyProcess::checkPid(pid_t pid)
     if (superUserCommand == "sudo") {
         return true;
     } else {
-	return kill(pid,0) == 0;
+        return kill(pid, 0) == 0;
     }
 }
 
@@ -127,9 +129,8 @@ public:
         delete m_pPTY;
     }
     QList<QByteArray> env;
-    PTY *m_pPTY;
+    KPty *m_pPTY;
     QByteArray m_Inbuf;
-    QByteArray m_TTY;
 };
 
 
@@ -144,17 +145,12 @@ PtyProcess::PtyProcess()
 int PtyProcess::init()
 {
     delete d->m_pPTY;
-    d->m_pPTY = new PTY();
-    m_Fd = d->m_pPTY->getpt();
-    if (m_Fd < 0)
-        return -1;
-    if ((d->m_pPTY->grantpt() < 0) || (d->m_pPTY->unlockpt() < 0))
+    d->m_pPTY = new KPty();
+    if (!d->m_pPTY->open())
     {
-        kError(900) << k_lineinfo << "Master setup failed.\n";
-        m_Fd = -1;
+        kError(900) << k_lineinfo << "Failed to open PTY.\n";
         return -1;
     }
-    d->m_TTY = d->m_pPTY->ptsname();
     d->m_Inbuf.resize(0);
     return 0;
 }
@@ -173,7 +169,7 @@ void PtyProcess::setEnvironment( const QList<QByteArray> &env )
 
 int PtyProcess::fd() const
 {
-    return m_Fd;
+    return d->m_pPTY ? d->m_pPTY->masterFd() : -1;
 }
 
 int PtyProcess::pid() const
@@ -213,7 +209,7 @@ QByteArray PtyProcess::readLine(bool block)
         return ret;
     }
 
-    int flags = fcntl(m_Fd, F_GETFL);
+    int flags = fcntl(fd(), F_GETFL);
     if (flags < 0)
     {
         kError(900) << k_lineinfo << "fcntl(F_GETFL): " << perror << "\n";
@@ -225,7 +221,7 @@ QByteArray PtyProcess::readLine(bool block)
     else
         flags |= O_NONBLOCK;
 
-    if ((flags != oflags) && (fcntl(m_Fd, F_SETFL, flags) < 0))
+    if ((flags != oflags) && (fcntl(fd(), F_SETFL, flags) < 0))
     {
        // We get an error here when the child process has closed
        // the file descriptor already.
@@ -236,7 +232,7 @@ QByteArray PtyProcess::readLine(bool block)
     char buf[256];
     while (1)
     {
-        nbytes = read(m_Fd, buf, 255);
+        nbytes = read(fd(), buf, 255);
         if (nbytes == -1)
         {
             if (errno == EINTR)
@@ -269,9 +265,9 @@ QByteArray PtyProcess::readLine(bool block)
 void PtyProcess::writeLine(const QByteArray &line, bool addnl)
 {
     if (!line.isEmpty())
-        write(m_Fd, line, line.length());
+        write(fd(), line, line.length());
     if (addnl)
-        write(m_Fd, "\n", 1);
+        write(fd(), "\n", 1);
 }
 
 
@@ -296,14 +292,6 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     if (init() < 0)
         return -1;
 
-    // Open the pty slave before forking. See SetupTTY()
-    int slave = open(d->m_TTY, O_RDWR);
-    if (slave < 0)
-    {
-        kError(900) << k_lineinfo << "Could not open slave pty.\n";
-        return -1;
-    }
-
     if ((m_Pid = fork()) == -1)
     {
         kError(900) << k_lineinfo << "fork(): " << perror << "\n";
@@ -313,12 +301,11 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     // Parent
     if (m_Pid)
     {
-        close(slave);
         return 0;
     }
 
     // Child
-    if (SetupTTY(slave) < 0)
+    if (setupTTY() < 0)
         _exit(1);
 
     for (i = 0; i < d->env.count(); ++i)
@@ -379,67 +366,35 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 
 int PtyProcess::WaitSlave()
 {
-    int slave = open(d->m_TTY, O_RDWR);
-    if (slave < 0)
-    {
-        kError(900) << k_lineinfo << "Could not open slave tty.\n";
-        return -1;
-    }
-
     kDebug(900) << k_lineinfo << "Child pid " << m_Pid << endl;
 
     struct termios tio;
     while (1)
     {
-	if (!checkPid(m_Pid))
-	{
-		close(slave);
-		return -1;
-	}
-        if (tcgetattr(slave, &tio) < 0)
+        if (!checkPid(m_Pid))
+        {
+            return -1;
+        }
+        if (!d->m_pPTY->tcGetAttr(&tio))
         {
             kError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
-            close(slave);
             return -1;
         }
         if (tio.c_lflag & ECHO)
         {
             kDebug(900) << k_lineinfo << "Echo mode still on.\n";
-	    waitMS(slave,100);
+            usleep(10000);
             continue;
         }
         break;
     }
-    close(slave);
     return 0;
 }
 
 
 int PtyProcess::enableLocalEcho(bool enable)
 {
-    int slave = open(d->m_TTY, O_RDWR);
-    if (slave < 0)
-    {
-        kError(900) << k_lineinfo << "Could not open slave tty.\n";
-        return -1;
-    }
-    struct termios tio;
-    if (tcgetattr(slave, &tio) < 0)
-    {
-        kError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";
-        close(slave); return -1;
-    }
-    if (enable)
-        tio.c_lflag |= ECHO;
-    else
-        tio.c_lflag &= ~ECHO;
-    if (tcsetattr(slave, TCSANOW, &tio) < 0)
-    {
-        kError(900) << k_lineinfo << "tcsetattr(): " << perror << "\n";
-        close(slave); return -1;
-    }
-    close(slave);
-    return 0;
+    return d->m_pPTY->setEcho(enable) ? 0 : -1;
 }
 
 
@@ -470,8 +425,8 @@ int PtyProcess::waitForChild()
 
     while (1)
     {
-        FD_SET(m_Fd, &fds);
-        int ret = select(m_Fd+1, &fds, 0L, 0L, 0L);
+        FD_SET(fd(), &fds);
+        int ret = select(fd()+1, &fds, 0L, 0L, 0L);
         if (ret == -1)
         {
             if (errno != EINTR)
@@ -498,27 +453,27 @@ int PtyProcess::waitForChild()
             }
         }
 
-	ret = checkPidExited(m_Pid);
-	if (ret == Error)
-	{
-		if (errno == ECHILD) retval = 0;
-		else retval = 1;
-		break;
-	}
-	else if (ret == Killed)
-	{
-		retval = 0;
-		break;
-	}
-	else if (ret == NotExited)
-	{
-		// keep checking
-	}
-	else
-	{
-		retval = ret;
-		break;
-	}
+        ret = checkPidExited(m_Pid);
+        if (ret == Error)
+        {
+            if (errno == ECHILD) retval = 0;
+            else retval = 1;
+            break;
+        }
+        else if (ret == Killed)
+        {
+            retval = 0;
+            break;
+        }
+        else if (ret == NotExited)
+        {
+            // keep checking
+        }
+        else
+        {
+            retval = ret;
+            break;
+        }
     }
     return retval;
 }
@@ -530,52 +485,29 @@ int PtyProcess::waitForChild()
  * so we'll never get EIO when reading from it.
  */
 
-int PtyProcess::SetupTTY(int fd)
+int PtyProcess::setupTTY()
 {
     // Reset signal handlers
     for (int sig = 1; sig < NSIG; sig++)
         signal(sig, SIG_DFL);
     signal(SIGHUP, SIG_IGN);
 
-    // Close all file handles
-    struct rlimit rlp;
-    getrlimit(RLIMIT_NOFILE, &rlp);
-    for (int i = 0; i < (int)rlp.rlim_cur; i++)
-        if (i != fd) close(i);
-
-    // Create a new session.
-    setsid();
-
-    // Open slave. This will make it our controlling terminal
-    int slave = open(d->m_TTY, O_RDWR);
-    if (slave < 0)
-    {
-        kError(900) << k_lineinfo << "Could not open slave side: " << perror << "\n";
-        return -1;
-    }
-    close(fd);
-
-#if defined(__SVR4) && defined(sun)
-
-    // Solaris STREAMS environment.
-    // Push these modules to make the stream look like a terminal.
-    ioctl(slave, I_PUSH, "ptem");
-    ioctl(slave, I_PUSH, "ldterm");
-
-#endif
-
-#ifdef TIOCSCTTY
-    ioctl(slave, TIOCSCTTY, NULL);
-#endif
+    d->m_pPTY->setCTty();
 
     // Connect stdin, stdout and stderr
+    int slave = d->m_pPTY->slaveFd();
     dup2(slave, 0); dup2(slave, 1); dup2(slave, 2);
-    if (slave > 2)
-        close(slave);
+
+    // Close all file handles
+    // XXX this caused problems in KProcess - not sure why anymore.
+    struct rlimit rlp;
+    getrlimit(RLIMIT_NOFILE, &rlp);
+    for (int i = 3; i < (int)rlp.rlim_cur; i++)
+        close(i);
 
     // Disable OPOST processing. Otherwise, '\n' are (on Linux at least)
     // translated to '\r\n'.
-    struct termios tio;
+    struct ::termios tio;
     if (tcgetattr(0, &tio) < 0)
     {
         kError(900) << k_lineinfo << "tcgetattr(): " << perror << "\n";

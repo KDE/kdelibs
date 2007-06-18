@@ -258,7 +258,7 @@ int SuProcess::ConverseSU(const char *password)
                     return ok;
                 }
 
-                while(waitMS(m_Fd,100)>0)
+                while(waitMS(fd(),100)>0)
                 {
                     // There is more output available, so the previous line
                     // couldn't have been a password prompt (the definition
@@ -295,8 +295,8 @@ int SuProcess::ConverseSU(const char *password)
                     }
                     if ((WaitSlave() == 0) && checkPid(m_Pid))
                     {
-                        write(m_Fd, password, strlen(password));
-                        write(m_Fd, "\n", 1);
+                        write(fd(), password, strlen(password));
+                        write(fd(), "\n", 1);
                         state=CheckStar;
                     }
                     else
