@@ -87,11 +87,9 @@ static Atom net_wm_allowed_actions   = 0;
 static Atom wm_window_role           = 0;
 static Atom net_frame_extents        = 0;
 static Atom net_wm_window_opacity    = 0;
+static Atom kde_net_wm_frame_strut   = 0;
 
 // KDE extensions
-static Atom kde_net_system_tray_windows       = 0;
-static Atom kde_net_wm_system_tray_window_for = 0;
-static Atom kde_net_wm_frame_strut            = 0;
 static Atom kde_net_wm_window_type_override   = 0;
 static Atom kde_net_wm_window_type_topmenu    = 0;
 static Atom kde_net_wm_temporary_rules        = 0;
@@ -204,7 +202,6 @@ static void refdec_nri(NETRootInfoPrivate *p) {
 	delete [] p->stacking;
 	delete [] p->clients;
 	delete [] p->virtual_roots;
-	delete [] p->kde_system_tray_windows;
 
 	int i;
 	for (i = 0; i < p->desktop_names.size(); i++)
@@ -243,7 +240,7 @@ static int wcmp(const void *a, const void *b) {
 }
 
 
-static const int netAtomCount = 86;
+static const int netAtomCount = 84;
 static void create_atoms(Display *d) {
     static const char * const names[netAtomCount] =
     {
@@ -330,8 +327,6 @@ static void create_atoms(Display *d) {
 
 	    "_NET_WM_STATE_STAYS_ON_TOP",
 
-	    "_KDE_NET_SYSTEM_TRAY_WINDOWS",
-	    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
 	    "_KDE_NET_WM_FRAME_STRUT",
 	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
 	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
@@ -428,8 +423,6 @@ static void create_atoms(Display *d) {
 
 	    &net_wm_state_stays_on_top,
 
-	    &kde_net_system_tray_windows,
-	    &kde_net_wm_system_tray_window_for,
 	    &kde_net_wm_frame_strut,
 	    &kde_net_wm_window_type_override,
 	    &kde_net_wm_window_type_topmenu,
@@ -635,8 +628,6 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
-    p->kde_system_tray_windows = 0;
-    p->kde_system_tray_windows_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
     p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
@@ -692,8 +683,6 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
-    p->kde_system_tray_windows = 0;
-    p->kde_system_tray_windows_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
     p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
@@ -753,8 +742,6 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->active = None;
     p->clients = p->stacking = p->virtual_roots = (Window *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
-    p->kde_system_tray_windows = 0;
-    p->kde_system_tray_windows_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
     p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
@@ -868,26 +855,6 @@ void NETRootInfo::setClientListStacking(const Window *windows, unsigned int coun
     XChangeProperty(p->display, p->root, net_client_list_stacking, XA_WINDOW, 32,
 		    PropModeReplace, (unsigned char *) p->stacking,
 		    p->stacking_count);
-}
-
-
-void NETRootInfo::setKDESystemTrayWindows(const Window *windows, unsigned int count) {
-    if (role != WindowManager) return;
-
-    p->kde_system_tray_windows_count = count;
-    delete [] p->kde_system_tray_windows;
-    p->kde_system_tray_windows = nwindup(windows, count);
-
-#ifdef    NETWMDEBUG
-    fprintf(stderr,
-	    "NETRootInfo::setKDESystemTrayWindows: setting list with %ld windows\n",
-	    p->kde_system_tray_windows_count);
-#endif
-
-    XChangeProperty(p->display, p->root, kde_net_system_tray_windows, XA_WINDOW, 32,
-		    PropModeReplace,
-		    (unsigned char *) p->kde_system_tray_windows,
-		    p->kde_system_tray_windows_count);
 }
 
 
@@ -1285,13 +1252,6 @@ void NETRootInfo::setSupported() {
     	    atoms[pnum++] = net_wm_action_close;
     }
 
-    // KDE specific extensions
-    if (p->properties[ PROTOCOLS ] & KDESystemTrayWindows)
-	atoms[pnum++] = kde_net_system_tray_windows;
-
-    if (p->properties[ PROTOCOLS ] & WMKDESystemTrayWinFor)
-	atoms[pnum++] = kde_net_wm_system_tray_window_for;
-
     if (p->properties[ PROTOCOLS ] & WMFrameExtents) {
 	atoms[pnum++] = net_frame_extents;
 	atoms[pnum++] = kde_net_wm_frame_strut;
@@ -1521,13 +1481,6 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ ACTIONS ] |= ActionChangeDesktop;
     else if( atom == net_wm_action_close )
         p->properties[ ACTIONS ] |= ActionClose;
-
-    // KDE specific extensions
-    else if( atom == kde_net_system_tray_windows )
-        p->properties[ PROTOCOLS ] |= KDESystemTrayWindows;
-
-    else if( atom == kde_net_wm_system_tray_window_for )
-        p->properties[ PROTOCOLS ] |= WMKDESystemTrayWinFor;
 
     else if( atom == net_frame_extents )
         p->properties[ PROTOCOLS ] |= WMFrameExtents;
@@ -2038,8 +1991,6 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		dirty |= ClientList;
 	    else if (pe.xproperty.atom == net_client_list_stacking)
 		dirty |= ClientListStacking;
-	    else if (pe.xproperty.atom == kde_net_system_tray_windows)
-		dirty |= KDESystemTrayWindows;
 	    else if (pe.xproperty.atom == net_desktop_names)
 		dirty |= DesktopNames;
 	    else if (pe.xproperty.atom == net_workarea)
@@ -2198,69 +2149,6 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 	fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
 		p->clients_count);
 #endif
-    }
-
-    if (dirty & KDESystemTrayWindows) {
-        bool read_ok = false;
-	if (XGetWindowProperty(p->display, p->root, kde_net_system_tray_windows,
-			       0l, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32) {
-		Window *wins = (Window *) data_ret;
-
-		qsort(wins, nitems_ret, sizeof(Window), wcmp);
-
-		if (p->kde_system_tray_windows) {
-		    if (role == Client) {
-			unsigned long new_index = 0, new_count = nitems_ret;
-			unsigned long old_index = 0,
-				      old_count = p->kde_system_tray_windows_count;
-
-			while(old_index < old_count || new_index < new_count) {
-			    if (old_index == old_count) {
-				addSystemTrayWin(wins[new_index++]);
-			    } else if (new_index == new_count) {
-				removeSystemTrayWin(p->kde_system_tray_windows[old_index++]);
-			    } else {
-				if (p->kde_system_tray_windows[old_index] <
-				    wins[new_index]) {
-				    removeSystemTrayWin(p->kde_system_tray_windows[old_index++]);
-				} else if (wins[new_index] <
-					   p->kde_system_tray_windows[old_index]) {
-				    addSystemTrayWin(wins[new_index++]);
-				} else {
-				    new_index++;
-				    old_index++;
-				}
-			    }
-			}
-		    }
-
-		} else {
-		    unsigned long n;
-		    for (n = 0; n < nitems_ret; n++) {
-			addSystemTrayWin(wins[n]);
-		    }
-		}
-
-		p->kde_system_tray_windows_count = nitems_ret;
-		delete [] p->kde_system_tray_windows;
-		p->kde_system_tray_windows =
-		    nwindup(wins, p->kde_system_tray_windows_count);
-                read_ok = true;
-	    }
-
-	    if ( data_ret )
-		XFree(data_ret);
-	}
-        if( !read_ok ) {
-            for( unsigned int i = 0; i < p->kde_system_tray_windows_count; ++i )
-                removeSystemTrayWin(p->kde_system_tray_windows[i]);
-            p->kde_system_tray_windows_count = 0;
-	    delete [] p->kde_system_tray_windows;
-            p->kde_system_tray_windows = NULL;
-        }
     }
 
     if (dirty & ClientListStacking) {
@@ -2647,16 +2535,6 @@ int NETRootInfo::clientListStackingCount() const {
 }
 
 
-const Window *NETRootInfo::kdeSystemTrayWindows() const {
-    return p->kde_system_tray_windows;
-}
-
-
-int NETRootInfo::kdeSystemTrayWindowsCount() const {
-    return p->kde_system_tray_windows_count;
-}
-
-
 NETSize NETRootInfo::desktopGeometry(int) const {
     return p->geometry.width != 0 ? p->geometry : p->rootSize;
 }
@@ -2780,8 +2658,6 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
     // p->frame_strut.bottom = 0;
 
-    p->kde_system_tray_win_for = 0;
-
     for( int i = 0;
          i < PROPERTIES_SIZE;
          ++i )
@@ -2842,8 +2718,6 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     // p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     // p->frame_strut.left = p->frame_strut.right = p->frame_strut.top =
     // p->frame_strut.bottom = 0;
-
-    p->kde_system_tray_win_for = 0;
 
     for( int i = 0;
          i < PROPERTIES_SIZE;
@@ -3506,16 +3380,6 @@ void NETWinInfo::setAllowedActions( unsigned long actions ) {
 		    PropModeReplace, (unsigned char *) data, count);
 }
 
-void NETWinInfo::setKDESystemTrayWinFor(Window window) {
-    if (role != Client) return;
-
-    p->kde_system_tray_win_for = window;
-    XChangeProperty(p->display, p->window, kde_net_wm_system_tray_window_for,
-		    XA_WINDOW, 32, PropModeReplace,
-		    (unsigned char *) &(p->kde_system_tray_win_for), 1);
-}
-
-
 void NETWinInfo::setFrameExtents(NETStrut strut) {
     if (role != WindowManager) return;
 
@@ -3549,7 +3413,7 @@ void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
 	p->win_geom.size.width = w;
 	p->win_geom.size.height = h;
     }
-// TODO try to work also without _KDE_NET_WM_FRAME_STRUT
+// TODO try to work also without _NET_WM_FRAME_EXTENTS
     window = p->win_geom;
 
     frame.pos.x = window.pos.x - p->frame_strut.left;
@@ -3754,8 +3618,6 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 		dirty2 |= WM2Opacity;
 	    else if (pe.xproperty.atom == net_wm_allowed_actions)
 		dirty2 |= WM2AllowedActions;
-	    else if (pe.xproperty.atom == kde_net_wm_system_tray_window_for)
-		dirty |= WMKDESystemTrayWinFor;
 	    else if (pe.xproperty.atom == xa_wm_state)
 		dirty |= XAWMState;
 	    else if (pe.xproperty.atom == net_frame_extents)
@@ -4163,23 +4025,6 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 	readIcon(p->display,p->window,net_wm_icon,p->icons,p->icon_count);
     }
 
-    if (dirty & WMKDESystemTrayWinFor) {
-	p->kde_system_tray_win_for = 0;
-	if (XGetWindowProperty(p->display, p->window, kde_net_wm_system_tray_window_for,
-			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32 &&
-		nitems_ret == 1) {
-		p->kde_system_tray_win_for = *((Window *) data_ret);
-		if ( p->kde_system_tray_win_for == 0 )
-		    p->kde_system_tray_win_for = p->root;
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-        }
-    }
-
     if (dirty & WMFrameExtents) {
         p->frame_strut = NETStrut();
         bool ok = false;
@@ -4526,10 +4371,6 @@ Bool NETWinInfo::handledIcons() const {
     return p->handled_icons;
 }
 
-
-Window NETWinInfo::kdeSystemTrayWinFor() const {
-    return p->kde_system_tray_win_for;
-}
 
 const unsigned long* NETWinInfo::passedProperties() const {
     return p->properties;

@@ -258,24 +258,6 @@ public:
     int clientListStackingCount() const;
 
     /**
-       Returns an array of Window id's, which contain all KDE system tray windows.
-
-       @return the array of Window id's of system tray windows
-
-       @see kdeSystemTrayWindowsCount()
-    **/
-    const Window *kdeSystemTrayWindows() const;
-
-    /**
-       Returns the number of windows in the kdeSystemTrayWindows array.
-
-       @return the number of Window id's in the system tray list
-
-       @see kdeSystemTrayWindows()
-    **/
-    int kdeSystemTrayWindowsCount() const;
-
-    /**
        Returns the desktop geometry size.
 
        The desktop argument is ignored. Early drafts of the NET WM
@@ -417,15 +399,6 @@ public:
        @param count The number of windows in the array.
     **/
     void setClientListStacking(const Window *windows, unsigned int count);
-
-    /**
-       Sets the list of KDE system tray windows on the root window.
-
-       @param windows The array of window id's
-
-       @param count The number of windows in the array.
-    **/
-    void setKDESystemTrayWindows(const Window *windows, unsigned int count);
 
     /**
        Sets the current desktop to the specified desktop.
@@ -661,24 +634,6 @@ protected:
        @param window the id of the window to remove
     **/
     virtual void removeClient(Window window) { Q_UNUSED(window); }
-
-    /**
-       A Client should subclass NETRootInfo and reimplement this function when
-       it wants to know when a system tray window has been added.  This is a KDE 2.0
-       extension.
-
-       @param window the id of the window to add
-    **/
-    virtual void addSystemTrayWin(Window window) { Q_UNUSED(window); }
-
-    /**
-       A Client should subclass NETRootInfo and reimplement this function when
-       it wants to know when a system tray window has been removed.  This is a KDE 2.0
-       extension.
-
-       @param window the id of the window to remove
-    **/
-    virtual void removeSystemTrayWin(Window window) { Q_UNUSED(window); }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
@@ -1025,14 +980,6 @@ public:
     Bool handledIcons() const;
 
     /**
-       Returns a Window id, telling the window manager which window we are
-       representing.
-
-       @return the window id
-    **/
-    Window kdeSystemTrayWinFor() const;
-
-    /**
        Returns the mapping state for the window (see the NET base class
        documentation for a description of mapping state).
 
@@ -1148,13 +1095,6 @@ public:
        @param handled true if the window handles icons, false otherwise
     **/
     void setHandledIcons(Bool handled);
-
-    /**
-       Set which window we are representing as a system tray window.
-
-       @param window the window that is represented by the system tray icon
-    **/
-    void setKDESystemTrayWinFor(Window window);
 
     /**
        Set the frame decoration strut, i.e. the width of the decoration borders.

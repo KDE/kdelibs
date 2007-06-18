@@ -554,10 +554,6 @@ public:
 
        @li XAWMState
 
-       Extended KDE protocols and properties (NOT STANDARD):
-
-       @li KDESystemTrayWindows
-       @li WMKDESystemTrayWinFor
     **/
 
     enum Property {
@@ -574,7 +570,7 @@ public:
 	WorkArea              = 1<<9,
 	SupportingWMCheck     = 1<<10,
 	VirtualRoots          = 1<<11,
-	KDESystemTrayWindows  = 1<<12, // NOT STANDARD
+        //
 	CloseWindow           = 1<<13,
 	WMMoveResize          = 1<<14,
 
@@ -590,8 +586,7 @@ public:
 	WMPid                 = 1<<23,
 	WMHandledIcons        = 1<<24,
 	WMPing                = 1<<25,
-	WMKDESystemTrayWinFor = 1<<26, // NOT STANDARD
-	XAWMState             = 1<<27, // NOT STANDARD
+	XAWMState             = 1<<27,
         WMFrameExtents        = 1<<28,
 
 	// Need to be reordered

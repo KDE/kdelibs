@@ -352,17 +352,11 @@ void KPassivePopup::positionSelf()
 
     else {
         NETWinInfo ni( QX11Info::display(), d->window, QX11Info::appRootWindow(),
-                       NET::WMIconGeometry | NET::WMKDESystemTrayWinFor );
+                       NET::WMIconGeometry );
 
         // Figure out where to put the popup. Note that we must handle
         // windows that skip the taskbar cleanly
-        if ( ni.kdeSystemTrayWinFor() ) {
-            NETRect frame, win;
-            ni.kdeGeometry( frame, win );
-            target.setRect( win.pos.x, win.pos.y,
-                            win.size.width, win.size.height );
-        }
-        else if ( ni.state() & NET::SkipTaskbar ) {
+        if ( ni.state() & NET::SkipTaskbar ) {
             target = defaultArea();
         }
         else {

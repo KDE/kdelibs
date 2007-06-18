@@ -53,7 +53,6 @@ static unsigned long windows_properties[ 2 ] = { NET::ClientList | NET::ClientLi
 				     NET::DesktopNames |
 				     NET::ActiveWindow |
 				     NET::WorkArea |
-				     NET::KDESystemTrayWindows,
                                      NET::WM2ShowingDesktop };
 
 static unsigned long desktop_properties[ 2 ] = { NET::ClientList |
@@ -65,7 +64,6 @@ static unsigned long desktop_properties[ 2 ] = { NET::ClientList |
 				     NET::DesktopNames |
 				     NET::ActiveWindow |
 				     NET::WorkArea |
-				     NET::KDESystemTrayWindows,
                                      NET::WM2ShowingDesktop };
 
 class KWindowSystemPrivate
@@ -75,7 +73,6 @@ public:
     KWindowSystemPrivate(int _what);
     QList<WId> windows;
     QList<WId> stackingOrder;
-    QList<WId> systemTrayWindows;
 
     struct StrutData
     {

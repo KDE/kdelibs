@@ -95,13 +95,12 @@ struct NETRootInfoPrivate {
     NETRArray<NETRect> workarea;
     NETSize geometry;
     Window active;
-    Window *clients, *stacking, *virtual_roots, *kde_system_tray_windows;
+    Window *clients, *stacking, *virtual_roots;
     NETRArray<const char *> desktop_names;
     int number_of_desktops;
     int current_desktop;
 
-    unsigned long clients_count, stacking_count, virtual_roots_count,
-	kde_system_tray_windows_count;
+    unsigned long clients_count, stacking_count, virtual_roots_count;
     bool showing_desktop;
     NET::Orientation desktop_layout_orientation;
     NET::DesktopLayoutCorner desktop_layout_corner;
@@ -138,7 +137,6 @@ struct NETWinInfoPrivate {
     int desktop;
     int pid;
     int handled_icons;
-    Window kde_system_tray_win_for;
     Time user_time;
     char* startup_id;
     unsigned long opacity;
