@@ -101,8 +101,10 @@ FactoryPrivate::FactoryPrivate()
     // are still available. If the FactoryPrivate dtor is called too late many bad things can happen
     // as the whole backend might still be alive.
     qAddPostRoutine(globalFactory.destroy);
+#ifndef QT_NO_DBUS
     QDBusConnection::sessionBus().connect(QString(), QString(), "org.kde.Phonon.Factory",
             "phononBackendChanged", this, SLOT(phononBackendChanged()));
+#endif
 }
 
 FactoryPrivate::~FactoryPrivate()
