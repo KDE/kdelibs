@@ -91,13 +91,9 @@ QList<int> FakeCdrom::writeSpeeds() const
     return speeds;
 }
 
-Solid::OpticalDrive::EjectStatus FakeCdrom::eject()
+bool FakeCdrom::eject()
 {
-    if (fakeDevice()->isBroken()) {
-        return Solid::OpticalDrive::EjectForbidden;
-    }
-
-    return Solid::OpticalDrive::EjectSuccess;
+    return false;
 }
 
 #include "backends/fakehw/fakecdrom.moc"

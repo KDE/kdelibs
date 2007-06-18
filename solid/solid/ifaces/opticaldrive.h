@@ -77,7 +77,7 @@ namespace Ifaces
          *
          * @return
          */
-        virtual Solid::OpticalDrive::EjectStatus eject() = 0;
+        virtual bool eject() = 0;
 
     protected:
     //Q_SIGNALS:
@@ -88,6 +88,8 @@ namespace Ifaces
          * Please note that some (broken) drives doesn't report this event.
          */
         virtual void ejectPressed() = 0;
+
+        virtual void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData) = 0;
     };
 }
 }

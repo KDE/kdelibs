@@ -37,10 +37,11 @@ public Q_SLOTS:
     virtual int readSpeed() const;
     virtual int writeSpeed() const;
     virtual QList<int> writeSpeeds() const;
-    virtual Solid::OpticalDrive::EjectStatus eject();
+    virtual bool eject();
 
 Q_SIGNALS:
     void ejectPressed();
+    void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData);
 };
 
 #endif

@@ -27,7 +27,9 @@ Solid::OpticalDrive::OpticalDrive(QObject *backendObject)
     : StorageDrive(*new OpticalDrivePrivate(), backendObject)
 {
     connect(backendObject, SIGNAL(ejectPressed()),
-             this, SIGNAL(ejectPressed()));
+            this, SIGNAL(ejectPressed()));
+    connect(backendObject, SIGNAL(ejectDone(Solid::OpticalDrive::EjectResult, QVariant)),
+            this, SIGNAL(ejectDone(Solid::OpticalDrive::EjectResult, QVariant)));
 }
 
 Solid::OpticalDrive::~OpticalDrive()
@@ -59,10 +61,10 @@ QList<int> Solid::OpticalDrive::writeSpeeds() const
     return_SOLID_CALL(Ifaces::OpticalDrive *, d->backendObject(), QList<int>(), writeSpeeds());
 }
 
-Solid::OpticalDrive::EjectStatus Solid::OpticalDrive::eject()
+bool Solid::OpticalDrive::eject()
 {
     Q_D(OpticalDrive);
-    return_SOLID_CALL(Ifaces::OpticalDrive *, d->backendObject(), EjectUnsupported, eject());
+    return_SOLID_CALL(Ifaces::OpticalDrive *, d->backendObject(), false, eject());
 }
 
 #include "opticaldrive.moc"

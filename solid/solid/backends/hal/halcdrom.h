@@ -23,6 +23,9 @@
 #include "solid/ifaces/opticaldrive.h"
 #include "solid/backends/hal/halstorage.h"
 
+#include <QtDBus/QDBusMessage>
+#include <QtDBus/QDBusError>
+
 class Cdrom : public Storage, virtual public Solid::Ifaces::OpticalDrive
 {
     Q_OBJECT
@@ -36,13 +39,19 @@ public:
     virtual int readSpeed() const;
     virtual int writeSpeed() const;
     virtual QList<int> writeSpeeds() const;
-    virtual Solid::OpticalDrive::EjectStatus eject();
+    virtual bool eject();
 
 Q_SIGNALS:
     void ejectPressed();
+    void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData);
 
 private Q_SLOTS:
     void slotCondition(const QString &name, const QString &reason);
+    void slotDBusReply(const QDBusMessage &reply);
+    void slotDBusError(const QDBusError &error);
+
+private:
+    bool m_ejectInProgress;
 };
 
 #endif

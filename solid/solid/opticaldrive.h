@@ -21,6 +21,7 @@
 #define SOLID_CDROM_H
 
 #include <QtCore/QList>
+#include <QtCore/QVariant>
 
 #include <solid/solid_export.h>
 
@@ -39,7 +40,7 @@ namespace Solid
     class SOLID_EXPORT OpticalDrive : public StorageDrive
     {
         Q_OBJECT
-        Q_ENUMS(MediumType EjectStatus)
+        Q_ENUMS(MediumType EjectResult)
         Q_FLAGS(MediumTypes)
         Q_PROPERTY(MediumTypes supportedMedia READ supportedMedia)
         Q_PROPERTY(int readSpeed READ readSpeed)
@@ -85,13 +86,11 @@ namespace Solid
          * This enum type describe the errors that can be encountered during eject.
          *
          * - EjectSuccess : the operation went successfully
-         * - EjectUnsupported : the operation is unsupported by this device or the system
-         * - EjectForbidden : the operation has been forbidden by a policy in the system
+         * - UnauthorizedEject : the operation has been forbidden by a policy in the system
          */
-        enum EjectStatus {
+        enum EjectResult {
             EjectSuccess = 0,
-            EjectUnsupported = 1,
-            EjectForbidden = 2
+            UnauthorizedEject
         };
 
     private:
@@ -156,7 +155,7 @@ namespace Solid
          *
          * @return the status of the eject operation
          */
-        EjectStatus eject();
+        bool eject();
 
     Q_SIGNALS:
         /**
@@ -166,6 +165,9 @@ namespace Solid
          * Please note that some (broken) drives doesn't report this event.
          */
         void ejectPressed();
+
+        void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData);
+
     };
 }
 

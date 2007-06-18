@@ -26,7 +26,7 @@
 #include "halcdrom.h"
 
 Cdrom::Cdrom(HalDevice *device)
-    : Storage(device)
+    : Storage(device), m_ejectInProgress(false)
 {
     connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
              this, SLOT(slotCondition(const QString &, const QString &)));
@@ -102,8 +102,13 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
     }
 }
 
-Solid::OpticalDrive::EjectStatus Cdrom::eject()
+bool Cdrom::eject()
 {
+    if (m_ejectInProgress) {
+        return false;
+    }
+    m_ejectInProgress = true;
+
     QString udi = m_device->udi();
     QString interface = "org.freedesktop.Hal.Device.Storage";
 
@@ -127,23 +132,32 @@ Solid::OpticalDrive::EjectStatus Cdrom::eject()
         }
     }
 
-    QDBusInterface drive("org.freedesktop.Hal", udi, interface,
-                         QDBusConnection::systemBus());
+    QDBusConnection c = QDBusConnection::systemBus();
+    QDBusMessage msg = QDBusMessage::createMethodCall("org.freedesktop.Hal", udi,
+                                                      interface, "Eject");
 
-    if (!drive.isValid()) {
-        return Solid::OpticalDrive::EjectUnsupported;
-    }
+    msg << QStringList();
 
-    QDBusReply<void> reply = drive.call("Eject", QStringList());
-    QString errorName = reply.error().name();
 
-    if (errorName.isEmpty()) {
-        return Solid::OpticalDrive::EjectSuccess;
-    } else if (errorName.startsWith("org.freedesktop.Hal.Device.Volume.")) {
-        return Solid::OpticalDrive::EjectForbidden;
-    } else {
-        return Solid::OpticalDrive::EjectUnsupported;
-    }
+    return c.callWithCallback(msg, this,
+                              SLOT(slotDBusReply(const QDBusMessage &)),
+                              SLOT(slotDBusError(const QDBusError &)));
 }
+
+void Cdrom::slotDBusReply(const QDBusMessage &/*reply*/)
+{
+    m_ejectInProgress = false;
+    emit ejectDone(Solid::OpticalDrive::EjectSuccess, QVariant());
+}
+
+void Cdrom::slotDBusError(const QDBusError &error)
+{
+    m_ejectInProgress = false;
+
+    // TODO: Better error reporting here
+    emit ejectDone(Solid::OpticalDrive::UnauthorizedEject,
+                   error.name()+": "+error.message());
+}
+
 
 #include "backends/hal/halcdrom.moc"
