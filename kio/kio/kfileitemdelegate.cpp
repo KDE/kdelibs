@@ -30,6 +30,7 @@
 #include <QImage>
 #include <QPainterPath>
 #include <QTextLayout>
+#include <QListView>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -89,6 +90,7 @@ class KFileItemDelegate::Private
         inline QSize subtractMargin(const QSize &size, MarginType type) const;
         QString itemSize(const QModelIndex &index, const KFileItem &item) const;
         QString information(const QStyleOptionViewItem &option, const QModelIndex &index, const KFileItem &item) const;
+        bool isListView(const QStyleOptionViewItem &option) const;
 
     public:
         KFileItemDelegate::AdditionalInformation additionalInformation;
@@ -199,7 +201,7 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
 QString KFileItemDelegate::Private::information(const QStyleOptionViewItem &option, const QModelIndex &index,
                                                 const KFileItem &item) const
 {
-    if (additionalInformation == KFileItemDelegate::NoInformation || item.isNull() || !verticalLayout(option))
+    if (additionalInformation == KFileItemDelegate::NoInformation || item.isNull() || !isListView(option))
         return QString();
 
     switch (additionalInformation)
@@ -560,6 +562,16 @@ bool KFileItemDelegate::Private::alternateBackground(const QStyleOptionViewItem 
 }
 
 
+bool KFileItemDelegate::Private::isListView(const QStyleOptionViewItem &option) const
+{
+    const QStyleOptionViewItemV3 *optv3 = qstyleoption_cast<const QStyleOptionViewItemV3*>(&option);
+    if ((optv3 && qobject_cast<const QListView*>(optv3->widget)) || verticalLayout(option))
+        return true;
+
+    return false;
+}
+
+
 
 
 // ---------------------------------------------------------------------------
@@ -798,7 +810,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
     const QString label  = display(index);
     const QPixmap pixmap = decoration(option, index);
-    KFileItem item      = d->fileItem(index);
+    KFileItem item       = d->fileItem(index);
     const QString info   = d->information(option, index, item);
     bool showInformation = false;
 
