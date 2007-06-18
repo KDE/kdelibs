@@ -23,7 +23,7 @@
 #include <QtCore/QtGlobal>
 
 #ifndef PHONON_EXPORT
-# ifdef phonon_EXPORTS
+# ifdef MAKE_PHONON_LIB
                                        /* We are building this library */
 #  define PHONON_EXPORT Q_DECL_EXPORT
 # else
