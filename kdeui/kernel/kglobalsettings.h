@@ -530,8 +530,12 @@ public:
      * @internal
      * Raw access for use by KDM.
      * note: expects config to be in the correct group already.
+     * @deprecated use createApplicationPalette()
      */
-    static QPalette createApplicationPalette( const KConfigGroup &config, int contrast );
+    // FIXME Currently this does not do anything different from
+    // createApplicationPalette() and will possibly be removed before 4.0 final.
+    // If KDM really needs it we need to figure out something else.
+    static KDE_DEPRECATED QPalette createApplicationPalette( const KConfigGroup &config, int contrast );
 
     /**
      * An identifier for change signals.

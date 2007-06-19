@@ -844,63 +844,58 @@ void KGlobalSettings::applyGUIStyle()
 
 QPalette KGlobalSettings::createApplicationPalette()
 {
-    KConfigGroup cg( KGlobal::config(), "General" );
-    return createApplicationPalette( cg, KGlobalSettings::contrast() );
-}
-
-QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup & /*config*/, int contrast_ )
-{
     KColorScheme schemeView(KColorScheme::View);
     KColorScheme schemeWindow(KColorScheme::Window);
     KColorScheme schemeButton(KColorScheme::Button);
     KColorScheme schemeSelection(KColorScheme::Selection);
-    QColor background = schemeWindow.background().color();
-
-    int highlightVal, lowlightVal;
-    highlightVal = 100 + (2*contrast_+4)*16/10;
-    lowlightVal = 100 + (2*contrast_+4)*10;
 
     QPalette palette;
-    palette.setBrush( QPalette::Foreground, schemeWindow.foreground() );
+    palette.setBrush( QPalette::WindowText, schemeWindow.foreground() );
     palette.setBrush( QPalette::Window, schemeWindow.background() );
-    palette.setColor( QPalette::Light, background.light( highlightVal ) );
-    palette.setColor( QPalette::Dark, background.dark( lowlightVal ) );
-    // FIXME - should use KColorUtils::mix, not fixed dark() value
-    // FIXME - actually, what does this do? We set it again later...??
-    palette.setColor( QPalette::Midlight, background.dark( 120 ) );
     palette.setBrush( QPalette::Base, schemeView.background() );
     palette.setBrush( QPalette::Text, schemeView.foreground() );
-
-    palette.setBrush( QPalette::Highlight, schemeSelection.background() );
-    palette.setBrush( QPalette::HighlightedText, schemeSelection.foreground() );
     palette.setBrush( QPalette::Button, schemeButton.background() );
     palette.setBrush( QPalette::ButtonText, schemeButton.foreground() );
-    // FIXME - should use KColorUtils::mix, not fixed light() value
-    palette.setColor( QPalette::Midlight, background.light( 110 ) );
+    palette.setBrush( QPalette::Highlight, schemeSelection.background() );
+    palette.setBrush( QPalette::HighlightedText, schemeSelection.foreground() );
+
+    palette.setColor( QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
+    palette.setColor( QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
+    palette.setColor( QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
+    palette.setColor( QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
+    palette.setColor( QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
+
+    palette.setBrush( QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
     palette.setBrush( QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
     palette.setBrush( QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
 
-    palette.setBrush( QPalette::Disabled, QPalette::Foreground, schemeWindow.foreground( KColorScheme::InactiveText ) );
+
+    palette.setBrush( QPalette::Disabled, QPalette::WindowText, schemeWindow.foreground( KColorScheme::InactiveText ) );
     palette.setBrush( QPalette::Disabled, QPalette::Window, schemeWindow.background() );
-    palette.setBrush( QPalette::Disabled, QPalette::Light, background.light( highlightVal ) );
-    palette.setBrush( QPalette::Disabled, QPalette::Dark, background.dark( lowlightVal ) );
-    // FIXME - should use KColorUtils::mix, not fixed dark() value
-    // FIXME - actually, what does this do? We set it again later...??
-    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.dark( 120 ) );
     palette.setBrush( QPalette::Disabled, QPalette::Base, schemeView.background() );
     palette.setBrush( QPalette::Disabled, QPalette::Text, schemeView.foreground( KColorScheme::InactiveText ) );
-
+    palette.setBrush( QPalette::Disabled, QPalette::Button, schemeButton.background() );
+    palette.setBrush( QPalette::Disabled, QPalette::ButtonText, schemeButton.foreground( KColorScheme::InactiveText ) );
     // use Window role for disabled selection (like gtk)
     palette.setBrush( QPalette::Disabled, QPalette::Highlight, schemeWindow.background() );
     palette.setBrush( QPalette::Disabled, QPalette::HighlightedText, schemeWindow.foreground() );
-    palette.setBrush( QPalette::Disabled, QPalette::Button, schemeButton.background() );
-    palette.setBrush( QPalette::Disabled, QPalette::ButtonText, schemeButton.foreground( KColorScheme::InactiveText ) );
-    // FIXME - should use KColorUtils::mix, not fixed light() value
-    palette.setColor( QPalette::Disabled, QPalette::Midlight, background.light( 110 ) );
+
+    palette.setColor( QPalette::Disabled, QPalette::Light, schemeWindow.shade( KColorScheme::LightShade ) );
+    palette.setColor( QPalette::Disabled, QPalette::Midlight, schemeWindow.shade( KColorScheme::MidlightShade ) );
+    palette.setColor( QPalette::Disabled, QPalette::Mid, schemeWindow.shade( KColorScheme::MidShade ) );
+    palette.setColor( QPalette::Disabled, QPalette::Dark, schemeWindow.shade( KColorScheme::DarkShade ) );
+    palette.setColor( QPalette::Disabled, QPalette::Shadow, schemeWindow.shade( KColorScheme::ShadowShade ) );
+
+    palette.setBrush( QPalette::Disabled, QPalette::AlternateBase, schemeView.background( KColorScheme::AlternateBackground) );
     palette.setBrush( QPalette::Disabled, QPalette::Link, schemeView.foreground( KColorScheme::LinkText ) );
     palette.setBrush( QPalette::Disabled, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
 
     return palette;
+}
+
+QPalette KGlobalSettings::createApplicationPalette( const KConfigGroup & /*config*/, int /*contrast_*/ )
+{
+    return createApplicationPalette();
 }
 
 
