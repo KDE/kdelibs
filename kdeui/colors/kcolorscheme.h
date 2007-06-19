@@ -23,7 +23,6 @@
 #include <kdeui_export.h>
 
 class QBrush;
-class KColorSchemePrivate;
 
 /**
  * A set of methods used to work with colors.
@@ -150,20 +149,20 @@ public:
     /**
      * Retrieve the requested background brush.
      */
-    QBrush background(BackgroundRole = NormalBackground);
+    QBrush background(BackgroundRole = NormalBackground) const;
 
     /**
      * Retrieve the requested foreground brush.
      */
-    QBrush foreground(ForegroundRole = NormalText);
+    QBrush foreground(ForegroundRole = NormalText) const;
 
     /**
      * Retrieve the requested decoration brush.
      */
-    QBrush decoration(DecorationRole);
+    QBrush decoration(DecorationRole) const;
 
 private:
-    KColorSchemePrivate* d;
+    class KColorSchemePrivate* d;
 };
 
 #endif // KCOLORSCHEME_H

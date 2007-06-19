@@ -141,7 +141,7 @@ QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role)
             return _config.readEntry( "DecorationHover", QColor(72,177,60) );
     }
 }
-// END KColorPrivate
+// END KColorSchemePrivate
 
 KColorScheme::KColorScheme(const KColorScheme &other)
 {
@@ -169,17 +169,18 @@ KColorScheme::KColorScheme(ColorSet set)
     }
 }
 
-QBrush KColorScheme::background(BackgroundRole role)
+QBrush KColorScheme::background(BackgroundRole role) const
 {
     return QBrush( d->background( role ) );
 }
 
-QBrush KColorScheme::foreground(ForegroundRole role)
+QBrush KColorScheme::foreground(ForegroundRole role) const
 {
     return d->foreground(role);
 }
 
-QBrush KColorScheme::decoration(DecorationRole role)
+QBrush KColorScheme::decoration(DecorationRole role) const
 {
     return d->decoration(role);
 }
+// kate: space-indent on; indent-width 4; replace-tabs on; auto-insert-doxygen on;
