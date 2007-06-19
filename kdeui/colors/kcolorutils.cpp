@@ -56,7 +56,7 @@ qreal KColorUtils::contrastRatio(const QColor &c1, const QColor &c2)
 QColor KColorUtils::lighten(const QColor &color, qreal ky, qreal kc)
 {
     KColorSpaces::KHCY c(color);
-    c.y = 1.0 - normalize((1.0 - c.y) * ky);
+    c.y = 1.0 - normalize((1.0 - c.y) * (1.0 - ky));
     c.c = 1.0 - normalize((1.0 - c.c) * kc);
     return c.qColor();
 }
@@ -64,7 +64,7 @@ QColor KColorUtils::lighten(const QColor &color, qreal ky, qreal kc)
 QColor KColorUtils::darken(const QColor &color, qreal ky, qreal kc)
 {
     KColorSpaces::KHCY c(color);
-    c.y = normalize(c.y * ky);
+    c.y = normalize(c.y * (1.0 - ky));
     c.c = normalize(c.c * kc);
     return c.qColor();
 }
