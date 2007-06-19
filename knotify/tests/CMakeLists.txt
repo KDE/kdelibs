@@ -15,11 +15,13 @@ kde4_add_test_executable(knotifytest ${knotifytest_SRCS})
 
 target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} knotifyconfig )
 
-install(TARGETS knotifytest DESTINATION ${BIN_INSTALL_DIR} )
+#the binary file doesn't need to be installed
+#install(TARGETS knotifytest DESTINATION ${BIN_INSTALL_DIR} )
 
 
 ########### install files ###############
 
-install( FILES  knotifytestui.rc knotifytest.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/knotifytest )
+
+install( FILES  knotifytest.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/knotifytest )
 
 endif(KDE4_BUILD_TESTS)
