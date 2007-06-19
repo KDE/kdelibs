@@ -30,8 +30,8 @@
 #include "nepomuk_export.h"
 
 
-NEPOMUK_EXPORT QDBusArgument& operator<<( QDBusArgument&, const Nepomuk::Middleware::ServiceDesc& desc );
-NEPOMUK_EXPORT const QDBusArgument& operator>>( const QDBusArgument&, Nepomuk::Middleware::ServiceDesc& desc );
+NEPOMUK_MIDDLEWARE_EXPORT QDBusArgument& operator<<( QDBusArgument&, const Nepomuk::Middleware::ServiceDesc& desc );
+NEPOMUK_MIDDLEWARE_EXPORT const QDBusArgument& operator>>( const QDBusArgument&, Nepomuk::Middleware::ServiceDesc& desc );
 
 namespace Nepomuk {
     namespace Middleware {
