@@ -124,9 +124,7 @@ bool KRun::runUrl( const KUrl& u, const QString& _mimetype, QWidget* window, boo
     {
       if (KAuthorized::authorize("shell_access"))
       {
-        QString path = u.path();
-        shellQuote( path );
-        return (KRun::runCommand(path, QString(), QString(), window, asn)); // just execute the url as a command
+        return (KRun::runCommand(KShell::quoteArg(u.path()), QString(), QString(), window, asn)); // just execute the url as a command
         // ## TODO implement deleting the file if tempFile==true
       }
       else
@@ -437,8 +435,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     result << _service.username() << "-c";
     KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
     if (err == KShell::FoundMeta) {
-      shellQuote( exec );
-      exec.prepend( "/bin/sh -c " );
+      exec = "/bin/sh -c " + KShell::quoteArg(exec);
     } else if (err != KShell::NoError)
       goto synerr;
     result << exec;

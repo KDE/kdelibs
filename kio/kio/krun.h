@@ -276,9 +276,14 @@ public:
 
   /**
    * Quotes a string for the shell.
+   * An empty string will @em not be quoted.
+   *
+   * @deprecated Use KShell::quoteArg() instead. @em Note that this function
+   *  behaves differently for empty arguments.
+   *
    * @param str the string to quote. The quoted string will be written here
    */
-  static void shellQuote( QString &str );
+  static KDE_DEPRECATED void shellQuote( QString &str );
 
   /**
    * Processes a Exec= line as found in .desktop files.
