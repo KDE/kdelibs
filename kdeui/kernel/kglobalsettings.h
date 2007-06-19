@@ -283,6 +283,13 @@ public:
     static int contrast();
 
     /**
+     * Returns the contrast for borders as a floating point value.
+     * @return the contrast (between 0.0 for minimum and 1.0 for maximum
+     *         contrast)
+     */
+    static qreal contrastF();
+
+    /**
      * Returns the button background color
      * @return the button background color
      * @deprecated use KColorScheme(Button).background() instead

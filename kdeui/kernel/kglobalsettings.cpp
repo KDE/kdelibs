@@ -253,6 +253,11 @@ int KGlobalSettings::contrast()
     return g.readEntry( "contrast", 7 );
 }
 
+qreal KGlobalSettings::contrastF()
+{
+    return 0.1 * (qreal)contrast();
+}
+
 QColor KGlobalSettings::buttonBackground()
 {
     return KColorScheme(KColorScheme::Button).background().color();
