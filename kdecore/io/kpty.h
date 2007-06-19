@@ -24,12 +24,7 @@
 #include <kdecore_export.h>
 
 struct KPtyPrivate;
-
-/* for HP-UX (some versions) the extern C is needed, and for other
-   platforms it doesn't hurt */
-extern "C" {
-#include <termios.h> // struct termios
-}
+struct termios;
 
 /**
  * Provides primitives for opening & closing a pseudo TTY pair, assigning the
@@ -106,11 +101,13 @@ public:
    * Wrapper around tcgetattr(3).
    *
    * This function can be used only while the PTY is open.
+   * You will need an #include &lt;termios.h&gt; to do anything useful
+   * with it.
    *
    * @param ttmode a pointer to a termios structure.
    *  Note: when declaring ttmode, @c struct @c ::termios must be used -
    *  without the '::' some version of HP-UX thinks, this declares
-   *  the struct in this class, in this method.
+   *  the struct in your class, in your method.
    * @return @c true on success, false otherwise
    */
   bool tcGetAttr(struct ::termios *ttmode) const;

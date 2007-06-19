@@ -22,6 +22,9 @@
 
 #include "kpty_p.h"
 
+#include <config.h>
+#include <config-pty.h>
+
 #ifdef __sgi
 #define __svr4__
 #endif
@@ -49,6 +52,15 @@
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+
+/* for HP-UX (some versions) the extern C is needed, and for other
+   platforms it doesn't hurt */
+extern "C" {
+#include <termios.h>
+#if defined(HAVE_TERMIO_H)
+# include <termio.h> // struct winsize on some systems
+#endif
+}
 
 #ifdef HAVE_SYS_STROPTS_H
 # include <sys/stropts.h>	// Defines I_PUSH

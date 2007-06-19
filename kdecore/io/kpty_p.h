@@ -21,21 +21,9 @@
 #ifndef kpty_p_h
 #define kpty_p_h
 
-#include <config.h>
-#include <config-pty.h>
-
 #include "kpty.h"
 
 #include <QtCore/QByteArray>
-
-#if defined(HAVE_TERMIOS_H)
-#include <termios.h>
-#else
-#if defined(HAVE_TERMIO_H)
-#include <termio.h> // struct winsize
-//else screwed
-#endif
-#endif
 
 struct KPtyPrivate {
     Q_DECLARE_PUBLIC(KPty)

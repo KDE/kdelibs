@@ -22,6 +22,9 @@
 #include "kptydevice.h"
 #include "kpty_p.h"
 
+#include <config.h>
+#include <config-pty.h>
+
 #include <QSocketNotifier>
 
 #include <klocale.h>
