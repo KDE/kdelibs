@@ -207,6 +207,7 @@ set(kio_LIB_SRCS
 
 set(kio_LIB_PRIVATE_SRCS
     kio/kfileshare_p.h
+    kio/krun_p.h
 )
 
 kde4_add_ui_files(kio_LIB_SRCS
