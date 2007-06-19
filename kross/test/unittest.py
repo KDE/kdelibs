@@ -154,15 +154,15 @@ class TestKross(unittest.TestCase):
 		##self.object1.func_qdate_qdate
 		##self.object1.func_qdatetime_qdatetime
 
-	#def testVariant(self):
-		#self.assert_( self.object1.func_qvariant_qvariant(0.0) == 0.0 )
-		#self.assert_( self.object1.func_qvariant_qvariant(True) == True )
-		#self.assert_( self.object1.func_qvariant_qvariant(False) == False )
-		#self.assert_( self.object1.func_qvariant_qvariant(187937) == 187937 )
-		#self.assert_( self.object1.func_qvariant_qvariant(-69825) == -69825 )
-		#self.assert_( self.object1.func_qvariant_qvariant(8632.274) == 8632.274 )
-		#self.assert_( self.object1.func_qvariant_qvariant(-8632.351) == -8632.351 )
-		#self.assert_( self.object1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
+	def testVariant(self):
+		self.assert_( self.object1.func_qvariant_qvariant(0.0) == 0.0 )
+		self.assert_( self.object1.func_qvariant_qvariant(True) == True )
+		self.assert_( self.object1.func_qvariant_qvariant(False) == False )
+		self.assert_( self.object1.func_qvariant_qvariant(187937) == 187937 )
+		self.assert_( self.object1.func_qvariant_qvariant(-69825) == -69825 )
+		self.assert_( self.object1.func_qvariant_qvariant(8632.274) == 8632.274 )
+		self.assert_( self.object1.func_qvariant_qvariant(-8632.351) == -8632.351 )
+		self.assert_( self.object1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
 
 	def testObject(self):
 		self.assert_( self.object1.name() == "TestObject1" and self.object2.name() == "TestObject2" )
