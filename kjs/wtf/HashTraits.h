@@ -78,13 +78,22 @@ namespace WTF {
     template<> struct HashTraits<int> : GenericHashTraits<int> {
         static int deletedValue() { return -1; }
     };
+    template<> struct HashTraits<unsigned int> : GenericHashTraits<unsigned int> {
+        static unsigned int deletedValue() { return static_cast<unsigned int>(-1); }
+    };
     template<> struct HashTraits<long> : GenericHashTraits<long> {
         static long deletedValue() { return -1; }
     };
-    template<> struct HashTraits<long long> : GenericHashTraits<long long> {
-        static long deletedValue() { return -1; }
+    template<> struct HashTraits<unsigned long> : GenericHashTraits<unsigned long> {
+        static unsigned long deletedValue() { return static_cast<unsigned long>(-1); }
     };
-
+    template<> struct HashTraits<long long> : GenericHashTraits<long long> {
+        static long long deletedValue() { return -1; }
+    };
+    template<> struct HashTraits<unsigned long long> : GenericHashTraits<unsigned long long> {
+        static unsigned long long deletedValue() { return static_cast<unsigned long long>(-1); }
+    };
+    
     template<typename P> struct HashTraits<P*> : GenericHashTraits<P*> {
         typedef HashTraits<typename IntTypes<sizeof(P*)>::SignedType> StorageTraits;
         static const bool emptyValueIsZero = true;
@@ -193,4 +202,3 @@ using WTF::HashTraits;
 using WTF::PairHashTraits;
 
 #endif // WTF_HashTraits_h
-
