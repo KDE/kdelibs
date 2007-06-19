@@ -30,7 +30,7 @@
 
 #ifdef __APPLE__
 #include <termios.h>
-#elif
+#else
 #include <termio.h> // struct winsize
 #endif
 
