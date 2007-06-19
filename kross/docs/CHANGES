@@ -1,14 +1,19 @@
 == Kross CHANGES ==
 
 2.0
-The whole backend got replaced and is build up on Qt's metatypes now.
-This means we are able to throw any QObject/QVariant in and just use
-the slots as script-functions and the properties as script-members.
-So, we don't need wrappers/bindings any longer (and provided
-scripting-interfaces don't need to depend on Kross) on the one hand
-and and earn a more cleaner interface on the other. Beside the try
-to follow KISS, we should earn much more speed that way cause
-everything talks now Qt internal :)
+* The whole backend got replaced and is build up on Qt's metatypes now.
+  This means we are able to throw any QObject/QVariant in and just use
+  the slots as script-functions and the properties as script-members.
+  So, we don't need wrappers/bindings any longer (and provided
+  scripting-interfaces don't need to depend on Kross) on the one hand
+  and and earn a more cleaner interface on the other. Beside the try
+  to follow KISS, we should earn much more speed that way cause
+  everything talks now Qt internal :)
+* Port to Qt4 and KDE4
+* Improved Python and Ruby backends a lot
+* Added KDE JavaScript support using KjsEmbed
+* Moved core from koffice/libs to kdelibs
+* Moved backends to kdebindings
 
 1.6
 * Added krossdebug and krosswarning.
