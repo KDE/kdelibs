@@ -434,7 +434,7 @@ private Q_SLOTS:
     void urlEntered( const KUrl& );
     void enterUrl( const KUrl& url );
     void enterUrl( const QString& url );
-    void locationActivated( const QString& url );
+    void locationAccepted( const QString& url );
 
     void slotFilterChanged();
     void fileHighlighted(const KFileItem *i);

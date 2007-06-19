@@ -392,10 +392,8 @@ KFileWidget::KFileWidget( const KUrl& startDir, QWidget *parent )
     connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
              SLOT( fileCompletion( const QString& )) );
 
-    connect( d->locationEdit, SIGNAL( returnPressed() ),
-             this, SLOT( slotOk()));
-    connect(d->locationEdit, SIGNAL( activated( const QString&  )),
-            this,  SLOT( locationActivated( const QString& ) ));
+    connect(d->locationEdit, SIGNAL( returnPressed( const QString&  )),
+            this,  SLOT( locationAccepted( const QString& ) ));
 
     // the Filter label/edit
     whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
@@ -1119,15 +1117,10 @@ void KFileWidget::urlEntered(const KUrl& url)
         d->placesView->setUrl( url );
 }
 
-void KFileWidget::locationActivated( const QString& url )
+void KFileWidget::locationAccepted( const QString& url )
 {
-    // This guard prevents any URL _typed_ by the user from being interpreted
-    // twice (by returnPressed/slotOk and here, activated/locationActivated)
-    // after the user presses Enter.  Without this, _both_ setSelection and
-    // slotOk would "u.addPath( url )" ...so instead we leave it up to just
-    // slotOk....
-    if (!d->locationEdit->lineEdit()->isModified())
-        setSelection( url );
+    setSelection( url );
+    slotOk();
 }
 
 void KFileWidget::enterUrl( const KUrl& url )
