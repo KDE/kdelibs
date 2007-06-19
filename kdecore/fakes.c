@@ -4,6 +4,7 @@
    Copyright (c) 2002 Oswald Buddenhagen <ossi@kde.org>
    Copyright (c) 2003 Joseph Wenninger <kde@jowenn.at>
    Copyright (c) 2005 Jaroslaw Staniek <js@iidea.pl>
+   Copyright (c) 2007 Rafael Fernández López <ereslibre@gmail.com>
 
    unsetenv() taken from the GNU C Library.
    Copyright (C) 1992,1995-1999,2000-2002 Free Software Foundation, Inc.
@@ -448,5 +449,22 @@ foundneedle:
   return (char*) haystack;
 ret0:
   return 0;
+}
+#endif
+
+#ifndef HAVE_TRUNC
+
+#include <math.h> /* floor */
+
+/*
+ * Here we simulate the trunc() function behavior. This function is not
+ * available for not C99 compatible systems.
+ *
+ * For example, Solaris 8.
+ */
+
+KDECORE_EXPORT double trunc (double x)
+{
+       return x < 0 ? -floor(-x) : floor(x);
 }
 #endif
