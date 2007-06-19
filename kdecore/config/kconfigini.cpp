@@ -177,14 +177,14 @@ QByteArray KConfigINIBackEndPrivate::stringToPrintable(const QByteArray& str, St
     };
 
     const int l = str.length();
+    if (l == 0)
+        return QByteArray();
+
     QByteArray result; // Guesstimated that it's good to avoid data() initialization for a length of l*4
     result.resize(l * 4); // Maximum 4x as long as source string due to \x<ab> escape sequences
     register char *r = result.data();
     register const char *s = str.constData();
     int i = 0;
-
-    if (l == 0)
-        return QByteArray();
 
     // Protect leading space
     if (s[0] == ' ') {
@@ -198,7 +198,7 @@ QByteArray KConfigINIBackEndPrivate::stringToPrintable(const QByteArray& str, St
         default:
             // The \n, \t, \r cases (all < 32) are handled below; we can ignore them here
             if (((unsigned char)s[i]) < 32)
-                goto escape;
+                goto doEscape;
             *r = s[i];
             break;
         case '\n':
@@ -225,7 +225,7 @@ QByteArray KConfigINIBackEndPrivate::stringToPrintable(const QByteArray& str, St
                 *r = s[i];
                 break;
             }
-        escape:
+        doEscape:
             *r++ = '\\';
             *r++ = 'x';
             *r++ = nibbleLookup[((unsigned char)s[i]) >> 4];
