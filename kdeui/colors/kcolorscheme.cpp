@@ -22,6 +22,8 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
+#include <kglobalsettings.h>
+#include <kcolorutils.h>
 
 #include <QtGui/QColor>
 #include <QtGui/QBrush>
@@ -182,5 +184,37 @@ QBrush KColorScheme::foreground(ForegroundRole role) const
 QBrush KColorScheme::decoration(DecorationRole role) const
 {
     return d->decoration(role);
+}
+
+QColor KColorScheme::shade(ShadeRole role) const
+{
+    return shade(background().color(), role);
+}
+
+QColor KColorScheme::shade(const QColor &color, ShadeRole role)
+{
+    return shade(color, role, KGlobalSettings::contrastF());
+}
+
+QColor KColorScheme::shade(const QColor &color, ShadeRole role, qreal contrast, qreal chromaAdjust)
+{
+    // TODO
+    // This algorithm is really just a placeholder; further investigation is
+    // needed to determine how to get "good" results. Also, extremas need to be
+    // handled specially; dark colors result in all shades lighter than the
+    // base, and light colors result in all shades darker than the base.
+    contrast = (1.0 > contrast ? (-1.0 < contrast ? 0.1 * contrast : -0.1) : 0.1);
+    switch (role) {
+        case LightShade:
+            return KColorUtils::lighten(color, contrast, chromaAdjust);
+        case MidlightShade:
+            return KColorUtils::lighten(color, contrast * 0.5, chromaAdjust);
+        case MidShade:
+            return KColorUtils::darken(color, contrast * 0.3, chromaAdjust);
+        case DarkShade:
+            return KColorUtils::darken(color, contrast * 0.7, chromaAdjust);
+        default:
+            return KColorUtils::darken(color, contrast * 1.1, chromaAdjust);
+    }
 }
 // kate: space-indent on; indent-width 4; replace-tabs on; auto-insert-doxygen on;

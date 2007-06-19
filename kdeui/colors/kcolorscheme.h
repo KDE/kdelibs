@@ -22,6 +22,7 @@
 
 #include <kdeui_export.h>
 
+class QColor;
 class QBrush;
 
 /**
@@ -138,6 +139,36 @@ public:
         HoverColor
     };
 
+    /**
+     * This enumeration describes the color shade being selected from the given
+     * set. Color shades are used to draw "3d" elements, such as frames and
+     * bevels. All roles are valid for all sets.
+     */
+    enum ShadeRole {
+        /**
+         * The light color is lighter than dark() or shadow() and contrasts
+         * with the base color.
+         */
+        LightShade,
+        /**
+         * The midlight color is in between base() and light().
+         */
+        MidlightShade,
+        /**
+         * The mid color is in between base() and dark().
+         */
+        MidShade,
+        /**
+         * The dark color is in between mid() and shadow().
+         */
+        DarkShade,
+        /**
+         * The shadow color is darker than light() or midlight() and contrasts
+         * the base color.
+         */
+        ShadowShade
+    };
+
     KColorScheme(const KColorScheme&);
     virtual ~KColorScheme();
 
@@ -160,6 +191,44 @@ public:
      * Retrieve the requested decoration brush.
      */
     QBrush decoration(DecorationRole) const;
+
+    /**
+     * Retrieve the requested shade color, using
+     * KColorScheme::background(KColorScheme::NormalBackground)
+     * as the base color and the system contrast setting.
+     *
+     * @note FIXME (copy note below)
+     */
+    QColor shade(ShadeRole) const;
+
+    /**
+     * Retrieve the requested shade color, using the specified color as the
+     * base color and the system contrast setting.
+     *
+     * @note FIXME (copy note below)
+     */
+    static QColor shade(const QColor&, ShadeRole);
+
+    /**
+     * Retrieve the requested shade color, using the specified color as the
+     * base color and the specified contrast.
+     *
+     * @param contrast Amount roughly specifying the contrast by which to
+     * adjust the base color, between -1.0 and 1.0 (values between 0.0 and 1.0
+     * correspond to the value from KGlobalSettings::contrastF)
+     * @param chromaAdjust (optional) Amount by which to adjust the chroma of
+     * the shade (1.0 means no adjustment)
+     *
+     * @note Shades are chosen such that all shades would contrast with the
+     * base color. This means that if base is very dark, the 'dark' shades will
+     * be lighter than the base color, with midlight() == shadow().
+     * Conversely, if the base color is very light, the 'light' shades will be
+     * darker than the base color, with light() == mid().
+     *
+     * @see KColorUtils::shade
+     */
+    static QColor shade(const QColor&, ShadeRole,
+                        qreal contrast, qreal chromaAdjust = 1.0);
 
 private:
     class KColorSchemePrivate* d;
