@@ -375,7 +375,13 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     if (protocol == "data")
         return new DataProtocol();
 #ifdef Q_WS_WIN
-    QString sockname = getenv("COMPUTERNAME");
+    // localhost could not resolved yet, this s a bug in kdecore network resolver stuff
+    // autoselect free tcp port 
+    KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
+    kss->setFamily(KResolver::InetFamily);
+    kss->listen();
+    QString sockname = kss->localAddress().serviceName();
+    sockname = "0"; // tcp, autodetect port
 #else
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
     KTemporaryFile *socketfile = new KTemporaryFile();
@@ -391,11 +397,11 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
     QString sockname = socketfile->fileName();
     delete socketfile; // can't bind if there is such a file
-#endif
 
     KServerSocket *kss = new KServerSocket(QFile::encodeName(sockname));
     kss->setFamily(KResolver::LocalFamily);
     kss->listen();
+#endif
     Slave *slave = new Slave(kss, protocol, sockname);
 
     // WABA: if the dcopserver is running under another uid we don't ask
