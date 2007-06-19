@@ -228,7 +228,7 @@ public:
      * @see KColorUtils::shade
      */
     static QColor shade(const QColor&, ShadeRole,
-                        qreal contrast, qreal chromaAdjust = 1.0);
+                        qreal contrast, qreal chromaAdjust = 0.0);
 
 private:
     class KColorSchemePrivate* d;
