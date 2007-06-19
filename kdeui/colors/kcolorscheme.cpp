@@ -199,22 +199,26 @@ QColor KColorScheme::shade(const QColor &color, ShadeRole role)
 QColor KColorScheme::shade(const QColor &color, ShadeRole role, qreal contrast, qreal chromaAdjust)
 {
     // TODO
-    // This algorithm is really just a placeholder; further investigation is
-    // needed to determine how to get "good" results. Also, extremas need to be
-    // handled specially; dark colors result in all shades lighter than the
-    // base, and light colors result in all shades darker than the base.
-    contrast = (1.0 > contrast ? (-1.0 < contrast ? 0.1 * contrast : -0.1) : 0.1);
+    // Extremas still need to be handled specially; dark colors result in all
+    // shades lighter than the base, and light colors result in all shades
+    // darker than the base.
+
+    // nan -> 1.0
+    contrast = (1.0 > contrast ? (-1.0 < contrast ? contrast : -1.0) : 1.0);
+    qreal y = KColorUtils::luma(color), yi = 1.0 - y;
+    qreal lightAmount = (0.05 + y * 0.55) * (0.25 + contrast * 0.75);
+    qreal darkAmount =  (     - y       ) * (0.55 + contrast * 0.35);
     switch (role) {
-        case LightShade:
-            return KColorUtils::lighten(color, contrast, chromaAdjust);
-        case MidlightShade:
-            return KColorUtils::lighten(color, contrast * 0.5, chromaAdjust);
-        case MidShade:
-            return KColorUtils::darken(color, contrast * 0.3, chromaAdjust);
-        case DarkShade:
-            return KColorUtils::darken(color, contrast * 0.7, chromaAdjust);
+        case KColorScheme::LightShade:
+            return KColorUtils::shade(color, lightAmount, chromaAdjust);
+        case KColorScheme::MidlightShade:
+            return KColorUtils::shade(color, (0.15 + 0.35 * yi) * lightAmount, chromaAdjust);
+        case KColorScheme::MidShade:
+            return KColorUtils::shade(color, (0.35 + 0.15 * y) * darkAmount, chromaAdjust);
+        case KColorScheme::DarkShade:
+            return KColorUtils::shade(color, darkAmount, chromaAdjust);
         default:
-            return KColorUtils::darken(color, contrast * 1.1, chromaAdjust);
+            return KColorUtils::darken(KColorUtils::shade(color, darkAmount, chromaAdjust), 0.5 + 0.3 * y);
     }
 }
 // kate: space-indent on; indent-width 4; replace-tabs on; auto-insert-doxygen on;
