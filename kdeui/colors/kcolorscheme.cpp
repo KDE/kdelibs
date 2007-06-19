@@ -93,11 +93,6 @@ KColorSchemePrivate::KColorSchemePrivate(const KColorSchemePrivate& other)
 {
 }
 
-KColorScheme::~KColorScheme()
-{
-    delete d;
-}
-
 #define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )
 
 QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role)
@@ -146,6 +141,11 @@ QColor KColorSchemePrivate::decoration(KColorScheme::DecorationRole role)
 KColorScheme::KColorScheme(const KColorScheme &other)
 {
     d = new KColorSchemePrivate(*other.d);
+}
+
+KColorScheme::~KColorScheme()
+{
+    delete d;
 }
 
 KColorScheme::KColorScheme(ColorSet set)
