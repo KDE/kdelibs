@@ -28,7 +28,11 @@
 
 #include <QtCore/QByteArray>
 
+#ifdef __APPLE__
+#include <termios.h>
+#elif
 #include <termio.h> // struct winsize
+#endif
 
 struct KPtyPrivate {
     Q_DECLARE_PUBLIC(KPty)
