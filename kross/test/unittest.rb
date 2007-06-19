@@ -242,16 +242,16 @@ class TestKross < Test::Unit::TestCase
 		#assert( {" key1 ":[12.5,True]," key2 ":[83.002,"test"]} )
 	end
 
-	#def testVariant
-		#assert( TestObject1.func_qvariant_qvariant(0.0) == 0.0 )
-		#assert( TestObject1.func_qvariant_qvariant(true) == true )
-		#assert( TestObject1.func_qvariant_qvariant(false) == false )
-		#assert( TestObject1.func_qvariant_qvariant(187937) == 187937 )
-		#assert( TestObject1.func_qvariant_qvariant(-69825) == -69825 )
-		#assert( TestObject1.func_qvariant_qvariant(8632.274) == 8632.274 )
-		#assert( TestObject1.func_qvariant_qvariant(-8632.351) == -8632.351 )
-		#assert( TestObject1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
-	#end
+	def testVariant
+		assert( TestObject1.func_qvariant_qvariant(0.0) == 0.0 )
+		assert( TestObject1.func_qvariant_qvariant(true) == true )
+		assert( TestObject1.func_qvariant_qvariant(false) == false )
+		assert( TestObject1.func_qvariant_qvariant(187937) == 187937 )
+		assert( TestObject1.func_qvariant_qvariant(-69825) == -69825 )
+		assert( TestObject1.func_qvariant_qvariant(8632.274) == 8632.274 )
+		assert( TestObject1.func_qvariant_qvariant(-8632.351) == -8632.351 )
+		assert( TestObject1.func_qvariant_qvariant(" Test \n\r This String $%&\"") == " Test \n\r This String $%&\"")
+	end
 
 	def testObject
 		assert( TestObject1.name() == "TestObject1" )

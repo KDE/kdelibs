@@ -136,6 +136,7 @@ class TestObject : public QObject
         QTime func_qtime_qtime(const QTime&);
         QDate func_qdate_qdate(const QDate&);
         QDateTime func_qdatetime_qdatetime(const QDateTime&);
+        void func_void_qvariant(const QVariant&);
         QVariant func_qvariant_qvariant(const QVariant&);
 
         // for misc tests

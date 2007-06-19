@@ -162,6 +162,11 @@ QTime TestObject::func_qtime_qtime(const QTime& t) { return t; }
 QDate TestObject::func_qdate_qdate(const QDate& d) { return d; }
 QDateTime TestObject::func_qdatetime_qdatetime(const QDateTime& dt) { return dt; }
 
+void TestObject::func_void_qvariant(const QVariant& v)
+{
+    kDebug() << "TestObject::func_void_qvariant variant.toString=" << v.toString() << " variant.type=" << v.typeName() << endl;
+}
+
 QVariant TestObject::func_qvariant_qvariant(const QVariant& v)
 {
     //kDebug() << "TestObject::func_qvariant_qvariant value=" << v.toString() << " type=" << v.typeName() << endl;
