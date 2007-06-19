@@ -140,6 +140,7 @@ public:
     };
 
     KColorScheme(const KColorScheme&);
+    virtual ~KColorScheme();
 
     /**
      * Construct a palette from the system colors in the given color set.

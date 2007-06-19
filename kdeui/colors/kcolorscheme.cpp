@@ -93,6 +93,11 @@ KColorSchemePrivate::KColorSchemePrivate(const KColorSchemePrivate& other)
 {
 }
 
+KColorScheme::~KColorScheme()
+{
+    delete d;
+}
+
 #define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )
 
 QColor KColorSchemePrivate::background(KColorScheme::BackgroundRole role)
