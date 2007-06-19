@@ -1606,9 +1606,11 @@ void KateDocument::updateModified()
   /*
       Detected Patterns:
 
+      Pattern:103  MOD 1:false MOD 2:false  MOD 3:false  MOD 4:false
       Pattern:105  MOD 1:true  MOD 2:false  MOD 3:false  MOD 4:true
       Pattern:148  MOD 1:false MOD 2:false  MOD 3:false  MOD 4:false
       Pattern:149  MOD 1:false MOD 2:true   MOD 3:false  MOD 4:false
+      Pattern:149  MOD 1:false MOD 2:false  MOD 3:true   MOD 4:false
       Pattern:159  MOD 1:false MOD 2:true   MOD 3:false  MOD 4:false
       Pattern:156  MOD 1:false MOD 2:false  MOD 3:false  MOD 4:false
       Pattern:195  MOD 1:true  MOD 2:false  MOD 3:false  MOD 4:true
@@ -1620,7 +1622,7 @@ void KateDocument::updateModified()
   switch (pattern)
   {
     // No MODS are true
-    case 148: case 156:
+    case 103: case 148: case 149: case 156:
         doModify = true;
       break;
 
@@ -1630,7 +1632,7 @@ void KateDocument::updateModified()
       break;
 
     // Only MOD 2 is true
-    case 149: case 151:
+    case 151:
         doModify = (lastUndoGroupWhenSavedIsLastRedo);
       break;
 
