@@ -28,10 +28,13 @@
 
 #include <QtCore/QByteArray>
 
-#ifdef __APPLE__
+#if defined(HAVE_TERMIOS_H)
 #include <termios.h>
 #else
+#if defined(HAVE_TERMIO_H)
 #include <termio.h> // struct winsize
+//else screwed
+#endif
 #endif
 
 struct KPtyPrivate {
