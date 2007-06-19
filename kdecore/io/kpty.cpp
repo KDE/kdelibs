@@ -211,7 +211,7 @@ bool KPty::open()
   // and the results of the configure checks.
   //
   const char* PTM_DEVICE = "";
-  if (::openpty( &d->masterFd, &d->slaveFd, 0, &ttmode, 0))
+  if (::openpty( &d->masterFd, &d->slaveFd, 0, 0, 0))
   {
     d->masterFd = -1;
     d->slaveFd = -1;
