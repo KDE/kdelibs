@@ -31,6 +31,7 @@
     random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
     mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
     mkstemp, mkstemps (prefer to use QTemporaryfile instead)
+    trunc
    
 */
 
@@ -162,6 +163,17 @@ int mkstemps(char *, int);
 extern "C" {
 #endif
 int mkstemp(char *);
+#ifdef __cplusplus
+}
+#endif
+#endif
+
+#cmakedefine HAVE_TRUNC 1
+#if !defined(HAVE_TRUNC)
+#ifdef __cplusplus
+extern "C" {
+#endif
+double trunc(double);
 #ifdef __cplusplus
 }
 #endif
