@@ -51,6 +51,10 @@
 # include <sys/wait.h>
 #endif
 
+#ifndef WEXITSTATUS
+#define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
+#endif
+
 void dumpOptions(const QMap<QString,QString>&);
 void initEditPrinter(KMPrinter *p)
 {
