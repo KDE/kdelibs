@@ -2,6 +2,9 @@ project(kdecore)
 # Generate kdefakes.h
 configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
+# Generate kdeversion.h
+configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
+
 # Configure checks for network/ but also for netsupp.*
 include(network/ConfigureChecks.cmake)
 configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
@@ -352,7 +355,6 @@ install( FILES
    util/kallocator.h
    util/kde_file.h
    util/kdedmodule.h
-   util/kdeversion.h
    util/kgenericfactory.h
    util/kgenericfactory.tcc
    util/klauncher_iface.h
@@ -368,6 +370,7 @@ install( FILES
    util/kuser.h
    util/qtest_kde.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
+   ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR}
 )
 

@@ -1,5 +1,12 @@
 project(kdelibs)
 
+# set version
+set (KDE_VERSION_MAJOR 3)
+set (KDE_VERSION_MINOR 90)
+set (KDE_VERSION_RELEASE 1)
+set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE 4.0 >= 20070518)")
+
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
@@ -240,6 +247,11 @@ make_install_path_absolute(KDE4_SERVICETYPES_INSTALL_DIR ${SERVICETYPES_INSTALL_
 # write the installdirs into a cmake file which will be installed
 file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake 
 "# this file was generated during the kdelibs build process
+set(KDE_VERSION_MAJOR ${KDE_VERSION_MAJOR})
+set(KDE_VERSION_MINOR ${KDE_VERSION_MINOR})
+set(KDE_VERSION_RELEASE ${KDE_VERSION_RELEASE})
+set(KDE_VERSION \"${KDE_VERSION}\")
+set(KDE_VERSION_STRING \"${KDE_VERSION_STRING}\")
 set(KDE4_INSTALL_DIR         \"${KDE4_INSTALL_DIR}\")
 set(KDE4_LIB_INSTALL_DIR     \"${KDE4_LIB_INSTALL_DIR}\")
 set(KDE4_LIBEXEC_INSTALL_DIR \"${KDE4_LIBEXEC_INSTALL_DIR}\")
