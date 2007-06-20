@@ -67,7 +67,10 @@ File=<oldfile>
 
 Specifies that configuration information is read from <oldfile> and written
 to <newfile>. If you only specify <oldfile>, the information is read from
-as well as written to <oldfile>.
+as well as written to <oldfile>. Note that if the file does not exist
+at the time kconf_update first checks, no related update will be performed
+(script won't be run at all, etc.).
+
 
 Script=<script>[,<interpreter>]
 

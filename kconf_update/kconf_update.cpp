@@ -80,6 +80,7 @@ protected:
    KConfig *config;
    QString currentFilename;
    bool skip;
+   bool skipFile;
    bool debug;
    QString id;
 
@@ -340,6 +341,8 @@ bool KonfUpdate::updateFile(const QString &filename)
          gotOptions(m_line.mid(8));
       else if (m_line.startsWith("File="))
          gotFile(m_line.mid(5));
+      else if(skipFile)
+         continue;
       else if (m_line.startsWith("Group="))
          gotGroup(m_line.mid(6));
       else if (m_line.startsWith("RemoveGroup="))
@@ -425,6 +428,7 @@ void KonfUpdate::gotId(const QString &_id)
           }
        }
        skip = false;
+       skipFile = false;
        id = _id;
        if (m_bUseConfigInfo)
           log() << currentFilename << ": Checking update '" << _id << "'" << endl;
@@ -539,6 +543,18 @@ void KonfUpdate::gotFile(const QString &_file)
    newFileName = newFile;
    if (newFileName.isEmpty())
       newFileName = oldFile;
+
+   skipFile = false;
+   if( !oldFile.isEmpty())
+   { // if File= is specified, it doesn't exist, is empty or contains only kconf_update's [$Version] group, skip
+      if( oldConfig1 != NULL
+          && ( oldConfig1->groupList().isEmpty()
+              || ( oldConfig1->groupList().count() == 1 && oldConfig1->groupList().first() == "$Version" )))
+      {
+         log() << currentFilename << ": File '" << oldFile << "' does not exist or empty, skipping" << endl;
+         skipFile = true;
+      }
+   }
 }
 
 void KonfUpdate::gotGroup(const QString &_group)
