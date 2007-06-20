@@ -74,6 +74,34 @@ void KFilePlacesSelector::updateMenu()
             setIcon(m_placesModel->icon(index));
         }
     }
+
+    updateTeardownAction();
+}
+
+void KFilePlacesSelector::updateTeardownAction()
+{
+    const int rowCount = m_placesModel->rowCount();
+    if (m_placesMenu->actions().size()==rowCount+2) {
+        // remove teardown action
+        QAction *action = m_placesMenu->actions().at(rowCount+1);
+        m_placesMenu->removeAction(action);
+        delete action;
+
+        // remove separator
+        action = m_placesMenu->actions().at(rowCount);
+        m_placesMenu->removeAction(action);
+        delete action;
+    }
+
+    const QModelIndex index = m_placesModel->index(m_selectedItem, 0);
+    QAction *teardown = m_placesModel->teardownActionForIndex(index);
+    if (teardown!=0) {
+        teardown->setParent(m_placesMenu);
+        teardown->setData("teardownAction");
+
+        m_placesMenu->addSeparator();
+        m_placesMenu->addAction(teardown);
+    }
 }
 
 void KFilePlacesSelector::updateSelection(const KUrl& url)
@@ -90,6 +118,7 @@ void KFilePlacesSelector::updateSelection(const KUrl& url)
         // a generic folder icon as pixmap for indication:
         setIcon(KIcon("folder"));
     }
+    updateTeardownAction();
 }
 
 KUrl KFilePlacesSelector::selectedPlaceUrl() const
@@ -134,6 +163,12 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
 void KFilePlacesSelector::activatePlace(QAction* action)
 {
     Q_ASSERT(action != 0);
+    if (action->data().toString()=="teardownAction") {
+        QModelIndex index = m_placesModel->index(m_selectedItem, 0);
+        m_placesModel->requestTeardown(index);
+        return;
+    }
+
     QModelIndex index = m_placesModel->index(action->data().toInt(), 0);
 
     m_lastClickedIndex = QPersistentModelIndex();
@@ -149,6 +184,7 @@ void KFilePlacesSelector::activatePlace(QAction* action)
     else if (index.isValid()) {
         m_selectedItem = index.row();
         setIcon(m_placesModel->icon(index));
+        updateTeardownAction();
         emit placeActivated(m_placesModel->url(index));
     }
 }
@@ -159,6 +195,7 @@ void KFilePlacesSelector::onStorageSetupDone(const QModelIndex &index, bool succ
         if (success) {
             m_selectedItem = index.row();
             setIcon(m_placesModel->icon(index));
+            updateTeardownAction();
             emit placeActivated(m_placesModel->url(index));
         }
         m_lastClickedIndex = QPersistentModelIndex();
