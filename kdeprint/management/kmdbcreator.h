@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QDate>
-#include <k3process.h>
+#include <kprocess.h>
 
 class QWidget;
 class QProgressDialog;
@@ -40,16 +40,16 @@ public:
 	bool status() const	{ return m_status; }
 
 protected Q_SLOTS:
-	void slotReceivedStdout(K3Process *p, char *bufm, int len);
-	void slotReceivedStderr(K3Process *p, char *bufm, int len);
-	void slotProcessExited(K3Process *p);
+	void slotReceivedStdout();
+	void slotProcessExited(int exitCode, KProcess::ExitStatus exitStatus);
 	void slotCancelled();
 
 Q_SIGNALS:
 	void dbCreated();
 
 private:
-	K3Process	m_proc;
+	KProcess	m_proc;
+	QString		m_dbfilename;
 	QProgressDialog	*m_dlg;
 	bool		m_status;
 	bool		m_firstflag;

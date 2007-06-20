@@ -35,15 +35,17 @@ KMDBCreator::KMDBCreator(QObject *parent)
 {
 	m_dlg = 0;
 	m_status = true;
+	m_proc.setOutputChannelMode(KProcess::SeparateChannels);
+	m_proc.closeReadChannel(KProcess::StandardError); //ignore stderr for now
 
-	connect(&m_proc,SIGNAL(receivedStdout(K3Process*,char*,int)),SLOT(slotReceivedStdout(K3Process*,char*,int)));
-	connect(&m_proc,SIGNAL(receivedStderr(K3Process*,char*,int)),SLOT(slotReceivedStderr(K3Process*,char*,int)));
-	connect(&m_proc,SIGNAL(processExited(K3Process*)),SLOT(slotProcessExited(K3Process*)));
+	connect(&m_proc,SIGNAL(readyReadStdout()),SLOT(slotReceivedStdout()));
+	connect(&m_proc,SIGNAL(finished(int,KProcess::ExitStatus)),
+                SLOT(slotProcessExited(int,KProcess::ExitStatus)));
 }
 
 KMDBCreator::~KMDBCreator()
 {
-	if (m_proc.isRunning())
+	if (m_proc.state() == KProcess::Running)
 		m_proc.kill();
 	// do not delete the progress dialog anymore: it's persistent and owned by
 	// it's parent. It will be destroyed along with its parent.
@@ -79,12 +81,14 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 {
 	bool	started(true);
 
+        m_dbfilename = filename;
+
 	// initialize status
 	m_status = false;
 	m_firstflag = true;
 
 	// start the child process
-	m_proc.clearArguments();
+	m_proc.clearProgram();
 	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
 	QString	msg;
 	if (exestr.isEmpty())
@@ -98,9 +102,13 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 			msg = i18n("The executable %1 could not be found in your "
 			           "PATH. Check that this program exists and is "
 				   "accessible in your PATH variable.", exestr);
-		else if (!m_proc.start(K3Process::NotifyOnExit, K3Process::AllOutput))
-			msg = i18n("Unable to start the creation of the driver "
-			           "database. The execution of %1 failed.", exestr);
+		else {
+			m_proc.start();
+			if (!m_proc.waitForStarted())
+				msg = i18n("Unable to start the creation of the "
+					"driver database. The execution of %1 "
+					"failed.", exestr);
+		}
 	}
 	if (!msg.isEmpty())
 	{
@@ -129,10 +137,10 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	return started;
 }
 
-void KMDBCreator::slotReceivedStdout(K3Process*, char *buf, int len)
+void KMDBCreator::slotReceivedStdout()
 {
 	// save buffer
-	QString	str( QByteArray(buf, len) );
+	QString	str( m_proc.readAllStandardOutput() );
 
 	// get the number, cut the string at the first '\n' otherwise
 	// the toInt() will return 0. If that occurs for the first number,
@@ -156,12 +164,7 @@ void KMDBCreator::slotReceivedStdout(K3Process*, char *buf, int len)
 	}
 }
 
-void KMDBCreator::slotReceivedStderr(K3Process*, char*, int)
-{
-	// just discard it for the moment
-}
-
-void KMDBCreator::slotProcessExited(K3Process*)
+void KMDBCreator::slotProcessExited(int, KProcess::ExitStatus exitStatus)
 {
 	// delete the progress dialog
 	if (m_dlg)
@@ -170,13 +173,13 @@ void KMDBCreator::slotProcessExited(K3Process*)
 	}
 
 	// set exit status
-	m_status = (m_proc.normalExit() && m_proc.exitStatus() == 0);
+	m_status = (exitStatus == KProcess::NormalExit);
 	if (!m_status)
 	{
 		KMFactory::self()->manager()->setErrorMsg(i18n("Error while creating driver database: abnormal child-process termination."));
-		// remove the incomplete driver DB file so that, it will be
+		// remove the incomplete driver DB file so that it will be
 		// reconstructed on next check
-		QFile::remove(m_proc.args()[2]);
+		QFile::remove(m_dbfilename);
 	}
 	//else
 		emit dbCreated();
@@ -184,7 +187,7 @@ void KMDBCreator::slotProcessExited(K3Process*)
 
 void KMDBCreator::slotCancelled()
 {
-	if (m_proc.isRunning())
+	if (m_proc.state() == KProcess::Running)
 		m_proc.kill();
 	else
 		emit dbCreated();
