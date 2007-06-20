@@ -198,14 +198,39 @@ QColor KColorScheme::shade(const QColor &color, ShadeRole role)
 
 QColor KColorScheme::shade(const QColor &color, ShadeRole role, qreal contrast, qreal chromaAdjust)
 {
-    // TODO
-    // Extremas still need to be handled specially; dark colors result in all
-    // shades lighter than the base, and light colors result in all shades
-    // darker than the base.
-
     // nan -> 1.0
     contrast = (1.0 > contrast ? (-1.0 < contrast ? contrast : -1.0) : 1.0);
     qreal y = KColorUtils::luma(color), yi = 1.0 - y;
+
+    // handle very dark colors (base, mid, dark, shadow == midlight, light)
+    if (y < 0.006) {
+        switch (role) {
+            case KColorScheme::LightShade:
+                return KColorUtils::shade(color, 0.05 + 0.95 * contrast, chromaAdjust);
+            case KColorScheme::MidShade:
+                return KColorUtils::shade(color, 0.01 + 0.20 * contrast, chromaAdjust);
+            case KColorScheme::DarkShade:
+                return KColorUtils::shade(color, 0.02 + 0.40 * contrast, chromaAdjust);
+            default:
+                return KColorUtils::shade(color, 0.03 + 0.60 * contrast, chromaAdjust);
+        }
+    }
+
+    // handle very light colors (base, midlight, light == mid, dark, shadow)
+    if (y > 0.93) {
+        switch (role) {
+            case KColorScheme::MidlightShade:
+                return KColorUtils::shade(color, -0.02 - 0.20 * contrast, chromaAdjust);
+            case KColorScheme::DarkShade:
+                return KColorUtils::shade(color, -0.06 - 0.60 * contrast, chromaAdjust);
+            case KColorScheme::ShadowShade:
+                return KColorUtils::shade(color, -0.10 - 0.90 * contrast, chromaAdjust);
+            default:
+                return KColorUtils::shade(color, -0.04 - 0.40 * contrast, chromaAdjust);
+        }
+    }
+
+    // handle everything else
     qreal lightAmount = (0.05 + y * 0.55) * (0.25 + contrast * 0.75);
     qreal darkAmount =  (     - y       ) * (0.55 + contrast * 0.35);
     switch (role) {
