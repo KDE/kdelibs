@@ -326,11 +326,10 @@ void KConfigDialogManager::updateWidgets()
         continue;
      }
 
-     QVariant p = item->property();
-     if (p != property(widget))
+     if(!item->isEqual( property(widget) ))
      {
-        setProperty(widget, p);
-//        kDebug(178) << "The setting '" << it.currentKey() << "' [" << widget->className() << "] has changed" << endl;
+        setProperty( widget, item->property() );
+//        kDebug(178) << "The setting '" << it.key() << "' [" << widget->className() << "] has changed" << endl;
         changed = true;
      }
      if (item->isImmutable())
