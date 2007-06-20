@@ -608,7 +608,7 @@ QAction *KFilePlacesModel::teardownActionForIndex(const QModelIndex &index) cons
 {
     Solid::Device device = deviceForIndex(index);
 
-    if (device.as<Solid::StorageAccess>()->isAccessible()
+    if ( (device.is<Solid::StorageAccess>() && device.as<Solid::StorageAccess>()->isAccessible())
      || device.is<Solid::OpticalDisc>()) {
 
         Solid::StorageDrive *drive = device.as<Solid::StorageDrive>();
