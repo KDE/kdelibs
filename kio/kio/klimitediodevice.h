@@ -91,7 +91,7 @@ public:
         pos = QMIN( pos, m_length ); // Apply upper limit
         return m_dev->at( m_start + pos );
     }
-    virtual bool atEnd() const { return m_dev->at() >= m_start + m_length; }
+    virtual bool atEnd() const { return m_dev->atEnd() || m_dev->at() >= m_start + m_length; }
 private:
     QIODevice* m_dev;
     Q_ULONG m_start;
