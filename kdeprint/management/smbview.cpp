@@ -29,7 +29,6 @@
 #include <kmessagebox.h>
 #include <kcursor.h>
 #include <kshell.h>
-#include <k3process.h>
 #include <ktemporaryfile.h>
 
 #include <QtCore/QFile>
@@ -50,17 +49,18 @@ SmbView::SmbView(QWidget *parent)
 
 	m_state = Idle;
 	m_current = 0;
-	m_proc = new K3Process();
-	m_proc->setUseShell(true);
+	m_proc.setOutputChannelMode(KProcess::OnlyStdoutChannel);
+	m_proc.setReadChannel(KProcess::StandardOutput);
 	m_passwdFile = 0;
-	connect(m_proc,SIGNAL(processExited(K3Process*)),SLOT(slotProcessExited(K3Process*)));
-	connect(m_proc,SIGNAL(receivedStdout(K3Process*,char*,int)),SLOT(slotReceivedStdout(K3Process*,char*,int)));
+	connect(&m_proc,SIGNAL(finished(int,KProcess::ExitStatus)),SLOT(slotProcessExited(int,KProcess::ExitStatus)));
+	connect(&m_proc,SIGNAL(readyReadStandardOutput()),SLOT(slotReceivedStdout()));
+	connect(&m_proc,SIGNAL(started()),SLOT(slotProcessStarted()));
+	connect(&m_proc,SIGNAL(error()),SLOT(slotProcessError(KProcess::ProcessError)));
 	connect(this,SIGNAL(selectionChanged(Q3ListViewItem*)),SLOT(slotSelectionChanged(Q3ListViewItem*)));
 }
 
 SmbView::~SmbView()
 {
-	delete m_proc;
 	delete m_passwdFile;
 }
 
@@ -90,8 +90,17 @@ void SmbView::startProcess(int state)
 	m_buffer.clear();
 	m_state = state;
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	m_proc->start(K3Process::NotifyOnExit,K3Process::Stdout);
+	m_proc.start();
+}
+
+void SmbView::slotProcessStarted()
+{
 	emit running(true);
+}
+
+void SmbView::slotProcessError(KProcess::ProcessError)
+{
+	endProcess();
 }
 
 void SmbView::endProcess()
@@ -114,17 +123,17 @@ void SmbView::endProcess()
 	QApplication::restoreOverrideCursor();
 	emit running(false);
 	// clean up for future usage
-	m_proc->clearArguments();
+	m_proc.clearProgram();
 }
 
-void SmbView::slotProcessExited(K3Process*)
+void SmbView::slotProcessExited(int, KProcess::ExitStatus)
 {
 	endProcess();
 }
 
-void SmbView::slotReceivedStdout(K3Process*, char *buf, int len)
+void SmbView::slotReceivedStdout()
 {
-	m_buffer.append(QString::fromLocal8Bit(buf,len));
+	m_buffer.append(m_proc.readAll());
 }
 
 void SmbView::init()
@@ -163,9 +172,8 @@ void SmbView::init()
 		smb_conf.close ();
 	}
 	m_wins_server = m_wins_server.isEmpty ()? " " : " -U " + m_wins_server + " ";
-	QString cmd ("nmblookup" + m_wins_server +
+	m_proc.setShellCommand ("nmblookup" + m_wins_server +
 					"-M -- - | grep '<01>' | awk '{print $1}' | xargs nmblookup -A | grep '<1d>'");
-	*m_proc << cmd;
 	startProcess(GroupListing);
 }
 
@@ -177,36 +185,40 @@ void SmbView::setOpen(Q3ListViewItem *item, bool on)
 		if (item->depth() == 0)
 		{ // opening group
 			m_current = item;
-			*m_proc << "nmblookup"+m_wins_server+"-M ";
-                        *m_proc << KShell::quoteArg(item->text(0));
-                        *m_proc << " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
-                        *m_proc << KShell::quoteArg(item->text(0));
-			*m_proc << " -A ";
-                        *m_proc << KShell::quoteArg(m_passwdFile->fileName());
+			QString cmd;
+			cmd += "nmblookup"+m_wins_server+"-M ";
+			cmd += KShell::quoteArg(item->text(0));
+			cmd += " -S | grep '<20>' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*<20>.*//' | xargs -iserv_name smbclient -N -L 'serv_name' -W ";
+			cmd += KShell::quoteArg(item->text(0));
+			cmd += " -A ";
+			cmd += KShell::quoteArg(m_passwdFile->fileName());
+			m_proc.setShellCommand(cmd);
 			startProcess(ServerListing);
 		}
 		else if (item->depth() == 1)
 		{ // opening server
 			char *krb5ccname = getenv ("KRB5CCNAME");
 			m_current = item;
+			QString cmd;
 			if (krb5ccname)
 			{
-				*m_proc << "smbclient -k -N -L ";
+				cmd += "smbclient -k -N -L ";
 			}
 			else
 			{
-				*m_proc << "smbclient -N -L ";
+				cmd += "smbclient -N -L ";
 			}
-			*m_proc << KShell::quoteArg(item->text (0));
-			*m_proc << " -W ";
-			*m_proc << KShell::quoteArg(item->parent ()->
+			cmd += KShell::quoteArg(item->text (0));
+			cmd += " -W ";
+			cmd += KShell::quoteArg(item->parent ()->
 							text (0));
 			if (!krb5ccname)
 			{
-				*m_proc << " -A ";
-				*m_proc << KShell::
+				cmd += " -A ";
+				cmd += KShell::
 					quoteArg (m_passwdFile->fileName ());
 			}
+			m_proc.setShellCommand(cmd);
 			startProcess(ShareListing);
 		}
 	}
@@ -291,7 +303,7 @@ void SmbView::slotSelectionChanged(Q3ListViewItem *item)
 
 void SmbView::abort()
 {
-	if (m_proc->isRunning())
-		m_proc->kill();
+	if (m_proc.state() != KProcess::NotRunning)
+		m_proc.kill();
 }
 #include "smbview.moc"

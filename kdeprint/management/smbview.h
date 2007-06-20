@@ -21,8 +21,8 @@
 #define SMBVIEW_H
 
 #include <k3listview.h>
+#include <kprocess.h>
 
-class K3Process;
 class KTemporaryFile;
 
 class SmbView : public K3ListView
@@ -49,15 +49,17 @@ protected:
 	void processShares();
 
 protected Q_SLOTS:
-	void slotReceivedStdout(K3Process*, char*, int);
-	void slotProcessExited(K3Process*);
+	void slotReceivedStdout();
+	void slotProcessStarted();
+	void slotProcessError(KProcess::ProcessError);
+	void slotProcessExited(int exitCode, KProcess::ExitStatus);
 	void slotSelectionChanged(Q3ListViewItem*);
 
 private:
 	enum State { GroupListing, ServerListing, ShareListing, Idle };
 	int 		m_state;
 	Q3ListViewItem	*m_current;
-	K3Process	*m_proc;
+	KProcess	m_proc;
 	QString		m_buffer;
 	QString		m_login, m_password;
 	KTemporaryFile	*m_passwdFile;
