@@ -30,6 +30,12 @@
 #include <QtDBus/QtDBus>
 #include <kdebug.h>
 
+void KWindowSystem::setMainWindow( QWidget* subwindow, WId id )
+{
+    kDebug() << "KWindowSystem::setMainWindow( QWidget*, WId ) isn't yet implemented!" << endl;
+    //TODO
+}
+
 int KWindowSystem::currentDesktop()
 {
     return 1;
@@ -219,7 +225,7 @@ void KWindowSystem::doNotManage( const QString& title )
 const QList<WId>& KWindowSystem::stackingOrder()
 {
   //TODO
-  QList<WId> lst;
+  static const QList<WId> lst;
   kDebug() << "const QList<WId>& KWindowSystem::stackingOrder() isn't yet implemented!" << endl;
   return lst;
 }
@@ -227,7 +233,7 @@ const QList<WId>& KWindowSystem::stackingOrder()
 const QList<WId>& KWindowSystem::windows()
 {
   //TODO
-  QList<WId> lst;
+  static const QList<WId> lst;
   kDebug() << "const QList<WId>& KWindowSystem::windows()  isn't yet implemented!" << endl;
   return lst;
 }
