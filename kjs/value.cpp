@@ -81,7 +81,7 @@ inline int32_t JSValue::toInt32Inline(ExecState* exec, bool& ok) const
 int32_t JSValue::toInt32(ExecState* exec) const
 {
     bool ok;
-    return toInt32(exec, ok);
+    return toInt32Inline(exec, ok);
 }
 
 int32_t JSValue::toInt32(ExecState* exec, bool& ok) const
