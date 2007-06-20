@@ -470,7 +470,6 @@ install( FILES
   NETWinInfo
   OrgKdeKDirNotifyInterface
   OrgKdeKLauncherInterface
-  PTY
   Pointer
   PtyProcess
   SshProcess
