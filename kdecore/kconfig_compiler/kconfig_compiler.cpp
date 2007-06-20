@@ -75,7 +75,7 @@ static void parseArgs(const QStringList &args, QString &directory, QString &file
             std::cout << "under the terms of the GNU Library Public License." << std::endl;
             std::cout << "For more information about these matters, see the file named COPYING." << std::endl;
             exit(0);
-        } else if (args.at(i).startsWith("-")) {
+        } else if (args.at(i).startsWith('-')) {
             std::cerr << "Unknown option: " << qPrintable(args.at(i)) << std::endl;
             exit(1);
         } else if (fileCount == 0) {

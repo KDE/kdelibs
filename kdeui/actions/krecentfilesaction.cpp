@@ -130,7 +130,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
      */
     const KUrl url( _url );
 
-    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
+    if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith('/'))
        return;
     const QString tmpName = name.isEmpty() ?  url.fileName() : name;
     const QString file = url.pathOrUrl();

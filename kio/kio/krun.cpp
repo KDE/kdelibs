@@ -865,7 +865,7 @@ void KRun::init()
        run( exec, urls, d->m_window, false, QString(), d->m_asn );
        ok = true;
     }
-    else if (exec.startsWith("!"))
+    else if (exec.startsWith('!'))
     {
        exec = exec.mid(1); // Literal command
        exec += " %u";

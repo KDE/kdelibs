@@ -610,7 +610,7 @@ QStringList KStandardDirs::findDirs( const char *type,
         testdir.setPath(reldir);
         if (testdir.exists())
         {
-            if (reldir.endsWith("/"))
+            if (reldir.endsWith('/'))
                 list.append(reldir);
             else
                 list.append(reldir+'/');
@@ -1396,7 +1396,7 @@ QString KStandardDirs::saveLocation(const char *type,
         }
         d->dircache.remove(type);
     }
-    if (!fullPath.endsWith("/"))
+    if (!fullPath.endsWith('/'))
         fullPath += '/';
     return fullPath;
 }
@@ -1798,7 +1798,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
 
         QString userMapFile = cg.readEntry("userProfileMapFile");
         QString profileDirsPrefix = cg.readEntry("profileDirsPrefix");
-        if (!profileDirsPrefix.isEmpty() && !profileDirsPrefix.endsWith("/"))
+        if (!profileDirsPrefix.isEmpty() && !profileDirsPrefix.endsWith('/'))
             profileDirsPrefix.append("/");
 
         QStringList profiles;

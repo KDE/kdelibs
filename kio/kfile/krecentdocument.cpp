@@ -81,7 +81,7 @@ void KRecentDocument::add(const KUrl& url)
 
 void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
 {
-	if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith("/"))
+	if ( url.isLocalFile() && !KGlobal::dirs()->relativeLocation("tmp", url.path()).startsWith('/'))
 		return;
 
     QString openStr = url.url();

@@ -322,11 +322,11 @@ static void initUrlActionRestrictions()
 
     if (refPath.startsWith("$HOME"))
        refPath.replace(0, 5, QDir::homePath());
-    else if (refPath.startsWith("~"))
+    else if (refPath.startsWith('~'))
        refPath.replace(0, 1, QDir::homePath());
     if (urlPath.startsWith("$HOME"))
        urlPath.replace(0, 5, QDir::homePath());
-    else if (urlPath.startsWith("~"))
+    else if (urlPath.startsWith('~'))
        urlPath.replace(0, 1, QDir::homePath());
 
     if (refPath.startsWith("$TMP"))

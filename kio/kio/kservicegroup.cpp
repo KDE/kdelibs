@@ -222,7 +222,7 @@ void KServiceGroup::setAllowInline(bool _b)
 
 bool KServiceGroup::noDisplay() const
 {
-  return d->m_bNoDisplay || m_strCaption.startsWith(".");
+  return d->m_bNoDisplay || m_strCaption.startsWith('.');
 }
 
 QStringList KServiceGroup::suppressGenericNames() const

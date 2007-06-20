@@ -1178,16 +1178,16 @@ void KFilePropsPlugin::determineRelativePath( const QString & path )
     if (KBindingPropsPlugin::supports(properties->items()))
     {
        m_sRelativePath =KGlobal::dirs()->relativeLocation("mime", path);
-       if (m_sRelativePath.startsWith("/"))
+       if (m_sRelativePath.startsWith('/'))
           m_sRelativePath.clear();
     }
     else
     {
        m_sRelativePath =KGlobal::dirs()->relativeLocation("apps", path);
-       if (m_sRelativePath.startsWith("/"))
+       if (m_sRelativePath.startsWith('/'))
        {
           m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-          if (m_sRelativePath.startsWith("/"))
+          if (m_sRelativePath.startsWith('/'))
              m_sRelativePath.clear();
           else
              m_sRelativePath = path;
@@ -3346,11 +3346,11 @@ void KDesktopPropsPlugin::applyChanges()
 
   // KSycoca update needed?
   QString sycocaPath = KGlobal::dirs()->relativeLocation("apps", path);
-  bool updateNeeded = !sycocaPath.startsWith("/");
+  bool updateNeeded = !sycocaPath.startsWith('/');
   if (!updateNeeded)
   {
      sycocaPath = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-     updateNeeded = !sycocaPath.startsWith("/");
+     updateNeeded = !sycocaPath.startsWith('/');
   }
   if (updateNeeded)
      KBuildSycocaProgressDialog::rebuildKSycoca(m_frame);

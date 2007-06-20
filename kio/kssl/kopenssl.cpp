@@ -212,7 +212,7 @@ public:
    KLibrary *sslLib;
    KLibrary *cryptoLib;
    bool ok;
-   
+
    static KOpenSSLProxy *sSelf;
    static void cleanupKOpenSSLProxy() {
       delete KOpenSSLProxyPrivate::sSelf;
@@ -375,7 +375,7 @@ KOpenSSLProxy::KOpenSSLProxy()
                                  shit != libnamesc.end();
                                  ++shit) {
          QString alib = *it;
-         if (!alib.isEmpty() && !alib.endsWith("/"))
+         if (!alib.isEmpty() && !alib.endsWith('/'))
             alib += '/';
          alib += *shit;
 	 // someone knows why this is needed?
@@ -528,7 +528,7 @@ KOpenSSLProxy::KOpenSSLProxy()
                                  shit != libnamess.end();
                                  ++shit) {
          QString alib = *it;
-         if (!alib.isEmpty() && !alib.endsWith("/"))
+         if (!alib.isEmpty() && !alib.endsWith('/'))
             alib += '/';
          alib += *shit;
 	 QString tmpStr(alib.toLatin1());
@@ -631,7 +631,7 @@ KOpenSSLProxy::~KOpenSSLProxy() {
    if (d->cryptoLib) {
 	d->cryptoLib->unload();
    }
-   
+
    KOpenSSLProxyPrivate::sSelf = 0;
    delete d;
 }

@@ -946,7 +946,7 @@ KCmdLineArgs::usage(const char *id)
             if (option->description)
             {
                optionsHeader = '\n'+i18n(option->description);
-               if (!optionsHeader.endsWith("\n"))
+               if (!optionsHeader.endsWith('\n'))
                   optionsHeader.append("\n");
                hasOptions = false;
             }
@@ -960,7 +960,7 @@ KCmdLineArgs::usage(const char *id)
             if (option->description)
             {
                tmp = '\n'+i18n(option->description);
-               if (!tmp.endsWith("\n"))
+               if (!tmp.endsWith('\n'))
                   tmp.append("\n");
                printQ(tmp);
             }

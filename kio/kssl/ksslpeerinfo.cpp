@@ -54,7 +54,7 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
 
 void KSSLPeerInfo::setPeerHost(const QString &realHost) {
 	d->peerHost = realHost.trimmed();
-	while(d->peerHost.endsWith("."))
+	while(d->peerHost.endsWith('.'))
 		d->peerHost.truncate(d->peerHost.length()-1);
 
 	d->peerHost = QString::fromLatin1(QUrl::toAce(d->peerHost));
@@ -91,7 +91,7 @@ bool KSSLPeerInfo::cnMatchesAddress(QString cn) {
 	}
 
 	// Domains can legally end with '.'s.  We don't need them though.
-	while(cn.endsWith("."))
+	while(cn.endsWith('.'))
 		cn.truncate(cn.length()-1);
 
 	// Do not let empty CN's get by!!

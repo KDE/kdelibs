@@ -89,7 +89,7 @@ int main(int argc, char **argv)
         else if (!url.path().isEmpty())
            host = url.path(); // telnet:host
 
-        if (host.isEmpty() || host.startsWith("-"))
+        if (host.isEmpty() || host.startsWith('-'))
         {
             kError() << "Invalid hostname " << host << endl;
             return 2;

@@ -520,7 +520,7 @@ void KGlobalSettings::initPaths()
     *s_desktopPath = QDir::homePath() + "/Desktop/";
     *s_desktopPath = g.readPathEntry( "Desktop", *s_desktopPath);
     *s_desktopPath = QDir::cleanPath( *s_desktopPath );
-    if ( !s_desktopPath->endsWith("/") ) {
+    if ( !s_desktopPath->endsWith('/') ) {
         s_desktopPath->append( QLatin1Char( '/' ) );
     }
 
@@ -528,7 +528,7 @@ void KGlobalSettings::initPaths()
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     *s_autostartPath = g.readPathEntry( "Autostart" , *s_autostartPath);
     *s_autostartPath = QDir::cleanPath( *s_autostartPath );
-    if ( !s_autostartPath->endsWith("/") ) {
+    if ( !s_autostartPath->endsWith('/') ) {
         s_autostartPath->append( QLatin1Char( '/' ) );
     }
 
@@ -541,7 +541,7 @@ void KGlobalSettings::initPaths()
 #endif
     );
     *s_documentPath = QDir::cleanPath( *s_documentPath );
-    if ( !s_documentPath->endsWith("/")) {
+    if ( !s_documentPath->endsWith('/')) {
         s_documentPath->append( QLatin1Char( '/' ) );
     }
 }
