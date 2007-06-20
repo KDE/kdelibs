@@ -109,9 +109,12 @@ private:
     const JSCell *asCell() const;
     inline int32_t toInt32Inline(ExecState*, bool& ok) const;
 
+    // emulate Q_DISABLE_COPY to avoid msvc linker errors
+#if !defined(_MSC_VER) || !defined(MAKE_KJS_LIB)
     // Give a compile time error if we try to copy one of these.
     JSValue(const JSValue&);
     JSValue& operator=(const JSValue&);
+#endif
 };
 
 class KJS_EXPORT JSCell : public JSValue {

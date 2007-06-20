@@ -29,7 +29,7 @@
 
 namespace WTF {
 
-    template<typename T> class DefaultHash;
+    template<typename T> struct DefaultHash;
     template<typename T> class StrHash;
 
     template<> struct StrHash<KJS::UString::Rep *> {

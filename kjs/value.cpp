@@ -193,17 +193,4 @@ JSValue *jsNumberCell(double d)
     return new NumberImp(d);
 }
 
-// Christian Ehrlicher: I really don't understand why those two members are referenced
-// in every obj-file in kjs and therefore needed
-JSValue::JSValue(const JSValue&o)
-{
-    *this = o;
-}
-
-JSValue& JSValue::operator=(const JSValue&o)
-{
-    *this = o;
-    return *this;
-}
-
 } // namespace KJS

@@ -128,7 +128,7 @@ namespace KJS {
     }
 
     bool isLocalReadOnly(int propertyID) {
-      return _locals[propertyID].attr & ReadOnly;
+      return (_locals[propertyID].attr & ReadOnly) == ReadOnly;
     }
 
     virtual const ClassInfo *classInfo() const { return &info; }
