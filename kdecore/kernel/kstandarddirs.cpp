@@ -1532,7 +1532,7 @@ void KStandardDirs::addKDEDefaults()
     kdedirList.append(QFile::decodeName(KDEDIR));
 
     QString execPrefix(EXEC_INSTALL_PREFIX);
-    if (!kdedirList.contains(execPrefix))
+    if (!execPrefix.isEmpty() && !kdedirList.contains(execPrefix))
         kdedirList.append(execPrefix);
 #ifdef __linux__
     const QString linuxExecPrefix = executablePrefix();
@@ -1629,7 +1629,7 @@ void KStandardDirs::addKDEDefaults()
              it != kdedirList.end(); ++it)
         {
             QString dir = *it;
-            if (dir[dir.length()-1] != '/')
+            if (dir.length() < 1 || dir[dir.length()-1] != '/')
                 dir += '/';
             xdgdirList.append(dir+"share/");
         }
