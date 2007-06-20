@@ -45,9 +45,10 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_state = None;
 	m_status = false;
 	m_actionindex = 0;
-	connect(&m_proc, SIGNAL(receivedStdout(K3Process*,char*,int)), SLOT(slotReceived(K3Process*,char*,int)));
-	connect(&m_proc, SIGNAL(receivedStderr(K3Process*,char*,int)), SLOT(slotReceived(K3Process*,char*,int)));
-	connect(&m_proc, SIGNAL(processExited(K3Process*)), SLOT(slotProcessExited(K3Process*)));
+        m_proc.setOutputChannelMode(KProcess::MergedChannels);
+	connect(&m_proc, SIGNAL(readyReadStandardOutput()), SLOT(slotReceived()));
+	connect(&m_proc, SIGNAL(finished(int,KProcess::ExitStatus)),
+                SLOT(slotProcessExited(int,KProcess::ExitStatus)));
 
 	m_side = new SidePixmap(this);
 	m_doit = new QPushButton(i18n("&Export"), this);
@@ -149,14 +150,13 @@ void CupsAddSmb::slotActionClicked()
 {
 	if (m_state == None)
 		doExport();
-	else if (m_proc.isRunning())
+	else if (m_proc.state() != KProcess::NotRunning)
 		m_proc.kill();
 }
 
-void CupsAddSmb::slotReceived(K3Process*, char *buf, int buflen)
+void CupsAddSmb::slotReceived()
 {
 	QString	line;
-	int		index(0);
 	bool	partial(false);
 	static bool incomplete(false);
 
@@ -166,16 +166,20 @@ void CupsAddSmb::slotReceived(K3Process*, char *buf, int buflen)
 		// read a line
 		line = QLatin1String("");
 		partial = true;
-		while (index < buflen)
+		char c;
+		while (m_proc.getChar(&c))
 		{
-			QChar	c(buf[index++]);
 			if (c == '\n')
 			{
 				partial = false;
 				break;
 			}
-			else if (c.isPrint())
-				line += c;
+			else
+			{
+				QChar qc(c);
+				if (qc.isPrint())
+					line += qc;
+			}
 		}
 
 		if (line.isEmpty())
@@ -206,7 +210,7 @@ void CupsAddSmb::slotReceived(K3Process*, char *buf, int buflen)
 				{
 					// quit program
 					kDebug(500) << "EXITING PROGRAM..." << endl;
-					m_proc.writeStdin("quit\n", 5);
+					m_proc.write("quit\n", 5);
 					kDebug(500) << "SENT" << endl;
 				}
 				return;
@@ -259,7 +263,7 @@ void CupsAddSmb::doNextAction()
 {
 	m_buffer.clear();
 	m_state = None;
-	if (m_proc.isRunning())
+	if (m_proc.state() == KProcess::Running)
 	{
 		QByteArray	s = m_actions[m_actionindex++].toLatin1();
 		m_bar->setValue(m_bar->value()+1);
@@ -313,17 +317,17 @@ void CupsAddSmb::doNextAction()
 		// send action
 		kDebug(500) << "ACTION = " << s << endl;
 		s.append("\n");
-		m_proc.writeStdin(s.data(), s.length());
+		m_proc.write(s);
 	}
 }
 
-void CupsAddSmb::slotProcessExited(K3Process*)
+void CupsAddSmb::slotProcessExited(int, KProcess::ExitStatus exitStatus)
 {
 	kDebug(500) << "PROCESS EXITED (" << m_state << ")" << endl;
-	if (m_proc.normalExit() && m_state != Start && m_status)
+	if (exitStatus == KProcess::NormalExit && m_state != Start && m_status)
 	{
 		// last process went OK. If it was smbclient, then switch to rpcclient
-		if (qstrncmp(m_proc.args().first(), "smbclient", 9) == 0)
+		if (m_procname == "smbclient")
 		{
 			doInstall();
 			return;
@@ -345,7 +349,7 @@ void CupsAddSmb::slotProcessExited(K3Process*)
 		}
 	}
 
-	if (m_proc.normalExit())
+	if (exitStatus == KProcess::NormalExit)
 	{
 		showError(
 				i18n("Operation failed. Possible reasons are: permission denied "
@@ -440,8 +444,9 @@ bool CupsAddSmb::doExport()
 	m_actions << "put" << m_datadir+"/drivers/PSMON.DLL" << "WIN40/PSMON.DLL";
 	m_actions << "quit";
 
-	m_proc.clearArguments();
-	m_proc << "smbclient" << QLatin1String("//")+m_servered->text()+"/print$";
+	m_proc.clearProgram();
+	m_procname = "smbclient";
+	m_proc << m_procname << QLatin1String("//")+m_servered->text()+"/print$";
 	return startProcess();
 }
 
@@ -462,8 +467,9 @@ bool CupsAddSmb::doInstall()
 	//m_text->setText(i18n("Preparing to install driver on host <b>%1</b>").arg(m_servered->text()));
 	m_textinfo->setText(i18n("Preparing to install driver on host %1", m_servered->text()));
 
-	m_proc.clearArguments();
-	m_proc << "rpcclient" << m_servered->text();
+	m_proc.clearProgram();
+	m_procname = "rpcclient";
+	m_proc << m_procname << m_servered->text();
 	return startProcess();
 }
 
@@ -477,8 +483,9 @@ bool CupsAddSmb::startProcess()
 	m_state = Start;
 	m_actionindex = 0;
 	m_buffer.clear();
-	kDebug(500) << "PROCESS STARTED = " << m_proc.args()[0] << endl;
-	return m_proc.start(K3Process::NotifyOnExit, K3Process::All);
+	kDebug(500) << "PROCESS STARTED = " << m_procname << endl;
+	m_proc.start();
+	return m_proc.waitForStarted(5000); // don't wait more than 5 seconds
 }
 
 #include "cupsaddsmb2.moc"
