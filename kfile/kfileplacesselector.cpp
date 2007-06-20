@@ -134,11 +134,34 @@ void KFilePlacesSelector::paintEvent(QPaintEvent* /*event*/)
 void KFilePlacesSelector::activatePlace(QAction* action)
 {
     Q_ASSERT(action != 0);
-    m_selectedItem = action->data().toInt();
-    QModelIndex index = m_placesModel->index(m_selectedItem, 0);
-    if (index.isValid()) {
+    QModelIndex index = m_placesModel->index(action->data().toInt(), 0);
+
+    m_lastClickedIndex = QPersistentModelIndex();
+
+    if (m_placesModel->setupNeeded(index)) {
+        connect(m_placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
+                this, SLOT(onStorageSetupDone(const QModelIndex &, bool)));
+
+        m_lastClickedIndex = index;
+        m_placesModel->requestSetup(index);
+        return;
+    }
+    else if (index.isValid()) {
+        m_selectedItem = index.row();
         setIcon(m_placesModel->icon(index));
         emit placeActivated(m_placesModel->url(index));
+    }
+}
+
+void KFilePlacesSelector::onStorageSetupDone(const QModelIndex &index, bool success)
+{
+    if (m_lastClickedIndex==index)  {
+        if (success) {
+            m_selectedItem = index.row();
+            setIcon(m_placesModel->icon(index));
+            emit placeActivated(m_placesModel->url(index));
+        }
+        m_lastClickedIndex = QPersistentModelIndex();
     }
 }
 

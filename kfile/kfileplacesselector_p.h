@@ -24,6 +24,8 @@
 #include "kurlbutton_p.h"
 #include <kurl.h>
 
+#include <QtCore/QPersistentModelIndex>
+
 class KFilePlacesModel;
 class KUrlNavigator;
 class KMenu;
@@ -89,8 +91,11 @@ private Q_SLOTS:
 
     void updateMenu();
 
+    void onStorageSetupDone(const QModelIndex &index, bool success);
+
 private:
     int m_selectedItem;
+    QPersistentModelIndex m_lastClickedIndex;
     KMenu* m_placesMenu;
     KFilePlacesModel* m_placesModel;
     KUrl m_selectedUrl;
