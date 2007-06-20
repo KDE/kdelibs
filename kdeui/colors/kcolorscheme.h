@@ -197,7 +197,11 @@ public:
      * KColorScheme::background(KColorScheme::NormalBackground)
      * as the base color and the system contrast setting.
      *
-     * @note FIXME (copy note below)
+     * @note Shades are chosen such that all shades would contrast with the
+     * base color. This means that if base is very dark, the 'dark' shades will
+     * be lighter than the base color, with midlight() == shadow().
+     * Conversely, if the base color is very light, the 'light' shades will be
+     * darker than the base color, with light() == mid().
      */
     QColor shade(ShadeRole) const;
 
@@ -205,7 +209,11 @@ public:
      * Retrieve the requested shade color, using the specified color as the
      * base color and the system contrast setting.
      *
-     * @note FIXME (copy note below)
+     * @note Shades are chosen such that all shades would contrast with the
+     * base color. This means that if base is very dark, the 'dark' shades will
+     * be lighter than the base color, with midlight() == shadow().
+     * Conversely, if the base color is very light, the 'light' shades will be
+     * darker than the base color, with light() == mid().
      */
     static QColor shade(const QColor&, ShadeRole);
 
