@@ -59,20 +59,20 @@ MediaController::~MediaController()
     delete d;
 }
 
-#define IFACE(retDefault) \
+#define IFACE0 \
     AddonInterface *iface = d->iface(); \
-    do { \
-        if (!iface) { \
-            return retDefault; \
-        } \
-    } while (false)
+    do { if (!iface) return; } while (false)
+
+#define IFACE1(retDefault) \
+    AddonInterface *iface = d->iface(); \
+    do { if (!iface) return retDefault; } while (false)
 
 MediaController::Features MediaController::supportedFeatures() const
 {
     if (!d || !d->media) {
         return false;
     }
-    IFACE(false);
+    IFACE1(false);
     Features ret;
     if (iface->hasInterface(AddonInterface::AngleInterface)) {
         ret |= Angles;
@@ -88,35 +88,35 @@ MediaController::Features MediaController::supportedFeatures() const
 
 int MediaController::availableTitles() const
 {
-    IFACE(0);
+    IFACE1(0);
     return iface->interfaceCall(AddonInterface::TitleInterface,
             AddonInterface::availableTitles).toInt();
 }
 
 int MediaController::currentTitle() const
 {
-    IFACE(0);
+    IFACE1(0);
     return iface->interfaceCall(AddonInterface::TitleInterface,
             AddonInterface::title).toInt();
 }
 
 void MediaController::setCurrentTitle(int titleNumber)
 {
-    IFACE();
+    IFACE0;
     iface->interfaceCall(AddonInterface::TitleInterface,
             AddonInterface::setTitle, QList<QVariant>() << QVariant(titleNumber));
 }
 
 bool MediaController::autoplayTitles() const
 {
-    IFACE(true);
+    IFACE1(true);
     return iface->interfaceCall(AddonInterface::TitleInterface,
             AddonInterface::autoplayTitles).toBool();
 }
 
 void MediaController::setAutoplayTitles(bool b)
 {
-    IFACE();
+    IFACE0;
     iface->interfaceCall(AddonInterface::TitleInterface,
             AddonInterface::setAutoplayTitles, QList<QVariant>() << QVariant(b));
 }
@@ -133,47 +133,48 @@ void MediaController::previousTitle()
 
 int MediaController::availableChapters() const
 {
-    IFACE(0);
+    IFACE1(0);
     return iface->interfaceCall(AddonInterface::ChapterInterface,
             AddonInterface::availableChapters).toInt();
 }
 
 int MediaController::currentChapter() const
 {
-    IFACE(0);
+    IFACE1(0);
     return iface->interfaceCall(AddonInterface::ChapterInterface,
             AddonInterface::chapter).toInt();
 }
 
 void MediaController::setCurrentChapter(int titleNumber)
 {
-    IFACE();
+    IFACE0;
     iface->interfaceCall(AddonInterface::ChapterInterface,
             AddonInterface::setChapter, QList<QVariant>() << QVariant(titleNumber));
 }
 
 int MediaController::availableAngles() const
 {
-    IFACE(0);
+    IFACE1(0);
     return iface->interfaceCall(AddonInterface::AngleInterface,
             AddonInterface::availableAngles).toInt();
 }
 
 int MediaController::currentAngle() const
 {
-    IFACE(0);
+    IFACE1(0);
     return iface->interfaceCall(AddonInterface::AngleInterface,
             AddonInterface::angle).toInt();
 }
 
 void MediaController::setCurrentAngle(int titleNumber)
 {
-    IFACE();
+    IFACE0;
     iface->interfaceCall(AddonInterface::AngleInterface,
             AddonInterface::setAngle, QList<QVariant>() << QVariant(titleNumber));
 }
 
-#undef IFACE
+#undef IFACE0
+#undef IFACE1
 
 } // namespace Phonon
 

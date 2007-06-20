@@ -107,6 +107,8 @@ contains(QT_CONFIG, qdbus) {
        CONFIG += qdbus
        HEADERS += audiooutputadaptor.h
        SOURCES += audiooutputadaptor.cpp
+} else {
+       DEFINES += QT_NO_DBUS
 }
 
 contains(QT_CONFIG, reduce_exports) {
