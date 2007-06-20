@@ -41,14 +41,24 @@
 class KFilePlacesViewDelegate : public QItemDelegate
 {
 public:
-    KFilePlacesViewDelegate(QObject *parent = 0);
+    KFilePlacesViewDelegate(KFilePlacesView *parent);
     virtual ~KFilePlacesViewDelegate();
     virtual QSize sizeHint(const QStyleOptionViewItem &option,
                            const QModelIndex &index) const;
+    virtual void paint(QPainter *painter,
+                       const QStyleOptionViewItem &option,
+                       const QModelIndex &index) const;
+
+    int iconSize() const;
+    void setIconSize(int newSize);
+
+private:
+    KFilePlacesView *m_view;
+    int m_iconSize;
 };
 
-KFilePlacesViewDelegate::KFilePlacesViewDelegate(QObject *parent) :
-    QItemDelegate(parent)
+KFilePlacesViewDelegate::KFilePlacesViewDelegate(KFilePlacesView *parent) :
+    QItemDelegate(parent), m_view(parent), m_iconSize(48)
 {
 }
 
@@ -60,8 +70,25 @@ QSize KFilePlacesViewDelegate::sizeHint(const QStyleOptionViewItem &option,
                                         const QModelIndex &index) const
 {
     QSize size = QItemDelegate::sizeHint(option, index);
-    size.setHeight(size.height() + KDialog::marginHint());
+    size.setHeight(m_iconSize + KDialog::marginHint());
     return size;
+}
+
+void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyleOptionViewItem opt = option;
+    opt.decorationSize = QSize(m_iconSize, m_iconSize);
+    QItemDelegate::paint(painter, opt, index);
+}
+
+int KFilePlacesViewDelegate::iconSize() const
+{
+    return m_iconSize;
+}
+
+void KFilePlacesViewDelegate::setIconSize(int newSize)
+{
+    m_iconSize = newSize;
 }
 
 class KFilePlacesView::Private
@@ -101,6 +128,7 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
 
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
+    setResizeMode(Adjust);
     setItemDelegate(new KFilePlacesViewDelegate(this));
 
     QPalette palette = viewport()->palette();
@@ -225,8 +253,8 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
 void KFilePlacesView::resizeEvent(QResizeEvent *event)
 {
-    d->adaptItemSize();
     QListView::resizeEvent(event);
+    d->adaptItemSize();
 }
 
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
@@ -315,8 +343,10 @@ void KFilePlacesView::Private::adaptItemSize()
         size<<= 4;
     }
 
-    if (size!=q->iconSize().height()) {
-        q->setIconSize(QSize(size, size));
+    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(q->itemDelegate());
+    if (delegate && size!=delegate->iconSize()) {
+        delegate->setIconSize(size);
+        q->scheduleDelayedItemsLayout();
     }
 }
 
