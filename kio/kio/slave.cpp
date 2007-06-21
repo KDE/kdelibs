@@ -380,8 +380,8 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     KServerSocket *kss = new KServerSocket(getenv("COMPUTERNAME"),"0");
     kss->setFamily(KResolver::InetFamily);
     kss->listen();
+    // get used tcp port
     QString sockname = kss->localAddress().serviceName();
-    sockname = "0"; // tcp, autodetect port
 #else
     QString prefix = KStandardDirs::locateLocal("socket", KGlobal::mainComponent().componentName());
     KTemporaryFile *socketfile = new KTemporaryFile();
