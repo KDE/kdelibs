@@ -331,7 +331,9 @@ int main(int argc, char **argv)
 
     // Take source directory into account
     kDebug() << "-- adding source directory " << KNSSRCDIR << endl;
+    kDebug() << "-- adding build directory " << KNSBUILDDIR << endl;
     KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
+    KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 
     KNewStuff2Download *download = new KNewStuff2Download();
     download->run();

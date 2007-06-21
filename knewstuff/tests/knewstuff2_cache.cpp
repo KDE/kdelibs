@@ -94,7 +94,9 @@ int main(int argc, char **argv)
 
 	// Take source directory into account
 	kDebug() << "-- adding source directory " << KNSSRCDIR << endl;
+	kDebug() << "-- adding build directory " << KNSBUILDDIR << endl;
 	KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
+	KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 
 	KNewStuff2Cache *test = new KNewStuff2Cache();
 	test->run();

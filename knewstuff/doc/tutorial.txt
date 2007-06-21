@@ -112,9 +112,13 @@ and further details such as data security policies.
 # SignaturePolicy=... # never/ifpossible/always
 
 # # Where to install? Exactly one of the lines below
+# # Note: if all three are missing, entry is considered remote resource
 # StandardResource=wallpapers # becomes $KDEHOME/share/wallpapers
 # TargetDir=appname/datadir # becomes $KDEHOME/share/apps/appname/datadir
 # InstallPath=.dir/subdir # becomes $HOME/.dir/subdir
+
+# # How to name the files?
+# CustomName=true # doesn't use payload file name
 
 # # What to do after installation? Any number of the lines below
 # Uncompress=true # unpack the downloaded archive

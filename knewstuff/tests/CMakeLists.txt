@@ -2,7 +2,7 @@ project(knewstuff2tests)
 
 include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-add_definitions(-DKNSSRCDIR=\\""${CMAKE_CURRENT_SOURCE_DIR}"\\")
+add_definitions(-DKNSSRCDIR=\\""${CMAKE_CURRENT_SOURCE_DIR}"\\" -DKNSBUILDDIR=\\""${CMAKE_CURRENT_BINARY_DIR}"\\")
 set(CMAKE_SKIP_RPATH TRUE)
 
 ##########################

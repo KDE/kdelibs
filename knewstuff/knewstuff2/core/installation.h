@@ -70,6 +70,8 @@ class KNEWSTUFF_EXPORT Installation
     void setChecksumPolicy(Policy policy);
     void setSignaturePolicy(Policy policy);
 
+    void setCustomName(bool customname);
+
     QString uncompression() const;
     QString command() const;
 
@@ -81,6 +83,8 @@ class KNEWSTUFF_EXPORT Installation
     Policy checksumPolicy();
     Policy signaturePolicy();
 
+    bool customName();
+
   private:
     QString m_command;
     QString m_uncompression;
@@ -89,6 +93,7 @@ class KNEWSTUFF_EXPORT Installation
     QString m_installpath;
     Policy m_checksumpolicy;
     Policy m_signaturepolicy;
+    bool m_customname;
     class InstallationPrivate *d;
 };
 

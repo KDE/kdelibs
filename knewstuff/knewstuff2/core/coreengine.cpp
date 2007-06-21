@@ -102,6 +102,7 @@ bool CoreEngine::init(const QString &configfile)
 	m_installation->setStandardResourceDir(group.readEntry("StandardResource", QString()));
 	m_installation->setTargetDir(group.readEntry("TargetDir", QString()));
 	m_installation->setInstallPath(group.readEntry("InstallPath", QString()));
+	m_installation->setCustomName(group.readEntry("CustomName", false));
 
 	QString checksumpolicy = group.readEntry("ChecksumPolicy", QString());
 	QString signaturepolicy = group.readEntry("SignaturePolicy", QString());
@@ -1253,13 +1254,24 @@ bool CoreEngine::install(QString payloadfile)
 	kDebug(550) << "INSTALL resourceDir " << m_installation->standardResourceDir() << endl;
 	kDebug(550) << "INSTALL targetDir " << m_installation->targetDir() << endl;
 	kDebug(550) << "INSTALL installPath " << m_installation->installPath() << endl;
+	kDebug(550) << "INSTALL + customName" << m_installation->customName() << endl;
 	kDebug(550) << "INSTALL + uncompression " << m_installation->uncompression() << endl;
 	kDebug(550) << "INSTALL + command " << m_installation->command() << endl;
 
-	QString ext = payloadfile.section('.', 1);
-	QString installfile = entry->name().representation();
-	installfile += '-' + entry->version();
-	if(!ext.isEmpty()) installfile += '.' + ext;
+	// FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
+	KUrl source = KUrl(entry->payload().representation());
+	QString installfile;
+	QString ext = source.fileName().section('.', -1);
+	if(m_installation->customName())
+	{
+		installfile = entry->name().representation();
+		installfile += '-' + entry->version();
+		if(!ext.isEmpty()) installfile += '.' + ext;
+	}
+	else
+	{
+		installfile = source.fileName();
+	}
 
 	QString installpath, installdir;
 	int pathcounter = 0;

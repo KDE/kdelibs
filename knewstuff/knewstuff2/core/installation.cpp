@@ -33,6 +33,7 @@ Installation::Installation()
 	d = NULL;
 	m_checksumpolicy = CheckIfPossible;
 	m_signaturepolicy = CheckIfPossible;
+	m_customname = false;
 }
 
 Installation::~Installation()
@@ -72,6 +73,11 @@ void Installation::setChecksumPolicy(Policy policy)
 void Installation::setSignaturePolicy(Policy policy)
 {
 	m_signaturepolicy = policy;
+}
+
+void Installation::setCustomName(bool customname)
+{
+	m_customname = customname;
 }
 
 QString Installation::uncompression() const
@@ -116,4 +122,10 @@ Installation::Policy Installation::signaturePolicy()
 {
 	return m_signaturepolicy;
 }
+
+bool Installation::customName()
+{
+	return m_customname;
+}
+
 
