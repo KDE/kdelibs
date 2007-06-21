@@ -168,7 +168,7 @@ int main(int argc, char **argv)
             QString path=QDir::homePath() + "/Desktop/";
             path=g.readPathEntry( "Desktop", path);
             path=QDir::cleanPath( path );
-            if ( !path.endsWith("/") )
+            if ( !path.endsWith('/') )
               path.append(QLatin1Char('/'));
             printResult(path);
         }
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
             QString path=QDir::homePath() + "/Autostart/";
             path=g.readPathEntry( "Autostart", path);
             path=QDir::cleanPath( path );
-            if ( !path.endsWith("/") )
+            if ( !path.endsWith('/') )
               path.append(QLatin1Char('/'));
             printResult(path);
 
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
 #endif
             path=g.readPathEntry( "Desktop", path);
             path=QDir::cleanPath( path );
-            if ( !path.endsWith("/") )
+            if ( !path.endsWith('/') )
               path.append(QLatin1Char('/'));
             printResult(path);
         }

@@ -49,10 +49,10 @@ QPixmap OxygenStyle::standardPixmap ( StandardPixmap standardPixmap, const QStyl
       pm = QPixmap(rect.size());
    }
 #if 0
-   QString key =  QString::number(standardPixmap) + "@"
-                  + QString::number(pm.width()) + "x" + QString::number(pm.height()) + ":"
+   QString key =  QString::number(standardPixmap) + '@'
+                  + QString::number(pm.width()) + 'x' + QString::number(pm.height()) + ':'
                   + QString::number(midColor(pal.color(QPalette::WindowText), pal.color(QPalette::Window)).rgb());
-   
+
    if (QPixmapCache::find(key, pm))
       return pm;
 #endif
@@ -148,28 +148,28 @@ QPixmap OxygenStyle::standardPixmap ( StandardPixmap standardPixmap, const QStyl
       painter.drawText(rect, Qt::AlignCenter, "?");
       break;
    }
-//    case SP_DesktopIcon: //  13   
-//    case SP_TrashIcon: //  14   
-//    case SP_ComputerIcon: //  15   
-//    case SP_DriveFDIcon: //  16   
-//    case SP_DriveHDIcon: //  17   
-//    case SP_DriveCDIcon: //  18   
-//    case SP_DriveDVDIcon: //  19   
-//    case SP_DriveNetIcon: //  20   
-//    case SP_DirOpenIcon: //  21   
-//    case SP_DirClosedIcon: //  22   
-//    case SP_DirLinkIcon: //  23   
-//    case SP_FileIcon: //  24   
-//    case SP_FileLinkIcon: //  25   
-//    case SP_FileDialogStart: //  28   
-//    case SP_FileDialogEnd: //  29   
-//    case SP_FileDialogToParent: //  30   
-//    case SP_FileDialogNewFolder: //  31   
-//    case SP_FileDialogDetailedView: //  32   
-//    case SP_FileDialogInfoView: //  33   
-//    case SP_FileDialogContentsView: //  34   
-//    case SP_FileDialogListView: //  35   
-//    case SP_FileDialogBack: //  36   
+//    case SP_DesktopIcon: //  13
+//    case SP_TrashIcon: //  14
+//    case SP_ComputerIcon: //  15
+//    case SP_DriveFDIcon: //  16
+//    case SP_DriveHDIcon: //  17
+//    case SP_DriveCDIcon: //  18
+//    case SP_DriveDVDIcon: //  19
+//    case SP_DriveNetIcon: //  20
+//    case SP_DirOpenIcon: //  21
+//    case SP_DirClosedIcon: //  22
+//    case SP_DirLinkIcon: //  23
+//    case SP_FileIcon: //  24
+//    case SP_FileLinkIcon: //  25
+//    case SP_FileDialogStart: //  28
+//    case SP_FileDialogEnd: //  29
+//    case SP_FileDialogToParent: //  30
+//    case SP_FileDialogNewFolder: //  31
+//    case SP_FileDialogDetailedView: //  32
+//    case SP_FileDialogInfoView: //  33
+//    case SP_FileDialogContentsView: //  34
+//    case SP_FileDialogListView: //  35
+//    case SP_FileDialogBack: //  36
    ///    case SP_ToolBarHorizontalExtensionButton: //  26  Extension button for horizontal toolbars
    ///    case SP_ToolBarVerticalExtensionButton: //  27  Extension button for vertical toolbars
    default:

@@ -276,7 +276,7 @@ K3SpellConfig::interpret( const QString &fname, QString &lname,
 
   QString dname( fname );
 
-  if( dname.endsWith( "+" ) )
+  if( dname.endsWith( '+' ) )
     dname.remove( dname.length()-1, 1 );
 
   if( dname.endsWith("sml") || dname.endsWith("med") || dname.endsWith("lrg") ||

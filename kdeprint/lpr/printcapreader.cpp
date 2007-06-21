@@ -166,7 +166,7 @@ PrintcapEntry* PrintcapReader::nextEntry()
                     f.type = Field::String;
                     f.name = (*it).left(p);
                     f.value = (*it).mid(p+1);
-                    if (f.value.startsWith("\""))
+                    if (f.value.startsWith('\"'))
                         f.value = f.value.mid(1, f.value.length()-2);
                 }
                 entry->fields[f.name] = f;

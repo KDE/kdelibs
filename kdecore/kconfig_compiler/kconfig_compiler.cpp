@@ -1118,9 +1118,9 @@ int main( int argc, char **argv )
 
   QString baseDir = directoryName;
 #ifdef Q_OS_WIN
-  if (!baseDir.endsWith("/") && !baseDir.endsWith("\\"))
+  if (!baseDir.endsWith('/') && !baseDir.endsWith('\\'))
 #else
-  if (!baseDir.endsWith("/"))
+  if (!baseDir.endsWith('/'))
 #endif
     baseDir.append("/");
 

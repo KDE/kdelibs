@@ -232,7 +232,7 @@ KMimeType::Ptr KMimeTypeFactory::findFromPatternHelper( const QString &_filename
     {
         if ( KShell::matchFileName( _filename, *it ) )
         {
-            if ( !matchingOffset || !(*it).endsWith( "*" ) ) // *.html wins over Makefile.*
+            if ( !matchingOffset || !(*it).endsWith( '*' ) ) // *.html wins over Makefile.*
             {
                 matchingOffset = *it_offset;
                 if (match)

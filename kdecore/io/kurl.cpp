@@ -1362,7 +1362,7 @@ bool KUrl::hasHTMLRef() const
 
 void KUrl::setDirectory( const QString &dir)
 {
-  if ( dir.endsWith("/"))
+  if ( dir.endsWith('/'))
      setPath(dir);
   else
      setPath(dir+'/');

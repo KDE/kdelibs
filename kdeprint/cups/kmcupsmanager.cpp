@@ -910,7 +910,7 @@ void KMCupsManager::slotConnectionSuccess()
 void KMCupsManager::slotAsyncConnect()
 {
 	kDebug(500) << "Starting async connect " << CupsInfos::self()->hostaddr() << endl;
-        if (CupsInfos::self()->host().startsWith("/"))
+	if (CupsInfos::self()->host().startsWith('/'))
 	{
 		KLocalSocket *ls = new KLocalSocket;
 		m_socket = ls;

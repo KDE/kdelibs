@@ -876,7 +876,7 @@ void KonfUpdate::gotScript(const QString &_script)
        while(!ts.atEnd())
        {
          QString line = ts.readLine();
-         if (line.startsWith("["))
+         if (line.startsWith('['))
          {
             int j = line.indexOf(']')+1;
             if (j > 0)

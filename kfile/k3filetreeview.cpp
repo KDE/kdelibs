@@ -633,7 +633,7 @@ K3FileTreeViewItem *K3FileTreeView::findItem( KFileTreeBranch* brnch, const QStr
       {
          QString partUrl( relUrl );
 
-         if( partUrl.endsWith("/"))
+         if( partUrl.endsWith('/'))
             partUrl.truncate( relUrl.length()-1 );
 
          url.addPath( partUrl );

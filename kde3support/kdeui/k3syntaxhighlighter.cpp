@@ -192,7 +192,7 @@ int K3SpellingHighlighter::highlightParagraph( const QString &text,
 
     bool isCode = diffAndCo.contains(text[0]);
 
-    if ( !text.endsWith(" ") )
+    if ( !text.endsWith(' ') )
 	d->alwaysEndsWithSpace = false;
 
     K3SyntaxHighlighter::highlightParagraph( text, -2 );
