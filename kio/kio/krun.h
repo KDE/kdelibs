@@ -187,7 +187,7 @@ public:
    *        when the application exits.
    * @param suggestedFileName see setSuggestedFileName
    * @param asn Application startup notification id, if any (otherwise "").
-   * @return the process id, or 0 on error
+   * @return @c true on success, @c false on error
    */
   static bool run( const KService& service, const KUrl::List& urls, QWidget* window,
       bool tempFiles = false, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
@@ -203,7 +203,7 @@ public:
    *        "Netscape 4.06".
    * @param icon the icon which should be used by the application.
    * @param asn Application startup notification id, if any (otherwise "").
-   * @return the process id, or 0 on error
+   * @return @c true on success, @c false on error
    */
   static bool run( const QString& exec, const KUrl::List& urls, QWidget* window,
                     const QString& name = QString(),
@@ -226,7 +226,7 @@ public:
    *        See also isExecutable().
    * @param suggestedFileName see setSuggestedFileName
    * @param asn Application startup notification id, if any (otherwise "").
-   * @return the process id, or 0 on error
+   * @return @c true on success, @c false on error
    */
   static bool runUrl( const KUrl& url, const QString& mimetype, QWidget* window,
       bool tempFile = false , bool runExecutables = true, const QString& suggestedFileName = QString(), const QByteArray& asn = "" );
@@ -243,7 +243,7 @@ public:
    * to it, since the function will do that for you.
    * @param window The top-level widget of the app that invoked this object.
    *
-   * @return PID of running command, 0 if it could not be started.
+   * @return @c true on success, @c false on error
    */
   static bool runCommand( const QString &cmd, QWidget* window );
 
@@ -257,7 +257,7 @@ public:
    * @param icon icon for app starting notification
    * @param window The top-level widget of the app that invoked this object.
    * @param asn Application startup notification id, if any (otherwise "").
-   * @return PID of running command, 0 if it could not be started.
+   * @return @c true on success, @c false on error
    */
   static bool runCommand( const QString& cmd, const QString & execName, const QString & icon, QWidget* window, const QByteArray& asn = "" );
 
@@ -279,7 +279,8 @@ public:
    * An empty string will @em not be quoted.
    *
    * @deprecated Use KShell::quoteArg() instead. @em Note that this function
-   *  behaves differently for empty arguments.
+   *  behaves differently for empty arguments and returns the result
+   *  differently.
    *
    * @param str the string to quote. The quoted string will be written here
    */
@@ -293,7 +294,7 @@ public:
    *        when the application exits.
    * @param suggestedFileName see setSuggestedFileName
    *
-   * @return a list of arguments suitable for either system() or exec().
+   * @return a list of arguments suitable for KProcess::setProgram().
    */
   static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls, bool tempFiles = false, const QString& suggestedFileName = QString() );
 
@@ -313,7 +314,7 @@ public:
   static bool isExecutable( const QString& serviceType );
 
   /**
-   * Returns wether the @p url of @p mimetype is executable.
+   * Returns whether the @p url of @p mimetype is executable.
    * To be executable the file must pass the following rules:
    * -# Must reside on the local filesystem.
    * -# Must be marked as executable for the user by the filesystem.
@@ -356,7 +357,7 @@ protected:
 
   /**
    * Called if the mimetype has been detected. The function checks
-   * whether the document and appends the gzip protocol to the
+   * whether the document <XXX - what?> and appends the gzip protocol to the
    * URL. Otherwise runUrl is called to finish the job.
    */
   virtual void foundMimeType( const QString& type );
@@ -379,7 +380,7 @@ protected:
   bool m_bIsDirectory;
 
   /**
-   * USed to indicate that the next action is to initialize.
+   * Used to indicate that the next action is to initialize.
    * This action is invoked from slotTimeout
    */
   bool m_bInit;
