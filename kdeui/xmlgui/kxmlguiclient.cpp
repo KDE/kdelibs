@@ -23,7 +23,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QtCore/QTextIStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QPointer>

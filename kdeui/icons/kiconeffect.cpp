@@ -742,9 +742,9 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
     void
 KIconEffect::visualActivate(QWidget * widget, const QRect &rect)
 {
-#ifdef __GNUC__
     Q_UNUSED(widget);
     Q_UNUSED(rect);
+#ifdef __GNUC__
     #warning "visualActivate is stubbed out. Needs fixing (or better) replacement"
 #endif
 #if 0

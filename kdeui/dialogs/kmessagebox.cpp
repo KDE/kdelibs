@@ -83,7 +83,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
    }
 }
 
-static void sendNotification( QString message,
+static void sendNotification( QString message, //krazy:exclude=passbyvalue
                               const QStringList& strlist,
                               QMessageBox::Icon icon,
                               WId parent_id )

@@ -36,7 +36,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 
-static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString())
+static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString()) //krazy:exclude=passbyvalue
 {
    if (s.isEmpty())
       s = e.text();
@@ -431,7 +431,7 @@ VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepR
    {
       dir = baseDir + dir;
    }
-   if (!dir.endsWith("/"))
+   if (!dir.endsWith('/'))
       dir += '/';
 
    if (QDir::isRelativePath(dir) && !keepRelativeToCfg)
@@ -1600,7 +1600,7 @@ static QStringList parseLayoutNode(const QDomElement &docElem)
 }
 
 void
-VFolderMenu::layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout)
+VFolderMenu::layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout) //krazy:exclude=passbyvalue
 {
    if (!menu->defaultLayoutNode.isNull())
    {

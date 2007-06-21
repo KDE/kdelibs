@@ -21,7 +21,7 @@
 #define _VFOLDER_MENU_H_
 
 #include <QtCore/QObject>
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
 #include <QtCore/QStack>

@@ -40,7 +40,7 @@
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QDockWidget>
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QtGui/QLayout>
 #include <QtCore/QObject>
 #include <QtGui/QSessionManager>

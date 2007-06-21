@@ -26,7 +26,7 @@
 #include <assert.h>
 
 #include <QtCore/QDir>
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
 #include <QtGui/QWidget>

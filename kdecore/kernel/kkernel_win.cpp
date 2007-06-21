@@ -83,7 +83,7 @@ QString getWin32RegistryValue ( HKEY key, const QString& subKey, const QString& 
 #define FAILURE \
  { if (ok) \
   *ok = false; \
- return QString::null; }
+ return QString(); }
 
     if ( subKey.isEmpty() )
         FAILURE;

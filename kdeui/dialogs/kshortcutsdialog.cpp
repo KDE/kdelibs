@@ -152,7 +152,7 @@ public:
 
 // private slots
 	//this invokes the appropriate conflict resolution function
-	void capturedShortcut(QVariant, const QModelIndex &);
+	void capturedShortcut(const QVariant &, const QModelIndex &);
 
 	void globalSettingsChangedSystemwide(int);
 
@@ -466,7 +466,7 @@ QTreeWidgetItem *KShortcutsEditorPrivate::findOrMakeItem(QTreeWidgetItem *parent
 
 
 //private slot
-void KShortcutsEditorPrivate::capturedShortcut(QVariant newShortcut, const QModelIndex &index)
+void KShortcutsEditorPrivate::capturedShortcut(const QVariant &newShortcut, const QModelIndex &index)
 {
 	//dispatch to the right handler
 	//TODO: make sure that letter shortcuts only go in if allowed. modify KKeySequenceWidget.

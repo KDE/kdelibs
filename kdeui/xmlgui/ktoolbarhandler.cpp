@@ -20,7 +20,7 @@
 
 #include <assert.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 
 #include <kaction.h>
 #include <kactioncollection.h>

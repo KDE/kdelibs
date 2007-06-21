@@ -21,7 +21,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QMap>
-#include <Qt/qdom.h>
+#include <QtXml/QDomElement>
 #include <QStack>
 
 #include <kaction.h>

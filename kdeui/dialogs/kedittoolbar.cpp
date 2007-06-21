@@ -19,7 +19,7 @@
 */
 #include <kedittoolbar.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QtGui/QLayout>
 #include <QtCore/QDir>
 #include <QtCore/QFile>

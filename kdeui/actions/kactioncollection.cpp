@@ -35,7 +35,7 @@
 #include <kglobal.h>
 #include <kaction.h>
 
-#include <Qt/qdom.h>
+#include <QtXml/QDomDocument>
 #include <QSet>
 #include <QtCore/QVariant>
 #include <QHash>
