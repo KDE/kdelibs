@@ -368,7 +368,7 @@ void Node::processVarDecl (ExecState*)
 void Node::processFuncDecl(ExecState*)
 {}
 
-Node* Node::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
+Node* Node::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* /*node*/)
 {
   return 0;
 }
@@ -1172,7 +1172,7 @@ void PostfixNode::recurseVisit(NodeVisitor *visitor)
    Node::recurseVisitLink(visitor, m_loc);
 }
 
-Node* PostfixNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
+Node* PostfixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* node)
 {
   if (m_loc->isVarAccessNode()) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
@@ -1354,7 +1354,7 @@ void PrefixNode::recurseVisit(NodeVisitor *visitor)
    Node::recurseVisitLink(visitor, m_loc);
 }
 
-Node* PrefixNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
+Node* PrefixNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* node)
 {
   if (m_loc->isVarAccessNode()) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
@@ -1730,7 +1730,7 @@ void AssignNode::recurseVisit(NodeVisitor *visitor)
 }
 
 
-Node* AssignNode::optimizeLocalAccess(ExecState *exec, FunctionBodyNode* node)
+Node* AssignNode::optimizeLocalAccess(ExecState* /*exec*/, FunctionBodyNode* node)
 {
   if (m_loc->isVarAccessNode() && m_oper == OpEqual) {
     VarAccessNode* ident = static_cast<VarAccessNode*>(m_loc.get());
