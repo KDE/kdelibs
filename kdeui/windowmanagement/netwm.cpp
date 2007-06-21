@@ -2007,6 +2007,14 @@ void NETRootInfo::event(XEvent *event, unsigned long* properties, int properties
 		dirty |= ActiveWindow;
 	    else if (pe.xproperty.atom == net_showing_desktop)
 		dirty2 |= WM2ShowingDesktop;
+            else if (pe.xproperty.atom == net_supported )
+                dirty |= Supported; // update here?
+            else if (pe.xproperty.atom == net_supporting_wm_check )
+                dirty |= SupportingWMCheck;
+            else if (pe.xproperty.atom == net_virtual_roots )
+                dirty |= VirtualRoots;
+            else if (pe.xproperty.atom == net_desktop_layout )
+                dirty2 |= WM2DesktopLayout;
 	    else {
 
 #ifdef    NETWMDEBUG
