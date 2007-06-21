@@ -458,18 +458,16 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
 
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
 
-    /* antlarr: Multiple inheritance is a broken concept on icon themes, so
-       the next code doesn't support it on purpose because in fact, it was
-       never supported at all. This makes the order in which we look for an
-       icon as:
+   /* JRT: To follow the XDG spec, the order in which we look for an
+       icon 1s:
 
        png, svgz, svg, xpm exact match
+       png, svgz, svg, xpm best match
        next theme in inheritance tree : png, svgz, svg, xpm exact match
+                                        png, svgz, svg, xpm best match
        next theme in inheritance tree : png, svgz, svg, xpm exact match
+                                        png, svgz, svg, xpm best match
        and so on
-
-       And if the icon couldn't be found then it tries best match in the same
-       order.
 
        */
     foreach(KIconThemeNode *themeNode, d->links)
@@ -481,10 +479,6 @@ K3Icon KIconLoader::findMatchingIcon(const QString& name, int size) const
 		return icon;
 	}
 
-    }
-
-    foreach(KIconThemeNode *themeNode, d->links)
-    {
 	for (int i = 0 ; i < 4 ; i++)
 	{
 	    icon = themeNode->theme->iconPath(name + ext[i], size, K3Icon::MatchBest);
