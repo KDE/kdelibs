@@ -22,6 +22,7 @@
 #ifndef kfile_tree_branch_h
 #define kfile_tree_branch_h
 
+class QColorGroup;
 
 #include <Qt3Support/Q3ListView>
 
