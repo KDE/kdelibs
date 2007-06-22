@@ -142,14 +142,11 @@ static bool makeGetterOrSetterPropertyNode(PropertyNode*& result, Identifier& ge
 
 static Node* makeAddNode(Node* n1, Node* n2, Operator op)
 {
-#ifdef TRACE_OPTIMIZER
-    printf("making Add Node\n");
-#endif
 #ifdef OPTIMIZE_NODES
     if (n1->isNumber()) {
 	if (n2->isNumber()) {
 #ifdef TRACE_OPTIMIZER
-	    printf("Optimizing as NUMBER\n");
+	    printf("Optimizing ADDNODE NUMBER NUMBER as NUMBER\n");
 #endif
 	    NumberNode* number1 = static_cast< NumberNode * >(n1);
 	    NumberNode* number2 = static_cast< NumberNode * >(n2);
@@ -167,7 +164,7 @@ static Node* makeAddNode(Node* n1, Node* n2, Operator op)
     }
     if (op == OpPlus && n1->isString() && n2->isString()) {
 #ifdef TRACE_OPTIMIZER
-	printf("Optimizing as STRING\n");
+	printf("Optimizing ADDNODE STRING STRING as STRING\n");
 #endif
 	StringNode* str1 = static_cast<StringNode*>(n1);
 	StringNode* str2 = static_cast<StringNode*>(n2);
@@ -180,14 +177,11 @@ static Node* makeAddNode(Node* n1, Node* n2, Operator op)
 
 static Node* makeMultNode(Node* n1, Node* n2, Operator op)
 {
-#ifdef TRACE_OPTIMIZER
-    printf("making Mult Node\n");
-#endif
 #ifdef OPTIMIZE_NODES
     if (n1->isNumber()) {
 	if (n2->isNumber()) {
 #ifdef TRACE_OPTIMIZER
-	    printf("Optimizing as NUMBER\n");
+	    printf("Optimizing MULTNODE NUMBER NUMBER as NUMBER\n");
 #endif
 	    NumberNode* number1 = static_cast< NumberNode * >(n1);
 	    NumberNode* number2 = static_cast< NumberNode * >(n2);
@@ -209,6 +203,35 @@ static Node* makeMultNode(Node* n1, Node* n2, Operator op)
 
 static Node* makeShiftNode(Node* n1, Node* n2, Operator op)
 {
+#ifdef OPTIMIZE_NODES
+    if (n1->isNumber() && n2->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+	printf("Optimizing MULTNODE NUMBER NUMBER as NUMBER\n");
+#endif
+	NumberNode* number1 = static_cast< NumberNode * >(n1);
+	NumberNode* number2 = static_cast< NumberNode * >(n2);
+	double val = number1->value();
+	uint32_t shiftAmount = toUInt32(number2->value());
+	switch (op) {
+	case OpLShift:
+	    // operator <<
+	    number1->setValue(toInt32(val) << (shiftAmount & 0x1f));
+	    break;
+	case OpRShift:
+	    // operator >>
+	    number1->setValue(toInt32(val) >> (shiftAmount & 0x1f));
+	    break;
+	case OpURShift:
+	    // operator >>>
+	    number1->setValue(toUInt32(val) >> (shiftAmount & 0x1f));
+	    break;
+	default:
+	    assert(false);
+	    break;
+	}
+	return number1;
+    }
+#endif
     return new BinaryOperatorNode(n1, n2, op);
 }
 
@@ -234,9 +257,6 @@ static Node* makeBinaryLogicalNode(Node* n1, Operator op, Node* n2)
 
 static Node* makeUnaryPlusNode(Node *n)
 {
-#ifdef TRACE_OPTIMIZER
-    printf("making UnaryPlus Node\n");
-#endif
 #ifdef OPTIMIZE_NODES
     if (n->isNumber()) {
 #ifdef TRACE_OPTIMIZER
@@ -250,9 +270,6 @@ static Node* makeUnaryPlusNode(Node *n)
 
 static Node* makeNegateNode(Node *n)
 {
-#ifdef TRACE_OPTIMIZER
-    printf("making Negate Node\n");
-#endif
 #ifdef OPTIMIZE_NODES
     if (n->isNumber()) {
 #ifdef TRACE_OPTIMIZER
@@ -268,6 +285,16 @@ static Node* makeNegateNode(Node *n)
 
 static Node* makeBitwiseNotNode(Node *n)
 {
+#ifdef OPTIMIZE_NODES
+    if (n->isNumber()) {
+#ifdef TRACE_OPTIMIZER
+    	printf("Optimizing BITWISENOT NUMBER\n");
+#endif
+	NumberNode *number = static_cast <NumberNode *>(n);
+	number->setValue(~toInt32(number->value()));
+	return number;
+    }
+#endif
     return new BitwiseNotNode(n);
 }
 
