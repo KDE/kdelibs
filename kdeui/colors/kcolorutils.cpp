@@ -85,8 +85,9 @@ QColor KColorUtils::tint(const QColor &base, const QColor &color, qreal amount)
 
     KColorSpaces::KHCY b(base), c(color);
     // change luma more if the colors are otherwise similar
-    qreal proximity = fabs(b.h - c.h)*b.c*c.c + 0.4*fabs(b.c - c.c);
-    b.y = mixQreal(b.y, c.y, pow(amount, 0.5 + 2.2 * proximity));
+    qreal proximity = pow(fabs(b.h - c.h)*b.c*c.c + 0.4*fabs(b.c - c.c), 0.3);
+    qreal yb = b.y * (1.0 - b.y);
+    b.y = mixQreal(b.y, c.y, pow(amount, 2.0 - 4.0 * yb + 2.0 * proximity));
     // mix hue by nearest, and mix more if base's chroma is poor
     // thanks to Alex Merry for help with the algorithm!
     if (b.h - c.h > 0.5) b.h -= 1.0;
