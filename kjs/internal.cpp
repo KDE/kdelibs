@@ -54,6 +54,10 @@ namespace KJS {
 #define copysign _copysign
 #endif
 
+static const double D16 = 65536.0;
+static const double D32 = 4294967296.0;
+
+
 // ------------------------------ StringImp ------------------------------------
 
 JSValue *StringImp::toPrimitive(ExecState *, JSType) const
@@ -83,7 +87,7 @@ JSObject *StringImp::toObject(ExecState *exec) const
     // See <http://bugs.webkit.org/show_bug.cgi?id=12535> 
     UString valCopy = val; 
 
-    return new StringInstance(exec->lexicalInterpreter()->builtinStringPrototype(), valCopy); 
+    return new StringInstance(exec->lexicalInterpreter()->builtinStringPrototype(), valCopy);
 }
 
 // ------------------------------ NumberImp ------------------------------------
@@ -197,13 +201,62 @@ bool InternalFunctionImp::implementsHasInstance() const
 
 // ------------------------------ global functions -----------------------------
 
-double roundValue(ExecState *exec, JSValue *v)
+double roundValue(double d)
 {
-  double d = v->toNumber(exec);
   double ad = fabs(d);
   if (ad == 0 || isNaN(d) || isInf(d))
     return d;
   return copysign(floor(ad), d);
+}
+
+int32_t toInt32(double d)
+{
+  if (isNaN(d) || isInf(d))
+    return 0;
+  double d32 = fmod(roundValue(d), D32);
+
+  if (d32 >= D32 / 2)
+    d32 -= D32;
+  else if (d32 < -D32 / 2)
+    d32 += D32;
+
+  return static_cast<int32_t>(d32);
+}
+
+int32_t toInt32(double d, bool &ok)
+{
+  ok = true;
+  if (isNaN(d) || isInf(d)) {
+    ok = false;
+    return 0;
+  }
+  return toInt32(d);
+}
+
+uint32_t toUInt32(double dd)
+{
+  double d = roundValue(dd);
+  if (isNaN(d) || isInf(d))
+    return 0;
+  double d32 = fmod(d, D32);
+
+  if (d32 < 0)
+    d32 += D32;
+
+  return static_cast<uint32_t>(d32);
+}
+
+uint16_t toUInt16(double dd)
+{
+  double d = roundValue(dd);
+  if (isNaN(d) || isInf(d))
+    return 0;
+  double d16 = fmod(d, D16);
+
+  if (d16 < 0)
+    d16 += D16;
+
+  return static_cast<uint16_t>(d16);
 }
 
 #ifndef NDEBUG

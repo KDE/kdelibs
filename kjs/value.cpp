@@ -33,9 +33,6 @@
 
 namespace KJS {
 
-static const double D16 = 65536.0;
-static const double D32 = 4294967296.0;
-
 void *JSCell::operator new(size_t size)
 {
     return Collector::allocate(size);
@@ -63,19 +60,12 @@ inline int32_t JSValue::toInt32Inline(ExecState* exec, bool& ok) const
     if (getUInt32(i))
         return i;
 
-    double d = roundValue(exec, const_cast<JSValue*>(this));
+    double d = const_cast<JSValue*>(this)->toNumber(exec);
     if (isNaN(d) || isInf(d)) {
         ok = false;
         return 0;
     }
-    double d32 = fmod(d, D32);
-
-    if (d32 >= D32 / 2)
-        d32 -= D32;
-    else if (d32 < -D32 / 2)
-        d32 += D32;
-
-    return static_cast<int32_t>(d32);
+    return KJS::toInt32(d);
 }
 
 int32_t JSValue::toInt32(ExecState* exec) const
@@ -95,15 +85,7 @@ uint32_t JSValue::toUInt32(ExecState *exec) const
     if (getUInt32(i))
         return i;
 
-    double d = roundValue(exec, const_cast<JSValue*>(this));
-    if (isNaN(d) || isInf(d))
-        return 0;
-    double d32 = fmod(d, D32);
-
-    if (d32 < 0)
-        d32 += D32;
-
-    return static_cast<uint32_t>(d32);
+    return KJS::toUInt32(const_cast<JSValue*>(this)->toNumber(exec));
 }
 
 uint16_t JSValue::toUInt16(ExecState *exec) const
@@ -112,15 +94,7 @@ uint16_t JSValue::toUInt16(ExecState *exec) const
     if (getUInt32(i))
         return static_cast<uint16_t>(i);
 
-    double d = roundValue(exec, const_cast<JSValue*>(this));
-    if (isNaN(d) || isInf(d))
-        return 0;
-    double d16 = fmod(d, D16);
-
-    if (d16 < 0)
-        d16 += D16;
-
-    return static_cast<uint16_t>(d16);
+    return KJS::toUInt16(const_cast<JSValue*>(this)->toNumber(exec));
 }
 
 bool JSCell::getNumber(double &numericValue) const

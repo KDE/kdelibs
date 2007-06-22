@@ -109,7 +109,12 @@ namespace KJS {
   };
 
   // helper function for toInteger, toInt32, toUInt32 and toUInt16
-  double roundValue(ExecState *, JSValue *);
+  double roundValue(double d);
+  inline double roundValue(ExecState *e, JSValue *v) { return roundValue(v->toNumber(e)); }
+
+  int32_t toInt32(double dd);
+  uint32_t toUInt32(double dd);
+  uint16_t toUInt16(double dd);
 
 #ifndef NDEBUG
   void printInfo(ExecState *exec, const char *s, JSValue *, int lineno = -1);
