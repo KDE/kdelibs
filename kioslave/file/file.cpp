@@ -370,7 +370,7 @@ void FileProtocol::get( const KUrl& url )
        {
            mimetypeEmitted = true;
            KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), array);
-           kDebug(7102) << "Emitting mimetype " << mime->name() << endl;
+           kDebug(7101) << "Emitting mimetype " << mime->name() << endl;
            mimeType( mime->name() );
            // Emit total size AFTER mimetype
            totalSize( buff.st_size );
