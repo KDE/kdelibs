@@ -70,6 +70,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
   QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame );
+    layout->setMargin(0);
   layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -111,6 +112,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   setModal(true);
   QWidget *frame = new QWidget( this );
   QVBoxLayout *layout = new QVBoxLayout( frame );
+    layout->setMargin(0);
   layout->setSpacing( spacingHint() );
 
   d->m_label = new QLabel( label, frame );
@@ -152,6 +154,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   layout->addWidget( d->m_intSpinBox );
 
   layout->addStretch();
+    layout->setMargin(0);
 
   d->m_intSpinBox->setFocus();
   setMainWidget(frame);
@@ -181,6 +184,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   layout->addWidget( d->m_doubleSpinBox );
 
   layout->addStretch();
+    layout->setMargin(0);
 
   d->m_doubleSpinBox->setFocus();
   setMainWidget(frame);
@@ -233,6 +237,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   }
 
   layout->addStretch();
+    layout->setMargin(0);
   setMainWidget(frame);
   setMinimumWidth( 320 );
 }
@@ -290,6 +295,7 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
   d->m_listBox->setFocus();
 
   layout->addStretch();
+    layout->setMargin(0);
   setMainWidget(frame);
   setMinimumWidth( 320 );
 }
