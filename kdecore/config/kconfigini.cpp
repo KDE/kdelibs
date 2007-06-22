@@ -985,50 +985,31 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
         }
     }
 
-    KSaveFile *pConfigFile = 0;
-    QFile *f = 0;
-
     if (createNew)
     {
-        pConfigFile = new KSaveFile(filename, pConfig->componentData());
+        KSaveFile configFile(filename, pConfig->componentData());
 
-        if (!pConfigFile->open())
+        if (!configFile.open())
         {
-            delete pConfigFile;
             return bEntriesLeft;
         }
-        pConfigFile->setPermissions(QFile::ReadUser|QFile::WriteUser);
+        configFile.setPermissions(QFile::ReadUser|QFile::WriteUser);
 
         if (!bGlobal && (fileMode == -1))
             fileMode = mFileMode;
 
         if (fileMode != -1)
         {
-            fchmod(pConfigFile->handle(), fileMode);
+            fchmod(configFile.handle(), fileMode);
         }
 
-        f = pConfigFile;
-    }
-    else
-    {
-        // Open existing file.
-        // We use open() to ensure that we call without O_CREAT.
-        f = new QFile( filename );
-        if (!f->open( QIODevice::WriteOnly | QIODevice::Append ))
-        {
-            delete f;
-            return bEntriesLeft;
-        }
-    }
-    d->writeEntries(*f, aTempMap);
+        d->writeEntries(configFile, aTempMap);
 
-    if (pConfigFile)
-    {
-        bool bEmptyFile = f->pos() == 0;
+        bool bEmptyFile = configFile.pos() == 0;
         if ( bEmptyFile && ((fileMode == -1) || (fileMode == 0600)) )
         {
             // File is empty and doesn't have special permissions: delete it.
-            pConfigFile->abort();
+            configFile.abort();
 
             if ( fileMode != -1 ) {
                 // also remove the old file in case it existed. this can happen
@@ -1037,18 +1018,46 @@ bool KConfigINIBackEnd::writeConfigFile(const QString &filename, bool bGlobal,
                 // will mysteriously fail
                 QFile::remove( filename );
             }
-
         }
         else
         {
             // Normal case: Close the file
-            pConfigFile->finalize();
+            configFile.finalize();
         }
-        delete pConfigFile;
     }
     else
     {
-        f->close();
+        // Open existing file. *DON'T* create it if it suddenly does not exist!
+#ifdef Q_OS_UNIX
+        int fd = KDE_open(QFile::encodeName(filename), O_WRONLY | O_TRUNC);
+        if (fd < 0)
+        {
+            return bEntriesLeft;
+        }
+        FILE *fp = KDE_fdopen(fd, "w");
+        if (!fp)
+        {
+            close(fd);
+            return bEntriesLeft;
+        }
+        QFile f;
+        if (!f.open(fp, QIODevice::WriteOnly))
+        {
+            fclose(fp);
+            return bEntriesLeft;
+        }
+        d->writeEntries(f, aTempMap);
+        f.close();
+        fclose(fp);
+#else
+        QFile f( filename );
+        // XXX This is broken - it DOES create the file if it is suddenly gone.
+        if (!f.open( QIODevice::WriteOnly | QIODevice::Truncate ))
+        {
+            return bEntriesLeft;
+        }
+        d->writeEntries(f, aTempMap);
+#endif
     }
 
     return bEntriesLeft;
