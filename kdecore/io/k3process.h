@@ -854,7 +854,7 @@ class K3ShellProcessPrivate;
 *   	processes through a shell.
 *   @author Christian Czezatke <e9025461@student.tuwien.ac.at>
 */
-class KDECORE_EXPORT K3ShellProcess: public K3Process
+class KDECORE_EXPORT_DEPRECATED K3ShellProcess : public K3Process
 {
   Q_OBJECT
 
