@@ -35,7 +35,6 @@ target_link_libraries( kstyle-oxygen
 	${X11_Xcursor_LIB}
 	${X11_Xinerama_LIB}
 	${X11_Xrender_LIB}
-	${X11_Xrandr_LIB}
 	${X11_XTest_LIB}
 	${X11_LIBRARIES}
 	${OPENGL_LIBRARIES}
