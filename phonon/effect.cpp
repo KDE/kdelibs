@@ -124,11 +124,12 @@ EffectParameter Effect::description(int idx) const
 int Effect::parameterCount() const
 {
     K_D(const Effect);
-    int ret;
     if (d->m_backendObject) {
+        int ret;
         BACKEND_GET(int, ret, "parameterCount");
+        return ret;
     }
-    return ret;
+    return 0;
 }
 
 QVariant Effect::parameterValue(int index) const
