@@ -1,5 +1,6 @@
 
 
+add_subdirectory( tests )
 
 ########### next target ###############
 
@@ -35,11 +36,6 @@ kde4_add_library(cupsdconf ${cupsdconf_KDEINIT_SRCS})
 target_link_libraries(cupsdconf  ${KDE4_KDECORE_LIBS} kio ${CUPS_LIBRARIES})
 
 install(TARGETS cupsdconf  DESTINATION ${LIB_INSTALL_DIR} )
-
-########### cupsdconftest ###############
-kde4_add_test_executable( cupsdconftest main.cpp )
-
-target_link_libraries( cupsdconftest cupsdconf )
 
 ########### install files ###############
 

@@ -3,6 +3,8 @@ project(khtml)
 KDE4_NO_ENABLE_FINAL(khtml)
 add_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
+add_subdirectory( tests )
+
 find_package(JPEG REQUIRED)
 find_package(GIF  REQUIRED)
 find_package(PNG  REQUIRED)
@@ -367,17 +369,6 @@ if(NOT MSVC)
     kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
     target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml )
-
-    ########### next target ###############
-    set(khtmltest_SRCS
-        testkhtmlnew.cpp
-        domtreeview.cpp
-    )
-
-    qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
-    kde4_automoc(${khtmltest_SRCS})
-    kde4_add_test_executable(khtmltest ${khtmltest_SRCS} )
-    target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############
 

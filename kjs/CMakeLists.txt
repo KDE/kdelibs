@@ -1,5 +1,8 @@
 
 project(kjs)
+
+add_subdirectory(tests)
+
 KDE4_NO_ENABLE_FINAL(kjs)
 
 # Configuration checks
@@ -150,22 +153,6 @@ kde4_add_executable(js NOGUI ${js_SRCS})
 target_link_libraries(js ${KJSLIBNAME})
 
 install(TARGETS js DESTINATION ${BIN_INSTALL_DIR})
-
-########### testkjs_static ###############
-
-set(testkjs_static_SRCS testkjs.cpp )
-
-kde4_add_test_executable(testkjs_static ${testkjs_static_SRCS})
-
-target_link_libraries(testkjs_static ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
-
-########### testkjs ###############
-
-set(testkjs_SRCS testkjs.cpp )
-
-kde4_add_test_executable(testkjs ${testkjs_SRCS})
-
-target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN32_LIBRARIES})
 
 ########### install files ###############
 install( FILES
