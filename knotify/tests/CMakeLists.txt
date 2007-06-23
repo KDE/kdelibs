@@ -1,4 +1,3 @@
-if(KDE4_BUILD_TESTS)
 project(knotifytest)
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../config )
@@ -22,6 +21,3 @@ target_link_libraries(knotifytest  ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE
 ########### install files ###############
 
 
-install( FILES  knotifytest.notifyrc  DESTINATION  ${DATA_INSTALL_DIR}/knotifytest )
-
-endif(KDE4_BUILD_TESTS)

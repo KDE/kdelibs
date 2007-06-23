@@ -24,7 +24,6 @@ int main( int argc, char ** argv )
   KCmdLineArgs::addCmdLineOptions( options );
 
   KApplication a;
-
   KNotifyTestWindow* knotifytestwindow = new KNotifyTestWindow;
   knotifytestwindow->show();
 

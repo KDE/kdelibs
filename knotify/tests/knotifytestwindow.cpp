@@ -15,6 +15,7 @@
 #include <kstandardshortcut.h>
 #include <kxmlguifactory.h>
 #include <kdialog.h>
+#include <kstandarddirs.h>
 
 // ------------------------------------------------------------------------
 
@@ -25,6 +26,8 @@ KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
 	view.setupUi(w);
 //	statusBar()->message(i18n("Test program for KNotify"));
 	setCaption( i18n("Test program for KNotify") );
+
+        KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
 
 	setCentralWidget(w);
 
