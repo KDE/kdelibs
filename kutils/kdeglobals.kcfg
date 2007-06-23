@@ -550,7 +550,6 @@
      <label>Password echo type</label>
      <choices>
        <choice name="OneStar"/>
-       <choice name="ThreeStars"/>
        <choice name="NoEcho"/>
      </choices>
      <default>OneStar</default>
