@@ -24,10 +24,8 @@
 
 #include <QtCore/QObject>
 #include "kprocess.h"
+#include "kstartupinfo.h"
 
-class KProcess;
-class QString;
-class KStartupInfoId;
 /**
  * @internal
  * This class watches a process launched by KRun.
@@ -40,24 +38,30 @@ class KProcessRunner : public QObject
 
   public:
 
-    static qint64 run(KProcess *, const QString & binName);
-    static qint64 run(KProcess *, const QString & binName, const KStartupInfoId& id );
+#ifndef Q_WS_X11
+    static int run(KProcess *, const QString & binName);
+#else
+    static int run(KProcess *, const QString & binName, const KStartupInfoId& id);
+#endif
 
     virtual ~KProcessRunner();
 
-    qint64 pid() const;
+    int pid() const;
 
   protected Q_SLOTS:
 
     void slotProcessExited(int, QProcess::ExitStatus);
 
   private:
+#ifndef Q_WS_X11
     KProcessRunner(KProcess *, const QString & binName);
-    KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id );
-    KProcessRunner();
+#else
+    KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id);
+#endif
 
-    class KProcessRunnerPrivate;
-    KProcessRunnerPrivate *const d;
+    KProcess *process;
+    QString binName;
+    KStartupInfoId id;
 
     Q_DISABLE_COPY(KProcessRunner)
 };

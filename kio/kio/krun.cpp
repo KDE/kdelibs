@@ -60,7 +60,6 @@
 #include <QtCore/QDate>
 #include <QtCore/QRegExp>
 #include <kdesktopfile.h>
-#include <kstartupinfo.h>
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <QTextDocument>
@@ -517,7 +516,7 @@ static bool runCommandInternal( KProcess* proc, const KService* service, const Q
           data.setLaunchedBy( window->winId());
       KStartupInfo::sendStartup( id, data );
   }
-  qint64 pid = KProcessRunner::run( proc, binName, id );
+  int pid = KProcessRunner::run( proc, binName, id );
   if( startup_notify && pid )
   {
       KStartupInfoData data;
@@ -1276,92 +1275,74 @@ bool KRun::isExecutable( const QString& serviceType )
 
 /****************/
 
-class KProcessRunner::KProcessRunnerPrivate
+#ifndef Q_WS_X11
+int KProcessRunner::run(KProcess * p, const QString & binName)
 {
-public:
-    KProcess *process;
-    QString binName;
-    KStartupInfoId id;
-};
-
-qint64 KProcessRunner::run(KProcess * p, const QString & binName)
-{
-  return (new KProcessRunner(p, binName))->pid();
+    return (new KProcessRunner(p, binName))->pid();
 }
-
-qint64 KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
+#else
+int KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id)
 {
-  return (new KProcessRunner(p, binName, id))->pid();
+    return (new KProcessRunner(p, binName, id))->pid();
 }
+#endif
 
-KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
-    : QObject(), d(new KProcessRunnerPrivate)
+#ifndef Q_WS_X11
+KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName)
+#else
+KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& _id) :
+    id(_id)
+#endif
 {
-    d->process = p;
-    d->binName = _binName;
-    connect(d->process, SIGNAL(finished(int, QProcess::ExitStatus)),
+    process = p;
+    binName = _binName;
+    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
             this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
 
-    d->process->start();
-    if (!d->process->waitForStarted()) {
-        slotProcessExited(127, QProcess::CrashExit);
-    }
-}
-
-KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
-    : QObject(), d(new KProcessRunnerPrivate)
-{
-    d->process = p;
-    d->binName = _binName;
-    d->id = id;
-    connect(d->process, SIGNAL(finished (int, QProcess::ExitStatus)),
-            this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
-
-    d->process->start();
-    if (!d->process->waitForStarted()) {
+    process->start();
+    if (!process->waitForStarted()) {
         slotProcessExited(127, QProcess::CrashExit);
     }
 }
 
 KProcessRunner::~KProcessRunner()
 {
-    delete d->process;
-    delete d;
+    delete process;
 }
 
-qint64 KProcessRunner::pid() const
+int KProcessRunner::pid() const
 {
-    return d->process ? d->process->pid() : 0;
+    return process ? process->pid() : 0;
 }
 
 void
 KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
-  kDebug(7010) << "slotProcessExited " << d->binName << endl;
-  kDebug(7010) << "normalExit " << (exitStatus == QProcess::NormalExit) << endl;
-  kDebug(7010) << "exitCode " << exitCode << endl;
-  bool showErr = exitStatus == QProcess::NormalExit
-                 && (exitCode == 127 || exitCode == 1);
-  if (!d->binName.isEmpty() && (showErr || pid() == 0 )) {
-    // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
-    // We can't just rely on that, but it's a good hint.
-    // Before assuming its really so, we'll try to find the binName
-    // relatively to current directory,  and then in the PATH.
-        if (!QFile(d->binName).exists() && KStandardDirs::findExe(d->binName).isEmpty()) {
-      KGlobal::ref();
-            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", d->binName));
-      KGlobal::deref();
+    kDebug(7010) << "slotProcessExited " << binName << endl;
+    kDebug(7010) << "normalExit " << (exitStatus == QProcess::NormalExit) << endl;
+    kDebug(7010) << "exitCode " << exitCode << endl;
+    bool showErr = exitStatus == QProcess::NormalExit
+                   && (exitCode == 127 || exitCode == 1);
+    if (!binName.isEmpty() && (showErr || pid() == 0 )) {
+        // Often we get 1 (zsh, csh) or 127 (ksh, bash) because the binary doesn't exist.
+        // We can't just rely on that, but it's a good hint.
+        // Before assuming its really so, we'll try to find the binName
+        // relatively to current directory,  and then in the PATH.
+        if (!QFile(binName).exists() && KStandardDirs::findExe(binName).isEmpty()) {
+            KGlobal::ref();
+            KMessageBox::sorry(0L, i18n("Could not find the program '%1'", binName));
+            KGlobal::deref();
+        }
     }
-  }
 #ifdef Q_WS_X11
-    if (!d->id.none()) {
-      KStartupInfoData data;
-      data.addPid(pid()); // announce this pid for the startup notification has finished
-      data.setHostname();
-      KStartupInfo::sendFinish(d->id, data);
-  }
+    if (!id.none()) {
+        KStartupInfoData data;
+        data.addPid(pid()); // announce this pid for the startup notification has finished
+        data.setHostname();
+        KStartupInfo::sendFinish(id, data);
+    }
 #endif
-  deleteLater();
+    deleteLater();
 }
 
 #include "krun.moc"
