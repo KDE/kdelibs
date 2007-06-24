@@ -334,7 +334,6 @@ install( FILES
   KPrintDialogPage
   KPrinter
   KProcess
-  KProcessRunner
   KProgressDialog
   KPropertiesDialog
   KProtocolInfo
