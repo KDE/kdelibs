@@ -27,8 +27,8 @@
 Solid::Button::Button(QObject *backendObject)
     : DeviceInterface(*new ButtonPrivate(), backendObject)
 {
-    connect(backendObject, SIGNAL(pressed(int)),
-             this, SIGNAL(pressed(int)));
+    connect(backendObject, SIGNAL(pressed(Solid::Button::ButtonType)),
+             this, SIGNAL(pressed(Solid::Button::ButtonType)));
 }
 
 Solid::Button::~Button()

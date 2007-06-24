@@ -39,7 +39,7 @@ public:
     virtual bool stateValue() const;
 
 Q_SIGNALS:
-    void pressed(int type);
+    void pressed(Solid::Button::ButtonType type);
 
 private Q_SLOTS:
     void slotConditionRaised(const QString &condition, const QString &reason);

@@ -40,7 +40,7 @@ public Q_SLOTS:
     void press();
 
 Q_SIGNALS:
-    void pressed(int type);
+    void pressed(Solid::Button::ButtonType type);
 };
 
 #endif

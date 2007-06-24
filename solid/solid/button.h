@@ -119,7 +119,7 @@ namespace Solid
          * the type Solid::Button::ButtonType
          * @see Solid::Button::ButtonType
          */
-        void pressed(int type);
+        void pressed(Solid::Button::ButtonType type);
     };
 }
 
