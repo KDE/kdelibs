@@ -313,11 +313,12 @@ class DialogPrivate
     friend class PageNode;
     Q_DECLARE_PUBLIC(Dialog)
     protected:
-        DialogPrivate(Dialog *d, QWidget *p, bool s, const QStringList &a);
+        DialogPrivate(Dialog *d, QWidget *p);
 
         PageNode pagetree;
 
         QStringList registeredComponents;
+        QStringList componentBlacklist;
         QList<KService::Ptr> services;
         QMap<QString, KPluginInfo*> plugininfomap;
         QStringList arguments;

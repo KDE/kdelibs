@@ -36,8 +36,8 @@
 namespace KSettings
 {
 
-Dialog::Dialog(ContentInListView content, QWidget *parent, const QStringList &arguments)
-    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent, (content == Static), arguments))
+Dialog::Dialog(QWidget *parent)
+    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent))
 {
     Q_D(Dialog);
     d->q_ptr = this;
@@ -45,17 +45,8 @@ Dialog::Dialog(ContentInListView content, QWidget *parent, const QStringList &ar
     d->removeDuplicateServices();
 }
 
-Dialog::Dialog(const QStringList &components, QWidget *parent, const QStringList &arguments)
-    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent, true, arguments))
-{
-    Q_D(Dialog);
-    d->q_ptr = this;
-    d->services = d->instanceServices() + d->parentComponentsServices(components);
-    d->removeDuplicateServices();
-}
-
-Dialog::Dialog(const QStringList &components, ContentInListView content, QWidget *parent, const QStringList &arguments)
-    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent, (content == Static), arguments))
+Dialog::Dialog(const QStringList &components, QWidget *parent)
+    : KCMultiDialog(parent), d_ptr(new DialogPrivate(this, parent))
 {
     Q_D(Dialog);
     d->q_ptr = this;
@@ -66,6 +57,24 @@ Dialog::Dialog(const QStringList &components, ContentInListView content, QWidget
 Dialog::~Dialog()
 {
     delete d_ptr;
+}
+
+void Dialog::setComponentSelection(ComponentSelection selection)
+{
+    Q_D(Dialog);
+    d->staticlistview = (selection == NoComponentSelection);
+}
+
+void Dialog::setKCMArguments(const QStringList& arguments)
+{
+    Q_D(Dialog);
+    d->arguments = arguments;
+}
+
+void Dialog::setComponentBlacklist(const QStringList& blacklist)
+{
+    Q_D(Dialog);
+    d->componentBlacklist = blacklist;
 }
 
 void Dialog::addPluginInfos( const QList<KPluginInfo*> & plugininfos )
@@ -90,8 +99,8 @@ void Dialog::show()
 	return d->dlg->show();
 }
 
-DialogPrivate::DialogPrivate(Dialog *d, QWidget *p, bool s, const QStringList &a)
-    : pagetree(d), arguments(a), dlg(0), parentwidget(p), staticlistview(s)
+DialogPrivate::DialogPrivate(Dialog *d, QWidget *p)
+    : pagetree(d), dlg(0), parentwidget(p), staticlistview(true)
 {
 }
 
@@ -216,6 +225,17 @@ void DialogPrivate::createDialogFromServices(KCMultiDialog *parent)
     for (QList<KService::Ptr>::ConstIterator it = services.begin(); it != services.end(); ++it) {
 		// we create the KCModuleInfo
 		KCModuleInfo * info = new KCModuleInfo( *it );
+        bool blacklisted = false;
+        foreach(QString comp, (*it)->property( "X-KDE-ParentComponents" ).toStringList())
+        {
+            if( componentBlacklist.contains(comp) ) {
+                blacklisted = true;
+                break;
+            }
+        }
+        if( blacklisted ) {
+            continue;
+        }
 		QString parentid;
 		QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
 			QVariant::String );

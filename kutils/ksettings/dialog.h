@@ -47,7 +47,7 @@ namespace KSettings
  *
  * You initialize \p m_cfgdlg with
  * \code
- * m_cfgdlg = new Dialog( Dialog::Static, this );
+ * m_cfgdlg = new Dialog( this );
  * \endcode
  * If you use a KPart that was not especially designed for your app you can use
  * the second constructor:
@@ -79,18 +79,19 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          * Tells the dialog whether the entries in the listview are all static
          * or whether it should add a Configure... button to select which parts
          * of the optional functionality should be active or not.
+         *
+         * The default for new KSettings::Dialog instances is NoComponentSelection
          */
-        enum ContentInListView
+        enum ComponentSelection
         {
             /**
-             * Static listview, while running no entries are added or deleted
+             * While running no entries are added or deleted
              */
-            Static,
+            NoComponentSelection,
             /**
-             * Configurable listview. The user can select what functionality he
-             * wants.
+             * The user can select what functionality he wants.
              */
-            Configurable
+            AllowComponentSelection
         };
 
         /**
@@ -102,11 +103,8 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
-         * @param arguments    A list of arguments that are passed to all
-         *                     KCModules when adding them to the dialog
          */
-        explicit Dialog( ContentInListView content = Static, QWidget * parent = 0,
-                         const QStringList& arguments = QStringList() );
+        explicit Dialog(QWidget * parent = 0);
 
         /**
          * Construct a new Preferences Dialog with the pages for the selected
@@ -119,31 +117,8 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          * @param parent       The parent is only used as the parent for the
          *                     dialog - centering the dialog over the parent
          *                     widget.
-         * @param arguments    A list of arguments that are passed to all
-         *                     KCModules when adding them to the dialog
          */
-         explicit Dialog( const QStringList & components, QWidget * parent = 0,
-                          const QStringList& arguments = QStringList() );
-
-        /**
-         * Construct a new Preferences Dialog with the pages for the selected
-         * instance names. For example if you want to have the configuration
-         * pages for the kviewviewer KPart you would pass a
-         * QStringList consisting of only the name of the part "kviewviewer".
-         *
-         * @param components   A list of the names of the components that your
-         *                     config dialog should merge the config pages in.
-         * @param content      Select whether you want a static or configurable
-         *                     config dialog.
-         * @param parent       The parent is only used as the parent for the
-         *                     dialog - centering the dialog over the parent
-         *                     widget.
-         * @param arguments    A list of arguments that are passed to all
-         *                     KCModules when adding them to the dialog
-         */
-        Dialog( const QStringList & components, ContentInListView
-                content, QWidget * parent = 0,
-                const QStringList& arguments = QStringList() );
+         explicit Dialog(const QStringList & components, QWidget * parent = 0);
 
         ~Dialog();
 
@@ -153,6 +128,41 @@ class KUTILS_EXPORT Dialog : public KCMultiDialog
          */
         void addPluginInfos( const QList<KPluginInfo*> & plugininfos );
 
+        /**
+         * Sets the argument list that is given to all the KControlModule's when
+         * they are created.
+         * Use this if you have KControlModule's that need special arguments to
+         * work
+         *
+         * Note that this function only works before showing the
+         * KSettings::Dialog for the first time.
+         * @param arguments The list of arguments passed to each KCM
+         */
+        void setKCMArguments(const QStringList& arguments);
+
+        /**
+         * Set the blacklisted component list. Any KCM that lists one
+         * of the components in the given blacklist is not loaded even if it
+         * would fit otherwise. This is a way to explicitly prevent loading of
+         * certain KControlModules.
+         *
+         * Note that this function only works before showing the
+         * KSettings::Dialog for the first time.
+         * @param blacklist the list of components that prevent a KCM from being
+         * loaded
+         */
+        void setComponentBlacklist(const QStringList& blacklist);
+
+
+        /**
+         * Sets the selection mode for the component list.
+         * @see ComponentSelection
+         *
+         * Note that this function only works before showing the
+         * KSettings::Dialog for the first time.
+         * @param selection the selection mode for component list
+         */
+        void setComponentSelection(ComponentSelection selection);
     public Q_SLOTS:
         /**
          * Show the config dialog. The slot immediately returns since the dialog
