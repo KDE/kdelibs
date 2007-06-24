@@ -47,6 +47,8 @@ namespace Kross {
             QVector<ActionCollectionModelItem*> children;
             const QModelIndex parent;
 
+            QString name() const { return type == ActionType ? action->name() : collection->name(); }
+
             explicit ActionCollectionModelItem(Action* a, const QModelIndex& p = QModelIndex(), ActionCollectionModelItem* parentitem = 0)
                 : QObject(parentitem), type(ActionType), action(a), parent(p)
             {
@@ -67,13 +69,34 @@ namespace Kross {
             Mode mode;
 
             template <class T>
-            ActionCollectionModelItem* childItem(ActionCollectionModelItem* item,
-                                                 const QModelIndex& parent,
-                                                 int row,
-                                                 int column,
-                                                 T value);
+            ActionCollectionModelItem* childItem( ActionCollectionModelItem* item,
+                                                  const QModelIndex& parent,
+                                                  int row,
+                                                  int column,
+                                                  T value );
     };
 
+}
+
+template <class T>
+ActionCollectionModelItem* ActionCollectionModel::Private::childItem(
+    ActionCollectionModelItem* item,
+    const QModelIndex& parent,
+    int row,
+    int column,
+    T value )
+{
+    Q_UNUSED(column);
+    ActionCollectionModelItem* childItem = 0;
+    if ( row < item->children.count() && item->children.at(row) != 0 ) {
+        childItem = item->children.at(row);
+    }
+    else {
+        childItem = new ActionCollectionModelItem(value,parent,item);
+        item->children.resize(row+1);
+        item->children[row] = childItem;
+    }
+    return childItem;
 }
 
 ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* collection, Mode mode)
@@ -126,27 +149,6 @@ int ActionCollectionModel::rowCount(const QModelIndex& index) const
     return 0;
 }
 
-template <class T>
-ActionCollectionModelItem* ActionCollectionModel::Private::childItem( ActionCollectionModelItem* item , 
-                                       const QModelIndex& parent,
-                                       int row,
-                                       int /*column*/, 
-                                       T value )
-{
-     ActionCollectionModelItem* childItem = 0;
-     if ( row < item->children.count() && 
-          item->children.at(row) != 0 ) {
-         childItem = item->children.at(row);
-     }
-     else {
-         childItem = new ActionCollectionModelItem(value,parent,item);
-
-         item->children.resize(row+1);
-         item->children[row] = childItem;
-     }
-     return childItem;
-}
-
 QModelIndex ActionCollectionModel::index(int row, int column, const QModelIndex& parent) const
 {
     ActionCollectionModelItem* item = parent.isValid() ? static_cast<ActionCollectionModelItem*>(parent.internalPointer()) : d->item;
@@ -181,10 +183,12 @@ Qt::ItemFlags ActionCollectionModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
     if( ! index.isValid() )
-        return Qt::ItemIsDropEnabled /*| Qt::ItemIsEnabled*/ | flags;
+        return Qt::ItemIsDropEnabled | flags;
 
-    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    flags |= Qt::ItemIsSelectable;
     //flags |= Qt::ItemIsEditable;
+    flags |= Qt::ItemIsDragEnabled;
+    flags |= Qt::ItemIsDropEnabled;
 
     if( (index.column() == 0) && (d->mode & UserCheckable) )
         flags |= Qt::ItemIsUserCheckable;
@@ -319,6 +323,16 @@ QStringList ActionCollectionModel::mimeTypes() const
     return QStringList() << "application/vnd.text.list";
 }
 
+QString fullPath(const QModelIndex& index)
+{
+    if( ! index.isValid() ) return QString();
+    ActionCollectionModelItem* item = static_cast<ActionCollectionModelItem*>(index.internalPointer());
+    QString n = item->name();
+    if( item->type == ActionCollectionModelItem::CollectionType ) n += "/";
+    QString p = fullPath( item->parent ); //recursive
+    return p.isNull() ? n : ( p.endsWith("/") ? p + n : p + "/" + n );
+}
+
 QMimeData* ActionCollectionModel::mimeData(const QModelIndexList& indexes) const
 {
     //krossdebug( QString("ActionCollectionModel::mimeData") );
@@ -327,9 +341,11 @@ QMimeData* ActionCollectionModel::mimeData(const QModelIndexList& indexes) const
 
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
     foreach(QModelIndex index, indexes) {
-        if( ! index.isValid() ) continue;
-        QString text = data(index, Qt::DisplayRole).toString();
-        stream << text;
+        //if( ! index.isValid() ) continue;
+        //QString text = data(index, Qt::DisplayRole).toString();
+        QString path = fullPath(index);
+        if( ! path.isNull() )
+            stream << path;
     }
 
     mimeData->setData("application/vnd.text.list", encodedData);
@@ -342,34 +358,6 @@ bool ActionCollectionModel::dropMimeData(const QMimeData* data, Qt::DropAction a
     if( action == Qt::IgnoreAction ) return true;
     if( ! data->hasFormat("application/vnd.text.list") ) return false;
     if( column > 0 ) return false;
-
-    //FIXME: return false for now since insertRows/removeRows need to be implemented before!
-    //return false;
-
-    /*
-    int beginRow;
-    if( row != -1 )
-        beginRow = row;
-    else if( parent.isValid() )
-        beginRow = parent.row();
-    else
-        beginRow = rowCount( QModelIndex() );
-    */
-
-    if( parent.isValid() ) {
-        ActionCollectionModelItem* parentitem = static_cast<ActionCollectionModelItem*>(parent.internalPointer());
-        switch( parentitem->type ) {
-            case ActionCollectionModelItem::ActionType: {
-                krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is Action with name=%1").arg(parentitem->action->name()) );
-            } break;
-            case ActionCollectionModelItem::CollectionType: {
-                krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is ActionCollection with name=%1").arg(parentitem->collection->name()) );
-            } break;
-            default: break;
-        }
-    }
-    else
-        krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is Invalid") );
 
     krossdebug( QString("ActionCollectionModel::dropMimeData: ENCODED DATA:") );
     QByteArray encodedData = data->data("application/vnd.text.list");
@@ -384,19 +372,41 @@ bool ActionCollectionModel::dropMimeData(const QMimeData* data, Qt::DropAction a
         ++rows;
     }
 
+    //FIXME: return false for now since insertRows/removeRows need to be implemented before!
+    //return false;
+
+    /*
+    int beginRow;
+    if( row != -1 )
+        beginRow = row;
+    else if( parent.isValid() )
+        beginRow = parent.row();
+    else
+        beginRow = rowCount( QModelIndex() );
+    krossdebug( QString("ActionCollectionModel::dropMimeData: beginRow=%1").arg(beginRow) );
+    */
+
+    ActionCollectionModelItem* targetparentitem = parent.isValid() ? static_cast<ActionCollectionModelItem*>(parent.internalPointer()) : d->item;
+    switch( targetparentitem->type ) {
+        case ActionCollectionModelItem::ActionType: {
+            krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is Action with name=%1").arg(targetparentitem->action->name()) );
+        } break;
+        case ActionCollectionModelItem::CollectionType: {
+            krossdebug( QString("ActionCollectionModel::dropMimeData: parentindex is ActionCollection with name=%1").arg(targetparentitem->collection->name()) );
+        } break;
+        default: break;
+    }
+
+
+
     return false;
     //return QAbstractItemModel::dropMimeData(data, action, row, column, parent);
 }
 
 Qt::DropActions ActionCollectionModel::supportedDropActions() const
 {
-    //return Qt::MoveAction;
-    //return Qt::CopyAction | Qt::MoveAction;
-    //return Qt::TargetMoveAction;
-    //return Qt::MoveAction | Qt::TargetMoveAction;
-    return Qt::CopyAction | Qt::TargetMoveAction;
-    //return Qt::CopyAction | Qt::MoveAction | Qt::TargetMoveAction;
-    //return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
+    return Qt::CopyAction | Qt::MoveAction | Qt::TargetMoveAction;
+    //return Qt::CopyAction | Qt::MoveAction | Qt::TargetMoveAction | Qt::LinkAction;
 }
 
 /******************************************************************************

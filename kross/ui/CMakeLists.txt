@@ -21,5 +21,5 @@ install(TARGETS krossui DESTINATION ${LIB_INSTALL_DIR})
 
 ########### install files ###############
 
-install(FILES guiclient.h model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui)
-
+#install(FILES guiclient.h model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui)
+install(FILES model.h view.h DESTINATION ${INCLUDE_INSTALL_DIR}/kross/ui)

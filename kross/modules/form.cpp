@@ -90,6 +90,7 @@ FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariabl
 
     d->filewidget = new KFileWidget(KUrl(startDirOrVariable), this);
     layout->addWidget( d->filewidget );
+    //QMetaObject::invokeMethod(d->filewidget, "toggleSpeedbar", Q_ARG(bool,false));
     //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
 
     QObject::connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SIGNAL(fileSelected(const QString&)));

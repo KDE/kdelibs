@@ -29,8 +29,6 @@
 #include <QtCore/QFileInfo>
 #include <QtXml/QDomAttr>
 
-#include <kstandarddirs.h>
-
 using namespace Kross;
 
 namespace Kross {
@@ -286,25 +284,6 @@ bool ActionCollection::readXmlFile(const QString& file)
             krosswarning( QString("ActionCollection::readXmlFile parsing XML content of file \"%1\" failed.").arg(file) );
     #endif
     return ok;
-}
-
-bool ActionCollection::readXmlResources(const QByteArray& resource, const QString& filer)
-{
-    //filer = KApplication::kApplication()->objectName() + "/scripts/*.rc";
-    QStringList files = KGlobal::dirs()->findAllResources(resource, filer);
-    //files.sort();
-    bool ok = true;
-    foreach(QString s, files)
-        if( ! readXmlFile(s) )
-            ok = false;
-    return ok;
-}
-
-bool ActionCollection::readXmlResource(const QByteArray& resource, const QString& filename)
-{
-    QString file = KGlobal::dirs()->findResource(resource, filename);
-    if( file.isEmpty() ) return false;
-    return readXmlFile(file);
 }
 
 /*********************************************************************

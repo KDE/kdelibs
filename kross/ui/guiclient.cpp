@@ -31,6 +31,7 @@
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kurl.h>
+#include <kstandarddirs.h>
 
 using namespace Kross;
 
@@ -91,7 +92,8 @@ void GUIClient::initialize(Kross::ActionCollection* collection)
     d->collection = collection;
 
     QByteArray partname = d->guiclient->componentData().componentName(); //KApplication::kApplication()->objectName()
-    d->collection->readXmlResources("data", partname + "/scripts/*.rc");
+    foreach(QString file, KGlobal::dirs()->findAllResources("data", partname + "/scripts/*.rc"))
+        d->collection->readXmlFile(file);
 }
 
 void finalizeCollection(Kross::ActionCollection* c)
