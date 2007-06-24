@@ -34,11 +34,6 @@
      </item>
      <item>
       <property name="text" >
-       <string>[Reserved]</string>
-      </property>
-     </item>
-     <item>
-      <property name="text" >
        <string>Complex</string>
       </property>
      </item>
@@ -60,11 +55,6 @@
      <item>
       <property name="text" >
        <string>Horizontal Center Gradient</string>
-      </property>
-     </item>
-     <item>
-      <property name="text" >
-       <string>Glass</string>
       </property>
      </item>
     </widget>
