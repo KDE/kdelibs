@@ -65,6 +65,6 @@ const QPixmap &bg(const QColor &c, bool other = false);
 void init(BgMode mode);
 void wipe();
 
-};
+}
 
 #endif //GRADIENTS_H

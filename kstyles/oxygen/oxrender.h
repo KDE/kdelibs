@@ -73,7 +73,7 @@ namespace OXRender {
                       const PointArray &stops = PointArray());
    
    void freePicture(OXPicture pict);
-};
+}
 
 #define Q2XRenderColor(_XRC_, _QC_) XRenderColor _XRC_; OXRender::setColor(_XRC_, _QC_)
 
