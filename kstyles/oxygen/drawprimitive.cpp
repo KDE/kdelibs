@@ -294,9 +294,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
           qobject_cast<const QAbstractButton*>(widget))
          isToggle = btn->isCheckable();
       }
-      
-      bool isDefault =
-         opt && (opt->features & QStyleOptionButton::DefaultButton);
+
       int step = isEnabled ? animator->hoverStep(widget) : 0;
       QRect r = RECT;
       
@@ -798,9 +796,10 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
          tabRect.translate(0,-1);
          masks.tab.outline(tabRect, painter, COLOR(Window).dark(130));
          painter->restore();
-         fillWithMask(painter, rect,
-                      Gradients::pix(COLOR(WindowText), baseHeight, o, Gradients::Glass),
-                      &masks.tab, pf | Tile::Center);
+         masks.tab.render(rect, painter,
+                          Gradients::brush(PAL.color(config.role_tab[0]),
+                                         baseHeight, o, config.gradChoose),
+                          pf | Tile::Center);
          shadows.tabSunken.render(rect, painter, pf);
       }
       break;
@@ -1080,7 +1079,7 @@ void OxygenStyle::drawPrimitive ( PrimitiveElement pe, const QStyleOption * opti
             break;
          }
          fillWithMask(painter, RECT,
-                      Gradients::pix(CONF_COLOR(role_tab[0]), size, o, config.gradChoose),
+                      Gradients::brush(CONF_COLOR(role_tab[0]), size, o, config.gradChoose),
                       &masks.button, pf | Tile::Center);
          if (north)
             shadows.lineEdit[0].render(RECT, painter, Tile::Ring & ~Tile::Bottom);

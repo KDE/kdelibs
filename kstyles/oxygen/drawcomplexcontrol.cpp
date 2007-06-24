@@ -377,8 +377,8 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                drawPrimitive(PE_PanelLineEdit, option, painter, widget);
             else {
                if (!isEnabled || ar.isNull()) {
-                  masks.tab.render(r, painter, Gradients::pix(COLOR(Window),
-                     r.height(), Qt::Vertical, Gradients::Glass));
+                  masks.tab.render(r, painter, Gradients::brush(COLOR(Window),
+                     r.height(), Qt::Vertical, config.gradChoose));
                }
                else {
                   int step = animator->hoverStep(widget);
@@ -395,8 +395,8 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                         r.setRight(ar.left());
                         pf &= ~Tile::Right;
                      }
-                     masks.tab.render(r, painter, Gradients::pix(c, r.height(),
-                        Qt::Vertical, Gradients::Glass), pf);
+                     masks.tab.render(r, painter, Gradients::brush(c, r.height(),
+                        Qt::Vertical, config.gradChoose), pf);
                      pf = Tile::Full;
                      if (reverse) {
                         r.setLeft(RECT.left());
@@ -408,13 +408,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                         r.setLeft(ar.left());
                         pf &= ~Tile::Left;
                      }
-                     masks.tab.render(r, painter, Gradients::pix(
+                     masks.tab.render(r, painter, Gradients::brush(
                         midColor(COLOR(Highlight), COLOR(Window),1, 3),
-                        r.height(), Qt::Vertical, Gradients::Glass), pf);
+                        r.height(), Qt::Vertical, config.gradChoose), pf);
                   }
                   else
-                     masks.tab.render(r, painter, Gradients::pix(c, r.height(),
-                        Qt::Vertical, Gradients::Glass));
+                     masks.tab.render(r, painter, Gradients::brush(c, r.height(),
+                        Qt::Vertical, config.gradChoose));
                }
                shadows.tabSunken.render(RECT, painter);
             }
@@ -581,13 +581,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                      groove.setLeft(handle.center().x());
                      groove.setRight(groundX);
                   }
-                  fillWithMask(painter, groove, Gradients::pix(COLOR(Window),
+                  fillWithMask(painter, groove, Gradients::brush(COLOR(Window),
                                groove.height(), Qt::Vertical, config.gradButton),
                                &masks.button);
                }
 #else
                groove.adjust(0,dpi.$1,0,-dpi.$1);
-               fillWithMask(painter, groove, Gradients::pix(COLOR(Window),
+               fillWithMask(painter, groove, Gradients::brush(COLOR(Window),
                                groove.height(), Qt::Vertical, config.gradButton),
                                &masks.button);
 #endif
@@ -623,13 +623,13 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
                      groove.setBottom(groundY);
                      groove.setTop(handle.center().y());
                   }
-                  fillWithMask(painter, groove, Gradients::pix(COLOR(Window),
+                  fillWithMask(painter, groove, Gradients::brush(COLOR(Window),
                                groove.width(), Qt::Horizontal, config.gradButton),
                                &masks.button);
                }
 #else
                groove.adjust(dpi.$1,0,-dpi.$1,0);
-               fillWithMask(painter, groove, Gradients::pix(COLOR(Window),
+               fillWithMask(painter, groove, Gradients::brush(COLOR(Window),
                                groove.width(), Qt::Horizontal, config.gradButton),
                                &masks.button);
 #endif
@@ -675,7 +675,7 @@ void OxygenStyle::drawComplexControl ( ComplexControl control, const QStyleOptio
             // gradient
             xy += QPoint(dpi.$2, dpi.$1/*direction?dpi.$1:0*/);
             fillWithMask(painter, xy,
-                         Gradients::pix(btnBgColor(PAL, isEnabled, hover, step),
+                         Gradients::brush(btnBgColor(PAL, isEnabled, hover, step),
                                         dpi.SliderControl-dpi.$4, Qt::Vertical,
                                         config.gradButton), masks.radio);
 //             painter->drawPixmap(xy, lights.slider[direction]);

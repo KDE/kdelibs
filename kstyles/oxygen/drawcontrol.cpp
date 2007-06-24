@@ -173,10 +173,15 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                          QPalette::WindowText);
             break;
          }
-         SAVE_PEN;
+         painter->save();
+         if (btn->features & QStyleOptionButton::DefaultButton) {
+            QFont tmpFnt = painter->font();
+            tmpFnt.setBold(true);
+            painter->setFont(tmpFnt);
+         }
          painter->setPen(btnFgColor(PAL, isEnabled, hover));
          drawItemText(painter, ir, tf, PAL, isEnabled, btn->text);
-         RESTORE_PEN;
+         painter->restore();
       }
       break;
    case CE_DockWidgetTitle: // Dock window title.
@@ -255,25 +260,25 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
    case CE_TabBarTabShape: // The tab shape within a tab bar
       if (const QStyleOptionTab *tab =
           qstyleoption_cast<const QStyleOptionTab *>(option)) {
-         const bool selected = option->state & State_Selected;
-         IndexedFadeInfo *info = 0;
-         int index = -1, hoveredIndex = -1, step = 0;
+//          IndexedFadeInfo *info = 0;
+//          int index = -1, hoveredIndex = -1, step = 0;
 
          // fade animation stuff
-         if (widget)
-         if (const QTabBar* tbar = qobject_cast<const QTabBar*>(widget)) {
-            // NOTICE: the index increment is IMPORTANT to make sure it's no "0"
-            index = tbar->tabAt(RECT.topLeft()) + 1; // is the action for this item!
-            hoveredIndex = hover ? index :
-                  tbar->tabAt(tbar->mapFromGlobal(QCursor::pos())) + 1;
-            info = const_cast<IndexedFadeInfo *>
-               (animator->indexedFadeInfo(widget, hoveredIndex));
-         }
-         if (info)
-            step = info->step(index);
+//          if (widget)
+//          if (const QTabBar* tbar = qobject_cast<const QTabBar*>(widget)) {
+//             // NOTICE: the index increment is IMPORTANT to make sure it's no "0"
+//             index = tbar->tabAt(RECT.topLeft()) + 1; // is the action for this item!
+//             hoveredIndex = hover ? index :
+//                   tbar->tabAt(tbar->mapFromGlobal(QCursor::pos())) + 1;
+//             info = const_cast<IndexedFadeInfo *>
+//                (animator->indexedFadeInfo(widget, hoveredIndex));
+//          }
+//          if (info)
+//             step = info->step(index);
          
          // maybe we're done here?!
-         if (!(step || hover || selected || sunken))
+//          if (!(step || hover || selected || sunken))
+         if (!(option->state & State_Selected))
             break;
          
          const int $2 = dpi.$2, $4 = dpi.$4;
@@ -281,8 +286,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          QRect rect = RECT;
          int size = RECT.height();
          Qt::Orientation o = Qt::Vertical;
-#if 1
-         if (selected) {
+         
+//          if (selected) {
             
             // invert the shape alignment if we're not on a tabwidget
             // (== safari style tabs)
@@ -335,12 +340,12 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
 //             QPoint zero = fillRect.topLeft();
 //             if (widget)
 //                zero = widget->mapTo(widget->topLevelWidget(), zero);
-            fillWithMask(painter, fillRect, Gradients::pix(COLOR(Window), size,
-               o, Gradients::Glass), &masks.tab, pf | Tile::Center/*, false, zero*/);
+            masks.tab.render(fillRect, painter, Gradients::brush(COLOR(Window),
+               size, o, config.gradChoose), pf | Tile::Center);
             shadows.tab[1][0].render(rect, painter, pf);
-         }
+//          }
+#if 0
          else
-#endif
          {
             switch (tab->shape) {
             case QTabBar::RoundedEast:
@@ -369,6 +374,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                              Tile::Full, false, off);
             
          }
+#endif
       }
       break;
    case CE_TabBarTabLabel: // The label within a tab
@@ -444,13 +450,14 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          
          // color adjustment
          QColor cF, cB;
-         if (sunken || hover || selected) {
+         if (selected) {
             cF = COLOR(WindowText);
             cB = COLOR(Window);
          }
          else {
-            cB = COLOR(WindowText);
-            cF = COLOR(Window);
+            cB = PAL.color(config.role_tab[0]);
+            cF = hover ? PAL.color(config.role_tab[1]) :
+               midColor(cB, PAL.color(config.role_tab[1]), 1,2);
          }
          // dark background, let's paint an emboss
          if (qGray(cB.rgb()) < 148) {
@@ -542,8 +549,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                PAL.color(config.role_progress[0]).light(85+step) :
                midColor( PAL.color(config.role_progress[0]),
                                      PAL.color(config.role_progress[1]), 1, 2);
-         const QPixmap &chunk1 = Gradients::pix(c1, size, o, config.gradProgress);
-         const QPixmap &chunk2 = Gradients::pix(c2, size, o, config.gradProgress);
+         const QBrush chunk1 = Gradients::brush(c1, size, o, config.gradProgress);
+         const QBrush chunk2 = Gradients::brush(c2, size, o, config.gradProgress);
          
          QPixmap pix; QPainter p;
          if (pb->orientation == Qt::Horizontal) {
@@ -730,11 +737,11 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                r.adjust(dx, 0, -dx, -0);
             }
             
-            const QPixmap &fill =
-               Gradients::pix(sunken ?
+            const QBrush fill =
+               Gradients::brush(sunken ?
                               midColor(COLOR(Highlight), COLOR(Window), 1, 3) :
                               COLOR(Window), r.height(), Qt::Vertical,
-                              Gradients::Glass);
+                              config.gradChoose);
             fillWithMask(painter, r, fill, &masks.tab);
             r.setHeight(r.height()+dpi.$2);
             shadows.tabSunken.render(r, painter);
@@ -789,8 +796,8 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          if (selected && isEnabled) {
             QRect r = RECT.adjusted(0,0,0,-dpi.$2);
             fillWithMask(painter, r,
-                         Gradients::pix(bg, r.height(), Qt::Vertical, Gradients::Glass),
-                         &masks.tab, Tile::Full);
+                         Gradients::brush(bg, r.height(), Qt::Vertical,
+                                        config.gradChoose), &masks.tab, Tile::Full);
             shadows.tabSunken.render(RECT, painter);
          }
 
@@ -902,12 +909,12 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
       QPalette::ColorRole bg = widget ? widget->backgroundRole() : QPalette::Window;
       if (option->state & State_DownArrow) {
          painter->drawTiledPixmap(RECT, Gradients::pix(PAL.color(QPalette::Active, bg),
-            RECT.height()*2, Qt::Vertical, sunken ? Gradients::Sunken : Gradients::Simple), QPoint(0,RECT.height()));
+            RECT.height()*2, Qt::Vertical, sunken ? Gradients::Sunken : Gradients::Button), QPoint(0,RECT.height()));
          drawPrimitive(PE_IndicatorArrowDown, option, painter, widget);
       }
       else {
          painter->drawTiledPixmap(RECT, Gradients::pix(PAL.color(QPalette::Active, bg),
-            RECT.height()*2, Qt::Vertical, sunken ? Gradients::Sunken : Gradients::Simple));
+            RECT.height()*2, Qt::Vertical, sunken ? Gradients::Sunken : Gradients::Button));
          drawPrimitive(PE_IndicatorArrowUp, option, painter, widget);
       }
       break;
@@ -936,10 +943,10 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          QPalette::ColorRole role = QPalette::WindowText, bgRole = QPalette::Window;
          if (isEnabled) {
             if (option->state & State_Selected) {
-               const QPixmap &fill = Gradients::pix(pal.color(QPalette::WindowText),
+               const QBrush fill = Gradients::brush(pal.color(QPalette::WindowText),
                                               RECT.height(), Qt::Vertical,
                                               config.gradChoose);
-               painter->drawTiledPixmap(RECT, fill);
+               painter->fillRect(RECT, fill);
                QFont f(painter->font());
                f.setBold(true);
                painter->setFont(f);
@@ -947,7 +954,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
                role = QPalette::Window;
             }
             else {
-               painter->drawTiledPixmap(RECT, Gradients::pix(pal.color(QPalette::Window),
+               painter->fillRect(RECT, Gradients::brush(pal.color(QPalette::Window),
                   RECT.height(), Qt::Vertical, sunken ?
                   Gradients::Sunken : config.gradChoose));
             }
@@ -1135,7 +1142,7 @@ void OxygenStyle::drawControl ( ControlElement element, const QStyleOption * opt
          xy += QPoint(dpi.$2,dpi.$1);
          int sz = dpi.ExclusiveIndicator - dpi.$4;
          fillWithMask(painter, xy,
-                      Gradients::pix(btnBgColor(PAL, alive, hover, complexStep),
+                      Gradients::brush(btnBgColor(PAL, alive, hover, complexStep),
                                      sz, Qt::Vertical, alive ? config.gradButton :
                                      Gradients::Sunken), masks.radio);
          break;

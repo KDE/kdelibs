@@ -279,6 +279,7 @@ void Config::save() {
    settings.beginGroup("Style");
    settings.setValue("BackgroundMode", ui.bgMode->currentIndex());
    settings.setValue("TabTransition", ui.tabTransition->currentIndex());
+   settings.setValue("CheckType", ui.checkMark->currentIndex());
    settings.setValue("HoverImpact", ui.hoverImpact->value());
    
 #define saveBool(_ENTRY_, _ELEMENT_) settings.setValue(_ENTRY_, ui._ELEMENT_->isChecked());

@@ -104,11 +104,6 @@
      </item>
      <item>
       <property name="text" >
-       <string>Crossfade</string>
-      </property>
-     </item>
-     <item>
-      <property name="text" >
        <string>Scanline blend</string>
       </property>
      </item>
@@ -150,6 +145,11 @@
      <item>
       <property name="text" >
        <string>Close horizontally</string>
+      </property>
+     </item>
+     <item>
+      <property name="text" >
+       <string>Crossfade</string>
       </property>
      </item>
     </widget>
