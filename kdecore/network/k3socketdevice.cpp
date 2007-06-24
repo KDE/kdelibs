@@ -134,19 +134,23 @@ bool KSocketDevice::setSocketOptions(int opts)
     return true;		// flags are stored
 
 #ifdef Q_WS_WIN
-  if (opts & Blocking)
+    if (opts & Blocking)
     {
-      u_long iMode = 0;
-      qDebug("socket set blocking");
-      // disable non blocking
-      if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
+        u_long iMode = 0;
+        qDebug("socket set blocking");
+        // disable non blocking
+        if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
         {
-          qDebug("socket set blocking failed %d",GetLastError());
-          setError(UnknownError);
-          return false;		// error
+            // socket can't made blocking because WSAAsyncSelect/WSAEventSelect (==QSocketNotifier)
+            // is activated for them
+            if(WSAGetLastError() == WSAEINVAL)
+                return true;
+            qDebug("socket set blocking failed %d",GetLastError());
+            setError(UnknownError);
+            return false;		// error
         }
-		  return true;
-	 }
+        return true;
+    }
 #endif
     {
       int fdflags = fcntl(m_sockfd, F_GETFL, 0);
