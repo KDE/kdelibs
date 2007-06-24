@@ -57,34 +57,10 @@ bool Solid::StorageDrive::isRemovable() const
     return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, isRemovable());
 }
 
-bool Solid::StorageDrive::isEjectRequired() const
-{
-    Q_D(const StorageDrive);
-    return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, isEjectRequired());
-}
-
 bool Solid::StorageDrive::isHotpluggable() const
 {
     Q_D(const StorageDrive);
     return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, isHotpluggable());
-}
-
-bool Solid::StorageDrive::isMediaCheckEnabled() const
-{
-    Q_D(const StorageDrive);
-    return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), false, isMediaCheckEnabled());
-}
-
-QString Solid::StorageDrive::vendor() const
-{
-    Q_D(const StorageDrive);
-    return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), QString(), vendor());
-}
-
-QString Solid::StorageDrive::product() const
-{
-    Q_D(const StorageDrive);
-    return_SOLID_CALL(Ifaces::StorageDrive *, d->backendObject(), QString(), product());
 }
 
 #include "storagedrive.moc"

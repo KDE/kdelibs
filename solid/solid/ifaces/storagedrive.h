@@ -71,45 +71,12 @@ namespace Ifaces
         virtual bool isRemovable() const = 0;
 
         /**
-         * Indicates if calling eject is required to properly remove
-         * media from this drive.
-         *
-         * @return true an eject command should be issued on medium removal
-         */
-        virtual bool isEjectRequired() const = 0;
-
-        /**
          * Indicates if this storage device can be plugged or unplugged while
          * the computer is running.
          *
          * @return true if this storage supports hotplug, false otherwise
          */
         virtual bool isHotpluggable() const = 0;
-
-        /**
-         * Indicates if this storage device supports media detection.
-         *
-         * It generally means that the drive is polled to detect when a medium
-         * is inserted, or that it can notify the system on insert.
-         *
-         * @return true is media detection is enabled
-         */
-        virtual bool isMediaCheckEnabled() const = 0;
-
-
-        /**
-         * Retrieves the name of this storage vendor.
-         *
-         * @return the vendor name
-         */
-        virtual QString vendor() const = 0;
-
-        /**
-         * Retrieves the name of the product corresponding to this storage.
-         *
-         * @return the product name
-         */
-        virtual QString product() const = 0;
     };
 }
 }

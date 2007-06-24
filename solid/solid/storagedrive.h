@@ -42,11 +42,7 @@ namespace Solid
         Q_PROPERTY(Bus bus READ bus)
         Q_PROPERTY(DriveType driveType READ driveType)
         Q_PROPERTY(bool removable READ isRemovable)
-        Q_PROPERTY(bool ejectRequired READ isEjectRequired)
         Q_PROPERTY(bool hotpluggable READ isHotpluggable)
-        Q_PROPERTY(bool mediaCheckEnabled READ isMediaCheckEnabled)
-        Q_PROPERTY(QString vendor READ vendor)
-        Q_PROPERTY(QString product READ product)
         Q_DECLARE_PRIVATE(StorageDrive)
         friend class Device;
 
@@ -134,45 +130,12 @@ namespace Solid
         bool isRemovable() const;
 
         /**
-         * Indicates if calling eject is required to properly remove
-         * media from this drive.
-         *
-         * @return true an eject command should be issued on medium removal
-         */
-        bool isEjectRequired() const;
-
-        /**
          * Indicates if this storage device can be plugged or unplugged while
          * the computer is running.
          *
          * @return true if this storage supports hotplug, false otherwise
          */
         bool isHotpluggable() const;
-
-        /**
-         * Indicates if this storage device supports media detection.
-         *
-         * It generally means that the drive is polled to detect when a medium
-         * is inserted, or that it can notify the system on insert.
-         *
-         * @return true is media detection is enabled
-         */
-        bool isMediaCheckEnabled() const;
-
-
-        /**
-         * Retrieves the name of this storage vendor.
-         *
-         * @return the vendor name
-         */
-        QString vendor() const;
-
-        /**
-         * Retrieves the name of the product corresponding to this storage.
-         *
-         * @return the product name
-         */
-        QString product() const;
 
     protected:
         /**

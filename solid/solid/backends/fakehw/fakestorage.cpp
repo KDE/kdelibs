@@ -107,29 +107,9 @@ bool FakeStorage::isRemovable() const
     return fakeDevice()->property("isRemovable").toBool();
 }
 
-bool FakeStorage::isEjectRequired() const
-{
-    return fakeDevice()->property("isEjectRequired").toBool();
-}
-
 bool FakeStorage::isHotpluggable() const
 {
     return fakeDevice()->property("isHotpluggable").toBool();
-}
-
-bool FakeStorage::isMediaCheckEnabled() const
-{
-    return fakeDevice()->property("isMediaCheckEnabled").toBool();
-}
-
-QString FakeStorage::vendor() const
-{
-    return fakeDevice()->property("vendor").toString();
-}
-
-QString FakeStorage::product() const
-{
-    return fakeDevice()->property("product").toString();
 }
 
 #include "backends/fakehw/fakestorage.moc"

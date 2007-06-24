@@ -36,12 +36,7 @@ public:
     virtual Solid::StorageDrive::DriveType driveType() const;
 
     virtual bool isRemovable() const;
-    virtual bool isEjectRequired() const;
     virtual bool isHotpluggable() const;
-    virtual bool isMediaCheckEnabled() const;
-
-    virtual QString vendor() const;
-    virtual QString product() const;
 };
 
 #endif

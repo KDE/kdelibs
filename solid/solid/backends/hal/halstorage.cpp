@@ -107,29 +107,9 @@ bool Storage::isRemovable() const
     return m_device->property("storage.removable").toBool();
 }
 
-bool Storage::isEjectRequired() const
-{
-    return m_device->property("storage.requires_eject").toBool();
-}
-
 bool Storage::isHotpluggable() const
 {
     return m_device->property("storage.hotpluggable").toBool();
-}
-
-bool Storage::isMediaCheckEnabled() const
-{
-    return m_device->property("storage.media_check_enabled").toBool();
-}
-
-QString Storage::vendor() const
-{
-    return m_device->property("storage.vendor").toString();
-}
-
-QString Storage::product() const
-{
-    return m_device->property("storage.model").toString();
 }
 
 #include "backends/hal/halstorage.moc"
