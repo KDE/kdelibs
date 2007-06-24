@@ -1,8 +1,5 @@
 add_subdirectory(kconfig_compiler)
 
-# This can be used for finding .rc files in the source dir, without installing them
-add_definitions( -DKDESRCDIR=\\"${CMAKE_CURRENT_SOURCE_DIR}\\" )
-
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 
