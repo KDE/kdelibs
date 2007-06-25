@@ -34,6 +34,9 @@ struct KeyStruct {
    bool secret;
 };
 
+class KProcess;
+namespace KNS {
+
 /**
 Handles security related issues, like signing, verifying.
 It is a private class, not meant to be used by third party applications.
@@ -42,10 +45,6 @@ It is a private class, not meant to be used by third party applications.
 
 * @internal
 */
-
-class KProcess;
-namespace KNS {
-
 class Security : public QObject
 {
 Q_OBJECT
