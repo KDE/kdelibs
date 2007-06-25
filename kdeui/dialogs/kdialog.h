@@ -26,6 +26,7 @@
 
 class KPushButton;
 class QMenu;
+class KDialogPrivate;
 
 #include <kdeui_export.h>
 
@@ -127,6 +128,7 @@ class KDEUI_EXPORT KDialog : public QDialog
 {
   Q_OBJECT
   Q_ENUMS(ButtonCode)
+    Q_DECLARE_PRIVATE(KDialog)
 
   public:
 
@@ -771,12 +773,12 @@ class KDEUI_EXPORT KDialog : public QDialog
      */
     void updateGeometry();
 
-  private:
-    class Private;
-    friend class Private;
-    Private* const d;
+    protected:
+        KDialog(KDialogPrivate &dd, QWidget *parent, Qt::WFlags flags = 0);
+        KDialogPrivate *const d_ptr;
 
-    Q_DISABLE_COPY(KDialog)
+    private:
+        Q_DISABLE_COPY(KDialog)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDialog::ButtonCodes)
