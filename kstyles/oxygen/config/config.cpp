@@ -170,6 +170,44 @@ Config::Config(QWidget *parent) : QWidget(parent) {
    handleEvents(tabTransition);
    connect(ui.bgMode, SIGNAL(highlighted(int)), this, SLOT(setBgModeInfo(int)));
    connect(ui.tabTransition, SIGNAL(highlighted(int)), this, SLOT(setTabTransInfo(int)));
+   
+   QWidgetList kids = findChildren<QWidget *>();
+   foreach (QWidget *kid, kids) {
+      if (qobject_cast<QCheckBox*>(kid))
+         connect (kid, SIGNAL(stateChanged(int)), this, SLOT(checkDirty()));
+      else if (qobject_cast<QComboBox*>(kid))
+         connect (kid, SIGNAL(currentIndexChanged(int)), this, SLOT(checkDirty()));
+      else if (qobject_cast<QSlider*>(kid))
+         connect (kid, SIGNAL(valueChanged(int)), this, SLOT(checkDirty()));
+   }
+}
+
+void Config::checkDirty() {
+#define CHECK(_ELEMENT_) if (sender() == ui._ELEMENT_) emit changed(DATA(_ELEMENT_) != initValues._ELEMENT_)
+#define DATA(_ELEMENT_) ui._ELEMENT_->currentIndex()
+   CHECK(bgMode);
+   CHECK(tabTransition);
+   CHECK(checkMark);
+   if (sender() == ui.hoverImpact)
+      emit changed(ui.hoverImpact->value() != initValues.hoverImpact);
+#undef DATA
+#define DATA(_ELEMENT_) ui._ELEMENT_->itemData(ui._ELEMENT_->currentIndex())
+   CHECK(crProgressBar);
+   CHECK(crProgressBarGroove);
+   CHECK(crTabBar);
+   CHECK(crButtons);
+   CHECK(crButtonsHover);
+   CHECK(crPopup);
+   
+   CHECK(gradButton);
+   CHECK(gradChoose);
+   CHECK(gradProgress);
+
+#undef DATA
+#define DATA(_ELEMENT_) ui._ELEMENT_->isChecked()
+   CHECK(showMenuIcons);
+   CHECK(glassProgress);
+   CHECK(menuShadow);
 }
 
 void Config::reset() {

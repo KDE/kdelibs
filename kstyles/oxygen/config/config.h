@@ -24,6 +24,7 @@ public slots:
    void defaults();
    void reset();
 private slots:
+   void checkDirty();
    void resetInfo();
    void setBgModeInfo(int index);
    void setTabTransInfo(int index);
