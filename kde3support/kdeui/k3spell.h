@@ -501,7 +501,6 @@ protected:
   QStringList ignorelist;
   QStringList replacelist;
   QStringList sugg;
-  QTextCodec* codec;
 
   spellStatus m_status;
 
