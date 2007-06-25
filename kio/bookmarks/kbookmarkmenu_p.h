@@ -22,8 +22,6 @@
 #ifndef __kbookmarkmenu_p_h__
 #define __kbookmarkmenu_p_h__
 
-#include <sys/types.h>
-
 #include <QtCore/QObject>
 
 #include <kdialog.h>
@@ -31,10 +29,8 @@
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <krun.h>
 #include <kmenu.h>
 #include <QtGui/QBoxLayout>
-#include <QtCore/QModelIndex>
 #include <QtGui/QTreeWidget>
 
 #include "kbookmark.h"

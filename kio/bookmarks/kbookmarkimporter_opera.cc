@@ -19,6 +19,7 @@
 */
 
 #include "kbookmarkimporter_opera.h"
+#include "kbookmarkimporter_opera_p.h"
 
 #include <kfiledialog.h>
 #include <kstringhandler.h>
@@ -168,4 +169,4 @@ void KOperaBookmarkExporterImpl::write(const KBookmarkGroup &parent) {
     fstream << content;
 }
 
-#include "kbookmarkimporter_opera.moc"
+#include "kbookmarkimporter_opera_p.moc"

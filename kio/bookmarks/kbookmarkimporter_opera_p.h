@@ -16,36 +16,34 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kbookmarkimporter_opera_h
-#define __kbookmarkimporter_opera_h
-
-#include <QtCore/QStringList>
-
-#include <kbookmarkimporter.h>
+#ifndef KBOOKMARKIMPORTER_OPERA_P_H
+#define KBOOKMARKIMPORTER_OPERA_P_H
 
 /**
  * A class for importing Opera bookmarks
+ * @internal
  */
-class KIO_EXPORT KOperaBookmarkImporterImpl : public KBookmarkImporterBase
+class KOperaBookmarkImporter : public QObject
 {
+    Q_OBJECT
 public:
-    KOperaBookmarkImporterImpl() { }
-    virtual void parse();
-    virtual QString findDefaultLocation(bool forSaving = false) const;
-private:
-    class KOperaBookmarkImporterImplPrivate *d;
+    KOperaBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
+    ~KOperaBookmarkImporter() {}
+
+    void parseOperaBookmarks();
+
+    // Usual place for Opera bookmarks
+    static QString operaBookmarksFile();
+
+Q_SIGNALS:
+    void newBookmark( const QString & text, const QString & url, const QString & additionalInfo );
+    void newFolder( const QString & text, bool open, const QString & additionalInfo );
+    void newSeparator();
+    void endFolder();
+
+protected:
+    QString m_fileName;
 };
 
-class KIO_EXPORT KOperaBookmarkExporterImpl : public KBookmarkExporterBase
-{
-public:
-    KOperaBookmarkExporterImpl(KBookmarkManager* mgr, const QString & filename)
-      : KBookmarkExporterBase(mgr, filename)
-    { ; }
-    virtual ~KOperaBookmarkExporterImpl() {}
-    virtual void write(const KBookmarkGroup &parent);
-private:
-    class KOperaBookmarkExporterImplPrivate *d;
-};
+#endif /* KBOOKMARKIMPORTER_OPERA_P_H */
 
-#endif
