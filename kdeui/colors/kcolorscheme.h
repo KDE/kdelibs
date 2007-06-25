@@ -23,9 +23,13 @@
 #include <kdeui_export.h>
 #include <ksharedconfig.h>
 
+#include <QtCore/QExplicitlySharedDataPointer>
+
 class KConfigBase;
 class QColor;
 class QBrush;
+
+class KColorSchemePrivate;
 
 /**
  * A set of methods used to work with colors.
@@ -246,7 +250,7 @@ public:
                         qreal contrast, qreal chromaAdjust = 0.0);
 
 private:
-    class KColorSchemePrivate* d;
+    QExplicitlySharedDataPointer<KColorSchemePrivate> d;
 };
 
 #endif // KCOLORSCHEME_H

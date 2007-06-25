@@ -71,11 +71,10 @@ DefaultColors defaultTooltipColors = {
 };
 
 //BEGIN KColorSchemePrivate
-class KColorSchemePrivate
+class KColorSchemePrivate : public QSharedData
 {
 public:
     explicit KColorSchemePrivate(const KSharedConfigPtr&, const char*, DefaultColors);
-    KColorSchemePrivate(const KColorSchemePrivate&);
 
     QColor background(KColorScheme::BackgroundRole) const;
     QColor foreground(KColorScheme::ForegroundRole) const;
@@ -92,11 +91,6 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, const c
 {
     KConfigGroup g( config, "KDE" );
     _contrast = g.readEntry( "contrast", 7 );
-}
-
-KColorSchemePrivate::KColorSchemePrivate(const KColorSchemePrivate& other)
-    : _config( other._config ), _defaults( other._defaults), _contrast( other._contrast )
-{
 }
 
 #define DEFAULT(a) QColor( _defaults.a[0], _defaults.a[1], _defaults.a[2] )
@@ -149,23 +143,18 @@ qreal KColorSchemePrivate::contrast() const
 }
 //END KColorSchemePrivate
 
-KColorScheme::KColorScheme(const KColorScheme &other)
+KColorScheme::KColorScheme(const KColorScheme &other) : d(other.d)
 {
-    d = new KColorSchemePrivate(*other.d);
 }
 
 KColorScheme& KColorScheme::operator=(const KColorScheme& other)
 {
-    if (this != &other) {
-        delete d;
-        d = new KColorSchemePrivate(*other.d);
-    }
+    d = other.d;
     return *this;
 }
 
 KColorScheme::~KColorScheme()
 {
-    delete d;
 }
 
 KColorScheme::KColorScheme(ColorSet set, KSharedConfigPtr config)
