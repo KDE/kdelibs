@@ -41,19 +41,52 @@ namespace Solid
     {
         /**
          * Describes the state of the networking system
-         * - Unknown : the networking system is not active or unable to report its status - proceed
-         *   with caution
-         * - Disconnected : the system is not connected to any network
-         * - Connecting : the system is in the process of making a connection
-         * - Connected : the system is currently connected to a network
-         * - Disconnecting : the system is breaking the connection
          */
-        enum Status { Unknown, Unconnected, Connecting, Connected, Disconnecting };
+        enum Status {
+            Unknown, /**< the networking system is not active or unable to report its status - proceed with caution */
+            Unconnected,/**< the system is not connected to any network */
+            Disconnecting, /**< the system is breaking the connection */
+            Connecting, /**< the system is not connected to any network */
+            Connected /**< the system is currently connected to a network */
+        };
+
+        /**
+         * This defines application policy in response to networking connect/disconnect events
+         */
+        enum ManagementPolicy {
+            Manual, /**< Manual - the app should only disconnect when the user does so manually */
+            OnNextStatusChange, /**< the app should connect or disconnect the next time the network changes status, thereafter Manual */
+            Managed /**< the app should connect or disconnect whenever the KConnectionManager reports a state change */
+        };
 
         /**
          * Get the current networking status
          */
         SOLID_EXPORT Status status();
+
+        /**
+         * Set a policy to manage the application's connect behaviour
+         * @param the new connection policy
+         */
+        void setConnectPolicy( ManagementPolicy );
+
+        /**
+         * Retrieve a policy managing the application's connect behaviour
+         * @return the connection policy in use
+         */
+        ManagementPolicy connectPolicy();
+
+        /**
+         * Set a policy to manage the application's disconnect behaviour
+         * @param the new disconnection policy
+         */
+        void setDisconnectPolicy( ManagementPolicy );
+
+        /**
+         * Retrieve a policy managing the application's disconnect behaviour
+         * @return the disconnection policy in use
+         */
+        ManagementPolicy disconnectPolicy();
 
         /**
          * This object emits signals, for use if your application requires notification
@@ -63,7 +96,26 @@ namespace Solid
         {
         Q_OBJECT
         Q_SIGNALS:
-            void statusChanged( Status );
+        /**
+         * Signals that the network status has changed
+         * @param status the new status of the network status service
+         */
+        void statusChanged( Solid::Networking::Status status );
+        /**
+         * Signals that the system's network has become connected, so receivers
+         * should connect their sockets, ioslaves etc.
+         *
+         * This signal is emitted according to the active connectPolicy.
+         */
+        void shouldConnect();
+        /**
+         * Signals that the system's network has become disconnected,
+         * so receivers should adjust application state appropriately.
+         *
+         * This signal is emitted according to the active disconnectPolicy.
+         */
+        void shouldDisconnect();
+
         };
 
         SOLID_EXPORT Notifier *notifier();
