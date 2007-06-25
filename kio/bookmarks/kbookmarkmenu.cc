@@ -1,5 +1,3 @@
-//  -*- c-basic-offset:2; indent-tabs-mode:nil -*-
-// vim: set ts=2 sts=2 sw=2 et:
 /* This file is part of the KDE project
    Copyright (C) 1998, 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2006 Daniel Teske <teske@squorn.de>
@@ -23,7 +21,6 @@
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
 
-#include <kapplication.h>
 #include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -49,6 +46,7 @@
 
 #include <QtCore/QStack>
 #include <QtGui/QHeaderView>
+#include <QtGui/QApplication>
 
 static QString makeTextNodeMod(const KBookmark &bk, const QString &m_nodename, const QString &m_newText) {
   QDomNode subnode = bk.internalElement().namedItem(m_nodename);
@@ -592,7 +590,7 @@ void KImportedBookmarkMenu::slotNSLoad()
   m_parentMenu->disconnect(SIGNAL(aboutToShow()));
 
   // not NSImporter, but kept old name for BC reasons
-  KBookmarkMenuNSImporter importer( m_pManager, this, m_actionCollection );
+  KBookmarkMenuImporter importer( m_pManager, this, m_actionCollection );
   importer.openBookmarks(m_location, m_type);
 }
 
@@ -840,15 +838,7 @@ void KBookmarkEditDialog::fillGroup( QTreeWidget* view, QTreeWidgetItem * parent
 /********************************************************************/
 /********************************************************************/
 
-// NOTE - KBookmarkMenuNSImporter is really === KBookmarkMenuImporter
-//        i.e, it is _not_ ns specific. and in KDE4 it should be renamed.
-
-void KBookmarkMenuNSImporter::openNSBookmarks()
-{
-  openBookmarks( KNSBookmarkImporter::netscapeBookmarksFile(), "netscape" );
-}
-
-void KBookmarkMenuNSImporter::openBookmarks( const QString &location, const QString &type )
+void KBookmarkMenuImporter::openBookmarks( const QString &location, const QString &type )
 {
   mstack.push(m_menu);
 
@@ -862,7 +852,7 @@ void KBookmarkMenuNSImporter::openBookmarks( const QString &location, const QStr
   delete importer;
 }
 
-void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
+void KBookmarkMenuImporter::connectToImporter(const QObject &importer)
 {
   connect( &importer, SIGNAL( newBookmark( const QString &, const QString &, const QString & ) ),
            SLOT( newBookmark( const QString &, const QString &, const QString & ) ) );
@@ -872,7 +862,7 @@ void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
   connect( &importer, SIGNAL( endFolder() ), SLOT( endFolder() ) );
 }
 
-void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString & url, const QString & )
+void KBookmarkMenuImporter::newBookmark( const QString & text, const QString & url, const QString & )
 {
   KBookmark bm = KBookmark::standaloneBookmark(text, url, QString("html"));
   KAction * action = new KImportedBookmarkAction(bm, mstack.top()->m_pOwner, this);
@@ -881,7 +871,7 @@ void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QString &
   mstack.top()->m_actions.append( action );
 }
 
-void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QString & )
+void KBookmarkMenuImporter::newFolder( const QString & text, bool, const QString & )
 {
   QString _text = KStringHandler::csqueeze(text).replace( '&', "&&" );
   KActionMenu * actionMenu = new KImportedBookmarkActionMenu( KIcon("folder"), _text, this );
@@ -894,12 +884,12 @@ void KBookmarkMenuNSImporter::newFolder( const QString & text, bool, const QStri
   mstack.push(subMenu);
 }
 
-void KBookmarkMenuNSImporter::newSeparator()
+void KBookmarkMenuImporter::newSeparator()
 {
   mstack.top()->m_parentMenu->addSeparator();
 }
 
-void KBookmarkMenuNSImporter::endFolder()
+void KBookmarkMenuImporter::endFolder()
 {
   mstack.pop();
 }
@@ -975,6 +965,7 @@ KImportedBookmarkAction::~KImportedBookmarkAction()
 
 void KImportedBookmarkAction::contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner)
 {
+  // TODO?
 }
 
 void KImportedBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km)

@@ -28,7 +28,6 @@
 #include <kglobal.h>
 #include <klocale.h>
 #include <assert.h>
-#include <kapplication.h>
 #include <kbookmarkmanager.h>
 
 #include <qdatetime.h>

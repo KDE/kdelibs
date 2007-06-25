@@ -41,7 +41,8 @@ public:
   virtual void contextMenu(const QPoint &pos, KBookmarkManager* m_pManager, KBookmarkOwner* m_pOwner);
 };
 
-class KonqBookmarkAction : public KBookmarkAction
+// only exported for KonqBookmarkBar in konqueror
+class KIO_EXPORT KonqBookmarkAction : public KBookmarkAction
 {
   Q_OBJECT
 public:
@@ -52,7 +53,7 @@ public:
 
 class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
 {
-  friend class KBookmarkBar;
+    //friend class KBookmarkBar;
   Q_OBJECT
     public:
   /**
@@ -73,6 +74,15 @@ class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
   }
   ~KonqBookmarkMenu()
   {}
+
+  /**
+   * Creates a bookmark submenu.
+   * Only used internally and for bookmark toolbar.
+   */
+  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KonqBookmarkActionMenu * parentMenu, QString parentAddress)
+    : KBookmarkMenu( mgr, owner, parentMenu->menu(), parentAddress)
+  {
+  }
 
   /**
    * Structure used for storing information about
@@ -107,10 +117,6 @@ class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
   static QStringList dynamicBookmarksList();
 
 protected:
-  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KonqBookmarkActionMenu * parentMenu, QString parentAddress)
-    : KBookmarkMenu( mgr, owner, parentMenu->menu(), parentAddress)
-  {
-  }
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
   void fillDynamicBookmarks();

@@ -119,7 +119,6 @@ endif(UNIX)
 
 set(kbookmarks_STAT_SRCS
   bookmarks/kbookmark.cc
-  bookmarks/kbookmarkbar.cc
   bookmarks/kbookmarkimporter.cc
   bookmarks/kbookmarkmanager.cc
   bookmarks/kbookmarkmanageradaptor.cc
@@ -361,7 +360,6 @@ install( FILES
   kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
   bookmarks/kbookmark.h
-  bookmarks/kbookmarkbar.h
   bookmarks/kbookmarkexporter.h
   bookmarks/kbookmarkimporter.h
   bookmarks/kbookmarkmanager.h

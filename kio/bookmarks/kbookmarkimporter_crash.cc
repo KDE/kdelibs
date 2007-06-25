@@ -24,7 +24,6 @@
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kapplication.h>
 #include <kstandarddirs.h>
 #include <qfile.h>
 #include <qdir.h>

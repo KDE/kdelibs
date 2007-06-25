@@ -29,7 +29,6 @@
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <kmenu.h>
 #include <QtGui/QBoxLayout>
 #include <QtGui/QTreeWidget>
 
@@ -104,7 +103,6 @@ class KBookmarkSettings
 public:
   bool m_advancedaddbookmark;
   bool m_contextmenu;
-  bool m_filteredtoolbar;
   static KBookmarkSettings *s_self;
   static void readSettings();
   static KBookmarkSettings *self();
@@ -113,14 +111,13 @@ public:
 /**
  * A class connected to KNSBookmarkImporter, to fill KActionMenus.
  */
-class KBookmarkMenuNSImporter : public QObject
+class KBookmarkMenuImporter : public QObject
 {
   Q_OBJECT
 public:
-  KBookmarkMenuNSImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu, KActionCollection * act ) :
+  KBookmarkMenuImporter( KBookmarkManager* mgr, KImportedBookmarkMenu * menu, KActionCollection * act ) :
      m_menu(menu), m_actionCollection(act), m_pManager(mgr) {}
 
-  void openNSBookmarks();
   void openBookmarks( const QString &location, const QString &type );
   void connectToImporter( const QObject &importer );
 

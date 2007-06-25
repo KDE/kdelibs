@@ -79,7 +79,7 @@ namespace KIO { class Job; }
  */
 class KIO_EXPORT KBookmarkMenu : public QObject
 {
-  friend class KBookmarkBar;
+    //friend class KBookmarkBar;
   Q_OBJECT
 public:
   /**
@@ -104,8 +104,11 @@ public:
    **/
   void ensureUpToDate();
 
-protected Q_SLOTS:
+public Q_SLOTS:
+    // public for KonqBookmarkBar. TODO rename to bookmarksChanged
   void slotBookmarksChanged( const QString & );
+
+protected Q_SLOTS:
   void slotAboutToShow();
   void contextMenu( const QPoint & );
 
@@ -224,7 +227,7 @@ private:
 
 class KImportedBookmarkMenu : public KBookmarkMenu
 {
-  friend class KBookmarkMenuNSImporter;
+    friend class KBookmarkMenuImporter;
   Q_OBJECT
 public:
   //TODO simplfy

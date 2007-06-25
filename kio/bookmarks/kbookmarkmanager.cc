@@ -30,7 +30,7 @@
 #include <kmessagebox.h>
 #include <qprocess.h>
 #include <klocale.h>
-#include <kapplication.h>
+#include <QtGui/QApplication>
 #include <kconfiggroup.h>
 #include <qdatetime.h>
 #include <qfile.h>
@@ -680,9 +680,8 @@ void KBookmarkSettings::readSettings()
    // add bookmark dialog usage - no reparse
    s_self->m_advancedaddbookmark = cg.readEntry("AdvancedAddBookmarkDialog", false);
 
-   // these three alter the menu, therefore all need a reparse
+   // this one alters the menu, therefore it needs a reparse
    s_self->m_contextmenu = cg.readEntry("ContextMenuActions", true);
-   s_self->m_filteredtoolbar = cg.readEntry("FilteredToolbar", false);
 }
 
 KBookmarkSettings *KBookmarkSettings::self()

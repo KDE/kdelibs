@@ -292,15 +292,6 @@ void KonqBookmarkActionMenu::contextMenu(const QPoint &pos, KBookmarkManager* m_
   KonqBookmarkContextMenu::self().contextMenu( pos, bookmark().address(), m_pManager, m_pOwner );
 }
 
-void KonqBookmarkOwner::openInNewTab(const KBookmark &bm)
-{}
-
-void KonqBookmarkOwner::openInNewWindow(const KBookmark &bm)
-{}
-
-void KonqBookmarkOwner::openFolderinTabs(const KBookmark &bm)
-{}
-
 KonqBookmarkOwner::~KonqBookmarkOwner()
 {
 }
