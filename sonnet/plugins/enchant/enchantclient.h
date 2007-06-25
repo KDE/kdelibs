@@ -20,7 +20,7 @@
 #ifndef QSPELL_ENCHANTCLIENT_H
 #define QSPELL_ENCHANTCLIENT_H
 
-#include "speller.h"
+#include "spellerplugin_p.h"
 #include "client_p.h"
 
 #include <QtCore/QObject>

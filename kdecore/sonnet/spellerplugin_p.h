@@ -1,6 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * speller.h
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
  *
@@ -19,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef SONNET_SPELLER_H
-#define SONNET_SPELLER_H
+#ifndef SONNET_SPELLERPLUGIN_P_H
+#define SONNET_SPELLERPLUGIN_P_H
 
 #include <QtCore/QStringList>
 #include <QtCore/QString>

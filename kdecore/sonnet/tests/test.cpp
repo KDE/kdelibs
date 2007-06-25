@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 #include "loader.h"
-#include "speller.h"
+#include "spellerplugin_p.h"
 
 #include <QCoreApplication>
 #include <kdebug.h>

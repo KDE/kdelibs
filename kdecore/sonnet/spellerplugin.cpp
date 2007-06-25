@@ -1,6 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * speller.cpp
  *
  * Copyright 2006  Zack Rusin <zack@kde.org>
  *
@@ -19,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "speller.h"
+#include "spellerplugin_p.h"
 
 namespace Sonnet
 {

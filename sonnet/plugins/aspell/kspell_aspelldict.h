@@ -21,7 +21,7 @@
 #ifndef KSPELL_ASPELLDICT_H
 #define KSPELL_ASPELLDICT_H
 
-#include "speller.h"
+#include "spellerplugin_p.h"
 
 #include "aspell.h"
 

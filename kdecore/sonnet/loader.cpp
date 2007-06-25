@@ -1,6 +1,5 @@
 // -*- Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 /**
- * loader.cpp
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
  *
@@ -22,7 +21,7 @@
 #include "loader.h"
 #include "settings.h"
 #include "client_p.h"
-#include "speller.h"
+#include "spellerplugin_p.h"
 
 #include <klocale.h>
 #include <kservicetypetrader.h>

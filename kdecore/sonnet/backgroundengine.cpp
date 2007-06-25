@@ -1,5 +1,4 @@
 /**
- * backgroundengine.cpp
  *
  * Copyright (C)  2004  Zack Rusin <zack@kde.org>
  *
@@ -20,7 +19,7 @@
  */
 #include "backgroundengine_p.h"
 
-#include "speller.h"
+#include "spellerplugin_p.h"
 #include "filter.h"
 
 #include <kdebug.h>

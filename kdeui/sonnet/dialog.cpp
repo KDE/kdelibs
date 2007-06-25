@@ -24,7 +24,6 @@
 #include "backgroundchecker.h"
 #include "loader.h"
 #include "filter.h"
-#include "speller.h"
 #include "settings.h"
 
 #include <kconfig.h>

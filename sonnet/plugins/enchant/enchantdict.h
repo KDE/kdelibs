@@ -20,7 +20,7 @@
 #ifndef QSPELL_ENCHANTDICT_H
 #define QSPELL_ENCHANTDICT_H
 
-#include "speller.h"
+#include "spellerplugin_p.h"
 
 #include <enchant/enchant.h>
 

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include "speller.h"
+#include "spellerplugin_p.h"
 #include "loader.h"
 #include "test_core.h"
 

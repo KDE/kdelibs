@@ -22,7 +22,7 @@
 #ifndef KSPELL_HSPELLDICT_H
 #define KSPELL_HSPELLDICT_H
 
-#include "speller.h"
+#include "spellerplugin_p.h"
 /* libhspell is a C library and it does not have #ifdef __cplusplus */
 extern "C" {
 #include "hspell.h"
