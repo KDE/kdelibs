@@ -225,7 +225,7 @@ void Engine::slotProvidersFailed()
 	m_command = command_none;
 }
 
-void Engine::slotEntryLoaded(KNS::Entry *entry, const Feed *feed, const Provider *provider)
+void Engine::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider)
 {
 	kDebug(550) << "Engine: slotEntryLoaded" << endl;
 
@@ -316,7 +316,7 @@ void Engine::slotProvidersFinished()
 	uploadEntry(provider, entry);
 }
 
-void Engine::slotEntriesFeedFinished(const Feed *feed)
+void Engine::slotEntriesFeedFinished(const KNS::Feed *feed)
 {
 	kDebug(550) << "Engine: slotEntriesFeedFinished" << endl;
 
