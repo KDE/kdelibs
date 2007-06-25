@@ -34,6 +34,7 @@
 #endif
 
 #include <QHash>
+#include <QtCore/QCoreApplication>
 #include <QStringList>
 
 #include <kdebug.h>
@@ -48,13 +49,10 @@
 class KGlobalAccelPrivate
 {
 public:
-    KGlobalAccelPrivate(KGlobalAccelImpl *impl)
-     : configGroup("Global Shortcuts")
-     , enabled(true)
-     , implEnabled(false)
-     , impl(impl)
-    {
-    }
+    KGlobalAccelPrivate();
+    ~KGlobalAccelPrivate();
+
+    KGlobalAccel q;
 
     QHash<int, KAction*> grabbedKeys;
     QMultiHash<KAction*, int> grabbedActions;
@@ -71,30 +69,49 @@ public:
     KGlobalAccelImpl *const impl;
 };
 
-KGlobalAccel::KGlobalAccel()
-    : d(new KGlobalAccelPrivate(new KGlobalAccelImpl(this)))
+K_GLOBAL_STATIC(KGlobalAccelPrivate, globalAccelPrivate)
+
+KGlobalAccelPrivate::KGlobalAccelPrivate()
+    : configGroup("Global Shortcuts"),
+    enabled(true),
+    implEnabled(false),
+    impl(new KGlobalAccelImpl(&q))
 {
-    //TODO: is fromUtf8 correct?
-    if (KGlobal::hasMainComponent())
-        d->mainComponentName = QString::fromUtf8(KGlobal::mainComponent().componentName());
+    if (KGlobal::hasMainComponent()) {
+        mainComponentName = KGlobal::mainComponent().componentName();
+    }
+    qAddPostRoutine(globalAccelPrivate.destroy);
+}
+
+KGlobalAccelPrivate::~KGlobalAccelPrivate()
+{
+    qRemovePostRoutine(globalAccelPrivate.destroy);
+    foreach (int key, grabbedKeys.keys()) {
+        impl->grabKey(key, false);
+    }
+
+    delete impl;
+}
+
+#define PRIVATE_DATA KGlobalAccelPrivate *d = globalAccelPrivate
+
+KGlobalAccel::KGlobalAccel()
+{
 }
 
 KGlobalAccel::~KGlobalAccel()
 {
-    foreach (int key, d->grabbedKeys.keys())
-        d->impl->grabKey(key, false);
-
-    delete d->impl;
-    delete d;
 }
 
 bool KGlobalAccel::isEnabled()
 {
+    PRIVATE_DATA;
     return d->enabled;
 }
 
 void KGlobalAccel::setEnabled( bool enabled )
 {
+    PRIVATE_DATA;
     d->enabled = enabled;
 
 //TODO: think of something sensible :|
@@ -115,6 +132,7 @@ void KGlobalAccel::setEnabled( bool enabled )
 
 void KGlobalAccel::readSettings()
 {
+    PRIVATE_DATA;
     KConfigBase *config = KGlobal::config().data();
     QStringList actionIdentifier("");
     actionIdentifier.append(QString());
@@ -156,6 +174,7 @@ void KGlobalAccel::readSettings()
 
 void KGlobalAccel::writeSettings(KAction *oneAction) const
 {
+    PRIVATE_DATA;
     KConfigGroup cg(KGlobal::config().data(), d->configGroup);
     QStringList actionIdentifier(d->mainComponentName);
     actionIdentifier.append(QString());
@@ -184,10 +203,10 @@ void KGlobalAccel::writeSettings(KAction *oneAction) const
     KGlobal::config()->sync();
 }
 
-KGlobalAccel * KGlobalAccel::self( )
+KGlobalAccel *KGlobalAccel::self()
 {
-    K_GLOBAL_STATIC(KGlobalAccel, s_instance)
-    return s_instance;
+    PRIVATE_DATA;
+    return &d->q;
 }
 
 
@@ -195,6 +214,7 @@ KGlobalAccel * KGlobalAccel::self( )
 //kdeglobals will already be updated by the signaller.
 void KGlobalAccel::DBusShortcutChangeListener(const QStringList &actionIdentifier, const QList<QKeySequence> &oldCuts, const QList<QKeySequence> &newCuts)
 {
+    PRIVATE_DATA;
     QString mainComponentName = actionIdentifier.at(0);
     QString actionName = actionIdentifier.at(1);
     KAction *kaction;
@@ -223,6 +243,7 @@ void KGlobalAccel::DBusShortcutChangeListener(const QStringList &actionIdentifie
 //to the thief which shortcuts the victim possesses.
 void KGlobalAccel::DBusShortcutTheftListener(const QKeySequence &loot)
 {
+    PRIVATE_DATA;
     KAction *kaction;
     QStringList shortcutIdentifier = d->systemWideGlobalShortcuts.value(loot);
     //QString mainComponentName = shortcutIdentfier.at(0);
@@ -248,6 +269,7 @@ void KGlobalAccel::DBusShortcutTheftListener(const QKeySequence &loot)
 //It is only allowed to call this in case of real changes. Save some cycles...
 void KGlobalAccel::updateGlobalShortcut(KAction *action, const KShortcut &oldShortcut)
 {
+    PRIVATE_DATA;
     //abort if any of the new shortcuts are already taken
     foreach (QKeySequence oldSeq, oldShortcut.toList()) {
         QStringList oldOwner;
@@ -298,6 +320,7 @@ void KGlobalAccel::updateGlobalShortcut(KAction *action, const KShortcut &oldSho
 //This entry will document the usage status of this action's global shortcut.
 void KGlobalAccel::enableAction(KAction *action, bool enable)
 {
+    PRIVATE_DATA;
     if (enable) {
         //make sure that all necessary keys are grabbed
         changeGrab(action, action->globalShortcut());
@@ -345,6 +368,7 @@ void KGlobalAccel::updateGlobalShortcutAllowed(KAction *action)
 //ungrab oldGrab, grab newGrab, and leave unchanged what's in both
 void KGlobalAccel::changeGrab(KAction *action, const KShortcut &newGrab)
 {
+    PRIVATE_DATA;
     QList<int> needToGrab;
     foreach (const QKeySequence &seq, newGrab.toList())
         needToGrab.append(seq);
@@ -385,6 +409,7 @@ void KGlobalAccel::changeGrab(KAction *action, const KShortcut &newGrab)
 
 bool KGlobalAccel::keyPressed( int key )
 {
+    PRIVATE_DATA;
     bool consumed = false;
     foreach (KAction* action, d->grabbedKeys.values(key)) {
         consumed = true;
@@ -395,11 +420,13 @@ bool KGlobalAccel::keyPressed( int key )
 
 bool KGlobalAccel::isHandled( int key )
 {
+    PRIVATE_DATA;
     return !d->grabbedKeys.values(key).isEmpty();
 }
 
 void KGlobalAccel::regrabKeys( )
 {
+    PRIVATE_DATA;
     QMutableHashIterator<int, KAction*> it2 = d->grabbedKeys;
     while (it2.hasNext()) {
         it2.next();
@@ -420,6 +447,7 @@ void KGlobalAccel::regrabKeys( )
 
 void KGlobalAccel::enableImpl( bool enable )
 {
+    PRIVATE_DATA;
     if (d->implEnabled != enable) {
         d->implEnabled = enable;
         d->impl->setEnabled(enable);
@@ -430,7 +458,8 @@ void KGlobalAccel::enableImpl( bool enable )
 //static
 QStringList KGlobalAccel::findActionNameSystemwide(const QKeySequence &seq)
 {
-    return self()->d->systemWideGlobalShortcuts.value(seq);
+    PRIVATE_DATA;
+    return d->systemWideGlobalShortcuts.value(seq);
 }
 
 
@@ -451,9 +480,12 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
 //static
 void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
 {
+    PRIVATE_DATA;
     //TODO: mainly notification work. Use DBUS. The other side is already implemented.
-    QStringList shortcutIdentifier = self()->d->systemWideGlobalShortcuts.value(seq);
-    //TODO: something like this... self()->d->dbus.requestTheft(seq);
+    QStringList shortcutIdentifier = d->systemWideGlobalShortcuts.value(seq);
+    //TODO: something like this... d->dbus.requestTheft(seq);
 }
+
+#undef PRIVATE_DATA
 
 #include "kglobalaccel.moc"

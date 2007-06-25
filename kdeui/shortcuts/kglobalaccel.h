@@ -46,9 +46,6 @@ class KDEUI_EXPORT KGlobalAccel : public QObject
     Q_OBJECT
 
 public:
-    /// Destructor
-    virtual ~KGlobalAccel();
-
     /**
      * Returns (and creates if necessary) the singleton instance
      */
@@ -125,6 +122,8 @@ private Q_SLOTS:
 
 private:
     friend class KAction;
+    friend class KGlobalAccelPrivate;
+
     ///Grab or release shortcuts for action as appropriate, and make any shortcut changes visible
     ///to other applications via the global configuration file.
     void updateGlobalShortcut(KAction *action, const KShortcut &oldShortcut);
@@ -161,9 +160,10 @@ private:
     /// Creates a new KGlobalAccel object
     KGlobalAccel();
 
-    void grabKey(int key, bool grab, KAction *action);
+    /// Destructor
+    ~KGlobalAccel();
 
-    class KGlobalAccelPrivate *const d;
+    void grabKey(int key, bool grab, KAction *action);
 };
 
 #endif // _KGLOBALACCEL_H_
