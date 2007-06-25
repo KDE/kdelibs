@@ -19,6 +19,7 @@
 #define _KGLOBALSETTINGS_H
 
 #include <kdeui_export.h>
+#include <ksharedconfig.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtGui/QPalette>
@@ -522,18 +523,11 @@ public:
      *
      * This is only useful for configuration modules such as krdb and should not be
      * used in normal circumstances.
+     *
      * @return the QPalette
      */
-    static QPalette createApplicationPalette();
-
-    /**
-     * @internal
-     * Raw access for use by KDM.
-     * note: expects config to be in the correct group already.
-     */
-    // TODO is the doc really correct? With KColorScheme also exposing being
-    // able to use a KConfig* maybe other people will want to use this...
-    static QPalette createApplicationPalette( KConfigBase *config );
+    // TODO should the parameter be documented, or should it be hidden from doxygen?
+    static QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * An identifier for change signals.

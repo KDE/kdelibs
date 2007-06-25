@@ -843,14 +843,7 @@ void KGlobalSettings::applyGUIStyle()
 #endif
 }
 
-QPalette KGlobalSettings::createApplicationPalette()
-{
-    // Use null for the group. KColorScheme interprets this as
-    // 'use KGlobal::config', which is what we want.
-    return createApplicationPalette(0);
-}
-
-QPalette KGlobalSettings::createApplicationPalette(KConfigBase *config)
+QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
 {
     KColorScheme schemeView(KColorScheme::View, config);
     KColorScheme schemeWindow(KColorScheme::Window, config);

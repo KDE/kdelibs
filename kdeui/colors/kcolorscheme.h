@@ -21,6 +21,7 @@
 #define KCOLORSCHEME_H
 
 #include <kdeui_export.h>
+#include <ksharedconfig.h>
 
 class KConfigBase;
 class QColor;
@@ -179,7 +180,7 @@ public:
      * Construct a palette from given color set, using the colors from the
      * given KConfig (if null, the system colors are used).
      */
-    explicit KColorScheme(ColorSet = View, KConfigBase* = 0);
+    explicit KColorScheme(ColorSet = View, KSharedConfigPtr = KSharedConfigPtr());
 
     /**
      * Retrieve the requested background brush.

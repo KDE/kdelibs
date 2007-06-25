@@ -74,7 +74,6 @@ DefaultColors defaultTooltipColors = {
 class KColorSchemePrivate
 {
 public:
-    explicit KColorSchemePrivate(KConfigBase*, const char*, DefaultColors);
     explicit KColorSchemePrivate(const KSharedConfigPtr&, const char*, DefaultColors);
     KColorSchemePrivate(const KColorSchemePrivate&);
 
@@ -87,13 +86,6 @@ private:
     DefaultColors _defaults;
     int _contrast;
 };
-
-KColorSchemePrivate::KColorSchemePrivate(KConfigBase *config, const char *group, DefaultColors defaults)
-    : _config( config, group ), _defaults( defaults )
-{
-    KConfigGroup g( config, "KDE" );
-    _contrast = g.readEntry( "contrast", 7 );
-}
 
 KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config, const char *group, DefaultColors defaults)
     : _config( config, group ), _defaults( defaults )
@@ -176,43 +168,26 @@ KColorScheme::~KColorScheme()
     delete d;
 }
 
-KColorScheme::KColorScheme(ColorSet set, KConfigBase *config)
+KColorScheme::KColorScheme(ColorSet set, KSharedConfigPtr config)
 {
     if (!config) {
-        switch (set) {
-            case Window:
-                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Window", defaultWindowColors );
-                break;
-            case Button:
-                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Button", defaultButtonColors );
-                break;
-            case Selection:
-                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Selection", defaultSelectionColors );
-                break;
-            case Tooltip:
-                d = new KColorSchemePrivate( KGlobal::config(), "Colors:Tooltip", defaultTooltipColors );
-                break;
-            default:
-                d = new KColorSchemePrivate( KGlobal::config(), "Colors:View", defaultViewColors );
-        }
+        config = KGlobal::config();
     }
-    else {
-        switch (set) {
-            case Window:
-                d = new KColorSchemePrivate( config, "Colors:Window", defaultWindowColors );
-                break;
-            case Button:
-                d = new KColorSchemePrivate( config, "Colors:Button", defaultButtonColors );
-                break;
-            case Selection:
-                d = new KColorSchemePrivate( config, "Colors:Selection", defaultSelectionColors );
-                break;
-            case Tooltip:
-                d = new KColorSchemePrivate( config, "Colors:Tooltip", defaultTooltipColors );
-                break;
-            default:
-                d = new KColorSchemePrivate( config, "Colors:View", defaultViewColors );
-        }
+    switch (set) {
+        case Window:
+            d = new KColorSchemePrivate(config, "Colors:Window", defaultWindowColors);
+            break;
+        case Button:
+            d = new KColorSchemePrivate(config, "Colors:Button", defaultButtonColors);
+            break;
+        case Selection:
+            d = new KColorSchemePrivate(config, "Colors:Selection", defaultSelectionColors);
+            break;
+        case Tooltip:
+            d = new KColorSchemePrivate(config, "Colors:Tooltip", defaultTooltipColors);
+            break;
+        default:
+            d = new KColorSchemePrivate(config, "Colors:View", defaultViewColors);
     }
 }
 
