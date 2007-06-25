@@ -28,6 +28,7 @@
 class QDataStream;
 class KSycocaFactory;
 class KSycocaFactoryList;
+class KSycocaPrivate;
 
 /**
  * Sycoca file version number.
@@ -184,8 +185,8 @@ protected:
 
 private:
     Q_DISABLE_COPY(KSycoca)
-    class Private;
-    Private * const d;
+    friend class KSycocaPrivate;
+    KSycocaPrivate * const d;
 };
 
 #endif
