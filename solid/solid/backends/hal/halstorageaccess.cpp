@@ -100,10 +100,10 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     if (m_setupInProgress) {
         m_setupInProgress = false;
-        emit setupDone(Solid::StorageAccess::SetupSucceed, QVariant());
+        emit setupDone(Solid::NoError, QVariant());
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
-        emit teardownDone(Solid::StorageAccess::TeardownSucceed, QVariant());
+        emit teardownDone(Solid::NoError, QVariant());
     }
 }
 
@@ -112,11 +112,11 @@ void StorageAccess::slotDBusError(const QDBusError &error)
     // TODO: Better error reporting here
     if (m_setupInProgress) {
         m_setupInProgress = false;
-        emit setupDone(Solid::StorageAccess::UnauthorizedSetup,
+        emit setupDone(Solid::UnauthorizedOperation,
                        error.name()+": "+error.message());
     } else if (m_teardownInProgress) {
         m_teardownInProgress = false;
-        emit teardownDone(Solid::StorageAccess::UnauthorizedTeardown,
+        emit teardownDone(Solid::UnauthorizedOperation,
                           error.name()+": "+error.message());
     }
 }

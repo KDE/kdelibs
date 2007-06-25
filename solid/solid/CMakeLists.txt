@@ -7,6 +7,7 @@ configure_file(solid_export.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h)
 ########### next target ###############
 
 set(solid_LIB_SRCS 
+   solidnamespace.cpp 
    managerbase.cpp 
    device.cpp 
    devicemanager.cpp 
@@ -120,7 +121,7 @@ if(WIN32)
 endif(WIN32)
 ########### install files ###############
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h device.h devicenotifier.h deviceinterface.h genericinterface.h processor.h block.h storageaccess.h storagedrive.h opticaldrive.h storagevolume.h opticaldisc.h camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h networking.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid)
 
 ########### parser build ###############
 

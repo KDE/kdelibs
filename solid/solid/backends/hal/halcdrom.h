@@ -43,7 +43,7 @@ public:
 
 Q_SIGNALS:
     void ejectPressed();
-    void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData);
+    void ejectDone(Solid::ErrorType error, QVariant errorData);
 
 private Q_SLOTS:
     void slotCondition(const QString &name, const QString &reason);

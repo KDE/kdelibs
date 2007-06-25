@@ -147,7 +147,7 @@ bool Cdrom::eject()
 void Cdrom::slotDBusReply(const QDBusMessage &/*reply*/)
 {
     m_ejectInProgress = false;
-    emit ejectDone(Solid::OpticalDrive::EjectSuccess, QVariant());
+    emit ejectDone(Solid::NoError, QVariant());
 }
 
 void Cdrom::slotDBusError(const QDBusError &error)
@@ -155,7 +155,7 @@ void Cdrom::slotDBusError(const QDBusError &error)
     m_ejectInProgress = false;
 
     // TODO: Better error reporting here
-    emit ejectDone(Solid::OpticalDrive::UnauthorizedEject,
+    emit ejectDone(Solid::UnauthorizedOperation,
                    error.name()+": "+error.message());
 }
 

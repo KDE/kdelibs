@@ -1,5 +1,5 @@
 /*  This file is part of the KDE project
-    Copyright (C) 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright (C) 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,31 +17,17 @@
 
 */
 
-#ifndef FAKECDROM_H
-#define FAKECDROM_H
+#include "solidnamespace.h"
 
-#include <solid/ifaces/opticaldrive.h>
-#include "fakestorage.h"
-
-class FakeCdrom : public FakeStorage, virtual public Solid::Ifaces::OpticalDrive
+static int registerSolidMetaTypes()
 {
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::OpticalDrive)
+    qRegisterMetaType<Solid::ErrorType>();
 
-public:
-    explicit FakeCdrom(FakeDevice *device);
-    virtual ~FakeCdrom();
+    return 0; // something
+}
 
-public Q_SLOTS:
-    virtual Solid::OpticalDrive::MediumTypes supportedMedia() const;
-    virtual int readSpeed() const;
-    virtual int writeSpeed() const;
-    virtual QList<int> writeSpeeds() const;
-    virtual bool eject();
-
-Q_SIGNALS:
-    void ejectPressed();
-    void ejectDone(Solid::ErrorType error, QVariant errorData);
-};
-
+#ifdef Q_CONSTRUCTOR_FUNCTION
+Q_CONSTRUCTOR_FUNCTION(registerSolidMetaTypes)
+#else
+static const int _Solid_registerMetaTypes = registerSolidMetaTypes();
 #endif

@@ -26,10 +26,10 @@
 Solid::StorageAccess::StorageAccess(QObject *backendObject)
     : DeviceInterface(*new StorageAccessPrivate(), backendObject)
 {
-    connect(backendObject, SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)),
-            this, SIGNAL(setupDone(Solid::StorageAccess::SetupResult, QVariant)));
-    connect(backendObject, SIGNAL(teardownDone(Solid::StorageAccess::TeardownResult, QVariant)),
-            this, SIGNAL(teardownDone(Solid::StorageAccess::TeardownResult, QVariant)));
+    connect(backendObject, SIGNAL(setupDone(Solid::ErrorType, QVariant)),
+            this, SIGNAL(setupDone(Solid::ErrorType, QVariant)));
+    connect(backendObject, SIGNAL(teardownDone(Solid::ErrorType, QVariant)),
+            this, SIGNAL(teardownDone(Solid::ErrorType, QVariant)));
     connect(backendObject, SIGNAL(accessibilityChanged(bool)),
             this, SIGNAL(accessibilityChanged(bool)));
 }

@@ -22,6 +22,7 @@
 
 #include <solid/solid_export.h>
 
+#include <solid/solidnamespace.h>
 #include <solid/deviceinterface.h>
 #include <QtCore/QVariant>
 
@@ -39,29 +40,10 @@ namespace Solid
     class SOLID_EXPORT StorageAccess : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS(SetupResult TeardownResult)
         Q_PROPERTY(bool accessible READ isAccessible)
         Q_PROPERTY(QString filePath READ filePath)
         Q_DECLARE_PRIVATE(StorageAccess)
         friend class Device;
-
-    public:
-        /**
-         * This enum type defines the possible results for a setup.
-         *
-         * - SetupSucceed : The requested setup was a success
-         * - UnauthorizedSetup : The setup failed because of a policy in the system
-         */
-        enum SetupResult { SetupSucceed = 0, UnauthorizedSetup };
-
-        /**
-         * This enum type defines the possible results for a teardown.
-         *
-         * - TeardownSucceed : The requested teardown was a success
-         * - UnauthorizedTeardown : The teardown failed because of a policy in the system
-         */
-        enum TeardownResult { TeardownSucceed = 0, UnauthorizedTeardown };
-
 
     private:
         /**
@@ -134,7 +116,7 @@ namespace Solid
          *
          * @param newState true if the volume is mounted, false otherwise
          */
-        void setupDone(Solid::StorageAccess::SetupResult result, QVariant resultData);
+        void setupDone(Solid::ErrorType error, QVariant errorData);
 
         /**
          * This signal is emitted when the mount state of this device
@@ -142,7 +124,7 @@ namespace Solid
          *
          * @param newState true if the volume is mounted, false otherwise
          */
-        void teardownDone(Solid::StorageAccess::TeardownResult result, QVariant resultData);
+        void teardownDone(Solid::ErrorType error, QVariant errorData);
 
     protected:
         /**

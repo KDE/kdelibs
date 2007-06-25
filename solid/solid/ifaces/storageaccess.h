@@ -87,7 +87,7 @@ namespace Ifaces
          *
          * @param newState true if the volume is mounted, false otherwise
          */
-        virtual void setupDone(Solid::StorageAccess::SetupResult, QVariant resultData) = 0;
+        virtual void setupDone(Solid::ErrorType error, QVariant resultData) = 0;
 
         /**
          * This signal is emitted when the mount state of this device
@@ -95,7 +95,7 @@ namespace Ifaces
          *
          * @param newState true if the volume is mounted, false otherwise
          */
-        virtual void teardownDone(Solid::StorageAccess::TeardownResult, QVariant resultData) = 0;
+        virtual void teardownDone(Solid::ErrorType error, QVariant resultData) = 0;
     };
 }
 }

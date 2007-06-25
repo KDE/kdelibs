@@ -89,7 +89,7 @@ namespace Ifaces
          */
         virtual void ejectPressed() = 0;
 
-        virtual void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData) = 0;
+        virtual void ejectDone(Solid::ErrorType error, QVariant errorData) = 0;
     };
 }
 }

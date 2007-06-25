@@ -24,6 +24,7 @@
 #include <QtCore/QVariant>
 
 #include <solid/solid_export.h>
+#include <solid/solidnamespace.h>
 
 #include <solid/storagedrive.h>
 
@@ -40,7 +41,7 @@ namespace Solid
     class SOLID_EXPORT OpticalDrive : public StorageDrive
     {
         Q_OBJECT
-        Q_ENUMS(MediumType EjectResult)
+        Q_ENUMS(MediumType)
         Q_FLAGS(MediumTypes)
         Q_PROPERTY(MediumTypes supportedMedia READ supportedMedia)
         Q_PROPERTY(int readSpeed READ readSpeed)
@@ -81,17 +82,6 @@ namespace Solid
          */
         Q_DECLARE_FLAGS(MediumTypes, MediumType)
 
-
-        /**
-         * This enum type describe the errors that can be encountered during eject.
-         *
-         * - EjectSuccess : the operation went successfully
-         * - UnauthorizedEject : the operation has been forbidden by a policy in the system
-         */
-        enum EjectResult {
-            EjectSuccess = 0,
-            UnauthorizedEject
-        };
 
     private:
         /**
@@ -166,7 +156,7 @@ namespace Solid
          */
         void ejectPressed();
 
-        void ejectDone(Solid::OpticalDrive::EjectResult result, QVariant resultData);
+        void ejectDone(Solid::ErrorType error, QVariant errorData);
 
     };
 }

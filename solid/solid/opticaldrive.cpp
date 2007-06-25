@@ -28,8 +28,8 @@ Solid::OpticalDrive::OpticalDrive(QObject *backendObject)
 {
     connect(backendObject, SIGNAL(ejectPressed()),
             this, SIGNAL(ejectPressed()));
-    connect(backendObject, SIGNAL(ejectDone(Solid::OpticalDrive::EjectResult, QVariant)),
-            this, SIGNAL(ejectDone(Solid::OpticalDrive::EjectResult, QVariant)));
+    connect(backendObject, SIGNAL(ejectDone(Solid::ErrorType, QVariant)),
+            this, SIGNAL(ejectDone(Solid::ErrorType, QVariant)));
 }
 
 Solid::OpticalDrive::~OpticalDrive()
